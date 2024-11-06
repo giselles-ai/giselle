@@ -20,11 +20,6 @@ const nextConfig: NextConfig = {
 	async redirects() {
 		return [
 			{
-				source: "/signup",
-				destination: "/signup/email",
-				permanent: false,
-			},
-			{
 				source: "/",
 				destination: "/agents",
 				permanent: false,

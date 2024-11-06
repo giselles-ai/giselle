@@ -12,7 +12,7 @@ export default function Page() {
 		<div className="min-h-screen flex items-center justify-center p-4">
 			<div className="w-[320px] space-y-8">
 				<div className="text-center">
-					<PageTitle>Sign up</PageTitle>
+					<PageTitle>Sign up with Email</PageTitle>
 					{/* @todo Hide at the time of beta release.
 					<p className="mt-2 text-sm text-black-50">
 						Free forever. No credit card required.
@@ -24,23 +24,13 @@ export default function Page() {
 
 				<div className="flex justify-center">
 					<ActionPrompt
-						prompt="Already have an account?"
-						action={
-							<ClickableText asChild>
-								<Link href="/login">Log in</Link>
-							</ClickableText>
-						}
-					/>
-					{/* @todo Hide at the time of beta release.
-					<ActionPrompt
-						prompt="Get started for free by"
+						prompt="Get started by "
 						action={
 							<ClickableText asChild>
 								<Link href="/signup">other way?</Link>
 							</ClickableText>
 						}
 					/>
-					*/}
 				</div>
 			</div>
 		</div>

@@ -1,8 +1,11 @@
 import { ClickableText } from "@/components/ui/clicable-text";
 import { Field } from "@/components/ui/field";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getUser } from "@/lib/supabase";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Card } from "../components/card";
+import GitHubAuthentication from "./github-authentication";
 
 export default async function AccountSettingPage() {
 	const user = await getUser();
@@ -24,6 +27,18 @@ export default async function AccountSettingPage() {
 						disabled
 					/>
 				</div>
+			</Card>
+			<Card
+				title="Authentication"
+				description="Connect your Giselle account to third-party services."
+			>
+				<Suspense
+					fallback={
+						<Skeleton className="rounded-md border border-black-70 w-full h-16" />
+					}
+				>
+					<GitHubAuthentication />
+				</Suspense>
 			</Card>
 			<Card
 				title="Reset Password"
