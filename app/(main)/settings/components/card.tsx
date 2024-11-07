@@ -4,15 +4,22 @@ import type { FC, PropsWithChildren } from "react";
 
 type SubmitAction = {
 	href?: never;
+	component?: never;
 	content: string;
 	onAction: () => void;
 };
 type LinkAction = {
 	onAction?: never;
+	component?: never;
 	content: string;
 	href: string;
 };
-type Action = SubmitAction | LinkAction;
+type CustomComponentAction = {
+	component: React.ReactNode;
+	onAction?: never;
+	href?: never;
+};
+type Action = SubmitAction | LinkAction | CustomComponentAction;
 type CardProps = {
 	title: string;
 	description?: string;
@@ -44,6 +51,7 @@ export const Card: FC<PropsWithChildren<CardProps>> = ({
 							<Link href={action.href}>{action.content}</Link>
 						</Button>
 					)}
+					{action.component != null && action.component}
 				</div>
 			)}
 		</div>

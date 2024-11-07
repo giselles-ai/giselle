@@ -22,6 +22,24 @@ export async function connectGitHubIdentity() {
 	}
 }
 
+export async function reconnectGitHubIdentity() {
+	const supabase = await createClient();
+	const { data, error } = await supabase.auth.signInWithOAuth({
+		provider: "github",
+		options: {
+			redirectTo: getAuthCallbackUrl({ next: "/settings/account" }),
+		},
+	});
+
+	if (error != null) {
+		const { code, message, name, status } = error;
+		throw new Error(`${name} occurred: ${code} (${status}): ${message}`);
+	}
+	if (data.url) {
+		redirect(data.url);
+	}
+}
+
 export async function disconnectGitHubIdentity() {
 	const supabaseUser = await getUser();
 	const supabase = await createClient();

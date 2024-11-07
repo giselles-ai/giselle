@@ -2,44 +2,37 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 
 type ButtonWithActionProps = {
 	action: () => Promise<void>;
+	children: React.ReactNode;
+	className?: string;
 };
 
-const buttonClassNames = "w-fit font-avenir text-sm font-medium";
+export function GitHubConnectionButton({
+	action,
+	children,
+	className,
+}: ButtonWithActionProps) {
+	const buttonClassNames = "w-fit font-avenir text-sm font-medium";
+	const router = useRouter();
 
-export function GitHubConnectButton({ action }: ButtonWithActionProps) {
 	const [_, formAction, isPending] = useActionState(async () => {
 		await action();
+		router.refresh();
 	}, null);
+
 	return (
 		<form>
 			<Button
-				className={buttonClassNames}
+				className={cn(buttonClassNames, className)}
 				type="submit"
 				formAction={formAction}
 				disabled={isPending}
 			>
-				Connect
-			</Button>
-		</form>
-	);
-}
-export function GitHubDisconnectButton({ action }: ButtonWithActionProps) {
-	const [_, formAction, isPending] = useActionState(async () => {
-		await action();
-	}, null);
-	return (
-		<form>
-			<Button
-				className={cn(buttonClassNames, "text-red-500")}
-				type="submit"
-				formAction={formAction}
-				disabled={isPending}
-			>
-				Disconnect
+				{children}
 			</Button>
 		</form>
 	);

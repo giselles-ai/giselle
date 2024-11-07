@@ -1,9 +1,9 @@
 # giselle
 
-As of November  6, 2024  2:02am. 834 total
+As of November  7, 2024  6:42am. 845 total
 
 ## Summary
-* 613 MIT
+* 624 MIT
 * 108 Apache 2.0
 * 59 ISC
 * 23 New BSD
@@ -796,6 +796,50 @@ Get the status of a file with some features
 
 A library for efficiently walking a directory recursively
 
+<a name="@octokit/auth-app"></a>
+### @octokit/auth-app v7.1.1 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+GitHub App authentication for JavaScript
+
+<a name="@octokit/auth-oauth-app"></a>
+### @octokit/auth-oauth-app v8.1.1 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+GitHub OAuth App authentication for JavaScript
+
+<a name="@octokit/auth-oauth-device"></a>
+### @octokit/auth-oauth-device v7.1.1 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+GitHub OAuth Device authentication strategy for JavaScript
+
+<a name="@octokit/auth-oauth-user"></a>
+### @octokit/auth-oauth-user v5.1.1 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+Octokit authentication strategy for OAuth clients
+
 <a name="@octokit/auth-token"></a>
 ### @octokit/auth-token v5.1.1 (dependencies)
 #### 
@@ -840,8 +884,41 @@ Turns REST API endpoints into generic request options
 
 GitHub GraphQL API client for browsers and Node
 
+<a name="@octokit/oauth-authorization-url"></a>
+### @octokit/oauth-authorization-url v7.1.1 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+Universal library to retrieve GitHubâs identity URL for the OAuth web flow
+
+<a name="@octokit/oauth-methods"></a>
+### @octokit/oauth-methods v5.1.2 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+Set of stateless request methods to create, check, reset, refresh, and delete user access tokens for OAuth and GitHub Apps
+
 <a name="@octokit/openapi-types"></a>
 ### @octokit/openapi-types v22.2.0 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+Generated TypeScript definitions based on GitHub's OpenAPI spec for api.github.com
+
+<a name="@octokit/openapi-webhooks-types"></a>
+### @octokit/openapi-webhooks-types v8.3.0 (dependencies)
 #### 
 
 ##### Paths
@@ -883,6 +960,39 @@ Error class for Octokit request errors
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
 
 Shared TypeScript definitions for Octokit projects
+
+<a name="@octokit/webhooks"></a>
+### @octokit/webhooks v13.3.0 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+GitHub webhook events toolset for Node.js
+
+<a name="@octokit/webhooks-methods"></a>
+### @octokit/webhooks-methods v5.1.0 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+Methods to handle GitHub Webhook requests
+
+<a name="@octokit/webhooks-types"></a>
+### @octokit/webhooks-types v7.6.1 (devDependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+Generated TypeScript definitions based on community contributed JSON Schemas
 
 <a name="@opentelemetry/api"></a>
 ### <a href="https://github.com/open-telemetry/opentelemetry-js/tree/main/api">@opentelemetry/api</a> v1.9.0 (dependencies)
@@ -8708,6 +8818,17 @@ unist utility to visit nodes
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
 
 unist utility to recursively walk over nodes, with ancestral information
+
+<a name="universal-github-app-jwt"></a>
+### universal-github-app-jwt v2.2.0 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+Calculate GitHub App bearer tokens for Node & modern browsers
 
 <a name="universal-user-agent"></a>
 ### universal-user-agent v7.0.2 (dependencies)

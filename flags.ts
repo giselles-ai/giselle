@@ -63,3 +63,16 @@ export const viewFlag = flag<boolean>({
 		{ value: true, label: "Enable" },
 	],
 });
+
+export const githubIntegrationFlag = flag<boolean>({
+	key: "github-integration",
+	async decide() {
+		return takeLocalEnv("GITHUB_INTEGRATION_FLAG");
+	},
+	description: "Enable GitHub Integration",
+	defaultValue: false,
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+});

@@ -5,7 +5,7 @@ import { getUser } from "@/lib/supabase";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Card } from "../components/card";
-import GitHubAuthentication from "./github-authentication";
+import { GitHubAuthentication } from "./github-authentication";
 
 export default async function AccountSettingPage() {
 	const user = await getUser();

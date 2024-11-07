@@ -1,8 +1,13 @@
+import { githubIntegrationFlag } from "@/flags";
 import { CreditCardIcon, UserIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { IntegrationIcon } from "./components/integration-icon";
 import { MenuLink } from "./components/menu-link";
 
-export default function SettingLayout({ children }: { children: ReactNode }) {
+export default async function SettingLayout({
+	children,
+}: { children: ReactNode }) {
+	const displayGitHubIntegration = await githubIntegrationFlag();
 	return (
 		<div className="flex divide-x divide-black-80 h-full">
 			<div className="w-[200px] p-[24px]">
@@ -16,6 +21,14 @@ export default function SettingLayout({ children }: { children: ReactNode }) {
 					>
 						Account
 					</MenuLink>
+					{displayGitHubIntegration && (
+						<MenuLink
+							href="/settings/integration"
+							icon={<IntegrationIcon className="w-4 h-4" />}
+						>
+							Integration
+						</MenuLink>
+					)}
 					<MenuLink
 						href="/settings/billing"
 						icon={<CreditCardIcon className="w-4 h-4" />}
