@@ -12,6 +12,8 @@ const headers = {
 	"signoz-access-token": process.env.SIGNOZ_INGESTION_TOKEN,
 };
 
+// Traces
+
 // Metrics
 const metricExporter = new OTLPMetricExporter({
 	url: "https://ingest.us.signoz.cloud:443/v1/metrics",
