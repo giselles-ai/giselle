@@ -52,7 +52,7 @@
 - - :approve
   - "@vercel/flags"
   - :who:
-    :why: The license is none. Check https://github.com/route06inc/giselle/issues/12
+    :why: The license is none. Check https://github.com/giselles-ai/giselle/issues/12
       later
     :versions: []
     :when: 2024-10-08 09:38:17.316315298 Z

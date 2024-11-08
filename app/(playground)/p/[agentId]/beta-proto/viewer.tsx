@@ -65,7 +65,7 @@ export function Viewer() {
 													<StepItem
 														key={step.id}
 														step={step}
-														node={nodeIndexes[step.nodeId]}
+														node={nodeIndexes[step.node.id]}
 													/>
 												</Tabs.Trigger>
 											))}

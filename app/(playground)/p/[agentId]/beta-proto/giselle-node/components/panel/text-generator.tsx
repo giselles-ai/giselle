@@ -13,7 +13,19 @@ import {
 import { PanelCloseIcon } from "../../../components/icons/panel-close";
 import { SpinnerIcon } from "../../../components/icons/spinner";
 import { WilliIcon } from "../../../components/icons/willi";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue,
+} from "../../../components/select";
 import { Spinner } from "../../../components/spinner";
+import { useFeatureFlags } from "../../../feature-flags/context";
+import { useGraph } from "../../../graph/context";
+import { updateNode } from "../../../graph/v2/composition/update-node";
 import {
 	type GiselleNode,
 	giselleNodeCategories,
@@ -41,6 +53,8 @@ type TextGeneratorPropertyPanelProps = {
 export const TextGeneratorPropertyPanel: FC<
 	TextGeneratorPropertyPanelProps
 > = ({ node }) => {
+	const { dispatch } = useGraph();
+	const { chooseModelFlag, anthropicFlag } = useFeatureFlags();
 	return (
 		<div className="flex gap-[10px] flex-col h-full">
 			<div className="relative z-10 pt-[16px] px-[24px] flex justify-between h-[40px]">
@@ -48,6 +62,9 @@ export const TextGeneratorPropertyPanel: FC<
 					<PanelCloseIcon className="w-[18px] h-[18px] fill-black-30" />
 				</button>
 				<div className="gap-[16px] flex items-center">
+					{chooseModelFlag && (
+						<TabTrigger value="property">Property</TabTrigger>
+					)}
 					<TabTrigger value="result">Result</TabTrigger>
 				</div>
 			</div>
@@ -72,7 +89,7 @@ export const TextGeneratorPropertyPanel: FC<
 				</div>
 			</div>
 
-			{/** node.ui.panelTab === panelTabs.property && (
+			{chooseModelFlag && node.ui.panelTab === panelTabs.property && (
 				<div className="px-[24px] pb-[16px] overflow-scroll">
 					<div>
 						<div className="relative z-10">
@@ -89,12 +106,12 @@ export const TextGeneratorPropertyPanel: FC<
 									}
 									onValueChange={(value) => {
 										dispatch(
-											updateNodeProperty({
-												node: {
-													id: node.id,
-													property: {
-														key: "llm",
-														value,
+											updateNode({
+												input: {
+													nodeId: node.id,
+													properties: {
+														...node.properties,
+														llm: value,
 													},
 												},
 											}),
@@ -112,25 +129,21 @@ export const TextGeneratorPropertyPanel: FC<
 												gpt-4o-mini
 											</SelectItem>
 										</SelectGroup>
-										<SelectGroup>
-											<SelectLabel>Anthropic </SelectLabel>
-											<SelectItem value="anthropic:claude-3.5-sonnet">
-												Claude 3.5 Sonnet
-											</SelectItem>
-										</SelectGroup>
-										<SelectGroup>
-											<SelectLabel>Google</SelectLabel>
-											<SelectItem value="google:gemini-1.5-flash">
-												Gemini 1.5 Flash
-											</SelectItem>
-										</SelectGroup>
+										{anthropicFlag && (
+											<SelectGroup>
+												<SelectLabel>Anthropic </SelectLabel>
+												<SelectItem value="anthropic:claude-3.5-sonnet">
+													Claude 3.5 Sonnet
+												</SelectItem>
+											</SelectGroup>
+										)}
 									</SelectContent>
 								</Select>
 							</div>
 						</div>
 					</div>
 				</div>
-			) */}
+			)}
 			{node.ui.panelTab === panelTabs.result && (
 				<div className="px-[24px] pb-[16px] overflow-y-auto overflow-x-hidden text-black-30 font-rosart text-[12px]">
 					<div className="flex flex-col gap-[8px]">

@@ -1,12 +1,15 @@
 import type { ConnectorObject } from "../connector/types";
 import type { StructuredData } from "../files/types";
-import type { GiselleNodeArchetype } from "../giselle-node/blueprints";
 import type { GiselleNode, GiselleNodeId } from "../giselle-node/types";
 import type { TextContent } from "../text-content/types";
 import type { AgentId } from "../types";
 import type { WebSearch } from "../web-search/types";
-import type { TextArtifact } from "./server-actions/generate-text";
+import type {
+	ModelConfiguration,
+	TextArtifact,
+} from "./server-actions/generate-text";
 import type { WebSearchArtifact } from "./server-actions/websearch";
+import type { StepNode } from "./step-nodes/types";
 
 export type FlowId = `flw_${string}`;
 
@@ -78,8 +81,6 @@ export const stepStatuses = {
 
 export type StepStatus = (typeof stepStatuses)[keyof typeof stepStatuses];
 
-type StepAction = GiselleNodeArchetype;
-
 export type Artifact = TextArtifact | WebSearchArtifact;
 export interface GeneratorNode {
 	nodeId: GiselleNodeId;
@@ -94,12 +95,13 @@ export interface GenerateResult {
 	generator: GeneratorNode;
 	artifact: Artifact;
 }
+
 interface BaseStep {
 	id: StepId;
 	object: "step";
-	nodeId: GiselleNodeId;
-	action: StepAction;
+	node: StepNode;
 	prompt: string;
+	action: string;
 	sources: (StructuredData | TextContent)[];
 	sourceNodeIds: GiselleNodeId[];
 }
@@ -118,7 +120,25 @@ interface CompletedStep extends BaseStep {
 	output: Artifact;
 }
 
-export type Step = QueuedStep | RunningStep | StreamingStep | CompletedStep;
+export type StatusStep =
+	| QueuedStep
+	| RunningStep
+	| StreamingStep
+	| CompletedStep;
+
+export interface GenerateTextAction {
+	action: "generate-text";
+	modelConfiguration: ModelConfiguration;
+}
+export interface SearchWebAction {
+	action: "search-web";
+}
+
+export type GenerateTextStep = StatusStep & GenerateTextAction;
+
+export type SearchWebStep = StatusStep & SearchWebAction;
+
+export type Step = GenerateTextStep | SearchWebStep;
 
 interface BaseFlowIndex {
 	object: "flow.index";

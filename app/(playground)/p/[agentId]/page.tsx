@@ -2,6 +2,8 @@ import "@xyflow/react/dist/style.css";
 import { getTeamMembershipByAgentId } from "@/app/(auth)/lib/get-team-membership-by-agent-id";
 import { agents, db } from "@/drizzle";
 import {
+	anthropicFlag as getAnthropicFlag,
+	chooseModelFlag as getChooseModelFlag,
 	debugFlag as getDebugFlag,
 	uploadFileToPromptNodeFlag as getUploadFileToPromptNodeFlag,
 	viewFlag as getViewFlag,
@@ -85,6 +87,8 @@ export default async function AgentPlaygroundPage({
 	const webSearchNodeFlag = await getWebSearchNodeFlag();
 	const debugFlag = await getDebugFlag();
 	const viewFlag = await getViewFlag();
+	const chooseModelFlag = await getChooseModelFlag();
+	const anthropicFlag = await getAnthropicFlag();
 
 	const agent = await getAgent(agentId);
 
@@ -97,6 +101,8 @@ export default async function AgentPlaygroundPage({
 				webSearchNodeFlag,
 				debugFlag,
 				viewFlag,
+				chooseModelFlag,
+				anthropicFlag,
 			}}
 		/>
 	);

@@ -66,10 +66,6 @@ export async function executeFlow(
 							input: { stepId: step.id, status: stepStatuses.running },
 						}),
 					);
-					const stepNode = graph.nodes.find((node) => node.id === step.nodeId);
-					if (stepNode === undefined) {
-						return;
-					}
 					const relevanceResults = step.sourceNodeIds
 						.map((sourceNodeId) => {
 							const sourceArtifact = generateResults.find(
@@ -84,11 +80,11 @@ export async function executeFlow(
 						})
 						.filter((sourceArtifact) => sourceArtifact !== null);
 					switch (step.action) {
-						case giselleNodeArchetypes.textGenerator: {
+						case "generate-text": {
 							const artifactObject = await generateArtifactObject({
 								input: {
 									prompt: step.prompt,
-									model: openai("gpt-4o-mini"),
+									model: step.modelConfiguration,
 									sources: [
 										...step.sources,
 										...relevanceResults.map((result) => result.artifact),
@@ -114,9 +110,9 @@ export async function executeFlow(
 							generateResults.push(
 								buildGenerateResult({
 									generator: buildGeneratorNode({
-										nodeId: stepNode.id,
-										archetype: stepNode.archetype,
-										name: stepNode.name,
+										nodeId: step.node.id,
+										archetype: step.node.archetype,
+										name: step.node.name,
 									}),
 									artifact: buildTextArtifact({
 										title: artifactObject.artifact.title,
@@ -126,7 +122,7 @@ export async function executeFlow(
 							);
 							break;
 						}
-						case giselleNodeArchetypes.webSearch: {
+						case "search-web": {
 							const webSearchArtifact = await generateWebSearchArtifactObject({
 								input: {
 									prompt: step.prompt,
@@ -155,9 +151,9 @@ export async function executeFlow(
 							generateResults.push(
 								buildGenerateResult({
 									generator: buildGeneratorNode({
-										nodeId: stepNode.id,
-										archetype: stepNode.archetype,
-										name: stepNode.name,
+										nodeId: step.node.id,
+										archetype: step.node.archetype,
+										name: step.node.name,
 									}),
 									artifact: buildWebSearchArtifact({
 										keywords: webSearchArtifact.keywords,

@@ -9,14 +9,17 @@ import { metrics } from "@opentelemetry/api";
 import { waitUntil } from "@vercel/functions";
 import { Langfuse } from "langfuse";
 import { schema as artifactSchema } from "../artifact/schema";
+import { buildLanguageModel } from "../flow/server-actions/generate-text";
 import type { SourceIndex } from "../source/types";
 import { sourceIndexesToSources, sourcesToText } from "../source/utils";
 import type { AgentId } from "../types";
+import type { ModelConfiguration } from "./types";
 
 type GenerateArtifactStreamParams = {
 	agentId: AgentId;
 	userPrompt: string;
 	sourceIndexes: SourceIndex[];
+	modelConfiguration: ModelConfiguration;
 };
 export async function generateArtifactStream(
 	params: GenerateArtifactStreamParams,
@@ -48,14 +51,13 @@ ${sourcesToText(sources)}
 	const stream = createStreamableValue();
 
 	(async () => {
-		console.log("async() envirenment: ", process.env.NEXT_RUNTIME);
-		const model = "gpt-4o";
+		const model = buildLanguageModel(params.modelConfiguration);
 		const generation = trace.generation({
 			input: params.userPrompt,
-			model,
+			model: params.modelConfiguration.modelId,
 		});
 		const { partialObjectStream, object } = await streamObject({
-			model: openai(model),
+			model,
 			system,
 			prompt: params.userPrompt,
 			schema: artifactSchema,
@@ -63,8 +65,7 @@ ${sourcesToText(sources)}
 				isEnabled: true,
 			},
 			onFinish: async (result) => {
-				console.log("onFinish() envirenment: ", process.env.NEXT_RUNTIME);
-				const meter = metrics.getMeter("OpenAI");
+				const meter = metrics.getMeter(params.modelConfiguration.provider);
 				const tokenCounter = meter.createCounter("token_consumed", {
 					description: "Number of OpenAI API tokens consumed by each request",
 				});

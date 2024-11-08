@@ -1,6 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import type { ConnectorObject } from "../connector/types";
 import { type StructuredData, fileStatuses } from "../files/types";
+import { giselleNodeArchetypes } from "../giselle-node/blueprints";
 import {
 	type GiselleNode,
 	type GiselleNodeId,
@@ -9,12 +10,15 @@ import {
 import type { Graph } from "../graph/types";
 import type { TextContent, TextContentId } from "../text-content/types";
 import type { AgentId } from "../types";
+import { isModelProvider } from "./server-actions/generate-text";
+import { buildStepNode } from "./step-nodes/utils";
 import {
 	type Artifact,
 	type Flow,
 	type FlowId,
 	type GenerateResult,
 	type GenerateResultId,
+	type GenerateTextAction,
 	type GeneratorNode,
 	type InitializingFlow,
 	type InitializingFlowIndex,
@@ -22,6 +26,7 @@ import {
 	type JobId,
 	type QueuedFlowIndex,
 	type RunningFlowIndex,
+	type SearchWebAction,
 	type Step,
 	type StepId,
 	flowStatuses,
@@ -128,11 +133,11 @@ export async function resolveJobs(
 						id: createStepId(),
 						object: "step",
 						status: stepStatuses.queued,
-						nodeId: node.id,
-						action: node.archetype,
+						node: buildStepNode(node),
 						prompt: resolvePrompt(node.id, nodes, relevantConnectors),
 						sources: await resolveSources(node.id, nodes, relevantConnectors),
 						sourceNodeIds: resolveSourceNodeIds(node.id, connectors),
+						...resolveStepAction(node),
 					}) satisfies Step,
 			),
 		);
@@ -319,4 +324,43 @@ export function buildGenerateResult(
 		generator: input.generator,
 		artifact: input.artifact,
 	};
+}
+
+export function resolveStepAction(node: GiselleNode) {
+	if (node.archetype === giselleNodeArchetypes.textGenerator) {
+		if (
+			node.properties !== null &&
+			typeof node.properties === "object" &&
+			"llm" in node.properties &&
+			typeof node.properties.llm === "string"
+		) {
+			const [provider, modelId] = node.properties.llm.split(":");
+			if (isModelProvider(provider) && typeof modelId === "string") {
+				return {
+					action: "generate-text",
+					modelConfiguration: {
+						provider,
+						modelId,
+						temperature: 0.7,
+						topP: 0.8,
+					},
+				} satisfies GenerateTextAction;
+			}
+		}
+		return {
+			action: "generate-text",
+			modelConfiguration: {
+				provider: "openai",
+				modelId: "gpt-4o-mini",
+				temperature: 0.7,
+				topP: 0.8,
+			},
+		} satisfies GenerateTextAction;
+	}
+	if (node.archetype === giselleNodeArchetypes.webSearch) {
+		return {
+			action: "search-web",
+		} satisfies SearchWebAction;
+	}
+	throw new Error(`Detect invalid archetype: ${node.archetype}`);
 }

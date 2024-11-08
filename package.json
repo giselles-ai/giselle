@@ -13,7 +13,8 @@
 	},
 	"packageManager": "bun@1.1.17",
 	"dependencies": {
-		"@ai-sdk/openai": "0.0.62",
+		"@ai-sdk/anthropic": "0.0.56",
+		"@ai-sdk/openai": "0.0.72",
 		"@icons-pack/react-simple-icons": "10.0.0",
 		"@mendable/firecrawl-js": "1.6.1",
 		"@next/env": "14.2.5",
@@ -46,7 +47,7 @@
 		"@vercel/postgres": "0.9.0",
 		"@vercel/speed-insights": "1.0.12",
 		"@xyflow/react": "12.0.3",
-		"ai": "3.4.3",
+		"ai": "3.4.33",
 		"boring-avatars": "1.11.1",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "2.1.1",

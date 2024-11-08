@@ -1,11 +1,11 @@
 # giselle
 
-As of November  5, 2024  8:23am. 824 total
+As of November  8, 2024  2:26am. 826 total
 
 ## Summary
 * 605 MIT
-* 107 Apache 2.0
-* 58 ISC
+* 108 Apache 2.0
+* 59 ISC
 * 23 New BSD
 * 12 Simplified BSD
 * 3 MIT OR Apache-2.0
@@ -26,8 +26,19 @@ As of November  5, 2024  8:23am. 824 total
 ## Items
 
 
+<a name="@ai-sdk/anthropic"></a>
+### <a href="https://sdk.vercel.ai/docs">@ai-sdk/anthropic</a> v0.0.56 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
 <a name="@ai-sdk/openai"></a>
-### <a href="https://sdk.vercel.ai/docs">@ai-sdk/openai</a> v0.0.62 (dependencies)
+### <a href="https://sdk.vercel.ai/docs">@ai-sdk/openai</a> v0.0.72 (dependencies)
 #### 
 
 ##### Paths
@@ -38,7 +49,7 @@ As of November  5, 2024  8:23am. 824 total
 
 
 <a name="@ai-sdk/provider"></a>
-### <a href="https://sdk.vercel.ai/docs">@ai-sdk/provider</a> v0.0.23 (dependencies)
+### <a href="https://sdk.vercel.ai/docs">@ai-sdk/provider</a> v0.0.26 (dependencies)
 #### 
 
 ##### Paths
@@ -49,7 +60,7 @@ As of November  5, 2024  8:23am. 824 total
 
 
 <a name="@ai-sdk/provider-utils"></a>
-### <a href="https://sdk.vercel.ai/docs">@ai-sdk/provider-utils</a> v1.0.19 (dependencies)
+### <a href="https://sdk.vercel.ai/docs">@ai-sdk/provider-utils</a> v1.0.22 (dependencies)
 #### 
 
 ##### Paths
@@ -60,7 +71,7 @@ As of November  5, 2024  8:23am. 824 total
 
 
 <a name="@ai-sdk/react"></a>
-### <a href="https://sdk.vercel.ai/docs">@ai-sdk/react</a> v0.0.60 (dependencies)
+### <a href="https://sdk.vercel.ai/docs">@ai-sdk/react</a> v0.0.70 (dependencies)
 #### 
 
 ##### Paths
@@ -71,7 +82,7 @@ As of November  5, 2024  8:23am. 824 total
 
 
 <a name="@ai-sdk/solid"></a>
-### <a href="https://sdk.vercel.ai/docs">@ai-sdk/solid</a> v0.0.47 (dependencies)
+### <a href="https://sdk.vercel.ai/docs">@ai-sdk/solid</a> v0.0.54 (dependencies)
 #### 
 
 ##### Paths
@@ -82,7 +93,7 @@ As of November  5, 2024  8:23am. 824 total
 
 
 <a name="@ai-sdk/svelte"></a>
-### <a href="https://sdk.vercel.ai/docs">@ai-sdk/svelte</a> v0.0.49 (dependencies)
+### <a href="https://sdk.vercel.ai/docs">@ai-sdk/svelte</a> v0.0.57 (dependencies)
 #### 
 
 ##### Paths
@@ -93,7 +104,7 @@ As of November  5, 2024  8:23am. 824 total
 
 
 <a name="@ai-sdk/ui-utils"></a>
-### <a href="https://sdk.vercel.ai/docs">@ai-sdk/ui-utils</a> v0.0.44 (dependencies)
+### <a href="https://sdk.vercel.ai/docs">@ai-sdk/ui-utils</a> v0.0.50 (dependencies)
 #### 
 
 ##### Paths
@@ -104,7 +115,7 @@ As of November  5, 2024  8:23am. 824 total
 
 
 <a name="@ai-sdk/vue"></a>
-### <a href="https://sdk.vercel.ai/docs">@ai-sdk/vue</a> v0.0.51 (dependencies)
+### <a href="https://sdk.vercel.ai/docs">@ai-sdk/vue</a> v0.0.59 (dependencies)
 #### 
 
 ##### Paths
@@ -3038,7 +3049,7 @@ The Vercel Blob JavaScript API client
 
 unknown manually approved
 
->The license is none. Check https://github.com/route06inc/giselle/issues/12 later
+>The license is none. Check https://github.com/giselles-ai/giselle/issues/12 later
 
 ><cite>  2024-10-08</cite>
 
@@ -3452,7 +3463,7 @@ Turn a function into an `http.Agent` instance
 Missing keepalive http.Agent
 
 <a name="ai"></a>
-### <a href="https://sdk.vercel.ai/docs">ai</a> v3.4.3 (dependencies)
+### <a href="https://sdk.vercel.ai/docs">ai</a> v3.4.33 (dependencies)
 #### 
 
 ##### Paths
@@ -6565,17 +6576,6 @@ Bytes go in, but they don't come out (when muted).
 modernize node.js to current ECMAScript standards
 
 <a name="nanoid"></a>
-### nanoid v3.3.6 (dependencies)
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-A tiny (116 bytes), secure URL-friendly unique string ID generator
-
-<a name="nanoid"></a>
 ### nanoid v3.3.7 (dependencies, devDependencies)
 #### 
 
@@ -8291,6 +8291,17 @@ Promisifies all the selected functions in an object
 
 
 
+<a name="throttleit"></a>
+### throttleit v2.1.0 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+Throttle a function to limit its execution rate
+
 <a name="through"></a>
 ### <a href="https://github.com/dominictarr/through">through</a> v2.3.8 (dependencies)
 #### 
@@ -9063,6 +9074,17 @@ TypeScript-first schema declaration and validation library with static type infe
 
 <a name="zod-to-json-schema"></a>
 ### zod-to-json-schema v3.23.2 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
+
+Converts Zod schemas to Json Schemas
+
+<a name="zod-to-json-schema"></a>
+### zod-to-json-schema v3.23.5 (dependencies)
 #### 
 
 ##### Paths

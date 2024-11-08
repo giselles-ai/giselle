@@ -32,3 +32,11 @@ export type GeneratedObject = {
 	description: string;
 };
 export type PartialGeneratedObject = Partial<GeneratedObject>;
+
+export type ModelProvider = "openai" | "anthropic";
+export interface ModelConfiguration {
+	provider: ModelProvider;
+	modelId: string;
+	temperature: number;
+	topP: number;
+}

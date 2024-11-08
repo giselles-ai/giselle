@@ -9,7 +9,7 @@ import {
 	requestPortMessages,
 	requests,
 } from "@/drizzle";
-import { logger } from "@trigger.dev/sdk/v3";
+// import { logger } from "@trigger.dev/sdk/v3";
 import { and, eq } from "drizzle-orm";
 import type { Port } from "../../types";
 
@@ -45,12 +45,12 @@ export const buildTemplate = async ({
 	for (const match of matches) {
 		const inputPort = inputPorts.find(({ name }) => name === match[0]);
 		if (inputPort == null) {
-			logger.log(`inputPort not found for ${match[0]}`);
+			// logger.log(`inputPort not found for ${match[0]}`);
 			continue;
 		}
 		const message = messages.find(({ portId }) => portId === inputPort.id);
 		if (message == null) {
-			logger.log(`message not found for ${inputPort.id}`);
+			// logger.log(`message not found for ${inputPort.id}`);
 			continue;
 		}
 		finalText = finalText.replace(`{${match[0]}}`, message.content);

@@ -1,8 +1,8 @@
 import type { DetailedHTMLProps } from "react";
 import { SpinnerIcon } from "../../components/icons/spinner";
+import type { StepNode } from "../../flow/step-nodes/types";
 import { type Step, stepStatuses } from "../../flow/types";
 import { ArchetypeIcon } from "../../giselle-node/components/archetype-icon";
-import type { GiselleNode } from "../../giselle-node/types";
 
 interface ActionItemProps
 	extends DetailedHTMLProps<
@@ -10,7 +10,7 @@ interface ActionItemProps
 		HTMLButtonElement
 	> {
 	step: Step;
-	node: GiselleNode;
+	node: StepNode;
 }
 export function StepItem({ step, node, ...props }: ActionItemProps) {
 	return (

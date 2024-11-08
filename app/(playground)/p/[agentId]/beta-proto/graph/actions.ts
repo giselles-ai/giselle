@@ -3,6 +3,7 @@ import { createArtifactId } from "../artifact/factory";
 import { generateArtifactStream } from "../artifact/server-actions";
 import type { Artifact, ArtifactId } from "../artifact/types";
 import type { PartialGeneratedObject } from "../artifact/types";
+import { resolveModelConfiguration } from "../artifact/utils";
 import type { V2ConnectorAction } from "../connector/actions";
 import { createConnectorId } from "../connector/factory";
 import type { ConnectorId, ConnectorObject } from "../connector/types";
@@ -478,6 +479,7 @@ export const generateText =
 					agentId: getState().graph.agentId,
 					userPrompt: instructionNode.output as string,
 					sourceIndexes,
+					modelConfiguration: resolveModelConfiguration(node),
 				});
 				let content: PartialGeneratedObject = {};
 				for await (const streamContent of readStreamableValue(object)) {
