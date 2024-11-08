@@ -6,6 +6,7 @@ import { createStreamableValue } from "ai/rsc";
 
 import { getUserSubscriptionId, isRoute06User } from "@/app/(auth)/lib";
 import { metrics } from "@opentelemetry/api";
+import { waitUntil } from "@vercel/functions";
 import { Langfuse } from "langfuse";
 import { schema as artifactSchema } from "../artifact/schema";
 import { buildLanguageModel } from "../flow/server-actions/generate-text";
@@ -80,6 +81,7 @@ ${sourcesToText(sources)}
 					output: result,
 				});
 				await lf.shutdownAsync();
+				waitUntil(new Promise((resolve) => setTimeout(resolve, 14000))); // wait until telemetry sent
 			},
 		});
 
