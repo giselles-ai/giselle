@@ -156,6 +156,11 @@ export interface TextArtifactObject extends ArtifactObjectBase {
 		plan: string;
 		description: string;
 	};
+	usage?: {
+		// unavailable until generation is completed
+		promptTokens: number;
+		completionTokens: number;
+	};
 }
 interface TextArtifact extends GeneratedArtifact {
 	object: TextArtifactObject;

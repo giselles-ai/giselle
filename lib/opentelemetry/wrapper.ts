@@ -1,14 +1,64 @@
 import { getCurrentMeasurementScope, isRoute06User } from "@/app/(auth)/lib";
 import { waitUntil } from "@vercel/functions";
 import type { LanguageModelUsage } from "ai";
+import type { LanguageModelV1 } from "ai";
 import type { Strategy } from "unstructured-client/sdk/models/shared";
 import { captureError } from "./log";
 import type { LogSchema, OtelLoggerWrapper } from "./types";
 import {
 	ExternalServiceName,
 	type RequestCountSchema,
+	type TokenBasedServiceName,
 	type TokenConsumedSchema,
+	UnimplementedServiceName,
 } from "./types";
+
+type ModelInfo = {
+	externalServiceName: TokenBasedServiceName;
+	modelId: string;
+};
+
+interface ModelConfig extends LanguageModelV1 {
+	modelId: string;
+	config: {
+		provider: string;
+	};
+}
+
+function getModelInfo(
+	logger: OtelLoggerWrapper,
+	modelConfiguration: ModelConfig,
+): ModelInfo {
+	const [provider, _subtype] = modelConfiguration.config.provider.split(".");
+	const modelId = modelConfiguration.modelId;
+
+	switch (provider) {
+		case "openai":
+			return {
+				externalServiceName: ExternalServiceName.OpenAI,
+				modelId,
+			};
+		case "anthropic":
+			return {
+				externalServiceName: ExternalServiceName.Anthropic,
+				modelId,
+			};
+		case "google":
+			return {
+				externalServiceName: ExternalServiceName.Google,
+				modelId,
+			};
+		default:
+			logger.error(
+				new Error(`unknown provider '${provider}' passed`),
+				"consider adding to 'ExternalServiceName'",
+			);
+			return {
+				externalServiceName: UnimplementedServiceName.TODO,
+				modelId: "unknown",
+			};
+	}
+}
 
 type MeasurementSchema<T> = (
 	result: T,
@@ -66,10 +116,6 @@ const APICallBasedService = {
 	VercelBlob: ExternalServiceName.VercelBlob,
 	Tavily: ExternalServiceName.Tavily,
 	Firecrawl: ExternalServiceName.Firecrawl,
-} as const;
-
-const TokenBasedService = {
-	OpenAI: ExternalServiceName.OpenAI,
 } as const;
 
 type VercelBlobOperationType = "put" | "fetch";
@@ -162,15 +208,21 @@ export function withCountMeasurement<T>(
 export function withTokenMeasurement<T extends { usage: LanguageModelUsage }>(
 	logger: OtelLoggerWrapper,
 	operation: () => Promise<T>,
+	model: LanguageModelV1,
 	measurementStartTime?: number,
 ): Promise<T> {
+	const { externalServiceName, modelId } = getModelInfo(
+		logger,
+		model as ModelConfig,
+	);
 	const measurements: MeasurementSchema<T> = (
 		result,
 		duration,
 		measurementScope,
 		isR06User,
 	): TokenConsumedSchema => ({
-		externalServiceName: TokenBasedService.OpenAI,
+		externalServiceName,
+		modelId,
 		tokenConsumedInput: result.usage.promptTokens,
 		tokenConsumedOutput: result.usage.completionTokens,
 		duration,

@@ -84,6 +84,7 @@ ${sourcesToText(sources)}
 							waitForTelemetryExport();
 							return result;
 						},
+						model,
 						startTime,
 					);
 				},

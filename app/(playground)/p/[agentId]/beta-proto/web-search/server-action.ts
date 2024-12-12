@@ -97,6 +97,7 @@ ${sourcesToText(sources)}
 						waitForTelemetryExport();
 						return result;
 					},
+					openai(model),
 					startTime,
 				);
 			},
