@@ -29,7 +29,7 @@ type TeamMemberListItemProps = {
 	displayName: string | null;
 	email: string | null;
 	role: TeamRole;
-	currentUserRoleState: [TeamRole, (role: TeamRole) => void];
+	currentUserRole: TeamRole;
 };
 
 export function TeamMemberListItem({
@@ -37,7 +37,7 @@ export function TeamMemberListItem({
 	displayName,
 	email,
 	role: initialRole,
-	currentUserRoleState,
+	currentUserRole,
 }: TeamMemberListItemProps) {
 	const [isEditingRole, setIsEditingRole] = useState(false);
 	const [role, setRole] = useState<TeamRole>(initialRole);
@@ -45,7 +45,6 @@ export function TeamMemberListItem({
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string>("");
 
-	const [currentUserRole, setCurrentUserRole] = currentUserRoleState;
 	const canEditRole = currentUserRole === "admin";
 	const handleRoleChange = (value: TeamRole) => {
 		setTempRole(value);
@@ -61,16 +60,11 @@ export function TeamMemberListItem({
 			formData.append("userId", userId);
 			formData.append("role", tempRole);
 
-			const { success, isUpdatingSelf, error } =
-				await updateTeamMemberRole(formData);
+			const { success, error } = await updateTeamMemberRole(formData);
 
 			if (success) {
 				setIsEditingRole(false);
 				setRole(tempRole);
-
-				if (isUpdatingSelf) {
-					setCurrentUserRole(tempRole);
-				}
 			} else {
 				const errorMsg = error || "Failed to update role";
 				setError(errorMsg);

@@ -64,22 +64,8 @@ export async function updateTeamName(teamDbId: number, formData: FormData) {
 
 export async function getTeamMembers() {
 	try {
-		const supabaseUser = await getUser();
-
 		// Subquery: Get current user's team
-		// TODO: In the future, this query will be changed to retrieve from the selected team ID
-		const currentUserTeam = db
-			.select({
-				teamDbId: teams.dbId,
-			})
-			.from(teams)
-			.innerJoin(teamMemberships, eq(teams.dbId, teamMemberships.teamDbId))
-			.innerJoin(
-				supabaseUserMappings,
-				eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
-			)
-			.where(eq(supabaseUserMappings.supabaseUserId, supabaseUser.id))
-			.limit(1);
+		const currentTeam = await fetchCurrentTeam();
 
 		// Main query: Get team members list
 		const teamMembers = await db
@@ -94,7 +80,7 @@ export async function getTeamMembers() {
 				teamMemberships,
 				and(
 					eq(users.dbId, teamMemberships.userDbId),
-					eq(teamMemberships.teamDbId, currentUserTeam),
+					eq(teamMemberships.teamDbId, currentTeam.dbId),
 				),
 			)
 			.orderBy(asc(teamMemberships.id));
@@ -269,7 +255,6 @@ export async function updateTeamMemberRole(formData: FormData) {
 
 		return {
 			success: true,
-			isUpdatingSelf,
 		};
 	} catch (error) {
 		console.error("Failed to update team member role:", error);
@@ -280,7 +265,6 @@ export async function updateTeamMemberRole(formData: FormData) {
 				error instanceof Error
 					? error.message
 					: "Failed to update team member role",
-			isUpdatingSelf: false,
 		};
 	}
 }
