@@ -40,7 +40,7 @@ interface GenerateWebSearchStreamInputs {
 export async function generateWebSearchStream(
 	inputs: GenerateWebSearchStreamInputs,
 ) {
-	const startTime = performance.now();
+	const startTime = Date.now();
 	const lf = new Langfuse();
 	const currentUser = await fetchCurrentUser();
 	const trace = lf.trace({

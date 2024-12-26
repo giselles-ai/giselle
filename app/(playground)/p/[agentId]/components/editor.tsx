@@ -273,7 +273,7 @@ export function Editor() {
 										type: "action",
 										content: {
 											type: "textGeneration",
-											llm: "anthropic:claude-3-5-sonnet-latest",
+											llm: "openai:gpt-4o",
 											temperature: 0.7,
 											topP: 1,
 											instruction: "Write a short story about a cat",

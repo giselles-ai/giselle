@@ -3,6 +3,7 @@ import type {
 	ConnectionId,
 	Files,
 	Flow,
+	FlowId,
 	Graph,
 	Job,
 	LatestGraphVersion,
@@ -12,7 +13,9 @@ import type {
 } from "../types";
 import { createFlowId, createJobId, createStepId } from "./utils";
 
-export function deriveFlows(graph: Graph): Flow[] {
+export function deriveFlows(
+	graph: Pick<Graph, "nodes" | "connections" | "flows">,
+): Flow[] {
 	const processedNodes = new Set<NodeId>();
 	const flows: Flow[] = [];
 	const connectionMap = new Map<NodeId, Set<NodeId>>();
@@ -232,6 +235,13 @@ export function deriveFlows(graph: Graph): Flow[] {
 		);
 	}
 
+	const nodeFlowMap = new Map(
+		graph.flows.flatMap((flow) =>
+			flow.nodes.map((nodeId) => [nodeId, flow.id]),
+		),
+	);
+
+	const usedFlowIds = new Set<FlowId>();
 	for (const node of graph.nodes.filter((node) => node.type === "action")) {
 		if (processedNodes.has(node.id)) continue;
 
@@ -239,9 +249,24 @@ export function deriveFlows(graph: Graph): Flow[] {
 
 		if (connectedNodes.size > 0) {
 			const flowConnections = findFlowConnections(connectedNodes);
-
+			const jobs = createJobsFromGraph(
+				graph.nodes.filter((node) => connectedNodes.has(node.id)),
+				graph.connections.filter((connection) =>
+					flowConnections.has(connection.id),
+				),
+			);
+			let flowId: FlowId | undefined;
+			if (jobs[0] !== undefined) {
+				if (jobs[0].steps[0] !== undefined) {
+					const firstStepFlowId = nodeFlowMap.get(jobs[0].steps[0].nodeId);
+					if (firstStepFlowId && !usedFlowIds.has(firstStepFlowId)) {
+						flowId = firstStepFlowId;
+						usedFlowIds.add(flowId);
+					}
+				}
+			}
 			const flow: Flow = {
-				id: createFlowId(),
+				id: flowId ?? createFlowId(),
 				name: `Flow ${flows.length + 1}`,
 				nodes: Array.from(connectedNodes),
 				connections: Array.from(flowConnections),
@@ -287,7 +312,7 @@ export function migrateGraph(graph: Graph): Graph {
 		newGraph = {
 			...newGraph,
 			version: "2024-12-09",
-			flows: deriveFlows(newGraph),
+			flows: deriveFlows({ ...newGraph, flows: [] }),
 		};
 	}
 

@@ -74,9 +74,23 @@ const VercelBlobFetchSchema = RequestCount.extend({
 	blobSizeTransfered: z.number(),
 });
 
+const VercelBlobDelSchema = RequestCount.extend({
+	externalServiceName: z.literal(ExternalServiceName.VercelBlob),
+	operationType: z.literal("del"),
+	blobSizeStored: z.number(), // minus the size of the blob deleted
+});
+
+const VercelBlobListSchema = RequestCount.extend({
+	externalServiceName: z.literal(ExternalServiceName.VercelBlob),
+	operationType: z.literal("list"),
+	blobSizeTransfered: z.number(),
+});
+
 const VercelBlobRequestCountSchema = z.discriminatedUnion("operationType", [
 	VercelBlobPutSchema,
 	VercelBlobFetchSchema,
+	VercelBlobDelSchema,
+	VercelBlobListSchema,
 ]);
 
 const RequestCountSchema = z.union([

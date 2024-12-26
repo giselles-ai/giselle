@@ -2,6 +2,9 @@ import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import { calculateAgentTimeUsageMs } from "./agent-time-usage";
 import { AGENT_TIME_CHARGE_LIMIT_MINUTES } from "./constants";
 
+/**
+ * @deprecated
+ */
 export async function hasEnoughAgentTimeCharge() {
 	const curerntTeam = await fetchCurrentTeam();
 	// If team is on a pro plan, proceed

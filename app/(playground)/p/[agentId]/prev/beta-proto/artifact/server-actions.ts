@@ -27,7 +27,7 @@ type GenerateArtifactStreamParams = {
 export async function generateArtifactStream(
 	params: GenerateArtifactStreamParams,
 ) {
-	const startTime = performance.now();
+	const startTime = Date.now();
 	const lf = new Langfuse();
 	const currentUser = await fetchCurrentUser();
 	const trace = lf.trace({

@@ -1,3 +1,5 @@
+import type { StreamableValue } from "ai/rsc";
+
 export type NodeId = `nd_${string}`;
 interface NodeBase {
 	id: NodeId;
@@ -156,13 +158,8 @@ export interface TextArtifactObject extends ArtifactObjectBase {
 		plan: string;
 		description: string;
 	};
-	usage?: {
-		// unavailable until generation is completed
-		promptTokens: number;
-		completionTokens: number;
-	};
 }
-interface TextArtifact extends GeneratedArtifact {
+export interface TextArtifact extends GeneratedArtifact {
 	object: TextArtifactObject;
 }
 interface TextStreamArtifact extends StreamAtrifact {
@@ -256,15 +253,29 @@ interface RunningStepExecution extends StepExecutionBase {
 	runStartedAt: number;
 }
 
-interface CompletedStepExecution extends StepExecutionBase {
+export interface CompletedStepExecution extends StepExecutionBase {
 	status: "completed";
 	runStartedAt: number;
 	durationMs: number;
 }
+
+export interface FailedStepExecution extends StepExecutionBase {
+	status: "failed";
+	runStartedAt: number;
+	durationMs: number;
+	error: string;
+}
+
+interface SkippedStepExecution extends StepExecutionBase {
+	status: "skipped";
+}
+
 export type StepExecution =
 	| PendingStepExecution
 	| RunningStepExecution
-	| CompletedStepExecution;
+	| CompletedStepExecution
+	| FailedStepExecution
+	| SkippedStepExecution;
 
 export type JobExecutionId = `jbex_${string}`;
 interface JobExecutionBase {
@@ -280,15 +291,25 @@ interface RunningJobExecution extends JobExecutionBase {
 	status: "running";
 	runStartedAt: number;
 }
-interface CompletedJobExecution extends JobExecutionBase {
+export interface CompletedJobExecution extends JobExecutionBase {
 	status: "completed";
 	runStartedAt: number;
 	durationMs: number;
 }
+export interface FailedJobExecution extends JobExecutionBase {
+	status: "failed";
+	runStartedAt: number;
+	durationMs: number;
+}
+export interface SkippedJobExecution extends JobExecutionBase {
+	status: "skipped";
+}
 export type JobExecution =
 	| PendingJobExecution
 	| RunningJobExecution
-	| CompletedJobExecution;
+	| CompletedJobExecution
+	| FailedJobExecution
+	| SkippedJobExecution;
 export type ExecutionId = `exct_${string}`;
 interface ExecutionBase {
 	id: ExecutionId;
@@ -303,19 +324,44 @@ interface RunningExecution extends ExecutionBase {
 	status: "running";
 	runStartedAt: number;
 }
-interface CompletedExecution extends ExecutionBase {
+export interface CompletedExecution extends ExecutionBase {
 	status: "completed";
 	runStartedAt: number;
 	durationMs: number;
 	resultArtifact: Artifact;
 }
+export interface FailedExecution extends ExecutionBase {
+	status: "failed";
+	runStartedAt: number;
+	durationMs: number;
+}
 export type Execution =
 	| PendingExecution
 	| RunningExecution
-	| CompletedExecution;
+	| CompletedExecution
+	| FailedExecution;
+
+export type ExecutionSnapshotId = `excs_${string}`;
+export interface ExecutionSnapshot {
+	id: ExecutionSnapshotId;
+	execution: Execution;
+	nodes: Node[];
+	connections: Connection[];
+	flow: Flow;
+}
 
 export interface ExecutionIndex {
 	executionId: ExecutionId;
 	blobUrl: string;
 	completedAt: number;
 }
+
+export type GitHubIntegrationSettingId = `gthbs_${string}`;
+export interface GitHubEventNodeMapping {
+	event: string;
+	nodeId: NodeId;
+}
+
+export type ExecuteActionReturnValue =
+	| TextArtifactObject
+	| StreamableValue<TextArtifactObject, unknown>;

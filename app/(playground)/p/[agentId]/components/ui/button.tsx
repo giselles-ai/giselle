@@ -11,10 +11,11 @@ export function Button({
 	return (
 		<button
 			className={clsx(
-				"px-[16px] py-[8px] rounded-[8px] flex items-center gap-[2px] bg-[hsla(207,19%,77%,0.3)] font-rosart",
+				"px-[16px] h-[36px] rounded-full flex items-center gap-[2px] font-rosart text-black-30",
+				className,
 			)}
 			style={{
-				boxShadow: "0px 0px 3px 0px hsla(0, 0%, 100%, 0.25) inset",
+				boxShadow: "0px 0px 3px 0px hsla(0, 0%, 100%, 0.4) inset",
 			}}
 			{...props}
 		/>

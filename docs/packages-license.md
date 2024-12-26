@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 660 MIT
+* 666 MIT
 * 122 Apache 2.0
 * 61 ISC
 * 23 New BSD
@@ -441,6 +441,17 @@ The Linux 64-bit binary for esbuild, a JavaScript bundler.
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
 
 The Linux 64-bit binary for esbuild, a JavaScript bundler.
+
+<a name="@fast-csv/format"></a>
+### <a href="https://c2fo.github.io/fast-csv/docs/formatting/getting-started/">@fast-csv/format</a> v5.0.2 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+fast-csv formatting module
 
 <a name="@fastify/busboy"></a>
 ### @fastify/busboy v2.1.1 (dependencies)
@@ -6568,6 +6579,61 @@ The lodash method `_.camelCase` exported as a module.
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
 
 The lodash method `_.castArray` exported as a module.
+
+<a name="lodash.escaperegexp"></a>
+### <a href="https://lodash.com/">lodash.escaperegexp</a> v4.1.2 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+The lodash method `_.escapeRegExp` exported as a module.
+
+<a name="lodash.isboolean"></a>
+### <a href="https://lodash.com/">lodash.isboolean</a> v3.0.3 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+The lodash method `_.isBoolean` exported as a module.
+
+<a name="lodash.isequal"></a>
+### <a href="https://lodash.com/">lodash.isequal</a> v4.5.0 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+The Lodash method `_.isEqual` exported as a module.
+
+<a name="lodash.isfunction"></a>
+### <a href="https://lodash.com/">lodash.isfunction</a> v3.0.9 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+The Lodash method `_.isFunction` exported as a module.
+
+<a name="lodash.isnil"></a>
+### <a href="https://lodash.com/">lodash.isnil</a> v4.0.0 (dependencies)
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+The lodash method `_.isNil` exported as a module.
 
 <a name="lodash.isplainobject"></a>
 ### <a href="https://lodash.com/">lodash.isplainobject</a> v4.0.6 (devDependencies)

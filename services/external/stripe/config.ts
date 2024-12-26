@@ -1,6 +1,21 @@
 import { Stripe } from "stripe";
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-	// https://github.com/stripe/stripe-node#configuration
-	apiVersion: "2024-11-20.acacia",
-});
+let stripeInstance: Stripe | null = null;
+
+const handler: ProxyHandler<Stripe> = {
+	get: (_target, prop: keyof Stripe | symbol) => {
+		if (!stripeInstance) {
+			const key = process.env.STRIPE_SECRET_KEY;
+			if (!key) {
+				throw new Error("STRIPE_SECRET_KEY is not configured");
+			}
+			stripeInstance = new Stripe(key, {
+				// https://github.com/stripe/stripe-node#configuration
+				apiVersion: "2024-11-20.acacia",
+			});
+		}
+		return stripeInstance[prop as keyof Stripe];
+	},
+};
+
+export const stripe: Stripe = new Proxy(new Stripe("dummy"), handler);

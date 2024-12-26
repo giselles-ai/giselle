@@ -1,6 +1,7 @@
 import { stripe } from "@/services/external/stripe";
 import { upsertSubscription } from "@/services/external/stripe/actions/upsert-subscription";
 import type Stripe from "stripe";
+import { handleSubscriptionCancellation } from "./handle-subscription-cancellation";
 import { handleSubscriptionCycleInvoice } from "./handle-subscription-cycle-invoice";
 
 const relevantEvents = new Set([
@@ -60,7 +61,6 @@ export async function POST(req: Request) {
 				break;
 
 			case "customer.subscription.updated":
-			case "customer.subscription.deleted":
 				if (
 					event.data.object.customer == null ||
 					typeof event.data.object.customer !== "string"
@@ -72,8 +72,39 @@ export async function POST(req: Request) {
 				await upsertSubscription(event.data.object.id);
 				break;
 
+			case "customer.subscription.deleted":
+				if (
+					event.data.object.customer == null ||
+					typeof event.data.object.customer !== "string"
+				) {
+					throw new Error(
+						"The checkout session is missing a valid customer ID. Please check the session data.",
+					);
+				}
+				await handleSubscriptionCancellation(event.data.object);
+				break;
+
 			case "invoice.created":
 				console.log(`🔔  Invoice created: ${event.data.object.id}`);
+
+				// TODO: Skip for now - will be handled when implementing subscription cancellation invoice processing
+				if (
+					event.data.object.subscription &&
+					typeof event.data.object.subscription === "string"
+				) {
+					const subscriptionId = event.data.object.subscription;
+					const subscription =
+						await stripe.subscriptions.retrieve(subscriptionId);
+
+					if (subscription.status === "canceled") {
+						console.log(
+							"Skipping processing for canceled subscription invoice: ",
+							subscriptionId,
+						);
+						break;
+					}
+				}
+
 				if (event.data.object.billing_reason === "subscription_cycle") {
 					await handleSubscriptionCycleInvoice(event.data.object);
 				}

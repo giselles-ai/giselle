@@ -2,6 +2,7 @@
 
 import {
 	ExternalServiceName,
+	VercelBlobOperation,
 	createLogger,
 	waitForTelemetryExport,
 	withCountMeasurement,
@@ -17,7 +18,7 @@ type UploadFileInput = {
 	file: File;
 };
 export async function uploadFile({ input }: { input: UploadFileInput }) {
-	const startTime = performance.now();
+	const startTime = Date.now();
 	const logger = createLogger("files");
 	const result = await withCountMeasurement(
 		logger,
@@ -37,7 +38,7 @@ export async function uploadFile({ input }: { input: UploadFileInput }) {
 		},
 		ExternalServiceName.VercelBlob,
 		startTime,
-		"put",
+		VercelBlobOperation.Put,
 	);
 	waitForTelemetryExport();
 
@@ -50,7 +51,7 @@ type ParseFileInput = {
 	blobUrl: string;
 };
 export async function parseFile(args: ParseFileInput) {
-	const startTime = performance.now();
+	const startTime = Date.now();
 	const logger = createLogger("files");
 	if (process.env.UNSTRUCTURED_API_KEY === undefined) {
 		throw new Error("UNSTRUCTURED_API_KEY is not set");
@@ -72,7 +73,7 @@ export async function parseFile(args: ParseFileInput) {
 		},
 		ExternalServiceName.VercelBlob,
 		startTime,
-		"fetch",
+		VercelBlobOperation.Fetch,
 	);
 
 	const content = await response.blob;
@@ -112,7 +113,7 @@ export async function parseFile(args: ParseFileInput) {
 			}),
 		ExternalServiceName.VercelBlob,
 		startTime,
-		"put",
+		VercelBlobOperation.Put,
 	);
 
 	const markdown = elementsToMarkdown(partitionResponse.elements ?? []);

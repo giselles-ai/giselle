@@ -1,5 +1,8 @@
 import type { AgentId } from "../types";
 
+/**
+ * @deprecated
+ */
 export class AgentActivity {
 	private actions: AgentActivityAction[] = [];
 	public agentId: AgentId;

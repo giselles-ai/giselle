@@ -55,7 +55,8 @@ export const githubIntegrationFlag = flag<boolean>({
 export const freePlanFlag = flag<boolean>({
 	key: "free-plan",
 	async decide() {
-		return takeLocalEnv("FREE_PLAN_FLAG");
+		return true;
+		// return takeLocalEnv("FREE_PLAN_FLAG");
 	},
 	description: "Enable Free Plan",
 	defaultValue: false,

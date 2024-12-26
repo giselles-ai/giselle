@@ -6,15 +6,18 @@ import {
 	agentActivities,
 	agents,
 	db,
+	subscriptions,
 	supabaseUserMappings,
 	teamMemberships,
 	teams,
 	users,
 } from "@/drizzle";
+import { updateGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import { and, asc, count, desc, eq, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 function isUserId(value: string): value is UserId {
 	return value.startsWith("usr_");
@@ -477,6 +480,99 @@ export async function getAgentActivities({
 				error instanceof Error
 					? error.message
 					: "Failed to get agent activities",
+		};
+	}
+}
+
+export async function deleteTeam(
+	prevState: { error: string },
+	formData: FormData,
+) {
+	try {
+		// Get current user's info and team
+		const currentTeam = await fetchCurrentTeam();
+		const currentUserRoleResult = await getCurrentUserRole();
+
+		// Check if user is admin
+		if (
+			!currentUserRoleResult.success ||
+			currentUserRoleResult.data !== "admin"
+		) {
+			throw new Error("Only admin users can delete teams");
+		}
+
+		// Check if team is on Free plan
+		if (isProPlan(currentTeam)) {
+			throw new Error("Only free plan teams can be deleted");
+		}
+
+		// Get current user's other teams count
+		const supabaseUser = await getUser();
+		const otherTeams = await db
+			.select({
+				teamDbId: teamMemberships.teamDbId,
+			})
+			.from(teamMemberships)
+			.innerJoin(
+				supabaseUserMappings,
+				eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
+			)
+			.where(
+				and(
+					eq(supabaseUserMappings.supabaseUserId, supabaseUser.id),
+					ne(teamMemberships.teamDbId, currentTeam.dbId), // Exclude current team
+				),
+			)
+			.limit(1);
+
+		// Check if user has other teams
+		if (otherTeams.length === 0) {
+			throw new Error("Cannot delete your only team");
+		}
+
+		// Delete team and all related data with cascading
+		await db.delete(teams).where(eq(teams.dbId, currentTeam.dbId));
+
+		// Refresh session to switch to another team after deletion
+		// This ensures that the user is redirected to a valid team context and prevents access to the deleted team's resources.
+		await updateGiselleSession({ teamDbId: otherTeams[0].teamDbId });
+	} catch (error) {
+		console.error("Failed to delete team:", error);
+
+		return {
+			error: error instanceof Error ? error.message : "Failed to delete team",
+		};
+	}
+
+	// Redirect to team settings page when team is deleted
+	redirect("/settings/team");
+}
+
+export async function getSubscription(subscriptionId: string) {
+	try {
+		const [dbSubscription] = await db
+			.select({
+				cancelAtPeriodEnd: subscriptions.cancelAtPeriodEnd,
+				cancelAt: subscriptions.cancelAt,
+			})
+			.from(subscriptions)
+			.where(eq(subscriptions.id, subscriptionId));
+
+		if (!dbSubscription) {
+			throw new Error(`Subscription not found: ${subscriptionId}`);
+		}
+
+		return {
+			success: true,
+			data: dbSubscription,
+		};
+	} catch (error) {
+		console.error("Failed to fetch subscription:", error);
+
+		return {
+			success: false,
+			error:
+				error instanceof Error ? error.message : "Failed to fetch subscription",
 		};
 	}
 }

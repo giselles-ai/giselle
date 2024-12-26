@@ -1,6 +1,7 @@
 "use client";
 
 import * as Tabs from "@radix-ui/react-tabs";
+import { CircleAlertIcon, CircleSlashIcon } from "lucide-react";
 import { type DetailedHTMLProps, useMemo } from "react";
 import { useExecution } from "../contexts/execution";
 import { useGraph } from "../contexts/graph";
@@ -13,6 +14,7 @@ import ClipboardButton from "./clipboard-button";
 import { ContentTypeIcon } from "./content-type-icon";
 import { Header } from "./header";
 import { Markdown } from "./markdown";
+import { Button } from "./ui/button";
 import { EmptyState } from "./ui/empty-state";
 
 interface StepExecutionButtonProps
@@ -36,6 +38,12 @@ function StepExecutionButton({
 		>
 			{stepExecution.status === "pending" && (
 				<SpinnerIcon className="w-[18px] h-[18px] stroke-black-30 fill-transparent" />
+			)}
+			{stepExecution.status === "failed" && (
+				<CircleAlertIcon className="w-[18px] h-[18px] stroke-black-30 fill-transparent" />
+			)}
+			{stepExecution.status === "skipped" && (
+				<CircleSlashIcon className="w-[18px] h-[18px] stroke-black-30 fill-transparent" />
 			)}
 			{stepExecution.status === "running" && (
 				<SpinnerIcon className="w-[18px] h-[18px] stroke-black-30 animate-follow-through-spin fill-transparent" />
@@ -61,6 +69,7 @@ function ExecutionViewer({
 	execution: tmpExecution,
 }: { execution: Execution }) {
 	const { graph } = useGraph();
+	const { retryFlowExecution } = useExecution();
 	const execution = useMemo(
 		() => ({
 			...tmpExecution,
@@ -72,6 +81,7 @@ function ExecutionViewer({
 							(node) => node.id === stepExecution.nodeId,
 						);
 						if (node === undefined) {
+							console.log(`${stepExecution.nodeId} not found`);
 							return null;
 						}
 						const artifact = tmpExecution.artifacts.find((artifact) => {
@@ -121,24 +131,49 @@ function ExecutionViewer({
 				{execution.jobExecutions.flatMap((jobExecution) =>
 					jobExecution.stepExecutions.map((stepExecution) => (
 						<Tabs.Content key={stepExecution.id} value={stepExecution.id}>
-							{stepExecution.artifact == null ? (
-								<p>Pending</p>
-							) : (
-								<Markdown>{stepExecution.artifact.object.content}</Markdown>
+							{stepExecution.status === "pending" && <p>Pending</p>}
+							{stepExecution.status === "failed" && (
+								<div className="flex flex-col gap-[8px]">
+									<p>{stepExecution.error}</p>
+									<div>
+										<Button
+											type="button"
+											onClick={() => {
+												retryFlowExecution(execution.id);
+											}}
+										>
+											Retry
+										</Button>
+									</div>
+								</div>
+							)}
+							{(stepExecution.status === "running" ||
+								stepExecution.status === "completed") && (
+								<Markdown>{stepExecution.artifact?.object.content}</Markdown>
 							)}
 							{stepExecution.artifact?.type === "generatedArtifact" && (
-								<div className="mt-[10px] flex gap-[12px]">
+								<div className="mt-[10px] flex gap-[12px] items-center">
 									<div className="text-[14px] font-bold text-black-70 ">
 										Generated{" "}
 										{formatTimestamp.toRelativeTime(
 											stepExecution.artifact.createdAt,
 										)}
 									</div>
-									<div className="text-black-30">
+									<div className="text-black-30 flex items-center">
 										<ClipboardButton
 											text={stepExecution.artifact.object.content}
 											sizeClassName="w-[16px] h-[16px]"
 										/>
+									</div>
+									<div className="text-black-30 text-[14px]">
+										<button
+											type="button"
+											onClick={() => {
+												retryFlowExecution(execution.id, stepExecution.stepId);
+											}}
+										>
+											Retry
+										</button>
 									</div>
 								</div>
 							)}

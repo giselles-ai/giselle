@@ -32,7 +32,7 @@ export default async function SettingLayout({
 							Integration
 						</MenuLink>
 					)}
-					{!displayProTeamPlan && (
+					{!displayFreePlan && (
 						<MenuLink
 							href="/settings/billing"
 							icon={<CreditCardIcon className="w-4 h-4" />}

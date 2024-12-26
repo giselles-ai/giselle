@@ -73,14 +73,14 @@ async function withMeasurement<T>(
 	measurement: MeasurementSchema<T>,
 	measurementStartTime?: number,
 ): Promise<T> {
-	const startTime = measurementStartTime ?? performance.now(); // set `startTime` for each call in parallel process
+	const startTime = measurementStartTime ?? Date.now(); // set `startTime` for each call in parallel process
 	try {
 		// business logic: error should be thrown
 		const result = await operation();
 
 		try {
 			// instrumentation: error must not be thrown to avoid interfering with the business logic
-			const duration = performance.now() - startTime;
+			const duration = Date.now() - startTime;
 			Promise.all([getCurrentMeasurementScope(), isRoute06User()])
 				.then(([measurementScope, isR06User]) => {
 					const metrics = measurement(
@@ -118,7 +118,35 @@ const APICallBasedService = {
 	Firecrawl: ExternalServiceName.Firecrawl,
 } as const;
 
-type VercelBlobOperationType = "put" | "fetch";
+export const VercelBlobOperation = {
+	Put: {
+		type: "put" as const,
+		measure: (result: { size: number }) => ({
+			blobSizeStored: result.size,
+		}),
+	},
+	Fetch: {
+		type: "fetch" as const,
+		measure: (result: { size: number }) => ({
+			blobSizeTransfered: result.size,
+		}),
+	},
+	Del: {
+		type: "del" as const,
+		measure: (result: { size: number }) => ({
+			blobSizeStored: -result.size,
+		}),
+	},
+	List: {
+		type: "list" as const,
+		measure: (result: { size: number }) => ({
+			blobSizeTransfered: result.size,
+		}),
+	},
+} as const;
+
+type VercelBlobOperationType =
+	(typeof VercelBlobOperation)[keyof typeof VercelBlobOperation];
 
 export function withCountMeasurement<T>(
 	logger: OtelLoggerWrapper,
@@ -132,7 +160,7 @@ export function withCountMeasurement<T>(
 	operation: () => Promise<T>,
 	externalServiceName: typeof APICallBasedService.VercelBlob,
 	measurementStartTime: number | undefined,
-	operationType: VercelBlobOperationType,
+	blobOperation: VercelBlobOperationType,
 ): Promise<T>;
 export function withCountMeasurement<T>(
 	logger: OtelLoggerWrapper,
@@ -177,23 +205,14 @@ export function withCountMeasurement<T>(
 		}
 
 		if (externalServiceName === APICallBasedService.VercelBlob) {
-			const operationType = strategyOrOptions as VercelBlobOperationType;
-			switch (operationType) {
-				case "put":
-					return {
-						...baseMetrics,
-						externalServiceName,
-						operationType: "put",
-						blobSizeStored: (result as { size: number }).size,
-					};
-				case "fetch":
-					return {
-						...baseMetrics,
-						externalServiceName,
-						operationType: "fetch",
-						blobSizeTransfered: (result as { size: number }).size,
-					};
-			}
+			const operation = strategyOrOptions as VercelBlobOperationType;
+			const operationResult = operation.measure(result as { size: number });
+			return {
+				...baseMetrics,
+				externalServiceName,
+				operationType: operation.type,
+				...operationResult,
+			} as RequestCountSchema;
 		}
 
 		return {

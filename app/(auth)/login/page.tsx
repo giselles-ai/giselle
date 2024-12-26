@@ -1,3 +1,6 @@
+import { ClickableText } from "@/components/ui/clicable-text";
+import Link from "next/link";
+import { ActionPrompt } from "../components/action-prompt";
 import { Divider } from "../components/divider";
 import { OAuthProviders } from "../components/oauth-providers";
 import { PageTitle } from "../components/page-title";
@@ -14,11 +17,7 @@ export default function Page() {
 						<Divider />
 						<LoginForm />
 
-						{/**
-						 * We are planning a pricing revision.
-						 * Temporarily hide new signups until the new plan is ready.
-						 **/}
-						{/* <div className="flex justify-center">
+						<div className="flex justify-center">
 							<ActionPrompt
 								prompt="Don&apos;t have an account?"
 								action={
@@ -27,7 +26,7 @@ export default function Page() {
 									</ClickableText>
 								}
 							/>
-						</div> */}
+						</div>
 					</div>
 				</div>
 			</div>

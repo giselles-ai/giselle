@@ -1,15 +1,31 @@
 import { GiselleLogo } from "@/components/giselle-logo";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { ButtonHTMLAttributes, DetailedHTMLProps, ReactNode } from "react";
 import { useExecution } from "../contexts/execution";
 import { useGraph } from "../contexts/graph";
 import {
 	type PlaygroundMode,
 	usePlaygroundMode,
 } from "../contexts/playground-mode";
-// import { RunButton } from "./flow/components/run-button";
 import { SparklesIcon } from "./icons/sparkles";
-import { Button } from "./ui/button";
+
+function Button({
+	className,
+	...props
+}: DetailedHTMLProps<
+	ButtonHTMLAttributes<HTMLButtonElement>,
+	HTMLButtonElement
+>) {
+	return (
+		<button
+			className="px-[16px] py-[8px] rounded-[8px] flex items-center gap-[2px] bg-[hsla(207,19%,77%,0.3)] font-rosart"
+			style={{
+				boxShadow: "0px 0px 3px 0px hsla(0, 0%, 100%, 0.25) inset",
+			}}
+			{...props}
+		/>
+	);
+}
 
 function SelectionIndicator() {
 	return (

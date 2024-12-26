@@ -1,15 +1,20 @@
 import { createId } from "@paralleldrive/cuid2";
+import type { StreamableValue } from "ai/rsc";
 import { vercelBlobFileFolder, vercelBlobGraphFolder } from "../constants";
 import type {
 	ArtifactId,
 	ConnectionId,
 	ExecutionId,
+	ExecutionSnapshotId,
 	File,
 	FileId,
 	Files,
+	Flow,
 	FlowId,
+	GitHubIntegrationSettingId,
 	Graph,
 	GraphId,
+	JobExecution,
 	JobExecutionId,
 	JobId,
 	LatestGraphVersion,
@@ -68,6 +73,13 @@ export function createJobExecutionId(): JobExecutionId {
 
 export function createExecutionId(): ExecutionId {
 	return `exct_${createId()}`;
+}
+export function createExecutionSnapshotId(): ExecutionSnapshotId {
+	return `excs_${createId()}`;
+}
+
+export function createGithubIntegrationSettingId(): GitHubIntegrationSettingId {
+	return `gthbs_${createId()}`;
 }
 
 export function isTextGeneration(node: Node): node is TextGeneration {
@@ -369,4 +381,32 @@ export function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
 
 export function pathnameToFilename(pathname: string) {
 	return pathname.split("/").pop() ?? "";
+}
+
+export function createInitialJobExecutions(flow: Flow): JobExecution[] {
+	return flow.jobs.map((job) => ({
+		id: createJobExecutionId(),
+		jobId: job.id,
+		status: "pending",
+		stepExecutions: job.steps.map((step) => ({
+			id: createStepExecutionId(),
+			stepId: step.id,
+			nodeId: step.nodeId,
+			status: "pending",
+		})),
+	}));
+}
+
+/**
+ * based on the implementation in Vercel AI
+ * @link https://github.com/vercel/ai/blob/5b59fce0665ef7e0b2257ad7a500db1a7c51d822/packages/ai/rsc/streamable-value/is-streamable-value.ts#L3-L10
+ */
+export function isStreamableValue(value: unknown): value is StreamableValue {
+	const STREAMABLE_VALUE_TYPE = Symbol.for("ui.streamable.value");
+	return (
+		value != null &&
+		typeof value === "object" &&
+		"type" in value &&
+		value.type === STREAMABLE_VALUE_TYPE
+	);
 }
