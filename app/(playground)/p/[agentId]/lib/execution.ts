@@ -360,6 +360,7 @@ async function performFlowExecution(
 							return { usage: await usage };
 						},
 						model,
+						context.agentId,
 						startTime,
 					);
 					streamableValue.done();
@@ -393,6 +394,7 @@ async function performFlowExecution(
 						return { usage };
 					},
 					model,
+					context.agentId,
 					startTime,
 				),
 			);

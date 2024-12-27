@@ -164,6 +164,12 @@ export const agents = pgTable(
 		teamDbIdIdx: index().on(table.teamDbId),
 	}),
 );
+export const agentsRelations = relations(agents, ({ one }) => ({
+	team: one(teams, {
+		fields: [agents.teamDbId],
+		references: [teams.dbId],
+	}),
+}));
 
 export const builds = pgTable("builds", {
 	id: text("id").$type<BuildId>().notNull().unique(),

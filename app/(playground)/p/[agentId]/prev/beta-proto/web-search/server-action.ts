@@ -83,7 +83,7 @@ ${sourcesToText(sources)}
 			input: inputs.userPrompt,
 			model: langfuseModel(model),
 		});
-		const { partialObjectStream, object } = await streamObject({
+		const { partialObjectStream, object } = streamObject({
 			model: openai(model),
 			system,
 			prompt: inputs.userPrompt,
@@ -98,6 +98,7 @@ ${sourcesToText(sources)}
 						return result;
 					},
 					openai(model),
+					inputs.agentId,
 					startTime,
 				);
 			},

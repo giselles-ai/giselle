@@ -68,7 +68,7 @@ ${sourcesToText(sources)}
 			},
 		});
 		try {
-			const { partialObjectStream, object } = await streamObject({
+			const { partialObjectStream, object } = streamObject({
 				model,
 				system,
 				temperature: params.modelConfiguration.temperature,
@@ -85,6 +85,7 @@ ${sourcesToText(sources)}
 							return result;
 						},
 						model,
+						params.agentId,
 						startTime,
 					);
 				},

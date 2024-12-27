@@ -13,6 +13,10 @@ import type { Execution, Graph } from "../../(playground)/p/[agentId]/types";
 import { parseCommand } from "./command";
 import { assertIssueCommentEvent, createOctokit } from "./utils";
 
+// Extend the max duration of the server actions from this page to 5 minutes
+// https://vercel.com/docs/functions/runtimes#max-duration
+export const maxDuration = 300;
+
 export async function POST(request: NextRequest) {
 	if (process.env.GITHUB_APP_WEBHOOK_SECRET === undefined) {
 		throw new Error("GITHUB_APP_WEBHOOK_SECRET is not set");
@@ -37,10 +41,16 @@ export async function POST(request: NextRequest) {
 
 	const command = parseCommand(payload.comment.body);
 	if (command === null) {
-		return;
+		return new Response(
+			`Command not found. payload: ${JSON.stringify(payload)}`,
+			{ status: 400 },
+		);
 	}
 	if (payload.installation === undefined) {
-		return;
+		return new Response(
+			`Installation not found. payload: ${JSON.stringify(payload)}`,
+			{ status: 400 },
+		);
 	}
 	const octokit = await createOctokit(payload.installation.id);
 
