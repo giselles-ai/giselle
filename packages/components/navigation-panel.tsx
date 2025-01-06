@@ -445,6 +445,7 @@ export function ContentPanelSectionFormField(props: { children: ReactNode }) {
 export function Overview() {
 	const [editTitle, setEditTitle] = useState(false);
 	const { agentName, updateAgentName } = useAgentName();
+	const defaultAgentName = "Untitled Agent";
 	return (
 		<ContentPanel>
 			<ContentPanelHeader>Overview</ContentPanelHeader>
@@ -453,7 +454,7 @@ export function Overview() {
 				<input
 					type="text"
 					className="text-[16px] text-black-30 p-[4px] text-left outline-black-70 rounded-[8px]"
-					defaultValue={agentName ?? "Untitled Agent"}
+					defaultValue={agentName ?? defaultAgentName}
 					ref={(ref) => {
 						if (ref === null) {
 							return;
@@ -463,7 +464,8 @@ export function Overview() {
 								return;
 							}
 							setEditTitle(false);
-							await updateAgentName(ref.value);
+							const value = ref.value === "" ? defaultAgentName : ref.value;
+							await updateAgentName(value);
 						}
 						ref.focus();
 						ref.select();
