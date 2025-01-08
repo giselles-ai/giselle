@@ -76,6 +76,7 @@
 		"import-in-the-middle": "1.11.0",
 		"input-otp": "^1.2.4",
 		"langfuse": "3.26.0",
+		"langfuse-vercel": "3.32.0",
 		"lucide-react": "0.417.0",
 		"next": "^15.1.2",
 		"next-auth": "^5.0.0-beta.20",

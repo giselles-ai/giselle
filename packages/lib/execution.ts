@@ -23,7 +23,7 @@ import { createStreamableValue } from "ai/rsc";
 import { MockLanguageModelV1, simulateReadableStream } from "ai/test";
 import { and, eq } from "drizzle-orm";
 import HandleBars from "handlebars";
-import Langfuse from "langfuse";
+import { after } from "next/server";
 import * as v from "valibot";
 import type {
 	AgentId,
@@ -44,7 +44,11 @@ import type {
 } from "../types";
 import { AgentTimeNotAvailableError } from "./errors";
 import { textGenerationPrompt } from "./prompts";
-import { langfuseModel, toErrorWithMessage } from "./utils";
+import {
+	langfuseModel,
+	toErrorWithMessage,
+	waitForLangfuseFlush,
+} from "./utils";
 
 function resolveLanguageModel(
 	llm: TextGenerateActionContent["llm"],
@@ -275,6 +279,7 @@ interface ExecutionContext {
 	nodes: Node[];
 	connections: Connection[];
 	stream?: boolean;
+	userId?: string;
 }
 
 async function performFlowExecution(
@@ -285,10 +290,6 @@ async function performFlowExecution(
 		throw new AgentTimeNotAvailableError();
 	}
 	const startTime = Date.now();
-	const lf = new Langfuse();
-	const trace = lf.trace({
-		sessionId: context.executionId,
-	});
 	const node = context.node;
 
 	switch (node.content.type) {
@@ -310,20 +311,6 @@ async function performFlowExecution(
 			const topP = node.content.topP;
 			const temperature = node.content.temperature;
 
-			trace.update({
-				input: prompt,
-			});
-
-			const generationTracer = trace.generation({
-				name: "generate-text",
-				input: prompt,
-				model: langfuseModel(node.content.llm),
-				modelParameters: {
-					topP: node.content.topP,
-					temperature: node.content.temperature,
-				},
-			});
-
 			if (context.stream) {
 				const streamableValue = createStreamableValue<TextArtifactObject>();
 				(async () => {
@@ -335,6 +322,11 @@ async function performFlowExecution(
 						),
 						topP,
 						temperature,
+						experimental_telemetry: {
+							isEnabled: true,
+							functionId: "giselles-ai.lib.performFlowExecution",
+							metadata: parseExecutionContextToTelemetryMetadata(context),
+						},
 					});
 
 					for await (const partialObject of partialObjectStream) {
@@ -353,9 +345,6 @@ async function performFlowExecution(
 					await withTokenMeasurement(
 						createLogger(node.content.type),
 						async () => {
-							generationTracer.end({ output: result });
-							trace.update({ output: result });
-							await lf.shutdownAsync();
 							waitForTelemetryExport();
 							return { usage: await usage };
 						},
@@ -363,12 +352,9 @@ async function performFlowExecution(
 						context.agentId,
 						startTime,
 					);
+					after(waitForLangfuseFlush);
 					streamableValue.done();
 				})().catch((error) => {
-					generationTracer.update({
-						level: "ERROR",
-						statusMessage: toErrorWithMessage(error).message,
-					});
 					streamableValue.error(error);
 				});
 
@@ -382,14 +368,16 @@ async function performFlowExecution(
 				),
 				topP,
 				temperature,
+				experimental_telemetry: {
+					isEnabled: true,
+					functionId: "giselles-ai.lib.performFlowExecution.generateObject",
+					metadata: parseExecutionContextToTelemetryMetadata(context),
+				},
 			});
 			waitUntil(
 				withTokenMeasurement(
 					createLogger(node.content.type),
 					async () => {
-						generationTracer.end({ output: object });
-						trace.update({ output: object });
-						await lf.shutdownAsync();
 						waitForTelemetryExport();
 						return { usage };
 					},
@@ -398,6 +386,7 @@ async function performFlowExecution(
 					startTime,
 				),
 			);
+			after(waitForLangfuseFlush);
 			return {
 				type: "text",
 				title: object.title,
@@ -424,6 +413,7 @@ interface ExecuteStepParams {
 	stepId: StepId;
 	artifacts: Artifact[];
 	stream?: boolean;
+	userId?: string;
 	overrideData?: OverrideData[];
 }
 export async function executeStep({
@@ -433,6 +423,7 @@ export async function executeStep({
 	stepId,
 	artifacts,
 	stream,
+	userId,
 	overrideData,
 }: ExecuteStepParams) {
 	const agent = await db.query.agents.findFirst({
@@ -503,6 +494,7 @@ export async function executeStep({
 		artifacts,
 		nodes: graph.nodes,
 		connections: graph.connections,
+		userId,
 		stream,
 	};
 
@@ -516,6 +508,7 @@ interface RetryStepParams {
 	stepId: StepId;
 	artifacts: Artifact[];
 	stream?: boolean;
+	userId?: string;
 }
 export async function retryStep({
 	agentId,
@@ -524,6 +517,7 @@ export async function retryStep({
 	stepId,
 	artifacts,
 	stream,
+	userId,
 }: RetryStepParams) {
 	const executionSnapshot = await fetch(retryExecutionSnapshotUrl).then(
 		(res) => res.json() as unknown as ExecutionSnapshot,
@@ -550,6 +544,7 @@ export async function retryStep({
 		nodes: executionSnapshot.nodes,
 		connections: executionSnapshot.connections,
 		stream,
+		userId,
 	};
 
 	return performFlowExecution(context);
@@ -560,12 +555,14 @@ interface ExecuteNodeParams {
 	executionId: ExecutionId;
 	nodeId: NodeId;
 	stream?: boolean;
+	userId?: string;
 }
 export async function executeNode({
 	agentId,
 	executionId,
 	nodeId,
 	stream,
+	userId,
 }: ExecuteNodeParams) {
 	const agent = await db.query.agents.findFirst({
 		where: (agents, { eq }) => eq(agents.id, agentId),
@@ -592,6 +589,7 @@ export async function executeNode({
 		nodes: graph.nodes,
 		connections: graph.connections,
 		stream,
+		userId,
 	};
 
 	return performFlowExecution(context);
@@ -624,4 +622,14 @@ async function canPerformFlowExecution(agentId: AgentId) {
 
 	const team = res[0];
 	return await isAgentTimeAvailable(team);
+}
+
+function parseExecutionContextToTelemetryMetadata(
+	executionContext: ExecutionContext,
+): Record<string, string> {
+	return {
+		sessionId: executionContext.executionId,
+		agentId: executionContext.agentId,
+		...(executionContext.userId && { userId: executionContext.userId }),
+	};
 }

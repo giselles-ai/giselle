@@ -16,7 +16,6 @@ import type {
 	GitHubTriggerEvent,
 } from "@/services/external/github/types";
 import { reportAgentTimeUsage } from "@/services/usage-based-billing/report-agent-time-usage";
-import { putGraph } from "@giselles-ai/actions";
 import { Playground } from "@giselles-ai/components/playground";
 import { AgentNameProvider } from "@giselles-ai/contexts/agent-name";
 import { DeveloperModeProvider } from "@giselles-ai/contexts/developer-mode";
@@ -28,6 +27,7 @@ import { PlaygroundModeProvider } from "@giselles-ai/contexts/playground-mode";
 import { PropertiesPanelProvider } from "@giselles-ai/contexts/properties-panel";
 import { ToastProvider } from "@giselles-ai/contexts/toast";
 import { ToolbarContextProvider } from "@giselles-ai/contexts/toolbar";
+import { persistGraph } from "@giselles-ai/giselle-provider/graph/persist";
 import {
 	executeNode,
 	executeStep,
@@ -40,7 +40,6 @@ import {
 import { isLatestVersion, migrateGraph } from "@giselles-ai/lib/graph";
 import {
 	buildGraphExecutionPath,
-	buildGraphFolderPath,
 	createGithubIntegrationSettingId,
 } from "@giselles-ai/lib/utils";
 import type {
@@ -55,7 +54,7 @@ import type {
 	NodeId,
 	StepId,
 } from "@giselles-ai/types";
-import { del, list, put } from "@vercel/blob";
+import { put } from "@vercel/blob";
 import { ReactFlowProvider } from "@xyflow/react";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
@@ -89,70 +88,17 @@ export default async function Page({
 	let graph = await fetch(agent.graphUrl).then(
 		(res) => res.json() as unknown as Graph,
 	);
-
-	const gitHubIntegrationState = await getGitHubIntegrationState(agent.dbId);
-
-	async function persistGraph(graph: Graph) {
-		"use server";
-		const startTime = Date.now();
-		const logger = createLogger("persistGraph");
-		const { url } = await putGraph(graph);
-		const { blobList } = await withCountMeasurement(
-			logger,
-			async () => {
-				const result = await list({
-					prefix: buildGraphFolderPath(graph.id),
-					mode: "folded",
-				});
-				const size = result.blobs.reduce((sum, blob) => sum + blob.size, 0);
-				return {
-					blobList: result,
-					size,
-				};
-			},
-			ExternalServiceName.VercelBlob,
-			startTime,
-			VercelBlobOperation.List,
-		);
-
-		const oldBlobs = blobList.blobs
-			.filter((blob) => blob.url !== url)
-			.map((blob) => ({
-				url: blob.url,
-				size: blob.size,
-			}));
-
-		if (oldBlobs.length > 0) {
-			await withCountMeasurement(
-				logger,
-				async () => {
-					await del(oldBlobs.map((blob) => blob.url));
-					const totalSize = oldBlobs.reduce((sum, blob) => sum + blob.size, 0);
-					return {
-						size: totalSize,
-					};
-				},
-				ExternalServiceName.VercelBlob,
-				startTime,
-				VercelBlobOperation.Del,
-			);
-			waitForTelemetryExport();
-		}
-
-		await db
-			.update(agents)
-			.set({
-				graphUrl: url,
-			})
-			.where(eq(agents.id, agentId));
-
-		return url;
-	}
-
 	let graphUrl = agent.graphUrl;
 	if (!isLatestVersion(graph)) {
 		graph = migrateGraph(graph);
-		graphUrl = await persistGraph(graph);
+		graphUrl = await persistGraph({ graph, agentId });
+	}
+
+	const gitHubIntegrationState = await getGitHubIntegrationState(agent.dbId);
+
+	async function persistGraphAction(graph: Graph) {
+		"use server";
+		return persistGraph({ graph, agentId });
 	}
 
 	async function updateAgentName(agentName: string) {
@@ -180,6 +126,7 @@ export default async function Page({
 			stepId,
 			artifacts,
 			stream: true,
+			userId: user.id,
 		});
 	}
 	async function putExecutionAction(executionSnapshot: ExecutionSnapshot) {
@@ -223,12 +170,19 @@ export default async function Page({
 			stepId,
 			artifacts,
 			stream: true,
+			userId: user.id,
 		});
 	}
 
 	async function executeNodeAction(executionId: ExecutionId, nodeId: NodeId) {
 		"use server";
-		return await executeNode({ agentId, executionId, nodeId, stream: true });
+		return await executeNode({
+			agentId,
+			executionId,
+			nodeId,
+			stream: true,
+			userId: user.id,
+		});
 	}
 
 	async function onFinishPerformExecutionAction(
@@ -351,7 +305,7 @@ export default async function Page({
 		<DeveloperModeProvider developerMode={developerMode}>
 			<GraphContextProvider
 				defaultGraph={graph}
-				onPersistAction={persistGraph}
+				onPersistAction={persistGraphAction}
 				defaultGraphUrl={graphUrl}
 			>
 				<GitHubIntegrationProvider
