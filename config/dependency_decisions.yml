@@ -75,3 +75,9 @@
     :versions:
     - 2.0.8
     :when: 2024-11-22 02:39:34.598816000 Z
+- - :permit
+  - MIT-0
+  - :who:
+    :why: To not conflict with Apache-2.0 license. https://opensource.org/license/MIT-0
+    :versions: []
+    :when: 2025-01-20 11:52:46.820138000 Z
