@@ -120,20 +120,6 @@ export const TextGeneratorPropertyPanel: FC<
 							<div className="grid gap-[8px]">
 								<div className="flex justify-between">
 									<div className="font-rosart text-[16px] text-black-30">
-										Requirements
-									</div>
-									<button type="button">
-										<CirclePlusIcon
-											size={20}
-											className="stroke-black-100 fill-black-30"
-										/>
-									</button>
-								</div>
-							</div>
-							<div className="border-t border-[hsla(222,21%,40%,1)]" />
-							<div className="grid gap-[8px]">
-								<div className="flex justify-between">
-									<div className="font-rosart text-[16px] text-black-30">
 										Sources
 									</div>
 									<button type="button">

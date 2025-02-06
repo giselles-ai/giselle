@@ -178,11 +178,6 @@ export function Editor() {
 													...dependentNode,
 													content: {
 														...dependentNode.content,
-														requirement: handleIds.includes(
-															dependentNode.content.requirement?.id,
-														)
-															? undefined
-															: dependentNode.content.requirement,
 														sources: dependentNode.content.sources.filter(
 															(source) => !handleIds.includes(source.id),
 														),

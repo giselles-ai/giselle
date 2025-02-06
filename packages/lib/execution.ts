@@ -241,32 +241,6 @@ async function resolveSources(
 	).then((sources) => sources.filter((source) => source !== null).flat());
 }
 
-function resolveRequirement(
-	requirement: NodeHandle | null,
-	context: ExecutionContext,
-) {
-	if (requirement === null) {
-		return null;
-	}
-	const node = nodeResolver(requirement.id, context);
-	switch (node?.content.type) {
-		case "text":
-			return node.content.text;
-		case "textGeneration": {
-			const generatedArtifact = artifactResolver(node.id, context);
-			if (
-				generatedArtifact === null ||
-				generatedArtifact.type === "generatedArtifact"
-			) {
-				return null;
-			}
-			return generatedArtifact.object.content;
-		}
-		default:
-			return null;
-	}
-}
-
 interface ExecutionContext {
 	agentId: AgentId;
 	executionId: ExecutionId;
@@ -294,17 +268,12 @@ async function performFlowExecution(
 	switch (node.content.type) {
 		case "textGeneration": {
 			const actionSources = await resolveSources(node.content.sources, context);
-			const requirement = resolveRequirement(
-				node.content.requirement ?? null,
-				context,
-			);
 			const model = resolveLanguageModel(node.content.llm);
 			const promptTemplate = HandleBars.compile(
 				node.content.system ?? textGenerationPrompt,
 			);
 			const prompt = promptTemplate({
 				instruction: node.content.instruction,
-				requirement,
 				sources: actionSources,
 			});
 			const topP = node.content.topP;
