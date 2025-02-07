@@ -1,6 +1,16 @@
 import { describe, expect, test } from "vitest";
-import type { Flow, Graph } from "../types";
-import { deriveFlows, isLatestVersion, migrateGraph } from "./graph";
+import type {
+	Connection,
+	Graph,
+	Node,
+	TextGenerateActionContent,
+} from "../types";
+import {
+	deriveFlows,
+	isLatestVersion,
+	migrateGraph,
+	validateConnection,
+} from "./graph";
 
 // graph is the following structure
 // ┌────────────────────────┐          ┌───────────────────┐
@@ -234,5 +244,203 @@ describe("migrateGraph", () => {
 		} as unknown as Graph);
 		expect(after.version).toBe("20241217");
 		expect(after.nodes[0].content.type).toBe("files");
+	});
+});
+
+describe("validateConnection", () => {
+	const baseNode = {
+		name: "Test Node",
+		position: { x: 0, y: 0 },
+		selected: false,
+		content: {
+			type: "textGeneration" as const,
+			llm: "anthropic:claude-3-5-sonnet-latest",
+			temperature: 0.7,
+			topP: 1,
+			instruction: "test",
+			sources: [],
+		} as TextGenerateActionContent,
+	};
+
+	test("prevents self-reference connections", () => {
+		const nodes: Node[] = [
+			{
+				...baseNode,
+				id: "nd_node1",
+				type: "action",
+			},
+		];
+
+		const selfConnection: Connection = {
+			id: "cnnc_conn1",
+			sourceNodeId: "nd_node1",
+			targetNodeId: "nd_node1",
+			sourceNodeType: "action",
+			targetNodeType: "action",
+			targetNodeHandleId: "ndh_handle1",
+		};
+
+		const result = validateConnection(selfConnection, [], nodes);
+		expect(result.isValid).toBe(false);
+		expect(result.error).toBe("Self-reference connections are not allowed");
+	});
+
+	test("prevents connections to non-existent nodes", () => {
+		const nodes: Node[] = [
+			{
+				...baseNode,
+				id: "nd_node1",
+				type: "action",
+			},
+		];
+
+		const invalidConnection: Connection = {
+			id: "cnnc_conn1",
+			sourceNodeId: "nd_node1",
+			targetNodeId: "nd_nonexistent",
+			sourceNodeType: "action",
+			targetNodeType: "action",
+			targetNodeHandleId: "ndh_handle1",
+		};
+
+		const result = validateConnection(invalidConnection, [], nodes);
+		expect(result.isValid).toBe(false);
+		expect(result.error).toBe("Target node nd_nonexistent does not exist");
+	});
+
+	test("prevents connections with mismatched source node type", () => {
+		const nodes: Node[] = [
+			{
+				...baseNode,
+				id: "nd_node1",
+				type: "action",
+			},
+			{
+				...baseNode,
+				id: "nd_node2",
+				type: "action",
+			},
+		];
+
+		const invalidConnection: Connection = {
+			id: "cnnc_conn1",
+			sourceNodeId: "nd_node1",
+			targetNodeId: "nd_node2",
+			sourceNodeType: "variable",
+			targetNodeType: "action",
+			targetNodeHandleId: "ndh_handle1",
+		};
+
+		const result = validateConnection(invalidConnection, [], nodes);
+		expect(result.isValid).toBe(false);
+		expect(result.error).toBe(
+			"Source node type mismatch: expected action, got variable",
+		);
+	});
+
+	test("prevents circular dependencies", () => {
+		const nodes: Node[] = [
+			{
+				...baseNode,
+				id: "nd_node1",
+				type: "action",
+			},
+			{
+				...baseNode,
+				id: "nd_node2",
+				type: "action",
+			},
+			{
+				...baseNode,
+				id: "nd_node3",
+				type: "action",
+			},
+		];
+
+		const existingConnections: Connection[] = [
+			{
+				id: "cnnc_conn1",
+				sourceNodeId: "nd_node1",
+				targetNodeId: "nd_node2",
+				sourceNodeType: "action",
+				targetNodeType: "action",
+				targetNodeHandleId: "ndh_handle1",
+			},
+			{
+				id: "cnnc_conn2",
+				sourceNodeId: "nd_node2",
+				targetNodeId: "nd_node3",
+				sourceNodeType: "action",
+				targetNodeType: "action",
+				targetNodeHandleId: "ndh_handle2",
+			},
+		];
+
+		const circularConnection: Connection = {
+			id: "cnnc_conn3",
+			sourceNodeId: "nd_node3",
+			targetNodeId: "nd_node1",
+			sourceNodeType: "action",
+			targetNodeType: "action",
+			targetNodeHandleId: "ndh_handle3",
+		};
+
+		const result = validateConnection(
+			circularConnection,
+			existingConnections,
+			nodes,
+		);
+		expect(result.isValid).toBe(false);
+		expect(result.error).toBe(
+			"Adding this connection would create a circular dependency",
+		);
+	});
+
+	test("allows valid connections", () => {
+		const nodes: Node[] = [
+			{
+				...baseNode,
+				id: "nd_node1",
+				type: "action",
+			},
+			{
+				...baseNode,
+				id: "nd_node2",
+				type: "action",
+			},
+			{
+				...baseNode,
+				id: "nd_node3",
+				type: "action",
+			},
+		];
+
+		const existingConnections: Connection[] = [
+			{
+				id: "cnnc_conn1",
+				sourceNodeId: "nd_node1",
+				targetNodeId: "nd_node2",
+				sourceNodeType: "action",
+				targetNodeType: "action",
+				targetNodeHandleId: "ndh_handle1",
+			},
+		];
+
+		const validConnection: Connection = {
+			id: "cnnc_conn2",
+			sourceNodeId: "nd_node2",
+			targetNodeId: "nd_node3",
+			sourceNodeType: "action",
+			targetNodeType: "action",
+			targetNodeHandleId: "ndh_handle2",
+		};
+
+		const result = validateConnection(
+			validConnection,
+			existingConnections,
+			nodes,
+		);
+		expect(result.isValid).toBe(true);
+		expect(result.error).toBeUndefined();
 	});
 });
