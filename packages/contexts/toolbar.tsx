@@ -54,11 +54,18 @@ export function ToolbarContextProvider({
 					action: "move",
 					category: "move",
 				});
-			default:
+			case "addGitHubNode":
+				return setSelectedTool({
+					action: "addGitHubNode",
+					category: "edit",
+				});
+			case undefined:
 				return setSelectedTool({
 					action: "move",
 					category: "move",
 				});
+			default:
+				throw new Error(tool satisfies never);
 		}
 	};
 

@@ -43,7 +43,12 @@ import type {
 	TextGenerateActionContent,
 } from "../types";
 import { AgentTimeNotAvailableError } from "./errors";
-import { textGenerationPrompt } from "./prompts";
+import {
+	GitHubAgent,
+	fetchGitHubIntegrationSetting,
+	fetchInstallationId,
+} from "./github-agent";
+import { gitHubAgentPrompt, textGenerationPrompt } from "./prompts";
 import { langfuseModel, toErrorWithMessage } from "./utils";
 
 function resolveLanguageModel(
@@ -148,8 +153,17 @@ interface TextGenerationSource extends ExecutionSourceBase {
 	title: string;
 	content: string;
 }
+interface GitHubSource extends ExecutionSourceBase {
+	type: "github";
+	title: string;
+	content: string;
+}
 
-type ExecutionSource = TextSource | TextGenerationSource | FileSource;
+type ExecutionSource =
+	| TextSource
+	| TextGenerationSource
+	| FileSource
+	| GitHubSource;
 async function resolveSources(
 	sources: NodeHandle[],
 	context: ExecutionContext,
@@ -229,6 +243,21 @@ async function resolveSources(
 					}
 					return {
 						type: "textGeneration",
+						title: generatedArtifact.object.title,
+						content: generatedArtifact.object.content,
+						nodeId: node.id,
+					} satisfies ExecutionSource;
+				}
+				case "github": {
+					const generatedArtifact = artifactResolver(node.id, context);
+					if (
+						generatedArtifact === null ||
+						generatedArtifact.type !== "generatedArtifact"
+					) {
+						return null;
+					}
+					return {
+						type: "github",
 						title: generatedArtifact.object.title,
 						content: generatedArtifact.object.content,
 						nodeId: node.id,
@@ -405,6 +434,61 @@ async function performFlowExecution(
 				messages: {
 					plan: object.plan,
 					description: object.description,
+				},
+			} satisfies TextArtifactObject;
+		}
+		case "github": {
+			const integrationSetting = await fetchGitHubIntegrationSetting(
+				context.agentId,
+			);
+			const installationId = await fetchInstallationId(integrationSetting);
+			const agent = await GitHubAgent.build(installationId);
+
+			const actionSources = await resolveSources(node.content.sources, context);
+			const promptTemplate = HandleBars.compile(gitHubAgentPrompt);
+			const prompt = promptTemplate({
+				instruction: node.content.instruction,
+				sources: actionSources,
+				integrationSetting: integrationSetting,
+			});
+
+			trace.update({
+				input: prompt,
+			});
+
+			const generationTracer = trace.generation({
+				name: "github",
+				input: prompt,
+				model: agent.MODEL.modelId,
+				modelParameters: {
+					temperature: 0.7,
+				},
+			});
+
+			const { result, usage } = await agent.execute(prompt);
+			waitUntil(
+				withTokenMeasurement(
+					createLogger(node.content.type),
+					async () => {
+						generationTracer.end({ output: result });
+						trace.update({ output: result });
+						await lf.shutdownAsync();
+						waitForTelemetryExport();
+						return { usage };
+					},
+					agent.MODEL,
+					context.agentId,
+					startTime,
+				),
+			);
+
+			return {
+				type: "text",
+				title: result.title,
+				content: result.content,
+				messages: {
+					plan: result.plan,
+					description: result.description,
 				},
 			} satisfies TextArtifactObject;
 		}

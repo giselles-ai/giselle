@@ -1,9 +1,11 @@
 "use client";
 
+import { useGitHubNodeMode } from "@giselles-ai/contexts/github-node-mode";
 import { TextGenerationIcon } from "@giselles-ai/icons/text-generation";
+import { SiGithub } from "@icons-pack/react-simple-icons";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import { FileUpIcon, LetterTextIcon, MousePointer2Icon } from "lucide-react";
-import { type ComponentProps, forwardRef } from "react";
+import type { ComponentProps } from "react";
 import { useToolbar } from "../contexts/toolbar";
 import type { Tool } from "../types";
 import { Tooltip } from "./tooltip";
@@ -41,6 +43,8 @@ function ToggleGroupItem({
 
 export function Toolbar() {
 	const { selectTool, selectedTool } = useToolbar();
+	const gitHubNodeMode = useGitHubNodeMode();
+
 	return (
 		<div className="relative rounded-[46px] overflow-hidden bg-black-100">
 			<div className="absolute z-0 rounded-[46px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-boarder border-transparent" />
@@ -74,6 +78,15 @@ export function Toolbar() {
 								className={"w-[24px] h-[24px] text-black-30 fill-current"}
 							/>
 						</ToggleGroupItem>
+						{gitHubNodeMode && (
+							<ToggleGroupItem
+								value="addGitHubNode"
+								tooltip="GitHub"
+								shortcut="h"
+							>
+								<SiGithub className={"w-[24px] h-[24px] text-black-30"} />
+							</ToggleGroupItem>
+						)}
 					</div>
 				</ToggleGroup.Root>
 			</div>

@@ -77,3 +77,16 @@ export const developerFlag = flag<boolean>({
 		{ value: true, label: "Enable" },
 	],
 });
+
+export const gitHubNodeFlag = flag<boolean>({
+	key: "github-node",
+	async decide() {
+		return takeLocalEnv("GITHUB_NODE_FLAG");
+	},
+	description: "Enable GitHub Node",
+	defaultValue: false,
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+});

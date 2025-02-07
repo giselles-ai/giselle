@@ -11,6 +11,7 @@ import type {
 	Files,
 	Flow,
 	FlowId,
+	GitHub,
 	GitHubIntegrationSettingId,
 	Graph,
 	GraphId,
@@ -95,6 +96,10 @@ export function isFile(node: Node): node is File {
 }
 export function isFiles(node: Node): node is Files {
 	return node.content.type === "files";
+}
+
+export function isGitHub(node: Node): node is GitHub {
+	return node.content.type === "github";
 }
 
 interface Element {

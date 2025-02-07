@@ -1,4 +1,5 @@
 export {
+	buildAppClient,
 	buildAppInstallationClient,
 	gitHubAppInstallURL,
 	needsAdditionalPermissions,
