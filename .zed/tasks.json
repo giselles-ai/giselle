@@ -11,7 +11,7 @@
 	},
 	{
 		"label": "drizzle studio",
-		"command": "pnpm dlx drizzle-kit studio",
+		"command": "pnpm drizzle-kit studio",
 		"allow_concurrent_runs": false
 	},
 	{

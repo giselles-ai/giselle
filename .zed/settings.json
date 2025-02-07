@@ -1,8 +1,9 @@
 {
 	"formatter": {
 		"external": {
-			"command": "pnpm dlx",
+			"command": "pnpm",
 			"arguments": [
+				"dlx",
 				"@biomejs/biome",
 				"check",
 				"--apply",
