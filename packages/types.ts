@@ -27,7 +27,6 @@ export interface TextGenerateActionContent extends ActionContentBase {
 	temperature: number;
 	topP: number;
 	instruction: string;
-	requirement?: NodeHandle;
 	system?: string;
 	sources: NodeHandle[];
 }

@@ -349,71 +349,6 @@ export function PropertiesPanel() {
 										},
 									});
 								}}
-								onRequirementConnect={(sourceNode) => {
-									const requirement: NodeHandle = {
-										id: createNodeHandleId(),
-										label: "Requirement",
-									};
-									dispatch([
-										{
-											type: "updateNode",
-											input: {
-												nodeId: selectedNode.id,
-												node: {
-													...selectedNode,
-													content: {
-														...selectedNode.content,
-														requirement,
-													},
-												},
-											},
-										},
-										{
-											type: "addConnection",
-											input: {
-												connection: {
-													id: createConnectionId(),
-													sourceNodeId: sourceNode.id,
-													sourceNodeType: sourceNode.type,
-													targetNodeId: selectedNode.id,
-													targetNodeType: selectedNode.type,
-													targetNodeHandleId: requirement.id,
-												},
-											},
-										},
-									]);
-								}}
-								onRequirementRemove={(sourceNode) => {
-									const connection = graph.connections.find(
-										(connection) =>
-											connection.targetNodeId === selectedNode.id &&
-											connection.sourceNodeId === sourceNode.id,
-									);
-									if (connection === undefined) {
-										return;
-									}
-									dispatch([
-										{
-											type: "removeConnection",
-											input: {
-												connectionId: connection.id,
-											},
-										},
-										{
-											type: "updateNode",
-											input: {
-												nodeId: selectedNode.id,
-												node: {
-													...selectedNode,
-													content: {
-														...selectedNode.content,
-														requirement: undefined,
-													},
-												},
-											},
-										},
-									]);
-								}}
 								onSourceConnect={(sourceNode) => {
 									const source: NodeHandle = {
 										id: createNodeHandleId(),
@@ -795,15 +730,11 @@ function SystemPromptTextarea({
 function TabsContentPrompt({
 	content,
 	onContentChange,
-	onRequirementConnect,
-	onRequirementRemove,
 	onSourceConnect,
 	onSourceRemove,
 }: {
 	content: TextGenerateActionContent;
 	onContentChange?: (content: TextGenerateActionContent) => void;
-	onRequirementConnect?: (sourceNode: Node) => void;
-	onRequirementRemove?: (sourceNode: Node) => void;
 	onSourceConnect?: (sourceNode: Node) => void;
 	onSourceRemove?: (sourceNode: Node) => void;
 }) {
@@ -820,9 +751,6 @@ function TabsContentPrompt({
 	const connectableFileNodes = nodes.filter(
 		(node) => node.content.type === "files",
 	);
-	const requirementNode = useNode({
-		targetNodeHandleId: content.requirement?.id,
-	});
 	const sourceNodes = useMemo(
 		() =>
 			content.sources
@@ -927,86 +855,7 @@ function TabsContentPrompt({
 					</div>
 				</div>
 			</PropertiesPanelCollapsible>
-
 			<div className="border-t border-[hsla(222,21%,40%,1)]" />
-			<PropertiesPanelCollapsible
-				title="Requirement"
-				glanceLabel={
-					requirementNode === null ? "Not selected" : requirementNode.name
-				}
-			>
-				{requirementNode === null ? (
-					<div className="flex items-center gap-[4px]">
-						<div className="py-[4px] text-[12px] flex-1">Not selected</div>
-						<NodeDropdown
-							nodes={[
-								...connectableTextNodes,
-								...connectableTextGeneratorNodes,
-							]}
-							onValueChange={(node) => {
-								onRequirementConnect?.(node);
-							}}
-						/>
-					</div>
-				) : (
-					<Block
-						hoverCardContent={
-							<div className="flex justify-between space-x-4">
-								{requirementNode.content.type === "text" && (
-									<div className="line-clamp-5 text-[14px]">
-										{requirementNode.content.text}
-									</div>
-								)}
-							</div>
-						}
-					>
-						<div className="flex items-center justify-between">
-							<div className="flex items-center gap-[8px]">
-								<p className="truncate text-[14px] font-rosart">
-									{requirementNode.name}
-								</p>
-							</div>
-							<button
-								type="button"
-								className="group-hover:block hidden p-[2px] hover:bg-black-70 rounded-[4px]"
-								onClick={() => {
-									onRequirementRemove?.(requirementNode);
-								}}
-							>
-								<TrashIcon className="w-[16px] h-[16px] text-black-30" />
-							</button>
-						</div>
-					</Block>
-				)}
-				{/* <div className="mb-[4px]">
-					<Select value={requirementNode?.id}>
-						<SelectTrigger>
-							<SelectValue placeholder="Select a requirement" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectGroup>
-								<SelectLabel>Text Generator</SelectLabel>
-								{connectableTextGeneratorNodes.map((node) => (
-									<SelectItem value={node.id} key={node.id} label={node.name}>
-										<p>it's a text generator</p>
-									</SelectItem>
-								))}
-							</SelectGroup>
-							<SelectGroup>
-								<SelectLabel>Text</SelectLabel>
-								{connectableTextNodes.map((node) => (
-									<SelectItem value={node.id} key={node.id} label={node.name}>
-										<p>{node.content.text}</p>
-									</SelectItem>
-								))}
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-				</div> */}
-			</PropertiesPanelCollapsible>
-
-			<div className="border-t border-[hsla(222,21%,40%,1)]" />
-
 			<PropertiesPanelCollapsible
 				title="Sources"
 				glanceLabel={

@@ -5,29 +5,13 @@ import { textGenerationPrompt } from "./prompts";
 describe("textGenerationPrompt template", () => {
 	const template = HandleBars.compile(textGenerationPrompt);
 
-	test("should render basic instruction without sources or requirement", () => {
+	test("should render basic instruction without sources", () => {
 		const result = template({
 			instruction: "Write a summary about cats.",
 		});
 
 		expect(result).toContain(
 			"<instruction>\nWrite a summary about cats.\n</instruction>",
-		);
-		expect(result).not.toContain("<requirement>");
-		expect(result).not.toContain("<sources>");
-	});
-
-	test("should render instruction with requirement", () => {
-		const result = template({
-			instruction: "Write a summary about cats.",
-			requirement: "Must include information about different breeds.",
-		});
-
-		expect(result).toContain(
-			"<instruction>\nWrite a summary about cats.\n</instruction>",
-		);
-		expect(result).toContain(
-			"<requirement>\nMust include information about different breeds.\n</requirement>",
 		);
 		expect(result).not.toContain("<sources>");
 	});
@@ -138,7 +122,6 @@ describe("textGenerationPrompt template", () => {
 	test("should render all components together", () => {
 		const result = template({
 			instruction: "Write a summary about cats.",
-			requirement: "Must include information about different breeds.",
 			sources: [
 				{
 					type: "text",
@@ -155,7 +138,6 @@ describe("textGenerationPrompt template", () => {
 		});
 
 		expect(result).toContain("<instruction>");
-		expect(result).toContain("<requirement>");
 		expect(result).toContain("<sources>");
 		expect(result).toContain('<text id="node1">');
 		expect(result).toContain('<generated id="node2" title="Cat Care Guide">');
