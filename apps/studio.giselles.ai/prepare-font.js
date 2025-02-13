@@ -59,6 +59,8 @@ const downloadFile = async (url, destination) => {
 			}
 		}
 	} else {
+		console.log(__dirname);
+		console.log(__filename);
 		fs.copyFile("./vendor/fonts/alternative.ts", "./app/fonts/index.ts");
 		console.log("Using an alternative font file in development mode.");
 	}
