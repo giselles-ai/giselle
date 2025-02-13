@@ -1,6 +1,6 @@
 import { getTeamMembershipByAgentId } from "@/app/(auth)/lib/get-team-membership-by-agent-id";
 import { agents, db, githubIntegrationSettings } from "@/drizzle";
-import { developerFlag } from "@/flags";
+import { developerFlag, gitHubNodeFlag } from "@/flags";
 import {
 	ExternalServiceName,
 	VercelBlobOperation,
@@ -23,6 +23,7 @@ import { AgentNameProvider } from "@giselles-ai/contexts/agent-name";
 import { DeveloperModeProvider } from "@giselles-ai/contexts/developer-mode";
 import { ExecutionProvider } from "@giselles-ai/contexts/execution";
 import { GitHubIntegrationProvider } from "@giselles-ai/contexts/github-integration";
+import { GitHubNodeModeProvider } from "@giselles-ai/contexts/github-node-mode";
 import { GraphContextProvider } from "@giselles-ai/contexts/graph";
 import { MousePositionProvider } from "@giselles-ai/contexts/mouse-position";
 import { PlaygroundModeProvider } from "@giselles-ai/contexts/playground-mode";
@@ -70,8 +71,9 @@ export default async function Page({
 }: {
 	params: Promise<{ agentId: AgentId }>;
 }) {
-	const [developerMode, { agentId }, user] = await Promise.all([
+	const [developerMode, gitHubNodeMode, { agentId }, user] = await Promise.all([
 		developerFlag(),
+		gitHubNodeFlag(),
 		params,
 		getUser(),
 	]);
@@ -360,50 +362,52 @@ export default async function Page({
 
 	return (
 		<DeveloperModeProvider developerMode={developerMode}>
-			<GraphContextProvider
-				defaultGraph={graph}
-				onPersistAction={persistGraph}
-				defaultGraphUrl={graphUrl}
-			>
-				<GitHubIntegrationProvider
-					{...gitHubIntegrationState}
-					installUrl={await gitHubAppInstallURL()}
-					upsertGitHubIntegrationSettingAction={
-						upsertGitHubIntegrationSettingAction
-					}
-					connectGitHubIdentityAction={connectGitHubIdentityAction}
-					reconnectGitHubIdentityAction={reconnectGitHubIdentityAction}
+			<GitHubNodeModeProvider gitHubNodeMode={gitHubNodeMode}>
+				<GraphContextProvider
+					defaultGraph={graph}
+					onPersistAction={persistGraph}
+					defaultGraphUrl={graphUrl}
 				>
-					<PropertiesPanelProvider>
-						<ReactFlowProvider>
-							<ToolbarContextProvider>
-								<MousePositionProvider>
-									<ToastProvider>
-										<AgentNameProvider
-											defaultValue={agent.name}
-											updateAgentNameAction={updateAgentName}
-										>
-											<PlaygroundModeProvider>
-												<ExecutionProvider
-													executeStepAction={executeStepAction}
-													putExecutionAction={putExecutionAction}
-													retryStepAction={retryStepAction}
-													executeNodeAction={executeNodeAction}
-													onFinishPerformExecutionAction={
-														onFinishPerformExecutionAction
-													}
-												>
-													<Playground />
-												</ExecutionProvider>
-											</PlaygroundModeProvider>
-										</AgentNameProvider>
-									</ToastProvider>
-								</MousePositionProvider>
-							</ToolbarContextProvider>
-						</ReactFlowProvider>
-					</PropertiesPanelProvider>
-				</GitHubIntegrationProvider>
-			</GraphContextProvider>
+					<GitHubIntegrationProvider
+						{...gitHubIntegrationState}
+						installUrl={await gitHubAppInstallURL()}
+						upsertGitHubIntegrationSettingAction={
+							upsertGitHubIntegrationSettingAction
+						}
+						connectGitHubIdentityAction={connectGitHubIdentityAction}
+						reconnectGitHubIdentityAction={reconnectGitHubIdentityAction}
+					>
+						<PropertiesPanelProvider>
+							<ReactFlowProvider>
+								<ToolbarContextProvider>
+									<MousePositionProvider>
+										<ToastProvider>
+											<AgentNameProvider
+												defaultValue={agent.name}
+												updateAgentNameAction={updateAgentName}
+											>
+												<PlaygroundModeProvider>
+													<ExecutionProvider
+														executeStepAction={executeStepAction}
+														putExecutionAction={putExecutionAction}
+														retryStepAction={retryStepAction}
+														executeNodeAction={executeNodeAction}
+														onFinishPerformExecutionAction={
+															onFinishPerformExecutionAction
+														}
+													>
+														<Playground />
+													</ExecutionProvider>
+												</PlaygroundModeProvider>
+											</AgentNameProvider>
+										</ToastProvider>
+									</MousePositionProvider>
+								</ToolbarContextProvider>
+							</ReactFlowProvider>
+						</PropertiesPanelProvider>
+					</GitHubIntegrationProvider>
+				</GraphContextProvider>
+			</GitHubNodeModeProvider>
 		</DeveloperModeProvider>
 	);
 }

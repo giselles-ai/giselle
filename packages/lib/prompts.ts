@@ -1,21 +1,7 @@
 import HandleBars from "handlebars";
 HandleBars.registerHelper("eq", (arg1, arg2) => arg1 === arg2);
 
-export const textGenerationPrompt = `You are tasked with generating text based on specific instructions, requirements, and sources provided by the user. Follow these steps carefully:
-
-1. Read and analyze the following inputs:
-
-<instruction>
-{{instruction}}
-</instruction>
-
-{{#if requirement}}
-<requirement>
-{{requirement}}
-</requirement>
-{{/if}}
-
-{{#if sources}}
+const sources = `{{#if sources}}
 <sources>
 {{#each sources}}
 {{#if (eq this.type "text")}}
@@ -30,10 +16,31 @@ export const textGenerationPrompt = `You are tasked with generating text based o
 <file id="{{this.nodeId}}" title="{{this.title}}">
 {{this.content}}
 </file>
+{{else if (eq this.type "github")}}
+<github id="{{this.nodeId}}" title="{{this.title}}">
+{{this.content}}
+</github>
 {{/if}}
 {{/each}}
 </sources>
 {{/if}}
+`;
+
+export const textGenerationPrompt = `You are tasked with generating text based on specific instructions, requirements, and sources provided by the user. Follow these steps carefully:
+
+1. Read and analyze the following inputs:
+
+<instruction>
+{{instruction}}
+</instruction>
+
+{{#if requirement}}
+<requirement>
+{{requirement}}
+</requirement>
+{{/if}}
+
+${sources}
 
 2. Process the instruction:
     - Carefully read and understand the instruction provided.
@@ -66,4 +73,52 @@ export const textGenerationPrompt = `You are tasked with generating text based o
     - If the instruction asks for specific sections or formatting, include appropriate subtags within your response.
 
 Remember to adhere strictly to the given instruction, fulfill all requirements, and make proper use of the provided sources. Your goal is to produce a well-crafted, accurate, and relevant piece of text that fully satisfies the user's request.
+`;
+
+export const gitHubAgentPrompt = `You are a GitHub API expert tasked with analyzing GitHub repositories and data through the GitHub GraphQL API. Your role is to provide accurate insights and information based on the provided instructions and sources.
+
+1. Read and analyze the following inputs:
+
+<instruction>
+{{instruction}}
+</instruction>
+
+{{#if integrationSetting}}
+<integration_setting>
+Repository: {{integrationSetting.repositoryFullName}}
+Event: {{integrationSetting.event}}
+</integration_setting>
+{{/if}}
+
+${sources}
+
+2. GitHub API Guidelines:
+    - You can ONLY perform READ operations through GraphQL queries
+    - You MUST reject any requests for mutations or data modifications
+    - Always respect GitHub API rate limits
+    - Structure queries efficiently to minimize API calls
+
+3. Query Planning and Execution:
+    - Break down complex requests into manageable GraphQL queries
+    - Handle pagination appropriately for large datasets
+    - Use aliases and fragments to optimize queries
+    - Validate all query parameters before execution
+
+4. Data Analysis and Response:
+    - Process retrieved data accurately and thoroughly
+    - Provide context and explanations for technical findings
+    - Include relevant metrics and statistics
+    - Format complex data in clear, readable structures
+
+5. Generate your artifact:
+    plan: Detailed explanation of how you'll retrieve the data
+    title: Clear, concise title for the artifact
+    content: Well-formatted markdown content with findings
+    description: Comprehensive explanation of the artifact and suggestions
+
+Remember:
+- Security: Never expose sensitive repository data
+- Accuracy: Double-check all query results
+- Clarity: Present technical information in an understandable way
+- Compliance: Follow GitHub API best practices
 `;

@@ -40,7 +40,19 @@ interface WebSearchActionContent extends ActionContentBase {
 export interface WebSearch extends Action {
 	content: WebSearchActionContent;
 }
-type ActionContent = TextGenerateActionContent | WebSearchActionContent;
+export interface GitHubActionContent extends ActionContentBase {
+	type: "github";
+	instruction: string;
+	sources: NodeHandle[];
+}
+export interface GitHub extends Action {
+	content: GitHubActionContent;
+}
+
+type ActionContent =
+	| TextGenerateActionContent
+	| WebSearchActionContent
+	| GitHubActionContent;
 
 interface Variable extends NodeBase {
 	type: "variable";
@@ -208,10 +220,16 @@ interface MoveTool extends ToolBase {
 	category: "move";
 	action: "move";
 }
+export interface AddGitHubNodeTool extends ToolBase {
+	category: "edit";
+	action: "addGitHubNode";
+}
+
 export type Tool =
 	| AddTextNodeTool
 	| AddFileNodeTool
 	| AddTextGenerationNodeTool
+	| AddGitHubNodeTool
 	| MoveTool;
 
 export type FlowId = `flw_${string}`;

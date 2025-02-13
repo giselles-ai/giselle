@@ -9,9 +9,8 @@ import {
 	useReactFlow,
 	useUpdateNodeInternals,
 } from "@xyflow/react";
-import bg from "./bg.png";
 import "@xyflow/react/dist/style.css";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useGraph } from "../contexts/graph";
 import { useMousePosition } from "../contexts/mouse-position";
 import { usePropertiesPanel } from "../contexts/properties-panel";
@@ -19,6 +18,7 @@ import { useToast } from "../contexts/toast";
 import { useToolbar } from "../contexts/toolbar";
 import { createNodeId, isTextGeneration } from "../lib/utils";
 import type { NodeId, Tool } from "../types";
+import bg from "./bg.png";
 import { Edge } from "./edge";
 import { Header } from "./header";
 import { KeyboardShortcut } from "./keyboard-shortcut";
@@ -129,6 +129,9 @@ export function Editor() {
 											break;
 										case "file":
 											setTab("File");
+											break;
+										case "github":
+											setTab("GitHub");
 											break;
 										default:
 											break;
@@ -277,6 +280,25 @@ export function Editor() {
 											temperature: 0.7,
 											topP: 1,
 											instruction: "Write a short story about a cat",
+											sources: [],
+										},
+									},
+								},
+							});
+							break;
+						case "addGitHubNode":
+							dispatch({
+								type: "addNode",
+								input: {
+									node: {
+										id: createNodeId(),
+										name: `GitHub node - ${graph.nodes.length + 1}`,
+										position,
+										selected: false,
+										type: "action",
+										content: {
+											type: "github",
+											instruction: "Execute GitHub operation",
 											sources: [],
 										},
 									},

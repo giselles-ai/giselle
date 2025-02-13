@@ -1,4 +1,3 @@
-import { TextGenerationIcon } from "@giselles-ai/icons/text-generation";
 import {
 	Handle,
 	type NodeProps,
@@ -6,17 +5,12 @@ import {
 	type Node as XYFlowNode,
 } from "@xyflow/react";
 import clsx from "clsx/lite";
-import React, {
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useGraph } from "../contexts/graph";
 import type {
 	File,
 	Files,
+	GitHub,
 	Node as NodeType,
 	Text,
 	TextGeneration,
@@ -30,12 +24,14 @@ type FileNode = XYFlowNode<{ node: File }>;
 type FilesNode = XYFlowNode<{ node: Files }>;
 type TextGenerationNode = XYFlowNode<{ node: TextGeneration }>;
 type WebSearchNode = XYFlowNode<{ node: WebSearch }>;
+type GitHubNode = XYFlowNode<{ node: GitHub }>;
 export type Node =
 	| TextNode
 	| FileNode
 	| TextGenerationNode
 	| WebSearchNode
-	| FilesNode;
+	| FilesNode
+	| GitHubNode;
 
 export function PreviewNode({ tool }: { tool: Tool }) {
 	switch (tool.action) {
@@ -111,6 +107,32 @@ export function PreviewNode({ tool }: { tool: Tool }) {
 								temperature: 0.7,
 								topP: 1,
 								instruction: "",
+								sources: [],
+							},
+						},
+					}}
+				/>
+			);
+		case "addGitHubNode":
+			return (
+				<Node
+					type="preview"
+					dragging={true}
+					zIndex={1}
+					isConnectable
+					positionAbsoluteX={0}
+					positionAbsoluteY={0}
+					id="nd_preview"
+					data={{
+						node: {
+							id: "nd_preview",
+							name: "GitHub Node",
+							position: { x: 0, y: 0 },
+							selected: false,
+							type: "action",
+							content: {
+								type: "github",
+								instruction: "Execute GitHub operation",
 								sources: [],
 							},
 						},
@@ -218,6 +240,11 @@ export function Node({
 				...data.node.content.sources,
 			].filter((item) => item !== undefined);
 		}
+		if (data.node.content.type === "github") {
+			return [...data.node.content.sources].filter(
+				(item) => item !== undefined,
+			);
+		}
 		return [];
 	}, [data.node]);
 	const { graph, dispatch } = useGraph();
@@ -275,6 +302,9 @@ export function Node({
 			>
 				{data.node.content.type === "textGeneration" && (
 					<NodeHeader name="Text Generator" contentType={"textGeneration"} />
+				)}
+				{data.node.content.type === "github" && (
+					<NodeHeader name="GitHub" contentType={"github"} />
 				)}
 				{data.node.content.type === "webSearch" && (
 					<NodeHeader name="Web Search" contentType="webSearch" />

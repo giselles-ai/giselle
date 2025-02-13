@@ -12,14 +12,25 @@ import { RequestError } from "@octokit/request-error";
  * @throws {Error} If the request to get app information fails.
  */
 export async function gitHubAppInstallURL(): Promise<string> {
-	const auth = appAuth();
-	const app = await auth({ type: "app" });
-	const octokit = new Octokit({ auth: app.token });
+	const octokit = await buildAppClient();
 	const res = await octokit.request("GET /app");
 	if (res.status !== 200 || !res.data) {
 		throw new Error("Failed to get app information");
 	}
 	return `https://github.com/apps/${res.data.slug}/installations/new`;
+}
+
+/**
+ * Builds an authenticated GitHub App client.
+ *
+ * Authenticating as a GitHub App: https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app
+ *
+ * @returns {Promise<Octokit>} A promise that resolves to an authenticated Octokit instance.
+ */
+export async function buildAppClient() {
+	const auth = appAuth();
+	const app = await auth({ type: "app" });
+	return new Octokit({ auth: app.token });
 }
 
 /**

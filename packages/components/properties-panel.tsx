@@ -52,6 +52,7 @@ import {
 	formatTimestamp,
 	isFile,
 	isFiles,
+	isGitHub,
 	isText,
 	isTextGeneration,
 	pathJoin,
@@ -61,6 +62,7 @@ import type {
 	FileContent,
 	FileData,
 	FilesContent,
+	GitHubActionContent,
 	Node,
 	NodeHandle,
 	NodeId,
@@ -297,6 +299,12 @@ export function PropertiesPanel() {
 							{selectedNode?.content?.type === "file" && (
 								<TabsTrigger value="File">File</TabsTrigger>
 							)}
+							{selectedNode?.content?.type === "github" && (
+								<>
+									<TabsTrigger value="GitHub">GitHub</TabsTrigger>
+									<TabsTrigger value="Result">Result</TabsTrigger>
+								</>
+							)}
 						</TabsList>
 					</div>
 
@@ -328,6 +336,17 @@ export function PropertiesPanel() {
 										onClick={() => executeNode(selectedNode.id)}
 									>
 										Generate
+									</button>
+								</div>
+							)}
+							{selectedNode.content.type === "github" && (
+								<div className="">
+									<button
+										type="button"
+										className="relative z-10 rounded-[8px] shadow-[0px_0px_3px_0px_#FFFFFF40_inset] py-[3px] px-[8px] bg-black-80 text-black-30 font-rosart text-[14px] disabled:bg-black-40"
+										onClick={() => executeNode(selectedNode.id)}
+									>
+										Execute
 									</button>
 								</div>
 							)}
@@ -558,6 +577,93 @@ export function PropertiesPanel() {
 							}}
 						/>
 					)}
+					{selectedNode && isGitHub(selectedNode) && (
+						<TabsContent value="GitHub" className="h-full">
+							<TabContentGitHub
+								content={selectedNode.content}
+								onContentChange={(content) => {
+									dispatch({
+										type: "updateNode",
+										input: {
+											nodeId: selectedNode.id,
+											node: {
+												...selectedNode,
+												content,
+											},
+										},
+									});
+								}}
+								onSourceConnect={(sourceNode) => {
+									const source: NodeHandle = {
+										id: createNodeHandleId(),
+										label: `Source${selectedNode.content.sources.length + 1}`,
+									};
+									dispatch([
+										{
+											type: "updateNode",
+											input: {
+												nodeId: selectedNode.id,
+												node: {
+													...selectedNode,
+													content: {
+														...selectedNode.content,
+														sources: [...selectedNode.content.sources, source],
+													},
+												},
+											},
+										},
+										{
+											type: "addConnection",
+											input: {
+												connection: {
+													id: createConnectionId(),
+													sourceNodeId: sourceNode.id,
+													sourceNodeType: sourceNode.type,
+													targetNodeId: selectedNode.id,
+													targetNodeType: selectedNode.type,
+													targetNodeHandleId: source.id,
+												},
+											},
+										},
+									]);
+								}}
+								onSourceRemove={(sourceNode) => {
+									const connection = graph.connections.find(
+										(connection) =>
+											connection.targetNodeId === selectedNode.id &&
+											connection.sourceNodeId === sourceNode.id,
+									);
+									if (connection === undefined) {
+										return;
+									}
+									dispatch([
+										{
+											type: "removeConnection",
+											input: {
+												connectionId: connection.id,
+											},
+										},
+										{
+											type: "updateNode",
+											input: {
+												nodeId: selectedNode.id,
+												node: {
+													...selectedNode,
+													content: {
+														...selectedNode.content,
+														sources: selectedNode.content.sources.filter(
+															(source) =>
+																source.id !== connection.targetNodeHandleId,
+														),
+													},
+												},
+											},
+										},
+									]);
+								}}
+							/>
+						</TabsContent>
+					)}
 					{selectedNode && (
 						<TabsContent value="Result">
 							<TabContentGenerateTextResult
@@ -650,6 +756,7 @@ function NodeDropdown({
 	);
 	const textNodes = nodes.filter((node) => node.content.type === "text");
 	const fileNodes = nodes.filter((node) => node.content.type === "files");
+	const gitHubNodes = nodes.filter((node) => node.content.type === "github");
 
 	const handleValueChange = (value: string) => {
 		if (!onValueChange) return;
@@ -667,12 +774,17 @@ function NodeDropdown({
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" sideOffset={6}>
 				<DropdownMenuRadioGroup onValueChange={handleValueChange}>
-					<DropdownMenuLabel>Text Generator</DropdownMenuLabel>
-					{textGenerationNodes.map((node) => (
-						<DropdownMenuRadioItem value={node.id} key={node.id}>
-							{node.name}
-						</DropdownMenuRadioItem>
-					))}
+					{textGenerationNodes.length > 0 && (
+						<>
+							<DropdownMenuLabel>Text Generator</DropdownMenuLabel>
+							{textGenerationNodes.map((node) => (
+								<DropdownMenuRadioItem value={node.id} key={node.id}>
+									{node.name}
+								</DropdownMenuRadioItem>
+							))}
+						</>
+					)}
+
 					{textNodes.length > 0 && (
 						<>
 							<DropdownMenuSeparator />
@@ -689,6 +801,17 @@ function NodeDropdown({
 							<DropdownMenuSeparator />
 							<DropdownMenuLabel>File</DropdownMenuLabel>
 							{fileNodes.map((node) => (
+								<DropdownMenuRadioItem value={node.id} key={node.id}>
+									{node.name}
+								</DropdownMenuRadioItem>
+							))}
+						</>
+					)}
+					{gitHubNodes.length > 0 && (
+						<>
+							<DropdownMenuSeparator />
+							<DropdownMenuLabel>GitHub</DropdownMenuLabel>
+							{gitHubNodes.map((node) => (
 								<DropdownMenuRadioItem value={node.id} key={node.id}>
 									{node.name}
 								</DropdownMenuRadioItem>
@@ -835,6 +958,9 @@ function TabsContentPrompt({
 	);
 	const connectableFileNodes = nodes.filter(
 		(node) => node.content.type === "files",
+	);
+	const connectableGitHubNodes = nodes.filter(
+		(node) => node.content.type === "github",
 	);
 	const requirementNode = useNode({
 		targetNodeHandleId: content.requirement?.id,
@@ -1040,6 +1166,7 @@ function TabsContentPrompt({
 								...connectableTextNodes,
 								...connectableTextGeneratorNodes,
 								...connectableFileNodes,
+								...connectableGitHubNodes,
 							]}
 							onValueChange={(node) => {
 								onSourceConnect?.(node);
@@ -1088,6 +1215,7 @@ function TabsContentPrompt({
 									...connectableTextNodes,
 									...connectableTextGeneratorNodes,
 									...connectableFileNodes,
+									...connectableGitHubNodes,
 								]}
 								onValueChange={(node) => {
 									onSourceConnect?.(node);
@@ -2093,6 +2221,159 @@ function FileListItem({
 					<TrashIcon className="w-[24px] h-[24px] stroke-current stroke-[1px] " />
 				</button>
 			</Tooltip>
+		</div>
+	);
+}
+
+function TabContentGitHub({
+	content,
+	onContentChange,
+	onSourceConnect,
+	onSourceRemove,
+}: {
+	content: GitHubActionContent;
+	onContentChange?: (content: GitHubActionContent) => void;
+	onSourceConnect?: (sourceNode: Node) => void;
+	onSourceRemove?: (sourceNode: Node) => void;
+}) {
+	const {
+		graph: { nodes, connections },
+	} = useGraph();
+	const connectableTextNodes = nodes.filter(
+		(node) => node.content.type === "text",
+	);
+	const connectableTextGenerationNodes = nodes.filter(
+		(node) => node.content.type === "textGeneration",
+	);
+	const connectableGitHubNodes = nodes.filter(
+		(node) => node.content.type === "github",
+	);
+	const sourceNodes = useMemo(
+		() =>
+			content.sources
+				.map((source) => {
+					const connection = connections.find(
+						(connection) => connection.targetNodeHandleId === source.id,
+					);
+					const node = nodes.find(
+						(node) => node.id === connection?.sourceNodeId,
+					);
+					return node;
+				})
+				.filter((node) => node !== undefined),
+		[connections, content.sources, nodes],
+	);
+	return (
+		<div className="relative z-10 flex flex-col gap-[2px] h-full">
+			<PropertiesPanelCollapsible
+				title="Sources"
+				glanceLabel={
+					sourceNodes.length < 1
+						? "No sources"
+						: `${sourceNodes.length} sources selected`
+				}
+			>
+				{sourceNodes.length < 1 ? (
+					<div className="flex items-center gap-[4px]">
+						<div className="py-[4px] text-[12px] flex-1">Not selected</div>
+						<NodeDropdown
+							triggerLabel="add"
+							nodes={[
+								...connectableTextNodes,
+								...connectableTextGenerationNodes,
+								...connectableGitHubNodes,
+							]}
+							onValueChange={(node) => {
+								onSourceConnect?.(node);
+							}}
+						/>
+					</div>
+				) : (
+					<div className="grid gap-2">
+						{sourceNodes.map((sourceNode) => (
+							<Block
+								key={sourceNode.id}
+								hoverCardContent={
+									<div className="flex justify-between space-x-4">
+										node type: {sourceNode.content.type}
+										{sourceNode.content.type === "text" && (
+											<div className="line-clamp-5 text-[14px]">
+												{sourceNode.content.text}
+											</div>
+										)}
+									</div>
+								}
+							>
+								<div className="flex items-center justify-between">
+									<div className="flex items-center gap-[8px]">
+										<p className="truncate text-[14px] font-rosart">
+											{sourceNode.name}
+										</p>
+									</div>
+									<button
+										type="button"
+										className="group-hover:block hidden p-[2px] hover:bg-black-70 rounded-[4px]"
+										onClick={() => {
+											onSourceRemove?.(sourceNode);
+										}}
+									>
+										<TrashIcon className="w-[16px] h-[16px] text-black-30" />
+									</button>
+								</div>
+							</Block>
+						))}
+
+						<div className="flex items-center gap-[4px]">
+							<NodeDropdown
+								triggerLabel="add"
+								nodes={[
+									...connectableTextNodes,
+									...connectableTextGenerationNodes,
+									...connectableGitHubNodes,
+								]}
+								onValueChange={(node) => {
+									onSourceConnect?.(node);
+								}}
+							/>
+						</div>
+					</div>
+				)}
+			</PropertiesPanelCollapsible>
+
+			<div className="border-t border-[hsla(222,21%,40%,1)]" />
+			<PropertiesPanelContentBox className="flex flex-col gap-[8px] flex-1">
+				<label htmlFor="text" className="font-rosart text-[16px] text-black-30">
+					Instruction
+				</label>
+				<textarea
+					name="text"
+					id="text"
+					className="w-full text-[14px] bg-[hsla(222,21%,40%,0.3)] rounded-[8px] text-white p-[14px] font-rosart outline-none resize-none flex-1 mb-[16px]"
+					defaultValue={content.instruction}
+					ref={(ref) => {
+						if (ref === null) {
+							return;
+						}
+
+						function updateInstruction() {
+							if (ref === null) {
+								return;
+							}
+							if (content.instruction !== ref.value) {
+								onContentChange?.({
+									...content,
+									instruction: ref.value,
+								});
+							}
+						}
+						ref.addEventListener("blur", updateInstruction);
+						return () => {
+							ref.removeEventListener("blur", updateInstruction);
+							updateInstruction();
+						};
+					}}
+				/>
+			</PropertiesPanelContentBox>
 		</div>
 	);
 }
