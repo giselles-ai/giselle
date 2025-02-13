@@ -33,6 +33,7 @@ import {
 	executeNode,
 	executeStep,
 	retryStep,
+	wrapAgentExecutionServerAction,
 } from "@giselles-ai/lib/execution";
 import {
 	type CreateGitHubIntegrationSettingResult,
@@ -174,14 +175,16 @@ export default async function Page({
 		artifacts: Artifact[],
 	) {
 		"use server";
-		return await executeStep({
-			agentId,
-			flowId,
-			executionId,
-			stepId,
-			artifacts,
-			stream: true,
-		});
+		return await wrapAgentExecutionServerAction(async () =>
+			executeStep({
+				agentId,
+				flowId,
+				executionId,
+				stepId,
+				artifacts,
+				stream: true,
+			}),
+		);
 	}
 	async function putExecutionAction(executionSnapshot: ExecutionSnapshot) {
 		"use server";
@@ -217,19 +220,23 @@ export default async function Page({
 		artifacts: Artifact[],
 	) {
 		"use server";
-		return await retryStep({
-			agentId,
-			retryExecutionSnapshotUrl,
-			executionId,
-			stepId,
-			artifacts,
-			stream: true,
-		});
+		return await wrapAgentExecutionServerAction(async () =>
+			retryStep({
+				agentId,
+				retryExecutionSnapshotUrl,
+				executionId,
+				stepId,
+				artifacts,
+				stream: true,
+			}),
+		);
 	}
 
 	async function executeNodeAction(executionId: ExecutionId, nodeId: NodeId) {
 		"use server";
-		return await executeNode({ agentId, executionId, nodeId, stream: true });
+		return await wrapAgentExecutionServerAction(async () =>
+			executeNode({ agentId, executionId, nodeId, stream: true }),
+		);
 	}
 
 	async function onFinishPerformExecutionAction(

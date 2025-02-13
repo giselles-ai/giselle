@@ -42,7 +42,11 @@ import type {
 	TextArtifactObject,
 	TextGenerateActionContent,
 } from "../types";
-import { AgentTimeNotAvailableError } from "./errors";
+import {
+	AgentTimeNotAvailableError,
+	FileNotReadyError,
+	UserDisplayableServerActionError,
+} from "./errors";
 import { textGenerationPrompt } from "./prompts";
 import { langfuseModel, toErrorWithMessage } from "./utils";
 
@@ -169,12 +173,10 @@ async function resolveSources(
 						throw new Error("File not found");
 					}
 					if (node.content.data.status === "uploading") {
-						/** @todo Let user know file is uploading*/
-						throw new Error("File is uploading");
+						throw new FileNotReadyError("File is uploading");
 					}
 					if (node.content.data.status === "processing") {
-						/** @todo Let user know file is processing*/
-						throw new Error("File is processing");
+						throw new FileNotReadyError("File is processing");
 					}
 					if (node.content.data.status === "failed") {
 						return null;
@@ -197,12 +199,10 @@ async function resolveSources(
 								throw new Error("File not found");
 							}
 							if (file.status === "uploading") {
-								/** @todo Let user know file is uploading*/
-								throw new Error("File is uploading");
+								throw new FileNotReadyError("File is uploading");
 							}
 							if (file.status === "processing") {
-								/** @todo Let user know file is processing*/
-								throw new Error("File is processing");
+								throw new FileNotReadyError("File is processing");
 							}
 							if (file.status === "failed") {
 								return null;
@@ -630,4 +630,36 @@ function applyOverrides(nodes: Node[], overrideData?: OverrideData[]) {
 				throw new Error(`Unsupported override type: ${node.content.type}`);
 		}
 	});
+}
+
+export type ExecuteAgentActionResult =
+	| {
+			status: "success";
+			result: ExecuteActionReturnValue;
+	  }
+	| {
+			status: "error";
+			message: string;
+	  };
+
+// In production builds, server-side exceptions are hidden from the client for security reasons.
+// However, we sometimes need to display specific error messages to users (e.g. "Please upgrade your plan").
+// This wrapper ensures that:
+// 1. UserDisplayableServerActionErrors are safely passed to the client with their messages intact
+// 2. Other errors are masked with a generic "Unknown error" message
+// 3. Successful results are properly formatted with the expected type
+export async function wrapAgentExecutionServerAction(
+	fn: () => Promise<ExecuteActionReturnValue>,
+): Promise<ExecuteAgentActionResult> {
+	"use server";
+
+	try {
+		const result = await fn();
+		return { status: "success", result };
+	} catch (error) {
+		if (error instanceof UserDisplayableServerActionError) {
+			return { status: "error", message: error.message };
+		}
+		throw new Error("Unknown error");
+	}
 }

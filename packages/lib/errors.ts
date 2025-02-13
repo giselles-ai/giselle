@@ -1,4 +1,11 @@
-export class AgentTimeNotAvailableError extends Error {
+export class UserDisplayableServerActionError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = this.constructor.name;
+	}
+}
+
+export class AgentTimeNotAvailableError extends UserDisplayableServerActionError {
 	constructor(
 		message = "Your agent time has been depleted. Please upgrade your plan to continue using this feature.",
 	) {
@@ -9,6 +16,13 @@ export class AgentTimeNotAvailableError extends Error {
 		if (Error.captureStackTrace) {
 			Error.captureStackTrace(this, AgentTimeNotAvailableError);
 		}
+	}
+}
+
+export class FileNotReadyError extends UserDisplayableServerActionError {
+	constructor(message: string) {
+		super(message);
+		this.name = this.constructor.name;
 	}
 }
 

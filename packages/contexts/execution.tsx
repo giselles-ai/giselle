@@ -8,6 +8,7 @@ import {
 	useContext,
 	useState,
 } from "react";
+import type { ExecuteAgentActionResult } from "../lib/execution";
 import { deriveFlows } from "../lib/graph";
 import {
 	type PerformFlowExecutionOptions,
@@ -21,7 +22,6 @@ import {
 } from "../lib/utils";
 import type {
 	Artifact,
-	ExecuteActionReturnValue,
 	Execution,
 	ExecutionId,
 	ExecutionSnapshot,
@@ -112,14 +112,20 @@ type ExecuteStepAction = (
 	executionId: ExecutionId,
 	stepId: StepId,
 	artifacts: Artifact[],
-) => Promise<ExecuteActionReturnValue>;
+) => Promise<ExecuteAgentActionResult>;
+
+type ExecuteNodeAction = (
+	executionId: ExecutionId,
+	nodeId: NodeId,
+) => Promise<ExecuteAgentActionResult>;
 
 type RetryStepAction = (
 	retryExecutionSnapshotUrl: string,
 	executionId: ExecutionId,
 	stepId: StepId,
 	artifacts: Artifact[],
-) => Promise<ExecuteActionReturnValue>;
+) => Promise<ExecuteAgentActionResult>;
+
 interface ExecutionProviderProps {
 	children: ReactNode;
 	executeStepAction: ExecuteStepAction;
@@ -127,10 +133,7 @@ interface ExecutionProviderProps {
 		executionSnapshot: ExecutionSnapshot,
 	) => Promise<{ blobUrl: string }>;
 	retryStepAction: RetryStepAction;
-	executeNodeAction: (
-		executionId: ExecutionId,
-		nodeId: NodeId,
-	) => Promise<ExecuteActionReturnValue>;
+	executeNodeAction: ExecuteNodeAction;
 	onFinishPerformExecutionAction: (
 		startedAt: number,
 		endedAt: number,
@@ -233,13 +236,18 @@ export function ExecutionProvider({
 					setExecution(execution);
 					initialExecution = execution;
 				},
-				executeStepFn: (stepId) =>
-					executeStepAction(
+				executeStepFn: async (stepId) => {
+					const result = await executeStepAction(
 						flowId,
 						executionId,
 						stepId,
 						initialExecution.artifacts,
-					),
+					);
+					if (result.status === "success") {
+						return result.result;
+					}
+					throw new Error(result.message);
+				},
 			});
 			setExecution(finalExecution);
 		},
@@ -276,13 +284,18 @@ export function ExecutionProvider({
 			};
 			const finalExecution = await performFlowExecution({
 				initialExecution,
-				executeStepFn: (stepId) =>
-					retryStepAction(
+				executeStepFn: async (stepId) => {
+					const result = await retryStepAction(
 						executionIndex.blobUrl,
 						initialExecution.id,
 						stepId,
 						initialExecution.artifacts,
-					),
+					);
+					if (result.status === "success") {
+						return result.result;
+					}
+					throw new Error(result.message);
+				},
 			});
 			setExecution(finalExecution);
 		},
@@ -319,7 +332,13 @@ export function ExecutionProvider({
 			};
 			await performFlowExecution({
 				initialExecution,
-				executeStepFn: (stepId) => executeNodeAction(executionId, node.id),
+				executeStepFn: async (stepId) => {
+					const result = await executeNodeAction(executionId, node.id);
+					if (result.status === "success") {
+						return result.result;
+					}
+					throw new Error(result.message);
+				},
 				onExecutionChange(execution) {
 					const targetArtifact = execution.artifacts.find(
 						(artifact) => artifact.creatorNodeId === node.id,
