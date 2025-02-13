@@ -6,7 +6,7 @@
 		"predev": "node prepare-font.js",
 		"dev": "SENTRY_SUPPRESS_TURBOPACK_WARNING=1 next dev --turbopack",
 		"dev-debug": "LOGLEVEL=debug pnpm run dev",
-		"prebuild": "node prepare-font.js",
+		"prebuild": "ls && ls vendor && ls vendor/fonts && node prepare-font.js",
 		"build": "next build",
 		"start": "next start",
 		"check": "biome check --write .",
