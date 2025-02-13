@@ -3,10 +3,12 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "turbo dev"
+		"dev": "turbo dev",
+		"build": "turbo build"
 	},
 	"packageManager": "pnpm@10.0.0",
 	"dependencies": {
-		"turbo": "2.0.9"
+		"turbo": "2.0.9",
+		"vercel": "^41.1.0"
 	}
 }

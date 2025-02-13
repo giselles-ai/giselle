@@ -14,6 +14,11 @@
 			"persistent": true,
 			"cache": false
 		},
+		"build": {
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", ".env*"],
+			"outputs": [".next/**", "!.next/cache/**"]
+		},
 		"dev": {
 			"dependsOn": ["^build"],
 			"cache": false,
