@@ -42,4 +42,5 @@ next-env.d.ts
 .env.sentry-build-plugin
 
 # prepare fonts programmatically
-app/fonts/
+app/fonts/*.ts
+app/fonts/*.woff2
