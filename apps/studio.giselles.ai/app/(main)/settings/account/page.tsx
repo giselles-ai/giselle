@@ -2,7 +2,6 @@ import { ClickableText } from "@/components/ui/clicable-text";
 import { Field } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { googleOauthFlag } from "@/flags";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Card } from "../components/card";
@@ -13,7 +12,6 @@ import { GoogleAuthentication } from "./google-authentication";
 
 export default async function AccountSettingPage() {
 	const { displayName, email } = await getAccountInfo();
-	const displayGoogleOauth = await googleOauthFlag();
 
 	return (
 		<div className="grid gap-[16px]">
@@ -50,15 +48,13 @@ export default async function AccountSettingPage() {
 				>
 					<GitHubAuthentication />
 				</Suspense>
-				{displayGoogleOauth && (
-					<Suspense
-						fallback={
-							<Skeleton className="rounded-md border border-black-70 w-full h-16" />
-						}
-					>
-						<GoogleAuthentication />
-					</Suspense>
-				)}
+				<Suspense
+					fallback={
+						<Skeleton className="rounded-md border border-black-70 w-full h-16" />
+					}
+				>
+					<GoogleAuthentication />
+				</Suspense>
 			</Card>
 			<Card
 				title="Reset Password"
