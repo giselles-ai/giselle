@@ -79,7 +79,9 @@ export function Header() {
 				<Link href="/">
 					<GiselleLogo className="fill-white w-[70px] h-auto mt-[6px]" />
 				</Link>
-				<div className="font-rosart text-[18px] text-black--30">Playground</div>
+				<div className="font-rosart text-[18px] text-black--30">
+					Playground!!!
+				</div>
 			</div>
 			<div className="flex items-center gap-[10px] flex-1 justify-center">
 				<ModeButton mode="editor">edit</ModeButton>
