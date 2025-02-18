@@ -12,7 +12,7 @@ export default function Home() {
 		router.push(`/workspaces/${workspace.id}`);
 	}, [router.push]);
 	return (
-		<button type="button" onClick={createWorkspace}>
+		<button type="button" onClick={createWorkspace} className="cursor-pointer">
 			Create workspace
 		</button>
 	);
