@@ -4,6 +4,7 @@ import type { FileCategory, LLMProvider } from "@giselle-sdk/data-type";
 import { type ReactNode, createContext, useContext, useState } from "react";
 import type {
 	AddFileNodeTool,
+	AddGitHubNodeTool,
 	AddTextGenerationNodeTool,
 	AddTextNodeTool,
 	MoveTool,
@@ -75,6 +76,13 @@ export function addTextGenerationNodeTool(provider?: LLMProvider) {
 		category: "edit",
 		provider,
 	} satisfies AddTextGenerationNodeTool;
+}
+
+export function addGitHubNodeTool(provider?: LLMProvider) {
+	return {
+		action: "addGitHubNode",
+		category: "edit",
+	} satisfies AddGitHubNodeTool;
 }
 
 export function addTextNodeTool() {

@@ -1,5 +1,6 @@
 "use client";
 
+import { OutputId } from "@giselle-sdk/data-type";
 import {
 	Background,
 	BackgroundVariant,
@@ -9,6 +10,7 @@ import {
 	useReactFlow,
 	useUpdateNodeInternals,
 } from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { useAnimationFrame, useSpring } from "motion/react";
@@ -30,8 +32,6 @@ import {
 	ToolbarContextProvider,
 	useToolbar,
 } from "./tool";
-import "@xyflow/react/dist/style.css";
-import { OutputId } from "@giselle-sdk/data-type";
 
 function NodeCanvas() {
 	const {
@@ -306,6 +306,26 @@ function NodeCanvas() {
 								throw new Error(`Unsupported provider: ${_exhaustiveCheck}`);
 							}
 						}
+						break;
+					case "addGitHubNode":
+						addNode(
+							{
+								type: "action",
+								content: {
+									type: "github",
+									prompt: "",
+								},
+								inputs: [],
+								outputs: [
+									{
+										id: OutputId.generate(),
+										label: "Output",
+									},
+								],
+							},
+							options,
+						);
+						break;
 				}
 				reset();
 			}}
