@@ -393,7 +393,7 @@ export function Editor() {
 		}
 	});
 	return (
-		<div className="flex-1">
+		<div className="flex-1 overflow-hidden font-sans">
 			<ReactFlowProvider>
 				<ToolbarContextProvider>
 					<MousePositionProvider>
@@ -421,7 +421,7 @@ export function Editor() {
 								defaultSize={0}
 							>
 								{selectedNodes.length === 1 && (
-									<div className="flex-1">
+									<div className="flex-1 overflow-hidden">
 										<PropertiesPanel />
 									</div>
 								)}

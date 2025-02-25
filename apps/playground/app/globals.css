@@ -46,6 +46,9 @@
 
 	--color-generation-node-1: hsl(219, 90%, 52%);
 	--color-generation-node-2: hsl(219, 98%, 23%);
+
+	--font-sans: var(--font-geist-sans);
+	--font-accent: var(--font-hubot-sans);
 }
 
 @layer components {

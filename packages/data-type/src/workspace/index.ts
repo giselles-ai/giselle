@@ -30,6 +30,7 @@ export type UIState = z.infer<typeof UIState>;
 
 export const Workspace = z.object({
 	id: WorkspaceId.schema,
+	name: z.string().optional(),
 	schemaVersion: WorkspaceSchemaVersion,
 	nodes: z.array(Node),
 	connections: z.array(Connection),

@@ -145,7 +145,7 @@ export function TextEditor({
 							: JSON.parse(value)
 				}
 				editorContainerProps={{
-					className: "flex-1",
+					className: "flex-1 overflow-hidden",
 				}}
 				onUpdate={(p) => {
 					onValueChange?.(JSON.stringify(p.editor.getJSON()));
@@ -154,7 +154,7 @@ export function TextEditor({
 				editorProps={{
 					attributes: {
 						class:
-							"prompt-editor border-[0.5px] border-white-900 rounded-[8px] p-[16px] h-full",
+							"prompt-editor border-[0.5px] border-white-900 rounded-[8px] p-[16px] h-full overflow-y-auto",
 					},
 				}}
 			/>

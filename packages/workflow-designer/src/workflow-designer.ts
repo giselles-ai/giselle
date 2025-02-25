@@ -46,6 +46,7 @@ export function WorkflowDesigner({
 	let connections = defaultValue.connections;
 	const ui = defaultValue.ui;
 	let editingWorkflows = defaultValue.editingWorkflows;
+	let name = defaultValue.name;
 	function updateWorkflowMap() {
 		editingWorkflows = Array.from(
 			buildWorkflowMap(
@@ -70,6 +71,7 @@ export function WorkflowDesigner({
 			id: defaultValue.id,
 			nodes,
 			connections,
+			name,
 			ui,
 			editingWorkflows,
 			schemaVersion: "20250221",
@@ -161,6 +163,11 @@ export function WorkflowDesigner({
 		const result = await callGetLLMProvidersApi({ api: getLLMProvidersApi });
 		return result.llmProviders;
 	}
+
+	function updateName(newName: string | undefined) {
+		name = newName;
+	}
+
 	return {
 		addNode,
 		addConnection,
@@ -174,5 +181,6 @@ export function WorkflowDesigner({
 		saveWorkspace,
 		removeFile,
 		getAvailableLLMProviders,
+		updateName,
 	};
 }

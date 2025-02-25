@@ -29,6 +29,7 @@ export interface WorkflowDesignerContextValue
 			| "deleteConnection"
 			| "removeFile"
 			| "setUiViewport"
+			| "updateName"
 		>,
 		ReturnType<typeof usePropertiesPanel>,
 		ReturnType<typeof useView> {
@@ -152,6 +153,14 @@ export function WorkflowDesignerProvider({
 		[setAndSaveWorkspace],
 	);
 
+	const updateName = useCallback<WorkflowDesigner["updateName"]>(
+		(args) => {
+			workflowDesignerRef.current?.updateName(args);
+			setAndSaveWorkspace();
+		},
+		[setAndSaveWorkspace],
+	);
+
 	const setUiNodeState = useCallback(
 		(
 			nodeId: string | NodeId,
@@ -267,6 +276,7 @@ export function WorkflowDesignerProvider({
 				llmProviders,
 				isLoading,
 				setUiViewport,
+				updateName,
 				...usePropertiesPanelHelper,
 				...useViewHelper,
 			}}
