@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { settingsV2Flag } from "@/flags";
 import { Suspense } from "react";
 import { AgentTimeCharge } from "./agent-time-charge";
 import { AgentUsage } from "./agent-usage";
@@ -7,14 +8,16 @@ import { DangerZone } from "./danger-zone";
 import { TeamMembers } from "./team-members";
 import { TeamName } from "./team-name";
 
-export default function TeamPage() {
+export default async function TeamPage() {
+	const settingsV2Mode = await settingsV2Flag();
+
 	return (
 		<div className="grid gap-[16px]">
 			<h3
 				className="text-[32px] text-black--30 font-rosart"
 				style={{ textShadow: "0px 0px 20px hsla(207, 100%, 48%, 1)" }}
 			>
-				Team
+				Team {settingsV2Mode ? "V2" : ""}
 			</h3>
 			<Suspense
 				fallback={
