@@ -55,7 +55,13 @@ export const playgroundV2Flag = flag<boolean>({
 export const googleOauthFlag = flag<boolean>({
 	key: "google-oauth",
 	async decide() {
-		return takeLocalEnv("GOOGLE_OAUTH_FLAG");
+		if (
+			process.env.GOOGLE_OAUTH_FLAG === undefined ||
+			process.env.GOOGLE_OAUTH_FLAG === "false"
+		) {
+			return false;
+		}
+		return true;
 	},
 	description: "Enable Google OAuth",
 	defaultValue: false,
