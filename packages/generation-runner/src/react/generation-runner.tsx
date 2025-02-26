@@ -130,44 +130,38 @@ function GitHubRunner({
 	if (!isGitHubNode(generation.context.actionNode)) {
 		throw new Error("Invalid generation type");
 	}
-	const content = generation.context.actionNode.content;
 
 	const {
 		requestGeneration,
-		updateGenerationStatusToRunning,
 		updateGenerationStatusToComplete,
 		updateGenerationStatusToFailure,
-		updateMessages,
 	} = useGenerationRunnerSystem();
-	useOnce(() => {
+
+	useOnce(async () => {
 		if (generation.status !== "queued") {
 			return;
 		}
-		requestGeneration(generation)
-			.then(async () => {
-				try {
-					await updateGenerationStatusToRunning(generation.id);
-					// FIXME: stub
-					const githubPrompt = content.prompt || "";
-					updateMessages(generation.id, [
-						{ role: "user", id: crypto.randomUUID(), content: githubPrompt },
-						{
-							role: "assistant",
-							id: crypto.randomUUID(),
-							content: "GitHub操作を実行しました",
-						},
-					]);
-					// FIXME: /stub
-					await updateGenerationStatusToComplete(generation.id);
-				} catch (error) {
-					console.error("GitHub generation failed:", error);
-					await updateGenerationStatusToFailure(generation.id);
-				}
-			})
-			.catch(async (error) => {
-				console.error("Failed to request GitHub generation:", error);
-				await updateGenerationStatusToFailure(generation.id);
+		try {
+			await requestGeneration(generation);
+			// FIXME
+			const response = await fetch("/api/giselle/github-operation", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					generationId: generation.id,
+				}),
 			});
+			if (!response.ok) {
+				throw new Error(`GitHub operation failed: ${response.statusText}`);
+			}
+			await updateGenerationStatusToComplete(generation.id);
+		} catch (error) {
+			console.error("GitHub operation failed:", error);
+			await updateGenerationStatusToFailure(generation.id);
+		}
 	});
+
 	return null;
 }
