@@ -13,6 +13,7 @@ import {
 import {
 	callAddGenerationApi,
 	callGetNodeGenerationsApi,
+	callGithubOperationApi,
 	callRequestGenerationApi,
 } from "@giselle-sdk/giselle-engine/client";
 import type { Message } from "ai";
@@ -69,6 +70,7 @@ interface GenerationRunnerSystemContextType {
 	) => Promise<FailedGeneration>;
 	updateMessages: (generationId: GenerationId, newMessages: Message[]) => void;
 	fetchNodeGenerations: FetchNodeGenerations;
+	callGithubOperation: (generationId: GenerationId) => Promise<void>;
 }
 
 export const GenerationRunnerSystemContext =
@@ -278,6 +280,12 @@ export function GenerationRunnerSystemProvider({
 		},
 		[],
 	);
+	const callGithubOperation = useCallback(
+		async (generationId: GenerationId) => {
+			await callGithubOperationApi({ generationId });
+		},
+		[],
+	);
 	return (
 		<GenerationRunnerSystemContext.Provider
 			value={{
@@ -292,6 +300,7 @@ export function GenerationRunnerSystemProvider({
 				updateMessages,
 				nodeGenerationMap,
 				fetchNodeGenerations,
+				callGithubOperation,
 			}}
 		>
 			{children}

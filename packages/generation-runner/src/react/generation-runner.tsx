@@ -135,6 +135,7 @@ function GitHubRunner({
 		requestGeneration,
 		updateGenerationStatusToComplete,
 		updateGenerationStatusToFailure,
+		callGithubOperation,
 	} = useGenerationRunnerSystem();
 
 	useOnce(async () => {
@@ -143,19 +144,7 @@ function GitHubRunner({
 		}
 		try {
 			await requestGeneration(generation);
-			// FIXME
-			const response = await fetch("/api/giselle/github-operation", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					generationId: generation.id,
-				}),
-			});
-			if (!response.ok) {
-				throw new Error(`GitHub operation failed: ${response.statusText}`);
-			}
+			await callGithubOperation(generation.id);
 			await updateGenerationStatusToComplete(generation.id);
 		} catch (error) {
 			console.error("GitHub operation failed:", error);
