@@ -34,13 +34,13 @@ export default function AppNode(nodeProps: NodeProps<AppNode>) {
 							type="target"
 							position={Position.Left}
 							id="b"
-							className="!absolute !w-[10px] !h-[10px] !top-[50%] !-translate-y-[50%] !-left-4 z-[1] !cursor-default !bg-rosepine-text"
+							className="absolute! w-[10px]! h-[10px]! top-[50%]! -translate-y-[50%]! -left-4! z-1 cursor-default! bg-rosepine-text!"
 						/>
 						<Handle
 							type="source"
 							position={Position.Right}
 							id="a"
-							className="!absolute !w-[10px] !h-[10px] !top-[50%] !-translate-y-[50%] !left-[initial] !-right-4 z-[1] !cursor-default !bg-rosepine-text"
+							className="absolute! w-[10px]! h-[10px]! top-[50%]! -translate-y-[50%]! left-[initial]! -right-4! z-1 cursor-default! bg-rosepine-text!"
 						/>
 					</div>
 				)}
@@ -57,7 +57,7 @@ export default function AppNode(nodeProps: NodeProps<AppNode>) {
 							type="source"
 							position={Position.Right}
 							id="a"
-							className="!absolute !w-[10px] !h-[10px] !top-[50%] !-translate-y-[50%] !left-[initial] !-right-4 z-[1] !cursor-default !bg-rosepine-text"
+							className="absolute! w-[10px]! h-[10px]! top-[50%]! -translate-y-[50%]! left-[initial]! -right-4! z-1 cursor-default! bg-rosepine-text!"
 						/>
 					</div>
 				)}
@@ -83,7 +83,7 @@ export default function AppNode(nodeProps: NodeProps<AppNode>) {
 							type="target"
 							position={Position.Left}
 							id="b"
-							className="!absolute !w-[10px] !h-[10px] !top-[50%] !-translate-y-[50%] !-left-4 z-[1] !cursor-default !bg-rosepine-text"
+							className="absolute! w-[10px]! h-[10px]! top-[50%]! -translate-y-[50%]! -left-4! z-1 cursor-default! bg-rosepine-text!"
 						/>
 					</div>
 				)}
@@ -102,7 +102,7 @@ export default function AppNode(nodeProps: NodeProps<AppNode>) {
 							type="target"
 							position={Position.Left}
 							id="inst"
-							className="!absolute !w-[10px] !h-[10px] !top-[50%] !-translate-y-[50%] !-left-4 z-[1] !cursor-default !bg-rosepine-gold"
+							className="absolute! w-[10px]! h-[10px]! top-[50%]! -translate-y-[50%]! -left-4! z-1 cursor-default! bg-rosepine-gold!"
 						/>
 					</div>
 
@@ -118,7 +118,7 @@ export default function AppNode(nodeProps: NodeProps<AppNode>) {
 							type="source"
 							position={Position.Right}
 							id="tgr"
-							className="!absolute !w-[10px] !h-[10px] !top-[50%] !-translate-y-[50%] !-right-4 z-[1] !cursor-default !bg-rosepine-gold"
+							className="absolute! w-[10px]! h-[10px]! top-[50%]! -translate-y-[50%]! -right-4! z-1 cursor-default! bg-rosepine-gold!"
 						/>
 					</div>
 				</div>
@@ -138,7 +138,7 @@ export default function AppNode(nodeProps: NodeProps<AppNode>) {
 							type="source"
 							position={Position.Right}
 							id="text"
-							className="!absolute !w-[10px] !h-[10px] !top-[50%] !-translate-y-[50%] !-right-4 z-[1] !cursor-default !bg-rosepine-gold"
+							className="absolute! w-[10px]! h-[10px]! top-[50%]! -translate-y-[50%]! -right-4! z-1 cursor-default! bg-rosepine-gold!"
 						/>
 					</div>
 				</div>
@@ -157,7 +157,7 @@ export default function AppNode(nodeProps: NodeProps<AppNode>) {
 							type="target"
 							position={Position.Left}
 							id="val"
-							className="!absolute !w-[10px] !h-[10px] !top-[50%] !-translate-y-[50%] !-left-4 z-[1] !cursor-default !bg-rosepine-gold"
+							className="absolute! w-[10px]! h-[10px]! top-[50%]! -translate-y-[50%]! -left-4! z-1 cursor-default! bg-rosepine-gold!"
 						/>
 					</div>
 				</div>

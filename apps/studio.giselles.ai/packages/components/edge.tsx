@@ -40,9 +40,9 @@ export function Edge({
 				id={id}
 				path={edgePath}
 				className={clsx(
-					"!stroke-[2px] bg-white drop-shadow-[0px_0px_16px_0px_hsla(187,_79%,_54%,_0.5)]",
-					"group-data-[source-node-type=variable]:group-data-[target-node-type=action]:!stroke-[url(#instructionToAction)]",
-					"group-data-[source-node-type=action]:group-data-[target-node-type=action]:!stroke-[url(#actionToAction)]",
+					"stroke-[2px]! bg-white drop-shadow-[0px_0px_16px_0px_hsla(187,_79%,_54%,_0.5)]",
+					"group-data-[target-node-type=action]:group-data-[source-node-type=variable]:stroke-[url(#instructionToAction)]!",
+					"group-data-[target-node-type=action]:group-data-[source-node-type=action]:stroke-[url(#actionToAction)]!",
 				)}
 			/>
 			<defs>

@@ -198,7 +198,7 @@ function Inner() {
 								selectionMode={SelectionMode.Partial}
 								colorMode="dark"
 							>
-								<Background className="!bg-rosepine-base/20" />
+								<Background className="bg-rosepine-base/20!" />
 								<Panel position={"bottom-center"}>
 									<div className="border border-rosepine-highlightMed rounded-md bg-rosepine-surface flex divide-x divide-rosepine-highlightMed items-stretch overflow-hidden">
 										<div className="grid divide-y h-full">

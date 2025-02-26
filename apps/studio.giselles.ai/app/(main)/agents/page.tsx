@@ -39,7 +39,7 @@ async function AgentList() {
 				{dbAgents.map((agent) => (
 					<div key={agent.id} className="relative">
 						<Link href={`/p/${agent.id}`}>
-							<div className="bg-gradient-to-br from-[hsla(187,79%,54%,0.2)] to-[hsla(207,100%,9%,0.2)] p-[18px] relative rounded-[8px]">
+							<div className="bg-linear-to-br from-[hsla(187,79%,54%,0.2)] to-[hsla(207,100%,9%,0.2)] p-[18px] relative rounded-[8px]">
 								<div className="divide-y divide-black-70">
 									<div className="h-[60px]">
 										<p className="font-rosart text-black-30 text-[18px]">
@@ -54,7 +54,7 @@ async function AgentList() {
 										</DataList>
 									</div>
 								</div>
-								<div className="absolute z-0 inset-0 border rounded-[8px] mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent from-[hsla(192,73%,84%,0.5)] to-[hsla(192,60%,33%,0.4)]" />
+								<div className="absolute z-0 inset-0 border rounded-[8px] mask-fill bg-linear-to-br bg-origin-border bg-clip-boarder border-transparent from-[hsla(192,73%,84%,0.5)] to-[hsla(192,60%,33%,0.4)]" />
 							</div>
 						</Link>
 						<DuplicateAgentButton agentId={agent.id} agentName={agent.name} />

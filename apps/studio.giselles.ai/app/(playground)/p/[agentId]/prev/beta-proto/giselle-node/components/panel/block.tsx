@@ -31,7 +31,7 @@ export function Block(props: BlockProps) {
 					<Trash2Icon size={16} className="stroke-black-30" />
 				</button>
 			)}
-			<div className="absolute z-0 rounded-[4px] inset-0 border mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent to-[hsla(233,4%,37%,1)] from-[hsla(233,62%,22%,1)]" />
+			<div className="absolute z-0 rounded-[4px] inset-0 border mask-fill bg-linear-to-br bg-origin-border bg-clip-boarder border-transparent to-[hsla(233,4%,37%,1)] from-[hsla(233,62%,22%,1)]" />
 		</div>
 	);
 }

@@ -64,7 +64,7 @@ function SelectTrigger({
 	return (
 		<SelectPrimitive.Trigger
 			className={clsx(
-				"flex h-10 w-full items-center justify-between rounded-md bg-[hsla(207,43%,91%,0.2)] px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+				"flex h-10 w-full items-center justify-between rounded-md bg-[hsla(207,43%,91%,0.2)] px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
 				className,
 			)}
 			{...props}
@@ -159,7 +159,7 @@ function SelectItem({
 	return (
 		<SelectPrimitive.Item
 			className={clsx(
-				"relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+				"relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50",
 			)}
 			{...props}
 		>
@@ -425,10 +425,10 @@ export function ContentPanelSectionHeader({
 }: { title: string; action?: ReactNode }) {
 	return (
 		<div className="flex items-center">
-			<span className="flex-shrink text-black-30 text-[16px] font-rosart font-[500]">
+			<span className="shrink text-black-30 text-[16px] font-rosart font-[500]">
 				{title}
 			</span>
-			<div className="ml-[16px] flex-grow border-t border-black-80" />
+			<div className="ml-[16px] grow border-t border-black-80" />
 			{action}
 		</div>
 	);
@@ -468,14 +468,14 @@ export function Overview() {
 						}
 						ref.focus();
 						ref.select();
-						ref.addEventListener("blur", update);
+						ref.addEventListener("blur-sm", update);
 						ref.addEventListener("keydown", (e) => {
 							if (e.key === "Enter") {
 								update();
 							}
 						});
 						return () => {
-							ref.removeEventListener("blur", update);
+							ref.removeEventListener("blur-sm", update);
 							ref.removeEventListener("keydown", update);
 						};
 					}}

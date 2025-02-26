@@ -69,7 +69,7 @@ export function GitHubAppInstallButton({ installationUrl, installed }: Props) {
 		<Button
 			variant="link"
 			onClick={handleInstall}
-			className="flex items-center gap-2 w-full justify-center px-6 py-3 text-sm font-medium flex-shrink text-black-30"
+			className="flex items-center gap-2 w-full justify-center px-6 py-3 text-sm font-medium shrink text-black-30"
 		>
 			{installed
 				? "Configure Giselle's GitHub App"

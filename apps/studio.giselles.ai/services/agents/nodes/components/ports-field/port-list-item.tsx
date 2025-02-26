@@ -59,12 +59,12 @@ export const PortListItem: FC<PortListItemProps> = ({ port }) => {
 			}}
 			data-state={edit ? "edit" : "show"}
 		>
-			<AlignLeftIcon className="w-4 h-4 flex-shrink-0" />
+			<AlignLeftIcon className="w-4 h-4 shrink-0" />
 			{edit ? (
 				<form onSubmit={handleSubmit}>
 					<input
 						type="text"
-						className="h-full w-full border border-blue-500 bg-transparent rounded-none focus-visible:outline-none px-1"
+						className="h-full w-full border border-blue-500 bg-transparent rounded-none focus-visible:outline-hidden px-1"
 						name="name"
 						ref={ref}
 						onBlur={handleBlur}
