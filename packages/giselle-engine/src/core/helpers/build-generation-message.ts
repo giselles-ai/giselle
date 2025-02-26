@@ -1,6 +1,6 @@
 import {
-	type ActionNode,
 	type FileData,
+	type GenerationNode,
 	type Node,
 	NodeId,
 	OutputId,
@@ -16,7 +16,7 @@ export interface FileIndex {
 }
 
 export async function buildMessageObject(
-	node: ActionNode,
+	node: GenerationNode,
 	contextNodes: Node[],
 	fileResolver: (file: FileData) => Promise<DataContent>,
 	textGenerationResolver: (nodeId: NodeId) => Promise<string | undefined>,
