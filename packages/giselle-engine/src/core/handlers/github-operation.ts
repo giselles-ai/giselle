@@ -7,6 +7,8 @@ import {
 	isGitHubNode,
 } from "@giselle-sdk/data-type";
 import { type CoreMessage, appendResponseMessages } from "ai";
+import { Agent as GitHubAgent } from "github-agent";
+import * as process from "node:process";
 import type { z } from "zod";
 import {
 	buildGenerationMessageForGithubOperation,
@@ -237,13 +239,23 @@ async function executeGitHubOperation(messages: CoreMessage[]) {
 		);
 	}
 	const prompt = promptText.text;
+	const githubToken = process.env.GITHUB_TOKEN;
+	if (githubToken === undefined) {
+		throw new Error("GITHUB_TOKEN is not set");
+	}
 
-	// Stub implementation
+	// TODO: Use our GitHub App
+	const agent = new GitHubAgent(githubToken);
+	const result = await agent.execute(prompt);
+	if (result.type === "success") {
+		return {
+			result: result.md,
+			details: result.evaluation,
+		};
+	}
+
 	return {
-		result: `GitHub operation completed: ${prompt}`,
-		details: `
-- Status: Success
-- Execution time: ${new Date().toISOString()}
-		`,
+		result: result.error,
+		details: result.evaluation,
 	};
 }

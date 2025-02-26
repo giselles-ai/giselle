@@ -50,6 +50,7 @@
 		"@ai-sdk/google": "catalog:",
 		"@ai-sdk/openai": "catalog:",
 		"@giselle-sdk/text-editor": "workspace:^",
+		"github-agent": "workspace:^",
 		"ai": "catalog:",
 		"next": "catalog:",
 		"openai": "catalog:",
