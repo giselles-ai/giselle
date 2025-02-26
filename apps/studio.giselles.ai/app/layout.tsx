@@ -4,7 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Suspense } from "react";
-import { hubotSans, rosart } from "./fonts";
+import { geist, hubotSans, rosart } from "./fonts";
 import { PostHogPageView } from "./posthog-page-view";
 import { PHProvider } from "./providers";
 
@@ -41,7 +41,9 @@ export default function RootLayout({
 		<html lang="en" suppressHydrationWarning>
 			<GoogleTagManager gtmId={process.env.GTM_ID ?? ""} />
 			<PHProvider>
-				<body className={`${rosart.variable} ${hubotSans.variable} font-sans`}>
+				<body
+					className={`${rosart.variable} ${hubotSans.variable} ${geist.variable} font-sans`}
+				>
 					<ThemeProvider
 						attribute="class"
 						defaultTheme="dark"
