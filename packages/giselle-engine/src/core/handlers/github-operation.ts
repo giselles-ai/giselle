@@ -1,14 +1,18 @@
 import {
 	type CompletedGeneration,
 	type FailedGeneration,
-	type GitHubContent,
+	type FileData,
+	type NodeId,
 	type RunningGeneration,
 	isGitHubNode,
 } from "@giselle-sdk/data-type";
-import { appendResponseMessages } from "ai";
+import { type CoreMessage, appendResponseMessages } from "ai";
 import type { z } from "zod";
 import {
+	buildGenerationMessageForGithubOperation,
+	filePath,
 	getGeneration,
+	getNodeGenerationIndexes,
 	setGeneration,
 	setNodeGenerationIndex,
 } from "../helpers";
@@ -66,11 +70,65 @@ export async function githubOperationHandler({
 
 	try {
 		const githubContent = runningGeneration.context.actionNode.content;
+		if (githubContent.type !== "github") {
+			throw new Error("GitHub content is not of type 'github'");
+		}
+
+		async function fileResolver(file: FileData) {
+			const blob = await context.storage.getItemRaw(
+				filePath({
+					...runningGeneration.context.origin,
+					fileId: file.id,
+					fileName: file.name,
+				}),
+			);
+			if (blob === undefined) {
+				return undefined;
+			}
+			return blob;
+		}
+
+		async function generationContentResolver(nodeId: NodeId) {
+			const nodeGenerationIndexes = await getNodeGenerationIndexes({
+				origin: runningGeneration.context.origin,
+				storage: context.storage,
+				nodeId,
+			});
+			if (
+				nodeGenerationIndexes === undefined ||
+				nodeGenerationIndexes.length === 0
+			) {
+				return undefined;
+			}
+			const generation = await getGeneration({
+				...input,
+				storage: context.storage,
+				generationId:
+					nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
+			});
+			if (generation?.status !== "completed") {
+				return undefined;
+			}
+			const assistantMessages = generation.messages.filter(
+				(m) => m.role === "assistant",
+			);
+			if (assistantMessages.length === 0) {
+				return undefined;
+			}
+			return assistantMessages[assistantMessages.length - 1].content;
+		}
+
+		const messages = await buildGenerationMessageForGithubOperation(
+			runningGeneration.context.actionNode,
+			runningGeneration.context.sourceNodes,
+			fileResolver,
+			generationContentResolver,
+		);
 
 		// Execute GitHub operation
-		const { result, details } = await executeGitHubOperation(githubContent);
+		const { result, details } = await executeGitHubOperation(messages);
 
-		const messages = appendResponseMessages({
+		const responseMessages = appendResponseMessages({
 			messages: [
 				{
 					id: "id",
@@ -92,7 +150,7 @@ export async function githubOperationHandler({
 			...runningGeneration,
 			status: "completed",
 			completedAt: Date.now(),
-			messages,
+			messages: responseMessages,
 		} satisfies CompletedGeneration;
 
 		await Promise.all([
@@ -163,13 +221,27 @@ export async function githubOperationHandler({
 /**
  * Execute GitHub operation and return the result
  */
-async function executeGitHubOperation(githubContent: GitHubContent) {
+async function executeGitHubOperation(messages: CoreMessage[]) {
+	if (messages.length === 0) {
+		throw new Error("Invalid input: messages must be a non-empty array.");
+	}
+	if (!Array.isArray(messages[0].content)) {
+		throw new Error("Invalid input: messages[0].content must be an array.");
+	}
+	const promptText = messages[0].content.find(
+		(it) => it.type === "text" && it.text !== undefined,
+	);
+	if (promptText === undefined || promptText.type !== "text") {
+		throw new Error(
+			"Invalid input: messages[0].content must contain a text message.",
+		);
+	}
+	const prompt = promptText.text;
+
 	// Stub implementation
 	return {
-		result: `GitHub operation completed: ${githubContent.prompt || "operation"}`,
+		result: `GitHub operation completed: ${prompt}`,
 		details: `
-- Repository: ${githubContent.type === "github" ? "GitHub" : "Not specified"}
-- Operation type: ${githubContent.prompt ? "Execute prompt" : "Not specified"}
 - Status: Success
 - Execution time: ${new Date().toISOString()}
 		`,

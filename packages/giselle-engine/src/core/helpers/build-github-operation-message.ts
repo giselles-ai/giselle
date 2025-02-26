@@ -1,49 +1,21 @@
 import {
 	type FileData,
-	type GenerationNode,
+	type GitHubNode,
 	type Node,
 	NodeId,
 	OutputId,
-	type TextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
 import type { CoreMessage, DataContent, FilePart } from "ai";
 
-export interface FileIndex {
-	nodeId: NodeId;
-	start: number;
-	end: number;
-}
-
-export async function buildMessageObject(
-	node: GenerationNode,
+// NOTE: almost duplicate of buildGenerationMessageForTextGeneration
+// - difference -> this function converts json content to text
+export async function buildGenerationMessageForGithubOperation(
+	node: GitHubNode,
 	contextNodes: Node[],
 	fileResolver: (file: FileData) => Promise<DataContent>,
 	textGenerationResolver: (nodeId: NodeId) => Promise<string | undefined>,
 ): Promise<CoreMessage[]> {
-	switch (node.content.type) {
-		case "textGeneration": {
-			return await buildGenerationMessageForTextGeneration(
-				node,
-				contextNodes,
-				fileResolver,
-				textGenerationResolver,
-			);
-		}
-		default: {
-			const _exhaustiveCheck: never = node.content.type;
-			throw new Error(`Unhandled content type: ${_exhaustiveCheck}`);
-		}
-	}
-}
-
-async function buildGenerationMessageForTextGeneration(
-	node: TextGenerationNode,
-	contextNodes: Node[],
-	fileResolver: (file: FileData) => Promise<DataContent>,
-	textGenerationResolver: (nodeId: NodeId) => Promise<string | undefined>,
-): Promise<CoreMessage[]> {
-	const llmProvider = node.content.llm.provider;
 	const prompt = node.content.prompt;
 	if (prompt === undefined) {
 		throw new Error("Prompt cannot be empty");
@@ -71,10 +43,12 @@ async function buildGenerationMessageForTextGeneration(
 		const replaceKeyword = `{{${sourceKeyword.nodeId}:${sourceKeyword.outputId}}}`;
 		switch (contextNode.content.type) {
 			case "text": {
-				userMessage = userMessage.replace(
-					replaceKeyword,
-					contextNode.content.text,
-				);
+				let content = contextNode.content.text;
+				if (isJsonContent(content)) {
+					content = jsonContentToText(JSON.parse(content));
+				}
+
+				userMessage = userMessage.replace(replaceKeyword, content);
 				break;
 			}
 			case "github":
@@ -115,8 +89,34 @@ async function buildGenerationMessageForTextGeneration(
 						attachedFiles.push(...fileContents);
 						break;
 					}
-					case "text":
-						throw new Error("Not implemented");
+					case "text": {
+						const fileContents = await Promise.all(
+							contextNode.content.files.map(async (file) => {
+								if (file.status !== "uploaded") {
+									return null;
+								}
+								const data = await fileResolver(file);
+								return {
+									type: "file",
+									data,
+									mimeType: "text/plain",
+								} satisfies FilePart;
+							}),
+						).then((results) => results.filter((result) => result !== null));
+						if (fileContents.length > 1) {
+							userMessage = userMessage.replace(
+								replaceKeyword,
+								`${getOrdinal(attachedFiles.length + 1)} ~ ${getOrdinal(attachedFiles.length + fileContents.length)} attached files`,
+							);
+						} else {
+							userMessage = userMessage.replace(
+								replaceKeyword,
+								`${getOrdinal(attachedFiles.length + 1)} attached file`,
+							);
+						}
+						attachedFiles.push(...fileContents);
+						break;
+					}
 					default: {
 						const _exhaustiveCheck: never = contextNode.content.category;
 						throw new Error(`Unhandled category: ${_exhaustiveCheck}`);
@@ -131,40 +131,18 @@ async function buildGenerationMessageForTextGeneration(
 		}
 	}
 
-	switch (llmProvider) {
-		case "openai": {
-			return [
+	return [
+		{
+			role: "user",
+			content: [
+				...attachedFiles,
 				{
-					role: "user",
-					content: [
-						{
-							type: "text",
-							text: userMessage,
-						},
-					],
+					type: "text",
+					text: userMessage,
 				},
-			];
-		}
-		case "anthropic":
-		case "google": {
-			return [
-				{
-					role: "user",
-					content: [
-						...attachedFiles,
-						{
-							type: "text",
-							text: userMessage,
-						},
-					],
-				},
-			];
-		}
-		default: {
-			const _exhaustiveCheck: never = llmProvider;
-			throw new Error(`Unhandled provider: ${_exhaustiveCheck}`);
-		}
-	}
+			],
+		},
+	];
 }
 
 function getOrdinal(n: number): string {
@@ -178,3 +156,5 @@ function getOrdinal(n: number): string {
 	const suffix = suffixes[rules.select(n)];
 	return `${n}${suffix}`;
 }
+
+export default buildGenerationMessageForGithubOperation;
