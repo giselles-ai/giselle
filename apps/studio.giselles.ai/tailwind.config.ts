@@ -77,6 +77,7 @@ const config = {
 				},
 				white: {
 					DEFAULT: "hsl(var(--white))",
+					400: "hsl(var(--white_400))",
 				},
 				green: {
 					DEFAULT: "hsl(var(--green))",
