@@ -2,8 +2,8 @@
 
 
 ## Summary
-* 865 MIT
-* 100 Apache 2.0
+* 856 MIT
+* 99 Apache 2.0
 * 56 ISC
 * 32 New BSD
 * 16 Simplified BSD
@@ -4619,17 +4619,6 @@ Python-2.0 manually approved
 
 
 
-<a name="camelcase-css"></a>
-### camelcase-css v2.0.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="caniuse-lite"></a>
 ### caniuse-lite v1.0.30001695
 #### 
@@ -5499,17 +5488,6 @@ CC-BY-4.0 permitted
 
 
 
-<a name="didyoumean"></a>
-### didyoumean v1.2.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
-
-
-
 <a name="diff"></a>
 ### diff v4.0.2
 #### 
@@ -5534,17 +5512,6 @@ CC-BY-4.0 permitted
 
 <a name="dir-glob"></a>
 ### dir-glob v3.0.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="dlv"></a>
-### dlv v1.1.3
 #### 
 
 ##### Paths
@@ -7238,7 +7205,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="jiti"></a>
-### jiti v1.21.7
+### jiti v2.4.2
 #### 
 
 ##### Paths
@@ -8590,17 +8557,6 @@ MIT-0 permitted
 
 
 
-<a name="object-hash"></a>
-### object-hash v3.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="object-inspect"></a>
 ### object-inspect v1.13.3
 #### 
@@ -9030,17 +8986,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="pify"></a>
-### pify v2.3.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="pino"></a>
 ### pino v9.5.0
 #### 
@@ -9129,41 +9074,8 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="postcss-import"></a>
-### postcss-import v15.1.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="postcss-js"></a>
-### postcss-js v4.0.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="postcss-load-config"></a>
-### postcss-load-config v4.0.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="postcss-nested"></a>
-### postcss-nested v6.2.0
+### postcss-load-config v6.0.1
 #### 
 
 ##### Paths
@@ -9175,17 +9087,6 @@ BlueOak-1.0.0 permitted
 
 <a name="postcss-selector-parser"></a>
 ### postcss-selector-parser v6.0.10
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="postcss-value-parser"></a>
-### postcss-value-parser v4.2.0
 #### 
 
 ##### Paths
@@ -9758,17 +9659,6 @@ BlueOak-1.0.0 permitted
 
 <a name="react-style-singleton"></a>
 ### react-style-singleton v2.2.3
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="read-cache"></a>
-### read-cache v1.0.0
 #### 
 
 ##### Paths
@@ -10725,7 +10615,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="tailwindcss"></a>
-### tailwindcss v3.4.17
+### tailwindcss v4.0.3
 #### 
 
 ##### Paths
