@@ -5,6 +5,7 @@ import {
 	type RunningGeneration,
 	isGitHubNode,
 } from "@giselle-sdk/data-type";
+import { appendResponseMessages } from "ai";
 import type { z } from "zod";
 import {
 	getGeneration,
@@ -69,32 +70,29 @@ export async function githubOperationHandler({
 		// Execute GitHub operation
 		const { result, details } = await executeGitHubOperation(githubContent);
 
-		// Create user message
-		const userMessage = {
-			id: crypto.randomUUID(),
-			role: "user" as const,
-			content: githubContent.prompt || "Execute GitHub operation",
-		};
-
-		// Create assistant message
-		const assistantMessage = {
-			id: crypto.randomUUID(),
-			role: "assistant" as const,
-			content: `${result}${details ? `\n\n## Operation Details\n${details}` : ""}`,
-			parts: [
+		const messages = appendResponseMessages({
+			messages: [
 				{
-					type: "text" as const,
-					text: `${result}${details ? `\n\n## Operation Details\n${details}` : ""}`,
+					id: "id",
+					role: "user",
+					content: "",
 				},
 			],
-		};
+			responseMessages: [
+				{
+					id: "id",
+					role: "assistant",
+					content: `${result}${details ? `\n\n## Operation Details\n${details}` : ""}`,
+				},
+			],
+		});
 
 		// Create completed generation
 		const completedGeneration = {
 			...runningGeneration,
 			status: "completed",
 			completedAt: Date.now(),
-			messages: [userMessage, assistantMessage],
+			messages,
 		} satisfies CompletedGeneration;
 
 		await Promise.all([
@@ -166,9 +164,6 @@ export async function githubOperationHandler({
  * Execute GitHub operation and return the result
  */
 async function executeGitHubOperation(githubContent: GitHubContent) {
-	// TODO: Implement actual GitHub API integration
-	// Examples: create issues, create PRs, fetch commits, etc.
-
 	// Stub implementation
 	return {
 		result: `GitHub operation completed: ${githubContent.prompt || "operation"}`,
