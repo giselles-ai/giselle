@@ -27,6 +27,7 @@ const config = {
 			fontFamily: {
 				rosart: ["var(--font-rosart)", "Times New Roman", "serif"],
 				avenir: ["Avenir", "Arial", "sans-serif"],
+				hubotSans: ["var(--font-hubot-sans)", "Arial", "sans-serif"],
 			},
 			colors: {
 				border: "hsl(var(--border))",
