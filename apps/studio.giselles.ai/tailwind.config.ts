@@ -73,6 +73,7 @@ const config = {
 					900: "hsl(var(--warning_900))",
 				},
 				black: {
+					850: "hsl(var(--black_850))",
 					800: "hsl(var(--black_800))",
 					400: "hsl(var(--black_400))",
 					100: "hsl(var(--black_100))",
