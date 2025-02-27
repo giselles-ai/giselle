@@ -8,19 +8,20 @@
 * 32 New BSD
 * 16 Simplified BSD
 * 3 MIT OR Apache-2.0
-* 3 Mozilla Public License 2.0
 * 3 BlueOak-1.0.0
-* 2 The Unlicense
-* 2 LGPL-3.0-or-later
+* 3 Mozilla Public License 2.0
 * 2 MIT-0
-* 1 Python-2.0
-* 1 CC-BY-4.0
-* 1 (AFL-2.1 OR BSD-3-Clause)
-* 1 (MIT AND Zlib)
-* 1 (BSD-2-Clause OR MIT OR Apache-2.0)
-* 1 BSD Zero Clause License
-* 1 (MIT OR CC0-1.0)
+* 2 LGPL-3.0-or-later
+* 2 The Unlicense
 * 1 BSD
+* 1 (MIT OR CC0-1.0)
+* 1 BSD Zero Clause License
+* 1 (BSD-2-Clause OR MIT OR Apache-2.0)
+* 1 (MIT AND Zlib)
+* 1 (AFL-2.1 OR BSD-3-Clause)
+* 1 SIL OPEN FONT LICENSE
+* 1 CC-BY-4.0
+* 1 Python-2.0
 
 
 
@@ -6232,6 +6233,17 @@ CC-BY-4.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
+<a name="geist"></a>
+### geist v1.3.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+SIL OPEN FONT LICENSE permitted
 
 
 

@@ -4,16 +4,19 @@ import {
 	useGenerationController,
 	useWorkflowDesigner,
 } from "giselle-sdk/react";
+import { CommandIcon, CornerDownLeft } from "lucide-react";
 import { Tabs } from "radix-ui";
 import { useCallback, useMemo } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { AnthropicIcon, GoogleIcon, OpenaiIcon } from "../../../icons";
+import { Button } from "../../../ui/button";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
 } from "../ui";
 import { GenerationPanel } from "./generation-panel";
+import { KeyboardShortcuts } from "./keyboard-shortcuts";
 import {
 	AnthropicModelPanel,
 	GoogleModelPanel,
@@ -30,10 +33,23 @@ export function TextGenerationNodePropertiesPanel({
 }) {
 	const { data, updateNodeDataContent, updateNodeData, setUiNodeState } =
 		useWorkflowDesigner();
-	const { startGeneration } = useGenerationController();
+	const { startGeneration, isGenerating } = useGenerationController();
 	const { all: connectedSources } = useConnectedSources(node);
 
 	const uiState = useMemo(() => data.ui.nodeState[node.id], [data, node.id]);
+
+	const generateText = useCallback(() => {
+		startGeneration({
+			origin: {
+				type: "workspace",
+				id: data.id,
+			},
+			actionNode: node,
+			sourceNodes: connectedSources.map(
+				(connectedSource) => connectedSource.node,
+			),
+		});
+	}, [connectedSources, data.id, node, startGeneration]);
 
 	return (
 		<PropertiesPanelRoot>
@@ -41,10 +57,10 @@ export function TextGenerationNodePropertiesPanel({
 				icon={
 					<>
 						{node.content.llm.provider === "openai" && (
-							<OpenaiIcon className="size-[20px] text-black" />
+							<OpenaiIcon className="size-[20px] text-black-900" />
 						)}
 						{node.content.llm.provider === "anthropic" && (
-							<AnthropicIcon className="size-[20px] text-black" />
+							<AnthropicIcon className="size-[20px] text-black-900" />
 						)}
 						{node.content.llm.provider === "google" && (
 							<GoogleIcon className="size-[20px]" />
@@ -58,24 +74,20 @@ export function TextGenerationNodePropertiesPanel({
 					updateNodeData(node, { name });
 				}}
 				action={
-					<button
+					<Button
+						loading={isGenerating}
 						type="button"
-						className="flex gap-[4px] justify-center items-center bg-blue rounded-[8px] px-[15px] py-[8px] text-white text-[14px] font-[700] cursor-pointer"
 						onClick={() => {
-							startGeneration({
-								origin: {
-									type: "workspace",
-									id: data.id,
-								},
-								actionNode: node,
-								sourceNodes: connectedSources.map(
-									(connectedSource) => connectedSource.node,
-								),
-							});
+							generateText();
 						}}
+						className="w-[150px]"
 					>
-						Generate
-					</button>
+						<span>{isGenerating ? "Generating..." : "Generate"}</span>
+						<kbd className="flex items-center text-[12px]">
+							<CommandIcon className="size-[12px]" />
+							<CornerDownLeft className="size-[12px]" />
+						</kbd>
+					</Button>
 				}
 			/>
 
@@ -94,9 +106,9 @@ export function TextGenerationNodePropertiesPanel({
 						>
 							<Tabs.List
 								className={clsx(
-									"flex gap-[16px] text-[14px]",
+									"flex gap-[16px] text-[14px] font-accent",
 									"**:p-[4px] **:border-b **:cursor-pointer",
-									"**:data-[state=active]:text-white **:data-[state=active]:border-white",
+									"**:data-[state=active]:text-white-900 **:data-[state=active]:border-white-900",
 									"**:data-[state=inactive]:text-black-400 **:data-[state=inactive]:border-transparent",
 								)}
 							>
@@ -104,10 +116,16 @@ export function TextGenerationNodePropertiesPanel({
 								<Tabs.Trigger value="model">Model</Tabs.Trigger>
 								<Tabs.Trigger value="sources">Sources</Tabs.Trigger>
 							</Tabs.List>
-							<Tabs.Content value="prompt" className="flex-1 flex flex-col">
+							<Tabs.Content
+								value="prompt"
+								className="flex-1 flex flex-col overflow-hidden"
+							>
 								<PromptPanel node={node} />
 							</Tabs.Content>
-							<Tabs.Content value="model" className="flex-1 flex flex-col">
+							<Tabs.Content
+								value="model"
+								className="flex-1 flex flex-col overflow-y-auto"
+							>
 								{node.content.llm.provider === "openai" && (
 									<OpenAIModelPanel
 										openai={node.content.llm}
@@ -142,7 +160,10 @@ export function TextGenerationNodePropertiesPanel({
 									/>
 								)}
 							</Tabs.Content>
-							<Tabs.Content value="sources" className="flex-1 flex flex-col">
+							<Tabs.Content
+								value="sources"
+								className="flex-1 flex flex-col overflow-y-auto"
+							>
 								<SourcesPanel node={node} />
 							</Tabs.Content>
 						</Tabs.Root>
@@ -160,6 +181,11 @@ export function TextGenerationNodePropertiesPanel({
 					</PropertiesPanelContent>
 				</Panel>
 			</PanelGroup>
+			<KeyboardShortcuts
+				generate={() => {
+					generateText();
+				}}
+			/>
 		</PropertiesPanelRoot>
 	);
 }

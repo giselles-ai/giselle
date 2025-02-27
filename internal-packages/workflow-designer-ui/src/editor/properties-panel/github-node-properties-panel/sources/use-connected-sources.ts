@@ -11,14 +11,14 @@ export function useConnectedSources(node: GitHubNode) {
 	const { data } = useWorkflowDesigner();
 	return useMemo(() => {
 		const connectionsToThisNode = data.connections.filter(
-			(connection) => connection.inputNodeId === node.id,
+			(connection) => connection.inputNode.id === node.id,
 		);
 		const connectedGeneratedSources: ConnectedSource<ActionNode>[] = [];
 		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
 
 		for (const connection of connectionsToThisNode) {
 			const sourceNode = data.nodes.find(
-				(node) => node.id === connection.outputNodeId,
+				(node) => node.id === connection.outputNode.id,
 			);
 			if (sourceNode === undefined) {
 				continue;

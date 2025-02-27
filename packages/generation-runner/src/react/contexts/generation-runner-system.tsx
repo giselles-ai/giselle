@@ -55,6 +55,7 @@ type FetchNodeGenerations = (
 interface GenerationRunnerSystemContextType {
 	generateTextApi: string;
 	startGeneration: StartGeneration;
+	isGenerating: boolean;
 	getGeneration: (generationId: GenerationId) => Generation | undefined;
 	generations: Generation[];
 	nodeGenerationMap: Map<NodeId, Generation[]>;
@@ -84,6 +85,7 @@ export function GenerationRunnerSystemProvider({
 	children,
 	generateTextApi = "/api/giselle/text-generation",
 }: GenerationRunnerSystemProviderProps) {
+	const [isGenerating, setIsGenerating] = useState(false);
 	const [generations, setGenerations] = useState<Generation[]>([]);
 	const generationListener = useRef<Record<GenerationId, Generation>>({});
 
@@ -153,6 +155,7 @@ export function GenerationRunnerSystemProvider({
 				createdAt: Date.now(),
 			} satisfies CreatedGeneration;
 			setGenerations((prev) => [...prev, generation]);
+			setIsGenerating(true);
 			generationListener.current[generation.id] = generation;
 			options?.onGenerationCreated?.(generation);
 			const result = await callAddGenerationApi({
@@ -170,6 +173,7 @@ export function GenerationRunnerSystemProvider({
 				onStart: options?.onGenerationStarted,
 				onComplete: options?.onGenerationCompleted,
 			});
+			setIsGenerating(false);
 		},
 		[waitForGeneration],
 	);
@@ -291,6 +295,7 @@ export function GenerationRunnerSystemProvider({
 			value={{
 				generateTextApi,
 				startGeneration,
+				isGenerating,
 				getGeneration,
 				requestGeneration,
 				generations,

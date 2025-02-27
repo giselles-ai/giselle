@@ -43,10 +43,10 @@ export function Toolbar() {
 				<ToggleGroup.Root
 					type="single"
 					className={clsx(
-						"flex items-center px-[16px] z-10 h-full gap-[12px] text-blue-20",
-						"**:data-tool:hover:bg-white/10 **:data-tool:p-[4px] **:data-tool:rounded-[4px]",
-						"**:data-tool:data-[state=on]:bg-blue **:data-tool:focus:outline-none",
-						"**:data-icon:w-[24px] **:data-icon:h-[24px] **:data-icon:text-black-30 ",
+						"flex items-center px-[16px] z-10 h-full gap-[12px] text-white-950",
+						"**:data-tool:hover:bg-white-850/10 **:data-tool:p-[4px] **:data-tool:rounded-[4px]",
+						"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
+						"**:data-icon:w-[24px] **:data-icon:h-[24px] **:data-icon:text-white-950 ",
 					)}
 					value={selectedTool?.action}
 					onValueChange={(value) => {
@@ -90,7 +90,7 @@ export function Toolbar() {
 									<Popover.Content
 										className={clsx(
 											"relative w-[160px] rounded-[8px] px-[8px] py-[8px]",
-											"bg-[hsla(255,_40%,_98%,_0.04)] text-white",
+											"bg-[hsla(255,_40%,_98%,_0.04)] text-white-900",
 											"backdrop-blur-[4px]",
 										)}
 										sideOffset={42}
@@ -102,8 +102,8 @@ export function Toolbar() {
 												className={clsx(
 													"flex flex-col gap-[8px]",
 													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-white/10",
-													"**:data-tool:data-[state=on]:bg-blue **:data-tool:focus:outline-none",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-white-900/10",
+													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												value={selectedTool.fileCategory}
 												onValueChange={(fileCategory) => {
@@ -137,7 +137,7 @@ export function Toolbar() {
 									<Popover.Content
 										className={clsx(
 											"relative w-[260px] rounded-[8px] px-[8px] py-[8px]",
-											"bg-[hsla(255,_40%,_98%,_0.04)] text-white",
+											"bg-[hsla(255,_40%,_98%,_0.04)] text-white-900",
 											"backdrop-blur-[4px]",
 										)}
 										sideOffset={42}
@@ -149,8 +149,8 @@ export function Toolbar() {
 												className={clsx(
 													"flex flex-col gap-[8px]",
 													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-white/10",
-													"**:data-tool:data-[state=on]:bg-blue **:data-tool:focus:outline-none",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-white-900/10",
+													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												value={selectedTool.provider}
 												onValueChange={(provider) => {

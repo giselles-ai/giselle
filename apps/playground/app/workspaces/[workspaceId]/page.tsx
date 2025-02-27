@@ -14,7 +14,7 @@ export default function Page() {
 	};
 
 	return (
-		<div className="flex flex-col h-screen bg-black">
+		<div className="flex flex-col h-screen bg-black-900">
 			<Header action={<RunButton onClick={handleRunButtonClick} />} />
 			<Editor />
 		</div>

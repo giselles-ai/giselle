@@ -42,3 +42,9 @@ export const NodeUIState = z.object({
 	tab: z.string().optional(),
 });
 export type NodeUIState = z.infer<typeof NodeUIState>;
+
+export const NodeReferenceBase = z.object({
+	id: NodeId.schema,
+	type: z.string(),
+});
+export type NodeReferenceBase = z.infer<typeof NodeReferenceBase>;

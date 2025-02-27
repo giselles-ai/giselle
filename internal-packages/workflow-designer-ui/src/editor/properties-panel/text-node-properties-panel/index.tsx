@@ -14,7 +14,7 @@ export function TextNodePropertiesPanel({ node }: { node: TextNode }) {
 	return (
 		<PropertiesPanelRoot>
 			<PropertiesPanelHeader
-				icon={<PromptIcon className="size-[20px] text-black" />}
+				icon={<PromptIcon className="size-[20px] text-black-900" />}
 				name={node.name}
 				fallbackName="Plain text"
 				description={"Plain text"}

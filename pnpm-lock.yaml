@@ -36,6 +36,9 @@ catalogs:
     '@tailwindcss/typography':
       specifier: 0.5.16
       version: 0.5.16
+    '@tiptap/core':
+      specifier: 2.11.5
+      version: 2.11.5
     '@tiptap/extension-bold':
       specifier: 2.11.5
       version: 2.11.5
@@ -221,6 +224,9 @@ importers:
       '@xyflow/react':
         specifier: 'catalog:'
         version: 12.4.1(@types/react@19.0.4)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      geist:
+        specifier: 1.3.1
+        version: 1.3.1(next@15.1.6(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       giselle-sdk:
         specifier: workspace:^
         version: link:../../packages/giselle-sdk
@@ -849,6 +855,12 @@ importers:
 
   packages/text-editor:
     dependencies:
+      '@giselle-sdk/data-type':
+        specifier: workspace:^
+        version: link:../data-type
+      '@tiptap/core':
+        specifier: 'catalog:'
+        version: 2.11.5(@tiptap/pm@2.11.5)
       '@tiptap/extension-bold':
         specifier: 'catalog:'
         version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
@@ -5801,6 +5813,11 @@ packages:
   gcp-metadata@6.1.0:
     resolution: {integrity: sha512-Jh/AIwwgaxan+7ZUUmRLCjtchyDiqh4KjBJ5tW3plBZb5iL/BPcso8A5DlzeD9qlw0duCamnNdpFjxwaT0KyKg==}
     engines: {node: '>=14'}
+
+  geist@1.3.1:
+    resolution: {integrity: sha512-Q4gC1pBVPN+D579pBaz0TRRnGA4p9UK6elDY/xizXdFk/g4EKR5g0I+4p/Kj6gM0SajDBZ/0FvDV9ey9ud7BWw==}
+    peerDependencies:
+      next: '>=13.2.0'
 
   gensync@1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
@@ -13504,6 +13521,10 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
+
+  geist@1.3.1(next@15.1.6(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)):
+    dependencies:
+      next: 15.1.6(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
 
   gensync@1.0.0-beta.2: {}
 

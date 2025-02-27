@@ -44,8 +44,8 @@ export function NodeDropdown({
 				<DropdownMenuTrigger
 					className={clsx(
 						"flex items-center cursor-pointer p-[10px] rounded-[8px]",
-						"border border-transparent hover:border-white-20",
-						"text-[12px] font-[700] text-white-20",
+						"border border-transparent hover:border-white-800",
+						"text-[12px] font-[700] text-white-800",
 						"transition-colors",
 					)}
 				>

@@ -13,7 +13,7 @@ export function Debug() {
 	}, [i]);
 
 	return (
-		<div className="w-[200px] text-white font-mono">
+		<div className="w-[200px] text-white-900 font-mono">
 			x: {viewport.x}
 			y: {viewport.y}
 		</div>

@@ -23,7 +23,7 @@ export function PropertiesPanel() {
 		[data],
 	);
 	return (
-		<div className={clsx("h-full text-white")}>
+		<div className={clsx("h-full text-white-900")}>
 			<>
 				{isTextGenerationNode(selectedNodes[0]) && (
 					<TextGenerationNodePropertiesPanel

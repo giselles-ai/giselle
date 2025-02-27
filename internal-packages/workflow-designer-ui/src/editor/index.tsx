@@ -22,6 +22,8 @@ import {
 	PanelResizeHandle,
 } from "react-resizable-panels";
 import bg from "../images/bg.png";
+import { edgeTypes } from "./connector";
+import { type ConnectorType, GradientDef } from "./connector/component";
 import { KeyboardShortcuts } from "./keyboard-shortcuts";
 import { type GiselleWorkflowDesignerNode, nodeTypes } from "./node";
 import { PropertiesPanel } from "./properties-panel";
@@ -37,12 +39,16 @@ function NodeCanvas() {
 	const {
 		data,
 		setUiNodeState,
+		setUiViewport,
 		deleteNode,
 		deleteConnection,
 		updateNodeData,
 		addNode,
 	} = useWorkflowDesigner();
-	const reactFlowInstance = useReactFlow();
+	const reactFlowInstance = useReactFlow<
+		GiselleWorkflowDesignerNode,
+		ConnectorType
+	>();
 	const updateNodeInternals = useUpdateNodeInternals();
 	const { selectedTool, reset } = useToolbar();
 	useEffect(() => {
@@ -59,7 +65,7 @@ function NodeCanvas() {
 						position: { x: nodeState.position.x, y: nodeState.position.y },
 						selected: nodeState.selected,
 						data: { nodeData: nodeData },
-					};
+					} as GiselleWorkflowDesignerNode;
 				})
 				.filter((result) => result !== null),
 		);
@@ -69,35 +75,40 @@ function NodeCanvas() {
 		reactFlowInstance.setEdges(
 			data.connections.map((connection) => ({
 				id: connection.id,
-				source: connection.outputNodeId,
+				type: "giselleConnector",
+				source: connection.outputNode.id,
 				sourceHandle: connection.outputId,
-				target: connection.inputNodeId,
+				target: connection.inputNode.id,
 				targetHandle: connection.inputId,
+				data: {
+					connection,
+				},
 			})),
 		);
 	}, [data, reactFlowInstance.setEdges]);
 	return (
-		<ReactFlow<GiselleWorkflowDesignerNode>
+		<ReactFlow<GiselleWorkflowDesignerNode, ConnectorType>
 			className="giselle-workflow-editor"
 			colorMode="dark"
 			defaultNodes={[]}
 			defaultEdges={[]}
 			nodeTypes={nodeTypes}
+			edgeTypes={edgeTypes}
+			defaultViewport={data.ui.viewport}
+			onMoveEnd={(_, viewport) => {
+				setUiViewport(viewport);
+			}}
 			onNodesChange={(nodesChange) => {
 				nodesChange.map((nodeChange) => {
 					switch (nodeChange.type) {
-						case "select": {
-							setUiNodeState(nodeChange.id, { selected: nodeChange.selected });
-							break;
-						}
 						case "remove": {
 							for (const connection of data.connections) {
-								if (connection.outputNodeId !== nodeChange.id) {
+								if (connection.outputNode.id !== nodeChange.id) {
 									continue;
 								}
 								deleteConnection(connection.id);
 								const connectedNode = data.nodes.find(
-									(node) => node.id === connection.inputNodeId,
+									(node) => node.id === connection.inputNode.id,
 								);
 								if (connectedNode === undefined) {
 									continue;
@@ -118,10 +129,17 @@ function NodeCanvas() {
 					}
 				});
 			}}
-			onNodeClick={(event, node) => {
+			onNodeDoubleClick={(event, nodeDoubleClicked) => {
+				for (const node of data.nodes) {
+					if (node.id === nodeDoubleClicked.id) {
+						setUiNodeState(node.id, { selected: true });
+					} else {
+						setUiNodeState(node.id, { selected: false });
+					}
+				}
 				const viewport = reactFlowInstance.getViewport();
 				const screenPosition = reactFlowInstance.flowToScreenPosition(
-					node.position,
+					nodeDoubleClicked.position,
 				);
 				reactFlowInstance.setViewport(
 					{
@@ -139,7 +157,9 @@ function NodeCanvas() {
 				});
 			}}
 			onPaneClick={(event) => {
-				event.preventDefault();
+				for (const node of data.nodes) {
+					setUiNodeState(node.id, { selected: false });
+				}
 				const position = reactFlowInstance.screenToFlowPosition({
 					x: event.clientX,
 					y: event.clientY,
@@ -331,7 +351,7 @@ function NodeCanvas() {
 			}}
 		>
 			<Background
-				className="!bg-black-20"
+				className="!bg-black-800"
 				lineWidth={0}
 				variant={BackgroundVariant.Lines}
 				style={{
@@ -408,16 +428,16 @@ export function Editor() {
 		}
 	});
 	return (
-		<div className="flex-1">
+		<div className="flex-1 overflow-hidden font-sans">
 			<ReactFlowProvider>
 				<ToolbarContextProvider>
 					<MousePositionProvider>
-						<PanelGroup direction="horizontal" className="bg-black h-full flex">
-							<Panel
-								className="flex-1 rounded-[8px] overflow-hidden px-[16px] pb-[16px]"
-								defaultSize={100}
-							>
-								<div className="flex h-full">
+						<PanelGroup
+							direction="horizontal"
+							className="bg-black-900 h-full flex"
+						>
+							<Panel className="flex-1 px-[16px] pb-[16px]" defaultSize={100}>
+								<div className="flex h-full rounded-[16px] overflow-hidden">
 									{/* <Debug /> */}
 									<NodeCanvas />
 								</div>
@@ -436,7 +456,7 @@ export function Editor() {
 								defaultSize={0}
 							>
 								{selectedNodes.length === 1 && (
-									<div className="flex-1">
+									<div className="flex-1 overflow-hidden">
 										<PropertiesPanel />
 									</div>
 								)}
@@ -445,6 +465,7 @@ export function Editor() {
 						<KeyboardShortcuts />
 					</MousePositionProvider>
 				</ToolbarContextProvider>
+				<GradientDef />
 			</ReactFlowProvider>
 		</div>
 	);

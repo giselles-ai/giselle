@@ -4,68 +4,67 @@ import {
 	useGenerationController,
 	useWorkflowDesigner,
 } from "giselle-sdk/react";
+import { CommandIcon, CornerDownLeft } from "lucide-react";
 import { Tabs } from "radix-ui";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { GitHubIcon } from "../../../icons";
+import { Button } from "../../../ui/button";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
 } from "../ui";
 import { GenerationPanel } from "./generation-panel";
+import { KeyboardShortcuts } from "./keyboard-shortcuts";
 import { PromptPanel } from "./prompt-panel";
 import { SourcesPanel } from "./sources-panel";
+import { useConnectedSources } from "./sources/use-connected-sources";
 
 export function GitHubNodePropertiesPanel({ node }: { node: GitHubNode }) {
-	const { updateNodeData, data, setUiNodeState } = useWorkflowDesigner();
-	const { startGeneration } = useGenerationController();
+	const { data, updateNodeData, setUiNodeState } = useWorkflowDesigner();
+	const { startGeneration, isGenerating } = useGenerationController();
+	const { all: connectedSources } = useConnectedSources(node);
+
 	const uiState = useMemo(() => data.ui.nodeState[node.id], [data, node.id]);
 
-	// 接続されたソースを取得
-	const connectedSources = useMemo(() => {
-		const sources = [];
-		const connectionsToThisNode = data.connections.filter(
-			(connection) => connection.inputNodeId === node.id,
-		);
-
-		for (const connection of connectionsToThisNode) {
-			const sourceNode = data.nodes.find(
-				(node) => node.id === connection.outputNodeId,
-			);
-			if (sourceNode) {
-				sources.push(sourceNode);
-			}
-		}
-
-		return sources;
-	}, [data.connections, data.nodes, node.id]);
+	const githubOperation = useCallback(() => {
+		startGeneration({
+			origin: {
+				type: "workspace",
+				id: data.id,
+			},
+			actionNode: node,
+			sourceNodes: connectedSources.map(
+				(connectedSource) => connectedSource.node,
+			),
+		});
+	}, [connectedSources, data.id, node, startGeneration]);
 
 	return (
 		<PropertiesPanelRoot>
 			<PropertiesPanelHeader
 				icon={<GitHubIcon className="size-[20px] text-black" />}
 				name={node.name}
+				fallbackName="GitHub"
 				onChangeName={(name) => {
 					updateNodeData(node, { name });
 				}}
 				action={
-					<button
+					<Button
+						loading={isGenerating}
 						type="button"
-						className="flex gap-[4px] justify-center items-center bg-blue rounded-[8px] px-[15px] py-[8px] text-white text-[14px] font-[700] cursor-pointer"
 						onClick={() => {
-							startGeneration({
-								origin: {
-									type: "workspace",
-									id: data.id,
-								},
-								actionNode: node,
-								sourceNodes: connectedSources,
-							});
+							githubOperation();
 						}}
+						className="w-[150px]"
 					>
-						Generate
-					</button>
+						<span>{isGenerating ? "Generating..." : "Generate"}</span>
+						<kbd className="flex items-center text-[12px]">
+							<CommandIcon className="size-[12px]" />
+							<CornerDownLeft className="size-[12px]" />
+						</kbd>
+					</Button>
 				}
 			/>
 
@@ -120,6 +119,11 @@ export function GitHubNodePropertiesPanel({ node }: { node: GitHubNode }) {
 					</PropertiesPanelContent>
 				</Panel>
 			</PanelGroup>
+			<KeyboardShortcuts
+				generate={() => {
+					githubOperation();
+				}}
+			/>
 		</PropertiesPanelRoot>
 	);
 }

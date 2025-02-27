@@ -3,7 +3,10 @@ import {
 	type GitHubNode,
 	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
-import { TextEditor } from "@giselle-sdk/text-editor/react";
+import {
+	TextEditor,
+	createSourceExtensionJSONContent,
+} from "@giselle-sdk/text-editor/react-internal";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { BracesIcon } from "lucide-react";
@@ -32,6 +35,7 @@ export function PromptPanel({ node }: { node: GitHubNode }) {
 					},
 				});
 			}}
+			nodes={connectedSources.map((source) => source.node)}
 			tools={(editor) => (
 				<DropdownMenu.Root>
 					<Toolbar.Button
@@ -62,9 +66,11 @@ export function PromptPanel({ node }: { node: GitHubNode }) {
 								)}
 							/>
 							<div className="relative flex flex-col gap-[8px]">
-								<div className="flex px-[16px] text-white">Insert Sources</div>
+								<div className="flex px-[16px] text-white-900">
+									Insert Sources
+								</div>
 								<div className="flex flex-col py-[4px]">
-									<div className="border-t border-black-30/20" />
+									<div className="border-t border-black-300/20" />
 								</div>
 
 								<DropdownMenu.RadioGroup
@@ -83,13 +89,21 @@ export function PromptPanel({ node }: { node: GitHubNode }) {
 										if (connectedSource === undefined) {
 											return;
 										}
+										const embedNode = {
+											outputId: connectedSource.connection.outputId,
+											node: connectedSource.connection.outputNode,
+										};
 										editor
 											.chain()
 											.focus()
 											.insertContentAt(
 												editor.state.selection.$anchor.pos,
-												`{{${connectedSource.connection.outputNodeId}:${connectedSource.connection.outputId}}}`,
+												createSourceExtensionJSONContent({
+													node: connectedSource.connection.outputNode,
+													outputId: embedNode.outputId,
+												}),
 											)
+											.insertContent(" ")
 											.run();
 									}}
 								>
@@ -97,7 +111,7 @@ export function PromptPanel({ node }: { node: GitHubNode }) {
 										{connectedSources.map((source) => (
 											<DropdownMenu.RadioItem
 												key={source.connection.id}
-												className="p-[8px] rounded-[8px] text-white hover:bg-blue/50 transition-colors cursor-pointer text-[12px] outline-none select-none"
+												className="p-[8px] rounded-[8px] text-white-900 hover:bg-primary-900/50 transition-colors cursor-pointer text-[12px] outline-none select-none"
 												value={source.connection.id}
 											>
 												{source.node.name ?? getDefaultNodeName(source)}/{" "}

@@ -3,21 +3,30 @@ import type { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
 
 export function Button({
 	className,
+	children,
+	loading = false,
 	...props
 }: DetailedHTMLProps<
 	ButtonHTMLAttributes<HTMLButtonElement>,
 	HTMLButtonElement
->) {
+> & { loading?: boolean }) {
 	return (
 		<button
+			data-loading={loading}
+			disabled={loading}
 			className={clsx(
-				"px-[16px] h-[36px] rounded-full flex items-center gap-[2px] font-rosart text-black-30",
+				"p-[1px] h-[34px]",
+				"rounded-[8px] text-white-900",
+				"text-[14px] cursor-pointer font-accent",
+				"bg-linear-[var(--button-gradient-angle)] data-[loading=true]:animate-rotate-button-gradient-angle from-[hsl(0,_2%,_89%)]/60 via-[hsl(0,_2%,_89%)] to-[hsl(0,_0%,_36%)] from-30% via-50% to-100%",
+				"data-[loading=true]:cursor-wait",
 				className,
 			)}
-			style={{
-				boxShadow: "0px 0px 3px 0px hsla(0, 0%, 100%, 0.4) inset",
-			}}
 			{...props}
-		/>
+		>
+			<div className="px-[16px] bg-primary-900 rounded-[8px] flex items-center gap-[4px] h-full text-[14px] font-[700] justify-center">
+				{children}
+			</div>
+		</button>
 	);
 }

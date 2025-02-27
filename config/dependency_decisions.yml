@@ -95,3 +95,9 @@
     :versions:
     - 2.0.1
     :when: 2025-02-17 09:01:39.703928000 Z
+- - :permit
+  - SIL OPEN FONT LICENSE
+  - :who: OSPO @masutaka
+    :why: Compatible with Apache-2.0 license. See https://openfontlicense.org/open-font-license-official-text/
+    :versions: []
+    :when: 2025-02-27 06:29:24.670306000 Z

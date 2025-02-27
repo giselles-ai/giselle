@@ -16,7 +16,7 @@ export const TextGenerationIcon: FC<SVGProps<SVGSVGElement>> = (props) => (
 		</g>
 		<defs>
 			<clipPath id="clip0_5636_1058">
-				<rect width="16" height="16" fill="white" />
+				<rect width="16" height="16" fill="white-900" />
 			</clipPath>
 		</defs>
 	</svg>

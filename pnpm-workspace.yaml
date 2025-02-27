@@ -37,6 +37,7 @@ catalog:
   radix-ui: 1.1.2
   motion: 12.3.1
   "@tiptap/pm": 2.11.5
+  "@tiptap/core": 2.11.5
   "@tiptap/react": 2.11.5
   "@tiptap/extension-document": 2.11.5
   "@tiptap/extension-paragraph": 2.11.5

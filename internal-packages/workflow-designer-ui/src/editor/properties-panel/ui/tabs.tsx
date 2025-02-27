@@ -14,7 +14,7 @@ export function TabsContent({
 	return (
 		<Content
 			className={clsx(
-				"overflow-y-auto overflow-x-hidden z-10 h-full text-black-30",
+				"overflow-y-auto overflow-x-hidden z-10 h-full text-black-300",
 				className,
 			)}
 			{...props}
@@ -52,7 +52,7 @@ export function TabsList({ children, ...props }: ComponentProps<typeof List>) {
 				onClick={() => setOpenPropertiesPanel(false)}
 				className="p-[8px]"
 			>
-				<PanelCloseIcon className="w-[18px] h-[18px] fill-black-70 hover:fill-black-30" />
+				<PanelCloseIcon className="w-[18px] h-[18px] fill-black-70 hover:fill-black-300" />
 			</button>
 			<div className="flex items-center gap-[16px]">{children}</div>
 		</List>
@@ -67,7 +67,7 @@ export const TabsTrigger: FC<ComponentProps<typeof Trigger>> = ({
 }) => (
 	<Trigger
 		ref={ref}
-		className="font-rosart text-[16px] text-black-70 hover:text-black-30/70 data-[state=active]:text-black-30 py-[6px] px-[2px]"
+		className="font-rosart text-[16px] text-black-70 hover:text-black-300/70 data-[state=active]:text-black-300 py-[6px] px-[2px]"
 		{...props}
 	/>
 );

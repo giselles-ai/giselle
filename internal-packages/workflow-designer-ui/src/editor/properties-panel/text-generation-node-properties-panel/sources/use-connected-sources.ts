@@ -7,13 +7,13 @@ export function useConnectedSources(node: TextGenerationNode) {
 	const { data } = useWorkflowDesigner();
 	return useMemo(() => {
 		const connectionsToThisNode = data.connections.filter(
-			(connection) => connection.inputNodeId === node.id,
+			(connection) => connection.inputNode.id === node.id,
 		);
 		const connectedGeneratedSources: ConnectedSource<TextGenerationNode>[] = [];
 		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
 		for (const connection of connectionsToThisNode) {
 			const node = data.nodes.find(
-				(node) => node.id === connection.outputNodeId,
+				(node) => node.id === connection.outputNode.id,
 			);
 			if (node === undefined) {
 				continue;

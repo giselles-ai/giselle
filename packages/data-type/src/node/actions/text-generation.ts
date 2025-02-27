@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Anthropic, Google, LLM, OpenAI } from "../../llm";
-import { Input, NodeBase, Output } from "../base";
+import { Input, NodeBase, NodeReferenceBase, Output } from "../base";
 
 export const OpenAIContent = z.object({
 	type: z.literal("textGeneration"),
@@ -37,3 +37,10 @@ export function isTextGenerationNode(
 	const result = TextGenerationNode.safeParse(args);
 	return result.success;
 }
+
+export const TextGenerationContentReference = z.object({
+	type: TextGenerationContent.shape.type,
+});
+export type TextGenerationContentReference = z.infer<
+	typeof TextGenerationContentReference
+>;

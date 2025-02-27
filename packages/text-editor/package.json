@@ -23,7 +23,8 @@
 			"import": "./react/dist/index.mjs",
 			"require": "./react/dist/index.js",
 			"default": "./react/dist/index.js"
-		}
+		},
+		"./react-internal": "./src/react/index.ts"
 	},
 	"devDependencies": {
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
@@ -32,6 +33,8 @@
 		"tsup": "catalog:"
 	},
 	"dependencies": {
+		"@giselle-sdk/data-type": "workspace:^",
+		"@tiptap/core": "catalog:",
 		"@tiptap/extension-bold": "catalog:",
 		"@tiptap/extension-bullet-list": "catalog:",
 		"@tiptap/extension-code": "catalog:",

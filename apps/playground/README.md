@@ -31,26 +31,20 @@
 
 ## Tasks
 
-- [ ] Set viewport to storage
+- [ ] Add setting button to title
+- [ ] Show unable sources
 - [ ] Auto detect storage backend
-- [ ] Workflow View
 - [ ] Update text node icon
-- [ ] Add generate text short cut
-- [ ] Make fill yellow for connected file node port
-- [ ] Styling connector
-- [ ] Support multi output
 - [ ] API Middleware
 - [ ] API Auth
 - [ ] API Rate Limit
 - [ ] Add to do comment llmProviders property
 - [ ] Handling error in file upload
-- [ ] Better font
 - [ ] Cancel button
 - [ ] LLM Provider from .env
 - [ ] Undo/Redo for prompt editor
 - [ ] Telemetry
 - [ ] Animation
-- [ ] Markdown styling
 
 
 ## Backlog
@@ -61,6 +55,23 @@
 
 ## Done
 
+- [x] Create exention for a source
+- [x] Rework node select intereaction
+- [x] Make fill yellow for connected file node port
+- [x] Styling connector
+- [x] Add title
+- [x] Better font(base: Geist, accent: Hubot)
+- [x] Fix layout of text node
+- [x] Improve layout of gen node's prompt tab
+- [x] Show running job
+- [x] Show running state on run view
+- [x] Workflow View
+- [x] Show flow selector if workspace has multiple flows
+- [x] Markdown styling
+- [x] Add generate text short cut
+- [x] Set viewport to storage
+- [x] animate spinner
+- [x] Support multi output
 - [x] Prompt object to html to markdown
 - [x] Add typecheck script to template of turborepo
 - [x] at removeFileHandler (packages/giselle-engine/src/core/handlers/remove-file.ts:35:53)

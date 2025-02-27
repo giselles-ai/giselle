@@ -55,7 +55,13 @@ export const playgroundV2Flag = flag<boolean>({
 export const googleOauthFlag = flag<boolean>({
 	key: "google-oauth",
 	async decide() {
-		return takeLocalEnv("GOOGLE_OAUTH_FLAG");
+		if (
+			process.env.GOOGLE_OAUTH_FLAG === undefined ||
+			process.env.GOOGLE_OAUTH_FLAG === "false"
+		) {
+			return false;
+		}
+		return true;
 	},
 	description: "Enable Google OAuth",
 	defaultValue: false,
@@ -71,6 +77,19 @@ export const developerFlag = flag<boolean>({
 		return takeLocalEnv("DEVELOPER_FLAG");
 	},
 	description: "Enable Developer",
+	defaultValue: false,
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+});
+
+export const settingsV2Flag = flag<boolean>({
+	key: "settings-v2",
+	async decide() {
+		return takeLocalEnv("SETTINGS_V2_FLAG");
+	},
+	description: "Enable Settings V2",
 	defaultValue: false,
 	options: [
 		{ value: false, label: "disable" },

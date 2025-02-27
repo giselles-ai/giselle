@@ -12,9 +12,14 @@ export const GitHubNode = NodeBase.extend({
 	type: z.literal("action"),
 	content: GitHubContent,
 });
-type GitHubNodeType = z.infer<typeof GitHubNode>;
+type GitHubNode = z.infer<typeof GitHubNode>;
 
-export function isGitHubNode(args?: unknown): args is GitHubNodeType {
+export function isGitHubNode(args?: unknown): args is GitHubNode {
 	const result = GitHubNode.safeParse(args);
 	return result.success;
 }
+
+export const GitHubContentReference = z.object({
+	type: GitHubContent.shape.type,
+});
+export type GitHubContentReferenceType = z.infer<typeof GitHubContentReference>;

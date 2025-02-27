@@ -21,6 +21,9 @@ export async function buildGenerationMessageForGithubOperation(
 		throw new Error("Prompt cannot be empty");
 	}
 
+	// TODO: source format has been changed
+	// old: {{nd-<nodeId>:otp-<outputId>}}
+	// new: {"type":"Source","attrs":{"node":{"id":"nd-bIIQ8d1zdt4C44Gz","type":"variable","content":{"type":"text"}},"outputId":"otp-p2DriE7CncEwlYyf"}},
 	const pattern = /\{\{(nd-[a-zA-Z0-9]+):(otp-[a-zA-Z0-9]+)\}\}/g;
 	const sourceKeywords = [...prompt.matchAll(pattern)].map((match) => ({
 		nodeId: NodeId.parse(match[1]),
@@ -41,9 +44,11 @@ export async function buildGenerationMessageForGithubOperation(
 			continue;
 		}
 		const replaceKeyword = `{{${sourceKeyword.nodeId}:${sourceKeyword.outputId}}}`;
+		console.log("!!!!!!!! replaceKeyword", replaceKeyword);
 		switch (contextNode.content.type) {
 			case "text": {
 				let content = contextNode.content.text;
+				console.log("???????? content", content);
 				if (isJsonContent(content)) {
 					content = jsonContentToText(JSON.parse(content));
 				}

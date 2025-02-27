@@ -1,14 +1,19 @@
+import clsx from "clsx/lite";
 import type { FC, SVGProps } from "react";
 
-export const SpinnerIcon: FC<SVGProps<SVGSVGElement>> = (props) => (
+export const SpinnerIcon: FC<SVGProps<SVGSVGElement>> = ({
+	className,
+	...props
+}) => (
 	<svg
 		width="20"
 		height="20"
 		viewBox="0 0 20 20"
 		xmlns="http://www.w3.org/2000/svg"
+		className={clsx("stroke-current fill-transparent", className)}
+		role="graphics-symbol"
 		{...props}
 	>
-		<title>Spinner Icon</title>
 		<circle
 			cx="10"
 			cy="10"

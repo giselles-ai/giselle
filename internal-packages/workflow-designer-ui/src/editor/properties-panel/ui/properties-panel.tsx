@@ -1,4 +1,5 @@
-import clsx from "clsx/lite";
+"use client";
+
 import {
 	type ReactNode,
 	useCallback,
@@ -7,13 +8,18 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { EditableText } from "./editable-text";
 
 export function PropertiesPanelRoot({
 	children,
 }: {
 	children: ReactNode;
 }) {
-	return <div className="h-full flex flex-col gap-[8px]">{children}</div>;
+	return (
+		<div className="h-full w-full flex flex-col gap-[8px] overflow-hidden">
+			{children}
+		</div>
+	);
 }
 
 export function PropertiesPanelHeader({
@@ -59,42 +65,17 @@ export function PropertiesPanelHeader({
 	return (
 		<div className="h-[48px] flex justify-between items-center px-[16px] shrink-0">
 			<div className="flex gap-[8px] items-center">
-				<div className="w-[28px] h-[28px] bg-white rounded-[4px] flex items-center justify-center">
+				<div className="w-[28px] h-[28px] bg-white-900 rounded-[4px] flex items-center justify-center">
 					{icon}
 				</div>
-				<div className="group" data-editing={edit}>
-					<input
-						type="text"
-						className={clsx(
-							"w-[200px] py-[2px] px-[4px] rounded-[8px] hidden group-data-[editing=true]:block",
-							"outline-none ring-[1px] ring-blue",
-							"text-white text-[14px]",
-						)}
-						ref={inputRef}
-						data-edit={edit}
-						defaultValue={name ?? fallbackName}
-						onBlur={updateName}
-						onKeyDown={(e) => {
-							if (e.key === "Enter") {
-								e.preventDefault();
-								updateName();
-							}
-						}}
+				<div>
+					<EditableText
+						onChange={(value) => onChangeName?.(value)}
+						value={name}
+						fallbackValue={fallbackName}
 					/>
-					<button
-						type="button"
-						className={clsx(
-							"py-[2px] px-[4px] rounded-[8px] group-data-[editing=true]:hidden",
-							"hover:bg-white/20",
-							"text-white text-[14px]",
-							"cursor-default",
-						)}
-						onClick={() => setEdit(true)}
-					>
-						{name ?? fallbackName}
-					</button>
 					{description && (
-						<p className="px-[5px] text-white-50 text-[10px]">{description}</p>
+						<p className="px-[5px] text-white-400 text-[10px]">{description}</p>
 					)}
 				</div>
 			</div>
@@ -108,5 +89,9 @@ export function PropertiesPanelContent({
 }: {
 	children: ReactNode;
 }) {
-	return <div className="px-[16px] h-full">{children}</div>;
+	return (
+		<div className="px-[16px] flex-1 h-full flex flex-col overflow-hidden">
+			{children}
+		</div>
+	);
 }

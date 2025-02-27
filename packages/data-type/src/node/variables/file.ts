@@ -87,3 +87,8 @@ export function isFileNode(args: unknown): args is FileNode {
 	const result = FileNode.safeParse(args);
 	return result.success;
 }
+
+export const FileContentReference = z.object({
+	type: FileContent.shape.type,
+});
+export type FileContentReference = z.infer<typeof FileContentReference>;

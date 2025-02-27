@@ -52,13 +52,13 @@ export function NodeGlance({
 		}
 	}, [node.content]);
 	return (
-		<div className="flex gap-[8px]">
-			<div className="row-span-2 flex items-center justify-center">
+		<div className="flex gap-[8px] overflow-hidden">
+			<div className="flex items-center justify-center">
 				<div className={iconClassName}>
 					<ContentTypeIcon node={node} />
 				</div>
 			</div>
-			<div className="flex flex-col items-start">
+			<div className="flex flex-col items-start overflow-hidden">
 				<p className={nameClassName}>{nodeName}</p>
 				<p className={descriptionClassName}>{nodeDescription}</p>
 			</div>

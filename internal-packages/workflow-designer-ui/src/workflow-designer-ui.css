@@ -38,4 +38,39 @@
 			color: inherit;
 		}
 	}
+
+	--animate-follow-through-overlap-spin: follow-through-overlap-spin 1.75s
+		ease-out infinite;
+	@keyframes follow-through-overlap-spin {
+		0% {
+			transform: rotate(0deg);
+		}
+		40% {
+			transform: rotate(-400deg);
+		}
+		60% {
+			transform: rotate(-300deg);
+		}
+		80% {
+			transform: rotate(-370deg);
+		}
+		100% {
+			transform: rotate(-360deg);
+		}
+	}
+}
+
+@property --button-gradient-angle {
+	syntax: "<angle>";
+	inherits: false;
+	initial-value: 15deg;
+}
+@theme {
+	--animate-rotate-button-gradient-angle: rotate-button-gradient-angle 3s linear
+		infinite;
+	@keyframes rotate-button-gradient-angle {
+		to {
+			--button-gradient-angle: 360deg;
+		}
+	}
 }

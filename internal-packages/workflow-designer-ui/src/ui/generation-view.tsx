@@ -47,10 +47,9 @@ export function GenerationView({
 
 							case "text":
 								return (
-									<MemoizedMarkdown
-										key={`${message.id}-text`}
-										content={part.text}
-									/>
+									<div className="markdown-renderer" key={`${message.id}-text`}>
+										<MemoizedMarkdown content={part.text} />
+									</div>
 								);
 							case "tool-invocation":
 								/** @todo Tool invocation */

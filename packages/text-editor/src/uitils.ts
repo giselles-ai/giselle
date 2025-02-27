@@ -1,7 +1,7 @@
 import { generateHTML } from "@tiptap/html";
 import type { JSONContent } from "@tiptap/react";
 import TurndownService from "turndown";
-import { extensions } from "./extensions";
+import { SourceExtension, extensions } from "./extensions";
 
 /**
  * @todo make more safe
@@ -21,7 +21,7 @@ export function isJsonContent(args: unknown): args is JSONContent {
 }
 
 export function jsonContentToText(jsonContent: JSONContent) {
-	const html = generateHTML(jsonContent, extensions);
+	const html = generateHTML(jsonContent, [...extensions, SourceExtension]);
 	const turndownService = new TurndownService();
 	return turndownService.turndown(html);
 }

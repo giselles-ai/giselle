@@ -58,14 +58,14 @@ export function CustomXyFlowNode({
 	const hasTarget = useMemo(
 		() =>
 			workspace.connections.some(
-				(connection) => connection.outputNodeId === data.nodeData.id,
+				(connection) => connection.outputNode.id === data.nodeData.id,
 			),
 		[workspace, data.nodeData.id],
 	);
 	const connectedOutputIds = useMemo(
 		() =>
 			workspace.connections
-				.filter((connection) => connection.outputNodeId === data.nodeData.id)
+				.filter((connection) => connection.outputNode.id === data.nodeData.id)
 				.map((connection) => connection.outputId),
 		[workspace, data.nodeData.id],
 	);
@@ -97,6 +97,7 @@ export function CustomXyFlowNode({
 					outputs={data.nodeData.outputs}
 					contentType="file"
 					fileCategory={data.nodeData.content.category}
+					connectedOutputIds={connectedOutputIds}
 				/>
 			);
 		case "text":
@@ -109,6 +110,7 @@ export function CustomXyFlowNode({
 					inputs={data.nodeData.inputs}
 					outputs={data.nodeData.outputs}
 					contentType="text"
+					connectedOutputIds={connectedOutputIds}
 				/>
 			);
 		case "github":
@@ -201,19 +203,19 @@ export function NodeComponent({
 							{...iconProps}
 							className={clsx(
 								"w-[16px] h-[16px] fill-current",
-								"group-data-[content-type=text]:text-black",
-								"group-data-[content-type=file]:text-black",
-								"group-data-[content-type=textGeneration]:text-white",
-								"group-data-[content-type=github]:text-white",
+								"group-data-[content-type=text]:text-black-900",
+								"group-data-[content-type=file]:text-black-900",
+								"group-data-[content-type=textGeneration]:text-white-900",
+								"group-data-[content-type=github]:text-white-900",
 							)}
 						/>
 					</div>
 					<div>
-						<div className="font-rosart text-[14px] text-white">
+						<div className="font-rosart text-[14px] text-white-900">
 							{title ?? "Unnamed node"}
 						</div>
 						{subtitle && (
-							<div className="text-[10px] text-white-50">{subtitle}</div>
+							<div className="text-[10px] text-white-400">{subtitle}</div>
 						)}
 					</div>
 				</div>
@@ -236,7 +238,7 @@ export function NodeComponent({
 										"group-data-[content-type=github]:!bg-github-node-1 group-data-[content-type=github]:!border-github-node-1",
 									)}
 								/>
-								<div className="text-[14px] px-[12px] text-white">
+								<div className="text-[14px] text-black--30 px-[12px] text-white-900">
 									{input.label}
 								</div>
 							</div>
@@ -270,10 +272,10 @@ export function NodeComponent({
 										"data-[state=connected]:group-data-[content-type=text]:!bg-text-node-1 data-[state=connected]:group-data-[content-type=text]:!border-text-node-1",
 										"data-[state=connected]:group-data-[content-type=file]:!bg-file-node-1 data-[state=connected]:group-data-[content-type=file]:!border-file-node-1",
 										"data-[state=connected]:group-data-[content-type=github]:!bg-github-node-1 data-[state=connected]:group-data-[content-type=github]:!border-github-node-1",
-										"data-[state=disconnected]:!bg-black",
+										"data-[state=disconnected]:!bg-black-900",
 									)}
 								/>
-								<div className="text-[14px] px-[16px] text-white">
+								<div className="text-[14px] px-[16px] text-white-900">
 									{output.label}
 								</div>
 							</div>

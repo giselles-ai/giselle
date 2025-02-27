@@ -8,7 +8,7 @@ import { GenerationView } from "../../../ui/generation-view";
 
 function Empty() {
 	return (
-		<div className="bg-white/10 h-full rounded-[8px] flex justify-center items-center text-black-400">
+		<div className="bg-white-900/10 h-full rounded-[8px] flex justify-center items-center text-black-400">
 			<EmptyState
 				icon={<StackBlicksIcon />}
 				title="Nothing is generated."
@@ -41,10 +41,10 @@ export function GenerationPanel({ node }: { node: TextGenerationNode }) {
 		return <Empty />;
 	}
 	return (
-		<div className="bg-white/10 h-full rounded-[8px] py-[8px]">
+		<div className="bg-white-900/10 h-full rounded-[8px] py-[8px]">
 			<div
 				className={clsx(
-					"border-b border-white-50/20 py-[4px] px-[16px] flex items-center gap-[8px]",
+					"border-b border-white-400/20 py-[4px] px-[16px] flex items-center gap-[8px]",
 					"**:data-header-text:font-[700]",
 				)}
 			>

@@ -15,9 +15,9 @@ function SliderInner({
 			{...props}
 		>
 			<SliderPrimitive.Track className="relative h-[4px] w-full grow overflow-hidden bg-black-400">
-				<SliderPrimitive.Range className="absolute h-full bg-white" />
+				<SliderPrimitive.Range className="absolute h-full bg-white-900" />
 			</SliderPrimitive.Track>
-			<SliderPrimitive.Thumb className="block h-[12px] w-[12px] rounded-full bg-white" />
+			<SliderPrimitive.Thumb className="block h-[12px] w-[12px] rounded-full bg-white-900" />
 		</SliderPrimitive.Root>
 	);
 }
@@ -46,7 +46,7 @@ export function Slider(props: SliderProps) {
 					onValueChange={(v) => setValue(v[0])}
 					onValueCommit={(v) => props.onChange?.(v[0])}
 				/>
-				<div className="text-[12px] font-[700] text-white w-[3em] text-right">
+				<div className="text-[12px] font-[700] text-white-900 w-[3em] text-right">
 					{value.toFixed(2)}
 				</div>
 			</div>

@@ -23,7 +23,7 @@ export function PropertiesPanelCollapsible({
 			{isExpanded ? (
 				<PropertiesPanelContentBox
 					className={clsx(
-						"text-black-30 flex flex-col gap-2",
+						"text-black-300 flex flex-col gap-2",
 						expandedClassName,
 					)}
 				>
@@ -32,7 +32,7 @@ export function PropertiesPanelCollapsible({
 						<button type="button" onClick={() => setIsExpanded(false)}>
 							<Minimize2Icon
 								size={16}
-								className="text-black-50 hover:text-black-30"
+								className="text-black-50 hover:text-black-300"
 							/>
 						</button>
 					</div>
@@ -40,7 +40,7 @@ export function PropertiesPanelCollapsible({
 				</PropertiesPanelContentBox>
 			) : (
 				<button type="button" onClick={() => setIsExpanded(true)}>
-					<PropertiesPanelContentBox className="text-black-30 flex justify-between items-center group">
+					<PropertiesPanelContentBox className="text-black-300 flex justify-between items-center group">
 						<div className="flex gap-2 items-center">
 							<p className="font-rosart">{title}</p>
 							{glanceLabel && (
@@ -49,7 +49,7 @@ export function PropertiesPanelCollapsible({
 						</div>
 						<ChevronsUpDownIcon
 							size={16}
-							className="text-black-50 group-hover:text-black-30"
+							className="text-black-50 group-hover:text-black-300"
 						/>
 					</PropertiesPanelContentBox>
 				</button>

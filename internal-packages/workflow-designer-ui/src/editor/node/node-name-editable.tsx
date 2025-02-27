@@ -22,7 +22,7 @@ export function NodeNameEditable({
 		}
 	}, [onNodeNameChange]);
 	return (
-		<div className="absolute text-black-30 font-rosart text-[12px] -translate-y-full left-[8px] -top-[2px]">
+		<div className="absolute text-black-300 font-rosart text-[12px] -translate-y-full left-[8px] -top-[2px]">
 			{editing ? (
 				<input
 					type="text"

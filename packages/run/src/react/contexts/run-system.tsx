@@ -32,6 +32,7 @@ interface RunSystemContextType {
 	activeRunId?: RunId;
 	runGenerations: Record<RunId, Generation[]>;
 	perform: Perform;
+	isRunning: boolean;
 }
 
 export const RunSystemContext = createContext<RunSystemContextType | undefined>(
@@ -47,6 +48,7 @@ export function RunSystemContextProvider({
 }) {
 	const [activeRunId, setActiveRunId] = useState<RunId | undefined>();
 	const [runs, setRuns] = useState<Run[]>([]);
+	const [isRunning, setIsRunning] = useState(false);
 	const { startGeneration } = useGenerationController();
 	const [runGenerations, setRunGenerations] = useState<
 		Record<RunId, Generation[]>
@@ -80,6 +82,7 @@ export function RunSystemContextProvider({
 
 	const perform = useCallback<Perform>(
 		async (workflowId, options) => {
+			setIsRunning(true);
 			const runId = RunId.generate();
 			const createdRun = {
 				id: runId,
@@ -130,6 +133,7 @@ export function RunSystemContextProvider({
 					}),
 				);
 			}
+			setIsRunning(false);
 		},
 		[workspaceId, setRunGeneration, startGeneration],
 	);
@@ -141,6 +145,7 @@ export function RunSystemContextProvider({
 				activeRunId,
 				runGenerations,
 				perform,
+				isRunning,
 			}}
 		>
 			{children}

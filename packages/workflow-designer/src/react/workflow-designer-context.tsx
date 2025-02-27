@@ -8,6 +8,7 @@ import {
 	type NodeId,
 	type NodeUIState,
 	type UploadedFileData,
+	type Viewport,
 	type Workspace,
 	createUploadedFileData,
 	createUploadingFileData,
@@ -27,6 +28,8 @@ export interface WorkflowDesignerContextValue
 			| "addConnection"
 			| "deleteConnection"
 			| "removeFile"
+			| "setUiViewport"
+			| "updateName"
 		>,
 		ReturnType<typeof usePropertiesPanel>,
 		ReturnType<typeof useView> {
@@ -150,6 +153,14 @@ export function WorkflowDesignerProvider({
 		[setAndSaveWorkspace],
 	);
 
+	const updateName = useCallback<WorkflowDesigner["updateName"]>(
+		(args) => {
+			workflowDesignerRef.current?.updateName(args);
+			setAndSaveWorkspace();
+		},
+		[setAndSaveWorkspace],
+	);
+
 	const setUiNodeState = useCallback(
 		(
 			nodeId: string | NodeId,
@@ -164,6 +175,14 @@ export function WorkflowDesignerProvider({
 			}
 		},
 		[setAndSaveWorkspace, setWorkspace],
+	);
+
+	const setUiViewport = useCallback(
+		(viewport: Viewport) => {
+			workflowDesignerRef.current.setUiViewport(viewport);
+			setAndSaveWorkspace();
+		},
+		[setAndSaveWorkspace],
 	);
 
 	const deleteNode = useCallback(
@@ -256,6 +275,8 @@ export function WorkflowDesignerProvider({
 				removeFile,
 				llmProviders,
 				isLoading,
+				setUiViewport,
+				updateName,
 				...usePropertiesPanelHelper,
 				...useViewHelper,
 			}}

@@ -50,7 +50,7 @@ export function FilePanel({ node }: { node: FileNode }) {
 	);
 
 	return (
-		<div className="relative z-10 flex flex-col gap-[2px] h-full text-[14px] text-black-30">
+		<div className="relative z-10 flex flex-col gap-[2px] h-full text-[14px] text-black-300">
 			<div className="p-[16px] divide-y divide-black-50">
 				{node.content.files.length > 0 && (
 					<div className="pb-[16px] flex flex-col gap-[8px]">
@@ -83,7 +83,7 @@ export function FilePanel({ node }: { node: FileNode }) {
 							{isDragging ? (
 								<>
 									<PdfFileIcon className="size-[30px] text-black-400" />
-									<p className="text-center text-white-50">
+									<p className="text-center text-white-400">
 										Drop to upload your files
 									</p>
 								</>
@@ -92,7 +92,7 @@ export function FilePanel({ node }: { node: FileNode }) {
 									<ArrowUpFromLineIcon size={38} className="text-black-400" />
 									<label
 										htmlFor="file"
-										className="text-center flex flex-col gap-[16px] text-white-50"
+										className="text-center flex flex-col gap-[16px] text-white-400"
 									>
 										<p>Drop pdf files here to upload.</p>
 										<div className="flex gap-[8px] justify-center items-center">
@@ -128,7 +128,7 @@ function FileListItem({
 	onRemove: (file: UploadedFileData) => void;
 }) {
 	return (
-		<div className="flex items-center overflow-x-hidden group justify-between bg-black-100 hover:bg-white/10 transition-colors p-[8px] rounded-[8px]">
+		<div className="flex items-center overflow-x-hidden group justify-between bg-black-100 hover:bg-white-900/10 transition-colors p-[8px] rounded-[8px]">
 			<div className="flex items-center overflow-x-hidden">
 				<div className="overflow-x-hidden">
 					<p className="truncate">{fileData.name}</p>
@@ -145,7 +145,7 @@ function FileListItem({
 				<Tooltip text="Remove">
 					<button
 						type="button"
-						className="hidden group-hover:block px-[4px] py-[4px] bg-transparent hover:bg-white/10 rounded-[8px] transition-colors mr-[2px] flex-shrink-0"
+						className="hidden group-hover:block px-[4px] py-[4px] bg-transparent hover:bg-white-900/10 rounded-[8px] transition-colors mr-[2px] flex-shrink-0"
 						onClick={() => onRemove(fileData)}
 					>
 						<TrashIcon className="w-[24px] h-[24px] stroke-current stroke-[1px] " />

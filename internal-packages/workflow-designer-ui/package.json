@@ -4,7 +4,8 @@
 	"private": true,
 	"scripts": {
 		"clean": "rm -rf node_modules",
-		"check-types": "tsc --noEmit"
+		"check-types": "tsc --noEmit",
+		"format": "biome check --write ."
 	},
 	"exports": {
 		".": "./src/index.ts"

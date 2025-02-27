@@ -7,7 +7,8 @@
 		"build-sdk": "turbo build --filter '@giselle-sdk/*' --filter giselle-sdk",
 		"build-data-type": "turbo build --filter '@giselle-sdk/data-type'",
 		"check-types": "turbo check-types",
-		"clean": "turbo clean && rm -rf node_modules .turbo",
+		"format": "turbo format",
+		"clean": "turbo clean",
 		"dev": "turbo dev --filter playground"
 	},
 	"devDependencies": {

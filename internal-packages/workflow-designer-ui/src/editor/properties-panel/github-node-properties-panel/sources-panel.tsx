@@ -1,4 +1,9 @@
-import type { GitHubNode, Input, OutputId } from "@giselle-sdk/data-type";
+import type {
+	Connection,
+	GitHubNode,
+	Input,
+	OutputId,
+} from "@giselle-sdk/data-type";
 import { InputId } from "@giselle-sdk/data-type";
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
 import clsx from "clsx/lite";
@@ -234,7 +239,7 @@ export function SourcesPanel({ node }: SourcesPanelProps) {
 	const sources = useMemo<Source[]>(() => {
 		const tmpSources: Source[] = [];
 		const connections = data.connections.filter(
-			(connection) => connection.inputNodeId === node.id,
+			(connection) => connection.inputNode.id === node.id,
 		);
 		for (const node of data.nodes) {
 			for (const output of node.outputs) {
@@ -255,7 +260,7 @@ export function SourcesPanel({ node }: SourcesPanelProps) {
 	const handleConnectionChange = useCallback(
 		(connectOutputIds: OutputId[]) => {
 			const currentConnectedOutputIds = data.connections
-				.filter((connection) => connection.inputNodeId === node.id)
+				.filter((connection) => connection.inputNode.id === node.id)
 				.map((connection) => connection.outputId);
 
 			// Find added outputs (in connectOutputIds but not in currentConnectedOutputIds)
@@ -279,12 +284,10 @@ export function SourcesPanel({ node }: SourcesPanelProps) {
 					inputs: [...node.inputs, newInput],
 				});
 				addConnection({
-					inputNodeId: node.id,
+					inputNode: node,
 					inputId: newInput.id,
-					inputNodeType: node.type,
 					outputId,
-					outputNodeId: outputNode.id,
-					outputNodeType: outputNode.type,
+					outputNode: outputNode,
 				});
 			}
 
@@ -296,7 +299,7 @@ export function SourcesPanel({ node }: SourcesPanelProps) {
 			for (const outputId of removedOutputIds) {
 				const connection = data.connections.find(
 					(connection) =>
-						connection.inputNodeId === node.id &&
+						connection.inputNode.id === node.id &&
 						connection.outputId === outputId,
 				);
 				if (connection === undefined) {
@@ -318,6 +321,16 @@ export function SourcesPanel({ node }: SourcesPanelProps) {
 			deleteConnection,
 			updateNodeData,
 		],
+	);
+
+	const handleRemove = useCallback(
+		(connection: Connection) => {
+			deleteConnection(connection.id);
+			updateNodeData(node, {
+				inputs: node.inputs.filter((input) => input.id !== connection.inputId),
+			});
+		},
+		[node, deleteConnection, updateNodeData],
 	);
 
 	if (node.inputs.length === 0) {
@@ -357,16 +370,7 @@ export function SourcesPanel({ node }: SourcesPanelProps) {
 								key={source.connection.id}
 								title={source.output.label}
 								subtitle={source.node.name ?? "Generated Content"}
-								onRemove={() => {
-									if (source.connection) {
-										deleteConnection(source.connection.id);
-										updateNodeData(node, {
-											inputs: node.inputs.filter(
-												(input) => input.id !== source.connection.inputId,
-											),
-										});
-									}
-								}}
+								onRemove={() => handleRemove(source.connection)}
 							/>
 						))}
 					</SourceListRoot>
@@ -374,85 +378,43 @@ export function SourcesPanel({ node }: SourcesPanelProps) {
 				{connectedSources.variable.length > 0 && (
 					<SourceListRoot title="Static Contents">
 						{connectedSources.variable.map((source) => {
-							if ("content" in source.node && "type" in source.node.content) {
-								switch (source.node.content.type) {
-									case "text": {
-										// Parse and display text content
-										let text = source.node.content.text;
-										try {
-											const jsonContentLikeString = JSON.parse(text);
-											if (isJsonContent(jsonContentLikeString)) {
-												text = jsonContentToText(jsonContentLikeString);
-											}
-										} catch (error) {
-											// If parsing fails, use the raw text
-											console.error("Error parsing JSON content:", error);
+							switch (source.node.content.type) {
+								case "text": {
+									let text = source.node.content.text;
+									if (text.length > 0) {
+										const jsonContentLikeString = JSON.parse(
+											source.node.content.text,
+										);
+										if (isJsonContent(jsonContentLikeString)) {
+											text = jsonContentToText(jsonContentLikeString);
 										}
+									}
 
-										return (
-											<SourceListItem
-												icon={<PromptIcon className="size-[24px] text-white" />}
-												key={source.connection.id}
-												title={source.node.name ?? "Text"}
-												subtitle={text}
-												onRemove={() => {
-													if (source.connection) {
-														deleteConnection(source.connection.id);
-														updateNodeData(node, {
-															inputs: node.inputs.filter(
-																(input) =>
-																	input.id !== source.connection.inputId,
-															),
-														});
-													}
-												}}
-											/>
-										);
-									}
-									case "file": {
-										return (
-											<SourceListItem
-												icon={
-													<PdfFileIcon className="size-[24px] text-white" />
-												}
-												key={source.connection.id}
-												title={source.node.name ?? "File"}
-												subtitle={`${source.node.content.files.length} ${pluralize("file", source.node.content.files.length)}`}
-												onRemove={() => {
-													if (source.connection) {
-														deleteConnection(source.connection.id);
-														updateNodeData(node, {
-															inputs: node.inputs.filter(
-																(input) =>
-																	input.id !== source.connection.inputId,
-															),
-														});
-													}
-												}}
-											/>
-										);
-									}
+									return (
+										<SourceListItem
+											icon={<PromptIcon className="size-[24px] text-white" />}
+											key={source.connection.id}
+											title={source.node.name ?? "Text"}
+											subtitle={text}
+											onRemove={() => handleRemove(source.connection)}
+										/>
+									);
+								}
+								case "file":
+									return (
+										<SourceListItem
+											icon={<PdfFileIcon className="size-[24px] text-white" />}
+											key={source.connection.id}
+											title={source.node.name ?? "File"}
+											subtitle={`${source.node.content.files.length} ${pluralize("file", source.node.content.files.length)}`}
+											onRemove={() => handleRemove(source.connection)}
+										/>
+									);
+								default: {
+									const _exhaustiveCheck: never = source.node.content;
+									throw new Error(`Unhandled source type: ${_exhaustiveCheck}`);
 								}
 							}
-
-							return (
-								<SourceListItem
-									icon={<PromptIcon className="size-[24px] text-white" />}
-									key={source.connection.id}
-									title={source.node.name ?? source.node.type}
-									subtitle={source.output.label}
-									onRemove={() => {
-										if (source.connection) {
-											deleteConnection(source.connection.id);
-											updateNodeData(node, {
-												inputs: node.inputs.filter(
-													(input) => input.id !== source.connection.inputId,
-												),
-											});
-										}
-									}}
-								/>
-							);
 						})}
 					</SourceListRoot>
 				)}

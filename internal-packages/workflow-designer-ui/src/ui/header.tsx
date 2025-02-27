@@ -14,7 +14,7 @@ function Button({
 >) {
 	return (
 		<button
-			className="px-[16px] py-[8px] rounded-[8px] flex items-center gap-[2px] bg-[hsla(207,19%,77%,0.3)] font-rosart text-white"
+			className="px-[16px] py-[8px] rounded-[8px] flex items-center gap-[2px] bg-[hsla(207,19%,77%,0.3)] font-rosart text-white-900"
 			style={{
 				boxShadow: "0px 0px 3px 0px hsla(0, 0%, 100%, 0.25) inset",
 			}}
@@ -53,7 +53,7 @@ function ViewSwitch(props: ViewSwitchProps) {
 	return (
 		<button
 			type="button"
-			className="px-[16px] uppercase font-bold text-[14px] relative text-white"
+			className="px-[16px] uppercase font-bold text-[14px] relative text-white-900"
 			onClick={() => setView(props.view)}
 		>
 			{props.children}
@@ -71,7 +71,7 @@ export function Header() {
 		<div className="h-[60px] flex items-center justify-between mx-[20px]">
 			<div className="flex gap-[8px] items-center flex-1">
 				<Link href="/">
-					<GiselleLogo className="fill-white w-[70px] h-auto mt-[6px]" />
+					<GiselleLogo className="fill-white-900 w-[70px] h-auto mt-[6px]" />
 				</Link>
 				<div className="font-rosart text-[18px] text-black--30">Playground</div>
 			</div>
@@ -86,7 +86,7 @@ export function Header() {
 					// 	executeFlow(graph.flows[0].id);
 					// }}
 				>
-					<SparklesIcon className="w-[18px] h-[18px] fill-white drop-shadow-[0.66px_1.32px_2.64px_hsla(0,0%,100%,0.25)]" />
+					<SparklesIcon className="w-[18px] h-[18px] fill-white-900 drop-shadow-[0.66px_1.32px_2.64px_hsla(0,0%,100%,0.25)]" />
 					<span>Run</span>
 				</Button>
 			</div>

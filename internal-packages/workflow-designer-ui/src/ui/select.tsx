@@ -26,7 +26,7 @@ function SelectTrigger({
 		<SelectPrimitive.Trigger
 			className={clsx(
 				"group w-full flex justify-between items-center rounded-[8px] py-[8px] px-[16px] outline-none focus:outline-none",
-				"border-[2px] border-white",
+				"border-[2px] border-white-900",
 				"text-[14px]",
 				// "data-[state=closed]:**:data-icon:opacity-50 data-[state=open]:**:data-icon:opacity-100 ",
 				className,
@@ -90,7 +90,7 @@ function SelectContent({
 			<SelectPrimitive.Content
 				className={clsx(
 					"relative z-50 max-h-96 overflow-hidden rounded-[8px]",
-					"border-[2px] border-white bg-black text-white",
+					"border-[2px] border-white-900 bg-black-900 text-white-900",
 					position === "popper" &&
 						"data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
 					className,
@@ -135,7 +135,7 @@ function SelectItem({
 	return (
 		<SelectPrimitive.Item
 			className={clsx(
-				"relative flex w-full cursor-default select-none items-center rounded-[4px] py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-white/20 focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+				"relative flex w-full cursor-default select-none items-center rounded-[4px] py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-white-900/20 focus:text-white-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
 			)}
 			{...props}
 		>

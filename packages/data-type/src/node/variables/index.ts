@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { NodeBase } from "../base";
-import { FileContent } from "./file";
-import { TextContent } from "./text";
+import { NodeBase, NodeReferenceBase } from "../base";
+import { FileContent, FileContentReference } from "./file";
+import { TextContent, TextContentReference } from "./text";
 export * from "./file";
 export * from "./text";
 
@@ -25,3 +25,14 @@ export const FileNode = VariableNode.extend({
 	content: FileContent,
 });
 export type FileNode = z.infer<typeof FileNode>;
+
+const VariableNodeContentReference = z.discriminatedUnion("type", [
+	FileContentReference,
+	TextContentReference,
+]);
+
+export const VariableNodeReference = NodeReferenceBase.extend({
+	type: VariableNode.shape.type,
+	content: VariableNodeContentReference,
+});
+export type VariableNodeReference = z.infer<typeof VariableNodeReference>;

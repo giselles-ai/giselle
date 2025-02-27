@@ -25,3 +25,8 @@ export function isTextNode(args: unknown): args is TextNode {
 	const result = TextNode.safeParse(args);
 	return result.success;
 }
+
+export const TextContentReference = z.object({
+	type: TextContent.shape.type,
+});
+export type TextContentReference = z.infer<typeof TextContentReference>;

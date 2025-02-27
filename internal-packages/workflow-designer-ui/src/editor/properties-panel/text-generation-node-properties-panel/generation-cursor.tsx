@@ -35,7 +35,7 @@ export function GenerationCursor({
 			<button
 				type="button"
 				disabled={!hasPrevGeneration}
-				className="text-black-30 hover:bg-white/20 px-[4px] disabled:text-black-70 rounded-[4px] disabled:hover:bg-transparent"
+				className="text-black-300 hover:bg-white-900/20 px-[4px] disabled:text-black-70 rounded-[4px] disabled:hover:bg-transparent"
 				onClick={onPrevGenerationButtonClick}
 			>
 				←
@@ -46,7 +46,7 @@ export function GenerationCursor({
 			<button
 				type="button"
 				disabled={!hasNextGeneration}
-				className="text-black-30 hover:bg-white/20 px-[4px] disabled:text-black-70 rounded-[4px] disabled:hover:bg-transparent"
+				className="text-black-300 hover:bg-white-900/20 px-[4px] disabled:text-black-70 rounded-[4px] disabled:hover:bg-transparent"
 				onClick={onNextGenerationButtonClick}
 			>
 				→
