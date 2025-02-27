@@ -30,7 +30,7 @@ export default async function SettingLayout({
 					</MenuLink>
 				</div>
 			</div>
-			<div className="px-[48px] py-[32px] flex-1">{children}</div>
+			<div className="px-[40px] py-[24px] flex-1">{children}</div>
 		</div>
 	);
 }
