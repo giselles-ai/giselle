@@ -36,15 +36,19 @@ export const Card: FC<PropsWithChildren<CardProps>> = ({
 }) => (
 	<div
 		className={cn(
-			"bg-transparent rounded-[16px] border border-black-70 py-[16px] px-[24px] w-full gap-[16px] grid",
+			"bg-transparent rounded-[8px] border-[0.5px] border-black-400 px-[24px] pt-[16px] pb-[24px] w-full gap-[16px] grid",
 			className,
 		)}
 	>
-		<div className="flex justify-between">
-			<div className="grid gap-[3px] font-avenir">
-				<h2 className="text-black-30 text-[16px]">{title}</h2>
+		<div className="flex justify-between gap-x-2.5">
+			<div className="grid gap-[3px] font-medium">
+				<h2 className="text-white-400 text-[16px] leading-[27.2px] tracking-normal font-hubotSans">
+					{title}
+				</h2>
 				{description && (
-					<p className="text-[12px] text-black-70">{description}</p>
+					<p className="text-black-400 text-[12px] leading-[20.4px] tracking-normal font-geist">
+						{description}
+					</p>
 				)}
 			</div>
 			{action && (
