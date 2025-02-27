@@ -263,10 +263,10 @@ async function executeGitHubOperation(messages: CoreMessage[]) {
 	};
 }
 
-async function createAgent() {
+async function createAgent(isDebug = true) {
 	const installation = await findInstallation();
 	const installationAuth = await githubAppInstallationAuth(installation.id);
-	return new GitHubAgent(installationAuth.token);
+	return new GitHubAgent(installationAuth.token, { isDebug });
 }
 
 async function findInstallation() {

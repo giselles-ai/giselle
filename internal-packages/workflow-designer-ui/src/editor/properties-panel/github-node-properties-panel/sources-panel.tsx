@@ -39,14 +39,8 @@ function SourceSelect({
 			.map((source) => source.output.id),
 	);
 
-	const {
-		generatedSources,
-		textSources,
-		fileSources,
-		textGeneration,
-		text,
-		file,
-	} = useSourceCategories(sources);
+	const { generatedSources, textSources, fileSources } =
+		useSourceCategories(sources);
 
 	return (
 		<Popover.Root>
