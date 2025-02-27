@@ -236,7 +236,7 @@ export function NodeComponent({
 										"group-data-[content-type=github]:!bg-github-node-1 group-data-[content-type=github]:!border-github-node-1",
 									)}
 								/>
-								<div className="text-[14px] text-black--30 px-[12px] text-white">
+								<div className="text-[14px] px-[12px] text-white">
 									{input.label}
 								</div>
 							</div>
@@ -265,9 +265,11 @@ export function NodeComponent({
 										"group-data-[content-type=textGeneration]:!border-generation-node-1",
 										"group-data-[content-type=text]:!border-text-node-1",
 										"group-data-[content-type=file]:!border-file-node-1",
+										"group-data-[content-type=github]:!border-github-node-1",
 										"data-[state=connected]:group-data-[content-type=textGeneration]:!bg-generation-node-1",
-										"data-[state=connected]:group-data-[content-type=github]:!bg-github-node-1",
 										"data-[state=connected]:group-data-[content-type=text]:!bg-text-node-1 data-[state=connected]:group-data-[content-type=text]:!border-text-node-1",
+										"data-[state=connected]:group-data-[content-type=file]:!bg-file-node-1 data-[state=connected]:group-data-[content-type=file]:!border-file-node-1",
+										"data-[state=connected]:group-data-[content-type=github]:!bg-github-node-1 data-[state=connected]:group-data-[content-type=github]:!border-github-node-1",
 										"data-[state=disconnected]:!bg-black",
 									)}
 								/>
