@@ -1,7 +1,6 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/v2/ui/alert";
 import { AGENT_TIME_CHARGE_LIMIT_MINUTES } from "@/services/agents/activities";
 import { clsx } from "clsx/lite";
-import { AlertTriangleIcon } from "lucide-react";
 
 export function AgentTimeUsageForFreePlan({
 	usedMinutes,
@@ -149,8 +148,8 @@ function AgentTimeUsage(props: AgentTimeUsageProps) {
 				)}
 
 				{isOverLimit && (
-					<Alert variant="destructive" className="p-4 !border-error-900 flex">
-						<CustumAlertTriangleIcon className="!text-error-900" />
+					<Alert variant="destructive" className="p-4 flex">
+						<CustumAlertTriangleIcon className="text-error-900" />
 
 						<div>
 							<AlertTitle className="mb-0 text-error-900 font-bold text-[12px] leading-[20.4px] tracking-normal font-geist">
