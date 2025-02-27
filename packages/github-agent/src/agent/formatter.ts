@@ -40,7 +40,6 @@ export class Formatter {
 		options: FormatOptions = {},
 	): string {
 		const opts = { ...this.defaultOptions, ...options };
-
 		// Do not insert extra blank lines between root-level items
 		return Array.from(results.entries())
 			.map(([key, value]) => {
@@ -203,7 +202,6 @@ export class Formatter {
 
 	private isBase64Object(value: unknown): value is Base64Object {
 		if (!value || typeof value !== "object") return false;
-
 		const obj = value as Record<string, unknown>;
 		return (
 			"encoding" in obj &&

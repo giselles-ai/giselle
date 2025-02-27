@@ -173,7 +173,6 @@ export class Planner {
 			system: systemPrompt(this.toolRegistry.generateToolDescriptions()),
 			prompt: userPrompt(prompt),
 		});
-
 		return result.object;
 	}
 
@@ -195,7 +194,6 @@ export class Planner {
 				wasTruncated,
 			),
 		});
-
 		return result.object;
 	}
 }

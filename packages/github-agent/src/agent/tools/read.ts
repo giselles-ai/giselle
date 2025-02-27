@@ -582,7 +582,6 @@ export const getPullRequestDiffTool = defineTool({
 				},
 			},
 		);
-
 		// https://github.com/octokit/request.js/issues/463#issuecomment-1164800010
 		return result.data as unknown as string;
 	},

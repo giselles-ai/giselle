@@ -110,6 +110,7 @@ export class Agent {
 				}
 
 				const results = new Map<string, unknown>();
+
 				try {
 					for (const step of plan.steps) {
 						try {
@@ -124,6 +125,7 @@ export class Agent {
 					}
 
 					const evaluation = await this.evaluator.evaluate(plan, results);
+
 					if (evaluation.decision === "accepted") {
 						const formatter = new Formatter();
 						const rawJson = JSON.stringify(
@@ -132,6 +134,7 @@ export class Agent {
 							2,
 						);
 						const markdown = formatter.format(results);
+
 						return {
 							type: "success",
 							json: rawJson,

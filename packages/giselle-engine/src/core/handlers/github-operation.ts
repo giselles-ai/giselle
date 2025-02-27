@@ -6,8 +6,8 @@ import {
 	type RunningGeneration,
 	isGitHubNode,
 } from "@giselle-sdk/data-type";
+import { Agent as GitHubAgent } from "@giselle-sdk/github-agent";
 import { type CoreMessage, appendResponseMessages } from "ai";
-import { Agent as GitHubAgent } from "github-agent";
 import * as process from "node:process";
 import type { z } from "zod";
 import {
@@ -247,15 +247,15 @@ async function executeGitHubOperation(messages: CoreMessage[]) {
 	// TODO: Use our GitHub App
 	const agent = new GitHubAgent(githubToken);
 	const result = await agent.execute(prompt);
-	if (result.type === "success") {
+	if (result.type === "failure") {
 		return {
-			result: result.md,
+			result: result.error,
 			details: result.evaluation,
 		};
 	}
 
 	return {
-		result: result.error,
+		result: result.md,
 		details: result.evaluation,
 	};
 }

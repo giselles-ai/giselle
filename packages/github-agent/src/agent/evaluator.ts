@@ -24,7 +24,6 @@ Consider the following aspects:
 1. Do the results contain the information requested in the plan?
 2. Are there any errors or missing data?
 3. If the results were truncated, check if the important information is still available in the truncated results. Note that truncation is only done to manage token limits and should not be a reason for replanning if the key information is present.
-
 Respond with either "accepted" if the results are satisfactory, or "replan" if we need to try a different approach.`;
 
 const userPrompt = ({
@@ -38,10 +37,8 @@ const userPrompt = ({
 }) => `
 Plan Summary: ${plan.summary}
 Results were${wasTruncated ? "" : " not"} truncated.
-
 Results:
 ${JSON.stringify(results, null, 2)}
-
 Evaluate whether these results satisfy the plan requirements.`;
 
 export class Evaluator {

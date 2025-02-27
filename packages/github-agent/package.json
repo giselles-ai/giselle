@@ -1,12 +1,24 @@
 {
-	"name": "github-agent",
-	"version": "0.1.0",
-	"type": "module",
+	"name": "@giselle-sdk/github-agent",
+	"version": "0.0.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
 	"sideEffects": false,
+	"scripts": {
+		"cli": "tsx src/cli.ts",
+		"build": "tsup",
+		"check-types": "tsc --noEmit",
+		"clean": "rm -rf .turbo dist node_modules"
+	},
 	"exports": {
+		"./package.json": "./package.json",
 		".": {
 			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js",
+			"default": "./dist/index.js"
 		}
 	},
 	"files": [
@@ -15,30 +27,18 @@
 	"engines": {
 		"node": ">=22.0.0"
 	},
-	"scripts": {
-		"build": "tsup",
-		"test": "node --import tsx --test **/*.test.ts",
-		"test:watch": "node --import tsx --watch --test **/*.test.ts",
-		"typecheck": "tsup --dts-only",
-		"prepublishOnly": "npm run build"
+	"devDependencies": {
+		"@giselle-sdk/utils": "workspace:*",
+		"@giselle/giselle-sdk-tsconfig": "workspace:*",
+		"tsup": "catalog:",
+		"vitest": "catalog:"
 	},
 	"dependencies": {
-		"@ai-sdk/anthropic": "^1.1.8",
-		"@ai-sdk/google": "^1.1.13",
-		"@ai-sdk/openai": "^1.1.9",
-		"@octokit/core": "^6.1.3",
-		"@octokit/graphql": "^8.0.0",
-		"@octokit/request-error": "^6.1.6",
-		"@octokit/types": "^12.6.0",
-		"ai": "^4.1.34",
-		"dotenv": "^16.4.7",
-		"zod": "^3.24.2"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "^1.9.4",
-		"@types/node": "^20.11.30",
-		"tsup": "^8.3.6",
-		"tsx": "^4.7.1",
-		"typescript": "^5.4.3"
+		"@octokit/core": "catalog:",
+		"@octokit/graphql": "catalog:",
+		"@octokit/request-error": "catalog:",
+		"ai": "catalog:",
+		"@ai-sdk/openai": "catalog:",
+		"zod": "catalog:"
 	}
 }

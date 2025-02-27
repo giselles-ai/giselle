@@ -1,10 +1,12 @@
 import "dotenv/config";
-import { Agent } from "./github-agent/index.js";
+import { Agent } from "./agent/index.js";
 
 const isDebug = process.env.DEBUG === "1";
+
 if (!process.env.GITHUB_TOKEN) {
 	throw new Error("GITHUB_TOKEN is required");
 }
+
 const agent = new Agent(process.env.GITHUB_TOKEN, {
 	isDebug,
 });

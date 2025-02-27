@@ -188,7 +188,6 @@ describe("Formatter", () => {
 				],
 			],
 		]);
-
 		const expected = `## testArray
 ├── {0}
 │   ├── name item1
@@ -203,7 +202,6 @@ describe("Formatter", () => {
 └── {3}
     └── nested
         └── deep value`;
-
 		const result = formatter.format(data);
 		assert.strictEqual(result, expected);
 	});
@@ -213,14 +211,12 @@ describe("Formatter", () => {
 		const data = new Map([
 			["emptyData", [[], {}, { emptyArray: [], emptyObject: {} }]],
 		]);
-
 		const expected = `## emptyData
 ├── [0]
 ├── {1}
 └── {2}
     ├── emptyArray
     └── emptyObject`;
-
 		const result = formatter.format(data);
 		assert.strictEqual(result, expected);
 	});
