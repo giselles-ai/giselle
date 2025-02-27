@@ -19,7 +19,7 @@ export async function AgentUsage() {
 
 	return (
 		<Card
-			title="Recent Agent Usage"
+			title="Recent Agent"
 			action={{
 				component:
 					activities.length > 0 ? (

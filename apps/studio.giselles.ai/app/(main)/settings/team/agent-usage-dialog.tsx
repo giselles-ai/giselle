@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -6,6 +5,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/v2/ui/button";
 import { type AgentActivity, AgentUsageTable } from "./agent-usage-table";
 
 type AgentUsageDialogProps = {
@@ -16,11 +16,13 @@ export function AgentUsageDialog({ activities }: AgentUsageDialogProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button variant="link">View all logs</Button>
+				<Button>View all logs</Button>
 			</DialogTrigger>
-			<DialogContent className="max-w-7xl">
+			<DialogContent className="border-[0.5px] border-black-400 px-[24px] pt-[16px] pb-[24px] max-w-7xl">
 				<DialogHeader>
-					<DialogTitle>Agent Usage Logs</DialogTitle>
+					<DialogTitle className="text-white-400 text-[16px] leading-[27.2px] tracking-normal font-hubotSans">
+						Agent Usage Logs
+					</DialogTitle>
 				</DialogHeader>
 				<AgentUsageTable
 					activities={activities}
