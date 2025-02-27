@@ -1,5 +1,6 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AGENT_TIME_CHARGE_LIMIT_MINUTES } from "@/services/agents/activities";
+import { clsx } from "clsx/lite";
 import { AlertTriangleIcon } from "lucide-react";
 
 export function AgentTimeUsageForFreePlan({
@@ -70,90 +71,123 @@ function AgentTimeUsage(props: AgentTimeUsageProps) {
 	return (
 		<>
 			<div className="flex justify-between items-baseline font-avenir">
-				<h2 className="text-black-30 text-[16px]">Agent Time Usage</h2>
+				<h2 className="text-white-400 font-medium text-[16px] leading-[27.2px] tracking-normal font-hubotSans">
+					Agent Time
+				</h2>
 				<div className="text-right">
-					<div className="text-lg font-medium text-zinc-200">
+					<div
+						className={clsx(
+							"text-sm font-bold text-white-900 leading-[23.8px] tracking-normal font-geist",
+							isOverLimit && "flex items-center gap-x-2",
+						)}
+					>
 						{isOverLimit ? (
 							<span>
 								{includedMinutes}min +{" "}
-								<span className="text-red-400">{overMinutes}min used</span>
+								<span className="text-error-900">{overMinutes}min used</span>
 							</span>
 						) : (
 							<span>{usedMinutes}min used</span>
 						)}
 					</div>
-					<div className="text-sm text-black--50">
+					<div className="font-medium text-[12px] leading-[20.4px] tracking-normal font-geist text-primary-200">
 						{Math.round(percentage)}% of your monthly limit used
 					</div>
 				</div>
 			</div>
 
-			<div className="relative w-full h-2">
-				<div className="absolute w-full h-full rounded-full bg-blue-950" />
-				<div
-					className="absolute h-full rounded-full bg-slate-400 transition-all duration-300"
-					style={{
-						width: `${Math.min(100, percentage)}%`,
-					}}
-				/>
+			<div className="flex flex-col gap-y-2">
+				<div className="flex flex-col gap-y-1">
+					<div className="relative w-full h-2">
+						<div className="absolute w-full h-full rounded-full bg-black-80" />
+						<div
+							className="absolute h-full rounded-full bg-white-400 transition-all duration-300"
+							style={{
+								width: `${Math.min(100, percentage)}%`,
+							}}
+						/>
+						{isOverLimit && (
+							<div
+								className="absolute h-full rounded-r-full bg-error-900 transition-all duration-300"
+								style={{
+									width: `${(overMinutes / includedMinutes) * 100}%`,
+									left: "100%",
+									transform: "translateX(-100%)",
+								}}
+							/>
+						)}
+					</div>
+
+					<div className="flex justify-between text-white-400 font-medium text-[12px] leading-[20.4px] tracking-normal font-geist">
+						<span>0min</span>
+						<span>
+							{isOverLimit ? `${usedMinutes}min` : `${includedMinutes}min`}
+						</span>
+					</div>
+				</div>
+
+				<div className="text-primary-200 font-medium text-[12px] leading-[20.4px] tracking-normal font-geist">
+					{includedMinutes} minutes included with your plan
+				</div>
+
+				{isNearLimit && (
+					<Alert className="border-warning-900 p-4">
+						<CustumAlertTriangleIcon className="!text-warning-900" />
+
+						<div>
+							<AlertTitle className="mb-0 text-warning-900 font-bold text-[12px] leading-[20.4px] tracking-normal font-geist">
+								Only {remainingMinutes}{" "}
+								{remainingMinutes === 1 ? "minute" : "minutes"} remaining in
+								your plan
+							</AlertTitle>
+
+							<AlertDescription className="text-warning-900 opacity-70 text-[12px] leading-[20.4px] tracking-normal font-geist">
+								{warningMessage}
+							</AlertDescription>
+						</div>
+					</Alert>
+				)}
+
 				{isOverLimit && (
-					<div
-						className="absolute h-full rounded-r-full bg-red-400 transition-all duration-300"
-						style={{
-							width: `${(overMinutes / includedMinutes) * 100}%`,
-							left: "100%",
-							transform: "translateX(-100%)",
-						}}
-					/>
+					<Alert variant="destructive" className="p-4 !border-error-900 flex">
+						<CustumAlertTriangleIcon className="!text-error-900" />
+
+						<div>
+							<AlertTitle className="mb-0 text-error-900 font-bold text-[12px] leading-[20.4px] tracking-normal font-geist">
+								{overMinutes} minutes over your plan limit
+							</AlertTitle>
+							<AlertDescription className="text-error-900 opacity-70 text-[12px] leading-[20.4px] tracking-normal font-geist">
+								{overLimitMessage}
+							</AlertDescription>
+						</div>
+					</Alert>
 				)}
 			</div>
-
-			<div className="flex justify-between text-sm text-slate-400">
-				<span>0min</span>
-				<span>
-					{isOverLimit ? `${usedMinutes}min` : `${includedMinutes}min`}
-				</span>
-			</div>
-
-			<div className="text-sm text-black--50">
-				{includedMinutes} minutes included with your plan
-			</div>
-
-			{isNearLimit && (
-				<Alert className="border-lime-400 p-4 text-lime-100">
-					<AlertTriangleIcon className="h-5 w-5 stroke-zinc-800 fill-lime-200" />
-
-					<div className="mt-2">
-						<AlertTitle className="text-lime-200 font-bold">
-							Only {remainingMinutes}{" "}
-							{remainingMinutes === 1 ? "minute" : "minutes"} remaining in your
-							plan
-						</AlertTitle>
-
-						<AlertDescription className="text-lime-100">
-							{warningMessage}
-						</AlertDescription>
-					</div>
-				</Alert>
-			)}
-
-			{isOverLimit && (
-				<Alert
-					variant="destructive"
-					className="bg-red-950/30 border-red-500/20 flex"
-				>
-					<AlertTriangleIcon className="h-5 w-5 stroke-zinc-800 fill-red-500" />
-
-					<div className="mt-2">
-						<AlertTitle className="text-red-500 font-bold">
-							{overMinutes} minutes over your plan limit
-						</AlertTitle>
-						<AlertDescription className="text-red-400">
-							{overLimitMessage}
-						</AlertDescription>
-					</div>
-				</Alert>
-			)}
 		</>
+	);
+}
+
+function CustumAlertTriangleIcon({ className }: { className?: string }) {
+	return (
+		<svg
+			className={clsx("size-[18px] stroke-black-850 opacity-80", className)}
+			xmlns="http://www.w3.org/2000/svg"
+			width="24"
+			height="24"
+			viewBox="0 0 24 24"
+			fill="none"
+			strokeWidth="2"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		>
+			<title>Alert triangle icon</title>
+			<path
+				fill="currentColor"
+				stroke="none"
+				d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"
+			/>
+			<path d="M12 9v4" />
+			<path d="M12 17h.01" />
+		</svg>
 	);
 }
