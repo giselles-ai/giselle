@@ -37,8 +37,8 @@
 		"@octokit/core": "catalog:",
 		"@octokit/graphql": "catalog:",
 		"@octokit/request-error": "catalog:",
-		"ai": "catalog:",
 		"@ai-sdk/openai": "catalog:",
+		"ai": "catalog:",
 		"zod": "catalog:"
 	}
 }

@@ -7,14 +7,16 @@ import {
 	isGitHubNode,
 } from "@giselle-sdk/data-type";
 import { Agent as GitHubAgent } from "@giselle-sdk/github-agent";
+import { Octokit } from "@octokit/core";
 import { type CoreMessage, appendResponseMessages } from "ai";
-import * as process from "node:process";
 import type { z } from "zod";
 import {
 	buildGenerationMessageForGithubOperation,
 	filePath,
 	getGeneration,
 	getNodeGenerationIndexes,
+	githubAppAuth,
+	githubAppInstallationAuth,
 	setGeneration,
 	setNodeGenerationIndex,
 } from "../helpers";
@@ -128,7 +130,17 @@ export async function githubOperationHandler({
 		);
 
 		// Execute GitHub operation
-		const { result, details } = await executeGitHubOperation(messages);
+		const { json, md } = await executeGitHubOperation(messages);
+		const responseMessage = `## Markdown:
+\`\`\`markdown
+${md}
+\`\`\`
+
+## JSON:
+\`\`\`json
+${JSON.stringify(JSON.parse(json), null, 2)}
+\`\`\`
+`;
 
 		const responseMessages = appendResponseMessages({
 			messages: [
@@ -142,7 +154,7 @@ export async function githubOperationHandler({
 				{
 					id: "id",
 					role: "assistant",
-					content: `${result}${details ? `\n\n## Operation Details\n${details}` : ""}`,
+					content: responseMessage,
 				},
 			],
 		});
@@ -239,23 +251,38 @@ async function executeGitHubOperation(messages: CoreMessage[]) {
 		);
 	}
 	const prompt = promptText.text;
-	const githubToken = process.env.GITHUB_TOKEN;
-	if (githubToken === undefined) {
-		throw new Error("GITHUB_TOKEN is not set");
-	}
-
-	// TODO: Use our GitHub App
-	const agent = new GitHubAgent(githubToken);
+	const agent = await createAgent();
 	const result = await agent.execute(prompt);
 	if (result.type === "failure") {
-		return {
-			result: result.error,
-			details: result.evaluation,
-		};
+		throw result.error;
 	}
 
 	return {
-		result: result.md,
-		details: result.evaluation,
+		json: result.json,
+		md: result.md,
 	};
+}
+
+async function createAgent() {
+	const installation = await findInstallation();
+	const installationAuth = await githubAppInstallationAuth(installation.id);
+	return new GitHubAgent(installationAuth.token);
+}
+
+async function findInstallation() {
+	// FIXME: hardcoded for now
+	const hardcodedInstalledAccount = "r06-sandbox-edge";
+
+	const appAuth = await githubAppAuth();
+	const appClient = new Octokit({
+		auth: appAuth.token,
+	});
+	const installations = await appClient.request("GET /app/installations");
+	const hardCodedInstallation = installations.data.find(
+		(it) => it.account?.login === hardcodedInstalledAccount,
+	);
+	if (hardCodedInstallation === undefined) {
+		throw new Error("Hardcoded installation not found");
+	}
+	return hardCodedInstallation;
 }

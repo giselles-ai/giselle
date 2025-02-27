@@ -55,6 +55,9 @@
 		"next": "catalog:",
 		"openai": "catalog:",
 		"unstorage": "catalog:",
-		"zod": "catalog:"
+		"zod": "catalog:",
+		"@octokit/core": "catalog:",
+		"@octokit/auth-app": "catalog:",
+		"@octokit/request-error": "catalog:"
 	}
 }
