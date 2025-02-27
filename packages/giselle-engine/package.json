@@ -50,10 +50,14 @@
 		"@ai-sdk/google": "catalog:",
 		"@ai-sdk/openai": "catalog:",
 		"@giselle-sdk/text-editor": "workspace:^",
+		"@giselle-sdk/github-agent": "workspace:^",
 		"ai": "catalog:",
 		"next": "catalog:",
 		"openai": "catalog:",
 		"unstorage": "catalog:",
-		"zod": "catalog:"
+		"zod": "catalog:",
+		"@octokit/core": "catalog:",
+		"@octokit/auth-app": "catalog:",
+		"@octokit/request-error": "catalog:"
 	}
 }

@@ -1,0 +1,44 @@
+{
+	"name": "@giselle-sdk/github-agent",
+	"version": "0.0.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"sideEffects": false,
+	"scripts": {
+		"cli": "tsx src/cli.ts",
+		"build": "tsup",
+		"check-types": "tsc --noEmit",
+		"clean": "rm -rf .turbo dist node_modules"
+	},
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"engines": {
+		"node": ">=22.0.0"
+	},
+	"devDependencies": {
+		"@giselle-sdk/utils": "workspace:*",
+		"@giselle/giselle-sdk-tsconfig": "workspace:*",
+		"tsup": "catalog:",
+		"vitest": "catalog:"
+	},
+	"dependencies": {
+		"@octokit/core": "catalog:",
+		"@octokit/graphql": "catalog:",
+		"@octokit/request-error": "catalog:",
+		"@ai-sdk/openai": "catalog:",
+		"ai": "catalog:",
+		"zod": "catalog:"
+	}
+}

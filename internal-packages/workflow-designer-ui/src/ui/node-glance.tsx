@@ -2,6 +2,7 @@ import type { Node } from "@giselle-sdk/data-type";
 import { useMemo } from "react";
 import {
 	AnthropicIcon,
+	GitHubIcon,
 	GoogleWhiteIcon,
 	OpenaiIcon,
 	PdfFileIcon,
@@ -24,6 +25,8 @@ export function NodeGlance({
 		switch (node.content.type) {
 			case "textGeneration":
 				return node.name ?? node.content.llm.model;
+			case "github":
+				return node.name ?? "GitHub";
 			case "file":
 			case "text":
 				return node.name ?? "Unnamed Node";
@@ -37,6 +40,8 @@ export function NodeGlance({
 		switch (node.content.type) {
 			case "textGeneration":
 				return node.content.llm.provider;
+			case "github":
+				return node.content.prompt;
 			case "file":
 			case "text":
 				return node.content.type;
@@ -79,6 +84,8 @@ function ContentTypeIcon({
 					throw new Error(`Unhandled LLMProvider: ${_exhaustiveCheck}`);
 				}
 			}
+		case "github":
+			return <GitHubIcon {...props} data-content-type-icon />;
 		case "text":
 			return <PromptIcon {...props} />;
 		case "file":

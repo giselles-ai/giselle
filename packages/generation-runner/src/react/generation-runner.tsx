@@ -1,10 +1,11 @@
-import type {
-	CompletedGeneration,
-	FailedGeneration,
-	Generation,
-	QueuedGeneration,
-	RequestedGeneration,
-	RunningGeneration,
+import {
+	type CompletedGeneration,
+	type FailedGeneration,
+	type Generation,
+	type QueuedGeneration,
+	type RequestedGeneration,
+	type RunningGeneration,
+	isGitHubNode,
 } from "@giselle-sdk/data-type";
 import { useChat } from "ai/react";
 import { useEffect, useRef } from "react";
@@ -31,9 +32,10 @@ export function GenerationRunner({
 	switch (generation.context.actionNode.content.type) {
 		case "textGeneration":
 			return <TextGenerationRunner generation={generation} />;
+		case "github":
+			return <GitHubRunner generation={generation} />;
 		default: {
-			const _exhaustiveCheck: never =
-				generation.context.actionNode.content.type;
+			const _exhaustiveCheck: never = generation.context.actionNode.content;
 			return _exhaustiveCheck;
 		}
 	}
@@ -114,5 +116,41 @@ function CompletionRunner({
 			);
 		});
 	});
+	return null;
+}
+
+function GitHubRunner({
+	generation,
+}: {
+	generation: Generation;
+}) {
+	if (generation.status === "created") {
+		return null;
+	}
+	if (!isGitHubNode(generation.context.actionNode)) {
+		throw new Error("Invalid generation type");
+	}
+
+	const {
+		requestGeneration,
+		updateGenerationStatusToComplete,
+		updateGenerationStatusToFailure,
+		callGithubOperation,
+	} = useGenerationRunnerSystem();
+
+	useOnce(async () => {
+		if (generation.status !== "queued") {
+			return;
+		}
+		try {
+			await requestGeneration(generation);
+			await callGithubOperation(generation.id);
+			await updateGenerationStatusToComplete(generation.id);
+		} catch (error) {
+			console.error("GitHub operation failed:", error);
+			await updateGenerationStatusToFailure(generation.id);
+		}
+	});
+
 	return null;
 }

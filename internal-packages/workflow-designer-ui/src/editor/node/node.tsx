@@ -1,5 +1,6 @@
 import {
 	FileNode,
+	GitHubNode,
 	type Input,
 	type Node,
 	type Output,
@@ -16,10 +17,8 @@ import {
 } from "@xyflow/react";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
-import { Icon } from "lucide-react";
 import { useMemo } from "react";
 import { ContentTypeIcon, type ContentTypeIconProps } from "../../icons";
-import { NodeNameEditable } from "./node-name-editable";
 
 type GiselleWorkflowDesignerTextGenerationNode = XYFlowNode<
 	{ nodeData: TextGenerationNode; preview?: boolean },
@@ -33,15 +32,22 @@ type GiselleWorkflowDesignerFileNode = XYFlowNode<
 	{ nodeData: FileNode; preview?: boolean },
 	FileNode["content"]["type"]
 >;
+type GiselleWorkflowDesignerGitHubNode = XYFlowNode<
+	{ nodeData: GitHubNode; preview?: boolean },
+	GitHubNode["content"]["type"]
+>;
+
 export type GiselleWorkflowDesignerNode =
 	| GiselleWorkflowDesignerTextGenerationNode
 	| GiselleWorkflowDesignerTextNode
-	| GiselleWorkflowDesignerFileNode;
+	| GiselleWorkflowDesignerFileNode
+	| GiselleWorkflowDesignerGitHubNode;
 
 export const nodeTypes: NodeTypes = {
 	[TextGenerationNode.shape.content.shape.type._def.value]: CustomXyFlowNode,
 	[TextNode.shape.content.shape.type._def.value]: CustomXyFlowNode,
 	[FileNode.shape.content.shape.type._def.value]: CustomXyFlowNode,
+	[GitHubNode.shape.content.shape.type._def.value]: CustomXyFlowNode,
 };
 
 export function CustomXyFlowNode({
@@ -107,6 +113,18 @@ export function CustomXyFlowNode({
 					connectedOutputIds={connectedOutputIds}
 				/>
 			);
+		case "github":
+			return (
+				<NodeComponent
+					nodeType={data.nodeData.type}
+					title={data.nodeData.name}
+					selected={selected}
+					hasTarget={hasTarget}
+					inputs={data.nodeData.inputs}
+					outputs={data.nodeData.outputs}
+					contentType="github"
+				/>
+			);
 		default: {
 			const _exhaustiveCheck: never = data.nodeData.content;
 			throw new Error(`Unhandled content type: ${_exhaustiveCheck}`);
@@ -148,6 +166,7 @@ export function NodeComponent({
 				"data-[content-type=text]:from-text-node-1] data-[content-type=text]:to-text-node-2 data-[content-type=text]:shadow-text-node-1",
 				"data-[content-type=file]:from-file-node-1] data-[content-type=file]:to-file-node-2 data-[content-type=file]:shadow-file-node-1",
 				"data-[content-type=textGeneration]:from-generation-node-1] data-[content-type=textGeneration]:to-generation-node-2 data-[content-type=textGeneration]:shadow-generation-node-1",
+				"data-[content-type=github]:from-github-node-1] data-[content-type=github]:to-github-node-2 data-[content-type=github]:shadow-github-node-1",
 				"data-[selected=true]:shadow-[0px_0px_16px_0px]",
 				"data-[preview=true]:opacity-50",
 				"not-data-preview:min-h-[110px]",
@@ -159,6 +178,7 @@ export function NodeComponent({
 					"group-data-[content-type=text]:from-text-node-1/40 group-data-[content-type=text]:to-text-node-1",
 					"group-data-[content-type=file]:from-file-node-1/40 group-data-[content-type=file]:to-file-node-1",
 					"group-data-[content-type=textGeneration]:from-generation-node-1/40 group-data-[content-type=textGeneration]:to-generation-node-1",
+					"group-data-[content-type=github]:from-github-node-1/40 group-data-[content-type=github]:to-github-node-1",
 				)}
 			/>
 
@@ -176,6 +196,7 @@ export function NodeComponent({
 							"group-data-[content-type=text]:bg-text-node-1",
 							"group-data-[content-type=file]:bg-file-node-1",
 							"group-data-[content-type=textGeneration]:bg-generation-node-1",
+							"group-data-[content-type=github]:bg-github-node-1",
 						)}
 					>
 						<ContentTypeIcon
@@ -185,6 +206,7 @@ export function NodeComponent({
 								"group-data-[content-type=text]:text-black-900",
 								"group-data-[content-type=file]:text-black-900",
 								"group-data-[content-type=textGeneration]:text-white-900",
+								"group-data-[content-type=github]:text-white-900",
 							)}
 						/>
 					</div>
@@ -213,6 +235,7 @@ export function NodeComponent({
 									className={clsx(
 										"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[5px] !translate-x-[50%] !border-[1.5px]",
 										"group-data-[content-type=textGeneration]:!bg-generation-node-1 group-data-[content-type=textGeneration]:!border-generation-node-1",
+										"group-data-[content-type=github]:!bg-github-node-1 group-data-[content-type=github]:!border-github-node-1",
 									)}
 								/>
 								<div className="text-[14px] text-black--30 px-[12px] text-white-900">
@@ -244,9 +267,11 @@ export function NodeComponent({
 										"group-data-[content-type=textGeneration]:!border-generation-node-1",
 										"group-data-[content-type=text]:!border-text-node-1",
 										"group-data-[content-type=file]:!border-file-node-1",
+										"group-data-[content-type=github]:!border-github-node-1",
 										"data-[state=connected]:group-data-[content-type=textGeneration]:!bg-generation-node-1",
 										"data-[state=connected]:group-data-[content-type=text]:!bg-text-node-1 data-[state=connected]:group-data-[content-type=text]:!border-text-node-1",
 										"data-[state=connected]:group-data-[content-type=file]:!bg-file-node-1 data-[state=connected]:group-data-[content-type=file]:!border-file-node-1",
+										"data-[state=connected]:group-data-[content-type=github]:!bg-github-node-1 data-[state=connected]:group-data-[content-type=github]:!border-github-node-1",
 										"data-[state=disconnected]:!bg-black-900",
 									)}
 								/>

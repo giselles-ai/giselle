@@ -10,6 +10,7 @@ import { getGenerationHandler } from "./handlers/get-generation";
 import { getLLMProvidersHandler } from "./handlers/get-llm-providers";
 import { getNodeGenerationsHandler } from "./handlers/get-node-generations";
 import { getWorkspace } from "./handlers/get-workspace";
+import { githubOperationHandler } from "./handlers/github-operation";
 import { removeFileHandler } from "./handlers/remove-file";
 import { requestGenerationHandler } from "./handlers/request-generation";
 import { saveWorkspace } from "./handlers/save-workspace";
@@ -23,6 +24,7 @@ export const GiselleEngineAction = z.enum([
 	"save-workspace",
 	"get-workspace",
 	"text-generation",
+	"github-operation",
 	"upload-file",
 	"remove-file",
 	"create-openai-vector-store",
@@ -203,6 +205,13 @@ export async function GiselleEngine(
 		case "dev": {
 			const res = await devHandler({ context });
 			return Response.json(res);
+		}
+		case "github-operation": {
+			const response = await githubOperationHandler({
+				context,
+				unsafeInput: payload,
+			});
+			return Response.json(response);
 		}
 		default: {
 			const _exhaustiveCheck: never = action;

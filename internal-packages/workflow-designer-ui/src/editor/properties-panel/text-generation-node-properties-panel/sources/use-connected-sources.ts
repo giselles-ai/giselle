@@ -29,10 +29,9 @@ export function useConnectedSources(node: TextGenerationNode) {
 				case "action":
 					switch (node.content.type) {
 						case "textGeneration":
-							node;
 							connectedGeneratedSources.push({
 								output,
-								node,
+								node: node as TextGenerationNode,
 								connection,
 							});
 							break;

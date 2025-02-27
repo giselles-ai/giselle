@@ -148,3 +148,10 @@ export const getNodeGenerations = {
 		generations: z.array(Generation),
 	}),
 };
+
+export const githubOperation = {
+	defaultApi: "/api/giselle/github-operation",
+	Input: z.object({
+		generationId: GenerationId.schema,
+	}),
+};
