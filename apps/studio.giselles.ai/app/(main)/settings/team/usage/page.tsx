@@ -1,12 +1,15 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { settingsV2Flag } from "@/flags";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { AgentTimeCharge } from "../agent-time-charge";
 import { AgentUsage } from "../agent-usage";
 
 export default async function TeamUsagePage() {
 	const settingsV2Mode = await settingsV2Flag();
-
+	if (!settingsV2Mode) {
+		return notFound();
+	}
 	return (
 		<div className="flex flex-col gap-[24px]">
 			<h3
