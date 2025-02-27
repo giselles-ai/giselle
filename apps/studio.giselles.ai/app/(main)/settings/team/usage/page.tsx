@@ -16,7 +16,7 @@ export default async function TeamUsagePage() {
 				className="text-primary-100 font-semibold text-[28px] leading-[33.6px] tracking-[-0.011em] font-hubotSans"
 				style={{ textShadow: "0px 0px 20px hsla(207, 100%, 48%, 1)" }}
 			>
-				Usage {settingsV2Mode ? "V2" : ""}
+				Usage
 			</h3>
 			<div className="flex flex-col gap-y-[16px]">
 				<Suspense
