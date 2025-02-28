@@ -19,7 +19,8 @@ export async function AgentUsage() {
 
 	return (
 		<Card
-			title="Recent Agent Usage"
+			title="Recent Agent"
+			description="This is your URL namespace within Giselle. Please use 48 characters at maximum."
 			action={{
 				component:
 					activities.length > 0 ? (
