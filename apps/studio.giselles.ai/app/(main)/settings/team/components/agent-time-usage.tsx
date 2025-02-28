@@ -131,7 +131,7 @@ function AgentTimeUsage(props: AgentTimeUsageProps) {
 
 				{isNearLimit && (
 					<Alert className="border-warning-900 p-4">
-						<CustumAlertTriangleIcon className="!text-warning-900" />
+						<CustumAlertTriangleIcon className="text-warning-900" />
 
 						<div>
 							<AlertTitle className="mb-0 text-warning-900 font-bold text-[12px] leading-[20.4px] tracking-normal font-geist">
@@ -140,7 +140,7 @@ function AgentTimeUsage(props: AgentTimeUsageProps) {
 								your plan
 							</AlertTitle>
 
-							<AlertDescription className="text-warning-900 opacity-70 text-[12px] leading-[20.4px] tracking-normal font-geist">
+							<AlertDescription className="text-warning-900 opacity-70 font-medium text-[12px] leading-[20.4px] tracking-normal font-geist">
 								{warningMessage}
 							</AlertDescription>
 						</div>
@@ -155,7 +155,7 @@ function AgentTimeUsage(props: AgentTimeUsageProps) {
 							<AlertTitle className="mb-0 text-error-900 font-bold text-[12px] leading-[20.4px] tracking-normal font-geist">
 								{overMinutes} minutes over your plan limit
 							</AlertTitle>
-							<AlertDescription className="text-error-900 opacity-70 text-[12px] leading-[20.4px] tracking-normal font-geist">
+							<AlertDescription className="text-error-900 opacity-70 font-medium text-[12px] leading-[20.4px] tracking-normal font-geist">
 								{overLimitMessage}
 							</AlertDescription>
 						</div>
