@@ -7,7 +7,7 @@ export default async function SettingLayout({
 	children,
 }: { children: ReactNode }) {
 	return (
-		<div className="flex divide-x divide-black-80 h-full">
+		<div className="flex divide-x divide-black-80 h-full bg-black-850">
 			<div className="w-[200px] p-[24px]">
 				<div className="grid gap-[16px]">
 					<MenuLink
