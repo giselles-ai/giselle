@@ -77,11 +77,10 @@ function AgentTimeUsage(props: AgentTimeUsageProps) {
 					<div
 						className={clsx(
 							"text-sm font-bold text-white-900 leading-[23.8px] tracking-normal font-geist",
-							isOverLimit && "flex items-center gap-x-2",
 						)}
 					>
 						{isOverLimit ? (
-							<span>
+							<span className="flex items-center gap-x-2">
 								{includedMinutes}min +{" "}
 								<span className="text-error-900">{overMinutes}min used</span>
 							</span>
