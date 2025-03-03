@@ -1,6 +1,7 @@
 import {
 	ConnectionId,
 	type GitHubNode,
+	isGitHubNode,
 	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
 import {
@@ -16,6 +17,9 @@ import { type Source, useConnectedSources } from "./sources";
 function getDefaultNodeName(source: Source): string {
 	if (isTextGenerationNode(source.node)) {
 		return source.node.content.llm.model;
+	}
+	if (isGitHubNode(source.node)) {
+		return "GitHub";
 	}
 	return source.node.type;
 }

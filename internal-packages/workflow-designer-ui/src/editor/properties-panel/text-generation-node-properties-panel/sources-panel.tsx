@@ -1,4 +1,5 @@
 import {
+	type ActionNode,
 	type Connection,
 	type Input,
 	InputId,
@@ -45,6 +46,22 @@ function SourceSelect({
 	);
 	const { generatedSources, textSources, fileSources } =
 		useSourceCategories(sources);
+
+	const actionNodeSourceLabel = (node: ActionNode) => {
+		if (node.name != null) {
+			return node.name;
+		}
+		switch (node.content.type) {
+			case "textGeneration":
+				return node.content.llm.model;
+			case "github":
+				return "GitHub";
+			default: {
+				const _exhaustiveCheck: never = node.content;
+				throw new Error(`Unhandled source type: ${_exhaustiveCheck}`);
+			}
+		}
+	};
 	return (
 		<Popover.Root>
 			<Popover.Trigger
@@ -109,9 +126,8 @@ function SourceSelect({
 											value={generatedSource.output.id}
 										>
 											<p className="text-[12px] truncate">
-												{generatedSource.node.name ??
-													generatedSource.node.content.llm.model}{" "}
-												/ {generatedSource.output.label}
+												{actionNodeSourceLabel(generatedSource.node)} /{" "}
+												{generatedSource.output.label}
 											</p>
 											<CheckIcon className="w-[16px] h-[16px] hidden group-data-[state=on]:block" />
 										</ToggleGroup.Item>
@@ -376,17 +392,34 @@ export function SourcesPanel({
 			<div className="flex flex-col gap-[32px]">
 				{connectedSources.generation.length > 0 && (
 					<SourceListRoot title="Generated Sources">
-						{connectedSources.generation.map((source) => (
-							<SourceListItem
-								icon={
-									<GeneratedContentIcon className="size-[24px] text-white-900" />
-								}
-								key={source.connection.id}
-								title={`${source.node.name ?? source.node.content.llm.model} / ${source.output.label}`}
-								subtitle={source.node.content.llm.provider}
-								onRemove={() => handleRemove(source.connection)}
-							/>
-						))}
+						{connectedSources.generation.map((source) => {
+							if (source.node.content.type === "github") {
+								return (
+									<SourceListItem
+										icon={
+											<GeneratedContentIcon className="size-[24px] text-white-900" />
+										}
+										key={source.connection.id}
+										title={source.output.label}
+										subtitle={source.node.name ?? "GitHub"}
+										onRemove={() => handleRemove(source.connection)}
+									/>
+								);
+							}
+							if (source.node.content.type === "textGeneration") {
+								return (
+									<SourceListItem
+										icon={<PromptIcon className="size-[24px] text-white-900" />}
+										key={source.connection.id}
+										title={source.output.label}
+										subtitle={source.node.name ?? source.node.content.llm.model}
+										onRemove={() => handleRemove(source.connection)}
+									/>
+								);
+							}
+							const _exhaustiveCheck: never = source.node.content;
+							throw new Error(`Unhandled source type: ${_exhaustiveCheck}`);
+						})}
 					</SourceListRoot>
 				)}
 				{connectedSources.variable.length > 0 && (

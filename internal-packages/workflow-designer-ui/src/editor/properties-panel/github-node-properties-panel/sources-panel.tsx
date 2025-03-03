@@ -1,10 +1,11 @@
-import type {
-	Connection,
-	GitHubNode,
-	Input,
+import {
+	type ActionNode,
+	type Connection,
+	type GitHubNode,
+	type Input,
+	InputId,
 	OutputId,
 } from "@giselle-sdk/data-type";
-import { InputId } from "@giselle-sdk/data-type";
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
@@ -47,13 +48,29 @@ function SourceSelect({
 	const { generatedSources, textSources, fileSources } =
 		useSourceCategories(sources);
 
+	const actionNodeSourceLabel = (node: ActionNode) => {
+		if (node.name != null) {
+			return node.name;
+		}
+		switch (node.content.type) {
+			case "textGeneration":
+				return node.content.llm.model;
+			case "github":
+				return "GitHub";
+			default: {
+				const _exhaustiveCheck: never = node.content;
+				throw new Error(`Unhandled source type: ${_exhaustiveCheck}`);
+			}
+		}
+	};
+
 	return (
 		<Popover.Root>
 			<Popover.Trigger
 				className={clsx(
 					"flex items-center cursor-pointer p-[10px] rounded-[8px]",
-					"border border-transparent hover:border-white-20",
-					"text-[12px] font-[700] text-white-20",
+					"border border-transparent hover:border-white-800",
+					"text-[12px] font-[700] text-white-800",
 					"transition-colors",
 				)}
 			>
@@ -63,7 +80,7 @@ function SourceSelect({
 			<Popover.Portal>
 				<Popover.Content
 					className={clsx(
-						"relative w-[300px] rounded py-[8px]",
+						"relative w-[300px] max-h-[300px] overflow-y-auto py-[8px]",
 						"rounded-[8px] border-[1px] backdrop-blur-[8px]",
 						"shadow-[-2px_-1px_0px_0px_rgba(0,0,0,0.1),1px_1px_8px_0px_rgba(0,0,0,0.25)]",
 					)}
@@ -82,18 +99,21 @@ function SourceSelect({
 						onValueChange={(unsafeValue) => {
 							const safeValue = unsafeValue
 								.map((value) => {
-									if (typeof value === "string" && value.startsWith("otp-")) {
-										return value as OutputId;
+									const parse = OutputId.safeParse(value);
+									if (parse.success) {
+										return parse.data;
 									}
 									return null;
 								})
-								.filter((id) => id !== null) as OutputId[];
+								.filter((id) => id !== null);
 							setSelectedOutputIds(safeValue);
 						}}
 					>
-						<div className="flex px-[16px] text-white">Select Sources From</div>
+						<div className="flex px-[16px] text-white-900">
+							Select Sources From
+						</div>
 						<div className="flex flex-col py-[4px]">
-							<div className="border-t border-black-30/20" />
+							<div className="border-t border-black-300/20" />
 						</div>
 						<div className="flex flex-col pb-[8px] gap-[8px]">
 							{generatedSources.length > 0 && (
@@ -108,12 +128,8 @@ function SourceSelect({
 											value={generatedSource.output.id}
 										>
 											<p className="text-[12px] truncate">
-												{generatedSource.node.name ??
-													(generatedSource.node.content.type ===
-													"textGeneration"
-														? generatedSource.node.content.llm.model
-														: "GitHub")}{" "}
-												/ {generatedSource.output.label}
+												{actionNodeSourceLabel(generatedSource.node)} /{" "}
+												{generatedSource.output.label}
 											</p>
 											<CheckIcon className="w-[16px] h-[16px] hidden group-data-[state=on]:block" />
 										</ToggleGroup.Item>
@@ -211,11 +227,11 @@ function SourceListItem({
 		<div
 			className={clsx(
 				"group flex items-center",
-				"border border-white/20 rounded-[8px] h-[60px]",
+				"border border-white-900/20 rounded-[8px] h-[60px]",
 			)}
 		>
 			<div className="w-[60px] flex items-center justify-center">{icon}</div>
-			<div className="w-[1px] h-full border-l border-white/20" />
+			<div className="w-[1px] h-full border-l border-white-900/20" />
 			<div className="px-[16px] flex-1 flex items-center justify-between">
 				<div className="flex flex-col gap-[4px]">
 					<p className="text=[16px]">{title}</p>
@@ -228,11 +244,11 @@ function SourceListItem({
 					className={clsx(
 						"hidden group-hover:block",
 						"p-[4px] rounded-[4px]",
-						"bg-transparent hover:bg-black-30/50 transition-colors",
+						"bg-transparent hover:bg-black-300/50 transition-colors",
 					)}
 					onClick={onRemove}
 				>
-					<TrashIcon className="w-[18px] h-[18px] text-white" />
+					<TrashIcon className="w-[18px] h-[18px] text-white-900" />
 				</button>
 			</div>
 		</div>
@@ -277,12 +293,13 @@ export function SourcesPanel({
 				.filter((connection) => connection.inputNode.id === gitHubNode.id)
 				.map((connection) => connection.outputId);
 
-			// Find added outputs (in connectOutputIds but not in currentConnectedOutputIds)
-			const addedOutputIds = connectOutputIds.filter(
-				(id) => !currentConnectedOutputIds.includes(id),
+			const newConnectOutputIdSet = new Set(connectOutputIds);
+			const currentConnectedOutputIdSet = new Set(currentConnectedOutputIds);
+			const addedOutputIdSet = newConnectOutputIdSet.difference(
+				currentConnectedOutputIdSet,
 			);
 
-			for (const outputId of addedOutputIds) {
+			for (const outputId of addedOutputIdSet) {
 				const outputNode = data.nodes.find((node) =>
 					node.outputs.some((output) => output.id === outputId),
 				);
@@ -305,12 +322,11 @@ export function SourcesPanel({
 				});
 			}
 
-			// Find removed outputs (in currentConnectedOutputIds but not in connectOutputIds)
-			const removedOutputIds = currentConnectedOutputIds.filter(
-				(id) => !connectOutputIds.includes(id),
+			const removedOutputIdSet = currentConnectedOutputIdSet.difference(
+				newConnectOutputIdSet,
 			);
 
-			for (const outputId of removedOutputIds) {
+			for (const outputId of removedOutputIdSet) {
 				const connection = data.connections.find(
 					(connection) =>
 						connection.inputNode.id === gitHubNode.id &&
@@ -378,17 +394,34 @@ export function SourcesPanel({
 			<div className="flex flex-col gap-[32px]">
 				{connectedSources.generation.length > 0 && (
 					<SourceListRoot title="Generated Sources">
-						{connectedSources.generation.map((source) => (
-							<SourceListItem
-								icon={
-									<GeneratedContentIcon className="size-[24px] text-white" />
-								}
-								key={source.connection.id}
-								title={source.output.label}
-								subtitle={source.node.name ?? "Generated Content"}
-								onRemove={() => handleRemove(source.connection)}
-							/>
-						))}
+						{connectedSources.generation.map((source) => {
+							if (source.node.content.type === "github") {
+								return (
+									<SourceListItem
+										icon={
+											<GeneratedContentIcon className="size-[24px] text-white-900" />
+										}
+										key={source.connection.id}
+										title={source.output.label}
+										subtitle={source.node.name ?? "GitHub"}
+										onRemove={() => handleRemove(source.connection)}
+									/>
+								);
+							}
+							if (source.node.content.type === "textGeneration") {
+								return (
+									<SourceListItem
+										icon={<PromptIcon className="size-[24px] text-white-900" />}
+										key={source.connection.id}
+										title={source.output.label}
+										subtitle={source.node.name ?? source.node.content.llm.model}
+										onRemove={() => handleRemove(source.connection)}
+									/>
+								);
+							}
+							const _exhaustiveCheck: never = source.node.content;
+							throw new Error(`Unhandled source type: ${_exhaustiveCheck}`);
+						})}
 					</SourceListRoot>
 				)}
 				{connectedSources.variable.length > 0 && (
@@ -408,9 +441,11 @@ export function SourcesPanel({
 
 									return (
 										<SourceListItem
-											icon={<PromptIcon className="size-[24px] text-white" />}
+											icon={
+												<PromptIcon className="size-[24px] text-white-900" />
+											}
 											key={source.connection.id}
-											title={source.node.name ?? "Text"}
+											title={`${source.node.name ?? "Text"} / ${source.output.label}`}
 											subtitle={text}
 											onRemove={() => handleRemove(source.connection)}
 										/>
@@ -419,9 +454,11 @@ export function SourcesPanel({
 								case "file":
 									return (
 										<SourceListItem
-											icon={<PdfFileIcon className="size-[24px] text-white" />}
+											icon={
+												<PdfFileIcon className="size-[24px] text-white-900" />
+											}
 											key={source.connection.id}
-											title={source.node.name ?? "File"}
+											title={`${source.node.name ?? "PDF Files"} / ${source.output.label}`}
 											subtitle={`${source.node.content.files.length} ${pluralize("file", source.node.content.files.length)}`}
 											onRemove={() => handleRemove(source.connection)}
 										/>
