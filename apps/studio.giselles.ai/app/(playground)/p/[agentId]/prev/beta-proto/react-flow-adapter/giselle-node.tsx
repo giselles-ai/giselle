@@ -103,13 +103,13 @@ export const ReactFlowEdge: FC<EdgeProps<ReactFlowEdgeType>> = ({
 				id={id}
 				path={edgePath}
 				className={clsx(
-					"!stroke-[2px] bg-white drop-shadow-[0px_0px_16px_0px_hsla(187,_79%,_54%,_0.5)]",
+					"stroke-[2px]! bg-white drop-shadow-[0px_0px_16px_0px_hsla(187,_79%,_54%,_0.5)]",
 					data.sourceNodeCategory === giselleNodeCategories.instruction &&
 						data.targetNodeCategory === giselleNodeCategories.action &&
-						" !stroke-[url(#instructionToAction)]",
+						" stroke-[url(#instructionToAction)]!",
 					data.sourceNodeCategory === giselleNodeCategories.action &&
 						data.targetNodeCategory === giselleNodeCategories.action &&
-						" !stroke-[url(#actionToAction)]",
+						" stroke-[url(#actionToAction)]!",
 				)}
 			/>
 		</>

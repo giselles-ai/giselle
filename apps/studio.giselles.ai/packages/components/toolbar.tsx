@@ -31,7 +31,7 @@ function ToggleGroupItem({
 		<Tooltip text={<TooltipAndHotkey text={tooltip} hotkey={shortcut} />}>
 			<ToggleGroup.Item
 				value={value}
-				className="hover:bg-white/20 p-[4px] rounded-[4px] data-[state=on]:bg-black-80 focus:outline-none "
+				className="hover:bg-white/20 p-[4px] rounded-[4px] data-[state=on]:bg-black-80 focus:outline-hidden "
 				data-state={selectedTool?.action === value ? "on" : "off"}
 				{...props}
 			/>
@@ -43,7 +43,7 @@ export function Toolbar() {
 	const { selectTool, selectedTool } = useToolbar();
 	return (
 		<div className="relative rounded-[46px] overflow-hidden bg-black-100">
-			<div className="absolute z-0 rounded-[46px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-boarder border-transparent" />
+			<div className="absolute z-0 rounded-[46px] inset-0 border mask-fill bg-linear-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-boarder border-transparent" />
 			<div className="flex divide-x divide-[hsla(232,36%,72%,0.2)] items-center px-[8px] py-[8px]">
 				<ToggleGroup.Root
 					type="single"

@@ -52,7 +52,6 @@ export function GenerationPanel({ node }: { node: GitHubNode }) {
 			>
 				{(currentGeneration.status === "created" ||
 					currentGeneration.status === "queued" ||
-					currentGeneration.status === "requested" ||
 					currentGeneration.status === "running") && (
 					<p data-header-text>Generating...</p>
 				)}
@@ -60,6 +59,9 @@ export function GenerationPanel({ node }: { node: GitHubNode }) {
 					<p data-header-text>Result</p>
 				)}
 				{currentGeneration.status === "failed" && <p data-header-text>Error</p>}
+				{currentGeneration.status === "cancelled" && (
+					<p data-header-text>Result</p>
+				)}
 			</div>
 			<div className="py-[4px] px-[16px] overflow-y-auto h-full">
 				<GenerationView generation={currentGeneration} />

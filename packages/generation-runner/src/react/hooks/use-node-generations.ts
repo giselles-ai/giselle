@@ -1,9 +1,10 @@
-import { GenerationOrigin } from "@giselle-sdk/data-type";
-import { useEffect, useMemo } from "react";
 import {
-	type FetchNodeGenerationsParams,
-	useGenerationRunnerSystem,
-} from "../contexts";
+	type Generation,
+	GenerationOrigin,
+	type NodeId,
+} from "@giselle-sdk/data-type";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useGenerationRunnerSystem } from "../contexts";
 
 /**
  * Hook to fetch and manage node generations.
@@ -13,9 +14,21 @@ import {
 export function useNodeGenerations({
 	nodeId,
 	origin: { id: originId, type: originType },
-}: FetchNodeGenerationsParams) {
-	const { generations: allGenerations, fetchNodeGenerations } =
-		useGenerationRunnerSystem();
+}: {
+	nodeId: NodeId;
+	origin: GenerationOrigin;
+}) {
+	const {
+		generations: allGenerations,
+		fetchNodeGenerations,
+		startGeneration,
+		stopGeneration: stopGenerationSystem,
+	} = useGenerationRunnerSystem();
+
+	const [currentGeneration, setCurrentGeneration] = useState<
+		Generation | undefined
+	>();
+
 	const generations = useMemo(
 		() => allGenerations.filter((g) => g.context.actionNode.id === nodeId),
 		[allGenerations, nodeId],
@@ -34,5 +47,37 @@ export function useNodeGenerations({
 			origin,
 		});
 	}, [fetchNodeGenerations, originId, originType, nodeId]);
-	return { generations };
+
+	useEffect(() => {
+		if (generations.length === 0) {
+			setCurrentGeneration(undefined);
+		} else {
+			const latestGeneration = generations[generations.length - 1];
+			setCurrentGeneration(latestGeneration);
+		}
+	}, [generations]);
+
+	const isGenerating = useMemo(() => {
+		const latestGeneration = generations[generations.length - 1];
+		return (
+			latestGeneration?.status === "running" ||
+			latestGeneration?.status === "created" ||
+			latestGeneration?.status === "queued"
+		);
+	}, [generations]);
+
+	const stopGeneration = useCallback(() => {
+		const latestGeneration = generations[generations.length - 1];
+		if (latestGeneration !== undefined) {
+			stopGenerationSystem(latestGeneration.id);
+		}
+	}, [generations, stopGenerationSystem]);
+
+	return {
+		generations,
+		startGeneration,
+		isGenerating,
+		currentGeneration,
+		stopGeneration,
+	};
 }

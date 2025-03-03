@@ -150,7 +150,7 @@ function EditorInner() {
 				}}
 			>
 				<Background
-					className="!bg-black-100"
+					className="bg-black-100!"
 					lineWidth={0}
 					variant={BackgroundVariant.Lines}
 					style={{
@@ -175,18 +175,18 @@ function EditorInner() {
 				<Panel position={"bottom-center"}>
 					<Toolbar />
 				</Panel>
-				<Panel position="top-left" className="!top-0 !left-0 !right-0 !m-0">
+				<Panel position="top-left" className="top-0! left-0! right-0! m-0!">
 					<Header />
 				</Panel>
-				<Panel position="top-left" className="!top-0 !bottom-0 !left-0 !m-0">
+				<Panel position="top-left" className="top-0! bottom-0! left-0! m-0!">
 					<LeftMenu />
 				</Panel>
-				<Panel position="top-right" className="!top-0 !bottom-0 !right-0 !m-0">
+				<Panel position="top-right" className="top-0! bottom-0! right-0! m-0!">
 					<GiselleNodeInformationPanel />
 				</Panel>
-				{/**<Panel position="top-left" className="!top-0 !bottom-0 !left-0 !m-0">
+				{/**<Panel position="top-left" className="top-0! bottom-0! left-0! m-0!">
 					<div className="absolute bg-black-100 w-[380px] rounded-[16px] overflow-hidden shadow-[0px_0px_8px_0px_hsla(0,_0%,_100%,_0.2)] top-[80px] bottom-[20px] left-[20px]">
-						<div className="absolute z-0 rounded-[16px] inset-0 border mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent from-[hsla(233,4%,37%,1)] to-[hsla(233,62%,22%,1)]" />
+						<div className="absolute z-0 rounded-[16px] inset-0 border mask-fill bg-linear-to-br bg-origin-border bg-clip-boarder border-transparent from-[hsla(233,4%,37%,1)] to-[hsla(233,62%,22%,1)]" />
 						<div className="flex gap-[10px] flex-col h-full">
 							<div className="relative z-10 pt-[16px] px-[24px] flex justify-between h-[40px]">
 								hello

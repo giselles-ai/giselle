@@ -65,7 +65,7 @@ export function GoogleSheetsSelection({ data }: { data: any }) {
 					id="drive-select"
 					value={selectedDrive}
 					onChange={handleDriveChange}
-					className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+					className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-hidden focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
 				>
 					<option value="">Choose a drive</option>
 					{
@@ -91,7 +91,7 @@ export function GoogleSheetsSelection({ data }: { data: any }) {
 						id="sheet-select"
 						value={selectedSpreadsheet}
 						onChange={handleSpreadsheetChange}
-						className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+						className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-hidden focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
 					>
 						<option value="">Choose a sheet</option>
 						{
@@ -118,7 +118,7 @@ export function GoogleSheetsSelection({ data }: { data: any }) {
 						id="worksheet-select"
 						value={selectedSheet}
 						onChange={handleSheetChange}
-						className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+						className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-hidden focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
 					>
 						<option value="">Choose a sheet</option>
 						{

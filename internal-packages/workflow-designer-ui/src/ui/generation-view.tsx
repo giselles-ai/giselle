@@ -1,4 +1,5 @@
 import type {
+	CancelledGeneration,
 	CompletedGeneration,
 	Generation,
 	NodeId,
@@ -29,7 +30,11 @@ export function GenerationView({
 	if (generation.status === "failed") {
 		return generation.error.message;
 	}
-	if (generation.status !== "running" && generation.status !== "completed") {
+	if (
+		generation.status !== "running" &&
+		generation.status !== "completed" &&
+		generation.status !== "cancelled"
+	) {
 		return (
 			<div className="pt-[8px]">
 				<Spinner />
@@ -68,11 +73,12 @@ export function GenerationView({
 					})}
 				</div>
 			))}
-			{generation.status !== "completed" && (
-				<div className="pt-[8px]">
-					<Spinner />
-				</div>
-			)}
+			{generation.status !== "completed" &&
+				generation.status !== "cancelled" && (
+					<div className="pt-[8px]">
+						<Spinner />
+					</div>
+				)}
 		</div>
 	);
 }
@@ -82,7 +88,7 @@ function ToolBlock({
 	contextNodeId,
 }: {
 	contextNodeId: NodeId;
-	generation: RunningGeneration | CompletedGeneration;
+	generation: RunningGeneration | CompletedGeneration | CancelledGeneration;
 }) {
 	const contextNode = useMemo(
 		() =>

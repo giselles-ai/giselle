@@ -1,5 +1,6 @@
 export { callAddGenerationApi } from "./call-add-generation-api";
 export { callAddRunApi } from "./call-add-run-api";
+export { callCancelGenerationApi } from "./call-cancel-generation-api";
 export { callCreateOpenAiVectorStoreApi } from "./call-create-open-ai-vector-store-api";
 export { callCreateWorkspaceApi } from "./call-create-workspace-api";
 export { callGetGenerationApi } from "./call-get-generation-api";

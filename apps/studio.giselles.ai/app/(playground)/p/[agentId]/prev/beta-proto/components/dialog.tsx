@@ -50,7 +50,7 @@ const DialogContent = React.forwardRef<
 			{...props}
 		>
 			{children}
-			<div className="absolute z-0 rounded-[16px] inset-0 border mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent from-[hsla(233,4%,37%,1)] to-[hsla(233,62%,22%,1)]" />
+			<div className="absolute z-0 rounded-[16px] inset-0 border mask-fill bg-linear-to-br bg-origin-border bg-clip-boarder border-transparent from-[hsla(233,4%,37%,1)] to-[hsla(233,62%,22%,1)]" />
 		</DialogPrimitive.Content>
 	</DialogPortal>
 ));

@@ -27,7 +27,7 @@ import {
 import { ToolSelectOption } from "./tool-select-option";
 
 export const GradientBorder: FC = () => (
-	<div className="absolute z-0 rounded-[46px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-boarder border-transparent" />
+	<div className="absolute z-0 rounded-[46px] inset-0 border mask-fill bg-linear-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-boarder border-transparent" />
 );
 
 const ToolbarButton = forwardRef<HTMLButtonElement, PropsWithChildren>(

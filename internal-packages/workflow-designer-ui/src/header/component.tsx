@@ -1,3 +1,5 @@
+"use client";
+
 import clsx from "clsx";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { PlayIcon } from "lucide-react";

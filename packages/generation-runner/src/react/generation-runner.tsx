@@ -1,9 +1,9 @@
 import {
+	type CancelledGeneration,
 	type CompletedGeneration,
 	type FailedGeneration,
 	type Generation,
 	type QueuedGeneration,
-	type RequestedGeneration,
 	type RunningGeneration,
 	isGitHubNode,
 } from "@giselle-sdk/data-type";
@@ -70,20 +70,20 @@ function CompletionRunner({
 }: {
 	generation:
 		| QueuedGeneration
-		| RequestedGeneration
 		| RunningGeneration
 		| CompletedGeneration
-		| FailedGeneration;
+		| FailedGeneration
+		| CancelledGeneration;
 }) {
 	const {
 		generateTextApi,
-		requestGeneration,
 		updateGenerationStatusToRunning,
 		updateGenerationStatusToComplete,
 		updateGenerationStatusToFailure,
 		updateMessages,
+		addStopHandler,
 	} = useGenerationRunnerSystem();
-	const { messages, append } = useChat({
+	const { messages, append, stop } = useChat({
 		api: generateTextApi,
 		onFinish: async () => {
 			await updateGenerationStatusToComplete(generation.id);
@@ -105,16 +105,15 @@ function CompletionRunner({
 		if (generation.status !== "queued") {
 			return;
 		}
-		requestGeneration(generation).then(() => {
-			append(
-				{ role: "user", content: "hello" },
-				{
-					body: {
-						generationId: generation.id,
-					},
+		addStopHandler(generation.id, stop);
+		append(
+			{ role: "user", content: "hello" },
+			{
+				body: {
+					generation,
 				},
-			);
-		});
+			},
+		);
 	});
 	return null;
 }
@@ -132,7 +131,6 @@ function GitHubRunner({
 	}
 
 	const {
-		requestGeneration,
 		updateGenerationStatusToComplete,
 		updateGenerationStatusToFailure,
 		callGithubOperation,
@@ -143,7 +141,6 @@ function GitHubRunner({
 			return;
 		}
 		try {
-			await requestGeneration(generation);
 			await callGithubOperation(generation.id);
 			await updateGenerationStatusToComplete(generation.id);
 		} catch (error) {

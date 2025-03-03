@@ -359,7 +359,7 @@ export const PromptPropertyPanel: FC<PromptPropertyPanelProps> = ({ node }) => {
 								<textarea
 									name="text"
 									id="text"
-									className="w-full text-[14px] h-[200px] bg-[hsla(222,21%,40%,0.3)] rounded-[8px] text-white p-[14px] font-rosart outline-none resize-none"
+									className="w-full text-[14px] h-[200px] bg-[hsla(222,21%,40%,0.3)] rounded-[8px] text-white p-[14px] font-rosart outline-hidden resize-none"
 									onBlur={handleBlur}
 									value={text}
 									onChange={(event) => {
@@ -421,7 +421,7 @@ export const PromptPropertyPanel: FC<PromptPropertyPanelProps> = ({ node }) => {
 																		) && (
 																			<CheckIcon
 																				size={16}
-																				className="stroke-white flex-shrink-0"
+																				className="stroke-white shrink-0"
 																			/>
 																		)}
 																	</button>
@@ -443,7 +443,7 @@ export const PromptPropertyPanel: FC<PromptPropertyPanelProps> = ({ node }) => {
 																		) && (
 																			<CheckIcon
 																				size={16}
-																				className="stroke-white flex-shrink-0"
+																				className="stroke-white shrink-0"
 																			/>
 																		)}
 																	</button>
@@ -479,7 +479,7 @@ export const PromptPropertyPanel: FC<PromptPropertyPanelProps> = ({ node }) => {
 																: "Pending"
 												}
 												icon={
-													<DocumentIcon className="w-[18px] h-[18px] fill-black-30 flex-shrink-0" />
+													<DocumentIcon className="w-[18px] h-[18px] fill-black-30 shrink-0" />
 												}
 											/>
 										) : source.object === "webSearch" ? (
@@ -487,7 +487,7 @@ export const PromptPropertyPanel: FC<PromptPropertyPanelProps> = ({ node }) => {
 												key={source.id}
 												title={source.name}
 												icon={
-													<TextsIcon className="w-[18px] h-[18px] fill-black-30 flex-shrink-0" />
+													<TextsIcon className="w-[18px] h-[18px] fill-black-30 shrink-0" />
 												}
 											/>
 										) : (
@@ -495,7 +495,7 @@ export const PromptPropertyPanel: FC<PromptPropertyPanelProps> = ({ node }) => {
 												key={source.id}
 												title={source.title}
 												icon={
-													<TextsIcon className="w-[18px] h-[18px] fill-black-30 flex-shrink-0" />
+													<TextsIcon className="w-[18px] h-[18px] fill-black-30 shrink-0" />
 												}
 												onDelete={removeTextContent({ id: source.id })}
 											/>

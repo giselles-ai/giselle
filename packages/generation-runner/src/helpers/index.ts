@@ -1,4 +1,5 @@
 import {
+	CancelledGeneration,
 	CompletedGeneration,
 	FailedGeneration,
 	type Generation,
@@ -49,12 +50,12 @@ export async function waitAndGetGenerationCompleted(
 	generationId: GenerationId,
 	requestOptions?: RequestOptions,
 ) {
-	const completedGeneration = await waitAndGetGenerationStatus(
+	const generation = await waitAndGetGenerationStatus(
 		generationId,
 		["completed"],
 		requestOptions,
 	);
-	return CompletedGeneration.parse(completedGeneration);
+	return CompletedGeneration.parse(generation);
 }
 
 export async function waitAndGetGenerationRunning(
@@ -63,11 +64,16 @@ export async function waitAndGetGenerationRunning(
 ) {
 	const generation = await waitAndGetGenerationStatus(
 		generationId,
-		["running", "completed", "failed"],
+		["running", "completed", "failed", "cancelled"],
 		requestOptions,
 	);
 	return z
-		.union([RunningGeneration, CompletedGeneration, FailedGeneration])
+		.union([
+			RunningGeneration,
+			CompletedGeneration,
+			FailedGeneration,
+			CancelledGeneration,
+		])
 		.parse(generation);
 }
 
@@ -81,4 +87,13 @@ export async function waitAndGetGenerationFailed(
 		requestOptions,
 	);
 	return FailedGeneration.parse(failedGeneration);
+}
+
+export function arrayEquals(a: unknown, b: unknown) {
+	return (
+		Array.isArray(a) &&
+		Array.isArray(b) &&
+		a.length === b.length &&
+		a.every((val, index) => val === b[index])
+	);
 }

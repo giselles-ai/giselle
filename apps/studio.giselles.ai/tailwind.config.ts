@@ -1,10 +1,8 @@
 import typographyPlugin from "@tailwindcss/typography";
 import type { Config } from "tailwindcss";
 import animatePlugin from "tailwindcss-animate";
-import type { PluginAPI } from "tailwindcss/types/config";
 
 const config = {
-	darkMode: ["class"],
 	content: [
 		"./pages/**/*.{ts,tsx}",
 		"./components/**/*.{ts,tsx}",
@@ -148,28 +146,6 @@ const config = {
 					"follow-through-overlap-spin 1.75s ease-out infinite",
 				"ticktock-bounce": "ticktock-bounce 1.5s steps(2, jump-none) infinite",
 			},
-			typography: (theme: PluginAPI["theme"]) => ({
-				giselle: {
-					css: {
-						"--tw-prose-body": theme("colors.black[30]"),
-						"--tw-prose-headings": theme("colors.black[30]"),
-						"--tw-prose-lead": theme("colors.black[30]"),
-						"--tw-prose-links": theme("colors.black[30]"),
-						"--tw-prose-bold": theme("colors.black[30]"),
-						"--tw-prose-counters": theme("colors.black[30]"),
-						"--tw-prose-bullets": theme("colors.black[30]"),
-						"--tw-prose-hr": theme("colors.black[30]"),
-						"--tw-prose-quotes": theme("colors.black[30]"),
-						"--tw-prose-quote-borders": theme("colors.black[30]"),
-						"--tw-prose-captions": theme("colors.black[30]"),
-						"--tw-prose-code": theme("colors.black[30]"),
-						"--tw-prose-pre-code": theme("colors.black[30]"),
-						"--tw-prose-pre-bg": theme("colors.black[80]"),
-						"--tw-prose-th-borders": theme("colors.black[30]"),
-						"--tw-prose-td-borders": theme("colors.black[30]"),
-					},
-				},
-			}),
 		},
 	},
 	plugins: [animatePlugin, typographyPlugin],

@@ -3,19 +3,19 @@ import type { Storage } from "unstorage";
 import { z } from "zod";
 import { addGenerationHandler } from "./handlers/add-generation";
 import { addRunHandler } from "./handlers/add-run";
+import { cancelGenerationHandler } from "./handlers/cancel-generation";
 import { createOpenAIVectorStoreHandler } from "./handlers/create-openai-vector-store";
 import { createWorkspaceHandler } from "./handlers/create-workspace";
 import { devHandler } from "./handlers/dev";
+import { generateText } from "./handlers/generate-text";
 import { getGenerationHandler } from "./handlers/get-generation";
 import { getLLMProvidersHandler } from "./handlers/get-llm-providers";
 import { getNodeGenerationsHandler } from "./handlers/get-node-generations";
 import { getWorkspace } from "./handlers/get-workspace";
 import { githubOperationHandler } from "./handlers/github-operation";
 import { removeFileHandler } from "./handlers/remove-file";
-import { requestGenerationHandler } from "./handlers/request-generation";
 import { saveWorkspace } from "./handlers/save-workspace";
 import { startRunHandler } from "./handlers/start-run";
-import { textGenerationHandler } from "./handlers/text-generation";
 import { uploadFileHandler } from "./handlers/upload-file";
 import type { GiselleEngineContext } from "./types";
 
@@ -23,18 +23,18 @@ export const GiselleEngineAction = z.enum([
 	"create-workspace",
 	"save-workspace",
 	"get-workspace",
-	"text-generation",
-	"github-operation",
 	"upload-file",
 	"remove-file",
 	"create-openai-vector-store",
 	"get-llm-providers",
 	"add-generation",
-	"request-generation",
 	"get-generation",
 	"add-run",
 	"start-run",
 	"get-node-generations",
+	"cancel-generation",
+	"generate-text",
+	"github-operation",
 	"dev",
 ]);
 type GiselleEngineAction = z.infer<typeof GiselleEngineAction>;
@@ -127,13 +127,6 @@ export async function GiselleEngine(
 			});
 			return Response.json(result);
 		}
-		case "text-generation": {
-			const stream = await textGenerationHandler({
-				context,
-				unsafeInput: payload,
-			});
-			return stream.toDataStreamResponse();
-		}
 		case "create-workspace": {
 			const result = await createWorkspaceHandler({ context });
 			return Response.json(result);
@@ -166,13 +159,6 @@ export async function GiselleEngine(
 			});
 			return Response.json(response);
 		}
-		case "request-generation": {
-			await requestGenerationHandler({
-				context,
-				unsafeInput: payload,
-			});
-			return Response.json({ ok: true });
-		}
 
 		case "get-generation": {
 			const response = await getGenerationHandler({
@@ -202,6 +188,13 @@ export async function GiselleEngine(
 			});
 			return Response.json(response);
 		}
+		case "cancel-generation": {
+			await cancelGenerationHandler({
+				context,
+				unsafeInput: payload,
+			});
+			return Response.json({ ok: true });
+		}
 		case "dev": {
 			const res = await devHandler({ context });
 			return Response.json(res);
@@ -212,6 +205,12 @@ export async function GiselleEngine(
 				unsafeInput: payload,
 			});
 			return Response.json(response);
+		}
+		case "generate-text": {
+			return await generateText({
+				context,
+				input: payload,
+			});
 		}
 		default: {
 			const _exhaustiveCheck: never = action;

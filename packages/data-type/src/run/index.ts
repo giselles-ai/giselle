@@ -47,10 +47,22 @@ export const CompletedRun = RunBase.extend({
 });
 export type CompletedRun = z.infer<typeof CompletedRun>;
 
+export const CancelledRun = RunBase.extend({
+	status: z.literal("cancelled"),
+	createdAt: z.number(),
+	workspaceId: WorkspaceId.schema,
+	workflow: Workflow,
+	queuedAt: z.number().optional(),
+	startedAt: z.number().optional(),
+	cancelledAt: z.number(),
+});
+export type CancelledRun = z.infer<typeof CancelledRun>;
+
 export const Run = z.discriminatedUnion("status", [
 	CreatedRun,
 	QueuedRun,
 	RunningRun,
 	CompletedRun,
+	CancelledRun,
 ]);
 export type Run = z.infer<typeof Run>;

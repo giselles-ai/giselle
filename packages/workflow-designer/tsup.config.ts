@@ -6,7 +6,6 @@ export default defineConfig([
 		format: ["cjs", "esm"],
 		dts: true,
 		sourcemap: true,
-		clean: true,
 	},
 	{
 		entry: ["src/react/index.ts"],
@@ -14,6 +13,5 @@ export default defineConfig([
 		dts: true,
 		outDir: "react/dist",
 		sourcemap: true,
-		clean: true,
 	},
 ]);

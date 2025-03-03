@@ -21,25 +21,25 @@ export function createConnectedNodeIdMap(
 	const connectionMap: ConnectedNodeIdMap = new Map();
 	for (const connection of connectionSet) {
 		if (
-			!nodeIdSet.has(connection.outputNodeId) ||
-			!nodeIdSet.has(connection.inputNodeId)
+			!nodeIdSet.has(connection.outputNode.id) ||
+			!nodeIdSet.has(connection.inputNode.id)
 		) {
 			continue;
 		}
-		if (!connectionMap.has(connection.outputNodeId)) {
-			connectionMap.set(connection.outputNodeId, new Set());
+		if (!connectionMap.has(connection.outputNode.id)) {
+			connectionMap.set(connection.outputNode.id, new Set());
 		}
-		const sourceSet = connectionMap.get(connection.outputNodeId);
+		const sourceSet = connectionMap.get(connection.outputNode.id);
 		if (sourceSet) {
-			sourceSet.add(connection.inputNodeId);
+			sourceSet.add(connection.inputNode.id);
 		}
 
-		if (!connectionMap.has(connection.inputNodeId)) {
-			connectionMap.set(connection.inputNodeId, new Set());
+		if (!connectionMap.has(connection.inputNode.id)) {
+			connectionMap.set(connection.inputNode.id, new Set());
 		}
-		const targetSet = connectionMap.get(connection.inputNodeId);
+		const targetSet = connectionMap.get(connection.inputNode.id);
 		if (targetSet) {
-			targetSet.add(connection.outputNodeId);
+			targetSet.add(connection.outputNode.id);
 		}
 	}
 	return connectionMap;
@@ -82,8 +82,8 @@ export function findConnectedConnectionMap(
 
 	for (const connection of allConnectionSet) {
 		if (
-			connectedNodeIdSet.has(connection.outputNodeId) &&
-			connectedNodeIdSet.has(connection.inputNodeId)
+			connectedNodeIdSet.has(connection.outputNode.id) &&
+			connectedNodeIdSet.has(connection.inputNode.id)
 		) {
 			connectedConnectionMap.set(connection.id, connection);
 		}
@@ -134,8 +134,8 @@ export function createJobMap(
 		}
 
 		for (const conn of connectionSet) {
-			const currentDegree = inDegrees.get(conn.inputNodeId) || 0;
-			inDegrees.set(conn.inputNodeId, currentDegree + 1);
+			const currentDegree = inDegrees.get(conn.inputNode.id) || 0;
+			inDegrees.set(conn.inputNode.id, currentDegree + 1);
 		}
 
 		return inDegrees;
@@ -158,10 +158,10 @@ export function createJobMap(
 	): Set<NodeId> => {
 		const childNodeIdSet = new Set<NodeId>();
 		for (const connection of connectionSet) {
-			if (connection.outputNodeId !== nodeId) {
+			if (connection.outputNode.id !== nodeId) {
 				continue;
 			}
-			childNodeIdSet.add(connection.inputNodeId);
+			childNodeIdSet.add(connection.inputNode.id);
 		}
 		return childNodeIdSet;
 	};
@@ -222,7 +222,7 @@ export function createJobMap(
 				);
 				return nodeArray.find((tmpNode) =>
 					connections.some(
-						(connection) => connection.outputNodeId === tmpNode.id,
+						(connection) => connection.outputNode.id === tmpNode.id,
 					),
 				);
 			})
@@ -241,7 +241,7 @@ export function createJobMap(
 	}
 	const actionConnectionSet = new Set<Connection>();
 	for (const connection of connectionSet) {
-		if (connection.outputNodeType === "action") {
+		if (connection.outputNode.type === "action") {
 			actionConnectionSet.add(connection);
 		}
 	}

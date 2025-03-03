@@ -288,7 +288,7 @@ export function Editor() {
 				}}
 			>
 				<Background
-					className="!bg-black-100"
+					className="bg-black-100!"
 					lineWidth={0}
 					variant={BackgroundVariant.Lines}
 					style={{
@@ -299,17 +299,17 @@ export function Editor() {
 					}}
 				/>
 
-				<Panel position="top-left" className="!top-0 !left-0 !right-0 !m-0">
+				<Panel position="top-left" className="top-0! left-0! right-0! m-0!">
 					<Header />
 				</Panel>
-				<Panel position="top-right" className="!top-0 !bottom-0 !right-0 !m-0">
+				<Panel position="top-right" className="top-0! bottom-0! right-0! m-0!">
 					<PropertiesPanel />
 				</Panel>
 				<Panel position={"bottom-center"}>
 					<Toolbar />
 				</Panel>
 
-				<Panel position="top-left" className="!top-0 !bottom-0 !left-0 !m-0">
+				<Panel position="top-left" className="top-0! bottom-0! left-0! m-0!">
 					<NavigationPanel />
 				</Panel>
 				{selectedTool?.category === "edit" && (

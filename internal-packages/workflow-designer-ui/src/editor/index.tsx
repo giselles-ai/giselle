@@ -2,8 +2,6 @@
 
 import { OutputId } from "@giselle-sdk/data-type";
 import {
-	Background,
-	BackgroundVariant,
 	ReactFlow,
 	ReactFlowProvider,
 	Panel as XYFlowPanel,
@@ -21,7 +19,7 @@ import {
 	PanelGroup,
 	PanelResizeHandle,
 } from "react-resizable-panels";
-import bg from "../images/bg.png";
+import { Background } from "../ui/background";
 import { edgeTypes } from "./connector";
 import { type ConnectorType, GradientDef } from "./connector/component";
 import { KeyboardShortcuts } from "./keyboard-shortcuts";
@@ -312,10 +310,6 @@ function NodeCanvas() {
 												id: OutputId.generate(),
 												label: "Output",
 											},
-											{
-												id: OutputId.generate(),
-												label: "Search Result",
-											},
 										],
 									},
 									options,
@@ -350,21 +344,10 @@ function NodeCanvas() {
 				reset();
 			}}
 		>
-			<Background
-				className="!bg-black-800"
-				lineWidth={0}
-				variant={BackgroundVariant.Lines}
-				style={{
-					backgroundImage: `url(${bg.src})`,
-					backgroundPositionX: "center",
-					backgroundPositionY: "center",
-					backgroundSize: "cover",
-				}}
-			/>
+			<Background />
 			{selectedTool?.category === "edit" && (
 				<FloatingNodePreview tool={selectedTool} />
 			)}
-
 			<XYFlowPanel position={"bottom-center"}>
 				<Toolbar />
 			</XYFlowPanel>

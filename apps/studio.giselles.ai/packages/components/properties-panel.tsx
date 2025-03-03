@@ -219,7 +219,7 @@ function DialogContent({
 				{...props}
 			>
 				<div className="relative z-10 flex flex-col w-full">{children}</div>
-				<div className="absolute z-0 rounded-[16px] inset-0 border mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent from-[hsla(233,4%,37%,1)] to-[hsla(233,62%,22%,1)]" />
+				<div className="absolute z-0 rounded-[16px] inset-0 border mask-fill bg-linear-to-br bg-origin-border bg-clip-boarder border-transparent from-[hsla(233,4%,37%,1)] to-[hsla(233,62%,22%,1)]" />
 			</DialogPrimitive.Content>
 		</DialogPrimitive.DialogPortal>
 	);
@@ -269,7 +269,7 @@ export function PropertiesPanel() {
 			)}
 			data-state={open ? "show" : "hidden"}
 		>
-			<div className="absolute z-0 rounded-[16px] inset-0 border mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent from-[hsla(233,4%,37%,1)] to-[hsla(233,62%,22%,1)]" />
+			<div className="absolute z-0 rounded-[16px] inset-0 border mask-fill bg-linear-to-br bg-origin-border bg-clip-boarder border-transparent from-[hsla(233,4%,37%,1)] to-[hsla(233,62%,22%,1)]" />
 			{open ? (
 				<Tabs
 					className="h-full overflow-y-hidden flex flex-col"
@@ -729,7 +729,7 @@ function RevertToDefaultButton({ onClick }: { onClick: () => void }) {
 				</span>
 			</div>
 			<div
-				className="overflow-hidden transition-all duration-300 ease-in-out w-0 data-[clicked=false]:group-hover:w-[98px] data-[clicked=true]:group-hover:w-[40px] group-hover:ml-[4px] flex"
+				className="overflow-hidden transition-all duration-300 ease-in-out w-0 group-hover:data-[clicked=false]:w-[98px] group-hover:data-[clicked=true]:w-[40px] group-hover:ml-[4px] flex"
 				data-clicked={clicked}
 			>
 				<span className="whitespace-nowrap text-[12px]">
@@ -763,7 +763,7 @@ function SystemPromptTextarea({
 	return (
 		<div className={clsx("relative", className)}>
 			<textarea
-				className="w-full text-[14px] bg-[hsla(222,21%,40%,0.3)] rounded-[8px] text-white p-[14px] font-rosart outline-none resize-none h-full"
+				className="w-full text-[14px] bg-[hsla(222,21%,40%,0.3)] rounded-[8px] text-white p-[14px] font-rosart outline-hidden resize-none h-full"
 				defaultValue={defaultValue}
 				ref={(ref) => {
 					if (ref === null) {
@@ -779,9 +779,9 @@ function SystemPromptTextarea({
 							onValueChange?.(ref.value);
 						}
 					}
-					ref.addEventListener("blur", updateValue);
+					ref.addEventListener("blur-sm", updateValue);
 					return () => {
-						ref.removeEventListener("blur", updateValue);
+						ref.removeEventListener("blur-sm", updateValue);
 						updateValue();
 					};
 				}}
@@ -1137,7 +1137,7 @@ function TabsContentPrompt({
 				<textarea
 					name="text"
 					id="text"
-					className="w-full text-[14px] bg-[hsla(222,21%,40%,0.3)] rounded-[8px] text-white p-[14px] font-rosart outline-none resize-none flex-1 mb-[16px]"
+					className="w-full text-[14px] bg-[hsla(222,21%,40%,0.3)] rounded-[8px] text-white p-[14px] font-rosart outline-hidden resize-none flex-1 mb-[16px]"
 					defaultValue={content.instruction}
 					ref={(ref) => {
 						if (ref === null) {
@@ -1155,9 +1155,9 @@ function TabsContentPrompt({
 								});
 							}
 						}
-						ref.addEventListener("blur", updateInstruction);
+						ref.addEventListener("blur-sm", updateInstruction);
 						return () => {
-							ref.removeEventListener("blur", updateInstruction);
+							ref.removeEventListener("blur-sm", updateInstruction);
 							updateInstruction();
 						};
 					}}
@@ -1293,7 +1293,7 @@ function TabsContentPrompt({
 																		) && (
 																			<CheckIcon
 																				size={16}
-																				className="stroke-white flex-shrink-0"
+																				className="stroke-white shrink-0"
 																			/>
 																		)}
 																	</button>
@@ -1315,7 +1315,7 @@ function TabsContentPrompt({
 																		) && (
 																			<CheckIcon
 																				size={16}
-																				className="stroke-white flex-shrink-0"
+																				className="stroke-white shrink-0"
 																			/>
 																		)}
 																	</button>
@@ -1351,7 +1351,7 @@ function TabsContentPrompt({
 																: "Pending"
 												}
 												icon={
-													<DocumentIcon className="w-[18px] h-[18px] fill-black-30 flex-shrink-0" />
+													<DocumentIcon className="w-[18px] h-[18px] fill-black-30 shrink-0" />
 												}
 											/>
 										) : source.object === "webSearch" ? (
@@ -1359,7 +1359,7 @@ function TabsContentPrompt({
 												key={source.id}
 												title={source.name}
 												icon={
-													<TextsIcon className="w-[18px] h-[18px] fill-black-30 flex-shrink-0" />
+													<TextsIcon className="w-[18px] h-[18px] fill-black-30 shrink-0" />
 												}
 											/>
 										) : (
@@ -1367,7 +1367,7 @@ function TabsContentPrompt({
 												key={source.id}
 												title={source.title}
 												icon={
-													<TextsIcon className="w-[18px] h-[18px] fill-black-30 flex-shrink-0" />
+													<TextsIcon className="w-[18px] h-[18px] fill-black-30 shrink-0" />
 												}
 												onDelete={removeTextContent({ id: source.id })}
 											/>
@@ -1444,7 +1444,7 @@ function TabContentGenerateTextResult({
 							<div className="flex items-center gap-[12px]">
 								<div className="px-[8px]">
 									{artifact.type === "generatedArtifact" ? (
-										<DocumentIcon className="w-[20px] h-[20px] fill-black-30 flex-shrink-0" />
+										<DocumentIcon className="w-[20px] h-[20px] fill-black-30 shrink-0" />
 									) : (
 										<SpinnerIcon className="w-[20px] h-[20px] stroke-black-30 animate-follow-through-spin fill-transparent" />
 									)}
@@ -1542,7 +1542,7 @@ function TabContentText({
 				<textarea
 					name="text"
 					id="text"
-					className="flex-1 text-[14px] bg-[hsla(222,21%,40%,0.3)] rounded-[8px] text-white p-[14px] font-rosart outline-none resize-none  my-[16px]"
+					className="flex-1 text-[14px] bg-[hsla(222,21%,40%,0.3)] rounded-[8px] text-white p-[14px] font-rosart outline-hidden resize-none  my-[16px]"
 					defaultValue={content.text}
 					ref={(el) => {
 						function updateText() {
@@ -1553,9 +1553,9 @@ function TabContentText({
 								});
 							}
 						}
-						el?.addEventListener("blur", updateText);
+						el?.addEventListener("blur-sm", updateText);
 						return () => {
-							el?.removeEventListener("blur", updateText);
+							el?.removeEventListener("blur-sm", updateText);
 							updateText();
 						};
 					}}
@@ -2087,7 +2087,7 @@ function FileListItem({
 			<Tooltip text="Remove">
 				<button
 					type="button"
-					className="hidden group-hover:block px-[4px] py-[4px] bg-transparent hover:bg-white/10 rounded-[8px] transition-colors mr-[2px] flex-shrink-0"
+					className="hidden group-hover:block px-[4px] py-[4px] bg-transparent hover:bg-white/10 rounded-[8px] transition-colors mr-[2px] shrink-0"
 					onClick={() => onRemove(fileData)}
 				>
 					<TrashIcon className="w-[24px] h-[24px] stroke-current stroke-[1px] " />

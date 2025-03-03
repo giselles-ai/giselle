@@ -1,4 +1,5 @@
 import {
+	type CancelledGeneration,
 	type CompletedGeneration,
 	type CreatedGeneration,
 	type FailedGeneration,
@@ -11,10 +12,9 @@ import {
 	type RunningGeneration,
 } from "@giselle-sdk/data-type";
 import {
-	callAddGenerationApi,
+	callCancelGenerationApi,
 	callGetNodeGenerationsApi,
 	callGithubOperationApi,
-	callRequestGenerationApi,
 } from "@giselle-sdk/giselle-engine/client";
 import type { Message } from "ai";
 import {
@@ -27,6 +27,7 @@ import {
 	useState,
 } from "react";
 import {
+	arrayEquals,
 	waitAndGetGenerationCompleted,
 	waitAndGetGenerationFailed,
 	waitAndGetGenerationRunning,
@@ -38,6 +39,8 @@ interface StartGenerationOptions {
 	onGenerationQueued?: (generation: QueuedGeneration) => void;
 	onGenerationStarted?: (generation: RunningGeneration) => void;
 	onGenerationCompleted?: (generation: CompletedGeneration) => void;
+	onGenerationCancelled?: (generation: CancelledGeneration) => void;
+	onUpdateMessages?: (generation: RunningGeneration) => void;
 }
 export type StartGeneration = (
 	generationContext: GenerationContext,
@@ -55,14 +58,17 @@ type FetchNodeGenerations = (
 interface GenerationRunnerSystemContextType {
 	generateTextApi: string;
 	startGeneration: StartGeneration;
-	isGenerating: boolean;
 	getGeneration: (generationId: GenerationId) => Generation | undefined;
 	generations: Generation[];
 	nodeGenerationMap: Map<NodeId, Generation[]>;
-	requestGeneration: (generation: Generation) => Promise<void>;
 	updateGenerationStatusToRunning: (
 		generationId: GenerationId,
-	) => Promise<RunningGeneration | CompletedGeneration | FailedGeneration>;
+	) => Promise<
+		| RunningGeneration
+		| CompletedGeneration
+		| FailedGeneration
+		| CancelledGeneration
+	>;
 	updateGenerationStatusToComplete: (
 		generationId: GenerationId,
 	) => Promise<CompletedGeneration>;
@@ -72,6 +78,8 @@ interface GenerationRunnerSystemContextType {
 	updateMessages: (generationId: GenerationId, newMessages: Message[]) => void;
 	fetchNodeGenerations: FetchNodeGenerations;
 	callGithubOperation: (generationId: GenerationId) => Promise<void>;
+	addStopHandler: (generationId: GenerationId, handler: () => void) => void;
+	stopGeneration: (generationId: GenerationId) => Promise<void>;
 }
 
 export const GenerationRunnerSystemContext =
@@ -83,10 +91,12 @@ interface GenerationRunnerSystemProviderProps {
 }
 export function GenerationRunnerSystemProvider({
 	children,
-	generateTextApi = "/api/giselle/text-generation",
+	generateTextApi = "/api/giselle/generate-text",
 }: GenerationRunnerSystemProviderProps) {
-	const [isGenerating, setIsGenerating] = useState(false);
 	const [generations, setGenerations] = useState<Generation[]>([]);
+	const [stopHandlers, setStopHandlers] = useState<
+		Record<GenerationId, () => void>
+	>({});
 	const generationListener = useRef<Record<GenerationId, Generation>>({});
 
 	const nodeGenerationMap = useMemo(() => {
@@ -113,9 +123,12 @@ export function GenerationRunnerSystemProvider({
 				onStart?: (generation: RunningGeneration) => void;
 				onComplete?: (generation: CompletedGeneration) => void;
 				onError?: (generation: FailedGeneration) => void;
+				onCancel?: (generation: CancelledGeneration) => void;
+				onUpdateMessages?: (generation: RunningGeneration) => void;
 			},
 		) => {
 			let status = generationListener.current[generationId].status;
+			const messages = generationListener.current[generationId].messages;
 			const timeoutDuration = options?.timeout || 1000 * 60 * 5;
 			const startTime = Date.now();
 
@@ -138,6 +151,16 @@ export function GenerationRunnerSystemProvider({
 						options?.onError?.(generation);
 						return generation;
 					}
+					if (generation.status === "cancelled") {
+						options?.onCancel?.(generation);
+						return generation;
+					}
+				}
+				if (
+					!arrayEquals(messages, generation.messages) &&
+					generation.status === "running"
+				) {
+					options?.onUpdateMessages?.(generation);
 				}
 
 				// Add small delay between checks
@@ -148,32 +171,38 @@ export function GenerationRunnerSystemProvider({
 	);
 	const startGeneration = useCallback<StartGeneration>(
 		async (generationContext, options = {}) => {
-			const generation = {
-				id: GenerationId.generate(),
+			const generationId = GenerationId.generate();
+			const createdGeneration = {
+				id: generationId,
 				context: generationContext,
 				status: "created",
 				createdAt: Date.now(),
 			} satisfies CreatedGeneration;
-			setGenerations((prev) => [...prev, generation]);
-			setIsGenerating(true);
-			generationListener.current[generation.id] = generation;
-			options?.onGenerationCreated?.(generation);
-			const result = await callAddGenerationApi({
-				generation,
-			});
-			options.onGenerationQueued?.(result.generation as QueuedGeneration);
+			setGenerations((prev) => [...prev, createdGeneration]);
+			generationListener.current[createdGeneration.id] = createdGeneration;
+			options?.onGenerationCreated?.(createdGeneration);
+
+			/** @todo split create and start */
+
+			const queuedGeneration = {
+				...createdGeneration,
+				status: "queued",
+				ququedAt: Date.now(),
+			} satisfies QueuedGeneration;
+			options.onGenerationQueued?.(queuedGeneration);
 			setGenerations((prev) =>
 				prev.map((prevGeneration) =>
-					prevGeneration.id === generation.id
-						? (result.generation as Generation)
+					prevGeneration.id === generationId
+						? queuedGeneration
 						: prevGeneration,
 				),
 			);
-			await waitForGeneration(generation.id, {
+			await waitForGeneration(createdGeneration.id, {
 				onStart: options?.onGenerationStarted,
 				onComplete: options?.onGenerationCompleted,
+				onUpdateMessages: options?.onUpdateMessages,
+				onCancel: options?.onGenerationCancelled,
 			});
-			setIsGenerating(false);
 		},
 		[waitForGeneration],
 	);
@@ -192,32 +221,15 @@ export function GenerationRunnerSystemProvider({
 						: prevGeneration,
 				),
 			);
+
+			const currentGeneration = generationListener.current[updateGenerationId];
+			generationListener.current[updateGenerationId] = {
+				...currentGeneration,
+				messages: newMessages,
+			} as RunningGeneration;
 		},
 		[],
 	);
-	const requestGeneration = useCallback(async (generation: Generation) => {
-		if (generation && generation.status === "queued") {
-			const requestedAt = Date.now();
-			setGenerations((prev) =>
-				prev.map((prevGeneration) => {
-					if (prevGeneration.id !== generation.id) {
-						return prevGeneration;
-					}
-					if (prevGeneration.status !== "queued") {
-						return prevGeneration;
-					}
-					return {
-						...prevGeneration,
-						status: "requested",
-						requestedAt,
-					};
-				}),
-			);
-			await callRequestGenerationApi({
-				generationId: generation.id,
-			});
-		}
-	}, []);
 	const updateGenerationStatusToRunning = useCallback(
 		async (generationId: GenerationId) => {
 			const generation = await waitAndGetGenerationRunning(generationId);
@@ -273,31 +285,73 @@ export function GenerationRunnerSystemProvider({
 				origin,
 				nodeId,
 			});
+			const excludeCancelled = generations.filter(
+				(generation) => generation.status !== "cancelled",
+			);
 			setGenerations((prev) => {
 				const filtered = prev.filter(
-					(p) => !generations.some((g) => g.id === p.id),
+					(p) => !excludeCancelled.some((g) => g.id === p.id),
 				);
-				return [...filtered, ...generations].sort(
+				return [...filtered, ...excludeCancelled].sort(
 					(a, b) => a.createdAt - b.createdAt,
 				);
 			});
 		},
 		[],
 	);
+
 	const callGithubOperation = useCallback(
 		async (generationId: GenerationId) => {
 			await callGithubOperationApi({ generationId });
 		},
 		[],
 	);
+
+	const addStopHandler = useCallback(
+		(generationId: GenerationId, handler: () => void) => {
+			setStopHandlers((prev) => ({ ...prev, [generationId]: handler }));
+		},
+		[],
+	);
+
+	const stopGeneration = useCallback(
+		async (generationId: GenerationId) => {
+			const handler = stopHandlers[generationId];
+			if (handler) {
+				handler();
+				setGenerations((prevGenerations) =>
+					prevGenerations.map((prevGeneration) => {
+						if (prevGeneration.id !== generationId) {
+							return prevGeneration;
+						}
+						return {
+							...prevGeneration,
+							status: "cancelled",
+							cancelledAt: Date.now(),
+						} as CancelledGeneration;
+					}),
+				);
+				await callCancelGenerationApi({
+					generationId,
+				});
+			}
+
+			const currentGeneration = generationListener.current[generationId];
+			generationListener.current[generationId] = {
+				...currentGeneration,
+				status: "cancelled",
+				cancelledAt: Date.now(),
+			} as CancelledGeneration;
+		},
+		[stopHandlers],
+	);
+
 	return (
 		<GenerationRunnerSystemContext.Provider
 			value={{
 				generateTextApi,
 				startGeneration,
-				isGenerating,
 				getGeneration,
-				requestGeneration,
 				generations,
 				updateGenerationStatusToRunning,
 				updateGenerationStatusToComplete,
@@ -306,6 +360,8 @@ export function GenerationRunnerSystemProvider({
 				nodeGenerationMap,
 				fetchNodeGenerations,
 				callGithubOperation,
+				addStopHandler,
+				stopGeneration,
 			}}
 		>
 			{children}

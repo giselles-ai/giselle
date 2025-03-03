@@ -31,20 +31,19 @@
 
 ## Tasks
 
+- [ ] Split create generation and start generation
+- [ ] Rework selected node design
 - [ ] Add setting button to title
-- [ ] Show unable sources
-- [ ] Auto detect storage backend
-- [ ] Update text node icon
+- [ ] Model catalog
+- [ ] Model catalog UI
 - [ ] API Middleware
 - [ ] API Auth
 - [ ] API Rate Limit
 - [ ] Add to do comment llmProviders property
 - [ ] Handling error in file upload
-- [ ] Cancel button
 - [ ] LLM Provider from .env
 - [ ] Undo/Redo for prompt editor
 - [ ] Telemetry
-- [ ] Animation
 
 
 ## Backlog
@@ -55,6 +54,15 @@
 
 ## Done
 
+- [x] Rework generation state management
+- [x] Cancel on Run
+- [x] Fix longtext layout of view
+- [x] Fix editing workflows
+- [x] Animation
+- [x] Cancel button
+- [x] Show unable sources
+- [x] Update text node icon
+- [x] Auto detect storage backend
 - [x] Create exention for a source
 - [x] Rework node select intereaction
 - [x] Make fill yellow for connected file node port

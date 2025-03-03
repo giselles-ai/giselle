@@ -45,11 +45,11 @@ const TargetParameter: FC<TargetParameterProps> = ({
 		{Handle && (
 			<div
 				className={clsx(
-					"*:!absolute *:!w-[6px] *:!h-[12px] *:!rounded-l-[12px] *:!rounded-r-none *:!top-[50%] *:!-translate-y-[50%] *:!-left-[10px]",
+					"*:absolute! *:w-[6px]! *:h-[12px]! *:rounded-l-[12px]! *:rounded-r-none! *:top-[50%]! *:-translate-y-[50%]! *:-left-[10px]!",
 					category === giselleNodeCategories.action &&
-						"*:!bg-[hsla(187,71%,48%,1)]",
+						"*:bg-[hsla(187,71%,48%,1)]!",
 					category === giselleNodeCategories.instruction &&
-						"*:!bg-[hsla(236,7%,39%,1)]",
+						"*:bg-[hsla(236,7%,39%,1)]!",
 				)}
 			>
 				<Handle id={id} />
@@ -89,11 +89,11 @@ const SourceParameter: FC<SourceParameterProps> = ({
 					<Handle
 						id={id}
 						className={clsx(
-							"!w-[12px] !absolute !h-[12px] !rounded-full !bg-black-100 !border-[2px] !top-[50%] !-translate-y-[50%] !translate-x-[5px]",
+							"w-[12px]! absolute! h-[12px]! rounded-full! bg-black-100! border-[2px]! top-[50%]! -translate-y-[50%]! translate-x-[5px]!",
 							category === giselleNodeCategories.action &&
-								"!border-[hsla(195,74%,21%,1)] data-[state=connected]:!bg-[hsla(187,71%,48%,1)] hover:!bg-[hsla(187,71%,48%,1)]",
+								"border-[hsla(195,74%,21%,1)]! data-[state=connected]:bg-[hsla(187,71%,48%,1)]! hover:bg-[hsla(187,71%,48%,1)]!",
 							category === giselleNodeCategories.instruction &&
-								"!border-[hsla(236,7%,39%,1)] data-[state=connected]:!bg-white",
+								"border-[hsla(236,7%,39%,1)]! data-[state=connected]:bg-white!",
 						)}
 						state={connections.length ? "connected" : "disconnected"}
 					/>
@@ -108,7 +108,7 @@ export function GiselleNode(props: GiselleNodeProps) {
 	return (
 		<div
 			className={clsx(
-				"relative rounded-[16px] bg-gradient-to-tl min-w-[180px] backdrop-blur-[1px] transition-shadow",
+				"relative rounded-[16px] bg-linear-to-tl min-w-[180px] backdrop-blur-[1px] transition-shadow",
 				props.category === giselleNodeCategories.action &&
 					"from-[hsla(187,79%,54%,0.2)] to-[hsla(207,100%,9%,0.2)]",
 				props.category === giselleNodeCategories.instruction &&
@@ -124,7 +124,7 @@ export function GiselleNode(props: GiselleNodeProps) {
 		>
 			<div
 				className={clsx(
-					"absolute z-0 rounded-[16px] inset-0 border mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent",
+					"absolute z-0 rounded-[16px] inset-0 border mask-fill bg-linear-to-br bg-origin-border bg-clip-boarder border-transparent",
 					props.category === giselleNodeCategories.action &&
 						"from-[hsla(187,79%,54%,1)] to-[hsla(187,68%,30%,1)]",
 					props.category === giselleNodeCategories.instruction &&
@@ -231,7 +231,7 @@ export const GiselleNodeInformationPanel: FC = () => {
 	);
 	return (
 		<div className="absolute bg-black-100 w-[380px] rounded-[16px] overflow-hidden shadow-[0px_0px_8px_0px_hsla(0,_0%,_100%,_0.2)] top-[0px] bottom-[20px] right-[20px] mt-[60px]">
-			<div className="absolute z-0 rounded-[16px] inset-0 border mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent from-[hsla(233,4%,37%,1)] to-[hsla(233,62%,22%,1)]" />
+			<div className="absolute z-0 rounded-[16px] inset-0 border mask-fill bg-linear-to-br bg-origin-border bg-clip-boarder border-transparent from-[hsla(233,4%,37%,1)] to-[hsla(233,62%,22%,1)]" />
 
 			{selectedNodes.length > 1 ? (
 				<div className="grid gap-[10px]">

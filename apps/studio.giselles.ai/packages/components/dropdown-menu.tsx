@@ -60,7 +60,7 @@ export function DropdownMenuCheckboxItem({
 >) {
 	return (
 		<DropdownMenuPrimitive.CheckboxItem
-			className="relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+			className="relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-hidden transition-colors focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50"
 			{...props}
 		>
 			{children}
@@ -100,7 +100,7 @@ export function DropdownMenuRadioItem({
 }) {
 	return (
 		<DropdownMenuPrimitive.RadioItem
-			className="relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+			className="relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-hidden transition-colors focus:bg-accent focus:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50"
 			value={value}
 		>
 			<span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">

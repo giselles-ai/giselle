@@ -10,13 +10,3 @@ export function useWorkflowDesigner() {
 	}
 	return context;
 }
-
-// export function useWorkflowDesigner(): WorkflowDesignerContextValue &
-// 	ReturnType<typeof useGenerationController> {
-// 	const context = useWorkflowDesignerContext();
-// 	const generationControllerHelpers = useGenerationController();
-// 	return {
-// 		...context,
-// 		...generationControllerHelpers,
-// 	};
-// }

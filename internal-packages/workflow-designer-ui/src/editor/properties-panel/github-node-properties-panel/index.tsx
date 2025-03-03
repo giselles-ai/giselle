@@ -1,9 +1,6 @@
 import type { GitHubNode } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
-import {
-	useGenerationController,
-	useWorkflowDesigner,
-} from "giselle-sdk/react";
+import { useNodeGenerations, useWorkflowDesigner } from "giselle-sdk/react";
 import { CommandIcon, CornerDownLeft } from "lucide-react";
 import { Tabs } from "radix-ui";
 import { useCallback, useMemo } from "react";
@@ -23,7 +20,10 @@ import { useConnectedSources } from "./sources/use-connected-sources";
 
 export function GitHubNodePropertiesPanel({ node }: { node: GitHubNode }) {
 	const { data, updateNodeData, setUiNodeState } = useWorkflowDesigner();
-	const { startGeneration, isGenerating } = useGenerationController();
+	const { startGeneration, isGenerating, stopGeneration } = useNodeGenerations({
+		nodeId: node.id,
+		origin: { type: "workspace", id: data.id },
+	});
 	const { all: connectedSources } = useConnectedSources(node);
 
 	const uiState = useMemo(() => data.ui.nodeState[node.id], [data, node.id]);
@@ -55,15 +55,25 @@ export function GitHubNodePropertiesPanel({ node }: { node: GitHubNode }) {
 						loading={isGenerating}
 						type="button"
 						onClick={() => {
-							githubOperation();
+							if (isGenerating) {
+								stopGeneration();
+							} else {
+								githubOperation();
+							}
 						}}
 						className="w-[150px]"
 					>
-						<span>{isGenerating ? "Generating..." : "Generate"}</span>
-						<kbd className="flex items-center text-[12px]">
-							<CommandIcon className="size-[12px]" />
-							<CornerDownLeft className="size-[12px]" />
-						</kbd>
+						{isGenerating ? (
+							<span>Stop</span>
+						) : (
+							<>
+								<span>Generate</span>
+								<kbd className="flex items-center text-[12px]">
+									<CommandIcon className="size-[12px]" />
+									<CornerDownLeft className="size-[12px]" />
+								</kbd>
+							</>
+						)}
 					</Button>
 				}
 			/>
@@ -121,7 +131,9 @@ export function GitHubNodePropertiesPanel({ node }: { node: GitHubNode }) {
 			</PanelGroup>
 			<KeyboardShortcuts
 				generate={() => {
-					githubOperation();
+					if (!isGenerating) {
+						githubOperation();
+					}
 				}}
 			/>
 		</PropertiesPanelRoot>

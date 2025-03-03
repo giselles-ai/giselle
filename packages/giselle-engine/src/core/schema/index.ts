@@ -155,3 +155,10 @@ export const githubOperation = {
 		generationId: GenerationId.schema,
 	}),
 };
+
+export const cancelGeneration = {
+	defaultApi: "/api/giselle/cancel-generation",
+	Input: z.object({
+		generationId: GenerationId.schema,
+	}),
+};

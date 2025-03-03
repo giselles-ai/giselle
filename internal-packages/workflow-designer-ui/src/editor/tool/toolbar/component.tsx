@@ -2,7 +2,7 @@
 
 import { FileCategory, LLMProvider } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
-import { LetterTextIcon, MousePointer2Icon } from "lucide-react";
+import { MousePointer2Icon } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
 import {
 	AnthropicIcon,
@@ -11,6 +11,7 @@ import {
 	GoogleWhiteIcon,
 	OpenaiIcon,
 	PdfFileIcon,
+	PromptIcon,
 	StackBlicksIcon,
 	TextFileIcon,
 } from "../../../icons";
@@ -78,7 +79,7 @@ export function Toolbar() {
 					</ToggleGroup.Item>
 					<ToggleGroup.Item value="addTextNode" data-tool>
 						<Tooltip text={<TooltipAndHotkey text="Text" hotkey="t" />}>
-							<LetterTextIcon data-icon />
+							<PromptIcon data-icon />
 						</Tooltip>
 					</ToggleGroup.Item>
 					<ToggleGroup.Item value="addFileNode" data-tool>
