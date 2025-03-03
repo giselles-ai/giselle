@@ -117,7 +117,7 @@ export function CustomXyFlowNode({
 			return (
 				<NodeComponent
 					nodeType={data.nodeData.type}
-					title={data.nodeData.name}
+					title={data.nodeData.name ?? "GitHub"}
 					selected={selected}
 					hasTarget={hasTarget}
 					inputs={data.nodeData.inputs}
