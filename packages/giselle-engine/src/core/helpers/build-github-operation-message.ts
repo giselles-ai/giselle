@@ -12,7 +12,7 @@ export async function buildGenerationMessageForGithubOperation(
 	node: GitHubNode,
 	contextNodes: Node[],
 	fileResolver: (file: FileData) => Promise<DataContent>,
-	textGenerationResolver: (nodeId: NodeId) => Promise<string | undefined>,
+	generationContentResolver: (nodeId: NodeId) => Promise<string | undefined>,
 ): Promise<CoreMessage[]> {
 	const prompt = node.content.prompt;
 	if (prompt === undefined) {
@@ -50,7 +50,7 @@ export async function buildGenerationMessageForGithubOperation(
 			}
 			case "github":
 			case "textGeneration": {
-				const result = await textGenerationResolver(contextNode.id);
+				const result = await generationContentResolver(contextNode.id);
 				if (result !== undefined) {
 					userMessage = userMessage.replace(replaceKeyword, result);
 				}

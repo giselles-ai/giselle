@@ -18,7 +18,7 @@ export async function buildMessageObject(
 	node: TextGenerationNode,
 	contextNodes: Node[],
 	fileResolver: (file: FileData) => Promise<DataContent>,
-	textGenerationResolver: (nodeId: NodeId) => Promise<string | undefined>,
+	generationContentResolver: (nodeId: NodeId) => Promise<string | undefined>,
 ): Promise<CoreMessage[]> {
 	switch (node.content.type) {
 		case "textGeneration": {
@@ -26,7 +26,7 @@ export async function buildMessageObject(
 				node,
 				contextNodes,
 				fileResolver,
-				textGenerationResolver,
+				generationContentResolver,
 			);
 		}
 		default: {
