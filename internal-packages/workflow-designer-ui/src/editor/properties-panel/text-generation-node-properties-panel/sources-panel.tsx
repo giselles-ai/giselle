@@ -400,8 +400,8 @@ export function SourcesPanel({
 											<GeneratedContentIcon className="size-[24px] text-white-900" />
 										}
 										key={source.connection.id}
-										title={source.output.label}
-										subtitle={source.node.name ?? "GitHub"}
+										title={`${source.node.name ?? "GitHub"} / ${source.output.label}`}
+										subtitle=""
 										onRemove={() => handleRemove(source.connection)}
 									/>
 								);
@@ -411,8 +411,8 @@ export function SourcesPanel({
 									<SourceListItem
 										icon={<PromptIcon className="size-[24px] text-white-900" />}
 										key={source.connection.id}
-										title={source.output.label}
-										subtitle={source.node.name ?? source.node.content.llm.model}
+										title={`${source.node.name ?? source.node.content.llm.model} / ${source.output.label}`}
+										subtitle={source.node.content.llm.provider}
 										onRemove={() => handleRemove(source.connection)}
 									/>
 								);
