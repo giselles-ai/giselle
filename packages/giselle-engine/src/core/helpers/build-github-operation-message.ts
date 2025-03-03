@@ -48,6 +48,7 @@ export async function buildGenerationMessageForGithubOperation(
 				);
 				break;
 			}
+			case "github":
 			case "textGeneration": {
 				const result = await textGenerationResolver(contextNode.id);
 				if (result !== undefined) {

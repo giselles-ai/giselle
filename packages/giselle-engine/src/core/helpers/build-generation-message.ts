@@ -77,6 +77,7 @@ async function buildGenerationMessageForTextGeneration(
 				);
 				break;
 			}
+			case "github":
 			case "textGeneration": {
 				const result = await textGenerationResolver(contextNode.id);
 				if (result !== undefined) {
@@ -124,7 +125,7 @@ async function buildGenerationMessageForTextGeneration(
 			}
 		}
 	}
-
+	console.dir(userMessage, { depth: null });
 	switch (llmProvider) {
 		case "openai": {
 			return [
