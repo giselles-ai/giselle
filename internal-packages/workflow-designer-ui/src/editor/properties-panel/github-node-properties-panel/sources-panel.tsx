@@ -96,70 +96,80 @@ function SourceSelect({
 							<div className="border-t border-black-30/20" />
 						</div>
 						<div className="flex flex-col pb-[8px] gap-[8px]">
-							<div className="flex flex-col px-[8px]">
-								<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
-									Generated Content
-								</p>
-								{generatedSources.map((generatedSource) => (
-									<ToggleGroup.Item
-										key={generatedSource.output.id}
-										className="group flex p-[8px] justify-between rounded-[8px] text-white hover:bg-blue/50 transition-colors cursor-pointer"
-										value={generatedSource.output.id}
-									>
-										<p className="text-[12px] truncate">
-											{generatedSource.node.name ?? "Generated Content"} /{" "}
-											{generatedSource.output.label}
-										</p>
-										<CheckIcon className="w-[16px] h-[16px] hidden group-data-[state=on]:block" />
-									</ToggleGroup.Item>
-								))}
-							</div>
-							<div className="flex flex-col px-[8px]">
-								<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
-									Text
-								</p>
-								{textSources.map((textSource) => (
-									<ToggleGroup.Item
-										key={textSource.output.id}
-										value={textSource.output.id}
-										className="group flex p-[8px] justify-between rounded-[8px] text-white hover:bg-blue/50 transition-colors cursor-pointer"
-									>
-										<p className="text-[12px] truncate">
-											{textSource.node.name ?? "Text"} /{" "}
-											{textSource.output.label}
-										</p>
-										<CheckIcon className="w-[16px] h-[16px] hidden group-data-[state=on]:block" />
-									</ToggleGroup.Item>
-								))}
-							</div>
+							{generatedSources.length > 0 && (
+								<div className="flex flex-col px-[8px]">
+									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
+										Generated Content
+									</p>
+									{generatedSources.map((generatedSource) => (
+										<ToggleGroup.Item
+											key={generatedSource.output.id}
+											className="group flex p-[8px] justify-between rounded-[8px] text-white-900 hover:bg-primary-900/50 transition-colors cursor-pointer"
+											value={generatedSource.output.id}
+										>
+											<p className="text-[12px] truncate">
+												{generatedSource.node.name ??
+													(generatedSource.node.content.type ===
+													"textGeneration"
+														? generatedSource.node.content.llm.model
+														: "GitHub")}{" "}
+												/ {generatedSource.output.label}
+											</p>
+											<CheckIcon className="w-[16px] h-[16px] hidden group-data-[state=on]:block" />
+										</ToggleGroup.Item>
+									))}
+								</div>
+							)}
+							{textSources.length > 0 && (
+								<div className="flex flex-col px-[8px]">
+									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
+										Text
+									</p>
+									{textSources.map((textSource) => (
+										<ToggleGroup.Item
+											key={textSource.output.id}
+											value={textSource.output.id}
+											className="group flex p-[8px] justify-between rounded-[8px] text-white-900 hover:bg-primary-900/50 transition-colors cursor-pointer"
+										>
+											<p className="text-[12px] truncate">
+												{textSource.node.name ?? "Text"} /{" "}
+												{textSource.output.label}
+											</p>
+											<CheckIcon className="w-[16px] h-[16px] hidden group-data-[state=on]:block" />
+										</ToggleGroup.Item>
+									))}
+								</div>
+							)}
 
-							<div className="flex flex-col px-[8px]">
-								<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
-									File
-								</p>
-								{fileSources.map((fileSource) => (
-									<ToggleGroup.Item
-										key={fileSource.output.id}
-										value={fileSource.output.id}
-										className="group flex p-[8px] justify-between rounded-[8px] text-white hover:bg-blue/50 transition-colors cursor-pointer"
-									>
-										<p className="text-[12px] truncate">
-											{fileSource.node.name ?? "File"} /{" "}
-											{fileSource.output.label}
-										</p>
-										<CheckIcon className="w-[16px] h-[16px] hidden group-data-[state=on]:block" />
-									</ToggleGroup.Item>
-								))}
-							</div>
+							{fileSources.length > 0 && (
+								<div className="flex flex-col px-[8px]">
+									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
+										File
+									</p>
+									{fileSources.map((fileSource) => (
+										<ToggleGroup.Item
+											key={fileSource.output.id}
+											value={fileSource.output.id}
+											className="group flex p-[8px] justify-between rounded-[8px] text-white-900 hover:bg-primary-900/50 transition-colors cursor-pointer"
+										>
+											<p className="text-[12px] truncate">
+												{fileSource.node.name ?? "File"} /{" "}
+												{fileSource.output.label}
+											</p>
+											<CheckIcon className="w-[16px] h-[16px] hidden group-data-[state=on]:block" />
+										</ToggleGroup.Item>
+									))}
+								</div>
+							)}
 							<div className="flex flex-col py-[4px]">
-								<div className="border-t border-black-30/20" />
+								<div className="border-t border-black-300/20" />
 							</div>
 							<div className="flex px-[16px] pt-[4px] gap-[8px]">
 								<Popover.Close
 									onClick={() => {
 										onValueChange?.(selectedOutputIds);
 									}}
-									className="h-[32px] w-full flex justify-center items-center bg-white text-black rounded-[8px] cursor-pointer text-[12px]"
+									className="h-[32px] w-full flex justify-center items-center bg-white-900 text-black-900 rounded-[8px] cursor-pointer text-[12px]"
 								>
 									Update
 								</Popover.Close>
@@ -229,19 +239,23 @@ function SourceListItem({
 	);
 }
 
-interface SourcesPanelProps {
+export function SourcesPanel({
+	node: gitHubNode,
+}: {
 	node: GitHubNode;
-}
-
-export function SourcesPanel({ node }: SourcesPanelProps) {
+}) {
 	const { data, addConnection, deleteConnection, updateNodeData } =
 		useWorkflowDesigner();
 	const sources = useMemo<Source[]>(() => {
 		const tmpSources: Source[] = [];
 		const connections = data.connections.filter(
-			(connection) => connection.inputNode.id === node.id,
+			(connection) => connection.inputNode.id === gitHubNode.id,
 		);
 		for (const node of data.nodes) {
+			if (node.id === gitHubNode.id) {
+				continue;
+			}
+
 			for (const output of node.outputs) {
 				const connection = connections.find(
 					(connection) => connection.outputId === output.id,
@@ -254,13 +268,13 @@ export function SourcesPanel({ node }: SourcesPanelProps) {
 			}
 		}
 		return tmpSources;
-	}, [data.nodes, data.connections, node.id]);
-	const connectedSources = useConnectedSources(node);
+	}, [data.nodes, data.connections, gitHubNode.id]);
+	const connectedSources = useConnectedSources(gitHubNode);
 
 	const handleConnectionChange = useCallback(
 		(connectOutputIds: OutputId[]) => {
 			const currentConnectedOutputIds = data.connections
-				.filter((connection) => connection.inputNode.id === node.id)
+				.filter((connection) => connection.inputNode.id === gitHubNode.id)
 				.map((connection) => connection.outputId);
 
 			// Find added outputs (in connectOutputIds but not in currentConnectedOutputIds)
@@ -280,11 +294,11 @@ export function SourcesPanel({ node }: SourcesPanelProps) {
 					label: "Source",
 				};
 
-				updateNodeData(node, {
-					inputs: [...node.inputs, newInput],
+				updateNodeData(gitHubNode, {
+					inputs: [...gitHubNode.inputs, newInput],
 				});
 				addConnection({
-					inputNode: node,
+					inputNode: gitHubNode,
 					inputId: newInput.id,
 					outputId,
 					outputNode: outputNode,
@@ -299,22 +313,22 @@ export function SourcesPanel({ node }: SourcesPanelProps) {
 			for (const outputId of removedOutputIds) {
 				const connection = data.connections.find(
 					(connection) =>
-						connection.inputNode.id === node.id &&
+						connection.inputNode.id === gitHubNode.id &&
 						connection.outputId === outputId,
 				);
 				if (connection === undefined) {
 					continue;
 				}
 				deleteConnection(connection.id);
-				updateNodeData(node, {
-					inputs: node.inputs.filter(
+				updateNodeData(gitHubNode, {
+					inputs: gitHubNode.inputs.filter(
 						(input) => input.id !== connection.inputId,
 					),
 				});
 			}
 		},
 		[
-			node,
+			gitHubNode,
 			data.nodes,
 			data.connections,
 			addConnection,
@@ -326,14 +340,16 @@ export function SourcesPanel({ node }: SourcesPanelProps) {
 	const handleRemove = useCallback(
 		(connection: Connection) => {
 			deleteConnection(connection.id);
-			updateNodeData(node, {
-				inputs: node.inputs.filter((input) => input.id !== connection.inputId),
+			updateNodeData(gitHubNode, {
+				inputs: gitHubNode.inputs.filter(
+					(input) => input.id !== connection.inputId,
+				),
 			});
 		},
-		[node, deleteConnection, updateNodeData],
+		[gitHubNode, deleteConnection, updateNodeData],
 	);
 
-	if (node.inputs.length === 0) {
+	if (gitHubNode.inputs.length === 0) {
 		return (
 			<div className="mt-[60px]">
 				<EmptyState

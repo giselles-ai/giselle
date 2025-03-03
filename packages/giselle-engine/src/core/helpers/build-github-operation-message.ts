@@ -8,8 +8,6 @@ import {
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
 import type { CoreMessage, DataContent, FilePart } from "ai";
 
-// NOTE: almost duplicate of buildGenerationMessageForTextGeneration
-// - difference -> this function converts json content to text
 export async function buildGenerationMessageForGithubOperation(
 	node: GitHubNode,
 	contextNodes: Node[],
@@ -21,20 +19,18 @@ export async function buildGenerationMessageForGithubOperation(
 		throw new Error("Prompt cannot be empty");
 	}
 
-	// TODO: source format has been changed
-	// old: {{nd-<nodeId>:otp-<outputId>}}
-	// new: {"type":"Source","attrs":{"node":{"id":"nd-bIIQ8d1zdt4C44Gz","type":"variable","content":{"type":"text"}},"outputId":"otp-p2DriE7CncEwlYyf"}},
-	const pattern = /\{\{(nd-[a-zA-Z0-9]+):(otp-[a-zA-Z0-9]+)\}\}/g;
-	const sourceKeywords = [...prompt.matchAll(pattern)].map((match) => ({
-		nodeId: NodeId.parse(match[1]),
-		outputId: OutputId.parse(match[2]),
-	}));
-
 	let userMessage = prompt;
 
 	if (isJsonContent(prompt)) {
 		userMessage = jsonContentToText(JSON.parse(prompt));
 	}
+
+	const pattern = /\{\{(nd-[a-zA-Z0-9]+):(otp-[a-zA-Z0-9]+)\}\}/g;
+	const sourceKeywords = [...userMessage.matchAll(pattern)].map((match) => ({
+		nodeId: NodeId.parse(match[1]),
+		outputId: OutputId.parse(match[2]),
+	}));
+
 	const attachedFiles: FilePart[] = [];
 	for (const sourceKeyword of sourceKeywords) {
 		const contextNode = contextNodes.find(
@@ -44,19 +40,14 @@ export async function buildGenerationMessageForGithubOperation(
 			continue;
 		}
 		const replaceKeyword = `{{${sourceKeyword.nodeId}:${sourceKeyword.outputId}}}`;
-		console.log("!!!!!!!! replaceKeyword", replaceKeyword);
 		switch (contextNode.content.type) {
 			case "text": {
-				let content = contextNode.content.text;
-				console.log("???????? content", content);
-				if (isJsonContent(content)) {
-					content = jsonContentToText(JSON.parse(content));
-				}
-
-				userMessage = userMessage.replace(replaceKeyword, content);
+				userMessage = userMessage.replace(
+					replaceKeyword,
+					contextNode.content.text,
+				);
 				break;
 			}
-			case "github":
 			case "textGeneration": {
 				const result = await textGenerationResolver(contextNode.id);
 				if (result !== undefined) {
@@ -94,44 +85,13 @@ export async function buildGenerationMessageForGithubOperation(
 						attachedFiles.push(...fileContents);
 						break;
 					}
-					case "text": {
-						const fileContents = await Promise.all(
-							contextNode.content.files.map(async (file) => {
-								if (file.status !== "uploaded") {
-									return null;
-								}
-								const data = await fileResolver(file);
-								return {
-									type: "file",
-									data,
-									mimeType: "text/plain",
-								} satisfies FilePart;
-							}),
-						).then((results) => results.filter((result) => result !== null));
-						if (fileContents.length > 1) {
-							userMessage = userMessage.replace(
-								replaceKeyword,
-								`${getOrdinal(attachedFiles.length + 1)} ~ ${getOrdinal(attachedFiles.length + fileContents.length)} attached files`,
-							);
-						} else {
-							userMessage = userMessage.replace(
-								replaceKeyword,
-								`${getOrdinal(attachedFiles.length + 1)} attached file`,
-							);
-						}
-						attachedFiles.push(...fileContents);
-						break;
-					}
+					case "text":
+						throw new Error("Not implemented");
 					default: {
 						const _exhaustiveCheck: never = contextNode.content.category;
 						throw new Error(`Unhandled category: ${_exhaustiveCheck}`);
 					}
 				}
-				break;
-			}
-			default: {
-				const _exhaustiveCheck: never = contextNode.content;
-				throw new Error(`Unhandled content type: ${_exhaustiveCheck}`);
 			}
 		}
 	}

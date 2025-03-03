@@ -1,6 +1,5 @@
 import {
 	type FileData,
-	type GenerationNode,
 	type Node,
 	NodeId,
 	OutputId,
@@ -16,7 +15,7 @@ export interface FileIndex {
 }
 
 export async function buildMessageObject(
-	node: GenerationNode,
+	node: TextGenerationNode,
 	contextNodes: Node[],
 	fileResolver: (file: FileData) => Promise<DataContent>,
 	textGenerationResolver: (nodeId: NodeId) => Promise<string | undefined>,
@@ -78,7 +77,6 @@ async function buildGenerationMessageForTextGeneration(
 				);
 				break;
 			}
-			case "github":
 			case "textGeneration": {
 				const result = await textGenerationResolver(contextNode.id);
 				if (result !== undefined) {
@@ -123,11 +121,6 @@ async function buildGenerationMessageForTextGeneration(
 						throw new Error(`Unhandled category: ${_exhaustiveCheck}`);
 					}
 				}
-				break;
-			}
-			default: {
-				const _exhaustiveCheck: never = contextNode.content;
-				throw new Error(`Unhandled content type: ${_exhaustiveCheck}`);
 			}
 		}
 	}
