@@ -53,7 +53,7 @@
 	--color-generation-node-2: hsl(219, 98%, 23%);
 
 	--color-github-node-1: hsl(264, 80%, 70%);
-  --color-github-node-2: hsl(264, 80%, 30%);
+	--color-github-node-2: hsl(264, 80%, 30%);
 
 	--font-sans: var(--font-geist-sans);
 	--font-accent: var(--font-hubot-sans);
