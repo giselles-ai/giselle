@@ -107,7 +107,7 @@ flowchart TD
     D --> E[Evaluator]
     E --> F{Success?}
     F -->|Yes| G[Return Results]
-    F -->|No| H{Retry Count < 3}
+    F -->|No| H{Retry Count < 5}
     H -->|Yes| B
     H -->|No| I[Return Error]
 ```
@@ -128,7 +128,6 @@ Tools can be added using the `defineTool` function. Each tool requires:
 - `purpose`: The intended use case of the tool
 - `inputSchema`: Zod schema defining the expected input
 - `execute`: Async function that performs the actual API call
-- `examples`: (Optional) Example usage and expected output
 - `constraints`: (Optional) List of tool limitations
 
 Example:
@@ -150,14 +149,6 @@ export const myNewTool = defineTool({
     });
     return result;
   },
-  examples: [{
-    input: {
-      tool: "my_tool",
-      param1: "example",
-    },
-    output: {/* expected output */},
-    description: "Example usage of my_tool",
-  }],
   constraints: [
     "Rate limit: X requests per minute",
     "Other limitations...",
@@ -176,23 +167,37 @@ toolRegistry.register(myNewTool);
 
 ### Search APIs
 
-- `search_code`: Search for code
-- `search_repositories`: Search for repositories
-- `search_users`: Search for users
-- `search_issues`: Search for issues and pull requests
+- `search_code`: Search for code across GitHub repositories
+- `search_repositories`: Search for repositories based on various criteria
+- `search_users`: Search for users based on various criteria
+- `search_issues`: Search for issues and pull requests across GitHub
+  repositories
 
 ### Read APIs
 
-- `get_file_contents`: Retrieve file contents
+- `get_file_contents`: Retrieve file or directory contents from a GitHub
+  repository
 - `get_issue`: Get specific issue details
-- `list_issues`: List repository issues
-- `list_commits`: Get commit history
-- `get_pull_request_diff`: Get pull request differences
+- `list_issues`: List repository issues with filtering options
+- `list_commits`: Get commit history of a repository branch
 
-### Generic APIs
+### Pull Request APIs
 
-- GraphQL API: For complex queries and retrieving multiple resources
-- REST API: For special media types and endpoints not covered by GraphQL
+- `get_pull_request`: Get pull request details
+- `list_pull_requests`: List repository pull requests
+- `get_pull_request_diff`: Get pull request differences in unified diff format
+- `get_pull_request_files`: Get files changed in a pull request
+- `get_pull_request_status`: Get combined status of all status checks for a pull
+  request
+- `get_pull_request_comments`: Get review comments on a pull request
+- `get_pull_request_reviews`: Get reviews on a pull request
+
+### Generic APIs (:warning: not using now.)
+
+- `rest`: Direct access to GitHub REST API endpoints with custom HTTP methods
+  and parameters
+- `graphql`: Execute GraphQL queries against GitHub's GraphQL API for efficient
+  data retrieval
 
 ## Limitations
 
@@ -211,6 +216,6 @@ toolRegistry.register(myNewTool);
 
 ### Runtime Limitations
 
-- Maximum of 3 retry attempts
+- Maximum of 5 retry attempts
 - Large files (>1MB) may be truncated
 - Long-running requests may timeout
