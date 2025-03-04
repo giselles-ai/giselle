@@ -273,6 +273,9 @@ importers:
       '@ai-sdk/openai':
         specifier: 1.0.8
         version: 1.0.8(zod@3.24.1)
+      '@giselle-sdk/data-type':
+        specifier: workspace:*
+        version: link:../../packages/data-type
       '@icons-pack/react-simple-icons':
         specifier: 10.0.0
         version: 10.0.0(react@19.0.0)
@@ -444,6 +447,9 @@ importers:
       gaxios:
         specifier: 6.7.1
         version: 6.7.1
+      giselle-sdk:
+        specifier: workspace:*
+        version: link:../../packages/giselle-sdk
       google-auth-library:
         specifier: 9.15.0
         version: 9.15.0

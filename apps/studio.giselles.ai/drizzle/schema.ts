@@ -4,6 +4,7 @@ import type {
 	GitHubTriggerEvent,
 } from "@/services/external/github/types";
 import type { TeamId } from "@/services/teams/types";
+import type {WorkspaceId} from "@giselle-sdk/data-type"
 import type {
 	FlowId,
 	GitHubEventNodeMapping,
@@ -104,7 +105,9 @@ export const agents = pgTable(
 			.notNull()
 			.references(() => teams.dbId, { onDelete: "cascade" }),
 		name: text("name"),
-		graphUrl: text("graph_url"), // // TODO: add notNull constrain when new architecture released
+		graphUrl: text("graph_url"),
+		// TODO: add notNull constrain when new architecture released
+		workspaceId: text("workspace_id").$type<WorkspaceId>(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at")
 			.defaultNow()
