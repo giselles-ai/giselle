@@ -20,7 +20,7 @@ import { useConnectedSources } from "./sources/use-connected-sources";
 
 export function GitHubNodePropertiesPanel({ node }: { node: GitHubNode }) {
 	const { data, updateNodeData, setUiNodeState } = useWorkflowDesigner();
-	const { startGeneration, isGenerating, stopGeneration } = useNodeGenerations({
+	const { startGeneration, isGenerating } = useNodeGenerations({
 		nodeId: node.id,
 		origin: { type: "workspace", id: data.id },
 	});
@@ -55,25 +55,15 @@ export function GitHubNodePropertiesPanel({ node }: { node: GitHubNode }) {
 						loading={isGenerating}
 						type="button"
 						onClick={() => {
-							if (isGenerating) {
-								stopGeneration();
-							} else {
-								githubOperation();
-							}
+							githubOperation();
 						}}
 						className="w-[150px]"
 					>
-						{isGenerating ? (
-							<span>Stop</span>
-						) : (
-							<>
-								<span>Generate</span>
-								<kbd className="flex items-center text-[12px]">
-									<CommandIcon className="size-[12px]" />
-									<CornerDownLeft className="size-[12px]" />
-								</kbd>
-							</>
-						)}
+						<span>Generate</span>
+						<kbd className="flex items-center text-[12px]">
+							<CommandIcon className="size-[12px]" />
+							<CornerDownLeft className="size-[12px]" />
+						</kbd>
 					</Button>
 				}
 			/>

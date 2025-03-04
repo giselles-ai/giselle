@@ -142,6 +142,7 @@ function GitHubRunner({
 			return;
 		}
 		try {
+			// TODO: if stop functionality is needed, implement here using addStopHandler
 			await callGithubOperation(generation);
 			await updateGenerationStatusToRunning(generation.id);
 			await updateGenerationStatusToComplete(generation.id);
