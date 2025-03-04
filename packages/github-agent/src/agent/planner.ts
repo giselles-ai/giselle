@@ -1,6 +1,7 @@
 import { openai } from "@ai-sdk/openai";
 import { type LanguageModelV1, generateObject } from "ai";
 import { z } from "zod";
+import type { EvaluationResult } from "./evaluator.js";
 import type { ToolRegistry } from "./tool-registry.js";
 
 // MARK: schemas
@@ -108,6 +109,18 @@ const userPrompt = (prompt: string) => `
 Task: ${prompt}
 `;
 
+const userPromptWithEvaluationResult = (
+	prompt: string,
+	previousPlan: Plan,
+	evaluationResult: EvaluationResult,
+) => `
+Task: ${prompt}
+Previous Plan: ${JSON.stringify(previousPlan, null, 2)}
+Evaluation Result: ${JSON.stringify(evaluationResult, null, 2)}
+
+Please create a new plan based on the previous plan and the evaluation result.
+`;
+
 // MARK: class
 export class Planner {
 	readonly model: LanguageModelV1 = openai("gpt-4o-mini");
@@ -127,6 +140,26 @@ export class Planner {
 			system: systemPrompt(this.toolRegistry.generateToolDescriptions()),
 			prompt: userPrompt(prompt),
 		});
+		return result.object;
+	}
+
+	async planWithEvaluation(
+		prompt: string,
+		previousPlan: Plan,
+		evaluationResult: EvaluationResult,
+	): Promise<Plan> {
+		const result = await generateObject({
+			model: this.model,
+			temperature: 0,
+			schema: this.planSchema,
+			system: systemPrompt(this.toolRegistry.generateToolDescriptions()),
+			prompt: userPromptWithEvaluationResult(
+				prompt,
+				previousPlan,
+				evaluationResult,
+			),
+		});
+
 		return result.object;
 	}
 }

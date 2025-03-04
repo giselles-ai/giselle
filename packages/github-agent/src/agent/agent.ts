@@ -1,4 +1,5 @@
 import { Octokit } from "@octokit/core";
+import { Evaluator } from "./evaluator.js";
 import { Formatter } from "./formatter.js";
 import { Planner } from "./planner.js";
 import { ToolRegistry } from "./tool-registry.js";
@@ -62,49 +63,71 @@ export class Agent {
 	private readonly planner: Planner;
 	private readonly toolRegistry: ToolRegistry;
 	private readonly isDebug: boolean;
+	private readonly maxRetries: number;
 
-	constructor(token: string, options?: { isDebug: boolean }) {
+	constructor(
+		token: string,
+		options?: { isDebug: boolean; maxRetries?: number },
+	) {
 		this.octokit = new Octokit({ auth: token });
 		this.toolRegistry = createRegistry(this.octokit);
 		this.planner = new Planner(this.toolRegistry);
 		this.isDebug = options?.isDebug ?? false;
+		this.maxRetries = options?.maxRetries ?? 5;
 	}
 
 	async execute(prompt: string): Promise<ExecutionResult> {
-		try {
-			const plan = await this.planner.plan(prompt);
-			if (this.isDebug) {
-				console.log("========== plan ==========");
-				console.dir(plan, { depth: null });
-				console.log("========== /plan ==========");
-			}
+		const evaluator = new Evaluator();
+		let attempts = 0;
 
+		while (attempts < this.maxRetries) {
 			try {
+				const plan = await this.planner.plan(prompt);
+				if (this.isDebug) {
+					console.log(`========== plan (attempt ${attempts + 1}) ==========`);
+					console.dir(plan, { depth: null });
+					console.log("========== /plan ==========");
+				}
+
 				const result = await this.toolRegistry.executeTool(
 					plan.toolCall.tool,
 					plan.toolCall,
 				);
-				const formatter = new Formatter();
-				const rawJson = JSON.stringify(result, null, 2);
-				const markdown = formatter.format(result);
 
-				return {
-					type: "success",
-					json: rawJson,
-					md: markdown,
-				};
+				const evaluation = await evaluator.evaluate(plan, result);
+				if (evaluation.decision === "accepted") {
+					const formatter = new Formatter();
+					const rawJson = JSON.stringify(result, null, 2);
+					const markdown = formatter.format(result);
+					return {
+						type: "success",
+						json: rawJson,
+						md: markdown,
+					};
+				}
+
+				attempts++;
+				if (attempts >= this.maxRetries) {
+					return {
+						type: "failure",
+						error: new Error("Maximum retry attempts reached"),
+					};
+				}
 			} catch (error) {
-				console.error("Error executing tool:", error);
-				return {
-					type: "failure",
-					error: new Error("Tool execution failed"),
-				};
+				console.error(`Error on attempt ${attempts + 1}:`, error);
+				attempts++;
+				if (attempts >= this.maxRetries) {
+					return {
+						type: "failure",
+						error: error instanceof Error ? error : new Error(String(error)),
+					};
+				}
 			}
-		} catch (error: unknown) {
-			return {
-				type: "failure",
-				error: error instanceof Error ? error : new Error(String(error)),
-			};
 		}
+
+		return {
+			type: "failure",
+			error: new Error("All retry attempts failed"),
+		};
 	}
 }
