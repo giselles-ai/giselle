@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { Agent } from "./agent/index.js";
 
 const isDebug = process.env.DEBUG === "1";
@@ -18,9 +17,10 @@ if (!prompt) {
 	process.exit(1);
 }
 
-const result = await agent.execute(prompt);
-if (result.type === "success") {
-	console.log(result.md);
-} else {
-	console.error("Execution failed with message:", result);
-}
+agent.execute(prompt).then((result) => {
+	if (result.type === "success") {
+		console.log(result.md);
+	} else {
+		console.error("Execution failed with message:", result);
+	}
+});

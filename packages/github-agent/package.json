@@ -21,13 +21,16 @@
 			"default": "./dist/index.js"
 		}
 	},
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"engines": {
 		"node": ">=22.0.0"
 	},
 	"devDependencies": {
 		"@giselle-sdk/utils": "workspace:*",
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
+		"@types/node": "catalog:",
 		"tsup": "catalog:",
 		"vitest": "catalog:"
 	},
