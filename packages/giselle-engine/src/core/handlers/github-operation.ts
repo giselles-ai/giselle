@@ -3,13 +3,15 @@ import {
 	type FailedGeneration,
 	type FileData,
 	type NodeId,
+	QueuedGeneration,
 	type RunningGeneration,
 	isGitHubNode,
 } from "@giselle-sdk/data-type";
 import { Agent as GitHubAgent } from "@giselle-sdk/github-agent";
 import { Octokit } from "@octokit/core";
 import { type CoreMessage, appendResponseMessages } from "ai";
-import type { z } from "zod";
+import { z } from "zod";
+import { createHandler } from "../create-handler";
 import {
 	buildGenerationMessageForGithubOperation,
 	filePath,
@@ -18,120 +20,111 @@ import {
 	githubAppAuth,
 	githubAppInstallationAuth,
 	setGeneration,
+	setGenerationIndex,
 	setNodeGenerationIndex,
 } from "../helpers";
-import { githubOperation } from "../schema";
-import type { GiselleEngineHandlerArgs } from "./types";
 
-const Input = githubOperation.Input;
-type Input = z.infer<typeof Input>;
+const input = z.object({
+	generation: QueuedGeneration,
+});
+export type Input = z.infer<typeof input>;
 
-export async function githubOperationHandler({
-	unsafeInput,
-	context,
-}: GiselleEngineHandlerArgs<Input>) {
-	const input = Input.parse(unsafeInput);
-	const generation = await getGeneration({
-		generationId: input.generationId,
-		storage: context.storage,
-	});
+export const githubOperationHandler = createHandler(
+	{
+		input,
+	},
+	async ({ input, context }) => {
+		const runningGeneration = {
+			...input.generation,
+			status: "running",
+			messages: [],
+			ququedAt: Date.now(),
+			requestedAt: Date.now(),
+			startedAt: Date.now(),
+		} satisfies RunningGeneration;
+		if (!isGitHubNode(runningGeneration.context.actionNode)) {
+			throw new Error("Action node is not a GitHub node");
+		}
 
-	if (generation?.status !== "requested") {
-		throw new Error("Generation not requested");
-	}
-
-	const runningGeneration = {
-		...generation,
-		status: "running",
-		messages: [],
-		startedAt: Date.now(),
-	} satisfies RunningGeneration;
-
-	if (!isGitHubNode(runningGeneration.context.actionNode)) {
-		throw new Error("Action node is not a GitHub node");
-	}
-
-	await Promise.all([
-		setGeneration({
-			storage: context.storage,
-			generation: runningGeneration,
-		}),
-		setNodeGenerationIndex({
-			storage: context.storage,
-			nodeId: runningGeneration.context.actionNode.id,
-			origin: runningGeneration.context.origin,
-			nodeGenerationIndex: {
-				id: runningGeneration.id,
+		await Promise.all([
+			setGeneration({
+				storage: context.storage,
+				generation: runningGeneration,
+			}),
+			setGenerationIndex({
+				storage: context.storage,
+				generationIndex: {
+					id: runningGeneration.id,
+					origin: runningGeneration.context.origin,
+				},
+			}),
+			setNodeGenerationIndex({
+				storage: context.storage,
 				nodeId: runningGeneration.context.actionNode.id,
-				status: "running",
-				createdAt: runningGeneration.createdAt,
-				ququedAt: runningGeneration.ququedAt,
-				requestedAt: runningGeneration.requestedAt,
-				startedAt: runningGeneration.startedAt,
-			},
-		}),
-	]);
-
-	try {
-		const githubContent = runningGeneration.context.actionNode.content;
-		if (githubContent.type !== "github") {
-			throw new Error("GitHub content is not of type 'github'");
-		}
-
-		async function fileResolver(file: FileData) {
-			const blob = await context.storage.getItemRaw(
-				filePath({
-					...runningGeneration.context.origin,
-					fileId: file.id,
-					fileName: file.name,
-				}),
-			);
-			if (blob === undefined) {
-				return undefined;
-			}
-			return blob;
-		}
-
-		async function generationContentResolver(nodeId: NodeId) {
-			const nodeGenerationIndexes = await getNodeGenerationIndexes({
 				origin: runningGeneration.context.origin,
-				storage: context.storage,
-				nodeId,
-			});
-			if (
-				nodeGenerationIndexes === undefined ||
-				nodeGenerationIndexes.length === 0
-			) {
-				return undefined;
+				nodeGenerationIndex: {
+					id: runningGeneration.id,
+					nodeId: runningGeneration.context.actionNode.id,
+					status: "running",
+					createdAt: runningGeneration.createdAt,
+					ququedAt: runningGeneration.ququedAt,
+					requestedAt: runningGeneration.requestedAt,
+					startedAt: runningGeneration.startedAt,
+				},
+			}),
+		]);
+
+		try {
+			const githubContent = runningGeneration.context.actionNode.content;
+			if (githubContent.type !== "github") {
+				throw new Error("GitHub content is not of type 'github'");
 			}
-			const generation = await getGeneration({
-				...input,
-				storage: context.storage,
-				generationId:
-					nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
-			});
-			if (generation?.status !== "completed") {
-				return undefined;
+
+			async function fileResolver(file: FileData) {
+				const blob = await context.storage.getItemRaw(
+					filePath({
+						...runningGeneration.context.origin,
+						fileId: file.id,
+						fileName: file.name,
+					}),
+				);
+				return blob === undefined ? undefined : blob;
 			}
-			const assistantMessages = generation.messages.filter(
-				(m) => m.role === "assistant",
+
+			async function generationContentResolver(nodeId: NodeId) {
+				const nodeGenerationIndexes = await getNodeGenerationIndexes({
+					origin: runningGeneration.context.origin,
+					storage: context.storage,
+					nodeId,
+				});
+				if (!nodeGenerationIndexes || nodeGenerationIndexes.length === 0) {
+					return undefined;
+				}
+				const latestGeneration = await getGeneration({
+					generationId:
+						nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
+					storage: context.storage,
+				});
+				if (latestGeneration?.status !== "completed") {
+					return undefined;
+				}
+				const assistantMessages = latestGeneration.messages.filter(
+					(m) => m.role === "assistant",
+				);
+				return assistantMessages.length === 0
+					? undefined
+					: assistantMessages[assistantMessages.length - 1].content;
+			}
+
+			const messages = await buildGenerationMessageForGithubOperation(
+				runningGeneration.context.actionNode,
+				runningGeneration.context.sourceNodes,
+				fileResolver,
+				generationContentResolver,
 			);
-			if (assistantMessages.length === 0) {
-				return undefined;
-			}
-			return assistantMessages[assistantMessages.length - 1].content;
-		}
 
-		const messages = await buildGenerationMessageForGithubOperation(
-			runningGeneration.context.actionNode,
-			runningGeneration.context.sourceNodes,
-			fileResolver,
-			generationContentResolver,
-		);
-
-		// Execute GitHub operation
-		const { json, md } = await executeGitHubOperation(messages);
-		const responseMessage = `## Markdown:
+			const { json, md } = await executeGitHubOperation(messages);
+			const responseMessage = `## Markdown:
 \`\`\`markdown
 ${md}
 \`\`\`
@@ -142,95 +135,94 @@ ${JSON.stringify(JSON.parse(json), null, 2)}
 \`\`\`
 `;
 
-		const responseMessages = appendResponseMessages({
-			messages: [
-				{
-					id: "id",
-					role: "user",
-					content: "",
+			const responseMessages = appendResponseMessages({
+				messages: [
+					{
+						id: "id",
+						role: "user",
+						content: "",
+					},
+				],
+				responseMessages: [
+					{
+						id: "id",
+						role: "assistant",
+						content: responseMessage,
+					},
+				],
+			});
+
+			const completedGeneration = {
+				...runningGeneration,
+				status: "completed",
+				completedAt: Date.now(),
+				messages: responseMessages,
+			} satisfies CompletedGeneration;
+
+			await Promise.all([
+				setGeneration({
+					storage: context.storage,
+					generation: completedGeneration,
+				}),
+				setNodeGenerationIndex({
+					storage: context.storage,
+					nodeId: runningGeneration.context.actionNode.id,
+					origin: runningGeneration.context.origin,
+					nodeGenerationIndex: {
+						id: completedGeneration.id,
+						nodeId: completedGeneration.context.actionNode.id,
+						status: "completed",
+						createdAt: completedGeneration.createdAt,
+						ququedAt: completedGeneration.ququedAt,
+						requestedAt: completedGeneration.requestedAt,
+						startedAt: completedGeneration.startedAt,
+						completedAt: completedGeneration.completedAt,
+					},
+				}),
+			]);
+
+			return {
+				messages: completedGeneration.messages,
+			};
+		} catch (error: unknown) {
+			const failedGeneration = {
+				...runningGeneration,
+				status: "failed",
+				failedAt: Date.now(),
+				error: {
+					name: error instanceof Error ? error.name : "Error",
+					message:
+						error instanceof Error ? error.message : "GitHub operation failed",
+					dump: error,
 				},
-			],
-			responseMessages: [
-				{
-					id: "id",
-					role: "assistant",
-					content: responseMessage,
-				},
-			],
-		});
+			} satisfies FailedGeneration;
 
-		// Create completed generation
-		const completedGeneration = {
-			...runningGeneration,
-			status: "completed",
-			completedAt: Date.now(),
-			messages: responseMessages,
-		} satisfies CompletedGeneration;
+			await Promise.all([
+				setGeneration({
+					storage: context.storage,
+					generation: failedGeneration,
+				}),
+				setNodeGenerationIndex({
+					storage: context.storage,
+					nodeId: runningGeneration.context.actionNode.id,
+					origin: runningGeneration.context.origin,
+					nodeGenerationIndex: {
+						id: failedGeneration.id,
+						nodeId: failedGeneration.context.actionNode.id,
+						status: "failed",
+						createdAt: failedGeneration.createdAt,
+						ququedAt: failedGeneration.ququedAt,
+						requestedAt: failedGeneration.requestedAt,
+						startedAt: failedGeneration.startedAt,
+						failedAt: failedGeneration.failedAt,
+					},
+				}),
+			]);
 
-		await Promise.all([
-			setGeneration({
-				storage: context.storage,
-				generation: completedGeneration,
-			}),
-			setNodeGenerationIndex({
-				storage: context.storage,
-				nodeId: runningGeneration.context.actionNode.id,
-				origin: runningGeneration.context.origin,
-				nodeGenerationIndex: {
-					id: completedGeneration.id,
-					nodeId: completedGeneration.context.actionNode.id,
-					status: "completed",
-					createdAt: completedGeneration.createdAt,
-					ququedAt: completedGeneration.ququedAt,
-					requestedAt: completedGeneration.requestedAt,
-					startedAt: completedGeneration.startedAt,
-					completedAt: completedGeneration.completedAt,
-				},
-			}),
-		]);
-
-		// Return result
-		return {
-			messages: completedGeneration.messages,
-		};
-	} catch (error: unknown) {
-		const failedGeneration = {
-			...runningGeneration,
-			status: "failed",
-			failedAt: Date.now(),
-			error: {
-				name: error instanceof Error ? error.name : "Error",
-				message:
-					error instanceof Error ? error.message : "GitHub operation failed",
-				dump: error,
-			},
-		} satisfies FailedGeneration;
-
-		await Promise.all([
-			setGeneration({
-				storage: context.storage,
-				generation: failedGeneration,
-			}),
-			setNodeGenerationIndex({
-				storage: context.storage,
-				nodeId: runningGeneration.context.actionNode.id,
-				origin: runningGeneration.context.origin,
-				nodeGenerationIndex: {
-					id: failedGeneration.id,
-					nodeId: failedGeneration.context.actionNode.id,
-					status: "failed",
-					createdAt: failedGeneration.createdAt,
-					ququedAt: failedGeneration.ququedAt,
-					requestedAt: failedGeneration.requestedAt,
-					startedAt: failedGeneration.startedAt,
-					failedAt: failedGeneration.failedAt,
-				},
-			}),
-		]);
-
-		throw error;
-	}
-}
+			throw error;
+		}
+	},
+);
 
 /**
  * Execute GitHub operation and return the result

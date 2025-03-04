@@ -134,6 +134,7 @@ function GitHubRunner({
 		updateGenerationStatusToComplete,
 		updateGenerationStatusToFailure,
 		callGithubOperation,
+		updateGenerationStatusToRunning,
 	} = useGenerationRunnerSystem();
 
 	useOnce(async () => {
@@ -141,7 +142,8 @@ function GitHubRunner({
 			return;
 		}
 		try {
-			await callGithubOperation(generation.id);
+			await callGithubOperation(generation);
+			await updateGenerationStatusToRunning(generation.id);
 			await updateGenerationStatusToComplete(generation.id);
 		} catch (error) {
 			console.error("GitHub operation failed:", error);

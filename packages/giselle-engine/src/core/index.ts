@@ -202,7 +202,7 @@ export async function GiselleEngine(
 		case "github-operation": {
 			const response = await githubOperationHandler({
 				context,
-				unsafeInput: payload,
+				input: payload,
 			});
 			return Response.json(response);
 		}

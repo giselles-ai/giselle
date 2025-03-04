@@ -150,9 +150,8 @@ export const getNodeGenerations = {
 };
 
 export const githubOperation = {
-	defaultApi: "/api/giselle/github-operation",
 	Input: z.object({
-		generationId: GenerationId.schema,
+		generation: Generation,
 	}),
 };
 

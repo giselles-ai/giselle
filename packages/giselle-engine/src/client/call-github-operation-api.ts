@@ -5,13 +5,8 @@ import { githubOperation } from "../core/schema";
 const Input = githubOperation.Input;
 type Input = z.infer<typeof Input>;
 
-export async function callGithubOperationApi({
-	api = githubOperation.defaultApi,
-	...input
-}: {
-	api?: string;
-} & Input) {
-	const response = await fetch(api, {
+export async function callGithubOperationApi(input: Input) {
+	const response = await fetch("/api/giselle/github-operation", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
