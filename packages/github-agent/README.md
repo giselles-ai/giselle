@@ -6,10 +6,8 @@ API. Built with Node.js and TypeScript.
 ## Requirements
 
 - Node.js 22.x or later
-- GitHub Personal Access Token
+- GitHub Token (PAT, GitHub App, GitHub App Installation)
 - OpenAI API Key
-- Anthropic API Key
-- Google Generative AI API Key
 
 ## Installation
 
@@ -24,8 +22,6 @@ Create a `.env` file in the root directory with the following variables:
 ```bash
 GITHUB_TOKEN=your_github_token
 OPENAI_API_KEY=your_openai_api_key
-ANTHROPIC_API_KEY=your_anthropic_api_key
-GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_api_key
 DEBUG=1  # Optional: Enable debug mode
 ```
 
@@ -43,23 +39,20 @@ const result = await agent.execute("your request here");
 Or use the CLI:
 
 ```bash
-npm run dev "your request here"
+npm run cli "your request here"
 ```
 
 ## Development
 
 ```bash
 # Run in development mode with auto-reload
-npm run dev
+npm run cli
 
 # Run tests
 npm test
 
-# Run tests in watch mode
-npm run test:watch
-
 # Type checking
-npm run typecheck
+npm run check-types
 
 # Build
 npm run build
@@ -221,15 +214,3 @@ toolRegistry.register(myNewTool);
 - Maximum of 3 retry attempts
 - Large files (>1MB) may be truncated
 - Long-running requests may timeout
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -am 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License.

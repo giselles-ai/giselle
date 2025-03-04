@@ -1,5 +1,4 @@
-import assert from "node:assert";
-import { describe, it } from "node:test";
+import { describe, expect, it } from "vitest";
 import { Formatter } from "./formatter.js";
 
 const testData = new Map([
@@ -32,7 +31,7 @@ describe("Formatter", () => {
     ├── path apps/studio.giselles.ai/.env.example
     ├── sha df58ba6fd4766ed6933ff53ab0618f738b60ff38
     └── score 1`;
-		assert.strictEqual(result, expected);
+		expect(result).toBe(expected);
 	});
 
 	it("empty values are filtered out", () => {
@@ -51,7 +50,7 @@ describe("Formatter", () => {
 		const result = formatter.format(emptyData);
 		const expected = `## Test
 └── d value`;
-		assert.strictEqual(result, expected);
+		expect(result).toBe(expected);
 	});
 
 	it("nested objects with proper alignment", () => {
@@ -75,7 +74,7 @@ describe("Formatter", () => {
     ├── child1 value1
     └── child2
         └── grandchild value2`;
-		assert.strictEqual(result, expected);
+		expect(result).toBe(expected);
 	});
 
 	it("deep nested objects with score at correct level", () => {
@@ -106,7 +105,7 @@ describe("Formatter", () => {
     │   └── owner
     │       └── login test-user
     └── score 1`;
-		assert.strictEqual(result, expected);
+		expect(result).toBe(expected);
 	});
 
 	it("multiline values", () => {
@@ -132,7 +131,7 @@ describe("Formatter", () => {
 │     console.log('hello');
 │   }
 └── single single line value`;
-		assert.strictEqual(result, expected);
+		expect(result).toBe(expected);
 	});
 
 	it("nested multiline values", () => {
@@ -168,7 +167,7 @@ describe("Formatter", () => {
             Important note:
             - Point 1
             - Point 2`;
-		assert.strictEqual(result, expected);
+		expect(result).toBe(expected);
 	});
 
 	it("formatArray - nested arrays and objects", () => {
@@ -203,7 +202,7 @@ describe("Formatter", () => {
     └── nested
         └── deep value`;
 		const result = formatter.format(data);
-		assert.strictEqual(result, expected);
+		expect(result).toBe(expected);
 	});
 
 	it("formatArray - empty arrays and objects", () => {
@@ -218,6 +217,6 @@ describe("Formatter", () => {
     ├── emptyArray
     └── emptyObject`;
 		const result = formatter.format(data);
-		assert.strictEqual(result, expected);
+		expect(result).toBe(expected);
 	});
 });

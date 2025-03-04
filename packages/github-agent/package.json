@@ -10,7 +10,10 @@
 		"cli": "tsx src/cli.ts",
 		"build": "tsup",
 		"check-types": "tsc --noEmit",
-		"clean": "rm -rf .turbo dist node_modules"
+		"clean": "rm -rf .turbo dist node_modules",
+		"test": "vitest run",
+		"lint": "biome lint .",
+		"check": "biome check --write ."
 	},
 	"exports": {
 		"./package.json": "./package.json",
