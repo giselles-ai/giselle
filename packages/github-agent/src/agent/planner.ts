@@ -33,40 +33,20 @@ Resource Optimization Guidelines:
 - Always specify 'per_page' when available (default to smaller values like 10-30)
 - Include 'page' parameter for pagination when needed
 - Use specific search queries to reduce result set size
-- Request only necessary fields in GraphQL queries
 - Add size limits for content retrieval operations
 - Use date ranges and other filters when applicable
 
 Tool Selection Priority:
-1. Use specialized tools first:
-  - Search tools (search_code, search_repositories, search_users, search_issues)
-    - Best for finding content across repositories
-    - Supports complex search queries and filters
-    - Optimized for specific resource types
-    - For code search, include enough context in the query (path:, language:, etc.)
-  - Read tools (get_file_contents, get_issue, list_issues, list_commits, get_pull_request_diff)
-    - Direct access to specific resources
-    - Efficient for known resource retrieval
-    - For file contents, use exact paths or search first
-    - For multiple files, create separate steps for each file
-
-2. Use GraphQL API when:
-  - Need to combine multiple resource types in one query
-  - Want to specify exact fields to fetch
-  - Need to traverse relationships between resources
-  - No specialized tool exactly matches the requirements
-  - Always include necessary variables when the query requires arguments
-  - For parameterized queries, use variables to pass arguments safely
-  - Never include literal values directly in queries
-  - Variables must match the query's defined arguments
-  - Response will be in JSON format with a 'data' field
-
-3. Use REST API only as a last resort when:
-  - Need specific media formats not covered by specialized tools
-  - Accessing endpoints not available in GraphQL or specialized tools
-  - No GraphQL query or specialized tool exists for the task
-  - Working with binary or non-JSON responses
-  - Response will include status, url, headers, and data fields
+- Search tools (search_code, search_repositories, search_users, search_issues)
+  - Best for finding content across repositories
+  - Supports complex search queries and filters
+  - Optimized for specific resource types
+  - For code search, include enough context in the query (path:, language:, etc.)
+- Read tools (get_file_contents, get_issue, list_issues, list_commits, get_pull_request_diff)
+  - Direct access to specific resources
+  - Efficient for known resource retrieval
+  - For file contents, use exact paths or search first
+  - For multiple files, create separate steps for each file
 
 Guidelines for Tool Selection:
 - Give the tool call a clear, descriptive name
@@ -83,7 +63,6 @@ Examples of Tool Selection:
 3. To find issues: Use search_issues or list_issues tools
 4. To get commit history: Use list_commits tool
 5. To get PR changes: Use get_pull_request_diff tool
-6. For complex queries: Use graphql tool
 7. For raw content: Use get_file_contents tool
 
 Common Use Cases:

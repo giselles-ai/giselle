@@ -3,7 +3,6 @@ import { Evaluator } from "./evaluator.js";
 import { Formatter } from "./formatter.js";
 import { Planner } from "./planner.js";
 import { ToolRegistry } from "./tool-registry.js";
-import { graphqlTool } from "./tools/graphql.js";
 import {
 	getFileContentsTool,
 	getIssueTool,
@@ -11,7 +10,6 @@ import {
 	listCommitsTool,
 	listIssuesTool,
 } from "./tools/read.js";
-import { restTool } from "./tools/rest.js";
 import {
 	searchCodeTool,
 	searchIssuesTool,
@@ -36,24 +34,18 @@ export type ExecutionResult = ExecutionSuccess | ExecutionFailure;
 function createRegistry(octokit: Octokit): ToolRegistry {
 	const registry = new ToolRegistry(octokit);
 
-	// Register GraphQL tool (primary tool for structured data)
-	registry.register(graphqlTool);
-
-	// Register specialized read tools
+	// Register read tools
 	registry.register(getFileContentsTool);
 	registry.register(getIssueTool);
 	registry.register(listIssuesTool);
 	registry.register(listCommitsTool);
 	registry.register(getPullRequestDiffTool);
 
-	// Register specialized search tools
+	// Register search tools
 	registry.register(searchCodeTool);
 	registry.register(searchRepositoriesTool);
 	registry.register(searchUsersTool);
 	registry.register(searchIssuesTool);
-
-	// Register REST tool (fallback for special cases)
-	registry.register(restTool);
 
 	return registry;
 }
