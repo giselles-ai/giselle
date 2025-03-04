@@ -21,6 +21,7 @@
 		"@ai-sdk/anthropic": "1.0.5",
 		"@ai-sdk/google": "1.0.10",
 		"@ai-sdk/openai": "1.0.8",
+		"@giselle-internal/workflow-designer-ui": "workspace:*",
 		"@giselle-sdk/data-type": "workspace:*",
 		"@icons-pack/react-simple-icons": "10.0.0",
 		"@lucide/lab": "0.1.2",
@@ -104,6 +105,7 @@
 		"tailwindcss-animate": "1.0.7",
 		"tiny-invariant": "1.3.3",
 		"ts-pattern": "5.2.0",
+		"unstorage": "catalog:",
 		"unstructured-client": "0.18.1",
 		"valibot": "0.37.0",
 		"zod": "3.24.1"

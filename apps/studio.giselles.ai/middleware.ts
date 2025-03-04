@@ -13,6 +13,6 @@ export default supabaseMiddleware(async (user, request) => {
 
 export const config = {
 	matcher: [
-		"/((?!_next/static|_next/image|.well-known|dev|webhooks|legal|login|signup|pricing|password_reset|subscription|auth|api/cron|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+		"/((?!_next/static|_next/image|.well-known|dev|webhooks|legal|login|signup|pricing|password_reset|subscription|auth|api/cron|api/giselle|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
 	],
 };

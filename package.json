@@ -9,7 +9,8 @@
 		"check-types": "turbo check-types",
 		"format": "turbo format",
 		"clean": "turbo clean",
-		"dev": "turbo dev --filter playground"
+		"dev": "turbo dev --filter playground",
+		"dev:studio.giselles.ai": "turbo dev --filter studio.giselles.ai"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
