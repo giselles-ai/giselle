@@ -125,7 +125,7 @@ async function buildGenerationMessageForTextGeneration(
 			}
 		}
 	}
-	console.dir(userMessage, { depth: null });
+
 	switch (llmProvider) {
 		case "openai": {
 			return [
