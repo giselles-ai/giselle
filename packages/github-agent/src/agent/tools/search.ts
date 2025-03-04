@@ -42,35 +42,6 @@ export const searchCodeTool = defineTool({
 		});
 		return result.data;
 	},
-	examples: [
-		{
-			input: {
-				tool: "search_code",
-				query: "addClass in:file language:js repo:jquery/jquery",
-				sort: "indexed",
-			},
-			output: {
-				total_count: 7,
-				incomplete_results: false,
-				items: [],
-			},
-			description:
-				"Search for code in jQuery repository with specific language and content location",
-		},
-		{
-			input: {
-				tool: "search_code",
-				query: "extension:ts filename:test language:typescript",
-				sort: "indexed",
-			},
-			output: {
-				total_count: 10,
-				incomplete_results: false,
-				items: [],
-			},
-			description: "Search for TypeScript test files across all repositories",
-		},
-	],
 	constraints: [
 		"Code search requires authentication",
 		"Rate limit: 10 requests per minute",
@@ -118,37 +89,6 @@ export const searchRepositoriesTool = defineTool({
 		});
 		return result.data;
 	},
-	examples: [
-		{
-			input: {
-				tool: "search_repositories",
-				query: "tetris language:assembly",
-				sort: "stars",
-				order: "desc",
-			},
-			output: {
-				total_count: 12,
-				incomplete_results: false,
-				items: [],
-			},
-			description: "Search for Assembly Tetris repositories, sorted by stars",
-		},
-		{
-			input: {
-				tool: "search_repositories",
-				query: "org:github fork:true language:javascript",
-				sort: "updated",
-				order: "desc",
-			},
-			output: {
-				total_count: 50,
-				incomplete_results: false,
-				items: [],
-			},
-			description:
-				"Search for JavaScript repositories in GitHub organization including forks",
-		},
-	],
 	constraints: [
 		"Rate limit: 30 requests per minute",
 		"Supports qualifiers:",
@@ -193,38 +133,6 @@ export const searchUsersTool = defineTool({
 		});
 		return result.data;
 	},
-	examples: [
-		{
-			input: {
-				tool: "search_users",
-				query: "type:user language:javascript location:japan",
-				sort: "followers",
-				order: "desc",
-			},
-			output: {
-				total_count: 1000,
-				incomplete_results: false,
-				items: [],
-			},
-			description:
-				"Search for JavaScript developers in Japan, sorted by followers",
-		},
-		{
-			input: {
-				tool: "search_users",
-				query: "type:org language:rust followers:>1000",
-				sort: "repositories",
-				order: "desc",
-			},
-			output: {
-				total_count: 15,
-				incomplete_results: false,
-				items: [],
-			},
-			description:
-				"Search for Rust organizations with more than 1000 followers",
-		},
-	],
 	constraints: [
 		"Rate limit: 30 requests per minute",
 		"Supports qualifiers:",
@@ -281,52 +189,6 @@ export const searchIssuesTool = defineTool({
 		});
 		return result.data;
 	},
-	examples: [
-		{
-			input: {
-				tool: "search_issues",
-				query: "is:open is:issue label:bug repo:microsoft/vscode",
-				sort: "created",
-				order: "desc",
-			},
-			output: {
-				total_count: 500,
-				incomplete_results: false,
-				items: [],
-			},
-			description:
-				"Search for open bug issues in VS Code repository, sorted by creation date",
-		},
-		{
-			input: {
-				tool: "search_issues",
-				query: "is:pr review:required language:typescript",
-				sort: "updated",
-				order: "desc",
-			},
-			output: {
-				total_count: 200,
-				incomplete_results: false,
-				items: [],
-			},
-			description: "Search for TypeScript pull requests requiring review",
-		},
-		{
-			input: {
-				tool: "search_issues",
-				query: "is:issue author:octocat is:public archived:false",
-				sort: "comments",
-				order: "desc",
-			},
-			output: {
-				total_count: 30,
-				incomplete_results: false,
-				items: [],
-			},
-			description:
-				"Search for issues created by octocat in non-archived public repositories",
-		},
-	],
 	constraints: [
 		"Rate limit: 30 requests per minute",
 		"Searches both issues and pull requests",

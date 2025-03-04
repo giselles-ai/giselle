@@ -21,41 +21,6 @@ export const graphqlTool = defineTool({
 			input.variables,
 		)) as GraphQlQueryResponse<unknown>;
 	},
-	examples: [
-		{
-			input: {
-				tool: "graphql",
-				query: `query($owner: String!, $repo: String!, $number: Int!) {
-          repository(owner: $owner, name: $repo) {
-            pullRequest(number: $number) {
-              title
-              state
-              author { login }
-              createdAt
-            }
-          }
-        }`,
-				variables: {
-					owner: "octocat",
-					repo: "hello-world",
-					number: 1,
-				},
-			},
-			output: {
-				data: {
-					repository: {
-						pullRequest: {
-							title: "Example PR",
-							state: "OPEN",
-							author: { login: "octocat" },
-							createdAt: "2024-01-01T00:00:00Z",
-						},
-					},
-				},
-			},
-			description: "Fetch pull request information using GraphQL",
-		},
-	],
 	constraints: [
 		"Must provide valid GraphQL query",
 		"Variables must match query parameters",

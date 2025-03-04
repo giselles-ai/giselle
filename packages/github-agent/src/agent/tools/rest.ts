@@ -31,19 +31,6 @@ export const restTool = defineTool({
 		});
 		return result.data;
 	},
-	examples: [
-		{
-			input: {
-				tool: "rest",
-				method: "GET",
-				path: "/repos/octocat/hello-world/pulls/1",
-				format: "diff",
-			},
-			output:
-				"diff --git a/file.txt b/file.txt\nindex 123..456 789\n--- a/file.txt\n+++ b/file.txt\n@@ -1,3 +1,3 @@\n-old line\n+new line\n no change",
-			description: "Fetch pull request diff using REST API",
-		},
-	],
 	constraints: [
 		"Path must be a valid GitHub REST API endpoint",
 		"Method must be appropriate for the endpoint",

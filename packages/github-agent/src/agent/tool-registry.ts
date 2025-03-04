@@ -36,11 +36,6 @@ interface DefineToolOptions<
 	purpose: string;
 	inputSchema: TInputSchema;
 	execute: (octokit: Octokit, input: z.infer<TInputSchema>) => Promise<TOutput>;
-	examples?: Array<{
-		input: z.infer<TInputSchema>;
-		output: TOutput;
-		description: string;
-	}>;
 	constraints?: string[];
 }
 
@@ -57,7 +52,6 @@ export function defineTool<
 		purpose: opts.purpose,
 		inputSchema: opts.inputSchema,
 		execute: opts.execute,
-		examples: opts.examples,
 		constraints: opts.constraints,
 	};
 }
@@ -157,17 +151,6 @@ export class ToolRegistry {
 				}
 				descriptions += "</constraints>\n";
 			}
-			// if (tool.examples && tool.examples.length > 0) {
-			//   descriptions += "<examples>\n";
-			//   tool.examples.forEach((example: { description: string; input: unknown; output: unknown }) => {
-			//     descriptions += "<example>\n";
-			//     descriptions += `<description>${example.description}</description>\n`;
-			//     descriptions += `<input>${JSON.stringify(example.input, null, 2)}</input>\n`;
-			//     descriptions += `<o>${JSON.stringify(example.output, null, 2)}<o>\n`;
-			//     descriptions += "</example>\n";
-			//   });
-			//   descriptions += "</examples>\n";
-			// }
 			descriptions += "</tool>\n\n";
 		}
 		return `<tools>\n${descriptions}</tools>`;
