@@ -140,7 +140,6 @@ export class ToolRegistry {
 		} catch (error) {
 			throw new Error(`Invalid input for tool ${name}: ${error}`);
 		}
-
 		return await this.withRetry(() => tool.execute(this.octokit, input));
 	}
 

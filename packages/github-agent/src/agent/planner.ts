@@ -5,48 +5,13 @@ import type { ToolRegistry } from "./tool-registry.js";
 
 // MARK: schemas
 export function createPlanSchema(toolRegistry: ToolRegistry) {
-	const planStepSchema = z.object({
-		name: z.string().describe("The name of the step"),
-		toolCall: toolRegistry.toolInputSchema(),
-	});
-
 	return z.object({
 		userRequest: z.string().describe("The user's request"),
-		steps: z.array(planStepSchema).describe("The steps to complete the task"),
-		summary: z.string().describe("A summary of the plan"),
-		reasoning: z
-			.string()
-			.describe("The reasoning for why these steps are necessary"),
-		hasDependencies: z
-			.boolean()
-			.describe(
-				"Whether this plan has steps that depend on results from previous steps",
-			),
-		dependencyExplanation: z
-			.string()
-			.optional()
-			.describe(
-				"If hasDependencies is true, explanation of the dependencies and how to split the task",
-			),
+		toolCall: toolRegistry.toolInputSchema(),
 	});
 }
 
 export type Plan = z.infer<ReturnType<typeof createPlanSchema>>;
-export type PlanStep = z.infer<
-	ReturnType<typeof createPlanSchema>
->["steps"][number];
-
-// Error class for dependency issues
-export class TaskDependencyError extends Error {
-	constructor(
-		message: string,
-		public readonly explanation: string,
-		public readonly plan: Plan,
-	) {
-		super(message);
-		this.name = "TaskDependencyError";
-	}
-}
 
 // MARK: prompts
 const systemPrompt = (toolDescriptions: string) => `
@@ -57,11 +22,19 @@ ${toolDescriptions}
 </tool_descriptions>
 
 Primary Goals:
-- Create efficient plans using the available tools
-- Break down complex tasks into multiple steps when necessary
-- Never include mutations or repository modifications in your plans
-- Choose the most appropriate tool for each task based on the priority order
-- Create independent steps that don't rely on previous results
+- Create an efficient plan using the available tools
+- Select the most appropriate single tool for the task
+- Never include mutations or repository modifications in your plan
+- Choose the most appropriate tool based on the priority order
+- Minimize API resource usage by limiting result sets
+
+Resource Optimization Guidelines:
+- Always specify 'per_page' when available (default to smaller values like 10-30)
+- Include 'page' parameter for pagination when needed
+- Use specific search queries to reduce result set size
+- Request only necessary fields in GraphQL queries
+- Add size limits for content retrieval operations
+- Use date ranges and other filters when applicable
 
 Tool Selection Priority:
 1. Use specialized tools first:
@@ -94,16 +67,13 @@ Tool Selection Priority:
   - Working with binary or non-JSON responses
   - Response will include status, url, headers, and data fields
 
-Guidelines for Steps:
-- Give each step a clear, descriptive name
+Guidelines for Tool Selection:
+- Give the tool call a clear, descriptive name
 - Include all necessary parameters
 - Use exact tool names as specified in the tool descriptions
-- Make each step independent and self-contained
-- Each step must be unique and avoid duplicate tool calls
 - For file operations:
-  - Use search_code to find files first if exact path is unknown
+  - Use search_code to find files if exact path is unknown
   - Use get_file_contents with exact paths
-  - Create separate steps for each file to be retrieved
   - Include file extension in search queries when possible
 
 Examples of Tool Selection:
@@ -138,22 +108,6 @@ const userPrompt = (prompt: string) => `
 Task: ${prompt}
 `;
 
-const userPromptWithPreviousResults = (
-	prompt: string,
-	previousPlan: Plan,
-	previousResults: Record<string, unknown>,
-	wasTruncated: boolean,
-) => `
-User Request: ${prompt}
-
-Previous attempt:
-${JSON.stringify(previousPlan, null, 2)}
-
-Previous results (${wasTruncated ? "truncated" : "complete"}):
-${JSON.stringify(previousResults, null, 2)}
-
-Please create a new plan that addresses any issues with the previous attempt.`;
-
 // MARK: class
 export class Planner {
 	readonly model: LanguageModelV1 = openai("gpt-4o-mini");
@@ -172,27 +126,6 @@ export class Planner {
 			schema: this.planSchema,
 			system: systemPrompt(this.toolRegistry.generateToolDescriptions()),
 			prompt: userPrompt(prompt),
-		});
-		return result.object;
-	}
-
-	async planWithPreviousResults(
-		prompt: string,
-		previousPlan: Plan,
-		previousResults: Map<string, unknown>,
-		wasTruncated: boolean,
-	): Promise<Plan> {
-		const result = await generateObject({
-			model: this.model,
-			temperature: 0,
-			schema: this.planSchema,
-			system: systemPrompt(this.toolRegistry.generateToolDescriptions()),
-			prompt: userPromptWithPreviousResults(
-				prompt,
-				previousPlan,
-				Object.fromEntries(previousResults),
-				wasTruncated,
-			),
 		});
 		return result.object;
 	}

@@ -35,18 +35,10 @@ export class Formatter {
 	// List of keys that require special indent processing
 	private specialIndentKeys = new Set(["items", "search", "result"]);
 
-	public format(
-		results: Map<string, unknown>,
-		options: FormatOptions = {},
-	): string {
+	public format(result: unknown, options: FormatOptions = {}): string {
 		const opts = { ...this.defaultOptions, ...options };
-		// Do not insert extra blank lines between root-level items
-		return Array.from(results.entries())
-			.map(([key, value]) => {
-				const formatted = this.formatValue(value, "", opts);
-				return formatted ? `## ${key}\n${formatted}` : `## ${key}`;
-			})
-			.join("\n");
+		const formatted = this.formatValue(result, "", opts);
+		return formatted ? `## Result\n${formatted}` : "## Result";
 	}
 
 	private formatMultilineValue(value: string, indent: string): string {

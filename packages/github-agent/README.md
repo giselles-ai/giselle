@@ -102,8 +102,8 @@ The project consists of the following components:
 ```mermaid
 flowchart TD
     A[User Request] --> B[Planner]
-    B --> C[Generate Plan]
-    C --> D[Execute Steps]
+    B --> C[Generate Plan with Single Tool Call]
+    C --> D[Execute Tool Call]
     D --> E[Evaluator]
     E --> F{Success?}
     F -->|Yes| G[Return Results]
@@ -113,8 +113,8 @@ flowchart TD
 ```
 
 1. Receive user request
-2. Planner analyzes request and generates execution plan
-3. Execute each step sequentially
+2. Planner analyzes request and selects appropriate tool
+3. Execute single tool call
 4. Evaluator assesses results
 5. Replan and retry if necessary
 6. Return final results to user
