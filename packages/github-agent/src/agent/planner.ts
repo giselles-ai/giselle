@@ -68,6 +68,7 @@ Examples of Tool Selection:
 4. To get commit history: Use list_commits tool
 5. To get PR changes: Use get_pull_request_diff tool
 6. For raw content: Use get_file_contents tool
+7. To fetch commits of a PR: Use list_commits with sha: 'pull/{number}/head'
 
 Common Use Cases:
 1. Finding and Reading Files:
