@@ -82,7 +82,7 @@ export function GitHubNodePropertiesPanel({ node }: { node: GitHubNode }) {
 				direction="vertical"
 				className="flex-1 flex flex-col gap-[16px]"
 			>
-				<Panel defaultSize={70} minSize={30}>
+				<Panel>
 					<PropertiesPanelContent>
 						<Tabs.Root
 							className="flex flex-col gap-[8px] h-full"
@@ -123,7 +123,7 @@ export function GitHubNodePropertiesPanel({ node }: { node: GitHubNode }) {
 						"data-[resize-handle-state=hover]:bg-black-400 data-[resize-handle-state=drag]:bg-black-400",
 					)}
 				/>
-				<Panel defaultSize={30} minSize={20}>
+				<Panel>
 					<PropertiesPanelContent>
 						<GenerationPanel node={node} />
 					</PropertiesPanelContent>
