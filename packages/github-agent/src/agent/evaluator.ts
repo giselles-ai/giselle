@@ -23,6 +23,42 @@ Consider the following aspects:
 3. If the results were truncated, check if the important information is still available in the truncated results. Note that truncation is only done to manage token limits and should not be a reason for replanning if the key information is present.
 Respond with either "accepted" if the results are satisfactory, or "replan" if we need to try a different approach.`;
 
+function compressResult(result: unknown, maxLength = 100): unknown {
+	if (result === null || result === undefined) return result;
+
+	if (typeof result === "object") {
+		if (Array.isArray(result)) {
+			return result.map((item) => {
+				if (typeof item === "string") {
+					return item.length > maxLength
+						? `${item.slice(0, maxLength)}...`
+						: item;
+				}
+				return compressResult(item, maxLength);
+			});
+		}
+
+		const compressed: Record<string, unknown> = {};
+		for (const [key, value] of Object.entries(result)) {
+			if (typeof value === "string") {
+				compressed[key] =
+					value.length > maxLength ? `${value.slice(0, maxLength)}...` : value;
+			} else {
+				compressed[key] = compressResult(value, maxLength);
+			}
+		}
+		return compressed;
+	}
+
+	if (typeof result === "string") {
+		return result.length > maxLength
+			? `${result.slice(0, maxLength)}...`
+			: result;
+	}
+
+	return result;
+}
+
 const userPrompt = ({
 	plan,
 	result,
@@ -32,7 +68,7 @@ const userPrompt = ({
 }) => `
 User request: ${plan.userRequest}
 Results:
-${JSON.stringify(result, null, 2)}
+${JSON.stringify(compressResult(result), null, 2)}
 Evaluate whether these results satisfy the plan requirements.`;
 
 export class Evaluator {
