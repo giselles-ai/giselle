@@ -96,3 +96,16 @@ export const settingsV2Flag = flag<boolean>({
 		{ value: true, label: "Enable" },
 	],
 });
+
+export const newUiFlag = flag<boolean>({
+	key: "new-ui",
+	async decide() {
+		return takeLocalEnv("NEW_UI_FLAG");
+	},
+	description: "Enable New UI",
+	defaultValue: false,
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+});
