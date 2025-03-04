@@ -786,6 +786,12 @@ importers:
 
   packages/github-agent:
     dependencies:
+      '@ai-sdk/anthropic':
+        specifier: 'catalog:'
+        version: 1.1.6(zod@3.24.1)
+      '@ai-sdk/google':
+        specifier: 'catalog:'
+        version: 1.1.11(zod@3.24.1)
       '@ai-sdk/openai':
         specifier: 'catalog:'
         version: 1.1.9(zod@3.24.1)

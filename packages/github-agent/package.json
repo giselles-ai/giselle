@@ -42,6 +42,8 @@
 		"@octokit/graphql": "catalog:",
 		"@octokit/request-error": "catalog:",
 		"@ai-sdk/openai": "catalog:",
+		"@ai-sdk/anthropic": "catalog:",
+		"@ai-sdk/google": "catalog:",
 		"ai": "catalog:",
 		"zod": "catalog:"
 	}

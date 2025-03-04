@@ -6,9 +6,15 @@ import { ToolRegistry } from "./tool-registry.js";
 import {
 	getFileContentsTool,
 	getIssueTool,
+	getPullRequestCommentsTool,
 	getPullRequestDiffTool,
+	getPullRequestFilesTool,
+	getPullRequestReviewsTool,
+	getPullRequestStatusTool,
+	getPullRequestTool,
 	listCommitsTool,
 	listIssuesTool,
+	listPullRequestsTool,
 } from "./tools/read.js";
 import {
 	searchCodeTool,
@@ -39,7 +45,15 @@ function createRegistry(octokit: Octokit): ToolRegistry {
 	registry.register(getIssueTool);
 	registry.register(listIssuesTool);
 	registry.register(listCommitsTool);
+
+	// Register pull request tools
 	registry.register(getPullRequestDiffTool);
+	registry.register(getPullRequestTool);
+	registry.register(listPullRequestsTool);
+	registry.register(getPullRequestFilesTool);
+	registry.register(getPullRequestStatusTool);
+	registry.register(getPullRequestCommentsTool);
+	registry.register(getPullRequestReviewsTool);
 
 	// Register search tools
 	registry.register(searchCodeTool);

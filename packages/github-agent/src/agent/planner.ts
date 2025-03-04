@@ -1,5 +1,9 @@
 import { openai } from "@ai-sdk/openai";
-import { type LanguageModelV1, generateObject } from "ai";
+import {
+	type LanguageModelV1,
+	NoObjectGeneratedError,
+	generateObject,
+} from "ai";
 import { z } from "zod";
 import type { EvaluationResult } from "./evaluator.js";
 import type { ToolRegistry } from "./tool-registry.js";
@@ -63,7 +67,7 @@ Examples of Tool Selection:
 3. To find issues: Use search_issues or list_issues tools
 4. To get commit history: Use list_commits tool
 5. To get PR changes: Use get_pull_request_diff tool
-7. For raw content: Use get_file_contents tool
+6. For raw content: Use get_file_contents tool
 
 Common Use Cases:
 1. Finding and Reading Files:
@@ -102,7 +106,10 @@ Please create a new plan based on the previous plan and the evaluation result.
 
 // MARK: class
 export class Planner {
-	readonly model: LanguageModelV1 = openai("gpt-4o-mini");
+	// readonly model: LanguageModelV1 = openai("gpt-4o-mini");
+	// It seems that gpt-4o-mini can not generate proper format if the number of tools is large
+	readonly model: LanguageModelV1 = openai("gpt-4o");
+	// readonly model: LanguageModelV1 = anthropic("claude-3-5-sonnet-latest");
 	private readonly toolRegistry: ToolRegistry;
 	private readonly planSchema: z.ZodType<Plan>;
 
@@ -112,14 +119,25 @@ export class Planner {
 	}
 
 	async plan(prompt: string): Promise<Plan> {
-		const result = await generateObject({
-			model: this.model,
-			temperature: 0,
-			schema: this.planSchema,
-			system: systemPrompt(this.toolRegistry.generateToolDescriptions()),
-			prompt: userPrompt(prompt),
-		});
-		return result.object;
+		try {
+			const result = await generateObject({
+				model: this.model,
+				temperature: 0,
+				schema: this.planSchema,
+				system: systemPrompt(this.toolRegistry.generateToolDescriptions()),
+				prompt: userPrompt(prompt),
+			});
+			return result.object;
+		} catch (error) {
+			if (NoObjectGeneratedError.isInstance(error)) {
+				console.log("======= NoObjectGeneratedError ========");
+				console.log("Cause:", error.cause);
+				console.log("Text:", error.text);
+				console.log("Response:", error.response);
+				console.log("Usage:", error.usage);
+			}
+			throw error;
+		}
 	}
 
 	async planWithEvaluation(

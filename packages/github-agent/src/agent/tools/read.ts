@@ -235,3 +235,209 @@ export const getPullRequestDiffTool = defineTool({
 		"Headers indicate binary file changes when applicable",
 	],
 });
+
+// Get pull request tool
+export const getPullRequestTool = defineTool({
+	name: "get_pull_request",
+	description: "Gets details of a specific pull request",
+	purpose:
+		"Retrieve detailed information about a pull request including its status",
+	inputSchema: z.object({
+		tool: z.literal("get_pull_request"),
+		owner: z.string().describe("Repository owner"),
+		repo: z.string().describe("Repository name"),
+		pull_number: z.number().describe("Pull request number"),
+	}),
+	execute: async (octokit: Octokit, input) => {
+		const result = await octokit.request(
+			"GET /repos/{owner}/{repo}/pulls/{pull_number}",
+			{
+				owner: input.owner,
+				repo: input.repo,
+				pull_number: input.pull_number,
+			},
+		);
+		return result.data;
+	},
+	constraints: [
+		"Returns detailed pull request information",
+		"Includes merge status and review status",
+		"Returns 404 if pull request number doesn't exist",
+		"Requires read access to the repository",
+	],
+});
+
+// List pull requests tool
+export const listPullRequestsTool = defineTool({
+	name: "list_pull_requests",
+	description: "Lists and filters pull requests in a repository",
+	purpose: "Retrieve a filtered list of pull requests",
+	inputSchema: z.object({
+		tool: z.literal("list_pull_requests"),
+		owner: z.string().describe("Repository owner"),
+		repo: z.string().describe("Repository name"),
+		state: z
+			.enum(["open", "closed", "all"])
+			.optional()
+			.describe("Pull request state"),
+		head: z.string().optional().describe("Filter by head user/org and branch"),
+		base: z.string().optional().describe("Filter by base branch"),
+		sort: z
+			.enum(["created", "updated", "popularity", "long-running"])
+			.optional()
+			.describe("Sort field"),
+		direction: z.enum(["asc", "desc"]).optional().describe("Sort direction"),
+		per_page: z
+			.number()
+			.min(1)
+			.max(100)
+			.optional()
+			.describe("Results per page"),
+		page: z.number().optional().describe("Page number"),
+	}),
+	execute: async (octokit: Octokit, input) => {
+		const result = await octokit.request("GET /repos/{owner}/{repo}/pulls", {
+			owner: input.owner,
+			repo: input.repo,
+			state: input.state,
+			head: input.head,
+			base: input.base,
+			sort: input.sort,
+			direction: input.direction,
+			per_page: input.per_page,
+			page: input.page,
+		});
+		return result.data;
+	},
+	constraints: [
+		"Default state is 'open'",
+		"Maximum 100 results per page",
+		"Sort defaults to 'created'",
+		"Direction defaults to 'desc'",
+	],
+});
+
+// Get pull request files tool
+export const getPullRequestFilesTool = defineTool({
+	name: "get_pull_request_files",
+	description: "Gets the list of files changed in a pull request",
+	purpose: "Retrieve details about files modified in a pull request",
+	inputSchema: z.object({
+		tool: z.literal("get_pull_request_files"),
+		owner: z.string().describe("Repository owner"),
+		repo: z.string().describe("Repository name"),
+		pull_number: z.number().describe("Pull request number"),
+	}),
+	execute: async (octokit: Octokit, input) => {
+		const result = await octokit.request(
+			"GET /repos/{owner}/{repo}/pulls/{pull_number}/files",
+			{
+				owner: input.owner,
+				repo: input.repo,
+				pull_number: input.pull_number,
+			},
+		);
+		return result.data;
+	},
+	constraints: [
+		"Returns details about added, modified, and deleted files",
+		"Includes file status and patch information",
+		"Limited to 300 files per page",
+	],
+});
+
+// Get pull request status tool
+export const getPullRequestStatusTool = defineTool({
+	name: "get_pull_request_status",
+	description:
+		"Gets the combined status of all status checks for a pull request",
+	purpose: "Retrieve status check results for a pull request",
+	inputSchema: z.object({
+		tool: z.literal("get_pull_request_status"),
+		owner: z.string().describe("Repository owner"),
+		repo: z.string().describe("Repository name"),
+		pull_number: z.number().describe("Pull request number"),
+	}),
+	execute: async (octokit: Octokit, input) => {
+		const pr = await octokit.request(
+			"GET /repos/{owner}/{repo}/pulls/{pull_number}",
+			{
+				owner: input.owner,
+				repo: input.repo,
+				pull_number: input.pull_number,
+			},
+		);
+		const result = await octokit.request(
+			"GET /repos/{owner}/{repo}/commits/{ref}/status",
+			{
+				owner: input.owner,
+				repo: input.repo,
+				ref: pr.data.head.sha,
+			},
+		);
+		return result.data;
+	},
+	constraints: [
+		"Returns combined status of all checks",
+		"Includes individual check details",
+		"Status can be success, failure, pending",
+	],
+});
+
+// Get pull request comments tool
+export const getPullRequestCommentsTool = defineTool({
+	name: "get_pull_request_comments",
+	description: "Gets the review comments on a pull request",
+	purpose: "Retrieve review comments from a pull request",
+	inputSchema: z.object({
+		tool: z.literal("get_pull_request_comments"),
+		owner: z.string().describe("Repository owner"),
+		repo: z.string().describe("Repository name"),
+		pull_number: z.number().describe("Pull request number"),
+	}),
+	execute: async (octokit: Octokit, input) => {
+		const result = await octokit.request(
+			"GET /repos/{owner}/{repo}/pulls/{pull_number}/comments",
+			{
+				owner: input.owner,
+				repo: input.repo,
+				pull_number: input.pull_number,
+			},
+		);
+		return result.data;
+	},
+	constraints: [
+		"Returns inline review comments",
+		"Includes comment location in diff",
+		"Comments are ordered by creation time",
+	],
+});
+
+// Get pull request reviews tool
+export const getPullRequestReviewsTool = defineTool({
+	name: "get_pull_request_reviews",
+	description: "Gets the reviews on a pull request",
+	purpose: "Retrieve review information for a pull request",
+	inputSchema: z.object({
+		tool: z.literal("get_pull_request_reviews"),
+		owner: z.string().describe("Repository owner"),
+		repo: z.string().describe("Repository name"),
+		pull_number: z.number().describe("Pull request number"),
+	}),
+	execute: async (octokit: Octokit, input) => {
+		const result = await octokit.request(
+			"GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews",
+			{
+				owner: input.owner,
+				repo: input.repo,
+				pull_number: input.pull_number,
+			},
+		);
+		return result.data;
+	},
+	constraints: [
+		"Returns all reviews on the pull request",
+		"Includes review state (APPROVED, CHANGES_REQUESTED, etc.)",
+		"Reviews are ordered by submission time",
+	],
+});
