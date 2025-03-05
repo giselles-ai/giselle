@@ -92,10 +92,7 @@ Remember to respect the available tools and assess whether the task can be execu
 
 // MARK: class
 export class Planner {
-	// readonly model: LanguageModelV1 = openai("gpt-4o-mini");
-	// It seems that gpt-4o-mini can not generate proper format if the number of tools is large
-	readonly model: LanguageModelV1 = openai("gpt-4o");
-	// readonly model: LanguageModelV1 = anthropic("claude-3-5-sonnet-latest");
+	readonly model: LanguageModelV1 = openai("gpt-4o-mini");
 	private readonly toolRegistry: ToolRegistry;
 	private readonly planSchema: z.ZodType<Plan>;
 
