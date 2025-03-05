@@ -1,4 +1,4 @@
-import { Agent } from "./agent/index.js";
+import { Agent, type ExecutionResult } from "./agent/index.js";
 import {
 	type AvailableToolName,
 	getAllToolNames,
@@ -17,53 +17,50 @@ if (!prompt) {
 	process.exit(1);
 }
 
-// Get available tools from Agent
+// Get available tools
 const availableTools = getAllToolNames();
 
-// Parse comma-separated tool names if provided
-const inputToolNames = toolsArg
-	? toolsArg
-			.split(",")
-			.map((t) => t.trim())
-			.filter(Boolean)
-	: [];
+// 型述語関数を定義
+function isAvailableToolName(name: string): name is AvailableToolName {
+	return availableTools.includes(name as AvailableToolName);
+}
 
-// Validate tool names if provided and convert to AvailableToolName type
-const toolNames: AvailableToolName[] = [];
-if (inputToolNames.length > 0) {
+const handleResult = (result: ExecutionResult) => {
+	if (result.type === "success") {
+		console.log(result.md);
+	} else {
+		console.error("Execution failed with message:", result);
+	}
+};
+
+let selectedTools: AvailableToolName[] = [];
+
+if (toolsArg) {
+	const inputToolNames = toolsArg
+		.split(",")
+		.map((t) => t.trim())
+		.filter(Boolean);
+
 	const invalidTools = inputToolNames.filter(
-		(tool) => !availableTools.includes(tool as AvailableToolName),
+		(tool) => !isAvailableToolName(tool),
 	);
+
 	if (invalidTools.length > 0) {
 		console.error(`Invalid tool(s): ${invalidTools.join(", ")}`);
 		console.error(`Available tools: ${availableTools.join(", ")}`);
 		process.exit(1);
 	}
-	toolNames.push(...(inputToolNames as AvailableToolName[]));
-}
 
-// If no tools specified, show available tools and use all
-if (toolNames.length === 0) {
-	console.log(`Using all available tools: ${availableTools.join(", ")}`);
-	const agent = Agent.fromAllTools(process.env.GITHUB_TOKEN, { isDebug });
-	agent.execute(prompt).then((result) => {
-		if (result.type === "success") {
-			console.log(result.md);
-		} else {
-			console.error("Execution failed with message:", result);
-		}
-	});
+	selectedTools = inputToolNames.filter(isAvailableToolName);
+	console.log(`Using tools: ${selectedTools.join(", ")}`);
 } else {
-	const agent = Agent.builder()
-		.withToken(process.env.GITHUB_TOKEN)
-		.withTools(toolNames)
-		.withOptions({ isDebug });
-
-	agent.execute(prompt).then((result) => {
-		if (result.type === "success") {
-			console.log(result.md);
-		} else {
-			console.error("Execution failed with message:", result);
-		}
-	});
+	console.log(`Using all available tools: ${availableTools.join(", ")}`);
+	selectedTools = availableTools;
 }
+
+const agent = new Agent(process.env.GITHUB_TOKEN, {
+	allowedToolNames: selectedTools,
+	isDebug,
+});
+
+agent.execute(prompt).then(handleResult);
