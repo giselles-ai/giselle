@@ -51,7 +51,7 @@ const toolMap: Map<AvailableToolName, AvailableTool> = new Map(
 	allTools.map((tool) => [tool.name, tool]),
 );
 
-function isAvailableToolName(name: string): name is AvailableToolName {
+export function isAvailableToolName(name: string): name is AvailableToolName {
 	return Array.from(toolMap.keys()).includes(name as AvailableToolName);
 }
 
