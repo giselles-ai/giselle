@@ -128,11 +128,15 @@ export const githubOperationHandler = createHandler(
 				generationContentResolver,
 			);
 
-			const { json, md } = await executeGitHubOperation(
+			const operationResult = await executeGitHubOperation(
 				messages,
 				runningGeneration.context.actionNode,
 			);
-			const responseMessage = `## Markdown:
+			let responseMessage: string;
+			switch (operationResult.type) {
+				case "success": {
+					const { json, md } = operationResult;
+					responseMessage = `## Markdown:
 \`\`\`markdown
 ${md}
 \`\`\`
@@ -142,6 +146,23 @@ ${md}
 ${JSON.stringify(JSON.parse(json), null, 2)}
 \`\`\`
 `;
+					break;
+				}
+
+				case "failure": {
+					const { error, userFeedback } = operationResult;
+					responseMessage = `## Error:\n${error}`;
+					if (userFeedback) {
+						responseMessage += `\n\n## Feedback:\n${userFeedback}`;
+					}
+					break;
+				}
+
+				default: {
+					const exhaustiveCheck: never = operationResult;
+					throw new Error("Invalid operation result");
+				}
+			}
 
 			const responseMessages = appendResponseMessages({
 				messages: [
@@ -232,13 +253,24 @@ ${JSON.stringify(JSON.parse(json), null, 2)}
 	},
 );
 
+type OperationResult =
+	| {
+			type: "success";
+			json: string;
+			md: string;
+	  }
+	| {
+			type: "failure";
+			error: string;
+			userFeedback?: string;
+	  };
 /**
  * Execute GitHub operation and return the result
  */
 async function executeGitHubOperation(
 	messages: CoreMessage[],
 	node: GitHubNode,
-) {
+): Promise<OperationResult> {
 	if (messages.length === 0) {
 		throw new Error("Invalid input: messages must be a non-empty array.");
 	}
@@ -258,10 +290,15 @@ async function executeGitHubOperation(
 	const agent = await createAgent(toolName);
 	const result = await agent.execute(prompt);
 	if (result.type === "failure") {
-		throw new Error(`${result.error}: ${result.userFeedback}`);
+		return {
+			type: "failure",
+			error: result.error,
+			userFeedback: result.userFeedback,
+		};
 	}
 
 	return {
+		type: "success",
 		json: result.json,
 		md: result.md,
 	};
