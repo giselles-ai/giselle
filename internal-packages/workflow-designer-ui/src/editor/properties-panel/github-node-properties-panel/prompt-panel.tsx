@@ -67,49 +67,8 @@ export function PromptPanel({ node }: { node: GitHubNode }) {
 									</SelectLabel>
 									<div className="pl-2 space-y-2">
 										{group.tools.map((tool) => (
-											<SelectItem
-												key={tool.name}
-												value={tool.name}
-												className="relative flex flex-col py-2.5 px-3 my-0.5 rounded-md transition-all
-                  hover:bg-slate-800 hover:shadow-md focus:bg-slate-800
-                  data-[state=checked]:bg-slate-800 data-[state=checked]:text-blue-400 data-[state=checked]:border-l-2 data-[state=checked]:border-l-blue-500 data-[state=checked]:pl-[10px]"
-											>
-												<div className="font-medium flex items-center">
-													{tool.name.includes("get") && (
-														<span className="text-xs bg-green-800 text-green-200 px-1.5 py-0.5 rounded mr-2 uppercase font-bold">
-															GET
-														</span>
-													)}
-													{tool.name.includes("search") && (
-														<span className="text-xs bg-purple-800 text-purple-200 px-1.5 py-0.5 rounded mr-2 uppercase font-bold">
-															SEARCH
-														</span>
-													)}
-													{tool.name.includes("list") && (
-														<span className="text-xs bg-blue-800 text-blue-200 px-1.5 py-0.5 rounded mr-2 uppercase font-bold">
-															LIST
-														</span>
-													)}
-													{tool.name.includes("create") && (
-														<span className="text-xs bg-yellow-800 text-yellow-200 px-1.5 py-0.5 rounded mr-2 uppercase font-bold">
-															POST
-														</span>
-													)}
-													{tool.name.includes("update") && (
-														<span className="text-xs bg-orange-800 text-orange-200 px-1.5 py-0.5 rounded mr-2 uppercase font-bold">
-															PUT
-														</span>
-													)}
-													<span>{tool.name}</span>
-												</div>
-												<div className="text-xs text-slate-400 mt-1 ml-0.5">
-													<div>{tool.description}</div>
-													{tool.purpose && (
-														<div className="mt-1 italic text-slate-500">
-															{tool.purpose}
-														</div>
-													)}
-												</div>
+											<SelectItem key={tool.name} value={tool.name}>
+												{tool.name}
 											</SelectItem>
 										))}
 									</div>

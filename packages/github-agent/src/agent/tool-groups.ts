@@ -35,7 +35,7 @@ export const toolGroups: Record<string, ToolGroup> = {
 		id: "issues",
 		name: "Issue Management",
 		description: "Creation, retrieval, and search of Issues",
-		tools: [getIssueTool, listIssuesTool, searchIssuesTool],
+		tools: [getIssueTool, listIssuesTool],
 	},
 	pullRequests: {
 		id: "pullRequests",
@@ -55,7 +55,7 @@ export const toolGroups: Record<string, ToolGroup> = {
 		id: "files",
 		name: "File Operations",
 		description: "Retrieval and search of files",
-		tools: [getFileContentsTool, searchCodeTool],
+		tools: [getFileContentsTool],
 	},
 	search: {
 		id: "search",
@@ -72,7 +72,7 @@ export const toolGroups: Record<string, ToolGroup> = {
 		id: "repos",
 		name: "Repository Management",
 		description: "Repository operations",
-		tools: [listCommitsTool, searchRepositoriesTool],
+		tools: [listCommitsTool],
 	},
 	utils: {
 		id: "utils",
