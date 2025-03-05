@@ -12,11 +12,6 @@ export interface Tool<
 	purpose: string;
 	inputSchema: TInput;
 	execute: (octokit: Octokit, input: z.infer<TInput>) => Promise<TOutput>;
-	examples?: {
-		input: z.infer<TInput>;
-		output: TOutput;
-		description: string;
-	}[];
 	constraints?: string[];
 }
 
