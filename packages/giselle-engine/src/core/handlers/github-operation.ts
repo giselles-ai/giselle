@@ -2,6 +2,7 @@ import {
 	type CompletedGeneration,
 	type FailedGeneration,
 	type FileData,
+	type GitHubNode,
 	type NodeId,
 	QueuedGeneration,
 	type RunningGeneration,
@@ -123,7 +124,10 @@ export const githubOperationHandler = createHandler(
 				generationContentResolver,
 			);
 
-			const { json, md } = await executeGitHubOperation(messages);
+			const { json, md } = await executeGitHubOperation(
+				messages,
+				runningGeneration.context.actionNode,
+			);
 			const responseMessage = `## Markdown:
 \`\`\`markdown
 ${md}
@@ -227,7 +231,10 @@ ${JSON.stringify(JSON.parse(json), null, 2)}
 /**
  * Execute GitHub operation and return the result
  */
-async function executeGitHubOperation(messages: CoreMessage[]) {
+async function executeGitHubOperation(
+	messages: CoreMessage[],
+	node: GitHubNode,
+) {
 	if (messages.length === 0) {
 		throw new Error("Invalid input: messages must be a non-empty array.");
 	}
@@ -243,6 +250,7 @@ async function executeGitHubOperation(messages: CoreMessage[]) {
 		);
 	}
 	const prompt = promptText.text;
+	console.dir(node.content, { depth: null });
 	const agent = await createAgent();
 	const result = await agent.execute(prompt);
 	if (result.type === "failure") {
