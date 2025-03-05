@@ -125,6 +125,10 @@ export class Agent {
 						currentPlan,
 						evaluation,
 					);
+				} else {
+					throw new Error(
+						"Invalid state: currentPlan or evaluation is undefined",
+					);
 				}
 
 				if (this.isDebug) {
@@ -133,21 +137,26 @@ export class Agent {
 					console.log("========== /plan ==========");
 				}
 
-				if (!currentPlan?.canBeExecuted) {
+				if (!currentPlan.canBeExecuted) {
 					return {
-						type: "error",
+						type: "failure",
 						error: "Plan cannot be executed",
-						userFeedback: currentPlan?.userFeedback,
+						userFeedback: currentPlan.userFeedback,
 					};
 				}
+
 				const result = await this.toolRegistry.dispatchTool(
 					currentPlan.toolCall,
 				);
+				evaluation = await evaluator.evaluate(currentPlan, result);
+				if (evaluation.decision === "replan") {
+					attempts++;
+					continue;
+				}
 
 				// Return success after dispatching
 				const formatter = new Formatter();
 				const formattedResult = formatter.format(result);
-
 				return {
 					type: "success",
 					json: JSON.stringify(result, null, 2),
@@ -160,7 +169,7 @@ export class Agent {
 		}
 
 		return {
-			type: "error",
+			type: "failure",
 			error: "Max retries reached, execution failed",
 			userFeedback:
 				"The operation could not be completed after multiple attempts",
