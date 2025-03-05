@@ -36,34 +36,6 @@ export type ExecutionFailure = {
 
 export type ExecutionResult = ExecutionSuccess | ExecutionFailure;
 
-// Create registry with all tools
-function createRegistry(octokit: Octokit): ToolRegistry {
-	const registry = new ToolRegistry(octokit);
-
-	// Register read tools
-	registry.register(getFileContentsTool);
-	registry.register(getIssueTool);
-	registry.register(listIssuesTool);
-	registry.register(listCommitsTool);
-
-	// Register pull request tools
-	registry.register(getPullRequestDiffTool);
-	registry.register(getPullRequestTool);
-	registry.register(listPullRequestsTool);
-	registry.register(getPullRequestFilesTool);
-	registry.register(getPullRequestStatusTool);
-	registry.register(getPullRequestCommentsTool);
-	registry.register(getPullRequestReviewsTool);
-
-	// Register search tools
-	registry.register(searchCodeTool);
-	registry.register(searchRepositoriesTool);
-	registry.register(searchUsersTool);
-	registry.register(searchIssuesTool);
-
-	return registry;
-}
-
 export class Agent {
 	private readonly octokit: Octokit;
 	private readonly planner: Planner;
@@ -76,10 +48,38 @@ export class Agent {
 		options?: { isDebug: boolean; maxRetries?: number },
 	) {
 		this.octokit = new Octokit({ auth: token });
-		this.toolRegistry = createRegistry(this.octokit);
+		this.toolRegistry = this.createRegistry(this.octokit);
 		this.planner = new Planner(this.toolRegistry);
 		this.isDebug = options?.isDebug ?? false;
 		this.maxRetries = options?.maxRetries ?? 5;
+	}
+
+	// Create registry with all tools
+	private createRegistry(octokit: Octokit): ToolRegistry {
+		const registry = new ToolRegistry(octokit);
+
+		// Register read tools
+		registry.register(getFileContentsTool);
+		registry.register(getIssueTool);
+		registry.register(listIssuesTool);
+		registry.register(listCommitsTool);
+
+		// Register pull request tools
+		registry.register(getPullRequestDiffTool);
+		registry.register(getPullRequestTool);
+		registry.register(listPullRequestsTool);
+		registry.register(getPullRequestFilesTool);
+		registry.register(getPullRequestStatusTool);
+		registry.register(getPullRequestCommentsTool);
+		registry.register(getPullRequestReviewsTool);
+
+		// Register search tools
+		registry.register(searchCodeTool);
+		registry.register(searchRepositoriesTool);
+		registry.register(searchUsersTool);
+		registry.register(searchIssuesTool);
+
+		return registry;
 	}
 
 	async execute(prompt: string): Promise<ExecutionResult> {
