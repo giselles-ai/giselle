@@ -1,7 +1,7 @@
 import type { Octokit } from "@octokit/core";
-import type { GraphQlQueryResponse } from "@octokit/graphql/types";
+import type { GraphQlQueryResponse } from "@octokit/graphql/dist-types/types.js";
 import { z } from "zod";
-import { defineTool } from "../tool-registry.js";
+import { defineTool } from "../tool-types.js";
 
 export const graphqlTool = defineTool({
 	name: "graphql",

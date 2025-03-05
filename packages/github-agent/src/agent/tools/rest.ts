@@ -1,39 +1,33 @@
 import type { Octokit } from "@octokit/core";
+import type { OctokitResponse } from "@octokit/types";
 import { z } from "zod";
-import { defineTool } from "../tool-registry.js";
+import { defineTool } from "../tool-types.js";
 
 export const restTool = defineTool({
 	name: "rest",
-	description: "Make requests to GitHub's REST API endpoints",
-	purpose:
-		"Access GitHub REST API endpoints for operations not available in GraphQL",
+	description: "Make a REST API request to GitHub's API",
+	purpose: "For making REST API requests to GitHub",
 	inputSchema: z.object({
-		tool: z.literal("rest").describe("The tool to use"),
+		tool: z.literal("rest"),
+		endpoint: z.string().describe("The REST API endpoint to call"),
 		method: z
 			.enum(["GET", "POST", "PUT", "DELETE", "PATCH"])
 			.describe("The HTTP method to use"),
-		path: z.string().describe("The path to make the API call to"),
 		params: z
 			.record(z.string(), z.unknown())
 			.optional()
-			.describe("The parameters to pass to the API call"),
-		format: z
-			.enum(["diff", "patch", "sha", "full", "raw", "text", "html"])
-			.optional()
-			.describe("The media type to use for the API call"),
+			.describe("The parameters to pass to the REST API request"),
 	}),
-	execute: async (octokit: Octokit, input) => {
-		const result = await octokit.request({
-			method: input.method,
-			url: input.path,
-			params: input.params,
-			mediaType: { format: input.format },
-		});
-		return result.data;
+	execute: async (
+		octokit: Octokit,
+		input,
+	): Promise<OctokitResponse<unknown>> => {
+		const { endpoint, method, params } = input;
+		return await octokit.request(`${method} ${endpoint}`, params);
 	},
 	constraints: [
-		"Path must be a valid GitHub REST API endpoint",
-		"Method must be appropriate for the endpoint",
-		"Format is only applicable for specific endpoints",
+		"Must provide valid REST API endpoint",
+		"Must use correct HTTP method",
+		"Parameters must match endpoint requirements",
 	],
 });

@@ -1,28 +1,27 @@
 import { Octokit } from "@octokit/core";
-import { Evaluator } from "./evaluator.js";
+import { z } from "zod";
+import { type EvaluationResult, Evaluator } from "./evaluator.js";
 import { Formatter } from "./formatter.js";
-import { Planner } from "./planner.js";
-import { ToolRegistry } from "./tool-registry.js";
+import { type Plan, Planner } from "./planner.js";
 import {
-	getFileContentsTool,
-	getIssueTool,
-	getPullRequestCommentsTool,
-	getPullRequestDiffTool,
-	getPullRequestFilesTool,
-	getPullRequestReviewsTool,
-	getPullRequestStatusTool,
-	getPullRequestTool,
-	listCommitsTool,
-	listIssuesTool,
-	listPullRequestsTool,
-} from "./tools/read.js";
-import {
-	searchCodeTool,
-	searchIssuesTool,
-	searchRepositoriesTool,
-	searchUsersTool,
-} from "./tools/search.js";
+	type AvailableToolName,
+	ToolRegistry,
+	getAllToolNames,
+	getToolByName,
+} from "./tool-registry.js";
 
+export const agentOptionsSchema = z.object({
+	allowedToolNames: z
+		.array(z.string())
+		.min(1)
+		.refine((names) => names.every((n) => getToolByName(n) !== undefined), {
+			message: "Invalid tool name(s) provided",
+		}),
+	isDebug: z.boolean().optional(),
+	maxRetries: z.number().optional(),
+});
+
+// Execution result types
 export type ExecutionSuccess = {
 	type: "success";
 	json: string;
@@ -30,12 +29,17 @@ export type ExecutionSuccess = {
 };
 
 export type ExecutionFailure = {
-	type: "failure";
-	error: Error;
+	type: "error";
+	error: string;
+	userFeedback?: string;
 };
 
 export type ExecutionResult = ExecutionSuccess | ExecutionFailure;
 
+// Agent options type
+export type AgentOptions = z.infer<typeof agentOptionsSchema>;
+
+// MARK: Agent class
 export class Agent {
 	private readonly octokit: Octokit;
 	private readonly planner: Planner;
@@ -43,97 +47,123 @@ export class Agent {
 	private readonly isDebug: boolean;
 	private readonly maxRetries: number;
 
-	constructor(
-		token: string,
-		options?: { isDebug: boolean; maxRetries?: number },
-	) {
+	constructor(token: string, options: AgentOptions) {
+		// Runtime validation of options
+		const result = agentOptionsSchema.safeParse(options);
+		if (!result.success) {
+			throw new Error(
+				`Invalid agent options: ${result.error.errors
+					.map((err) => err.message)
+					.join(", ")}`,
+			);
+		}
+
+		const validOptions = result.data;
+		const allowedToolNames =
+			validOptions.allowedToolNames as AvailableToolName[];
+
 		this.octokit = new Octokit({ auth: token });
-		this.toolRegistry = this.createRegistry(this.octokit);
+		this.toolRegistry = this.createRegistry(this.octokit, allowedToolNames);
 		this.planner = new Planner(this.toolRegistry);
-		this.isDebug = options?.isDebug ?? false;
-		this.maxRetries = options?.maxRetries ?? 5;
+		this.isDebug = validOptions?.isDebug ?? false;
+		this.maxRetries = validOptions?.maxRetries ?? 5;
 	}
 
-	// Create registry with all tools
-	private createRegistry(octokit: Octokit): ToolRegistry {
+	// Register specified tools
+	private createRegistry(
+		octokit: Octokit,
+		toolNames: AvailableToolName[],
+	): ToolRegistry {
 		const registry = new ToolRegistry(octokit);
-
-		// Register read tools
-		registry.register(getFileContentsTool);
-		registry.register(getIssueTool);
-		registry.register(listIssuesTool);
-		registry.register(listCommitsTool);
-
-		// Register pull request tools
-		registry.register(getPullRequestDiffTool);
-		registry.register(getPullRequestTool);
-		registry.register(listPullRequestsTool);
-		registry.register(getPullRequestFilesTool);
-		registry.register(getPullRequestStatusTool);
-		registry.register(getPullRequestCommentsTool);
-		registry.register(getPullRequestReviewsTool);
-
-		// Register search tools
-		registry.register(searchCodeTool);
-		registry.register(searchRepositoriesTool);
-		registry.register(searchUsersTool);
-		registry.register(searchIssuesTool);
-
+		registry.registerByNames(toolNames, getToolByName);
 		return registry;
+	}
+
+	static fromAllTools(
+		token: string,
+		options: Omit<AgentOptions, "allowedToolNames"> = {},
+	): Agent {
+		return new Agent(token, {
+			...options,
+			allowedToolNames: getAllToolNames(),
+		});
+	}
+
+	// Builder pattern for creating an Agent with specific tools
+	static builder(): {
+		withToken: (token: string) => {
+			withTools: (toolNames: AvailableToolName[]) => {
+				withOptions: (options: Omit<AgentOptions, "allowedToolNames">) => Agent;
+				build: () => Agent;
+			};
+		};
+	} {
+		return {
+			withToken: (token: string) => ({
+				withTools: (toolNames: AvailableToolName[]) => ({
+					withOptions: (options: Omit<AgentOptions, "allowedToolNames">) =>
+						new Agent(token, { ...options, allowedToolNames: toolNames }),
+					build: () => new Agent(token, { allowedToolNames: toolNames }),
+				}),
+			}),
+		};
 	}
 
 	async execute(prompt: string): Promise<ExecutionResult> {
 		const evaluator = new Evaluator();
 		let attempts = 0;
+		let currentPlan: Plan | undefined;
+		let evaluation: EvaluationResult | undefined;
 
 		while (attempts < this.maxRetries) {
 			try {
-				const plan = await this.planner.plan(prompt);
+				if (attempts === 0) {
+					currentPlan = await this.planner.plan(prompt);
+				} else if (currentPlan && evaluation) {
+					currentPlan = await this.planner.planWithEvaluation(
+						prompt,
+						currentPlan,
+						evaluation,
+					);
+				}
+
 				if (this.isDebug) {
 					console.log(`========== plan (attempt ${attempts + 1}) ==========`);
-					console.dir(plan, { depth: null });
+					console.dir(currentPlan, { depth: null });
 					console.log("========== /plan ==========");
 				}
 
-				const result = await this.toolRegistry.executeTool(
-					plan.toolCall.tool,
-					plan.toolCall,
+				if (!currentPlan?.canBeExecuted) {
+					return {
+						type: "error",
+						error: "Plan cannot be executed",
+						userFeedback: currentPlan?.userFeedback,
+					};
+				}
+				const result = await this.toolRegistry.dispatchTool(
+					currentPlan.toolCall,
 				);
 
-				const evaluation = await evaluator.evaluate(plan, result);
-				if (evaluation.decision === "accepted") {
-					const formatter = new Formatter();
-					const rawJson = JSON.stringify(result, null, 2);
-					const markdown = formatter.format(result);
-					return {
-						type: "success",
-						json: rawJson,
-						md: markdown,
-					};
-				}
+				// Return success after dispatching
+				const formatter = new Formatter();
+				const formattedResult = formatter.format(result);
 
-				attempts++;
-				if (attempts >= this.maxRetries) {
-					return {
-						type: "failure",
-						error: new Error("Maximum retry attempts reached"),
-					};
-				}
+				return {
+					type: "success",
+					json: JSON.stringify(result, null, 2),
+					md: formattedResult,
+				};
 			} catch (error) {
-				console.error(`Error on attempt ${attempts + 1}:`, error);
+				console.error(`Execution attempt ${attempts + 1} failed:`, error);
 				attempts++;
-				if (attempts >= this.maxRetries) {
-					return {
-						type: "failure",
-						error: error instanceof Error ? error : new Error(String(error)),
-					};
-				}
 			}
 		}
 
 		return {
-			type: "failure",
-			error: new Error("All retry attempts failed"),
+			type: "error",
+			error: "Max retries reached, execution failed",
+			userFeedback:
+				"The operation could not be completed after multiple attempts",
 		};
 	}
 }

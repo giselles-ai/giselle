@@ -1,6 +1,6 @@
 import type { Octokit } from "@octokit/core";
 import { z } from "zod";
-import { defineTool } from "../tool-registry.js";
+import { defineTool } from "../tool-types.js";
 
 // Get file contents tool
 export const getFileContentsTool = defineTool({

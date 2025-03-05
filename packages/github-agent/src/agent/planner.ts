@@ -13,6 +13,14 @@ export function createPlanSchema(toolRegistry: ToolRegistry) {
 	return z.object({
 		userRequest: z.string().describe("The user's request"),
 		toolCall: toolRegistry.toolInputSchema(),
+		canBeExecuted: z
+			.boolean()
+			.describe("Whether the task can be executed with the available tools"),
+		userFeedback: z
+			.string()
+			.describe(
+				"Feedback to the user if the task cannot be executed with available tools",
+			),
 	});
 }
 
@@ -26,12 +34,14 @@ You are a GitHub API planner focused on creating plans for retrieving data throu
 ${toolDescriptions}
 </tool_descriptions>
 
+IMPORTANT CONTEXT: The available tools shown above have been pre-selected by the user. You MUST respect their choice and use ONLY these tools.
+
 Primary Goals:
-- Create an efficient plan using the available tools
-- Select the most appropriate single tool for the task
+- Create an efficient plan using ONLY the available tools shown in the tool_descriptions
+- Select the most appropriate single tool from the available options
 - Never include mutations or repository modifications in your plan
-- Choose the most appropriate tool based on the priority order
 - Minimize API resource usage by limiting result sets
+- If the requested task CANNOT be accomplished with the available tools, explain why and suggest alternatives
 
 Resource Optimization Guidelines:
 - Always specify 'per_page' when available (default to smaller values like 10-30)
@@ -40,53 +50,27 @@ Resource Optimization Guidelines:
 - Add size limits for content retrieval operations
 - Use date ranges and other filters when applicable
 
-Tool Selection Priority:
-- Search tools (search_code, search_repositories, search_users, search_issues)
-  - Best for finding content across repositories
-  - Supports complex search queries and filters
-  - Optimized for specific resource types
-  - For code search, include enough context in the query (path:, language:, etc.)
-- Read tools (get_file_contents, get_issue, list_issues, list_commits, get_pull_request_diff)
-  - Direct access to specific resources
-  - Efficient for known resource retrieval
-  - For file contents, use exact paths or search first
-  - For multiple files, create separate steps for each file
-
 Guidelines for Tool Selection:
 - Give the tool call a clear, descriptive name
 - Include all necessary parameters
 - Use exact tool names as specified in the tool descriptions
-- For file operations:
-  - Use search_code to find files if exact path is unknown
-  - Use get_file_contents with exact paths
-  - Include file extension in search queries when possible
+- If the user's request cannot be fulfilled with the available tools, set canBeExecuted to false and provide helpful feedback
 
 Examples of Tool Selection:
-1. To find repositories: Use search_repositories tool
-2. To get file contents: Use get_file_contents tool with exact path
-3. To find issues: Use search_issues or list_issues tools
-4. To get commit history: Use list_commits tool
-5. To get PR changes: Use get_pull_request_diff tool
-6. For raw content: Use get_file_contents tool
-7. To fetch commits of a PR: Use list_commits with sha: 'pull/{number}/head'
+1. To find repositories: Use search_repositories tool (if available)
+2. To get file contents: Use get_file_contents tool (if available)
+3. To find issues: Use search_issues or list_issues tools (if available)
 
-Common Use Cases:
-1. Finding and Reading Files:
-   - Use search_code to find relevant files
-   - Create separate get_file_contents steps for each file
-   - Include file extensions and paths in search queries
-   - Never make steps dependent on search results
+Task Feasibility Assessment:
+- Carefully analyze whether the user's request can be fulfilled with the available tools
+- If the task cannot be executed with the available tools, set canBeExecuted to false
+- Provide clear feedback on what is missing and suggest alternatives if possible
 
-2. Analyzing Code:
-   - Use search_code with specific file types and content
-   - Use get_file_contents for known files
-   - Use get_pull_request_diff for changes
-   - Create independent steps for each operation
-
-3. Issue Management:
-   - Use search_issues for finding specific issues
-   - Use list_issues for repository issue lists
-   - Use get_issue for detailed information
+Your response MUST include:
+1. The user's request (userRequest)
+2. The appropriate tool call with parameters (toolCall)
+3. Whether the task can be executed (canBeExecuted)
+4. Feedback to the user if the task cannot be executed (userFeedback)
 `;
 
 const userPrompt = (prompt: string) => `
@@ -103,6 +87,7 @@ Previous Plan: ${JSON.stringify(previousPlan, null, 2)}
 Evaluation Result: ${JSON.stringify(evaluationResult, null, 2)}
 
 Please create a new plan based on the previous plan and the evaluation result.
+Remember to respect the available tools and assess whether the task can be executed.
 `;
 
 // MARK: class
@@ -157,7 +142,6 @@ export class Planner {
 				evaluationResult,
 			),
 		});
-
 		return result.object;
 	}
 }

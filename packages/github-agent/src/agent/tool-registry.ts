@@ -1,64 +1,89 @@
 import type { Octokit } from "@octokit/core";
 import { RequestError } from "@octokit/request-error";
 import { z } from "zod";
+import { graphqlTool } from "./tools/graphql.js";
+import {
+	getFileContentsTool,
+	getIssueTool,
+	getPullRequestCommentsTool,
+	getPullRequestDiffTool,
+	getPullRequestFilesTool,
+	getPullRequestReviewsTool,
+	getPullRequestStatusTool,
+	getPullRequestTool,
+	listCommitsTool,
+	listIssuesTool,
+	listPullRequestsTool,
+} from "./tools/read.js";
+import { restTool } from "./tools/rest.js";
+import {
+	searchCodeTool,
+	searchIssuesTool,
+	searchRepositoriesTool,
+	searchUsersTool,
+} from "./tools/search.js";
 
-// MARK: Tool types
-export interface Tool<
-	TName extends string,
-	TInput extends z.ZodType,
-	TOutput = unknown,
-> {
-	name: TName;
-	description: string;
-	purpose: string;
-	inputSchema: TInput;
-	execute: (octokit: Octokit, input: z.infer<TInput>) => Promise<TOutput>;
-	examples?: {
-		input: z.infer<TInput>;
-		output: TOutput;
-		description: string;
-	}[];
-	constraints?: string[];
+const allTools = [
+	getFileContentsTool,
+	getIssueTool,
+	getPullRequestCommentsTool,
+	getPullRequestDiffTool,
+	getPullRequestFilesTool,
+	getPullRequestReviewsTool,
+	getPullRequestStatusTool,
+	getPullRequestTool,
+	listCommitsTool,
+	listIssuesTool,
+	listPullRequestsTool,
+	searchCodeTool,
+	searchIssuesTool,
+	searchRepositoriesTool,
+	searchUsersTool,
+	graphqlTool,
+	restTool,
+] as const;
+
+export type AvailableToolName = (typeof allTools)[number]["name"];
+export type AvailableTool = (typeof allTools)[number];
+type ToolByName<TName extends string> = Extract<AvailableTool, { name: TName }>;
+
+const toolMap: Map<AvailableToolName, AvailableTool> = new Map(
+	allTools.map((tool) => [tool.name, tool]),
+);
+
+function isAvailableToolName(name: string): name is AvailableToolName {
+	return Array.from(toolMap.keys()).includes(name as AvailableToolName);
 }
 
-// Utility type to extract schema type from a tool
-export type ToolSchema<T> = T extends Tool<string, infer S, unknown>
-	? S
-	: never;
-
-interface DefineToolOptions<
-	TName extends string,
-	TInputSchema extends z.ZodType,
-	TOutput,
-> {
-	name: TName;
-	description: string;
-	purpose: string;
-	inputSchema: TInputSchema;
-	execute: (octokit: Octokit, input: z.infer<TInputSchema>) => Promise<TOutput>;
-	constraints?: string[];
+export function getToolByName(name: string): AvailableTool | undefined {
+	if (!isAvailableToolName(name)) {
+		return undefined;
+	}
+	return toolMap.get(name);
 }
 
-export function defineTool<
-	TName extends string,
-	TInputSchema extends z.ZodType,
-	TOutput,
->(
-	opts: DefineToolOptions<TName, TInputSchema, TOutput>,
-): Tool<TName, TInputSchema, TOutput> {
-	return {
-		name: opts.name,
-		description: opts.description,
-		purpose: opts.purpose,
-		inputSchema: opts.inputSchema,
-		execute: opts.execute,
-		constraints: opts.constraints,
-	};
+export function getAllToolNames(): AvailableToolName[] {
+	return Array.from(toolMap.keys());
+}
+
+// Error classes for tool registry
+export class ToolNotFoundError extends Error {
+	constructor(toolName: string) {
+		super(`Tool "${toolName}" not found`);
+		this.name = "ToolNotFoundError";
+	}
+}
+
+export class NoToolsRegisteredError extends Error {
+	constructor() {
+		super("No tools registered");
+		this.name = "NoToolsRegisteredError";
+	}
 }
 
 // MARK: Tool registry
 export class ToolRegistry {
-	private tools = new Map<string, Tool<string, z.ZodType, unknown>>();
+	private tools = new Map<string, AvailableTool>();
 	private octokit: Octokit;
 
 	constructor(octokit: Octokit) {
@@ -93,55 +118,69 @@ export class ToolRegistry {
 		}
 	}
 
-	register<TName extends string, TInput extends z.ZodType, TOutput>(
-		tool: Tool<TName, TInput, TOutput>,
-	) {
-		// Convert to base tool type with unknown output
-		const baseTool: Tool<string, z.ZodType, unknown> = {
-			...tool,
-			execute: async (octokit: Octokit, input: unknown) => {
-				return await tool.execute(octokit, input);
-			},
-		};
-		this.tools.set(tool.name, baseTool);
+	register(tool: AvailableTool): void {
+		this.tools.set(tool.name, tool);
 	}
 
-	getTool<TName extends string, TInput extends z.ZodType, TOutput>(
-		name: TName,
-	): Tool<TName, TInput, TOutput> | undefined {
-		const tool = this.tools.get(name);
-		if (!tool) return undefined;
-		// Convert back to specific tool type
-		return {
-			...tool,
-			execute: async (octokit: Octokit, input: z.infer<TInput>) => {
-				return (await tool.execute(octokit, input)) as TOutput;
-			},
-		} as Tool<TName, TInput, TOutput>;
+	registerByNames(
+		toolNames: string[],
+		toolResolver: (name: string) => AvailableTool | undefined,
+	): void {
+		if (toolNames.length === 0) {
+			throw new NoToolsRegisteredError();
+		}
+
+		const notFoundTools: string[] = [];
+
+		for (const name of toolNames) {
+			const tool = toolResolver(name);
+			if (!tool) {
+				notFoundTools.push(name);
+				continue;
+			}
+			this.register(tool);
+		}
+
+		if (notFoundTools.length > 0) {
+			throw new ToolNotFoundError(notFoundTools.join(", "));
+		}
 	}
 
-	async executeTool<TName extends string>(
+	getTool<TName extends AvailableToolName>(
 		name: TName,
-		input: unknown,
-	): Promise<unknown> {
+	): ToolByName<TName> | undefined {
 		const tool = this.tools.get(name);
+		return tool as ToolByName<TName> | undefined;
+	}
+
+	async dispatchTool(rawInput: unknown): Promise<unknown> {
+		const validated = this.toolInputSchema().parse(rawInput);
+
+		const tool = this.tools.get(validated.tool);
 		if (!tool) {
-			throw new Error(`Tool ${name} not found`);
+			throw new ToolNotFoundError(validated.tool);
 		}
-
 		try {
-			tool.inputSchema.parse(input);
+			return await this.withRetry(() => {
+				return (
+					tool.execute as (
+						octokit: Octokit,
+						input: typeof validated,
+					) => Promise<unknown>
+				)(this.octokit, validated);
+			});
 		} catch (error) {
-			throw new Error(`Invalid input for tool ${name}: ${error}`);
+			throw new Error(
+				`Invalid input for tool ${validated.tool}: ${error instanceof Error ? error.message : error}`,
+			);
 		}
-		return await this.withRetry(() => tool.execute(this.octokit, input));
 	}
 
 	generateToolDescriptions(): string {
 		let descriptions = "";
 		for (const tool of this.tools.values()) {
 			descriptions += "<tool>\n";
-			descriptions += `<n>${tool.name}<n>\n`;
+			descriptions += `<name>${tool.name}</name>\n`;
 			descriptions += `<purpose>${tool.purpose}</purpose>\n`;
 			descriptions += `<description>${tool.description}</description>\n`;
 			if (tool.constraints && tool.constraints.length > 0) {
@@ -156,10 +195,6 @@ export class ToolRegistry {
 		return `<tools>\n${descriptions}</tools>`;
 	}
 
-	/**
-	 * Get the combined input schema for all registered tools
-	 * @returns A Zod schema that validates any registered tool input
-	 */
 	toolInputSchema() {
 		const schemas = Array.from(this.tools.values()).map((tool) => {
 			const schema = tool.inputSchema;
@@ -172,15 +207,17 @@ export class ToolRegistry {
 		});
 
 		if (schemas.length === 0) {
-			throw new Error("No tools registered");
+			throw new NoToolsRegisteredError();
 		}
 
-		// Type assertion to help TypeScript understand the schema structure
-		const unionSchemas = schemas as unknown as [
-			z.ZodObject<{ tool: z.ZodLiteral<string> }>,
-			...z.ZodObject<{ tool: z.ZodLiteral<string> }>[],
-		];
+		if (schemas.length === 1) {
+			return schemas[0];
+		}
 
-		return z.discriminatedUnion("tool", unionSchemas);
+		return z.discriminatedUnion("tool", [
+			schemas[0],
+			schemas[1],
+			...schemas.slice(2),
+		]);
 	}
 }
