@@ -24,7 +24,9 @@
 			"default": "./dist/index.js"
 		}
 	},
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"engines": {
 		"node": ">=22.0.0"
 	},
@@ -39,6 +41,7 @@
 		"@octokit/core": "catalog:",
 		"@octokit/graphql": "catalog:",
 		"@octokit/request-error": "catalog:",
+		"@octokit/types": "catalog:",
 		"@ai-sdk/openai": "catalog:",
 		"@ai-sdk/anthropic": "catalog:",
 		"@ai-sdk/google": "catalog:",
