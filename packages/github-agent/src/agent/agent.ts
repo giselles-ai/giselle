@@ -29,7 +29,7 @@ export type ExecutionSuccess = {
 };
 
 export type ExecutionFailure = {
-	type: "error";
+	type: "failure";
 	error: string;
 	userFeedback?: string;
 };
