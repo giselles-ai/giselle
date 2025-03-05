@@ -4,3 +4,4 @@ export type {
 	ExecutionResult,
 	ExecutionSuccess,
 } from "./agent.js";
+export type { AvailableToolName } from "./tool-registry.js";
