@@ -8,7 +8,11 @@ import {
 	type RunningGeneration,
 	isGitHubNode,
 } from "@giselle-sdk/data-type";
-import { Agent as GitHubAgent } from "@giselle-sdk/github-agent";
+import {
+	Agent,
+	type AvailableToolName,
+	isAvailableToolName,
+} from "@giselle-sdk/github-agent";
 import { Octokit } from "@octokit/core";
 import { type CoreMessage, appendResponseMessages } from "ai";
 import { z } from "zod";
@@ -250,11 +254,11 @@ async function executeGitHubOperation(
 		);
 	}
 	const prompt = promptText.text;
-	console.dir(node.content, { depth: null });
-	const agent = await createAgent();
+	const toolName = node.content.toolName;
+	const agent = await createAgent(toolName);
 	const result = await agent.execute(prompt);
 	if (result.type === "failure") {
-		throw result.error;
+		throw new Error(`${result.error}: ${result.userFeedback}`);
 	}
 
 	return {
@@ -263,10 +267,20 @@ async function executeGitHubOperation(
 	};
 }
 
-async function createAgent(isDebug = false) {
+async function createAgent(toolName: string) {
+	const isValidToolName = (name: string): name is AvailableToolName => {
+		return isAvailableToolName(name);
+	};
+
+	if (!isValidToolName(toolName)) {
+		throw new Error("Invalid tool name provided.");
+	}
 	const installation = await findInstallation();
 	const installationAuth = await githubAppInstallationAuth(installation.id);
-	return new GitHubAgent(installationAuth.token, { isDebug });
+	return Agent.builder()
+		.withToken(installationAuth.token)
+		.withTools([toolName])
+		.build();
 }
 
 async function findInstallation() {

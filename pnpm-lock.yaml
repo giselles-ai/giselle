@@ -607,6 +607,9 @@ importers:
       '@giselle-sdk/giselle-engine':
         specifier: workspace:*
         version: link:../../packages/giselle-engine
+      '@giselle-sdk/github-agent':
+        specifier: workspace:*
+        version: link:../../packages/github-agent
       '@giselle-sdk/text-editor':
         specifier: workspace:^
         version: link:../../packages/text-editor

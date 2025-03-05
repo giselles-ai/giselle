@@ -3,6 +3,7 @@ import { NodeBase } from "../base";
 
 export const GitHubContent = z.object({
 	type: z.literal("github"),
+	toolName: z.string(),
 	prompt: z.string(),
 });
 

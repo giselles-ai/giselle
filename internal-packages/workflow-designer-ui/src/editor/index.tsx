@@ -328,6 +328,7 @@ function NodeCanvas() {
 								content: {
 									type: "github",
 									prompt: "",
+									toolName: "",
 								},
 								inputs: [],
 								outputs: [
