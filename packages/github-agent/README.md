@@ -27,13 +27,32 @@ DEBUG=1  # Optional: Enable debug mode
 
 ## Usage
 
+Basic usage:
+
 ```typescript
-import { Agent } from "github-agent";
+import { Agent } from "@giselles-ai/github-agent";
 
 const agent = new Agent(process.env.GITHUB_TOKEN);
 
 // Execute a request
 const result = await agent.execute("your request here");
+```
+
+Using the builder pattern with specific tool groups:
+
+```typescript
+import { Agent, toolGroups } from "@giselles-ai/github-agent";
+
+// Create an agent with only PR and issue tools
+const agent = Agent.builder()
+  .withToken(process.env.GITHUB_TOKEN)
+  .withTools([
+    ...toolGroups.pullRequests,
+    ...toolGroups.issues,
+  ])
+  .build();
+
+const result = await agent.execute("Get details of PR #123 in owner/repo");
 ```
 
 Or use the CLI:
@@ -68,6 +87,8 @@ classDiagram
         -Evaluator evaluator
         -ToolRegistry toolRegistry
         +execute(prompt: string)
+        +static builder()
+        +static fromAllTools(token)
     }
     class Planner {
         +plan(prompt: string)
@@ -96,6 +117,17 @@ The project consists of the following components:
 - **Planner**: Analyzes user requests and breaks them down into executable steps
 - **Evaluator**: Evaluates execution results and determines success/failure
 - **ToolRegistry**: Manages available GitHub API tools
+
+### Tool Groups
+
+The tools are organized into logical groups:
+
+- **issues**: Tools for managing issues
+- **pullRequests**: Tools for working with pull requests
+- **files**: Tools for file operations
+- **search**: Tools for searching code, repositories, users, etc.
+- **repos**: Tools for repository management
+- **utils**: Advanced utility tools like GraphQL and REST
 
 ### Execution Flow
 
@@ -159,8 +191,11 @@ export const myNewTool = defineTool({
 Register the tool in your application:
 
 ```typescript
-const toolRegistry = new ToolRegistry(octokit);
-toolRegistry.register(myNewTool);
+// Using the builder pattern
+const agent = Agent.builder()
+  .withToken(process.env.GITHUB_TOKEN)
+  .withTools([myNewTool, ...toolGroups.pullRequests])
+  .build();
 ```
 
 ## Supported GitHub APIs
@@ -192,7 +227,7 @@ toolRegistry.register(myNewTool);
 - `get_pull_request_comments`: Get review comments on a pull request
 - `get_pull_request_reviews`: Get reviews on a pull request
 
-### Generic APIs (:warning: not using now.)
+### Generic APIs
 
 - `rest`: Direct access to GitHub REST API endpoints with custom HTTP methods
   and parameters
@@ -206,6 +241,7 @@ toolRegistry.register(myNewTool);
 - GitHub Personal Access Token required for authenticated API access
 - Subject to GitHub API rate limits
 - Appropriate permissions required for private repository access
+- Read-only operations (no write operations are supported)
 
 ### Functional Limitations
 
@@ -213,9 +249,11 @@ toolRegistry.register(myNewTool);
 - Result count limitations (e.g., maximum 100 results per page for searches)
 - Binary files are automatically base64 encoded
 - Symbolic links return the content of their target
+- File search limited to 1000 files
+- Code search limited to 384KB
 
 ### Runtime Limitations
 
 - Maximum of 5 retry attempts
-- Large files (>1MB) may be truncated
+- Large files (>100MB) are not supported
 - Long-running requests may timeout
