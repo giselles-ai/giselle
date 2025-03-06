@@ -26,7 +26,7 @@ import { type Source, useConnectedSources } from "./sources";
 
 function getDefaultNodeName(source: Source): string {
 	if (isTextGenerationNode(source.node)) {
-		return source.node.content.llm.model;
+		return source.node.content.llm.id;
 	}
 	if (isGitHubNode(source.node)) {
 		return "GitHub";

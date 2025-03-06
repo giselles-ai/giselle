@@ -90,7 +90,7 @@ function SourceSelect({
 		}
 		switch (node.content.type) {
 			case "textGeneration":
-				return node.content.llm.model;
+				return node.content.llm.id;
 			case "github":
 				return "GitHub";
 			default: {

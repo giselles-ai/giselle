@@ -79,7 +79,7 @@ export function addTextGenerationNodeTool(languageModel?: LanguageModel) {
 	} satisfies AddTextGenerationNodeTool;
 }
 
-export function addGitHubNodeTool(provider?: LLMProvider) {
+export function addGitHubNodeTool() {
 	return {
 		action: "addGitHubNode",
 		category: "edit",
