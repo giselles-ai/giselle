@@ -14,6 +14,7 @@ import {
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
 import type { CoreMessage, DataContent, FilePart } from "ai";
 import type { Storage } from "unstorage";
+import buildGenerationMessageForGithubOperation from "../helpers/build-github-operation-message";
 
 export interface FileIndex {
 	nodeId: NodeId;
@@ -30,14 +31,23 @@ export async function buildMessageObject(
 	switch (node.content.type) {
 		case "textGeneration": {
 			return await buildGenerationMessageForTextGeneration(
+				// @ts-expect-error
 				node,
 				contextNodes,
 				fileResolver,
 				textGenerationResolver,
 			);
 		}
+		case "github":
+			return await buildGenerationMessageForGithubOperation(
+				// @ts-expect-error
+				node,
+				contextNodes,
+				fileResolver,
+				textGenerationResolver,
+			);
 		default: {
-			const _exhaustiveCheck: never = node.content.type;
+			const _exhaustiveCheck: never = node.content;
 			throw new Error(`Unhandled content type: ${_exhaustiveCheck}`);
 		}
 	}

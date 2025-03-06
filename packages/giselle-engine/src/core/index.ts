@@ -18,6 +18,7 @@ import {
 	getGeneration,
 	getNodeGenerations,
 } from "./generations";
+import { executeGitHubOperation } from "./github/github-operation";
 import { addRun, startRun } from "./runs";
 import type { GiselleEngineConfig, GiselleEngineContext } from "./types";
 import { createWorkspace, getWorkspace, updateWorkspace } from "./workspaces";
@@ -80,6 +81,12 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			fileName: string,
 		) => {
 			return await removeFile({ context, fileId, workspaceId, fileName });
+		},
+		executeGitHubOperation: async (generation: QueuedGeneration) => {
+			return await executeGitHubOperation({
+				context,
+				generation,
+			});
 		},
 	};
 }
