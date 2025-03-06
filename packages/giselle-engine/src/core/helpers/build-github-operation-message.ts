@@ -93,6 +93,11 @@ export async function buildGenerationMessageForGithubOperation(
 						throw new Error(`Unhandled category: ${_exhaustiveCheck}`);
 					}
 				}
+				break;
+			}
+			default: {
+				const _exhaustiveCheck: never = contextNode.content;
+				throw new Error(`Unhandled type: ${_exhaustiveCheck}`);
 			}
 		}
 	}
