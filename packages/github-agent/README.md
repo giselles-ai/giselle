@@ -32,7 +32,9 @@ Basic usage:
 ```typescript
 import { Agent } from "@giselles-ai/github-agent";
 
-const agent = new Agent(process.env.GITHUB_TOKEN);
+const agent = new Agent(process.env.GITHUB_TOKEN, {
+  allowedToolNames: ["search_code", "search_repositories"],
+});
 
 // Execute a request
 const result = await agent.execute("your request here");
@@ -47,8 +49,8 @@ import { Agent, toolGroups } from "@giselles-ai/github-agent";
 const agent = Agent.builder()
   .withToken(process.env.GITHUB_TOKEN)
   .withTools([
-    ...toolGroups.pullRequests,
-    ...toolGroups.issues,
+    ...toolGroups.pullRequests.tools,
+    ...toolGroups.issues.tools,
   ])
   .build();
 
@@ -84,26 +86,33 @@ classDiagram
     class Agent {
         -Octokit octokit
         -Planner planner
-        -Evaluator evaluator
         -ToolRegistry toolRegistry
+        -boolean isDebug
+        -number maxRetries
         +execute(prompt: string)
         +static builder()
         +static fromAllTools(token)
     }
     class Planner {
         +plan(prompt: string)
-        +planWithPreviousResults()
+        +planWithEvaluation()
     }
     class Evaluator {
         +evaluate(plan, results)
     }
     class ToolRegistry {
         +register(tool)
-        +executeTool(name, input)
+        +dispatchTool(input)
+        +generateToolDescriptions()
+        +toolInputSchema()
+    }
+    class Formatter {
+        +format(result, options)
     }
     Agent --> Planner
     Agent --> Evaluator
     Agent --> ToolRegistry
+    Agent --> Formatter
     ToolRegistry --> "n" Tool
 ```
 
@@ -117,17 +126,19 @@ The project consists of the following components:
 - **Planner**: Analyzes user requests and breaks them down into executable steps
 - **Evaluator**: Evaluates execution results and determines success/failure
 - **ToolRegistry**: Manages available GitHub API tools
+- **Formatter**: Formats API responses into readable tree structures
 
 ### Tool Groups
 
 The tools are organized into logical groups:
 
-- **issues**: Tools for managing issues
-- **pullRequests**: Tools for working with pull requests
-- **files**: Tools for file operations
-- **search**: Tools for searching code, repositories, users, etc.
-- **repos**: Tools for repository management
-- **utils**: Advanced utility tools like GraphQL and REST
+- **issues**: Tools for managing issues (list, retrieve)
+- **pullRequests**: Tools for working with pull requests (retrieve, reviews,
+  comments, diffs)
+- **files**: Tools for file operations (retrieve contents)
+- **search**: Tools for searching code, repositories, users, and issues
+- **repos**: Tools for repository management (list commits)
+- **utils**: Advanced utility tools like GraphQL and REST API access
 
 ### Execution Flow
 
@@ -138,18 +149,20 @@ flowchart TD
     C --> D[Execute Tool Call]
     D --> E[Evaluator]
     E --> F{Success?}
-    F -->|Yes| G[Return Results]
-    F -->|No| H{Retry Count < 5}
-    H -->|Yes| B
-    H -->|No| I[Return Error]
+    F -->|Yes| G[Format Results]
+    G --> H[Return Results]
+    F -->|No| I{Retry Count < Max}
+    I -->|Yes| B
+    I -->|No| J[Return Error]
 ```
 
 1. Receive user request
 2. Planner analyzes request and selects appropriate tool
 3. Execute single tool call
 4. Evaluator assesses results
-5. Replan and retry if necessary
-6. Return final results to user
+5. Format results into readable structure if successful
+6. Replan and retry if necessary
+7. Return final results to user
 
 ## Adding New Tools
 
@@ -188,13 +201,39 @@ export const myNewTool = defineTool({
 });
 ```
 
-Register the tool in your application:
+After creating a new tool, you need to:
+
+1. Register it in `tool-registry.ts` by adding it to the `allTools` array:
+
+```typescript
+const allTools = [
+  // ...existing tools
+  myNewTool, // Add your new tool here
+] as const;
+```
+
+2. Add it to an appropriate tool group in `tool-groups.ts` or create a new
+   group:
+
+```typescript
+export const toolGroups: Record<string, ToolGroup> = {
+  // ...existing groups
+  myGroup: {
+    id: "myGroup",
+    name: "My Custom Tools",
+    description: "Custom tools for specific tasks",
+    tools: [myNewTool], // Add your tool here
+  },
+};
+```
+
+3. Use the tool in your application:
 
 ```typescript
 // Using the builder pattern
 const agent = Agent.builder()
   .withToken(process.env.GITHUB_TOKEN)
-  .withTools([myNewTool, ...toolGroups.pullRequests])
+  .withTools([myNewTool, ...toolGroups.pullRequests.tools])
   .build();
 ```
 
@@ -234,6 +273,52 @@ const agent = Agent.builder()
 - `graphql`: Execute GraphQL queries against GitHub's GraphQL API for efficient
   data retrieval
 
+## Search API Constraints
+
+### Code Search
+
+- Code search requires authentication
+- Rate limit: 10 requests per minute
+- Maximum file size searchable is 384 KB
+- Only the default branch is searchable
+- Binary files are not searchable
+- Supports various qualifiers including language, file path, repository, file
+  size, etc.
+
+### Repository Search
+
+- Rate limit: 30 requests per minute
+- Supports qualifiers for language, stars, forks, repository size, creation
+  date, etc.
+
+### User Search
+
+- Rate limit: 30 requests per minute
+- Supports search in username, email, full name, location, etc.
+- Name searches are case-insensitive
+- Partial matches supported for username and email
+
+### Issue Search
+
+- Rate limit: 30 requests per minute
+- Searches both issues and pull requests
+- Supports filtering by status, author, assignee, labels, and many other
+  qualifiers
+- Comments are searchable
+- Labels are case-insensitive
+
+## Result Formatting
+
+The GitHub Agent includes a specialized formatter that converts API responses
+into readable tree-structured output. Features include:
+
+- Tree-like visualization of nested data structures
+- Special handling for base64-encoded content
+- Multi-line text formatting
+- Empty value filtering
+- Array and object representation
+- Customizable indentation and symbols
+
 ## Limitations
 
 ### General Limitations
@@ -254,6 +339,7 @@ const agent = Agent.builder()
 
 ### Runtime Limitations
 
-- Maximum of 5 retry attempts
+- Maximum configurable retry attempts (default: 5)
 - Large files (>100MB) are not supported
 - Long-running requests may timeout
+- Error retrying only occurs for specific HTTP status codes (429, 502, 503, 504)
