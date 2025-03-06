@@ -13,7 +13,7 @@
 		"clean": "rm -rf .turbo dist node_modules",
 		"test": "vitest run",
 		"lint": "biome lint .",
-		"check": "biome check --write ."
+		"format": "biome check --write ."
 	},
 	"exports": {
 		"./package.json": "./package.json",
@@ -24,9 +24,7 @@
 			"default": "./dist/index.js"
 		}
 	},
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"engines": {
 		"node": ">=22.0.0"
 	},

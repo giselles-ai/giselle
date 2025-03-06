@@ -1,11 +1,7 @@
 {
 	"extends": "@giselle/giselle-sdk-tsconfig/react-library.json",
-	"include": [
-		"."
-	],
-	"exclude": [
-		"node_modules"
-	],
+	"include": ["."],
+	"exclude": ["node_modules"],
 	"compilerOptions": {
 		"target": "ES2018",
 		"module": "ESNext",
