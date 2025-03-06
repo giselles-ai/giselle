@@ -1,4 +1,5 @@
-import type { FileCategory, LLMProvider } from "@giselle-sdk/data-type";
+import type { FileCategory } from "@giselle-sdk/data-type";
+import type { LanguageModel } from "@giselle-sdk/language-model";
 
 interface ToolBase {
 	category: string;
@@ -17,7 +18,7 @@ export interface AddFileNodeTool extends ToolBase {
 export interface AddTextGenerationNodeTool extends ToolBase {
 	category: "edit";
 	action: "addTextGenerationNode";
-	provider?: LLMProvider;
+	languageModel?: LanguageModel;
 }
 export interface AddGitHubNodeTool extends ToolBase {
 	category: "edit";

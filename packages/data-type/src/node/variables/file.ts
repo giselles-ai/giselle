@@ -1,6 +1,6 @@
 import { createIdGenerator } from "@giselle-sdk/utils";
 import { z } from "zod";
-import { NodeBase, NodeId } from "../base";
+import { NodeBase } from "../base";
 
 export const FileId = createIdGenerator("fl");
 export type FileId = z.infer<typeof FileId.schema>;
@@ -39,7 +39,6 @@ export const UploadedFileProviderOptions = z.object({
 
 export const UploadedFileData = FileDataBase.extend({
 	status: z.literal("uploaded"),
-	title: z.string(),
 	uploadedAt: z.number(),
 	providerOptions: z.optional(UploadedFileProviderOptions),
 });
@@ -47,13 +46,11 @@ export type UploadedFileData = z.infer<typeof UploadedFileData>;
 export function createUploadedFileData(
 	uploadingFile: UploadingFileData,
 	uploadedAt: number,
-	title: string,
 ): UploadedFileData {
 	return {
 		...uploadingFile,
 		status: "uploaded",
 		uploadedAt,
-		title,
 	};
 }
 

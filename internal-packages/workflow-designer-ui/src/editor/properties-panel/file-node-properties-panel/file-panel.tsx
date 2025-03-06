@@ -4,15 +4,10 @@ import type {
 	UploadedFileData,
 } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
-import {
-	ArrowUpFromLineIcon,
-	FileIcon,
-	FileXIcon,
-	TrashIcon,
-} from "lucide-react";
+import { ArrowUpFromLineIcon, TrashIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { toRelativeTime } from "../../../helper/datetime";
-import { DocumentIcon, PdfFileIcon } from "../../../icons";
+import { PdfFileIcon } from "../../../icons";
 import { Tooltip } from "../../../ui/tooltip";
 import { useFileNode } from "./use-file-node";
 

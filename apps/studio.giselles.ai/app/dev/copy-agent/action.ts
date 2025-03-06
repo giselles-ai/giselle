@@ -107,19 +107,6 @@ export async function copyAgentAction(
 		teamDbId: team.dbId,
 		creatorDbId: user.dbId,
 		graphUrl: url,
-		graphv2: {
-			agentId: newAgentId,
-			nodes: [],
-			xyFlow: {
-				nodes: [],
-				edges: [],
-			},
-			connectors: [],
-			artifacts: [],
-			webSearches: [],
-			mode: "edit",
-			flowIndexes: [],
-		},
 	});
 	return { result: "success", agentId: newAgentId };
 }

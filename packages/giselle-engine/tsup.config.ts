@@ -15,15 +15,8 @@ export default defineConfig([
 		sourcemap: true,
 	},
 	{
-		entry: ["src/core/schema/index.ts"],
-		outDir: "schema/dist",
-		format: ["cjs", "esm"],
-		dts: true,
-		sourcemap: true,
-	},
-	{
-		entry: ["src/client/index.ts"],
-		outDir: "client/dist",
+		entry: ["src/react/index.ts"],
+		outDir: "react/dist",
 		format: ["cjs", "esm"],
 		dts: true,
 		sourcemap: true,

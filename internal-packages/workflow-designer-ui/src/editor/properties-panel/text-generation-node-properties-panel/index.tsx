@@ -1,8 +1,7 @@
-import type { Node, TextGenerationNode } from "@giselle-sdk/data-type";
+import type { TextGenerationNode } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
 import { useNodeGenerations, useWorkflowDesigner } from "giselle-sdk/react";
 import { CommandIcon, CornerDownLeft } from "lucide-react";
-import { isGenerator } from "motion/react";
 import { Tabs } from "radix-ui";
 import { useCallback, useMemo } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -69,7 +68,7 @@ export function TextGenerationNodePropertiesPanel({
 					</>
 				}
 				name={node.name}
-				fallbackName={node.content.llm.model}
+				fallbackName={node.content.llm.id}
 				description={node.content.llm.provider}
 				onChangeName={(name) => {
 					updateNodeData(node, { name });
@@ -139,7 +138,7 @@ export function TextGenerationNodePropertiesPanel({
 							>
 								{node.content.llm.provider === "openai" && (
 									<OpenAIModelPanel
-										openai={node.content.llm}
+										openaiLanguageModel={node.content.llm}
 										onModelChange={(value) =>
 											updateNodeDataContent(node, {
 												...node.content,
@@ -150,7 +149,7 @@ export function TextGenerationNodePropertiesPanel({
 								)}
 								{node.content.llm.provider === "google" && (
 									<GoogleModelPanel
-										google={node.content.llm}
+										googleLanguageModel={node.content.llm}
 										onModelChange={(value) =>
 											updateNodeDataContent(node, {
 												...node.content,
@@ -161,7 +160,7 @@ export function TextGenerationNodePropertiesPanel({
 								)}
 								{node.content.llm.provider === "anthropic" && (
 									<AnthropicModelPanel
-										anthropic={node.content.llm}
+										anthropicLanguageModel={node.content.llm}
 										onModelChange={(value) =>
 											updateNodeDataContent(node, {
 												...node.content,

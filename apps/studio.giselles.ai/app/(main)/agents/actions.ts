@@ -171,19 +171,6 @@ export async function copyAgent(
 				teamDbId: team.dbId,
 				creatorDbId: user.dbId,
 				graphUrl: url,
-				graphv2: {
-					agentId: newAgentId,
-					nodes: [],
-					xyFlow: {
-						nodes: [],
-						edges: [],
-					},
-					connectors: [],
-					artifacts: [],
-					webSearches: [],
-					mode: "edit",
-					flowIndexes: [],
-				},
 			})
 			.returning({ id: agents.id });
 

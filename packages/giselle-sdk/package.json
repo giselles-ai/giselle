@@ -36,6 +36,7 @@
 	},
 	"dependencies": {
 		"@giselle-sdk/giselle-engine": "workspace:^",
+		"@giselle-sdk/language-model": "workspace:^",
 		"@giselle-sdk/workspace": "workspace:^"
 	}
 }

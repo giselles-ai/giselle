@@ -1,6 +1,9 @@
 {
 	"name": "playground",
 	"version": "0.1.0",
+	"engines": {
+		"node": "22.x"
+	},
 	"private": true,
 	"scripts": {
 		"dev": "next dev --turbopack --port 6180",

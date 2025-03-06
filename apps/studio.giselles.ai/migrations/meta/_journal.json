@@ -190,6 +190,13 @@
 			"when": 1737012769271,
 			"tag": "0026_military_spirit",
 			"breakpoints": true
+		},
+		{
+			"idx": 27,
+			"version": "7",
+			"when": 1741074174409,
+			"tag": "0027_funny_infant_terrible",
+			"breakpoints": true
 		}
 	]
 }

@@ -1,0 +1,30 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		"build": {
+			"env": [
+				"OPENAI_API_KEY",
+				"GOOGLE_GENERATIVE_AI_API_KEY",
+				"ANTHROPIC_API_KEY",
+				"BLOB_READ_WRITE_TOKEN"
+			],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				".env.production.local",
+				".env.local",
+				".env.production",
+				".env"
+			]
+		},
+		"dev": {
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				".env.development.local",
+				".env.local",
+				".env.development",
+				".env"
+			]
+		},
+		"test": {}
+	}
+}

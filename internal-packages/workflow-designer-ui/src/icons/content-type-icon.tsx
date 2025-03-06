@@ -1,4 +1,5 @@
-import type { FileCategory, LLMProvider } from "@giselle-sdk/data-type";
+import type { FileCategory } from "@giselle-sdk/data-type";
+import type { LanguageModelProvider } from "@giselle-sdk/language-model";
 import type { SVGProps } from "react";
 import { PromptIcon } from "../icons/prompt";
 import { AnthropicIcon } from "./anthropic";
@@ -20,7 +21,7 @@ interface FileNodeIconProps extends SVGProps<SVGSVGElement> {
 }
 interface TextGenerationNodeIconProps extends SVGProps<SVGSVGElement> {
 	contentType: "textGeneration";
-	llmProvider: LLMProvider;
+	llmProvider: LanguageModelProvider;
 	fileCategory?: never;
 }
 interface GitHubNodeIconProps extends SVGProps<SVGSVGElement> {

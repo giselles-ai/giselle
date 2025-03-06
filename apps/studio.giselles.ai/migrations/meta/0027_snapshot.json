@@ -1,0 +1,912 @@
+{
+	"id": "fa5910b8-2a48-42b6-8889-643b3fcb21a0",
+	"prevId": "719d3696-76ca-4d69-b4da-c79aaf63848f",
+	"version": "7",
+	"dialect": "postgresql",
+	"tables": {
+		"public.agent_activities": {
+			"name": "agent_activities",
+			"schema": "",
+			"columns": {
+				"db_id": {
+					"name": "db_id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"agent_db_id": {
+					"name": "agent_db_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"started_at": {
+					"name": "started_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"ended_at": {
+					"name": "ended_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"total_duration_ms": {
+					"name": "total_duration_ms",
+					"type": "numeric",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"usage_report_db_id": {
+					"name": "usage_report_db_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"indexes": {
+				"agent_activities_agent_db_id_index": {
+					"name": "agent_activities_agent_db_id_index",
+					"columns": [
+						{
+							"expression": "agent_db_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				},
+				"agent_activities_ended_at_index": {
+					"name": "agent_activities_ended_at_index",
+					"columns": [
+						{
+							"expression": "ended_at",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
+			"foreignKeys": {
+				"agent_activities_agent_db_id_agents_db_id_fk": {
+					"name": "agent_activities_agent_db_id_agents_db_id_fk",
+					"tableFrom": "agent_activities",
+					"tableTo": "agents",
+					"columnsFrom": ["agent_db_id"],
+					"columnsTo": ["db_id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"agent_activities_usage_report_db_id_agent_time_usage_reports_db_id_fk": {
+					"name": "agent_activities_usage_report_db_id_agent_time_usage_reports_db_id_fk",
+					"tableFrom": "agent_activities",
+					"tableTo": "agent_time_usage_reports",
+					"columnsFrom": ["usage_report_db_id"],
+					"columnsTo": ["db_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"public.agent_time_usage_reports": {
+			"name": "agent_time_usage_reports",
+			"schema": "",
+			"columns": {
+				"db_id": {
+					"name": "db_id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"team_db_id": {
+					"name": "team_db_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"accumulated_duration_ms": {
+					"name": "accumulated_duration_ms",
+					"type": "numeric",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"minutes_increment": {
+					"name": "minutes_increment",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"stripe_meter_event_id": {
+					"name": "stripe_meter_event_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"agent_time_usage_reports_team_db_id_index": {
+					"name": "agent_time_usage_reports_team_db_id_index",
+					"columns": [
+						{
+							"expression": "team_db_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				},
+				"agent_time_usage_reports_created_at_index": {
+					"name": "agent_time_usage_reports_created_at_index",
+					"columns": [
+						{
+							"expression": "created_at",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				},
+				"agent_time_usage_reports_stripe_meter_event_id_index": {
+					"name": "agent_time_usage_reports_stripe_meter_event_id_index",
+					"columns": [
+						{
+							"expression": "stripe_meter_event_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
+			"foreignKeys": {
+				"agent_time_usage_reports_team_db_id_teams_db_id_fk": {
+					"name": "agent_time_usage_reports_team_db_id_teams_db_id_fk",
+					"tableFrom": "agent_time_usage_reports",
+					"tableTo": "teams",
+					"columnsFrom": ["team_db_id"],
+					"columnsTo": ["db_id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"public.agents": {
+			"name": "agents",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"db_id": {
+					"name": "db_id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"team_db_id": {
+					"name": "team_db_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"graph_url": {
+					"name": "graph_url",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"creator_db_id": {
+					"name": "creator_db_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {
+				"agents_team_db_id_index": {
+					"name": "agents_team_db_id_index",
+					"columns": [
+						{
+							"expression": "team_db_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
+			"foreignKeys": {
+				"agents_team_db_id_teams_db_id_fk": {
+					"name": "agents_team_db_id_teams_db_id_fk",
+					"tableFrom": "agents",
+					"tableTo": "teams",
+					"columnsFrom": ["team_db_id"],
+					"columnsTo": ["db_id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"agents_creator_db_id_users_db_id_fk": {
+					"name": "agents_creator_db_id_users_db_id_fk",
+					"tableFrom": "agents",
+					"tableTo": "users",
+					"columnsFrom": ["creator_db_id"],
+					"columnsTo": ["db_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"agents_id_unique": {
+					"name": "agents_id_unique",
+					"nullsNotDistinct": false,
+					"columns": ["id"]
+				}
+			}
+		},
+		"public.github_integration_settings": {
+			"name": "github_integration_settings",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"agent_db_id": {
+					"name": "agent_db_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"db_id": {
+					"name": "db_id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"repository_full_name": {
+					"name": "repository_full_name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"call_sign": {
+					"name": "call_sign",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"event": {
+					"name": "event",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"flow_id": {
+					"name": "flow_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"event_node_mappings": {
+					"name": "event_node_mappings",
+					"type": "jsonb",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"next_action": {
+					"name": "next_action",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"github_integration_settings_agent_db_id_agents_db_id_fk": {
+					"name": "github_integration_settings_agent_db_id_agents_db_id_fk",
+					"tableFrom": "github_integration_settings",
+					"tableTo": "agents",
+					"columnsFrom": ["agent_db_id"],
+					"columnsTo": ["db_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"github_integration_settings_id_unique": {
+					"name": "github_integration_settings_id_unique",
+					"nullsNotDistinct": false,
+					"columns": ["id"]
+				}
+			}
+		},
+		"public.oauth_credentials": {
+			"name": "oauth_credentials",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"user_id": {
+					"name": "user_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"provider": {
+					"name": "provider",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"provider_account_id": {
+					"name": "provider_account_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"access_token": {
+					"name": "access_token",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"refresh_token": {
+					"name": "refresh_token",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"expires_at": {
+					"name": "expires_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"token_type": {
+					"name": "token_type",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"scope": {
+					"name": "scope",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"oauth_credentials_user_id_users_db_id_fk": {
+					"name": "oauth_credentials_user_id_users_db_id_fk",
+					"tableFrom": "oauth_credentials",
+					"tableTo": "users",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["db_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"oauth_credentials_user_id_provider_provider_account_id_unique": {
+					"name": "oauth_credentials_user_id_provider_provider_account_id_unique",
+					"nullsNotDistinct": false,
+					"columns": ["user_id", "provider", "provider_account_id"]
+				}
+			}
+		},
+		"public.subscriptions": {
+			"name": "subscriptions",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"db_id": {
+					"name": "db_id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"team_db_id": {
+					"name": "team_db_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"customer_id": {
+					"name": "customer_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"status": {
+					"name": "status",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"cancel_at_period_end": {
+					"name": "cancel_at_period_end",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"cancel_at": {
+					"name": "cancel_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"canceled_at": {
+					"name": "canceled_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"current_period_start": {
+					"name": "current_period_start",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"current_period_end": {
+					"name": "current_period_end",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created": {
+					"name": "created",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"ended_at": {
+					"name": "ended_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"trial_start": {
+					"name": "trial_start",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"trial_end": {
+					"name": "trial_end",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"subscriptions_team_db_id_teams_db_id_fk": {
+					"name": "subscriptions_team_db_id_teams_db_id_fk",
+					"tableFrom": "subscriptions",
+					"tableTo": "teams",
+					"columnsFrom": ["team_db_id"],
+					"columnsTo": ["db_id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"subscriptions_id_unique": {
+					"name": "subscriptions_id_unique",
+					"nullsNotDistinct": false,
+					"columns": ["id"]
+				}
+			}
+		},
+		"public.supabase_user_mappings": {
+			"name": "supabase_user_mappings",
+			"schema": "",
+			"columns": {
+				"user_db_id": {
+					"name": "user_db_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"supabase_user_id": {
+					"name": "supabase_user_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"supabase_user_mappings_user_db_id_users_db_id_fk": {
+					"name": "supabase_user_mappings_user_db_id_users_db_id_fk",
+					"tableFrom": "supabase_user_mappings",
+					"tableTo": "users",
+					"columnsFrom": ["user_db_id"],
+					"columnsTo": ["db_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"supabase_user_mappings_user_db_id_unique": {
+					"name": "supabase_user_mappings_user_db_id_unique",
+					"nullsNotDistinct": false,
+					"columns": ["user_db_id"]
+				},
+				"supabase_user_mappings_supabase_user_id_unique": {
+					"name": "supabase_user_mappings_supabase_user_id_unique",
+					"nullsNotDistinct": false,
+					"columns": ["supabase_user_id"]
+				}
+			}
+		},
+		"public.team_memberships": {
+			"name": "team_memberships",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"user_db_id": {
+					"name": "user_db_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"team_db_id": {
+					"name": "team_db_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"role": {
+					"name": "role",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"team_memberships_user_db_id_users_db_id_fk": {
+					"name": "team_memberships_user_db_id_users_db_id_fk",
+					"tableFrom": "team_memberships",
+					"tableTo": "users",
+					"columnsFrom": ["user_db_id"],
+					"columnsTo": ["db_id"],
+					"onDelete": "no action",
+					"onUpdate": "no action"
+				},
+				"team_memberships_team_db_id_teams_db_id_fk": {
+					"name": "team_memberships_team_db_id_teams_db_id_fk",
+					"tableFrom": "team_memberships",
+					"tableTo": "teams",
+					"columnsFrom": ["team_db_id"],
+					"columnsTo": ["db_id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"team_memberships_user_db_id_team_db_id_unique": {
+					"name": "team_memberships_user_db_id_team_db_id_unique",
+					"nullsNotDistinct": false,
+					"columns": ["user_db_id", "team_db_id"]
+				}
+			}
+		},
+		"public.teams": {
+			"name": "teams",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"db_id": {
+					"name": "db_id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"name": {
+					"name": "name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"updated_at": {
+					"name": "updated_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"type": {
+					"name": "type",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "'customer'"
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"teams_id_unique": {
+					"name": "teams_id_unique",
+					"nullsNotDistinct": false,
+					"columns": ["id"]
+				}
+			}
+		},
+		"public.user_seat_usage_reports": {
+			"name": "user_seat_usage_reports",
+			"schema": "",
+			"columns": {
+				"db_id": {
+					"name": "db_id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"team_db_id": {
+					"name": "team_db_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"user_db_id_list": {
+					"name": "user_db_id_list",
+					"type": "integer[]",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"stripe_meter_event_id": {
+					"name": "stripe_meter_event_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"value": {
+					"name": "value",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"is_delta": {
+					"name": "is_delta",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				}
+			},
+			"indexes": {
+				"user_seat_usage_reports_team_db_id_index": {
+					"name": "user_seat_usage_reports_team_db_id_index",
+					"columns": [
+						{
+							"expression": "team_db_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				},
+				"user_seat_usage_reports_created_at_index": {
+					"name": "user_seat_usage_reports_created_at_index",
+					"columns": [
+						{
+							"expression": "created_at",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				},
+				"user_seat_usage_reports_stripe_meter_event_id_index": {
+					"name": "user_seat_usage_reports_stripe_meter_event_id_index",
+					"columns": [
+						{
+							"expression": "stripe_meter_event_id",
+							"isExpression": false,
+							"asc": true,
+							"nulls": "last"
+						}
+					],
+					"isUnique": false,
+					"concurrently": false,
+					"method": "btree",
+					"with": {}
+				}
+			},
+			"foreignKeys": {
+				"user_seat_usage_reports_team_db_id_teams_db_id_fk": {
+					"name": "user_seat_usage_reports_team_db_id_teams_db_id_fk",
+					"tableFrom": "user_seat_usage_reports",
+					"tableTo": "teams",
+					"columnsFrom": ["team_db_id"],
+					"columnsTo": ["db_id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
+		"public.users": {
+			"name": "users",
+			"schema": "",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"email": {
+					"name": "email",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"display_name": {
+					"name": "display_name",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
+				},
+				"db_id": {
+					"name": "db_id",
+					"type": "serial",
+					"primaryKey": true,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"users_id_unique": {
+					"name": "users_id_unique",
+					"nullsNotDistinct": false,
+					"columns": ["id"]
+				},
+				"users_email_unique": {
+					"name": "users_email_unique",
+					"nullsNotDistinct": false,
+					"columns": ["email"]
+				}
+			}
+		}
+	},
+	"enums": {},
+	"schemas": {},
+	"sequences": {},
+	"_meta": {
+		"columns": {},
+		"schemas": {},
+		"tables": {}
+	}
+}

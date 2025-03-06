@@ -6,7 +6,6 @@ import {
 	type GenerationId,
 	RunningGeneration,
 } from "@giselle-sdk/data-type";
-import { callGetGenerationApi } from "@giselle-sdk/giselle-engine/client";
 import { z } from "zod";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -14,11 +13,17 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const exponentialBackoff = (interval: number) => {
 	return interval * 2;
 };
+
+type GenerationFetcher = (
+	generationId: GenerationId,
+) => Promise<Generation | undefined>;
+
 interface RequestOptions {
 	initialInterval?: number;
 	maxAttempts?: number;
 }
 async function waitAndGetGenerationStatus(
+	fetcher: GenerationFetcher,
 	generationId: GenerationId,
 	status: Array<z.infer<typeof Generation>["status"]>,
 	{ initialInterval = 500, maxAttempts = 10 }: RequestOptions = {},
@@ -27,11 +32,9 @@ async function waitAndGetGenerationStatus(
 	let attempts = 0;
 
 	while (attempts < maxAttempts) {
-		const generation = await callGetGenerationApi({
-			generationId,
-		});
+		const generation = await fetcher(generationId);
 
-		if (status.includes(generation.status)) {
+		if (generation !== undefined && status.includes(generation.status)) {
 			return generation;
 		}
 
@@ -47,10 +50,12 @@ async function waitAndGetGenerationStatus(
 }
 
 export async function waitAndGetGenerationCompleted(
+	fetcher: GenerationFetcher,
 	generationId: GenerationId,
 	requestOptions?: RequestOptions,
 ) {
 	const generation = await waitAndGetGenerationStatus(
+		fetcher,
 		generationId,
 		["completed"],
 		requestOptions,
@@ -59,10 +64,12 @@ export async function waitAndGetGenerationCompleted(
 }
 
 export async function waitAndGetGenerationRunning(
+	fetcher: GenerationFetcher,
 	generationId: GenerationId,
 	requestOptions?: RequestOptions,
 ) {
 	const generation = await waitAndGetGenerationStatus(
+		fetcher,
 		generationId,
 		["running", "completed", "failed", "cancelled"],
 		requestOptions,
@@ -78,10 +85,12 @@ export async function waitAndGetGenerationRunning(
 }
 
 export async function waitAndGetGenerationFailed(
+	fetcher: GenerationFetcher,
 	generationId: GenerationId,
 	requestOptions?: RequestOptions,
 ) {
 	const failedGeneration = await waitAndGetGenerationStatus(
+		fetcher,
 		generationId,
 		["failed"],
 		requestOptions,

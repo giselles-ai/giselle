@@ -1,6 +1,9 @@
 {
 	"name": "web",
 	"version": "0.1.0",
+	"engines": {
+		"node": "22.x"
+	},
 	"private": true,
 	"scripts": {
 		"predev": "node prepare-font.js",
@@ -60,7 +63,6 @@
 		"@supabase/supabase-js": "2.45.0",
 		"@valibot/to-json-schema": "1.0.0-beta.3",
 		"@vercel/blob": "0.23.4",
-		"@vercel/flags": "2.6.3",
 		"@vercel/functions": "1.5.0",
 		"@vercel/otel": "1.10.0",
 		"@vercel/postgres": "0.9.0",
@@ -73,6 +75,7 @@
 		"cmdk": "1.0.4",
 		"cva": "1.0.0-beta.1",
 		"drizzle-orm": "0.32.1",
+		"flags": "3.1.1",
 		"framer-motion": "12.0.0-alpha.0",
 		"gaxios": "6.7.1",
 		"google-auth-library": "9.15.0",

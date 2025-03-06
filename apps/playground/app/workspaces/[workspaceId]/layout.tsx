@@ -1,5 +1,4 @@
 import { WorkspaceId } from "@giselle-sdk/data-type";
-import { callGetWorkspaceApi } from "giselle-sdk";
 import { WorkspaceProvider } from "giselle-sdk/react";
 import type { ReactNode } from "react";
 

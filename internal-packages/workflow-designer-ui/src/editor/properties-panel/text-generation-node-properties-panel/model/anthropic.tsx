@@ -1,4 +1,7 @@
-import { Anthropic, AnthropicModelId } from "@giselle-sdk/data-type";
+import {
+	AnthropicLanguageModel,
+	anthropicLanguageModels,
+} from "@giselle-sdk/language-model";
 import {
 	Select,
 	SelectContent,
@@ -10,21 +13,21 @@ import {
 import { Slider } from "../../../../ui/slider";
 
 export function AnthropicModelPanel({
-	anthropic,
+	anthropicLanguageModel,
 	onModelChange,
 }: {
-	anthropic: Anthropic;
-	onModelChange: (changedValue: Anthropic) => void;
+	anthropicLanguageModel: AnthropicLanguageModel;
+	onModelChange: (changedValue: AnthropicLanguageModel) => void;
 }) {
 	return (
 		<div className="flex flex-col gap-[34px]">
 			<Select
-				value={anthropic.model}
+				value={anthropicLanguageModel.id}
 				onValueChange={(value) => {
 					onModelChange(
-						Anthropic.parse({
-							...anthropic,
-							model: value,
+						AnthropicLanguageModel.parse({
+							...anthropicLanguageModel,
+							id: value,
 						}),
 					);
 				}}
@@ -34,11 +37,14 @@ export function AnthropicModelPanel({
 				</SelectTrigger>
 				<SelectContent>
 					<SelectGroup>
-						<SelectItem
-							value={AnthropicModelId.Enum["claude-3-5-sonnet-latest"]}
-						>
-							claude-3-5-sonnet-latest
-						</SelectItem>
+						{anthropicLanguageModels.map((anthropicLanguageModel) => (
+							<SelectItem
+								key={anthropicLanguageModel.id}
+								value={anthropicLanguageModel.id}
+							>
+								{anthropicLanguageModel.id}
+							</SelectItem>
+						))}
 					</SelectGroup>
 				</SelectContent>
 			</Select>
@@ -46,30 +52,36 @@ export function AnthropicModelPanel({
 				<div className="grid grid-cols-2 gap-[24px]">
 					<Slider
 						label="Temperature"
-						value={anthropic.temperature}
+						value={anthropicLanguageModel.configurations.temperature}
 						max={2.0}
 						min={0.0}
 						step={0.01}
 						onChange={(value) => {
 							onModelChange(
-								Anthropic.parse({
-									...anthropic,
-									temperature: value,
+								AnthropicLanguageModel.parse({
+									...anthropicLanguageModel,
+									configurations: {
+										...anthropicLanguageModel.configurations,
+										temperature: value,
+									},
 								}),
 							);
 						}}
 					/>
 					<Slider
 						label="Top P"
-						value={anthropic.topP}
+						value={anthropicLanguageModel.configurations.topP}
 						max={1.0}
 						min={0.0}
 						step={0.01}
 						onChange={(value) => {
 							onModelChange(
-								Anthropic.parse({
-									...anthropic,
-									topP: value,
+								AnthropicLanguageModel.parse({
+									...anthropicLanguageModel,
+									configurations: {
+										...anthropicLanguageModel.configurations,
+										topP: value,
+									},
 								}),
 							);
 						}}

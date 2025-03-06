@@ -1,7 +1,12 @@
-import type { LLMProvider } from "@giselle-sdk/data-type";
+import type { LanguageModelProvider } from "@giselle-sdk/language-model";
 import type { Storage } from "unstorage";
 
 export interface GiselleEngineContext {
 	storage: Storage;
-	llmProviders: LLMProvider[];
+	llmProviders: LanguageModelProvider[];
+}
+
+export interface GiselleEngineConfig {
+	storage: Storage;
+	llmProviders?: LanguageModelProvider[];
 }

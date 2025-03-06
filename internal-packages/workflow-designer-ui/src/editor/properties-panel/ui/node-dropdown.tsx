@@ -66,7 +66,7 @@ export function NodeDropdown({
 							<DropdownMenuLabel>Text Generator</DropdownMenuLabel>
 							{textGenerationNodes.map((node) => (
 								<DropdownMenuRadioItem value={node.id} key={node.id}>
-									{node.name ?? node.content.llm.model}
+									{node.name ?? node.content.llm.id}
 								</DropdownMenuRadioItem>
 							))}
 						</>

@@ -1,4 +1,4 @@
-import { unstable_flag as flag } from "@vercel/flags/next";
+import { flag } from "flags/next";
 
 function takeLocalEnv(localEnvironemntKey: string) {
 	if (process.env.NODE_ENV !== "development") {

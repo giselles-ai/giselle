@@ -1,4 +1,7 @@
-import { OpenAI } from "@giselle-sdk/data-type";
+import {
+	OpenAILanguageModel,
+	openaiLanguageModels,
+} from "@giselle-sdk/language-model";
 import {
 	Select,
 	SelectContent,
@@ -10,21 +13,21 @@ import {
 import { Slider } from "../../../../ui/slider";
 
 export function OpenAIModelPanel({
-	openai,
+	openaiLanguageModel,
 	onModelChange,
 }: {
-	openai: OpenAI;
-	onModelChange: (changedValue: OpenAI) => void;
+	openaiLanguageModel: OpenAILanguageModel;
+	onModelChange: (changedValue: OpenAILanguageModel) => void;
 }) {
 	return (
 		<div className="flex flex-col gap-[34px]">
 			<Select
-				value={openai.model}
+				value={openaiLanguageModel.id}
 				onValueChange={(value) => {
 					onModelChange(
-						OpenAI.parse({
-							...openai,
-							model: value,
+						OpenAILanguageModel.parse({
+							...openaiLanguageModel,
+							id: value,
 						}),
 					);
 				}}
@@ -34,9 +37,11 @@ export function OpenAIModelPanel({
 				</SelectTrigger>
 				<SelectContent>
 					<SelectGroup>
-						<SelectItem value="gpt-4o">gpt-4o</SelectItem>
-						<SelectItem value="o1-mini">o1-mini</SelectItem>
-						<SelectItem value="o1-preview">o1-preview</SelectItem>
+						{openaiLanguageModels.map((model) => (
+							<SelectItem key={model.id} value={model.id}>
+								{model.id}
+							</SelectItem>
+						))}
 					</SelectGroup>
 				</SelectContent>
 			</Select>
@@ -44,60 +49,72 @@ export function OpenAIModelPanel({
 				<div className="grid grid-cols-2 gap-[24px]">
 					<Slider
 						label="Temperature"
-						value={openai.temperature}
+						value={openaiLanguageModel.configurations.temperature}
 						max={2.0}
 						min={0.0}
 						step={0.01}
 						onChange={(value) => {
 							onModelChange(
-								OpenAI.parse({
-									...openai,
-									temperature: value,
+								OpenAILanguageModel.parse({
+									...openaiLanguageModel,
+									configurations: {
+										...openaiLanguageModel.configurations,
+										temperature: value,
+									},
 								}),
 							);
 						}}
 					/>
 					<Slider
 						label="Top P"
-						value={openai.topP}
+						value={openaiLanguageModel.configurations.topP}
 						max={1.0}
 						min={0.0}
 						step={0.01}
 						onChange={(value) => {
 							onModelChange(
-								OpenAI.parse({
-									...openai,
-									topP: value,
+								OpenAILanguageModel.parse({
+									...openaiLanguageModel,
+									configurations: {
+										...openaiLanguageModel.configurations,
+										topP: value,
+									},
 								}),
 							);
 						}}
 					/>
 					<Slider
 						label="Frequency Panalty"
-						value={openai.frequencyPenalty}
+						value={openaiLanguageModel.configurations.frequencyPenalty}
 						max={2.0}
 						min={0.0}
 						step={0.01}
 						onChange={(value) => {
 							onModelChange(
-								OpenAI.parse({
-									...openai,
-									frequencyPenalty: value,
+								OpenAILanguageModel.parse({
+									...openaiLanguageModel,
+									configurations: {
+										...openaiLanguageModel.configurations,
+										frequencyPenalty: value,
+									},
 								}),
 							);
 						}}
 					/>
 					<Slider
 						label="Presence Penalty"
-						value={openai.presencePenalty}
+						value={openaiLanguageModel.configurations.presencePenalty}
 						max={2.0}
 						min={0.0}
 						step={0.01}
 						onChange={(value) => {
 							onModelChange(
-								OpenAI.parse({
-									...openai,
-									presencePenalty: value,
+								OpenAILanguageModel.parse({
+									...openaiLanguageModel,
+									configurations: {
+										...openaiLanguageModel.configurations,
+										presencePenalty: value,
+									},
 								}),
 							);
 						}}

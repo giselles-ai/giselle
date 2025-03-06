@@ -24,7 +24,7 @@ export function NodeGlance({
 	const nodeName = useMemo(() => {
 		switch (node.content.type) {
 			case "textGeneration":
-				return node.name ?? node.content.llm.model;
+				return node.name ?? node.content.llm.id;
 			case "github":
 				return node.name ?? "GitHub";
 			case "file":

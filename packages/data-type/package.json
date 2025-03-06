@@ -26,6 +26,7 @@
 		"vitest": "catalog:"
 	},
 	"dependencies": {
+		"@giselle-sdk/language-model": "workspace:^",
 		"ai": "catalog:",
 		"zod": "catalog:"
 	}

@@ -1,6 +1,7 @@
 "use client";
 
-import type { FileCategory, LLMProvider } from "@giselle-sdk/data-type";
+import type { FileCategory } from "@giselle-sdk/data-type";
+import type { LanguageModel } from "@giselle-sdk/language-model";
 import { type ReactNode, createContext, useContext, useState } from "react";
 import type {
 	AddFileNodeTool,
@@ -70,11 +71,11 @@ export function addFileNodeTool(fileCategory?: FileCategory) {
 	} satisfies AddFileNodeTool;
 }
 
-export function addTextGenerationNodeTool(provider?: LLMProvider) {
+export function addTextGenerationNodeTool(languageModel?: LanguageModel) {
 	return {
 		action: "addTextGenerationNode",
 		category: "edit",
-		provider,
+		languageModel,
 	} satisfies AddTextGenerationNodeTool;
 }
 

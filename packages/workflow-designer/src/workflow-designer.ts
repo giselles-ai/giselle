@@ -12,13 +12,6 @@ import {
 	type Workspace,
 	generateInitialWorkspace,
 } from "@giselle-sdk/data-type";
-import {
-	callGetLLMProvidersApi,
-	callRemoveFileApi,
-	callSaveWorkspaceApi,
-	callUploadFileApi,
-} from "@giselle-sdk/giselle-engine/client";
-import { getLLMProviders } from "@giselle-sdk/giselle-engine/schema";
 import { buildWorkflowMap } from "@giselle-sdk/workflow-utils";
 
 interface AddNodeOptions {
@@ -29,19 +22,8 @@ export type WorkflowDesigner = ReturnType<typeof WorkflowDesigner>;
 
 export function WorkflowDesigner({
 	defaultValue = generateInitialWorkspace(),
-	saveWorkflowApi = "/api/giselle/save-workspace",
-	uploadFileApi = "/api/giselle/upload-file",
-	removeFileApi = "/api/giselle/remove-file",
-	getLLMProvidersApi = getLLMProviders.defaultApi,
 }: {
 	defaultValue?: Workspace;
-	saveWorkflowApi?: string;
-	uploadFileApi?: string;
-	removeFileApi?: string;
-	createOpenAiVectorStoreApi?: string;
-	getLLMProvidersApi?: string;
-	getNodeArtifactsApi?: string;
-	getArtifactApi?: string;
 }) {
 	let nodes = defaultValue.nodes;
 	let connections = defaultValue.connections;
@@ -139,34 +121,6 @@ export function WorkflowDesigner({
 		updateWorkflowMap();
 		return deleteNode;
 	}
-	async function uploadFile(file: File, fileId: FileId) {
-		return await callUploadFileApi({
-			api: uploadFileApi,
-			workspaceId: defaultValue.id,
-			file,
-			fileId,
-			fileName: file.name,
-		});
-	}
-	async function removeFile(uploadedFile: UploadedFileData) {
-		await callRemoveFileApi({
-			api: removeFileApi,
-			workspaceId: defaultValue.id,
-			uploadedFile,
-		});
-	}
-	async function saveWorkspace() {
-		await callSaveWorkspaceApi({
-			api: saveWorkflowApi,
-			workspaceId: defaultValue.id,
-			workspace: getData(),
-		});
-	}
-	async function getAvailableLLMProviders() {
-		const result = await callGetLLMProvidersApi({ api: getLLMProvidersApi });
-		return result.llmProviders;
-	}
-
 	function updateName(newName: string | undefined) {
 		name = newName;
 	}
@@ -180,10 +134,6 @@ export function WorkflowDesigner({
 		setUiViewport,
 		deleteNode,
 		deleteConnection,
-		uploadFile,
-		saveWorkspace,
-		removeFile,
-		getAvailableLLMProviders,
 		updateName,
 	};
 }

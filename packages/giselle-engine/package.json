@@ -8,7 +8,7 @@
 	"scripts": {
 		"build": "tsup",
 		"check-types": "tsc --noEmit",
-		"clean": "rm -rf .turbo dist next node_modules schema"
+		"clean": "rm -rf .turbo dist next react node_modules"
 	},
 	"exports": {
 		"./package.json": "./package.json",
@@ -24,36 +24,38 @@
 			"require": "./next/dist/index.js",
 			"default": "./next/dist/index.js"
 		},
-		"./next-internal": "./src/next/index.ts",
-		"./schema": {
-			"types": "./schema/dist/index.d.ts",
-			"import": "./schema/dist/index.mjs",
-			"require": "./schema/dist/index.js",
-			"default": "./schema/dist/index.js"
+		"./react": {
+			"types": "./react/dist/index.d.ts",
+			"import": "./react/dist/index.mjs",
+			"require": "./react/dist/index.js",
+			"default": "./react/dist/index.js"
 		},
+		"./next-internal": "./src/next/index.ts",
 		"./client": {
 			"types": "./client/dist/index.d.ts",
 			"import": "./client/dist/index.mjs",
 			"require": "./client/dist/index.js",
 			"default": "./client/dist/index.js"
-		},
-		"./client-internal": "./src/client/index.ts"
+		}
 	},
 	"devDependencies": {
 		"@giselle-sdk/data-type": "workspace:*",
 		"@giselle-sdk/utils": "workspace:*",
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
+		"@types/react": "catalog:",
 		"tsup": "catalog:"
 	},
 	"dependencies": {
 		"@ai-sdk/anthropic": "catalog:",
 		"@ai-sdk/google": "catalog:",
 		"@ai-sdk/openai": "catalog:",
+		"@giselle-sdk/language-model": "workspace:^",
 		"@giselle-sdk/text-editor": "workspace:^",
 		"@giselle-sdk/github-agent": "workspace:^",
 		"ai": "catalog:",
 		"next": "catalog:",
 		"openai": "catalog:",
+		"react": "catalog:",
 		"unstorage": "catalog:",
 		"zod": "catalog:",
 		"@octokit/core": "catalog:",

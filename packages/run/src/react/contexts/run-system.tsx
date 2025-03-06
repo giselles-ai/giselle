@@ -1,20 +1,15 @@
-import type {
-	CancelledRun,
-	WorkflowId,
-	WorkspaceId,
-} from "@giselle-sdk/data-type";
 import {
+	type CancelledRun,
 	type CreatedRun,
 	type Generation,
 	type Run,
 	RunId,
 	type RunningRun,
+	type WorkflowId,
+	type WorkspaceId,
 } from "@giselle-sdk/data-type";
 import { useGenerationRunnerSystem } from "@giselle-sdk/generation-runner/react";
-import {
-	callAddRunApi,
-	callStartRunApi,
-} from "@giselle-sdk/giselle-engine/client";
+import { useGiselleEngine } from "@giselle-sdk/giselle-engine/react";
 import {
 	type ReactNode,
 	createContext,
@@ -53,6 +48,7 @@ export function RunSystemContextProvider({
 	workspaceId: WorkspaceId;
 	children: ReactNode;
 }) {
+	const client = useGiselleEngine();
 	const [activeRunId, setActiveRunId] = useState<RunId | undefined>();
 	const [runs, setRuns] = useState<Run[]>([]);
 	const [isRunning, setIsRunning] = useState(false);
@@ -102,7 +98,7 @@ export function RunSystemContextProvider({
 			runRef.current[runId] = createdRun;
 			options?.onCreateRun?.(createdRun);
 			setActiveRunId(createdRun.id);
-			const { run: queuedRun } = await callAddRunApi({
+			const queuedRun = await client.addRun({
 				run: createdRun,
 				workspaceId,
 				workflowId,
@@ -114,7 +110,7 @@ export function RunSystemContextProvider({
 			} satisfies RunningRun;
 			setRuns((prev) => [...prev.filter((p) => p.id !== runId), runningRun]);
 			runRef.current[runId] = runningRun;
-			await callStartRunApi({
+			await client.startRun({
 				runId,
 			});
 
@@ -159,7 +155,7 @@ export function RunSystemContextProvider({
 			}
 			setIsRunning(false);
 		},
-		[workspaceId, setRunGeneration, startGeneration],
+		[workspaceId, setRunGeneration, startGeneration, client],
 	);
 
 	const cancel = useCallback<Cancel>(

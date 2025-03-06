@@ -414,9 +414,6 @@ importers:
       '@vercel/blob':
         specifier: 0.23.4
         version: 0.23.4
-      '@vercel/flags':
-        specifier: 2.6.3
-        version: 2.6.3(next@15.1.4(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@vercel/functions':
         specifier: 1.5.0
         version: 1.5.0
@@ -453,6 +450,9 @@ importers:
       drizzle-orm:
         specifier: 0.32.1
         version: 0.32.1(@neondatabase/serverless@0.9.5)(@opentelemetry/api@1.9.0)(@types/pg@8.11.6)(@types/react@19.0.4)(@vercel/postgres@0.9.0)(react@19.0.0)
+      flags:
+        specifier: 3.1.1
+        version: 3.1.1(@opentelemetry/api@1.9.0)(next@15.1.4(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       framer-motion:
         specifier: 12.0.0-alpha.0
         version: 12.0.0-alpha.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -610,6 +610,9 @@ importers:
       '@giselle-sdk/github-agent':
         specifier: workspace:*
         version: link:../../packages/github-agent
+      '@giselle-sdk/language-model':
+        specifier: workspace:^
+        version: link:../../packages/language-model
       '@giselle-sdk/text-editor':
         specifier: workspace:^
         version: link:../../packages/text-editor
@@ -671,6 +674,9 @@ importers:
 
   packages/data-type:
     dependencies:
+      '@giselle-sdk/language-model':
+        specifier: workspace:^
+        version: link:../language-model
       ai:
         specifier: 'catalog:'
         version: 4.1.28(react@19.0.0)(zod@3.24.1)
@@ -733,6 +739,9 @@ importers:
       '@giselle-sdk/github-agent':
         specifier: workspace:^
         version: link:../github-agent
+      '@giselle-sdk/language-model':
+        specifier: workspace:^
+        version: link:../language-model
       '@giselle-sdk/text-editor':
         specifier: workspace:^
         version: link:../text-editor
@@ -754,6 +763,9 @@ importers:
       openai:
         specifier: 'catalog:'
         version: 5.0.0-alpha.0(zod@3.24.1)
+      react:
+        specifier: 'catalog:'
+        version: 19.0.0
       unstorage:
         specifier: 'catalog:'
         version: 1.14.4
@@ -770,6 +782,9 @@ importers:
       '@giselle/giselle-sdk-tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.0.4
       tsup:
         specifier: 'catalog:'
         version: 8.3.5(jiti@2.4.2)(postcss@8.5.1)(tsx@4.19.3)(typescript@5.7.3)(yaml@2.7.0)
@@ -779,6 +794,9 @@ importers:
       '@giselle-sdk/giselle-engine':
         specifier: workspace:^
         version: link:../giselle-engine
+      '@giselle-sdk/language-model':
+        specifier: workspace:^
+        version: link:../language-model
       '@giselle-sdk/workspace':
         specifier: workspace:^
         version: link:../workspace
@@ -835,6 +853,19 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 3.0.5(@types/debug@4.1.12)(@types/node@22.10.7)(jiti@2.4.2)(jsdom@26.0.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.29.1)(terser@5.38.0)(tsx@4.19.3)(yaml@2.7.0)
+
+  packages/language-model:
+    dependencies:
+      zod:
+        specifier: 'catalog:'
+        version: 3.24.1
+    devDependencies:
+      '@giselle/giselle-sdk-tsconfig':
+        specifier: workspace:*
+        version: link:../../tools/tsconfig
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.4.2)(postcss@8.5.1)(tsx@4.19.3)(typescript@5.7.3)(yaml@2.7.0)
 
   packages/run:
     dependencies:
@@ -986,6 +1017,9 @@ importers:
       '@giselle-sdk/giselle-engine':
         specifier: workspace:*
         version: link:../giselle-engine
+      '@giselle-sdk/language-model':
+        specifier: workspace:^
+        version: link:../language-model
       '@giselle-sdk/run':
         specifier: workspace:^
         version: link:../run
@@ -1352,6 +1386,10 @@ packages:
   '@csstools/css-tokenizer@3.0.3':
     resolution: {integrity: sha512-UJnjoFsmxfKUdNYdWgOB0mWUypuLvAfQPH1+pyvRJs6euowbFkFC6P13w1l8mJyi3vxYMxc9kld5jZEGRQs6bw==}
     engines: {node: '>=18'}
+
+  '@edge-runtime/cookies@5.0.2':
+    resolution: {integrity: sha512-Sd8LcWpZk/SWEeKGE8LT6gMm5MGfX/wm+GPnh1eBEtCpya3vYqn37wYknwAHw92ONoyyREl1hJwxV/Qx2DWNOg==}
+    engines: {node: '>=16'}
 
   '@emnapi/runtime@1.3.1':
     resolution: {integrity: sha512-kEBmG8KyqtxJZv+ygbEim+KCGtIq1fC22Ms3S4ziXmYKm8uyoLX0MHONVKwp+9opg390VaKRNt4a7A9NwmpNhw==}
@@ -4624,23 +4662,6 @@ packages:
     resolution: {integrity: sha512-cOU2e01RWZXFyc/OVRq+zZg38m34bcxpQk5insKp3Td9akNWThrXiF2URFHpRlm4fbaQ/l7pPSOB5nkLq+t6pw==}
     engines: {node: '>=16.14'}
 
-  '@vercel/flags@2.6.3':
-    resolution: {integrity: sha512-knLDYS8MCc/zx4FF6KRzHQzAKdo8VQ3V0PEBI5WvRlFIhcqhcEomxHoK41/xMnNEQvUzETACHw610/i/pVwYSA==}
-    peerDependencies:
-      '@sveltejs/kit': '*'
-      next: '*'
-      react: '*'
-      react-dom: '*'
-    peerDependenciesMeta:
-      '@sveltejs/kit':
-        optional: true
-      next:
-        optional: true
-      react:
-        optional: true
-      react-dom:
-        optional: true
-
   '@vercel/functions@1.5.0':
     resolution: {integrity: sha512-ub3ptVeOsx8UPgiTv9+rpQJqmF7VG8QIzguBZo0E0VRAyJliB8bt1ooB9Wrh3333dKzMNS8NMe3iFtf6OPUP3A==}
     engines: {node: '>= 16'}
@@ -5743,6 +5764,26 @@ packages:
     resolution: {integrity: sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==}
     engines: {node: '>=10'}
 
+  flags@3.1.1:
+    resolution: {integrity: sha512-UWxZ61y25rJCOId54unQ4Htc+u9fcpwbaYJ7nqoo7Yg0GZ/dVD7Bmw3srMHFuE52kDWHNnnly+6cscmTGaJ6QA==}
+    peerDependencies:
+      '@opentelemetry/api': ^1.7.0
+      '@sveltejs/kit': '*'
+      next: '*'
+      react: '*'
+      react-dom: '*'
+    peerDependenciesMeta:
+      '@opentelemetry/api':
+        optional: true
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   follow-redirects@1.15.9:
     resolution: {integrity: sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==}
     engines: {node: '>=4.0'}
@@ -6196,9 +6237,6 @@ packages:
   jiti@2.4.2:
     resolution: {integrity: sha512-rg9zJN+G4n2nfJl5MW3BMygZX56zKPNVEYYqq7adpmMh4Jn2QNEwhvQlFy6jPVdcod7txZtKHWnyZiA3a0zP7A==}
     hasBin: true
-
-  jose@5.2.1:
-    resolution: {integrity: sha512-qiaQhtQRw6YrOaOj0v59h3R6hUY9NvxBmmnMfKemkqYmBB0tEc97NbLP7ix44VP5p9/0YHG8Vyhzuo5YBNwviA==}
 
   jose@5.9.6:
     resolution: {integrity: sha512-AMlnetc9+CV9asI19zHmrgS/WYsWUwCn2R7RzlbJWD7F9eWYUTGyBmU9o6PxngtLGOiDGPRu+Uc4fhKzbpteZQ==}
@@ -8776,6 +8814,8 @@ snapshots:
 
   '@csstools/css-tokenizer@3.0.3':
     optional: true
+
+  '@edge-runtime/cookies@5.0.2': {}
 
   '@emnapi/runtime@1.3.1':
     dependencies:
@@ -12264,14 +12304,6 @@ snapshots:
       is-plain-object: 5.0.0
       undici: 5.28.5
 
-  '@vercel/flags@2.6.3(next@15.1.4(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
-    dependencies:
-      jose: 5.2.1
-    optionalDependencies:
-      next: 15.1.4(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-
   '@vercel/functions@1.5.0': {}
 
   '@vercel/otel@1.10.0(@opentelemetry/api-logs@0.57.1)(@opentelemetry/api@1.9.0)(@opentelemetry/instrumentation@0.56.0(@opentelemetry/api@1.9.0))(@opentelemetry/resources@1.30.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.57.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@1.24.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))':
@@ -13393,6 +13425,16 @@ snapshots:
       locate-path: 6.0.0
       path-exists: 4.0.0
 
+  flags@3.1.1(@opentelemetry/api@1.9.0)(next@15.1.4(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      '@edge-runtime/cookies': 5.0.2
+      jose: 5.9.6
+    optionalDependencies:
+      '@opentelemetry/api': 1.9.0
+      next: 15.1.4(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+
   follow-redirects@1.15.9: {}
 
   foreground-child@3.3.0:
@@ -13949,8 +13991,6 @@ snapshots:
       supports-color: 8.1.1
 
   jiti@2.4.2: {}
-
-  jose@5.2.1: {}
 
   jose@5.9.6: {}
 
