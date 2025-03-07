@@ -25,6 +25,8 @@ const config = {
 			fontFamily: {
 				rosart: ["var(--font-rosart)", "Times New Roman", "serif"],
 				avenir: ["Avenir", "Arial", "sans-serif"],
+				hubot: ["var(--font-hubot-sans)", "Arial", "sans-serif"],
+				geist: ["var(--font-geist)", "Arial", "sans-serif"],
 			},
 			colors: {
 				border: "hsl(var(--border))",
@@ -35,6 +37,8 @@ const config = {
 				primary: {
 					DEFAULT: "hsl(var(--primary))",
 					foreground: "hsl(var(--primary-foreground))",
+					200: "hsl(var(--primary_200))",
+					100: "hsl(var(--primary_100))",
 				},
 				secondary: {
 					DEFAULT: "hsl(var(--secondary))",
@@ -60,7 +64,16 @@ const config = {
 					DEFAULT: "hsl(var(--card))",
 					foreground: "hsl(var(--card-foreground))",
 				},
+				error: {
+					900: "hsl(var(--error_900))",
+				},
+				warning: {
+					900: "hsl(var(--warning_900))",
+				},
 				black: {
+					850: "hsl(var(--black_850))",
+					800: "hsl(var(--black_800))",
+					400: "hsl(var(--black_400))",
 					100: "hsl(var(--black_100))",
 					80: "hsl(var(--black_80))",
 					70: "hsl(var(--black_70))",
@@ -73,12 +86,18 @@ const config = {
 				},
 				white: {
 					DEFAULT: "hsl(var(--white))",
+					900: "hsl(var(--white_900))",
+					850: "hsl(var(--white_850))",
+					400: "hsl(var(--white_400))",
 				},
 				green: {
 					DEFAULT: "hsl(var(--green))",
 				},
 				red: {
 					50: "hsl(var(--red_50))",
+				},
+				blue: {
+					80: "hsl(var(--blue_80))",
 				},
 				rosepine: {
 					base: "hsl(var(--rosepine_base))",
