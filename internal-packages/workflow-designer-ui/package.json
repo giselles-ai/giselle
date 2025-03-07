@@ -15,6 +15,7 @@
 		"@giselle-sdk/giselle-engine": "workspace:*",
 		"@giselle-sdk/language-model": "workspace:^",
 		"@giselle-sdk/text-editor": "workspace:^",
+		"@giselle-sdk/github-agent": "workspace:*",
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
 		"@xyflow/react": "catalog:",
 		"ai": "catalog:",

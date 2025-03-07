@@ -1,4 +1,8 @@
-import type { TextGenerationNode, VariableNode } from "@giselle-sdk/data-type";
+import type {
+	GitHubNode,
+	TextGenerationNode,
+	VariableNode,
+} from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { useMemo } from "react";
 import type { ConnectedSource } from "./types";
@@ -9,7 +13,9 @@ export function useConnectedSources(node: TextGenerationNode) {
 		const connectionsToThisNode = data.connections.filter(
 			(connection) => connection.inputNode.id === node.id,
 		);
-		const connectedGeneratedSources: ConnectedSource<TextGenerationNode>[] = [];
+		const connectedGeneratedSources: ConnectedSource<
+			TextGenerationNode | GitHubNode
+		>[] = [];
 		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
 		for (const connection of connectionsToThisNode) {
 			const node = data.nodes.find(
@@ -29,10 +35,16 @@ export function useConnectedSources(node: TextGenerationNode) {
 				case "action":
 					switch (node.content.type) {
 						case "textGeneration":
-							node;
 							connectedGeneratedSources.push({
 								output,
-								node,
+								node: node as TextGenerationNode,
+								connection,
+							});
+							break;
+						case "github":
+							connectedGeneratedSources.push({
+								output,
+								node: node as GitHubNode,
 								connection,
 							});
 							break;

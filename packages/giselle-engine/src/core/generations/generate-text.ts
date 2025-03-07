@@ -1,13 +1,14 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { google } from "@ai-sdk/google";
 import { openai } from "@ai-sdk/openai";
-import type {
-	CompletedGeneration,
-	FailedGeneration,
-	FileData,
-	NodeId,
-	QueuedGeneration,
-	RunningGeneration,
+import {
+	type CompletedGeneration,
+	type FailedGeneration,
+	type FileData,
+	type NodeId,
+	type QueuedGeneration,
+	type RunningGeneration,
+	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
 import type { LanguageModel } from "@giselle-sdk/language-model";
 import { AISDKError, appendResponseMessages, streamText } from "ai";
@@ -34,6 +35,9 @@ export async function generateText(args: {
 		requestedAt: Date.now(),
 		startedAt: Date.now(),
 	} satisfies RunningGeneration;
+	if (!isTextGenerationNode(runningGeneration.context.actionNode)) {
+		throw new Error("Action node is not a text generation node");
+	}
 
 	await Promise.all([
 		setGeneration({

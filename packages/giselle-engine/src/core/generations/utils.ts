@@ -14,6 +14,7 @@ import {
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
 import type { CoreMessage, DataContent, FilePart } from "ai";
 import type { Storage } from "unstorage";
+import buildGenerationMessageForGithubOperation from "../helpers/build-github-operation-message";
 
 export interface FileIndex {
 	nodeId: NodeId;
@@ -30,14 +31,23 @@ export async function buildMessageObject(
 	switch (node.content.type) {
 		case "textGeneration": {
 			return await buildGenerationMessageForTextGeneration(
+				// @ts-expect-error
 				node,
 				contextNodes,
 				fileResolver,
 				textGenerationResolver,
 			);
 		}
+		case "github":
+			return await buildGenerationMessageForGithubOperation(
+				// @ts-expect-error
+				node,
+				contextNodes,
+				fileResolver,
+				textGenerationResolver,
+			);
 		default: {
-			const _exhaustiveCheck: never = node.content.type;
+			const _exhaustiveCheck: never = node.content;
 			throw new Error(`Unhandled content type: ${_exhaustiveCheck}`);
 		}
 	}
@@ -84,6 +94,7 @@ async function buildGenerationMessageForTextGeneration(
 				);
 				break;
 			}
+			case "github":
 			case "textGeneration": {
 				const result = await textGenerationResolver(contextNode.id);
 				if (result !== undefined) {
@@ -91,43 +102,49 @@ async function buildGenerationMessageForTextGeneration(
 				}
 				break;
 			}
-			case "file": {
-				switch (contextNode.content.category) {
-					case "pdf": {
-						const fileContents = await Promise.all(
-							contextNode.content.files.map(async (file) => {
-								if (file.status !== "uploaded") {
-									return null;
-								}
-								const data = await fileResolver(file);
-								return {
-									type: "file",
-									data,
-									mimeType: "application/pdf",
-								} satisfies FilePart;
-							}),
-						).then((results) => results.filter((result) => result !== null));
-						if (fileContents.length > 1) {
-							userMessage = userMessage.replace(
-								replaceKeyword,
-								`${getOrdinal(attachedFiles.length + 1)} ~ ${getOrdinal(attachedFiles.length + fileContents.length)} attached files`,
-							);
-						} else {
-							userMessage = userMessage.replace(
-								replaceKeyword,
-								`${getOrdinal(attachedFiles.length + 1)} attached file`,
-							);
+			case "file":
+				{
+					switch (contextNode.content.category) {
+						case "pdf": {
+							const fileContents = await Promise.all(
+								contextNode.content.files.map(async (file) => {
+									if (file.status !== "uploaded") {
+										return null;
+									}
+									const data = await fileResolver(file);
+									return {
+										type: "file",
+										data,
+										mimeType: "application/pdf",
+									} satisfies FilePart;
+								}),
+							).then((results) => results.filter((result) => result !== null));
+							if (fileContents.length > 1) {
+								userMessage = userMessage.replace(
+									replaceKeyword,
+									`${getOrdinal(attachedFiles.length + 1)} ~ ${getOrdinal(attachedFiles.length + fileContents.length)} attached files`,
+								);
+							} else {
+								userMessage = userMessage.replace(
+									replaceKeyword,
+									`${getOrdinal(attachedFiles.length + 1)} attached file`,
+								);
+							}
+							attachedFiles.push(...fileContents);
+							break;
 						}
-						attachedFiles.push(...fileContents);
-						break;
-					}
-					case "text":
-						throw new Error("Not implemented");
-					default: {
-						const _exhaustiveCheck: never = contextNode.content.category;
-						throw new Error(`Unhandled category: ${_exhaustiveCheck}`);
+						case "text":
+							throw new Error("Not implemented");
+						default: {
+							const _exhaustiveCheck: never = contextNode.content.category;
+							throw new Error(`Unhandled category: ${_exhaustiveCheck}`);
+						}
 					}
 				}
+				break;
+			default: {
+				const _exhaustiveCheck: never = contextNode.content;
+				throw new Error(`Unhandled content type: ${_exhaustiveCheck}`);
 			}
 		}
 	}

@@ -15,6 +15,7 @@ import type { ReactNode } from "react";
 import {
 	AnthropicIcon,
 	DocumentIcon,
+	GitHubWhiteIcon,
 	GoogleWhiteIcon,
 	OpenaiIcon,
 	PdfFileIcon,
@@ -26,6 +27,7 @@ import { Tooltip } from "../../../ui/tooltip";
 import { isToolAction } from "../types";
 import {
 	addFileNodeTool,
+	addGitHubNodeTool,
 	addTextGenerationNodeTool,
 	addTextNodeTool,
 	moveTool,
@@ -140,6 +142,9 @@ export function Toolbar() {
 								case "addTextGenerationNode":
 									setSelectedTool(addTextGenerationNodeTool());
 									break;
+								case "addGitHubNode":
+									setSelectedTool(addGitHubNodeTool());
+									break;
 							}
 						}
 					}}
@@ -250,6 +255,11 @@ export function Toolbar() {
 								</Popover.Portal>
 							</Popover.Root>
 						)}
+					</ToggleGroup.Item>
+					<ToggleGroup.Item value="addGitHubNode" data-tool>
+						<Tooltip text={<TooltipAndHotkey text="GitHub" hotkey="g" />}>
+							<GitHubWhiteIcon data-icon />
+						</Tooltip>
 					</ToggleGroup.Item>
 				</ToggleGroup.Root>
 			</div>

@@ -1,12 +1,17 @@
 import { z } from "zod";
 import { NodeBase, NodeReferenceBase } from "../base";
+import { GitHubContent, GitHubContentReference } from "./github";
 import {
 	TextGenerationContent,
 	TextGenerationContentReference,
 } from "./text-generation";
+export * from "./github";
 export * from "./text-generation";
 
-const ActionNodeContent = z.discriminatedUnion("type", [TextGenerationContent]);
+const ActionNodeContent = z.discriminatedUnion("type", [
+	TextGenerationContent,
+	GitHubContent,
+]);
 
 export const ActionNode = NodeBase.extend({
 	type: z.literal("action"),
@@ -20,6 +25,7 @@ export function isActionNode(node: NodeBase): node is ActionNode {
 
 const ActionNodeContentReference = z.discriminatedUnion("type", [
 	TextGenerationContentReference,
+	GitHubContentReference,
 ]);
 export const ActionNodeReference = NodeReferenceBase.extend({
 	type: ActionNode.shape.type,

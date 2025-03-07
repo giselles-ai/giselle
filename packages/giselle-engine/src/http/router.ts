@@ -132,6 +132,14 @@ export const createJsonRouters = {
 				return new Response(null, { status: 204 });
 			},
 		}),
+	executeGitHubOperation: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			input: z.object({ generation: QueuedGeneration }),
+			handler: async ({ input }) => {
+				await giselleEngine.executeGitHubOperation(input.generation);
+				return new Response(null, { status: 204 });
+			},
+		}),
 } as const;
 
 export const jsonRouterPaths = Object.keys(

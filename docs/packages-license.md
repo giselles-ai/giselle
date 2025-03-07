@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 857 MIT
+* 859 MIT
 * 99 Apache 2.0
 * 56 ISC
 * 32 New BSD
@@ -942,7 +942,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@octokit/graphql"></a>
-### @octokit/graphql v8.1.2
+### @octokit/graphql v8.2.1
 #### 
 
 ##### Paths
@@ -1019,7 +1019,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@octokit/types"></a>
-### @octokit/types v13.7.0
+### @octokit/types v13.8.0
 #### 
 
 ##### Paths
@@ -2823,7 +2823,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/node"></a>
-### @tailwindcss/node v4.0.6
+### @tailwindcss/node v4.0.9
 #### 
 
 ##### Paths
@@ -2834,7 +2834,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/oxide"></a>
-### @tailwindcss/oxide v4.0.6
+### @tailwindcss/oxide v4.0.9
 #### 
 
 ##### Paths
@@ -2845,7 +2845,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/oxide-linux-x64-gnu"></a>
-### @tailwindcss/oxide-linux-x64-gnu v4.0.6
+### @tailwindcss/oxide-linux-x64-gnu v4.0.9
 #### 
 
 ##### Paths
@@ -2856,7 +2856,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/oxide-linux-x64-musl"></a>
-### @tailwindcss/oxide-linux-x64-musl v4.0.6
+### @tailwindcss/oxide-linux-x64-musl v4.0.9
 #### 
 
 ##### Paths
@@ -10802,7 +10802,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="tinyglobby"></a>
-### tinyglobby v0.2.10
+### tinyglobby v0.2.12
 #### 
 
 ##### Paths
@@ -10913,6 +10913,17 @@ BlueOak-1.0.0 permitted
 
 <a name="to-regex-range"></a>
 ### to-regex-range v5.0.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="toad-cache"></a>
+### toad-cache v3.7.0
 #### 
 
 ##### Paths
@@ -11034,6 +11045,17 @@ BlueOak-1.0.0 permitted
 
 <a name="tsup"></a>
 ### tsup v8.3.5
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="tsx"></a>
+### tsx v4.19.3
 #### 
 
 ##### Paths

@@ -73,6 +73,7 @@ interface GenerationRunnerSystemContextType {
 	) => Promise<FailedGeneration>;
 	updateMessages: (generationId: GenerationId, newMessages: Message[]) => void;
 	fetchNodeGenerations: FetchNodeGenerations;
+	callGithubOperation: (generation: QueuedGeneration) => Promise<void>;
 	addStopHandler: (generationId: GenerationId, handler: () => void) => void;
 	stopGeneration: (generationId: GenerationId) => Promise<void>;
 }
@@ -304,6 +305,13 @@ export function GenerationRunnerSystemProvider({
 		[client],
 	);
 
+	const callGithubOperation = useCallback(
+		async (generation: QueuedGeneration) => {
+			await client.executeGitHubOperation({ generation });
+		},
+		[client],
+	);
+
 	const addStopHandler = useCallback(
 		(generationId: GenerationId, handler: () => void) => {
 			setStopHandlers((prev) => ({ ...prev, [generationId]: handler }));
@@ -356,6 +364,7 @@ export function GenerationRunnerSystemProvider({
 				updateMessages,
 				nodeGenerationMap,
 				fetchNodeGenerations,
+				callGithubOperation,
 				addStopHandler,
 				stopGeneration,
 			}}

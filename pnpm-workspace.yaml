@@ -59,3 +59,8 @@ catalog:
   "@types/pluralize": 0.0.33
   react-markdown: 9.0.3
   marked: 15.0.7
+  "@octokit/core": 6.1.4
+  "@octokit/graphql": 8.2.1
+  "@octokit/request-error": 6.1.7
+  "@octokit/auth-app": 7.1.5
+  "@octokit/types": 13.8.0
