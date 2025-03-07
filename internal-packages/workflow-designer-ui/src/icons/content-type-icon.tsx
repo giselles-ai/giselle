@@ -6,6 +6,7 @@ import { AnthropicIcon } from "./anthropic";
 import { GoogleWhiteIcon } from "./google";
 import { OpenaiIcon } from "./openai";
 import { PdfFileIcon } from "./pdf-file";
+import { PictureIcon } from "./picture";
 import { TextFileIcon } from "./text-file";
 
 interface TextNodeIconProps extends SVGProps<SVGSVGElement> {
@@ -56,6 +57,8 @@ export function ContentTypeIcon({
 					return <PdfFileIcon {...props} />;
 				case "text":
 					return <TextFileIcon {...props} />;
+				case "image":
+					return <PictureIcon {...props} />;
 				default: {
 					const _exhaustiveCheck: never = fileCategory;
 					throw new Error(`Unhandled FileCategory: ${_exhaustiveCheck}`);

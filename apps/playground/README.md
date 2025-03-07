@@ -34,7 +34,8 @@
 
 ## Tasks
 
-- [ ] Support server action
+- [ ] Improve Catalog UI
+- [ ] Add filesize limit to workspace property
 - [ ] Split stream route
 - [ ] Copy button
 - [ ] Run detail route
@@ -59,6 +60,11 @@
 
 ## Done
 
+- [x] Toast UI
+- [x] Image File
+- [x] contentType to type
+- [x] Textfile Node
+- [x] Support server action
 - [x] Model catalog
 - [x] Model catalog UI
 - [x] Writing getting started

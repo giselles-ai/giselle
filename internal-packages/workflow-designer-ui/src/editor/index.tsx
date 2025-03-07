@@ -30,6 +30,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { OutputId } from "@giselle-sdk/data-type";
 import { Background } from "../ui/background";
+import { ToastProvider } from "../ui/toast";
 import { edgeTypes } from "./connector";
 import { type ConnectorType, GradientDef } from "./connector/component";
 
@@ -215,11 +216,12 @@ function NodeCanvas() {
 							case "text":
 								addNode(
 									{
-										name: "Text",
+										name: "Text Files",
 										type: "variable",
 										content: {
-											type: "text",
-											text: "",
+											type: "file",
+											category: "text",
+											files: [],
 										},
 										inputs: [],
 										outputs: [
@@ -231,8 +233,32 @@ function NodeCanvas() {
 									},
 									options,
 								);
-
 								break;
+							case "image":
+								addNode(
+									{
+										name: "Image",
+										type: "variable",
+										content: {
+											type: "file",
+											category: "image",
+											files: [],
+										},
+										inputs: [],
+										outputs: [
+											{
+												id: OutputId.generate(),
+												label: "Output",
+											},
+										],
+									},
+									options,
+								);
+								break;
+							default: {
+								const _exhaustiveCheck: never = selectedTool.fileCategory;
+								throw new Error(`Unhandled FileCategory: ${_exhaustiveCheck}`);
+							}
 						}
 						break;
 					case "addTextGenerationNode":
@@ -328,44 +354,46 @@ export function Editor() {
 	});
 	return (
 		<div className="flex-1 overflow-hidden font-sans">
-			<ReactFlowProvider>
-				<ToolbarContextProvider>
-					<MousePositionProvider>
-						<PanelGroup
-							direction="horizontal"
-							className="bg-black-900 h-full flex"
-						>
-							<Panel className="flex-1 px-[16px] pb-[16px]" defaultSize={100}>
-								<div className="flex h-full rounded-[16px] overflow-hidden">
-									{/* <Debug /> */}
-									<NodeCanvas />
-								</div>
-							</Panel>
-
-							<PanelResizeHandle
-								className={clsx(
-									"w-[1px] bg-black-400/50 transition-colors",
-									"data-[resize-handle-state=hover]:bg-black-400 data-[resize-handle-state=drag]:bg-black-400",
-								)}
-							/>
-							<Panel
-								id="right-panel"
-								className="flex py-[16px]"
-								ref={rightPanelRef}
-								defaultSize={0}
+			<ToastProvider>
+				<ReactFlowProvider>
+					<ToolbarContextProvider>
+						<MousePositionProvider>
+							<PanelGroup
+								direction="horizontal"
+								className="bg-black-900 h-full flex"
 							>
-								{selectedNodes.length === 1 && (
-									<div className="flex-1 overflow-hidden">
-										<PropertiesPanel />
+								<Panel className="flex-1 px-[16px] pb-[16px]" defaultSize={100}>
+									<div className="flex h-full rounded-[16px] overflow-hidden">
+										{/* <Debug /> */}
+										<NodeCanvas />
 									</div>
-								)}
-							</Panel>
-						</PanelGroup>
-						<KeyboardShortcuts />
-					</MousePositionProvider>
-				</ToolbarContextProvider>
-				<GradientDef />
-			</ReactFlowProvider>
+								</Panel>
+
+								<PanelResizeHandle
+									className={clsx(
+										"w-[1px] bg-black-400/50 transition-colors",
+										"data-[resize-handle-state=hover]:bg-black-400 data-[resize-handle-state=drag]:bg-black-400",
+									)}
+								/>
+								<Panel
+									id="right-panel"
+									className="flex py-[16px]"
+									ref={rightPanelRef}
+									defaultSize={0}
+								>
+									{selectedNodes.length === 1 && (
+										<div className="flex-1 overflow-hidden">
+											<PropertiesPanel />
+										</div>
+									)}
+								</Panel>
+							</PanelGroup>
+							<KeyboardShortcuts />
+						</MousePositionProvider>
+					</ToolbarContextProvider>
+					<GradientDef />
+				</ReactFlowProvider>
+			</ToastProvider>
 		</div>
 	);
 }

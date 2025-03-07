@@ -18,6 +18,7 @@ import {
 	GoogleWhiteIcon,
 	OpenaiIcon,
 	PdfFileIcon,
+	PictureIcon,
 	PromptIcon,
 	StackBlicksIcon,
 	TextFileIcon,
@@ -189,6 +190,10 @@ export function Toolbar() {
 												<ToggleGroup.Item value="pdf" data-tool>
 													<PdfFileIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">PDF</p>
+												</ToggleGroup.Item>
+												<ToggleGroup.Item value="image" data-tool>
+													<PictureIcon className="w-[20px] h-[20px]" />
+													<p className="text-[14px]">Image</p>
 												</ToggleGroup.Item>
 												<ToggleGroup.Item value="text" data-tool>
 													<TextFileIcon className="w-[20px] h-[20px]" />

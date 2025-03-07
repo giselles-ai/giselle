@@ -210,7 +210,7 @@ export function WorkflowDesignerProvider({
 						}
 						const uploadingFileData = createUploadingFileData({
 							name: file.name,
-							contentType: file.type,
+							type: file.type,
 							size: file.size,
 						});
 						fileContents = [...fileContents, uploadingFileData];

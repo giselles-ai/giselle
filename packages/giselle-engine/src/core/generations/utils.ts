@@ -1,5 +1,6 @@
 import {
 	type ActionNode,
+	type FileContent,
 	type FileData,
 	Generation,
 	type GenerationId,
@@ -12,7 +13,7 @@ import {
 	type TextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
-import type { CoreMessage, DataContent, FilePart } from "ai";
+import type { CoreMessage, DataContent, FilePart, ImagePart } from "ai";
 import type { Storage } from "unstorage";
 
 export interface FileIndex {
@@ -67,7 +68,7 @@ async function buildGenerationMessageForTextGeneration(
 		outputId: OutputId.parse(match[2]),
 	}));
 
-	const attachedFiles: FilePart[] = [];
+	const attachedFiles: (FilePart | ImagePart)[] = [];
 	for (const sourceKeyword of sourceKeywords) {
 		const contextNode = contextNodes.find(
 			(contextNode) => contextNode.id === sourceKeyword.nodeId,
@@ -93,36 +94,21 @@ async function buildGenerationMessageForTextGeneration(
 			}
 			case "file": {
 				switch (contextNode.content.category) {
+					case "text":
+					case "image":
 					case "pdf": {
-						const fileContents = await Promise.all(
-							contextNode.content.files.map(async (file) => {
-								if (file.status !== "uploaded") {
-									return null;
-								}
-								const data = await fileResolver(file);
-								return {
-									type: "file",
-									data,
-									mimeType: "application/pdf",
-								} satisfies FilePart;
-							}),
-						).then((results) => results.filter((result) => result !== null));
-						if (fileContents.length > 1) {
-							userMessage = userMessage.replace(
-								replaceKeyword,
-								`${getOrdinal(attachedFiles.length + 1)} ~ ${getOrdinal(attachedFiles.length + fileContents.length)} attached files`,
-							);
-						} else {
-							userMessage = userMessage.replace(
-								replaceKeyword,
-								`${getOrdinal(attachedFiles.length + 1)} attached file`,
-							);
-						}
+						const fileContents = await getFileContents(
+							contextNode.content,
+							fileResolver,
+						);
+						userMessage = userMessage.replace(
+							replaceKeyword,
+							getFilesDescription(attachedFiles.length, fileContents.length),
+						);
+
 						attachedFiles.push(...fileContents);
 						break;
 					}
-					case "text":
-						throw new Error("Not implemented");
 					default: {
 						const _exhaustiveCheck: never = contextNode.content.category;
 						throw new Error(`Unhandled category: ${_exhaustiveCheck}`);
@@ -348,4 +334,48 @@ export async function getNodeGenerationIndexes(
 		return undefined;
 	}
 	return NodeGenerationIndex.array().parse(unsafeNodeGenerationIndexData);
+}
+
+async function getFileContents(
+	fileContent: FileContent,
+	fileResolver: (file: FileData) => Promise<DataContent>,
+): Promise<(FilePart | ImagePart)[]> {
+	return await Promise.all(
+		fileContent.files.map(async (file) => {
+			if (file.status !== "uploaded") {
+				return null;
+			}
+			const data = await fileResolver(file);
+			switch (fileContent.category) {
+				case "pdf":
+				case "text":
+					return {
+						type: "file",
+						data,
+						mimeType: file.type,
+					} satisfies FilePart;
+				case "image":
+					return {
+						type: "image",
+						image: data,
+						mimeType: file.type,
+					} satisfies ImagePart;
+				default: {
+					const _exhaustiveCheck: never = fileContent.category;
+					throw new Error(`Unhandled file category: ${_exhaustiveCheck}`);
+				}
+			}
+		}),
+	).then((results) => results.filter((result) => result !== null));
+}
+
+// Helper function for generating the files description
+function getFilesDescription(
+	currentCount: number,
+	newFilesCount: number,
+): string {
+	if (newFilesCount > 1) {
+		return `${getOrdinal(currentCount + 1)} ~ ${getOrdinal(currentCount + newFilesCount)} attached files`;
+	}
+	return `${getOrdinal(currentCount + 1)} attached file`;
 }

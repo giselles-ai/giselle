@@ -33,6 +33,8 @@
 
 	--color-turquoise-900: hsl(178, 94%, 49%);
 
+	--color-red-900: hsl(344, 100%, 62%);
+
 	--color-primary-900: var(--color-blue-900);
 	--color-primary-800: var(--color-blue-800);
 	--color-primary-400: var(--color-blue-400);
@@ -51,6 +53,8 @@
 
 	--color-generation-node-1: hsl(219, 90%, 52%);
 	--color-generation-node-2: hsl(219, 98%, 23%);
+
+	--color-error-900: var(--color-red-900);
 
 	--font-sans: var(--font-geist-sans);
 	--font-accent: var(--font-hubot-sans);

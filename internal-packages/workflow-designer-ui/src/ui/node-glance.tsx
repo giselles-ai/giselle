@@ -5,6 +5,7 @@ import {
 	GoogleWhiteIcon,
 	OpenaiIcon,
 	PdfFileIcon,
+	PictureIcon,
 	PromptIcon,
 	TextFileIcon,
 } from "../icons";
@@ -87,6 +88,8 @@ function ContentTypeIcon({
 					return <PdfFileIcon {...props} data-content-type-icon />;
 				case "text":
 					return <TextFileIcon {...props} data-content-type-icon />;
+				case "image":
+					return <PictureIcon {...props} data-content-type-icon />;
 				default: {
 					const _exhaustiveCheck: never = node.content.category;
 					throw new Error(`Unhandled FileCategory: ${_exhaustiveCheck}`);

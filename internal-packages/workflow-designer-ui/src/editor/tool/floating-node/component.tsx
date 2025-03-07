@@ -54,6 +54,16 @@ export function PreviewNode({ tool }: { tool: Tool }) {
 							preview
 						/>
 					);
+				case "image":
+					return (
+						<NodeComponent
+							title="Image"
+							nodeType="variable"
+							contentType="file"
+							fileCategory="image"
+							preview
+						/>
+					);
 				case "text":
 					return (
 						<NodeComponent
