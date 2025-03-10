@@ -35,7 +35,9 @@ import { vercelBlobFileFolder } from "../constants";
 import { useDeveloperMode } from "../contexts/developer-mode";
 import { useExecution } from "../contexts/execution";
 import {
+	type GraphAction,
 	useArtifact,
+	useConnections,
 	useGraph,
 	useNode,
 	useSelectedNode,
@@ -45,6 +47,7 @@ import { useToast } from "../contexts/toast";
 import { GraphError } from "../lib/errors";
 import { textGenerationPrompt } from "../lib/prompts";
 import {
+	createArtifactId,
 	createConnectionId,
 	createFileId,
 	createNodeHandleId,
@@ -258,6 +261,10 @@ DialogFooter.displayName = "DialogHeader";
 export function PropertiesPanel() {
 	const { graph, dispatch, flush } = useGraph();
 	const selectedNode = useSelectedNode();
+	const selectedArtifact = useArtifact({ creatorNodeId: selectedNode?.id });
+	const selectedConnections = useConnections({
+		targetNodeId: selectedNode?.id,
+	});
 	const { open, setOpen, tab, setTab } = usePropertiesPanel();
 	const { executeNode } = useExecution();
 	const { addToast } = useToast();
@@ -320,6 +327,126 @@ export function PropertiesPanel() {
 									{selectedNode.name}
 								</div>
 							</div>
+							{isText(selectedNode) && (
+								<div className="">
+									<button
+										type="button"
+										className="relative z-10 rounded-[8px] shadow-[0px_0px_3px_0px_#FFFFFF40_inset] py-[3px] px-[8px] bg-black-80 text-black-30 font-rosart text-[14px] disabled:bg-black-40"
+										onClick={() => {
+											dispatch([
+												{
+													type: "addNode",
+													input: {
+														node: {
+															id: createNodeId(),
+															name: `Copy of ${selectedNode.name}`,
+															position: {
+																x: selectedNode.position.x + 400,
+																y: selectedNode.position.y + 100,
+															},
+															selected: true,
+															type: "variable",
+															content: {
+																type: "text",
+																text: selectedNode.content.text,
+															},
+														},
+													},
+												},
+												{
+													type: "updateNode",
+													input: {
+														nodeId: selectedNode.id,
+														node: {
+															...selectedNode,
+															selected: false,
+														},
+													},
+												},
+											]);
+											setOpen(false);
+										}}
+									>
+										Copy
+									</button>
+								</div>
+							)}
+							{isTextGeneration(selectedNode) && (
+								<div className="">
+									<button
+										type="button"
+										className="relative z-10 rounded-[8px] shadow-[0px_0px_3px_0px_#FFFFFF40_inset] py-[3px] px-[8px] bg-black-80 text-black-30 font-rosart text-[14px] disabled:bg-black-40"
+										onClick={() => {
+											const nodeId = createNodeId();
+											const addConnectionActions: GraphAction[] =
+												selectedConnections.map((connection) => ({
+													type: "addConnection",
+													input: {
+														connection: {
+															...connection,
+															id: createConnectionId(),
+															targetNodeId: nodeId,
+														},
+													},
+												}));
+											dispatch([
+												{
+													type: "addNode",
+													input: {
+														node: {
+															id: nodeId,
+															name: `Copy of ${selectedNode.name}`,
+															position: {
+																x: selectedNode.position.x + 400,
+																y: selectedNode.position.y + 100,
+															},
+															selected: true,
+															type: "action",
+															content: {
+																type: "textGeneration",
+																llm: selectedNode.content.llm,
+																temperature: selectedNode.content.temperature,
+																topP: selectedNode.content.topP,
+																instruction: selectedNode.content.instruction,
+																system: selectedNode.content.system,
+																sources: selectedNode.content.sources,
+															},
+														},
+													},
+												},
+												...addConnectionActions,
+												{
+													type: "upsertArtifact",
+													input: {
+														nodeId: nodeId,
+														artifact:
+															selectedArtifact?.type === "generatedArtifact"
+																? {
+																		...selectedArtifact,
+																		id: createArtifactId(),
+																		creatorNodeId: nodeId,
+																	}
+																: null,
+													},
+												},
+												{
+													type: "updateNode",
+													input: {
+														nodeId: selectedNode.id,
+														node: {
+															...selectedNode,
+															selected: false,
+														},
+													},
+												},
+											]);
+											setOpen(false);
+										}}
+									>
+										Copy
+									</button>
+								</div>
+							)}
 							{selectedNode.content.type === "textGeneration" && (
 								<div className="">
 									<button

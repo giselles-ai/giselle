@@ -92,7 +92,7 @@ interface AddExecutionIndexAction {
 	input: { executionIndex: ExecutionIndex };
 }
 
-type GraphAction =
+export type GraphAction =
 	| UpsertArtifactAction
 	| UpdateNodeAction
 	| AddConnectionAction
@@ -334,6 +334,24 @@ export function useArtifact(query: CreatorNode): Artifact | null | undefined {
 		return createdArtifacts[0];
 	}, [artifacts, query]);
 	return artifact;
+}
+
+interface TargetNode {
+	targetNodeId?: NodeId;
+}
+
+export function useConnections(query: TargetNode) {
+	const {
+		graph: { connections },
+	} = useGraph();
+	const nodeConnections = useMemo(
+		() =>
+			connections.filter(
+				(connection) => connection.targetNodeId === query.targetNodeId,
+			),
+		[connections, query],
+	);
+	return nodeConnections;
 }
 
 export function useSelectedNode() {
