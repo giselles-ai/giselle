@@ -10,10 +10,13 @@
 		"format": "turbo format",
 		"clean": "turbo clean",
 		"dev": "turbo dev --filter playground",
-		"dev:studio.giselles.ai": "turbo dev --filter studio.giselles.ai"
+		"dev:studio.giselles.ai": "turbo dev --filter studio.giselles.ai",
+		"changeset": "changeset",
+		"version": "changeset version"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
+		"@changesets/cli": "^2.28.1",
 		"@turbo/gen": "catalog:",
 		"turbo": "2.4.2",
 		"typescript": "catalog:"

@@ -101,3 +101,10 @@
     :why: Compatible with Apache-2.0 license. See https://openfontlicense.org/open-font-license-official-text/
     :versions: []
     :when: 2025-02-27 06:29:24.670306000 Z
+- - :approve
+  - spawndamnit
+  - :who: sakito
+    :why: See https://github.com/jamiebuilds/spawndamnit/pull/11
+    :versions: 
+    - 3.0.1
+    :when: 2025-03-10 08:02:40.655579000 Z
