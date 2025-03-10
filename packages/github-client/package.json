@@ -27,10 +27,13 @@
 		"tsup": "catalog:"
 	},
 	"dependencies": {
+		"@octokit/auth-app": "catalog:",
+		"@octokit/core": "catalog:",
 		"@octokit/graphql": "catalog:",
-		"@urql/core": "5.1.1",
-		"gql.tada": "1.8.10",
+		"@octokit/request-error": "catalog:",
+		"@urql/core": "catalog:",
+		"gql.tada": "catalog:",
 		"graphql": "catalog:",
-		"urql": "4.2.2"
+		"urql": "catalog:"
 	}
 }

@@ -28,6 +28,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 	const context: GiselleEngineContext = {
 		storage: config.storage,
 		llmProviders: config.llmProviders ?? [],
+		integrationConfigs: config.integrationConfigs ?? [],
 	};
 	return {
 		createWorkspace: async () => {
@@ -84,7 +85,10 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		},
 
 		githubUrlToObjectId: async (url: string) => {
-			return await urlToObjectID(url);
+			return await urlToObjectID({
+				url,
+				context,
+			});
 		},
 	};
 }

@@ -24,9 +24,18 @@ catalogs:
     '@graphql-codegen/client-preset':
       specifier: 4.7.0
       version: 4.7.0
+    '@octokit/auth-app':
+      specifier: 7.1.1
+      version: 7.1.1
+    '@octokit/core':
+      specifier: 6.1.2
+      version: 6.1.2
     '@octokit/graphql':
       specifier: 8.2.1
       version: 8.2.1
+    '@octokit/request-error':
+      specifier: 6.1.5
+      version: 6.1.5
     '@tailwindcss/postcss':
       specifier: 4.0.3
       version: 4.0.3
@@ -96,6 +105,9 @@ catalogs:
     '@types/turndown':
       specifier: 5.0.5
       version: 5.0.5
+    '@urql/core':
+      specifier: 5.1.1
+      version: 5.1.1
     '@xyflow/react':
       specifier: 12.4.1
       version: 12.4.1
@@ -105,6 +117,9 @@ catalogs:
     clsx:
       specifier: 2.1.1
       version: 2.1.1
+    gql.tada:
+      specifier: 1.8.10
+      version: 1.8.10
     graphql:
       specifier: 16.10.0
       version: 16.10.0
@@ -174,6 +189,9 @@ catalogs:
     unstorage:
       specifier: 1.14.4
       version: 1.14.4
+    urql:
+      specifier: 4.2.2
+      version: 4.2.2
     vitest:
       specifier: 3.0.5
       version: 3.0.5
@@ -810,20 +828,29 @@ importers:
 
   packages/github-client:
     dependencies:
+      '@octokit/auth-app':
+        specifier: 'catalog:'
+        version: 7.1.1
+      '@octokit/core':
+        specifier: 'catalog:'
+        version: 6.1.2
       '@octokit/graphql':
         specifier: 'catalog:'
         version: 8.2.1
+      '@octokit/request-error':
+        specifier: 'catalog:'
+        version: 6.1.5
       '@urql/core':
-        specifier: 5.1.1
+        specifier: 'catalog:'
         version: 5.1.1(graphql@16.10.0)
       gql.tada:
-        specifier: 1.8.10
+        specifier: 'catalog:'
         version: 1.8.10(graphql@16.10.0)(typescript@5.7.3)
       graphql:
         specifier: 'catalog:'
         version: 16.10.0
       urql:
-        specifier: 4.2.2
+        specifier: 'catalog:'
         version: 4.2.2(@urql/core@5.1.1(graphql@16.10.0))(react@19.0.0)
     devDependencies:
       '@giselle/giselle-sdk-tsconfig':
@@ -2429,10 +2456,6 @@ packages:
     resolution: {integrity: sha512-hEb7Ma4cGJGEUNOAVmyfdB/3WirWMg5hDuNFVejGEDFqupeOysLc2sG6HJxY2etBp5YQu5Wtxwi020jS9xlUwg==}
     engines: {node: '>= 18'}
 
-  '@octokit/endpoint@10.1.2':
-    resolution: {integrity: sha512-XybpFv9Ms4hX5OCHMZqyODYqGTZ3H6K6Vva+M9LR7ib/xr1y1ZnlChYv9H680y77Vd/i/k+thXApeRASBQkzhA==}
-    engines: {node: '>= 18'}
-
   '@octokit/endpoint@10.1.3':
     resolution: {integrity: sha512-nBRBMpKPhQUxCsQQeW+rCJ/OPSMcj3g0nfHn01zGYZXuNDvvXudF/TYY6APj5THlurerpFN4a/dQAIAaM6BYhA==}
     engines: {node: '>= 18'}
@@ -2462,24 +2485,13 @@ packages:
     resolution: {integrity: sha512-IlBTfGX8Yn/oFPMwSfvugfncK2EwRLjzbrpifNaMY8o/HTEAFqCA1FZxjD9cWvSKBHgrIhc4CSBIzMxiLsbzFQ==}
     engines: {node: '>= 18'}
 
-  '@octokit/request-error@6.1.6':
-    resolution: {integrity: sha512-pqnVKYo/at0NuOjinrgcQYpEbv4snvP3bKMRqHaD9kIsk9u1LCpb2smHZi8/qJfgeNqLo5hNW4Z7FezNdEo0xg==}
-    engines: {node: '>= 18'}
-
   '@octokit/request-error@6.1.7':
     resolution: {integrity: sha512-69NIppAwaauwZv6aOzb+VVLwt+0havz9GT5YplkeJv7fG7a40qpLt/yZKyiDxAhgz0EtgNdNcb96Z0u+Zyuy2g==}
-    engines: {node: '>= 18'}
-
-  '@octokit/request@9.2.0':
-    resolution: {integrity: sha512-kXLfcxhC4ozCnAXy2ff+cSxpcF0A1UqxjvYMqNuPIeOAzJbVWQ+dy5G2fTylofB/gTbObT8O6JORab+5XtA1Kw==}
     engines: {node: '>= 18'}
 
   '@octokit/request@9.2.2':
     resolution: {integrity: sha512-dZl0ZHx6gOQGcffgm1/Sf6JfEpmh34v3Af2Uci02vzUYz6qEN6zepoRtmybWXIGXFIK8K9ylE3b+duCWqhArtg==}
     engines: {node: '>= 18'}
-
-  '@octokit/types@13.7.0':
-    resolution: {integrity: sha512-BXfRP+3P3IN6fd4uF3SniaHKOO4UXWBfkdR3vA8mIvaoO/wLjGN5qivUtW0QRitBHHMcfC41SLhNVYIZZE+wkA==}
 
   '@octokit/types@13.8.0':
     resolution: {integrity: sha512-x7DjTIbEpEWXK99DMd01QfWy0hd5h4EN+Q7shkdKds3otGQP+oWE/y0A76i1OvH9fygo4ddvNf7ZvF0t78P98A==}
@@ -10269,9 +10281,9 @@ snapshots:
     dependencies:
       '@octokit/auth-oauth-app': 8.1.2
       '@octokit/auth-oauth-user': 5.1.2
-      '@octokit/request': 9.2.0
+      '@octokit/request': 9.2.2
       '@octokit/request-error': 6.1.5
-      '@octokit/types': 13.7.0
+      '@octokit/types': 13.8.0
       lru-cache: 10.4.3
       universal-github-app-jwt: 2.2.0
       universal-user-agent: 7.0.2
@@ -10305,15 +10317,10 @@ snapshots:
     dependencies:
       '@octokit/auth-token': 5.1.1
       '@octokit/graphql': 8.2.1
-      '@octokit/request': 9.2.0
+      '@octokit/request': 9.2.2
       '@octokit/request-error': 6.1.5
-      '@octokit/types': 13.7.0
-      before-after-hook: 3.0.2
-      universal-user-agent: 7.0.2
-
-  '@octokit/endpoint@10.1.2':
-    dependencies:
       '@octokit/types': 13.8.0
+      before-after-hook: 3.0.2
       universal-user-agent: 7.0.2
 
   '@octokit/endpoint@10.1.3':
@@ -10333,7 +10340,7 @@ snapshots:
     dependencies:
       '@octokit/oauth-authorization-url': 7.1.1
       '@octokit/request': 9.2.2
-      '@octokit/request-error': 6.1.6
+      '@octokit/request-error': 6.1.7
       '@octokit/types': 13.8.0
 
   '@octokit/openapi-types@22.2.0': {}
@@ -10344,23 +10351,11 @@ snapshots:
 
   '@octokit/request-error@6.1.5':
     dependencies:
-      '@octokit/types': 13.7.0
-
-  '@octokit/request-error@6.1.6':
-    dependencies:
       '@octokit/types': 13.8.0
 
   '@octokit/request-error@6.1.7':
     dependencies:
       '@octokit/types': 13.8.0
-
-  '@octokit/request@9.2.0':
-    dependencies:
-      '@octokit/endpoint': 10.1.2
-      '@octokit/request-error': 6.1.5
-      '@octokit/types': 13.8.0
-      fast-content-type-parse: 2.0.1
-      universal-user-agent: 7.0.2
 
   '@octokit/request@9.2.2':
     dependencies:
@@ -10369,10 +10364,6 @@ snapshots:
       '@octokit/types': 13.8.0
       fast-content-type-parse: 2.0.1
       universal-user-agent: 7.0.2
-
-  '@octokit/types@13.7.0':
-    dependencies:
-      '@octokit/openapi-types': 23.0.1
 
   '@octokit/types@13.8.0':
     dependencies:

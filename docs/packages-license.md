@@ -1460,7 +1460,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@octokit/endpoint"></a>
-### @octokit/endpoint v10.1.2
+### @octokit/endpoint v10.1.3
 #### 
 
 ##### Paths
@@ -1526,7 +1526,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@octokit/request"></a>
-### @octokit/request v9.2.0
+### @octokit/request v9.2.2
 #### 
 
 ##### Paths
@@ -1548,7 +1548,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@octokit/types"></a>
-### @octokit/types v13.7.0
+### @octokit/types v13.8.0
 #### 
 
 ##### Paths
