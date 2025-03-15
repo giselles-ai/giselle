@@ -7,9 +7,13 @@ import BillingSection from "./billing-section";
 import { DangerZone } from "./danger-zone";
 import { TeamMembers } from "./team-members";
 import { TeamName } from "./team-name";
+import TeamPageV2 from "./v2/page";
 
 export default async function TeamPage() {
 	const settingsV2Mode = await settingsV2Flag();
+	if (settingsV2Mode) {
+		return <TeamPageV2 />;
+	}
 
 	return (
 		<div className="grid gap-[16px]">
@@ -17,7 +21,7 @@ export default async function TeamPage() {
 				className="text-[32px] text-black--30 font-rosart"
 				style={{ textShadow: "0px 0px 20px hsla(207, 100%, 48%, 1)" }}
 			>
-				Team {settingsV2Mode ? "V2" : ""}
+				Team
 			</h3>
 			<Suspense
 				fallback={

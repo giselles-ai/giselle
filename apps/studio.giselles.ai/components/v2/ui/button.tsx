@@ -16,7 +16,7 @@ const buttonVariants = cva(
 					"justify-center text-black-800 bg-primary-200 border-primary-200 gap-[8px] hover:bg-transparent hover:text-primary-200",
 				link: "flex-start gap-[40px] text-white bg-transparent border-black-30 hover:bg-black-30 hover:text-black-80",
 				destructive:
-					"justify-center bg-destructive text-destructive-foreground hover:bg-destructive/90",
+					"justify-center border-error-900 bg-error-900 text-white-900 hover:bg-transparent hover:text-error-900",
 			},
 		},
 		defaultVariants: {
