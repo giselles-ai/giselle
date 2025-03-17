@@ -1,13 +1,21 @@
 import { z } from "zod";
 import { NodeBase, NodeReferenceBase, OverrideNodeBase } from "../base";
 import {
+	ImageGenerationContent,
+	ImageGenerationContentReference,
+	OverrideImageGenerationContent,
+} from "./image-generation";
+import {
 	OverrideTextGenerationContent,
 	TextGenerationContent,
 	TextGenerationContentReference,
 } from "./text-generation";
 export * from "./text-generation";
 
-const ActionNodeContent = z.discriminatedUnion("type", [TextGenerationContent]);
+const ActionNodeContent = z.discriminatedUnion("type", [
+	TextGenerationContent,
+	ImageGenerationContent,
+]);
 
 export const ActionNode = NodeBase.extend({
 	type: z.literal("action"),
@@ -32,8 +40,21 @@ export function isTextGenerationNode(
 	return result.success;
 }
 
+export const ImageGenerationNode = ActionNode.extend({
+	content: ImageGenerationContent,
+});
+type ImageGenerationNode = z.infer<typeof ImageGenerationNode>;
+
+export function isImageGenerationNode(
+	args?: unknown,
+): args is ImageGenerationNode {
+	const result = ImageGenerationNode.safeParse(args);
+	return result.success;
+}
+
 const OverrideActionNodeContent = z.discriminatedUnion("type", [
 	OverrideTextGenerationContent,
+	OverrideImageGenerationContent,
 ]);
 export const OverrideActionNode = OverrideNodeBase.extend({
 	type: ActionNode.shape.type,
@@ -43,6 +64,7 @@ export type OverrideActionNode = z.infer<typeof OverrideActionNode>;
 
 const ActionNodeContentReference = z.discriminatedUnion("type", [
 	TextGenerationContentReference,
+	ImageGenerationContentReference,
 ]);
 export const ActionNodeReference = NodeReferenceBase.extend({
 	type: ActionNode.shape.type,

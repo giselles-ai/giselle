@@ -31,9 +31,10 @@ export function GenerationRunner({
 	switch (generation.context.actionNode.content.type) {
 		case "textGeneration":
 			return <TextGenerationRunner generation={generation} />;
+		case "imageGeneration":
+			return <ImageGenerationRunner generation={generation} />;
 		default: {
-			const _exhaustiveCheck: never =
-				generation.context.actionNode.content.type;
+			const _exhaustiveCheck: never = generation.context.actionNode.content;
 			return _exhaustiveCheck;
 		}
 	}
@@ -114,5 +115,13 @@ function CompletionRunner({
 			},
 		);
 	});
+	return null;
+}
+
+function ImageGenerationRunner({
+	generation,
+}: {
+	generation: Generation;
+}) {
 	return null;
 }
