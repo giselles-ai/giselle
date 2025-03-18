@@ -1,11 +1,14 @@
 "use client";
 
-import type {
-	FileCategory,
-	ImageGenerationLanguageModelData,
-	Node,
-	TextGenerationLanguageModelData,
-	TextNode,
+import {
+	type FileCategory,
+	type FileNode,
+	type ImageGenerationLanguageModelData,
+	type Node,
+	NodeId,
+	OutputId,
+	type TextGenerationLanguageModelData,
+	type TextNode
 } from "@giselle-sdk/data-type";
 import { type ReactNode, createContext, useContext, useState } from "react";
 import type {
@@ -112,20 +115,43 @@ export function addNodeTool(node: Node) {
 		node,
 	} satisfies AddNodeTool;
 }
+
 export function textNode() {
 	return {
-    type: 'variable',
-    content: {
-      type: 'text',
-      text:''
-    },
-    inputs: [],
-    outputs: [
-      {}
-    ]
+		id: NodeId.generate(),
+		type: "variable",
+		content: {
+			type: "text",
+			text: "",
+		},
+		inputs: [],
+		outputs: [
+			{
+				id: OutputId.generate(),
+				label: "Output",
+				accesor: "text",
+			},
+		],
+	} satisfies TextNode;
+}
 
-
-  }satisfies Omit<TextNode, 'idA>'
+export function fileNode(category: FileCategory) {
+  return {id: NodeId.generate(),
+		type: "variable",
+		content: {
+			type: "file",
+			category,
+			files: []
+		},
+		inputs: [],
+		outputs: [
+			{
+				id: OutputId.generate(),
+				label: "Output",
+				accesor: "text",
+			},
+		]
+  } satisfies FileNode
 }
 
 export function addGitHubNodeTool() {
