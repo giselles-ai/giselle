@@ -30,6 +30,7 @@ import {
 	StackBlicksIcon,
 	TextFileIcon,
 } from "../../../icons";
+import { ImageGenerationNodeIcon } from "../../../icons/node";
 import { Tooltip } from "../../../ui/tooltip";
 import { isAddGitHubNodeToolAction, isToolAction } from "../types";
 import {
@@ -92,6 +93,13 @@ function LanguageModelListItem({
 			)}
 			{languageModel.provider === "perplexity" && (
 				<PerplexityIcon className="w-[20px] h-[20px]" data-icon />
+			)}
+			{languageModel.provider === "fal" && (
+				<ImageGenerationNodeIcon
+					modelId={languageModel.id}
+					className="w-[20px] h-[20px]"
+					data-icon
+				/>
 			)}
 			<div className="flex flex-start gap-[8px]">
 				<p className="text-[14px] text-left text-nowrap">{languageModel.id}</p>
@@ -339,6 +347,14 @@ export function Toolbar() {
 																			data-icon
 																		/>
 																	)}
+																	{languageModelMouseHovered.provider ===
+																		"fal" && (
+																		<ImageGenerationNodeIcon
+																			modelId={languageModelMouseHovered.id}
+																			className="size-[20px]"
+																			data-icon
+																		/>
+																	)}
 																</div>
 																<p className="text-[22px] font-accent">
 																	{languageModelMouseHovered.id}
@@ -350,6 +366,14 @@ export function Toolbar() {
 																	Capability.TextGeneration,
 																) && (
 																	<CapabilityIcon>Generate Text</CapabilityIcon>
+																)}
+																{hasCapability(
+																	languageModelMouseHovered,
+																	Capability.ImageGeneration,
+																) && (
+																	<CapabilityIcon>
+																		Generate Image
+																	</CapabilityIcon>
 																)}
 																{hasCapability(
 																	languageModelMouseHovered,
