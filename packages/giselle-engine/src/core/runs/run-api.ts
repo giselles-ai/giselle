@@ -4,6 +4,7 @@ import {
 	GenerationId,
 	type GenerationTemplate,
 	type GitHubNode,
+	type ImageGenerationNode,
 	type JobId,
 	type OverrideNode,
 	type QueuedGeneration,
@@ -14,6 +15,7 @@ import {
 	type WorkspaceId,
 	isOverrideFileContent,
 	isOverrideGitHubContent,
+	isOverrideImageGenerationContent,
 	isOverrideTextContent,
 	isOverrideTextGenerationContent,
 } from "@giselle-sdk/data-type";
@@ -45,8 +47,23 @@ function overrideGenerationTemplate(
 					}
 					break;
 				}
+				case "imageGeneration": {
+					if (isOverrideImageGenerationContent(overrideNode.content)) {
+						overridedTemplate = {
+							...overridedTemplate,
+							actionNode: {
+								...overridedTemplate.actionNode,
+								content: {
+									...overridedTemplate.actionNode.content,
+									prompt: overrideNode.content.prompt,
+								},
+							},
+						};
+					}
+					break;
+				}
 				default: {
-					const _exhaustiveCheck: never = template.actionNode.content.type;
+					const _exhaustiveCheck: never = template.actionNode.content;
 					throw new Error(`Unhandled action node type: ${_exhaustiveCheck}`);
 				}
 			}
@@ -77,6 +94,26 @@ function overrideGenerationTemplate(
 					};
 					break;
 				}
+				case "imageGeneration":
+					overridedTemplate = {
+						...overridedTemplate,
+						sourceNodes: overridedTemplate.sourceNodes.map((node) => {
+							if (
+								node.id === sourceNode.id &&
+								isOverrideImageGenerationContent(overrideNode.content)
+							) {
+								return {
+									...node,
+									content: {
+										...node.content,
+										prompt: overrideNode.content.prompt,
+									},
+								} as ImageGenerationNode;
+							}
+							return node;
+						}),
+					};
+					break;
 				case "file":
 					overridedTemplate = {
 						...overridedTemplate,

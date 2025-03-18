@@ -209,7 +209,8 @@ export function TextGenerationNodePropertiesPanel({
 														}
 														if (connectedNode.type === "action") {
 															switch (connectedNode.content.type) {
-																case "textGeneration": {
+																case "textGeneration":
+																case "imageGeneration": {
 																	updateNodeData(connectedNode, {
 																		inputs: connectedNode.inputs.filter(
 																			(input) =>
@@ -220,7 +221,7 @@ export function TextGenerationNodePropertiesPanel({
 																}
 																default: {
 																	const _exhaustiveCheck: never =
-																		connectedNode.content.type;
+																		connectedNode.content;
 																	throw new Error(
 																		`Unhandled node type: ${_exhaustiveCheck}`,
 																	);

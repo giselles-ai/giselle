@@ -21,6 +21,7 @@ import {
 } from "./perplexity";
 export * from "./base";
 export * from "./helper";
+export { getImageGenerationModelProvider } from "./fal";
 
 export const LanguageModel = z.discriminatedUnion("provider", [
 	AnthropicLanguageModel,

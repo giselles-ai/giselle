@@ -1,4 +1,7 @@
-import type { FileCategory } from "@giselle-sdk/data-type";
+import type {
+	FileCategory,
+	TextGenerationLanguageModelData,
+} from "@giselle-sdk/data-type";
 import type { LanguageModel } from "@giselle-sdk/language-model";
 
 interface ToolBase {
@@ -18,7 +21,7 @@ export interface AddFileNodeTool extends ToolBase {
 export interface AddTextGenerationNodeTool extends ToolBase {
 	category: "edit";
 	action: "addTextGenerationNode";
-	languageModel?: LanguageModel;
+	languageModel?: TextGenerationLanguageModelData;
 }
 export interface MoveTool extends ToolBase {
 	category: "move";

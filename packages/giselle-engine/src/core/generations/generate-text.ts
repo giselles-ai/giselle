@@ -2,18 +2,20 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { google } from "@ai-sdk/google";
 import { openai } from "@ai-sdk/openai";
 import { perplexity } from "@ai-sdk/perplexity";
-import type {
-	CompletedGeneration,
-	FailedGeneration,
-	FileData,
-	GenerationOutput,
-	LanguageModelData,
-	NodeId,
-	Output,
-	OutputId,
-	QueuedGeneration,
-	RunningGeneration,
-	UrlSource,
+import {
+	type CompletedGeneration,
+	type FailedGeneration,
+	type FileData,
+	type GenerationOutput,
+	type NodeId,
+	type Output,
+	type OutputId,
+	type QueuedGeneration,
+	type RunningGeneration,
+	type TextGenerationLanguageModelData,
+	type TextGenerationNode,
+	type UrlSource,
+	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { AISDKError, appendResponseMessages, streamText } from "ai";
 import { filePath } from "../files/utils";
@@ -32,6 +34,10 @@ export async function generateText(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
 }) {
+	const actionNode = args.generation.context.actionNode;
+	if (!isTextGenerationNode(actionNode)) {
+		throw new Error("Invalid generation type");
+	}
 	const runningGeneration = {
 		...args.generation,
 		status: "running",
@@ -138,14 +144,14 @@ export async function generateText(args: {
 		}
 	}
 	const messages = await buildMessageObject(
-		runningGeneration.context.actionNode,
+		actionNode,
 		runningGeneration.context.sourceNodes,
 		fileResolver,
 		generationContentResolver,
 	);
 
 	const streamTextResult = streamText({
-		model: generationModel(runningGeneration.context.actionNode.content.llm),
+		model: generationModel(actionNode.content.llm),
 		messages,
 		onError: async ({ error }) => {
 			if (AISDKError.isInstance(error)) {
@@ -269,7 +275,7 @@ export async function generateText(args: {
 	return streamTextResult;
 }
 
-function generationModel(languageModel: LanguageModelData) {
+function generationModel(languageModel: TextGenerationLanguageModelData) {
 	const llmProvider = languageModel.provider;
 	switch (llmProvider) {
 		case "anthropic": {

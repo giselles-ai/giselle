@@ -1,6 +1,10 @@
 "use client";
 
-import { FileCategory } from "@giselle-sdk/data-type";
+import {
+	FileCategory,
+	TextGenerationLanguageModelData,
+	TextGenerationLanguageModelProvider,
+} from "@giselle-sdk/data-type";
 import {
 	Capability,
 	type LanguageModel,
@@ -235,15 +239,22 @@ export function Toolbar() {
 												className={clsx("flex flex-col gap-[8px]")}
 												value={selectedTool.languageModel?.id}
 												onValueChange={(modelId) => {
-													const languageModel = languageModels.find(
+													const unsafeLanguageModel = languageModels.find(
 														(model) => model.id === modelId,
 													);
-													if (languageModel === undefined) {
+													const languageModel =
+														TextGenerationLanguageModelData.safeParse({
+															id: unsafeLanguageModel?.id,
+															provider: unsafeLanguageModel?.provider,
+															configurations:
+																unsafeLanguageModel?.configurations,
+														});
+													if (!languageModel.success) {
 														return;
 													}
 													setSelectedTool({
 														...selectedTool,
-														languageModel,
+														languageModel: languageModel.data,
 													});
 												}}
 											>

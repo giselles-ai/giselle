@@ -10,9 +10,10 @@ function defaultName(node: GiselleNode) {
 		case "action":
 			switch (node.content.type) {
 				case "textGeneration":
+				case "imageGeneration":
 					return node.name ?? node.content.llm.id;
 				default: {
-					const _exhaustiveCheck: never = node.content.type;
+					const _exhaustiveCheck: never = node.content;
 					throw new Error(`Unhandled action content type: ${_exhaustiveCheck}`);
 				}
 			}

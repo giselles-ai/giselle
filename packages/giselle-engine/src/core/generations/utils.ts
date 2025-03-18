@@ -23,7 +23,7 @@ export interface FileIndex {
 }
 
 export async function buildMessageObject(
-	node: ActionNode,
+	node: TextGenerationNode,
 	contextNodes: Node[],
 	fileResolver: (file: FileData) => Promise<DataContent>,
 	textGenerationResolver: (

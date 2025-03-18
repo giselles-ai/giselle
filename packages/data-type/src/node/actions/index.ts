@@ -10,6 +10,7 @@ import {
 	TextGenerationContent,
 	TextGenerationContentReference,
 } from "./text-generation";
+export * from "./image-generation";
 export * from "./text-generation";
 
 const ActionNodeContent = z.discriminatedUnion("type", [

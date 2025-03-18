@@ -28,7 +28,10 @@ import {
 	useToolbar,
 } from "./tool";
 import "@xyflow/react/dist/style.css";
-import { OutputId } from "@giselle-sdk/data-type";
+import {
+	OutputId,
+	TextGenerationLanguageModelData,
+} from "@giselle-sdk/data-type";
 import { Background } from "../ui/background";
 import { ToastProvider } from "../ui/toast";
 import { edgeTypes } from "./connector";

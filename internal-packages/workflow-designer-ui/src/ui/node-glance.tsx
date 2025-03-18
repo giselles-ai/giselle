@@ -1,14 +1,19 @@
 import type { Node } from "@giselle-sdk/data-type";
+import { getImageGenerationModelProvider } from "@giselle-sdk/language-model";
 import { useMemo } from "react";
 import {
 	AnthropicIcon,
+	Flux1Icon,
 	GitHubIcon,
 	GoogleWhiteIcon,
+	IdegramIcon,
 	OpenaiIcon,
 	PdfFileIcon,
 	PerplexityIcon,
 	PictureIcon,
 	PromptIcon,
+	RecraftIcon,
+	StableDiffusionIcon,
 	TextFileIcon,
 } from "../icons";
 
@@ -26,6 +31,7 @@ export function NodeGlance({
 	const nodeName = useMemo(() => {
 		switch (node.content.type) {
 			case "textGeneration":
+			case "imageGeneration":
 				return node.name ?? node.content.llm.id;
 			case "file":
 			case "text":
@@ -40,6 +46,7 @@ export function NodeGlance({
 	const nodeDescription = useMemo(() => {
 		switch (node.content.type) {
 			case "textGeneration":
+			case "imageGeneration":
 				return node.content.llm.provider;
 			case "file":
 			case "text":
@@ -86,6 +93,28 @@ function ContentTypeIcon({
 					throw new Error(`Unhandled LLMProvider: ${_exhaustiveCheck}`);
 				}
 			}
+		case "imageGeneration": {
+			const imageModelProvider = getImageGenerationModelProvider(
+				node.content.llm.id,
+			);
+			if (imageModelProvider === undefined) {
+				return null;
+			}
+			switch (imageModelProvider) {
+				case "flux":
+					return <Flux1Icon {...props} data-content-type-icon />;
+				case "recraft":
+					return <RecraftIcon {...props} data-content-type-icon />;
+				case "ideogram":
+					return <IdegramIcon {...props} data-content-type-icon />;
+				case "stable-diffusion":
+					return <StableDiffusionIcon {...props} data-content-type-icon />;
+				default: {
+					const _exhaustiveCheck: never = imageModelProvider;
+					throw new Error(`Unhandled ImageModelProvider: ${_exhaustiveCheck}`);
+				}
+			}
+		}
 		case "text":
 			return <PromptIcon {...props} />;
 		case "file":
