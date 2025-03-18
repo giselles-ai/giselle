@@ -1,5 +1,7 @@
 import type {
 	FileCategory,
+	ImageGenerationLanguageModelData,
+	Node,
 	TextGenerationLanguageModelData,
 } from "@giselle-sdk/data-type";
 import type { LanguageModel } from "@giselle-sdk/language-model";
@@ -7,6 +9,12 @@ import type { LanguageModel } from "@giselle-sdk/language-model";
 interface ToolBase {
 	category: string;
 	action: string;
+}
+
+export interface AddNodeTool extends ToolBase {
+	category: "edit";
+	action: "addNode";
+	node: Node;
 }
 
 export interface AddTextNodeTool extends ToolBase {
@@ -23,6 +31,11 @@ export interface AddTextGenerationNodeTool extends ToolBase {
 	action: "addTextGenerationNode";
 	languageModel?: TextGenerationLanguageModelData;
 }
+export interface AddImageGenerationNodeTool extends ToolBase {
+	category: "edit";
+	action: "addImageGenerationNode";
+	languageModel?: ImageGenerationLanguageModelData;
+}
 export interface MoveTool extends ToolBase {
 	category: "move";
 	action: "move";
@@ -36,14 +49,16 @@ export type Tool =
 	| AddFileNodeTool
 	| AddTextGenerationNodeTool
 	| MoveTool
-	| AddGitHubNodeTool;
+	| AddGitHubNodeTool
+	| AddNodeTool;
 
 type ToolAction =
 	| AddTextNodeTool["action"]
 	| AddFileNodeTool["action"]
 	| AddTextGenerationNodeTool["action"]
 	| AddGitHubNodeTool["action"]
-	| MoveTool["action"];
+	| MoveTool["action"]
+	| AddNodeTool["action"];
 
 export function isToolAction(args: unknown): args is ToolAction {
 	if (typeof args === "string") {
@@ -51,7 +66,8 @@ export function isToolAction(args: unknown): args is ToolAction {
 			args === "addTextNode" ||
 			args === "addFileNode" ||
 			args === "addTextGenerationNode" ||
-			args === "move"
+			args === "move" ||
+			args === "addNode"
 		);
 	}
 	return false;

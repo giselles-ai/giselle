@@ -2,12 +2,17 @@
 
 import type {
 	FileCategory,
+	ImageGenerationLanguageModelData,
+	Node,
 	TextGenerationLanguageModelData,
+	TextNode,
 } from "@giselle-sdk/data-type";
 import { type ReactNode, createContext, useContext, useState } from "react";
 import type {
 	AddFileNodeTool,
 	AddGitHubNodeTool,
+	AddImageGenerationNodeTool,
+	AddNodeTool,
 	AddTextGenerationNodeTool,
 	AddTextNodeTool,
 	MoveTool,
@@ -83,11 +88,44 @@ export function addTextGenerationNodeTool(
 	} satisfies AddTextGenerationNodeTool;
 }
 
+export function addImageGenerationNodeTool(
+	languageModel?: ImageGenerationLanguageModelData,
+) {
+	return {
+		action: "addImageGenerationNode",
+		category: "edit",
+		languageModel,
+	} satisfies AddImageGenerationNodeTool;
+}
+
 export function addTextNodeTool() {
 	return {
 		action: "addTextNode",
 		category: "edit",
 	} satisfies AddTextNodeTool;
+}
+
+export function addNodeTool(node: Node) {
+	return {
+		action: "addNode",
+		category: "edit",
+		node,
+	} satisfies AddNodeTool;
+}
+export function textNode() {
+	return {
+    type: 'variable',
+    content: {
+      type: 'text',
+      text:''
+    },
+    inputs: [],
+    outputs: [
+      {}
+    ]
+
+
+  }satisfies Omit<TextNode, 'idA>'
 }
 
 export function addGitHubNodeTool() {
