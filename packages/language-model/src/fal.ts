@@ -91,3 +91,36 @@ export const models = [
 
 export const LanguageModel = FalLanguageModel;
 export type LanguageModel = FalLanguageModel;
+
+type ImageGenerationModelProvider =
+	| "flux"
+	| "recraft"
+	| "ideogram"
+	| "stable-diffusion";
+
+export function getImageGenerationModelProvider(
+	provider: string,
+): ImageGenerationModelProvider | undefined {
+	// Extract model family from the model ID
+	// E.g., "fal-ai/flux/schnell" -> "flux"
+	// E.g., "fal-ai/stable-diffusion-3.5-medium" -> "stable-diffusion"
+
+	const parts = provider.split("/");
+	if (parts.length < 2) return undefined;
+
+	// Handle different model naming patterns
+	if (parts[1] === "flux" || parts[1] === "flux-pro") {
+		return "flux";
+	}
+	if (parts[1].startsWith("recraft")) {
+		return "recraft";
+	}
+	if (parts[1] === "ideogram") {
+		return "ideogram";
+	}
+	if (parts[1].startsWith("stable-diffusion")) {
+		return "stable-diffusion";
+	}
+
+	return undefined;
+}
