@@ -3,7 +3,6 @@
 import {
 	FileCategory,
 	TextGenerationLanguageModelData,
-	TextGenerationLanguageModelProvider,
 } from "@giselle-sdk/data-type";
 import {
 	Capability,
