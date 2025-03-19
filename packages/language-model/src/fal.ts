@@ -74,7 +74,7 @@ const falIdeogramV2Turbo: FalLanguageModel = {
 
 const falStableDiffusion35Med: FalLanguageModel = {
 	provider: "fal",
-	id: "fal-ai/stable-diffusion-3.5-medium",
+	id: "fal-ai/stable-diffusion-v3-medium",
 	capabilities: Capability.ImageGeneration,
 	tier: "pro",
 	configurations: defaultConfiguration,

@@ -557,3 +557,14 @@ export async function setGeneratedImage(params: {
 		params.generatedImage.uint8Array,
 	);
 }
+
+export async function getGeneratedImage(params: {
+	storage: Storage;
+	generation: Generation;
+	filename: string;
+}) {
+	const image = await params.storage.getItemRaw(
+		generatedImagePath(params.generation, params.filename),
+	);
+	return image;
+}
