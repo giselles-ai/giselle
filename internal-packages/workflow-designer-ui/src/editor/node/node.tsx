@@ -1,6 +1,7 @@
 import {
 	FileNode,
 	GitHubNode,
+	ImageGenerationNode,
 	type Node,
 	type OutputId,
 	TextGenerationNode,
@@ -23,6 +24,10 @@ type GiselleWorkflowDesignerTextGenerationNode = XYFlowNode<
 	{ nodeData: TextGenerationNode; preview?: boolean },
 	TextGenerationNode["content"]["type"]
 >;
+type GiselleWorkflowDesignerImageGenerationNode = XYFlowNode<
+	{ nodeData: ImageGenerationNode; preview?: boolean },
+	TextGenerationNode["content"]["type"]
+>;
 type GiselleWorkflowDesignerTextNode = XYFlowNode<
 	{ nodeData: TextNode; preview?: boolean },
 	TextNode["content"]["type"]
@@ -37,15 +42,17 @@ type GiselleWorkflowGitHubNode = XYFlowNode<
 >;
 export type GiselleWorkflowDesignerNode =
 	| GiselleWorkflowDesignerTextGenerationNode
+	| GiselleWorkflowDesignerImageGenerationNode
 	| GiselleWorkflowDesignerTextNode
 	| GiselleWorkflowDesignerFileNode
 	| GiselleWorkflowGitHubNode;
 
 export const nodeTypes: NodeTypes = {
-	[TextGenerationNode.shape.content.shape.type._def.value]: CustomXyFlowNode,
-	[TextNode.shape.content.shape.type._def.value]: CustomXyFlowNode,
-	[FileNode.shape.content.shape.type._def.value]: CustomXyFlowNode,
-	[GitHubNode.shape.content.shape.type._def.value]: CustomXyFlowNode,
+	[TextGenerationNode.shape.content.shape.type.value]: CustomXyFlowNode,
+	[ImageGenerationNode.shape.content.shape.type.value]: CustomXyFlowNode,
+	[TextNode.shape.content.shape.type.value]: CustomXyFlowNode,
+	[FileNode.shape.content.shape.type.value]: CustomXyFlowNode,
+	[GitHubNode.shape.content.shape.type.value]: CustomXyFlowNode,
 };
 
 export function CustomXyFlowNode({
@@ -100,6 +107,7 @@ export function NodeComponent({
 				"data-[content-type=text]:from-text-node-1] data-[content-type=text]:to-text-node-2 data-[content-type=text]:shadow-text-node-1",
 				"data-[content-type=file]:from-file-node-1] data-[content-type=file]:to-file-node-2 data-[content-type=file]:shadow-file-node-1",
 				"data-[content-type=textGeneration]:from-generation-node-1] data-[content-type=textGeneration]:to-generation-node-2 data-[content-type=textGeneration]:shadow-generation-node-1",
+				"data-[content-type=imageGeneration]:from-generation-node-1] data-[content-type=imageGeneration]:to-generation-node-2 data-[content-type=imageGeneration]:shadow-generation-node-1",
 				"data-[content-type=github]:from-github-node-1] data-[content-type=github]:to-github-node-2 data-[content-type=github]:shadow-github-node-1",
 				"data-[selected=true]:shadow-[0px_0px_16px_0px]",
 				"data-[preview=true]:opacity-50",
@@ -112,6 +120,7 @@ export function NodeComponent({
 					"group-data-[content-type=text]:from-text-node-1/40 group-data-[content-type=text]:to-text-node-1",
 					"group-data-[content-type=file]:from-file-node-1/40 group-data-[content-type=file]:to-file-node-1",
 					"group-data-[content-type=textGeneration]:from-generation-node-1/40 group-data-[content-type=textGeneration]:to-generation-node-1",
+					"group-data-[content-type=imageGeneration]:from-generation-node-1/40 group-data-[content-type=textGeneration]:to-generation-node-1",
 					"group-data-[content-type=github]:from-github-node-1/40 group-data-[content-type=github]:to-github-node-1",
 				)}
 			/>
@@ -130,6 +139,7 @@ export function NodeComponent({
 							"group-data-[content-type=text]:bg-text-node-1",
 							"group-data-[content-type=file]:bg-file-node-1",
 							"group-data-[content-type=textGeneration]:bg-generation-node-1",
+							"group-data-[content-type=imageGeneration]:bg-generation-node-1",
 							"group-data-[content-type=github]:bg-github-node-1",
 						)}
 					>
@@ -140,6 +150,7 @@ export function NodeComponent({
 								"group-data-[content-type=text]:text-black-900",
 								"group-data-[content-type=file]:text-black-900",
 								"group-data-[content-type=textGeneration]:text-white-900",
+								"group-data-[content-type=imageGeneration]:text-white-900",
 								"group-data-[content-type=github]:text-white-900",
 							)}
 						/>
@@ -171,6 +182,7 @@ export function NodeComponent({
 									className={clsx(
 										"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[5px] !translate-x-[50%] !border-[1.5px]",
 										"group-data-[content-type=textGeneration]:!bg-generation-node-1 group-data-[content-type=textGeneration]:!border-generation-node-1",
+										"group-data-[content-type=imageGeneration]:!bg-generation-node-1 group-data-[content-type=imageGeneration]:!border-generation-node-1",
 									)}
 								/>
 								<div className="text-[14px] text-black--30 px-[12px] text-white-900">
@@ -200,10 +212,12 @@ export function NodeComponent({
 									className={clsx(
 										"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px]",
 										"group-data-[content-type=textGeneration]:!border-generation-node-1",
+										"group-data-[content-type=imageGeneration]:!border-generation-node-1",
 										"group-data-[content-type=github]:!border-github-node-1",
 										"group-data-[content-type=text]:!border-text-node-1",
 										"group-data-[content-type=file]:!border-file-node-1",
 										"data-[state=connected]:group-data-[content-type=textGeneration]:!bg-generation-node-1",
+										"data-[state=connected]:group-data-[content-type=imageGeneration]:!bg-generation-node-1",
 										"data-[state=connected]:group-data-[content-type=github]:!bg-cgithub-node-1",
 										"data-[state=connected]:group-data-[content-type=text]:!bg-text-node-1 data-[state=connected]:group-data-[content-type=text]:!border-text-node-1",
 										"data-[state=connected]:group-data-[content-type=file]:!bg-file-node-1 data-[state=connected]:group-data-[content-type=file]:!border-file-node-1",
