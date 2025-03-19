@@ -66,6 +66,10 @@ if (process.env.PERPLEXITY_API_KEY) {
 	llmProviders.push("perplexity");
 }
 
+if (process.env.FAL_API_KEY) {
+	llmProviders.push("fal");
+}
+
 export const giselleEngine = NextGiselleEngine({
 	basePath: "/api/giselle",
 	storage,

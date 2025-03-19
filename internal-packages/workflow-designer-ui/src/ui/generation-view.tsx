@@ -43,6 +43,23 @@ export function GenerationView({
 	}
 	return (
 		<div>
+			{generation.status === "completed" &&
+				generation.outputs.map((output) => {
+					if (output.type !== "generated-image") {
+						return null;
+					}
+					return (
+						<div key={output.outputId}>
+							{output.contents.map((content) => (
+								<img
+									src={content.filename}
+									alt="generated file"
+									key={content.filename}
+								/>
+							))}
+						</div>
+					);
+				})}
 			{generatedMessages.map((message) => (
 				<div key={message.id}>
 					{message.parts?.map((part) => {

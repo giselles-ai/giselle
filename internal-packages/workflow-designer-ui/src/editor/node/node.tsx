@@ -1,9 +1,8 @@
 import {
 	FileNode,
 	GitHubNode,
-	type Input,
+	ImageGenerationNode,
 	type Node,
-	type Output,
 	type OutputId,
 	TextGenerationNode,
 	TextNode,
@@ -17,13 +16,16 @@ import {
 } from "@xyflow/react";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
-import { Github, Icon } from "lucide-react";
 import { useMemo } from "react";
-import { ContentTypeIcon, type ContentTypeIconProps } from "../../icons";
-import { NodeNameEditable } from "./node-name-editable";
+import { NodeIcon } from "../../icons/node";
+import { defaultName } from "../../utils";
 
 type GiselleWorkflowDesignerTextGenerationNode = XYFlowNode<
 	{ nodeData: TextGenerationNode; preview?: boolean },
+	TextGenerationNode["content"]["type"]
+>;
+type GiselleWorkflowDesignerImageGenerationNode = XYFlowNode<
+	{ nodeData: ImageGenerationNode; preview?: boolean },
 	TextGenerationNode["content"]["type"]
 >;
 type GiselleWorkflowDesignerTextNode = XYFlowNode<
@@ -40,15 +42,17 @@ type GiselleWorkflowGitHubNode = XYFlowNode<
 >;
 export type GiselleWorkflowDesignerNode =
 	| GiselleWorkflowDesignerTextGenerationNode
+	| GiselleWorkflowDesignerImageGenerationNode
 	| GiselleWorkflowDesignerTextNode
 	| GiselleWorkflowDesignerFileNode
 	| GiselleWorkflowGitHubNode;
 
 export const nodeTypes: NodeTypes = {
-	[TextGenerationNode.shape.content.shape.type._def.value]: CustomXyFlowNode,
-	[TextNode.shape.content.shape.type._def.value]: CustomXyFlowNode,
-	[FileNode.shape.content.shape.type._def.value]: CustomXyFlowNode,
-	[GitHubNode.shape.content.shape.type._def.value]: CustomXyFlowNode,
+	[TextGenerationNode.shape.content.shape.type.value]: CustomXyFlowNode,
+	[ImageGenerationNode.shape.content.shape.type.value]: CustomXyFlowNode,
+	[TextNode.shape.content.shape.type.value]: CustomXyFlowNode,
+	[FileNode.shape.content.shape.type.value]: CustomXyFlowNode,
+	[GitHubNode.shape.content.shape.type.value]: CustomXyFlowNode,
 };
 
 export function CustomXyFlowNode({
@@ -71,95 +75,30 @@ export function CustomXyFlowNode({
 		[workspace, data.nodeData.id],
 	);
 
-	switch (data.nodeData.content.type) {
-		case "textGeneration":
-			return (
-				<NodeComponent
-					nodeType={data.nodeData.type}
-					title={data.nodeData.name ?? data.nodeData.content.llm.id}
-					subtitle={data.nodeData.content.llm.provider}
-					selected={selected}
-					hasTarget={hasTarget}
-					inputs={data.nodeData.inputs}
-					outputs={data.nodeData.outputs}
-					connectedOutputIds={connectedOutputIds}
-					contentType="textGeneration"
-					llmProvider={data.nodeData.content.llm.provider}
-				/>
-			);
-		case "file":
-			return (
-				<NodeComponent
-					nodeType={data.nodeData.type}
-					title={data.nodeData.name}
-					selected={selected}
-					hasTarget={hasTarget}
-					inputs={data.nodeData.inputs}
-					outputs={data.nodeData.outputs}
-					contentType="file"
-					fileCategory={data.nodeData.content.category}
-					connectedOutputIds={connectedOutputIds}
-				/>
-			);
-		case "text":
-			return (
-				<NodeComponent
-					nodeType={data.nodeData.type}
-					title={data.nodeData.name}
-					selected={selected}
-					hasTarget={hasTarget}
-					inputs={data.nodeData.inputs}
-					outputs={data.nodeData.outputs}
-					contentType="text"
-					connectedOutputIds={connectedOutputIds}
-				/>
-			);
-		case "github":
-			return (
-				<NodeComponent
-					nodeType={data.nodeData.type}
-					title={data.nodeData.name}
-					selected={selected}
-					hasTarget={hasTarget}
-					inputs={data.nodeData.inputs}
-					outputs={data.nodeData.outputs}
-					contentType="github"
-					connectedOutputIds={connectedOutputIds}
-				/>
-			);
-		default: {
-			const _exhaustiveCheck: never = data.nodeData.content;
-			throw new Error(`Unhandled content type: ${_exhaustiveCheck}`);
-		}
-	}
+	return (
+		<NodeComponent
+			node={data.nodeData}
+			selected={selected}
+			connectedOutputIds={connectedOutputIds}
+		/>
+	);
 }
 
 export function NodeComponent({
-	nodeType,
+	node,
 	selected,
-	inputs,
 	connectedOutputIds,
-	outputs,
-	title,
-	subtitle,
 	preview = false,
-	hasTarget = false,
-	...iconProps
 }: {
-	title?: string;
-	subtitle?: string;
-	nodeType: Node["type"];
-	inputs?: Input[];
-	outputs?: Output[];
+	node: Node;
 	selected?: boolean;
 	preview?: boolean;
-	hasTarget?: boolean;
 	connectedOutputIds?: OutputId[];
-} & ContentTypeIconProps) {
+}) {
 	return (
 		<div
-			data-type={nodeType}
-			data-content-type={iconProps.contentType}
+			data-type={node.type}
+			data-content-type={node.content.type}
 			data-selected={selected}
 			data-preview={preview}
 			className={clsx(
@@ -168,6 +107,7 @@ export function NodeComponent({
 				"data-[content-type=text]:from-text-node-1] data-[content-type=text]:to-text-node-2 data-[content-type=text]:shadow-text-node-1",
 				"data-[content-type=file]:from-file-node-1] data-[content-type=file]:to-file-node-2 data-[content-type=file]:shadow-file-node-1",
 				"data-[content-type=textGeneration]:from-generation-node-1] data-[content-type=textGeneration]:to-generation-node-2 data-[content-type=textGeneration]:shadow-generation-node-1",
+				"data-[content-type=imageGeneration]:from-generation-node-1] data-[content-type=imageGeneration]:to-generation-node-2 data-[content-type=imageGeneration]:shadow-generation-node-1",
 				"data-[content-type=github]:from-github-node-1] data-[content-type=github]:to-github-node-2 data-[content-type=github]:shadow-github-node-1",
 				"data-[selected=true]:shadow-[0px_0px_16px_0px]",
 				"data-[preview=true]:opacity-50",
@@ -180,6 +120,7 @@ export function NodeComponent({
 					"group-data-[content-type=text]:from-text-node-1/40 group-data-[content-type=text]:to-text-node-1",
 					"group-data-[content-type=file]:from-file-node-1/40 group-data-[content-type=file]:to-file-node-1",
 					"group-data-[content-type=textGeneration]:from-generation-node-1/40 group-data-[content-type=textGeneration]:to-generation-node-1",
+					"group-data-[content-type=imageGeneration]:from-generation-node-1/40 group-data-[content-type=textGeneration]:to-generation-node-1",
 					"group-data-[content-type=github]:from-github-node-1/40 group-data-[content-type=github]:to-github-node-1",
 				)}
 			/>
@@ -198,26 +139,30 @@ export function NodeComponent({
 							"group-data-[content-type=text]:bg-text-node-1",
 							"group-data-[content-type=file]:bg-file-node-1",
 							"group-data-[content-type=textGeneration]:bg-generation-node-1",
+							"group-data-[content-type=imageGeneration]:bg-generation-node-1",
 							"group-data-[content-type=github]:bg-github-node-1",
 						)}
 					>
-						<ContentTypeIcon
-							{...iconProps}
+						<NodeIcon
+							node={node}
 							className={clsx(
 								"w-[16px] h-[16px] fill-current",
 								"group-data-[content-type=text]:text-black-900",
 								"group-data-[content-type=file]:text-black-900",
 								"group-data-[content-type=textGeneration]:text-white-900",
+								"group-data-[content-type=imageGeneration]:text-white-900",
 								"group-data-[content-type=github]:text-white-900",
 							)}
 						/>
 					</div>
 					<div>
 						<div className="font-rosart text-[14px] text-white-900">
-							{title ?? "Unnamed node"}
+							{defaultName(node)}
 						</div>
-						{subtitle && (
-							<div className="text-[10px] text-white-400">{subtitle}</div>
+						{node.type === "action" && (
+							<div className="text-[10px] text-white-400">
+								{node.content.llm.provider}
+							</div>
 						)}
 					</div>
 				</div>
@@ -225,7 +170,7 @@ export function NodeComponent({
 			{!preview && (
 				<div className="flex justify-between">
 					<div className="grid">
-						{inputs?.map((input) => (
+						{node.inputs?.map((input) => (
 							<div
 								className="relative flex items-center h-[28px]"
 								key={input.id}
@@ -237,6 +182,7 @@ export function NodeComponent({
 									className={clsx(
 										"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[5px] !translate-x-[50%] !border-[1.5px]",
 										"group-data-[content-type=textGeneration]:!bg-generation-node-1 group-data-[content-type=textGeneration]:!border-generation-node-1",
+										"group-data-[content-type=imageGeneration]:!bg-generation-node-1 group-data-[content-type=imageGeneration]:!border-generation-node-1",
 									)}
 								/>
 								<div className="text-[14px] text-black--30 px-[12px] text-white-900">
@@ -247,7 +193,7 @@ export function NodeComponent({
 					</div>
 
 					<div className="grid">
-						{outputs?.map((output) => (
+						{node.outputs?.map((output) => (
 							<div
 								className="relative flex items-center h-[28px]"
 								key={output.id}
@@ -266,10 +212,12 @@ export function NodeComponent({
 									className={clsx(
 										"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px]",
 										"group-data-[content-type=textGeneration]:!border-generation-node-1",
+										"group-data-[content-type=imageGeneration]:!border-generation-node-1",
 										"group-data-[content-type=github]:!border-github-node-1",
 										"group-data-[content-type=text]:!border-text-node-1",
 										"group-data-[content-type=file]:!border-file-node-1",
 										"data-[state=connected]:group-data-[content-type=textGeneration]:!bg-generation-node-1",
+										"data-[state=connected]:group-data-[content-type=imageGeneration]:!bg-generation-node-1",
 										"data-[state=connected]:group-data-[content-type=github]:!bg-cgithub-node-1",
 										"data-[state=connected]:group-data-[content-type=text]:!bg-text-node-1 data-[state=connected]:group-data-[content-type=text]:!border-text-node-1",
 										"data-[state=connected]:group-data-[content-type=file]:!bg-file-node-1 data-[state=connected]:group-data-[content-type=file]:!border-file-node-1",

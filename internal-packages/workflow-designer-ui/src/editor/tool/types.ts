@@ -1,9 +1,30 @@
-import type { FileCategory } from "@giselle-sdk/data-type";
+import type {
+	FileCategory,
+	ImageGenerationLanguageModelData,
+	Node,
+	TextGenerationLanguageModelData,
+} from "@giselle-sdk/data-type";
 import type { LanguageModel } from "@giselle-sdk/language-model";
 
 interface ToolBase {
 	category: string;
 	action: string;
+}
+
+export interface AddNodeTool extends ToolBase {
+	category: "edit";
+	action: "addNode";
+	node: Node;
+}
+
+export interface SelectLanguageModelTool extends ToolBase {
+	category: "edit";
+	action: "selectLanguageModel";
+}
+
+export interface SelectFileNodeCategoryTool extends ToolBase {
+	category: "edit";
+	action: "selectFileNodeCategory";
 }
 
 export interface AddTextNodeTool extends ToolBase {
@@ -18,7 +39,12 @@ export interface AddFileNodeTool extends ToolBase {
 export interface AddTextGenerationNodeTool extends ToolBase {
 	category: "edit";
 	action: "addTextGenerationNode";
-	languageModel?: LanguageModel;
+	languageModel?: TextGenerationLanguageModelData;
+}
+export interface AddImageGenerationNodeTool extends ToolBase {
+	category: "edit";
+	action: "addImageGenerationNode";
+	languageModel?: ImageGenerationLanguageModelData;
 }
 export interface MoveTool extends ToolBase {
 	category: "move";
@@ -33,14 +59,12 @@ export type Tool =
 	| AddFileNodeTool
 	| AddTextGenerationNodeTool
 	| MoveTool
-	| AddGitHubNodeTool;
+	| AddGitHubNodeTool
+	| AddNodeTool
+	| SelectFileNodeCategoryTool
+	| SelectLanguageModelTool;
 
-type ToolAction =
-	| AddTextNodeTool["action"]
-	| AddFileNodeTool["action"]
-	| AddTextGenerationNodeTool["action"]
-	| AddGitHubNodeTool["action"]
-	| MoveTool["action"];
+type ToolAction = Tool["action"];
 
 export function isToolAction(args: unknown): args is ToolAction {
 	if (typeof args === "string") {
@@ -48,7 +72,10 @@ export function isToolAction(args: unknown): args is ToolAction {
 			args === "addTextNode" ||
 			args === "addFileNode" ||
 			args === "addTextGenerationNode" ||
-			args === "move"
+			args === "move" ||
+			args === "addNode" ||
+			args === "selectLanguageModel" ||
+			args === "selectFileNodeCategory"
 		);
 	}
 	return false;

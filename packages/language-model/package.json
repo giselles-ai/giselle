@@ -8,7 +8,8 @@
 	"scripts": {
 		"build": "tsup",
 		"clean": "rm -rf dist",
-		"check-types": "tsc --noEmit"
+		"check-types": "tsc --noEmit",
+		"test": "vitest run"
 	},
 	"exports": {
 		"./package.json": "./package.json",
@@ -20,7 +21,8 @@
 	},
 	"devDependencies": {
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
-		"tsup": "catalog:"
+		"tsup": "catalog:",
+		"vitest": "catalog:"
 	},
 	"dependencies": {
 		"@ai-sdk/perplexity": "catalog:",

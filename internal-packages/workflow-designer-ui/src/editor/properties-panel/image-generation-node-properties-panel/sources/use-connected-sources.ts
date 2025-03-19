@@ -1,9 +1,13 @@
-import type { TextGenerationNode, VariableNode } from "@giselle-sdk/data-type";
+import type {
+	ImageGenerationNode,
+	TextGenerationNode,
+	VariableNode,
+} from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { useMemo } from "react";
 import type { ConnectedSource } from "./types";
 
-export function useConnectedSources(node: TextGenerationNode) {
+export function useConnectedSources(node: ImageGenerationNode) {
 	const { data } = useWorkflowDesigner();
 	return useMemo(() => {
 		const connectionsToThisNode = data.connections.filter(

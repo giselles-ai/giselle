@@ -38,11 +38,7 @@ export function WorkflowDesigner({
 			).values(),
 		);
 	}
-	function addNode(nodeData: Omit<Node, "id">, options?: AddNodeOptions) {
-		const node = {
-			id: NodeId.generate(),
-			...nodeData,
-		} as Node;
+	function addNode(node: Node, options?: AddNodeOptions) {
 		nodes = [...nodes, node];
 		if (options?.ui) {
 			ui.nodeState[node.id] = options.ui;

@@ -183,6 +183,14 @@ export const createJsonRouters = {
 				return new Response(result);
 			},
 		}),
+	generateImage: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			input: z.object({ generation: QueuedGeneration }),
+			handler: async ({ input }) => {
+				await giselleEngine.generateImage(input.generation);
+				return new Response(null, { status: 204 });
+			},
+		}),
 } as const;
 
 export const jsonRouterPaths = Object.keys(

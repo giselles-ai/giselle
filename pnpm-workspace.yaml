@@ -12,7 +12,7 @@ catalog:
   "@turbo/gen": 2.3.3
   next: 15.1.6
   unstorage: 1.14.4
-  ai: 4.1.61
+  ai: 4.1.62
   "@types/node": 22.10.7
   "@types/react": 19.0.4
   "@types/react-dom": 19.0.2
@@ -33,6 +33,7 @@ catalog:
   "@ai-sdk/google": 1.1.25
   "@ai-sdk/perplexity": 1.0.7
   "@ai-sdk/react": 1.1.23
+  "@ai-sdk/fal": 0.0.9
   "@tailwindcss/typography": 0.5.16
   tailwindcss-animate: 1.0.7
   react-resizable-panels: 2.1.7

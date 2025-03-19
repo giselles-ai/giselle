@@ -1,14 +1,28 @@
 "use client";
 
-import type { FileCategory } from "@giselle-sdk/data-type";
-import type { LanguageModel } from "@giselle-sdk/language-model";
+import {
+	type FileCategory,
+	type FileNode,
+	type ImageGenerationLanguageModelData,
+	type ImageGenerationNode,
+	type Node,
+	NodeId,
+	OutputId,
+	type TextGenerationLanguageModelData,
+	type TextGenerationNode,
+	type TextNode,
+} from "@giselle-sdk/data-type";
 import { type ReactNode, createContext, useContext, useState } from "react";
 import type {
 	AddFileNodeTool,
 	AddGitHubNodeTool,
+	AddImageGenerationNodeTool,
+	AddNodeTool,
 	AddTextGenerationNodeTool,
 	AddTextNodeTool,
 	MoveTool,
+	SelectFileNodeCategoryTool,
+	SelectLanguageModelTool,
 	Tool,
 } from "../types";
 
@@ -71,12 +85,38 @@ export function addFileNodeTool(fileCategory?: FileCategory) {
 	} satisfies AddFileNodeTool;
 }
 
-export function addTextGenerationNodeTool(languageModel?: LanguageModel) {
+export function addTextGenerationNodeTool(
+	languageModel?: TextGenerationLanguageModelData,
+) {
 	return {
 		action: "addTextGenerationNode",
 		category: "edit",
 		languageModel,
 	} satisfies AddTextGenerationNodeTool;
+}
+
+export function addImageGenerationNodeTool(
+	languageModel?: ImageGenerationLanguageModelData,
+) {
+	return {
+		action: "addImageGenerationNode",
+		category: "edit",
+		languageModel,
+	} satisfies AddImageGenerationNodeTool;
+}
+
+export function selectFileNodeCategoryTool() {
+	return {
+		action: "selectFileNodeCategory",
+		category: "edit",
+	} satisfies SelectFileNodeCategoryTool;
+}
+
+export function selectLanguageModelTool() {
+	return {
+		action: "selectLanguageModel",
+		category: "edit",
+	} satisfies SelectLanguageModelTool;
 }
 
 export function addTextNodeTool() {
@@ -86,9 +126,87 @@ export function addTextNodeTool() {
 	} satisfies AddTextNodeTool;
 }
 
-export function addGitHubNodeTool() {
+export function addNodeTool(node: Node) {
 	return {
-		action: "addGitHubNode",
+		action: "addNode",
 		category: "edit",
-	} satisfies AddGitHubNodeTool;
+		node,
+	} satisfies AddNodeTool;
+}
+
+export function textNode() {
+	return {
+		id: NodeId.generate(),
+		type: "variable",
+		content: {
+			type: "text",
+			text: "",
+		},
+		inputs: [],
+		outputs: [
+			{
+				id: OutputId.generate(),
+				label: "Output",
+				accesor: "text",
+			},
+		],
+	} satisfies TextNode;
+}
+
+export function fileNode(category: FileCategory) {
+	return {
+		id: NodeId.generate(),
+		type: "variable",
+		content: {
+			type: "file",
+			category,
+			files: [],
+		},
+		inputs: [],
+		outputs: [
+			{
+				id: OutputId.generate(),
+				label: "Output",
+				accesor: "text",
+			},
+		],
+	} satisfies FileNode;
+}
+
+export function textGenerationNode(llm: TextGenerationLanguageModelData) {
+	return {
+		id: NodeId.generate(),
+		type: "action",
+		content: {
+			type: "textGeneration",
+			llm,
+		},
+		inputs: [],
+		outputs: [
+			{
+				id: OutputId.generate(),
+				label: "Output",
+				accesor: "generated-text",
+			},
+		],
+	} satisfies TextGenerationNode;
+}
+
+export function imageGenerationNode(llm: ImageGenerationLanguageModelData) {
+	return {
+		id: NodeId.generate(),
+		type: "action",
+		content: {
+			type: "imageGeneration",
+			llm,
+		},
+		inputs: [],
+		outputs: [
+			{
+				id: OutputId.generate(),
+				label: "Output",
+				accesor: "generated-image",
+			},
+		],
+	} satisfies ImageGenerationNode;
 }

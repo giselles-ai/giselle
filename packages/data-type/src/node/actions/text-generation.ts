@@ -36,17 +36,37 @@ export type PerplexityLanguageModelData = z.infer<
 	typeof PerplexityLanguageModelData
 >;
 
-export const LanguageModelData = z.discriminatedUnion("provider", [
-	AnthropicLanguageModelData,
-	GoogleLanguageModelData,
-	OpenAILanguageModelData,
-	PerplexityLanguageModelData,
+export const TextGenerationLanguageModelProvider = z.enum([
+	AnthropicLanguageModelData.shape.provider.value,
+	GoogleLanguageModelData.shape.provider.value,
+	OpenAILanguageModelData.shape.provider.value,
+	PerplexityLanguageModelData.shape.provider.value,
 ]);
-export type LanguageModelData = z.infer<typeof LanguageModelData>;
+export type TextGenerationLanguageModelProvider = z.infer<
+	typeof TextGenerationLanguageModelProvider
+>;
+
+export const TextGenerationLanguageModelData = z.discriminatedUnion(
+	"provider",
+	[
+		AnthropicLanguageModelData,
+		GoogleLanguageModelData,
+		OpenAILanguageModelData,
+		PerplexityLanguageModelData,
+	],
+);
+export type TextGenerationLanguageModelData = z.infer<
+	typeof TextGenerationLanguageModelData
+>;
+export function isTextGenerationLanguageModelData(
+	data: unknown,
+): data is TextGenerationLanguageModelData {
+	return TextGenerationLanguageModelData.safeParse(data).success;
+}
 
 export const TextGenerationContent = z.object({
 	type: z.literal("textGeneration"),
-	llm: LanguageModelData,
+	llm: TextGenerationLanguageModelData,
 	prompt: z.string().optional(),
 });
 export type TextGenerationContent = z.infer<typeof TextGenerationContent>;

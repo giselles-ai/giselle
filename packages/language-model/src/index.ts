@@ -4,6 +4,10 @@ import {
 	models as anthropicLanguageModels,
 } from "./anthropic";
 import {
+	LanguageModel as FalLanguageModel,
+	models as falLanguageModels,
+} from "./fal";
+import {
 	LanguageModel as GoogleLanguageModel,
 	models as googleLanguageModels,
 } from "./google";
@@ -17,12 +21,14 @@ import {
 } from "./perplexity";
 export * from "./base";
 export * from "./helper";
+export { getImageGenerationModelProvider, imageGenerationSizes } from "./fal";
 
 export const LanguageModel = z.discriminatedUnion("provider", [
 	AnthropicLanguageModel,
 	GoogleLanguageModel,
 	OpenAILanguageModel,
 	PerplexityLanguageModel,
+	FalLanguageModel,
 ]);
 export type LanguageModel = z.infer<typeof LanguageModel>;
 
@@ -31,6 +37,7 @@ export const languageModels = [
 	...anthropicLanguageModels,
 	...openaiLanguageModels,
 	...perplexityLanguageModels,
+	...falLanguageModels,
 ];
 
 export {
@@ -38,10 +45,12 @@ export {
 	GoogleLanguageModel,
 	OpenAILanguageModel,
 	PerplexityLanguageModel,
+	FalLanguageModel,
 	anthropicLanguageModels,
 	openaiLanguageModels,
 	googleLanguageModels,
 	perplexityLanguageModels,
+	falLanguageModels,
 };
 
 export const LanguageModelProviders = z.enum([
@@ -49,5 +58,6 @@ export const LanguageModelProviders = z.enum([
 	GoogleLanguageModel.shape.provider.value,
 	OpenAILanguageModel.shape.provider.value,
 	PerplexityLanguageModel.shape.provider.value,
+	FalLanguageModel.shape.provider.value,
 ]);
 export type LanguageModelProvider = z.infer<typeof LanguageModelProviders>;
