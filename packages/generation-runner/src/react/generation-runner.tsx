@@ -7,6 +7,7 @@ import type {
 	QueuedGeneration,
 	RunningGeneration,
 } from "@giselle-sdk/data-type";
+import { useGiselleEngine } from "@giselle-sdk/giselle-engine/react";
 import { useEffect, useRef } from "react";
 import { useGenerationRunnerSystem } from "./contexts/generation-runner-system";
 
@@ -123,5 +124,25 @@ function ImageGenerationRunner({
 }: {
 	generation: Generation;
 }) {
+	const {
+		updateGenerationStatusToComplete,
+		updateGenerationStatusToRunning,
+		addStopHandler,
+	} = useGenerationRunnerSystem();
+	const client = useGiselleEngine();
+	useOnce(() => {
+		if (generation.status !== "queued") {
+			return;
+		}
+		addStopHandler(generation.id, stop);
+		updateGenerationStatusToRunning(generation.id);
+		client
+			.generateImage({
+				generation,
+			})
+			.then(() => {
+				updateGenerationStatusToComplete(generation.id);
+			});
+	});
 	return null;
 }

@@ -9,6 +9,9 @@ catalogs:
     '@ai-sdk/anthropic':
       specifier: 1.1.17
       version: 1.1.17
+    '@ai-sdk/fal':
+      specifier: 0.0.9
+      version: 0.0.9
     '@ai-sdk/google':
       specifier: 1.1.25
       version: 1.1.25
@@ -121,8 +124,8 @@ catalogs:
       specifier: 12.4.1
       version: 12.4.1
     ai:
-      specifier: 4.1.61
-      version: 4.1.61
+      specifier: 4.1.62
+      version: 4.1.62
     clsx:
       specifier: 2.1.1
       version: 2.1.1
@@ -669,7 +672,7 @@ importers:
         version: 12.4.1(@types/react@19.0.4)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       ai:
         specifier: 'catalog:'
-        version: 4.1.61(react@19.0.0)(zod@3.24.1)
+        version: 4.1.62(react@19.0.0)(zod@3.24.1)
       clsx:
         specifier: 'catalog:'
         version: 2.1.1
@@ -730,7 +733,7 @@ importers:
         version: link:../language-model
       ai:
         specifier: 'catalog:'
-        version: 4.1.61(react@19.0.0)(zod@3.24.1)
+        version: 4.1.62(react@19.0.0)(zod@3.24.1)
       zod:
         specifier: 'catalog:'
         version: 3.24.1
@@ -761,7 +764,7 @@ importers:
         version: link:../giselle-engine
       ai:
         specifier: 'catalog:'
-        version: 4.1.61(react@19.0.0)(zod@3.24.1)
+        version: 4.1.62(react@19.0.0)(zod@3.24.1)
       react:
         specifier: 'catalog:'
         version: 19.0.0
@@ -784,6 +787,9 @@ importers:
       '@ai-sdk/anthropic':
         specifier: 'catalog:'
         version: 1.1.17(zod@3.24.1)
+      '@ai-sdk/fal':
+        specifier: 'catalog:'
+        version: 0.0.9(zod@3.24.1)
       '@ai-sdk/google':
         specifier: 'catalog:'
         version: 1.1.25(zod@3.24.1)
@@ -804,7 +810,7 @@ importers:
         version: link:../text-editor
       ai:
         specifier: 'catalog:'
-        version: 4.1.61(react@19.0.0)(zod@3.24.1)
+        version: 4.1.62(react@19.0.0)(zod@3.24.1)
       next:
         specifier: 'catalog:'
         version: 15.1.6(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1217,6 +1223,12 @@ packages:
 
   '@ai-sdk/anthropic@1.1.17':
     resolution: {integrity: sha512-t4ipxope34TFvWa4SrFsg2//aAFk3hUv2gxlM5W39IdsT7Hq2nMxJIcXE6C19YdhE/0Kep32iv38BgPaDZet6A==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.0.0
+
+  '@ai-sdk/fal@0.0.9':
+    resolution: {integrity: sha512-5p4BOFBIWpJ6KN+CPCirkuLM7zpV/HGsfNRDtV1VCQhfjqYk6mHx+e82Bt+vmR7BFdZOh6XklXISY2rTelHTfQ==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.0.0
@@ -5079,8 +5091,8 @@ packages:
       zod:
         optional: true
 
-  ai@4.1.61:
-    resolution: {integrity: sha512-Y9SAyGJEeW23F6C7PSHZXYNEvbH2cqJm0rVW2AoeFaXFT13ttx8rAqs8wz2w466C1UB329yl5PXayFcHqofSEA==}
+  ai@4.1.62:
+    resolution: {integrity: sha512-+cEyxjOUUA4IxaPiPhmGSQHVrwFplDLqFADzmK0lRnLgacmtI4j1jWuT0HeqAHM3pVtKPYubbQNDuY1djc934A==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19 || ^19.0.0-rc
@@ -9221,6 +9233,12 @@ snapshots:
       zod: 3.24.1
 
   '@ai-sdk/anthropic@1.1.17(zod@3.24.1)':
+    dependencies:
+      '@ai-sdk/provider': 1.0.11
+      '@ai-sdk/provider-utils': 2.1.13(zod@3.24.1)
+      zod: 3.24.1
+
+  '@ai-sdk/fal@0.0.9(zod@3.24.1)':
     dependencies:
       '@ai-sdk/provider': 1.0.11
       '@ai-sdk/provider-utils': 2.1.13(zod@3.24.1)
@@ -13762,7 +13780,7 @@ snapshots:
       react: 19.0.0
       zod: 3.24.1
 
-  ai@4.1.61(react@19.0.0)(zod@3.24.1):
+  ai@4.1.62(react@19.0.0)(zod@3.24.1):
     dependencies:
       '@ai-sdk/provider': 1.0.11
       '@ai-sdk/provider-utils': 2.1.13(zod@3.24.1)

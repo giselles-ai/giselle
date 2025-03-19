@@ -14,7 +14,7 @@ export const GeneratedTextContentOutput = GenerationOutputBase.extend({
 });
 
 export const Image = z.object({
-	url: z.string().url(),
+	filename: z.string(),
 });
 
 export const GeneratedImageOuputType = z.literal("generated-image");
