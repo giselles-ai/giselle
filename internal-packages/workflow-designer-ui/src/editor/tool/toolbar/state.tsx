@@ -4,11 +4,13 @@ import {
 	type FileCategory,
 	type FileNode,
 	type ImageGenerationLanguageModelData,
+	type ImageGenerationNode,
 	type Node,
 	NodeId,
 	OutputId,
 	type TextGenerationLanguageModelData,
-	type TextNode
+	type TextGenerationNode,
+	type TextNode,
 } from "@giselle-sdk/data-type";
 import { type ReactNode, createContext, useContext, useState } from "react";
 import type {
@@ -19,6 +21,8 @@ import type {
 	AddTextGenerationNodeTool,
 	AddTextNodeTool,
 	MoveTool,
+	SelectFileNodeCategoryTool,
+	SelectLanguageModelTool,
 	Tool,
 } from "../types";
 
@@ -101,6 +105,20 @@ export function addImageGenerationNodeTool(
 	} satisfies AddImageGenerationNodeTool;
 }
 
+export function selectFileNodeCategoryTool() {
+	return {
+		action: "selectFileNodeCategory",
+		category: "edit",
+	} satisfies SelectFileNodeCategoryTool;
+}
+
+export function selectLanguageModelTool() {
+	return {
+		action: "selectLanguageModel",
+		category: "edit",
+	} satisfies SelectLanguageModelTool;
+}
+
 export function addTextNodeTool() {
 	return {
 		action: "addTextNode",
@@ -136,12 +154,13 @@ export function textNode() {
 }
 
 export function fileNode(category: FileCategory) {
-  return {id: NodeId.generate(),
+	return {
+		id: NodeId.generate(),
 		type: "variable",
 		content: {
 			type: "file",
 			category,
-			files: []
+			files: [],
 		},
 		inputs: [],
 		outputs: [
@@ -150,13 +169,44 @@ export function fileNode(category: FileCategory) {
 				label: "Output",
 				accesor: "text",
 			},
-		]
-  } satisfies FileNode
+		],
+	} satisfies FileNode;
 }
 
-export function addGitHubNodeTool() {
+export function textGenerationNode(llm: TextGenerationLanguageModelData) {
 	return {
-		action: "addGitHubNode",
-		category: "edit",
-	} satisfies AddGitHubNodeTool;
+		id: NodeId.generate(),
+		type: "action",
+		content: {
+			type: "textGeneration",
+			llm,
+		},
+		inputs: [],
+		outputs: [
+			{
+				id: OutputId.generate(),
+				label: "Output",
+				accesor: "generated-text",
+			},
+		],
+	} satisfies TextGenerationNode;
+}
+
+export function imageGenerationNode(llm: ImageGenerationLanguageModelData) {
+	return {
+		id: NodeId.generate(),
+		type: "action",
+		content: {
+			type: "imageGeneration",
+			llm,
+		},
+		inputs: [],
+		outputs: [
+			{
+				id: OutputId.generate(),
+				label: "Output",
+				accesor: "generated-image",
+			},
+		],
+	} satisfies ImageGenerationNode;
 }

@@ -114,8 +114,8 @@ export function WorkflowDesignerProvider({
 	);
 
 	const addNode = useCallback(
-		(nodeData: Omit<Node, "id">, options?: { ui?: NodeUIState }) => {
-			workflowDesignerRef.current.addNode(nodeData, options);
+		(node: Node, options?: { ui?: NodeUIState }) => {
+			workflowDesignerRef.current.addNode(node, options);
 			setAndSaveWorkspace();
 		},
 		[setAndSaveWorkspace],

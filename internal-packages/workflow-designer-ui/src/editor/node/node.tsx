@@ -1,9 +1,7 @@
 import {
 	FileNode,
 	GitHubNode,
-	type Input,
 	type Node,
-	type Output,
 	type OutputId,
 	TextGenerationNode,
 	TextNode,
@@ -17,10 +15,9 @@ import {
 } from "@xyflow/react";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
-import { Github, Icon } from "lucide-react";
 import { useMemo } from "react";
-import { ContentTypeIcon, type ContentTypeIconProps } from "../../icons";
-import { NodeNameEditable } from "./node-name-editable";
+import { NodeIcon } from "../../icons/node";
+import { defaultName } from "../../utils";
 
 type GiselleWorkflowDesignerTextGenerationNode = XYFlowNode<
 	{ nodeData: TextGenerationNode; preview?: boolean },
@@ -71,95 +68,30 @@ export function CustomXyFlowNode({
 		[workspace, data.nodeData.id],
 	);
 
-	switch (data.nodeData.content.type) {
-		case "textGeneration":
-			return (
-				<NodeComponent
-					nodeType={data.nodeData.type}
-					title={data.nodeData.name ?? data.nodeData.content.llm.id}
-					subtitle={data.nodeData.content.llm.provider}
-					selected={selected}
-					hasTarget={hasTarget}
-					inputs={data.nodeData.inputs}
-					outputs={data.nodeData.outputs}
-					connectedOutputIds={connectedOutputIds}
-					contentType="textGeneration"
-					llmProvider={data.nodeData.content.llm.provider}
-				/>
-			);
-		case "file":
-			return (
-				<NodeComponent
-					nodeType={data.nodeData.type}
-					title={data.nodeData.name}
-					selected={selected}
-					hasTarget={hasTarget}
-					inputs={data.nodeData.inputs}
-					outputs={data.nodeData.outputs}
-					contentType="file"
-					fileCategory={data.nodeData.content.category}
-					connectedOutputIds={connectedOutputIds}
-				/>
-			);
-		case "text":
-			return (
-				<NodeComponent
-					nodeType={data.nodeData.type}
-					title={data.nodeData.name}
-					selected={selected}
-					hasTarget={hasTarget}
-					inputs={data.nodeData.inputs}
-					outputs={data.nodeData.outputs}
-					contentType="text"
-					connectedOutputIds={connectedOutputIds}
-				/>
-			);
-		case "github":
-			return (
-				<NodeComponent
-					nodeType={data.nodeData.type}
-					title={data.nodeData.name}
-					selected={selected}
-					hasTarget={hasTarget}
-					inputs={data.nodeData.inputs}
-					outputs={data.nodeData.outputs}
-					contentType="github"
-					connectedOutputIds={connectedOutputIds}
-				/>
-			);
-		default: {
-			const _exhaustiveCheck: never = data.nodeData.content;
-			throw new Error(`Unhandled content type: ${_exhaustiveCheck}`);
-		}
-	}
+	return (
+		<NodeComponent
+			node={data.nodeData}
+			selected={selected}
+			connectedOutputIds={connectedOutputIds}
+		/>
+	);
 }
 
 export function NodeComponent({
-	nodeType,
+	node,
 	selected,
-	inputs,
 	connectedOutputIds,
-	outputs,
-	title,
-	subtitle,
 	preview = false,
-	hasTarget = false,
-	...iconProps
 }: {
-	title?: string;
-	subtitle?: string;
-	nodeType: Node["type"];
-	inputs?: Input[];
-	outputs?: Output[];
+	node: Node;
 	selected?: boolean;
 	preview?: boolean;
-	hasTarget?: boolean;
 	connectedOutputIds?: OutputId[];
-} & ContentTypeIconProps) {
+}) {
 	return (
 		<div
-			data-type={nodeType}
-			data-content-type={iconProps.contentType}
+			data-type={node.type}
+			data-content-type={node.content.type}
 			data-selected={selected}
 			data-preview={preview}
 			className={clsx(
@@ -201,8 +133,8 @@ export function NodeComponent({
 							"group-data-[content-type=github]:bg-github-node-1",
 						)}
 					>
-						<ContentTypeIcon
-							{...iconProps}
+						<NodeIcon
+							node={node}
 							className={clsx(
 								"w-[16px] h-[16px] fill-current",
 								"group-data-[content-type=text]:text-black-900",
@@ -214,10 +146,12 @@ export function NodeComponent({
 					</div>
 					<div>
 						<div className="font-rosart text-[14px] text-white-900">
-							{title ?? "Unnamed node"}
+							{defaultName(node)}
 						</div>
-						{subtitle && (
-							<div className="text-[10px] text-white-400">{subtitle}</div>
+						{node.type === "action" && (
+							<div className="text-[10px] text-white-400">
+								{node.content.llm.provider}
+							</div>
 						)}
 					</div>
 				</div>
@@ -225,7 +159,7 @@ export function NodeComponent({
 			{!preview && (
 				<div className="flex justify-between">
 					<div className="grid">
-						{inputs?.map((input) => (
+						{node.inputs?.map((input) => (
 							<div
 								className="relative flex items-center h-[28px]"
 								key={input.id}
@@ -247,7 +181,7 @@ export function NodeComponent({
 					</div>
 
 					<div className="grid">
-						{outputs?.map((output) => (
+						{node.outputs?.map((output) => (
 							<div
 								className="relative flex items-center h-[28px]"
 								key={output.id}

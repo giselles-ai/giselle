@@ -17,6 +17,16 @@ export interface AddNodeTool extends ToolBase {
 	node: Node;
 }
 
+export interface SelectLanguageModelTool extends ToolBase {
+	category: "edit";
+	action: "selectLanguageModel";
+}
+
+export interface SelectFileNodeCategoryTool extends ToolBase {
+	category: "edit";
+	action: "selectFileNodeCategory";
+}
+
 export interface AddTextNodeTool extends ToolBase {
 	category: "edit";
 	action: "addTextNode";
@@ -50,15 +60,11 @@ export type Tool =
 	| AddTextGenerationNodeTool
 	| MoveTool
 	| AddGitHubNodeTool
-	| AddNodeTool;
+	| AddNodeTool
+	| SelectFileNodeCategoryTool
+	| SelectLanguageModelTool;
 
-type ToolAction =
-	| AddTextNodeTool["action"]
-	| AddFileNodeTool["action"]
-	| AddTextGenerationNodeTool["action"]
-	| AddGitHubNodeTool["action"]
-	| MoveTool["action"]
-	| AddNodeTool["action"];
+type ToolAction = Tool["action"];
 
 export function isToolAction(args: unknown): args is ToolAction {
 	if (typeof args === "string") {
@@ -67,7 +73,9 @@ export function isToolAction(args: unknown): args is ToolAction {
 			args === "addFileNode" ||
 			args === "addTextGenerationNode" ||
 			args === "move" ||
-			args === "addNode"
+			args === "addNode" ||
+			args === "selectLanguageModel" ||
+			args === "selectFileNodeCategory"
 		);
 	}
 	return false;

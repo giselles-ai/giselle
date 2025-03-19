@@ -6,8 +6,14 @@ export const ImageGenerationLanguageModelData = FalLanguageModel.pick({
 	id: true,
 	configurations: true,
 });
-export type ImageGenerationLanguageModelData =
-	typeof ImageGenerationLanguageModelData;
+export type ImageGenerationLanguageModelData = z.infer<
+	typeof ImageGenerationLanguageModelData
+>;
+export function isImageGenerationLanguageModelData(
+	data: unknown,
+): data is ImageGenerationLanguageModelData {
+	return ImageGenerationLanguageModelData.safeParse(data).success;
+}
 
 export const ImageGenerationLanguageModelProvider = z.enum([
 	ImageGenerationLanguageModelData.shape.provider.value,

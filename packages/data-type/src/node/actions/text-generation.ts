@@ -58,6 +58,11 @@ export const TextGenerationLanguageModelData = z.discriminatedUnion(
 export type TextGenerationLanguageModelData = z.infer<
 	typeof TextGenerationLanguageModelData
 >;
+export function isTextGenerationLanguageModelData(
+	data: unknown,
+): data is TextGenerationLanguageModelData {
+	return TextGenerationLanguageModelData.safeParse(data).success;
+}
 
 export const TextGenerationContent = z.object({
 	type: z.literal("textGeneration"),

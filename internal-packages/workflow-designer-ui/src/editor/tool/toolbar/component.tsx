@@ -2,7 +2,8 @@
 
 import {
 	FileCategory,
-	TextGenerationLanguageModelData,
+	isImageGenerationLanguageModelData,
+	isTextGenerationLanguageModelData,
 } from "@giselle-sdk/data-type";
 import {
 	Capability,
@@ -19,7 +20,6 @@ import { type ReactNode, useState } from "react";
 import {
 	AnthropicIcon,
 	DocumentIcon,
-	GitHubIcon,
 	GoogleWhiteIcon,
 	OpenaiIcon,
 	PdfFileIcon,
@@ -31,13 +31,17 @@ import {
 } from "../../../icons";
 import { ImageGenerationNodeIcon } from "../../../icons/node";
 import { Tooltip } from "../../../ui/tooltip";
-import { isAddGitHubNodeToolAction, isToolAction } from "../types";
+import { isToolAction } from "../types";
 import {
-	addFileNodeTool,
-	addGitHubNodeTool,
+	addNodeTool,
 	addTextGenerationNodeTool,
-	addTextNodeTool,
+	fileNode,
+	imageGenerationNode,
 	moveTool,
+	selectFileNodeCategoryTool,
+	selectLanguageModelTool,
+	textGenerationNode,
+	textNode,
 	useToolbar,
 } from "./state";
 
@@ -143,13 +147,13 @@ export function Toolbar() {
 									setSelectedTool(moveTool());
 									break;
 								case "addTextNode":
-									setSelectedTool(addTextNodeTool());
+									setSelectedTool(addNodeTool(textNode()));
 									break;
-								case "addFileNode":
-									setSelectedTool(addFileNodeTool());
+								case "selectLanguageModel":
+									setSelectedTool(selectLanguageModelTool());
 									break;
-								case "addTextGenerationNode":
-									setSelectedTool(addTextGenerationNodeTool());
+								case "selectFileNodeCategory":
+									setSelectedTool(selectFileNodeCategoryTool());
 									break;
 							}
 						}
@@ -165,9 +169,13 @@ export function Toolbar() {
 							<PromptIcon data-icon />
 						</Tooltip>
 					</ToggleGroup.Item>
-					<ToggleGroup.Item value="addFileNode" data-tool className="relative">
+					<ToggleGroup.Item
+						value="selectFileNodeCategory"
+						data-tool
+						className="relative"
+					>
 						<DocumentIcon data-icon />
-						{selectedTool?.action === "addFileNode" && (
+						{selectedTool?.action === "selectFileNodeCategory" && (
 							<Popover.Root open={true}>
 								<Popover.Anchor />
 								<Popover.Portal>
@@ -189,16 +197,12 @@ export function Toolbar() {
 													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-white-900/10",
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
-												value={selectedTool.fileCategory}
 												onValueChange={(fileCategory) => {
-													if (isAddGitHubNodeToolAction(fileCategory)) {
-														setSelectedTool(addGitHubNodeTool());
-													} else {
-														setSelectedTool({
-															...selectedTool,
-															fileCategory: FileCategory.parse(fileCategory),
-														});
-													}
+													setSelectedTool(
+														addNodeTool(
+															fileNode(FileCategory.parse(fileCategory)),
+														),
+													);
 												}}
 											>
 												<ToggleGroup.Item value="pdf" data-tool>
@@ -213,10 +217,10 @@ export function Toolbar() {
 													<TextFileIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Text</p>
 												</ToggleGroup.Item>
-												<ToggleGroup.Item value="addGitHubNode" data-tool>
+												{/* <ToggleGroup.Item value="addGitHubNode" data-tool>
 													<GitHubIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">GitHub</p>
-												</ToggleGroup.Item>
+												</ToggleGroup.Item> */}
 											</ToggleGroup.Root>
 										</div>
 									</Popover.Content>
@@ -224,9 +228,9 @@ export function Toolbar() {
 							</Popover.Root>
 						)}
 					</ToggleGroup.Item>
-					<ToggleGroup.Item value="addTextGenerationNode" data-tool>
+					<ToggleGroup.Item value="selectLanguageModel" data-tool>
 						<StackBlicksIcon data-icon />
-						{selectedTool?.action === "addTextGenerationNode" && (
+						{selectedTool?.action === "selectLanguageModel" && (
 							<Popover.Root open={true}>
 								<Popover.Anchor />
 								<Popover.Portal>
@@ -244,25 +248,35 @@ export function Toolbar() {
 											<ToggleGroup.Root
 												type="single"
 												className={clsx("flex flex-col gap-[8px]")}
-												value={selectedTool.languageModel?.id}
 												onValueChange={(modelId) => {
-													const unsafeLanguageModel = languageModels.find(
+													const languageModel = languageModels.find(
 														(model) => model.id === modelId,
 													);
-													const languageModel =
-														TextGenerationLanguageModelData.safeParse({
-															id: unsafeLanguageModel?.id,
-															provider: unsafeLanguageModel?.provider,
-															configurations:
-																unsafeLanguageModel?.configurations,
-														});
-													if (!languageModel.success) {
-														return;
+													const languageModelData = {
+														id: languageModel?.id,
+														provider: languageModel?.provider,
+														configurations: languageModel?.configurations,
+													};
+													if (
+														isTextGenerationLanguageModelData(languageModelData)
+													) {
+														setSelectedTool(
+															addNodeTool(
+																textGenerationNode(languageModelData),
+															),
+														);
 													}
-													setSelectedTool({
-														...selectedTool,
-														languageModel: languageModel.data,
-													});
+													if (
+														isImageGenerationLanguageModelData(
+															languageModelData,
+														)
+													) {
+														setSelectedTool(
+															addNodeTool(
+																imageGenerationNode(languageModelData),
+															),
+														);
+													}
 												}}
 											>
 												{languageModels.map(
@@ -300,7 +314,7 @@ export function Toolbar() {
 						)}
 						<div className="absolute left-[calc(var(--language-model-detail-panel-width)_+_16px)]">
 							<div className="relative">
-								{selectedTool?.action === "addTextGenerationNode" && (
+								{selectedTool?.action === "selectLanguageModel" && (
 									<Popover.Root open={true}>
 										<Popover.Anchor />
 										<Popover.Portal>
