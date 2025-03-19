@@ -9,6 +9,7 @@ import {
 	withCountMeasurement,
 } from "@/lib/opentelemetry";
 import { getUser } from "@/lib/supabase";
+import { AgentIdProvider } from "@/packages/contexts/agent-id";
 import { connectIdentity, reconnectIdentity } from "@/services/accounts";
 import { saveAgentActivity } from "@/services/agents/activities";
 import { gitHubAppInstallURL } from "@/services/external/github";
@@ -386,24 +387,26 @@ export default async function Page({
 							<ToolbarContextProvider>
 								<MousePositionProvider>
 									<ToastProvider>
-										<AgentNameProvider
-											defaultValue={agent.name}
-											updateAgentNameAction={updateAgentName}
-										>
-											<PlaygroundModeProvider>
-												<ExecutionProvider
-													executeStepAction={executeStepAction}
-													putExecutionAction={putExecutionAction}
-													retryStepAction={retryStepAction}
-													executeNodeAction={executeNodeAction}
-													onFinishPerformExecutionAction={
-														onFinishPerformExecutionAction
-													}
-												>
-													<Playground />
-												</ExecutionProvider>
-											</PlaygroundModeProvider>
-										</AgentNameProvider>
+										<AgentIdProvider value={agentId}>
+											<AgentNameProvider
+												defaultValue={agent.name}
+												updateAgentNameAction={updateAgentName}
+											>
+												<PlaygroundModeProvider>
+													<ExecutionProvider
+														executeStepAction={executeStepAction}
+														putExecutionAction={putExecutionAction}
+														retryStepAction={retryStepAction}
+														executeNodeAction={executeNodeAction}
+														onFinishPerformExecutionAction={
+															onFinishPerformExecutionAction
+														}
+													>
+														<Playground />
+													</ExecutionProvider>
+												</PlaygroundModeProvider>
+											</AgentNameProvider>
+										</AgentIdProvider>
 									</ToastProvider>
 								</MousePositionProvider>
 							</ToolbarContextProvider>

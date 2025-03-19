@@ -1,3 +1,4 @@
+import { copyFiles } from "@/app/(playground)/p/[agentId]/actions";
 import { DocumentIcon } from "@giselles-ai/icons/document";
 import { PanelCloseIcon } from "@giselles-ai/icons/panel-close";
 import { PanelOpenIcon } from "@giselles-ai/icons/panel-open";
@@ -19,6 +20,7 @@ import {
 	TrashIcon,
 	UndoIcon,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
 	type ComponentProps,
 	type DetailedHTMLProps,
@@ -28,14 +30,19 @@ import {
 	useCallback,
 	useId,
 	useMemo,
+	useRef,
 	useState,
+	useTransition,
 } from "react";
 import { parse, remove } from "../actions";
 import { vercelBlobFileFolder } from "../constants";
+import { useAgentId } from "../contexts/agent-id";
 import { useDeveloperMode } from "../contexts/developer-mode";
 import { useExecution } from "../contexts/execution";
 import {
+	type GraphAction,
 	useArtifact,
+	useConnections,
 	useGraph,
 	useNode,
 	useSelectedNode,
@@ -45,6 +52,7 @@ import { useToast } from "../contexts/toast";
 import { GraphError } from "../lib/errors";
 import { textGenerationPrompt } from "../lib/prompts";
 import {
+	createArtifactId,
 	createConnectionId,
 	createFileId,
 	createNodeHandleId,
@@ -257,10 +265,39 @@ DialogFooter.displayName = "DialogHeader";
 
 export function PropertiesPanel() {
 	const { graph, dispatch, flush } = useGraph();
+	const agentId = useAgentId();
 	const selectedNode = useSelectedNode();
+	const selectedArtifact = useArtifact({ creatorNodeId: selectedNode?.id });
+	const selectedConnections = useConnections({
+		targetNodeId: selectedNode?.id,
+	});
 	const { open, setOpen, tab, setTab } = usePropertiesPanel();
 	const { executeNode } = useExecution();
 	const { addToast } = useToast();
+	const copyFileAction = copyFiles.bind(null, agentId);
+	const formRef = useRef<HTMLFormElement>(null);
+	const [isPending, startTransition] = useTransition();
+	const router = useRouter();
+
+	const handleConfirm = () => {
+		formRef.current?.requestSubmit();
+	};
+
+	const formAction = async (targetNode: Node) => {
+		startTransition(async () => {
+			const res = await copyFileAction(targetNode);
+			switch (res.result) {
+				case "success":
+					addToast({ message: "Success to copy files", type: "success" });
+					router.refresh();
+					break;
+				case "error":
+					addToast({ message: "Failed to copy files", type: "error" });
+					break;
+			}
+		});
+	};
+
 	return (
 		<div
 			className={clsx(
@@ -320,8 +357,124 @@ export function PropertiesPanel() {
 									{selectedNode.name}
 								</div>
 							</div>
-							{selectedNode.content.type === "textGeneration" && (
-								<div className="">
+							<div className="gap-[16px] flex items-center">
+								{isText(selectedNode) && (
+									<button
+										type="button"
+										className="relative z-10 rounded-[8px] shadow-[0px_0px_3px_0px_#FFFFFF40_inset] py-[3px] px-[8px] bg-black-80 text-black-30 font-rosart text-[14px] disabled:bg-black-40"
+										onClick={() => {
+											dispatch([
+												{
+													type: "addNode",
+													input: {
+														node: {
+															id: createNodeId(),
+															name: `Copy of ${selectedNode.name}`,
+															position: {
+																x: selectedNode.position.x + 400,
+																y: selectedNode.position.y + 100,
+															},
+															selected: true,
+															type: "variable",
+															content: {
+																type: "text",
+																text: selectedNode.content.text,
+															},
+														},
+													},
+												},
+												{
+													type: "updateNode",
+													input: {
+														nodeId: selectedNode.id,
+														node: {
+															...selectedNode,
+															selected: false,
+														},
+													},
+												},
+											]);
+											setOpen(false);
+										}}
+									>
+										Copy
+									</button>
+								)}
+								{isTextGeneration(selectedNode) && (
+									<button
+										type="button"
+										className="relative z-10 rounded-[8px] shadow-[0px_0px_3px_0px_#FFFFFF40_inset] py-[3px] px-[8px] bg-black-80 text-black-30 font-rosart text-[14px] disabled:bg-black-40"
+										onClick={() => {
+											const nodeId = createNodeId();
+											const addConnectionActions: GraphAction[] =
+												selectedConnections.map((connection) => ({
+													type: "addConnection",
+													input: {
+														connection: {
+															...connection,
+															id: createConnectionId(),
+															targetNodeId: nodeId,
+														},
+													},
+												}));
+											dispatch([
+												{
+													type: "addNode",
+													input: {
+														node: {
+															id: nodeId,
+															name: `Copy of ${selectedNode.name}`,
+															position: {
+																x: selectedNode.position.x + 400,
+																y: selectedNode.position.y + 100,
+															},
+															selected: true,
+															type: "action",
+															content: {
+																type: "textGeneration",
+																llm: selectedNode.content.llm,
+																temperature: selectedNode.content.temperature,
+																topP: selectedNode.content.topP,
+																instruction: selectedNode.content.instruction,
+																system: selectedNode.content.system,
+																sources: selectedNode.content.sources,
+															},
+														},
+													},
+												},
+												...addConnectionActions,
+												{
+													type: "upsertArtifact",
+													input: {
+														nodeId: nodeId,
+														artifact:
+															selectedArtifact?.type === "generatedArtifact"
+																? {
+																		...selectedArtifact,
+																		id: createArtifactId(),
+																		creatorNodeId: nodeId,
+																	}
+																: null,
+													},
+												},
+												{
+													type: "updateNode",
+													input: {
+														nodeId: selectedNode.id,
+														node: {
+															...selectedNode,
+															selected: false,
+														},
+													},
+												},
+											]);
+											setOpen(false);
+										}}
+									>
+										Copy
+									</button>
+								)}
+								{selectedNode.content.type === "textGeneration" && (
 									<button
 										type="button"
 										className="relative z-10 rounded-[8px] shadow-[0px_0px_3px_0px_#FFFFFF40_inset] py-[3px] px-[8px] bg-black-80 text-black-30 font-rosart text-[14px] disabled:bg-black-40"
@@ -329,8 +482,32 @@ export function PropertiesPanel() {
 									>
 										Generate
 									</button>
-								</div>
-							)}
+								)}
+								{selectedNode.content.type === "file" && (
+									<form ref={formRef} action={() => formAction(selectedNode)}>
+										<button
+											type="button"
+											className="relative z-10 rounded-[8px] shadow-[0px_0px_3px_0px_#FFFFFF40_inset] py-[3px] px-[8px] bg-black-80 text-black-30 font-rosart text-[14px] disabled:bg-black-40"
+											disabled={isPending}
+											onClick={handleConfirm}
+										>
+											Copy
+										</button>
+									</form>
+								)}
+								{selectedNode.content.type === "files" && (
+									<form ref={formRef} action={() => formAction(selectedNode)}>
+										<button
+											type="button"
+											className="relative z-10 rounded-[8px] shadow-[0px_0px_3px_0px_#FFFFFF40_inset] py-[3px] px-[8px] bg-black-80 text-black-30 font-rosart text-[14px] disabled:bg-black-40"
+											onClick={handleConfirm}
+											disabled={isPending}
+										>
+											Copy
+										</button>
+									</form>
+								)}
+							</div>
 						</div>
 					)}
 
@@ -2084,6 +2261,18 @@ function FileListItem({
 					{fileData.status === "failed" && <p>Failed</p>}
 				</div>
 			</div>
+			{/* <Tooltip text="Copy">
+				<button
+					type="button"
+					className="hidden group-hover:block px-[4px] py-[4px] bg-transparent hover:bg-white/10 rounded-[8px] transition-colors mr-[2px] shrink-0"
+					onClick={() => {
+						// TODO
+					}}
+
+					>
+					<CopyIcon className="w-[24px] h-[24px] stroke-current stroke-[1px] " />
+					</button>
+			</Tooltip> */}
 			<Tooltip text="Remove">
 				<button
 					type="button"
