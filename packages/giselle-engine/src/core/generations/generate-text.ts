@@ -278,6 +278,9 @@ export async function generateText(args: {
 		},
 		experimental_telemetry: {
 			isEnabled: args.context.telemetry?.isEnabled,
+			metadata: {
+				foo: "bar",
+			},
 		},
 	});
 	return streamTextResult;
