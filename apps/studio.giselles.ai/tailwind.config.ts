@@ -38,6 +38,7 @@ const config = {
 					DEFAULT: "hsl(var(--primary))",
 					foreground: "hsl(var(--primary-foreground))",
 					900: "hsl(var(--primary_900))",
+					400: "hsl(var(--primary_400))",
 					200: "hsl(var(--primary_200))",
 					100: "hsl(var(--primary_100))",
 				},
