@@ -13,7 +13,7 @@ export async function getUsageLimitsForTeam(
 
 	const agentTimeUsage = await calculateAgentTimeUsageMs(team.dbId);
 	const agentTimeLimit = isProPlan(team)
-		? AGENT_TIME_CHARGE_LIMIT_MINUTES.PRO * 60 * 1000
+		? Number.POSITIVE_INFINITY // pro plan has no limit
 		: AGENT_TIME_CHARGE_LIMIT_MINUTES.FREE * 60 * 1000;
 
 	return {

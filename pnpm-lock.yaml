@@ -808,6 +808,9 @@ importers:
       '@giselle-sdk/text-editor':
         specifier: workspace:^
         version: link:../text-editor
+      '@giselle-sdk/usage-limits':
+        specifier: workspace:^
+        version: link:../usage-limits
       ai:
         specifier: 'catalog:'
         version: 4.1.61(react@19.0.0)(zod@3.24.1)

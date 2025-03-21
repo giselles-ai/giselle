@@ -56,6 +56,7 @@
 		"@giselle-sdk/github-client": "workspace:^",
 		"@giselle-sdk/language-model": "workspace:^",
 		"@giselle-sdk/text-editor": "workspace:^",
+		"@giselle-sdk/usage-limits": "workspace:^",
 		"ai": "catalog:",
 		"next": "catalog:",
 		"openai": "catalog:",

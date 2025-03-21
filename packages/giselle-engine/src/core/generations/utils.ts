@@ -439,20 +439,10 @@ export async function handleAgentTimeConsumption(args: {
 	origin: { type: "workspace"; id: WorkspaceId } | { type: "run"; id: RunId };
 	onConsumeAgentTime: NonNullable<GiselleEngineContext["onConsumeAgentTime"]>;
 }) {
-	let workspaceId: WorkspaceId;
-	if (args.origin.type === "workspace") {
-		workspaceId = args.origin.id;
-	} else {
-		const run = await getRun({
-			storage: args.storage,
-			runId: args.origin.id,
-		});
-		// FIXME: run is still queued here
-		if (run == null || !("workspaceId" in run)) {
-			throw new Error("Run not completed");
-		}
-		workspaceId = run.workspaceId;
-	}
+	const workspaceId = await extractWorkspaceIdFromOrigin({
+		storage: args.storage,
+		origin: args.origin,
+	});
 
 	const totalDurationMs =
 		args.generation.completedAt - args.generation.startedAt;
@@ -462,4 +452,39 @@ export async function handleAgentTimeConsumption(args: {
 		args.generation.completedAt,
 		totalDurationMs,
 	);
+}
+
+/**
+ * Check usage limits for the workspace
+ */
+export async function fetchUsageLimits(args: {
+	storage: GiselleEngineContext["storage"];
+	origin: { type: "workspace"; id: WorkspaceId } | { type: "run"; id: RunId };
+	fetchUsageLimitsFn: NonNullable<GiselleEngineContext["fetchUsageLimitsFn"]>;
+}) {
+	const workspaceId = await extractWorkspaceIdFromOrigin({
+		storage: args.storage,
+		origin: args.origin,
+	});
+
+	return await args.fetchUsageLimitsFn(workspaceId);
+}
+
+async function extractWorkspaceIdFromOrigin(args: {
+	storage: GiselleEngineContext["storage"];
+	origin: { type: "workspace"; id: WorkspaceId } | { type: "run"; id: RunId };
+}) {
+	if (args.origin.type === "workspace") {
+		return args.origin.id;
+	}
+
+	const run = await getRun({
+		storage: args.storage,
+		runId: args.origin.id,
+	});
+
+	if (run == null || !("workspaceId" in run)) {
+		throw new Error("Run not completed");
+	}
+	return run.workspaceId;
 }

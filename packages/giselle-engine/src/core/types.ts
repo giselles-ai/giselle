@@ -5,6 +5,7 @@ import type {
 	GitHubTokenAuth,
 } from "@giselle-sdk/github-client";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
+import type { UsageLimits } from "@giselle-sdk/usage-limits";
 import type { Storage } from "unstorage";
 
 export interface GiselleEngineContext {
@@ -12,6 +13,7 @@ export interface GiselleEngineContext {
 	llmProviders: LanguageModelProvider[];
 	integrationConfigs?: GiselleIntegrationConfig[];
 	onConsumeAgentTime?: ConsumeAgentTimeCallback;
+	fetchUsageLimitsFn?: FetchUsageLimitsFn;
 	telemetry?: {
 		isEnabled?: boolean;
 		waitForFlushFn?: () => Promise<unknown>;
@@ -34,6 +36,10 @@ export type ConsumeAgentTimeCallback = (
 	totalDurationMs: number,
 ) => Promise<void>;
 
+export type FetchUsageLimitsFn = (
+	workspaceId: WorkspaceId,
+) => Promise<UsageLimits>;
+
 export interface GiselleEngineConfig {
 	storage: Storage;
 	llmProviders?: LanguageModelProvider[];
@@ -43,4 +49,5 @@ export interface GiselleEngineConfig {
 		isEnabled?: boolean;
 		waitForFlushFn?: () => Promise<unknown>;
 	};
+	fetchUsageLimitsFn?: FetchUsageLimitsFn;
 }

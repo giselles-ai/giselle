@@ -9,8 +9,6 @@ export async function onConsumeAgentTime(
 	endedAt: number,
 	totalDurationMs: number,
 ) {
-	"use server";
-
 	const agent = await db.query.agents.findFirst({
 		where: (agents, { eq }) => eq(agents.workspaceId, workspaceId),
 	});
