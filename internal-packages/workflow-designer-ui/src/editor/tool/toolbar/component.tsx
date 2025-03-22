@@ -202,10 +202,10 @@ export function Toolbar() {
 													<TextFileIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Text</p>
 												</ToggleGroup.Item>
-												<ToggleGroup.Item value="addGitHubNode" data-tool>
+												{/* <ToggleGroup.Item value="addGitHubNode" data-tool>
 													<GitHubIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">GitHub</p>
-												</ToggleGroup.Item>
+												</ToggleGroup.Item> */}
 											</ToggleGroup.Root>
 										</div>
 									</Popover.Content>
