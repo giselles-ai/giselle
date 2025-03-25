@@ -60,6 +60,7 @@
 		"@giselle-sdk/text-editor": "workspace:^",
 		"@giselle-sdk/usage-limits": "workspace:^",
 		"ai": "catalog:",
+		"langfuse": "3.37.0",
 		"next": "catalog:",
 		"openai": "catalog:",
 		"react": "catalog:",

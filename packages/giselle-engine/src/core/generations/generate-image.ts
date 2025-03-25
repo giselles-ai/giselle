@@ -15,9 +15,12 @@ import {
 	isImageGenerationNode,
 } from "@giselle-sdk/data-type";
 import { experimental_generateImage as generateImageAiSdk } from "ai";
+import { Langfuse, LangfuseMedia } from "langfuse";
+import { after } from "next/server";
 import { UsageLimitError } from "../error";
 import { filePath } from "../files/utils";
 import type { GiselleEngineContext } from "../types";
+import type { TelemetrySettings } from "./types";
 import {
 	buildMessageObject,
 	checkUsageLimits,
@@ -35,11 +38,13 @@ import {
 export async function generateImage(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
+	telemetry?: TelemetrySettings;
 }) {
 	const actionNode = args.generation.context.actionNode;
 	if (!isImageGenerationNode(actionNode)) {
 		throw new Error("Invalid generation type");
 	}
+	const langfuse = new Langfuse();
 	const runningGeneration = {
 		...args.generation,
 		status: "running",
@@ -47,6 +52,14 @@ export async function generateImage(args: {
 		queuedAt: Date.now(),
 		startedAt: Date.now(),
 	} satisfies RunningGeneration;
+
+	const trace = langfuse.trace({
+		name: runningGeneration.id,
+	});
+	const generation = trace.generation({
+		model: actionNode.content.llm.id,
+		modelParameters: actionNode.content.llm.configurations,
+	});
 
 	await Promise.all([
 		setGeneration({
@@ -212,6 +225,9 @@ export async function generateImage(args: {
 		size: actionNode.content.llm.configurations.size,
 		n: actionNode.content.llm.configurations.n,
 	});
+	trace.update({
+		input: { messages },
+	});
 
 	const generationOutputs: GenerationOutput[] = [];
 
@@ -283,4 +299,40 @@ export async function generateImage(args: {
 		generation: completedGeneration,
 		onConsumeAgentTime: args.context.onConsumeAgentTime,
 	});
+
+	if (args.context.telemetry?.isEnabled && generatedImageOutput) {
+		await Promise.all(
+			result.images.map(async (image) => {
+				const wrappedMedia = new LangfuseMedia({
+					contentType: imageType.contentType as
+						| "image/jpeg"
+						| "image/png"
+						| "image/webp"
+						| "image/jpg"
+						| "image/gif"
+						| "image/svg+xml"
+						| "image/tiff"
+						| "image/bmp"
+						| "audio/mpeg"
+						| "audio/mp3"
+						| "audio/wav"
+						| "audio/ogg",
+					contentBytes: Buffer.from(image.uint8Array),
+				});
+
+				generation.update({
+					input: { messages },
+					metadata: {
+						context: wrappedMedia,
+					},
+				});
+			}),
+		);
+
+		generation.end();
+
+		if (args.context.telemetry?.waitForFlushFn) {
+			after(args.context.telemetry.waitForFlushFn);
+		}
+	}
 }

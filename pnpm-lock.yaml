@@ -823,6 +823,9 @@ importers:
       ai:
         specifier: 'catalog:'
         version: 4.1.62(react@19.0.0)(zod@3.24.1)
+      langfuse:
+        specifier: 3.37.0
+        version: 3.37.0
       next:
         specifier: 'catalog:'
         version: 15.1.6(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -6826,10 +6829,6 @@ packages:
 
   jws@4.0.0:
     resolution: {integrity: sha512-KDncfTmOZoOMTFG4mBlG0qUIOlc03fmzH+ru6RgYVZhPkyiy/92Owlt/8UEN+a4TXR1FQetfIpJE8ApdvdVxTg==}
-
-  langfuse-core@3.32.0:
-    resolution: {integrity: sha512-8wWnPtmhMBBgVicLR9SjQ1O29fgvTJyRDE5kaF8b908TvE0PXZmxs068GGhLCCdTMUGpU6WXqKRHTZfXAuIzXA==}
-    engines: {node: '>=18'}
 
   langfuse-core@3.37.0:
     resolution: {integrity: sha512-7ZOFJ51u4dOeCpsQ8otNuNYeMb7xsExVQcOIBOByPFKjjd1mjf/03xF907F44dRzgf7n1U8ZYa0XgMSRgxKNoA==}
@@ -15609,10 +15608,6 @@ snapshots:
       jwa: 2.0.0
       safe-buffer: 5.2.1
 
-  langfuse-core@3.32.0:
-    dependencies:
-      mustache: 4.2.0
-
   langfuse-core@3.37.0:
     dependencies:
       mustache: 4.2.0
@@ -15625,7 +15620,7 @@ snapshots:
 
   langfuse@3.26.0:
     dependencies:
-      langfuse-core: 3.32.0
+      langfuse-core: 3.37.0
 
   langfuse@3.37.0:
     dependencies:
