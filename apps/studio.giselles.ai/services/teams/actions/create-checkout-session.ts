@@ -8,9 +8,11 @@ export async function createCheckoutSession(
 ) {
 	const proPlanPriceId = process.env.STRIPE_PRO_PLAN_PRICE_ID;
 	const userSeatPriceId = process.env.STRIPE_USER_SEAT_PRICE_ID;
+	const modelUsagePriceId = process.env.STRIPE_MODEL_USAGE_PRICE_ID;
 
 	invariant(proPlanPriceId, "STRIPE_PRO_PLAN_PRICE_ID is not set");
 	invariant(userSeatPriceId, "STRIPE_USER_SEAT_PRICE_ID is not set");
+	invariant(modelUsagePriceId, "STRIPE_MODEL_USAGE_PRICE_ID is not set");
 
 	const checkoutSession = await stripe.checkout.sessions.create({
 		mode: "subscription",
@@ -21,6 +23,9 @@ export async function createCheckoutSession(
 			},
 			{
 				price: userSeatPriceId,
+			},
+			{
+				price: modelUsagePriceId,
 			},
 		],
 		automatic_tax: { enabled: true },
