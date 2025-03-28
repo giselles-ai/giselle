@@ -40,15 +40,17 @@ Giselle is currently still in active development. The roadmap for the public rep
 
 ## Contributing
 
-We welcome your contributions to help improve Giselle!
+Your contributions — big or small — help Giselle evolve and improve. Interested in joining us?
 
-Here are some ways you can contribute:
+Here's how you can contribute:
 
-- [Report a bug](https://github.com/giselles-ai/giselle/issues/new?template=1_bug_report.yml) you found while using Giselle
-- [Request a feature](https://github.com/giselles-ai/giselle/discussions/categories/ideas) that you believe would be helpful
+- Star this repo ⭐
+- Follow us on social media: [Facebook](https://www.facebook.com/GiselleAI/), [X](https://x.com/Giselles_AI), [Instagram](https://www.instagram.com/giselle_de_ai) and [YouTube](https://www.youtube.com/@Giselle_AI)
+- [Report a bug](https://github.com/giselles-ai/giselle/issues/new?template=1_bug_report.yml) you encounter while using Giselle
+- [Request a feature](https://github.com/giselles-ai/giselle/discussions/categories/ideas) you think would be helpful
 - [Submit a pull request](CONTRIBUTING.md#how-to-submit-a-pull-request) if you'd like to add new features or fix bugs
 
-For more details, please see the [contributing guide](CONTRIBUTING.md).
+For more details, please see our [contributing guide](CONTRIBUTING.md).
 
 ## License
 

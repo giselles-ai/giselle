@@ -10,12 +10,14 @@ type TooltipProps = Omit<
 	text: ReactNode;
 	sideOffset?: number;
 	delayDuration?: number;
+	className?: string;
 };
 
 export function Tooltip({
 	text,
-	sideOffset = 4,
+	sideOffset = 8,
 	delayDuration = 300,
+	className,
 	...props
 }: TooltipProps) {
 	return (
@@ -24,14 +26,18 @@ export function Tooltip({
 				<TooltipPrimitive.Trigger asChild {...props} />
 				<TooltipPrimitive.Portal>
 					<TooltipPrimitive.Content
-						sideOffset={sideOffset}
 						className={clsx(
-							"z-50 overflow-hidden rounded-md px-[8px] py-[2px]",
-							"bg-primary-60",
-							"text-xs text-black-900 shadow-sm",
+							"z-50 overflow-hidden rounded-md bg-[#97A2BE] px-2 py-1 text-xs text-black-850 shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+							className,
 						)}
+						sideOffset={sideOffset}
 					>
 						{text}
+						<TooltipPrimitive.Arrow
+							className="fill-[#97A2BE] border-[hsla(232,36%,72%,0.2)]"
+							width={12}
+							height={6}
+						/>
 					</TooltipPrimitive.Content>
 				</TooltipPrimitive.Portal>
 			</TooltipPrimitive.Root>

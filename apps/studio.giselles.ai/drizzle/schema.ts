@@ -232,3 +232,17 @@ export const userSeatUsageReports = pgTable(
 		stripeMeterEventIdIdx: index().on(table.stripeMeterEventId),
 	}),
 );
+
+export const agentTimeRestrictions = pgTable(
+	"agent_time_restrictions",
+	{
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" })
+			.primaryKey(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => ({
+		teamDbIdIdx: index().on(table.teamDbId),
+	}),
+);

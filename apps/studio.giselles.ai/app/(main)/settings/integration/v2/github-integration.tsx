@@ -108,7 +108,7 @@ function Header({ account, installed, installationUrl }: HeaderProps) {
 					/>
 				) : (
 					<Button asChild>
-						<Link href="/settings/account/authentcation">
+						<Link href="/settings/account/authentication">
 							Configure GitHub App
 						</Link>
 					</Button>

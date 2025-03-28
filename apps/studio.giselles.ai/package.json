@@ -14,7 +14,7 @@
 		"start": "next start",
 		"check": "biome check --write .",
 		"lint": "next lint",
-		"test": "vitest"
+		"test": "vitest run"
 	},
 	"packageManager": "pnpm@10.0.0",
 	"dependencies": {

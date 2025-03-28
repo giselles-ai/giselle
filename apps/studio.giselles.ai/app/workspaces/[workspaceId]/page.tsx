@@ -1,22 +1,16 @@
 "use client";
 
-import {
-	Editor,
-	Header,
-	RunButton,
-} from "@giselle-internal/workflow-designer-ui";
+import { Editor, Header, Viewer } from "@giselle-internal/workflow-designer-ui";
 import { useWorkflowDesigner } from "giselle-sdk/react";
+import { updateAgentName } from "./actions";
 
 export default function Page() {
-	const { data } = useWorkflowDesigner();
-	const handleRunButtonClick = () => {
-		window.open(`/workspaces/${data.id}/run`, "_blank");
-	};
+	const { view } = useWorkflowDesigner();
 
 	return (
 		<div className="flex flex-col h-screen bg-black-900">
-			<Header action={<RunButton onClick={handleRunButtonClick} />} />
-			<Editor />
+			<Header onWorkflowNameChange={updateAgentName} />
+			{view === "editor" ? <Editor /> : <Viewer />}
 		</div>
 	);
 }

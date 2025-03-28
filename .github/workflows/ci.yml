@@ -1,8 +1,9 @@
 name: CI
 
 on:
-  - push
-  - pull_request
+  push:
+    branches: [main]
+  pull_request:
 
 jobs:
   check:
@@ -16,7 +17,14 @@ jobs:
           version: 1.9.4
       - uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
       - run: pnpm install
+      - name: Set node version to 22.14.0
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        with:
+          node-version: 22.14.0
+          cache: "pnpm"
       - name: Run Biome
         run: biome ci .
+      - name: Build SDK
+        run: pnpm build-sdk
       - name: Test
-        run: pnpm test --coverage
+        run: pnpm test

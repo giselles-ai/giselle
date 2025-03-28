@@ -12,7 +12,7 @@ export default function CompleteResetPasswordPage() {
 						description="Your password has been successfully reset."
 					/>
 					<Button asChild>
-						<Link href="/agents">Continue</Link>
+						<Link href="/apps">Continue</Link>
 					</Button>
 				</div>
 			</div>

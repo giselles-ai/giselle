@@ -58,10 +58,10 @@ To start using Giselle's playground:
 
    # Google AI API Key
    GOOGLE_AI_API_KEY=your_google_ai_api_key
-   
+
    # Perplexity API Key
    PERPLEXITY_API_KEY=your_perplexity_api_key
-   
+
    # FAL AI API Key
    FAL_API_KEY=your_fal_api_key
    ```
@@ -73,6 +73,12 @@ To start using Giselle's playground:
    pnpm dev
    ```
 
-4. Open your browser and visit `http://localhost:6180` to access the playground interface.
+   By default, the development server runs on port 3000 (this is the standard Next.js default). If you need to use a different port, you can set the `PORT` environment variable:
+
+   ```bash
+   PORT=6180 pnpm dev
+   ```
+
+4. Open your browser and visit `http://localhost:3000` to access the playground interface.
 
 The playground allows you to experiment with Giselle's core features in a standalone environment without needing to set up authentication or other production features.

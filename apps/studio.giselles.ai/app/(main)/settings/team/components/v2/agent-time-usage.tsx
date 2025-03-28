@@ -81,11 +81,11 @@ function AgentTimeUsage(props: AgentTimeUsageProps) {
 					>
 						{isOverLimit ? (
 							<span className="flex items-center gap-x-2">
-								{includedMinutes}min +{" "}
-								<span className="text-error-900">{overMinutes}min used</span>
+								{includedMinutes} min +{" "}
+								<span className="text-error-900">{overMinutes} min used</span>
 							</span>
 						) : (
-							<span>{usedMinutes}min used</span>
+							<span>{usedMinutes} min used</span>
 						)}
 					</div>
 					<div className="font-medium text-[12px] leading-[20.4px] tracking-normal font-geist text-primary-200">
@@ -117,9 +117,9 @@ function AgentTimeUsage(props: AgentTimeUsageProps) {
 					</div>
 
 					<div className="flex justify-between text-white-400 font-medium text-[12px] leading-[20.4px] tracking-normal font-geist">
-						<span>0min</span>
+						<span>0 min</span>
 						<span>
-							{isOverLimit ? `${usedMinutes}min` : `${includedMinutes}min`}
+							{isOverLimit ? `${usedMinutes} min` : `${includedMinutes} min`}
 						</span>
 					</div>
 				</div>

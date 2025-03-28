@@ -1,9 +1,44 @@
-import { type agents, db, teamMemberships, users } from "@/drizzle";
+import { db, teamMemberships, users } from "@/drizzle";
 import { type EmailRecipient, sendEmail } from "@/services/external/email";
+import type { WorkspaceId } from "@giselle-sdk/data-type";
 import { createAppAuth } from "@octokit/auth-app";
 import { Octokit } from "@octokit/core";
 import type { EmitterWebhookEvent } from "@octokit/webhooks";
 import { eq } from "drizzle-orm";
+
+export class WebhookPayloadError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "PayloadError";
+		Object.setPrototypeOf(this, WebhookPayloadError.prototype);
+	}
+}
+
+interface GitHubClientFactory {
+	createClient(installationId: number): Promise<Octokit>;
+}
+
+export const defaultGitHubClientFactory: GitHubClientFactory = {
+	createClient: async (installationId: number) => {
+		return await createOctokit(installationId);
+	},
+};
+
+export const mockGitHubClientFactory: GitHubClientFactory = {
+	createClient: async (installationId: number) =>
+		({
+			// biome-ignore lint/suspicious/noExplicitAny: mock
+			request: async (route: string, params?: any) => {
+				console.log("Mock GitHub API call:", { route, params });
+				return {
+					data: {
+						id: "mock-comment-id",
+						body: params?.body,
+					},
+				};
+			},
+		}) as Octokit,
+};
 
 export function assertIssueCommentEvent(
 	payload: unknown,
@@ -54,9 +89,15 @@ export async function createOctokit(installationId: number | string) {
 
 // Notify workflow error to team members
 export async function notifyWorkflowError(
-	agent: typeof agents.$inferSelect,
+	workspaceId: WorkspaceId,
 	error: string,
 ) {
+	const agent = await db.query.agents.findFirst({
+		where: (agents, { eq }) => eq(agents.workspaceId, workspaceId),
+	});
+	if (!agent) {
+		throw new Error("Agent not found");
+	}
 	const teamMembers = await db
 		.select({ userDisplayName: users.displayName, userEmail: users.email })
 		.from(teamMemberships)

@@ -85,6 +85,9 @@ export function GenerationView({
 							case "source":
 								/** @todo Source */
 								return null;
+							case "file":
+								/** @todo File parts */
+								return null;
 							default: {
 								const _exhaustiveCheck: never = part;
 								throw new Error(`Unhandled part type: ${_exhaustiveCheck}`);

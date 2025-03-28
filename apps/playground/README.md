@@ -32,6 +32,12 @@
     pnpm turbo dev
     ```
 
+    By default, the development server runs on port 3000 (this is the standard Next.js default). If you need to use a different port, you can set the `PORT` environment variable:
+
+    ```sh
+    PORT=6180 pnpm turbo dev
+    ```
+
 ## Tasks
 
 - [ ] Rework biome config(create tools/biome and each package import it)

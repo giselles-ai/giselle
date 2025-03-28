@@ -64,7 +64,7 @@
 
 
 <a name="@ai-sdk/fal"></a>
-### @ai-sdk/fal v0.0.9
+### @ai-sdk/fal v0.1.1
 #### 
 
 ##### Paths
@@ -97,7 +97,7 @@
 
 
 <a name="@ai-sdk/perplexity"></a>
-### @ai-sdk/perplexity v1.0.7
+### @ai-sdk/perplexity v1.1.1
 #### 
 
 ##### Paths

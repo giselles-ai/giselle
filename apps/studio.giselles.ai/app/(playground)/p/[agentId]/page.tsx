@@ -16,7 +16,6 @@ import type {
 	GitHubNextAction,
 	GitHubTriggerEvent,
 } from "@/services/external/github/types";
-import { reportAgentTimeUsage } from "@/services/usage-based-billing";
 import { putGraph } from "@giselles-ai/actions";
 import { Playground } from "@giselles-ai/components/playground";
 import { AgentNameProvider } from "@giselles-ai/contexts/agent-name";
@@ -254,7 +253,6 @@ export default async function Page({
 			endedAtDate,
 			totalDurationMs,
 		);
-		await reportAgentTimeUsage(agentId, endedAtDate);
 	}
 
 	async function connectGitHubIdentityAction() {

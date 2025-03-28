@@ -1,0 +1,35 @@
+{
+	"name": "@giselle-sdk/telemetry",
+	"version": "0.0.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "tsup",
+		"check-types": "tsc --noEmit",
+		"format": "biome format --write ."
+	},
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js"
+		},
+		"./react": {
+			"types": "./react/dist/index.d.ts",
+			"import": "./react/dist/index.mjs",
+			"require": "./react/dist/index.js"
+		}
+	},
+	"devDependencies": {
+		"@giselle/giselle-sdk-tsconfig": "workspace:*",
+		"@types/react": "catalog:",
+		"tsup": "catalog:"
+	},
+	"dependencies": {
+		"ai": "catalog:",
+		"react": "catalog:"
+	}
+}

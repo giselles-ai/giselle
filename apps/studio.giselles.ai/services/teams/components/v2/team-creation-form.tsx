@@ -44,11 +44,13 @@ function Submit({
 interface TeamCreationFormProps {
 	canCreateFreeTeam: boolean;
 	proPlanPrice: string;
+	children?: React.ReactNode;
 }
 
 export function TeamCreationForm({
 	canCreateFreeTeam,
 	proPlanPrice,
+	children,
 }: TeamCreationFormProps) {
 	const [teamName, setTeamName] = useState("");
 	const [selectedPlan, setSelectedPlan] = useState("");
@@ -56,7 +58,9 @@ export function TeamCreationForm({
 	return (
 		<Dialog>
 			<DialogTrigger asChild className="cursor-pointer">
-				<UserPlus className="h-6 w-6 text-white hover:opacity-80" />
+				{children ?? (
+					<UserPlus className="h-6 w-6 text-white hover:opacity-80" />
+				)}
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[500px] gap-y-6 px-8 py-6 border-[0.5px] border-black-400 rounded-[8px] bg-black-900">
 				<DialogHeader>

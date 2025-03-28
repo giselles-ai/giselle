@@ -37,8 +37,9 @@
 		"@giselle-sdk/giselle-engine": "workspace:^",
 		"@giselle-sdk/integration": "workspace:^",
 		"@giselle-sdk/run": "workspace:^",
-		"@giselle-sdk/workflow-designer": "workspace:^",
+		"@giselle-sdk/telemetry": "workspace:^",
 		"@giselle-sdk/usage-limits": "workspace:^",
+		"@giselle-sdk/workflow-designer": "workspace:^",
 		"react": "catalog:"
 	}
 }

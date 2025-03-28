@@ -31,7 +31,7 @@ export function CreateAgentButton() {
 	const { pending } = useFormStatus();
 	return (
 		<Button type="submit" disabled={pending} data-loading={pending}>
-			New Agent +
+			New App +
 		</Button>
 	);
 }
@@ -98,7 +98,7 @@ export function DuplicateAgentButton({
 							</TooltipTrigger>
 						</AlertDialogTrigger>
 						<TooltipContent side="top">
-							<p>Duplicate Agent</p>
+							<p>Duplicate App</p>
 						</TooltipContent>
 					</Tooltip>
 				</TooltipProvider>
@@ -107,7 +107,7 @@ export function DuplicateAgentButton({
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>
-						Are you sure to duplicate this agent?
+						Are you sure to duplicate this app?
 					</AlertDialogTitle>
 					{agentName && (
 						<AlertDialogDescription>{agentName}</AlertDialogDescription>
@@ -181,7 +181,7 @@ export function DeleteAgentButton({
 							</TooltipTrigger>
 						</AlertDialogTrigger>
 						<TooltipContent side="top">
-							<p>Delete Agent</p>
+							<p>Delete App</p>
 						</TooltipContent>
 					</Tooltip>
 				</TooltipProvider>
@@ -190,12 +190,12 @@ export function DeleteAgentButton({
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>
-						Are you sure you want to delete this agent?
+						Are you sure you want to delete this app?
 					</AlertDialogTitle>
 					{agentName && (
 						<AlertDialogDescription>
-							This action cannot be undone. This will permanently delete the
-							agent "{agentName}".
+							This action cannot be undone. This will permanently delete the app
+							"{agentName}".
 						</AlertDialogDescription>
 					)}
 				</AlertDialogHeader>

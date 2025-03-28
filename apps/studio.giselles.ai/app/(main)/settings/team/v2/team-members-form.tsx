@@ -26,7 +26,7 @@ import { addTeamMember } from "../actions";
 const TeamMemberSchema = object({
 	email: pipe(
 		string(),
-		minLength(1, "Email is required"),
+		minLength(1, "Please enter an email address"),
 		maxLength(256, "Email must be 256 characters or less"),
 		email("Please enter a valid email address"),
 	),

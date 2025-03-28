@@ -1,5 +1,3 @@
-<!-- Complete [TODO] -->
-
 # Contributing
 
 Thank you for your interest in this project! Please contribute according to the following guidelines:
@@ -8,33 +6,12 @@ Please note we have a [code of conduct](CODE_OF_CONDUCT.md), please follow it in
 
 ## Development environment setup
 
-To set up a development environment, please follow these steps:
+Giselle has both a Cloud version and a Self-hosting version, which can be found in the following directories:
 
-### 1. Fork this repository and clone it
+- Cloud: [apps/studio.giselles.ai/](apps/studio.giselles.ai/)
+- Self-hosting: [apps/playground/](apps/playground/)
 
-1. [Fork this repository](https://github.com/giselles-ai/giselle/fork) to your own GitHub account
-2. [Clone](https://help.github.com/articles/cloning-a-repository/) it to your local device.
-
-### 2. Prerequisites
-
-- pnpm (Version: 10.0.0)
-
-### 3. Set up your .env file
-
-1. Duplicate .env.example to .env.
-2. Please set the environment variables in the .env file.
-
-### 4. Install dependencies
-
-```sh
-pnpm install
-```
-
-### 5. Start developing and watch for code changes
-
-```sh
-pnpm dev
-```
+External contributors may find it easier to contribute to the Self-hosting version. Please follow the [Getting Started](apps/playground#getting-started) guide.
 
 ## Issues and feature requests
 

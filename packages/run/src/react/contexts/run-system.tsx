@@ -148,6 +148,9 @@ export function RunSystemContextProvider({
 								onGenerationCancelled(generation) {
 									setRunGeneration(runId, generation);
 								},
+								onGenerationFailed(generation) {
+									setRunGeneration(runId, generation);
+								},
 							},
 						);
 					}),

@@ -5,19 +5,22 @@ import { CommandIcon, CornerDownLeft } from "lucide-react";
 import { Tabs } from "radix-ui";
 import { useCallback, useMemo } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { NodeIcon } from "../../../icons/node";
 import { Button } from "../../../ui/button";
+import { useToasts } from "../../../ui/toast";
+import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
 } from "../ui";
 import { GenerationPanel } from "./generation-panel";
+import { InputPanel } from "./input-panel";
 import { KeyboardShortcuts } from "./keyboard-shortcuts";
 import { ImageGenerationModelPanel } from "./model-panel";
 import { PromptPanel } from "./prompt-panel";
 import { useConnectedSources } from "./sources";
-import { SourcesPanel } from "./sources-panel";
 
 export function ImageGenerationNodePropertiesPanel({
 	node,
@@ -36,10 +39,17 @@ export function ImageGenerationNodePropertiesPanel({
 		origin: { type: "workspace", id: data.id },
 	});
 	const { all: connectedSources } = useConnectedSources(node);
+	const usageLimitsReached = useUsageLimitsReached();
+	const { error } = useToasts();
 
 	const uiState = useMemo(() => data.ui.nodeState[node.id], [data, node.id]);
 
 	const generateText = useCallback(() => {
+		if (usageLimitsReached) {
+			error("Please upgrade your plan to continue using this feature.");
+			return;
+		}
+
 		startGeneration({
 			origin: {
 				type: "workspace",
@@ -50,10 +60,18 @@ export function ImageGenerationNodePropertiesPanel({
 				(connectedSource) => connectedSource.node,
 			),
 		});
-	}, [connectedSources, data.id, node, startGeneration]);
+	}, [
+		connectedSources,
+		data.id,
+		node,
+		startGeneration,
+		usageLimitsReached,
+		error,
+	]);
 
 	return (
 		<PropertiesPanelRoot>
+			{usageLimitsReached && <UsageLimitWarning />}
 			<PropertiesPanelHeader
 				icon={<NodeIcon node={node} className="size-[20px] text-black-900" />}
 				name={node.name}
@@ -66,6 +84,7 @@ export function ImageGenerationNodePropertiesPanel({
 					<Button
 						loading={isGenerating}
 						type="button"
+						disabled={usageLimitsReached}
 						onClick={() => {
 							if (isGenerating) {
 								stopGeneration();
@@ -73,7 +92,7 @@ export function ImageGenerationNodePropertiesPanel({
 								generateText();
 							}
 						}}
-						className="w-[150px]"
+						className="w-[150px] disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						{isGenerating ? (
 							<span>Stop</span>
@@ -90,10 +109,7 @@ export function ImageGenerationNodePropertiesPanel({
 				}
 			/>
 
-			<PanelGroup
-				direction="vertical"
-				className="flex-1 flex flex-col gap-[16px]"
-			>
+			<PanelGroup direction="vertical" className="flex-1 flex flex-col">
 				<Panel>
 					<PropertiesPanelContent>
 						<Tabs.Root
@@ -113,7 +129,7 @@ export function ImageGenerationNodePropertiesPanel({
 							>
 								<Tabs.Trigger value="prompt">Prompt</Tabs.Trigger>
 								<Tabs.Trigger value="model">Model</Tabs.Trigger>
-								<Tabs.Trigger value="sources">Sources</Tabs.Trigger>
+								<Tabs.Trigger value="input">Input</Tabs.Trigger>
 							</Tabs.List>
 							<Tabs.Content
 								value="prompt"
@@ -136,23 +152,24 @@ export function ImageGenerationNodePropertiesPanel({
 								/>
 							</Tabs.Content>
 							<Tabs.Content
-								value="sources"
+								value="input"
 								className="flex-1 flex flex-col overflow-y-auto"
 							>
-								<SourcesPanel node={node} />
+								<InputPanel node={node} />
 							</Tabs.Content>
 						</Tabs.Root>
 					</PropertiesPanelContent>
 				</Panel>
 				<PanelResizeHandle
 					className={clsx(
-						"h-[1px] bg-black-400/50 transition-colors",
-						"data-[resize-handle-state=hover]:bg-black-400 data-[resize-handle-state=drag]:bg-black-400",
+						"h-[12px] flex items-center justify-center cursor-row-resize",
+						"after:content-[''] after:h-[3px] after:w-[32px] after:bg-[#3a3f44] after:rounded-full",
+						"hover:after:bg-[#4a90e2]",
 					)}
 				/>
 				<Panel>
 					<PropertiesPanelContent>
-						<GenerationPanel node={node} />
+						<GenerationPanel node={node} onClickGenerateButton={generateText} />
 					</PropertiesPanelContent>
 				</Panel>
 			</PanelGroup>

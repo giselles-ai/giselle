@@ -15,6 +15,7 @@ import {
 } from "@giselle-sdk/data-type";
 import { z } from "zod";
 import type { GiselleEngine } from "../core";
+import type { TelemetrySettings } from "../core/generations";
 import { JsonResponse } from "../utils";
 import { createHandler } from "./create-handler";
 
@@ -54,9 +55,15 @@ export const createJsonRouters = {
 		}),
 	generateText: (giselleEngine: GiselleEngine) =>
 		createHandler({
-			input: z.object({ generation: QueuedGeneration }),
+			input: z.object({
+				generation: QueuedGeneration,
+				telemetry: z.custom<TelemetrySettings>().optional(),
+			}),
 			handler: async ({ input }) => {
-				const stream = await giselleEngine.generateText(input.generation);
+				const stream = await giselleEngine.generateText(
+					input.generation,
+					input.telemetry,
+				);
 				return stream.toDataStreamResponse();
 			},
 		}),

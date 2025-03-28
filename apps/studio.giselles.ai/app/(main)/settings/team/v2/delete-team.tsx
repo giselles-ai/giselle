@@ -30,7 +30,7 @@ export function DeleteTeam() {
 				</h2>
 				<p className="text-red-900/50 font-medium text-[12px] leading-[20.4px] tracking-normal font-geist">
 					Permanently remove your Team Account and all of its contents from the
-					Giselle's platform. This action is not reversible, so please continue
+					Giselle platform. This action is not reversible, so please continue
 					with caution.
 				</p>
 			</div>

@@ -22,6 +22,18 @@ const GoogleLanguageModel = LanguageModelBase.extend({
 });
 type GoogleLanguageModel = z.infer<typeof GoogleLanguageModel>;
 
+const gemini25ProExp: GoogleLanguageModel = {
+	provider: "google",
+	id: "gemini-2.5-pro-exp-03-25",
+	capabilities:
+		Capability.TextGeneration |
+		Capability.GenericFileInput |
+		Capability.SearchGrounding |
+		Capability.Reasoning,
+	tier: Tier.enum.free,
+	configurations: defaultConfigurations,
+};
+
 const gemini20Flash: GoogleLanguageModel = {
 	provider: "google",
 	id: "gemini-2.0-flash-001",
@@ -61,7 +73,12 @@ const gemini20ProExp: GoogleLanguageModel = {
 	configurations: defaultConfigurations,
 };
 
-export const models = [gemini20Flash, gemini20FlashThinkingExp, gemini20ProExp];
+export const models = [
+	gemini25ProExp,
+	gemini20Flash,
+	gemini20FlashThinkingExp,
+	gemini20ProExp,
+];
 
 export const LanguageModel = GoogleLanguageModel;
 export type LanguageModel = GoogleLanguageModel;

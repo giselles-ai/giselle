@@ -64,7 +64,7 @@ export async function copyAgent(
 		if (agent.teamDbId !== team.dbId) {
 			return {
 				result: "error",
-				message: "You are not allowed to duplicate this agent",
+				message: "You are not allowed to duplicate this app",
 			};
 		}
 
@@ -213,7 +213,7 @@ export async function deleteAgent(
 	if (agent.teamDbId !== team.dbId) {
 		return {
 			result: "error",
-			message: "You are not allowed to delete this agent",
+			message: "You are not allowed to delete this app",
 		};
 	}
 

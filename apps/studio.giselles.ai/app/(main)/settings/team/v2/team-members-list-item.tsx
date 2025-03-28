@@ -209,7 +209,7 @@ export function TeamMemberListItem({
 													<AlertDialogContent className="px-8 py-6 border-[0.5px] border-black-400 rounded-[16px] bg-black-850">
 														<AlertDialogHeader>
 															<AlertDialogTitle className="text-white-800 font-bold text-[16px] leading-[16px] font-hubot">
-																Remove team member
+																Remove Team Member
 															</AlertDialogTitle>
 															<AlertDialogDescription className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
 																Are you sure you want to remove{" "}

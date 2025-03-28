@@ -12,15 +12,15 @@ export const Nav: FC = () => {
 			<p className="text-black--30">
 				{pathname === "/"
 					? "Lobby"
-					: pathname.startsWith("/agents")
-						? "Agents"
+					: pathname.startsWith("/apps")
+						? "Apps"
 						: pathname.startsWith("/settings")
 							? "Settings"
 							: ""}
 			</p>
 			<p>/</p>
 			{/** pathname !== "/" && <Link href="/">Lobby</Link> */}
-			{!pathname.startsWith("/agents") && <Link href="/agents">Agents</Link>}
+			{!pathname.startsWith("/apps") && <Link href="/apps">Apps</Link>}
 			{!pathname.startsWith("/settings") && (
 				<Link href="/settings/account">Settings</Link>
 			)}

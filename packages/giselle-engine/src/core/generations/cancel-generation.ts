@@ -13,14 +13,15 @@ export async function cancelGeneration(args: {
 	if (generation === undefined) {
 		throw new Error(`Generation ${args.generationId} not found`);
 	}
+	const cancelledGeneration: CancelledGeneration = {
+		...generation,
+		status: "cancelled",
+		cancelledAt: Date.now(),
+	};
 	await Promise.all([
 		setGeneration({
 			storage: args.context.storage,
-			generation: {
-				...generation,
-				status: "cancelled",
-				cancelledAt: Date.now(),
-			} as CancelledGeneration,
+			generation: cancelledGeneration,
 		}),
 		setNodeGenerationIndex({
 			storage: args.context.storage,
@@ -36,4 +37,5 @@ export async function cancelGeneration(args: {
 			},
 		}),
 	]);
+	return cancelledGeneration;
 }

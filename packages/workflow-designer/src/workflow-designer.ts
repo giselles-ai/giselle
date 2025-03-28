@@ -1,18 +1,17 @@
 import {
 	ConnectionId,
-	type FileId,
 	type InputId,
 	type Node,
 	NodeId,
 	type NodeReference,
 	NodeUIState,
 	type OutputId,
-	type UploadedFileData,
 	type Viewport,
 	type Workspace,
 	generateInitialWorkspace,
 } from "@giselle-sdk/data-type";
 import { buildWorkflowMap } from "@giselle-sdk/workflow-utils";
+import { isSupportedConnection } from "./is-supported-connection";
 
 interface AddNodeOptions {
 	ui?: NodeUIState;
@@ -131,5 +130,6 @@ export function WorkflowDesigner({
 		deleteNode,
 		deleteConnection,
 		updateName,
+		isSupportedConnection,
 	};
 }

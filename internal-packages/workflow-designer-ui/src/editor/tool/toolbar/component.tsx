@@ -20,13 +20,13 @@ import { type ReactNode, useState } from "react";
 import {
 	AnthropicIcon,
 	DocumentIcon,
+	GenNodeIcon,
 	GoogleWhiteIcon,
 	OpenaiIcon,
 	PdfFileIcon,
 	PerplexityIcon,
 	PictureIcon,
 	PromptIcon,
-	StackBlicksIcon,
 	TextFileIcon,
 } from "../../../icons";
 import { ImageGenerationNodeIcon } from "../../../icons/node";
@@ -47,9 +47,11 @@ import {
 
 function TooltipAndHotkey({ text, hotkey }: { text: string; hotkey?: string }) {
 	return (
-		<div className="flex justify-between items-center gap-[8px]">
-			<p>{text}</p>
-			{hotkey && <p className="uppercase text-black-70">{hotkey}</p>}
+		<div className="flex items-center gap-1">
+			<span>{text}</span>
+			{hotkey && (
+				<span className="text-black-400 uppercase ml-1">{hotkey}</span>
+			)}
 		</div>
 	);
 }
@@ -174,7 +176,9 @@ export function Toolbar() {
 						data-tool
 						className="relative"
 					>
-						<DocumentIcon data-icon />
+						<Tooltip text={<TooltipAndHotkey text="Document" hotkey="d" />}>
+							<DocumentIcon data-icon />
+						</Tooltip>
 						{selectedTool?.action === "selectFileNodeCategory" && (
 							<Popover.Root open={true}>
 								<Popover.Anchor />
@@ -229,7 +233,9 @@ export function Toolbar() {
 						)}
 					</ToggleGroup.Item>
 					<ToggleGroup.Item value="selectLanguageModel" data-tool>
-						<StackBlicksIcon data-icon />
+						<Tooltip text={<TooltipAndHotkey text="Generation" hotkey="l" />}>
+							<GenNodeIcon data-icon />
+						</Tooltip>
 						{selectedTool?.action === "selectLanguageModel" && (
 							<Popover.Root open={true}>
 								<Popover.Anchor />

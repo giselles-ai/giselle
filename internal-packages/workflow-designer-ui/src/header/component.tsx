@@ -1,8 +1,15 @@
 "use client";
 
+import type { WorkspaceId } from "@giselle-sdk/data-type";
 import clsx from "clsx";
 import { useWorkflowDesigner } from "giselle-sdk/react";
-import { ChevronDownIcon, PlayIcon, View } from "lucide-react";
+import { ViewState } from "giselle-sdk/react";
+import {
+	ChevronDownIcon,
+	EyeIcon,
+	GanttChartIcon,
+	PlayIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { Dialog, DropdownMenu, VisuallyHidden } from "radix-ui";
 import { type ReactNode, useState } from "react";
@@ -12,11 +19,30 @@ import { SettingsPanel } from "../settings";
 
 export function Header({
 	action,
+	onWorkflowNameChange,
 }: {
 	action?: ReactNode;
+	onWorkflowNameChange?: (workspaceId: WorkspaceId, name: string) => void;
 }) {
-	const { data, updateName } = useWorkflowDesigner();
+	const { data, updateName, view, setView } = useWorkflowDesigner();
 	const [openSettings, setOpenSettings] = useState(false);
+
+	const toggleView = () => {
+		setView(view === "editor" ? "viewer" : "editor");
+	};
+
+	const updateWorkflowName = (value?: string) => {
+		if (!value) {
+			return;
+		}
+
+		if (onWorkflowNameChange) {
+			onWorkflowNameChange(data.id, value);
+		}
+
+		updateName(value);
+	};
+
 	return (
 		<div className="h-[54px] pl-[24px] pr-[16px] flex items-center justify-between shrink-0">
 			<div className="flex items-center gap-[8px] text-white-950">
@@ -27,7 +53,7 @@ export function Header({
 				<div className="flex gap-[2px] group">
 					<EditableText
 						fallbackValue="Untitled"
-						onChange={updateName}
+						onChange={updateWorkflowName}
 						value={data.name}
 					/>
 
@@ -80,7 +106,39 @@ export function Header({
 					</DropdownMenu.Root>
 				</div>
 			</div>
-			{action && <div className="flex items-center">{action}</div>}
+
+			<div className="flex items-center gap-[12px]">
+				<div className="flex items-center overflow-hidden rounded-[8px] border border-black-400/30">
+					<button
+						type="button"
+						onClick={toggleView}
+						className={clsx(
+							"flex items-center gap-[4px] px-[12px] py-[6px] text-[14px] transition-colors",
+							view === "editor"
+								? "bg-primary-900 text-white-900"
+								: "bg-transparent text-white-900/70 hover:text-white-900 hover:bg-black-800",
+						)}
+					>
+						<GanttChartIcon className="size-[16px]" />
+						<span>Builder</span>
+					</button>
+					<button
+						type="button"
+						onClick={toggleView}
+						className={clsx(
+							"flex items-center gap-[4px] px-[12px] py-[6px] text-[14px] transition-colors",
+							view === "viewer"
+								? "bg-primary-900 text-white-900"
+								: "bg-transparent text-white-900/70 hover:text-white-900 hover:bg-black-800",
+						)}
+					>
+						<EyeIcon className="size-[16px]" />
+						<span>Preview</span>
+					</button>
+				</div>
+
+				{action && <div className="flex items-center">{action}</div>}
+			</div>
 
 			<Dialog.Root open={openSettings} onOpenChange={setOpenSettings}>
 				<Dialog.Portal>

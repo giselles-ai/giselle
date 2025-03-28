@@ -7,9 +7,10 @@ import {
 	useRunController,
 	useWorkflowDesigner,
 } from "giselle-sdk/react";
-import { CircleCheckIcon, CircleSlashIcon } from "lucide-react";
+import { CircleCheckIcon, CircleSlashIcon, XCircleIcon } from "lucide-react";
 import { Tabs } from "radix-ui";
 import { useMemo, useState } from "react";
+import { useUsageLimitsReached } from "../hooks/usage-limits";
 import { SpinnerIcon, WilliIcon } from "../icons";
 import bg from "../images/bg.png";
 import { Button } from "../ui/button";
@@ -23,11 +24,14 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "../ui/select";
+import { UsageLimitWarning } from "../ui/usage-limit-warning";
 
 export function Viewer() {
 	const { generations, run } = useRun();
 	const { perform, isRunning, cancel } = useRunController();
 	const { data } = useWorkflowDesigner();
+	const usageLimitsReached = useUsageLimitsReached();
+
 	const [flowId, setFlowId] = useState<WorkflowId | undefined>(
 		data.editingWorkflows.length === 1
 			? data.editingWorkflows[0].id
@@ -72,6 +76,8 @@ export function Viewer() {
 									</Select>
 								)}
 
+								{usageLimitsReached && <UsageLimitWarning />}
+
 								{flowId &&
 									(isRunning ? (
 										<Button
@@ -86,7 +92,12 @@ export function Viewer() {
 									) : (
 										<Button
 											type="button"
+											disabled={usageLimitsReached}
+											className="disabled:opacity-50 disabled:cursor-not-allowed"
 											onClick={() => {
+												if (usageLimitsReached) {
+													return;
+												}
 												perform(flowId);
 											}}
 										>
@@ -142,7 +153,12 @@ export function Viewer() {
 																	/>
 																);
 															case "failed":
-																return <div key={generation.id}>failed</div>;
+																return (
+																	<XCircleIcon
+																		className="size-[22px] text-error-900 shrink-0"
+																		key={generation.id}
+																	/>
+																);
 															case "cancelled":
 																return (
 																	<CircleSlashIcon

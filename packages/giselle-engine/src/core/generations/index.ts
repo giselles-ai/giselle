@@ -5,3 +5,4 @@ export * from "./get-node-generations";
 export * from "./generate-image";
 export * from "./get-generated-image";
 export * from "./set-generation";
+export * from "./types";

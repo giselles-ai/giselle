@@ -7,14 +7,9 @@ export async function createCheckoutSession(
 	cancelUrl: string,
 ) {
 	const proPlanPriceId = process.env.STRIPE_PRO_PLAN_PRICE_ID;
-	const agentTimeChargePriceId = process.env.STRIPE_AGENT_TIME_CHARGE_PRICE_ID;
 	const userSeatPriceId = process.env.STRIPE_USER_SEAT_PRICE_ID;
 
 	invariant(proPlanPriceId, "STRIPE_PRO_PLAN_PRICE_ID is not set");
-	invariant(
-		agentTimeChargePriceId,
-		"STRIPE_AGENT_TIME_CHARGE_PRICE_ID is not set",
-	);
 	invariant(userSeatPriceId, "STRIPE_USER_SEAT_PRICE_ID is not set");
 
 	const checkoutSession = await stripe.checkout.sessions.create({
@@ -23,9 +18,6 @@ export async function createCheckoutSession(
 			{
 				price: proPlanPriceId,
 				quantity: 1,
-			},
-			{
-				price: agentTimeChargePriceId,
 			},
 			{
 				price: userSeatPriceId,

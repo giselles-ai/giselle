@@ -1,9 +1,9 @@
 import {
 	type Connection,
-	type ImageGenerationNode,
 	type Input,
 	InputId,
 	OutputId,
+	type TextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
 import clsx from "clsx/lite";
@@ -76,7 +76,7 @@ function SourceSelect({
 	onValueChange,
 	contentProps,
 }: {
-	node: ImageGenerationNode;
+	node: TextGenerationNode;
 	sources: Source[];
 	onValueChange?: (value: OutputId[]) => void;
 	contentProps?: Omit<
@@ -87,6 +87,15 @@ function SourceSelect({
 	const [selectedOutputIds, setSelectedOutputIds] = useState<OutputId[]>([]);
 	const { generatedSources, textSources, fileSources, githubSources } =
 		useSourceCategories(sources);
+	const { isSupportedConnection } = useWorkflowDesigner();
+	const isSupported = useCallback(
+		(source: Source) => {
+			const { canConnect } = isSupportedConnection(source.node, node);
+			return canConnect;
+		},
+		[isSupportedConnection, node],
+	);
+
 	return (
 		<Popover.Root
 			onOpenChange={(open) => {
@@ -158,6 +167,7 @@ function SourceSelect({
 										<SourceToggleItem
 											key={generatedSource.output.id}
 											source={generatedSource}
+											disabled={!isSupported(generatedSource)}
 										/>
 									))}
 								</div>
@@ -171,6 +181,7 @@ function SourceSelect({
 										<SourceToggleItem
 											key={textSource.output.id}
 											source={textSource}
+											disabled={!isSupported(textSource)}
 										/>
 									))}
 								</div>
@@ -185,7 +196,7 @@ function SourceSelect({
 										<SourceToggleItem
 											key={fileSource.output.id}
 											source={fileSource}
-											disabled={true}
+											disabled={!isSupported(fileSource)}
 										/>
 									))}
 								</div>
@@ -199,7 +210,7 @@ function SourceSelect({
 										<SourceToggleItem
 											key={githubSource.output.id}
 											source={githubSource}
-											disabled={true}
+											disabled={!isSupported(githubSource)}
 										/>
 									))}
 								</div>
@@ -282,20 +293,20 @@ function SourceListItem({
 	);
 }
 
-export function SourcesPanel({
-	node: imageGenerationNode,
+export function InputPanel({
+	node: textGenerationNode,
 }: {
-	node: ImageGenerationNode;
+	node: TextGenerationNode;
 }) {
 	const { data, addConnection, deleteConnection, updateNodeData } =
 		useWorkflowDesigner();
 	const sources = useMemo<Source[]>(() => {
 		const tmpSources: Source[] = [];
 		const connections = data.connections.filter(
-			(connection) => connection.inputNode.id === imageGenerationNode.id,
+			(connection) => connection.inputNode.id === textGenerationNode.id,
 		);
 		for (const node of data.nodes) {
-			if (node.id === imageGenerationNode.id) {
+			if (node.id === textGenerationNode.id) {
 				continue;
 			}
 			for (const output of node.outputs) {
@@ -310,14 +321,14 @@ export function SourcesPanel({
 			}
 		}
 		return tmpSources;
-	}, [data.nodes, data.connections, imageGenerationNode.id]);
-	const connectedSources = useConnectedSources(imageGenerationNode);
+	}, [data.nodes, data.connections, textGenerationNode.id]);
+	const connectedSources = useConnectedSources(textGenerationNode);
 
 	const handleConnectionChange = useCallback(
 		(connectOutputIds: OutputId[]) => {
 			const currentConnectedOutputIds = data.connections
 				.filter(
-					(connection) => connection.inputNode.id === imageGenerationNode.id,
+					(connection) => connection.inputNode.id === textGenerationNode.id,
 				)
 				.map((connection) => connection.outputId);
 			const newConnectOutputIdSet = new Set(connectOutputIds);
@@ -326,7 +337,7 @@ export function SourcesPanel({
 				currentConnectedOutputIdSet,
 			);
 
-			let mutableInputs = imageGenerationNode.inputs;
+			let mutableInputs = textGenerationNode.inputs;
 			for (const outputId of addedOutputIdSet) {
 				const outputNode = data.nodes.find((node) =>
 					node.outputs.some((output) => output.id === outputId),
@@ -336,15 +347,15 @@ export function SourcesPanel({
 				}
 				const newInput: Input = {
 					id: InputId.generate(),
-					label: "Source",
+					label: "Input",
 				};
 
 				mutableInputs = [...mutableInputs, newInput];
-				updateNodeData(imageGenerationNode, {
+				updateNodeData(textGenerationNode, {
 					inputs: mutableInputs,
 				});
 				addConnection({
-					inputNode: imageGenerationNode,
+					inputNode: textGenerationNode,
 					inputId: newInput.id,
 					outputId,
 					outputNode: outputNode,
@@ -358,7 +369,7 @@ export function SourcesPanel({
 			for (const outputId of removedOutputIdSet) {
 				const connection = data.connections.find(
 					(connection) =>
-						connection.inputNode.id === imageGenerationNode.id &&
+						connection.inputNode.id === textGenerationNode.id &&
 						connection.outputId === outputId,
 				);
 				if (connection === undefined) {
@@ -369,13 +380,13 @@ export function SourcesPanel({
 				mutableInputs = mutableInputs.filter(
 					(input) => input.id !== connection.inputId,
 				);
-				updateNodeData(imageGenerationNode, {
+				updateNodeData(textGenerationNode, {
 					inputs: mutableInputs,
 				});
 			}
 		},
 		[
-			imageGenerationNode,
+			textGenerationNode,
 			data.nodes,
 			data.connections,
 			addConnection,
@@ -387,16 +398,16 @@ export function SourcesPanel({
 	const handleRemove = useCallback(
 		(connection: Connection) => {
 			deleteConnection(connection.id);
-			updateNodeData(imageGenerationNode, {
-				inputs: imageGenerationNode.inputs.filter(
+			updateNodeData(textGenerationNode, {
+				inputs: textGenerationNode.inputs.filter(
 					(input) => input.id !== connection.inputId,
 				),
 			});
 		},
-		[imageGenerationNode, deleteConnection, updateNodeData],
+		[textGenerationNode, deleteConnection, updateNodeData],
 	);
 
-	if (imageGenerationNode.inputs.length === 0) {
+	if (textGenerationNode.inputs.length === 0) {
 		return (
 			<div className="mt-[60px]">
 				<EmptyState
@@ -404,7 +415,7 @@ export function SourcesPanel({
 					description="Select the data you want to refer to from the output and the information and knowledge you have."
 				>
 					<SourceSelect
-						node={imageGenerationNode}
+						node={textGenerationNode}
 						sources={sources}
 						onValueChange={handleConnectionChange}
 					/>
@@ -416,7 +427,7 @@ export function SourcesPanel({
 		<div>
 			<div className="flex justify-end">
 				<SourceSelect
-					node={imageGenerationNode}
+					node={textGenerationNode}
 					sources={sources}
 					onValueChange={handleConnectionChange}
 					contentProps={{

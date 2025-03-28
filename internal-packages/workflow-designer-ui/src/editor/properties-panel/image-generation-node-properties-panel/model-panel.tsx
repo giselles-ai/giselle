@@ -63,7 +63,7 @@ export function ImageGenerationModelPanel({
 							...languageModel,
 							configurations: {
 								...languageModel.configurations,
-								n: value,
+								size: value,
 							},
 						}),
 					);

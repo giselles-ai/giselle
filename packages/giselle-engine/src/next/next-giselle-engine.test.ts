@@ -1,3 +1,5 @@
+import { createStorage } from "unstorage";
+import memoryDriver from "unstorage/drivers/memory";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { GiselleEngine } from "../core";
 import { createHttpHandler } from "./next-giselle-engine";
@@ -16,6 +18,10 @@ vi.mock("../http", () => {
 	};
 });
 
+const memoryStorage = createStorage({
+	driver: memoryDriver(),
+});
+
 describe("createHttpHandler", () => {
 	const mockFile = new File(["test image content"], "test.png", {
 		type: "image/png",
@@ -30,7 +36,10 @@ describe("createHttpHandler", () => {
 		vi.clearAllMocks();
 		httpHandler = createHttpHandler({
 			giselleEngine: mockGiselleEngine,
-			basePath,
+			config: {
+				basePath,
+				storage: memoryStorage,
+			},
 		});
 	});
 

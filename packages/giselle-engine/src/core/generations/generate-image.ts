@@ -1,6 +1,7 @@
 import { fal } from "@ai-sdk/fal";
 import {
 	type CompletedGeneration,
+	type FailedGeneration,
 	type FileData,
 	type GenerationOutput,
 	type Image,
@@ -14,13 +15,17 @@ import {
 	isImageGenerationNode,
 } from "@giselle-sdk/data-type";
 import { experimental_generateImage as generateImageAiSdk } from "ai";
+import { UsageLimitError } from "../error";
 import { filePath } from "../files/utils";
 import type { GiselleEngineContext } from "../types";
 import {
 	buildMessageObject,
+	checkUsageLimits,
 	detectImageType,
+	extractWorkspaceIdFromOrigin,
 	getGeneration,
 	getNodeGenerationIndexes,
+	handleAgentTimeConsumption,
 	setGeneratedImage,
 	setGeneration,
 	setGenerationIndex,
@@ -69,6 +74,50 @@ export async function generateImage(args: {
 			},
 		}),
 	]);
+
+	const workspaceId = await extractWorkspaceIdFromOrigin({
+		storage: args.context.storage,
+		origin: args.generation.context.origin,
+	});
+
+	const usageLimitStatus = await checkUsageLimits({
+		workspaceId,
+		generation: args.generation,
+		fetchUsageLimitsFn: args.context.fetchUsageLimitsFn,
+	});
+	if (usageLimitStatus.type === "error") {
+		const failedGeneration = {
+			...runningGeneration,
+			status: "failed",
+			failedAt: Date.now(),
+			error: {
+				name: usageLimitStatus.error,
+				message: usageLimitStatus.error,
+				dump: usageLimitStatus,
+			},
+		} satisfies FailedGeneration;
+		await Promise.all([
+			setGeneration({
+				storage: args.context.storage,
+				generation: failedGeneration,
+			}),
+			setNodeGenerationIndex({
+				storage: args.context.storage,
+				nodeId: runningGeneration.context.actionNode.id,
+				origin: runningGeneration.context.origin,
+				nodeGenerationIndex: {
+					id: failedGeneration.id,
+					nodeId: failedGeneration.context.actionNode.id,
+					status: "failed",
+					createdAt: failedGeneration.createdAt,
+					queuedAt: failedGeneration.queuedAt,
+					startedAt: failedGeneration.startedAt,
+					failedAt: failedGeneration.failedAt,
+				},
+			}),
+		]);
+		throw new UsageLimitError(usageLimitStatus.error);
+	}
 
 	async function fileResolver(file: FileData) {
 		const blob = await args.context.storage.getItemRaw(
@@ -201,11 +250,9 @@ export async function generateImage(args: {
 		});
 	}
 	const completedGeneration = {
-		...args.generation,
+		...runningGeneration,
 		status: "completed",
 		messages: [],
-		queuedAt: Date.now(),
-		startedAt: Date.now(),
 		completedAt: Date.now(),
 		outputs: generationOutputs,
 	} satisfies CompletedGeneration;
@@ -230,4 +277,10 @@ export async function generateImage(args: {
 			},
 		}),
 	]);
+
+	await handleAgentTimeConsumption({
+		workspaceId,
+		generation: completedGeneration,
+		onConsumeAgentTime: args.context.onConsumeAgentTime,
+	});
 }

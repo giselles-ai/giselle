@@ -36,6 +36,7 @@
 		"@ai-sdk/react": "catalog:",
 		"@giselle-sdk/data-type": "workspace:^",
 		"@giselle-sdk/giselle-engine": "workspace:^",
+		"@giselle-sdk/telemetry": "workspace:^",
 		"ai": "catalog:",
 		"react": "catalog:",
 		"zod": "catalog:"

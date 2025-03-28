@@ -29,6 +29,7 @@ export interface WorkflowDesignerContextValue
 			| "deleteConnection"
 			| "setUiViewport"
 			| "updateName"
+			| "isSupportedConnection"
 		>,
 		ReturnType<typeof usePropertiesPanel>,
 		ReturnType<typeof useView> {
@@ -156,6 +157,15 @@ export function WorkflowDesignerProvider({
 		[setAndSaveWorkspace],
 	);
 
+	const isSupportedConnection = useCallback<
+		WorkflowDesigner["isSupportedConnection"]
+	>((outputNode, inputNode) => {
+		return workflowDesignerRef.current?.isSupportedConnection(
+			outputNode,
+			inputNode,
+		);
+	}, []);
+
 	const setUiNodeState = useCallback(
 		(
 			nodeId: string | NodeId,
@@ -276,6 +286,7 @@ export function WorkflowDesignerProvider({
 				isLoading,
 				setUiViewport,
 				updateName,
+				isSupportedConnection,
 				...usePropertiesPanelHelper,
 				...useViewHelper,
 			}}

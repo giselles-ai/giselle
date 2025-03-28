@@ -9,7 +9,8 @@
 		"build": "tsup",
 		"check-types": "tsc --noEmit",
 		"clean": "rm -rf .turbo dist node_modules react",
-		"format": "biome check --write ."
+		"format": "biome check --write .",
+		"test": "vitest run"
 	},
 	"files": ["dist/**/*", "react/dist/**/*"],
 	"exports": {
@@ -31,7 +32,8 @@
 	"devDependencies": {
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
 		"@types/react": "catalog:",
-		"tsup": "catalog:"
+		"tsup": "catalog:",
+		"vitest": "catalog:"
 	},
 	"dependencies": {
 		"@giselle-sdk/data-type": "workspace:*",

@@ -32,3 +32,4 @@ export * from "./flux1";
 export * from "./recraft";
 export * from "./ideogram";
 export * from "./stable-diffusion";
+export * from "./gennode";

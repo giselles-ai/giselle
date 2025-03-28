@@ -58,7 +58,7 @@ const o1Mini: OpenAILanguageModel = {
 
 const o3Mini: OpenAILanguageModel = {
 	provider: "openai",
-	id: "o3mini",
+	id: "o3-mini",
 	capabilities: Capability.TextGeneration,
 	tier: Tier.enum.pro,
 	configurations: defaultConfigurations,

@@ -96,17 +96,11 @@ export function TeamNameForm({ id: teamId, name }: Team) {
 							/>
 							<DialogHeader className="relative z-10">
 								<DialogTitle className="text-white-800 font-semibold text-[20px] leading-[28px] font-hubot text-center">
-									Change your Profiles
+									Change Your Team Name
 								</DialogTitle>
 							</DialogHeader>
 							<form className="flex flex-col gap-y-4 relative z-10">
 								<div className="flex flex-col gap-y-2">
-									<Label
-										htmlFor="tempTeamName"
-										className="text-white-800 font-medium text-[12px] leading-[20.4px] font-geist"
-									>
-										Your Display Name
-									</Label>
 									<Input
 										id="tempTeamName"
 										value={tempTeamName}

@@ -1,6 +1,6 @@
 "use client";
 
-import { TextGenerationIcon } from "@giselles-ai/icons/text-generation";
+import { GenNodeIcon } from "@giselles-ai/icons/gennode";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
 import { FileUpIcon, LetterTextIcon, MousePointer2Icon } from "lucide-react";
 import { type ComponentProps, forwardRef } from "react";
@@ -70,7 +70,7 @@ export function Toolbar() {
 							tooltip="Text Generator"
 							shortcut="g"
 						>
-							<TextGenerationIcon
+							<GenNodeIcon
 								className={"w-[24px] h-[24px] text-black-30 fill-current"}
 							/>
 						</ToggleGroupItem>

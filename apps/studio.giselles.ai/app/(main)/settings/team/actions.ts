@@ -155,7 +155,7 @@ export async function addTeamMember(formData: FormData) {
 			);
 
 		if (existingMembership.length > 0) {
-			throw new Error("User is already a team member");
+			throw new Error("This email address is already a team member");
 		}
 
 		// 5. Create team membership

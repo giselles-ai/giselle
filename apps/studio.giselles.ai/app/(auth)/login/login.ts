@@ -25,6 +25,6 @@ export async function login(
 			name: error.name,
 		};
 	}
-	redirect("/agents");
+	redirect("/apps");
 	return null;
 }

@@ -6,6 +6,7 @@ import {
 } from "@giselle-sdk/data-type";
 import type { IssueCommentCreatedEvent } from "@octokit/webhooks-types";
 import { z } from "zod";
+import { WorkflowError } from "../error";
 import { runApi } from "../runs";
 import type { GiselleEngineContext } from "../types";
 import { getWorkspace } from "../workspaces";
@@ -177,6 +178,13 @@ export async function handleWebhook(args: HandleGitHubWebhookArgs) {
 						workspaceId: workspace.id,
 						workflowId: workflow.id,
 						overrideNodes,
+					}).catch((error: unknown) => {
+						throw new WorkflowError(
+							`Failed to run workflow: ${error}`,
+							workspace.id,
+							workflow.id,
+							{ cause: error },
+						);
 					}),
 				),
 			);

@@ -6,6 +6,8 @@ import { useGiselleEngine } from "@giselle-sdk/giselle-engine/react";
 import type { Integration } from "@giselle-sdk/integration";
 import { IntegrationProvider } from "@giselle-sdk/integration/react";
 import { RunSystemContextProvider } from "@giselle-sdk/run/react";
+import type { TelemetrySettings } from "@giselle-sdk/telemetry";
+import { TelemetryProvider } from "@giselle-sdk/telemetry/react";
 import type { UsageLimits } from "@giselle-sdk/usage-limits";
 import { UsageLimitsProvider } from "@giselle-sdk/usage-limits/react";
 import { WorkflowDesignerProvider } from "@giselle-sdk/workflow-designer/react";
@@ -16,11 +18,13 @@ export function WorkspaceProvider({
 	workspaceId,
 	integration,
 	usageLimits,
+	telemetry,
 }: {
 	children: ReactNode;
 	workspaceId: WorkspaceId;
 	integration?: Integration;
 	usageLimits?: UsageLimits;
+	telemetry?: TelemetrySettings;
 }) {
 	const client = useGiselleEngine();
 
@@ -38,16 +42,18 @@ export function WorkspaceProvider({
 		return null;
 	}
 	return (
-		<UsageLimitsProvider limits={usageLimits}>
-			<IntegrationProvider integration={integration}>
-				<WorkflowDesignerProvider data={workspace}>
-					<GenerationRunnerSystemProvider>
-						<RunSystemContextProvider workspaceId={workspaceId}>
-							{children}
-						</RunSystemContextProvider>
-					</GenerationRunnerSystemProvider>
-				</WorkflowDesignerProvider>
-			</IntegrationProvider>
-		</UsageLimitsProvider>
+		<TelemetryProvider settings={telemetry}>
+			<UsageLimitsProvider limits={usageLimits}>
+				<IntegrationProvider integration={integration}>
+					<WorkflowDesignerProvider data={workspace}>
+						<GenerationRunnerSystemProvider>
+							<RunSystemContextProvider workspaceId={workspaceId}>
+								{children}
+							</RunSystemContextProvider>
+						</GenerationRunnerSystemProvider>
+					</WorkflowDesignerProvider>
+				</IntegrationProvider>
+			</UsageLimitsProvider>
+		</TelemetryProvider>
 	);
 }

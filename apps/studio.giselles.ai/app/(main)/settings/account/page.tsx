@@ -2,6 +2,7 @@ import { ClickableText } from "@/components/ui/clicable-text";
 import { Field } from "@/components/ui/field";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { settingsV2Flag } from "@/flags";
 import { ToastProvider } from "@/packages/contexts/toast";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -11,8 +12,13 @@ import { AccountToasts } from "./account-toasts";
 import { getAccountInfo } from "./actions";
 import { GitHubAuthentication } from "./github-authentication";
 import { GoogleAuthentication } from "./google-authentication";
+import AccountSettingPageV2 from "./v2/page";
 
 export default async function AccountSettingPage() {
+	const settingsV2Mode = await settingsV2Flag();
+	if (settingsV2Mode) {
+		return <AccountSettingPageV2 />;
+	}
 	const { displayName, email } = await getAccountInfo();
 
 	return (

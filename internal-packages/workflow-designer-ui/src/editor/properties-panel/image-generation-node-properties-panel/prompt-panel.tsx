@@ -9,7 +9,7 @@ import {
 } from "@giselle-sdk/text-editor/react-internal";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
-import { BracesIcon } from "lucide-react";
+import { AtSignIcon } from "lucide-react";
 import { DropdownMenu, Toolbar } from "radix-ui";
 import { type Source, useConnectedSources } from "./sources";
 
@@ -43,7 +43,7 @@ export function PromptPanel({
 						asChild
 					>
 						<DropdownMenu.Trigger>
-							<BracesIcon className="w-[18px]" />
+							<AtSignIcon className="w-[18px]" />
 						</DropdownMenu.Trigger>
 					</Toolbar.Button>
 					<DropdownMenu.Portal>

@@ -63,7 +63,7 @@ export function PropertiesPanelHeader({
 		inputRef.current.value = currentValue ?? fallbackName;
 	}, [onChangeName, fallbackName]);
 	return (
-		<div className="h-[48px] flex justify-between items-center px-[16px] shrink-0">
+		<div className="h-[48px] flex justify-between items-center pl-0 pr-[16px] shrink-0">
 			<div className="flex gap-[8px] items-center">
 				<div className="w-[28px] h-[28px] bg-white-900 rounded-[4px] flex items-center justify-center">
 					{icon}
@@ -92,7 +92,7 @@ export function PropertiesPanelContent({
 	children: ReactNode;
 }) {
 	return (
-		<div className="px-[16px] flex-1 h-full flex flex-col overflow-hidden">
+		<div className="pl-0 pr-[16px] flex-1 h-full flex flex-col overflow-hidden">
 			{children}
 		</div>
 	);

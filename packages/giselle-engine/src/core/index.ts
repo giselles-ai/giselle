@@ -16,6 +16,7 @@ import type {
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";
 import { removeFile, uploadFile } from "./files";
 import {
+	type TelemetrySettings,
 	cancelGeneration,
 	generateImage,
 	generateText,
@@ -44,6 +45,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		integrationConfigs: config.integrationConfigs ?? [],
 		onConsumeAgentTime: config.onConsumeAgentTime,
 		telemetry: config.telemetry,
+		fetchUsageLimitsFn: config.fetchUsageLimitsFn,
 	};
 	return {
 		createWorkspace: async () => {
@@ -58,10 +60,14 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		getLanguageModelProviders: async () => {
 			return await getLanguageModelProviders({ context });
 		},
-		generateText: async (generation: QueuedGeneration) => {
+		generateText: async (
+			generation: QueuedGeneration,
+			telemetry?: TelemetrySettings,
+		) => {
 			return await generateText({
 				context,
 				generation,
+				telemetry,
 			});
 		},
 		getGeneration: async (generationId: GenerationId) => {
@@ -160,3 +166,5 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 }
 
 export type GiselleEngine = ReturnType<typeof GiselleEngine>;
+
+export * from "./error";

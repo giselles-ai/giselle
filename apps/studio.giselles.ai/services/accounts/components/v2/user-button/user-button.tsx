@@ -62,7 +62,7 @@ export const UserButton: FC = async () => {
 					</DropdownMenuItem>
 					<DropdownMenuItem className="p-0 rounded-[8px] focus:bg-primary-900/50">
 						<SignOutButton className="block p-2 w-full text-left">
-							Log out
+							Log Out
 						</SignOutButton>
 					</DropdownMenuItem>
 				</div>

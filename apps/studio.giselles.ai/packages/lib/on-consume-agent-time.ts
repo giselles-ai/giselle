@@ -1,6 +1,5 @@
 import { db } from "@/drizzle";
 import { saveAgentActivity } from "@/services/agents/activities";
-import { reportAgentTimeUsage } from "@/services/usage-based-billing";
 import type { WorkspaceId } from "@giselle-sdk/data-type";
 
 export async function onConsumeAgentTime(
@@ -9,8 +8,6 @@ export async function onConsumeAgentTime(
 	endedAt: number,
 	totalDurationMs: number,
 ) {
-	"use server";
-
 	const agent = await db.query.agents.findFirst({
 		where: (agents, { eq }) => eq(agents.workspaceId, workspaceId),
 	});
@@ -23,5 +20,4 @@ export async function onConsumeAgentTime(
 	const startedAtDate = new Date(startedAt);
 	const endedAtDate = new Date(endedAt);
 	await saveAgentActivity(agentId, startedAtDate, endedAtDate, totalDurationMs);
-	await reportAgentTimeUsage(agentId, endedAtDate);
 }

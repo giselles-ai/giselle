@@ -24,7 +24,7 @@ export default async function AccountGeneralPage() {
 				<AccountDisplayNameForm displayName={displayName} />
 				<Card
 					title="Email"
-					description="Enter the email addresses you want to use to log in with Giselle. Your primary email will be used for account-related notifications."
+					description="This email will be used for account-related notifications."
 					className="gap-y-6"
 				>
 					<Field
@@ -37,11 +37,11 @@ export default async function AccountGeneralPage() {
 				</Card>
 				<Card
 					title="Session"
-					description="Log out of all session"
+					description="Log out of all sessions."
 					className="flex flex-row justify-between items-center gap-y-6"
 				>
 					<SignOutButton className="px-[16px] py-[4px] rounded-[6.32px] border border-primary-200 w-fit bg-primary-200 text-black-800 font-bold text-[14px] font-hubot whitespace-nowrap leading-[19.6px] tracking-normal hover:bg-transparent hover:text-primary-200">
-						Log out
+						Log Out
 					</SignOutButton>
 				</Card>
 			</div>

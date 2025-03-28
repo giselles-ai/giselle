@@ -20,6 +20,7 @@ export async function fetchUserTeams() {
 			name: teams.name,
 			type: teams.type,
 			activeSubscriptionId: subscriptions.id,
+			role: teamMemberships.role,
 		})
 		.from(teams)
 		.innerJoin(teamMemberships, eq(teams.dbId, teamMemberships.teamDbId))

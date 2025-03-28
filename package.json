@@ -12,7 +12,8 @@
 		"dev": "turbo dev --filter playground",
 		"dev:studio.giselles.ai": "turbo dev --filter studio.giselles.ai",
 		"changeset": "changeset",
-		"version": "changeset version"
+		"version": "changeset version",
+		"test": "turbo test"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
