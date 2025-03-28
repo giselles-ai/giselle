@@ -72,11 +72,11 @@ export function TeamNameForm({ id: teamId, name }: Team) {
 		setTempTeamName(e.target.value);
 	};
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key !== 'Enter') return
-    e.preventDefault();
-    handleSaveTeamName();
-  };
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key !== "Enter") return;
+		e.preventDefault();
+		handleSaveTeamName();
+	};
 
 	return (
 		<Card title="Team name">
@@ -87,7 +87,7 @@ export function TeamNameForm({ id: teamId, name }: Team) {
 							<Input
 								value={tempTeamName}
 								onChange={handleChange}
-                onKeyDown={handleKeyDown}
+								onKeyDown={handleKeyDown}
 								className="w-full"
 								disabled={isLoading}
 							/>
