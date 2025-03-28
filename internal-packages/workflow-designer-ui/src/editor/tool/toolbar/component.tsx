@@ -14,7 +14,6 @@ import {
 } from "@giselle-sdk/language-model";
 import clsx from "clsx/lite";
 import { useUsageLimits, useWorkflowDesigner } from "giselle-sdk/react";
-import { MousePointer2Icon } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
 import { type ReactNode, useState } from "react";
 import {
@@ -37,7 +36,6 @@ import {
 	addTextGenerationNodeTool,
 	fileNode,
 	imageGenerationNode,
-	moveTool,
 	selectFileNodeCategoryTool,
 	selectLanguageModelTool,
 	textGenerationNode,
@@ -145,9 +143,6 @@ export function Toolbar() {
 					onValueChange={(value) => {
 						if (isToolAction(value)) {
 							switch (value) {
-								case "move":
-									setSelectedTool(moveTool());
-									break;
 								case "addTextNode":
 									setSelectedTool(addNodeTool(textNode()));
 									break;
@@ -161,77 +156,6 @@ export function Toolbar() {
 						}
 					}}
 				>
-					<ToggleGroup.Item value="move" data-tool>
-						<Tooltip text={<TooltipAndHotkey text="Move" hotkey="v" />}>
-							<MousePointer2Icon data-icon />
-						</Tooltip>
-					</ToggleGroup.Item>
-					<ToggleGroup.Item value="addTextNode" data-tool>
-						<Tooltip text={<TooltipAndHotkey text="Text" hotkey="t" />}>
-							<PromptIcon data-icon />
-						</Tooltip>
-					</ToggleGroup.Item>
-					<ToggleGroup.Item
-						value="selectFileNodeCategory"
-						data-tool
-						className="relative"
-					>
-						<Tooltip text={<TooltipAndHotkey text="Document" hotkey="d" />}>
-							<DocumentIcon data-icon />
-						</Tooltip>
-						{selectedTool?.action === "selectFileNodeCategory" && (
-							<Popover.Root open={true}>
-								<Popover.Anchor />
-								<Popover.Portal>
-									<Popover.Content
-										className={clsx(
-											"relative w-[160px] rounded-[8px] px-[8px] py-[8px]",
-											"bg-[hsla(255,_40%,_98%,_0.04)] text-white-900",
-											"backdrop-blur-[4px]",
-										)}
-										sideOffset={42}
-									>
-										<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-boarder border-transparent" />
-										<div className="relative flex flex-col gap-[8px]">
-											<ToggleGroup.Root
-												type="single"
-												className={clsx(
-													"flex flex-col gap-[8px]",
-													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-white-900/10",
-													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
-												)}
-												onValueChange={(fileCategory) => {
-													setSelectedTool(
-														addNodeTool(
-															fileNode(FileCategory.parse(fileCategory)),
-														),
-													);
-												}}
-											>
-												<ToggleGroup.Item value="pdf" data-tool>
-													<PdfFileIcon className="w-[20px] h-[20px]" />
-													<p className="text-[14px]">PDF</p>
-												</ToggleGroup.Item>
-												<ToggleGroup.Item value="image" data-tool>
-													<PictureIcon className="w-[20px] h-[20px]" />
-													<p className="text-[14px]">Image</p>
-												</ToggleGroup.Item>
-												<ToggleGroup.Item value="text" data-tool>
-													<TextFileIcon className="w-[20px] h-[20px]" />
-													<p className="text-[14px]">Text</p>
-												</ToggleGroup.Item>
-												{/* <ToggleGroup.Item value="addGitHubNode" data-tool>
-													<GitHubIcon className="w-[20px] h-[20px]" />
-													<p className="text-[14px]">GitHub</p>
-												</ToggleGroup.Item> */}
-											</ToggleGroup.Root>
-										</div>
-									</Popover.Content>
-								</Popover.Portal>
-							</Popover.Root>
-						)}
-					</ToggleGroup.Item>
 					<ToggleGroup.Item value="selectLanguageModel" data-tool>
 						<Tooltip text={<TooltipAndHotkey text="Generation" hotkey="l" />}>
 							<GenNodeIcon data-icon />
@@ -435,6 +359,72 @@ export function Toolbar() {
 								)}
 							</div>
 						</div>
+					</ToggleGroup.Item>
+					<ToggleGroup.Item
+						value="selectFileNodeCategory"
+						data-tool
+						className="relative"
+					>
+						<Tooltip text={<TooltipAndHotkey text="Document" hotkey="d" />}>
+							<DocumentIcon data-icon />
+						</Tooltip>
+						{selectedTool?.action === "selectFileNodeCategory" && (
+							<Popover.Root open={true}>
+								<Popover.Anchor />
+								<Popover.Portal>
+									<Popover.Content
+										className={clsx(
+											"relative w-[160px] rounded-[8px] px-[8px] py-[8px]",
+											"bg-[hsla(255,_40%,_98%,_0.04)] text-white-900",
+											"backdrop-blur-[4px]",
+										)}
+										sideOffset={42}
+									>
+										<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-boarder border-transparent" />
+										<div className="relative flex flex-col gap-[8px]">
+											<ToggleGroup.Root
+												type="single"
+												className={clsx(
+													"flex flex-col gap-[8px]",
+													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-white-900/10",
+													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
+												)}
+												onValueChange={(fileCategory) => {
+													setSelectedTool(
+														addNodeTool(
+															fileNode(FileCategory.parse(fileCategory)),
+														),
+													);
+												}}
+											>
+												<ToggleGroup.Item value="pdf" data-tool>
+													<PdfFileIcon className="w-[20px] h-[20px]" />
+													<p className="text-[14px]">PDF</p>
+												</ToggleGroup.Item>
+												<ToggleGroup.Item value="image" data-tool>
+													<PictureIcon className="w-[20px] h-[20px]" />
+													<p className="text-[14px]">Image</p>
+												</ToggleGroup.Item>
+												<ToggleGroup.Item value="text" data-tool>
+													<TextFileIcon className="w-[20px] h-[20px]" />
+													<p className="text-[14px]">Text</p>
+												</ToggleGroup.Item>
+												{/* <ToggleGroup.Item value="addGitHubNode" data-tool>
+													<GitHubIcon className="w-[20px] h-[20px]" />
+													<p className="text-[14px]">GitHub</p>
+												</ToggleGroup.Item> */}
+											</ToggleGroup.Root>
+										</div>
+									</Popover.Content>
+								</Popover.Portal>
+							</Popover.Root>
+						)}
+					</ToggleGroup.Item>
+					<ToggleGroup.Item value="addTextNode" data-tool>
+						<Tooltip text={<TooltipAndHotkey text="Text" hotkey="t" />}>
+							<PromptIcon data-icon />
+						</Tooltip>
 					</ToggleGroup.Item>
 				</ToggleGroup.Root>
 			</div>
