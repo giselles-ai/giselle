@@ -1,6 +1,6 @@
 import { GiselleLogo } from "@/components/giselle-logo";
-import { TeamSelection } from "@/services/teams/components/v2/team-selection";
 import TeamCreation from "@/services/teams/components/v2/team-creation";
+import { TeamSelection } from "@/services/teams/components/v2/team-selection";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { UserButton } from "../../../services/accounts/components/v2/user-button/user-button";

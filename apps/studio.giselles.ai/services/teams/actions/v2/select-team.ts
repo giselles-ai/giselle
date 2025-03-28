@@ -8,5 +8,5 @@ import { teamIdSchema } from "../../validations";
 export async function selectTeam(data: FormData) {
 	const teamId = v.parse(teamIdSchema, data.get("teamId"));
 	await setCurrentTeam(teamId);
-  redirect("/settings/team");
+	redirect("/settings/team");
 }
