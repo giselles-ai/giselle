@@ -7,11 +7,17 @@ import {
 	type ImageGenerationNode,
 	type Node,
 	NodeId,
+	type Output,
 	OutputId,
 	type TextGenerationLanguageModelData,
 	type TextGenerationNode,
 	type TextNode,
 } from "@giselle-sdk/data-type";
+import {
+	Capability,
+	hasCapability,
+	languageModels,
+} from "@giselle-sdk/language-model";
 import { type ReactNode, createContext, useContext, useState } from "react";
 import type {
 	AddFileNodeTool,
@@ -174,6 +180,28 @@ export function fileNode(category: FileCategory) {
 }
 
 export function textGenerationNode(llm: TextGenerationLanguageModelData) {
+	const outputs: Output[] = [
+		{
+			id: OutputId.generate(),
+			label: "Output",
+			accesor: "generated-text",
+		},
+	];
+	const languageModel = languageModels.find(
+		(languageModel) => languageModel.id === llm.id,
+	);
+
+	if (
+		languageModel !== undefined &&
+		hasCapability(languageModel, Capability.SearchGrounding)
+	) {
+		outputs.push({
+			id: OutputId.generate(),
+			label: "Source",
+			accesor: "source",
+		});
+	}
+
 	return {
 		id: NodeId.generate(),
 		type: "action",
@@ -182,13 +210,7 @@ export function textGenerationNode(llm: TextGenerationLanguageModelData) {
 			llm,
 		},
 		inputs: [],
-		outputs: [
-			{
-				id: OutputId.generate(),
-				label: "Output",
-				accesor: "generated-text",
-			},
-		],
+		outputs,
 	} satisfies TextGenerationNode;
 }
 
