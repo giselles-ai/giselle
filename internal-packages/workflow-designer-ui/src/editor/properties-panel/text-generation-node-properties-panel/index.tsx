@@ -202,13 +202,13 @@ export function TextGenerationNodePropertiesPanel({
 														{
 															id: OutputId.generate(),
 															label: "Source",
-															accesor: "source",
+															accessor: "source",
 														},
 													],
 												});
 											} else {
 												const sourceOutput = node.outputs.find(
-													(output) => output.accesor === "source",
+													(output) => output.accessor === "source",
 												);
 												if (sourceOutput) {
 													for (const connection of data.connections) {
@@ -259,7 +259,7 @@ export function TextGenerationNodePropertiesPanel({
 														},
 													},
 													outputs: node.outputs.filter(
-														(output) => output.accesor !== "source",
+														(output) => output.accessor !== "source",
 													),
 												});
 											}

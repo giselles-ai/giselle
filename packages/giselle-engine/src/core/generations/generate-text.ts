@@ -241,7 +241,7 @@ export async function generateText(args: {
 			const generationOutputs: GenerationOutput[] = [];
 			const generatedTextOutput =
 				runningGeneration.context.actionNode.outputs.find(
-					(output) => output.accesor === "generated-text",
+					(output) => output.accessor === "generated-text",
 				);
 			if (generatedTextOutput !== undefined) {
 				generationOutputs.push({
@@ -251,7 +251,7 @@ export async function generateText(args: {
 				});
 			}
 			const reasoningOutput = runningGeneration.context.actionNode.outputs.find(
-				(output) => output.accesor === "reasoning",
+				(output) => output.accessor === "reasoning",
 			);
 			if (reasoningOutput !== undefined && event.reasoning !== undefined) {
 				generationOutputs.push({
@@ -261,7 +261,7 @@ export async function generateText(args: {
 				});
 			}
 			const sourceOutput = runningGeneration.context.actionNode.outputs.find(
-				(output) => output.accesor === "source",
+				(output) => output.accessor === "source",
 			);
 			if (sourceOutput !== undefined && event.sources.length > 0) {
 				const sources = await Promise.all(

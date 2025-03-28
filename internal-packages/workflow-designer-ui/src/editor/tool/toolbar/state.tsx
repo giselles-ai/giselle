@@ -147,7 +147,7 @@ export function textNode() {
 			{
 				id: OutputId.generate(),
 				label: "Output",
-				accesor: "text",
+				accessor: "text",
 			},
 		],
 	} satisfies TextNode;
@@ -167,7 +167,7 @@ export function fileNode(category: FileCategory) {
 			{
 				id: OutputId.generate(),
 				label: "Output",
-				accesor: "text",
+				accessor: "text",
 			},
 		],
 	} satisfies FileNode;
@@ -186,7 +186,7 @@ export function textGenerationNode(llm: TextGenerationLanguageModelData) {
 			{
 				id: OutputId.generate(),
 				label: "Output",
-				accesor: "generated-text",
+				accessor: "generated-text",
 			},
 		],
 	} satisfies TextGenerationNode;
@@ -205,7 +205,7 @@ export function imageGenerationNode(llm: ImageGenerationLanguageModelData) {
 			{
 				id: OutputId.generate(),
 				label: "Output",
-				accesor: "generated-image",
+				accessor: "generated-image",
 			},
 		],
 	} satisfies ImageGenerationNode;

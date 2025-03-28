@@ -217,7 +217,7 @@ export async function generateImage(args: {
 
 	const generatedImageOutput =
 		runningGeneration.context.actionNode.outputs.find(
-			(output) => output.accesor === "generated-image",
+			(output) => output.accessor === "generated-image",
 		);
 	if (generatedImageOutput !== undefined) {
 		const contents = await Promise.all(
