@@ -729,6 +729,22 @@ importers:
         specifier: 'catalog:'
         version: 5.7.3
 
+  packages/data-mod:
+    dependencies:
+      '@giselle-sdk/data-type':
+        specifier: workspace:^
+        version: link:../data-type
+      zod:
+        specifier: 'catalog:'
+        version: 3.24.1
+    devDependencies:
+      '@giselle/giselle-sdk-tsconfig':
+        specifier: workspace:*
+        version: link:../../tools/tsconfig
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.4.2)(postcss@8.5.1)(typescript@5.7.3)(yaml@2.7.0)
+
   packages/data-type:
     dependencies:
       '@ai-sdk/react':
@@ -808,6 +824,9 @@ importers:
       '@ai-sdk/perplexity':
         specifier: 'catalog:'
         version: 1.1.1(zod@3.24.1)
+      '@giselle-sdk/data-mod':
+        specifier: workspace:^
+        version: link:../data-mod
       '@giselle-sdk/github-client':
         specifier: workspace:^
         version: link:../github-client

@@ -1,3 +1,4 @@
+import { dataMod } from "@giselle-sdk/data-mod";
 import {
 	type ActionNode,
 	type CompletedGeneration,
@@ -296,6 +297,22 @@ export async function setGeneration(params: {
 	);
 }
 
+function parseAndMod(generationLike: unknown, mod = false) {
+	const parseResult = Generation.safeParse(generationLike);
+	if (parseResult.success) {
+		return parseResult.data;
+	}
+	if (mod) {
+		throw new Error("Invalid generation");
+	}
+
+	let modData = generationLike;
+	for (const issue of parseResult.error.issues) {
+		modData = dataMod(modData, issue);
+	}
+	return parseAndMod(modData, true);
+}
+
 export async function getGeneration(params: {
 	storage: Storage;
 	generationId: GenerationId;
@@ -310,7 +327,7 @@ export async function getGeneration(params: {
 	const unsafeGeneration = await params.storage.getItem(
 		generationPath(generationIndex),
 	);
-	return Generation.parse(unsafeGeneration);
+	return parseAndMod(unsafeGeneration);
 }
 
 export function nodeGenerationIndexPath(

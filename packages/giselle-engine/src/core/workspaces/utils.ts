@@ -1,3 +1,4 @@
+import { dataMod } from "@giselle-sdk/data-mod";
 import { Workspace, type WorkspaceId } from "@giselle-sdk/data-type";
 import type { Storage } from "unstorage";
 
@@ -20,13 +21,20 @@ export async function setWorkspace({
 	});
 }
 
-function parseAndRepairWorkspace(workspaceLike: unknown) {
+function parseAndMod(workspaceLike: unknown, mod = false) {
 	const parseResult = Workspace.safeParse(workspaceLike);
 	if (parseResult.success) {
 		return parseResult.data;
 	}
-	/** @todo repair */
-	throw new Error(`Invalid workspace: ${parseResult.error}`);
+	if (mod) {
+		throw new Error(`Invalid workspace: ${parseResult.error}`);
+	}
+
+	let modData = workspaceLike;
+	for (const issue of parseResult.error.issues) {
+		modData = dataMod(modData, issue);
+	}
+	return parseAndMod(modData, true);
 }
 
 export async function getWorkspace({
@@ -37,5 +45,5 @@ export async function getWorkspace({
 	workspaceId: WorkspaceId;
 }) {
 	const result = await storage.getItem(workspacePath(workspaceId));
-	return parseAndRepairWorkspace(result);
+	return parseAndMod(result);
 }
