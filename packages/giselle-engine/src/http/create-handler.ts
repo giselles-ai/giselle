@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { GiselleEngineContext } from "../core";
+import { type GiselleEngineContext, UsageLimitError } from "../core";
 
 /**
  * Type definition for handler arguments that conditionally includes input
@@ -59,5 +59,29 @@ export function createHandler<
 		return await handler({
 			context: args.context,
 		} as HandlerArgs<TSchema>);
+	};
+}
+
+/**
+ * Higher-order function that wraps a handler to catch and handle UsageLimitError.
+ *
+ * @param handler The original handler function
+ * @returns A new handler function that catches UsageLimitError and returns a 429 response
+ */
+export function withUsageLimitErrorHandler<
+	TOutput,
+	TSchema extends z.AnyZodObject | undefined = undefined,
+>(
+	handler: (args: HandlerInputArgs<TSchema>) => Promise<TOutput>,
+): (args: HandlerInputArgs<TSchema>) => Promise<TOutput | Response> {
+	return async (args: HandlerInputArgs<TSchema>) => {
+		try {
+			return await handler(args);
+		} catch (error) {
+			if (error instanceof UsageLimitError) {
+				return new Response(error.message, { status: 429 });
+			}
+			throw error;
+		}
 	};
 }
