@@ -12,7 +12,7 @@
 		"prebuild": "node prepare-font.js",
 		"build": "next build",
 		"start": "next start",
-		"check": "biome check --write .",
+		"format": "biome check --write .",
 		"lint": "next lint",
 		"test": "vitest run"
 	},
