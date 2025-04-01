@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
 		"pino",
 		"pino-pretty",
 		"unstorage",
+		"googleapis",
 	],
 	async redirects() {
 		return [
