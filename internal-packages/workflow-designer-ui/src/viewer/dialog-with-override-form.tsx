@@ -14,54 +14,51 @@ let currentOverrideNodes: OverrideNode[] = [];
 
 export function DialogWithOverrideForm({
   flow,
-  workspaceId,
-  onRunWithOverride,
+  perform,
 }: {
   flow: Workflow;
-  workspaceId: WorkflowId;
-  onRunWithOverride: (nodes: OverrideNode[]) => void;
+  perform: (flowId: WorkflowId, options?: { overrideNodes?: OverrideNode[] }) => void;
 }) {
   // Dialog open/close state
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   // Override nodes state
   const [overrideNodes, setOverrideNodes] = useState<OverrideNode[]>([]);
 
-  // Initialize state when opening the modal
-  const handleOpenChange = useCallback((isOpen: boolean) => {
-    setOpen(isOpen);
+  // Initialize state when modal opens
+  const handleOpenChange = useCallback((open: boolean) => {
+    setIsOpen(open);
     // Set initial data when modal is opened
-    if (isOpen) {
-      setOverrideNodes(currentOverrideNodes);
+    if (open) {
+      console.log("Dialog opened, initializing data...");
     }
   }, []);
 
   // Function to update override nodes
-  const handleNodesChange = useCallback((nodes: OverrideNode[]) => {
+  const updateOverrideNodes = useCallback((nodes: OverrideNode[]) => {
     setOverrideNodes(nodes);
-    currentOverrideNodes = nodes;
+    currentOverrideNodes = [...nodes];
   }, []);
 
-  // Handle Run with override button
+  // Handle Run with override button click
   const handleRunWithOverride = useCallback(() => {
-    onRunWithOverride(overrideNodes);
-    setOpen(false);
-  }, [overrideNodes, onRunWithOverride]);
+    perform(flow.id, {
+      overrideNodes: currentOverrideNodes,
+    });
+    setIsOpen(false);
+  }, [flow.id, perform]);
 
   return (
-    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
+    <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
       <Dialog.Trigger asChild>
-        <Button
+        <button
           type="button"
-          className="bg-primary-900 hover:bg-primary-800"
+          className="hover:bg-black-800/20 rounded-[4px]"
         >
-          <div className="flex items-center gap-[8px]">
-            <PencilIcon className="h-3 w-3" />
-            <span>Run with override</span>
-          </div>
-        </Button>
+          <PencilIcon className="size-[18px]" />
+        </button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/80 z-40" />
+        <Dialog.Overlay className="fixed inset-0 bg-black/25 z-50" />
         <Dialog.Content
           className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[900px] h-[600px] bg-black-900 rounded-[12px] p-[24px] shadow-xl z-50 overflow-hidden border border-black-400"
         >
@@ -90,11 +87,13 @@ export function DialogWithOverrideForm({
               </Button>
             </div>
           </div>
-          <RunWithOverrideParamsForm
-            flow={flow}
-            onNodesChange={handleNodesChange}
-            isModalOpen={open}
-          />
+          {flow && (
+            <RunWithOverrideParamsForm 
+              flow={flow} 
+              onNodesChange={updateOverrideNodes}
+              isModalOpen={isOpen}
+            />
+          )}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

@@ -27,10 +27,10 @@ export function RunWithOverrideParamsForm({
 		OverrideVariableNode[]
 	>([]);
 	
-	// State to track the currently selected node
+	// Track the currently selected node
 	const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
 	
-	// Initialize data when the modal is opened
+	// Load initial data when the modal is opened
 	useEffect(() => {
 		if (isModalOpen) {
 			console.log("Modal is open, initializing form data");
@@ -52,7 +52,7 @@ export function RunWithOverrideParamsForm({
 			// Reverse the order to display older nodes at the top
 			setOverrideVariableNodes([...initialNodes].reverse());
 			
-			// Select the first node (oldest node = top)
+			// Select the first node (oldest node = first in the reversed list)
 			if (initialNodes.length > 0) {
 				setActiveNodeId(initialNodes[initialNodes.length - 1].id);
 			}
@@ -62,7 +62,7 @@ export function RunWithOverrideParamsForm({
 		}
 	}, [flow.nodes, isModalOpen]);
 	
-	// Notify parent component when override node state changes
+	// Notify parent component when override nodes state changes
 	useEffect(() => {
 		if (overrideVariableNodes.length > 0 && onNodesChange) {
 			console.log("Notification: Override nodes changed", overrideVariableNodes);
@@ -84,7 +84,7 @@ export function RunWithOverrideParamsForm({
 		return "";
 	}, [activeNodeId, overrideVariableNodes]);
 	
-	// Function to get the name of the active node
+	// Get name of the active node
 	const getActiveNodeName = (): string => {
 		if (!activeNodeId) return "";
 		const originalNode = flow.nodes.find(node => node.id === activeNodeId);
@@ -128,8 +128,8 @@ export function RunWithOverrideParamsForm({
 		<div className="flex flex-row gap-[24px] flex-1 overflow-hidden h-[calc(100%-60px)]">
 			{/* Left side: Node list */}
 			<div className="w-[250px] overflow-y-auto pr-[8px] h-full">
-				<h3 className="text-[12px] mb-[16px] text-black-400 font-hubot font-semibold">Input information</h3>
-				<div className="flex flex-col gap-[16px]">
+				<h3 className="text-[12px] mb-[8px] text-black-400 font-hubot font-semibold">Input information</h3>
+				<div className="flex flex-col gap-[8px]">
 					{overrideVariableNodes.map((overrideNode) => {
 						// Find original node (for icon and name)
 						const originalNode = flow.nodes.find(node => node.id === overrideNode.id);
