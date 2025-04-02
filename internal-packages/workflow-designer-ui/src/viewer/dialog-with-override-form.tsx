@@ -9,56 +9,59 @@ import { X, PencilIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { RunWithOverrideParamsForm } from "./run-with-override-params-form";
 
-// 現在のオーバーライドノードを格納するstate
+// Global state to store current override nodes
 let currentOverrideNodes: OverrideNode[] = [];
 
 export function DialogWithOverrideForm({
   flow,
-  perform,
+  workspaceId,
+  onRunWithOverride,
 }: {
   flow: Workflow;
-  perform: (flowId: WorkflowId, options?: { overrideNodes?: OverrideNode[] }) => void;
+  workspaceId: WorkflowId;
+  onRunWithOverride: (nodes: OverrideNode[]) => void;
 }) {
-  // ダイアログの開閉状態
-  const [isOpen, setIsOpen] = useState(false);
-  // オーバーライドノードの状態
+  // Dialog open/close state
+  const [open, setOpen] = useState(false);
+  // Override nodes state
   const [overrideNodes, setOverrideNodes] = useState<OverrideNode[]>([]);
 
-  // モーダルを開く時に状態を初期化
-  const handleOpenChange = useCallback((open: boolean) => {
-    setIsOpen(open);
-    // モーダルが開かれた時に初期データをセット
-    if (open) {
-      console.log("Dialog opened, initializing data...");
+  // Initialize state when opening the modal
+  const handleOpenChange = useCallback((isOpen: boolean) => {
+    setOpen(isOpen);
+    // Set initial data when modal is opened
+    if (isOpen) {
+      setOverrideNodes(currentOverrideNodes);
     }
   }, []);
 
-  // オーバーライドノードを更新する関数
-  const updateOverrideNodes = useCallback((nodes: OverrideNode[]) => {
+  // Function to update override nodes
+  const handleNodesChange = useCallback((nodes: OverrideNode[]) => {
     setOverrideNodes(nodes);
-    currentOverrideNodes = [...nodes];
+    currentOverrideNodes = nodes;
   }, []);
 
-  // Run with overrideボタンの処理
+  // Handle Run with override button
   const handleRunWithOverride = useCallback(() => {
-    perform(flow.id, {
-      overrideNodes: currentOverrideNodes,
-    });
-    setIsOpen(false);
-  }, [flow.id, perform]);
+    onRunWithOverride(overrideNodes);
+    setOpen(false);
+  }, [overrideNodes, onRunWithOverride]);
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Trigger asChild>
-        <button
+        <Button
           type="button"
-          className="hover:bg-black-800/20 rounded-[4px]"
+          className="bg-primary-900 hover:bg-primary-800"
         >
-          <PencilIcon className="size-[18px]" />
-        </button>
+          <div className="flex items-center gap-[8px]">
+            <PencilIcon className="h-3 w-3" />
+            <span>Run with override</span>
+          </div>
+        </Button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/25 z-50" />
+        <Dialog.Overlay className="fixed inset-0 bg-black/80 z-40" />
         <Dialog.Content
           className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[900px] h-[600px] bg-black-900 rounded-[12px] p-[24px] shadow-xl z-50 overflow-hidden border border-black-400"
         >
@@ -87,13 +90,11 @@ export function DialogWithOverrideForm({
               </Button>
             </div>
           </div>
-          {flow && (
-            <RunWithOverrideParamsForm 
-              flow={flow} 
-              onNodesChange={updateOverrideNodes}
-              isModalOpen={isOpen}
-            />
-          )}
+          <RunWithOverrideParamsForm
+            flow={flow}
+            onNodesChange={handleNodesChange}
+            isModalOpen={open}
+          />
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

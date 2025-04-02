@@ -27,10 +27,10 @@ export function RunWithOverrideParamsForm({
 		OverrideVariableNode[]
 	>([]);
 	
-	// 選択中のノードを追跡する状態
+	// State to track the currently selected node
 	const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
 	
-	// モーダルが開かれた時に初期データをロードする
+	// Initialize data when the modal is opened
 	useEffect(() => {
 		if (isModalOpen) {
 			console.log("Modal is open, initializing form data");
@@ -49,53 +49,53 @@ export function RunWithOverrideParamsForm({
 				)
 				.filter((node): node is OverrideVariableNode => node !== null);
 			
-			// 古いノードが上に表示されるよう順序を反転
+			// Reverse the order to display older nodes at the top
 			setOverrideVariableNodes([...initialNodes].reverse());
 			
-			// 最初のノードを選択（古いノード＝先頭）
+			// Select the first node (oldest node = top)
 			if (initialNodes.length > 0) {
 				setActiveNodeId(initialNodes[initialNodes.length - 1].id);
 			}
 			
-			// デバッグ出力
-			console.log("初期ノード (逆順):", [...initialNodes].reverse());
+			// Debug output
+			console.log("Initial nodes (reversed):", [...initialNodes].reverse());
 		}
 	}, [flow.nodes, isModalOpen]);
 	
-	// オーバーライドノード状態が変更されたら親コンポーネントに通知
+	// Notify parent component when override node state changes
 	useEffect(() => {
 		if (overrideVariableNodes.length > 0 && onNodesChange) {
-			console.log("通知: オーバーライドノード変更", overrideVariableNodes);
+			console.log("Notification: Override nodes changed", overrideVariableNodes);
 			onNodesChange(overrideVariableNodes);
 		}
 	}, [overrideVariableNodes, onNodesChange]);
 	
-	// アクティブノードのコンテンツを取得
+	// Get content of the active node
 	const getActiveNodeContent = useCallback(() => {
 		if (!activeNodeId) return "";
 		
 		const activeNode = overrideVariableNodes.find(node => node.id === activeNodeId);
 		if (activeNode && isOverrideTextContent(activeNode.content)) {
 			const content = activeNode.content.text;
-			console.log("アクティブノードの内容:", content);
+			console.log("Active node content:", content);
 			return content;
 		}
-		console.log("アクティブノードの内容が見つかりません");
+		console.log("Active node content not found");
 		return "";
 	}, [activeNodeId, overrideVariableNodes]);
 	
-	// アクティブなノードの名前を取得する関数
+	// Function to get the name of the active node
 	const getActiveNodeName = (): string => {
 		if (!activeNodeId) return "";
 		const originalNode = flow.nodes.find(node => node.id === activeNodeId);
 		return originalNode?.name || originalNode?.id || "";
 	};
 	
-	// 値変更ハンドラー
+	// Value change handler
 	const handleValueChange = useCallback((value: string) => {
 		if (!activeNodeId) return;
 		
-		console.log("値変更:", activeNodeId, value);
+		console.log("Value changed:", activeNodeId, value);
 		
 		setOverrideVariableNodes(prevNodes => 
 			prevNodes.map(node => 
@@ -113,25 +113,25 @@ export function RunWithOverrideParamsForm({
 		);
 	}, [activeNodeId]);
 	
-	// アクティブノードの変更ハンドラー
+	// Active node change handler
 	const handleNodeSelect = useCallback((nodeId: string) => {
-		console.log("ノード選択:", nodeId);
+		console.log("Node selected:", nodeId);
 		setActiveNodeId(nodeId);
 	}, []);
 	
-	// 空のデータや初期化前は何も表示しない
+	// Don't display anything if data is empty or not initialized
 	if (overrideVariableNodes.length === 0) {
 		return null;
 	}
 	
 	return (
 		<div className="flex flex-row gap-[24px] flex-1 overflow-hidden h-[calc(100%-60px)]">
-			{/* 左側：ノードリスト */}
+			{/* Left side: Node list */}
 			<div className="w-[250px] overflow-y-auto pr-[8px] h-full">
-				<h3 className="text-[12px] mb-[8px] text-black-400 font-hubot font-semibold">Input information</h3>
-				<div className="flex flex-col gap-[8px]">
+				<h3 className="text-[12px] mb-[16px] text-black-400 font-hubot font-semibold">Input information</h3>
+				<div className="flex flex-col gap-[16px]">
 					{overrideVariableNodes.map((overrideNode) => {
-						// オリジナルノードを見つける（アイコンと名前のため）
+						// Find original node (for icon and name)
 						const originalNode = flow.nodes.find(node => node.id === overrideNode.id);
 						if (!originalNode) return null;
 						
@@ -146,12 +146,12 @@ export function RunWithOverrideParamsForm({
 								)}
 								onClick={() => handleNodeSelect(overrideNode.id)}
 							>
-								{/* ノードのアイコン（オリジナルアイコンを使用） */}
+								{/* Node icon (using original icon) */}
 								<div className="flex items-center justify-center w-[36px] h-[36px] mr-[12px] rounded-[4px] bg-white-950 text-black-950">
 									<NodeIcon node={originalNode} className="size-[20px]" />
 								</div>
 								
-								{/* ノード名 */}
+								{/* Node name */}
 								<div className="flex-1">
 									<p className="text-[14px] font-medium text-white-900">
 										{originalNode.name || "Unnamed Node"}
@@ -171,7 +171,7 @@ export function RunWithOverrideParamsForm({
 				</div>
 			</div>
 			
-			{/* 右側：テキストエディタ */}
+			{/* Right side: Text editor */}
 			<div className="flex-1 h-full">
 				<div className="w-full h-full [&_.prompt-editor]:text-white [&_svg]:text-white [&_button]:text-white">
 					<TextEditor
