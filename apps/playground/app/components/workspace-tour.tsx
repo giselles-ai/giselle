@@ -594,13 +594,13 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
           <div className="grid grid-cols-3 h-full">
             {/* 左カラム: Navigation */}
             <div className="flex flex-col justify-center p-4 gap-1 border-r border-white/10">
-              <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>Navigation</h3>
-              <p className="text-white/40 my-2" style={{ fontSize: '12px' }}>
+              <h3 className="text-white/80 font-semibold mb-1 text-center" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>Navigation</h3>
+              <p className="text-white/40 my-2 text-center" style={{ fontSize: '12px' }}>
                 Drag to move canvas<br />
                 ⌘(Ctrl) + scroll to<br />
                 zoom in/out
               </p>
-              <div className="flex w-full mt-1">
+              <div className="flex w-full mt-1 justify-center">
                 <button 
                   className="text-white/85 text-xs rounded-full flex justify-center items-center gap-1"
                   style={{
@@ -617,13 +617,13 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
 
             {/* 中央カラム: Node Controls */}
             <div className="flex flex-col justify-center p-4 gap-1 border-r border-white/10">
-              <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>Node Controls</h3>
-              <p className="text-white/40 my-2" style={{ fontSize: '12px' }}>
+              <h3 className="text-white/80 font-semibold mb-1 text-center" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>Node Controls</h3>
+              <p className="text-white/40 my-2 text-center" style={{ fontSize: '12px' }}>
                 Double-tap nodes to open<br />
                 setting Drag & drop<br />
                 to connect
               </p>
-              <div className="flex w-full mt-1">
+              <div className="flex w-full mt-1 justify-center">
                 <button 
                   className="text-white/85 text-xs rounded-full flex justify-center items-center gap-1"
                   style={{
@@ -640,13 +640,13 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
 
             {/* 右カラム: Run Commands */}
             <div className="flex flex-col justify-center p-4 gap-1">
-              <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>Run Commands</h3>
-              <p className="text-white/40 my-2" style={{ fontSize: '12px' }}>
+              <h3 className="text-white/80 font-semibold mb-1 text-center" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>Run Commands</h3>
+              <p className="text-white/40 my-2 text-center" style={{ fontSize: '12px' }}>
                 ⌘ + Enter to Run<br />
                 ⌘ + Shift + Enter to<br />
                 run entire workflows
               </p>
-              <div className="flex w-full mt-1">
+              <div className="flex w-full mt-1 justify-center">
                 <button 
                   className="text-white/85 text-xs rounded-full flex justify-center items-center gap-1"
                   style={{
@@ -693,7 +693,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
                 className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
                 style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
               >
-                Finish
+                →
               </button>
             </div>
           </div>
