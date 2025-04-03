@@ -32,8 +32,8 @@ import {
 	SelectValue,
 } from "../ui/select";
 import { UsageLimitWarning } from "../ui/usage-limit-warning";
-import { RunWithOverrideParamsForm } from "./run-with-override-params-form";
 import { DialogWithOverrideForm } from "./dialog-with-override-form";
+import { RunWithOverrideParamsForm } from "./run-with-override-params-form";
 
 export function Viewer() {
 	const { generations, run } = useRun();
@@ -116,7 +116,10 @@ export function Viewer() {
 											<div className="absolute right-0 pr-[8px] top-[50%] translate-y-[-50%] h-full flex items-center justify-center">
 												<div className="w-[1px] h-full border-l border-white-800/40 mr-[6px]" />
 												{flow && (
-													<DialogWithOverrideForm flow={flow} perform={perform} />
+													<DialogWithOverrideForm
+														flow={flow}
+														perform={perform}
+													/>
 												)}
 											</div>
 										</div>

@@ -1,15 +1,15 @@
-import {
-  type Workflow,
-  type WorkflowId,
-  type OverrideNode,
+import type {
+  OverrideNode,
+  Workflow,
+  WorkflowId,
 } from "@giselle-sdk/data-type";
+import { PencilIcon, X } from "lucide-react";
 import { Dialog } from "radix-ui";
-import { useState, useCallback, useEffect } from "react";
-import { X, PencilIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { RunWithOverrideParamsForm } from "./run-with-override-params-form";
 
-// Global state to store current override nodes
+// Global variable to store override nodes
 let currentOverrideNodes: OverrideNode[] = [];
 
 export function DialogWithOverrideForm({
@@ -17,7 +17,10 @@ export function DialogWithOverrideForm({
   perform,
 }: {
   flow: Workflow;
-  perform: (flowId: WorkflowId, options?: { overrideNodes?: OverrideNode[] }) => void;
+  perform: (
+    flowId: WorkflowId,
+    options?: { overrideNodes?: OverrideNode[] },
+  ) => void;
 }) {
   // Dialog open/close state
   const [isOpen, setIsOpen] = useState(false);
@@ -50,18 +53,13 @@ export function DialogWithOverrideForm({
   return (
     <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
       <Dialog.Trigger asChild>
-        <button
-          type="button"
-          className="hover:bg-black-800/20 rounded-[4px]"
-        >
+        <button type="button" className="hover:bg-black-800/20 rounded-[4px]">
           <PencilIcon className="size-[18px]" />
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/25 z-50" />
-        <Dialog.Content
-          className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[900px] h-[600px] bg-black-900 rounded-[12px] p-[24px] shadow-xl z-50 overflow-hidden border border-black-400"
-        >
+        <Dialog.Content className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[900px] h-[600px] bg-black-900 rounded-[12px] p-[24px] shadow-xl z-50 overflow-hidden border border-black-400">
           <Dialog.Title className="sr-only">
             Override inputs to test workflow
           </Dialog.Title>
@@ -88,8 +86,8 @@ export function DialogWithOverrideForm({
             </div>
           </div>
           {flow && (
-            <RunWithOverrideParamsForm 
-              flow={flow} 
+            <RunWithOverrideParamsForm
+              flow={flow}
               onNodesChange={updateOverrideNodes}
               isModalOpen={isOpen}
             />

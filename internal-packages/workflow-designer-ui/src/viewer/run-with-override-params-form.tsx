@@ -1,4 +1,10 @@
-import { type OverrideNode, type OverrideVariableNode, type Workflow, isOverrideTextContent, isTextNode } from "@giselle-sdk/data-type";
+import {
+	type OverrideNode,
+	type OverrideVariableNode,
+	type Workflow,
+	isOverrideTextContent,
+	isTextNode,
+} from "@giselle-sdk/data-type";
 import { TextEditor } from "@giselle-sdk/text-editor/react-internal";
 import clsx from "clsx/lite";
 import { useCallback, useEffect, useState } from "react";
@@ -57,8 +63,8 @@ export function RunWithOverrideParamsForm({
 	useEffect(() => {
 		if (overrideVariableNodes.length > 0 && onNodesChange) {
 			console.log(
-				"Notification: Override nodes changed", 
-				overrideVariableNodes
+				"Notification: Override nodes changed",
+				overrideVariableNodes,
 			);
 			onNodesChange(overrideVariableNodes);
 		}
@@ -68,7 +74,9 @@ export function RunWithOverrideParamsForm({
 	const getActiveNodeContent = useCallback(() => {
 		if (!activeNodeId) return "";
 		
-		const activeNode = overrideVariableNodes.find(node => node.id === activeNodeId);
+		const activeNode = overrideVariableNodes.find(
+			(node) => node.id === activeNodeId,
+		);
 		if (activeNode && isOverrideTextContent(activeNode.content)) {
 			const content = activeNode.content.text;
 			console.log("Active node content:", content);
@@ -81,31 +89,34 @@ export function RunWithOverrideParamsForm({
 	// Get name of the active node
 	const getActiveNodeName = (): string => {
 		if (!activeNodeId) return "";
-		const originalNode = flow.nodes.find(node => node.id === activeNodeId);
+		const originalNode = flow.nodes.find((node) => node.id === activeNodeId);
 		return originalNode?.name || originalNode?.id || "";
 	};
 	
 	// Value change handler
-	const handleValueChange = useCallback((value: string) => {
-		if (!activeNodeId) return;
-		
-		console.log("Value changed:", activeNodeId, value);
-		
-		setOverrideVariableNodes(prevNodes => 
-			prevNodes.map(node => 
-				node.id === activeNodeId
-					? {
-							id: node.id,
-							type: node.type,
-							content: {
-								type: "text" as const,
-								text: value
-							},
-						}
-					: node
-			)
-		);
-	}, [activeNodeId]);
+	const handleValueChange = useCallback(
+		(value: string) => {
+			if (!activeNodeId) return;
+			
+			console.log("Value changed:", activeNodeId, value);
+			
+			setOverrideVariableNodes((prevNodes) =>
+				prevNodes.map((node) =>
+					node.id === activeNodeId
+						? {
+								id: node.id,
+								type: node.type,
+								content: {
+									type: "text" as const,
+									text: value,
+								},
+							}
+						: node,
+				),
+			);
+		},
+		[activeNodeId],
+	);
 	
 	// Active node change handler
 	const handleNodeSelect = useCallback((nodeId: string) => {
@@ -114,11 +125,14 @@ export function RunWithOverrideParamsForm({
 	}, []);
 	
 	// Keyboard handler for node selection
-	const handleKeyDown = useCallback((e: React.KeyboardEvent, nodeId: string) => {
-		if (e.key === "Enter" || e.key === " ") {
-			handleNodeSelect(nodeId);
-		}
-	}, [handleNodeSelect]);
+	const handleKeyDown = useCallback(
+		(e: React.KeyboardEvent, nodeId: string) => {
+			if (e.key === "Enter" || e.key === " ") {
+				handleNodeSelect(nodeId);
+			}
+		},
+		[handleNodeSelect],
+	);
 	
 	// Don't display anything if data is empty or not initialized
 	if (overrideVariableNodes.length === 0) {
