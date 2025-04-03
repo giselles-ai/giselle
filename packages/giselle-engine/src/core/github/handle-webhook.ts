@@ -229,8 +229,11 @@ async function processIntegration(
 								owner: repository.owner,
 								name: repository.name,
 							},
-							// GitHub treats pull requests as issues, so we use the `issue.number` for the pull request.
-							number: gitHubEvent.payload.issue.number,
+							// Some GitHub events treat pull requests as issues.
+							number:
+								"issue" in gitHubEvent.payload
+									? gitHubEvent.payload.issue.number
+									: gitHubEvent.payload.pull_request.number,
 						},
 						content: resultText,
 					});
@@ -244,7 +247,11 @@ async function processIntegration(
 								owner: repository.owner,
 								name: repository.name,
 							},
-							number: gitHubEvent.payload.issue.number,
+							// Some GitHub events treat pull requests as issues.
+							number:
+								"issue" in gitHubEvent.payload
+									? gitHubEvent.payload.issue.number
+									: gitHubEvent.payload.pull_request.number,
 						},
 						content: resultText,
 					});
@@ -277,6 +284,12 @@ export function isMatchingIntegrationSetting(
 			return event.type === GitHubEventType.ISSUES_OPENED;
 		case "github.issues.closed":
 			return event.type === GitHubEventType.ISSUES_CLOSED;
+		case "github.pull_request.opened":
+			return event.type === GitHubEventType.PULL_REQUEST_OPENED;
+		case "github.pull_request.ready_for_review":
+			return event.type === GitHubEventType.PULL_REQUEST_READY_FOR_REVIEW;
+		case "github.pull_request.closed":
+			return event.type === GitHubEventType.PULL_REQUEST_CLOSED;
 		default: {
 			const _exhaustiveCheck: never = setting.event;
 			throw new Error(`Unhandled setting event type: ${_exhaustiveCheck}`);
@@ -303,6 +316,17 @@ async function handleReaction(
 					event.payload.repository.owner.login,
 					event.payload.repository.name,
 					event.payload.issue.number,
+				);
+			}
+			break;
+		case GitHubEventType.PULL_REQUEST_OPENED:
+		case GitHubEventType.PULL_REQUEST_READY_FOR_REVIEW:
+		case GitHubEventType.PULL_REQUEST_CLOSED:
+			if (options?.addReactionToIssue) {
+				await options.addReactionToIssue(
+					event.payload.repository.owner.login,
+					event.payload.repository.name,
+					event.payload.pull_request.number,
 				);
 			}
 			break;
@@ -367,6 +391,29 @@ async function getPayloadValue(
 					return event.payload.issue.title;
 				case "github.issues.body":
 					return event.payload.issue.body ?? "";
+				default: {
+					throw new Error(
+						`Unhandled field type: ${field} for event ${event.type}`,
+					);
+				}
+			}
+
+		case GitHubEventType.PULL_REQUEST_OPENED:
+		case GitHubEventType.PULL_REQUEST_READY_FOR_REVIEW:
+		case GitHubEventType.PULL_REQUEST_CLOSED:
+			switch (field) {
+				case "github.pull_request.title":
+					return event.payload.pull_request.title;
+				case "github.pull_request.body":
+					return event.payload.pull_request.body ?? "";
+				case "github.pull_request.diff": {
+					const diffResult = await diff?.(
+						event.payload.repository.owner.login,
+						event.payload.repository.name,
+						event.payload.pull_request.number,
+					);
+					return diffResult ?? "";
+				}
 				default: {
 					throw new Error(
 						`Unhandled field type: ${field} for event ${event.type}`,

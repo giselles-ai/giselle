@@ -45,7 +45,7 @@ export default function Layout({
 					<form action={createAgent}>
 						<button
 							type="submit"
-							className="w-full bg-primary-200 hover:bg-primary-100 text-black-900 font-bold py-2 px-4 rounded-md font-hubot"
+							className="w-full bg-primary-200 hover:bg-primary-100 text-black-900 font-bold py-2 px-4 rounded-md font-hubot cursor-pointer"
 						>
 							Create new
 						</button>

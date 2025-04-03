@@ -14,6 +14,11 @@ import {
 } from "@giselle-sdk/data-type";
 
 type ConnectedNodeIdMap = Map<NodeId, Set<NodeId>>;
+
+/**
+ * Creates a map of node IDs to their connected node IDs.
+ * This maintains a bidirectional mapping of connections between nodes.
+ */
 export function createConnectedNodeIdMap(
 	connectionSet: Set<Connection>,
 	nodeIdSet: Set<NodeId>,
@@ -45,6 +50,10 @@ export function createConnectedNodeIdMap(
 	return connectionMap;
 }
 
+/**
+ * Finds all nodes connected to a starting node using breadth-first search.
+ * Returns a map of node IDs to their node objects.
+ */
 export function findConnectedNodeMap(
 	startNodeId: NodeId,
 	nodeMap: Map<NodeId, Node>,
@@ -74,6 +83,10 @@ export function findConnectedNodeMap(
 	return connectedNodeMap;
 }
 
+/**
+ * Finds all connections between a set of connected nodes.
+ * Returns a map of connection IDs to their connection objects.
+ */
 export function findConnectedConnectionMap(
 	connectedNodeIdSet: Set<NodeId>,
 	allConnectionSet: Set<Connection>,
@@ -100,8 +113,10 @@ export function findConnectedConnectionMap(
  * ↓   ↓                 Job2: [B, C]
  * C → E                 Job3: [D, E]
  *
- * @param graph The input graph with nodes and connections
- * @returns Set of jobs where each job contains steps that can be executed in parallel
+ * @param nodeSet The set of nodes in the workflow
+ * @param connectionSet The set of connections between nodes
+ * @param workflowId The ID of the workflow
+ * @returns Map of job IDs to job objects
  */
 export function createJobMap(
 	nodeSet: Set<Node>,
@@ -110,30 +125,28 @@ export function createJobMap(
 ) {
 	/**
 	 * Calculates the number of incoming edges for each node.
-	 *
-	 * Example:
-	 * A → B → C
-	 * ↓   ↓
-	 * D → E
-	 *
-	 * Results:
-	 * A: 0
-	 * B: 1
-	 * C: 1
-	 * D: 1
-	 * E: 2
+	 * Handles duplicate connections between the same nodes.
 	 */
 	const calculateInDegrees = (
 		nodeIdSet: Set<NodeId>,
 		connectionSet: Set<Connection>,
 	): Map<string, number> => {
 		const inDegrees = new Map<NodeId, number>();
+		const processedNodeIdSet = new Map<NodeId, Set<NodeId>>();
 
 		for (const nodeId of nodeIdSet) {
 			inDegrees.set(nodeId, 0);
 		}
 
 		for (const conn of connectionSet) {
+			const processedOutputNodes =
+				processedNodeIdSet.get(conn.inputNode.id) ?? new Set();
+			if (processedOutputNodes?.has(conn.outputNode.id)) {
+				continue;
+			}
+			processedOutputNodes.add(conn.outputNode.id);
+			processedNodeIdSet.set(conn.inputNode.id, processedOutputNodes);
+
 			const currentDegree = inDegrees.get(conn.inputNode.id) || 0;
 			inDegrees.set(conn.inputNode.id, currentDegree + 1);
 		}
@@ -143,14 +156,6 @@ export function createJobMap(
 
 	/**
 	 * Gets all direct child nodes of a given node.
-	 *
-	 * Example:
-	 * For node A in:
-	 * A → B
-	 * ↓
-	 * C
-	 *
-	 * Returns: [B, C]
 	 */
 	const getChildNodes = (
 		nodeId: NodeId,
@@ -168,13 +173,7 @@ export function createJobMap(
 
 	/**
 	 * Performs topological sort and groups nodes by levels.
-	 *
-	 * Example graph:       Result levels:
-	 * A → B → D            Level 1: [A]
-	 * ↓   ↓                Level 2: [B, C]
-	 * C → E                Level 3: [D, E]
-	 *
-	 * Each level contains nodes that can be processed in parallel
+	 * Each level contains nodes that can be processed in parallel.
 	 */
 	const topologicalSort = (
 		nodeIdSet: Set<NodeId>,
@@ -184,6 +183,7 @@ export function createJobMap(
 		const levels = new Set<Set<NodeId>>();
 		let currentLevel = new Set<NodeId>();
 
+		// Add all nodes with no incoming edges to the first level
 		for (const nodeId of nodeIdSet) {
 			if (inDegrees.get(nodeId) === 0) {
 				currentLevel.add(nodeId);
@@ -194,6 +194,7 @@ export function createJobMap(
 			levels.add(new Set(currentLevel));
 			const nextLevel = new Set<NodeId>();
 
+			// For each node in the current level, reduce the in-degree of its children
 			for (const nodeId of currentLevel) {
 				const childrenNodeIdSet = getChildNodes(nodeId, connectionSet);
 				for (const childNodeId of childrenNodeIdSet) {
@@ -211,6 +212,9 @@ export function createJobMap(
 		return levels;
 	};
 
+	/**
+	 * Creates a generation context for an action node by finding its source nodes.
+	 */
 	function createGenerationContext(node: ActionNode): GenerationTemplate {
 		const connectionArray = Array.from(connectionSet);
 		const nodeArray = Array.from(nodeSet);
@@ -233,6 +237,7 @@ export function createJobMap(
 		};
 	}
 
+	// Filter for action nodes and connections
 	const actionNodeIdSet = new Set<NodeId>();
 	for (const node of nodeSet) {
 		if (node.type === "action") {
@@ -247,6 +252,7 @@ export function createJobMap(
 	}
 	const levels = topologicalSort(actionNodeIdSet, actionConnectionSet);
 
+	// Create jobs based on the topological levels
 	const jobMap = new Map<JobId, Job>();
 	for (const level of levels) {
 		const jobId = JobId.generate();

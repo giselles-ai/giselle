@@ -1,7 +1,8 @@
 import clsx from "clsx/lite";
 import { Tabs } from "radix-ui";
 import type { ReactNode } from "react";
-import { GitHubIcon, LayersIcon } from "../icons";
+import { GitHubIcon } from "../icons";
+import { Background } from "../ui/background";
 import { GitHubIntegrationSettingForm } from "./github-integration";
 
 type TabTriggerProps = Omit<
@@ -54,6 +55,37 @@ export function SettingsPanel() {
 					<GitHubIntegrationSettingForm />
 				</Tabs.Content>
 			</Tabs.Root>
+		</div>
+	);
+}
+
+export function SettingsView() {
+	return (
+		<div className="bg-black-850 flex flex-col gap-[16px] text-white-800 flex-1 relative">
+			<div className="relative z-1 pt-[24px] px-[24px]">
+				<Tabs.Root
+					orientation="horizontal"
+					className="flex gap-[24px]"
+					defaultValue="github"
+				>
+					<Tabs.List
+						className={clsx("flex flex-col gap-[10px] px-[8px] w-[240px]")}
+					>
+						<Tabs.Trigger value="github" asChild>
+							<TabTrigger
+								label="GitHub Integration"
+								icon={<GitHubIcon className="size-[16px]" />}
+							/>
+						</Tabs.Trigger>
+					</Tabs.List>
+					<Tabs.Content value="github" className="flex-1">
+						<GitHubIntegrationSettingForm />
+					</Tabs.Content>
+				</Tabs.Root>
+			</div>
+			<div className="absolute h-full w-full z-0">
+				<Background />
+			</div>
 		</div>
 	);
 }

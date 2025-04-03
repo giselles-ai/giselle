@@ -96,9 +96,6 @@ const nodeIdSet = new Set<NodeId>(sampleNodes.map((node) => node.id));
 const nodeMap = new Map<NodeId, Node>(
 	sampleNodes.map((node) => [node.id, node]),
 );
-const connectionMap = new Map<ConnectionId, Connection>(
-	sampleConnections.map((connection) => [connection.id, connection]),
-);
 const workflowId = "wf-N5RH1s46zdx3XjQj" as WorkflowId;
 
 describe("createConnectedNodeIdMap", () => {
@@ -236,5 +233,255 @@ describe("createJobMap", () => {
 
 		expect(result).toBeInstanceOf(Map);
 		expect(result.size).toBe(0);
+	});
+});
+
+describe("Test with complex workflow", () => {
+	// Sample data from user's example
+	const complexNodes: Node[] = [
+		{
+			id: "nd-E89xeYnFyQUGxdCL",
+			type: "action",
+			inputs: [],
+			outputs: [
+				{
+					id: "otp-iK3fTc8uBJn2JFM8",
+					label: "Output",
+					accessor: "generated-text",
+				},
+				{
+					id: "otp-178F8dUeKWPWlU6y",
+					label: "Source",
+					accessor: "source",
+				},
+			],
+			content: {
+				type: "textGeneration",
+				llm: {
+					provider: "perplexity",
+					id: "sonar-pro",
+					configurations: {
+						temperature: 0.2,
+						topP: 0.9,
+						presencePenalty: 0,
+						frequencyPenalty: 1,
+					},
+				},
+			},
+		},
+		{
+			id: "nd-daF6m8YshVoiBARi",
+			name: "gemini-2.0-flash-0012",
+			type: "action",
+			inputs: [
+				{ id: "inp-rVg0GxYPFNnFUvJd", label: "Input" },
+				{ id: "inp-xYV0iiqdumwxPOQR", label: "Input" },
+			],
+			outputs: [
+				{
+					id: "otp-B7rFjf3M6m14gN7R",
+					label: "Output",
+					accessor: "generated-text",
+				},
+			],
+			content: {
+				type: "textGeneration",
+				llm: {
+					provider: "google",
+					id: "gemini-2.0-flash-001",
+					configurations: {
+						temperature: 0.7,
+						topP: 1,
+						searchGrounding: false,
+					},
+				},
+			},
+		},
+		{
+			id: "nd-ixIefYTHjZVhpEGq",
+			type: "action",
+			inputs: [{ id: "inp-vZaOw0D8k9uyGNgp", label: "Input" }],
+			outputs: [
+				{
+					id: "otp-yXSelwQUWs6DQrFl",
+					label: "Output",
+					accessor: "generated-text",
+				},
+			],
+			content: {
+				type: "textGeneration",
+				llm: {
+					provider: "google",
+					id: "gemini-2.0-flash-001",
+					configurations: {
+						temperature: 0.7,
+						topP: 1,
+						searchGrounding: false,
+					},
+				},
+			},
+		},
+	] as Node[];
+
+	const complexConnections: Connection[] = [
+		{
+			id: "cnnc-KprKOaAqxL7TXeHZ",
+			outputNode: {
+				id: "nd-E89xeYnFyQUGxdCL",
+				type: "action",
+				content: { type: "textGeneration" },
+			},
+			outputId: "otp-iK3fTc8uBJn2JFM8",
+			inputNode: {
+				id: "nd-daF6m8YshVoiBARi",
+				type: "action",
+				content: { type: "textGeneration" },
+			},
+			inputId: "inp-rVg0GxYPFNnFUvJd",
+		},
+		{
+			id: "cnnc-VWcUOOacadZQ2CMc",
+			outputNode: {
+				id: "nd-E89xeYnFyQUGxdCL",
+				type: "action",
+				content: { type: "textGeneration" },
+			},
+			outputId: "otp-178F8dUeKWPWlU6y",
+			inputNode: {
+				id: "nd-daF6m8YshVoiBARi",
+				type: "action",
+				content: { type: "textGeneration" },
+			},
+			inputId: "inp-xYV0iiqdumwxPOQR",
+		},
+		{
+			id: "cnnc-pHNejzic6NKKxBsA",
+			outputNode: {
+				id: "nd-E89xeYnFyQUGxdCL",
+				type: "action",
+				content: { type: "textGeneration" },
+			},
+			outputId: "otp-iK3fTc8uBJn2JFM8",
+			inputNode: {
+				id: "nd-ixIefYTHjZVhpEGq",
+				type: "action",
+				content: { type: "textGeneration" },
+			},
+			inputId: "inp-vZaOw0D8k9uyGNgp",
+		},
+	] as Connection[];
+
+	// Setup helper variables
+	const complexNodeSet = new Set<Node>(complexNodes);
+	const complexConnectionSet = new Set<Connection>(complexConnections);
+	const complexNodeIdSet = new Set<NodeId>(complexNodes.map((node) => node.id));
+	const complexNodeMap = new Map<NodeId, Node>(
+		complexNodes.map((node) => [node.id, node]),
+	);
+	const complexWorkflowId = "wf-fgEzJutLbpYu1Hj3" as WorkflowId;
+
+	test("should create correct connected node id map for complex workflow", () => {
+		const result = createConnectedNodeIdMap(
+			complexConnectionSet,
+			complexNodeIdSet,
+		);
+
+		expect(result).toBeInstanceOf(Map);
+		expect(result.size).toBe(3); // Three nodes in our complex sample
+
+		// Check first node connections (output)
+		const node1Connections = result.get("nd-E89xeYnFyQUGxdCL");
+		expect(node1Connections).toBeInstanceOf(Set);
+		expect(node1Connections?.size).toBe(2);
+		expect(node1Connections?.has("nd-daF6m8YshVoiBARi")).toBe(true);
+		expect(node1Connections?.has("nd-ixIefYTHjZVhpEGq")).toBe(true);
+
+		// Check second node connections (input)
+		const node2Connections = result.get("nd-daF6m8YshVoiBARi");
+		expect(node2Connections).toBeInstanceOf(Set);
+		expect(node2Connections?.size).toBe(1);
+		expect(node2Connections?.has("nd-E89xeYnFyQUGxdCL")).toBe(true);
+
+		// Check third node connections (input)
+		const node3Connections = result.get("nd-ixIefYTHjZVhpEGq");
+		expect(node3Connections).toBeInstanceOf(Set);
+		expect(node3Connections?.size).toBe(1);
+		expect(node3Connections?.has("nd-E89xeYnFyQUGxdCL")).toBe(true);
+	});
+
+	test("should find all connected nodes starting from source node", () => {
+		const connectedNodeIdMap = createConnectedNodeIdMap(
+			complexConnectionSet,
+			complexNodeIdSet,
+		);
+
+		const result = findConnectedNodeMap(
+			"nd-E89xeYnFyQUGxdCL",
+			complexNodeMap,
+			connectedNodeIdMap,
+		);
+
+		expect(result).toBeInstanceOf(Map);
+		expect(result.size).toBe(3); // All nodes are connected
+		expect(result.has("nd-E89xeYnFyQUGxdCL")).toBe(true);
+		expect(result.has("nd-daF6m8YshVoiBARi")).toBe(true);
+		expect(result.has("nd-ixIefYTHjZVhpEGq")).toBe(true);
+	});
+
+	test("should create correct job map for complex workflow", () => {
+		const result = createJobMap(
+			complexNodeSet,
+			complexConnectionSet,
+			complexWorkflowId,
+		);
+
+		const jobsArray = Array.from(result.values());
+
+		expect(result).toBeInstanceOf(Map);
+		expect(result.size).toBe(2); // Two jobs: one for source node and one for dependent nodes
+
+		// First job should contain the first node (which has no inputs)
+		expect(jobsArray[0].workflowId).toBe(complexWorkflowId);
+		expect(jobsArray[0].actions.length).toBe(1);
+		expect(jobsArray[0].actions[0].node.id).toBe("nd-E89xeYnFyQUGxdCL");
+
+		// Second job should contain both dependent nodes
+		expect(jobsArray[1].workflowId).toBe(complexWorkflowId);
+		expect(jobsArray[1].actions.length).toBe(2);
+
+		// Get the node IDs from the second job
+		const secondJobNodeIds = jobsArray[1].actions
+			.map((action) => action.node.id)
+			.sort();
+		expect(secondJobNodeIds).toEqual(
+			["nd-daF6m8YshVoiBARi", "nd-ixIefYTHjZVhpEGq"].sort(),
+		);
+
+		// Check generation templates for first job
+		expect(jobsArray[0].actions[0].generationTemplate.sourceNodes.length).toBe(
+			0,
+		);
+
+		// Check generation templates for second job nodes
+		// Find the node with id nd-ixIefYTHjZVhpEGq
+		const ixIefYTHjZVhpEGqNode = jobsArray[1].actions.find(
+			(action) => action.node.id === "nd-ixIefYTHjZVhpEGq",
+		);
+		expect(ixIefYTHjZVhpEGqNode?.generationTemplate.sourceNodes.length).toBe(1);
+		expect(ixIefYTHjZVhpEGqNode?.generationTemplate.sourceNodes[0].id).toBe(
+			"nd-E89xeYnFyQUGxdCL",
+		);
+
+		// Find the node with id nd-daF6m8YshVoiBARi
+		const daF6m8YshVoiBARiNode = jobsArray[1].actions.find(
+			(action) => action.node.id === "nd-daF6m8YshVoiBARi",
+		);
+		expect(daF6m8YshVoiBARiNode?.generationTemplate.sourceNodes.length).toBe(2);
+		expect(daF6m8YshVoiBARiNode?.generationTemplate.sourceNodes[0].id).toBe(
+			"nd-E89xeYnFyQUGxdCL",
+		);
+		expect(daF6m8YshVoiBARiNode?.generationTemplate.sourceNodes[1].id).toBe(
+			"nd-E89xeYnFyQUGxdCL",
+		);
 	});
 });

@@ -1,3 +1,5 @@
+"use client";
+
 import type { WorkspaceGitHubNextIntegrationAction } from "@giselle-sdk/data-type";
 import {
 	WorkspaceGitHubIntegrationNextAction,
@@ -36,6 +38,11 @@ const TRIGGER_TO_ACTIONS: Record<
 	"github.issue_comment.created": ["github.issue_comment.create"],
 	"github.pull_request_comment.created": ["github.pull_request_comment.create"],
 	"github.issues.closed": ["github.issue_comment.create"],
+	"github.pull_request.opened": ["github.pull_request_comment.create"],
+	"github.pull_request.ready_for_review": [
+		"github.pull_request_comment.create",
+	],
+	"github.pull_request.closed": ["github.pull_request_comment.create"],
 } as const;
 
 const TRIGGERS_REQUIRING_CALLSIGN: readonly WorkspaceGitHubIntegrationTrigger[] =
@@ -57,7 +64,7 @@ const getAvailablePayloadFields = (
 ) => {
 	const fields = Object.values(WorkspaceGitHubIntegrationPayloadField.Enum);
 	const triggerParts = trigger.split(".");
-	const triggerPrefix = `${triggerParts[0]}.${triggerParts[1]}`;
+	const triggerPrefix = `${triggerParts[0]}.${triggerParts[1]}.`;
 	return fields.filter((field) => field.startsWith(triggerPrefix));
 };
 
@@ -224,6 +231,33 @@ function Installed({
 										}
 									>
 										issue_comment.created
+									</SelectItem>
+									<SelectItem
+										value={
+											WorkspaceGitHubIntegrationTrigger.Enum[
+												"github.pull_request.opened"
+											]
+										}
+									>
+										pull_request.opened
+									</SelectItem>
+									<SelectItem
+										value={
+											WorkspaceGitHubIntegrationTrigger.Enum[
+												"github.pull_request.ready_for_review"
+											]
+										}
+									>
+										pull_request.ready_for_review
+									</SelectItem>
+									<SelectItem
+										value={
+											WorkspaceGitHubIntegrationTrigger.Enum[
+												"github.pull_request.closed"
+											]
+										}
+									>
+										pull_request.closed
 									</SelectItem>
 									<SelectItem
 										value={

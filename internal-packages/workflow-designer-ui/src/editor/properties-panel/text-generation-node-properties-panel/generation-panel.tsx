@@ -16,7 +16,7 @@ function Empty({ onGenerate }: { onGenerate?: () => void }) {
 		<div className="bg-white-900/10 h-full rounded-[8px] flex justify-center items-center text-black-400">
 			<EmptyState
 				icon={<StackBlicksIcon />}
-				title="Nothing is generated."
+				title="Nothing generated yet."
 				description="Generate with the current Prompt or adjust the Prompt and the results will be displayed."
 				className="text-black-400"
 			>
@@ -27,7 +27,7 @@ function Empty({ onGenerate }: { onGenerate?: () => void }) {
 						className="flex items-center justify-center px-[24px] py-[12px] mt-[16px] bg-[#141519] text-white rounded-[9999px] border border-white-900/15 transition-all hover:bg-[#1e1f26] hover:border-white-900/25 hover:translate-y-[-1px] cursor-pointer font-hubot font-[500] text-[14px]"
 					>
 						<span className="mr-[8px] generate-star">✦</span>
-						Generate with the current prompt
+						Generate with the Current Prompt
 					</button>
 				)}
 				<style jsx>{`

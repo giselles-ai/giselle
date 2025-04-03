@@ -1,0 +1,87 @@
+---
+description: Update ai-sdk(ai, @ai/*) to latest
+globs:
+alwaysApply: false
+---
+
+# Updating AI SDK in Giselle
+
+This document provides a step-by-step guide for updating the AI SDK packages in this project.
+
+## What is AI SDK
+
+The AI SDK is a TypeScript toolkit for building AI-powered applications using frameworks like Next.js, React, Svelte, Vue and Node.js runtimes. It provides a unified interface for working with different AI providers.
+
+Package namespaces include `ai` and `@ai-sdk/{provider}` (such as `@ai-sdk/openai`, `@ai-sdk/anthropic`, etc.).
+
+## Step 1: Check current AI SDK versions
+
+Check which AI SDK packages need to be updated:
+
+```sh
+pnpm outdated -r --json
+```
+
+Look for entries with `ai` and `@ai-sdk/*` in the results.
+
+## Step 2: Update catalog entries
+
+This project uses pnpm's "Catalogs" feature to define dependency version ranges as reusable constants. These constants can be referenced in package.json files.
+
+Update the catalog entries in `pnpm-workspace.yaml`:
+
+```yaml
+catalog:
+  "ai": 4.2.9              # Update to latest version
+  "@ai-sdk/openai": 1.3.6   # Update to latest version
+  "@ai-sdk/anthropic": 1.2.4 # Update to latest version
+  "@ai-sdk/google": 1.2.5   # Update to latest version
+  "@ai-sdk/perplexity": 1.1.3 # Update to latest version
+  "@ai-sdk/react": 1.2.5    # Update to latest version
+  "@ai-sdk/fal": 0.1.1      # Update if needed
+```
+
+## Step 3: Install updated packages
+
+Run the installation command to update all packages:
+
+```sh
+pnpm i
+```
+
+
+## Step 4: Build the SDK
+
+After fixing type issues, build the SDK:
+
+```sh
+pnpm build-sdk
+```
+
+When you see these errors, record them and seek guidance on how to address each specific case.
+
+## Step 5: Verify types
+
+Run the type checking command to ensure there are no remaining type errors:
+
+```sh
+pnpm check-types
+```
+
+When you see these errors, record them and seek guidance on how to address each specific case.
+
+## Step 6: Test the application
+
+Run the application and request user to make sure everything works as expected:
+
+```sh
+pnpm dev
+```
+
+## Troubleshooting
+
+If you encounter peer dependency warnings, they may be safely ignored if the application works correctly. However, if you encounter runtime errors, you may need to:
+
+1. Revert to earlier versions of specific packages
+2. Update code to accommodate breaking changes in the new SDK versions
+3. Add explicit dependency resolutions in package.json

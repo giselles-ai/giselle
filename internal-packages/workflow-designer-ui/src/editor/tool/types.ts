@@ -27,6 +27,11 @@ export interface SelectFileNodeCategoryTool extends ToolBase {
 	action: "selectFileNodeCategory";
 }
 
+export interface SelectSourceCategoryTool extends ToolBase {
+	category: "edit";
+	action: "selectSourceCategory";
+}
+
 export interface AddTextNodeTool extends ToolBase {
 	category: "edit";
 	action: "addTextNode";
@@ -62,7 +67,8 @@ export type Tool =
 	| AddGitHubNodeTool
 	| AddNodeTool
 	| SelectFileNodeCategoryTool
-	| SelectLanguageModelTool;
+	| SelectLanguageModelTool
+	| SelectSourceCategoryTool;
 
 type ToolAction = Tool["action"];
 
@@ -75,7 +81,8 @@ export function isToolAction(args: unknown): args is ToolAction {
 			args === "move" ||
 			args === "addNode" ||
 			args === "selectLanguageModel" ||
-			args === "selectFileNodeCategory"
+			args === "selectFileNodeCategory" ||
+			args === "selectSourceCategory"
 		);
 	}
 	return false;

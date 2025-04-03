@@ -97,7 +97,7 @@
 
 
 <a name="@ai-sdk/perplexity"></a>
-### @ai-sdk/perplexity v1.1.1
+### @ai-sdk/perplexity v1.1.3
 #### 
 
 ##### Paths

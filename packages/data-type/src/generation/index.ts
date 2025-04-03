@@ -1,4 +1,5 @@
 import type { Message as AISdkMessage } from "@ai-sdk/react";
+export type { Message as AISdkMessage } from "@ai-sdk/react";
 import { createIdGenerator } from "@giselle-sdk/utils";
 import { z } from "zod";
 import { NodeId } from "../node";

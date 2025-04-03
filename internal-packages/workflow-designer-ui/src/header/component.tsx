@@ -2,16 +2,10 @@
 
 import type { WorkspaceId } from "@giselle-sdk/data-type";
 import clsx from "clsx";
-import { useWorkflowDesigner } from "giselle-sdk/react";
-import { ViewState } from "giselle-sdk/react";
-import {
-	ChevronDownIcon,
-	EyeIcon,
-	GanttChartIcon,
-	PlayIcon,
-} from "lucide-react";
+import { ViewState, useWorkflowDesigner } from "giselle-sdk/react";
+import { CableIcon, EyeIcon, GanttChartIcon, PlayIcon } from "lucide-react";
 import Link from "next/link";
-import { Dialog, DropdownMenu, VisuallyHidden } from "radix-ui";
+import { Dialog, ToggleGroup, VisuallyHidden } from "radix-ui";
 import { type ReactNode, useState } from "react";
 import { EditableText } from "../editor/properties-panel/ui";
 import { GiselleLogo } from "../icons";
@@ -57,6 +51,8 @@ export function Header({
 						value={data.name}
 					/>
 
+					{/*
+					Setting menu is moved to main view
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger asChild>
 							<button
@@ -103,15 +99,20 @@ export function Header({
 								</div>
 							</DropdownMenu.Content>
 						</DropdownMenu.Portal>
-					</DropdownMenu.Root>
+					</DropdownMenu.Root> */}
 				</div>
 			</div>
 
 			<div className="flex items-center gap-[12px]">
-				<div className="flex items-center py-[4px] px-[8px] rounded-[8px] overflow-hidden bg-black-200/20">
-					<button
-						type="button"
-						onClick={toggleView}
+				<ToggleGroup.Root
+					type="single"
+					className="flex items-center py-[4px] px-[8px] rounded-[8px] overflow-hidden bg-black-200/20"
+					onValueChange={(value) => {
+						setView(ViewState.parse(value));
+					}}
+				>
+					<ToggleGroup.Item
+						value="editor"
 						className={clsx(
 							"flex items-center gap-[4px] px-[8px] py-[4px] text-[12px] rounded-[4px] border-[1px] transition-colors font-[700]",
 							view === "editor"
@@ -121,9 +122,9 @@ export function Header({
 					>
 						<GanttChartIcon className="size-[16px]" />
 						<span>Builder</span>
-					</button>
-					<button
-						type="button"
+					</ToggleGroup.Item>
+					<ToggleGroup.Item
+						value="viewer"
 						onClick={toggleView}
 						className={clsx(
 							"flex items-center gap-[4px] px-[8px] py-[4px] text-[12px] rounded-[4px] border-[1px] transition-colors font-[700]",
@@ -134,8 +135,21 @@ export function Header({
 					>
 						<EyeIcon className="size-[16px]" />
 						<span>Preview</span>
-					</button>
-				</div>
+					</ToggleGroup.Item>
+					<ToggleGroup.Item
+						value="integrator"
+						onClick={toggleView}
+						className={clsx(
+							"flex items-center gap-[4px] px-[8px] py-[4px] text-[12px] rounded-[4px] border-[1px] transition-colors font-[700]",
+							view === "integrator"
+								? "bg-primary-950/20 text-primary-200 border-primary-900"
+								: "bg-transparent text-white-900/70 hover:text-white-900 hover:bg-black-800/20 border-transparent cursor-pointer",
+						)}
+					>
+						<CableIcon className="size-[16px]" />
+						<span>Integrate</span>
+					</ToggleGroup.Item>
+				</ToggleGroup.Root>
 
 				{action && <div className="flex items-center">{action}</div>}
 			</div>

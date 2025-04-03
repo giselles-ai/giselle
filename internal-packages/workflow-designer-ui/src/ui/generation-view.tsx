@@ -88,6 +88,9 @@ export function GenerationView({
 							case "file":
 								/** @todo File parts */
 								return null;
+							case "step-start":
+								/** @todo Step start */
+								return null;
 							default: {
 								const _exhaustiveCheck: never = part;
 								throw new Error(`Unhandled part type: ${_exhaustiveCheck}`);

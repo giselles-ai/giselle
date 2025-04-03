@@ -29,6 +29,7 @@ import type {
 	MoveTool,
 	SelectFileNodeCategoryTool,
 	SelectLanguageModelTool,
+	SelectSourceCategoryTool,
 	Tool,
 } from "../types";
 
@@ -231,4 +232,11 @@ export function imageGenerationNode(llm: ImageGenerationLanguageModelData) {
 			},
 		],
 	} satisfies ImageGenerationNode;
+}
+
+export function selectSourceCategoryTool() {
+	return {
+		action: "selectSourceCategory",
+		category: "edit",
+	} satisfies SelectSourceCategoryTool;
 }

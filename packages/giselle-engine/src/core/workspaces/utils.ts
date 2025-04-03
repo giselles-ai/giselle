@@ -27,7 +27,7 @@ function parseAndMod(workspaceLike: unknown, mod = false) {
 		return parseResult.data;
 	}
 	if (mod) {
-		throw new Error(`Invalid workspace: ${parseResult.error}`);
+		throw parseResult.error;
 	}
 
 	let modData = workspaceLike;
