@@ -1,1 +1,1 @@
-export * from "./github-integration-setting-form";
+export * from "./github-integration-setting";

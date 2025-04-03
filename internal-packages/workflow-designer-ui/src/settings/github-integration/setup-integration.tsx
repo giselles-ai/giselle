@@ -1,5 +1,3 @@
-"use client";
-
 import type { WorkspaceGitHubNextIntegrationAction } from "@giselle-sdk/data-type";
 import {
 	WorkspaceGitHubIntegrationNextAction,
@@ -8,7 +6,6 @@ import {
 	WorkspaceGitHubIntegrationTrigger,
 } from "@giselle-sdk/data-type";
 import type { GitHubIntegrationRepository } from "@giselle-sdk/integration";
-import { useIntegration } from "@giselle-sdk/integration/react";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -20,6 +17,8 @@ import {
 	SelectValue,
 } from "../ui";
 import { PayloadMapForm } from "./payload-map-form";
+import { Stepper } from "./stepper";
+import { TitleHeader } from "./title-header";
 import { useGitHubIntegrationSetting } from "./use-github-integration-setting";
 
 const NEXT_ACTION_DISPLAY_NAMES: Record<
@@ -74,28 +73,7 @@ const getAvailableNextActions = (
 	return TRIGGER_TO_ACTIONS[trigger] ?? [];
 };
 
-export function GitHubIntegrationSettingForm() {
-	const { github } = useIntegration();
-
-	switch (github.status) {
-		case "unset":
-		case "unauthorized":
-			return "step1: Authorize with GitHub";
-		case "invalid-credential":
-			return "step1: Authorize with GitHub (invalid credential)";
-		case "not-installed":
-			return "step2: Install Giselle GitHub App";
-		case "installed":
-			// step3: Setup integration
-			return <Installed repositories={github.repositories} />;
-		default: {
-			const _exhaustiveCheck: never = github;
-			throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
-		}
-	}
-}
-
-function Installed({
+export function SetupIntegration({
 	repositories,
 }: { repositories: GitHubIntegrationRepository[] }) {
 	const { data: workspace } = useWorkflowDesigner();
@@ -176,9 +154,8 @@ function Installed({
 
 	return (
 		<div className="flex flex-col gap-[16px]">
-			<h2 className="text-[14px] font-accent font-[700] text-white-400">
-				GitHub Integration
-			</h2>
+			<TitleHeader />
+			<Stepper currentStep={data == null ? 3 : 4} />
 			<form className="w-full flex flex-col gap-[16px]" onSubmit={handleSubmit}>
 				<div className="grid grid-cols-[140px_1fr] gap-x-[4px] gap-y-[16px]">
 					<h3 className="relative font-accent text-white-400 text-[14px] flex items-center font-bold">
