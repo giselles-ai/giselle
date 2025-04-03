@@ -10,27 +10,33 @@ export default function TourExamplePage() {
     {
       target: "#step1",
       title: "Welcome to Giselle",
-      content: "This tour will guide you through the key features of our platform.",
-      placement: "bottom" as const,
+      content: "This platform helps you build and manage AI workflows easily.",
+      placement: "bottom" as const
     },
     {
       target: "#step2",
-      title: "Create Your First Workflow",
-      content: "Click here to create a new workflow and start building your AI agent.",
-      placement: "right" as const,
+      title: "Your command hub.",
+      content: "Add Gen nodes, access your knowledge base, manipulate files, invoke other agents, and orchestrate your workflow.",
+      placement: "right" as const
     },
     {
       target: "#step3",
-      title: "Add Components",
-      content: "Drag and drop components to build your workflow. Connect them to create a powerful AI agent.",
-      placement: "top" as const,
+      title: "Node Settings",
+      content: "Double-tap nodes to edit settings, craft prompts, configure references, and establish connections between nodes to create a seamless generation flow.",
+      placement: "left" as const
     },
     {
       target: "#step4",
-      title: "Deploy Your Agent",
-      content: "When you're ready, deploy your agent to make it available to your users.",
-      placement: "left" as const,
+      title: "Connecting Nodes",
+      content: "Connect nodes by hovering over node edges and dragging to your target, or specify connections directly in node settings to create powerful automation pathways.",
+      placement: "right" as const
     },
+    {
+      target: "#step5",
+      title: "Agent Configuration",
+      content: "Customize agent names, integrate with external tools like GitHub, and share your creations with collaborators to extend your workflow capabilities.",
+      placement: "left" as const
+    }
   ];
 
   return (
@@ -80,10 +86,25 @@ export default function TourExamplePage() {
           <div className="bg-black-800 p-6 rounded-lg">
             <h2 className="text-xl font-semibold mb-4" id="step4">Deploy</h2>
             <p className="text-gray-400">
-              Deploy your agent to make it available to your users.
+              Deploy your AI agent to production with one click.
             </p>
-            <button className="mt-4 px-3 py-1.5 bg-green-700 rounded text-sm">
-              Deploy Agent
+            <button className="mt-4 px-3 py-1.5 bg-primary-700/50 rounded text-sm">
+              Coming Soon
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-8 bg-black-800 p-6 rounded-lg">
+          <h2 className="text-xl font-semibold mb-4" id="step5">Settings & Integrations</h2>
+          <p className="text-gray-400">
+            Configure your agents and integrate with external tools and services.
+          </p>
+          <div className="mt-4 flex gap-3">
+            <button className="px-3 py-1.5 bg-primary-700 rounded text-sm">
+              Settings
+            </button>
+            <button className="px-3 py-1.5 bg-primary-700/70 rounded text-sm">
+              Integrations
             </button>
           </div>
         </div>
