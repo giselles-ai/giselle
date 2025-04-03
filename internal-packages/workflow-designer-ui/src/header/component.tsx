@@ -2,7 +2,7 @@
 
 import type { WorkspaceId } from "@giselle-sdk/data-type";
 import clsx from "clsx";
-import { ViewState, useWorkflowDesigner } from "giselle-sdk/react";
+import { useWorkflowDesigner } from "giselle-sdk/react";
 import { CableIcon, EyeIcon, GanttChartIcon, PlayIcon } from "lucide-react";
 import Link from "next/link";
 import { Dialog, ToggleGroup, VisuallyHidden } from "radix-ui";
@@ -108,7 +108,9 @@ export function Header({
 					type="single"
 					className="flex items-center py-[4px] px-[8px] rounded-[8px] overflow-hidden bg-black-200/20"
 					onValueChange={(value) => {
-						setView(ViewState.parse(value));
+						if (value === "editor" || value === "viewer") {
+							setView(value);
+						}
 					}}
 				>
 					<ToggleGroup.Item
@@ -135,19 +137,6 @@ export function Header({
 					>
 						<EyeIcon className="size-[16px]" />
 						<span>Preview</span>
-					</ToggleGroup.Item>
-					<ToggleGroup.Item
-						value="integrator"
-						onClick={toggleView}
-						className={clsx(
-							"flex items-center gap-[4px] px-[8px] py-[4px] text-[12px] rounded-[4px] border-[1px] transition-colors font-[700]",
-							view === "integrator"
-								? "bg-primary-950/20 text-primary-200 border-primary-900"
-								: "bg-transparent text-white-900/70 hover:text-white-900 hover:bg-black-800/20 border-transparent cursor-pointer",
-						)}
-					>
-						<CableIcon className="size-[16px]" />
-						<span>Integrate</span>
 					</ToggleGroup.Item>
 				</ToggleGroup.Root>
 
