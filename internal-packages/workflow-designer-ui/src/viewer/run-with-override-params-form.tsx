@@ -1,24 +1,15 @@
-import React, {
-	useCallback, 
-	useState, 
-	useEffect
-} from "react";
-import {
-	type OverrideVariableNode,
-	type Workflow,
-	isOverrideTextContent,
-	isTextNode,
-	type OverrideNode,
-} from "@giselle-sdk/data-type";
+import { type OverrideNode, type OverrideVariableNode, type Workflow, isOverrideTextContent, isTextNode } from "@giselle-sdk/data-type";
 import { TextEditor } from "@giselle-sdk/text-editor/react-internal";
-import { NodeIcon } from "../icons/node";
 import clsx from "clsx/lite";
+import { useCallback, useEffect, useState } from "react";
+import type React from "react";
+import { NodeIcon } from "../icons/node";
 
-export function RunWithOverrideParamsForm({ 
+export function RunWithOverrideParamsForm({
 	flow,
 	onNodesChange,
 	isModalOpen,
-}: { 
+}: {
 	flow: Workflow;
 	onNodesChange?: (nodes: OverrideNode[]) => void;
 	isModalOpen?: boolean;
@@ -65,7 +56,10 @@ export function RunWithOverrideParamsForm({
 	// Notify parent component when override nodes state changes
 	useEffect(() => {
 		if (overrideVariableNodes.length > 0 && onNodesChange) {
-			console.log("Notification: Override nodes changed", overrideVariableNodes);
+			console.log(
+				"Notification: Override nodes changed", 
+				overrideVariableNodes
+			);
 			onNodesChange(overrideVariableNodes);
 		}
 	}, [overrideVariableNodes, onNodesChange]);
@@ -143,19 +137,17 @@ export function RunWithOverrideParamsForm({
 						if (!originalNode) return null;
 						
 						return (
-							<div
+							<button
 								key={overrideNode.id}
 								className={clsx(
-									"flex items-center p-[12px] rounded-[8px] border cursor-pointer transition-all duration-200",
+									"flex items-center p-[12px] rounded-[8px] border cursor-pointer transition-all duration-200 w-full text-left",
 									activeNodeId === overrideNode.id
 										? "border-primary-900 bg-black-800/30"
 										: "border-black-400/40 hover:border-primary-900/50 hover:bg-black-800/10"
 								)}
 								onClick={() => handleNodeSelect(overrideNode.id)}
-								onKeyDown={(e) => handleKeyDown(e, overrideNode.id)}
-								tabIndex={0}
-								role="button"
 								aria-pressed={activeNodeId === overrideNode.id}
+								type="button"
 							>
 								{/* Node icon (using original icon) */}
 								<div className="flex items-center justify-center w-[36px] h-[36px] mr-[12px] rounded-[4px] bg-white-950 text-black-950">
@@ -177,7 +169,7 @@ export function RunWithOverrideParamsForm({
 										<span className="text-[10px] text-black-400">Connected node</span>
 									</div>
 								</div>
-							</div>
+							</button>
 						);
 					})}
 				</div>
