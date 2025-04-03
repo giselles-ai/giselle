@@ -34,8 +34,15 @@ export default function TourExamplePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-black-900 text-white p-8">
-      <div className="max-w-6xl mx-auto">
+    <div 
+      className="min-h-screen text-white p-8 relative"
+      style={{
+        backgroundColor: "#0f1116",
+        backgroundImage: "radial-gradient(circle at 50% 50%, #1a1f2e, #0f1116)",
+      }}
+    >
+      <div className="absolute inset-0 bg-black opacity-30 pointer-events-none"></div>
+      <div className="max-w-6xl mx-auto relative z-10">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold" id="step1">Giselle Platform</h1>
           <button
