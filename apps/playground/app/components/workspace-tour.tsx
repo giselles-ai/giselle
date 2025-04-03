@@ -25,8 +25,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
     return () => setMounted(false);
   }, []);
 
-  // ハイライト機能は後で実装するため、コメントアウト
-  /*
+  // ハイライト機能を有効化
   useEffect(() => {
     if (!isOpen || steps.length === 0) return;
 
@@ -44,7 +43,6 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
       }
     };
   }, [isOpen, currentStep, steps]);
-  */
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -578,7 +576,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
 
       {/* ツアーカード */}
       <div
-        className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col"
+        className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col tour-card-step1"
         style={{
           width: '792px',
           height: '241px',
@@ -707,6 +705,23 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
           box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
           border-radius: 4px;
           animation: pulse 2s infinite;
+        }
+        
+        .tour-card-step1 {
+          filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+          animation: card-glow 2s infinite;
+        }
+        
+        @keyframes card-glow {
+          0% {
+            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+          }
+          50% {
+            filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.5));
+          }
+          100% {
+            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+          }
         }
         
         @keyframes pulse {
