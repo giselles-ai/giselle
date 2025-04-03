@@ -36,6 +36,12 @@ export default function TourExamplePage() {
       title: "Agent Configuration",
       content: "Customize agent names, integrate with external tools like GitHub, and share your creations with collaborators to extend your workflow capabilities.",
       placement: "left" as const
+    },
+    {
+      target: "#step6",
+      title: "Resources & Support",
+      content: "Get help when you need it. Visit our forum to connect with the community or explore our comprehensive documentation for detailed guidance and best practices whenever you encounter challenges.",
+      placement: "bottom" as const
     }
   ];
 
@@ -106,6 +112,19 @@ export default function TourExamplePage() {
             <button className="px-3 py-1.5 bg-primary-700/70 rounded text-sm">
               Integrations
             </button>
+          </div>
+        </div>
+
+        <div className="mt-8 bg-black-800 p-6 rounded-lg">
+          <h2 className="text-xl font-semibold mb-4" id="step6">Help & Resources</h2>
+          <p className="text-gray-400">
+            Get assistance and access additional resources to maximize your experience.
+          </p>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <a href="#" className="px-3 py-1.5 bg-primary-700/60 rounded text-sm text-center">Documentation</a>
+            <a href="#" className="px-3 py-1.5 bg-primary-700/60 rounded text-sm text-center">Community Forum</a>
+            <a href="#" className="px-3 py-1.5 bg-primary-700/60 rounded text-sm text-center">Tutorials</a>
+            <a href="#" className="px-3 py-1.5 bg-primary-700/60 rounded text-sm text-center">Contact Support</a>
           </div>
         </div>
       </div>
