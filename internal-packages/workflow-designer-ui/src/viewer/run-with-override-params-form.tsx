@@ -23,10 +23,10 @@ export function RunWithOverrideParamsForm({
 	const [overrideVariableNodes, setOverrideVariableNodes] = useState<
 		OverrideVariableNode[]
 	>([]);
-	
+
 	// Track the currently selected node
 	const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
-	
+
 	// Load initial data when the modal is opened
 	useEffect(() => {
 		if (isModalOpen) {
@@ -45,20 +45,20 @@ export function RunWithOverrideParamsForm({
 						: null,
 				)
 				.filter((node): node is OverrideVariableNode => node !== null);
-			
+
 			// Reverse the order to display older nodes at the top
 			setOverrideVariableNodes([...initialNodes].reverse());
-			
+
 			// Select the first node (oldest node = first in the reversed list)
 			if (initialNodes.length > 0) {
 				setActiveNodeId(initialNodes[initialNodes.length - 1].id);
 			}
-			
+
 			// Debug output
 			console.log("Initial nodes (reversed):", [...initialNodes].reverse());
 		}
 	}, [flow.nodes, isModalOpen]);
-	
+
 	// Notify parent component when override nodes state changes
 	useEffect(() => {
 		if (overrideVariableNodes.length > 0 && onNodesChange) {
@@ -69,11 +69,11 @@ export function RunWithOverrideParamsForm({
 			onNodesChange(overrideVariableNodes);
 		}
 	}, [overrideVariableNodes, onNodesChange]);
-	
+
 	// Get content of the active node
 	const getActiveNodeContent = useCallback(() => {
 		if (!activeNodeId) return "";
-		
+
 		const activeNode = overrideVariableNodes.find(
 			(node) => node.id === activeNodeId,
 		);
@@ -85,21 +85,21 @@ export function RunWithOverrideParamsForm({
 		console.log("Active node content not found");
 		return "";
 	}, [activeNodeId, overrideVariableNodes]);
-	
+
 	// Get name of the active node
 	const getActiveNodeName = (): string => {
 		if (!activeNodeId) return "";
 		const originalNode = flow.nodes.find((node) => node.id === activeNodeId);
 		return originalNode?.name || originalNode?.id || "";
 	};
-	
+
 	// Value change handler
 	const handleValueChange = useCallback(
 		(value: string) => {
 			if (!activeNodeId) return;
-			
+
 			console.log("Value changed:", activeNodeId, value);
-			
+
 			setOverrideVariableNodes((prevNodes) =>
 				prevNodes.map((node) =>
 					node.id === activeNodeId
@@ -117,13 +117,13 @@ export function RunWithOverrideParamsForm({
 		},
 		[activeNodeId],
 	);
-	
+
 	// Active node change handler
 	const handleNodeSelect = useCallback((nodeId: string) => {
 		console.log("Node selected:", nodeId);
 		setActiveNodeId(nodeId);
 	}, []);
-	
+
 	// Keyboard handler for node selection
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent, nodeId: string) => {
@@ -133,12 +133,12 @@ export function RunWithOverrideParamsForm({
 		},
 		[handleNodeSelect],
 	);
-	
+
 	// Don't display anything if data is empty or not initialized
 	if (overrideVariableNodes.length === 0) {
 		return null;
 	}
-	
+
 	return (
 		<div className="flex flex-row gap-[24px] flex-1 overflow-hidden h-[calc(100%-60px)]">
 			{/* Left side: Node list */}
@@ -153,7 +153,7 @@ export function RunWithOverrideParamsForm({
 							(node) => node.id === overrideNode.id,
 						);
 						if (!originalNode) return null;
-						
+
 						return (
 							<button
 								key={overrideNode.id}
@@ -171,7 +171,7 @@ export function RunWithOverrideParamsForm({
 								<div className="flex items-center justify-center w-[36px] h-[36px] mr-[12px] rounded-[4px] bg-white-950 text-black-950">
 									<NodeIcon node={originalNode} className="size-[20px]" />
 								</div>
-								
+
 								{/* Node name */}
 								<div className="flex-1">
 									<p className="text-[14px] font-medium text-white-900">
@@ -211,12 +211,12 @@ export function RunWithOverrideParamsForm({
 					})}
 				</div>
 			</div>
-			
+
 			{/* Right side: Text editor */}
 			<div className="flex-1 h-full">
 				<div className="w-full h-full [&_.prompt-editor]:text-white [&_svg]:text-white [&_button]:text-white">
 					<TextEditor
-						value={getActiveNodeContent() || ''}
+						value={getActiveNodeContent() || ""}
 						onValueChange={handleValueChange}
 					/>
 				</div>
