@@ -79,14 +79,14 @@ export function GitHubIntegrationSettingForm() {
 
 	switch (github.status) {
 		case "unset":
-			return "unset";
 		case "unauthorized":
-			return "unauthorized";
-		case "not-installed":
-			return "not-installed";
+			return "step1: Authorize with GitHub";
 		case "invalid-credential":
-			return "invalid-credential";
+			return "step1: Authorize with GitHub (invalid credential)";
+		case "not-installed":
+			return "step2: Install Giselle GitHub App";
 		case "installed":
+			// step3: Setup integration
 			return <Installed repositories={github.repositories} />;
 		default: {
 			const _exhaustiveCheck: never = github;
