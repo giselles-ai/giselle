@@ -1,13 +1,13 @@
 "use client";
 
-import {
-	type KeyboardEvent,
-	type ReactNode,
-	useCallback,
-	useEffect,
-	useState,
-} from "react";
+import type { StaticImageData } from "next/image";
+import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import step2Gif from "./assets/02.gif";
+import step3Gif from "./assets/03.gif";
+import step4Gif from "./assets/04.gif";
+import step2Arrow from "./assets/step2_arrow.png";
+import step5Arror from "./assets/step5_arrow.png";
 
 type TourStep = {
 	target?: string; // CSS selector for the target element (optional)
@@ -141,7 +141,7 @@ interface TourCardProps {
 	title?: string;
 	content?: string;
 	size: CardSize;
-	imageSrc?: string;
+	imageSrc?: StaticImageData;
 	className?: string;
 	footer: ReactNode;
 	children?: ReactNode;
@@ -184,7 +184,7 @@ const TourCard = ({
 					>
 						{imageSrc && (
 							<img
-								src={imageSrc}
+								src={imageSrc.src}
 								alt={"Tour step tutorial"}
 								className="w-full h-full object-cover"
 							/>
@@ -495,7 +495,7 @@ const TourStep2 = (props: TourStepComponentProps) => {
 					size="small"
 					title={step.title}
 					content={step.content}
-					imageSrc="/02.gif"
+					imageSrc={step2Gif}
 					footer={
 						<NavigationFooter
 							currentStep={currentStep}
@@ -509,7 +509,7 @@ const TourStep2 = (props: TourStepComponentProps) => {
 				/>
 
 				<img
-					src="/step2_arrow.png"
+					src={step2Arrow.src}
 					alt="Arrow pointing to toolbar"
 					className="absolute bottom-[-100px] left-[calc(50%-200px)] translate-x-[-50%] z-[60] w-[150px] h-auto pointer-events-none arrow-animation"
 				/>
@@ -541,7 +541,7 @@ const TourStep3 = (props: TourStepComponentProps) => {
 				size="large"
 				title={step.title}
 				content={step.content}
-				imageSrc="/03.gif"
+				imageSrc={step3Gif}
 				footer={
 					<NavigationFooter
 						currentStep={currentStep}
@@ -582,7 +582,7 @@ const TourStep4 = (props: TourStepComponentProps) => {
 				size="small"
 				title={step.title}
 				content={step.content}
-				imageSrc="/04.gif"
+				imageSrc={step4Gif}
 				footer={
 					<NavigationFooter
 						currentStep={currentStep}
@@ -637,7 +637,7 @@ const TourStep5 = (props: TourStepComponentProps) => {
 				/>
 
 				<img
-					src="/step5_arrow.png"
+					src={step5Arror.src}
 					alt="Arrow pointing to tabs"
 					className="absolute top-[-110px] left-[calc(50%-190px)] z-[60] w-[150px] h-auto pointer-events-none arrow-animation"
 				/>
@@ -695,6 +695,7 @@ const TourStep6 = (props: TourStepComponentProps) => {
 export const WorkspaceTour = ({
 	steps,
 	isOpen,
+	/** @todo I'll resolve this warning soon */
 	onClose,
 }: WorkspaceTourProps) => {
 	const [currentStep, setCurrentStep] = useState(0);
