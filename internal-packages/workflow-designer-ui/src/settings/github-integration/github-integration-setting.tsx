@@ -6,8 +6,11 @@ import { RequireInstallation } from "./require-installation";
 import { SetupIntegration } from "./setup-integration";
 
 export function GitHubIntegrationSetting() {
-	const { github } = useIntegration();
-	switch (github.status) {
+	const {
+		github: { state: gitHubState },
+	} = useIntegration();
+
+	switch (gitHubState.status) {
 		case "unset":
 		case "unauthorized":
 			return <RequireAuthorization />;
@@ -18,9 +21,9 @@ export function GitHubIntegrationSetting() {
 		case "not-installed":
 			return <RequireInstallation />;
 		case "installed":
-			return <SetupIntegration repositories={github.repositories} />;
+			return <SetupIntegration repositories={gitHubState.repositories} />;
 		default: {
-			const _exhaustiveCheck: never = github;
+			const _exhaustiveCheck: never = gitHubState;
 			throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
 		}
 	}

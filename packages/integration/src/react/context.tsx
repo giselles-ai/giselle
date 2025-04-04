@@ -12,7 +12,10 @@ export function IntegrationProvider({
 	const value = useMemo<Integration>(
 		() => ({
 			github: integration?.github ?? {
-				status: "unset",
+				state: integration?.github?.state ?? {
+					status: "unset",
+				},
+				components: integration?.github?.components ?? {},
 			},
 		}),
 		[integration],

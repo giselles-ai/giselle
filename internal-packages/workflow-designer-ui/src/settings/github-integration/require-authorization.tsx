@@ -1,5 +1,5 @@
+import { useIntegration } from "@giselle-sdk/integration/react";
 import { AlertCircle } from "lucide-react";
-import { Button } from "../../ui/button";
 import {
 	Card,
 	CardContent,
@@ -10,16 +10,15 @@ import {
 } from "../../ui/card";
 import { Stepper } from "./stepper";
 import { TitleHeader } from "./title-header";
-
 interface RequireAuthorizationProps {
 	error?: string;
-	onAuthorize?: () => void;
 }
 
-export function RequireAuthorization({
-	error,
-	onAuthorize,
-}: RequireAuthorizationProps) {
+export function RequireAuthorization({ error }: RequireAuthorizationProps) {
+	const {
+		github: { components },
+	} = useIntegration();
+
 	return (
 		<div>
 			<TitleHeader />
@@ -59,12 +58,13 @@ export function RequireAuthorization({
 				</CardContent>
 
 				<CardFooter className="flex justify-end p-6 border-slate-800 bg-slate-900/50">
-					<Button
+					{components?.authentication}
+					{/* <Button
 						className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 border-0"
 						onClick={onAuthorize}
 					>
 						Authorize with GitHub
-					</Button>
+					</Button> */}
 				</CardFooter>
 			</Card>
 		</div>

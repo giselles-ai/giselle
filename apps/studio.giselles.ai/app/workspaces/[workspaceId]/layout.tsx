@@ -1,6 +1,9 @@
+import { GitHubAuthentication } from "@/app/(main)/settings/account/v2/github-authentication";
 import { db } from "@/drizzle";
+import { GitHubAppInstallButton } from "@/packages/components/v2/github-app-install-button";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { getUsageLimitsForTeam } from "@/packages/lib/usage-limits";
+import { gitHubAppInstallURL } from "@/services/external/github";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import { WorkspaceId } from "@giselle-sdk/data-type";
 import { WorkspaceProvider } from "giselle-sdk/react";
@@ -34,7 +37,18 @@ export default async function Layout({
 		<WorkspaceProvider
 			workspaceId={workspaceId}
 			integration={{
-				github: gitHubIntegrationState,
+				github: {
+					state: gitHubIntegrationState,
+					components: {
+						authentication: <GitHubAuthentication />,
+						installation: (
+							<GitHubAppInstallButton
+								installationUrl={await gitHubAppInstallURL()}
+								installed={gitHubIntegrationState.status === "installed"}
+							/>
+						),
+					},
+				},
 			}}
 			usageLimits={usageLimits}
 			telemetry={{

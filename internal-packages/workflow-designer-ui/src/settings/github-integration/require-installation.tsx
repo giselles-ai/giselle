@@ -1,4 +1,4 @@
-import { Button } from "../../ui/button";
+import { useIntegration } from "@giselle-sdk/integration/react";
 import {
 	Card,
 	CardContent,
@@ -13,8 +13,11 @@ import { TitleHeader } from "./title-header";
 interface RequireInstallationProps {
 	onInstall?: () => void;
 }
-
 export function RequireInstallation({ onInstall }: RequireInstallationProps) {
+	const {
+		github: { components },
+	} = useIntegration();
+
 	return (
 		<div>
 			<TitleHeader />
@@ -50,12 +53,13 @@ export function RequireInstallation({ onInstall }: RequireInstallationProps) {
 				</CardContent>
 
 				<CardFooter className="flex justify-end p-6 bg-slate-900/50">
-					<Button
+					{components?.installation}
+					{/* <Button
 						className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 border-0"
 						onClick={onInstall}
 					>
 						Install GitHub App
-					</Button>
+					</Button> */}
 				</CardFooter>
 			</Card>
 		</div>
