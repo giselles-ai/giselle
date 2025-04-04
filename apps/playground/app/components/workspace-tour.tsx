@@ -204,13 +204,9 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
 
           {/* Arrow image placement - displayed below card */}
           <img
-            src="/arrow.svg"
-            alt="Arrow pointing to element"
-            className="absolute -bottom-16 left-32 z-20 w-24 h-24"
-            style={{
-              transform: 'scaleX(-1)',
-              animation: 'pulse 2s infinite'
-            }}
+            src="/step2_arrow.png" 
+            alt="Arrow pointing to toolbar" 
+            className="absolute bottom-[-100px] left-[calc(50%-200px)] translate-x-[-50%] z-[60] w-[150px] h-auto pointer-events-none arrow-animation"
           />
         </div>
 
@@ -592,7 +588,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
                 backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))'
               }}
             >
-              <img src="/04.gif" alt="Step 4 Tutorial" className="w-full h-full object-cover" />
+              {/* 画像が入る場所（仮） */}
             </div>
 
             {/* Text area */}
@@ -749,12 +745,12 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
         >
           {/* Image area */}
           <div 
-            className="w-full h-[280px]"
+            className="w-full h-[280px] flex items-center justify-center"
             style={{
               backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))'
             }}
           >
-            {/* Image placeholder */}
+            {/* 画像が入る場所（仮） */}
           </div>
 
           {/* Text area */}
