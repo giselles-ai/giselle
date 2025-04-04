@@ -37,8 +37,9 @@ export default function Page() {
 			placement: "right" as const
 		},
 		{
-			title: "Agent Configuration",
-			content: "Customize agent names, integrate with external tools like GitHub, and share your creations with collaborators to extend your workflow capabilities.",
+			target: ".ToggleGroup\\.Root", // モード切替タブをターゲットに
+			title: "Workflow Modes",
+			content: "Experience the complete development lifecycle with three specialized modes: Build to design your node workflows, Preview to test and validate your creations, and Integrate to connect with GitHub and deploy your solutions seamlessly.",
 			placement: "left" as const
 		},
 		{
