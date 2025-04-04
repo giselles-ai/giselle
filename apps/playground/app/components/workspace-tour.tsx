@@ -414,18 +414,6 @@ export const WorkspaceTour = ({
 	// Bail early if conditions aren't met
 	if (!isMounted || !isOpen || steps.length === 0) return null;
 
-	// Use the extracted NavigationFooter component
-	const tourNavigationFooter = (
-		<NavigationFooter
-			currentStep={currentStep}
-			totalSteps={steps.length}
-			isFirstStep={isFirstStep}
-			isLastStep={isLastStep}
-			onPrev={handlePrev}
-			onNext={handleNext}
-		/>
-	);
-
 	// Special layout for step 2 (index 1)
 	if (currentStep === 1) {
 		return createPortal(
@@ -441,7 +429,16 @@ export const WorkspaceTour = ({
 						title={steps[currentStep].title}
 						content={steps[currentStep].content}
 						imageSrc="/02.gif"
-						footer={tourNavigationFooter}
+						footer={
+							<NavigationFooter
+								currentStep={currentStep}
+								totalSteps={steps.length}
+								isFirstStep={isFirstStep}
+								isLastStep={isLastStep}
+								onPrev={handlePrev}
+								onNext={handleNext}
+							/>
+						}
 					/>
 
 					<img
@@ -470,7 +467,16 @@ export const WorkspaceTour = ({
 					title={steps[currentStep].title}
 					content={steps[currentStep].content}
 					imageSrc="/03.gif"
-					footer={tourNavigationFooter}
+					footer={
+						<NavigationFooter
+							currentStep={currentStep}
+							totalSteps={steps.length}
+							isFirstStep={isFirstStep}
+							isLastStep={isLastStep}
+							onPrev={handlePrev}
+							onNext={handleNext}
+						/>
+					}
 					additionalClassName="tour-card-step3"
 				/>
 
@@ -494,7 +500,16 @@ export const WorkspaceTour = ({
 					title={steps[currentStep].title}
 					content={steps[currentStep].content}
 					imageSrc="/04.gif"
-					footer={tourNavigationFooter}
+					footer={
+						<NavigationFooter
+							currentStep={currentStep}
+							totalSteps={steps.length}
+							isFirstStep={isFirstStep}
+							isLastStep={isLastStep}
+							onPrev={handlePrev}
+							onNext={handleNext}
+						/>
+					}
 					additionalClassName="tour-card-step3"
 				/>
 
@@ -518,7 +533,16 @@ export const WorkspaceTour = ({
 						size="large"
 						title={steps[currentStep].title}
 						content={steps[currentStep].content}
-						footer={tourNavigationFooter}
+						footer={
+							<NavigationFooter
+								currentStep={currentStep}
+								totalSteps={steps.length}
+								isFirstStep={isFirstStep}
+								isLastStep={isLastStep}
+								onPrev={handlePrev}
+								onNext={handleNext}
+							/>
+						}
 					/>
 
 					<img
@@ -547,7 +571,16 @@ export const WorkspaceTour = ({
 					size="small"
 					title={steps[currentStep].title}
 					content={steps[currentStep].content}
-					footer={tourNavigationFooter}
+					footer={
+						<NavigationFooter
+							currentStep={currentStep}
+							totalSteps={steps.length}
+							isFirstStep={isFirstStep}
+							isLastStep={isLastStep}
+							onPrev={handlePrev}
+							onNext={handleNext}
+						/>
+					}
 					additionalClassName="ml-8 mb-8 mt-auto"
 				/>
 
@@ -567,7 +600,16 @@ export const WorkspaceTour = ({
 
 			<TourCard
 				size="wide"
-				footer={tourNavigationFooter}
+				footer={
+					<NavigationFooter
+						currentStep={currentStep}
+						totalSteps={steps.length}
+						isFirstStep={isFirstStep}
+						isLastStep={isLastStep}
+						onPrev={handlePrev}
+						onNext={handleNext}
+					/>
+				}
 				additionalClassName="tour-card-step1"
 			>
 				<div className="relative z-10 h-full w-full flex flex-col justify-between">
