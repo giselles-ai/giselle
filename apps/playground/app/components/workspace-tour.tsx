@@ -25,49 +25,49 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
     return () => setMounted(false);
   }, []);
 
-  // ブラーの値を取得する関数（ステップ5のみ10px、他は20px）
+  // Function to get blur size (10px for step 5, 20px for others)
   const getBlurSize = (): string => {
     return currentStep === 4 ? "10px" : "20px";
   };
 
-  // パルスアニメーション名を取得する関数
+  // Function to get pulse animation name
   const getPulseAnimation = (): string => {
     return currentStep === 4 ? "pulseStep5" : "pulse";
   };
 
-  // ハイライト機能を有効化
+  // Enable highlight feature
   useEffect(() => {
     if (!isOpen || steps.length === 0) return;
 
-    // すべてのステップのターゲット要素をチェック
-    console.log("現在のステップ:", currentStep + 1);
-    console.log("すべてのターゲット:");
+    // Check target elements for all steps
+    console.log("Current step:", currentStep + 1);
+    console.log("All targets:");
     steps.forEach((step, idx) => {
       const target = step.target ? document.querySelector(step.target) : null;
-      console.log(`ステップ${idx + 1}:`, {
+      console.log(`Step ${idx + 1}:`, {
         target: step.target,
-        found: target ? "✅ 要素あり" : "❌ 要素なし"
+        found: target ? "✅ Element found" : "❌ Element not found"
       });
     });
 
-    // ハイライト対象の要素を取得して強調表示
-    // undefined エラーを防ぐためにチェックを追加
+    // Get and highlight the target element
+    // Add check to prevent undefined error
     if (!steps[currentStep]) return;
     
     const currentStepTarget = steps[currentStep].target;
     const currentTarget = currentStepTarget ? document.querySelector(currentStepTarget) : null;
     
-    console.log(`[ツアーハイライト] ステップ${currentStep + 1}:`, {
+    console.log(`[Tour Highlight] Step ${currentStep + 1}:`, {
       target: currentStepTarget,
-      foundElement: currentTarget ? "✅ 要素あり" : "❌ 要素なし",
+      foundElement: currentTarget ? "✅ Element found" : "❌ Element not found",
       element: currentTarget
     });
     
     if (currentTarget) {
       currentTarget.classList.add("tour-highlight");
-      console.log("ハイライト適用: ", currentTarget);
+      console.log("Highlight applied: ", currentTarget);
       
-      // 強制的にスタイルを適用（ステップ5だけblur 10px、他は20px）
+      // Force apply styles (10px blur for step 5, 20px for others)
       const blurSize = getBlurSize();
       (currentTarget as HTMLElement).style.setProperty("box-shadow", "0 0 10px 5px rgba(0, 135, 246, 0.5)", "important");
       (currentTarget as HTMLElement).style.removeProperty("outline");
@@ -75,13 +75,13 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
       (currentTarget as HTMLElement).style.setProperty("position", "relative", "important");
       (currentTarget as HTMLElement).style.setProperty("filter", `drop-shadow(0 0 ${blurSize} rgba(0, 135, 246, 0.5))`, "important");
     } else if (currentStepTarget) {
-      console.error("ターゲット要素が見つかりません:", currentStepTarget);
+      console.error("Target element not found:", currentStepTarget);
       
-      // 要素を見つけるための代替セレクタを試す
+      // Try alternative selectors to find elements
       const alternativeSelectors = [".View-selector", "[role='tablist']", ".header-tabs", ".view-switcher"];
       alternativeSelectors.forEach(selector => {
         const el = document.querySelector(selector);
-        console.log(`代替セレクタ ${selector}:`, el ? "✅ 要素あり" : "❌ 要素なし");
+        console.log(`Alternative selector ${selector}:`, el ? "✅ Element found" : "❌ Element not found");
       });
     }
 
@@ -118,24 +118,24 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
     onClose();
   };
 
-  // ボタンの無効状態を判定する関数（TypeScript エラーを回避）
+  // Function to determine button disabled state (avoid TypeScript errors)
   const isFirstStep = (): boolean => {
     return currentStep === 0;
   };
 
   if (!mounted || !isOpen || steps.length === 0) return null;
 
-  // 現在のステップに応じて異なるレイアウトを表示
+  // Display different layouts based on current step
   if (currentStep === 1) {
-    // ステップ2の特別なレイアウト
+    // Special layout for step 2
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-end justify-center">
         {/* Overlay */}
         <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
 
-        {/* カードと矢印をグループ化 - 中央下部配置 */}
+        {/* Group card and arrow - positioned at bottom center */}
         <div className="relative pointer-events-none mb-[200px] ml-[550px]">
-          {/* ステップ2専用カード - 中央配置 */}
+          {/* Step 2 special card - center positioned */}
           <div
             className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col"
             style={{
@@ -147,7 +147,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
               fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif',
             }}
           >
-            {/* 画像エリア */}
+            {/* Image area */}
             <div 
               className="w-full h-[280px] flex items-center justify-center"
               style={{
@@ -157,7 +157,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
               <img src="/02.gif" alt="Step 2 Tutorial" className="w-full h-full object-cover" />
             </div>
 
-            {/* テキストエリア */}
+            {/* Text area */}
             <div className="flex flex-col justify-center p-4 gap-1 flex-grow">
               <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>
                 {steps[currentStep].title}
@@ -165,7 +165,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
               <div className="text-white/40 my-2" style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: steps[currentStep].content }} />
             </div>
 
-            {/* フッター: ページナビゲーション */}
+            {/* Footer: Page navigation */}
             <div 
               className="flex justify-between items-center border-t border-white/10"
               style={{
@@ -202,11 +202,15 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             </div>
           </div>
 
-          {/* 矢印画像の配置 - カードの下に表示 */}
-          <img 
-            src="/step2_arrow.png" 
-            alt="Arrow pointing to toolbar" 
-            className="absolute bottom-[-100px] left-[calc(50%-200px)] translate-x-[-50%] z-[60] w-[150px] h-auto pointer-events-none arrow-animation"
+          {/* Arrow image placement - displayed below card */}
+          <img
+            src="/arrow.svg"
+            alt="Arrow pointing to element"
+            className="absolute -bottom-16 left-32 z-20 w-24 h-24"
+            style={{
+              transform: 'scaleX(-1)',
+              animation: 'pulse 2s infinite'
+            }}
           />
         </div>
 
@@ -291,13 +295,13 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
       document.body
     );
   } else if (currentStep === 2) {
-    // ステップ3の特別なレイアウト
+    // Special layout for step 3
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
         {/* Overlay */}
         <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
 
-        {/* ステップ3専用カード */}
+        {/* Step 3 special card */}
         <div
           className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col tour-card-step3"
           style={{
@@ -309,7 +313,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif',
           }}
         >
-          {/* 画像エリア */}
+          {/* Image area */}
           <div 
             className="w-full h-[280px] flex items-center justify-center"
             style={{
@@ -319,7 +323,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <img src="/03.gif" alt="Step 3 Tutorial" className="w-full h-full object-cover" />
           </div>
 
-          {/* テキストエリア */}
+          {/* Text area */}
           <div className="flex flex-col justify-start p-4 gap-1 flex-grow">
             <h3 className="text-white/80 font-semibold" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif', marginBottom: '0' }}>
               {steps[currentStep].title}
@@ -327,7 +331,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <div className="text-white/40" style={{ fontSize: '12px', marginTop: '0' }} dangerouslySetInnerHTML={{ __html: steps[currentStep].content }} />
           </div>
 
-          {/* フッター: ページナビゲーション */}
+          {/* Footer: Page navigation */}
           <div 
             className="flex justify-between items-center border-t border-white/10"
             style={{
@@ -426,13 +430,13 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
       document.body
     );
   } else if (currentStep === 3) {
-    // ステップ4の特別なレイアウト (ステップ2のスタイルと同じ)
+    // Special layout for step 4 (same style as step 2)
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
         {/* Overlay */}
         <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
 
-        {/* ステップ4専用カード */}
+        {/* Step 4 special card */}
         <div
           className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col tour-card-step3"
           style={{
@@ -444,7 +448,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif',
           }}
         >
-          {/* 画像エリア */}
+          {/* Image area */}
           <div 
             className="w-full h-[280px] flex items-center justify-center"
             style={{
@@ -454,7 +458,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <img src="/04.gif" alt="Step 4 Tutorial" className="w-full h-full object-cover" />
           </div>
 
-          {/* テキストエリア */}
+          {/* Text area */}
           <div className="flex flex-col justify-center p-4 gap-1 flex-grow">
             <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>
               {steps[currentStep].title}
@@ -462,7 +466,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <div className="text-white/40 my-2" style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: steps[currentStep].content }} />
           </div>
 
-          {/* フッター: ページナビゲーション */}
+          {/* Footer: Page navigation */}
           <div 
             className="flex justify-between items-center border-t border-white/10"
             style={{
@@ -561,15 +565,15 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
       document.body
     );
   } else if (currentStep === 4) {
-    // ステップ5の特別なレイアウト
+    // Special layout for step 5
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-start justify-end">
         {/* Overlay */}
         <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
 
-        {/* カードと矢印をグループ化 - 右上に配置 */}
+        {/* Group card and arrow - positioned at top right */}
         <div className="relative pointer-events-none mt-[140px] mr-8">
-          {/* ステップ5専用カード */}
+          {/* Step 5 special card */}
           <div
             className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col"
             style={{
@@ -581,7 +585,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
               fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif',
             }}
           >
-            {/* 画像エリア */}
+            {/* Image area */}
             <div 
               className="w-full h-[280px] flex items-center justify-center"
               style={{
@@ -591,7 +595,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
               <img src="/04.gif" alt="Step 4 Tutorial" className="w-full h-full object-cover" />
             </div>
 
-            {/* テキストエリア */}
+            {/* Text area */}
             <div className="flex flex-col justify-center p-4 gap-1 flex-grow">
               <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>
                 {steps[currentStep].title}
@@ -599,7 +603,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
               <div className="text-white/40 my-2" style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: steps[currentStep].content }} />
             </div>
 
-            {/* フッター: ページナビゲーション */}
+            {/* Footer: Page navigation */}
             <div 
               className="flex justify-between items-center border-t border-white/10"
               style={{
@@ -636,7 +640,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             </div>
           </div>
 
-          {/* 矢印画像の配置 */}
+          {/* Arrow image placement */}
           <img 
             src="/step5_arrow.png" 
             alt="Arrow pointing to tabs" 
@@ -725,13 +729,13 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
       document.body
     );
   } else if (currentStep === 5) {
-    // ステップ6の特別なレイアウト (左下に配置)
+    // Special layout for step 6 (positioned at bottom left)
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-start justify-start">
         {/* Overlay */}
         <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
 
-        {/* ステップ6専用カード - 左下に配置 */}
+        {/* Step 6 special card - positioned at bottom left */}
         <div
           className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col ml-8 mb-8 mt-auto"
           style={{
@@ -743,17 +747,17 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif',
           }}
         >
-          {/* 画像エリア */}
+          {/* Image area */}
           <div 
             className="w-full h-[280px]"
             style={{
               backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))'
             }}
           >
-            {/* 画像が入る場所 */}
+            {/* Image placeholder */}
           </div>
 
-          {/* テキストエリア */}
+          {/* Text area */}
           <div className="flex flex-col justify-center p-4 gap-1 flex-grow">
             <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>
               {steps[currentStep].title}
@@ -761,7 +765,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <div className="text-white/40 my-2" style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: steps[currentStep].content }} />
           </div>
 
-          {/* フッター: ページナビゲーション */}
+          {/* Footer: Page navigation */}
           <div 
             className="flex justify-between items-center border-t border-white/10"
             style={{
@@ -861,13 +865,13 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
     );
   }
 
-  // デフォルトのレイアウト（ステップ1など）
+  // Default layout (for step 1, etc.)
   return createPortal(
     <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
       {/* Overlay */}
       <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
 
-      {/* ツアーカード */}
+      {/* Tour card */}
       <div
         className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col tour-card-step1"
         style={{
@@ -879,11 +883,11 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
           fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif',
         }}
       >
-        {/* カードコンテンツ */}
+        {/* Card content */}
         <div className="relative z-10 h-full w-full flex flex-col justify-between">
-          {/* 3カラムのメインコンテンツ */}
+          {/* 3-column main content */}
           <div className="grid grid-cols-3 h-full">
-            {/* 左カラム: Navigation */}
+            {/* Left column: Navigation */}
             <div className="flex flex-col justify-center p-4 gap-1 border-r border-white/10">
               <h3 className="text-white/80 font-semibold mb-1 text-center" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>Navigation</h3>
               <p className="text-white/40 my-2 text-center" style={{ fontSize: '12px' }}>
@@ -906,7 +910,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
               </div>
             </div>
 
-            {/* 中央カラム: Node Controls */}
+            {/* Middle column: Node Controls */}
             <div className="flex flex-col justify-center p-4 gap-1 border-r border-white/10">
               <h3 className="text-white/80 font-semibold mb-1 text-center" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>Node Controls</h3>
               <p className="text-white/40 my-2 text-center" style={{ fontSize: '12px' }}>
@@ -929,7 +933,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
               </div>
             </div>
 
-            {/* 右カラム: Run Commands */}
+            {/* Right column: Run Commands */}
             <div className="flex flex-col justify-center p-4 gap-1">
               <h3 className="text-white/80 font-semibold mb-1 text-center" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>Run Commands</h3>
               <p className="text-white/40 my-2 text-center" style={{ fontSize: '12px' }}>
@@ -953,7 +957,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             </div>
           </div>
 
-          {/* フッター: ページナビゲーション */}
+          {/* Footer: Page navigation */}
           <div 
             className="flex justify-between items-center border-t border-white/10"
             style={{
