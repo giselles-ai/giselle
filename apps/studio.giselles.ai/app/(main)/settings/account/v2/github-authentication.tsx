@@ -1,5 +1,3 @@
-"use server";
-
 import { getGitHubIdentityState } from "@/services/accounts";
 import { TriangleAlert } from "lucide-react";
 import { GitHubAuthenticationPresentation } from "../../components/v2/github-authentication-presentation";
