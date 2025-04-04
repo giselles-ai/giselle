@@ -70,7 +70,14 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
         {/* Overlay */}
-        <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
+        <div 
+          className="absolute inset-0 bg-transparent pointer-events-auto" 
+          onClick={handleClose}
+          onKeyDown={(e) => e.key === 'Escape' && handleClose()} 
+          tabIndex={0}
+          role="button"
+          aria-label="Close tour"
+        />
 
         {/* ステップ2専用カード */}
         <div
@@ -119,6 +126,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
             </div>
             <div className="flex gap-1">
               <button
+                type="button"
                 onClick={handlePrev}
                 disabled={currentStep === 0}
                 className={`w-6 h-6 flex items-center justify-center rounded-full border ${
@@ -131,6 +139,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
                 ←
               </button>
               <button
+                type="button"
                 onClick={handleNext}
                 className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
                 style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
@@ -165,12 +174,21 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
       </div>,
       document.body
     );
-  } else if (currentStep as number === 2) {
+  }
+  
+  if (currentStep as number === 2) {
     // ステップ3の特別なレイアウト
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
         {/* Overlay */}
-        <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
+        <div 
+          className="absolute inset-0 bg-transparent pointer-events-auto" 
+          onClick={handleClose}
+          onKeyDown={(e) => e.key === 'Escape' && handleClose()} 
+          tabIndex={0}
+          role="button"
+          aria-label="Close tour"
+        />
 
         {/* ステップ3専用カード */}
         <div
@@ -219,6 +237,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
             </div>
             <div className="flex gap-1">
               <button
+                type="button"
                 onClick={handlePrev}
                 disabled={currentStep === 0}
                 className={`w-6 h-6 flex items-center justify-center rounded-full border ${
@@ -231,6 +250,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
                 ←
               </button>
               <button
+                type="button"
                 onClick={handleNext}
                 className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
                 style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
@@ -265,12 +285,21 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
       </div>,
       document.body
     );
-  } else if (currentStep as number === 3) {
+  }
+  
+  if (currentStep as number === 3) {
     // ステップ4の特別なレイアウト (ステップ2のスタイルをコピー)
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
         {/* Overlay */}
-        <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
+        <div 
+          className="absolute inset-0 bg-transparent pointer-events-auto" 
+          onClick={handleClose}
+          onKeyDown={(e) => e.key === 'Escape' && handleClose()} 
+          tabIndex={0}
+          role="button"
+          aria-label="Close tour"
+        />
 
         {/* ステップ4専用カード */}
         <div
@@ -319,6 +348,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
             </div>
             <div className="flex gap-1">
               <button
+                type="button"
                 onClick={handlePrev}
                 disabled={currentStep === 0}
                 className={`w-6 h-6 flex items-center justify-center rounded-full border ${
@@ -331,6 +361,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
                 ←
               </button>
               <button
+                type="button"
                 onClick={handleNext}
                 className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
                 style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
@@ -365,12 +396,21 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
       </div>,
       document.body
     );
-  } else if (currentStep as number === 4) {
+  }
+  
+  if (currentStep as number === 4) {
     // ステップ5の特別なレイアウト (ステップ3のスタイルをコピー)
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
         {/* Overlay */}
-        <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
+        <div 
+          className="absolute inset-0 bg-transparent pointer-events-auto" 
+          onClick={handleClose}
+          onKeyDown={(e) => e.key === 'Escape' && handleClose()} 
+          tabIndex={0}
+          role="button"
+          aria-label="Close tour"
+        />
 
         {/* ステップ5専用カード */}
         <div
@@ -419,6 +459,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
             </div>
             <div className="flex gap-1">
               <button
+                type="button"
                 onClick={handlePrev}
                 disabled={currentStep === 0}
                 className={`w-6 h-6 flex items-center justify-center rounded-full border ${
@@ -431,6 +472,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
                 ←
               </button>
               <button
+                type="button"
                 onClick={handleNext}
                 className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
                 style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
@@ -465,12 +507,21 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
       </div>,
       document.body
     );
-  } else if (currentStep as number === 5) {
+  }
+  
+  if (currentStep as number === 5) {
     // ステップ6の特別なレイアウト (ステップ2のスタイルをコピー)
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
         {/* Overlay */}
-        <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
+        <div 
+          className="absolute inset-0 bg-transparent pointer-events-auto" 
+          onClick={handleClose}
+          onKeyDown={(e) => e.key === 'Escape' && handleClose()} 
+          tabIndex={0}
+          role="button"
+          aria-label="Close tour"
+        />
 
         {/* ステップ6専用カード */}
         <div
@@ -519,6 +570,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
             </div>
             <div className="flex gap-1">
               <button
+                type="button"
                 onClick={handlePrev}
                 disabled={currentStep === 0}
                 className={`w-6 h-6 flex items-center justify-center rounded-full border ${
@@ -531,6 +583,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
                 ←
               </button>
               <button
+                type="button"
                 onClick={handleNext}
                 className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
                 style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
@@ -571,7 +624,14 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
   return createPortal(
     <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
       {/* Overlay */}
-      <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
+      <div 
+        className="absolute inset-0 bg-transparent pointer-events-auto" 
+        onClick={handleClose}
+        onKeyDown={(e) => e.key === 'Escape' && handleClose()} 
+        tabIndex={0}
+        role="button"
+        aria-label="Close tour"
+      />
 
       {/* ツアーカード */}
       <div
@@ -674,6 +734,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
             </div>
             <div className="flex gap-1">
               <button
+                type="button"
                 onClick={handlePrev}
                 disabled={currentStep === 0}
                 className={`w-6 h-6 flex items-center justify-center rounded-full border ${
@@ -686,6 +747,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
                 ←
               </button>
               <button
+                type="button"
                 onClick={handleNext}
                 className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
                 style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
