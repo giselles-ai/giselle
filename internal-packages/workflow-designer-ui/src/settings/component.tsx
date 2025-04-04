@@ -3,7 +3,7 @@ import { Tabs } from "radix-ui";
 import type { ReactNode } from "react";
 import { GitHubIcon } from "../icons";
 import { Background } from "../ui/background";
-import { GitHubIntegrationSettingForm } from "./github-integration";
+import { GitHubIntegrationSetting } from "./github-integration";
 
 type TabTriggerProps = Omit<
 	Tabs.TabsTriggerProps,
@@ -52,7 +52,7 @@ export function SettingsPanel() {
 					</Tabs.Trigger>
 				</Tabs.List>
 				<Tabs.Content value="github-integration" className="flex-1">
-					<GitHubIntegrationSettingForm />
+					<GitHubIntegrationSetting />
 				</Tabs.Content>
 			</Tabs.Root>
 		</div>
@@ -79,7 +79,7 @@ export function SettingsView() {
 						</Tabs.Trigger>
 					</Tabs.List>
 					<Tabs.Content value="github" className="flex-1">
-						<GitHubIntegrationSettingForm />
+						<GitHubIntegrationSetting />
 					</Tabs.Content>
 				</Tabs.Root>
 			</div>
