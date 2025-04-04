@@ -309,7 +309,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
 
         {/* ステップ4専用カード */}
         <div
-          className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col"
+          className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col tour-card-step3"
           style={{
             width: '264px',
             height: '437px',
