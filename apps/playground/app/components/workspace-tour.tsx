@@ -1,6 +1,12 @@
 "use client";
 
-import { type ReactNode, useCallback, useEffect, useState } from "react";
+import {
+	type KeyboardEvent,
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useState,
+} from "react";
 import { createPortal } from "react-dom";
 
 type TourStep = {
@@ -15,6 +21,81 @@ interface WorkspaceTourProps {
 	isOpen: boolean;
 	onClose: () => void;
 }
+
+interface NavigationFooterProps {
+	currentStep: number;
+	totalSteps: number;
+	isFirstStep: boolean;
+	isLastStep: boolean;
+	onPrev: () => void;
+	onNext: () => void;
+}
+
+// Extracted NavigationFooter component
+const NavigationFooter = ({
+	currentStep,
+	totalSteps,
+	isFirstStep,
+	isLastStep,
+	onPrev,
+	onNext,
+}: NavigationFooterProps) => {
+	return (
+		<div
+			className="flex justify-between items-center border-t border-white/10"
+			style={{
+				padding: "6px 12px 6px 12px",
+				justifyContent: "space-between",
+				alignItems: "center",
+				alignSelf: "stretch",
+			}}
+		>
+			<div className="text-sm text-white/70">
+				{currentStep + 1}/{totalSteps}
+			</div>
+			<div className="flex gap-1">
+				<button
+					type="button"
+					onClick={onPrev}
+					disabled={isFirstStep}
+					className={`w-6 h-6 flex items-center justify-center rounded-full border ${
+						isFirstStep
+							? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
+							: "border-primary-200 text-primary-200 hover:bg-primary-200/10"
+					}`}
+					style={{
+						fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+					}}
+				>
+					←
+				</button>
+				{isLastStep ? (
+					<button
+						type="button"
+						onClick={onNext}
+						className="px-3 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
+						style={{
+							fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+						}}
+					>
+						Finish
+					</button>
+				) : (
+					<button
+						type="button"
+						onClick={onNext}
+						className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
+						style={{
+							fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+						}}
+					>
+						→
+					</button>
+				)}
+			</div>
+		</div>
+	);
+};
 
 // Common style constants to improve consistency
 const CARD_STYLES = {
@@ -130,24 +211,121 @@ const TourCard = ({
 	);
 };
 
+// Create persistent global styles element
+const GlobalStyles = ({ animationStyle }: { animationStyle: string }) => (
+	<style jsx global>{`
+     .tour-highlight {
+       position: relative;
+       z-index: 999 !important;
+       box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
+       border-radius: 8px !important;
+       animation: ${animationStyle} 2s infinite;
+       filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
+       outline: 2px solid rgba(0, 135, 246, 0.8) !important;
+     }
+
+     .tour-card-step1, .tour-card-step3 {
+       filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
+       animation: card-glow 2s infinite;
+     }
+
+     .arrow-animation {
+       animation: arrow-pulse 2s infinite;
+     }
+
+     @keyframes arrow-pulse {
+       0% {
+         opacity: 0.8;
+         transform: translateY(0);
+       }
+       50% {
+         opacity: 1;
+         transform: translateY(-10px);
+       }
+       100% {
+         opacity: 0.8;
+         transform: translateY(0);
+       }
+     }
+
+     @keyframes card-glow {
+       0% {
+         filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
+       }
+       50% {
+         filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
+       }
+       100% {
+         filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
+       }
+     }
+
+     @keyframes pulse {
+       0% {
+         box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+         filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
+       }
+       50% {
+         box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+         filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
+       }
+       100% {
+         box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+         filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
+       }
+     }
+
+     @keyframes pulseStep5 {
+       0% {
+         box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+         filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
+       }
+       50% {
+         box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+         filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
+       }
+       100% {
+         box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+         filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
+       }
+     }
+   `}</style>
+);
+
+const TourOverlay = ({
+	onClose,
+	onKeyDown,
+}: {
+	onClose: () => void;
+	onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => void;
+}) => (
+	<div
+		className="absolute inset-0 bg-transparent pointer-events-auto"
+		onClick={onClose}
+		onKeyDown={(e) => {}}
+		tabIndex={0}
+		role="button"
+		aria-label="Close tour"
+	/>
+);
+
 export const WorkspaceTour = ({
 	steps,
 	isOpen,
 	onClose,
 }: WorkspaceTourProps) => {
 	const [currentStep, setCurrentStep] = useState(0);
-	const [mounted, setMounted] = useState(false);
-
-	useEffect(() => {
-		setMounted(true);
-		return () => setMounted(false);
-	}, []);
-
 	// Determine if this is the first step
 	const isFirstStep = currentStep === 0;
 
 	// Determine if this is the last step
 	const isLastStep = currentStep === steps.length - 1;
+
+	// Using useEffect for hydration safety
+	const [isMounted, setIsMounted] = useState(false);
+	useEffect(() => {
+		setIsMounted(true);
+	}, []);
 
 	// Get blur size for highlight effect
 	const getBlurSize = useCallback((): string => {
@@ -234,163 +412,28 @@ export const WorkspaceTour = ({
 	};
 
 	// Bail early if conditions aren't met
-	if (!mounted || !isOpen || steps.length === 0) return null;
+	if (!isMounted || !isOpen || steps.length === 0) return null;
 
-	// Common footer component to reduce duplication
-	const NavigationFooter = () => (
-		<div
-			className="flex justify-between items-center border-t border-white/10"
-			style={{
-				padding: "6px 12px 6px 12px",
-				justifyContent: "space-between",
-				alignItems: "center",
-				alignSelf: "stretch",
-			}}
-		>
-			<div className="text-sm text-white/70">
-				{currentStep + 1}/{steps.length}
-			</div>
-			<div className="flex gap-1">
-				<button
-					type="button"
-					onClick={handlePrev}
-					disabled={isFirstStep}
-					className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-						isFirstStep
-							? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
-							: "border-primary-200 text-primary-200 hover:bg-primary-200/10"
-					}`}
-					style={{
-						fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-					}}
-				>
-					←
-				</button>
-				{isLastStep ? (
-					<button
-						type="button"
-						onClick={handleNext}
-						className="px-3 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
-						style={{
-							fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-						}}
-					>
-						Finish
-					</button>
-				) : (
-					<button
-						type="button"
-						onClick={handleNext}
-						className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
-						style={{
-							fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-						}}
-					>
-						→
-					</button>
-				)}
-			</div>
-		</div>
-	);
-
-	// Common transparent overlay used by all layouts
-	const Overlay = () => (
-		<div
-			className="absolute inset-0 bg-transparent pointer-events-auto"
-			onClick={handleClose}
-			onKeyDown={(e) => e.key === "Escape" && handleClose()}
-			tabIndex={0}
-			role="button"
-			aria-label="Close tour"
+	// Use the extracted NavigationFooter component
+	const tourNavigationFooter = (
+		<NavigationFooter
+			currentStep={currentStep}
+			totalSteps={steps.length}
+			isFirstStep={isFirstStep}
+			isLastStep={isLastStep}
+			onPrev={handlePrev}
+			onNext={handleNext}
 		/>
-	);
-
-	// Shared global styles used by all layouts
-	const GlobalStyles = () => (
-		<style jsx global>{`
-      .tour-highlight {
-        position: relative;
-        z-index: 999 !important;
-        box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
-        border-radius: 8px !important;
-        animation: ${getPulseAnimation()} 2s infinite;
-        filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
-        outline: 2px solid rgba(0, 135, 246, 0.8) !important;
-      }
-      
-      .tour-card-step1, .tour-card-step3 {
-        filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-        animation: card-glow 2s infinite;
-      }
-      
-      .arrow-animation {
-        animation: arrow-pulse 2s infinite;
-      }
-      
-      @keyframes arrow-pulse {
-        0% {
-          opacity: 0.8;
-          transform: translateY(0);
-        }
-        50% {
-          opacity: 1;
-          transform: translateY(-10px);
-        }
-        100% {
-          opacity: 0.8;
-          transform: translateY(0);
-        }
-      }
-      
-      @keyframes card-glow {
-        0% {
-          filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-        }
-        50% {
-          filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
-        }
-        100% {
-          filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-        }
-      }
-      
-      @keyframes pulse {
-        0% {
-          box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-          filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
-        }
-        50% {
-          box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
-          filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
-        }
-        100% {
-          box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-          filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
-        }
-      }
-
-      @keyframes pulseStep5 {
-        0% {
-          box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-          filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
-        }
-        50% {
-          box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
-          filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
-        }
-        100% {
-          box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-          filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
-        }
-      }
-    `}</style>
 	);
 
 	// Special layout for step 2 (index 1)
 	if (currentStep === 1) {
 		return createPortal(
 			<div className="fixed inset-0 z-50 pointer-events-none flex items-end justify-center">
-				<Overlay />
+				<TourOverlay
+					onClose={handleClose}
+					onKeyDown={(e) => e.key === "Escape" && handleClose()}
+				/>
 
 				<div className="relative pointer-events-none mb-[200px] ml-[550px]">
 					<TourCard
@@ -398,7 +441,7 @@ export const WorkspaceTour = ({
 						title={steps[currentStep].title}
 						content={steps[currentStep].content}
 						imageSrc="/02.gif"
-						footer={<NavigationFooter />}
+						footer={tourNavigationFooter}
 					/>
 
 					<img
@@ -407,8 +450,7 @@ export const WorkspaceTour = ({
 						className="absolute bottom-[-100px] left-[calc(50%-200px)] translate-x-[-50%] z-[60] w-[150px] h-auto pointer-events-none arrow-animation"
 					/>
 				</div>
-
-				<GlobalStyles />
+				<GlobalStyles animationStyle="pulse" />
 			</div>,
 			document.body,
 		);
@@ -418,18 +460,21 @@ export const WorkspaceTour = ({
 	if (currentStep === 2) {
 		return createPortal(
 			<div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
-				<Overlay />
+				<TourOverlay
+					onClose={handleClose}
+					onKeyDown={(e) => e.key === "Escape" && handleClose()}
+				/>
 
 				<TourCard
 					size="large"
 					title={steps[currentStep].title}
 					content={steps[currentStep].content}
 					imageSrc="/03.gif"
-					footer={<NavigationFooter />}
+					footer={tourNavigationFooter}
 					additionalClassName="tour-card-step3"
 				/>
 
-				<GlobalStyles />
+				<GlobalStyles animationStyle="pulse" />
 			</div>,
 			document.body,
 		);
@@ -439,18 +484,21 @@ export const WorkspaceTour = ({
 	if (currentStep === 3) {
 		return createPortal(
 			<div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
-				<Overlay />
+				<TourOverlay
+					onClose={handleClose}
+					onKeyDown={(e) => e.key === "Escape" && handleClose()}
+				/>
 
 				<TourCard
 					size="small"
 					title={steps[currentStep].title}
 					content={steps[currentStep].content}
 					imageSrc="/04.gif"
-					footer={<NavigationFooter />}
+					footer={tourNavigationFooter}
 					additionalClassName="tour-card-step3"
 				/>
 
-				<GlobalStyles />
+				<GlobalStyles animationStyle="pulse" />
 			</div>,
 			document.body,
 		);
@@ -460,14 +508,17 @@ export const WorkspaceTour = ({
 	if (currentStep === 4) {
 		return createPortal(
 			<div className="fixed inset-0 z-50 pointer-events-none flex items-start justify-end">
-				<Overlay />
+				<TourOverlay
+					onClose={handleClose}
+					onKeyDown={(e) => e.key === "Escape" && handleClose()}
+				/>
 
 				<div className="relative pointer-events-none mt-[140px] mr-8">
 					<TourCard
 						size="large"
 						title={steps[currentStep].title}
 						content={steps[currentStep].content}
-						footer={<NavigationFooter />}
+						footer={tourNavigationFooter}
 					/>
 
 					<img
@@ -477,7 +528,7 @@ export const WorkspaceTour = ({
 					/>
 				</div>
 
-				<GlobalStyles />
+				<GlobalStyles animationStyle="pulseStep5" />
 			</div>,
 			document.body,
 		);
@@ -487,17 +538,20 @@ export const WorkspaceTour = ({
 	if (currentStep === 5) {
 		return createPortal(
 			<div className="fixed inset-0 z-50 pointer-events-none flex items-start justify-start">
-				<Overlay />
+				<TourOverlay
+					onClose={handleClose}
+					onKeyDown={(e) => e.key === "Escape" && handleClose()}
+				/>
 
 				<TourCard
 					size="small"
 					title={steps[currentStep].title}
 					content={steps[currentStep].content}
-					footer={<NavigationFooter />}
+					footer={tourNavigationFooter}
 					additionalClassName="ml-8 mb-8 mt-auto"
 				/>
 
-				<GlobalStyles />
+				<GlobalStyles animationStyle="pulse" />
 			</div>,
 			document.body,
 		);
@@ -506,11 +560,14 @@ export const WorkspaceTour = ({
 	// Default layout (for step 1, etc.)
 	return createPortal(
 		<div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
-			<Overlay />
+			<TourOverlay
+				onClose={handleClose}
+				onKeyDown={(e) => e.key === "Escape" && handleClose()}
+			/>
 
 			<TourCard
 				size="wide"
-				footer={<NavigationFooter />}
+				footer={tourNavigationFooter}
 				additionalClassName="tour-card-step1"
 			>
 				<div className="relative z-10 h-full w-full flex flex-col justify-between">
@@ -626,7 +683,7 @@ export const WorkspaceTour = ({
 				</div>
 			</TourCard>
 
-			<GlobalStyles />
+			<GlobalStyles animationStyle="pulse" />
 		</div>,
 		document.body,
 	);
