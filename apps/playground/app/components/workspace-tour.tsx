@@ -25,21 +25,76 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
     return () => setMounted(false);
   }, []);
 
+  // ブラーの値を取得する関数（ステップ5のみ10px、他は20px）
+  const getBlurSize = (): string => {
+    return currentStep === 4 ? "10px" : "20px";
+  };
+
+  // パルスアニメーション名を取得する関数
+  const getPulseAnimation = (): string => {
+    return currentStep === 4 ? "pulseStep5" : "pulse";
+  };
+
   // ハイライト機能を有効化
   useEffect(() => {
     if (!isOpen || steps.length === 0) return;
 
+    // すべてのステップのターゲット要素をチェック
+    console.log("現在のステップ:", currentStep + 1);
+    console.log("すべてのターゲット:");
+    steps.forEach((step, idx) => {
+      const target = step.target ? document.querySelector(step.target) : null;
+      console.log(`ステップ${idx + 1}:`, {
+        target: step.target,
+        found: target ? "✅ 要素あり" : "❌ 要素なし"
+      });
+    });
+
     // ハイライト対象の要素を取得して強調表示
-    const currentTarget = steps[currentStep].target ? document.querySelector(steps[currentStep].target) : null;
+    // undefined エラーを防ぐためにチェックを追加
+    if (!steps[currentStep]) return;
+    
+    const currentStepTarget = steps[currentStep].target;
+    const currentTarget = currentStepTarget ? document.querySelector(currentStepTarget) : null;
+    
+    console.log(`[ツアーハイライト] ステップ${currentStep + 1}:`, {
+      target: currentStepTarget,
+      foundElement: currentTarget ? "✅ 要素あり" : "❌ 要素なし",
+      element: currentTarget
+    });
+    
     if (currentTarget) {
       currentTarget.classList.add("tour-highlight");
+      console.log("ハイライト適用: ", currentTarget);
+      
+      // 強制的にスタイルを適用（ステップ5だけblur 10px、他は20px）
+      const blurSize = getBlurSize();
+      (currentTarget as HTMLElement).style.setProperty("box-shadow", "0 0 10px 5px rgba(0, 135, 246, 0.5)", "important");
+      (currentTarget as HTMLElement).style.removeProperty("outline");
+      (currentTarget as HTMLElement).style.setProperty("z-index", "9999", "important");
+      (currentTarget as HTMLElement).style.setProperty("position", "relative", "important");
+      (currentTarget as HTMLElement).style.setProperty("filter", `drop-shadow(0 0 ${blurSize} rgba(0, 135, 246, 0.5))`, "important");
+    } else if (currentStepTarget) {
+      console.error("ターゲット要素が見つかりません:", currentStepTarget);
+      
+      // 要素を見つけるための代替セレクタを試す
+      const alternativeSelectors = [".View-selector", "[role='tablist']", ".header-tabs", ".view-switcher"];
+      alternativeSelectors.forEach(selector => {
+        const el = document.querySelector(selector);
+        console.log(`代替セレクタ ${selector}:`, el ? "✅ 要素あり" : "❌ 要素なし");
+      });
     }
 
     // Clean up function to remove highlight
     return () => {
-      const currentTarget = steps[currentStep].target ? document.querySelector(steps[currentStep].target) : null;
+      if (!steps[currentStep]) return;
+      const currentStepTarget = steps[currentStep].target;
+      const currentTarget = currentStepTarget ? document.querySelector(currentStepTarget) : null;
       if (currentTarget) {
         currentTarget.classList.remove("tour-highlight");
+        (currentTarget as HTMLElement).style.removeProperty("box-shadow");
+        (currentTarget as HTMLElement).style.removeProperty("filter");
+        (currentTarget as HTMLElement).style.removeProperty("z-index");
       }
     };
   }, [isOpen, currentStep, steps]);
@@ -61,6 +116,11 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
   const handleClose = () => {
     setCurrentStep(0);
     onClose();
+  };
+
+  // ボタンの無効状態を判定する関数（TypeScript エラーを回避）
+  const isFirstStep = (): boolean => {
+    return currentStep === 0;
   };
 
   if (!mounted || !isOpen || steps.length === 0) return null;
@@ -121,9 +181,9 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <div className="flex gap-1">
               <button
                 onClick={handlePrev}
-                disabled={currentStep === 0}
+                disabled={isFirstStep()}
                 className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-                  currentStep === 0
+                  isFirstStep()
                     ? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
                     : "border-primary-200 text-primary-200 hover:bg-primary-200/10"
                 }`}
@@ -145,38 +205,57 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
         <style jsx global>{`
           .tour-highlight {
             position: relative;
-            z-index: 51;
-            box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+            z-index: 999 !important;
+            box-shadow: 0 0 10px 5px rgba(0, 135, 246, 0.5) !important;
             border-radius: 4px;
-            animation: pulse 2s infinite;
+            animation: ${getPulseAnimation()} 2s infinite;
+            filter: drop-shadow(0 0 ${getBlurSize()} rgba(0, 135, 246, 0.5)) !important;
           }
           
           .tour-card-step1, .tour-card-step3 {
-            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             animation: card-glow 2s infinite;
           }
           
           @keyframes card-glow {
             0% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             }
             50% {
-              filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
             }
             100% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             }
           }
           
           @keyframes pulse {
             0% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
             }
             50% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 20px rgba(76, 89, 175, 0.9);
+              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
             }
             100% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
+            }
+          }
+
+          @keyframes pulseStep5 {
+            0% {
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
+            }
+            50% {
+              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
+            }
+            100% {
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
             }
           }
         `}</style>
@@ -238,9 +317,9 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <div className="flex gap-1">
               <button
                 onClick={handlePrev}
-                disabled={currentStep === 0}
+                disabled={isFirstStep()}
                 className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-                  currentStep === 0
+                  isFirstStep()
                     ? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
                     : "border-primary-200 text-primary-200 hover:bg-primary-200/10"
                 }`}
@@ -262,38 +341,57 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
         <style jsx global>{`
           .tour-highlight {
             position: relative;
-            z-index: 51;
-            box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+            z-index: 999 !important;
+            box-shadow: 0 0 10px 5px rgba(0, 135, 246, 0.5) !important;
             border-radius: 4px;
-            animation: pulse 2s infinite;
+            animation: ${getPulseAnimation()} 2s infinite;
+            filter: drop-shadow(0 0 ${getBlurSize()} rgba(0, 135, 246, 0.5)) !important;
           }
           
           .tour-card-step1, .tour-card-step3 {
-            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             animation: card-glow 2s infinite;
           }
           
           @keyframes card-glow {
             0% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             }
             50% {
-              filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
             }
             100% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             }
           }
           
           @keyframes pulse {
             0% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
             }
             50% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 20px rgba(76, 89, 175, 0.9);
+              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
             }
             100% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
+            }
+          }
+
+          @keyframes pulseStep5 {
+            0% {
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
+            }
+            50% {
+              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
+            }
+            100% {
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
             }
           }
         `}</style>
@@ -355,9 +453,9 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <div className="flex gap-1">
               <button
                 onClick={handlePrev}
-                disabled={currentStep === 0}
+                disabled={isFirstStep()}
                 className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-                  currentStep === 0
+                  isFirstStep()
                     ? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
                     : "border-primary-200 text-primary-200 hover:bg-primary-200/10"
                 }`}
@@ -379,38 +477,57 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
         <style jsx global>{`
           .tour-highlight {
             position: relative;
-            z-index: 51;
-            box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+            z-index: 999 !important;
+            box-shadow: 0 0 10px 5px rgba(0, 135, 246, 0.5) !important;
             border-radius: 4px;
-            animation: pulse 2s infinite;
+            animation: ${getPulseAnimation()} 2s infinite;
+            filter: drop-shadow(0 0 ${getBlurSize()} rgba(0, 135, 246, 0.5)) !important;
           }
           
           .tour-card-step1, .tour-card-step3 {
-            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             animation: card-glow 2s infinite;
           }
           
           @keyframes card-glow {
             0% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             }
             50% {
-              filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
             }
             100% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             }
           }
           
           @keyframes pulse {
             0% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
             }
             50% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 20px rgba(76, 89, 175, 0.9);
+              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
             }
             100% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
+            }
+          }
+
+          @keyframes pulseStep5 {
+            0% {
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
+            }
+            50% {
+              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
+            }
+            100% {
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
             }
           }
         `}</style>
@@ -420,13 +537,13 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
   } else if (currentStep === 4) {
     // ステップ5の特別なレイアウト (ステップ3のスタイルと同じ)
     return createPortal(
-      <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
+      <div className="fixed inset-0 z-50 pointer-events-none flex items-start justify-end">
         {/* Overlay */}
         <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
 
-        {/* ステップ5専用カード */}
+        {/* ステップ5専用カード - 右上に配置 - 上部余白追加 */}
         <div
-          className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col"
+          className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col mt-[100px] mr-8"
           style={{
             width: '483px',
             height: '423px',
@@ -472,9 +589,9 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <div className="flex gap-1">
               <button
                 onClick={handlePrev}
-                disabled={currentStep === 0}
+                disabled={isFirstStep()}
                 className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-                  currentStep === 0
+                  isFirstStep()
                     ? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
                     : "border-primary-200 text-primary-200 hover:bg-primary-200/10"
                 }`}
@@ -496,38 +613,57 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
         <style jsx global>{`
           .tour-highlight {
             position: relative;
-            z-index: 51;
-            box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+            z-index: 999 !important;
+            box-shadow: 0 0 10px 5px rgba(0, 135, 246, 0.5) !important;
             border-radius: 4px;
-            animation: pulse 2s infinite;
+            animation: ${getPulseAnimation()} 2s infinite;
+            filter: drop-shadow(0 0 ${getBlurSize()} rgba(0, 135, 246, 0.5)) !important;
           }
           
           .tour-card-step1, .tour-card-step3 {
-            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             animation: card-glow 2s infinite;
           }
           
           @keyframes card-glow {
             0% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             }
             50% {
-              filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
             }
             100% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             }
           }
           
           @keyframes pulse {
             0% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
             }
             50% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 20px rgba(76, 89, 175, 0.9);
+              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
             }
             100% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
+            }
+          }
+
+          @keyframes pulseStep5 {
+            0% {
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
+            }
+            50% {
+              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
+            }
+            100% {
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
             }
           }
         `}</style>
@@ -589,9 +725,9 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <div className="flex gap-1">
               <button
                 onClick={handlePrev}
-                disabled={currentStep === 0}
+                disabled={isFirstStep()}
                 className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-                  currentStep === 0
+                  isFirstStep()
                     ? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
                     : "border-primary-200 text-primary-200 hover:bg-primary-200/10"
                 }`}
@@ -613,38 +749,57 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
         <style jsx global>{`
           .tour-highlight {
             position: relative;
-            z-index: 51;
-            box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+            z-index: 999 !important;
+            box-shadow: 0 0 10px 5px rgba(0, 135, 246, 0.5) !important;
             border-radius: 4px;
-            animation: pulse 2s infinite;
+            animation: ${getPulseAnimation()} 2s infinite;
+            filter: drop-shadow(0 0 ${getBlurSize()} rgba(0, 135, 246, 0.5)) !important;
           }
           
           .tour-card-step1, .tour-card-step3 {
-            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             animation: card-glow 2s infinite;
           }
           
           @keyframes card-glow {
             0% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             }
             50% {
-              filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
             }
             100% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             }
           }
           
           @keyframes pulse {
             0% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
             }
             50% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 20px rgba(76, 89, 175, 0.9);
+              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
             }
             100% {
-              box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
+            }
+          }
+
+          @keyframes pulseStep5 {
+            0% {
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
+            }
+            50% {
+              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
+            }
+            100% {
+              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
             }
           }
         `}</style>
@@ -761,9 +916,9 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <div className="flex gap-1">
               <button
                 onClick={handlePrev}
-                disabled={currentStep === 0}
+                disabled={isFirstStep()}
                 className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-                  currentStep === 0
+                  isFirstStep()
                     ? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
                     : "border-primary-200 text-primary-200 hover:bg-primary-200/10"
                 }`}
@@ -786,38 +941,57 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
       <style jsx global>{`
         .tour-highlight {
           position: relative;
-          z-index: 51;
-          box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+          z-index: 999 !important;
+          box-shadow: 0 0 10px 5px rgba(0, 135, 246, 0.5) !important;
           border-radius: 4px;
-          animation: pulse 2s infinite;
+          animation: ${getPulseAnimation()} 2s infinite;
+          filter: drop-shadow(0 0 ${getBlurSize()} rgba(0, 135, 246, 0.5)) !important;
         }
         
         .tour-card-step1, .tour-card-step3 {
-          filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+          filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
           animation: card-glow 2s infinite;
         }
         
         @keyframes card-glow {
           0% {
-            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
           }
           50% {
-            filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.5));
+            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
           }
           100% {
-            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
           }
         }
         
         @keyframes pulse {
           0% {
-            box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+            box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
           }
           50% {
-            box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 20px rgba(76, 89, 175, 0.9);
+            box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
           }
           100% {
-            box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
+            box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
+          }
+        }
+
+        @keyframes pulseStep5 {
+          0% {
+            box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+            filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
+          }
+          50% {
+            box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+            filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
+          }
+          100% {
+            box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+            filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
           }
         }
       `}</style>
