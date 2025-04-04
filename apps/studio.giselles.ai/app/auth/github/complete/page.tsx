@@ -43,7 +43,7 @@ export default function GitHubAuthComplete() {
 
 				{message && <p className="mb-6 text-gray-600">{message}</p>}
 
-				<Button onClick={handleClose} size="lg" className="mt-4">
+				<Button onClick={handleClose} className="mt-4">
 					Close Window
 				</Button>
 			</div>
