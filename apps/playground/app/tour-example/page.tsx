@@ -33,14 +33,14 @@ export default function TourExamplePage() {
     },
     {
       target: "#step5",
-      title: "Agent Configuration",
-      content: "Customize agent names, integrate with external tools like GitHub, and share your creations with collaborators to extend your workflow capabilities.",
+      title: "Workflow Modes",
+      content: "Experience the complete development lifecycle with three specialized modes: Build to design your node workflows, Preview to test and validate your creations, and Integrate to connect with GitHub and deploy your solutions seamlessly.",
       placement: "left" as const
     },
     {
       target: "#step6",
       title: "Resources & Support",
-      content: "Get help when you need it. Visit our forum to connect with the community or explore our comprehensive documentation for detailed guidance and best practices whenever you encounter challenges.",
+      content: "Get help when you need it. Explore our comprehensive <a href=\"https://docs.giselles.ai/introduction\" style={{textDecoration: 'underline'}}>Docs</a> for detailed guidance and best practices whenever you encounter challenges.",
       placement: "bottom" as const
     }
   ];
@@ -53,11 +53,12 @@ export default function TourExamplePage() {
         backgroundImage: "radial-gradient(circle at 50% 50%, #1a1f2e, #0f1116)",
       }}
     >
-      <div className="absolute inset-0 bg-black opacity-30 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-black opacity-30 pointer-events-none" />
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold" id="step1">Giselle Platform</h1>
           <button
+            type="button"
             className="px-4 py-2 bg-primary-500 rounded hover:bg-primary-600"
             onClick={() => setIsTourOpen(true)}
           >
@@ -71,7 +72,10 @@ export default function TourExamplePage() {
             <p className="text-gray-400">
               Start building your AI agent by creating a new workflow.
             </p>
-            <button className="mt-4 px-3 py-1.5 bg-primary-700 rounded text-sm">
+            <button 
+              type="button"
+              className="mt-4 px-3 py-1.5 bg-primary-700 rounded text-sm"
+            >
               New Workflow
             </button>
           </div>
@@ -94,7 +98,10 @@ export default function TourExamplePage() {
             <p className="text-gray-400">
               Deploy your AI agent to production with one click.
             </p>
-            <button className="mt-4 px-3 py-1.5 bg-primary-700/50 rounded text-sm">
+            <button 
+              type="button"
+              className="mt-4 px-3 py-1.5 bg-primary-700/50 rounded text-sm"
+            >
               Coming Soon
             </button>
           </div>
@@ -106,10 +113,16 @@ export default function TourExamplePage() {
             Configure your agents and integrate with external tools and services.
           </p>
           <div className="mt-4 flex gap-3">
-            <button className="px-3 py-1.5 bg-primary-700 rounded text-sm">
+            <button 
+              type="button"
+              className="px-3 py-1.5 bg-primary-700 rounded text-sm"
+            >
               Settings
             </button>
-            <button className="px-3 py-1.5 bg-primary-700/70 rounded text-sm">
+            <button 
+              type="button"
+              className="px-3 py-1.5 bg-primary-700/70 rounded text-sm"
+            >
               Integrations
             </button>
           </div>
@@ -121,10 +134,10 @@ export default function TourExamplePage() {
             Get assistance and access additional resources to maximize your experience.
           </p>
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <a href="#" className="px-3 py-1.5 bg-primary-700/60 rounded text-sm text-center">Documentation</a>
-            <a href="#" className="px-3 py-1.5 bg-primary-700/60 rounded text-sm text-center">Community Forum</a>
-            <a href="#" className="px-3 py-1.5 bg-primary-700/60 rounded text-sm text-center">Tutorials</a>
-            <a href="#" className="px-3 py-1.5 bg-primary-700/60 rounded text-sm text-center">Contact Support</a>
+            <a href="https://docs.giselles.ai" className="px-3 py-1.5 bg-primary-700/60 rounded text-sm text-center">Documentation</a>
+            <a href="https://forum.giselles.ai" className="px-3 py-1.5 bg-primary-700/60 rounded text-sm text-center">Community Forum</a>
+            <a href="https://tutorials.giselles.ai" className="px-3 py-1.5 bg-primary-700/60 rounded text-sm text-center">Tutorials</a>
+            <a href="https://support.giselles.ai" className="px-3 py-1.5 bg-primary-700/60 rounded text-sm text-center">Contact Support</a>
           </div>
         </div>
       </div>
