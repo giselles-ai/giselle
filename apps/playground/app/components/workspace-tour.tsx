@@ -151,6 +151,23 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             animation: pulse 2s infinite;
           }
           
+          .tour-card-step1, .tour-card-step3 {
+            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            animation: card-glow 2s infinite;
+          }
+          
+          @keyframes card-glow {
+            0% {
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            }
+            50% {
+              filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.5));
+            }
+            100% {
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            }
+          }
+          
           @keyframes pulse {
             0% {
               box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
@@ -175,7 +192,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
 
         {/* ステップ3専用カード */}
         <div
-          className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col"
+          className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col tour-card-step3"
           style={{
             width: '483px',
             height: '423px',
@@ -249,6 +266,23 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
             border-radius: 4px;
             animation: pulse 2s infinite;
+          }
+          
+          .tour-card-step1, .tour-card-step3 {
+            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            animation: card-glow 2s infinite;
+          }
+          
+          @keyframes card-glow {
+            0% {
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            }
+            50% {
+              filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.5));
+            }
+            100% {
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            }
           }
           
           @keyframes pulse {
@@ -351,6 +385,23 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             animation: pulse 2s infinite;
           }
           
+          .tour-card-step1, .tour-card-step3 {
+            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            animation: card-glow 2s infinite;
+          }
+          
+          @keyframes card-glow {
+            0% {
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            }
+            50% {
+              filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.5));
+            }
+            100% {
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            }
+          }
+          
           @keyframes pulse {
             0% {
               box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
@@ -451,6 +502,23 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             animation: pulse 2s infinite;
           }
           
+          .tour-card-step1, .tour-card-step3 {
+            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            animation: card-glow 2s infinite;
+          }
+          
+          @keyframes card-glow {
+            0% {
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            }
+            50% {
+              filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.5));
+            }
+            100% {
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            }
+          }
+          
           @keyframes pulse {
             0% {
               box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
@@ -549,6 +617,23 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             box-shadow: 0 0 0 3px rgb(76, 89, 175), 0 0 15px rgba(76, 89, 175, 0.7);
             border-radius: 4px;
             animation: pulse 2s infinite;
+          }
+          
+          .tour-card-step1, .tour-card-step3 {
+            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            animation: card-glow 2s infinite;
+          }
+          
+          @keyframes card-glow {
+            0% {
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            }
+            50% {
+              filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.5));
+            }
+            100% {
+              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
+            }
           }
           
           @keyframes pulse {
@@ -707,7 +792,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
           animation: pulse 2s infinite;
         }
         
-        .tour-card-step1 {
+        .tour-card-step1, .tour-card-step3 {
           filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5));
           animation: card-glow 2s infinite;
         }
