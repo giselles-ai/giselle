@@ -561,77 +561,87 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
       document.body
     );
   } else if (currentStep === 4) {
-    // ステップ5の特別なレイアウト (ステップ3のスタイルと同じ)
+    // ステップ5の特別なレイアウト
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-start justify-end">
         {/* Overlay */}
         <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
 
-        {/* ステップ5専用カード - 右上に配置 - 上部余白追加 */}
-        <div
-          className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col mt-[100px] mr-8"
-          style={{
-            width: '483px',
-            height: '423px',
-            border: '1px solid rgba(241, 241, 241, 0.20)',
-            background: 'linear-gradient(169deg, rgba(26, 42, 70, 0.60) 0%, rgba(23, 21, 42, 0.60) 97.46%)',
-            boxShadow: '0px 34px 84px 0px rgba(0, 0, 0, 0.25)',
-            fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif',
-          }}
-        >
-          {/* 画像エリア */}
-          <div 
-            className="w-full h-[280px]"
+        {/* カードと矢印をグループ化 - 右上に配置 */}
+        <div className="relative pointer-events-none mt-[140px] mr-8">
+          {/* ステップ5専用カード */}
+          <div
+            className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col"
             style={{
-              backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))'
+              width: '483px',
+              height: '423px',
+              border: '1px solid rgba(241, 241, 241, 0.20)',
+              background: 'linear-gradient(169deg, rgba(26, 42, 70, 0.60) 0%, rgba(23, 21, 42, 0.60) 97.46%)',
+              boxShadow: '0px 34px 84px 0px rgba(0, 0, 0, 0.25)',
+              fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif',
             }}
           >
-            {/* 画像が入る場所 */}
+            {/* 画像エリア */}
+            <div 
+              className="w-full h-[280px]"
+              style={{
+                backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))'
+              }}
+            >
+              {/* 画像が入る場所 */}
+            </div>
+
+            {/* テキストエリア */}
+            <div className="flex flex-col justify-center p-4 gap-1 flex-grow">
+              <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>
+                {steps[currentStep].title}
+              </h3>
+              <div className="text-white/40 my-2" style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: steps[currentStep].content }} />
+            </div>
+
+            {/* フッター: ページナビゲーション */}
+            <div 
+              className="flex justify-between items-center border-t border-white/10"
+              style={{
+                padding: '6px 12px 6px 12px',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                alignSelf: 'stretch',
+              }}
+            >
+              <div className="text-sm text-white/70">
+                {currentStep + 1}/{steps.length}
+              </div>
+              <div className="flex gap-1">
+                <button
+                  onClick={handlePrev}
+                  disabled={isFirstStep()}
+                  className={`w-6 h-6 flex items-center justify-center rounded-full border ${
+                    isFirstStep()
+                      ? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
+                      : "border-primary-200 text-primary-200 hover:bg-primary-200/10"
+                  }`}
+                  style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
+                >
+                  ←
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
+                  style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
+                >
+                  →
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* テキストエリア */}
-          <div className="flex flex-col justify-center p-4 gap-1 flex-grow">
-            <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>
-              {steps[currentStep].title}
-            </h3>
-            <div className="text-white/40 my-2" style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: steps[currentStep].content }} />
-          </div>
-
-          {/* フッター: ページナビゲーション */}
-          <div 
-            className="flex justify-between items-center border-t border-white/10"
-            style={{
-              padding: '6px 12px 6px 12px',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              alignSelf: 'stretch',
-            }}
-          >
-            <div className="text-sm text-white/70">
-              {currentStep + 1}/{steps.length}
-            </div>
-            <div className="flex gap-1">
-              <button
-                onClick={handlePrev}
-                disabled={isFirstStep()}
-                className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-                  isFirstStep()
-                    ? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
-                    : "border-primary-200 text-primary-200 hover:bg-primary-200/10"
-                }`}
-                style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
-              >
-                ←
-              </button>
-              <button
-                onClick={handleNext}
-                className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
-                style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
-              >
-                →
-              </button>
-            </div>
-          </div>
+          {/* 矢印画像の配置 */}
+          <img 
+            src="/step5_arrow.png" 
+            alt="Arrow pointing to tabs" 
+            className="absolute top-[-110px] left-[calc(50%-190px)] z-[60] w-[150px] h-auto pointer-events-none arrow-animation"
+          />
         </div>
 
         <style jsx global>{`
@@ -648,6 +658,25 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
           .tour-card-step1, .tour-card-step3 {
             filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             animation: card-glow 2s infinite;
+          }
+          
+          .arrow-animation {
+            animation: arrow-pulse 2s infinite;
+          }
+          
+          @keyframes arrow-pulse {
+            0% {
+              opacity: 0.8;
+              transform: translateY(0);
+            }
+            50% {
+              opacity: 1;
+              transform: translateY(-10px);
+            }
+            100% {
+              opacity: 0.8;
+              transform: translateY(0);
+            }
           }
           
           @keyframes card-glow {
