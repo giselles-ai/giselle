@@ -5,7 +5,6 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
-// このページは動的なため、静的生成しない
 export const dynamic = "force-dynamic";
 
 export default function GitHubAuthComplete() {
