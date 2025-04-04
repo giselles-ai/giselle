@@ -2,8 +2,6 @@
 
 import { useIntegration } from "@giselle-sdk/integration/react";
 import { RequireAuthorization } from "./require-authorization";
-import { RequireInstallation } from "./require-installation";
-import { SetupIntegration } from "./setup-integration";
 
 export function GitHubIntegrationSetting() {
 	const {
@@ -19,9 +17,13 @@ export function GitHubIntegrationSetting() {
 				<RequireAuthorization error="Your GitHub access token has expired or is invalid. Please re-authorize with GitHub." />
 			);
 		case "not-installed":
-			return <RequireInstallation />;
 		case "installed":
-			return <SetupIntegration repositories={gitHubState.repositories} />;
+			return <RequireAuthorization />;
+
+		// case "not-installed":
+		// 	return <RequireInstallation />;
+		// case "installed":
+		// 	return <SetupIntegration repositories={gitHubState.repositories} />;
 		default: {
 			const _exhaustiveCheck: never = gitHubState;
 			throw new Error(`Unhandled status: ${_exhaustiveCheck}`);

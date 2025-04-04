@@ -1,4 +1,5 @@
 import { deleteOauthCredential, getAuthCallbackUrl } from "@/app/(auth)/lib";
+import { buildBaseUrl } from "@/app/(auth)/lib/get-auth-callback-url";
 import { createClient, getUser } from "@/lib/supabase";
 import type { OAuthProvider } from "./oauth-credentials";
 
@@ -81,5 +82,6 @@ export async function disconnectIdentityApi(
 	}
 
 	await deleteOauthCredential(provider);
-	return next;
+	const url = buildBaseUrl();
+	return `${url}${next}`;
 }

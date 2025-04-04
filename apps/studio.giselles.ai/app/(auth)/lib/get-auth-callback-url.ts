@@ -11,13 +11,17 @@ export function getAuthCallbackUrl({
 	if (!provider) {
 		throw new Error("Provider is required");
 	}
+	const url = buildBaseUrl();
+	const callbackUrl = `${url}/auth/callback/${provider}`;
+	return `${callbackUrl}?next=${encodeURIComponent(next)}`;
+}
+
+export function buildBaseUrl() {
 	let url =
 		process.env.NEXT_PUBLIC_SITE_URL ??
 		process.env.NEXT_PUBLIC_VERCEL_URL ??
-		"http://localhost:3000/";
+		"http://localhost:3000";
 	url = url.startsWith("http") ? url : `https://${url}`;
-	url = url.endsWith("/") ? url : `${url}/`;
-
-	const callbackUrl = `${url}auth/callback/${provider}`;
-	return `${callbackUrl}?next=${encodeURIComponent(next)}`;
+	url = url.endsWith("/") ? url.slice(0, -1) : url;
+	return url;
 }
