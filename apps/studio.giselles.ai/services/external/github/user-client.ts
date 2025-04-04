@@ -1,4 +1,5 @@
 import { refreshOauthCredential } from "@/app/(auth)/lib";
+import { getOauthCredential } from "@/services/accounts/oauth-credentials";
 import { Octokit } from "@octokit/core";
 import { RequestError } from "@octokit/request-error";
 import * as Sentry from "@sentry/nextjs";
@@ -33,12 +34,19 @@ export function buildGitHubUserClient(token: GitHubUserCredential) {
 		},
 	};
 
+	// 最新のトークンを取得するコールバック関数
+	const getFreshToken = async (): Promise<GitHubUserCredential | null> => {
+		const credential = await getOauthCredential("github");
+		return credential || null;
+	};
+
 	return new GitHubUserClient(
 		token,
 		clientId,
 		clientSecret,
 		refreshOauthCredential,
 		loggerWithSentry,
+		getFreshToken,
 	);
 }
 
@@ -94,6 +102,8 @@ type RefreshCredentialsFunc = (
 	tokenType: string,
 ) => Promise<void>;
 
+type GetFreshTokenFunc = () => Promise<GitHubUserCredential | null>;
+
 // MARK: Client
 
 class GitHubUserClient {
@@ -101,6 +111,7 @@ class GitHubUserClient {
 	private clientSecret: string;
 	private refreshCredentialsFunc: RefreshCredentialsFunc;
 	private logger: Logger;
+	private getFreshToken: GetFreshTokenFunc;
 
 	constructor(
 		private token: GitHubUserCredential,
@@ -108,11 +119,13 @@ class GitHubUserClient {
 		clientSecret: string,
 		refreshCredentialsFunc: RefreshCredentialsFunc,
 		logger: Logger,
+		getFreshToken: GetFreshTokenFunc,
 	) {
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
 		this.refreshCredentialsFunc = refreshCredentialsFunc;
 		this.logger = logger;
+		this.getFreshToken = getFreshToken;
 	}
 
 	async getUser() {
@@ -162,8 +175,42 @@ class GitHubUserClient {
 	}
 
 	private async buildClient() {
+		// store the time before refresh
+		const beforeRefresh = new Date();
+
 		if (this.needsRefreshAccessToken()) {
-			await this.refreshAccessToken();
+			try {
+				await this.refreshAccessToken();
+			} catch (error) {
+				// if refresh fails, continue if the token is updated by another process
+				const freshToken = await this.getFreshToken();
+				if (freshToken?.expiresAt && freshToken.expiresAt > new Date()) {
+					this.token = freshToken;
+					this.logger.warning(
+						"Token refresh failed but found valid token updated by another process",
+					);
+				} else {
+					throw error;
+				}
+			}
+		}
+
+		// check again after refresh
+		// if the token is updated by another process, get the new token
+		if (
+			this.token.expiresAt &&
+			this.token.expiresAt > beforeRefresh &&
+			Date.now() - this.token.expiresAt.getTime() < 60000 // 1 minute ago
+		) {
+			// get the latest OAuth credential
+			const freshToken = await this.getFreshToken();
+			if (
+				freshToken?.expiresAt &&
+				(!this.token.expiresAt || freshToken.expiresAt > this.token.expiresAt)
+			) {
+				this.token = freshToken;
+				this.logger.info("Using newer token that was recently updated");
+			}
 		}
 
 		return new Octokit({
