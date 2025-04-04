@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 type TourStep = {
@@ -16,6 +16,120 @@ interface WorkspaceTourProps {
 	onClose: () => void;
 }
 
+// Common style constants to improve consistency
+const CARD_STYLES = {
+	base: {
+		border: "1px solid rgba(241, 241, 241, 0.20)",
+		background:
+			"linear-gradient(169deg, rgba(26, 42, 70, 0.60) 0%, rgba(23, 21, 42, 0.60) 97.46%)",
+		boxShadow: "0px 34px 84px 0px rgba(0, 0, 0, 0.25)",
+		fontFamily: "var(--font-hubot-sans), system-ui, sans-serif",
+	},
+	small: {
+		width: "264px",
+		height: "437px",
+	},
+	large: {
+		width: "483px",
+		height: "423px",
+	},
+	wide: {
+		width: "792px",
+		height: "241px",
+	},
+};
+
+const BACKGROUND_GRADIENT =
+	"radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))";
+
+type CardSize = "small" | "large" | "wide";
+
+interface TourCardProps {
+	title?: string;
+	content?: string;
+	size: CardSize;
+	imageSrc?: string;
+	className?: string;
+	footer: ReactNode;
+	children?: ReactNode;
+	additionalClassName?: string;
+}
+
+// Extracted reusable TourCard component
+const TourCard = ({
+	title,
+	content,
+	size,
+	imageSrc,
+	footer,
+	children,
+	additionalClassName = "",
+}: TourCardProps) => {
+	const sizeStyles =
+		size === "small"
+			? CARD_STYLES.small
+			: size === "large"
+				? CARD_STYLES.large
+				: CARD_STYLES.wide;
+
+	return (
+		<div
+			className={`rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col ${additionalClassName}`}
+			style={{
+				...CARD_STYLES.base,
+				...sizeStyles,
+			}}
+		>
+			{children || (
+				<>
+					{/* Image area */}
+					<div
+						className="w-full h-[280px] flex items-center justify-center"
+						style={{
+							backgroundImage: BACKGROUND_GRADIENT,
+						}}
+					>
+						{imageSrc && (
+							<img
+								src={imageSrc}
+								alt={"Tour step tutorial"}
+								className="w-full h-full object-cover"
+							/>
+						)}
+					</div>
+
+					{/* Text area */}
+					<div
+						className={`flex flex-col ${
+							size === "large" ? "justify-start" : "justify-center"
+						} p-4 gap-1 flex-grow`}
+					>
+						{title && (
+							<h3
+								className="text-white/80 font-semibold mb-1"
+								style={{
+									fontSize: "16px",
+									fontFamily: "var(--font-hubot-sans), system-ui, sans-serif",
+								}}
+							>
+								{title}
+							</h3>
+						)}
+						{content && (
+							<p className="text-white/40 my-2" style={{ fontSize: "12px" }}>
+								{content}
+							</p>
+						)}
+					</div>
+				</>
+			)}
+
+			{/* Footer */}
+			{footer}
+		</div>
+	);
+};
+
 export const WorkspaceTour = ({
 	steps,
 	isOpen,
@@ -29,33 +143,27 @@ export const WorkspaceTour = ({
 		return () => setMounted(false);
 	}, []);
 
-	// Function to get blur size (10px for step 5, 20px for others)
+	// Determine if this is the first step
+	const isFirstStep = currentStep === 0;
+
+	// Determine if this is the last step
+	const isLastStep = currentStep === steps.length - 1;
+
+	// Get blur size for highlight effect
 	const getBlurSize = useCallback((): string => {
-		return Number(currentStep) === 4 ? "10px" : "20px";
+		return currentStep === 4 ? "10px" : "20px";
 	}, [currentStep]);
 
-	// Function to get pulse animation name
-	const getPulseAnimation = (): string => {
-		return Number(currentStep) === 4 ? "pulseStep5" : "pulse";
-	};
+	// Get pulse animation name based on step
+	const getPulseAnimation = useCallback((): string => {
+		return currentStep === 4 ? "pulseStep5" : "pulse";
+	}, [currentStep]);
 
-	// Enable highlight feature
+	// Handle element highlighting
 	useEffect(() => {
 		if (!isOpen || steps.length === 0) return;
 
-		// Check target elements for all steps
-		console.log("Current step:", currentStep + 1);
-		console.log("All targets:");
-		steps.forEach((step, idx) => {
-			const target = step.target ? document.querySelector(step.target) : null;
-			console.log(`Step ${idx + 1}:`, {
-				target: step.target,
-				found: target ? "✅ Element found" : "❌ Element not found",
-			});
-		});
-
-		// Get and highlight the target element
-		// Add check to prevent undefined error
+		// Skip if current step has no target or is invalid
 		if (!steps[currentStep]) return;
 
 		const currentStepTarget = steps[currentStep].target;
@@ -63,18 +171,10 @@ export const WorkspaceTour = ({
 			? document.querySelector(currentStepTarget)
 			: null;
 
-		console.log(`[Tour Highlight] Step ${currentStep + 1}:`, {
-			target: currentStepTarget,
-			foundElement: currentTarget ? "✅ Element found" : "❌ Element not found",
-			element: currentTarget,
-		});
-
 		if (currentTarget) {
-			currentTarget.classList.add("tour-highlight");
-			console.log("Highlight applied: ", currentTarget);
-
-			// Force apply styles (10px blur for step 5, 20px for others)
+			// Apply highlight styles
 			const blurSize = getBlurSize();
+			currentTarget.classList.add("tour-highlight");
 			(currentTarget as HTMLElement).style.setProperty(
 				"box-shadow",
 				"0 0 10px 5px rgba(0, 135, 246, 0.5)",
@@ -96,23 +196,6 @@ export const WorkspaceTour = ({
 				`drop-shadow(0 0 ${blurSize} rgba(0, 135, 246, 0.5))`,
 				"important",
 			);
-		} else if (currentStepTarget) {
-			console.error("Target element not found:", currentStepTarget);
-
-			// Try alternative selectors to find elements
-			const alternativeSelectors = [
-				".View-selector",
-				"[role='tablist']",
-				".header-tabs",
-				".view-switcher",
-			];
-			for (const selector of alternativeSelectors) {
-				const el = document.querySelector(selector);
-				console.log(
-					`Alternative selector ${selector}:`,
-					el ? "✅ Element found" : "❌ Element not found",
-				);
-			}
 		}
 
 		// Clean up function to remove highlight
@@ -150,118 +233,174 @@ export const WorkspaceTour = ({
 		onClose();
 	};
 
-	// Function to determine button disabled state (avoid TypeScript errors)
-	const isFirstStep = (): boolean => {
-		return Number(currentStep) === 0;
-	};
-
+	// Bail early if conditions aren't met
 	if (!mounted || !isOpen || steps.length === 0) return null;
 
-	// Display different layouts based on current step
-	if (Number(currentStep) === 1) {
-		// Special layout for step 2
-		return createPortal(
-			<div className="fixed inset-0 z-50 pointer-events-none flex items-end justify-center">
-				{/* Overlay */}
-				<div
-					className="absolute inset-0 bg-transparent pointer-events-auto"
-					onClick={handleClose}
-					onKeyDown={(e) => e.key === "Escape" && handleClose()}
-					tabIndex={0}
-					role="button"
-					aria-label="Close tour"
-				/>
-
-				{/* Group card and arrow - positioned at bottom center */}
-				<div className="relative pointer-events-none mb-[200px] ml-[550px]">
-					{/* Step 2 special card - center positioned */}
-					<div
-						className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col"
+	// Common footer component to reduce duplication
+	const NavigationFooter = () => (
+		<div
+			className="flex justify-between items-center border-t border-white/10"
+			style={{
+				padding: "6px 12px 6px 12px",
+				justifyContent: "space-between",
+				alignItems: "center",
+				alignSelf: "stretch",
+			}}
+		>
+			<div className="text-sm text-white/70">
+				{currentStep + 1}/{steps.length}
+			</div>
+			<div className="flex gap-1">
+				<button
+					type="button"
+					onClick={handlePrev}
+					disabled={isFirstStep}
+					className={`w-6 h-6 flex items-center justify-center rounded-full border ${
+						isFirstStep
+							? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
+							: "border-primary-200 text-primary-200 hover:bg-primary-200/10"
+					}`}
+					style={{
+						fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+					}}
+				>
+					←
+				</button>
+				{isLastStep ? (
+					<button
+						type="button"
+						onClick={handleNext}
+						className="px-3 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
 						style={{
-							width: "264px",
-							height: "437px",
-							border: "1px solid rgba(241, 241, 241, 0.20)",
-							background:
-								"linear-gradient(169deg, rgba(26, 42, 70, 0.60) 0%, rgba(23, 21, 42, 0.60) 97.46%)",
-							boxShadow: "0px 34px 84px 0px rgba(0, 0, 0, 0.25)",
-							fontFamily: "var(--font-hubot-sans), system-ui, sans-serif",
+							fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
 						}}
 					>
-						{/* Image area */}
-						<div
-							className="w-full h-[280px] flex items-center justify-center"
-							style={{
-								backgroundImage:
-									"radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))",
-							}}
-						>
-							<img
-								src="/02.gif"
-								alt="Step 2 Tutorial"
-								className="w-full h-full object-cover"
-							/>
-						</div>
+						Finish
+					</button>
+				) : (
+					<button
+						type="button"
+						onClick={handleNext}
+						className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
+						style={{
+							fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+						}}
+					>
+						→
+					</button>
+				)}
+			</div>
+		</div>
+	);
 
-						{/* Text area */}
-						<div className="flex flex-col justify-center p-4 gap-1 flex-grow">
-							<h3
-								className="text-white/80 font-semibold mb-1"
-								style={{
-									fontSize: "16px",
-									fontFamily: "var(--font-hubot-sans), system-ui, sans-serif",
-								}}
-							>
-								{steps[currentStep].title}
-							</h3>
-							<p className="text-white/40 my-2" style={{ fontSize: "12px" }}>
-								{steps[currentStep].content}
-							</p>
-						</div>
+	// Common transparent overlay used by all layouts
+	const Overlay = () => (
+		<div
+			className="absolute inset-0 bg-transparent pointer-events-auto"
+			onClick={handleClose}
+			onKeyDown={(e) => e.key === "Escape" && handleClose()}
+			tabIndex={0}
+			role="button"
+			aria-label="Close tour"
+		/>
+	);
 
-						{/* Footer: Page navigation */}
-						<div
-							className="flex justify-between items-center border-t border-white/10"
-							style={{
-								padding: "6px 12px 6px 12px",
-								justifyContent: "space-between",
-								alignItems: "center",
-								alignSelf: "stretch",
-							}}
-						>
-							<div className="text-sm text-white/70">
-								{currentStep + 1}/{steps.length}
-							</div>
-							<div className="flex gap-1">
-								<button
-									type="button"
-									onClick={handlePrev}
-									disabled={isFirstStep()}
-									className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-										isFirstStep()
-											? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
-											: "border-primary-200 text-primary-200 hover:bg-primary-200/10"
-									}`}
-									style={{
-										fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-									}}
-								>
-									←
-								</button>
-								<button
-									type="button"
-									onClick={handleNext}
-									className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
-									style={{
-										fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-									}}
-								>
-									→
-								</button>
-							</div>
-						</div>
-					</div>
+	// Shared global styles used by all layouts
+	const GlobalStyles = () => (
+		<style jsx global>{`
+      .tour-highlight {
+        position: relative;
+        z-index: 999 !important;
+        box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
+        border-radius: 8px !important;
+        animation: ${getPulseAnimation()} 2s infinite;
+        filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
+        outline: 2px solid rgba(0, 135, 246, 0.8) !important;
+      }
+      
+      .tour-card-step1, .tour-card-step3 {
+        filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
+        animation: card-glow 2s infinite;
+      }
+      
+      .arrow-animation {
+        animation: arrow-pulse 2s infinite;
+      }
+      
+      @keyframes arrow-pulse {
+        0% {
+          opacity: 0.8;
+          transform: translateY(0);
+        }
+        50% {
+          opacity: 1;
+          transform: translateY(-10px);
+        }
+        100% {
+          opacity: 0.8;
+          transform: translateY(0);
+        }
+      }
+      
+      @keyframes card-glow {
+        0% {
+          filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
+        }
+        50% {
+          filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
+        }
+        100% {
+          filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
+        }
+      }
+      
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+          filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
+        }
+        50% {
+          box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+          filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
+        }
+        100% {
+          box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+          filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
+        }
+      }
 
-					{/* Arrow image placement - displayed below card */}
+      @keyframes pulseStep5 {
+        0% {
+          box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+          filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
+        }
+        50% {
+          box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
+          filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
+        }
+        100% {
+          box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
+          filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
+        }
+      }
+    `}</style>
+	);
+
+	// Special layout for step 2 (index 1)
+	if (currentStep === 1) {
+		return createPortal(
+			<div className="fixed inset-0 z-50 pointer-events-none flex items-end justify-center">
+				<Overlay />
+
+				<div className="relative pointer-events-none mb-[200px] ml-[550px]">
+					<TourCard
+						size="small"
+						title={steps[currentStep].title}
+						content={steps[currentStep].content}
+						imageSrc="/02.gif"
+						footer={<NavigationFooter />}
+					/>
+
 					<img
 						src="/step2_arrow.png"
 						alt="Arrow pointing to toolbar"
@@ -269,520 +408,68 @@ export const WorkspaceTour = ({
 					/>
 				</div>
 
-				<style jsx global>{`
-          .tour-highlight {
-            position: relative;
-            z-index: 999 !important;
-            box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
-            border-radius: 8px !important;
-            animation: ${getPulseAnimation()} 2s infinite;
-            filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
-            outline: 2px solid rgba(0, 135, 246, 0.8) !important;
-          }
-          
-          .tour-card-step1, .tour-card-step3 {
-            filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            animation: card-glow 2s infinite;
-          }
-          
-          .arrow-animation {
-            animation: arrow-pulse 2s infinite;
-          }
-          
-          @keyframes arrow-pulse {
-            0% {
-              opacity: 0.8;
-              transform: translateY(0);
-            }
-            50% {
-              opacity: 1;
-              transform: translateY(-10px);
-            }
-            100% {
-              opacity: 0.8;
-              transform: translateY(0);
-            }
-          }
-          
-          @keyframes card-glow {
-            0% {
-              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            }
-            50% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
-            }
-            100% {
-              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            }
-          }
-          
-          @keyframes pulse {
-            0% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
-            }
-            50% {
-              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
-            }
-            100% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
-            }
-          }
-
-          @keyframes pulseStep5 {
-            0% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
-            }
-            50% {
-              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
-            }
-            100% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
-            }
-          }
-        `}</style>
+				<GlobalStyles />
 			</div>,
 			document.body,
 		);
 	}
 
-	if (Number(currentStep) === 2) {
-		// Special layout for step 3
+	// Special layout for step 3 (index 2)
+	if (currentStep === 2) {
 		return createPortal(
 			<div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
-				{/* Overlay */}
-				<div
-					className="absolute inset-0 bg-transparent pointer-events-auto"
-					onClick={handleClose}
-					onKeyDown={(e) => e.key === "Escape" && handleClose()}
-					tabIndex={0}
-					role="button"
-					aria-label="Close tour"
+				<Overlay />
+
+				<TourCard
+					size="large"
+					title={steps[currentStep].title}
+					content={steps[currentStep].content}
+					imageSrc="/03.gif"
+					footer={<NavigationFooter />}
+					additionalClassName="tour-card-step3"
 				/>
 
-				{/* Step 3 special card */}
-				<div
-					className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col tour-card-step3"
-					style={{
-						width: "483px",
-						height: "423px",
-						border: "1px solid rgba(241, 241, 241, 0.20)",
-						background:
-							"linear-gradient(169deg, rgba(26, 42, 70, 0.60) 0%, rgba(23, 21, 42, 0.60) 97.46%)",
-						boxShadow: "0px 34px 84px 0px rgba(0, 0, 0, 0.25)",
-						fontFamily: "var(--font-hubot-sans), system-ui, sans-serif",
-					}}
-				>
-					{/* Image area */}
-					<div
-						className="w-full h-[280px] flex items-center justify-center"
-						style={{
-							backgroundImage:
-								"radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))",
-						}}
-					>
-						<img
-							src="/03.gif"
-							alt="Step 3 Tutorial"
-							className="w-full h-full object-cover"
-						/>
-					</div>
-
-					{/* Text area */}
-					<div className="flex flex-col justify-start p-4 gap-1 flex-grow">
-						<h3
-							className="text-white/80 font-semibold"
-							style={{
-								fontSize: "16px",
-								fontFamily: "var(--font-hubot-sans), system-ui, sans-serif",
-								marginBottom: "0",
-							}}
-						>
-							{steps[currentStep].title}
-						</h3>
-						<p
-							className="text-white/40"
-							style={{ fontSize: "12px", marginTop: "0" }}
-						>
-							{steps[currentStep].content}
-						</p>
-					</div>
-
-					{/* Footer: Page navigation */}
-					<div
-						className="flex justify-between items-center border-t border-white/10"
-						style={{
-							padding: "6px 12px 6px 12px",
-							justifyContent: "space-between",
-							alignItems: "center",
-							alignSelf: "stretch",
-						}}
-					>
-						<div className="text-sm text-white/70">
-							{currentStep + 1}/{steps.length}
-						</div>
-						<div className="flex gap-1">
-							<button
-								type="button"
-								onClick={handlePrev}
-								disabled={isFirstStep()}
-								className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-									isFirstStep()
-										? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
-										: "border-primary-200 text-primary-200 hover:bg-primary-200/10"
-								}`}
-								style={{
-									fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-								}}
-							>
-								←
-							</button>
-							<button
-								type="button"
-								onClick={handleNext}
-								className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
-								style={{
-									fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-								}}
-							>
-								→
-							</button>
-						</div>
-					</div>
-				</div>
-
-				<style jsx global>{`
-          .tour-highlight {
-            position: relative;
-            z-index: 999 !important;
-            box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
-            border-radius: 8px !important;
-            animation: ${getPulseAnimation()} 2s infinite;
-            filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
-            outline: 2px solid rgba(0, 135, 246, 0.8) !important;
-          }
-          
-          .tour-card-step1, .tour-card-step3 {
-            filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            animation: card-glow 2s infinite;
-          }
-          
-          @keyframes card-glow {
-            0% {
-              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            }
-            50% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
-            }
-            100% {
-              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            }
-          }
-          
-          @keyframes pulse {
-            0% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
-            }
-            50% {
-              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
-            }
-            100% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
-            }
-          }
-
-          @keyframes pulseStep5 {
-            0% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
-            }
-            50% {
-              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
-            }
-            100% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
-            }
-          }
-        `}</style>
+				<GlobalStyles />
 			</div>,
 			document.body,
 		);
 	}
 
-	if (Number(currentStep) === 3) {
-		// Special layout for step 4 (same style as step 2)
+	// Special layout for step 4 (index 3)
+	if (currentStep === 3) {
 		return createPortal(
 			<div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
-				{/* Overlay */}
-				<div
-					className="absolute inset-0 bg-transparent pointer-events-auto"
-					onClick={handleClose}
-					onKeyDown={(e) => e.key === "Escape" && handleClose()}
-					tabIndex={0}
-					role="button"
-					aria-label="Close tour"
+				<Overlay />
+
+				<TourCard
+					size="small"
+					title={steps[currentStep].title}
+					content={steps[currentStep].content}
+					imageSrc="/04.gif"
+					footer={<NavigationFooter />}
+					additionalClassName="tour-card-step3"
 				/>
 
-				{/* Step 4 special card */}
-				<div
-					className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col tour-card-step3"
-					style={{
-						width: "264px",
-						height: "437px",
-						border: "1px solid rgba(241, 241, 241, 0.20)",
-						background:
-							"linear-gradient(169deg, rgba(26, 42, 70, 0.60) 0%, rgba(23, 21, 42, 0.60) 97.46%)",
-						boxShadow: "0px 34px 84px 0px rgba(0, 0, 0, 0.25)",
-						fontFamily: "var(--font-hubot-sans), system-ui, sans-serif",
-					}}
-				>
-					{/* Image area */}
-					<div
-						className="w-full h-[280px] flex items-center justify-center"
-						style={{
-							backgroundImage:
-								"radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))",
-						}}
-					>
-						<img
-							src="/04.gif"
-							alt="Step 4 Tutorial"
-							className="w-full h-full object-cover"
-						/>
-					</div>
-
-					{/* Text area */}
-					<div className="flex flex-col justify-center p-4 gap-1 flex-grow">
-						<h3
-							className="text-white/80 font-semibold mb-1"
-							style={{
-								fontSize: "16px",
-								fontFamily: "var(--font-hubot-sans), system-ui, sans-serif",
-							}}
-						>
-							{steps[currentStep].title}
-						</h3>
-						<p className="text-white/40 my-2" style={{ fontSize: "12px" }}>
-							{steps[currentStep].content}
-						</p>
-					</div>
-
-					{/* Footer: Page navigation */}
-					<div
-						className="flex justify-between items-center border-t border-white/10"
-						style={{
-							padding: "6px 12px 6px 12px",
-							justifyContent: "space-between",
-							alignItems: "center",
-							alignSelf: "stretch",
-						}}
-					>
-						<div className="text-sm text-white/70">
-							{currentStep + 1}/{steps.length}
-						</div>
-						<div className="flex gap-1">
-							<button
-								type="button"
-								onClick={handlePrev}
-								disabled={isFirstStep()}
-								className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-									isFirstStep()
-										? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
-										: "border-primary-200 text-primary-200 hover:bg-primary-200/10"
-								}`}
-								style={{
-									fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-								}}
-							>
-								←
-							</button>
-							<button
-								type="button"
-								onClick={handleNext}
-								className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
-								style={{
-									fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-								}}
-							>
-								→
-							</button>
-						</div>
-					</div>
-				</div>
-
-				<style jsx global>{`
-          .tour-highlight {
-            position: relative;
-            z-index: 999 !important;
-            box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
-            border-radius: 8px !important;
-            animation: ${getPulseAnimation()} 2s infinite;
-            filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
-            outline: 2px solid rgba(0, 135, 246, 0.8) !important;
-          }
-          
-          .tour-card-step1, .tour-card-step3 {
-            filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            animation: card-glow 2s infinite;
-          }
-          
-          @keyframes card-glow {
-            0% {
-              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            }
-            50% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
-            }
-            100% {
-              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            }
-          }
-          
-          @keyframes pulse {
-            0% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
-            }
-            50% {
-              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
-            }
-            100% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
-            }
-          }
-
-          @keyframes pulseStep5 {
-            0% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
-            }
-            50% {
-              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
-            }
-            100% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
-            }
-          }
-        `}</style>
+				<GlobalStyles />
 			</div>,
 			document.body,
 		);
 	}
 
-	if (Number(currentStep) === 4) {
-		// Special layout for step 5
+	// Special layout for step 5 (index 4)
+	if (currentStep === 4) {
 		return createPortal(
 			<div className="fixed inset-0 z-50 pointer-events-none flex items-start justify-end">
-				{/* Overlay */}
-				<div
-					className="absolute inset-0 bg-transparent pointer-events-auto"
-					onClick={handleClose}
-					onKeyDown={(e) => e.key === "Escape" && handleClose()}
-					tabIndex={0}
-					role="button"
-					aria-label="Close tour"
-				/>
+				<Overlay />
 
-				{/* Group card and arrow - positioned at top right */}
 				<div className="relative pointer-events-none mt-[140px] mr-8">
-					{/* Step 5 special card */}
-					<div
-						className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col"
-						style={{
-							width: "483px",
-							height: "423px",
-							border: "1px solid rgba(241, 241, 241, 0.20)",
-							background:
-								"linear-gradient(169deg, rgba(26, 42, 70, 0.60) 0%, rgba(23, 21, 42, 0.60) 97.46%)",
-							boxShadow: "0px 34px 84px 0px rgba(0, 0, 0, 0.25)",
-							fontFamily: "var(--font-hubot-sans), system-ui, sans-serif",
-						}}
-					>
-						{/* Image area */}
-						<div
-							className="w-full h-[280px] flex items-center justify-center"
-							style={{
-								backgroundImage:
-									"radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))",
-							}}
-						>
-							{/* Image placeholder (temporary) */}
-						</div>
+					<TourCard
+						size="large"
+						title={steps[currentStep].title}
+						content={steps[currentStep].content}
+						footer={<NavigationFooter />}
+					/>
 
-						{/* Text area */}
-						<div className="flex flex-col justify-center p-4 gap-1 flex-grow">
-							<h3
-								className="text-white/80 font-semibold mb-1"
-								style={{
-									fontSize: "16px",
-									fontFamily: "var(--font-hubot-sans), system-ui, sans-serif",
-								}}
-							>
-								{steps[currentStep].title}
-							</h3>
-							<p className="text-white/40 my-2" style={{ fontSize: "12px" }}>
-								{steps[currentStep].content}
-							</p>
-						</div>
-
-						{/* Footer: Page navigation */}
-						<div
-							className="flex justify-between items-center border-t border-white/10"
-							style={{
-								padding: "6px 12px 6px 12px",
-								justifyContent: "space-between",
-								alignItems: "center",
-								alignSelf: "stretch",
-							}}
-						>
-							<div className="text-sm text-white/70">
-								{currentStep + 1}/{steps.length}
-							</div>
-							<div className="flex gap-1">
-								<button
-									type="button"
-									onClick={handlePrev}
-									disabled={isFirstStep()}
-									className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-										isFirstStep()
-											? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
-											: "border-primary-200 text-primary-200 hover:bg-primary-200/10"
-									}`}
-									style={{
-										fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-									}}
-								>
-									←
-								</button>
-								<button
-									type="button"
-									onClick={handleNext}
-									className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
-									style={{
-										fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-									}}
-								>
-									→
-								</button>
-							</div>
-						</div>
-					</div>
-
-					{/* Arrow image placement */}
 					<img
 						src="/step5_arrow.png"
 						alt="Arrow pointing to tabs"
@@ -790,243 +477,27 @@ export const WorkspaceTour = ({
 					/>
 				</div>
 
-				<style jsx global>{`
-          .tour-highlight {
-            position: relative;
-            z-index: 999 !important;
-            box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
-            border-radius: 8px !important;
-            animation: ${getPulseAnimation()} 2s infinite;
-            filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
-            outline: 2px solid rgba(0, 135, 246, 0.8) !important;
-          }
-          
-          .tour-card-step1, .tour-card-step3 {
-            filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            animation: card-glow 2s infinite;
-          }
-          
-          .arrow-animation {
-            animation: arrow-pulse 2s infinite;
-          }
-          
-          @keyframes arrow-pulse {
-            0% {
-              opacity: 0.8;
-              transform: translateY(0);
-            }
-            50% {
-              opacity: 1;
-              transform: translateY(-10px);
-            }
-            100% {
-              opacity: 0.8;
-              transform: translateY(0);
-            }
-          }
-          
-          @keyframes card-glow {
-            0% {
-              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            }
-            50% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
-            }
-            100% {
-              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            }
-          }
-          
-          @keyframes pulse {
-            0% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
-            }
-            50% {
-              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
-            }
-            100% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
-            }
-          }
-
-          @keyframes pulseStep5 {
-            0% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
-            }
-            50% {
-              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
-            }
-            100% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
-            }
-          }
-        `}</style>
+				<GlobalStyles />
 			</div>,
 			document.body,
 		);
 	}
 
-	if (Number(currentStep) === 5) {
-		// Special layout for step 6 (positioned at bottom left)
+	// Special layout for step 6 (index 5)
+	if (currentStep === 5) {
 		return createPortal(
 			<div className="fixed inset-0 z-50 pointer-events-none flex items-start justify-start">
-				{/* Overlay */}
-				<div
-					className="absolute inset-0 bg-transparent pointer-events-auto"
-					onClick={handleClose}
-					onKeyDown={(e) => e.key === "Escape" && handleClose()}
-					tabIndex={0}
-					role="button"
-					aria-label="Close tour"
+				<Overlay />
+
+				<TourCard
+					size="small"
+					title={steps[currentStep].title}
+					content={steps[currentStep].content}
+					footer={<NavigationFooter />}
+					additionalClassName="ml-8 mb-8 mt-auto"
 				/>
 
-				{/* Step 6 special card - positioned at bottom left */}
-				<div
-					className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col ml-8 mb-8 mt-auto"
-					style={{
-						width: "264px",
-						height: "437px",
-						border: "1px solid rgba(241, 241, 241, 0.20)",
-						background:
-							"linear-gradient(169deg, rgba(26, 42, 70, 0.60) 0%, rgba(23, 21, 42, 0.60) 97.46%)",
-						boxShadow: "0px 34px 84px 0px rgba(0, 0, 0, 0.25)",
-						fontFamily: "var(--font-hubot-sans), system-ui, sans-serif",
-					}}
-				>
-					{/* Image area */}
-					<div
-						className="w-full h-[280px] flex items-center justify-center"
-						style={{
-							backgroundImage:
-								"radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))",
-						}}
-					>
-						{/* Image placeholder (temporary) */}
-					</div>
-
-					{/* Text area */}
-					<div className="flex flex-col justify-center p-4 gap-1 flex-grow">
-						<h3
-							className="text-white/80 font-semibold mb-1"
-							style={{
-								fontSize: "16px",
-								fontFamily: "var(--font-hubot-sans), system-ui, sans-serif",
-							}}
-						>
-							{steps[currentStep].title}
-						</h3>
-						<p className="text-white/40 my-2" style={{ fontSize: "12px" }}>
-							{steps[currentStep].content}
-						</p>
-					</div>
-
-					{/* Footer: Page navigation */}
-					<div
-						className="flex justify-between items-center border-t border-white/10"
-						style={{
-							padding: "6px 12px 6px 12px",
-							justifyContent: "space-between",
-							alignItems: "center",
-							alignSelf: "stretch",
-						}}
-					>
-						<div className="text-sm text-white/70">
-							{currentStep + 1}/{steps.length}
-						</div>
-						<div className="flex gap-1">
-							<button
-								type="button"
-								onClick={handlePrev}
-								disabled={isFirstStep()}
-								className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-									isFirstStep()
-										? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
-										: "border-primary-200 text-primary-200 hover:bg-primary-200/10"
-								}`}
-								style={{
-									fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-								}}
-							>
-								←
-							</button>
-							<button
-								type="button"
-								onClick={handleNext}
-								className="px-3 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
-								style={{
-									fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-								}}
-							>
-								Finish
-							</button>
-						</div>
-					</div>
-				</div>
-
-				<style jsx global>{`
-          .tour-highlight {
-            position: relative;
-            z-index: 999 !important;
-            box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
-            border-radius: 8px !important;
-            animation: ${getPulseAnimation()} 2s infinite;
-            filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
-            outline: 2px solid rgba(0, 135, 246, 0.8) !important;
-          }
-          
-          .tour-card-step1, .tour-card-step3 {
-            filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            animation: card-glow 2s infinite;
-          }
-          
-          @keyframes card-glow {
-            0% {
-              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            }
-            50% {
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
-            }
-            100% {
-              filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-            }
-          }
-          
-          @keyframes pulse {
-            0% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
-            }
-            50% {
-              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
-            }
-            100% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
-            }
-          }
-
-          @keyframes pulseStep5 {
-            0% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
-            }
-            50% {
-              box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
-            }
-            100% {
-              box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-              filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
-            }
-          }
-        `}</style>
+				<GlobalStyles />
 			</div>,
 			document.body,
 		);
@@ -1035,30 +506,13 @@ export const WorkspaceTour = ({
 	// Default layout (for step 1, etc.)
 	return createPortal(
 		<div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
-			{/* Overlay */}
-			<div
-				className="absolute inset-0 bg-transparent pointer-events-auto"
-				onClick={handleClose}
-				onKeyDown={(e) => e.key === "Escape" && handleClose()}
-				tabIndex={0}
-				role="button"
-				aria-label="Close tour"
-			/>
+			<Overlay />
 
-			{/* Tour card */}
-			<div
-				className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col tour-card-step1"
-				style={{
-					width: "792px",
-					height: "241px",
-					border: "1px solid rgba(241, 241, 241, 0.20)",
-					background:
-						"linear-gradient(169deg, rgba(26, 42, 70, 0.60) 0%, rgba(23, 21, 42, 0.60) 97.46%)",
-					boxShadow: "0px 34px 84px 0px rgba(0, 0, 0, 0.25)",
-					fontFamily: "var(--font-hubot-sans), system-ui, sans-serif",
-				}}
+			<TourCard
+				size="wide"
+				footer={<NavigationFooter />}
+				additionalClassName="tour-card-step1"
 			>
-				{/* Card content */}
 				<div className="relative z-10 h-full w-full flex flex-col justify-between">
 					{/* 3-column main content */}
 					<div className="grid grid-cols-3 h-full">
@@ -1169,109 +623,10 @@ export const WorkspaceTour = ({
 							</div>
 						</div>
 					</div>
-
-					{/* Footer: Page navigation */}
-					<div
-						className="flex justify-between items-center border-t border-white/10"
-						style={{
-							padding: "6px 12px 6px 12px",
-							justifyContent: "space-between",
-							alignItems: "center",
-							alignSelf: "stretch",
-						}}
-					>
-						<div className="text-sm text-white/70">
-							{currentStep + 1}/{steps.length}
-						</div>
-						<div className="flex gap-1">
-							<button
-								type="button"
-								onClick={handlePrev}
-								disabled={isFirstStep()}
-								className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-									isFirstStep()
-										? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
-										: "border-primary-200 text-primary-200 hover:bg-primary-200/10"
-								}`}
-								style={{
-									fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-								}}
-							>
-								←
-							</button>
-							<button
-								type="button"
-								onClick={handleNext}
-								className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
-								style={{
-									fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-								}}
-							>
-								→
-							</button>
-						</div>
-					</div>
 				</div>
-			</div>
+			</TourCard>
 
-			<style jsx global>{`
-        .tour-highlight {
-          position: relative;
-          z-index: 999 !important;
-          box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
-          border-radius: 8px !important;
-          animation: ${getPulseAnimation()} 2s infinite;
-          filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
-          outline: 2px solid rgba(0, 135, 246, 0.8) !important;
-        }
-        
-        .tour-card-step1, .tour-card-step3 {
-          filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-          animation: card-glow 2s infinite;
-        }
-        
-        @keyframes card-glow {
-          0% {
-            filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-          }
-          50% {
-            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.3));
-          }
-          100% {
-            filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
-          }
-        }
-        
-        @keyframes pulse {
-          0% {
-            box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
-          }
-          50% {
-            box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
-            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.5)) !important;
-          }
-          100% {
-            box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-            filter: drop-shadow(0 0 20px rgba(0, 135, 246, 0.4)) !important;
-          }
-        }
-
-        @keyframes pulseStep5 {
-          0% {
-            box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-            filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
-          }
-          50% {
-            box-shadow: 0 0 12px 6px rgba(0, 135, 246, 0.5) !important;
-            filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.5)) !important;
-          }
-          100% {
-            box-shadow: 0 0 10px 3px rgba(0, 135, 246, 0.4) !important;
-            filter: drop-shadow(0 0 10px rgba(0, 135, 246, 0.4)) !important;
-          }
-        }
-      `}</style>
+			<GlobalStyles />
 		</div>,
 		document.body,
 	);
