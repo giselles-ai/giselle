@@ -738,6 +738,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
 							</p>
 							<div className="flex w-full mt-1">
 								<button
+									type="button"
 									className="text-white/85 text-xs rounded-full flex justify-center items-center gap-1"
 									style={{
 										padding: "3px 12px",
@@ -771,6 +772,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
 							</p>
 							<div className="flex w-full mt-1">
 								<button
+									type="button"
 									className="text-white/85 text-xs rounded-full flex justify-center items-center gap-1"
 									style={{
 										padding: "3px 12px",
@@ -803,6 +805,7 @@ export const ProductTour = ({ steps, isOpen, onClose }: ProductTourProps) => {
 							</p>
 							<div className="flex w-full mt-1">
 								<button
+									type="button"
 									className="text-white/85 text-xs rounded-full flex justify-center items-center gap-1"
 									style={{
 										padding: "3px 12px",
