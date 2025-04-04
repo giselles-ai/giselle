@@ -1,4 +1,4 @@
-import { GitHubAuthentication } from "@/app/(main)/settings/account/v2/github-authentication";
+import { GitHubAuthenticationPopup } from "@/app/(main)/settings/account/v2/github-authentication-popup";
 import { db } from "@/drizzle";
 import { GitHubAppInstallButton } from "@/packages/components/v2/github-app-install-button";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
@@ -40,7 +40,9 @@ export default async function Layout({
 				github: {
 					state: gitHubIntegrationState,
 					components: {
-						authentication: <GitHubAuthentication />,
+						authentication: (
+							<GitHubAuthenticationPopup next="/auth/github/complete" />
+						),
 						installation: (
 							<GitHubAppInstallButton
 								installationUrl={await gitHubAppInstallURL()}

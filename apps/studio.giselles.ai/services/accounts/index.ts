@@ -7,4 +7,9 @@ export {
 	disconnectIdentity,
 	reconnectIdentity,
 } from "./identity";
+export {
+	connectIdentityApi,
+	disconnectIdentityApi,
+	reconnectIdentityApi,
+} from "./identity-api";
 export type { OAuthProvider } from "./oauth-credentials";
