@@ -27,12 +27,12 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
 
   // Function to get blur size (10px for step 5, 20px for others)
   const getBlurSize = (): string => {
-    return currentStep === 4 ? "10px" : "20px";
+    return Number(currentStep) === 4 ? "10px" : "20px";
   };
 
   // Function to get pulse animation name
   const getPulseAnimation = (): string => {
-    return currentStep === 4 ? "pulseStep5" : "pulse";
+    return Number(currentStep) === 4 ? "pulseStep5" : "pulse";
   };
 
   // Enable highlight feature
@@ -120,13 +120,13 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
 
   // Function to determine button disabled state (avoid TypeScript errors)
   const isFirstStep = (): boolean => {
-    return currentStep === 0;
+    return Number(currentStep) === 0;
   };
 
   if (!mounted || !isOpen || steps.length === 0) return null;
 
   // Display different layouts based on current step
-  if (currentStep === 1) {
+  if (Number(currentStep) === 1) {
     // Special layout for step 2
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-end justify-center">
@@ -290,7 +290,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
       </div>,
       document.body
     );
-  } else if (currentStep === 2) {
+  } else if (Number(currentStep) === 2) {
     // Special layout for step 3
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
@@ -425,7 +425,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
       </div>,
       document.body
     );
-  } else if (currentStep === 3) {
+  } else if (Number(currentStep) === 3) {
     // Special layout for step 4 (same style as step 2)
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
@@ -560,7 +560,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
       </div>,
       document.body
     );
-  } else if (currentStep === 4) {
+  } else if (Number(currentStep) === 4) {
     // Special layout for step 5
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-start justify-end">
@@ -724,7 +724,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
       </div>,
       document.body
     );
-  } else if (currentStep === 5) {
+  } else if (Number(currentStep) === 5) {
     // Special layout for step 6 (positioned at bottom left)
     return createPortal(
       <div className="fixed inset-0 z-50 pointer-events-none flex items-start justify-start">
