@@ -1,11 +1,4 @@
-import dynamic from "next/dynamic";
-
-const GitHubAuthCompleteClient = dynamic(
-	() => import("./github-auth-complete-client"),
-	{
-		ssr: false,
-	},
-);
+import { GitHubAuthCompleteClient } from "./github-auth-complete-client";
 
 export default function GitHubAuthComplete() {
 	return <GitHubAuthCompleteClient />;

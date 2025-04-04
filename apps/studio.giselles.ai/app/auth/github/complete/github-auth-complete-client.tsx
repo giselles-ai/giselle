@@ -5,7 +5,7 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
-export default function GitHubAuthCompleteClient() {
+export function GitHubAuthCompleteClient() {
 	const searchParams = useSearchParams();
 	const status = searchParams.get("status");
 	const message = searchParams.get("message");
