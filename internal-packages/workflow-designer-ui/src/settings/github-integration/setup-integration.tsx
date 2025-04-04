@@ -86,7 +86,8 @@ export function SetupIntegration({
 	repositories,
 }: { repositories: GitHubIntegrationRepository[] }) {
 	const { data: workspace } = useWorkflowDesigner();
-	const { isLoading, data, handleSubmit } = useGitHubIntegrationSetting();
+	const { isLoading, isSaving, saveSuccess, data, handleSubmit } =
+		useGitHubIntegrationSetting();
 	const [selectedTrigger, setSelectedTrigger] = useState<
 		WorkspaceGitHubIntegrationTrigger | undefined
 	>(data?.event);
@@ -164,10 +165,13 @@ export function SetupIntegration({
 		return null;
 	}
 
+	// Check if configuration exists or has just been successfully saved
+	const isConfigured = data != null || saveSuccess === true;
+
 	return (
 		<div className="flex flex-col gap-[16px]">
 			<TitleHeader />
-			<Stepper currentStep={data == null ? 3 : 4} />
+			<Stepper currentStep={isConfigured ? 4 : 3} />
 			<Card className="bg-slate-900 border-slate-800 shadow-xl overflow-hidden">
 				<div className="border-b border-slate-800 bg-gradient-to-r from-slate-900 to-slate-900/80 backdrop-blur-sm">
 					<CardHeader className="flex flex-row items-center justify-between">
@@ -179,7 +183,7 @@ export function SetupIntegration({
 								Configure your GitHub integration settings
 							</CardDescription>
 						</div>
-						{data != null && (
+						{isConfigured && (
 							<Badge className="bg-gradient-to-r from-emerald-600 to-green-600 text-white border-0 px-3 py-1">
 								Configured
 							</Badge>
@@ -188,6 +192,17 @@ export function SetupIntegration({
 				</div>
 
 				<CardContent className="p-6 my-6">
+					{saveSuccess === true && (
+						<div className="mb-4 p-3 bg-gradient-to-r from-emerald-600/20 to-green-600/20 border border-emerald-600/30 rounded-lg text-emerald-400 text-sm">
+							GitHub integration settings saved successfully.
+						</div>
+					)}
+					{saveSuccess === false && (
+						<div className="mb-4 p-3 bg-gradient-to-r from-red-600/20 to-red-800/20 border border-red-600/30 rounded-lg text-red-400 text-sm">
+							Failed to save GitHub integration settings. Please try again.
+						</div>
+					)}
+
 					<form
 						className="w-full flex flex-col gap-[16px]"
 						onSubmit={handleSubmit}
@@ -355,9 +370,10 @@ export function SetupIntegration({
 						<div className="flex justify-end">
 							<button
 								type="submit"
-								className="h-[28px] rounded-[8px] bg-white-800 text-[14px] cursor-pointer text-black-800 font-[700] px-[16px] font-accent"
+								disabled={isSaving}
+								className="h-[28px] rounded-[8px] bg-white-800 text-[14px] cursor-pointer text-black-800 font-[700] px-[16px] font-accent disabled:opacity-50 disabled:cursor-not-allowed"
 							>
-								Save
+								{isSaving ? "Saving..." : "Save"}
 							</button>
 						</div>
 					</form>
