@@ -34,7 +34,7 @@ export function buildGitHubUserClient(token: GitHubUserCredential) {
 		},
 	};
 
-	// 最新のトークンを取得するコールバック関数
+	// Callback function to get the latest token
 	const getFreshToken = async (): Promise<GitHubUserCredential | null> => {
 		const credential = await getOauthCredential("github");
 		return credential || null;
