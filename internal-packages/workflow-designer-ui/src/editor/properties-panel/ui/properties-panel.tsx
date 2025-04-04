@@ -74,6 +74,7 @@ export function PropertiesPanelHeader({
 							onChange={(value) => onChangeName?.(value)}
 							value={name}
 							fallbackValue={fallbackName}
+							widthIcon
 						/>
 					</div>
 					{description && (
