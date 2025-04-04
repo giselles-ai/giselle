@@ -7,8 +7,8 @@ import {
 	Viewer,
 } from "@giselle-internal/workflow-designer-ui";
 import { useWorkflowDesigner } from "giselle-sdk/react";
-import { WorkspaceTour } from "../../components/workspace-tour";
 import { useState } from "react";
+import { WorkspaceTour } from "../../components/workspace-tour";
 
 export default function Page() {
 	const { view } = useWorkflowDesigner();
