@@ -149,12 +149,12 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
           >
             {/* 画像エリア */}
             <div 
-              className="w-full h-[280px]"
+              className="w-full h-[280px] flex items-center justify-center"
               style={{
                 backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))'
               }}
             >
-              {/* 画像が入る場所 */}
+              <img src="/02.gif" alt="Step 2 Tutorial" className="w-full h-full object-cover" />
             </div>
 
             {/* テキストエリア */}
@@ -311,12 +311,12 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
         >
           {/* 画像エリア */}
           <div 
-            className="w-full h-[280px]"
+            className="w-full h-[280px] flex items-center justify-center"
             style={{
               backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))'
             }}
           >
-            {/* 画像が入る場所 */}
+            <img src="/03.gif" alt="Step 3 Tutorial" className="w-full h-full object-cover" />
           </div>
 
           {/* テキストエリア */}
@@ -446,12 +446,12 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
         >
           {/* 画像エリア */}
           <div 
-            className="w-full h-[280px]"
+            className="w-full h-[280px] flex items-center justify-center"
             style={{
               backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))'
             }}
           >
-            {/* 画像が入る場所 */}
+            <img src="/04.gif" alt="Step 4 Tutorial" className="w-full h-full object-cover" />
           </div>
 
           {/* テキストエリア */}
@@ -583,12 +583,12 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
           >
             {/* 画像エリア */}
             <div 
-              className="w-full h-[280px]"
+              className="w-full h-[280px] flex items-center justify-center"
               style={{
                 backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))'
               }}
             >
-              {/* 画像が入る場所 */}
+              <img src="/04.gif" alt="Step 4 Tutorial" className="w-full h-full object-cover" />
             </div>
 
             {/* テキストエリア */}
