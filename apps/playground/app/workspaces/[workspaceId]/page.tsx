@@ -37,14 +37,14 @@ export default function Page() {
 			placement: "right" as const
 		},
 		{
-			target: ".ToggleGroup\\.Root", // モード切替タブをターゲットに
+			target: "[role='tablist'], .flex.items-center.rounded-\\[8px\\], div[role='tablist']", // モード切替タブの別セレクタ
 			title: "Workflow Modes",
 			content: "Experience the complete development lifecycle with three specialized modes: Build to design your node workflows, Preview to test and validate your creations, and Integrate to connect with GitHub and deploy your solutions seamlessly.",
-			placement: "left" as const
+			placement: "bottom" as const
 		},
 		{
 			title: "Resources & Support",
-			content: "Get help when you need it. Visit our forum to connect with the community or explore our comprehensive documentation for detailed guidance and best practices whenever you encounter challenges.",
+			content: "Get help when you need it. Explore our comprehensive <a href=\"https://docs.giselles.ai/introduction\" style=\"text-decoration: underline; color: #0087f6;\">Docs</a> for detailed guidance and best practices whenever you encounter challenges.",
 			placement: "bottom" as const
 		}
 	];

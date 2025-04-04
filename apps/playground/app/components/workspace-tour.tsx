@@ -160,9 +160,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>
               {steps[currentStep].title}
             </h3>
-            <p className="text-white/40 my-2" style={{ fontSize: '12px' }}>
-              {steps[currentStep].content}
-            </p>
+            <div className="text-white/40 my-2" style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: steps[currentStep].content }} />
           </div>
 
           {/* フッター: ページナビゲーション */}
@@ -296,9 +294,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <h3 className="text-white/80 font-semibold" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif', marginBottom: '0' }}>
               {steps[currentStep].title}
             </h3>
-            <p className="text-white/40" style={{ fontSize: '12px', marginTop: '0' }}>
-              {steps[currentStep].content}
-            </p>
+            <div className="text-white/40" style={{ fontSize: '12px', marginTop: '0' }} dangerouslySetInnerHTML={{ __html: steps[currentStep].content }} />
           </div>
 
           {/* フッター: ページナビゲーション */}
@@ -432,9 +428,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>
               {steps[currentStep].title}
             </h3>
-            <p className="text-white/40 my-2" style={{ fontSize: '12px' }}>
-              {steps[currentStep].content}
-            </p>
+            <div className="text-white/40 my-2" style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: steps[currentStep].content }} />
           </div>
 
           {/* フッター: ページナビゲーション */}
@@ -564,13 +558,11 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
           </div>
 
           {/* テキストエリア */}
-          <div className="flex flex-col justify-start p-4 gap-1 flex-grow">
-            <h3 className="text-white/80 font-semibold" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif', marginBottom: '0' }}>
+          <div className="flex flex-col justify-center p-4 gap-1 flex-grow">
+            <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>
               {steps[currentStep].title}
             </h3>
-            <p className="text-white/40" style={{ fontSize: '12px', marginTop: '0' }}>
-              {steps[currentStep].content}
-            </p>
+            <div className="text-white/40 my-2" style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: steps[currentStep].content }} />
           </div>
 
           {/* フッター: ページナビゲーション */}
@@ -671,15 +663,15 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
       document.body
     );
   } else if (currentStep === 5) {
-    // ステップ6の特別なレイアウト (ステップ2のスタイルと同じ)
+    // ステップ6の特別なレイアウト (左下に配置)
     return createPortal(
-      <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
+      <div className="fixed inset-0 z-50 pointer-events-none flex items-start justify-start">
         {/* Overlay */}
         <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
 
-        {/* ステップ6専用カード */}
+        {/* ステップ6専用カード - 左下に配置 */}
         <div
-          className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col"
+          className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col ml-8 mb-8 mt-auto"
           style={{
             width: '264px',
             height: '437px',
@@ -704,9 +696,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
             <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>
               {steps[currentStep].title}
             </h3>
-            <p className="text-white/40 my-2" style={{ fontSize: '12px' }}>
-              {steps[currentStep].content}
-            </p>
+            <div className="text-white/40 my-2" style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: steps[currentStep].content }} />
           </div>
 
           {/* フッター: ページナビゲーション */}
