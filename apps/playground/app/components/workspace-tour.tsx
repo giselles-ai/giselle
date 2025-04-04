@@ -129,15 +129,15 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
   if (currentStep === 1) {
     // ステップ2の特別なレイアウト
     return createPortal(
-      <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-end">
+      <div className="fixed inset-0 z-50 pointer-events-none flex items-end justify-center">
         {/* Overlay */}
         <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
 
-        {/* カードと矢印をグループ化 */}
-        <div className="relative pointer-events-none">
-          {/* ステップ2専用カード - 右に配置 - 右に300px移動 */}
+        {/* カードと矢印をグループ化 - 中央下部配置 */}
+        <div className="relative pointer-events-none mb-[200px] ml-[550px]">
+          {/* ステップ2専用カード - 中央配置 */}
           <div
-            className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col mr-[250px]"
+            className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col"
             style={{
               width: '264px',
               height: '437px',
@@ -206,7 +206,7 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
           <img 
             src="/step2_arrow.png" 
             alt="Arrow pointing to toolbar" 
-            className="absolute bottom-[-100px] right-[500px] z-[60] w-[150px] h-auto pointer-events-none arrow-animation"
+            className="absolute bottom-[-100px] left-[calc(50%-200px)] translate-x-[-50%] z-[60] w-[150px] h-auto pointer-events-none arrow-animation"
           />
         </div>
 
