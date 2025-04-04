@@ -6,17 +6,8 @@ export async function GET(request: NextRequest) {
 	const next = searchParams.get("next") || "/settings/account";
 
 	try {
-		const redirectPath = await disconnectIdentityApi("github", next);
-
-		// Redirect to completion page on success
-		const completeUrl = new URL("/auth/github/complete", request.url);
-		completeUrl.searchParams.set("status", "success");
-		completeUrl.searchParams.set(
-			"message",
-			"GitHub connection has been disconnected",
-		);
-
-		return NextResponse.redirect(completeUrl);
+		const url = await disconnectIdentityApi("github", next);
+		return NextResponse.redirect(url);
 	} catch (error) {
 		console.error("Error disconnecting GitHub identity:", error);
 		const errorMessage =

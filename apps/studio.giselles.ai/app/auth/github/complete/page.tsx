@@ -9,7 +9,7 @@ export default function GitHubAuthComplete() {
 	const searchParams = useSearchParams();
 	const status = searchParams.get("status");
 	const message = searchParams.get("message");
-	const isSuccess = status === "success";
+	const isSuccess = status !== "error";
 
 	useEffect(() => {
 		// Refresh parent window component when this page loads
