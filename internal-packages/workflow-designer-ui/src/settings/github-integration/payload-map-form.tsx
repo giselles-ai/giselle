@@ -22,6 +22,8 @@ const getDisplayName = (node: Node) => {
 	return node.name ?? "Source";
 };
 
+const getLastTwoParts = (field: string) => field.split(".").slice(-2).join(".");
+
 export function PayloadMapForm({
 	nodes,
 	currentPayloadMaps = [],
@@ -123,7 +125,7 @@ export function PayloadMapForm({
 						className="group col-span-3 grid grid-cols-[200px_20px_200px] gap-[8px] items-center h-[28px] bg-black-750 rounded-[8px] text-[14px] border-[1px] border-white-950/10"
 					>
 						<p className="w-[200px] px-[12px]">
-							{payloadMap.payload.split(".").splice(2).join(".")}
+							{getLastTwoParts(payloadMap.payload)}
 						</p>
 						<div className="w-[20px] flex justify-center text-primary-800">
 							→
@@ -155,11 +157,15 @@ export function PayloadMapForm({
 									<SelectValue placeholder="Select a payload" />
 								</SelectTrigger>
 								<SelectContent>
-									{availablePayloadFields.map((field) => (
-										<SelectItem key={field} value={field}>
-											{field.split(".").slice(1).join(".")}
-										</SelectItem>
-									))}
+									{[...availablePayloadFields]
+										.sort((a, b) =>
+											getLastTwoParts(a).localeCompare(getLastTwoParts(b)),
+										)
+										.map((field) => (
+											<SelectItem key={field} value={field}>
+												{getLastTwoParts(field)}
+											</SelectItem>
+										))}
 								</SelectContent>
 							</Select>
 						</fieldset>
