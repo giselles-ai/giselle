@@ -6,6 +6,7 @@ import {
 	WorkspaceGitHubIntegrationTrigger,
 } from "@giselle-sdk/data-type";
 import type { GitHubIntegrationRepository } from "@giselle-sdk/integration";
+import { useIntegration } from "@giselle-sdk/integration/react";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Badge } from "../../ui/badge";
@@ -106,6 +107,9 @@ export function SetupIntegration({
 		setSelectedNextAction(undefined);
 		setNextActionKey((prev) => prev + 1);
 	}, []);
+	const {
+		github: { components },
+	} = useIntegration();
 
 	useEffect(() => {
 		if (data) {
@@ -189,7 +193,7 @@ export function SetupIntegration({
 						onSubmit={handleSubmit}
 					>
 						<div className="grid grid-cols-[140px_1fr] gap-x-[4px] gap-y-[16px]">
-							<h3 className="relative font-accent text-white-400 text-[14px] flex items-center font-bold">
+							<h3 className="relative font-accent text-white-400 text-[14px] flex items-start font-bold">
 								Repository
 							</h3>
 							<div>
@@ -210,6 +214,7 @@ export function SetupIntegration({
 										</SelectContent>
 									</Select>
 								</fieldset>
+								<div className="mt-2">{components?.installation}</div>
 							</div>
 							<h3 className="font-accent text-white-400 text-[14px] font-bold">
 								<div className="flex items-center">Trigger</div>
