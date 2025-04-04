@@ -59,12 +59,6 @@ export function RequireAuthorization({ error }: RequireAuthorizationProps) {
 
 				<CardFooter className="flex justify-end p-6 border-slate-800 bg-slate-900/50">
 					{components?.authentication}
-					{/* <Button
-						className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 border-0"
-						onClick={onAuthorize}
-					>
-						Authorize with GitHub
-					</Button> */}
 				</CardFooter>
 			</Card>
 		</div>

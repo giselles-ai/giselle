@@ -10,10 +10,7 @@ import {
 import { Stepper } from "./stepper";
 import { TitleHeader } from "./title-header";
 
-interface RequireInstallationProps {
-	onInstall?: () => void;
-}
-export function RequireInstallation({ onInstall }: RequireInstallationProps) {
+export function RequireInstallation() {
 	const {
 		github: { components },
 	} = useIntegration();
@@ -54,12 +51,6 @@ export function RequireInstallation({ onInstall }: RequireInstallationProps) {
 
 				<CardFooter className="flex justify-end p-6 bg-slate-900/50">
 					{components?.installation}
-					{/* <Button
-						className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 border-0"
-						onClick={onInstall}
-					>
-						Install GitHub App
-					</Button> */}
 				</CardFooter>
 			</Card>
 		</div>
