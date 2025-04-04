@@ -24,7 +24,8 @@ export default function Page() {
 		{
 			title: "Your command hub.",
 			content: "Add Gen nodes, access your knowledge base, manipulate files, invoke other agents, and orchestrate your workflow.",
-			placement: "right" as const
+			placement: "right" as const,
+			target: ".nav, .absolute.bottom-0, nav.rounded-\\[8px\\]" // 下部ナビゲーションバーを正確に指定
 		},
 		{
 			title: "Node Settings",

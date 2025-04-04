@@ -129,90 +129,120 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
   if (currentStep === 1) {
     // ステップ2の特別なレイアウト
     return createPortal(
-      <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
+      <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-end">
         {/* Overlay */}
         <div className="absolute inset-0 bg-transparent pointer-events-auto" onClick={handleClose} />
 
-        {/* ステップ2専用カード */}
-        <div
-          className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col"
-          style={{
-            width: '264px',
-            height: '437px',
-            border: '1px solid rgba(241, 241, 241, 0.20)',
-            background: 'linear-gradient(169deg, rgba(26, 42, 70, 0.60) 0%, rgba(23, 21, 42, 0.60) 97.46%)',
-            boxShadow: '0px 34px 84px 0px rgba(0, 0, 0, 0.25)',
-            fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif',
-          }}
-        >
-          {/* 画像エリア */}
-          <div 
-            className="w-full h-[280px]"
+        {/* カードと矢印をグループ化 */}
+        <div className="relative pointer-events-none">
+          {/* ステップ2専用カード - 右に配置 - 右に300px移動 */}
+          <div
+            className="rounded-2xl shadow-lg pointer-events-auto relative overflow-hidden flex flex-col mr-[250px]"
             style={{
-              backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))'
+              width: '264px',
+              height: '437px',
+              border: '1px solid rgba(241, 241, 241, 0.20)',
+              background: 'linear-gradient(169deg, rgba(26, 42, 70, 0.60) 0%, rgba(23, 21, 42, 0.60) 97.46%)',
+              boxShadow: '0px 34px 84px 0px rgba(0, 0, 0, 0.25)',
+              fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif',
             }}
           >
-            {/* 画像が入る場所 */}
+            {/* 画像エリア */}
+            <div 
+              className="w-full h-[280px]"
+              style={{
+                backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(30, 50, 80, 1), rgba(20, 25, 40, 1))'
+              }}
+            >
+              {/* 画像が入る場所 */}
+            </div>
+
+            {/* テキストエリア */}
+            <div className="flex flex-col justify-center p-4 gap-1 flex-grow">
+              <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>
+                {steps[currentStep].title}
+              </h3>
+              <div className="text-white/40 my-2" style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: steps[currentStep].content }} />
+            </div>
+
+            {/* フッター: ページナビゲーション */}
+            <div 
+              className="flex justify-between items-center border-t border-white/10"
+              style={{
+                padding: '6px 12px 6px 12px',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                alignSelf: 'stretch',
+              }}
+            >
+              <div className="text-sm text-white/70">
+                {currentStep + 1}/{steps.length}
+              </div>
+              <div className="flex gap-1">
+                <button
+                  onClick={handlePrev}
+                  disabled={isFirstStep()}
+                  className={`w-6 h-6 flex items-center justify-center rounded-full border ${
+                    isFirstStep()
+                      ? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
+                      : "border-primary-200 text-primary-200 hover:bg-primary-200/10"
+                  }`}
+                  style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
+                >
+                  ←
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
+                  style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
+                >
+                  →
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* テキストエリア */}
-          <div className="flex flex-col justify-center p-4 gap-1 flex-grow">
-            <h3 className="text-white/80 font-semibold mb-1" style={{ fontSize: '16px', fontFamily: 'var(--font-hubot-sans), system-ui, sans-serif' }}>
-              {steps[currentStep].title}
-            </h3>
-            <div className="text-white/40 my-2" style={{ fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: steps[currentStep].content }} />
-          </div>
-
-          {/* フッター: ページナビゲーション */}
-          <div 
-            className="flex justify-between items-center border-t border-white/10"
-            style={{
-              padding: '6px 12px 6px 12px',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              alignSelf: 'stretch',
-            }}
-          >
-            <div className="text-sm text-white/70">
-              {currentStep + 1}/{steps.length}
-            </div>
-            <div className="flex gap-1">
-              <button
-                onClick={handlePrev}
-                disabled={isFirstStep()}
-                className={`w-6 h-6 flex items-center justify-center rounded-full border ${
-                  isFirstStep()
-                    ? "border-primary-200/50 text-primary-200/50 cursor-not-allowed"
-                    : "border-primary-200 text-primary-200 hover:bg-primary-200/10"
-                }`}
-                style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
-              >
-                ←
-              </button>
-              <button
-                onClick={handleNext}
-                className="w-6 h-6 flex items-center justify-center rounded-full border border-primary-200 text-primary-200 hover:bg-primary-200/10"
-                style={{ fontFamily: 'var(--font-geist-sans), system-ui, sans-serif' }}
-              >
-                →
-              </button>
-            </div>
-          </div>
+          {/* 矢印画像の配置 - カードの下に表示 */}
+          <img 
+            src="/step2_arrow.png" 
+            alt="Arrow pointing to toolbar" 
+            className="absolute bottom-[-100px] right-[500px] z-[60] w-[150px] h-auto pointer-events-none arrow-animation"
+          />
         </div>
 
         <style jsx global>{`
           .tour-highlight {
             position: relative;
             z-index: 999 !important;
-            box-shadow: 0 0 10px 5px rgba(0, 135, 246, 0.5) !important;
-            border-radius: 4px;
+            box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
+            border-radius: 8px !important;
             animation: ${getPulseAnimation()} 2s infinite;
-            filter: drop-shadow(0 0 ${getBlurSize()} rgba(0, 135, 246, 0.5)) !important;
+            filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
+            outline: 2px solid rgba(0, 135, 246, 0.8) !important;
           }
           
           .tour-card-step1, .tour-card-step3 {
             filter: drop-shadow(0 0 15px rgba(0, 135, 246, 0.3));
             animation: card-glow 2s infinite;
+          }
+          
+          .arrow-animation {
+            animation: arrow-pulse 2s infinite;
+          }
+          
+          @keyframes arrow-pulse {
+            0% {
+              opacity: 0.8;
+              transform: translateY(0);
+            }
+            50% {
+              opacity: 1;
+              transform: translateY(-10px);
+            }
+            100% {
+              opacity: 0.8;
+              transform: translateY(0);
+            }
           }
           
           @keyframes card-glow {
@@ -338,10 +368,11 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
           .tour-highlight {
             position: relative;
             z-index: 999 !important;
-            box-shadow: 0 0 10px 5px rgba(0, 135, 246, 0.5) !important;
-            border-radius: 4px;
+            box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
+            border-radius: 8px !important;
             animation: ${getPulseAnimation()} 2s infinite;
-            filter: drop-shadow(0 0 ${getBlurSize()} rgba(0, 135, 246, 0.5)) !important;
+            filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
+            outline: 2px solid rgba(0, 135, 246, 0.8) !important;
           }
           
           .tour-card-step1, .tour-card-step3 {
@@ -472,10 +503,11 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
           .tour-highlight {
             position: relative;
             z-index: 999 !important;
-            box-shadow: 0 0 10px 5px rgba(0, 135, 246, 0.5) !important;
-            border-radius: 4px;
+            box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
+            border-radius: 8px !important;
             animation: ${getPulseAnimation()} 2s infinite;
-            filter: drop-shadow(0 0 ${getBlurSize()} rgba(0, 135, 246, 0.5)) !important;
+            filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
+            outline: 2px solid rgba(0, 135, 246, 0.8) !important;
           }
           
           .tour-card-step1, .tour-card-step3 {
@@ -606,10 +638,11 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
           .tour-highlight {
             position: relative;
             z-index: 999 !important;
-            box-shadow: 0 0 10px 5px rgba(0, 135, 246, 0.5) !important;
-            border-radius: 4px;
+            box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
+            border-radius: 8px !important;
             animation: ${getPulseAnimation()} 2s infinite;
-            filter: drop-shadow(0 0 ${getBlurSize()} rgba(0, 135, 246, 0.5)) !important;
+            filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
+            outline: 2px solid rgba(0, 135, 246, 0.8) !important;
           }
           
           .tour-card-step1, .tour-card-step3 {
@@ -740,10 +773,11 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
           .tour-highlight {
             position: relative;
             z-index: 999 !important;
-            box-shadow: 0 0 10px 5px rgba(0, 135, 246, 0.5) !important;
-            border-radius: 4px;
+            box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
+            border-radius: 8px !important;
             animation: ${getPulseAnimation()} 2s infinite;
-            filter: drop-shadow(0 0 ${getBlurSize()} rgba(0, 135, 246, 0.5)) !important;
+            filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
+            outline: 2px solid rgba(0, 135, 246, 0.8) !important;
           }
           
           .tour-card-step1, .tour-card-step3 {
@@ -932,10 +966,11 @@ export const WorkspaceTour = ({ steps, isOpen, onClose }: WorkspaceTourProps) =>
         .tour-highlight {
           position: relative;
           z-index: 999 !important;
-          box-shadow: 0 0 10px 5px rgba(0, 135, 246, 0.5) !important;
-          border-radius: 4px;
+          box-shadow: 0 0 15px 8px rgba(0, 135, 246, 0.6) !important;
+          border-radius: 8px !important;
           animation: ${getPulseAnimation()} 2s infinite;
-          filter: drop-shadow(0 0 ${getBlurSize()} rgba(0, 135, 246, 0.5)) !important;
+          filter: drop-shadow(0 0 30px rgba(0, 135, 246, 0.6)) !important;
+          outline: 2px solid rgba(0, 135, 246, 0.8) !important;
         }
         
         .tour-card-step1, .tour-card-step3 {
