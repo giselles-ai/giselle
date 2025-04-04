@@ -25,11 +25,7 @@ export async function connectIdentityApi(
 	const { data, error } = await supabase.auth.linkIdentity({
 		provider,
 		options: {
-			redirectTo: getAuthCallbackUrl({
-				next,
-				provider,
-				addSuccessRedirect: true,
-			}),
+			redirectTo: getAuthCallbackUrl({ next, provider }),
 		},
 	});
 
@@ -49,11 +45,7 @@ export async function reconnectIdentityApi(
 	const { data, error } = await supabase.auth.signInWithOAuth({
 		provider,
 		options: {
-			redirectTo: getAuthCallbackUrl({
-				next,
-				provider,
-				addSuccessRedirect: true,
-			}),
+			redirectTo: getAuthCallbackUrl({ next, provider }),
 		},
 	});
 
