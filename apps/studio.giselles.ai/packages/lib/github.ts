@@ -54,26 +54,3 @@ export async function getGitHubIntegrationState(
 		repositories,
 	};
 }
-
-type Repository = components["schemas"]["repository"];
-
-export type GitHubIntegrationSettingState = {
-	setting?: GitHubIntegrationSetting;
-};
-
-export type GitHubIntegrationSetting = Omit<
-	typeof githubIntegrationSettings.$inferSelect,
-	"dbId" | "agentDbId"
->;
-
-interface CreateGitHubIntegrationSettingSuccess {
-	result: "success";
-	setting: GitHubIntegrationSetting;
-}
-interface CreateGitHubIntegrationSettingError {
-	result: "error";
-	message: string;
-}
-export type CreateGitHubIntegrationSettingResult =
-	| CreateGitHubIntegrationSettingSuccess
-	| CreateGitHubIntegrationSettingError;
