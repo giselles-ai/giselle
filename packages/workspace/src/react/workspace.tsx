@@ -3,15 +3,24 @@
 import type { Workspace, WorkspaceId } from "@giselle-sdk/data-type";
 import { GenerationRunnerSystemProvider } from "@giselle-sdk/generation-runner/react";
 import { useGiselleEngine } from "@giselle-sdk/giselle-engine/react";
-import type { Integration } from "@giselle-sdk/integration";
-import { IntegrationProvider } from "@giselle-sdk/integration/react";
+import {
+	IntegrationProvider,
+	type IntegrationProviderProps,
+} from "@giselle-sdk/integration/react";
 import { RunSystemContextProvider } from "@giselle-sdk/run/react";
 import type { TelemetrySettings } from "@giselle-sdk/telemetry";
 import { TelemetryProvider } from "@giselle-sdk/telemetry/react";
 import type { UsageLimits } from "@giselle-sdk/usage-limits";
 import { UsageLimitsProvider } from "@giselle-sdk/usage-limits/react";
 import { WorkflowDesignerProvider } from "@giselle-sdk/workflow-designer/react";
-import { type ReactNode, useEffect, useState } from "react";
+import { type PropsWithChildren, useEffect, useState } from "react";
+
+interface WorkspaceProviderProps {
+	workspaceId: WorkspaceId;
+	usageLimits?: UsageLimits;
+	telemetry?: TelemetrySettings;
+	integration?: IntegrationProviderProps;
+}
 
 export function WorkspaceProvider({
 	children,
@@ -19,13 +28,7 @@ export function WorkspaceProvider({
 	integration,
 	usageLimits,
 	telemetry,
-}: {
-	children: ReactNode;
-	workspaceId: WorkspaceId;
-	integration?: Integration;
-	usageLimits?: UsageLimits;
-	telemetry?: TelemetrySettings;
-}) {
+}: PropsWithChildren<WorkspaceProviderProps>) {
 	const client = useGiselleEngine();
 
 	const [workspace, setWorkspace] = useState<Workspace | undefined>();
@@ -44,7 +47,7 @@ export function WorkspaceProvider({
 	return (
 		<TelemetryProvider settings={telemetry}>
 			<UsageLimitsProvider limits={usageLimits}>
-				<IntegrationProvider integration={integration}>
+				<IntegrationProvider {...integration}>
 					<WorkflowDesignerProvider data={workspace}>
 						<GenerationRunnerSystemProvider>
 							<RunSystemContextProvider workspaceId={workspaceId}>

@@ -1,23 +1,47 @@
-import { type ReactNode, createContext, useContext, useMemo } from "react";
+"use client";
+
+import {
+	type PropsWithChildren,
+	createContext,
+	useCallback,
+	useContext,
+	useState,
+} from "react";
 import type { Integration } from "../schema";
 
-export const IntegrationContext = createContext<Integration | undefined>(
-	undefined,
-);
+type IntegrationContextValue = {
+	state: Integration;
+	reloadState: () => void;
+};
+export const IntegrationContext = createContext<
+	IntegrationContextValue | undefined
+>(undefined);
 
+export interface IntegrationProviderProps {
+	state?: Partial<Integration>;
+	reloadState?: () => Promise<Partial<Integration>>;
+}
 export function IntegrationProvider({
 	children,
-	integration,
-}: { children: ReactNode; integration?: Partial<Integration> }) {
-	const value = useMemo<Integration>(
-		() => ({
-			github: integration?.github,
-		}),
-		[integration],
-	);
+	...props
+}: PropsWithChildren<IntegrationProviderProps | undefined>) {
+	const [state, setState] = useState({
+		github: props.state?.github,
+	});
+	const reloadState = useCallback(async () => {
+		const newState = await props?.reloadState?.();
+		setState({
+			github: newState?.github,
+		});
+	}, [props.reloadState]);
 
 	return (
-		<IntegrationContext.Provider value={value}>
+		<IntegrationContext.Provider
+			value={{
+				state,
+				reloadState,
+			}}
+		>
 			{children}
 		</IntegrationContext.Provider>
 	);

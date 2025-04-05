@@ -75,19 +75,31 @@ const getAvailableNextActions = (
 };
 
 export function GitHubIntegrationSettingForm() {
-	const { github } = useIntegration();
+	const { state, reloadState } = useIntegration();
 
-	if (github === undefined) {
+	useEffect(() => {
+		const handleVisibilityChange = () => {
+			if (document.visibilityState === "visible") {
+				reloadState();
+			}
+		};
+		document.addEventListener("visibilitychange", handleVisibilityChange);
+		return () => {
+			document.removeEventListener("visibilitychange", handleVisibilityChange);
+		};
+	}, [reloadState]);
+
+	if (state.github === undefined) {
 		return <div>This Application has not setted up GitHub App.</div>;
 	}
-	switch (github.status) {
+	switch (state.github.status) {
 		case "unset":
 		case "unauthorized":
 		case "not-installed":
 		case "invalid-credential":
 			return (
 				<a
-					href={github.settingPageUrl}
+					href={state.github.settingPageUrl}
 					target="_blank"
 					rel="noopener noreferrer"
 				>
@@ -95,9 +107,9 @@ export function GitHubIntegrationSettingForm() {
 				</a>
 			);
 		case "installed":
-			return <Installed repositories={github.repositories} />;
+			return <Installed repositories={state.github.repositories} />;
 		default: {
-			const _exhaustiveCheck: never = github;
+			const _exhaustiveCheck: never = state.github;
 			throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
 		}
 	}

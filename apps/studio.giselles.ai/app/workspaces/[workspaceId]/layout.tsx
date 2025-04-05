@@ -7,6 +7,13 @@ import { WorkspaceProvider } from "giselle-sdk/react";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
+async function getIntegrationState(agentDbId: number) {
+	const githubIntegrationState = await getGitHubIntegrationState(agentDbId);
+	return {
+		github: githubIntegrationState,
+	};
+}
+
 export default async function Layout({
 	params,
 	children,
@@ -22,7 +29,7 @@ export default async function Layout({
 	if (agent === undefined) {
 		return notFound();
 	}
-	const gitHubIntegrationState = await getGitHubIntegrationState(agent.dbId);
+	const integrationState = await getIntegrationState(agent.dbId);
 
 	const currentTeam = await fetchCurrentTeam();
 	if (currentTeam.dbId !== agent.teamDbId) {
@@ -34,7 +41,11 @@ export default async function Layout({
 		<WorkspaceProvider
 			workspaceId={workspaceId}
 			integration={{
-				github: gitHubIntegrationState,
+				state: integrationState,
+				reloadState: async () => {
+					"use server";
+					return await getIntegrationState(agent.dbId);
+				},
 			}}
 			usageLimits={usageLimits}
 			telemetry={{
