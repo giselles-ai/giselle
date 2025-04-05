@@ -18,7 +18,7 @@ function TabTrigger({ icon, label, ...props }: TabTriggerProps) {
 			type="button"
 			className={clsx(
 				"relative h-[32px] rounded-[10px] px-[16px] flex items-center gap-[8px] overflow-hidden font-accent text-[14px]",
-				"data-[state=active]:bg-primary-900/20 data-[state=active]:text-primary-400",
+				"data-[state=active]:bg-primary-900/20 data-[state=active]:text-white-400",
 				"data-[state=active]:before:absolute data-[state=active]:before:left-0 data-[state=active]:before:w-[8px] data-[state=active]:before:bg-primary-400 data-[state=active]:before:h-full",
 			)}
 			{...props}
@@ -62,7 +62,7 @@ export function SettingsPanel() {
 export function SettingsView() {
 	return (
 		<div className="relative flex flex-col gap-[16px] text-white-800 flex-1 px-[16px]">
-			<div className="relative z-1">
+			<div className="relative z-1 px-[16px] py-[16px]">
 				<Tabs.Root
 					orientation="horizontal"
 					className="flex gap-[24px]"

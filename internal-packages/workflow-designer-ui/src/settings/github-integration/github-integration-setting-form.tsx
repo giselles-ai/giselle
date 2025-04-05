@@ -10,7 +10,9 @@ import {
 import type { GitHubIntegrationRepository } from "@giselle-sdk/integration";
 import { useIntegration } from "@giselle-sdk/integration/react";
 import { useWorkflowDesigner } from "giselle-sdk/react";
+import { ExternalLinkIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { EmptyState } from "../../ui/empty-state";
 import {
 	Label,
 	Select,
@@ -98,13 +100,7 @@ export function GitHubIntegrationSettingForm() {
 		case "not-installed":
 		case "invalid-credential":
 			return (
-				<a
-					href={state.github.settingPageUrl}
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Setting
-				</a>
+				<InstallationCallout settingPageUrl={state.github.settingPageUrl} />
 			);
 		case "installed":
 			return <Installed repositories={state.github.repositories} />;
@@ -113,6 +109,32 @@ export function GitHubIntegrationSettingForm() {
 			throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
 		}
 	}
+}
+
+function InstallationCallout({ settingPageUrl }: { settingPageUrl: string }) {
+	return (
+		<div className="flex flex-col gap-[16px]">
+			<h2 className="text-[14px] font-accent font-[700] text-white-400">
+				GitHub Integration
+			</h2>
+			<EmptyState
+				title="Set up GitHub Integration"
+				description="Open GitHub Setting page to complete GitHub Integration settings."
+				className="border border-black-800 rounded-[8px] h-[200px] justify-center"
+			>
+				<p className="flex items-center gap-[8px]">
+					<a
+						href={settingPageUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="flex items-center gap-[4px] text-primary-800"
+					>
+						GitHub Settings <ExternalLinkIcon className="size-[14px]" />
+					</a>
+				</p>
+			</EmptyState>
+		</div>
+	);
 }
 
 function Installed({
