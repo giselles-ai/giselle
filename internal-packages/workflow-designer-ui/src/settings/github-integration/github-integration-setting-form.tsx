@@ -1,11 +1,11 @@
 "use client";
 
-import type { WorkspaceGitHubNextIntegrationAction } from "@giselle-sdk/data-type";
 import {
 	WorkspaceGitHubIntegrationNextAction,
 	WorkspaceGitHubIntegrationPayloadField,
 	type WorkspaceGitHubIntegrationPayloadNodeMap,
 	WorkspaceGitHubIntegrationTrigger,
+	type WorkspaceGitHubNextIntegrationAction,
 } from "@giselle-sdk/data-type";
 import type { GitHubIntegrationRepository } from "@giselle-sdk/integration";
 import { useIntegration } from "@giselle-sdk/integration/react";
