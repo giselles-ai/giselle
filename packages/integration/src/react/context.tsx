@@ -11,9 +11,7 @@ export function IntegrationProvider({
 }: { children: ReactNode; integration?: Partial<Integration> }) {
 	const value = useMemo<Integration>(
 		() => ({
-			github: integration?.github ?? {
-				status: "unset",
-			},
+			github: integration?.github,
 		}),
 		[integration],
 	);
