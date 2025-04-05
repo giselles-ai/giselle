@@ -24,6 +24,7 @@
 		"@giselle-internal/workflow-designer-ui": "workspace:*",
 		"@giselle-sdk/data-type": "workspace:*",
 		"@giselle-sdk/giselle-engine": "workspace:*",
+		"@giselle-sdk/integration": "workspace:*",
 		"@icons-pack/react-simple-icons": "10.0.0",
 		"@lucide/lab": "0.1.2",
 		"@mendable/firecrawl-js": "1.6.1",
