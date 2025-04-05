@@ -77,15 +77,23 @@ const getAvailableNextActions = (
 export function GitHubIntegrationSettingForm() {
 	const { github } = useIntegration();
 
+	if (github === undefined) {
+		return <div>This Application has not setted up GitHub App.</div>;
+	}
 	switch (github.status) {
 		case "unset":
-			return "unset";
 		case "unauthorized":
-			return "unauthorized";
 		case "not-installed":
-			return "not-installed";
 		case "invalid-credential":
-			return "invalid-credential";
+			return (
+				<a
+					href={github.settingPageUrl}
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					Setting
+				</a>
+			);
 		case "installed":
 			return <Installed repositories={github.repositories} />;
 		default: {
