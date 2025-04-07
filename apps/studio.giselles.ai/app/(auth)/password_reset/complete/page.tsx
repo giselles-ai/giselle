@@ -13,7 +13,7 @@ export default function CompleteResetPasswordPage() {
 						>
 							Set new password
 						</h2>
-						<p className="mt-4 text-[14px] font-geist text-black-70">
+						<p className="mt-4 text-[14px] font-geist text-primary-300">
 							Your password has been successfully reset.
 						</p>
 					</div>

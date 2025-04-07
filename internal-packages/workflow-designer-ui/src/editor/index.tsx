@@ -15,7 +15,8 @@ import "@xyflow/react/dist/style.css";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { useAnimationFrame, useSpring } from "motion/react";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { SP } from "next/dist/shared/lib/utils";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
 	type ImperativePanelHandle,
 	Panel,
@@ -36,6 +37,7 @@ import {
 	ToolbarContextProvider,
 	useToolbar,
 } from "./tool";
+import { WorkspaceTour, tourSteps } from "./workspace-tour";
 
 function NodeCanvas() {
 	const {
@@ -357,6 +359,8 @@ export function Editor() {
 			rightPanelWidthMotionValue.jump(rightPanelRef.current.getSize());
 		}
 	});
+
+	const [isTourOpen, setIsTourOpen] = useState(data.nodes.length === 0);
 	return (
 		<div className="flex-1 overflow-hidden font-sans">
 			<ToastProvider>
@@ -403,6 +407,11 @@ export function Editor() {
 					<GradientDef />
 				</ReactFlowProvider>
 			</ToastProvider>
+			<WorkspaceTour
+				steps={tourSteps}
+				isOpen={isTourOpen}
+				onOpenChange={setIsTourOpen}
+			/>
 		</div>
 	);
 }

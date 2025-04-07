@@ -8,7 +8,7 @@ export const Nav: FC = () => {
 	const pathname = usePathname();
 
 	return (
-		<div className="gap-[16px] text-[18px] font-rosart flex text-black-70">
+		<div className="gap-[16px] text-[18px] font-hubot font-medium flex text-black-70">
 			<p className="text-black--30">
 				{pathname === "/"
 					? "Lobby"

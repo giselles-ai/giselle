@@ -111,6 +111,16 @@ function Installed({
 		WorkspaceGitHubIntegrationPayloadNodeMap[]
 	>(data?.payloadMaps || []);
 
+	// Select component doesn't support resetting the value to undefined
+	// So we need to use a workaround
+	// https://github.com/radix-ui/primitives/issues/1569
+	// https://github.com/shadcn-ui/ui/discussions/638
+	const [nextActionKey, setNextActionKey] = useState(0);
+	const resetSelectedNextAction = useCallback(() => {
+		setSelectedNextAction(undefined);
+		setNextActionKey((prev) => prev + 1);
+	}, []);
+
 	useEffect(() => {
 		if (data) {
 			setSelectedTrigger(data.event);
@@ -126,8 +136,8 @@ function Installed({
 			if (!newTrigger.success) {
 				setSelectedTrigger(undefined);
 				setCallsign("");
-				setSelectedNextAction(undefined);
 				setPayloadMaps([]);
+				resetSelectedNextAction();
 				return;
 			}
 
@@ -145,11 +155,11 @@ function Installed({
 					selectedNextAction &&
 					!availableActions.includes(selectedNextAction)
 				) {
-					setSelectedNextAction(undefined);
+					resetSelectedNextAction();
 				}
 			}
 		},
-		[selectedTrigger, selectedNextAction],
+		[selectedTrigger, selectedNextAction, resetSelectedNextAction],
 	);
 	const availablePayloadFields = useMemo(
 		() => (selectedTrigger ? getAvailablePayloadFields(selectedTrigger) : []),
@@ -176,7 +186,10 @@ function Installed({
 					</h3>
 					<div>
 						<fieldset className="flex flex-col gap-[4px]">
-							<Select value={data?.repositoryNodeId} name="repositoryNodeId">
+							<Select
+								defaultValue={data?.repositoryNodeId}
+								name="repositoryNodeId"
+							>
 								<SelectTrigger>
 									<SelectValue placeholder="Select a repository" />
 								</SelectTrigger>
@@ -299,6 +312,7 @@ function Installed({
 					</h3>
 					<fieldset className="flex flex-col gap-[4px]">
 						<Select
+							key={nextActionKey}
 							name="nextAction"
 							value={selectedNextAction}
 							onValueChange={(value) => {
@@ -307,7 +321,7 @@ function Installed({
 								if (nextAction.success) {
 									setSelectedNextAction(nextAction.data);
 								} else {
-									setSelectedNextAction(undefined);
+									resetSelectedNextAction();
 								}
 							}}
 						>

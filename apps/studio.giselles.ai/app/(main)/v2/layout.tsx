@@ -7,7 +7,7 @@ import { Nav } from "./nav";
 
 export default async function LayoutV2({ children }: { children: ReactNode }) {
 	return (
-		<div className="h-screen overflow-y-hidden bg-black-100 divide-y divide-black-80 flex flex-col">
+		<div className="h-screen overflow-y-hidden bg-black-900 divide-y divide-black-80 flex flex-col">
 			<header className="h-[60px] flex items-center px-[24px] justify-between">
 				<div className="flex">
 					<Link href="/">

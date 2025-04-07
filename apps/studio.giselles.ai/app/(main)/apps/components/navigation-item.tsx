@@ -9,10 +9,12 @@ export function NavigationItem({
 	href,
 	icon,
 	label,
+	openInNewTab = false,
 }: {
 	href: string;
 	icon: ReactNode;
 	label: string;
+	openInNewTab?: boolean;
 }) {
 	const pathname = usePathname();
 	const isActive = pathname === href;
@@ -20,6 +22,10 @@ export function NavigationItem({
 	return (
 		<Link
 			href={href}
+			{...(openInNewTab && {
+				target: "_blank",
+				rel: "noopener noreferrer",
+			})}
 			className="flex items-center gap-2 text-white-400 hover:text-white"
 		>
 			{icon}

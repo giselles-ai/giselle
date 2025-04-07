@@ -74,8 +74,7 @@ export function ImageGenerationNodePropertiesPanel({
 			{usageLimitsReached && <UsageLimitWarning />}
 			<PropertiesPanelHeader
 				icon={<NodeIcon node={node} className="size-[20px] text-black-900" />}
-				name={node.name}
-				fallbackName={node.content.llm.id}
+				node={node}
 				description={node.content.llm.provider}
 				onChangeName={(name) => {
 					updateNodeData(node, { name });

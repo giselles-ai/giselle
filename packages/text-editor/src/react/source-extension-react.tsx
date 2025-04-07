@@ -1,5 +1,5 @@
 import { Node as GiselleNode } from "@giselle-sdk/data-type";
-import { type NodeViewProps, NodeViewWrapper } from "@tiptap/react";
+import { type NodeViewProps, NodeViewWrapper, PasteRule } from "@tiptap/react";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import clsx from "clsx/lite";
 import { useMemo } from "react";
@@ -101,4 +101,41 @@ export const SourceExtensionReact = SourceExtension.extend<
 	addNodeView() {
 		return ReactNodeViewRenderer(Component);
 	},
+
+	parseHTML() {
+		return [
+			{
+				tag: "span[data-node-id][data-output-id]",
+				getAttrs: (element) => {
+					const nodeId = element.getAttribute("data-node-id");
+					const outputId = element.getAttribute("data-output-id");
+					if (!nodeId || !outputId) {
+						return false;
+					}
+
+					const node = findRelatedNode(this.options, nodeId, outputId);
+					if (!node) {
+						return false;
+					}
+
+					return {
+						node,
+						outputId,
+					};
+				},
+			},
+		];
+	},
 });
+
+function findRelatedNode(
+	options: SourceExtensionReactOptions,
+	nodeId: string,
+	outputId: string,
+) {
+	return options.nodes.find(
+		(node) =>
+			node.id === nodeId &&
+			node.outputs.some((output) => output.id === outputId),
+	);
+}

@@ -65,7 +65,7 @@ export function DuplicateAgentButton({
 			const res = await action(formData);
 			switch (res.result) {
 				case "success":
-					return redirect(`/p/${res.agentId}`);
+					return redirect(`/workspaces/${res.workspaceId}`);
 
 				case "error":
 					addToast({ message: res.message, type: "error" });

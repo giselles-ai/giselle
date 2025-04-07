@@ -14068,7 +14068,7 @@ type MergeQueueConfiguration {
   minimumEntriesToMerge: Int
 
   """
-  The amount of time in minutes to wait before ignoring the minumum number of entries in the queue requirement and merging a collection of entries
+  The amount of time in minutes to wait before ignoring the minimum number of entries in the queue requirement and merging a collection of entries
   """
   minimumEntriesToMergeWaitTime: Int
 }

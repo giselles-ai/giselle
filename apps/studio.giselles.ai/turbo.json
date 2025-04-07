@@ -40,7 +40,8 @@
 				"SMTP_SECURE",
 				"SMTP_USER",
 				"SMTP_PASS",
-				"SEND_EMAIL_DEBUG"
+				"SEND_EMAIL_DEBUG",
+				"SAMPLE_APP_WORKSPACE_ID"
 			],
 			"inputs": [
 				"$TURBO_DEFAULT$",

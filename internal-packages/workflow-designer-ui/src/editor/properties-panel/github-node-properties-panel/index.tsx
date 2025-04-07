@@ -15,8 +15,7 @@ export function GitHubNodePropertiesPanel({ node }: { node: GitHubNode }) {
 		<PropertiesPanelRoot>
 			<PropertiesPanelHeader
 				icon={<GitHubIcon className="size-[20px] text-black-900" />}
-				name={node.name}
-				fallbackName="GitHub"
+				node={node}
 				description={"GitHub"}
 				onChangeName={(name) => {
 					updateNodeData(node, { name });

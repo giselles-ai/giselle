@@ -1,6 +1,7 @@
 import { waitForLangfuseFlush } from "@/instrumentation.node";
 import { fetchUsageLimits } from "@/packages/lib/fetch-usage-limits";
 import { onConsumeAgentTime } from "@/packages/lib/on-consume-agent-time";
+import { WorkspaceId } from "@giselle-sdk/data-type";
 import { NextGiselleEngine } from "@giselle-sdk/giselle-engine/next-internal";
 import { createStorage } from "unstorage";
 import fsDriver from "unstorage/drivers/fs";
@@ -19,6 +20,10 @@ const storage = createStorage({
 			}),
 });
 
+const sampleAppWorkspaceId = WorkspaceId.parse(
+	process.env.SAMPLE_APP_WORKSPACE_ID,
+);
+
 export const giselleEngine = NextGiselleEngine({
 	basePath: "/api/giselle",
 	storage,
@@ -29,4 +34,5 @@ export const giselleEngine = NextGiselleEngine({
 		waitForFlushFn: waitForLangfuseFlush,
 	},
 	fetchUsageLimitsFn: fetchUsageLimits,
+	sampleAppWorkspaceId,
 });

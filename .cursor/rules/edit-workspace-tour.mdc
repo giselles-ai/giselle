@@ -1,0 +1,154 @@
+---
+description: Guide to edit the Workspace Tour feature
+globs: internal-packages/workflow-designer-ui/src/editor/workspace-tour/*
+alwaysApply: false
+---
+
+# Guide to Edit Workspace Tour
+
+The workspace tour is a user onboarding experience that guides new users through the Giselle workspace interface. This guide will help you understand the structure and make modifications to the tour.
+
+## File Structure
+
+The workspace tour is located in:
+```
+internal-packages/workflow-designer-ui/src/editor/workspace-tour/
+```
+
+It contains:
+- [index.ts](internal-packages/workflow-designer-ui/src/editor/workspace-tour/index.ts) - Exports components and types
+- [steps.ts](internal-packages/workflow-designer-ui/src/editor/workspace-tour/steps.ts) - Defines the tour steps content
+- [workspace-tour.tsx](internal-packages/workflow-designer-ui/src/editor/workspace-tour/workspace-tour.tsx) - Main component implementation
+- `assets/` - Images and GIFs for tour steps
+
+## Key Components
+
+1. **TourStep Interface** (in `workspace-tour.tsx`)
+   ```typescript
+   export type TourStep = {
+     target?: string; // CSS selector for element to highlight
+     title: string;
+     content: string;
+     placement?: "top" | "bottom" | "left" | "right";
+   };
+   ```
+
+2. **Tour Steps** (in `steps.ts`)
+   ```typescript
+   export const tourSteps: TourStep[] = [
+     {
+       title: "Welcome to Giselle",
+       content: "This platform helps you build and manage AI workflows easily.",
+       placement: "bottom",
+     },
+     // Additional steps...
+   ];
+   ```
+
+3. **Step Components** (in `workspace-tour.tsx`)
+   - `TourStep1` - Overview with 3 columns
+   - `TourStep2` - Toolbar tutorial with arrow
+   - `TourStep3` - Large centered card with GIF
+   - `TourStep4` - Small centered card with GIF
+   - `TourStep5` - Card with arrow in top-right corner
+   - `TourStep6` - Final step in bottom-left corner
+
+4. **Visual Components**
+   - `TourCard` - Reusable card component
+   - `NavigationFooter` - Navigation controls
+   - `TourGlobalStyles` - CSS animations
+   - `TourOverlay` - Transparent clickable overlay
+
+## Making Changes
+
+### To Edit Tour Content
+
+1. Modify the `tourSteps` array in `steps.ts` to change text, target elements, or placement
+2. Be careful with CSS selectors in the `target` property - these need to match elements in the UI
+
+### To Change Tour Visuals
+
+1. Replace GIFs and images in the `assets/` directory
+2. Update imports and references in `workspace-tour.tsx`
+
+### To Add a New Step
+
+1. Add a new step to the `tourSteps` array in `steps.ts`
+2. Create a corresponding component in `workspace-tour.tsx` (follow pattern of existing steps)
+3. Add the new step to the switch statement in the main `WorkspaceTour` component
+
+### To Change Step Styling
+
+1. Modify the `CARD_STYLES` constants in `workspace-tour.tsx` 
+2. Update the `TourGlobalStyles` component for animation changes
+
+## Implementation Notes
+
+- The tour uses React portals to render above other UI elements
+- CSS selectors target specific UI elements to highlight
+- Animation effects use CSS keyframes
+- Navigation manages state between steps
+
+## How To...
+
+### Edit Step Text
+
+1. Open [steps.ts](internal-packages/workflow-designer-ui/src/editor/workspace-tour/steps.ts)
+2. Find the step you want to modify in the `tourSteps` array
+3. Edit the `title` and `content` properties:
+   ```typescript
+   {
+     title: "Your New Title",
+     content: "Your new content with <a href=\"...\">links</a> if needed",
+     placement: "bottom",
+   }
+   ```
+4. For HTML content in steps, use appropriate HTML tags inside the content string
+
+### Change Step Images
+
+1. Prepare your new GIF or PNG image (recommended dimensions: ~450px width)
+2. Add your image to the `assets/` directory
+3. In [workspace-tour.tsx](internal-packages/workflow-designer-ui/src/editor/workspace-tour/workspace-tour.tsx):
+   - Import your new image at the top of the file:
+     ```typescript
+     import myNewImage from "./assets/my-new-image.gif";
+     ```
+   - Find the appropriate step component (e.g., `TourStep2`)
+   - Update the `imageSrc` prop to use your new image:
+     ```typescript
+     imageSrc={myNewImage}
+     ```
+
+### Modify CSS Selectors for Highlighting
+
+1. Open [steps.ts](internal-packages/workflow-designer-ui/src/editor/workspace-tour/steps.ts)
+2. Find the step that needs to target a different element
+3. Update the `target` property with the correct CSS selector:
+   ```typescript
+   {
+     title: "Node Settings",
+     content: "Double-tap nodes to edit settings...",
+     placement: "left",
+     target: ".your-new-css-selector",
+   }
+   ```
+4. Complex selectors may need escaping (note the double backslashes in existing selectors)
+
+### Adjust Positioning
+
+1. In [workspace-tour.tsx](internal-packages/workflow-designer-ui/src/editor/workspace-tour/workspace-tour.tsx):
+2. Find the step component you need to reposition
+3. Modify CSS positioning in the component, for example:
+   ```jsx
+   <div className="relative pointer-events-none mt-[140px] mr-8">
+   ```
+4. Adjust values like `mt-[140px]` (margin-top) and `mr-8` (margin-right) as needed
+
+## Best Practices
+
+1. Keep step content concise and focused on a single concept
+2. Use high-quality visuals that clearly demonstrate the feature
+3. Test selectors on different screen sizes to ensure elements are highlighted properly
+4. Maintain consistent styling across all steps
+5. Consider accessibility when designing the tour experience

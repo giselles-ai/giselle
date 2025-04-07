@@ -18,9 +18,6 @@ export default function SignupPage() {
 				>
 					Unleash Your Potential
 				</h2>
-				<p className="text-[18px] font-hubot leading-[30.6px] tracking-normal text-left text-black-70">
-					• Easy setup, no coding required
-				</p>
 			</div>
 			<div className="mt-8 space-y-6 w-[320px]">
 				<PageHeader title="Get Started" />

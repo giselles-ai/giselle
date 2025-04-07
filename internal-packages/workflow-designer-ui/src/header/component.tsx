@@ -21,10 +21,6 @@ export function Header({
 	const { data, updateName, view, setView } = useWorkflowDesigner();
 	const [openSettings, setOpenSettings] = useState(false);
 
-	const toggleView = () => {
-		setView(view === "editor" ? "viewer" : "editor");
-	};
-
 	const updateWorkflowName = (value?: string) => {
 		if (!value) {
 			return;
@@ -106,49 +102,115 @@ export function Header({
 			<div className="flex items-center gap-[12px]">
 				<ToggleGroup.Root
 					type="single"
-					className="flex items-center py-[4px] px-[8px] rounded-[8px] overflow-hidden bg-black-200/20"
-					onValueChange={(value) => {
-						setView(ViewState.parse(value));
+					className="flex h-[33px] px-[8px] py-0 items-center justify-center rounded-[29px] overflow-hidden border border-[#20222F] bg-[rgba(18,23,35,0.20)]"
+					onValueChange={(unsafeValue) => {
+						const parse = ViewState.safeParse(unsafeValue);
+						if (parse.success) {
+							setView(ViewState.parse(parse.data));
+						}
 					}}
 				>
 					<ToggleGroup.Item
 						value="editor"
 						className={clsx(
-							"flex items-center gap-[4px] px-[8px] py-[4px] text-[12px] rounded-[4px] border-[1px] transition-colors font-[700]",
+							"relative rounded-[24px] transition-colors duration-300 ease-out",
 							view === "editor"
-								? "bg-primary-950/20 text-primary-200 border-primary-900"
-								: "bg-transparent text-white-900/70 hover:text-white-900 hover:bg-black-800/20 border-transparent cursor-pointer",
+								? "p-[1px]"
+								: "inline-flex h-[25px] py-[4px] items-center gap-[4px] flex-shrink-0 rounded-[4px] text-[#616779] font-[700] font-accent text-[12px] hover:text-[#8990a5]",
 						)}
+						style={
+							view === "editor"
+								? {
+										background: "linear-gradient(135deg, #64759B, #222835)",
+									}
+								: undefined
+						}
 					>
-						<GanttChartIcon className="size-[16px]" />
-						<span>Builder</span>
+						{view === "editor" && (
+							<span className="absolute inset-[1px] bg-[#1B2333] rounded-[23px] z-0 animate-softFade" />
+						)}
+						<span
+							className={
+								view === "editor"
+									? "relative z-10 text-primary-200 font-[700] font-accent text-[12px] py-[4px] px-[10px] inline-flex items-center"
+									: ""
+							}
+						>
+							Build
+						</span>
 					</ToggleGroup.Item>
+
+					<span className="text-[#616779] font-[700] font-accent text-[12px] mx-1">
+						,
+					</span>
+
 					<ToggleGroup.Item
 						value="viewer"
-						onClick={toggleView}
 						className={clsx(
-							"flex items-center gap-[4px] px-[8px] py-[4px] text-[12px] rounded-[4px] border-[1px] transition-colors font-[700]",
+							"relative rounded-[24px] transition-colors duration-300 ease-out",
 							view === "viewer"
-								? "bg-primary-950/20 text-primary-200 border-primary-900"
-								: "bg-transparent text-white-900/70 hover:text-white-900 hover:bg-black-800/20 border-transparent cursor-pointer",
+								? "p-[1px]"
+								: "inline-flex h-[25px] py-[4px] items-center gap-[4px] flex-shrink-0 rounded-[4px] text-[#616779] font-[700] font-accent text-[12px] hover:text-[#8990a5]",
 						)}
+						style={
+							view === "viewer"
+								? {
+										background: "linear-gradient(135deg, #64759B, #222835)",
+									}
+								: undefined
+						}
 					>
-						<EyeIcon className="size-[16px]" />
-						<span>Preview</span>
+						{view === "viewer" && (
+							<span className="absolute inset-[1px] bg-[#1B2333] rounded-[23px] z-0 animate-softFade" />
+						)}
+						<span
+							className={
+								view === "viewer"
+									? "relative z-10 text-primary-200 font-[700] font-accent text-[12px] py-[4px] px-[10px] inline-flex items-center"
+									: ""
+							}
+						>
+							Preview
+						</span>
 					</ToggleGroup.Item>
+
+					<span className="text-[#616779] font-[700] font-accent text-[12px] mx-1">
+						,
+					</span>
+
 					<ToggleGroup.Item
 						value="integrator"
-						onClick={toggleView}
 						className={clsx(
-							"flex items-center gap-[4px] px-[8px] py-[4px] text-[12px] rounded-[4px] border-[1px] transition-colors font-[700]",
+							"relative rounded-[24px] transition-colors duration-300 ease-out",
 							view === "integrator"
-								? "bg-primary-950/20 text-primary-200 border-primary-900"
-								: "bg-transparent text-white-900/70 hover:text-white-900 hover:bg-black-800/20 border-transparent cursor-pointer",
+								? "p-[1px]"
+								: "inline-flex h-[25px] py-[4px] items-center gap-[4px] flex-shrink-0 rounded-[4px] text-[#616779] font-[700] font-accent text-[12px] hover:text-[#8990a5]",
 						)}
+						style={
+							view === "integrator"
+								? {
+										background: "linear-gradient(135deg, #64759B, #222835)",
+									}
+								: undefined
+						}
 					>
-						<CableIcon className="size-[16px]" />
-						<span>Integrate</span>
+						{view === "integrator" && (
+							<span className="absolute inset-[1px] bg-[#1B2333] rounded-[23px] z-0 animate-softFade" />
+						)}
+						<span
+							className={
+								view === "integrator"
+									? "relative z-10 text-primary-200 font-[700] font-accent text-[12px] py-[4px] px-[10px] inline-flex items-center"
+									: ""
+							}
+						>
+							Integrate
+						</span>
 					</ToggleGroup.Item>
+
+					<span className="text-[#616779] font-[700] font-accent text-[12px] mx-1">
+						.
+					</span>
 				</ToggleGroup.Root>
 
 				{action && <div className="flex items-center">{action}</div>}
@@ -170,6 +232,17 @@ export function Header({
 					</Dialog.Content>
 				</Dialog.Portal>
 			</Dialog.Root>
+
+			<style jsx global>{`
+				@keyframes softFade {
+					from { opacity: 0; }
+					to { opacity: 1; }
+				}
+				
+				.animate-softFade {
+					animation: softFade 0.5s ease-out;
+				}
+			`}</style>
 		</div>
 	);
 }

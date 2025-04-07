@@ -27,6 +27,7 @@
 	},
 	"dependencies": {
 		"@ai-sdk/perplexity": "catalog:",
+		"@fal-ai/client": "catalog:",
 		"zod": "catalog:"
 	}
 }

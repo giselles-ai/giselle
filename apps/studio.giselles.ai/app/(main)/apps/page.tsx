@@ -52,7 +52,7 @@ async function AgentList() {
 				{dbAgents.map((agent) => (
 					<div
 						key={agent.id}
-						className="relative group flex-grow basis-[280px] min-w-[280px] max-w-[376px] h-[354px]"
+						className="relative group flex-grow basis-[280px] min-w-[280px] max-w-[376px] h-[160px]"
 					>
 						{/* Menu buttons - positioned absolutely on top of the card */}
 						<div className="absolute top-0 right-[8px] z-10 opacity-60 group-hover:opacity-100 transition-opacity flex">
@@ -72,7 +72,7 @@ async function AgentList() {
 								<div className="h-[20px] mb-1.5" />
 
 								{/* Thumbnail */}
-								<div className="h-[150px] bg-black-80 rounded-[8px] mb-4" />
+								{/* <div className="h-[150px] bg-black-80 rounded-[8px] mb-4" /> */}
 
 								<div className="flex-grow">
 									<h3 className="font-hubot text-white-400 text-[16px] font-semibold mb-1 line-clamp-2">

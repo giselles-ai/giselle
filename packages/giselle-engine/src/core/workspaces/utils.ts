@@ -47,3 +47,31 @@ export async function getWorkspace({
 	const result = await storage.getItem(workspacePath(workspaceId));
 	return parseAndMod(result);
 }
+
+/** @todo update new fileId for each file */
+export async function copyFiles({
+	storage,
+	templateWorkspaceId,
+	newWorkspaceId,
+}: {
+	storage: Storage;
+	templateWorkspaceId: WorkspaceId;
+	newWorkspaceId: WorkspaceId;
+}) {
+	const fileKeys = await storage.getKeys(
+		`workspaces/${templateWorkspaceId}/files`,
+	);
+
+	await Promise.all(
+		fileKeys.map(async (fileKey) => {
+			const file = await storage.getItemRaw(fileKey);
+			await storage.setItemRaw(
+				fileKey.replace(
+					/workspaces:wrks-\w+:files:/,
+					`workspaces:${newWorkspaceId}:files:`,
+				),
+				file,
+			);
+		}),
+	);
+}

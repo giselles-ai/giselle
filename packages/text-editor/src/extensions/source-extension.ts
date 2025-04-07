@@ -31,6 +31,13 @@ export const SourceExtension = Node.create({
 		};
 	},
 	renderHTML({ node }) {
-		return ["span", `{{${node.attrs.node.id}:${node.attrs.outputId}}}`];
+		return [
+			"span",
+			{
+				"data-node-id": node.attrs.node.id,
+				"data-output-id": node.attrs.outputId,
+			},
+			`{{${node.attrs.node.id}:${node.attrs.outputId}}}`,
+		];
 	},
 });

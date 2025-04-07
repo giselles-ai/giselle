@@ -18,6 +18,7 @@ import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { useMemo } from "react";
 import { NodeIcon } from "../../icons/node";
+import { EditableText } from "../../ui/editable-text";
 import { defaultName } from "../../utils";
 
 type GiselleWorkflowDesignerTextGenerationNode = XYFlowNode<
@@ -95,6 +96,7 @@ export function NodeComponent({
 	preview?: boolean;
 	connectedOutputIds?: OutputId[];
 }) {
+	const { updateNodeData } = useWorkflowDesigner();
 	return (
 		<div
 			data-type={node.type}
@@ -125,13 +127,7 @@ export function NodeComponent({
 				)}
 			/>
 
-			{/* <NodeNameEditable
-				name={data.nodeData.name}
-				onNodeNameChange={(name) => {
-					updateNodeData(data.nodeData, { name });
-				}}
-			/> */}
-			<div className={clsx("px-[16px]")}>
+			<div className={clsx("px-[16px] relative")}>
 				<div className="flex items-center gap-[8px]">
 					<div
 						className={clsx(
@@ -156,9 +152,27 @@ export function NodeComponent({
 						/>
 					</div>
 					<div>
-						<div className="font-rosart text-[14px] text-white-900">
-							{defaultName(node)}
-						</div>
+						<EditableText
+							className="group-data-[selected=false]:pointer-events-none **:data-input:w-full"
+							text={defaultName(node)}
+							onValueChange={(value) => {
+								if (value === defaultName(node)) {
+									return;
+								}
+								if (value.trim().length === 0) {
+									updateNodeData(node, { name: undefined });
+									return;
+								}
+								updateNodeData(node, { name: value });
+							}}
+							onClickToEditMode={(e) => {
+								if (!selected) {
+									e.preventDefault();
+									return;
+								}
+								e.stopPropagation();
+							}}
+						/>
 						{node.type === "action" && (
 							<div className="text-[10px] text-white-400">
 								{node.content.llm.provider}

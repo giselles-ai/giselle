@@ -1,3 +1,4 @@
+import { WorkspaceId } from "@giselle-sdk/data-type";
 import type {
 	GiselleIntegrationConfig,
 	LanguageModelProvider,
@@ -70,9 +71,20 @@ if (process.env.FAL_API_KEY) {
 	llmProviders.push("fal");
 }
 
+let sampleAppWorkspaceId: WorkspaceId | undefined = undefined;
+if (process.env.SAMPLE_APP_WORKSPACE_ID) {
+	const parseResult = WorkspaceId.safeParse(
+		process.env.SAMPLE_APP_WORKSPACE_ID,
+	);
+	if (parseResult.success) {
+		sampleAppWorkspaceId = parseResult.data;
+	}
+}
+
 export const giselleEngine = NextGiselleEngine({
 	basePath: "/api/giselle",
 	storage,
 	llmProviders,
 	integrationConfigs,
+	sampleAppWorkspaceId,
 });

@@ -34,7 +34,13 @@ import {
 } from "./github";
 import { addRun, runApi, startRun } from "./runs";
 import type { GiselleEngineConfig, GiselleEngineContext } from "./types";
-import { createWorkspace, getWorkspace, updateWorkspace } from "./workspaces";
+import {
+	copyWorkspace,
+	createSampleWorkspace,
+	createWorkspace,
+	getWorkspace,
+	updateWorkspace,
+} from "./workspaces";
 export { HandleGitHubWebhookResult } from "./github";
 export * from "./types";
 
@@ -46,8 +52,12 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		onConsumeAgentTime: config.onConsumeAgentTime,
 		telemetry: config.telemetry,
 		fetchUsageLimitsFn: config.fetchUsageLimitsFn,
+		sampleAppWorkspaceId: config.sampleAppWorkspaceId,
 	};
 	return {
+		copyWorkspace: async (workspaceId: WorkspaceId) => {
+			return await copyWorkspace({ context, workspaceId });
+		},
 		createWorkspace: async () => {
 			return await createWorkspace({ context });
 		},
@@ -150,10 +160,14 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		}) => {
 			return await handleWebhook({ context, github: args, options });
 		},
-		generateImage: async (generation: QueuedGeneration) => {
+		generateImage: async (
+			generation: QueuedGeneration,
+			telemetry?: TelemetrySettings,
+		) => {
 			return await generateImage({
 				context,
 				generation,
+				telemetry,
 			});
 		},
 		getGeneratedImage: async (generationId: GenerationId, filename: string) => {
@@ -168,6 +182,9 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 				context,
 				generation,
 			});
+		},
+		createSampleWorkspace: async () => {
+			return await createSampleWorkspace({ context });
 		},
 	};
 }

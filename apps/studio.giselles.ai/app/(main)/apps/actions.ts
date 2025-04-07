@@ -1,5 +1,6 @@
 "use server";
 
+import { giselleEngine } from "@/app/giselle-engine";
 import { agents, db, githubIntegrationSettings } from "@/drizzle";
 import {
 	ExternalServiceName,
@@ -10,22 +11,16 @@ import {
 } from "@/lib/opentelemetry";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
-import { putGraph } from "@giselles-ai/actions";
-import {
-	buildFileFolderPath,
-	createFileId,
-	createGraphId,
-	pathJoin,
-	pathnameToFilename,
-} from "@giselles-ai/lib/utils";
-import type { AgentId, Graph, Node } from "@giselles-ai/types";
+import type { WorkspaceId } from "@giselle-sdk/data-type";
+import { buildFileFolderPath } from "@giselles-ai/lib/utils";
+import type { AgentId, Graph } from "@giselles-ai/types";
 import { createId } from "@paralleldrive/cuid2";
-import { copy, del, list } from "@vercel/blob";
+import { del, list } from "@vercel/blob";
 import { eq } from "drizzle-orm";
 
 interface AgentDuplicationSuccess {
 	result: "success";
-	agentId: AgentId;
+	workspaceId: WorkspaceId;
 }
 interface AgentDuplicationError {
 	result: "error";
@@ -48,18 +43,14 @@ export async function copyAgent(
 	const agent = await db.query.agents.findFirst({
 		where: (agents, { eq }) => eq(agents.id, agentId as AgentId),
 	});
-	if (agent === undefined || agent.graphUrl === null) {
+	if (agent === undefined) {
 		return { result: "error", message: `${agentId} is not found.` };
 	}
 
 	try {
-		const startTime = Date.now();
-		const logger = createLogger("copyAgent");
-
-		const [user, team, graph] = await Promise.all([
+		const [user, team] = await Promise.all([
 			fetchCurrentUser(),
 			fetchCurrentTeam(),
-			fetch(agent.graphUrl).then((res) => res.json() as unknown as Graph),
 		]);
 		if (agent.teamDbId !== team.dbId) {
 			return {
@@ -68,122 +59,26 @@ export async function copyAgent(
 			};
 		}
 
-		const newNodes = await Promise.all(
-			graph.nodes.map(async (node) => {
-				if (node.content.type !== "files") {
-					return node;
-				}
-				const newData = await Promise.all(
-					node.content.data.map(async (fileData) => {
-						if (fileData.status !== "completed") {
-							return null;
-						}
-						const newFileId = createFileId();
-						const { blobList } = await withCountMeasurement(
-							logger,
-							async () => {
-								const result = await list({
-									prefix: buildFileFolderPath(fileData.id),
-								});
-								const size = result.blobs.reduce(
-									(sum, blob) => sum + blob.size,
-									0,
-								);
-								return {
-									blobList: result,
-									size,
-								};
-							},
-							ExternalServiceName.VercelBlob,
-							startTime,
-							VercelBlobOperation.List,
-						);
-
-						let newFileBlobUrl = "";
-						let newTextDataUrl = "";
-
-						await Promise.all(
-							blobList.blobs.map(async (blob) => {
-								const { url: copyUrl } = await withCountMeasurement(
-									logger,
-									async () => {
-										const copyResult = await copy(
-											blob.url,
-											pathJoin(
-												buildFileFolderPath(newFileId),
-												pathnameToFilename(blob.pathname),
-											),
-											{
-												addRandomSuffix: true,
-												access: "public",
-											},
-										);
-										return {
-											url: copyResult.url,
-											size: blob.size,
-										};
-									},
-									ExternalServiceName.VercelBlob,
-									startTime,
-									VercelBlobOperation.Copy,
-								);
-
-								if (blob.url === fileData.fileBlobUrl) {
-									newFileBlobUrl = copyUrl;
-								}
-								if (blob.url === fileData.textDataUrl) {
-									newTextDataUrl = copyUrl;
-								}
-							}),
-						);
-
-						return {
-							...fileData,
-							id: newFileId,
-							fileBlobUrl: newFileBlobUrl,
-							textDataUrl: newTextDataUrl,
-						};
-					}),
-				).then((data) => data.filter((d) => d !== null));
-				return {
-					...node,
-					content: {
-						...node.content,
-						data: newData,
-					},
-				} as Node;
-			}),
-		);
-
-		const newGraphId = createGraphId();
-		const { url } = await putGraph({
-			...graph,
-			id: newGraphId,
-			nodes: newNodes,
-		});
-
-		const newAgentId = `agnt_${createId()}` as AgentId;
-		const insertResult = await db
-			.insert(agents)
-			.values({
-				id: newAgentId,
-				name: `Copy of ${agent.name ?? agentId}`,
-				teamDbId: team.dbId,
-				creatorDbId: user.dbId,
-				graphUrl: url,
-			})
-			.returning({ id: agents.id });
-
-		if (insertResult.length === 0) {
+		if (agent.workspaceId === null) {
 			return {
 				result: "error",
-				message: "Failed to save the duplicated agent",
+				message: "Workspace not found",
 			};
 		}
 
+		const newAgentId = `agnt_${createId()}` as AgentId;
+		const workspace = await giselleEngine.copyWorkspace(agent.workspaceId);
+		await db.insert(agents).values({
+			id: newAgentId,
+			name: `Copy of ${agent.name ?? agentId}`,
+			teamDbId: team.dbId,
+			creatorDbId: user.dbId,
+			graphUrl: agent.graphUrl, // TODO: This field is not used in the new playground and will be removed in the future
+			workspaceId: workspace.id,
+		});
+
 		waitForTelemetryExport();
-		const newAgent = insertResult[0];
-		return { result: "success", agentId: newAgent.id };
+		return { result: "success", workspaceId: workspace.id };
 	} catch (error) {
 		console.error("Failed to copy agent:", error);
 		return {

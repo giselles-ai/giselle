@@ -1,14 +1,9 @@
 "use client";
 
-import {
-	type ReactNode,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
-import { EditableText } from "./editable-text";
+import type { Node } from "@giselle-sdk/data-type";
+import type { ReactNode } from "react";
+import { EditableText } from "../../../ui/editable-text";
+import { defaultName } from "../../../utils";
 
 export function PropertiesPanelRoot({
 	children,
@@ -23,45 +18,18 @@ export function PropertiesPanelRoot({
 }
 
 export function PropertiesPanelHeader({
-	name,
-	fallbackName: propsFallbackName,
+	node,
 	description,
 	icon,
 	onChangeName,
 	action,
 }: {
-	name?: string;
-	fallbackName?: string;
+	node: Node;
 	description?: string;
 	icon: ReactNode;
 	onChangeName?: (name?: string) => void;
 	action?: ReactNode;
 }) {
-	const [edit, setEdit] = useState(false);
-	const inputRef = useRef<HTMLInputElement>(null);
-	useEffect(() => {
-		if (edit) {
-			inputRef.current?.select();
-			inputRef.current?.focus();
-		}
-	}, [edit]);
-	const fallbackName = useMemo(
-		() => propsFallbackName ?? "Untitled Node",
-		[propsFallbackName],
-	);
-	const updateName = useCallback(() => {
-		if (!inputRef.current) {
-			return;
-		}
-		setEdit(false);
-		const currentValue =
-			inputRef.current.value.length === 0 ? undefined : inputRef.current.value;
-		if (fallbackName === currentValue) {
-			return;
-		}
-		onChangeName?.(currentValue);
-		inputRef.current.value = currentValue ?? fallbackName;
-	}, [onChangeName, fallbackName]);
 	return (
 		<div className="h-[48px] flex justify-between items-center pl-0 pr-[16px] shrink-0">
 			<div className="flex gap-[8px] items-center">
@@ -71,10 +39,17 @@ export function PropertiesPanelHeader({
 				<div>
 					<div>
 						<EditableText
-							onChange={(value) => onChangeName?.(value)}
-							value={name}
-							fallbackValue={fallbackName}
-							widthIcon
+							onValueChange={(value) => {
+								if (value === defaultName(node)) {
+									return;
+								}
+								if (value.trim().length === 0) {
+									onChangeName?.();
+									return;
+								}
+								onChangeName?.(value);
+							}}
+							text={defaultName(node)}
 						/>
 					</div>
 					{description && (

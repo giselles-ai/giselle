@@ -121,6 +121,7 @@ function ImageGenerationRunner({
 		addStopHandler,
 	} = useGenerationRunnerSystem();
 	const client = useGiselleEngine();
+	const telemetry = useTelemetry();
 	useOnce(() => {
 		if (!isQueuedGeneration(generation)) {
 			return;
@@ -131,6 +132,7 @@ function ImageGenerationRunner({
 			client
 				.generateImage({
 					generation,
+					telemetry,
 				})
 				.then(() => {
 					updateGenerationStatusToComplete(generation.id);

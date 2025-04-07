@@ -10,6 +10,7 @@ import type { Storage } from "unstorage";
 
 export interface GiselleEngineContext {
 	storage: Storage;
+	sampleAppWorkspaceId?: WorkspaceId;
 	llmProviders: LanguageModelProvider[];
 	integrationConfigs?: GiselleIntegrationConfig[];
 	onConsumeAgentTime?: ConsumeAgentTimeCallback;
@@ -42,6 +43,7 @@ export type FetchUsageLimitsFn = (
 
 export interface GiselleEngineConfig {
 	storage: Storage;
+	sampleAppWorkspaceId?: WorkspaceId;
 	llmProviders?: LanguageModelProvider[];
 	integrationConfigs?: GiselleIntegrationConfig[];
 	onConsumeAgentTime?: ConsumeAgentTimeCallback;

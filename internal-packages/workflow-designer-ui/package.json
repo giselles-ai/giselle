@@ -16,6 +16,7 @@
 		"@giselle-sdk/integration": "workspace:^",
 		"@giselle-sdk/language-model": "workspace:^",
 		"@giselle-sdk/text-editor": "workspace:^",
+		"@giselle-sdk/usage-limits": "workspace:^",
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
 		"@xyflow/react": "catalog:",
 		"ai": "catalog:",
@@ -28,6 +29,7 @@
 		"pluralize": "catalog:",
 		"radix-ui": "catalog:",
 		"react": "catalog:",
+		"react-dom": "catalog:",
 		"react-markdown": "catalog:",
 		"react-resizable-panels": "catalog:"
 	},
@@ -35,7 +37,7 @@
 		"@types/node": "catalog:",
 		"@types/pluralize": "catalog:",
 		"@types/react": "catalog:",
-		"@giselle-sdk/usage-limits": "workspace:^",
+		"@types/react-dom": "catalog:",
 		"typescript": "catalog:"
 	}
 }

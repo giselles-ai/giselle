@@ -1,6 +1,8 @@
 "use server";
 
+import { giselleEngine } from "@/app/giselle-engine";
 import {
+	agents,
 	db,
 	supabaseUserMappings,
 	teamMemberships,
@@ -8,6 +10,8 @@ import {
 	users,
 } from "@/drizzle";
 import { isEmailFromRoute06 } from "@/lib/utils";
+import { putGraph } from "@/packages/actions";
+import { initGraph } from "@/packages/lib/utils";
 import { createTeamId } from "@/services/teams/utils";
 import { createId } from "@paralleldrive/cuid2";
 import type { User } from "@supabase/auth-js";
@@ -49,6 +53,21 @@ export const initializeAccount = async (
 			teamDbId: team.id,
 			role: "admin",
 		});
+
+		// create sample app
+		const graph = initGraph();
+		const agentId = `agnt_${createId()}` as const;
+		const { url } = await putGraph(graph);
+		const workspace = await giselleEngine.createSampleWorkspace();
+		await db.insert(agents).values({
+			id: agentId,
+			name: workspace.name,
+			teamDbId: team.id,
+			creatorDbId: user.dbId,
+			graphUrl: url,
+			workspaceId: workspace.id,
+		});
+
 		return { id: userId };
 	});
 	return result;

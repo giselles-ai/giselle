@@ -15,8 +15,7 @@ export function TextNodePropertiesPanel({ node }: { node: TextNode }) {
 		<PropertiesPanelRoot>
 			<PropertiesPanelHeader
 				icon={<PromptIcon className="size-[20px] text-black-900" />}
-				name={node.name}
-				fallbackName="Plain Text"
+				node={node}
 				description={"Plain Text"}
 				onChangeName={(name) => {
 					updateNodeData(node, { name });

@@ -12,9 +12,26 @@ export default function Home() {
 		const workspace = await giselleEngine.createWorkspace();
 		router.push(`/workspaces/${workspace.id}`);
 	}, [router.push, giselleEngine]);
+	const createSampleWorkspace = useCallback(async () => {
+		const workspace = await giselleEngine.createSampleWorkspace();
+		router.push(`/workspaces/${workspace.id}`);
+	}, [router.push, giselleEngine]);
 	return (
-		<button type="button" onClick={createWorkspace} className="cursor-pointer">
-			Create workspace
-		</button>
+		<div className="p-[24px] flex gap-[8px]">
+			<button
+				type="button"
+				onClick={createWorkspace}
+				className="cursor-pointer"
+			>
+				Create workspace
+			</button>
+			<button
+				type="button"
+				onClick={createSampleWorkspace}
+				className="cursor-pointer"
+			>
+				Create sample workspace
+			</button>
+		</div>
 	);
 }

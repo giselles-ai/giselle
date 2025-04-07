@@ -4,6 +4,10 @@
 	-webkit-mask-composite: destination-out;
 }
 
+.giselle-workflow-editor.react-flow {
+	background-color: transparent;
+}
+
 .giselle-workflow-editor .react-flow__pane.selection {
 	cursor: default;
 }

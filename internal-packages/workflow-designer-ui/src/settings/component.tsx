@@ -61,8 +61,8 @@ export function SettingsPanel() {
 
 export function SettingsView() {
 	return (
-		<div className="bg-black-850 flex flex-col gap-[16px] text-white-800 flex-1 relative">
-			<div className="relative z-1 pt-[24px] px-[24px]">
+		<div className="relative flex flex-col gap-[16px] text-white-800 flex-1 px-[16px]">
+			<div className="relative z-1">
 				<Tabs.Root
 					orientation="horizontal"
 					className="flex gap-[24px]"

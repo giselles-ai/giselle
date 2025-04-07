@@ -107,8 +107,7 @@ export function TextGenerationNodePropertiesPanel({
 						)}
 					</>
 				}
-				name={node.name}
-				fallbackName={node.content.llm.id}
+				node={node}
 				description={node.content.llm.provider}
 				onChangeName={(name) => {
 					updateNodeData(node, { name });

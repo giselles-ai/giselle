@@ -19,16 +19,15 @@ import {
 } from "@giselle-sdk/data-type";
 import { hasTierAccess, languageModels } from "@giselle-sdk/language-model";
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
-import type {
-	CoreMessage,
-	DataContent,
-	FilePart,
-	Experimental_GeneratedImage as GeneratedImage,
-	ImagePart,
-} from "ai";
+import type { CoreMessage, DataContent, FilePart, ImagePart } from "ai";
 import type { Storage } from "unstorage";
 import { getRun } from "../runs/utils";
 import type { GiselleEngineContext } from "../types";
+
+export interface GeneratedImageData {
+	uint8Array: Uint8Array;
+	base64: string;
+}
 
 export interface FileIndex {
 	nodeId: NodeId;
@@ -591,7 +590,7 @@ export async function setGeneratedImage(params: {
 	storage: Storage;
 	generation: Generation;
 	generatedImageFilename: string;
-	generatedImage: GeneratedImage;
+	generatedImage: GeneratedImageData;
 }) {
 	await params.storage.setItemRaw(
 		generatedImagePath(params.generation, params.generatedImageFilename),
@@ -628,7 +627,7 @@ function assertUint8Array(value: unknown): asserts value is Uint8Array {
  */
 export function detectImageType(
 	imageAsUint8Array: Uint8Array<ArrayBufferLike>,
-) {
+): { contentType: string; ext: string } | null {
 	// Get the first 12 bytes of the file (enough for all our formats)
 	const bytes = imageAsUint8Array;
 
