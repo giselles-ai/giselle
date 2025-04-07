@@ -59,7 +59,7 @@ export function EditableText({
 			<button
 				type="button"
 				className={clsx(
-					"peer flex items-center gap-[4px] py-[2px] px-[4px] rounded-l-[4px] last:rounded-r-[4px] data-[editing=true]:hidden",
+					"peer py-[2px] px-[4px] rounded-l-[4px] last:rounded-r-[4px] data-[editing=true]:hidden",
 					"hover:bg-white-900/20 group-hover:bg-white-900/10",
 					"text-white-900 text-[14px]",
 					"cursor-default",
