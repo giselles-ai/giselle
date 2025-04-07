@@ -50,6 +50,7 @@ export function PropertiesPanelHeader({
 								onChangeName?.(value);
 							}}
 							text={defaultName(node)}
+							showEdit
 						/>
 					</div>
 					{description && (
