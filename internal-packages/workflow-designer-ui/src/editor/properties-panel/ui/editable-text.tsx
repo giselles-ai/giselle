@@ -1,19 +1,16 @@
 "use client";
 
 import clsx from "clsx/lite";
-import { Pen } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export function EditableText({
 	value,
 	fallbackValue,
 	onChange,
-	widthIcon,
 }: {
 	value?: string;
 	fallbackValue: string;
 	onChange?: (value?: string) => void;
-	widthIcon?: boolean;
 }) {
 	const [edit, setEdit] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -71,9 +68,6 @@ export function EditableText({
 				onClick={() => setEdit(true)}
 			>
 				{value ?? fallbackValue}
-				{widthIcon && (
-					<Pen aria-label="Edit name" className="shrink-0 size-4" />
-				)}
 			</button>
 		</>
 	);
