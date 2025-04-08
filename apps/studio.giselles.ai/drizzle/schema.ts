@@ -246,3 +246,24 @@ export const agentTimeRestrictions = pgTable(
 		teamDbIdIdx: index().on(table.teamDbId),
 	}),
 );
+
+export const teamGithubAppInstallations = pgTable(
+	"team_github_app_installations",
+	{
+		id: serial("id").primaryKey(),
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		installationId: integer("installation_id").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.notNull()
+			.$onUpdate(() => new Date()),
+	},
+	(table) => [
+		index().on(table.teamDbId),
+		index().on(table.installationId),
+		unique().on(table.teamDbId, table.installationId),
+	],
+);

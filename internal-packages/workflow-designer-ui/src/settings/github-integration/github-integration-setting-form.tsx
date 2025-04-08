@@ -7,15 +7,17 @@ import {
 	type WorkspaceGitHubIntegrationPayloadNodeMap,
 	WorkspaceGitHubIntegrationTrigger,
 } from "@giselle-sdk/data-type";
-import type { GitHubIntegrationRepository } from "@giselle-sdk/integration";
+import type { InstallationWithRepositories } from "@giselle-sdk/integration";
 import { useIntegration } from "@giselle-sdk/integration/react";
-import { useWorkflowDesigner } from "giselle-sdk/react";
+import { useGiselleEngine, useWorkflowDesigner } from "giselle-sdk/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	Label,
 	Select,
 	SelectContent,
+	SelectGroup,
 	SelectItem,
+	SelectLabel,
 	SelectTrigger,
 	SelectValue,
 } from "../ui";
@@ -75,29 +77,38 @@ const getAvailableNextActions = (
 };
 
 export function GitHubIntegrationSettingForm() {
-	const { github } = useIntegration();
-
-	switch (github.status) {
-		case "unset":
-			return "unset";
-		case "unauthorized":
-			return "unauthorized";
-		case "not-installed":
-			return "not-installed";
-		case "invalid-credential":
-			return "invalid-credential";
-		case "installed":
-			return <Installed repositories={github.repositories} />;
-		default: {
-			const _exhaustiveCheck: never = github;
-			throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
+	const { value } = useIntegration();
+	const githubIntegration = useMemo(
+		() => value.find((v) => v.provider === "github"),
+		[value],
+	);
+	const client = useGiselleEngine();
+	const [installations, setInstallations] = useState<
+		InstallationWithRepositories[]
+	>([]);
+	useEffect(() => {
+		if (githubIntegration === undefined) {
+			return;
 		}
+
+		client
+			.getInstallationRepositories({
+				installationIds: githubIntegration.integrationIds,
+			})
+			.then((res) => setInstallations(res));
+	}, [client, githubIntegration]);
+
+	if (githubIntegration === undefined) {
+		/** @todo ui for app/playground */
+		return <div>No settings</div>;
 	}
+
+	return <Installed installations={installations} />;
 }
 
 function Installed({
-	repositories,
-}: { repositories: GitHubIntegrationRepository[] }) {
+	installations,
+}: { installations: InstallationWithRepositories[] }) {
 	const { data: workspace } = useWorkflowDesigner();
 	const { isLoading, data, handleSubmit } = useGitHubIntegrationSetting();
 	const [selectedTrigger, setSelectedTrigger] = useState<
@@ -194,10 +205,22 @@ function Installed({
 									<SelectValue placeholder="Select a repository" />
 								</SelectTrigger>
 								<SelectContent>
-									{repositories.map((repo) => (
-										<SelectItem key={repo.node_id} value={repo.node_id}>
-											{repo.full_name}
-										</SelectItem>
+									{installations.map((installation) => (
+										<SelectGroup key={installation.id}>
+											<SelectLabel>
+												{"login" in installation.account
+													? installation.account.login
+													: installation.account.name || ""}
+											</SelectLabel>
+											{installation.repositories.map((repository) => (
+												<SelectItem
+													key={repository.id}
+													value={repository.node_id}
+												>
+													{repository.full_name}
+												</SelectItem>
+											))}
+										</SelectGroup>
 									))}
 								</SelectContent>
 							</Select>

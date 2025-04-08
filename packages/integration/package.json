@@ -30,6 +30,7 @@
 		"tsup": "catalog:"
 	},
 	"dependencies": {
+		"@giselle-sdk/github-client": "workspace:^",
 		"@octokit/openapi-types": "catalog:",
 		"react": "catalog:",
 		"zod": "catalog:"

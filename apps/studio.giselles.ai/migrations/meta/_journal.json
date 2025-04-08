@@ -211,6 +211,20 @@
 			"when": 1742868382390,
 			"tag": "0029_lame_senator_kelly",
 			"breakpoints": true
+		},
+		{
+			"idx": 30,
+			"version": "7",
+			"when": 1743931803788,
+			"tag": "0030_quiet_clint_barton",
+			"breakpoints": true
+		},
+		{
+			"idx": 31,
+			"version": "7",
+			"when": 1743974944466,
+			"tag": "0031_flimsy_stone_men",
+			"breakpoints": true
 		}
 	]
 }

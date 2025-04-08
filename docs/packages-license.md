@@ -2,8 +2,8 @@
 
 
 ## Summary
-* 1015 MIT
-* 105 Apache 2.0
+* 1017 MIT
+* 107 Apache 2.0
 * 58 ISC
 * 34 New BSD
 * 17 Simplified BSD
@@ -731,6 +731,17 @@ MIT-0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@drizzle-team/brocli"></a>
+### @drizzle-team/brocli v0.10.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
 
 
 
@@ -1967,7 +1978,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-amqplib"></a>
-### @opentelemetry/instrumentation-amqplib v0.45.0
+### @opentelemetry/instrumentation-amqplib v0.46.1
 #### 
 
 ##### Paths
@@ -1978,7 +1989,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-connect"></a>
-### @opentelemetry/instrumentation-connect v0.42.0
+### @opentelemetry/instrumentation-connect v0.43.0
 #### 
 
 ##### Paths
@@ -1989,7 +2000,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-dataloader"></a>
-### @opentelemetry/instrumentation-dataloader v0.15.0
+### @opentelemetry/instrumentation-dataloader v0.16.0
 #### 
 
 ##### Paths
@@ -2000,7 +2011,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-express"></a>
-### @opentelemetry/instrumentation-express v0.46.0
+### @opentelemetry/instrumentation-express v0.47.0
 #### 
 
 ##### Paths
@@ -2011,7 +2022,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-fastify"></a>
-### @opentelemetry/instrumentation-fastify v0.43.0
+### @opentelemetry/instrumentation-fastify v0.44.1
 #### 
 
 ##### Paths
@@ -2022,7 +2033,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-fs"></a>
-### @opentelemetry/instrumentation-fs v0.18.0
+### @opentelemetry/instrumentation-fs v0.19.0
 #### 
 
 ##### Paths
@@ -2033,7 +2044,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-generic-pool"></a>
-### @opentelemetry/instrumentation-generic-pool v0.42.0
+### @opentelemetry/instrumentation-generic-pool v0.43.0
 #### 
 
 ##### Paths
@@ -2044,7 +2055,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-graphql"></a>
-### @opentelemetry/instrumentation-graphql v0.46.0
+### @opentelemetry/instrumentation-graphql v0.47.0
 #### 
 
 ##### Paths
@@ -2055,7 +2066,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-hapi"></a>
-### @opentelemetry/instrumentation-hapi v0.44.0
+### @opentelemetry/instrumentation-hapi v0.45.1
 #### 
 
 ##### Paths
@@ -2066,7 +2077,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-http"></a>
-### @opentelemetry/instrumentation-http v0.56.0
+### @opentelemetry/instrumentation-http v0.57.1
 #### 
 
 ##### Paths
@@ -2077,7 +2088,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-ioredis"></a>
-### @opentelemetry/instrumentation-ioredis v0.46.0
+### @opentelemetry/instrumentation-ioredis v0.47.0
 #### 
 
 ##### Paths
@@ -2088,7 +2099,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-kafkajs"></a>
-### @opentelemetry/instrumentation-kafkajs v0.6.0
+### @opentelemetry/instrumentation-kafkajs v0.7.0
 #### 
 
 ##### Paths
@@ -2099,7 +2110,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-knex"></a>
-### @opentelemetry/instrumentation-knex v0.43.0
+### @opentelemetry/instrumentation-knex v0.44.0
 #### 
 
 ##### Paths
@@ -2110,7 +2121,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-koa"></a>
-### @opentelemetry/instrumentation-koa v0.46.0
+### @opentelemetry/instrumentation-koa v0.47.0
 #### 
 
 ##### Paths
@@ -2121,7 +2132,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-lru-memoizer"></a>
-### @opentelemetry/instrumentation-lru-memoizer v0.43.0
+### @opentelemetry/instrumentation-lru-memoizer v0.44.0
 #### 
 
 ##### Paths
@@ -2132,7 +2143,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-mongodb"></a>
-### @opentelemetry/instrumentation-mongodb v0.50.0
+### @opentelemetry/instrumentation-mongodb v0.51.0
 #### 
 
 ##### Paths
@@ -2143,7 +2154,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-mongoose"></a>
-### @opentelemetry/instrumentation-mongoose v0.45.0
+### @opentelemetry/instrumentation-mongoose v0.46.0
 #### 
 
 ##### Paths
@@ -2154,7 +2165,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-mysql"></a>
-### @opentelemetry/instrumentation-mysql v0.44.0
+### @opentelemetry/instrumentation-mysql v0.45.0
 #### 
 
 ##### Paths
@@ -2165,7 +2176,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-mysql2"></a>
-### @opentelemetry/instrumentation-mysql2 v0.44.0
+### @opentelemetry/instrumentation-mysql2 v0.45.0
 #### 
 
 ##### Paths
@@ -2176,7 +2187,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-nestjs-core"></a>
-### @opentelemetry/instrumentation-nestjs-core v0.43.0
+### @opentelemetry/instrumentation-nestjs-core v0.44.0
 #### 
 
 ##### Paths
@@ -2187,7 +2198,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-pg"></a>
-### @opentelemetry/instrumentation-pg v0.49.0
+### @opentelemetry/instrumentation-pg v0.50.0
 #### 
 
 ##### Paths
@@ -2198,7 +2209,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-redis-4"></a>
-### @opentelemetry/instrumentation-redis-4 v0.45.0
+### @opentelemetry/instrumentation-redis-4 v0.46.0
 #### 
 
 ##### Paths
@@ -2209,7 +2220,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-tedious"></a>
-### @opentelemetry/instrumentation-tedious v0.17.0
+### @opentelemetry/instrumentation-tedious v0.18.0
 #### 
 
 ##### Paths
@@ -2220,7 +2231,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-undici"></a>
-### @opentelemetry/instrumentation-undici v0.9.0
+### @opentelemetry/instrumentation-undici v0.10.0
 #### 
 
 ##### Paths
@@ -2430,6 +2441,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@pdf-lib/upng"></a>
 ### @pdf-lib/upng v1.0.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@petamoriken/float16"></a>
+### @petamoriken/float16 v3.9.2
 #### 
 
 ##### Paths
@@ -3276,7 +3298,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry-internal/browser-utils"></a>
-### @sentry-internal/browser-utils v8.49.0
+### @sentry-internal/browser-utils v8.55.0
 #### 
 
 ##### Paths
@@ -3287,7 +3309,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry-internal/feedback"></a>
-### @sentry-internal/feedback v8.49.0
+### @sentry-internal/feedback v8.55.0
 #### 
 
 ##### Paths
@@ -3298,7 +3320,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry-internal/replay"></a>
-### @sentry-internal/replay v8.49.0
+### @sentry-internal/replay v8.55.0
 #### 
 
 ##### Paths
@@ -3309,7 +3331,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry-internal/replay-canvas"></a>
-### @sentry-internal/replay-canvas v8.49.0
+### @sentry-internal/replay-canvas v8.55.0
 #### 
 
 ##### Paths
@@ -3342,7 +3364,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/browser"></a>
-### @sentry/browser v8.49.0
+### @sentry/browser v8.55.0
 #### 
 
 ##### Paths
@@ -3408,7 +3430,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/nextjs"></a>
-### @sentry/nextjs v8.49.0
+### @sentry/nextjs v8.55.0
 #### 
 
 ##### Paths
@@ -3430,7 +3452,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/opentelemetry"></a>
-### @sentry/opentelemetry v8.49.0
+### @sentry/opentelemetry v8.55.0
 #### 
 
 ##### Paths
@@ -3441,7 +3463,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/react"></a>
-### @sentry/react v8.49.0
+### @sentry/react v8.55.0
 #### 
 
 ##### Paths
@@ -3474,7 +3496,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/vercel-edge"></a>
-### @sentry/vercel-edge v8.49.0
+### @sentry/vercel-edge v8.55.0
 #### 
 
 ##### Paths
@@ -6635,7 +6657,7 @@ CC-BY-4.0 permitted
 
 
 <a name="drizzle-kit"></a>
-### drizzle-kit v0.23.0
+### drizzle-kit v0.30.6
 #### 
 
 ##### Paths
@@ -6646,7 +6668,7 @@ CC-BY-4.0 permitted
 
 
 <a name="drizzle-orm"></a>
-### drizzle-orm v0.32.1
+### drizzle-orm v0.41.0
 #### 
 
 ##### Paths
@@ -6774,6 +6796,17 @@ CC-BY-4.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/bsd-license">Simplified BSD</a> permitted
+
+
+
+<a name="env-paths"></a>
+### env-paths v3.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
 
 
 
@@ -7423,6 +7456,17 @@ CC-BY-4.0 permitted
 * /home/runner/work/giselle/giselle
 
 SIL OPEN FONT LICENSE permitted
+
+
+
+<a name="gel"></a>
+### gel v2.0.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
 
 
 

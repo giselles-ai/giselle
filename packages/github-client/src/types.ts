@@ -2,7 +2,7 @@ export interface GitHubInstallationAppAuth {
 	strategy: "github-installation";
 	appId: string;
 	privateKey: string;
-	installationId: string;
+	installationId: number;
 }
 
 export interface GitHubAppUserAuth {

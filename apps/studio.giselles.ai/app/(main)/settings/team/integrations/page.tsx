@@ -1,12 +1,17 @@
-import { settingsV2Flag } from "@/flags";
-import { notFound } from "next/navigation";
-import { GitHubIntegration } from "../../integration/v2/github-integration";
+import {
+	getTeamGitHubAppInstallURL,
+	getTeamGitHubInstallationDetails,
+} from "@/services/external/github/team-installation";
+import { fetchCurrentTeam } from "@/services/teams";
+import GitHubIntegration from "./github-integration";
 
 export default async function TeamIntegrationsPage() {
-	const settingsV2Mode = await settingsV2Flag();
-	if (!settingsV2Mode) {
-		return notFound();
-	}
+	const team = await fetchCurrentTeam();
+	const [installationUrl, installations] = await Promise.all([
+		getTeamGitHubAppInstallURL(team.id),
+		getTeamGitHubInstallationDetails(team.id),
+	]);
+
 	return (
 		<div className="flex flex-col gap-[24px]">
 			<h3
@@ -16,7 +21,11 @@ export default async function TeamIntegrationsPage() {
 				Integration
 			</h3>
 			<div className="flex flex-col gap-y-4">
-				<GitHubIntegration />
+				<GitHubIntegration
+					teamId={team.id}
+					installationUrl={installationUrl}
+					installations={installations}
+				/>
 			</div>
 		</div>
 	);

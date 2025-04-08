@@ -23,10 +23,7 @@ export interface GiselleEngineContext {
 
 export interface GitHubIntegrationConfig {
 	provider: "github";
-	auth:
-		| GitHubTokenAuth
-		| Omit<GitHubAppUserAuth, "token" | "refreshToken">
-		| Omit<GitHubInstallationAppAuth, "installationId">;
+	auth: GitHubTokenAuth | Omit<GitHubInstallationAppAuth, "installationId">;
 }
 
 export type GiselleIntegrationConfig = GitHubIntegrationConfig;

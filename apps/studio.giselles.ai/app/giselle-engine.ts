@@ -24,6 +24,13 @@ const sampleAppWorkspaceId = WorkspaceId.parse(
 	process.env.SAMPLE_APP_WORKSPACE_ID,
 );
 
+const githubAppId = process.env.GITHUB_APP_ID;
+const githubAppPrivateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+
+if (githubAppId === undefined || githubAppPrivateKey === undefined) {
+	throw new Error("Missing environment variables");
+}
+
 export const giselleEngine = NextGiselleEngine({
 	basePath: "/api/giselle",
 	storage,
@@ -35,4 +42,14 @@ export const giselleEngine = NextGiselleEngine({
 	},
 	fetchUsageLimitsFn: fetchUsageLimits,
 	sampleAppWorkspaceId,
+	integrationConfigs: [
+		{
+			provider: "github",
+			auth: {
+				strategy: "github-installation",
+				appId: githubAppId,
+				privateKey: githubAppPrivateKey,
+			},
+		},
+	],
 });

@@ -9,6 +9,7 @@ import { parseGitHubUrl } from "./utils";
 
 export async function urlToObjectID(args: {
 	url: string;
+	installationId: number;
 	context: GiselleEngineContext;
 }) {
 	const githubUrlInfo = parseGitHubUrl(args.url);
@@ -25,22 +26,12 @@ export async function urlToObjectID(args: {
 	let config: GitHubAuthConfig | undefined = undefined;
 
 	switch (githubConfig.auth.strategy) {
-		case "github-app-user":
-			config = {
-				strategy: "github-app-user",
-				clientId: githubConfig.auth.clientId,
-				clientSecret: githubConfig.auth.clientSecret,
-				token: process.env.EXPERIMENTAL_GITHUB_APP_USER_TOKEN ?? "",
-				refreshToken:
-					process.env.EXPERIMENTAL_GITHUB_APP_USER_REFRESH_TOKEN ?? "",
-			};
-			break;
 		case "github-installation":
 			config = {
 				strategy: "github-installation",
 				appId: githubConfig.auth.appId,
 				privateKey: githubConfig.auth.privateKey,
-				installationId: process.env.EXPERIMENTAL_GITHUB_INSTALLATION_ID ?? "",
+				installationId: args.installationId,
 			};
 			break;
 		case "github-token":

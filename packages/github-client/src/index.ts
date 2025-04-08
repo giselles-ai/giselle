@@ -3,6 +3,7 @@ import { Octokit } from "@octokit/core";
 import { Client, cacheExchange, fetchExchange } from "urql";
 import { graphql as gql } from "./graphql";
 import type { GitHubAuthConfig } from "./types";
+export * from "./installation";
 export * from "./types";
 
 export const IssueNodeIdQuery = gql(/* GraphQL */ `
