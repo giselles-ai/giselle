@@ -1,0 +1,384 @@
+import type { WorkspaceGitHubNextIntegrationAction } from "@giselle-sdk/data-type";
+import {
+	WorkspaceGitHubIntegrationNextAction,
+	WorkspaceGitHubIntegrationPayloadField,
+	type WorkspaceGitHubIntegrationPayloadNodeMap,
+	WorkspaceGitHubIntegrationTrigger,
+} from "@giselle-sdk/data-type";
+import type { GitHubIntegrationRepository } from "@giselle-sdk/integration";
+import { useIntegration } from "@giselle-sdk/integration/react";
+import { useWorkflowDesigner } from "giselle-sdk/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Badge } from "../../ui/badge";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "../../ui/card";
+import {
+	Label,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "../ui";
+import { PayloadMapForm } from "./payload-map-form";
+import { Stepper } from "./stepper";
+import { TitleHeader } from "./title-header";
+import { useGitHubIntegrationSetting } from "./use-github-integration-setting";
+
+const NEXT_ACTION_DISPLAY_NAMES: Record<
+	WorkspaceGitHubNextIntegrationAction,
+	string
+> = {
+	"github.issue_comment.create": "Create Issue Comment",
+	"github.pull_request_comment.create": "Create Pull Request Comment",
+} as const;
+
+const TRIGGER_TO_ACTIONS: Record<
+	WorkspaceGitHubIntegrationTrigger,
+	WorkspaceGitHubNextIntegrationAction[]
+> = {
+	"github.issues.opened": ["github.issue_comment.create"],
+	"github.issue_comment.created": ["github.issue_comment.create"],
+	"github.pull_request_comment.created": ["github.pull_request_comment.create"],
+	"github.issues.closed": ["github.issue_comment.create"],
+	"github.pull_request.opened": ["github.pull_request_comment.create"],
+	"github.pull_request.ready_for_review": [
+		"github.pull_request_comment.create",
+	],
+	"github.pull_request.closed": ["github.pull_request_comment.create"],
+} as const;
+
+const TRIGGERS_REQUIRING_CALLSIGN: readonly WorkspaceGitHubIntegrationTrigger[] =
+	[
+		"github.issue_comment.created",
+		"github.pull_request_comment.created",
+	] as const;
+
+type TriggerRequiringCallsign = (typeof TRIGGERS_REQUIRING_CALLSIGN)[number];
+
+const isTriggerRequiringCallsign = (
+	trigger: WorkspaceGitHubIntegrationTrigger,
+): trigger is TriggerRequiringCallsign => {
+	return TRIGGERS_REQUIRING_CALLSIGN.includes(trigger);
+};
+
+const getAvailablePayloadFields = (
+	trigger: WorkspaceGitHubIntegrationTrigger,
+) => {
+	const fields = Object.values(WorkspaceGitHubIntegrationPayloadField.Enum);
+	const triggerParts = trigger.split(".");
+	const triggerPrefix = `${triggerParts[0]}.${triggerParts[1]}.`;
+	return fields.filter((field) => field.startsWith(triggerPrefix));
+};
+
+const getAvailableNextActions = (
+	trigger: WorkspaceGitHubIntegrationTrigger,
+) => {
+	return TRIGGER_TO_ACTIONS[trigger] ?? [];
+};
+
+export function SetupIntegration({
+	repositories,
+}: { repositories: GitHubIntegrationRepository[] }) {
+	const { data: workspace } = useWorkflowDesigner();
+	const { isLoading, isSaving, saveSuccess, data, handleSubmit } =
+		useGitHubIntegrationSetting();
+	const [selectedTrigger, setSelectedTrigger] = useState<
+		WorkspaceGitHubIntegrationTrigger | undefined
+	>(data?.event);
+	const [callsign, setCallsign] = useState(data?.callsign || "");
+	const [selectedNextAction, setSelectedNextAction] = useState<
+		WorkspaceGitHubNextIntegrationAction | undefined
+	>(data?.nextAction);
+	const [payloadMaps, setPayloadMaps] = useState<
+		WorkspaceGitHubIntegrationPayloadNodeMap[]
+	>(data?.payloadMaps || []);
+
+	// Select component doesn't support resetting the value to undefined
+	// So we need to use a workaround
+	// https://github.com/radix-ui/primitives/issues/1569
+	// https://github.com/shadcn-ui/ui/discussions/638
+	const [nextActionKey, setNextActionKey] = useState(0);
+	const resetSelectedNextAction = useCallback(() => {
+		setSelectedNextAction(undefined);
+		setNextActionKey((prev) => prev + 1);
+	}, []);
+	const {
+		github: { components },
+	} = useIntegration();
+
+	useEffect(() => {
+		if (data) {
+			setSelectedTrigger(data.event);
+			setCallsign(data.callsign || "");
+			setSelectedNextAction(data.nextAction);
+			setPayloadMaps(data.payloadMaps || []);
+		}
+	}, [data]);
+
+	const handleTriggerChange = useCallback(
+		(value: string) => {
+			const newTrigger = WorkspaceGitHubIntegrationTrigger.safeParse(value);
+			if (!newTrigger.success) {
+				setSelectedTrigger(undefined);
+				setCallsign("");
+				setPayloadMaps([]);
+				resetSelectedNextAction();
+				return;
+			}
+
+			const newTriggerValue = newTrigger.data;
+			const currentTrigger = selectedTrigger;
+			setSelectedTrigger(newTriggerValue);
+
+			if (newTriggerValue !== currentTrigger) {
+				if (!isTriggerRequiringCallsign(newTriggerValue)) {
+					setCallsign("");
+				}
+
+				const availableActions = getAvailableNextActions(newTriggerValue);
+				if (
+					selectedNextAction &&
+					!availableActions.includes(selectedNextAction)
+				) {
+					resetSelectedNextAction();
+				}
+			}
+		},
+		[selectedTrigger, selectedNextAction, resetSelectedNextAction],
+	);
+	const availablePayloadFields = useMemo(
+		() => (selectedTrigger ? getAvailablePayloadFields(selectedTrigger) : []),
+		[selectedTrigger],
+	);
+	const availableNextActions = useMemo(
+		() => (selectedTrigger ? getAvailableNextActions(selectedTrigger) : []),
+		[selectedTrigger],
+	);
+
+	if (isLoading) {
+		return null;
+	}
+
+	// Check if configuration exists or has just been successfully saved
+	const isConfigured = data != null || saveSuccess === true;
+
+	return (
+		<div className="flex flex-col gap-[16px]">
+			<TitleHeader />
+			<Stepper currentStep={isConfigured ? 4 : 3} />
+			<Card className="bg-slate-900 border-slate-800 shadow-xl overflow-hidden">
+				<div className="border-b border-slate-800 bg-gradient-to-r from-slate-900 to-slate-900/80 backdrop-blur-sm">
+					<CardHeader className="flex flex-row items-center justify-between">
+						<div>
+							<CardTitle className="text-xl font-semibold">
+								Setup Integration
+							</CardTitle>
+							<CardDescription className="text-gray-400">
+								Configure your GitHub integration settings
+							</CardDescription>
+						</div>
+						{isConfigured && (
+							<Badge className="bg-gradient-to-r from-emerald-600 to-green-600 text-white border-0 px-3 py-1">
+								Configured
+							</Badge>
+						)}
+					</CardHeader>
+				</div>
+
+				<CardContent className="p-6 my-6">
+					{saveSuccess === true && (
+						<div className="mb-4 p-3 bg-gradient-to-r from-emerald-600/20 to-green-600/20 border border-emerald-600/30 rounded-lg text-emerald-400 text-sm">
+							GitHub integration settings saved successfully.
+						</div>
+					)}
+					{saveSuccess === false && (
+						<div className="mb-4 p-3 bg-gradient-to-r from-red-600/20 to-red-800/20 border border-red-600/30 rounded-lg text-red-400 text-sm">
+							Failed to save GitHub integration settings. Please try again.
+						</div>
+					)}
+
+					<form
+						className="w-full flex flex-col gap-[16px]"
+						onSubmit={handleSubmit}
+					>
+						<div className="grid grid-cols-[140px_1fr] gap-x-[4px] gap-y-[16px]">
+							<h3 className="relative font-accent text-white-400 text-[14px] flex items-start font-bold">
+								Repository
+							</h3>
+							<div>
+								<fieldset className="flex flex-col gap-[4px]">
+									<Select
+										defaultValue={data?.repositoryNodeId}
+										name="repositoryNodeId"
+									>
+										<SelectTrigger>
+											<SelectValue placeholder="Select a repository" />
+										</SelectTrigger>
+										<SelectContent>
+											{repositories.map((repo) => (
+												<SelectItem key={repo.node_id} value={repo.node_id}>
+													{repo.full_name}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+								</fieldset>
+								<div className="mt-2">{components?.installation}</div>
+							</div>
+							<h3 className="font-accent text-white-400 text-[14px] font-bold">
+								<div className="flex items-center">Trigger</div>
+							</h3>
+							<div className="flex flex-col gap-[16px]">
+								<fieldset className="flex flex-col gap-[4px]">
+									<Label>Event</Label>
+									<Select
+										name="event"
+										defaultValue={data?.event}
+										onValueChange={handleTriggerChange}
+									>
+										<SelectTrigger>
+											<SelectValue placeholder="Select a trigger" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem
+												value={
+													WorkspaceGitHubIntegrationTrigger.Enum[
+														"github.issues.opened"
+													]
+												}
+											>
+												issues.opened
+											</SelectItem>
+											<SelectItem
+												value={
+													WorkspaceGitHubIntegrationTrigger.Enum[
+														"github.issues.closed"
+													]
+												}
+											>
+												issues.closed
+											</SelectItem>
+											<SelectItem
+												value={
+													WorkspaceGitHubIntegrationTrigger.Enum[
+														"github.issue_comment.created"
+													]
+												}
+											>
+												issue_comment.created
+											</SelectItem>
+											<SelectItem
+												value={
+													WorkspaceGitHubIntegrationTrigger.Enum[
+														"github.pull_request.opened"
+													]
+												}
+											>
+												pull_request.opened
+											</SelectItem>
+											<SelectItem
+												value={
+													WorkspaceGitHubIntegrationTrigger.Enum[
+														"github.pull_request.ready_for_review"
+													]
+												}
+											>
+												pull_request.ready_for_review
+											</SelectItem>
+											<SelectItem
+												value={
+													WorkspaceGitHubIntegrationTrigger.Enum[
+														"github.pull_request.closed"
+													]
+												}
+											>
+												pull_request.closed
+											</SelectItem>
+											<SelectItem
+												value={
+													WorkspaceGitHubIntegrationTrigger.Enum[
+														"github.pull_request_comment.created"
+													]
+												}
+											>
+												pull_request_comment.created
+											</SelectItem>
+										</SelectContent>
+									</Select>
+								</fieldset>
+								{selectedTrigger &&
+									isTriggerRequiringCallsign(selectedTrigger) && (
+										<fieldset className="flex flex-col gap-[4px]">
+											<Label>Callsign</Label>
+											<input
+												type="text"
+												name="callsign"
+												className="bg-black-750 h-[28px] border-[1px] border-white-950/10 flex items-center px-[12px] text-[12px] rounded-[8px] outline-none placeholder:text-white-400/70"
+												value={callsign}
+												onChange={(e) => setCallsign(e.target.value)}
+											/>
+										</fieldset>
+									)}
+							</div>
+							<h3 className="font-accent text-white-400 text-[14px] font-bold">
+								Data mapping
+							</h3>
+							<div>
+								<PayloadMapForm
+									nodes={workspace.nodes}
+									currentPayloadMaps={payloadMaps}
+									availablePayloadFields={availablePayloadFields}
+								/>
+							</div>
+							<h3 className="font-accent text-white-400 text-[14px] font-bold">
+								Then
+							</h3>
+							<fieldset className="flex flex-col gap-[4px]">
+								<Select
+									key={nextActionKey}
+									name="nextAction"
+									value={selectedNextAction}
+									onValueChange={(value) => {
+										const nextAction =
+											WorkspaceGitHubIntegrationNextAction.safeParse(value);
+										if (nextAction.success) {
+											setSelectedNextAction(nextAction.data);
+										} else {
+											setSelectedNextAction(undefined);
+										}
+									}}
+								>
+									<SelectTrigger>
+										<SelectValue placeholder="Select an action" />
+									</SelectTrigger>
+									<SelectContent>
+										{availableNextActions.map((action) => (
+											<SelectItem key={action} value={action}>
+												{NEXT_ACTION_DISPLAY_NAMES[action]}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</fieldset>
+						</div>
+						<div className="flex justify-end">
+							<button
+								type="submit"
+								disabled={isSaving}
+								className="h-[28px] rounded-[8px] bg-white-800 text-[14px] cursor-pointer text-black-800 font-[700] px-[16px] font-accent disabled:opacity-50 disabled:cursor-not-allowed"
+							>
+								{isSaving ? "Saving..." : "Save"}
+							</button>
+						</div>
+					</form>
+				</CardContent>
+			</Card>
+		</div>
+	);
+}
