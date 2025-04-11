@@ -31,7 +31,9 @@
 		"react": "catalog:",
 		"react-dom": "catalog:",
 		"react-markdown": "catalog:",
-		"react-resizable-panels": "catalog:"
+		"react-resizable-panels": "catalog:",
+		"rehype-raw": "^7.0.0",
+		"remark-gfm": "^4.0.1"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",

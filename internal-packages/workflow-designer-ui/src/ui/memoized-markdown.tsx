@@ -1,6 +1,8 @@
 import { marked } from "marked";
 import { memo, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 
 function parseMarkdownIntoBlocks(markdown: string): string[] {
 	const tokens = marked.lexer(markdown);
@@ -9,7 +11,27 @@ function parseMarkdownIntoBlocks(markdown: string): string[] {
 
 const MemoizedMarkdownBlock = memo(
 	({ content }: { content: string }) => {
-		return <ReactMarkdown>{content}</ReactMarkdown>;
+		return (
+			<ReactMarkdown
+				remarkPlugins={[remarkGfm]}
+				rehypePlugins={[rehypeRaw]}
+				components={{
+					// aタグ（リンク）のカスタマイズ
+					a: ({ node, children, ...props }) => (
+						<a
+							{...props}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="underline"
+						>
+							{children}
+						</a>
+					),
+				}}
+			>
+				{content}
+			</ReactMarkdown>
+		);
 	},
 	(prevProps, nextProps) => {
 		if (prevProps.content !== nextProps.content) return false;
