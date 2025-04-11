@@ -20,6 +20,7 @@ import {
 	pipe,
 	string,
 } from "valibot";
+import { AccountImageForm } from "../../components/v2/account/account-image-form";
 import { updateDisplayName } from "../actions";
 
 const DisplayNameSchema = pipe(
@@ -83,9 +84,15 @@ export function AccountDisplayNameForm({
 	return (
 		<div className="bg-transparent rounded-[8px] border-[0.5px] border-black-400 px-[24px] py-[16px] w-full">
 			<div className="flex justify-between items-center gap-2">
-				<span className="text-white-400 font-normal text-[18px] leading-[21.6px] tracking-[-0.011em] font-hubot">
-					{displayName}
-				</span>
+				<div className="flex items-center gap-4">
+					<AccountImageForm
+						avatarUrl={null} // TODO: Add avatarUrl from user data
+						displayName={displayName}
+					/>
+					<span className="text-white-400 font-normal text-[18px] leading-[21.6px] tracking-[-0.011em] font-hubot">
+						{displayName}
+					</span>
+				</div>
 
 				<Dialog open={isEditingName} onOpenChange={setIsEditingName}>
 					<DialogTrigger asChild>

@@ -64,6 +64,7 @@ export const users = pgTable("users", {
 	id: text("id").$type<UserId>().notNull().unique(),
 	email: text("email").unique(), // TODO: Allow null values initially when adding schema, then change to not null after data update
 	displayName: text("display_name"),
+	avatarUrl: text("avatar_url"),
 	dbId: serial("db_id").primaryKey(),
 });
 
