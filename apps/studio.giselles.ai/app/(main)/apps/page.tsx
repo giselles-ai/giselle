@@ -39,8 +39,7 @@ async function AgentList() {
 						No apps yet.
 					</h3>
 					<p className="text-[12px] font-geist text-black-400">
-						Please create a new app with the 'New App +' button in the left
-						sidebar.
+						Please create a new app with the 'New App +' button.
 					</p>
 				</div>
 			</div>
@@ -107,9 +106,6 @@ export default function AgentListV2Page() {
 	return (
 		<ToastProvider>
 			<div className="w-full">
-				<h1 className="text-[28px] font-hubot font-medium mb-8 text-primary-100 drop-shadow-[0_0_20px_#0087f6]">
-					Apps
-				</h1>
 				<Suspense fallback={<p className="text-center py-8">Loading...</p>}>
 					<AgentList />
 				</Suspense>

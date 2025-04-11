@@ -9,8 +9,8 @@ const mockCookieStore = {
 		return value ? { value } : null;
 	},
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	set(name: string, value: string, options: any) {
-		this.cookies.set(name, value);
+	set(options: { name: string; value: string; [key: string]: any }) {
+		this.cookies.set(options.name, options.value);
 	},
 };
 

@@ -8,6 +8,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import {
 	type InferInput,
@@ -98,8 +99,9 @@ export function TeamMembersForm() {
 					}}
 					disabled={isLoading}
 				>
-					<SelectTrigger className="px-4 py-2 border border-white-900 rounded-[8px] h-[40px] w-[123px] bg-transparent text-white-900 shadow-[inset_0_0_4px_0_#ffffff33] [&_svg]:opacity-100 cursor-pointer">
+					<SelectTrigger className="px-4 py-2 border border-white-900 rounded-[8px] h-[40px] w-[123px] bg-transparent text-white-900 shadow-[inset_0_0_4px_0_#ffffff33] [&_svg]:opacity-100 cursor-pointer focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-white-900">
 						<SelectValue />
+						<ChevronDown className="h-4 w-4 opacity-50" />
 					</SelectTrigger>
 					<SelectContent className="border-[0.5px] border-black-400 rounded-[8px] bg-black-850 text-white-900 font-hubot">
 						<SelectItem

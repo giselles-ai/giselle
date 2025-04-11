@@ -39,7 +39,7 @@ export const initializeAccount = async (
 			.insert(teams)
 			.values({
 				id: createTeamId(),
-				name: "default",
+				name: "My Project",
 				type: isEmailFromRoute06(supabaseUserEmail ?? "")
 					? "internal"
 					: "customer",

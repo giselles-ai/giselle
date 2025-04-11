@@ -1,12 +1,21 @@
 import { ToastProvider } from "@/packages/contexts/toast";
 import { fetchUserTeams } from "@/services/teams";
 import TeamCreation from "@/services/teams/components/team-creation";
+import { isProPlan } from "@/services/teams/utils";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import UserTeams from "./user-teams";
 
 export default async function AccountSettingPage() {
 	const teams = await fetchUserTeams();
+
+	// Add isPro information to each team
+	const teamsWithProInfo = teams.map((team) => ({
+		id: team.id,
+		name: team.name,
+		role: team.role,
+		isPro: isProPlan(team),
+	}));
 
 	return (
 		<ToastProvider>
@@ -31,7 +40,7 @@ export default async function AccountSettingPage() {
 							),
 						}}
 					>
-						<UserTeams teams={teams} />
+						<UserTeams teams={teamsWithProInfo} />
 					</Card>
 				</div>
 			</div>

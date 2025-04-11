@@ -40,32 +40,39 @@ export function DeleteTeam() {
 						Delete Team
 					</Button>
 				</DialogTrigger>
-				<DialogContent className="px-8 py-6 border-[0.5px] border-black-400 rounded-[8px] bg-black-850">
-					<DialogHeader>
-						<DialogTitle className="text-white-800 font-bold text-[16px] leading-[16px] font-hubot">
+				<DialogContent
+					className="px-8 py-6 border-[0.5px] border-error-900 rounded-[16px] bg-black-850 animate-fadeIn fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+					style={{
+						animation: "0.2s ease-out 0s 1 normal none running fadeIn",
+					}}
+				>
+					<div
+						aria-hidden="true"
+						className="absolute inset-0 rounded-[16px] border-[0.5px] border-transparent bg-black-850 bg-clip-padding"
+					/>
+					<DialogHeader className="relative z-10">
+						<DialogTitle className="text-error-900 font-bold text-[20px] leading-[28px] font-hubot text-center">
 							Delete Team
 						</DialogTitle>
 					</DialogHeader>
-					<Alert
-						variant="destructive"
-						className="bg-error-900/5 border-error-900/20"
-					>
-						<AlertDescription className="text-red-900/50 font-medium text-[12px] leading-[20.4px] tracking-normal font-geist">
-							This action cannot be undone. This will permanently delete the
-							team and remove all members.
-						</AlertDescription>
-					</Alert>
+					<p className="text-error-900 font-medium text-[14px] leading-[24px] relative z-10 text-center my-4">
+						This action cannot be undone. This will permanently delete the team
+						and remove all members.
+					</p>
 					{state.error !== "" && (
 						<Alert
 							variant="destructive"
-							className="mt-2 bg-error-900/5 border-error-900/20"
+							className="mt-2 bg-error-900/5 border-error-900/20 relative z-10"
 						>
 							<AlertDescription className="text-red-900/50 font-medium text-[12px] leading-[20.4px] tracking-normal font-geist">
 								{state.error}
 							</AlertDescription>
 						</Alert>
 					)}
-					<form action={action} className="flex justify-end space-x-4">
+					<form
+						action={action}
+						className="flex justify-end space-x-4 relative z-10"
+					>
 						<Button
 							type="button"
 							onClick={() => setShowDeleteConfirm(false)}

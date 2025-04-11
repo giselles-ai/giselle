@@ -65,7 +65,25 @@ export function TeamCreationForm({
 					<UserPlus className="h-6 w-6 text-white hover:opacity-80" />
 				)}
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-[500px] gap-y-6 px-8 py-6 border-[0.5px] border-black-400 rounded-[8px] bg-black-900">
+			<DialogContent
+				className="sm:max-w-[500px] gap-y-6 px-8 py-6 border-[0.5px] border-black-400 rounded-[8px] bg-black-900"
+				style={{
+					animation: "fadeIn 0.2s ease-out",
+					transformOrigin: "center",
+				}}
+			>
+				<style jsx global>{`
+					@keyframes fadeIn {
+						from {
+							opacity: 0;
+							transform: scale(0.95);
+						}
+						to {
+							opacity: 1;
+							transform: scale(1);
+						}
+					}
+				`}</style>
 				<DialogHeader>
 					<DialogTitle className="text-white-800 font-semibold text-[20px] leading-[28px] font-hubot text-center">
 						Create New Team

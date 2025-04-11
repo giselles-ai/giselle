@@ -80,15 +80,42 @@ export function TeamNameForm({ id: teamId, name }: Team) {
 	return (
 		<div className="bg-transparent rounded-[8px] border-[0.5px] border-black-400 px-[24px] py-[16px] w-full">
 			<div className="flex flex-col gap-2">
+				<div className="flex flex-col gap-2">
+					<span className="text-white-400 font-medium text-[16px] leading-[19.2px] font-hubot">
+						Team name
+					</span>
+					<p className="text-black-400 text-[14px] leading-[20.4px] font-geist">
+						This is your team&apos;s display name in Vercel. You can use your
+						company name or department.
+					</p>
+				</div>
 				<div className="flex justify-between items-center gap-2">
-					<span className="text-white-400 font-normal text-[18px] leading-[21.6px] tracking-[-0.011em] font-hubot">
+					<span className="text-primary-100 font-normal text-[18px] leading-[21.6px] tracking-[-0.011em] font-hubot px-3 py-2 border-[0.5px] border-black-750 rounded-[4px] bg-black-900 w-[360px] truncate">
 						{teamName}
 					</span>
 					<Dialog open={isEditingTeam} onOpenChange={setIsEditingTeam}>
 						<DialogTrigger asChild>
 							<Button>Edit</Button>
 						</DialogTrigger>
-						<DialogContent className="gap-y-6 px-[57px] py-[40px] max-w-[380px] w-full bg-black-900 border-none rounded-[16px] bg-linear-to-br/hsl from-black-600 to-black-250 sm:rounded-[16px]">
+						<DialogContent
+							className="gap-y-6 px-[57px] py-[40px] max-w-[380px] w-full bg-black-900 border-none rounded-[16px] bg-linear-to-br/hsl from-black-600 to-black-250 sm:rounded-[16px]"
+							style={{
+								animation: "fadeIn 0.2s ease-out",
+								transformOrigin: "center",
+							}}
+						>
+							<style jsx global>{`
+								@keyframes fadeIn {
+									from {
+										opacity: 0;
+										transform: scale(0.95);
+									}
+									to {
+										opacity: 1;
+										transform: scale(1);
+									}
+								}
+							`}</style>
 							<div
 								aria-hidden="true"
 								className="absolute inset-0 rounded-[16px] border-[0.5px] border-transparent bg-black-900 bg-clip-padding"
