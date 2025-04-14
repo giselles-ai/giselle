@@ -516,8 +516,10 @@ export function Toolbar() {
 																)}
 															</div>
 															
-															{/* Pro upgrade overlay - always shown for debugging */}
-															<ProUpgradeOverlay />
+															{/* Pro upgrade overlay - only shown for Pro models */}
+															{languageModelMouseHovered.tier === "pro" && (
+																<ProUpgradeOverlay />
+															)}
 														</div>
 													)}
 												</div>
