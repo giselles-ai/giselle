@@ -94,14 +94,16 @@ function ProUpgradeOverlay() {
 		<div className="absolute inset-0 z-20 flex flex-col justify-center items-center bg-black-850/80 backdrop-blur-[4px] rounded-[8px] w-[334px] h-[200px]">
 			<div className="flex flex-col items-center justify-center gap-4 px-4 text-center">
 				<p className="text-primary-400 text-[16px] font-semibold">
-					Upgrade to Pro<br />
+					Upgrade to Pro
+					<br />
 					to unlock this feature!
 				</p>
 				<button
+					type="button"
 					className="bg-primary-200 text-black-900 border border-primary-200 rounded-[8px] px-4 py-2 font-semibold hover:bg-primary-100 transition-colors font-hubot"
 					onClick={() => {
 						// Redirect to upgrade page
-						window.open('/settings/team', '_blank');
+						window.open("/settings/team", "_blank");
 					}}
 				>
 					Upgrade
@@ -123,7 +125,7 @@ function LanguageModelListItem({
 }) {
 	// If this is a Pro model and the user doesn't have Pro access, don't allow selection
 	const freePlanRestriction = languageModel.tier === "pro" && !isPro;
-	
+
 	return (
 		<button
 			{...props}
@@ -131,7 +133,7 @@ function LanguageModelListItem({
 				"flex gap-[8px]",
 				"hover:bg-white-850/10 focus:bg-white-850/10 p-[4px] rounded-[4px]",
 				// Only add the selected state style if not restricted by plan
-				{"data-[state=on]:bg-primary-900": !freePlanRestriction},
+				{ "data-[state=on]:bg-primary-900": !freePlanRestriction },
 				"focus:outline-none",
 				"**:data-icon:w-[16px] **:data-icon:h-[16px] **:data-icon:text-white-950 ",
 				disabled && "opacity-50 cursor-not-allowed",
@@ -242,14 +244,17 @@ export function Toolbar() {
 													const languageModel = languageModels.find(
 														(model) => model.id === modelId,
 													);
-													
+
 													// Check if user has access to this model
-													if (languageModel?.tier === "pro" && limits?.featureTier !== "pro") {
+													if (
+														languageModel?.tier === "pro" &&
+														limits?.featureTier !== "pro"
+													) {
 														// If pro model and free user, do not create node
 														// The overlay is already shown on hover
 														return;
 													}
-													
+
 													const languageModelData = {
 														id: languageModel?.id,
 														provider: languageModel?.provider,
@@ -533,11 +538,12 @@ export function Toolbar() {
 																	</>
 																)}
 															</div>
-															
+
 															{/* Pro upgrade overlay - show for Pro models if user is not on Pro plan */}
-															{languageModelMouseHovered.tier === "pro" && limits?.featureTier !== "pro" && (
-																<ProUpgradeOverlay />
-															)}
+															{languageModelMouseHovered.tier === "pro" &&
+																limits?.featureTier !== "pro" && (
+																	<ProUpgradeOverlay />
+																)}
 														</div>
 													)}
 												</div>
