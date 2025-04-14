@@ -89,6 +89,28 @@ function ProTag() {
 	);
 }
 
+function ProUpgradeOverlay() {
+	return (
+		<div className="absolute inset-0 z-20 flex flex-col justify-center items-center bg-black-850/80 backdrop-blur-[4px] rounded-[8px] w-[334px] h-[200px]">
+			<div className="flex flex-col items-center justify-center gap-4 px-4 text-center">
+				<p className="text-primary-400 text-[16px] font-semibold">
+					Upgrade to Pro<br />
+					to unlock this feature!
+				</p>
+				<button
+					className="bg-primary-200 text-black-900 border border-primary-200 rounded-[8px] px-4 py-2 font-semibold hover:bg-primary-100 transition-colors font-hubot"
+					onClick={() => {
+						// アップグレードページへのリダイレクト処理
+						window.open('/settings/team', '_blank');
+					}}
+				>
+					Upgrade
+				</button>
+			</div>
+		</div>
+	);
+}
+
 function LanguageModelListItem({
 	languageModel,
 	disabled,
@@ -288,7 +310,7 @@ export function Toolbar() {
 												<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-boarder border-transparent" />
 												<div className="relative text-white-800 h-[200px]">
 													{languageModelMouseHovered && (
-														<div className="px-[16px] py-[16px] flex flex-col gap-[24px]">
+														<div className="px-[16px] py-[16px] flex flex-col gap-[24px] relative">
 															<div className="flex items-start gap-[16px]">
 																<div className="flex items-center shrink-0">
 																	{languageModelMouseHovered.provider ===
@@ -493,6 +515,9 @@ export function Toolbar() {
 																	</>
 																)}
 															</div>
+															
+															{/* Pro upgrade overlay - always shown for debugging */}
+															<ProUpgradeOverlay />
 														</div>
 													)}
 												</div>
