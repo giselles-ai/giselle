@@ -100,7 +100,7 @@ function ProUpgradeOverlay() {
 				<button
 					className="bg-primary-200 text-black-900 border border-primary-200 rounded-[8px] px-4 py-2 font-semibold hover:bg-primary-100 transition-colors font-hubot"
 					onClick={() => {
-						// アップグレードページへのリダイレクト処理
+						// Redirect to upgrade page
 						window.open('/settings/team', '_blank');
 					}}
 				>
@@ -114,20 +114,28 @@ function ProUpgradeOverlay() {
 function LanguageModelListItem({
 	languageModel,
 	disabled,
+	isPro,
 	...props
 }: Omit<ToggleGroup.ToggleGroupItemProps, "value"> & {
 	languageModel: LanguageModel;
 	disabled?: boolean;
+	isPro?: boolean;
 }) {
+	// If this is a Pro model and the user doesn't have Pro access, don't allow selection
+	const freePlanRestriction = languageModel.tier === "pro" && !isPro;
+	
 	return (
 		<button
 			{...props}
 			className={clsx(
 				"flex gap-[8px]",
 				"hover:bg-white-850/10 focus:bg-white-850/10 p-[4px] rounded-[4px]",
-				"data-[state=on]:bg-primary-900 focus:outline-none",
+				// Only add the selected state style if not restricted by plan
+				{"data-[state=on]:bg-primary-900": !freePlanRestriction},
+				"focus:outline-none",
 				"**:data-icon:w-[16px] **:data-icon:h-[16px] **:data-icon:text-white-950 ",
 				disabled && "opacity-50 cursor-not-allowed",
+				freePlanRestriction && "cursor-pointer", // Still shows as clickable for UX
 			)}
 			disabled={disabled}
 		>
@@ -168,6 +176,7 @@ export function Toolbar() {
 		useState<LanguageModel | null>(null);
 	const { llmProviders } = useWorkflowDesigner();
 	const limits = useUsageLimits();
+	const isProUser = limits?.featureTier === "pro";
 	const languageModelAvailable = (languageModel: LanguageModel) => {
 		if (limits === undefined) {
 			return true;
@@ -233,6 +242,14 @@ export function Toolbar() {
 													const languageModel = languageModels.find(
 														(model) => model.id === modelId,
 													);
+													
+													// Check if user has access to this model
+													if (languageModel?.tier === "pro" && limits?.featureTier !== "pro") {
+														// If pro model and free user, do not create node
+														// The overlay is already shown on hover
+														return;
+													}
+													
 													const languageModelData = {
 														id: languageModel?.id,
 														provider: languageModel?.provider,
@@ -283,6 +300,7 @@ export function Toolbar() {
 																	disabled={
 																		!languageModelAvailable(languageModel)
 																	}
+																	isPro={isProUser}
 																/>
 															</ToggleGroup.Item>
 														),
@@ -516,8 +534,8 @@ export function Toolbar() {
 																)}
 															</div>
 															
-															{/* Pro upgrade overlay - only shown for Pro models */}
-															{languageModelMouseHovered.tier === "pro" && (
+															{/* Pro upgrade overlay - show for Pro models if user is not on Pro plan */}
+															{languageModelMouseHovered.tier === "pro" && limits?.featureTier !== "pro" && (
 																<ProUpgradeOverlay />
 															)}
 														</div>
