@@ -246,9 +246,7 @@ export function Toolbar() {
 														configurations: languageModel?.configurations,
 													};
 													if (
-														isTextGenerationLanguageModelData(
-															languageModelData,
-														)
+														isTextGenerationLanguageModelData(languageModelData)
 													) {
 														setSelectedTool(
 															addNodeTool(
@@ -257,9 +255,7 @@ export function Toolbar() {
 														);
 													}
 													if (
-														isImageGenerationLanguageModelData(
-															languageModelData,
-														)
+														isImageGenerationLanguageModelData(languageModelData)
 													) {
 														setSelectedTool(
 															addNodeTool(
