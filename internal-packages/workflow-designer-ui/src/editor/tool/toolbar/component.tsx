@@ -255,7 +255,9 @@ export function Toolbar() {
 														);
 													}
 													if (
-														isImageGenerationLanguageModelData(languageModelData)
+														isImageGenerationLanguageModelData(
+															languageModelData,
+														)
 													) {
 														setSelectedTool(
 															addNodeTool(
