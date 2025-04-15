@@ -123,21 +123,16 @@ function LanguageModelListItem({
 	disabled?: boolean;
 	isPro?: boolean;
 }) {
-	// If this is a Pro model and the user doesn't have Pro access, don't allow selection
-	const freePlanRestriction = languageModel.tier === "pro" && !isPro;
-
 	return (
 		<button
 			{...props}
 			className={clsx(
-				"flex gap-[8px]",
+				"flex gap-[8px] relative",
 				"hover:bg-white-850/10 focus:bg-white-850/10 p-[4px] rounded-[4px]",
-				// Only add the selected state style if not restricted by plan
-				{ "data-[state=on]:bg-primary-900": !freePlanRestriction },
+				"data-[state=on]:bg-primary-900",
 				"focus:outline-none",
 				"**:data-icon:w-[16px] **:data-icon:h-[16px] **:data-icon:text-white-950 ",
-				disabled && "opacity-50 cursor-not-allowed",
-				freePlanRestriction && "cursor-pointer", // Still shows as clickable for UX
+				disabled && "opacity-50 cursor-not-allowed"
 			)}
 			disabled={disabled}
 		>
@@ -178,7 +173,6 @@ export function Toolbar() {
 		useState<LanguageModel | null>(null);
 	const { llmProviders } = useWorkflowDesigner();
 	const limits = useUsageLimits();
-	const isProUser = limits?.featureTier === "pro";
 	const languageModelAvailable = (languageModel: LanguageModel) => {
 		if (limits === undefined) {
 			return true;
@@ -245,39 +239,22 @@ export function Toolbar() {
 														(model) => model.id === modelId,
 													);
 
-													// Check if user has access to this model
-													if (
-														languageModel?.tier === "pro" &&
-														limits?.featureTier !== "pro"
-													) {
-														// If pro model and free user, do not create node
-														// The overlay is already shown on hover
-														return;
-													}
+													// Ensure languageModel exists before proceeding
+													if (!languageModel) return;
 
 													const languageModelData = {
 														id: languageModel?.id,
 														provider: languageModel?.provider,
 														configurations: languageModel?.configurations,
 													};
-													if (
-														isTextGenerationLanguageModelData(languageModelData)
-													) {
+													if (isTextGenerationLanguageModelData(languageModelData)) {
 														setSelectedTool(
-															addNodeTool(
-																textGenerationNode(languageModelData),
-															),
+															addNodeTool(textGenerationNode(languageModelData)),
 														);
 													}
-													if (
-														isImageGenerationLanguageModelData(
-															languageModelData,
-														)
-													) {
+													if (isImageGenerationLanguageModelData(languageModelData)) {
 														setSelectedTool(
-															addNodeTool(
-																imageGenerationNode(languageModelData),
-															),
+															addNodeTool(imageGenerationNode(languageModelData)),
 														);
 													}
 												}}
@@ -305,7 +282,7 @@ export function Toolbar() {
 																	disabled={
 																		!languageModelAvailable(languageModel)
 																	}
-																	isPro={isProUser}
+																	isPro={limits?.featureTier === "pro"}
 																/>
 															</ToggleGroup.Item>
 														),
