@@ -116,12 +116,10 @@ function ProUpgradeOverlay() {
 function LanguageModelListItem({
 	languageModel,
 	disabled,
-	isPro,
 	...props
 }: Omit<ToggleGroup.ToggleGroupItemProps, "value"> & {
 	languageModel: LanguageModel;
 	disabled?: boolean;
-	isPro?: boolean;
 }) {
 	return (
 		<button
@@ -282,7 +280,6 @@ export function Toolbar() {
 																	disabled={
 																		!languageModelAvailable(languageModel)
 																	}
-																	isPro={limits?.featureTier === "pro"}
 																/>
 															</ToggleGroup.Item>
 														),
