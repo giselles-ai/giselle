@@ -130,7 +130,7 @@ function LanguageModelListItem({
 				"data-[state=on]:bg-primary-900",
 				"focus:outline-none",
 				"**:data-icon:w-[16px] **:data-icon:h-[16px] **:data-icon:text-white-950 ",
-				disabled && "opacity-50 cursor-not-allowed"
+				disabled && "opacity-50 cursor-not-allowed",
 			)}
 			disabled={disabled}
 		>
@@ -245,14 +245,26 @@ export function Toolbar() {
 														provider: languageModel?.provider,
 														configurations: languageModel?.configurations,
 													};
-													if (isTextGenerationLanguageModelData(languageModelData)) {
+													if (
+														isTextGenerationLanguageModelData(
+															languageModelData,
+														)
+													) {
 														setSelectedTool(
-															addNodeTool(textGenerationNode(languageModelData)),
+															addNodeTool(
+																textGenerationNode(languageModelData),
+															),
 														);
 													}
-													if (isImageGenerationLanguageModelData(languageModelData)) {
+													if (
+														isImageGenerationLanguageModelData(
+															languageModelData,
+														)
+													) {
 														setSelectedTool(
-															addNodeTool(imageGenerationNode(languageModelData)),
+															addNodeTool(
+																imageGenerationNode(languageModelData),
+															),
 														);
 													}
 												}}
