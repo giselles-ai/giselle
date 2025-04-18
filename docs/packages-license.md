@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 1015 MIT
+* 1020 MIT
 * 107 Apache 2.0
 * 58 ISC
 * 34 New BSD
@@ -10528,6 +10528,39 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="pg"></a>
+### pg v8.14.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="pg-cloudflare"></a>
+### pg-cloudflare v1.1.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="pg-connection-string"></a>
+### pg-connection-string v2.7.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="pg-int8"></a>
 ### pg-int8 v1.0.1
 #### 
@@ -10550,8 +10583,19 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="pg-pool"></a>
+### pg-pool v3.8.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="pg-protocol"></a>
-### pg-protocol v1.7.0
+### pg-protocol v1.8.0
 #### 
 
 ##### Paths
@@ -10563,6 +10607,17 @@ BlueOak-1.0.0 permitted
 
 <a name="pg-types"></a>
 ### pg-types v2.2.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="pgpass"></a>
+### pgpass v1.0.5
 #### 
 
 ##### Paths

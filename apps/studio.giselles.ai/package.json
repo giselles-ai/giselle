@@ -19,8 +19,8 @@
 		"@giselle-internal/workflow-designer-ui": "workspace:*",
 		"@giselle-sdk/data-type": "workspace:*",
 		"@giselle-sdk/giselle-engine": "workspace:*",
-		"@giselle-sdk/supabase-driver": "workspace:*",
 		"@giselle-sdk/integration": "workspace:*",
+		"@giselle-sdk/supabase-driver": "workspace:*",
 		"@icons-pack/react-simple-icons": "10.0.0",
 		"@lucide/lab": "0.1.2",
 		"@mendable/firecrawl-js": "1.6.1",
@@ -92,6 +92,7 @@
 		"next-themes": "0.3.0",
 		"nodemailer": "6.10.0",
 		"openai": "4.64.0",
+		"pg": "catalog:",
 		"pino": "9.5.0",
 		"posthog-js": "1.194.2",
 		"react": "catalog:",
@@ -130,5 +131,7 @@
 		"vite-tsconfig-paths": "5.1.4",
 		"vitest": "3.0.5"
 	},
-	"trustedDependencies": ["@sentry/cli"]
+	"trustedDependencies": [
+		"@sentry/cli"
+	]
 }

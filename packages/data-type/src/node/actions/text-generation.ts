@@ -75,6 +75,12 @@ export const GitHubTool = z.object({
 });
 export type GitHubTool = z.infer<typeof GitHubTool>;
 
+export const PostgresTool = z.object({
+	tools: z.string().array(),
+	connectionString: z.string(),
+});
+export type PostgresTool = z.infer<typeof PostgresTool>;
+
 export const TextGenerationContent = z.object({
 	type: z.literal("textGeneration"),
 	llm: TextGenerationLanguageModelData,
@@ -82,6 +88,7 @@ export const TextGenerationContent = z.object({
 	tools: z.optional(
 		z.object({
 			github: z.optional(GitHubTool),
+			postgres: z.optional(PostgresTool),
 		}),
 	),
 });

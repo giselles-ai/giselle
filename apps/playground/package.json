@@ -26,6 +26,7 @@
 		"giselle-sdk": "workspace:^",
 		"lucide-react": "catalog:",
 		"next": "catalog:",
+		"pg": "catalog:",
 		"react": "catalog:",
 		"react-dom": "catalog:",
 		"unstorage": "catalog:"

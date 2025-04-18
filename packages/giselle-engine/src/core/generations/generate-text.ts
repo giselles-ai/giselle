@@ -28,7 +28,8 @@ import {
 import { UsageLimitError } from "../error";
 import { filePath } from "../files/utils";
 import type { GiselleEngineContext } from "../types";
-import type { TelemetrySettings } from "./types";
+import { createPostgresTools } from "./tools/postgres";
+import type { PreparedToolSet, TelemetrySettings } from "./types";
 import {
 	buildMessageObject,
 	checkUsageLimits,
@@ -204,7 +205,7 @@ export async function generateText(args: {
 		generationContentResolver,
 	);
 
-	let tools: ToolSet = {};
+	let preparedToolSet: PreparedToolSet = { toolSet: {}, cleanupFunctions: [] };
 	if (actionNode.content.tools?.github?.auth) {
 		const decryptToken = await args.context.vault?.decrypt(
 			actionNode.content.tools.github.auth.token,
@@ -218,11 +219,42 @@ export async function generateText(args: {
 		);
 		for (const tool of actionNode.content.tools.github.tools) {
 			if (tool in allGitHubTools) {
-				tools = {
-					...tools,
-					[tool]: allGitHubTools[tool as keyof typeof allGitHubTools],
+				preparedToolSet = {
+					...preparedToolSet,
+					toolSet: {
+						...preparedToolSet.toolSet,
+						[tool]: allGitHubTools[tool as keyof typeof allGitHubTools],
+					},
 				};
 			}
+		}
+	}
+
+	if (actionNode.content.tools?.postgres?.connectionString) {
+		const connectionString = await args.context.vault?.decrypt(
+			actionNode.content.tools.postgres.connectionString,
+		);
+		const postgresTool = createPostgresTools(
+			connectionString ?? actionNode.content.tools.postgres.connectionString,
+		);
+		for (const tool of actionNode.content.tools.postgres.tools) {
+			if (tool in postgresTool.toolSet) {
+				preparedToolSet = {
+					...preparedToolSet,
+					toolSet: {
+						...preparedToolSet.toolSet,
+						[tool]:
+							postgresTool.toolSet[tool as keyof typeof postgresTool.toolSet],
+					},
+				};
+			}
+			preparedToolSet = {
+				...preparedToolSet,
+				cleanupFunctions: [
+					...preparedToolSet.cleanupFunctions,
+					postgresTool.cleanup,
+				],
+			};
 		}
 	}
 
@@ -275,7 +307,7 @@ export async function generateText(args: {
 		model: generationModel(actionNode.content.llm),
 		messages,
 		maxSteps: 5, // enable multi-step calls
-		tools,
+		tools: preparedToolSet.toolSet,
 		experimental_continueSteps: true,
 		onError: async ({ error }) => {
 			if (AISDKError.isInstance(error)) {
@@ -309,6 +341,12 @@ export async function generateText(args: {
 					}),
 				]);
 			}
+
+			await Promise.all(
+				preparedToolSet.cleanupFunctions.map((cleanupFunction) =>
+					cleanupFunction(),
+				),
+			);
 		},
 		async onFinish(event) {
 			const generationOutputs: GenerationOutput[] = [];
@@ -408,6 +446,11 @@ export async function generateText(args: {
 				generation: completedGeneration,
 				onConsumeAgentTime: args.context.onConsumeAgentTime,
 			});
+			await Promise.all(
+				preparedToolSet.cleanupFunctions.map((cleanupFunction) =>
+					cleanupFunction(),
+				),
+			);
 		},
 		experimental_telemetry: {
 			isEnabled: args.context.telemetry?.isEnabled,

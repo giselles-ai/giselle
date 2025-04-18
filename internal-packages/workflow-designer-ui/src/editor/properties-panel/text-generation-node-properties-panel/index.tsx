@@ -33,7 +33,7 @@ import {
 } from "./model";
 import { useConnectedOutputs } from "./outputs";
 import { PromptPanel } from "./prompt-panel";
-import { GitHubToolsPanel } from "./tools";
+import { GitHubToolsPanel, PostgresToolsPanel } from "./tools";
 
 export function TextGenerationNodePropertiesPanel({
 	node,
@@ -316,9 +316,10 @@ export function TextGenerationNodePropertiesPanel({
 							</Tabs.Content>
 							<Tabs.Content
 								value="tools"
-								className="flex-1 flex flex-col overflow-y-auto p-[16px]"
+								className="flex-1 flex flex-col overflow-y-auto p-[16px] gap-[16px]"
 							>
 								<GitHubToolsPanel node={node} />
+								<PostgresToolsPanel node={node} />
 							</Tabs.Content>
 						</Tabs.Root>
 					</PropertiesPanelContent>

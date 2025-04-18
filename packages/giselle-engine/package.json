@@ -45,6 +45,7 @@
 		"@giselle-sdk/utils": "workspace:*",
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
 		"@octokit/webhooks-types": "7.6.1",
+		"@types/pg": "catalog:",
 		"@types/react": "catalog:",
 		"tsup": "catalog:",
 		"vitest": "catalog:"
@@ -69,6 +70,7 @@
 		"langfuse-core": "catalog:",
 		"next": "catalog:",
 		"openai": "catalog:",
+		"pg": "catalog:",
 		"react": "catalog:",
 		"unstorage": "catalog:",
 		"zod": "catalog:"

@@ -20,6 +20,7 @@ export default defineConfig([
 		banner: {
 			js: "'use client'",
 		},
+		external: ["react", "zod"],
 		format: ["cjs", "esm"],
 		dts: true,
 		sourcemap: true,
