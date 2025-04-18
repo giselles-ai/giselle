@@ -246,3 +246,24 @@ export const agentTimeRestrictions = pgTable(
 		teamDbIdIdx: index().on(table.teamDbId),
 	}),
 );
+
+export const invitations = pgTable(
+	"invitations",
+	{
+		token: text("token").notNull().unique(),
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		email: text("email").notNull(),
+		role: text("role").notNull().$type<TeamRole>(),
+		inviteUserDbId: integer("invite_user_db_id")
+			.notNull()
+			.references(() => users.dbId),
+		expiredAt: timestamp("expired_at").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		revokedAt: timestamp("revoked_at"),
+	},
+	(table) => ({
+		teamDbIdRevokedAtIdx: index().on(table.teamDbId, table.revokedAt),
+	}),
+);

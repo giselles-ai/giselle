@@ -6,6 +6,7 @@ import {
 	agentActivities,
 	agents,
 	db,
+	type invitations,
 	subscriptions,
 	supabaseUserMappings,
 	teamMemberships,
@@ -14,6 +15,7 @@ import {
 } from "@/drizzle";
 import { updateGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
+import { fetchCurrentUser } from "@/services/accounts";
 import { stripe } from "@/services/external/stripe";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import type { CurrentTeam, TeamId } from "@/services/teams/types";
@@ -21,6 +23,12 @@ import { reportUserSeatUsage } from "@/services/usage-based-billing";
 import { and, asc, count, desc, eq, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import {
+	createInvitation,
+	listInvitations,
+	revokeInvitation,
+	sendInvitationEmail,
+} from "./invitation";
 
 function isUserId(value: string): value is UserId {
 	return value.startsWith("usr_");
@@ -108,7 +116,9 @@ export async function getTeamMembers() {
 	}
 }
 
-export async function addTeamMember(formData: FormData) {
+export async function addTeamMember(
+	formData: FormData,
+): Promise<{ success: boolean; error?: string }> {
 	try {
 		const email = formData.get("email") as string;
 		const role = formData.get("role") as string;
@@ -597,4 +607,151 @@ async function handleMemberChange(currentTeam: CurrentTeam) {
 			? subscription.customer
 			: subscription.customer.id;
 	await reportUserSeatUsage(subscriptionId, customer);
+}
+
+// Define result types for sendInvitations
+type InvitationResult = {
+	email: string;
+	status: "success" | "db_error" | "email_error" | "unknown_error";
+	error?: string;
+};
+
+export type SendInvitationsResult = {
+	overallStatus: "success" | "partial_success" | "failure";
+	results: InvitationResult[];
+};
+
+// Update sendInvitations function
+export async function sendInvitations(
+	emails: string[],
+	role: TeamRole,
+): Promise<SendInvitationsResult> {
+	const currentUser = await fetchCurrentUser();
+	const currentTeam = await fetchCurrentTeam();
+
+	const invitationPromises = emails.map(
+		async (email): Promise<InvitationResult> => {
+			let invitation: typeof invitations.$inferSelect | null = null;
+			try {
+				invitation = await createInvitation(
+					email,
+					role,
+					currentTeam,
+					currentUser,
+				);
+				await sendInvitationEmail(invitation);
+				return { email, status: "success" };
+			} catch (error: unknown) {
+				const status = invitation ? "email_error" : "db_error";
+				console.error(`Failed to process invitation for ${email}:`, error);
+				const errorMessage =
+					error instanceof Error
+						? error.message
+						: "Unknown error during invitation process";
+				return { email, status, error: errorMessage };
+			}
+		},
+	);
+
+	const settledResults = await Promise.allSettled(invitationPromises);
+
+	const detailedResults: InvitationResult[] = settledResults.map(
+		(result, index) => {
+			if (result.status === "fulfilled") {
+				return result.value;
+			}
+			// Handle unexpected errors during the Promise execution itself
+			console.error(
+				`Unexpected error processing invitation for ${emails[index]}:`,
+				result.reason,
+			);
+			const reason = result.reason as unknown;
+			const errorMessage =
+				reason instanceof Error
+					? reason.message
+					: "Unexpected processing error";
+			return {
+				email: emails[index],
+				status: "unknown_error",
+				error: errorMessage,
+			};
+		},
+	);
+
+	const successfulCount = detailedResults.filter(
+		(r) => r.status === "success",
+	).length;
+	let overallStatus: SendInvitationsResult["overallStatus"];
+	if (successfulCount === emails.length) {
+		overallStatus = "success";
+	} else if (successfulCount > 0) {
+		overallStatus = "partial_success";
+	} else {
+		overallStatus = "failure";
+	}
+
+	revalidatePath("/settings/team/members");
+
+	return {
+		overallStatus,
+		results: detailedResults,
+	};
+}
+
+// Define a unified result type for actions
+export type ActionResult =
+	| { success: true }
+	| { success: false; error: string };
+
+export async function revokeInvitationAction(
+	prevState: ActionResult | undefined,
+	formData: FormData,
+): Promise<ActionResult> {
+	const token = formData.get("token") as string;
+	try {
+		await revokeInvitation(token);
+		revalidatePath("/settings/team/members");
+		return { success: true };
+	} catch (e: unknown) {
+		console.error("Failed to revoke invitation:", e);
+		return {
+			success: false,
+			error: e instanceof Error ? e.message : "Unknown error",
+		};
+	}
+}
+
+export async function resendInvitationAction(
+	prevState: ActionResult | undefined,
+	formData: FormData,
+): Promise<ActionResult> {
+	const token = formData.get("token") as string;
+	try {
+		const invitations = await listInvitations();
+		const invitation = invitations.find((inv) => inv.token === token);
+		if (!invitation) {
+			throw new Error("Invitation not found");
+		}
+		// 1. revoke existing invitation
+		await revokeInvitation(token);
+		// 2. create new invitation
+		const currentTeam = await fetchCurrentTeam();
+		const currentUser = await fetchCurrentUser();
+		const newInvitation = await createInvitation(
+			invitation.email,
+			invitation.role,
+			currentTeam,
+			currentUser,
+		);
+		// 3. send invitation email
+		await sendInvitationEmail(newInvitation);
+		revalidatePath("/settings/team/members");
+		return { success: true };
+	} catch (e: unknown) {
+		console.error("Failed to resend invitation:", e);
+		return {
+			success: false,
+			error: e instanceof Error ? e.message : "Unknown error",
+		};
+	}
 }

@@ -37,7 +37,6 @@ type TeamMemberListItemProps = {
 	role: TeamRole;
 	currentUserRole: TeamRole;
 	isProPlan: boolean;
-	isInvited?: boolean;
 	profileImage?: string | null;
 };
 
@@ -48,7 +47,6 @@ export function TeamMemberListItem({
 	role: initialRole,
 	currentUserRole,
 	isProPlan,
-	isInvited = false,
 	profileImage = null,
 }: TeamMemberListItemProps) {
 	const [isEditingRole, setIsEditingRole] = useState(false);
@@ -61,10 +59,7 @@ export function TeamMemberListItem({
 	const currentUser = "current-user-id"; // should come from getUserId() or similar
 
 	const canEdit =
-		isProPlan &&
-		currentUserRole === "admin" &&
-		user !== currentUser &&
-		!isInvited;
+		isProPlan && currentUserRole === "admin" && user !== currentUser;
 
 	const handleRoleChange = (value: string) => {
 		setTempRole(value as TeamRole);
@@ -126,30 +121,17 @@ export function TeamMemberListItem({
 		<div className="px-2">
 			<div className="flex items-center justify-between gap-4 py-4 border-b-[0.5px] border-black-400 font-hubot">
 				<div className="flex gap-x-4 items-center">
-					<div className={`flex-shrink-0 ${isInvited ? "opacity-50" : ""}`}>
-						{isInvited ? (
-							<div className="w-8 h-8 rounded-full border border-dashed border-white-400 flex items-center justify-center">
-								{/* Empty circle with dashed border */}
-							</div>
-						) : (
-							<Avatar
-								name={email || userId}
-								variant="marble"
-								size={32}
-								colors={["#413e4a", "#73626e", "#b38184", "#f0b49e", "#f7e4be"]}
-							/>
-						)}
+					<div className="flex-shrink-0">
+						<Avatar
+							name={email || userId}
+							variant="marble"
+							size={32}
+							colors={["#413e4a", "#73626e", "#b38184", "#f0b49e", "#f7e4be"]}
+						/>
 					</div>
-					<div
-						className={`flex flex-col gap-y-1 font-medium text-[12px] leading-[12px] ${
-							isInvited ? "opacity-50" : ""
-						}`}
-					>
+					<div className="flex flex-col gap-y-1 font-medium text-[12px] leading-[12px]">
 						<div className="text-blue-80">
 							{displayName || "No display name"}
-							{isInvited && (
-								<span className="ml-2 text-white-400">(Invite sent)</span>
-							)}
 						</div>
 						<div className="text-white-400">{email || "No email"}</div>
 					</div>

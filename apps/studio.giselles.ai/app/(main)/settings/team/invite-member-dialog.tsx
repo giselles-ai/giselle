@@ -14,35 +14,11 @@ import { ChevronDown, Link as LinkIcon, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { email as emailValidator, parse, pipe, string } from "valibot";
 import { Button } from "../components/button";
-import { addTeamMember } from "./actions";
-
-// Global variable to store invited members (for UI demo)
-// In actual implementation, this should be fetched from the server or managed with a state management library
-let invitedMembersList: { email: string; role: TeamRole }[] = [];
-
-// Function to get invited members (for UI demo)
-export function getInvitedMembers() {
-	// Try to get from localStorage first
-	try {
-		const stored = localStorage.getItem("invitedMembers");
-		if (stored) {
-			invitedMembersList = JSON.parse(stored);
-		}
-	} catch (e) {
-		console.error("Failed to load invited members from localStorage:", e);
-	}
-	return invitedMembersList;
-}
-
-// Function to save invited members (for UI demo)
-function saveInvitedMembers(list: { email: string; role: TeamRole }[]) {
-	invitedMembersList = list;
-	try {
-		localStorage.setItem("invitedMembers", JSON.stringify(list));
-	} catch (e) {
-		console.error("Failed to save invited members to localStorage:", e);
-	}
-}
+import {
+	type SendInvitationsResult,
+	addTeamMember,
+	sendInvitations,
+} from "./actions";
 
 type InviteMemberDialogProps = {
 	teamInvitationViaEmailEnabled: boolean;
@@ -54,7 +30,7 @@ export function InviteMemberDialog({
 	const [open, setOpen] = useState(false);
 	const [emailInput, setEmailInput] = useState("");
 	const [emailList, setEmailList] = useState<string[]>([]);
-	const [role, setRole] = useState("member");
+	const [role, setRole] = useState<TeamRole>("member");
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string>("");
 	const [dialogKey, setDialogKey] = useState(Date.now()); // Key for forced re-rendering
@@ -131,61 +107,54 @@ export function InviteMemberDialog({
 			return;
 		}
 
-		try {
-			setIsLoading(true);
+		setIsLoading(true);
 
-			if (teamInvitationViaEmailEnabled) {
-				// For UI demo: Add to list without server communication
-				const newList = [...invitedMembersList];
-				for (const email of emailList) {
-					// Check for duplicates
-					if (!newList.some((member) => member.email === email)) {
-						newList.push({ email, role: role as TeamRole });
-					}
-				}
-				saveInvitedMembers(newList);
+		if (teamInvitationViaEmailEnabled) {
+			const response: SendInvitationsResult = await sendInvitations(
+				emailList,
+				role,
+			);
+
+			if (response.overallStatus === "success") {
+				handleCloseDialog();
 			} else {
-				// Process for each email address
-				const results = await Promise.all(
-					emailList.map(async (emailAddress) => {
-						const formData = new FormData();
-						formData.append("email", emailAddress);
-						formData.append("role", role);
-						return addTeamMember(formData);
-					}),
+				const failedInvites = response.results.filter(
+					(r) => r.status !== "success",
 				);
-
-				// Check for errors
-				const errors = results.filter((result) => !result.success);
-				if (errors.length > 0) {
-					setError(
-						`Failed to add ${errors.length} member(s). ${errors[0].error || ""}`,
-					);
+				const errorMessages = failedInvites
+					.map((r) => `${r.email}: ${r.error || r.status}`)
+					.join(", ");
+				let message = `Failed to send ${failedInvites.length} invitation(s).`;
+				if (response.overallStatus === "partial_success") {
+					const successCount = emailList.length - failedInvites.length;
+					message = `${successCount} invitation(s) sent successfully. Failed to send ${failedInvites.length}: ${errorMessages}`;
 				} else {
-					handleCloseDialog(); // Close dialog on success
+					message = `Failed to send all ${failedInvites.length} invitation(s): ${errorMessages}`;
 				}
+				setError(message);
 			}
+		} else {
+			// Process for each email address
+			const results = await Promise.all(
+				emailList.map(async (emailAddress) => {
+					const formData = new FormData();
+					formData.append("email", emailAddress);
+					formData.append("role", role);
+					return addTeamMember(formData);
+				}),
+			);
 
-			// Always emit the event to refresh the list, even if server-side errors occurred
-			const event = new CustomEvent("invited-members-updated");
-			window.dispatchEvent(event);
-
-			// Assuming success for the demo
-			setTimeout(() => {
+			// Check for errors
+			const errors = results.filter((result) => !result.success);
+			if (errors.length > 0) {
+				setError(
+					`Failed to add ${errors.length} member(s). ${errors[0].error || ""}`,
+				);
+			} else {
 				handleCloseDialog(); // Close dialog on success
-			}, 500); // Process after 0.5 seconds (for loading indicator)
-		} catch (error) {
-			if (error instanceof Error) {
-				setError(error.message);
 			}
-			console.error("Error:", error);
-
-			// Even on error, try to refresh the list (the error might be with one email but others added)
-			const event = new CustomEvent("invited-members-updated");
-			window.dispatchEvent(event);
-		} finally {
-			setIsLoading(false);
 		}
+		setIsLoading(false);
 	};
 
 	return (
@@ -271,7 +240,12 @@ export function InviteMemberDialog({
 									value={role}
 									onValueChange={(value) => {
 										setError("");
-										setRole(value);
+										const isTeamRole = (value: string): value is TeamRole => {
+											return ["admin", "member"].includes(value);
+										};
+										if (isTeamRole(value)) {
+											setRole(value);
+										}
 									}}
 									disabled={isLoading}
 								>

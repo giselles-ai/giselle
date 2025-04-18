@@ -1,9 +1,10 @@
 "use client";
-
 import type { TeamRole } from "@/drizzle";
+import { Toast } from "@/packages/components/toast";
+import { useToast } from "@/packages/contexts/toast";
 import type { TeamId } from "@/services/teams/types";
-import { useCallback, useEffect, useState } from "react";
-import { getInvitedMembers } from "./invite-member-dialog";
+import type { Invitation } from "./invitation";
+import { InvitationListItem } from "./invitation-list-item";
 import { TeamMemberListItem } from "./team-members-list-item";
 
 type TeamMembersListProps = {
@@ -13,64 +14,20 @@ type TeamMembersListProps = {
 		displayName: string | null;
 		email: string | null;
 		role: TeamRole;
-		isInvited?: boolean;
 	}[];
+	invitations: Invitation[];
 	currentUserRole: TeamRole;
 	isProPlan: boolean;
-	teamInvitationViaEmailEnabled: boolean;
 };
 
 export function TeamMembersList({
 	teamId,
 	members,
+	invitations,
 	currentUserRole,
 	isProPlan,
-	teamInvitationViaEmailEnabled,
 }: TeamMembersListProps) {
-	// Get invited members on client side
-	const [invitedMembers, setInvitedMembers] = useState<
-		{ email: string; role: TeamRole }[]
-	>([]);
-
-	// Function to refresh invited members list wrapped in useCallback
-	const refreshInvitedMembers = useCallback(() => {
-		if (!teamInvitationViaEmailEnabled) {
-			return;
-		}
-
-		try {
-			const invited = getInvitedMembers();
-			console.log("Refreshed invited members:", invited);
-			setInvitedMembers(invited || []);
-		} catch (error) {
-			console.error("Error refreshing invited members:", error);
-		}
-	}, [teamInvitationViaEmailEnabled]);
-
-	// Get invited members once on mount and when custom event is fired
-	useEffect(() => {
-		// Initial load
-		refreshInvitedMembers();
-
-		// Set up custom event listener
-		const handleInvitedMembersUpdated = () => {
-			refreshInvitedMembers();
-		};
-
-		// Add event listener
-		window.addEventListener(
-			"invited-members-updated",
-			handleInvitedMembersUpdated,
-		);
-
-		// Cleanup function
-		return () => {
-			window.removeEventListener(
-				"invited-members-updated",
-				handleInvitedMembersUpdated,
-			);
-		};
-	}, [refreshInvitedMembers]);
+	const { toasts } = useToast();
 
 	return (
 		<>
@@ -83,23 +40,22 @@ export function TeamMembersList({
 					role={member.role}
 					currentUserRole={currentUserRole}
 					isProPlan={isProPlan}
-					isInvited={member.isInvited}
 				/>
 			))}
 
-			{invitedMembers.length > 0 &&
-				invitedMembers.map((invitedMember, index) => (
-					<TeamMemberListItem
-						key={`invited-${index}-${invitedMember.email}`}
-						userId={`temp-id-${index}`}
-						displayName={null}
-						email={invitedMember.email}
-						role={invitedMember.role}
-						currentUserRole={currentUserRole}
-						isProPlan={isProPlan}
-						isInvited={true}
+			{invitations.length > 0 &&
+				invitations.map((invitation) => (
+					<InvitationListItem
+						key={invitation.token}
+						token={invitation.token}
+						email={invitation.email}
+						role={invitation.role}
+						expiredAt={invitation.expiredAt}
 					/>
 				))}
+			{toasts.map((toast) => (
+				<Toast key={toast.id} {...toast} />
+			))}
 		</>
 	);
 }

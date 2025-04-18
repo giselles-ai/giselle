@@ -4,7 +4,7 @@ import {
 	Provider as ToastComponentProvider,
 	Viewport as ToastComponentViewport,
 } from "@radix-ui/react-toast";
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 
 interface Toast {
 	id: string;
@@ -35,24 +35,27 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
 	const [toasts, setToasts] = useState<Toast[]>([]);
 
-	const addToast = (toast: Omit<Toast, "id">) => {
-		const id = Math.random().toString(36).substring(2);
-		const newToast = {
-			...toast,
-			id,
-			duration: toast.duration || 10000,
-		};
-
-		setToasts((prevToasts) => [...prevToasts, newToast]);
-
-		setTimeout(() => {
-			removeToast(id);
-		}, newToast.duration);
-	};
-
-	const removeToast = (id: string) => {
+	const removeToast = useCallback((id: string) => {
 		setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
-	};
+	}, []);
+
+	const addToast = useCallback(
+		(toast: Omit<Toast, "id">) => {
+			const id = Math.random().toString(36).substring(2);
+			const newToast = {
+				...toast,
+				id,
+				duration: toast.duration || 10000,
+			};
+
+			setToasts((prevToasts) => [...prevToasts, newToast]);
+
+			setTimeout(() => {
+				removeToast(id);
+			}, newToast.duration);
+		},
+		[removeToast],
+	);
 
 	return (
 		<ToastContext.Provider value={{ toasts, addToast, removeToast }}>
