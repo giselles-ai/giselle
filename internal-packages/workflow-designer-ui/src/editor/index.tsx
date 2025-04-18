@@ -24,6 +24,7 @@ import {
 	PanelResizeHandle,
 } from "react-resizable-panels";
 import { Background } from "../ui/background";
+import { ReadOnlyBanner } from "../ui/read-only-banner";
 import { ToastProvider, useToasts } from "../ui/toast";
 import { Beta } from "./beta";
 import { edgeTypes } from "./connector";
@@ -307,8 +308,12 @@ function NodeCanvas() {
 
 export function Editor({
 	githubTools = false,
+	isReadOnly = false,
+	userRole = "viewer",
 }: {
 	githubTools?: boolean;
+	isReadOnly?: boolean;
+	userRole?: "viewer" | "guest" | "editor" | "owner";
 }) {
 	const { data } = useWorkflowDesigner();
 	const selectedNodes = useMemo(
@@ -327,6 +332,8 @@ export function Editor({
 	});
 	const expand = useRef(false);
 	const collapse = useRef(false);
+
+	const [showReadOnlyBanner, setShowReadOnlyBanner] = useState(isReadOnly);
 
 	useEffect(() => {
 		if (!rightPanelRef.current) {
@@ -366,8 +373,21 @@ export function Editor({
 	});
 
 	const [isTourOpen, setIsTourOpen] = useState(data.nodes.length === 0);
+
+	const handleDismissBanner = useCallback(() => {
+		setShowReadOnlyBanner(false);
+	}, []);
+
 	return (
 		<div className="flex-1 overflow-hidden font-sans">
+			{showReadOnlyBanner && isReadOnly && (
+				<ReadOnlyBanner
+					onDismiss={handleDismissBanner}
+					userRole={userRole}
+					className="z-50"
+				/>
+			)}
+
 			<Beta.Provider value={{ githubTools }}>
 				<ToastProvider>
 					<ReactFlowProvider>
@@ -382,7 +402,6 @@ export function Editor({
 										defaultSize={100}
 									>
 										<div className="h-full flex">
-											{/* <Debug /> */}
 											<NodeCanvas />
 										</div>
 									</Panel>

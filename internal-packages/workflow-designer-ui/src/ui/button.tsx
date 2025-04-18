@@ -1,30 +1,93 @@
-import clsx from "clsx/lite";
-import type { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
+import clsx from "clsx";
+import { forwardRef } from "react";
 
-export function Button({
-	className,
-	children,
-	loading = false,
-	...props
-}: DetailedHTMLProps<
-	ButtonHTMLAttributes<HTMLButtonElement>,
-	HTMLButtonElement
-> & { loading?: boolean }) {
-	return (
-		<button
-			data-loading={loading}
-			className={clsx(
-				"p-[1px] h-[34px]",
-				"rounded-[8px] text-white-900",
-				"text-[14px] cursor-pointer font-accent",
-				"bg-linear-[var(--button-gradient-angle)] data-[loading=true]:animate-rotate-button-gradient-angle from-[hsl(0,_2%,_89%)]/60 via-[hsl(0,_2%,_89%)] to-[hsl(0,_0%,_36%)] from-30% via-50% to-100%",
-				className,
-			)}
-			{...props}
-		>
-			<div className="px-[16px] bg-primary-900 rounded-[8px] flex items-center gap-[4px] h-full text-[14px] font-[700] justify-center">
+type ButtonProps = {
+	variant?: "primary" | "outline" | "ghost";
+	size?: "sm" | "md" | "lg";
+	loading?: boolean;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>;
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+	function Button(
+		{
+			variant = "primary",
+			size = "md",
+			className,
+			children,
+			loading,
+			...props
+		},
+		ref,
+	) {
+		return (
+			<button
+				className={clsx(
+					"rounded-[8px] font-accent inline-flex items-center justify-center",
+					{
+						"bg-primary-900 text-white-900 hover:bg-primary-800":
+							variant === "primary",
+						"bg-transparent text-white-900 border border-white-900/20 hover:bg-white-900/5":
+							variant === "outline",
+						"bg-transparent text-white-900 hover:bg-white-900/5":
+							variant === "ghost",
+					},
+					{
+						"text-[12px] font-bold px-[12px] py-[4px]": size === "sm",
+						"text-[14px] font-bold px-[16px] py-[8px]": size === "md",
+						"text-[16px] font-bold px-[20px] py-[10px]": size === "lg",
+					},
+					{
+						"opacity-70 cursor-wait": loading,
+					},
+					className,
+				)}
+				ref={ref}
+				data-loading={loading}
+				disabled={loading}
+				{...props}
+			>
 				{children}
-			</div>
-		</button>
-	);
-}
+			</button>
+		);
+	},
+);
+
+export const ShareButton = forwardRef<HTMLButtonElement, ButtonProps>(
+	function ShareButton({ className, children = "Share", ...props }, ref) {
+		return (
+			<button
+				className={clsx(
+					"flex px-[8px] py-[4px] justify-center items-center gap-[4px] rounded-[5px] bg-[#839DC3] text-black-850 text-[14px] font-bold hover:bg-[#6d88b0] transition-colors",
+					className,
+				)}
+				ref={ref}
+				{...props}
+			>
+				<svg
+					width="17"
+					height="17"
+					viewBox="0 0 17 17"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+					aria-hidden="true"
+				>
+					<title>Share Icon</title>
+					<g clipPath="url(#clip0_12687_53417)">
+						<path
+							fillRule="evenodd"
+							clipRule="evenodd"
+							d="M16.5838 15.2942C16.5838 15.2942 15.7927 15.102 14.8885 14.3492C14.4892 14.0209 14.4515 13.7807 14.4063 12.5874C14.3837 11.9547 14.3535 11.1699 14.2104 10.1449C13.8261 7.34994 11.6335 6.73329 10.443 6.78935C10.4882 6.68524 10.5108 6.58113 10.5108 6.46101C10.5108 4.99548 10.1115 3.85829 9.32032 3.09749C8.26512 2.07142 6.89773 2.12766 6.6873 2.13632L6.68315 2.13649C5.53787 2.06442 3.30004 2.65703 2.91577 5.492C2.78014 6.52508 2.75 7.30189 2.7274 7.93455C2.68219 9.12779 2.64452 9.36804 2.25271 9.69639C1.3636 10.4412 0.595058 10.6334 0.595058 10.6334C0.188181 10.7215 -0.0755364 11.1539 0.0148808 11.5864C0.0902285 11.9628 0.399154 12.219 0.753288 12.219C0.806032 12.219 0.858775 12.219 0.911519 12.203C1.02454 12.179 2.02666 11.9307 3.19455 10.9537C4.15611 10.1473 4.18895 9.24534 4.23395 8.00977L4.23435 7.99861L4.23795 7.90348C4.25964 7.32755 4.28633 6.61888 4.40765 5.71623C4.6789 3.71414 6.29135 3.70613 6.60781 3.73016C6.63277 3.73016 6.65257 3.72466 6.67576 3.71822L6.69069 3.71414C6.70274 3.71414 6.7148 3.7167 6.72685 3.71926C6.74494 3.72311 6.76302 3.72695 6.7811 3.72215L6.78321 3.72205C6.83222 3.71945 7.70812 3.673 8.32573 4.27472C8.77782 4.72319 9.0114 5.45195 9.0114 6.44499C9.0114 6.62918 9.07921 6.78935 9.17716 6.92549C8.09215 7.24583 6.88659 8.12675 6.61534 10.1368C6.47971 11.1699 6.44957 11.9547 6.42697 12.5794C6.38176 13.7726 6.34409 14.0129 5.95228 14.3412C5.06318 15.086 4.30217 15.2782 4.29463 15.2782C3.88775 15.3663 3.62404 15.7988 3.71445 16.2312C3.7898 16.6076 4.09873 16.8639 4.45286 16.8639H4.45287C4.50561 16.8639 4.55835 16.8639 4.61109 16.8479C4.72411 16.8238 5.72624 16.5756 6.89413 15.5986C7.85568 14.7921 7.88853 13.8902 7.93352 12.6546L7.93392 12.6435L7.93752 12.5483C7.95921 11.9724 7.9859 11.2637 8.10722 10.3611C8.37848 8.35899 9.98338 8.35899 10.3074 8.37501C10.3224 8.37501 10.3375 8.37301 10.3526 8.371L10.3526 8.371C10.3677 8.369 10.3827 8.367 10.3978 8.367C10.4066 8.367 10.4166 8.36943 10.4268 8.37193C10.4428 8.37584 10.4594 8.37989 10.4731 8.37501C10.6766 8.35899 12.4397 8.28692 12.7185 10.3611C12.8466 11.3061 12.8767 12.0428 12.8993 12.6355C12.9445 13.8367 12.9822 14.7817 13.9617 15.5986C15.1372 16.5756 16.1619 16.8238 16.2749 16.8479C16.3277 16.8559 16.3804 16.8639 16.4331 16.8639C16.7797 16.8639 17.0887 16.6076 17.164 16.2312C17.2544 15.7988 16.9907 15.3743 16.5914 15.2782L16.5838 15.2942ZM9.47852 10.3771C8.59695 10.3771 8.59695 11.8346 9.47852 11.8346C10.3601 11.8346 10.3601 10.3771 9.47852 10.3771ZM11.4753 10.3771C10.5937 10.3771 10.5937 11.8346 11.4753 11.8346C12.3568 11.8346 12.3568 10.3771 11.4753 10.3771ZM5.77892 5.73223C4.89735 5.73223 4.89735 7.18975 5.77892 7.18975C6.66049 7.18975 6.66049 5.73223 5.77892 5.73223ZM7.77565 5.73223C6.89409 5.73223 6.89409 7.18975 7.77565 7.18975C8.65722 7.18975 8.65722 5.73223 7.77565 5.73223Z"
+							fill="currentColor"
+						/>
+					</g>
+					<defs>
+						<clipPath id="clip0_12687_53417">
+							<rect width="17" height="17" fill="white" />
+						</clipPath>
+					</defs>
+				</svg>
+				{children}
+			</button>
+		);
+	},
+);

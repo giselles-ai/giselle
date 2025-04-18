@@ -85,7 +85,8 @@ export function Viewer() {
 											onClick={() => {
 												cancel();
 											}}
-											loading={true}
+											data-loading="true"
+											disabled={true}
 										>
 											Stop
 										</Button>

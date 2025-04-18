@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 1015 MIT
+* 1041 MIT
 * 107 Apache 2.0
 * 58 ISC
 * 34 New BSD
@@ -7800,6 +7800,39 @@ SIL OPEN FONT LICENSE permitted
 
 
 
+<a name="hast-util-from-parse5"></a>
+### hast-util-from-parse5 v8.0.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="hast-util-parse-selector"></a>
+### hast-util-parse-selector v4.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="hast-util-raw"></a>
+### hast-util-raw v9.1.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="hast-util-to-jsx-runtime"></a>
 ### hast-util-to-jsx-runtime v2.3.2
 #### 
@@ -7811,8 +7844,30 @@ SIL OPEN FONT LICENSE permitted
 
 
 
+<a name="hast-util-to-parse5"></a>
+### hast-util-to-parse5 v8.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="hast-util-whitespace"></a>
 ### hast-util-whitespace v3.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="hastscript"></a>
+### hastscript v9.0.1
 #### 
 
 ##### Paths
@@ -7890,6 +7945,17 @@ SIL OPEN FONT LICENSE permitted
 
 <a name="html-url-attributes"></a>
 ### html-url-attributes v3.0.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="html-void-elements"></a>
+### html-void-elements v3.0.0
 #### 
 
 ##### Paths
@@ -9241,6 +9307,17 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="markdown-table"></a>
+### markdown-table v3.0.4
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="marked"></a>
 ### marked v15.0.7
 #### 
@@ -9263,8 +9340,85 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="mdast-util-find-and-replace"></a>
+### mdast-util-find-and-replace v3.0.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="mdast-util-from-markdown"></a>
 ### mdast-util-from-markdown v2.0.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="mdast-util-gfm"></a>
+### mdast-util-gfm v3.1.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="mdast-util-gfm-autolink-literal"></a>
+### mdast-util-gfm-autolink-literal v2.0.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="mdast-util-gfm-footnote"></a>
+### mdast-util-gfm-footnote v2.1.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="mdast-util-gfm-strikethrough"></a>
+### mdast-util-gfm-strikethrough v2.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="mdast-util-gfm-table"></a>
+### mdast-util-gfm-table v2.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="mdast-util-gfm-task-list-item"></a>
+### mdast-util-gfm-task-list-item v2.0.0
 #### 
 
 ##### Paths
@@ -9408,6 +9562,83 @@ BlueOak-1.0.0 permitted
 
 <a name="micromark-core-commonmark"></a>
 ### micromark-core-commonmark v2.0.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="micromark-extension-gfm"></a>
+### micromark-extension-gfm v3.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="micromark-extension-gfm-autolink-literal"></a>
+### micromark-extension-gfm-autolink-literal v2.1.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="micromark-extension-gfm-footnote"></a>
+### micromark-extension-gfm-footnote v2.1.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="micromark-extension-gfm-strikethrough"></a>
+### micromark-extension-gfm-strikethrough v2.1.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="micromark-extension-gfm-table"></a>
+### micromark-extension-gfm-table v2.1.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="micromark-extension-gfm-tagfilter"></a>
+### micromark-extension-gfm-tagfilter v2.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="micromark-extension-gfm-task-list-item"></a>
+### micromark-extension-gfm-task-list-item v2.1.0
 #### 
 
 ##### Paths
@@ -11408,8 +11639,30 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="rehype-raw"></a>
+### rehype-raw v7.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="relay-runtime"></a>
 ### relay-runtime v12.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="remark-gfm"></a>
+### remark-gfm v4.0.1
 #### 
 
 ##### Paths
@@ -11432,6 +11685,17 @@ BlueOak-1.0.0 permitted
 
 <a name="remark-rehype"></a>
 ### remark-rehype v11.1.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="remark-stringify"></a>
+### remark-stringify v11.0.0
 #### 
 
 ##### Paths
@@ -13385,6 +13649,17 @@ Unknown manually approved
 
 
 
+<a name="vfile-location"></a>
+### vfile-location v5.0.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="vfile-message"></a>
 ### vfile-message v4.0.2
 #### 
@@ -13475,6 +13750,17 @@ Unknown manually approved
 
 <a name="wcwidth"></a>
 ### wcwidth v1.0.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="web-namespaces"></a>
+### web-namespaces v2.0.1
 #### 
 
 ##### Paths

@@ -10,16 +10,27 @@ import { type ReactNode, useState } from "react";
 import { EditableText } from "../editor/properties-panel/ui";
 import { GiselleLogo } from "../icons";
 import { SettingsPanel } from "../settings";
+import { ShareButton } from "../ui/button";
+import { ReadOnlyBadge } from "../ui/read-only-banner";
+import { ShareModal } from "../ui/share-modal";
+import { UserPresence } from "../ui/user-presence";
 
 export function Header({
 	action,
 	onWorkflowNameChange,
+	isReadOnly = false,
+	/** @todo use feature flag provider instead of props */
+	shareFeatureFlag = false,
 }: {
 	action?: ReactNode;
 	onWorkflowNameChange?: (workspaceId: WorkspaceId, name: string) => void;
+	isReadOnly?: boolean;
+	/** @todo use feature flag provider instead of props */
+	shareFeatureFlag?: boolean;
 }) {
 	const { data, updateName, view, setView } = useWorkflowDesigner();
 	const [openSettings, setOpenSettings] = useState(false);
+	const [openShareModal, setOpenShareModal] = useState(false);
 
 	const updateWorkflowName = (value?: string) => {
 		if (!value) {
@@ -41,65 +52,36 @@ export function Header({
 				</Link>
 				<Divider />
 				<div className="flex gap-[2px] group">
-					<EditableText
-						fallbackValue="Untitled"
-						onChange={updateWorkflowName}
-						value={data.name}
-					/>
-
-					{/*
-					Setting menu is moved to main view
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger asChild>
-							<button
-								type="button"
-								className="group-hover:bg-white-900/10 hover:bg-white-900/20 rounded-r-[4px] peer-data-[editing=true]:hidden px-[2px]"
-							>
-								<ChevronDownIcon className="size-[12px] text-white-900" />
-							</button>
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Portal>
-							<DropdownMenu.Content
-								align="start"
-								className={clsx(
-									"relative rounded py-[8px] min-w-[200px]",
-									"rounded-[8px] border-[1px] bg-black-900/50 backdrop-blur-[8px]",
-									"shadow-[-2px_-1px_0px_0px_rgba(0,0,0,0.1),1px_1px_8px_0px_rgba(0,0,0,0.25)]",
-								)}
-								onCloseAutoFocus={(e) => {
-									e.preventDefault();
-								}}
-							>
-								<div
-									className={clsx(
-										"absolute z-0 rounded-[8px] inset-0 border-[1px] mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent",
-										"from-[hsl(232,_36%,_72%)]/40 to-[hsl(218,_58%,_21%)]/90",
-									)}
-								/>
-								<div className="relative flex flex-col gap-[8px]">
-									<DropdownMenu.RadioGroup
-										className="flex flex-col gap-[8px] px-[8px]"
-										onValueChange={(value) => {
-											if (value === "settings") {
-												setOpenSettings(true);
-											}
-										}}
-									>
-										<DropdownMenu.RadioItem
-											className="p-[8px] rounded-[8px] text-white-900 hover:bg-primary-900/50 transition-colors cursor-pointer text-[12px] outline-none select-none"
-											value="settings"
-										>
-											Settings
-										</DropdownMenu.RadioItem>
-									</DropdownMenu.RadioGroup>
-								</div>
-							</DropdownMenu.Content>
-						</DropdownMenu.Portal>
-					</DropdownMenu.Root> */}
+					{isReadOnly ? (
+						<span className="py-[2px] px-[4px] text-white-900 text-[14px]">
+							{data.name || "Untitled"}
+						</span>
+					) : (
+						<EditableText
+							fallbackValue="Untitled"
+							onChange={updateWorkflowName}
+							value={data.name}
+						/>
+					)}
 				</div>
+
+				{isReadOnly && (
+					<>
+						<Divider />
+						<ReadOnlyBadge />
+					</>
+				)}
 			</div>
 
 			<div className="flex items-center gap-[12px]">
+				{shareFeatureFlag && (
+					<>
+						<UserPresence />
+
+						<ShareButton onClick={() => setOpenShareModal(true)} />
+					</>
+				)}
+
 				<ToggleGroup.Root
 					type="single"
 					className="flex h-[33px] px-[8px] py-0 items-center justify-center rounded-[29px] overflow-hidden border border-[#20222F] bg-[rgba(18,23,35,0.20)]"
@@ -125,6 +107,7 @@ export function Header({
 									}
 								: undefined
 						}
+						disabled={isReadOnly}
 					>
 						{view === "editor" && (
 							<span className="absolute inset-[1px] bg-[#1B2333] rounded-[23px] z-0 animate-softFade" />
@@ -193,6 +176,7 @@ export function Header({
 									}
 								: undefined
 						}
+						disabled={isReadOnly}
 					>
 						{view === "integrator" && (
 							<span className="absolute inset-[1px] bg-[#1B2333] rounded-[23px] z-0 animate-softFade" />
@@ -233,12 +217,18 @@ export function Header({
 				</Dialog.Portal>
 			</Dialog.Root>
 
+			<ShareModal
+				open={openShareModal}
+				onOpenChange={setOpenShareModal}
+				appId={data.id}
+			/>
+
 			<style jsx global>{`
 				@keyframes softFade {
 					from { opacity: 0; }
 					to { opacity: 1; }
 				}
-				
+
 				.animate-softFade {
 					animation: softFade 0.5s ease-out;
 				}
