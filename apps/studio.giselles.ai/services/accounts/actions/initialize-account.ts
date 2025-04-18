@@ -19,6 +19,7 @@ import type { User } from "@supabase/auth-js";
 export const initializeAccount = async (
 	supabaseUserId: User["id"],
 	supabaseUserEmail: User["email"],
+	supabaseUserAvatarUrl?: User["user_metadata"]["avatar_url"],
 ) => {
 	const result = await db.transaction(async (tx) => {
 		const userId = `usr_${createId()}` as const;
@@ -27,6 +28,7 @@ export const initializeAccount = async (
 			.values({
 				id: userId,
 				email: supabaseUserEmail,
+				avatarUrl: supabaseUserAvatarUrl ?? null,
 			})
 			.returning({
 				dbId: users.dbId,

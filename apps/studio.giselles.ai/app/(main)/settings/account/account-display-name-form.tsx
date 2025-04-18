@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import type { users } from "@/drizzle";
 import { useState } from "react";
 import { maxLength, minLength, parse, pipe, string } from "valibot";
+import { AccountImageForm } from "../components/account-image-form";
 import { Button } from "../components/button";
 import { updateDisplayName } from "./actions";
 
@@ -23,7 +24,13 @@ const DisplayNameSchema = pipe(
 
 export function AccountDisplayNameForm({
 	displayName: _displayName,
-}: { displayName: typeof users.$inferSelect.displayName }) {
+	avatarUrl,
+	alt,
+}: {
+	displayName: typeof users.$inferSelect.displayName;
+	avatarUrl: typeof users.$inferSelect.avatarUrl;
+	alt?: string;
+}) {
 	const [isEditingName, setIsEditingName] = useState(false);
 	const [displayName, setDisplayName] = useState(
 		_displayName ?? "No display name",
@@ -86,9 +93,12 @@ export function AccountDisplayNameForm({
 					</p>
 				</div>
 				<div className="flex justify-between items-center gap-2">
-					<span className="text-primary-100 font-normal text-[18px] leading-[21.6px] tracking-[-0.011em] font-hubot px-3 py-2 border-[0.5px] border-black-750 rounded-[4px] bg-black-900 w-[360px] truncate">
-						{displayName}
-					</span>
+					<div className="flex items-center gap-4">
+						<AccountImageForm avatarUrl={avatarUrl} alt={alt} />
+						<span className="text-primary-100 font-normal text-[18px] leading-[21.6px] tracking-[-0.011em] font-hubot px-3 py-2 border-[0.5px] border-black-750 rounded-[4px] bg-black-900 w-[360px] truncate">
+							{displayName}
+						</span>
+					</div>
 
 					<Dialog open={isEditingName} onOpenChange={setIsEditingName}>
 						<DialogTrigger asChild>

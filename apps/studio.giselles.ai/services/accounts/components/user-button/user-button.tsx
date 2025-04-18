@@ -8,7 +8,6 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getUser } from "@/lib/supabase";
 import {
 	type CurrentTeam,
 	fetchCurrentTeam,
@@ -16,26 +15,27 @@ import {
 } from "@/services/teams";
 import { upgradeTeam } from "@/services/teams/actions/upgrade-team";
 import TeamCreation from "@/services/teams/components/team-creation";
-import Avatar from "boring-avatars";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import type { FC } from "react";
+import { AvatarImage } from "./avatar-image";
 import { SignOutButton } from "./sign-out-button";
 
 export const UserButton: FC = async () => {
-	const user = await getUser();
-	const { displayName } = await getAccountInfo();
+	const { displayName, email, avatarUrl } = await getAccountInfo();
+	const alt = displayName || email || "";
 	const currentTeam = await fetchCurrentTeam();
 	const isPro = isProPlan(currentTeam);
 
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger className="cursor-pointer">
-				<Avatar
-					name={user.email}
-					variant="marble"
-					size={36}
-					colors={["#413e4a", "#73626e", "#b38184", "#f0b49e", "#f7e4be"]}
+				<AvatarImage
+					className="w-9 h-9 rounded-full"
+					avatarUrl={avatarUrl}
+					width={36}
+					height={36}
+					alt={alt}
 				/>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent
@@ -47,7 +47,7 @@ export const UserButton: FC = async () => {
 						{displayName || "No display name"}
 					</span>
 					<span className="font-medium leading-[20.4px] font-hubot text-black-600">
-						{user.email}
+						{email}
 					</span>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator className="-mx-2 my-0 bg-black-400" />

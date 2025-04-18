@@ -95,6 +95,19 @@ export default defineDriver((options: SupabaseStorageDriverOptions) => {
 		},
 
 		async getItem(key, opts) {
+			if (opts?.signedUrl) {
+				const path = r(key);
+				const { data, error } = await supabase.storage
+					.from(bucket)
+					.createSignedUrl(path, opts.expiresIn || 60 * 60);
+
+				if (error || !data.signedUrl) {
+					return null;
+				}
+
+				return data.signedUrl;
+			}
+
 			let path = r(key);
 			if (opts?.bypassingCache) {
 				path = `${path}?timestamp=${Date.now()}`;

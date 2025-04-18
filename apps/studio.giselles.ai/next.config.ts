@@ -12,6 +12,27 @@ const nextConfig: NextConfig = {
 		"pino-pretty",
 		"unstorage",
 	],
+	images: {
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "avatars.githubusercontent.com",
+			},
+			{
+				protocol: "https",
+				hostname: "lh3.googleusercontent.com",
+			},
+			{
+				protocol: "https",
+				hostname: (() => {
+					if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+						throw new Error("NEXT_PUBLIC_SUPABASE_URL is not defined");
+					}
+					return new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname;
+				})(),
+			},
+		],
+	},
 	async redirects() {
 		return [
 			{

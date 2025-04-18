@@ -6,7 +6,9 @@ import { AccountDisplayNameForm } from "../account-display-name-form";
 import { getAccountInfo } from "../actions";
 
 export default async function AccountGeneralPage() {
-	const { displayName, email } = await getAccountInfo();
+	const { displayName, email, avatarUrl } = await getAccountInfo();
+	const alt = displayName || email || "";
+
 	return (
 		<div className="flex flex-col gap-[24px]">
 			<div className="flex justify-between items-center">
@@ -27,7 +29,11 @@ export default async function AccountGeneralPage() {
 				</a>
 			</div>
 			<div className="flex flex-col gap-y-4">
-				<AccountDisplayNameForm displayName={displayName} />
+				<AccountDisplayNameForm
+					displayName={displayName}
+					avatarUrl={avatarUrl}
+					alt={alt}
+				/>
 				<Card
 					title="Email"
 					description="This email will be used for account-related notifications."

@@ -118,7 +118,28 @@ async function initializeUserIfNeeded(user: User) {
 		where: eq(supabaseUserMappings.supabaseUserId, user.id),
 	});
 	if (!dbUser) {
-		await initializeAccount(user.id, user.email);
+		const avatarUrl = getAvatarUrlFromMetadata(
+			user.app_metadata.provider,
+			user.user_metadata,
+		);
+		await initializeAccount(user.id, user.email, avatarUrl);
+	}
+}
+
+function getAvatarUrlFromMetadata(
+	provider: User["app_metadata"]["provider"],
+	metadata: User["user_metadata"],
+): string | undefined {
+	switch (provider) {
+		case "google":
+		case "github":
+			return metadata.avatar_url;
+		default:
+			logger.debug(
+				{ provider, metadata },
+				"Unknown provider metadata structure",
+			);
+			return undefined;
 	}
 }
 

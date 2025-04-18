@@ -1,5 +1,6 @@
 "use server";
 
+import { storage } from "@/app/giselle-engine";
 import {
 	type TeamRole,
 	type UserId,
@@ -17,8 +18,9 @@ import {
 } from "@/services/accounts";
 import { isTeamId } from "@/services/teams";
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { redirect } from "next/navigation";
+import { IMAGE_CONSTRAINTS } from "../constants";
 import { deleteTeamMember } from "../team/actions";
 
 export async function connectGoogleIdentity() {
@@ -50,7 +52,11 @@ export async function getAccountInfo() {
 		const supabaseUser = await getUser();
 
 		const _users = await db
-			.select({ displayName: users.displayName, email: users.email })
+			.select({
+				displayName: users.displayName,
+				email: users.email,
+				avatarUrl: users.avatarUrl,
+			})
 			.from(users)
 			.innerJoin(
 				supabaseUserMappings,
@@ -58,7 +64,14 @@ export async function getAccountInfo() {
 			)
 			.where(eq(supabaseUserMappings.supabaseUserId, supabaseUser.id));
 
-		return _users[0];
+		const user = _users[0];
+		const avatarUrl = user.avatarUrl
+			? await getAvatarUrl(user.avatarUrl)
+			: null;
+		return {
+			...user,
+			avatarUrl,
+		};
 	} catch (error) {
 		logger.error("Failed to get account info:", error);
 		throw error;
@@ -140,4 +153,115 @@ export async function leaveTeam(
 		revalidatePath("/settings/account");
 	}
 	return result;
+}
+
+function getExtensionFromMimeType(mimeType: string): string {
+	return (
+		IMAGE_CONSTRAINTS.mimeToExt[
+			mimeType as keyof typeof IMAGE_CONSTRAINTS.mimeToExt
+		] || "jpg"
+	);
+}
+
+/**
+ * Gets a cached avatar URL, either returning an external URL directly or generating a signed URL for Supabase storage
+ *
+ * @param path - The path to the avatar image (full URL for external sources, storage path for Supabase)
+ * @returns A URL that can be used to display the avatar
+ *
+ * Note on timing:
+ * - Signed URL is set to expire in 1 hour (3600 seconds)
+ * - Cache is set to revalidate in 55 minutes (3300 seconds)
+ * This 5-minute buffer ensures we generate a new signed URL before the current one expires
+ */
+const getAvatarUrl = unstable_cache(
+	async (path: string): Promise<string> => {
+		if (path.startsWith("https://")) {
+			return path;
+		}
+
+		try {
+			const signedUrl = await storage.getItem(path, {
+				signedUrl: true,
+				expiresIn: 60 * 60, // 1 hour expiry for signed URL
+			});
+
+			if (!signedUrl || typeof signedUrl !== "string") {
+				throw new Error("Failed to generate signed URL");
+			}
+
+			return signedUrl;
+		} catch (error) {
+			logger.error("Failed to generate signed URL:", error);
+			throw new Error("Failed to generate avatar URL");
+		}
+	},
+	["avatar-url"],
+	{
+		revalidate: 55 * 60, // Revalidate cache after 55 minutes
+		tags: ["avatar-url"],
+	},
+);
+
+export async function updateAvatar(formData: FormData) {
+	try {
+		const user = await getUser();
+
+		const file = formData.get("avatar") as File | null;
+		if (!file) {
+			throw new Error("Missing avatar file");
+		}
+
+		const [currentUser] = await db
+			.select({ avatarUrl: users.avatarUrl })
+			.from(users)
+			.innerJoin(
+				supabaseUserMappings,
+				eq(users.dbId, supabaseUserMappings.userDbId),
+			)
+			.where(eq(supabaseUserMappings.supabaseUserId, user.id));
+
+		const ext = getExtensionFromMimeType(file.type);
+		const filePath = `avatars/${user.id}.${ext}`;
+
+		const arrayBuffer = await file.arrayBuffer();
+		const buffer = Buffer.from(arrayBuffer);
+
+		await storage.setItemRaw(filePath, buffer, {
+			contentType: file.type,
+		});
+
+		if (currentUser?.avatarUrl && currentUser.avatarUrl !== filePath) {
+			try {
+				await storage.removeItem(currentUser.avatarUrl);
+				logger.debug("Old avatar file removed:", currentUser.avatarUrl);
+			} catch (error) {
+				// Don't fail the update if cleanup fails
+				logger.error("Failed to remove old avatar:", error);
+			}
+		}
+
+		const userDbIdSubquery = db
+			.select({ userDbId: supabaseUserMappings.userDbId })
+			.from(supabaseUserMappings)
+			.where(eq(supabaseUserMappings.supabaseUserId, user.id));
+
+		await db
+			.update(users)
+			.set({ avatarUrl: filePath })
+			.where(eq(users.dbId, userDbIdSubquery));
+
+		revalidateTag("avatar-url");
+		revalidatePath("/settings/account");
+
+		const avatarUrl = await getAvatarUrl(filePath);
+
+		return {
+			success: true,
+			avatarUrl,
+		};
+	} catch (error) {
+		logger.error("Failed to update avatar:", error);
+		throw error;
+	}
 }
