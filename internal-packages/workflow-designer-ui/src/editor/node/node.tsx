@@ -23,14 +23,14 @@ import ShinyText from "../../ui/shiny-text";
 import { defaultName } from "../../utils";
 import { CheckCircleIcon, AlertCircleIcon, PlayCircleIcon, StopCircleIcon, RefreshCcwIcon, Square, Check } from "lucide-react";
 
-// 内部で使用するNodeStatus型の定義
+// Definition of NodeStatus type used internally
 type NodeStatus = "idle" | "running" | "completed" | "failed" | "selected";
 
-// 実行状態表示で使用する色の定義
+// Color definitions used for execution state display
 const NODE_COLORS = {
-	BLUE: '#3b82f6',    // 実行中の青色
-	GREEN: '#39FF7F',   // 完了の緑色
-	RED: '#FF3D71',     // エラーの赤色
+	BLUE: '#3b82f6',    // Blue for running state
+	GREEN: '#39FF7F',   // Green for completed state
+	RED: '#FF3D71',     // Red for error state
 };
 
 type GiselleWorkflowDesignerTextGenerationNode = XYFlowNode<
@@ -88,33 +88,33 @@ export function CustomXyFlowNode({
 		[workspace, data.nodeData.id],
 	);
 
-	// ノードの状態を管理するためのステート
+	// State for managing node execution status
 	const [executionStatus, setExecutionStatus] = useState<NodeStatus>("idle");
 	const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
 	const [progress, setProgress] = useState<number | undefined>(undefined);
-	const [fadeOutOpacity, setFadeOutOpacity] = useState(1); // 不透明度を管理
+	const [fadeOutOpacity, setFadeOutOpacity] = useState(1); // Opacity control
 
-	// completed状態になったら5秒後にフェードアウトし、その後idle状態に戻す
+	// Fade out completed state after 5 seconds, then return to idle
 	useEffect(() => {
 		let fadeTimer: NodeJS.Timeout | null = null;
 		let resetTimer: NodeJS.Timeout | null = null;
 
 		if (executionStatus === "completed") {
-			// 5秒後にフェードアウト開始
+			// Start fade out after 5 seconds
 			fadeTimer = setTimeout(() => {
-				// 不透明度を徐々に下げる
+				// Gradually decrease opacity
 				setFadeOutOpacity(0);
 				
-				// フェードアウト完了後にリセット
+				// Reset after fade out is complete
 				resetTimer = setTimeout(() => {
 					setExecutionStatus("idle");
-					setFadeOutOpacity(1); // 不透明度をリセット
-				}, 500); // トランジション時間
+					setFadeOutOpacity(1); // Reset opacity
+				}, 500); // Transition duration
 				
 			}, 5000);
 		}
 		
-		// クリーンアップ
+		// Cleanup
 		return () => {
 			if (fadeTimer) clearTimeout(fadeTimer);
 			if (resetTimer) clearTimeout(resetTimer);
@@ -122,25 +122,25 @@ export function CustomXyFlowNode({
 	}, [executionStatus]);
 
 	const handleStopExecution = () => {
-		// ノード実行停止処理
+		// Stop node execution
 		setExecutionStatus("idle");
-		// ここでAPI呼び出しなど、実際の実行停止処理を行う
+		// Real implementation would call API or actual stop processing
 	};
 
 	const handleRetryExecution = () => {
-		// ノード再実行処理
+		// Retry node execution
 		setExecutionStatus("running");
 		setErrorMessage(undefined);
-		// ここでAPI呼び出しなど、実際の再実行処理を行う
+		// Real implementation would call API or actual retry processing
 	};
 
-	// 外部からテスト用に実行状態を変更できる関数を追加
-	// 実際のアプリでは、APIからの通知などで状態が更新される
+	// Function to change execution state externally for testing
+	// In actual app, state would be updated from API notifications
 	const startExecution = () => {
 		setExecutionStatus("running");
 		setProgress(0);
 		
-		// 進捗をシミュレートするためのタイマー
+		// Timer to simulate progress
 		let currentProgress = 0;
 		const timer = setInterval(() => {
 			currentProgress += 10;
@@ -154,7 +154,7 @@ export function CustomXyFlowNode({
 		}, 1000);
 	};
 
-	// エラー状態をシミュレートする関数
+	// Function to simulate error state
 	const simulateError = () => {
 		setExecutionStatus("failed");
 		setErrorMessage("An error occurred during execution");
@@ -173,7 +173,7 @@ export function CustomXyFlowNode({
 				onRetryExecution={handleRetryExecution}
 				fadeOutOpacity={fadeOutOpacity}
 			/>
-			{/* デバッグ用のコントロール、実際のアプリではAPIなどで制御 */}
+			{/* Debug controls - would be managed via API in real app */}
 			{selected && (
 				<div className="absolute bottom-[-40px] left-1/2 transform -translate-x-1/2 flex gap-1 z-20">
 					<button 
@@ -219,10 +219,10 @@ export function NodeComponent({
 }) {
 	const { updateNodeData } = useWorkflowDesigner();
 	
-	// アニメーション用の状態管理
+	// State for animation management
 	const [shadowSize, setShadowSize] = useState<number>(8);
 	
-	// 実行中状態の場合のみ、影のサイズを段階的に変更するアニメーション
+	// Gradual shadow size change animation only when in running state
 	useEffect(() => {
 		if (executionStatus !== "running") {
 			setShadowSize(8);
@@ -230,36 +230,36 @@ export function NodeComponent({
 		}
 		
 		let step = 0;
-		const sizes = [8, 20]; // 8px → 20px に変化
+		const sizes = [8, 20]; // Changes from 8px to 20px
 		
 		const interval = setInterval(() => {
 			step = (step + 1) % sizes.length;
 			setShadowSize(sizes[step]);
-		}, 500); // 0.5秒ごとに変化
+		}, 500); // Change every 0.5 seconds
 		
 		return () => clearInterval(interval);
 	}, [executionStatus]);
 	
-	// 動的にシャドウスタイルを生成
+	// Generate dynamic shadow style
 	const shadowStyle = useMemo(() => {
-		// 実行中のノードの場合、アニメーションシャドウを適用
+		// Apply animation shadow for running nodes
 		if (executionStatus === "running") {
-			const color = `rgba(${parseInt(NODE_COLORS.BLUE.slice(1, 3), 16)}, ${parseInt(NODE_COLORS.BLUE.slice(3, 5), 16)}, ${parseInt(NODE_COLORS.BLUE.slice(5, 7), 16)}, 0.7)`; // 青色の影
+			const color = `rgba(${parseInt(NODE_COLORS.BLUE.slice(1, 3), 16)}, ${parseInt(NODE_COLORS.BLUE.slice(3, 5), 16)}, ${parseInt(NODE_COLORS.BLUE.slice(5, 7), 16)}, 0.7)`; // Blue shadow
 			return {
 				boxShadow: `0px 0px ${shadowSize}px 0px ${color}`,
 				transition: "box-shadow 0.5s ease"
 			};
 		}
-		// 完了・エラー状態の場合、静的なシャドウを適用
+		// Apply static shadow for completed and error states
 		else if (executionStatus === "completed") {
 			const color = `rgba(${parseInt(NODE_COLORS.GREEN.slice(1, 3), 16)}, ${parseInt(NODE_COLORS.GREEN.slice(3, 5), 16)}, ${parseInt(NODE_COLORS.GREEN.slice(5, 7), 16)}, 0.5)`;
-			return { boxShadow: `0px 0px 16px 0px ${color}` }; // 緑色の影
+			return { boxShadow: `0px 0px 16px 0px ${color}` }; // Green shadow
 		}
 		else if (executionStatus === "failed") {
 			const color = `rgba(${parseInt(NODE_COLORS.RED.slice(1, 3), 16)}, ${parseInt(NODE_COLORS.RED.slice(3, 5), 16)}, ${parseInt(NODE_COLORS.RED.slice(5, 7), 16)}, 0.5)`;
-			return { boxShadow: `0px 0px 16px 0px ${color}` }; // 赤色の影
+			return { boxShadow: `0px 0px 16px 0px ${color}` }; // Red shadow
 		}
-		// 選択状態の場合はインラインスタイルではなくclassNameで処理するため空を返す
+		// For selected state, use className instead of inline style
 		return {};
 	}, [executionStatus, shadowSize]);
 	
@@ -278,30 +278,30 @@ export function NodeComponent({
 				"data-[content-type=textGeneration]:from-generation-node-1] data-[content-type=textGeneration]:to-generation-node-2 data-[content-type=textGeneration]:shadow-generation-node-1",
 				"data-[content-type=imageGeneration]:from-generation-node-1] data-[content-type=imageGeneration]:to-generation-node-2 data-[content-type=imageGeneration]:shadow-generation-node-1",
 				"data-[content-type=github]:from-github-node-1] data-[content-type=github]:to-github-node-2 data-[content-type=github]:shadow-github-node-1",
-				"data-[selected=true]:shadow-[0px_0px_16px_0px]", // 選択状態のシャドウをクラスで適用
+				"data-[selected=true]:shadow-[0px_0px_16px_0px]", // Shadow applied for selected state
 				"data-[preview=true]:opacity-50",
 				"not-data-preview:min-h-[110px]",
 			)}
 			style={shadowStyle}
 		>
-			{/* 実行状態のオーバーレイ */}
+			{/* Execution state overlay */}
 			{executionStatus && executionStatus !== "idle" && executionStatus !== "selected" && (
 				<>
 					{executionStatus === "running" && (
 						<div className="absolute top-[-28px] left-0 right-0 py-1 px-3 z-10 flex items-center justify-between rounded-t-[16px]">
-							{/* 左側に進捗率 */}
+							{/* Progress percentage on the left */}
 							<span className="text-xs font-medium font-hubot text-blue-500">
 								{progress !== undefined ? `${Math.round(progress)}%` : '0%'}
 							</span>
 							
-							{/* 右側にRunning...テキストとStopアイコン */}
+							{/* Running text and Stop icon on the right */}
 							<div className="flex items-center">
 								<ShinyText 
 									text="Running..." 
 									className="text-xs font-medium font-hubot" 
 									speed={2}
 									style={{
-										color: NODE_COLORS.BLUE, // blue-500（Stopアイコンと同じ色）
+										color: NODE_COLORS.BLUE, // blue-500 (same color as stop icon)
 										backgroundImage: 'linear-gradient(120deg, rgba(59, 130, 246, 1) 40%, rgba(255, 255, 255, 0.6) 50%, rgba(59, 130, 246, 1) 60%)'
 									}}
 								/>
@@ -343,7 +343,7 @@ export function NodeComponent({
 				</>
 			)}
 
-			{/* エラーメッセージのツールチップ */}
+			{/* Error message tooltip */}
 			{executionStatus === "failed" && errorMessage && (
 				<div 
 					className="absolute bottom-full left-0 right-0 mb-2 flex w-full p-4 justify-between items-start rounded-lg border backdrop-blur-[8px] text-white-850 text-xs z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
