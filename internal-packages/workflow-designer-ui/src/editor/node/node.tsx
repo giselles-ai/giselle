@@ -16,10 +16,15 @@ import {
 } from "@xyflow/react";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
+import ShinyText from "../../ui/shiny-text";
 import { defaultName } from "../../utils";
+import { CheckCircleIcon, AlertCircleIcon, PlayCircleIcon, StopCircleIcon, RefreshCcwIcon, Square } from "lucide-react";
+
+// 内部で使用するNodeStatus型の定義
+type NodeStatus = "idle" | "running" | "completed" | "failed" | "selected";
 
 type GiselleWorkflowDesignerTextGenerationNode = XYFlowNode<
 	{ nodeData: TextGenerationNode; preview?: boolean },
@@ -76,12 +81,80 @@ export function CustomXyFlowNode({
 		[workspace, data.nodeData.id],
 	);
 
+	// ノードの状態を管理するためのステート
+	const [executionStatus, setExecutionStatus] = useState<NodeStatus>("idle");
+	const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+	const [progress, setProgress] = useState<number | undefined>(undefined);
+
+	const handleStopExecution = () => {
+		// ノード実行停止処理
+		setExecutionStatus("idle");
+		// ここでAPI呼び出しなど、実際の実行停止処理を行う
+	};
+
+	const handleRetryExecution = () => {
+		// ノード再実行処理
+		setExecutionStatus("running");
+		setErrorMessage(undefined);
+		// ここでAPI呼び出しなど、実際の再実行処理を行う
+	};
+
+	// 外部からテスト用に実行状態を変更できる関数を追加
+	// 実際のアプリでは、APIからの通知などで状態が更新される
+	const startExecution = () => {
+		setExecutionStatus("running");
+		setProgress(0);
+		
+		// 進捗をシミュレートするためのタイマー
+		let currentProgress = 0;
+		const timer = setInterval(() => {
+			currentProgress += 10;
+			if (currentProgress >= 100) {
+				clearInterval(timer);
+				setExecutionStatus("completed");
+				setProgress(100);
+			} else {
+				setProgress(currentProgress);
+			}
+		}, 1000);
+	};
+
+	// エラー状態をシミュレートする関数
+	const simulateError = () => {
+		setExecutionStatus("failed");
+		setErrorMessage("実行中にエラーが発生しました");
+	};
+
 	return (
-		<NodeComponent
-			node={data.nodeData}
-			selected={selected}
-			connectedOutputIds={connectedOutputIds}
-		/>
+		<>
+			<NodeComponent
+				node={data.nodeData}
+				selected={selected}
+				connectedOutputIds={connectedOutputIds}
+				executionStatus={executionStatus}
+				errorMessage={errorMessage}
+				progress={progress}
+				onStopExecution={handleStopExecution}
+				onRetryExecution={handleRetryExecution}
+			/>
+			{/* デバッグ用のコントロール、実際のアプリではAPIなどで制御 */}
+			{selected && (
+				<div className="absolute bottom-[-40px] left-1/2 transform -translate-x-1/2 flex gap-1 z-20">
+					<button 
+						onClick={startExecution}
+						className="px-2 py-1 bg-blue-500 text-white text-xs rounded"
+					>
+						実行
+					</button>
+					<button 
+						onClick={simulateError}
+						className="px-2 py-1 bg-red-500 text-white text-xs rounded"
+					>
+						エラー
+					</button>
+				</div>
+			)}
+		</>
 	);
 }
 
@@ -90,32 +163,161 @@ export function NodeComponent({
 	selected,
 	connectedOutputIds,
 	preview = false,
+	executionStatus,
+	errorMessage,
+	progress,
+	onStopExecution,
+	onRetryExecution,
 }: {
 	node: Node;
 	selected?: boolean;
 	preview?: boolean;
 	connectedOutputIds?: OutputId[];
+	executionStatus?: NodeStatus;
+	errorMessage?: string;
+	progress?: number;
+	onStopExecution?: () => void;
+	onRetryExecution?: () => void;
 }) {
 	const { updateNodeData } = useWorkflowDesigner();
+	
+	// アニメーション用の状態管理
+	const [shadowSize, setShadowSize] = useState<number>(8);
+	
+	// 実行中状態の場合のみ、影のサイズを段階的に変更するアニメーション
+	useEffect(() => {
+		if (executionStatus !== "running") {
+			setShadowSize(8);
+			return;
+		}
+		
+		let step = 0;
+		const sizes = [8, 20]; // 8px → 20px に変化
+		
+		const interval = setInterval(() => {
+			step = (step + 1) % sizes.length;
+			setShadowSize(sizes[step]);
+		}, 500); // 0.5秒ごとに変化
+		
+		return () => clearInterval(interval);
+	}, [executionStatus]);
+	
+	// 動的にシャドウスタイルを生成
+	const shadowStyle = useMemo(() => {
+		// 実行中のノードの場合、アニメーションシャドウを適用
+		if (executionStatus === "running") {
+			const color = "rgba(59, 130, 246, 0.7)"; // 青色の影
+			return {
+				boxShadow: `0px 0px ${shadowSize}px 0px ${color}`,
+				transition: "box-shadow 0.5s ease"
+			};
+		}
+		// 完了・エラー状態の場合、静的なシャドウを適用
+		else if (executionStatus === "completed") {
+			return { boxShadow: "0px 0px 16px 0px rgba(34, 197, 94, 0.5)" }; // 緑色の影
+		}
+		else if (executionStatus === "failed") {
+			return { boxShadow: "0px 0px 16px 0px rgba(239, 68, 68, 0.5)" }; // 赤色の影
+		}
+		// 選択状態の場合はインラインスタイルではなくclassNameで処理するため空を返す
+		return {};
+	}, [executionStatus, shadowSize]);
+	
 	return (
 		<div
 			data-type={node.type}
 			data-content-type={node.content.type}
 			data-selected={selected}
 			data-preview={preview}
+			data-status={executionStatus}
 			className={clsx(
 				"group relative flex flex-col rounded-[16px] py-[16px] gap-[16px] min-w-[180px]",
-				"bg-gradient-to-tl transition-shadow backdrop-blur-[4px]",
+				"bg-gradient-to-tl transition-all backdrop-blur-[4px]",
 				"data-[content-type=text]:from-text-node-1] data-[content-type=text]:to-text-node-2 data-[content-type=text]:shadow-text-node-1",
 				"data-[content-type=file]:from-file-node-1] data-[content-type=file]:to-file-node-2 data-[content-type=file]:shadow-file-node-1",
 				"data-[content-type=textGeneration]:from-generation-node-1] data-[content-type=textGeneration]:to-generation-node-2 data-[content-type=textGeneration]:shadow-generation-node-1",
 				"data-[content-type=imageGeneration]:from-generation-node-1] data-[content-type=imageGeneration]:to-generation-node-2 data-[content-type=imageGeneration]:shadow-generation-node-1",
 				"data-[content-type=github]:from-github-node-1] data-[content-type=github]:to-github-node-2 data-[content-type=github]:shadow-github-node-1",
-				"data-[selected=true]:shadow-[0px_0px_16px_0px]",
+				"data-[selected=true]:shadow-[0px_0px_16px_0px]", // 選択状態のシャドウをクラスで適用
 				"data-[preview=true]:opacity-50",
 				"not-data-preview:min-h-[110px]",
 			)}
+			style={shadowStyle}
 		>
+			{/* 実行状態のオーバーレイ */}
+			{executionStatus && executionStatus !== "idle" && executionStatus !== "selected" && (
+				<>
+					{executionStatus === "running" && (
+						<div className="absolute top-[-28px] left-0 right-0 py-1 px-3 z-10 flex items-center justify-between rounded-t-[16px]">
+							{/* 左側に進捗率 */}
+							<span className="text-xs font-medium font-hubot text-blue-500">
+								{progress !== undefined ? `${Math.round(progress)}%` : '0%'}
+							</span>
+							
+							{/* 右側にRunning...テキストとStopアイコン */}
+							<div className="flex items-center">
+								<ShinyText 
+									text="Running..." 
+									className="text-xs font-medium font-hubot" 
+									speed={2}
+									style={{
+										color: '#3b82f6', // blue-500（Stopアイコンと同じ色）
+										backgroundImage: 'linear-gradient(120deg, rgba(59, 130, 246, 1) 40%, rgba(255, 255, 255, 0.6) 50%, rgba(59, 130, 246, 1) 60%)'
+									}}
+								/>
+								{onStopExecution && (
+									<button
+										onClick={(e) => {
+											e.stopPropagation();
+											onStopExecution();
+										}}
+										className="ml-1 p-1 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors"
+									>
+										<Square className="w-2 h-2 text-white" fill="white" />
+									</button>
+								)}
+							</div>
+						</div>
+					)}
+					
+					{executionStatus === "completed" && (
+						<div className="absolute top-[-28px] left-1/2 transform -translate-x-1/2 py-1 px-2 rounded-full z-10 bg-green-500/20" data-status={executionStatus}>
+							<div className="flex items-center justify-center">
+								<CheckCircleIcon className="w-5 h-5 text-green-500 mr-1" />
+								<span className="text-xs text-green-500 font-medium">完了</span>
+							</div>
+						</div>
+					)}
+					
+					{executionStatus === "failed" && (
+						<div className="absolute top-[-28px] left-1/2 transform -translate-x-1/2 py-1 px-2 rounded-full z-10 bg-red-500/20" data-status={executionStatus}>
+							<div className="flex items-center justify-center">
+								<AlertCircleIcon className="w-5 h-5 text-red-500 mr-1" />
+								<span className="text-xs text-red-500 font-medium">エラー</span>
+								{onRetryExecution && (
+									<button
+										onClick={(e) => {
+											e.stopPropagation();
+											onRetryExecution();
+										}}
+										className="ml-2 p-1 rounded-full hover:bg-red-500/30"
+									>
+										<RefreshCcwIcon className="w-4 h-4 text-red-500" />
+									</button>
+								)}
+							</div>
+						</div>
+					)}
+				</>
+			)}
+
+			{/* エラーメッセージのツールチップ */}
+			{executionStatus === "failed" && errorMessage && (
+				<div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 p-2 bg-red-100 text-red-800 rounded shadow-lg max-w-xs text-xs z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+					{errorMessage}
+				</div>
+			)}
+
 			<div
 				className={clsx(
 					"absolute z-0 rounded-[16px] inset-0 border-[1.5px] mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent",
@@ -124,7 +326,11 @@ export function NodeComponent({
 					"group-data-[content-type=textGeneration]:from-generation-node-1/40 group-data-[content-type=textGeneration]:to-generation-node-1",
 					"group-data-[content-type=imageGeneration]:from-generation-node-1/40 group-data-[content-type=imageGeneration]:to-generation-node-1",
 					"group-data-[content-type=github]:from-github-node-1/40 group-data-[content-type=github]:to-github-node-1",
+					"group-data-[status=running]:border-blue-500",
+					"group-data-[status=completed]:border-green-500",
+					"group-data-[status=failed]:border-red-500",
 				)}
+				data-status={executionStatus}
 			/>
 
 			<div className={clsx("px-[16px] relative")}>

@@ -168,6 +168,10 @@ const config = {
 						fill: "hsl(var(--black_40))",
 					},
 				},
+				"shine": {
+					"0%": { "background-position": "100%" },
+					"100%": { "background-position": "-100%" },
+				},
 			},
 			animation: {
 				"accordion-down": "accordion-down 0.2s ease-out",
@@ -176,6 +180,7 @@ const config = {
 				"follow-through-spin":
 					"follow-through-overlap-spin 1.75s ease-out infinite",
 				"ticktock-bounce": "ticktock-bounce 1.5s steps(2, jump-none) infinite",
+				"shine": "shine 3s linear infinite",
 			},
 		},
 	},
