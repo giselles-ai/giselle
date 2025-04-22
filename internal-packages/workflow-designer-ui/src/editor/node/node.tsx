@@ -21,7 +21,7 @@ import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
 import ShinyText from "../../ui/shiny-text";
 import { defaultName } from "../../utils";
-import { CheckCircleIcon, AlertCircleIcon, PlayCircleIcon, StopCircleIcon, RefreshCcwIcon, Square } from "lucide-react";
+import { CheckCircleIcon, AlertCircleIcon, PlayCircleIcon, StopCircleIcon, RefreshCcwIcon, Square, Check } from "lucide-react";
 
 // 内部で使用するNodeStatus型の定義
 type NodeStatus = "idle" | "running" | "completed" | "failed" | "selected";
@@ -85,6 +85,34 @@ export function CustomXyFlowNode({
 	const [executionStatus, setExecutionStatus] = useState<NodeStatus>("idle");
 	const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
 	const [progress, setProgress] = useState<number | undefined>(undefined);
+	const [fadeOutOpacity, setFadeOutOpacity] = useState(1); // 不透明度を管理
+
+	// completed状態になったら5秒後にフェードアウトし、その後idle状態に戻す
+	useEffect(() => {
+		let fadeTimer: NodeJS.Timeout | null = null;
+		let resetTimer: NodeJS.Timeout | null = null;
+
+		if (executionStatus === "completed") {
+			// 5秒後にフェードアウト開始
+			fadeTimer = setTimeout(() => {
+				// 不透明度を徐々に下げる
+				setFadeOutOpacity(0);
+				
+				// フェードアウト完了後にリセット
+				resetTimer = setTimeout(() => {
+					setExecutionStatus("idle");
+					setFadeOutOpacity(1); // 不透明度をリセット
+				}, 500); // トランジション時間
+				
+			}, 5000);
+		}
+		
+		// クリーンアップ
+		return () => {
+			if (fadeTimer) clearTimeout(fadeTimer);
+			if (resetTimer) clearTimeout(resetTimer);
+		};
+	}, [executionStatus]);
 
 	const handleStopExecution = () => {
 		// ノード実行停止処理
@@ -136,6 +164,7 @@ export function CustomXyFlowNode({
 				progress={progress}
 				onStopExecution={handleStopExecution}
 				onRetryExecution={handleRetryExecution}
+				fadeOutOpacity={fadeOutOpacity}
 			/>
 			{/* デバッグ用のコントロール、実際のアプリではAPIなどで制御 */}
 			{selected && (
@@ -168,6 +197,7 @@ export function NodeComponent({
 	progress,
 	onStopExecution,
 	onRetryExecution,
+	fadeOutOpacity = 1,
 }: {
 	node: Node;
 	selected?: boolean;
@@ -178,6 +208,7 @@ export function NodeComponent({
 	progress?: number;
 	onStopExecution?: () => void;
 	onRetryExecution?: () => void;
+	fadeOutOpacity?: number;
 }) {
 	const { updateNodeData } = useWorkflowDesigner();
 	
@@ -281,10 +312,13 @@ export function NodeComponent({
 					)}
 					
 					{executionStatus === "completed" && (
-						<div className="absolute top-[-28px] left-1/2 transform -translate-x-1/2 py-1 px-2 rounded-full z-10 bg-green-500/20" data-status={executionStatus}>
-							<div className="flex items-center justify-center">
-								<CheckCircleIcon className="w-5 h-5 text-green-500 mr-1" />
-								<span className="text-xs text-green-500 font-medium">完了</span>
+						<div 
+							className={`absolute top-[-28px] right-0 py-1 px-2 rounded-full z-10 transition-opacity duration-500 ease-in-out ${fadeOutOpacity === 0 ? 'opacity-0' : 'opacity-100'}`} 
+							data-status={executionStatus}
+						>
+							<div className="flex items-center justify-end">
+								<span className="text-xs text-[#39FF7F] font-medium font-hubot">Completed</span>
+								<Check className="w-4 h-4 text-[#39FF7F] ml-1" />
 							</div>
 						</div>
 					)}
@@ -320,14 +354,14 @@ export function NodeComponent({
 
 			<div
 				className={clsx(
-					"absolute z-0 rounded-[16px] inset-0 border-[1.5px] mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent",
+					"absolute z-0 rounded-[16px] inset-0 border-[1px] mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent",
 					"group-data-[content-type=text]:from-text-node-1/40 group-data-[content-type=text]:to-text-node-1",
 					"group-data-[content-type=file]:from-file-node-1/40 group-data-[content-type=file]:to-file-node-1",
 					"group-data-[content-type=textGeneration]:from-generation-node-1/40 group-data-[content-type=textGeneration]:to-generation-node-1",
 					"group-data-[content-type=imageGeneration]:from-generation-node-1/40 group-data-[content-type=imageGeneration]:to-generation-node-1",
 					"group-data-[content-type=github]:from-github-node-1/40 group-data-[content-type=github]:to-github-node-1",
 					"group-data-[status=running]:border-blue-500",
-					"group-data-[status=completed]:border-green-500",
+					"group-data-[status=completed]:border-[#39FF7F]",
 					"group-data-[status=failed]:border-red-500",
 				)}
 				data-status={executionStatus}
