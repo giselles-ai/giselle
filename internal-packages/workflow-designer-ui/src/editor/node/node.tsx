@@ -26,6 +26,13 @@ import { CheckCircleIcon, AlertCircleIcon, PlayCircleIcon, StopCircleIcon, Refre
 // 内部で使用するNodeStatus型の定義
 type NodeStatus = "idle" | "running" | "completed" | "failed" | "selected";
 
+// 実行状態表示で使用する色の定義
+const NODE_COLORS = {
+	BLUE: '#3b82f6',    // 実行中の青色
+	GREEN: '#39FF7F',   // 完了の緑色
+	RED: '#FF3D71',     // エラーの赤色
+};
+
 type GiselleWorkflowDesignerTextGenerationNode = XYFlowNode<
 	{ nodeData: TextGenerationNode; preview?: boolean },
 	TextGenerationNode["content"]["type"]
@@ -150,7 +157,7 @@ export function CustomXyFlowNode({
 	// エラー状態をシミュレートする関数
 	const simulateError = () => {
 		setExecutionStatus("failed");
-		setErrorMessage("実行中にエラーが発生しました");
+		setErrorMessage("An error occurred during execution");
 	};
 
 	return (
@@ -173,13 +180,13 @@ export function CustomXyFlowNode({
 						onClick={startExecution}
 						className="px-2 py-1 bg-blue-500 text-white text-xs rounded"
 					>
-						実行
+						Execute
 					</button>
 					<button 
 						onClick={simulateError}
 						className="px-2 py-1 bg-red-500 text-white text-xs rounded"
 					>
-						エラー
+						Error
 					</button>
 				</div>
 			)}
@@ -237,7 +244,7 @@ export function NodeComponent({
 	const shadowStyle = useMemo(() => {
 		// 実行中のノードの場合、アニメーションシャドウを適用
 		if (executionStatus === "running") {
-			const color = "rgba(59, 130, 246, 0.7)"; // 青色の影
+			const color = `rgba(${parseInt(NODE_COLORS.BLUE.slice(1, 3), 16)}, ${parseInt(NODE_COLORS.BLUE.slice(3, 5), 16)}, ${parseInt(NODE_COLORS.BLUE.slice(5, 7), 16)}, 0.7)`; // 青色の影
 			return {
 				boxShadow: `0px 0px ${shadowSize}px 0px ${color}`,
 				transition: "box-shadow 0.5s ease"
@@ -245,10 +252,12 @@ export function NodeComponent({
 		}
 		// 完了・エラー状態の場合、静的なシャドウを適用
 		else if (executionStatus === "completed") {
-			return { boxShadow: "0px 0px 16px 0px rgba(34, 197, 94, 0.5)" }; // 緑色の影
+			const color = `rgba(${parseInt(NODE_COLORS.GREEN.slice(1, 3), 16)}, ${parseInt(NODE_COLORS.GREEN.slice(3, 5), 16)}, ${parseInt(NODE_COLORS.GREEN.slice(5, 7), 16)}, 0.5)`;
+			return { boxShadow: `0px 0px 16px 0px ${color}` }; // 緑色の影
 		}
 		else if (executionStatus === "failed") {
-			return { boxShadow: "0px 0px 16px 0px rgba(239, 68, 68, 0.5)" }; // 赤色の影
+			const color = `rgba(${parseInt(NODE_COLORS.RED.slice(1, 3), 16)}, ${parseInt(NODE_COLORS.RED.slice(3, 5), 16)}, ${parseInt(NODE_COLORS.RED.slice(5, 7), 16)}, 0.5)`;
+			return { boxShadow: `0px 0px 16px 0px ${color}` }; // 赤色の影
 		}
 		// 選択状態の場合はインラインスタイルではなくclassNameで処理するため空を返す
 		return {};
@@ -292,7 +301,7 @@ export function NodeComponent({
 									className="text-xs font-medium font-hubot" 
 									speed={2}
 									style={{
-										color: '#3b82f6', // blue-500（Stopアイコンと同じ色）
+										color: NODE_COLORS.BLUE, // blue-500（Stopアイコンと同じ色）
 										backgroundImage: 'linear-gradient(120deg, rgba(59, 130, 246, 1) 40%, rgba(255, 255, 255, 0.6) 50%, rgba(59, 130, 246, 1) 60%)'
 									}}
 								/>
@@ -317,28 +326,17 @@ export function NodeComponent({
 							data-status={executionStatus}
 						>
 							<div className="flex items-center justify-end">
-								<span className="text-xs text-[#39FF7F] font-medium font-hubot">Completed</span>
-								<Check className="w-4 h-4 text-[#39FF7F] ml-1" />
+								<span className={`text-xs font-medium font-hubot`} style={{color: NODE_COLORS.GREEN}}>Completed</span>
+								<Check className="w-4 h-4 ml-1" style={{color: NODE_COLORS.GREEN}} />
 							</div>
 						</div>
 					)}
 					
 					{executionStatus === "failed" && (
-						<div className="absolute top-[-28px] left-1/2 transform -translate-x-1/2 py-1 px-2 rounded-full z-10 bg-red-500/20" data-status={executionStatus}>
-							<div className="flex items-center justify-center">
-								<AlertCircleIcon className="w-5 h-5 text-red-500 mr-1" />
-								<span className="text-xs text-red-500 font-medium">エラー</span>
-								{onRetryExecution && (
-									<button
-										onClick={(e) => {
-											e.stopPropagation();
-											onRetryExecution();
-										}}
-										className="ml-2 p-1 rounded-full hover:bg-red-500/30"
-									>
-										<RefreshCcwIcon className="w-4 h-4 text-red-500" />
-									</button>
-								)}
+						<div className="absolute top-[-28px] right-0 py-1 px-2 rounded-full z-10" data-status={executionStatus}>
+							<div className="flex items-center justify-end">
+								<span className={`text-xs font-medium font-hubot`} style={{color: NODE_COLORS.RED}}>Error</span>
+								<AlertCircleIcon className="w-4 h-4 ml-1" style={{color: NODE_COLORS.RED}} />
 							</div>
 						</div>
 					)}
@@ -347,8 +345,30 @@ export function NodeComponent({
 
 			{/* エラーメッセージのツールチップ */}
 			{executionStatus === "failed" && errorMessage && (
-				<div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 p-2 bg-red-100 text-red-800 rounded shadow-lg max-w-xs text-xs z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-					{errorMessage}
+				<div 
+					className="absolute bottom-full left-0 right-0 mb-2 flex w-full p-4 justify-between items-start rounded-lg border backdrop-blur-[8px] text-white-850 text-xs z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+					style={{ 
+						borderColor: `rgba(${parseInt(NODE_COLORS.RED.slice(1, 3), 16)}, ${parseInt(NODE_COLORS.RED.slice(3, 5), 16)}, ${parseInt(NODE_COLORS.RED.slice(5, 7), 16)}, 0.2)`,
+						backgroundColor: `rgba(${parseInt(NODE_COLORS.RED.slice(1, 3), 16)}, ${parseInt(NODE_COLORS.RED.slice(3, 5), 16)}, ${parseInt(NODE_COLORS.RED.slice(5, 7), 16)}, 0.2)`,
+						boxShadow: '-2px -1px 0px 0px rgba(0,0,0,0.1), 1px 1px 8px 0px rgba(0,0,0,0.25)'
+					}}
+				>
+					<div>
+						<div className="font-medium mb-1">Execution Error: Timeout</div>
+						<div>{errorMessage}</div>
+					</div>
+					{onRetryExecution && (
+						<button
+							onClick={(e) => {
+								e.stopPropagation();
+								onRetryExecution();
+							}}
+							className="ml-4 p-1.5 rounded-full transition-colors flex-shrink-0"
+							style={{ backgroundColor: NODE_COLORS.RED, color: 'white' }}
+						>
+							<RefreshCcwIcon className="w-4 h-4" />
+						</button>
+					)}
 				</div>
 			)}
 
@@ -361,9 +381,13 @@ export function NodeComponent({
 					"group-data-[content-type=imageGeneration]:from-generation-node-1/40 group-data-[content-type=imageGeneration]:to-generation-node-1",
 					"group-data-[content-type=github]:from-github-node-1/40 group-data-[content-type=github]:to-github-node-1",
 					"group-data-[status=running]:border-blue-500",
-					"group-data-[status=completed]:border-[#39FF7F]",
-					"group-data-[status=failed]:border-red-500",
+					`group-data-[status=completed]:border`,
+					`group-data-[status=failed]:border`,
 				)}
+				style={{
+					...(executionStatus === "completed" ? { borderColor: NODE_COLORS.GREEN } : {}),
+					...(executionStatus === "failed" ? { borderColor: NODE_COLORS.RED } : {})
+				}}
 				data-status={executionStatus}
 			/>
 
