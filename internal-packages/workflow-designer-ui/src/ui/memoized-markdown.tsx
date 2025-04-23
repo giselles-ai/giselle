@@ -16,7 +16,7 @@ const MemoizedMarkdownBlock = memo(
 				remarkPlugins={[remarkGfm]}
 				rehypePlugins={[rehypeRaw]}
 				components={{
-					// aタグ（リンク）のカスタマイズ
+					// Customization of anchor tags (links)
 					a: ({ node, children, ...props }) => (
 						<a
 							{...props}

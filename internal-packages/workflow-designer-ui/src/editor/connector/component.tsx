@@ -17,11 +17,11 @@ const CONNECTOR_COLORS = {
 	YELLOW: '#F4B400',   // Google Yellow
 	PURPLE: '#9C27B0',   // Purple
 	
-	// 新しいノードタイプの色
-	WEB_SEARCH: '#3A36FF',    // Web検索
-	IMAGE_GEN: '#00A2FF',     // 画像生成
-	AUDIO_GEN: '#0E3BC9',     // 音声生成
-	VIDEO_GEN: '#00BADF',     // 動画生成
+	// New node type colors
+	WEB_SEARCH: '#3A36FF',    // Web Search
+	IMAGE_GEN: '#00A2FF',     // Image Generation
+	AUDIO_GEN: '#0E3BC9',     // Audio Generation
+	VIDEO_GEN: '#00BADF',     // Video Generation
 };
 
 export function Connector({
@@ -47,25 +47,25 @@ export function Connector({
 	}
 	
 	// Determine color based on node type
-	let lineColor = CONNECTOR_COLORS.BLUE;  // デフォルト色
+	let lineColor = CONNECTOR_COLORS.BLUE;  // Default color
 	const outputType = data.connection.outputNode.content.type;
 	const inputType = data.connection.inputNode.content.type;
 	
-	// シンプルにノードタイプに基づいて色を決定
+	// Simple color determination based on node type
 	if (outputType === 'imageGeneration' || inputType === 'imageGeneration') {
 		lineColor = CONNECTOR_COLORS.IMAGE_GEN;
 	}
-	// 特殊なケース：Perplexity web search
+	// Special case: Perplexity web search
 	else if ((outputType === 'textGeneration' && 
 		  data.connection.outputNode.content.type === 'textGeneration' &&
 		  data.connection.outputNode.content.hasOwnProperty('llm') &&
 		  data.connection.outputNode.content.llm?.provider === 'perplexity' &&
-		  data.connection.outputNode.content.llm?.id === 'sonar-pro') ||
+		  (data.connection.outputNode.content.llm?.id === 'sonar-pro' || data.connection.outputNode.content.llm?.id === 'sonar')) ||
 		 (inputType === 'textGeneration' &&
 		  data.connection.inputNode.content.type === 'textGeneration' &&
 		  data.connection.inputNode.content.hasOwnProperty('llm') &&
 		  data.connection.inputNode.content.llm?.provider === 'perplexity' &&
-		  data.connection.inputNode.content.llm?.id === 'sonar-pro')) {
+		  (data.connection.inputNode.content.llm?.id === 'sonar-pro' || data.connection.inputNode.content.llm?.id === 'sonar'))) {
 		lineColor = CONNECTOR_COLORS.WEB_SEARCH;
 	}
 	
@@ -136,17 +136,17 @@ export function Connector({
 					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#fileToImageGeneration)]",
 					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#textToImageGeneration)]",
 					
-					// Web検索ノード用のグラデーション
+					// Gradients for web search nodes
 					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=webSearch]:!stroke-[url(#textGenerationToWebSearch)]",
 					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=webSearch]:!stroke-[url(#fileToWebSearch)]",
 					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=webSearch]:!stroke-[url(#textToWebSearch)]",
 					
-					// 音声生成ノード用のグラデーション
+					// Gradients for audio generation nodes
 					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=audioGeneration]:!stroke-[url(#textGenerationToAudioGeneration)]",
 					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=audioGeneration]:!stroke-[url(#fileToAudioGeneration)]",
 					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=audioGeneration]:!stroke-[url(#textToAudioGeneration)]",
 					
-					// 動画生成ノード用のグラデーション
+					// Gradients for video generation nodes
 					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=videoGeneration]:!stroke-[url(#textGenerationToVideoGeneration)]",
 					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=videoGeneration]:!stroke-[url(#fileToVideoGeneration)]",
 					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=videoGeneration]:!stroke-[url(#textToVideoGeneration)]",
@@ -241,7 +241,7 @@ export function GradientDef() {
 					<stop offset="100%" stopColor="var(--color-image-generation-node-1)" />
 				</linearGradient>
 				
-				{/* Web検索ノード用のグラデーション */}
+				{/* Gradients for web search nodes */}
 				<linearGradient
 					id="textGenerationToWebSearch"
 					x1="0%"
@@ -273,7 +273,7 @@ export function GradientDef() {
 					<stop offset="100%" stopColor="var(--color-web-search-node-1)" />
 				</linearGradient>
 				
-				{/* 音声生成ノード用のグラデーション */}
+				{/* Gradients for audio generation nodes */}
 				<linearGradient
 					id="textGenerationToAudioGeneration"
 					x1="0%"
@@ -305,7 +305,7 @@ export function GradientDef() {
 					<stop offset="100%" stopColor="var(--color-audio-generation-node-1)" />
 				</linearGradient>
 				
-				{/* 動画生成ノード用のグラデーション */}
+				{/* Gradients for video generation nodes */}
 				<linearGradient
 					id="textGenerationToVideoGeneration"
 					x1="0%"

@@ -31,7 +31,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
 					</div>
 				</div>
 
-				{/* 下の行: メインナビゲーション */}
+				{/* The line below: Main navigation */}
 				<Nav />
 
 				{/* Border line below navigation */}

@@ -21,7 +21,7 @@ export const Nav: FC = () => {
 		return null;
 	}
 
-	// 現在のパスに最もマッチする項目を見つける
+	// Find the item that best matches the current path
 	let bestMatchPath = "";
 	let bestMatchIndex = -1;
 

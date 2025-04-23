@@ -116,40 +116,40 @@ const NODE_THEME = {
  * @returns The highest priority node type for styling
  */
 function getPriorityNodeType(node: Node): string {
-	// まずノードの基本タイプを取得
+	// Get the basic node type first
 	const contentType = node.content.type;
 	
-	// テキスト生成ノードの場合、モデルに基づいて特殊判定
+	// For text generation nodes, make special determinations based on the model
 	if (contentType === "textGeneration" && node.content.llm) {
 		const { provider, id } = node.content.llm;
 		
-		// Web検索機能を持つモデル判定（Perplexity sonar-pro）
-		if (provider === "perplexity" && id === "sonar-pro") {
-			return "webSearch"; // Web検索ノードとして扱う
+		// Web search capable model detection (Perplexity sonar, sonar-pro)
+		if (provider === "perplexity" && (id === "sonar-pro" || id === "sonar")) {
+			return "webSearch"; // Treat as web search node
 		}
 		
-		// 画像生成機能を持つモデル判定（OpenAI DALL-E等）
+		// Image generation capable model detection (OpenAI DALL-E etc.)
 		if (provider === "openai" && id.includes("dall-e")) {
-			return "imageGeneration"; // 画像生成ノードとして扱う
+			return "imageGeneration"; // Treat as image generation node
 		}
 		
-		// 音声生成機能を持つモデル判定
+		// Audio generation capable model detection
 		if (provider === "openai" && id.includes("tts")) {
-			return "audioGeneration"; // 音声生成ノードとして扱う
+			return "audioGeneration"; // Treat as audio generation node
 		}
 		
-		// 動画生成機能を持つモデル判定
+		// Video generation capable model detection
 		if (provider === "openai" && id.includes("sora")) {
-			return "videoGeneration"; // 動画生成ノードとして扱う
+			return "videoGeneration"; // Treat as video generation node
 		}
 	}
 	
-	// 画像生成ノードの場合
+	// For image generation nodes
 	if (contentType === "imageGeneration") {
 		return "imageGeneration";
 	}
 	
-	// デフォルトはコンテンツタイプをそのまま返す
+	// Default: return the content type as is
 	return contentType;
 }
 
