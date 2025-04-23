@@ -2,49 +2,30 @@
 export type Cost = number;
 
 /**
- * Token-based pricing with a flat rate
+ * Base configuration for token-based pricing (flat rate)
+ * Represents the simplest form of token pricing with a fixed cost per token
  */
-export type FlatTokenBasedPrice = {
+export type BaseTokenPrice = {
   type: "token";
   costPerMegaToken: Cost;
 };
 
 /**
- * Token-based pricing with tiered rates (inclusive threshold)
- * Uses base rate for tokens up-to and including the threshold (<=),
- * and a different rate for tokens above the threshold (>)
+ * Token-based pricing with tiered rates
+ * - Inclusive (<=): Base price for tokens <= threshold, different price for tokens > threshold
+ * - Exclusive (<): Base price for tokens < threshold, different price for tokens >= threshold
  */
-export type TieredTokenBasedPriceInclusive = {
-  type: "token";
-  costPerMegaToken: Cost;
-  thresholdType: "<=";
+export type TieredTokenPrice = BaseTokenPrice & {
   threshold: number;
   costPerMegaTokenAboveThreshold: Cost;
-};
-
-/**
- * Token-based pricing with tiered rates (exclusive threshold)
- * Uses base rate for tokens below the threshold (<),
- * and a different rate for tokens at and above the threshold (>=)
- */
-export type TieredTokenBasedPriceExclusive = {
-  type: "token";
-  costPerMegaToken: Cost;
-  thresholdType: "<";
-  threshold: number;
-  costPerMegaTokenAboveThreshold: Cost;
+  thresholdType: "<=" | "<";
 };
 
 /**
  * Token-based pricing configuration
- * - Flat rate: Same price for all tokens
- * - Tiered (inclusive): Base price for tokens <= threshold, different price for tokens > threshold
- * - Tiered (exclusive): Base price for tokens < threshold, different price for tokens >= threshold
+ * Can be either a flat rate (BaseTokenPrice) or a tiered rate (TieredTokenPrice)
  */
-export type TokenBasedPrice = 
-  | FlatTokenBasedPrice 
-  | TieredTokenBasedPriceInclusive 
-  | TieredTokenBasedPriceExclusive;
+export type TokenBasedPrice = BaseTokenPrice | TieredTokenPrice;
 
 /**
  * Token-based pricing with input/output configuration
