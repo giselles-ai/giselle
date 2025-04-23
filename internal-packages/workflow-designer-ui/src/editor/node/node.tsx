@@ -602,7 +602,7 @@ export function NodeComponent({
 										"group-data-[content-type=videoGeneration]:!bg-video-generation-node-1 group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
 									)}
 								/>
-								<div className={clsx("px-[12px] text-white-900")}>
+								<div className={clsx("px-[12px] text-white-900 text-[12px]")}>
 									{input.label}
 								</div>
 							</div>
@@ -622,7 +622,7 @@ export function NodeComponent({
 										"group-data-[content-type=videoGeneration]:!border-video-generation-node-1"
 									)}
 								/>
-								<div className="absolute left-[-45px] text-[14px] text-black-400 whitespace-nowrap">
+								<div className="absolute left-[-45px] text-[12px] text-black-400 whitespace-nowrap">
 									Input
 								</div>
 							</div>
@@ -669,7 +669,7 @@ export function NodeComponent({
 								/>
 								<div
 									className={clsx(
-										"text-[14px]",
+										"text-[12px]",
 										"group-data-[state=connected]:px-[16px]",
 										"group-data-[state=disconnected]:absolute group-data-[state=disconnected]:right-[-60px] group-data-[state=disconnected]:whitespace-nowrap",
 										"group-data-[state=connected]:text-white-900 group-data-[state=disconnected]:text-black-400",
