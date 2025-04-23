@@ -294,7 +294,7 @@ export function CustomXyFlowNode({
 				fadeOutOpacity={fadeOutOpacity}
 			/>
 			{/* Debug controls - would be managed via API in real app */}
-			{selected && (
+			{selected && data.nodeData.content.type === "textGeneration" && (
 				<div className="absolute bottom-[-40px] left-1/2 transform -translate-x-1/2 flex gap-1 z-20">
 					<button 
 						onClick={startExecution}
