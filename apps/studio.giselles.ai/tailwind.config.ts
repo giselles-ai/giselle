@@ -168,7 +168,7 @@ const config = {
 						fill: "hsl(var(--black_40))",
 					},
 				},
-				"shine": {
+				shine: {
 					"0%": { "background-position": "100%" },
 					"100%": { "background-position": "-100%" },
 				},
@@ -177,10 +177,9 @@ const config = {
 				"accordion-down": "accordion-down 0.2s ease-out",
 				"accordion-up": "accordion-up 0.2s ease-out",
 				"caret-blink": "caret-blink 1.25s ease-out infinite",
-				"follow-through-spin":
-					"follow-through-overlap-spin 1.75s ease-out infinite",
+				"follow-through-spin": "follow-through-overlap-spin 1.75s ease-out infinite",
 				"ticktock-bounce": "ticktock-bounce 1.5s steps(2, jump-none) infinite",
-				"shine": "shine 3s linear infinite",
+				shine: "shine 3s linear infinite",
 			},
 		},
 	},

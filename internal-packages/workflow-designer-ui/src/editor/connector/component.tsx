@@ -11,17 +11,17 @@ export type ConnectorType = XYFlowEdge<{ connection: Connection }>;
 
 // Google-style color palette
 const CONNECTOR_COLORS = {
-	BLUE: "#4285F4",     // Google Blue
-	GREEN: "#0F9D58",    // Google Green
-	RED: "#DB4437",      // Google Red
-	YELLOW: "#F4B400",   // Google Yellow
-	PURPLE: "#9C27B0",   // Purple
+	BLUE: "#4285f4", // Google Blue
+	GREEN: "#0f9d58", // Google Green
+	RED: "#db4437", // Google Red
+	YELLOW: "#f4b400", // Google Yellow
+	PURPLE: "#9c27b0", // Purple
 	
 	// New node type colors
-	WEB_SEARCH: "#3A36FF",    // Web Search
-	IMAGE_GEN: "#00A2FF",     // Image Generation
-	AUDIO_GEN: "#0E3BC9",     // Audio Generation
-	VIDEO_GEN: "#00BADF",     // Video Generation
+	WEB_SEARCH: "#3a36ff", // Web Search
+	IMAGE_GEN: "#00a2ff", // Image Generation
+	AUDIO_GEN: "#0e3bc9", // Audio Generation
+	VIDEO_GEN: "#00badf", // Video Generation
 };
 
 export function Connector({
@@ -54,18 +54,21 @@ export function Connector({
 	// Simple color determination based on node type
 	if (outputType === "imageGeneration" || inputType === "imageGeneration") {
 		lineColor = CONNECTOR_COLORS.IMAGE_GEN;
-	}
-	// Special case: Perplexity web search
-	else if (
+	} else if (outputType === "audioGeneration" || inputType === "audioGeneration") {
+		lineColor = CONNECTOR_COLORS.AUDIO_GEN;
+	} else if (outputType === "videoGeneration" || inputType === "videoGeneration") {
+		lineColor = CONNECTOR_COLORS.VIDEO_GEN;
+	} else if (
+		outputType === "webSearch" ||
+		inputType === "webSearch" ||
+		// Check for Perplexity web search nodes (sonar-pro and sonar)
 		(outputType === "textGeneration" &&
-			data.connection.outputNode.content.type === "textGeneration" &&
-			Object.hasOwn(data.connection.outputNode.content, "llm") &&
+			"llm" in data.connection.outputNode.content &&
 			data.connection.outputNode.content.llm?.provider === "perplexity" &&
 			(data.connection.outputNode.content.llm?.id === "sonar-pro" ||
 				data.connection.outputNode.content.llm?.id === "sonar")) ||
 		(inputType === "textGeneration" &&
-			data.connection.inputNode.content.type === "textGeneration" &&
-			Object.hasOwn(data.connection.inputNode.content, "llm") &&
+			"llm" in data.connection.inputNode.content &&
 			data.connection.inputNode.content.llm?.provider === "perplexity" &&
 			(data.connection.inputNode.content.llm?.id === "sonar-pro" ||
 				data.connection.inputNode.content.llm?.id === "sonar"))
@@ -95,7 +98,13 @@ export function Connector({
 				</linearGradient>
 				
 				{/* Gradient for animation */}
-				<linearGradient id={animatedGradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+				<linearGradient
+					id={animatedGradientId}
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
 					<stop offset="0%" stopColor="rgba(255,255,255,0)" />
 					<stop offset="25%" stopColor="rgba(255,255,255,0)" />
 					<stop offset="49%" stopColor="rgba(255,255,255,0.4)" />
@@ -121,7 +130,13 @@ export function Connector({
 				</linearGradient>
 				
 				{/* Filter for white light glow effect */}
-				<filter id={whiteGlowFilterId} x="-50%" y="-50%" width="200%" height="200%">
+				<filter
+					id={whiteGlowFilterId}
+					x="-50%"
+					y="-50%"
+					width="200%"
+					height="200%"
+				>
 					<feGaussianBlur stdDeviation="3.5" result="blur" />
 					<feComposite in="SourceGraphic" in2="blur" operator="over" />
 				</filter>
