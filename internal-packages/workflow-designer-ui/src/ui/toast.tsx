@@ -43,7 +43,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 
 	const error = useCallback(
 		(message: string) => {
-			addToast({ message, type: "error", preserve: true });
+			addToast({ message, type: "error", preserve: false });
 		},
 		[addToast],
 	);
@@ -61,7 +61,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 							"data-[type=error]:bg-error-900/60",
 						)}
 						data-type={toast.type}
-						duration={toast.preserve ? Number.POSITIVE_INFINITY : undefined}
+						duration={toast.preserve ? Number.POSITIVE_INFINITY : 5000}
 					>
 						<div
 							className={clsx(
