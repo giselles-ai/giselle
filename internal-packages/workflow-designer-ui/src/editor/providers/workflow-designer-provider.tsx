@@ -1,57 +1,91 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { NodeUIState } from '../types';
-import { Edge, Node } from 'reactflow';
+import type React from "react";
+import {
+	createContext,
+	useContext,
+	useState,
+	useCallback,
+	type ReactNode,
+} from "react";
+import type { Edge, Node } from "@xyflow/react";
 
-interface WorkflowDesignerContextType {
-  nodes: Node[];
-  edges: Edge[];
-  uiNodeStates: Record<string, NodeUIState>;
-  setNodes: (nodes: Node[]) => void;
-  setEdges: (edges: Edge[]) => void;
-  setUiNodeState: (nodeId: string, state: Partial<NodeUIState>) => void;
+export interface UINodeState {
+	isDragging: boolean;
 }
 
-const WorkflowDesignerContext = createContext<WorkflowDesignerContextType | null>(null);
+export interface WorkflowDesignerContextType {
+	nodes: Node[];
+	edges: Edge[];
+	uiNodeStates: Record<string, UINodeState>;
+	setNodes: (nodes: Node[]) => void;
+	setEdges: (edges: Edge[]) => void;
+	setUINodeState: (nodeId: string, state: Partial<UINodeState>) => void;
+	updateNodeData: (node: Node, newData: Partial<Node>) => void;
+}
+
+const WorkflowDesignerContext =
+	createContext<WorkflowDesignerContextType | undefined>(undefined);
 
 export const useWorkflowDesigner = () => {
-  const context = useContext(WorkflowDesignerContext);
-  if (!context) {
-    throw new Error('useWorkflowDesigner must be used within a WorkflowDesignerProvider');
-  }
-  return context;
+	const context = useContext(WorkflowDesignerContext);
+	if (!context) {
+		throw new Error(
+			"useWorkflowDesigner must be used within a WorkflowDesignerProvider"
+		);
+	}
+	return context;
 };
 
 interface WorkflowDesignerProviderProps {
-  children: ReactNode;
+	children: ReactNode;
 }
 
-export const WorkflowDesignerProvider: React.FC<WorkflowDesignerProviderProps> = ({ children }) => {
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
-  const [uiNodeStates, setUiNodeStates] = useState<Record<string, NodeUIState>>({});
+export const WorkflowDesignerProvider: React.FC<
+	WorkflowDesignerProviderProps
+> = ({ children }) => {
+	const [nodes, setNodes] = useState<Node[]>([]);
+	const [edges, setEdges] = useState<Edge[]>([]);
+	const [uiNodeStates, setUINodeStates] = useState<Record<string, UINodeState>>({});
 
-  const setUiNodeState = useCallback((nodeId: string, state: Partial<NodeUIState>) => {
-    setUiNodeStates((prev) => ({
-      ...prev,
-      [nodeId]: {
-        ...prev[nodeId],
-        ...state,
-      },
-    }));
-  }, []);
+	const setUINodeState = useCallback((nodeId: string, state: Partial<UINodeState>) => {
+		setUINodeStates((prev) => {
+			const currentState = prev[nodeId] || { isDragging: false };
+			return {
+				...prev,
+				[nodeId]: {
+					...currentState,
+					...state,
+				},
+			};
+		});
+	}, []);
 
-  return (
-    <WorkflowDesignerContext.Provider
-      value={{
-        nodes,
-        edges,
-        uiNodeStates,
-        setNodes,
-        setEdges,
-        setUiNodeState,
-      }}
-    >
-      {children}
-    </WorkflowDesignerContext.Provider>
-  );
+	const updateNodeData = useCallback(
+		(node: Node, newData: Partial<Node>) => {
+			setNodes((nodes) =>
+				nodes.map((n) => {
+					if (n.id === node.id) {
+						return { ...n, ...newData };
+					}
+					return n;
+				})
+			);
+		},
+		[]
+	);
+
+	return (
+		<WorkflowDesignerContext.Provider
+			value={{
+				nodes,
+				edges,
+				uiNodeStates,
+				setNodes,
+				setEdges,
+				setUINodeState,
+				updateNodeData,
+			}}
+		>
+			{children}
+		</WorkflowDesignerContext.Provider>
+	);
 }; 
