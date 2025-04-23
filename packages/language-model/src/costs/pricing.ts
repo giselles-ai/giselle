@@ -36,21 +36,30 @@ export type TokenBasedPricing = {
   output: TokenBasedPrice;
 };
 
+/**
+ * Image pricing based on count
+ */
 export type ImageCountBasedPrice = {
   type: "image";
   pricingType: "per_image";
   costPerImage: Cost;
 };
 
+/**
+ * Image pricing based on size
+ */
 export type ImageSizeBasedPrice = {
   type: "image";
   pricingType: "per_megapixel";
   costPerMegaPixel: Cost;
 };
 
-export type FlatApiCallBasedPrice = {
-  type: "api_call";
-  costPerCall: Cost;
+/**
+ * Web search API pricing configuration
+ */
+export type WebSearchApiCallBasedPrice = {
+  type: "web_search";
+  costPerKCalls: Record<SearchContextSize, Cost>;
 };
 
 /**
@@ -59,46 +68,9 @@ export type FlatApiCallBasedPrice = {
 export type SearchContextSize = "low" | "medium" | "high";
 
 /**
- * API call-based pricing with context size variations
- */
-export type WebSearchApiCallBasedPrice = {
-  type: "web_search";
-  costPerKCalls: Record<SearchContextSize, Cost>;
-};
-
-export type ApiCallBasedPrice = WebSearchApiCallBasedPrice | FlatApiCallBasedPrice;
-
-/**
- * Usage-based (non-token-based) pricing patterns
- */
-export type UsageBasedPrice =
-  | TokenBasedPrice
-  | ImageCountBasedPrice
-  | ImageSizeBasedPrice
-  | ApiCallBasedPrice;
-
-/**
- * Usage-based pricing configuration
- */
-export type UsageBasedPricing = {
-  type: "usage";
-  price: WebSearchApiCallBasedPrice;
-}
-
-/**
  * Model pricing configuration for a specific time period
- * The validity period starts from validFrom and continues until the validFrom of the next price in the array
- * For the latest price (last in the array), it remains valid until a new price is added
  */
 export type ModelPrice = {
   validFrom: string;
-  price: TokenBasedPricing | UsageBasedPricing;
-};
-
-/**
- * Historical pricing configuration for a model
- * Prices should be ordered by validFrom in ascending order
- */
-export type ModelPriceConfig = {
-  prices: ModelPrice[];
-};
+  price: TokenBasedPricing | WebSearchApiCallBasedPrice;
+}; 
