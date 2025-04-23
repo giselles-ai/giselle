@@ -294,15 +294,19 @@ export function CustomXyFlowNode({
 				fadeOutOpacity={fadeOutOpacity}
 			/>
 			{/* Debug controls - would be managed via API in real app */}
-			{selected && data.nodeData.content.type === "textGeneration" && (
+			{selected && 
+				data.nodeData.content.type !== "file" && 
+				data.nodeData.content.type !== "text" && (
 				<div className="absolute bottom-[-40px] left-1/2 transform -translate-x-1/2 flex gap-1 z-20">
 					<button 
+						type="button"
 						onClick={startExecution}
 						className="px-2 py-1 bg-blue-500 text-white text-xs rounded"
 					>
 						Execute
 					</button>
 					<button 
+						type="button"
 						onClick={simulateError}
 						className="px-2 py-1 bg-red-500 text-white text-xs rounded"
 					>
@@ -367,19 +371,19 @@ export function NodeComponent({
 	const shadowStyle = useMemo(() => {
 		// Apply animation shadow for running nodes
 		if (executionStatus === "running") {
-			const color = `rgba(${parseInt(NODE_COLORS.BLUE.slice(1, 3), 16)}, ${parseInt(NODE_COLORS.BLUE.slice(3, 5), 16)}, ${parseInt(NODE_COLORS.BLUE.slice(5, 7), 16)}, 0.7)`; // Blue shadow
+			const color = `rgba(${Number.parseInt(NODE_COLORS.BLUE.slice(1, 3), 16)}, ${Number.parseInt(NODE_COLORS.BLUE.slice(3, 5), 16)}, ${Number.parseInt(NODE_COLORS.BLUE.slice(5, 7), 16)}, 0.7)`; // Blue shadow
 			return {
 				boxShadow: `0px 0px ${shadowSize}px 0px ${color}`,
 				transition: "box-shadow 0.5s ease"
 			};
 		}
 		// Apply static shadow for completed and error states
-		else if (executionStatus === "completed") {
-			const color = `rgba(${parseInt(NODE_COLORS.GREEN.slice(1, 3), 16)}, ${parseInt(NODE_COLORS.GREEN.slice(3, 5), 16)}, ${parseInt(NODE_COLORS.GREEN.slice(5, 7), 16)}, 0.5)`;
+		if (executionStatus === "completed") {
+			const color = `rgba(${Number.parseInt(NODE_COLORS.GREEN.slice(1, 3), 16)}, ${Number.parseInt(NODE_COLORS.GREEN.slice(3, 5), 16)}, ${Number.parseInt(NODE_COLORS.GREEN.slice(5, 7), 16)}, 0.5)`;
 			return { boxShadow: `0px 0px 16px 0px ${color}` }; // Green shadow
 		}
-		else if (executionStatus === "failed") {
-			const color = `rgba(${parseInt(NODE_COLORS.RED.slice(1, 3), 16)}, ${parseInt(NODE_COLORS.RED.slice(3, 5), 16)}, ${parseInt(NODE_COLORS.RED.slice(5, 7), 16)}, 0.5)`;
+		if (executionStatus === "failed") {
+			const color = `rgba(${Number.parseInt(NODE_COLORS.RED.slice(1, 3), 16)}, ${Number.parseInt(NODE_COLORS.RED.slice(3, 5), 16)}, ${Number.parseInt(NODE_COLORS.RED.slice(5, 7), 16)}, 0.5)`;
 			return { boxShadow: `0px 0px 16px 0px ${color}` }; // Red shadow
 		}
 		// For selected state, use className instead of inline style
@@ -433,6 +437,7 @@ export function NodeComponent({
 								/>
 								{onStopExecution && (
 									<button
+										type="button"
 										onClick={(e) => {
 											e.stopPropagation();
 											onStopExecution();
@@ -452,7 +457,7 @@ export function NodeComponent({
 							data-status={executionStatus}
 						>
 							<div className="flex items-center justify-end">
-								<span className={`text-xs font-medium font-hubot`} style={{color: NODE_COLORS.GREEN}}>Completed</span>
+								<span className="text-xs font-medium font-hubot" style={{color: NODE_COLORS.GREEN}}>Completed</span>
 								<Check className="w-4 h-4 ml-1" style={{color: NODE_COLORS.GREEN}} />
 							</div>
 						</div>
@@ -461,7 +466,7 @@ export function NodeComponent({
 					{executionStatus === "failed" && (
 						<div className="absolute top-[-28px] right-0 py-1 px-2 rounded-full z-10" data-status={executionStatus}>
 							<div className="flex items-center justify-end">
-								<span className={`text-xs font-medium font-hubot`} style={{color: NODE_COLORS.RED}}>Error</span>
+								<span className="text-xs font-medium font-hubot" style={{color: NODE_COLORS.RED}}>Error</span>
 								<AlertCircleIcon className="w-4 h-4 ml-1" style={{color: NODE_COLORS.RED}} />
 							</div>
 						</div>
@@ -474,8 +479,8 @@ export function NodeComponent({
 				<div 
 					className="absolute bottom-full left-0 right-0 mb-2 flex w-full p-4 justify-between items-start rounded-lg border backdrop-blur-[8px] text-white-850 text-xs z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
 					style={{ 
-						borderColor: `rgba(${parseInt(NODE_COLORS.RED.slice(1, 3), 16)}, ${parseInt(NODE_COLORS.RED.slice(3, 5), 16)}, ${parseInt(NODE_COLORS.RED.slice(5, 7), 16)}, 0.2)`,
-						backgroundColor: `rgba(${parseInt(NODE_COLORS.RED.slice(1, 3), 16)}, ${parseInt(NODE_COLORS.RED.slice(3, 5), 16)}, ${parseInt(NODE_COLORS.RED.slice(5, 7), 16)}, 0.2)`,
+						borderColor: `rgba(${Number.parseInt(NODE_COLORS.RED.slice(1, 3), 16)}, ${Number.parseInt(NODE_COLORS.RED.slice(3, 5), 16)}, ${Number.parseInt(NODE_COLORS.RED.slice(5, 7), 16)}, 0.2)`,
+						backgroundColor: `rgba(${Number.parseInt(NODE_COLORS.RED.slice(1, 3), 16)}, ${Number.parseInt(NODE_COLORS.RED.slice(3, 5), 16)}, ${Number.parseInt(NODE_COLORS.RED.slice(5, 7), 16)}, 0.2)`,
 						boxShadow: '-2px -1px 0px 0px rgba(0,0,0,0.1), 1px 1px 8px 0px rgba(0,0,0,0.25)'
 					}}
 				>
@@ -485,6 +490,7 @@ export function NodeComponent({
 					</div>
 					{onRetryExecution && (
 						<button
+							type="button"
 							onClick={(e) => {
 								e.stopPropagation();
 								onRetryExecution();
@@ -510,8 +516,8 @@ export function NodeComponent({
 					"group-data-[content-type=audioGeneration]:from-audio-generation-node-1/40 group-data-[content-type=audioGeneration]:to-audio-generation-node-1",
 					"group-data-[content-type=videoGeneration]:from-video-generation-node-1/40 group-data-[content-type=videoGeneration]:to-video-generation-node-1",
 					"group-data-[status=running]:border-blue-500",
-					`group-data-[status=completed]:border`,
-					`group-data-[status=failed]:border`,
+					"group-data-[status=completed]:border",
+					"group-data-[status=failed]:border",
 				)}
 				style={{
 					...(executionStatus === "completed" ? { borderColor: NODE_COLORS.GREEN } : {}),

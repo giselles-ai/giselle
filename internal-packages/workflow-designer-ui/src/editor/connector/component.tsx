@@ -11,17 +11,17 @@ export type ConnectorType = XYFlowEdge<{ connection: Connection }>;
 
 // Google-style color palette
 const CONNECTOR_COLORS = {
-	BLUE: '#4285F4',     // Google Blue
-	GREEN: '#0F9D58',    // Google Green
-	RED: '#DB4437',      // Google Red
-	YELLOW: '#F4B400',   // Google Yellow
-	PURPLE: '#9C27B0',   // Purple
+	BLUE: "#4285F4",     // Google Blue
+	GREEN: "#0F9D58",    // Google Green
+	RED: "#DB4437",      // Google Red
+	YELLOW: "#F4B400",   // Google Yellow
+	PURPLE: "#9C27B0",   // Purple
 	
 	// New node type colors
-	WEB_SEARCH: '#3A36FF',    // Web Search
-	IMAGE_GEN: '#00A2FF',     // Image Generation
-	AUDIO_GEN: '#0E3BC9',     // Audio Generation
-	VIDEO_GEN: '#00BADF',     // Video Generation
+	WEB_SEARCH: "#3A36FF",    // Web Search
+	IMAGE_GEN: "#00A2FF",     // Image Generation
+	AUDIO_GEN: "#0E3BC9",     // Audio Generation
+	VIDEO_GEN: "#00BADF",     // Video Generation
 };
 
 export function Connector({
@@ -52,20 +52,24 @@ export function Connector({
 	const inputType = data.connection.inputNode.content.type;
 	
 	// Simple color determination based on node type
-	if (outputType === 'imageGeneration' || inputType === 'imageGeneration') {
+	if (outputType === "imageGeneration" || inputType === "imageGeneration") {
 		lineColor = CONNECTOR_COLORS.IMAGE_GEN;
 	}
 	// Special case: Perplexity web search
-	else if ((outputType === 'textGeneration' && 
-		  data.connection.outputNode.content.type === 'textGeneration' &&
-		  data.connection.outputNode.content.hasOwnProperty('llm') &&
-		  data.connection.outputNode.content.llm?.provider === 'perplexity' &&
-		  (data.connection.outputNode.content.llm?.id === 'sonar-pro' || data.connection.outputNode.content.llm?.id === 'sonar')) ||
-		 (inputType === 'textGeneration' &&
-		  data.connection.inputNode.content.type === 'textGeneration' &&
-		  data.connection.inputNode.content.hasOwnProperty('llm') &&
-		  data.connection.inputNode.content.llm?.provider === 'perplexity' &&
-		  (data.connection.inputNode.content.llm?.id === 'sonar-pro' || data.connection.inputNode.content.llm?.id === 'sonar'))) {
+	else if (
+		(outputType === "textGeneration" &&
+			data.connection.outputNode.content.type === "textGeneration" &&
+			Object.hasOwn(data.connection.outputNode.content, "llm") &&
+			data.connection.outputNode.content.llm?.provider === "perplexity" &&
+			(data.connection.outputNode.content.llm?.id === "sonar-pro" ||
+				data.connection.outputNode.content.llm?.id === "sonar")) ||
+		(inputType === "textGeneration" &&
+			data.connection.inputNode.content.type === "textGeneration" &&
+			Object.hasOwn(data.connection.inputNode.content, "llm") &&
+			data.connection.inputNode.content.llm?.provider === "perplexity" &&
+			(data.connection.inputNode.content.llm?.id === "sonar-pro" ||
+				data.connection.inputNode.content.llm?.id === "sonar"))
+	) {
 		lineColor = CONNECTOR_COLORS.WEB_SEARCH;
 	}
 	
