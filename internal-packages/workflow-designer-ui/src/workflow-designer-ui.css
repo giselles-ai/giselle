@@ -62,6 +62,19 @@
 			transform: rotate(-360deg);
 		}
 	}
+	
+	/* Node type color definitions */
+	--color-web-search-node-1: #3A36FF;
+	--color-web-search-node-2: color-mix(in srgb, #3A36FF, #000000 20%);
+	
+	--color-image-generation-node-1: #0085E0;
+	--color-image-generation-node-2: color-mix(in srgb, #0085E0, #000000 20%);
+	
+	--color-audio-generation-node-1: #084B8A;
+	--color-audio-generation-node-2: color-mix(in srgb, #084B8A, #000000 20%);
+	
+	--color-video-generation-node-1: #0098B2;
+	--color-video-generation-node-2: color-mix(in srgb, #0098B2, #000000 20%);
 }
 
 @property --button-gradient-angle {

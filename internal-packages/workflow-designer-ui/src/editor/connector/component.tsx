@@ -11,11 +11,17 @@ export type ConnectorType = XYFlowEdge<{ connection: Connection }>;
 
 // Google-style color palette
 const CONNECTOR_COLORS = {
-	BLUE: '#4285F4',    // Google Blue
-	GREEN: '#0F9D58',   // Google Green
-	RED: '#DB4437',     // Google Red
-	YELLOW: '#F4B400',  // Google Yellow
-	PURPLE: '#9C27B0',  // Purple
+	BLUE: '#4285F4',     // Google Blue
+	GREEN: '#0F9D58',    // Google Green
+	RED: '#DB4437',      // Google Red
+	YELLOW: '#F4B400',   // Google Yellow
+	PURPLE: '#9C27B0',   // Purple
+	
+	// 新しいノードタイプの色
+	WEB_SEARCH: '#3A36FF',    // Web検索
+	IMAGE_GEN: '#00A2FF',     // 画像生成
+	AUDIO_GEN: '#0E3BC9',     // 音声生成
+	VIDEO_GEN: '#00BADF',     // 動画生成
 };
 
 export function Connector({
@@ -41,14 +47,26 @@ export function Connector({
 	}
 	
 	// Determine color based on node type
-	let lineColor = CONNECTOR_COLORS.BLUE;
+	let lineColor = CONNECTOR_COLORS.BLUE;  // デフォルト色
 	const outputType = data.connection.outputNode.content.type;
 	const inputType = data.connection.inputNode.content.type;
 	
-	if (outputType === 'textGeneration' || inputType === 'textGeneration') {
-		lineColor = CONNECTOR_COLORS.BLUE;
-	} else if (outputType === 'imageGeneration' || inputType === 'imageGeneration') {
-		lineColor = CONNECTOR_COLORS.PURPLE;
+	// シンプルにノードタイプに基づいて色を決定
+	if (outputType === 'imageGeneration' || inputType === 'imageGeneration') {
+		lineColor = CONNECTOR_COLORS.IMAGE_GEN;
+	}
+	// 特殊なケース：Perplexity web search
+	else if ((outputType === 'textGeneration' && 
+		  data.connection.outputNode.content.type === 'textGeneration' &&
+		  data.connection.outputNode.content.hasOwnProperty('llm') &&
+		  data.connection.outputNode.content.llm?.provider === 'perplexity' &&
+		  data.connection.outputNode.content.llm?.id === 'sonar-pro') ||
+		 (inputType === 'textGeneration' &&
+		  data.connection.inputNode.content.type === 'textGeneration' &&
+		  data.connection.inputNode.content.hasOwnProperty('llm') &&
+		  data.connection.inputNode.content.llm?.provider === 'perplexity' &&
+		  data.connection.inputNode.content.llm?.id === 'sonar-pro')) {
+		lineColor = CONNECTOR_COLORS.WEB_SEARCH;
 	}
 	
 	// Dynamic IDs
@@ -117,6 +135,21 @@ export function Connector({
 					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#textGenerationToImageGeneration)]",
 					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#fileToImageGeneration)]",
 					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#textToImageGeneration)]",
+					
+					// Web検索ノード用のグラデーション
+					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=webSearch]:!stroke-[url(#textGenerationToWebSearch)]",
+					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=webSearch]:!stroke-[url(#fileToWebSearch)]",
+					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=webSearch]:!stroke-[url(#textToWebSearch)]",
+					
+					// 音声生成ノード用のグラデーション
+					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=audioGeneration]:!stroke-[url(#textGenerationToAudioGeneration)]",
+					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=audioGeneration]:!stroke-[url(#fileToAudioGeneration)]",
+					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=audioGeneration]:!stroke-[url(#textToAudioGeneration)]",
+					
+					// 動画生成ノード用のグラデーション
+					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=videoGeneration]:!stroke-[url(#textGenerationToVideoGeneration)]",
+					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=videoGeneration]:!stroke-[url(#fileToVideoGeneration)]",
+					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=videoGeneration]:!stroke-[url(#textToVideoGeneration)]",
 				)}
 			/>
 			
@@ -154,8 +187,8 @@ export function GradientDef() {
 					x2="100%"
 					y2="0%"
 				>
-					<stop offset="0%" stopColor="var(--color-primary-900)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
+					<stop offset="0%" stopColor="var(--color-generation-node-1)" />
+					<stop offset="100%" stopColor="var(--color-generation-node-1)" />
 				</linearGradient>
 				<linearGradient
 					id="fileToTextGeneration"
@@ -165,7 +198,7 @@ export function GradientDef() {
 					y2="0%"
 				>
 					<stop offset="0%" stopColor="var(--color-node-data-900)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
+					<stop offset="100%" stopColor="var(--color-generation-node-1)" />
 				</linearGradient>
 				<linearGradient
 					id="textToTextGeneration"
@@ -175,7 +208,7 @@ export function GradientDef() {
 					y2="0%"
 				>
 					<stop offset="0%" stopColor="var(--color-node-plaintext-900)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
+					<stop offset="100%" stopColor="var(--color-generation-node-1)" />
 				</linearGradient>
 				<linearGradient
 					id="textGenerationToImageGeneration"
@@ -185,7 +218,7 @@ export function GradientDef() {
 					y2="0%"
 				>
 					<stop offset="0%" stopColor="var(--color-primary-900)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
+					<stop offset="100%" stopColor="var(--color-image-generation-node-1)" />
 				</linearGradient>
 				<linearGradient
 					id="fileToImageGeneration"
@@ -195,7 +228,7 @@ export function GradientDef() {
 					y2="0%"
 				>
 					<stop offset="0%" stopColor="var(--color-node-data-900)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
+					<stop offset="100%" stopColor="var(--color-image-generation-node-1)" />
 				</linearGradient>
 				<linearGradient
 					id="textToImageGeneration"
@@ -205,7 +238,103 @@ export function GradientDef() {
 					y2="0%"
 				>
 					<stop offset="0%" stopColor="var(--color-node-plaintext-900)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
+					<stop offset="100%" stopColor="var(--color-image-generation-node-1)" />
+				</linearGradient>
+				
+				{/* Web検索ノード用のグラデーション */}
+				<linearGradient
+					id="textGenerationToWebSearch"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-primary-900)" />
+					<stop offset="100%" stopColor="var(--color-web-search-node-1)" />
+				</linearGradient>
+				<linearGradient
+					id="fileToWebSearch"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-node-data-900)" />
+					<stop offset="100%" stopColor="var(--color-web-search-node-1)" />
+				</linearGradient>
+				<linearGradient
+					id="textToWebSearch"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-node-plaintext-900)" />
+					<stop offset="100%" stopColor="var(--color-web-search-node-1)" />
+				</linearGradient>
+				
+				{/* 音声生成ノード用のグラデーション */}
+				<linearGradient
+					id="textGenerationToAudioGeneration"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-primary-900)" />
+					<stop offset="100%" stopColor="var(--color-audio-generation-node-1)" />
+				</linearGradient>
+				<linearGradient
+					id="fileToAudioGeneration"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-node-data-900)" />
+					<stop offset="100%" stopColor="var(--color-audio-generation-node-1)" />
+				</linearGradient>
+				<linearGradient
+					id="textToAudioGeneration"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-node-plaintext-900)" />
+					<stop offset="100%" stopColor="var(--color-audio-generation-node-1)" />
+				</linearGradient>
+				
+				{/* 動画生成ノード用のグラデーション */}
+				<linearGradient
+					id="textGenerationToVideoGeneration"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-primary-900)" />
+					<stop offset="100%" stopColor="var(--color-video-generation-node-1)" />
+				</linearGradient>
+				<linearGradient
+					id="fileToVideoGeneration"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-node-data-900)" />
+					<stop offset="100%" stopColor="var(--color-video-generation-node-1)" />
+				</linearGradient>
+				<linearGradient
+					id="textToVideoGeneration"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-node-plaintext-900)" />
+					<stop offset="100%" stopColor="var(--color-video-generation-node-1)" />
 				</linearGradient>
 			</defs>
 		</svg>
