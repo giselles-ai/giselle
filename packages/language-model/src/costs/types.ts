@@ -46,6 +46,15 @@ export type TokenBasedPrice =
   | TieredTokenBasedPriceInclusive 
   | TieredTokenBasedPriceExclusive;
 
+/**
+ * Token-based pricing with input/output configuration
+ */
+export type TokenBasedPricing = {
+  type: "token";
+  input: TokenBasedPrice;
+  output: TokenBasedPrice;
+};
+
 export type ImageCountBasedPrice = {
   type: "image";
   pricingType: "per_image";
@@ -58,16 +67,42 @@ export type ImageSizeBasedPrice = {
   costPerMegaPixel: Cost;
 };
 
-export type ApiCallBasedPrice = {
+export type FlatApiCallBasedPrice = {
   type: "api_call";
   costPerCall: Cost;
 };
 
+/**
+ * Search context size options for web search API
+ */
+export type SearchContextSize = "low" | "medium" | "high";
+
+/**
+ * API call-based pricing with context size variations
+ */
+export type WebSearchApiCallBasedPrice = {
+  type: "web_search";
+  costPerKCalls: Record<SearchContextSize, Cost>;
+};
+
+export type ApiCallBasedPrice = WebSearchApiCallBasedPrice | FlatApiCallBasedPrice;
+
+/**
+ * Usage-based (non-token-based) pricing patterns
+ */
 export type UsageBasedPrice =
   | TokenBasedPrice
   | ImageCountBasedPrice
   | ImageSizeBasedPrice
   | ApiCallBasedPrice;
+
+/**
+ * Usage-based pricing configuration
+ */
+export type UsageBasedPricing = {
+  type: "usage";
+  price: WebSearchApiCallBasedPrice;
+}
 
 /**
  * Model pricing configuration for a specific time period
@@ -76,8 +111,7 @@ export type UsageBasedPrice =
  */
 export type ModelPrice = {
   validFrom: string;
-  input: UsageBasedPrice;
-  output: UsageBasedPrice;
+  price: TokenBasedPricing | UsageBasedPricing;
 };
 
 /**
