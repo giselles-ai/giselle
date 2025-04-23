@@ -1,10 +1,10 @@
 import type React from "react";
 import {
+	type ReactNode,
 	createContext,
+	useCallback,
 	useContext,
 	useState,
-	useCallback,
-	type ReactNode,
 } from "react";
 
 export type NodeStatus =
@@ -28,15 +28,15 @@ interface ExecutionStateContextType {
 	resetAllNodeStates: () => void;
 }
 
-const ExecutionStateContext = createContext<ExecutionStateContextType | undefined>(
-	undefined
-);
+const ExecutionStateContext = createContext<
+	ExecutionStateContextType | undefined
+>(undefined);
 
 export const useExecutionState = () => {
 	const context = useContext(ExecutionStateContext);
 	if (!context) {
 		throw new Error(
-			"useExecutionState must be used within an ExecutionStateProvider"
+			"useExecutionState must be used within an ExecutionStateProvider",
 		);
 	}
 	return context;
@@ -49,13 +49,13 @@ interface ExecutionStateProviderProps {
 export const ExecutionStateProvider: React.FC<ExecutionStateProviderProps> = ({
 	children,
 }) => {
-	const [nodeStates, setNodeStates] = useState<Record<string, NodeExecutionState>>(
-		{}
-	);
+	const [nodeStates, setNodeStates] = useState<
+		Record<string, NodeExecutionState>
+	>({});
 
 	const updateNodeState = (
 		nodeId: string,
-		state: Partial<NodeExecutionState>
+		state: Partial<NodeExecutionState>,
 	) => {
 		setNodeStates((prev) => {
 			const currentState = prev[nodeId] || { id: nodeId, status: "idle" };

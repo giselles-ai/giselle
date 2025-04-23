@@ -1,12 +1,12 @@
+import type { Edge, Node } from "@xyflow/react";
 import type React from "react";
 import {
+	type ReactNode,
 	createContext,
+	useCallback,
 	useContext,
 	useState,
-	useCallback,
-	type ReactNode,
 } from "react";
-import type { Edge, Node } from "@xyflow/react";
 
 export interface UINodeState {
 	isDragging: boolean;
@@ -22,14 +22,15 @@ export interface WorkflowDesignerContextType {
 	updateNodeData: (node: Node, newData: Partial<Node>) => void;
 }
 
-const WorkflowDesignerContext =
-	createContext<WorkflowDesignerContextType | undefined>(undefined);
+const WorkflowDesignerContext = createContext<
+	WorkflowDesignerContextType | undefined
+>(undefined);
 
 export const useWorkflowDesigner = () => {
 	const context = useContext(WorkflowDesignerContext);
 	if (!context) {
 		throw new Error(
-			"useWorkflowDesigner must be used within a WorkflowDesignerProvider"
+			"useWorkflowDesigner must be used within a WorkflowDesignerProvider",
 		);
 	}
 	return context;
@@ -44,34 +45,36 @@ export const WorkflowDesignerProvider: React.FC<
 > = ({ children }) => {
 	const [nodes, setNodes] = useState<Node[]>([]);
 	const [edges, setEdges] = useState<Edge[]>([]);
-	const [uiNodeStates, setUINodeStates] = useState<Record<string, UINodeState>>({});
-
-	const setUINodeState = useCallback((nodeId: string, state: Partial<UINodeState>) => {
-		setUINodeStates((prev) => {
-			const currentState = prev[nodeId] || { isDragging: false };
-			return {
-				...prev,
-				[nodeId]: {
-					...currentState,
-					...state,
-				},
-			};
-		});
-	}, []);
-
-	const updateNodeData = useCallback(
-		(node: Node, newData: Partial<Node>) => {
-			setNodes((nodes) =>
-				nodes.map((n) => {
-					if (n.id === node.id) {
-						return { ...n, ...newData };
-					}
-					return n;
-				})
-			);
-		},
-		[]
+	const [uiNodeStates, setUINodeStates] = useState<Record<string, UINodeState>>(
+		{},
 	);
+
+	const setUINodeState = useCallback(
+		(nodeId: string, state: Partial<UINodeState>) => {
+			setUINodeStates((prev) => {
+				const currentState = prev[nodeId] || { isDragging: false };
+				return {
+					...prev,
+					[nodeId]: {
+						...currentState,
+						...state,
+					},
+				};
+			});
+		},
+		[],
+	);
+
+	const updateNodeData = useCallback((node: Node, newData: Partial<Node>) => {
+		setNodes((nodes) =>
+			nodes.map((n) => {
+				if (n.id === node.id) {
+					return { ...n, ...newData };
+				}
+				return n;
+			}),
+		);
+	}, []);
 
 	return (
 		<WorkflowDesignerContext.Provider

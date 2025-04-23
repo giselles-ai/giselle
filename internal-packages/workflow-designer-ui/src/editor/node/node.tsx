@@ -16,21 +16,29 @@ import {
 } from "@xyflow/react";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
+import {
+	AlertCircleIcon,
+	Check,
+	CheckCircleIcon,
+	PlayCircleIcon,
+	RefreshCcwIcon,
+	Square,
+	StopCircleIcon
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
 import ShinyText from "../../ui/shiny-text";
 import { defaultName } from "../../utils";
-import { CheckCircleIcon, AlertCircleIcon, PlayCircleIcon, StopCircleIcon, RefreshCcwIcon, Square, Check } from "lucide-react";
 
 // Definition of NodeStatus type used internally
 type NodeStatus = "idle" | "running" | "completed" | "failed" | "selected";
 
 // Color definitions used for execution state display
 const NODE_COLORS = {
-	BLUE: '#3b82f6',    // Blue for running state
-	GREEN: '#39FF7F',   // Green for completed state
-	RED: '#FF3D71',     // Red for error state
+	BLUE: "#3b82f6",    // Blue for running state
+	GREEN: "#39FF7F",   // Green for completed state
+	RED: "#FF3D71",     // Red for error state
 };
 
 /**
@@ -43,69 +51,69 @@ const NODE_COLORS = {
  */
 const NODE_THEME = {
 	text: {
-		from: 'text-node-1',
-		to: 'text-node-2',
-		shadow: 'text-node-1',
-		iconBg: 'text-node-1',
-		iconText: 'black-900',
-		border: 'text-node-1'
+		from: "text-node-1",
+		to: "text-node-2",
+		shadow: "text-node-1",
+		iconBg: "text-node-1",
+		iconText: "black-900",
+		border: "text-node-1",
 	},
 	file: {
-		from: 'file-node-1',
-		to: 'file-node-2',
-		shadow: 'file-node-1',
-		iconBg: 'file-node-1',
-		iconText: 'black-900',
-		border: 'file-node-1'
+		from: "file-node-1",
+		to: "file-node-2",
+		shadow: "file-node-1",
+		iconBg: "file-node-1",
+		iconText: "black-900",
+		border: "file-node-1",
 	},
 	textGeneration: {
-		from: 'generation-node-1',
-		to: 'generation-node-2',
-		shadow: 'generation-node-1',
-		iconBg: 'generation-node-1',
-		iconText: 'white-900',
-		border: 'generation-node-1'
+		from: "generation-node-1",
+		to: "generation-node-2",
+		shadow: "generation-node-1",
+		iconBg: "generation-node-1",
+		iconText: "white-900",
+		border: "generation-node-1",
 	},
 	imageGeneration: {
-		from: 'image-generation-node-1',
-		to: 'image-generation-node-2',
-		shadow: 'image-generation-node-1',
-		iconBg: 'image-generation-node-1',
-		iconText: 'white-900',
-		border: 'image-generation-node-1'
+		from: "image-generation-node-1",
+		to: "image-generation-node-2",
+		shadow: "image-generation-node-1",
+		iconBg: "image-generation-node-1",
+		iconText: "white-900",
+		border: "image-generation-node-1",
 	},
 	webSearch: {
-		from: 'web-search-node-1',
-		to: 'web-search-node-2',
-		shadow: 'web-search-node-1',
-		iconBg: 'web-search-node-1',
-		iconText: 'white-900',
-		border: 'web-search-node-1'
+		from: "web-search-node-1",
+		to: "web-search-node-2",
+		shadow: "web-search-node-1",
+		iconBg: "web-search-node-1",
+		iconText: "white-900",
+		border: "web-search-node-1",
 	},
 	github: {
-		from: 'github-node-1',
-		to: 'github-node-2',
-		shadow: 'github-node-1',
-		iconBg: 'github-node-1',
-		iconText: 'white-900',
-		border: 'github-node-1'
+		from: "github-node-1",
+		to: "github-node-2",
+		shadow: "github-node-1",
+		iconBg: "github-node-1",
+		iconText: "white-900",
+		border: "github-node-1",
 	},
 	audioGeneration: {
-		from: 'audio-generation-node-1',
-		to: 'audio-generation-node-2',
-		shadow: 'audio-generation-node-1',
-		iconBg: 'audio-generation-node-1',
-		iconText: 'white-900',
-		border: 'audio-generation-node-1'
+		from: "audio-generation-node-1",
+		to: "audio-generation-node-2",
+		shadow: "audio-generation-node-1",
+		iconBg: "audio-generation-node-1",
+		iconText: "white-900",
+		border: "audio-generation-node-1",
 	},
 	videoGeneration: {
-		from: 'video-generation-node-1',
-		to: 'video-generation-node-2',
-		shadow: 'video-generation-node-1',
-		iconBg: 'video-generation-node-1',
-		iconText: 'white-900',
-		border: 'video-generation-node-1'
-	}
+		from: "video-generation-node-1",
+		to: "video-generation-node-2",
+		shadow: "video-generation-node-1",
+		iconBg: "video-generation-node-1",
+		iconText: "white-900",
+		border: "video-generation-node-1",
+	},
 };
 
 /**
