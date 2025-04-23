@@ -23,7 +23,7 @@ import {
 	PlayCircleIcon,
 	RefreshCcwIcon,
 	Square,
-	StopCircleIcon
+	StopCircleIcon,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { NodeIcon } from "../../icons/node";
@@ -218,7 +218,9 @@ export function CustomXyFlowNode({
 
 	// State for managing node execution status
 	const [executionStatus, setExecutionStatus] = useState<NodeStatus>("idle");
-	const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+	const [errorMessage, setErrorMessage] = useState<string | undefined>(
+		undefined,
+	);
 	const [progress, setProgress] = useState<number | undefined>(undefined);
 	const [fadeOutOpacity, setFadeOutOpacity] = useState(1); // Opacity control
 

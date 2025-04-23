@@ -4,25 +4,12 @@ import {
 	type EdgeProps,
 	type Edge as XYFlowEdge,
 	getBezierPath,
+	useNodes,
 } from "@xyflow/react";
 import clsx from "clsx/lite";
+import { CONNECTOR_COLORS } from "@giselle/foundation-ui/global-constants";
 
 export type ConnectorType = XYFlowEdge<{ connection: Connection }>;
-
-// Google-style color palette
-const CONNECTOR_COLORS = {
-	BLUE: "#4285f4", // Google Blue
-	GREEN: "#0f9d58", // Google Green
-	RED: "#db4437", // Google Red
-	YELLOW: "#f4b400", // Google Yellow
-	PURPLE: "#9c27b0", // Purple
-	
-	// New node type colors
-	WEB_SEARCH: "#3a36ff", // Web Search
-	IMAGE_GEN: "#00a2ff", // Image Generation
-	AUDIO_GEN: "#0e3bc9", // Audio Generation
-	VIDEO_GEN: "#00badf", // Video Generation
-};
 
 export function Connector({
 	id,
@@ -34,6 +21,145 @@ export function Connector({
 	targetPosition,
 	data,
 }: EdgeProps<ConnectorType>) {
+	const sourceNode = useNodes().find(node => node.id === data?.connection?.source);
+	const targetNode = useNodes().find(node => node.id === data?.connection?.target);
+
+	// Determine the color of the line based on the source and target nodes
+	const defaultLineColor = CONNECTOR_COLORS.BLUE;
+	let color = defaultLineColor;
+
+	if (sourceNode && targetNode) {
+		const outputType = sourceNode.contentType;
+		const inputType = targetNode.contentType;
+
+		// Special case for the Perplexity web search
+		if (
+			outputType === "textGeneration" &&
+			inputType === "textGeneration" &&
+			targetNode.data?.provider === "perplexity" &&
+			(targetNode.data?.id === "sonar-pro" || targetNode.data?.id === "sonar")
+		) {
+			color = CONNECTOR_COLORS.GREEN;
+		}
+		// Check if the output node is image-generation type
+		else if (outputType === "imageGeneration") {
+			color = CONNECTOR_COLORS.IMAGE_GEN;
+		}
+		// Check if the input node is image-generation type
+		else if (inputType === "imageGeneration") {
+			color = CONNECTOR_COLORS.IMAGE_GEN;
+		}
+		// Check if the output node is web-search type
+		else if (outputType === "webSearch") {
+			color = CONNECTOR_COLORS.GREEN;
+		}
+		// Check if the input node is web-search type
+		else if (inputType === "webSearch") {
+			color = CONNECTOR_COLORS.GREEN;
+		}
+		// Check if the output node is audioGeneration type
+		else if (outputType === "audioGeneration") {
+			color = CONNECTOR_COLORS.YELLOW;
+		}
+		// Check if the input node is audioGeneration type
+		else if (inputType === "audioGeneration") {
+			color = CONNECTOR_COLORS.YELLOW;
+		}
+		// Check if the output node is videoGeneration type
+		else if (outputType === "videoGeneration") {
+			color = CONNECTOR_COLORS.VIDEO_GEN;
+		}
+		// Check if the input node is videoGeneration type
+		else if (inputType === "videoGeneration") {
+			color = CONNECTOR_COLORS.VIDEO_GEN;
+		}
+	}
+
+	let gradientId = "";
+	if (sourceNode && targetNode) {
+		const outputType = sourceNode.contentType;
+		const inputType = targetNode.contentType;
+
+		// text generation to text generation
+		if (outputType === "textGeneration" && inputType === "textGeneration") {
+			gradientId = "textGenerationToTextGeneration";
+		}
+		// text generation to image generation
+		else if (outputType === "textGeneration" && inputType === "imageGeneration") {
+			gradientId = "textGenerationToImageGeneration";
+		}
+		// file to image generation
+		else if (outputType === "file" && inputType === "imageGeneration") {
+			gradientId = "fileToImageGeneration";
+		}
+		// text to image generation
+		else if (outputType === "text" && inputType === "imageGeneration") {
+			gradientId = "textToImageGeneration";
+		}
+		// text generation to web search
+		else if (outputType === "textGeneration" && inputType === "webSearch") {
+			gradientId = "textGenerationToWebSearch";
+		}
+		// file to web search
+		else if (outputType === "file" && inputType === "webSearch") {
+			gradientId = "fileToWebSearch";
+		}
+		// text to web search
+		else if (outputType === "text" && inputType === "webSearch") {
+			gradientId = "textToWebSearch";
+		}
+		// text generation to audio generation
+		else if (
+			outputType === "textGeneration" &&
+			inputType === "audioGeneration"
+		) {
+			gradientId = "textGenerationToAudioGeneration";
+		}
+		// file to audio generation
+		else if (outputType === "file" && inputType === "audioGeneration") {
+			gradientId = "fileToAudioGeneration";
+		}
+		// text to audio generation
+		else if (outputType === "text" && inputType === "audioGeneration") {
+			gradientId = "textToAudioGeneration";
+		}
+		// text generation to video generation
+		else if (
+			outputType === "textGeneration" &&
+			inputType === "videoGeneration"
+		) {
+			gradientId = "textGenerationToVideoGeneration";
+		}
+		// file to video generation
+		else if (outputType === "file" && inputType === "videoGeneration") {
+			gradientId = "fileToVideoGeneration";
+		}
+		// text to video generation
+		else if (outputType === "text" && inputType === "videoGeneration") {
+			gradientId = "textToVideoGeneration";
+		}
+
+		// If the target node is a perplexity node, it's a web search
+		if (
+			inputType === "textGeneration" &&
+			targetNode.data?.provider === "perplexity" &&
+			(targetNode.data?.id === "sonar-pro" || targetNode.data?.id === "sonar")
+		) {
+			// text generation to web search (perplexity)
+			if (outputType === "textGeneration") {
+				gradientId = "textGenerationToWebSearch";
+			}
+			// file to web search (perplexity)
+			else if (outputType === "file") {
+				gradientId = "fileToWebSearch";
+			}
+			// text to web search (perplexity)
+			else if (outputType === "text") {
+				gradientId = "textToWebSearch";
+			}
+		}
+	}
+
 	const [edgePath] = getBezierPath({
 		sourceX,
 		sourceY,
@@ -44,36 +170,6 @@ export function Connector({
 	});
 	if (data == null) {
 		return null;
-	}
-	
-	// Determine color based on node type
-	let lineColor = CONNECTOR_COLORS.BLUE;  // Default color
-	const outputType = data.connection.outputNode.content.type;
-	const inputType = data.connection.inputNode.content.type;
-	
-	// Simple color determination based on node type
-	if (outputType === "imageGeneration" || inputType === "imageGeneration") {
-		lineColor = CONNECTOR_COLORS.IMAGE_GEN;
-	} else if (outputType === "audioGeneration" || inputType === "audioGeneration") {
-		lineColor = CONNECTOR_COLORS.AUDIO_GEN;
-	} else if (outputType === "videoGeneration" || inputType === "videoGeneration") {
-		lineColor = CONNECTOR_COLORS.VIDEO_GEN;
-	} else if (
-		outputType === "webSearch" ||
-		inputType === "webSearch" ||
-		// Check for Perplexity web search nodes (sonar-pro and sonar)
-		(outputType === "textGeneration" &&
-			"llm" in data.connection.outputNode.content &&
-			data.connection.outputNode.content.llm?.provider === "perplexity" &&
-			(data.connection.outputNode.content.llm?.id === "sonar-pro" ||
-				data.connection.outputNode.content.llm?.id === "sonar")) ||
-		(inputType === "textGeneration" &&
-			"llm" in data.connection.inputNode.content &&
-			data.connection.inputNode.content.llm?.provider === "perplexity" &&
-			(data.connection.inputNode.content.llm?.id === "sonar-pro" ||
-				data.connection.inputNode.content.llm?.id === "sonar"))
-	) {
-		lineColor = CONNECTOR_COLORS.WEB_SEARCH;
 	}
 	
 	// Dynamic IDs
@@ -93,8 +189,8 @@ export function Connector({
 			<defs>
 				{/* Gradient for base glow */}
 				<linearGradient id={glowGradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-					<stop offset="0%" stopColor={lineColor} stopOpacity="0.1" />
-					<stop offset="100%" stopColor={lineColor} stopOpacity="0.1" />
+					<stop offset="0%" stopColor={color} stopOpacity="0.1" />
+					<stop offset="100%" stopColor={color} stopOpacity="0.1" />
 				</linearGradient>
 				
 				{/* Gradient for animation */}
@@ -197,8 +293,9 @@ export function Connector({
 
 export function GradientDef() {
 	return (
-		<svg role="graphics-symbol">
+		<svg style={{ position: "absolute", width: 0, height: 0 }}>
 			<defs>
+				{/* Gradients for text generation nodes */}
 				<linearGradient
 					id="textGenerationToTextGeneration"
 					x1="0%"
@@ -206,29 +303,11 @@ export function GradientDef() {
 					x2="100%"
 					y2="0%"
 				>
-					<stop offset="0%" stopColor="var(--color-generation-node-1)" />
-					<stop offset="100%" stopColor="var(--color-generation-node-1)" />
+					<stop offset="0%" stopColor="var(--color-primary-900)" />
+					<stop offset="100%" stopColor="var(--color-primary-900)" />
 				</linearGradient>
-				<linearGradient
-					id="fileToTextGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-node-data-900)" />
-					<stop offset="100%" stopColor="var(--color-generation-node-1)" />
-				</linearGradient>
-				<linearGradient
-					id="textToTextGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-node-plaintext-900)" />
-					<stop offset="100%" stopColor="var(--color-generation-node-1)" />
-				</linearGradient>
+
+				{/* Gradients for image generation nodes */}
 				<linearGradient
 					id="textGenerationToImageGeneration"
 					x1="0%"
@@ -259,7 +338,7 @@ export function GradientDef() {
 					<stop offset="0%" stopColor="var(--color-node-plaintext-900)" />
 					<stop offset="100%" stopColor="var(--color-image-generation-node-1)" />
 				</linearGradient>
-				
+
 				{/* Gradients for web search nodes */}
 				<linearGradient
 					id="textGenerationToWebSearch"
@@ -291,7 +370,7 @@ export function GradientDef() {
 					<stop offset="0%" stopColor="var(--color-node-plaintext-900)" />
 					<stop offset="100%" stopColor="var(--color-web-search-node-1)" />
 				</linearGradient>
-				
+
 				{/* Gradients for audio generation nodes */}
 				<linearGradient
 					id="textGenerationToAudioGeneration"
@@ -323,7 +402,7 @@ export function GradientDef() {
 					<stop offset="0%" stopColor="var(--color-node-plaintext-900)" />
 					<stop offset="100%" stopColor="var(--color-audio-generation-node-1)" />
 				</linearGradient>
-				
+
 				{/* Gradients for video generation nodes */}
 				<linearGradient
 					id="textGenerationToVideoGeneration"
