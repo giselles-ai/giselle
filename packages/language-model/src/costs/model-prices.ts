@@ -1,4 +1,4 @@
-import { type ModelPriceConfig, type UsageBasedPricing, type WebSearchApiCallBasedPrice } from "./types";
+import type { TokenBasedPricing, WebSearchApiCallBasedPrice } from "./pricing";
 
 /**
  * Model pricing configurations
@@ -11,7 +11,7 @@ import { type ModelPriceConfig, type UsageBasedPricing, type WebSearchApiCallBas
 /**
  * Shared pricing configurations for model groups
  */
-const webSearchPricing = {
+export const webSearchPricing = {
   gpt4: {
     validFrom: "2025-04-23T00:00:00Z",
     price: {
@@ -24,7 +24,7 @@ const webSearchPricing = {
           high: 50.00,
         },
       } satisfies WebSearchApiCallBasedPrice,
-    } satisfies UsageBasedPricing,
+    },
   },
   gpt4Mini: {
     validFrom: "2025-04-23T00:00:00Z",
@@ -38,7 +38,7 @@ const webSearchPricing = {
           high: 30.00,
         },
       } satisfies WebSearchApiCallBasedPrice,
-    } satisfies UsageBasedPricing,
+    },
   },
 };
 
