@@ -12,10 +12,6 @@ export interface CostCalculator<Usage extends ModelUsage, Pricing> {
   calculate(usage: Usage, pricing: Pricing): CostResult;
 }
 
-export interface TokenCostCalculator extends CostCalculator<TokenUsage, TokenBasedPricing> {}
-
-export interface WebSearchCostCalculator extends CostCalculator<WebSearchUsage, WebSearchApiCallBasedPrice> {}
-
 /**
  * Calculate token cost based on pricing configuration
  * Handles both flat rate and tiered pricing
