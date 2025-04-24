@@ -180,3 +180,9 @@ export const models = [
 
 export const LanguageModel = OpenAILanguageModel;
 export type LanguageModel = OpenAILanguageModel;
+
+export interface OpenAIWebSearchConfig {
+	openaiWebSearch?: {
+		searchContextSize: "low" | "medium" | "high";
+	};
+}

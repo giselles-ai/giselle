@@ -14,6 +14,8 @@ import {
 import {
 	LanguageModel as OpenAILanguageModel,
 	models as openaiLanguageModels,
+	OpenAICostCalculator,
+	type OpenAIWebSearchConfig,
 } from "./openai";
 import {
 	LanguageModel as OpenAIImageLanguageModel,
@@ -23,6 +25,9 @@ import {
 	LanguageModel as PerplexityLanguageModel,
 	models as perplexityLanguageModels,
 } from "./perplexity";
+import type { CostResult } from "./costs/calculator";
+import type { TokenUsage } from "./costs/usage";
+
 export * from "./base";
 export * from "./helper";
 export {
@@ -81,3 +86,36 @@ export const LanguageModelProviders = z.enum([
 	FalLanguageModel.shape.provider.value,
 ]);
 export type LanguageModelProvider = z.infer<typeof LanguageModelProviders>;
+
+const costCalculators = {
+	openai: {
+		default: new OpenAICostCalculator(),
+	},
+	anthropic: {
+		default: new OpenAICostCalculator(),
+	},
+	google: {
+		default: new OpenAICostCalculator(),
+	},
+	perplexity: {
+		default: new OpenAICostCalculator(),
+	},
+	fal: {
+		default: new OpenAICostCalculator(),
+	},
+} as const;
+
+function getCostCalculator(provider: LanguageModelProvider, model: string) {
+	const providerCalculators = costCalculators[provider];
+	return providerCalculators[model as keyof typeof providerCalculators] ?? providerCalculators.default;
+}
+
+export function calculateModelCost(
+	provider: LanguageModelProvider,
+	model: string,
+	toolConfig: OpenAIWebSearchConfig | undefined,
+	usage: TokenUsage
+): CostResult {
+	const calculator = getCostCalculator(provider, model);
+	return calculator.calculate(model, toolConfig, usage);
+}

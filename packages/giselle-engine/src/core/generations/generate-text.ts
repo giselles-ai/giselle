@@ -22,6 +22,7 @@ import {
 import { githubTools, octokit } from "@giselle-sdk/github-tool";
 import {
 	Capability,
+	calculateModelCost,
 	hasCapability,
 	languageModels,
 } from "@giselle-sdk/language-model";
@@ -378,6 +379,15 @@ export async function generateText(args: {
 			);
 		},
 		async onFinish(event) {
+			console.log(
+				"model cost:------------------------",
+				calculateModelCost(
+					actionNode.content.llm.provider,
+					actionNode.content.llm.id,
+					actionNode.content.tools,
+					event.usage,
+				),
+			);
 			const generationOutputs: GenerationOutput[] = [];
 			const generatedTextOutput = generationContext.operationNode.outputs.find(
 				(output) => output.accessor === "generated-text",
