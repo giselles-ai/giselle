@@ -18,10 +18,9 @@ export type ImageSizeUsage = {
 
 export type ImageUsage = ImageCountUsage | ImageSizeUsage;
 
-export type WebSearchUsage = {
-  type: "web_search";
+export type ApiCallUsage = {
+  type: "api_call";
   calls: number;
-  contextSize: SearchContextSize;
 };
 
-export type ModelUsage = TokenUsage | ImageUsage | WebSearchUsage;
+export type ModelUsage = TokenUsage | ImageUsage | ApiCallUsage;
