@@ -97,4 +97,27 @@ const generateModelPrices = () => {
   };
 };
 
+export getModelPriceFromLangfuse(model: string): TokenBasedPricing {
+        // TODO: get from internet
+        const response = {
+                id: model,
+                modelName: model,
+                matchPattern: model,
+                startDate: null,
+                unit: "CHARACTERS",
+                inputPrice: 0.0123,
+                outputPrice: 0.0456,
+                totalPrice: null,
+                tokenizerId: null,
+                tokenizerConfig: null,
+                isLangfuseManaged: true
+        };
+
+        return {
+                type: "token",
+                input: response.inputPrice ?? 0,
+                output: response.outputPrice ?? 0,
+                },
+        };
+
 export const modelPrices = generateModelPrices();
