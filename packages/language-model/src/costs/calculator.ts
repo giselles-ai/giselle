@@ -1,15 +1,16 @@
 import type { Cost } from "./pricing";
 import type { TokenBasedPrice, TokenBasedPricing, WebSearchApiCallBasedPrice } from "./pricing";
 import type { ModelUsage, TokenUsage, WebSearchUsage } from "./usage";
+import type { ModelUsage } from "./usage";
 
-export type CostResult = {
+export interface CostResult {
   input: Cost;
   output: Cost;
   total: Cost;
 };
 
-export interface CostCalculator<Usage extends ModelUsage, Pricing> {
-  calculate(usage: Usage, pricing: Pricing): CostResult;
+export interface CostCalculator {
+  calculate(model: string, toolConfig: any | undefined, usage: ModelUsage): CostResult;
 }
 
 /**
