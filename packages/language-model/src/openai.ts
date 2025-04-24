@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { Capability, LanguageModelBase, Tier } from "./base";
 import type { CostCalculator, CostResult } from "./costs/calculator";
+import { calculateTokenCost } from "./costs/calculator";
+import { getModelPriceFromLangfuse, modelPrices } from "./costs/model-prices";
 import type { Cost } from "./costs/pricing";
 import type { TokenBasedPrice, TokenBasedPricing } from "./costs/pricing";
-import type { TokenUsage, ApiCallUsage } from "./costs/usage";
-import { calculateTokenCost } from "./costs/calculator";
-import { modelPrices, getModelPriceFromLangfuse } from "./costs/model-prices";
+import type { ApiCallUsage, TokenUsage } from "./costs/usage";
 
 const OpenAILanguageModelConfigurations = z.object({
 	temperature: z.number(),
@@ -31,19 +31,23 @@ const OpenAILanguageModel = LanguageModelBase.extend({
 type OpenAILanguageModel = z.infer<typeof OpenAILanguageModel>;
 
 export class OpenAICostCalculator implements CostCalculator {
-	calculate(model: string, toolConfig: any | undefined, usage: TokenUsage): CostResult {
+	calculate(
+		model: string,
+		toolConfig: any | undefined,
+		usage: TokenUsage,
+	): CostResult {
 		const tokenCost = this.calculateTokenCost(model, usage);
 
 		if (toolConfig?.openaiWebSearch && toolConfig.webSearchCalls) {
 			const webSearchUsage: ApiCallUsage = {
-				calls: toolConfig.webSearchCalls
+				calls: toolConfig.webSearchCalls,
 			};
 			const webSearchCost = this.calculateWebSearchCost(model, webSearchUsage);
 
 			return {
 				input: tokenCost.input + webSearchCost.input,
 				output: tokenCost.output + webSearchCost.output,
-				total: tokenCost.total + webSearchCost.total
+				total: tokenCost.total + webSearchCost.total,
 			};
 		}
 
@@ -52,9 +56,12 @@ export class OpenAICostCalculator implements CostCalculator {
 
 	private calculateTokenCost(model: string, usage: TokenUsage): CostResult {
 		const pricing = getModelPriceFromLangfuse(model);
-		
+
 		const inputCost = calculateTokenCost(usage.promptTokens, pricing.input);
-		const outputCost = calculateTokenCost(usage.completionTokens, pricing.output);
+		const outputCost = calculateTokenCost(
+			usage.completionTokens,
+			pricing.output,
+		);
 
 		return {
 			input: inputCost,
@@ -63,7 +70,10 @@ export class OpenAICostCalculator implements CostCalculator {
 		};
 	}
 
-	private calculateWebSearchCost(model: string, usage: ApiCallUsage): CostResult {
+	private calculateWebSearchCost(
+		model: string,
+		usage: ApiCallUsage,
+	): CostResult {
 		const costPerCall = 0.002; // $0.002 per web search call
 		const inputCost = usage.calls * costPerCall;
 

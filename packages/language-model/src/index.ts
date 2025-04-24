@@ -3,6 +3,8 @@ import {
 	LanguageModel as AnthropicLanguageModel,
 	models as anthropicLanguageModels,
 } from "./anthropic";
+import type { CostResult } from "./costs/calculator";
+import type { TokenUsage } from "./costs/usage";
 import {
 	LanguageModel as FalLanguageModel,
 	models as falLanguageModels,
@@ -12,10 +14,10 @@ import {
 	models as googleLanguageModels,
 } from "./google";
 import {
-	LanguageModel as OpenAILanguageModel,
-	models as openaiLanguageModels,
 	OpenAICostCalculator,
+	LanguageModel as OpenAILanguageModel,
 	type OpenAIWebSearchConfig,
+	models as openaiLanguageModels,
 } from "./openai";
 import {
 	LanguageModel as OpenAIImageLanguageModel,
@@ -25,8 +27,6 @@ import {
 	LanguageModel as PerplexityLanguageModel,
 	models as perplexityLanguageModels,
 } from "./perplexity";
-import type { CostResult } from "./costs/calculator";
-import type { TokenUsage } from "./costs/usage";
 
 export * from "./base";
 export * from "./helper";
@@ -107,14 +107,17 @@ const costCalculators = {
 
 function getCostCalculator(provider: LanguageModelProvider, model: string) {
 	const providerCalculators = costCalculators[provider];
-	return providerCalculators[model as keyof typeof providerCalculators] ?? providerCalculators.default;
+	return (
+		providerCalculators[model as keyof typeof providerCalculators] ??
+		providerCalculators.default
+	);
 }
 
 export function calculateModelCost(
 	provider: LanguageModelProvider,
 	model: string,
 	toolConfig: OpenAIWebSearchConfig | undefined,
-	usage: TokenUsage
+	usage: TokenUsage,
 ): CostResult {
 	const calculator = getCostCalculator(provider, model);
 	return calculator.calculate(model, toolConfig, usage);

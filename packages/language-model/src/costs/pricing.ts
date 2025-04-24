@@ -6,8 +6,8 @@ export type Cost = number;
  * Represents the simplest form of token pricing with a fixed cost per token
  */
 export type BaseTokenPrice = {
-  type: "token";
-  costPerMegaToken: Cost;
+	type: "token";
+	costPerMegaToken: Cost;
 };
 
 /**
@@ -16,9 +16,9 @@ export type BaseTokenPrice = {
  * - Exclusive (<): Base price for tokens < threshold, different price for tokens >= threshold
  */
 export type TieredTokenPrice = BaseTokenPrice & {
-  threshold: number;
-  costPerMegaTokenAboveThreshold: Cost;
-  thresholdType: "<=" | "<";
+	threshold: number;
+	costPerMegaTokenAboveThreshold: Cost;
+	thresholdType: "<=" | "<";
 };
 
 /**
@@ -31,35 +31,35 @@ export type TokenBasedPrice = BaseTokenPrice | TieredTokenPrice;
  * Token-based pricing with input/output configuration
  */
 export type TokenBasedPricing = {
-  type: "token";
-  input: TokenBasedPrice;
-  output: TokenBasedPrice;
+	type: "token";
+	input: TokenBasedPrice;
+	output: TokenBasedPrice;
 };
 
 /**
  * Image pricing based on count
  */
 export type ImageCountBasedPrice = {
-  type: "image";
-  pricingType: "per_image";
-  costPerImage: Cost;
+	type: "image";
+	pricingType: "per_image";
+	costPerImage: Cost;
 };
 
 /**
  * Image pricing based on size
  */
 export type ImageSizeBasedPrice = {
-  type: "image";
-  pricingType: "per_megapixel";
-  costPerMegaPixel: Cost;
+	type: "image";
+	pricingType: "per_megapixel";
+	costPerMegaPixel: Cost;
 };
 
 /**
  * Web search API pricing configuration
  */
 export type WebSearchApiCallBasedPrice = {
-  type: "web_search";
-  costPerKCalls: Record<SearchContextSize, Cost>;
+	type: "web_search";
+	costPerKCalls: Record<SearchContextSize, Cost>;
 };
 
 /**
@@ -71,6 +71,6 @@ export type SearchContextSize = "low" | "medium" | "high";
  * Model pricing configuration for a specific time period
  */
 export type ModelPrice = {
-  validFrom: string;
-  price: TokenBasedPricing | WebSearchApiCallBasedPrice;
-}; 
+	validFrom: string;
+	price: TokenBasedPricing | WebSearchApiCallBasedPrice;
+};

@@ -1,23 +1,23 @@
 import type { SearchContextSize } from "./pricing";
 
 export type TokenUsage = {
-  promptTokens: number;
-  completionTokens: number;
-  totalTokens: number;
+	promptTokens: number;
+	completionTokens: number;
+	totalTokens: number;
 };
 
 export type ImageCountUsage = {
-  images: number;
+	images: number;
 };
 
 export type ImageSizeUsage = {
-  megaPixels: number;
+	megaPixels: number;
 };
 
 export type ImageUsage = ImageCountUsage | ImageSizeUsage;
 
 export type ApiCallUsage = {
-  calls: number;
+	calls: number;
 };
 
 export type ModelUsage = TokenUsage | ImageUsage | ApiCallUsage;
