@@ -3,7 +3,7 @@ import {
 	LanguageModel as AnthropicLanguageModel,
 	models as anthropicLanguageModels,
 } from "./anthropic";
-import type { CostResult } from "./costs/calculator";
+import { CostCalculator, CostResult, DefaultCostCalculator } from "./costs/calculator";
 import type { TokenUsage } from "./costs/usage";
 import {
 	LanguageModel as FalLanguageModel,
@@ -91,26 +91,11 @@ const costCalculators = {
 	openai: {
 		default: new OpenAICostCalculator(),
 	},
-	anthropic: {
-		default: new OpenAICostCalculator(),
-	},
-	google: {
-		default: new OpenAICostCalculator(),
-	},
-	perplexity: {
-		default: new OpenAICostCalculator(),
-	},
-	fal: {
-		default: new OpenAICostCalculator(),
-	},
 } as const;
 
 function getCostCalculator(provider: LanguageModelProvider, model: string) {
-	const providerCalculators = costCalculators[provider];
-	return (
-		providerCalculators[model as keyof typeof providerCalculators] ??
-		providerCalculators.default
-	);
+	const providerCalculators = costCalculators[provider as keyof typeof costCalculators];
+	return providerCalculators?.default ?? new DefaultCostCalculator(provider);
 }
 
 export function calculateModelCost(

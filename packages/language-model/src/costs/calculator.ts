@@ -31,6 +31,29 @@ export class CostCalculation<TToolConfig = any, TUsage = TokenUsage> {
 	}
 }
 
+export class DefaultCostCalculator implements CostCalculator {
+	private provider: string;
+
+	constructor(provider: string) {
+		this.provider = provider;
+	}
+
+	calculate(
+		model: string,
+		toolConfig: any | undefined,
+		usage: TokenUsage
+	): CostResult {
+		console.log(
+			`Warning: Cost calculation for ${this.provider} is not implemented yet. Please implement a specific calculator for this provider.`
+		);
+		return {
+			input: 0,
+			output: 0,
+			total: 0,
+		};
+	}
+}
+
 export function calculateTokenCost(
 	tokens: number,
 	pricing: TokenBasedPrice,
