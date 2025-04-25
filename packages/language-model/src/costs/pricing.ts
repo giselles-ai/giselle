@@ -55,9 +55,9 @@ export type ImageSizeBasedPrice = {
 };
 
 /**
- * Web search API pricing configuration
+ * Web search pricing configuration
  */
-export type WebSearchApiCallBasedPrice = {
+export type WebSearchPrice = {
 	type: "web_search";
 	costPerKCalls: Record<SearchContextSize, Cost>;
 };
@@ -72,5 +72,5 @@ export type SearchContextSize = "low" | "medium" | "high";
  */
 export type ModelPrice = {
 	validFrom: string;
-	price: TokenBasedPricing | WebSearchApiCallBasedPrice;
+	price: TokenBasedPricing | WebSearchPrice;
 };

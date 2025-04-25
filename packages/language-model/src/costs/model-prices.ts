@@ -1,4 +1,4 @@
-import type { TokenBasedPricing, WebSearchApiCallBasedPrice } from "./pricing";
+import type { TokenBasedPricing, WebSearchPrice, Cost, CallCountBasedPrice } from "./pricing";
 
 /**
  * Model pricing configurations
@@ -23,7 +23,7 @@ export const webSearchPricing = {
 					medium: 35.0,
 					high: 50.0,
 				},
-			} satisfies WebSearchApiCallBasedPrice,
+			} satisfies WebSearchPrice,
 		},
 	},
 	gpt4Mini: {
@@ -37,7 +37,7 @@ export const webSearchPricing = {
 					medium: 27.5,
 					high: 30.0,
 				},
-			} satisfies WebSearchApiCallBasedPrice,
+			} satisfies WebSearchPrice,
 		},
 	},
 };
