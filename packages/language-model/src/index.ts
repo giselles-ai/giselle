@@ -11,6 +11,7 @@ import {
 	models as falLanguageModels,
 } from "./fal";
 import {
+	GoogleCostCalculator,
 	LanguageModel as GoogleLanguageModel,
 	models as googleLanguageModels,
 } from "./google";
@@ -89,6 +90,9 @@ export const LanguageModelProviders = z.enum([
 export type LanguageModelProvider = z.infer<typeof LanguageModelProviders>;
 
 const costCalculators = {
+	google: {
+		default: new GoogleCostCalculator(),
+	},
 	openai: {
 		default: new OpenAICostCalculator(),
 	},

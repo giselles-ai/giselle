@@ -1,5 +1,10 @@
 import { z } from "zod";
 import { Capability, LanguageModelBase, Tier } from "./base";
+import type { CostCalculator, CostResult } from "./costs/calculator";
+import { calculateTokenCost } from "./costs/calculator";
+import { getModelPriceFromLangfuse, modelPrices } from "./costs/model-prices";
+import type { TokenBasedPricing } from "./costs/pricing";
+import type { TokenUsage } from "./costs/usage";
 
 const GoogleLanguageModelConfigurations = z.object({
 	temperature: z.number(),
@@ -95,6 +100,44 @@ const gemini20ProExp: GoogleLanguageModel = {
 	tier: Tier.enum.free,
 	configurations: defaultConfigurations,
 };
+
+export class GoogleCostCalculator implements CostCalculator {
+	calculate(
+		model: string,
+		toolConfig: any | undefined,
+		usage: TokenUsage,
+	): CostResult {
+		// Try to get price from model-prices.ts
+		const modelPriceConfig = modelPrices[model as keyof typeof modelPrices];
+		if (modelPriceConfig) {
+			const pricing = modelPriceConfig.prices[0].price as TokenBasedPricing;
+			const inputCost = calculateTokenCost(usage.promptTokens, pricing.input);
+			const outputCost = calculateTokenCost(
+				usage.completionTokens,
+				pricing.output,
+			);
+			return {
+				input: inputCost,
+				output: outputCost,
+				total: inputCost + outputCost,
+			};
+		}
+
+		// Fetch from Langfuse if model not found in model-prices.ts
+		const pricing = getModelPriceFromLangfuse(model);
+		const inputCost = calculateTokenCost(usage.promptTokens, pricing.input);
+		const outputCost = calculateTokenCost(
+			usage.completionTokens,
+			pricing.output,
+		);
+
+		return {
+			input: inputCost,
+			output: outputCost,
+			total: inputCost + outputCost,
+		};
+	}
+}
 
 export const models = [
 	gemini25ProExp,
