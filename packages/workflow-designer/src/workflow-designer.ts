@@ -44,6 +44,15 @@ export function WorkflowDesigner({
 		}
 		updateWorkflowMap();
 	}
+	function copyNode(sourceNode: Node, options?: AddNodeOptions) {
+		const newNode = {
+			...sourceNode,
+			id: NodeId.generate(),
+			name: `Copy of ${sourceNode.name}`, // TODO: This code will be modified to use the default name if name is undefined.
+		};
+
+		addNode(newNode, options);
+	}
 	function getData() {
 		return {
 			id: defaultValue.id,
@@ -123,6 +132,7 @@ export function WorkflowDesigner({
 
 	return {
 		addNode,
+		copyNode,
 		addConnection,
 		getData,
 		updateNodeData,

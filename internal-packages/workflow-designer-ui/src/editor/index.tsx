@@ -41,6 +41,38 @@ import {
 } from "./tool";
 import { WorkspaceTour, tourSteps } from "./workspace-tour";
 
+// TODO: Implement ContextMenu as temporary solution
+function ContextMenu({
+	x,
+	y,
+	onClose,
+	onDuplicate,
+}: {
+	x: number;
+	y: number;
+	onClose: () => void;
+	onDuplicate: () => void;
+}) {
+	return (
+		<div
+			className="fixed bg-[#1a1a1a] border border-[#333] rounded-md p-1 z-[1000]"
+			style={{ left: x, top: y }}
+		>
+			<button
+				type="button"
+				className="w-full px-3 py-2 text-white bg-transparent border-none cursor-pointer text-left whitespace-nowrap hover:bg-[#333]"
+				onClick={(e) => {
+					e.stopPropagation();
+					onDuplicate();
+					onClose();
+				}}
+			>
+				Duplicate Node
+			</button>
+		</div>
+	);
+}
+
 function NodeCanvas() {
 	const {
 		data,
@@ -50,6 +82,7 @@ function NodeCanvas() {
 		deleteConnection,
 		updateNodeData,
 		addNode,
+		copyNode,
 		addConnection,
 		isSupportedConnection,
 	} = useWorkflowDesigner();
@@ -60,6 +93,11 @@ function NodeCanvas() {
 	const updateNodeInternals = useUpdateNodeInternals();
 	const { selectedTool, reset } = useToolbar();
 	const toast = useToasts();
+	const [contextMenu, setContextMenu] = useState<{
+		x: number;
+		y: number;
+		nodeId: string;
+	} | null>(null);
 	useEffect(() => {
 		reactFlowInstance.setNodes(
 			Object.entries(data.ui.nodeState)
@@ -200,109 +238,158 @@ function NodeCanvas() {
 		return true;
 	};
 
+	const handleDuplicateNode = useCallback(
+		(nodeId?: string) => {
+			const targetNode = nodeId
+				? data.nodes.find((node) => node.id === nodeId)
+				: data.nodes.find((node) => data.ui.nodeState[node.id]?.selected);
+
+			if (!targetNode) {
+				toast.error("No node selected to duplicate");
+				return;
+			}
+
+			const nodeState = data.ui.nodeState[targetNode.id];
+			if (!nodeState) return;
+
+			const position = {
+				x: nodeState.position.x + 200,
+				y: nodeState.position.y + 100,
+			};
+
+			copyNode(targetNode, { ui: { position } });
+		},
+		[data.nodes, data.ui.nodeState, copyNode, toast],
+	);
+
 	return (
-		<ReactFlow<GiselleWorkflowDesignerNode, ConnectorType>
-			className="giselle-workflow-editor"
-			colorMode="dark"
-			defaultNodes={[]}
-			defaultEdges={[]}
-			nodeTypes={nodeTypes}
-			edgeTypes={edgeTypes}
-			defaultViewport={data.ui.viewport}
-			onConnect={handleConnect}
-			onEdgesDelete={handleEdgesDelete}
-			isValidConnection={isValidConnection}
-			panOnScroll={true}
-			zoomOnScroll={false}
-			zoomOnPinch={true}
-			onMoveEnd={(_, viewport) => {
-				setUiViewport(viewport);
-			}}
-			onNodesChange={(nodesChange) => {
-				nodesChange.map((nodeChange) => {
-					switch (nodeChange.type) {
-						case "remove": {
-							for (const connection of data.connections) {
-								if (connection.outputNode.id !== nodeChange.id) {
-									continue;
-								}
-								deleteConnection(connection.id);
-								const connectedNode = data.nodes.find(
-									(node) => node.id === connection.inputNode.id,
-								);
-								if (connectedNode === undefined) {
-									continue;
-								}
-								switch (connectedNode.content.type) {
-									case "textGeneration": {
-										updateNodeData(connectedNode, {
-											inputs: connectedNode.inputs.filter(
-												(input) => input.id !== connection.inputId,
-											),
-										});
+		<>
+			<ReactFlow<GiselleWorkflowDesignerNode, ConnectorType>
+				className="giselle-workflow-editor"
+				colorMode="dark"
+				defaultNodes={[]}
+				defaultEdges={[]}
+				nodeTypes={nodeTypes}
+				edgeTypes={edgeTypes}
+				defaultViewport={data.ui.viewport}
+				onConnect={handleConnect}
+				onEdgesDelete={handleEdgesDelete}
+				isValidConnection={isValidConnection}
+				panOnScroll={true}
+				zoomOnScroll={false}
+				zoomOnPinch={true}
+				onMoveEnd={(_, viewport) => {
+					setUiViewport(viewport);
+				}}
+				onNodesChange={(nodesChange) => {
+					nodesChange.map((nodeChange) => {
+						switch (nodeChange.type) {
+							case "remove": {
+								for (const connection of data.connections) {
+									if (connection.outputNode.id !== nodeChange.id) {
+										continue;
+									}
+									deleteConnection(connection.id);
+									const connectedNode = data.nodes.find(
+										(node) => node.id === connection.inputNode.id,
+									);
+									if (connectedNode === undefined) {
+										continue;
+									}
+									switch (connectedNode.content.type) {
+										case "textGeneration": {
+											updateNodeData(connectedNode, {
+												inputs: connectedNode.inputs.filter(
+													(input) => input.id !== connection.inputId,
+												),
+											});
+										}
 									}
 								}
+								deleteNode(nodeChange.id);
+								break;
 							}
-							deleteNode(nodeChange.id);
-							break;
+						}
+					});
+				}}
+				onNodeClick={(_event, nodeClicked) => {
+					for (const node of data.nodes) {
+						if (node.id === nodeClicked.id) {
+							setUiNodeState(node.id, { selected: true });
+						} else {
+							setUiNodeState(node.id, { selected: false });
 						}
 					}
-				});
-			}}
-			onNodeClick={(_event, nodeClicked) => {
-				for (const node of data.nodes) {
-					if (node.id === nodeClicked.id) {
-						setUiNodeState(node.id, { selected: true });
-					} else {
+				}}
+				onNodeDoubleClick={(_event, nodeDoubleClicked) => {
+					const viewport = reactFlowInstance.getViewport();
+					const screenPosition = reactFlowInstance.flowToScreenPosition(
+						nodeDoubleClicked.position,
+					);
+					reactFlowInstance.setViewport(
+						{
+							...viewport,
+							x: viewport.x - screenPosition.x + 100,
+						},
+						{
+							duration: 300,
+						},
+					);
+				}}
+				onNodeDragStop={(_event, _node, nodes) => {
+					nodes.map((node) => {
+						setUiNodeState(
+							node.id,
+							{ position: node.position },
+							{ save: true },
+						);
+					});
+				}}
+				onPaneClick={(event) => {
+					for (const node of data.nodes) {
 						setUiNodeState(node.id, { selected: false });
 					}
-				}
-			}}
-			onNodeDoubleClick={(_event, nodeDoubleClicked) => {
-				const viewport = reactFlowInstance.getViewport();
-				const screenPosition = reactFlowInstance.flowToScreenPosition(
-					nodeDoubleClicked.position,
-				);
-				reactFlowInstance.setViewport(
-					{
-						...viewport,
-						x: viewport.x - screenPosition.x + 100,
-					},
-					{
-						duration: 300,
-					},
-				);
-			}}
-			onNodeDragStop={(_event, _node, nodes) => {
-				nodes.map((node) => {
-					setUiNodeState(node.id, { position: node.position }, { save: true });
-				});
-			}}
-			onPaneClick={(event) => {
-				for (const node of data.nodes) {
-					setUiNodeState(node.id, { selected: false });
-				}
-				const position = reactFlowInstance.screenToFlowPosition({
-					x: event.clientX,
-					y: event.clientY,
-				});
-				const options = {
-					ui: { position },
-				};
-				if (selectedTool?.action === "addNode") {
-					addNode(selectedTool.node, options);
-				}
-				reset();
-			}}
-		>
-			<Background />
-			{selectedTool?.action === "addNode" && (
-				<FloatingNodePreview node={selectedTool.node} />
+					const position = reactFlowInstance.screenToFlowPosition({
+						x: event.clientX,
+						y: event.clientY,
+					});
+					const options = {
+						ui: { position },
+					};
+					if (selectedTool?.action === "addNode") {
+						addNode(selectedTool.node, options);
+					}
+					reset();
+				}}
+				onNodeContextMenu={(event, node) => {
+					event.preventDefault();
+					setContextMenu({
+						x: event.clientX,
+						y: event.clientY,
+						nodeId: node.id,
+					});
+				}}
+			>
+				<Background />
+				{selectedTool?.action === "addNode" && (
+					<FloatingNodePreview node={selectedTool.node} />
+				)}
+				<XYFlowPanel position={"bottom-center"}>
+					<Toolbar />
+				</XYFlowPanel>
+			</ReactFlow>
+			{contextMenu && (
+				<ContextMenu
+					x={contextMenu.x}
+					y={contextMenu.y}
+					onClose={() => setContextMenu(null)}
+					onDuplicate={() => {
+						handleDuplicateNode(contextMenu.nodeId);
+						setContextMenu(null);
+					}}
+				/>
 			)}
-			<XYFlowPanel position={"bottom-center"}>
-				<Toolbar />
-			</XYFlowPanel>
-		</ReactFlow>
+		</>
 	);
 }
 

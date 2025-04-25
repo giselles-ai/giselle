@@ -34,6 +34,7 @@ export interface WorkflowDesignerContextValue
 	extends Pick<
 			WorkflowDesigner,
 			| "addNode"
+			| "copyNode"
 			| "updateNodeData"
 			| "addConnection"
 			| "deleteConnection"
@@ -127,6 +128,14 @@ export function WorkflowDesignerProvider({
 	const addNode = useCallback(
 		(node: Node, options?: { ui?: NodeUIState }) => {
 			workflowDesignerRef.current.addNode(node, options);
+			setAndSaveWorkspace();
+		},
+		[setAndSaveWorkspace],
+	);
+
+	const copyNode = useCallback(
+		(sourceNode: Node, options?: { ui?: NodeUIState }) => {
+			workflowDesignerRef.current.copyNode(sourceNode, options);
 			setAndSaveWorkspace();
 		},
 		[setAndSaveWorkspace],
@@ -309,6 +318,7 @@ export function WorkflowDesignerProvider({
 				data: workspace,
 				textGenerationApi,
 				addNode,
+				copyNode,
 				addConnection,
 				updateNodeData,
 				updateNodeDataContent,
