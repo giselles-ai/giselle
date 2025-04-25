@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+	AnthropicCostCalculator,
 	LanguageModel as AnthropicLanguageModel,
 	models as anthropicLanguageModels,
 } from "./anthropic";
@@ -90,6 +91,9 @@ export type LanguageModelProvider = z.infer<typeof LanguageModelProviders>;
 const costCalculators = {
 	openai: {
 		default: new OpenAICostCalculator(),
+	},
+	anthropic: {
+		default: new AnthropicCostCalculator(),
 	},
 } as const;
 
