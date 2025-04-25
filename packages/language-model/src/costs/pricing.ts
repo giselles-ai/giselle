@@ -59,7 +59,7 @@ export type ImageSizeBasedPrice = {
  */
 export type WebSearchPrice = {
 	type: "web_search";
-	costPerKCalls: Record<SearchContextSize, Cost>;
+	costPerKiloCalls: Record<SearchContextSize, Cost>;
 };
 
 /**
@@ -73,4 +73,11 @@ export type SearchContextSize = "low" | "medium" | "high";
 export type ModelPrice = {
 	validFrom: string;
 	price: TokenBasedPricing | WebSearchPrice;
+};
+
+/**
+ * Model pricing configuration with multiple price points
+ */
+export type ModelPriceConfig = {
+	prices: ModelPrice[];
 };

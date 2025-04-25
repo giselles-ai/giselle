@@ -26,6 +26,7 @@ import {
 	models as openaiImageLanguageModels,
 } from "./openai-image";
 import {
+	PerplexityCostCalculator,
 	LanguageModel as PerplexityLanguageModel,
 	models as perplexityLanguageModels,
 } from "./perplexity";
@@ -98,6 +99,9 @@ const costCalculators = {
 	},
 	anthropic: {
 		default: new AnthropicCostCalculator(),
+	},
+	perplexity: {
+		default: new PerplexityCostCalculator(),
 	},
 } as const;
 

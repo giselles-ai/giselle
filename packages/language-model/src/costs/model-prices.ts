@@ -1,4 +1,4 @@
-import type { TokenBasedPricing, WebSearchPrice, Cost, CallCountBasedPrice } from "./pricing";
+import type { TokenBasedPricing, WebSearchPrice, Cost, ModelPrice, ModelPriceConfig } from "./pricing";
 
 /**
  * Model pricing configurations
@@ -11,35 +11,108 @@ import type { TokenBasedPricing, WebSearchPrice, Cost, CallCountBasedPrice } fro
 /**
  * Shared pricing configurations for model groups
  */
-export const webSearchPricing = {
+export const webSearchPricing: Record<string, ModelPriceConfig> = {
 	gpt4: {
-		validFrom: "2025-04-23T00:00:00Z",
-		price: {
-			type: "usage" as const,
+		prices: [{
+			validFrom: "2025-04-23T00:00:00Z",
 			price: {
 				type: "web_search" as const,
-				costPerKCalls: {
+				costPerKiloCalls: {
 					low: 30.0,
 					medium: 35.0,
 					high: 50.0,
 				},
 			} satisfies WebSearchPrice,
-		},
-	},
+		} satisfies ModelPrice],
+	} satisfies ModelPriceConfig,
 	gpt4Mini: {
-		validFrom: "2025-04-23T00:00:00Z",
-		price: {
-			type: "usage" as const,
+		prices: [{
+			validFrom: "2025-04-23T00:00:00Z",
 			price: {
 				type: "web_search" as const,
-				costPerKCalls: {
+				costPerKiloCalls: {
 					low: 25.0,
 					medium: 27.5,
 					high: 30.0,
 				},
 			} satisfies WebSearchPrice,
-		},
-	},
+		} satisfies ModelPrice],
+	} satisfies ModelPriceConfig,
+};
+
+/**
+ * Perplexity
+ */
+export const perplexityTokenPrices: Record<string, ModelPriceConfig> = {
+	"sonar-pro": {
+		prices: [
+			{
+				validFrom: "2024-01-01T00:00:00Z",
+				price: {
+					type: "token" as const,
+					input: {
+						type: "token" as const,
+						costPerMegaToken: 3.0,
+					},
+					output: {
+						type: "token" as const,
+						costPerMegaToken: 15.0,
+					},
+				} satisfies TokenBasedPricing,
+			} satisfies ModelPrice,
+		],
+	} satisfies ModelPriceConfig,
+	"sonar": {
+		prices: [
+			{
+				validFrom: "2024-01-01T00:00:00Z",
+				price: {
+					type: "token" as const,
+					input: {
+						type: "token" as const,
+						costPerMegaToken: 1.0,
+					},
+					output: {
+						type: "token" as const,
+						costPerMegaToken: 1.0,
+					},
+				} satisfies TokenBasedPricing,
+			} satisfies ModelPrice,
+		],
+	} satisfies ModelPriceConfig,
+};
+
+export const perplexityRequestPrices: Record<string, ModelPriceConfig> = {
+	"sonar-pro": {
+		prices: [
+			{
+				validFrom: "2024-01-01T00:00:00Z",
+				price: {
+					type: "web_search" as const,
+					costPerKCalls: {
+						high: 14.0,
+						medium: 10.0,
+						low: 6.0,
+					},
+				} satisfies WebSearchPrice,
+			} satisfies ModelPrice,
+		],
+	} satisfies ModelPriceConfig,
+	"sonar": {
+		prices: [
+			{
+				validFrom: "2024-01-01T00:00:00Z",
+				price: {
+					type: "web_search" as const,
+					costPerKCalls: {
+						high: 12.0,
+						medium: 8.0,
+						low: 5.0,
+					},
+				} satisfies WebSearchPrice,
+			} satisfies ModelPrice,
+		],
+	} satisfies ModelPriceConfig,
 };
 
 /**
@@ -50,26 +123,24 @@ const modelGroups = {
 	gpt4Mini: ["gpt-4o-mini", "gpt-4.1-mini", "gpt-4o-mini-search-preview"],
 } as const;
 
-const generateModelPrices = () => {
+export const generateModelPrices = (): Record<string, ModelPriceConfig> => {
 	const prices: Record<string, ModelPriceConfig> = {};
 
 	// GPT-4 models
 	modelGroups.gpt4.forEach((modelId) => {
-		prices[modelId] = {
-			prices: [webSearchPricing.gpt4],
-		};
+		prices[modelId] = webSearchPricing.gpt4;
 	});
 
 	// GPT-4 Mini models
 	modelGroups.gpt4Mini.forEach((modelId) => {
-		prices[modelId] = {
-			prices: [webSearchPricing.gpt4Mini],
-		};
+		prices[modelId] = webSearchPricing.gpt4Mini;
 	});
 
 	// Other models with unique pricing
 	return {
 		...prices,
+		...perplexityTokenPrices,
+		...perplexityRequestPrices,
 		"gemini-1.5-pro": {
 			prices: [
 				{
@@ -90,10 +161,10 @@ const generateModelPrices = () => {
 							costPerMegaTokenAboveThreshold: 10.0,
 							thresholdType: "<=" as const,
 						},
-					},
-				},
+					} satisfies TokenBasedPricing,
+				} satisfies ModelPrice,
 			],
-		},
+		} satisfies ModelPriceConfig,
 	};
 };
 
@@ -120,7 +191,7 @@ export function getModelPriceFromLangfuse(model: string): TokenBasedPricing {
 		startDate: null,
 		unit: "CHARACTERS",
 		inputPrice: 0.0005,
-		outputPrice:0.0015,
+		outputPrice: 0.0015,
 		totalPrice: null,
 		tokenizerId: "cl100k_base",
 		tokenizerConfig: null,
@@ -137,7 +208,7 @@ export function getModelPriceFromLangfuse(model: string): TokenBasedPricing {
 			type: "token",
 			costPerMegaToken: response.outputPrice ?? 0,
 		},
-	};
+	} satisfies TokenBasedPricing;
 }
 
 export const modelPrices = generateModelPrices();
