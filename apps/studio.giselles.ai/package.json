@@ -10,7 +10,7 @@
 		"dev-debug": "LOGLEVEL=debug pnpm run dev",
 		"build": "next build --turbopack",
 		"start": "next start",
-		"check": "biome check --write .",
+		"format": "biome check --write .",
 		"lint": "next lint",
 		"test": "vitest run"
 	},
