@@ -10,7 +10,7 @@ import {
 	type Workspace,
 	generateInitialWorkspace,
 } from "@giselle-sdk/data-type";
-import { buildWorkflowMap } from "@giselle-sdk/workflow-utils";
+import { buildWorkflowMap, defaultName } from "@giselle-sdk/workflow-utils";
 import { isSupportedConnection } from "./is-supported-connection";
 
 interface AddNodeOptions {
@@ -48,7 +48,7 @@ export function WorkflowDesigner({
 		const newNode = {
 			...sourceNode,
 			id: NodeId.generate(),
-			name: `Copy of ${sourceNode.name}`, // TODO: This code will be modified to use the default name if name is undefined.
+			name: `Copy of ${sourceNode.name ?? defaultName(sourceNode)}`,
 		};
 
 		addNode(newNode, options);
