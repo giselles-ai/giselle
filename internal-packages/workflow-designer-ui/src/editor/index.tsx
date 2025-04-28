@@ -29,6 +29,7 @@ import { ToastProvider, useToasts } from "../ui/toast";
 import { Beta } from "./beta";
 import { edgeTypes } from "./connector";
 import { type ConnectorType, GradientDef } from "./connector/component";
+import { ContextMenu, useContextMenu } from "./context-menu";
 import { KeyboardShortcuts } from "./keyboard-shortcuts";
 import { type GiselleWorkflowDesignerNode, nodeTypes } from "./node";
 import { PropertiesPanel } from "./properties-panel";
@@ -40,38 +41,6 @@ import {
 	useToolbar,
 } from "./tool";
 import { WorkspaceTour, tourSteps } from "./workspace-tour";
-
-// TODO: Implement ContextMenu as temporary solution
-function ContextMenu({
-	x,
-	y,
-	onClose,
-	onDuplicate,
-}: {
-	x: number;
-	y: number;
-	onClose: () => void;
-	onDuplicate: () => void;
-}) {
-	return (
-		<div
-			className="fixed bg-[#1a1a1a] border border-[#333] rounded-md p-1 z-[1000]"
-			style={{ left: x, top: y }}
-		>
-			<button
-				type="button"
-				className="w-full px-3 py-2 text-white bg-transparent border-none cursor-pointer text-left whitespace-nowrap hover:bg-[#333]"
-				onClick={(e) => {
-					e.stopPropagation();
-					onDuplicate();
-					onClose();
-				}}
-			>
-				Duplicate Node
-			</button>
-		</div>
-	);
-}
 
 function NodeCanvas() {
 	const {
@@ -93,11 +62,7 @@ function NodeCanvas() {
 	const updateNodeInternals = useUpdateNodeInternals();
 	const { selectedTool, reset } = useToolbar();
 	const toast = useToasts();
-	const [contextMenu, setContextMenu] = useState<{
-		x: number;
-		y: number;
-		nodeId: string;
-	} | null>(null);
+	const { contextMenu, setContextMenu, closeContextMenu } = useContextMenu();
 	useEffect(() => {
 		reactFlowInstance.setNodes(
 			Object.entries(data.ui.nodeState)
@@ -360,6 +325,7 @@ function NodeCanvas() {
 						addNode(selectedTool.node, options);
 					}
 					reset();
+					closeContextMenu();
 				}}
 				onNodeContextMenu={(event, node) => {
 					event.preventDefault();
@@ -378,17 +344,13 @@ function NodeCanvas() {
 					<Toolbar />
 				</XYFlowPanel>
 			</ReactFlow>
-			{contextMenu && (
-				<ContextMenu
-					x={contextMenu.x}
-					y={contextMenu.y}
-					onClose={() => setContextMenu(null)}
-					onDuplicate={() => {
-						handleDuplicateNode(contextMenu.nodeId);
-						setContextMenu(null);
-					}}
-				/>
-			)}
+			<ContextMenu
+				contextMenu={contextMenu}
+				onDuplicate={(nodeId) => {
+					handleDuplicateNode(nodeId);
+					closeContextMenu();
+				}}
+			/>
 		</>
 	);
 }
