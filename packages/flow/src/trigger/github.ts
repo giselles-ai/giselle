@@ -6,33 +6,23 @@ export interface GitHubTrigger extends TriggerBase {
 	provider: typeof provider;
 }
 
-export const githubIssueCreatedTrigger = {
+export const githubTrigger = {
 	provider,
-	id: "github.issue.created",
-	label: "Created an issue",
+	id: "github",
+	label: "GitHub",
 	payloads: z.object({
-		title: z.string(),
+		title: z.string().optional(),
 		body: z.string(),
+		issueNumber: z.number().optional(),
+		issueTitle: z.string().optional(),
+		issueBody: z.string().optional(),
 		repositoryOwner: z.string(),
 		repositoryName: z.string(),
 	}),
 } as const satisfies GitHubTrigger;
 
-export const githubIssueCommentCreatedTrigger = {
-	provider,
-	id: "github.issue_comment.created",
-	label: "Created an issue comment",
-	payloads: z.object({
-		body: z.string(),
-		issueNumber: z.number(),
-		issueTitle: z.string(),
-		issueBody: z.string(),
-		repositoryOwner: z.string(),
-		repositoryName: z.string(),
-	}),
-} as const satisfies GitHubTrigger;
+// 互換性のために古いエクスポートを維持
+export const githubIssueCreatedTrigger = githubTrigger;
+export const githubIssueCommentCreatedTrigger = githubTrigger;
 
-export const triggers = [
-	githubIssueCreatedTrigger,
-	githubIssueCommentCreatedTrigger,
-] as const;
+export const triggers = [githubTrigger] as const;
