@@ -17,6 +17,7 @@ export * from "./spinner";
 export * from "./text-generation";
 export * from "./texts";
 export * from "./tool";
+export * from "./trigger";
 export * from "./willi";
 export * from "./openai";
 export * from "./stack-blicks";
