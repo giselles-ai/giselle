@@ -122,6 +122,7 @@ export function NodeComponent({
 				"data-[content-type=audioGeneration]:from-audio-generation-node-1] data-[content-type=audioGeneration]:to-audio-generation-node-2 data-[content-type=audioGeneration]:shadow-audio-generation-node-1",
 				"data-[content-type=videoGeneration]:from-video-generation-node-1] data-[content-type=videoGeneration]:to-video-generation-node-2 data-[content-type=videoGeneration]:shadow-video-generation-node-1",
 				"data-[content-type=trigger]:from-trigger-node-1] data-[content-type=trigger]:to-trigger-node-2 data-[content-type=trigger]:shadow-trigger-node-1",
+				"data-[content-type=trigger]:border-[1px] data-[content-type=trigger]:border-solid data-[content-type=trigger]:border-black-400 data-[content-type=trigger]:bg-black-400-20 data-[content-type=trigger]:backdrop-blur-[2px]",
 				"data-[selected=true]:shadow-[0px_0px_16px_0px]",
 				"data-[preview=true]:opacity-50",
 				"not-data-preview:min-h-[110px]",
@@ -138,7 +139,7 @@ export function NodeComponent({
 					"group-data-[content-type=webSearch]:from-web-search-node-1/40 group-data-[content-type=webSearch]:to-web-search-node-1",
 					"group-data-[content-type=audioGeneration]:from-audio-generation-node-1/40 group-data-[content-type=audioGeneration]:to-audio-generation-node-1",
 					"group-data-[content-type=videoGeneration]:from-video-generation-node-1/40 group-data-[content-type=videoGeneration]:to-video-generation-node-1",
-					"group-data-[content-type=trigger]:from-trigger-node-1/40 group-data-[content-type=trigger]:to-trigger-node-1",
+					"group-data-[content-type=trigger]:hidden",
 				)}
 			/>
 
@@ -155,7 +156,7 @@ export function NodeComponent({
 							"group-data-[content-type=webSearch]:bg-web-search-node-1",
 							"group-data-[content-type=audioGeneration]:bg-audio-generation-node-1",
 							"group-data-[content-type=videoGeneration]:bg-video-generation-node-1",
-							"group-data-[content-type=trigger]:bg-trigger-node-1",
+							"group-data-[content-type=trigger]:bg-black-400",
 						)}
 					>
 						<NodeIcon
