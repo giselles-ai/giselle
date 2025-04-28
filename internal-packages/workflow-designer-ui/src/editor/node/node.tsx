@@ -8,6 +8,7 @@ import {
 	TextNode,
 	TriggerNode,
 } from "@giselle-sdk/data-type";
+import { defaultName } from "@giselle-sdk/workflow-utils";
 import {
 	Handle,
 	type NodeProps,
@@ -20,7 +21,6 @@ import { useWorkflowDesigner } from "giselle-sdk/react";
 import { useMemo } from "react";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
-import { defaultName } from "../../utils";
 
 type GiselleWorkflowDesignerTextGenerationNode = XYFlowNode<
 	{ nodeData: TextGenerationNode; preview?: boolean },
