@@ -17,8 +17,8 @@ import clsx from "clsx/lite";
 import { useFeatureFlag } from "giselle-sdk/react";
 import { useUsageLimits, useWorkflowDesigner } from "giselle-sdk/react";
 import {
+	Plug2,
 	SquareFunctionIcon,
-	WorkflowIcon,
 } from "lucide-react";
 import { Dialog, Popover, ToggleGroup } from "radix-ui";
 import { type ReactNode, useState } from "react";
@@ -285,7 +285,7 @@ export function Toolbar() {
 								className="relative"
 							>
 								<Tooltip text={<TooltipAndHotkey text="Action" hotkey="a" />}>
-									<WorkflowIcon data-icon />
+									<Plug2 data-icon />
 								</Tooltip>
 								{selectedTool?.action === "selectEnvironmentAction" && (
 									<Popover.Root open={true}>
