@@ -206,7 +206,7 @@ export function Toolbar() {
 								className="relative"
 							>
 								<Tooltip text={<TooltipAndHotkey text="Trigger" hotkey="t" />}>
-									<TriggerIcon data-icon />
+									<TriggerIcon style={{ transform: 'scale(0.85)' }} data-icon />
 								</Tooltip>
 								{selectedTool?.action === "selectTrigger" && (
 									<Popover.Root open={true}>
@@ -285,7 +285,7 @@ export function Toolbar() {
 								className="relative"
 							>
 								<Tooltip text={<TooltipAndHotkey text="Action" hotkey="a" />}>
-									<Plug2 data-icon />
+									<Plug2 size={26} data-icon />
 								</Tooltip>
 								{selectedTool?.action === "selectEnvironmentAction" && (
 									<Popover.Root open={true}>
