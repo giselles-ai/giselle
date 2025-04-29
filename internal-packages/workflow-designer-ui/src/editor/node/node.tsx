@@ -17,41 +17,48 @@ import {
 } from "@xyflow/react";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
 import { defaultName } from "../../utils";
+import { useDebug } from "../debug-context";
 
 type GiselleWorkflowDesignerTextGenerationNode = XYFlowNode<
 	{ nodeData: TextGenerationNode; preview?: boolean },
 	TextGenerationNode["content"]["type"]
 >;
+
 type GiselleWorkflowDesignerImageGenerationNode = XYFlowNode<
 	{ nodeData: ImageGenerationNode; preview?: boolean },
-	TextGenerationNode["content"]["type"]
+	ImageGenerationNode["content"]["type"]
 >;
+
 type GiselleWorkflowDesignerTextNode = XYFlowNode<
 	{ nodeData: TextNode; preview?: boolean },
 	TextNode["content"]["type"]
 >;
+
 type GiselleWorkflowDesignerFileNode = XYFlowNode<
 	{ nodeData: FileNode; preview?: boolean },
 	FileNode["content"]["type"]
 >;
-type GiselleWorkflowGitHubNode = XYFlowNode<
+
+type GiselleWorkflowDesignerGitHubNode = XYFlowNode<
 	{ nodeData: GitHubNode; preview?: boolean },
-	FileNode["content"]["type"]
+	GitHubNode["content"]["type"]
 >;
+
 type GiselleWorkflowTriggerNode = XYFlowNode<
 	{ nodeData: TriggerNode; preview?: boolean },
 	TriggerNode["content"]["type"]
 >;
+
 export type GiselleWorkflowDesignerNode =
 	| GiselleWorkflowDesignerTextGenerationNode
 	| GiselleWorkflowDesignerImageGenerationNode
 	| GiselleWorkflowDesignerTextNode
 	| GiselleWorkflowDesignerFileNode
-	| GiselleWorkflowGitHubNode
+	| GiselleWorkflowDesignerGitHubNode
 	| GiselleWorkflowTriggerNode;
 
 export const nodeTypes: NodeTypes = {
@@ -104,6 +111,14 @@ export function NodeComponent({
 	connectedOutputIds?: OutputId[];
 }) {
 	const { updateNodeData } = useWorkflowDesigner();
+	const { githubAuthState, setGithubAuthState } = useDebug();
+	
+	// GitHubトリガーノードか確認する
+	const isGitHubTriggerNode = 
+		node.type === "action" && 
+		node.content.type === "trigger" && 
+		(node.content.provider as any).type === "github";
+		
 	return (
 		<div
 			data-type={node.type}
@@ -309,6 +324,42 @@ export function NodeComponent({
 							</div>
 						))}
 					</div>
+				</div>
+			)}
+			
+			{/* GitHubトリガーノード用デバッグコントロール */}
+			{isGitHubTriggerNode && !preview && (
+				<div className="mt-2 mx-4 pt-2 border-t border-white-900/10">
+					<div className="flex flex-wrap gap-1">
+						<button
+							className="px-1 py-0.5 bg-red-500/20 text-red-300 text-[10px] rounded hover:bg-red-500/30"
+							onClick={() => setGithubAuthState('unauthorized')}
+						>
+							Unauthorized
+						</button>
+						<button
+							className="px-1 py-0.5 bg-yellow-500/20 text-yellow-300 text-[10px] rounded hover:bg-yellow-500/30"
+							onClick={() => setGithubAuthState('not-installed')}
+						>
+							Not Installed
+						</button>
+						<button
+							className="px-1 py-0.5 bg-green-500/20 text-green-300 text-[10px] rounded hover:bg-green-500/30"
+							onClick={() => setGithubAuthState('installed')}
+						>
+							Selected
+						</button>
+					</div>
+					{/* 選択中のデバッグ状態を表示 */}
+					{githubAuthState !== 'default' && (
+						<div className="mt-1 text-[10px] text-white-500/70">
+							Debug State: {
+								githubAuthState === 'unauthorized' ? 'Unauthorized' :
+								githubAuthState === 'not-installed' ? 'Not Installed' :
+								'Selected'
+							}
+						</div>
+					)}
 				</div>
 			)}
 		</div>
