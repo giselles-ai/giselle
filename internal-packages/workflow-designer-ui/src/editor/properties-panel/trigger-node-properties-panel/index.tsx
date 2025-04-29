@@ -282,7 +282,7 @@ export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
 		WorkspaceGitHubIntegrationPayloadNodeMap[]
 	>([]);
 	
-	// トリガータイプに基づいてアイコンを選択
+	// Select icon based on trigger type
 	const getTriggerIcon = () => {
 		switch (node.content.provider.type) {
 			case "github":
@@ -294,7 +294,7 @@ export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
 		}
 	};
 
-	// GitHub統合のリポジトリリスト
+	// GitHub integration repository list
 	const repositories = useMemo(() => {
 		if (value?.github?.status === 'installed') {
 			return value.github.repositories;
@@ -302,19 +302,19 @@ export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
 		return [];
 	}, [value?.github]);
 
-	// 選択中のトリガーに基づく利用可能なペイロードフィールド
+	// Available payload fields based on selected trigger
 	const availablePayloadFields = useMemo(
 		() => (selectedTrigger ? getAvailablePayloadFields(selectedTrigger) : []),
 		[selectedTrigger],
 	);
 
-	// 選択中のトリガーに基づく利用可能なアクション
+	// Available actions based on selected trigger
 	const availableNextActions = useMemo(
 		() => (selectedTrigger ? getAvailableNextActions(selectedTrigger) : []),
 		[selectedTrigger],
 	);
 
-	// トリガー変更ハンドラー
+	// Trigger change handler
 	const handleTriggerChange = useCallback(
 		(value: string) => {
 			const newTrigger = WorkspaceGitHubIntegrationTrigger.safeParse(value);
@@ -347,12 +347,12 @@ export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
 		[selectedTrigger, selectedNextAction],
 	);
 
-	// GitHub認証状態に基づくコンテンツレンダリング
+	// Render content based on GitHub auth state
 	const renderGitHubContent = () => {
-		// デバッグ状態が設定されている場合はそれを優先
+		// Prioritize debug state if set
 		let github = value?.github;
 		
-		// デバッグモードが有効（デフォルト以外）の場合は、デバッグ用のステータスで上書き
+		// If debug mode is active (not default), override with debug status
 		if (githubAuthState !== 'default') {
 			github = { 
 				...value?.github, 
@@ -363,14 +363,14 @@ export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
 			} as typeof value.github;
 		}
 		
-		// GitHub情報がない場合やステータスが未設定の場合は接続パネルを表示
+		// Display connection panel if GitHub info is missing or unset
 		if (!github || github.status === "unset") {
-			// デフォルトの認証URLを使用
+			// Use default auth URL
 			const defaultAuthUrl = "/api/integrations/github/auth";
 			return <GitHubConnections authUrl={defaultAuthUrl} />;
 		}
 		
-		// ここからは github が存在し、status が "unset" 以外の場合の処理
+		// Handle cases where github exists and status is not "unset"
 		switch (github.status) {
 			case "unauthorized":
 				return <GitHubConnections authUrl={github.authUrl} />;
@@ -412,8 +412,9 @@ export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
 						
 						<div className="space-y-[4px]">
 							<p className="text-[14px] py-[1.5px]">Call sign</p>
-							<textarea
-								className="prompt-editor border-[0.5px] border-white-900 rounded-[8px] p-[16px] w-full h-[100px] bg-transparent text-[14px] outline-none placeholder:text-white-400/70 resize-none"
+							<input
+								type="text"
+								className="prompt-editor border-[0.5px] border-white-900 rounded-[8px] px-[16px] w-full h-[38px] bg-transparent text-[14px] outline-none placeholder:text-white-400/70 flex items-center"
 								placeholder="Your personal call sign (e.g. /Giselle)"
 							/>
 							<p className="text-[12px] text-white-400">This trigger activates only when someone mentions this call sign on GitHub</p>
@@ -424,22 +425,11 @@ export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
 								type="button"
 								className="h-[38px] rounded-[8px] bg-white-800 text-[14px] cursor-pointer text-black-800 font-[700] px-[16px] font-accent flex items-center justify-center"
 								onClick={() => {
-									// インストールページへのリダイレクト
-									if (github?.installationUrl) {
-										const width = 800;
-										const height = 800;
-										const left = window.screenX + (window.outerWidth - width) / 2;
-										const top = window.screenY + (window.outerHeight - height) / 2;
-										
-										window.open(
-											github.installationUrl,
-											"Configure GitHub App",
-											`width=${width},height=${height},top=${top},left=${left},popup=1`
-										);
-									}
+									// Save implementation
+									console.log("Save button clicked");
 								}}
 							>
-								Continue
+								Save
 							</button>
 						</div>
 					</div>
@@ -447,180 +437,40 @@ export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
 			case "invalid-credential":
 				return (
 					<div className="flex-1 flex flex-col items-center justify-center">
-						<p className="text-yellow-500 mb-4">GitHub認証情報が無効です</p>
+						<p className="text-yellow-500 mb-4">GitHub authentication credentials are invalid</p>
 						<button
 							type="button"
 							className="bg-white-900 text-black-900 rounded-lg py-2 px-4 font-medium"
 							onClick={() => {
-								// 再認証処理
+								// Re-authentication process
 							}}
 						>
-							再認証する
+							Re-authenticate
 						</button>
 					</div>
 				);
 			case "installed":
 				return (
-					<div className="grid gap-y-4">
-						<div>
-							<Label>リポジトリ</Label>
-							<Select>
-								<SelectTrigger>
-									<SelectValue placeholder="リポジトリを選択" />
-								</SelectTrigger>
-								<SelectContent>
-									{repositories.map((repo) => (
-										<SelectItem key={repo.node_id} value={repo.node_id}>
-											{repo.full_name}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
+					<div className="flex flex-col gap-[17px] p-0">
+						<div className="space-y-[4px]">
+							<p className="text-[14px] py-[1.5px] text-white-400">Repository Type</p>
+							<div className="px-[16px] py-[9px] w-full bg-transparent text-[14px]">
+								Public Repository
+							</div>
 						</div>
-
-						<div>
-							<Label>イベント</Label>
-							<Select onValueChange={handleTriggerChange}>
-								<SelectTrigger>
-									<SelectValue placeholder="トリガーを選択" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem
-										value={
-											WorkspaceGitHubIntegrationTrigger.Enum[
-												"github.issues.opened"
-											]
-										}
-									>
-										issues.opened
-									</SelectItem>
-									<SelectItem
-										value={
-											WorkspaceGitHubIntegrationTrigger.Enum[
-												"github.issues.closed"
-											]
-										}
-									>
-										issues.closed
-									</SelectItem>
-									<SelectItem
-										value={
-											WorkspaceGitHubIntegrationTrigger.Enum[
-												"github.issue_comment.created"
-											]
-										}
-									>
-										issue_comment.created
-									</SelectItem>
-									<SelectItem
-										value={
-											WorkspaceGitHubIntegrationTrigger.Enum[
-												"github.pull_request.opened"
-											]
-										}
-									>
-										pull_request.opened
-									</SelectItem>
-									<SelectItem
-										value={
-											WorkspaceGitHubIntegrationTrigger.Enum[
-												"github.pull_request.ready_for_review"
-											]
-										}
-									>
-										pull_request.ready_for_review
-									</SelectItem>
-									<SelectItem
-										value={
-											WorkspaceGitHubIntegrationTrigger.Enum[
-												"github.pull_request.closed"
-											]
-										}
-									>
-										pull_request.closed
-									</SelectItem>
-									<SelectItem
-										value={
-											WorkspaceGitHubIntegrationTrigger.Enum[
-												"github.pull_request_comment.created"
-											]
-										}
-									>
-										pull_request_comment.created
-									</SelectItem>
-								</SelectContent>
-							</Select>
+						
+						<div className="space-y-[4px]">
+							<p className="text-[14px] py-[1.5px] text-white-400">Event Type</p>
+							<div className="px-[16px] py-[9px] w-full bg-transparent text-[14px]">
+								Push Event
+							</div>
 						</div>
-
-						{selectedTrigger && isTriggerRequiringCallsign(selectedTrigger) && (
-							<div>
-								<Label>コールサイン</Label>
-								<input
-									type="text"
-									className="bg-black-750 h-[28px] w-full border-[1px] border-white-950/10 flex items-center px-[12px] text-[12px] rounded-[8px] outline-none placeholder:text-white-400/70"
-									value={callsign}
-									onChange={(e) => setCallsign(e.target.value)}
-									placeholder="@giselle など"
-								/>
+						
+						<div className="space-y-[4px]">
+							<p className="text-[14px] py-[1.5px] text-white-400">Call sign</p>
+							<div className="px-[16px] py-[9px] w-full bg-transparent text-[14px]">
+								/Giselle
 							</div>
-						)}
-
-						{selectedTrigger && (
-							<div>
-								<Label>データマッピング</Label>
-								<PayloadMapForm
-									nodes={data.nodes}
-									currentPayloadMaps={payloadMaps}
-									availablePayloadFields={availablePayloadFields}
-								/>
-							</div>
-						)}
-
-						{selectedTrigger && availableNextActions.length > 0 && (
-							<div>
-								<Label>アクション</Label>
-								<Select
-									value={selectedNextAction}
-									onValueChange={(value) => {
-										const nextAction = (value === "github.issue_comment.create" || value === "github.pull_request_comment.create") 
-											? value as WorkspaceGitHubIntegrationNextActionType
-											: undefined;
-										setSelectedNextAction(nextAction);
-									}}
-								>
-									<SelectTrigger>
-										<SelectValue placeholder="アクションを選択" />
-									</SelectTrigger>
-									<SelectContent>
-										{availableNextActions.map((action) => (
-											<SelectItem key={action} value={action}>
-												{NEXT_ACTION_DISPLAY_NAMES[action]}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</div>
-						)}
-
-						<div className="flex justify-end mt-2">
-							<button
-								type="button"
-								className="h-[28px] rounded-[8px] bg-white-800 text-[14px] cursor-pointer text-black-800 font-[700] px-[16px] font-accent"
-								onClick={() => {
-									// ここでノードに設定を保存する処理を実装
-									if (selectedTrigger) {
-										console.log("保存", {
-											リポジトリ: repositories[0]?.node_id, // 選択中のリポジトリ
-											イベント: selectedTrigger,
-											コールサイン: callsign,
-											アクション: selectedNextAction,
-											データマッピング: payloadMaps,
-										});
-									}
-								}}
-							>
-								保存
-							</button>
 						</div>
 					</div>
 				);
@@ -642,9 +492,9 @@ export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
 			<PropertiesPanelContent>
 				{node.content.provider.type === "manual" && (
 					<div className="p-4">
-						<h3 className="text-lg font-semibold mb-2">トリガー設定</h3>
-						<p>トリガータイプ: {node.content.provider.type}</p>
-						<p className="mt-2">手動トリガーID: {node.content.provider.triggerId}</p>
+						<h3 className="text-lg font-semibold mb-2">Trigger Settings</h3>
+						<p>Trigger Type: {node.content.provider.type}</p>
+						<p className="mt-2">Manual Trigger ID: {node.content.provider.triggerId}</p>
 					</div>
 				)}
 
