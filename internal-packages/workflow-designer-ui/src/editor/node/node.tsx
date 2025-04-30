@@ -22,6 +22,7 @@ import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
 import { defaultName } from "../../utils";
 import { useDebug } from "../debug-context";
+import styles from "./github-trigger-node.module.css";
 
 type GiselleWorkflowDesignerTextGenerationNode = XYFlowNode<
 	{ nodeData: TextGenerationNode; preview?: boolean },
@@ -144,7 +145,7 @@ export function NodeComponent({
 				"data-[selected=true]:shadow-[0px_0px_16px_0px]",
 				"data-[preview=true]:opacity-50",
 				"not-data-preview:min-h-[110px]",
-				isGitHubTriggerNode && "github-trigger-node"
+				isGitHubTriggerNode && styles.githubTriggerNode
 			)}
 		>
 			<div
@@ -162,7 +163,10 @@ export function NodeComponent({
 				)}
 			/>
 
-			<div className={clsx("px-[16px] relative", isGitHubTriggerNode && "github-node-title")}>
+			<div className={clsx(
+				"px-[16px] relative",
+				isGitHubTriggerNode && styles.nodeTitle
+			)}>
 				<div className="flex items-center gap-[8px]">
 					<div
 						className={clsx(
@@ -227,11 +231,11 @@ export function NodeComponent({
 				</div>
 			</div>
 			
-			{/* リポジトリ情報表示 - GitHubトリガーノードの場合はz-indexで上に */}
+			{/* リポジトリ情報表示 - GitHubトリガーノードの場合 */}
 			{showRepositoryInfo && (
 				<div className={clsx(
 					"mx-4 px-3 py-2 bg-black-800/40 rounded-lg border border-white-900/10",
-					isGitHubTriggerNode && "github-repo-info"
+					isGitHubTriggerNode && styles.repoInfo
 				)}>
 					<div className="flex items-center gap-2 mb-2">
 						<svg className="w-4 h-4 text-white-900" viewBox="0 0 24 24" fill="currentColor">
@@ -251,11 +255,12 @@ export function NodeComponent({
 					</div>
 				</div>
 			)}
+
 			
-			{!preview && (
+			{!preview　&& githubAuthState === 'installed' && (
 				<div className={clsx(
 					"flex justify-between",
-					isGitHubTriggerNode && "github-node-connectors"
+					isGitHubTriggerNode && styles.nodeConnectors
 				)}>
 					<div className="grid">
 						{node.inputs?.map((input) => (
@@ -342,6 +347,7 @@ export function NodeComponent({
 										"group-data-[state=connected]:group-data-[content-type=videoGeneration]:!bg-video-generation-node-1 group-data-[state=connected]:group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
 										"group-data-[state=connected]:group-data-[content-type=trigger]:!bg-trigger-node-1 group-data-[state=connected]:group-data-[content-type=trigger]:!border-trigger-node-1",
 										"group-data-[state=disconnected]:!bg-black-900",
+										isGitHubTriggerNode && styles.handle
 									)}
 								/>
 								<div
@@ -364,7 +370,7 @@ export function NodeComponent({
 			{isGitHubTriggerNode && !preview && (
 				<div className={clsx(
 					"mt-2 mx-4 pt-2 border-t border-white-900/10",
-					"github-debug-controls"
+					styles.debugControls
 				)}>
 					<div className="flex flex-wrap gap-1">
 						<button
@@ -397,43 +403,6 @@ export function NodeComponent({
 						</div>
 					)}
 				</div>
-			)}
-
-			{/* GitHubトリガーノードのスタイル - z-indexを活用して要素を上に持ってくる */}
-			{isGitHubTriggerNode && (
-				<style jsx>{`
-					.github-trigger-node {
-						position: relative;
-						overflow: visible;
-					}
-					
-					.github-node-title {
-						z-index: 30;
-						position: relative;
-					}
-					
-					.github-repo-info {
-						position: absolute;
-						z-index: 20;
-						top: 60px;
-						left: 0;
-						width: 100%;
-					}
-					
-					.github-node-connectors {
-						position: absolute;
-						z-index: 30; /* リポジトリ情報より高いz-indexに設定 */
-						top: 60px; /* リポジトリ情報と同じ位置に配置 */
-						left: 0;
-						width: 100%;
-					}
-					
-					.github-debug-controls {
-						position: relative;
-						z-index: 25;
-						margin-top: 200px; /* デバッグコントロールをさらに下に移動 */
-					}
-				`}</style>
 			)}
 		</div>
 	);

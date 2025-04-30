@@ -1,0 +1,57 @@
+/* GitHubトリガーノードのスタイル */
+.githubTriggerNode {
+  position: relative;
+  overflow: visible;
+}
+
+.nodeTitle {
+  z-index: 30;
+  position: relative;
+}
+
+.repoInfo {
+  position: relative;
+  z-index: 20;
+}
+
+.nodeConnectors {
+  position: absolute;
+  z-index: 60; /* 最前面に表示 */
+  pointer-events: none;
+  top: 10px; /* 上部に配置 */
+  right: 0;
+  left: 0;
+  width: 100%;
+  display: block !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.nodeConnectors::before,
+.nodeConnectors::after {
+  display: none !important;
+}
+
+.debugControls {
+  position: relative;
+  z-index: 25;
+  margin-top: 10px;
+}
+
+/* コネクターのラベルテキストを非表示 */
+.nodeConnectors :global(.text-white-900),
+.nodeConnectors :global(.text-black-400) {
+  opacity: 0 !important;
+}
+
+/* ハンドルスタイル */
+.handle {
+  position: absolute !important;
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 9999px !important;
+  border-width: 1.5px !important;
+  right: -0.5px !important;
+  z-index: 100 !important;
+} 
