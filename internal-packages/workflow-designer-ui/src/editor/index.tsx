@@ -11,6 +11,7 @@ import {
 	useReactFlow,
 	useUpdateNodeInternals,
 } from "@xyflow/react";
+import { useDuplicateNode } from "./node";
 import "@xyflow/react/dist/style.css";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
@@ -63,6 +64,7 @@ function NodeCanvas() {
 	const { selectedTool, reset } = useToolbar();
 	const toast = useToasts();
 	const { contextMenu, setContextMenu, closeContextMenu } = useContextMenu();
+	const duplicateNode = useDuplicateNode();
 	useEffect(() => {
 		reactFlowInstance.setNodes(
 			Object.entries(data.ui.nodeState)
@@ -203,30 +205,6 @@ function NodeCanvas() {
 		return true;
 	};
 
-	const handleDuplicateNode = useCallback(
-		(nodeId?: string) => {
-			const targetNode = nodeId
-				? data.nodes.find((node) => node.id === nodeId)
-				: data.nodes.find((node) => data.ui.nodeState[node.id]?.selected);
-
-			if (!targetNode) {
-				toast.error("No node selected to duplicate");
-				return;
-			}
-
-			const nodeState = data.ui.nodeState[targetNode.id];
-			if (!nodeState) return;
-
-			const position = {
-				x: nodeState.position.x + 200,
-				y: nodeState.position.y + 100,
-			};
-
-			copyNode(targetNode, { ui: { position } });
-		},
-		[data.nodes, data.ui.nodeState, copyNode, toast],
-	);
-
 	return (
 		<>
 			<ReactFlow<GiselleWorkflowDesignerNode, ConnectorType>
@@ -347,7 +325,9 @@ function NodeCanvas() {
 			<ContextMenu
 				contextMenu={contextMenu}
 				onDuplicate={(nodeId) => {
-					handleDuplicateNode(nodeId);
+					duplicateNode(nodeId, () =>
+						toast.error("No node selected to duplicate"),
+					);
 					closeContextMenu();
 				}}
 			/>
