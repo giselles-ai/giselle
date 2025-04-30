@@ -1,18 +1,6 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.8.2/schema.json",
-	"organizeImports": {
-		"enabled": true
-	},
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true
-		}
-	},
-	"vcs": {
-		"enabled": true,
-		"clientKind": "git"
-	},
+	"extends": ["../../biome.json"],
+	"$schema": "../../node_modules/@biomejs/biome/configuration_schema.json",
 	"files": {
 		"ignore": ["deprecated", "packages/sdk-nextjs", "packages/sdk/dist"]
 	}

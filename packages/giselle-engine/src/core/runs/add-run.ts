@@ -29,10 +29,10 @@ export async function addRun(args: {
 		...workflow,
 		jobs: workflow.jobs.map((job) => ({
 			...job,
-			actions: job.actions.map((action) => ({
-				...action,
+			operations: job.operations.map((operation) => ({
+				...operation,
 				generationTemplate: overrideGenerationTemplate(
-					action.generationTemplate,
+					operation.generationTemplate,
 					args.overrideNodes ?? [],
 				),
 			})),

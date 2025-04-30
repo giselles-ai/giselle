@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ActionNode, Node } from "../node";
+import { Node, NodeId, OperationNode } from "../node";
 import { RunId } from "../run";
 import { WorkspaceId } from "../workspace";
 
@@ -38,14 +38,16 @@ export const GenerationOrigin = z.discriminatedUnion("type", [
 export type GenerationOrigin = z.infer<typeof GenerationOrigin>;
 
 export const GenerationContext = z.object({
-	actionNode: ActionNode,
+	operationNode: OperationNode,
 	sourceNodes: z.array(Node),
 	origin: GenerationOrigin,
 });
 export type GenerationContext = z.infer<typeof GenerationContext>;
 
 export const GenerationContextLike = z.object({
-	actionNode: z.any(),
+	operationNode: OperationNode.extend({
+		content: z.any(),
+	}),
 	sourceNodes: z.array(z.any()),
 	origin: z.any(),
 });

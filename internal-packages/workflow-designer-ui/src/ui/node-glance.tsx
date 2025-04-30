@@ -22,6 +22,7 @@ export function NodeGlance({
 			case "text":
 			case "github":
 			case "trigger":
+			case "action":
 				return node.name ?? "Untitled Node";
 			default: {
 				const _exhaustiveCheck: never = node.content;
@@ -38,6 +39,7 @@ export function NodeGlance({
 			case "text":
 			case "github":
 			case "trigger":
+			case "action":
 				return node.content.type;
 			default: {
 				const _exhaustiveCheck: never = node.content;

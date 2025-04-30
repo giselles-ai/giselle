@@ -24,7 +24,7 @@ export function NodeIcon({
 	...props
 }: { node: Node } & SVGProps<SVGSVGElement>) {
 	switch (node.type) {
-		case "action": {
+		case "operation": {
 			switch (node.content.type) {
 				case "textGeneration":
 					switch (node.content.llm.provider) {
@@ -47,26 +47,38 @@ export function NodeIcon({
 						}
 					}
 				case "imageGeneration": {
-					const imageModelProvider = getImageGenerationModelProvider(
-						node.content.llm.id,
-					);
-					if (imageModelProvider === undefined) {
-						return null;
-					}
-					switch (imageModelProvider) {
-						case "flux":
-							return <Flux1Icon {...props} data-content-type-icon />;
-						case "recraft":
-							return <RecraftIcon {...props} data-content-type-icon />;
-						case "ideogram":
-							return <IdegramIcon {...props} data-content-type-icon />;
-						case "stable-diffusion":
-							return <StableDiffusionIcon {...props} data-content-type-icon />;
-						default: {
-							const _exhaustiveCheck: never = imageModelProvider;
-							throw new Error(
-								`Unhandled ImageModelProvider: ${_exhaustiveCheck}`,
+					switch (node.content.llm.provider) {
+						case "fal": {
+							const imageModelProvider = getImageGenerationModelProvider(
+								node.content.llm.id,
 							);
+							if (imageModelProvider === undefined) {
+								return null;
+							}
+							switch (imageModelProvider) {
+								case "flux":
+									return <Flux1Icon {...props} data-content-type-icon />;
+								case "recraft":
+									return <RecraftIcon {...props} data-content-type-icon />;
+								case "ideogram":
+									return <IdegramIcon {...props} data-content-type-icon />;
+								case "stable-diffusion":
+									return (
+										<StableDiffusionIcon {...props} data-content-type-icon />
+									);
+								default: {
+									const _exhaustiveCheck: never = imageModelProvider;
+									throw new Error(
+										`Unhandled ImageModelProvider: ${_exhaustiveCheck}`,
+									);
+								}
+							}
+						}
+						case "openai":
+							return <OpenaiIcon {...props} data-content-type-icon />;
+						default: {
+							const _exhaustiveCheck: never = node.content.llm;
+							throw new Error(`Unhandled LLMProvider: ${_exhaustiveCheck}`);
 						}
 					}
 				}
@@ -78,6 +90,17 @@ export function NodeIcon({
 							return (
 								<MousePointerClickIcon {...props} data-content-type-icon />
 							);
+						default: {
+							throw new Error(
+								`Unhandled TriggerProviderType: ${node.content.provider.type}`,
+							);
+						}
+					}
+				}
+				case "action": {
+					switch (node.content.provider.type) {
+						case "github":
+							return <GitHubIcon {...props} data-content-type-icon />;
 						default: {
 							throw new Error(
 								`Unhandled TriggerProviderType: ${node.content.provider.type}`,

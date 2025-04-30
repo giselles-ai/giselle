@@ -7,7 +7,7 @@ const imageGenerationSize1x1Hd = z.literal("1024x1024");
 const imageGenerationSize4x3 = z.literal("1152x864");
 const imageGenerationSize16x9 = z.literal("1312x736");
 
-export const imageGenerationSizes = z.enum([
+export const falImageGenerationSizes = z.enum([
 	imageGenerationSize1x1.value,
 	imageGenerationSize1x1Hd.value,
 	imageGenerationSize4x3.value,
@@ -16,7 +16,7 @@ export const imageGenerationSizes = z.enum([
 
 export const FalLanguageModelConfigurations = z.object({
 	n: z.number(),
-	size: imageGenerationSizes,
+	size: falImageGenerationSizes,
 });
 export type FalLanguageModelConfigurations = z.infer<
 	typeof FalLanguageModelConfigurations

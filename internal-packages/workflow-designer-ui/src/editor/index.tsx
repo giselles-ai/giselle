@@ -124,20 +124,34 @@ function NodeCanvas() {
 					throw new Error("Invalid output id");
 				}
 				const outputId = safeOutputId.data;
-				const newInput = {
-					id: InputId.generate(),
-					label: "Input",
-				};
-				const updatedInputs = [...inputNode.inputs, newInput];
-				updateNodeData(inputNode, {
-					inputs: updatedInputs,
-				});
-				addConnection({
-					inputNode: inputNode,
-					inputId: newInput.id,
-					outputId,
-					outputNode: outputNode,
-				});
+				if (inputNode.content.type === "action") {
+					const safeInputId = InputId.safeParse(connection.targetHandle);
+					if (!safeInputId.success) {
+						throw new Error("Invalid input id");
+					}
+					const inputId = safeInputId.data;
+					addConnection({
+						inputNode,
+						inputId,
+						outputNode,
+						outputId,
+					});
+				} else {
+					const newInput = {
+						id: InputId.generate(),
+						label: "Input",
+					};
+					const updatedInputs = [...inputNode.inputs, newInput];
+					updateNodeData(inputNode, {
+						inputs: updatedInputs,
+					});
+					addConnection({
+						inputNode: inputNode,
+						inputId: newInput.id,
+						outputId,
+						outputNode: outputNode,
+					});
+				}
 			} catch (error: unknown) {
 				if (error instanceof Error) {
 					toast.error(error.message);
@@ -160,7 +174,7 @@ function NodeCanvas() {
 			const targetNode = data.nodes.find(
 				(node) => node.id === connection.inputNode.id,
 			);
-			if (targetNode && targetNode.type === "action") {
+			if (targetNode && targetNode.type === "operation") {
 				const updatedInputs = targetNode.inputs.filter(
 					(input) => input.id !== connection.inputId,
 				);

@@ -24,7 +24,7 @@ describe("isSupportedConnection", () => {
 		llm: TextGenerationLanguageModelData = anthropicLanguageModels[0],
 	): TextGenerationNode => ({
 		id,
-		type: "action",
+		type: "operation",
 		inputs: [],
 		outputs: [],
 		content: {
@@ -38,7 +38,7 @@ describe("isSupportedConnection", () => {
 		llm: ImageGenerationLanguageModelData = falLanguageModels[0],
 	): ImageGenerationNode => ({
 		id,
-		type: "action",
+		type: "operation",
 		inputs: [],
 		outputs: [],
 		content: {

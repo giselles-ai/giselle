@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { ActionNode, Node } from "../node";
+import { Node, OperationNode } from "../node";
 
 export const GenerationTemplate = z.object({
-	actionNode: ActionNode,
+	operationNode: OperationNode,
 	sourceNodes: z.array(Node),
 });
 export type GenerationTemplate = z.infer<typeof GenerationTemplate>;

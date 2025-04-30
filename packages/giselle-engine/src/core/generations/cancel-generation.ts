@@ -25,11 +25,11 @@ export async function cancelGeneration(args: {
 		}),
 		setNodeGenerationIndex({
 			storage: args.context.storage,
-			nodeId: generation.context.actionNode.id,
+			nodeId: generation.context.operationNode.id,
 			origin: generation.context.origin,
 			nodeGenerationIndex: {
 				id: generation.id,
-				nodeId: generation.context.actionNode.id,
+				nodeId: generation.context.operationNode.id,
 				status: "cancelled",
 				createdAt: generation.createdAt,
 				queuedAt: Date.now(),

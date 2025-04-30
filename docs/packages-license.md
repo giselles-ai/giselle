@@ -75,7 +75,7 @@
 
 
 <a name="@ai-sdk/google"></a>
-### @ai-sdk/google v1.2.11
+### @ai-sdk/google v1.2.13
 #### 
 
 ##### Paths
@@ -86,7 +86,7 @@
 
 
 <a name="@ai-sdk/openai"></a>
-### @ai-sdk/openai v1.3.12
+### @ai-sdk/openai v1.3.18
 #### 
 
 ##### Paths
@@ -4981,7 +4981,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="ai"></a>
-### ai v4.3.6
+### ai v4.3.9
 #### 
 
 ##### Paths

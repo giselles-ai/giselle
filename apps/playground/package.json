@@ -12,7 +12,8 @@
 		"build": "next build --turbopack",
 		"start": "next start",
 		"lint": "next lint",
-		"check-types": "tsc --noEmit"
+		"check-types": "tsc --noEmit",
+		"format": "biome check --write ."
 	},
 	"dependencies": {
 		"@giselle-internal/workflow-designer-ui": "workspace:*",
@@ -32,6 +33,7 @@
 		"unstorage": "catalog:"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "catalog:",
 		"@tailwindcss/typography": "catalog:",
 		"@types/node": "catalog:",
 		"@types/react": "catalog:",

@@ -18,7 +18,7 @@ import {
 import { GenerationPanel } from "./generation-panel";
 import { InputPanel } from "./input-panel";
 import { KeyboardShortcuts } from "./keyboard-shortcuts";
-import { ImageGenerationModelPanel } from "./model-panel";
+import { FalModelPanel, OpenAIImageModelPanel } from "./models";
 import { PromptPanel } from "./prompt-panel";
 import { useConnectedSources } from "./sources";
 
@@ -55,7 +55,7 @@ export function ImageGenerationNodePropertiesPanel({
 				type: "workspace",
 				id: data.id,
 			},
-			actionNode: node,
+			operationNode: node,
 			sourceNodes: connectedSources.map(
 				(connectedSource) => connectedSource.node,
 			),
@@ -140,15 +140,28 @@ export function ImageGenerationNodePropertiesPanel({
 								value="model"
 								className="flex-1 flex flex-col overflow-y-auto"
 							>
-								<ImageGenerationModelPanel
-									languageModel={node.content.llm}
-									onModelChange={(value) =>
-										updateNodeDataContent(node, {
-											...node.content,
-											llm: value,
-										})
-									}
-								/>
+								{node.content.llm.provider === "fal" && (
+									<FalModelPanel
+										languageModel={node.content.llm}
+										onModelChange={(value) =>
+											updateNodeDataContent(node, {
+												...node.content,
+												llm: value,
+											})
+										}
+									/>
+								)}
+								{node.content.llm.provider === "openai" && (
+									<OpenAIImageModelPanel
+										languageModel={node.content.llm}
+										onModelChange={(value) =>
+											updateNodeDataContent(node, {
+												...node.content,
+												llm: value,
+											})
+										}
+									/>
+								)}
 							</Tabs.Content>
 							<Tabs.Content
 								value="input"

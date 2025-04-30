@@ -24,11 +24,11 @@ export async function setGeneration(args: {
 		}),
 		setNodeGenerationIndex({
 			storage: args.context.storage,
-			nodeId: args.generation.context.actionNode.id,
+			nodeId: args.generation.context.operationNode.id,
 			origin: args.generation.context.origin,
 			nodeGenerationIndex: {
 				id: args.generation.id,
-				nodeId: args.generation.context.actionNode.id,
+				nodeId: args.generation.context.operationNode.id,
 				status: args.generation.status,
 				createdAt: args.generation.createdAt,
 				queuedAt: args.generation.queuedAt,

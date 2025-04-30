@@ -1,11 +1,8 @@
-import {
-	type ActionNode,
-	type Connection,
-	type ConnectionId,
-	type Node,
-	type NodeId,
-	type WorkflowId,
-	isActionNode,
+import type {
+	Connection,
+	Node,
+	NodeId,
+	WorkflowId,
 } from "@giselle-sdk/data-type";
 import { describe, expect, test } from "vitest";
 import {
@@ -19,7 +16,7 @@ import {
 const sampleNodes: Node[] = [
 	{
 		id: "nd-KzXeXSIffRIMwZtX",
-		type: "action",
+		type: "operation",
 		inputs: [],
 		outputs: [
 			{
@@ -46,7 +43,7 @@ const sampleNodes: Node[] = [
 	},
 	{
 		id: "nd-P2EllMigi6Tm6gij",
-		type: "action",
+		type: "operation",
 		inputs: [{ id: "inp-id3Grof8Hyy3DJbN", label: "Input" }],
 		outputs: [
 			{
@@ -76,13 +73,13 @@ const sampleConnections: Connection[] = [
 		id: "cnnc-7SZdtE1iSWtoghGD",
 		outputNode: {
 			id: "nd-KzXeXSIffRIMwZtX",
-			type: "action",
+			type: "operation",
 			content: { type: "textGeneration" },
 		},
 		outputId: "otp-93MKjM7HdSu3hOdw",
 		inputNode: {
 			id: "nd-P2EllMigi6Tm6gij",
-			type: "action",
+			type: "operation",
 			content: { type: "textGeneration" },
 		},
 		inputId: "inp-id3Grof8Hyy3DJbN",
@@ -208,24 +205,24 @@ describe("createJobMap", () => {
 
 		// First job should contain the first node (which has no inputs)
 		expect(jobsArray[0].workflowId).toBe(workflowId);
-		expect(jobsArray[0].actions.length).toBe(1);
-		expect(jobsArray[0].actions[0].node.id).toBe("nd-KzXeXSIffRIMwZtX");
+		expect(jobsArray[0].operations.length).toBe(1);
+		expect(jobsArray[0].operations[0].node.id).toBe("nd-KzXeXSIffRIMwZtX");
 
 		// Second job should contain the second node (which depends on the first)
 		expect(jobsArray[1].workflowId).toBe(workflowId);
-		expect(jobsArray[1].actions.length).toBe(1);
-		expect(jobsArray[1].actions[0].node.id).toBe("nd-P2EllMigi6Tm6gij");
+		expect(jobsArray[1].operations.length).toBe(1);
+		expect(jobsArray[1].operations[0].node.id).toBe("nd-P2EllMigi6Tm6gij");
 
 		// Check generation templates
-		expect(jobsArray[0].actions[0].generationTemplate.sourceNodes.length).toBe(
-			0,
-		);
-		expect(jobsArray[1].actions[0].generationTemplate.sourceNodes.length).toBe(
-			1,
-		);
-		expect(jobsArray[1].actions[0].generationTemplate.sourceNodes[0].id).toBe(
-			"nd-KzXeXSIffRIMwZtX",
-		);
+		expect(
+			jobsArray[0].operations[0].generationTemplate.sourceNodes.length,
+		).toBe(0);
+		expect(
+			jobsArray[1].operations[0].generationTemplate.sourceNodes.length,
+		).toBe(1);
+		expect(
+			jobsArray[1].operations[0].generationTemplate.sourceNodes[0].id,
+		).toBe("nd-KzXeXSIffRIMwZtX");
 	});
 
 	test("should handle empty node set", () => {
@@ -241,7 +238,7 @@ describe("Test with complex workflow", () => {
 	const complexNodes: Node[] = [
 		{
 			id: "nd-E89xeYnFyQUGxdCL",
-			type: "action",
+			type: "operation",
 			inputs: [],
 			outputs: [
 				{
@@ -272,7 +269,7 @@ describe("Test with complex workflow", () => {
 		{
 			id: "nd-daF6m8YshVoiBARi",
 			name: "gemini-2.0-flash-0012",
-			type: "action",
+			type: "operation",
 			inputs: [
 				{ id: "inp-rVg0GxYPFNnFUvJd", label: "Input" },
 				{ id: "inp-xYV0iiqdumwxPOQR", label: "Input" },
@@ -299,7 +296,7 @@ describe("Test with complex workflow", () => {
 		},
 		{
 			id: "nd-ixIefYTHjZVhpEGq",
-			type: "action",
+			type: "operation",
 			inputs: [{ id: "inp-vZaOw0D8k9uyGNgp", label: "Input" }],
 			outputs: [
 				{
@@ -328,13 +325,13 @@ describe("Test with complex workflow", () => {
 			id: "cnnc-KprKOaAqxL7TXeHZ",
 			outputNode: {
 				id: "nd-E89xeYnFyQUGxdCL",
-				type: "action",
+				type: "operation",
 				content: { type: "textGeneration" },
 			},
 			outputId: "otp-iK3fTc8uBJn2JFM8",
 			inputNode: {
 				id: "nd-daF6m8YshVoiBARi",
-				type: "action",
+				type: "operation",
 				content: { type: "textGeneration" },
 			},
 			inputId: "inp-rVg0GxYPFNnFUvJd",
@@ -343,13 +340,13 @@ describe("Test with complex workflow", () => {
 			id: "cnnc-VWcUOOacadZQ2CMc",
 			outputNode: {
 				id: "nd-E89xeYnFyQUGxdCL",
-				type: "action",
+				type: "operation",
 				content: { type: "textGeneration" },
 			},
 			outputId: "otp-178F8dUeKWPWlU6y",
 			inputNode: {
 				id: "nd-daF6m8YshVoiBARi",
-				type: "action",
+				type: "operation",
 				content: { type: "textGeneration" },
 			},
 			inputId: "inp-xYV0iiqdumwxPOQR",
@@ -358,13 +355,13 @@ describe("Test with complex workflow", () => {
 			id: "cnnc-pHNejzic6NKKxBsA",
 			outputNode: {
 				id: "nd-E89xeYnFyQUGxdCL",
-				type: "action",
+				type: "operation",
 				content: { type: "textGeneration" },
 			},
 			outputId: "otp-iK3fTc8uBJn2JFM8",
 			inputNode: {
 				id: "nd-ixIefYTHjZVhpEGq",
-				type: "action",
+				type: "operation",
 				content: { type: "textGeneration" },
 			},
 			inputId: "inp-vZaOw0D8k9uyGNgp",
@@ -442,30 +439,30 @@ describe("Test with complex workflow", () => {
 
 		// First job should contain the first node (which has no inputs)
 		expect(jobsArray[0].workflowId).toBe(complexWorkflowId);
-		expect(jobsArray[0].actions.length).toBe(1);
-		expect(jobsArray[0].actions[0].node.id).toBe("nd-E89xeYnFyQUGxdCL");
+		expect(jobsArray[0].operations.length).toBe(1);
+		expect(jobsArray[0].operations[0].node.id).toBe("nd-E89xeYnFyQUGxdCL");
 
 		// Second job should contain both dependent nodes
 		expect(jobsArray[1].workflowId).toBe(complexWorkflowId);
-		expect(jobsArray[1].actions.length).toBe(2);
+		expect(jobsArray[1].operations.length).toBe(2);
 
 		// Get the node IDs from the second job
-		const secondJobNodeIds = jobsArray[1].actions
-			.map((action) => action.node.id)
+		const secondJobNodeIds = jobsArray[1].operations
+			.map((operation) => operation.node.id)
 			.sort();
 		expect(secondJobNodeIds).toEqual(
 			["nd-daF6m8YshVoiBARi", "nd-ixIefYTHjZVhpEGq"].sort(),
 		);
 
 		// Check generation templates for first job
-		expect(jobsArray[0].actions[0].generationTemplate.sourceNodes.length).toBe(
-			0,
-		);
+		expect(
+			jobsArray[0].operations[0].generationTemplate.sourceNodes.length,
+		).toBe(0);
 
 		// Check generation templates for second job nodes
 		// Find the node with id nd-ixIefYTHjZVhpEGq
-		const ixIefYTHjZVhpEGqNode = jobsArray[1].actions.find(
-			(action) => action.node.id === "nd-ixIefYTHjZVhpEGq",
+		const ixIefYTHjZVhpEGqNode = jobsArray[1].operations.find(
+			(operation) => operation.node.id === "nd-ixIefYTHjZVhpEGq",
 		);
 		expect(ixIefYTHjZVhpEGqNode?.generationTemplate.sourceNodes.length).toBe(1);
 		expect(ixIefYTHjZVhpEGqNode?.generationTemplate.sourceNodes[0].id).toBe(
@@ -473,8 +470,8 @@ describe("Test with complex workflow", () => {
 		);
 
 		// Find the node with id nd-daF6m8YshVoiBARi
-		const daF6m8YshVoiBARiNode = jobsArray[1].actions.find(
-			(action) => action.node.id === "nd-daF6m8YshVoiBARi",
+		const daF6m8YshVoiBARiNode = jobsArray[1].operations.find(
+			(operation) => operation.node.id === "nd-daF6m8YshVoiBARi",
 		);
 		expect(daF6m8YshVoiBARiNode?.generationTemplate.sourceNodes.length).toBe(2);
 		expect(daF6m8YshVoiBARiNode?.generationTemplate.sourceNodes[0].id).toBe(

@@ -1,7 +1,9 @@
 import {
+	ActionNode,
 	FileNode,
 	GitHubNode,
 	ImageGenerationNode,
+	type InputId,
 	type Node,
 	type OutputId,
 	TextGenerationNode,
@@ -17,7 +19,8 @@ import {
 	type Node as XYFlowNode,
 } from "@xyflow/react";
 import clsx from "clsx/lite";
-import { useWorkflowDesigner } from "giselle-sdk/react";
+import { useNodeGenerations, useWorkflowDesigner } from "giselle-sdk/react";
+import { CheckIcon, SquareIcon } from "lucide-react";
 import { useMemo } from "react";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
@@ -46,13 +49,18 @@ type GiselleWorkflowTriggerNode = XYFlowNode<
 	{ nodeData: TriggerNode; preview?: boolean },
 	TriggerNode["content"]["type"]
 >;
+type GiselleWorkflowActionNode = XYFlowNode<
+	{ nodeData: ActionNode; preview?: boolean },
+	ActionNode["content"]["type"]
+>;
 export type GiselleWorkflowDesignerNode =
 	| GiselleWorkflowDesignerTextGenerationNode
 	| GiselleWorkflowDesignerImageGenerationNode
 	| GiselleWorkflowDesignerTextNode
 	| GiselleWorkflowDesignerFileNode
 	| GiselleWorkflowGitHubNode
-	| GiselleWorkflowTriggerNode;
+	| GiselleWorkflowTriggerNode
+	| GiselleWorkflowActionNode;
 
 export const nodeTypes: NodeTypes = {
 	[TextGenerationNode.shape.content.shape.type.value]: CustomXyFlowNode,
@@ -61,6 +69,7 @@ export const nodeTypes: NodeTypes = {
 	[FileNode.shape.content.shape.type.value]: CustomXyFlowNode,
 	[GitHubNode.shape.content.shape.type.value]: CustomXyFlowNode,
 	[TriggerNode.shape.content.shape.type.value]: CustomXyFlowNode,
+	[ActionNode.shape.content.shape.type.value]: CustomXyFlowNode,
 };
 
 export function CustomXyFlowNode({
@@ -68,11 +77,11 @@ export function CustomXyFlowNode({
 	selected,
 }: NodeProps<GiselleWorkflowDesignerNode>) {
 	const { data: workspace, updateNodeData } = useWorkflowDesigner();
-	const hasTarget = useMemo(
+	const connectedInputIds = useMemo(
 		() =>
-			workspace.connections.some(
-				(connection) => connection.outputNode.id === data.nodeData.id,
-			),
+			workspace.connections
+				.filter((connection) => connection.inputNode.id === data.nodeData.id)
+				.map((connection) => connection.inputId),
 		[workspace, data.nodeData.id],
 	);
 	const connectedOutputIds = useMemo(
@@ -87,6 +96,7 @@ export function CustomXyFlowNode({
 		<NodeComponent
 			node={data.nodeData}
 			selected={selected}
+			connectedInputIds={connectedInputIds}
 			connectedOutputIds={connectedOutputIds}
 		/>
 	);
@@ -95,21 +105,28 @@ export function CustomXyFlowNode({
 export function NodeComponent({
 	node,
 	selected,
+	connectedInputIds,
 	connectedOutputIds,
 	preview = false,
 }: {
 	node: Node;
 	selected?: boolean;
 	preview?: boolean;
+	connectedInputIds?: InputId[];
 	connectedOutputIds?: OutputId[];
 }) {
-	const { updateNodeData } = useWorkflowDesigner();
+	const { updateNodeData, data } = useWorkflowDesigner();
+	const { stopGeneration, currentGeneration } = useNodeGenerations({
+		nodeId: node.id,
+		origin: { type: "workspace", id: data.id },
+	});
 	return (
 		<div
 			data-type={node.type}
 			data-content-type={node.content.type}
 			data-selected={selected}
 			data-preview={preview}
+			data-current-generation-status={currentGeneration?.status}
 			className={clsx(
 				"group relative flex flex-col rounded-[16px] py-[16px] gap-[16px] min-w-[180px]",
 				"bg-gradient-to-tl transition-all backdrop-blur-[4px]",
@@ -122,11 +139,40 @@ export function NodeComponent({
 				"data-[content-type=audioGeneration]:from-audio-generation-node-1] data-[content-type=audioGeneration]:to-audio-generation-node-2 data-[content-type=audioGeneration]:shadow-audio-generation-node-1",
 				"data-[content-type=videoGeneration]:from-video-generation-node-1] data-[content-type=videoGeneration]:to-video-generation-node-2 data-[content-type=videoGeneration]:shadow-video-generation-node-1",
 				"data-[content-type=trigger]:from-trigger-node-1] data-[content-type=trigger]:to-trigger-node-2 data-[content-type=trigger]:shadow-trigger-node-1",
+				"data-[content-type=action]:from-action-node-1] data-[content-type=action]:to-action-node-2 data-[content-type=action]:shadow-action-node-1",
 				"data-[selected=true]:shadow-[0px_0px_16px_0px]",
 				"data-[preview=true]:opacity-50",
 				"not-data-preview:min-h-[110px]",
 			)}
 		>
+			{(currentGeneration?.status === "queued" ||
+				currentGeneration?.status === "running") && (
+				<div className="absolute top-[-28px] right-0 py-1 px-3 z-10 flex items-center justify-between rounded-t-[16px]">
+					<div className="flex items-center">
+						<p className="text-xs font-medium font-hubot bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-[rgba(59,_130,_246,_1)] via-[rgba(255,_255,_255,_0.5)] to-[rgba(59,_130,_246,_1)] text-transparent animate-shimmer">
+							Generating...
+						</p>
+						<button
+							type="button"
+							onClick={(e) => {
+								e.stopPropagation();
+								stopGeneration();
+							}}
+							className="ml-1 p-1 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors"
+						>
+							<SquareIcon className="w-2 h-2 text-white" fill="white" />
+						</button>
+					</div>
+				</div>
+			)}
+			{currentGeneration?.status === "completed" && (
+				<div className="absolute top-[-28px] right-0 py-1 px-3 z-10 flex items-center justify-between rounded-t-[16px] text-green-900">
+					<div className="flex items-center gap-[4px]">
+						<p className="text-xs font-medium font-hubot">Completed</p>
+						<CheckIcon className="w-4 h-4" />
+					</div>
+				</div>
+			)}
 			<div
 				className={clsx(
 					"absolute z-0 rounded-[16px] inset-0 border-[1px] mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent",
@@ -139,6 +185,7 @@ export function NodeComponent({
 					"group-data-[content-type=audioGeneration]:from-audio-generation-node-1/40 group-data-[content-type=audioGeneration]:to-audio-generation-node-1",
 					"group-data-[content-type=videoGeneration]:from-video-generation-node-1/40 group-data-[content-type=videoGeneration]:to-video-generation-node-1",
 					"group-data-[content-type=trigger]:from-trigger-node-1/40 group-data-[content-type=trigger]:to-trigger-node-1",
+					"group-data-[content-type=action]:from-action-node-1/40 group-data-[content-type=action]:to-action-node-1",
 				)}
 			/>
 
@@ -156,6 +203,7 @@ export function NodeComponent({
 							"group-data-[content-type=audioGeneration]:bg-audio-generation-node-1",
 							"group-data-[content-type=videoGeneration]:bg-video-generation-node-1",
 							"group-data-[content-type=trigger]:bg-trigger-node-1",
+							"group-data-[content-type=action]:bg-action-node-1",
 						)}
 					>
 						<NodeIcon
@@ -171,6 +219,7 @@ export function NodeComponent({
 								"group-data-[content-type=audioGeneration]:text-white-900",
 								"group-data-[content-type=videoGeneration]:text-white-900",
 								"group-data-[content-type=trigger]:text-white-900",
+								"group-data-[content-type=action]:text-white-900",
 							)}
 						/>
 					</div>
@@ -196,7 +245,7 @@ export function NodeComponent({
 								e.stopPropagation();
 							}}
 						/>
-						{node.type === "action" &&
+						{node.type === "operation" &&
 							(node.content.type === "imageGeneration" ||
 								node.content.type === "textGeneration") && (
 								<div className="text-[10px] text-white-400 pl-[4px]">
@@ -209,50 +258,96 @@ export function NodeComponent({
 			{!preview && (
 				<div className="flex justify-between">
 					<div className="grid">
-						{node.inputs?.map((input) => (
-							<div
-								className="relative flex items-center h-[28px]"
-								key={input.id}
-							>
-								<Handle
-									type="target"
-									isConnectable={false}
-									position={Position.Left}
-									id={input.id}
-									className={clsx(
-										"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px]",
-										"group-data-[content-type=textGeneration]:!bg-generation-node-1 group-data-[content-type=textGeneration]:!border-generation-node-1",
-										"group-data-[content-type=imageGeneration]:!bg-image-generation-node-1 group-data-[content-type=imageGeneration]:!border-image-generation-node-1",
-										"group-data-[content-type=webSearch]:!bg-web-search-node-1 group-data-[content-type=webSearch]:!border-web-search-node-1",
-										"group-data-[content-type=audioGeneration]:!bg-audio-generation-node-1 group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
-										"group-data-[content-type=videoGeneration]:!bg-video-generation-node-1 group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
-									)}
-								/>
-								<div className={clsx("px-[12px] text-white-900 text-[12px]")}>
-									{input.label}
+						{node.content.type !== "action" &&
+							node.inputs?.map((input) => (
+								<div
+									className="relative flex items-center h-[28px]"
+									key={input.id}
+								>
+									<Handle
+										type="target"
+										isConnectable={false}
+										position={Position.Left}
+										id={input.id}
+										className={clsx(
+											"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px]",
+											"group-data-[content-type=textGeneration]:!bg-generation-node-1 group-data-[content-type=textGeneration]:!border-generation-node-1",
+											"group-data-[content-type=imageGeneration]:!bg-image-generation-node-1 group-data-[content-type=imageGeneration]:!border-image-generation-node-1",
+											"group-data-[content-type=webSearch]:!bg-web-search-node-1 group-data-[content-type=webSearch]:!border-web-search-node-1",
+											"group-data-[content-type=audioGeneration]:!bg-audio-generation-node-1 group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
+											"group-data-[content-type=videoGeneration]:!bg-video-generation-node-1 group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
+										)}
+									/>
+									<div className={clsx("px-[12px] text-white-900 text-[12px]")}>
+										{input.label}
+									</div>
 								</div>
-							</div>
-						))}
-						{node.type === "action" && node.content.type !== "trigger" && (
-							<div className="relative flex items-center h-[28px]" key="blank">
-								<Handle
-									type="target"
-									position={Position.Left}
-									id="blank-handle"
-									className={clsx(
-										"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px] !bg-black-900",
-										"group-data-[content-type=textGeneration]:!border-generation-node-1",
-										"group-data-[content-type=imageGeneration]:!border-image-generation-node-1",
-										"group-data-[content-type=webSearch]:!border-web-search-node-1",
-										"group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
-										"group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
-									)}
-								/>
-								<div className="absolute left-[-12px] text-[12px] text-black-400 whitespace-nowrap -translate-x-[100%]">
-									Input
+							))}
+						{node.content.type === "action" &&
+							node.inputs.map((input) => (
+								<div
+									className="relative flex items-center h-[28px] group"
+									key={input.id}
+									data-state={
+										connectedInputIds?.some(
+											(connectedInputId) => connectedInputId === input.id,
+										)
+											? "connected"
+											: "disconnected"
+									}
+								>
+									<Handle
+										type="target"
+										isConnectable={
+											!connectedInputIds?.some(
+												(connectedInputId) => connectedInputId === input.id,
+											)
+										}
+										position={Position.Left}
+										id={input.id}
+										className={clsx(
+											"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px]",
+											"group-data-[content-type=action]:!bg-action-node-1 group-data-[content-type=action]:!border-action-node-1",
+											"group-data-[state=disconnected]:!bg-black-900",
+										)}
+									/>
+									<div
+										className={clsx(
+											"px-[12px] text-white-900 text-[12px]",
+											"group-data-[state=connected]:px-[16px]",
+											"group-data-[state=disconnected]:absolute group-data-[state=disconnected]:-left-[4.5px] group-data-[state=disconnected]:whitespace-nowrap group-data-[state=disconnected]:-translate-x-[100%]",
+											"group-data-[state=connected]:text-white-900 group-data-[state=disconnected]:text-black-400",
+										)}
+									>
+										{input.label}
+									</div>
 								</div>
-							</div>
-						)}
+							))}
+						{node.type === "operation" &&
+							node.content.type !== "trigger" &&
+							node.content.type !== "action" && (
+								<div
+									className="relative flex items-center h-[28px]"
+									key="blank"
+								>
+									<Handle
+										type="target"
+										position={Position.Left}
+										id="blank-handle"
+										className={clsx(
+											"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px] !bg-black-900",
+											"group-data-[content-type=textGeneration]:!border-generation-node-1",
+											"group-data-[content-type=imageGeneration]:!border-image-generation-node-1",
+											"group-data-[content-type=webSearch]:!border-web-search-node-1",
+											"group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
+											"group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
+										)}
+									/>
+									<div className="absolute left-[-12px] text-[12px] text-black-400 whitespace-nowrap -translate-x-[100%]">
+										Input
+									</div>
+								</div>
+							)}
 					</div>
 
 					<div className="grid">

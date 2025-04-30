@@ -35,7 +35,7 @@ export function useNodeGenerations({
 			allGenerations
 				.filter(
 					(generation) =>
-						generation.context.actionNode.id === nodeId &&
+						generation.context.operationNode.id === nodeId &&
 						generation.context.origin.type === originType &&
 						generation.context.origin.id === originId,
 				)

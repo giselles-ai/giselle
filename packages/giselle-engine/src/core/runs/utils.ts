@@ -116,16 +116,16 @@ export function overrideGenerationTemplate(
 ): GenerationTemplate {
 	let overridedTemplate = template;
 	for (const overrideNode of overrideNodes) {
-		if (overrideNode.id === template.actionNode.id) {
-			switch (overridedTemplate.actionNode.content.type) {
+		if (overrideNode.id === template.operationNode.id) {
+			switch (overridedTemplate.operationNode.content.type) {
 				case "textGeneration": {
 					if (isOverrideTextGenerationContent(overrideNode.content)) {
 						overridedTemplate = {
 							...overridedTemplate,
-							actionNode: {
-								...overridedTemplate.actionNode,
+							operationNode: {
+								...overridedTemplate.operationNode,
 								content: {
-									...overridedTemplate.actionNode.content,
+									...overridedTemplate.operationNode.content,
 									prompt: overrideNode.content.prompt,
 								},
 							},
@@ -137,10 +137,10 @@ export function overrideGenerationTemplate(
 					if (isOverrideImageGenerationContent(overrideNode.content)) {
 						overridedTemplate = {
 							...overridedTemplate,
-							actionNode: {
-								...overridedTemplate.actionNode,
+							operationNode: {
+								...overridedTemplate.operationNode,
 								content: {
-									...overridedTemplate.actionNode.content,
+									...overridedTemplate.operationNode.content,
 									prompt: overrideNode.content.prompt,
 								},
 							},
@@ -149,9 +149,11 @@ export function overrideGenerationTemplate(
 					break;
 				}
 				case "trigger":
+				case "action":
 					break;
 				default: {
-					const _exhaustiveCheck: never = overridedTemplate.actionNode.content;
+					const _exhaustiveCheck: never =
+						overridedTemplate.operationNode.content;
 					throw new Error(`Unhandled action node type: ${_exhaustiveCheck}`);
 				}
 			}
@@ -263,6 +265,7 @@ export function overrideGenerationTemplate(
 					};
 					break;
 				case "trigger":
+				case "action":
 					break;
 				default: {
 					const _exhaustiveCheck: never = sourceNode.content;

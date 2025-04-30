@@ -73,7 +73,7 @@ export function TextGenerationNodePropertiesPanel({
 				type: "workspace",
 				id: data.id,
 			},
-			actionNode: node,
+			operationNode: node,
 			sourceNodes: connectedSources.map(
 				(connectedSource) => connectedSource.node,
 			),
@@ -241,7 +241,7 @@ export function TextGenerationNodePropertiesPanel({
 														if (connectedNode === undefined) {
 															continue;
 														}
-														if (connectedNode.type === "action") {
+														if (connectedNode.type === "operation") {
 															switch (connectedNode.content.type) {
 																case "textGeneration":
 																case "imageGeneration": {
@@ -254,6 +254,7 @@ export function TextGenerationNodePropertiesPanel({
 																	break;
 																}
 																case "trigger":
+																case "action":
 																	break;
 																default: {
 																	const _exhaustiveCheck: never =
@@ -324,7 +325,7 @@ export function TextGenerationNodePropertiesPanel({
 														if (connectedNode === undefined) {
 															continue;
 														}
-														if (connectedNode.type === "action") {
+														if (connectedNode.type === "operation") {
 															switch (connectedNode.content.type) {
 																case "textGeneration":
 																case "imageGeneration": {
@@ -337,6 +338,7 @@ export function TextGenerationNodePropertiesPanel({
 																	break;
 																}
 																case "trigger":
+																case "action":
 																	break;
 																default: {
 																	const _exhaustiveCheck: never =

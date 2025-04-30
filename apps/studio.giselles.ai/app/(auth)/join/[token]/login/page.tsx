@@ -6,18 +6,21 @@ import { declineInvitation } from "../actions";
 import { fetchInvitationToken } from "../invitation";
 import { LoginForm } from "./form";
 
-export default async function Page({ params }: { params: { token: string } }) {
+export default async function Page({
+	params,
+}: { params: Promise<{ token: string }> }) {
+	const { token } = await params;
 	const isTeamInvitationViaEmail = await teamInvitationViaEmailFlag();
 	if (!isTeamInvitationViaEmail) {
 		return notFound();
 	}
 
-	const tokenObj = await fetchInvitationToken(params.token);
+	const tokenObj = await fetchInvitationToken(token);
 	if (!tokenObj) {
 		return notFound();
 	}
 	if (tokenObj.expiredAt < new Date()) {
-		redirect(`/join/${encodeURIComponent(params.token)}`);
+		redirect(`/join/${encodeURIComponent(token)}`);
 	}
 
 	return (
@@ -34,12 +37,12 @@ export default async function Page({ params }: { params: { token: string } }) {
 						</h2>
 					</div>
 					<div className="grid gap-[16px]">
-						<LoginForm email={tokenObj.invitedEmail} token={params.token} />
+						<LoginForm email={tokenObj.invitedEmail} token={token} />
 
 						<div className="text-center text-sm text-slate-400">
 							Don't have a Giselle account?{" "}
 							<Link
-								href={`/join/${params.token}/signup`}
+								href={`/join/${token}/signup`}
 								className="text-blue-300 hover:underline"
 							>
 								Sign up
@@ -49,7 +52,7 @@ export default async function Page({ params }: { params: { token: string } }) {
 						<LegalConsent />
 						<div className="flex justify-center mt-4">
 							<form action={declineInvitation} className="contents">
-								<input type="hidden" name="token" value={params.token} />
+								<input type="hidden" name="token" value={token} />
 								<button
 									type="submit"
 									className="text-white hover:text-white/80 underline"

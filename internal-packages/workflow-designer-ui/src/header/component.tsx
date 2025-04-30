@@ -1,6 +1,11 @@
 "use client";
-
-import type { WorkspaceId } from "@giselle-sdk/data-type";
+import {
+	type TriggerNode,
+	TriggerProvider,
+	type WorkspaceId,
+	isTriggerNode,
+	isTriggerProvider,
+} from "@giselle-sdk/data-type";
 import clsx from "clsx";
 import {
 	ViewState,
@@ -9,14 +14,21 @@ import {
 } from "giselle-sdk/react";
 import {
 	CableIcon,
+	ChevronDownIcon,
 	CirclePlayIcon,
 	EyeIcon,
 	GanttChartIcon,
 	PlayIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { DropdownMenu } from "radix-ui";
 import { Dialog, ToggleGroup, VisuallyHidden } from "radix-ui";
-import { type ReactNode, useState } from "react";
+import {
+	type ButtonHTMLAttributes,
+	type ReactNode,
+	useMemo,
+	useState,
+} from "react";
 import { EditableText } from "../editor/properties-panel/ui";
 import { GiselleLogo } from "../icons";
 import { SettingsPanel } from "../settings";
@@ -24,6 +36,105 @@ import { ShareButton } from "../ui/button";
 import { ReadOnlyBadge } from "../ui/read-only-banner";
 import { ShareModal } from "../ui/share-modal";
 import { UserPresence } from "../ui/user-presence";
+
+function buttonLabel(triggerProvider: TriggerProvider) {
+	switch (triggerProvider.type) {
+		case "manual":
+			return "Trigger Manual flow";
+		case "github":
+			return "Trigger GitHub flow";
+		default: {
+			const _exhaustiveCheck: never = triggerProvider;
+			throw new Error(`Unhandled trigger provider type: ${_exhaustiveCheck}`);
+		}
+	}
+}
+
+function Button({
+	leftIcon: LeftIcon,
+	rightIcon: RightIcon,
+	children,
+	...props
+}: {
+	leftIcon?: ReactNode;
+	rightIcon?: ReactNode;
+} & ButtonHTMLAttributes<HTMLButtonElement>) {
+	return (
+		<button
+			type="button"
+			className="bg-white-900 px-[8px] rounded-[4px] py-[4px] text-[14px] flex items-center gap-[4px] cursor-pointer outline-none"
+			{...props}
+		>
+			{LeftIcon}
+			<div>{children}</div>
+			{RightIcon}
+		</button>
+	);
+}
+
+function TriggerButton({ triggerNode }: { triggerNode: TriggerNode }) {
+	const triggerProvider = useMemo(() => {
+		const parse = TriggerProvider.safeParse(triggerNode.content.provider);
+		if (parse.success) {
+			return parse.data;
+		}
+		return null;
+	}, [triggerNode.content.provider]);
+
+	if (triggerProvider === null) {
+		return null;
+	}
+	return (
+		<Button leftIcon={<PlayIcon className="size-[14px] fill-black-900" />}>
+			{buttonLabel(triggerProvider)}
+		</Button>
+	);
+}
+
+function Trigger() {
+	const { data } = useWorkflowDesigner();
+
+	const triggerNodes = useMemo(
+		() => data.nodes.filter((node) => isTriggerNode(node)),
+		[data.nodes],
+	);
+	if (triggerNodes.length === 0) {
+		return null;
+	}
+	if (triggerNodes.length === 1) {
+		return <TriggerButton triggerNode={triggerNodes[0]} />;
+	}
+	return (
+		<DropdownMenu.Root>
+			<DropdownMenu.Trigger asChild>
+				<Button leftIcon={<ChevronDownIcon className="size-[16px]" />}>
+					Select trigger
+				</Button>
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Portal>
+				<DropdownMenu.Content
+					className="bg-white-800 px-[6px] py-[6px] rounded-[6px] text-[14px]"
+					sideOffset={4}
+					align="end"
+				>
+					{triggerNodes.map((triggerNode) => {
+						if (!isTriggerProvider(triggerNode.content.provider)) {
+							return null;
+						}
+						return (
+							<DropdownMenu.Item
+								key={triggerNode.id}
+								className="text-black-900 outline-none hover:bg-black-300/20 px-[8px] cursor-pointer rounded-[4px] py-[2px]"
+							>
+								{buttonLabel(triggerNode.content.provider)}
+							</DropdownMenu.Item>
+						);
+					})}
+				</DropdownMenu.Content>
+			</DropdownMenu.Portal>
+		</DropdownMenu.Root>
+	);
+}
 
 export function Header({
 	action,
@@ -86,13 +197,14 @@ export function Header({
 
 			<div className="flex items-center gap-[12px]">
 				{runV2 && (
-					<button
-						type="button"
-						className="rounded-[4px] bg-white-800 px-[12px] flex items-center justify-center py-[4px] text-[14px] gap-[4px] flex items-center justify-center cursor-pointer text-black-800"
-					>
-						<PlayIcon className="size-[14px]" />
-						<span>Run</span>
-					</button>
+					// <button
+					// 	type="button"
+					// 	className="rounded-[4px] bg-white-800 px-[12px] flex items-center justify-center py-[4px] text-[14px] gap-[4px] flex items-center justify-center cursor-pointer text-black-900"
+					// >
+					// 	<PlayIcon className="size-[14px]" />
+					// 	<span>Trigger manual flow</span>
+					// </button>
+					<Trigger />
 				)}
 				{!runV2 && shareFeatureFlag && (
 					<>

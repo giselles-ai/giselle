@@ -119,7 +119,7 @@ export function RunSystemContextProvider({
 
 			for (const job of runningRun.workflow.jobs) {
 				await Promise.all(
-					job.actions.map(async (action) => {
+					job.operations.map(async (operation) => {
 						const currentRun = runRef.current[runId];
 						if (currentRun === undefined) {
 							return;
@@ -130,7 +130,7 @@ export function RunSystemContextProvider({
 						await startGeneration(
 							{
 								origin: { type: "run", id: runId },
-								...action.generationTemplate,
+								...operation.generationTemplate,
 							},
 							{
 								onGenerationCreated(generation) {

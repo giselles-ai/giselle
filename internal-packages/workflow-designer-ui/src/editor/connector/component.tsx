@@ -52,14 +52,14 @@ export function Connector({
 				)}
 				filter="url(#white-glow-filter)"
 			/>
-			<path
+			{/* <path
 				d={edgePath}
 				stroke="url(#connector-gradient-animation)"
 				strokeWidth="2"
 				fill="none"
 				strokeLinecap="round"
 				filter="url(#white-glow-filter)"
-			/>
+			/> */}
 		</g>
 	);
 }

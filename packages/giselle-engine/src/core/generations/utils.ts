@@ -1,6 +1,5 @@
 import { parseAndMod } from "@giselle-sdk/data-mod";
 import {
-	type ActionNode,
 	type CompletedGeneration,
 	type FileContent,
 	type FileData,
@@ -13,6 +12,7 @@ import {
 	type Node,
 	NodeGenerationIndex,
 	NodeId,
+	type OperationNode,
 	OutputId,
 	type RunId,
 	type TextGenerationNode,
@@ -37,7 +37,7 @@ export interface FileIndex {
 }
 
 export async function buildMessageObject(
-	node: ActionNode,
+	node: OperationNode,
 	contextNodes: Node[],
 	fileResolver: (file: FileData) => Promise<DataContent>,
 	textGenerationResolver: (
@@ -62,6 +62,7 @@ export async function buildMessageObject(
 				textGenerationResolver,
 			);
 		}
+		case "action":
 		case "trigger": {
 			return [];
 		}
@@ -164,6 +165,7 @@ async function buildGenerationMessageForTextGeneration(
 			case "github":
 			case "imageGeneration":
 			case "trigger":
+			case "action":
 				throw new Error("Not implemented");
 
 			default: {
@@ -551,6 +553,7 @@ async function buildGenerationMessageForImageGeneration(
 			case "github":
 			case "imageGeneration":
 			case "trigger":
+			case "action":
 				throw new Error("Not implemented");
 
 			default: {
@@ -707,33 +710,45 @@ export async function checkUsageLimits(args: {
 	}
 	const usageLimits = await fetchUsageLimitsFn(workspaceId);
 
-	const actionNode = generation.context.actionNode;
-	const languageModel = languageModels.find(
-		(model) => model.id === actionNode.content.llm.id,
-	);
-	if (languageModel === undefined) {
-		return {
-			type: "error",
-			error: "Language model not found",
-		};
-	}
-	if (!hasTierAccess(languageModel, usageLimits.featureTier)) {
-		return {
-			type: "error",
-			error:
-				"Access denied: insufficient tier for the requested language model.",
-		};
-	}
+	const generationContext = GenerationContext.parse(generation.context);
+	const operationNode = generationContext.operationNode;
+	switch (operationNode.content.type) {
+		case "imageGeneration":
+		case "textGeneration": {
+			const llm = operationNode.content.llm;
+			const languageModel = languageModels.find((model) => model.id === llm.id);
+			if (languageModel === undefined) {
+				return {
+					type: "error",
+					error: "Language model not found",
+				};
+			}
+			if (!hasTierAccess(languageModel, usageLimits.featureTier)) {
+				return {
+					type: "error",
+					error:
+						"Access denied: insufficient tier for the requested language model.",
+				};
+			}
 
-	const agentTimeLimits = usageLimits.resourceLimits.agentTime;
-	if (agentTimeLimits.used >= agentTimeLimits.limit) {
-		return {
-			type: "error",
-			error:
-				"Access denied: insufficient agent time for the requested generation.",
-		};
+			const agentTimeLimits = usageLimits.resourceLimits.agentTime;
+			if (agentTimeLimits.used >= agentTimeLimits.limit) {
+				return {
+					type: "error",
+					error:
+						"Access denied: insufficient agent time for the requested generation.",
+				};
+			}
+			return { type: "ok" };
+		}
+		case "trigger":
+		case "action":
+			return { type: "ok" };
+		default: {
+			const _exhaustiveCheck: never = operationNode.content;
+			throw new Error(`Unhandled type: ${_exhaustiveCheck}`);
+		}
 	}
-	return { type: "ok" };
 }
 
 export async function extractWorkspaceIdFromOrigin(args: {

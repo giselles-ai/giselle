@@ -104,10 +104,10 @@ export function GenerationRunnerSystemProvider({
 			if (generation.status === "created") {
 				continue;
 			}
-			const generations = tmp.get(generation.context.actionNode.id) || [];
+			const generations = tmp.get(generation.context.operationNode.id) || [];
 			generations.push(generation);
 			tmp.set(
-				generation.context.actionNode.id,
+				generation.context.operationNode.id,
 				generations.sort((a, b) => a.createdAt - b.createdAt),
 			);
 		}

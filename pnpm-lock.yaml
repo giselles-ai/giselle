@@ -13,11 +13,11 @@ catalogs:
       specifier: 0.1.8
       version: 0.1.8
     '@ai-sdk/google':
-      specifier: 1.2.11
-      version: 1.2.11
+      specifier: 1.2.13
+      version: 1.2.13
     '@ai-sdk/openai':
-      specifier: 1.3.12
-      version: 1.3.12
+      specifier: 1.3.18
+      version: 1.3.18
     '@ai-sdk/perplexity':
       specifier: 1.1.7
       version: 1.1.7
@@ -139,8 +139,8 @@ catalogs:
       specifier: 12.4.1
       version: 12.4.1
     ai:
-      specifier: 4.3.6
-      version: 4.3.6
+      specifier: 4.3.9
+      version: 4.3.9
     clsx:
       specifier: 2.1.1
       version: 2.1.1
@@ -303,6 +303,9 @@ importers:
         specifier: 'catalog:'
         version: 1.14.4(@vercel/blob@0.27.3)(aws4fetch@1.0.20)
     devDependencies:
+      '@biomejs/biome':
+        specifier: 'catalog:'
+        version: 1.9.4
       '@tailwindcss/typography':
         specifier: 'catalog:'
         version: 0.5.16(tailwindcss@4.0.3)
@@ -494,7 +497,7 @@ importers:
         version: 12.0.3(@types/react@19.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       ai:
         specifier: 'catalog:'
-        version: 4.3.6(react@19.1.0)(zod@3.24.1)
+        version: 4.3.9(react@19.1.0)(zod@3.24.1)
       boring-avatars:
         specifier: 1.11.1
         version: 1.11.1
@@ -542,7 +545,7 @@ importers:
         version: 3.26.0
       langfuse-vercel:
         specifier: 3.37.0
-        version: 3.37.0(ai@4.3.6(react@19.1.0)(zod@3.24.1))
+        version: 3.37.0(ai@4.3.9(react@19.1.0)(zod@3.24.1))
       lucide-react:
         specifier: 0.417.0
         version: 0.417.0(react@19.1.0)
@@ -611,7 +614,7 @@ importers:
         version: 3.24.1
     devDependencies:
       '@biomejs/biome':
-        specifier: 1.9.4
+        specifier: 'catalog:'
         version: 1.9.4
       '@giselle-sdk/usage-limits':
         specifier: workspace:*
@@ -705,7 +708,7 @@ importers:
         version: 12.4.1(@types/react@19.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       ai:
         specifier: 'catalog:'
-        version: 4.3.6(react@19.1.0)(zod@3.24.1)
+        version: 4.3.9(react@19.1.0)(zod@3.24.1)
       clsx:
         specifier: 'catalog:'
         version: 2.1.1
@@ -770,6 +773,9 @@ importers:
       '@giselle-sdk/data-type':
         specifier: workspace:^
         version: link:../data-type
+      vitest:
+        specifier: 'catalog:'
+        version: 3.0.5(@types/debug@4.1.12)(@types/node@22.14.0)(jiti@2.4.2)(jsdom@26.0.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.29.1)(terser@5.38.0)(yaml@2.7.0)
       zod:
         specifier: 'catalog:'
         version: 3.24.1
@@ -791,7 +797,7 @@ importers:
         version: link:../language-model
       ai:
         specifier: 'catalog:'
-        version: 4.3.6(react@19.1.0)(zod@3.24.1)
+        version: 4.3.9(react@19.1.0)(zod@3.24.1)
       zod:
         specifier: 'catalog:'
         version: 3.24.1
@@ -835,10 +841,10 @@ importers:
         version: 0.1.8(zod@3.24.1)
       '@ai-sdk/google':
         specifier: 'catalog:'
-        version: 1.2.11(zod@3.24.1)
+        version: 1.2.13(zod@3.24.1)
       '@ai-sdk/openai':
         specifier: 'catalog:'
-        version: 1.3.12(zod@3.24.1)
+        version: 1.3.18(zod@3.24.1)
       '@ai-sdk/perplexity':
         specifier: 'catalog:'
         version: 1.1.7(zod@3.24.1)
@@ -871,7 +877,7 @@ importers:
         version: link:../workflow-utils
       ai:
         specifier: 'catalog:'
-        version: 4.3.6(react@19.1.0)(zod@3.24.1)
+        version: 4.3.9(react@19.1.0)(zod@3.24.1)
       langfuse:
         specifier: 'catalog:'
         version: 3.37.0
@@ -963,7 +969,7 @@ importers:
         version: 5.1.1(graphql@16.10.0)
       ai:
         specifier: 'catalog:'
-        version: 4.3.6(react@19.1.0)(zod@3.24.1)
+        version: 4.3.9(react@19.1.0)(zod@3.24.1)
       gql.tada:
         specifier: 'catalog:'
         version: 1.8.10(graphql@16.10.0)(typescript@5.7.3)
@@ -1054,7 +1060,7 @@ importers:
     dependencies:
       ai:
         specifier: 'catalog:'
-        version: 4.3.6(react@19.1.0)(zod@3.24.1)
+        version: 4.3.9(react@19.1.0)(zod@3.24.1)
       react:
         specifier: 'catalog:'
         version: 19.1.0
@@ -1334,14 +1340,14 @@ packages:
     peerDependencies:
       zod: ^3.0.0
 
-  '@ai-sdk/google@1.2.11':
-    resolution: {integrity: sha512-gjGcxKcRri/Jbkujs9nVwP4qOW5GI4rYQ6vQ17uLAvGMo3qnwr26Q2KUqUWuVHQYtboXVSrxC/Kb6sm3hE5WUQ==}
+  '@ai-sdk/google@1.2.13':
+    resolution: {integrity: sha512-nnHDzbX1Zst28AjP3718xSWsEqx++qmFuqmnDc2Htelc02HyO6WkWOXMH+YVK3W8zdIyZEKpHL9KKlql7pa10A==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.0.0
 
-  '@ai-sdk/openai@1.3.12':
-    resolution: {integrity: sha512-ueAP69p8a/ZR2ns+pmlr9h/nyV2/DAwzfnPUGZiLpXbxWnLXd2g3a7l38CuEhBydH/nOfDb/byMgpS8+bnJHTg==}
+  '@ai-sdk/openai@1.3.18':
+    resolution: {integrity: sha512-gqOHTOu62Tm2r4yDQx/Z5tWAgUrcTK8wXnC4A8zF/VOCzIjJDxxPsqJRTtQTMgIdGXhwmsv2sZ2PzvvuLeZeEg==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.0.0
@@ -5104,8 +5110,8 @@ packages:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
     engines: {node: '>=8'}
 
-  ai@4.3.6:
-    resolution: {integrity: sha512-cRL/9zFfPRRfVUOk+ll5FHy08FVc692voFzXWJ2YPD9KS+mkjDPp72QT9Etr0ZD/mdlJZHYq4ZHIts7nRpdD6A==}
+  ai@4.3.9:
+    resolution: {integrity: sha512-P2RpV65sWIPdUlA4f1pcJ11pB0N1YmqPVLEmC4j8WuBwKY0L3q9vGhYPh0Iv+spKHKyn0wUbMfas+7Z6nTfS0g==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19 || ^19.0.0-rc
@@ -9307,13 +9313,13 @@ snapshots:
       '@ai-sdk/provider-utils': 2.2.7(zod@3.24.1)
       zod: 3.24.1
 
-  '@ai-sdk/google@1.2.11(zod@3.24.1)':
+  '@ai-sdk/google@1.2.13(zod@3.24.1)':
     dependencies:
       '@ai-sdk/provider': 1.1.3
       '@ai-sdk/provider-utils': 2.2.7(zod@3.24.1)
       zod: 3.24.1
 
-  '@ai-sdk/openai@1.3.12(zod@3.24.1)':
+  '@ai-sdk/openai@1.3.18(zod@3.24.1)':
     dependencies:
       '@ai-sdk/provider': 1.1.3
       '@ai-sdk/provider-utils': 2.2.7(zod@3.24.1)
@@ -13590,7 +13596,7 @@ snapshots:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  ai@4.3.6(react@19.1.0)(zod@3.24.1):
+  ai@4.3.9(react@19.1.0)(zod@3.24.1):
     dependencies:
       '@ai-sdk/provider': 1.1.3
       '@ai-sdk/provider-utils': 2.2.7(zod@3.24.1)
@@ -15384,9 +15390,9 @@ snapshots:
     dependencies:
       mustache: 4.2.0
 
-  langfuse-vercel@3.37.0(ai@4.3.6(react@19.1.0)(zod@3.24.1)):
+  langfuse-vercel@3.37.0(ai@4.3.9(react@19.1.0)(zod@3.24.1)):
     dependencies:
-      ai: 4.3.6(react@19.1.0)(zod@3.24.1)
+      ai: 4.3.9(react@19.1.0)(zod@3.24.1)
       langfuse: 3.37.0
       langfuse-core: 3.37.0
 

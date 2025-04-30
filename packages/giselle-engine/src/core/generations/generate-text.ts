@@ -54,12 +54,12 @@ export async function generateText(args: {
 	generation: QueuedGeneration;
 	telemetry?: TelemetrySettings;
 }) {
-	const actionNode = args.generation.context.actionNode;
-	if (!isTextGenerationNode(actionNode)) {
+	const operationNode = args.generation.context.operationNode;
+	if (!isTextGenerationNode(operationNode)) {
 		throw new Error("Invalid generation type");
 	}
 	const languageModel = languageModels.find(
-		(lm) => lm.id === actionNode.content.llm.id,
+		(lm) => lm.id === operationNode.content.llm.id,
 	);
 	if (!languageModel) {
 		throw new Error("Invalid language model");
@@ -86,11 +86,11 @@ export async function generateText(args: {
 		}),
 		setNodeGenerationIndex({
 			storage: args.context.storage,
-			nodeId: runningGeneration.context.actionNode.id,
+			nodeId: runningGeneration.context.operationNode.id,
 			origin: runningGeneration.context.origin,
 			nodeGenerationIndex: {
 				id: runningGeneration.id,
-				nodeId: runningGeneration.context.actionNode.id,
+				nodeId: runningGeneration.context.operationNode.id,
 				status: "running",
 				createdAt: runningGeneration.createdAt,
 				queuedAt: runningGeneration.queuedAt,
@@ -127,11 +127,11 @@ export async function generateText(args: {
 			}),
 			setNodeGenerationIndex({
 				storage: args.context.storage,
-				nodeId: runningGeneration.context.actionNode.id,
+				nodeId: runningGeneration.context.operationNode.id,
 				origin: runningGeneration.context.origin,
 				nodeGenerationIndex: {
 					id: failedGeneration.id,
-					nodeId: failedGeneration.context.actionNode.id,
+					nodeId: failedGeneration.context.operationNode.id,
 					status: "failed",
 					createdAt: failedGeneration.createdAt,
 					queuedAt: failedGeneration.queuedAt,
@@ -212,25 +212,25 @@ export async function generateText(args: {
 		}
 	}
 	const messages = await buildMessageObject(
-		actionNode,
+		operationNode,
 		runningGeneration.context.sourceNodes,
 		fileResolver,
 		generationContentResolver,
 	);
 
 	let preparedToolSet: PreparedToolSet = { toolSet: {}, cleanupFunctions: [] };
-	if (actionNode.content.tools?.github?.auth) {
+	if (operationNode.content.tools?.github?.auth) {
 		const decryptToken = await args.context.vault?.decrypt(
-			actionNode.content.tools.github.auth.token,
+			operationNode.content.tools.github.auth.token,
 		);
 		const allGitHubTools = githubTools(
 			octokit({
 				strategy: "personal-access-token",
 				personalAccessToken:
-					decryptToken ?? actionNode.content.tools.github.auth.token,
+					decryptToken ?? operationNode.content.tools.github.auth.token,
 			}),
 		);
-		for (const tool of actionNode.content.tools.github.tools) {
+		for (const tool of operationNode.content.tools.github.tools) {
 			if (tool in allGitHubTools) {
 				preparedToolSet = {
 					...preparedToolSet,
@@ -243,14 +243,14 @@ export async function generateText(args: {
 		}
 	}
 
-	if (actionNode.content.tools?.postgres?.connectionString) {
+	if (operationNode.content.tools?.postgres?.connectionString) {
 		const connectionString = await args.context.vault?.decrypt(
-			actionNode.content.tools.postgres.connectionString,
+			operationNode.content.tools.postgres.connectionString,
 		);
 		const postgresTool = createPostgresTools(
-			connectionString ?? actionNode.content.tools.postgres.connectionString,
+			connectionString ?? operationNode.content.tools.postgres.connectionString,
 		);
-		for (const tool of actionNode.content.tools.postgres.tools) {
+		for (const tool of operationNode.content.tools.postgres.tools) {
 			if (tool in postgresTool.toolSet) {
 				preparedToolSet = {
 					...preparedToolSet,
@@ -272,8 +272,8 @@ export async function generateText(args: {
 	}
 
 	if (
-		actionNode.content.llm.provider === "openai" &&
-		actionNode.content.tools?.openaiWebSearch &&
+		operationNode.content.llm.provider === "openai" &&
+		operationNode.content.tools?.openaiWebSearch &&
 		hasCapability(languageModel, Capability.OptionalSearchGrounding)
 	)
 		preparedToolSet = {
@@ -281,20 +281,20 @@ export async function generateText(args: {
 			toolSet: {
 				...preparedToolSet.toolSet,
 				openaiWebSearch: openai.tools.webSearchPreview(
-					actionNode.content.tools.openaiWebSearch,
+					operationNode.content.tools.openaiWebSearch,
 				),
 			},
 		};
 
 	// if (
-	// 	actionNode.content.tools?.github &&
+	// 	operationNode.content.tools?.github &&
 	// 	args.context.integrationConfigs?.github
 	// ) {
 	// 	const auth = args.context.integrationConfigs.github.auth;
 	// 	switch (auth.strategy) {
 	// 		case "app-installation": {
 	// 			const installationId = await auth.resolver.installationIdForRepo(
-	// 				actionNode.content.tools.github.repositoryNodeId,
+	// 				operationNode.content.tools.github.repositoryNodeId,
 	// 			);
 	// 			const allGitHubTools = githubTools(
 	// 				octokit({
@@ -302,7 +302,7 @@ export async function generateText(args: {
 	// 					installationId,
 	// 				}),
 	// 			);
-	// 			for (const tool of actionNode.content.tools.github.tools) {
+	// 			for (const tool of operationNode.content.tools.github.tools) {
 	// 				if (tool in allGitHubTools) {
 	// 					tools = {
 	// 						...tools,
@@ -314,7 +314,7 @@ export async function generateText(args: {
 	// 		}
 	// 		case "personal-access-token": {
 	// 			const allGitHubTools = githubTools(octokit(auth));
-	// 			for (const tool of actionNode.content.tools.github.tools) {
+	// 			for (const tool of operationNode.content.tools.github.tools) {
 	// 				if (tool in allGitHubTools) {
 	// 					tools = {
 	// 						...tools,
@@ -332,8 +332,8 @@ export async function generateText(args: {
 	// }
 
 	const streamTextResult = streamText({
-		model: generationModel(actionNode.content.llm),
-		providerOptions: providerOptions(actionNode.content.llm),
+		model: generationModel(operationNode.content.llm),
+		providerOptions: providerOptions(operationNode.content.llm),
 		messages,
 		maxSteps: 5, // enable multi-step calls
 		tools: preparedToolSet.toolSet,
@@ -356,11 +356,11 @@ export async function generateText(args: {
 					}),
 					setNodeGenerationIndex({
 						storage: args.context.storage,
-						nodeId: runningGeneration.context.actionNode.id,
+						nodeId: runningGeneration.context.operationNode.id,
 						origin: runningGeneration.context.origin,
 						nodeGenerationIndex: {
 							id: failedGeneration.id,
-							nodeId: failedGeneration.context.actionNode.id,
+							nodeId: failedGeneration.context.operationNode.id,
 							status: "failed",
 							createdAt: failedGeneration.createdAt,
 							queuedAt: failedGeneration.queuedAt,
@@ -379,7 +379,7 @@ export async function generateText(args: {
 		},
 		async onFinish(event) {
 			const generationOutputs: GenerationOutput[] = [];
-			const generatedTextOutput = generationContext.actionNode.outputs.find(
+			const generatedTextOutput = generationContext.operationNode.outputs.find(
 				(output) => output.accessor === "generated-text",
 			);
 			if (generatedTextOutput !== undefined) {
@@ -389,7 +389,7 @@ export async function generateText(args: {
 					outputId: generatedTextOutput.id,
 				});
 			}
-			const reasoningOutput = generationContext.actionNode.outputs.find(
+			const reasoningOutput = generationContext.operationNode.outputs.find(
 				(output) => output.accessor === "reasoning",
 			);
 			if (reasoningOutput !== undefined && event.reasoning !== undefined) {
@@ -399,7 +399,7 @@ export async function generateText(args: {
 					outputId: reasoningOutput.id,
 				});
 			}
-			const sourceOutput = generationContext.actionNode.outputs.find(
+			const sourceOutput = generationContext.operationNode.outputs.find(
 				(output) => output.accessor === "source",
 			);
 			if (sourceOutput !== undefined && event.sources.length > 0) {
@@ -455,11 +455,11 @@ export async function generateText(args: {
 				}),
 				setNodeGenerationIndex({
 					storage: args.context.storage,
-					nodeId: runningGeneration.context.actionNode.id,
+					nodeId: runningGeneration.context.operationNode.id,
 					origin: runningGeneration.context.origin,
 					nodeGenerationIndex: {
 						id: completedGeneration.id,
-						nodeId: completedGeneration.context.actionNode.id,
+						nodeId: completedGeneration.context.operationNode.id,
 						status: "completed",
 						createdAt: completedGeneration.createdAt,
 						queuedAt: completedGeneration.queuedAt,
