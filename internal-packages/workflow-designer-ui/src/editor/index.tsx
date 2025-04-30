@@ -415,7 +415,7 @@ export function Editor({
 									/>
 									<Panel
 										id="right-panel"
-										className="flex py-[16px]"
+										className="flex py-0"
 										ref={rightPanelRef}
 										defaultSize={0}
 									>
