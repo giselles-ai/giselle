@@ -142,7 +142,7 @@ function GitHubConnections({
 	}, [authUrl]);
 
 	return (
-		<div className="relative p-[32px] rounded-lg flex flex-col items-center text-white-900">
+		<div className="relative p-0 pt-2 rounded-lg flex flex-col items-center text-white-900">
 			{onClose && (
 				<button
 					onClick={onClose}
@@ -153,7 +153,7 @@ function GitHubConnections({
 				</button>
 			)}
 			
-			<GitHubIcon className="size-[40px] mb-6" />
+			<GitHubIcon className="size-[40px] mt-0 mb-6" />
 			
 			<h2 className="text-[#F5F5F5] text-center font-['Hubot_Sans'] text-[20px] font-semibold leading-[140%] mb-8">GitHub Connections</h2>
 			
@@ -233,7 +233,7 @@ function GitHubInstallApp({
 	}, [handleInstallationMessage]);
 	
 	return (
-		<div className="relative p-[32px] rounded-lg flex flex-col items-center text-white-900">
+		<div className="relative p-0 pt-2 rounded-lg flex flex-col items-center text-white-900">
 			{onClose && (
 				<button
 					onClick={onClose}
@@ -244,7 +244,7 @@ function GitHubInstallApp({
 				</button>
 			)}
 			
-			<GitHubIcon className="size-[40px] mb-6" />
+			<GitHubIcon className="size-[40px] mt-0 mb-6" />
 			
 			<h2 className="text-[#F5F5F5] text-center font-['Hubot_Sans'] text-[20px] font-semibold leading-[140%] mb-8">GitHub Connections</h2>
 			
@@ -480,30 +480,32 @@ export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
 	};
 
 	return (
-		<PropertiesPanelRoot>
-			<PropertiesPanelHeader
-				icon={getTriggerIcon()}
-				node={node}
-				description={"Trigger"}
-				onChangeName={(name) => {
-					updateNodeData(node, { name });
-				}}
-			/>
-			<PropertiesPanelContent>
-				{node.content.provider.type === "manual" && (
-					<div className="p-4">
-						<h3 className="text-lg font-semibold mb-2">Trigger Settings</h3>
-						<p>Trigger Type: {node.content.provider.type}</p>
-						<p className="mt-2">Manual Trigger ID: {node.content.provider.triggerId}</p>
-					</div>
-				)}
+		<div className="h-full">
+			<PropertiesPanelRoot>
+				<PropertiesPanelHeader
+					icon={getTriggerIcon()}
+					node={node}
+					description={"Trigger"}
+					onChangeName={(name) => {
+						updateNodeData(node, { name });
+					}}
+				/>
+				<PropertiesPanelContent>
+					{node.content.provider.type === "manual" && (
+						<div className="p-4">
+							<h3 className="text-lg font-semibold mb-2">Trigger Settings</h3>
+							<p>Trigger Type: {node.content.provider.type}</p>
+							<p className="mt-2">Manual Trigger ID: {node.content.provider.triggerId}</p>
+						</div>
+					)}
 
-				{node.content.provider.type === "github" && (
-					<div className="py-4 px-2 h-full flex flex-col">
-						{renderGitHubContent()}
-					</div>
-				)}
-			</PropertiesPanelContent>
-		</PropertiesPanelRoot>
+					{node.content.provider.type === "github" && (
+						<div className="p-0 flex flex-col">
+							{renderGitHubContent()}
+						</div>
+					)}
+				</PropertiesPanelContent>
+			</PropertiesPanelRoot>
+		</div>
 	);
 } 

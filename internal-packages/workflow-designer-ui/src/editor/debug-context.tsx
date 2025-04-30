@@ -4,24 +4,18 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 export type GitHubAuthDebugState = 'default' | 'unauthorized' | 'not-installed' | 'installed';
 
 // デバッグコンテキストの型
-type DebugContextType = {
+interface DebugContextType {
   githubAuthState: GitHubAuthDebugState;
   setGithubAuthState: (state: GitHubAuthDebugState) => void;
-};
+}
 
-// デフォルト値
-const defaultContext: DebugContextType = {
+// デフォルト値でコンテキストを作成
+const DebugContext = createContext<DebugContextType>({
   githubAuthState: 'default',
   setGithubAuthState: () => {},
-};
+});
 
-// コンテキスト作成
-const DebugContext = createContext<DebugContextType>(defaultContext);
-
-// useDebugフック
-export const useDebug = () => useContext(DebugContext);
-
-// Props型
+// コンテキストプロバイダーのPropsの型
 interface DebugProviderProps {
   children: ReactNode;
 }
@@ -40,4 +34,9 @@ export function DebugProvider({ children }: DebugProviderProps) {
       {children}
     </DebugContext.Provider>
   );
+}
+
+// デバッグコンテキストを使用するためのフック
+export function useDebug() {
+  return useContext(DebugContext);
 } 

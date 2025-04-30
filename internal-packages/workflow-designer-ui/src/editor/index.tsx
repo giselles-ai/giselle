@@ -29,8 +29,9 @@ import { ToastProvider, useToasts } from "../ui/toast";
 import { Beta } from "./beta";
 import { edgeTypes } from "./connector";
 import { type ConnectorType, GradientDef } from "./connector/component";
+import { DebugProvider } from "./debug-context";
 import { KeyboardShortcuts } from "./keyboard-shortcuts";
-import { type GiselleWorkflowDesignerNode, nodeTypes } from "./node";
+import { nodeTypes, type GiselleWorkflowDesignerNode } from "./node";
 import { PropertiesPanel } from "./properties-panel";
 import {
 	FloatingNodePreview,
@@ -389,54 +390,56 @@ export function Editor({
 			)}
 
 			<Beta.Provider value={{ githubTools }}>
-				<ToastProvider>
-					<ReactFlowProvider>
-						<ToolbarContextProvider>
-							<MousePositionProvider>
-								<PanelGroup
-									direction="horizontal"
-									className="bg-black-900 h-full flex"
-								>
-									<Panel
-										className="flex-1 px-[16px] pb-[16px] pr-0"
-										defaultSize={100}
+				<DebugProvider>
+					<ToastProvider>
+						<ReactFlowProvider>
+							<ToolbarContextProvider>
+								<MousePositionProvider>
+									<PanelGroup
+										direction="horizontal"
+										className="bg-black-900 h-full flex"
 									>
-										<div className="h-full flex">
-											<NodeCanvas />
-										</div>
-									</Panel>
-
-									<PanelResizeHandle
-										className={clsx(
-											"w-[12px] flex items-center justify-center cursor-col-resize",
-											"after:content-[''] after:w-[3px] after:h-[32px] after:bg-[#3a3f44] after:rounded-full",
-											"hover:after:bg-[#4a90e2]",
-										)}
-									/>
-									<Panel
-										id="right-panel"
-										className="flex py-0"
-										ref={rightPanelRef}
-										defaultSize={0}
-									>
-										{selectedNodes.length === 1 && (
-											<div className="flex-1 overflow-hidden">
-												<PropertiesPanel />
+										<Panel
+											className="flex-1 px-[16px] pb-[16px] pr-0"
+											defaultSize={100}
+										>
+											<div className="h-full flex">
+												<NodeCanvas />
 											</div>
-										)}
-									</Panel>
-								</PanelGroup>
-								<KeyboardShortcuts />
-							</MousePositionProvider>
-						</ToolbarContextProvider>
-						<GradientDef />
-					</ReactFlowProvider>
-				</ToastProvider>
-				<WorkspaceTour
-					steps={tourSteps}
-					isOpen={isTourOpen}
-					onOpenChange={setIsTourOpen}
-				/>
+										</Panel>
+
+										<PanelResizeHandle
+											className={clsx(
+												"w-[12px] flex items-center justify-center cursor-col-resize",
+												"after:content-[''] after:w-[3px] after:h-[32px] after:bg-[#3a3f44] after:rounded-full",
+												"hover:after:bg-[#4a90e2]",
+											)}
+										/>
+										<Panel
+											id="right-panel"
+											className="flex py-0"
+											ref={rightPanelRef}
+											defaultSize={0}
+										>
+											{selectedNodes.length === 1 && (
+												<div className="flex-1 overflow-hidden">
+													<PropertiesPanel />
+												</div>
+											)}
+										</Panel>
+									</PanelGroup>
+									<KeyboardShortcuts />
+								</MousePositionProvider>
+							</ToolbarContextProvider>
+							<GradientDef />
+						</ReactFlowProvider>
+					</ToastProvider>
+					<WorkspaceTour
+						steps={tourSteps}
+						isOpen={isTourOpen}
+						onOpenChange={setIsTourOpen}
+					/>
+				</DebugProvider>
 			</Beta.Provider>
 		</div>
 	);
