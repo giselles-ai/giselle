@@ -8,16 +8,16 @@ export type JobId = z.infer<typeof JobId.schema>;
 export const WorkflowId = createIdGenerator("wf");
 export type WorkflowId = z.infer<typeof WorkflowId.schema>;
 
-export const Action = z.object({
+export const Operation = z.object({
 	node: Node,
 	generationTemplate: GenerationTemplate,
 });
-export type Action = z.infer<typeof Action>;
+export type Operation = z.infer<typeof Operation>;
 
 export const Job = z.object({
 	id: JobId.schema,
 	workflowId: WorkflowId.schema,
-	actions: z.array(Action),
+	operations: z.array(Operation),
 });
 export type Job = z.infer<typeof Job>;
 

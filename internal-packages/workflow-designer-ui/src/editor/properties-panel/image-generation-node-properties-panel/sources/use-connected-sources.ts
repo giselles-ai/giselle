@@ -30,7 +30,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 			}
 
 			switch (node.type) {
-				case "action":
+				case "operation":
 					switch (node.content.type) {
 						case "textGeneration":
 							connectedGeneratedSources.push({

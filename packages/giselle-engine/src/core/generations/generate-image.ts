@@ -60,8 +60,8 @@ export async function generateImage(args: {
 	providerOptions?: ProviderOptions;
 	telemetry?: TelemetrySettings;
 }) {
-	const actionNode = args.generation.context.actionNode;
-	if (!isImageGenerationNode(actionNode)) {
+	const operationNode = args.generation.context.operationNode;
+	if (!isImageGenerationNode(operationNode)) {
 		throw new Error("Invalid generation type");
 	}
 	const langfuse = new Langfuse();
@@ -88,11 +88,11 @@ export async function generateImage(args: {
 		}),
 		setNodeGenerationIndex({
 			storage: args.context.storage,
-			nodeId: runningGeneration.context.actionNode.id,
+			nodeId: runningGeneration.context.operationNode.id,
 			origin: runningGeneration.context.origin,
 			nodeGenerationIndex: {
 				id: runningGeneration.id,
-				nodeId: runningGeneration.context.actionNode.id,
+				nodeId: runningGeneration.context.operationNode.id,
 				status: "running",
 				createdAt: runningGeneration.createdAt,
 				queuedAt: runningGeneration.queuedAt,
@@ -129,11 +129,11 @@ export async function generateImage(args: {
 			}),
 			setNodeGenerationIndex({
 				storage: args.context.storage,
-				nodeId: runningGeneration.context.actionNode.id,
+				nodeId: runningGeneration.context.operationNode.id,
 				origin: runningGeneration.context.origin,
 				nodeGenerationIndex: {
 					id: failedGeneration.id,
-					nodeId: failedGeneration.context.actionNode.id,
+					nodeId: failedGeneration.context.operationNode.id,
 					status: "failed",
 					createdAt: failedGeneration.createdAt,
 					queuedAt: failedGeneration.queuedAt,
@@ -214,17 +214,17 @@ export async function generateImage(args: {
 		}
 	}
 	const messages = await buildMessageObject(
-		actionNode,
+		operationNode,
 		runningGeneration.context.sourceNodes,
 		fileResolver,
 		generationContentResolver,
 	);
 
 	let generationOutputs: GenerationOutput[] = [];
-	switch (actionNode.content.llm.provider) {
+	switch (operationNode.content.llm.provider) {
 		case "fal":
 			generationOutputs = await generateImageWithFal({
-				actionNode,
+				operationNode,
 				messages,
 				runningGeneration,
 				generationContext,
@@ -238,12 +238,12 @@ export async function generateImage(args: {
 				messages,
 				runningGeneration,
 				generationContext,
-				languageModelData: actionNode.content.llm,
+				languageModelData: operationNode.content.llm,
 				context: args.context,
 			});
 			break;
 		default: {
-			const _exhaustiveCheck: never = actionNode.content.llm;
+			const _exhaustiveCheck: never = operationNode.content.llm;
 			throw new Error(`Unhandled generation output type: ${_exhaustiveCheck}`);
 		}
 	}
@@ -262,11 +262,11 @@ export async function generateImage(args: {
 		}),
 		setNodeGenerationIndex({
 			storage: args.context.storage,
-			nodeId: runningGeneration.context.actionNode.id,
+			nodeId: runningGeneration.context.operationNode.id,
 			origin: runningGeneration.context.origin,
 			nodeGenerationIndex: {
 				id: completedGeneration.id,
-				nodeId: completedGeneration.context.actionNode.id,
+				nodeId: completedGeneration.context.operationNode.id,
 				status: "completed",
 				createdAt: completedGeneration.createdAt,
 				queuedAt: completedGeneration.queuedAt,
@@ -284,7 +284,7 @@ export async function generateImage(args: {
 }
 
 async function generateImageWithFal({
-	actionNode,
+	operationNode,
 	generationContext,
 	runningGeneration,
 	messages,
@@ -292,7 +292,7 @@ async function generateImageWithFal({
 	telemetry,
 	context,
 }: {
-	actionNode: ImageGenerationNode;
+	operationNode: ImageGenerationNode;
 	generationContext: GenerationContext;
 	runningGeneration: RunningGeneration;
 	messages: CoreMessage[];
@@ -307,8 +307,8 @@ async function generateImageWithFal({
 	});
 	const generation = trace.generation({
 		name: "fal-ai/client.subscribe",
-		model: actionNode.content.llm.id,
-		modelParameters: actionNode.content.llm.configurations,
+		model: operationNode.content.llm.id,
+		modelParameters: operationNode.content.llm.configurations,
 		input: { messages },
 		usage: {
 			input: 0,
@@ -329,24 +329,24 @@ async function generateImageWithFal({
 			prompt += content.text;
 		}
 	}
-	const result = (await fal.subscribe(actionNode.content.llm.id, {
+	const result = (await fal.subscribe(operationNode.content.llm.id, {
 		input: {
 			prompt,
 			image_size: {
 				width: Number.parseInt(
-					actionNode.content.llm.configurations.size.split("x")[0],
+					operationNode.content.llm.configurations.size.split("x")[0],
 				),
 				height: Number.parseInt(
-					actionNode.content.llm.configurations.size.split("x")[1],
+					operationNode.content.llm.configurations.size.split("x")[1],
 				),
 			},
-			num_images: actionNode.content.llm.configurations.n,
+			num_images: operationNode.content.llm.configurations.n,
 		},
 	})) as unknown as FalImageResult;
 
 	const generationOutputs: GenerationOutput[] = [];
 
-	const generatedImageOutput = generationContext.actionNode.outputs.find(
+	const generatedImageOutput = generationContext.operationNode.outputs.find(
 		(output) => output.accessor === "generated-image",
 	);
 	if (generatedImageOutput !== undefined) {
@@ -391,7 +391,7 @@ async function generateImageWithFal({
 		});
 	}
 	if (context.telemetry?.isEnabled && generatedImageOutput) {
-		const usageCalculator = createUsageCalculator(actionNode.content.llm.id);
+		const usageCalculator = createUsageCalculator(operationNode.content.llm.id);
 		await Promise.all([
 			...result.data.images.map(async (image) => {
 				const response = await fetch(image.url);
@@ -459,7 +459,7 @@ export async function generateImageWithOpenAI({
 	});
 	const generationOutputs: GenerationOutput[] = [];
 
-	const generatedImageOutput = generationContext.actionNode.outputs.find(
+	const generatedImageOutput = generationContext.operationNode.outputs.find(
 		(output) => output.accessor === "generated-image",
 	);
 	if (generatedImageOutput !== undefined) {

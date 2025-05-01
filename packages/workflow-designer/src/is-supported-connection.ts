@@ -14,13 +14,16 @@ export function isSupportedConnection(
 			message: "Connecting to the same node is not allowed",
 		};
 	}
-	if (inputNode.type !== "action") {
+	if (inputNode.type !== "operation") {
 		return {
 			canConnect: false,
 			message: "This node does not receive inputs",
 		};
 	}
-	if (inputNode.content.type === "trigger") {
+	if (
+		inputNode.content.type === "trigger" ||
+		inputNode.content.type === "action"
+	) {
 		return {
 			canConnect: true,
 		};

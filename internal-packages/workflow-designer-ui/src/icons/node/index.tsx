@@ -24,7 +24,7 @@ export function NodeIcon({
 	...props
 }: { node: Node } & SVGProps<SVGSVGElement>) {
 	switch (node.type) {
-		case "action": {
+		case "operation": {
 			switch (node.content.type) {
 				case "textGeneration":
 					switch (node.content.llm.provider) {
@@ -90,6 +90,17 @@ export function NodeIcon({
 							return (
 								<MousePointerClickIcon {...props} data-content-type-icon />
 							);
+						default: {
+							throw new Error(
+								`Unhandled TriggerProviderType: ${node.content.provider.type}`,
+							);
+						}
+					}
+				}
+				case "action": {
+					switch (node.content.provider.type) {
+						case "github":
+							return <GitHubIcon {...props} data-content-type-icon />;
 						default: {
 							throw new Error(
 								`Unhandled TriggerProviderType: ${node.content.provider.type}`,

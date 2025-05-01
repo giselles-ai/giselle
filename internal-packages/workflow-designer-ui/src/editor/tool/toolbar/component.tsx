@@ -5,7 +5,11 @@ import {
 	isImageGenerationLanguageModelData,
 	isTextGenerationLanguageModelData,
 } from "@giselle-sdk/data-type";
-import { githubTriggers, manualTriggers } from "@giselle-sdk/flow";
+import {
+	githubActions,
+	githubTriggers,
+	manualTriggers,
+} from "@giselle-sdk/flow";
 import {
 	Capability,
 	type LanguageModel,
@@ -48,10 +52,11 @@ import { ImageGenerationNodeIcon } from "../../../icons/node";
 import { Tooltip } from "../../../ui/tooltip";
 import { isToolAction } from "../types";
 import {
+	actionNode,
 	addNodeTool,
 	fileNode,
 	imageGenerationNode,
-	selectEnvironmentActionTool,
+	selectActionTool,
 	selectFileNodeCategoryTool,
 	selectLanguageModelTool,
 	selectSourceCategoryTool,
@@ -191,8 +196,8 @@ export function Toolbar() {
 								case "selectTrigger":
 									setSelectedTool(selectTriggerTool());
 									break;
-								case "selectEnvironmentAction":
-									setSelectedTool(selectEnvironmentActionTool());
+								case "selectAction":
+									setSelectedTool(selectActionTool());
 									break;
 							}
 						}
@@ -280,14 +285,14 @@ export function Toolbar() {
 							</ToggleGroup.Item>
 
 							<ToggleGroup.Item
-								value="selectEnvironmentAction"
+								value="selectAction"
 								data-tool
 								className="relative"
 							>
 								<Tooltip text={<TooltipAndHotkey text="Action" hotkey="a" />}>
 									<Plug2 size={26} data-icon />
 								</Tooltip>
-								{selectedTool?.action === "selectEnvironmentAction" && (
+								{selectedTool?.action === "selectAction" && (
 									<Popover.Root open={true}>
 										<Popover.Anchor />
 										<Popover.Portal>
@@ -309,22 +314,19 @@ export function Toolbar() {
 															"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-white-900/10",
 															"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 														)}
-														onValueChange={(sourceType) => {
-															if (sourceType === "text") {
-																setSelectedTool(addNodeTool(textNode()));
-															}
-															// Add more source types here in the future if needed
+														onValueChange={(value) => {
+															setSelectedTool(addNodeTool(actionNode(value)));
 														}}
 													>
-														{githubTriggers.map((githubTrigger) => (
+														{githubActions.map((githubAction) => (
 															<ToggleGroup.Item
-																key={githubTrigger.id}
-																value={githubTrigger.id}
+																key={githubAction.id}
+																value={githubAction.id}
 																data-tool
 															>
 																<GitHubIcon className="w-[20px] h-[20px] shrink-0" />
 																<p className="text-[14px]">
-																	{githubTrigger.label}
+																	{githubAction.label}
 																</p>
 															</ToggleGroup.Item>
 														))}
@@ -338,7 +340,11 @@ export function Toolbar() {
 						</>
 					)}
 
-					<ToggleGroup.Item value="selectLanguageModel" data-tool>
+					<ToggleGroup.Item
+						value="selectLanguageModel"
+						data-tool
+						className="relative"
+					>
 						<Tooltip text={<TooltipAndHotkey text="Generation" hotkey="G" />}>
 							<GenNodeIcon data-icon />
 						</Tooltip>
@@ -510,7 +516,7 @@ export function Toolbar() {
 								</Dialog.Portal>
 							</Dialog.Root>
 						)}
-						<div className="absolute left-[calc(var(--language-model-detail-panel-width)_+_56px)]">
+						<div className="absolute left-[calc(var(--language-model-detail-panel-width)/2_+_var(--language-model-toggle-group-popover-width)/2_-_var(--language-model-detail-panel-width)/2_+_10px)]">
 							<div className="relative">
 								{selectedTool?.action === "selectLanguageModel" && (
 									<Popover.Root open={true}>
@@ -519,7 +525,6 @@ export function Toolbar() {
 											<Popover.Content
 												className="bg-black-900/10 w-[var(--language-model-detail-panel-width)] backdrop-blur-[4px] rounded-[8px] px-[8px] py-[8px] "
 												sideOffset={42}
-												align="end"
 												onOpenAutoFocus={(e) => {
 													e.preventDefault();
 												}}

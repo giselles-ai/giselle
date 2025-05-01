@@ -238,6 +238,17 @@ export const createJsonRouters = {
 				});
 			},
 		}),
+	resolveTrigger: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			input: z.object({
+				generation: QueuedGeneration,
+			}),
+			handler: async ({ input }) => {
+				return JsonResponse.json({
+					trigger: await giselleEngine.resolveTrigger(input),
+				});
+			},
+		}),
 } as const;
 
 export const jsonRouterPaths = Object.keys(

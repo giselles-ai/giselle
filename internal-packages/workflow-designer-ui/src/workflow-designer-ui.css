@@ -81,6 +81,15 @@
 	}
 	--animate-slideDown: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
 	--animate-slideUp: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
+	@keyframes shimmer {
+		0% {
+			background-position: 200% 50%;
+		}
+		100% {
+			background-position: 0% 50%;
+		}
+	}
+	--animate-shimmer: shimmer 2s infinite;
 }
 
 @property --button-gradient-angle {

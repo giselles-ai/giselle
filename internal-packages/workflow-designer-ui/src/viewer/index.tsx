@@ -147,19 +147,19 @@ export function Viewer() {
 										<p className="text-black-400 text-[12px] font-[700]">
 											Step {index + 1}
 										</p>
-										{job.actions.map((action) => (
+										{job.operations.map((operation) => (
 											<Tabs.Trigger
-												value={action.node.id}
+												value={operation.node.id}
 												className={clsx(
 													"[w-180px] flex p-[16px] justify-between items-center border border-black-200/20 rounded-[8px] gap-[4px]",
 													"hover:border-black-200/60",
 													"data-[state=active]:border-primary-900",
 													"transition-colors",
 												)}
-												key={`tabs-trigger-${action.node.id}`}
+												key={`tabs-trigger-${operation.node.id}`}
 											>
 												<NodeGlance
-													node={action.node}
+													node={operation.node}
 													iconClassName="rounded-[8px] bg-white-950 text-black-950 flex items-center justify-center p-[8px] **:data-content-type-icon:size-[16px]"
 													nameClassName="text-white-900 text-[12px] font-[700] truncate w-full"
 													descriptionClassName="text-black-400 text-[10px]"
@@ -167,8 +167,8 @@ export function Viewer() {
 												{generations
 													.filter(
 														(generation) =>
-															generation.context.actionNode.id ===
-															action.node.id,
+															generation.context.operationNode.id ===
+															operation.node.id,
 													)
 													.map((generation) => {
 														switch (generation.status) {
@@ -232,7 +232,7 @@ export function Viewer() {
 							{run &&
 								run.status !== "created" &&
 								run?.workflow?.jobs.flatMap((job) =>
-									job.actions.map(({ node }) => (
+									job.operations.map(({ node }) => (
 										<Tabs.Content
 											key={node.id}
 											value={node.id}
@@ -248,7 +248,7 @@ export function Viewer() {
 												.filter(
 													(g) =>
 														g.status !== "created" &&
-														g.context.actionNode.id === node.id,
+														g.context.operationNode.id === node.id,
 												)
 												.sort((a, b) => a.createdAt - b.createdAt)
 												.map((generation) => (

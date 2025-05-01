@@ -3,16 +3,15 @@ import type {
 	ConnectionId,
 	Node,
 	NodeId,
-	WorkflowId,
 } from "@giselle-sdk/data-type";
 import { describe, expect, test } from "vitest";
-import { buildWorkflowMap } from "./build-workflow";
+import { buildWorkflowMap } from "./build-workflow-map";
 
 // Sample data for tests based on provided workflow JSON
 const sampleNodes: Node[] = [
 	{
 		id: "nd-KzXeXSIffRIMwZtX",
-		type: "action",
+		type: "operation",
 		inputs: [],
 		outputs: [
 			{
@@ -39,7 +38,7 @@ const sampleNodes: Node[] = [
 	},
 	{
 		id: "nd-P2EllMigi6Tm6gij",
-		type: "action",
+		type: "operation",
 		inputs: [{ id: "inp-id3Grof8Hyy3DJbN", label: "Input" }],
 		outputs: [
 			{
@@ -69,13 +68,13 @@ const sampleConnections: Connection[] = [
 		id: "cnnc-7SZdtE1iSWtoghGD",
 		outputNode: {
 			id: "nd-KzXeXSIffRIMwZtX",
-			type: "action",
+			type: "operation",
 			content: { type: "textGeneration" },
 		},
 		outputId: "otp-93MKjM7HdSu3hOdw",
 		inputNode: {
 			id: "nd-P2EllMigi6Tm6gij",
-			type: "action",
+			type: "operation",
 			content: { type: "textGeneration" },
 		},
 		inputId: "inp-id3Grof8Hyy3DJbN",
@@ -111,10 +110,14 @@ describe("buildWorkflowMap", () => {
 
 		// Check job structure
 		const jobsWithFirstNode = workflow.jobs.filter((job) =>
-			job.actions.some((action) => action.node.id === "nd-KzXeXSIffRIMwZtX"),
+			job.operations.some(
+				(operation) => operation.node.id === "nd-KzXeXSIffRIMwZtX",
+			),
 		);
 		const jobsWithSecondNode = workflow.jobs.filter((job) =>
-			job.actions.some((action) => action.node.id === "nd-P2EllMigi6Tm6gij"),
+			job.operations.some(
+				(operation) => operation.node.id === "nd-P2EllMigi6Tm6gij",
+			),
 		);
 
 		expect(jobsWithFirstNode.length).toBe(1);
@@ -122,12 +125,12 @@ describe("buildWorkflowMap", () => {
 
 		// Check dependency relationship in generation templates
 		const secondNodeJob = jobsWithSecondNode[0];
-		expect(secondNodeJob.actions[0].generationTemplate.sourceNodes.length).toBe(
-			1,
-		);
-		expect(secondNodeJob.actions[0].generationTemplate.sourceNodes[0].id).toBe(
-			"nd-KzXeXSIffRIMwZtX",
-		);
+		expect(
+			secondNodeJob.operations[0].generationTemplate.sourceNodes.length,
+		).toBe(1);
+		expect(
+			secondNodeJob.operations[0].generationTemplate.sourceNodes[0].id,
+		).toBe("nd-KzXeXSIffRIMwZtX");
 	});
 
 	test("should handle empty maps", () => {
@@ -140,20 +143,20 @@ describe("buildWorkflowMap", () => {
 		expect(result.size).toBe(0);
 	});
 
-	test("should handle maps with only non-action nodes", () => {
-		const nonActionNode: Node = {
-			id: "nd-NonAction",
+	test("should handle maps with only non-operation nodes", () => {
+		const nonOperationNode: Node = {
+			id: "nd-NonOperation",
 			type: "data",
 			inputs: [],
 			outputs: [],
 			content: { type: "data" },
 		} as unknown as Node;
 
-		const nonActionNodeMap = new Map<NodeId, Node>([
-			["nd-NonAction", nonActionNode],
+		const nonOperationNodeMap = new Map<NodeId, Node>([
+			["nd-NonOperation", nonOperationNode],
 		]);
 
-		const result = buildWorkflowMap(nonActionNodeMap, connectionMap);
+		const result = buildWorkflowMap(nonOperationNodeMap, connectionMap);
 
 		expect(result).toBeInstanceOf(Map);
 		expect(result.size).toBe(0);
@@ -164,7 +167,7 @@ describe("buildWorkflowMap", () => {
 		const complexNodes: Node[] = [
 			{
 				id: "nd-E89xeYnFyQUGxdCL",
-				type: "action",
+				type: "operation",
 				inputs: [],
 				outputs: [
 					{
@@ -195,7 +198,7 @@ describe("buildWorkflowMap", () => {
 			{
 				id: "nd-daF6m8YshVoiBARi",
 				name: "gemini-2.0-flash-0012",
-				type: "action",
+				type: "operation",
 				inputs: [
 					{ id: "inp-rVg0GxYPFNnFUvJd", label: "Input" },
 					{ id: "inp-xYV0iiqdumwxPOQR", label: "Input" },
@@ -222,7 +225,7 @@ describe("buildWorkflowMap", () => {
 			},
 			{
 				id: "nd-ixIefYTHjZVhpEGq",
-				type: "action",
+				type: "operation",
 				inputs: [{ id: "inp-vZaOw0D8k9uyGNgp", label: "Input" }],
 				outputs: [
 					{
@@ -251,13 +254,13 @@ describe("buildWorkflowMap", () => {
 				id: "cnnc-KprKOaAqxL7TXeHZ",
 				outputNode: {
 					id: "nd-E89xeYnFyQUGxdCL",
-					type: "action",
+					type: "operation",
 					content: { type: "textGeneration" },
 				},
 				outputId: "otp-iK3fTc8uBJn2JFM8",
 				inputNode: {
 					id: "nd-daF6m8YshVoiBARi",
-					type: "action",
+					type: "operation",
 					content: { type: "textGeneration" },
 				},
 				inputId: "inp-rVg0GxYPFNnFUvJd",
@@ -266,13 +269,13 @@ describe("buildWorkflowMap", () => {
 				id: "cnnc-VWcUOOacadZQ2CMc",
 				outputNode: {
 					id: "nd-E89xeYnFyQUGxdCL",
-					type: "action",
+					type: "operation",
 					content: { type: "textGeneration" },
 				},
 				outputId: "otp-178F8dUeKWPWlU6y",
 				inputNode: {
 					id: "nd-daF6m8YshVoiBARi",
-					type: "action",
+					type: "operation",
 					content: { type: "textGeneration" },
 				},
 				inputId: "inp-xYV0iiqdumwxPOQR",
@@ -281,13 +284,13 @@ describe("buildWorkflowMap", () => {
 				id: "cnnc-pHNejzic6NKKxBsA",
 				outputNode: {
 					id: "nd-E89xeYnFyQUGxdCL",
-					type: "action",
+					type: "operation",
 					content: { type: "textGeneration" },
 				},
 				outputId: "otp-iK3fTc8uBJn2JFM8",
 				inputNode: {
 					id: "nd-ixIefYTHjZVhpEGq",
-					type: "action",
+					type: "operation",
 					content: { type: "textGeneration" },
 				},
 				inputId: "inp-vZaOw0D8k9uyGNgp",
@@ -324,15 +327,15 @@ describe("buildWorkflowMap", () => {
 		);
 
 		// The first job should be the source node
-		expect(workflow.jobs[0].actions.length).toBe(1);
-		expect(workflow.jobs[0].actions[0].node.id).toBe("nd-E89xeYnFyQUGxdCL");
+		expect(workflow.jobs[0].operations.length).toBe(1);
+		expect(workflow.jobs[0].operations[0].node.id).toBe("nd-E89xeYnFyQUGxdCL");
 
 		// The second job should contain both dependent nodes
-		expect(workflow.jobs[1].actions.length).toBe(2);
+		expect(workflow.jobs[1].operations.length).toBe(2);
 
 		// Get both nodes IDs from the second job
-		const secondJobNodeIds = workflow.jobs[1].actions
-			.map((action) => action.node.id)
+		const secondJobNodeIds = workflow.jobs[1].operations
+			.map((operation) => operation.node.id)
 			.sort();
 
 		expect(secondJobNodeIds).toEqual(
@@ -341,25 +344,25 @@ describe("buildWorkflowMap", () => {
 
 		// Check generation templates for source and dependent nodes
 		for (const job of workflow.jobs) {
-			for (const action of job.actions) {
-				const nodeId = action.node.id;
+			for (const operation of job.operations) {
+				const nodeId = operation.node.id;
 
 				if (nodeId === "nd-E89xeYnFyQUGxdCL") {
 					// Source node has no dependencies
-					expect(action.generationTemplate.sourceNodes.length).toBe(0);
+					expect(operation.generationTemplate.sourceNodes.length).toBe(0);
 				} else if (nodeId === "nd-daF6m8YshVoiBARi") {
 					// This node has two inputs connected to the source node
-					expect(action.generationTemplate.sourceNodes.length).toBe(2);
-					expect(action.generationTemplate.sourceNodes[0].id).toBe(
+					expect(operation.generationTemplate.sourceNodes.length).toBe(2);
+					expect(operation.generationTemplate.sourceNodes[0].id).toBe(
 						"nd-E89xeYnFyQUGxdCL",
 					);
-					expect(action.generationTemplate.sourceNodes[1].id).toBe(
+					expect(operation.generationTemplate.sourceNodes[1].id).toBe(
 						"nd-E89xeYnFyQUGxdCL",
 					);
 				} else if (nodeId === "nd-ixIefYTHjZVhpEGq") {
 					// This node has one input connected to the source node
-					expect(action.generationTemplate.sourceNodes.length).toBe(1);
-					expect(action.generationTemplate.sourceNodes[0].id).toBe(
+					expect(operation.generationTemplate.sourceNodes.length).toBe(1);
+					expect(operation.generationTemplate.sourceNodes[0].id).toBe(
 						"nd-E89xeYnFyQUGxdCL",
 					);
 				}

@@ -1,16 +1,15 @@
 import {
-	type Action,
-	type ActionNode,
 	type Connection,
 	type ConnectionId,
-	GenerationContext,
 	type GenerationTemplate,
 	type Job,
 	JobId,
 	type Node,
 	type NodeId,
+	type Operation,
+	type OperationNode,
 	type WorkflowId,
-	isActionNode,
+	isOperationNode,
 } from "@giselle-sdk/data-type";
 
 type ConnectedNodeIdMap = Map<NodeId, Set<NodeId>>;
@@ -213,9 +212,9 @@ export function createJobMap(
 	};
 
 	/**
-	 * Creates a generation context for an action node by finding its source nodes.
+	 * Creates a generation context for an operation node by finding its source nodes.
 	 */
-	function createGenerationContext(node: ActionNode): GenerationTemplate {
+	function createGenerationContext(node: OperationNode): GenerationTemplate {
 		const connectionArray = Array.from(connectionSet);
 		const nodeArray = Array.from(nodeSet);
 
@@ -232,25 +231,25 @@ export function createJobMap(
 			})
 			.filter((node) => node !== undefined);
 		return {
-			actionNode: node,
+			operationNode: node,
 			sourceNodes,
 		};
 	}
 
-	// Filter for action nodes and connections
-	const actionNodeIdSet = new Set<NodeId>();
+	// Filter for operation nodes and connections
+	const operationNodeIdSet = new Set<NodeId>();
 	for (const node of nodeSet) {
-		if (node.type === "action") {
-			actionNodeIdSet.add(node.id);
+		if (node.type === "operation") {
+			operationNodeIdSet.add(node.id);
 		}
 	}
-	const actionConnectionSet = new Set<Connection>();
+	const operationConnectionSet = new Set<Connection>();
 	for (const connection of connectionSet) {
-		if (connection.outputNode.type === "action") {
-			actionConnectionSet.add(connection);
+		if (connection.outputNode.type === "operation") {
+			operationConnectionSet.add(connection);
 		}
 	}
-	const levels = topologicalSort(actionNodeIdSet, actionConnectionSet);
+	const levels = topologicalSort(operationNodeIdSet, operationConnectionSet);
 
 	// Create jobs based on the topological levels
 	const jobMap = new Map<JobId, Job>();
@@ -258,18 +257,18 @@ export function createJobMap(
 		const jobId = JobId.generate();
 		const nodes = Array.from(nodeSet)
 			.filter((node) => level.has(node.id))
-			.filter((node) => isActionNode(node));
-		const actions = nodes.map(
+			.filter((node) => isOperationNode(node));
+		const operations = nodes.map(
 			(node) =>
 				({
 					node,
 					generationTemplate: createGenerationContext(node),
-				}) satisfies Action,
+				}) satisfies Operation,
 		);
 
 		const job = {
 			id: jobId,
-			actions,
+			operations,
 			workflowId,
 		} satisfies Job;
 		jobMap.set(job.id, job);

@@ -25,7 +25,7 @@ export function buildWorkflowMap(
 		new Set(nodeMap.keys()),
 	);
 	for (const [nodeId, node] of nodeMap) {
-		if (node.type !== "action") continue;
+		if (node.type !== "operation") continue;
 		if (processedNodes.includes(nodeId)) continue;
 		const connectedNodeMap = findConnectedNodeMap(
 			nodeId,

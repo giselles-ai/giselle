@@ -151,7 +151,7 @@ async function processIntegration(
 			case "textGeneration":
 				overrideNodes.push({
 					id: node.id,
-					type: "action",
+					type: "operation",
 					content: {
 						type: node.content.type,
 						prompt: `${payloadValue}`,
@@ -161,7 +161,7 @@ async function processIntegration(
 			case "imageGeneration":
 				overrideNodes.push({
 					id: node.id,
-					type: "action",
+					type: "operation",
 					content: {
 						type: node.content.type,
 						prompt: `${payloadValue}`,
@@ -184,6 +184,8 @@ async function processIntegration(
 				throw new Error("GitHub nodes are not supported");
 			case "trigger":
 				break;
+			case "action":
+				break;
 
 			default: {
 				const _exhaustiveCheck: never = node.content;
@@ -193,11 +195,11 @@ async function processIntegration(
 	}
 	const workflows = workspace.editingWorkflows.filter((workflow) =>
 		workflow.jobs.some((job) =>
-			job.actions.some((action) =>
+			job.operations.some((operation) =>
 				overrideNodes.some(
 					(overrideNode) =>
-						overrideNode.id === action.node.id ||
-						action.generationTemplate.sourceNodes.some(
+						overrideNode.id === operation.node.id ||
+						operation.generationTemplate.sourceNodes.some(
 							(sourceNode) => sourceNode.id === overrideNode.id,
 						),
 				),

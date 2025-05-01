@@ -24,22 +24,21 @@ export const GitHubTriggerProvider = z.object({
 });
 export type GitHubTriggerProvider = z.infer<typeof GitHubTriggerProvider>;
 
-export const HttpTriggerProvider = z.object({
-	type: z.literal("http"),
-});
-export type HttpTriggerProvider = z.infer<typeof HttpTriggerProvider>;
-
 export const TriggerProvider = z.discriminatedUnion("type", [
 	ManualTriggerProvider,
 	GitHubTriggerProvider,
-	HttpTriggerProvider,
 ]);
 export type TriggerProvider = z.infer<typeof TriggerProvider>;
+export function isTriggerProvider(value: unknown): value is TriggerProvider {
+	return TriggerProvider.safeParse(value).success;
+}
 
-export const TriggerProviderLike = z.object({
-	type: z.string(),
-	triggerId: z.string().describe("id of @giselle-sdk/flow/trigger"),
-});
+export const TriggerProviderLike = z
+	.object({
+		type: z.string(),
+		triggerId: z.string().describe("id of @giselle-sdk/flow/trigger"),
+	})
+	.passthrough();
 export type TriggerProviderLike = z.infer<typeof TriggerProviderLike>;
 
 export const TriggerContent = z.object({

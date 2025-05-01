@@ -2,14 +2,7 @@
 	"extends": ["//"],
 	"tasks": {
 		"build": {
-			"env": [
-				"OPENAI_API_KEY",
-				"GOOGLE_GENERATIVE_AI_API_KEY",
-				"ANTHROPIC_API_KEY",
-				"BLOB_READ_WRITE_TOKEN",
-				"SUPABASE_URL",
-				"SUPABASE_SERVICE_KEY"
-			],
+			"env": ["*_API_KEY", "SUPABASE_*", "BLOB_READ_WRITE_TOKEN"],
 			"inputs": [
 				"$TURBO_DEFAULT$",
 				".env.production.local",

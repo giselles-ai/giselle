@@ -37,12 +37,12 @@ export async function runApi(args: {
 	const jobResults: Record<JobId, string[]> = {};
 	for (const job of run.workflow.jobs) {
 		const jobResult = await Promise.all(
-			job.actions.map(async (action) => {
+			job.operations.map(async (operation) => {
 				const generationId = GenerationId.generate();
 				const generation = {
 					id: generationId,
 					context: {
-						...action.generationTemplate,
+						...operation.generationTemplate,
 						origin: { type: "run", id: runId },
 					},
 					status: "queued",

@@ -7,12 +7,13 @@ import { SourceExtension } from "../extensions/source-extension";
 
 function defaultName(node: GiselleNode) {
 	switch (node.type) {
-		case "action":
+		case "operation":
 			switch (node.content.type) {
 				case "textGeneration":
 				case "imageGeneration":
 					return node.name ?? node.content.llm.id;
 				case "trigger":
+				case "action":
 					return node.name ?? node.content.provider.type;
 				default: {
 					const _exhaustiveCheck: never = node.content;

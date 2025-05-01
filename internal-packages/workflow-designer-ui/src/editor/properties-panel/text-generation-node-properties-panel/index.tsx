@@ -52,10 +52,11 @@ export function TextGenerationNodePropertiesPanel({
 		setUiNodeState,
 		deleteConnection,
 	} = useWorkflowDesigner();
-	const { startGeneration, isGenerating, stopGeneration } = useNodeGenerations({
-		nodeId: node.id,
-		origin: { type: "workspace", id: data.id },
-	});
+	const { createAndStartGeneration, isGenerating, stopGeneration } =
+		useNodeGenerations({
+			nodeId: node.id,
+			origin: { type: "workspace", id: data.id },
+		});
 	const { all: connectedSources } = useConnectedOutputs(node);
 	const usageLimitsReached = useUsageLimitsReached();
 	const { error } = useToasts();
@@ -68,12 +69,12 @@ export function TextGenerationNodePropertiesPanel({
 			return;
 		}
 
-		startGeneration({
+		createAndStartGeneration({
 			origin: {
 				type: "workspace",
 				id: data.id,
 			},
-			actionNode: node,
+			operationNode: node,
 			sourceNodes: connectedSources.map(
 				(connectedSource) => connectedSource.node,
 			),
@@ -82,7 +83,7 @@ export function TextGenerationNodePropertiesPanel({
 		connectedSources,
 		data.id,
 		node,
-		startGeneration,
+		createAndStartGeneration,
 		usageLimitsReached,
 		error,
 	]);
@@ -241,7 +242,7 @@ export function TextGenerationNodePropertiesPanel({
 														if (connectedNode === undefined) {
 															continue;
 														}
-														if (connectedNode.type === "action") {
+														if (connectedNode.type === "operation") {
 															switch (connectedNode.content.type) {
 																case "textGeneration":
 																case "imageGeneration": {
@@ -254,6 +255,7 @@ export function TextGenerationNodePropertiesPanel({
 																	break;
 																}
 																case "trigger":
+																case "action":
 																	break;
 																default: {
 																	const _exhaustiveCheck: never =
@@ -324,7 +326,7 @@ export function TextGenerationNodePropertiesPanel({
 														if (connectedNode === undefined) {
 															continue;
 														}
-														if (connectedNode.type === "action") {
+														if (connectedNode.type === "operation") {
 															switch (connectedNode.content.type) {
 																case "textGeneration":
 																case "imageGeneration": {
@@ -337,6 +339,7 @@ export function TextGenerationNodePropertiesPanel({
 																	break;
 																}
 																case "trigger":
+																case "action":
 																	break;
 																default: {
 																	const _exhaustiveCheck: never =
