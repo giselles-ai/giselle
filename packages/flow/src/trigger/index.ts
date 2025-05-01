@@ -3,6 +3,7 @@ import { triggers as manualTriggers } from "./manual";
 
 export {
 	triggers as githubTriggers,
+	githubTrigger,
 	githubIssueCreatedTrigger,
 	githubIssueCommentCreatedTrigger,
 } from "./github";

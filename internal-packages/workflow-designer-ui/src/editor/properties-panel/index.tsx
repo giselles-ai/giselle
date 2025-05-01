@@ -4,6 +4,7 @@ import {
 	isImageGenerationNode,
 	isTextGenerationNode,
 	isTextNode,
+	TriggerNode,
 } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
@@ -13,6 +14,12 @@ import { GitHubNodePropertiesPanel } from "./github-node-properties-panel";
 import { ImageGenerationNodePropertiesPanel } from "./image-generation-node-properties-panel";
 import { TextGenerationNodePropertiesPanel } from "./text-generation-node-properties-panel";
 import { TextNodePropertiesPanel } from "./text-node-properties-panel";
+import { TriggerNodePropertiesPanel } from "./trigger-node-properties-panel";
+
+// トリガーノードかどうかをチェックする関数
+function isTriggerNode(node: any): node is TriggerNode {
+	return node?.content?.type === "trigger";
+}
 
 export function PropertiesPanel() {
 	const { data } = useWorkflowDesigner();
@@ -53,6 +60,12 @@ export function PropertiesPanel() {
 				)}
 				{isGitHubNode(selectedNodes[0]) && (
 					<GitHubNodePropertiesPanel
+						node={selectedNodes[0]}
+						key={selectedNodes[0].id}
+					/>
+				)}
+				{isTriggerNode(selectedNodes[0]) && (
+					<TriggerNodePropertiesPanel
 						node={selectedNodes[0]}
 						key={selectedNodes[0].id}
 					/>

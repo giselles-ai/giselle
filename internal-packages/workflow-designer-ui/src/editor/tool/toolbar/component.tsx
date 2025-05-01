@@ -21,9 +21,8 @@ import clsx from "clsx/lite";
 import { useFeatureFlag } from "giselle-sdk/react";
 import { useUsageLimits, useWorkflowDesigner } from "giselle-sdk/react";
 import {
-	MousePointerClickIcon,
+	Plug2,
 	SquareFunctionIcon,
-	WorkflowIcon,
 } from "lucide-react";
 import { Dialog, Popover, ToggleGroup } from "radix-ui";
 import { type ReactNode, useState } from "react";
@@ -44,6 +43,7 @@ import {
 	SearchIcon,
 	SourceLinkIcon,
 	TextFileIcon,
+	TriggerIcon,
 	UploadIcon,
 	VideoIcon,
 	WilliIcon,
@@ -211,7 +211,7 @@ export function Toolbar() {
 								className="relative"
 							>
 								<Tooltip text={<TooltipAndHotkey text="Trigger" hotkey="t" />}>
-									<MousePointerClickIcon data-icon />
+									<TriggerIcon style={{ transform: 'scale(0.85)' }} data-icon />
 								</Tooltip>
 								{selectedTool?.action === "selectTrigger" && (
 									<Popover.Root open={true}>
@@ -245,7 +245,7 @@ export function Toolbar() {
 																value={manualTrigger.id}
 																data-tool
 															>
-																<MousePointerClickIcon className="w-[20px] h-[20px] shrink-0" />
+																<TriggerIcon className="w-[20px] h-[20px] shrink-0" />
 																<p className="text-[14px]">
 																	{manualTrigger.label}
 																</p>
@@ -290,7 +290,7 @@ export function Toolbar() {
 								className="relative"
 							>
 								<Tooltip text={<TooltipAndHotkey text="Action" hotkey="a" />}>
-									<WorkflowIcon data-icon />
+									<Plug2 size={26} data-icon />
 								</Tooltip>
 								{selectedTool?.action === "selectAction" && (
 									<Popover.Root open={true}>
