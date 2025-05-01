@@ -1,4 +1,10 @@
-import type { TokenBasedPricing, WebSearchPrice, Cost, ModelPrice, ModelPriceConfig } from "./pricing";
+import type {
+	Cost,
+	ModelPrice,
+	ModelPriceConfig,
+	TokenBasedPricing,
+	WebSearchPrice,
+} from "./pricing";
 
 /**
  * Model pricing configurations
@@ -13,30 +19,34 @@ import type { TokenBasedPricing, WebSearchPrice, Cost, ModelPrice, ModelPriceCon
  */
 export const webSearchPricing: Record<string, ModelPriceConfig> = {
 	gpt4: {
-		prices: [{
-			validFrom: "2025-04-23T00:00:00Z",
-			price: {
-				type: "web_search" as const,
-				costPerKiloCalls: {
-					low: 30.0,
-					medium: 35.0,
-					high: 50.0,
-				},
-			} satisfies WebSearchPrice,
-		} satisfies ModelPrice],
+		prices: [
+			{
+				validFrom: "2025-04-23T00:00:00Z",
+				price: {
+					type: "web_search" as const,
+					costPerKiloCalls: {
+						low: 30.0,
+						medium: 35.0,
+						high: 50.0,
+					},
+				} satisfies WebSearchPrice,
+			} satisfies ModelPrice,
+		],
 	} satisfies ModelPriceConfig,
 	gpt4Mini: {
-		prices: [{
-			validFrom: "2025-04-23T00:00:00Z",
-			price: {
-				type: "web_search" as const,
-				costPerKiloCalls: {
-					low: 25.0,
-					medium: 27.5,
-					high: 30.0,
-				},
-			} satisfies WebSearchPrice,
-		} satisfies ModelPrice],
+		prices: [
+			{
+				validFrom: "2025-04-23T00:00:00Z",
+				price: {
+					type: "web_search" as const,
+					costPerKiloCalls: {
+						low: 25.0,
+						medium: 27.5,
+						high: 30.0,
+					},
+				} satisfies WebSearchPrice,
+			} satisfies ModelPrice,
+		],
 	} satisfies ModelPriceConfig,
 };
 
@@ -62,7 +72,7 @@ export const perplexityTokenPrices: Record<string, ModelPriceConfig> = {
 			} satisfies ModelPrice,
 		],
 	} satisfies ModelPriceConfig,
-	"sonar": {
+	sonar: {
 		prices: [
 			{
 				validFrom: "2024-01-01T00:00:00Z",
@@ -89,7 +99,7 @@ export const perplexityRequestPrices: Record<string, ModelPriceConfig> = {
 				validFrom: "2024-01-01T00:00:00Z",
 				price: {
 					type: "web_search" as const,
-					costPerKCalls: {
+					costPerKiloCalls: {
 						high: 14.0,
 						medium: 10.0,
 						low: 6.0,
@@ -98,13 +108,13 @@ export const perplexityRequestPrices: Record<string, ModelPriceConfig> = {
 			} satisfies ModelPrice,
 		],
 	} satisfies ModelPriceConfig,
-	"sonar": {
+	sonar: {
 		prices: [
 			{
 				validFrom: "2024-01-01T00:00:00Z",
 				price: {
 					type: "web_search" as const,
-					costPerKCalls: {
+					costPerKiloCalls: {
 						high: 12.0,
 						medium: 8.0,
 						low: 5.0,

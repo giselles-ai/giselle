@@ -4,8 +4,18 @@ import {
 	LanguageModel as AnthropicLanguageModel,
 	models as anthropicLanguageModels,
 } from "./anthropic";
-import { CostCalculator, CostResult, DefaultCostCalculator } from "./costs/calculator";
-import type { TokenUsage, ModelUsage, ImageUsage, ImageCountUsage, ImageSizeUsage } from "./costs/usage";
+import {
+	type CostCalculator,
+	type CostResult,
+	DefaultCostCalculator,
+} from "./costs/calculator";
+import type {
+	ImageCountUsage,
+	ImageSizeUsage,
+	ImageUsage,
+	ModelUsage,
+	TokenUsage,
+} from "./costs/usage";
 import {
 	FalCostCalculator,
 	LanguageModel as FalLanguageModel,
@@ -109,8 +119,12 @@ const costCalculators = {
 	},
 } as const;
 
-function getCostCalculator(provider: LanguageModelProvider, model: string): CostCalculator<any, any> {
-	const providerCalculators = costCalculators[provider as keyof typeof costCalculators];
+function getCostCalculator(
+	provider: LanguageModelProvider,
+	model: string,
+): CostCalculator<any, any> {
+	const providerCalculators =
+		costCalculators[provider as keyof typeof costCalculators];
 	return providerCalculators?.default ?? new DefaultCostCalculator(provider);
 }
 
