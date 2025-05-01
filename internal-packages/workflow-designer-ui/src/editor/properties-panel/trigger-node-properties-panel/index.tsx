@@ -145,6 +145,7 @@ function GitHubConnections({
 		<div className="relative p-0 pt-2 rounded-lg flex flex-col items-center text-white-900">
 			{onClose && (
 				<button
+					type="button"
 					onClick={onClose}
 					className="absolute top-4 right-4 text-gray-500 hover:text-white-900"
 					aria-label="Close"
@@ -236,6 +237,7 @@ function GitHubInstallApp({
 		<div className="relative p-0 pt-2 rounded-lg flex flex-col items-center text-white-900">
 			{onClose && (
 				<button
+					type="button"
 					onClick={onClose}
 					className="absolute top-4 right-4 text-gray-500 hover:text-white-900"
 					aria-label="Close"

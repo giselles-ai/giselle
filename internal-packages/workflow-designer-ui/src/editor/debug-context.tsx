@@ -1,42 +1,45 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from "react";
 
-// デバッグ状態の型
-export type GitHubAuthDebugState = 'default' | 'unauthorized' | 'not-installed' | 'installed';
+// Debug state type
+export type GitHubAuthDebugState =
+	| "default"
+	| "unauthorized"
+	| "not-installed"
+	| "installed";
 
-// デバッグコンテキストの型
+// Debug context type
 interface DebugContextType {
-  githubAuthState: GitHubAuthDebugState;
-  setGithubAuthState: (state: GitHubAuthDebugState) => void;
+	githubAuthState: GitHubAuthDebugState;
+	setGithubAuthState: (state: GitHubAuthDebugState) => void;
 }
 
-// デフォルト値でコンテキストを作成
+// Create context with default values
 const DebugContext = createContext<DebugContextType>({
-  githubAuthState: 'default',
-  setGithubAuthState: () => {},
+	githubAuthState: "default",
+	setGithubAuthState: () => {},
 });
 
-// コンテキストプロバイダーのPropsの型
+// Props type for context provider
 interface DebugProviderProps {
-  children: ReactNode;
+	children: ReactNode;
 }
 
-// デバッグコンテキストプロバイダーコンポーネント
+// Debug context provider component
 export function DebugProvider({ children }: DebugProviderProps) {
-  const [githubAuthState, setGithubAuthState] = useState<GitHubAuthDebugState>('default');
+	const [githubAuthState, setGithubAuthState] =
+		useState<GitHubAuthDebugState>("default");
 
-  const value = {
-    githubAuthState,
-    setGithubAuthState,
-  };
+	const value = {
+		githubAuthState,
+		setGithubAuthState,
+	};
 
-  return (
-    <DebugContext.Provider value={value}>
-      {children}
-    </DebugContext.Provider>
-  );
+	return (
+		<DebugContext.Provider value={value}>{children}</DebugContext.Provider>
+	);
 }
 
-// デバッグコンテキストを使用するためのフック
+// Hook to use debug context
 export function useDebug() {
-  return useContext(DebugContext);
+	return useContext(DebugContext);
 } 
