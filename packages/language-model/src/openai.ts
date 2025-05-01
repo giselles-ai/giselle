@@ -31,12 +31,12 @@ const OpenAILanguageModel = LanguageModelBase.extend({
 type OpenAILanguageModel = z.infer<typeof OpenAILanguageModel>;
 
 export class OpenAICostCalculator implements CostCalculator {
-	calculate(
+	async calculate(
 		model: string,
 		toolConfig: any | undefined,
 		usage: TokenUsage,
-	): CostResult {
-		const tokenCost = this.calculateTokenCost(model, usage);
+	): Promise<CostResult> {
+		const tokenCost = await this.calculateTokenCost(model, usage);
 
 		if (toolConfig?.openaiWebSearch && toolConfig.webSearchCalls) {
 			const webSearchUsage: ApiCallUsage = {
@@ -54,8 +54,8 @@ export class OpenAICostCalculator implements CostCalculator {
 		return tokenCost;
 	}
 
-	private calculateTokenCost(model: string, usage: TokenUsage): CostResult {
-		const pricing = getModelPriceFromLangfuse(model);
+	private async calculateTokenCost(model: string, usage: TokenUsage): Promise<CostResult> {
+		const pricing = await getModelPriceFromLangfuse(model);
 
 		const inputCost = calculateTokenCost(usage.promptTokens, pricing.input);
 		const outputCost = calculateTokenCost(

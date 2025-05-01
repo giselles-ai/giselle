@@ -128,12 +128,12 @@ function getCostCalculator(
 	return providerCalculators?.default ?? new DefaultCostCalculator(provider);
 }
 
-export function calculateModelCost(
+export async function calculateModelCost(
 	provider: LanguageModelProvider,
 	model: string,
 	toolConfig: OpenAIWebSearchConfig | undefined,
 	usage: ModelUsage,
-): CostResult {
+): Promise<CostResult> {
 	const defaultResult: CostResult = { input: 0, output: 0, total: 0 };
 
 	switch (provider) {

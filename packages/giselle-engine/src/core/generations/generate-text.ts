@@ -381,7 +381,7 @@ export async function generateText(args: {
 		async onFinish(event) {
 			console.log(
 				"model cost:------------------------",
-				calculateModelCost(
+				await calculateModelCost(
 					actionNode.content.llm.provider,
 					actionNode.content.llm.id,
 					actionNode.content.tools,

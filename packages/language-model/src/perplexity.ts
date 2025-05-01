@@ -61,11 +61,11 @@ export const LanguageModel = PerplexityLanguageModel;
 export type LanguageModel = PerplexityLanguageModel;
 
 export class PerplexityCostCalculator implements CostCalculator {
-	calculate(
+	async calculate(
 		model: string,
 		toolConfig: any | undefined,
 		usage: TokenUsage,
-	): CostResult {
+	): Promise<CostResult> {
 		let tokenBasedCost = 0;
 		let inputCost = 0;
 		let outputCost = 0;

@@ -102,11 +102,11 @@ const gemini20ProExp: GoogleLanguageModel = {
 };
 
 export class GoogleCostCalculator implements CostCalculator {
-	calculate(
+	async calculate(
 		model: string,
 		toolConfig: any | undefined,
 		usage: TokenUsage,
-	): CostResult {
+	): Promise<CostResult> {
 		// Try to get price from model-prices.ts
 		const modelPriceConfig = modelPrices[model as keyof typeof modelPrices];
 		if (modelPriceConfig) {
@@ -124,7 +124,7 @@ export class GoogleCostCalculator implements CostCalculator {
 		}
 
 		// Fetch from Langfuse if model not found in model-prices.ts
-		const pricing = getModelPriceFromLangfuse(model);
+		const pricing = await getModelPriceFromLangfuse(model);
 		const inputCost = calculateTokenCost(usage.promptTokens, pricing.input);
 		const outputCost = calculateTokenCost(
 			usage.completionTokens,

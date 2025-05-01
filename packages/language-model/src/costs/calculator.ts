@@ -12,29 +12,15 @@ export interface CostCalculator<TToolConfig = any, TUsage = TokenUsage> {
 		model: string,
 		toolConfig: TToolConfig | undefined,
 		usage: TUsage,
-	): CostResult;
+	): Promise<CostResult>;
 }
 
 export class DefaultCostCalculator implements CostCalculator {
-	private provider: string;
+	constructor(private provider: string) {}
 
-	constructor(provider: string) {
-		this.provider = provider;
-	}
-
-	calculate(
-		model: string,
-		toolConfig: any | undefined,
-		usage: TokenUsage | ImageUsage,
-	): CostResult {
-		console.log(
-			`Warning: Cost calculation for ${this.provider} is not implemented yet. Please implement a specific calculator for this provider.`,
-		);
-		return {
-			input: 0,
-			output: 0,
-			total: 0,
-		};
+	async calculate(): Promise<CostResult> {
+		console.log(`No cost calculator found for ${this.provider}`);
+		return { input: 0, output: 0, total: 0 };
 	}
 }
 

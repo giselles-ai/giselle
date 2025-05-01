@@ -236,11 +236,11 @@ export function calculateFalCost(
 }
 
 export class FalCostCalculator implements CostCalculator<any, ImageUsage> {
-	calculate(
+	async calculate(
 		model: string,
 		toolConfig: undefined,
 		usage: ImageUsage,
-	): CostResult {
+	): Promise<CostResult> {
 		const modelConfig = falModelPrices[model as FalModelId];
 		if (!modelConfig) {
 			console.log("unknown model");

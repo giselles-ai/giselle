@@ -60,17 +60,12 @@ const claude35Haiku: AnthropicLanguageModel = {
 };
 
 export class AnthropicCostCalculator implements CostCalculator {
-	calculate(
+	async calculate(
 		model: string,
 		_toolConfig: any | undefined,
 		usage: TokenUsage,
-	): CostResult {
-		const pricing = getModelPriceFromLangfuse(model);
-		if (!pricing) {
-			console.warn(`No pricing found for model: ${model}`);
-			return { input: 0, output: 0, total: 0 };
-		}
-
+	): Promise<CostResult> {
+		const pricing = await getModelPriceFromLangfuse(model);
 		const inputCost = calculateTokenCost(usage.promptTokens, pricing.input);
 		const outputCost = calculateTokenCost(
 			usage.completionTokens,

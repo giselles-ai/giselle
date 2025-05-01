@@ -345,7 +345,7 @@ async function generateImageWithFal({
 		},
 	})) as unknown as FalImageResult;
 	generation.update({
-		usage: calculateModelCost(
+		usage: await calculateModelCost(
 			actionNode.content.llm.provider,
 			actionNode.content.llm.id,
 			undefined,

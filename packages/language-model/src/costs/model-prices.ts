@@ -231,10 +231,11 @@ export const generateModelPrices = (): Record<string, ModelPriceConfig> => {
 
 interface LangfuseModelPrice {
 	id: string;
+	createdAt: string;
 	modelName: string;
 	matchPattern: string;
 	startDate: null;
-	unit: "CHARACTERS";
+	unit: "TOKENS" | "CHARACTERS";
 	inputPrice: number | null;
 	outputPrice: number | null;
 	totalPrice: number | null;
@@ -243,33 +244,120 @@ interface LangfuseModelPrice {
 	isLangfuseManaged: boolean;
 }
 
-export function getModelPriceFromLangfuse(model: string): TokenBasedPricing {
-	// TODO: get from internet
-	const response: LangfuseModelPrice = {
-		id: model,
-		modelName: model,
-		matchPattern: model,
-		startDate: null,
-		unit: "CHARACTERS",
-		inputPrice: 0.0005,
-		outputPrice: 0.0015,
-		totalPrice: null,
-		tokenizerId: "cl100k_base",
-		tokenizerConfig: null,
-		isLangfuseManaged: true,
-	};
+interface LangfuseMeta {
+	page: number;
+	limit: number;
+	totalItems: number;
+	totalPages: number;
+}
 
+interface LangfuseResponse {
+	data: LangfuseModelPrice[];
+	meta: LangfuseMeta;
+}
+
+export async function getModelPriceFromLangfuse(
+	model: string,
+): Promise<TokenBasedPricing> {
+	try {
+		const credentials = Buffer.from(
+			`${process.env.LANGFUSE_PUBLIC_KEY}:${process.env.LANGFUSE_SECRET_KEY}`,
+		).toString("base64");
+
+		// Fetch first page to get metadata
+		const firstPageResponse = await fetch(
+			`${process.env.LANGFUSE_BASEURL}/api/public/models?page=1`,
+			{
+				method: "GET",
+				headers: {
+					Authorization: `Basic ${credentials}`,
+					"Content-Type": "application/json",
+				},
+			},
+		);
+
+		if (!firstPageResponse.ok) {
+			console.warn(
+				`Failed to fetch models from Langfuse. Using default pricing.`,
+			);
+			return getDefaultPricing();
+		}
+
+		const firstPageData: LangfuseResponse = await firstPageResponse.json();
+		const { totalPages } = firstPageData.meta;
+		let allModels = [...firstPageData.data];
+
+		// Fetch remaining pages
+		const remainingPages = Array.from(
+			{ length: totalPages - 1 },
+			(_, i) => i + 2,
+		);
+		const remainingPagesPromises = remainingPages.map((page) =>
+			fetch(`${process.env.LANGFUSE_BASEURL}/api/public/models?page=${page}`, {
+				method: "GET",
+				headers: {
+					Authorization: `Basic ${credentials}`,
+					"Content-Type": "application/json",
+				},
+			}).then((res) => res.json() as Promise<LangfuseResponse>),
+		);
+
+		const remainingPagesData = await Promise.all(remainingPagesPromises);
+		allModels = allModels.concat(
+			...remainingPagesData.map((response) => response.data),
+		);
+
+		// Find model using matchPattern
+		const modelPrice = allModels.find((price) => {
+			try {
+				// Convert (?i) syntax to JavaScript's i flag
+				const pattern = price.matchPattern.replace(/^\(\?i\)/, "");
+				const regex = new RegExp(pattern, "i");
+				return regex.test(model);
+			} catch (e) {
+				console.warn(`Invalid match pattern for model ${price.modelName}:`, e);
+				return false;
+			}
+		});
+
+		if (!modelPrice) {
+			console.warn(
+				`No pricing found for model ${model}. Using default pricing.`,
+			);
+			return getDefaultPricing();
+		}
+
+		// Convert "per-pixel" price to "per-megapixcels"
+		const multiplier = modelPrice.unit === "TOKENS" ? 1_000_000 : 0;
+		return {
+			type: "token",
+			input: {
+				type: "token",
+				costPerMegaToken: (modelPrice.inputPrice ?? 0) * multiplier,
+			},
+			output: {
+				type: "token",
+				costPerMegaToken: (modelPrice.outputPrice ?? 0) * multiplier,
+			},
+		} satisfies TokenBasedPricing;
+	} catch (error) {
+		console.error("Error fetching model price from Langfuse:", error);
+		return getDefaultPricing();
+	}
+}
+
+function getDefaultPricing(): TokenBasedPricing {
 	return {
 		type: "token",
 		input: {
 			type: "token",
-			costPerMegaToken: response.inputPrice ?? 0,
+			costPerMegaToken: 0,
 		},
 		output: {
 			type: "token",
-			costPerMegaToken: response.outputPrice ?? 0,
+			costPerMegaToken: 0,
 		},
-	} satisfies TokenBasedPricing;
+	};
 }
 
 export const modelPrices = generateModelPrices();
