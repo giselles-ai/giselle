@@ -32,6 +32,7 @@ import {
 	appendResponseMessages,
 	streamText,
 } from "ai";
+import { Langfuse } from "langfuse";
 import { UsageLimitError } from "../error";
 import { filePath } from "../files/utils";
 import type { GiselleEngineContext } from "../types";
@@ -55,6 +56,11 @@ export async function generateText(args: {
 	generation: QueuedGeneration;
 	telemetry?: TelemetrySettings;
 }) {
+	const langfuse = new Langfuse();
+	const trace = langfuse.trace({
+		name: "generateText",
+		metadata: args.telemetry?.metadata,
+	});
 	const operationNode = args.generation.context.operationNode;
 	if (!isTextGenerationNode(operationNode)) {
 		throw new Error("Invalid generation type");
@@ -66,6 +72,10 @@ export async function generateText(args: {
 		throw new Error("Invalid language model");
 	}
 	const generationContext = GenerationContext.parse(args.generation.context);
+	const generation = trace.generation({
+		name: "generation",
+		modelParameters: languageModel.configurations,
+	});
 	const runningGeneration = {
 		...args.generation,
 		status: "running",
@@ -218,6 +228,14 @@ export async function generateText(args: {
 		fileResolver,
 		generationContentResolver,
 	);
+
+	trace.update({
+		name: "generateText",
+		input: { messages },
+	});
+	generation.update({
+		input: { messages },
+	});
 
 	let preparedToolSet: PreparedToolSet = { toolSet: {}, cleanupFunctions: [] };
 	if (operationNode.content.tools?.github?.auth) {
@@ -379,15 +397,32 @@ export async function generateText(args: {
 			);
 		},
 		async onFinish(event) {
-			console.log(
-				"model cost:------------------------",
-				await calculateModelCost(
-					actionNode.content.llm.provider,
-					actionNode.content.llm.id,
-					actionNode.content.tools,
+			let costs = { input: 0, output: 0, total: 0 };
+			if (generationContext.operationNode.content.type === "textGeneration") {
+				costs = await calculateModelCost(
+					generationContext.operationNode.content.llm.provider,
+					generationContext.operationNode.content.llm.id,
+					generationContext.operationNode.content.tools,
 					event.usage,
-				),
-			);
+				);
+			}
+			trace.update({
+				output: event.text,
+			});
+			generation.update({
+				model:
+					generationContext.operationNode.content.type === "textGeneration"
+						? generationContext.operationNode.content.llm.id
+						: "",
+				output: event.text,
+				usage: {
+					inputCost: costs.input,
+					outputCost: costs.output,
+					totalCost: costs.total,
+				},
+				metadata: args.telemetry?.metadata,
+			});
+			generation.end();
 			const generationOutputs: GenerationOutput[] = [];
 			const generatedTextOutput = generationContext.operationNode.outputs.find(
 				(output) => output.accessor === "generated-text",
@@ -489,10 +524,6 @@ export async function generateText(args: {
 					cleanupFunction(),
 				),
 			);
-		},
-		experimental_telemetry: {
-			isEnabled: args.context.telemetry?.isEnabled,
-			metadata: args.telemetry?.metadata,
 		},
 	});
 	return streamTextResult;

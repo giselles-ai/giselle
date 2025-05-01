@@ -409,12 +409,12 @@ async function generateImageWithFal({
 						context: wrappedMedia,
 					},
 					usage: await calculateModelCost(
-						actionNode.content.llm.provider,
-						actionNode.content.llm.id,
+						operationNode.content.llm.provider,
+						operationNode.content.llm.id,
 						undefined,
 						{
-							nOfImages: actionNode.content.llm.configurations.n,
-							pixelDimensions: actionNode.content.llm.configurations.size,
+							nOfImages: operationNode.content.llm.configurations.n,
+							pixelDimensions: operationNode.content.llm.configurations.size,
 						},
 					),
 				});
