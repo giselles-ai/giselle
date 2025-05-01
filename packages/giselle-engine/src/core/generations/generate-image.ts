@@ -344,17 +344,6 @@ async function generateImageWithFal({
 			num_images: operationNode.content.llm.configurations.n,
 		},
 	})) as unknown as FalImageResult;
-	generation.update({
-		usage: await calculateModelCost(
-			actionNode.content.llm.provider,
-			actionNode.content.llm.id,
-			undefined,
-			{
-				nOfImages: actionNode.content.llm.configurations.n,
-				pixelDimensions: actionNode.content.llm.configurations.size,
-			},
-		),
-	});
 
 	const generationOutputs: GenerationOutput[] = [];
 
@@ -419,6 +408,15 @@ async function generateImageWithFal({
 					metadata: {
 						context: wrappedMedia,
 					},
+					usage: await calculateModelCost(
+						actionNode.content.llm.provider,
+						actionNode.content.llm.id,
+						undefined,
+						{
+							nOfImages: actionNode.content.llm.configurations.n,
+							pixelDimensions: actionNode.content.llm.configurations.size,
+						},
+					),
 				});
 			}),
 			(async () => {
