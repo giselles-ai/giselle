@@ -115,6 +115,57 @@ export const perplexityRequestPrices: Record<string, ModelPriceConfig> = {
 	} satisfies ModelPriceConfig,
 };
 
+type FalImageSizeBasedPrice = {
+	type: "size";
+	pricePerMegaPixel: number;
+};
+
+type FalImageCountBasedPrice = {
+	type: "count";
+	pricePerImage: number;
+};
+
+type FalModelPrice = {
+	validFrom: string;
+	price: FalImageSizeBasedPrice | FalImageCountBasedPrice;
+};
+
+export const falModelPrices = {
+	"fal-ai/flux/schnell": {
+		prices: [
+			{
+				validFrom: "2024-01-01T00:00:00Z",
+				price: {
+					type: "size",
+					pricePerMegaPixel: 0.033,
+				},
+			},
+		],
+	},
+	"fal-ai/flux-pro/v1.1": {
+		prices: [
+			{
+				validFrom: "2024-01-01T00:00:00Z",
+				price: {
+					type: "size",
+					pricePerMegaPixel: 0.05,
+				},
+			},
+		],
+	},
+	"fal-ai/stable-diffusion-v3-medium": {
+		prices: [
+			{
+				validFrom: "2024-01-01T00:00:00Z",
+				price: {
+					type: "count",
+					pricePerImage: 0.035,
+				},
+			},
+		],
+	},
+} as const;
+
 /**
  * Model ID groups sharing the same pricing
  */
@@ -212,3 +263,5 @@ export function getModelPriceFromLangfuse(model: string): TokenBasedPricing {
 }
 
 export const modelPrices = generateModelPrices();
+export type FalModelId = keyof typeof falModelPrices;
+export type FalModelPriceConfig = (typeof falModelPrices)[FalModelId];

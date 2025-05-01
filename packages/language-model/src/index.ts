@@ -5,8 +5,9 @@ import {
 	models as anthropicLanguageModels,
 } from "./anthropic";
 import { CostCalculator, CostResult, DefaultCostCalculator } from "./costs/calculator";
-import type { TokenUsage } from "./costs/usage";
+import type { TokenUsage, ModelUsage, ImageUsage, ImageCountUsage, ImageSizeUsage } from "./costs/usage";
 import {
+	FalCostCalculator,
 	LanguageModel as FalLanguageModel,
 	models as falLanguageModels,
 } from "./fal";
@@ -91,6 +92,9 @@ export const LanguageModelProviders = z.enum([
 export type LanguageModelProvider = z.infer<typeof LanguageModelProviders>;
 
 const costCalculators = {
+	fal: {
+		default: new FalCostCalculator(),
+	},
 	google: {
 		default: new GoogleCostCalculator(),
 	},
@@ -105,7 +109,7 @@ const costCalculators = {
 	},
 } as const;
 
-function getCostCalculator(provider: LanguageModelProvider, model: string) {
+function getCostCalculator(provider: LanguageModelProvider, model: string): CostCalculator<any, any> {
 	const providerCalculators = costCalculators[provider as keyof typeof costCalculators];
 	return providerCalculators?.default ?? new DefaultCostCalculator(provider);
 }
@@ -114,8 +118,58 @@ export function calculateModelCost(
 	provider: LanguageModelProvider,
 	model: string,
 	toolConfig: OpenAIWebSearchConfig | undefined,
-	usage: TokenUsage,
+	usage: ModelUsage,
 ): CostResult {
-	const calculator = getCostCalculator(provider, model);
-	return calculator.calculate(model, toolConfig, usage);
+	const defaultResult: CostResult = { input: 0, output: 0, total: 0 };
+
+	switch (provider) {
+		case "google":
+		case "openai":
+		case "anthropic":
+		case "perplexity": {
+			const calculator = getCostCalculator(provider, model);
+			if (isTokenUsage(usage)) {
+				return calculator.calculate(model, toolConfig, usage);
+			}
+			console.log(
+				`TokenUsage type needed to calculate cost of ${provider} model`,
+			);
+			return defaultResult;
+		}
+		case "fal": {
+			const calculator = getCostCalculator(provider, model);
+			if (isImageUsage(usage)) {
+				return calculator.calculate(model, toolConfig, usage);
+			}
+			console.log(`ImageUsage type needed to calculate cost of Fal model`);
+			return defaultResult;
+		}
+		default: {
+			console.log("Unknown provider");
+			return defaultResult;
+		}
+	}
+}
+
+function isTokenUsage(usage: ModelUsage): usage is TokenUsage {
+	return (
+		typeof (usage as TokenUsage).promptTokens === "number" &&
+		typeof (usage as TokenUsage).completionTokens === "number" &&
+		typeof (usage as TokenUsage).totalTokens === "number"
+	);
+}
+function isImageUsage(usage: any): usage is ImageUsage {
+	return (
+		typeof usage === "object" &&
+		usage !== null &&
+		("nOfImages" in usage || "pixelDimensions" in usage) &&
+		(("nOfImages" in usage && typeof usage.nOfImages === "number") ||
+			("pixelDimensions" in usage && typeof usage.pixelDimensions === "string"))
+	);
+}
+function isImageCountUsage(usage: ImageUsage): usage is ImageCountUsage {
+	return "nOfImages" in usage && typeof usage.nOfImages === "number";
+}
+function isImageSizeUsage(usage: ImageUsage): usage is ImageSizeUsage {
+	return "pixelDimensions" in usage && typeof usage.pixelDimensions === "string";
 }

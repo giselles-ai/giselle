@@ -21,6 +21,7 @@ import {
 import {
 	type FalImageResult,
 	type GeneratedImageData,
+	calculateModelCost,
 	createUsageCalculator,
 } from "@giselle-sdk/language-model";
 import {
@@ -343,6 +344,17 @@ async function generateImageWithFal({
 			num_images: operationNode.content.llm.configurations.n,
 		},
 	})) as unknown as FalImageResult;
+	generation.update({
+		usage: calculateModelCost(
+			actionNode.content.llm.provider,
+			actionNode.content.llm.id,
+			undefined,
+			{
+				nOfImages: actionNode.content.llm.configurations.n,
+				pixelDimensions: actionNode.content.llm.configurations.size,
+			},
+		),
+	});
 
 	const generationOutputs: GenerationOutput[] = [];
 

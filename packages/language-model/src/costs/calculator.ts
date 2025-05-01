@@ -1,5 +1,5 @@
 import type { Cost, TokenBasedPrice } from "./pricing";
-import type { TokenUsage } from "./usage";
+import type { ImageUsage, TokenUsage } from "./usage";
 
 export interface CostResult {
 	input: Cost;
@@ -15,22 +15,6 @@ export interface CostCalculator<TToolConfig = any, TUsage = TokenUsage> {
 	): CostResult;
 }
 
-export class CostCalculation<TToolConfig = any, TUsage = TokenUsage> {
-	constructor(private calculator: CostCalculator<TToolConfig, TUsage>) {}
-
-	setStrategy(calculator: CostCalculator<TToolConfig, TUsage>) {
-		this.calculator = calculator;
-	}
-
-	calculate(
-		model: string,
-		toolConfig: TToolConfig | undefined,
-		usage: TUsage,
-	): CostResult {
-		return this.calculator.calculate(model, toolConfig, usage);
-	}
-}
-
 export class DefaultCostCalculator implements CostCalculator {
 	private provider: string;
 
@@ -41,10 +25,10 @@ export class DefaultCostCalculator implements CostCalculator {
 	calculate(
 		model: string,
 		toolConfig: any | undefined,
-		usage: TokenUsage
+		usage: TokenUsage | ImageUsage,
 	): CostResult {
 		console.log(
-			`Warning: Cost calculation for ${this.provider} is not implemented yet. Please implement a specific calculator for this provider.`
+			`Warning: Cost calculation for ${this.provider} is not implemented yet. Please implement a specific calculator for this provider.`,
 		);
 		return {
 			input: 0,

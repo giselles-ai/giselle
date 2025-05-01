@@ -1,6 +1,9 @@
 import type { Result } from "@fal-ai/client";
 import { z } from "zod";
 import { Capability, LanguageModelBase } from "./base";
+import type { CostCalculator, CostResult } from "./costs/calculator";
+import { type FalModelId, falModelPrices } from "./costs/model-prices";
+import type { ImageUsage } from "./costs/usage";
 
 const imageGenerationSize1x1 = z.literal("512x512");
 const imageGenerationSize1x1Hd = z.literal("1024x1024");
@@ -140,14 +143,25 @@ export interface UsageCalculator {
 	};
 }
 
+export function calculateMegaPixels(size: string): number {
+	const [width, height] = size.split("x").map(Number);
+	return (width * height) / 1_000_000;
+}
+
+export function roundUpToNearestMegaPixel(megaPixels: number): number {
+	return Math.ceil(megaPixels);
+}
+
 export class PixelBasedUsageCalculator implements UsageCalculator {
 	calculateUsage(images: FalImage[]) {
-		const totalPixels = images.reduce(
-			(sum, image) => sum + image.height * image.width,
-			0,
-		);
+		const totalPixels = images.reduce((sum, image) => {
+			if (typeof image.width === "string" && typeof image.height === "string") {
+				return sum + calculateMegaPixels(`${image.width}x${image.height}`);
+			}
+			return sum + (image.height * image.width) / 1_000_000;
+		}, 0);
 		return {
-			output: Math.ceil(totalPixels / 1_000_000) * 1_000_000,
+			output: roundUpToNearestMegaPixel(totalPixels) * 1_000_000,
 			unit: "IMAGES" as const,
 		};
 	}
@@ -186,4 +200,72 @@ export type FalImageResult = Result<FalImageData>;
 export interface GeneratedImageData {
 	uint8Array: Uint8Array;
 	base64: string;
+}
+
+interface FalPriceConfigBase {
+	type: string;
+}
+
+interface FalImageCountBasedPrice extends FalPriceConfigBase {
+	type: "count";
+	pricePerImage: number;
+}
+
+interface FalImageSizeBasedPrice extends FalPriceConfigBase {
+	type: "size";
+	pricePerMegaPixel: number;
+}
+
+type FalPriceConfig = FalImageCountBasedPrice | FalImageSizeBasedPrice;
+
+export function calculateFalCost(
+	usage: ImageUsage,
+	priceConfig: FalImageSizeBasedPrice | FalImageCountBasedPrice,
+): number {
+	if ("nOfImages" in usage && priceConfig.type === "count") {
+		return usage.nOfImages * priceConfig.pricePerImage;
+	}
+
+	if ("pixelDimensions" in usage && priceConfig.type === "size") {
+		const rawMegaPixels = calculateMegaPixels(usage.pixelDimensions);
+		const roundedMegaPixels = roundUpToNearestMegaPixel(rawMegaPixels);
+		return roundedMegaPixels * priceConfig.pricePerMegaPixel;
+	}
+
+	return 0;
+}
+
+export class FalCostCalculator implements CostCalculator<any, ImageUsage> {
+	calculate(
+		model: string,
+		toolConfig: undefined,
+		usage: ImageUsage,
+	): CostResult {
+		const modelConfig = falModelPrices[model as FalModelId];
+		if (!modelConfig) {
+			console.log("unknown model");
+			return { input: 0, output: 0, total: 0 };
+		}
+
+		const prices = [...modelConfig.prices];
+		const latestPrice = prices
+			.sort(
+				(a, b) =>
+					new Date(b.validFrom).getTime() - new Date(a.validFrom).getTime(),
+			)
+			.find((price) => new Date(price.validFrom) <= new Date());
+
+		if (!latestPrice) {
+			console.log("no valid price found");
+			return { input: 0, output: 0, total: 0 };
+		}
+
+		const costInUsd = calculateFalCost(usage, latestPrice.price);
+
+		return {
+			input: 0,
+			output: costInUsd,
+			total: costInUsd,
+		};
+	}
 }

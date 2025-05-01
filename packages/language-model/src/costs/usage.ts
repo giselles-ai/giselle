@@ -7,11 +7,11 @@ export type TokenUsage = {
 };
 
 export type ImageCountUsage = {
-	images: number;
+	nOfImages: number;
 };
 
 export type ImageSizeUsage = {
-	megaPixels: number;
+	pixelDimensions: string;
 };
 
 export type ImageUsage = ImageCountUsage | ImageSizeUsage;
