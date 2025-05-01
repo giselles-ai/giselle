@@ -185,5 +185,7 @@ function isImageCountUsage(usage: ImageUsage): usage is ImageCountUsage {
 	return "nOfImages" in usage && typeof usage.nOfImages === "number";
 }
 function isImageSizeUsage(usage: ImageUsage): usage is ImageSizeUsage {
-	return "pixelDimensions" in usage && typeof usage.pixelDimensions === "string";
+	return (
+		"pixelDimensions" in usage && typeof usage.pixelDimensions === "string"
+	);
 }
