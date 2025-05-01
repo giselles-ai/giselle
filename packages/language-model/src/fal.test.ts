@@ -1,5 +1,10 @@
 import { describe, expect, test } from "vitest";
-import {calculateFalCost, calculateMegaPixels, getImageGenerationModelProvider, models,} from "./fal";
+import {
+	calculateFalCost,
+	calculateMegaPixels,
+	getImageGenerationModelProvider,
+	models,
+} from "./fal";
 
 describe("getImageGenerationModelProvider", () => {
 	test("should identify flux provider", () => {
