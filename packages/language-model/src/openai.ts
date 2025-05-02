@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Capability, LanguageModelBase, Tier } from "./base";
 import type { CostCalculator, CostResult } from "./costs/calculator";
-import { calculateTokenCost, ToolConfig } from "./costs/calculator";
+import { type ToolConfig, calculateTokenCost } from "./costs/calculator";
 import { getModelPriceFromLangfuse, modelPrices } from "./costs/model-prices";
 import type { Cost } from "./costs/pricing";
 import type { SearchContextSize } from "./costs/pricing";
@@ -41,7 +41,9 @@ export interface OpenAIToolConfig extends ToolConfig {
 	};
 }
 
-export class OpenAICostCalculator implements CostCalculator<OpenAIToolConfig, TokenUsage> {
+export class OpenAICostCalculator
+	implements CostCalculator<OpenAIToolConfig, TokenUsage>
+{
 	async calculate(
 		model: string,
 		toolConfig: OpenAIToolConfig,
@@ -65,7 +67,10 @@ export class OpenAICostCalculator implements CostCalculator<OpenAIToolConfig, To
 		return tokenCost;
 	}
 
-	private async calculateTokenCost(model: string, usage: TokenUsage): Promise<CostResult> {
+	private async calculateTokenCost(
+		model: string,
+		usage: TokenUsage,
+	): Promise<CostResult> {
 		const pricing = await getModelPriceFromLangfuse(model);
 
 		const inputCost = calculateTokenCost(usage.promptTokens, pricing.input);

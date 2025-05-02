@@ -7,7 +7,13 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"ignore": ["./packages/github-tool/schema.graphql"]
+		"ignore": [
+			"./packages/github-tool/schema.graphql",
+			"**/node_modules/**",
+			"**/dist/**",
+			"**/.next/**",
+			"**/graphql-env.d.ts"
+		]
 	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
 	"organizeImports": { "enabled": true },

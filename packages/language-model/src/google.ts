@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { Capability, LanguageModelBase, Tier } from "./base";
-import type { CostCalculator, CostResult, ToolConfig } from "./costs/calculator";
+import type {
+	CostCalculator,
+	CostResult,
+	ToolConfig,
+} from "./costs/calculator";
 import { calculateTokenCost } from "./costs/calculator";
 import { getModelPriceFromLangfuse, modelPrices } from "./costs/model-prices";
 import type { TokenBasedPricing } from "./costs/pricing";
@@ -101,10 +105,12 @@ const gemini20ProExp: GoogleLanguageModel = {
 	configurations: defaultConfigurations,
 };
 
-export class GoogleCostCalculator implements CostCalculator {
+export class GoogleCostCalculator
+	implements CostCalculator<ToolConfig, TokenUsage>
+{
 	async calculate(
 		model: string,
-		toolConfig: ToolConfig | undefined,
+		toolConfig: ToolConfig,
 		usage: TokenUsage,
 	): Promise<CostResult> {
 		// Try to get price from model-prices.ts

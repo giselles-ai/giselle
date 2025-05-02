@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { Capability, LanguageModelBase, Tier } from "./base";
-import type { CostCalculator, CostResult, ToolConfig } from "./costs/calculator";
+import type {
+	CostCalculator,
+	CostResult,
+	ToolConfig,
+} from "./costs/calculator";
 import { calculateTokenCost } from "./costs/calculator";
 import {
 	getModelPriceFromLangfuse,
@@ -67,7 +71,9 @@ export interface PerplexityToolConfig extends ToolConfig {
 	searchContextSize?: SearchContextSize;
 }
 
-export class PerplexityCostCalculator implements CostCalculator<PerplexityToolConfig, TokenUsage> {
+export class PerplexityCostCalculator
+	implements CostCalculator<PerplexityToolConfig, TokenUsage>
+{
 	async calculate(
 		model: string,
 		toolConfig: PerplexityToolConfig,

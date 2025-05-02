@@ -7,8 +7,8 @@ import {
 import {
 	type CostCalculator,
 	type CostResult,
-	type ToolConfig,
 	DefaultCostCalculator,
+	type ToolConfig,
 } from "./costs/calculator";
 import type {
 	ImageCountUsage,
