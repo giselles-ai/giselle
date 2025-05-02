@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Capability, LanguageModelBase, Tier } from "./base";
 import type { CostCalculator, CostResult } from "./costs/calculator";
-import { calculateTokenCost } from "./costs/calculator";
+import { calculateTokenCost, ToolConfig } from "./costs/calculator";
 import { getModelPriceFromLangfuse } from "./costs/model-prices";
 import type { TokenBasedPricing } from "./costs/pricing";
 import type { TokenUsage } from "./costs/usage";
@@ -59,10 +59,10 @@ const claude35Haiku: AnthropicLanguageModel = {
 	configurations: defaultConfigurations,
 };
 
-export class AnthropicCostCalculator implements CostCalculator {
+export class AnthropicCostCalculator implements CostCalculator<ToolConfig, TokenUsage> {
 	async calculate(
 		model: string,
-		_toolConfig: any | undefined,
+		_toolConfig: ToolConfig,
 		usage: TokenUsage,
 	): Promise<CostResult> {
 		const pricing = await getModelPriceFromLangfuse(model);

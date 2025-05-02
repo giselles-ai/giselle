@@ -1,5 +1,5 @@
 import type { Cost, TokenBasedPrice } from "./pricing";
-import type { ImageUsage, TokenUsage } from "./usage";
+import type { ImageUsage, TokenUsage, ModelUsage } from "./usage";
 
 export interface CostResult {
 	input: Cost;
@@ -7,10 +7,19 @@ export interface CostResult {
 	total: Cost;
 }
 
-export interface CostCalculator<TToolConfig = any, TUsage = TokenUsage> {
+/**
+ * Base interface for tool configurations
+ * All provider-specific configurations should extend this interface
+ * and be defined in their respective provider files.
+ */
+export interface ToolConfig {
+	[key: string]: unknown;
+}
+
+export interface CostCalculator<TToolConfig extends ToolConfig | undefined = ToolConfig, TUsage extends ModelUsage = TokenUsage> {
 	calculate(
 		model: string,
-		toolConfig: TToolConfig | undefined,
+		toolConfig: TToolConfig,
 		usage: TUsage,
 	): Promise<CostResult>;
 }

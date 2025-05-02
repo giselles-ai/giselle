@@ -1,9 +1,10 @@
 import { z } from "zod";
 import { Capability, LanguageModelBase, Tier } from "./base";
 import type { CostCalculator, CostResult } from "./costs/calculator";
-import { calculateTokenCost } from "./costs/calculator";
+import { calculateTokenCost, ToolConfig } from "./costs/calculator";
 import { getModelPriceFromLangfuse, modelPrices } from "./costs/model-prices";
 import type { Cost } from "./costs/pricing";
+import type { SearchContextSize } from "./costs/pricing";
 import type { TokenBasedPrice, TokenBasedPricing } from "./costs/pricing";
 import type { ApiCallUsage, TokenUsage } from "./costs/usage";
 
@@ -30,17 +31,27 @@ const OpenAILanguageModel = LanguageModelBase.extend({
 });
 type OpenAILanguageModel = z.infer<typeof OpenAILanguageModel>;
 
-export class OpenAICostCalculator implements CostCalculator {
+/**
+ * OpenAI specific tool configuration
+ */
+export interface OpenAIToolConfig extends ToolConfig {
+	openaiWebSearch?: {
+		webSearchCalls: number;
+		searchContextSize?: SearchContextSize;
+	};
+}
+
+export class OpenAICostCalculator implements CostCalculator<OpenAIToolConfig, TokenUsage> {
 	async calculate(
 		model: string,
-		toolConfig: any | undefined,
+		toolConfig: OpenAIToolConfig,
 		usage: TokenUsage,
 	): Promise<CostResult> {
 		const tokenCost = await this.calculateTokenCost(model, usage);
 
-		if (toolConfig?.openaiWebSearch && toolConfig.webSearchCalls) {
+		if (toolConfig?.openaiWebSearch?.webSearchCalls) {
 			const webSearchUsage: ApiCallUsage = {
-				calls: toolConfig.webSearchCalls,
+				calls: toolConfig.openaiWebSearch.webSearchCalls,
 			};
 			const webSearchCost = this.calculateWebSearchCost(model, webSearchUsage);
 
@@ -190,9 +201,3 @@ export const models = [
 
 export const LanguageModel = OpenAILanguageModel;
 export type LanguageModel = OpenAILanguageModel;
-
-export interface OpenAIWebSearchConfig {
-	openaiWebSearch?: {
-		searchContextSize: "low" | "medium" | "high";
-	};
-}

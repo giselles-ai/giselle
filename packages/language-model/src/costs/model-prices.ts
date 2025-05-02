@@ -188,14 +188,14 @@ export const generateModelPrices = (): Record<string, ModelPriceConfig> => {
 	const prices: Record<string, ModelPriceConfig> = {};
 
 	// GPT-4 models
-	modelGroups.gpt4.forEach((modelId) => {
+	for (const modelId of modelGroups.gpt4) {
 		prices[modelId] = webSearchPricing.gpt4;
-	});
+	}
 
 	// GPT-4 Mini models
-	modelGroups.gpt4Mini.forEach((modelId) => {
+	for (const modelId of modelGroups.gpt4Mini) {
 		prices[modelId] = webSearchPricing.gpt4Mini;
-	});
+	}
 
 	// Other models with unique pricing
 	return {

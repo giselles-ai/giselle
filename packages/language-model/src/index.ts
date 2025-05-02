@@ -7,6 +7,7 @@ import {
 import {
 	type CostCalculator,
 	type CostResult,
+	type ToolConfig,
 	DefaultCostCalculator,
 } from "./costs/calculator";
 import type {
@@ -29,7 +30,7 @@ import {
 import {
 	OpenAICostCalculator,
 	LanguageModel as OpenAILanguageModel,
-	type OpenAIWebSearchConfig,
+	type OpenAIToolConfig,
 	models as openaiLanguageModels,
 } from "./openai";
 import {
@@ -122,7 +123,7 @@ const costCalculators = {
 function getCostCalculator(
 	provider: LanguageModelProvider,
 	model: string,
-): CostCalculator<any, any> {
+): CostCalculator<ToolConfig | undefined, ModelUsage> {
 	const providerCalculators =
 		costCalculators[provider as keyof typeof costCalculators];
 	return providerCalculators?.default ?? new DefaultCostCalculator(provider);
@@ -131,7 +132,7 @@ function getCostCalculator(
 export async function calculateModelCost(
 	provider: LanguageModelProvider,
 	model: string,
-	toolConfig: OpenAIWebSearchConfig | undefined,
+	toolConfig: ToolConfig | undefined,
 	usage: ModelUsage,
 ): Promise<CostResult> {
 	const defaultResult: CostResult = { input: 0, output: 0, total: 0 };
@@ -142,21 +143,21 @@ export async function calculateModelCost(
 		case "anthropic":
 		case "perplexity": {
 			const calculator = getCostCalculator(provider, model);
-			if (isTokenUsage(usage)) {
-				return calculator.calculate(model, toolConfig, usage);
+			if (!isTokenUsage(usage)) {
+				console.log(
+					`TokenUsage type needed to calculate cost of ${provider} model`,
+				);
+				return defaultResult;
 			}
-			console.log(
-				`TokenUsage type needed to calculate cost of ${provider} model`,
-			);
-			return defaultResult;
+			return calculator.calculate(model, toolConfig, usage);
 		}
 		case "fal": {
 			const calculator = getCostCalculator(provider, model);
-			if (isImageUsage(usage)) {
-				return calculator.calculate(model, toolConfig, usage);
+			if (!isImageUsage(usage)) {
+				console.log("ImageUsage type needed to calculate cost of Fal model");
+				return defaultResult;
 			}
-			console.log(`ImageUsage type needed to calculate cost of Fal model`);
-			return defaultResult;
+			return calculator.calculate(model, toolConfig, usage);
 		}
 		default: {
 			console.log("Unknown provider");
@@ -167,20 +168,22 @@ export async function calculateModelCost(
 
 function isTokenUsage(usage: ModelUsage): usage is TokenUsage {
 	return (
-		typeof (usage as TokenUsage).promptTokens === "number" &&
-		typeof (usage as TokenUsage).completionTokens === "number" &&
-		typeof (usage as TokenUsage).totalTokens === "number"
+		"promptTokens" in usage &&
+		"completionTokens" in usage &&
+		"totalTokens" in usage &&
+		typeof usage.promptTokens === "number" &&
+		typeof usage.completionTokens === "number" &&
+		typeof usage.totalTokens === "number"
 	);
 }
-function isImageUsage(usage: any): usage is ImageUsage {
+
+function isImageUsage(usage: ModelUsage): usage is ImageUsage {
 	return (
-		typeof usage === "object" &&
-		usage !== null &&
-		("nOfImages" in usage || "pixelDimensions" in usage) &&
-		(("nOfImages" in usage && typeof usage.nOfImages === "number") ||
-			("pixelDimensions" in usage && typeof usage.pixelDimensions === "string"))
+		("nOfImages" in usage && typeof usage.nOfImages === "number") ||
+		("pixelDimensions" in usage && typeof usage.pixelDimensions === "string")
 	);
 }
+
 function isImageCountUsage(usage: ImageUsage): usage is ImageCountUsage {
 	return "nOfImages" in usage && typeof usage.nOfImages === "number";
 }

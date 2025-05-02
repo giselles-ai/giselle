@@ -1,7 +1,7 @@
 import type { Result } from "@fal-ai/client";
 import { z } from "zod";
 import { Capability, LanguageModelBase } from "./base";
-import type { CostCalculator, CostResult } from "./costs/calculator";
+import type { CostCalculator, CostResult, ToolConfig } from "./costs/calculator";
 import { type FalModelId, falModelPrices } from "./costs/model-prices";
 import type { ImageUsage } from "./costs/usage";
 
@@ -235,10 +235,10 @@ export function calculateFalCost(
 	return 0;
 }
 
-export class FalCostCalculator implements CostCalculator<any, ImageUsage> {
+export class FalCostCalculator implements CostCalculator<ToolConfig, ImageUsage> {
 	async calculate(
 		model: string,
-		toolConfig: undefined,
+		toolConfig: ToolConfig,
 		usage: ImageUsage,
 	): Promise<CostResult> {
 		const modelConfig = falModelPrices[model as FalModelId];
