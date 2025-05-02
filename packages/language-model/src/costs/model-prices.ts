@@ -278,7 +278,7 @@ export async function getModelPriceFromLangfuse(
 
 		if (!firstPageResponse.ok) {
 			console.warn(
-				`Failed to fetch models from Langfuse. Using default pricing.`,
+				"Failed to fetch models from Langfuse. Using default pricing.",
 			);
 			return getDefaultPricing();
 		}
