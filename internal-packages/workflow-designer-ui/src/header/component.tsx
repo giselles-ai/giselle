@@ -1,11 +1,14 @@
 "use client";
 import {
+	type Generation,
 	type TriggerNode,
 	TriggerProvider,
 	type WorkspaceId,
 	isTriggerNode,
 	isTriggerProvider,
 } from "@giselle-sdk/data-type";
+import { useGenerationRunnerSystem } from "@giselle-sdk/giselle-engine/react";
+import { buildWorkflowFromNode } from "@giselle-sdk/workflow-utils";
 import clsx from "clsx";
 import {
 	ViewState,
@@ -26,6 +29,7 @@ import { Dialog, ToggleGroup, VisuallyHidden } from "radix-ui";
 import {
 	type ButtonHTMLAttributes,
 	type ReactNode,
+	useCallback,
 	useMemo,
 	useState,
 } from "react";
@@ -73,6 +77,7 @@ function Button({
 }
 
 function TriggerButton({ triggerNode }: { triggerNode: TriggerNode }) {
+	const { data } = useWorkflowDesigner();
 	const triggerProvider = useMemo(() => {
 		const parse = TriggerProvider.safeParse(triggerNode.content.provider);
 		if (parse.success) {
@@ -80,12 +85,53 @@ function TriggerButton({ triggerNode }: { triggerNode: TriggerNode }) {
 		}
 		return null;
 	}, [triggerNode.content.provider]);
+	const { createGeneration, startGeneration } = useGenerationRunnerSystem();
+	const handleClick = useCallback(async () => {
+		const flow = buildWorkflowFromNode(
+			triggerNode.id,
+			data.nodes,
+			data.connections,
+		);
+		if (flow === null) {
+			return;
+		}
+		const generations: Generation[] = [];
+		flow.jobs.map((job) =>
+			job.operations.map((operation) => {
+				generations.push(
+					createGeneration({
+						origin: {
+							type: "workspace",
+							id: data.id,
+						},
+						...operation.generationTemplate,
+					}),
+				);
+			}),
+		);
+		for (const job of flow.jobs) {
+			for (const operation of job.operations) {
+				const generation = generations.find(
+					(generation) =>
+						generation.context.operationNode.id ===
+						operation.generationTemplate.operationNode.id,
+				);
+				if (generation === undefined) {
+					continue;
+				}
+				await startGeneration(generation.id);
+			}
+		}
+	}, [triggerNode.id, data, createGeneration, startGeneration]);
 
 	if (triggerProvider === null) {
 		return null;
 	}
 	return (
-		<Button leftIcon={<PlayIcon className="size-[14px] fill-black-900" />}>
+		<Button
+			leftIcon={<PlayIcon className="size-[14px] fill-black-900" />}
+			onClick={handleClick}
+		>
 			{buttonLabel(triggerProvider)}
 		</Button>
 	);

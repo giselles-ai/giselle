@@ -1,6 +1,5 @@
 import type { Node } from "@giselle-sdk/data-type";
 import { getImageGenerationModelProvider } from "@giselle-sdk/language-model";
-import { GithubIcon, MousePointerClickIcon } from "lucide-react";
 import type { SVGProps } from "react";
 import { AnthropicIcon } from "../anthropic";
 import { Flux1Icon } from "../flux1";
@@ -15,6 +14,7 @@ import { PromptIcon } from "../prompt";
 import { RecraftIcon } from "../recraft";
 import { StableDiffusionIcon } from "../stable-diffusion";
 import { TextFileIcon } from "../text-file";
+import { TriggerIcon } from "../trigger";
 export * from "./file-node";
 export * from "./image-generation-node";
 export * from "./text-generation-node";
@@ -87,9 +87,7 @@ export function NodeIcon({
 						case "github":
 							return <GitHubIcon {...props} data-content-type-icon />;
 						case "manual":
-							return (
-								<MousePointerClickIcon {...props} data-content-type-icon />
-							);
+							return <TriggerIcon {...props} data-content-type-icon />;
 						default: {
 							throw new Error(
 								`Unhandled TriggerProviderType: ${node.content.provider.type}`,

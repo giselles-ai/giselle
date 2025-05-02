@@ -139,8 +139,8 @@ describe("isSupportedConnection", () => {
 	});
 
 	describe("File node restrictions", () => {
-		test("should reject file node as input for image generation", () => {
-			const fileNode = createFileNode("nd-test8");
+		test("should reject pdf file node as input for image generation", () => {
+			const fileNode = createFileNode("nd-test8", "pdf");
 			const inputNode = createImageGenerationNode("nd-test9");
 
 			const result = isSupportedConnection(fileNode, inputNode);
@@ -148,12 +148,12 @@ describe("isSupportedConnection", () => {
 			expect(result.canConnect).toBe(false);
 			expect(result).toHaveProperty(
 				"message",
-				"File node is not supported as an input for Image Generation",
+				"File node is not supported as an input for this node",
 			);
 		});
 
-		test("should reject file node as input for OpenAI", () => {
-			const fileNode = createFileNode("nd-test10");
+		test("should reject pdf file node as input for OpenAI", () => {
+			const fileNode = createFileNode("nd-test10", "pdf");
 			const inputNode = createTextGenerationNode(
 				"nd-test11",
 				openaiLanguageModels[0],
@@ -164,12 +164,12 @@ describe("isSupportedConnection", () => {
 			expect(result.canConnect).toBe(false);
 			expect(result).toHaveProperty(
 				"message",
-				"File node is not supported as an input for OpenAI",
+				"File node is not supported as an input for this node",
 			);
 		});
 
-		test("should reject file node as input for Perplexity", () => {
-			const fileNode = createFileNode("nd-test12");
+		test("should reject image file node as input for Perplexity", () => {
+			const fileNode = createFileNode("nd-test12", "image");
 			const inputNode = createTextGenerationNode(
 				"nd-test13",
 				perplexityLanguageModels[0],
@@ -180,7 +180,7 @@ describe("isSupportedConnection", () => {
 			expect(result.canConnect).toBe(false);
 			expect(result).toHaveProperty(
 				"message",
-				"File node is not supported as an input for Perplexity",
+				"File node is not supported as an input for this node",
 			);
 		});
 

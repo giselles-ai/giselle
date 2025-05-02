@@ -4,6 +4,8 @@ import {
 	type NodeId,
 } from "@giselle-sdk/data-type";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import useSWR from "swr";
+import { useGiselleEngine } from "../../use-giselle-engine";
 import { useGenerationRunnerSystem } from "../contexts";
 
 /**
@@ -21,10 +23,49 @@ export function useNodeGenerations({
 }) {
 	const {
 		generations: allGenerations,
-		fetchNodeGenerations,
+		createGeneration,
 		startGeneration,
+		createAndStartGeneration,
 		stopGeneration: stopGenerationSystem,
+		setGenerations,
 	} = useGenerationRunnerSystem();
+	const client = useGiselleEngine();
+	/** @todo fetch on server */
+	const { data, isLoading } = useSWR(
+		() => {
+			const origin = GenerationOrigin.parse({
+				id: originId,
+				type: originType,
+			});
+			return {
+				api: "node-generations",
+				origin,
+				nodeId,
+			};
+		},
+		(args) => client.getNodeGenerations(args),
+		{
+			revalidateIfStale: false,
+			revalidateOnFocus: false,
+			revalidateOnReconnect: false,
+		},
+	);
+	useEffect(() => {
+		if (isLoading || data === undefined) {
+			return;
+		}
+		const excludeCancelled = data.filter(
+			(generation) => generation.status !== "cancelled",
+		);
+		setGenerations((prev) => {
+			const filtered = prev.filter(
+				(p) => !excludeCancelled.some((g) => g.id === p.id),
+			);
+			return [...filtered, ...excludeCancelled].sort(
+				(a, b) => a.createdAt - b.createdAt,
+			);
+		});
+	}, [isLoading, data, setGenerations]);
 
 	const [currentGeneration, setCurrentGeneration] = useState<
 		Generation | undefined
@@ -45,20 +86,6 @@ export function useNodeGenerations({
 				),
 		[allGenerations, nodeId, originId, originType],
 	);
-
-	// Effect to fetch node generations
-	// Using primitive values (originId, originType) in dependencies array instead of the origin object
-	// to prevent infinite re-renders caused by new object references
-	useEffect(() => {
-		const origin = GenerationOrigin.parse({
-			id: originId,
-			type: originType,
-		});
-		fetchNodeGenerations({
-			nodeId,
-			origin,
-		});
-	}, [fetchNodeGenerations, originId, originType, nodeId]);
 
 	useEffect(() => {
 		if (generations.length === 0) {
@@ -88,7 +115,9 @@ export function useNodeGenerations({
 
 	return {
 		generations,
+		createGeneration,
 		startGeneration,
+		createAndStartGeneration,
 		isGenerating,
 		currentGeneration,
 		stopGeneration,

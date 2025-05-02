@@ -1,4 +1,4 @@
-import type { Connection } from "@giselle-sdk/data-type";
+import type { Connection, NodeId } from "@giselle-sdk/data-type";
 import {
 	BaseEdge,
 	type EdgeProps,
@@ -6,8 +6,30 @@ import {
 	getBezierPath,
 } from "@xyflow/react";
 import clsx from "clsx/lite";
+import { useNodeGenerations, useWorkflowDesigner } from "giselle-sdk/react";
+import type { PropsWithChildren } from "react";
 
 export type ConnectorType = XYFlowEdge<{ connection: Connection }>;
+
+function ConnectedNodeRunning({
+	inputNodeId,
+	children,
+}: PropsWithChildren<{
+	inputNodeId: NodeId;
+}>) {
+	const { data } = useWorkflowDesigner();
+	const { currentGeneration: inputNodeCurrentGeneration } = useNodeGenerations({
+		nodeId: inputNodeId,
+		origin: { type: "workspace", id: data.id },
+	});
+	if (
+		inputNodeCurrentGeneration?.status === "queued" ||
+		inputNodeCurrentGeneration?.status === "running"
+	) {
+		return children;
+	}
+	return null;
+}
 
 export function Connector({
 	id,
@@ -52,14 +74,16 @@ export function Connector({
 				)}
 				filter="url(#white-glow-filter)"
 			/>
-			{/* <path
-				d={edgePath}
-				stroke="url(#connector-gradient-animation)"
-				strokeWidth="2"
-				fill="none"
-				strokeLinecap="round"
-				filter="url(#white-glow-filter)"
-			/> */}
+			<ConnectedNodeRunning inputNodeId={data.connection.inputNode.id}>
+				<path
+					d={edgePath}
+					stroke="url(#connector-gradient-animation)"
+					strokeWidth="2"
+					fill="none"
+					strokeLinecap="round"
+					filter="url(#white-glow-filter)"
+				/>
+			</ConnectedNodeRunning>
 		</g>
 	);
 }

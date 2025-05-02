@@ -34,10 +34,11 @@ export function ImageGenerationNodePropertiesPanel({
 		setUiNodeState,
 		deleteConnection,
 	} = useWorkflowDesigner();
-	const { startGeneration, isGenerating, stopGeneration } = useNodeGenerations({
-		nodeId: node.id,
-		origin: { type: "workspace", id: data.id },
-	});
+	const { createAndStartGeneration, isGenerating, stopGeneration } =
+		useNodeGenerations({
+			nodeId: node.id,
+			origin: { type: "workspace", id: data.id },
+		});
 	const { all: connectedSources } = useConnectedSources(node);
 	const usageLimitsReached = useUsageLimitsReached();
 	const { error } = useToasts();
@@ -50,7 +51,7 @@ export function ImageGenerationNodePropertiesPanel({
 			return;
 		}
 
-		startGeneration({
+		createAndStartGeneration({
 			origin: {
 				type: "workspace",
 				id: data.id,
@@ -64,7 +65,7 @@ export function ImageGenerationNodePropertiesPanel({
 		connectedSources,
 		data.id,
 		node,
-		startGeneration,
+		createAndStartGeneration,
 		usageLimitsReached,
 		error,
 	]);

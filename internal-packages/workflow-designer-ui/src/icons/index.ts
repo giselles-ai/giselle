@@ -43,3 +43,4 @@ export { SearchIcon } from "./generate-text";
 export { AudioIcon } from "./audio";
 export { VideoIcon } from "./video";
 export { GenerateImageIcon } from "./generate-image";
+export * from "./trigger";

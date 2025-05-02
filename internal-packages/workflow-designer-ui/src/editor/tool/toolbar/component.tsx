@@ -20,11 +20,7 @@ import {
 import clsx from "clsx/lite";
 import { useFeatureFlag } from "giselle-sdk/react";
 import { useUsageLimits, useWorkflowDesigner } from "giselle-sdk/react";
-import {
-	MousePointerClickIcon,
-	SquareFunctionIcon,
-	WorkflowIcon,
-} from "lucide-react";
+import { WorkflowIcon } from "lucide-react";
 import { Dialog, Popover, ToggleGroup } from "radix-ui";
 import { type ReactNode, useState } from "react";
 import {
@@ -44,6 +40,7 @@ import {
 	SearchIcon,
 	SourceLinkIcon,
 	TextFileIcon,
+	TriggerIcon,
 	UploadIcon,
 	VideoIcon,
 	WilliIcon,
@@ -211,7 +208,7 @@ export function Toolbar() {
 								className="relative"
 							>
 								<Tooltip text={<TooltipAndHotkey text="Trigger" hotkey="t" />}>
-									<MousePointerClickIcon data-icon />
+									<TriggerIcon data-icon />
 								</Tooltip>
 								{selectedTool?.action === "selectTrigger" && (
 									<Popover.Root open={true}>
@@ -245,7 +242,7 @@ export function Toolbar() {
 																value={manualTrigger.id}
 																data-tool
 															>
-																<MousePointerClickIcon className="w-[20px] h-[20px] shrink-0" />
+																<TriggerIcon className="size-[20px] shrink-0" />
 																<p className="text-[14px]">
 																	{manualTrigger.label}
 																</p>
@@ -340,7 +337,11 @@ export function Toolbar() {
 						</>
 					)}
 
-					<ToggleGroup.Item value="selectLanguageModel" data-tool>
+					<ToggleGroup.Item
+						value="selectLanguageModel"
+						data-tool
+						className="relative"
+					>
 						<Tooltip text={<TooltipAndHotkey text="Generation" hotkey="G" />}>
 							<GenNodeIcon data-icon />
 						</Tooltip>
@@ -512,7 +513,7 @@ export function Toolbar() {
 								</Dialog.Portal>
 							</Dialog.Root>
 						)}
-						<div className="absolute left-[calc(var(--language-model-detail-panel-width)_+_56px)]">
+						<div className="absolute left-[calc(var(--language-model-detail-panel-width)/2_+_var(--language-model-toggle-group-popover-width)/2_-_var(--language-model-detail-panel-width)/2_+_10px)]">
 							<div className="relative">
 								{selectedTool?.action === "selectLanguageModel" && (
 									<Popover.Root open={true}>
@@ -521,7 +522,6 @@ export function Toolbar() {
 											<Popover.Content
 												className="bg-black-900/10 w-[var(--language-model-detail-panel-width)] backdrop-blur-[4px] rounded-[8px] px-[8px] py-[8px] "
 												sideOffset={42}
-												align="end"
 												onOpenAutoFocus={(e) => {
 													e.preventDefault();
 												}}

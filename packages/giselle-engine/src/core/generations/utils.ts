@@ -139,7 +139,30 @@ async function buildGenerationMessageForTextGeneration(
 					continue;
 				}
 				switch (contextNode.content.category) {
-					case "text":
+					case "text": {
+						const fileContents = await getFileContents(
+							contextNode.content,
+							fileResolver,
+						);
+						userMessage = userMessage.replace(
+							replaceKeyword,
+							fileContents
+								.map((fileContent) => {
+									if (fileContent.type === "image") {
+										return null;
+									}
+									if (!(fileContent.data instanceof Uint8Array)) {
+										return null;
+									}
+									const text = new TextDecoder().decode(fileContent.data);
+									return `<File name=${fileContent.filename}>${text}</File>`;
+								})
+								.filter((data) => data !== null)
+								.join(),
+						);
+
+						break;
+					}
 					case "image":
 					case "pdf": {
 						const fileContents = await getFileContents(
@@ -422,6 +445,7 @@ async function getFileContents(
 					return {
 						type: "file",
 						data,
+						filename: file.name,
 						mimeType: file.type,
 					} satisfies FilePart;
 				case "image":

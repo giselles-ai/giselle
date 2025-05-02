@@ -59,8 +59,8 @@
 	--color-generation-node-1: hsl(219, 90%, 52%);
 	--color-generation-node-2: hsl(219, 98%, 23%);
 
-	--color-trigger-node-1: var(--color-deep-purple-900);
-	--color-trigger-node-2: hsl(275, 91%, 26%);
+	--color-trigger-node-1: var(--color-black-400);
+	--color-trigger-node-2: var(--color-black-400);
 
 	--color-action-node-1: var(--color-deep-purple-900);
 	--color-action-node-2: hsl(275, 91%, 26%);

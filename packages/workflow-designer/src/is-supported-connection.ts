@@ -1,4 +1,9 @@
 import type { Node } from "@giselle-sdk/data-type";
+import {
+	Capability,
+	hasCapability,
+	languageModels,
+} from "@giselle-sdk/language-model";
 
 export type ConnectionValidationResult =
 	| { canConnect: true }
@@ -29,6 +34,11 @@ export function isSupportedConnection(
 		};
 	}
 
+	const inputNodeLLMId = inputNode.content.llm.id;
+	const inputNodeLanguageModel = languageModels.find(
+		(languageModel) => languageModel.id === inputNodeLLMId,
+	);
+
 	if (outputNode.content.type === "imageGeneration") {
 		return {
 			canConnect: false,
@@ -43,28 +53,45 @@ export function isSupportedConnection(
 	}
 
 	if (outputNode.content.type === "file") {
-		if (inputNode.content.type === "imageGeneration") {
+		if (inputNodeLanguageModel === undefined) {
 			return {
 				canConnect: false,
-				message: "File node is not supported as an input for Image Generation",
+				message: "This node is not supported as an input for File",
+			};
+		}
+		if (hasCapability(inputNodeLanguageModel, Capability.GenericFileInput)) {
+			return {
+				canConnect: true,
+			};
+		}
+		if (outputNode.content.category === "text") {
+			return {
+				canConnect: true,
 			};
 		}
 
 		if (
-			inputNode.content.llm.provider === "openai" &&
-			outputNode.content.category !== "image"
+			outputNode.content.category === "image" &&
+			hasCapability(inputNodeLanguageModel, Capability.ImageFileInput)
 		) {
 			return {
-				canConnect: false,
-				message: "File node is not supported as an input for OpenAI",
+				canConnect: true,
 			};
 		}
-		if (inputNode.content.llm.provider === "perplexity") {
+
+		if (
+			outputNode.content.category === "pdf" &&
+			hasCapability(inputNodeLanguageModel, Capability.PdfFileInput)
+		) {
 			return {
-				canConnect: false,
-				message: "File node is not supported as an input for Perplexity",
+				canConnect: true,
 			};
 		}
+
+		return {
+			canConnect: false,
+			message: "File node is not supported as an input for this node",
+		};
 	}
 
 	return {

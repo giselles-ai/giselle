@@ -1,7 +1,12 @@
+*.md
+.changeset
+.claude
+.cursor
+.DS_Store
 .env.example
 .github
+.turbo
 .zed
-*.md
+biome.json
 docs
 LICENSE
-scripts

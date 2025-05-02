@@ -34,7 +34,7 @@ export function GenerationRunner({
 		case "imageGeneration":
 			return <ImageGenerationRunner generation={generation} />;
 		case "trigger":
-			return null;
+			return <TriggerRunner generation={generation} />;
 		case "action":
 			return null;
 		default: {
@@ -143,6 +143,36 @@ function ImageGenerationRunner({
 				.generateImage({
 					generation,
 					telemetry,
+				})
+				.then(() => {
+					updateGenerationStatusToComplete(generation.id);
+				});
+		});
+	});
+	return null;
+}
+
+function TriggerRunner({
+	generation,
+}: {
+	generation: Generation;
+}) {
+	const {
+		updateGenerationStatusToComplete,
+		updateGenerationStatusToRunning,
+		addStopHandler,
+	} = useGenerationRunnerSystem();
+	const client = useGiselleEngine();
+	useOnce(() => {
+		if (!isQueuedGeneration(generation)) {
+			return;
+		}
+		addStopHandler(generation.id, stop);
+		client.setGeneration({ generation }).then(() => {
+			updateGenerationStatusToRunning(generation.id);
+			client
+				.resolveTrigger({
+					generation,
 				})
 				.then(() => {
 					updateGenerationStatusToComplete(generation.id);

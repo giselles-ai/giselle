@@ -54,7 +54,8 @@ export function RunSystemContextProvider({
 	const [activeRunId, setActiveRunId] = useState<RunId | undefined>();
 	const [runs, setRuns] = useState<Run[]>([]);
 	const [isRunning, setIsRunning] = useState(false);
-	const { startGeneration, stopGeneration } = useGenerationRunnerSystem();
+	const { createAndStartGeneration: startGeneration, stopGeneration } =
+		useGenerationRunnerSystem();
 	const [runGenerations, setRunGenerations] = useState<
 		Record<RunId, Generation[]>
 	>({});

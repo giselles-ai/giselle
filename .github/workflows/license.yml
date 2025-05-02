@@ -30,7 +30,7 @@ jobs:
         id: fork-check
         run: echo "is_fork=${{ github.event.pull_request.head.repo.fork }}" >> "$GITHUB_OUTPUT"
       - name: Create GitHub App Token for non-fork PRs
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v2
         if: steps.fork-check.outputs.is_fork != 'true'
         id: app-token
         with:
@@ -70,7 +70,7 @@ jobs:
         if: steps.determine.outputs.files_changed == 'true'
       - run: pnpm install
         if: steps.determine.outputs.files_changed == 'true'
-      - uses: ruby/setup-ruby@354a1ad156761f5ee2b7b13fa8e09943a5e8d252 # v1.229.0
+      - uses: ruby/setup-ruby@f41e084df884422b269f4c01c3748a9df4431a75 # v1.236.0
         if: steps.determine.outputs.files_changed == 'true'
         with:
           ruby-version: '3.3'

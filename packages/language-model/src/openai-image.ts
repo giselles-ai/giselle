@@ -37,7 +37,7 @@ type OpenAIImageLanguageModel = z.infer<typeof OpenAIImageLanguageModel>;
 const openaiGptImage1: OpenAIImageLanguageModel = {
 	provider: "openai",
 	id: "gpt-image-1",
-	capabilities: Capability.ImageGeneration,
+	capabilities: Capability.ImageGeneration | Capability.ImageFileInput,
 	tier: "pro",
 	configurations: defaultConfiguration,
 };

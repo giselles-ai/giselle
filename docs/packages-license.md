@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 1046 MIT
+* 1048 MIT
 * 107 Apache 2.0
 * 58 ISC
 * 34 New BSD
@@ -185,7 +185,7 @@
 
 
 <a name="@asamuzakjp/css-color"></a>
-### @asamuzakjp/css-color v2.8.3
+### @asamuzakjp/css-color v3.1.5
 #### 
 
 ##### Paths
@@ -680,7 +680,7 @@ MIT OR Apache-2.0 permitted
 
 
 <a name="@csstools/color-helpers"></a>
-### @csstools/color-helpers v5.0.1
+### @csstools/color-helpers v5.0.2
 #### 
 
 ##### Paths
@@ -691,7 +691,7 @@ MIT-0 permitted
 
 
 <a name="@csstools/css-calc"></a>
-### @csstools/css-calc v2.1.1
+### @csstools/css-calc v2.1.3
 #### 
 
 ##### Paths
@@ -702,7 +702,7 @@ MIT-0 permitted
 
 
 <a name="@csstools/css-color-parser"></a>
-### @csstools/css-color-parser v3.0.7
+### @csstools/css-color-parser v3.0.9
 #### 
 
 ##### Paths
@@ -6228,7 +6228,7 @@ CC-BY-4.0 permitted
 
 
 <a name="cssstyle"></a>
-### cssstyle v4.2.1
+### cssstyle v4.3.1
 #### 
 
 ##### Paths
@@ -6426,7 +6426,7 @@ CC-BY-4.0 permitted
 
 
 <a name="decimal.js"></a>
-### decimal.js v10.4.3
+### decimal.js v10.5.0
 #### 
 
 ##### Paths
@@ -6845,6 +6845,17 @@ CC-BY-4.0 permitted
 
 <a name="es-object-atoms"></a>
 ### es-object-atoms v1.1.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="es-set-tostringtag"></a>
+### es-set-tostringtag v2.1.0
 #### 
 
 ##### Paths
@@ -7780,6 +7791,17 @@ SIL OPEN FONT LICENSE permitted
 
 <a name="has-symbols"></a>
 ### has-symbols v1.1.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="has-tostringtag"></a>
+### has-tostringtag v1.0.2
 #### 
 
 ##### Paths
@@ -10265,7 +10287,7 @@ MIT-0 permitted
 
 
 <a name="nwsapi"></a>
-### nwsapi v2.2.16
+### nwsapi v2.2.20
 #### 
 
 ##### Paths
@@ -12777,7 +12799,7 @@ Unknown manually approved
 
 
 <a name="terser"></a>
-### terser v5.38.0
+### terser v5.39.0
 #### 
 
 ##### Paths
@@ -12788,7 +12810,7 @@ Unknown manually approved
 
 
 <a name="terser-webpack-plugin"></a>
-### terser-webpack-plugin v5.3.11
+### terser-webpack-plugin v5.3.14
 #### 
 
 ##### Paths
@@ -13008,7 +13030,7 @@ Unknown manually approved
 
 
 <a name="tldts"></a>
-### tldts v6.1.73
+### tldts v6.1.86
 #### 
 
 ##### Paths
@@ -13019,7 +13041,7 @@ Unknown manually approved
 
 
 <a name="tldts-core"></a>
-### tldts-core v6.1.73
+### tldts-core v6.1.86
 #### 
 
 ##### Paths
@@ -13052,7 +13074,7 @@ Unknown manually approved
 
 
 <a name="tough-cookie"></a>
-### tough-cookie v5.1.0
+### tough-cookie v5.1.2
 #### 
 
 ##### Paths
