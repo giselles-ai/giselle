@@ -1231,12 +1231,18 @@ importers:
       '@giselle-sdk/language-model':
         specifier: workspace:^
         version: link:../language-model
+      '@giselle-sdk/text-editor':
+        specifier: workspace:*
+        version: link:../text-editor
       '@giselle-sdk/utils':
         specifier: workspace:*
         version: link:../utils
       '@giselle-sdk/workflow-utils':
         specifier: workspace:*
         version: link:../workflow-utils
+      '@tiptap/react':
+        specifier: 'catalog:'
+        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react:
         specifier: 'catalog:'
         version: 19.1.0

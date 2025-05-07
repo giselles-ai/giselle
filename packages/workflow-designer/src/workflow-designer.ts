@@ -12,6 +12,7 @@ import {
 } from "@giselle-sdk/data-type";
 import { buildWorkflowMap, defaultName } from "@giselle-sdk/workflow-utils";
 import { isSupportedConnection } from "./is-supported-connection";
+import { nodeFactories } from "./node-factories";
 
 interface AddNodeOptions {
 	ui?: NodeUIState;
@@ -44,13 +45,14 @@ export function WorkflowDesigner({
 		}
 		updateWorkflowMap();
 	}
-	function copyNode(sourceNode: Node, options?: AddNodeOptions) {
-		const newNode = {
-			...sourceNode,
-			id: NodeId.generate(),
-			name: `Copy of ${sourceNode.name ?? defaultName(sourceNode)}`,
-		};
-
+	function copyNode(sourceNode: Node, options?: AddNodeOptions): void {
+		const factory = nodeFactories[sourceNode.content.type];
+		if (!factory) {
+			throw new Error(
+				`No factory defined for node content type: ${sourceNode.content.type}`,
+			);
+		}
+		const newNode = factory.clone(sourceNode);
 		addNode(newNode, options);
 	}
 	function getData() {
