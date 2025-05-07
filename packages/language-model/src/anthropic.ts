@@ -1,5 +1,10 @@
 import { z } from "zod";
 import { Capability, LanguageModelBase, Tier } from "./base";
+import type { CostCalculator, CostResult } from "./costs/calculator";
+import { type ToolConfig, calculateTokenCost } from "./costs/calculator";
+import { getModelPriceFromLangfuse } from "./costs/model-prices";
+import type { TokenBasedPricing } from "./costs/pricing";
+import type { TokenUsage } from "./costs/usage";
 
 const AnthropicLanguageModelConfigurations = z.object({
 	temperature: z.number(),
@@ -53,6 +58,29 @@ const claude35Haiku: AnthropicLanguageModel = {
 	tier: Tier.enum.free,
 	configurations: defaultConfigurations,
 };
+
+export class AnthropicCostCalculator
+	implements CostCalculator<ToolConfig, TokenUsage>
+{
+	async calculate(
+		model: string,
+		toolConfig: ToolConfig,
+		usage: TokenUsage,
+	): Promise<CostResult> {
+		const pricing = await getModelPriceFromLangfuse(model);
+		const inputCost = calculateTokenCost(usage.promptTokens, pricing.input);
+		const outputCost = calculateTokenCost(
+			usage.completionTokens,
+			pricing.output,
+		);
+
+		return {
+			input: inputCost,
+			output: outputCost,
+			total: inputCost + outputCost,
+		};
+	}
+}
 
 export const models = [claude37Sonnet, claude35Sonnet, claude35Haiku];
 
