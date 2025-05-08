@@ -1,4 +1,4 @@
-import { GitHubIntegration } from "../../integration/github-integration";
+import { GitHubIntegration } from "./github-integration";
 
 export default async function TeamIntegrationsPage() {
 	return (
