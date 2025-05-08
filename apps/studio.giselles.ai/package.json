@@ -20,6 +20,7 @@
 		"@giselle-internal/workflow-designer-ui": "workspace:*",
 		"@giselle-sdk/data-type": "workspace:*",
 		"@giselle-sdk/giselle-engine": "workspace:*",
+		"@giselle-sdk/github-vector-store": "workspace:*",
 		"@giselle-sdk/integration": "workspace:*",
 		"@giselle-sdk/supabase-driver": "workspace:*",
 		"@icons-pack/react-simple-icons": "10.0.0",
@@ -132,7 +133,5 @@
 		"vite-tsconfig-paths": "5.1.4",
 		"vitest": "3.0.5"
 	},
-	"trustedDependencies": [
-		"@sentry/cli"
-	]
+	"trustedDependencies": ["@sentry/cli"]
 }

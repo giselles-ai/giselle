@@ -1,5 +1,4 @@
 import type { Octokit } from "@octokit/core";
-import { captureMessage } from "@sentry/nextjs";
 import { chunkByLines } from "./chunk";
 import { embed } from "./embed";
 
@@ -194,14 +193,7 @@ async function* traverseTree(
 		 * If this limit is exceeded, please consider another way to ingest the repository.
 		 * For example, you can use the git clone or GET tarball API for first time ingestion.
 		 */
-		captureMessage("Tree is truncated", {
-			level: "warning",
-			extra: {
-				owner,
-				repo,
-				sha: treeData.sha,
-			},
-		});
+		throw new Error(`Tree is truncated: ${owner}/${repo}/${treeData.sha}`);
 	}
 
 	for (const entry of treeData.tree) {

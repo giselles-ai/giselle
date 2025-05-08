@@ -1,12 +1,12 @@
 import { githubVectorStoreFlag } from "@/flags";
 import { buildAppInstallationClient } from "@/services/external/github";
-import type { NextRequest } from "next/server";
 import {
 	type EmbeddingStore,
 	type GitHubBlobEmbedding,
 	type GitHubBlobEmbeddingKey,
 	ingestBlobs,
-} from "./ingest-blobs";
+} from "@giselle-sdk/github-vector-store";
+import type { NextRequest } from "next/server";
 
 // ingest GitHub Code
 // TODO: implement as a cron job
