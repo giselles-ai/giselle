@@ -1,3 +1,4 @@
+import { githubVectorStoreFlag } from "@/flags";
 import { buildAppInstallationClient } from "@/services/external/github";
 import type { NextRequest } from "next/server";
 import {
@@ -10,6 +11,11 @@ import {
 // ingest GitHub Code
 // TODO: implement as a cron job
 export async function GET(request: NextRequest) {
+	const isEnabled = await githubVectorStoreFlag();
+	if (!isEnabled) {
+		return new Response("Vector store is disabled", { status: 400 });
+	}
+
 	const targetGitHubRepositories = await fetchTargetGitHubRepositories();
 	const embeddingStore = new EmbeddingStoreImpl();
 

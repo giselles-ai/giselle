@@ -103,3 +103,16 @@ export const runV2Flag = flag<boolean>({
 		{ value: true, label: "Enable" },
 	],
 });
+
+export const githubVectorStoreFlag = flag<boolean>({
+	key: "github-vector-store",
+	async decide() {
+		return takeLocalEnv("GITHUB_VECTOR_STORE_FLAG");
+	},
+	description: "Enable GitHub Vector Store",
+	defaultValue: false,
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+});
