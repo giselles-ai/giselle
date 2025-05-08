@@ -143,7 +143,7 @@ export const textGenerationFactory = {
 			if (Object.keys(newTools).length > 0) {
 				clonedContent.tools = newTools;
 			} else {
-				delete clonedContent.tools; // Remove tools if all sensitive parts were stripped
+				clonedContent.tools = undefined; // Remove tools if all sensitive parts were stripped
 			}
 		}
 
