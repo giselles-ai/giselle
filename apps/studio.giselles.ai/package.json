@@ -16,6 +16,7 @@
 	},
 	"packageManager": "pnpm@10.0.0",
 	"dependencies": {
+		"@ai-sdk/openai": "catalog:",
 		"@giselle-internal/workflow-designer-ui": "workspace:*",
 		"@giselle-sdk/data-type": "workspace:*",
 		"@giselle-sdk/giselle-engine": "workspace:*",
@@ -131,5 +132,7 @@
 		"vite-tsconfig-paths": "5.1.4",
 		"vitest": "3.0.5"
 	},
-	"trustedDependencies": ["@sentry/cli"]
+	"trustedDependencies": [
+		"@sentry/cli"
+	]
 }
