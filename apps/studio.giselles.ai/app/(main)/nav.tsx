@@ -9,6 +9,7 @@ const menuItems = [
 	{ name: "Apps", path: "/apps" },
 	{ name: "Members", path: "/settings/team/members" },
 	{ name: "Integrations", path: "/settings/team/integrations" },
+	{ name: "Vector Store", path: "/settings/team/vector-store" },
 	{ name: "Usage", path: "/settings/team/usage" },
 	{ name: "Settings", path: "/settings/team" },
 ];
