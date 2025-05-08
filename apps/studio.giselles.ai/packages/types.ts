@@ -365,3 +365,5 @@ export interface GitHubEventNodeMapping {
 export type ExecuteActionReturnValue =
 	| TextArtifactObject
 	| StreamableValue<TextArtifactObject, unknown>;
+
+export type GitHubRepositoryIndexId = `gthbi_${string}`;
