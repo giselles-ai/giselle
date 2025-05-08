@@ -15,8 +15,9 @@ export type GitHubBlobEmbedding = {
 	fileSha: string;
 	path: string;
 	nodeId: string;
-	embedding: number[];
 	chunkIndex: number;
+	chunkContent: string;
+	embedding: number[];
 };
 
 export type GitHubBlobEmbeddingKey = Pick<
@@ -134,8 +135,9 @@ async function ingestBlob(
 			fileSha,
 			path,
 			nodeId: blob.nodeId,
-			embedding,
 			chunkIndex: chunk.index,
+			chunkContent: chunk.content,
+			embedding,
 		});
 	}
 }

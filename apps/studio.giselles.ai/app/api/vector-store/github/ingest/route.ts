@@ -1,3 +1,8 @@
+import {
+	db,
+	githubRepositoryEmbeddings,
+	githubRepositoryIndex,
+} from "@/drizzle";
 import { githubVectorStoreFlag } from "@/flags";
 import { buildAppInstallationClient } from "@/services/external/github";
 import {
@@ -6,6 +11,7 @@ import {
 	type GitHubBlobEmbeddingKey,
 	ingestBlobs,
 } from "@giselle-sdk/github-vector-store";
+import { and, eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 
 // ingest GitHub Code
@@ -49,36 +55,79 @@ type TargetGitHubRepository = {
 	lastIngestedCommitSha: string | null;
 };
 
-// TODO: fetch target repository from database
-// currently returning mock data
 async function fetchTargetGitHubRepositories(): Promise<
 	TargetGitHubRepository[]
 > {
-	const targetRepository =
-		process.env.EXPERIMENTAL_GITHUB_TARGET_REPOSITORY ?? "giselles-ai/giselle";
-	const installationId =
-		process.env.EXPERIMENTAL_GITHUB_INGESTION_INSTALLATION_ID ?? "";
-	const [owner, repo] = targetRepository.split("/");
-	const target: TargetGitHubRepository = {
-		owner,
-		repo,
-		installationId: Number.parseInt(installationId, 10),
-		lastIngestedCommitSha: null,
-	};
+	const records = await db
+		.select({
+			owner: githubRepositoryIndex.owner,
+			repo: githubRepositoryIndex.repo,
+			installationId: githubRepositoryIndex.installationId,
+			lastIngestedCommitSha: githubRepositoryIndex.lastIngestedCommitSha,
+		})
+		.from(githubRepositoryIndex)
+		.where(eq(githubRepositoryIndex.status, "idle"));
 
-	return [target];
+	return records.map((record) => ({
+		owner: record.owner,
+		repo: record.repo,
+		installationId: record.installationId,
+		lastIngestedCommitSha: record.lastIngestedCommitSha,
+	}));
 }
 
-// TODO: implement
 class EmbeddingStoreImpl implements EmbeddingStore {
+	private async getRepositoryIndexDbId(owner: string, repo: string) {
+		const records = await db
+			.select({ dbId: githubRepositoryIndex.dbId })
+			.from(githubRepositoryIndex)
+			.where(
+				and(
+					eq(githubRepositoryIndex.owner, owner),
+					eq(githubRepositoryIndex.repo, repo),
+				),
+			)
+			.limit(1);
+		const repositoryIndex = records[0];
+		if (repositoryIndex == null) {
+			throw new Error(`Repository index not found: ${owner}/${repo}`);
+		}
+		return repositoryIndex.dbId;
+	}
+
 	async insert(data: GitHubBlobEmbedding) {
-		console.log(
-			`insert: ${data.owner}/${data.repo}/${data.path} ${data.chunkIndex}`,
+		const repositoryIndexDbId = await this.getRepositoryIndexDbId(
+			data.owner,
+			data.repo,
 		);
+		await db.insert(githubRepositoryEmbeddings).values({
+			repositoryIndexDbId,
+			commitSha: data.commitSha,
+			fileSha: data.fileSha,
+			path: data.path,
+			nodeId: data.nodeId,
+			embedding: data.embedding,
+			chunkIndex: data.chunkIndex,
+			chunkContent: data.chunkContent,
+		});
 	}
 
 	async delete(key: GitHubBlobEmbeddingKey) {
-		console.log(`delete: ${key.owner}/${key.repo}/${key.path}`);
+		const repositoryIndexDbId = await this.getRepositoryIndexDbId(
+			key.owner,
+			key.repo,
+		);
+		await db
+			.delete(githubRepositoryEmbeddings)
+			.where(
+				and(
+					eq(
+						githubRepositoryEmbeddings.repositoryIndexDbId,
+						repositoryIndexDbId,
+					),
+					eq(githubRepositoryEmbeddings.path, key.path),
+				),
+			);
 	}
 
 	async update(data: GitHubBlobEmbedding) {
