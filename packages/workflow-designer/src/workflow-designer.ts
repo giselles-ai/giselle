@@ -10,8 +10,9 @@ import {
 	type Workspace,
 	generateInitialWorkspace,
 } from "@giselle-sdk/data-type";
-import { buildWorkflowMap } from "@giselle-sdk/workflow-utils";
+import { buildWorkflowMap, defaultName } from "@giselle-sdk/workflow-utils";
 import { isSupportedConnection } from "./is-supported-connection";
+import { factories } from "./node-factories";
 
 interface AddNodeOptions {
 	ui?: NodeUIState;
@@ -43,6 +44,57 @@ export function WorkflowDesigner({
 			ui.nodeState[node.id] = options.ui;
 		}
 		updateWorkflowMap();
+	}
+	function copyNode(sourceNode: Node, options?: AddNodeOptions): void {
+		const { newNode, inputIdMap, outputIdMap } = factories.clone(sourceNode);
+		addNode(newNode, options);
+
+		const originalConnections = connections.filter(
+			(conn) =>
+				conn.outputNode.id === sourceNode.id ||
+				conn.inputNode.id === sourceNode.id,
+		);
+
+		for (const originalConn of originalConnections) {
+			try {
+				if (originalConn.outputNode.id === sourceNode.id) {
+					const newOutputId = outputIdMap[originalConn.outputId];
+					if (newOutputId) {
+						const targetInputNode = nodes.find(
+							(n) => n.id === originalConn.inputNode.id,
+						);
+						if (targetInputNode) {
+							addConnection({
+								outputNode: newNode,
+								outputId: newOutputId,
+								inputNode: targetInputNode,
+								inputId: originalConn.inputId,
+							});
+						}
+					}
+				} else if (originalConn.inputNode.id === sourceNode.id) {
+					const newInputId = inputIdMap[originalConn.inputId];
+					if (newInputId) {
+						const sourceOutputNode = nodes.find(
+							(n) => n.id === originalConn.outputNode.id,
+						);
+						if (sourceOutputNode) {
+							addConnection({
+								outputNode: sourceOutputNode,
+								outputId: originalConn.outputId,
+								inputNode: newNode,
+								inputId: newInputId,
+							});
+						}
+					}
+				}
+			} catch (error) {
+				console.error(
+					"Failed to re-create connection during node duplication:",
+					error,
+				);
+			}
+		}
 	}
 	function getData() {
 		return {
@@ -123,6 +175,7 @@ export function WorkflowDesigner({
 
 	return {
 		addNode,
+		copyNode,
 		addConnection,
 		getData,
 		updateNodeData,

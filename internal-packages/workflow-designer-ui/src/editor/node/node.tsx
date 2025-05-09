@@ -10,6 +10,7 @@ import {
 	TextNode,
 	TriggerNode,
 } from "@giselle-sdk/data-type";
+import { defaultName } from "@giselle-sdk/workflow-utils";
 import {
 	Handle,
 	type NodeProps,
@@ -25,7 +26,6 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { GitHubIcon } from "../../icons";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
-import { defaultName } from "../../utils";
 import { GitHubRepositoryBadge } from "./ui";
 
 type GiselleWorkflowDesignerTextGenerationNode = XYFlowNode<

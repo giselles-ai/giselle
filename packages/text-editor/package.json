@@ -35,6 +35,7 @@
 	},
 	"dependencies": {
 		"@giselle-sdk/data-type": "workspace:^",
+		"@giselle-sdk/workflow-utils": "workspace:^",
 		"@tiptap/core": "catalog:",
 		"@tiptap/extension-bold": "catalog:",
 		"@tiptap/extension-bullet-list": "catalog:",
