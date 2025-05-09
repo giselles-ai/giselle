@@ -24,7 +24,7 @@ function SelectTrigger({
 		<SelectPrimitive.Trigger
 			className={clsx(
 				"group w-full flex justify-between items-center rounded-[8px] py-[8px] px-[16px] outline-none focus:outline-none",
-				"border-[2px] border-white-900",
+				"border-[1px] border-white-900",
 				"text-[14px]",
 				// "data-[state=closed]:**:data-icon:opacity-50 data-[state=open]:**:data-icon:opacity-100 ",
 				className,
@@ -88,7 +88,7 @@ function SelectContent({
 			<SelectPrimitive.Content
 				className={clsx(
 					"relative z-50 max-h-96 overflow-hidden rounded-[8px]",
-					"border-[2px] border-white-900 bg-black-900 text-white-900",
+					"border-[1px] border-white-900 bg-black-900 text-white-900",
 					position === "popper" &&
 						"data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
 					className,

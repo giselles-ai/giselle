@@ -39,34 +39,39 @@ export function OpenAIModelPanel({
 
 	return (
 		<div className="flex flex-col gap-[34px]">
-			<Select
-				value={openaiLanguageModel.id}
-				onValueChange={(value) => {
-					onModelChange(
-						OpenAILanguageModelData.parse({
-							...openaiLanguageModel,
-							id: value,
-						}),
-					);
-				}}
-			>
-				<SelectTrigger>
-					<SelectValue placeholder="Select a LLM" />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectGroup>
-						{openaiLanguageModels.map((model) => (
-							<SelectItem
-								key={model.id}
-								value={model.id}
-								disabled={!languageModelAvailable(model, limits)}
-							>
-								{model.id}
-							</SelectItem>
-						))}
-					</SelectGroup>
-				</SelectContent>
-			</Select>
+			<div className="grid grid-cols-2 gap-[24px]">
+				<div className="flex flex-col col-span-2">
+					<div className="text-[14px] py-[1.5px]">Model</div>
+					<Select
+						value={openaiLanguageModel.id}
+						onValueChange={(value) => {
+							onModelChange(
+								OpenAILanguageModelData.parse({
+									...openaiLanguageModel,
+									id: value,
+								}),
+							);
+						}}
+					>
+						<SelectTrigger className="border-[2px]">
+							<SelectValue placeholder="Select a LLM" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								{openaiLanguageModels.map((model) => (
+									<SelectItem
+										key={model.id}
+										value={model.id}
+										disabled={!languageModelAvailable(model, limits)}
+									>
+										{model.id}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						</SelectContent>
+					</Select>
+				</div>
+			</div>
 			<div>
 				<div className="grid grid-cols-2 gap-[24px]">
 					<Slider

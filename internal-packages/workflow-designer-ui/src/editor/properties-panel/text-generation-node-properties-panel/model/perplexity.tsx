@@ -23,36 +23,41 @@ export function PerplexityModelPanel({
 
 	return (
 		<div className="flex flex-col gap-[34px]">
-			<Select
-				value={perplexityLanguageModel.id}
-				onValueChange={(value) => {
-					onModelChange(
-						PerplexityLanguageModelData.parse({
-							...perplexityLanguageModel,
-							id: value,
-						}),
-					);
-				}}
-			>
-				<SelectTrigger>
-					<SelectValue placeholder="Select a LLM" />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectGroup>
-						{perplexityLanguageModels.map((perplexityLanguageModel) => (
-							<SelectItem
-								key={perplexityLanguageModel.id}
-								value={perplexityLanguageModel.id}
-								disabled={
-									!languageModelAvailable(perplexityLanguageModel, limits)
-								}
-							>
-								{perplexityLanguageModel.id}
-							</SelectItem>
-						))}
-					</SelectGroup>
-				</SelectContent>
-			</Select>
+			<div className="grid grid-cols-2 gap-[24px]">
+				<div className="flex flex-col col-span-2">
+					<div className="text-[14px] py-[1.5px]">Model</div>
+					<Select
+						value={perplexityLanguageModel.id}
+						onValueChange={(value) => {
+							onModelChange(
+								PerplexityLanguageModelData.parse({
+									...perplexityLanguageModel,
+									id: value,
+								}),
+							);
+						}}
+					>
+						<SelectTrigger className="border-[2px]">
+							<SelectValue placeholder="Select a LLM" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								{perplexityLanguageModels.map((perplexityLanguageModel) => (
+									<SelectItem
+										key={perplexityLanguageModel.id}
+										value={perplexityLanguageModel.id}
+										disabled={
+											!languageModelAvailable(perplexityLanguageModel, limits)
+										}
+									>
+										{perplexityLanguageModel.id}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						</SelectContent>
+					</Select>
+				</div>
+			</div>
 			<div>
 				<div className="grid grid-cols-2 gap-[24px]">
 					<Slider
