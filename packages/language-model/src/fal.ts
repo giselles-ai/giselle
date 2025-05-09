@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Capability, LanguageModelBase } from "./base";
+import { Capability, LanguageModelBase, type UsageCalculator } from "./base";
 
 const imageGenerationSize1x1 = z.literal("512x512");
 const imageGenerationSize1x1Hd = z.literal("1024x1024");
@@ -125,19 +125,14 @@ export function getImageGenerationModelProvider(
 	return undefined;
 }
 
-export interface UsageCalculator {
-	calculateUsage(params: { width: number; height: number; n: number }): {
-		output: number;
-		unit: "IMAGES";
-	};
+export interface FalImageGenerationParams {
+	width: number;
+	height: number;
+	n: number;
 }
 
 export class PixelBasedUsageCalculator implements UsageCalculator {
-	calculateUsage({
-		width,
-		height,
-		n,
-	}: { width: number; height: number; n: number }) {
+	calculateUsage({ width, height, n }: FalImageGenerationParams) {
 		const totalPixels = width * height * n;
 		return {
 			output: Math.ceil(totalPixels / 1_000_000) * 1_000_000,
@@ -156,15 +151,6 @@ export class ImageCountBasedUsageCalculator implements UsageCalculator {
 			output: n,
 			unit: "IMAGES" as const,
 		};
-	}
-}
-
-export function createUsageCalculator(modelId: string): UsageCalculator {
-	switch (modelId) {
-		case "fal-ai/stable-diffusion-v3-medium":
-			return new ImageCountBasedUsageCalculator();
-		default:
-			return new PixelBasedUsageCalculator();
 	}
 }
 

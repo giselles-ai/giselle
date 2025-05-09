@@ -28,8 +28,8 @@ export * from "./helper";
 export {
 	getImageGenerationModelProvider,
 	falImageGenerationSizes as imageGenerationSizes,
-	createUsageCalculator,
 } from "./fal";
+export { createUsageCalculator } from "./usage-factory.ts";
 export type { GeneratedImageData } from "./fal";
 export {
 	size as openaiImageSize,
