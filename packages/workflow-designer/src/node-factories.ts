@@ -39,32 +39,69 @@ export type NodeContentType =
 	| OperationNodeContentType
 	| VariableNodeContentType;
 
+// --- ID Mapping Types and Helpers ---
+// Specific IdMap types
+interface OutputIdMap {
+	[oldId: string]: OutputId; // Value is OutputId
+}
+interface InputIdMap {
+	[oldId: string]: InputId; // Value is InputId
+}
+
+interface CloneOutputResult {
+	// Specific for Outputs
+	newIo: Output[];
+	idMap: OutputIdMap;
+}
+
+interface CloneInputResult {
+	// Specific for Inputs
+	newIo: Input[];
+	idMap: InputIdMap;
+}
+
+function cloneAndRenewOutputIdsWithMap(
+	originalOutputs: ReadonlyArray<Output>,
+): CloneOutputResult {
+	const newOutputs: Output[] = [];
+	const idMap: OutputIdMap = {}; // Use OutputIdMap
+	for (const o of originalOutputs) {
+		const newId = OutputId.generate(); // Returns OutputId
+		newOutputs.push({ ...o, id: newId });
+		idMap[o.id] = newId;
+	}
+	return { newIo: newOutputs, idMap };
+}
+
+function cloneAndRenewInputIdsWithMap(
+	originalInputs: ReadonlyArray<Input>,
+): CloneInputResult {
+	const newInputs: Input[] = [];
+	const idMap: InputIdMap = {}; // Use InputIdMap
+	for (const i of originalInputs) {
+		const newId = InputId.generate(); // Returns InputId
+		newInputs.push({ ...i, id: newId });
+		idMap[i.id] = newId;
+	}
+	return { newIo: newInputs, idMap };
+}
+
+// --- Node Factory Interface and Result Type ---
+export interface NodeFactoryCloneResult<N extends Node> {
+	newNode: N;
+	inputIdMap: InputIdMap; // Use specific map type
+	outputIdMap: OutputIdMap; // Use specific map type
+}
+
 export interface NodeFactory<
 	N extends Node,
 	CreateArgs extends unknown[] = unknown[],
 > {
 	create(...args: CreateArgs): N;
-	clone(orig: N): N;
+	clone(orig: N): NodeFactoryCloneResult<N>;
 }
 
-// --- Helper functions ---
-
-function cloneAndRenewOutputIds(
-	originalOutputs: ReadonlyArray<Output>,
-): Output[] {
-	return originalOutputs.map((o) => ({
-		...o,
-		id: OutputId.generate(),
-	}));
-}
-
-function cloneAndRenewInputIds(originalInputs: ReadonlyArray<Input>): Input[] {
-	return originalInputs.map((i) => ({
-		...i,
-		id: InputId.generate(),
-	}));
-}
-
+// ... (Helper functions: hasProviderOptions, removeSourceRefsFromPrompt - unchanged) ...
 function hasProviderOptions(fileData: FileData): fileData is UploadedFileData {
 	return fileData.status === "uploaded" && "providerOptions" in fileData;
 }
@@ -84,7 +121,7 @@ function removeSourceRefsFromPrompt(
 		.filter((item) => !(item.type === "text" && !item.text?.trim()));
 }
 
-// --- Concrete Node Factories (Simplified Clone Logic) ---
+// --- Concrete Node Factories (Clone Logic Updated) ---
 
 const textGenerationFactoryImpl = {
 	create: (llm: TextGenerationContent["llm"]): TextGenerationNode => {
@@ -110,10 +147,10 @@ const textGenerationFactoryImpl = {
 			outputs,
 		} as TextGenerationNode;
 	},
-	clone: (orig: TextGenerationNode): TextGenerationNode => {
+	clone: (
+		orig: TextGenerationNode,
+	): NodeFactoryCloneResult<TextGenerationNode> => {
 		const clonedContent = structuredClone(orig.content);
-
-		// Clean prompt from source references
 		if (clonedContent.prompt && isJsonContent(clonedContent.prompt)) {
 			try {
 				const promptJson: JSONContent = JSON.parse(clonedContent.prompt);
@@ -128,19 +165,22 @@ const textGenerationFactoryImpl = {
 				}
 			} catch (e) {
 				console.error("Error processing prompt for TextGeneration clone:", e);
-				// Fallback: clear prompt or keep original based on desired behavior
-				// clonedContent.prompt = "";
 			}
 		}
+		const { newIo: newInputs, idMap: inputIdMap } =
+			cloneAndRenewInputIdsWithMap(orig.inputs);
+		const { newIo: newOutputs, idMap: outputIdMap } =
+			cloneAndRenewOutputIdsWithMap(orig.outputs);
 
-		return {
+		const newNode = {
 			id: NodeId.generate(),
 			type: "operation",
 			name: `Copy of ${orig.name ?? defaultName(orig)}`,
 			content: clonedContent,
-			inputs: [], // TextGenerationNode inputs are reset
-			outputs: cloneAndRenewOutputIds(orig.outputs),
+			inputs: newInputs,
+			outputs: newOutputs,
 		} as TextGenerationNode;
+		return { newNode, inputIdMap, outputIdMap };
 	},
 } satisfies NodeFactory<TextGenerationNode, [TextGenerationContent["llm"]]>;
 
@@ -159,15 +199,24 @@ const imageGenerationFactoryImpl = {
 				},
 			],
 		}) as ImageGenerationNode,
-	clone: (orig: ImageGenerationNode): ImageGenerationNode =>
-		({
+	clone: (
+		orig: ImageGenerationNode,
+	): NodeFactoryCloneResult<ImageGenerationNode> => {
+		const { newIo: newInputs, idMap: inputIdMap } =
+			cloneAndRenewInputIdsWithMap(orig.inputs);
+		const { newIo: newOutputs, idMap: outputIdMap } =
+			cloneAndRenewOutputIdsWithMap(orig.outputs);
+
+		const newNode = {
 			id: NodeId.generate(),
 			type: "operation",
 			name: `Copy of ${orig.name ?? defaultName(orig)}`,
-			content: structuredClone(orig.content), // Simple deep clone
-			inputs: [], // ImageGenerationNode inputs are reset
-			outputs: cloneAndRenewOutputIds(orig.outputs),
-		}) as ImageGenerationNode,
+			content: structuredClone(orig.content),
+			inputs: newInputs,
+			outputs: newOutputs,
+		} as ImageGenerationNode;
+		return { newNode, inputIdMap, outputIdMap };
+	},
 } satisfies NodeFactory<ImageGenerationNode, [ImageGenerationContent["llm"]]>;
 
 const triggerFactoryImpl = {
@@ -181,24 +230,29 @@ const triggerFactoryImpl = {
 			content: {
 				type: "trigger",
 				provider,
-				state: { status: "unconfigured" }, // Set initial state
+				state: { status: "unconfigured" },
 			},
 			inputs: [],
-			outputs: cloneAndRenewOutputIds(outputsFromTriggerDef),
+			outputs: cloneAndRenewOutputIdsWithMap(outputsFromTriggerDef).newIo,
 		}) as TriggerNode,
-	clone: (orig: TriggerNode): TriggerNode => {
+	clone: (orig: TriggerNode): NodeFactoryCloneResult<TriggerNode> => {
 		const clonedContent = structuredClone(orig.content);
-		// Reset state to unconfigured
 		clonedContent.state = { status: "unconfigured" };
 
-		return {
+		const { newIo: newInputs, idMap: inputIdMap } =
+			cloneAndRenewInputIdsWithMap(orig.inputs);
+		const { newIo: newOutputs, idMap: outputIdMap } =
+			cloneAndRenewOutputIdsWithMap(orig.outputs);
+
+		const newNode = {
 			id: NodeId.generate(),
 			type: "operation",
 			name: `Copy of ${orig.name ?? defaultName(orig)}`,
 			content: clonedContent,
-			inputs: [], // TriggerNode inputs are reset
-			outputs: cloneAndRenewOutputIds(orig.outputs),
+			inputs: newInputs,
+			outputs: newOutputs,
 		} as TriggerNode;
+		return { newNode, inputIdMap, outputIdMap };
 	},
 } satisfies NodeFactory<TriggerNode, [TriggerContent["provider"], Output[]]>;
 
@@ -213,20 +267,27 @@ const actionFactoryImpl = {
 			type: "operation",
 			content: {
 				type: "action",
-				provider: { type: providerType, actionId }, // Create ActionProviderLike
+				provider: { type: providerType, actionId },
 			},
-			inputs: cloneAndRenewInputIds(inputsFromActionDef),
+			inputs: cloneAndRenewInputIdsWithMap(inputsFromActionDef).newIo,
 			outputs: [],
 		}) as ActionNode,
-	clone: (orig: ActionNode): ActionNode =>
-		({
+	clone: (orig: ActionNode): NodeFactoryCloneResult<ActionNode> => {
+		const { newIo: newInputs, idMap: inputIdMap } =
+			cloneAndRenewInputIdsWithMap(orig.inputs);
+		const { newIo: newOutputs, idMap: outputIdMap } =
+			cloneAndRenewOutputIdsWithMap(orig.outputs);
+
+		const newNode = {
 			id: NodeId.generate(),
 			type: "operation",
 			name: `Copy of ${orig.name ?? defaultName(orig)}`,
-			content: structuredClone(orig.content), // Simple deep clone, provider is ActionProviderLike
-			inputs: cloneAndRenewInputIds(orig.inputs), // ActionNode inputs are preserved with new IDs
-			outputs: cloneAndRenewOutputIds(orig.outputs),
-		}) as ActionNode,
+			content: structuredClone(orig.content),
+			inputs: newInputs,
+			outputs: newOutputs,
+		} as ActionNode;
+		return { newNode, inputIdMap, outputIdMap };
+	},
 } satisfies NodeFactory<ActionNode, [ActionProvider["type"], string, Input[]]>;
 
 const textVariableFactoryImpl = {
@@ -238,15 +299,22 @@ const textVariableFactoryImpl = {
 			inputs: [],
 			outputs: [{ id: OutputId.generate(), label: "Output", accessor: "text" }],
 		}) as TextNode,
-	clone: (orig: TextNode): TextNode =>
-		({
+	clone: (orig: TextNode): NodeFactoryCloneResult<TextNode> => {
+		const { newIo: newInputs, idMap: inputIdMap } =
+			cloneAndRenewInputIdsWithMap(orig.inputs);
+		const { newIo: newOutputs, idMap: outputIdMap } =
+			cloneAndRenewOutputIdsWithMap(orig.outputs);
+
+		const newNode = {
 			id: NodeId.generate(),
 			type: "variable",
 			name: `Copy of ${orig.name ?? defaultName(orig)}`,
-			content: structuredClone(orig.content), // Simple deep clone
-			inputs: [], // VariableNode inputs are reset
-			outputs: cloneAndRenewOutputIds(orig.outputs),
-		}) as TextNode,
+			content: structuredClone(orig.content),
+			inputs: newInputs,
+			outputs: newOutputs,
+		} as TextNode;
+		return { newNode, inputIdMap, outputIdMap };
+	},
 } satisfies NodeFactory<TextNode, [text?: string]>;
 
 const fileVariableFactoryImpl = {
@@ -258,9 +326,8 @@ const fileVariableFactoryImpl = {
 			inputs: [],
 			outputs: [{ id: OutputId.generate(), label: "Output", accessor: "text" }],
 		}) as FileNode,
-	clone: (orig: FileNode): FileNode => {
+	clone: (orig: FileNode): NodeFactoryCloneResult<FileNode> => {
 		const clonedContent = structuredClone(orig.content);
-		// Renew File IDs and clear providerOptions
 		clonedContent.files = clonedContent.files.map((fileData): FileData => {
 			const newFileId = FileId.generate();
 			if (hasProviderOptions(fileData)) {
@@ -269,14 +336,21 @@ const fileVariableFactoryImpl = {
 			}
 			return { ...fileData, id: newFileId };
 		});
-		return {
+
+		const { newIo: newInputs, idMap: inputIdMap } =
+			cloneAndRenewInputIdsWithMap(orig.inputs);
+		const { newIo: newOutputs, idMap: outputIdMap } =
+			cloneAndRenewOutputIdsWithMap(orig.outputs);
+
+		const newNode = {
 			id: NodeId.generate(),
 			type: "variable",
 			name: `Copy of ${orig.name ?? defaultName(orig)}`,
 			content: clonedContent,
-			inputs: [], // VariableNode inputs are reset
-			outputs: cloneAndRenewOutputIds(orig.outputs),
+			inputs: newInputs,
+			outputs: newOutputs,
 		} as FileNode;
+		return { newNode, inputIdMap, outputIdMap };
 	},
 } satisfies NodeFactory<FileNode, [category?: FileContent["category"]]>;
 
@@ -291,15 +365,22 @@ const githubVariableFactoryImpl = {
 			inputs: [],
 			outputs: [{ id: OutputId.generate(), label: "Output", accessor: "text" }],
 		}) as GitHubNode,
-	clone: (orig: GitHubNode): GitHubNode =>
-		({
+	clone: (orig: GitHubNode): NodeFactoryCloneResult<GitHubNode> => {
+		const { newIo: newInputs, idMap: inputIdMap } =
+			cloneAndRenewInputIdsWithMap(orig.inputs);
+		const { newIo: newOutputs, idMap: outputIdMap } =
+			cloneAndRenewOutputIdsWithMap(orig.outputs);
+
+		const newNode = {
 			id: NodeId.generate(),
 			type: "variable",
 			name: `Copy of ${orig.name ?? defaultName(orig)}`,
-			content: structuredClone(orig.content), // Simple deep clone
-			inputs: [], // VariableNode inputs are reset
-			outputs: cloneAndRenewOutputIds(orig.outputs),
-		}) as GitHubNode,
+			content: structuredClone(orig.content),
+			inputs: newInputs,
+			outputs: newOutputs,
+		} as GitHubNode;
+		return { newNode, inputIdMap, outputIdMap };
+	},
 } satisfies NodeFactory<
 	GitHubNode,
 	[objectReferences?: GitHubContent["objectReferences"]]
@@ -327,41 +408,51 @@ type CreateArgsMap = {
 	github: Parameters<typeof githubVariableFactoryImpl.create>;
 };
 
+export interface CloneResultWithMappings {
+	newNode: Node;
+	inputIdMap: InputIdMap; // Use specific map type
+	outputIdMap: OutputIdMap; // Use specific map type
+}
+
 function cloneInternal<K extends NodeContentType>(
 	sourceNode: NodeMap[K],
-): NodeMap[K] {
+): NodeFactoryCloneResult<NodeMap[K]> {
 	const type = sourceNode.content.type as K;
 	switch (type) {
 		case "textGeneration": {
 			return textGenerationFactoryImpl.clone(
 				sourceNode as TextGenerationNode,
-			) as NodeMap[K];
+			) as NodeFactoryCloneResult<NodeMap[K]>;
 		}
 		case "imageGeneration": {
 			return imageGenerationFactoryImpl.clone(
 				sourceNode as ImageGenerationNode,
-			) as NodeMap[K];
+			) as NodeFactoryCloneResult<NodeMap[K]>;
 		}
 		case "trigger": {
-			return triggerFactoryImpl.clone(sourceNode as TriggerNode) as NodeMap[K];
+			return triggerFactoryImpl.clone(
+				sourceNode as TriggerNode,
+			) as NodeFactoryCloneResult<NodeMap[K]>;
 		}
 		case "action": {
-			return actionFactoryImpl.clone(sourceNode as ActionNode) as NodeMap[K];
+			return actionFactoryImpl.clone(
+				sourceNode as ActionNode,
+			) as NodeFactoryCloneResult<NodeMap[K]>;
 		}
 		case "text": {
 			return textVariableFactoryImpl.clone(
 				sourceNode as TextNode,
-			) as NodeMap[K];
+			) as NodeFactoryCloneResult<NodeMap[K]>;
 		}
 		case "file": {
 			return fileVariableFactoryImpl.clone(
 				sourceNode as FileNode,
-			) as NodeMap[K];
+			) as NodeFactoryCloneResult<NodeMap[K]>;
 		}
 		case "github": {
 			return githubVariableFactoryImpl.clone(
 				sourceNode as GitHubNode,
-			) as NodeMap[K];
+			) as NodeFactoryCloneResult<NodeMap[K]>;
 		}
 		default: {
 			const _exhaustiveCheck: never = type;
@@ -424,7 +515,7 @@ export const factories = {
 	): NodeMap[K] => {
 		return createInternal(type, ...args);
 	},
-	clone: (sourceNode: Node): Node => {
+	clone: (sourceNode: Node): CloneResultWithMappings => {
 		const type = sourceNode.content.type as NodeContentType;
 		switch (type) {
 			case "textGeneration": {
