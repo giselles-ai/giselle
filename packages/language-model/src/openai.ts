@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { Capability, LanguageModelBase, Tier } from "./base";
+import {
+	Capability,
+	type ImageGenerationParams,
+	LanguageModelBase,
+	Tier,
+	type UsageCalculator,
+} from "./base";
 
 const OpenAILanguageModelConfigurations = z.object({
 	temperature: z.number(),
@@ -129,3 +135,49 @@ export const models = [
 
 export const LanguageModel = OpenAILanguageModel;
 export type LanguageModel = OpenAILanguageModel;
+
+export interface OpenAIImageGenerationParams {
+	width: number;
+	height: number;
+	quality: "Low" | "Medium" | "High";
+}
+
+const openAICostTable: Record<
+	"Low" | "Medium" | "High",
+	Record<string, number>
+> = {
+	Low: {
+		"1024x1024": 0.011,
+		"1024x1536": 0.016,
+		"1536x1024": 0.016,
+	},
+	Medium: {
+		"1024x1024": 0.042,
+		"1024x1536": 0.063,
+		"1536x1024": 0.063,
+	},
+	High: {
+		"1024x1024": 0.167,
+		"1024x1536": 0.25,
+		"1536x1024": 0.25,
+	},
+};
+
+function getSizeKey(width: number, height: number): string {
+	return `${width}x${height}`;
+}
+
+export class OpenAIImageGenerationUsageCalculator implements UsageCalculator {
+	calculateUsage({ width, height, quality }: OpenAIImageGenerationParams) {
+		const price = openAICostTable[quality][getSizeKey(width, height)];
+		if (price === undefined) {
+			console.error(
+				`Unsupported size or quality: ${width}x${height}, ${quality}`,
+			);
+		}
+		return {
+			output: price,
+			unit: "IMAGES" as const,
+		};
+	}
+}
