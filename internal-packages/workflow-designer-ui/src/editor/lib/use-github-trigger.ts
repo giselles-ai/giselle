@@ -9,25 +9,24 @@ export function useGitHubTrigger(flowTriggerId: FlowTriggerId) {
 		isLoading: isLoadingFlowTriggerData,
 		data: trigger,
 		mutate,
-	} = useSWR(
-		[`/triggers/${flowTriggerId}`, flowTriggerId],
-		([_, flowTriggerId]) =>
-			client.getTrigger({ flowTriggerId }).then((res) => res.trigger),
+	} = useSWR(`/triggers/${flowTriggerId}`, () =>
+		client.getTrigger({ flowTriggerId }).then((res) => res.trigger),
 	);
+
 	const {
 		isLoading: isLoadingGitHubRepositoryFullname,
 		data: githubRepositoryFullnameData,
 	} = useSWR(
 		trigger && trigger.configuration.provider === "github"
-			? [
-					`/github/repositories/${trigger.configuration.repositoryNodeId}`,
-					trigger,
-				]
+			? {
+					installationId: trigger.configuration.installationId,
+					repositoryNodeId: trigger.configuration.repositoryNodeId,
+				}
 			: null,
-		([_, flowTrigger]) =>
+		({ installationId, repositoryNodeId }) =>
 			client.getGitHubRepositoryFullname({
-				installationId: flowTrigger.configuration.installationId,
-				repositoryNodeId: flowTrigger.configuration.repositoryNodeId,
+				installationId,
+				repositoryNodeId,
 			}),
 	);
 	const data = useMemo(
@@ -40,7 +39,6 @@ export function useGitHubTrigger(flowTriggerId: FlowTriggerId) {
 					},
 		[trigger, githubRepositoryFullnameData],
 	);
-
 	const setFlowTrigger = useCallback(
 		async (newValue: Partial<FlowTrigger>) => {
 			if (trigger === undefined) {
