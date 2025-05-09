@@ -5,12 +5,10 @@ import {
 	type FileCategory,
 	type FileNode,
 	type GitHubActionProvider,
-	type GitHubTriggerProvider,
 	type ImageGenerationLanguageModelData,
 	type ImageGenerationNode,
 	type Input,
 	InputId,
-	type ManualTriggerProvider,
 	type Node,
 	NodeId,
 	type Output,
@@ -19,16 +17,15 @@ import {
 	type TextGenerationNode,
 	type TextNode,
 	type TriggerNode,
-	type TriggerProvider,
-	type TriggerProviderLike,
 } from "@giselle-sdk/data-type";
-import { actions, githubTriggers, triggers } from "@giselle-sdk/flow";
+import { type TriggerProvider, actions } from "@giselle-sdk/flow";
 import {
 	Capability,
 	hasCapability,
 	languageModels,
 } from "@giselle-sdk/language-model";
 import { type ReactNode, createContext, useContext, useState } from "react";
+import { triggerNodeDefaultName } from "../../../utils";
 import type {
 	AddFileNodeTool,
 	AddGitHubNodeTool,
@@ -172,52 +169,20 @@ export function textNode() {
 	} satisfies TextNode;
 }
 
-export function triggerNode(triggerId: string) {
-	const trigger = triggers.find((trigger) => trigger.id === triggerId);
-	if (trigger === undefined) {
-		throw new Error("Unsupported trigger");
-	}
-
-	const outputs: Output[] = [];
-	if ("payloads" in trigger)
-		for (const payloadKey of trigger.payloads.keyof()
-			.options as Array<string>) {
-			outputs.push({
-				id: OutputId.generate(),
-				label: payloadKey,
-				accessor: payloadKey,
-			});
-		}
-
-	function createDefaultProvider(trigger: (typeof triggers)[number]) {
-		switch (trigger.provider) {
-			case "github":
-				return {
-					type: "github",
-					triggerId,
-					auth: {
-						state: "unauthenticated",
-					},
-				} satisfies GitHubTriggerProvider;
-			case "manual":
-				return { type: "manual", triggerId } satisfies ManualTriggerProvider;
-			default: {
-				const _exhaustiveCheck: never = trigger;
-				throw new Error(`Unsupported trigger provider: ${_exhaustiveCheck}`);
-			}
-		}
-	}
-
+export function triggerNode(triggerProvider: TriggerProvider) {
 	return {
 		id: NodeId.generate(),
 		type: "operation",
-		name: trigger.label,
+		name: triggerNodeDefaultName(triggerProvider),
 		content: {
 			type: "trigger",
-			provider: createDefaultProvider(trigger),
+			provider: triggerProvider,
+			state: {
+				status: "unconfigured",
+			},
 		},
 		inputs: [],
-		outputs,
+		outputs: [],
 	} satisfies TriggerNode;
 }
 

@@ -7,7 +7,7 @@ export default async function TeamIntegrationsPage() {
 				className="text-primary-100 font-semibold text-[28px] leading-[28px] tracking-[-0.011em] font-hubot"
 				style={{ textShadow: "0px 0px 20px hsla(207, 100%, 48%, 1)" }}
 			>
-				Integration
+				Integrations
 			</h3>
 			<div className="flex flex-col gap-y-4">
 				<GitHubIntegration />

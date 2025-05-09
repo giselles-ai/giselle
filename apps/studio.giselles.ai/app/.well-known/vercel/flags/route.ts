@@ -1,14 +1,14 @@
-import { type ApiData, verifyAccess } from "flags";
-import { getProviderData } from "flags/next";
-import { type NextRequest, NextResponse } from "next/server";
+import { createFlagsDiscoveryEndpoint, getProviderData } from "flags/next";
 import * as flags from "../../../../flags";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic"; // defaults to auto
 
-export async function GET(request: NextRequest) {
-	const access = await verifyAccess(request.headers.get("Authorization"));
-	if (!access) return NextResponse.json(null, { status: 401 });
+// This function handles the authorization check for you
+export const GET = createFlagsDiscoveryEndpoint(async (request) => {
+	// Get provider data for feature flags
+	const apiData = await getProviderData(flags);
 
-	return NextResponse.json<ApiData>(getProviderData(flags));
-}
+	// Return the ApiData directly, without a NextResponse.json object
+	return apiData;
+});

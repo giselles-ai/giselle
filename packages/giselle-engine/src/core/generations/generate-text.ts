@@ -482,7 +482,12 @@ export async function generateText(args: {
 		},
 		experimental_telemetry: {
 			isEnabled: args.context.telemetry?.isEnabled,
-			metadata: args.telemetry?.metadata,
+			metadata: {
+				...args.telemetry?.metadata,
+				...(preparedToolSet.toolSet.openaiWebSearch
+					? { tags: ["web-search"] }
+					: {}),
+			},
 		},
 	});
 	return streamTextResult;

@@ -1,6 +1,7 @@
 import {
 	CreatedRun,
 	FileId,
+	FlowTriggerId,
 	Generation,
 	GenerationId,
 	GenerationOrigin,
@@ -15,6 +16,7 @@ import {
 } from "@giselle-sdk/data-type";
 import { z } from "zod";
 import type { GiselleEngine } from "../core";
+import { ConfigureTriggerInput } from "../core/flows";
 import type { TelemetrySettings } from "../core/generations";
 import { JsonResponse } from "../utils";
 import { createHandler, withUsageLimitErrorHandler } from "./create-handler";
@@ -143,16 +145,6 @@ export const createJsonRouters = {
 				return new Response(null, { status: 204 });
 			},
 		}),
-	githubUrlToObjectId: (giselleEngine: GiselleEngine) =>
-		createHandler({
-			input: z.object({
-				url: z.string().url(),
-			}),
-			handler: async ({ input }) => {
-				const objectId = await giselleEngine.githubUrlToObjectId(input.url);
-				return JsonResponse.json({ objectId });
-			},
-		}),
 	upsertWorkspaceGitHubIntegrationSetting: (giselleEngine: GiselleEngine) =>
 		createHandler({
 			input: z.object({
@@ -246,6 +238,40 @@ export const createJsonRouters = {
 			handler: async ({ input }) => {
 				return JsonResponse.json({
 					trigger: await giselleEngine.resolveTrigger(input),
+				});
+			},
+		}),
+	configureTrigger: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			input: z.object({
+				trigger: ConfigureTriggerInput,
+			}),
+			handler: async ({ input }) => {
+				return JsonResponse.json({
+					triggerId: await giselleEngine.configureTrigger(input),
+				});
+			},
+		}),
+	getTrigger: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			input: z.object({
+				flowTriggerId: FlowTriggerId.schema,
+			}),
+			handler: async ({ input }) => {
+				return JsonResponse.json({
+					flowTrigger: await giselleEngine.getTrigger(input),
+				});
+			},
+		}),
+	getGitHubRepositoryFullname: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			input: z.object({
+				repositoryNodeId: z.string(),
+				installationId: z.number(),
+			}),
+			handler: async ({ input }) => {
+				return JsonResponse.json({
+					fullname: await giselleEngine.getGitHubRepositoryFullname(input),
 				});
 			},
 		}),

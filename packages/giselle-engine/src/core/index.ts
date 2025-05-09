@@ -1,6 +1,7 @@
 import type {
 	CreatedRun,
 	FileId,
+	FlowTriggerId,
 	Generation,
 	GenerationId,
 	GenerationOrigin,
@@ -13,9 +14,15 @@ import type {
 	WorkspaceGitHubIntegrationSetting,
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
+import { getRepositoryFullname } from "@giselle-sdk/github-tool";
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";
 import { removeFile, uploadFile } from "./files";
-import { resolveTrigger } from "./flows/resolve-trigger";
+import {
+	type ConfigureTriggerInput,
+	configureTrigger,
+	getTrigger,
+	resolveTrigger,
+} from "./flows";
 import {
 	type TelemetrySettings,
 	cancelGeneration,
@@ -29,10 +36,10 @@ import {
 import {
 	type HandleGitHubWebhookOptions,
 	getGitHubRepositories,
+	getGitHubRepositoryFullname,
 	getWorkspaceGitHubIntegrationSetting,
 	handleWebhook,
 	upsertGithubIntegrationSetting,
-	urlToObjectID,
 } from "./github";
 import { addRun, runApi, startRun } from "./runs";
 import type { GiselleEngineConfig, GiselleEngineContext } from "./types";
@@ -49,14 +56,9 @@ export * from "./vault";
 
 export function GiselleEngine(config: GiselleEngineConfig) {
 	const context: GiselleEngineContext = {
-		storage: config.storage,
+		...config,
 		llmProviders: config.llmProviders ?? [],
 		integrationConfigs: config.integrationConfigs ?? {},
-		onConsumeAgentTime: config.onConsumeAgentTime,
-		telemetry: config.telemetry,
-		fetchUsageLimitsFn: config.fetchUsageLimitsFn,
-		sampleAppWorkspaceId: config.sampleAppWorkspaceId,
-		vault: config.vault,
 	};
 	return {
 		copyWorkspace: async (workspaceId: WorkspaceId) => {
@@ -120,13 +122,6 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		},
 		removeFile: async (workspaceId: WorkspaceId, fileId: FileId) => {
 			return await removeFile({ context, fileId, workspaceId });
-		},
-
-		githubUrlToObjectId: async (url: string) => {
-			return await urlToObjectID({
-				url,
-				context,
-			});
 		},
 		upsertGithubIntegrationSetting: async (
 			workspaceGitHubIntegrationSetting: WorkspaceGitHubIntegrationSetting,
@@ -200,6 +195,22 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			generation: QueuedGeneration;
 		}) => {
 			return await resolveTrigger({ ...args, context });
+		},
+		configureTrigger: async (args: {
+			trigger: ConfigureTriggerInput;
+		}) => {
+			return await configureTrigger({ ...args, context });
+		},
+		getTrigger: async (args: {
+			flowTriggerId: FlowTriggerId;
+		}) => {
+			return await getTrigger({ ...args, context });
+		},
+		getGitHubRepositoryFullname: async (args: {
+			repositoryNodeId: string;
+			installationId: number;
+		}) => {
+			return await getGitHubRepositoryFullname({ ...args, context });
 		},
 	};
 }

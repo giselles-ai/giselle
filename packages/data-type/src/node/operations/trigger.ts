@@ -1,49 +1,30 @@
+import { triggerProviders } from "@giselle-sdk/flow";
 import { z } from "zod";
-
-export const ManualTriggerProvider = z.object({
-	type: z.literal("manual"),
-	triggerId: z.string().describe("id of @giselle-sdk/flow/manualTrigger"),
-});
-export type ManualTriggerProvider = z.infer<typeof ManualTriggerProvider>;
-
-const GitHubTriggerProviderAuthUnauthenticated = z.object({
-	state: z.literal("unauthenticated"),
-});
-const GitHubTriggerProviderAuthAuthenticated = z.object({
-	state: z.literal("authenticated"),
-	installtionId: z.number(),
-});
-const GitHubTriggerProviderAuth = z.discriminatedUnion("state", [
-	GitHubTriggerProviderAuthUnauthenticated,
-	GitHubTriggerProviderAuthAuthenticated,
-]);
-export const GitHubTriggerProvider = z.object({
-	type: z.literal("github"),
-	triggerId: z.string().describe("id of @giselle-sdk/flow/githubTriggers"),
-	auth: GitHubTriggerProviderAuth,
-});
-export type GitHubTriggerProvider = z.infer<typeof GitHubTriggerProvider>;
-
-export const TriggerProvider = z.discriminatedUnion("type", [
-	ManualTriggerProvider,
-	GitHubTriggerProvider,
-]);
-export type TriggerProvider = z.infer<typeof TriggerProvider>;
-export function isTriggerProvider(value: unknown): value is TriggerProvider {
-	return TriggerProvider.safeParse(value).success;
-}
+import { FlowTriggerId } from "../../flow/trigger";
 
 export const TriggerProviderLike = z
 	.object({
-		type: z.string(),
-		triggerId: z.string().describe("id of @giselle-sdk/flow/trigger"),
+		provider: z.string(),
 	})
 	.passthrough();
 export type TriggerProviderLike = z.infer<typeof TriggerProviderLike>;
 
+const TriggerUnconfiguredState = z.object({
+	status: z.literal("unconfigured"),
+});
+const TriggerConfiguredState = z.object({
+	status: z.literal("configured"),
+	flowTriggerId: FlowTriggerId.schema,
+});
+const TriggerConfigurationState = z.discriminatedUnion("status", [
+	TriggerUnconfiguredState,
+	TriggerConfiguredState,
+]);
+
 export const TriggerContent = z.object({
 	type: z.literal("trigger"),
-	provider: TriggerProviderLike,
+	provider: z.enum(triggerProviders),
+	state: TriggerConfigurationState,
 });
 export type TriggerContent = z.infer<typeof TriggerContent>;
 

@@ -6,9 +6,9 @@ import {
 	isTextGenerationLanguageModelData,
 } from "@giselle-sdk/data-type";
 import {
+	type TriggerProvider,
 	githubActions,
-	githubTriggers,
-	manualTriggers,
+	triggerProviders,
 } from "@giselle-sdk/flow";
 import {
 	Capability,
@@ -47,6 +47,7 @@ import {
 } from "../../../icons";
 import { ImageGenerationNodeIcon } from "../../../icons/node";
 import { Tooltip } from "../../../ui/tooltip";
+import { triggerNodeDefaultName } from "../../../utils";
 import { isToolAction } from "../types";
 import {
 	actionNode,
@@ -216,7 +217,7 @@ export function Toolbar() {
 										<Popover.Portal>
 											<Popover.Content
 												className={clsx(
-													"relative rounded-[8px] px-[8px] py-[8px]",
+													"relative rounded-[8px] px-[8px] py-[8px] min-w-[200px]",
 													"bg-[hsla(255,_40%,_98%,_0.04)] text-white-900",
 													"backdrop-blur-[4px]",
 												)}
@@ -233,43 +234,28 @@ export function Toolbar() {
 															"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 														)}
 														onValueChange={(value) => {
-															setSelectedTool(addNodeTool(triggerNode(value)));
+															setSelectedTool(
+																addNodeTool(
+																	triggerNode(value as TriggerProvider),
+																),
+															);
 														}}
 													>
-														{manualTriggers.map((manualTrigger) => (
+														{triggerProviders.map((triggerProvider) => (
 															<ToggleGroup.Item
-																key={manualTrigger.id}
-																value={manualTrigger.id}
+																key={triggerProvider}
+																value={triggerProvider}
 																data-tool
 															>
-																<TriggerIcon className="size-[20px] shrink-0" />
+																{triggerProvider === "manual" && (
+																	<TriggerIcon className="size-[20px] shrink-0" />
+																)}
+																{triggerProvider === "github" && (
+																	<GitHubIcon className="size-[20px] shrink-0" />
+																)}
+
 																<p className="text-[14px]">
-																	{manualTrigger.label}
-																</p>
-															</ToggleGroup.Item>
-														))}
-													</ToggleGroup.Root>
-													<ToggleGroup.Root
-														type="single"
-														className={clsx(
-															"flex flex-col gap-[8px]",
-															"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-															"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-white-900/10",
-															"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
-														)}
-														onValueChange={(value) => {
-															setSelectedTool(addNodeTool(triggerNode(value)));
-														}}
-													>
-														{githubTriggers.map((githubTrigger) => (
-															<ToggleGroup.Item
-																key={githubTrigger.id}
-																value={githubTrigger.id}
-																data-tool
-															>
-																<GitHubIcon className="w-[20px] h-[20px] shrink-0" />
-																<p className="text-[14px]">
-																	{githubTrigger.label}
+																	{triggerNodeDefaultName(triggerProvider)}
 																</p>
 															</ToggleGroup.Item>
 														))}

@@ -83,14 +83,15 @@ export function NodeIcon({
 					}
 				}
 				case "trigger": {
-					switch (node.content.provider.type) {
+					switch (node.content.provider) {
 						case "github":
 							return <GitHubIcon {...props} data-content-type-icon />;
 						case "manual":
 							return <TriggerIcon {...props} data-content-type-icon />;
 						default: {
+							const _exhaustiveCheck: never = node.content;
 							throw new Error(
-								`Unhandled TriggerProviderType: ${node.content.provider.type}`,
+								`Unhandled TriggerProviderType: ${_exhaustiveCheck}`,
 							);
 						}
 					}

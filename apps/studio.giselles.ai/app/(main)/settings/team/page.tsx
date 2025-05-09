@@ -28,7 +28,7 @@ export default async function TeamPage() {
 					rel="noopener noreferrer"
 					className="text-black-300 text-[14px] font-medium border border-black-300 rounded-[4px] px-1.5 py-0.5 hover:bg-black-300/10 flex items-center gap-1.5 font-hubot"
 				>
-					About Setting
+					About Team Settings
 					<ExternalLink size={14} />
 				</a>
 			</div>
@@ -118,9 +118,6 @@ async function BillingInfoForProPlan({ team }: BillingInfoProps) {
 		<>
 			<div className="flex flex-col gap-y-[2px]">
 				<div className="flex flex-col gap-0.5">
-					<p className="text-[14px] leading-[16px] font-medium tracking-wide font-hubot text-white-400">
-						Thank you for being
-					</p>
 					<p className="text-[22px] leading-[26.4px] tracking-[-0.04em] font-medium font-hubot">
 						<span className="text-primary-400">Pro Plan</span>
 					</p>

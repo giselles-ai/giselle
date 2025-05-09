@@ -27,34 +27,47 @@ export async function getGitHubIntegrationState(
 	}
 
 	const gitHubUserClient = identityState.gitHubUserClient;
-	const { installations } = await gitHubUserClient.getInstallations();
+	const [{ installations }, installationUrl] = await Promise.all([
+		gitHubUserClient.getInstallations(),
+		gitHubAppInstallURL(),
+	]);
 	if (installations.length === 0) {
 		return {
 			status: "not-installed",
-			installationUrl: await gitHubAppInstallURL(),
+			installationUrl,
 		};
 	}
 
-	const [repositories, githubIntegrationSetting] = await Promise.all([
-		Promise.all(
-			installations.map(async (installation) => {
-				const { repositories: repos } = await gitHubUserClient.getRepositories(
-					installation.id,
-				);
-				return repos;
+	const [installationsWithRepositories, githubIntegrationSetting] =
+		await Promise.all([
+			Promise.all(
+				installations.map(async (installation) => {
+					const data = await gitHubUserClient.getRepositories(installation.id);
+					return {
+						...installation,
+						repositories: data.repositories,
+					};
+				}),
+			),
+			db.query.githubIntegrationSettings.findFirst({
+				where: (githubIntegrationSettings, { eq }) =>
+					eq(githubIntegrationSettings.agentDbId, agentDbId),
 			}),
-		).then((repos) =>
-			repos.flat().sort((a, b) => a.name.localeCompare(b.name)),
-		),
-		db.query.githubIntegrationSettings.findFirst({
-			where: (githubIntegrationSettings, { eq }) =>
-				eq(githubIntegrationSettings.agentDbId, agentDbId),
-		}),
-	]);
+		]);
+
+	const allRepositories = installationsWithRepositories
+		.flatMap(
+			(installationWithRepositories) =>
+				installationWithRepositories.repositories,
+		)
+		.sort((a, b) => a.name.localeCompare(b.name));
+
 	return {
 		status: "installed",
-		repositories,
+		repositories: allRepositories,
+		installations: installationsWithRepositories,
 		setting: githubIntegrationSetting,
+		installationUrl,
 	};
 }
 

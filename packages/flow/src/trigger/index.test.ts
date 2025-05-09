@@ -3,7 +3,7 @@ import { triggers } from "./index";
 
 describe("triggers", () => {
 	it("should have unique ids", () => {
-		const ids = triggers.map((trigger) => trigger.id);
+		const ids = triggers.map((trigger) => trigger.event.id);
 		const uniqueIds = new Set(ids);
 
 		// Print duplicates if any for easier debugging

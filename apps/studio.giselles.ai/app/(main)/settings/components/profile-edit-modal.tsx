@@ -221,7 +221,7 @@ export function ProfileEditModal({
 				/>
 				<DialogHeader className="relative z-10 w-full pt-[40px] mb-4 px-[24px]">
 					<DialogTitle className="text-white-800 font-semibold text-[20px] leading-[28px] font-hubot text-center">
-						Change your Profiles
+						Update Your Profile
 					</DialogTitle>
 					<DialogClose
 						className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none"

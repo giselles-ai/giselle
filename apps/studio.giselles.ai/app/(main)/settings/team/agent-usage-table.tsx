@@ -51,7 +51,7 @@ export function AgentUsageTable({
 						))
 					) : (
 						<div className="text-black-400 text-[12px] leading-[20.4px] tracking-normal font-geist">
-							No app usages
+							No app usage
 						</div>
 					)}
 				</div>

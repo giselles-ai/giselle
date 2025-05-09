@@ -1,4 +1,8 @@
-import type { FileNode, UploadedFileData } from "@giselle-sdk/data-type";
+import type {
+	FileData,
+	FileNode,
+	UploadedFileData,
+} from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { useCallback } from "react";
 import { useToasts } from "../../../ui/toast";
@@ -22,11 +26,13 @@ export function useFileNode(node: FileNode) {
 	);
 
 	const removeFile = useCallback(
-		async (file: UploadedFileData) => {
+		async (file: FileData) => {
+			// Update node content for all file statuses
 			updateNodeDataContent(node, {
 				files: node.content.files.filter((f) => f.id !== file.id),
 			});
-			await removeFileInternal(file);
+
+			await removeFileInternal(file as UploadedFileData);
 		},
 		[node, updateNodeDataContent, removeFileInternal],
 	);

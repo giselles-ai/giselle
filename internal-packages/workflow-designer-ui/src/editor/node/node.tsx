@@ -23,8 +23,10 @@ import { useNodeGenerations, useWorkflowDesigner } from "giselle-sdk/react";
 import { CheckIcon, SquareIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { GitHubIcon } from "../../icons";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
+import { GitHubRepositoryBadge } from "./ui";
 
 type GiselleWorkflowDesignerTextGenerationNode = XYFlowNode<
 	{ nodeData: TextGenerationNode; preview?: boolean },
@@ -295,6 +297,16 @@ export function NodeComponent({
 					</div>
 				</div>
 			</div>
+			{node.type === "operation" &&
+				node.content.type === "trigger" &&
+				node.content.provider === "github" &&
+				node.content.state.status === "configured" && (
+					<div className="px-[16px] relative">
+						<GitHubRepositoryBadge
+							flowTriggerId={node.content.state.flowTriggerId}
+						/>
+					</div>
+				)}
 			{!preview && (
 				<div className="flex justify-between">
 					<div className="grid">

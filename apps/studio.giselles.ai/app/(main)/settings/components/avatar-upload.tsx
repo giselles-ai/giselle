@@ -125,7 +125,7 @@ export function AvatarUpload({ isOpen, onClose, onUpload }: AvatarUploadProps) {
 				/>
 				<DialogHeader className="relative z-10">
 					<DialogTitle className="text-white-800 font-semibold text-[20px] leading-[28px] font-hubot text-center">
-						Change your Profiles
+						Update Your Profile
 					</DialogTitle>
 				</DialogHeader>
 

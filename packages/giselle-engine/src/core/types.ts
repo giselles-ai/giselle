@@ -34,6 +34,12 @@ export interface GitHubIntegrationConfig {
 		| (Omit<GitHubInstallationAppAuth, "installationId"> & {
 				resolver: GitHubInstalltionAppAuthResolver;
 		  });
+	authV2: {
+		appId: string;
+		privateKey: string;
+		clientId: string;
+		clientSecret: string;
+	};
 }
 
 export type GiselleIntegrationConfig = {

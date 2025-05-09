@@ -38,7 +38,7 @@ if (llmProviders.length === 0) {
 	throw new Error("No LLM providers configured");
 }
 
-let integrationConfigs: GiselleIntegrationConfig = {};
+const integrationConfigs: GiselleIntegrationConfig = {};
 // if (
 // 	process.env.GITHUB_APP_ID &&
 // 	process.env.GITHUB_APP_PRIVATE_KEY &&
@@ -54,16 +54,16 @@ let integrationConfigs: GiselleIntegrationConfig = {};
 // 		},
 // 	});
 // }
-if (process.env.GITHUB_TOKEN) {
-	integrationConfigs = {
-		github: {
-			auth: {
-				strategy: "personal-access-token",
-				personalAccessToken: process.env.GITHUB_TOKEN,
-			},
-		},
-	};
-}
+// if (process.env.GITHUB_TOKEN) {
+// 	integrationConfigs = {
+// 		github: {
+// 			auth: {
+// 				strategy: "personal-access-token",
+// 				personalAccessToken: process.env.GITHUB_TOKEN,
+// 			},
+// 		},
+// 	};
+// }
 
 if (process.env.PERPLEXITY_API_KEY) {
 	llmProviders.push("perplexity");

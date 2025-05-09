@@ -125,9 +125,8 @@ async function buildGenerationMessageForTextGeneration(
 					contextNode.id,
 					sourceKeyword.outputId,
 				);
-				if (result !== undefined) {
-					userMessage = userMessage.replace(replaceKeyword, result);
-				}
+				// If there is no matching Output, replace it with an empty string (remove the pattern string from userMessage)
+				userMessage = userMessage.replace(replaceKeyword, result ?? "");
 				break;
 			}
 			case "file":

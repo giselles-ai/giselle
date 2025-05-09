@@ -5,6 +5,7 @@
 			"env": [
 				"*_API_KEY",
 				"*_SECRET",
+				"GITHUB_*",
 				"LANGFUSE_*",
 				"POSTGRES_*",
 				"SIGNOZ_*",

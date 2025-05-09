@@ -520,8 +520,8 @@ importers:
         specifier: 0.32.1
         version: 0.32.1(@neondatabase/serverless@0.9.5)(@opentelemetry/api@1.9.0)(@types/pg@8.11.13)(@types/react@19.1.0)(@vercel/postgres@0.9.0)(pg@8.14.1)(react@19.1.0)
       flags:
-        specifier: 3.1.1
-        version: 3.1.1(@opentelemetry/api@1.9.0)(next@15.3.0(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        specifier: 4.0.0
+        version: 4.0.0(@opentelemetry/api@1.9.0)(next@15.3.0(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       gaxios:
         specifier: 6.7.1
         version: 6.7.1
@@ -754,6 +754,9 @@ importers:
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
+      swr:
+        specifier: 'catalog:'
+        version: 2.2.5(react@19.1.0)
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -795,6 +798,9 @@ importers:
       '@ai-sdk/react':
         specifier: 'catalog:'
         version: 1.2.9(react@19.1.0)(zod@3.24.1)
+      '@giselle-sdk/flow':
+        specifier: workspace:^
+        version: link:../flow
       '@giselle-sdk/language-model':
         specifier: workspace:^
         version: link:../language-model
@@ -6169,8 +6175,8 @@ packages:
     resolution: {integrity: sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==}
     engines: {node: '>=10'}
 
-  flags@3.1.1:
-    resolution: {integrity: sha512-UWxZ61y25rJCOId54unQ4Htc+u9fcpwbaYJ7nqoo7Yg0GZ/dVD7Bmw3srMHFuE52kDWHNnnly+6cscmTGaJ6QA==}
+  flags@4.0.0:
+    resolution: {integrity: sha512-CpONOK/nflKfaTT36r+Y4SP5rb9mv3AdqY/2Ws+TScrEGlT4PK+PZNiKJgIH87HooTXDblz31807q7lZ3LpuYQ==}
     peerDependencies:
       '@opentelemetry/api': ^1.7.0
       '@sveltejs/kit': '*'
@@ -14675,7 +14681,7 @@ snapshots:
       locate-path: 6.0.0
       path-exists: 4.0.0
 
-  flags@3.1.1(@opentelemetry/api@1.9.0)(next@15.3.0(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  flags@4.0.0(@opentelemetry/api@1.9.0)(next@15.3.0(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       '@edge-runtime/cookies': 5.0.2
       jose: 5.9.6

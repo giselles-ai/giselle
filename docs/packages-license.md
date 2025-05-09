@@ -7295,7 +7295,7 @@ CC-BY-4.0 permitted
 
 
 <a name="flags"></a>
-### flags v3.1.1
+### flags v4.0.0
 #### 
 
 ##### Paths

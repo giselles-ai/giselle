@@ -35,7 +35,7 @@ export function AccountDisplayNameForm({
 			<div className="flex flex-col gap-2">
 				<div className="flex flex-col gap-2">
 					<span className="text-white-400 font-medium text-[16px] leading-[19.2px] font-hubot">
-						Display name
+						Display Name
 					</span>
 					<p className="text-black-400 text-[14px] leading-[20.4px] font-geist">
 						Please provide your preferred name or display name that you're

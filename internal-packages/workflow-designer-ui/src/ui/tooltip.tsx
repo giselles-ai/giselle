@@ -2,7 +2,7 @@ import clsx from "clsx/lite";
 import { Tooltip as TooltipPrimitive } from "radix-ui";
 import type { ComponentProps, ReactNode } from "react";
 
-type TooltipProps = Omit<
+export type TooltipProps = Omit<
 	ComponentProps<typeof TooltipPrimitive.Trigger>,
 	"asChild"
 > & {

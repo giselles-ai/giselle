@@ -7,7 +7,7 @@ export default async function IntegrationPage() {
 				className="text-[32px] text-black--30 font-rosart"
 				style={{ textShadow: "0px 0px 20px hsla(207, 100%, 48%, 1)" }}
 			>
-				Integration
+				Integrations
 			</h3>
 			<GitHubIntegration />
 		</div>

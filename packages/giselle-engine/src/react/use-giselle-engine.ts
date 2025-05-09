@@ -135,9 +135,12 @@ export function useGiselleEngine(options?: FetchOptions): GiselleEngineClient {
 			type InputType = JsonRouterInput[TPath];
 
 			// Create a function that is correctly typed based on whether input is required
-			return ((input?: InputType extends undefined ? never : InputType) => {
+			return (async (
+				input?: InputType extends undefined ? never : InputType,
+			) => {
 				// @ts-expect-error
-				return fetchApi(path, input as unknown, transformToForm);
+				const result = await fetchApi(path, input as unknown, transformToForm);
+				return result;
 			}) as GiselleEngineClient[TPath];
 		},
 		[fetchApi],

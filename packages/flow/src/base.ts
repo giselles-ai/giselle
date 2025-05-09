@@ -1,11 +1,15 @@
 import type { z } from "zod";
 
-export interface TriggerBase {
-	provider: string;
+export interface TriggerEventBase {
 	id: string;
 	label: string;
 	description?: string;
 	payloads?: z.AnyZodObject;
+	conditions?: z.AnyZodObject;
+}
+export interface TriggerBase {
+	provider: string;
+	event: TriggerEventBase;
 }
 
 export interface ActionBase {

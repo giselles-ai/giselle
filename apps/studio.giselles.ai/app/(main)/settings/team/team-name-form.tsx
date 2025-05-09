@@ -82,10 +82,10 @@ export function TeamNameForm({ id: teamId, name }: Team) {
 			<div className="flex flex-col gap-2">
 				<div className="flex flex-col gap-2">
 					<span className="text-white-400 font-medium text-[16px] leading-[19.2px] font-hubot">
-						Team name
+						Team Name
 					</span>
 					<p className="text-black-400 text-[14px] leading-[20.4px] font-geist">
-						This is your team&apos;s display name in Vercel. You can use your
+						This is your team&apos;s display name in Giselle. You can use your
 						company name or department.
 					</p>
 				</div>

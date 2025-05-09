@@ -1,16 +1,13 @@
-import type {
-	FileData,
-	FileNode,
-	UploadedFileData,
-} from "@giselle-sdk/data-type";
+import type { FileData, FileNode } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
 import { ArrowUpFromLineIcon, FileXIcon, TrashIcon } from "lucide-react";
-import { useCallback, useState } from "react";
+import { Dialog } from "radix-ui";
+import { type ButtonHTMLAttributes, useCallback, useState } from "react";
 import { toRelativeTime } from "../../../helper/datetime";
 import { TriangleAlert } from "../../../icons";
 import { FileNodeIcon } from "../../../icons/node";
 import { useToasts } from "../../../ui/toast";
-import { Tooltip } from "../../../ui/tooltip";
+import { Tooltip, type TooltipProps } from "../../../ui/tooltip";
 import { useFileNode } from "./use-file-node";
 
 export type FileTypeConfig = {
@@ -216,7 +213,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 							<FileListItem
 								key={file.id}
 								fileData={file}
-								onRemove={(uploadedFile) => removeFile(uploadedFile)}
+								onRemove={removeFile}
 							/>
 						))}
 					</div>
@@ -303,12 +300,29 @@ export function FilePanel({ node, config }: FilePanelProps) {
 	);
 }
 
+function RemoveButton({
+	onClick,
+	...props
+}: Omit<TooltipProps, "text" | "children">) {
+	return (
+		<Tooltip text="Remove" {...props}>
+			<button
+				type="button"
+				className="hidden group-hover:block px-[4px] py-[4px] bg-transparent hover:bg-white-900/10 rounded-[8px] transition-colors mr-[2px] flex-shrink-0"
+				onClick={onClick}
+			>
+				<TrashIcon className="w-[24px] h-[24px] stroke-current stroke-[1px] " />
+			</button>
+		</Tooltip>
+	);
+}
+
 function FileListItem({
 	fileData,
 	onRemove,
 }: {
 	fileData: FileData;
-	onRemove: (file: UploadedFileData) => void;
+	onRemove: (file: FileData) => void;
 }) {
 	return (
 		<div className="flex items-center overflow-x-hidden group justify-between bg-black-100 hover:bg-white-900/10 transition-colors p-[8px] rounded-[8px]">
@@ -324,16 +338,49 @@ function FileListItem({
 					{fileData.status === "failed" && <p>Failed</p>}
 				</div>
 			</div>
-			{fileData.status === "uploaded" && (
-				<Tooltip text="Remove">
-					<button
-						type="button"
-						className="hidden group-hover:block px-[4px] py-[4px] bg-transparent hover:bg-white-900/10 rounded-[8px] transition-colors mr-[2px] flex-shrink-0"
-						onClick={() => onRemove(fileData)}
-					>
-						<TrashIcon className="w-[24px] h-[24px] stroke-current stroke-[1px] " />
-					</button>
-				</Tooltip>
+
+			{fileData.status === "failed" ? (
+				<RemoveButton onClick={() => onRemove(fileData)} />
+			) : (
+				<Dialog.Root>
+					<Dialog.Trigger asChild>
+						<RemoveButton />
+					</Dialog.Trigger>
+					<Dialog.Portal>
+						<Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-50" />
+						<Dialog.Content className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[400px] bg-black-900 rounded-[12px] p-[24px] shadow-xl z-50 border border-black-400">
+							<Dialog.Title className="text-[18px] font-semibold text-white-800 mb-4">
+								Confirm Removal
+							</Dialog.Title>
+							<Dialog.Description className="text-[14px] text-white-400 mb-6">
+								This file is still uploading. Are you sure you want to remove
+								it?
+							</Dialog.Description>
+							<div className="flex justify-end gap-[12px]">
+								<Dialog.Close asChild>
+									<button
+										type="button"
+										className="py-[8px] px-[16px] rounded-[8px] text-[14px] font-medium bg-transparent text-white-800 border border-black-400 hover:bg-white-900/10"
+									>
+										Cancel
+									</button>
+								</Dialog.Close>
+								<button
+									type="button"
+									className="py-[8px] px-[16px] rounded-[8px] text-[14px] font-medium bg-error-900 text-white-800 hover:bg-error-900/80"
+									onClick={() => onRemove(fileData)}
+								>
+									Remove
+								</button>
+							</div>
+							<Dialog.Close
+								className="hidden"
+								tabIndex={-1}
+								aria-hidden="true"
+							/>
+						</Dialog.Content>
+					</Dialog.Portal>
+				</Dialog.Root>
 			)}
 		</div>
 	);

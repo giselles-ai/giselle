@@ -65,7 +65,7 @@ export function needsAuthorization(error: unknown) {
 	if (error instanceof GitHubTokenRefreshError) {
 		return true;
 	}
-	if (error instanceof RequestError) {
+	if (typeof error === "object" && error !== null && "status" in error) {
 		return error.status === 401 || error.status === 403 || error.status === 404;
 	}
 	return false;

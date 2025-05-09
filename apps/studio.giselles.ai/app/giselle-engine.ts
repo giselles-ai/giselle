@@ -32,6 +32,20 @@ const sampleAppWorkspaceId = WorkspaceId.parse(
 	process.env.SAMPLE_APP_WORKSPACE_ID,
 );
 
+const githubAppId = process.env.GITHUB_APP_ID;
+const githubAppPrivateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+const githubAppClientId = process.env.GITHUB_APP_CLIENT_ID;
+const githubAppClientSecret = process.env.GITHUB_APP_CLIENT_SECRET;
+
+if (
+	githubAppId === undefined ||
+	githubAppPrivateKey === undefined ||
+	githubAppClientId === undefined ||
+	githubAppClientSecret === undefined
+) {
+	throw new Error("missing github credentials");
+}
+
 export const giselleEngine = NextGiselleEngine({
 	basePath: "/api/giselle",
 	storage,
@@ -54,15 +68,13 @@ export const giselleEngine = NextGiselleEngine({
 					installtionIds: () => [1234],
 				},
 			},
+			authV2: {
+				appId: githubAppId,
+				privateKey: githubAppPrivateKey,
+				clientId: githubAppClientId,
+				clientSecret: githubAppClientSecret,
+			},
 		},
-		// github: {
-		// 	provider: "github",
-		// 	auth: {
-		// 		strategy: "app-installation",
-		// 		appId: 1234,
-		// 		privateKey: "pp",
-		// 	},
-		// },
 	},
 	vault,
 });
