@@ -101,27 +101,9 @@ export interface NodeFactory<
 	clone(orig: N): NodeFactoryCloneResult<N>;
 }
 
-// ... (Helper functions: hasProviderOptions, removeSourceRefsFromPrompt - unchanged) ...
 function hasProviderOptions(fileData: FileData): fileData is UploadedFileData {
 	return fileData.status === "uploaded" && "providerOptions" in fileData;
 }
-
-function removeSourceRefsFromPrompt(
-	content: JSONContent[] | undefined,
-): JSONContent[] | undefined {
-	if (!content) return undefined;
-	return content
-		.filter((item) => item.type !== "Source")
-		.map((item) => {
-			if (item.content) {
-				return { ...item, content: removeSourceRefsFromPrompt(item.content) };
-			}
-			return item;
-		})
-		.filter((item) => !(item.type === "text" && !item.text?.trim()));
-}
-
-// --- Concrete Node Factories (Clone Logic Updated) ---
 
 const textGenerationFactoryImpl = {
 	create: (llm: TextGenerationContent["llm"]): TextGenerationNode => {
@@ -151,26 +133,58 @@ const textGenerationFactoryImpl = {
 		orig: TextGenerationNode,
 	): NodeFactoryCloneResult<TextGenerationNode> => {
 		const clonedContent = structuredClone(orig.content);
+		const { newIo: newInputs, idMap: inputIdMap } =
+			cloneAndRenewInputIdsWithMap(orig.inputs);
+		const { newIo: newOutputs, idMap: outputIdMap } =
+			cloneAndRenewOutputIdsWithMap(orig.outputs);
+
 		if (clonedContent.prompt && isJsonContent(clonedContent.prompt)) {
 			try {
 				const promptJson: JSONContent = JSON.parse(clonedContent.prompt);
-				const cleanedPromptContent = removeSourceRefsFromPrompt(
-					promptJson.content,
-				);
-				if (cleanedPromptContent && cleanedPromptContent.length > 0) {
-					promptJson.content = cleanedPromptContent;
+
+				function keepSourceRefs(
+					content: JSONContent[] | undefined,
+				): JSONContent[] | undefined {
+					if (!content) return undefined;
+
+					return content
+						.map((item) => {
+							if (item.content) {
+								const newSubContent = keepSourceRefs(item.content);
+								if (
+									newSubContent &&
+									newSubContent.length === 0 &&
+									item.type !== "paragraph"
+								) {
+									return { ...item, content: newSubContent };
+								}
+
+								if (!newSubContent && item.content) {
+									return null;
+								}
+							}
+							return item;
+						})
+						.filter(
+							(item): item is JSONContent =>
+								item !== null &&
+								!(item.type === "text" && !item.text?.trim() && !item.marks),
+						);
+				}
+
+				const processedPromptContent = keepSourceRefs(promptJson.content);
+
+				if (processedPromptContent && processedPromptContent.length > 0) {
+					promptJson.content = processedPromptContent;
 					clonedContent.prompt = JSON.stringify(promptJson);
 				} else {
 					clonedContent.prompt = "";
 				}
 			} catch (e) {
 				console.error("Error processing prompt for TextGeneration clone:", e);
+				clonedContent.prompt = "";
 			}
 		}
-		const { newIo: newInputs, idMap: inputIdMap } =
-			cloneAndRenewInputIdsWithMap(orig.inputs);
-		const { newIo: newOutputs, idMap: outputIdMap } =
-			cloneAndRenewOutputIdsWithMap(orig.outputs);
 
 		const newNode = {
 			id: NodeId.generate(),
