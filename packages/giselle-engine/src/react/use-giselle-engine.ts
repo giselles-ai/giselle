@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import type { AnyZodObject, z } from "zod";
+import type { z } from "zod";
 import {
 	type FormDataRouterHandlers,
 	type FormDataRouterInput,
@@ -17,34 +17,9 @@ type FetchOptions = {
 	basePath?: string;
 };
 
-type ExtractResponseData<T> = T extends JsonResponse<infer U>
-	? U
-	: T extends Promise<infer U>
-		? U
-		: T;
-
-type JsonMethodWithInput<P extends JsonRouterPaths> = (
-	input: JsonRouterInput[P] extends z.AnyZodObject
-		? z.infer<JsonRouterInput[P]>
-		: never,
-) => Promise<ExtractResponseData<Awaited<ReturnType<JsonRouterHandlers[P]>>>>;
-
-type JsonMethodWithoutInput<P extends JsonRouterPaths> = () => Promise<
-	ExtractResponseData<Awaited<ReturnType<JsonRouterHandlers[P]>>>
->;
-
-type FormDataMethodWithInput<P extends FormDataRouterPaths> = (
-	input: FormDataRouterInput[P] extends z.AnyZodObject
-		? z.infer<FormDataRouterInput[P]>
-		: never,
-) => Promise<
-	ExtractResponseData<Awaited<ReturnType<FormDataRouterHandlers[P]>>>
->;
-
-type FormDataMethodWithoutInput<P extends FormDataRouterPaths> = () => Promise<
-	ExtractResponseData<Awaited<ReturnType<FormDataRouterHandlers[P]>>>
->;
-
+/**
+ * Converts JSON object to FormData
+ */
 function transformJsonToFormData(json: Record<string, unknown>): FormData {
 	const formData = new FormData();
 	for (const key in json) {
@@ -60,14 +35,41 @@ function transformJsonToFormData(json: Record<string, unknown>): FormData {
 	return formData;
 }
 
-type GiselleEngineClient = {
-	[P in JsonRouterPaths]: JsonRouterInput[P] extends AnyZodObject
-		? JsonMethodWithInput<P>
-		: JsonMethodWithoutInput<P>;
-} & {
-	[P in FormDataRouterPaths]: FormDataRouterInput[P] extends AnyZodObject
-		? FormDataMethodWithInput<P>
-		: FormDataMethodWithoutInput<P>;
+/**
+ * Extract response data type from API handler return types
+ */
+type ExtractResponseData<T> = T extends JsonResponse<infer U>
+	? U
+	: T extends Promise<infer U>
+		? U
+		: T;
+
+/**
+ * GiselleEngineClient type definition
+ * Provides autocomplete and type checking for all API endpoints
+ */
+export type GiselleEngineClient = {
+	[K in JsonRouterPaths | FormDataRouterPaths]: K extends JsonRouterPaths
+		? JsonRouterInput[K] extends z.ZodType<unknown>
+			? (
+					input: z.infer<JsonRouterInput[K]>,
+				) => Promise<
+					ExtractResponseData<Awaited<ReturnType<JsonRouterHandlers[K]>>>
+				>
+			: () => Promise<
+					ExtractResponseData<Awaited<ReturnType<JsonRouterHandlers[K]>>>
+				>
+		: K extends FormDataRouterPaths
+			? FormDataRouterInput[K] extends z.ZodType<unknown>
+				? (
+						input: z.infer<FormDataRouterInput[K]>,
+					) => Promise<
+						ExtractResponseData<Awaited<ReturnType<FormDataRouterHandlers[K]>>>
+					>
+				: () => Promise<
+						ExtractResponseData<Awaited<ReturnType<FormDataRouterHandlers[K]>>>
+					>
+			: never;
 } & {
 	basePath: string;
 };
@@ -81,24 +83,15 @@ type GiselleEngineClient = {
 export function useGiselleEngine(options?: FetchOptions): GiselleEngineClient {
 	const basePath = options?.basePath ?? "/api/giselle";
 
-	/**
-	 * Generic fetch function that handles API requests with proper typing
-	 */
-	const fetchApi = useCallback(
-		async <TPath extends JsonRouterPaths>(
-			path: TPath,
-			input?: JsonRouterInput[TPath],
-			transformToFormData = false,
-		) => {
-			// Check if input is FormData
+	// Function to make API requests
+	const makeRequest = useCallback(
+		async (path: string, input?: unknown, isFormData = false) => {
 			const response = await fetch(`${basePath}/${path}`, {
 				method: "POST",
-				// Don't set Content-Type header for FormData (browser will set it with boundary)
-				headers: transformToFormData
+				headers: isFormData
 					? undefined
 					: { "Content-Type": "application/json" },
-				// If it's FormData, send it directly; otherwise, stringify as JSON
-				body: transformToFormData
+				body: isFormData
 					? transformJsonToFormData(input as Record<string, unknown>)
 					: input
 						? JSON.stringify(input)
@@ -127,53 +120,26 @@ export function useGiselleEngine(options?: FetchOptions): GiselleEngineClient {
 		},
 		[basePath],
 	);
-	/**
-	 * Creates a method for a specific router path
-	 */
-	const createMethod = useCallback(
-		<TPath extends JsonRouterPaths>(path: TPath, transformToForm = false) => {
-			type InputType = JsonRouterInput[TPath];
 
-			// Create a function that is correctly typed based on whether input is required
-			return (async (
-				input?: InputType extends undefined ? never : InputType,
-			) => {
-				// @ts-expect-error
-				const result = await fetchApi(path, input as unknown, transformToForm);
-				return result;
-			}) as GiselleEngineClient[TPath];
-		},
-		[fetchApi],
-	);
-
-	/**
-	 * Generate the client object with all router methods
-	 */
+	// Create the client object with all API methods
 	const client = useMemo(() => {
-		const jsonRouterMethods = jsonRouterPaths.reduce(
-			(acc, path) => {
-				// @ts-expect-error
-				acc[path] = createMethod(path);
-				return acc;
-			},
-			{} as Partial<GiselleEngineClient>,
-		);
+		const methods = {} as Record<string, unknown>;
 
-		const formDataRouterMethods = formDataRouterPaths.reduce(
-			(acc, path) => {
-				// @ts-expect-error
-				acc[path] = createMethod(path, true);
-				return acc;
-			},
-			{} as Partial<GiselleEngineClient>,
-		);
+		// Add JSON router methods
+		for (const path of jsonRouterPaths) {
+			methods[path] = (input?: unknown) => makeRequest(path, input, false);
+		}
+
+		// Add FormData router methods
+		for (const path of formDataRouterPaths) {
+			methods[path] = (input?: unknown) => makeRequest(path, input, true);
+		}
 
 		return {
-			...jsonRouterMethods,
-			...formDataRouterMethods,
+			...methods,
 			basePath,
 		} as GiselleEngineClient;
-	}, [createMethod, basePath]);
+	}, [makeRequest, basePath]);
 
 	return client;
 }

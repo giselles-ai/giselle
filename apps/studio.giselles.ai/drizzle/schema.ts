@@ -9,6 +9,7 @@ import type {
 	FlowId,
 	GitHubEventNodeMapping,
 	GitHubIntegrationSettingId,
+	GitHubRepositoryIndexId,
 } from "@giselles-ai/types";
 import { relations } from "drizzle-orm";
 import {
@@ -22,6 +23,7 @@ import {
 	text,
 	timestamp,
 	unique,
+	vector,
 } from "drizzle-orm/pg-core";
 import type { Stripe } from "stripe";
 
@@ -266,5 +268,64 @@ export const invitations = pgTable(
 	},
 	(table) => ({
 		teamDbIdRevokedAtIdx: index().on(table.teamDbId, table.revokedAt),
+	}),
+);
+
+type GitHubRepositoryIndexStatus = "idle" | "running" | "completed" | "failed";
+export const githubRepositoryIndex = pgTable(
+	"github_repository_index",
+	{
+		id: text("id").$type<GitHubRepositoryIndexId>().notNull().unique(),
+		dbId: serial("db_id").primaryKey(),
+		owner: text("owner").notNull(),
+		repo: text("repo").notNull(),
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		installationId: integer("installation_id").notNull(),
+		lastIngestedCommitSha: text("last_ingested_commit_sha"),
+		status: text("status")
+			.notNull()
+			.$type<GitHubRepositoryIndexStatus>()
+			.default("idle"),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.notNull()
+			.$onUpdate(() => new Date()),
+	},
+	(table) => ({
+		ownerRepoTeamUnique: unique().on(table.owner, table.repo, table.teamDbId),
+		teamDbIdIdx: index().on(table.teamDbId),
+		statusIdx: index().on(table.status),
+	}),
+);
+
+export const githubRepositoryEmbeddings = pgTable(
+	"github_repository_embeddings",
+	{
+		dbId: serial("db_id").primaryKey(),
+		repositoryIndexDbId: integer("repository_index_db_id")
+			.notNull()
+			.references(() => githubRepositoryIndex.dbId, { onDelete: "cascade" }),
+		commitSha: text("commit_sha").notNull(),
+		fileSha: text("file_sha").notNull(),
+		path: text("path").notNull(),
+		nodeId: text("node_id").notNull(),
+		embedding: vector("embedding", { dimensions: 1536 }).notNull(),
+		chunkContent: text("chunk_content").notNull(),
+		chunkIndex: integer("chunk_index").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => ({
+		repositoryIndexDbIdFilePathChunkIndexUnique: unique().on(
+			table.repositoryIndexDbId,
+			table.path,
+			table.chunkIndex,
+		),
+		embeddingIndex: index().using(
+			"hnsw",
+			table.embedding.op("vector_cosine_ops"),
+		),
 	}),
 );

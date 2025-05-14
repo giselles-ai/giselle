@@ -121,10 +121,19 @@ function TriggerButton({ triggerNode }: { triggerNode: TriggerNode }) {
 function Trigger() {
 	const { data } = useWorkflowDesigner();
 
-	const triggerNodes = useMemo(
-		() => data.nodes.filter((node) => isTriggerNode(node)),
-		[data.nodes],
-	);
+	const triggerNodes = useMemo(() => {
+		const tmp: TriggerNode[] = [];
+		for (const node of data.nodes) {
+			if (!isTriggerNode(node)) {
+				continue;
+			}
+			if (node.content.state.status === "unconfigured") {
+				continue;
+			}
+			tmp.push(node);
+		}
+		return tmp;
+	}, [data.nodes]);
 	if (triggerNodes.length === 0) {
 		return null;
 	}

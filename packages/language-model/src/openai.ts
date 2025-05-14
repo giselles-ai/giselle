@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { Capability, LanguageModelBase, Tier } from "./base";
+import {
+	Capability,
+	type ImageGenerationParams,
+	LanguageModelBase,
+	Tier,
+} from "./base";
 
 const OpenAILanguageModelConfigurations = z.object({
 	temperature: z.number(),

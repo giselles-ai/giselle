@@ -179,7 +179,7 @@ export function OpenAIModelPanel({
 								languageModel,
 								Capability.OptionalSearchGrounding,
 							) &&
-							"Web search will not use since the current model does not support web search"
+							"Web search is not supported by the selected model"
 						}
 					/>
 				</div>

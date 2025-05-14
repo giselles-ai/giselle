@@ -36,7 +36,7 @@ export function GenerationRunner({
 		case "trigger":
 			return <TriggerRunner generation={generation} />;
 		case "action":
-			return null;
+			return <ActionRunner generation={generation} />;
 		default: {
 			const _exhaustiveCheck: never = generationContext.operationNode.content;
 			return _exhaustiveCheck;
@@ -132,6 +132,7 @@ function ImageGenerationRunner({
 	} = useGenerationRunnerSystem();
 	const client = useGiselleEngine();
 	const telemetry = useTelemetry();
+	const stop = () => {};
 	useOnce(() => {
 		if (!isQueuedGeneration(generation)) {
 			return;
@@ -163,6 +164,7 @@ function TriggerRunner({
 		addStopHandler,
 	} = useGenerationRunnerSystem();
 	const client = useGiselleEngine();
+	const stop = () => {};
 	useOnce(() => {
 		if (!isQueuedGeneration(generation)) {
 			return;
@@ -172,6 +174,37 @@ function TriggerRunner({
 			updateGenerationStatusToRunning(generation.id);
 			client
 				.resolveTrigger({
+					generation,
+				})
+				.then(() => {
+					updateGenerationStatusToComplete(generation.id);
+				});
+		});
+	});
+	return null;
+}
+
+function ActionRunner({
+	generation,
+}: {
+	generation: Generation;
+}) {
+	const {
+		updateGenerationStatusToComplete,
+		updateGenerationStatusToRunning,
+		addStopHandler,
+	} = useGenerationRunnerSystem();
+	const client = useGiselleEngine();
+	const stop = () => {};
+	useOnce(() => {
+		if (!isQueuedGeneration(generation)) {
+			return;
+		}
+		addStopHandler(generation.id, stop);
+		client.setGeneration({ generation }).then(() => {
+			updateGenerationStatusToRunning(generation.id);
+			client
+				.executeAction({
 					generation,
 				})
 				.then(() => {

@@ -1,6 +1,7 @@
 import type {
 	CreatedRun,
 	FileId,
+	FlowTrigger,
 	FlowTriggerId,
 	Generation,
 	GenerationId,
@@ -22,6 +23,7 @@ import {
 	configureTrigger,
 	getTrigger,
 	resolveTrigger,
+	setTrigger,
 } from "./flows";
 import {
 	type TelemetrySettings,
@@ -41,6 +43,7 @@ import {
 	handleWebhook,
 	upsertGithubIntegrationSetting,
 } from "./github";
+import { executeAction } from "./operations";
 import { addRun, runApi, startRun } from "./runs";
 import type { GiselleEngineConfig, GiselleEngineContext } from "./types";
 import {
@@ -212,6 +215,11 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		}) => {
 			return await getGitHubRepositoryFullname({ ...args, context });
 		},
+		setTrigger: async (args: { trigger: FlowTrigger }) =>
+			setTrigger({ ...args, context }),
+		executeAction: async (args: {
+			generation: QueuedGeneration;
+		}) => executeAction({ ...args, context }),
 	};
 }
 

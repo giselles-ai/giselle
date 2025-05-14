@@ -10,7 +10,7 @@ const menuItems = [
 	{ name: "Members", path: "/settings/team/members" },
 	{ name: "Integrations", path: "/settings/team/integrations" },
 	{ name: "Usage", path: "/settings/team/usage" },
-	{ name: "Settings", path: "/settings/team" },
+	{ name: "Team Settings", path: "/settings/team" },
 ];
 
 export const Nav: FC = () => {

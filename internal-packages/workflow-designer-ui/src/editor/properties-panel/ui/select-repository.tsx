@@ -15,7 +15,7 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "../../../../ui/select";
+} from "../../../ui/select";
 
 interface SelectRepository {
 	installationId: number;

@@ -1,5 +1,5 @@
 import type { Node } from "@giselle-sdk/data-type";
-import type { TriggerProvider } from "@giselle-sdk/flow";
+import type { ActionProvider, TriggerProvider } from "@giselle-sdk/flow";
 
 export const triggerProviderLabel: Record<TriggerProvider, string> = {
 	github: "GitHub",
@@ -8,6 +8,14 @@ export const triggerProviderLabel: Record<TriggerProvider, string> = {
 
 export function triggerNodeDefaultName(triggerProvider: TriggerProvider) {
 	return `${triggerProviderLabel[triggerProvider]} Trigger`;
+}
+
+export const actionProviderLabel: Record<ActionProvider, string> = {
+	github: "GitHub",
+};
+
+export function actionNodeDefaultName(triggerProvider: ActionProvider) {
+	return `${triggerProviderLabel[triggerProvider]} Action`;
 }
 
 export function defaultName(node: Node) {
@@ -20,7 +28,9 @@ export function defaultName(node: Node) {
 				case "trigger":
 					return node.name ?? triggerNodeDefaultName(node.content.provider);
 				case "action":
-					return node.name ?? node.content.provider.type;
+					return (
+						node.name ?? actionNodeDefaultName(node.content.command.provider)
+					);
 				default: {
 					const _exhaustiveCheck: never = node.content;
 					throw new Error(`Unhandled action content type: ${_exhaustiveCheck}`);

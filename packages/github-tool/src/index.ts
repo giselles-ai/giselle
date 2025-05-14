@@ -3,6 +3,7 @@ export * from "./types";
 export * from "./octokit";
 export * from "./tools";
 export * from "./repository";
+export * from "./issues";
 
 export const IssueNodeIdQuery = gql(/* GraphQL */ `
   query IssueNodeIdQuery($name: String!, $owner: String!, $issueNumber: Int!) {

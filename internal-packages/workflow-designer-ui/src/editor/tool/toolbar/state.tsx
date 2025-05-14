@@ -4,7 +4,6 @@ import {
 	type ActionNode,
 	type FileCategory,
 	type FileNode,
-	type GitHubActionProvider,
 	type ImageGenerationLanguageModelData,
 	type ImageGenerationNode,
 	type Input,
@@ -18,14 +17,18 @@ import {
 	type TextNode,
 	type TriggerNode,
 } from "@giselle-sdk/data-type";
-import { type TriggerProvider, actions } from "@giselle-sdk/flow";
+import {
+	type ActionProvider,
+	type TriggerProvider,
+	actions,
+} from "@giselle-sdk/flow";
 import {
 	Capability,
 	hasCapability,
 	languageModels,
 } from "@giselle-sdk/language-model";
 import { type ReactNode, createContext, useContext, useState } from "react";
-import { triggerNodeDefaultName } from "../../../utils";
+import { actionNodeDefaultName, triggerNodeDefaultName } from "../../../utils";
 import type {
 	AddFileNodeTool,
 	AddGitHubNodeTool,
@@ -186,47 +189,21 @@ export function triggerNode(triggerProvider: TriggerProvider) {
 	} satisfies TriggerNode;
 }
 
-export function actionNode(actionId: string) {
-	const action = actions.find((action) => action.id === actionId);
-	if (!action) {
-		throw new Error(`Action not found: ${actionId}`);
-	}
-
-	const inputs: Input[] = [];
-	if ("parameters" in action)
-		for (const payloadKey of action.parameters.keyof()
-			.options as Array<string>) {
-			inputs.push({
-				id: InputId.generate(),
-				label: payloadKey,
-			});
-		}
-
-	function createDefaultProvider(action: (typeof actions)[number]) {
-		switch (action.provider) {
-			case "github":
-				return {
-					type: "github",
-					actionId,
-					auth: {
-						state: "unauthenticated",
-					},
-				} satisfies GitHubActionProvider;
-			default: {
-				const _exhaustiveCheck: never = action.provider;
-				throw new Error(`Unsupported trigger provider: ${_exhaustiveCheck}`);
-			}
-		}
-	}
+export function actionNode(actionProvider: ActionProvider) {
 	return {
 		id: NodeId.generate(),
 		type: "operation",
-		name: action.label,
+		name: actionNodeDefaultName(actionProvider),
 		content: {
 			type: "action",
-			provider: createDefaultProvider(action),
+			command: {
+				provider: actionProvider,
+				state: {
+					status: "unconfigured",
+				},
+			},
 		},
-		inputs,
+		inputs: [],
 		outputs: [],
 	} satisfies ActionNode;
 }

@@ -353,8 +353,7 @@ function FileListItem({
 								Confirm Removal
 							</Dialog.Title>
 							<Dialog.Description className="text-[14px] text-white-400 mb-6">
-								This file is still uploading. Are you sure you want to remove
-								it?
+								Are you sure you want to remove this file?
 							</Dialog.Description>
 							<div className="flex justify-end gap-[12px]">
 								<Dialog.Close asChild>

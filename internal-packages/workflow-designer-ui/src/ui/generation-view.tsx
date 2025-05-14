@@ -86,12 +86,14 @@ export function GenerationView({
 											<Accordion.Item
 												value={`messages.${message.id}.parts.[${index}].reasoning`}
 											>
-												<Accordion.Trigger className="group text-white-400 text-[14px] flex items-center gap-[4px] cursor-pointer hover:text-white-800 transition-colors data-[state=open]:text-white-800 outline-none">
+												<Accordion.Trigger className="group text-white-400 text-[12px] flex items-center gap-[4px] cursor-pointer hover:text-white-800 transition-colors data-[state=open]:text-white-800 outline-none font-hubot">
 													<ChevronRightIcon
 														className="size-[16px] transition-transform duration-300 ease-[cubic-bezier(0.87,_0,_0.13,_1)] group-data-[state=open]:rotate-90"
 														aria-hidden
 													/>
-													Thinking
+													<span className="bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-[rgba(255,_255,_255,_1)] via-[rgba(255,_255,_255,_0.5)] to-[rgba(255,_255,_255,_1)] text-transparent animate-shimmer">
+														Thinking...
+													</span>
 												</Accordion.Trigger>
 												<Accordion.Content className="markdown-renderer overflow-hidden italic text-[14px] text-white-400 ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-white-400/20">
 													<MemoizedMarkdown content={part.reasoning} />
@@ -111,12 +113,12 @@ export function GenerationView({
 										<Accordion.Item
 											value={`messages.${message.id}.parts.[${index}].reason`}
 										>
-											<Accordion.Trigger className="group text-white-400 text-[14px] flex items-center gap-[4px] cursor-pointer hover:text-white-800 transition-colors data-[state=open]:text-white-800 outline-none">
+											<Accordion.Trigger className="group text-white-400 text-[12px] flex items-center gap-[4px] cursor-pointer hover:text-white-800 transition-colors data-[state=open]:text-white-800 outline-none font-hubot">
 												<ChevronRightIcon
 													className="size-[16px] transition-transform duration-300 ease-[cubic-bezier(0.87,_0,_0.13,_1)] group-data-[state=open]:rotate-90"
 													aria-hidden
 												/>
-												Thought Process
+												<span>Thinking Process</span>
 											</Accordion.Trigger>
 											<Accordion.Content className="markdown-renderer overflow-hidden italic text-[14px] text-white-400 ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-white-400/20">
 												<MemoizedMarkdown content={part.reasoning} />
@@ -155,7 +157,14 @@ export function GenerationView({
 				</div>
 			))}
 			{generation.status !== "completed" &&
-				generation.status !== "cancelled" && (
+				generation.status !== "cancelled" &&
+				// reasoning部分がない場合のみSpinnerを表示
+				!generatedMessages.some((message) =>
+					message.parts?.some(
+						(part) =>
+							part.type === "reasoning" && generation.status === "running",
+					),
+				) && (
 					<div className="pt-[8px]">
 						<Spinner />
 					</div>

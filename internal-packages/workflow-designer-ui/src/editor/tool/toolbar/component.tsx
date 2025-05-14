@@ -6,7 +6,9 @@ import {
 	isTextGenerationLanguageModelData,
 } from "@giselle-sdk/data-type";
 import {
+	type ActionProvider,
 	type TriggerProvider,
+	actionProviders,
 	githubActions,
 	triggerProviders,
 } from "@giselle-sdk/flow";
@@ -47,7 +49,7 @@ import {
 } from "../../../icons";
 import { ImageGenerationNodeIcon } from "../../../icons/node";
 import { Tooltip } from "../../../ui/tooltip";
-import { triggerNodeDefaultName } from "../../../utils";
+import { actionNodeDefaultName, triggerNodeDefaultName } from "../../../utils";
 import { isToolAction } from "../types";
 import {
 	actionNode,
@@ -298,19 +300,25 @@ export function Toolbar() {
 															"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 														)}
 														onValueChange={(value) => {
-															setSelectedTool(addNodeTool(actionNode(value)));
+															setSelectedTool(
+																addNodeTool(
+																	actionNode(value as ActionProvider),
+																),
+															);
 														}}
 													>
-														{githubActions.map((githubAction) => (
+														{actionProviders.map((actionProvider) => (
 															<ToggleGroup.Item
-																key={githubAction.id}
-																value={githubAction.id}
+																key={actionProvider}
+																value={actionProvider}
 																data-tool
 															>
-																<GitHubIcon className="w-[20px] h-[20px] shrink-0" />
+																{actionProvider === "github" && (
+																	<GitHubIcon className="size-[20px] shrink-0" />
+																)}
 																<p className="text-[14px]">
-																	{githubAction.label}
-																</p>
+																	{actionNodeDefaultName(actionProvider)}
+																</p>{" "}
 															</ToggleGroup.Item>
 														))}
 													</ToggleGroup.Root>

@@ -20,7 +20,7 @@ export default async function TeamPage() {
 					className="text-primary-100 font-semibold text-[28px] leading-[28px] tracking-[-0.011em] font-hubot"
 					style={{ textShadow: "0px 0px 20px hsla(207, 100%, 48%, 1)" }}
 				>
-					Settings
+					Team Settings
 				</h3>
 				<a
 					href="https://docs.giselles.ai/guides/settings/team/billing"

@@ -1,7 +1,5 @@
 import {
 	type GitHubFlowTriggerEvent,
-	type Input,
-	InputId,
 	type Output,
 	OutputId,
 	type TriggerNode,
@@ -11,10 +9,7 @@ import {
 	githubTriggers,
 	triggers,
 } from "@giselle-sdk/flow";
-import type {
-	GitHubIntegrationInstallation,
-	GitHubIntegrationRepository,
-} from "@giselle-sdk/integration";
+import type { GitHubIntegrationInstallation } from "@giselle-sdk/integration";
 import { useIntegration } from "@giselle-sdk/integration/react";
 import clsx from "clsx/lite";
 import { useGiselleEngine, useWorkflowDesigner } from "giselle-sdk/react";
@@ -23,7 +18,6 @@ import {
 	type FormEventHandler,
 	useCallback,
 	useEffect,
-	useMemo,
 	useRef,
 	useState,
 	useTransition,
@@ -37,7 +31,8 @@ import {
 	SelectValue,
 } from "../../../ui/select";
 import { Tooltip } from "../../../ui/tooltip";
-import { ConfiguredView, GitHubRepositoryBlock, SelectRepository } from "./ui";
+import { GitHubRepositoryBlock, SelectRepository } from "../ui";
+import { ConfiguredView } from "./ui";
 
 export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	const { value } = useIntegration();
@@ -334,6 +329,7 @@ function Installed({
 						},
 					},
 					outputs: [...node.outputs, ...outputs],
+					name: trigger.event.label,
 				});
 			});
 		},

@@ -1,4 +1,5 @@
 import {
+	isActionNode,
 	isFileNode,
 	isImageGenerationNode,
 	isTextGenerationNode,
@@ -8,6 +9,7 @@ import {
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { useMemo } from "react";
+import { ActionNodePropertiesPanel } from "./action-node-properties-panel";
 import { FileNodePropertiesPanel } from "./file-node-properties-panel";
 import { ImageGenerationNodePropertiesPanel } from "./image-generation-node-properties-panel";
 import { TextGenerationNodePropertiesPanel } from "./text-generation-node-properties-panel";
@@ -53,6 +55,12 @@ export function PropertiesPanel() {
 				)}
 				{isTriggerNode(selectedNodes[0]) && (
 					<TriggerNodePropertiesPanel
+						node={selectedNodes[0]}
+						key={selectedNodes[0].id}
+					/>
+				)}
+				{isActionNode(selectedNodes[0]) && (
+					<ActionNodePropertiesPanel
 						node={selectedNodes[0]}
 						key={selectedNodes[0].id}
 					/>

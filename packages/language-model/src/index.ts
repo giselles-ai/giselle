@@ -28,9 +28,9 @@ export * from "./helper";
 export {
 	getImageGenerationModelProvider,
 	falImageGenerationSizes as imageGenerationSizes,
-	createUsageCalculator,
 } from "./fal";
-export type { FalImageResult, GeneratedImageData } from "./fal";
+export { createUsageCalculator } from "./usage-factory";
+export type { GeneratedImageData } from "./fal";
 export {
 	size as openaiImageSize,
 	quality as openaiImageQuality,

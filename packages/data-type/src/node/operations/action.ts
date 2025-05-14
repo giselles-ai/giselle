@@ -1,42 +1,39 @@
+import type { GitHubActionCommandId } from "@giselle-sdk/flow";
 import { z } from "zod";
 
-const GitHubActionProviderAuthUnauthenticated = z.object({
-	state: z.literal("unauthenticated"),
+const GitHubActionCommandUnconfiguredState = z.object({
+	status: z.literal("unconfigured"),
 });
-const GitHubActionProviderAuthAuthenticated = z.object({
-	state: z.literal("authenticated"),
-	installtionId: z.number(),
-});
-const GitHubActionProviderAuth = z.discriminatedUnion("state", [
-	GitHubActionProviderAuthUnauthenticated,
-	GitHubActionProviderAuthAuthenticated,
-]);
+export type GitHubActionCommandUnconfiguredState = z.infer<
+	typeof GitHubActionCommandUnconfiguredState
+>;
 
-export const GitHubActionProvider = z.object({
-	type: z.literal("github"),
-	actionId: z.string(),
-	auth: GitHubActionProviderAuth,
+const GitHubActionCommandConfiguredState = z.object({
+	status: z.literal("configured"),
+	commandId: z.custom<GitHubActionCommandId>(),
+	installationId: z.number(),
+	repositoryNodeId: z.string(),
 });
-export type GitHubActionProvider = z.infer<typeof GitHubActionProvider>;
+export type GitHubActionCommandConfiguredState = z.infer<
+	typeof GitHubActionCommandConfiguredState
+>;
 
-export const ActionProvider = z.discriminatedUnion("type", [
-	GitHubActionProvider,
-]);
-export type ActionProvider = z.infer<typeof ActionProvider>;
-
-export const ActionProviderLike = z.object({
-	type: z.string(),
-	actionId: z.string(),
+const GitHubActionCommandData = z.object({
+	provider: z.literal("github"),
+	state: z.discriminatedUnion("status", [
+		GitHubActionCommandUnconfiguredState,
+		GitHubActionCommandConfiguredState,
+	]),
 });
-export type ActionProviderLike = z.infer<typeof ActionProviderLike>;
+export type GitHubActionCommandData = z.infer<typeof GitHubActionCommandData>;
 
 export const ActionContent = z.object({
 	type: z.literal("action"),
-	provider: ActionProviderLike,
+	command: GitHubActionCommandData,
 });
 export type ActionContent = z.infer<typeof ActionContent>;
 
 export const ActionContentReference = z.object({
-	type: z.literal("action"),
+	type: ActionContent.shape.type,
 });
 export type ActionContentReference = z.infer<typeof ActionContentReference>;

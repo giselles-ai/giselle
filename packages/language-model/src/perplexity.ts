@@ -6,6 +6,7 @@ const PerplexityLanguageModelConfigurations = z.object({
 	topP: z.number(),
 	presencePenalty: z.number(),
 	frequencyPenalty: z.number(),
+	searchDomainFilter: z.array(z.string()).optional(),
 });
 type PerplexityLanguageModelConfigurations = z.infer<
 	typeof PerplexityLanguageModelConfigurations

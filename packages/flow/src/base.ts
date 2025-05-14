@@ -1,6 +1,6 @@
 import type { z } from "zod";
 
-export interface TriggerEventBase {
+export interface TriggerEvent {
 	id: string;
 	label: string;
 	description?: string;
@@ -9,13 +9,17 @@ export interface TriggerEventBase {
 }
 export interface TriggerBase {
 	provider: string;
-	event: TriggerEventBase;
+	event: TriggerEvent;
 }
 
-export interface ActionBase {
-	provider: string;
+export interface ActionCommand {
 	id: string;
 	label: string;
 	description?: string;
 	parameters?: z.AnyZodObject;
+}
+
+export interface ActionBase {
+	provider: string;
+	command: ActionCommand;
 }

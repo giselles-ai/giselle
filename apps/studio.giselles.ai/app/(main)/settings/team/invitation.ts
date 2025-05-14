@@ -118,7 +118,7 @@ export async function sendInvitationEmail(invitation: Invitation) {
 	const teamName = team[0].name;
 
 	await sendEmail(
-		"Invitation to join team",
+		`Invitation to join ${teamName} on Giselle`,
 		`You have been invited to join the team ${teamName} by ${inviter.email}.\n\n${buildJoinLink(
 			invitation.token,
 		)}`,

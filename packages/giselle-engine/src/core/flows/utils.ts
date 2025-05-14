@@ -29,6 +29,9 @@ export async function getFlowTrigger({
 		flowTriggerPath({
 			flowTriggerId: flowTriggerId,
 		}),
+		{
+			bypassingCache: true,
+		},
 	);
 
 	return FlowTrigger.parse(unsafe);

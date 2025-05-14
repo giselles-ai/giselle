@@ -34,6 +34,7 @@ import {
 import { UsageLimitError } from "../error";
 import { filePath } from "../files/utils";
 import type { GiselleEngineContext } from "../types";
+import { generateTelemetryTags } from "./telemetry";
 import { createPostgresTools } from "./tools/postgres";
 import type { PreparedToolSet, TelemetrySettings } from "./types";
 import {
@@ -48,6 +49,11 @@ import {
 	setGenerationIndex,
 	setNodeGenerationIndex,
 } from "./utils";
+
+// PerplexityProviderOptions is not exported from @ai-sdk/perplexity, so we define it here based on the model configuration
+export type PerplexityProviderOptions = {
+	search_domain_filter?: string[];
+};
 
 export async function generateText(args: {
 	context: GiselleEngineContext;
@@ -331,9 +337,10 @@ export async function generateText(args: {
 	// 	}
 	// }
 
+	const providerOptions = getProviderOptions(operationNode.content.llm);
 	const streamTextResult = streamText({
 		model: generationModel(operationNode.content.llm),
-		providerOptions: providerOptions(operationNode.content.llm),
+		providerOptions,
 		messages,
 		maxSteps: 5, // enable multi-step calls
 		tools: preparedToolSet.toolSet,
@@ -405,18 +412,6 @@ export async function generateText(args: {
 			if (sourceOutput !== undefined && event.sources.length > 0) {
 				const sources = await Promise.all(
 					event.sources.map(async (source) => {
-						// When using Gemini search grounding, source provides a proxy URL
-						// We need to access and resolve this proxy URL to get the actual redirect URL
-						if (isVertexAiHost(source.url)) {
-							const redirected = await getRedirectedUrlAndTitle(source.url);
-							return {
-								sourceType: "url",
-								id: source.id,
-								url: redirected.redirectedUrl,
-								title: redirected.title,
-								providerMetadata: source.providerMetadata,
-							} satisfies UrlSource;
-						}
 						return {
 							sourceType: "url",
 							id: source.id,
@@ -484,9 +479,16 @@ export async function generateText(args: {
 			isEnabled: args.context.telemetry?.isEnabled,
 			metadata: {
 				...args.telemetry?.metadata,
-				...(preparedToolSet.toolSet.openaiWebSearch
-					? { tags: ["web-search"] }
-					: {}),
+				tags: generateTelemetryTags({
+					provider: operationNode.content.llm.provider,
+					languageModel,
+					toolSet: preparedToolSet.toolSet,
+					configurations: operationNode.content.llm.configurations,
+					providerOptions:
+						operationNode.content.llm.provider === "anthropic"
+							? providerOptions
+							: undefined,
+				}),
 			},
 		},
 	});
@@ -517,18 +519,12 @@ function generationModel(languageModel: TextGenerationLanguageModelData) {
 	}
 }
 
-function isVertexAiHost(urlString: string): boolean {
-	// Disabling Vertex AI URL redirection due to frequent errors. Will monitor the impact.
-	return false;
-	// try {
-	// 	const parsedUrl = new URL(urlString);
-	// 	return ["vertexaisearch.cloud.google.com"].includes(parsedUrl.host);
-	// } catch (e) {
-	// 	return false;
-	// }
-}
-
-function providerOptions(languageModelData: TextGenerationLanguageModelData) {
+function getProviderOptions(languageModelData: TextGenerationLanguageModelData):
+	| {
+			anthropic?: AnthropicProviderOptions;
+			perplexity?: PerplexityProviderOptions;
+	  }
+	| undefined {
 	const languageModel = languageModels.find(
 		(model) => model.id === languageModelData.id,
 	);
@@ -545,7 +541,21 @@ function providerOptions(languageModelData: TextGenerationLanguageModelData) {
 					// Based on Zed's configuration: https://github.com/zed-industries/zed/blob/9d10489607df700c544c48cf09fea82f5d5aacf8/crates/anthropic/src/anthropic.rs#L212
 					budgetTokens: 4096,
 				},
-			} satisfies AnthropicProviderOptions,
+			},
 		};
 	}
+	if (
+		languageModel &&
+		languageModelData.provider === "perplexity" &&
+		languageModelData.configurations.searchDomainFilter
+	) {
+		const { searchDomainFilter } = languageModelData.configurations;
+		return {
+			perplexity: {
+				// https://docs.perplexity.ai/guides/search-domain-filters
+				search_domain_filter: searchDomainFilter,
+			},
+		};
+	}
+	return undefined;
 }

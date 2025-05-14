@@ -73,6 +73,10 @@ export const ActionNode = OperationNode.extend({
 	content: ActionContent,
 });
 export type ActionNode = z.infer<typeof ActionNode>;
+export function isActionNode(args?: unknown): args is ActionNode {
+	const result = ActionNode.safeParse(args);
+	return result.success;
+}
 
 const OverrideOperationNodeContent = z.discriminatedUnion("type", [
 	OverrideTextGenerationContent,
