@@ -65,6 +65,7 @@
 		"@giselle-sdk/text-editor": "workspace:^",
 		"@giselle-sdk/usage-limits": "workspace:^",
 		"@giselle-sdk/workflow-utils": "workspace:^",
+		"@mendable/firecrawl-js": "catalog:",
 		"ai": "catalog:",
 		"langfuse": "catalog:",
 		"langfuse-core": "catalog:",
