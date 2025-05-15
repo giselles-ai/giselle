@@ -10,12 +10,21 @@ import {
 	type Workspace,
 	generateInitialWorkspace,
 } from "@giselle-sdk/data-type";
-import { buildWorkflowMap } from "@giselle-sdk/workflow-utils";
+import { buildWorkflowMap, defaultName } from "@giselle-sdk/workflow-utils";
 import { isSupportedConnection } from "./is-supported-connection";
+import { factories } from "./node-factories";
 
 interface AddNodeOptions {
 	ui?: NodeUIState;
 }
+
+export type ConnectionCloneStrategy =
+	| "inputs-only" // Default: Only incoming connections to the new node are cloned
+	| "all" // Clones both incoming and outgoing connections
+	| "none"; // Clones no connections (future possibility)
+// Add more strategies here as needed, e.g., "outputs-only"
+const DEFAULT_CONNECTION_CLONE_STRATEGY: ConnectionCloneStrategy =
+	"inputs-only";
 
 export type WorkflowDesigner = ReturnType<typeof WorkflowDesigner>;
 
@@ -43,6 +52,81 @@ export function WorkflowDesigner({
 			ui.nodeState[node.id] = options.ui;
 		}
 		updateWorkflowMap();
+	}
+	function copyNode(
+		sourceNode: Node,
+		options?: {
+			connectionCloneStrategy?: ConnectionCloneStrategy;
+		} & AddNodeOptions,
+	): void {
+		const { newNode, inputIdMap, outputIdMap } = factories.clone(sourceNode);
+		addNode(newNode, options);
+
+		const strategy =
+			options?.connectionCloneStrategy ?? DEFAULT_CONNECTION_CLONE_STRATEGY;
+
+		// Find connections related to the original sourceNode
+		const originalConnections = connections.filter(
+			(conn) =>
+				conn.inputNode.id === sourceNode.id ||
+				conn.outputNode.id === sourceNode.id,
+		);
+
+		for (const originalConnection of originalConnections) {
+			// Case 1: Source node was the INPUT node of the original connection
+			// (originalConnection.outputNode) ---> (sourceNode)
+			// We want to clone this to: (originalConnection.outputNode) ---> (newNode)
+			if (
+				originalConnection.inputNode.id === sourceNode.id &&
+				(strategy === "all" || strategy === "inputs-only")
+			) {
+				const outputNode = nodes.find(
+					(n) => n.id === originalConnection.outputNode.id,
+				);
+				if (outputNode) {
+					const newInputId = inputIdMap[originalConnection.inputId];
+					if (newInputId) {
+						addConnection({
+							outputNode: outputNode, // Keep original output node
+							outputId: originalConnection.outputId,
+							inputNode: newNode, // New cloned node is the input
+							inputId: newInputId, // Use the new input ID from the map
+						});
+					} else {
+						console.warn(
+							`Could not find new input ID for old input ID: ${originalConnection.inputId} on new node ${newNode.id}`,
+						);
+					}
+				}
+			}
+			// Case 2: Source node was the OUTPUT node of the original connection
+			// (sourceNode) ---> (originalConnection.inputNode)
+			// We want to clone this to: (newNode) ---> (originalConnection.inputNode)
+			// This should only happen if strategy is "all"
+			else if (
+				originalConnection.outputNode.id === sourceNode.id &&
+				strategy === "all"
+			) {
+				const inputNode = nodes.find(
+					(n) => n.id === originalConnection.inputNode.id,
+				);
+				if (inputNode) {
+					const newOutputId = outputIdMap[originalConnection.outputId];
+					if (newOutputId) {
+						addConnection({
+							outputNode: newNode, // New cloned node is the output
+							outputId: newOutputId, // Use the new output ID from the map
+							inputNode: inputNode, // Keep original input node
+							inputId: originalConnection.inputId,
+						});
+					} else {
+						console.warn(
+							`Could not find new output ID for old output ID: ${originalConnection.outputId} on new node ${newNode.id}`,
+						);
+					}
+				}
+			}
+		}
 	}
 	function getData() {
 		return {
@@ -123,6 +207,7 @@ export function WorkflowDesigner({
 
 	return {
 		addNode,
+		copyNode,
 		addConnection,
 		getData,
 		updateNodeData,
