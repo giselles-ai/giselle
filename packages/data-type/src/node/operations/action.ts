@@ -1,4 +1,7 @@
-import type { GitHubActionCommandId } from "@giselle-sdk/flow";
+import type {
+	FetchActionCommandId,
+	GitHubActionCommandId,
+} from "@giselle-sdk/flow";
 import { z } from "zod";
 
 const GitHubActionCommandUnconfiguredState = z.object({
@@ -27,9 +30,38 @@ const GitHubActionCommandData = z.object({
 });
 export type GitHubActionCommandData = z.infer<typeof GitHubActionCommandData>;
 
+const FetchActionCommandUnconfiguredState = z.object({
+	status: z.literal("unconfigured"),
+});
+export type FetchActionCommandUnconfiguredState = z.infer<
+	typeof FetchActionCommandUnconfiguredState
+>;
+
+const FetchActionCommandConfiguredState = z.object({
+	status: z.literal("configured"),
+	commandId: z.custom<FetchActionCommandId>(),
+	urls: z.array(z.string().url()),
+	formats: z.array(z.enum(["markdown", "links", "html"])),
+});
+export type FetchActionCommandConfiguredState = z.infer<
+	typeof FetchActionCommandConfiguredState
+>;
+
+const FetchActionCommandData = z.object({
+	provider: z.literal("fetch"),
+	state: z.discriminatedUnion("status", [
+		FetchActionCommandUnconfiguredState,
+		FetchActionCommandConfiguredState,
+	]),
+});
+export type FetchActionCommandData = z.infer<typeof FetchActionCommandData>;
+
 export const ActionContent = z.object({
 	type: z.literal("action"),
-	command: GitHubActionCommandData,
+	command: z.discriminatedUnion("provider", [
+		GitHubActionCommandData,
+		FetchActionCommandData,
+	]),
 });
 export type ActionContent = z.infer<typeof ActionContent>;
 
