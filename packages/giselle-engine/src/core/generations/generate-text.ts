@@ -20,6 +20,7 @@ import {
 	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { githubTools, octokit } from "@giselle-sdk/github-tool";
+import { calculateCost } from "@giselle-sdk/language-model";
 import {
 	Capability,
 	hasCapability,
@@ -34,7 +35,7 @@ import {
 import { UsageLimitError } from "../error";
 import { filePath } from "../files/utils";
 import type { GiselleEngineContext } from "../types";
-import { generateTelemetryTags } from "./telemetry";
+import { createLangfuseTracer, generateTelemetryTags } from "./telemetry";
 import { createPostgresTools } from "./tools/postgres";
 import type { PreparedToolSet, TelemetrySettings } from "./types";
 import {
@@ -64,6 +65,7 @@ export async function generateText(args: {
 	if (!isTextGenerationNode(operationNode)) {
 		throw new Error("Invalid generation type");
 	}
+
 	const languageModel = languageModels.find(
 		(lm) => lm.id === operationNode.content.llm.id,
 	);
@@ -338,6 +340,7 @@ export async function generateText(args: {
 	// }
 
 	const providerOptions = getProviderOptions(operationNode.content.llm);
+
 	const streamTextResult = streamText({
 		model: generationModel(operationNode.content.llm),
 		providerOptions,
@@ -396,6 +399,18 @@ export async function generateText(args: {
 					outputId: generatedTextOutput.id,
 				});
 			}
+
+			const tokenUsage = event.usage;
+			let costInfo = null;
+
+			if (tokenUsage) {
+				costInfo = await calculateCost(
+					operationNode.content.llm.provider,
+					operationNode.content.llm.id,
+					tokenUsage,
+				);
+			}
+
 			const reasoningOutput = generationContext.operationNode.outputs.find(
 				(output) => output.accessor === "reasoning",
 			);
@@ -469,6 +484,37 @@ export async function generateText(args: {
 				generation: completedGeneration,
 				onConsumeAgentTime: args.context.onConsumeAgentTime,
 			});
+
+			console.log("before---------------");
+			const { langfuse, trace, span, generation } = createLangfuseTracer({
+				workspaceId,
+				runningGeneration,
+				tags: generateTelemetryTags({
+					provider: operationNode.content.llm.provider,
+					languageModel,
+					toolSet: preparedToolSet.toolSet,
+					configurations: operationNode.content.llm.configurations,
+					providerOptions,
+				}),
+				messages: { messages },
+				output: event.text,
+				usage: {
+					input: tokenUsage?.promptTokens ?? 0,
+					output: tokenUsage?.completionTokens ?? 0,
+					total:
+						(tokenUsage?.promptTokens ?? 0) +
+						(tokenUsage?.completionTokens ?? 0),
+					inputCost: costInfo?.inputCost ?? 0,
+					outputCost: costInfo?.outputCost ?? 0,
+					totalCost: costInfo?.totalCost ?? 0,
+				},
+				completedGeneration,
+				spanName: "ai.streamText",
+				generationName: "ai.streamText.doStream",
+				unit: "TOKENS",
+				settings: args.telemetry,
+			});
+			console.log("after---------------");
 			await Promise.all(
 				preparedToolSet.cleanupFunctions.map((cleanupFunction) =>
 					cleanupFunction(),
@@ -479,16 +525,19 @@ export async function generateText(args: {
 			isEnabled: args.context.telemetry?.isEnabled,
 			metadata: {
 				...args.telemetry?.metadata,
-				tags: generateTelemetryTags({
-					provider: operationNode.content.llm.provider,
-					languageModel,
-					toolSet: preparedToolSet.toolSet,
-					configurations: operationNode.content.llm.configurations,
-					providerOptions:
-						operationNode.content.llm.provider === "anthropic"
-							? providerOptions
-							: undefined,
-				}),
+				tags: [
+					"auto-instrumented",
+					...generateTelemetryTags({
+						provider: operationNode.content.llm.provider,
+						languageModel,
+						toolSet: preparedToolSet.toolSet,
+						configurations: operationNode.content.llm.configurations,
+						providerOptions:
+							operationNode.content.llm.provider === "anthropic"
+								? providerOptions
+								: undefined,
+					}),
+				],
 			},
 		},
 	});

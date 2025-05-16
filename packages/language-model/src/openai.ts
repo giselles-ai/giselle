@@ -5,6 +5,15 @@ import {
 	LanguageModelBase,
 	Tier,
 } from "./base";
+import {
+	Cost,
+	type CostCalculator,
+	type CostResultForDisplay,
+	type ModelTokenUsage,
+	calculateTokenCostForDisplay,
+	getValidPricing,
+	openAiTokenPricing,
+} from "./costs";
 
 const OpenAILanguageModelConfigurations = z.object({
 	temperature: z.number(),
@@ -134,3 +143,13 @@ export const models = [
 
 export const LanguageModel = OpenAILanguageModel;
 export type LanguageModel = OpenAILanguageModel;
+
+export class OpenAICostCalculator implements CostCalculator {
+	async calculate(
+		modelId: string,
+		usage: ModelTokenUsage,
+	): Promise<CostResultForDisplay> {
+		const validPrice = getValidPricing(modelId, openAiTokenPricing);
+		return calculateTokenCostForDisplay(usage, validPrice.price);
+	}
+}
