@@ -149,10 +149,18 @@ async function executeFetchActionCommand(args: {
 		return [];
 	}
 
+	let content: string;
+	if ("data" in result) {
+		content = JSON.stringify(result.data);
+	} else {
+		// TODO: Handle error
+		content = JSON.stringify(result);
+	}
+
 	return [
 		{
 			type: "generated-text",
-			content: JSON.stringify(result.data),
+			content,
 			outputId: resultOutput.id,
 		},
 	];
