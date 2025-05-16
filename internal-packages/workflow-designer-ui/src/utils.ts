@@ -15,7 +15,7 @@ export const actionProviderLabel: Record<ActionProvider, string> = {
 };
 
 export function actionNodeDefaultName(triggerProvider: ActionProvider) {
-	return `${triggerProviderLabel[triggerProvider]} Action`;
+	return `${actionProviderLabel[triggerProvider]} Action`;
 }
 
 export function defaultName(node: Node) {
