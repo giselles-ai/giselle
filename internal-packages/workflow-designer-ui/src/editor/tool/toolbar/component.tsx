@@ -29,6 +29,7 @@ import {
 	AnthropicIcon,
 	AudioIcon,
 	DocumentIcon,
+	FetchIcon,
 	GenNodeIcon,
 	GenerateImageIcon,
 	GenerateTextIcon,
@@ -315,6 +316,9 @@ export function Toolbar() {
 															>
 																{actionProvider === "github" && (
 																	<GitHubIcon className="size-[20px] shrink-0" />
+																)}
+																{actionProvider === "fetch" && (
+																	<FetchIcon className="size-[20px] shrink-0" />
 																)}
 																<p className="text-[14px]">
 																	{actionNodeDefaultName(actionProvider)}
