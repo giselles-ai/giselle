@@ -183,7 +183,7 @@ export function TextGenerationNodePropertiesPanel({
 							</Tabs.Content>
 							<Tabs.Content
 								value="model"
-								className="flex-1 flex flex-col overflow-y-auto"
+								className="flex-1 flex flex-col overflow-y-auto px-[4px]"
 							>
 								{node.content.llm.provider === "openai" && (
 									<OpenAIModelPanel
