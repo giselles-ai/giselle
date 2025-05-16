@@ -28,7 +28,10 @@ type UrlInputMode = (typeof urlInputModes)[number]["value"];
 export function FetchActionPropertiesPanel({ node }: { node: ActionNode }) {
 	const { updateNodeData } = useWorkflowDesigner();
 
-	if (node.content.command.state.status === "configured") {
+	if (
+		node.content.command.provider === "fetch" &&
+		node.content.command.state.status === "configured"
+	) {
 		return (
 			<FetchActionConfiguredView
 				nodeId={node.id}
