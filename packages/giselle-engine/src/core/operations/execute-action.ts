@@ -1,5 +1,6 @@
 import {
 	type CompletedGeneration,
+	type FetchActionCommandConfiguredState,
 	GenerationContext,
 	type GenerationOutput,
 	type GitHubActionCommandConfiguredState,
@@ -7,6 +8,7 @@ import {
 	isActionNode,
 } from "@giselle-sdk/data-type";
 import { createIssue } from "@giselle-sdk/github-tool";
+import FirecrawlApp from "@mendable/firecrawl-js";
 import { setGeneration, setNodeGenerationIndex } from "../generations/utils";
 import type { GiselleEngineContext } from "../types";
 
@@ -31,9 +33,16 @@ export async function executeAction(args: {
 				generation: args.generation,
 			});
 			break;
+		case "fetch": {
+			generationOutputs = await executeFetchActionCommand({
+				state: command.state,
+				context: args.context,
+				generation: args.generation,
+			});
+			break;
+		}
 		default: {
-			const _exhaustiveCheck: never = command.provider;
-			throw new Error(`Unhandled provider: ${_exhaustiveCheck}`);
+			throw new Error("Unhandled action provider");
 		}
 	}
 
@@ -113,4 +122,38 @@ async function executeGitHubActionCommand(args: {
 			throw new Error(`Unhandled command: ${_exhaustiveCheck}`);
 		}
 	}
+}
+
+async function executeFetchActionCommand(args: {
+	state: FetchActionCommandConfiguredState;
+	context: GiselleEngineContext;
+	generation: QueuedGeneration;
+}): Promise<GenerationOutput[]> {
+	const apiKey = process.env.FIRECRAWL_API_KEY;
+	if (!apiKey) throw new Error("FIRECRAWL_API_KEY is not set");
+	const app = new FirecrawlApp({ apiKey });
+
+	if (args.state.status !== "configured") {
+		throw new Error("Fetch action is not configured");
+	}
+
+	const { urls, formats } = args.state;
+	const result = await app.batchScrapeUrls(urls, {
+		formats,
+	});
+
+	const resultOutput = args.generation.context.operationNode.outputs.find(
+		(output) => output.accessor === "action-result",
+	);
+	if (resultOutput === undefined) {
+		return [];
+	}
+
+	return [
+		{
+			type: "generated-text",
+			content: JSON.stringify(result.data),
+			outputId: resultOutput.id,
+		},
+	];
 }
