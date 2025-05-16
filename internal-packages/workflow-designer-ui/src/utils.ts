@@ -12,6 +12,7 @@ export function triggerNodeDefaultName(triggerProvider: TriggerProvider) {
 
 export const actionProviderLabel: Record<ActionProvider, string> = {
 	github: "GitHub",
+	fetch: "Fetch",
 };
 
 export function actionNodeDefaultName(triggerProvider: ActionProvider) {
