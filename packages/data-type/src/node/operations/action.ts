@@ -41,6 +41,7 @@ const FetchActionCommandConfiguredState = z.object({
 	status: z.literal("configured"),
 	commandId: z.custom<FetchActionCommandId>(),
 	urls: z.array(z.string().url()),
+	urlInputMode: z.enum(["manual", "node"]),
 	formats: z.array(z.enum(["markdown", "links", "html"])),
 });
 export type FetchActionCommandConfiguredState = z.infer<
