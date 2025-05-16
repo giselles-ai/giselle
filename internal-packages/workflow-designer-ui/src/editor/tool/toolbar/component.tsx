@@ -9,7 +9,6 @@ import {
 	type ActionProvider,
 	type TriggerProvider,
 	actionProviders,
-	githubActions,
 	triggerProviders,
 } from "@giselle-sdk/flow";
 import {
