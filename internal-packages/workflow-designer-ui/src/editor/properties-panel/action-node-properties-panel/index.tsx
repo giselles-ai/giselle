@@ -8,6 +8,7 @@ import {
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
 } from "../ui";
+import { FetchActionPropertiesPanel } from "./fetch-action-properties-panel";
 import { GitHubActionPropertiesPanel } from "./github-action-properties-panel";
 import { useConnectedInputs } from "./lib";
 
@@ -83,8 +84,11 @@ function PropertiesPanel({
 	switch (node.content.command.provider) {
 		case "github":
 			return <GitHubActionPropertiesPanel node={node} />;
+		case "fetch":
+			return <FetchActionPropertiesPanel node={node} />;
 		default: {
-			const _exhaustiveCheck: never = node.content.command.provider;
+			const { provider } = node.content.command;
+			const _exhaustiveCheck: never = provider;
 			throw new Error(`Unhandled action provider: ${_exhaustiveCheck}`);
 		}
 	}

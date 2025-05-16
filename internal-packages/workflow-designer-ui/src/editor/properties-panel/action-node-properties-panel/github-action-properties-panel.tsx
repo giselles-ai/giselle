@@ -4,7 +4,11 @@ import {
 	InputId,
 	OutputId,
 } from "@giselle-sdk/data-type";
-import { actions, githubActions } from "@giselle-sdk/flow";
+import {
+	type GitHubActionCommandId,
+	actions,
+	githubActions,
+} from "@giselle-sdk/flow";
 import type { GitHubIntegrationInstallation } from "@giselle-sdk/integration";
 import { useIntegration } from "@giselle-sdk/integration/react";
 import { useWorkflowDesigner } from "giselle-sdk/react";
@@ -30,7 +34,10 @@ import { GitHubActionConfiguredView } from "./ui/github-action-configured-view";
 export function GitHubActionPropertiesPanel({ node }: { node: ActionNode }) {
 	const { value } = useIntegration();
 
-	if (node.content.command.state.status === "configured") {
+	if (
+		node.content.command.provider === "github" &&
+		node.content.command.state.status === "configured"
+	) {
 		return (
 			<GitHubActionConfiguredView
 				state={node.content.command.state}
@@ -298,7 +305,7 @@ function Installed({
 						provider: "github",
 						state: {
 							status: "configured",
-							commandId: action.command.id,
+							commandId: action.command.id as GitHubActionCommandId,
 							repositoryNodeId: step.repoNodeId,
 							installationId: step.installationId,
 						},

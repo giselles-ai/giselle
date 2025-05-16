@@ -2,6 +2,7 @@ import type { Node } from "@giselle-sdk/data-type";
 import { getImageGenerationModelProvider } from "@giselle-sdk/language-model";
 import type { SVGProps } from "react";
 import { AnthropicIcon } from "../anthropic";
+import { FetchIcon } from "../fetch";
 import { Flux1Icon } from "../flux1";
 import { GitHubIcon } from "../github";
 import { GoogleIcon, GoogleWhiteIcon } from "../google";
@@ -100,6 +101,8 @@ export function NodeIcon({
 					switch (node.content.command.provider) {
 						case "github":
 							return <GitHubIcon {...props} data-content-type-icon />;
+						case "fetch":
+							return <FetchIcon {...props} data-content-type-icon />;
 						default: {
 							throw new Error(`Unhandled TriggerProviderType: ${node.content}`);
 						}

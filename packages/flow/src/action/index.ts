@@ -1,3 +1,4 @@
+import { actions as fetchActions, provider as fetchProvider } from "./fetch";
 import { actions as githubActions, provider as githubProvider } from "./github";
 
 export {
@@ -7,6 +8,13 @@ export {
 	actionIdToLabel as githubActionIdToLabel,
 } from "./github";
 
-export const actions = [...githubActions];
-export type ActionProvider = typeof githubProvider;
-export const actionProviders = [githubProvider];
+export {
+	actions as fetchActions,
+	provider as fetchProvider,
+	type ActionCommandId as FetchActionCommandId,
+	actionIdToLabel as fetchActionIdToLabel,
+} from "./fetch";
+
+export const actions = [...githubActions, ...fetchActions];
+export type ActionProvider = typeof githubProvider | typeof fetchProvider;
+export const actionProviders = [githubProvider, fetchProvider];
