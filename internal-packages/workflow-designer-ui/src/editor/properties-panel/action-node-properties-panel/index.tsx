@@ -87,7 +87,8 @@ function PropertiesPanel({
 		case "fetch":
 			return <FetchActionPropertiesPanel node={node} />;
 		default: {
-			const _exhaustiveCheck: never = node.content.command.provider;
+			const { provider } = node.content.command;
+			const _exhaustiveCheck: never = provider;
 			throw new Error(`Unhandled action provider: ${_exhaustiveCheck}`);
 		}
 	}
