@@ -1231,6 +1231,9 @@ importers:
       '@giselle-sdk/data-type':
         specifier: workspace:*
         version: link:../data-type
+      '@giselle-sdk/flow':
+        specifier: workspace:*
+        version: link:../flow
       '@giselle-sdk/giselle-engine':
         specifier: workspace:*
         version: link:../giselle-engine

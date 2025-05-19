@@ -1,6 +1,5 @@
 import {
 	type ActionNode,
-	type ActionProvider,
 	type FileContent,
 	type FileData,
 	FileId,
@@ -24,6 +23,7 @@ import {
 	type UploadedFileData,
 	type VariableNode,
 } from "@giselle-sdk/data-type";
+import type { ActionProvider } from "@giselle-sdk/flow";
 import {
 	Capability,
 	hasCapability,
@@ -272,8 +272,7 @@ const triggerFactoryImpl = {
 
 const actionFactoryImpl = {
 	create: (
-		providerType: ActionProvider["type"],
-		actionId: string,
+		provider: ActionProvider,
 		inputsFromActionDef: Input[],
 	): ActionNode =>
 		({
@@ -281,7 +280,12 @@ const actionFactoryImpl = {
 			type: "operation",
 			content: {
 				type: "action",
-				provider: { type: providerType, actionId },
+				command: {
+					provider,
+					state: {
+						status: "unconfigured",
+					},
+				},
 			},
 			inputs: cloneAndRenewInputIdsWithMap(inputsFromActionDef).newIo,
 			outputs: [],
@@ -302,7 +306,7 @@ const actionFactoryImpl = {
 		} as ActionNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
-} satisfies NodeFactory<ActionNode, [ActionProvider["type"], string, Input[]]>;
+} satisfies NodeFactory<ActionNode, [ActionProvider, Input[]]>;
 
 const textVariableFactoryImpl = {
 	create: (text = ""): TextNode =>
