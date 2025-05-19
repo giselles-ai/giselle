@@ -25,7 +25,7 @@ import {
 	useWorkflowDesigner,
 } from "giselle-sdk/react";
 import { WorkflowIcon } from "lucide-react";
-import { Dialog, Popover, ToggleGroup } from "radix-ui";
+import { Popover, ToggleGroup } from "radix-ui";
 import { type ReactNode, useEffect, useState } from "react";
 import {
 	AnthropicIcon,
