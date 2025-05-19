@@ -1,22 +1,20 @@
 "use client";
 
-import {
-	type ActionNode,
-	type FileCategory,
-	type FileNode,
-	type ImageGenerationLanguageModelData,
-	type ImageGenerationNode,
-	type Input,
-	InputId,
-	type Node,
-	NodeId,
-	type Output,
-	OutputId,
-	type TextGenerationLanguageModelData,
-	type TextGenerationNode,
-	type TextNode,
-	type TriggerNode,
+import type {
+	ActionNode,
+	FileCategory,
+	FileNode,
+	ImageGenerationLanguageModelData,
+	ImageGenerationNode,
+	Node,
+	Output,
+	TextGenerationLanguageModelData,
+	TextGenerationNode,
+	TextNode,
+	TriggerNode,
+	VectorStoreContent,
 } from "@giselle-sdk/data-type";
+import { NodeId, OutputId, type VectorStoreNode } from "@giselle-sdk/data-type";
 import type { ActionProvider, TriggerProvider } from "@giselle-sdk/flow";
 import {
 	Capability,
@@ -27,11 +25,11 @@ import { type ReactNode, createContext, useContext, useState } from "react";
 import { actionNodeDefaultName, triggerNodeDefaultName } from "../../../utils";
 import type {
 	AddFileNodeTool,
-	AddGitHubNodeTool,
 	AddImageGenerationNodeTool,
 	AddNodeTool,
 	AddTextGenerationNodeTool,
 	AddTextNodeTool,
+	AddVectorStoreNodeTool,
 	MoveTool,
 	SelectEnviromentActionTool,
 	SelectFileNodeCategoryTool,
@@ -147,6 +145,13 @@ export function addNodeTool(node: Node) {
 		category: "edit",
 		node,
 	} satisfies AddNodeTool;
+}
+
+export function addVectorStoreNodeTool() {
+	return {
+		action: "addVectorStoreNode",
+		category: "edit",
+	} satisfies AddVectorStoreNodeTool;
 }
 
 export function textNode() {
@@ -297,4 +302,25 @@ export function selectActionTool() {
 		action: "selectAction",
 		category: "edit",
 	} satisfies SelectEnviromentActionTool;
+}
+
+export function vectorStoreNode(
+	provider: VectorStoreContent["source"]["provider"],
+): VectorStoreNode {
+	return {
+		id: NodeId.generate(),
+		type: "variable",
+		name: provider === "github" ? "GitHub Vector Store" : "Vector Store",
+		content: {
+			type: "vectorStore",
+			source: {
+				provider: provider,
+				state: {
+					status: "unconfigured",
+				},
+			},
+		},
+		inputs: [],
+		outputs: [],
+	};
 }

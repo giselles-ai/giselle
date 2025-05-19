@@ -9,7 +9,6 @@ import {
 	type ActionProvider,
 	type TriggerProvider,
 	actionProviders,
-	githubActions,
 	triggerProviders,
 } from "@giselle-sdk/flow";
 import {
@@ -20,8 +19,11 @@ import {
 	languageModels,
 } from "@giselle-sdk/language-model";
 import clsx from "clsx/lite";
-import { useFeatureFlag } from "giselle-sdk/react";
-import { useUsageLimits, useWorkflowDesigner } from "giselle-sdk/react";
+import {
+	useFeatureFlag,
+	useUsageLimits,
+	useWorkflowDesigner,
+} from "giselle-sdk/react";
 import { WorkflowIcon } from "lucide-react";
 import { Dialog, Popover, ToggleGroup } from "radix-ui";
 import { type ReactNode, useEffect, useState } from "react";
@@ -65,6 +67,7 @@ import {
 	textNode,
 	triggerNode,
 	useToolbar,
+	vectorStoreNode,
 } from "./state";
 
 function TooltipAndHotkey({ text, hotkey }: { text: string; hotkey?: string }) {
@@ -1070,7 +1073,7 @@ export function Toolbar() {
 								<Popover.Portal>
 									<Popover.Content
 										className={clsx(
-											"relative w-[160px] rounded-[8px] px-[8px] py-[8px]",
+											"relative rounded-[8px] px-[8px] py-[8px]",
 											"bg-[hsla(255,_40%,_98%,_0.04)] text-white-900",
 											"backdrop-blur-[4px]",
 										)}
@@ -1089,13 +1092,20 @@ export function Toolbar() {
 												onValueChange={(sourceType) => {
 													if (sourceType === "text") {
 														setSelectedTool(addNodeTool(textNode()));
+													} else if (sourceType === "githubVectorStore") {
+														setSelectedTool(
+															addNodeTool(vectorStoreNode("github")),
+														);
 													}
-													// Add more source types here in the future if needed
 												}}
 											>
 												<ToggleGroup.Item value="text" data-tool>
 													<PromptIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Plain Text</p>
+												</ToggleGroup.Item>
+												<ToggleGroup.Item value="githubVectorStore" data-tool>
+													<GitHubIcon className="w-[20px] h-[20px]" />
+													<p className="text-[14px]">GitHub Vector Store</p>
 												</ToggleGroup.Item>
 											</ToggleGroup.Root>
 										</div>
