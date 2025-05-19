@@ -8,8 +8,8 @@ import {
 } from "./github";
 import { OverrideTextContent, TextContent, TextContentReference } from "./text";
 export * from "./file";
-export * from "./text";
 export * from "./github";
+export * from "./text";
 
 const VariableNodeContent = z.discriminatedUnion("type", [
 	TextContent,
