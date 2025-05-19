@@ -6,21 +6,21 @@ import {
 	GitHubContentReference,
 	OverrideGitHubContent,
 } from "./github";
-import {
-	GitHubVectorStoreContent,
-	GitHubVectorStoreContentReference,
-} from "./github-vector-store";
 import { OverrideTextContent, TextContent, TextContentReference } from "./text";
+import {
+	VectorStoreContent,
+	VectorStoreContentReference,
+} from "./vector-store";
 export * from "./file";
 export * from "./github";
-export * from "./github-vector-store";
 export * from "./text";
+export * from "./vector-store";
 
 const VariableNodeContent = z.discriminatedUnion("type", [
 	TextContent,
 	FileContent,
 	GitHubContent,
-	GitHubVectorStoreContent,
+	VectorStoreContent,
 ]);
 
 export const VariableNode = NodeBase.extend({
@@ -59,15 +59,13 @@ export function isGitHubNode(args: unknown): args is GitHubNode {
 	return result.success;
 }
 
-export const GitHubVectorStoreNode = VariableNode.extend({
-	content: GitHubVectorStoreContent,
+export const VectorStoreNode = VariableNode.extend({
+	content: VectorStoreContent,
 });
-export type GitHubVectorStoreNode = z.infer<typeof GitHubVectorStoreNode>;
+export type VectorStoreNode = z.infer<typeof VectorStoreNode>;
 
-export function isGitHubVectorStoreNode(
-	args: unknown,
-): args is GitHubVectorStoreNode {
-	const result = GitHubVectorStoreNode.safeParse(args);
+export function isVectorStoreNode(args: unknown): args is VectorStoreNode {
+	const result = VectorStoreNode.safeParse(args);
 	return result.success;
 }
 
@@ -86,7 +84,7 @@ const VariableNodeContentReference = z.discriminatedUnion("type", [
 	FileContentReference,
 	TextContentReference,
 	GitHubContentReference,
-	GitHubVectorStoreContentReference,
+	VectorStoreContentReference,
 ]);
 
 export const VariableNodeReference = NodeReferenceBase.extend({
