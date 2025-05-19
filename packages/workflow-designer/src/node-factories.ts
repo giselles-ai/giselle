@@ -101,10 +101,6 @@ export interface NodeFactory<
 	clone(orig: N): NodeFactoryCloneResult<N>;
 }
 
-function hasProviderOptions(fileData: FileData): fileData is UploadedFileData {
-	return fileData.status === "uploaded" && "providerOptions" in fileData;
-}
-
 const textGenerationFactoryImpl = {
 	create: (llm: TextGenerationContent["llm"]): TextGenerationNode => {
 		const outputs: Output[] = [
@@ -346,14 +342,20 @@ const fileVariableFactoryImpl = {
 		}) as FileNode,
 	clone: (orig: FileNode): NodeFactoryCloneResult<FileNode> => {
 		const clonedContent = structuredClone(orig.content);
-		clonedContent.files = clonedContent.files.map((fileData): FileData => {
-			const newFileId = FileId.generate();
-			if (hasProviderOptions(fileData)) {
-				const { providerOptions, ...rest } = fileData;
-				return { ...rest, id: newFileId };
-			}
-			return { ...fileData, id: newFileId };
-		});
+		clonedContent.files = orig.content.files.map(
+			(
+				fileData: FileData,
+			): FileData & {
+				originalFileIdForCopy: FileId;
+			} => {
+				const newFileId = FileId.generate();
+				return {
+					...fileData,
+					id: newFileId,
+					originalFileIdForCopy: fileData.id,
+				};
+			},
+		);
 
 		const { newIo: newInputs, idMap: inputIdMap } =
 			cloneAndRenewInputIdsWithMap(orig.inputs);

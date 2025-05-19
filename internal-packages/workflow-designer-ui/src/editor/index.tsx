@@ -51,7 +51,6 @@ function NodeCanvas() {
 		deleteConnection,
 		updateNodeData,
 		addNode,
-		copyNode,
 		addConnection,
 		isSupportedConnection,
 	} = useWorkflowDesigner();

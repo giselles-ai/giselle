@@ -58,7 +58,7 @@ export function WorkflowDesigner({
 		options?: {
 			connectionCloneStrategy?: ConnectionCloneStrategy;
 		} & AddNodeOptions,
-	): void {
+	): Node | undefined {
 		const { newNode, inputIdMap, outputIdMap } = factories.clone(sourceNode);
 		addNode(newNode, options);
 
@@ -127,6 +127,8 @@ export function WorkflowDesigner({
 				}
 			}
 		}
+
+		return newNode;
 	}
 	function getData() {
 		return {
