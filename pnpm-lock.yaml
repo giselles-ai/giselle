@@ -700,6 +700,9 @@ importers:
       '@giselle-sdk/usage-limits':
         specifier: workspace:^
         version: link:../../packages/usage-limits
+      '@giselle-sdk/workflow-designer':
+        specifier: workspace:^
+        version: link:../../packages/workflow-designer
       '@giselle-sdk/workflow-utils':
         specifier: workspace:^
         version: link:../../packages/workflow-utils
