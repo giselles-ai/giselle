@@ -10838,8 +10838,8 @@ snapshots:
     dependencies:
       axios: 1.7.9
       typescript-event-target: 1.1.1
-      zod: 3.25.28
-      zod-to-json-schema: 3.24.1(zod@3.25.28)
+      zod: 3.24.1
+      zod-to-json-schema: 3.24.1(zod@3.24.1)
     transitivePeerDependencies:
       - debug
 
