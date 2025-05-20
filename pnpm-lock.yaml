@@ -1266,6 +1266,22 @@ importers:
         specifier: 'catalog:'
         version: 8.3.5(jiti@2.4.2)(postcss@8.5.1)(typescript@5.7.3)(yaml@2.7.0)
 
+  packages/vector-store:
+    dependencies:
+      react:
+        specifier: 'catalog:'
+        version: 19.1.0
+    devDependencies:
+      '@giselle/giselle-sdk-tsconfig':
+        specifier: workspace:*
+        version: link:../../tools/tsconfig
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.1.0
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.4.2)(postcss@8.5.1)(typescript@5.7.3)(yaml@2.7.0)
+
   packages/workflow-designer:
     dependencies:
       '@giselle-sdk/data-type':
@@ -1333,6 +1349,9 @@ importers:
       '@giselle-sdk/usage-limits':
         specifier: workspace:^
         version: link:../usage-limits
+      '@giselle-sdk/vector-store':
+        specifier: workspace:^
+        version: link:../vector-store
       '@giselle-sdk/workflow-designer':
         specifier: workspace:^
         version: link:../workflow-designer
@@ -13320,7 +13339,7 @@ snapshots:
 
   '@types/estree-jsx@1.0.5':
     dependencies:
-      '@types/estree': 1.0.6
+      '@types/estree': 1.0.7
 
   '@types/estree@1.0.6': {}
 
