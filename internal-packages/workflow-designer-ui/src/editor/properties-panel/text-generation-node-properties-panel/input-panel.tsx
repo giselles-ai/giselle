@@ -264,6 +264,9 @@ export function InputPanel({
 											onRemove={() => handleRemove(source.connection)}
 										/>
 									);
+								case "vectorStore":
+									// vector store node can not be connected directly
+									break;
 								default: {
 									const _exhaustiveCheck: never = source.node.content;
 									throw new Error(`Unhandled source type: ${_exhaustiveCheck}`);
