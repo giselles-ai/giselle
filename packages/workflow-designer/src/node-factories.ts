@@ -270,13 +270,11 @@ const triggerFactoryImpl = {
 } satisfies NodeFactory<TriggerNode, [TriggerContent["provider"], string]>;
 
 const actionFactoryImpl = {
-	create: (
-		provider: ActionProvider,
-		inputsFromActionDef: Input[],
-	): ActionNode =>
+	create: (provider: ActionProvider, name: string): ActionNode =>
 		({
 			id: NodeId.generate(),
 			type: "operation",
+			name,
 			content: {
 				type: "action",
 				command: {
@@ -286,9 +284,9 @@ const actionFactoryImpl = {
 					},
 				},
 			},
-			inputs: cloneAndRenewInputIdsWithMap(inputsFromActionDef).newIo,
+			inputs: [],
 			outputs: [],
-		}) as ActionNode,
+		}) satisfies ActionNode,
 	clone: (orig: ActionNode): NodeFactoryCloneResult<ActionNode> => {
 		const { newIo: newInputs, idMap: inputIdMap } =
 			cloneAndRenewInputIdsWithMap(orig.inputs);
@@ -305,7 +303,7 @@ const actionFactoryImpl = {
 		} as ActionNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
-} satisfies NodeFactory<ActionNode, [ActionProvider, Input[]]>;
+} satisfies NodeFactory<ActionNode, [ActionProvider, string]>;
 
 const textVariableFactoryImpl = {
 	create: (): TextNode =>

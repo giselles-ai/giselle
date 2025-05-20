@@ -167,22 +167,11 @@ export function triggerNode(triggerProvider: TriggerProvider) {
 }
 
 export function actionNode(actionProvider: ActionProvider) {
-	return {
-		id: NodeId.generate(),
-		type: "operation",
-		name: actionNodeDefaultName(actionProvider),
-		content: {
-			type: "action",
-			command: {
-				provider: actionProvider,
-				state: {
-					status: "unconfigured",
-				},
-			},
-		},
-		inputs: [],
-		outputs: [],
-	} satisfies ActionNode;
+	return nodeFactories.create(
+		"action",
+		actionProvider,
+		actionNodeDefaultName(actionProvider),
+	);
 }
 
 export function fileNode(category: FileCategory) {
