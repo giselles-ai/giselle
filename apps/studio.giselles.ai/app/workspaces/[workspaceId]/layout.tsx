@@ -1,3 +1,4 @@
+import { getGitHubVectorStores } from "@/app/services/vector-store";
 import { db } from "@/drizzle";
 import { flowNodeFlag, runV2Flag } from "@/flags";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
@@ -35,6 +36,7 @@ export default async function Layout({
 	const usageLimits = await getUsageLimitsForTeam(currentTeam);
 	const flowNode = await flowNodeFlag();
 	const runV2 = await runV2Flag();
+	const gitHubVectorStores = await getGitHubVectorStores(currentTeam.dbId);
 
 	return (
 		<WorkspaceProvider
@@ -47,6 +49,9 @@ export default async function Layout({
 					"use server";
 					return { github: await getGitHubIntegrationState(agent.dbId) };
 				},
+			}}
+			vectorStore={{
+				github: gitHubVectorStores,
 			}}
 			usageLimits={usageLimits}
 			telemetry={{
