@@ -203,7 +203,7 @@ const textGenerationFactoryImpl = {
 			content: clonedContent,
 			inputs: newInputs,
 			outputs: newOutputs,
-		} as TextGenerationNode;
+		} satisfies TextGenerationNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
 } satisfies NodeFactory<TextGenerationNode, [TextGenerationContent["llm"]]>;
@@ -241,7 +241,7 @@ const imageGenerationFactoryImpl = {
 			content: structuredClone(orig.content),
 			inputs: newInputs,
 			outputs: newOutputs,
-		} as ImageGenerationNode;
+		} satisfies ImageGenerationNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
 } satisfies NodeFactory<ImageGenerationNode, [ImageGenerationContent["llm"]]>;
@@ -278,7 +278,7 @@ const triggerFactoryImpl = {
 			content: clonedContent,
 			inputs: newInputs,
 			outputs: newOutputs,
-		} as TriggerNode;
+		} satisfies TriggerNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
 } satisfies NodeFactory<TriggerNode, [TriggerContent["provider"]]>;
@@ -314,7 +314,7 @@ const actionFactoryImpl = {
 			content: structuredClone(orig.content),
 			inputs: newInputs,
 			outputs: newOutputs,
-		} as ActionNode;
+		} satisfies ActionNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
 } satisfies NodeFactory<ActionNode, [ActionProvider]>;
@@ -350,7 +350,7 @@ const textVariableFactoryImpl = {
 			content: structuredClone(orig.content),
 			inputs: newInputs,
 			outputs: newOutputs,
-		} as TextNode;
+		} satisfies TextNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
 } satisfies NodeFactory<TextNode, [text?: string]>;
@@ -403,7 +403,7 @@ const fileVariableFactoryImpl = {
 			content: clonedContent,
 			inputs: newInputs,
 			outputs: newOutputs,
-		} as FileNode;
+		} satisfies FileNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
 } satisfies NodeFactory<FileNode, [category: FileContent["category"]]>;
@@ -418,7 +418,7 @@ const githubVariableFactoryImpl = {
 			content: { type: "github", objectReferences },
 			inputs: [],
 			outputs: [{ id: OutputId.generate(), label: "Output", accessor: "text" }],
-		}) as GitHubNode,
+		}) satisfies GitHubNode,
 	clone: (orig: GitHubNode): NodeFactoryCloneResult<GitHubNode> => {
 		const { newIo: newInputs, idMap: inputIdMap } =
 			cloneAndRenewInputIdsWithMap(orig.inputs);
@@ -432,7 +432,7 @@ const githubVariableFactoryImpl = {
 			content: structuredClone(orig.content),
 			inputs: newInputs,
 			outputs: newOutputs,
-		} as GitHubNode;
+		} satisfies GitHubNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
 } satisfies NodeFactory<
