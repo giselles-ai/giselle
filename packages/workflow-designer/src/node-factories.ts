@@ -305,14 +305,23 @@ const actionFactoryImpl = {
 } satisfies NodeFactory<ActionNode, [ActionProvider, Input[]]>;
 
 const textVariableFactoryImpl = {
-	create: (text = ""): TextNode =>
+	create: (): TextNode =>
 		({
 			id: NodeId.generate(),
 			type: "variable",
-			content: { type: "text", text },
+			content: {
+				type: "text",
+				text: "",
+			},
 			inputs: [],
-			outputs: [{ id: OutputId.generate(), label: "Output", accessor: "text" }],
-		}) as TextNode,
+			outputs: [
+				{
+					id: OutputId.generate(),
+					label: "Output",
+					accessor: "text",
+				},
+			],
+		}) satisfies TextNode,
 	clone: (orig: TextNode): NodeFactoryCloneResult<TextNode> => {
 		const { newIo: newInputs, idMap: inputIdMap } =
 			cloneAndRenewInputIdsWithMap(orig.inputs);

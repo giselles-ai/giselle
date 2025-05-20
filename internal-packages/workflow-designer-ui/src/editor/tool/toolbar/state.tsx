@@ -27,6 +27,7 @@ import {
 	hasCapability,
 	languageModels,
 } from "@giselle-sdk/language-model";
+import { nodeFactories } from "@giselle-sdk/workflow-designer";
 import { type ReactNode, createContext, useContext, useState } from "react";
 import { actionNodeDefaultName, triggerNodeDefaultName } from "../../../utils";
 import type {
@@ -154,22 +155,7 @@ export function addNodeTool(node: Node) {
 }
 
 export function textNode() {
-	return {
-		id: NodeId.generate(),
-		type: "variable",
-		content: {
-			type: "text",
-			text: "",
-		},
-		inputs: [],
-		outputs: [
-			{
-				id: OutputId.generate(),
-				label: "Output",
-				accessor: "text",
-			},
-		],
-	} satisfies TextNode;
+	return nodeFactories.create("text");
 }
 
 export function triggerNode(triggerProvider: TriggerProvider) {
