@@ -159,20 +159,11 @@ export function textNode() {
 }
 
 export function triggerNode(triggerProvider: TriggerProvider) {
-	return {
-		id: NodeId.generate(),
-		type: "operation",
-		name: triggerNodeDefaultName(triggerProvider),
-		content: {
-			type: "trigger",
-			provider: triggerProvider,
-			state: {
-				status: "unconfigured",
-			},
-		},
-		inputs: [],
-		outputs: [],
-	} satisfies TriggerNode;
+	return nodeFactories.create(
+		"trigger",
+		triggerProvider,
+		triggerNodeDefaultName(triggerProvider),
+	);
 }
 
 export function actionNode(actionProvider: ActionProvider) {

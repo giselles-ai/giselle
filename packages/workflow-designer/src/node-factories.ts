@@ -232,19 +232,22 @@ const imageGenerationFactoryImpl = {
 const triggerFactoryImpl = {
 	create: (
 		provider: TriggerContent["provider"],
-		outputsFromTriggerDef: Output[],
+		name: Required<TriggerNode["name"]>,
 	): TriggerNode =>
 		({
 			id: NodeId.generate(),
 			type: "operation",
+			name,
 			content: {
 				type: "trigger",
 				provider,
-				state: { status: "unconfigured" },
+				state: {
+					status: "unconfigured",
+				},
 			},
 			inputs: [],
-			outputs: cloneAndRenewOutputIdsWithMap(outputsFromTriggerDef).newIo,
-		}) as TriggerNode,
+			outputs: [],
+		}) satisfies TriggerNode,
 	clone: (orig: TriggerNode): NodeFactoryCloneResult<TriggerNode> => {
 		const clonedContent = structuredClone(orig.content);
 		clonedContent.state = { status: "unconfigured" };
@@ -264,7 +267,7 @@ const triggerFactoryImpl = {
 		} as TriggerNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
-} satisfies NodeFactory<TriggerNode, [TriggerContent["provider"], Output[]]>;
+} satisfies NodeFactory<TriggerNode, [TriggerContent["provider"], string]>;
 
 const actionFactoryImpl = {
 	create: (
