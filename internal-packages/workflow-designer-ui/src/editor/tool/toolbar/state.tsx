@@ -183,22 +183,7 @@ export function textGenerationNode(llm: TextGenerationLanguageModelData) {
 }
 
 export function imageGenerationNode(llm: ImageGenerationLanguageModelData) {
-	return {
-		id: NodeId.generate(),
-		type: "operation",
-		content: {
-			type: "imageGeneration",
-			llm,
-		},
-		inputs: [],
-		outputs: [
-			{
-				id: OutputId.generate(),
-				label: "Output",
-				accessor: "generated-image",
-			},
-		],
-	} satisfies ImageGenerationNode;
+	return nodeFactories.create("imageGeneration", llm);
 }
 
 export function selectSourceCategoryTool() {

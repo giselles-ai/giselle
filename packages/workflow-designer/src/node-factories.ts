@@ -209,7 +209,10 @@ const imageGenerationFactoryImpl = {
 		({
 			id: NodeId.generate(),
 			type: "operation",
-			content: { type: "imageGeneration", llm, prompt: "" },
+			content: {
+				type: "imageGeneration",
+				llm,
+			},
 			inputs: [],
 			outputs: [
 				{
@@ -218,7 +221,7 @@ const imageGenerationFactoryImpl = {
 					accessor: "generated-image",
 				},
 			],
-		}) as ImageGenerationNode,
+		}) satisfies ImageGenerationNode,
 	clone: (
 		orig: ImageGenerationNode,
 	): NodeFactoryCloneResult<ImageGenerationNode> => {
