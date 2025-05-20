@@ -19,7 +19,7 @@ export async function getGitHubVectorStores(teamDbId: number) {
 		id: vectorStore.id,
 		name: `${vectorStore.owner}/${vectorStore.repo}`,
 		reference: {
-			provider: "github",
+			provider: "github" as const,
 			owner: vectorStore.owner,
 			repo: vectorStore.repo,
 		},
