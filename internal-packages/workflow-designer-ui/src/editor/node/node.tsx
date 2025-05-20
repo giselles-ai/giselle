@@ -30,6 +30,7 @@ import { EditableText } from "../../ui/editable-text";
 import { Tooltip } from "../../ui/tooltip";
 import { defaultName } from "../../utils";
 import {
+	GitHubRepositoryBadge,
 	GitHubRepositoryBadgeFromRepo,
 	GitHubRepositoryBadgeFromTrigger,
 } from "./ui";
@@ -350,6 +351,17 @@ export function NodeComponent({
 						<GitHubRepositoryBadgeFromRepo
 							installationId={node.content.command.state.installationId}
 							repositoryNodeId={node.content.command.state.repositoryNodeId}
+						/>
+					</div>
+				)}
+			{node.type === "variable" &&
+				node.content.type === "vectorStore" &&
+				node.content.source.provider === "github" &&
+				node.content.source.state.status === "configured" && (
+					<div className="px-[16px] relative">
+						<GitHubRepositoryBadge
+							owner={node.content.source.state.owner}
+							repo={node.content.source.state.repo}
 						/>
 					</div>
 				)}
