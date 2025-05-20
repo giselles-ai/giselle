@@ -1,5 +1,10 @@
-import { type ActionNode, type Input, InputId } from "@giselle-sdk/data-type";
-import { actions, githubActions } from "@giselle-sdk/flow";
+import {
+	type ActionNode,
+	type Input,
+	InputId,
+	OutputId,
+} from "@giselle-sdk/data-type";
+import { type GitHubActionCommandId, githubActions } from "@giselle-sdk/flow";
 import type { GitHubIntegrationInstallation } from "@giselle-sdk/integration";
 import { useIntegration } from "@giselle-sdk/integration/react";
 import { useWorkflowDesigner } from "giselle-sdk/react";
@@ -262,14 +267,8 @@ function Installed({
 				throw new Error("unexpected request");
 			}
 
-			const action = actions.find(
-				(action) =>
-					action.provider === "github" && action.command.id === commandId,
-			);
-
-			if (action === undefined) {
-				return;
-			}
+			/** @todo remove type assertion */
+			const action = githubActions[commandId as GitHubActionCommandId];
 
 			// Setup inputs and outputs for the action
 			const inputs: Input[] = [];
@@ -280,6 +279,7 @@ function Installed({
 				const schema = action.command.parameters.shape[key] as AnyZodObject;
 				inputs.push({
 					id: InputId.generate(),
+					accessor: key,
 					label: key,
 					isRequired: !schema.isOptional(),
 				});
@@ -301,6 +301,13 @@ function Installed({
 				},
 				name: action.command.label,
 				inputs,
+				outputs: [
+					{
+						id: OutputId.generate(),
+						label: "output",
+						accessor: "action-result",
+					},
+				],
 			});
 		},
 		[node, updateNodeData, step],
@@ -337,11 +344,8 @@ function Installed({
 								<SelectValue placeholder="Select an command" />
 							</SelectTrigger>
 							<SelectContent>
-								{githubActions.map((githubAction) => (
-									<SelectItem
-										key={githubAction.command.id}
-										value={githubAction.command.id}
-									>
+								{Object.entries(githubActions).map(([id, githubAction]) => (
+									<SelectItem key={id} value={id}>
 										{githubAction.command.label}
 									</SelectItem>
 								))}

@@ -46,18 +46,6 @@ export function GitHubActionConfiguredView({
 			}),
 	);
 
-	const action = useMemo(
-		() =>
-			githubActions.find(
-				(githubAction) => githubAction.command.id === state.commandId,
-			),
-		[state.commandId],
-	);
-
-	if (action === undefined) {
-		throw new Error(`Action with id ${state.commandId} not found`);
-	}
-
 	const { connectedInputs } = useConnectedInputs(nodeId, inputs);
 
 	const handleClickRemoveButton = useCallback(

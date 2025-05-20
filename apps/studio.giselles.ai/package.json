@@ -12,13 +12,17 @@
 		"start": "next start",
 		"format": "biome check --write .",
 		"lint": "next lint",
-		"test": "vitest run"
+		"test": "vitest run",
+		"test:e2e": "playwright test"
 	},
 	"packageManager": "pnpm@10.0.0",
 	"dependencies": {
+		"@ai-sdk/openai": "catalog:",
 		"@giselle-internal/workflow-designer-ui": "workspace:*",
 		"@giselle-sdk/data-type": "workspace:*",
 		"@giselle-sdk/giselle-engine": "workspace:*",
+		"@giselle-sdk/rag": "workspace:*",
+		"@giselle-sdk/github-tool": "workspace:*",
 		"@giselle-sdk/integration": "workspace:*",
 		"@giselle-sdk/supabase-driver": "workspace:*",
 		"@icons-pack/react-simple-icons": "10.0.0",
@@ -114,6 +118,7 @@
 		"@giselle-sdk/usage-limits": "workspace:*",
 		"@octokit/openapi-types": "22.2.0",
 		"@octokit/webhooks-types": "7.6.1",
+		"@playwright/test": "1.52.0",
 		"@radix-ui/react-hover-card": "1.1.2",
 		"@tailwindcss/postcss": "4.0.9",
 		"@tailwindcss/typography": "0.5.15",
@@ -121,7 +126,7 @@
 		"@types/nodemailer": "6.4.17",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
-		"@vitest/coverage-v8": "3.0.4",
+		"@vitest/coverage-v8": "3.1.4",
 		"drizzle-kit": "0.23.0",
 		"pino-pretty": "13.0.0",
 		"postcss": "8.4.49",
@@ -129,7 +134,7 @@
 		"turbo": "2.0.9",
 		"typescript": "5.7.3",
 		"vite-tsconfig-paths": "5.1.4",
-		"vitest": "3.0.5"
+		"vitest": "catalog:"
 	},
 	"trustedDependencies": ["@sentry/cli"]
 }

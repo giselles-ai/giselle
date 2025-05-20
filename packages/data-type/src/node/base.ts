@@ -7,6 +7,11 @@ export type InputId = z.infer<typeof InputId.schema>;
 export const Input = z.object({
 	id: InputId.schema,
 	label: z.string(),
+	accessor: z
+		.string()
+		.describe(
+			"Field used for data access. When not provided, defaults to the label value.",
+		),
 	isRequired: z.optional(z.boolean().default(false)),
 });
 export type Input = z.infer<typeof Input>;

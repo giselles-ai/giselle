@@ -271,7 +271,11 @@ export const invitations = pgTable(
 	}),
 );
 
-type GitHubRepositoryIndexStatus = "idle" | "running" | "completed" | "failed";
+export type GitHubRepositoryIndexStatus =
+	| "idle"
+	| "running"
+	| "completed"
+	| "failed";
 export const githubRepositoryIndex = pgTable(
 	"github_repository_index",
 	{

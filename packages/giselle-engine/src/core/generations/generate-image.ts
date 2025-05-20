@@ -31,6 +31,7 @@ import type { Storage } from "unstorage";
 import { UsageLimitError } from "../error";
 import { filePath } from "../files/utils";
 import type { GiselleEngineContext } from "../types";
+import { generateTelemetryTags } from "./telemetry";
 import type { TelemetrySettings } from "./types";
 import {
 	buildMessageObject,
@@ -46,14 +47,9 @@ import {
 	setNodeGenerationIndex,
 } from "./utils";
 
-type ProviderOptions = Parameters<
-	typeof generateImageAiSdk
->[0]["providerOptions"];
-
 export async function generateImage(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
-	providerOptions?: ProviderOptions;
 	telemetry?: TelemetrySettings;
 }) {
 	const operationNode = args.generation.context.operationNode;

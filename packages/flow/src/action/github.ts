@@ -3,7 +3,7 @@ import type { ActionBase } from "../base";
 
 export const provider = "github" as const;
 
-export interface GitHubAction extends ActionBase {
+export interface GitHubActionBase extends ActionBase {
 	provider: typeof provider;
 }
 
@@ -17,7 +17,7 @@ export const githubCreateIssueAction = {
 			body: z.string(),
 		}),
 	},
-} as const satisfies GitHubAction;
+} as const satisfies GitHubActionBase;
 
 export const githubCreateIssueCommentAction = {
 	provider,
@@ -29,14 +29,18 @@ export const githubCreateIssueCommentAction = {
 			body: z.string(),
 		}),
 	},
-} as const satisfies GitHubAction;
+} as const satisfies GitHubActionBase;
 
-export const actions = [
-	githubCreateIssueAction,
-	githubCreateIssueCommentAction,
-] as const;
+export const actions = {
+	[githubCreateIssueAction.command.id]: githubCreateIssueAction,
+	[githubCreateIssueCommentAction.command.id]: githubCreateIssueCommentAction,
+} as const;
 
-export type ActionCommandId = (typeof actions)[number]["command"]["id"];
+export type GitHubAction =
+	| typeof githubCreateIssueAction
+	| typeof githubCreateIssueCommentAction;
+
+export type ActionCommandId = keyof typeof actions;
 
 export function actionIdToLabel(triggerId: ActionCommandId) {
 	switch (triggerId) {

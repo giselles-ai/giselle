@@ -7,6 +7,7 @@ import {
 	PropertiesPanelRoot,
 } from "../ui";
 import { GitHubTriggerPropertiesPanel } from "./github-trigger-properties-panel";
+import { ManualTriggerPropertiesPanel } from "./manual-trigger-properties-panel";
 
 export function TriggerNodePropertiesPanel({
 	node,
@@ -24,12 +25,12 @@ export function TriggerNodePropertiesPanel({
 				}}
 			/>
 			<PropertiesPanelContent>
-				<PropertiesPnael node={node} />
+				<PropertiesPanel node={node} />
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);
 }
-function PropertiesPnael({
+function PropertiesPanel({
 	node,
 }: {
 	node: TriggerNode;
@@ -38,7 +39,7 @@ function PropertiesPnael({
 		case "github":
 			return <GitHubTriggerPropertiesPanel node={node} />;
 		case "manual":
-			return "manual";
+			return <ManualTriggerPropertiesPanel node={node} />;
 		default: {
 			const _exhaustiveCheck: never = node.content.provider;
 			throw new Error(`Unhandled action: ${_exhaustiveCheck}`);

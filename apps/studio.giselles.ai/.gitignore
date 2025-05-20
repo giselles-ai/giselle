@@ -46,3 +46,10 @@ app/fonts/*.woff2
 
 # Filesystem storage
 .storage
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

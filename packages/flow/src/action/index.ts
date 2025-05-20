@@ -5,8 +5,8 @@ export {
 	provider as githubProvider,
 	type ActionCommandId as GitHubActionCommandId,
 	actionIdToLabel as githubActionIdToLabel,
+	type GitHubAction,
 } from "./github";
 
-export const actions = [...githubActions];
 export type ActionProvider = typeof githubProvider;
 export const actionProviders = [githubProvider];

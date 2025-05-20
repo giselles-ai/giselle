@@ -29,6 +29,7 @@
 		"tsup": "catalog:"
 	},
 	"dependencies": {
+		"@giselle-sdk/rag": "workspace:*",
 		"@octokit/auth-app": "catalog:",
 		"@octokit/core": "catalog:",
 		"@octokit/graphql": "catalog:",

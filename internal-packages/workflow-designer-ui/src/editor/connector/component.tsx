@@ -71,6 +71,12 @@ export function Connector({
 					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#textGenerationToImageGeneration)]",
 					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#fileToImageGeneration)]",
 					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#textToImageGeneration)]",
+					"group-data-[output-node-content-type=trigger]:group-data-[input-node-content-type=textGeneration]:!stroke-[url(#triggerToTextGeneration)]",
+					"group-data-[output-node-content-type=trigger]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#triggerToImageGeneration)]",
+					"group-data-[output-node-content-type=trigger]:group-data-[input-node-content-type=action]:!stroke-[url(#triggerToAction)]",
+					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=action]:!stroke-[url(#textGenerationToAction)]",
+					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=action]:!stroke-[url(#fileToAction)]",
+					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=action]:!stroke-[url(#textToAction)]",
 				)}
 				filter="url(#white-glow-filter)"
 			/>
@@ -151,6 +157,48 @@ export function GradientDef() {
 				>
 					<stop offset="0%" stopColor="var(--color-node-plaintext-900)" />
 					<stop offset="100%" stopColor="var(--color-primary-900)" />
+				</linearGradient>
+				<linearGradient
+					id="triggerToTextGeneration"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-trigger-node-1)" />
+					<stop offset="100%" stopColor="var(--color-primary-900)" />
+				</linearGradient>
+				<linearGradient
+					id="triggerToImageGeneration"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-trigger-node-1)" />
+					<stop offset="100%" stopColor="var(--color-primary-900)" />
+				</linearGradient>
+				<linearGradient id="triggerToAction" x1="0%" y1="0%" x2="100%" y2="0%">
+					<stop offset="0%" stopColor="var(--color-trigger-node-1)" />
+					<stop offset="100%" stopColor="var(--color-action-node-1)" />
+				</linearGradient>
+				<linearGradient
+					id="textGenerationToAction"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-primary-900)" />
+					<stop offset="100%" stopColor="var(--color-action-node-1)" />
+				</linearGradient>
+				<linearGradient id="fileToAction" x1="0%" y1="0%" x2="100%" y2="0%">
+					<stop offset="0%" stopColor="var(--color-node-data-900)" />
+					<stop offset="100%" stopColor="var(--color-action-node-1)" />
+				</linearGradient>
+				<linearGradient id="textToAction" x1="0%" y1="0%" x2="100%" y2="0%">
+					<stop offset="0%" stopColor="var(--color-node-plaintext-900)" />
+					<stop offset="100%" stopColor="var(--color-action-node-1)" />
 				</linearGradient>
 
 				<linearGradient

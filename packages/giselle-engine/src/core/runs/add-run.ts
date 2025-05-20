@@ -86,6 +86,7 @@ async function copyFiles({
 				fileId,
 				type: "run",
 				id: queuedRun.id,
+				workspaceId: queuedRun.workspaceId,
 			});
 			await storage.setItemRaw(runFilePath, fileContent);
 		}),

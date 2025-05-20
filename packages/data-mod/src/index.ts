@@ -1,5 +1,7 @@
 import type { ZodIssue, ZodSchema, z } from "zod";
+import { addAccessorToInput } from "./mods/add-accessor-to-input";
 import { addOverrideNodes } from "./mods/add-override-nodes";
+import { addWorkspaceIdToOriginRun } from "./mods/add-workspace-id-to-origin-run";
 import { fixTypoAccesorToAccessor } from "./mods/fix-typo-accesor-to-accessor";
 import { fixTypoQuquedAtToQueuedAt } from "./mods/fix-typo-ququedAt-queuedAt";
 import { renameActionToOperation } from "./mods/rename-action-to-operation";
@@ -10,6 +12,8 @@ export function dataMod(data: unknown, issue: ZodIssue) {
 	modData = addOverrideNodes(modData, issue);
 	modData = fixTypoQuquedAtToQueuedAt(modData, issue);
 	modData = renameActionToOperation(modData, issue);
+	modData = addAccessorToInput(modData, issue);
+	modData = addWorkspaceIdToOriginRun(modData, issue);
 	return modData;
 }
 

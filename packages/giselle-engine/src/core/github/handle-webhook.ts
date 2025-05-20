@@ -102,6 +102,28 @@ export async function handleWebhook(args: HandleGitHubWebhookArgs) {
 		});
 
 	const command = parseCommandFromEvent(gitHubEvent);
+
+	const results = await processMatchedIntegrationSettingsDeprecated(
+		gitHubEvent,
+		args,
+		repository,
+		command,
+		workspaceGitHubIntegrationRepositorySettings,
+	);
+	return results;
+}
+
+// Extracted for legacy parallel execution.
+// @deprecated This function will be removed in the future. Please use the new webhook processing method.
+async function processMatchedIntegrationSettingsDeprecated(
+	gitHubEvent: GitHubEvent,
+	args: HandleGitHubWebhookArgs,
+	repository: { owner: string; name: string; nodeId: string },
+	command: Command | null,
+	workspaceGitHubIntegrationRepositorySettings:
+		| WorkspaceGitHubIntegrationSetting[]
+		| undefined,
+): Promise<HandleGitHubWebhookResult[]> {
 	const matchedIntegrationSettings =
 		workspaceGitHubIntegrationRepositorySettings?.filter((setting) =>
 			isMatchingIntegrationSetting(setting, gitHubEvent, command),

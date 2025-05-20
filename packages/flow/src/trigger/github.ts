@@ -14,8 +14,6 @@ export const githubIssueCreatedTrigger = {
 		payloads: z.object({
 			title: z.string(),
 			body: z.string(),
-			repositoryOwner: z.string(),
-			repositoryName: z.string(),
 		}),
 	},
 } as const satisfies GitHubTrigger;
@@ -30,8 +28,6 @@ export const githubIssueCommentCreatedTrigger = {
 			issueNumber: z.number(),
 			issueTitle: z.string(),
 			issueBody: z.string(),
-			repositoryOwner: z.string(),
-			repositoryName: z.string(),
 		}),
 		conditions: z.object({
 			callsign: z.string(),
@@ -39,12 +35,12 @@ export const githubIssueCommentCreatedTrigger = {
 	},
 } as const satisfies GitHubTrigger;
 
-export const triggers = [
-	githubIssueCreatedTrigger,
-	githubIssueCommentCreatedTrigger,
-] as const;
+export const triggers = {
+	[githubIssueCreatedTrigger.event.id]: githubIssueCreatedTrigger,
+	[githubIssueCommentCreatedTrigger.event.id]: githubIssueCommentCreatedTrigger,
+} as const;
 
-export type TriggerEventId = (typeof triggers)[number]["event"]["id"];
+export type TriggerEventId = keyof typeof triggers;
 
 export function triggerIdToLabel(triggerId: TriggerEventId) {
 	switch (triggerId) {

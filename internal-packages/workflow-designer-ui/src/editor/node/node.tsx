@@ -9,6 +9,8 @@ import {
 	TextGenerationNode,
 	TextNode,
 	TriggerNode,
+	isImageGenerationNode,
+	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { defaultName } from "@giselle-sdk/workflow-utils";
 import {
@@ -25,6 +27,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
+import { Tooltip } from "../../ui/tooltip";
 import {
 	GitHubRepositoryBadgeFromRepo,
 	GitHubRepositoryBadgeFromTrigger,
@@ -148,6 +151,14 @@ export function NodeComponent({
 		}
 		setPrevGenerationStatus(currentGeneration.status);
 	}, [currentGeneration, prevGenerationStatus]);
+	const metadataTexts = useMemo(() => {
+		const tmp: { label: string; tooltip: string }[] = [];
+		if (isTextGenerationNode(node) || isImageGenerationNode(node)) {
+			tmp.push({ label: node.content.llm.provider, tooltip: "LLM Provider" });
+		}
+		tmp.push({ label: node.id.substring(3, 11), tooltip: "Node ID" });
+		return tmp;
+	}, [node]);
 	return (
 		<div
 			data-type={node.type}
@@ -289,13 +300,19 @@ export function NodeComponent({
 								e.stopPropagation();
 							}}
 						/>
-						{node.type === "operation" &&
-							(node.content.type === "imageGeneration" ||
-								node.content.type === "textGeneration") && (
-								<div className="text-[10px] text-white-400 pl-[4px]">
-									{node.content.llm.provider}
+						<div className="flex items-center gap-[2px] pl-[4px] text-[10px] text-white-300 font-mono [&>*:not(:last-child)]:after:content-['/'] [&>*:not(:last-child)]:after:ml-[2px] [&>*:not(:last-child)]:after:text-white-300">
+							{metadataTexts.map((item, index) => (
+								<div key={item.label} className="text-[10px] text-white-400">
+									{selected ? (
+										<Tooltip text={item.tooltip} variant="dark">
+											<button type="button">{item.label}</button>
+										</Tooltip>
+									) : (
+										item.label
+									)}
 								</div>
-							)}
+							))}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -443,6 +460,7 @@ export function NodeComponent({
 										"group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
 										"group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
 										"group-data-[content-type=trigger]:!border-trigger-node-1",
+										"group-data-[content-type=action]:!border-action-node-1",
 										"group-data-[state=connected]:group-data-[content-type=textGeneration]:!bg-generation-node-1",
 										"group-data-[state=connected]:group-data-[content-type=imageGeneration]:!bg-image-generation-node-1",
 										"group-data-[state=connected]:group-data-[content-type=github]:!bg-github-node-1",
@@ -452,6 +470,7 @@ export function NodeComponent({
 										"group-data-[state=connected]:group-data-[content-type=audioGeneration]:!bg-audio-generation-node-1 group-data-[state=connected]:group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
 										"group-data-[state=connected]:group-data-[content-type=videoGeneration]:!bg-video-generation-node-1 group-data-[state=connected]:group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
 										"group-data-[state=connected]:group-data-[content-type=trigger]:!bg-trigger-node-1 group-data-[state=connected]:group-data-[content-type=trigger]:!border-trigger-node-1",
+										"group-data-[state=connected]:group-data-[content-type=action]:!bg-action-node-1 group-data-[state=connected]:group-data-[content-type=action]:!border-action-node-1",
 										"group-data-[state=disconnected]:!bg-black-900",
 									)}
 								/>

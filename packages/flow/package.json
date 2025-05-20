@@ -8,8 +8,7 @@
 	"scripts": {
 		"build": "tsup",
 		"check-types": "tsc --noEmit",
-		"format": "biome format --write .",
-		"test": "vitest run"
+		"format": "biome format --write ."
 	},
 	"exports": {
 		"./package.json": "./package.json",

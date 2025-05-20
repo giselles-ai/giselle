@@ -1,0 +1,280 @@
+{
+	"id": "wrks-Mbali31eEdQqPNdF",
+	"schemaVersion": "20250221",
+	"nodes": [],
+	"connections": [],
+	"ui": {
+		"nodeState": {},
+		"viewport": { "x": 0, "y": 0, "zoom": 1 }
+	},
+	"editingWorkflows": [
+		{
+			"id": "wf-zaWpAjLRzaglMHfG",
+			"jobs": [
+				{
+					"id": "jb-FsBPUseWOKcM89SW",
+					"workflowId": "wf-5Y7TyYo8sdgdeACl",
+					"actions": [
+						{
+							"node": {
+								"id": "nd-z8WUYhntSwqvxtkX",
+								"type": "action",
+								"inputs": [],
+								"outputs": [
+									{
+										"id": "otp-HWM4rJR6xFEwSell",
+										"label": "Output",
+										"accessor": "generated-text"
+									}
+								],
+								"content": {
+									"type": "textGeneration",
+									"llm": {
+										"provider": "google",
+										"id": "gemini-2.0-flash-001",
+										"configurations": {
+											"temperature": 0.7,
+											"topP": 1,
+											"searchGrounding": false
+										}
+									},
+									"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Please tell me https://github.com/supabase-community/supabase-mcp/issues/52 \"}]}]}",
+									"tools": {
+										"github": {
+											"tools": ["getIssue"],
+											"auth": {
+												"type": "pat",
+												"token": "d27e783d-5765-482e-bb8c-ad371beaf430"
+											}
+										}
+									}
+								}
+							},
+							"generationTemplate": {
+								"actionNode": {
+									"id": "nd-z8WUYhntSwqvxtkX",
+									"type": "action",
+									"inputs": [],
+									"outputs": [
+										{
+											"id": "otp-HWM4rJR6xFEwSell",
+											"label": "Output",
+											"accessor": "generated-text"
+										}
+									],
+									"content": {
+										"type": "textGeneration",
+										"llm": {
+											"provider": "google",
+											"id": "gemini-2.0-flash-001",
+											"configurations": {
+												"temperature": 0.7,
+												"topP": 1,
+												"searchGrounding": false
+											}
+										},
+										"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Please tell me https://github.com/supabase-community/supabase-mcp/issues/52 \"}]}]}",
+										"tools": {
+											"github": {
+												"tools": ["getIssue"],
+												"auth": {
+													"type": "pat",
+													"token": "d27e783d-5765-482e-bb8c-ad371beaf430"
+												}
+											}
+										}
+									}
+								},
+								"sourceNodes": []
+							}
+						}
+					]
+				}
+			],
+			"nodes": [
+				{
+					"id": "nd-z8WUYhntSwqvxtkX",
+					"type": "action",
+					"inputs": [],
+					"outputs": [
+						{
+							"id": "otp-HWM4rJR6xFEwSell",
+							"label": "Output",
+							"accessor": "generated-text"
+						}
+					],
+					"content": {
+						"type": "textGeneration",
+						"llm": {
+							"provider": "google",
+							"id": "gemini-2.0-flash-001",
+							"configurations": {
+								"temperature": 0.7,
+								"topP": 1,
+								"searchGrounding": false
+							}
+						},
+						"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Please tell me https://github.com/supabase-community/supabase-mcp/issues/52 \"}]}]}",
+						"tools": {
+							"github": {
+								"tools": ["getIssue"],
+								"auth": {
+									"type": "pat",
+									"token": "d27e783d-5765-482e-bb8c-ad371beaf430"
+								}
+							}
+						}
+					}
+				}
+			]
+		},
+		{
+			"id": "wf-6L62PvOIhNB7GtGC",
+			"jobs": [
+				{
+					"id": "jb-us4bYdbIKIvyJmcB",
+					"workflowId": "wf-V59utbKUW1otoBwz",
+					"actions": [
+						{
+							"node": {
+								"id": "nd-gNgxfDeR33r095O1",
+								"type": "action",
+								"inputs": [{ "id": "inp-DZXZ6GrvzTTUHhvb", "label": "Input" }],
+								"outputs": [
+									{
+										"id": "otp-KBsL3G9Tk1JsfFAv",
+										"label": "Output",
+										"accessor": "generated-text"
+									}
+								],
+								"content": {
+									"type": "textGeneration",
+									"llm": {
+										"provider": "google",
+										"id": "gemini-2.5-pro-preview-03-25",
+										"configurations": {
+											"temperature": 0.7,
+											"topP": 1,
+											"searchGrounding": false
+										}
+									},
+									"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Please tell me about \"},{\"type\":\"Source\",\"attrs\":{\"node\":{\"id\":\"nd-k6oXvpNpMzRTxp2r\",\"type\":\"variable\",\"content\":{\"type\":\"file\"}},\"outputId\":\"otp-tk0qI1kZJoCF4Y9N\"}},{\"type\":\"text\",\"text\":\" \"}]}]}"
+								}
+							},
+							"generationTemplate": {
+								"actionNode": {
+									"id": "nd-gNgxfDeR33r095O1",
+									"type": "action",
+									"inputs": [
+										{ "id": "inp-DZXZ6GrvzTTUHhvb", "label": "Input" }
+									],
+									"outputs": [
+										{
+											"id": "otp-KBsL3G9Tk1JsfFAv",
+											"label": "Output",
+											"accessor": "generated-text"
+										}
+									],
+									"content": {
+										"type": "textGeneration",
+										"llm": {
+											"provider": "google",
+											"id": "gemini-2.5-pro-preview-03-25",
+											"configurations": {
+												"temperature": 0.7,
+												"topP": 1,
+												"searchGrounding": false
+											}
+										},
+										"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Please tell me about \"},{\"type\":\"Source\",\"attrs\":{\"node\":{\"id\":\"nd-k6oXvpNpMzRTxp2r\",\"type\":\"variable\",\"content\":{\"type\":\"file\"}},\"outputId\":\"otp-tk0qI1kZJoCF4Y9N\"}},{\"type\":\"text\",\"text\":\" \"}]}]}"
+									}
+								},
+								"sourceNodes": [
+									{
+										"id": "nd-k6oXvpNpMzRTxp2r",
+										"type": "variable",
+										"inputs": [],
+										"outputs": [
+											{
+												"id": "otp-tk0qI1kZJoCF4Y9N",
+												"label": "Output",
+												"accessor": "text"
+											}
+										],
+										"content": {
+											"type": "file",
+											"category": "pdf",
+											"files": [
+												{
+													"id": "fl-QgpPbjohIdLfoCLb",
+													"name": "Ask the Developer Vol. 14, Nintendo Sound Clock_ Alarmo.pdf",
+													"type": "application/pdf",
+													"size": 3026098,
+													"status": "uploaded",
+													"uploadedAt": 1744721612366
+												}
+											]
+										}
+									}
+								]
+							}
+						}
+					]
+				}
+			],
+			"nodes": [
+				{
+					"id": "nd-gNgxfDeR33r095O1",
+					"type": "action",
+					"inputs": [{ "id": "inp-DZXZ6GrvzTTUHhvb", "label": "Input" }],
+					"outputs": [
+						{
+							"id": "otp-KBsL3G9Tk1JsfFAv",
+							"label": "Output",
+							"accessor": "generated-text"
+						}
+					],
+					"content": {
+						"type": "textGeneration",
+						"llm": {
+							"provider": "google",
+							"id": "gemini-2.5-pro-preview-03-25",
+							"configurations": {
+								"temperature": 0.7,
+								"topP": 1,
+								"searchGrounding": false
+							}
+						},
+						"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Please tell me about \"},{\"type\":\"Source\",\"attrs\":{\"node\":{\"id\":\"nd-k6oXvpNpMzRTxp2r\",\"type\":\"variable\",\"content\":{\"type\":\"file\"}},\"outputId\":\"otp-tk0qI1kZJoCF4Y9N\"}},{\"type\":\"text\",\"text\":\" \"}]}]}"
+					}
+				},
+				{
+					"id": "nd-k6oXvpNpMzRTxp2r",
+					"type": "variable",
+					"inputs": [],
+					"outputs": [
+						{
+							"id": "otp-tk0qI1kZJoCF4Y9N",
+							"label": "Output",
+							"accessor": "text"
+						}
+					],
+					"content": {
+						"type": "file",
+						"category": "pdf",
+						"files": [
+							{
+								"id": "fl-QgpPbjohIdLfoCLb",
+								"name": "Ask the Developer Vol. 14, Nintendo Sound Clock_ Alarmo.pdf",
+								"type": "application/pdf",
+								"size": 3026098,
+								"status": "uploaded",
+								"uploadedAt": 1744721612366
+							}
+						]
+					}
+				}
+			]
+		}
+	]
+}

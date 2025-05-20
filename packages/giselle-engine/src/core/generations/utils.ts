@@ -186,9 +186,17 @@ async function buildGenerationMessageForTextGeneration(
 
 			case "github":
 			case "imageGeneration":
-			case "trigger":
-			case "action":
 				throw new Error("Not implemented");
+			case "trigger":
+			case "action": {
+				const result = await textGenerationResolver(
+					contextNode.id,
+					sourceKeyword.outputId,
+				);
+				// If there is no matching Output, replace it with an empty string (remove the pattern string from userMessage)
+				userMessage = userMessage.replace(replaceKeyword, result ?? "");
+				break;
+			}
 
 			default: {
 				const _exhaustiveCheck: never = contextNode.content;
@@ -350,7 +358,15 @@ export async function getGeneration(params: {
 			bypassingCache: true,
 		},
 	);
-	return parseAndMod(Generation, unsafeGeneration);
+	const parsedGeneration = parseAndMod(Generation, unsafeGeneration);
+	const parsedGenerationContext = parseAndMod(
+		GenerationContext,
+		parsedGeneration.context,
+	);
+	return {
+		...parsedGeneration,
+		context: parsedGenerationContext,
+	};
 }
 
 export function nodeGenerationIndexPath(
@@ -421,6 +437,9 @@ export async function getNodeGenerationIndexes(
 ) {
 	const unsafeNodeGenerationIndexData = await params.storage.getItem(
 		nodeGenerationIndexPath(params),
+		{
+			bypassingCache: true,
+		},
 	);
 	if (unsafeNodeGenerationIndexData === null) {
 		return undefined;

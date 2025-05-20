@@ -1,0 +1,9 @@
+[
+	{
+		"label": "test with symbol",
+		"command": "pnpm vitest watch",
+		"cwd": "$ZED_DIRNAME",
+		"args": ["$ZED_FILENAME", "--testNamePattern", "$ZED_SYMBOL"],
+		"tags": ["js-test", "ts-test", "tsx-test"]
+	}
+]

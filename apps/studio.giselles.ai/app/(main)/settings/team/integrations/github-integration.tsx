@@ -4,7 +4,7 @@ import { gitHubAppInstallURL } from "@/services/external/github";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import type { components } from "@octokit/openapi-types";
 import Link from "next/link";
-import { Button } from "../components/button";
+import { Button } from "../../components/button";
 
 export async function GitHubIntegration() {
 	const installUrl = await gitHubAppInstallURL();

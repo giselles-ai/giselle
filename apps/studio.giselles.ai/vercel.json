@@ -1,0 +1,8 @@
+{
+	"crons": [
+		{
+			"path": "/api/vector-stores/github/ingest",
+			"schedule": "*/10 * * * *"
+		}
+	]
+}

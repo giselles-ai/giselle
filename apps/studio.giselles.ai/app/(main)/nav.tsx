@@ -9,11 +9,17 @@ const menuItems = [
 	{ name: "Apps", path: "/apps" },
 	{ name: "Members", path: "/settings/team/members" },
 	{ name: "Integrations", path: "/settings/team/integrations" },
+	{ name: "Vector Stores", path: "/settings/team/vector-stores" },
 	{ name: "Usage", path: "/settings/team/usage" },
 	{ name: "Team Settings", path: "/settings/team" },
 ];
 
-export const Nav: FC = () => {
+// receive githubVectorStoreFlag as props
+interface NavProps {
+	githubVectorStoreFlag: boolean;
+}
+
+export const Nav: FC<NavProps> = ({ githubVectorStoreFlag }) => {
 	const pathname = usePathname();
 
 	// hide nav on settings/account page
@@ -21,11 +27,16 @@ export const Nav: FC = () => {
 		return null;
 	}
 
-	// 現在のパスに最もマッチする項目を見つける
+	// remove Vector Store link
+	const filteredMenuItems = githubVectorStoreFlag
+		? menuItems
+		: menuItems.filter((item) => item.name !== "Vector Stores");
+
+	// find the best match path
 	let bestMatchPath = "";
 	let bestMatchIndex = -1;
 
-	menuItems.forEach((item, index) => {
+	filteredMenuItems.forEach((item, index) => {
 		if (
 			pathname.startsWith(item.path) &&
 			item.path.length > bestMatchPath.length
@@ -38,7 +49,7 @@ export const Nav: FC = () => {
 	return (
 		<div className="flex items-center px-[24px] py-0 border-t border-black-900/50">
 			<div className="flex items-center">
-				{menuItems.map((item, index) => {
+				{filteredMenuItems.map((item, index) => {
 					const isActive = index === bestMatchIndex;
 
 					return (

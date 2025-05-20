@@ -22,7 +22,7 @@ catalog:
   react: 19.1.0
   react-dom: 19.1.0
   node-loader: 2.1.0
-  vitest: 3.0.5
+  vitest: 3.1.4
   "@radix-ui/react-tabs": 1.1.2
   lucide-react: 0.473.0
   clsx: 2.1.1

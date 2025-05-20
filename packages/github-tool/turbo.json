@@ -5,7 +5,7 @@
 			"outputs": ["src/graphql-env.d.ts"]
 		},
 		"build": {
-			"dependsOn": ["generate-output"],
+			"dependsOn": ["^build", "generate-output"],
 			"outputs": ["**/dist/**"]
 		}
 	}

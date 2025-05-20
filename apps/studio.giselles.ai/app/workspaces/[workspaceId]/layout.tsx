@@ -2,6 +2,7 @@ import { db } from "@/drizzle";
 import { flowNodeFlag, runV2Flag } from "@/flags";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { getUsageLimitsForTeam } from "@/packages/lib/usage-limits";
+import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import { WorkspaceId } from "@giselle-sdk/data-type";
 import { WorkspaceProvider } from "giselle-sdk/react";
@@ -24,6 +25,8 @@ export default async function Layout({
 		return notFound();
 	}
 	const gitHubIntegrationState = await getGitHubIntegrationState(agent.dbId);
+
+	const currentUser = await fetchCurrentUser();
 
 	const currentTeam = await fetchCurrentTeam();
 	if (currentTeam.dbId !== agent.teamDbId) {
@@ -50,6 +53,7 @@ export default async function Layout({
 				metadata: {
 					isProPlan: isProPlan(currentTeam),
 					teamType: currentTeam.type,
+					userId: currentUser.id,
 					subscriptionId: currentTeam.activeSubscriptionId ?? "",
 				},
 			}}

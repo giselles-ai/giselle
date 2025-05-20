@@ -1,0 +1,592 @@
+{
+	"id": "wrks-lEObuorf2lh1DzOG",
+	"schemaVersion": "20250221",
+	"nodes": [
+		{
+			"id": "nd-c2tg86XNmMef5SUj",
+			"name": "Create Issue",
+			"type": "operation",
+			"inputs": [
+				{
+					"id": "inp-x1tOkyCQv4Dyivsm",
+					"label": "title",
+					"accessor": "title",
+					"isRequired": true
+				},
+				{
+					"id": "inp-7iz8ra48uqxekD37",
+					"label": "body",
+					"accessor": "body",
+					"isRequired": true
+				}
+			],
+			"outputs": [
+				{
+					"id": "otp-aYvLOOWLyx2sPmIA",
+					"label": "output",
+					"accessor": "action-result"
+				}
+			],
+			"content": {
+				"type": "action",
+				"command": {
+					"provider": "github",
+					"state": {
+						"status": "configured",
+						"commandId": "github.create.issue",
+						"installationId": 65591132,
+						"repositoryNodeId": "R_kgDONFn3Nw"
+					}
+				}
+			}
+		},
+		{
+			"id": "nd-qRt17h0TP7nQd4Xk",
+			"name": "Manual Trigger",
+			"type": "operation",
+			"inputs": [],
+			"outputs": [
+				{
+					"id": "otp-k9Ah2r0NBdK1Ki6Z",
+					"label": "Question",
+					"accessor": "mntgp-xPQZyvNWXBNr0O38"
+				}
+			],
+			"content": {
+				"type": "trigger",
+				"provider": "manual",
+				"state": {
+					"status": "configured",
+					"flowTriggerId": "fltg-DZOZvbbyLI60IvoY"
+				}
+			}
+		},
+		{
+			"id": "nd-LsNVgNj3s1xJjreL",
+			"type": "operation",
+			"inputs": [
+				{
+					"id": "inp-wuJkeWE30dSCDSsp",
+					"label": "Input",
+					"accessor": "inp-wuJkeWE30dSCDSsp"
+				}
+			],
+			"outputs": [
+				{
+					"id": "otp-qJ8xg2JIgjbYbOg5",
+					"label": "Output",
+					"accessor": "generated-text"
+				}
+			],
+			"content": {
+				"type": "textGeneration",
+				"llm": {
+					"provider": "google",
+					"id": "gemini-2.0-flash",
+					"configurations": {
+						"temperature": 0.7,
+						"topP": 1,
+						"searchGrounding": false
+					}
+				},
+				"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"Source\",\"attrs\":{\"node\":{\"id\":\"nd-qRt17h0TP7nQd4Xk\",\"type\":\"operation\",\"content\":{\"type\":\"trigger\"}},\"outputId\":\"otp-k9Ah2r0NBdK1Ki6Z\"}},{\"type\":\"text\",\"text\":\" を解決するためのタスクリストを作ってください。結果のみ表示してください。\"}]}]}"
+			}
+		}
+	],
+	"connections": [
+		{
+			"id": "cnnc-17r6tr11TxLUptRh",
+			"outputNode": {
+				"id": "nd-qRt17h0TP7nQd4Xk",
+				"type": "operation",
+				"content": { "type": "trigger" }
+			},
+			"outputId": "otp-k9Ah2r0NBdK1Ki6Z",
+			"inputNode": {
+				"id": "nd-LsNVgNj3s1xJjreL",
+				"type": "operation",
+				"content": { "type": "textGeneration" }
+			},
+			"inputId": "inp-wuJkeWE30dSCDSsp"
+		},
+		{
+			"id": "cnnc-CUkGxtnuRw7Bciag",
+			"outputNode": {
+				"id": "nd-LsNVgNj3s1xJjreL",
+				"type": "operation",
+				"content": { "type": "textGeneration" }
+			},
+			"outputId": "otp-qJ8xg2JIgjbYbOg5",
+			"inputNode": {
+				"id": "nd-c2tg86XNmMef5SUj",
+				"type": "operation",
+				"content": { "type": "action" }
+			},
+			"inputId": "inp-7iz8ra48uqxekD37"
+		},
+		{
+			"id": "cnnc-w3Ma5Nl0dhZPkNWg",
+			"outputNode": {
+				"id": "nd-qRt17h0TP7nQd4Xk",
+				"type": "operation",
+				"content": { "type": "trigger" }
+			},
+			"outputId": "otp-k9Ah2r0NBdK1Ki6Z",
+			"inputNode": {
+				"id": "nd-c2tg86XNmMef5SUj",
+				"type": "operation",
+				"content": { "type": "action" }
+			},
+			"inputId": "inp-x1tOkyCQv4Dyivsm"
+		}
+	],
+	"ui": {
+		"nodeState": {
+			"nd-c2tg86XNmMef5SUj": {
+				"position": { "x": 510, "y": 330 },
+				"selected": false,
+				"showError": false
+			},
+			"nd-qRt17h0TP7nQd4Xk": {
+				"position": { "x": -16.494515598651866, "y": 372.5715910205574 },
+				"selected": false
+			},
+			"nd-LsNVgNj3s1xJjreL": {
+				"position": { "x": 236.40390328321456, "y": 553.5630434071808 },
+				"selected": false
+			}
+		},
+		"viewport": {
+			"x": 64.15064935595461,
+			"y": -121.28369702408787,
+			"zoom": 1.0150368346287086
+		}
+	},
+	"editingWorkflows": [
+		{
+			"id": "wf-EJOh7IPyVyOs2Nfm",
+			"jobs": [
+				{
+					"id": "jb-0oDhnvWrewvGfMSj",
+					"workflowId": "wf-9qwt1L7Ug6KX9Svv",
+					"operations": [
+						{
+							"node": {
+								"id": "nd-qRt17h0TP7nQd4Xk",
+								"name": "Manual Trigger",
+								"type": "operation",
+								"inputs": [],
+								"outputs": [
+									{
+										"id": "otp-k9Ah2r0NBdK1Ki6Z",
+										"label": "Question",
+										"accessor": "mntgp-xPQZyvNWXBNr0O38"
+									}
+								],
+								"content": {
+									"type": "trigger",
+									"provider": "manual",
+									"state": {
+										"status": "configured",
+										"flowTriggerId": "fltg-DZOZvbbyLI60IvoY"
+									}
+								}
+							},
+							"generationTemplate": {
+								"operationNode": {
+									"id": "nd-qRt17h0TP7nQd4Xk",
+									"name": "Manual Trigger",
+									"type": "operation",
+									"inputs": [],
+									"outputs": [
+										{
+											"id": "otp-k9Ah2r0NBdK1Ki6Z",
+											"label": "Question",
+											"accessor": "mntgp-xPQZyvNWXBNr0O38"
+										}
+									],
+									"content": {
+										"type": "trigger",
+										"provider": "manual",
+										"state": {
+											"status": "configured",
+											"flowTriggerId": "fltg-DZOZvbbyLI60IvoY"
+										}
+									}
+								},
+								"sourceNodes": [],
+								"connections": []
+							}
+						}
+					]
+				},
+				{
+					"id": "jb-5S1JWC2beA0bFGaT",
+					"workflowId": "wf-9qwt1L7Ug6KX9Svv",
+					"operations": [
+						{
+							"node": {
+								"id": "nd-LsNVgNj3s1xJjreL",
+								"type": "operation",
+								"inputs": [
+									{
+										"id": "inp-wuJkeWE30dSCDSsp",
+										"label": "Input",
+										"accessor": "inp-wuJkeWE30dSCDSsp"
+									}
+								],
+								"outputs": [
+									{
+										"id": "otp-qJ8xg2JIgjbYbOg5",
+										"label": "Output",
+										"accessor": "generated-text"
+									}
+								],
+								"content": {
+									"type": "textGeneration",
+									"llm": {
+										"provider": "google",
+										"id": "gemini-2.0-flash",
+										"configurations": {
+											"temperature": 0.7,
+											"topP": 1,
+											"searchGrounding": false
+										}
+									},
+									"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"Source\",\"attrs\":{\"node\":{\"id\":\"nd-qRt17h0TP7nQd4Xk\",\"type\":\"operation\",\"content\":{\"type\":\"trigger\"}},\"outputId\":\"otp-k9Ah2r0NBdK1Ki6Z\"}},{\"type\":\"text\",\"text\":\" を解決するためのタスクリストを作ってください。結果のみ表示してください。\"}]}]}"
+								}
+							},
+							"generationTemplate": {
+								"operationNode": {
+									"id": "nd-LsNVgNj3s1xJjreL",
+									"type": "operation",
+									"inputs": [
+										{
+											"id": "inp-wuJkeWE30dSCDSsp",
+											"label": "Input",
+											"accessor": "inp-wuJkeWE30dSCDSsp"
+										}
+									],
+									"outputs": [
+										{
+											"id": "otp-qJ8xg2JIgjbYbOg5",
+											"label": "Output",
+											"accessor": "generated-text"
+										}
+									],
+									"content": {
+										"type": "textGeneration",
+										"llm": {
+											"provider": "google",
+											"id": "gemini-2.0-flash",
+											"configurations": {
+												"temperature": 0.7,
+												"topP": 1,
+												"searchGrounding": false
+											}
+										},
+										"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"Source\",\"attrs\":{\"node\":{\"id\":\"nd-qRt17h0TP7nQd4Xk\",\"type\":\"operation\",\"content\":{\"type\":\"trigger\"}},\"outputId\":\"otp-k9Ah2r0NBdK1Ki6Z\"}},{\"type\":\"text\",\"text\":\" を解決するためのタスクリストを作ってください。結果のみ表示してください。\"}]}]}"
+									}
+								},
+								"sourceNodes": [
+									{
+										"id": "nd-qRt17h0TP7nQd4Xk",
+										"name": "Manual Trigger",
+										"type": "operation",
+										"inputs": [],
+										"outputs": [
+											{
+												"id": "otp-k9Ah2r0NBdK1Ki6Z",
+												"label": "Question",
+												"accessor": "mntgp-xPQZyvNWXBNr0O38"
+											}
+										],
+										"content": {
+											"type": "trigger",
+											"provider": "manual",
+											"state": {
+												"status": "configured",
+												"flowTriggerId": "fltg-DZOZvbbyLI60IvoY"
+											}
+										}
+									}
+								],
+								"connections": [
+									{
+										"id": "cnnc-17r6tr11TxLUptRh",
+										"outputNode": {
+											"id": "nd-qRt17h0TP7nQd4Xk",
+											"type": "operation",
+											"content": { "type": "trigger" }
+										},
+										"outputId": "otp-k9Ah2r0NBdK1Ki6Z",
+										"inputNode": {
+											"id": "nd-LsNVgNj3s1xJjreL",
+											"type": "operation",
+											"content": { "type": "textGeneration" }
+										},
+										"inputId": "inp-wuJkeWE30dSCDSsp"
+									}
+								]
+							}
+						}
+					]
+				},
+				{
+					"id": "jb-imZgsdELOuYntRTv",
+					"workflowId": "wf-9qwt1L7Ug6KX9Svv",
+					"operations": [
+						{
+							"node": {
+								"id": "nd-c2tg86XNmMef5SUj",
+								"name": "Create Issue",
+								"type": "operation",
+								"inputs": [
+									{
+										"id": "inp-x1tOkyCQv4Dyivsm",
+										"label": "title",
+										"accessor": "title",
+										"isRequired": true
+									},
+									{
+										"id": "inp-7iz8ra48uqxekD37",
+										"label": "body",
+										"accessor": "body",
+										"isRequired": true
+									}
+								],
+								"outputs": [
+									{
+										"id": "otp-aYvLOOWLyx2sPmIA",
+										"label": "output",
+										"accessor": "action-result"
+									}
+								],
+								"content": {
+									"type": "action",
+									"command": {
+										"provider": "github",
+										"state": {
+											"status": "configured",
+											"commandId": "github.create.issue",
+											"installationId": 65591132,
+											"repositoryNodeId": "R_kgDONFn3Nw"
+										}
+									}
+								}
+							},
+							"generationTemplate": {
+								"operationNode": {
+									"id": "nd-c2tg86XNmMef5SUj",
+									"name": "Create Issue",
+									"type": "operation",
+									"inputs": [
+										{
+											"id": "inp-x1tOkyCQv4Dyivsm",
+											"label": "title",
+											"accessor": "title",
+											"isRequired": true
+										},
+										{
+											"id": "inp-7iz8ra48uqxekD37",
+											"label": "body",
+											"accessor": "body",
+											"isRequired": true
+										}
+									],
+									"outputs": [
+										{
+											"id": "otp-aYvLOOWLyx2sPmIA",
+											"label": "output",
+											"accessor": "action-result"
+										}
+									],
+									"content": {
+										"type": "action",
+										"command": {
+											"provider": "github",
+											"state": {
+												"status": "configured",
+												"commandId": "github.create.issue",
+												"installationId": 65591132,
+												"repositoryNodeId": "R_kgDONFn3Nw"
+											}
+										}
+									}
+								},
+								"sourceNodes": [
+									{
+										"id": "nd-qRt17h0TP7nQd4Xk",
+										"name": "Manual Trigger",
+										"type": "operation",
+										"inputs": [],
+										"outputs": [
+											{
+												"id": "otp-k9Ah2r0NBdK1Ki6Z",
+												"label": "Question",
+												"accessor": "mntgp-xPQZyvNWXBNr0O38"
+											}
+										],
+										"content": {
+											"type": "trigger",
+											"provider": "manual",
+											"state": {
+												"status": "configured",
+												"flowTriggerId": "fltg-DZOZvbbyLI60IvoY"
+											}
+										}
+									},
+									{
+										"id": "nd-qRt17h0TP7nQd4Xk",
+										"name": "Manual Trigger",
+										"type": "operation",
+										"inputs": [],
+										"outputs": [
+											{
+												"id": "otp-k9Ah2r0NBdK1Ki6Z",
+												"label": "Question",
+												"accessor": "mntgp-xPQZyvNWXBNr0O38"
+											}
+										],
+										"content": {
+											"type": "trigger",
+											"provider": "manual",
+											"state": {
+												"status": "configured",
+												"flowTriggerId": "fltg-DZOZvbbyLI60IvoY"
+											}
+										}
+									}
+								],
+								"connections": [
+									{
+										"id": "cnnc-CUkGxtnuRw7Bciag",
+										"outputNode": {
+											"id": "nd-LsNVgNj3s1xJjreL",
+											"type": "operation",
+											"content": { "type": "textGeneration" }
+										},
+										"outputId": "otp-qJ8xg2JIgjbYbOg5",
+										"inputNode": {
+											"id": "nd-c2tg86XNmMef5SUj",
+											"type": "operation",
+											"content": { "type": "action" }
+										},
+										"inputId": "inp-7iz8ra48uqxekD37"
+									},
+									{
+										"id": "cnnc-w3Ma5Nl0dhZPkNWg",
+										"outputNode": {
+											"id": "nd-qRt17h0TP7nQd4Xk",
+											"type": "operation",
+											"content": { "type": "trigger" }
+										},
+										"outputId": "otp-k9Ah2r0NBdK1Ki6Z",
+										"inputNode": {
+											"id": "nd-c2tg86XNmMef5SUj",
+											"type": "operation",
+											"content": { "type": "action" }
+										},
+										"inputId": "inp-x1tOkyCQv4Dyivsm"
+									}
+								]
+							}
+						}
+					]
+				}
+			],
+			"nodes": [
+				{
+					"id": "nd-c2tg86XNmMef5SUj",
+					"name": "Create Issue",
+					"type": "operation",
+					"inputs": [
+						{
+							"id": "inp-x1tOkyCQv4Dyivsm",
+							"label": "title",
+							"accessor": "title",
+							"isRequired": true
+						},
+						{
+							"id": "inp-7iz8ra48uqxekD37",
+							"label": "body",
+							"accessor": "body",
+							"isRequired": true
+						}
+					],
+					"outputs": [
+						{
+							"id": "otp-aYvLOOWLyx2sPmIA",
+							"label": "output",
+							"accessor": "action-result"
+						}
+					],
+					"content": {
+						"type": "action",
+						"command": {
+							"provider": "github",
+							"state": {
+								"status": "configured",
+								"commandId": "github.create.issue",
+								"installationId": 65591132,
+								"repositoryNodeId": "R_kgDONFn3Nw"
+							}
+						}
+					}
+				},
+				{
+					"id": "nd-qRt17h0TP7nQd4Xk",
+					"name": "Manual Trigger",
+					"type": "operation",
+					"inputs": [],
+					"outputs": [
+						{
+							"id": "otp-k9Ah2r0NBdK1Ki6Z",
+							"label": "Question",
+							"accessor": "mntgp-xPQZyvNWXBNr0O38"
+						}
+					],
+					"content": {
+						"type": "trigger",
+						"provider": "manual",
+						"state": {
+							"status": "configured",
+							"flowTriggerId": "fltg-DZOZvbbyLI60IvoY"
+						}
+					}
+				},
+				{
+					"id": "nd-LsNVgNj3s1xJjreL",
+					"type": "operation",
+					"inputs": [
+						{
+							"id": "inp-wuJkeWE30dSCDSsp",
+							"label": "Input",
+							"accessor": "inp-wuJkeWE30dSCDSsp"
+						}
+					],
+					"outputs": [
+						{
+							"id": "otp-qJ8xg2JIgjbYbOg5",
+							"label": "Output",
+							"accessor": "generated-text"
+						}
+					],
+					"content": {
+						"type": "textGeneration",
+						"llm": {
+							"provider": "google",
+							"id": "gemini-2.0-flash",
+							"configurations": {
+								"temperature": 0.7,
+								"topP": 1,
+								"searchGrounding": false
+							}
+						},
+						"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"Source\",\"attrs\":{\"node\":{\"id\":\"nd-qRt17h0TP7nQd4Xk\",\"type\":\"operation\",\"content\":{\"type\":\"trigger\"}},\"outputId\":\"otp-k9Ah2r0NBdK1Ki6Z\"}},{\"type\":\"text\",\"text\":\" を解決するためのタスクリストを作ってください。結果のみ表示してください。\"}]}]}"
+					}
+				}
+			]
+		}
+	]
+}

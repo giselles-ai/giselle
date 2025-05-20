@@ -1,15 +1,31 @@
 import type { AnthropicProviderOptions } from "@ai-sdk/anthropic";
+import type {
+	CompletedGeneration,
+	RunningGeneration,
+} from "@giselle-sdk/data-type";
 import type { LanguageModel } from "@giselle-sdk/language-model";
 import type { ToolSet } from "ai";
+import { Langfuse } from "langfuse";
+import type { TelemetrySettings } from "./types";
 
-type TelemetryTag =
-	// generic name
-	| "web-search"
-	// provider-specific function name
+type BaseFunctionalityTag = "web-search";
+
+type ProviderNameTag = "openai" | "anthropic" | "google" | "perplexity" | "fal";
+
+type ProviderOptionTag =
 	| "openai:web-search"
 	| "google:search-grounding"
 	| "anthropic:reasoning"
-	| "anthropic:thinking";
+	| "anthropic:thinking"
+	| "perplexity:search-domain-filter";
+
+type ModelNameTag = string;
+
+type TelemetryTag =
+	| BaseFunctionalityTag
+	| ProviderNameTag
+	| ProviderOptionTag
+	| ModelNameTag;
 
 export function generateTelemetryTags(args: {
 	provider: string;
@@ -21,6 +37,8 @@ export function generateTelemetryTags(args: {
 	};
 }): TelemetryTag[] {
 	const tags: TelemetryTag[] = [];
+
+	tags.push(args.provider, args.languageModel.id);
 
 	// OpenAI Web Search
 	if (args.provider === "openai" && args.toolSet.openaiWebSearch) {
@@ -44,5 +62,98 @@ export function generateTelemetryTags(args: {
 		}
 	}
 
+	// Perplexity Search Domain Filter
+	if (args.provider === "perplexity") {
+		tags.push("web-search");
+
+		if (
+			Array.isArray(args.configurations.searchDomainFilter) &&
+			args.configurations.searchDomainFilter.length > 0
+		) {
+			tags.push("perplexity:search-domain-filter");
+		}
+	}
+
 	return tags;
+}
+
+type LangfuseUnit =
+	| "CHARACTERS"
+	| "TOKENS"
+	| "MILLISECONDS"
+	| "SECONDS"
+	| "IMAGES"
+	| "REQUESTS";
+
+export function createLangfuseTracer({
+	workspaceId,
+	runningGeneration,
+	tags,
+	messages,
+	output,
+	usage,
+	completedGeneration,
+	spanName,
+	generationName,
+	settings,
+}: {
+	workspaceId: string;
+	runningGeneration: RunningGeneration;
+	tags: string[];
+	messages: { messages: unknown[] };
+	output: string;
+	usage: {
+		input: number;
+		output: number;
+		total: number;
+		inputCost: number; // these cost values are for preliminary analysis on Langfuse, not for billing purpose
+		outputCost: number;
+		totalCost: number;
+		unit: LangfuseUnit;
+	};
+	completedGeneration: CompletedGeneration;
+	spanName: string;
+	generationName: string;
+	settings?: TelemetrySettings;
+}): {
+	langfuse: Langfuse;
+	trace: ReturnType<Langfuse["trace"]>;
+	span: ReturnType<ReturnType<Langfuse["trace"]>["span"]>;
+	generation: ReturnType<
+		ReturnType<ReturnType<Langfuse["trace"]>["span"]>["generation"]
+	>;
+} {
+	const langfuse = new Langfuse();
+	const trace = langfuse.trace({
+		userId: String(settings?.metadata?.userId),
+		name: spanName,
+		metadata: settings?.metadata,
+		input: messages,
+		output,
+		tags,
+	});
+
+	const span = trace.span({
+		name: spanName,
+		startTime: new Date(runningGeneration.queuedAt),
+		output,
+		metadata: settings?.metadata,
+		endTime: new Date(completedGeneration.completedAt),
+	});
+
+	const generation = span.generation({
+		name: generationName,
+		model: runningGeneration.context.operationNode.content.llm.id,
+		modelParameters:
+			runningGeneration.context.operationNode.content.llm.configurations,
+		input: messages,
+		usage,
+		startTime: new Date(runningGeneration.createdAt),
+		completionStartTime: new Date(runningGeneration.startedAt),
+		metadata: settings?.metadata,
+		output,
+		endTime: new Date(completedGeneration.completedAt),
+	});
+
+	return { langfuse, trace, span, generation };
 }

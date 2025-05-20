@@ -130,7 +130,7 @@ export function RunSystemContextProvider({
 						}
 						await startGeneration(
 							{
-								origin: { type: "run", id: runId },
+								origin: { type: "run", id: runId, workspaceId },
 								...operation.generationTemplate,
 							},
 							{

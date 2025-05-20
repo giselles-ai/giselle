@@ -1,8 +1,10 @@
 import {
+	isActionNode,
 	isFileNode,
 	isGitHubNode,
 	isTextGenerationNode,
 	isTextNode,
+	isTriggerNode,
 } from "@giselle-sdk/data-type";
 import { useMemo } from "react";
 import type { OutputWithDetails } from "./types";
@@ -19,11 +21,21 @@ export function useCategoriedOutputs(inputs: OutputWithDetails[]) {
 		() => filterInputs(inputs, isGitHubNode),
 		[inputs],
 	);
+	const triggerInputs = useMemo(
+		() => filterInputs(inputs, isTriggerNode),
+		[inputs],
+	);
+	const actionInputs = useMemo(
+		() => filterInputs(inputs, isActionNode),
+		[inputs],
+	);
 
 	return {
 		generatedInputs,
 		textInputs,
 		fileInputs,
 		githubInputs,
+		actionInputs,
+		triggerInputs,
 	};
 }

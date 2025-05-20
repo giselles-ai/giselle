@@ -11,6 +11,7 @@ test("should parse operation node with required inputs correctly", () => {
 				id: "inp-NnAVaRCdioDX0Jnb",
 				label: "body",
 				isRequired: true,
+				accessor: "body",
 			},
 		],
 		outputs: [],
@@ -27,7 +28,7 @@ test("should parse operation node with required inputs correctly", () => {
 			},
 		},
 	});
-	expect(parse.success).toBe(true);
+	expect(parse.success).toBeTruthy();
 	if (parse.success) {
 		expect(parse.data.inputs[0].isRequired).toBe(true);
 	}

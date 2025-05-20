@@ -7,6 +7,15 @@ export function fixTypoAccesorToAccessor(data: unknown, issue: ZodIssue) {
 	if (lastPath !== "accessor") {
 		return data;
 	}
+
+	// Check if the path includes "outputs"
+	const pathContainsOutput = issue.path.some(
+		(segment) => typeof segment === "string" && segment === "outputs",
+	);
+	if (!pathContainsOutput) {
+		return data;
+	}
+
 	if (!isObject(data)) {
 		return data;
 	}

@@ -37,6 +37,8 @@ const Component = (props: NodeViewProps) => {
 					"data-[content-type=github]:bg-github-node-1/20 data-[content-type=github]:text-github-node-1",
 					"data-[content-type=text]:bg-node-plaintext-900/20 data-[content-type=text]:text-node-plaintext-900",
 					"data-[content-type=file]:bg-node-data-900/20 data-[content-type=file]:text-node-data-900",
+					"data-[content-type=action]:bg-action-node-1/20 data-[content-type=action]:text-action-node-1",
+					"data-[content-type=trigger]:bg-trigger-node-1/20 data-[content-type=trigger]:text-trigger-node-1",
 					"border-transparent data-[selected=true]:border-primary-900",
 					"text-[12px] ",
 				)}

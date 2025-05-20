@@ -19,7 +19,9 @@
 				},
 				"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"A whimsical ghost-like entity floating gracefully through the vast emptiness of cosmic space. The character has a simplified, cute design with an oversized round head, big expressive eyes, and a small ethereal body that trails off like wisps of cosmic fog. Despite its cartoonish proportions, the ghost features photorealistic textures - its semi-transparent body capturing and refracting starlight, creating an otherworldly glow against the darkness of space.\"}]},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"The surrounding environment showcases a breathtaking cosmic landscape with swirling nebulae in rich purples, blues and pinks, distant twinkling stars, and perhaps a ringed planet looming in the background. The lighting is dramatic and cinematic - strong rim lighting outlines the ghost's form while subtle volumetric rays cut through the scene, creating depth and atmosphere.\"}]},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"The composition follows cinematic principles with perfect framing and depth of field, as if captured by a master cinematographer for a high-budget science fiction film. The ghost appears to be on a solitary journey through the cosmos, conveying both innocence and subtle melancholy that creates an emotionally resonant moment frozen in time.\"}]},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Ultra-detailed, 8K resolution, with masterful use of lighting and shadow to create a scene that balances fantastical elements with photorealistic rendering techniques.\"}]},{\"type\":\"paragraph\"}]}"
 			},
-			"inputs": [{ "id": "inp-LT5aFSiSg4MVUEEO", "label": "Input" }],
+			"inputs": [
+				{ "id": "inp-LT5aFSiSg4MVUEEO", "label": "Input", "accessor": "Input" }
+			],
 			"outputs": [
 				{
 					"id": "otp-mri0RwDANyzPGdI0",
@@ -45,7 +47,13 @@
 					},
 					"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"以下はユーザーが描きたい画像を説明したテキストです。すごく言葉足らずなので、そのテキストの背後や行間になる意図や欲望を推論して良質な画像を生成できるプロンプトを英語で書いてください。たくさん時間を使いましょう。アインシュタインは1時間あったら50分は何が問題かを考えていたそうです。アインシュタイン流に行きましょう。\"}]},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"ただし、プロンプトに既存の固有名詞は含めないようにしましょう。固有名詞を使いたくなったらそれの構成要素を抽象的に考えて使いましょう。\"}]},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"---\"}]},{\"type\":\"paragraph\"},{\"type\":\"paragraph\",\"content\":[{\"type\":\"Source\",\"attrs\":{\"node\":{\"id\":\"nd-sa0AjaR7kV6pRmqL\",\"type\":\"variable\",\"content\":{\"type\":\"text\"}},\"outputId\":\"otp-bFxzsK4AnMNFVTCs\"}},{\"type\":\"text\",\"text\":\" \"}]}]}"
 				},
-				"inputs": [{ "id": "inp-ycRsiMdaFD04WWyP", "label": "Input" }],
+				"inputs": [
+					{
+						"id": "inp-ycRsiMdaFD04WWyP",
+						"label": "Input",
+						"accessor": "Input"
+					}
+				],
 				"outputs": [
 					{
 						"id": "otp-zCanm0ncOyEM3CPN",

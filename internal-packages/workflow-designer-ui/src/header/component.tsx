@@ -8,13 +8,13 @@ import {
 import type { TriggerProvider } from "@giselle-sdk/flow";
 import { useGenerationRunnerSystem } from "@giselle-sdk/giselle-engine/react";
 import { buildWorkflowFromNode } from "@giselle-sdk/workflow-utils";
-import clsx from "clsx";
+import clsx from "clsx/lite";
 import {
 	ViewState,
 	useFeatureFlag,
 	useWorkflowDesigner,
 } from "giselle-sdk/react";
-import { ChevronDownIcon, PlayIcon } from "lucide-react";
+import { ChevronDownIcon, PlayIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import { DropdownMenu } from "radix-ui";
 import { Dialog, ToggleGroup, VisuallyHidden } from "radix-ui";
@@ -26,100 +26,20 @@ import {
 	useState,
 } from "react";
 import { EditableText } from "../editor/properties-panel/ui";
+import { useTrigger } from "../hooks/use-trigger";
 import { GiselleLogo } from "../icons";
 import { SettingsPanel } from "../settings";
 import { ShareButton } from "../ui/button";
 import { ReadOnlyBadge } from "../ui/read-only-banner";
 import { ShareModal } from "../ui/share-modal";
 import { UserPresence } from "../ui/user-presence";
-
-function buttonLabel(triggerProvider: TriggerProvider) {
-	switch (triggerProvider) {
-		case "manual":
-			return "Trigger Manual flow";
-		case "github":
-			return "Trigger GitHub flow";
-		default: {
-			const _exhaustiveCheck: never = triggerProvider;
-			throw new Error(`Unhandled trigger provider type: ${_exhaustiveCheck}`);
-		}
-	}
-}
-
-function Button({
-	leftIcon: LeftIcon,
-	rightIcon: RightIcon,
-	children,
-	...props
-}: {
-	leftIcon?: ReactNode;
-	rightIcon?: ReactNode;
-} & ButtonHTMLAttributes<HTMLButtonElement>) {
-	return (
-		<button
-			type="button"
-			className="bg-white-900 px-[8px] rounded-[4px] py-[4px] text-[14px] flex items-center gap-[4px] cursor-pointer outline-none text-black-900"
-			{...props}
-		>
-			{LeftIcon}
-			<div>{children}</div>
-			{RightIcon}
-		</button>
-	);
-}
-
-function TriggerButton({ triggerNode }: { triggerNode: TriggerNode }) {
-	const { data } = useWorkflowDesigner();
-	const { createGeneration, startGeneration } = useGenerationRunnerSystem();
-	const handleClick = useCallback(async () => {
-		const flow = buildWorkflowFromNode(
-			triggerNode.id,
-			data.nodes,
-			data.connections,
-		);
-		if (flow === null) {
-			return;
-		}
-		const generations: Generation[] = [];
-		flow.jobs.map((job) =>
-			job.operations.map((operation) => {
-				generations.push(
-					createGeneration({
-						origin: {
-							type: "workspace",
-							id: data.id,
-						},
-						...operation.generationTemplate,
-					}),
-				);
-			}),
-		);
-		for (const job of flow.jobs) {
-			for (const operation of job.operations) {
-				const generation = generations.find(
-					(generation) =>
-						generation.context.operationNode.id ===
-						operation.generationTemplate.operationNode.id,
-				);
-				if (generation === undefined) {
-					continue;
-				}
-				await startGeneration(generation.id);
-			}
-		}
-	}, [triggerNode.id, data, createGeneration, startGeneration]);
-	return (
-		<Button
-			leftIcon={<PlayIcon className="size-[14px] fill-black-900" />}
-			onClick={handleClick}
-		>
-			{buttonLabel(triggerNode.content.provider)}
-		</Button>
-	);
-}
+import { triggerNodeDefaultName } from "../utils";
+import { Button, TriggerInputDialog, buttonLabel } from "./ui";
 
 function Trigger() {
 	const { data } = useWorkflowDesigner();
+	const [selectedTriggerNode, setSelectedTriggerNode] =
+		useState<TriggerNode | null>(null);
 
 	const triggerNodes = useMemo(() => {
 		const tmp: TriggerNode[] = [];
@@ -134,38 +54,78 @@ function Trigger() {
 		}
 		return tmp;
 	}, [data.nodes]);
+
+	const handleTriggerSelect = useCallback((node: TriggerNode) => {
+		setSelectedTriggerNode(node);
+	}, []);
+
 	if (triggerNodes.length === 0) {
 		return null;
 	}
-	if (triggerNodes.length === 1) {
-		return <TriggerButton triggerNode={triggerNodes[0]} />;
-	}
+
+	// Use a unified button and dialog approach for both single and multiple triggers
 	return (
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger asChild>
-				<Button leftIcon={<ChevronDownIcon className="size-[16px]" />}>
-					Select trigger
-				</Button>
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Portal>
-				<DropdownMenu.Content
-					className="bg-white-800 px-[6px] py-[6px] rounded-[6px] text-[14px]"
-					sideOffset={4}
-					align="end"
+		<Dialog.Root onOpenChange={(open) => !open && setSelectedTriggerNode(null)}>
+			<Dialog.Trigger asChild>
+				<Button
+					leftIcon={<PlayIcon className="size-[14px] fill-black-900" />}
+					type="button"
 				>
-					{triggerNodes.map((triggerNode) => {
-						return (
-							<DropdownMenu.Item
-								key={triggerNode.id}
-								className="text-black-900 outline-none hover:bg-black-300/20 px-[8px] cursor-pointer rounded-[4px] py-[2px]"
-							>
-								{buttonLabel(triggerNode.content.provider)}
-							</DropdownMenu.Item>
-						);
-					})}
-				</DropdownMenu.Content>
-			</DropdownMenu.Portal>
-		</DropdownMenu.Root>
+					{triggerNodes.length === 1 ? buttonLabel(triggerNodes[0]) : "Run"}
+				</Button>
+			</Dialog.Trigger>
+			<Dialog.Portal>
+				<Dialog.Overlay className="fixed inset-0 bg-black/25 z-50" />
+				<Dialog.Content className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[400px] bg-black-900 rounded-[12px] p-[24px] shadow-xl z-50 overflow-hidden border border-black-400 outline-none">
+					<Dialog.Title className="sr-only">
+						Override inputs to test workflow
+					</Dialog.Title>
+
+					{triggerNodes.length === 1 ? (
+						<TriggerInputDialog node={triggerNodes[0]} />
+					) : (
+						<>
+							{selectedTriggerNode ? (
+								<TriggerInputDialog node={selectedTriggerNode} />
+							) : (
+								// Show trigger selection
+								<div className="space-y-4">
+									<h3 className="text-white-900 text-[16px] font-medium mb-2">
+										Select a trigger to execute
+									</h3>
+									<div className="space-y-2">
+										{triggerNodes.map((triggerNode) => (
+											<button
+												type="button"
+												key={triggerNode.id}
+												className="w-full text-left text-white-900 p-3 border border-black-400 rounded-[6px] hover:bg-black-800 flex items-center gap-2"
+												onClick={() => handleTriggerSelect(triggerNode)}
+											>
+												<PlayIcon className="size-[14px] shrink-0 fill-white-900" />
+												<div className="flex flex-col">
+													<span className="font-medium">
+														{triggerNode.name ??
+															triggerNodeDefaultName(
+																triggerNode.content.provider,
+															)}{" "}
+														<span className="text-[10px] text-white-300 font-mono">
+															(id:{triggerNode.id.substring(3, 11)})
+														</span>
+													</span>
+													<span className="text-white-700 text-xs">
+														{buttonLabel(triggerNode)}
+													</span>
+												</div>
+											</button>
+										))}
+									</div>
+								</div>
+							)}
+						</>
+					)}
+				</Dialog.Content>
+			</Dialog.Portal>
+		</Dialog.Root>
 	);
 }
 

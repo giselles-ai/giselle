@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { Node, NodeId, OperationNode } from "../node";
+import { Connection } from "../connection";
+import { Node, NodeBase, NodeId, OperationNode } from "../node";
 import { RunId } from "../run";
 import { WorkspaceId } from "../workspace";
 
@@ -27,6 +28,7 @@ export type GenerationOriginWorkspace = z.infer<
 
 export const GenerationOriginRun = z.object({
 	id: RunId.schema,
+	workspaceId: WorkspaceId.schema,
 	type: GenerationOriginTypeRun,
 });
 export type GenerationOriginRun = z.infer<typeof GenerationOriginRun>;
@@ -37,18 +39,34 @@ export const GenerationOrigin = z.discriminatedUnion("type", [
 ]);
 export type GenerationOrigin = z.infer<typeof GenerationOrigin>;
 
+export const GenerationInput = z.object({
+	name: z.string(),
+	value: z.string(),
+});
+export type GenerationInput = z.infer<typeof GenerationInput>;
+
 export const GenerationContext = z.object({
 	operationNode: OperationNode,
+	connections: z.array(Connection).default([]),
 	sourceNodes: z.array(Node),
 	origin: GenerationOrigin,
+	inputs: z
+		.array(GenerationInput)
+		.optional()
+		.describe(
+			"Inputs from node connections are represented in sourceNodes, while this represents inputs from the external environment. Mainly used with Trigger nodes.",
+		),
 });
 export type GenerationContext = z.infer<typeof GenerationContext>;
 
 export const GenerationContextLike = z.object({
-	operationNode: OperationNode.extend({
+	operationNode: NodeBase.extend({
+		type: z.literal("operation"),
 		content: z.any(),
 	}),
 	sourceNodes: z.array(z.any()),
+	connections: z.array(z.any()).default([]),
 	origin: z.any(),
+	inputs: z.array(GenerationInput).optional(),
 });
 export type GenerationContextLike = z.infer<typeof GenerationContextLike>;

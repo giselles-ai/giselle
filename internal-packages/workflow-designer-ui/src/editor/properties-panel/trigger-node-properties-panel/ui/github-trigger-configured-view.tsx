@@ -3,7 +3,7 @@ import { githubTriggerIdToLabel } from "@giselle-sdk/flow";
 import { useGitHubTrigger } from "../../../lib/use-github-trigger";
 import { GitHubRepositoryBlock } from "../../ui";
 
-export function ConfiguredView({
+export function GitHubTriggerConfiguredView({
 	flowTriggerId,
 }: {
 	flowTriggerId: FlowTriggerId;

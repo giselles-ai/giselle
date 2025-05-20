@@ -1,14 +1,12 @@
 import { useCallback, useMemo } from "react";
 import type { z } from "zod";
-import {
-	type FormDataRouterHandlers,
-	type FormDataRouterInput,
-	type FormDataRouterPaths,
-	type JsonRouterHandlers,
-	type JsonRouterInput,
-	type JsonRouterPaths,
-	formDataRouterPaths,
-	jsonRouterPaths,
+import type {
+	FormDataRouterHandlers,
+	FormDataRouterInput,
+	FormDataRouterPaths,
+	JsonRouterHandlers,
+	JsonRouterInput,
+	JsonRouterPaths,
 } from "../http/router";
 import type { JsonResponse } from "../utils";
 import { APICallError } from "./errors/api-call-error";
@@ -121,24 +119,37 @@ export function useGiselleEngine(options?: FetchOptions): GiselleEngineClient {
 		[basePath],
 	);
 
-	// Create the client object with all API methods
+	// Create a proxy-based client that dynamically handles API requests
 	const client = useMemo(() => {
-		const methods = {} as Record<string, unknown>;
+		// Create a Proxy that will lazily create methods when accessed
+		const proxyClient = new Proxy(
+			{
+				basePath,
+			},
+			{
+				get: (target, prop) => {
+					// Return basePath property directly
+					if (prop === "basePath") {
+						return target.basePath;
+					}
 
-		// Add JSON router methods
-		for (const path of jsonRouterPaths) {
-			methods[path] = (input?: unknown) => makeRequest(path, input, false);
-		}
+					// For other properties, create a method that makes the API request
+					// We check if it's a string because symbols can also be used as props
+					if (typeof prop === "string") {
+						// Create methods on-demand
+						// We determine if it's a FormData endpoint based on our knowledge
+						// of the API design (there's only "uploadFile" that uses FormData)
+						const isFormData = prop === "uploadFile";
 
-		// Add FormData router methods
-		for (const path of formDataRouterPaths) {
-			methods[path] = (input?: unknown) => makeRequest(path, input, true);
-		}
+						return (input?: unknown) => makeRequest(prop, input, isFormData);
+					}
 
-		return {
-			...methods,
-			basePath,
-		} as GiselleEngineClient;
+					return undefined;
+				},
+			},
+		);
+
+		return proxyClient as GiselleEngineClient;
 	}, [makeRequest, basePath]);
 
 	return client;

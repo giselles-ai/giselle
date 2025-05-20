@@ -60,10 +60,14 @@ export function ImageGenerationNodePropertiesPanel({
 			sourceNodes: connectedSources.map(
 				(connectedSource) => connectedSource.node,
 			),
+			connections: data.connections.filter(
+				(connection) => connection.inputNode.id === node.id,
+			),
 		});
 	}, [
 		connectedSources,
 		data.id,
+		data.connections,
 		node,
 		createAndStartGeneration,
 		usageLimitsReached,

@@ -17,11 +17,7 @@ import {
 	type TextNode,
 	type TriggerNode,
 } from "@giselle-sdk/data-type";
-import {
-	type ActionProvider,
-	type TriggerProvider,
-	actions,
-} from "@giselle-sdk/flow";
+import type { ActionProvider, TriggerProvider } from "@giselle-sdk/flow";
 import {
 	Capability,
 	hasCapability,

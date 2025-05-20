@@ -61,6 +61,10 @@ export function renameActionToOperation(data: unknown, issue: ZodIssue) {
 		return data;
 	}
 
+	if (issue.code === "invalid_type" && issue.expected === "string") {
+		return data;
+	}
+
 	// For missing operationNode in generationTemplate (required field missing)
 	if (
 		issue.code === "invalid_type" &&

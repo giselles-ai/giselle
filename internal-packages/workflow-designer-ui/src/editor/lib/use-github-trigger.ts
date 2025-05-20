@@ -1,4 +1,8 @@
-import type { FlowTrigger, FlowTriggerId } from "@giselle-sdk/data-type";
+import type {
+	FlowTrigger,
+	FlowTriggerId,
+	GitHubFlowTrigger,
+} from "@giselle-sdk/data-type";
 import { useGiselleEngine } from "giselle-sdk/react";
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
@@ -31,10 +35,17 @@ export function useGitHubTrigger(flowTriggerId: FlowTriggerId) {
 	);
 	const data = useMemo(
 		() =>
-			trigger === undefined || githubRepositoryFullnameData === undefined
+			trigger === undefined ||
+			trigger.configuration.provider !== "github" ||
+			githubRepositoryFullnameData === undefined
 				? undefined
 				: {
-						trigger,
+						trigger: {
+							...trigger,
+							configuration: {
+								...trigger.configuration,
+							} satisfies GitHubFlowTrigger,
+						},
 						githubRepositoryFullname: githubRepositoryFullnameData.fullname,
 					},
 		[trigger, githubRepositoryFullnameData],

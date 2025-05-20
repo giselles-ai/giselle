@@ -1,11 +1,14 @@
 import {
 	type CompletedGeneration,
 	GenerationContext,
+	type GenerationOutput,
 	type QueuedGeneration,
 	isTriggerNode,
 } from "@giselle-sdk/data-type";
+import { githubTriggers } from "@giselle-sdk/flow";
 import { setGeneration, setNodeGenerationIndex } from "../generations/utils";
 import type { GiselleEngineContext } from "../types";
+import { getFlowTrigger } from "./utils";
 
 export async function resolveTrigger(args: {
 	context: GiselleEngineContext;
@@ -15,7 +18,70 @@ export async function resolveTrigger(args: {
 	if (!isTriggerNode(operationNode)) {
 		throw new Error("Invalid generation type");
 	}
+	if (operationNode.content.state.status !== "configured") {
+		throw new Error("Trigger node is not configured");
+	}
+	const triggerData = await getFlowTrigger({
+		storage: args.context.storage,
+		flowTriggerId: operationNode.content.state.flowTriggerId,
+	});
+
 	const generationContext = GenerationContext.parse(args.generation.context);
+
+	const outputs: GenerationOutput[] = [];
+	switch (triggerData.configuration.provider) {
+		case "github": {
+			const trigger = githubTriggers[triggerData.configuration.event.id];
+			for (const payload of trigger.event.payloads.keyof().options) {
+				const input = generationContext.inputs?.find(
+					(input) => input.name === payload,
+				);
+				if (input === undefined) {
+					continue;
+				}
+				const output = operationNode.outputs.find(
+					(output) => output.accessor === payload,
+				);
+				if (output === undefined) {
+					continue;
+				}
+				outputs.push({
+					type: "generated-text",
+					outputId: output.id,
+					content: input.value,
+				});
+			}
+			break;
+		}
+		case "manual": {
+			for (const parameter of triggerData.configuration.event.parameters) {
+				const input = generationContext.inputs?.find(
+					(input) => input.name === parameter.id,
+				);
+				if (input === undefined) {
+					continue;
+				}
+				const output = operationNode.outputs.find(
+					(output) => output.accessor === parameter.id,
+				);
+				if (output === undefined) {
+					continue;
+				}
+
+				outputs.push({
+					type: "generated-text",
+					outputId: output.id,
+					content: input.value,
+				});
+			}
+			break;
+		}
+		default: {
+			const _exhaustiveCheck: never = triggerData.configuration;
+			throw new Error(`Unhandled provider: ${_exhaustiveCheck}`);
+		}
+	}
+
 	const completedGeneration = {
 		...args.generation,
 		status: "completed",
@@ -23,7 +89,7 @@ export async function resolveTrigger(args: {
 		queuedAt: Date.now(),
 		startedAt: Date.now(),
 		completedAt: Date.now(),
-		outputs: [],
+		outputs,
 	} satisfies CompletedGeneration;
 
 	await Promise.all([
