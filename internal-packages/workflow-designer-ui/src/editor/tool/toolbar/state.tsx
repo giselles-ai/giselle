@@ -179,38 +179,7 @@ export function fileNode(category: FileCategory) {
 }
 
 export function textGenerationNode(llm: TextGenerationLanguageModelData) {
-	const outputs: Output[] = [
-		{
-			id: OutputId.generate(),
-			label: "Output",
-			accessor: "generated-text",
-		},
-	];
-	const languageModel = languageModels.find(
-		(languageModel) => languageModel.id === llm.id,
-	);
-
-	if (
-		languageModel !== undefined &&
-		hasCapability(languageModel, Capability.SearchGrounding)
-	) {
-		outputs.push({
-			id: OutputId.generate(),
-			label: "Source",
-			accessor: "source",
-		});
-	}
-
-	return {
-		id: NodeId.generate(),
-		type: "operation",
-		content: {
-			type: "textGeneration",
-			llm,
-		},
-		inputs: [],
-		outputs,
-	} satisfies TextGenerationNode;
+	return nodeFactories.create("textGeneration", llm);
 }
 
 export function imageGenerationNode(llm: ImageGenerationLanguageModelData) {

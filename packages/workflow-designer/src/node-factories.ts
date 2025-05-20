@@ -104,12 +104,18 @@ export interface NodeFactory<
 const textGenerationFactoryImpl = {
 	create: (llm: TextGenerationContent["llm"]): TextGenerationNode => {
 		const outputs: Output[] = [
-			{ id: OutputId.generate(), label: "Output", accessor: "generated-text" },
+			{
+				id: OutputId.generate(),
+				label: "Output",
+				accessor: "generated-text",
+			},
 		];
-		const model = languageModels.find((m) => m.id === llm.id);
+		const languageModel = languageModels.find(
+			(languageModel) => languageModel.id === llm.id,
+		);
 		if (
-			model !== undefined &&
-			hasCapability(model, Capability.SearchGrounding)
+			languageModel !== undefined &&
+			hasCapability(languageModel, Capability.SearchGrounding)
 		) {
 			outputs.push({
 				id: OutputId.generate(),
@@ -117,13 +123,17 @@ const textGenerationFactoryImpl = {
 				accessor: "source",
 			});
 		}
+
 		return {
 			id: NodeId.generate(),
 			type: "operation",
-			content: { type: "textGeneration", llm, prompt: "" },
+			content: {
+				type: "textGeneration",
+				llm,
+			},
 			inputs: [],
 			outputs,
-		} as TextGenerationNode;
+		} satisfies TextGenerationNode;
 	},
 	clone: (
 		orig: TextGenerationNode,
