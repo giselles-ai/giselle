@@ -9,6 +9,8 @@ export async function register() {
 	if (process.env.NEXT_RUNTIME === "edge") {
 		await import("./sentry.edge.config");
 	}
-}
 
+	process.env.LANGFUSE_TRACING_ENVIRONMENT =
+		process.env.VERCEL_ENV || "development";
+}
 export const onRequestError = Sentry.captureRequestError;
