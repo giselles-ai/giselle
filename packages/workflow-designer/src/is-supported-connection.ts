@@ -33,11 +33,13 @@ export function isSupportedConnection(
 			canConnect: true,
 		};
 	}
-
-	const inputNodeLLMId = inputNode.content.llm.id;
-	const inputNodeLanguageModel = languageModels.find(
-		(languageModel) => languageModel.id === inputNodeLLMId,
-	);
+	if (outputNode.content.type === "vectorStore") {
+		// TODO: support vector store to connect to query node
+		return {
+			canConnect: false,
+			message: "Vector store node is not supported as an output",
+		};
+	}
 
 	if (outputNode.content.type === "imageGeneration") {
 		return {
@@ -53,6 +55,11 @@ export function isSupportedConnection(
 	}
 
 	if (outputNode.content.type === "file") {
+		const inputNodeLLMId = inputNode.content.llm.id;
+		const inputNodeLanguageModel = languageModels.find(
+			(languageModel) => languageModel.id === inputNodeLLMId,
+		);
+
 		if (inputNodeLanguageModel === undefined) {
 			return {
 				canConnect: false,
