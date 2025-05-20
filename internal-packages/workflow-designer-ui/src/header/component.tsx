@@ -7,7 +7,10 @@ import {
 } from "@giselle-sdk/data-type";
 import type { TriggerProvider } from "@giselle-sdk/flow";
 import { useGenerationRunnerSystem } from "@giselle-sdk/giselle-engine/react";
-import { buildWorkflowFromNode } from "@giselle-sdk/workflow-utils";
+import {
+	buildWorkflowFromNode,
+	triggerNodeDefaultName,
+} from "@giselle-sdk/workflow-utils";
 import clsx from "clsx/lite";
 import {
 	ViewState,
@@ -33,7 +36,6 @@ import { ShareButton } from "../ui/button";
 import { ReadOnlyBadge } from "../ui/read-only-banner";
 import { ShareModal } from "../ui/share-modal";
 import { UserPresence } from "../ui/user-presence";
-import { triggerNodeDefaultName } from "../utils";
 import { Button, TriggerInputDialog, buttonLabel } from "./ui";
 
 function Trigger() {

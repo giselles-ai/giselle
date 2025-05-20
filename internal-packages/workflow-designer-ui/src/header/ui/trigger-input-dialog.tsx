@@ -19,7 +19,6 @@ import {
 	useMemo,
 } from "react";
 import { useTrigger } from "../../hooks/use-trigger";
-import { triggerNodeDefaultName } from "../../utils";
 
 export function Button({
 	leftIcon: LeftIcon,

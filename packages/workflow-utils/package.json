@@ -27,6 +27,7 @@
 		"vitest": "catalog:"
 	},
 	"dependencies": {
-		"@giselle-sdk/data-type": "workspace:*"
+		"@giselle-sdk/data-type": "workspace:*",
+		"@giselle-sdk/flow": "workspace:*"
 	}
 }
