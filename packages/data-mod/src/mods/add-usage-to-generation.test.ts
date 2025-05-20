@@ -14,9 +14,9 @@ describe("addUsageToGeneration", () => {
 			completedAt: 1643000003000,
 			messages: [
 				{ role: "user", content: "Hello" },
-				{ role: "assistant", content: "Hi there!" }
+				{ role: "assistant", content: "Hi there!" },
 			],
-			outputs: [{ type: "text", content: "Hi there!" }]
+			outputs: [{ type: "text", content: "Hi there!" }],
 		};
 
 		const issue: ZodIssue = {
@@ -34,8 +34,8 @@ describe("addUsageToGeneration", () => {
 			usage: {
 				promptTokens: 200,
 				completionTokens: 400,
-				totalTokens: 600
-			}
+				totalTokens: 600,
+			},
 		});
 	});
 
@@ -47,9 +47,7 @@ describe("addUsageToGeneration", () => {
 			createdAt: 1643000000000,
 			queuedAt: 1643000001000,
 			startedAt: 1643000002000,
-			messages: [
-				{ role: "user", content: "Hello" }
-			]
+			messages: [{ role: "user", content: "Hello" }],
 		};
 
 		const issue: ZodIssue = {
@@ -67,8 +65,8 @@ describe("addUsageToGeneration", () => {
 			usage: {
 				promptTokens: 100,
 				completionTokens: 100,
-				totalTokens: 200
-			}
+				totalTokens: 200,
+			},
 		});
 	});
 
@@ -78,7 +76,7 @@ describe("addUsageToGeneration", () => {
 			context: { origin: { type: "workspace", id: "wrks-123456" } },
 			status: "queued",
 			createdAt: 1643000000000,
-			queuedAt: 1643000001000
+			queuedAt: 1643000001000,
 		};
 
 		const issue: ZodIssue = {
@@ -96,8 +94,8 @@ describe("addUsageToGeneration", () => {
 			usage: {
 				promptTokens: 0,
 				completionTokens: 0,
-				totalTokens: 0
-			}
+				totalTokens: 0,
+			},
 		});
 	});
 
@@ -105,7 +103,7 @@ describe("addUsageToGeneration", () => {
 		const data = {
 			id: "gnr-123456",
 			context: { origin: { type: "workspace", id: "wrks-123456" } },
-			status: "completed"
+			status: "completed",
 		};
 
 		const issue: ZodIssue = {

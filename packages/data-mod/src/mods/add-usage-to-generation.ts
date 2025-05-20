@@ -39,18 +39,23 @@ export function addUsageToGeneration(data: unknown, issue: ZodIssue) {
 	// Generate default token usage based on messages length
 	// This is a simplistic estimation - in real scenarios you would
 	// want to use actual token counts from the API response
-	const messages = Array.isArray(generation.messages) ? generation.messages : [];
+	const messages = Array.isArray(generation.messages)
+		? generation.messages
+		: [];
 	const promptTokens = messages.length > 0 ? messages.length * 100 : 0;
-	const completionTokens = 
-		generation.status === "completed" ? (messages.length * 200) : 
-		generation.status === "running" ? (messages.length * 100) : 0;
+	const completionTokens =
+		generation.status === "completed"
+			? messages.length * 200
+			: generation.status === "running"
+				? messages.length * 100
+				: 0;
 	const totalTokens = promptTokens + completionTokens;
 
 	// Set default usage
 	const usage = {
 		promptTokens,
 		completionTokens,
-		totalTokens
+		totalTokens,
 	};
 
 	// Set the usage in the generation
