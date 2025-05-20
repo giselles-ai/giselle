@@ -30,7 +30,11 @@ import {
 	languageModels,
 } from "@giselle-sdk/language-model";
 import { isJsonContent } from "@giselle-sdk/text-editor";
-import { defaultName } from "@giselle-sdk/workflow-utils";
+import {
+	actionNodeDefaultName,
+	defaultName,
+	triggerNodeDefaultName,
+} from "@giselle-sdk/workflow-utils";
 import type { JSONContent } from "@tiptap/react";
 
 type OperationNodeContentType = OperationNode["content"]["type"];
@@ -243,14 +247,11 @@ const imageGenerationFactoryImpl = {
 } satisfies NodeFactory<ImageGenerationNode, [ImageGenerationContent["llm"]]>;
 
 const triggerFactoryImpl = {
-	create: (
-		provider: TriggerContent["provider"],
-		name: Required<TriggerNode["name"]>,
-	): TriggerNode =>
+	create: (provider: TriggerContent["provider"]): TriggerNode =>
 		({
 			id: NodeId.generate(),
 			type: "operation",
-			name,
+			name: triggerNodeDefaultName(provider),
 			content: {
 				type: "trigger",
 				provider,
@@ -280,14 +281,14 @@ const triggerFactoryImpl = {
 		} as TriggerNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
-} satisfies NodeFactory<TriggerNode, [TriggerContent["provider"], string]>;
+} satisfies NodeFactory<TriggerNode, [TriggerContent["provider"]]>;
 
 const actionFactoryImpl = {
-	create: (provider: ActionProvider, name: string): ActionNode =>
+	create: (provider: ActionProvider): ActionNode =>
 		({
 			id: NodeId.generate(),
 			type: "operation",
-			name,
+			name: actionNodeDefaultName(provider),
 			content: {
 				type: "action",
 				command: {
@@ -316,7 +317,7 @@ const actionFactoryImpl = {
 		} as ActionNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
-} satisfies NodeFactory<ActionNode, [ActionProvider, string]>;
+} satisfies NodeFactory<ActionNode, [ActionProvider]>;
 
 const textVariableFactoryImpl = {
 	create: (): TextNode =>

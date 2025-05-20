@@ -8,10 +8,6 @@ import type {
 } from "@giselle-sdk/data-type";
 import type { ActionProvider, TriggerProvider } from "@giselle-sdk/flow";
 import { nodeFactories } from "@giselle-sdk/workflow-designer";
-import {
-	actionNodeDefaultName,
-	triggerNodeDefaultName,
-} from "@giselle-sdk/workflow-utils";
 import { type ReactNode, createContext, useContext, useState } from "react";
 import type {
 	AddFileNodeTool,
@@ -142,19 +138,11 @@ export function textNode() {
 }
 
 export function triggerNode(triggerProvider: TriggerProvider) {
-	return nodeFactories.create(
-		"trigger",
-		triggerProvider,
-		triggerNodeDefaultName(triggerProvider),
-	);
+	return nodeFactories.create("trigger", triggerProvider);
 }
 
 export function actionNode(actionProvider: ActionProvider) {
-	return nodeFactories.create(
-		"action",
-		actionProvider,
-		actionNodeDefaultName(actionProvider),
-	);
+	return nodeFactories.create("action", actionProvider);
 }
 
 export function fileNode(category: FileCategory) {
