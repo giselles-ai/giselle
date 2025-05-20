@@ -24,6 +24,14 @@ export type GenerationType = z.infer<typeof GenerationType>;
 export const Message = z.custom<AISdkMessage>();
 export type Message = z.infer<typeof Message>;
 
+// TokenUsage schema
+export const TokenUsage = z.object({
+	promptTokens: z.number(),
+	completionTokens: z.number(),
+	totalTokens: z.number(),
+});
+export type TokenUsage = z.infer<typeof TokenUsage>;
+
 // Generation status constants
 export const GenerationStatusCreated = z.literal("created");
 export type GenerationStatusCreated = z.infer<typeof GenerationStatusCreated>;
@@ -80,6 +88,9 @@ export const Generation = z
 		messages: z.array(Message).optional().or(z.undefined()),
 		outputs: z.array(GenerationOutput).optional(),
 		error: GenerationError.optional(),
+		
+		// Token usage information
+		usage: TokenUsage.optional(),
 	})
 	.refine(
 		(data) => {
@@ -173,6 +184,7 @@ export const RunningGeneration = z.object({
 	queuedAt: z.number(),
 	startedAt: z.number(),
 	messages: z.array(Message),
+	usage: TokenUsage.optional(),
 });
 export type RunningGeneration = z.infer<typeof RunningGeneration>;
 
@@ -195,6 +207,7 @@ export const CompletedGeneration = z.object({
 	completedAt: z.number(),
 	messages: z.array(Message),
 	outputs: z.array(GenerationOutput),
+	usage: TokenUsage,
 });
 export type CompletedGeneration = z.infer<typeof CompletedGeneration>;
 
@@ -217,6 +230,7 @@ export const FailedGeneration = z.object({
 	failedAt: z.number(),
 	messages: z.array(Message),
 	error: GenerationError,
+	usage: TokenUsage.optional(),
 });
 export type FailedGeneration = z.infer<typeof FailedGeneration>;
 
@@ -238,6 +252,7 @@ export const CancelledGeneration = z.object({
 	messages: z.array(Message).optional(),
 	queuedAt: z.number().optional(),
 	startedAt: z.number().optional(),
+	usage: TokenUsage.optional(),
 });
 export type CancelledGeneration = z.infer<typeof CancelledGeneration>;
 
