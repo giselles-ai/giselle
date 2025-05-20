@@ -197,6 +197,8 @@ async function buildGenerationMessageForTextGeneration(
 				userMessage = userMessage.replace(replaceKeyword, result ?? "");
 				break;
 			}
+			case "vectorStore":
+				break;
 
 			default: {
 				const _exhaustiveCheck: never = contextNode.content;
@@ -603,6 +605,8 @@ async function buildGenerationMessageForImageGeneration(
 			case "trigger":
 			case "action":
 				throw new Error("Not implemented");
+			case "vectorStore":
+				break;
 
 			default: {
 				const _exhaustiveCheck: never = contextNode.content;
