@@ -40,6 +40,8 @@ export interface GitHubIntegrationConfig {
 		privateKey: string;
 		clientId: string;
 		clientSecret: string;
+		getUserToken?: (userId: string) => Promise<string | undefined>;
+		getUserProfile?: (userId: string) => Promise<Record<string, any> | undefined>;
 	};
 }
 

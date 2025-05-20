@@ -73,6 +73,18 @@ export const giselleEngine = NextGiselleEngine({
 				privateKey: githubAppPrivateKey,
 				clientId: githubAppClientId,
 				clientSecret: githubAppClientSecret,
+				getUserToken: async (userId: string) => {
+					console.log(
+						`[Placeholder] getUserToken called for userId: ${userId}. Needs actual implementation.`,
+					);
+					return Promise.resolve(undefined);
+				},
+				getUserProfile: async (userId: string) => {
+					console.log(
+						`[Placeholder] getUserProfile called for userId: ${userId}. Needs actual implementation.`,
+					);
+					return Promise.resolve(undefined);
+				},
 			},
 		},
 	},
