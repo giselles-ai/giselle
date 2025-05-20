@@ -55,14 +55,12 @@ export function filesystemDriver(
 		async copyItem(from, to) {
 			const srcFile = toPath(base, from);
 			const dstFile = toPath(base, to);
-			const data = await fs.readFile(srcFile);
-			await ensureDir(dirname(dstFile));
-			await fs.writeFile(dstFile, data);
+			fs.copyFile(from, to);
 		},
 		async setItemRaw(key, value) {
 			const file = toPath(base, key);
 			await ensureDir(dirname(file));
-			await fs.writeFile(file, Buffer.from(value));
+			await fs.writeFile(file, value);
 		},
 		async getItemRaw(key) {
 			return await fs.readFile(toPath(base, key));
