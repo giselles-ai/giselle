@@ -321,6 +321,12 @@ export function vectorStoreNode(
 			},
 		},
 		inputs: [],
-		outputs: [],
+		outputs: [
+			{
+				id: OutputId.generate(),
+				label: "Output",
+				accessor: "source",
+			},
+		],
 	};
 }
