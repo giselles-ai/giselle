@@ -12,7 +12,7 @@ import {
 } from "@giselle-sdk/data-type";
 import { buildWorkflowMap, defaultName } from "@giselle-sdk/workflow-utils";
 import { isSupportedConnection } from "./is-supported-connection";
-import { factories } from "./node-factories";
+import { nodeFactories } from "./node-factories";
 
 interface AddNodeOptions {
 	ui?: NodeUIState;
@@ -59,7 +59,8 @@ export function WorkflowDesigner({
 			connectionCloneStrategy?: ConnectionCloneStrategy;
 		} & AddNodeOptions,
 	): Node | undefined {
-		const { newNode, inputIdMap, outputIdMap } = factories.clone(sourceNode);
+		const { newNode, inputIdMap, outputIdMap } =
+			nodeFactories.clone(sourceNode);
 		addNode(newNode, options);
 
 		const strategy =

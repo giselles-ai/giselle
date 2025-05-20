@@ -528,7 +528,7 @@ function createInternal<K extends NodeContentType>(
 	}
 }
 
-export const factories = {
+export const nodeFactories = {
 	create: <K extends NodeContentType>(
 		type: K,
 		...args: CreateArgsMap[K]
