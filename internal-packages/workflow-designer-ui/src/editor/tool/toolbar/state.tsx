@@ -175,23 +175,7 @@ export function actionNode(actionProvider: ActionProvider) {
 }
 
 export function fileNode(category: FileCategory) {
-	return {
-		id: NodeId.generate(),
-		type: "variable",
-		content: {
-			type: "file",
-			category,
-			files: [],
-		},
-		inputs: [],
-		outputs: [
-			{
-				id: OutputId.generate(),
-				label: "Output",
-				accessor: "text",
-			},
-		],
-	} satisfies FileNode;
+	return nodeFactories.create("file", category);
 }
 
 export function textGenerationNode(llm: TextGenerationLanguageModelData) {

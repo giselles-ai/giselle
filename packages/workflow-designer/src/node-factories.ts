@@ -342,14 +342,24 @@ const textVariableFactoryImpl = {
 } satisfies NodeFactory<TextNode, [text?: string]>;
 
 const fileVariableFactoryImpl = {
-	create: (category: FileContent["category"] = "pdf"): FileNode =>
+	create: (category: FileContent["category"]): FileNode =>
 		({
 			id: NodeId.generate(),
 			type: "variable",
-			content: { type: "file", category, files: [] },
+			content: {
+				type: "file",
+				category,
+				files: [],
+			},
 			inputs: [],
-			outputs: [{ id: OutputId.generate(), label: "Output", accessor: "text" }],
-		}) as FileNode,
+			outputs: [
+				{
+					id: OutputId.generate(),
+					label: "Output",
+					accessor: "text",
+				},
+			],
+		}) satisfies FileNode,
 	clone: (orig: FileNode): NodeFactoryCloneResult<FileNode> => {
 		const clonedContent = structuredClone(orig.content);
 		clonedContent.files = orig.content.files.map(
@@ -382,7 +392,7 @@ const fileVariableFactoryImpl = {
 		} as FileNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
-} satisfies NodeFactory<FileNode, [category?: FileContent["category"]]>;
+} satisfies NodeFactory<FileNode, [category: FileContent["category"]]>;
 
 const githubVariableFactoryImpl = {
 	create: (
