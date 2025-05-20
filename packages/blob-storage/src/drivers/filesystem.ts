@@ -1,6 +1,6 @@
 import { promises as fs, existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import type { BlobStorageDriver, GetKeysOptions, WatchCallback } from "..";
+import type { BlobStorageDriver, GetKeysOptions } from "..";
 
 export interface FilesystemDriverOptions {
 	base: string;
@@ -79,10 +79,6 @@ export function filesystemDriver(
 		async clear(prefix = "") {
 			const dir = toPath(base, prefix);
 			await fs.rm(dir, { recursive: true, force: true }).catch(() => {});
-		},
-		async dispose() {},
-		async watch(_cb: WatchCallback) {
-			return async () => {};
 		},
 	};
 }

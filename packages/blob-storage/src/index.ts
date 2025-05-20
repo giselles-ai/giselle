@@ -16,9 +16,6 @@ export interface GetKeysOptions {
 	level?: number;
 }
 
-export type WatchEvent = "update" | "remove";
-export type WatchCallback = (event: WatchEvent, key: string) => void;
-
 export interface BlobStorageDriver {
 	hasItem(key: string, opts?: Record<string, unknown>): Promise<boolean>;
 	getItem(key: string, opts?: GetItemOptions): Promise<unknown>;
@@ -40,8 +37,6 @@ export interface BlobStorageDriver {
 	removeItem?(key: string, opts?: Record<string, unknown>): Promise<void>;
 	getKeys?(base: string, opts?: GetKeysOptions): Promise<string[]>;
 	clear?(base: string, opts?: Record<string, unknown>): Promise<void>;
-	dispose?(): Promise<void>;
-	watch?(callback: WatchCallback): Promise<() => void>;
 }
 
 export function defineDriver<O>(factory: (opts: O) => BlobStorageDriver) {

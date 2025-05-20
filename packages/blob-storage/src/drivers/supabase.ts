@@ -63,7 +63,6 @@ export function supabaseStorageDriver(
 	}
 
 	return {
-		name: "supabase-storage-driver",
 		async hasItem(key) {
 			const path = r(key);
 			const dirPath = path.split("/").slice(0, -1).join("/");
@@ -160,10 +159,6 @@ export function supabaseStorageDriver(
 				prefix ? joinKeys(prefix, item.name) : item.name,
 			);
 			await supabase.storage.from(bucket).remove(filePaths);
-		},
-		async dispose() {},
-		async watch() {
-			return async () => {};
 		},
 	};
 }
