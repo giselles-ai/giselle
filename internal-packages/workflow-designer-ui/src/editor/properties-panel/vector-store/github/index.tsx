@@ -1,5 +1,5 @@
 import type { VectorStoreNode } from "@giselle-sdk/data-type";
-import { useWorkflowDesigner } from "giselle-sdk/react";
+import { useVectorStore, useWorkflowDesigner } from "giselle-sdk/react";
 import Link from "next/link"; // Next.jsのLinkコンポーネントをインポート
 import { useMemo } from "react";
 import {
@@ -9,7 +9,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "../../../../ui/select";
-import { GitHubVectorStoreAdaptor } from "./github-vectore-store-adaptor";
 
 type GitHubVectorStoreNodePropertiesPanelProps = {
 	node: VectorStoreNode;
@@ -18,24 +17,17 @@ type GitHubVectorStoreNodePropertiesPanelProps = {
 export function GitHubVectorStoreNodePropertiesPanel({
 	node,
 }: GitHubVectorStoreNodePropertiesPanelProps) {
-	// TODO: get adaptor from context
-	const adaptor = new GitHubVectorStoreAdaptor();
-	const vectorStoreInfos = adaptor.getVectorStoreList();
 	const { updateNodeDataContent } = useWorkflowDesigner();
+	const { github } = useVectorStore();
+	const vectorStoreInfos = github ?? [];
 
 	const currentSelectedRepoId = useMemo(() => {
-		if (
-			node.content.source?.provider === "github" &&
-			node.content.source.state?.status === "configured"
-		) {
-			const currentState = node.content.source.state as {
-				owner: string;
-				repo: string;
-			};
+		const sourceState = node.content.source.state;
+		if (sourceState.status === "configured") {
 			const foundInfo = vectorStoreInfos.find(
 				(info) =>
-					info.reference.owner === currentState.owner &&
-					info.reference.repo === currentState.repo,
+					info.reference.owner === sourceState.owner &&
+					info.reference.repo === sourceState.repo,
 			);
 			return foundInfo?.id;
 		}
@@ -50,7 +42,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 			updateNodeDataContent(node, {
 				...node.content,
 				source: {
-					provider: "github",
+					...node.content.source,
 					state: {
 						status: "configured",
 						owner: selectedInfo.reference.owner,
