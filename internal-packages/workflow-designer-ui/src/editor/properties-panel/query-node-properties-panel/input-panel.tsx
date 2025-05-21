@@ -8,7 +8,12 @@ import {
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
-import { CheckIcon, DatabaseZapIcon, TrashIcon } from "lucide-react";
+import {
+	CheckIcon,
+	DatabaseZapIcon,
+	TrashIcon,
+	WorkflowIcon,
+} from "lucide-react";
 import pluralize from "pluralize";
 import { Popover, ToggleGroup } from "radix-ui";
 import {
@@ -23,6 +28,7 @@ import {
 	GitHubIcon,
 	PdfFileIcon,
 	PromptIcon,
+	TriggerIcon,
 } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";
 import {
@@ -470,6 +476,21 @@ export function InputPanel({
 				/>
 			</div>
 			<div className="flex flex-col gap-[32px]">
+				{connectedSources.datastore.length > 0 && (
+					<SourceListRoot title="Datastore Sources">
+						{connectedSources.datastore.map((source) => (
+							<SourceListItem
+								icon={
+									<DatabaseZapIcon className="size-[24px] text-white-900" />
+								}
+								key={source.connection.id}
+								title={`${source.node.name ?? "Datastore"} / ${source.output.label}`}
+								subtitle={source.node.content.source.provider}
+								onRemove={() => handleRemove(source.connection)}
+							/>
+						))}
+					</SourceListRoot>
+				)}
 				{connectedSources.generation.length > 0 && (
 					<SourceListRoot title="Generated Sources">
 						{connectedSources.generation.map((source) => (
@@ -480,6 +501,44 @@ export function InputPanel({
 								key={source.connection.id}
 								title={`${source.node.name ?? source.node.content.llm.id} / ${source.output.label}`}
 								subtitle={source.node.content.llm.provider}
+								onRemove={() => handleRemove(source.connection)}
+							/>
+						))}
+					</SourceListRoot>
+				)}
+				{connectedSources.action.length > 0 && (
+					<SourceListRoot title="Action Sources">
+						{connectedSources.action.map((source) => (
+							<SourceListItem
+								icon={
+									source.node.content.command.provider === "github" ? (
+										<GitHubIcon className="size-[24px] text-white-900" />
+									) : (
+										<WorkflowIcon className="size-[24px] text-white-900" />
+									)
+								}
+								key={source.connection.id}
+								title={`${source.node.name ?? "Action"} / ${source.output.label}`}
+								subtitle={source.node.content.command.provider}
+								onRemove={() => handleRemove(source.connection)}
+							/>
+						))}
+					</SourceListRoot>
+				)}
+				{connectedSources.trigger.length > 0 && (
+					<SourceListRoot title="Trigger Sources">
+						{connectedSources.trigger.map((source) => (
+							<SourceListItem
+								icon={
+									source.node.content.provider === "github" ? (
+										<GitHubIcon className="size-[24px] text-white-900" />
+									) : (
+										<TriggerIcon className="size-[24px] text-white-900" />
+									)
+								}
+								key={source.connection.id}
+								title={`${source.node.name ?? "Trigger"} / ${source.output.label}`}
+								subtitle={source.node.content.provider}
 								onRemove={() => handleRemove(source.connection)}
 							/>
 						))}
