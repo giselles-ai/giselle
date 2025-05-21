@@ -1,6 +1,5 @@
 import {
 	isActionNode,
-	isFileNode,
 	isTextGenerationNode,
 	isTextNode,
 	isTriggerNode,
@@ -28,10 +27,6 @@ export function useSourceCategories(sources: Source[]) {
 		() => filterSources(sources, isTextNode),
 		[sources],
 	);
-	const fileSources = useMemo(
-		() => filterSources(sources, isFileNode),
-		[sources],
-	);
 	const datastoreSources = useMemo(
 		() => filterSources(sources, isVectorStoreNode),
 		[sources],
@@ -42,7 +37,6 @@ export function useSourceCategories(sources: Source[]) {
 		triggerSources,
 		generatedSources,
 		textSources,
-		fileSources,
 		datastoreSources,
 	};
 }
