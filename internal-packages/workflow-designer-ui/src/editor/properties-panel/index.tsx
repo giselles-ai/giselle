@@ -2,6 +2,7 @@ import {
 	isActionNode,
 	isFileNode,
 	isImageGenerationNode,
+	isQueryNode,
 	isTextGenerationNode,
 	isTextNode,
 	isTriggerNode,
@@ -13,6 +14,7 @@ import { useMemo } from "react";
 import { ActionNodePropertiesPanel } from "./action-node-properties-panel";
 import { FileNodePropertiesPanel } from "./file-node-properties-panel";
 import { ImageGenerationNodePropertiesPanel } from "./image-generation-node-properties-panel";
+import { QueryNodePropertiesPanel } from "./query-node-properties-panel";
 import { TextGenerationNodePropertiesPanel } from "./text-generation-node-properties-panel";
 import { TextNodePropertiesPanel } from "./text-node-properties-panel";
 import { TriggerNodePropertiesPanel } from "./trigger-node-properties-panel";
@@ -69,6 +71,12 @@ export function PropertiesPanel() {
 				)}
 				{isVectorStoreNode(selectedNodes[0]) && (
 					<VectorStoreNodePropertiesPanel
+						node={selectedNodes[0]}
+						key={selectedNodes[0].id}
+					/>
+				)}
+				{isQueryNode(selectedNodes[0]) && (
+					<QueryNodePropertiesPanel
 						node={selectedNodes[0]}
 						key={selectedNodes[0].id}
 					/>
