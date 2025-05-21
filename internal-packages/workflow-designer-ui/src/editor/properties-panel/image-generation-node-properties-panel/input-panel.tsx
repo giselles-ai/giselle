@@ -12,7 +12,7 @@ import {
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
-import { CheckIcon, TrashIcon } from "lucide-react";
+import { CheckIcon, DatabaseZapIcon, TrashIcon } from "lucide-react";
 import pluralize from "pluralize";
 import { Popover, ToggleGroup } from "radix-ui";
 import {
@@ -87,8 +87,13 @@ function SourceSelect({
 	>;
 }) {
 	const [selectedOutputIds, setSelectedOutputIds] = useState<OutputId[]>([]);
-	const { generatedSources, textSources, fileSources, githubSources } =
-		useSourceCategories(sources);
+	const {
+		generatedSources,
+		textSources,
+		fileSources,
+		githubSources,
+		querySources,
+	} = useSourceCategories(sources);
 	const { isSupportedConnection } = useWorkflowDesigner();
 	const isSupported = useCallback(
 		(source: Source) => {
@@ -213,6 +218,20 @@ function SourceSelect({
 											key={githubSource.output.id}
 											source={githubSource}
 											disabled={!isSupported(githubSource)}
+										/>
+									))}
+								</div>
+							)}
+							{querySources.length > 0 && (
+								<div className="flex flex-col px-[8px]">
+									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
+										Query
+									</p>
+									{querySources.map((querySource) => (
+										<SourceToggleItem
+											key={querySource.output.id}
+											source={querySource}
+											disabled={!isSupported(querySource)}
 										/>
 									))}
 								</div>
@@ -516,6 +535,21 @@ export function InputPanel({
 								}
 							}
 						})}
+					</SourceListRoot>
+				)}
+				{connectedSources.query.length > 0 && (
+					<SourceListRoot title="Query Sources">
+						{connectedSources.query.map((source) => (
+							<SourceListItem
+								key={source.connection.id}
+								icon={
+									<DatabaseZapIcon className="size-[24px] text-white-900" />
+								}
+								title={`${source.node.name ?? "Query"} / ${source.output.label}`}
+								subtitle=""
+								onRemove={() => handleRemove(source.connection)}
+							/>
+						))}
 					</SourceListRoot>
 				)}
 			</div>

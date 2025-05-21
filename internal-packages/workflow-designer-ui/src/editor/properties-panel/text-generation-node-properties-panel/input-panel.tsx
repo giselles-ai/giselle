@@ -7,6 +7,7 @@ import {
 } from "@giselle-sdk/data-type";
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
 import { useWorkflowDesigner } from "giselle-sdk/react";
+import { DatabaseZapIcon } from "lucide-react";
 import pluralize from "pluralize";
 import { useCallback, useMemo } from "react";
 import {
@@ -274,6 +275,21 @@ export function InputPanel({
 								}
 							}
 						})}
+					</ConnectedOutputListRoot>
+				)}
+				{connectedOutputs.query.length > 0 && (
+					<ConnectedOutputListRoot title="Query Sources">
+						{connectedOutputs.query.map((source) => (
+							<ConnectedOutputListItem
+								key={source.connection.id}
+								icon={
+									<DatabaseZapIcon className="size-[24px] text-white-900" />
+								}
+								title={`${source.node.name ?? "Query"} / ${source.label}`}
+								subtitle=""
+								onRemove={() => handleRemove(source.connection)}
+							/>
+						))}
 					</ConnectedOutputListRoot>
 				)}
 			</div>

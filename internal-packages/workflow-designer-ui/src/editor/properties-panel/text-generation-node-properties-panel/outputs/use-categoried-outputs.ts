@@ -2,6 +2,7 @@ import {
 	isActionNode,
 	isFileNode,
 	isGitHubNode,
+	isQueryNode,
 	isTextGenerationNode,
 	isTextNode,
 	isTriggerNode,
@@ -29,6 +30,10 @@ export function useCategoriedOutputs(inputs: OutputWithDetails[]) {
 		() => filterInputs(inputs, isActionNode),
 		[inputs],
 	);
+	const queryInputs = useMemo(
+		() => filterInputs(inputs, isQueryNode),
+		[inputs],
+	);
 
 	return {
 		generatedInputs,
@@ -37,5 +42,6 @@ export function useCategoriedOutputs(inputs: OutputWithDetails[]) {
 		githubInputs,
 		actionInputs,
 		triggerInputs,
+		queryInputs,
 	};
 }

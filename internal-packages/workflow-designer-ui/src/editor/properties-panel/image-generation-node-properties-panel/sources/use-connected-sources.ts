@@ -1,5 +1,6 @@
 import type {
 	ImageGenerationNode,
+	QueryNode,
 	TextGenerationNode,
 	VariableNodeLike,
 } from "@giselle-sdk/data-type";
@@ -15,6 +16,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 		);
 		const connectedGeneratedSources: ConnectedSource<TextGenerationNode>[] = [];
 		const connectedVariableSources: ConnectedSource<VariableNodeLike>[] = [];
+		const connectedQuerySources: ConnectedSource<QueryNode>[] = [];
 		for (const connection of connectionsToThisNode) {
 			const node = data.nodes.find(
 				(node) => node.id === connection.outputNode.id,
@@ -39,14 +41,42 @@ export function useConnectedSources(node: ImageGenerationNode) {
 								connection,
 							});
 							break;
+						case "query":
+							connectedQuerySources.push({
+								output,
+								node: node as QueryNode,
+								connection,
+							});
+							break;
+						case "imageGeneration":
+						case "action":
+						case "trigger":
+							throw new Error("not implemented");
+						default: {
+							const _exhaustiveCheck: never = node.content.type;
+							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
+						}
 					}
 					break;
 				case "variable":
-					connectedVariableSources.push({
-						output,
-						node,
-						connection,
-					});
+					switch (node.content.type) {
+						case "text":
+							connectedVariableSources.push({
+								output,
+								node,
+								connection,
+							});
+							break;
+
+						case "file":
+						case "github":
+						case "vectorStore":
+							break;
+						default: {
+							const _exhaustiveCheck: never = node.content.type;
+							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
+						}
+					}
 					break;
 				default: {
 					const _exhaustiveCheck: never = node;
@@ -56,9 +86,14 @@ export function useConnectedSources(node: ImageGenerationNode) {
 		}
 
 		return {
-			all: [...connectedGeneratedSources, ...connectedVariableSources],
+			all: [
+				...connectedGeneratedSources,
+				...connectedVariableSources,
+				...connectedQuerySources,
+			],
 			generation: connectedGeneratedSources,
 			variable: connectedVariableSources,
+			query: connectedQuerySources,
 		};
 	}, [node.id, data.connections, data.nodes]);
 }

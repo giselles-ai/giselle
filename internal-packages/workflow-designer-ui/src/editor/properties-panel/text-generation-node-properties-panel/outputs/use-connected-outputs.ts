@@ -1,5 +1,6 @@
 import {
 	type ActionNode,
+	type QueryNode,
 	type TextGenerationNode,
 	type TriggerNode,
 	VariableNode,
@@ -21,6 +22,7 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 			[];
 		const connectedVariableInputs: ConnectedOutputWithDetails<VariableNode>[] =
 			[];
+		const connectedQueryInputs: ConnectedOutputWithDetails<QueryNode>[] = [];
 		for (const connection of connectionsToThisNode) {
 			const node = data.nodes.find(
 				(node) => node.id === connection.outputNode.id,
@@ -61,6 +63,13 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 							break;
 						case "imageGeneration":
 							break;
+						case "query":
+							connectedQueryInputs.push({
+								...output,
+								node: node as QueryNode,
+								connection,
+							});
+							break;
 						default: {
 							const _exhaustiveCheck: never = node.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
@@ -87,11 +96,13 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 				...connectedGeneratedInputs,
 				...connectedActionInputs,
 				...connectedVariableInputs,
+				...connectedQueryInputs,
 			],
 			generation: connectedGeneratedInputs,
 			variable: connectedVariableInputs,
 			action: connectedActionInputs,
 			trigger: connectedTriggerInputs,
+			query: connectedQueryInputs,
 		};
 	}, [node.id, data.connections, data.nodes]);
 }

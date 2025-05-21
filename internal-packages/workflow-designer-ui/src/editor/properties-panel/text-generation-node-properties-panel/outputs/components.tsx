@@ -78,6 +78,7 @@ export function SelectOutputPopover({
 		githubInputs,
 		actionInputs,
 		triggerInputs,
+		queryInputs,
 	} = useCategoriedOutputs(outputs);
 	const { isSupportedConnection } = useWorkflowDesigner();
 	const isSupported = useCallback(
@@ -231,6 +232,20 @@ export function SelectOutputPopover({
 											key={actionInput.id}
 											input={actionInput}
 											disabled={!isSupported(actionInput)}
+										/>
+									))}
+								</div>
+							)}
+							{queryInputs.length > 0 && (
+								<div className="flex flex-col px-[8px]">
+									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
+										Query
+									</p>
+									{queryInputs.map((queryInput) => (
+										<OutputToggleItem
+											key={queryInput.id}
+											input={queryInput}
+											disabled={!isSupported(queryInput)}
 										/>
 									))}
 								</div>
