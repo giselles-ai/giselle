@@ -2,6 +2,7 @@ import {
 	type NodeLike,
 	isFileNode,
 	isImageGenerationNode,
+	isQueryNode,
 	isTextGenerationNode,
 	isVectorStoreNode,
 } from "@giselle-sdk/data-type";
@@ -16,56 +17,62 @@ export type ConnectionValidationResult =
 	| { canConnect: false; message: string };
 
 export function isSupportedConnection(
-	outputNode: NodeLike,
-	inputNode: NodeLike,
+	senderNode: NodeLike,
+	receiverNode: NodeLike,
 ): ConnectionValidationResult {
-	if (outputNode.id === inputNode.id) {
+	// prevent self-loop
+	if (senderNode.id === receiverNode.id) {
 		return {
 			canConnect: false,
 			message: "Connecting to the same node is not allowed",
 		};
 	}
-	if (inputNode.type !== "operation") {
+
+	// only operation node can receive inputs
+	if (receiverNode.type !== "operation") {
 		return {
 			canConnect: false,
 			message: "This node does not receive inputs",
 		};
 	}
+
+	// trigger and action node can be connected to any node
 	if (
-		inputNode.content.type === "trigger" ||
-		inputNode.content.type === "action"
+		senderNode.content.type === "trigger" ||
+		senderNode.content.type === "action"
 	) {
 		return {
 			canConnect: true,
 		};
 	}
-	if (isVectorStoreNode(outputNode)) {
-		// TODO: support vector store to connect to query node
-		return {
-			canConnect: false,
-			message: "Vector store node is not supported as an output",
-		};
-	}
 
-	if (!isTextGenerationNode(inputNode) && !isImageGenerationNode(inputNode)) {
-		throw new Error("Unexpected input node detected");
-	}
-
-	if (outputNode.content.type === "imageGeneration") {
+	// image generation, github is not supported as an output
+	if (senderNode.content.type === "imageGeneration") {
 		return {
 			canConnect: false,
 			message: "Image generation node is not supported as an output",
 		};
 	}
-	if (outputNode.content.type === "github") {
+	if (senderNode.content.type === "github") {
 		return {
 			canConnect: false,
 			message: "GitHub node is not supported as an output",
 		};
 	}
 
-	if (isFileNode(outputNode)) {
-		const inputNodeLLMId = inputNode.content.llm.id;
+	// file can be connected to generation node if the model have a capability to handle file input
+	if (isFileNode(senderNode)) {
+		if (
+			!isTextGenerationNode(receiverNode) &&
+			!isImageGenerationNode(receiverNode)
+		) {
+			return {
+				canConnect: false,
+				message: "File node is not supported as an input for this node",
+			};
+		}
+
+		const inputNodeLLMId = receiverNode.content.llm.id;
 		const inputNodeLanguageModel = languageModels.find(
 			(languageModel) => languageModel.id === inputNodeLLMId,
 		);
@@ -81,14 +88,14 @@ export function isSupportedConnection(
 				canConnect: true,
 			};
 		}
-		if (outputNode.content.category === "text") {
+		if (senderNode.content.category === "text") {
 			return {
 				canConnect: true,
 			};
 		}
 
 		if (
-			outputNode.content.category === "image" &&
+			senderNode.content.category === "image" &&
 			hasCapability(inputNodeLanguageModel, Capability.ImageFileInput)
 		) {
 			return {
@@ -97,7 +104,7 @@ export function isSupportedConnection(
 		}
 
 		if (
-			outputNode.content.category === "pdf" &&
+			senderNode.content.category === "pdf" &&
 			hasCapability(inputNodeLanguageModel, Capability.PdfFileInput)
 		) {
 			return {
@@ -109,6 +116,33 @@ export function isSupportedConnection(
 			canConnect: false,
 			message: "File node is not supported as an input for this node",
 		};
+	}
+
+	// Vector store node can only be connected to query node
+	if (isVectorStoreNode(senderNode)) {
+		if (isQueryNode(receiverNode)) {
+			return {
+				canConnect: true,
+			};
+		}
+		return {
+			canConnect: false,
+			message: "Vector store node can only be connected to query node",
+		};
+	}
+
+	// query can only be connected to text generation or image generation
+	if (isQueryNode(senderNode)) {
+		if (
+			!isTextGenerationNode(receiverNode) &&
+			!isImageGenerationNode(receiverNode)
+		) {
+			return {
+				canConnect: false,
+				message:
+					"Query node can only be connected to text generation or image generation",
+			};
+		}
 	}
 
 	return {

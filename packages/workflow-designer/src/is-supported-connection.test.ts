@@ -1,13 +1,16 @@
-import {
-	type FileNode,
-	type GitHubNode,
-	type ImageGenerationLanguageModelData,
-	type ImageGenerationNode,
-	NodeId,
-	type TextGenerationLanguageModelData,
-	type TextGenerationNode,
-	type VariableNode,
+import type {
+	ActionNode,
+	FileNode,
+	GitHubNode,
+	ImageGenerationLanguageModelData,
+	ImageGenerationNode,
+	QueryNode,
+	TextGenerationLanguageModelData,
+	TextGenerationNode,
+	VariableNode,
+	VectorStoreNode,
 } from "@giselle-sdk/data-type";
+import { NodeId } from "@giselle-sdk/data-type";
 import {
 	anthropicLanguageModels,
 	falLanguageModels,
@@ -63,6 +66,20 @@ describe("isSupportedConnection", () => {
 		},
 	});
 
+	const createActionNode = (id: NodeId): ActionNode => ({
+		id,
+		type: "operation",
+		inputs: [],
+		outputs: [],
+		content: {
+			type: "action",
+			command: {
+				provider: "github",
+				state: { status: "unconfigured" },
+			},
+		},
+	});
+
 	const createGitHubNode = (id: NodeId): GitHubNode => ({
 		id,
 		type: "variable",
@@ -82,6 +99,28 @@ describe("isSupportedConnection", () => {
 		content: {
 			type: "text",
 			text: "",
+		},
+	});
+
+	const createVectorStoreNode = (id: NodeId): VectorStoreNode => ({
+		id,
+		type: "variable",
+		inputs: [],
+		outputs: [],
+		content: {
+			type: "vectorStore",
+			source: { provider: "github", state: { status: "unconfigured" } },
+		},
+	});
+
+	const createQueryNode = (id: NodeId): QueryNode => ({
+		id,
+		type: "operation",
+		inputs: [],
+		outputs: [],
+		content: {
+			type: "query",
+			query: "test query",
 		},
 	});
 
@@ -212,6 +251,62 @@ describe("isSupportedConnection", () => {
 
 			const result = isSupportedConnection(fileNode, inputNode);
 			expect(result.canConnect).toBe(expected);
+		});
+	});
+
+	describe("Vector store node restrictions", () => {
+		test("should allow connection from VectorStoreNode to QueryNode", () => {
+			const outputNode = createVectorStoreNode(NodeId.generate());
+			const inputNode = createQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should reject connection from VectorStoreNode to non-QueryNode", () => {
+			const outputNode = createVectorStoreNode(NodeId.generate());
+			const inputNode = createTextGenerationNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+
+			expect(result.canConnect).toBe(false);
+			if (!result.canConnect) {
+				expect(result.message).toBe(
+					"Vector store node can only be connected to query node",
+				);
+			}
+		});
+	});
+
+	describe("Query node output restrictions", () => {
+		test("should allow connection from QueryNode to TextGenerationNode", () => {
+			const outputNode = createQueryNode(NodeId.generate());
+			const inputNode = createTextGenerationNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should allow connection from QueryNode to ImageGenerationNode", () => {
+			const outputNode = createQueryNode(NodeId.generate());
+			const inputNode = createImageGenerationNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should reject connection from QueryNode to a non-Text/ImageGenerationNode (e.g., ActionNode)", () => {
+			const outputNode = createQueryNode("nd-query-out-3");
+			const inputNode = createActionNode("nd-action-in-1");
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(false);
+			if (!result.canConnect) {
+				expect(result.message).toBe(
+					"Query node can only be connected to text generation or image generation",
+				);
+			}
 		});
 	});
 

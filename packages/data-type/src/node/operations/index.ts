@@ -48,6 +48,7 @@ export const OperationNodeLike = NodeBase.extend({
 			ImageGenerationContent.shape.type,
 			TriggerContent.shape.type,
 			ActionContent.shape.type,
+			QueryContent.shape.type,
 		]),
 	}),
 });
