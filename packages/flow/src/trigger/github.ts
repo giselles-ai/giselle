@@ -18,6 +18,19 @@ export const githubIssueCreatedTrigger = {
 	},
 } as const satisfies GitHubTrigger;
 
+export const githubIssueClosedTrigger = {
+	provider,
+	event: {
+		id: "github.issue.closed",
+		label: "Issue Closed",
+		payloads: z.object({
+			title: z.string(),
+			body: z.string(),
+			number: z.number(),
+		}),
+	},
+} as const satisfies GitHubTrigger;
+
 export const githubIssueCommentCreatedTrigger = {
 	provider,
 	event: {
@@ -51,6 +64,7 @@ export const githubPullRequestReadyForReviewTrigger = {
 
 export const triggers = {
 	[githubIssueCreatedTrigger.event.id]: githubIssueCreatedTrigger,
+	[githubIssueClosedTrigger.event.id]: githubIssueClosedTrigger,
 	[githubIssueCommentCreatedTrigger.event.id]: githubIssueCommentCreatedTrigger,
 	[githubPullRequestReadyForReviewTrigger.event.id]:
 		githubPullRequestReadyForReviewTrigger,
@@ -62,6 +76,8 @@ export function triggerIdToLabel(triggerId: TriggerEventId) {
 	switch (triggerId) {
 		case "github.issue.created":
 			return githubIssueCreatedTrigger.event.label;
+		case "github.issue.closed":
+			return githubIssueClosedTrigger.event.label;
 		case "github.issue_comment.created":
 			return githubIssueCommentCreatedTrigger.event.label;
 		case "github.pull_request.ready_for_review":
