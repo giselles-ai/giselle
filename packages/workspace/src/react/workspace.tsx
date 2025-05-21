@@ -69,6 +69,8 @@ export function WorkspaceProvider({
 										value={{
 											flowNode: featureFlag?.flowNode ?? false,
 											runV2: featureFlag?.runV2 ?? false,
+											githubVectorStore:
+												featureFlag?.githubVectorStore ?? false,
 										}}
 									>
 										{children}
