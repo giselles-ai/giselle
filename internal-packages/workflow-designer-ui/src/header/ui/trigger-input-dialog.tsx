@@ -130,6 +130,28 @@ const githubEventInputs: GithubEventInputMap = {
 			required: true,
 		},
 	},
+	"github.pull_request_comment.created": {
+		pullRequestNumber: {
+			label: "Pull Request Number",
+			type: "number",
+			required: true,
+		},
+		pullRequestTitle: {
+			label: "Pull Request Title",
+			type: "text",
+			required: true,
+		},
+		pullRequestBody: {
+			label: "Pull Request Body",
+			type: "multiline-text",
+			required: true,
+		},
+		body: {
+			label: "Comment",
+			type: "multiline-text",
+			required: true,
+		},
+	},
 };
 
 export function TriggerInputDialog({

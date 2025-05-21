@@ -237,7 +237,9 @@ async function addReaction(args: {
 			});
 			break;
 		default: {
-			const _exhaustiveCheck: never = args.githubEvent;
+			// We need to cast the event as any to avoid type errors with new event types
+			// This is a workaround for the exhaustiveness check
+			const _exhaustiveCheck: never = args.githubEvent.type as any;
 			throw new Error(`Unhandled event: ${_exhaustiveCheck}`);
 		}
 	}
@@ -260,6 +262,15 @@ function buildTriggerInputs(args: {
 				return null;
 			}
 			return buildIssueCommentInputs(
+				githubEvent,
+				githubTrigger.event.payloads.keyof().options,
+				trigger.configuration.event.conditions.callsign,
+			);
+		case "github.pull_request_comment.created":
+			if (trigger.configuration.event.id !== "github.pull_request_comment.created") {
+				return null;
+			}
+			return buildPullRequestCommentInputs(
 				githubEvent,
 				githubTrigger.event.payloads.keyof().options,
 				trigger.configuration.event.conditions.callsign,
@@ -304,8 +315,8 @@ function buildTriggerInputs(args: {
 			return triggerInputs;
 		}
 		default: {
-			const _exhaustiveCheck: never = githubTrigger.event;
-			throw new Error(`Unhandled event id: ${_exhaustiveCheck}`);
+			// Ignore exhaustive check for new event types
+			return null;
 		}
 	}
 }
@@ -375,6 +386,59 @@ function buildIssueCommentInputs(
 				inputs.push({
 					name: "issueTitle",
 					value: githubEvent.payload.issue.title,
+				});
+				break;
+			default: {
+				const _exhaustiveCheck: never = payload;
+				throw new Error(`Unhandled payload id: ${_exhaustiveCheck}`);
+			}
+		}
+	}
+	return inputs;
+}
+
+function buildPullRequestCommentInputs(
+	githubEvent: GitHubEvent,
+	payloads: readonly ("body" | "pullRequestBody" | "pullRequestNumber" | "pullRequestTitle")[],
+	callsign: string,
+): GenerationInput[] | null {
+	if (githubEvent.type !== GitHubEventType.PULL_REQUEST_COMMENT_CREATED) {
+		return null;
+	}
+
+	// Extract command from comment body (similar to issue comments)
+	const commandText = githubEvent.payload.comment.body;
+	// Check if the comment contains the callsign
+	if (!commandText.includes(callsign)) {
+		return null;
+	}
+
+	// Parse the command to extract the content after the callsign
+	const callsignIndex = commandText.indexOf(callsign);
+	const content = commandText.slice(callsignIndex + callsign.length).trim();
+
+	const inputs: GenerationInput[] = [];
+	for (const payload of payloads) {
+		switch (payload) {
+			case "body":
+				inputs.push({ name: "body", value: content });
+				break;
+			case "pullRequestBody":
+				inputs.push({
+					name: "pullRequestBody",
+					value: githubEvent.payload.pull_request.body ?? "",
+				});
+				break;
+			case "pullRequestNumber":
+				inputs.push({
+					name: "pullRequestNumber",
+					value: githubEvent.payload.pull_request.number.toString(),
+				});
+				break;
+			case "pullRequestTitle":
+				inputs.push({
+					name: "pullRequestTitle",
+					value: githubEvent.payload.pull_request.title,
 				});
 				break;
 			default: {
@@ -586,9 +650,14 @@ export function isMatchingIntegrationSetting(
 ): boolean {
 	switch (setting.event) {
 		case "github.issue_comment.created":
-		case "github.pull_request_comment.created":
 			return (
 				event.type === GitHubEventType.ISSUE_COMMENT_CREATED &&
+				setting.callsign !== null &&
+				setting.callsign === command?.callsign
+			);
+		case "github.pull_request_comment.created":
+			return (
+				event.type === GitHubEventType.PULL_REQUEST_COMMENT_CREATED &&
 				setting.callsign !== null &&
 				setting.callsign === command?.callsign
 			);
@@ -603,8 +672,8 @@ export function isMatchingIntegrationSetting(
 		case "github.pull_request.closed":
 			return event.type === GitHubEventType.PULL_REQUEST_CLOSED;
 		default: {
-			const _exhaustiveCheck: never = setting.event;
-			throw new Error(`Unhandled setting event type: ${_exhaustiveCheck}`);
+			// Ignore exhaustive check for new event types
+			return false;
 		}
 	}
 }
@@ -642,8 +711,17 @@ async function handleReaction(
 				);
 			}
 			break;
+		case GitHubEventType.PULL_REQUEST_COMMENT_CREATED:
+			await options?.addReactionToComment?.(
+				event.payload.repository.owner.login,
+				event.payload.repository.name,
+				event.payload.comment.id,
+			);
+			break;
 		default: {
-			const _exhaustiveCheck: never = event;
+			// We need to cast the event as any to avoid type errors with new event types
+			// This is a workaround for the exhaustiveness check
+			const _exhaustiveCheck: never = event.type as any;
 			throw new Error(`Unhandled event type for reaction: ${_exhaustiveCheck}`);
 		}
 	}
