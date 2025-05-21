@@ -463,7 +463,7 @@ type CreateArgMap = {
 };
 
 export const nodeFactories = {
-	create: <K extends NodeContentType>(type: K, arg: CreateArgMap[K]) => {
+	create: <K extends NodeContentType>(type: K, arg?: CreateArgMap[K]) => {
 		if (type === "textGeneration") {
 			return factoryImplementations.textGeneration.create(
 				arg as CreateArgMap["textGeneration"],
