@@ -77,6 +77,12 @@ export function Connector({
 					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=action]:!stroke-[url(#textGenerationToAction)]",
 					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=action]:!stroke-[url(#fileToAction)]",
 					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=action]:!stroke-[url(#textToAction)]",
+					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=query]:!stroke-[url(#textGenerationToQueryNode)]",
+					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=query]:!stroke-[url(#fileToQueryNode)]",
+					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=query]:!stroke-[url(#textToQueryNode)]",
+					"group-data-[output-node-content-type=vectorStore]:group-data-[input-node-content-type=query]:!stroke-[url(#vectorStoreToQueryNode)]",
+					"group-data-[output-node-content-type=trigger]:group-data-[input-node-content-type=query]:!stroke-[url(#triggerToQueryNode)]",
+					"group-data-[output-node-content-type=action]:group-data-[input-node-content-type=query]:!stroke-[url(#actionToQueryNode)]",
 				)}
 				filter="url(#white-glow-filter)"
 			/>
@@ -199,6 +205,56 @@ export function GradientDef() {
 				<linearGradient id="textToAction" x1="0%" y1="0%" x2="100%" y2="0%">
 					<stop offset="0%" stopColor="var(--color-node-plaintext-900)" />
 					<stop offset="100%" stopColor="var(--color-action-node-1)" />
+				</linearGradient>
+
+				<linearGradient
+					id="textGenerationToQueryNode"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-primary-900)" />
+					<stop offset="100%" stopColor="var(--color-query-node-1)" />
+				</linearGradient>
+				<linearGradient id="fileToQueryNode" x1="0%" y1="0%" x2="100%" y2="0%">
+					<stop offset="0%" stopColor="var(--color-node-data-900)" />
+					<stop offset="100%" stopColor="var(--color-query-node-1)" />
+				</linearGradient>
+				<linearGradient id="textToQueryNode" x1="0%" y1="0%" x2="100%" y2="0%">
+					<stop offset="0%" stopColor="var(--color-node-plaintext-900)" />
+					<stop offset="100%" stopColor="var(--color-query-node-1)" />
+				</linearGradient>
+				<linearGradient
+					id="vectorStoreToQueryNode"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-vector-store-node-1)" />
+					<stop offset="100%" stopColor="var(--color-query-node-1)" />
+				</linearGradient>
+				<linearGradient
+					id="triggerToQueryNode"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-trigger-node-1)" />
+					<stop offset="100%" stopColor="var(--color-query-node-1)" />
+				</linearGradient>
+
+				<linearGradient
+					id="actionToQueryNode"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-action-node-1)" />
+					<stop offset="100%" stopColor="var(--color-query-node-1)" />
 				</linearGradient>
 
 				<linearGradient
