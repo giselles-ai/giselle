@@ -5,6 +5,7 @@ import type {
 	IssuesClosedEvent,
 	IssuesOpenedEvent,
 	PullRequestClosedEvent,
+	PullRequestCommentCreatedEvent,
 	PullRequestOpenedEvent,
 	PullRequestReadyForReviewEvent,
 } from "@octokit/webhooks-types";
@@ -16,6 +17,7 @@ export enum GitHubEventType {
 	PULL_REQUEST_OPENED = "pull_request.opened",
 	PULL_REQUEST_READY_FOR_REVIEW = "pull_request.ready_for_review",
 	PULL_REQUEST_CLOSED = "pull_request.closed",
+	PULL_REQUEST_COMMENT_CREATED = "pull_request_comment.created",
 }
 
 export type GitHubEvent =
@@ -48,4 +50,9 @@ export type GitHubEvent =
 			type: GitHubEventType.PULL_REQUEST_CLOSED;
 			event: "pull_request";
 			payload: PullRequestClosedEvent;
+	  }
+	| {
+			type: GitHubEventType.PULL_REQUEST_COMMENT_CREATED;
+			event: "pull_request_review_comment";
+			payload: PullRequestCommentCreatedEvent;
 	  };
