@@ -22,6 +22,13 @@ import {
 	type TriggerNode,
 	type UploadedFileData,
 	type VariableNode,
+	isActionNode,
+	isFileNode,
+	isGitHubNode,
+	isImageGenerationNode,
+	isTextGenerationNode,
+	isTextNode,
+	isTriggerNode,
 } from "@giselle-sdk/data-type";
 import type { ActionProvider } from "@giselle-sdk/flow";
 import {
@@ -91,17 +98,14 @@ function cloneAndRenewInputIdsWithMap(
 }
 
 // --- Node Factory Interface and Result Type ---
-export interface NodeFactoryCloneResult<N extends Node> {
+interface NodeFactoryCloneResult<N extends Node> {
 	newNode: N;
 	inputIdMap: InputIdMap; // Use specific map type
 	outputIdMap: OutputIdMap; // Use specific map type
 }
 
-export interface NodeFactory<
-	N extends Node,
-	CreateArgs extends unknown[] = unknown[],
-> {
-	create(...args: CreateArgs): N;
+interface NodeFactory<N extends Node, CreateArg = void> {
+	create: CreateArg extends void ? () => N : (arg: CreateArg) => N;
 	clone(orig: N): NodeFactoryCloneResult<N>;
 }
 
@@ -206,7 +210,7 @@ const textGenerationFactoryImpl = {
 		} satisfies TextGenerationNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
-} satisfies NodeFactory<TextGenerationNode, [TextGenerationContent["llm"]]>;
+} satisfies NodeFactory<TextGenerationNode, TextGenerationContent["llm"]>;
 
 const imageGenerationFactoryImpl = {
 	create: (llm: ImageGenerationContent["llm"]): ImageGenerationNode =>
@@ -244,7 +248,7 @@ const imageGenerationFactoryImpl = {
 		} satisfies ImageGenerationNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
-} satisfies NodeFactory<ImageGenerationNode, [ImageGenerationContent["llm"]]>;
+} satisfies NodeFactory<ImageGenerationNode, ImageGenerationContent["llm"]>;
 
 const triggerFactoryImpl = {
 	create: (provider: TriggerContent["provider"]): TriggerNode =>
@@ -281,7 +285,7 @@ const triggerFactoryImpl = {
 		} satisfies TriggerNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
-} satisfies NodeFactory<TriggerNode, [TriggerContent["provider"]]>;
+} satisfies NodeFactory<TriggerNode, TriggerContent["provider"]>;
 
 const actionFactoryImpl = {
 	create: (provider: ActionProvider): ActionNode =>
@@ -317,7 +321,7 @@ const actionFactoryImpl = {
 		} satisfies ActionNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
-} satisfies NodeFactory<ActionNode, [ActionProvider]>;
+} satisfies NodeFactory<ActionNode, ActionProvider>;
 
 const textVariableFactoryImpl = {
 	create: (): TextNode =>
@@ -353,7 +357,7 @@ const textVariableFactoryImpl = {
 		} satisfies TextNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
-} satisfies NodeFactory<TextNode, [text?: string]>;
+} satisfies NodeFactory<TextNode>;
 
 const fileVariableFactoryImpl = {
 	create: (category: FileContent["category"]): FileNode =>
@@ -406,7 +410,7 @@ const fileVariableFactoryImpl = {
 		} satisfies FileNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
-} satisfies NodeFactory<FileNode, [category: FileContent["category"]]>;
+} satisfies NodeFactory<FileNode, FileContent["category"]>;
 
 const githubVariableFactoryImpl = {
 	create: (
@@ -435,168 +439,90 @@ const githubVariableFactoryImpl = {
 		} satisfies GitHubNode;
 		return { newNode, inputIdMap, outputIdMap };
 	},
-} satisfies NodeFactory<
-	GitHubNode,
-	[objectReferences?: GitHubContent["objectReferences"]]
->;
+} satisfies NodeFactory<GitHubNode, GitHubContent["objectReferences"]>;
 
 // --- Factories Manager ---
+const factoryImplementations = {
+	textGeneration: textGenerationFactoryImpl,
+	imageGeneration: imageGenerationFactoryImpl,
+	trigger: triggerFactoryImpl,
+	action: actionFactoryImpl,
+	text: textVariableFactoryImpl,
+	file: fileVariableFactoryImpl,
+	github: githubVariableFactoryImpl,
+} as const;
 
-type NodeMap = {
-	textGeneration: TextGenerationNode;
-	imageGeneration: ImageGenerationNode;
-	trigger: TriggerNode;
-	action: ActionNode;
-	text: TextNode;
-	file: FileNode;
-	github: GitHubNode;
+type CreateArgMap = {
+	textGeneration: Parameters<typeof textGenerationFactoryImpl.create>[0];
+	imageGeneration: Parameters<typeof imageGenerationFactoryImpl.create>[0];
+	trigger: Parameters<typeof triggerFactoryImpl.create>[0];
+	action: Parameters<typeof actionFactoryImpl.create>[0];
+	text: undefined; // textVariableFactoryImpl.create is no argument
+	file: Parameters<typeof fileVariableFactoryImpl.create>[0];
+	github: Parameters<typeof githubVariableFactoryImpl.create>[0];
 };
-
-type CreateArgsMap = {
-	textGeneration: Parameters<typeof textGenerationFactoryImpl.create>;
-	imageGeneration: Parameters<typeof imageGenerationFactoryImpl.create>;
-	trigger: Parameters<typeof triggerFactoryImpl.create>;
-	action: Parameters<typeof actionFactoryImpl.create>;
-	text: Parameters<typeof textVariableFactoryImpl.create>;
-	file: Parameters<typeof fileVariableFactoryImpl.create>;
-	github: Parameters<typeof githubVariableFactoryImpl.create>;
-};
-
-export interface CloneResultWithMappings {
-	newNode: Node;
-	inputIdMap: InputIdMap; // Use specific map type
-	outputIdMap: OutputIdMap; // Use specific map type
-}
-
-function cloneInternal<K extends NodeContentType>(
-	sourceNode: NodeMap[K],
-): NodeFactoryCloneResult<NodeMap[K]> {
-	const type = sourceNode.content.type as K;
-	switch (type) {
-		case "textGeneration": {
-			return textGenerationFactoryImpl.clone(
-				sourceNode as TextGenerationNode,
-			) as NodeFactoryCloneResult<NodeMap[K]>;
-		}
-		case "imageGeneration": {
-			return imageGenerationFactoryImpl.clone(
-				sourceNode as ImageGenerationNode,
-			) as NodeFactoryCloneResult<NodeMap[K]>;
-		}
-		case "trigger": {
-			return triggerFactoryImpl.clone(
-				sourceNode as TriggerNode,
-			) as NodeFactoryCloneResult<NodeMap[K]>;
-		}
-		case "action": {
-			return actionFactoryImpl.clone(
-				sourceNode as ActionNode,
-			) as NodeFactoryCloneResult<NodeMap[K]>;
-		}
-		case "text": {
-			return textVariableFactoryImpl.clone(
-				sourceNode as TextNode,
-			) as NodeFactoryCloneResult<NodeMap[K]>;
-		}
-		case "file": {
-			return fileVariableFactoryImpl.clone(
-				sourceNode as FileNode,
-			) as NodeFactoryCloneResult<NodeMap[K]>;
-		}
-		case "github": {
-			return githubVariableFactoryImpl.clone(
-				sourceNode as GitHubNode,
-			) as NodeFactoryCloneResult<NodeMap[K]>;
-		}
-		default: {
-			const _exhaustiveCheck: never = type;
-			throw new Error(`No clone logic for content type: ${type}`);
-		}
-	}
-}
-
-function createInternal<K extends NodeContentType>(
-	type: K,
-	...args: CreateArgsMap[K]
-): NodeMap[K] {
-	switch (type) {
-		case "textGeneration": {
-			return textGenerationFactoryImpl.create(
-				...(args as CreateArgsMap["textGeneration"]),
-			) as NodeMap[K];
-		}
-		case "imageGeneration": {
-			return imageGenerationFactoryImpl.create(
-				...(args as CreateArgsMap["imageGeneration"]),
-			) as NodeMap[K];
-		}
-		case "trigger": {
-			return triggerFactoryImpl.create(
-				...(args as CreateArgsMap["trigger"]),
-			) as NodeMap[K];
-		}
-		case "action": {
-			return actionFactoryImpl.create(
-				...(args as CreateArgsMap["action"]),
-			) as NodeMap[K];
-		}
-		case "text": {
-			return textVariableFactoryImpl.create(
-				...(args as CreateArgsMap["text"]),
-			) as NodeMap[K];
-		}
-		case "file": {
-			return fileVariableFactoryImpl.create(
-				...(args as CreateArgsMap["file"]),
-			) as NodeMap[K];
-		}
-		case "github": {
-			return githubVariableFactoryImpl.create(
-				...(args as CreateArgsMap["github"]),
-			) as NodeMap[K];
-		}
-		default: {
-			const _exhaustiveCheck: never = type;
-			throw new Error(`No create logic for content type: ${type}`);
-		}
-	}
-}
 
 export const nodeFactories = {
-	create: <K extends NodeContentType>(
-		type: K,
-		...args: CreateArgsMap[K]
-	): NodeMap[K] => {
-		return createInternal(type, ...args);
-	},
-	clone: (sourceNode: Node): CloneResultWithMappings => {
-		const type = sourceNode.content.type as NodeContentType;
-		switch (type) {
-			case "textGeneration": {
-				return cloneInternal(sourceNode as TextGenerationNode);
-			}
-			case "imageGeneration": {
-				return cloneInternal(sourceNode as ImageGenerationNode);
-			}
-			case "trigger": {
-				return cloneInternal(sourceNode as TriggerNode);
-			}
-			case "action": {
-				return cloneInternal(sourceNode as ActionNode);
-			}
-			case "text": {
-				return cloneInternal(sourceNode as TextNode);
-			}
-			case "file": {
-				return cloneInternal(sourceNode as FileNode);
-			}
-			case "github": {
-				return cloneInternal(sourceNode as GitHubNode);
-			}
-			default: {
-				const _exhaustiveCheck: never = type;
-				throw new Error(`No clone logic for content type: ${type}`);
-			}
+	create: <K extends NodeContentType>(type: K, arg: CreateArgMap[K]) => {
+		if (type === "textGeneration") {
+			return factoryImplementations.textGeneration.create(
+				arg as CreateArgMap["textGeneration"],
+			);
 		}
+		if (type === "imageGeneration") {
+			return factoryImplementations.imageGeneration.create(
+				arg as CreateArgMap["imageGeneration"],
+			);
+		}
+		if (type === "trigger") {
+			return factoryImplementations.trigger.create(
+				arg as CreateArgMap["trigger"],
+			);
+		}
+		if (type === "action") {
+			return factoryImplementations.action.create(
+				arg as CreateArgMap["action"],
+			);
+		}
+		if (type === "text") {
+			return factoryImplementations.text.create();
+		}
+		if (type === "file") {
+			return factoryImplementations.file.create(arg as CreateArgMap["file"]);
+		}
+		if (type === "github") {
+			return factoryImplementations.github.create(
+				arg as CreateArgMap["github"],
+			);
+		}
+
+		throw new Error(`No create factory for content type: ${type}`);
+	},
+	clone: (sourceNode: Node) => {
+		if (isTextGenerationNode(sourceNode)) {
+			return factoryImplementations.textGeneration.clone(sourceNode);
+		}
+		if (isImageGenerationNode(sourceNode)) {
+			return factoryImplementations.imageGeneration.clone(sourceNode);
+		}
+		if (isTriggerNode(sourceNode)) {
+			return factoryImplementations.trigger.clone(sourceNode);
+		}
+		if (isActionNode(sourceNode)) {
+			return factoryImplementations.action.clone(sourceNode);
+		}
+		if (isTextNode(sourceNode)) {
+			return factoryImplementations.text.clone(sourceNode);
+		}
+		if (isFileNode(sourceNode)) {
+			return factoryImplementations.file.clone(sourceNode);
+		}
+		if (isGitHubNode(sourceNode)) {
+			return factoryImplementations.github.clone(sourceNode);
+		}
+
+		throw new Error(
+			`No clone factory for content type: ${sourceNode.content.type}`,
+		);
 	},
 };
