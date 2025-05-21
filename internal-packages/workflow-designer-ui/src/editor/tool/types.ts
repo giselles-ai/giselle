@@ -37,6 +37,10 @@ export interface MoveTool extends ToolBase {
 	category: "move";
 	action: "move";
 }
+export interface SelectRetrievalCategoryTool extends ToolBase {
+	category: "edit";
+	action: "selectRetrievalCategory";
+}
 export type Tool =
 	| MoveTool
 	| AddNodeTool
@@ -44,7 +48,8 @@ export type Tool =
 	| SelectLanguageModelTool
 	| SelectSourceCategoryTool
 	| SelectTriggerTool
-	| SelectEnviromentActionTool;
+	| SelectEnviromentActionTool
+	| SelectRetrievalCategoryTool;
 
 type ToolAction = Tool["action"];
 
@@ -57,7 +62,8 @@ export function isToolAction(args: unknown): args is ToolAction {
 			args === "selectFileNodeCategory" ||
 			args === "selectSourceCategory" ||
 			args === "selectTrigger" ||
-			args === "selectAction"
+			args === "selectAction" ||
+			args === "selectRetrievalCategory"
 		);
 	}
 	return false;

@@ -80,6 +80,9 @@
 	--color-video-generation-node-1: #0098b2;
 	--color-video-generation-node-2: color-mix(in srgb, #0098b2, #000000 20%);
 
+	--color-query-node-1: hsl(200, 80%, 50%);
+	--color-query-node-2: hsl(200, 80%, 30%);
+
 	--color-error-900: var(--color-red-900);
 
 	--font-sans: var(--font-geist-sans);

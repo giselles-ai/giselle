@@ -8,6 +8,7 @@ import {
 	isVectorStoreNode,
 } from "@giselle-sdk/data-type";
 import { getImageGenerationModelProvider } from "@giselle-sdk/language-model";
+import { DatabaseZapIcon } from "lucide-react";
 import type { SVGProps } from "react";
 import { AnthropicIcon } from "../anthropic";
 import { Flux1Icon } from "../flux1";
@@ -132,6 +133,8 @@ export function NodeIcon({
 						}
 					}
 				}
+				case "query":
+					return <DatabaseZapIcon {...props} data-content-type-icon />;
 				default: {
 					const _exhaustiveCheck: never = node.content.type;
 					throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);

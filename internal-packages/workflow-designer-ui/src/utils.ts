@@ -66,6 +66,8 @@ export function defaultName(node: NodeLike) {
 					return (
 						node.name ?? actionNodeDefaultName(node.content.command.provider)
 					);
+				case "query":
+					return node.name ?? "Query";
 				default: {
 					const _exhaustiveCheck: never = node.content.type;
 					throw new Error(`Unhandled action content type: ${_exhaustiveCheck}`);
