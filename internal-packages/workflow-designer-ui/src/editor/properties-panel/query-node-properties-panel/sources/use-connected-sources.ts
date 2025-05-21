@@ -73,15 +73,6 @@ export function useConnectedSources(node: QueryNode) {
 					break;
 				case "variable":
 					switch (node.content.type) {
-						case "file":
-							if (node.content.category !== "image") {
-								connectedVariableSources.push({
-									output,
-									node,
-									connection,
-								});
-							}
-							break;
 						case "vectorStore":
 							connectedDatastoreSources.push({
 								output,
@@ -96,6 +87,8 @@ export function useConnectedSources(node: QueryNode) {
 								node,
 								connection,
 							});
+							break;
+						case "file":
 							break;
 						default: {
 							const _exhaustiveCheck: never = node.content;

@@ -14,7 +14,6 @@ import {
 	TrashIcon,
 	WorkflowIcon,
 } from "lucide-react";
-import pluralize from "pluralize";
 import { Popover, ToggleGroup } from "radix-ui";
 import {
 	type ComponentProps,
@@ -26,7 +25,6 @@ import {
 import {
 	GeneratedContentIcon,
 	GitHubIcon,
-	PdfFileIcon,
 	PromptIcon,
 	TriggerIcon,
 } from "../../../icons";
@@ -94,7 +92,6 @@ function SourceSelect({
 	const {
 		generatedSources,
 		textSources,
-		fileSources,
 		datastoreSources,
 		actionSources,
 		triggerSources,
@@ -213,20 +210,6 @@ function SourceSelect({
 								</div>
 							)}
 
-							{fileSources.length > 0 && (
-								<div className="flex flex-col px-[8px]">
-									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
-										File
-									</p>
-									{fileSources.map((fileSource) => (
-										<SourceToggleItem
-											key={fileSource.output.id}
-											source={fileSource}
-											disabled={!isSupported(fileSource)}
-										/>
-									))}
-								</div>
-							)}
 							{actionSources.length > 0 && (
 								<div className="flex flex-col px-[8px]">
 									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
@@ -571,18 +554,6 @@ export function InputPanel({
 										/>
 									);
 								}
-								case "file":
-									return (
-										<SourceListItem
-											icon={
-												<PdfFileIcon className="size-[24px] text-white-900" />
-											}
-											key={source.connection.id}
-											title={`${source.node.name ?? "PDF Files"} / ${source.output.label}`}
-											subtitle={`${source.node.content.files.length} ${pluralize("file", source.node.content.files.length)}`}
-											onRemove={() => handleRemove(source.connection)}
-										/>
-									);
 								case "github":
 									return (
 										<SourceListItem
@@ -607,6 +578,8 @@ export function InputPanel({
 											onRemove={() => handleRemove(source.connection)}
 										/>
 									);
+								case "file":
+									break;
 								default: {
 									const _exhaustiveCheck: never = source.node.content;
 									throw new Error(`Unhandled source type: ${_exhaustiveCheck}`);
