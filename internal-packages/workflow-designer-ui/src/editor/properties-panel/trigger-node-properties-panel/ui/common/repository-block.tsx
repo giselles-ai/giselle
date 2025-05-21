@@ -1,4 +1,4 @@
-import { GitHubIcon } from "../../../icons";
+import { GitHubIcon } from "../../../../../icons";
 
 export function GitHubRepositoryBlock({
 	owner,

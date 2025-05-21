@@ -1,4 +1,5 @@
 import {
+	type GenerationInput,
 	type OverrideNode,
 	WorkspaceGitHubIntegrationNextActionIssueCommentCreate,
 	WorkspaceGitHubIntegrationNextActionPullRequestCommentCreate,
@@ -6,11 +7,19 @@ import {
 	type WorkspaceGitHubIntegrationSetting,
 	type WorkspaceId,
 } from "@giselle-sdk/data-type";
+import { githubTriggers } from "@giselle-sdk/flow";
+import {
+	type GitHubAuthConfig,
+	addReaction as addReactionApi,
+} from "@giselle-sdk/github-tool";
 import { z } from "zod";
 import { WorkflowError } from "../error";
+import { runFlow } from "../flows";
+import { getFlowTrigger } from "../flows/utils";
+import { getGitHubRepositoryIntegrationIndex } from "../integrations/utils";
 import { runApi } from "../runs";
 import type { GiselleEngineContext } from "../types";
-import { getWorkspace } from "../workspaces";
+import { getWorkspace } from "../workspaces/utils";
 import {
 	type GitHubEvent,
 	GitHubEventType,
@@ -103,6 +112,12 @@ export async function handleWebhook(args: HandleGitHubWebhookArgs) {
 
 	const command = parseCommandFromEvent(gitHubEvent);
 
+	await processV2({
+		context: args.context,
+		repositoryNodeId: repository.nodeId,
+		githubEvent: gitHubEvent,
+	});
+
 	const results = await processMatchedIntegrationSettingsDeprecated(
 		gitHubEvent,
 		args,
@@ -111,6 +126,225 @@ export async function handleWebhook(args: HandleGitHubWebhookArgs) {
 		workspaceGitHubIntegrationRepositorySettings,
 	);
 	return results;
+}
+
+async function processV2(args: {
+	context: GiselleEngineContext;
+	repositoryNodeId: string;
+	githubEvent: GitHubEvent;
+	options?: HandleGitHubWebhookOptions;
+}) {
+	const githubRepositoryIntegration = await getGitHubRepositoryIntegrationIndex(
+		{
+			storage: args.context.storage,
+			repositoryNodeId: args.repositoryNodeId,
+		},
+	);
+	if (githubRepositoryIntegration === undefined) {
+		return;
+	}
+
+	await Promise.all(
+		githubRepositoryIntegration.flowTriggerIds.map(async (flowTriggerId) => {
+			const trigger = await getFlowTrigger({
+				storage: args.context.storage,
+				flowTriggerId,
+			});
+			await runRepositoryTrigger({
+				context: args.context,
+				trigger,
+				githubEvent: args.githubEvent,
+				repositoryNodeId: args.repositoryNodeId,
+			});
+		}),
+	);
+}
+
+async function runRepositoryTrigger(args: {
+	context: GiselleEngineContext;
+	trigger: Awaited<ReturnType<typeof getFlowTrigger>>;
+	githubEvent: GitHubEvent;
+	repositoryNodeId: string;
+}) {
+	if (
+		!args.trigger.enable ||
+		args.trigger.configuration.provider !== "github"
+	) {
+		return;
+	}
+	if (args.trigger.configuration.repositoryNodeId !== args.repositoryNodeId) {
+		return;
+	}
+
+	const githubTrigger = githubTriggers[args.trigger.configuration.event.id];
+	const triggerInputs = buildTriggerInputs({
+		githubTrigger,
+		trigger: args.trigger,
+		githubEvent: args.githubEvent,
+	});
+	if (triggerInputs === null) {
+		return;
+	}
+
+	await Promise.all([
+		addReaction(args),
+		runFlow({
+			context: args.context,
+			triggerId: args.trigger.id,
+			triggerInputs,
+		}),
+	]);
+}
+
+async function addReaction(args: {
+	githubEvent: GitHubEvent;
+	context: GiselleEngineContext;
+}) {
+	const githubAuthV2 = args.context.integrationConfigs?.github?.authV2;
+	if (githubAuthV2 === undefined) {
+		throw new Error("GitHub authV2 configuration is missing");
+	}
+	if (args.githubEvent.payload.installation?.id === undefined) {
+		throw new Error("GitHub installation ID is missing");
+	}
+	const authConfig = {
+		strategy: "app-installation",
+		appId: githubAuthV2.appId,
+		privateKey: githubAuthV2.privateKey,
+		installationId: args.githubEvent.payload.installation.id,
+	} satisfies GitHubAuthConfig;
+
+	switch (args.githubEvent.event) {
+		case "issue_comment":
+			await addReactionApi({
+				id: args.githubEvent.payload.comment.node_id,
+				content: "EYES",
+				authConfig,
+			});
+			break;
+		case "issues":
+			await addReactionApi({
+				id: args.githubEvent.payload.issue.node_id,
+				content: "EYES",
+				authConfig,
+			});
+			break;
+		case "pull_request":
+			await addReactionApi({
+				id: args.githubEvent.payload.pull_request.node_id,
+				content: "EYES",
+				authConfig,
+			});
+			break;
+		default: {
+			const _exhaustiveCheck: never = args.githubEvent;
+			throw new Error(`Unhandled event: ${_exhaustiveCheck}`);
+		}
+	}
+}
+
+function buildTriggerInputs(args: {
+	githubTrigger: (typeof githubTriggers)[keyof typeof githubTriggers];
+	trigger: Awaited<ReturnType<typeof getFlowTrigger>>;
+	githubEvent: GitHubEvent;
+}): GenerationInput[] | null {
+	const { githubTrigger, githubEvent, trigger } = args;
+	switch (githubTrigger.event.id) {
+		case "github.issue.created":
+			return buildIssueCreatedInputs(
+				githubEvent,
+				githubTrigger.event.payloads.keyof().options,
+			);
+		case "github.issue_comment.created":
+			if (trigger.configuration.event.id !== "github.issue_comment.created") {
+				return null;
+			}
+			return buildIssueCommentInputs(
+				githubEvent,
+				githubTrigger.event.payloads.keyof().options,
+				trigger.configuration.event.conditions.callsign,
+			);
+		default: {
+			const _exhaustiveCheck: never = githubTrigger.event;
+			throw new Error(`Unhandled event id: ${_exhaustiveCheck}`);
+		}
+	}
+}
+
+function buildIssueCreatedInputs(
+	githubEvent: GitHubEvent,
+	payloads: readonly ("title" | "body")[],
+): GenerationInput[] | null {
+	if (githubEvent.type !== GitHubEventType.ISSUES_OPENED) {
+		return null;
+	}
+
+	const inputs: GenerationInput[] = [];
+	for (const payload of payloads) {
+		switch (payload) {
+			case "title":
+				inputs.push({ name: "title", value: githubEvent.payload.issue.title });
+				break;
+			case "body":
+				inputs.push({
+					name: "body",
+					value: githubEvent.payload.issue.body ?? "",
+				});
+				break;
+			default: {
+				const _exhaustiveCheck: never = payload;
+				throw new Error(`Unhandled payload id: ${_exhaustiveCheck}`);
+			}
+		}
+	}
+	return inputs;
+}
+
+function buildIssueCommentInputs(
+	githubEvent: GitHubEvent,
+	payloads: readonly ("body" | "issueBody" | "issueNumber" | "issueTitle")[],
+	callsign: string,
+): GenerationInput[] | null {
+	if (githubEvent.type !== GitHubEventType.ISSUE_COMMENT_CREATED) {
+		return null;
+	}
+
+	const command = parseCommandFromEvent(githubEvent);
+	if (command === null || command.callsign !== callsign) {
+		return null;
+	}
+
+	const inputs: GenerationInput[] = [];
+	for (const payload of payloads) {
+		switch (payload) {
+			case "body":
+				inputs.push({ name: "body", value: command.content });
+				break;
+			case "issueBody":
+				inputs.push({
+					name: "issueBody",
+					value: githubEvent.payload.issue.body ?? "",
+				});
+				break;
+			case "issueNumber":
+				inputs.push({
+					name: "issueNumber",
+					value: githubEvent.payload.issue.number.toString(),
+				});
+				break;
+			case "issueTitle":
+				inputs.push({
+					name: "issueTitle",
+					value: githubEvent.payload.issue.title,
+				});
+				break;
+			default: {
+				const _exhaustiveCheck: never = payload;
+				throw new Error(`Unhandled payload id: ${_exhaustiveCheck}`);
+			}
+		}
+	}
+	return inputs;
 }
 
 // Extracted for legacy parallel execution.
@@ -155,7 +389,7 @@ async function processIntegration(
 
 	const overrideNodes: OverrideNode[] = [];
 	const workspace = await getWorkspace({
-		context: context,
+		storage: context.storage,
 		workspaceId: setting.workspaceId,
 	});
 	for (const payloadMap of setting.payloadMaps) {

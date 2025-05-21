@@ -25,7 +25,7 @@ export const githubCreateIssueCommentAction = {
 		id: "github.create.issueComment",
 		label: "Create Issue Comment",
 		parameters: z.object({
-			issueNumber: z.number(),
+			issueNumber: z.coerce.number(),
 			body: z.string(),
 		}),
 	},

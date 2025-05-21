@@ -5,6 +5,7 @@ import {
 	FlowTriggerId,
 	Generation,
 	GenerationId,
+	GenerationInput,
 	GenerationOrigin,
 	NodeId,
 	OverrideNode,
@@ -311,6 +312,17 @@ export const createJsonRouters = {
 			}),
 			handler: async ({ input }) => {
 				await giselleEngine.executeAction(input);
+				return new Response(null, { status: 204 });
+			},
+		}),
+	runFlow: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			input: z.object({
+				triggerId: FlowTriggerId.schema,
+				triggerInputs: z.array(GenerationInput),
+			}),
+			handler: async ({ input }) => {
+				await giselleEngine.runFlow(input);
 				return new Response(null, { status: 204 });
 			},
 		}),

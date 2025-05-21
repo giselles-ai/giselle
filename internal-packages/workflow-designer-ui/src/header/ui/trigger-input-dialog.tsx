@@ -97,8 +97,8 @@ export function TriggerInputDialog({
 					case "github.issue_comment.created":
 						return [
 							{
-								name: "issueId",
-								label: "Issue ID",
+								name: "issueNumber",
+								label: "Issue Number",
 								type: "number",
 								required: true,
 							},
@@ -115,7 +115,7 @@ export function TriggerInputDialog({
 								required: true,
 							},
 							{
-								name: "issueCommentBody",
+								name: "body",
 								label: "Issue Comment",
 								type: "multiline-text",
 								required: true,

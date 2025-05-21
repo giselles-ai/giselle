@@ -272,7 +272,7 @@ export function parseCommand(text: string): Command | null {
 	const lines = normalizedText.trim().split("\n");
 
 	const commandLine = lines[0];
-	const commandMatch = commandLine.match(/^\/giselle\s+([^\n]+)/);
+	const commandMatch = commandLine.match(/^\/([^\n]+)/);
 	if (!commandMatch) {
 		return null;
 	}

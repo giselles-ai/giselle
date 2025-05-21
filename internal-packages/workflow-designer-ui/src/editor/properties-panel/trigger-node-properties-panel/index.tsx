@@ -6,8 +6,8 @@ import {
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
 } from "../ui";
-import { GitHubTriggerPropertiesPanel } from "./github-trigger-properties-panel";
-import { ManualTriggerPropertiesPanel } from "./manual-trigger-properties-panel";
+import { GitHubTriggerPropertiesPanel } from "./providers/github-trigger/github-trigger-properties-panel";
+import { ManualTriggerPropertiesPanel } from "./providers/manual-trigger/manual-trigger-properties-panel";
 
 export function TriggerNodePropertiesPanel({
 	node,

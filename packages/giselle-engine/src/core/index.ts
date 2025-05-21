@@ -5,6 +5,7 @@ import type {
 	FlowTriggerId,
 	Generation,
 	GenerationId,
+	GenerationInput,
 	GenerationOrigin,
 	NodeId,
 	OverrideNode,
@@ -23,6 +24,7 @@ import {
 	configureTrigger,
 	getTrigger,
 	resolveTrigger,
+	runFlow,
 	setTrigger,
 } from "./flows";
 import {
@@ -232,6 +234,10 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		executeAction: async (args: {
 			generation: QueuedGeneration;
 		}) => executeAction({ ...args, context }),
+		runFlow: async (args: {
+			triggerId: FlowTriggerId;
+			triggerInputs: GenerationInput[];
+		}) => runFlow({ ...args, context }),
 	};
 }
 

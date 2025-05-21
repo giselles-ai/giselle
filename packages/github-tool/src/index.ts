@@ -5,6 +5,7 @@ export * from "./octokit";
 export * from "./repository";
 export * from "./tools";
 export * from "./types";
+export * from "./reactions";
 
 export const IssueNodeIdQuery = gql(/* GraphQL */ `
   query IssueNodeIdQuery($name: String!, $owner: String!, $issueNumber: Int!) {

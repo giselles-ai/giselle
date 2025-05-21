@@ -18,17 +18,20 @@ import {
 	useState,
 	useTransition,
 } from "react";
-import { GitHubIcon, SpinnerIcon } from "../../../icons";
+import { GitHubIcon, SpinnerIcon } from "../../../../../icons";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "../../../ui/select";
-import { Tooltip } from "../../../ui/tooltip";
-import { GitHubRepositoryBlock, SelectRepository } from "../ui";
-import { GitHubTriggerConfiguredView } from "./ui";
+} from "../../../../../ui/select";
+import { Tooltip } from "../../../../../ui/tooltip";
+import { SelectRepository } from "../../../ui";
+import { GitHubRepositoryBlock } from "../../ui";
+import { GitHubTriggerConfiguredView } from "../../ui";
+import { InstallGitHubApplication } from "./components/install-application";
+import { Unauthorized } from "./components/unauthorized";
 
 export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	const { value } = useIntegration();
@@ -70,153 +73,6 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 			throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
 		}
 	}
-}
-
-function Unauthorized({
-	authUrl,
-}: {
-	authUrl: string;
-}) {
-	const { refresh } = useIntegration();
-	const [isPending, startTransition] = useTransition();
-	const popupRef = useRef<Window | null>(null);
-
-	// Handler for installation message from popup window
-	const handleInstallationMessage = useCallback(
-		(event: MessageEvent) => {
-			if (event.data?.type === "github-app-installed") {
-				startTransition(() => {
-					refresh();
-				});
-			}
-		},
-		[refresh],
-	);
-
-	// Listen for visibility changes to refresh data when user returns to the page
-	useEffect(() => {
-		// Add event listener for installation message from popup
-		window.addEventListener("message", handleInstallationMessage);
-
-		return () => {
-			window.removeEventListener("message", handleInstallationMessage);
-
-			// Close popup if component unmounts
-			if (popupRef.current && !popupRef.current.closed) {
-				popupRef.current.close();
-			}
-		};
-	}, [handleInstallationMessage]);
-
-	const handleClick = useCallback(() => {
-		const width = 800;
-		const height = 800;
-		const left = window.screenX + (window.outerWidth - width) / 2;
-		const top = window.screenY + (window.outerHeight - height) / 2;
-
-		popupRef.current = window.open(
-			authUrl,
-			"Configure GitHub App",
-			`width=${width},height=${height},top=${top},left=${left},popup=1`,
-		);
-
-		if (!popupRef.current) {
-			console.warn("Failed to open popup window");
-			return;
-		}
-	}, [authUrl]);
-
-	return (
-		<div className="bg-white-900/10 h-[300px] rounded-[8px] flex items-center justify-center">
-			<div className="flex flex-col gap-[8px]">
-				<p>To get started you have to sign into your GitHub account</p>
-				<button
-					type="button"
-					className="group cursor-pointer bg-black-900 rounded-[4px] py-[4px] flex items-center justify-center gap-[8px] disabled:opacity-50 disabled:cursor-wait"
-					onClick={handleClick}
-					disabled={isPending}
-				>
-					<GitHubIcon className="size-[18px]" />
-					Continue with GitHub
-					<SpinnerIcon className="hidden group-disabled:block animate-follow-through-overlap-spin" />
-				</button>
-			</div>
-		</div>
-	);
-}
-
-function InstallGitHubApplication({
-	installationUrl,
-}: {
-	installationUrl: string;
-}) {
-	const [isPending, startTransition] = useTransition();
-	const { refresh } = useIntegration();
-	const popupRef = useRef<Window | null>(null);
-	const handleClick = useCallback(() => {
-		const width = 800;
-		const height = 800;
-		const left = window.screenX + (window.outerWidth - width) / 2;
-		const top = window.screenY + (window.outerHeight - height) / 2;
-
-		popupRef.current = window.open(
-			installationUrl,
-			"Configure GitHub App",
-			`width=${width},height=${height},top=${top},left=${left},popup=1`,
-		);
-
-		if (!popupRef.current) {
-			console.warn("Failed to open popup window");
-			return;
-		}
-	}, [installationUrl]);
-
-	// Handler for installation message from popup window
-	const handleInstallationMessage = useCallback(
-		(event: MessageEvent) => {
-			if (event.data?.type === "github-app-installed") {
-				startTransition(() => {
-					refresh();
-				});
-			}
-		},
-		[refresh],
-	);
-
-	// Listen for visibility changes to refresh data when user returns to the page
-	useEffect(() => {
-		// Add event listener for installation message from popup
-		window.addEventListener("message", handleInstallationMessage);
-
-		return () => {
-			window.removeEventListener("message", handleInstallationMessage);
-
-			// Close popup if component unmounts
-			if (popupRef.current && !popupRef.current.closed) {
-				popupRef.current.close();
-			}
-		};
-	}, [handleInstallationMessage]);
-	return (
-		<div className="bg-white-900/10 h-[300px] rounded-[8px] flex items-center justify-center">
-			<div className="flex flex-col gap-[8px]">
-				<p>
-					Install the GitHub application for the accounts you with to Import
-					from to continue
-				</p>
-				<button
-					type="button"
-					className="group cursor-pointer bg-black-900 rounded-[4px] py-[4px] flex items-center justify-center gap-[8px] disabled:opacity-50 disabled:cursor-wait"
-					onClick={handleClick}
-					disabled={isPending}
-				>
-					<GitHubIcon className="size-[18px]" />
-					Install
-					<SpinnerIcon className="hidden group-disabled:block animate-follow-through-overlap-spin" />
-				</button>
-			</div>
-		</div>
-	);
 }
 
 interface SelectRepositoryStep {
@@ -285,6 +141,11 @@ function Installed({
 							callsign,
 						},
 					};
+					break;
+				}
+				default: {
+					const _exhaustiveCheck: never = eventId;
+					throw new Error(`Unhandled eventId: ${_exhaustiveCheck}`);
 				}
 			}
 			if (event === undefined) {
@@ -344,7 +205,12 @@ function Installed({
 				<SelectRepository
 					installations={installations}
 					installationUrl={installationUrl}
-					onSelectRepository={(value) => {
+					onSelectRepository={(value: {
+						installationId: number;
+						owner: string;
+						repo: string;
+						repoNodeId: string;
+					}) => {
 						setStep({
 							state: "select-event",
 							installationId: value.installationId,
@@ -402,16 +268,21 @@ function Installed({
 									</button>
 								</Tooltip>
 							</div>
-							<input
-								type="text"
-								name="callsign"
-								className={clsx(
-									"group w-full flex justify-between items-center rounded-[8px] py-[8px] px-[16px] outline-none focus:outline-none mb-[4px]",
-									"border-[2px] border-white-900",
-									"text-[14px]",
-								)}
-								placeholder="/code-review"
-							/>
+							<div className="relative">
+								<div className="absolute inset-y-0 left-0 flex items-center pl-[16px] pointer-events-none">
+									<span className="text-[14px]">/</span>
+								</div>
+								<input
+									type="text"
+									name="callsign"
+									className={clsx(
+										"group w-full flex justify-between items-center rounded-[8px] py-[8px] pl-[24px] pr-[16px] outline-none focus:outline-none",
+										"border-[2px] border-white-900",
+										"text-[14px]",
+									)}
+									placeholder="code-review"
+								/>
+							</div>
 							<p className="text-[14px] text-black-400">
 								A callsign is required for issue comment triggers. Examples:
 								/code-review, /check-policy

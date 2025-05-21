@@ -43,7 +43,7 @@ export async function runApi(args: {
 					id: generationId,
 					context: {
 						...operation.generationTemplate,
-						origin: { type: "run", id: runId },
+						origin: { type: "run", id: runId, workspaceId: args.workspaceId },
 					},
 					status: "queued",
 					createdAt: Date.now(),

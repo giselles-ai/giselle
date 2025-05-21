@@ -24,7 +24,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "../../../ui/select";
-import { GitHubRepositoryBlock, SelectRepository } from "../ui";
+import { GitHubRepositoryBlock } from "../trigger-node-properties-panel/ui";
+import { SelectRepository } from "../ui";
 import { GitHubActionConfiguredView } from "./ui/github-action-configured-view";
 
 export function GitHubActionPropertiesPanel({ node }: { node: ActionNode }) {

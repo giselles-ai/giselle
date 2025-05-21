@@ -273,9 +273,15 @@ function generationIndexPath(generationId: GenerationId) {
 export async function getGenerationIndex(params: {
 	storage: Storage;
 	generationId: GenerationId;
+	options?: {
+		bypassingCache?: boolean;
+	};
 }) {
 	const unsafeGenerationIndex = await params.storage.getItem(
 		generationIndexPath(params.generationId),
+		{
+			bypassingCache: params.options?.bypassingCache ?? false,
+		},
 	);
 	if (unsafeGenerationIndex === null) {
 		return undefined;
@@ -344,18 +350,18 @@ export async function setGeneration(params: {
 export async function getGeneration(params: {
 	storage: Storage;
 	generationId: GenerationId;
+	options?: {
+		bypassingCache?: boolean;
+	};
 }): Promise<Generation | undefined> {
-	const generationIndex = await getGenerationIndex({
-		storage: params.storage,
-		generationId: params.generationId,
-	});
+	const generationIndex = await getGenerationIndex(params);
 	if (generationIndex == null) {
 		throw new Error("Generation not found");
 	}
 	const unsafeGeneration = await params.storage.getItem(
 		`${generationPath(generationIndex)}`,
 		{
-			bypassingCache: true,
+			bypassingCache: params.options?.bypassingCache ?? false,
 		},
 	);
 	const parsedGeneration = parseAndMod(Generation, unsafeGeneration);

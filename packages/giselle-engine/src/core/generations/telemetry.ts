@@ -115,14 +115,7 @@ export function createLangfuseTracer({
 	spanName: string;
 	generationName: string;
 	settings?: TelemetrySettings;
-}): {
-	langfuse: Langfuse;
-	trace: ReturnType<Langfuse["trace"]>;
-	span: ReturnType<ReturnType<Langfuse["trace"]>["span"]>;
-	generation: ReturnType<
-		ReturnType<ReturnType<Langfuse["trace"]>["span"]>["generation"]
-	>;
-} {
+}): Langfuse {
 	const langfuse = new Langfuse();
 	const trace = langfuse.trace({
 		userId: String(settings?.metadata?.userId),
@@ -155,5 +148,5 @@ export function createLangfuseTracer({
 		endTime: new Date(completedGeneration.completedAt),
 	});
 
-	return { langfuse, trace, span, generation };
+	return langfuse;
 }

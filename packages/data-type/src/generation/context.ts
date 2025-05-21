@@ -66,7 +66,7 @@ export const GenerationContextLike = z.object({
 	}),
 	sourceNodes: z.array(z.any()),
 	connections: z.array(z.any()).default([]),
-	origin: z.any(),
+	origin: GenerationOrigin,
 	inputs: z.array(GenerationInput).optional(),
 });
 export type GenerationContextLike = z.infer<typeof GenerationContextLike>;

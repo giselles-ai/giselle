@@ -1,2 +1,3 @@
-export * from "./github-trigger-configured-view";
-export * from "./manual-trigger-configured-view";
+export * from "./configured-views/github-trigger-configured-view";
+export * from "./configured-views/manual-trigger-configured-view";
+export * from "./common/repository-block";

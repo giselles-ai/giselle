@@ -16,6 +16,7 @@ import {
 	type RunningGeneration,
 	type TextGenerationLanguageModelData,
 	type UrlSource,
+	type WorkspaceId,
 	isCompletedGeneration,
 	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
@@ -107,10 +108,19 @@ export async function generateText(args: {
 		}),
 	]);
 
-	const workspaceId = await extractWorkspaceIdFromOrigin({
-		storage: args.context.storage,
-		origin: args.generation.context.origin,
-	});
+	let workspaceId: WorkspaceId | undefined;
+	switch (args.generation.context.origin.type) {
+		case "run":
+			workspaceId = args.generation.context.origin.workspaceId;
+			break;
+		case "workspace":
+			workspaceId = args.generation.context.origin.id;
+			break;
+		default: {
+			const _exhaustiveCheck: never = args.generation.context.origin;
+			throw new Error(`Unhandled origin type: ${_exhaustiveCheck}`);
+		}
+	}
 
 	const usageLimitStatus = await checkUsageLimits({
 		workspaceId,
@@ -180,6 +190,9 @@ export async function generateText(args: {
 			...args,
 			storage: args.context.storage,
 			generationId: nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
+			options: {
+				bypassingCache: true,
+			},
 		});
 		if (generation === undefined || !isCompletedGeneration(generation)) {
 			return undefined;
@@ -486,7 +499,7 @@ export async function generateText(args: {
 			});
 
 			// necessary to send telemetry but not explicitly used
-			const _langfuseTracer = createLangfuseTracer({
+			const langfuse = createLangfuseTracer({
 				workspaceId,
 				runningGeneration,
 				tags: generateTelemetryTags({
@@ -514,11 +527,16 @@ export async function generateText(args: {
 				generationName: "ai.streamText.doStream",
 				settings: args.telemetry,
 			});
-			await Promise.all(
-				preparedToolSet.cleanupFunctions.map((cleanupFunction) =>
-					cleanupFunction(),
-				),
-			);
+			try {
+				await Promise.all([
+					langfuse.shutdownAsync(),
+					...preparedToolSet.cleanupFunctions.map((cleanupFunction) =>
+						cleanupFunction(),
+					),
+				]);
+			} catch (error) {
+				console.error("Cleanup process failed:", error);
+			}
 		},
 		experimental_telemetry: {
 			isEnabled: args.context.telemetry?.isEnabled,

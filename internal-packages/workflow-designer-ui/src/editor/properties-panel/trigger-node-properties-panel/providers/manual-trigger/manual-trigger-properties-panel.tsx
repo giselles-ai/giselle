@@ -14,8 +14,8 @@ import {
 	useState,
 	useTransition,
 } from "react";
-import { SpinnerIcon } from "../../../icons";
-import { ManualTriggerConfiguredView } from "./ui";
+import { SpinnerIcon } from "../../../../../icons";
+import { ManualTriggerConfiguredView } from "../../ui";
 
 export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	const { data: workspace, updateNodeData } = useWorkflowDesigner();
