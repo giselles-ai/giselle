@@ -70,6 +70,14 @@ export interface AddVectorStoreNodeTool extends ToolBase {
 	category: "edit";
 	action: "addVectorStoreNode";
 }
+export interface AddQueryNodeTool extends ToolBase {
+	category: "edit";
+	action: "addQueryNode";
+}
+export interface SelectRetrievalCategoryTool extends ToolBase {
+	category: "edit";
+	action: "selectRetrievalCategory";
+}
 export type Tool =
 	| AddTextNodeTool
 	| AddFileNodeTool
@@ -82,7 +90,9 @@ export type Tool =
 	| SelectSourceCategoryTool
 	| SelectTriggerTool
 	| SelectEnviromentActionTool
-	| AddVectorStoreNodeTool;
+	| AddVectorStoreNodeTool
+	| AddQueryNodeTool
+	| SelectRetrievalCategoryTool;
 
 type ToolAction = Tool["action"];
 
@@ -99,7 +109,9 @@ export function isToolAction(args: unknown): args is ToolAction {
 			args === "selectSourceCategory" ||
 			args === "selectTrigger" ||
 			args === "selectAction" ||
-			args === "addVectorStoreNode"
+			args === "addVectorStoreNode" ||
+			args === "addQueryNode" ||
+			args === "selectRetrievalCategory"
 		);
 	}
 	return false;

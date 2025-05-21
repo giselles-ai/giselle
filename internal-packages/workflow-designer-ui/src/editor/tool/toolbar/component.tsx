@@ -24,7 +24,7 @@ import {
 	useUsageLimits,
 	useWorkflowDesigner,
 } from "giselle-sdk/react";
-import { WorkflowIcon } from "lucide-react";
+import { DatabaseZapIcon, LucideSearch, WorkflowIcon } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
 import { type ReactNode, useEffect, useState } from "react";
 import {
@@ -58,9 +58,11 @@ import {
 	addNodeTool,
 	fileNode,
 	imageGenerationNode,
+	queryNode,
 	selectActionTool,
 	selectFileNodeCategoryTool,
 	selectLanguageModelTool,
+	selectRetrievalCategoryTool,
 	selectSourceCategoryTool,
 	selectTriggerTool,
 	textGenerationNode,
@@ -466,6 +468,12 @@ export function Toolbar() {
 									break;
 								case "selectAction":
 									setSelectedTool(selectActionTool());
+									break;
+								case "addQueryNode":
+									setSelectedTool(addNodeTool(queryNode()));
+									break;
+								case "selectRetrievalCategory":
+									setSelectedTool(selectRetrievalCategoryTool());
 									break;
 							}
 						}
@@ -1059,6 +1067,59 @@ export function Toolbar() {
 							</div>
 						</div>
 					</ToggleGroup.Item>
+
+					{githubVectorStore && (
+						<ToggleGroup.Item
+							value="selectRetrievalCategory"
+							data-tool
+							className="relative"
+						>
+							<Tooltip text={<TooltipAndHotkey text="Retrieval" hotkey="r" />}>
+								<LucideSearch data-icon />
+							</Tooltip>
+							{selectedTool?.action === "selectRetrievalCategory" && (
+								<Popover.Root open={true}>
+									<Popover.Anchor />
+									<Popover.Portal>
+										<Popover.Content
+											className={clsx(
+												"relative rounded-[8px] px-[8px] py-[8px]",
+												"bg-[hsla(255,_40%,_98%,_0.04)] text-white-900",
+												"backdrop-blur-[4px]",
+											)}
+											sideOffset={42}
+										>
+											<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-border border-transparent" />
+											<div className="relative flex flex-col gap-[8px]">
+												<ToggleGroup.Root
+													type="single"
+													className={clsx(
+														"flex flex-col gap-[8px]",
+														"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
+														"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-white-900/10",
+														"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
+													)}
+													onValueChange={(sourceType) => {
+														switch (sourceType) {
+															case "query":
+																setSelectedTool(addNodeTool(queryNode()));
+																break;
+														}
+													}}
+												>
+													<ToggleGroup.Item value="query" data-tool>
+														<DatabaseZapIcon className="w-[20px] h-[20px]" />
+														<p className="text-[14px]">Query</p>
+													</ToggleGroup.Item>
+												</ToggleGroup.Root>
+											</div>
+										</Popover.Content>
+									</Popover.Portal>
+								</Popover.Root>
+							)}
+						</ToggleGroup.Item>
+					)}
+
 					<ToggleGroup.Item
 						value="selectSourceCategory"
 						data-tool
