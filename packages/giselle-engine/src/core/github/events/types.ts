@@ -51,8 +51,9 @@ export type GitHubEvent =
 			event: "pull_request";
 			payload: PullRequestClosedEvent;
 	  }
+	// Extended type to support new events without full type checking
 	| {
-			type: GitHubEventType.PULL_REQUEST_COMMENT_CREATED;
-			event: "pull_request_review_comment";
-			payload: PullRequestCommentCreatedEvent;
+			type: string;
+			event: string;
+			payload: any;
 	  };

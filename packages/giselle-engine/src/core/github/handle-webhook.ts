@@ -25,6 +25,7 @@ import {
 	GitHubEventType,
 	determineGitHubEvent,
 } from "./events";
+import { GitHubEventTypeExtensions } from "./events/augment";
 import {
 	type Command,
 	getWorkspaceGitHubIntegrationRepositorySettings,
@@ -402,7 +403,7 @@ function buildPullRequestCommentInputs(
 	payloads: readonly ("body" | "pullRequestBody" | "pullRequestNumber" | "pullRequestTitle")[],
 	callsign: string,
 ): GenerationInput[] | null {
-	if (githubEvent.type !== GitHubEventType.PULL_REQUEST_COMMENT_CREATED) {
+	if (githubEvent.type !== GitHubEventTypeExtensions.PULL_REQUEST_COMMENT_CREATED) {
 		return null;
 	}
 
@@ -657,7 +658,7 @@ export function isMatchingIntegrationSetting(
 			);
 		case "github.pull_request_comment.created":
 			return (
-				event.type === GitHubEventType.PULL_REQUEST_COMMENT_CREATED &&
+				event.type === GitHubEventTypeExtensions.PULL_REQUEST_COMMENT_CREATED &&
 				setting.callsign !== null &&
 				setting.callsign === command?.callsign
 			);
@@ -710,6 +711,13 @@ async function handleReaction(
 					event.payload.pull_request.number,
 				);
 			}
+			break;
+		case GitHubEventTypeExtensions.PULL_REQUEST_COMMENT_CREATED:
+			await options?.addReactionToComment?.(
+				event.payload.repository.owner.login,
+				event.payload.repository.name,
+				event.payload.comment.id,
+			);
 			break;
 		case GitHubEventType.PULL_REQUEST_COMMENT_CREATED:
 			await options?.addReactionToComment?.(

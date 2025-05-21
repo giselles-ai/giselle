@@ -7,6 +7,7 @@ import type {
 	PullRequestOpenedEvent,
 	PullRequestReadyForReviewEvent,
 } from "@octokit/webhooks-types";
+import { GitHubEventTypeExtensions } from "./augment";
 import { type GitHubEvent, GitHubEventType } from "./types";
 
 function isIssueCommentCreatedPayload(
@@ -199,7 +200,7 @@ export function determineGitHubEvent(
 
 	if (isPullRequestCommentCreatedPayload(event, payload)) {
 		return {
-			type: GitHubEventType.PULL_REQUEST_COMMENT_CREATED,
+			type: GitHubEventTypeExtensions.PULL_REQUEST_COMMENT_CREATED as any,
 			event: "pull_request_review_comment",
 			payload,
 		};
