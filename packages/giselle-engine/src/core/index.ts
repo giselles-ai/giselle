@@ -16,7 +16,6 @@ import type {
 	WorkspaceGitHubIntegrationSetting,
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
-import { getRepositoryFullname } from "@giselle-sdk/github-tool";
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";
 import { removeFile, uploadFile } from "./files";
 import {
@@ -47,6 +46,7 @@ import {
 	upsertGithubIntegrationSetting,
 } from "./github";
 import { executeAction } from "./operations";
+import { executeQuery } from "./operations/execute-query";
 import { addRun, runApi, startRun } from "./runs";
 import type { GiselleEngineConfig, GiselleEngineContext } from "./types";
 import {
@@ -229,6 +229,9 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		}) => runFlow({ ...args, context }),
 		handleGitHubWebhookV2: async (args: { request: Request }) =>
 			handleGitHubWebhookV2({ ...args, context }),
+		executeQuery: async (args: {
+			generation: QueuedGeneration;
+		}) => executeQuery({ ...args, context }),
 	};
 }
 

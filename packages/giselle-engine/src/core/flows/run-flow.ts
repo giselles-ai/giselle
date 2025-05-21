@@ -8,6 +8,7 @@ import {
 import { buildWorkflowFromNode } from "@giselle-sdk/workflow-utils";
 import { generateImage, generateText } from "../generations";
 import { executeAction } from "../operations";
+import { executeQuery } from "../operations/execute-query";
 import type { GiselleEngineContext } from "../types";
 import { getWorkspace } from "../workspaces/utils";
 import { resolveTrigger } from "./resolve-trigger";
@@ -87,6 +88,12 @@ export async function runFlow(args: {
 					}
 					case "trigger":
 						await resolveTrigger({
+							context: args.context,
+							generation,
+						});
+						break;
+					case "query":
+						await executeQuery({
 							context: args.context,
 							generation,
 						});

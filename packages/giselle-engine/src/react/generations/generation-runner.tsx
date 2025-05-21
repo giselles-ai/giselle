@@ -38,6 +38,8 @@ export function GenerationRunner({
 			return <TriggerRunner generation={generation} />;
 		case "action":
 			return <ActionRunner generation={generation} />;
+		case "query":
+			return <QueryRunner generation={generation} />;
 		default: {
 			const _exhaustiveCheck: never =
 				generationContext.operationNode.content.type;
@@ -207,6 +209,37 @@ function ActionRunner({
 			updateGenerationStatusToRunning(generation.id);
 			client
 				.executeAction({
+					generation,
+				})
+				.then(() => {
+					updateGenerationStatusToComplete(generation.id);
+				});
+		});
+	});
+	return null;
+}
+
+function QueryRunner({
+	generation,
+}: {
+	generation: Generation;
+}) {
+	const {
+		updateGenerationStatusToComplete,
+		updateGenerationStatusToRunning,
+		addStopHandler,
+	} = useGenerationRunnerSystem();
+	const client = useGiselleEngine();
+	const stop = () => {};
+	useOnce(() => {
+		if (!isQueuedGeneration(generation)) {
+			return;
+		}
+		addStopHandler(generation.id, stop);
+		client.setGeneration({ generation }).then(() => {
+			updateGenerationStatusToRunning(generation.id);
+			client
+				.executeQuery({
 					generation,
 				})
 				.then(() => {

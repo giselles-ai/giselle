@@ -324,12 +324,10 @@ async function processIntegration(
 			case "github":
 				throw new Error("GitHub nodes are not supported");
 			case "trigger":
-				break;
 			case "action":
-				break;
 			case "vectorStore":
+			case "query":
 				break;
-
 			default: {
 				const _exhaustiveCheck: never = node.content;
 				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
