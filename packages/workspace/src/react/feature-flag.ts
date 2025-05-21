@@ -3,6 +3,7 @@ import { createContext, useContext } from "react";
 export interface FeatureFlagContextValue {
 	flowNode: boolean;
 	runV2: boolean;
+	githubVectorStore: boolean;
 }
 export const FeatureFlagContext = createContext<
 	FeatureFlagContextValue | undefined

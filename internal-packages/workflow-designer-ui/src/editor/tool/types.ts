@@ -4,7 +4,6 @@ import type {
 	Node,
 	TextGenerationLanguageModelData,
 } from "@giselle-sdk/data-type";
-import type { LanguageModel } from "@giselle-sdk/language-model";
 
 interface ToolBase {
 	category: string;
@@ -67,6 +66,10 @@ export interface AddGitHubNodeTool extends ToolBase {
 	category: "edit";
 	action: "addGitHubNode";
 }
+export interface AddVectorStoreNodeTool extends ToolBase {
+	category: "edit";
+	action: "addVectorStoreNode";
+}
 export type Tool =
 	| AddTextNodeTool
 	| AddFileNodeTool
@@ -78,7 +81,8 @@ export type Tool =
 	| SelectLanguageModelTool
 	| SelectSourceCategoryTool
 	| SelectTriggerTool
-	| SelectEnviromentActionTool;
+	| SelectEnviromentActionTool
+	| AddVectorStoreNodeTool;
 
 type ToolAction = Tool["action"];
 
@@ -94,7 +98,8 @@ export function isToolAction(args: unknown): args is ToolAction {
 			args === "selectFileNodeCategory" ||
 			args === "selectSourceCategory" ||
 			args === "selectTrigger" ||
-			args === "selectAction"
+			args === "selectAction" ||
+			args === "addVectorStoreNode"
 		);
 	}
 	return false;

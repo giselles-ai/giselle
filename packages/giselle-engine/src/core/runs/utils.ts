@@ -266,6 +266,7 @@ export function overrideGenerationTemplate(
 					break;
 				case "trigger":
 				case "action":
+				case "vectorStore":
 					break;
 				default: {
 					const _exhaustiveCheck: never = sourceNode.content;

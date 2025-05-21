@@ -16,6 +16,7 @@ export default async function Layout({
 			featureFlag={{
 				flowNode: true,
 				runV2: true,
+				githubVectorStore: true,
 			}}
 		>
 			{children}

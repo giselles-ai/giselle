@@ -605,6 +605,8 @@ async function processIntegration(
 				break;
 			case "action":
 				break;
+			case "vectorStore":
+				break;
 
 			default: {
 				const _exhaustiveCheck: never = node.content;
