@@ -65,3 +65,30 @@ export type EmbeddingTransformer<LoaderMetadataType, StoreDataType> = (
 	baseEmbedding: BaseEmbedding,
 	metadata: LoaderMetadataType,
 ) => StoreDataType;
+
+export type RecordValue = string | number | boolean | null | undefined;
+export type MetadataType = Record<string, RecordValue>;
+export interface QueryResult<M extends MetadataType> {
+	chunk: ChunkResult;
+	score: number;
+	metadata: M;
+}
+
+/**
+ * Parameters for the QueryFunction
+ */
+export type QueryFunctionParams<F = Record<string, RecordValue>> = {
+	embedding: number[];
+	limit: number;
+	similarityThreshold?: number; // Optional: Threshold for similarity score
+	filters: F; // Application-specific filters
+	sortOrder?: "asc" | "desc"; // Optional: Sort order for similarity score
+};
+
+/**
+ * The function provided by the application to query the vector store.
+ */
+export type QueryFunction<
+	M extends MetadataType,
+	F = Record<string, RecordValue>,
+> = (params: QueryFunctionParams<F>) => Promise<QueryResult<M>[]>;
