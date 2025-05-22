@@ -1079,6 +1079,22 @@ importers:
         specifier: 'catalog:'
         version: 3.1.4(@types/debug@4.1.12)(@types/node@22.15.3)(jiti@2.4.2)(jsdom@26.0.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.29.1)(terser@5.39.0)(yaml@2.7.0)
 
+  packages/node-utils:
+    dependencies:
+      '@giselle-sdk/data-type':
+        specifier: workspace:*
+        version: link:../data-type
+      '@giselle-sdk/flow':
+        specifier: workspace:*
+        version: link:../flow
+    devDependencies:
+      '@giselle/giselle-sdk-tsconfig':
+        specifier: workspace:*
+        version: link:../../tools/tsconfig
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.4.2)(postcss@8.5.1)(typescript@5.7.3)(yaml@2.7.0)
+
   packages/rag:
     dependencies:
       '@ai-sdk/openai':
@@ -1151,9 +1167,9 @@ importers:
       '@giselle-sdk/data-type':
         specifier: workspace:^
         version: link:../data-type
-      '@giselle-sdk/workflow-utils':
+      '@giselle-sdk/node-utils':
         specifier: workspace:^
-        version: link:../workflow-utils
+        version: link:../node-utils
       '@tiptap/core':
         specifier: 'catalog:'
         version: 2.11.5(@tiptap/pm@2.11.5)
@@ -8679,10 +8695,6 @@ packages:
   tinyexec@0.3.2:
     resolution: {integrity: sha512-KQQR9yN7R5+OSwaK0XQoj22pwHoTlgYqmUscPYoknOoWCWfj/5/ABTMRi69FrKU5ffPVh5QcFikpWJI/P1ocHA==}
 
-  tinyglobby@0.2.10:
-    resolution: {integrity: sha512-Zc+8eJlFMvgatPZTl6A9L/yht8QqdmUNtURHaKZLmKBE12hNPSrqNkUp2cs3M/UKmNVVAMFQYSjYIVHDjW5zew==}
-    engines: {node: '>=12.0.0'}
-
   tinyglobby@0.2.13:
     resolution: {integrity: sha512-mEwzpUgrLySlveBwEVDMKk5B57bhLPYovRfPAXD5gA/98Opn0rCDj3GtLwFvCvH5RK9uPCExUROW5NjDwvqkxw==}
     engines: {node: '>=12.0.0'}
@@ -12686,7 +12698,7 @@ snapshots:
 
   '@rollup/pluginutils@5.1.4(rollup@3.29.5)':
     dependencies:
-      '@types/estree': 1.0.6
+      '@types/estree': 1.0.7
       estree-walker: 2.0.2
       picomatch: 4.0.2
     optionalDependencies:
@@ -13341,7 +13353,7 @@ snapshots:
 
   '@types/estree-jsx@1.0.5':
     dependencies:
-      '@types/estree': 1.0.6
+      '@types/estree': 1.0.7
 
   '@types/estree@1.0.6': {}
 
@@ -15434,7 +15446,7 @@ snapshots:
 
   is-reference@1.2.1:
     dependencies:
-      '@types/estree': 1.0.6
+      '@types/estree': 1.0.7
 
   is-relative@1.0.0:
     dependencies:
@@ -17724,11 +17736,6 @@ snapshots:
 
   tinyexec@0.3.2: {}
 
-  tinyglobby@0.2.10:
-    dependencies:
-      fdir: 6.4.3(picomatch@4.0.2)
-      picomatch: 4.0.2
-
   tinyglobby@0.2.13:
     dependencies:
       fdir: 6.4.4(picomatch@4.0.2)
@@ -17846,7 +17853,7 @@ snapshots:
       source-map: 0.8.0-beta.0
       sucrase: 3.35.0
       tinyexec: 0.3.2
-      tinyglobby: 0.2.10
+      tinyglobby: 0.2.13
       tree-kill: 1.2.2
     optionalDependencies:
       postcss: 8.5.1
