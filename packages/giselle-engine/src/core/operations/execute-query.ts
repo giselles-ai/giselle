@@ -5,9 +5,11 @@ import {
 	type GenerationOutput,
 	type QueuedGeneration,
 	type RunningGeneration,
+	type VectorStoreNode,
 	type WorkspaceId,
 	isQueryNode,
 } from "@giselle-sdk/data-type";
+import { query as queryRag } from "@giselle-sdk/rag";
 import {
 	setGeneration,
 	setGenerationIndex,
@@ -79,7 +81,9 @@ export async function executeQuery(args: {
 			initialGeneration.context,
 		);
 
-		const datastoreNodes = generationContext.sourceNodes.filter(
+		const query = await resolveQuery(operationNode.content.query);
+
+		const vectorStoreNodes = generationContext.sourceNodes.filter(
 			(node) =>
 				node.type === "variable" &&
 				node.content.type === "vectorStore" &&
@@ -87,9 +91,13 @@ export async function executeQuery(args: {
 					(connection) => connection.outputNode.id === node.id,
 				),
 		);
+		const queryResults = await queryVectorStore(
+			workspaceId,
+			query,
+			context,
+			vectorStoreNodes as VectorStoreNode[],
+		);
 
-		const query = await resolveQuery(operationNode.content.query);
-		const queryResults = await queryVectorStore(query);
 		const outputId = initialGeneration.context.operationNode.outputs.find(
 			(output) => output.accessor === "result",
 		)?.id;
@@ -172,7 +180,56 @@ async function resolveQuery(query: string) {
 	return query;
 }
 
-async function queryVectorStore(query: string) {
-	// TODO: implement query execution
-	return ["hello", "world"];
+async function queryVectorStore(
+	workspaceId: WorkspaceId,
+	query: string,
+	context: GiselleEngineContext,
+	vectorStoreNodes: VectorStoreNode[],
+) {
+	const { vectorStoreQueryFunctions } = context;
+	if (vectorStoreQueryFunctions === undefined) {
+		throw new Error("No vector store query function provided");
+	}
+
+	const results: any[] = [];
+	for (const vectorStoreNode of vectorStoreNodes) {
+		const { content } = vectorStoreNode;
+		const { source } = content;
+		const { provider, state } = source;
+		if (state.status === "unconfigured") {
+			throw new Error("Vector store is not configured");
+		}
+
+		switch (provider) {
+			case "github": {
+				const { github } = vectorStoreQueryFunctions;
+				if (github === undefined) {
+					throw new Error("No github vector store query function provided");
+				}
+				const { owner, repo } = state;
+				const res = await queryRag({
+					question: query,
+					limit: 10,
+					similarityThreshold: 0.2,
+					filters: {
+						workspaceId,
+						owner,
+						repo,
+					},
+					queryFunction: github,
+				});
+				for (const tmp of res) {
+					results.push(JSON.stringify(tmp));
+				}
+				break;
+			}
+			default: {
+				const _exhaustiveCheck: never = provider;
+				throw new Error(
+					`Unsupported vector store provider: ${_exhaustiveCheck}`,
+				);
+			}
+		}
+	}
+	return results;
 }
