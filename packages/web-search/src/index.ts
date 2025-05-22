@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { FirecrawlWebSearchProvider, firecrawlProviderName } from "./firecrawl";
 import { SelfMadeWebSearchProvider, selfMadeProviderName } from "./self-made";
+export { websearch } from "./websearch";
 
 export { scrapeUrl as firecrawlScrapeUrl } from "./firecrawl";
 export { scrapeUrl as selfMadeScrapeUrl } from "./self-made";

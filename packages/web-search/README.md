@@ -19,29 +19,21 @@ pnpm install
 
 ## Usage
 
-### Firecrawl Provider
+### Unified Interface
 
-Requires a Firecrawl API key (`FIRECRAWL_API_KEY` environment variable).
-
-```ts
-import { firecrawlScrapeUrl } from "@giselle-sdk/web-search";
-
-const result = await firecrawlScrapeUrl("https://example.com", ["html", "markdown"]);
-console.log(result.html);      // HTML content
-console.log(result.markdown);  // Markdown content
-```
-
-### SelfMade Provider
-
-No API key required. Uses fetch and Turndown to convert HTML to Markdown.
+Create a web search tool by specifying the provider. Firecrawl requires an API key.
 
 ```ts
-import { selfMadeScrapeUrl } from "@giselle-sdk/web-search";
+import { websearch } from "@giselle-sdk/web-search";
 
-const result = await selfMadeScrapeUrl("https://example.com", ["html", "markdown"]);
-console.log(result.html);      // HTML content
-console.log(result.markdown);  // Markdown content
+const firecrawlTool = websearch({ provider: "firecrawl", apiKey: "fc-..." });
+const selfMadeTool = websearch({ provider: "self-made" });
+
+const result = await firecrawlTool.fetchUrl("https://example.com", ["html"]);
+console.log(result.html); // HTML content
 ```
+
+Provider specific functions `firecrawlScrapeUrl` and `selfMadeScrapeUrl` are still exported if needed.
 
 ## API
 
