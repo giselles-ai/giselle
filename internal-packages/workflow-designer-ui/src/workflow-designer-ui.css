@@ -8,6 +8,12 @@
 	background-color: transparent;
 }
 
+.giselle-workflow-editor .react-flow__pane {
+	border: 0.5px solid rgba(235, 235, 235, 0.15);
+	border-radius: 16px;
+	box-shadow: inset 0 0 40px rgba(200, 200, 200, 0.15);
+}
+
 .giselle-workflow-editor .react-flow__pane.selection {
 	cursor: default;
 }

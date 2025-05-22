@@ -28,32 +28,40 @@ import { useFeatureFlag } from "giselle-sdk/react";
 import { useUsageLimits, useWorkflowDesigner } from "giselle-sdk/react";
 import { WorkflowIcon } from "lucide-react";
 import { Dialog, Popover, ToggleGroup } from "radix-ui";
-import { type ReactNode, useState } from "react";
+import { useEffect, useState } from "react";
+import { Tooltip } from "../../../ui/tooltip";
+import { isToolAction } from "../types";
 import {
 	AnthropicIcon,
 	AudioIcon,
+	CapabilityIcon,
 	DocumentIcon,
 	GenNodeIcon,
 	GenerateImageIcon,
 	GenerateTextIcon,
 	GitHubIcon,
 	GoogleWhiteIcon,
+	ImageGenerationNodeIcon,
 	OpenaiIcon,
 	PdfFileIcon,
 	PerplexityIcon,
 	PictureIcon,
+	ProTag,
 	PromptIcon,
 	SearchIcon,
 	SourceLinkIcon,
 	TextFileIcon,
+	TooltipAndHotkey,
 	TriggerIcon,
 	UploadIcon,
 	VideoIcon,
 	WilliIcon,
-} from "../../../icons";
-import { ImageGenerationNodeIcon } from "../../../icons/node";
-import { Tooltip } from "../../../ui/tooltip";
-import { isToolAction } from "../types";
+} from "./components";
+import {
+	filterModelsByCategory,
+	filterModelsBySearch,
+	getAvailableModels,
+} from "./model-components";
 import {
 	actionNode,
 	addNodeTool,
@@ -70,95 +78,12 @@ import {
 	useToolbar,
 } from "./state";
 
-function TooltipAndHotkey({ text, hotkey }: { text: string; hotkey?: string }) {
-	return (
-		<div className="flex items-center gap-1">
-			<span>{text}</span>
-			{hotkey && (
-				<span className="text-black-400 uppercase ml-1">{hotkey}</span>
-			)}
-		</div>
-	);
-}
-
-function CapabilityIcon({
-	children,
-	icon,
-}: {
-	children: ReactNode;
-	icon?: ReactNode;
-}) {
-	return (
-		<span className="flex gap-[4px] rounded-[20px] border-[1px] border-white-800 px-[8px] py-[2px] text-[12px]">
-			{icon && (
-				<span className="flex items-center scale-90 text-white-950">
-					{icon}
-				</span>
-			)}
-			{children}
-		</span>
-	);
-}
-
-function ProTag() {
-	return (
-		<span className="inline-flex justify-center items-center rounded-[4px] border border-primary-400 px-[2px] py-[0px] text-[11px] leading-tight font-accent font-semibold text-primary-400">
-			Pro
-		</span>
-	);
-}
-
-function LanguageModelListItem({
-	languageModel,
-	...props
-}: Omit<ToggleGroup.ToggleGroupItemProps, "value"> & {
-	languageModel: LanguageModel;
-}) {
-	return (
-		<button
-			{...props}
-			className={clsx(
-				"flex gap-[8px]",
-				"hover:bg-white-850/10 focus:bg-white-850/10 p-[4px] rounded-[4px]",
-				"data-[state=on]:bg-primary-900 focus:outline-none",
-				"**:data-icon:w-[16px] **:data-icon:h-[16px] **:data-icon:text-white-950 ",
-			)}
-		>
-			<div className="flex gap-[12px] items-center">
-				{languageModel.provider === "anthropic" && (
-					<AnthropicIcon className="w-[18px] h-[18px]" data-icon />
-				)}
-				{languageModel.provider === "openai" && (
-					<OpenaiIcon className="w-[18px] h-[18px]" data-icon />
-				)}
-				{languageModel.provider === "google" && (
-					<GoogleWhiteIcon className="w-[18px] h-[18px]" data-icon />
-				)}
-				{languageModel.provider === "perplexity" && (
-					<PerplexityIcon className="w-[18px] h-[18px]" data-icon />
-				)}
-				{languageModel.provider === "fal" && (
-					<ImageGenerationNodeIcon
-						modelId={languageModel.id}
-						className="w-[18px] h-[18px]"
-						data-icon
-					/>
-				)}
-				<div className="flex items-center gap-[8px]">
-					<p className="text-[14px] text-left text-nowrap">
-						{languageModel.id}
-					</p>
-					{languageModel.tier === "pro" && <ProTag />}
-				</div>
-			</div>
-		</button>
-	);
-}
-
 export function Toolbar() {
 	const { setSelectedTool, selectedTool } = useToolbar();
 	const [languageModelMouseHovered, setLanguageModelMouseHovered] =
 		useState<LanguageModel | null>(null);
+	const [searchQuery, setSearchQuery] = useState<string>("");
+	const [selectedCategory, setSelectedCategory] = useState<string>("All");
 	const { llmProviders } = useWorkflowDesigner();
 	const limits = useUsageLimits();
 	const { flowNode } = useFeatureFlag();
@@ -168,6 +93,122 @@ export function Toolbar() {
 		}
 		return hasTierAccess(languageModel, limits.featureTier);
 	};
+
+	const modelsFilteredBySearchOnly = languageModels
+		.filter((model) => llmProviders.includes(model.provider))
+		.filter((model) => filterModelsBySearch(model, searchQuery));
+
+	// Automatically update the category based on search results
+	useEffect(() => {
+		if (searchQuery.trim() === "") return; // Do nothing for empty search queries
+
+		// Aggregate model capabilities from search results
+		const hasTextModels = modelsFilteredBySearchOnly.some((model) =>
+			hasCapability(model, Capability.TextGeneration),
+		);
+		const hasImageModels = modelsFilteredBySearchOnly.some((model) =>
+			hasCapability(model, Capability.ImageGeneration),
+		);
+
+		// Auto-select the category when only one is present
+		if (hasTextModels && !hasImageModels) {
+			setSelectedCategory("Text");
+		} else if (!hasTextModels && hasImageModels) {
+			setSelectedCategory("Image");
+		} else {
+			// Select All when multiple categories are present
+			setSelectedCategory("All");
+		}
+	}, [searchQuery, modelsFilteredBySearchOnly]);
+
+	// Models filtered by both search and category
+	const filteredModels = modelsFilteredBySearchOnly.filter((model) =>
+		filterModelsByCategory(model, selectedCategory),
+	);
+
+	// Recommended models for each provider
+	const openaiModels = getAvailableModels(
+		["gpt-4o", "gpt-4", "gpt-4-turbo"],
+		"openai",
+		llmProviders,
+		languageModels,
+	);
+	const anthropicModels = getAvailableModels(
+		["claude-3-opus-20240229", "claude-3-sonnet-20240229"],
+		"anthropic",
+		llmProviders,
+		languageModels,
+	);
+	const googleModels = getAvailableModels(
+		["gemini-2.5-pro-exp-03-25", "gemini-1.5-pro-latest", "gemini-1.0-pro"],
+		"google",
+		llmProviders,
+		languageModels,
+	);
+
+	// Combine all recommended models
+	const recommendedModels = [
+		...openaiModels.slice(0, 1),
+		...anthropicModels.slice(0, 1),
+		...googleModels.slice(0, 1),
+	];
+
+	// Rendering function for each model button
+	const renderModelButton = (model: LanguageModel) => {
+		return (
+			<button
+				type="button"
+				key={model.id}
+				className="flex gap-[12px] items-center hover:bg-white-850/10 focus:bg-white-850/10 p-[4px] rounded-[4px]"
+				onClick={() => {
+					const languageModelData = {
+						id: model.id,
+						provider: model.provider,
+						configurations: model.configurations,
+					};
+
+					if (isTextGenerationLanguageModelData(languageModelData)) {
+						setSelectedTool(addNodeTool(textGenerationNode(languageModelData)));
+					}
+
+					if (isImageGenerationLanguageModelData(languageModelData)) {
+						setSelectedTool(
+							addNodeTool(imageGenerationNode(languageModelData)),
+						);
+					}
+				}}
+				onMouseEnter={() => setLanguageModelMouseHovered(model)}
+				onMouseLeave={() => setLanguageModelMouseHovered(null)}
+			>
+				<div className="flex items-center">
+					{model.provider === "anthropic" && (
+						<AnthropicIcon className="w-[18px] h-[18px]" data-icon />
+					)}
+					{model.provider === "openai" && (
+						<OpenaiIcon className="w-[18px] h-[18px]" data-icon />
+					)}
+					{model.provider === "google" && (
+						<GoogleWhiteIcon className="w-[18px] h-[18px]" data-icon />
+					)}
+					{model.provider === "perplexity" && (
+						<PerplexityIcon className="w-[18px] h-[18px]" data-icon />
+					)}
+					{model.provider === "fal" && (
+						<ImageGenerationNodeIcon
+							modelId={model.id}
+							className="w-[18px] h-[18px]"
+							data-icon
+						/>
+					)}
+				</div>
+				<div className="flex items-center gap-[8px]">
+					<p className="text-[14px] text-left text-nowrap">{model.id}</p>
+					{model.tier === "pro" && <ProTag />}
+				</div>
+			</button>
+		);
+	};
+
 	return (
 		<div className="relative rounded-[8px] overflow-hidden bg-white-900/10">
 			<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-boarder border-transparent" />
@@ -343,172 +384,219 @@ export function Toolbar() {
 							<GenNodeIcon data-icon />
 						</Tooltip>
 						{selectedTool?.action === "selectLanguageModel" && (
-							<Dialog.Root>
-								<Popover.Root open={true}>
-									<Popover.Anchor />
-									<Popover.Portal>
-										<Popover.Content
-											className={clsx(
-												"relative rounded-[8px] px-[8px] py-[8px] w-[var(--language-model-toggle-group-popover-width)]",
-												"bg-black-900/10 text-white-900",
-												"backdrop-blur-[4px]",
-											)}
-											align="end"
-											sideOffset={42}
-										>
-											<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-boarder border-transparent" />
-											<div className="relative flex flex-col gap-[8px] max-h-[200px] overflow-y-auto">
-												<ToggleGroup.Root
-													type="single"
-													className={clsx("flex flex-col gap-[8px]")}
-													onValueChange={(modelId) => {
-														const languageModel = languageModels.find(
-															(model) => model.id === modelId,
-														);
-														const languageModelData = {
-															id: languageModel?.id,
-															provider: languageModel?.provider,
-															configurations: languageModel?.configurations,
-														};
-														if (
-															isTextGenerationLanguageModelData(
-																languageModelData,
-															)
-														) {
-															setSelectedTool(
-																addNodeTool(
-																	textGenerationNode(languageModelData),
-																),
-															);
-														}
-														if (
-															isImageGenerationLanguageModelData(
-																languageModelData,
-															)
-														) {
-															setSelectedTool(
-																addNodeTool(
-																	imageGenerationNode(languageModelData),
-																),
-															);
-														}
-													}}
-												>
-													{languageModels
-														.filter((languageModel) =>
-															llmProviders.includes(languageModel.provider),
-														)
-														.map((languageModel) =>
-															languageModelAvailable(languageModel) ? (
-																<ToggleGroup.Item
-																	data-tool
-																	value={languageModel.id}
-																	key={languageModel.id}
-																	onMouseEnter={() =>
-																		setLanguageModelMouseHovered(languageModel)
-																	}
-																	onFocus={() =>
-																		setLanguageModelMouseHovered(languageModel)
-																	}
-																	asChild
-																>
-																	<LanguageModelListItem
-																		languageModel={languageModel}
-																	/>
-																</ToggleGroup.Item>
-															) : (
-																<Dialog.Trigger
-																	asChild
-																	key={languageModel.id}
-																	onMouseEnter={() =>
-																		setLanguageModelMouseHovered(languageModel)
-																	}
-																	onFocus={() =>
-																		setLanguageModelMouseHovered(languageModel)
-																	}
-																	data-tool
-																>
-																	<LanguageModelListItem
-																		languageModel={languageModel}
-																	/>
-																</Dialog.Trigger>
-															),
-														)}
-												</ToggleGroup.Root>
-											</div>
-										</Popover.Content>
-									</Popover.Portal>
-								</Popover.Root>
-								<Dialog.Portal>
-									<Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-50" />
-									<Dialog.Content
-										className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[500px] bg-black-900 rounded-[12px] p-[32px] shadow-xl z-50 overflow-hidden border border-black-400 flex flex-col items-start gap-[20px]"
-										onCloseAutoFocus={(e) => {
-											e.preventDefault();
-										}}
+							<Popover.Root open={true}>
+								<Popover.Anchor />
+								<Popover.Portal>
+									<Popover.Content
+										className={clsx(
+											"relative rounded-[8px] px-[8px] py-[8px] w-[var(--language-model-toggle-group-popover-width)]",
+											"bg-black-900/10 text-white-900",
+											"backdrop-blur-[4px]",
+										)}
+										align="end"
+										sideOffset={42}
 									>
-										<Dialog.Title
-											className="text-[20px] font-hubot font-semibold leading-[140%] text-[#B8E8F4] w-full text-center"
-											style={{ textShadow: "0px 0px 10px #0087F6" }}
-										>
-											Upgrade to Pro
-										</Dialog.Title>
-										<Dialog.Description className="text-[#B5C0CA] text-[14px] font-[Geist] font-medium leading-[170%]">
-											Unlock the full power of AI for your projects! With Pro,
-											you'll get:
-										</Dialog.Description>
-										<ul className="text-[#B5C0CA] text-[14px] font-[Geist] font-medium leading-[170%] list-disc pl-[20px] space-y-[12px]">
-											<li>
-												Access to all premium AI models for smarter, faster
-												results
-											</li>
-											<li>
-												$20 of AI usage included (unlimited during our special
-												promotion!)
-											</li>
-											<li>
-												Seamless team collaboration with easy member invites
-											</li>
-											<li>Priority email support when you need it</li>
-										</ul>
-										<p className="text-[#B5C0CA] text-[14px] font-[Geist] font-medium leading-[170%]">
-											Take your development to the next level with advanced AI
-											capabilities that save time and enhance your workflow.
-											Your ideas deserve the best tools!
-										</p>
-										<div className="w-full flex justify-center mt-[8px]">
-											<a
-												className="bg-primary-100 text-black-900 font-hubot border-none rounded-[8px] px-8 py-3 font-semibold text-[16px] hover:opacity-90 transition-opacity"
-												href="/settings/team"
-												target="_blank"
-												rel="noopener noreferrer"
-											>
-												Upgrade
-											</a>
-										</div>
-										<Dialog.Close className="absolute top-[12px] right-[12px] text-white-400 hover:text-white-100">
-											<svg
-												width="24"
-												height="24"
-												viewBox="0 0 24 24"
-												fill="none"
-												xmlns="http://www.w3.org/2000/svg"
-												role="img"
-												aria-label="Close dialog"
-											>
-												<title>Close dialog</title>
-												<path
-													d="M18 6L6 18M6 6L18 18"
-													stroke="currentColor"
-													strokeWidth="2"
-													strokeLinecap="round"
-													strokeLinejoin="round"
+										<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-boarder border-transparent" />
+										<div className="relative flex flex-col gap-[8px] max-h-[280px] overflow-y-auto">
+											{/* Search box */}
+											<div className="flex h-[28px] p-[8px] items-center gap-[11px] self-stretch rounded-[8px] bg-[rgba(222,233,242,0.20)] mx-[4px] mb-[4px]">
+												<div className="text-black-400">
+													<svg
+														width="18"
+														height="18"
+														viewBox="0 0 24 24"
+														fill="none"
+														xmlns="http://www.w3.org/2000/svg"
+														role="img"
+														aria-labelledby="searchIconTitle"
+													>
+														<title id="searchIconTitle">Search Icon</title>
+														<path
+															d="M21 21L15.5 15.5M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
+															stroke="currentColor"
+															strokeWidth="2"
+															strokeLinecap="round"
+															strokeLinejoin="round"
+														/>
+													</svg>
+												</div>
+												<input
+													type="text"
+													placeholder="Search LLM Model..."
+													className="w-full bg-transparent border-none text-white-850 text-[12px] placeholder:text-black-400 focus:outline-none"
+													value={searchQuery}
+													onChange={(e) => setSearchQuery(e.target.value)}
 												/>
-											</svg>
-										</Dialog.Close>
-									</Dialog.Content>
-								</Dialog.Portal>
-							</Dialog.Root>
+											</div>
+
+											{/* Tabs displayed after the search box */}
+											<div className="mx-[4px] mb-[6px]">
+												<div className="flex items-center rounded-md gap-2">
+													<button
+														type="button"
+														className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
+															selectedCategory === "All"
+																? "bg-[#505D7B]"
+																: "hover:bg-[#3A425A]"
+														} text-[#DEE9F2] rounded text-[12px] font-medium leading-[170%]`}
+														onClick={() => setSelectedCategory("All")}
+													>
+														All
+													</button>
+													<button
+														type="button"
+														className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
+															selectedCategory === "Text"
+																? "bg-[#505D7B]"
+																: "hover:bg-[#3A425A]"
+														} text-[#DEE9F2] rounded text-[12px] font-medium leading-[170%]`}
+														onClick={() => setSelectedCategory("Text")}
+													>
+														Text
+													</button>
+													<button
+														type="button"
+														className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
+															selectedCategory === "Image"
+																? "bg-[#505D7B]"
+																: "hover:bg-[#3A425A]"
+														} text-[#DEE9F2] rounded text-[12px] font-medium leading-[170%]`}
+														onClick={() => setSelectedCategory("Image")}
+													>
+														Image
+													</button>
+													<button
+														type="button"
+														className="flex px-[8px] py-0 justify-center items-center gap-[10px] text-black-400 rounded text-[12px] font-medium leading-[170%] opacity-50 cursor-not-allowed"
+													>
+														Video
+													</button>
+													<button
+														type="button"
+														className="flex px-[8px] py-0 justify-center items-center gap-[10px] text-black-400 rounded text-[12px] font-medium leading-[170%] opacity-50 cursor-not-allowed"
+													>
+														Audio
+													</button>
+												</div>
+											</div>
+
+											<div className="mt-[0px] mx-[4px]">
+												{selectedCategory === "All" &&
+													searchQuery.trim() === "" && (
+														<>
+															<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mb-[4px]">
+																Recommended models
+															</p>
+															{/* Display recommended models */}
+															{recommendedModels.length > 0 && (
+																<div className="flex flex-col gap-[4px] mb-[12px]">
+																	{recommendedModels.map(renderModelButton)}
+																</div>
+															)}
+
+															{/* Divider */}
+															<div className="flex my-[12px] mx-auto w-[90%] py-0 flex-col items-center border-b border-[#505D7B]/20" />
+														</>
+													)}
+
+												{/* Flat list of models with filtering applied */}
+												<div className="flex flex-col gap-[4px] max-h-[200px] overflow-y-auto pr-[4px]">
+													{filteredModels.length > 0 ? (
+														filteredModels.map((model) => (
+															<button
+																type="button"
+																key={model.id}
+																className="flex gap-[12px] items-center hover:bg-white-850/10 focus:bg-white-850/10 p-[4px] rounded-[4px]"
+																onClick={() => {
+																	const languageModelData = {
+																		id: model.id,
+																		provider: model.provider,
+																		configurations: model.configurations,
+																	};
+
+																	if (
+																		isTextGenerationLanguageModelData(
+																			languageModelData,
+																		)
+																	) {
+																		setSelectedTool(
+																			addNodeTool(
+																				textGenerationNode(languageModelData),
+																			),
+																		);
+																	}
+
+																	if (
+																		isImageGenerationLanguageModelData(
+																			languageModelData,
+																		)
+																	) {
+																		setSelectedTool(
+																			addNodeTool(
+																				imageGenerationNode(languageModelData),
+																			),
+																		);
+																	}
+																}}
+																onMouseEnter={() =>
+																	setLanguageModelMouseHovered(model)
+																}
+																onMouseLeave={() =>
+																	setLanguageModelMouseHovered(null)
+																}
+															>
+																<div className="flex items-center">
+																	{model.provider === "anthropic" && (
+																		<AnthropicIcon
+																			className="w-[18px] h-[18px]"
+																			data-icon
+																		/>
+																	)}
+																	{model.provider === "openai" && (
+																		<OpenaiIcon
+																			className="w-[18px] h-[18px]"
+																			data-icon
+																		/>
+																	)}
+																	{model.provider === "google" && (
+																		<GoogleWhiteIcon
+																			className="w-[18px] h-[18px]"
+																			data-icon
+																		/>
+																	)}
+																	{model.provider === "perplexity" && (
+																		<PerplexityIcon
+																			className="w-[18px] h-[18px]"
+																			data-icon
+																		/>
+																	)}
+																	{model.provider === "fal" && (
+																		<ImageGenerationNodeIcon
+																			modelId={model.id}
+																			className="w-[18px] h-[18px]"
+																			data-icon
+																		/>
+																	)}
+																</div>
+																<div className="flex items-center gap-[8px]">
+																	<p className="text-[14px] text-left text-nowrap">
+																		{model.id}
+																	</p>
+																	{model.tier === "pro" && <ProTag />}
+																</div>
+															</button>
+														))
+													) : (
+														<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] p-[8px] text-center">
+															No matching models found
+														</p>
+													)}
+												</div>
+											</div>
+										</div>
+									</Popover.Content>
+								</Popover.Portal>
+							</Popover.Root>
 						)}
 						<div className="absolute left-[calc(var(--language-model-detail-panel-width)/2_+_var(--language-model-toggle-group-popover-width)/2_-_var(--language-model-detail-panel-width)/2_+_10px)]">
 							<div className="relative">
@@ -525,7 +613,7 @@ export function Toolbar() {
 											>
 												<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-boarder border-transparent" />
 												<div className="relative text-white-800 h-[200px]">
-													{languageModelMouseHovered && (
+													{languageModelMouseHovered ? (
 														<div className="px-[16px] py-[16px] flex flex-col gap-[24px]">
 															<div className="flex items-start gap-[16px]">
 																<div className="flex items-center shrink-0">
@@ -731,6 +819,12 @@ export function Toolbar() {
 																	</>
 																)}
 															</div>
+														</div>
+													) : (
+														<div className="flex h-full items-center justify-center">
+															<p className="text-[14px] text-black-400">
+																Hover over a model to view details
+															</p>
 														</div>
 													)}
 												</div>

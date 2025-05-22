@@ -13,17 +13,17 @@ export default function Page() {
 	const { view } = useWorkflowDesigner();
 	const searchParams = useSearchParams();
 
-	// URLパラメータからreadOnly状態を取得
+	// Get the readOnly state from URL parameters
 	const isReadOnly = searchParams.get("readOnly") === "true";
 
-	// ロールパラメータも取得（指定がなければデフォルトでviewer）
+	// Retrieve role parameter or default to viewer
 	const userRole = (searchParams.get("role") || "viewer") as
 		| "viewer"
 		| "guest"
 		| "editor"
 		| "owner";
 
-	// readOnlyモードの場合、viewerビューを強制的に表示
+	// Force viewer view when in read-only mode
 	const currentView = isReadOnly ? "viewer" : view;
 
 	return (

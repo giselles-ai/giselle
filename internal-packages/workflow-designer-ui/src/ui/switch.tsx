@@ -21,7 +21,7 @@ export const Switch = ({
 				{label}
 			</label>
 
-			{/* 区切り線 */}
+			{/* Divider */}
 			<div className="flex-grow mx-[12px] h-[1px] bg-black-200/30" />
 
 			<RadixSwitch.Root

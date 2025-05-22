@@ -37,7 +37,8 @@
 		"react-resizable-panels": "catalog:",
 		"rehype-raw": "^7.0.0",
 		"remark-gfm": "^4.0.1",
-		"swr": "catalog:"
+		"swr": "catalog:",
+		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",

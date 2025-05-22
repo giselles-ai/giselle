@@ -158,7 +158,7 @@ export function GenerationView({
 			))}
 			{generation.status !== "completed" &&
 				generation.status !== "cancelled" &&
-				// reasoning部分がない場合のみSpinnerを表示
+				// Show the spinner only when there is no reasoning part
 				!generatedMessages.some((message) =>
 					message.parts?.some(
 						(part) =>

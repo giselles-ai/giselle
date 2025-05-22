@@ -772,6 +772,9 @@ importers:
       swr:
         specifier: 'catalog:'
         version: 2.2.5(react@19.1.0)
+      zod:
+        specifier: 'catalog:'
+        version: 3.24.1
     devDependencies:
       '@types/node':
         specifier: 'catalog:'

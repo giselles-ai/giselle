@@ -259,7 +259,7 @@ export function ProfileEditModal({
 					{/* Avatar Profile Images */}
 					<div className="flex items-center justify-center gap-4 w-full">
 						<div className="flex flex-row gap-4">
-							{/* 左側 - クリックできるアバター */}
+							{/* Left side - clickable avatar */}
 							{initialAvatarUrl && !avatarPreview && (
 								<button
 									type="button"
@@ -281,7 +281,7 @@ export function ProfileEditModal({
 								</button>
 							)}
 
-							{/* 左側 - プレビュー画像 */}
+							{/* Left side - preview image */}
 							{avatarPreview && (
 								<div className="relative w-[80px] h-[80px] rounded-full overflow-hidden border border-primary-100/30">
 									<Image
@@ -295,7 +295,7 @@ export function ProfileEditModal({
 								</div>
 							)}
 
-							{/* 左側 - 画像アイコン（初期アバターがない場合） */}
+							{/* Left side - image icon when no initial avatar */}
 							{!initialAvatarUrl && !avatarPreview && (
 								<button
 									type="button"

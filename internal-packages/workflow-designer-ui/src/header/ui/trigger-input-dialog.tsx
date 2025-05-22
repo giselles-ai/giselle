@@ -4,7 +4,7 @@ import type {
 	GenerationInput,
 	TriggerNode,
 } from "@giselle-sdk/data-type";
-import { type TriggerProvider, githubTriggers } from "@giselle-sdk/flow";
+import type { TriggerProvider, githubTriggers } from "@giselle-sdk/flow";
 import { useGenerationRunnerSystem } from "@giselle-sdk/giselle-engine/react";
 import { buildWorkflowFromNode } from "@giselle-sdk/workflow-utils";
 import { clsx } from "clsx/lite";
@@ -18,6 +18,7 @@ import {
 	useCallback,
 	useMemo,
 } from "react";
+import type { z } from "zod";
 import { useTrigger } from "../../hooks/use-trigger";
 
 export function Button({
@@ -62,6 +63,152 @@ interface Input {
 	required: boolean;
 }
 
+type GithubEventInputMap = {
+	[K in keyof typeof githubTriggers]: {
+		[K2 in keyof z.infer<
+			(typeof githubTriggers)[K]["event"]["payloads"]
+		>]: Omit<Input, "name">;
+	};
+};
+
+// Define the input fields for each GitHub event type
+const githubEventInputs: GithubEventInputMap = {
+	"github.issue.created": {
+		title: {
+			label: "Title",
+			type: "text",
+			required: true,
+		},
+		body: {
+			label: "Body",
+			type: "multiline-text",
+			required: false,
+		},
+	},
+	"github.issue.closed": {
+		title: {
+			label: "Title",
+			type: "text",
+			required: true,
+		},
+		body: {
+			label: "Body",
+			type: "multiline-text",
+			required: false,
+		},
+	},
+	"github.issue_comment.created": {
+		issueNumber: {
+			label: "Issue Number",
+			type: "number",
+			required: true,
+		},
+		issueTitle: {
+			label: "Issue Title",
+			type: "text",
+			required: true,
+		},
+		issueBody: {
+			label: "Issue Body",
+			type: "multiline-text",
+			required: true,
+		},
+		body: {
+			label: "Issue Comment",
+			type: "multiline-text",
+			required: true,
+		},
+	},
+	"github.pull_request_comment.created": {
+		issueNumber: {
+			label: "Pull Request Number",
+			type: "number",
+			required: true,
+		},
+		issueTitle: {
+			label: "Pull Request Title",
+			type: "text",
+			required: true,
+		},
+		issueBody: {
+			label: "Pull Request Body",
+			type: "multiline-text",
+			required: true,
+		},
+		body: {
+			label: "Pull Request Comment",
+			type: "multiline-text",
+			required: true,
+		},
+	},
+	"github.pull_request.ready_for_review": {
+		title: {
+			label: "Title",
+			type: "text",
+			required: true,
+		},
+		body: {
+			label: "Body",
+			type: "multiline-text",
+			required: false,
+		},
+		number: {
+			label: "Number",
+			type: "number",
+			required: true,
+		},
+		pullRequestUrl: {
+			label: "Pull request URL",
+			type: "text",
+			required: true,
+		},
+	},
+	"github.pull_request.closed": {
+		title: {
+			label: "Title",
+			type: "text",
+			required: true,
+		},
+		body: {
+			label: "Body",
+			type: "multiline-text",
+			required: false,
+		},
+		number: {
+			label: "Number",
+			type: "number",
+			required: true,
+		},
+		pullRequestUrl: {
+			label: "Pull request URL",
+			type: "text",
+			required: true,
+		},
+	},
+	"github.pull_request.opened": {
+		title: {
+			label: "Title",
+			type: "text",
+			required: true,
+		},
+		body: {
+			label: "Body",
+			type: "multiline-text",
+			required: false,
+		},
+		number: {
+			label: "Number",
+			type: "number",
+			required: true,
+		},
+		pullRequestUrl: {
+			label: "Pull request URL",
+			type: "text",
+			required: true,
+		},
+	},
+};
+
 export function TriggerInputDialog({
 	node,
 }: {
@@ -71,61 +218,21 @@ export function TriggerInputDialog({
 
 	const { createGeneration, startGeneration } = useGenerationRunnerSystem();
 	const { data } = useWorkflowDesigner();
+
 	const inputs = useMemo<Input[]>(() => {
 		if (trigger === undefined) {
 			return [];
 		}
+
 		switch (trigger.configuration.provider) {
 			case "github": {
-				const githubTrigger = githubTriggers[trigger.configuration.event.id];
-				switch (githubTrigger.event.id) {
-					case "github.issue.created":
-						return [
-							{
-								name: "title",
-								label: "Title",
-								type: "text",
-								required: true,
-							},
-							{
-								name: "body",
-								label: "Body",
-								type: "multiline-text",
-								required: false,
-							},
-						];
-					case "github.issue_comment.created":
-						return [
-							{
-								name: "issueNumber",
-								label: "Issue Number",
-								type: "number",
-								required: true,
-							},
-							{
-								name: "issueTitle",
-								label: "Issue Title",
-								type: "text",
-								required: true,
-							},
-							{
-								name: "issueBody",
-								label: "Issue Body",
-								type: "multiline-text",
-								required: true,
-							},
-							{
-								name: "body",
-								label: "Issue Comment",
-								type: "multiline-text",
-								required: true,
-							},
-						];
-					default: {
-						const _exhaustiveCheck: never = githubTrigger.event;
-						throw new Error(`Unhandled event id: ${_exhaustiveCheck}`);
-					}
-				}
+				const inputDefs = githubEventInputs[trigger.configuration.event.id];
+				return Object.entries(inputDefs).map(([name, def]) => ({
+					name,
+					label: def.label,
+					type: def.type,
+					required: def.required,
+				}));
 			}
 			case "manual": {
 				return trigger.configuration.event.parameters.map((parameter) => ({
