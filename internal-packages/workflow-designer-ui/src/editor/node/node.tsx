@@ -11,6 +11,7 @@ import {
 	TriggerNode,
 	isImageGenerationNode,
 	isTextGenerationNode,
+	isTriggerNode,
 } from "@giselle-sdk/data-type";
 import {
 	Handle,
@@ -24,6 +25,7 @@ import { useNodeGenerations, useWorkflowDesigner } from "giselle-sdk/react";
 import { CheckIcon, SquareIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { useTrigger } from "../../hooks/use-trigger";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
 import { Tooltip } from "../../ui/tooltip";
@@ -128,6 +130,7 @@ export function NodeComponent({
 		nodeId: node.id,
 		origin: { type: "workspace", id: data.id },
 	});
+	const triggerHook = isTriggerNode(node) ? useTrigger(node) : undefined;
 	const [prevGenerationStatus, setPrevGenerationStatus] = useState(
 		currentGeneration?.status,
 	);
@@ -159,6 +162,21 @@ export function NodeComponent({
 		tmp.push({ label: node.id.substring(3, 11), tooltip: "Node ID" });
 		return tmp;
 	}, [node]);
+	const triggerStatusText = useMemo(() => {
+		if (!isTriggerNode(node)) {
+			return undefined;
+		}
+		if (node.content.state.status === "unconfigured") {
+			return { text: "Unconfigured", color: "text-red-900" };
+		}
+		if (triggerHook?.isLoading ?? false) {
+			return { text: "Loading...", color: "text-black-200" };
+		}
+		if (triggerHook?.data?.enable) {
+			return { text: "Enabled", color: "text-green-900" };
+		}
+		return { text: "Disabled", color: "text-red-900" };
+	}, [node, triggerHook]);
 	return (
 		<div
 			data-type={node.type}
@@ -225,6 +243,16 @@ export function NodeComponent({
 							<p className="text-xs font-medium font-hubot">Completed</p>
 							<CheckIcon className="w-4 h-4" />
 						</div>
+					</motion.div>
+				)}
+				{triggerStatusText && (
+					<motion.div
+						className={`absolute top-[-28px] right-0 py-1 px-3 z-10 flex items-center justify-between rounded-t-[16px] ${triggerStatusText.color}`}
+						exit={{ opacity: 0 }}
+					>
+						<p className="text-xs font-medium font-hubot">
+							{triggerStatusText.text}
+						</p>
 					</motion.div>
 				)}
 			</AnimatePresence>
