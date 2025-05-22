@@ -126,6 +126,7 @@ export function createLangfuseTracer({
 				deploymentId: process.env.VERCEL_DEPLOYMENT_ID,
 			}),
 		},
+		sessionId: workspaceId,
 		input: messages,
 		output,
 		tags,
