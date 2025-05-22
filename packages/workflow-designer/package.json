@@ -41,6 +41,7 @@
 		"@giselle-sdk/giselle-engine": "workspace:*",
 		"@giselle-sdk/language-model": "workspace:^",
 		"@giselle-sdk/workflow-utils": "workspace:*",
+		"@giselle-sdk/node-utils": "workspace:*",
 		"@giselle-sdk/text-editor": "workspace:*",
 		"@giselle-sdk/flow": "workspace:*",
 		"react": "catalog:",

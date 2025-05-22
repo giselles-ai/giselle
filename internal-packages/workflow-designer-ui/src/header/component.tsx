@@ -7,10 +7,8 @@ import {
 } from "@giselle-sdk/data-type";
 import type { TriggerProvider } from "@giselle-sdk/flow";
 import { useGenerationRunnerSystem } from "@giselle-sdk/giselle-engine/react";
-import {
-	buildWorkflowFromNode,
-	triggerNodeDefaultName,
-} from "@giselle-sdk/workflow-utils";
+import { triggerNodeDefaultName } from "@giselle-sdk/node-utils";
+import { buildWorkflowFromNode } from "@giselle-sdk/workflow-utils";
 import clsx from "clsx/lite";
 import {
 	ViewState,

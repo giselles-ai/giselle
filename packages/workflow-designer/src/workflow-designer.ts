@@ -10,7 +10,7 @@ import {
 	type Workspace,
 	generateInitialWorkspace,
 } from "@giselle-sdk/data-type";
-import { buildWorkflowMap, defaultName } from "@giselle-sdk/workflow-utils";
+import { buildWorkflowMap } from "@giselle-sdk/workflow-utils";
 import { isSupportedConnection } from "./is-supported-connection";
 import { nodeFactories } from "./node-factories";
 

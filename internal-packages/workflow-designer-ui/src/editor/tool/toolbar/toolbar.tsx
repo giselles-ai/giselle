@@ -22,7 +22,7 @@ import {
 import {
 	actionNodeDefaultName,
 	triggerNodeDefaultName,
-} from "@giselle-sdk/workflow-utils";
+} from "@giselle-sdk/node-utils";
 import clsx from "clsx/lite";
 import { useFeatureFlag } from "giselle-sdk/react";
 import { useUsageLimits, useWorkflowDesigner } from "giselle-sdk/react";

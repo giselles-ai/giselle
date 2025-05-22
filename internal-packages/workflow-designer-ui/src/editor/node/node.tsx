@@ -12,7 +12,7 @@ import {
 	isImageGenerationNode,
 	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
-import { defaultName } from "@giselle-sdk/workflow-utils";
+import { defaultName } from "@giselle-sdk/node-utils";
 import {
 	Handle,
 	type NodeProps,

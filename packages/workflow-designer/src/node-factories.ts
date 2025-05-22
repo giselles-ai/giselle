@@ -36,12 +36,12 @@ import {
 	hasCapability,
 	languageModels,
 } from "@giselle-sdk/language-model";
-import { isJsonContent } from "@giselle-sdk/text-editor";
 import {
 	actionNodeDefaultName,
 	defaultName,
 	triggerNodeDefaultName,
-} from "@giselle-sdk/workflow-utils";
+} from "@giselle-sdk/node-utils";
+import { isJsonContent } from "@giselle-sdk/text-editor";
 import type { JSONContent } from "@tiptap/react";
 
 type OperationNodeContentType = OperationNode["content"]["type"];

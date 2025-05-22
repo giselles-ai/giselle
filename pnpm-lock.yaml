@@ -706,6 +706,9 @@ importers:
       '@giselle-sdk/language-model':
         specifier: workspace:^
         version: link:../../packages/language-model
+      '@giselle-sdk/node-utils':
+        specifier: workspace:^
+        version: link:../../packages/node-utils
       '@giselle-sdk/text-editor':
         specifier: workspace:^
         version: link:../../packages/text-editor
@@ -1302,6 +1305,9 @@ importers:
       '@giselle-sdk/language-model':
         specifier: workspace:^
         version: link:../language-model
+      '@giselle-sdk/node-utils':
+        specifier: workspace:*
+        version: link:../node-utils
       '@giselle-sdk/text-editor':
         specifier: workspace:*
         version: link:../text-editor
@@ -1339,9 +1345,6 @@ importers:
       '@giselle-sdk/data-type':
         specifier: workspace:*
         version: link:../data-type
-      '@giselle-sdk/flow':
-        specifier: workspace:*
-        version: link:../flow
     devDependencies:
       '@giselle/giselle-sdk-tsconfig':
         specifier: workspace:*

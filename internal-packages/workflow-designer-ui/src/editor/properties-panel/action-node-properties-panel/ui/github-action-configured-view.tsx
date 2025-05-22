@@ -9,7 +9,7 @@ import {
 	isTextNode,
 } from "@giselle-sdk/data-type";
 import { githubActionIdToLabel, githubActions } from "@giselle-sdk/flow";
-import { defaultName } from "@giselle-sdk/workflow-utils";
+import { defaultName } from "@giselle-sdk/node-utils";
 import clsx from "clsx/lite";
 import { useGiselleEngine, useWorkflowDesigner } from "giselle-sdk/react";
 import { TrashIcon, TriangleAlert } from "lucide-react";

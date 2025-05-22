@@ -5,8 +5,8 @@ import {
 	type OutputId,
 	type TextGenerationNode,
 } from "@giselle-sdk/data-type";
+import { defaultName } from "@giselle-sdk/node-utils";
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
-import { defaultName } from "@giselle-sdk/workflow-utils";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import pluralize from "pluralize";
 import { useCallback, useMemo } from "react";

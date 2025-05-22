@@ -20,6 +20,7 @@
 		"@giselle-sdk/usage-limits": "workspace:^",
 		"@giselle-sdk/workflow-designer": "workspace:^",
 		"@giselle-sdk/workflow-utils": "workspace:^",
+		"@giselle-sdk/node-utils": "workspace:^",
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
 		"@xyflow/react": "catalog:",
 		"ai": "catalog:",

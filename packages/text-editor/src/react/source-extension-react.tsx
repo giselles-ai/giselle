@@ -1,5 +1,5 @@
 import { Node as GiselleNode } from "@giselle-sdk/data-type";
-import { defaultName } from "@giselle-sdk/workflow-utils";
+import { defaultName } from "@giselle-sdk/node-utils";
 import { type NodeViewProps, NodeViewWrapper, PasteRule } from "@tiptap/react";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import clsx from "clsx/lite";
