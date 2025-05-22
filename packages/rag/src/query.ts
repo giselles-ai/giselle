@@ -16,6 +16,7 @@ type QueryParams<M extends MetadataType, F = Record<string, RecordValue>> = {
 	similarityThreshold?: number;
 	queryFunction: QueryFunction<M, F>;
 };
+
 export async function query<
 	M extends MetadataType,
 	F = Record<string, RecordValue>,
