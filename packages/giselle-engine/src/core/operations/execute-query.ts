@@ -23,16 +23,13 @@ export async function executeQuery(args: {
 
 	const operationNode = initialGeneration.context.operationNode;
 	if (!isQueryNode(operationNode)) {
-		// This case should ideally be caught before reaching executeQuery
-		// or handled by creating a FailedGeneration status immediately.
-		// For now, we'll throw, assuming upstream validation or a more robust error handling strategy.
 		throw new Error("Invalid generation type for executeQuery");
 	}
 
 	const runningGeneration = {
 		...initialGeneration,
 		status: "running",
-		messages: [], // Query execution might not have messages like text generation, adjust as needed
+		messages: [],
 		startedAt: Date.now(),
 	} satisfies RunningGeneration;
 
@@ -93,20 +90,19 @@ export async function executeQuery(args: {
 
 		const query = await resolveQuery(operationNode.content.query);
 		const queryResults = await queryVectorStore(query);
-		const outputs: GenerationOutput[] = [];
 		const outputId = initialGeneration.context.operationNode.outputs.find(
 			(output) => output.accessor === "result",
 		)?.id;
 		if (outputId === undefined) {
 			throw new Error("query-results output not found in operation node");
 		}
-		for (const result of queryResults) {
-			outputs.push({
+		const outputs: GenerationOutput[] = [
+			{
 				type: "generated-text",
-				content: result,
+				content: queryResults.join("\n\n"),
 				outputId,
-			});
-		}
+			},
+		];
 
 		const completedGeneration = {
 			...runningGeneration,
