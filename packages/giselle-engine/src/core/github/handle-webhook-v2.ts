@@ -13,7 +13,15 @@ import { getGitHubRepositoryIntegrationIndex } from "../integrations/utils";
 import type { GiselleEngineContext } from "../types";
 import { parseCommand } from "./utils";
 
-const events: WebhookEventName[] = ["issues.opened", "issue_comment.created"];
+const events: WebhookEventName[] = [
+	"issues.opened",
+	"issues.closed",
+	"issue_comment.created",
+	"pull_request.opened",
+	"pull_request.ready_for_review",
+	"pull_request.closed",
+	"pull_request_review_comment.created",
+];
 
 export async function handleGitHubWebhookV2(args: {
 	context: GiselleEngineContext;
@@ -115,6 +123,7 @@ async function process<TEventName extends WebhookEventName>(args: {
 			} satisfies GitHubAuthConfig;
 
 			let run = false;
+
 			if (
 				ensureWebhookEvent(args.event, "issues.opened") &&
 				trigger.configuration.event.id === "github.issue.created"
@@ -126,6 +135,19 @@ async function process<TEventName extends WebhookEventName>(args: {
 					authConfig,
 				});
 			}
+
+			if (
+				ensureWebhookEvent(args.event, "issues.closed") &&
+				trigger.configuration.event.id === "github.issue.closed"
+			) {
+				run = true;
+				await addReaction({
+					id: args.event.data.payload.issue.node_id,
+					content: "EYES",
+					authConfig,
+				});
+			}
+
 			if (
 				ensureWebhookEvent(args.event, "issue_comment.created") &&
 				trigger.configuration.event.id === "github.issue_comment.created"
@@ -140,6 +162,62 @@ async function process<TEventName extends WebhookEventName>(args: {
 				run = true;
 				await addReaction({
 					id: args.event.data.payload.comment.node_id,
+					content: "EYES",
+					authConfig,
+				});
+			}
+
+			if (
+				ensureWebhookEvent(args.event, "pull_request_review_comment.created") &&
+				trigger.configuration.event.id === "github.pull_request_comment.created"
+			) {
+				const command = parseCommand(args.event.data.payload.comment.body);
+				if (
+					command?.callsign !== trigger.configuration.event.conditions.callsign
+				) {
+					return;
+				}
+
+				run = true;
+				await addReaction({
+					id: args.event.data.payload.comment.node_id,
+					content: "EYES",
+					authConfig,
+				});
+			}
+
+			if (
+				ensureWebhookEvent(args.event, "pull_request.opened") &&
+				trigger.configuration.event.id === "github.pull_request.opened"
+			) {
+				run = true;
+				await addReaction({
+					id: args.event.data.payload.pull_request.node_id,
+					content: "EYES",
+					authConfig,
+				});
+			}
+
+			if (
+				ensureWebhookEvent(args.event, "pull_request.ready_for_review") &&
+				trigger.configuration.event.id ===
+					"github.pull_request.ready_for_review"
+			) {
+				run = true;
+				await addReaction({
+					id: args.event.data.payload.pull_request.node_id,
+					content: "EYES",
+					authConfig,
+				});
+			}
+
+			if (
+				ensureWebhookEvent(args.event, "pull_request.closed") &&
+				trigger.configuration.event.id === "github.pull_request.closed"
+			) {
+				run = true;
+				await addReaction({
+					id: args.event.data.payload.pull_request.node_id,
 					content: "EYES",
 					authConfig,
 				});
