@@ -62,6 +62,7 @@
 		"@giselle-sdk/flow": "workspace:^",
 		"@giselle-sdk/github-tool": "workspace:^",
 		"@giselle-sdk/language-model": "workspace:^",
+		"@giselle-sdk/rag": "workspace:^",
 		"@giselle-sdk/telemetry": "workspace:^",
 		"@giselle-sdk/text-editor": "workspace:^",
 		"@giselle-sdk/usage-limits": "workspace:^",

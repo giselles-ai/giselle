@@ -4,6 +4,7 @@ import type {
 	GitHubPersonalAccessTokenAuth,
 } from "@giselle-sdk/github-tool";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
+import type { QueryFunction, QueryFunctionParams } from "@giselle-sdk/rag";
 import type { UsageLimits } from "@giselle-sdk/usage-limits";
 import type { Storage } from "unstorage";
 import type { Vault } from "./vault";
@@ -22,6 +23,9 @@ export interface GiselleEngineContext {
 		waitForFlushFn?: () => Promise<unknown>;
 	};
 	vault?: Vault;
+	vectorStoreQueryFunctions?: {
+		github?: GitHubVectorStoreQueryFunction;
+	};
 }
 
 interface GitHubInstalltionAppAuthResolver {
@@ -57,6 +61,24 @@ export type FetchUsageLimitsFn = (
 	workspaceId: WorkspaceId,
 ) => Promise<UsageLimits>;
 
+export type GithubEmbeddingMetadata = {
+	commitSha: string;
+	fileSha: string;
+	path: string;
+	nodeId: string;
+};
+export type GitHubEmbeddingFilter = {
+	workspaceId: WorkspaceId;
+	owner: string;
+	repo: string;
+};
+export type GitHubVectorStoreQueryFunctionParams =
+	QueryFunctionParams<GitHubEmbeddingFilter>;
+export type GitHubVectorStoreQueryFunction = QueryFunction<
+	GithubEmbeddingMetadata,
+	GitHubEmbeddingFilter
+>;
+
 export interface GiselleEngineConfig {
 	storage: Storage;
 	sampleAppWorkspaceId?: WorkspaceId;
@@ -69,4 +91,7 @@ export interface GiselleEngineConfig {
 	};
 	fetchUsageLimitsFn?: FetchUsageLimitsFn;
 	vault?: Vault;
+	vectorStoreQueryFunctions?: {
+		github: GitHubVectorStoreQueryFunction;
+	};
 }

@@ -905,6 +905,9 @@ importers:
       '@giselle-sdk/language-model':
         specifier: workspace:^
         version: link:../language-model
+      '@giselle-sdk/rag':
+        specifier: workspace:^
+        version: link:../rag
       '@giselle-sdk/telemetry':
         specifier: workspace:^
         version: link:../telemetry
