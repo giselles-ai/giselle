@@ -20,21 +20,31 @@ export async function handleGitHubWebhookV2(args: {
 	if (credentials === undefined) {
 		throw new Error("GitHub credentials not found");
 	}
+	const events: WebhookEventName[] = ["issues.opened", "issue_comment.created"];
+
+	const dispatch = async (
+		event: WebhookEvent<WebhookEventName>,
+	): Promise<void> =>
+		process({
+			event,
+			context: args.context,
+		});
+
+	const handlers: Partial<
+		Record<
+			WebhookEventName,
+			(event: WebhookEvent<WebhookEventName>) => Promise<void>
+		>
+	> = {};
+	for (const eventName of events) {
+		// biome-ignore lint: lint/suspicious/noExplicitAny: Casting to match handler type
+		handlers[eventName] = dispatch as any;
+	}
+
 	await handleWebhook({
 		secret: credentials.webhookSecret,
 		request: args.request,
-		on: {
-			"issues.opened": (event) =>
-				process({
-					event,
-					context: args.context,
-				}),
-			"issue_comment.created": (event) =>
-				process({
-					event,
-					context: args.context,
-				}),
-		},
+		on: handlers,
 	});
 }
 
