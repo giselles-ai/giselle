@@ -1,15 +1,19 @@
 import {
 	type Connection,
-	type ImageGenerationNode,
 	type Input,
 	InputId,
 	OutputId,
+	type QueryNode,
 } from "@giselle-sdk/data-type";
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
-import { CheckIcon, DatabaseZapIcon, TrashIcon } from "lucide-react";
-import pluralize from "pluralize";
+import {
+	CheckIcon,
+	DatabaseZapIcon,
+	TrashIcon,
+	WorkflowIcon,
+} from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
 import {
 	type ComponentProps,
@@ -21,8 +25,8 @@ import {
 import {
 	GeneratedContentIcon,
 	GitHubIcon,
-	PdfFileIcon,
 	PromptIcon,
+	TriggerIcon,
 } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";
 import {
@@ -76,7 +80,7 @@ function SourceSelect({
 	onValueChange,
 	contentProps,
 }: {
-	node: ImageGenerationNode;
+	node: QueryNode;
 	sources: Source[];
 	onValueChange?: (value: OutputId[]) => void;
 	contentProps?: Omit<
@@ -88,9 +92,9 @@ function SourceSelect({
 	const {
 		generatedSources,
 		textSources,
-		fileSources,
-		githubSources,
-		querySources,
+		datastoreSources,
+		actionSources,
+		triggerSources,
 	} = useSourceCategories(sources);
 	const { isSupportedConnection } = useWorkflowDesigner();
 	const isSupported = useCallback(
@@ -163,6 +167,20 @@ function SourceSelect({
 							<div className="border-t border-black-300/20" />
 						</div>
 						<div className="grow flex flex-col pb-[8px] gap-[8px] overflow-y-auto min-h-0">
+							{datastoreSources.length > 0 && (
+								<div className="flex flex-col px-[8px]">
+									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
+										Datastore
+									</p>
+									{datastoreSources.map((datastoreSource) => (
+										<SourceToggleItem
+											key={datastoreSource.output.id}
+											source={datastoreSource}
+											disabled={!isSupported(datastoreSource)}
+										/>
+									))}
+								</div>
+							)}
 							{generatedSources.length > 0 && (
 								<div className="flex flex-col px-[8px]">
 									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
@@ -192,44 +210,30 @@ function SourceSelect({
 								</div>
 							)}
 
-							{fileSources.length > 0 && (
+							{actionSources.length > 0 && (
 								<div className="flex flex-col px-[8px]">
 									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
-										File
+										Action
 									</p>
-									{fileSources.map((fileSource) => (
+									{actionSources.map((actionSource) => (
 										<SourceToggleItem
-											key={fileSource.output.id}
-											source={fileSource}
-											disabled={!isSupported(fileSource)}
+											key={actionSource.output.id}
+											source={actionSource}
+											disabled={!isSupported(actionSource)}
 										/>
 									))}
 								</div>
 							)}
-							{githubSources.length > 0 && (
+							{triggerSources.length > 0 && (
 								<div className="flex flex-col px-[8px]">
 									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
-										GitHub
+										Trigger
 									</p>
-									{githubSources.map((githubSource) => (
+									{triggerSources.map((triggerSource) => (
 										<SourceToggleItem
-											key={githubSource.output.id}
-											source={githubSource}
-											disabled={!isSupported(githubSource)}
-										/>
-									))}
-								</div>
-							)}
-							{querySources.length > 0 && (
-								<div className="flex flex-col px-[8px]">
-									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
-										Query
-									</p>
-									{querySources.map((querySource) => (
-										<SourceToggleItem
-											key={querySource.output.id}
-											source={querySource}
-											disabled={!isSupported(querySource)}
+											key={triggerSource.output.id}
+											source={triggerSource}
+											disabled={!isSupported(triggerSource)}
 										/>
 									))}
 								</div>
@@ -313,19 +317,19 @@ function SourceListItem({
 }
 
 export function InputPanel({
-	node: imageGenerationNode,
+	node: queryNode,
 }: {
-	node: ImageGenerationNode;
+	node: QueryNode;
 }) {
 	const { data, addConnection, deleteConnection, updateNodeData } =
 		useWorkflowDesigner();
 	const sources = useMemo<Source[]>(() => {
 		const tmpSources: Source[] = [];
 		const connections = data.connections.filter(
-			(connection) => connection.inputNode.id === imageGenerationNode.id,
+			(connection) => connection.inputNode.id === queryNode.id,
 		);
 		for (const node of data.nodes) {
-			if (node.id === imageGenerationNode.id) {
+			if (node.id === queryNode.id) {
 				continue;
 			}
 			for (const output of node.outputs) {
@@ -340,15 +344,13 @@ export function InputPanel({
 			}
 		}
 		return tmpSources;
-	}, [data.nodes, data.connections, imageGenerationNode.id]);
-	const connectedSources = useConnectedSources(imageGenerationNode);
+	}, [data.nodes, data.connections, queryNode.id]);
+	const connectedSources = useConnectedSources(queryNode);
 
 	const handleConnectionChange = useCallback(
 		(connectOutputIds: OutputId[]) => {
 			const currentConnectedOutputIds = data.connections
-				.filter(
-					(connection) => connection.inputNode.id === imageGenerationNode.id,
-				)
+				.filter((connection) => connection.inputNode.id === queryNode.id)
 				.map((connection) => connection.outputId);
 			const newConnectOutputIdSet = new Set(connectOutputIds);
 			const currentConnectedOutputIdSet = new Set(currentConnectedOutputIds);
@@ -356,7 +358,7 @@ export function InputPanel({
 				currentConnectedOutputIdSet,
 			);
 
-			let mutableInputs = imageGenerationNode.inputs;
+			let mutableInputs = queryNode.inputs;
 			for (const outputId of addedOutputIdSet) {
 				const outputNode = data.nodes.find((node) =>
 					node.outputs.some((output) => output.id === outputId),
@@ -372,11 +374,11 @@ export function InputPanel({
 				};
 
 				mutableInputs = [...mutableInputs, newInput];
-				updateNodeData(imageGenerationNode, {
+				updateNodeData(queryNode, {
 					inputs: mutableInputs,
 				});
 				addConnection({
-					inputNode: imageGenerationNode,
+					inputNode: queryNode,
 					inputId: newInput.id,
 					outputId,
 					outputNode: outputNode,
@@ -390,7 +392,7 @@ export function InputPanel({
 			for (const outputId of removedOutputIdSet) {
 				const connection = data.connections.find(
 					(connection) =>
-						connection.inputNode.id === imageGenerationNode.id &&
+						connection.inputNode.id === queryNode.id &&
 						connection.outputId === outputId,
 				);
 				if (connection === undefined) {
@@ -401,13 +403,13 @@ export function InputPanel({
 				mutableInputs = mutableInputs.filter(
 					(input) => input.id !== connection.inputId,
 				);
-				updateNodeData(imageGenerationNode, {
+				updateNodeData(queryNode, {
 					inputs: mutableInputs,
 				});
 			}
 		},
 		[
-			imageGenerationNode,
+			queryNode,
 			data.nodes,
 			data.connections,
 			addConnection,
@@ -419,16 +421,16 @@ export function InputPanel({
 	const handleRemove = useCallback(
 		(connection: Connection) => {
 			deleteConnection(connection.id);
-			updateNodeData(imageGenerationNode, {
-				inputs: imageGenerationNode.inputs.filter(
+			updateNodeData(queryNode, {
+				inputs: queryNode.inputs.filter(
 					(input) => input.id !== connection.inputId,
 				),
 			});
 		},
-		[imageGenerationNode, deleteConnection, updateNodeData],
+		[queryNode, deleteConnection, updateNodeData],
 	);
 
-	if (imageGenerationNode.inputs.length === 0) {
+	if (queryNode.inputs.length === 0) {
 		return (
 			<div className="mt-[60px]">
 				<EmptyState
@@ -436,7 +438,7 @@ export function InputPanel({
 					description="Select the data you want to refer to from the output and the information and knowledge you have."
 				>
 					<SourceSelect
-						node={imageGenerationNode}
+						node={queryNode}
 						sources={sources}
 						onValueChange={handleConnectionChange}
 					/>
@@ -448,7 +450,7 @@ export function InputPanel({
 		<div>
 			<div className="flex justify-end">
 				<SourceSelect
-					node={imageGenerationNode}
+					node={queryNode}
 					sources={sources}
 					onValueChange={handleConnectionChange}
 					contentProps={{
@@ -457,6 +459,21 @@ export function InputPanel({
 				/>
 			</div>
 			<div className="flex flex-col gap-[32px]">
+				{connectedSources.datastore.length > 0 && (
+					<SourceListRoot title="Datastore Sources">
+						{connectedSources.datastore.map((source) => (
+							<SourceListItem
+								icon={
+									<DatabaseZapIcon className="size-[24px] text-white-900" />
+								}
+								key={source.connection.id}
+								title={`${source.node.name ?? "Datastore"} / ${source.output.label}`}
+								subtitle={source.node.content.source.provider}
+								onRemove={() => handleRemove(source.connection)}
+							/>
+						))}
+					</SourceListRoot>
+				)}
 				{connectedSources.generation.length > 0 && (
 					<SourceListRoot title="Generated Sources">
 						{connectedSources.generation.map((source) => (
@@ -467,6 +484,44 @@ export function InputPanel({
 								key={source.connection.id}
 								title={`${source.node.name ?? source.node.content.llm.id} / ${source.output.label}`}
 								subtitle={source.node.content.llm.provider}
+								onRemove={() => handleRemove(source.connection)}
+							/>
+						))}
+					</SourceListRoot>
+				)}
+				{connectedSources.action.length > 0 && (
+					<SourceListRoot title="Action Sources">
+						{connectedSources.action.map((source) => (
+							<SourceListItem
+								icon={
+									source.node.content.command.provider === "github" ? (
+										<GitHubIcon className="size-[24px] text-white-900" />
+									) : (
+										<WorkflowIcon className="size-[24px] text-white-900" />
+									)
+								}
+								key={source.connection.id}
+								title={`${source.node.name ?? "Action"} / ${source.output.label}`}
+								subtitle={source.node.content.command.provider}
+								onRemove={() => handleRemove(source.connection)}
+							/>
+						))}
+					</SourceListRoot>
+				)}
+				{connectedSources.trigger.length > 0 && (
+					<SourceListRoot title="Trigger Sources">
+						{connectedSources.trigger.map((source) => (
+							<SourceListItem
+								icon={
+									source.node.content.provider === "github" ? (
+										<GitHubIcon className="size-[24px] text-white-900" />
+									) : (
+										<TriggerIcon className="size-[24px] text-white-900" />
+									)
+								}
+								key={source.connection.id}
+								title={`${source.node.name ?? "Trigger"} / ${source.output.label}`}
+								subtitle={source.node.content.provider}
 								onRemove={() => handleRemove(source.connection)}
 							/>
 						))}
@@ -499,18 +554,6 @@ export function InputPanel({
 										/>
 									);
 								}
-								case "file":
-									return (
-										<SourceListItem
-											icon={
-												<PdfFileIcon className="size-[24px] text-white-900" />
-											}
-											key={source.connection.id}
-											title={`${source.node.name ?? "PDF Files"} / ${source.output.label}`}
-											subtitle={`${source.node.content.files.length} ${pluralize("file", source.node.content.files.length)}`}
-											onRemove={() => handleRemove(source.connection)}
-										/>
-									);
 								case "github":
 									return (
 										<SourceListItem
@@ -519,12 +562,23 @@ export function InputPanel({
 											}
 											key={source.connection.id}
 											title={`${source.node.name ?? "GitHub"} / ${source.output.label}`}
-											subtitle={"todo"}
+											subtitle="GitHub"
 											onRemove={() => handleRemove(source.connection)}
 										/>
 									);
 								case "vectorStore":
-									// vector store node can not be connected directly
+									return (
+										<SourceListItem
+											icon={
+												<DatabaseZapIcon className="size-[24px] text-white-900" />
+											}
+											key={source.connection.id}
+											title={`${source.node.name ?? "Vector Store"} / ${source.output.label}`}
+											subtitle={`${source.node.content.source.provider} / ${source.node.content.source.state.status}`}
+											onRemove={() => handleRemove(source.connection)}
+										/>
+									);
+								case "file":
 									break;
 								default: {
 									const _exhaustiveCheck: never = source.node.content;
@@ -532,21 +586,6 @@ export function InputPanel({
 								}
 							}
 						})}
-					</SourceListRoot>
-				)}
-				{connectedSources.query.length > 0 && (
-					<SourceListRoot title="Query Sources">
-						{connectedSources.query.map((source) => (
-							<SourceListItem
-								key={source.connection.id}
-								icon={
-									<DatabaseZapIcon className="size-[24px] text-white-900" />
-								}
-								title={`${source.node.name ?? "Query"} / ${source.output.label}`}
-								subtitle=""
-								onRemove={() => handleRemove(source.connection)}
-							/>
-						))}
 					</SourceListRoot>
 				)}
 			</div>

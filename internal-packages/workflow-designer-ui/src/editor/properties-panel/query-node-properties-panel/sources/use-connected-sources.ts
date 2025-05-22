@@ -4,25 +4,26 @@ import type {
 	TextGenerationNode,
 	TriggerNode,
 	VariableNode,
+	VectorStoreNode,
 } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { useMemo } from "react";
-import type { ConnectedOutputWithDetails } from "./types";
+import type { ConnectedSource, DatastoreNode } from "./types";
 
-export function useConnectedOutputs(node: TextGenerationNode) {
+export function useConnectedSources(node: QueryNode) {
 	const { data } = useWorkflowDesigner();
 	return useMemo(() => {
 		const connectionsToThisNode = data.connections.filter(
 			(connection) => connection.inputNode.id === node.id,
 		);
-		const connectedGeneratedInputs: ConnectedOutputWithDetails<TextGenerationNode>[] =
-			[];
-		const connectedActionInputs: ConnectedOutputWithDetails<ActionNode>[] = [];
-		const connectedTriggerInputs: ConnectedOutputWithDetails<TriggerNode>[] =
-			[];
-		const connectedVariableInputs: ConnectedOutputWithDetails<VariableNode>[] =
-			[];
-		const connectedQueryInputs: ConnectedOutputWithDetails<QueryNode>[] = [];
+
+		const connectedDatastoreSources: ConnectedSource<DatastoreNode>[] = [];
+		const connectedActionSources: ConnectedSource<ActionNode>[] = [];
+		const connectedTriggerSources: ConnectedSource<TriggerNode>[] = [];
+		// does not support image generation
+		const connectedGeneratedSources: ConnectedSource<TextGenerationNode>[] = [];
+		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
+
 		for (const connection of connectionsToThisNode) {
 			const node = data.nodes.find(
 				(node) => node.id === connection.outputNode.id,
@@ -41,34 +42,28 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 				case "operation":
 					switch (node.content.type) {
 						case "textGeneration":
-							connectedGeneratedInputs.push({
-								...output,
+							connectedGeneratedSources.push({
+								output,
 								node: node as TextGenerationNode,
 								connection,
 							});
 							break;
 						case "action":
-							connectedActionInputs.push({
-								...output,
+							connectedActionSources.push({
+								output,
 								node: node as ActionNode,
 								connection,
 							});
 							break;
 						case "trigger":
-							connectedTriggerInputs.push({
-								...output,
+							connectedTriggerSources.push({
+								output,
 								node: node as TriggerNode,
 								connection,
 							});
 							break;
 						case "imageGeneration":
-							break;
 						case "query":
-							connectedQueryInputs.push({
-								...output,
-								node: node as QueryNode,
-								connection,
-							});
 							break;
 						default: {
 							const _exhaustiveCheck: never = node.content;
@@ -77,11 +72,29 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 					}
 					break;
 				case "variable":
-					connectedVariableInputs.push({
-						...output,
-						node,
-						connection,
-					});
+					switch (node.content.type) {
+						case "vectorStore":
+							connectedDatastoreSources.push({
+								output,
+								node: node as VectorStoreNode,
+								connection,
+							});
+							break;
+						case "github":
+						case "text":
+							connectedVariableSources.push({
+								output,
+								node,
+								connection,
+							});
+							break;
+						case "file":
+							break;
+						default: {
+							const _exhaustiveCheck: never = node.content;
+							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
+						}
+					}
 					break;
 				default: {
 					const _exhaustiveCheck: never = node;
@@ -92,17 +105,17 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 
 		return {
 			all: [
-				...connectedTriggerInputs,
-				...connectedGeneratedInputs,
-				...connectedActionInputs,
-				...connectedVariableInputs,
-				...connectedQueryInputs,
+				...connectedDatastoreSources,
+				...connectedGeneratedSources,
+				...connectedVariableSources,
+				...connectedActionSources,
+				...connectedTriggerSources,
 			],
-			generation: connectedGeneratedInputs,
-			variable: connectedVariableInputs,
-			action: connectedActionInputs,
-			trigger: connectedTriggerInputs,
-			query: connectedQueryInputs,
+			datastore: connectedDatastoreSources,
+			generation: connectedGeneratedSources,
+			variable: connectedVariableSources,
+			action: connectedActionSources,
+			trigger: connectedTriggerSources,
 		};
 	}, [node.id, data.connections, data.nodes]);
 }

@@ -260,6 +260,7 @@ export function TextGenerationNodePropertiesPanel({
 																}
 																case "trigger":
 																case "action":
+																case "query":
 																	break;
 																default: {
 																	const _exhaustiveCheck: never =
@@ -344,6 +345,7 @@ export function TextGenerationNodePropertiesPanel({
 																}
 																case "trigger":
 																case "action":
+																case "query":
 																	break;
 																default: {
 																	const _exhaustiveCheck: never =

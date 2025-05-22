@@ -8,6 +8,7 @@ import type {
 	ImageGenerationNode,
 	Node,
 	Output,
+	QueryNode,
 	TextGenerationLanguageModelData,
 	TextGenerationNode,
 	TextNode,
@@ -27,6 +28,7 @@ import type {
 	AddFileNodeTool,
 	AddImageGenerationNodeTool,
 	AddNodeTool,
+	AddQueryNodeTool,
 	AddTextGenerationNodeTool,
 	AddTextNodeTool,
 	AddVectorStoreNodeTool,
@@ -34,6 +36,7 @@ import type {
 	SelectEnviromentActionTool,
 	SelectFileNodeCategoryTool,
 	SelectLanguageModelTool,
+	SelectRetrievalCategoryTool,
 	SelectSourceCategoryTool,
 	SelectTriggerTool,
 	Tool,
@@ -154,6 +157,20 @@ export function addVectorStoreNodeTool() {
 	} satisfies AddVectorStoreNodeTool;
 }
 
+export function selectRetrievalCategoryTool() {
+	return {
+		action: "selectRetrievalCategory",
+		category: "edit",
+	} satisfies SelectRetrievalCategoryTool;
+}
+
+export function addQueryNodeTool() {
+	return {
+		action: "addQueryNode",
+		category: "edit",
+	} satisfies AddQueryNodeTool;
+}
+
 export function textNode() {
 	return {
 		id: NodeId.generate(),
@@ -171,6 +188,26 @@ export function textNode() {
 			},
 		],
 	} satisfies TextNode;
+}
+
+export function queryNode(): QueryNode {
+	return {
+		id: NodeId.generate(),
+		type: "operation",
+		name: "Query",
+		content: {
+			type: "query",
+			query: "",
+		},
+		inputs: [],
+		outputs: [
+			{
+				id: OutputId.generate(),
+				label: "Result",
+				accessor: "result",
+			},
+		],
+	};
 }
 
 export function triggerNode(triggerProvider: TriggerProvider) {

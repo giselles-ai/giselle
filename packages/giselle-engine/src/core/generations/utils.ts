@@ -63,7 +63,8 @@ export async function buildMessageObject(
 			);
 		}
 		case "action":
-		case "trigger": {
+		case "trigger":
+		case "query": {
 			return [];
 		}
 		default: {
@@ -186,7 +187,9 @@ async function buildGenerationMessageForTextGeneration(
 
 			case "github":
 			case "imageGeneration":
+			case "query":
 				throw new Error("Not implemented");
+
 			case "trigger":
 			case "action": {
 				const result = await textGenerationResolver(
@@ -604,6 +607,7 @@ async function buildGenerationMessageForImageGeneration(
 			case "imageGeneration":
 			case "trigger":
 			case "action":
+			case "query":
 				throw new Error("Not implemented");
 			case "vectorStore":
 				break;
@@ -795,6 +799,7 @@ export async function checkUsageLimits(args: {
 		}
 		case "trigger":
 		case "action":
+		case "query":
 			return { type: "ok" };
 		default: {
 			const _exhaustiveCheck: never = operationNode.content;
