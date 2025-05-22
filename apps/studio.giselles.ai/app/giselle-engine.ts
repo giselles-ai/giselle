@@ -6,6 +6,7 @@ import { WorkspaceId } from "@giselle-sdk/data-type";
 import { NextGiselleEngine } from "@giselle-sdk/giselle-engine/next";
 import { supabaseVaultDriver } from "@giselle-sdk/supabase-driver";
 import { createStorage } from "unstorage";
+import { queryGithubVectorStore } from "./services/vector-store/";
 
 export const publicStorage = createStorage({
 	driver: supabaseStorageDriver({
@@ -80,4 +81,7 @@ export const giselleEngine = NextGiselleEngine({
 		},
 	},
 	vault,
+	vectorStoreQueryFunctions: {
+		github: queryGithubVectorStore,
+	},
 });
