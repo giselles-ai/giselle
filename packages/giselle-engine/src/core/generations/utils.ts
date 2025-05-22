@@ -65,7 +65,8 @@ export async function buildMessageObject(
 			);
 		}
 		case "action":
-		case "trigger": {
+		case "trigger":
+		case "query": {
 			return [];
 		}
 		default: {
@@ -190,7 +191,9 @@ async function buildGenerationMessageForTextGeneration(
 			case "github":
 			case "imageGeneration":
 			case "vectorStore":
+			case "query":
 				throw new Error("Not implemented");
+
 			case "trigger":
 			case "action": {
 				const result = await textGenerationResolver(
@@ -619,6 +622,7 @@ async function buildGenerationMessageForImageGeneration(
 			case "imageGeneration":
 			case "trigger":
 			case "action":
+			case "query":
 			case "vectorStore":
 				throw new Error("Not implemented");
 
