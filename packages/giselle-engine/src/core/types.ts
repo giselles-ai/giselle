@@ -24,6 +24,9 @@ export interface GiselleEngineContext {
 	};
 	vault?: Vault;
 	userId?: string;
+	vectorStoreQueryFunctions?: {
+		github?: GitHubVectorStoreQueryFunction;
+	};
 }
 
 interface GitHubInstalltionAppAuthResolver {
