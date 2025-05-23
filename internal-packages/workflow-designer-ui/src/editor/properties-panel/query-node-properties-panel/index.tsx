@@ -72,7 +72,7 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 							<span>Stop</span>
 						) : (
 							<>
-								<span>Generate</span>
+								<span>Query</span>
 								<kbd className="flex items-center text-[12px]">
 									<CommandIcon className="size-[12px]" />
 									<CornerDownLeft className="size-[12px]" />
@@ -84,7 +84,7 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 			/>
 
 			<PanelGroup direction="vertical" className="flex-1 flex flex-col">
-				<Panel defaultSize={60} minSize={20}>
+				<Panel defaultSize={50} minSize={20}>
 					<PropertiesPanelContent>
 						<Tabs.Root
 							className="flex flex-col gap-[8px] h-full"
@@ -110,7 +110,7 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 					</PropertiesPanelContent>
 				</Panel>
 				<PanelResizeHandle className="h-[1px] bg-black-700/50 data-[resize-handle-state=drag]:bg-black-600 transition-colors duration-100 ease-in-out" />
-				<Panel defaultSize={40} minSize={20}>
+				<Panel defaultSize={50} minSize={20}>
 					<PropertiesPanelContent>
 						<GenerationPanel node={node} onClickGenerateButton={generate} />
 					</PropertiesPanelContent>
