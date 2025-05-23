@@ -10,7 +10,7 @@ import {
 	SelectValue,
 } from "../../../../ui/select";
 import { Slider } from "../../../../ui/slider";
-import { SearchDomainFilterPanel } from "./search-domain-filter-panel";
+import { SimpleDomainFilter } from "./simple-domain-filter";
 import { languageModelAvailable } from "./utils";
 
 export function PerplexityModelPanel({
@@ -141,7 +141,7 @@ export function PerplexityModelPanel({
 					/>
 				</div>
 			</div>
-			<SearchDomainFilterPanel
+			<SimpleDomainFilter
 				searchDomainFilter={
 					perplexityLanguageModel.configurations.searchDomainFilter || []
 				}
