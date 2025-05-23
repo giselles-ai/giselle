@@ -1,4 +1,3 @@
-import { URL } from "node:url";
 import { type AnthropicProviderOptions, anthropic } from "@ai-sdk/anthropic";
 import { google } from "@ai-sdk/google";
 import { openai } from "@ai-sdk/openai";
@@ -21,18 +20,13 @@ import {
 	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { githubTools, octokit } from "@giselle-sdk/github-tool";
-import { calculateDisplayCost } from "@giselle-sdk/language-model";
 import {
 	Capability,
+	calculateDisplayCost,
 	hasCapability,
 	languageModels,
 } from "@giselle-sdk/language-model";
-import {
-	AISDKError,
-	type ToolSet,
-	appendResponseMessages,
-	streamText,
-} from "ai";
+import { AISDKError, appendResponseMessages, streamText } from "ai";
 import { UsageLimitError } from "../error";
 import { filePath } from "../files/utils";
 import type { GiselleEngineContext } from "../types";
@@ -42,10 +36,8 @@ import type { PreparedToolSet, TelemetrySettings } from "./types";
 import {
 	buildMessageObject,
 	checkUsageLimits,
-	extractWorkspaceIdFromOrigin,
 	getGeneration,
 	getNodeGenerationIndexes,
-	getRedirectedUrlAndTitle,
 	handleAgentTimeConsumption,
 	setGeneration,
 	setGenerationIndex,
@@ -224,6 +216,9 @@ export async function generateText(args: {
 				throw new Error("Generation output type is not supported");
 			case "generated-text":
 				return generationOutput.content;
+			case "query-result":
+				// TODO: format for context
+				throw new Error("Not implemented");
 			default: {
 				const _exhaustiveCheck: never = generationOutput;
 				throw new Error(

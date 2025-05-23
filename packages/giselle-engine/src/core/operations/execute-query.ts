@@ -106,8 +106,8 @@ export async function executeQuery(args: {
 		}
 		const outputs: GenerationOutput[] = [
 			{
-				type: "generated-text",
-				content: queryResults.join("\n\n"),
+				type: "query-result",
+				content: queryResults,
 				outputId,
 			},
 		];
@@ -180,6 +180,23 @@ async function resolveQuery(query: string) {
 	return query;
 }
 
+function isConfiguredVectorStoreNode(
+	vectorStoreNode: VectorStoreNode,
+): vectorStoreNode is VectorStoreNode & {
+	content: {
+		source: {
+			state: {
+				status: "configured";
+			};
+		};
+	};
+} {
+	const { content } = vectorStoreNode;
+	const { source } = content;
+	const { state } = source;
+	return state.status === "configured";
+}
+
 async function queryVectorStore(
 	workspaceId: WorkspaceId,
 	query: string,
@@ -191,45 +208,52 @@ async function queryVectorStore(
 		throw new Error("No vector store query function provided");
 	}
 
-	const results: any[] = [];
-	for (const vectorStoreNode of vectorStoreNodes) {
-		const { content } = vectorStoreNode;
-		const { source } = content;
-		const { provider, state } = source;
-		if (state.status === "unconfigured") {
-			throw new Error("Vector store is not configured");
-		}
+	const results = await Promise.all(
+		vectorStoreNodes
+			.filter(isConfiguredVectorStoreNode)
+			.map(async (vectorStoreNode) => {
+				const { content } = vectorStoreNode;
+				const { source } = content;
+				const { provider, state } = source;
 
-		switch (provider) {
-			case "github": {
-				const { github } = vectorStoreQueryFunctions;
-				if (github === undefined) {
-					throw new Error("No github vector store query function provided");
+				switch (provider) {
+					case "github": {
+						const { github } = vectorStoreQueryFunctions;
+						if (github === undefined) {
+							throw new Error("No github vector store query function provided");
+						}
+						const { owner, repo } = state;
+						const res = await queryRag({
+							question: query,
+							limit: 10,
+							similarityThreshold: 0.2,
+							filters: {
+								workspaceId,
+								owner,
+								repo,
+							},
+							queryFunction: github,
+						});
+						return {
+							type: "vector-store" as const,
+							source,
+							records: res.map((record) => ({
+								chunkContent: record.chunk.content,
+								chunkIndex: record.chunk.index,
+								score: record.score,
+								metadata: record.metadata,
+							})),
+						};
+					}
+					default: {
+						const _exhaustiveCheck: never = provider;
+						throw new Error(
+							`Unsupported vector store provider: ${_exhaustiveCheck}`,
+						);
+					}
 				}
-				const { owner, repo } = state;
-				const res = await queryRag({
-					question: query,
-					limit: 10,
-					similarityThreshold: 0.2,
-					filters: {
-						workspaceId,
-						owner,
-						repo,
-					},
-					queryFunction: github,
-				});
-				for (const tmp of res) {
-					results.push(JSON.stringify(tmp));
-				}
-				break;
-			}
-			default: {
-				const _exhaustiveCheck: never = provider;
-				throw new Error(
-					`Unsupported vector store provider: ${_exhaustiveCheck}`,
-				);
-			}
-		}
-	}
+			}),
+	);
+
 	return results;
 }

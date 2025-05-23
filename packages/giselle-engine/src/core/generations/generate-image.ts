@@ -27,11 +27,9 @@ import {
 	experimental_generateImage as generateImageAiSdk,
 } from "ai";
 import { type ApiMediaContentType, Langfuse, LangfuseMedia } from "langfuse";
-import type { Storage } from "unstorage";
 import { UsageLimitError } from "../error";
 import { filePath } from "../files/utils";
 import type { GiselleEngineContext } from "../types";
-import { generateTelemetryTags } from "./telemetry";
 import type { TelemetrySettings } from "./types";
 import {
 	buildMessageObject,
@@ -197,6 +195,9 @@ export async function generateImage(args: {
 				throw new Error("Generation output type is not supported");
 			case "generated-text":
 				return generationOutput.content;
+			case "query-result":
+				// TODO: format for context
+				throw new Error("Not implemented");
 			default: {
 				const _exhaustiveCheck: never = generationOutput;
 				throw new Error(
