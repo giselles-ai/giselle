@@ -14,11 +14,6 @@
 	"files": ["dist/**/*", "react/dist/**/*"],
 	"exports": {
 		"./package.json": "./package.json",
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.mjs",
-			"require": "./dist/index.js"
-		},
 		"./react": {
 			"types": "./react/dist/index.d.ts",
 			"import": "./react/dist/index.mjs",
@@ -30,33 +25,16 @@
 	"devDependencies": {
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
 		"@types/react": "catalog:",
-		"@types/turndown": "catalog:",
 		"tsup": "catalog:"
 	},
 	"dependencies": {
 		"@giselle-sdk/data-type": "workspace:^",
-		"@tiptap/core": "catalog:",
-		"@tiptap/extension-bold": "catalog:",
-		"@tiptap/extension-bullet-list": "catalog:",
-		"@tiptap/extension-code": "catalog:",
-		"@tiptap/extension-code-block-lowlight": "catalog:",
-		"@tiptap/extension-document": "catalog:",
-		"@tiptap/extension-history": "catalog:",
-		"@tiptap/extension-italic": "catalog:",
-		"@tiptap/extension-list-item": "catalog:",
-		"@tiptap/extension-ordered-list": "catalog:",
-		"@tiptap/extension-paragraph": "catalog:",
-		"@tiptap/extension-strike": "catalog:",
-		"@tiptap/extension-text": "catalog:",
-		"@tiptap/html": "catalog:",
-		"@tiptap/pm": "catalog:",
+		"@giselle-sdk/node-utils": "workspace:^",
+		"@giselle-sdk/text-editor-utils": "workspace:^",
 		"@tiptap/react": "catalog:",
 		"clsx": "catalog:",
-		"highlight.js": "catalog:",
-		"lowlight": "catalog:",
 		"lucide-react": "catalog:",
 		"radix-ui": "catalog:",
-		"react": "catalog:",
-		"turndown": "catalog:"
+		"react": "catalog:"
 	}
 }

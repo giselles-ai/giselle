@@ -10,7 +10,10 @@ import {
 } from "@giselle-sdk/data-type";
 import { githubActions } from "@giselle-sdk/flow";
 import { createIssue, createIssueComment } from "@giselle-sdk/github-tool";
-import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
+import {
+	isJsonContent,
+	jsonContentToText,
+} from "@giselle-sdk/text-editor-utils";
 import type { Storage } from "unstorage";
 import {
 	getGeneration,

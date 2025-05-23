@@ -5,7 +5,10 @@ import {
 	InputId,
 	OutputId,
 } from "@giselle-sdk/data-type";
-import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
+import {
+	isJsonContent,
+	jsonContentToText,
+} from "@giselle-sdk/text-editor-utils";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { CheckIcon, TrashIcon } from "lucide-react";

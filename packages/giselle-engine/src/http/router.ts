@@ -147,6 +147,23 @@ export const createJsonRouters = {
 				return new Response(null, { status: 204 });
 			},
 		}),
+	copyFile: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			input: z.object({
+				workspaceId: WorkspaceId.schema,
+				sourceFileId: FileId.schema,
+				destinationFileId: FileId.schema,
+			}),
+			handler: async ({ input }) => {
+				await giselleEngine.copyFile(
+					input.workspaceId,
+					input.sourceFileId,
+					input.destinationFileId,
+				);
+
+				return new Response(null, { status: 204 });
+			},
+		}),
 	upsertWorkspaceGitHubIntegrationSetting: (giselleEngine: GiselleEngine) =>
 		createHandler({
 			input: z.object({

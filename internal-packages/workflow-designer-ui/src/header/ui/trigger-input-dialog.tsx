@@ -20,7 +20,6 @@ import {
 } from "react";
 import type { z } from "zod";
 import { useTrigger } from "../../hooks/use-trigger";
-import { triggerNodeDefaultName } from "../../utils";
 
 export function Button({
 	leftIcon: LeftIcon,

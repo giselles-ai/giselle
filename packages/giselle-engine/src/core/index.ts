@@ -18,7 +18,7 @@ import type {
 } from "@giselle-sdk/data-type";
 import { getRepositoryFullname } from "@giselle-sdk/github-tool";
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";
-import { removeFile, uploadFile } from "./files";
+import { copyFile, removeFile, uploadFile } from "./files";
 import {
 	type ConfigureTriggerInput,
 	configureTrigger,
@@ -117,6 +117,18 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		},
 		startRun: async (runId: RunId) => {
 			return await startRun({ context, runId });
+		},
+		copyFile: async (
+			workspaceId: WorkspaceId,
+			sourceFileId: FileId,
+			destinationFileId: FileId,
+		) => {
+			return await copyFile({
+				context,
+				workspaceId,
+				sourceFileId,
+				destinationFileId,
+			});
 		},
 		uploadFile: async (
 			file: File,

@@ -19,6 +19,10 @@ import {
 	hasTierAccess,
 	languageModels,
 } from "@giselle-sdk/language-model";
+import {
+	actionNodeDefaultName,
+	triggerNodeDefaultName,
+} from "@giselle-sdk/node-utils";
 import clsx from "clsx/lite";
 import { useFeatureFlag } from "giselle-sdk/react";
 import { useUsageLimits, useWorkflowDesigner } from "giselle-sdk/react";
@@ -26,7 +30,6 @@ import { WorkflowIcon } from "lucide-react";
 import { Dialog, Popover, ToggleGroup } from "radix-ui";
 import { useEffect, useState } from "react";
 import { Tooltip } from "../../../ui/tooltip";
-import { actionNodeDefaultName, triggerNodeDefaultName } from "../../../utils";
 import { isToolAction } from "../types";
 import {
 	AnthropicIcon,

@@ -108,10 +108,10 @@ catalogs:
     '@tiptap/html':
       specifier: 2.11.5
       version: 2.11.5
-    '@tiptap/pm':
+    '@tiptap/react':
       specifier: 2.11.5
       version: 2.11.5
-    '@tiptap/react':
+    '@tiptap/starter-kit':
       specifier: 2.11.5
       version: 2.11.5
     '@turbo/gen':
@@ -712,9 +712,15 @@ importers:
       '@giselle-sdk/language-model':
         specifier: workspace:^
         version: link:../../packages/language-model
+      '@giselle-sdk/node-utils':
+        specifier: workspace:^
+        version: link:../../packages/node-utils
       '@giselle-sdk/text-editor':
         specifier: workspace:^
         version: link:../../packages/text-editor
+      '@giselle-sdk/text-editor-utils':
+        specifier: workspace:^
+        version: link:../../packages/text-editor-utils
       '@giselle-sdk/usage-limits':
         specifier: workspace:^
         version: link:../../packages/usage-limits
@@ -899,9 +905,9 @@ importers:
       '@giselle-sdk/telemetry':
         specifier: workspace:^
         version: link:../telemetry
-      '@giselle-sdk/text-editor':
+      '@giselle-sdk/text-editor-utils':
         specifier: workspace:^
-        version: link:../text-editor
+        version: link:../text-editor-utils
       '@giselle-sdk/usage-limits':
         specifier: workspace:^
         version: link:../usage-limits
@@ -1085,6 +1091,31 @@ importers:
         specifier: 'catalog:'
         version: 3.1.4(@types/debug@4.1.12)(@types/node@22.15.3)(jiti@2.4.2)(jsdom@26.0.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.29.1)(terser@5.39.0)(yaml@2.7.0)
 
+  packages/node-utils:
+    dependencies:
+      '@giselle-sdk/data-type':
+        specifier: workspace:*
+        version: link:../data-type
+      '@giselle-sdk/flow':
+        specifier: workspace:*
+        version: link:../flow
+      '@giselle-sdk/language-model':
+        specifier: workspace:*
+        version: link:../language-model
+      '@giselle-sdk/text-editor-utils':
+        specifier: workspace:*
+        version: link:../text-editor-utils
+      '@tiptap/react':
+        specifier: 'catalog:'
+        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+    devDependencies:
+      '@giselle/giselle-sdk-tsconfig':
+        specifier: workspace:*
+        version: link:../../tools/tsconfig
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.4.2)(postcss@8.5.1)(typescript@5.7.3)(yaml@2.7.0)
+
   packages/rag:
     dependencies:
       '@ai-sdk/openai':
@@ -1157,6 +1188,43 @@ importers:
       '@giselle-sdk/data-type':
         specifier: workspace:^
         version: link:../data-type
+      '@giselle-sdk/node-utils':
+        specifier: workspace:^
+        version: link:../node-utils
+      '@giselle-sdk/text-editor-utils':
+        specifier: workspace:^
+        version: link:../text-editor-utils
+      '@tiptap/react':
+        specifier: 'catalog:'
+        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      clsx:
+        specifier: 'catalog:'
+        version: 2.1.1
+      lucide-react:
+        specifier: 'catalog:'
+        version: 0.473.0(react@19.1.0)
+      radix-ui:
+        specifier: 'catalog:'
+        version: 1.1.2(@types/react-dom@19.1.2(@types/react@19.1.0))(@types/react@19.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react:
+        specifier: 'catalog:'
+        version: 19.1.0
+    devDependencies:
+      '@giselle/giselle-sdk-tsconfig':
+        specifier: workspace:*
+        version: link:../../tools/tsconfig
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.1.0
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.4.2)(postcss@8.5.1)(typescript@5.7.3)(yaml@2.7.0)
+
+  packages/text-editor-utils:
+    dependencies:
+      '@giselle-sdk/data-type':
+        specifier: workspace:*
+        version: link:../data-type
       '@tiptap/core':
         specifier: 'catalog:'
         version: 2.11.5(@tiptap/pm@2.11.5)
@@ -1199,30 +1267,18 @@ importers:
       '@tiptap/html':
         specifier: 'catalog:'
         version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)
-      '@tiptap/pm':
-        specifier: 'catalog:'
-        version: 2.11.5
       '@tiptap/react':
         specifier: 'catalog:'
         version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      clsx:
+      '@tiptap/starter-kit':
         specifier: 'catalog:'
-        version: 2.1.1
+        version: 2.11.5
       highlight.js:
         specifier: 'catalog:'
         version: 11.11.1
       lowlight:
         specifier: 'catalog:'
         version: 3.3.0
-      lucide-react:
-        specifier: 'catalog:'
-        version: 0.473.0(react@19.1.0)
-      radix-ui:
-        specifier: 'catalog:'
-        version: 1.1.2(@types/react-dom@19.1.2(@types/react@19.1.0))(@types/react@19.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      react:
-        specifier: 'catalog:'
-        version: 19.1.0
       turndown:
         specifier: 'catalog:'
         version: 7.2.0
@@ -1230,9 +1286,6 @@ importers:
       '@giselle/giselle-sdk-tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.1.0
       '@types/turndown':
         specifier: 'catalog:'
         version: 5.0.5
@@ -1308,15 +1361,27 @@ importers:
       '@giselle-sdk/data-type':
         specifier: workspace:*
         version: link:../data-type
+      '@giselle-sdk/flow':
+        specifier: workspace:*
+        version: link:../flow
       '@giselle-sdk/giselle-engine':
         specifier: workspace:*
         version: link:../giselle-engine
       '@giselle-sdk/language-model':
         specifier: workspace:^
         version: link:../language-model
+      '@giselle-sdk/node-utils':
+        specifier: workspace:*
+        version: link:../node-utils
+      '@giselle-sdk/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@giselle-sdk/workflow-utils':
         specifier: workspace:*
         version: link:../workflow-utils
+      '@tiptap/react':
+        specifier: 'catalog:'
+        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react:
         specifier: 'catalog:'
         version: 19.1.0
@@ -4696,6 +4761,11 @@ packages:
     peerDependencies:
       '@tiptap/pm': ^2.7.0
 
+  '@tiptap/extension-blockquote@2.12.0':
+    resolution: {integrity: sha512-XUC2A77YAPMJS2SqZ2S62IGcUH8gZ7cdhoWlYQb1pR4ZzXFByeKDJPxfYeAePSiuI01YGrlzgY2c6Ncx/DtO0A==}
+    peerDependencies:
+      '@tiptap/core': ^2.7.0
+
   '@tiptap/extension-bold@2.11.5':
     resolution: {integrity: sha512-OAq03MHEbl7MtYCUzGuwb0VpOPnM0k5ekMbEaRILFU5ZC7cEAQ36XmPIw1dQayrcuE8GZL35BKub2qtRxyC9iA==}
     peerDependencies:
@@ -4737,14 +4807,42 @@ packages:
     peerDependencies:
       '@tiptap/core': ^2.7.0
 
+  '@tiptap/extension-dropcursor@2.12.0':
+    resolution: {integrity: sha512-zcZSOXFj+7LVnmdPWTfKr5AoxYIzFPFlLJe35AdTQC5IhkljLn1Exct8I30ZREojX/00hKYsO7JJmePS6TEVlQ==}
+    peerDependencies:
+      '@tiptap/core': ^2.7.0
+      '@tiptap/pm': ^2.7.0
+
   '@tiptap/extension-floating-menu@2.11.5':
     resolution: {integrity: sha512-HsMI0hV5Lwzm530Z5tBeyNCBNG38eJ3qjfdV2OHlfSf3+KOEfn6a5AUdoNaZO02LF79/8+7BaYU2drafag9cxQ==}
     peerDependencies:
       '@tiptap/core': ^2.7.0
       '@tiptap/pm': ^2.7.0
 
+  '@tiptap/extension-gapcursor@2.12.0':
+    resolution: {integrity: sha512-k8ji5v9YKn7bNjo8UtI9hEfXfl4tKUp1hpJOEmUxGJQa3LIwrwSbReupUTnHszGQelzxikS/l1xO9P0TIGwRoA==}
+    peerDependencies:
+      '@tiptap/core': ^2.7.0
+      '@tiptap/pm': ^2.7.0
+
+  '@tiptap/extension-hard-break@2.12.0':
+    resolution: {integrity: sha512-08MNS2PK5DzdnAfqXn4krmJ/xebKmWpRpYqqN5EM8AvetYKlAJyTVSpo0ZUeGbZ3EZiPm9djgSnrLqpFUDjRCg==}
+    peerDependencies:
+      '@tiptap/core': ^2.7.0
+
+  '@tiptap/extension-heading@2.12.0':
+    resolution: {integrity: sha512-9DfES4Wd5TX1foI70N9sAL+35NN1UHrtzDYN2+dTHupnmKir9RaMXyZcbkUb4aDVzYrGxIqxJzHBVkquKIlTrw==}
+    peerDependencies:
+      '@tiptap/core': ^2.7.0
+
   '@tiptap/extension-history@2.11.5':
     resolution: {integrity: sha512-b+wOS33Dz1azw6F1i9LFTEIJ/gUui0Jwz5ZvmVDpL2ZHBhq1Ui0/spTT+tuZOXq7Y/uCbKL8Liu4WoedIvhboQ==}
+    peerDependencies:
+      '@tiptap/core': ^2.7.0
+      '@tiptap/pm': ^2.7.0
+
+  '@tiptap/extension-horizontal-rule@2.12.0':
+    resolution: {integrity: sha512-Vi2+6RIehDSpoJn/7PDuOieUj7W7WrEb4wBxK9TG8PDscihR0mehhhzm/K2xhH4TN48iPJGRsjDFrFjTbXmcnw==}
     peerDependencies:
       '@tiptap/core': ^2.7.0
       '@tiptap/pm': ^2.7.0
@@ -4774,6 +4872,11 @@ packages:
     peerDependencies:
       '@tiptap/core': ^2.7.0
 
+  '@tiptap/extension-text-style@2.12.0':
+    resolution: {integrity: sha512-Pxwt23ZlvbQUahV0PvHy8Ej6IAuKR1FvHobUvwP3T8AiY7hob66fWRe7tQbESzSAzm5Vv2xkvyHeU8vekMTezA==}
+    peerDependencies:
+      '@tiptap/core': ^2.7.0
+
   '@tiptap/extension-text@2.11.5':
     resolution: {integrity: sha512-Gq1WwyhFpCbEDrLPIHt5A8aLSlf8bfz4jm417c8F/JyU0J5dtYdmx0RAxjnLw1i7ZHE7LRyqqAoS0sl7JHDNSQ==}
     peerDependencies:
@@ -4795,6 +4898,9 @@ packages:
       '@tiptap/pm': ^2.7.0
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@tiptap/starter-kit@2.11.5':
+    resolution: {integrity: sha512-SLI7Aj2ruU1t//6Mk8f+fqW+18uTqpdfLUJYgwu0CkqBckrkRZYZh6GVLk/02k3H2ki7QkFxiFbZrdbZdng0JA==}
 
   '@tootallnate/quickjs-emscripten@0.23.0':
     resolution: {integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==}
@@ -12711,7 +12817,7 @@ snapshots:
 
   '@rollup/pluginutils@5.1.4(rollup@3.29.5)':
     dependencies:
-      '@types/estree': 1.0.6
+      '@types/estree': 1.0.7
       estree-walker: 2.0.2
       picomatch: 4.0.2
     optionalDependencies:
@@ -13168,6 +13274,10 @@ snapshots:
     dependencies:
       '@tiptap/pm': 2.11.5
 
+  '@tiptap/extension-blockquote@2.12.0(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))':
+    dependencies:
+      '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
+
   '@tiptap/extension-bold@2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))':
     dependencies:
       '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
@@ -13203,13 +13313,36 @@ snapshots:
     dependencies:
       '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
 
+  '@tiptap/extension-dropcursor@2.12.0(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)':
+    dependencies:
+      '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
+      '@tiptap/pm': 2.11.5
+
   '@tiptap/extension-floating-menu@2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)':
     dependencies:
       '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
       '@tiptap/pm': 2.11.5
       tippy.js: 6.3.7
 
+  '@tiptap/extension-gapcursor@2.12.0(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)':
+    dependencies:
+      '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
+      '@tiptap/pm': 2.11.5
+
+  '@tiptap/extension-hard-break@2.12.0(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))':
+    dependencies:
+      '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
+
+  '@tiptap/extension-heading@2.12.0(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))':
+    dependencies:
+      '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
+
   '@tiptap/extension-history@2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)':
+    dependencies:
+      '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
+      '@tiptap/pm': 2.11.5
+
+  '@tiptap/extension-horizontal-rule@2.12.0(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)':
     dependencies:
       '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
       '@tiptap/pm': 2.11.5
@@ -13231,6 +13364,10 @@ snapshots:
       '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
 
   '@tiptap/extension-strike@2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))':
+    dependencies:
+      '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
+
+  '@tiptap/extension-text-style@2.12.0(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))':
     dependencies:
       '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
 
@@ -13276,6 +13413,30 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
       use-sync-external-store: 1.4.0(react@19.1.0)
+
+  '@tiptap/starter-kit@2.11.5':
+    dependencies:
+      '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
+      '@tiptap/extension-blockquote': 2.12.0(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-bold': 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-bullet-list': 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-code': 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-code-block': 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)
+      '@tiptap/extension-document': 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-dropcursor': 2.12.0(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)
+      '@tiptap/extension-gapcursor': 2.12.0(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)
+      '@tiptap/extension-hard-break': 2.12.0(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-heading': 2.12.0(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-history': 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)
+      '@tiptap/extension-horizontal-rule': 2.12.0(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)
+      '@tiptap/extension-italic': 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-list-item': 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-ordered-list': 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-paragraph': 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-strike': 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-text': 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/extension-text-style': 2.12.0(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
+      '@tiptap/pm': 2.11.5
 
   '@tootallnate/quickjs-emscripten@0.23.0': {}
 
@@ -13366,7 +13527,7 @@ snapshots:
 
   '@types/estree-jsx@1.0.5':
     dependencies:
-      '@types/estree': 1.0.6
+      '@types/estree': 1.0.7
 
   '@types/estree@1.0.6': {}
 
@@ -15454,7 +15615,7 @@ snapshots:
 
   is-reference@1.2.1:
     dependencies:
-      '@types/estree': 1.0.6
+      '@types/estree': 1.0.7
 
   is-relative@1.0.0:
     dependencies:
