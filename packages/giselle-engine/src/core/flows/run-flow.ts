@@ -19,6 +19,11 @@ export async function runFlow(args: {
 	context: GiselleEngineContext;
 	triggerInputs?: GenerationInput[];
 	payload?: unknown;
+	onStep?: (args: {
+		step: number;
+		totalSteps: number;
+		nodeId: string;
+	}) => Promise<void> | void;
 }) {
 	const trigger = await getFlowTrigger({
 		storage: args.context.storage,
@@ -42,6 +47,11 @@ export async function runFlow(args: {
 	}
 
 	const runId = RunId.generate();
+	const totalSteps = flow.jobs.reduce(
+		(sum, job) => sum + job.operations.length,
+		0,
+	);
+	let step = 0;
 	for (const job of flow.jobs) {
 		await Promise.all(
 			job.operations.map(async (operation) => {
@@ -98,6 +108,12 @@ export async function runFlow(args: {
 						throw new Error(`Unhandled operation type: ${_exhaustiveCheck}`);
 					}
 				}
+				step++;
+				await args.onStep?.({
+					step,
+					totalSteps,
+					nodeId: operationNode.id,
+				});
 			}),
 		);
 	}

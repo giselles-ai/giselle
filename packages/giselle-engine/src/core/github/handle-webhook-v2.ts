@@ -3,8 +3,10 @@ import {
 	type WebhookEvent,
 	type WebhookEventName,
 	addReaction,
+	createIssueComment,
 	ensureWebhookEvent,
 	handleWebhook,
+	updateIssueComment,
 } from "@giselle-sdk/github-tool";
 import { runFlow } from "../flows";
 import { getFlowTrigger } from "../flows/utils";
@@ -44,6 +46,8 @@ export async function handleGitHubWebhookV2(args: {
 				ensureWebhookEvent,
 				runFlow,
 				parseCommand,
+				createIssueComment,
+				updateIssueComment,
 			},
 		});
 
@@ -143,6 +147,8 @@ async function process<TEventName extends WebhookEventName>(args: {
 					ensureWebhookEvent: args.deps.ensureWebhookEvent,
 					runFlow: args.deps.runFlow,
 					parseCommand: args.deps.parseCommand,
+					createIssueComment: args.deps.createIssueComment,
+					updateIssueComment: args.deps.updateIssueComment,
 				},
 			});
 		}),

@@ -4,7 +4,9 @@ import type {
 	WebhookEvent,
 	WebhookEventName,
 	addReaction,
+	createIssueComment,
 	ensureWebhookEvent,
+	updateIssueComment,
 } from "@giselle-sdk/github-tool";
 import type { runFlow } from "../flows";
 import type { GiselleEngineContext } from "../types";
@@ -15,6 +17,8 @@ export interface EventHandlerDependencies {
 	ensureWebhookEvent: typeof ensureWebhookEvent;
 	runFlow: typeof runFlow;
 	parseCommand: typeof parseCommand;
+	createIssueComment: typeof createIssueComment;
+	updateIssueComment: typeof updateIssueComment;
 }
 
 export type EventHandlerArgs<TEventName extends WebhookEventName> = {
@@ -28,6 +32,10 @@ export type EventHandlerArgs<TEventName extends WebhookEventName> = {
 export type EventHandlerResult = {
 	shouldRun: boolean;
 	reactionNodeId?: string;
+	commentTarget?: {
+		repositoryNodeId: string;
+		issueNumber: number;
+	};
 };
 
 export async function handleIssueOpened<TEventName extends WebhookEventName>(
@@ -45,7 +53,19 @@ export async function handleIssueOpened<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, reactionNodeId: issue.node_id };
+	const issueNumber = (issue as { number?: number }).number;
+	const commentTarget =
+		issueNumber !== undefined
+			? {
+					repositoryNodeId: args.event.data.payload.repository.node_id,
+					issueNumber,
+				}
+			: undefined;
+	return {
+		shouldRun: true,
+		reactionNodeId: issue.node_id,
+		commentTarget,
+	};
 }
 
 export async function handleIssueClosed<TEventName extends WebhookEventName>(
@@ -63,7 +83,20 @@ export async function handleIssueClosed<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, reactionNodeId: issue.node_id };
+	const issueNumber = (issue as { number?: number }).number;
+	const commentTarget =
+		issueNumber !== undefined
+			? {
+					repositoryNodeId: args.event.data.payload.repository.node_id,
+					issueNumber,
+				}
+			: undefined;
+
+	return {
+		shouldRun: true,
+		reactionNodeId: issue.node_id,
+		commentTarget,
+	};
 }
 
 export async function handleIssueCommentCreated<
@@ -91,7 +124,21 @@ export async function handleIssueCommentCreated<
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, reactionNodeId: comment.node_id };
+	const issueNumber = (args.event.data.payload.issue as { number?: number })
+		?.number;
+	const commentTarget =
+		issueNumber !== undefined
+			? {
+					repositoryNodeId: args.event.data.payload.repository.node_id,
+					issueNumber,
+				}
+			: undefined;
+
+	return {
+		shouldRun: true,
+		reactionNodeId: comment.node_id,
+		commentTarget,
+	};
 }
 
 export async function handlePullRequestCommentCreated<
@@ -119,9 +166,20 @@ export async function handlePullRequestCommentCreated<
 		return { shouldRun: false };
 	}
 
+	const issueNumber = (args.event.data.payload.issue as { number?: number })
+		?.number;
+	const commentTarget =
+		issueNumber !== undefined
+			? {
+					repositoryNodeId: args.event.data.payload.repository.node_id,
+					issueNumber,
+				}
+			: undefined;
+
 	return {
 		shouldRun: true,
 		reactionNodeId: args.event.data.payload.comment.node_id,
+		commentTarget,
 	};
 }
 
@@ -140,7 +198,20 @@ export async function handlePullRequestOpened<
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, reactionNodeId: pullRequest.node_id };
+	const pullNumber = (pullRequest as { number?: number }).number;
+	const commentTarget =
+		pullNumber !== undefined
+			? {
+					repositoryNodeId: args.event.data.payload.repository.node_id,
+					issueNumber: pullNumber,
+				}
+			: undefined;
+
+	return {
+		shouldRun: true,
+		reactionNodeId: pullRequest.node_id,
+		commentTarget,
+	};
 }
 
 export async function handlePullRequestReadyForReview<
@@ -162,7 +233,20 @@ export async function handlePullRequestReadyForReview<
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, reactionNodeId: pullRequest.node_id };
+	const pullNumber = (pullRequest as { number?: number }).number;
+	const commentTarget =
+		pullNumber !== undefined
+			? {
+					repositoryNodeId: args.event.data.payload.repository.node_id,
+					issueNumber: pullNumber,
+				}
+			: undefined;
+
+	return {
+		shouldRun: true,
+		reactionNodeId: pullRequest.node_id,
+		commentTarget,
+	};
 }
 
 export async function handlePullRequestClosed<
@@ -180,7 +264,20 @@ export async function handlePullRequestClosed<
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, reactionNodeId: pullRequest.node_id };
+	const pullNumber = (pullRequest as { number?: number }).number;
+	const commentTarget =
+		pullNumber !== undefined
+			? {
+					repositoryNodeId: args.event.data.payload.repository.node_id,
+					issueNumber: pullNumber,
+				}
+			: undefined;
+
+	return {
+		shouldRun: true,
+		reactionNodeId: pullRequest.node_id,
+		commentTarget,
+	};
 }
 
 export const eventHandlers = [
@@ -232,11 +329,42 @@ export async function processEvent<TEventName extends WebhookEventName>(
 		}
 
 		if (result.shouldRun) {
+			let commentId: number | undefined;
+			if (result.commentTarget) {
+				const comment = await deps.createIssueComment({
+					repositoryNodeId: result.commentTarget.repositoryNodeId,
+					issueNumber: result.commentTarget.issueNumber,
+					body: "Running flow...",
+					authConfig,
+				});
+				commentId = (comment as { id?: number }).id;
+			}
+
 			await deps.runFlow({
 				context: args.context,
 				triggerId: args.trigger.id,
 				payload: args.event,
+				onStep: async ({ step, totalSteps }) => {
+					if (commentId !== undefined && result.commentTarget) {
+						await deps.updateIssueComment({
+							repositoryNodeId: result.commentTarget.repositoryNodeId,
+							commentId,
+							body: `Running flow... (${step}/${totalSteps})`,
+							authConfig,
+						});
+					}
+				},
 			});
+
+			if (commentId !== undefined && result.commentTarget) {
+				await deps.updateIssueComment({
+					repositoryNodeId: result.commentTarget.repositoryNodeId,
+					commentId,
+					body: "Flow completed",
+					authConfig,
+				});
+			}
+
 			return true;
 		}
 	}
