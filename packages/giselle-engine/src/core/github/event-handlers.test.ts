@@ -57,6 +57,8 @@ describe("GitHub Event Handlers", () => {
 			parseCommand: vi
 				.fn()
 				.mockReturnValue({ callsign: "giselle", content: "help me" }),
+			createIssueComment: vi.fn().mockResolvedValue({ id: 1 }),
+			updateIssueComment: vi.fn().mockResolvedValue(undefined),
 		};
 
 		// Setup base arguments
@@ -623,6 +625,7 @@ describe("GitHub Event Handlers", () => {
 				context: expect.anything(),
 				triggerId: mockFlowTriggerId,
 				payload: event,
+				onStep: expect.any(Function),
 			});
 			expect(testDeps.addReaction).toHaveBeenCalledWith({
 				id: "issue-node-id",

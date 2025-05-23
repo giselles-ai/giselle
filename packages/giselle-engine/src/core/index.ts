@@ -227,6 +227,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			triggerId: FlowTriggerId;
 			triggerInputs?: GenerationInput[];
 			payload?: unknown;
+			onStep?: Parameters<typeof runFlow>[0]["onStep"];
 		}) => runFlow({ ...args, context }),
 		handleGitHubWebhookV2: async (args: { request: Request }) =>
 			handleGitHubWebhookV2({ ...args, context }),
