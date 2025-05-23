@@ -159,20 +159,35 @@ export function BasicTagInput({
 					)}
 				</div>
 
-				{/* Maximum domains warning */}
-				{isMaxReached && (
-					<div style={{ marginBottom: "8px" }}>
-						<p
-							style={{
-								color: "var(--color-error-900, #FF627E)",
-								fontSize: "12px",
-								fontFamily: "var(--font-geist), system-ui, sans-serif",
-							}}
-						>
-							You can add up to {MAX_DOMAINS} domains only.
-						</p>
-					</div>
-				)}
+                                {/* Maximum domains warning */}
+                                {isMaxReached && (
+                                        <div style={{ marginBottom: "8px" }}>
+                                                <p
+                                                        style={{
+                                                                color: "var(--color-error-900, #FF627E)",
+                                                                fontSize: "12px",
+                                                                fontFamily: "var(--font-geist), system-ui, sans-serif",
+                                                        }}
+                                                >
+                                                        You can add up to {MAX_DOMAINS} domains only.
+                                                </p>
+                                        </div>
+                                )}
+
+                                {/* Validation error message */}
+                                {validationError && (
+                                        <div style={{ marginBottom: "8px" }}>
+                                                <p
+                                                        style={{
+                                                                color: "var(--color-error-900, #FF627E)",
+                                                                fontSize: "12px",
+                                                                fontFamily: "var(--font-geist), system-ui, sans-serif",
+                                                        }}
+                                                >
+                                                        {validationError}
+                                                </p>
+                                        </div>
+                                )}
 
 				{/* Input area */}
 				<div
@@ -248,19 +263,6 @@ export function BasicTagInput({
 					</button>
 				</div>
 
-				{/* Validation error message */}
-				{validationError && (
-					<div
-						style={{
-							color: "var(--color-error-900, #FF627E)",
-							fontSize: "12px",
-							marginTop: "4px",
-							fontFamily: "var(--font-geist), system-ui, sans-serif",
-						}}
-					>
-						{validationError}
-					</div>
-				)}
 			</div>
 		</div>
 	);
