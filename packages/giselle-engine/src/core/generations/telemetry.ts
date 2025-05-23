@@ -97,7 +97,7 @@ export function createLangfuseTracer({
 	generationName,
 	settings,
 }: {
-	sessionId: string;
+	sessionId?: string;
 	runningGeneration: RunningGeneration;
 	tags: string[];
 	messages: { messages: unknown[] };
@@ -126,7 +126,7 @@ export function createLangfuseTracer({
 				deploymentId: process.env.VERCEL_DEPLOYMENT_ID,
 			}),
 		},
-		sessionId,
+		...(sessionId && { sessionId }),
 		input: messages,
 		output,
 		tags,
