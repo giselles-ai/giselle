@@ -25,6 +25,9 @@
 	},
 	"dependencies": {
 		"@giselle-sdk/data-type": "workspace:*",
-		"@giselle-sdk/flow": "workspace:*"
+		"@giselle-sdk/flow": "workspace:*",
+		"@giselle-sdk/language-model": "workspace:*",
+		"@giselle-sdk/text-editor-utils": "workspace:*",
+		"@tiptap/react": "catalog:"
 	}
 }

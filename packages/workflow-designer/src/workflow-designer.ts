@@ -10,9 +10,9 @@ import {
 	type Workspace,
 	generateInitialWorkspace,
 } from "@giselle-sdk/data-type";
+import { nodeFactories } from "@giselle-sdk/node-utils";
 import { buildWorkflowMap } from "@giselle-sdk/workflow-utils";
 import { isSupportedConnection } from "./is-supported-connection";
-import { nodeFactories } from "./node-factories";
 
 interface AddNodeOptions {
 	ui?: NodeUIState;

@@ -1,10 +1,10 @@
 import { Node as GiselleNode } from "@giselle-sdk/data-type";
 import { defaultName } from "@giselle-sdk/node-utils";
+import { SourceExtension } from "@giselle-sdk/text-editor-utils";
 import { type NodeViewProps, NodeViewWrapper, PasteRule } from "@tiptap/react";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import clsx from "clsx/lite";
 import { useMemo } from "react";
-import { SourceExtension } from "../extensions/source-extension";
 
 const Component = (props: NodeViewProps) => {
 	const node = useMemo(

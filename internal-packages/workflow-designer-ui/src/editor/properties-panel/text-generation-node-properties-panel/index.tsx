@@ -4,7 +4,10 @@ import {
 	type TextGenerationNode,
 	type ToolSet,
 } from "@giselle-sdk/data-type";
-import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
+import {
+	isJsonContent,
+	jsonContentToText,
+} from "@giselle-sdk/text-editor-utils";
 import clsx from "clsx/lite";
 import { useNodeGenerations, useWorkflowDesigner } from "giselle-sdk/react";
 import { CommandIcon, CornerDownLeft } from "lucide-react";

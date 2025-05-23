@@ -3,10 +3,8 @@ import {
 	type TextGenerationNode,
 	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
-import {
-	TextEditor,
-	createSourceExtensionJSONContent,
-} from "@giselle-sdk/text-editor/react-internal";
+import { createSourceExtensionJSONContent } from "@giselle-sdk/text-editor-utils";
+import { TextEditor } from "@giselle-sdk/text-editor/react-internal";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { AtSignIcon } from "lucide-react";

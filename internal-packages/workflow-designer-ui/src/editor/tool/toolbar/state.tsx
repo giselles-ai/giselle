@@ -7,7 +7,7 @@ import type {
 	TextGenerationLanguageModelData,
 } from "@giselle-sdk/data-type";
 import type { ActionProvider, TriggerProvider } from "@giselle-sdk/flow";
-import { nodeFactories } from "@giselle-sdk/workflow-designer";
+import { nodeFactories } from "@giselle-sdk/node-utils";
 import { type ReactNode, createContext, useContext, useState } from "react";
 import type {
 	AddFileNodeTool,

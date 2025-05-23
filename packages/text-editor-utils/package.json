@@ -1,0 +1,48 @@
+{
+	"name": "@giselle-sdk/text-editor-utils",
+	"version": "0.0.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "tsup",
+		"check-types": "tsc --noEmit",
+		"clean": "rm -rf .turbo dist node_modules",
+		"format": "biome check --write ."
+	},
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js"
+		}
+	},
+	"devDependencies": {
+		"@giselle/giselle-sdk-tsconfig": "workspace:*",
+		"@types/turndown": "catalog:",
+		"tsup": "catalog:"
+	},
+	"dependencies": {
+		"@giselle-sdk/data-type": "workspace:*",
+		"@tiptap/core": "catalog:",
+		"@tiptap/react": "catalog:",
+		"@tiptap/html": "catalog:",
+		"@tiptap/extension-bold": "catalog:",
+		"@tiptap/extension-bullet-list": "catalog:",
+		"@tiptap/extension-code": "catalog:",
+		"@tiptap/extension-code-block-lowlight": "catalog:",
+		"@tiptap/extension-document": "catalog:",
+		"@tiptap/extension-history": "catalog:",
+		"@tiptap/extension-italic": "catalog:",
+		"@tiptap/extension-list-item": "catalog:",
+		"@tiptap/extension-ordered-list": "catalog:",
+		"@tiptap/extension-paragraph": "catalog:",
+		"@tiptap/extension-strike": "catalog:",
+		"@tiptap/extension-text": "catalog:",
+		"highlight.js": "catalog:",
+		"lowlight": "catalog:",
+		"turndown": "catalog:"
+	}
+}

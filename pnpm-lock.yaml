@@ -102,9 +102,6 @@ catalogs:
     '@tiptap/html':
       specifier: 2.11.5
       version: 2.11.5
-    '@tiptap/pm':
-      specifier: 2.11.5
-      version: 2.11.5
     '@tiptap/react':
       specifier: 2.11.5
       version: 2.11.5
@@ -712,12 +709,12 @@ importers:
       '@giselle-sdk/text-editor':
         specifier: workspace:^
         version: link:../../packages/text-editor
+      '@giselle-sdk/text-editor-utils':
+        specifier: workspace:^
+        version: link:../../packages/text-editor-utils
       '@giselle-sdk/usage-limits':
         specifier: workspace:^
         version: link:../../packages/usage-limits
-      '@giselle-sdk/workflow-designer':
-        specifier: workspace:^
-        version: link:../../packages/workflow-designer
       '@giselle-sdk/workflow-utils':
         specifier: workspace:^
         version: link:../../packages/workflow-utils
@@ -899,9 +896,9 @@ importers:
       '@giselle-sdk/telemetry':
         specifier: workspace:^
         version: link:../telemetry
-      '@giselle-sdk/text-editor':
+      '@giselle-sdk/text-editor-utils':
         specifier: workspace:^
-        version: link:../text-editor
+        version: link:../text-editor-utils
       '@giselle-sdk/usage-limits':
         specifier: workspace:^
         version: link:../usage-limits
@@ -1090,6 +1087,15 @@ importers:
       '@giselle-sdk/flow':
         specifier: workspace:*
         version: link:../flow
+      '@giselle-sdk/language-model':
+        specifier: workspace:*
+        version: link:../language-model
+      '@giselle-sdk/text-editor-utils':
+        specifier: workspace:*
+        version: link:../text-editor-utils
+      '@tiptap/react':
+        specifier: 'catalog:'
+        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
     devDependencies:
       '@giselle/giselle-sdk-tsconfig':
         specifier: workspace:*
@@ -1173,6 +1179,40 @@ importers:
       '@giselle-sdk/node-utils':
         specifier: workspace:^
         version: link:../node-utils
+      '@giselle-sdk/text-editor-utils':
+        specifier: workspace:^
+        version: link:../text-editor-utils
+      '@tiptap/react':
+        specifier: 'catalog:'
+        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      clsx:
+        specifier: 'catalog:'
+        version: 2.1.1
+      lucide-react:
+        specifier: 'catalog:'
+        version: 0.473.0(react@19.1.0)
+      radix-ui:
+        specifier: 'catalog:'
+        version: 1.1.2(@types/react-dom@19.1.2(@types/react@19.1.0))(@types/react@19.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react:
+        specifier: 'catalog:'
+        version: 19.1.0
+    devDependencies:
+      '@giselle/giselle-sdk-tsconfig':
+        specifier: workspace:*
+        version: link:../../tools/tsconfig
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.1.0
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.4.2)(postcss@8.5.1)(typescript@5.7.3)(yaml@2.7.0)
+
+  packages/text-editor-utils:
+    dependencies:
+      '@giselle-sdk/data-type':
+        specifier: workspace:*
+        version: link:../data-type
       '@tiptap/core':
         specifier: 'catalog:'
         version: 2.11.5(@tiptap/pm@2.11.5)
@@ -1215,30 +1255,15 @@ importers:
       '@tiptap/html':
         specifier: 'catalog:'
         version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)
-      '@tiptap/pm':
-        specifier: 'catalog:'
-        version: 2.11.5
       '@tiptap/react':
         specifier: 'catalog:'
         version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      clsx:
-        specifier: 'catalog:'
-        version: 2.1.1
       highlight.js:
         specifier: 'catalog:'
         version: 11.11.1
       lowlight:
         specifier: 'catalog:'
         version: 3.3.0
-      lucide-react:
-        specifier: 'catalog:'
-        version: 0.473.0(react@19.1.0)
-      radix-ui:
-        specifier: 'catalog:'
-        version: 1.1.2(@types/react-dom@19.1.2(@types/react@19.1.0))(@types/react@19.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      react:
-        specifier: 'catalog:'
-        version: 19.1.0
       turndown:
         specifier: 'catalog:'
         version: 7.2.0
@@ -1246,9 +1271,6 @@ importers:
       '@giselle/giselle-sdk-tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.1.0
       '@types/turndown':
         specifier: 'catalog:'
         version: 5.0.5
@@ -1308,9 +1330,6 @@ importers:
       '@giselle-sdk/node-utils':
         specifier: workspace:*
         version: link:../node-utils
-      '@giselle-sdk/text-editor':
-        specifier: workspace:*
-        version: link:../text-editor
       '@giselle-sdk/utils':
         specifier: workspace:*
         version: link:../utils
