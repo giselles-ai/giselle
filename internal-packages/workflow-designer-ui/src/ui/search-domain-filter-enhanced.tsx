@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { type DomainTag, DomainTagInput } from "./domain-tag-input";
 
+const MAX_TOTAL_DOMAINS = 10;
+
 export type SearchDomainFilterEnhancedProps = {
 	onFilterChange?: (include: string[], exclude: string[]) => void;
 	className?: string;
@@ -27,13 +29,16 @@ export function SearchDomainFilterEnhanced({
 	};
 
 	// Initialize state with default values
-	const [includeDomains, setIncludeDomains] = useState<DomainTag[]>(() => {
-		return createInitialTags(defaultIncludeDomains);
-	});
+        const [includeDomains, setIncludeDomains] = useState<DomainTag[]>(() => {
+                return createInitialTags(defaultIncludeDomains);
+        });
 
-	const [excludeDomains, setExcludeDomains] = useState<DomainTag[]>(() => {
-		return createInitialTags(defaultExcludeDomains);
-	});
+        const [excludeDomains, setExcludeDomains] = useState<DomainTag[]>(() => {
+                return createInitialTags(defaultExcludeDomains);
+        });
+
+        const totalDomains = includeDomains.length + excludeDomains.length;
+        const isMaxReached = totalDomains >= MAX_TOTAL_DOMAINS;
 
 	// Effect to notify parent of changes
 	useEffect(() => {
@@ -45,20 +50,21 @@ export function SearchDomainFilterEnhanced({
 	}, [includeDomains, excludeDomains, onFilterChange]);
 
 	// Add include domain
-	const handleAddIncludeDomain = (domain: string) => {
-		// Check for duplicates
-		if (includeDomains.some((d) => d.domain === domain)) {
-			return;
-		}
+        const handleAddIncludeDomain = (domain: string) => {
+                if (isMaxReached) return;
+                // Check for duplicates
+                if (includeDomains.some((d) => d.domain === domain)) {
+                        return;
+                }
 		// Check if exists in exclude list
 		if (excludeDomains.some((d) => d.domain === domain)) {
 			return;
 		}
 
-		const newDomain: DomainTag = {
-			id: `include-${Date.now()}`,
-			domain,
-		};
+                const newDomain: DomainTag = {
+                        id: `include-${Date.now()}`,
+                        domain,
+                };
 
 		setIncludeDomains((prevDomains) => {
 			return [...prevDomains, newDomain];
@@ -73,11 +79,12 @@ export function SearchDomainFilterEnhanced({
 	};
 
 	// Add exclude domain
-	const handleAddExcludeDomain = (domain: string) => {
-		// Check for duplicates
-		if (excludeDomains.some((d) => d.domain === domain)) {
-			return;
-		}
+        const handleAddExcludeDomain = (domain: string) => {
+                if (isMaxReached) return;
+                // Check for duplicates
+                if (excludeDomains.some((d) => d.domain === domain)) {
+                        return;
+                }
 		// Check if exists in include list
 		if (includeDomains.some((d) => d.domain === domain)) {
 			return;
@@ -107,22 +114,24 @@ export function SearchDomainFilterEnhanced({
 			</div>
 
 			{/* Include domain input and tags */}
-			<DomainTagInput
-				domains={includeDomains}
-				onAddDomain={handleAddIncludeDomain}
-				onRemoveDomain={handleRemoveIncludeDomain}
-				placeholder={includePlaceholder}
-				label="Allow List"
-			/>
+                        <DomainTagInput
+                                domains={includeDomains}
+                                onAddDomain={handleAddIncludeDomain}
+                                onRemoveDomain={handleRemoveIncludeDomain}
+                                placeholder={includePlaceholder}
+                                label="Allow List"
+                                disableAdd={isMaxReached}
+                        />
 
 			{/* Exclude domain input and tags */}
-			<DomainTagInput
-				domains={excludeDomains}
-				onAddDomain={handleAddExcludeDomain}
-				onRemoveDomain={handleRemoveExcludeDomain}
-				placeholder={excludePlaceholder}
-				label="Deny List"
-			/>
+                        <DomainTagInput
+                                domains={excludeDomains}
+                                onAddDomain={handleAddExcludeDomain}
+                                onRemoveDomain={handleRemoveExcludeDomain}
+                                placeholder={excludePlaceholder}
+                                label="Deny List"
+                                disableAdd={isMaxReached}
+                        />
 		</div>
 	);
 }
