@@ -3,14 +3,22 @@ import {
 	type FailedGeneration,
 	GenerationContext,
 	type GenerationOutput,
+	NodeId,
+	type Output,
+	OutputId,
 	type QueuedGeneration,
 	type RunningGeneration,
 	type VectorStoreNode,
 	type WorkspaceId,
+	isCompletedGeneration,
 	isQueryNode,
 } from "@giselle-sdk/data-type";
 import { query as queryRag } from "@giselle-sdk/rag";
+import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
+import type { Storage } from "unstorage";
 import {
+	getGeneration,
+	getNodeGenerationIndexes,
 	setGeneration,
 	setGenerationIndex,
 	setNodeGenerationIndex,
@@ -81,7 +89,11 @@ export async function executeQuery(args: {
 			initialGeneration.context,
 		);
 
-		const query = await resolveQuery(operationNode.content.query);
+		const query = await resolveQuery(
+			operationNode.content.query,
+			runningGeneration,
+			context.storage,
+		);
 
 		const vectorStoreNodes = generationContext.sourceNodes.filter(
 			(node) =>
@@ -175,9 +187,140 @@ export async function executeQuery(args: {
 	}
 }
 
-async function resolveQuery(query: string) {
-	// TODO: implement query resolution
-	return query;
+async function resolveQuery(
+	query: string,
+	runningGeneration: RunningGeneration,
+	storage: Storage,
+) {
+	const generationContext = GenerationContext.parse(runningGeneration.context);
+
+	async function generationContentResolver(nodeId: NodeId, outputId: OutputId) {
+		const nodeGenerationIndexes = await getNodeGenerationIndexes({
+			origin: runningGeneration.context.origin,
+			storage,
+			nodeId,
+		});
+		if (
+			nodeGenerationIndexes === undefined ||
+			nodeGenerationIndexes.length === 0
+		) {
+			return undefined;
+		}
+		const generation = await getGeneration({
+			storage,
+			generationId: nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
+			options: {
+				bypassingCache: true,
+			},
+		});
+		if (generation === undefined || !isCompletedGeneration(generation)) {
+			return undefined;
+		}
+		let output: Output | undefined;
+		for (const sourceNode of runningGeneration.context.sourceNodes) {
+			for (const sourceOutput of sourceNode.outputs) {
+				if (sourceOutput.id === outputId) {
+					output = sourceOutput;
+					break;
+				}
+			}
+		}
+		if (output === undefined) {
+			return undefined;
+		}
+		const generationOutput = generation.outputs.find(
+			(output) => output.outputId === outputId,
+		);
+		if (generationOutput === undefined) {
+			return undefined;
+		}
+		switch (generationOutput.type) {
+			case "source":
+				return JSON.stringify(generationOutput.sources);
+			case "reasoning":
+				throw new Error("Generation output type is not supported");
+			case "generated-image":
+				throw new Error("Generation output type is not supported");
+			case "generated-text":
+				return generationOutput.content;
+			case "query-result":
+				// TODO: format for context
+				throw new Error("Not implemented");
+			default: {
+				const _exhaustiveCheck: never = generationOutput;
+				throw new Error(
+					`Unhandled generation output type: ${_exhaustiveCheck}`,
+				);
+			}
+		}
+	}
+
+	let resolvedQuery = query;
+
+	if (isJsonContent(query)) {
+		resolvedQuery = jsonContentToText(JSON.parse(query));
+	}
+
+	// Find all references in the format {{nd-XXXX:otp-XXXX}}
+	const pattern = /\{\{(nd-[a-zA-Z0-9]+):(otp-[a-zA-Z0-9]+)\}\}/g;
+	const sourceKeywords = [...resolvedQuery.matchAll(pattern)].map((match) => ({
+		nodeId: NodeId.parse(match[1]),
+		outputId: OutputId.parse(match[2]),
+	}));
+
+	for (const sourceKeyword of sourceKeywords) {
+		const contextNode = generationContext.sourceNodes.find(
+			(contextNode) => contextNode.id === sourceKeyword.nodeId,
+		);
+		if (contextNode === undefined) {
+			continue;
+		}
+		const replaceKeyword = `{{${sourceKeyword.nodeId}:${sourceKeyword.outputId}}}`;
+
+		switch (contextNode.content.type) {
+			case "text": {
+				const jsonOrText = contextNode.content.text;
+				const text = isJsonContent(jsonOrText)
+					? jsonContentToText(JSON.parse(jsonOrText))
+					: jsonOrText;
+				resolvedQuery = resolvedQuery.replace(replaceKeyword, text);
+				break;
+			}
+			case "textGeneration": {
+				const result = await generationContentResolver(
+					contextNode.id,
+					sourceKeyword.outputId,
+				);
+				// If there is no matching Output, replace it with an empty string (remove the pattern string from query)
+				resolvedQuery = resolvedQuery.replace(replaceKeyword, result ?? "");
+				break;
+			}
+			case "file":
+			case "github":
+			case "imageGeneration":
+				throw new Error("Not implemented");
+
+			case "trigger":
+			case "action": {
+				const result = await generationContentResolver(
+					contextNode.id,
+					sourceKeyword.outputId,
+				);
+				// If there is no matching Output, replace it with an empty string (remove the pattern string from query)
+				resolvedQuery = resolvedQuery.replace(replaceKeyword, result ?? "");
+				break;
+			}
+			case "query":
+			case "vectorStore":
+				break;
+			default: {
+				const _exhaustiveCheck: never = contextNode.content;
+				throw new Error(`Unhandled type: ${_exhaustiveCheck}`);
+			}
+		}
+	}
+
+	return resolvedQuery;
 }
 
 function isConfiguredVectorStoreNode(
