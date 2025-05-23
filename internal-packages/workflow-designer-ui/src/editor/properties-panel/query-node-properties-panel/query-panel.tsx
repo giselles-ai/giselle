@@ -11,6 +11,7 @@ import clsx from "clsx";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { AtSignIcon, DatabaseZapIcon } from "lucide-react";
 import { DropdownMenu, Toolbar } from "radix-ui";
+import { useMemo } from "react";
 import { GitHubIcon } from "../../../icons";
 import { type ConnectedSource, useConnectedSources } from "./sources";
 
@@ -115,11 +116,19 @@ function DataSourceDisplayBar({
 export function QueryPanel({ node }: { node: QueryNode }) {
 	const { updateNodeDataContent } = useWorkflowDesigner();
 	const { all: connectedInputs } = useConnectedSources(node);
-	const connectedDatasourceInputs = connectedInputs.filter(
-		(input) => input.node.content.type === "vectorStore",
+	const connectedDatasourceInputs = useMemo(
+		() =>
+			connectedInputs.filter(
+				(input) => input.node.content.type === "vectorStore",
+			),
+		[connectedInputs],
 	);
-	const connectedInputsWithoutDatasource = connectedInputs.filter(
-		(input) => !connectedDatasourceInputs.includes(input),
+	const connectedInputsWithoutDatasource = useMemo(
+		() =>
+			connectedInputs.filter(
+				(input) => !connectedDatasourceInputs.includes(input),
+			),
+		[connectedInputs, connectedDatasourceInputs],
 	);
 
 	return (
