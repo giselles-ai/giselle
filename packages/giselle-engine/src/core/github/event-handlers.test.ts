@@ -622,7 +622,12 @@ describe("GitHub Event Handlers", () => {
 			expect(testDeps.runFlow).toHaveBeenCalledWith({
 				context: expect.anything(),
 				triggerId: mockFlowTriggerId,
-				payload: event,
+				triggerInputs: [
+					{
+						type: "github-webhook-event",
+						webhookEvent: event,
+					},
+				],
 			});
 			expect(testDeps.addReaction).toHaveBeenCalledWith({
 				id: "issue-node-id",

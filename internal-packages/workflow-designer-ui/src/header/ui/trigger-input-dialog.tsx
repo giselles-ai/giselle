@@ -1,10 +1,9 @@
 import type {
-	FlowTrigger,
 	Generation,
-	GenerationInput,
+	ParameterItem,
 	TriggerNode,
 } from "@giselle-sdk/data-type";
-import type { TriggerProvider, githubTriggers } from "@giselle-sdk/flow";
+import type { githubTriggers } from "@giselle-sdk/flow";
 import { useGenerationRunnerSystem } from "@giselle-sdk/giselle-engine/react";
 import { buildWorkflowFromNode } from "@giselle-sdk/workflow-utils";
 import { clsx } from "clsx/lite";
@@ -20,7 +19,6 @@ import {
 } from "react";
 import type { z } from "zod";
 import { useTrigger } from "../../hooks/use-trigger";
-import { triggerNodeDefaultName } from "../../utils";
 
 export function Button({
 	leftIcon: LeftIcon,
@@ -271,14 +269,36 @@ export function TriggerInputDialog({
 			const generations: Generation[] = [];
 			flow.jobs.map((job) =>
 				job.operations.map((operation) => {
-					const generationInputs: GenerationInput[] = [];
+					const parameterItems: ParameterItem[] = [];
 					if (operation.node.content.type === "trigger") {
 						const formData = new FormData(e.currentTarget);
-						for (const [key, value] of formData.entries()) {
-							generationInputs.push({
-								name: key,
-								value: value.toString(),
-							});
+						for (const input of inputs) {
+							const formDataEntryValue = formData.get(input.name);
+							if (typeof formDataEntryValue === "string") {
+								switch (input.type) {
+									case "text":
+									case "multiline-text":
+										parameterItems.push({
+											type: "string",
+											name: input.name,
+											value: formDataEntryValue,
+										});
+										break;
+									case "number":
+										parameterItems.push({
+											type: "number",
+											name: input.name,
+											value: Number.parseInt(formDataEntryValue),
+										});
+										break;
+									default: {
+										const _exhaustiveCheck: never = input.type;
+										throw new Error(
+											`Unhandled input type: ${_exhaustiveCheck}`,
+										);
+									}
+								}
+							}
 						}
 					}
 					generations.push(
@@ -287,7 +307,10 @@ export function TriggerInputDialog({
 								type: "workspace",
 								id: data.id,
 							},
-							inputs: generationInputs,
+							inputs:
+								parameterItems.length > 0
+									? [{ type: "parameters", items: parameterItems }]
+									: [],
 							...operation.generationTemplate,
 						}),
 					);
@@ -309,7 +332,7 @@ export function TriggerInputDialog({
 				);
 			}
 		},
-		[node.id, data, createGeneration, startGeneration],
+		[node.id, data, createGeneration, startGeneration, inputs],
 	);
 
 	if (isLoading || trigger === undefined) {

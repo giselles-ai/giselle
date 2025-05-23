@@ -22,6 +22,7 @@
 		}
 	},
 	"devDependencies": {
+		"@giselle-sdk/github-tool": "workspace:^",
 		"@giselle-sdk/utils": "workspace:*",
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
 		"tsup": "catalog:",
