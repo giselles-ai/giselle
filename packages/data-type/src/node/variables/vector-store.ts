@@ -5,7 +5,7 @@ const VectorStoreContentBase = z.object({
 });
 type VectorStoreContentBase = z.infer<typeof VectorStoreContentBase>;
 
-const GitHubVectorStoreSource = z.object({
+export const GitHubVectorStoreSource = z.object({
 	provider: z.literal("github"),
 	state: z.discriminatedUnion("status", [
 		z.object({
@@ -18,7 +18,7 @@ const GitHubVectorStoreSource = z.object({
 		}),
 	]),
 });
-type GitHubVectorStoreSource = z.infer<typeof GitHubVectorStoreSource>;
+export type GitHubVectorStoreSource = z.infer<typeof GitHubVectorStoreSource>;
 
 export const VectorStoreContent = VectorStoreContentBase.extend({
 	source: z.discriminatedUnion("provider", [GitHubVectorStoreSource]),
