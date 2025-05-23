@@ -1,7 +1,5 @@
-export type ModelTokenUsage = {
-	promptTokens: number;
-	completionTokens: number;
+export interface ModelTokenUsage {
+	inputTokens: number;
+	outputTokens: number;
 	totalTokens: number;
-};
-
-export type ModelUsage = ModelTokenUsage;
+}

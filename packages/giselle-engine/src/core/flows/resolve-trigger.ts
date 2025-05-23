@@ -1,22 +1,27 @@
 import {
 	type CompletedGeneration,
 	GenerationContext,
+	type GenerationInput,
 	type GenerationOutput,
 	type QueuedGeneration,
 	isTriggerNode,
 } from "@giselle-sdk/data-type";
 import { githubTriggers } from "@giselle-sdk/flow";
+import { isWebhookEvent } from "@giselle-sdk/github-tool";
 import {
 	setGeneration,
 	setGenerationIndex,
 	setNodeGenerationIndex,
 } from "../generations/utils";
+import { buildTriggerInputs } from "../github/trigger-utils";
 import type { GiselleEngineContext } from "../types";
 import { getFlowTrigger } from "./utils";
 
 export async function resolveTrigger(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
+	/** @todo Make this more generic. Should use GenerationContextInput. */
+	githubWebhookEvent?: unknown;
 }) {
 	const operationNode = args.generation.context.operationNode;
 	if (!isTriggerNode(operationNode)) {
@@ -32,14 +37,26 @@ export async function resolveTrigger(args: {
 
 	const generationContext = GenerationContext.parse(args.generation.context);
 
+	let githubWebhookInputs: GenerationInput[] | null = null;
+	if (
+		args.githubWebhookEvent !== undefined &&
+		isWebhookEvent(args.githubWebhookEvent) &&
+		triggerData.configuration.provider === "github"
+	) {
+		githubWebhookInputs = buildTriggerInputs({
+			githubTrigger: githubTriggers[triggerData.configuration.event.id],
+			trigger: triggerData,
+			webhookEvent: args.githubWebhookEvent,
+		});
+	}
+
 	const outputs: GenerationOutput[] = [];
 	switch (triggerData.configuration.provider) {
 		case "github": {
 			const trigger = githubTriggers[triggerData.configuration.event.id];
+			const inputsToUse = githubWebhookInputs ?? generationContext.inputs ?? [];
 			for (const payload of trigger.event.payloads.keyof().options) {
-				const input = generationContext.inputs?.find(
-					(input) => input.name === payload,
-				);
+				const input = inputsToUse.find((i) => i.name === payload);
 				if (input === undefined) {
 					continue;
 				}

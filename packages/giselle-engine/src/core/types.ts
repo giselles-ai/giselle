@@ -22,7 +22,6 @@ export interface GiselleEngineContext {
 		waitForFlushFn?: () => Promise<unknown>;
 	};
 	vault?: Vault;
-	userId?: string;
 }
 
 interface GitHubInstalltionAppAuthResolver {
@@ -40,6 +39,7 @@ export interface GitHubIntegrationConfig {
 		privateKey: string;
 		clientId: string;
 		clientSecret: string;
+		webhookSecret: string;
 	};
 }
 

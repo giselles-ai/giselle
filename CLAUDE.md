@@ -4,6 +4,7 @@
 - Build all: `pnpm build`
 - Build specific packages: `pnpm build-sdk`, `pnpm build-data-type`
 - Type checking: `pnpm check-types`
+- Type check packages with modified files: `pnpm -F <modified files packagename> check-types`
 - Format code: `pnpm format`
 - Development: `pnpm dev` (playground), `pnpm dev:studio.giselles.ai` (studio)
 - Run tests: `pnpm -F <package> test` or `cd <directory> && vitest`
@@ -13,7 +14,9 @@
 
 ## Critical Requirements
 - MUST run `pnpm biome check --write [filename]` after EVERY code modification
+- MUST run `pnpm -F [packagename in file] check-types` to validate type safety of packages with modified files
 - All code changes must be formatted using Biome before being committed
+- All code changes must pass type checking in their respective packages before being committed
 
 ## Code Style Guidelines
 - Use Biome for formatting with tab indentation and double quotes

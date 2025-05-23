@@ -120,7 +120,12 @@ export function createLangfuseTracer({
 	const trace = langfuse.trace({
 		userId: String(settings?.metadata?.userId),
 		name: spanName,
-		metadata: settings?.metadata,
+		metadata: {
+			...settings?.metadata,
+			...(process.env.VERCEL_DEPLOYMENT_ID && {
+				deploymentId: process.env.VERCEL_DEPLOYMENT_ID,
+			}),
+		},
 		input: messages,
 		output,
 		tags,

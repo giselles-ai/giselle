@@ -39,6 +39,39 @@ if (llmProviders.length === 0) {
 }
 
 const integrationConfigs: GiselleIntegrationConfig = {};
+
+const githubAppId = process.env.GITHUB_APP_ID;
+const githubAppPrivateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+const githubAppClientId = process.env.GITHUB_APP_CLIENT_ID;
+const githubAppClientSecret = process.env.GITHUB_APP_CLIENT_SECRET;
+const githubAppWebhookSecret = process.env.GITHUB_APP_WEBHOOK_SECRET;
+
+if (
+	githubAppId !== undefined &&
+	githubAppPrivateKey !== undefined &&
+	githubAppClientId !== undefined &&
+	githubAppClientSecret !== undefined &&
+	githubAppWebhookSecret !== undefined
+) {
+	integrationConfigs.github = {
+		auth: {
+			strategy: "app-installation",
+			appId: "",
+			privateKey: "",
+			resolver: {
+				installationIdForRepo: () => 1234,
+				installtionIds: () => [1234],
+			},
+		},
+		authV2: {
+			appId: githubAppId,
+			privateKey: githubAppPrivateKey,
+			clientId: githubAppClientId,
+			clientSecret: githubAppClientSecret,
+			webhookSecret: githubAppWebhookSecret,
+		},
+	};
+}
 // if (
 // 	process.env.GITHUB_APP_ID &&
 // 	process.env.GITHUB_APP_PRIVATE_KEY &&

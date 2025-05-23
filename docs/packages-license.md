@@ -12986,7 +12986,7 @@ Unknown manually approved
 
 
 <a name="tinyglobby"></a>
-### tinyglobby v0.2.10
+### tinyglobby v0.2.13
 #### 
 
 ##### Paths

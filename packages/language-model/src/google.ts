@@ -1,5 +1,12 @@
 import { z } from "zod";
 import { Capability, LanguageModelBase, Tier } from "./base";
+import {
+	BaseCostCalculator,
+	type CostCalculator,
+	type CostResultForDisplay,
+} from "./costs/calculator";
+import { googleTokenPricing } from "./costs/model-prices";
+import type { ModelTokenUsage } from "./costs/usage";
 
 const GoogleLanguageModelConfigurations = z.object({
 	temperature: z.number(),
@@ -107,3 +114,9 @@ export const models = [
 
 export const LanguageModel = GoogleLanguageModel;
 export type LanguageModel = GoogleLanguageModel;
+
+export class GoogleCostCalculator extends BaseCostCalculator {
+	protected getPricingTable() {
+		return googleTokenPricing;
+	}
+}

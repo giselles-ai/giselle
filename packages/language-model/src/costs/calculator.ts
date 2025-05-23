@@ -1,6 +1,8 @@
+import type { ModelPriceTable } from "./model-prices";
+import { getValidPricing } from "./model-prices";
 import type { BaseTokenPrice, Cost, TokenBasedPricing } from "./pricing";
 import { tokensToMegaTokens } from "./pricing";
-import type { ModelTokenUsage, ModelUsage } from "./usage";
+import type { ModelTokenUsage } from "./usage";
 
 /**
  * For preliminary feedback on UI and LLM o11y platform
@@ -17,19 +19,56 @@ export interface CostResultForDisplay {
  * All provider-specific configurations should extend this interface
  * and be defined in their respective provider files.
  */
-export interface CostCalculator<TUsage extends ModelUsage = ModelTokenUsage> {
-	calculate(model: string, usage: TUsage): Promise<CostResultForDisplay>;
+export interface CostCalculator {
+	calculate(
+		model: string,
+		usage: ModelTokenUsage,
+	): Promise<CostResultForDisplay>;
+}
+
+export abstract class BaseCostCalculator implements CostCalculator {
+	protected abstract getPricingTable(): ModelPriceTable;
+
+	protected getProviderName(): string {
+		return this.constructor.name.replace("CostCalculator", "");
+	}
+
+	async calculate(
+		modelId: string,
+		usage: ModelTokenUsage,
+	): Promise<CostResultForDisplay> {
+		try {
+			const validPrice = getValidPricing(modelId, this.getPricingTable());
+			return calculateTokenCostForDisplay(usage, validPrice.price);
+		} catch (error) {
+			console.error(
+				`Error calculating cost for ${this.getProviderName()} model ${modelId}:`,
+				error,
+			);
+			return {
+				input: 0,
+				output: 0,
+				total: 0,
+			};
+		}
+	}
 }
 
 export class DefaultCostCalculator implements CostCalculator {
-	constructor(private provider: string) {}
+	constructor(private readonly provider: string) {}
 
 	async calculate(
-		model: string,
-		usage: ModelUsage,
+		modelId: string,
+		usage: ModelTokenUsage,
 	): Promise<CostResultForDisplay> {
-		console.log(`No cost calculator found for ${this.provider}`);
-		return { input: 0, output: 0, total: 0 };
+		console.log(
+			`Cost calculation not implemented for provider: ${this.provider}, model: ${modelId}`,
+		);
+		return {
+			input: 0,
+			output: 0,
+			total: 0,
+		};
 	}
 }
 
@@ -51,9 +90,8 @@ export function calculateTokenCostForDisplay(
 		pricing.output.costPerMegaToken * dollarToCent * tokensPerMegaToken;
 
 	// Calculate costs in cents using integer arithmetic
-	const inputCostInCents = usage.promptTokens * inputCostPerMegaTokenInCents;
-	const outputCostInCents =
-		usage.completionTokens * outputCostPerMegaTokenInCents;
+	const inputCostInCents = usage.inputTokens * inputCostPerMegaTokenInCents;
+	const outputCostInCents = usage.outputTokens * outputCostPerMegaTokenInCents;
 	const totalCostInCents = inputCostInCents + outputCostInCents;
 
 	// Convert back to dollars by dividing by 1,000,000 (mega tokens) and 100 (cents)

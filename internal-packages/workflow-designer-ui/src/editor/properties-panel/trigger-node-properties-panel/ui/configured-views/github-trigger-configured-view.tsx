@@ -2,6 +2,7 @@ import type { FlowTriggerId } from "@giselle-sdk/data-type";
 import { githubTriggerIdToLabel } from "@giselle-sdk/flow";
 import { UserIcon } from "lucide-react";
 import { GitHubRepositoryBlock } from "../";
+import ClipboardButton from "../../../../../ui/clipboard-button";
 import { useGitHubTrigger } from "../../../../lib/use-github-trigger";
 
 export function GitHubTriggerConfiguredView({
@@ -73,8 +74,15 @@ export function GitHubTriggerConfiguredView({
 				<div>
 					<div className="space-y-[4px]">
 						<p className="text-[14px] py-[1.5px] text-white-400">Call sign</p>
-						<div className="px-[16px] py-[9px] w-full bg-transparent text-[14px]">
-							/{data.trigger.configuration.event.conditions.callsign}
+						<div className="px-[16px] py-[9px] w-full bg-transparent text-[14px] flex items-center gap-[8px]">
+							<span>
+								/{data.trigger.configuration.event.conditions.callsign}
+							</span>
+							<ClipboardButton
+								text={`/${data.trigger.configuration.event.conditions.callsign}`}
+								className="text-black-400 hover:text-black-300"
+								sizeClassName="h-[16px] w-[16px]"
+							/>
 						</div>
 					</div>
 					<div className="border border-black-800 rounded-[4px] overflow-hidden ml-[16px] pointer-events-none">

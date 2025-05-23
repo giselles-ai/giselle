@@ -17,7 +17,8 @@ import { getFlowTrigger } from "./utils";
 export async function runFlow(args: {
 	triggerId: FlowTriggerId;
 	context: GiselleEngineContext;
-	triggerInputs: GenerationInput[];
+	triggerInputs?: GenerationInput[];
+	payload?: unknown;
 }) {
 	const trigger = await getFlowTrigger({
 		storage: args.context.storage,
@@ -57,7 +58,7 @@ export async function runFlow(args: {
 						},
 						inputs:
 							operationNode.content.type === "trigger"
-								? args.triggerInputs
+								? (args.triggerInputs ?? [])
 								: [],
 					},
 					status: "queued",
@@ -89,6 +90,7 @@ export async function runFlow(args: {
 						await resolveTrigger({
 							context: args.context,
 							generation,
+							githubWebhookEvent: args.payload,
 						});
 						break;
 					default: {

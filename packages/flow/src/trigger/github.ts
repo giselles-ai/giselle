@@ -12,6 +12,7 @@ export const githubIssueCreatedTrigger = {
 		id: "github.issue.created",
 		label: "Issue Created",
 		payloads: z.object({
+			issueNumber: z.number(),
 			title: z.string(),
 			body: z.string(),
 		}),
@@ -24,6 +25,7 @@ export const githubIssueClosedTrigger = {
 		id: "github.issue.closed",
 		label: "Issue Closed",
 		payloads: z.object({
+			issueNumber: z.number(),
 			title: z.string(),
 			body: z.string(),
 		}),

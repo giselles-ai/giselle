@@ -1,4 +1,8 @@
 import { GenerationId } from "@giselle-sdk/data-type";
+import {
+	GitHubWebhookUnauthorizedError,
+	verifyRequest as verifyRequestAsGitHubWebook,
+} from "@giselle-sdk/github-tool";
 import { after } from "next/server";
 import { GiselleEngine, type GiselleEngineConfig } from "../core";
 import {
@@ -114,6 +118,22 @@ export function createHttpHandler({
 				// @ts-expect-error
 				input: await getBody(request),
 			});
+		}
+		/** Experimental implementation for handling webhooks with GiselleEngine */
+		if (routerPath === "experimental_github-webhook") {
+			try {
+				await verifyRequestAsGitHubWebook({
+					secret: config.integrationConfigs?.github?.authV2.webhookSecret ?? "",
+					request,
+				});
+			} catch (e) {
+				if (GitHubWebhookUnauthorizedError.isInstance(e)) {
+					return new Response("Unauthorized", { status: 401 });
+				}
+				return new Response("Internal Server Error", { status: 500 });
+			}
+			after(() => giselleEngine.handleGitHubWebhookV2({ request }));
+			return new Response("Accepted", { status: 202 });
 		}
 		throw new Error(`Invalid router path at ${pathname}`);
 	};

@@ -43,6 +43,9 @@ async function resolveGeneration(args: {
 		...args,
 		storage: args.storage,
 		generationId: nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
+		options: {
+			bypassingCache: true,
+		},
 	});
 	if (generation === undefined || !isCompletedGeneration(generation)) {
 		throw new Error("Generation not completed");
@@ -110,10 +113,6 @@ async function resolveGitHubActionInputs(args: {
 				const _exhaustiveCheck: never = sourceNode;
 				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 			}
-		}
-		if (sourceNode.type === "variable" && sourceNode.content.type === "text") {
-			result[parameter] = sourceNode.content.text;
-			continue;
 		}
 
 		const nodeGenerationIndexes = await getNodeGenerationIndexes({

@@ -3,13 +3,13 @@
 Follow these guidelines when editing this repository.
 
 ## Commands
-- **Build SDK**: `pnpm build-sdk` 
+- **Build SDK**: `turbo build --filter '@giselle-sdk/*' --filter giselle-sdk --cache=local:rw`
   - Add `--filter <package>` to build specific packages.
-- **Check Types**: `pnpm check-types`
+- **Check Types**: `turbo check-types --cache=local:rw`
   - Use `--filter <package>` for package-level checks.
-- **Format**: `pnpm format` 
+- **Format**: `turbo format --cache=local:rw`
   - Prefer `pnpm biome check --write [filename]` for individual files.
-- **Test**: `pnpm test`
+- **Test**: `turbo test --cache=local:rw`
   - Run `pnpm -F <package> test` for package-level tests.
 
 ## Formatting
