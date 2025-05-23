@@ -97,7 +97,7 @@ export function createLangfuseTracer({
 	generationName,
 	settings,
 }: {
-	sessionId?: string;
+	sessionId?: string | null;
 	runningGeneration: RunningGeneration;
 	tags: string[];
 	messages: { messages: unknown[] };

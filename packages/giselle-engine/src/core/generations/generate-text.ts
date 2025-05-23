@@ -500,7 +500,10 @@ export async function generateText(args: {
 
 			// necessary to send telemetry but not explicitly used
 			const langfuse = createLangfuseTracer({
-				sessionId: workspaceId,
+				sessionId:
+					args.generation.context.origin.type === "run"
+						? args.generation.context.origin.id
+						: null,
 				runningGeneration,
 				tags: generateTelemetryTags({
 					provider: operationNode.content.llm.provider,
