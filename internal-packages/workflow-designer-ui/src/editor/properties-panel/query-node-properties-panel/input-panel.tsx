@@ -367,15 +367,9 @@ export function InputPanel({
 					continue;
 				}
 				const newInputId = InputId.generate();
-
-				// Determine label based on connected node type
-				const isDatastoreConnection =
-					outputNode.type === "variable" &&
-					outputNode.content.type === "vectorStore";
-
 				const newInput: Input = {
 					id: newInputId,
-					label: isDatastoreConnection ? "Datasource" : "Input",
+					label: "Input",
 					accessor: newInputId,
 				};
 

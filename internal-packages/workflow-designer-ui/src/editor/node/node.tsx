@@ -125,37 +125,6 @@ export function CustomXyFlowNode({
 	);
 }
 
-/**
- * Check if a specific input port is connected to a Vector Store
- */
-function isInputConnectedToVectorStore(
-	inputId: string,
-	nodeId: string,
-	connections: Array<{
-		inputNode: { id: string };
-		inputId: string;
-		outputNode: { id: string };
-	}>,
-	nodes: Node[],
-): boolean {
-	const connection = connections.find(
-		(conn) => conn.inputNode.id === nodeId && conn.inputId === inputId,
-	);
-
-	if (!connection) {
-		return false;
-	}
-
-	const connectedNode = nodes.find(
-		(node) => node.id === connection.outputNode.id,
-	);
-
-	return (
-		connectedNode?.type === "variable" &&
-		connectedNode.content.type === "vectorStore"
-	);
-}
-
 export function NodeComponent({
 	node,
 	selected,
@@ -207,7 +176,6 @@ export function NodeComponent({
 		tmp.push({ label: node.id.substring(3, 11), tooltip: "Node ID" });
 		return tmp;
 	}, [node]);
-
 	return (
 		<div
 			data-type={node.type}
@@ -414,63 +382,31 @@ export function NodeComponent({
 				<div className="flex justify-between">
 					<div className="grid">
 						{node.content.type !== "action" &&
-							node.inputs?.map((input) => {
-								const isConnectedToVectorStore = isInputConnectedToVectorStore(
-									input.id,
-									node.id,
-									data.connections,
-									data.nodes,
-								);
-								const displayLabel = isConnectedToVectorStore
-									? "Datasource"
-									: input.label;
-
-								return (
-									<div
-										className="relative flex items-center h-[28px]"
-										key={input.id}
-									>
-										<Handle
-											type="target"
-											isConnectable={false}
-											position={Position.Left}
-											id={input.id}
-											className={clsx(
-												"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px]",
-												isConnectedToVectorStore
-													? "!bg-blue-900 !border-blue-900"
-													: "",
-												"group-data-[content-type=textGeneration]:!bg-generation-node-1 group-data-[content-type=textGeneration]:!border-generation-node-1",
-												"group-data-[content-type=imageGeneration]:!bg-image-generation-node-1 group-data-[content-type=imageGeneration]:!border-image-generation-node-1",
-												"group-data-[content-type=webSearch]:!bg-web-search-node-1 group-data-[content-type=webSearch]:!border-web-search-node-1",
-												"group-data-[content-type=audioGeneration]:!bg-audio-generation-node-1 group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
-												"group-data-[content-type=videoGeneration]:!bg-video-generation-node-1 group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
-												"group-data-[content-type=query]:!bg-query-node-1 group-data-[content-type=query]:!border-query-node-1",
-											)}
-										/>
-										{isConnectedToVectorStore ? (
-											<Tooltip
-												text="Connected to Vector Store for data retrieval"
-												variant="dark"
-											>
-												<div
-													className={clsx(
-														"px-[12px] text-blue-400 text-[12px] cursor-help",
-													)}
-												>
-													{displayLabel}
-												</div>
-											</Tooltip>
-										) : (
-											<div
-												className={clsx("px-[12px] text-white-900 text-[12px]")}
-											>
-												{displayLabel}
-											</div>
+							node.inputs?.map((input) => (
+								<div
+									className="relative flex items-center h-[28px]"
+									key={input.id}
+								>
+									<Handle
+										type="target"
+										isConnectable={false}
+										position={Position.Left}
+										id={input.id}
+										className={clsx(
+											"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px]",
+											"group-data-[content-type=textGeneration]:!bg-generation-node-1 group-data-[content-type=textGeneration]:!border-generation-node-1",
+											"group-data-[content-type=imageGeneration]:!bg-image-generation-node-1 group-data-[content-type=imageGeneration]:!border-image-generation-node-1",
+											"group-data-[content-type=webSearch]:!bg-web-search-node-1 group-data-[content-type=webSearch]:!border-web-search-node-1",
+											"group-data-[content-type=audioGeneration]:!bg-audio-generation-node-1 group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
+											"group-data-[content-type=videoGeneration]:!bg-video-generation-node-1 group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
+											"group-data-[content-type=query]:!bg-query-node-1 group-data-[content-type=query]:!border-query-node-1",
 										)}
+									/>
+									<div className={clsx("px-[12px] text-white-900 text-[12px]")}>
+										{input.label}
 									</div>
-								);
-							})}
+								</div>
+							))}
 						{node.content.type === "action" &&
 							node.inputs.map((input) => (
 								<div
