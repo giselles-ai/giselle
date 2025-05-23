@@ -86,7 +86,7 @@ type LangfuseUnit =
 	| "REQUESTS";
 
 export function createLangfuseTracer({
-	workspaceId,
+	sessionId,
 	runningGeneration,
 	tags,
 	messages,
@@ -97,7 +97,7 @@ export function createLangfuseTracer({
 	generationName,
 	settings,
 }: {
-	workspaceId: string;
+	sessionId?: string | null;
 	runningGeneration: RunningGeneration;
 	tags: string[];
 	messages: { messages: unknown[] };
@@ -126,6 +126,7 @@ export function createLangfuseTracer({
 				deploymentId: process.env.VERCEL_DEPLOYMENT_ID,
 			}),
 		},
+		...(sessionId && { sessionId }),
 		input: messages,
 		output,
 		tags,
