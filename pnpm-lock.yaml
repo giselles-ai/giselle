@@ -69,40 +69,7 @@ catalogs:
     '@tiptap/core':
       specifier: 2.11.5
       version: 2.11.5
-    '@tiptap/extension-bold':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/extension-bullet-list':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/extension-code':
-      specifier: 2.11.5
-      version: 2.11.5
     '@tiptap/extension-code-block-lowlight':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/extension-document':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/extension-history':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/extension-italic':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/extension-list-item':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/extension-ordered-list':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/extension-paragraph':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/extension-strike':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/extension-text':
       specifier: 2.11.5
       version: 2.11.5
     '@tiptap/html':
@@ -1228,42 +1195,9 @@ importers:
       '@tiptap/core':
         specifier: 'catalog:'
         version: 2.11.5(@tiptap/pm@2.11.5)
-      '@tiptap/extension-bold':
-        specifier: 'catalog:'
-        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
-      '@tiptap/extension-bullet-list':
-        specifier: 'catalog:'
-        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
-      '@tiptap/extension-code':
-        specifier: 'catalog:'
-        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
       '@tiptap/extension-code-block-lowlight':
         specifier: 'catalog:'
         version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/extension-code-block@2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)(highlight.js@11.11.1)(lowlight@3.3.0)
-      '@tiptap/extension-document':
-        specifier: 'catalog:'
-        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
-      '@tiptap/extension-history':
-        specifier: 'catalog:'
-        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)
-      '@tiptap/extension-italic':
-        specifier: 'catalog:'
-        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
-      '@tiptap/extension-list-item':
-        specifier: 'catalog:'
-        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
-      '@tiptap/extension-ordered-list':
-        specifier: 'catalog:'
-        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
-      '@tiptap/extension-paragraph':
-        specifier: 'catalog:'
-        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
-      '@tiptap/extension-strike':
-        specifier: 'catalog:'
-        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
-      '@tiptap/extension-text':
-        specifier: 'catalog:'
-        version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))
       '@tiptap/html':
         specifier: 'catalog:'
         version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)
