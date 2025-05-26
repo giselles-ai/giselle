@@ -12,32 +12,32 @@ export type DomainTag = {
 const MAX_DOMAINS = 10;
 
 type DomainTagInputProps = {
-        domains: DomainTag[];
-        onAddDomain: (domain: string) => void;
-        onRemoveDomain: (id: string) => void;
-        placeholder?: string;
-        className?: string;
-        label?: string;
-        /**
-         * When true, disallow adding new domains regardless of the per-list
-         * limit. Useful for enforcing a global maximum across lists.
-         */
-        disableAdd?: boolean;
+	domains: DomainTag[];
+	onAddDomain: (domain: string) => void;
+	onRemoveDomain: (id: string) => void;
+	placeholder?: string;
+	className?: string;
+	label?: string;
+	/**
+	 * When true, disallow adding new domains regardless of the per-list
+	 * limit. Useful for enforcing a global maximum across lists.
+	 */
+	disableAdd?: boolean;
 };
 
 export function DomainTagInput({
-        domains,
-        onAddDomain,
-        onRemoveDomain,
-        placeholder = "Enter text to add",
-        className = "",
-        label,
-        disableAdd = false,
+	domains,
+	onAddDomain,
+	onRemoveDomain,
+	placeholder = "Enter text to add",
+	className = "",
+	label,
+	disableAdd = false,
 }: DomainTagInputProps) {
 	const [inputValue, setInputValue] = useState("");
 
-        // Check if maximum domains limit reached
-        const isMaxReached = domains.length >= MAX_DOMAINS || disableAdd;
+	// Check if maximum domains limit reached
+	const isMaxReached = domains.length >= MAX_DOMAINS || disableAdd;
 
 	const handleAddDomain = () => {
 		const value = inputValue.trim();
