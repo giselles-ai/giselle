@@ -48,11 +48,14 @@ export function createHttpHandler({
 	config: NextGiselleEngineConfig;
 }) {
 	const jsonRouter: JsonRouterHandlers = {} as JsonRouterHandlers;
-	for (const [path, createRoute] of Object.entries(createJsonRouters)) {
-		if (isJsonRouterPath(path)) {
-			// @ts-expect-error
-			jsonRouter[path] = createRoute(giselleEngine);
-		}
+	// createJsonRouters has a complex type structure
+	// Using Object.entries() would make createRoute become `any` type
+	// Using Object.keys() + type casting to avoid this issue
+	for (const path of Object.keys(
+		createJsonRouters,
+	) as (keyof typeof createJsonRouters)[]) {
+		// @ts-expect-error
+		jsonRouter[path] = createJsonRouters[path](giselleEngine);
 	}
 
 	const formDataRouter: FormDataRouterHandlers = {} as FormDataRouterHandlers;
