@@ -1,4 +1,4 @@
-import type { WorkspaceId } from "@giselle-sdk/data-type";
+import type { UsageItem, WorkspaceId } from "@giselle-sdk/data-type";
 import type {
 	GitHubInstallationAppAuth,
 	GitHubPersonalAccessTokenAuth,
@@ -22,6 +22,7 @@ export interface GiselleEngineContext {
 		waitForFlushFn?: () => Promise<unknown>;
 	};
 	vault?: Vault;
+	onUsageResolved?: ModelUsageResolvedCallback;
 }
 
 interface GitHubInstalltionAppAuthResolver {
@@ -56,6 +57,14 @@ export type ConsumeAgentTimeCallback = (
 export type FetchUsageLimitsFn = (
 	workspaceId: WorkspaceId,
 ) => Promise<UsageLimits>;
+
+export type ModelUsageResolvedCallback = (params: {
+	workspaceId: WorkspaceId;
+	model: string;
+	provider: string;
+	endedAt: Date;
+	usageItems: UsageItem[];
+}) => Promise<void>;
 
 export interface GiselleEngineConfig {
 	storage: Storage;

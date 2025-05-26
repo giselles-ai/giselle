@@ -4,7 +4,7 @@ import type {
 	GitHubTriggerEvent,
 } from "@/services/external/github/types";
 import type { TeamId } from "@/services/teams/types";
-import type { WorkspaceId } from "@giselle-sdk/data-type";
+import type { UsageMetric, UsageUnit, WorkspaceId } from "@giselle-sdk/data-type";
 import type {
 	FlowId,
 	GitHubEventNodeMapping,
@@ -354,10 +354,6 @@ export const modelUsage = pgTable(
 		createdAtIdx: index().on(table.createdAt),
 	}),
 );
-
-export type UsageMetric = "input_token" | "output_token";
-
-export type UsageUnit = "tokens";
 
 export const modelUsageItems = pgTable(
 	"model_usage_items",

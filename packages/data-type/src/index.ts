@@ -8,3 +8,4 @@ export * from "./workspace";
 export * from "./workspace/integrations";
 export * from "./flow";
 export * from "./integrations";
+export * from "./usage-based-billing";

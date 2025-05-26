@@ -1,5 +1,5 @@
 import { db, modelUsage, modelUsageItems } from "@/drizzle";
-import type { UsageMetric, UsageUnit } from "@/drizzle/schema";
+import type { UsageMetric, UsageUnit } from "@giselle-sdk/data-type";
 import { createId } from "@paralleldrive/cuid2";
 import { and, eq, gte, lt } from "drizzle-orm";
 
