@@ -47,6 +47,7 @@ import {
 	getNodeGenerationIndexes,
 	getRedirectedUrlAndTitle,
 	handleAgentTimeConsumption,
+	handleModelUsage,
 	setGeneration,
 	setGenerationIndex,
 	setNodeGenerationIndex,
@@ -496,6 +497,28 @@ export async function generateText(args: {
 				workspaceId,
 				generation: completedGeneration,
 				onConsumeAgentTime: args.context.onConsumeAgentTime,
+			});
+
+			await handleModelUsage({
+				workspaceId,
+				model: operationNode.content.llm.id,
+				provider: operationNode.content.llm.provider,
+				endedAt: new Date(completedGeneration.completedAt),
+				usageItems: tokenUsage
+					? [
+							{
+								metric: "input_token",
+								amount: tokenUsage.promptTokens,
+								unit: "tokens",
+							},
+							{
+								metric: "output_token",
+								amount: tokenUsage.completionTokens,
+								unit: "tokens",
+							},
+						]
+					: [],
+				onUsageResolved: args.context.onUsageResolved,
 			});
 
 			// necessary to send telemetry but not explicitly used

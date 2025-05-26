@@ -16,6 +16,8 @@ import {
 	OutputId,
 	type RunId,
 	type TextGenerationNode,
+	type UsageMetric,
+	type UsageUnit,
 	type WorkspaceId,
 } from "@giselle-sdk/data-type";
 import { hasTierAccess, languageModels } from "@giselle-sdk/language-model";
@@ -23,7 +25,10 @@ import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
 import type { CoreMessage, DataContent, FilePart, ImagePart } from "ai";
 import type { Storage } from "unstorage";
 import { getRun } from "../runs/utils";
-import type { GiselleEngineContext } from "../types";
+import type {
+	GiselleEngineContext,
+	ModelUsageResolvedCallback,
+} from "../types";
 
 export interface GeneratedImageData {
 	uint8Array: Uint8Array;
@@ -829,4 +834,29 @@ export async function extractWorkspaceIdFromOrigin(args: {
 		throw new Error("Run not completed");
 	}
 	return run.workspaceId;
+}
+
+export async function handleModelUsage(args: {
+	workspaceId: WorkspaceId;
+	model: string;
+	provider: string;
+	endedAt: Date;
+	usageItems: {
+		metric: UsageMetric;
+		amount: number;
+		unit: UsageUnit;
+	}[];
+	onUsageResolved?: NonNullable<GiselleEngineContext["onUsageResolved"]>;
+}) {
+	if (!args.onUsageResolved) {
+		return;
+	}
+
+	await args.onUsageResolved({
+		workspaceId: args.workspaceId,
+		model: args.model,
+		provider: args.provider,
+		endedAt: args.endedAt,
+		usageItems: args.usageItems,
+	});
 }
