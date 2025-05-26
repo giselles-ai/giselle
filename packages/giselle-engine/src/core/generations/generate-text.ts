@@ -39,6 +39,7 @@ import {
 	getGeneration,
 	getNodeGenerationIndexes,
 	handleAgentTimeConsumption,
+	queryResultToText,
 	setGeneration,
 	setGenerationIndex,
 	setNodeGenerationIndex,
@@ -216,9 +217,9 @@ export async function generateText(args: {
 				throw new Error("Generation output type is not supported");
 			case "generated-text":
 				return generationOutput.content;
-			case "query-result":
-				// TODO: format for context
-				throw new Error("Not implemented");
+			case "query-result": {
+				return queryResultToText(generationOutput);
+			}
 			default: {
 				const _exhaustiveCheck: never = generationOutput;
 				throw new Error(

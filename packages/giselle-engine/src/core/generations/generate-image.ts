@@ -39,6 +39,7 @@ import {
 	getGeneration,
 	getNodeGenerationIndexes,
 	handleAgentTimeConsumption,
+	queryResultToText,
 	setGeneratedImage,
 	setGeneration,
 	setGenerationIndex,
@@ -196,8 +197,7 @@ export async function generateImage(args: {
 			case "generated-text":
 				return generationOutput.content;
 			case "query-result":
-				// TODO: format for context
-				throw new Error("Not implemented");
+				return queryResultToText(generationOutput);
 			default: {
 				const _exhaustiveCheck: never = generationOutput;
 				throw new Error(
