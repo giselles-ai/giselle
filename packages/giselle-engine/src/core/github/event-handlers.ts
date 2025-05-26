@@ -27,6 +27,7 @@ export type EventHandlerArgs<TEventName extends WebhookEventName> = {
 
 export type EventHandlerResult = {
 	shouldRun: boolean;
+	reactionNodeId?: string;
 };
 
 export async function handleIssueOpened<TEventName extends WebhookEventName>(
@@ -44,13 +45,7 @@ export async function handleIssueOpened<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	await args.deps.addReaction({
-		id: issue.node_id,
-		content: "EYES",
-		authConfig: args.authConfig,
-	});
-
-	return { shouldRun: true };
+	return { shouldRun: true, reactionNodeId: issue.node_id };
 }
 
 export async function handleIssueClosed<TEventName extends WebhookEventName>(
@@ -68,13 +63,7 @@ export async function handleIssueClosed<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	await args.deps.addReaction({
-		id: issue.node_id,
-		content: "EYES",
-		authConfig: args.authConfig,
-	});
-
-	return { shouldRun: true };
+	return { shouldRun: true, reactionNodeId: issue.node_id };
 }
 
 export async function handleIssueCommentCreated<
@@ -102,13 +91,7 @@ export async function handleIssueCommentCreated<
 		return { shouldRun: false };
 	}
 
-	await args.deps.addReaction({
-		id: comment.node_id,
-		content: "EYES",
-		authConfig: args.authConfig,
-	});
-
-	return { shouldRun: true };
+	return { shouldRun: true, reactionNodeId: comment.node_id };
 }
 
 export async function handlePullRequestCommentCreated<
@@ -136,13 +119,10 @@ export async function handlePullRequestCommentCreated<
 		return { shouldRun: false };
 	}
 
-	await args.deps.addReaction({
-		id: args.event.data.payload.comment.node_id,
-		content: "EYES",
-		authConfig: args.authConfig,
-	});
-
-	return { shouldRun: true };
+	return {
+		shouldRun: true,
+		reactionNodeId: args.event.data.payload.comment.node_id,
+	};
 }
 
 export async function handlePullRequestOpened<
@@ -160,13 +140,7 @@ export async function handlePullRequestOpened<
 		return { shouldRun: false };
 	}
 
-	await args.deps.addReaction({
-		id: pullRequest.node_id,
-		content: "EYES",
-		authConfig: args.authConfig,
-	});
-
-	return { shouldRun: true };
+	return { shouldRun: true, reactionNodeId: pullRequest.node_id };
 }
 
 export async function handlePullRequestReadyForReview<
@@ -188,13 +162,7 @@ export async function handlePullRequestReadyForReview<
 		return { shouldRun: false };
 	}
 
-	await args.deps.addReaction({
-		id: pullRequest.node_id,
-		content: "EYES",
-		authConfig: args.authConfig,
-	});
-
-	return { shouldRun: true };
+	return { shouldRun: true, reactionNodeId: pullRequest.node_id };
 }
 
 export async function handlePullRequestClosed<
@@ -212,13 +180,7 @@ export async function handlePullRequestClosed<
 		return { shouldRun: false };
 	}
 
-	await args.deps.addReaction({
-		id: pullRequest.node_id,
-		content: "EYES",
-		authConfig: args.authConfig,
-	});
-
-	return { shouldRun: true };
+	return { shouldRun: true, reactionNodeId: pullRequest.node_id };
 }
 
 export const eventHandlers = [
@@ -260,6 +222,14 @@ export async function processEvent<TEventName extends WebhookEventName>(
 			authConfig,
 			deps,
 		});
+
+		if (result.reactionNodeId) {
+			await deps.addReaction({
+				id: result.reactionNodeId,
+				content: "EYES",
+				authConfig,
+			});
+		}
 
 		if (result.shouldRun) {
 			await deps.runFlow({

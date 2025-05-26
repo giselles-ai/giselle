@@ -9,7 +9,11 @@ import {
 	isCompletedGeneration,
 } from "@giselle-sdk/data-type";
 import { githubActions } from "@giselle-sdk/flow";
-import { createIssue, createIssueComment } from "@giselle-sdk/github-tool";
+import {
+	createIssue,
+	createIssueComment,
+	createPullRequestComment,
+} from "@giselle-sdk/github-tool";
 import {
 	isJsonContent,
 	jsonContentToText,
@@ -250,6 +254,33 @@ async function executeGitHubActionCommand(args: {
 				...githubActions["github.create.issueComment"].command.parameters.parse(
 					args.inputs,
 				),
+				repositoryNodeId: args.state.repositoryNodeId,
+				authConfig: {
+					strategy: "app-installation",
+					appId: authConfig.appId,
+					privateKey: authConfig.privateKey,
+					installationId: args.state.installationId,
+				},
+			});
+			const resultOutput = args.generation.context.operationNode.outputs.find(
+				(output) => output.accessor === "action-result",
+			);
+			if (resultOutput === undefined) {
+				return [];
+			}
+			return [
+				{
+					type: "generated-text",
+					content: JSON.stringify(result),
+					outputId: resultOutput.id,
+				},
+			];
+		}
+		case "github.create.pullRequestComment": {
+			const result = await createPullRequestComment({
+				...githubActions[
+					"github.create.pullRequestComment"
+				].command.parameters.parse(args.inputs),
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: {
 					strategy: "app-installation",

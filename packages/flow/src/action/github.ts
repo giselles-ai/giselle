@@ -31,14 +31,29 @@ export const githubCreateIssueCommentAction = {
 	},
 } as const satisfies GitHubActionBase;
 
+export const githubCreatePullRequestCommentAction = {
+	provider,
+	command: {
+		id: "github.create.pullRequestComment",
+		label: "Create Pull Request Comment",
+		parameters: z.object({
+			pullNumber: z.coerce.number(),
+			body: z.string(),
+		}),
+	},
+} as const satisfies GitHubActionBase;
+
 export const actions = {
 	[githubCreateIssueAction.command.id]: githubCreateIssueAction,
 	[githubCreateIssueCommentAction.command.id]: githubCreateIssueCommentAction,
+	[githubCreatePullRequestCommentAction.command.id]:
+		githubCreatePullRequestCommentAction,
 } as const;
 
 export type GitHubAction =
 	| typeof githubCreateIssueAction
-	| typeof githubCreateIssueCommentAction;
+	| typeof githubCreateIssueCommentAction
+	| typeof githubCreatePullRequestCommentAction;
 
 export type ActionCommandId = keyof typeof actions;
 
@@ -48,6 +63,8 @@ export function actionIdToLabel(triggerId: ActionCommandId) {
 			return githubCreateIssueAction.command.label;
 		case "github.create.issueComment":
 			return githubCreateIssueCommentAction.command.label;
+		case "github.create.pullRequestComment":
+			return githubCreatePullRequestCommentAction.command.label;
 		default: {
 			const exhaustiveCheck: never = triggerId;
 			throw new Error(`Unknown trigger ID: ${exhaustiveCheck}`);

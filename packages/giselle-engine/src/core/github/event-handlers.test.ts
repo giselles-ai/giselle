@@ -128,12 +128,11 @@ describe("GitHub Event Handlers", () => {
 			const result = await handleIssueOpened(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(true);
-			expect(args.deps.addReaction).toHaveBeenCalledWith({
-				id: "issue-node-id",
-				content: "EYES",
-				authConfig: args.authConfig,
+			expect(result).toEqual({
+				shouldRun: true,
+				reactionNodeId: "issue-node-id",
 			});
+			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 
 		it("should not run if event type doesn't match", async () => {
@@ -159,7 +158,7 @@ describe("GitHub Event Handlers", () => {
 			const result = await handleIssueOpened(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(false);
+			expect(result).toEqual({ shouldRun: false });
 			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 
@@ -183,7 +182,7 @@ describe("GitHub Event Handlers", () => {
 			const result = await handleIssueOpened(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(false);
+			expect(result).toEqual({ shouldRun: false });
 			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 	});
@@ -213,13 +212,12 @@ describe("GitHub Event Handlers", () => {
 			const result = await handleIssueCommentCreated(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(true);
-			expect(args.deps.parseCommand).toHaveBeenCalledWith("@giselle help me");
-			expect(args.deps.addReaction).toHaveBeenCalledWith({
-				id: "comment-node-id",
-				content: "EYES",
-				authConfig: args.authConfig,
+			expect(result).toEqual({
+				shouldRun: true,
+				reactionNodeId: "comment-node-id",
 			});
+			expect(args.deps.parseCommand).toHaveBeenCalledWith("@giselle help me");
+			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 
 		it("should not run if callsign doesn't match", async () => {
@@ -253,7 +251,7 @@ describe("GitHub Event Handlers", () => {
 			const result = await handleIssueCommentCreated(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(false);
+			expect(result).toEqual({ shouldRun: false });
 			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 	});
@@ -280,12 +278,11 @@ describe("GitHub Event Handlers", () => {
 			const result = await handleIssueClosed(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(true);
-			expect(args.deps.addReaction).toHaveBeenCalledWith({
-				id: "issue-node-id",
-				content: "EYES",
-				authConfig: args.authConfig,
+			expect(result).toEqual({
+				shouldRun: true,
+				reactionNodeId: "issue-node-id",
 			});
+			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 
 		it("should not run if trigger event ID doesn't match", async () => {
@@ -309,7 +306,7 @@ describe("GitHub Event Handlers", () => {
 			const result = await handleIssueClosed(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(false);
+			expect(result).toEqual({ shouldRun: false });
 			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 	});
@@ -336,12 +333,11 @@ describe("GitHub Event Handlers", () => {
 			const result = await handlePullRequestOpened(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(true);
-			expect(args.deps.addReaction).toHaveBeenCalledWith({
-				id: "pr-node-id",
-				content: "EYES",
-				authConfig: args.authConfig,
+			expect(result).toEqual({
+				shouldRun: true,
+				reactionNodeId: "pr-node-id",
 			});
+			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 
 		it("should not run if trigger event ID doesn't match", async () => {
@@ -365,7 +361,7 @@ describe("GitHub Event Handlers", () => {
 			const result = await handlePullRequestOpened(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(false);
+			expect(result).toEqual({ shouldRun: false });
 			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 	});
@@ -392,12 +388,11 @@ describe("GitHub Event Handlers", () => {
 			const result = await handlePullRequestClosed(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(true);
-			expect(args.deps.addReaction).toHaveBeenCalledWith({
-				id: "pr-node-id",
-				content: "EYES",
-				authConfig: args.authConfig,
+			expect(result).toEqual({
+				shouldRun: true,
+				reactionNodeId: "pr-node-id",
 			});
+			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 
 		it("should not run if trigger event ID doesn't match", async () => {
@@ -421,7 +416,7 @@ describe("GitHub Event Handlers", () => {
 			const result = await handlePullRequestClosed(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(false);
+			expect(result).toEqual({ shouldRun: false });
 			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 	});
@@ -455,13 +450,12 @@ describe("GitHub Event Handlers", () => {
 			const result = await handlePullRequestCommentCreated(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(true);
-			expect(args.deps.parseCommand).toHaveBeenCalledWith("@giselle help me");
-			expect(args.deps.addReaction).toHaveBeenCalledWith({
-				id: "comment-node-id",
-				content: "EYES",
-				authConfig: args.authConfig,
+			expect(result).toEqual({
+				shouldRun: true,
+				reactionNodeId: "comment-node-id",
 			});
+			expect(args.deps.parseCommand).toHaveBeenCalledWith("@giselle help me");
+			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 
 		it("should not run if callsign doesn't match", async () => {
@@ -499,7 +493,7 @@ describe("GitHub Event Handlers", () => {
 			const result = await handlePullRequestCommentCreated(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(false);
+			expect(result).toEqual({ shouldRun: false });
 			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 	});
@@ -527,12 +521,11 @@ describe("GitHub Event Handlers", () => {
 			const result = await handlePullRequestReadyForReview(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(true);
-			expect(args.deps.addReaction).toHaveBeenCalledWith({
-				id: "pr-node-id",
-				content: "EYES",
-				authConfig: args.authConfig,
+			expect(result).toEqual({
+				shouldRun: true,
+				reactionNodeId: "pr-node-id",
 			});
+			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 
 		it("should not run if trigger event ID doesn't match", async () => {
@@ -556,7 +549,7 @@ describe("GitHub Event Handlers", () => {
 			const result = await handlePullRequestReadyForReview(args);
 
 			// Assert
-			expect(result.shouldRun).toBe(false);
+			expect(result).toEqual({ shouldRun: false });
 			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
 	});
@@ -631,6 +624,11 @@ describe("GitHub Event Handlers", () => {
 				triggerId: mockFlowTriggerId,
 				payload: event,
 			});
+			expect(testDeps.addReaction).toHaveBeenCalledWith({
+				id: "issue-node-id",
+				content: "EYES",
+				authConfig: expect.anything(),
+			});
 		});
 
 		it("should return false when trigger is disabled", async () => {
@@ -690,6 +688,7 @@ describe("GitHub Event Handlers", () => {
 			// Assert
 			expect(result).toBe(false);
 			expect(testDeps.runFlow).not.toHaveBeenCalled();
+			expect(testDeps.addReaction).not.toHaveBeenCalled();
 		});
 	});
 });
