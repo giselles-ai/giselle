@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 1048 MIT
+* 1056 MIT
 * 110 Apache 2.0
 * 58 ISC
 * 34 New BSD
@@ -3704,6 +3704,17 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@tiptap/extension-blockquote"></a>
+### @tiptap/extension-blockquote v2.12.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="@tiptap/extension-bold"></a>
 ### @tiptap/extension-bold v2.11.5
 #### 
@@ -3781,6 +3792,17 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@tiptap/extension-dropcursor"></a>
+### @tiptap/extension-dropcursor v2.12.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="@tiptap/extension-floating-menu"></a>
 ### @tiptap/extension-floating-menu v2.11.5
 #### 
@@ -3792,8 +3814,52 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@tiptap/extension-gapcursor"></a>
+### @tiptap/extension-gapcursor v2.12.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@tiptap/extension-hard-break"></a>
+### @tiptap/extension-hard-break v2.12.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@tiptap/extension-heading"></a>
+### @tiptap/extension-heading v2.12.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="@tiptap/extension-history"></a>
 ### @tiptap/extension-history v2.11.5
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@tiptap/extension-horizontal-rule"></a>
+### @tiptap/extension-horizontal-rule v2.12.0
 #### 
 
 ##### Paths
@@ -3869,6 +3935,17 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@tiptap/extension-text-style"></a>
+### @tiptap/extension-text-style v2.12.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="@tiptap/html"></a>
 ### @tiptap/html v2.11.5
 #### 
@@ -3893,6 +3970,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@tiptap/react"></a>
 ### @tiptap/react v2.11.5
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@tiptap/starter-kit"></a>
+### @tiptap/starter-kit v2.11.5
 #### 
 
 ##### Paths
