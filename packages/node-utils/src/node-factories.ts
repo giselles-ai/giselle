@@ -154,7 +154,10 @@ const textGenerationFactoryImpl = {
 
 		if (clonedContent.prompt && isJsonContent(clonedContent.prompt)) {
 			try {
-				const promptJson: JSONContent = JSON.parse(clonedContent.prompt);
+				const promptJsonContent: JSONContent =
+					typeof clonedContent.prompt === "string"
+						? JSON.parse(clonedContent.prompt)
+						: clonedContent.prompt;
 
 				function keepSourceRefs(
 					content: JSONContent[] | undefined,
@@ -186,11 +189,13 @@ const textGenerationFactoryImpl = {
 						);
 				}
 
-				const processedPromptContent = keepSourceRefs(promptJson.content);
+				const processedPromptContent = keepSourceRefs(
+					promptJsonContent.content,
+				);
 
 				if (processedPromptContent && processedPromptContent.length > 0) {
-					promptJson.content = processedPromptContent;
-					clonedContent.prompt = JSON.stringify(promptJson);
+					promptJsonContent.content = processedPromptContent;
+					clonedContent.prompt = JSON.stringify(promptJsonContent);
 				} else {
 					clonedContent.prompt = "";
 				}
