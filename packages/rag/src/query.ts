@@ -28,6 +28,9 @@ export async function query<
 		similarityThreshold = 0.5,
 		queryFunction,
 	} = params;
+	if (question.length === 0) {
+		throw new Error("Question cannot be empty");
+	}
 	const embedder = new OpenAIEmbedder();
 	const qEmbedding = await embedder.embed(question);
 
