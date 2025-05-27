@@ -4,8 +4,8 @@ import {
 	type GenerationTemplate,
 	type Job,
 	JobId,
-	type Node,
 	type NodeId,
+	type NodeLike,
 	type Operation,
 	type OperationNode,
 	type WorkflowId,
@@ -55,10 +55,10 @@ export function createConnectedNodeIdMap(
  */
 export function findConnectedNodeMap(
 	startNodeId: NodeId,
-	nodeMap: Map<NodeId, Node>,
+	nodeMap: Map<NodeId, NodeLike>,
 	connectionMap: ConnectedNodeIdMap,
-): Map<NodeId, Node> {
-	const connectedNodeMap = new Map<NodeId, Node>();
+): Map<NodeId, NodeLike> {
+	const connectedNodeMap = new Map<NodeId, NodeLike>();
 	const stack: NodeId[] = [startNodeId];
 
 	while (stack.length > 0) {
@@ -118,7 +118,7 @@ export function findConnectedConnectionMap(
  * @returns Map of job IDs to job objects
  */
 export function createJobMap(
-	nodeSet: Set<Node>,
+	nodeSet: Set<NodeLike>,
 	connectionSet: Set<Connection>,
 	workflowId: WorkflowId,
 ) {

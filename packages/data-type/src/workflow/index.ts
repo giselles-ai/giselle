@@ -1,7 +1,7 @@
 import { createIdGenerator } from "@giselle-sdk/utils";
 import { z } from "zod";
 import { GenerationTemplate } from "../generation/template";
-import { Node } from "../node";
+import { NodeLike } from "../node";
 
 export const JobId = createIdGenerator("jb");
 export type JobId = z.infer<typeof JobId.schema>;
@@ -9,7 +9,7 @@ export const WorkflowId = createIdGenerator("wf");
 export type WorkflowId = z.infer<typeof WorkflowId.schema>;
 
 export const Operation = z.object({
-	node: Node,
+	node: NodeLike,
 	generationTemplate: GenerationTemplate,
 });
 export type Operation = z.infer<typeof Operation>;
@@ -24,6 +24,6 @@ export type Job = z.infer<typeof Job>;
 export const Workflow = z.object({
 	id: WorkflowId.schema,
 	jobs: z.array(Job),
-	nodes: z.array(Node),
+	nodes: z.array(NodeLike),
 });
 export type Workflow = z.infer<typeof Workflow>;

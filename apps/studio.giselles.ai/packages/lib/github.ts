@@ -4,6 +4,7 @@ import { db, type githubIntegrationSettings } from "@/drizzle";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { gitHubAppInstallURL } from "@/services/external/github";
 import type {
+	GitHubIntegrationErrorState,
 	GitHubIntegrationInstalledState,
 	GitHubIntegrationInvalidCredentialState,
 	GitHubIntegrationNotInstalledState,
@@ -25,12 +26,24 @@ export async function getGitHubIntegrationState(
 			status: identityState.status,
 		};
 	}
+	if (identityState.status === "error") {
+		return {
+			status: "error",
+			errorMessage: identityState.errorMessage,
+		};
+	}
 
 	const gitHubUserClient = identityState.gitHubUserClient;
 	const [{ installations }, installationUrl] = await Promise.all([
 		gitHubUserClient.getInstallations(),
 		gitHubAppInstallURL(),
 	]);
+	if (installationUrl == null) {
+		return {
+			status: "error",
+			errorMessage: "Failed to get GitHub App installation URL.",
+		};
+	}
 	if (installations.length === 0) {
 		return {
 			status: "not-installed",
@@ -76,6 +89,7 @@ export type GitHubIntegrationState = (
 	| GitHubIntegrationInvalidCredentialState
 	| GitHubIntegrationNotInstalledState
 	| GitHubIntegrationInstalledState
+	| GitHubIntegrationErrorState
 ) &
 	GitHubIntegrationSettingState;
 

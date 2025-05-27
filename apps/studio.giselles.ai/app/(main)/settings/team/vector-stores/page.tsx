@@ -4,7 +4,7 @@ import { githubVectorStoreFlag } from "@/flags";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 import { desc, eq } from "drizzle-orm";
-import { ExternalLink } from "lucide-react";
+import { AlertCircle, ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
 import { deleteRepositoryIndex, registerRepositoryIndex } from "./actions";
 import { RepositoryItem } from "./repository-item";
@@ -22,6 +22,12 @@ export default async function TeamVectorStorePage() {
 		githubIdentityState.status === "invalid-credential"
 	) {
 		return <GitHubAuthRequiredCard />;
+	}
+
+	if (githubIdentityState.status === "error") {
+		return (
+			<GitHubAuthErrorCard errorMessage={githubIdentityState.errorMessage} />
+		);
 	}
 
 	const userClient = githubIdentityState.gitHubUserClient;
@@ -117,6 +123,32 @@ function GitHubAuthRequiredCard() {
 					>
 						Open Authentication Settings
 					</a>
+				</div>
+			</Card>
+		</div>
+	);
+}
+
+function GitHubAuthErrorCard({ errorMessage }: { errorMessage: string }) {
+	return (
+		<div className="flex flex-col gap-[24px]">
+			<h3
+				className="text-primary-100 font-semibold text-[28px] leading-[28px] tracking-[-0.011em] font-hubot"
+				style={{ textShadow: "0px 0px 20px hsla(207, 100%, 48%, 1)" }}
+			>
+				Vector Store
+			</h3>
+			<Card className="border-[0.5px] border-red-500/50 rounded-[8px] bg-red-500/5 p-6">
+				<div className="flex flex-col items-center justify-center py-8">
+					<div className="flex items-center gap-2 mb-4">
+						<AlertCircle className="text-red-400" size={24} />
+						<h4 className="text-red-200 font-medium text-[18px] leading-[21.6px] font-hubot">
+							GitHub authentication error occurred.
+						</h4>
+					</div>
+					<p className="text-red-300 text-[14px] leading-[20.4px] font-geist text-center mb-4">
+						{errorMessage}
+					</p>
 				</div>
 			</Card>
 		</div>

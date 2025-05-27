@@ -2,7 +2,9 @@ import {
 	ConnectionId,
 	type InputId,
 	type Node,
+	type NodeBase,
 	NodeId,
+	type NodeLike,
 	type NodeReference,
 	NodeUIState,
 	type OutputId,
@@ -142,8 +144,8 @@ export function WorkflowDesigner({
 			schemaVersion: "20250221",
 		} satisfies Workspace;
 	}
-	function updateNodeData<T extends Node>(node: T, data: Partial<T>) {
-		nodes = [...nodes.filter((n) => n.id !== node.id), { ...node, ...data }];
+	function updateNodeData<T extends NodeBase>(node: T, data: Partial<T>) {
+		nodes = nodes.map((n) => (n.id !== node.id ? n : { ...n, ...data }));
 		updateWorkflowMap();
 	}
 	function addConnection({
@@ -152,9 +154,9 @@ export function WorkflowDesigner({
 		inputId,
 		inputNode,
 	}: {
-		outputNode: Node;
+		outputNode: NodeLike;
 		outputId: OutputId;
-		inputNode: Node;
+		inputNode: NodeLike;
 		inputId: InputId;
 	}) {
 		connections = [

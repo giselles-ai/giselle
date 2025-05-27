@@ -3,8 +3,8 @@ import {
 	ConnectionId,
 	type Input,
 	InputId,
-	type Node,
 	NodeId,
+	type NodeLike,
 	type NodeUIState,
 	type Output,
 	OutputId,
@@ -27,7 +27,7 @@ export async function createSampleWorkspace(args: {
 		workspaceId: args.context.sampleAppWorkspaceId,
 	});
 	const idMap = new Map<string, string>();
-	const newNodes: Node[] = [];
+	const newNodes: NodeLike[] = [];
 	for (const templateNode of templateWorkspace.nodes) {
 		const newInputs: Input[] = [];
 		const newOutputs: Output[] = [];

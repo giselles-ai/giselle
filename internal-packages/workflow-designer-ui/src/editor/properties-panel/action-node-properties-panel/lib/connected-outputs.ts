@@ -1,5 +1,12 @@
-import type { ConnectionId, Input, Node, Output } from "@giselle-sdk/data-type";
+import type {
+	ConnectionId,
+	Input,
+	NodeLike,
+	Output,
+} from "@giselle-sdk/data-type";
 
 export type InputWithConnectedOutput = Input & {
-	connectedOutput?: Output & { node: Node } & { connectionId: ConnectionId };
+	connectedOutput?: Output & { node: NodeLike } & {
+		connectionId: ConnectionId;
+	};
 };

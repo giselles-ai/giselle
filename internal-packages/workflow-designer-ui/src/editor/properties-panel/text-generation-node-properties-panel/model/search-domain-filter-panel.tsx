@@ -5,99 +5,48 @@ import { Input } from "../../../../ui/input";
 const DOMAIN_VALIDATION_REGEX = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const MAX_DOMAINS = 10;
 
-// Domain list item component
-interface DomainItemProps {
-	domain: string;
-	onRemove: () => void;
-}
-
-function DomainItem({ domain, onRemove }: DomainItemProps) {
-	// Display domain name without the minus prefix for denylist items
-	const displayName = domain.startsWith("-") ? domain.slice(1) : domain;
-
-	return (
-		<li className="domain-item flex items-center bg-white-900/10 rounded px-2 py-1 text-[13px]">
-			{displayName}
-			<Button
-				variant="ghost"
-				size="sm"
-				className="domain-remove-button ml-1 px-1"
-				onClick={onRemove}
-			>
-				×
-			</Button>
-		</li>
-	);
-}
-
-// Domain list component for both allowlist and denylist
-interface DomainListProps {
-	type: "allow" | "deny";
-	domains: string[];
-	inputValue: string;
-	setInputValue: (value: string) => void;
-	onAdd: () => void;
-	onRemove: (index: number) => void;
-	isMaxReached: boolean;
-	className?: string;
-}
-
-function DomainList({
-	type,
-	domains,
+// Simple domain input component
+function SimpleDomainInput({
+	label,
 	inputValue,
 	setInputValue,
 	onAdd,
-	onRemove,
-	isMaxReached,
-	className,
-}: DomainListProps) {
-	const isAllowList = type === "allow";
-	const title = isAllowList ? "Allowlist" : "Denylist";
-	const icon = isAllowList ? "✔" : "⛔";
-	const titleColorClass = isAllowList ? "text-green-600" : "text-red-600";
-	const placeholder = isAllowList
-		? "Enter domain to include (e.g., example.com)"
-		: "Enter domain to exclude (e.g., example.com)";
-
+	placeholder,
+}: {
+	label: string;
+	inputValue: string;
+	setInputValue: (value: string) => void;
+	onAdd: () => void;
+	placeholder: string;
+}) {
 	return (
-		<div className={`domain-list ${className || ""}`}>
-			<span className={`${titleColorClass} text-[14px] font-semibold mt-2`}>
-				{icon} {title} ({domains.length})
-			</span>
-
-			<div className="domain-input-container flex items-center gap-2 mt-1">
+		<div className="flex w-full mb-4">
+			<div className="w-[150px] flex items-center">
+				<span className="text-[14px] text-white pl-2">{label}</span>
+			</div>
+			<div className="flex-1 flex items-center">
 				<Input
-					className="domain-input"
+					className="w-full h-10 bg-transparent border-[0.5px] border-white-900 rounded-md text-[14px] text-gray-300 px-3 py-2 placeholder:text-gray-500"
 					placeholder={placeholder}
 					value={inputValue}
 					onChange={(e) => setInputValue(e.target.value)}
 					onKeyDown={(e) => {
-						if (e.key === "Enter") onAdd();
+						if (e.key === "Enter") {
+							e.preventDefault();
+							onAdd();
+						}
 					}}
 					maxLength={100}
-					disabled={isMaxReached}
 				/>
 				<Button
-					className="domain-add-button"
-					variant="outline"
-					size="sm"
-					disabled={isMaxReached || !inputValue.trim()}
+					className="ml-2 px-2 py-1 text-sm text-gray-300 opacity-50 hover:opacity-100"
+					variant="ghost"
 					onClick={onAdd}
+					disabled={!inputValue.trim()}
 				>
 					Add
 				</Button>
 			</div>
-
-			<ul className="domain-list-items flex flex-wrap gap-2 mt-2">
-				{domains.map((domain, idx) => (
-					<DomainItem
-						key={domain}
-						domain={domain}
-						onRemove={() => onRemove(idx)}
-					/>
-				))}
-			</ul>
 		</div>
 	);
 }
@@ -137,6 +86,7 @@ export function SearchDomainFilterPanel({
 		if (isMaxReached) return;
 		if (allowlist.includes(value) || denylist.some((d) => d.slice(1) === value))
 			return;
+
 		updateDomainFilter([...allowlist, value], denylist);
 		setAllowlistInput("");
 	}
@@ -147,51 +97,48 @@ export function SearchDomainFilterPanel({
 		if (!DOMAIN_VALIDATION_REGEX.test(value)) return;
 		if (isMaxReached) return;
 		if (denylist.includes(`-${value}`) || allowlist.includes(value)) return;
+
 		updateDomainFilter(allowlist, [...denylist, `-${value}`]);
 		setDenylistInput("");
 	}
 
-	function removeAllowDomain(idx: number) {
-		const newAllow = allowlist.filter((_, i) => i !== idx);
-		updateDomainFilter(newAllow, denylist);
-	}
-
-	function removeDenyDomain(idx: number) {
-		const newDeny = denylist.filter((_, i) => i !== idx);
-		updateDomainFilter(allowlist, newDeny);
-	}
-
 	return (
-		<div className="search-domain-filter flex flex-col gap-2 mt-8">
-			<span className="filter-title font-bold text-[15px]">
+		<div className="search-domain-filter mt-8">
+			<div className="mb-4 text-[15px] font-medium text-white">
 				Search Domain Filter
-			</span>
+			</div>
 
-			<DomainList
-				type="allow"
-				domains={allowlist}
+			{/* Display domain count */}
+			<div className="mb-4 text-[13px] text-gray-400">
+				Total domains: {totalDomains}/{MAX_DOMAINS}
+			</div>
+
+			<SimpleDomainInput
+				label="Allow List"
 				inputValue={allowlistInput}
 				setInputValue={setAllowlistInput}
 				onAdd={addAllowDomain}
-				onRemove={removeAllowDomain}
-				isMaxReached={isMaxReached}
+				placeholder="Enter domain to include(e.g.,example.com)"
 			/>
 
-			<DomainList
-				type="deny"
-				domains={denylist}
+			{allowlist.length > 0 && (
+				<div className="ml-[150px] mb-4 text-[13px] text-gray-400">
+					Added: {allowlist.join(", ")}
+				</div>
+			)}
+
+			<SimpleDomainInput
+				label="Deny List"
 				inputValue={denylistInput}
 				setInputValue={setDenylistInput}
 				onAdd={addDenyDomain}
-				onRemove={removeDenyDomain}
-				isMaxReached={isMaxReached}
-				className="mt-4"
+				placeholder="Enter domain to exclude(e.g.,example.com)"
 			/>
 
-			{isMaxReached && (
-				<p className="max-domains-warning text-red-700 text-[12px]">
-					You can add up to {MAX_DOMAINS} domains only.
-				</p>
+			{denylist.length > 0 && (
+				<div className="ml-[150px] mb-4 text-[13px] text-gray-400">
+					Added: {denylist.map((d) => d.slice(1)).join(", ")}
+				</div>
 			)}
 		</div>
 	);

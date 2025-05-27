@@ -235,7 +235,12 @@ export async function processEvent<TEventName extends WebhookEventName>(
 			await deps.runFlow({
 				context: args.context,
 				triggerId: args.trigger.id,
-				payload: args.event,
+				triggerInputs: [
+					{
+						type: "github-webhook-event",
+						webhookEvent: args.event,
+					},
+				],
 			});
 			return true;
 		}

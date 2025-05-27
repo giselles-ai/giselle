@@ -34,6 +34,22 @@ export function isOperationNode(node: NodeBase): node is OperationNode {
 	return node.type === "operation";
 }
 
+export const OperationNodeLike = NodeBase.extend({
+	type: z.literal("operation"),
+	content: z
+		.object({
+			type: z.union([
+				TextGenerationContent.shape.type,
+				ImageGenerationContent.shape.type,
+				TriggerContent.shape.type,
+				ActionContent.shape.type,
+			]),
+		})
+		.passthrough(),
+});
+
+export type OperationNodeLike = z.infer<typeof OperationNodeLike>;
+
 export const TextGenerationNode = OperationNode.extend({
 	type: z.literal("operation"),
 	content: TextGenerationContent,

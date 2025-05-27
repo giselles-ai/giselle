@@ -10,7 +10,7 @@
 		"format": "turbo format",
 		"clean": "turbo clean",
 		"dev": "turbo dev --filter playground",
-		"dev:studio.giselles.ai": "turbo dev --filter studio.giselles.ai",
+		"dev:studio.giselles.ai": "NODE_NO_WARNINGS=1 turbo dev --filter studio.giselles.ai",
 		"changeset": "changeset",
 		"version": "changeset version",
 		"test": "turbo test"

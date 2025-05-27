@@ -1,7 +1,7 @@
 import type {
 	ImageGenerationNode,
 	TextGenerationNode,
-	VariableNode,
+	VariableNodeLike,
 } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { useMemo } from "react";
@@ -14,7 +14,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 			(connection) => connection.inputNode.id === node.id,
 		);
 		const connectedGeneratedSources: ConnectedSource<TextGenerationNode>[] = [];
-		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
+		const connectedVariableSources: ConnectedSource<VariableNodeLike>[] = [];
 		for (const connection of connectionsToThisNode) {
 			const node = data.nodes.find(
 				(node) => node.id === connection.outputNode.id,

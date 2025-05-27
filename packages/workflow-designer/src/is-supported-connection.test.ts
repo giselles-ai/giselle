@@ -1,12 +1,12 @@
-import type {
-	FileNode,
-	GitHubNode,
-	ImageGenerationLanguageModelData,
-	ImageGenerationNode,
+import {
+	type FileNode,
+	type GitHubNode,
+	type ImageGenerationLanguageModelData,
+	type ImageGenerationNode,
 	NodeId,
-	TextGenerationLanguageModelData,
-	TextGenerationNode,
-	VariableNode,
+	type TextGenerationLanguageModelData,
+	type TextGenerationNode,
+	type VariableNode,
 } from "@giselle-sdk/data-type";
 import {
 	anthropicLanguageModels,
@@ -22,30 +22,31 @@ describe("isSupportedConnection", () => {
 	const createTextGenerationNode = (
 		id: NodeId,
 		llm: TextGenerationLanguageModelData = anthropicLanguageModels[0],
-	): TextGenerationNode => ({
-		id,
-		type: "operation",
-		inputs: [],
-		outputs: [],
-		content: {
-			type: "textGeneration",
-			llm,
-		},
-	});
-
+	) =>
+		({
+			id,
+			type: "operation",
+			inputs: [],
+			outputs: [],
+			content: {
+				type: "textGeneration",
+				llm,
+			},
+		}) satisfies TextGenerationNode;
 	const createImageGenerationNode = (
 		id: NodeId,
 		llm: ImageGenerationLanguageModelData = falLanguageModels[0],
-	): ImageGenerationNode => ({
-		id,
-		type: "operation",
-		inputs: [],
-		outputs: [],
-		content: {
-			type: "imageGeneration",
-			llm,
-		},
-	});
+	) =>
+		({
+			id,
+			type: "operation",
+			inputs: [],
+			outputs: [],
+			content: {
+				type: "imageGeneration",
+				llm,
+			},
+		}) satisfies ImageGenerationNode;
 
 	const createFileNode = (
 		id: NodeId,
@@ -113,7 +114,7 @@ describe("isSupportedConnection", () => {
 	describe("Output node restrictions", () => {
 		test("should reject image generation node as output", () => {
 			const outputNode = createImageGenerationNode("nd-test4");
-			const inputNode = createTextGenerationNode("nd-test5");
+			const inputNode = createTextGenerationNode(NodeId.generate());
 
 			const result = isSupportedConnection(outputNode, inputNode);
 
@@ -126,7 +127,7 @@ describe("isSupportedConnection", () => {
 
 		test("should reject GitHub node as output", () => {
 			const outputNode = createGitHubNode("nd-test6");
-			const inputNode = createTextGenerationNode("nd-test7");
+			const inputNode = createTextGenerationNode(NodeId.generate());
 
 			const result = isSupportedConnection(outputNode, inputNode);
 
@@ -140,8 +141,8 @@ describe("isSupportedConnection", () => {
 
 	describe("File node restrictions", () => {
 		test("should reject pdf file node as input for image generation", () => {
-			const fileNode = createFileNode("nd-test8", "pdf");
-			const inputNode = createImageGenerationNode("nd-test9");
+			const fileNode = createFileNode(NodeId.generate(), "pdf");
+			const inputNode = createImageGenerationNode(NodeId.generate());
 
 			const result = isSupportedConnection(fileNode, inputNode);
 
@@ -153,9 +154,9 @@ describe("isSupportedConnection", () => {
 		});
 
 		test("should reject pdf file node as input for OpenAI", () => {
-			const fileNode = createFileNode("nd-test10", "pdf");
+			const fileNode = createFileNode(NodeId.generate(), "pdf");
 			const inputNode = createTextGenerationNode(
-				"nd-test11",
+				NodeId.generate(),
 				openaiLanguageModels[0],
 			);
 
@@ -169,9 +170,9 @@ describe("isSupportedConnection", () => {
 		});
 
 		test("should reject image file node as input for Perplexity", () => {
-			const fileNode = createFileNode("nd-test12", "image");
+			const fileNode = createFileNode(NodeId.generate(), "image");
 			const inputNode = createTextGenerationNode(
-				"nd-test13",
+				NodeId.generate(),
 				perplexityLanguageModels[0],
 			);
 
@@ -185,9 +186,9 @@ describe("isSupportedConnection", () => {
 		});
 
 		test("should allow file node as input for Anthropic", () => {
-			const fileNode = createFileNode("nd-test14");
+			const fileNode = createFileNode(NodeId.generate());
 			const inputNode = createTextGenerationNode(
-				"nd-test15",
+				NodeId.generate(),
 				anthropicLanguageModels[0],
 			);
 
@@ -205,7 +206,7 @@ describe("isSupportedConnection", () => {
 				category as "text" | "pdf" | "image",
 			);
 			const inputNode = createTextGenerationNode(
-				"nd-test17",
+				NodeId.generate(),
 				anthropicLanguageModels[0],
 			);
 
@@ -216,8 +217,8 @@ describe("isSupportedConnection", () => {
 
 	describe("Valid connections", () => {
 		test("should allow valid connection between compatible nodes", () => {
-			const outputNode = createTextGenerationNode("nd-test18");
-			const inputNode = createTextGenerationNode("nd-test19");
+			const outputNode = createTextGenerationNode(NodeId.generate());
+			const inputNode = createTextGenerationNode(NodeId.generate());
 
 			const result = isSupportedConnection(outputNode, inputNode);
 

@@ -2,6 +2,7 @@ import type {
 	Connection,
 	Node,
 	NodeBase,
+	NodeLike,
 	Output,
 } from "@giselle-sdk/data-type";
 
@@ -15,6 +16,6 @@ export interface ConnectedSource<T extends NodeBase = Node> {
 	node: T;
 	connection: Connection;
 }
-export type Source<T extends NodeBase = Node> =
+export type Source<T extends NodeBase = NodeLike> =
 	| UnconnectedSource<T>
 	| ConnectedSource<T>;

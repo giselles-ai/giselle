@@ -65,6 +65,8 @@ export function GitHubActionPropertiesPanel({ node }: { node: ActionNode }) {
 					installationUrl={value.github.installationUrl}
 				/>
 			);
+		case "error":
+			return `GitHub integration error: ${value.github.errorMessage}`;
 		default: {
 			const _exhaustiveCheck: never = value.github;
 			throw new Error(`Unhandled status: ${_exhaustiveCheck}`);

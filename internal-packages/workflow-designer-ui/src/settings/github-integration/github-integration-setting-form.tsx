@@ -250,6 +250,8 @@ export function GitHubIntegrationSettingForm() {
 			return "invalid-credential";
 		case "installed":
 			return <Installed repositories={github.repositories} />;
+		case "error":
+			return `GitHub integration error: ${github.errorMessage}`;
 		default: {
 			const _exhaustiveCheck: never = github;
 			throw new Error(`Unhandled status: ${_exhaustiveCheck}`);

@@ -1,8 +1,7 @@
 import {
 	type Connection,
-	type ConnectionId,
-	type Node,
 	type NodeId,
+	type NodeLike,
 	type Workflow,
 	WorkflowId,
 } from "@giselle-sdk/data-type";
@@ -24,7 +23,7 @@ import {
  */
 export function buildWorkflowFromNode(
 	startNodeId: NodeId,
-	nodes: Node[],
+	nodes: NodeLike[],
 	connections: Connection[],
 ): Workflow | null {
 	const nodeMap = new Map(nodes.map((node) => [node.id, node]));

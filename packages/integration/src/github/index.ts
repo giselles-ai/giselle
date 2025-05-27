@@ -38,11 +38,20 @@ export const GitHubIntegrationInstalledState = z.object({
 export type GitHubIntegrationInstalledState = z.infer<
 	typeof GitHubIntegrationInstalledState
 >;
+
+export const GitHubIntegrationErrorState = z.object({
+	status: z.literal("error"),
+	errorMessage: z.string(),
+});
+export type GitHubIntegrationErrorState = z.infer<
+	typeof GitHubIntegrationErrorState
+>;
 export const GitHubIntegrationState = z.discriminatedUnion("status", [
 	GitHubIntegrationUnsetState,
 	GitHubIntegrationUnauthorizedState,
 	GitHubIntegrationInvalidCredentialState,
 	GitHubIntegrationNotInstalledState,
 	GitHubIntegrationInstalledState,
+	GitHubIntegrationErrorState,
 ]);
 export type GitHubIntegration = z.infer<typeof GitHubIntegrationState>;

@@ -26,7 +26,11 @@ export async function getNodeGenerations(args: {
 				getGeneration({
 					generationId: nodeGenerationIndex.id,
 					storage: args.context.storage,
-				}),
+					options: {
+						bypassingCache: true,
+						skipMod: true,
+					},
+				}).catch(() => null),
 			),
-	).then((result) => result.filter((generation) => generation !== undefined));
+	).then((result) => result.filter((generation) => !!generation));
 }

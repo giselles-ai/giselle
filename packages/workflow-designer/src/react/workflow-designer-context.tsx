@@ -7,6 +7,7 @@ import {
 	type FileData,
 	type FileNode,
 	type Node,
+	type NodeBase,
 	type NodeId,
 	type NodeUIState,
 	type UploadedFileData,
@@ -231,7 +232,7 @@ export function WorkflowDesignerProvider({
 	);
 
 	const updateNodeData = useCallback(
-		<T extends Node>(node: T, data: Partial<T>) => {
+		<T extends NodeBase>(node: T, data: Partial<T>) => {
 			workflowDesignerRef.current.updateNodeData(node, data);
 			setAndSaveWorkspace();
 		},

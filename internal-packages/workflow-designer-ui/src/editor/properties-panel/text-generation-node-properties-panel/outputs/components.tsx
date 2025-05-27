@@ -1,4 +1,9 @@
-import { OutputId, type TextGenerationNode } from "@giselle-sdk/data-type";
+import {
+	OutputId,
+	type TextGenerationNode,
+	isImageGenerationNode,
+	isTextGenerationNode,
+} from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { CheckIcon, TrashIcon } from "lucide-react";
@@ -17,7 +22,7 @@ function OutputToggleItem({
 	disabled = false,
 }: { input: OutputWithDetails; disabled?: boolean }) {
 	const getDisplayName = () => {
-		if ("content" in input.node && "llm" in input.node.content) {
+		if (isTextGenerationNode(input.node) || isImageGenerationNode(input.node)) {
 			return input.node.name ?? input.node.content.llm.id;
 		}
 		return input.node.name ?? "Source";

@@ -2,6 +2,7 @@ import {
 	FlowTrigger,
 	FlowTriggerId,
 	type TriggerNode,
+	isTriggerNode,
 } from "@giselle-sdk/data-type";
 import type { z } from "zod";
 import { addGitHubRepositoryIntegrationIndex } from "../integrations/utils";
@@ -43,9 +44,7 @@ export async function configureTrigger(args: {
 		workspace: {
 			...workspace,
 			nodes: workspace.nodes.map((node) =>
-				node.type === "operation" &&
-				node.content.type === "trigger" &&
-				node.id === args.trigger.nodeId
+				node.id === args.trigger.nodeId && isTriggerNode(node)
 					? ({
 							...node,
 							content: {

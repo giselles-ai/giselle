@@ -1,8 +1,11 @@
 import {
 	type Node,
 	NodeId,
+	type NodeLike,
 	WorkspaceGitHubIntegrationPayloadField,
 	type WorkspaceGitHubIntegrationPayloadNodeMap,
+	isImageGenerationNode,
+	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -15,8 +18,8 @@ import {
 	SelectValue,
 } from "../ui";
 
-const getDisplayName = (node: Node) => {
-	if ("content" in node && "llm" in node.content) {
+const getDisplayName = (node: NodeLike) => {
+	if (isTextGenerationNode(node) || isImageGenerationNode(node)) {
 		return node.name ?? node.content.llm.id;
 	}
 	return node.name ?? "Source";
@@ -27,7 +30,7 @@ export function PayloadMapForm({
 	currentPayloadMaps = [],
 	availablePayloadFields = [],
 }: {
-	nodes: Node[];
+	nodes: NodeLike[];
 	currentPayloadMaps?: WorkspaceGitHubIntegrationPayloadNodeMap[];
 	availablePayloadFields?: WorkspaceGitHubIntegrationPayloadField[];
 }) {

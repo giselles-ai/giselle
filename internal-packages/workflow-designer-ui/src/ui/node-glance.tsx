@@ -1,4 +1,9 @@
-import type { Node } from "@giselle-sdk/data-type";
+import {
+	type Node,
+	type NodeLike,
+	isImageGenerationNode,
+	isTextGenerationNode,
+} from "@giselle-sdk/data-type";
 import { useMemo } from "react";
 import { NodeIcon } from "../icons/node";
 
@@ -8,7 +13,7 @@ export function NodeGlance({
 	nameClassName,
 	descriptionClassName,
 }: {
-	node: Node;
+	node: NodeLike;
 	iconClassName?: string;
 	nameClassName?: string;
 	descriptionClassName?: string;
@@ -16,7 +21,14 @@ export function NodeGlance({
 	const nodeName = useMemo(() => {
 		switch (node.content.type) {
 			case "textGeneration":
+				if (!isTextGenerationNode(node)) {
+					throw new Error("Node is not a text generation node");
+				}
+				return node.name ?? node.content.llm.id;
 			case "imageGeneration":
+				if (!isImageGenerationNode(node)) {
+					throw new Error("Node is not a image generation node");
+				}
 				return node.name ?? node.content.llm.id;
 			case "file":
 			case "text":
@@ -29,12 +41,19 @@ export function NodeGlance({
 				return _exhaustiveCheck;
 			}
 		}
-	}, [node.content, node.name]);
+	}, [node]);
 	const nodeDescription = useMemo(() => {
 		switch (node.content.type) {
 			case "textGeneration":
+				if (!isTextGenerationNode(node)) {
+					throw new Error("Node is not a text generation node");
+				}
+				return node.name ?? node.content.llm.provider;
 			case "imageGeneration":
-				return node.content.llm.provider;
+				if (!isImageGenerationNode(node)) {
+					throw new Error("Node is not a image generation node");
+				}
+				return node.name ?? node.content.llm.provider;
 			case "file":
 			case "text":
 			case "github":
@@ -46,7 +65,7 @@ export function NodeGlance({
 				return _exhaustiveCheck;
 			}
 		}
-	}, [node.content]);
+	}, [node]);
 	return (
 		<div className="flex gap-[8px] overflow-hidden">
 			<div className="flex items-center justify-center">

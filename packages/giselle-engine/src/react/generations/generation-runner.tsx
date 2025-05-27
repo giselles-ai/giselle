@@ -3,6 +3,7 @@ import {
 	type Generation,
 	GenerationContext,
 	isQueuedGeneration,
+	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { useTelemetry } from "@giselle-sdk/telemetry/react";
 import { useEffect, useRef } from "react";
@@ -38,7 +39,8 @@ export function GenerationRunner({
 		case "action":
 			return <ActionRunner generation={generation} />;
 		default: {
-			const _exhaustiveCheck: never = generationContext.operationNode.content;
+			const _exhaustiveCheck: never =
+				generationContext.operationNode.content.type;
 			return _exhaustiveCheck;
 		}
 	}
@@ -53,7 +55,7 @@ function TextGenerationRunner({
 		return null;
 	}
 	const generationContext = GenerationContext.parse(generation.context);
-	if (generationContext.operationNode.content.type !== "textGeneration") {
+	if (!isTextGenerationNode(generationContext.operationNode)) {
 		throw new Error("Invalid generation type");
 	}
 	const content = generationContext.operationNode.content;

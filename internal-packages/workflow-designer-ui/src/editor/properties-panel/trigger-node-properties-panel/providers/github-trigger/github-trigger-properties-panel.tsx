@@ -13,12 +13,9 @@ import { InfoIcon } from "lucide-react";
 import {
 	type FormEventHandler,
 	useCallback,
-	useEffect,
-	useRef,
 	useState,
 	useTransition,
 } from "react";
-import { GitHubIcon, SpinnerIcon } from "../../../../../icons";
 import {
 	Select,
 	SelectContent,
@@ -28,8 +25,7 @@ import {
 } from "../../../../../ui/select";
 import { Tooltip } from "../../../../../ui/tooltip";
 import { SelectRepository } from "../../../ui";
-import { GitHubRepositoryBlock } from "../../ui";
-import { GitHubTriggerConfiguredView } from "../../ui";
+import { GitHubRepositoryBlock, GitHubTriggerConfiguredView } from "../../ui";
 import { InstallGitHubApplication } from "./components/install-application";
 import { Unauthorized } from "./components/unauthorized";
 
@@ -68,6 +64,8 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 					installationUrl={value.github.installationUrl}
 				/>
 			);
+		case "error":
+			return `GitHub integration error: ${value.github.errorMessage}`;
 		default: {
 			const _exhaustiveCheck: never = value.github;
 			throw new Error(`Unhandled status: ${_exhaustiveCheck}`);

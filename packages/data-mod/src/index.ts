@@ -28,7 +28,6 @@ export function parseAndMod<T extends ZodSchema>(
 	}
 
 	if (prevError?.toString() === parseResult.error.toString()) {
-		console.log(JSON.stringify(data));
 		throw parseResult.error;
 	}
 

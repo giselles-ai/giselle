@@ -1,14 +1,23 @@
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { GitHubAppInstallButton } from "@/packages/components/github-app-install-button";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { gitHubAppInstallURL } from "@/services/external/github";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import type { components } from "@octokit/openapi-types";
+import { TriangleAlertIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../../components/button";
 
 export async function GitHubIntegration() {
-	const installUrl = await gitHubAppInstallURL();
 	const identityState = await getGitHubIdentityState();
+	if (identityState.status === "error") {
+		return <GitHubError message={identityState.errorMessage} />;
+	}
+
+	const installUrl = await gitHubAppInstallURL();
+	if (installUrl == null) {
+		return <GitHubError message="Failed to get GitHub App installation URL." />;
+	}
 	if (
 		identityState.status === "unauthorized" ||
 		identityState.status === "invalid-credential"
@@ -35,6 +44,24 @@ export async function GitHubIntegration() {
 			installations={installationsWithRepos}
 			installationUrl={installUrl}
 		/>
+	);
+}
+
+type GitHubErrorProps = {
+	message: string;
+};
+
+function GitHubError({ message }: GitHubErrorProps) {
+	return (
+		<Alert variant="destructive" className="p-4">
+			<TriangleAlertIcon className="w-[18px] h-[18px] text-error-900/80" />
+			<AlertTitle className="mb-0 text-error-900 font-bold text-[12px] leading-[20.4px] font-geist">
+				Authentication Error
+			</AlertTitle>
+			<AlertDescription className="text-error-900/70 font-medium text-[12px] leading-[20.4px] font-geist">
+				{message}
+			</AlertDescription>
+		</Alert>
 	);
 }
 

@@ -11,15 +11,20 @@ import { RequestError } from "@octokit/request-error";
  * @returns {Promise<string>} The URL for installing the GitHub App.
  * @throws {Error} If the request to get app information fails.
  */
-export async function gitHubAppInstallURL(): Promise<string> {
+export async function gitHubAppInstallURL(): Promise<string | undefined> {
 	const auth = appAuth();
 	const app = await auth({ type: "app" });
 	const octokit = new Octokit({ auth: app.token });
-	const res = await octokit.request("GET /app");
-	if (res.status !== 200 || !res.data) {
-		throw new Error("Failed to get app information");
+	try {
+		const res = await octokit.request("GET /app");
+		if (res.status !== 200 || !res.data) {
+			throw new Error("Failed to get app information");
+		}
+		return `https://github.com/apps/${res.data.slug}/installations/new`;
+	} catch (error: unknown) {
+		console.error("Error getting GitHub App information:", error);
+		return;
 	}
-	return `https://github.com/apps/${res.data.slug}/installations/new`;
 }
 
 /**

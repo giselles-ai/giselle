@@ -7,6 +7,7 @@ import {
 	type QueuedGeneration,
 	isActionNode,
 	isCompletedGeneration,
+	isTextNode,
 } from "@giselle-sdk/data-type";
 import { githubActions } from "@giselle-sdk/flow";
 import {
@@ -96,6 +97,9 @@ async function resolveGitHubActionInputs(args: {
 			case "variable":
 				switch (sourceNode.content.type) {
 					case "text": {
+						if (!isTextNode(sourceNode)) {
+							throw new Error(`Unexpected node data: ${sourceNode.id}`);
+						}
 						const jsonOrText = sourceNode.content.text;
 						result[parameter] = isJsonContent(jsonOrText)
 							? jsonContentToText(JSON.parse(jsonOrText))
@@ -108,7 +112,7 @@ async function resolveGitHubActionInputs(args: {
 							`Unsupported node type: ${sourceNode.content.type}`,
 						);
 					default: {
-						const _exhaustiveCheck: never = sourceNode.content;
+						const _exhaustiveCheck: never = sourceNode.content.type;
 						throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 					}
 				}

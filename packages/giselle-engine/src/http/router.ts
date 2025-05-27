@@ -4,8 +4,8 @@ import {
 	FlowTrigger,
 	FlowTriggerId,
 	Generation,
+	GenerationContextInput,
 	GenerationId,
-	GenerationInput,
 	GenerationOrigin,
 	NodeId,
 	OverrideNode,
@@ -319,8 +319,7 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				triggerId: FlowTriggerId.schema,
-				triggerInputs: z.array(GenerationInput).optional(),
-				payload: z.unknown().optional(),
+				triggerInputs: z.array(GenerationContextInput).optional(),
 			}),
 			handler: async ({ input }) => {
 				await giselleEngine.runFlow(input);

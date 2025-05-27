@@ -1,4 +1,9 @@
-import type { Node } from "@giselle-sdk/data-type";
+import {
+	type NodeLike,
+	isFileNode,
+	isImageGenerationNode,
+	isTextGenerationNode,
+} from "@giselle-sdk/data-type";
 import {
 	Capability,
 	hasCapability,
@@ -10,8 +15,8 @@ export type ConnectionValidationResult =
 	| { canConnect: false; message: string };
 
 export function isSupportedConnection(
-	outputNode: Node,
-	inputNode: Node,
+	outputNode: NodeLike,
+	inputNode: NodeLike,
 ): ConnectionValidationResult {
 	if (outputNode.id === inputNode.id) {
 		return {
@@ -34,6 +39,10 @@ export function isSupportedConnection(
 		};
 	}
 
+	if (!isTextGenerationNode(inputNode) && !isImageGenerationNode(inputNode)) {
+		throw new Error("Unexpected input node detected");
+	}
+
 	const inputNodeLLMId = inputNode.content.llm.id;
 	const inputNodeLanguageModel = languageModels.find(
 		(languageModel) => languageModel.id === inputNodeLLMId,
@@ -52,7 +61,7 @@ export function isSupportedConnection(
 		};
 	}
 
-	if (outputNode.content.type === "file") {
+	if (isFileNode(outputNode)) {
 		if (inputNodeLanguageModel === undefined) {
 			return {
 				canConnect: false,

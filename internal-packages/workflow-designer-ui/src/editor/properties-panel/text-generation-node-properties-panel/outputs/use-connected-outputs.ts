@@ -1,7 +1,7 @@
-import type {
-	ActionNode,
-	TextGenerationNode,
-	TriggerNode,
+import {
+	type ActionNode,
+	type TextGenerationNode,
+	type TriggerNode,
 	VariableNode,
 } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "giselle-sdk/react";
@@ -62,7 +62,7 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 						case "imageGeneration":
 							break;
 						default: {
-							const _exhaustiveCheck: never = node.content;
+							const _exhaustiveCheck: never = node.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 						}
 					}
@@ -70,7 +70,7 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 				case "variable":
 					connectedVariableInputs.push({
 						...output,
-						node,
+						node: VariableNode.parse(node),
 						connection,
 					});
 					break;

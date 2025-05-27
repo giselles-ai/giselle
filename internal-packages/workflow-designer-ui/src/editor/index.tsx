@@ -1,6 +1,6 @@
 "use client";
 
-import { InputId, OutputId } from "@giselle-sdk/data-type";
+import { InputId, OutputId, isActionNode } from "@giselle-sdk/data-type";
 import {
 	type Connection,
 	type Edge,
@@ -122,7 +122,7 @@ function NodeCanvas() {
 					throw new Error("Invalid output id");
 				}
 				const outputId = safeOutputId.data;
-				if (inputNode.content.type === "action") {
+				if (isActionNode(inputNode)) {
 					const safeInputId = InputId.safeParse(connection.targetHandle);
 					if (!safeInputId.success) {
 						throw new Error("Invalid input id");

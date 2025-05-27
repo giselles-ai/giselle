@@ -133,18 +133,25 @@ async function process<TEventName extends WebhookEventName>(args: {
 				installationId,
 			});
 
-			await processEvent({
-				event: args.event,
-				context: args.context,
-				trigger,
-				createAuthConfig,
-				deps: {
-					addReaction: args.deps.addReaction,
-					ensureWebhookEvent: args.deps.ensureWebhookEvent,
-					runFlow: args.deps.runFlow,
-					parseCommand: args.deps.parseCommand,
-				},
-			});
+			try {
+				await processEvent({
+					event: args.event,
+					context: args.context,
+					trigger,
+					createAuthConfig,
+					deps: {
+						addReaction: args.deps.addReaction,
+						ensureWebhookEvent: args.deps.ensureWebhookEvent,
+						runFlow: args.deps.runFlow,
+						parseCommand: args.deps.parseCommand,
+					},
+				});
+			} catch (error) {
+				console.error(
+					`processEvent failed for workspaceId=${trigger.workspaceId} nodeId=${trigger.nodeId}:`,
+					error,
+				);
+			}
 		}),
 	);
 }

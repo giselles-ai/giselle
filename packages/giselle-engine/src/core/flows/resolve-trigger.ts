@@ -1,27 +1,24 @@
 import {
 	type CompletedGeneration,
 	GenerationContext,
-	type GenerationInput,
+	type GenerationContextInput,
 	type GenerationOutput,
 	type QueuedGeneration,
 	isTriggerNode,
 } from "@giselle-sdk/data-type";
 import { githubTriggers } from "@giselle-sdk/flow";
-import { isWebhookEvent } from "@giselle-sdk/github-tool";
 import {
 	setGeneration,
 	setGenerationIndex,
 	setNodeGenerationIndex,
 } from "../generations/utils";
-import { buildTriggerInputs } from "../github/trigger-utils";
+import { resolveTrigger as resolveGitHubTrigger } from "../github/trigger-utils";
 import type { GiselleEngineContext } from "../types";
 import { getFlowTrigger } from "./utils";
 
 export async function resolveTrigger(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
-	/** @todo Make this more generic. Should use GenerationContextInput. */
-	githubWebhookEvent?: unknown;
 }) {
 	const operationNode = args.generation.context.operationNode;
 	if (!isTriggerNode(operationNode)) {
@@ -37,54 +34,70 @@ export async function resolveTrigger(args: {
 
 	const generationContext = GenerationContext.parse(args.generation.context);
 
-	let githubWebhookInputs: GenerationInput[] | null = null;
-	if (
-		args.githubWebhookEvent !== undefined &&
-		isWebhookEvent(args.githubWebhookEvent) &&
-		triggerData.configuration.provider === "github"
-	) {
-		githubWebhookInputs = buildTriggerInputs({
-			githubTrigger: githubTriggers[triggerData.configuration.event.id],
-			trigger: triggerData,
-			webhookEvent: args.githubWebhookEvent,
-		});
-	}
-
 	const outputs: GenerationOutput[] = [];
 	switch (triggerData.configuration.provider) {
 		case "github": {
-			const trigger = githubTriggers[triggerData.configuration.event.id];
-			const inputsToUse = githubWebhookInputs ?? generationContext.inputs ?? [];
-			for (const payload of trigger.event.payloads.keyof().options) {
-				const input = inputsToUse.find((i) => i.name === payload);
-				if (input === undefined) {
-					continue;
-				}
-				const output = operationNode.outputs.find(
-					(output) => output.accessor === payload,
-				);
-				if (output === undefined) {
-					continue;
-				}
-				outputs.push({
-					type: "generated-text",
-					outputId: output.id,
-					content: input.value,
+			const githubWebhookEventInput = generationContext.inputs?.find(
+				(input) => input.type === "github-webhook-event",
+			);
+			if (githubWebhookEventInput === undefined) {
+				throw new Error("Missing github-webhook-event input");
+			}
+			if (triggerData.configuration.provider !== "github") {
+				throw new Error("Invalid provider");
+			}
+
+			if (
+				!args.context.integrationConfigs?.github?.authV2.appId ||
+				!args.context.integrationConfigs?.github?.authV2.privateKey
+			) {
+				throw new Error("Missing GitHub App ID or Private Key");
+			}
+			for (const output of operationNode.outputs) {
+				const resolveOutput = await resolveGitHubTrigger({
+					output,
+					githubTrigger: githubTriggers[triggerData.configuration.event.id],
+					trigger: triggerData,
+					webhookEvent: githubWebhookEventInput.webhookEvent,
+					appId: args.context.integrationConfigs.github.authV2.appId,
+					privateKey: args.context.integrationConfigs.github.authV2.privateKey,
+					installationId: triggerData.configuration.installationId,
 				});
+				if (resolveOutput !== null) {
+					outputs.push(resolveOutput);
+				}
 			}
 			break;
 		}
 		case "manual": {
+			// Find ParametersInput once outside the loop
+			const parametersInput = generationContext.inputs?.find(
+				(i): i is GenerationContextInput & { type: "parameters" } =>
+					i.type === "parameters",
+			);
+
+			// Create Map of outputs by accessor for O(1) lookup
+			const outputsByAccessor = new Map(
+				operationNode.outputs.map((output) => [output.accessor, output]),
+			);
+
 			for (const parameter of triggerData.configuration.event.parameters) {
-				const input = generationContext.inputs?.find(
-					(input) => input.name === parameter.id,
-				);
-				if (input === undefined) {
+				let parameterValue: string | undefined;
+
+				if (parametersInput) {
+					const parameterItem = parametersInput.items.find(
+						(item) => item.name === parameter.id,
+					);
+					if (parameterItem) {
+						parameterValue = parameterItem.value.toString();
+					}
+				}
+
+				if (parameterValue === undefined) {
 					continue;
 				}
-				const output = operationNode.outputs.find(
-					(output) => output.accessor === parameter.id,
-				);
+
+				const output = outputsByAccessor.get(parameter.id);
 				if (output === undefined) {
 					continue;
 				}
@@ -92,7 +105,7 @@ export async function resolveTrigger(args: {
 				outputs.push({
 					type: "generated-text",
 					outputId: output.id,
-					content: input.value,
+					content: parameterValue,
 				});
 			}
 			break;
