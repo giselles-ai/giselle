@@ -334,31 +334,45 @@ export const githubRepositoryEmbeddings = pgTable(
 	}),
 );
 
-export const modelUsage = pgTable("model_usage", {
-	dbId: serial("db_id").primaryKey(),
-	teamDbId: integer("team_db_id")
-		.notNull()
-		.references(() => teams.dbId, { onDelete: "cascade" }),
-	model: text("model").notNull(),
-	provider: text("provider").notNull(),
-	agentDbId: integer("agent_db_id")
-		.notNull()
-		.references(() => agents.dbId, { onDelete: "cascade" }),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const modelUsage = pgTable(
+	"model_usage",
+	{
+		dbId: serial("db_id").primaryKey(),
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		model: text("model").notNull(),
+		provider: text("provider").notNull(),
+		agentDbId: integer("agent_db_id")
+			.notNull()
+			.references(() => agents.dbId, { onDelete: "cascade" }),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => ({
+		teamDbIdIdx: index().on(table.teamDbId),
+		agentDbIdIdx: index().on(table.agentDbId),
+		createdAtIdx: index().on(table.createdAt),
+	}),
+);
 
 export type UsageMetric = "input_token" | "output_token";
 
 export type UsageUnit = "tokens";
 
-export const modelUsageItems = pgTable("model_usage_items", {
-	dbId: serial("db_id").primaryKey(),
-	modelUsageDbId: integer("model_usage_db_id")
-		.notNull()
-		.references(() => modelUsage.dbId, { onDelete: "cascade" }),
-	usageMetric: text("usage_metric").$type<UsageMetric>().notNull(),
-	amount: integer("amount").notNull(),
-	unit: text("unit").$type<UsageUnit>().notNull(),
-	endedAt: timestamp("ended_at").notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const modelUsageItems = pgTable(
+	"model_usage_items",
+	{
+		dbId: serial("db_id").primaryKey(),
+		modelUsageDbId: integer("model_usage_db_id")
+			.notNull()
+			.references(() => modelUsage.dbId, { onDelete: "cascade" }),
+		usageMetric: text("usage_metric").$type<UsageMetric>().notNull(),
+		amount: integer("amount").notNull(),
+		unit: text("unit").$type<UsageUnit>().notNull(),
+		endedAt: timestamp("ended_at").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => ({
+		modelUsageDbIdIdx: index().on(table.modelUsageDbId),
+	}),
+);
