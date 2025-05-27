@@ -30,5 +30,6 @@ export const GOOGLE_MODELS = {
 } as const;
 
 export type OpenAIModel = (typeof OPENAI_MODELS)[keyof typeof OPENAI_MODELS];
-export type AnthropicModel = (typeof ANTHROPIC_MODELS)[keyof typeof ANTHROPIC_MODELS];
+export type AnthropicModel =
+	(typeof ANTHROPIC_MODELS)[keyof typeof ANTHROPIC_MODELS];
 export type GoogleModel = (typeof GOOGLE_MODELS)[keyof typeof GOOGLE_MODELS];
