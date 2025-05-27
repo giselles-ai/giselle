@@ -334,8 +334,8 @@ export const githubRepositoryEmbeddings = pgTable(
 	}),
 );
 
-export const modelUsage = pgTable(
-	"model_usage",
+export const modelUsages = pgTable(
+	"model_usages",
 	{
 		dbId: serial("db_id").primaryKey(),
 		teamDbId: integer("team_db_id")
@@ -365,7 +365,7 @@ export const modelUsageItems = pgTable(
 		dbId: serial("db_id").primaryKey(),
 		modelUsageDbId: integer("model_usage_db_id")
 			.notNull()
-			.references(() => modelUsage.dbId, { onDelete: "cascade" }),
+			.references(() => modelUsages.dbId, { onDelete: "cascade" }),
 		usageMetric: text("usage_metric").$type<UsageMetric>().notNull(),
 		amount: integer("amount").notNull(),
 		unit: text("unit").$type<UsageUnit>().notNull(),
