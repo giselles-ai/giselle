@@ -346,6 +346,7 @@ export const modelUsages = pgTable(
 		agentDbId: integer("agent_db_id")
 			.notNull()
 			.references(() => agents.dbId, { onDelete: "cascade" }),
+		userDbId: integer("user_db_id").references(() => users.dbId),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 	},
 	(table) => ({
