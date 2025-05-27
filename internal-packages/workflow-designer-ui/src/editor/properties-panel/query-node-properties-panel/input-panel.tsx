@@ -4,6 +4,8 @@ import {
 	InputId,
 	OutputId,
 	type QueryNode,
+	isImageGenerationNode,
+	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
 import clsx from "clsx/lite";
@@ -40,7 +42,10 @@ function SourceToggleItem({
 	disabled = false,
 }: { source: Source; disabled?: boolean }) {
 	const getDisplayName = () => {
-		if ("content" in source.node && "llm" in source.node.content) {
+		if (
+			isTextGenerationNode(source.node) ||
+			isImageGenerationNode(source.node)
+		) {
 			return source.node.name ?? source.node.content.llm.id;
 		}
 		return source.node.name ?? "Source";

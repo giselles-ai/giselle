@@ -2,6 +2,7 @@ import {
 	ConnectionId,
 	type QueryNode,
 	isTextGenerationNode,
+	isVectorStoreNode,
 } from "@giselle-sdk/data-type";
 import {
 	TextEditor,
@@ -24,7 +25,7 @@ function getDefaultNodeName(input: ConnectedSource): string {
 
 function getDataSourceDisplayInfo(input: ConnectedSource) {
 	const node = input.node;
-	if (node.content.type === "vectorStore") {
+	if (isVectorStoreNode(node)) {
 		const name = node.name ?? "Vector Store";
 		let description = "";
 		let icon = <DatabaseZapIcon className="w-[14px] h-[14px]" />;

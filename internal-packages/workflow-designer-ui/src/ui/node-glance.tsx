@@ -35,10 +35,9 @@ export function NodeGlance({
 			case "github":
 			case "trigger":
 			case "action":
+			case "vectorStore":
+			case "query":
 				return node.name ?? "Untitled Node";
-			case "vectorStore": {
-				return node.name ?? "Vector Store";
-			}
 			default: {
 				const _exhaustiveCheck: never = node.content;
 				throw new Error(`Unknown node content type: ${_exhaustiveCheck}`);
@@ -57,12 +56,6 @@ export function NodeGlance({
 					throw new Error("Node is not a image generation node");
 				}
 				return node.name ?? node.content.llm.provider;
-			case "file":
-			case "text":
-			case "github":
-			case "trigger":
-			case "action":
-				return node.content.type;
 			case "vectorStore": {
 				if (!isVectorStoreNode(node)) {
 					throw new Error("Node is not a vector store node");
@@ -81,6 +74,13 @@ export function NodeGlance({
 					}
 				}
 			}
+			case "file":
+			case "text":
+			case "github":
+			case "trigger":
+			case "action":
+			case "query":
+				return node.content.type;
 			default: {
 				const _exhaustiveCheck: never = node.content;
 				throw new Error(`Unknown node content type: ${_exhaustiveCheck}`);

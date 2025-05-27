@@ -66,7 +66,7 @@ export function useConnectedSources(node: QueryNode) {
 						case "query":
 							break;
 						default: {
-							const _exhaustiveCheck: never = node.content;
+							const _exhaustiveCheck: never = node.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 						}
 					}
@@ -84,14 +84,14 @@ export function useConnectedSources(node: QueryNode) {
 						case "text":
 							connectedVariableSources.push({
 								output,
-								node,
+								node: node as VariableNode,
 								connection,
 							});
 							break;
 						case "file":
 							break;
 						default: {
-							const _exhaustiveCheck: never = node.content;
+							const _exhaustiveCheck: never = node.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 						}
 					}
