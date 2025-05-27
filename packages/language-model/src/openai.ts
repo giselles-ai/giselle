@@ -15,6 +15,7 @@ import {
 	openAiTokenPricing,
 } from "./costs";
 import { BaseCostCalculator } from "./costs/calculator";
+import { OPENAI_MODELS } from "./models";
 
 const OpenAILanguageModelConfigurations = z.object({
 	temperature: z.number(),
@@ -41,7 +42,7 @@ type OpenAILanguageModel = z.infer<typeof OpenAILanguageModel>;
 
 const gpt4o: OpenAILanguageModel = {
 	provider: "openai",
-	id: "gpt-4o",
+	id: OPENAI_MODELS.GPT4O,
 	capabilities:
 		Capability.ImageFileInput |
 		Capability.TextGeneration |
@@ -52,7 +53,7 @@ const gpt4o: OpenAILanguageModel = {
 
 const gpt4oMini: OpenAILanguageModel = {
 	provider: "openai",
-	id: "gpt-4o-mini",
+	id: OPENAI_MODELS.GPT4O_MINI,
 	capabilities:
 		Capability.ImageFileInput |
 		Capability.TextGeneration |
@@ -63,7 +64,7 @@ const gpt4oMini: OpenAILanguageModel = {
 
 const o1Preview: OpenAILanguageModel = {
 	provider: "openai",
-	id: "o1-preview",
+	id: OPENAI_MODELS.O1_PREVIEW,
 	capabilities: Capability.TextGeneration,
 	tier: Tier.enum.free,
 	configurations: defaultConfigurations,
@@ -71,7 +72,7 @@ const o1Preview: OpenAILanguageModel = {
 
 const o1Mini: OpenAILanguageModel = {
 	provider: "openai",
-	id: "o1-mini",
+	id: OPENAI_MODELS.O1_MINI,
 	capabilities: Capability.TextGeneration,
 	tier: Tier.enum.free,
 	configurations: defaultConfigurations,
@@ -79,7 +80,7 @@ const o1Mini: OpenAILanguageModel = {
 
 const o3: OpenAILanguageModel = {
 	provider: "openai",
-	id: "o3",
+	id: OPENAI_MODELS.O3,
 	capabilities: Capability.ImageFileInput | Capability.TextGeneration,
 	tier: Tier.enum.pro,
 	configurations: defaultConfigurations,
@@ -87,7 +88,7 @@ const o3: OpenAILanguageModel = {
 
 const o3Mini: OpenAILanguageModel = {
 	provider: "openai",
-	id: "o3-mini",
+	id: OPENAI_MODELS.O3_MINI,
 	capabilities: Capability.TextGeneration,
 	tier: Tier.enum.pro,
 	configurations: defaultConfigurations,
@@ -95,7 +96,7 @@ const o3Mini: OpenAILanguageModel = {
 
 const o4Mini: OpenAILanguageModel = {
 	provider: "openai",
-	id: "o4-mini",
+	id: OPENAI_MODELS.O4_MINI,
 	capabilities: Capability.ImageFileInput | Capability.TextGeneration,
 	tier: Tier.enum.pro,
 	configurations: defaultConfigurations,
@@ -103,7 +104,7 @@ const o4Mini: OpenAILanguageModel = {
 
 const gpt41: OpenAILanguageModel = {
 	provider: "openai",
-	id: "gpt-4.1",
+	id: OPENAI_MODELS.GPT4_1,
 	capabilities:
 		Capability.ImageFileInput |
 		Capability.TextGeneration |
@@ -114,7 +115,7 @@ const gpt41: OpenAILanguageModel = {
 
 const gpt41mini: OpenAILanguageModel = {
 	provider: "openai",
-	id: "gpt-4.1-mini",
+	id: OPENAI_MODELS.GPT4_1_MINI,
 	capabilities:
 		Capability.ImageFileInput |
 		Capability.TextGeneration |
@@ -125,7 +126,7 @@ const gpt41mini: OpenAILanguageModel = {
 
 const gpt41nano: OpenAILanguageModel = {
 	provider: "openai",
-	id: "gpt-4.1-nano",
+	id: OPENAI_MODELS.GPT4_1_NANO,
 	capabilities: Capability.ImageFileInput | Capability.TextGeneration,
 	tier: Tier.enum.pro,
 	configurations: defaultConfigurations,

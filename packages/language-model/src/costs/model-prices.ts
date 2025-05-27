@@ -1,10 +1,11 @@
 import type { ModelPrice } from "./pricing";
+import { OPENAI_MODELS, ANTHROPIC_MODELS, GOOGLE_MODELS } from "../models";
 
 export type ModelPriceTable = Record<string, { prices: ModelPrice[] }>;
 
 export const openAiTokenPricing: ModelPriceTable = {
 	// https://platform.openai.com/docs/pricing#latest-models
-	"gpt-4.1": {
+	[OPENAI_MODELS.GPT4_1]: {
 		prices: [
 			{
 				validFrom: "2025-05-12T00:00:00Z",
@@ -19,7 +20,7 @@ export const openAiTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"gpt-4.1-mini": {
+	[OPENAI_MODELS.GPT4_1_MINI]: {
 		prices: [
 			{
 				validFrom: "2025-05-12T00:00:00Z",
@@ -34,7 +35,7 @@ export const openAiTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"gpt-4.1-nano": {
+	[OPENAI_MODELS.GPT4_1_NANO]: {
 		prices: [
 			{
 				validFrom: "2025-05-12T00:00:00Z",
@@ -49,7 +50,7 @@ export const openAiTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"gpt-4o": {
+	[OPENAI_MODELS.GPT4O]: {
 		prices: [
 			{
 				validFrom: "2025-05-12T00:00:00Z",
@@ -64,7 +65,7 @@ export const openAiTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"gpt-4o-mini": {
+	[OPENAI_MODELS.GPT4O_MINI]: {
 		prices: [
 			{
 				validFrom: "2025-05-12T00:00:00Z",
@@ -79,7 +80,7 @@ export const openAiTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	o3: {
+	[OPENAI_MODELS.O3]: {
 		prices: [
 			{
 				validFrom: "2025-05-12T00:00:00Z",
@@ -94,7 +95,7 @@ export const openAiTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"o3-mini": {
+	[OPENAI_MODELS.O3_MINI]: {
 		prices: [
 			{
 				validFrom: "2025-05-12T00:00:00Z",
@@ -109,7 +110,7 @@ export const openAiTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"o4-mini": {
+	[OPENAI_MODELS.O4_MINI]: {
 		prices: [
 			{
 				validFrom: "2025-05-12T00:00:00Z",
@@ -128,7 +129,7 @@ export const openAiTokenPricing: ModelPriceTable = {
 
 export const anthropicTokenPricing: ModelPriceTable = {
 	// https://www.anthropic.com/pricing
-	"claude-4-opus-20250514": {
+	[ANTHROPIC_MODELS.CLAUDE4_OPUS]: {
 		prices: [
 			{
 				validFrom: "2025-05-23T00:00:00Z",
@@ -143,7 +144,7 @@ export const anthropicTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"claude-4-sonnet-20250514": {
+	[ANTHROPIC_MODELS.CLAUDE4_SONNET]: {
 		prices: [
 			{
 				validFrom: "2025-05-23T00:00:00Z",
@@ -158,7 +159,7 @@ export const anthropicTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"claude-3-7-sonnet-20250219": {
+	[ANTHROPIC_MODELS.CLAUDE3_7_SONNET]: {
 		prices: [
 			{
 				validFrom: "2025-05-19T00:00:00Z",
@@ -173,7 +174,7 @@ export const anthropicTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"claude-3-5-sonnet-20241022": {
+	[ANTHROPIC_MODELS.CLAUDE3_5_SONNET]: {
 		prices: [
 			{
 				validFrom: "2025-05-19T00:00:00Z",
@@ -188,7 +189,7 @@ export const anthropicTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"claude-3-5-haiku-20241022": {
+	[ANTHROPIC_MODELS.CLAUDE3_5_HAIKU]: {
 		prices: [
 			{
 				validFrom: "2025-05-19T00:00:00Z",
@@ -207,7 +208,7 @@ export const anthropicTokenPricing: ModelPriceTable = {
 
 export const googleTokenPricing: ModelPriceTable = {
 	// https://ai.google.dev/gemini-api/docs/pricing
-	"gemini-2.5-pro-exp-03-25": {
+	[GOOGLE_MODELS.GEMINI_25_PRO_EXP]: {
 		prices: [
 			{
 				validFrom: "2025-05-20T00:00:00Z",
@@ -222,7 +223,7 @@ export const googleTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"gemini-2.5-pro-preview-03-25": {
+	[GOOGLE_MODELS.GEMINI_25_PRO_PREVIEW]: {
 		prices: [
 			{
 				validFrom: "2025-05-20T00:00:00Z",
@@ -237,7 +238,7 @@ export const googleTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"gemini-2.5-flash-preview-04-17": {
+	[GOOGLE_MODELS.GEMINI_25_FLASH_PREVIEW]: {
 		prices: [
 			{
 				validFrom: "2025-05-20T00:00:00Z",
@@ -256,7 +257,7 @@ export const googleTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"gemini-2.0-flash": {
+	[GOOGLE_MODELS.GEMINI_20_FLASH]: {
 		prices: [
 			{
 				validFrom: "2025-05-20T00:00:00Z",
@@ -271,7 +272,7 @@ export const googleTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"gemini-2.0-flash-lite-preview-02-05": {
+	[GOOGLE_MODELS.GEMINI_20_FLASH_LITE_PREVIEW]: {
 		prices: [
 			{
 				validFrom: "2025-05-20T00:00:00Z",
@@ -286,7 +287,7 @@ export const googleTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"gemini-2.0-flash-thinking-exp-01-21": {
+	[GOOGLE_MODELS.GEMINI_20_FLASH_THINKING_EXP]: {
 		prices: [
 			{
 				validFrom: "2025-05-20T00:00:00Z",
@@ -301,7 +302,7 @@ export const googleTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"gemini-2.0-pro-exp-02-05": {
+	[GOOGLE_MODELS.GEMINI_20_PRO_EXP]: {
 		prices: [
 			{
 				validFrom: "2025-05-20T00:00:00Z",
