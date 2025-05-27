@@ -1,6 +1,5 @@
-import { createIdGenerator } from "@giselle-sdk/utils";
-import { z } from "zod";
-import { NodeBase } from "../base";
+import { createIdGeneratorV4 as createIdGenerator } from "@giselle-sdk/utils";
+import { z } from "zod/v4";
 
 export const FileId = createIdGenerator("fl");
 export type FileId = z.infer<typeof FileId.schema>;
@@ -76,7 +75,7 @@ export const FileData = z.union([
 ]);
 export type FileData = z.infer<typeof FileData>;
 
-export const FileCategory = z.enum(["pdf", "text", "image"]);
+export const FileCategory = z.enum(["pdf", "text", "image", "webPage"]);
 export type FileCategory = z.infer<typeof FileCategory>;
 export const FileContent = z.object({
 	type: z.literal("file"),

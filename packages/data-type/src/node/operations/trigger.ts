@@ -1,12 +1,10 @@
 import { triggerProviders } from "@giselle-sdk/flow";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { FlowTriggerId } from "../../flow/trigger";
 
-export const TriggerProviderLike = z
-	.object({
-		provider: z.string(),
-	})
-	.passthrough();
+export const TriggerProviderLike = z.looseObject({
+	provider: z.string(),
+});
 export type TriggerProviderLike = z.infer<typeof TriggerProviderLike>;
 
 const TriggerUnconfiguredState = z.object({

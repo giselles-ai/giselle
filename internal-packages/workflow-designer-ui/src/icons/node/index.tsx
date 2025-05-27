@@ -23,6 +23,7 @@ import { RecraftIcon } from "../recraft";
 import { StableDiffusionIcon } from "../stable-diffusion";
 import { TextFileIcon } from "../text-file";
 import { TriggerIcon } from "../trigger";
+import { WebPageFileIcon } from "../web-page-file";
 export * from "./file-node";
 export * from "./image-generation-node";
 export * from "./text-generation-node";
@@ -152,6 +153,8 @@ export function NodeIcon({
 							return <TextFileIcon {...props} data-content-type-icon />;
 						case "image":
 							return <PictureIcon {...props} data-content-type-icon />;
+						case "webPage":
+							return <WebPageFileIcon {...props} data-content-type-icon />;
 						default: {
 							const _exhaustiveCheck: never = node.content.category;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);

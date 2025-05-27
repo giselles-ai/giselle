@@ -1,5 +1,5 @@
+import type { $ZodIssue } from "@zod/core";
 import { describe, expect, it } from "vitest";
-import type { ZodIssue } from "zod";
 import { addAccessorToInput } from "./add-accessor-to-input";
 
 describe("addAccessorToInput", () => {
@@ -14,10 +14,10 @@ describe("addAccessorToInput", () => {
 			],
 		};
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["inputs", 0, "accessor"],
 			message: "Required",
 		};
@@ -47,10 +47,10 @@ describe("addAccessorToInput", () => {
 			],
 		};
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["inputs", 0, "someOtherField"],
 			message: "Required",
 		};
@@ -72,10 +72,10 @@ describe("addAccessorToInput", () => {
 			],
 		};
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["inputs", 0, "accessor"],
 			message: "Required",
 		};
@@ -88,10 +88,10 @@ describe("addAccessorToInput", () => {
 	it("should handle non-object data", () => {
 		const data = "not an object";
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["inputs", 0, "accessor"],
 			message: "Required",
 		};

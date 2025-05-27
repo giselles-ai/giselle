@@ -1,4 +1,5 @@
-import type { ZodIssue, ZodSchema, z } from "zod";
+import type { $ZodIssue } from "@zod/core";
+import type { ZodType, z } from "zod/v4";
 import { addAccessorToInput } from "./mods/add-accessor-to-input";
 import { addOverrideNodes } from "./mods/add-override-nodes";
 import { addWorkspaceIdToOriginRun } from "./mods/add-workspace-id-to-origin-run";
@@ -6,7 +7,7 @@ import { fixTypoAccesorToAccessor } from "./mods/fix-typo-accesor-to-accessor";
 import { fixTypoQuquedAtToQueuedAt } from "./mods/fix-typo-ququedAt-queuedAt";
 import { renameActionToOperation } from "./mods/rename-action-to-operation";
 
-export function dataMod(data: unknown, issue: ZodIssue) {
+export function dataMod(data: unknown, issue: $ZodIssue) {
 	let modData = data;
 	modData = fixTypoAccesorToAccessor(modData, issue);
 	modData = addOverrideNodes(modData, issue);
@@ -17,7 +18,7 @@ export function dataMod(data: unknown, issue: ZodIssue) {
 	return modData;
 }
 
-export function parseAndMod<T extends ZodSchema>(
+export function parseAndMod<T extends ZodType>(
 	schema: T,
 	data: unknown,
 	prevError?: z.ZodError,
@@ -33,7 +34,7 @@ export function parseAndMod<T extends ZodSchema>(
 
 	let modData = data;
 	for (const issue of parseResult.error.issues) {
-		modData = dataMod(modData, issue);
+		modData = dataMod(modData, issue as $ZodIssue);
 	}
 	return parseAndMod(schema, modData, parseResult.error);
 }

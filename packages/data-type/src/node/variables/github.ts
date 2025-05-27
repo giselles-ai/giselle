@@ -1,8 +1,8 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const GitHubObjectType = z.enum(["issue", "issueComment"]);
 const GitHubObjectReference = z.object({
-	url: z.string().url(),
+	url: z.url(),
 	owner: z.string(),
 	repo: z.string(),
 	type: GitHubObjectType,

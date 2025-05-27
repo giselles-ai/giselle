@@ -1,5 +1,5 @@
+import type { $ZodIssue } from "@zod/core";
 import { describe, expect, it } from "vitest";
-import type { ZodIssue } from "zod";
 import { fixTypoAccesorToAccessor } from "./fix-typo-accesor-to-accessor";
 
 describe("fixTypoAccesorToAccessor", () => {
@@ -13,10 +13,10 @@ describe("fixTypoAccesorToAccessor", () => {
 			],
 		};
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["outputs", 0, "accessor"],
 			message: "Required",
 		};
@@ -44,10 +44,10 @@ describe("fixTypoAccesorToAccessor", () => {
 			],
 		};
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["outputs", "someOtherField"],
 			message: "Required",
 		};
@@ -60,10 +60,10 @@ describe("fixTypoAccesorToAccessor", () => {
 	it("should handle non-object data", () => {
 		const data = "not an object";
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["outputs", "accessor"],
 			message: "Required",
 		};
@@ -83,10 +83,10 @@ describe("fixTypoAccesorToAccessor", () => {
 			],
 		};
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["inputs", 0, "accessor"],
 			message: "Required",
 		};
@@ -110,10 +110,10 @@ describe("fixTypoAccesorToAccessor", () => {
 			],
 		};
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["steps", 0, "outputs", 0, "accessor"],
 			message: "Required",
 		};
@@ -145,10 +145,10 @@ describe("fixTypoAccesorToAccessor", () => {
 			],
 		};
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["outputs", 0, "accessor"],
 			message: "Required",
 		};

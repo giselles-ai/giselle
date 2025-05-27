@@ -1,5 +1,5 @@
 import { db } from "@/drizzle";
-import { flowNodeFlag, runV2Flag } from "@/flags";
+import { flowNodeFlag, runV2Flag, webPageFileNodeFlag } from "@/flags";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { getUsageLimitsForTeam } from "@/packages/lib/usage-limits";
 import { fetchCurrentUser } from "@/services/accounts";
@@ -35,7 +35,7 @@ export default async function Layout({
 	const usageLimits = await getUsageLimitsForTeam(currentTeam);
 	const flowNode = await flowNodeFlag();
 	const runV2 = await runV2Flag();
-
+	const webPageFileNode = await webPageFileNodeFlag();
 	return (
 		<WorkspaceProvider
 			workspaceId={workspaceId}
@@ -60,6 +60,7 @@ export default async function Layout({
 			featureFlag={{
 				flowNode,
 				runV2,
+				webPageFileNode,
 			}}
 		>
 			{children}

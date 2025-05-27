@@ -4,7 +4,7 @@ import {
 	type TriggerNode,
 	isTriggerNode,
 } from "@giselle-sdk/data-type";
-import type { z } from "zod";
+import type { z } from "zod/v4";
 import { addGitHubRepositoryIntegrationIndex } from "../integrations/utils";
 import type { GiselleEngineContext } from "../types";
 import { getWorkspace, setWorkspace } from "../workspaces/utils";

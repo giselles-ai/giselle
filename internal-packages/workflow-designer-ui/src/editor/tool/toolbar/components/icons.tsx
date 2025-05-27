@@ -19,5 +19,6 @@ export {
 	UploadIcon,
 	VideoIcon,
 	WilliIcon,
+	WebPageFileIcon,
 } from "../../../../icons";
 export { ImageGenerationNodeIcon } from "../../../../icons/node";

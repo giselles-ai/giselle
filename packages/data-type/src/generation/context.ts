@@ -1,5 +1,5 @@
 import type { WebhookEvent } from "@giselle-sdk/github-tool";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { Connection } from "../connection";
 import { NodeBase, NodeLike, OperationNodeLike } from "../node";
 import { RunId } from "../run";

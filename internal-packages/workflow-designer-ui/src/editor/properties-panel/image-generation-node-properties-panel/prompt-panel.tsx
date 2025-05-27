@@ -28,7 +28,11 @@ export function PromptPanel({
 	const { updateNodeDataContent } = useWorkflowDesigner();
 	const { all: connectedSources } = useConnectedSources(node);
 	const nodes = useMemo(
-		() => connectedSources.map((source) => Node.parse(source.node)),
+		() =>
+			connectedSources
+				.map((source) => Node.safeParse(source.node))
+				.map((parse) => (parse.success ? parse.data : null))
+				.filter((data) => data !== null),
 		[connectedSources],
 	);
 

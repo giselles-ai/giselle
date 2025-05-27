@@ -1,7 +1,7 @@
 export function getValueAtPath(
 	// biome-ignore lint/suspicious/noExplicitAny: adjust any object
 	obj: any,
-	path: (string | number)[],
+	path: PropertyKey[],
 ) {
 	return path.reduce(
 		(acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined),
@@ -12,7 +12,7 @@ export function getValueAtPath(
 export function setValueAtPath(
 	// biome-ignore lint/suspicious/noExplicitAny: adjust any object
 	obj: any,
-	path: (string | number)[],
+	path: PropertyKey[],
 	// biome-ignore lint/suspicious/noExplicitAny: adjust any object
 	value: any,
 ) {

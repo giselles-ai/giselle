@@ -1,8 +1,8 @@
 import type { Input } from "@giselle-sdk/data-type";
-import type { ZodIssue } from "zod";
+import type { $ZodIssue } from "@zod/core";
 import { getValueAtPath, isObject, setValueAtPath } from "../utils";
 
-export function addAccessorToInput(data: unknown, issue: ZodIssue) {
+export function addAccessorToInput(data: unknown, issue: $ZodIssue) {
 	// Check if this is an issue with a missing required accessor field
 	const lastPath = issue.path[issue.path.length - 1];
 	if (lastPath !== "accessor") {

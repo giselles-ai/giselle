@@ -16,7 +16,7 @@ import {
 	WorkspaceGitHubIntegrationSetting,
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
-import { z } from "zod";
+import { z } from "zod/v4";
 import type { GiselleEngine } from "../core";
 import { ConfigureTriggerInput } from "../core/flows";
 import type { TelemetrySettings } from "../core/generations";

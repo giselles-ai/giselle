@@ -1,5 +1,5 @@
-import { createIdGenerator } from "@giselle-sdk/utils";
-import { z } from "zod";
+import { createIdGeneratorV4 as createIdGenerator } from "@giselle-sdk/utils";
+import { z } from "zod/v4";
 import { GenerationTemplate } from "../generation/template";
 import { NodeLike } from "../node";
 

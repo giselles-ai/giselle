@@ -4,7 +4,7 @@ import {
 	OpenAILanguageModel,
 	PerplexityLanguageModel,
 } from "@giselle-sdk/language-model";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export const AnthropicLanguageModelData = AnthropicLanguageModel.pick({
 	provider: true,

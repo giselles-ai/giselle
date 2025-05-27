@@ -21,6 +21,7 @@
 	},
 	"devDependencies": {
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
+		"@zod/core": "0.11.6",
 		"tsup": "catalog:"
 	},
 	"dependencies": {

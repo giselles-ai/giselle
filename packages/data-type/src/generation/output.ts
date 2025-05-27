@@ -1,6 +1,6 @@
-import { createIdGenerator } from "@giselle-sdk/utils";
+import { createIdGeneratorV4 as createIdGenerator } from "@giselle-sdk/utils";
 import type { ProviderMetadata } from "ai";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { OutputId } from "../node";
 
 export const GenerationOutputBase = z.object({
@@ -44,7 +44,7 @@ export interface UrlSource {
 export const UrlSource = z.object({
 	sourceType: z.literal("url"),
 	id: z.string(),
-	url: z.string().url(),
+	url: z.url(),
 	title: z.string(),
 	providerMetadata: z.custom<ProviderMetadata>().optional(),
 }) as z.ZodType<UrlSource>;

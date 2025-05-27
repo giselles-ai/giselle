@@ -1,5 +1,5 @@
-import { createIdGenerator } from "@giselle-sdk/utils";
-import { z } from "zod";
+import { createIdGeneratorV4 as createIdGenerator } from "@giselle-sdk/utils";
+import { z } from "zod/v4";
 
 export const InputId = createIdGenerator("inp");
 export type InputId = z.infer<typeof InputId.schema>;

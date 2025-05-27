@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import { NodeId } from "../node";
 import { WorkspaceId } from "../workspace";
 import { FlowTriggerId, GitHubFlowTrigger, ManualFlowTrigger } from "./trigger";

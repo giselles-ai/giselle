@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import { NodeBase, NodeReferenceBase, OverrideNodeBase } from "../base";
 import { ActionContent, ActionContentReference } from "./action";
 import {
@@ -36,16 +36,14 @@ export function isOperationNode(node: NodeBase): node is OperationNode {
 
 export const OperationNodeLike = NodeBase.extend({
 	type: z.literal("operation"),
-	content: z
-		.object({
-			type: z.union([
-				TextGenerationContent.shape.type,
-				ImageGenerationContent.shape.type,
-				TriggerContent.shape.type,
-				ActionContent.shape.type,
-			]),
-		})
-		.passthrough(),
+	content: z.looseObject({
+		type: z.union([
+			TextGenerationContent.shape.type,
+			ImageGenerationContent.shape.type,
+			TriggerContent.shape.type,
+			ActionContent.shape.type,
+		]),
+	}),
 });
 
 export type OperationNodeLike = z.infer<typeof OperationNodeLike>;

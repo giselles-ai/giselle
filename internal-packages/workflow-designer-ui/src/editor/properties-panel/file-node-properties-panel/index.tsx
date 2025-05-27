@@ -6,7 +6,9 @@ import {
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
 } from "../ui";
-import { FilePanel, type FileTypeConfig } from "./file-panel";
+import { FilePanel } from "./file-panel";
+import type { FileTypeConfig } from "./file-panel-type";
+import { WebPageFilePanel } from "./web-page-file-panel";
 
 const fileType: Record<FileCategory, FileTypeConfig> = {
 	pdf: {
@@ -21,6 +23,10 @@ const fileType: Record<FileCategory, FileTypeConfig> = {
 		accept: ["image/png", "image/jpeg", "image/gif", "image/svg"],
 		label: "Image",
 		maxSize: 1024 * 1024,
+	},
+	webPage: {
+		accept: ["text/html", "text/markdown"],
+		label: "Web Page",
 	},
 };
 
@@ -38,7 +44,14 @@ export function FileNodePropertiesPanel({ node }: { node: FileNode }) {
 				}}
 			/>
 			<PropertiesPanelContent>
-				<FilePanel node={node} config={fileType[node.content.category]} />
+				{node.content.category === "webPage" ? (
+					<WebPageFilePanel
+						node={node}
+						config={fileType[node.content.category]}
+					/>
+				) : (
+					<FilePanel node={node} config={fileType[node.content.category]} />
+				)}
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);

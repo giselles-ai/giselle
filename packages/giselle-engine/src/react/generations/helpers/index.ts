@@ -6,7 +6,7 @@ import {
 	type GenerationId,
 	RunningGeneration,
 } from "@giselle-sdk/data-type";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

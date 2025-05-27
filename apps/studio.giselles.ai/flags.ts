@@ -116,3 +116,16 @@ export const githubVectorStoreFlag = flag<boolean>({
 		{ value: true, label: "Enable" },
 	],
 });
+
+export const webPageFileNodeFlag = flag<boolean>({
+	key: "web-page-file-node",
+	async decide() {
+		return takeLocalEnv("WEB_PAGE_FILE_NODE_FLAG");
+	},
+	description: "Enable Web Page File Node",
+	defaultValue: false,
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+});

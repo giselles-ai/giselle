@@ -2,19 +2,14 @@ import type { FileData, FileNode } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
 import { ArrowUpFromLineIcon, FileXIcon, TrashIcon } from "lucide-react";
 import { Dialog } from "radix-ui";
-import { type ButtonHTMLAttributes, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { toRelativeTime } from "../../../helper/datetime";
 import { TriangleAlert } from "../../../icons";
 import { FileNodeIcon } from "../../../icons/node";
 import { useToasts } from "../../../ui/toast";
-import { Tooltip, type TooltipProps } from "../../../ui/tooltip";
+import { RemoveButton } from "../ui";
+import type { FilePanelProps } from "./file-panel-type";
 import { useFileNode } from "./use-file-node";
-
-export type FileTypeConfig = {
-	accept: string[];
-	label: string;
-	maxSize?: number;
-};
 
 /**
  * Hard limit to upload file since Vercel Serverless Functions have a 4.5MB body size limit
@@ -22,11 +17,6 @@ export type FileTypeConfig = {
  * @todo implement streaming or alternative solution to support larger files (up to 20MB)
  */
 const defaultMaxSize = 1024 * 1024 * 4.5;
-
-type FilePanelProps = {
-	node: FileNode;
-	config: FileTypeConfig;
-};
 
 class FileUploadError extends Error {
 	constructor(message: string) {
@@ -297,23 +287,6 @@ export function FilePanel({ node, config }: FilePanelProps) {
 				</div>
 			</div>
 		</div>
-	);
-}
-
-function RemoveButton({
-	onClick,
-	...props
-}: Omit<TooltipProps, "text" | "children">) {
-	return (
-		<Tooltip text="Remove" {...props}>
-			<button
-				type="button"
-				className="hidden group-hover:block px-[4px] py-[4px] bg-transparent hover:bg-white-900/10 rounded-[8px] transition-colors mr-[2px] flex-shrink-0"
-				onClick={onClick}
-			>
-				<TrashIcon className="w-[24px] h-[24px] stroke-current stroke-[1px] " />
-			</button>
-		</Tooltip>
 	);
 }
 

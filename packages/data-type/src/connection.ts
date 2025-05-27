@@ -1,5 +1,5 @@
-import { createIdGenerator } from "@giselle-sdk/utils";
-import { z } from "zod";
+import { createIdGeneratorV4 as createIdGenerator } from "@giselle-sdk/utils";
+import { z } from "zod/v4";
 import { InputId, NodeReference, OutputId } from "./node";
 
 export const ConnectionId = createIdGenerator("cnnc");

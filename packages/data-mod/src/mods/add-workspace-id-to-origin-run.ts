@@ -1,4 +1,4 @@
-import type { ZodIssue } from "zod";
+import type { $ZodIssue } from "@zod/core";
 import { getValueAtPath, isObject, setValueAtPath } from "../utils";
 
 /**
@@ -7,7 +7,7 @@ import { getValueAtPath, isObject, setValueAtPath } from "../utils";
  * When adding workspaceId via this mod, we use a fixed value "wrks-9999999999999999"
  * to make it clear the ID was automatically added by the data-mod system
  */
-export function addWorkspaceIdToOriginRun(data: unknown, issue: ZodIssue) {
+export function addWorkspaceIdToOriginRun(data: unknown, issue: $ZodIssue) {
 	// Check if this is an issue with a missing required workspaceId field in an origin object
 	const pathLen = issue.path.length;
 	if (

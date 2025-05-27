@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import { Capability, LanguageModelBase, type UsageCalculator } from "./base";
 
 const imageGenerationSize1x1 = z.literal("512x512");

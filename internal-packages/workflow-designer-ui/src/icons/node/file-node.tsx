@@ -3,6 +3,7 @@ import type { SVGProps } from "react";
 import { PdfFileIcon } from "../pdf-file";
 import { PictureIcon } from "../picture";
 import { TextFileIcon } from "../text-file";
+import { WebPageFileIcon } from "../web-page-file";
 
 export function FileNodeIcon({
 	node,
@@ -17,6 +18,8 @@ export function FileNodeIcon({
 			return <TextFileIcon {...props} />;
 		case "image":
 			return <PictureIcon {...props} />;
+		case "webPage":
+			return <WebPageFileIcon {...props} />;
 		default: {
 			const _exhaustiveCheck: never = node.content.category;
 			throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);

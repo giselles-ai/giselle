@@ -10,7 +10,7 @@ import {
 	type GitHubAuthConfig,
 	addReaction as addReactionApi,
 } from "@giselle-sdk/github-tool";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { WorkflowError } from "../error";
 import { runFlow } from "../flows";
 import { getFlowTrigger } from "../flows/utils";

@@ -1,5 +1,5 @@
-import { createIdGenerator } from "@giselle-sdk/utils";
-import { z } from "zod";
+import { createIdGeneratorV4 as createIdGenerator } from "@giselle-sdk/utils";
+import { z } from "zod/v4";
 import { WorkspaceId } from "..";
 import { NodeId } from "../../node";
 
@@ -26,9 +26,9 @@ export const WorkspaceGitHubIntegrationNextActionIssueCommentCreate = z.literal(
 export const WorkspaceGitHubIntegrationNextActionPullRequestCommentCreate =
 	z.literal("github.pull_request_comment.create");
 
-export const WorkspaceGitHubIntegrationNextAction = z.enum([
-	WorkspaceGitHubIntegrationNextActionIssueCommentCreate._def.value,
-	WorkspaceGitHubIntegrationNextActionPullRequestCommentCreate._def.value,
+export const WorkspaceGitHubIntegrationNextAction = z.union([
+	WorkspaceGitHubIntegrationNextActionIssueCommentCreate,
+	WorkspaceGitHubIntegrationNextActionPullRequestCommentCreate,
 ]);
 export type WorkspaceGitHubNextIntegrationAction = z.infer<
 	typeof WorkspaceGitHubIntegrationNextAction

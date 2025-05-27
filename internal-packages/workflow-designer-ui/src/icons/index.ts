@@ -44,3 +44,4 @@ export { AudioIcon } from "./audio";
 export { VideoIcon } from "./video";
 export { GenerateImageIcon } from "./generate-image";
 export * from "./trigger";
+export * from "./web-page-file";

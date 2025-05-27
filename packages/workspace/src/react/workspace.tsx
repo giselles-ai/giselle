@@ -62,6 +62,7 @@ export function WorkspaceProvider({
 									value={{
 										flowNode: featureFlag?.flowNode ?? false,
 										runV2: featureFlag?.runV2 ?? false,
+										webPageFileNode: featureFlag?.webPageFileNode ?? false,
 									}}
 								>
 									{children}

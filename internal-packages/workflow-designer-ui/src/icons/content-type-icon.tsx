@@ -18,6 +18,7 @@ import { PictureIcon } from "./picture";
 import { RecraftIcon } from "./recraft";
 import { StableDiffusionIcon } from "./stable-diffusion";
 import { TextFileIcon } from "./text-file";
+import { WebPageFileIcon } from "./web-page-file";
 
 interface TextNodeIconProps extends SVGProps<SVGSVGElement> {
 	contentType: "text";
@@ -109,6 +110,8 @@ export function ContentTypeIcon({
 					return <TextFileIcon {...props} />;
 				case "image":
 					return <PictureIcon {...props} />;
+				case "webPage":
+					return <WebPageFileIcon {...props} />;
 				default: {
 					const _exhaustiveCheck: never = fileCategory;
 					throw new Error(`Unhandled FileCategory: ${_exhaustiveCheck}`);

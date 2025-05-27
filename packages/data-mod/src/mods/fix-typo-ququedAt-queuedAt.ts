@@ -1,7 +1,7 @@
-import type { ZodIssue } from "zod";
+import type { $ZodIssue } from "@zod/core";
 import { isObject, setValueAtPath } from "../utils";
 
-export function fixTypoQuquedAtToQueuedAt(data: unknown, issue: ZodIssue) {
+export function fixTypoQuquedAtToQueuedAt(data: unknown, issue: $ZodIssue) {
 	if (
 		issue.message !==
 		"Generation fields don't match required fields for the specified status"

@@ -1,5 +1,5 @@
 import type { GitHubActionCommandId } from "@giselle-sdk/flow";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const GitHubActionCommandUnconfiguredState = z.object({
 	status: z.literal("unconfigured"),

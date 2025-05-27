@@ -55,6 +55,7 @@ import {
 	TriggerIcon,
 	UploadIcon,
 	VideoIcon,
+	WebPageFileIcon,
 	WilliIcon,
 } from "./components";
 import {
@@ -86,7 +87,7 @@ export function Toolbar() {
 	const [selectedCategory, setSelectedCategory] = useState<string>("All");
 	const { llmProviders } = useWorkflowDesigner();
 	const limits = useUsageLimits();
-	const { flowNode } = useFeatureFlag();
+	const { flowNode, webPageFileNode } = useFeatureFlag();
 	const languageModelAvailable = (languageModel: LanguageModel) => {
 		if (limits === undefined) {
 			return true;
@@ -933,6 +934,12 @@ export function Toolbar() {
 													<TextFileIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Text</p>
 												</ToggleGroup.Item>
+												{webPageFileNode && (
+													<ToggleGroup.Item value="webPage" data-tool>
+														<WebPageFileIcon className="w-[20px] h-[20px]" />
+														<p className="text-[14px]">Web Page</p>
+													</ToggleGroup.Item>
+												)}
 												{/* <ToggleGroup.Item value="addGitHubNode" data-tool>
 													<GitHubIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">GitHub</p>

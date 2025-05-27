@@ -70,7 +70,7 @@ const isTriggerRequiringCallsign = (
 const getAvailablePayloadFields = (
 	trigger: WorkspaceGitHubIntegrationTrigger,
 ) => {
-	const fields = Object.values(WorkspaceGitHubIntegrationPayloadField.Enum);
+	const fields = WorkspaceGitHubIntegrationPayloadField.options;
 	const triggerParts = trigger.split(".");
 	const triggerPrefix = `${triggerParts[0]}.${triggerParts[1]}.`;
 	return fields.filter((field) => field.startsWith(triggerPrefix));
@@ -384,7 +384,7 @@ function Installed({
 								<SelectContent>
 									<SelectItem
 										value={
-											WorkspaceGitHubIntegrationTrigger.Enum[
+											WorkspaceGitHubIntegrationTrigger.def.entries[
 												"github.issues.opened"
 											]
 										}
@@ -393,7 +393,7 @@ function Installed({
 									</SelectItem>
 									<SelectItem
 										value={
-											WorkspaceGitHubIntegrationTrigger.Enum[
+											WorkspaceGitHubIntegrationTrigger.def.entries[
 												"github.issues.closed"
 											]
 										}
@@ -402,7 +402,7 @@ function Installed({
 									</SelectItem>
 									<SelectItem
 										value={
-											WorkspaceGitHubIntegrationTrigger.Enum[
+											WorkspaceGitHubIntegrationTrigger.def.entries[
 												"github.issue_comment.created"
 											]
 										}
@@ -411,7 +411,7 @@ function Installed({
 									</SelectItem>
 									<SelectItem
 										value={
-											WorkspaceGitHubIntegrationTrigger.Enum[
+											WorkspaceGitHubIntegrationTrigger.def.entries[
 												"github.pull_request.opened"
 											]
 										}
@@ -420,7 +420,7 @@ function Installed({
 									</SelectItem>
 									<SelectItem
 										value={
-											WorkspaceGitHubIntegrationTrigger.Enum[
+											WorkspaceGitHubIntegrationTrigger.def.entries[
 												"github.pull_request.ready_for_review"
 											]
 										}
@@ -429,7 +429,7 @@ function Installed({
 									</SelectItem>
 									<SelectItem
 										value={
-											WorkspaceGitHubIntegrationTrigger.Enum[
+											WorkspaceGitHubIntegrationTrigger.def.entries[
 												"github.pull_request.closed"
 											]
 										}
@@ -438,7 +438,7 @@ function Installed({
 									</SelectItem>
 									<SelectItem
 										value={
-											WorkspaceGitHubIntegrationTrigger.Enum[
+											WorkspaceGitHubIntegrationTrigger.def.entries[
 												"github.pull_request_comment.created"
 											]
 										}

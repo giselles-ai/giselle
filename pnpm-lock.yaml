@@ -208,8 +208,8 @@ catalogs:
       specifier: 3.1.4
       version: 3.1.4
     zod:
-      specifier: 3.24.1
-      version: 3.24.1
+      specifier: 3.25.28
+      version: 3.25.28
 
 importers:
 
@@ -702,7 +702,7 @@ importers:
         version: 12.4.1(@types/react@19.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       ai:
         specifier: 'catalog:'
-        version: 4.3.9(react@19.1.0)(zod@3.24.1)
+        version: 4.3.9(react@19.1.0)(zod@3.25.28)
       clsx:
         specifier: 'catalog:'
         version: 2.1.1
@@ -750,7 +750,7 @@ importers:
         version: 2.2.5(react@19.1.0)
       zod:
         specifier: 'catalog:'
-        version: 3.24.1
+        version: 3.25.28
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -778,11 +778,14 @@ importers:
         version: 3.1.4(@types/debug@4.1.12)(@types/node@22.15.3)(jiti@2.4.2)(jsdom@26.0.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.29.1)(terser@5.39.0)(yaml@2.7.0)
       zod:
         specifier: 'catalog:'
-        version: 3.24.1
+        version: 3.25.28
     devDependencies:
       '@giselle/giselle-sdk-tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
+      '@zod/core':
+        specifier: 0.11.6
+        version: 0.11.6
       tsup:
         specifier: 'catalog:'
         version: 8.3.5(jiti@2.4.2)(postcss@8.5.1)(typescript@5.7.3)(yaml@2.7.0)
@@ -791,7 +794,7 @@ importers:
     dependencies:
       '@ai-sdk/react':
         specifier: 'catalog:'
-        version: 1.2.9(react@19.1.0)(zod@3.24.1)
+        version: 1.2.9(react@19.1.0)(zod@3.25.28)
       '@giselle-sdk/flow':
         specifier: workspace:^
         version: link:../flow
@@ -800,10 +803,10 @@ importers:
         version: link:../language-model
       ai:
         specifier: 'catalog:'
-        version: 4.3.9(react@19.1.0)(zod@3.24.1)
+        version: 4.3.9(react@19.1.0)(zod@3.25.28)
       zod:
         specifier: 'catalog:'
-        version: 3.24.1
+        version: 3.25.28
     devDependencies:
       '@giselle-sdk/github-tool':
         specifier: workspace:^
@@ -828,7 +831,7 @@ importers:
         version: 3.1.4(@types/debug@4.1.12)(@types/node@22.15.3)(jiti@2.4.2)(jsdom@26.0.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.29.1)(terser@5.39.0)(yaml@2.7.0)
       zod:
         specifier: 'catalog:'
-        version: 3.24.1
+        version: 3.25.28
     devDependencies:
       '@giselle/giselle-sdk-tsconfig':
         specifier: workspace:*
@@ -841,22 +844,22 @@ importers:
     dependencies:
       '@ai-sdk/anthropic':
         specifier: 'catalog:'
-        version: 1.2.10(zod@3.24.1)
+        version: 1.2.10(zod@3.25.28)
       '@ai-sdk/fal':
         specifier: 'catalog:'
-        version: 0.1.8(zod@3.24.1)
+        version: 0.1.8(zod@3.25.28)
       '@ai-sdk/google':
         specifier: 'catalog:'
-        version: 1.2.13(zod@3.24.1)
+        version: 1.2.13(zod@3.25.28)
       '@ai-sdk/openai':
         specifier: 'catalog:'
-        version: 1.3.18(zod@3.24.1)
+        version: 1.3.18(zod@3.25.28)
       '@ai-sdk/perplexity':
         specifier: 'catalog:'
-        version: 1.1.7(zod@3.24.1)
+        version: 1.1.7(zod@3.25.28)
       '@ai-sdk/react':
         specifier: 'catalog:'
-        version: 1.2.9(react@19.1.0)(zod@3.24.1)
+        version: 1.2.9(react@19.1.0)(zod@3.25.28)
       '@fal-ai/client':
         specifier: 'catalog:'
         version: 1.3.0
@@ -886,7 +889,7 @@ importers:
         version: link:../workflow-utils
       ai:
         specifier: 'catalog:'
-        version: 4.3.9(react@19.1.0)(zod@3.24.1)
+        version: 4.3.9(react@19.1.0)(zod@3.25.28)
       langfuse:
         specifier: 'catalog:'
         version: 3.37.0
@@ -898,7 +901,7 @@ importers:
         version: 15.3.0(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.52.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       openai:
         specifier: 'catalog:'
-        version: 5.0.0-alpha.0(zod@3.24.1)
+        version: 5.0.0-alpha.0(zod@3.25.28)
       pg:
         specifier: 'catalog:'
         version: 8.14.1
@@ -913,7 +916,7 @@ importers:
         version: 1.14.4(@vercel/blob@0.27.3)(aws4fetch@1.0.20)
       zod:
         specifier: 'catalog:'
-        version: 3.24.1
+        version: 3.25.28
     devDependencies:
       '@giselle-sdk/data-type':
         specifier: workspace:*
@@ -987,7 +990,7 @@ importers:
         version: 5.1.1(graphql@16.10.0)
       ai:
         specifier: 'catalog:'
-        version: 4.3.9(react@19.1.0)(zod@3.24.1)
+        version: 4.3.9(react@19.1.0)(zod@3.25.28)
       gql.tada:
         specifier: 'catalog:'
         version: 1.8.10(graphql@16.10.0)(typescript@5.7.3)
@@ -999,7 +1002,7 @@ importers:
         version: 4.2.2(@urql/core@5.1.1(graphql@16.10.0))(react@19.1.0)
       zod:
         specifier: 'catalog:'
-        version: 3.24.1
+        version: 3.25.28
     devDependencies:
       '@giselle/giselle-sdk-tsconfig':
         specifier: workspace:*
@@ -1027,7 +1030,7 @@ importers:
         version: 19.1.0
       zod:
         specifier: 'catalog:'
-        version: 3.24.1
+        version: 3.25.28
     devDependencies:
       '@giselle/giselle-sdk-tsconfig':
         specifier: workspace:*
@@ -1043,13 +1046,13 @@ importers:
     dependencies:
       '@ai-sdk/perplexity':
         specifier: 'catalog:'
-        version: 1.1.7(zod@3.24.1)
+        version: 1.1.7(zod@3.25.28)
       '@fal-ai/client':
         specifier: 'catalog:'
         version: 1.3.0
       zod:
         specifier: 'catalog:'
-        version: 3.24.1
+        version: 3.25.28
     devDependencies:
       '@giselle/giselle-sdk-tsconfig':
         specifier: workspace:*
@@ -1090,10 +1093,10 @@ importers:
     dependencies:
       '@ai-sdk/openai':
         specifier: 'catalog:'
-        version: 1.3.18(zod@3.24.1)
+        version: 1.3.18(zod@3.25.28)
       ai:
         specifier: 'catalog:'
-        version: 4.3.9(react@19.1.0)(zod@3.24.1)
+        version: 4.3.9(react@19.1.0)(zod@3.25.28)
     devDependencies:
       '@giselle/giselle-sdk-tsconfig':
         specifier: workspace:*
@@ -1125,7 +1128,7 @@ importers:
     dependencies:
       ai:
         specifier: 'catalog:'
-        version: 4.3.9(react@19.1.0)(zod@3.24.1)
+        version: 4.3.9(react@19.1.0)(zod@3.25.28)
       react:
         specifier: 'catalog:'
         version: 19.1.0
@@ -1256,7 +1259,7 @@ importers:
         version: 5.0.9
       zod:
         specifier: 'catalog:'
-        version: 3.24.1
+        version: 3.25.28
     devDependencies:
       '@giselle/giselle-sdk-tsconfig':
         specifier: workspace:*
@@ -1275,7 +1278,7 @@ importers:
         version: 7.2.0
       zod:
         specifier: 'catalog:'
-        version: 3.24.1
+        version: 3.25.28
     devDependencies:
       '@giselle/giselle-sdk-tsconfig':
         specifier: workspace:*
@@ -1324,7 +1327,7 @@ importers:
         version: 19.1.0
       zod:
         specifier: 'catalog:'
-        version: 3.24.1
+        version: 3.25.28
     devDependencies:
       '@giselle/giselle-sdk-tsconfig':
         specifier: workspace:*
@@ -5219,6 +5222,9 @@ packages:
 
   '@xyflow/system@0.0.49':
     resolution: {integrity: sha512-U41XEPv0doyUrP9sgjquuB834/PhqcuE5a4gSo0itC4DjDU4RHjfqmPP1NnYiCu3Jee9MRJzU9Bq+tmh98jldQ==}
+
+  '@zod/core@0.11.6':
+    resolution: {integrity: sha512-03Bv82fFSfjDAvMfdHHdGSS6SOJs0iCcJlWJv1kJHRtoTT02hZpyip/2Lk6oo4l4FtjuwTrsEQTwg/LD8I7dJA==}
 
   abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -9482,6 +9488,9 @@ packages:
   zod@3.24.1:
     resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
 
+  zod@3.25.28:
+    resolution: {integrity: sha512-/nt/67WYKnr5by3YS7LroZJbtcCBurDKKPBPWWzaxvVCGuG/NOsiKkrjoOhI8mJ+SQUXEbUzeB3S+6XDUEEj7Q==}
+
   zustand@4.5.6:
     resolution: {integrity: sha512-ibr/n1hBzLLj5Y+yUcU7dYw8p6WnIVzdJbnX+1YpaScvZVF2ziugqHs+LAmHw4lWO9c/zRj+K1ncgWDQuthEdQ==}
     engines: {node: '>=12.7.0'}
@@ -9512,23 +9521,23 @@ snapshots:
       graphql: 16.10.0
       typescript: 5.7.3
 
-  '@ai-sdk/anthropic@1.2.10(zod@3.24.1)':
+  '@ai-sdk/anthropic@1.2.10(zod@3.25.28)':
     dependencies:
       '@ai-sdk/provider': 1.1.3
-      '@ai-sdk/provider-utils': 2.2.7(zod@3.24.1)
-      zod: 3.24.1
+      '@ai-sdk/provider-utils': 2.2.7(zod@3.25.28)
+      zod: 3.25.28
 
-  '@ai-sdk/fal@0.1.8(zod@3.24.1)':
+  '@ai-sdk/fal@0.1.8(zod@3.25.28)':
     dependencies:
       '@ai-sdk/provider': 1.1.3
-      '@ai-sdk/provider-utils': 2.2.7(zod@3.24.1)
-      zod: 3.24.1
+      '@ai-sdk/provider-utils': 2.2.7(zod@3.25.28)
+      zod: 3.25.28
 
-  '@ai-sdk/google@1.2.13(zod@3.24.1)':
+  '@ai-sdk/google@1.2.13(zod@3.25.28)':
     dependencies:
       '@ai-sdk/provider': 1.1.3
-      '@ai-sdk/provider-utils': 2.2.7(zod@3.24.1)
-      zod: 3.24.1
+      '@ai-sdk/provider-utils': 2.2.7(zod@3.25.28)
+      zod: 3.25.28
 
   '@ai-sdk/openai@1.3.18(zod@3.24.1)':
     dependencies:
@@ -9536,11 +9545,17 @@ snapshots:
       '@ai-sdk/provider-utils': 2.2.7(zod@3.24.1)
       zod: 3.24.1
 
-  '@ai-sdk/perplexity@1.1.7(zod@3.24.1)':
+  '@ai-sdk/openai@1.3.18(zod@3.25.28)':
     dependencies:
       '@ai-sdk/provider': 1.1.3
-      '@ai-sdk/provider-utils': 2.2.7(zod@3.24.1)
-      zod: 3.24.1
+      '@ai-sdk/provider-utils': 2.2.7(zod@3.25.28)
+      zod: 3.25.28
+
+  '@ai-sdk/perplexity@1.1.7(zod@3.25.28)':
+    dependencies:
+      '@ai-sdk/provider': 1.1.3
+      '@ai-sdk/provider-utils': 2.2.7(zod@3.25.28)
+      zod: 3.25.28
 
   '@ai-sdk/provider-utils@2.2.7(zod@3.24.1)':
     dependencies:
@@ -9548,6 +9563,13 @@ snapshots:
       nanoid: 3.3.8
       secure-json-parse: 2.7.0
       zod: 3.24.1
+
+  '@ai-sdk/provider-utils@2.2.7(zod@3.25.28)':
+    dependencies:
+      '@ai-sdk/provider': 1.1.3
+      nanoid: 3.3.8
+      secure-json-parse: 2.7.0
+      zod: 3.25.28
 
   '@ai-sdk/provider@1.1.3':
     dependencies:
@@ -9563,12 +9585,29 @@ snapshots:
     optionalDependencies:
       zod: 3.24.1
 
+  '@ai-sdk/react@1.2.9(react@19.1.0)(zod@3.25.28)':
+    dependencies:
+      '@ai-sdk/provider-utils': 2.2.7(zod@3.25.28)
+      '@ai-sdk/ui-utils': 1.2.8(zod@3.25.28)
+      react: 19.1.0
+      swr: 2.2.5(react@19.1.0)
+      throttleit: 2.1.0
+    optionalDependencies:
+      zod: 3.25.28
+
   '@ai-sdk/ui-utils@1.2.8(zod@3.24.1)':
     dependencies:
       '@ai-sdk/provider': 1.1.3
       '@ai-sdk/provider-utils': 2.2.7(zod@3.24.1)
       zod: 3.24.1
       zod-to-json-schema: 3.24.1(zod@3.24.1)
+
+  '@ai-sdk/ui-utils@1.2.8(zod@3.25.28)':
+    dependencies:
+      '@ai-sdk/provider': 1.1.3
+      '@ai-sdk/provider-utils': 2.2.7(zod@3.25.28)
+      zod: 3.25.28
+      zod-to-json-schema: 3.24.1(zod@3.25.28)
 
   '@alloc/quick-lru@5.2.0': {}
 
@@ -10817,8 +10856,8 @@ snapshots:
     dependencies:
       axios: 1.7.9
       typescript-event-target: 1.1.1
-      zod: 3.24.1
-      zod-to-json-schema: 3.24.1(zod@3.24.1)
+      zod: 3.25.28
+      zod-to-json-schema: 3.24.1(zod@3.25.28)
     transitivePeerDependencies:
       - debug
 
@@ -13858,6 +13897,8 @@ snapshots:
       d3-selection: 3.0.0
       d3-zoom: 3.0.0
 
+  '@zod/core@0.11.6': {}
+
   abort-controller@3.0.0:
     dependencies:
       event-target-shim: 5.0.1
@@ -13900,6 +13941,18 @@ snapshots:
       '@opentelemetry/api': 1.9.0
       jsondiffpatch: 0.6.0
       zod: 3.24.1
+    optionalDependencies:
+      react: 19.1.0
+
+  ai@4.3.9(react@19.1.0)(zod@3.25.28):
+    dependencies:
+      '@ai-sdk/provider': 1.1.3
+      '@ai-sdk/provider-utils': 2.2.7(zod@3.25.28)
+      '@ai-sdk/react': 1.2.9(react@19.1.0)(zod@3.25.28)
+      '@ai-sdk/ui-utils': 1.2.8(zod@3.25.28)
+      '@opentelemetry/api': 1.9.0
+      jsondiffpatch: 0.6.0
+      zod: 3.25.28
     optionalDependencies:
       react: 19.1.0
 
@@ -16540,9 +16593,9 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  openai@5.0.0-alpha.0(zod@3.24.1):
+  openai@5.0.0-alpha.0(zod@3.25.28):
     optionalDependencies:
-      zod: 3.24.1
+      zod: 3.25.28
 
   opn@5.5.0:
     dependencies:
@@ -18613,7 +18666,13 @@ snapshots:
     dependencies:
       zod: 3.24.1
 
+  zod-to-json-schema@3.24.1(zod@3.25.28):
+    dependencies:
+      zod: 3.25.28
+
   zod@3.24.1: {}
+
+  zod@3.25.28: {}
 
   zustand@4.5.6(@types/react@19.1.0)(react@19.1.0):
     dependencies:

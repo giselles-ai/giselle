@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import { FlowTriggerId } from "../flow";
 
 export const GitHubRepositoryIntegrationIndex = z.object({

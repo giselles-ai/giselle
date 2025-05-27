@@ -1,5 +1,5 @@
+import type { $ZodIssue } from "@zod/core";
 import { describe, expect, it } from "vitest";
-import type { ZodIssue } from "zod";
 import { addWorkspaceIdToOriginRun } from "./add-workspace-id-to-origin-run";
 
 describe("addWorkspaceIdToOriginRun", () => {
@@ -13,10 +13,10 @@ describe("addWorkspaceIdToOriginRun", () => {
 			},
 		};
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["context", "origin", "workspaceId"],
 			message: "Required",
 		};
@@ -50,10 +50,10 @@ describe("addWorkspaceIdToOriginRun", () => {
 			},
 		};
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["context", "someOtherField", "origin", "workspaceId"],
 			message: "Required",
 		};
@@ -87,10 +87,10 @@ describe("addWorkspaceIdToOriginRun", () => {
 			},
 		};
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["context", "origin", "someOtherField"],
 			message: "Required",
 		};
@@ -110,10 +110,10 @@ describe("addWorkspaceIdToOriginRun", () => {
 			},
 		};
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["context", "someField", "workspaceId"],
 			message: "Required",
 		};
@@ -133,10 +133,10 @@ describe("addWorkspaceIdToOriginRun", () => {
 			},
 		};
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["context", "origin", "workspaceId"],
 			message: "Required",
 		};
@@ -149,10 +149,10 @@ describe("addWorkspaceIdToOriginRun", () => {
 	it("should handle non-object data", () => {
 		const data = "not an object";
 
-		const issue: ZodIssue = {
+		const issue: $ZodIssue = {
 			code: "invalid_type",
 			expected: "string",
-			received: "undefined",
+			input: "undefined",
 			path: ["context", "origin", "workspaceId"],
 			message: "Required",
 		};

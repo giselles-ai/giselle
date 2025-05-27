@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import type { z } from "zod";
+import type { z } from "zod/v4";
 import type {
 	FormDataRouterHandlers,
 	FormDataRouterInput,

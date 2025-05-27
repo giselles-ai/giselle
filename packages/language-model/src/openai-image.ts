@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import { Capability, LanguageModelBase, type UsageCalculator } from "./base";
 
 export const size = z.enum(["1024x1024", "1536x1024", "1024x1536"]);

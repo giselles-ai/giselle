@@ -1,4 +1,4 @@
-import { dataMod, parseAndMod } from "@giselle-sdk/data-mod";
+import { parseAndMod } from "@giselle-sdk/data-mod";
 import { Workspace, type WorkspaceId } from "@giselle-sdk/data-type";
 import type { Storage } from "unstorage";
 

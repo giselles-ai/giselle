@@ -1,4 +1,4 @@
-import type { z } from "zod";
+import type { z } from "zod/v4";
 import type { GiselleEngineContext } from "../core";
 import { UsageLimitError } from "../core/error";
 
@@ -6,7 +6,7 @@ import { UsageLimitError } from "../core/error";
  * Type definition for handler arguments that conditionally includes input
  * based on whether an input schema is provided
  */
-type HandlerArgs<TSchema> = TSchema extends z.AnyZodObject
+type HandlerArgs<TSchema> = TSchema extends z.ZodObject
 	? {
 			input: z.infer<TSchema>;
 			context: GiselleEngineContext;
@@ -18,7 +18,7 @@ type HandlerArgs<TSchema> = TSchema extends z.AnyZodObject
 /**
  * Type definition for arguments passed to the created handler function
  */
-type HandlerInputArgs<TSchema> = TSchema extends z.AnyZodObject
+type HandlerInputArgs<TSchema> = TSchema extends z.ZodObject
 	? {
 			input: TSchema;
 			context: GiselleEngineContext;
@@ -36,7 +36,7 @@ type HandlerInputArgs<TSchema> = TSchema extends z.AnyZodObject
  */
 export function createHandler<
 	TOutput,
-	TSchema extends z.AnyZodObject | undefined = undefined,
+	TSchema extends z.ZodObject | undefined = undefined,
 >({
 	input,
 	handler,
@@ -71,7 +71,7 @@ export function createHandler<
  */
 export function withUsageLimitErrorHandler<
 	TOutput,
-	TSchema extends z.AnyZodObject | undefined = undefined,
+	TSchema extends z.ZodObject | undefined = undefined,
 >(
 	handler: (args: HandlerInputArgs<TSchema>) => Promise<TOutput>,
 ): (args: HandlerInputArgs<TSchema>) => Promise<TOutput | Response> {

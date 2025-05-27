@@ -1,19 +1,11 @@
-import { createIdGenerator } from "@giselle-sdk/utils";
-import { z } from "zod";
+import { createIdGeneratorV4 as createIdGenerator } from "@giselle-sdk/utils";
+import { z } from "zod/v4";
 import { Connection } from "../connection";
 import { NodeId, NodeLike, NodeUIState } from "../node";
-import { OpenAIVecrtorStore } from "../openai";
 import { Workflow } from "../workflow";
 
 export const WorkspaceId = createIdGenerator("wrks");
 export type WorkspaceId = z.infer<typeof WorkspaceId.schema>;
-
-export const WorkspaceProviderOptionOpenAI = z.object({
-	vectorStore: OpenAIVecrtorStore,
-});
-export const WorkspaceProviderOptions = z.object({
-	openai: z.optional(WorkspaceProviderOptionOpenAI),
-});
 
 export const WorkspaceSchemaVersion = z.enum(["20250221"]);
 export const Viewport = z.object({
@@ -36,7 +28,6 @@ export const Workspace = z.object({
 	connections: z.array(Connection),
 	ui: UIState,
 	editingWorkflows: z.array(Workflow),
-	providerOptions: z.optional(WorkspaceProviderOptions),
 });
 export type Workspace = z.infer<typeof Workspace>;
 
