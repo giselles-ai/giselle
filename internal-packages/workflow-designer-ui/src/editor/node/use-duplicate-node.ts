@@ -1,3 +1,4 @@
+import { Node } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "giselle-sdk/react";
 import { useCallback } from "react";
 
@@ -6,11 +7,24 @@ export function useDuplicateNode() {
 
 	return useCallback(
 		(nodeId?: string, onError?: () => void) => {
-			const targetNode = nodeId
+			const targetNodeLike = nodeId
 				? data.nodes.find((node) => node.id === nodeId)
 				: data.nodes.find((node) => data.ui.nodeState[node.id]?.selected);
 
-			if (!targetNode) {
+			if (!targetNodeLike) {
+				onError?.();
+				return;
+			}
+
+			let targetNode: Node;
+			try {
+				targetNode = Node.parse(targetNodeLike);
+			} catch (error) {
+				console.error(
+					"Failed to parse target node for duplication:",
+					error,
+					targetNodeLike,
+				);
 				onError?.();
 				return;
 			}
