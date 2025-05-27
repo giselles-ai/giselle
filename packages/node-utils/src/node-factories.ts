@@ -44,6 +44,10 @@ import {
 	triggerNodeDefaultName,
 } from "./default-name";
 
+export type ClonedFileDataPayload = FileData & {
+	originalFileIdForCopy: FileId;
+};
+
 type OperationNodeContentType = OperationNode["content"]["type"];
 type VariableNodeContentType = VariableNode["content"]["type"];
 export type NodeContentType =
@@ -386,11 +390,7 @@ const fileVariableFactoryImpl = {
 	clone: (orig: FileNode): NodeFactoryCloneResult<FileNode> => {
 		const clonedContent = structuredClone(orig.content);
 		clonedContent.files = orig.content.files.map(
-			(
-				fileData: FileData,
-			): FileData & {
-				originalFileIdForCopy: FileId;
-			} => {
+			(fileData: FileData): ClonedFileDataPayload => {
 				const newFileId = FileId.generate();
 				return {
 					...fileData,
