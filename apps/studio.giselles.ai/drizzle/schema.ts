@@ -11,7 +11,7 @@ import type {
 	GitHubIntegrationSettingId,
 	GitHubRepositoryIndexId,
 } from "@giselles-ai/types";
-import type { OpenAIModel, AnthropicModel, GoogleModel } from "@giselle-sdk/language-model";
+import type { OpenAIModel, AnthropicModel, GoogleModel, ModelPriceId } from "@giselle-sdk/language-model";
 import { relations } from "drizzle-orm";
 import {
 	boolean,
@@ -342,8 +342,7 @@ export const modelUsages = pgTable(
 		teamDbId: integer("team_db_id")
 			.notNull()
 			.references(() => teams.dbId, { onDelete: "cascade" }),
-		model: text("model").$type<OpenAIModel | AnthropicModel | GoogleModel>().notNull(),
-		provider: text("provider").notNull(),
+		priceId: text("price_id").$type<ModelPriceId>().notNull(),
 		agentDbId: integer("agent_db_id")
 			.notNull()
 			.references(() => agents.dbId, { onDelete: "cascade" }),

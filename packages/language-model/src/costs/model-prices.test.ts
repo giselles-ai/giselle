@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { type ModelPriceTable, getValidPricing } from "./model-prices";
-import type { ModelPrice } from "./pricing";
+import type { ModelPriceInput } from "./pricing";
 
 describe("getValidPricing", () => {
 	it("should return the price", () => {
@@ -11,6 +11,7 @@ describe("getValidPricing", () => {
 			"test-model": {
 				prices: [
 					{
+						id: "test-model-1",
 						validFrom: past.toISOString(),
 						price: {
 							input: { costPerMegaToken: 1 },
@@ -34,6 +35,7 @@ describe("getValidPricing", () => {
 			"test-model": {
 				prices: [
 					{
+						id: "test-model-1",
 						validFrom: past.toISOString(),
 						price: {
 							input: { costPerMegaToken: 1 },
@@ -41,6 +43,7 @@ describe("getValidPricing", () => {
 						},
 					},
 					{
+						id: "test-model-2",
 						validFrom: now.toISOString(),
 						price: {
 							input: { costPerMegaToken: 3 },
@@ -48,6 +51,7 @@ describe("getValidPricing", () => {
 						},
 					},
 					{
+						id: "test-model-3",
 						validFrom: future.toISOString(),
 						price: {
 							input: { costPerMegaToken: 5 },
@@ -77,6 +81,7 @@ describe("getValidPricing", () => {
 			"test-model": {
 				prices: [
 					{
+						id: "test-model-1",
 						validFrom: future.toISOString(),
 						price: {
 							input: { costPerMegaToken: 1 },
@@ -101,6 +106,7 @@ describe("getValidPricing", () => {
 			"test-model": {
 				prices: [
 					{
+						id: "test-model-1",
 						validFrom: initial.toISOString(),
 						price: {
 							input: { costPerMegaToken: 1 },
@@ -108,6 +114,7 @@ describe("getValidPricing", () => {
 						},
 					},
 					{
+						id: "test-model-2",
 						validFrom: updated.toISOString(),
 						price: {
 							input: { costPerMegaToken: 3 },

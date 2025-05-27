@@ -18,10 +18,35 @@ export type TokenBasedPricing = {
 	output: BaseTokenPrice;
 };
 
-export type ModelPrice = {
+export type ModelPriceId = string;
+
+export type ModelPriceInput = {
 	validFrom: string;
 	price: TokenBasedPricing;
 };
+
+export type ModelPrice = ModelPriceInput & {
+	id: ModelPriceId;
+};
+
+/**
+ * Creates a price table for a model
+ */
+export function defineModelPriceTable<T extends string>(
+	entries: Record<T, ModelPriceInput[]>,
+): Record<T, { prices: ModelPrice[] }> {
+	return Object.fromEntries(
+		Object.entries<ModelPriceInput[]>(entries).map(([model, prices]) => [
+			model,
+			{
+				prices: prices.map((price) => ({
+					...price,
+					id: `${model}-${price.validFrom}`,
+				})),
+			},
+		]),
+	) as Record<T, { prices: ModelPrice[] }>;
+}
 
 export interface TokenUsage {
 	input: number;

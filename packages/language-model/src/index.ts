@@ -26,6 +26,7 @@ import {
 export * from "./base";
 export * from "./helper";
 export * from "./costs";
+export * from "./models";
 export {
 	getImageGenerationModelProvider,
 	falImageGenerationSizes as imageGenerationSizes,

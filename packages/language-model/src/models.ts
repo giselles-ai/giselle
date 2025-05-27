@@ -29,6 +29,6 @@ export const GOOGLE_MODELS = {
 	GEMINI_20_PRO_EXP: "gemini-2.0-pro-exp-02-05",
 } as const;
 
-export type OpenAIModel = typeof OPENAI_MODELS[keyof typeof OPENAI_MODELS];
-export type AnthropicModel = typeof ANTHROPIC_MODELS[keyof typeof ANTHROPIC_MODELS];
-export type GoogleModel = typeof GOOGLE_MODELS[keyof typeof GOOGLE_MODELS];
+export type OpenAIModel = (typeof OPENAI_MODELS)[keyof typeof OPENAI_MODELS];
+export type AnthropicModel = (typeof ANTHROPIC_MODELS)[keyof typeof ANTHROPIC_MODELS];
+export type GoogleModel = (typeof GOOGLE_MODELS)[keyof typeof GOOGLE_MODELS];

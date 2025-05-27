@@ -23,7 +23,8 @@
 			"@giselles-ai/*": ["./packages/*"],
 			"@giselles-ai/icons/*": [
 				"../../internal-packages/workflow-designer-ui/src/icons/*"
-			]
+			],
+			"@giselle-sdk/*": ["../../packages/*"]
 		},
 		"target": "ES2017"
 	},
