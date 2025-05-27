@@ -12,6 +12,7 @@ import {
 	type WorkspaceId,
 	isCompletedGeneration,
 	isQueryNode,
+	isTextNode,
 } from "@giselle-sdk/data-type";
 import { query as queryRag } from "@giselle-sdk/rag";
 import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
@@ -279,6 +280,9 @@ async function resolveQuery(
 
 		switch (contextNode.content.type) {
 			case "text": {
+				if (!isTextNode(contextNode)) {
+					throw new Error(`Unexpected node data: ${contextNode.id}`);
+				}
 				const jsonOrText = contextNode.content.text;
 				const text = isJsonContent(jsonOrText)
 					? jsonContentToText(JSON.parse(jsonOrText))
