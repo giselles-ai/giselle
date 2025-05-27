@@ -21,7 +21,10 @@ import {
 	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { hasTierAccess, languageModels } from "@giselle-sdk/language-model";
-import { isJsonContent, jsonContentToText } from "@giselle-sdk/text-editor";
+import {
+	isJsonContent,
+	jsonContentToText,
+} from "@giselle-sdk/text-editor-utils";
 import type { CoreMessage, DataContent, FilePart, ImagePart } from "ai";
 import type { Storage } from "unstorage";
 import { getRun } from "../runs/utils";

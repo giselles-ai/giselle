@@ -1,9 +1,9 @@
 "use client";
 
 import type { Node } from "@giselle-sdk/data-type";
+import { defaultName } from "@giselle-sdk/node-utils";
 import type { ReactNode } from "react";
 import { EditableText } from "../../../ui/editable-text";
-import { defaultName } from "../../../utils";
 
 export function PropertiesPanelRoot({
 	children,

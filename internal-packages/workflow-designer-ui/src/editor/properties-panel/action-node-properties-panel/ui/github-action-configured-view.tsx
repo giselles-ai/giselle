@@ -9,6 +9,7 @@ import {
 	isTextNode,
 } from "@giselle-sdk/data-type";
 import { githubActionIdToLabel, githubActions } from "@giselle-sdk/flow";
+import { defaultName } from "@giselle-sdk/node-utils";
 import clsx from "clsx/lite";
 import { useGiselleEngine, useWorkflowDesigner } from "giselle-sdk/react";
 import { TrashIcon, TriangleAlert } from "lucide-react";
@@ -16,7 +17,6 @@ import { DropdownMenu } from "radix-ui";
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
 import { NodeIcon } from "../../../../icons/node";
-import { defaultName } from "../../../../utils";
 import { GitHubRepositoryBlock } from "../../trigger-node-properties-panel/ui";
 import { type InputWithConnectedOutput, useConnectedInputs } from "../lib";
 

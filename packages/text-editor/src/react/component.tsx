@@ -1,4 +1,5 @@
 import type { Node } from "@giselle-sdk/data-type";
+import { extensions as baseExtensions } from "@giselle-sdk/text-editor-utils";
 import { type Editor, EditorProvider, useCurrentEditor } from "@tiptap/react";
 import clsx from "clsx/lite";
 import {
@@ -10,7 +11,6 @@ import {
 } from "lucide-react";
 import { Toolbar as ToolbarPrimitive } from "radix-ui";
 import { type ReactNode, useMemo } from "react";
-import { extensions as baseExtensions } from "../extensions";
 import { SourceExtensionReact } from "./source-extension-react";
 
 function Toolbar({

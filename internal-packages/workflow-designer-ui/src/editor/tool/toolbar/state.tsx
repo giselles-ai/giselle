@@ -1,30 +1,14 @@
 "use client";
 
-import {
-	type ActionNode,
-	type FileCategory,
-	type FileNode,
-	type ImageGenerationLanguageModelData,
-	type ImageGenerationNode,
-	type Input,
-	InputId,
-	type Node,
-	NodeId,
-	type Output,
-	OutputId,
-	type TextGenerationLanguageModelData,
-	type TextGenerationNode,
-	type TextNode,
-	type TriggerNode,
+import type {
+	FileCategory,
+	ImageGenerationLanguageModelData,
+	Node,
+	TextGenerationLanguageModelData,
 } from "@giselle-sdk/data-type";
 import type { ActionProvider, TriggerProvider } from "@giselle-sdk/flow";
-import {
-	Capability,
-	hasCapability,
-	languageModels,
-} from "@giselle-sdk/language-model";
+import { nodeFactories } from "@giselle-sdk/node-utils";
 import { type ReactNode, createContext, useContext, useState } from "react";
-import { actionNodeDefaultName, triggerNodeDefaultName } from "../../../utils";
 import type {
 	AddFileNodeTool,
 	AddGitHubNodeTool,
@@ -150,132 +134,27 @@ export function addNodeTool(node: Node) {
 }
 
 export function textNode() {
-	return {
-		id: NodeId.generate(),
-		type: "variable",
-		content: {
-			type: "text",
-			text: "",
-		},
-		inputs: [],
-		outputs: [
-			{
-				id: OutputId.generate(),
-				label: "Output",
-				accessor: "text",
-			},
-		],
-	} satisfies TextNode;
+	return nodeFactories.create("text");
 }
 
 export function triggerNode(triggerProvider: TriggerProvider) {
-	return {
-		id: NodeId.generate(),
-		type: "operation",
-		name: triggerNodeDefaultName(triggerProvider),
-		content: {
-			type: "trigger",
-			provider: triggerProvider,
-			state: {
-				status: "unconfigured",
-			},
-		},
-		inputs: [],
-		outputs: [],
-	} satisfies TriggerNode;
+	return nodeFactories.create("trigger", triggerProvider);
 }
 
 export function actionNode(actionProvider: ActionProvider) {
-	return {
-		id: NodeId.generate(),
-		type: "operation",
-		name: actionNodeDefaultName(actionProvider),
-		content: {
-			type: "action",
-			command: {
-				provider: actionProvider,
-				state: {
-					status: "unconfigured",
-				},
-			},
-		},
-		inputs: [],
-		outputs: [],
-	} satisfies ActionNode;
+	return nodeFactories.create("action", actionProvider);
 }
 
 export function fileNode(category: FileCategory) {
-	return {
-		id: NodeId.generate(),
-		type: "variable",
-		content: {
-			type: "file",
-			category,
-			files: [],
-		},
-		inputs: [],
-		outputs: [
-			{
-				id: OutputId.generate(),
-				label: "Output",
-				accessor: "text",
-			},
-		],
-	} satisfies FileNode;
+	return nodeFactories.create("file", category);
 }
 
 export function textGenerationNode(llm: TextGenerationLanguageModelData) {
-	const outputs: Output[] = [
-		{
-			id: OutputId.generate(),
-			label: "Output",
-			accessor: "generated-text",
-		},
-	];
-	const languageModel = languageModels.find(
-		(languageModel) => languageModel.id === llm.id,
-	);
-
-	if (
-		languageModel !== undefined &&
-		hasCapability(languageModel, Capability.SearchGrounding)
-	) {
-		outputs.push({
-			id: OutputId.generate(),
-			label: "Source",
-			accessor: "source",
-		});
-	}
-
-	return {
-		id: NodeId.generate(),
-		type: "operation",
-		content: {
-			type: "textGeneration",
-			llm,
-		},
-		inputs: [],
-		outputs,
-	} satisfies TextGenerationNode;
+	return nodeFactories.create("textGeneration", llm);
 }
 
 export function imageGenerationNode(llm: ImageGenerationLanguageModelData) {
-	return {
-		id: NodeId.generate(),
-		type: "operation",
-		content: {
-			type: "imageGeneration",
-			llm,
-		},
-		inputs: [],
-		outputs: [
-			{
-				id: OutputId.generate(),
-				label: "Output",
-				accessor: "generated-image",
-			},
-		],
-	} satisfies ImageGenerationNode;
+	return nodeFactories.create("imageGeneration", llm);
 }
 
 export function selectSourceCategoryTool() {

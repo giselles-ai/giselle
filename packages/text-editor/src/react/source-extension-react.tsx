@@ -1,34 +1,10 @@
 import { Node as GiselleNode } from "@giselle-sdk/data-type";
+import { defaultName } from "@giselle-sdk/node-utils";
+import { SourceExtension } from "@giselle-sdk/text-editor-utils";
 import { type NodeViewProps, NodeViewWrapper, PasteRule } from "@tiptap/react";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import clsx from "clsx/lite";
 import { useMemo } from "react";
-import { SourceExtension } from "../extensions/source-extension";
-
-function defaultName(node: GiselleNode) {
-	switch (node.type) {
-		case "operation":
-			switch (node.content.type) {
-				case "textGeneration":
-				case "imageGeneration":
-					return node.name ?? node.content.llm.id;
-				case "trigger":
-					return node.name ?? node.content.provider;
-				case "action":
-					return node.name ?? node.content.command.provider;
-				default: {
-					const _exhaustiveCheck: never = node.content;
-					throw new Error(`Unhandled action content type: ${_exhaustiveCheck}`);
-				}
-			}
-		case "variable":
-			return node.name ?? node.content.type;
-		default: {
-			const _exhaustiveCheck: never = node;
-			throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
-		}
-	}
-}
 
 const Component = (props: NodeViewProps) => {
 	const node = useMemo(

@@ -37,10 +37,14 @@
 	},
 	"dependencies": {
 		"@giselle-sdk/data-type": "workspace:*",
+		"@giselle-sdk/utils": "workspace:*",
 		"@giselle-sdk/giselle-engine": "workspace:*",
 		"@giselle-sdk/language-model": "workspace:^",
 		"@giselle-sdk/workflow-utils": "workspace:*",
+		"@giselle-sdk/node-utils": "workspace:*",
+		"@giselle-sdk/flow": "workspace:*",
 		"react": "catalog:",
-		"zod": "catalog:"
+		"zod": "catalog:",
+		"@tiptap/react": "catalog:"
 	}
 }
