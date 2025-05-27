@@ -137,10 +137,10 @@ describe("isSupportedConnection", () => {
 		});
 
 		test("should reject non-action node as input", () => {
-			const outputNode = createTextGenerationNode("nd-test2");
-			const inputNode = createTextNode("nd-test3");
+			const senderNode = createTextGenerationNode("nd-test2");
+			const receiverNode = createTextNode("nd-test3");
 
-			const result = isSupportedConnection(outputNode, inputNode);
+			const result = isSupportedConnection(senderNode, receiverNode);
 
 			expect(result.canConnect).toBe(false);
 			expect(result).toHaveProperty(
@@ -152,10 +152,10 @@ describe("isSupportedConnection", () => {
 
 	describe("Output node restrictions", () => {
 		test("should reject image generation node as output", () => {
-			const outputNode = createImageGenerationNode("nd-test4");
-			const inputNode = createTextGenerationNode(NodeId.generate());
+			const senderNode = createImageGenerationNode("nd-test4");
+			const receiverNode = createTextGenerationNode(NodeId.generate());
 
-			const result = isSupportedConnection(outputNode, inputNode);
+			const result = isSupportedConnection(senderNode, receiverNode);
 
 			expect(result.canConnect).toBe(false);
 			expect(result).toHaveProperty(
@@ -165,10 +165,10 @@ describe("isSupportedConnection", () => {
 		});
 
 		test("should reject GitHub node as output", () => {
-			const outputNode = createGitHubNode("nd-test6");
-			const inputNode = createTextGenerationNode(NodeId.generate());
+			const senderNode = createGitHubNode("nd-test6");
+			const receiverNode = createTextGenerationNode(NodeId.generate());
 
-			const result = isSupportedConnection(outputNode, inputNode);
+			const result = isSupportedConnection(senderNode, receiverNode);
 
 			expect(result.canConnect).toBe(false);
 			expect(result).toHaveProperty(
@@ -181,9 +181,9 @@ describe("isSupportedConnection", () => {
 	describe("File node restrictions", () => {
 		test("should reject pdf file node as input for image generation", () => {
 			const fileNode = createFileNode(NodeId.generate(), "pdf");
-			const inputNode = createImageGenerationNode(NodeId.generate());
+			const receiverNode = createImageGenerationNode(NodeId.generate());
 
-			const result = isSupportedConnection(fileNode, inputNode);
+			const result = isSupportedConnection(fileNode, receiverNode);
 
 			expect(result.canConnect).toBe(false);
 			expect(result).toHaveProperty(
@@ -194,12 +194,12 @@ describe("isSupportedConnection", () => {
 
 		test("should reject pdf file node as input for OpenAI", () => {
 			const fileNode = createFileNode(NodeId.generate(), "pdf");
-			const inputNode = createTextGenerationNode(
+			const receiverNode = createTextGenerationNode(
 				NodeId.generate(),
 				openaiLanguageModels[0],
 			);
 
-			const result = isSupportedConnection(fileNode, inputNode);
+			const result = isSupportedConnection(fileNode, receiverNode);
 
 			expect(result.canConnect).toBe(false);
 			expect(result).toHaveProperty(
@@ -210,12 +210,12 @@ describe("isSupportedConnection", () => {
 
 		test("should reject image file node as input for Perplexity", () => {
 			const fileNode = createFileNode(NodeId.generate(), "image");
-			const inputNode = createTextGenerationNode(
+			const receiverNode = createTextGenerationNode(
 				NodeId.generate(),
 				perplexityLanguageModels[0],
 			);
 
-			const result = isSupportedConnection(fileNode, inputNode);
+			const result = isSupportedConnection(fileNode, receiverNode);
 
 			expect(result.canConnect).toBe(false);
 			expect(result).toHaveProperty(
@@ -226,12 +226,12 @@ describe("isSupportedConnection", () => {
 
 		test("should allow file node as input for Anthropic", () => {
 			const fileNode = createFileNode(NodeId.generate());
-			const inputNode = createTextGenerationNode(
+			const receiverNode = createTextGenerationNode(
 				NodeId.generate(),
 				anthropicLanguageModels[0],
 			);
 
-			const result = isSupportedConnection(fileNode, inputNode);
+			const result = isSupportedConnection(fileNode, receiverNode);
 			expect(result.canConnect).toBe(true);
 		});
 
@@ -244,31 +244,31 @@ describe("isSupportedConnection", () => {
 				"nd-test16",
 				category as "text" | "pdf" | "image",
 			);
-			const inputNode = createTextGenerationNode(
+			const receiverNode = createTextGenerationNode(
 				NodeId.generate(),
 				anthropicLanguageModels[0],
 			);
 
-			const result = isSupportedConnection(fileNode, inputNode);
+			const result = isSupportedConnection(fileNode, receiverNode);
 			expect(result.canConnect).toBe(expected);
 		});
 	});
 
 	describe("Vector store node restrictions", () => {
 		test("should allow connection from VectorStoreNode to QueryNode", () => {
-			const outputNode = createVectorStoreNode(NodeId.generate());
-			const inputNode = createQueryNode(NodeId.generate());
+			const senderNode = createVectorStoreNode(NodeId.generate());
+			const receiverNode = createQueryNode(NodeId.generate());
 
-			const result = isSupportedConnection(outputNode, inputNode);
+			const result = isSupportedConnection(senderNode, receiverNode);
 
 			expect(result.canConnect).toBe(true);
 		});
 
 		test("should reject connection from VectorStoreNode to non-QueryNode", () => {
-			const outputNode = createVectorStoreNode(NodeId.generate());
-			const inputNode = createTextGenerationNode(NodeId.generate());
+			const senderNode = createVectorStoreNode(NodeId.generate());
+			const receiverNode = createTextGenerationNode(NodeId.generate());
 
-			const result = isSupportedConnection(outputNode, inputNode);
+			const result = isSupportedConnection(senderNode, receiverNode);
 
 			expect(result.canConnect).toBe(false);
 			if (!result.canConnect) {
@@ -281,26 +281,26 @@ describe("isSupportedConnection", () => {
 
 	describe("Query node output restrictions", () => {
 		test("should allow connection from QueryNode to TextGenerationNode", () => {
-			const outputNode = createQueryNode(NodeId.generate());
-			const inputNode = createTextGenerationNode(NodeId.generate());
+			const senderNode = createQueryNode(NodeId.generate());
+			const receiverNode = createTextGenerationNode(NodeId.generate());
 
-			const result = isSupportedConnection(outputNode, inputNode);
+			const result = isSupportedConnection(senderNode, receiverNode);
 			expect(result.canConnect).toBe(true);
 		});
 
 		test("should allow connection from QueryNode to ImageGenerationNode", () => {
-			const outputNode = createQueryNode(NodeId.generate());
-			const inputNode = createImageGenerationNode(NodeId.generate());
+			const senderNode = createQueryNode(NodeId.generate());
+			const receiverNode = createImageGenerationNode(NodeId.generate());
 
-			const result = isSupportedConnection(outputNode, inputNode);
+			const result = isSupportedConnection(senderNode, receiverNode);
 			expect(result.canConnect).toBe(true);
 		});
 
 		test("should reject connection from QueryNode to a non-Text/ImageGenerationNode (e.g., ActionNode)", () => {
-			const outputNode = createQueryNode("nd-query-out-3");
-			const inputNode = createActionNode("nd-action-in-1");
+			const senderNode = createQueryNode(NodeId.generate());
+			const receiverNode = createActionNode(NodeId.generate());
 
-			const result = isSupportedConnection(outputNode, inputNode);
+			const result = isSupportedConnection(senderNode, receiverNode);
 			expect(result.canConnect).toBe(false);
 			if (!result.canConnect) {
 				expect(result.message).toBe(
@@ -312,10 +312,10 @@ describe("isSupportedConnection", () => {
 
 	describe("Valid connections", () => {
 		test("should allow valid connection between compatible nodes", () => {
-			const outputNode = createTextGenerationNode(NodeId.generate());
-			const inputNode = createTextGenerationNode(NodeId.generate());
+			const senderNode = createTextGenerationNode(NodeId.generate());
+			const receiverNode = createTextGenerationNode(NodeId.generate());
 
-			const result = isSupportedConnection(outputNode, inputNode);
+			const result = isSupportedConnection(senderNode, receiverNode);
 
 			expect(result.canConnect).toBe(true);
 			expect(result).not.toHaveProperty("message");
