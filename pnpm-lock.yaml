@@ -718,6 +718,9 @@ importers:
       '@giselle-sdk/vector-store':
         specifier: workspace:^
         version: link:../../packages/vector-store
+      '@giselle-sdk/web-search':
+        specifier: workspace:^
+        version: link:../../packages/web-search
       '@giselle-sdk/workflow-utils':
         specifier: workspace:^
         version: link:../../packages/workflow-utils
