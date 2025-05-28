@@ -5,6 +5,7 @@ import type {
 } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
 import { useNodeGenerations, useWorkflowDesigner } from "giselle-sdk/react";
+import { ArrowDownIcon, ArrowUpIcon, TimerIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { StackBlicksIcon } from "../../../icons";
 import ClipboardButton from "../../../ui/clipboard-button";
@@ -46,6 +47,17 @@ function Empty({ onGenerate }: { onGenerate?: () => void }) {
 			</EmptyState>
 		</div>
 	);
+}
+
+// Helper function to format execution time
+function formatExecutionTime(startedAt: number, completedAt: number): string {
+	const durationMs = completedAt - startedAt;
+	if (durationMs < 60000) {
+		return `${durationMs.toLocaleString()}ms`;
+	}
+	const minutes = Math.floor(durationMs / 60000);
+	const seconds = Math.floor((durationMs % 60000) / 1000);
+	return `${minutes}m ${seconds}s`;
 }
 
 // Helper function to extract text content from a generation
@@ -132,6 +144,40 @@ export function GenerationPanel({
 					{currentGeneration.status === "cancelled" && (
 						<p data-header-text>Result</p>
 					)}
+					{currentGeneration.status === "completed" &&
+						currentGeneration.usage && (
+							<div className="flex items-center gap-[10px] text-[11px] text-black-400 font-hubot ml-[6px]">
+								{currentGeneration.startedAt &&
+									currentGeneration.completedAt && (
+										<span className="flex items-center gap-[2px]">
+											<TimerIcon className="text-black-400 size-[12px]" />
+											{formatExecutionTime(
+												currentGeneration.startedAt,
+												currentGeneration.completedAt,
+											)}
+										</span>
+									)}
+
+								<span className="flex items-center gap-[2px]">
+									<ArrowUpIcon className="text-black-400 size-[12px]" />
+									{(
+										currentGeneration as unknown as {
+											usage: { promptTokens: number };
+										}
+									).usage.promptTokens.toLocaleString()}
+									t
+								</span>
+								<span className="flex items-center gap-[2px]">
+									<ArrowDownIcon className="text-black-400 size-[12px]" />
+									{(
+										currentGeneration as unknown as {
+											usage: { completionTokens: number };
+										}
+									).usage.completionTokens.toLocaleString()}
+									t
+								</span>
+							</div>
+						)}
 				</div>
 				{(currentGeneration.status === "completed" ||
 					currentGeneration.status === "cancelled") && (
