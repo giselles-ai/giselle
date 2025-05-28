@@ -169,9 +169,7 @@ export function NodeComponent({
 	const metadataTexts = useMemo(() => {
 		const tmp: { label: string; tooltip: string }[] = [];
 		if (isTextGenerationNode(node) || isImageGenerationNode(node)) {
-			if ("llm" in node.content) {
-				tmp.push({ label: node.content.llm.provider, tooltip: "LLM Provider" });
-			}
+			tmp.push({ label: node.content.llm.provider, tooltip: "LLM Provider" });
 		}
 		tmp.push({ label: node.id.substring(3, 11), tooltip: "Node ID" });
 		return tmp;
