@@ -9,6 +9,7 @@ export * from "./reactions";
 export * from "./webhooks";
 export * from "./errors";
 export * from "./pull-requests";
+export * from "./mock-webhook-event";
 
 export const IssueNodeIdQuery = gql(/* GraphQL */ `
   query IssueNodeIdQuery($name: String!, $owner: String!, $issueNumber: Int!) {
