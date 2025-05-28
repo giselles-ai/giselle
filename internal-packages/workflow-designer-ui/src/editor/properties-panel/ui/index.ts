@@ -3,3 +3,4 @@ export * from "./node-dropdown";
 export * from "./editable-text";
 export * from "./select-repository";
 export { RemoveButton } from "./remove-button";
+export * from "./connection-list";
