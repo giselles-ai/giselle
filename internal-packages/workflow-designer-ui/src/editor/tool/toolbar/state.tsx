@@ -144,7 +144,6 @@ export function queryNode(): QueryNode {
 	return {
 		id: NodeId.generate(),
 		type: "operation",
-		name: "Query",
 		content: {
 			type: "query",
 			query: "",
