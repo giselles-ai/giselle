@@ -539,11 +539,20 @@ export function InputPanel({
 								case "text": {
 									let text = source.node.content.text;
 									if (text.length > 0) {
-										const jsonContentLikeString = JSON.parse(
-											source.node.content.text,
-										);
-										if (isJsonContent(jsonContentLikeString)) {
-											text = jsonContentToText(jsonContentLikeString);
+										try {
+											const jsonContentLikeString = JSON.parse(
+												source.node.content.text,
+											);
+											if (isJsonContent(jsonContentLikeString)) {
+												text = jsonContentToText(jsonContentLikeString);
+											}
+										} catch (e) {
+											// Ignore JSON parsing error, keep the original text
+											console.warn(
+												"Failed to parse text content as JSON, using original text: ",
+												e,
+											);
+											return text;
 										}
 									}
 
