@@ -355,6 +355,11 @@ async function queryVectorStore(
 		throw new Error("No vector store query function provided");
 	}
 
+	// Default values for query parameters
+	// TODO: Make these configurable via the UI
+	const LIMIT = 10;
+	const SIMILARITY_THRESHOLD = 0.2;
+
 	const results = await Promise.all(
 		vectorStoreNodes
 			.filter(isConfiguredVectorStoreNode)
@@ -372,8 +377,8 @@ async function queryVectorStore(
 						const { owner, repo } = state;
 						const res = await queryRag({
 							question: query,
-							limit: 10,
-							similarityThreshold: 0.2,
+							limit: LIMIT,
+							similarityThreshold: SIMILARITY_THRESHOLD,
 							filters: {
 								workspaceId,
 								owner,
