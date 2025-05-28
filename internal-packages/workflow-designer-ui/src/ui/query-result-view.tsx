@@ -1,5 +1,4 @@
 import {
-	type CompletedGeneration,
 	type Generation,
 	isCompletedGeneration,
 	isFailedGeneration,
@@ -325,12 +324,10 @@ export function QueryResultView({
 }
 
 function getGenerationQueryResult(generation: Generation): QueryResultData[] {
-	if (generation.status !== "completed") {
+	if (!isCompletedGeneration(generation)) {
 		throw new Error("Generation is not completed");
 	}
-
-	const completedGeneration = generation as CompletedGeneration;
-	const queryResultOutputs = completedGeneration.outputs.filter(
+	const queryResultOutputs = generation.outputs.filter(
 		(output) => output.type === "query-result",
 	);
 
