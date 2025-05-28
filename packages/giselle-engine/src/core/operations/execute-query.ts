@@ -350,6 +350,10 @@ async function queryVectorStore(
 	context: GiselleEngineContext,
 	vectorStoreNodes: VectorStoreNode[],
 ) {
+	if (vectorStoreNodes.length === 0) {
+		return [];
+	}
+
 	const { vectorStoreQueryFunctions } = context;
 	if (vectorStoreQueryFunctions === undefined) {
 		throw new Error("No vector store query function provided");
