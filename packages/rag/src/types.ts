@@ -81,8 +81,7 @@ export type QueryFunctionParams<F = Record<string, RecordValue>> = {
 	embedding: number[];
 	limit: number;
 	similarityThreshold?: number; // Optional: Threshold for similarity score
-	filters: F; // Application-specific filters
-	sortOrder?: "asc" | "desc"; // Optional: Sort order for similarity score
+	filters: F; // DataSource-specific filters
 };
 
 /**
