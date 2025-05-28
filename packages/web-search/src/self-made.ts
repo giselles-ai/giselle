@@ -49,7 +49,7 @@ export async function scrapeUrl(
 	}
 	const html = await res.text();
 	// Extract title from HTML
-	const match = html.match(/<title>(.*?)<\/title>/is);
+	const match = html.match(/<title>([\s\S]*?)<\/title>/i);
 	const title = match ? match[1].trim() : "";
 
 	let markdown = "";
