@@ -20,6 +20,7 @@ import type { Storage } from "unstorage";
 import {
 	getGeneration,
 	getNodeGenerationIndexes,
+	queryResultToText,
 	setGeneration,
 	setGenerationIndex,
 	setNodeGenerationIndex,
@@ -245,8 +246,7 @@ async function resolveQuery(
 			case "generated-text":
 				return generationOutput.content;
 			case "query-result":
-				// TODO: format for context
-				throw new Error("Not implemented");
+				return queryResultToText(generationOutput);
 			default: {
 				const _exhaustiveCheck: never = generationOutput;
 				throw new Error(
