@@ -619,12 +619,6 @@ async function buildGenerationMessageForImageGeneration(
 				}
 				break;
 
-			case "github":
-			case "imageGeneration":
-			case "trigger":
-			case "action":
-				throw new Error("Not implemented");
-
 			case "query": {
 				const result = await textGenerationResolver(
 					contextNode.id,
@@ -635,6 +629,10 @@ async function buildGenerationMessageForImageGeneration(
 				break;
 			}
 
+			case "github":
+			case "imageGeneration":
+			case "trigger":
+			case "action":
 			case "vectorStore":
 				throw new Error("Not implemented");
 
