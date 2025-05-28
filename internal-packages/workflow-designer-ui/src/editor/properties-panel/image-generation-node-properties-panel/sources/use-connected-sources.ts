@@ -71,7 +71,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 						case "file":
 						case "github":
 						case "vectorStore":
-							break;
+							throw new Error("not implemented");
 						default: {
 							const _exhaustiveCheck: never = node.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
