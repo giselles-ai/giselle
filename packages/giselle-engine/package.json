@@ -43,6 +43,7 @@
 	"devDependencies": {
 		"@giselle-sdk/data-type": "workspace:*",
 		"@giselle-sdk/utils": "workspace:*",
+		"@giselle-sdk/web-search": "workspace:*",
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
 		"@octokit/webhooks-types": "7.6.1",
 		"@types/pg": "catalog:",
