@@ -2,6 +2,7 @@ import {
 	type NodeLike,
 	isActionNode,
 	isImageGenerationNode,
+	isQueryNode,
 	isTextGenerationNode,
 	isTriggerNode,
 	isVectorStoreNode,
@@ -67,6 +68,9 @@ export function defaultName(node: NodeLike) {
 						node.name ?? actionNodeDefaultName(node.content.command.provider)
 					);
 				case "query":
+					if (!isQueryNode(node)) {
+						throw new Error(`Expected query node, got ${node.type}`);
+					}
 					return node.name ?? "Query";
 				default: {
 					const _exhaustiveCheck: never = node.content.type;
