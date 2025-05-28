@@ -92,6 +92,6 @@ export interface GiselleEngineConfig {
 	fetchUsageLimitsFn?: FetchUsageLimitsFn;
 	vault?: Vault;
 	vectorStoreQueryFunctions?: {
-		github: GitHubVectorStoreQueryFunction;
+		github?: GitHubVectorStoreQueryFunction;
 	};
 }
