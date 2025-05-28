@@ -5,9 +5,7 @@ import type {
 } from "@/services/external/github/types";
 import type { TeamId } from "@/services/teams/types";
 import type { WorkspaceId } from "@giselle-sdk/data-type";
-import type {
-	ModelPriceId,
-} from "@giselle-sdk/language-model";
+import type { ModelPriceId } from "@giselle-sdk/language-model";
 import type {
 	FlowId,
 	GitHubEventNodeMapping,
