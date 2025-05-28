@@ -12,11 +12,11 @@ export function WebPageFilePanel({ node, config }: FilePanelProps) {
 		setUrls,
 		format,
 		setFormat,
-		files,
 		onFetch,
 		onRemoveFile,
+		isLoading,
+		files,
 		urlError,
-		isFetching,
 	} = useWebPageFileNode(node);
 
 	return (
@@ -25,7 +25,7 @@ export function WebPageFilePanel({ node, config }: FilePanelProps) {
 				{/* Fetched Files List */}
 				{files.length > 0 && (
 					<div className="pb-[16px] flex flex-col gap-[8px]">
-						{files.map((file) => (
+						{files.map((file: FileData) => (
 							<WebPageFileListItem
 								key={file.id}
 								fileData={file}
@@ -97,9 +97,9 @@ export function WebPageFilePanel({ node, config }: FilePanelProps) {
 						type="button"
 						className="w-fit px-[16px] py-[8px] rounded-[8px] bg-blue-700 text-white-800 font-semibold hover:bg-blue-800 disabled:bg-black-400"
 						onClick={onFetch}
-						disabled={isFetching || !urls.trim()}
+						disabled={isLoading || !urls.trim()}
 					>
-						{isFetching ? "Fetching..." : "Fetch Web Pages"}
+						{isLoading ? "Fetching..." : "Fetch Web Pages"}
 					</button>
 				</div>
 			</div>
