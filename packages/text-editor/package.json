@@ -25,16 +25,20 @@
 	"devDependencies": {
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
 		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
 		"tsup": "catalog:"
 	},
 	"dependencies": {
 		"@giselle-sdk/data-type": "workspace:^",
 		"@giselle-sdk/node-utils": "workspace:^",
 		"@giselle-sdk/text-editor-utils": "workspace:^",
-		"@tiptap/react": "catalog:",
+		"prosemirror-state": "^1.4.3",
+		"prosemirror-view": "^1.34.2",
+		"prosemirror-model": "^1.21.0",
 		"clsx": "catalog:",
 		"lucide-react": "catalog:",
 		"radix-ui": "catalog:",
-		"react": "catalog:"
+		"react": "catalog:",
+		"react-dom": "catalog:"
 	}
 }
