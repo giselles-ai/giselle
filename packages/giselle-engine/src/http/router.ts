@@ -309,6 +309,20 @@ export const createJsonRouters = {
 				return new Response(null, { status: 204 });
 			},
 		}),
+	fetchWebPageFiles: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			input: z.object({
+				urls: z.array(z.string()),
+				format: z.enum(["html", "markdown"]),
+				provider: z
+					.union([z.literal("self-made"), z.literal("firecrawl")])
+					.optional(),
+			}),
+			handler: async ({ input }) => {
+				const result = await giselleEngine.fetchWebPageFiles(input);
+				return JsonResponse.json(result);
+			},
+		}),
 } as const;
 
 export const jsonRouterPaths = Object.keys(

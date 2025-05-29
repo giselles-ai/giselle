@@ -2,18 +2,19 @@
 
 import {
 	type ConnectionId,
+	type FileData,
 	type FileNode,
 	type Node,
 	type NodeBase,
 	type NodeId,
 	type NodeUIState,
-	type UploadedFileData,
 	type Viewport,
 	type Workspace,
 	createFailedFileData,
 	createUploadedFileData,
 	createUploadingFileData,
 } from "@giselle-sdk/data-type";
+import type { WebPageFileResult } from "@giselle-sdk/giselle-engine";
 import { GenerationRunnerSystemProvider } from "@giselle-sdk/giselle-engine/react";
 import {
 	APICallError,
@@ -22,6 +23,7 @@ import {
 import { RunSystemContextProvider } from "@giselle-sdk/giselle-engine/react";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
+import type { AllowedFormats } from "../../../../packages/web-search/src/web-search";
 import { WorkflowDesigner } from "../workflow-designer";
 import { usePropertiesPanel, useView } from "./state";
 
@@ -56,10 +58,15 @@ export interface WorkflowDesignerContextValue
 		content: Partial<T["content"]>,
 	) => void;
 	uploadFile: UploadFileFn;
-	removeFile: (uploadedFile: UploadedFileData) => Promise<void>;
+	removeFile: (uploadedFile: FileData) => Promise<void>;
 	deleteNode: (nodeId: NodeId | string) => void;
 	llmProviders: LanguageModelProvider[];
 	isLoading: boolean;
+	fetchWebPageFiles: (args: {
+		urls: string[];
+		format: AllowedFormats;
+		provider?: "self-made" | "firecrawl";
+	}) => Promise<WebPageFileResult[]>;
 }
 export const WorkflowDesignerContext = createContext<
 	WorkflowDesignerContextValue | undefined
@@ -257,7 +264,7 @@ export function WorkflowDesignerProvider({
 							);
 							fileContents = [
 								...fileContents.filter(
-									(file) => file.id !== uploadedFileData.id,
+									(file: FileData) => file.id !== uploadedFileData.id,
 								),
 								uploadedFileData,
 							];
@@ -274,7 +281,7 @@ export function WorkflowDesignerProvider({
 								);
 								fileContents = [
 									...fileContents.filter(
-										(file) => file.id !== failedFileData.id,
+										(file: FileData) => file.id !== failedFileData.id,
 									),
 									failedFileData,
 								];
@@ -291,7 +298,7 @@ export function WorkflowDesignerProvider({
 	);
 
 	const removeFile = useCallback(
-		async (uploadedFile: UploadedFileData) => {
+		async (uploadedFile: FileData) => {
 			await client.removeFile({
 				workspaceId: data.id,
 				fileId: uploadedFile.id,
@@ -303,6 +310,21 @@ export function WorkflowDesignerProvider({
 
 	const usePropertiesPanelHelper = usePropertiesPanel();
 	const useViewHelper = useView();
+
+	const fetchWebPageFiles = useCallback(
+		async (args: {
+			urls: string[];
+			format: AllowedFormats;
+			provider?: "self-made" | "firecrawl";
+		}): Promise<WebPageFileResult[]> => {
+			return client.fetchWebPageFiles({
+				urls: args.urls,
+				format: args.format as AllowedFormats,
+				provider: args.provider,
+			});
+		},
+		[client],
+	);
 
 	return (
 		<WorkflowDesignerContext.Provider
@@ -325,6 +347,7 @@ export function WorkflowDesignerProvider({
 				isSupportedConnection,
 				...usePropertiesPanelHelper,
 				...useViewHelper,
+				fetchWebPageFiles,
 			}}
 		>
 			<GenerationRunnerSystemProvider>

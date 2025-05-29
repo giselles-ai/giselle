@@ -17,8 +17,9 @@ import type {
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
 import { getRepositoryFullname } from "@giselle-sdk/github-tool";
+import type { AllowedFormats } from "@giselle-sdk/web-search";
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";
-import { removeFile, uploadFile } from "./files";
+import { fetchWebPageFiles, removeFile, uploadFile } from "./files";
 import {
 	type ConfigureTriggerInput,
 	configureTrigger,
@@ -189,6 +190,13 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		},
 		getGitHubRepositories: async () => {
 			return await getGitHubRepositories({ context });
+		},
+		fetchWebPageFiles: async (args: {
+			urls: string[];
+			format: AllowedFormats;
+			provider?: "self-made" | "firecrawl";
+		}) => {
+			return await fetchWebPageFiles(args);
 		},
 		encryptSecret: async (plaintext: string) => {
 			if (context.vault === undefined) {
