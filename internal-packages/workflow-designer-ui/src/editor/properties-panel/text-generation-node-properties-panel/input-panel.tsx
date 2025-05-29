@@ -20,9 +20,8 @@ import {
 	PromptIcon,
 } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";
+import { ConnectionListItem, ConnectionListRoot } from "../ui";
 import {
-	ConnectedOutputListItem,
-	ConnectedOutputListRoot,
 	type OutputWithDetails,
 	SelectOutputPopover,
 	useConnectedOutputs,
@@ -174,9 +173,9 @@ export function InputPanel({
 			</div>
 			<div className="flex flex-col gap-[32px]">
 				{connectedOutputs.trigger.length > 0 && (
-					<ConnectedOutputListRoot title="Generated Sources">
+					<ConnectionListRoot title="Generated Sources">
 						{connectedOutputs.trigger.map((source) => (
-							<ConnectedOutputListItem
+							<ConnectionListItem
 								icon={
 									<GeneratedContentIcon className="size-[24px] text-white-900" />
 								}
@@ -186,12 +185,12 @@ export function InputPanel({
 								onRemove={() => handleRemove(source.connection)}
 							/>
 						))}
-					</ConnectedOutputListRoot>
+					</ConnectionListRoot>
 				)}
 				{connectedOutputs.generation.length > 0 && (
-					<ConnectedOutputListRoot title="Generated Sources">
+					<ConnectionListRoot title="Generated Sources">
 						{connectedOutputs.generation.map((source) => (
-							<ConnectedOutputListItem
+							<ConnectionListItem
 								icon={
 									<GeneratedContentIcon className="size-[24px] text-white-900" />
 								}
@@ -201,12 +200,12 @@ export function InputPanel({
 								onRemove={() => handleRemove(source.connection)}
 							/>
 						))}
-					</ConnectedOutputListRoot>
+					</ConnectionListRoot>
 				)}
 				{connectedOutputs.action.length > 0 && (
-					<ConnectedOutputListRoot title="Generated Sources">
+					<ConnectionListRoot title="Generated Sources">
 						{connectedOutputs.action.map((source) => (
-							<ConnectedOutputListItem
+							<ConnectionListItem
 								icon={<GitHubIcon className="size-[24px] text-white-900" />}
 								key={source.connection.id}
 								title={source.node.name ?? defaultName(source.node)}
@@ -214,10 +213,10 @@ export function InputPanel({
 								onRemove={() => handleRemove(source.connection)}
 							/>
 						))}
-					</ConnectedOutputListRoot>
+					</ConnectionListRoot>
 				)}
 				{connectedOutputs.variable.length > 0 && (
-					<ConnectedOutputListRoot title="Static Contents">
+					<ConnectionListRoot title="Static Contents">
 						{connectedOutputs.variable.map((source) => {
 							switch (source.node.content.type) {
 								case "text": {
@@ -232,7 +231,7 @@ export function InputPanel({
 									}
 
 									return (
-										<ConnectedOutputListItem
+										<ConnectionListItem
 											icon={
 												<PromptIcon className="size-[24px] text-white-900" />
 											}
@@ -245,7 +244,7 @@ export function InputPanel({
 								}
 								case "file":
 									return (
-										<ConnectedOutputListItem
+										<ConnectionListItem
 											icon={
 												<PdfFileIcon className="size-[24px] text-white-900" />
 											}
@@ -257,7 +256,7 @@ export function InputPanel({
 									);
 								case "github":
 									return (
-										<ConnectedOutputListItem
+										<ConnectionListItem
 											icon={
 												<GitHubIcon className="size-[24px] text-white-900" />
 											}
@@ -277,7 +276,7 @@ export function InputPanel({
 								}
 							}
 						})}
-					</ConnectedOutputListRoot>
+					</ConnectionListRoot>
 				)}
 			</div>
 		</div>
