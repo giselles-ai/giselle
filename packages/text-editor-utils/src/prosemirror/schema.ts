@@ -41,7 +41,7 @@ const baseNodes: { [name: string]: NodeSpec } = {
 				tag: "ol",
 				getAttrs(dom: HTMLElement) {
 					return {
-						order: dom.hasAttribute("start") ? +dom.getAttribute("start") : 1,
+						order: dom.hasAttribute("start") ? +(dom.getAttribute("start") || "1") : 1,
 					};
 				},
 			},
@@ -74,7 +74,7 @@ const baseNodes: { [name: string]: NodeSpec } = {
 				tag: "pre",
 				preserveWhitespace: "full",
 				getAttrs: (node: HTMLElement) => ({
-					language: node.getAttribute("data-language"),
+					language: node.getAttribute("data-language") || null,
 				}),
 			},
 		],

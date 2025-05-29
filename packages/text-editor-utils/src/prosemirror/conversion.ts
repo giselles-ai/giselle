@@ -66,16 +66,18 @@ class ProseMirrorConverter {
 
 		// Add custom rule for Source nodes
 		turndownService.addRule("source", {
-			filter: (node: Element) => {
+			filter: (node: Node) => {
+				const element = node as Element;
 				return (
-					node.nodeName === "SPAN" &&
-					node.hasAttribute("data-node-id") &&
-					node.hasAttribute("data-output-id")
+					element.nodeName === "SPAN" &&
+					element.hasAttribute("data-node-id") &&
+					element.hasAttribute("data-output-id")
 				);
 			},
-			replacement: (content: string, node: Element) => {
-				const nodeId = node.getAttribute("data-node-id");
-				const outputId = node.getAttribute("data-output-id");
+			replacement: (content: string, node: Node) => {
+				const element = node as Element;
+				const nodeId = element.getAttribute("data-node-id");
+				const outputId = element.getAttribute("data-output-id");
 				return `{{${nodeId}:${outputId}}}`;
 			},
 		});
