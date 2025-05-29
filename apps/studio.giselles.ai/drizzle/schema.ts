@@ -5,7 +5,12 @@ import type {
 } from "@/services/external/github/types";
 import type { TeamId } from "@/services/teams/types";
 import type { WorkspaceId } from "@giselle-sdk/data-type";
-import type { ModelPriceId } from "@giselle-sdk/language-model";
+import type {
+	AnthropicModel,
+	GoogleModel,
+	ModelPriceId,
+	OpenAIModel,
+} from "@giselle-sdk/language-model";
 import type {
 	FlowId,
 	GitHubEventNodeMapping,
@@ -342,6 +347,9 @@ export const modelUsages = pgTable(
 		teamDbId: integer("team_db_id")
 			.notNull()
 			.references(() => teams.dbId, { onDelete: "cascade" }),
+		model: text("model")
+			.$type<OpenAIModel | AnthropicModel | GoogleModel>()
+			.notNull(),
 		priceId: text("price_id").$type<ModelPriceId>().notNull(),
 		agentDbId: integer("agent_db_id")
 			.notNull()
