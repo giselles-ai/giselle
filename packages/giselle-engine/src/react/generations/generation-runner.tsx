@@ -227,6 +227,7 @@ function QueryRunner({
 	const {
 		updateGenerationStatusToComplete,
 		updateGenerationStatusToRunning,
+		updateGenerationStatusToFailure,
 		addStopHandler,
 	} = useGenerationRunnerSystem();
 	const client = useGiselleEngine();
@@ -236,16 +237,26 @@ function QueryRunner({
 			return;
 		}
 		addStopHandler(generation.id, stop);
-		client.setGeneration({ generation }).then(() => {
-			updateGenerationStatusToRunning(generation.id);
-			client
-				.executeQuery({
-					generation,
-				})
-				.then(() => {
-					updateGenerationStatusToComplete(generation.id);
-				});
-		});
+		client
+			.setGeneration({ generation })
+			.then(() => {
+				updateGenerationStatusToRunning(generation.id);
+				client
+					.executeQuery({
+						generation,
+					})
+					.then(() => {
+						updateGenerationStatusToComplete(generation.id);
+					})
+					.catch((error) => {
+						console.error("Query execution failed:", error);
+						updateGenerationStatusToFailure(generation.id);
+					});
+			})
+			.catch((error) => {
+				console.error("Failed to set generation:", error);
+				updateGenerationStatusToFailure(generation.id);
+			});
 	});
 	return null;
 }

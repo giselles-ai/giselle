@@ -89,6 +89,13 @@ export async function executeQuery(args: {
 		}
 	}
 
+	// Explicit error handling for undefined workspaceId
+	if (!workspaceId) {
+		throw new Error(
+			"WorkspaceId is required but not found in generation context",
+		);
+	}
+
 	try {
 		const generationContext = GenerationContext.parse(
 			initialGeneration.context,
@@ -102,7 +109,6 @@ export async function executeQuery(args: {
 
 		const vectorStoreNodes = generationContext.sourceNodes.filter(
 			(node) =>
-				node.type === "variable" &&
 				node.content.type === "vectorStore" &&
 				generationContext.connections.some(
 					(connection) => connection.outputNode.id === node.id,
@@ -253,7 +259,7 @@ async function resolveQuery(
 			default: {
 				const _exhaustiveCheck: never = generationOutput;
 				throw new Error(
-					`Unhandled generation output type: ${_exhaustiveCheck}`,
+					`Unhandled generation output type: ${JSON.stringify(generationOutput)} for output ID: ${outputId}`,
 				);
 			}
 		}

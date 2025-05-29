@@ -66,9 +66,9 @@ export type EmbeddingTransformer<LoaderMetadataType, StoreDataType> = (
 	metadata: LoaderMetadataType,
 ) => StoreDataType;
 
-export type RecordValue = string | number | boolean | null | undefined;
-export type MetadataType = Record<string, RecordValue>;
-export interface QueryResult<M extends MetadataType> {
+export type RecordValue = string | number | boolean | null;
+export type QueryMetadataType = Record<string, RecordValue>;
+export interface QueryResult<M extends QueryMetadataType> {
 	chunk: ChunkResult;
 	score: number;
 	metadata: M;
@@ -88,6 +88,6 @@ export type QueryFunctionParams<F = Record<string, RecordValue>> = {
  * The function provided by the application to query the vector store.
  */
 export type QueryFunction<
-	M extends MetadataType,
+	M extends QueryMetadataType,
 	F = Record<string, RecordValue>,
 > = (params: QueryFunctionParams<F>) => Promise<QueryResult<M>[]>;

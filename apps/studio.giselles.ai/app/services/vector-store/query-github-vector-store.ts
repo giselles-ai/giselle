@@ -18,38 +18,46 @@ export async function queryGithubVectorStore(
 		filters: { workspaceId, owner, repo },
 	} = params;
 
-	const records = await db
+	// Input validation
+	if (!workspaceId || typeof workspaceId !== "string") {
+		throw new Error("Invalid workspaceId: must be a non-empty string");
+	}
+	if (!owner || typeof owner !== "string" || owner.trim().length === 0) {
+		throw new Error("Invalid owner: must be a non-empty string");
+	}
+	if (!repo || typeof repo !== "string" || repo.trim().length === 0) {
+		throw new Error("Invalid repo: must be a non-empty string");
+	}
+	if (!Array.isArray(embedding) || embedding.length === 0) {
+		throw new Error("Invalid embedding: must be a non-empty array");
+	}
+	if (typeof limit !== "number" || limit <= 0) {
+		throw new Error("Invalid limit: must be a positive number");
+	}
+
+	// Optimized combined query to get both team and repository index in one operation
+	const teamAndRepoQuery = await db
 		.select({
-			dbId: teams.dbId,
+			teamDbId: teams.dbId,
+			repositoryIndexDbId: githubRepositoryIndex.dbId,
 		})
 		.from(teams)
 		.innerJoin(agents, eq(agents.workspaceId, workspaceId))
+		.innerJoin(
+			githubRepositoryIndex,
+			and(
+				eq(githubRepositoryIndex.teamDbId, teams.dbId),
+				eq(githubRepositoryIndex.owner, owner.trim()),
+				eq(githubRepositoryIndex.repo, repo.trim()),
+			),
+		)
 		.where(eq(teams.dbId, agents.teamDbId))
 		.limit(1);
 
-	if (records.length === 0) {
-		throw new Error("Team not found");
+	if (teamAndRepoQuery.length === 0) {
+		throw new Error("Team or repository index not found");
 	}
-	const teamDbId = records[0].dbId;
-
-	const repositoryIndex = await db
-		.select({
-			dbId: githubRepositoryIndex.dbId,
-		})
-		.from(githubRepositoryIndex)
-		.where(
-			and(
-				eq(githubRepositoryIndex.teamDbId, teamDbId),
-				eq(githubRepositoryIndex.owner, owner),
-				eq(githubRepositoryIndex.repo, repo),
-			),
-		)
-		.limit(1);
-
-	if (repositoryIndex.length === 0) {
-		throw new Error("Repository index not found");
-	}
-	const repositoryIndexDbId = repositoryIndex[0].dbId;
+	const repositoryIndexDbId = teamAndRepoQuery[0].repositoryIndexDbId;
 
 	const similarity = sql<number>`1 - (${cosineDistance(
 		githubRepositoryEmbeddings.embedding,
