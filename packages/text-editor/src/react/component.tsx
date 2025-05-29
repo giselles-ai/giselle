@@ -1,6 +1,5 @@
 import type { Node } from "@giselle-sdk/data-type";
-import { extensions as baseExtensions } from "@giselle-sdk/text-editor-utils";
-import { type Editor, EditorProvider, useCurrentEditor } from "@tiptap/react";
+import { ProseMirrorEditor } from "@giselle-sdk/text-editor-utils";
 import clsx from "clsx/lite";
 import {
 	BoldIcon,
@@ -10,18 +9,71 @@ import {
 	StrikethroughIcon,
 } from "lucide-react";
 import { Toolbar as ToolbarPrimitive } from "radix-ui";
-import { type ReactNode, useMemo } from "react";
-import { SourceExtensionReact } from "./source-extension-react";
+import { type ReactNode, useRef, useState, useEffect } from "react";
+import { ProseMirrorReact, type ProseMirrorReactRef } from "./prosemirror-react";
 
-function Toolbar({
-	tools,
-}: {
-	tools?: (editor: Editor) => ReactNode;
-}) {
-	const { editor } = useCurrentEditor();
+interface ToolbarProps {
+	editor: ProseMirrorEditor | null;
+	tools?: (editor: ProseMirrorEditor) => ReactNode;
+}
+
+function Toolbar({ editor, tools }: ToolbarProps) {
+	const [activeStates, setActiveStates] = useState({
+		bold: false,
+		italic: false,
+		strike: false,
+		bulletList: false,
+		orderedList: false,
+	});
+
+	const [canStates, setCanStates] = useState({
+		bold: false,
+		italic: false,
+		strike: false,
+		bulletList: false,
+		orderedList: false,
+	});
+
+	useEffect(() => {
+		if (!editor?.view) return;
+
+		const updateStates = () => {
+			setActiveStates({
+				bold: editor.isActive("strong"),
+				italic: editor.isActive("em"),
+				strike: editor.isActive("strike"),
+				bulletList: editor.isActive("bullet_list"),
+				orderedList: editor.isActive("ordered_list"),
+			});
+
+			setCanStates({
+				bold: editor.can().toggleBold(),
+				italic: editor.can().toggleItalic(),
+				strike: editor.can().toggleStrike(),
+				bulletList: editor.can().toggleBulletList(),
+				orderedList: editor.can().toggleOrderedList(),
+			});
+		};
+
+		updateStates();
+
+		// Listen to editor updates
+		const view = editor.view;
+		const originalDispatch = view.dispatch;
+		view.dispatch = (tr: any) => {
+			originalDispatch.call(view, tr);
+			updateStates();
+		};
+
+		return () => {
+			view.dispatch = originalDispatch;
+		};
+	}, [editor]);
+
 	if (!editor) {
 		return null;
 	}
+
 	return (
 		<ToolbarPrimitive.Root
 			className={clsx(
@@ -36,9 +88,9 @@ function Toolbar({
 				aria-label="Text formatting"
 				className="flex items-center gap-[4px]"
 				value={[
-					editor.isActive("bold") ? "bold" : null,
-					editor.isActive("italic") ? "italic" : null,
-					editor.isActive("strike") ? "strike" : null,
+					activeStates.bold ? "bold" : null,
+					activeStates.italic ? "italic" : null,
+					activeStates.strike ? "strike" : null,
 				].filter((item) => item !== null)}
 			>
 				<ToolbarPrimitive.ToggleItem
@@ -46,7 +98,7 @@ function Toolbar({
 					aria-label="Bold"
 					data-toolbar-item
 					onClick={() => editor.chain().focus().toggleBold().run()}
-					disabled={!editor.can().chain().focus().toggleBold().run()}
+					disabled={!canStates.bold}
 				>
 					<BoldIcon className="w-[12px]" />
 				</ToolbarPrimitive.ToggleItem>
@@ -55,7 +107,7 @@ function Toolbar({
 					aria-label="Italic"
 					data-toolbar-item
 					onClick={() => editor.chain().focus().toggleItalic().run()}
-					disabled={!editor.can().chain().focus().toggleItalic().run()}
+					disabled={!canStates.italic}
 				>
 					<ItalicIcon className="w-[12px]" />
 				</ToolbarPrimitive.ToggleItem>
@@ -64,7 +116,7 @@ function Toolbar({
 					aria-label="Strike"
 					data-toolbar-item
 					onClick={() => editor.chain().focus().toggleStrike().run()}
-					disabled={!editor.can().chain().focus().toggleStrike().run()}
+					disabled={!canStates.strike}
 				>
 					<StrikethroughIcon className="w-[12px]" />
 				</ToolbarPrimitive.ToggleItem>
@@ -75,9 +127,9 @@ function Toolbar({
 				aria-label="Text formatting"
 				className="flex items-center gap-[4px]"
 				value={
-					editor.isActive("bulletList")
+					activeStates.bulletList
 						? "bulletList"
-						: editor.isActive("orderedList")
+						: activeStates.orderedList
 							? "orderedList"
 							: ""
 				}
@@ -87,12 +139,12 @@ function Toolbar({
 					aria-label="Ordered list"
 					data-toolbar-item
 					onClick={() => {
-						if (editor.isActive("bulletList")) {
+						if (activeStates.bulletList) {
 							editor.chain().focus().toggleBulletList().run();
 						}
 						editor.chain().focus().toggleOrderedList().run();
 					}}
-					disabled={!editor.can().chain().focus().toggleOrderedList().run()}
+					disabled={!canStates.orderedList}
 				>
 					<ListOrdered className="w-[18px]" />
 				</ToolbarPrimitive.ToggleItem>
@@ -102,12 +154,12 @@ function Toolbar({
 					aria-label="Bulleted list"
 					data-toolbar-item
 					onClick={() => {
-						if (editor.isActive("orderedList")) {
+						if (activeStates.orderedList) {
 							editor.chain().focus().toggleOrderedList().run();
 						}
 						editor.chain().focus().toggleBulletList().run();
 					}}
-					disabled={!editor.can().chain().focus().toggleBulletList().run()}
+					disabled={!canStates.bulletList}
 				>
 					<List className="w-[18px]" />
 				</ToolbarPrimitive.ToggleItem>
@@ -122,55 +174,40 @@ function Toolbar({
 	);
 }
 
+export interface TextEditorProps {
+	value?: string;
+	onValueChange?: (value: string) => void;
+	tools?: (editor: ProseMirrorEditor) => ReactNode;
+	nodes?: Node[];
+}
+
 export function TextEditor({
 	value,
 	onValueChange,
 	tools,
 	nodes,
-}: {
-	value?: string;
-	onValueChange?: (value: string) => void;
-	tools?: (editor: Editor) => ReactNode;
-	nodes?: Node[];
-}) {
-	const extensions = useMemo(
-		() =>
-			nodes === undefined
-				? baseExtensions
-				: [
-						...baseExtensions,
-						SourceExtensionReact.configure({
-							nodes,
-						}),
-					],
-		[nodes],
-	);
+}: TextEditorProps) {
+	const editorRef = useRef<ProseMirrorReactRef>(null);
+	const [editor, setEditor] = useState<ProseMirrorEditor | null>(null);
+
+	useEffect(() => {
+		if (editorRef.current?.editor) {
+			setEditor(editorRef.current.editor);
+		}
+	}, [editorRef.current?.editor]);
+
 	return (
 		<div className="flex flex-col h-full w-full">
-			<EditorProvider
-				slotBefore={<Toolbar tools={tools} />}
-				extensions={extensions}
-				content={
-					value === undefined
-						? undefined
-						: value === ""
-							? undefined
-							: JSON.parse(value)
-				}
-				editorContainerProps={{
-					className: "flex-1 overflow-hidden",
-				}}
-				onUpdate={(p) => {
-					onValueChange?.(JSON.stringify(p.editor.getJSON()));
-				}}
-				immediatelyRender={false}
-				editorProps={{
-					attributes: {
-						class:
-							"prompt-editor border-[0.5px] border-white-900 rounded-[8px] p-[16px] h-full overflow-y-auto",
-					},
-				}}
-			/>
+			<Toolbar editor={editor} tools={tools} />
+			<div className="flex-1 overflow-hidden">
+				<ProseMirrorReact
+					ref={editorRef}
+					value={value}
+					onValueChange={onValueChange}
+					nodes={nodes}
+					className="prompt-editor border-[0.5px] border-white-900 rounded-[8px] p-[16px] h-full overflow-y-auto"
+				/>
+			</div>
 		</div>
 	);
 }
