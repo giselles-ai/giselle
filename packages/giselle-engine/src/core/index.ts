@@ -17,7 +17,13 @@ import type {
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";
-import { copyFile, fetchWebPageFiles, removeFile, uploadFile } from "./files";
+import {
+	copyFile,
+	fetchWebPageFile,
+	fetchWebPageFiles,
+	removeFile,
+	uploadFile,
+} from "./files";
 import {
 	type ConfigureTriggerInput,
 	configureTrigger,
@@ -147,6 +153,17 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			provider?: "self-made";
 		}) => {
 			return await fetchWebPageFiles(args);
+		},
+		fetchWebPageFile: async (args: {
+			url: string;
+			format: "html" | "markdown";
+			workspaceId: WorkspaceId;
+			provider?: "self-made";
+		}) => {
+			return await fetchWebPageFile({
+				...args,
+				context,
+			});
 		},
 		upsertGithubIntegrationSetting: async (
 			workspaceGitHubIntegrationSetting: WorkspaceGitHubIntegrationSetting,
