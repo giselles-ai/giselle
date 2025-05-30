@@ -307,37 +307,12 @@ export async function setGenerationIndex(params: {
 		GenerationIndex.parse(params.generationIndex),
 	);
 }
-export function generationPath(generationIndex: GenerationIndex) {
-	const generationOrigin = generationIndex.origin;
-	const originType = generationOrigin.type;
-	switch (originType) {
-		case "workspace":
-			return `workspaces/${generationOrigin.id}/generations/${generationIndex.id}/generation.json`;
-		case "run":
-			return `runs/${generationOrigin.id}/generations/${generationIndex.id}/generation.json`;
-		default: {
-			const _exhaustiveCheck: never = originType;
-			return _exhaustiveCheck;
-		}
-	}
+export function generationPath(generationId: GenerationId) {
+	return `generations/${generationId}/generation.json`;
 }
 
-export function activeNodeGenerationIdPath(
-	params: {
-		storage: Storage;
-		nodeId: NodeId;
-	} & { origin: GenerationOrigin },
-) {
-	switch (params.origin.type) {
-		case "workspace":
-			return `workspaces/${params.origin.id}/node-generations/${params.nodeId}/activeGenerationId.txt`;
-		case "run":
-			return `runs/${params.origin.id}/node-generations/${params.nodeId}/activeGenerationId.txt`;
-		default: {
-			const _exhaustiveCheck: never = params.origin;
-			return _exhaustiveCheck;
-		}
-	}
+export function activeNodeGenerationIdPath(nodeId: NodeId) {
+	return `generations/byNode/${nodeId}/activeGenerationId.txt`;
 }
 
 export async function setGeneration(params: {
@@ -345,10 +320,7 @@ export async function setGeneration(params: {
 	generation: Generation;
 }) {
 	await params.storage.setItem(
-		generationPath({
-			id: params.generation.id,
-			origin: params.generation.context.origin,
-		}),
+		generationPath(params.generation.id),
 		Generation.parse(params.generation),
 		{
 			// Disable caching by setting cacheControlMaxAge to 0 for Vercel Blob storage
@@ -370,7 +342,7 @@ export async function getGeneration(params: {
 		throw new Error("Generation not found");
 	}
 	const unsafeGeneration = await params.storage.getItem(
-		`${generationPath(generationIndex)}`,
+		`${generationPath(generationIndex.id)}`,
 		{
 			bypassingCache: params.options?.bypassingCache ?? false,
 		},
@@ -396,22 +368,8 @@ export async function getGeneration(params: {
 	};
 }
 
-export function nodeGenerationIndexPath(
-	params: {
-		storage: Storage;
-		nodeId: NodeId;
-	} & { origin: GenerationOrigin },
-) {
-	switch (params.origin.type) {
-		case "workspace":
-			return `workspaces/${params.origin.id}/node-generations/${params.nodeId}.json`;
-		case "run":
-			return `runs/${params.origin.id}/node-generations/${params.nodeId}.json`;
-		default: {
-			const _exhaustiveCheck: never = params.origin;
-			return _exhaustiveCheck;
-		}
-	}
+export function nodeGenerationIndexPath(nodeId: NodeId) {
+	return `generations/byNode/${nodeId}.json`;
 }
 export async function setNodeGenerationIndex(
 	params: {
@@ -447,7 +405,7 @@ export async function setNodeGenerationIndex(
 		}
 	}
 	await params.storage.setItem(
-		nodeGenerationIndexPath(params),
+		nodeGenerationIndexPath(params.nodeId),
 		newNodeGenerationIndexes,
 		{
 			// Disable caching by setting cacheControlMaxAge to 0 for Vercel Blob storage
@@ -463,7 +421,7 @@ export async function getNodeGenerationIndexes(
 	} & { origin: GenerationOrigin },
 ) {
 	const unsafeNodeGenerationIndexData = await params.storage.getItem(
-		nodeGenerationIndexPath(params),
+		nodeGenerationIndexPath(params.nodeId),
 		{
 			bypassingCache: true,
 		},
@@ -657,19 +615,11 @@ async function buildGenerationMessageForImageGeneration(
 	];
 }
 
-export function generatedImagePath(generation: Generation, filename: string) {
-	const generationContext = GenerationContext.parse(generation.context);
-	const originType = generationContext.origin.type;
-	switch (originType) {
-		case "workspace":
-			return `workspaces/${generation.context.origin.id}/generations/${generation.id}/${filename}`;
-		case "run":
-			return `runs/${generation.context.origin.id}/generations/${generation.id}/${filename}`;
-		default: {
-			const _exhaustiveCheck: never = originType;
-			return _exhaustiveCheck;
-		}
-	}
+export function generatedImagePath(
+	generationId: GenerationId,
+	filename: string,
+) {
+	return `generations/${generationId}/generated-images/${filename}`;
 }
 
 export async function setGeneratedImage(params: {
@@ -679,7 +629,7 @@ export async function setGeneratedImage(params: {
 	generatedImage: GeneratedImageData;
 }) {
 	await params.storage.setItemRaw(
-		generatedImagePath(params.generation, params.generatedImageFilename),
+		generatedImagePath(params.generation.id, params.generatedImageFilename),
 		params.generatedImage.uint8Array,
 	);
 }
@@ -690,7 +640,7 @@ export async function getGeneratedImage(params: {
 	filename: string;
 }) {
 	let image = await params.storage.getItemRaw(
-		generatedImagePath(params.generation, params.filename),
+		generatedImagePath(params.generation.id, params.filename),
 	);
 	if (image instanceof ArrayBuffer) {
 		image = new Uint8Array(image);

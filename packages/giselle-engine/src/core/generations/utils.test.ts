@@ -73,7 +73,7 @@ describe("getGeneration", () => {
 		});
 
 		// Set up generation data
-		const generationPath = `workspaces/${mockGenerationIndex.origin.id}/generations/${generationId}/generation.json`;
+		const generationPath = `generations/${generationId}/generation.json`;
 		await storage.setItem(generationPath, mockGeneration);
 	});
 
