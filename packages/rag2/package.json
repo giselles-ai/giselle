@@ -1,0 +1,40 @@
+{
+	"name": "@giselle-sdk/rag2",
+	"version": "0.0.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "tsup",
+		"check-types": "tsc --noEmit",
+		"clean": "rm -rf .turbo dist node_modules",
+		"format": "biome check --write .",
+		"test": "vitest run"
+	},
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js",
+			"default": "./dist/index.js"
+		}
+	},
+	"devDependencies": {
+		"@giselle/giselle-sdk-tsconfig": "workspace:*",
+		"tsup": "catalog:",
+		"vitest": "catalog:",
+		"@types/node": "catalog:",
+		"@types/pg": "catalog:"
+	},
+	"dependencies": {
+		"@ai-sdk/openai": "catalog:",
+		"ai": "catalog:",
+		"zod": "catalog:",
+		"openai": "catalog:",
+		"@octokit/core": "catalog:",
+		"pg": "catalog:",
+		"pgvector": "catalog:"
+	}
+}
