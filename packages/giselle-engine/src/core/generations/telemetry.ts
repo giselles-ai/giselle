@@ -3,7 +3,6 @@ import type {
 	CompletedGeneration,
 	RunningGeneration,
 } from "@giselle-sdk/data-type";
-import type { LanguageModel } from "@giselle-sdk/language-model";
 import type { ToolSet } from "ai";
 import { Langfuse } from "langfuse";
 import type { TelemetrySettings } from "./types";
@@ -29,7 +28,7 @@ type TelemetryTag =
 
 export function generateTelemetryTags(args: {
 	provider: string;
-	languageModel: LanguageModel;
+	modelId: string;
 	toolSet: ToolSet;
 	configurations: Record<string, unknown>;
 	providerOptions?: {
@@ -38,7 +37,7 @@ export function generateTelemetryTags(args: {
 }): TelemetryTag[] {
 	const tags: TelemetryTag[] = [];
 
-	tags.push(args.provider, args.languageModel.id);
+	tags.push(args.provider, args.modelId);
 
 	// OpenAI Web Search
 	if (args.provider === "openai" && args.toolSet.openaiWebSearch) {
@@ -86,7 +85,6 @@ type LangfuseUnit =
 	| "REQUESTS";
 
 export function createLangfuseTracer({
-	workspaceId,
 	runningGeneration,
 	tags,
 	messages,
@@ -97,7 +95,6 @@ export function createLangfuseTracer({
 	generationName,
 	settings,
 }: {
-	workspaceId: string;
 	runningGeneration: RunningGeneration;
 	tags: string[];
 	messages: { messages: unknown[] };

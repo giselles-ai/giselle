@@ -7,6 +7,7 @@ import type { LanguageModelProvider } from "@giselle-sdk/language-model";
 import type { QueryFunction, QueryFunctionParams } from "@giselle-sdk/rag";
 import type { UsageLimits } from "@giselle-sdk/usage-limits";
 import type { Storage } from "unstorage";
+import type { CostTracker } from "./cost-tracking/tracker";
 import type { Vault } from "./vault";
 
 export interface GiselleEngineContext {
@@ -26,6 +27,7 @@ export interface GiselleEngineContext {
 	vectorStoreQueryFunctions?: {
 		github?: GitHubVectorStoreQueryFunction;
 	};
+	costTracker: CostTracker;
 }
 
 interface GitHubInstalltionAppAuthResolver {
