@@ -1323,6 +1323,9 @@ importers:
       '@giselle-sdk/language-model':
         specifier: workspace:^
         version: link:../language-model
+      '@giselle-sdk/node-utils':
+        specifier: workspace:*
+        version: link:../node-utils
       '@giselle-sdk/workflow-utils':
         specifier: workspace:*
         version: link:../workflow-utils

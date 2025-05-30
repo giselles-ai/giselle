@@ -39,6 +39,7 @@
 		"@giselle-sdk/data-type": "workspace:*",
 		"@giselle-sdk/giselle-engine": "workspace:*",
 		"@giselle-sdk/language-model": "workspace:^",
+		"@giselle-sdk/node-utils": "workspace:*",
 		"@giselle-sdk/workflow-utils": "workspace:*",
 		"react": "catalog:",
 		"zod": "catalog:"

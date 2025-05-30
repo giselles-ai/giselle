@@ -12,12 +12,21 @@ import {
 	type Workspace,
 	generateInitialWorkspace,
 } from "@giselle-sdk/data-type";
+import { nodeFactories } from "@giselle-sdk/node-utils";
 import { buildWorkflowMap } from "@giselle-sdk/workflow-utils";
 import { isSupportedConnection } from "./is-supported-connection";
 
 interface AddNodeOptions {
 	ui?: NodeUIState;
 }
+
+export type ConnectionCloneStrategy =
+	| "inputs-only" // Default: Only incoming connections to the new node are cloned
+	| "all" // Clones both incoming and outgoing connections
+	| "none"; // Clones no connections (future possibility)
+// Add more strategies here as needed, e.g., "outputs-only"
+const DEFAULT_CONNECTION_CLONE_STRATEGY: ConnectionCloneStrategy =
+	"inputs-only";
 
 export type WorkflowDesigner = ReturnType<typeof WorkflowDesigner>;
 
@@ -45,6 +54,118 @@ export function WorkflowDesigner({
 			ui.nodeState[node.id] = options.ui;
 		}
 		updateWorkflowMap();
+	}
+	function copyNode(
+		sourceNode: Node,
+		options?: {
+			connectionCloneStrategy?: ConnectionCloneStrategy;
+		} & AddNodeOptions,
+	): Node | undefined {
+		const { newNode, inputIdMap, outputIdMap } =
+			nodeFactories.clone(sourceNode);
+		addNode(newNode, options);
+
+		const strategy =
+			options?.connectionCloneStrategy ?? DEFAULT_CONNECTION_CLONE_STRATEGY;
+
+		// Find connections related to the original sourceNode
+		const originalConnections = connections.filter(
+			(conn) =>
+				conn.inputNode.id === sourceNode.id ||
+				conn.outputNode.id === sourceNode.id,
+		);
+
+		for (const originalConnection of originalConnections) {
+			// Case 1: Source node was the INPUT node of the original connection
+			// (originalConnection.outputNode) ---> (sourceNode)
+			// We want to clone this to: (originalConnection.outputNode) ---> (newNode)
+			if (
+				originalConnection.inputNode.id === sourceNode.id &&
+				(strategy === "all" || strategy === "inputs-only")
+			) {
+				const outputNode = nodes.find(
+					(n) => n.id === originalConnection.outputNode.id,
+				);
+				if (outputNode) {
+					const newInputId = inputIdMap[originalConnection.inputId];
+					if (newInputId) {
+						// Check if connection already exists
+						const connectionExists = connections.some(
+							(conn) =>
+								conn.outputNode.id === outputNode.id &&
+								conn.outputId === originalConnection.outputId &&
+								conn.inputNode.id === newNode.id &&
+								conn.inputId === newInputId,
+						);
+
+						// Check if connection is valid
+						const connectionValid = isSupportedConnection(
+							outputNode,
+							newNode,
+						).canConnect;
+
+						if (!connectionExists && connectionValid) {
+							addConnection({
+								outputNode: outputNode,
+								outputId: originalConnection.outputId,
+								inputNode: newNode,
+								inputId: newInputId,
+							});
+						}
+					} else {
+						console.warn(
+							`Could not find new input ID for old input ID: ${originalConnection.inputId} on new node ${newNode.id}`,
+						);
+					}
+				}
+			}
+			// Case 2: Source node was the OUTPUT node of the original connection
+			// (sourceNode) ---> (originalConnection.inputNode)
+			// We want to clone this to: (newNode) ---> (originalConnection.inputNode)
+			// This should only happen if strategy is "all"
+			else if (
+				originalConnection.outputNode.id === sourceNode.id &&
+				strategy === "all"
+			) {
+				const inputNode = nodes.find(
+					(n) => n.id === originalConnection.inputNode.id,
+				);
+				if (inputNode) {
+					const newOutputId = outputIdMap[originalConnection.outputId];
+					if (newOutputId) {
+						// Check if connection already exists
+						const connectionExists = connections.some(
+							(conn) =>
+								conn.outputNode.id === newNode.id &&
+								conn.outputId === newOutputId &&
+								conn.inputNode.id === inputNode.id &&
+								conn.inputId === originalConnection.inputId,
+						);
+
+						// Check if connection is valid
+						const connectionValid = isSupportedConnection(
+							newNode,
+							inputNode,
+						).canConnect;
+
+						if (!connectionExists && connectionValid) {
+							addConnection({
+								outputNode: newNode,
+								outputId: newOutputId,
+								inputNode: inputNode,
+								inputId: originalConnection.inputId,
+							});
+						}
+					} else {
+						console.warn(
+							`Could not find new output ID for old output ID: ${originalConnection.outputId} on new node ${newNode.id}`,
+						);
+					}
+				}
+			}
+		}
+
+		return newNode;
 	}
 	function getData() {
 		return {
@@ -125,6 +246,7 @@ export function WorkflowDesigner({
 
 	return {
 		addNode,
+		copyNode,
 		addConnection,
 		getData,
 		updateNodeData,

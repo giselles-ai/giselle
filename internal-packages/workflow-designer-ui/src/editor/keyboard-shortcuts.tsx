@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useDuplicateNode } from "./node";
 import {
 	moveTool,
 	selectFileNodeCategoryTool,
@@ -12,9 +13,16 @@ const ignoredTags = ["INPUT", "TEXTAREA", "SELECT"];
 
 export function KeyboardShortcuts() {
 	const { setSelectedTool } = useToolbar();
+	const duplicateNode = useDuplicateNode();
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
+			if ((event.metaKey || event.ctrlKey) && event.key === "d") {
+				event.preventDefault();
+				duplicateNode();
+				return;
+			}
+
 			const activeElement = document.activeElement;
 
 			if (
@@ -43,7 +51,7 @@ export function KeyboardShortcuts() {
 		};
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [setSelectedTool]);
+	}, [setSelectedTool, duplicateNode]);
 
 	return <></>;
 }

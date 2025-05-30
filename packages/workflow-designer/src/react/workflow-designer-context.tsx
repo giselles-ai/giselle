@@ -2,6 +2,9 @@
 
 import {
 	type ConnectionId,
+	type FailedFileData,
+	type FileContent,
+	type FileData,
 	type FileNode,
 	type Node,
 	type NodeBase,
@@ -14,6 +17,7 @@ import {
 	createFailedFileData,
 	createUploadedFileData,
 	createUploadingFileData,
+	isFileNode,
 } from "@giselle-sdk/data-type";
 import { GenerationRunnerSystemProvider } from "@giselle-sdk/giselle-engine/react";
 import {
@@ -22,8 +26,12 @@ import {
 } from "@giselle-sdk/giselle-engine/react";
 import { RunSystemContextProvider } from "@giselle-sdk/giselle-engine/react";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
+import { isClonedFileDataPayload } from "@giselle-sdk/node-utils";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
-import { WorkflowDesigner } from "../workflow-designer";
+import {
+	type ConnectionCloneStrategy,
+	WorkflowDesigner,
+} from "../workflow-designer";
 import { usePropertiesPanel, useView } from "./state";
 
 type UploadFileFn = (
@@ -58,6 +66,13 @@ export interface WorkflowDesignerContextValue
 	) => void;
 	uploadFile: UploadFileFn;
 	removeFile: (uploadedFile: UploadedFileData) => Promise<void>;
+	copyNode: (
+		sourceNode: Node,
+		options?: {
+			ui?: NodeUIState;
+			connectionCloneStrategy?: ConnectionCloneStrategy;
+		},
+	) => Promise<Node | undefined>;
 	fetchWebPageFiles: (args: {
 		urls: string[];
 		format: "markdown" | "html";
@@ -137,6 +152,87 @@ export function WorkflowDesignerProvider({
 			setAndSaveWorkspace();
 		},
 		[setAndSaveWorkspace],
+	);
+
+	const handleFileNodeCopy = useCallback(
+		async (sourceNode: Node, newNode: Node): Promise<void> => {
+			if (!isFileNode(newNode) || !isFileNode(sourceNode)) {
+				return;
+			}
+
+			const fileCopyPromises = newNode.content.files.map(
+				async (fileDataWithOriginalId) => {
+					if (!isClonedFileDataPayload(fileDataWithOriginalId)) {
+						// Already completed file data, keep as is
+						return fileDataWithOriginalId;
+					}
+
+					const { originalFileIdForCopy, ...newFileData } =
+						fileDataWithOriginalId;
+
+					if (originalFileIdForCopy) {
+						try {
+							await client.copyFile({
+								workspaceId: data.id,
+								sourceFileId: originalFileIdForCopy,
+								destinationFileId: newFileData.id,
+							});
+
+							return newFileData;
+						} catch (error) {
+							console.error(
+								`Failed to copy file for new fileId ${newFileData.id} (source: ${originalFileIdForCopy}):`,
+								error,
+							);
+
+							return {
+								...newFileData,
+								status: "failed",
+								errorMessage:
+									error instanceof Error ? error.message : "Unknown error",
+							} as FailedFileData;
+						}
+					}
+
+					return newFileData;
+				},
+			);
+
+			const resolvedFiles = await Promise.all(fileCopyPromises);
+			const newContentForNode: FileContent = {
+				...newNode.content,
+				files: resolvedFiles,
+			};
+
+			workflowDesignerRef.current.updateNodeData(newNode, {
+				content: newContentForNode,
+			});
+
+			setAndSaveWorkspace();
+		},
+		[client, data.id, setAndSaveWorkspace],
+	);
+
+	const copyNode = useCallback(
+		async (
+			sourceNode: Node,
+			options?: {
+				ui?: NodeUIState;
+				connectionCloneStrategy?: ConnectionCloneStrategy;
+			},
+		): Promise<Node | undefined> => {
+			const newNodeDefinition = workflowDesignerRef.current.copyNode(
+				sourceNode,
+				options,
+			);
+			if (!newNodeDefinition) {
+				return undefined;
+			}
+			setAndSaveWorkspace();
+			await handleFileNodeCopy(sourceNode, newNodeDefinition);
+			return newNodeDefinition;
+		},
+		[setAndSaveWorkspace, handleFileNodeCopy],
 	);
 
 	const updateNodeData = useCallback(
@@ -328,6 +424,7 @@ export function WorkflowDesignerProvider({
 				data: workspace,
 				textGenerationApi,
 				addNode,
+				copyNode,
 				addConnection,
 				updateNodeData,
 				updateNodeDataContent,

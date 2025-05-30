@@ -49,9 +49,15 @@ import {
 	vectorStoreNodeDefaultName,
 } from "./default-name";
 
-export type ClonedFileDataPayload = FileData & {
+type ClonedFileDataPayload = FileData & {
 	originalFileIdForCopy: FileId;
 };
+
+export function isClonedFileDataPayload(
+	data: FileData,
+): data is ClonedFileDataPayload {
+	return "originalFileIdForCopy" in data;
+}
 
 type OperationNodeContentType = OperationNode["content"]["type"];
 type VariableNodeContentType = VariableNode["content"]["type"];

@@ -1,33 +1,14 @@
 "use client";
 
 import type {
-	ActionNode,
 	FileCategory,
-	FileNode,
 	ImageGenerationLanguageModelData,
-	ImageGenerationNode,
 	Node,
-	Output,
-	QueryNode,
 	TextGenerationLanguageModelData,
-	TextGenerationNode,
-	TextNode,
-	TriggerNode,
 	VectorStoreContent,
-	VectorStoreNode,
 } from "@giselle-sdk/data-type";
-import { NodeId, OutputId } from "@giselle-sdk/data-type";
 import type { ActionProvider, TriggerProvider } from "@giselle-sdk/flow";
-import {
-	Capability,
-	hasCapability,
-	languageModels,
-} from "@giselle-sdk/language-model";
-import {
-	actionNodeDefaultName,
-	triggerNodeDefaultName,
-	vectorStoreNodeDefaultName,
-} from "@giselle-sdk/node-utils";
+import { nodeFactories } from "@giselle-sdk/node-utils";
 import { type ReactNode, createContext, useContext, useState } from "react";
 import type {
 	AddNodeTool,
@@ -122,151 +103,31 @@ export function selectRetrievalCategoryTool() {
 }
 
 export function textNode() {
-	return {
-		id: NodeId.generate(),
-		type: "variable",
-		content: {
-			type: "text",
-			text: "",
-		},
-		inputs: [],
-		outputs: [
-			{
-				id: OutputId.generate(),
-				label: "Output",
-				accessor: "text",
-			},
-		],
-	} satisfies TextNode;
+	return nodeFactories.create("text");
 }
 
-export function queryNode(): QueryNode {
-	return {
-		id: NodeId.generate(),
-		type: "operation",
-		content: {
-			type: "query",
-			query: "",
-		},
-		inputs: [],
-		outputs: [
-			{
-				id: OutputId.generate(),
-				label: "Result",
-				accessor: "result",
-			},
-		],
-	};
+export function queryNode() {
+	return nodeFactories.create("query");
 }
 
 export function triggerNode(triggerProvider: TriggerProvider) {
-	return {
-		id: NodeId.generate(),
-		type: "operation",
-		name: triggerNodeDefaultName(triggerProvider),
-		content: {
-			type: "trigger",
-			provider: triggerProvider,
-			state: {
-				status: "unconfigured",
-			},
-		},
-		inputs: [],
-		outputs: [],
-	} satisfies TriggerNode;
+	return nodeFactories.create("trigger", triggerProvider);
 }
 
 export function actionNode(actionProvider: ActionProvider) {
-	return {
-		id: NodeId.generate(),
-		type: "operation",
-		name: actionNodeDefaultName(actionProvider),
-		content: {
-			type: "action",
-			command: {
-				provider: actionProvider,
-				state: {
-					status: "unconfigured",
-				},
-			},
-		},
-		inputs: [],
-		outputs: [],
-	} satisfies ActionNode;
+	return nodeFactories.create("action", actionProvider);
 }
 
 export function fileNode(category: FileCategory) {
-	return {
-		id: NodeId.generate(),
-		type: "variable",
-		content: {
-			type: "file",
-			category,
-			files: [],
-		},
-		inputs: [],
-		outputs: [
-			{
-				id: OutputId.generate(),
-				label: "Output",
-				accessor: "text",
-			},
-		],
-	} satisfies FileNode;
+	return nodeFactories.create("file", category);
 }
 
 export function textGenerationNode(llm: TextGenerationLanguageModelData) {
-	const outputs: Output[] = [
-		{
-			id: OutputId.generate(),
-			label: "Output",
-			accessor: "generated-text",
-		},
-	];
-	const languageModel = languageModels.find(
-		(languageModel) => languageModel.id === llm.id,
-	);
-
-	if (
-		languageModel !== undefined &&
-		hasCapability(languageModel, Capability.SearchGrounding)
-	) {
-		outputs.push({
-			id: OutputId.generate(),
-			label: "Source",
-			accessor: "source",
-		});
-	}
-
-	return {
-		id: NodeId.generate(),
-		type: "operation",
-		content: {
-			type: "textGeneration",
-			llm,
-		},
-		inputs: [],
-		outputs,
-	} satisfies TextGenerationNode;
+	return nodeFactories.create("textGeneration", llm);
 }
 
 export function imageGenerationNode(llm: ImageGenerationLanguageModelData) {
-	return {
-		id: NodeId.generate(),
-		type: "operation",
-		content: {
-			type: "imageGeneration",
-			llm,
-		},
-		inputs: [],
-		outputs: [
-			{
-				id: OutputId.generate(),
-				label: "Output",
-				accessor: "generated-image",
-			},
-		],
-	} satisfies ImageGenerationNode;
+	return nodeFactories.create("imageGeneration", llm);
 }
 
 export function selectSourceCategoryTool() {
@@ -292,27 +153,6 @@ export function selectActionTool() {
 
 export function vectorStoreNode(
 	provider: VectorStoreContent["source"]["provider"],
-): VectorStoreNode {
-	return {
-		id: NodeId.generate(),
-		type: "variable",
-		name: vectorStoreNodeDefaultName(provider),
-		content: {
-			type: "vectorStore",
-			source: {
-				provider: provider,
-				state: {
-					status: "unconfigured",
-				},
-			},
-		},
-		inputs: [],
-		outputs: [
-			{
-				id: OutputId.generate(),
-				label: "Output",
-				accessor: "source",
-			},
-		],
-	};
+) {
+	return nodeFactories.create("vectorStore", provider);
 }
