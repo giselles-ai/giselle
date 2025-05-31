@@ -1,6 +1,7 @@
 import type { CancelledGeneration, GenerationId } from "@giselle-sdk/data-type";
 import type { GiselleEngineContext } from "../types";
-import { getGeneration, setGeneration, setNodeGenerationIndex } from "./utils";
+import { internalSetGeneration } from "./internal/set-generation";
+import { getGeneration } from "./utils";
 
 export async function cancelGeneration(args: {
 	context: GiselleEngineContext;
@@ -18,24 +19,9 @@ export async function cancelGeneration(args: {
 		status: "cancelled",
 		cancelledAt: Date.now(),
 	};
-	await Promise.all([
-		setGeneration({
-			storage: args.context.storage,
-			generation: cancelledGeneration,
-		}),
-		setNodeGenerationIndex({
-			storage: args.context.storage,
-			nodeId: generation.context.operationNode.id,
-			origin: generation.context.origin,
-			nodeGenerationIndex: {
-				id: generation.id,
-				nodeId: generation.context.operationNode.id,
-				status: "cancelled",
-				createdAt: generation.createdAt,
-				queuedAt: Date.now(),
-				cancelledAt: Date.now(),
-			},
-		}),
-	]);
+	await internalSetGeneration({
+		storage: args.context.storage,
+		generation: cancelledGeneration,
+	});
 	return cancelledGeneration;
 }

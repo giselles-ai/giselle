@@ -7,11 +7,7 @@ import {
 	isTriggerNode,
 } from "@giselle-sdk/data-type";
 import { githubTriggers } from "@giselle-sdk/flow";
-import {
-	setGeneration,
-	setGenerationIndex,
-	setNodeGenerationIndex,
-} from "../generations/utils";
+import { internalSetGeneration } from "../generations/internal/set-generation";
 import { resolveTrigger as resolveGitHubTrigger } from "../github/trigger-utils";
 import type { GiselleEngineContext } from "../types";
 import { getFlowTrigger } from "./utils";
@@ -163,31 +159,8 @@ export async function resolveTrigger(args: {
 		outputs,
 	} satisfies CompletedGeneration;
 
-	await Promise.all([
-		setGeneration({
-			storage: args.context.storage,
-			generation: completedGeneration,
-		}),
-		setGenerationIndex({
-			storage: args.context.storage,
-			generationIndex: {
-				id: completedGeneration.id,
-				origin: completedGeneration.context.origin,
-			},
-		}),
-		setNodeGenerationIndex({
-			storage: args.context.storage,
-			nodeId: generationContext.operationNode.id,
-			origin: generationContext.origin,
-			nodeGenerationIndex: {
-				id: completedGeneration.id,
-				nodeId: completedGeneration.context.operationNode.id,
-				status: "completed",
-				createdAt: completedGeneration.createdAt,
-				queuedAt: completedGeneration.queuedAt,
-				startedAt: completedGeneration.startedAt,
-				completedAt: completedGeneration.completedAt,
-			},
-		}),
-	]);
+	await internalSetGeneration({
+		storage: args.context.storage,
+		generation: completedGeneration,
+	});
 }

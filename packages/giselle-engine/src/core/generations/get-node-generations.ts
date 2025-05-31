@@ -11,7 +11,6 @@ export async function getNodeGenerations(args: {
 }) {
 	const nodeGenerationIndexes = await getNodeGenerationIndexes({
 		storage: args.context.storage,
-		origin: args.origin,
 		nodeId: args.nodeId,
 	});
 	if (nodeGenerationIndexes === undefined) {

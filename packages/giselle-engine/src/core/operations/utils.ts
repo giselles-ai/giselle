@@ -15,7 +15,6 @@ export async function connectionResolver(args: {
 	storage: Storage;
 }) {
 	const nodeGenerationIndexes = await getNodeGenerationIndexes({
-		origin: args.context.origin,
 		storage: args.storage,
 		nodeId: args.nodeId,
 	});

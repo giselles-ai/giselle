@@ -20,12 +20,8 @@ import {
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
 import type { Storage } from "unstorage";
-import {
-	getGeneration,
-	getNodeGenerationIndexes,
-	setGeneration,
-	setNodeGenerationIndex,
-} from "../generations/utils";
+import { internalSetGeneration } from "../generations/internal/set-generation";
+import { getGeneration, getNodeGenerationIndexes } from "../generations/utils";
 import type { GiselleEngineContext } from "../types";
 
 async function resolveGeneration(args: {
@@ -34,7 +30,6 @@ async function resolveGeneration(args: {
 	connection: Connection;
 }) {
 	const nodeGenerationIndexes = await getNodeGenerationIndexes({
-		origin: args.generationContext.origin,
 		storage: args.storage,
 		nodeId: args.connection.outputNode.id,
 	});
@@ -125,7 +120,6 @@ async function resolveGitHubActionInputs(args: {
 		}
 
 		const nodeGenerationIndexes = await getNodeGenerationIndexes({
-			origin: generationContext.origin,
 			storage: args.storage,
 			nodeId: connection?.outputNode.id,
 		});
@@ -194,26 +188,11 @@ export async function executeAction(args: {
 		completedAt: Date.now(),
 		outputs: generationOutputs,
 	} satisfies CompletedGeneration;
-	await Promise.all([
-		setGeneration({
-			storage: args.context.storage,
-			generation: completedGeneration,
-		}),
-		setNodeGenerationIndex({
-			storage: args.context.storage,
-			nodeId: args.generation.context.operationNode.id,
-			origin: args.generation.context.origin,
-			nodeGenerationIndex: {
-				id: completedGeneration.id,
-				nodeId: args.generation.context.operationNode.id,
-				status: "completed",
-				createdAt: completedGeneration.createdAt,
-				queuedAt: completedGeneration.queuedAt,
-				startedAt: completedGeneration.startedAt,
-				completedAt: completedGeneration.completedAt,
-			},
-		}),
-	]);
+
+	await internalSetGeneration({
+		storage: args.context.storage,
+		generation: completedGeneration,
+	});
 }
 
 async function executeGitHubActionCommand(args: {

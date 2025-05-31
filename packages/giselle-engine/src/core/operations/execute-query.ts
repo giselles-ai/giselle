@@ -20,13 +20,11 @@ import {
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
 import type { Storage } from "unstorage";
+import { internalSetGeneration } from "../generations/internal/set-generation";
 import {
 	getGeneration,
 	getNodeGenerationIndexes,
 	queryResultToText,
-	setGeneration,
-	setGenerationIndex,
-	setNodeGenerationIndex,
 } from "../generations/utils";
 import type { GiselleEngineContext } from "../types";
 
@@ -48,33 +46,10 @@ export async function executeQuery(args: {
 		startedAt: Date.now(),
 	} satisfies RunningGeneration;
 
-	await Promise.all([
-		setGeneration({
-			storage: context.storage,
-			generation: runningGeneration,
-		}),
-		setGenerationIndex({
-			storage: context.storage,
-			generationIndex: {
-				id: runningGeneration.id,
-				origin: runningGeneration.context.origin,
-			},
-		}),
-		setNodeGenerationIndex({
-			storage: context.storage,
-			nodeId: runningGeneration.context.operationNode.id,
-			origin: runningGeneration.context.origin,
-			nodeGenerationIndex: {
-				id: runningGeneration.id,
-				nodeId: runningGeneration.context.operationNode.id,
-				status: "running",
-				createdAt: runningGeneration.createdAt,
-				queuedAt: runningGeneration.queuedAt,
-				startedAt: runningGeneration.startedAt,
-			},
-		}),
-	]);
-
+	internalSetGeneration({
+		storage: context.storage,
+		generation: runningGeneration,
+	});
 	let workspaceId: WorkspaceId | undefined;
 	switch (initialGeneration.context.origin.type) {
 		case "run":
@@ -140,26 +115,10 @@ export async function executeQuery(args: {
 			outputs,
 		} satisfies CompletedGeneration;
 
-		await Promise.all([
-			setGeneration({
-				storage: context.storage,
-				generation: completedGeneration,
-			}),
-			setNodeGenerationIndex({
-				storage: context.storage,
-				nodeId: runningGeneration.context.operationNode.id,
-				origin: runningGeneration.context.origin,
-				nodeGenerationIndex: {
-					id: completedGeneration.id,
-					nodeId: completedGeneration.context.operationNode.id,
-					status: "completed",
-					createdAt: completedGeneration.createdAt,
-					queuedAt: completedGeneration.queuedAt,
-					startedAt: completedGeneration.startedAt,
-					completedAt: completedGeneration.completedAt,
-				},
-			}),
-		]);
+		internalSetGeneration({
+			storage: context.storage,
+			generation: completedGeneration,
+		});
 	} catch (error) {
 		const err = error instanceof Error ? error : new Error(String(error));
 		const failedGeneration = {
@@ -172,26 +131,11 @@ export async function executeQuery(args: {
 			},
 		} satisfies FailedGeneration;
 
-		await Promise.all([
-			setGeneration({
-				storage: context.storage,
-				generation: failedGeneration,
-			}),
-			setNodeGenerationIndex({
-				storage: context.storage,
-				nodeId: runningGeneration.context.operationNode.id,
-				origin: runningGeneration.context.origin,
-				nodeGenerationIndex: {
-					id: failedGeneration.id,
-					nodeId: failedGeneration.context.operationNode.id,
-					status: "failed",
-					createdAt: failedGeneration.createdAt,
-					queuedAt: failedGeneration.queuedAt,
-					startedAt: failedGeneration.startedAt,
-					failedAt: failedGeneration.failedAt,
-				},
-			}),
-		]);
+		await internalSetGeneration({
+			storage: context.storage,
+			generation: failedGeneration,
+		});
+
 		throw error;
 	}
 }
@@ -205,7 +149,6 @@ async function resolveQuery(
 
 	async function generationContentResolver(nodeId: NodeId, outputId: OutputId) {
 		const nodeGenerationIndexes = await getNodeGenerationIndexes({
-			origin: runningGeneration.context.origin,
 			storage,
 			nodeId,
 		});

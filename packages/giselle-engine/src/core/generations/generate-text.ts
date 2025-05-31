@@ -30,6 +30,7 @@ import { AISDKError, appendResponseMessages, streamText } from "ai";
 import { UsageLimitError } from "../error";
 import { filePath } from "../files/utils";
 import type { GiselleEngineContext } from "../types";
+import { internalSetGeneration } from "./internal/set-generation";
 import { createLangfuseTracer, generateTelemetryTags } from "./telemetry";
 import { createPostgresTools } from "./tools/postgres";
 import type { PreparedToolSet, TelemetrySettings } from "./types";
@@ -40,9 +41,6 @@ import {
 	getNodeGenerationIndexes,
 	handleAgentTimeConsumption,
 	queryResultToText,
-	setGeneration,
-	setGenerationIndex,
-	setNodeGenerationIndex,
 } from "./utils";
 
 // PerplexityProviderOptions is not exported from @ai-sdk/perplexity, so we define it here based on the model configuration
@@ -66,7 +64,6 @@ export async function generateText(args: {
 	if (!languageModel) {
 		throw new Error("Invalid language model");
 	}
-	const generationContext = GenerationContext.parse(args.generation.context);
 	const runningGeneration = {
 		...args.generation,
 		status: "running",
@@ -74,32 +71,10 @@ export async function generateText(args: {
 		startedAt: Date.now(),
 	} satisfies RunningGeneration;
 
-	await Promise.all([
-		setGeneration({
-			storage: args.context.storage,
-			generation: runningGeneration,
-		}),
-		setGenerationIndex({
-			storage: args.context.storage,
-			generationIndex: {
-				id: runningGeneration.id,
-				origin: runningGeneration.context.origin,
-			},
-		}),
-		setNodeGenerationIndex({
-			storage: args.context.storage,
-			nodeId: runningGeneration.context.operationNode.id,
-			origin: runningGeneration.context.origin,
-			nodeGenerationIndex: {
-				id: runningGeneration.id,
-				nodeId: runningGeneration.context.operationNode.id,
-				status: "running",
-				createdAt: runningGeneration.createdAt,
-				queuedAt: runningGeneration.queuedAt,
-				startedAt: runningGeneration.startedAt,
-			},
-		}),
-	]);
+	await internalSetGeneration({
+		storage: args.context.storage,
+		generation: runningGeneration,
+	});
 
 	let workspaceId: WorkspaceId | undefined;
 	switch (args.generation.context.origin.type) {
@@ -131,26 +106,12 @@ export async function generateText(args: {
 				dump: usageLimitStatus,
 			},
 		} satisfies FailedGeneration;
-		await Promise.all([
-			setGeneration({
-				storage: args.context.storage,
-				generation: failedGeneration,
-			}),
-			setNodeGenerationIndex({
-				storage: args.context.storage,
-				nodeId: runningGeneration.context.operationNode.id,
-				origin: runningGeneration.context.origin,
-				nodeGenerationIndex: {
-					id: failedGeneration.id,
-					nodeId: failedGeneration.context.operationNode.id,
-					status: "failed",
-					createdAt: failedGeneration.createdAt,
-					queuedAt: failedGeneration.queuedAt,
-					startedAt: failedGeneration.startedAt,
-					failedAt: failedGeneration.failedAt,
-				},
-			}),
-		]);
+
+		await internalSetGeneration({
+			storage: args.context.storage,
+			generation: failedGeneration,
+		});
+
 		throw new UsageLimitError(usageLimitStatus.error);
 	}
 
@@ -169,7 +130,6 @@ export async function generateText(args: {
 
 	async function generationContentResolver(nodeId: NodeId, outputId: OutputId) {
 		const nodeGenerationIndexes = await getNodeGenerationIndexes({
-			origin: runningGeneration.context.origin,
 			storage: args.context.storage,
 			nodeId,
 		});
@@ -368,26 +328,11 @@ export async function generateText(args: {
 						message: error.message,
 					},
 				} satisfies FailedGeneration;
-				await Promise.all([
-					setGeneration({
-						storage: args.context.storage,
-						generation: failedGeneration,
-					}),
-					setNodeGenerationIndex({
-						storage: args.context.storage,
-						nodeId: runningGeneration.context.operationNode.id,
-						origin: runningGeneration.context.origin,
-						nodeGenerationIndex: {
-							id: failedGeneration.id,
-							nodeId: failedGeneration.context.operationNode.id,
-							status: "failed",
-							createdAt: failedGeneration.createdAt,
-							queuedAt: failedGeneration.queuedAt,
-							startedAt: failedGeneration.startedAt,
-							failedAt: failedGeneration.failedAt,
-						},
-					}),
-				]);
+
+				await internalSetGeneration({
+					storage: args.context.storage,
+					generation: failedGeneration,
+				});
 			}
 
 			await Promise.all(
@@ -397,6 +342,9 @@ export async function generateText(args: {
 			);
 		},
 		async onFinish(event) {
+			const generationContext = GenerationContext.parse(
+				args.generation.context,
+			);
 			const generationOutputs: GenerationOutput[] = [];
 			const generatedTextOutput = generationContext.operationNode.outputs.find(
 				(output) => output.accessor === "generated-text",
@@ -468,26 +416,11 @@ export async function generateText(args: {
 					responseMessages: event.response.messages,
 				}),
 			} satisfies CompletedGeneration;
-			await Promise.all([
-				setGeneration({
-					storage: args.context.storage,
-					generation: completedGeneration,
-				}),
-				setNodeGenerationIndex({
-					storage: args.context.storage,
-					nodeId: runningGeneration.context.operationNode.id,
-					origin: runningGeneration.context.origin,
-					nodeGenerationIndex: {
-						id: completedGeneration.id,
-						nodeId: completedGeneration.context.operationNode.id,
-						status: "completed",
-						createdAt: completedGeneration.createdAt,
-						queuedAt: completedGeneration.queuedAt,
-						startedAt: completedGeneration.startedAt,
-						completedAt: completedGeneration.completedAt,
-					},
-				}),
-			]);
+
+			await internalSetGeneration({
+				storage: args.context.storage,
+				generation: completedGeneration,
+			});
 
 			await handleAgentTimeConsumption({
 				workspaceId,

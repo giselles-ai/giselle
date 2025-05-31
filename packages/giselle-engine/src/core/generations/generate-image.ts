@@ -31,6 +31,7 @@ import { type ApiMediaContentType, Langfuse, LangfuseMedia } from "langfuse";
 import { UsageLimitError } from "../error";
 import { filePath } from "../files/utils";
 import type { GiselleEngineContext } from "../types";
+import { internalSetGeneration } from "./internal/set-generation";
 import type { TelemetrySettings } from "./types";
 import {
 	buildMessageObject,
@@ -41,9 +42,6 @@ import {
 	handleAgentTimeConsumption,
 	queryResultToText,
 	setGeneratedImage,
-	setGeneration,
-	setGenerationIndex,
-	setNodeGenerationIndex,
 } from "./utils";
 
 export async function generateImage(args: {
@@ -65,32 +63,10 @@ export async function generateImage(args: {
 		startedAt: Date.now(),
 	} satisfies RunningGeneration;
 
-	await Promise.all([
-		setGeneration({
-			storage: args.context.storage,
-			generation: runningGeneration,
-		}),
-		setGenerationIndex({
-			storage: args.context.storage,
-			generationIndex: {
-				id: runningGeneration.id,
-				origin: runningGeneration.context.origin,
-			},
-		}),
-		setNodeGenerationIndex({
-			storage: args.context.storage,
-			nodeId: runningGeneration.context.operationNode.id,
-			origin: runningGeneration.context.origin,
-			nodeGenerationIndex: {
-				id: runningGeneration.id,
-				nodeId: runningGeneration.context.operationNode.id,
-				status: "running",
-				createdAt: runningGeneration.createdAt,
-				queuedAt: runningGeneration.queuedAt,
-				startedAt: runningGeneration.startedAt,
-			},
-		}),
-	]);
+	internalSetGeneration({
+		storage: args.context.storage,
+		generation: runningGeneration,
+	});
 
 	let workspaceId: WorkspaceId | undefined;
 	switch (args.generation.context.origin.type) {
@@ -121,26 +97,10 @@ export async function generateImage(args: {
 				dump: usageLimitStatus,
 			},
 		} satisfies FailedGeneration;
-		await Promise.all([
-			setGeneration({
-				storage: args.context.storage,
-				generation: failedGeneration,
-			}),
-			setNodeGenerationIndex({
-				storage: args.context.storage,
-				nodeId: runningGeneration.context.operationNode.id,
-				origin: runningGeneration.context.origin,
-				nodeGenerationIndex: {
-					id: failedGeneration.id,
-					nodeId: failedGeneration.context.operationNode.id,
-					status: "failed",
-					createdAt: failedGeneration.createdAt,
-					queuedAt: failedGeneration.queuedAt,
-					startedAt: failedGeneration.startedAt,
-					failedAt: failedGeneration.failedAt,
-				},
-			}),
-		]);
+		internalSetGeneration({
+			storage: args.context.storage,
+			generation: failedGeneration,
+		});
 		throw new UsageLimitError(usageLimitStatus.error);
 	}
 
@@ -159,7 +119,6 @@ export async function generateImage(args: {
 
 	async function generationContentResolver(nodeId: NodeId, outputId: OutputId) {
 		const nodeGenerationIndexes = await getNodeGenerationIndexes({
-			origin: runningGeneration.context.origin,
 			storage: args.context.storage,
 			nodeId,
 		});
@@ -258,26 +217,10 @@ export async function generateImage(args: {
 		outputs: generationOutputs,
 	} satisfies CompletedGeneration;
 
-	await Promise.all([
-		setGeneration({
-			storage: args.context.storage,
-			generation: completedGeneration,
-		}),
-		setNodeGenerationIndex({
-			storage: args.context.storage,
-			nodeId: runningGeneration.context.operationNode.id,
-			origin: runningGeneration.context.origin,
-			nodeGenerationIndex: {
-				id: completedGeneration.id,
-				nodeId: completedGeneration.context.operationNode.id,
-				status: "completed",
-				createdAt: completedGeneration.createdAt,
-				queuedAt: completedGeneration.queuedAt,
-				startedAt: completedGeneration.startedAt,
-				completedAt: completedGeneration.completedAt,
-			},
-		}),
-	]);
+	internalSetGeneration({
+		storage: args.context.storage,
+		generation: completedGeneration,
+	});
 
 	await handleAgentTimeConsumption({
 		workspaceId,

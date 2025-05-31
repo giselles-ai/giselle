@@ -277,56 +277,8 @@ function getOrdinal(n: number): string {
 	return `${n}${suffix}`;
 }
 
-function generationIndexPath(generationId: GenerationId) {
-	return `generations/${generationId}.json`;
-}
-export async function getGenerationIndex(params: {
-	storage: Storage;
-	generationId: GenerationId;
-	options?: {
-		bypassingCache?: boolean;
-	};
-}) {
-	const unsafeGenerationIndex = await params.storage.getItem(
-		generationIndexPath(params.generationId),
-		{
-			bypassingCache: params.options?.bypassingCache ?? false,
-		},
-	);
-	if (unsafeGenerationIndex === null) {
-		return undefined;
-	}
-	return GenerationIndex.parse(unsafeGenerationIndex);
-}
-export async function setGenerationIndex(params: {
-	storage: Storage;
-	generationIndex: GenerationIndex;
-}) {
-	await params.storage.setItem(
-		generationIndexPath(params.generationIndex.id),
-		GenerationIndex.parse(params.generationIndex),
-	);
-}
 export function generationPath(generationId: GenerationId) {
 	return `generations/${generationId}/generation.json`;
-}
-
-export function activeNodeGenerationIdPath(nodeId: NodeId) {
-	return `generations/byNode/${nodeId}/activeGenerationId.txt`;
-}
-
-export async function setGeneration(params: {
-	storage: Storage;
-	generation: Generation;
-}) {
-	await params.storage.setItem(
-		generationPath(params.generation.id),
-		Generation.parse(params.generation),
-		{
-			// Disable caching by setting cacheControlMaxAge to 0 for Vercel Blob storage
-			cacheControlMaxAge: 0,
-		},
-	);
 }
 
 export async function getGeneration(params: {
@@ -337,16 +289,15 @@ export async function getGeneration(params: {
 		skipMod?: boolean;
 	};
 }): Promise<Generation | undefined> {
-	const generationIndex = await getGenerationIndex(params);
-	if (generationIndex == null) {
-		throw new Error("Generation not found");
-	}
 	const unsafeGeneration = await params.storage.getItem(
-		`${generationPath(generationIndex.id)}`,
+		`${generationPath(params.generationId)}`,
 		{
 			bypassingCache: params.options?.bypassingCache ?? false,
 		},
 	);
+	if (unsafeGeneration == null) {
+		throw new Error("Generation not found");
+	}
 	if (params.options?.skipMod) {
 		const parsedGeneration = Generation.parse(unsafeGeneration);
 		const parsedGenerationContext = GenerationContext.parse(
@@ -371,55 +322,11 @@ export async function getGeneration(params: {
 export function nodeGenerationIndexPath(nodeId: NodeId) {
 	return `generations/byNode/${nodeId}.json`;
 }
-export async function setNodeGenerationIndex(
-	params: {
-		storage: Storage;
-		nodeId: NodeId;
-		nodeGenerationIndex: NodeGenerationIndex;
-	} & { origin: GenerationOrigin },
-) {
-	let newNodeGenerationIndexes: NodeGenerationIndex[] | undefined;
-	const nodeGenerationIndexes = await getNodeGenerationIndexes({
-		storage: params.storage,
-		nodeId: params.nodeId,
-		origin: params.origin,
-	});
-	if (nodeGenerationIndexes === undefined) {
-		newNodeGenerationIndexes = [params.nodeGenerationIndex];
-	} else {
-		const index = nodeGenerationIndexes.findIndex(
-			(nodeGenerationIndex) =>
-				nodeGenerationIndex.id === params.nodeGenerationIndex.id,
-		);
-		if (index === -1) {
-			newNodeGenerationIndexes = [
-				...nodeGenerationIndexes,
-				params.nodeGenerationIndex,
-			];
-		} else {
-			newNodeGenerationIndexes = [
-				...nodeGenerationIndexes.slice(0, index),
-				params.nodeGenerationIndex,
-				...nodeGenerationIndexes.slice(index + 1),
-			];
-		}
-	}
-	await params.storage.setItem(
-		nodeGenerationIndexPath(params.nodeId),
-		newNodeGenerationIndexes,
-		{
-			// Disable caching by setting cacheControlMaxAge to 0 for Vercel Blob storage
-			cacheControlMaxAge: 0,
-		},
-	);
-}
 
-export async function getNodeGenerationIndexes(
-	params: {
-		storage: Storage;
-		nodeId: NodeId;
-	} & { origin: GenerationOrigin },
-) {
+export async function getNodeGenerationIndexes(params: {
+	storage: Storage;
+	nodeId: NodeId;
+}) {
 	const unsafeNodeGenerationIndexData = await params.storage.getItem(
 		nodeGenerationIndexPath(params.nodeId),
 		{
