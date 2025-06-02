@@ -13,6 +13,7 @@ import {
 	createIssue,
 	createIssueComment,
 	createPullRequestComment,
+	createPullRequestReviewComment,
 } from "@giselle-sdk/github-tool";
 import {
 	isJsonContent,
@@ -205,6 +206,16 @@ async function executeGitHubActionCommand(args: {
 			const result = await createPullRequestComment({
 				...githubActions[
 					"github.create.pullRequestComment"
+				].command.parameters.parse(inputs),
+				repositoryNodeId: args.state.repositoryNodeId,
+				authConfig: commonAuthConfig,
+			});
+			return createActionOutput(result, args.generationContext);
+		}
+		case "github.create.pullRequestReviewComment": {
+			const result = await createPullRequestReviewComment({
+				...githubActions[
+					"github.create.pullRequestReviewComment"
 				].command.parameters.parse(inputs),
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
