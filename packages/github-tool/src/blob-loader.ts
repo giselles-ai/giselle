@@ -228,7 +228,7 @@ async function* traverseTree(
 /**
  * Get the default branch HEAD commit for a GitHub repository
  */
-async function fetchDefaultBranchHead(
+export async function fetchDefaultBranchHead(
 	octokit: Octokit,
 	owner: string,
 	repo: string,

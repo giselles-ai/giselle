@@ -24,7 +24,7 @@ import {
 	getNodeGenerationIndexes,
 	queryResultToText,
 } from "../generations/utils";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleEngineContext, GitHubQueryContext } from "../types";
 
 export async function executeQuery(args: {
 	context: GiselleEngineContext;
@@ -250,15 +250,66 @@ async function queryVectorStore(
 		return [];
 	}
 
-	const { vectorStoreQueryFunctions } = context;
-	if (vectorStoreQueryFunctions === undefined) {
-		throw new Error("No vector store query function provided");
-	}
+	const { vectorStoreQueryFunctions, vectorStoreQueryServices } = context;
 
 	// Default values for query parameters
 	// TODO: Make these configurable via the UI
 	const LIMIT = 10;
 	const SIMILARITY_THRESHOLD = 0.2;
+
+	// Prefer new vectorStoreQueryServices over legacy vectorStoreQueryFunctions
+	if (vectorStoreQueryServices?.github) {
+		// Use new rag2-based implementation
+		const { github } = vectorStoreQueryServices;
+		const results = await Promise.all(
+			vectorStoreNodes
+				.filter(isConfiguredVectorStoreNode)
+				.map(async (vectorStoreNode) => {
+					const { content } = vectorStoreNode;
+					const { source } = content;
+					const { provider, state } = source;
+
+					switch (provider) {
+						case "github": {
+							const { owner, repo } = state;
+							const queryContext: GitHubQueryContext = {
+								workspaceId,
+								owner,
+								repo,
+							};
+							const res = await github.searchByQuestion({
+								question: query,
+								limit: LIMIT,
+								similarityThreshold: SIMILARITY_THRESHOLD,
+								context: queryContext,
+							});
+							return {
+								type: "vector-store" as const,
+								source,
+								records: res.map((record) => ({
+									chunkContent: record.chunk.content,
+									chunkIndex: record.chunk.index,
+									score: record.similarity,
+									metadata: record.metadata,
+								})),
+							};
+						}
+						default: {
+							const _exhaustiveCheck: never = provider;
+							throw new Error(
+								`Unsupported vector store provider: ${_exhaustiveCheck}`,
+							);
+						}
+					}
+				}),
+		);
+		return results;
+	}
+
+	// Fallback to legacy implementation
+	if (vectorStoreQueryFunctions === undefined) {
+		throw new Error("No vector store query function provided");
+	}
 
 	const results = await Promise.all(
 		vectorStoreNodes
