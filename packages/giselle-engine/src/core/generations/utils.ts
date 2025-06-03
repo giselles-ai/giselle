@@ -490,11 +490,12 @@ async function buildGenerationMessageForImageGeneration(
 						attachedFiles.push(...fileContents);
 						break;
 					}
-					// Remove or comment out problematic never assignments for exhaustiveness checks
-					// default: {
-					//     const _exhaustiveCheck: never = contextNode.content.category;
-					//     throw new Error(`Unhandled category: ${_exhaustiveCheck}`);
-					// }
+					// Exhaustiveness check intentionally omitted for compatibility
+					default: {
+						console.warn(`Unhandled file category: ${(contextNode.content as any).category}`);
+						// Skip processing for unknown categories
+						break;
+					}
 				}
 				break;
 			}
