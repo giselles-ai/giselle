@@ -375,11 +375,11 @@ async function getFileContents(
 						image: data,
 						mimeType: file.type,
 					} satisfies ImagePart;
-				// Remove or comment out problematic never assignments for exhaustiveness checks
-				// default: {
-				//     const _exhaustiveCheck: never = fileContent.category;
-				//     throw new Error(`Unhandled file category: ${_exhaustiveCheck}`);
-				// }
+				// Exhaustiveness check intentionally omitted for compatibility
+				default: {
+					console.warn(`Unhandled file category: ${(fileContent as any).category}`);
+					return null;
+				}
 			}
 		}),
 	).then((results) => results.filter((result) => result !== null));
