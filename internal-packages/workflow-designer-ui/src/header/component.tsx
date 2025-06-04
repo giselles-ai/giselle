@@ -2,6 +2,7 @@
 import {
 	type TriggerNode,
 	type WorkspaceId,
+	isOperationNode,
 	isTriggerNode,
 } from "@giselle-sdk/data-type";
 import { triggerNodeDefaultName } from "@giselle-sdk/node-utils";
@@ -40,6 +41,11 @@ function Trigger() {
 		return tmp;
 	}, [data.nodes]);
 
+	const operationNodes = useMemo(
+		() => data.nodes.filter((n) => isOperationNode(n) && !isTriggerNode(n)),
+		[data.nodes],
+	);
+
 	const handleTriggerSelect = useCallback((node: TriggerNode) => {
 		setSelectedTriggerNode(node);
 	}, []);
@@ -49,8 +55,13 @@ function Trigger() {
 		setSelectedTriggerNode(null);
 	}, []);
 
-	if (triggerNodes.length === 0) {
+	if (triggerNodes.length === 0 && operationNodes.length === 0) {
 		return null;
+	}
+
+	if (triggerNodes.length === 0 && operationNodes.length > 0) {
+		// TODO: handle running workflow without triggers
+		return <RunButton label="Run All" onClick={() => {}} />;
 	}
 
 	// Use a unified button and dialog approach for both single and multiple triggers
@@ -120,6 +131,11 @@ function Trigger() {
 											</button>
 										))}
 									</div>
+									{operationNodes.length > 0 && (
+										<div className="pt-2">
+											<RunButton label="Run All" onClick={() => {}} />
+										</div>
+									)}
 								</div>
 							)}
 						</>
@@ -227,8 +243,10 @@ function Divider() {
 
 export function RunButton({
 	onClick,
+	label = "Run",
 }: {
 	onClick?: () => void;
+	label?: string;
 }) {
 	return (
 		<button
@@ -242,7 +260,7 @@ export function RunButton({
 			)}
 		>
 			<PlayIcon className="size-[16px] fill-white-900" />
-			<p>Run</p>
+			<p>{label}</p>
 		</button>
 	);
 }
