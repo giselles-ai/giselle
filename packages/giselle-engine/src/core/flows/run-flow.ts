@@ -51,7 +51,7 @@ export async function runFlow(args: {
 	await args.callbacks?.flowCreate?.({ flow });
 
 	const runId = RunId.generate();
-	for (const job of flow.jobs.values()) {
+	for (const job of flow.jobs) {
 		if (args.callbacks?.jobStart) {
 			await args.callbacks.jobStart({ job });
 		}
