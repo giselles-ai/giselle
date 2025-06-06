@@ -76,14 +76,6 @@ export function generateTelemetryTags(args: {
 	return tags;
 }
 
-function getDeploymentId(): string | undefined {
-	try {
-		return process.env.VERCEL_DEPLOYMENT_ID;
-	} catch {
-		return undefined;
-	}
-}
-
 export async function emitTelemetry(
 	generation: CompletedGeneration,
 	options: GenerationCompleteOption,
@@ -155,7 +147,6 @@ export async function emitTelemetry(
 			};
 		}
 
-		const deploymentId = getDeploymentId();
 		const trace = langfuse.trace({
 			...(options?.telemetry?.userId && {
 				userId: String(options.telemetry.userId),
@@ -171,7 +162,9 @@ export async function emitTelemetry(
 			}),
 			metadata: {
 				...options?.telemetry,
-				deploymentId,
+				...(process.env.VERCEL_DEPLOYMENT_ID && {
+					deploymentId: process.env.VERCEL_DEPLOYMENT_ID,
+				}),
 			},
 			output,
 		});
