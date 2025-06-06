@@ -76,6 +76,14 @@ export function generateTelemetryTags(args: {
 	return tags;
 }
 
+function getDeploymentId(): string | undefined {
+	try {
+		return process.env.VERCEL_DEPLOYMENT_ID;
+	} catch {
+		return undefined;
+	}
+}
+
 export async function emitTelemetry(
 	generation: CompletedGeneration,
 	options: GenerationCompleteOption,
@@ -147,6 +155,7 @@ export async function emitTelemetry(
 			};
 		}
 
+		const deploymentId = getDeploymentId();
 		const trace = langfuse.trace({
 			userId: String(options?.telemetry?.userId),
 			name: "llm-generation",
@@ -158,7 +167,10 @@ export async function emitTelemetry(
 				configurations: llm.configurations ?? {},
 				providerOptions,
 			}),
-			metadata: options?.telemetry,
+			metadata: {
+				...options?.telemetry,
+				deploymentId,
+			},
 			output,
 		});
 
