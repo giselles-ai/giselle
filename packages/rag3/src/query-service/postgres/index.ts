@@ -12,8 +12,10 @@ export interface PostgresQueryServiceConfig<TContext, TMetadata> {
 	tableName: string;
 	embedder: Embedder;
 	columnMapping: ColumnMapping<TMetadata>;
-	// コンテキストからフィルタ条件への変換
-	contextToFilter: (context: TContext) => Record<string, unknown>;
+	// コンテキストからフィルタ条件への変換（非同期対応）
+	contextToFilter: (
+		context: TContext,
+	) => Record<string, unknown> | Promise<Record<string, unknown>>;
 	// 検索時の追加オプション
 	searchOptions?: {
 		distanceFunction?: DistanceFunction;
@@ -50,8 +52,8 @@ export class PostgresQueryService<
 			// クエリの埋め込みを生成
 			const queryEmbedding = await embedder.embed(query);
 
-			// フィルタ条件を生成
-			const filters = contextToFilter(context);
+			// フィルタ条件を生成（非同期対応）
+			const filters = await contextToFilter(context);
 
 			// WHERE句を構築
 			const whereConditions: string[] = [];
