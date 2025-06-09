@@ -5,25 +5,48 @@ import {
 	githubRepositoryIndex,
 	teams,
 } from "@/drizzle";
-import { GitHubBlob, type GitHubBlobMetadata } from "@/lib/github-schema";
+import {
+	type GitHubBlobMetadata,
+	gitHubBlobColumnMapping,
+} from "@/lib/github-schema";
 import type { GitHubQueryContext } from "@giselle-sdk/giselle-engine";
-import type { DbValue } from "@giselle-sdk/rag2";
-import { createPostgresQueryService } from "@giselle-sdk/rag2";
+import {
+	type DatabaseConfig,
+	OpenAIEmbedder,
+	PostgresQueryService,
+} from "@giselle/rag3";
 import { and, eq, getTableName } from "drizzle-orm";
 
-export const gitHubQueryService = createPostgresQueryService<
+// Create PostgreSQL connection config from environment
+function createDatabaseConfig(): DatabaseConfig {
+	const postgresUrl = process.env.POSTGRES_URL;
+	if (!postgresUrl) {
+		throw new Error("POSTGRES_URL environment variable is required");
+	}
+	return { connectionString: postgresUrl };
+}
+
+// Create embedder
+const embedder = new OpenAIEmbedder({
+	apiKey: process.env.OPENAI_API_KEY!,
+	model: "text-embedding-3-small",
+});
+
+export const gitHubQueryService = new PostgresQueryService<
 	GitHubQueryContext,
 	GitHubBlobMetadata
->(createPostgresConfig(), {
+>({
+	database: createDatabaseConfig(),
 	tableName: getTableName(githubRepositoryEmbeddings),
-	metadataDefinition: GitHubBlob.createMetadataDefinition(),
-	filterResolver: resolveGitHubEmbeddingFilter,
+	embedder,
+	columnMapping: gitHubBlobColumnMapping,
+	contextToFilter: resolveGitHubEmbeddingFilter,
 });
 
 // Context resolver - handles complex DB resolution logic
 async function resolveGitHubEmbeddingFilter(
 	context: GitHubQueryContext,
-): Promise<Record<string, DbValue>> {
+): Promise<Record<string, unknown>> {
 	const { workspaceId, owner, repo } = context;
 
 	// Input validation
@@ -67,19 +90,8 @@ async function resolveGitHubEmbeddingFilter(
 		throw new Error("Repository index not found");
 	}
 
-	// Return DB-level filters using correct column mapping
-	const repositoryIndexDbIdColumn =
-		GitHubBlob.columnMapping.repositoryIndexDbId;
+	// Return DB-level filters
 	return {
-		[repositoryIndexDbIdColumn]: repositoryIndex[0].dbId,
+		repository_index_db_id: repositoryIndex[0].dbId,
 	};
-}
-
-// Create PostgreSQL connection config from environment
-function createPostgresConfig() {
-	const postgresUrl = process.env.POSTGRES_URL;
-	if (!postgresUrl) {
-		throw new Error("POSTGRES_URL environment variable is required");
-	}
-	return { connectionString: postgresUrl };
 }

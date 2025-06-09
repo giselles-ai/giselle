@@ -3,14 +3,26 @@ import {
 	githubRepositoryEmbeddings,
 	githubRepositoryIndex,
 } from "@/drizzle";
-import { GitHubBlob } from "@/lib/github-schema";
-import { fetchDefaultBranchHead, octokit } from "@giselle-sdk/github-tool";
 import {
-	GitHubBlobLoader,
-	type GitHubBlobSource,
-	createDocumentChunkStore,
-	createIngestionPipeline,
-} from "@giselle-sdk/rag2";
+	type GitHubBlobMetadata,
+	gitHubBlobColumnMapping,
+	gitHubBlobMetadataSchema,
+} from "@/lib/github-schema";
+import {
+	GitHubDocumentLoader,
+	fetchDefaultBranchHead,
+	octokit,
+} from "@giselle-sdk/github-tool";
+import {
+	type DatabaseConfig,
+	type Document,
+	type DocumentLoader,
+	IngestPipeline,
+	type IngestProgress,
+	LineChunker,
+	OpenAIEmbedder,
+	PostgresChunkStore,
+} from "@giselle/rag3";
 import type { Octokit } from "@octokit/core";
 import { captureException } from "@sentry/nextjs";
 import { and, eq, getTableName } from "drizzle-orm";
@@ -51,19 +63,12 @@ export async function GET(request: NextRequest) {
 				installationId,
 			});
 
-			// Get actual commit SHA for the default branch
-			const defaultBranchCommit = await fetchDefaultBranchHead(
-				octokitClient,
-				owner,
-				repo,
-			);
-			const commitSha = defaultBranchCommit.sha;
+			const commit = await fetchDefaultBranchHead(octokitClient, owner, repo);
 
-			const source: GitHubBlobSource = {
-				type: GitHubBlob.name,
+			const source = {
 				owner,
 				repo,
-				commitSha,
+				commitSha: commit.sha,
 			};
 
 			await ingestGitHubRepository({
@@ -73,7 +78,7 @@ export async function GET(request: NextRequest) {
 			});
 
 			// Update status to completed
-			await updateRepositoryStatus(owner, repo, "completed", source.commitSha);
+			await updateRepositoryStatus(owner, repo, "completed", commit.sha);
 		} catch (error) {
 			console.error(`Failed to ingest ${owner}/${repo}:`, error);
 			captureException(error, {
@@ -87,34 +92,110 @@ export async function GET(request: NextRequest) {
 }
 
 /**
+ * Adapter to convert GitHubDocumentMetadata to GitHubBlobMetadata
+ */
+class GitHubMetadataAdapter implements DocumentLoader<GitHubBlobMetadata> {
+	constructor(
+		private innerLoader: GitHubDocumentLoader,
+		private repositoryIndexDbId: number,
+		private params: { owner: string; repo: string; commitSha?: string },
+	) {}
+
+	async *load(): AsyncIterable<Document<GitHubBlobMetadata>> {
+		for await (const doc of this.innerLoader.load(this.params)) {
+			// Map GitHubDocumentMetadata to GitHubBlobMetadata
+			const metadata = gitHubBlobMetadataSchema.parse({
+				repositoryIndexDbId: this.repositoryIndexDbId,
+				commitSha: doc.metadata.commitSha,
+				fileSha: doc.metadata.fileSha,
+				path: doc.metadata.path,
+				nodeId: doc.metadata.nodeId,
+			});
+
+			yield {
+				content: doc.content,
+				metadata,
+			};
+		}
+	}
+}
+
+/**
  * Main GitHub repository ingestion coordination
  */
 async function ingestGitHubRepository(params: {
 	octokitClient: Octokit;
-	source: GitHubBlobSource;
+	source: { owner: string; repo: string; commitSha: string };
 	teamDbId: number;
 }): Promise<void> {
 	const repositoryIndexDbId = await getRepositoryIndexDbId(
 		params.source,
 		params.teamDbId,
 	);
-	const loader = createGitHubLoader(params.octokitClient);
-	const chunkStore = await createGitHubChunkStore(repositoryIndexDbId);
-	const pipeline = createIngestionPipeline();
 
-	await pipeline.run({
-		source: params.source,
-		loader,
-		chunkStore,
-		// sourceScope is now handled internally by chunkStore
+	// Create database config
+	const postgresUrl = process.env.POSTGRES_URL;
+	if (!postgresUrl) {
+		throw new Error("POSTGRES_URL environment variable is required");
+	}
+	const database: DatabaseConfig = { connectionString: postgresUrl };
+
+	// Create document loader
+	const gitHubLoader = new GitHubDocumentLoader(params.octokitClient, {
+		maxBlobSize: 1 * 1024 * 1024,
 	});
+
+	// Wrap with adapter to add repositoryIndexDbId
+	const documentLoader = new GitHubMetadataAdapter(
+		gitHubLoader,
+		repositoryIndexDbId,
+		params.source,
+	);
+
+	const chunkStore = new PostgresChunkStore<GitHubBlobMetadata>({
+		database,
+		tableName: getTableName(githubRepositoryEmbeddings),
+		columnMapping: gitHubBlobColumnMapping,
+		staticContext: { repository_index_db_id: repositoryIndexDbId },
+	});
+
+	const embedder = new OpenAIEmbedder({
+		apiKey: process.env.OPENAI_API_KEY!,
+		model: "text-embedding-3-small",
+	});
+
+	const chunker = new LineChunker({
+		maxChunkSize: 1000,
+		overlap: 200,
+	});
+
+	// Create and run pipeline
+	const pipeline = new IngestPipeline({
+		documentLoader,
+		chunker,
+		embedder,
+		chunkStore,
+		options: {
+			batchSize: 50,
+			onProgress: (progress: IngestProgress) => {
+				console.log(
+					`Progress: ${progress.processedDocuments}/${progress.totalDocuments} documents`,
+				);
+			},
+		},
+	});
+
+	const result = await pipeline.ingest({});
+	console.log(
+		`Ingested ${result.totalChunks} chunks from ${result.totalDocuments} documents`,
+	);
 }
 
 /**
  * Get repository index database ID
  */
 async function getRepositoryIndexDbId(
-	source: GitHubBlobSource,
+	source: { owner: string; repo: string },
 	teamDbId: number,
 ): Promise<number> {
 	const repositoryIndex = await db
@@ -136,33 +217,6 @@ async function getRepositoryIndexDbId(
 	}
 
 	return repositoryIndex[0].dbId;
-}
-
-/**
- * Create GitHub-specific chunk store using new simplified API
- */
-async function createGitHubChunkStore(repositoryIndexDbId: number) {
-	const postgresUrl = process.env.POSTGRES_URL;
-	if (!postgresUrl) {
-		throw new Error("POSTGRES_URL environment variable is required");
-	}
-
-	return createDocumentChunkStore(
-		{ connectionString: postgresUrl },
-		GitHubBlob,
-		getTableName(githubRepositoryEmbeddings),
-		{ repository_index_db_id: repositoryIndexDbId },
-	);
-}
-
-/**
- * Create GitHub loader using new simplified API
- */
-function createGitHubLoader(octokitClient: Octokit) {
-	return new GitHubBlobLoader(octokitClient, {
-		maxBlobSize: 1 * 1024 * 1024,
-		metadataSchema: GitHubBlob.documentMetadataSchema,
-	});
 }
 
 // ===== HELPER FUNCTIONS =====
@@ -198,24 +252,21 @@ async function fetchTargetGitHubRepositories(): Promise<
 	}));
 }
 
+/**
+ * Update the ingestion status of a repository
+ */
 async function updateRepositoryStatus(
 	owner: string,
 	repo: string,
-	status: "running" | "completed" | "failed",
+	status: "idle" | "running" | "failed" | "completed",
 	commitSha?: string,
 ): Promise<void> {
-	const updateData: {
-		status: "running" | "completed" | "failed";
-		lastIngestedCommitSha?: string;
-	} = { status };
-
-	if (status === "completed" && commitSha) {
-		updateData.lastIngestedCommitSha = commitSha;
-	}
-
 	await db
 		.update(githubRepositoryIndex)
-		.set(updateData)
+		.set({
+			status,
+			lastIngestedCommitSha: commitSha || null,
+		})
 		.where(
 			and(
 				eq(githubRepositoryIndex.owner, owner),

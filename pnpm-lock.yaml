@@ -351,15 +351,15 @@ importers:
       '@giselle-sdk/rag':
         specifier: workspace:*
         version: link:../../packages/rag
-      '@giselle-sdk/rag2':
-        specifier: workspace:*
-        version: link:../../packages/rag2
       '@giselle-sdk/supabase-driver':
         specifier: workspace:*
         version: link:../../packages/supabase-driver
       '@giselle-sdk/telemetry':
         specifier: workspace:*
         version: link:../../packages/telemetry
+      '@giselle/rag3':
+        specifier: workspace:*
+        version: link:../../packages/rag3
       '@icons-pack/react-simple-icons':
         specifier: 10.0.0
         version: 10.0.0(react@19.1.0)
