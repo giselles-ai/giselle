@@ -63,7 +63,7 @@
 		"@radix-ui/react-tooltip": "1.1.4",
 		"@sentry/nextjs": "8.49.0",
 		"@sentry/wizard": "3.38.0",
-		"@supabase/auth-js": "2.64.4",
+		"@supabase/auth-js": "2.69.1",
 		"@supabase/ssr": "0.6.1",
 		"@supabase/supabase-js": "2.45.0",
 		"@valibot/to-json-schema": "1.0.0-beta.3",
