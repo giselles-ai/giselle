@@ -8,7 +8,9 @@ import type {
 import type { Embedder } from "../embedder/types";
 import { Rag3Error } from "../errors";
 
-export interface IngestPipelineConfig<TMetadata> {
+export interface IngestPipelineConfig<
+	TMetadata extends Record<string, unknown>,
+> {
 	documentLoader: DocumentLoader<TMetadata>;
 	chunker: Chunker;
 	embedder: Embedder;
@@ -46,7 +48,7 @@ export interface IngestResult {
 	errors: Array<{ document: string; error: Error }>;
 }
 
-export class IngestPipeline<TMetadata> {
+export class IngestPipeline<TMetadata extends Record<string, unknown>> {
 	private documentLoader: DocumentLoader<TMetadata>;
 	private chunker: Chunker;
 	private embedder: Embedder;

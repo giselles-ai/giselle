@@ -7,7 +7,9 @@ export interface ChunkWithEmbedding extends Chunk {
 	embedding: number[];
 }
 
-export interface ChunkStore<TMetadata = Record<string, unknown>> {
+export interface ChunkStore<
+	TMetadata extends Record<string, unknown> = Record<string, unknown>,
+> {
 	/**
 	 * チャンクを保存する
 	 * @param documentKey ドキュメントの一意キー

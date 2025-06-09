@@ -149,17 +149,20 @@ interface Chunker {
 
 ## Database Schema
 
-The PostgreSQL implementation expects tables with these required columns:
+The PostgreSQL implementation requires the pgvector extension and expects tables with these required columns:
 
 - `documentKey`: TEXT - Unique document identifier (maps to your document path/id)
 - `content`: TEXT - Chunk content
 - `index`: INTEGER - Chunk index within document  
-- `embedding`: VECTOR - Embedding vector (pgvector)
+- `embedding`: VECTOR - Embedding vector (requires pgvector extension)
 - Additional metadata columns as defined in your `columnMapping`
 
 Example table:
 
 ```sql
+-- Enable pgvector extension
+CREATE EXTENSION IF NOT EXISTS vector;
+
 CREATE TABLE github_repository_embeddings (
   db_id SERIAL PRIMARY KEY,
   repository_index_db_id INTEGER NOT NULL,
@@ -173,9 +176,18 @@ CREATE TABLE github_repository_embeddings (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Create index for vector similarity search
 CREATE INDEX ON github_repository_embeddings 
 USING hnsw (embedding vector_cosine_ops);
 ```
+
+### pgvector Integration
+
+The package uses pgvector for storing and querying embeddings:
+
+- Automatic type registration on first use
+- Supports cosine, euclidean, and inner product distance functions
+- Optimized for large-scale vector search with HNSW indexes
 
 ## Migration from rag2
 

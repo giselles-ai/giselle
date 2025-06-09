@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { IngestPipeline } from "./ingest-pipeline";
-import type { Document, DocumentLoader } from "../document-loader/types";
-import type { Chunker } from "../chunker/types";
-import type { Embedder } from "../embedder/types";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChunkStore } from "../chunk-store/types";
+import type { Chunker } from "../chunker/types";
+import type { Document, DocumentLoader } from "../document-loader/types";
+import type { Embedder } from "../embedder/types";
+import { IngestPipeline } from "./ingest-pipeline";
 
 describe("IngestPipeline", () => {
 	let mockDocumentLoader: DocumentLoader<{ path: string }>;
@@ -56,7 +56,8 @@ describe("IngestPipeline", () => {
 	it("should handle errors and retry", async () => {
 		const failingChunkStore = {
 			...mockChunkStore,
-			insert: vi.fn()
+			insert: vi
+				.fn()
 				.mockRejectedValueOnce(new Error("First attempt failed"))
 				.mockResolvedValueOnce(undefined),
 		};

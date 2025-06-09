@@ -1,4 +1,5 @@
 import type { PoolClient } from "pg";
+import * as pgvector from "pgvector/pg";
 import { PoolManager } from "../../database/postgres";
 import type { ColumnMapping, DatabaseConfig } from "../../database/types";
 import { DatabaseError } from "../../errors";
@@ -12,8 +13,9 @@ export interface PostgresChunkStoreConfig<TMetadata> {
 	staticContext?: Record<string, unknown>;
 }
 
-export class PostgresChunkStore<TMetadata = Record<string, unknown>>
-	implements ChunkStore<TMetadata>
+export class PostgresChunkStore<
+	TMetadata extends Record<string, unknown> = Record<string, unknown>,
+> implements ChunkStore<TMetadata>
 {
 	constructor(private config: PostgresChunkStoreConfig<TMetadata>) {}
 
@@ -44,14 +46,17 @@ export class PostgresChunkStore<TMetadata = Record<string, unknown>>
 					[columnMapping.documentKey]: documentKey,
 					[columnMapping.content]: chunk.content,
 					[columnMapping.index]: chunk.index,
-					[columnMapping.embedding]: `[${chunk.embedding.join(",")}]`,
+					// embeddingはpgvectorで変換するため、ここでは含めない
 					// メタデータをマッピング
 					...this.mapMetadata(metadata, columnMapping),
 					// 静的コンテキストを追加
 					...staticContext,
 				};
 
-				await this.insertRecord(client, tableName, record);
+				await this.insertRecord(client, tableName, record, {
+					embeddingColumn: columnMapping.embedding,
+					embeddingValue: chunk.embedding,
+				});
 			}
 
 			await client.query("COMMIT");
@@ -103,13 +108,24 @@ export class PostgresChunkStore<TMetadata = Record<string, unknown>>
 		client: PoolClient,
 		tableName: string,
 		record: Record<string, unknown>,
+		embedding?: {
+			embeddingColumn: string;
+			embeddingValue: number[];
+		},
 	): Promise<void> {
 		const columns = Object.keys(record);
 		const values = Object.values(record);
-		const placeholders = values.map((_, i) => `$${i + 1}`);
+
+		// embeddingカラムを追加
+		if (embedding) {
+			columns.push(embedding.embeddingColumn);
+			values.push(pgvector.toSql(embedding.embeddingValue));
+		}
+
+		const placeholders = columns.map((_, i) => `$${i + 1}`);
 
 		const query = `
-      INSERT INTO ${this.escapeIdentifier(tableName)} 
+      INSERT INTO ${this.escapeIdentifier(tableName)}
       (${columns.map((c) => this.escapeIdentifier(c)).join(", ")})
       VALUES (${placeholders.join(", ")})
     `;
@@ -123,7 +139,7 @@ export class PostgresChunkStore<TMetadata = Record<string, unknown>>
 	): Record<string, unknown> {
 		const result: Record<string, unknown> = {};
 
-		const metadataObj = metadata as Record<string, unknown>;
+		const metadataObj = metadata;
 		for (const [key, value] of Object.entries(metadataObj)) {
 			if (
 				key in mapping &&

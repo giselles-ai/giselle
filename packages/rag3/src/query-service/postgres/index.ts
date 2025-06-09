@@ -1,3 +1,4 @@
+import * as pgvector from "pgvector/pg";
 import { PoolManager } from "../../database/postgres";
 import type { ColumnMapping, DatabaseConfig } from "../../database/types";
 import type { Embedder } from "../../embedder/types";
@@ -19,8 +20,10 @@ export interface PostgresQueryServiceConfig<TContext, TMetadata> {
 	};
 }
 
-export class PostgresQueryService<TContext, TMetadata = Record<string, unknown>>
-	implements QueryService<TContext, TMetadata>
+export class PostgresQueryService<
+	TContext,
+	TMetadata extends Record<string, unknown> = Record<string, unknown>,
+> implements QueryService<TContext, TMetadata>
 {
 	constructor(
 		private config: PostgresQueryServiceConfig<TContext, TMetadata>,
@@ -35,6 +38,14 @@ export class PostgresQueryService<TContext, TMetadata = Record<string, unknown>>
 			this.config;
 		const pool = PoolManager.getPool(database);
 
+		// pgvectorの型を登録
+		const client = await pool.connect();
+		try {
+			await pgvector.registerTypes(client);
+		} finally {
+			client.release();
+		}
+
 		try {
 			// クエリの埋め込みを生成
 			const queryEmbedding = await embedder.embed(query);
@@ -44,7 +55,7 @@ export class PostgresQueryService<TContext, TMetadata = Record<string, unknown>>
 
 			// WHERE句を構築
 			const whereConditions: string[] = [];
-			const values: unknown[] = [`[${queryEmbedding.join(",")}]`];
+			const values: unknown[] = [pgvector.toSql(queryEmbedding)];
 			let paramIndex = 2;
 
 			for (const [column, value] of Object.entries(filters)) {
@@ -59,17 +70,21 @@ export class PostgresQueryService<TContext, TMetadata = Record<string, unknown>>
 
 			// メタデータカラムを選択
 			const metadataColumns = Object.entries(columnMapping)
-				.filter(([key]) => !["documentKey", "content", "index", "embedding"].includes(key))
+				.filter(
+					([key]) =>
+						!["documentKey", "content", "index", "embedding"].includes(key),
+				)
 				.map(([metadataKey, dbColumn]) => ({
 					metadataKey,
-					dbColumn: typeof dbColumn === "string" ? this.escapeIdentifier(dbColumn) : "",
+					dbColumn:
+						typeof dbColumn === "string" ? this.escapeIdentifier(dbColumn) : "",
 				}))
-				.filter(item => item.dbColumn !== "");
+				.filter((item) => item.dbColumn !== "");
 
 			// SQLクエリを構築
 			const distanceFunction = this.getDistanceFunction();
 			const sql = `
-        SELECT 
+        SELECT
           ${this.escapeIdentifier(columnMapping.content)} as content,
           ${this.escapeIdentifier(columnMapping.index)} as index,
           ${metadataColumns.map(({ dbColumn, metadataKey }) => `${dbColumn} as "${metadataKey}"`).join(", ")}${metadataColumns.length > 0 ? "," : ""}
@@ -118,13 +133,9 @@ export class PostgresQueryService<TContext, TMetadata = Record<string, unknown>>
 		row: Record<string, unknown>,
 		metadataColumns: Array<{ metadataKey: string; dbColumn: string }>,
 	): TMetadata {
-		const metadata: Record<string, unknown> = {};
-
-		for (const { metadataKey } of metadataColumns) {
-			metadata[metadataKey] = row[metadataKey];
-		}
-
-		return metadata as TMetadata;
+		return Object.fromEntries(
+			metadataColumns.map(({ metadataKey }) => [metadataKey, row[metadataKey]]),
+		) as TMetadata;
 	}
 
 	private escapeIdentifier(identifier: string): string {

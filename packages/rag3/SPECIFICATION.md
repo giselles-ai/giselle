@@ -417,9 +417,42 @@ export class DatabaseError extends Rag3Error {}
 export class EmbeddingError extends Rag3Error {}
 ```
 
-## 8. 移行ガイド
+## 8. pgvectorとの統合
 
-### 8.1 主な変更点
+### 8.1 pgvectorの利用
+
+rag3はPostgreSQLのpgvector拡張を使用してベクトル埋め込みの保存と検索を行います：
+
+```typescript
+// 自動的にpgvectorの型を登録
+await pgvector.registerTypes(client);
+
+// 埋め込みをSQL形式に変換
+const sql = pgvector.toSql(embedding); // [1,2,3] → "[1,2,3]"
+
+// 距離関数
+// <=> : コサイン距離（デフォルト）
+// <-> : ユークリッド距離  
+// <#> : 内積
+```
+
+### 8.2 データベースセットアップ
+
+```sql
+-- pgvector拡張を有効化
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- テーブル作成時にVECTOR型を使用
+embedding VECTOR(1536) NOT NULL
+
+-- インデックス作成（HNSWが推奨）
+CREATE INDEX ON your_table 
+USING hnsw (embedding vector_cosine_ops);
+```
+
+## 9. 移行ガイド
+
+### 9.1 主な変更点
 
 1. **Pool管理の内部化**
    - 外部からPoolを渡す → DatabaseConfigを渡す
@@ -436,7 +469,11 @@ export class EmbeddingError extends Rag3Error {}
    - giselle-engineがQueryContextを定義
    - apps層がfilterResolverを実装
 
-### 8.2 移行手順
+5. **pgvectorの組み込み**
+   - pgvectorのtoSql/registerTypesを内部で自動的に処理
+   - 距離関数の選択が可能（cosine/euclidean/inner_product）
+
+### 9.2 移行手順
 
 ```typescript
 // Before

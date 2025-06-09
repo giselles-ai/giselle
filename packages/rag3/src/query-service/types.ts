@@ -1,12 +1,17 @@
 import type { Chunk } from "../chunk-store/types";
 
-export interface QueryResult<TMetadata = Record<string, unknown>> {
+export interface QueryResult<
+	TMetadata extends Record<string, unknown> = Record<string, unknown>,
+> {
 	chunk: Chunk;
 	similarity: number;
 	metadata: TMetadata;
 }
 
-export interface QueryService<TContext, TMetadata = Record<string, unknown>> {
+export interface QueryService<
+	TContext,
+	TMetadata extends Record<string, unknown> = Record<string, unknown>,
+> {
 	/**
 	 * ベクトル類似検索を実行
 	 * @param query 検索クエリ
