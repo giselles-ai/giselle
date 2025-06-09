@@ -5,12 +5,12 @@ import type {
 } from "@giselle-sdk/github-tool";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
 import type { QueryFunction, QueryFunctionParams } from "@giselle-sdk/rag";
-import type { DocumentMetadata, QueryService } from "@giselle-sdk/rag2";
 import type {
 	GenerationCompleteOption,
 	TelemetrySettings,
 } from "@giselle-sdk/telemetry";
 import type { UsageLimits } from "@giselle-sdk/usage-limits";
+import type { QueryService } from "@giselle/rag3";
 import type { Storage } from "unstorage";
 import type { Vault } from "./vault";
 
@@ -102,8 +102,8 @@ export interface GitHubQueryContext {
 }
 
 export type GitHubVectorStoreQueryService<
-	M extends DocumentMetadata = DocumentMetadata,
-> = QueryService<M, GitHubQueryContext>;
+	M extends Record<string, unknown> = GithubEmbeddingMetadata,
+> = QueryService<GitHubQueryContext, M>;
 
 export interface GiselleEngineConfig {
 	storage: Storage;

@@ -905,9 +905,6 @@ importers:
       '@giselle-sdk/rag':
         specifier: workspace:^
         version: link:../rag
-      '@giselle-sdk/rag2':
-        specifier: workspace:^
-        version: link:../rag2
       '@giselle-sdk/telemetry':
         specifier: workspace:^
         version: link:../telemetry
@@ -923,6 +920,9 @@ importers:
       '@giselle-sdk/workflow-utils':
         specifier: workspace:^
         version: link:../workflow-utils
+      '@giselle/rag3':
+        specifier: workspace:^
+        version: link:../rag3
       ai:
         specifier: 'catalog:'
         version: 4.3.9(react@19.1.0)(zod@3.25.28)
@@ -1006,6 +1006,9 @@ importers:
       '@giselle-sdk/rag':
         specifier: workspace:*
         version: link:../rag
+      '@giselle/rag3':
+        specifier: workspace:*
+        version: link:../rag3
       '@octokit/auth-app':
         specifier: 'catalog:'
         version: 8.0.1
