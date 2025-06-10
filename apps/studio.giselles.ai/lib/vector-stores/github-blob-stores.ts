@@ -17,7 +17,7 @@ import { z } from "zod/v4";
 /**
  * GitHub chunk metadata schema and type for RAG storage
  */
-export const githubChunkMetadataSchema = z.object({
+const githubChunkMetadataSchema = z.object({
 	repositoryIndexDbId: z.number(),
 	commitSha: z.string(),
 	fileSha: z.string(),
@@ -25,7 +25,7 @@ export const githubChunkMetadataSchema = z.object({
 	nodeId: z.string(),
 });
 
-export type GitHubChunkMetadata = z.infer<typeof githubChunkMetadataSchema>;
+type GitHubChunkMetadata = z.infer<typeof githubChunkMetadataSchema>;
 
 /**
  * Create PostgreSQL connection config from environment
@@ -117,14 +117,22 @@ async function resolveGitHubEmbeddingFilter(
 	};
 }
 
+const githubQueryMetadataSchema = z.object({
+	commitSha: z.string(),
+	fileSha: z.string(),
+	path: z.string(),
+	nodeId: z.string(),
+});
+type GitHubQueryMetadata = z.infer<typeof githubQueryMetadataSchema>;
+
 /**
  * GitHub query service factory - for RAG queries
  */
 export function createGitHubQueryService() {
-	return createQueryService<GitHubQueryContext, GitHubChunkMetadata>({
+	return createQueryService<GitHubQueryContext, GitHubQueryMetadata>({
 		database: createDatabaseConfig(),
 		tableName: getTableName(githubRepositoryEmbeddings),
-		metadataSchema: githubChunkMetadataSchema,
+		metadataSchema: githubQueryMetadataSchema,
 		contextToFilter: resolveGitHubEmbeddingFilter,
 		requiredColumnOverrides: {
 			documentKey: "path",
@@ -133,7 +141,6 @@ export function createGitHubQueryService() {
 			// embedding: "embedding" (default)
 		},
 		// Metadata fields will auto-convert from camelCase to snake_case:
-		// repositoryIndexDbId -> repository_index_db_id
 		// commitSha -> commit_sha
 		// fileSha -> file_sha
 		// path -> path
