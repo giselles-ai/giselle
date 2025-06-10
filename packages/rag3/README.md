@@ -1,27 +1,70 @@
 # @giselle-sdk/rag3
 
-Simplified RAG (Retrieval Augmented Generation) system with type safety.
-
-## Design Goals
-
-- **Simplified Type System**: Maximum 2-layer generics, no type puzzles
-- **Clear Separation of Concerns**: Independent modules for loading, storing,
-  and querying
-- **Practical Usage**: Prioritize usability over abstract perfection
-- **Type Safety**: Runtime validation with Zod for external inputs, TypeScript
-  for internal consistency
-- **Built-in Pool Management**: Connection pooling handled internally
-- **Integrated Pipeline**: IngestPipeline with error handling, retry logic, and
-  batch optimization
+Giselle RAG (Retrieval-Augmented Generation) system built for production use
+with PostgreSQL and pgvector.
 
 ## Quick Start
 
-### Using IngestPipeline (Recommended)
+### 1. Factory Functions (Recommended)
+
+Use preset factory functions for common scenarios:
 
 ```typescript
 import {
-  type ColumnMapping,
-  type DatabaseConfig,
+  createChunkStore,
+  createIngestPipeline,
+  createQueryService,
+} from "@giselle-sdk/rag3";
+import { z } from "zod/v4";
+
+// Define metadata schema
+const GitHubSchema = z.object({
+  repositoryId: z.number(),
+  commitSha: z.string(),
+  filePath: z.string(),
+  lastModified: z.date(),
+});
+
+// Create ingestion pipeline
+const pipeline = createIngestPipeline({
+  documentLoader: yourDocumentLoader,
+  chunkStore: createChunkStore({
+    database: { connectionString: process.env.DATABASE_URL! },
+    tableName: "github_chunks",
+    preset: "github", // Built-in GitHub metadata preset
+  }),
+  metadataTransform: (sourceMetadata) => ({
+    repositoryId: sourceMetadata.repoId,
+    commitSha: sourceMetadata.sha,
+    filePath: sourceMetadata.path,
+    lastModified: new Date(sourceMetadata.updatedAt),
+  }),
+});
+
+// Ingest documents
+const result = await pipeline.ingest(/* loader params */);
+
+// Create query service
+const queryService = createQueryService({
+  database: { connectionString: process.env.DATABASE_URL! },
+  tableName: "github_chunks",
+  embedder: createDefaultEmbedder({ apiKey: process.env.OPENAI_API_KEY! }),
+  preset: "github",
+  contextToFilter: (context) => ({ repository_id: context.repositoryId }),
+});
+
+// Search
+const results = await queryService.search("search query", {
+  repositoryId: 123,
+});
+```
+
+### 2. Manual Configuration
+
+For full control over configuration:
+
+```typescript
+import {
   IngestPipeline,
   LineChunker,
   OpenAIEmbedder,
@@ -29,89 +72,115 @@ import {
   PostgresQueryService,
 } from "@giselle-sdk/rag3";
 
-// Define your metadata type
-interface GitHubMetadata {
-  commitSha: string;
-  fileSha: string;
-  path: string;
-  nodeId: string;
-  repositoryIndexDbId: number;
-}
-
-// Database configuration
-const database: DatabaseConfig = {
+const database = {
   connectionString: process.env.DATABASE_URL!,
-  poolConfig: { max: 20 },
+  poolConfig: { max: 20, idleTimeoutMillis: 30000 },
 };
 
-// Column mapping with required columns
-const columnMapping: ColumnMapping<GitHubMetadata> = {
-  // Required columns (TypeScript enforces these)
-  documentKey: "path",
+const columnMapping = {
+  documentKey: "file_path",
   content: "chunk_content",
   index: "chunk_index",
   embedding: "embedding",
-  // Metadata columns
+  repositoryId: "repository_id",
   commitSha: "commit_sha",
-  fileSha: "file_sha",
-  path: "path",
-  nodeId: "node_id",
-  repositoryIndexDbId: "repository_index_db_id",
+  filePath: "file_path",
+  lastModified: "last_modified",
 };
 
-// Create and run pipeline
+// Ingestion
 const pipeline = new IngestPipeline({
   documentLoader: yourDocumentLoader,
-  chunker: new LineChunker({ maxChunkSize: 1000 }),
-  embedder: new OpenAIEmbedder({ apiKey: process.env.OPENAI_API_KEY! }),
-  chunkStore: new PostgresChunkStore<GitHubMetadata>({
+  chunker: new LineChunker({ maxChunkSize: 1000, overlap: 100 }),
+  embedder: new OpenAIEmbedder({
+    apiKey: process.env.OPENAI_API_KEY!,
+    model: "text-embedding-3-small",
+  }),
+  chunkStore: new PostgresChunkStore({
     database,
-    tableName: "github_repository_embeddings",
+    tableName: "github_chunks",
     columnMapping,
-    staticContext: { repository_index_db_id: 123 },
+    staticContext: { repository_id: 123 },
+  }),
+  metadataTransform: (source) => ({
+    repositoryId: source.repoId,
+    commitSha: source.sha,
+    filePath: source.path,
+    lastModified: new Date(source.updatedAt),
   }),
   options: {
     batchSize: 50,
-    onProgress: (progress) => console.log(progress),
+    retryCount: 3,
+    onProgress: (progress) =>
+      console.log(`${progress.processedCount}/${progress.totalCount}`),
   },
 });
 
-const result = await pipeline.ingest({/* loader params */});
+await pipeline.ingest(loaderParams);
 
-// Query service
-const queryService = new PostgresQueryService<
-  { repositoryId: number },
-  GitHubMetadata
->({
+// Querying
+const queryService = new PostgresQueryService({
   database,
-  tableName: "github_repository_embeddings",
+  tableName: "github_chunks",
   embedder: new OpenAIEmbedder({ apiKey: process.env.OPENAI_API_KEY! }),
   columnMapping,
-  contextToFilter: (context) => ({
-    repository_index_db_id: context.repositoryId,
-  }),
+  contextToFilter: (context) => ({ repository_id: context.repositoryId }),
+  searchOptions: {
+    distanceFunction: "cosine",
+    limit: 10,
+  },
 });
 
-const results = await queryService.search("search query", {
+const results = await queryService.search("implement authentication", {
   repositoryId: 123,
 });
 ```
 
-## Modules
+## Architecture
 
-### DocumentLoader
+### Core Components
 
-Interface for loading documents from external sources.
+#### IngestPipeline
+
+Orchestrates the complete ingestion process with built-in error handling, retry
+logic, and progress tracking.
+
+```typescript
+const pipeline = new IngestPipeline<SourceMetadata, TargetMetadata>({
+  documentLoader: DocumentLoader<SourceMetadata>,
+  chunker: Chunker,
+  embedder: Embedder,
+  chunkStore: ChunkStore<TargetMetadata>,
+  metadataTransform?: (source: SourceMetadata) => TargetMetadata,
+  options?: {
+    batchSize?: number;
+    retryCount?: number;
+    onProgress?: (progress: IngestProgress) => void;
+  },
+});
+
+const result = await pipeline.ingest(params);
+```
+
+#### DocumentLoader
+
+Loads documents from external sources (GitHub, file system, APIs, etc.).
 
 ```typescript
 interface DocumentLoader<TMetadata> {
-  load(params: DocumentLoaderParams): AsyncIterable<Document<TMetadata>>;
+  load(params: unknown): AsyncIterable<Document<TMetadata>>;
+}
+
+interface Document<TMetadata> {
+  key: string;
+  content: string;
+  metadata: TMetadata;
 }
 ```
 
-### ChunkStore
+#### ChunkStore
 
-Handles persistence of document chunks with embeddings.
+Persists document chunks with embeddings to PostgreSQL + pgvector.
 
 ```typescript
 interface ChunkStore<TMetadata> {
@@ -125,9 +194,9 @@ interface ChunkStore<TMetadata> {
 }
 ```
 
-### QueryService
+#### QueryService
 
-Performs vector similarity search with filtering.
+Performs vector similarity search with context-based filtering.
 
 ```typescript
 interface QueryService<TContext, TMetadata> {
@@ -137,88 +206,185 @@ interface QueryService<TContext, TMetadata> {
     limit?: number,
   ): Promise<QueryResult<TMetadata>[]>;
 }
+
+interface QueryResult<TMetadata> {
+  chunk: { content: string; index: number };
+  similarity: number;
+  metadata: TMetadata;
+}
 ```
 
-### Embedder
+#### Embedder
 
-Converts text to embedding vectors.
+Converts text to embedding vectors using various providers.
 
 ```typescript
 interface Embedder {
   embed(text: string): Promise<number[]>;
   embedBatch(texts: string[]): Promise<number[][]>;
 }
+
+// Built-in embedders
+new OpenAIEmbedder({ apiKey, model?: "text-embedding-3-small" });
 ```
 
-### Chunker
+#### Chunker
 
-Splits text into chunks.
+Splits documents into smaller chunks for embedding.
 
 ```typescript
 interface Chunker {
   chunk(text: string): string[];
 }
+
+// Built-in chunkers
+new LineChunker({ maxChunkSize: 1000, overlap?: 100 });
 ```
 
-## Database Schema
+### Factory Functions
 
-The PostgreSQL implementation requires the pgvector extension and expects tables
-with these required columns:
+#### Metadata Schema Helpers
 
-- `documentKey`: TEXT - Unique document identifier (maps to your document
-  path/id)
-- `content`: TEXT - Chunk content
-- `index`: INTEGER - Chunk index within document
-- `embedding`: VECTOR - Embedding vector (requires pgvector extension)
-- Additional metadata columns as defined in your `columnMapping`
+Utilities for schema management:
 
-Example table:
+```typescript
+import {
+  createColumnMappingFromZod,
+  validateMetadata,
+} from "@giselle-sdk/rag3/schemas";
+
+// Auto-generate column mappings from Zod schemas
+const mapping = createColumnMappingFromZod(schema, {
+  caseConversion: "snake_case" | "camelCase" | "none",
+  customMappings: { field: "custom_column" },
+});
+
+// Runtime metadata validation
+const validMetadata = validateMetadata(unknownData, schema);
+```
+
+## Database Setup
+
+### Prerequisites
+
+1. PostgreSQL with pgvector extension
+2. Node.js with TypeScript support
+
+### Required Columns
+
+Every table must include these columns (enforced by TypeScript):
+
+```typescript
+interface RequiredColumns {
+  documentKey: string; // Unique document identifier
+  content: string; // Chunk text content
+  index: string; // Chunk index within document
+  embedding: string; // Vector embedding column
+}
+```
+
+### Column Mapping
+
+Map your metadata fields to database columns:
+
+```typescript
+const columnMapping: ColumnMapping<YourMetadata> = {
+  // Required columns
+  documentKey: "file_path",
+  content: "chunk_content",
+  index: "chunk_index",
+  embedding: "embedding",
+  // Metadata columns
+  repositoryId: "repository_id",
+  commitSha: "commit_sha",
+  lastModified: "last_modified",
+};
+```
+
+### Example Schema
 
 ```sql
 -- Enable pgvector extension
 CREATE EXTENSION IF NOT EXISTS vector;
 
-CREATE TABLE github_repository_embeddings (
-  db_id SERIAL PRIMARY KEY,
-  repository_index_db_id INTEGER NOT NULL,
+-- GitHub repository chunks table
+CREATE TABLE github_chunks (
+  id SERIAL PRIMARY KEY,
+
+  -- Required columns
+  file_path TEXT NOT NULL,           -- documentKey
+  chunk_content TEXT NOT NULL,       -- content
+  chunk_index INTEGER NOT NULL,      -- index
+  embedding VECTOR(1536) NOT NULL,   -- embedding (OpenAI dimensions)
+
+  -- Metadata columns
+  repository_id INTEGER NOT NULL,
   commit_sha TEXT NOT NULL,
-  file_sha TEXT NOT NULL,
-  path TEXT NOT NULL,
-  node_id TEXT NOT NULL,
-  embedding VECTOR(1536) NOT NULL,
-  chunk_content TEXT NOT NULL,
-  chunk_index INTEGER NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW()
+  last_modified TIMESTAMP NOT NULL,
+
+  -- Timestamps
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Create index for vector similarity search
-CREATE INDEX ON github_repository_embeddings
-USING hnsw (embedding vector_cosine_ops);
+-- Vector similarity search index (HNSW)
+CREATE INDEX github_chunks_embedding_cosine_idx
+ON github_chunks USING hnsw (embedding vector_cosine_ops);
+
+-- Metadata filtering indexes
+CREATE INDEX github_chunks_repository_id_idx ON github_chunks (repository_id);
+CREATE INDEX github_chunks_commit_sha_idx ON github_chunks (commit_sha);
 ```
 
-### pgvector Integration
+## Error Handling
 
-The package uses pgvector for storing and querying embeddings:
+The package provides a comprehensive error system for different failure modes:
 
-- Automatic type registration on first use
-- Supports cosine, euclidean, and inner product distance functions
-- Optimized for large-scale vector search with HNSW indexes
+### Error Types
 
-## Migration from rag2
+```typescript
+// Validation errors (Zod validation failures)
+ValidationError.fromZodError(zodError, context?)
 
-Key differences:
+// Database errors
+DatabaseError.connectionFailed(cause?, context?)
+DatabaseError.queryFailed(query, cause?, context?)
+DatabaseError.transactionFailed(operation, cause?, context?)
 
-1. **Built-in Pool Management**: Database connections handled internally
-2. **IngestPipeline**: Integrated ingestion with error handling and retry logic
-3. **Required Columns**: TypeScript enforces documentKey, content, index,
-   embedding
-4. **Explicit Column Mapping**: No more automatic camelCase → snake_case
-   conversion
-5. **Simplified Types**: No complex Zod-based type definitions
-6. **Clear Boundaries**: Validation only at package boundaries
+// Embedding API errors
+EmbeddingError.apiError(cause?, context?)
+EmbeddingError.rateLimitExceeded(retryAfter, context?)
+EmbeddingError.invalidInput(input, context?)
 
-See `SPECIFICATION.md` for detailed migration examples.
+// Configuration errors
+ConfigurationError.missingField(field, context?)
+ConfigurationError.invalidValue(field, value, expected, context?)
 
-## License
+// Operation errors
+OperationError.documentNotFound(documentKey, context?)
+OperationError.invalidOperation(operation, reason, context?)
+```
 
-MIT
+### Error Handling Utilities
+
+```typescript
+import { handleError, isErrorCategory, isErrorCode } from "@giselle-sdk/rag3";
+
+// Type-safe error handling
+handleError(error, {
+  VALIDATION_FAILED: (err) => console.log("Validation:", err.validationDetails),
+  CONNECTION_FAILED: (err) => console.log("DB connection failed:", err.context),
+  RATE_LIMIT_EXCEEDED: (err) =>
+    console.log("Rate limited, retry after:", err.context?.retryAfter),
+  default: (err) => console.log("Unknown error:", err.message),
+});
+
+// Error type checking
+if (isErrorCategory(error, "database")) {
+  // Handle database-related errors
+}
+
+if (isErrorCode(error, "CONNECTION_FAILED")) {
+  // Specific error code handling
+}
+```
