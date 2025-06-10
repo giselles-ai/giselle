@@ -1,15 +1,15 @@
 export interface Embedder {
 	/**
-	 * テキストを埋め込みベクトルに変換
-	 * @param text 埋め込むテキスト
-	 * @returns 埋め込みベクトル
+	 * Convert text to an embedding vector
+	 * @param text The text to embed
+	 * @returns The embedding vector
 	 */
 	embed(text: string): Promise<number[]>;
 
 	/**
-	 * 複数のテキストを一度に埋め込む
-	 * @param texts 埋め込むテキストの配列
-	 * @returns 埋め込みベクトルの配列
+	 * Embed multiple texts at once
+	 * @param texts The array of texts to embed
+	 * @returns The array of embedding vectors
 	 */
-	embedBatch(texts: string[]): Promise<number[][]>;
+	embedMany(texts: string[]): Promise<number[][]>;
 }

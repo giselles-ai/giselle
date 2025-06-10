@@ -13,10 +13,10 @@ export interface QueryService<
 	TMetadata extends Record<string, unknown> = Record<string, unknown>,
 > {
 	/**
-	 * ベクトル類似検索を実行
-	 * @param query 検索クエリ
-	 * @param context 検索コンテキスト（フィルタリング用）
-	 * @param limit 結果の最大数
+	 * vector similarity search
+	 * @param query search query
+	 * @param context search context (filtering)
+	 * @param limit maximum number of results
 	 */
 	search(
 		query: string,

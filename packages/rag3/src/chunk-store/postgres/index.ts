@@ -10,10 +10,10 @@ export interface PostgresChunkStoreConfig<TMetadata> {
 	database: DatabaseConfig;
 	tableName: string;
 	columnMapping: ColumnMapping<TMetadata>;
-	// 全レコードに適用される静的な値
-	staticContext?: Record<string, unknown>;
-	// メタデータの検証用Zodスキーマ（オプショナル）
+	// Zod schema for metadata validation
 	metadataSchema?: z.ZodType<TMetadata>;
+	// static context to be applied to all records
+	staticContext?: Record<string, unknown>;
 }
 
 export class PostgresChunkStore<
@@ -35,7 +35,6 @@ export class PostgresChunkStore<
 			metadataSchema,
 		} = this.config;
 
-		// メタデータの検証（スキーマが提供されている場合）
 		if (metadataSchema) {
 			const result = metadataSchema.safeParse(metadata);
 			if (!result.success) {
@@ -48,25 +47,28 @@ export class PostgresChunkStore<
 		}
 
 		const pool = PoolManager.getPool(database);
-
-		// トランザクション開始
+		// register pgvector types
 		const client = await pool.connect();
+		try {
+			await pgvector.registerTypes(client);
+		} finally {
+			client.release();
+		}
+
 		try {
 			await client.query("BEGIN");
 
-			// 既存データを削除
 			await this.deleteByDocumentKeyInternal(documentKey, client);
 
-			// チャンクを挿入
 			for (const chunk of chunks) {
 				const record = {
 					[columnMapping.documentKey]: documentKey,
 					[columnMapping.content]: chunk.content,
 					[columnMapping.index]: chunk.index,
-					// embeddingはpgvectorで変換するため、ここでは含めない
-					// メタデータをマッピング
+					// embedding is converted by pgvector, so it is not included here
+					// map metadata
 					...this.mapMetadata(metadata, columnMapping),
-					// 静的コンテキストを追加
+					// add static context
 					...staticContext,
 				};
 
@@ -99,7 +101,14 @@ export class PostgresChunkStore<
 
 	async deleteByDocumentKey(documentKey: string): Promise<void> {
 		const pool = PoolManager.getPool(this.config.database);
+		// register pgvector types
 		const client = await pool.connect();
+		try {
+			await pgvector.registerTypes(client);
+		} finally {
+			client.release();
+		}
+
 		try {
 			await this.deleteByDocumentKeyInternal(documentKey, client);
 		} catch (error) {
@@ -115,10 +124,6 @@ export class PostgresChunkStore<
 		} finally {
 			client.release();
 		}
-	}
-
-	async dispose(): Promise<void> {
-		// プール自体の管理は呼び出し側の責任
 	}
 
 	private async deleteByDocumentKeyInternal(
@@ -147,7 +152,7 @@ export class PostgresChunkStore<
 		const columns = Object.keys(record);
 		const values = Object.values(record);
 
-		// embeddingカラムを追加
+		// add embedding column
 		if (embedding) {
 			columns.push(embedding.embeddingColumn);
 			values.push(pgvector.toSql(embedding.embeddingValue));
@@ -185,7 +190,7 @@ export class PostgresChunkStore<
 	}
 
 	private escapeIdentifier(identifier: string): string {
-		// PostgreSQLの識別子エスケープ
+		// escape PostgreSQL identifier
 		return `"${identifier.replace(/"/g, '""')}"`;
 	}
 }

@@ -13,16 +13,12 @@ export interface PostgresQueryServiceConfig<TContext, TMetadata> {
 	tableName: string;
 	embedder: Embedder;
 	columnMapping: ColumnMapping<TMetadata>;
-	// コンテキストからフィルタ条件への変換（非同期対応）
+	// context to filter
 	contextToFilter: (
 		context: TContext,
 	) => Record<string, unknown> | Promise<Record<string, unknown>>;
-	// 検索時の追加オプション
-	searchOptions?: {
-		distanceFunction?: DistanceFunction;
-	};
-	// メタデータの検証用Zodスキーマ（オプショナル）
-	metadataSchema?: z.ZodType<TMetadata>;
+	// metadata schema
+	metadataSchema: z.ZodType<TMetadata>;
 }
 
 export class PostgresQueryService<
@@ -43,7 +39,7 @@ export class PostgresQueryService<
 			this.config;
 		const pool = PoolManager.getPool(database);
 
-		// pgvectorの型を登録
+		// register pgvector types
 		const client = await pool.connect();
 		try {
 			await pgvector.registerTypes(client);
@@ -51,17 +47,13 @@ export class PostgresQueryService<
 			client.release();
 		}
 
-		// フィルタ条件を生成（非同期対応）
 		let filters: Record<string, unknown> = {};
 
 		try {
-			// クエリの埋め込みを生成
 			const queryEmbedding = await embedder.embed(query);
 
-			// フィルタ条件を生成（非同期対応）
 			filters = await contextToFilter(context);
 
-			// WHERE句を構築
 			const whereConditions: string[] = [];
 			const values: unknown[] = [pgvector.toSql(queryEmbedding)];
 			let paramIndex = 2;
@@ -76,7 +68,6 @@ export class PostgresQueryService<
 				}
 			}
 
-			// メタデータカラムを選択
 			const metadataColumns = Object.entries(columnMapping)
 				.filter(
 					([key]) =>
@@ -89,27 +80,23 @@ export class PostgresQueryService<
 				}))
 				.filter((item) => item.dbColumn !== "");
 
-			// SQLクエリを構築
-			const distanceFunction = this.getDistanceFunction();
 			const sql = `
         SELECT
           ${this.escapeIdentifier(columnMapping.content)} as content,
           ${this.escapeIdentifier(columnMapping.index)} as index,
           ${metadataColumns.map(({ dbColumn, metadataKey }) => `${dbColumn} as "${metadataKey}"`).join(", ")}${metadataColumns.length > 0 ? "," : ""}
-          1 - (${this.escapeIdentifier(columnMapping.embedding)} ${distanceFunction} $1) as similarity
+          1 - (${this.escapeIdentifier(columnMapping.embedding)} <=> $1) as similarity
         FROM ${this.escapeIdentifier(tableName)}
         ${whereConditions.length > 0 ? `WHERE ${whereConditions.join(" AND ")}` : ""}
-        ORDER BY ${this.escapeIdentifier(columnMapping.embedding)} ${distanceFunction} $1
+        ORDER BY ${this.escapeIdentifier(columnMapping.embedding)} <=> $1
         LIMIT ${limit}
       `;
 
 			const result = await pool.query(sql, values);
 
-			// 結果をマッピング
 			return result.rows.map((row) => {
 				const metadata = this.extractMetadata(row, metadataColumns);
 
-				// メタデータの検証（スキーマが提供されている場合）
 				const validatedMetadata = this.validateMetadata(metadata);
 
 				return {
@@ -142,43 +129,30 @@ export class PostgresQueryService<
 		}
 	}
 
-	private getDistanceFunction(): string {
-		const { searchOptions } = this.config;
-		switch (searchOptions?.distanceFunction) {
-			case "euclidean":
-				return "<->";
-			case "inner_product":
-				return "<#>";
-			default:
-				return "<=>";
-		}
-	}
-
 	/**
-	 * データベースの行からメタデータを安全に抽出（実行時バリデーション付き）
+	 * extract metadata from database row
 	 */
 	private extractMetadata(
 		row: Record<string, unknown>,
 		metadataColumns: Array<{ metadataKey: string; dbColumn: string }>,
 	): TMetadata {
-		// 生のメタデータを構築
+		// build raw metadata
 		const rawMetadata = Object.fromEntries(
 			metadataColumns.map(({ metadataKey }) => [metadataKey, row[metadataKey]]),
 		);
 
-		// 実行時バリデーションを通してから型保証
+		// type safe validation
 		return this.validateMetadata(rawMetadata);
 	}
 
 	/**
-	 * unknownデータをTMetadataに安全に変換（実行時バリデーション）
+	 * convert unknown data to TMetadata safely
 	 */
 	private validateMetadata(metadata: unknown): TMetadata {
 		const { metadataSchema } = this.config;
 
-		// スキーマが提供されていない場合の処理
+		// if metadataSchema is not provided, perform more strict type check
 		if (!metadataSchema) {
-			// スキーマが提供されていない場合、より厳密な型チェックを実行
 			if (this.isValidMetadataObject(metadata)) {
 				return metadata;
 			}
@@ -189,7 +163,7 @@ export class PostgresQueryService<
 			);
 		}
 
-		// メタデータの検証
+		// validate metadata
 		const result = metadataSchema.safeParse(metadata);
 		if (!result.success) {
 			throw ValidationError.fromZodError(result.error, {
@@ -203,26 +177,26 @@ export class PostgresQueryService<
 	}
 
 	/**
-	 * メタデータが有効なオブジェクト形式かチェックする型ガード
+	 * type guard: check if metadata is valid object
 	 */
 	private isValidMetadataObject(metadata: unknown): metadata is TMetadata {
-		// nullチェック
+		// null check
 		if (metadata === null || metadata === undefined) {
 			return false;
 		}
 
-		// オブジェクトかチェック
+		// check if metadata is an object
 		if (typeof metadata !== "object") {
 			return false;
 		}
 
-		// 配列は除外
+		// exclude array
 		if (Array.isArray(metadata)) {
 			return false;
 		}
 
-		// プレーンオブジェクトであることを確認
-		// プロトタイプチェーンの確認でプレーンオブジェクトかチェック
+		// check if metadata is a plain object
+		// check if metadata is a plain object by checking the prototype chain
 		try {
 			return (
 				Object.getPrototypeOf(metadata) === Object.prototype ||

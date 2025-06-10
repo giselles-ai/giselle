@@ -1,9 +1,9 @@
-import type { ZodError, ZodIssue } from "zod/v4";
+import type { ZodError } from "zod/v4";
 
 /**
- * RAG3の基底エラークラス
+ * Base error class
  */
-export abstract class Rag3Error extends Error {
+export abstract class RagError extends Error {
 	abstract readonly code: string;
 	abstract readonly category:
 		| "validation"
@@ -22,7 +22,7 @@ export abstract class Rag3Error extends Error {
 	}
 
 	/**
-	 * エラーの詳細情報を含む構造化データを返す
+	 * return structured data of the error
 	 */
 	toJSON() {
 		return {
@@ -38,9 +38,9 @@ export abstract class Rag3Error extends Error {
 }
 
 /**
- * バリデーションエラー
+ * Validation error
  */
-export class ValidationError extends Rag3Error {
+export class ValidationError extends RagError {
 	readonly code = "VALIDATION_FAILED";
 	readonly category = "validation" as const;
 
@@ -53,7 +53,7 @@ export class ValidationError extends Rag3Error {
 	}
 
 	/**
-	 * Zodエラーから詳細な検証エラー情報を取得
+	 * Get detailed validation error information from Zod error
 	 */
 	get validationDetails(): Array<{
 		path: string;
@@ -64,7 +64,7 @@ export class ValidationError extends Rag3Error {
 	}> {
 		if (!this.zodError) return [];
 
-		return this.zodError.issues.map((issue: ZodIssue) => ({
+		return this.zodError.issues.map((issue) => ({
 			path: issue.path.join("."),
 			message: issue.message,
 			code: issue.code,
@@ -74,7 +74,7 @@ export class ValidationError extends Rag3Error {
 	}
 
 	/**
-	 * Zodエラーから ValidationError を作成
+	 * Create ValidationError from Zod error
 	 */
 	static fromZodError(
 		zodError: ZodError,
@@ -87,9 +87,9 @@ export class ValidationError extends Rag3Error {
 }
 
 /**
- * データベースエラー
+ * Database error
  */
-export class DatabaseError extends Rag3Error {
+export class DatabaseError extends RagError {
 	readonly category = "database" as const;
 
 	constructor(
@@ -102,7 +102,7 @@ export class DatabaseError extends Rag3Error {
 	}
 
 	/**
-	 * よく使われるデータベースエラーの作成ヘルパー
+	 * Helper to create common database errors
 	 */
 	static connectionFailed(cause?: Error, context?: Record<string, unknown>) {
 		return new DatabaseError(
@@ -159,9 +159,9 @@ export type DatabaseErrorCode =
 	| "UNKNOWN";
 
 /**
- * 埋め込み生成エラー
+ * Embedding generation error
  */
-export class EmbeddingError extends Rag3Error {
+export class EmbeddingError extends RagError {
 	readonly category = "embedding" as const;
 
 	constructor(
@@ -174,7 +174,7 @@ export class EmbeddingError extends Rag3Error {
 	}
 
 	/**
-	 * よく使われる埋め込みエラーの作成ヘルパー
+	 * Helper to create common embedding errors
 	 */
 	static apiError(cause?: Error, context?: Record<string, unknown>) {
 		return new EmbeddingError(
@@ -202,7 +202,7 @@ export class EmbeddingError extends Rag3Error {
 			"Invalid input for embedding generation",
 			"INVALID_INPUT",
 			undefined,
-			{ ...context, input: input.substring(0, 100) + "..." },
+			{ ...context, input: `${input.substring(0, 100)}...` },
 		);
 	}
 }
@@ -216,9 +216,9 @@ export type EmbeddingErrorCode =
 	| "UNKNOWN";
 
 /**
- * 設定エラー
+ * Configuration error
  */
-export class ConfigurationError extends Rag3Error {
+export class ConfigurationError extends RagError {
 	readonly code = "CONFIGURATION_INVALID";
 	readonly category = "configuration" as const;
 
@@ -231,7 +231,7 @@ export class ConfigurationError extends Rag3Error {
 	}
 
 	/**
-	 * 設定エラーの作成ヘルパー
+	 * Helper to create common configuration errors
 	 */
 	static missingField(field: string, context?: Record<string, unknown>) {
 		return new ConfigurationError(
@@ -256,9 +256,9 @@ export class ConfigurationError extends Rag3Error {
 }
 
 /**
- * 操作エラー
+ * Operation error
  */
-export class OperationError extends Rag3Error {
+export class OperationError extends RagError {
 	readonly category = "operation" as const;
 
 	constructor(
@@ -270,7 +270,7 @@ export class OperationError extends Rag3Error {
 	}
 
 	/**
-	 * 操作エラーの作成ヘルパー
+	 * Helper to create common operation errors
 	 */
 	static documentNotFound(
 		documentKey: string,
@@ -304,33 +304,33 @@ export type OperationErrorCode =
 	| "UNKNOWN";
 
 /**
- * エラーハンドリングのユーティリティ関数
+ * Utility function for error handling
  */
 
 /**
- * エラーが特定のカテゴリに属するかチェック
+ * Check if the error belongs to a specific category
  */
 export function isErrorCategory(
 	error: unknown,
-	category: Rag3Error["category"],
-): error is Rag3Error {
-	return error instanceof Rag3Error && error.category === category;
+	category: RagError["category"],
+): error is RagError {
+	return error instanceof RagError && error.category === category;
 }
 
 /**
- * エラーが特定のコードかチェック
+ * Check if the error has a specific code
  */
 export function isErrorCode<T extends string>(
 	error: unknown,
 	code: T,
-): error is Rag3Error & { code: T } {
-	return error instanceof Rag3Error && error.code === code;
+): error is RagError & { code: T } {
+	return error instanceof RagError && error.code === code;
 }
 
 /**
- * 型安全なエラー処理のためのヘルパー
+ * Helper for type-safe error handling
  */
-export function handleError<T extends Rag3Error>(
+export function handleError<T extends RagError>(
 	error: unknown,
 	handlers: {
 		[K in T["code"]]?: (error: T & { code: K }) => void;
@@ -338,7 +338,7 @@ export function handleError<T extends Rag3Error>(
 		default?: (error: unknown) => void;
 	},
 ): void {
-	if (error instanceof Rag3Error) {
+	if (error instanceof RagError) {
 		const handler = handlers[error.code as T["code"]];
 		if (handler) {
 			handler(error as T & { code: T["code"] });

@@ -1,17 +1,17 @@
 // Errors
 export {
-	Rag3Error,
-	ValidationError,
 	DatabaseError,
 	EmbeddingError,
+	RagError,
+	ValidationError,
 } from "./errors";
 
 // Database
 export { PoolManager } from "./database";
 export type {
+	ColumnMapping,
 	DatabaseConfig,
 	RequiredColumns,
-	ColumnMapping,
 } from "./database";
 
 // Document Loader
@@ -22,90 +22,89 @@ export type {
 } from "./document-loader";
 
 // Chunk Store
+export { PostgresChunkStore } from "./chunk-store";
 export type {
 	Chunk,
-	ChunkWithEmbedding,
 	ChunkStore,
+	ChunkWithEmbedding,
 	PostgresChunkStoreConfig,
 } from "./chunk-store";
-export { PostgresChunkStore } from "./chunk-store";
 
 // Query Service
+export { PostgresQueryService } from "./query-service";
 export type {
+	DistanceFunction,
+	PostgresQueryServiceConfig,
 	QueryResult,
 	QueryService,
-	PostgresQueryServiceConfig,
-	DistanceFunction,
 } from "./query-service";
-export { PostgresQueryService } from "./query-service";
 
 // Embedder
-export type { Embedder, OpenAIEmbedderConfig } from "./embedder";
 export { OpenAIEmbedder } from "./embedder";
+export type { Embedder, OpenAIEmbedderConfig } from "./embedder";
 
 // Chunker
-export type { Chunker, LineChunkerOptions } from "./chunker";
 export { LineChunker } from "./chunker";
+export type { Chunker, LineChunkerOptions } from "./chunker";
 
 // Ingest Pipeline
 export {
 	IngestPipeline,
+	type IngestError,
 	type IngestPipelineConfig,
 	type IngestProgress,
-	type IngestError,
 	type IngestResult,
 } from "./ingest";
 
 // Schemas
 export {
+	addTypeDiscriminator,
 	// Core schemas
 	ChunkSchema,
 	ChunkWithEmbeddingSchema,
-	DatabaseConfigSchema,
-	RequiredColumnsSchema,
-	createDocumentSchema,
-	createColumnMappingSchema,
-	createQueryResultSchema,
 	// Helper functions
 	createColumnMappingFromZod,
-	addTypeDiscriminator,
+	createColumnMappingSchema,
+	createDocumentSchema,
+	createQueryResultSchema,
+	DatabaseConfigSchema,
+	RequiredColumnsSchema,
 	validateMetadata,
+	type CaseConversion,
+	type ChunkWithEmbeddingZod,
 	// Types
 	type ChunkZod,
-	type ChunkWithEmbeddingZod,
+	type CreateColumnMappingOptions,
 	type DatabaseConfigZod,
 	type RequiredColumnsZod,
-	type CaseConversion,
-	type CreateColumnMappingOptions,
 } from "./schemas";
 
 // Simplified API with smart defaults
 export {
 	// Factory functions
 	createChunkStore,
-	createQueryService,
-	createIngestPipeline,
-	// Default instances
-	createDefaultEmbedder,
-	createDefaultChunker,
 	// Utilities
 	createColumnMapping,
+	createDefaultChunker,
+	// Default instances
+	createDefaultEmbedder,
+	createIngestPipeline,
+	createQueryService,
 	DEFAULT_REQUIRED_COLUMNS,
 	// Types
 	type ChunkStoreConfig,
 	type QueryServiceConfig,
-	type SimpleIngestConfig,
 } from "./presets";
 
 // Enhanced errors (additional classes and utilities)
 export {
 	// Additional error classes not exported above
 	ConfigurationError,
-	OperationError,
+	handleError,
 	// Error utilities
 	isErrorCategory,
 	isErrorCode,
-	handleError,
+	OperationError,
 	// Error types
 	type DatabaseErrorCode,
 	type EmbeddingErrorCode,

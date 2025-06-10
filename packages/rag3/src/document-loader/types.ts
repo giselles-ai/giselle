@@ -13,9 +13,9 @@ export interface DocumentLoader<
 	TMetadata extends Record<string, unknown> = Record<string, unknown>,
 > {
 	/**
-	 * ドキュメントを非同期的にロードする
-	 * @param params ローダー固有のパラメータ
-	 * @returns Document のAsyncIterable
+	 * Load documents asynchronously
+	 * @param params loader-specific parameters
+	 * @returns AsyncIterable of Document
 	 */
 	load(params: DocumentLoaderParams): AsyncIterable<Document<TMetadata>>;
 }

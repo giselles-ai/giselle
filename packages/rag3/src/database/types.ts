@@ -7,7 +7,7 @@ export interface DatabaseConfig {
 	};
 }
 
-// 必須カラムの定義
+// define required columns
 export interface RequiredColumns {
 	documentKey: string;
 	content: string;
@@ -15,7 +15,7 @@ export interface RequiredColumns {
 	embedding: string;
 }
 
-// カラムマッピングの型定義（必須カラムを強制）
+// define column mapping (required columns are enforced)
 export type ColumnMapping<TMetadata> = RequiredColumns & {
 	[K in keyof TMetadata]: string;
 };

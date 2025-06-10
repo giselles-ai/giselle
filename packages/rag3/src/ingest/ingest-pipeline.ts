@@ -9,7 +9,7 @@ import type { Embedder } from "../embedder/types";
 import { OperationError } from "../errors";
 
 /**
- * IngestPipelineの設定オプション（実用性重視版）
+ * Config for IngestPipeline
  */
 export interface IngestPipelineConfig<
 	TSourceMetadata extends Record<string, unknown>,
@@ -20,16 +20,19 @@ export interface IngestPipelineConfig<
 	embedder: Embedder;
 	chunkStore: ChunkStore<TTargetMetadata>;
 	/**
-	 * メタデータ変換関数
-	 * TSourceMetadata と TTargetMetadata が異なる型の場合は必須
-	 * 同じ型の場合は省略可能
+	 * Function to extract document key from a document
+	 * This is used to uniquely identify documents in the chunk store
 	 */
-	metadataTransform?: (metadata: TSourceMetadata) => TTargetMetadata;
-	// オプション設定
+	documentKey: (document: Document<TSourceMetadata>) => string;
+	/**
+	 * Metadata transformation function
+	 */
+	metadataTransform: (metadata: TSourceMetadata) => TTargetMetadata;
+	// options
 	options?: {
-		batchSize?: number; // 埋め込みのバッチサイズ
-		maxRetries?: number; // リトライ回数
-		retryDelay?: number; // リトライ間隔（ミリ秒）
+		batchSize?: number; // batch size for embedding
+		maxRetries?: number; // number of retries
+		retryDelay?: number; // retry interval (milliseconds)
 		onProgress?: (progress: IngestProgress) => void;
 		onError?: (error: IngestError) => void;
 	};
@@ -66,7 +69,8 @@ export class IngestPipeline<
 	private chunker: Chunker;
 	private embedder: Embedder;
 	private chunkStore: ChunkStore<TTargetMetadata>;
-	private metadataTransform?: (metadata: TSourceMetadata) => TTargetMetadata;
+	private documentKey: (document: Document<TSourceMetadata>) => string;
+	private metadataTransform: (metadata: TSourceMetadata) => TTargetMetadata;
 	private options: Required<
 		NonNullable<
 			IngestPipelineConfig<TSourceMetadata, TTargetMetadata>["options"]
@@ -78,6 +82,7 @@ export class IngestPipeline<
 		this.chunker = config.chunker;
 		this.embedder = config.embedder;
 		this.chunkStore = config.chunkStore;
+		this.documentKey = config.documentKey;
 		this.metadataTransform = config.metadataTransform;
 		this.options = {
 			batchSize: 100,
@@ -106,7 +111,7 @@ export class IngestPipeline<
 		};
 
 		try {
-			// ドキュメントを処理
+			// process documents
 			for await (const document of this.documentLoader.load(
 				params as DocumentLoaderParams,
 			)) {
@@ -144,20 +149,20 @@ export class IngestPipeline<
 	): Promise<void> {
 		const documentKey = this.getDocumentKey(document);
 
-		// メタデータ変換を適用（型安全な方法）
+		// apply metadata transformation
 		const targetMetadata = this.getTargetMetadata(document.metadata);
 
-		// リトライロジック
+		// with retry logic
 		for (let attempt = 1; attempt <= this.options.maxRetries; attempt++) {
 			try {
-				// チャンキング
+				// chunking
 				const chunkTexts = this.chunker.chunk(document.content);
 
-				// バッチ埋め込み
+				// batch embedding
 				const chunks = [];
 				for (let i = 0; i < chunkTexts.length; i += this.options.batchSize) {
 					const batch = chunkTexts.slice(i, i + this.options.batchSize);
-					const embeddings = await this.embedder.embedBatch(batch);
+					const embeddings = await this.embedder.embedMany(batch);
 
 					for (let j = 0; j < batch.length; j++) {
 						chunks.push({
@@ -168,9 +173,9 @@ export class IngestPipeline<
 					}
 				}
 
-				// 変換されたメタデータで保存
+				// save with transformed metadata
 				await this.chunkStore.insert(documentKey, chunks, targetMetadata);
-				return; // 成功したら終了
+				return;
 			} catch (error) {
 				const isLastAttempt = attempt === this.options.maxRetries;
 
@@ -185,7 +190,7 @@ export class IngestPipeline<
 					throw error;
 				}
 
-				// 指数バックオフ
+				// exponential backoff
 				const delay = this.options.retryDelay * 2 ** (attempt - 1);
 				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
@@ -193,60 +198,16 @@ export class IngestPipeline<
 	}
 
 	/**
-	 * 型安全なメタデータ変換
+	 * metadata transformation
 	 */
 	private getTargetMetadata(sourceMetadata: TSourceMetadata): TTargetMetadata {
-		if (this.metadataTransform) {
-			return this.metadataTransform(sourceMetadata);
-		}
-
-		// metadataTransformがない場合、TSourceとTTargetが同じ型である必要がある
-		// 条件付き型により、コンパイル時にチェックされているが、
-		// 実行時の安全性のために明示的にチェック
-		if (this.isMetadataCompatible(sourceMetadata)) {
-			// 型ガードにより、sourceMetadataはTSourceMetadata & TTargetMetadata型
-			return sourceMetadata;
-		}
-
-		throw OperationError.invalidOperation(
-			"metadata transformation",
-			"metadataTransform function is required when TSourceMetadata and TTargetMetadata are different types",
-			{ sourceMetadata },
-		);
+		return this.metadataTransform(sourceMetadata);
 	}
 
 	/**
-	 * メタデータの互換性をチェック（実行時バリデーション）
-	 */
-	private isMetadataCompatible(
-		metadata: TSourceMetadata,
-	): metadata is TSourceMetadata & TTargetMetadata {
-		// TSourceとTTargetが同じ型の場合、条件付き型により metadataTransform は省略可能
-		// この時点でmetadataTransformがundefinedなら、型は互換性がある
-		return this.metadataTransform === undefined;
-	}
-
-	/**
-	 * 型ガード: 値が文字列かチェック
-	 */
-	private isString(value: unknown): value is string {
-		return typeof value === "string";
-	}
-
-	/**
-	 * メタデータから安全にドキュメントキーを取得
+	 * Get document key using the provided documentKey function
 	 */
 	private getDocumentKey(document: Document<TSourceMetadata>): string {
-		// メタデータから適切なキーを生成
-		// 実装によって異なるが、一般的にはパスやIDを使用
-		const metadata = document.metadata;
-
-		// 型安全な方法でプロパティをチェック
-		if ("path" in metadata && this.isString(metadata.path))
-			return metadata.path;
-		if ("id" in metadata && this.isString(metadata.id)) return metadata.id;
-		if ("url" in metadata && this.isString(metadata.url)) return metadata.url;
-
-		return "unknown";
+		return this.documentKey(document);
 	}
 }

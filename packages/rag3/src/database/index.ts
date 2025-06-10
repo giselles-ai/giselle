@@ -1,2 +1,2 @@
-export { PoolManager, getPool, closePool, closeAllPools } from "./postgres";
-export type { DatabaseConfig, RequiredColumns, ColumnMapping } from "./types";
+export { PoolManager } from "./postgres";
+export type { ColumnMapping, DatabaseConfig, RequiredColumns } from "./types";

@@ -1,8 +1,8 @@
 export interface Chunker {
 	/**
-	 * テキストをチャンクに分割
-	 * @param text 分割するテキスト
-	 * @returns チャンクの配列
+	 * Split text into chunks
+	 * @param text The text to split
+	 * @returns The array of chunks
 	 */
 	chunk(text: string): string[];
 }

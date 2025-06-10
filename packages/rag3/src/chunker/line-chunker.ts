@@ -1,80 +1,126 @@
 import type { Chunker } from "./types";
 
 export interface LineChunkerOptions {
-	minChunkSize?: number;
-	maxChunkSize?: number;
+	/**
+	 * Maximum number of lines per chunk
+	 * Default: 150
+	 */
+	maxLines?: number;
+	/**
+	 * Number of lines to overlap between chunks
+	 * Default: 30
+	 */
 	overlap?: number;
+	/**
+	 * Maximum characters per chunk before splitting
+	 * Default: 10000
+	 */
+	maxChars?: number;
 }
 
 export class LineChunker implements Chunker {
-	private options: Required<LineChunkerOptions>;
+	private maxLines: number;
+	private overlap: number;
+	private maxChars: number;
 
 	constructor(options: LineChunkerOptions = {}) {
-		this.options = {
-			minChunkSize: 100,
-			maxChunkSize: 1000,
-			overlap: 50,
-			...options,
-		};
+		this.maxLines = options.maxLines ?? 150;
+		this.overlap = options.overlap ?? 30;
+		this.maxChars = options.maxChars ?? 10000;
 	}
 
 	chunk(text: string): string[] {
 		const lines = text.split("\n");
 		const chunks: string[] = [];
-		let currentChunk: string[] = [];
-		let currentSize = 0;
 
-		for (const line of lines) {
-			const lineSize = line.length;
+		// Ensure we make progress even with large overlaps
+		const step = Math.max(1, this.maxLines - this.overlap);
 
-			if (
-				currentSize + lineSize > this.options.maxChunkSize &&
-				currentChunk.length > 0
-			) {
-				chunks.push(currentChunk.join("\n"));
+		for (let i = 0; i < lines.length; i += step) {
+			const endIndex = Math.min(i + this.maxLines, lines.length);
+			const chunkLines = lines.slice(i, endIndex);
+			const chunkContent = chunkLines.join("\n").trim();
 
-				// オーバーラップ処理
-				if (this.options.overlap > 0) {
-					const overlapLines = this.getOverlapLines(currentChunk);
-					currentChunk = overlapLines;
-					currentSize = overlapLines.join("\n").length;
-				} else {
-					currentChunk = [];
-					currentSize = 0;
-				}
+			if (chunkContent.length === 0) {
+				continue;
 			}
 
-			currentChunk.push(line);
-			currentSize += lineSize + 1; // +1 for newline
-		}
-
-		// 最後のチャンク
-		if (currentChunk.length > 0) {
-			const finalChunk = currentChunk.join("\n");
-			if (finalChunk.length >= this.options.minChunkSize) {
-				chunks.push(finalChunk);
-			} else if (chunks.length > 0) {
-				// 小さすぎる場合は前のチャンクに結合
-				chunks[chunks.length - 1] += `\n${finalChunk}`;
+			// Check if content exceeds character limit or has long lines
+			if (
+				chunkContent.length > this.maxChars ||
+				this.hasLongLinesAfterProcessing(chunkContent)
+			) {
+				// Split content that exceeds character limits
+				const splitChunks = this.splitLongContent(chunkContent);
+				chunks.push(...splitChunks);
 			} else {
-				// 唯一のチャンクの場合はそのまま追加
-				chunks.push(finalChunk);
+				chunks.push(chunkContent);
+			}
+
+			// If we've reached the end, break
+			if (endIndex >= lines.length) {
+				break;
 			}
 		}
 
 		return chunks.filter((chunk) => chunk.trim().length > 0);
 	}
 
-	private getOverlapLines(lines: string[]): string[] {
-		let overlapSize = 0;
-		const overlapLines: string[] = [];
+	/**
+	 * Check if content has long lines after processing
+	 */
+	private hasLongLinesAfterProcessing(content: string): boolean {
+		const threshold = this.maxChars * 0.8;
+		return content.split("\n").some((line) => line.length > threshold);
+	}
 
-		for (let i = lines.length - 1; i >= 0; i--) {
-			if (overlapSize >= this.options.overlap) break;
-			overlapLines.unshift(lines[i]);
-			overlapSize += lines[i].length;
+	/**
+	 * Split long content into smaller chunks
+	 */
+	private splitLongContent(content: string): string[] {
+		if (content.length <= this.maxChars) {
+			return [content];
 		}
 
-		return overlapLines;
+		const chunks: string[] = [];
+		let remaining = content;
+
+		while (remaining.length > 0) {
+			if (remaining.length <= this.maxChars) {
+				chunks.push(remaining);
+				break;
+			}
+
+			// Try to find a good break point (space, punctuation)
+			let breakPoint = this.maxChars;
+			for (let i = this.maxChars - 1; i > this.maxChars * 0.8; i--) {
+				if (i < remaining.length && /\s|[,.;!?]/.test(remaining[i])) {
+					breakPoint = i + 1;
+					break;
+				}
+			}
+
+			// Ensure we make progress (avoid infinite loop)
+			if (breakPoint === 0) {
+				breakPoint = Math.max(1, this.maxChars);
+			}
+
+			const chunk = remaining.slice(0, breakPoint).trim();
+			if (chunk.length > 0) {
+				chunks.push(chunk);
+			}
+
+			remaining = remaining.slice(breakPoint).trim();
+
+			// Safety check to prevent infinite loop
+			if (remaining === content || breakPoint === 0) {
+				if (remaining.length > 0) {
+					chunks.push(remaining);
+				}
+				break;
+			}
+		}
+
+		return chunks;
 	}
 }

@@ -11,6 +11,8 @@
 		"test": "vitest"
 	},
 	"dependencies": {
+		"@ai-sdk/openai": "catalog:",
+		"ai": "catalog:",
 		"pg": "catalog:",
 		"pgvector": "catalog:",
 		"zod": "catalog:"

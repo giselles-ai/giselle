@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChunkStore } from "../chunk-store/types";
 import type { Chunker } from "../chunker/types";
-import type { Document, DocumentLoader } from "../document-loader/types";
+import type { DocumentLoader } from "../document-loader/types";
 import type { Embedder } from "../embedder/types";
 import { IngestPipeline } from "./ingest-pipeline";
 
@@ -25,13 +25,12 @@ describe("IngestPipeline", () => {
 
 		mockEmbedder = {
 			embed: vi.fn(async () => [0.1, 0.2, 0.3]),
-			embedBatch: vi.fn(async (texts) => texts.map(() => [0.1, 0.2, 0.3])),
+			embedMany: vi.fn(async (texts) => texts.map(() => [0.1, 0.2, 0.3])),
 		};
 
 		mockChunkStore = {
 			insert: vi.fn(async () => {}),
 			deleteByDocumentKey: vi.fn(async () => {}),
-			dispose: vi.fn(async () => {}),
 		};
 	});
 
@@ -41,6 +40,8 @@ describe("IngestPipeline", () => {
 			chunker: mockChunker,
 			embedder: mockEmbedder,
 			chunkStore: mockChunkStore,
+			documentKey: (doc) => doc.metadata.path,
+			metadataTransform: (metadata) => metadata,
 		});
 
 		const result = await pipeline.ingest({});
@@ -49,7 +50,7 @@ describe("IngestPipeline", () => {
 		expect(result.successfulDocuments).toBe(2);
 		expect(result.failedDocuments).toBe(0);
 		expect(mockChunker.chunk).toHaveBeenCalledTimes(2);
-		expect(mockEmbedder.embedBatch).toHaveBeenCalledTimes(2);
+		expect(mockEmbedder.embedMany).toHaveBeenCalledTimes(2);
 		expect(mockChunkStore.insert).toHaveBeenCalledTimes(2);
 	});
 
@@ -67,6 +68,8 @@ describe("IngestPipeline", () => {
 			chunker: mockChunker,
 			embedder: mockEmbedder,
 			chunkStore: failingChunkStore,
+			documentKey: (doc) => doc.metadata.path,
+			metadataTransform: (metadata) => metadata,
 			options: {
 				maxRetries: 2,
 				retryDelay: 10,
@@ -87,6 +90,8 @@ describe("IngestPipeline", () => {
 			chunker: mockChunker,
 			embedder: mockEmbedder,
 			chunkStore: mockChunkStore,
+			documentKey: (doc) => doc.metadata.path,
+			metadataTransform: (metadata) => metadata,
 			options: { onProgress },
 		});
 
@@ -104,12 +109,14 @@ describe("IngestPipeline", () => {
 			chunker: mockChunker,
 			embedder: mockEmbedder,
 			chunkStore: mockChunkStore,
+			documentKey: (doc) => doc.metadata.path,
+			metadataTransform: (metadata) => metadata,
 			options: { batchSize: 1 },
 		});
 
 		await pipeline.ingest({});
 
-		// With batch size 1 and 2 chunks per document, should call embedBatch 4 times
-		expect(mockEmbedder.embedBatch).toHaveBeenCalledTimes(4);
+		// With batch size 1 and 2 chunks per document, should call embedMany 4 times
+		expect(mockEmbedder.embedMany).toHaveBeenCalledTimes(4);
 	});
 });

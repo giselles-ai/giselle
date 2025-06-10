@@ -3,7 +3,7 @@ import type { DatabaseConfig } from "../types";
 
 const pools = new Map<string, Pool>();
 
-export function getPool(config: DatabaseConfig): Pool {
+function getPool(config: DatabaseConfig): Pool {
 	const key = config.connectionString;
 
 	let pool = pools.get(key);
@@ -13,7 +13,7 @@ export function getPool(config: DatabaseConfig): Pool {
 			...config.poolConfig,
 		});
 
-		// エラーハンドリング
+		// error handling
 		pool.on("error", (err) => {
 			console.error("Unexpected error on idle client", err);
 		});
@@ -24,13 +24,13 @@ export function getPool(config: DatabaseConfig): Pool {
 	return pool;
 }
 
-export async function closeAllPools(): Promise<void> {
+async function closeAllPools(): Promise<void> {
 	const promises = Array.from(pools.values()).map((pool) => pool.end());
 	await Promise.all(promises);
 	pools.clear();
 }
 
-export async function closePool(connectionString: string): Promise<void> {
+async function closePool(connectionString: string): Promise<void> {
 	const pool = pools.get(connectionString);
 	if (pool) {
 		await pool.end();
@@ -38,7 +38,6 @@ export async function closePool(connectionString: string): Promise<void> {
 	}
 }
 
-// PoolManager for backward compatibility
 export const PoolManager = {
 	getPool,
 	closeAll: closeAllPools,

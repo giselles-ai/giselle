@@ -11,10 +11,10 @@ export interface ChunkStore<
 	TMetadata extends Record<string, unknown> = Record<string, unknown>,
 > {
 	/**
-	 * チャンクを保存する
-	 * @param documentKey ドキュメントの一意キー
-	 * @param chunks 埋め込み付きチャンク
-	 * @param metadata ドキュメントメタデータ
+	 * Insert chunks into the chunk store
+	 * @param documentKey The unique key of the document
+	 * @param chunks The chunks with embeddings
+	 * @param metadata The document metadata
 	 */
 	insert(
 		documentKey: string,
@@ -23,13 +23,8 @@ export interface ChunkStore<
 	): Promise<void>;
 
 	/**
-	 * ドキュメントキーに関連するチャンクを削除
-	 * @param documentKey ドキュメントの一意キー
+	 * Delete chunks associated with a document key
+	 * @param documentKey The unique key of the document
 	 */
 	deleteByDocumentKey(documentKey: string): Promise<void>;
-
-	/**
-	 * リソースをクリーンアップ
-	 */
-	dispose(): Promise<void>;
 }

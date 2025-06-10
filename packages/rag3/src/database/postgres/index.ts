@@ -1,1 +1,1 @@
-export { PoolManager, getPool, closePool, closeAllPools } from "./pool-manager";
+export { PoolManager } from "./pool-manager";

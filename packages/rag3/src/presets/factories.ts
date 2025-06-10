@@ -1,17 +1,20 @@
-import { PostgresChunkStore } from "../chunk-store/postgres";
 import type { PostgresChunkStoreConfig } from "../chunk-store/postgres";
+import { PostgresChunkStore } from "../chunk-store/postgres";
 import { ValidationError } from "../errors";
-import { PostgresQueryService } from "../query-service/postgres";
+import { IngestPipeline } from "../ingest";
 import type { PostgresQueryServiceConfig } from "../query-service/postgres";
+import { PostgresQueryService } from "../query-service/postgres";
 import {
 	type ChunkStoreConfig,
 	type QueryServiceConfig,
+	type SimpleIngestConfig,
 	createColumnMapping,
+	createDefaultChunker,
 	createDefaultEmbedder,
 } from "./index";
 
 /**
- * データベース設定を検証
+ * validate database config
  */
 function validateDatabaseConfig(database: {
 	connectionString: string;
@@ -21,25 +24,55 @@ function validateDatabaseConfig(database: {
 		connectionTimeoutMillis?: number;
 	};
 }) {
-	if (!database.connectionString) {
-		throw ValidationError.fromZodError(
-			new Error("Connection string is required") as any,
-			{ field: "connectionString" },
-		);
+	if (!database.connectionString || database.connectionString.length === 0) {
+		throw new ValidationError("Connection string is required", undefined, {
+			operation: "validateDatabaseConfig",
+			field: "connectionString",
+		});
 	}
+
+	if (database.poolConfig) {
+		if (database.poolConfig.max !== undefined && database.poolConfig.max < 0) {
+			throw new ValidationError("Pool max must be non-negative", undefined, {
+				operation: "validateDatabaseConfig",
+				field: "poolConfig.max",
+			});
+		}
+		if (
+			database.poolConfig.max !== undefined &&
+			database.poolConfig.max > 100
+		) {
+			throw new ValidationError("Pool max must be 100 or less", undefined, {
+				operation: "validateDatabaseConfig",
+				field: "poolConfig.max",
+			});
+		}
+		if (
+			database.poolConfig.idleTimeoutMillis !== undefined &&
+			database.poolConfig.idleTimeoutMillis < 0
+		) {
+			throw new ValidationError(
+				"Pool idle timeout must be non-negative",
+				undefined,
+				{
+					operation: "validateDatabaseConfig",
+					field: "poolConfig.idleTimeoutMillis",
+				},
+			);
+		}
+	}
+
 	return database;
 }
 
 /**
- * チャンクストアを作成する
+ * create chunk store
  */
 export function createChunkStore<
 	TMetadata extends Record<string, unknown> = Record<string, never>,
 >(options: ChunkStoreConfig<TMetadata>): PostgresChunkStore<TMetadata> {
-	// データベース設定の検証
 	const database = validateDatabaseConfig(options.database);
 
-	// カラムマッピングを決定
 	const columnMapping =
 		options.columnMapping ||
 		createColumnMapping({
@@ -61,7 +94,7 @@ export function createChunkStore<
 }
 
 /**
- * クエリサービスを作成する
+ * create query service
  */
 export function createQueryService<
 	TContext,
@@ -69,10 +102,8 @@ export function createQueryService<
 >(
 	options: QueryServiceConfig<TContext, TMetadata>,
 ): PostgresQueryService<TContext, TMetadata> {
-	// データベース設定の検証
 	const database = validateDatabaseConfig(options.database);
 
-	// カラムマッピングを決定
 	const columnMapping =
 		options.columnMapping ||
 		createColumnMapping({
@@ -81,16 +112,49 @@ export function createQueryService<
 			metadataColumnOverrides: options.metadataColumnOverrides,
 		});
 
-	// PostgresQueryServiceConfigを構築
+	// build PostgresQueryServiceConfig
 	const config: PostgresQueryServiceConfig<TContext, TMetadata> = {
 		database,
 		tableName: options.tableName,
 		embedder: options.embedder || createDefaultEmbedder(),
 		columnMapping,
 		contextToFilter: options.contextToFilter,
-		searchOptions: options.searchOptions,
 		metadataSchema: options.metadataSchema,
 	};
 
 	return new PostgresQueryService(config);
+}
+
+/**
+ * simplified ingest pipeline creation function
+ * hide the details of chunker and embedder, and use default settings
+ */
+export function createIngestPipeline<
+	TSourceMetadata extends Record<string, unknown>,
+	TTargetMetadata extends Record<string, unknown> = TSourceMetadata,
+>(config: SimpleIngestConfig<TSourceMetadata, TTargetMetadata>) {
+	const {
+		documentLoader,
+		chunkStore,
+		documentKey,
+		metadataTransform,
+		options = {},
+	} = config;
+
+	// use default embedder and chunker
+	const embedder = createDefaultEmbedder();
+	const chunker = createDefaultChunker();
+
+	return new IngestPipeline({
+		documentLoader,
+		chunker,
+		embedder,
+		chunkStore,
+		documentKey,
+		metadataTransform,
+		options: {
+			batchSize: options.batchSize || 50,
+			onProgress: options.onProgress,
+		},
+	});
 }

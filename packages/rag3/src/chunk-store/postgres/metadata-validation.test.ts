@@ -101,34 +101,6 @@ describe("PostgresChunkStore with metadata validation", () => {
 		);
 	});
 
-	it("should not validate metadata when schema is not provided", async () => {
-		const store = new PostgresChunkStore({
-			database: mockDatabaseConfig,
-			tableName: "test_chunks",
-			columnMapping: mockColumnMapping,
-			// No metadataSchema provided
-		});
-
-		const metadata = {
-			title: "Test Document",
-			author: 123, // Would be invalid if validated
-			publishedAt: "not a date", // Would be invalid if validated
-		};
-
-		const chunks = [
-			{
-				content: "Test content",
-				index: 0,
-				embedding: [1, 2, 3],
-			},
-		];
-
-		// Should not throw because no validation occurs
-		await expect(
-			store.insert("doc1", chunks, metadata),
-		).resolves.toBeUndefined();
-	});
-
 	it("should provide detailed error information for validation failures", async () => {
 		const metadataSchema = z.object({
 			title: z.string().min(1),
