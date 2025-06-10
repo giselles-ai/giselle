@@ -102,6 +102,7 @@ async function ingestGitHubRepository(params: {
 	>({
 		documentLoader: githubLoader,
 		chunkStore,
+		documentKey: (document) => document.metadata.path,
 		metadataTransform: (
 			metadata: GitHubDocumentMetadata,
 		): GitHubChunkMetadata => ({
