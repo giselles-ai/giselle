@@ -259,7 +259,7 @@ async function queryVectorStore(
 
 	// Prefer new vectorStoreQueryServices over legacy vectorStoreQueryFunctions
 	if (vectorStoreQueryServices?.github) {
-		// Use new rag2-based implementation
+		// Use new rag3-based implementation
 		const { github } = vectorStoreQueryServices;
 		const results = await Promise.all(
 			vectorStoreNodes
