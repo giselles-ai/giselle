@@ -143,10 +143,15 @@ function hasShapeProperty<T>(
 	}
 
 	// shapeプロパティが存在する場合、その型をチェック
-	const shapeValue = (schema as Record<string, unknown>).shape;
-	return shapeValue !== null && typeof shapeValue === "object";
+	// 型アサーションを避けて安全にアクセス
+	const potentialShape = (schema as { shape?: unknown }).shape;
+	return (
+		potentialShape !== null &&
+		potentialShape !== undefined &&
+		typeof potentialShape === "object" &&
+		!Array.isArray(potentialShape)
+	);
 }
-
 
 /**
  * メタデータスキーマからColumnMappingを自動生成（型安全版）

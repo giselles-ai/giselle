@@ -204,7 +204,8 @@ export class IngestPipeline<
 		// 条件付き型により、コンパイル時にチェックされているが、
 		// 実行時の安全性のために明示的にチェック
 		if (this.isMetadataCompatible(sourceMetadata)) {
-			return sourceMetadata as TTargetMetadata;
+			// 型ガードにより、sourceMetadataはTSourceMetadata & TTargetMetadata型
+			return sourceMetadata;
 		}
 
 		throw OperationError.invalidOperation(

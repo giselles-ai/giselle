@@ -106,10 +106,40 @@ export function createColumnMappingFromZod<
 		...metadataMapping,
 	};
 
-	// 構造的に互換性があることを保証するための型アサーション
-	// ランタイムでは正しいColumnMapping構造を持っているが、
-	// TypeScriptが複雑な型関係を正確に推論できないため
-	return result as ColumnMapping<z.infer<TSchema>>;
+	// ColumnMappingの構造要件を満たしているかを実行時検証
+	if (isValidColumnMapping<z.infer<TSchema>>(result, schema)) {
+		return result;
+	}
+
+	throw new Error(
+		"Failed to create valid ColumnMapping: missing required columns",
+	);
+}
+
+/**
+ * オブジェクトが有効なColumnMapping構造を持っているかチェックする型ガード
+ */
+function isValidColumnMapping<TMetadata>(
+	obj: Record<string, string>,
+	schema: z.ZodObject<z.ZodRawShape>,
+): obj is ColumnMapping<TMetadata> {
+	// 必須カラムが存在するかチェック
+	const requiredColumns = ["documentKey", "content", "index", "embedding"];
+	for (const column of requiredColumns) {
+		if (!(column in obj) || typeof obj[column] !== "string") {
+			return false;
+		}
+	}
+
+	// スキーマのすべてのフィールドに対応するマッピングが存在するかチェック
+	const schemaKeys = Object.keys(schema.shape);
+	for (const key of schemaKeys) {
+		if (!(key in obj) || typeof obj[key] !== "string") {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 /**

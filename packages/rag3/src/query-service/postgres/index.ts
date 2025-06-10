@@ -178,12 +178,12 @@ export class PostgresQueryService<
 
 		// スキーマが提供されていない場合の処理
 		if (!metadataSchema) {
-			// スキーマが提供されていない場合、基本的な型チェックのみ実行
-			if (metadata !== null && typeof metadata === "object") {
-				return metadata as TMetadata;
+			// スキーマが提供されていない場合、より厳密な型チェックを実行
+			if (this.isValidMetadataObject(metadata)) {
+				return metadata;
 			}
 			throw new ValidationError(
-				"Metadata validation failed: expected object",
+				"Metadata validation failed: expected object with string keys",
 				undefined,
 				{ operation: "validateMetadata", metadata },
 			);
@@ -200,6 +200,37 @@ export class PostgresQueryService<
 		}
 
 		return result.data;
+	}
+
+	/**
+	 * メタデータが有効なオブジェクト形式かチェックする型ガード
+	 */
+	private isValidMetadataObject(metadata: unknown): metadata is TMetadata {
+		// nullチェック
+		if (metadata === null || metadata === undefined) {
+			return false;
+		}
+
+		// オブジェクトかチェック
+		if (typeof metadata !== "object") {
+			return false;
+		}
+
+		// 配列は除外
+		if (Array.isArray(metadata)) {
+			return false;
+		}
+
+		// プレーンオブジェクトであることを確認
+		// プロトタイプチェーンの確認でプレーンオブジェクトかチェック
+		try {
+			return (
+				Object.getPrototypeOf(metadata) === Object.prototype ||
+				Object.getPrototypeOf(metadata) === null
+			);
+		} catch {
+			return false;
+		}
 	}
 
 	private escapeIdentifier(identifier: string): string {
