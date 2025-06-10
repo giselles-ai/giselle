@@ -17,7 +17,7 @@ import { z } from "zod/v4";
 /**
  * GitHub chunk metadata schema and type for RAG storage
  */
-const githubChunkMetadataSchema = z.object({
+export const githubChunkMetadataSchema = z.object({
 	repositoryIndexDbId: z.number(),
 	commitSha: z.string(),
 	fileSha: z.string(),
@@ -25,7 +25,7 @@ const githubChunkMetadataSchema = z.object({
 	nodeId: z.string(),
 });
 
-type GitHubChunkMetadata = z.infer<typeof githubChunkMetadataSchema>;
+export type GitHubChunkMetadata = z.infer<typeof githubChunkMetadataSchema>;
 
 /**
  * Create PostgreSQL connection config from environment

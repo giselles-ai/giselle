@@ -127,7 +127,6 @@ export interface SimpleIngestConfig<
 		batchSize?: number;
 		onProgress?: (progress: {
 			processedDocuments: number;
-			totalDocuments: number;
 			currentDocument?: string;
 		}) => void;
 	};

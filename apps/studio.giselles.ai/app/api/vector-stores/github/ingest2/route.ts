@@ -116,7 +116,7 @@ async function ingestGitHubRepository(params: {
 			batchSize: 50,
 			onProgress: (progress) => {
 				console.log(
-					`Progress: ${progress.processedDocuments}/${progress.totalDocuments} documents`,
+					`Ingesting... (${progress.processedDocuments}) ${progress.currentDocument}`,
 				);
 			},
 		},
@@ -124,7 +124,7 @@ async function ingestGitHubRepository(params: {
 
 	const result = await pipeline.ingest(params.source);
 	console.log(
-		`Ingested ${result.totalChunks} chunks from ${result.totalDocuments} documents`,
+		`Ingested from ${result.totalDocuments} documents with success: ${result.successfulDocuments}, failure: ${result.failedDocuments}`,
 	);
 }
 
