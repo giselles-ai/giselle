@@ -17,6 +17,7 @@ vi.mock("../../database/postgres", () => ({
 
 vi.mock("pgvector/pg", () => ({
 	toSql: vi.fn((arr) => `[${arr.join(",")}]`),
+	registerTypes: vi.fn().mockResolvedValue(undefined),
 }));
 
 describe("PostgresChunkStore with metadata validation", () => {
