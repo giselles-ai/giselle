@@ -1,8 +1,9 @@
 import type { PoolClient } from "pg";
 import * as pgvector from "pgvector/pg";
+import type { z } from "zod";
 import { PoolManager } from "../../database/postgres";
 import type { ColumnMapping, DatabaseConfig } from "../../database/types";
-import { DatabaseError } from "../../errors";
+import { DatabaseError, ValidationError } from "../../errors";
 import type { ChunkStore, ChunkWithEmbedding } from "../types";
 
 export interface PostgresChunkStoreConfig<TMetadata> {
@@ -11,6 +12,8 @@ export interface PostgresChunkStoreConfig<TMetadata> {
 	columnMapping: ColumnMapping<TMetadata>;
 	// 全レコードに適用される静的な値
 	staticContext?: Record<string, unknown>;
+	// メタデータの検証用Zodスキーマ（オプショナル）
+	metadataSchema?: z.ZodType<TMetadata>;
 }
 
 export class PostgresChunkStore<
@@ -29,7 +32,20 @@ export class PostgresChunkStore<
 			tableName,
 			columnMapping,
 			staticContext = {},
+			metadataSchema,
 		} = this.config;
+
+		// メタデータの検証（スキーマが提供されている場合）
+		if (metadataSchema) {
+			const result = metadataSchema.safeParse(metadata);
+			if (!result.success) {
+				throw new ValidationError(
+					`Invalid metadata for document ${documentKey}`,
+					result.error.errors,
+				);
+			}
+		}
+
 		const pool = PoolManager.getPool(database);
 
 		// トランザクション開始
@@ -62,6 +78,9 @@ export class PostgresChunkStore<
 			await client.query("COMMIT");
 		} catch (error) {
 			await client.query("ROLLBACK");
+			if (error instanceof ValidationError) {
+				throw error;
+			}
 			throw new DatabaseError(
 				`Failed to insert chunks for document: ${documentKey}`,
 				error instanceof Error ? error : undefined,

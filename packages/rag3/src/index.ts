@@ -55,3 +55,26 @@ export {
 	type IngestError,
 	type IngestResult,
 } from "./ingest";
+
+// Schemas
+export {
+	// Core schemas
+	ChunkSchema,
+	ChunkWithEmbeddingSchema,
+	DatabaseConfigSchema,
+	RequiredColumnsSchema,
+	createDocumentSchema,
+	createColumnMappingSchema,
+	createQueryResultSchema,
+	// Helper functions
+	createColumnMappingFromZod,
+	addTypeDiscriminator,
+	validateMetadata,
+	// Types
+	type ChunkZod,
+	type ChunkWithEmbeddingZod,
+	type DatabaseConfigZod,
+	type RequiredColumnsZod,
+	type CaseConversion,
+	type CreateColumnMappingOptions,
+} from "./schemas";

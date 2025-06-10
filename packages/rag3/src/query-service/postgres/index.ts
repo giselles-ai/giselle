@@ -1,8 +1,9 @@
 import * as pgvector from "pgvector/pg";
+import type { z } from "zod";
 import { PoolManager } from "../../database/postgres";
 import type { ColumnMapping, DatabaseConfig } from "../../database/types";
 import type { Embedder } from "../../embedder/types";
-import { DatabaseError, EmbeddingError } from "../../errors";
+import { DatabaseError, EmbeddingError, ValidationError } from "../../errors";
 import type { QueryResult, QueryService } from "../types";
 
 export type DistanceFunction = "cosine" | "euclidean" | "inner_product";
@@ -20,6 +21,8 @@ export interface PostgresQueryServiceConfig<TContext, TMetadata> {
 	searchOptions?: {
 		distanceFunction?: DistanceFunction;
 	};
+	// メタデータの検証用Zodスキーマ（オプショナル）
+	metadataSchema?: z.ZodType<TMetadata>;
 }
 
 export class PostgresQueryService<
@@ -100,16 +103,26 @@ export class PostgresQueryService<
 			const result = await pool.query(sql, values);
 
 			// 結果をマッピング
-			return result.rows.map((row) => ({
-				chunk: {
-					content: row.content,
-					index: row.index,
-				},
-				similarity: row.similarity,
-				metadata: this.extractMetadata(row, metadataColumns),
-			}));
+			return result.rows.map((row) => {
+				const metadata = this.extractMetadata(row, metadataColumns);
+
+				// メタデータの検証（スキーマが提供されている場合）
+				const validatedMetadata = this.validateMetadata(metadata);
+
+				return {
+					chunk: {
+						content: row.content,
+						index: row.index,
+					},
+					similarity: row.similarity,
+					metadata: validatedMetadata,
+				};
+			});
 		} catch (error) {
 			if (error instanceof EmbeddingError) {
+				throw error;
+			}
+			if (error instanceof ValidationError) {
 				throw error;
 			}
 			throw new DatabaseError(
@@ -138,6 +151,26 @@ export class PostgresQueryService<
 		return Object.fromEntries(
 			metadataColumns.map(({ metadataKey }) => [metadataKey, row[metadataKey]]),
 		) as TMetadata;
+	}
+
+	private validateMetadata(metadata: TMetadata): TMetadata {
+		const { metadataSchema } = this.config;
+
+		// スキーマが提供されていない場合はそのまま返す
+		if (!metadataSchema) {
+			return metadata;
+		}
+
+		// メタデータの検証
+		const result = metadataSchema.safeParse(metadata);
+		if (!result.success) {
+			throw new ValidationError(
+				"Invalid metadata retrieved from database",
+				result.error.errors,
+			);
+		}
+
+		return result.data;
 	}
 
 	private escapeIdentifier(identifier: string): string {
