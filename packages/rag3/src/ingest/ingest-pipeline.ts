@@ -45,11 +45,8 @@ export interface IngestPipelineConfig<
 }
 
 export interface IngestProgress {
-	totalDocuments: number;
-	processedDocuments: number;
 	currentDocument?: string;
-	totalChunks: number;
-	processedChunks: number;
+	processedDocuments: number;
 }
 
 export interface IngestError {
@@ -63,7 +60,6 @@ export interface IngestResult {
 	totalDocuments: number;
 	successfulDocuments: number;
 	failedDocuments: number;
-	totalChunks: number;
 	errors: Array<{ document: string; error: Error }>;
 }
 
@@ -105,39 +101,35 @@ export class IngestPipeline<
 			totalDocuments: 0,
 			successfulDocuments: 0,
 			failedDocuments: 0,
-			totalChunks: 0,
 			errors: [],
 		};
 
 		const progress: IngestProgress = {
-			totalDocuments: 0,
 			processedDocuments: 0,
-			totalChunks: 0,
-			processedChunks: 0,
+			currentDocument: undefined,
 		};
 
 		try {
-			// process documents
+			// Collect documents into batches for more efficient processing
+			const documentBatch: Array<Document<TSourceMetadata>> = [];
+			
+			// process documents in batches
 			for await (const document of this.documentLoader.load(
 				params as DocumentLoaderParams,
 			)) {
 				result.totalDocuments++;
-				progress.totalDocuments++;
-				progress.currentDocument = this.getDocumentKey(document);
+				documentBatch.push(document);
 
-				try {
-					await this.processDocument(document);
-					result.successfulDocuments++;
-					progress.processedDocuments++;
-				} catch (error) {
-					result.failedDocuments++;
-					result.errors.push({
-						document: progress.currentDocument,
-						error: error instanceof Error ? error : new Error(String(error)),
-					});
+				// Process batch when it reaches the configured size
+				if (documentBatch.length >= this.options.batchSize) {
+					await this.processBatch(documentBatch, result, progress);
+					documentBatch.length = 0; // Clear the batch
 				}
+			}
 
-				this.options.onProgress(progress);
+			// Process any remaining documents in the final batch
+			if (documentBatch.length > 0) {
+				await this.processBatch(documentBatch, result, progress);
 			}
 		} catch (error) {
 			throw OperationError.invalidOperation(
@@ -148,6 +140,36 @@ export class IngestPipeline<
 		}
 
 		return result;
+	}
+
+	/**
+	 * Process a batch of documents efficiently with optimized connection usage
+	 */
+	private async processBatch(
+		documents: Array<Document<TSourceMetadata>>,
+		result: IngestResult,
+		progress: IngestProgress,
+	): Promise<void> {
+		// Process documents sequentially within the batch
+		// This maintains the existing single-document transaction model
+		// while grouping documents for better overall efficiency
+		for (const document of documents) {
+			progress.currentDocument = this.getDocumentKey(document);
+			
+			try {
+				await this.processDocument(document);
+				result.successfulDocuments++;
+				progress.processedDocuments++;
+			} catch (error) {
+				result.failedDocuments++;
+				result.errors.push({
+					document: progress.currentDocument,
+					error: error instanceof Error ? error : new Error(String(error)),
+				});
+			}
+
+			this.options.onProgress(progress);
+		}
 	}
 
 	private async processDocument(

@@ -99,7 +99,6 @@ describe("IngestPipeline", () => {
 
 		expect(onProgress).toHaveBeenCalled();
 		const lastCall = onProgress.mock.calls[onProgress.mock.calls.length - 1][0];
-		expect(lastCall.totalDocuments).toBe(2);
 		expect(lastCall.processedDocuments).toBe(2);
 	});
 
