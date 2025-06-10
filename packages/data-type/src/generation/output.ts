@@ -59,11 +59,15 @@ export const SourceOutput = GenerationOutputBase.extend({
 const VectorStoreSource = z.discriminatedUnion("provider", [
 	GitHubVectorStoreSource,
 ]);
+const VectorStoreQueryResultMetadata = z.record(
+	z.string(),
+	z.string().or(z.number()),
+);
 const VectorStoreQueryResultRecord = z.object({
 	chunkContent: z.string(),
 	chunkIndex: z.number(),
 	score: z.number(),
-	metadata: z.record(z.string(), z.string()),
+	metadata: VectorStoreQueryResultMetadata,
 });
 const VectorStoreQueryResult = z.object({
 	type: z.literal("vector-store"),

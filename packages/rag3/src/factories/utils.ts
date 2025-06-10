@@ -4,6 +4,25 @@ import type { ColumnMapping, RequiredColumns } from "../database/types";
 import { OpenAIEmbedder } from "../embedder";
 
 /**
+ * Default configuration values for factory functions
+ */
+const FACTORY_DEFAULTS = {
+	/**
+	 * Default OpenAI embedding model
+	 */
+	OPENAI_MODEL: "text-embedding-3-small",
+
+	/**
+	 * Default line chunker configuration
+	 */
+	CHUNKER: {
+		MAX_LINES: 150,
+		OVERLAP: 30,
+		MAX_CHARS: 10000,
+	},
+} as const;
+
+/**
  * Default mapping for required columns
  */
 export const DEFAULT_REQUIRED_COLUMNS: RequiredColumns = {
@@ -146,7 +165,7 @@ export function createDefaultEmbedder() {
 	}
 	return new OpenAIEmbedder({
 		apiKey,
-		model: "text-embedding-3-small",
+		model: FACTORY_DEFAULTS.OPENAI_MODEL,
 	});
 }
 
@@ -155,8 +174,8 @@ export function createDefaultEmbedder() {
  */
 export function createDefaultChunker() {
 	return new LineChunker({
-		maxLines: 150,
-		overlap: 30,
-		maxChars: 10000,
+		maxLines: FACTORY_DEFAULTS.CHUNKER.MAX_LINES,
+		overlap: FACTORY_DEFAULTS.CHUNKER.OVERLAP,
+		maxChars: FACTORY_DEFAULTS.CHUNKER.MAX_CHARS,
 	});
 }

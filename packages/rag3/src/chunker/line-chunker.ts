@@ -2,6 +2,34 @@ import { z } from "zod/v4";
 import { ConfigurationError } from "../errors";
 import type { Chunker } from "./types";
 
+/**
+ * Constants for line chunker behavior
+ */
+const CHUNKER_CONSTANTS = {
+	/**
+	 * Threshold ratio for detecting long lines (relative to maxChars)
+	 * Used to identify lines that might need special handling
+	 */
+	LONG_LINE_THRESHOLD_RATIO: 0.8,
+
+	/**
+	 * Minimum step size to ensure progress when chunking
+	 * Prevents infinite loops when overlap is too large
+	 */
+	MIN_STEP_SIZE: 1,
+
+	/**
+	 * Word boundary patterns for intelligent text splitting
+	 * Prioritizes breaking at natural language boundaries
+	 */
+	WORD_BOUNDARY_PATTERN: /\s|[,.;!?]/,
+
+	/**
+	 * Minimum break point to avoid creating empty chunks
+	 */
+	MIN_BREAK_POINT: 1,
+} as const;
+
 const LineChunkerOptionsSchema = z
 	.object({
 		/**
@@ -92,7 +120,10 @@ export class LineChunker implements Chunker {
 		const chunks: string[] = [];
 
 		// Ensure we make progress even with large overlaps
-		const step = Math.max(1, this.maxLines - this.overlap);
+		const step = Math.max(
+			CHUNKER_CONSTANTS.MIN_STEP_SIZE,
+			this.maxLines - this.overlap,
+		);
 
 		for (let i = 0; i < lines.length; i += step) {
 			const endIndex = Math.min(i + this.maxLines, lines.length);
@@ -128,7 +159,8 @@ export class LineChunker implements Chunker {
 	 * Check if content has long lines after processing
 	 */
 	private hasLongLinesAfterProcessing(content: string): boolean {
-		const threshold = this.maxChars * 0.8;
+		const threshold =
+			this.maxChars * CHUNKER_CONSTANTS.LONG_LINE_THRESHOLD_RATIO;
 		return content.split("\n").some((line) => line.length > threshold);
 	}
 
@@ -151,8 +183,14 @@ export class LineChunker implements Chunker {
 
 			// Try to find a good break point (space, punctuation)
 			let breakPoint = this.maxChars;
-			for (let i = this.maxChars - 1; i > this.maxChars * 0.8; i--) {
-				if (i < remaining.length && /\s|[,.;!?]/.test(remaining[i])) {
+			const minBreakPoint =
+				this.maxChars * CHUNKER_CONSTANTS.LONG_LINE_THRESHOLD_RATIO;
+
+			for (let i = this.maxChars - 1; i > minBreakPoint; i--) {
+				if (
+					i < remaining.length &&
+					CHUNKER_CONSTANTS.WORD_BOUNDARY_PATTERN.test(remaining[i])
+				) {
 					breakPoint = i + 1;
 					break;
 				}
@@ -160,7 +198,7 @@ export class LineChunker implements Chunker {
 
 			// Ensure we make progress (avoid infinite loop)
 			if (breakPoint === 0) {
-				breakPoint = Math.max(1, this.maxChars);
+				breakPoint = Math.max(CHUNKER_CONSTANTS.MIN_BREAK_POINT, this.maxChars);
 			}
 
 			const chunk = remaining.slice(0, breakPoint).trim();
