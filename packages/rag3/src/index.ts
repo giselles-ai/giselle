@@ -56,29 +56,6 @@ export {
 	type IngestResult,
 } from "./ingest";
 
-// Schemas
-export {
-	addTypeDiscriminator,
-	// Core schemas
-	ChunkSchema,
-	ChunkWithEmbeddingSchema,
-	// Helper functions
-	createColumnMappingFromZod,
-	createColumnMappingSchema,
-	createDocumentSchema,
-	createQueryResultSchema,
-	DatabaseConfigSchema,
-	RequiredColumnsSchema,
-	validateMetadata,
-	type CaseConversion,
-	type ChunkWithEmbeddingZod,
-	// Types
-	type ChunkZod,
-	type CreateColumnMappingOptions,
-	type DatabaseConfigZod,
-	type RequiredColumnsZod,
-} from "./schemas";
-
 // Simplified API with smart defaults
 export {
 	// Factory functions
@@ -94,7 +71,7 @@ export {
 	// Types
 	type ChunkStoreConfig,
 	type QueryServiceConfig,
-} from "./presets";
+} from "./factories";
 
 // Enhanced errors (additional classes and utilities)
 export {
