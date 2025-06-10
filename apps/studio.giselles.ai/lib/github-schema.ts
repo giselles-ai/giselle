@@ -1,9 +1,9 @@
 import { z } from "zod/v4";
 
 /**
- * GitHub Blob metadata schema and type
+ * GitHub chunk metadata schema and type for RAG storage
  */
-export const gitHubBlobMetadataSchema = z.object({
+export const githubChunkMetadataSchema = z.object({
 	repositoryIndexDbId: z.number(),
 	commitSha: z.string(),
 	fileSha: z.string(),
@@ -11,4 +11,4 @@ export const gitHubBlobMetadataSchema = z.object({
 	nodeId: z.string(),
 });
 
-export type GitHubBlobMetadata = z.infer<typeof gitHubBlobMetadataSchema>;
+export type GitHubChunkMetadata = z.infer<typeof githubChunkMetadataSchema>;

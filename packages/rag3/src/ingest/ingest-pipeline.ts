@@ -9,12 +9,15 @@ import type { Embedder } from "../embedder/types";
 import { OperationError } from "../errors";
 
 export interface IngestPipelineConfig<
-	TMetadata extends Record<string, unknown>,
+	TSourceMetadata extends Record<string, unknown>,
+	TTargetMetadata extends Record<string, unknown> = TSourceMetadata,
 > {
-	documentLoader: DocumentLoader<TMetadata>;
+	documentLoader: DocumentLoader<TSourceMetadata>;
 	chunker: Chunker;
 	embedder: Embedder;
-	chunkStore: ChunkStore<TMetadata>;
+	chunkStore: ChunkStore<TTargetMetadata>;
+	// メタデータ変換関数（省略可能）
+	metadataTransform?: (metadata: TSourceMetadata) => TTargetMetadata;
 	// オプション設定
 	options?: {
 		batchSize?: number; // 埋め込みのバッチサイズ
@@ -48,20 +51,25 @@ export interface IngestResult {
 	errors: Array<{ document: string; error: Error }>;
 }
 
-export class IngestPipeline<TMetadata extends Record<string, unknown>> {
-	private documentLoader: DocumentLoader<TMetadata>;
+export class IngestPipeline<
+	TSourceMetadata extends Record<string, unknown>,
+	TTargetMetadata extends Record<string, unknown> = TSourceMetadata,
+> {
+	private documentLoader: DocumentLoader<TSourceMetadata>;
 	private chunker: Chunker;
 	private embedder: Embedder;
-	private chunkStore: ChunkStore<TMetadata>;
+	private chunkStore: ChunkStore<TTargetMetadata>;
+	private metadataTransform?: (metadata: TSourceMetadata) => TTargetMetadata;
 	private options: Required<
-		NonNullable<IngestPipelineConfig<TMetadata>["options"]>
+		NonNullable<IngestPipelineConfig<TSourceMetadata, TTargetMetadata>["options"]>
 	>;
 
-	constructor(config: IngestPipelineConfig<TMetadata>) {
+	constructor(config: IngestPipelineConfig<TSourceMetadata, TTargetMetadata>) {
 		this.documentLoader = config.documentLoader;
 		this.chunker = config.chunker;
 		this.embedder = config.embedder;
 		this.chunkStore = config.chunkStore;
+		this.metadataTransform = config.metadataTransform;
 		this.options = {
 			batchSize: 100,
 			maxRetries: 3,
@@ -122,8 +130,13 @@ export class IngestPipeline<TMetadata extends Record<string, unknown>> {
 		return result;
 	}
 
-	private async processDocument(document: Document<TMetadata>): Promise<void> {
+	private async processDocument(document: Document<TSourceMetadata>): Promise<void> {
 		const documentKey = this.getDocumentKey(document);
+
+		// メタデータ変換を適用
+		const targetMetadata = this.metadataTransform 
+			? this.metadataTransform(document.metadata)
+			: document.metadata as unknown as TTargetMetadata;
 
 		// リトライロジック
 		for (let attempt = 1; attempt <= this.options.maxRetries; attempt++) {
@@ -146,8 +159,8 @@ export class IngestPipeline<TMetadata extends Record<string, unknown>> {
 					}
 				}
 
-				// 保存
-				await this.chunkStore.insert(documentKey, chunks, document.metadata);
+				// 変換されたメタデータで保存
+				await this.chunkStore.insert(documentKey, chunks, targetMetadata);
 				return; // 成功したら終了
 			} catch (error) {
 				const isLastAttempt = attempt === this.options.maxRetries;
@@ -170,7 +183,7 @@ export class IngestPipeline<TMetadata extends Record<string, unknown>> {
 		}
 	}
 
-	private getDocumentKey(document: Document<TMetadata>): string {
+	private getDocumentKey(document: Document<TSourceMetadata>): string {
 		// メタデータから適切なキーを生成
 		// 実装によって異なるが、一般的にはパスやIDを使用
 		const metadata = document.metadata as Record<string, unknown>;

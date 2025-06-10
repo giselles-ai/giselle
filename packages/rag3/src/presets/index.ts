@@ -20,6 +20,7 @@ export const DEFAULT_REQUIRED_COLUMNS: RequiredColumns = {
 	embedding: "embedding",
 } as const;
 
+
 /**
  * 文字列をsnake_caseに変換
  */
@@ -213,15 +214,22 @@ export function createDefaultChunker() {
 /**
  * 簡素化されたIngestPipeline設定オプション
  */
-export interface SimpleIngestConfig<TMetadata extends Record<string, unknown>> {
+export interface SimpleIngestConfig<
+	TSourceMetadata extends Record<string, unknown>,
+	TTargetMetadata extends Record<string, unknown> = TSourceMetadata
+> {
 	/**
 	 * ドキュメントローダー
 	 */
-	documentLoader: DocumentLoader<TMetadata>;
+	documentLoader: DocumentLoader<TSourceMetadata>;
 	/**
 	 * チャンクストア
 	 */
-	chunkStore: ChunkStore<TMetadata>;
+	chunkStore: ChunkStore<TTargetMetadata>;
+	/**
+	 * メタデータ変換関数（省略可能）
+	 */
+	metadataTransform?: (metadata: TSourceMetadata) => TTargetMetadata;
 	/**
 	 * パイプラインオプション
 	 */
@@ -239,10 +247,13 @@ export interface SimpleIngestConfig<TMetadata extends Record<string, unknown>> {
  * 簡素化されたIngestPipeline作成関数
  * chunker や embedder の詳細を隠蔽し、デフォルト設定を使用
  */
-export function createIngestPipeline<TMetadata extends Record<string, unknown>>(
-	config: SimpleIngestConfig<TMetadata>
+export function createIngestPipeline<
+	TSourceMetadata extends Record<string, unknown>,
+	TTargetMetadata extends Record<string, unknown> = TSourceMetadata
+>(
+	config: SimpleIngestConfig<TSourceMetadata, TTargetMetadata>
 ) {
-	const { documentLoader, chunkStore, options = {} } = config;
+	const { documentLoader, chunkStore, metadataTransform, options = {} } = config;
 	
 	// デフォルトのembedderとchunkerを使用
 	const embedder = createDefaultEmbedder();
@@ -253,6 +264,7 @@ export function createIngestPipeline<TMetadata extends Record<string, unknown>>(
 		chunker,
 		embedder,
 		chunkStore,
+		metadataTransform,
 		options: {
 			batchSize: options.batchSize || 50,
 			onProgress: options.onProgress,

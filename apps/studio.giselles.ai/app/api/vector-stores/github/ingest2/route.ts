@@ -4,18 +4,17 @@ import {
 	githubRepositoryIndex,
 } from "@/drizzle";
 import {
-	type GitHubBlobMetadata,
-	gitHubBlobMetadataSchema,
+	type GitHubChunkMetadata,
+	githubChunkMetadataSchema,
 } from "@/lib/github-schema";
 import {
 	GitHubDocumentLoader,
+	type GitHubDocumentMetadata,
 	fetchDefaultBranchHead,
 	octokit,
 } from "@giselle-sdk/github-tool";
 import {
 	type DatabaseConfig,
-	type Document,
-	type DocumentLoader,
 	createChunkStore,
 	createIngestPipeline,
 } from "@giselle/rag3";
@@ -88,38 +87,6 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * GitHubDocumentLoader のメタデータを GitHubBlobMetadata に変換するアダプター
- */
-class GitHubMetadataAdapter implements DocumentLoader<GitHubBlobMetadata> {
-	constructor(
-		private loader: GitHubDocumentLoader,
-		private repositoryIndexDbId: number,
-	) {}
-
-	async *load(params: {
-		owner: string;
-		repo: string;
-		commitSha: string;
-	}): AsyncIterable<Document<GitHubBlobMetadata>> {
-		for await (const doc of this.loader.load(params)) {
-			// GitHubDocumentMetadata を GitHubBlobMetadata に変換
-			const metadata: GitHubBlobMetadata = {
-				repositoryIndexDbId: this.repositoryIndexDbId,
-				commitSha: doc.metadata.commitSha,
-				fileSha: doc.metadata.fileSha,
-				path: doc.metadata.path,
-				nodeId: doc.metadata.nodeId,
-			};
-
-			yield {
-				content: doc.content,
-				metadata,
-			};
-		}
-	}
-}
-
-/**
  * Main GitHub repository ingestion coordination
  */
 async function ingestGitHubRepository(params: {
@@ -144,16 +111,10 @@ async function ingestGitHubRepository(params: {
 		maxBlobSize: 1 * 1024 * 1024,
 	});
 
-	// Adapter to convert metadata
-	const documentLoader = new GitHubMetadataAdapter(
-		githubLoader,
-		repositoryIndexDbId,
-	);
-
-	const chunkStore = createChunkStore<GitHubBlobMetadata>({
+	const chunkStore = createChunkStore<GitHubChunkMetadata>({
 		database,
 		tableName: getTableName(githubRepositoryEmbeddings),
-		metadataSchema: gitHubBlobMetadataSchema,
+		metadataSchema: githubChunkMetadataSchema,
 		staticContext: { repository_index_db_id: repositoryIndexDbId },
 		requiredColumnOverrides: {
 			documentKey: "path",
@@ -169,10 +130,22 @@ async function ingestGitHubRepository(params: {
 		// nodeId -> node_id
 	});
 
-	// 簡素化されたパイプライン作成（chunker/embedderの詳細を隠蔽）
-	const pipeline = createIngestPipeline({
-		documentLoader,
+	// IngestPipelineでメタデータ変換を担当
+	const pipeline = createIngestPipeline<
+		GitHubDocumentMetadata,
+		GitHubChunkMetadata
+	>({
+		documentLoader: githubLoader,
 		chunkStore,
+		metadataTransform: (
+			metadata: GitHubDocumentMetadata,
+		): GitHubChunkMetadata => ({
+			repositoryIndexDbId, // アプリケーション固有情報を注入
+			commitSha: metadata.commitSha,
+			fileSha: metadata.fileSha,
+			path: metadata.path,
+			nodeId: metadata.nodeId,
+		}),
 		options: {
 			batchSize: 50,
 			onProgress: (progress) => {
