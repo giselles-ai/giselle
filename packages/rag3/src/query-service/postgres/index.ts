@@ -154,21 +154,39 @@ export class PostgresQueryService<
 		}
 	}
 
+	/**
+	 * データベースの行からメタデータを安全に抽出（実行時バリデーション付き）
+	 */
 	private extractMetadata(
 		row: Record<string, unknown>,
 		metadataColumns: Array<{ metadataKey: string; dbColumn: string }>,
 	): TMetadata {
-		return Object.fromEntries(
+		// 生のメタデータを構築
+		const rawMetadata = Object.fromEntries(
 			metadataColumns.map(({ metadataKey }) => [metadataKey, row[metadataKey]]),
-		) as TMetadata;
+		);
+
+		// 実行時バリデーションを通してから型保証
+		return this.validateMetadata(rawMetadata);
 	}
 
-	private validateMetadata(metadata: TMetadata): TMetadata {
+	/**
+	 * unknownデータをTMetadataに安全に変換（実行時バリデーション）
+	 */
+	private validateMetadata(metadata: unknown): TMetadata {
 		const { metadataSchema } = this.config;
 
-		// スキーマが提供されていない場合はそのまま返す
+		// スキーマが提供されていない場合の処理
 		if (!metadataSchema) {
-			return metadata;
+			// スキーマが提供されていない場合、基本的な型チェックのみ実行
+			if (metadata !== null && typeof metadata === "object") {
+				return metadata as TMetadata;
+			}
+			throw new ValidationError(
+				"Metadata validation failed: expected object",
+				undefined,
+				{ operation: "validateMetadata", metadata },
+			);
 		}
 
 		// メタデータの検証

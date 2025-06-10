@@ -100,11 +100,16 @@ export function createColumnMappingFromZod<
 		}
 	}
 
-	// 完全なColumnMappingを構築
-	return {
+	// 完全なColumnMappingを段階的に構築（型安全）
+	const result: Record<string, string> = {
 		...finalRequiredColumns,
 		...metadataMapping,
-	} as ColumnMapping<z.infer<TSchema>>;
+	};
+
+	// 構造的に互換性があることを保証するための型アサーション
+	// ランタイムでは正しいColumnMapping構造を持っているが、
+	// TypeScriptが複雑な型関係を正確に推論できないため
+	return result as ColumnMapping<z.infer<TSchema>>;
 }
 
 /**

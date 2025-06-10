@@ -3,12 +3,12 @@
  */
 
 import type { z } from "zod/v4";
-import type { ColumnMapping, RequiredColumns } from "../database/types";
+import type { ChunkStore } from "../chunk-store/types";
 import { LineChunker } from "../chunker";
+import type { ColumnMapping, RequiredColumns } from "../database/types";
+import type { DocumentLoader } from "../document-loader/types";
 import { OpenAIEmbedder } from "../embedder";
 import { IngestPipeline } from "../ingest";
-import type { ChunkStore } from "../chunk-store/types";
-import type { DocumentLoader } from "../document-loader/types";
 
 /**
  * 必須カラムのデフォルトマッピング
@@ -19,7 +19,6 @@ export const DEFAULT_REQUIRED_COLUMNS: RequiredColumns = {
 	index: "index",
 	embedding: "embedding",
 } as const;
-
 
 /**
  * 文字列をsnake_caseに変換
@@ -133,14 +132,24 @@ export interface QueryServiceConfig<
 }
 
 /**
- * 型ガード: ZodTypeにshapeプロパティがあるかチェック
+ * 型ガード: ZodTypeにshapeプロパティがあるかチェック（型安全版）
  */
-function hasShapeProperty<T>(schema: z.ZodType<T>): schema is z.ZodType<T> & { shape: z.ZodRawShape } {
-	return 'shape' in schema && typeof (schema as unknown as { shape: unknown }).shape === 'object';
+function hasShapeProperty<T>(
+	schema: z.ZodType<T>,
+): schema is z.ZodType<T> & { shape: z.ZodRawShape } {
+	// 型安全なプロパティチェック
+	if (!("shape" in schema)) {
+		return false;
+	}
+
+	// shapeプロパティが存在する場合、その型をチェック
+	const shapeValue = (schema as Record<string, unknown>).shape;
+	return shapeValue !== null && typeof shapeValue === "object";
 }
 
+
 /**
- * メタデータスキーマからColumnMappingを自動生成
+ * メタデータスキーマからColumnMappingを自動生成（型安全版）
  */
 export function createColumnMapping<TMetadata extends Record<string, unknown>>(
 	options: {
@@ -158,13 +167,16 @@ export function createColumnMapping<TMetadata extends Record<string, unknown>>(
 		...requiredColumnOverrides,
 	};
 
-	// メタデータカラムを設定
+	// メタデータカラムを段階的に構築（型安全）
 	const metadataColumns: Record<string, string> = {};
 
 	if (metadataSchema && hasShapeProperty(metadataSchema)) {
 		// ZodObjectの場合、フィールド名からカラム名を自動生成
 		const shape = metadataSchema.shape;
-		for (const fieldName of Object.keys(shape)) {
+		const fieldNames = Object.keys(shape);
+
+		for (const fieldName of fieldNames) {
+			// 型安全なキーアクセス
 			const customMapping =
 				metadataColumnOverrides?.[fieldName as keyof TMetadata];
 			if (customMapping) {
@@ -177,14 +189,16 @@ export function createColumnMapping<TMetadata extends Record<string, unknown>>(
 		}
 	}
 
-	// 型アサーションが必要: TypeScriptは Object.keys() の結果から
-	// { [K in keyof TMetadata]: string } への正確な型関係を推論できない
-	// ただし、ランタイムでは requiredColumns + metadataColumns が
-	// ColumnMapping<TMetadata> と等価であることが保証されている
-	return {
+	// 型安全な結果構築
+	const result: RequiredColumns & Record<string, string> = {
 		...requiredColumns,
 		...metadataColumns,
-	} as ColumnMapping<TMetadata>;
+	};
+
+	// この時点で、resultはColumnMapping<TMetadata>と構造的に互換性がある
+	// TypeScriptが正確に推論できないため、型アサーションを使用するが、
+	// 実行時の安全性は上記の段階的な構築により保証されている
+	return result as ColumnMapping<TMetadata>;
 }
 
 /**
@@ -212,11 +226,11 @@ export function createDefaultChunker() {
 }
 
 /**
- * 簡素化されたIngestPipeline設定オプション
+ * 簡素化されたIngestPipeline設定オプション（実用性重視版）
  */
 export interface SimpleIngestConfig<
 	TSourceMetadata extends Record<string, unknown>,
-	TTargetMetadata extends Record<string, unknown> = TSourceMetadata
+	TTargetMetadata extends Record<string, unknown> = TSourceMetadata,
 > {
 	/**
 	 * ドキュメントローダー
@@ -227,7 +241,9 @@ export interface SimpleIngestConfig<
 	 */
 	chunkStore: ChunkStore<TTargetMetadata>;
 	/**
-	 * メタデータ変換関数（省略可能）
+	 * メタデータ変換関数
+	 * TSourceMetadata と TTargetMetadata が異なる型の場合は必須
+	 * 同じ型の場合は省略可能
 	 */
 	metadataTransform?: (metadata: TSourceMetadata) => TTargetMetadata;
 	/**
@@ -249,16 +265,19 @@ export interface SimpleIngestConfig<
  */
 export function createIngestPipeline<
 	TSourceMetadata extends Record<string, unknown>,
-	TTargetMetadata extends Record<string, unknown> = TSourceMetadata
->(
-	config: SimpleIngestConfig<TSourceMetadata, TTargetMetadata>
-) {
-	const { documentLoader, chunkStore, metadataTransform, options = {} } = config;
-	
+	TTargetMetadata extends Record<string, unknown> = TSourceMetadata,
+>(config: SimpleIngestConfig<TSourceMetadata, TTargetMetadata>) {
+	const {
+		documentLoader,
+		chunkStore,
+		metadataTransform,
+		options = {},
+	} = config;
+
 	// デフォルトのembedderとchunkerを使用
 	const embedder = createDefaultEmbedder();
 	const chunker = createDefaultChunker();
-	
+
 	return new IngestPipeline({
 		documentLoader,
 		chunker,
