@@ -1,14 +1,34 @@
 import clsx from "clsx/lite";
-import {
-	DraftingCompassIcon,
-	FileKey2Icon,
-	HistoryIcon,
-	MessageSquareIcon,
-} from "lucide-react";
+import { useWorkflowDesigner } from "giselle-sdk/react";
+import { DraftingCompassIcon, FileKey2Icon, HistoryIcon } from "lucide-react";
+import Link from "next/link";
+import { useCallback } from "react";
+import { GiselleLogo } from "../../icons";
+import { EditableText } from "../properties-panel/ui";
 
 export function SideMenu() {
+	const { updateName, data } = useWorkflowDesigner();
+	const handleChange = useCallback(
+		(value?: string) => {
+			if (!value) {
+				return;
+			}
+			updateName(value);
+		},
+		[updateName],
+	);
 	return (
-		<div className="px-[8px] flex justify-center w-full">
+		<div className="px-[8px] flex flex-col gap-[16px]">
+			<Link href="/">
+				<GiselleLogo className="fill-white-900 w-[70px] h-auto mt-[6px]" />
+			</Link>
+
+			<EditableText
+				fallbackValue="Untitled"
+				onChange={handleChange}
+				value={data.name}
+				size="large"
+			/>
 			<ul
 				className={clsx(
 					"flex flex-col w-full text-white-800 text-[14px]",
