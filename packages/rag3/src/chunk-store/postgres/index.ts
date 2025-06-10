@@ -1,6 +1,7 @@
 import type { PoolClient } from "pg";
 import * as pgvector from "pgvector/pg";
 import type { z } from "zod/v4";
+import { ensurePgVectorTypes } from "../../database/pgvector-registry";
 import { PoolManager } from "../../database/postgres";
 import type { ColumnMapping, DatabaseConfig } from "../../database/types";
 import { DatabaseError, ValidationError } from "../../errors";
@@ -47,10 +48,10 @@ export class PostgresChunkStore<
 		}
 
 		const pool = PoolManager.getPool(database);
-		// register pgvector types
+		// register pgvector types using singleton registry
 		const client = await pool.connect();
 		try {
-			await pgvector.registerTypes(client);
+			await ensurePgVectorTypes(client, database.connectionString);
 		} finally {
 			client.release();
 		}
@@ -101,10 +102,10 @@ export class PostgresChunkStore<
 
 	async deleteByDocumentKey(documentKey: string): Promise<void> {
 		const pool = PoolManager.getPool(this.config.database);
-		// register pgvector types
+		// register pgvector types using singleton registry
 		const client = await pool.connect();
 		try {
-			await pgvector.registerTypes(client);
+			await ensurePgVectorTypes(client, this.config.database.connectionString);
 		} finally {
 			client.release();
 		}

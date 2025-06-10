@@ -1,5 +1,6 @@
 import * as pgvector from "pgvector/pg";
 import type { z } from "zod/v4";
+import { ensurePgVectorTypes } from "../../database/pgvector-registry";
 import { PoolManager } from "../../database/postgres";
 import type { ColumnMapping, DatabaseConfig } from "../../database/types";
 import type { Embedder } from "../../embedder/types";
@@ -37,15 +38,12 @@ export class PostgresQueryService<
 	): Promise<QueryResult<TMetadata>[]> {
 		const { database, tableName, embedder, columnMapping, contextToFilter } =
 			this.config;
-		console.log("====== rag3 =======");
-		console.dir(this.config, { depth: null });
-		console.log("====== /rag3/ =======");
 		const pool = PoolManager.getPool(database);
 
-		// register pgvector types
+		// register pgvector types using singleton registry
 		const client = await pool.connect();
 		try {
-			await pgvector.registerTypes(client);
+			await ensurePgVectorTypes(client, database.connectionString);
 		} finally {
 			client.release();
 		}
