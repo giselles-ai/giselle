@@ -4,6 +4,7 @@ export interface FeatureFlagContextValue {
 	githubVectorStore: boolean;
 	runV3: boolean;
 	sidemenu: boolean;
+	githubTools: boolean;
 }
 export const FeatureFlagContext = createContext<
 	FeatureFlagContextValue | undefined

@@ -25,7 +25,6 @@ import {
 import { Background } from "../ui/background";
 import { ReadOnlyBanner } from "../ui/read-only-banner";
 import { ToastProvider, useToasts } from "../ui/toast";
-import { Beta } from "./beta";
 import { edgeTypes } from "./connector";
 import { type ConnectorType, GradientDef } from "./connector/component";
 import { ContextMenu } from "./context-menu";
@@ -372,11 +371,9 @@ function NodeCanvas() {
 }
 
 export function Editor({
-	githubTools = false,
 	isReadOnly = false,
 	userRole = "viewer",
 }: {
-	githubTools?: boolean;
 	isReadOnly?: boolean;
 	userRole?: "viewer" | "guest" | "editor" | "owner";
 }) {
@@ -456,120 +453,56 @@ export function Editor({
 					/>
 				)}
 
-				<Beta.Provider value={{ githubTools }}>
-					<ToastProvider>
-						<ReactFlowProvider>
-							<ToolbarContextProvider>
-								<MousePositionProvider>
-									<PanelGroup
-										direction="horizontal"
-										className="bg-black-900 h-full flex pr-[16px] py-[16px]"
-									>
-										<Panel defaultSize={10} className="flex py-[16px]">
-											<SideMenu />
-										</Panel>
-
-										<PanelResizeHandle
-											className={clsx(
-												"group pt-[16px] pb-[32px] h-full pl-[3px]",
-											)}
-										>
-											<div className="w-[2px] h-full bg-transparent group-data-[resize-handle-state=hover]:bg-black-400 group-data-[resize-handle-state=drag]:bg-black-400 transition-colors" />
-										</PanelResizeHandle>
-										<Panel className="flex-1 border border-black-400 rounded-[12px]">
-											<PanelGroup direction="horizontal">
-												<Panel>
-													<NodeCanvas />
-												</Panel>
-												<PanelResizeHandle
-													className={clsx(
-														"w-[1px] bg-black-400 cursor-col-resize",
-														"data-[resize-handle-state=hover]:bg-[#4a90e2]",
-														"opacity-0 data-[right-panel=show]:opacity-100 transition-opacity",
-													)}
-													data-right-panel={
-														selectedNodes.length === 1 ? "show" : "hide"
-													}
-												/>
-												<Panel
-													id="right-panel"
-													className="flex"
-													ref={rightPanelRef}
-													defaultSize={0}
-													data-right-panel={
-														selectedNodes.length === 1 ? "show" : "hide"
-													}
-												>
-													{selectedNodes.length === 1 && (
-														<div className="flex-1 overflow-hidden p-[16px]">
-															<PropertiesPanel />
-														</div>
-													)}
-												</Panel>
-											</PanelGroup>
-										</Panel>
-									</PanelGroup>
-									<KeyboardShortcuts />
-								</MousePositionProvider>
-							</ToolbarContextProvider>
-							<GradientDef />
-						</ReactFlowProvider>
-					</ToastProvider>
-					<WorkspaceTour
-						steps={tourSteps}
-						isOpen={isTourOpen}
-						onOpenChange={setIsTourOpen}
-					/>
-				</Beta.Provider>
-			</div>
-		);
-	}
-	return (
-		<div className="flex-1 overflow-hidden font-sans">
-			{showReadOnlyBanner && isReadOnly && (
-				<ReadOnlyBanner
-					onDismiss={handleDismissBanner}
-					userRole={userRole}
-					className="z-50"
-				/>
-			)}
-
-			<Beta.Provider value={{ githubTools }}>
 				<ToastProvider>
 					<ReactFlowProvider>
 						<ToolbarContextProvider>
 							<MousePositionProvider>
 								<PanelGroup
 									direction="horizontal"
-									className="bg-black-900 h-full flex"
+									className="bg-black-900 h-full flex pr-[16px] py-[16px]"
 								>
-									<Panel
-										className="flex-1 px-[16px] pb-[16px] pr-0"
-										defaultSize={100}
-									>
-										<div className="h-full flex">
-											<NodeCanvas />
-										</div>
+									<Panel defaultSize={10} className="flex py-[16px]">
+										<SideMenu />
 									</Panel>
 
 									<PanelResizeHandle
 										className={clsx(
-											"w-[12px] flex items-center justify-center cursor-col-resize",
-											"after:content-[''] after:w-[3px] after:h-[32px] after:bg-[#3a3f44] after:rounded-full",
-											"hover:after:bg-[#4a90e2]",
+											"group pt-[16px] pb-[32px] h-full pl-[3px]",
 										)}
-									/>
-									<Panel
-										id="right-panel"
-										className="flex py-[16px]"
-										ref={rightPanelRef}
-										defaultSize={0}
 									>
-										{selectedNodes.length === 1 && (
-											<div className="flex-1 overflow-hidden">
-												<PropertiesPanel />
-											</div>
-										)}
+										<div className="w-[2px] h-full bg-transparent group-data-[resize-handle-state=hover]:bg-black-400 group-data-[resize-handle-state=drag]:bg-black-400 transition-colors" />
+									</PanelResizeHandle>
+									<Panel className="flex-1 border border-black-400 rounded-[12px]">
+										<PanelGroup direction="horizontal">
+											<Panel>
+												<NodeCanvas />
+											</Panel>
+											<PanelResizeHandle
+												className={clsx(
+													"w-[1px] bg-black-400 cursor-col-resize",
+													"data-[resize-handle-state=hover]:bg-[#4a90e2]",
+													"opacity-0 data-[right-panel=show]:opacity-100 transition-opacity",
+												)}
+												data-right-panel={
+													selectedNodes.length === 1 ? "show" : "hide"
+												}
+											/>
+											<Panel
+												id="right-panel"
+												className="flex"
+												ref={rightPanelRef}
+												defaultSize={0}
+												data-right-panel={
+													selectedNodes.length === 1 ? "show" : "hide"
+												}
+											>
+												{selectedNodes.length === 1 && (
+													<div className="flex-1 overflow-hidden p-[16px]">
+														<PropertiesPanel />
+													</div>
+												)}
+											</Panel>
+										</PanelGroup>
 									</Panel>
 								</PanelGroup>
 								<KeyboardShortcuts />
@@ -583,7 +516,67 @@ export function Editor({
 					isOpen={isTourOpen}
 					onOpenChange={setIsTourOpen}
 				/>
-			</Beta.Provider>
+			</div>
+		);
+	}
+	return (
+		<div className="flex-1 overflow-hidden font-sans">
+			{showReadOnlyBanner && isReadOnly && (
+				<ReadOnlyBanner
+					onDismiss={handleDismissBanner}
+					userRole={userRole}
+					className="z-50"
+				/>
+			)}
+
+			<ToastProvider>
+				<ReactFlowProvider>
+					<ToolbarContextProvider>
+						<MousePositionProvider>
+							<PanelGroup
+								direction="horizontal"
+								className="bg-black-900 h-full flex"
+							>
+								<Panel
+									className="flex-1 px-[16px] pb-[16px] pr-0"
+									defaultSize={100}
+								>
+									<div className="h-full flex">
+										<NodeCanvas />
+									</div>
+								</Panel>
+
+								<PanelResizeHandle
+									className={clsx(
+										"w-[12px] flex items-center justify-center cursor-col-resize",
+										"after:content-[''] after:w-[3px] after:h-[32px] after:bg-[#3a3f44] after:rounded-full",
+										"hover:after:bg-[#4a90e2]",
+									)}
+								/>
+								<Panel
+									id="right-panel"
+									className="flex py-[16px]"
+									ref={rightPanelRef}
+									defaultSize={0}
+								>
+									{selectedNodes.length === 1 && (
+										<div className="flex-1 overflow-hidden">
+											<PropertiesPanel />
+										</div>
+									)}
+								</Panel>
+							</PanelGroup>
+							<KeyboardShortcuts />
+						</MousePositionProvider>
+					</ToolbarContextProvider>
+					<GradientDef />
+				</ReactFlowProvider>
+			</ToastProvider>
+			<WorkspaceTour
+				steps={tourSteps}
+				isOpen={isTourOpen}
+				onOpenChange={setIsTourOpen}
+			/>
 		</div>
 	);
 }

@@ -17,6 +17,7 @@ export default async function Layout({
 				githubVectorStore: true,
 				runV3: true,
 				sidemenu: true,
+				githubTools: true,
 			}}
 		>
 			{children}

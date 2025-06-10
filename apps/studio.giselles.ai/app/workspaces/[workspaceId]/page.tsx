@@ -1,12 +1,11 @@
-import { githubToolsFlag } from "@/flags";
-import Page from "./page.client";
+import { Editor, Header } from "@giselle-internal/workflow-designer-ui";
+import { updateAgentName } from "./actions";
 
-export default async function () {
-	const githubTools = await githubToolsFlag();
+export default function () {
 	return (
-		<Page
-			// Enable if we implement encryption
-			githubTools={githubTools}
-		/>
+		<div className="flex flex-col h-screen bg-black-900">
+			<Header onWorkflowNameChange={updateAgentName} />
+			<Editor />
+		</div>
 	);
 }

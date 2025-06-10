@@ -11,7 +11,11 @@ import {
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
 import clsx from "clsx/lite";
-import { useNodeGenerations, useWorkflowDesigner } from "giselle-sdk/react";
+import {
+	useFeatureFlag,
+	useNodeGenerations,
+	useWorkflowDesigner,
+} from "giselle-sdk/react";
 import { CommandIcon, CornerDownLeft } from "lucide-react";
 import { Tabs } from "radix-ui";
 import { useCallback, useMemo } from "react";
@@ -26,7 +30,6 @@ import {
 import { Button } from "../../../ui/button";
 import { useToasts } from "../../../ui/toast";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
-import { useBeta } from "../../beta";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
@@ -103,7 +106,7 @@ export function TextGenerationNodePropertiesPanel({
 		: jsonOrText;
 	const noWhitespaceText = text?.replace(/[\s\u3000]+/g, "");
 	const disabled = usageLimitsReached || !noWhitespaceText;
-	const beta = useBeta();
+	const { githubTools } = useFeatureFlag();
 
 	return (
 		<PropertiesPanelRoot>
@@ -180,7 +183,7 @@ export function TextGenerationNodePropertiesPanel({
 								<Tabs.Trigger value="prompt">Prompt</Tabs.Trigger>
 								<Tabs.Trigger value="model">Model</Tabs.Trigger>
 								<Tabs.Trigger value="input">Input</Tabs.Trigger>
-								{beta.githubTools && (
+								{githubTools && (
 									<Tabs.Trigger value="tools">Tools</Tabs.Trigger>
 								)}
 							</Tabs.List>

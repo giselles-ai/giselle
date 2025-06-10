@@ -22,7 +22,7 @@ export default function Page() {
 	return (
 		<div className="flex flex-col h-screen bg-black-900">
 			{!sidemenu && <Header isReadOnly={isReadOnly} shareFeatureFlag />}
-			<Editor githubTools isReadOnly={isReadOnly} userRole={userRole} />
+			<Editor isReadOnly={isReadOnly} userRole={userRole} />
 		</div>
 	);
 }
