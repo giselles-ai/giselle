@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { ValidationError } from "../../errors";
 import { PostgresQueryService } from "./index";
 
@@ -224,7 +224,7 @@ describe("PostgresQueryService with metadata validation", () => {
 
 		// Should throw on the first invalid row
 		await expect(service.search("test query", {}, 10)).rejects.toThrow(
-			"Invalid metadata retrieved from database",
+			"Validation failed with 1 error",
 		);
 	});
 });

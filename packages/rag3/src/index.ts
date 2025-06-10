@@ -78,3 +78,31 @@ export {
 	type CaseConversion,
 	type CreateColumnMappingOptions,
 } from "./schemas";
+
+// Simplified API with smart defaults
+export {
+	// Factory functions
+	createChunkStore,
+	createQueryService,
+	// Utilities
+	createColumnMapping,
+	DEFAULT_REQUIRED_COLUMNS,
+	// Types
+	type ChunkStoreConfig,
+	type QueryServiceConfig,
+} from "./presets";
+
+// Enhanced errors (additional classes and utilities)
+export {
+	// Additional error classes not exported above
+	ConfigurationError,
+	OperationError,
+	// Error utilities
+	isErrorCategory,
+	isErrorCode,
+	handleError,
+	// Error types
+	type DatabaseErrorCode,
+	type EmbeddingErrorCode,
+	type OperationErrorCode,
+} from "./errors";

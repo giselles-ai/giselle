@@ -41,9 +41,9 @@ export class OpenAIEmbedder implements Embedder {
 				(item: { embedding: number[] }) => item.embedding,
 			);
 		} catch (error) {
-			throw new EmbeddingError(
-				`Failed to generate embeddings: ${error instanceof Error ? error.message : "Unknown error"}`,
+			throw EmbeddingError.apiError(
 				error instanceof Error ? error : undefined,
+				{ model: this.config.model, textCount: texts.length },
 			);
 		}
 	}

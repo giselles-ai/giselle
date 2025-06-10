@@ -1,5 +1,5 @@
 import * as pgvector from "pgvector/pg";
-import type { z } from "zod";
+import type { z } from "zod/v4";
 import { PoolManager } from "../../database/postgres";
 import type { ColumnMapping, DatabaseConfig } from "../../database/types";
 import type { Embedder } from "../../embedder/types";
@@ -51,12 +51,15 @@ export class PostgresQueryService<
 			client.release();
 		}
 
+		// フィルタ条件を生成（非同期対応）
+		let filters: Record<string, unknown> = {};
+
 		try {
 			// クエリの埋め込みを生成
 			const queryEmbedding = await embedder.embed(query);
 
 			// フィルタ条件を生成（非同期対応）
-			const filters = await contextToFilter(context);
+			filters = await contextToFilter(context);
 
 			// WHERE句を構築
 			const whereConditions: string[] = [];
@@ -125,9 +128,16 @@ export class PostgresQueryService<
 			if (error instanceof ValidationError) {
 				throw error;
 			}
-			throw new DatabaseError(
-				"Failed to execute vector search",
+			throw DatabaseError.queryFailed(
+				"vector search query",
 				error instanceof Error ? error : undefined,
+				{
+					operation: "search",
+					query,
+					limit,
+					tableName,
+					contextFilters: JSON.stringify(filters),
+				},
 			);
 		}
 	}
@@ -164,10 +174,11 @@ export class PostgresQueryService<
 		// メタデータの検証
 		const result = metadataSchema.safeParse(metadata);
 		if (!result.success) {
-			throw new ValidationError(
-				"Invalid metadata retrieved from database",
-				result.error.errors,
-			);
+			throw ValidationError.fromZodError(result.error, {
+				operation: "validateMetadata",
+				source: "database",
+				metadata,
+			});
 		}
 
 		return result.data;

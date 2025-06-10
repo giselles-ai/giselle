@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 
 /**
  * RAG システムの基本的な型のためのZodスキーマ
@@ -55,7 +55,9 @@ export const RequiredColumnsSchema = z.object({
 export type RequiredColumnsZod = z.infer<typeof RequiredColumnsSchema>;
 
 // カラムマッピングのスキーマファクトリー関数
-export const createColumnMappingSchema = <TSchema extends z.ZodObject<z.ZodRawShape>>(
+export const createColumnMappingSchema = <
+	TSchema extends z.ZodObject<z.ZodRawShape>,
+>(
 	metadataSchema: TSchema,
 ) => {
 	// メタデータスキーマからキーを取得

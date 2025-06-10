@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import type { ColumnMapping } from "../database/types";
 
 /**
@@ -46,7 +46,9 @@ export interface CreateColumnMappingOptions {
  * @param options 生成オプション
  * @returns ColumnMapping
  */
-export function createColumnMappingFromZod<TSchema extends z.ZodObject<z.ZodRawShape>>(
+export function createColumnMappingFromZod<
+	TSchema extends z.ZodObject<z.ZodRawShape>,
+>(
 	schema: TSchema,
 	options: CreateColumnMappingOptions = {},
 ): ColumnMapping<z.infer<TSchema>> {
@@ -111,10 +113,9 @@ export function createColumnMappingFromZod<TSchema extends z.ZodObject<z.ZodRawS
  * @param typeName type判別子の値
  * @returns type判別子が追加されたスキーマ
  */
-export function addTypeDiscriminator<TSchema extends z.ZodObject<z.ZodRawShape>>(
-	schema: TSchema,
-	typeName: string,
-) {
+export function addTypeDiscriminator<
+	TSchema extends z.ZodObject<z.ZodRawShape>,
+>(schema: TSchema, typeName: string) {
 	return schema.extend({
 		type: z.literal(typeName),
 	});
@@ -134,7 +135,7 @@ export function validateMetadata<T>(
 	const result = schema.safeParse(metadata);
 	if (!result.success) {
 		throw new Error(
-			`Metadata validation failed: ${JSON.stringify(result.error.errors)}`,
+			`Metadata validation failed: ${JSON.stringify(result.error.issues)}`,
 		);
 	}
 	return result.data;

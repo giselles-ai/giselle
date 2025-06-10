@@ -1,6 +1,6 @@
 import type { PoolClient } from "pg";
 import * as pgvector from "pgvector/pg";
-import type { z } from "zod";
+import type { z } from "zod/v4";
 import { PoolManager } from "../../database/postgres";
 import type { ColumnMapping, DatabaseConfig } from "../../database/types";
 import { DatabaseError, ValidationError } from "../../errors";
@@ -39,10 +39,11 @@ export class PostgresChunkStore<
 		if (metadataSchema) {
 			const result = metadataSchema.safeParse(metadata);
 			if (!result.success) {
-				throw new ValidationError(
-					`Invalid metadata for document ${documentKey}`,
-					result.error.errors,
-				);
+				throw ValidationError.fromZodError(result.error, {
+					operation: "insert",
+					documentKey,
+					tableName,
+				});
 			}
 		}
 
@@ -81,9 +82,15 @@ export class PostgresChunkStore<
 			if (error instanceof ValidationError) {
 				throw error;
 			}
-			throw new DatabaseError(
-				`Failed to insert chunks for document: ${documentKey}`,
+			throw DatabaseError.transactionFailed(
+				"chunk insertion",
 				error instanceof Error ? error : undefined,
+				{
+					operation: "insert",
+					documentKey,
+					tableName,
+					chunkCount: chunks.length,
+				},
 			);
 		} finally {
 			client.release();
@@ -96,9 +103,14 @@ export class PostgresChunkStore<
 		try {
 			await this.deleteByDocumentKeyInternal(documentKey, client);
 		} catch (error) {
-			throw new DatabaseError(
-				`Failed to delete chunks for document: ${documentKey}`,
+			throw DatabaseError.queryFailed(
+				`DELETE FROM ${this.config.tableName}`,
 				error instanceof Error ? error : undefined,
+				{
+					operation: "deleteByDocumentKey",
+					documentKey,
+					tableName: this.config.tableName,
+				},
 			);
 		} finally {
 			client.release();

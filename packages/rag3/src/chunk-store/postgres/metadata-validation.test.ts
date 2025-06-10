@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { ValidationError } from "../../errors";
 import { PostgresChunkStore } from "./index";
 
@@ -168,8 +168,8 @@ describe("PostgresChunkStore with metadata validation", () => {
 			expect.fail("Should have thrown ValidationError");
 		} catch (error) {
 			expect(error).toBeInstanceOf(ValidationError);
-			expect(error.message).toContain("Invalid metadata for document doc1");
-			expect(error.errors).toBeDefined();
+			expect(error.message).toContain("Validation failed");
+			expect(error.zodError).toBeDefined();
 		}
 	});
 });

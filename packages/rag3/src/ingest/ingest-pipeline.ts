@@ -6,7 +6,7 @@ import type {
 	DocumentLoaderParams,
 } from "../document-loader/types";
 import type { Embedder } from "../embedder/types";
-import { Rag3Error } from "../errors";
+import { OperationError } from "../errors";
 
 export interface IngestPipelineConfig<
 	TMetadata extends Record<string, unknown>,
@@ -112,9 +112,10 @@ export class IngestPipeline<TMetadata extends Record<string, unknown>> {
 				this.options.onProgress(progress);
 			}
 		} catch (error) {
-			throw new Rag3Error(
+			throw OperationError.invalidOperation(
+				"ingestion pipeline",
 				"Failed to complete ingestion pipeline",
-				error instanceof Error ? error : undefined,
+				{ cause: error instanceof Error ? error.message : String(error) },
 			);
 		}
 
