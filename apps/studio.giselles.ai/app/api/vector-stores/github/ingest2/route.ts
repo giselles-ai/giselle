@@ -5,7 +5,6 @@ import {
 } from "@/drizzle";
 import {
 	type GitHubBlobMetadata,
-	gitHubBlobColumnMapping,
 	gitHubBlobMetadataSchema,
 } from "@/lib/github-schema";
 import {
@@ -17,11 +16,8 @@ import {
 	type DatabaseConfig,
 	type Document,
 	type DocumentLoader,
-	IngestPipeline,
-	type IngestProgress,
-	LineChunker,
-	OpenAIEmbedder,
-	PostgresChunkStore,
+	createChunkStore,
+	createIngestPipeline,
 } from "@giselle/rag3";
 import type { Octokit } from "@octokit/core";
 import { captureException } from "@sentry/nextjs";
@@ -92,25 +88,28 @@ export async function GET(request: NextRequest) {
 }
 
 /**
- * Adapter to convert GitHubDocumentMetadata to GitHubBlobMetadata
+ * GitHubDocumentLoader のメタデータを GitHubBlobMetadata に変換するアダプター
  */
 class GitHubMetadataAdapter implements DocumentLoader<GitHubBlobMetadata> {
 	constructor(
-		private innerLoader: GitHubDocumentLoader,
+		private loader: GitHubDocumentLoader,
 		private repositoryIndexDbId: number,
-		private params: { owner: string; repo: string; commitSha?: string },
 	) {}
 
-	async *load(): AsyncIterable<Document<GitHubBlobMetadata>> {
-		for await (const doc of this.innerLoader.load(this.params)) {
-			// Map GitHubDocumentMetadata to GitHubBlobMetadata
-			const metadata = gitHubBlobMetadataSchema.parse({
+	async *load(params: {
+		owner: string;
+		repo: string;
+		commitSha: string;
+	}): AsyncIterable<Document<GitHubBlobMetadata>> {
+		for await (const doc of this.loader.load(params)) {
+			// GitHubDocumentMetadata を GitHubBlobMetadata に変換
+			const metadata: GitHubBlobMetadata = {
 				repositoryIndexDbId: this.repositoryIndexDbId,
 				commitSha: doc.metadata.commitSha,
 				fileSha: doc.metadata.fileSha,
 				path: doc.metadata.path,
 				nodeId: doc.metadata.nodeId,
-			});
+			};
 
 			yield {
 				content: doc.content,
@@ -140,44 +139,43 @@ async function ingestGitHubRepository(params: {
 	}
 	const database: DatabaseConfig = { connectionString: postgresUrl };
 
-	// Create document loader
-	const gitHubLoader = new GitHubDocumentLoader(params.octokitClient, {
+	// GitHub document loader
+	const githubLoader = new GitHubDocumentLoader(params.octokitClient, {
 		maxBlobSize: 1 * 1024 * 1024,
 	});
 
-	// Wrap with adapter to add repositoryIndexDbId
+	// Adapter to convert metadata
 	const documentLoader = new GitHubMetadataAdapter(
-		gitHubLoader,
+		githubLoader,
 		repositoryIndexDbId,
-		params.source,
 	);
 
-	const chunkStore = new PostgresChunkStore<GitHubBlobMetadata>({
+	const chunkStore = createChunkStore<GitHubBlobMetadata>({
 		database,
 		tableName: getTableName(githubRepositoryEmbeddings),
-		columnMapping: gitHubBlobColumnMapping,
+		metadataSchema: gitHubBlobMetadataSchema,
 		staticContext: { repository_index_db_id: repositoryIndexDbId },
+		requiredColumnOverrides: {
+			documentKey: "path",
+			content: "chunk_content",
+			index: "chunk_index",
+			// embedding: "embedding" (default)
+		},
+		// Metadata fields will auto-convert from camelCase to snake_case:
+		// repositoryIndexDbId -> repository_index_db_id
+		// commitSha -> commit_sha
+		// fileSha -> file_sha
+		// path -> path
+		// nodeId -> node_id
 	});
 
-	const embedder = new OpenAIEmbedder({
-		apiKey: process.env.OPENAI_API_KEY!,
-		model: "text-embedding-3-small",
-	});
-
-	const chunker = new LineChunker({
-		maxChunkSize: 1000,
-		overlap: 200,
-	});
-
-	// Create and run pipeline
-	const pipeline = new IngestPipeline({
+	// 簡素化されたパイプライン作成（chunker/embedderの詳細を隠蔽）
+	const pipeline = createIngestPipeline({
 		documentLoader,
-		chunker,
-		embedder,
 		chunkStore,
 		options: {
 			batchSize: 50,
-			onProgress: (progress: IngestProgress) => {
+			onProgress: (progress) => {
 				console.log(
 					`Progress: ${progress.processedDocuments}/${progress.totalDocuments} documents`,
 				);
@@ -185,7 +183,7 @@ async function ingestGitHubRepository(params: {
 		},
 	});
 
-	const result = await pipeline.ingest({});
+	const result = await pipeline.ingest(params.source);
 	console.log(
 		`Ingested ${result.totalChunks} chunks from ${result.totalDocuments} documents`,
 	);

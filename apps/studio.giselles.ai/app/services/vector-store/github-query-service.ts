@@ -7,14 +7,10 @@ import {
 } from "@/drizzle";
 import {
 	type GitHubBlobMetadata,
-	gitHubBlobColumnMapping,
+	gitHubBlobMetadataSchema,
 } from "@/lib/github-schema";
 import type { GitHubQueryContext } from "@giselle-sdk/giselle-engine";
-import {
-	type DatabaseConfig,
-	OpenAIEmbedder,
-	PostgresQueryService,
-} from "@giselle/rag3";
+import { type DatabaseConfig, createQueryService } from "@giselle/rag3";
 import { and, eq, getTableName } from "drizzle-orm";
 
 // Create PostgreSQL connection config from environment
@@ -26,21 +22,27 @@ function createDatabaseConfig(): DatabaseConfig {
 	return { connectionString: postgresUrl };
 }
 
-// Create embedder
-const embedder = new OpenAIEmbedder({
-	apiKey: process.env.OPENAI_API_KEY!,
-	model: "text-embedding-3-small",
-});
-
-export const gitHubQueryService = new PostgresQueryService<
+export const gitHubQueryService = createQueryService<
 	GitHubQueryContext,
 	GitHubBlobMetadata
 >({
 	database: createDatabaseConfig(),
 	tableName: getTableName(githubRepositoryEmbeddings),
-	embedder,
-	columnMapping: gitHubBlobColumnMapping,
+	// embedder は省略して自動的にデフォルトのOpenAI embedderを使用
+	metadataSchema: gitHubBlobMetadataSchema,
 	contextToFilter: resolveGitHubEmbeddingFilter,
+	requiredColumnOverrides: {
+		documentKey: "path",
+		content: "chunk_content",
+		index: "chunk_index",
+		// embedding: "embedding" (default)
+	},
+	// Metadata fields will auto-convert from camelCase to snake_case:
+	// repositoryIndexDbId -> repository_index_db_id
+	// commitSha -> commit_sha
+	// fileSha -> file_sha
+	// path -> path
+	// nodeId -> node_id
 });
 
 // Context resolver - handles complex DB resolution logic

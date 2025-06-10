@@ -4,6 +4,11 @@
 
 import type { z } from "zod/v4";
 import type { ColumnMapping, RequiredColumns } from "../database/types";
+import { LineChunker } from "../chunker";
+import { OpenAIEmbedder } from "../embedder";
+import { IngestPipeline } from "../ingest";
+import type { ChunkStore } from "../chunk-store/types";
+import type { DocumentLoader } from "../document-loader/types";
 
 /**
  * 必須カラムのデフォルトマッピング
@@ -47,7 +52,7 @@ export interface ChunkStoreConfig<TMetadata extends Record<string, unknown>> {
 	/**
 	 * メタデータのZodスキーマ（省略可能）
 	 */
-	metadataSchema?: z.ZodType<TMetadata> & { shape: z.ZodRawShape };
+	metadataSchema?: z.ZodType<TMetadata>;
 	/**
 	 * 必須カラムのカスタマイズ（省略可能）
 	 */
@@ -90,9 +95,9 @@ export interface QueryServiceConfig<
 	 */
 	tableName: string;
 	/**
-	 * 埋め込みモデル
+	 * 埋め込みモデル（省略可能、デフォルトのOpenAI embedderを使用）
 	 */
-	embedder: {
+	embedder?: {
 		embed: (text: string) => Promise<number[]>;
 		embedBatch: (texts: string[]) => Promise<number[][]>;
 	};
@@ -105,7 +110,7 @@ export interface QueryServiceConfig<
 	/**
 	 * メタデータのZodスキーマ（省略可能）
 	 */
-	metadataSchema?: z.ZodType<TMetadata> & { shape: z.ZodRawShape };
+	metadataSchema?: z.ZodType<TMetadata>;
 	/**
 	 * 必須カラムのカスタマイズ（省略可能）
 	 */
@@ -127,11 +132,18 @@ export interface QueryServiceConfig<
 }
 
 /**
+ * 型ガード: ZodTypeにshapeプロパティがあるかチェック
+ */
+function hasShapeProperty<T>(schema: z.ZodType<T>): schema is z.ZodType<T> & { shape: z.ZodRawShape } {
+	return 'shape' in schema && typeof (schema as unknown as { shape: unknown }).shape === 'object';
+}
+
+/**
  * メタデータスキーマからColumnMappingを自動生成
  */
 export function createColumnMapping<TMetadata extends Record<string, unknown>>(
 	options: {
-		metadataSchema?: z.ZodType<TMetadata> & { shape: z.ZodRawShape };
+		metadataSchema?: z.ZodType<TMetadata>;
 		requiredColumnOverrides?: Partial<RequiredColumns>;
 		metadataColumnOverrides?: Partial<Record<keyof TMetadata, string>>;
 	} = {},
@@ -148,7 +160,7 @@ export function createColumnMapping<TMetadata extends Record<string, unknown>>(
 	// メタデータカラムを設定
 	const metadataColumns: Record<string, string> = {};
 
-	if (metadataSchema) {
+	if (metadataSchema && hasShapeProperty(metadataSchema)) {
 		// ZodObjectの場合、フィールド名からカラム名を自動生成
 		const shape = metadataSchema.shape;
 		for (const fieldName of Object.keys(shape)) {
@@ -172,6 +184,80 @@ export function createColumnMapping<TMetadata extends Record<string, unknown>>(
 		...requiredColumns,
 		...metadataColumns,
 	} as ColumnMapping<TMetadata>;
+}
+
+/**
+ * デフォルトのembedder作成関数
+ */
+export function createDefaultEmbedder() {
+	const apiKey = process.env.OPENAI_API_KEY;
+	if (!apiKey) {
+		throw new Error("OPENAI_API_KEY environment variable is required");
+	}
+	return new OpenAIEmbedder({
+		apiKey,
+		model: "text-embedding-3-small",
+	});
+}
+
+/**
+ * デフォルトのchunker作成関数
+ */
+export function createDefaultChunker() {
+	return new LineChunker({
+		maxChunkSize: 1000,
+		overlap: 200,
+	});
+}
+
+/**
+ * 簡素化されたIngestPipeline設定オプション
+ */
+export interface SimpleIngestConfig<TMetadata extends Record<string, unknown>> {
+	/**
+	 * ドキュメントローダー
+	 */
+	documentLoader: DocumentLoader<TMetadata>;
+	/**
+	 * チャンクストア
+	 */
+	chunkStore: ChunkStore<TMetadata>;
+	/**
+	 * パイプラインオプション
+	 */
+	options?: {
+		batchSize?: number;
+		onProgress?: (progress: {
+			processedDocuments: number;
+			totalDocuments: number;
+			currentDocument?: string;
+		}) => void;
+	};
+}
+
+/**
+ * 簡素化されたIngestPipeline作成関数
+ * chunker や embedder の詳細を隠蔽し、デフォルト設定を使用
+ */
+export function createIngestPipeline<TMetadata extends Record<string, unknown>>(
+	config: SimpleIngestConfig<TMetadata>
+) {
+	const { documentLoader, chunkStore, options = {} } = config;
+	
+	// デフォルトのembedderとchunkerを使用
+	const embedder = createDefaultEmbedder();
+	const chunker = createDefaultChunker();
+	
+	return new IngestPipeline({
+		documentLoader,
+		chunker,
+		embedder,
+		chunkStore,
+		options: {
+			batchSize: options.batchSize || 50,
+			onProgress: options.onProgress,
+		},
+	});
 }
 
 // Re-export factory functions

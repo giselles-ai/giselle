@@ -7,6 +7,7 @@ import {
 	type ChunkStoreConfig,
 	type QueryServiceConfig,
 	createColumnMapping,
+	createDefaultEmbedder,
 } from "./index";
 
 /**
@@ -84,7 +85,7 @@ export function createQueryService<
 	const config: PostgresQueryServiceConfig<TContext, TMetadata> = {
 		database,
 		tableName: options.tableName,
-		embedder: options.embedder,
+		embedder: options.embedder || createDefaultEmbedder(),
 		columnMapping,
 		contextToFilter: options.contextToFilter,
 		searchOptions: options.searchOptions,

@@ -84,12 +84,17 @@ export {
 	// Factory functions
 	createChunkStore,
 	createQueryService,
+	createIngestPipeline,
+	// Default instances
+	createDefaultEmbedder,
+	createDefaultChunker,
 	// Utilities
 	createColumnMapping,
 	DEFAULT_REQUIRED_COLUMNS,
 	// Types
 	type ChunkStoreConfig,
 	type QueryServiceConfig,
+	type SimpleIngestConfig,
 } from "./presets";
 
 // Enhanced errors (additional classes and utilities)
