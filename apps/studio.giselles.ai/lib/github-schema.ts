@@ -12,3 +12,5 @@ export const githubChunkMetadataSchema = z.object({
 });
 
 export type GitHubChunkMetadata = z.infer<typeof githubChunkMetadataSchema>;
+
+// TODO: ここで store 各種作っていいかも。ファイル名と場所も変えつつ。

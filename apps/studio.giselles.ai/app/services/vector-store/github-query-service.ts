@@ -6,8 +6,8 @@ import {
 	teams,
 } from "@/drizzle";
 import {
-	type GitHubBlobMetadata,
-	gitHubBlobMetadataSchema,
+	type GitHubChunkMetadata,
+	githubChunkMetadataSchema,
 } from "@/lib/github-schema";
 import type { GitHubQueryContext } from "@giselle-sdk/giselle-engine";
 import { type DatabaseConfig, createQueryService } from "@giselle/rag3";
@@ -24,12 +24,12 @@ function createDatabaseConfig(): DatabaseConfig {
 
 export const gitHubQueryService = createQueryService<
 	GitHubQueryContext,
-	GitHubBlobMetadata
+	GitHubChunkMetadata
 >({
 	database: createDatabaseConfig(),
 	tableName: getTableName(githubRepositoryEmbeddings),
 	// embedder は省略して自動的にデフォルトのOpenAI embedderを使用
-	metadataSchema: gitHubBlobMetadataSchema,
+	metadataSchema: githubChunkMetadataSchema,
 	contextToFilter: resolveGitHubEmbeddingFilter,
 	requiredColumnOverrides: {
 		documentKey: "path",
