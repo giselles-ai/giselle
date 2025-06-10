@@ -1,5 +1,5 @@
 {
-	"name": "@giselle/rag3",
+	"name": "@giselle-sdk/rag3",
 	"version": "0.1.0",
 	"description": "Simplified RAG system with type safety",
 	"main": "dist/index.js",

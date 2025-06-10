@@ -2,7 +2,7 @@ import type {
 	Document,
 	DocumentLoader,
 	DocumentLoaderParams,
-} from "@giselle/rag3";
+} from "@giselle-sdk/rag3";
 import type { Octokit } from "@octokit/core";
 import { fetchDefaultBranchHead } from "./blob-loader";
 

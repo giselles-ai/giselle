@@ -10,7 +10,7 @@ import {
 	type DatabaseConfig,
 	createChunkStore,
 	createQueryService,
-} from "@giselle/rag3";
+} from "@giselle-sdk/rag3";
 import { and, eq, getTableName } from "drizzle-orm";
 import { z } from "zod/v4";
 

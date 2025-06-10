@@ -5,12 +5,12 @@ import type {
 } from "@giselle-sdk/github-tool";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
 import type { QueryFunction, QueryFunctionParams } from "@giselle-sdk/rag";
+import type { QueryService } from "@giselle-sdk/rag3";
 import type {
 	GenerationCompleteOption,
 	TelemetrySettings,
 } from "@giselle-sdk/telemetry";
 import type { UsageLimits } from "@giselle-sdk/usage-limits";
-import type { QueryService } from "@giselle/rag3";
 import type { Storage } from "unstorage";
 import type { Vault } from "./vault";
 
