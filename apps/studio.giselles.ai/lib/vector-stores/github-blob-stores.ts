@@ -124,7 +124,6 @@ export function createGitHubQueryService() {
 	return createQueryService<GitHubQueryContext, GitHubChunkMetadata>({
 		database: createDatabaseConfig(),
 		tableName: getTableName(githubRepositoryEmbeddings),
-		// embedder は省略して自動的にデフォルトのOpenAI embedderを使用
 		metadataSchema: githubChunkMetadataSchema,
 		contextToFilter: resolveGitHubEmbeddingFilter,
 		requiredColumnOverrides: {
