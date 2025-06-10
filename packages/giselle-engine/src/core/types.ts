@@ -5,7 +5,7 @@ import type {
 } from "@giselle-sdk/github-tool";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
 import type { QueryFunction, QueryFunctionParams } from "@giselle-sdk/rag";
-import type { QueryService } from "@giselle-sdk/rag3";
+import type { QueryService } from "@giselle-sdk/rag2";
 import type {
 	GenerationCompleteOption,
 	TelemetrySettings,

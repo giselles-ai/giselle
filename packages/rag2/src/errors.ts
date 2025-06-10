@@ -1,32 +1,28 @@
-// Standardized error classes for RAG2 package
+import type { ZodError } from "zod/v4";
 
 /**
- * Base error class for all RAG2-related errors
+ * Base error class
  */
-export abstract class RAGError extends Error {
+export abstract class RagError extends Error {
 	abstract readonly code: string;
 	abstract readonly category:
 		| "validation"
 		| "database"
-		| "api"
+		| "embedding"
 		| "configuration"
-		| "processing";
+		| "operation";
 
 	constructor(
 		message: string,
-		public readonly cause?: unknown,
+		public readonly cause?: Error,
+		public readonly context?: Record<string, unknown>,
 	) {
 		super(message);
 		this.name = this.constructor.name;
-
-		// Maintains proper stack trace for where our error was thrown (V8 only)
-		if (Error.captureStackTrace) {
-			Error.captureStackTrace(this, this.constructor);
-		}
 	}
 
 	/**
-	 * Convert error to JSON for logging/debugging
+	 * return structured data of the error
 	 */
 	toJSON() {
 		return {
@@ -34,222 +30,323 @@ export abstract class RAGError extends Error {
 			code: this.code,
 			category: this.category,
 			message: this.message,
-			cause: this.cause instanceof Error ? this.cause.message : this.cause,
+			context: this.context,
+			cause: this.cause?.message,
 			stack: this.stack,
 		};
 	}
 }
 
 /**
- * Validation-related errors (invalid input, schema validation failures, etc.)
+ * Validation error
  */
-export class ValidationError extends RAGError {
-	readonly code = "VALIDATION_ERROR";
+export class ValidationError extends RagError {
+	readonly code = "VALIDATION_FAILED";
 	readonly category = "validation" as const;
 
 	constructor(
 		message: string,
-		public readonly field?: string,
-		cause?: unknown,
+		public readonly zodError?: ZodError,
+		context?: Record<string, unknown>,
 	) {
-		super(message, cause);
+		super(message, undefined, context);
 	}
 
-	static invalidInput(
-		field: string,
-		expected: string,
-		received: unknown,
+	/**
+	 * Get detailed validation error information from Zod error
+	 */
+	get validationDetails(): Array<{
+		path: string;
+		message: string;
+		code: string;
+		received?: unknown;
+		expected?: unknown;
+	}> {
+		if (!this.zodError) return [];
+
+		return this.zodError.issues.map((issue) => ({
+			path: issue.path.join("."),
+			message: issue.message,
+			code: issue.code,
+			received: "received" in issue ? issue.received : undefined,
+			expected: "expected" in issue ? issue.expected : undefined,
+		}));
+	}
+
+	/**
+	 * Create ValidationError from Zod error
+	 */
+	static fromZodError(
+		zodError: ZodError,
+		context?: Record<string, unknown>,
 	): ValidationError {
-		return new ValidationError(
-			`Invalid input for field '${field}': expected ${expected}, received ${typeof received}`,
-			field,
-		);
-	}
-
-	static missingRequired(field: string): ValidationError {
-		return new ValidationError(`Required field '${field}' is missing`, field);
-	}
-
-	static invalidFormat(field: string, format: string): ValidationError {
-		return new ValidationError(
-			`Field '${field}' has invalid format: ${format}`,
-			field,
-		);
+		const errorCount = zodError.issues.length;
+		const message = `Validation failed with ${errorCount} error${errorCount > 1 ? "s" : ""}`;
+		return new ValidationError(message, zodError, context);
 	}
 }
 
 /**
- * Database-related errors (connection failures, query errors, etc.)
+ * Database error
  */
-export class DatabaseError extends RAGError {
-	readonly code = "DATABASE_ERROR";
+export class DatabaseError extends RagError {
 	readonly category = "database" as const;
 
 	constructor(
 		message: string,
-		public readonly operation?: string,
-		cause?: unknown,
+		public readonly code: DatabaseErrorCode,
+		cause?: Error,
+		context?: Record<string, unknown>,
 	) {
-		super(message, cause);
+		super(message, cause, context);
 	}
 
-	static connectionFailed(cause?: unknown): DatabaseError {
-		return new DatabaseError("Failed to connect to database", "connect", cause);
-	}
-
-	static queryFailed(operation: string, cause?: unknown): DatabaseError {
+	/**
+	 * Helper to create common database errors
+	 */
+	static connectionFailed(cause?: Error, context?: Record<string, unknown>) {
 		return new DatabaseError(
-			`Database query failed: ${operation}`,
-			operation,
+			"Failed to connect to database",
+			"CONNECTION_FAILED",
 			cause,
+			context,
 		);
 	}
 
-	static insertFailed(table: string, cause?: unknown): DatabaseError {
+	static queryFailed(
+		query: string,
+		cause?: Error,
+		context?: Record<string, unknown>,
+	) {
 		return new DatabaseError(
-			`Failed to insert data into table '${table}'`,
-			"insert",
+			`Database query failed: ${query}`,
+			"QUERY_FAILED",
 			cause,
+			{ ...context, query },
 		);
 	}
 
-	static deleteFailed(table: string, cause?: unknown): DatabaseError {
+	static transactionFailed(
+		operation: string,
+		cause?: Error,
+		context?: Record<string, unknown>,
+	) {
 		return new DatabaseError(
-			`Failed to delete data from table '${table}'`,
-			"delete",
+			`Database transaction failed during: ${operation}`,
+			"TRANSACTION_FAILED",
 			cause,
+			{ ...context, operation },
+		);
+	}
+
+	static tableNotFound(tableName: string, context?: Record<string, unknown>) {
+		return new DatabaseError(
+			`Table '${tableName}' does not exist`,
+			"TABLE_NOT_FOUND",
+			undefined,
+			{ ...context, tableName },
 		);
 	}
 }
 
+export type DatabaseErrorCode =
+	| "CONNECTION_FAILED"
+	| "QUERY_FAILED"
+	| "TRANSACTION_FAILED"
+	| "TABLE_NOT_FOUND"
+	| "CONSTRAINT_VIOLATION"
+	| "TIMEOUT"
+	| "UNKNOWN";
+
 /**
- * External API-related errors (OpenAI, GitHub, etc.)
+ * Embedding generation error
  */
-export class APIError extends RAGError {
-	readonly code = "API_ERROR";
-	readonly category = "api" as const;
+export class EmbeddingError extends RagError {
+	readonly category = "embedding" as const;
 
 	constructor(
 		message: string,
-		public readonly service: string,
-		public readonly statusCode?: number,
-		cause?: unknown,
+		public readonly code: EmbeddingErrorCode,
+		cause?: Error,
+		context?: Record<string, unknown>,
 	) {
-		super(message, cause);
+		super(message, cause, context);
 	}
 
-	static rateLimited(service: string, retryAfter?: number): APIError {
-		const message = retryAfter
-			? `Rate limited by ${service}. Retry after ${retryAfter} seconds`
-			: `Rate limited by ${service}`;
-		return new APIError(message, service, 429);
+	/**
+	 * Helper to create common embedding errors
+	 */
+	static apiError(cause?: Error, context?: Record<string, unknown>) {
+		return new EmbeddingError(
+			"Embedding API request failed",
+			"API_ERROR",
+			cause,
+			context,
+		);
 	}
 
-	static unauthorized(service: string): APIError {
-		return new APIError(`Unauthorized access to ${service}`, service, 401);
+	static rateLimitExceeded(
+		retryAfter?: number,
+		context?: Record<string, unknown>,
+	) {
+		return new EmbeddingError(
+			"Embedding API rate limit exceeded",
+			"RATE_LIMIT_EXCEEDED",
+			undefined,
+			{ ...context, retryAfter },
+		);
 	}
 
-	static requestFailed(
-		service: string,
-		statusCode: number,
-		message: string,
-	): APIError {
-		return new APIError(
-			`${service} API request failed: ${message}`,
-			service,
-			statusCode,
+	static invalidInput(input: string, context?: Record<string, unknown>) {
+		return new EmbeddingError(
+			"Invalid input for embedding generation",
+			"INVALID_INPUT",
+			undefined,
+			{ ...context, input: `${input.substring(0, 100)}...` },
 		);
 	}
 }
 
+export type EmbeddingErrorCode =
+	| "API_ERROR"
+	| "RATE_LIMIT_EXCEEDED"
+	| "INVALID_INPUT"
+	| "TIMEOUT"
+	| "QUOTA_EXCEEDED"
+	| "UNKNOWN";
+
 /**
- * Configuration-related errors (missing environment variables, invalid config, etc.)
+ * Configuration error
  */
-export class ConfigurationError extends RAGError {
-	readonly code = "CONFIGURATION_ERROR";
+export class ConfigurationError extends RagError {
+	readonly code = "CONFIGURATION_INVALID";
 	readonly category = "configuration" as const;
 
 	constructor(
 		message: string,
-		public readonly configKey?: string,
-		cause?: unknown,
+		public readonly field?: string,
+		context?: Record<string, unknown>,
 	) {
-		super(message, cause);
+		super(message, undefined, { ...context, field });
 	}
 
-	static missingEnvVar(key: string): ConfigurationError {
+	/**
+	 * Helper to create common configuration errors
+	 */
+	static missingField(field: string, context?: Record<string, unknown>) {
 		return new ConfigurationError(
-			`Required environment variable '${key}' is not set`,
-			key,
+			`Required configuration field '${field}' is missing`,
+			field,
+			context,
 		);
 	}
 
-	static invalidConfig(key: string, expected: string): ConfigurationError {
+	static invalidValue(
+		field: string,
+		value: unknown,
+		expected: string,
+		context?: Record<string, unknown>,
+	) {
 		return new ConfigurationError(
-			`Invalid configuration for '${key}': expected ${expected}`,
-			key,
+			`Configuration field '${field}' has invalid value. Expected: ${expected}`,
+			field,
+			{ ...context, value, expected },
 		);
 	}
 }
 
 /**
- * Processing-related errors (chunking, embedding, pipeline errors, etc.)
+ * Operation error
  */
-export class ProcessingError extends RAGError {
-	readonly code = "PROCESSING_ERROR";
-	readonly category = "processing" as const;
+export class OperationError extends RagError {
+	readonly category = "operation" as const;
 
 	constructor(
 		message: string,
-		public readonly stage?: string,
-		cause?: unknown,
+		public readonly code: OperationErrorCode,
+		context?: Record<string, unknown>,
 	) {
-		super(message, cause);
+		super(message, undefined, context);
 	}
 
-	static chunkingFailed(cause?: unknown): ProcessingError {
-		return new ProcessingError(
-			"Failed to chunk document content",
-			"chunking",
-			cause,
+	/**
+	 * Helper to create common operation errors
+	 */
+	static documentNotFound(
+		documentKey: string,
+		context?: Record<string, unknown>,
+	) {
+		return new OperationError(
+			`Document with key '${documentKey}' not found`,
+			"DOCUMENT_NOT_FOUND",
+			{ ...context, documentKey },
 		);
 	}
 
-	static embeddingFailed(cause?: unknown): ProcessingError {
-		return new ProcessingError(
-			"Failed to generate embeddings",
-			"embedding",
-			cause,
-		);
-	}
-
-	static pipelineFailed(stage: string, cause?: unknown): ProcessingError {
-		return new ProcessingError(
-			`Pipeline failed at stage: ${stage}`,
-			stage,
-			cause,
+	static invalidOperation(
+		operation: string,
+		reason: string,
+		context?: Record<string, unknown>,
+	) {
+		return new OperationError(
+			`Invalid operation '${operation}': ${reason}`,
+			"INVALID_OPERATION",
+			{ ...context, operation, reason },
 		);
 	}
 }
 
+export type OperationErrorCode =
+	| "DOCUMENT_NOT_FOUND"
+	| "INVALID_OPERATION"
+	| "RESOURCE_BUSY"
+	| "INSUFFICIENT_PERMISSIONS"
+	| "UNKNOWN";
+
 /**
- * Utility function to wrap unknown errors in RAGError
+ * Utility function for error handling
  */
-export function wrapError(error: unknown, defaultMessage: string): RAGError {
-	if (error instanceof RAGError) {
-		return error;
-	}
 
-	if (error instanceof Error) {
-		return new ProcessingError(error.message, undefined, error);
-	}
-
-	return new ProcessingError(defaultMessage, undefined, error);
+/**
+ * Check if the error belongs to a specific category
+ */
+export function isErrorCategory(
+	error: unknown,
+	category: RagError["category"],
+): error is RagError {
+	return error instanceof RagError && error.category === category;
 }
 
 /**
- * Type guard to check if error is a RAGError
+ * Check if the error has a specific code
  */
-export function isRAGError(error: unknown): error is RAGError {
-	return error instanceof RAGError;
+export function isErrorCode<T extends string>(
+	error: unknown,
+	code: T,
+): error is RagError & { code: T } {
+	return error instanceof RagError && error.code === code;
+}
+
+/**
+ * Helper for type-safe error handling
+ */
+export function handleError<T extends RagError>(
+	error: unknown,
+	handlers: {
+		[K in T["code"]]?: (error: T & { code: K }) => void;
+	} & {
+		default?: (error: unknown) => void;
+	},
+): void {
+	if (error instanceof RagError) {
+		const handler = handlers[error.code as T["code"]];
+		if (handler) {
+			handler(error as T & { code: T["code"] });
+			return;
+		}
+	}
+
+	if (handlers.default) {
+		handlers.default(error);
+	}
 }

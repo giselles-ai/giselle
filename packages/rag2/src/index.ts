@@ -1,47 +1,89 @@
-// Core data types
-export * from "./types";
-
-// Configuration
-export * from "./config";
-
-// Error types
-export * from "./errors";
-
-// Document type definition API
+// Errors
 export {
-	defineStorageSchema,
-	type ChunkOf,
-	type MetadataOf,
-	type StorageSchemaConfig,
-} from "./storage-schema";
+	DatabaseError,
+	EmbeddingError,
+	RagError,
+	ValidationError,
+} from "./errors";
 
-// Internal utilities (used by document-type, exported for advanced use cases)
-export type { MetadataDefinitionResult } from "./metadata";
+// Database
+export { PoolManager } from "./database";
+export type {
+	ColumnMapping,
+	DatabaseConfig,
+	RequiredColumns,
+} from "./database";
 
-// Service interfaces
-export * from "./stores/interfaces";
+// Document Loader
+export type {
+	Document,
+	DocumentLoader,
+	DocumentLoaderParams,
+} from "./document-loader";
 
-// Implementations
-export { createLineChunker } from "./chunkers/line-chunker";
-export { createOpenAIEmbedder } from "./embedders/openai-embedder";
-export { createIngestionPipeline } from "./pipelines/ingestion-pipeline";
-// PostgreSQL implementations
-export {
-	createDocumentChunkStore,
-	DocumentChunkStore,
-} from "./stores/postgres/chunk-store";
-export {
-	createPostgresQueryService,
-	PostgresQueryService,
-} from "./stores/postgres/query-service";
+// Chunk Store
+export { PostgresChunkStore } from "./chunk-store";
+export type {
+	Chunk,
+	ChunkStore,
+	ChunkWithEmbedding,
+	PostgresChunkStoreConfig,
+} from "./chunk-store";
 
-// GitHub-specific exports (used with defineStorageSchema)
+// Query Service
+export { PostgresQueryService } from "./query-service";
+export type {
+	DistanceFunction,
+	PostgresQueryServiceConfig,
+	QueryResult,
+	QueryService,
+} from "./query-service";
+
+// Embedder
+export { OpenAIEmbedder } from "./embedder";
+export type { Embedder, OpenAIEmbedderConfig } from "./embedder";
+
+// Chunker
+export { LineChunker } from "./chunker";
+export type { Chunker, LineChunkerOptions } from "./chunker";
+
+// Ingest Pipeline
 export {
-	GitHubBlobLoader,
-	type GitHubLoaderOptions,
-} from "./github/loaders/github-loader";
+	IngestPipeline,
+	type IngestError,
+	type IngestPipelineConfig,
+	type IngestProgress,
+	type IngestResult,
+} from "./ingest";
+
+// Simplified API with smart defaults
 export {
-	GitHubBlobSource,
-	GitHubBlobSourceType,
-	type GitHubBlobBasicMetadata,
-} from "./github/types";
+	// Factory functions
+	createChunkStore,
+	// Utilities
+	createColumnMapping,
+	createDefaultChunker,
+	// Default instances
+	createDefaultEmbedder,
+	createIngestPipeline,
+	createQueryService,
+	DEFAULT_REQUIRED_COLUMNS,
+	// Types
+	type ChunkStoreConfig,
+	type QueryServiceConfig,
+} from "./factories";
+
+// Enhanced errors (additional classes and utilities)
+export {
+	// Additional error classes not exported above
+	ConfigurationError,
+	handleError,
+	// Error utilities
+	isErrorCategory,
+	isErrorCode,
+	OperationError,
+	// Error types
+	type DatabaseErrorCode,
+	type EmbeddingErrorCode,
+	type OperationErrorCode,
+} from "./errors";

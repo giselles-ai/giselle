@@ -30,7 +30,7 @@
 	},
 	"dependencies": {
 		"@giselle-sdk/rag": "workspace:*",
-		"@giselle-sdk/rag3": "workspace:*",
+		"@giselle-sdk/rag2": "workspace:*",
 		"@octokit/auth-app": "catalog:",
 		"@octokit/core": "catalog:",
 		"@octokit/graphql": "catalog:",

@@ -9,7 +9,7 @@ import {
 	fetchDefaultBranchHead,
 	octokit,
 } from "@giselle-sdk/github-tool";
-import { createIngestPipeline } from "@giselle-sdk/rag3";
+import { createIngestPipeline } from "@giselle-sdk/rag2";
 import type { Octokit } from "@octokit/core";
 import { captureException } from "@sentry/nextjs";
 import { and, eq } from "drizzle-orm";
