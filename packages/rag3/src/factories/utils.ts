@@ -45,6 +45,40 @@ function hasShapeProperty<T>(
 }
 
 /**
+ * Validates that an object has all required columns for a ColumnMapping
+ */
+function validateColumnMapping<TMetadata extends Record<string, unknown>>(
+	obj: RequiredColumns & Record<string, string>,
+	metadataSchema: z.ZodType<TMetadata>,
+): obj is ColumnMapping<TMetadata> {
+	// Check that all required columns are present
+	const requiredKeys: (keyof RequiredColumns)[] = [
+		"documentKey",
+		"content",
+		"index",
+		"embedding",
+	];
+
+	for (const key of requiredKeys) {
+		if (!(key in obj) || typeof obj[key] !== "string") {
+			return false;
+		}
+	}
+
+	// If schema has shape property, validate metadata keys
+	if (hasShapeProperty(metadataSchema)) {
+		const metadataKeys = Object.keys(metadataSchema.shape);
+		for (const key of metadataKeys) {
+			if (!(key in obj) || typeof obj[key] !== "string") {
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+/**
  * create column mapping from metadata schema
  */
 export function createColumnMapping<
@@ -85,16 +119,21 @@ export function createColumnMapping<
 		}
 	}
 
-	// build type safe result
+	// build result
 	const result: RequiredColumns & Record<string, string> = {
 		...requiredColumns,
 		...metadataColumns,
 	};
 
-	// at this point, result is structurally compatible with ColumnMapping<TMetadata>
-	// TypeScript cannot infer the type correctly, so we use type assertion,
-	// but the runtime safety is guaranteed by the step-by-step construction above
-	return result as ColumnMapping<TMetadata>;
+	// Runtime validation ensures type safety
+	if (!validateColumnMapping(result, metadataSchema)) {
+		throw new Error(
+			"Failed to create valid ColumnMapping: missing required columns or metadata fields",
+		);
+	}
+
+	// Now we can safely return the validated result
+	return result;
 }
 
 /**
