@@ -91,15 +91,11 @@ async function ingestGitHubRepository(params: {
 		params.teamDbId,
 	);
 
-	// GitHub document loader
 	const githubLoader = new GitHubDocumentLoader(params.octokitClient, {
 		maxBlobSize: 1 * 1024 * 1024,
 	});
-
-	// Create GitHub chunk store using factory
 	const chunkStore = createGitHubChunkStore(repositoryIndexDbId);
 
-	// IngestPipelineでメタデータ変換を担当
 	const pipeline = createIngestPipeline<
 		GitHubDocumentMetadata,
 		GitHubChunkMetadata
@@ -109,7 +105,7 @@ async function ingestGitHubRepository(params: {
 		metadataTransform: (
 			metadata: GitHubDocumentMetadata,
 		): GitHubChunkMetadata => ({
-			repositoryIndexDbId, // アプリケーション固有情報を注入
+			repositoryIndexDbId,
 			commitSha: metadata.commitSha,
 			fileSha: metadata.fileSha,
 			path: metadata.path,
