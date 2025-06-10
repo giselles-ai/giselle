@@ -4,7 +4,6 @@ import type {
 	DocumentLoaderParams,
 } from "@giselle/rag3";
 import type { Octokit } from "@octokit/core";
-import { z } from "zod";
 import { fetchDefaultBranchHead } from "./blob-loader";
 
 /**
@@ -32,7 +31,8 @@ export type GitHubDocumentMetadata = {
  * GitHub document loader that implements rag3's DocumentLoader interface
  */
 export class GitHubDocumentLoader
-	implements DocumentLoader<GitHubDocumentMetadata> {
+	implements DocumentLoader<GitHubDocumentMetadata>
+{
 	private readonly maxBlobSize: number;
 	private readonly maxRetries: number;
 
@@ -199,13 +199,3 @@ export class GitHubDocumentLoader
 		}
 	}
 }
-
-// Export metadata schema for validation
-export const gitHubDocumentMetadataSchema = z.object({
-	owner: z.string(),
-	repo: z.string(),
-	commitSha: z.string(),
-	fileSha: z.string(),
-	path: z.string(),
-	nodeId: z.string(),
-});
