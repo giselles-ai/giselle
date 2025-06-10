@@ -1,12 +1,11 @@
 import {
 	db,
-	githubRepositoryEmbeddings,
 	githubRepositoryIndex,
 } from "@/drizzle";
 import {
 	type GitHubChunkMetadata,
-	githubChunkMetadataSchema,
-} from "@/lib/github-schema";
+	createGitHubChunkStore,
+} from "@/lib/vector-stores/github-blob-stores";
 import {
 	GitHubDocumentLoader,
 	type GitHubDocumentMetadata,
@@ -14,13 +13,11 @@ import {
 	octokit,
 } from "@giselle-sdk/github-tool";
 import {
-	type DatabaseConfig,
-	createChunkStore,
 	createIngestPipeline,
 } from "@giselle/rag3";
 import type { Octokit } from "@octokit/core";
 import { captureException } from "@sentry/nextjs";
-import { and, eq, getTableName } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 
 export const maxDuration = 800;
@@ -99,36 +96,13 @@ async function ingestGitHubRepository(params: {
 		params.teamDbId,
 	);
 
-	// Create database config
-	const postgresUrl = process.env.POSTGRES_URL;
-	if (!postgresUrl) {
-		throw new Error("POSTGRES_URL environment variable is required");
-	}
-	const database: DatabaseConfig = { connectionString: postgresUrl };
-
 	// GitHub document loader
 	const githubLoader = new GitHubDocumentLoader(params.octokitClient, {
 		maxBlobSize: 1 * 1024 * 1024,
 	});
 
-	const chunkStore = createChunkStore<GitHubChunkMetadata>({
-		database,
-		tableName: getTableName(githubRepositoryEmbeddings),
-		metadataSchema: githubChunkMetadataSchema,
-		staticContext: { repository_index_db_id: repositoryIndexDbId },
-		requiredColumnOverrides: {
-			documentKey: "path",
-			content: "chunk_content",
-			index: "chunk_index",
-			// embedding: "embedding" (default)
-		},
-		// Metadata fields will auto-convert from camelCase to snake_case:
-		// repositoryIndexDbId -> repository_index_db_id
-		// commitSha -> commit_sha
-		// fileSha -> file_sha
-		// path -> path
-		// nodeId -> node_id
-	});
+	// Create GitHub chunk store using factory
+	const chunkStore = createGitHubChunkStore(repositoryIndexDbId);
 
 	// IngestPipelineでメタデータ変換を担当
 	const pipeline = createIngestPipeline<

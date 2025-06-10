@@ -1,4 +1,5 @@
 import { waitForLangfuseFlush } from "@/instrumentation.node";
+import { gitHubQueryService } from "@/lib/vector-stores/github-blob-stores";
 import { fetchUsageLimits } from "@/packages/lib/fetch-usage-limits";
 import { onConsumeAgentTime } from "@/packages/lib/on-consume-agent-time";
 import supabaseStorageDriver from "@/supabase-storage-driver";
@@ -8,7 +9,6 @@ import { supabaseVaultDriver } from "@giselle-sdk/supabase-driver";
 import { emitTelemetry } from "@giselle-sdk/telemetry";
 import { createStorage } from "unstorage";
 import { queryGithubVectorStore } from "./services/vector-store/";
-import { gitHubQueryService } from "./services/vector-store/github-query-service";
 
 export const publicStorage = createStorage({
 	driver: supabaseStorageDriver({
