@@ -17,7 +17,7 @@ export interface PostgresChunkStoreConfig<TMetadata> {
 }
 
 export class PostgresChunkStore<
-	TMetadata extends Record<string, unknown> = Record<string, unknown>,
+	TMetadata extends Record<string, unknown> = Record<string, never>,
 > implements ChunkStore<TMetadata>
 {
 	constructor(private config: PostgresChunkStoreConfig<TMetadata>) {}

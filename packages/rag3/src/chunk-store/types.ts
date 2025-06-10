@@ -8,7 +8,7 @@ export interface ChunkWithEmbedding extends Chunk {
 }
 
 export interface ChunkStore<
-	TMetadata extends Record<string, unknown> = Record<string, unknown>,
+	TMetadata extends Record<string, unknown> = Record<string, never>,
 > {
 	/**
 	 * Insert chunks into the chunk store

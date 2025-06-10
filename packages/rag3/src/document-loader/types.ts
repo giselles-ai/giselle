@@ -1,5 +1,5 @@
 export interface Document<
-	TMetadata extends Record<string, unknown> = Record<string, unknown>,
+	TMetadata extends Record<string, unknown> = Record<string, never>,
 > {
 	content: string;
 	metadata: TMetadata;
@@ -10,7 +10,7 @@ export interface DocumentLoaderParams {
 }
 
 export interface DocumentLoader<
-	TMetadata extends Record<string, unknown> = Record<string, unknown>,
+	TMetadata extends Record<string, unknown> = Record<string, never>,
 > {
 	/**
 	 * Load documents asynchronously

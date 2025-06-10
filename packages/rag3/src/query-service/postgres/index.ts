@@ -23,7 +23,7 @@ export interface PostgresQueryServiceConfig<TContext, TMetadata> {
 
 export class PostgresQueryService<
 	TContext,
-	TMetadata extends Record<string, unknown> = Record<string, unknown>,
+	TMetadata extends Record<string, unknown> = Record<string, never>,
 > implements QueryService<TContext, TMetadata>
 {
 	constructor(
@@ -37,6 +37,9 @@ export class PostgresQueryService<
 	): Promise<QueryResult<TMetadata>[]> {
 		const { database, tableName, embedder, columnMapping, contextToFilter } =
 			this.config;
+		console.log("====== rag3 =======");
+		console.dir(this.config, { depth: null });
+		console.log("====== /rag3/ =======");
 		const pool = PoolManager.getPool(database);
 
 		// register pgvector types

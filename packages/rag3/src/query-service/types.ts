@@ -1,7 +1,7 @@
 import type { Chunk } from "../chunk-store/types";
 
 export interface QueryResult<
-	TMetadata extends Record<string, unknown> = Record<string, unknown>,
+	TMetadata extends Record<string, unknown> = Record<string, never>,
 > {
 	chunk: Chunk;
 	similarity: number;
@@ -10,7 +10,7 @@ export interface QueryResult<
 
 export interface QueryService<
 	TContext,
-	TMetadata extends Record<string, unknown> = Record<string, unknown>,
+	TMetadata extends Record<string, unknown> = Record<string, never>,
 > {
 	/**
 	 * vector similarity search
