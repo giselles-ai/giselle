@@ -63,6 +63,7 @@ describe("LineChunker", () => {
 	it("should split chunks when they exceed maxChars", () => {
 		const chunker = new LineChunker({
 			maxLines: 10,
+			overlap: 2,
 			maxChars: 50,
 		});
 		// Create a chunk that would normally be within maxLines but exceeds maxChars
@@ -91,6 +92,7 @@ describe("LineChunker", () => {
 	it("should split long content at word boundaries when possible", () => {
 		const chunker = new LineChunker({
 			maxLines: 5,
+			overlap: 1,
 			maxChars: 30,
 		});
 		const longText =
@@ -136,6 +138,7 @@ describe("LineChunker", () => {
 	it("should prioritize line count for chunking", () => {
 		const chunker = new LineChunker({
 			maxLines: 2,
+			overlap: 0,
 			maxChars: 1000, // Set high to ensure line count is the primary factor
 		});
 		const text = "line1\nline2\nline3\nline4\nline5";

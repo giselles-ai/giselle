@@ -1,4 +1,46 @@
+import { z } from "zod/v4";
+import { ConfigurationError } from "../errors";
 import type { Chunker } from "./types";
+
+const LineChunkerOptionsSchema = z
+	.object({
+		/**
+		 * Maximum number of lines per chunk
+		 * Default: 150
+		 */
+		maxLines: z
+			.number()
+			.int()
+			.positive("maxLines must be positive")
+			.max(1000, "maxLines cannot exceed 1000")
+			.optional()
+			.default(150),
+		/**
+		 * Number of lines to overlap between chunks
+		 * Default: 30
+		 */
+		overlap: z
+			.number()
+			.int()
+			.nonnegative("overlap must be non-negative")
+			.optional()
+			.default(30),
+		/**
+		 * Maximum characters per chunk before splitting
+		 * Default: 10000
+		 */
+		maxChars: z
+			.number()
+			.int()
+			.positive("maxChars must be positive")
+			.max(100000, "maxChars cannot exceed 100000")
+			.optional()
+			.default(10000),
+	})
+	.refine((data) => data.overlap < data.maxLines, {
+		message: "overlap must be less than maxLines",
+		path: ["overlap"],
+	});
 
 export interface LineChunkerOptions {
 	/**
@@ -24,9 +66,25 @@ export class LineChunker implements Chunker {
 	private maxChars: number;
 
 	constructor(options: LineChunkerOptions = {}) {
-		this.maxLines = options.maxLines ?? 150;
-		this.overlap = options.overlap ?? 30;
-		this.maxChars = options.maxChars ?? 10000;
+		// Validate configuration with Zod
+		const validationResult = LineChunkerOptionsSchema.safeParse(options);
+		if (!validationResult.success) {
+			throw ConfigurationError.invalidValue(
+				"LineChunkerOptions",
+				options,
+				"Valid chunker configuration",
+				{
+					operation: "constructor",
+					validationErrors: validationResult.error.issues,
+				},
+			);
+		}
+
+		// Use validated and defaulted values
+		const validatedOptions = validationResult.data;
+		this.maxLines = validatedOptions.maxLines;
+		this.overlap = validatedOptions.overlap;
+		this.maxChars = validatedOptions.maxChars;
 	}
 
 	chunk(text: string): string[] {
