@@ -7,6 +7,18 @@ import type { ColumnMapping, DatabaseConfig } from "../../database/types";
 import { DatabaseError, ValidationError } from "../../errors";
 import type { ChunkStore, ChunkWithEmbedding } from "../types";
 
+/**
+ * Performance constants for batch operations
+ */
+const PERFORMANCE_CONSTANTS = {
+	/**
+	 * Maximum number of records to insert in a single batch
+	 * Limited by PostgreSQL parameter limit (typically 65535)
+	 * With ~10 columns per record, this allows safe batching
+	 */
+	MAX_BATCH_SIZE: 5000,
+} as const;
+
 export interface PostgresChunkStoreConfig<TMetadata> {
 	database: DatabaseConfig;
 	tableName: string;
@@ -36,6 +48,7 @@ export class PostgresChunkStore<
 			metadataSchema,
 		} = this.config;
 
+		// Validate metadata first (fail fast)
 		if (metadataSchema) {
 			const result = metadataSchema.safeParse(metadata);
 			if (!result.success) {
@@ -47,37 +60,43 @@ export class PostgresChunkStore<
 			}
 		}
 
-		const pool = PoolManager.getPool(database);
-		// register pgvector types using singleton registry
-		const client = await pool.connect();
-		try {
-			await ensurePgVectorTypes(client, database.connectionString);
-		} finally {
-			client.release();
+		// Early return for empty chunks
+		if (chunks.length === 0) {
+			return;
 		}
 
+		const pool = PoolManager.getPool(database);
+		const client = await pool.connect();
+
 		try {
+			// Register pgvector types once per connection
+			await ensurePgVectorTypes(client, database.connectionString);
+
+			// Start transaction
 			await client.query("BEGIN");
 
+			// Delete existing chunks for this document
 			await this.deleteByDocumentKeyInternal(documentKey, client);
 
-			for (const chunk of chunks) {
-				const record = {
+			// Prepare all records for batch insert
+			const records = chunks.map((chunk) => ({
+				record: {
 					[columnMapping.documentKey]: documentKey,
 					[columnMapping.content]: chunk.content,
 					[columnMapping.index]: chunk.index,
-					// embedding is converted by pgvector, so it is not included here
 					// map metadata
 					...this.mapMetadata(metadata, columnMapping),
 					// add static context
 					...staticContext,
-				};
-
-				await this.insertRecord(client, tableName, record, {
+				},
+				embedding: {
 					embeddingColumn: columnMapping.embedding,
 					embeddingValue: chunk.embedding,
-				});
-			}
+				},
+			}));
+
+			// Batch insert all chunks in a single query
+			await this.insertRecords(client, tableName, records);
 
 			await client.query("COMMIT");
 		} catch (error) {
@@ -102,15 +121,11 @@ export class PostgresChunkStore<
 
 	async deleteByDocumentKey(documentKey: string): Promise<void> {
 		const pool = PoolManager.getPool(this.config.database);
-		// register pgvector types using singleton registry
 		const client = await pool.connect();
-		try {
-			await ensurePgVectorTypes(client, this.config.database.connectionString);
-		} finally {
-			client.release();
-		}
 
 		try {
+			// Register pgvector types and execute deletion in single connection
+			await ensurePgVectorTypes(client, this.config.database.connectionString);
 			await this.deleteByDocumentKeyInternal(documentKey, client);
 		} catch (error) {
 			throw DatabaseError.queryFailed(
@@ -141,6 +156,100 @@ export class PostgresChunkStore<
 		await client.query(query, [documentKey]);
 	}
 
+	/**
+	 * Batch insert multiple records using optimal batching strategy
+	 *
+	 * Performance improvements over individual inserts:
+	 * - Reduces network round-trips from N queries to 1 (or few batches)
+	 * - Reduces PostgreSQL parsing overhead
+	 * - Enables better transaction efficiency
+	 * - Can improve throughput by 10-100x for large datasets
+	 */
+	private async insertRecords(
+		client: PoolClient,
+		tableName: string,
+		records: Array<{
+			record: Record<string, unknown>;
+			embedding: {
+				embeddingColumn: string;
+				embeddingValue: number[];
+			};
+		}>,
+	): Promise<void> {
+		if (records.length === 0) {
+			return;
+		}
+
+		// Process in batches if records exceed safe limit
+		if (records.length > PERFORMANCE_CONSTANTS.MAX_BATCH_SIZE) {
+			for (
+				let i = 0;
+				i < records.length;
+				i += PERFORMANCE_CONSTANTS.MAX_BATCH_SIZE
+			) {
+				const batch = records.slice(
+					i,
+					i + PERFORMANCE_CONSTANTS.MAX_BATCH_SIZE,
+				);
+				await this.insertRecordsBatch(client, tableName, batch);
+			}
+			return;
+		}
+
+		// Single batch insert for smaller datasets
+		await this.insertRecordsBatch(client, tableName, records);
+	}
+
+	/**
+	 * Insert a single batch of records
+	 */
+	private async insertRecordsBatch(
+		client: PoolClient,
+		tableName: string,
+		records: Array<{
+			record: Record<string, unknown>;
+			embedding: {
+				embeddingColumn: string;
+				embeddingValue: number[];
+			};
+		}>,
+	): Promise<void> {
+		// Get column names from the first record (all records should have same structure)
+		const firstRecord = records[0];
+		const columns = Object.keys(firstRecord.record);
+		columns.push(firstRecord.embedding.embeddingColumn);
+
+		// Build values array for all records
+		const allValues: unknown[] = [];
+		const valuePlaceholders: string[] = [];
+
+		records.forEach((item, recordIndex) => {
+			const recordValues = Object.values(item.record);
+			recordValues.push(pgvector.toSql(item.embedding.embeddingValue));
+
+			// Add values to the flat array
+			allValues.push(...recordValues);
+
+			// Create placeholders for this record
+			const startIndex = recordIndex * columns.length;
+			const placeholders = columns.map(
+				(_, colIndex) => `$${startIndex + colIndex + 1}`,
+			);
+			valuePlaceholders.push(`(${placeholders.join(", ")})`);
+		});
+
+		const query = `
+			INSERT INTO ${this.escapeIdentifier(tableName)}
+			(${columns.map((c) => this.escapeIdentifier(c)).join(", ")})
+			VALUES ${valuePlaceholders.join(", ")}
+		`;
+
+		await client.query(query, allValues);
+	}
+
+	/**
+	 * Insert a single record (kept for compatibility, but batch insert is preferred)
+	 */
 	private async insertRecord(
 		client: PoolClient,
 		tableName: string,

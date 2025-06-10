@@ -10,6 +10,12 @@ import { OperationError } from "../errors";
 
 /**
  * Config for IngestPipeline
+ *
+ * Performance characteristics:
+ * - Embedding: Batch processing using embedMany() for optimal API efficiency
+ * - Database: Batch INSERT operations to minimize round-trips and parsing overhead
+ * - Connection: Single connection per document with pgvector type registration caching
+ * - Overall: Significant performance improvement over individual operations
  */
 export interface IngestPipelineConfig<
 	TSourceMetadata extends Record<string, unknown>,
