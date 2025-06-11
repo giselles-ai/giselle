@@ -27,9 +27,28 @@ const GitHubActionCommandData = z.object({
 });
 export type GitHubActionCommandData = z.infer<typeof GitHubActionCommandData>;
 
+const WebFetchCommandConfiguredState = z.object({
+	status: z.literal("configured"),
+});
+export type WebFetchCommandConfiguredState = z.infer<
+	typeof WebFetchCommandConfiguredState
+>;
+
+const WebFetchCommandData = z.object({
+	provider: z.literal("web-search"),
+	state: WebFetchCommandConfiguredState,
+});
+export type WebFetchCommandData = z.infer<typeof WebFetchCommandData>;
+
+const ActionCommandData = z.discriminatedUnion("provider", [
+	GitHubActionCommandData,
+	WebFetchCommandData,
+]);
+export type ActionCommandData = z.infer<typeof ActionCommandData>;
+
 export const ActionContent = z.object({
 	type: z.literal("action"),
-	command: GitHubActionCommandData,
+	command: ActionCommandData,
 });
 export type ActionContent = z.infer<typeof ActionContent>;
 
