@@ -1,18 +1,16 @@
 "use client";
 
 import {
-	type ActionNode,
 	type ConnectionId,
 	type FailedFileData,
 	type FileContent,
 	type FileNode,
 	type Node,
 	type NodeBase,
-	type NodeId,
+	NodeId,
 	type NodeUIState,
 	type TriggerNode,
 	type UploadedFileData,
-	type VectorStoreNode,
 	type Viewport,
 	type Workspace,
 	createFailedFileData,
@@ -30,12 +28,80 @@ import {
 } from "@giselle-sdk/giselle-engine/react";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
 import { isClonedFileDataPayload } from "@giselle-sdk/node-utils";
+import { isJsonContent } from "@giselle-sdk/text-editor-utils";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import {
 	type ConnectionCloneStrategy,
 	WorkflowDesigner,
 } from "../workflow-designer";
 import { usePropertiesPanel, useView } from "./state";
+
+function cleanupNodeReferencesInJsonContent(
+	jsonContent: unknown,
+	deletedNodeId: NodeId,
+): unknown {
+	if (!jsonContent || typeof jsonContent !== "object") {
+		return jsonContent;
+	}
+
+	const content = jsonContent as Record<string, unknown>;
+
+	// If this is a Source node with the deleted nodeId, remove it
+	if (
+		content.type === "Source" &&
+		typeof content.attrs === "object" &&
+		content.attrs !== null &&
+		(content.attrs as Record<string, unknown>).node !== null &&
+		typeof (content.attrs as Record<string, unknown>).node === "object" &&
+		((content.attrs as Record<string, unknown>).node as Record<string, unknown>)
+			.id === deletedNodeId
+	) {
+		return null;
+	}
+
+	// Recursively process content array
+	if (Array.isArray(content.content)) {
+		content.content = content.content
+			.map((child: unknown) =>
+				cleanupNodeReferencesInJsonContent(child, deletedNodeId),
+			)
+			.filter((child: unknown) => child !== null);
+	}
+
+	return content;
+}
+
+function cleanupNodeReferencesInText(
+	text: string,
+	deletedNodeId: NodeId,
+): string {
+	// Handle JSON content (rich text from TipTap editor)
+	if (isJsonContent(text)) {
+		try {
+			const jsonContent = JSON.parse(text);
+			const cleaned = cleanupNodeReferencesInJsonContent(
+				jsonContent,
+				deletedNodeId,
+			);
+			return JSON.stringify(cleaned);
+		} catch (error) {
+			console.error("Failed to parse JSON content:", error);
+		}
+	}
+
+	// Handle plain text with {{nodeId:outputId}} references
+	let result = text;
+	while (result.includes(`{{${deletedNodeId}:`)) {
+		const start = result.indexOf(`{{${deletedNodeId}:`);
+		const end = result.indexOf("}}", start) + 2;
+		if (end > start) {
+			result = result.substring(0, start) + result.substring(end);
+		} else {
+			break;
+		}
+	}
+	return result;
+}
 
 type UploadFileFn = (
 	files: File[],
@@ -409,18 +475,45 @@ export function WorkflowDesignerProvider({
 
 	const deleteNode = useCallback(
 		async (nodeId: NodeId | string) => {
+			const parsedNodeId =
+				typeof nodeId === "string" ? NodeId.parse(nodeId) : nodeId;
 			const deletedNode = workflowDesignerRef.current.deleteNode(nodeId);
-			if (
-				deletedNode &&
-				isTriggerNode(deletedNode) &&
-				deletedNode.content.state.status === "configured"
-			) {
-				try {
-					await client.deleteTrigger({
-						flowTriggerId: deletedNode.content.state.flowTriggerId,
-					});
-				} catch (error) {
-					console.error("Failed to delete trigger", error);
+
+			if (deletedNode) {
+				const currentWorkspace = workflowDesignerRef.current.getData();
+
+				for (const node of currentWorkspace.nodes) {
+					let hasChanges = false;
+					const updatedContent = { ...node.content };
+
+					for (const [key, value] of Object.entries(node.content)) {
+						if (typeof value === "string" && value.length > 0) {
+							const cleaned = cleanupNodeReferencesInText(value, parsedNodeId);
+							if (cleaned !== value) {
+								updatedContent[key] = cleaned;
+								hasChanges = true;
+							}
+						}
+					}
+
+					if (hasChanges) {
+						workflowDesignerRef.current.updateNodeData(node, {
+							content: updatedContent as any,
+						});
+					}
+				}
+
+				if (
+					isTriggerNode(deletedNode) &&
+					deletedNode.content.state.status === "configured"
+				) {
+					try {
+						await client.deleteTrigger({
+							flowTriggerId: deletedNode.content.state.flowTriggerId,
+						});
+					} catch (error) {
+						console.error("Failed to delete trigger", error);
+					}
 				}
 			}
 			setAndSaveWorkspace();
