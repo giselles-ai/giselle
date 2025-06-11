@@ -18,7 +18,7 @@ export type GitHubActionCommandConfiguredState = z.infer<
 	typeof GitHubActionCommandConfiguredState
 >;
 
-const GitHubActionCommandData = z.object({
+export const GitHubActionCommandData = z.object({
 	provider: z.literal("github"),
 	state: z.discriminatedUnion("status", [
 		GitHubActionCommandUnconfiguredState,
@@ -34,13 +34,13 @@ export type WebFetchCommandConfiguredState = z.infer<
 	typeof WebFetchCommandConfiguredState
 >;
 
-const WebFetchCommandData = z.object({
+export const WebFetchCommandData = z.object({
 	provider: z.literal("web-search"),
 	state: WebFetchCommandConfiguredState,
 });
 export type WebFetchCommandData = z.infer<typeof WebFetchCommandData>;
 
-const ActionCommandData = z.discriminatedUnion("provider", [
+export const ActionCommandData = z.discriminatedUnion("provider", [
 	GitHubActionCommandData,
 	WebFetchCommandData,
 ]);

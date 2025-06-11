@@ -116,22 +116,6 @@ export function isActionNode<
 	);
 }
 
-export const WebFetchNode = ActionNode.extend({
-	content: ActionContent.extend({
-		command: z.object({
-			provider: z.literal("web-search"),
-			state: z.object({
-				status: z.literal("configured"),
-			}),
-		}),
-	}),
-});
-export type WebFetchNode = z.infer<typeof WebFetchNode>;
-export function isWebFetchNode(args?: unknown): args is WebFetchNode {
-	const result = WebFetchNode.safeParse(args);
-	return result.success;
-}
-
 export const QueryNode = OperationNode.extend({
 	content: QueryContent,
 });

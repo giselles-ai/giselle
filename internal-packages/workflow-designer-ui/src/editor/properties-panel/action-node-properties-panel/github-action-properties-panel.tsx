@@ -1,5 +1,6 @@
 import {
 	type ActionNode,
+	type GitHubActionCommandData,
 	type Input,
 	InputId,
 	OutputId,
@@ -39,12 +40,19 @@ export function GitHubActionPropertiesPanel({
 }) {
 	const { value } = useIntegration();
 
-	if (node.content.command.state.status === "configured") {
+	// Type guard to ensure this is a GitHub action
+	if (node.content.command.provider !== "github") {
+		return null;
+	}
+
+	const githubCommand = node.content.command as GitHubActionCommandData;
+
+	if (githubCommand.state.status === "configured") {
 		return (
 			<PanelGroup direction="vertical" className="flex-1 flex flex-col">
 				<Panel defaultSize={50} minSize={20}>
 					<GitHubActionConfiguredView
-						state={node.content.command.state}
+						state={githubCommand.state}
 						nodeId={node.id}
 						inputs={node.inputs}
 					/>

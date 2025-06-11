@@ -86,12 +86,19 @@ function PropertiesPanel({
 	node: ActionNode;
 	onRunAction: () => void;
 }) {
-	switch (node.content.command.provider) {
+	const command = node.content.command;
+	switch (command.provider) {
 		case "github":
 			return <GitHubActionPropertiesPanel node={node} onRun={onRunAction} />;
+		case "web-search":
+			// TODO: Implement WebFetchActionPropertiesPanel in future phases
+			return <div>Web Fetch Node properties panel (TODO)</div>;
 		default: {
-			const _exhaustiveCheck: never = node.content.command.provider;
-			throw new Error(`Unhandled action provider: ${_exhaustiveCheck}`);
+			// TODO: Uncomment this exhaustive check after implementing WebFetchActionPropertiesPanel
+			// const _exhaustiveCheck: never = command.provider;
+			throw new Error(
+				`Unhandled action provider: ${String((command as { provider: string }).provider)}`,
+			);
 		}
 	}
 }
