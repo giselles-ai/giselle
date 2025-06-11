@@ -1,4 +1,4 @@
-import type { Octokit } from "@octokit/core";
+import type { Octokit } from "@octokit/rest";
 import { tool } from "ai";
 import { z } from "zod";
 
@@ -1088,7 +1088,7 @@ export function githubTools(octokit: Octokit) {
 			execute: async (params) => {
 				const { order, page, perPage, q, sort } = params;
 
-				const response = await octokit.request("GET /search/issues", {
+				const response = await octokit.search.issuesAndPullRequests({
 					q,
 					sort,
 					order,
@@ -1136,7 +1136,7 @@ export function githubTools(octokit: Octokit) {
 			execute: async (params) => {
 				const { order, page, perPage, q, sort } = params;
 
-				const response = await octokit.request("GET /search/issues", {
+				const response = await octokit.search.issuesAndPullRequests({
 					q: `${q} type:pr`,
 					sort,
 					order,
