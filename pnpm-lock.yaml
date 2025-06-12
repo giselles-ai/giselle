@@ -1371,6 +1371,9 @@ importers:
       '@giselle-sdk/node-utils':
         specifier: workspace:*
         version: link:../node-utils
+      '@giselle-sdk/text-editor-utils':
+        specifier: workspace:*
+        version: link:../text-editor-utils
       '@giselle-sdk/workflow-utils':
         specifier: workspace:*
         version: link:../workflow-utils
