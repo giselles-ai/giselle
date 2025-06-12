@@ -1,5 +1,8 @@
 import type { NodeId } from "@giselle-sdk/data-type";
-import { isJsonContent } from "@giselle-sdk/text-editor-utils";
+import {
+	findNextNodeReference,
+	isJsonContent,
+} from "@giselle-sdk/text-editor-utils";
 
 export function cleanupNodeReferencesInJsonContent(
 	jsonContent: unknown,
@@ -62,14 +65,16 @@ export function cleanupNodeReferencesInText(
 
 	// Handle plain text with {{nodeId:outputId}} references
 	let result = text;
-	while (result.includes(`{{${deletedNodeId}:`)) {
-		const start = result.indexOf(`{{${deletedNodeId}:`);
-		const end = result.indexOf("}}", start) + 2;
-		if (end > start) {
-			result = result.substring(0, start) + result.substring(end);
-		} else {
-			break;
-		}
+	let searchStart = 0;
+
+	while (true) {
+		const reference = findNextNodeReference(result, deletedNodeId, searchStart);
+		if (!reference) break;
+
+		result =
+			result.substring(0, reference.start) + result.substring(reference.end);
+		searchStart = reference.start;
 	}
+
 	return result;
 }

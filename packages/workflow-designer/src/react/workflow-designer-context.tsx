@@ -31,7 +31,10 @@ import {
 	cleanupNodeReferencesInText,
 	isClonedFileDataPayload,
 } from "@giselle-sdk/node-utils";
-import { isJsonContent } from "@giselle-sdk/text-editor-utils";
+import {
+	containsNodeReference,
+	isJsonContent,
+} from "@giselle-sdk/text-editor-utils";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import {
 	type ConnectionCloneStrategy,
@@ -420,7 +423,7 @@ export function WorkflowDesignerProvider({
 				const hasReference = Object.values(node.content).some((value) => {
 					if (typeof value === "string" && value.length > 0) {
 						return (
-							value.includes(`{{${deletedNodeId}:`) ||
+							containsNodeReference(value, deletedNodeId) ||
 							(isJsonContent(value) &&
 								value.includes(`"id":"${deletedNodeId}"`))
 						);
