@@ -50,13 +50,19 @@ function cleanupNodeReferencesInJsonContent(
 	if (
 		content.type === "Source" &&
 		typeof content.attrs === "object" &&
-		content.attrs !== null &&
-		(content.attrs as Record<string, unknown>).node !== null &&
-		typeof (content.attrs as Record<string, unknown>).node === "object" &&
-		((content.attrs as Record<string, unknown>).node as Record<string, unknown>)
-			.id === deletedNodeId
+		content.attrs !== null
 	) {
-		return null;
+		const attrs = content.attrs as Record<string, unknown>;
+		if (
+			attrs.node !== null &&
+			typeof attrs.node === "object" &&
+			attrs.node !== null
+		) {
+			const node = attrs.node as Record<string, unknown>;
+			if (node.id === deletedNodeId) {
+				return null;
+			}
+		}
 	}
 
 	// Recursively process content array
@@ -475,45 +481,65 @@ export function WorkflowDesignerProvider({
 
 	const deleteNode = useCallback(
 		async (nodeId: NodeId | string) => {
+			const deletedNode = workflowDesignerRef.current.deleteNode(nodeId);
+			if (!deletedNode) {
+				setAndSaveWorkspace();
+				return;
+			}
+
 			const parsedNodeId =
 				typeof nodeId === "string" ? NodeId.parse(nodeId) : nodeId;
-			const deletedNode = workflowDesignerRef.current.deleteNode(nodeId);
+			const currentWorkspace = workflowDesignerRef.current.getData();
 
-			if (deletedNode) {
-				const currentWorkspace = workflowDesignerRef.current.getData();
-
-				for (const node of currentWorkspace.nodes) {
-					let hasChanges = false;
-					const updatedContent = { ...node.content };
-
-					for (const [key, value] of Object.entries(node.content)) {
-						if (typeof value === "string" && value.length > 0) {
-							const cleaned = cleanupNodeReferencesInText(value, parsedNodeId);
-							if (cleaned !== value) {
-								updatedContent[key] = cleaned;
-								hasChanges = true;
-							}
-						}
+			// Process nodes and clean up references
+			for (const node of currentWorkspace.nodes) {
+				// Check if node contains reference to deleted node
+				const hasReference = Object.values(node.content).some((value) => {
+					if (typeof value === "string" && value.length > 0) {
+						return (
+							value.includes(`{{${parsedNodeId}:`) ||
+							(isJsonContent(value) && value.includes(`"id":"${parsedNodeId}"`))
+						);
 					}
+					return false;
+				});
 
-					if (hasChanges) {
-						workflowDesignerRef.current.updateNodeData(node, {
-							content: updatedContent as any,
-						});
+				// Skip if no reference found
+				if (!hasReference) {
+					continue;
+				}
+
+				// Clean up all string fields
+				let hasChanges = false;
+				const updatedContent = { ...node.content };
+				for (const [key, value] of Object.entries(node.content)) {
+					if (typeof value === "string" && value.length > 0) {
+						const cleaned = cleanupNodeReferencesInText(value, parsedNodeId);
+						if (cleaned !== value) {
+							(updatedContent as Record<string, unknown>)[key] = cleaned;
+							hasChanges = true;
+						}
 					}
 				}
 
-				if (
-					isTriggerNode(deletedNode) &&
-					deletedNode.content.state.status === "configured"
-				) {
-					try {
-						await client.deleteTrigger({
-							flowTriggerId: deletedNode.content.state.flowTriggerId,
-						});
-					} catch (error) {
-						console.error("Failed to delete trigger", error);
-					}
+				// Update node if changes were made
+				if (hasChanges) {
+					workflowDesignerRef.current.updateNodeData(node, {
+						content: updatedContent,
+					} as Partial<typeof node>);
+				}
+			}
+
+			if (
+				isTriggerNode(deletedNode) &&
+				deletedNode.content.state.status === "configured"
+			) {
+				try {
+					await client.deleteTrigger({
+						flowTriggerId: deletedNode.content.state.flowTriggerId,
+					});
+				} catch (error) {
+					console.error("Failed to delete trigger", error);
 				}
 			}
 			setAndSaveWorkspace();
