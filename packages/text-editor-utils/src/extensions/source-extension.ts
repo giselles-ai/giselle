@@ -1,5 +1,6 @@
 import type { NodeReference, OutputId } from "@giselle-sdk/data-type";
-import { Node, mergeAttributes, nodeInputRule } from "@tiptap/core";
+import { Node } from "@tiptap/core";
+import { formatNodeReference } from "../node-reference";
 
 export function createSourceExtensionJSONContent({
 	node,
@@ -37,7 +38,7 @@ export const SourceExtension = Node.create({
 				"data-node-id": node.attrs.node.id,
 				"data-output-id": node.attrs.outputId,
 			},
-			`{{${node.attrs.node.id}:${node.attrs.outputId}}}`,
+			formatNodeReference(node.attrs.node.id, node.attrs.outputId),
 		];
 	},
 });
