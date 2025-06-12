@@ -27,7 +27,10 @@ import {
 	useGiselleEngine,
 } from "@giselle-sdk/giselle-engine/react";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
-import { isClonedFileDataPayload } from "@giselle-sdk/node-utils";
+import {
+	cleanupNodeReferencesInText,
+	isClonedFileDataPayload,
+} from "@giselle-sdk/node-utils";
 import { isJsonContent } from "@giselle-sdk/text-editor-utils";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -35,79 +38,6 @@ import {
 	WorkflowDesigner,
 } from "../workflow-designer";
 import { usePropertiesPanel, useView } from "./state";
-
-function cleanupNodeReferencesInJsonContent(
-	jsonContent: unknown,
-	deletedNodeId: NodeId,
-): unknown {
-	if (!jsonContent || typeof jsonContent !== "object") {
-		return jsonContent;
-	}
-
-	const content = jsonContent as Record<string, unknown>;
-
-	// If this is a Source node with the deleted nodeId, remove it
-	if (
-		content.type === "Source" &&
-		typeof content.attrs === "object" &&
-		content.attrs !== null
-	) {
-		const attrs = content.attrs as Record<string, unknown>;
-		if (
-			attrs.node !== null &&
-			typeof attrs.node === "object" &&
-			attrs.node !== null
-		) {
-			const node = attrs.node as Record<string, unknown>;
-			if (node.id === deletedNodeId) {
-				return null;
-			}
-		}
-	}
-
-	// Recursively process content array
-	if (Array.isArray(content.content)) {
-		content.content = content.content
-			.map((child: unknown) =>
-				cleanupNodeReferencesInJsonContent(child, deletedNodeId),
-			)
-			.filter((child: unknown) => child !== null);
-	}
-
-	return content;
-}
-
-function cleanupNodeReferencesInText(
-	text: string,
-	deletedNodeId: NodeId,
-): string {
-	// Handle JSON content (rich text from TipTap editor)
-	if (isJsonContent(text)) {
-		try {
-			const jsonContent = JSON.parse(text);
-			const cleaned = cleanupNodeReferencesInJsonContent(
-				jsonContent,
-				deletedNodeId,
-			);
-			return JSON.stringify(cleaned);
-		} catch (error) {
-			console.error("Failed to parse JSON content:", error);
-		}
-	}
-
-	// Handle plain text with {{nodeId:outputId}} references
-	let result = text;
-	while (result.includes(`{{${deletedNodeId}:`)) {
-		const start = result.indexOf(`{{${deletedNodeId}:`);
-		const end = result.indexOf("}}", start) + 2;
-		if (end > start) {
-			result = result.substring(0, start) + result.substring(end);
-		} else {
-			break;
-		}
-	}
-	return result;
-}
 
 type UploadFileFn = (
 	files: File[],
@@ -479,16 +409,9 @@ export function WorkflowDesignerProvider({
 		[setAndSaveWorkspace],
 	);
 
-	const deleteNode = useCallback(
-		async (nodeId: NodeId | string) => {
-			const deletedNode = workflowDesignerRef.current.deleteNode(nodeId);
-			if (!deletedNode) {
-				setAndSaveWorkspace();
-				return;
-			}
-
-			const parsedNodeId =
-				typeof nodeId === "string" ? NodeId.parse(nodeId) : nodeId;
+	const handleDeleteNodeCleanup = useCallback(
+		(unsafeNodeId: string | NodeId) => {
+			const deletedNodeId = NodeId.parse(unsafeNodeId);
 			const currentWorkspace = workflowDesignerRef.current.getData();
 
 			// Process nodes and clean up references
@@ -497,8 +420,9 @@ export function WorkflowDesignerProvider({
 				const hasReference = Object.values(node.content).some((value) => {
 					if (typeof value === "string" && value.length > 0) {
 						return (
-							value.includes(`{{${parsedNodeId}:`) ||
-							(isJsonContent(value) && value.includes(`"id":"${parsedNodeId}"`))
+							value.includes(`{{${deletedNodeId}:`) ||
+							(isJsonContent(value) &&
+								value.includes(`"id":"${deletedNodeId}"`))
 						);
 					}
 					return false;
@@ -514,7 +438,7 @@ export function WorkflowDesignerProvider({
 				const updatedContent = { ...node.content };
 				for (const [key, value] of Object.entries(node.content)) {
 					if (typeof value === "string" && value.length > 0) {
-						const cleaned = cleanupNodeReferencesInText(value, parsedNodeId);
+						const cleaned = cleanupNodeReferencesInText(value, deletedNodeId);
 						if (cleaned !== value) {
 							(updatedContent as Record<string, unknown>)[key] = cleaned;
 							hasChanges = true;
@@ -529,7 +453,12 @@ export function WorkflowDesignerProvider({
 					} as Partial<typeof node>);
 				}
 			}
+		},
+		[],
+	);
 
+	const handleDeleteTriggerCleanup = useCallback(
+		async (deletedNode: unknown) => {
 			if (
 				isTriggerNode(deletedNode) &&
 				deletedNode.content.state.status === "configured"
@@ -542,9 +471,20 @@ export function WorkflowDesignerProvider({
 					console.error("Failed to delete trigger", error);
 				}
 			}
+		},
+		[client],
+	);
+
+	const deleteNode = useCallback(
+		async (nodeId: NodeId | string) => {
+			const deletedNode = workflowDesignerRef.current.deleteNode(nodeId);
+			if (deletedNode) {
+				handleDeleteNodeCleanup(nodeId);
+				await handleDeleteTriggerCleanup(deletedNode);
+			}
 			setAndSaveWorkspace();
 		},
-		[setAndSaveWorkspace, client],
+		[setAndSaveWorkspace, handleDeleteNodeCleanup, handleDeleteTriggerCleanup],
 	);
 
 	const deleteConnection = useCallback(
