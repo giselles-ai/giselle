@@ -1,5 +1,9 @@
 import type { Node } from "@giselle-sdk/data-type";
-import { extensions as baseExtensions } from "@giselle-sdk/text-editor-utils";
+import {
+	type SourceNode,
+	extensions as baseExtensions,
+	findRemovedSources,
+} from "@giselle-sdk/text-editor-utils";
 import { type Editor, EditorProvider, useCurrentEditor } from "@tiptap/react";
 import clsx from "clsx/lite";
 import {
@@ -10,7 +14,7 @@ import {
 	StrikethroughIcon,
 } from "lucide-react";
 import { Toolbar as ToolbarPrimitive } from "radix-ui";
-import { type ReactNode, useMemo } from "react";
+import { type ReactNode, useEffect, useMemo, useRef } from "react";
 import { SourceExtensionReact } from "./source-extension-react";
 
 function Toolbar({
@@ -125,14 +129,18 @@ function Toolbar({
 export function TextEditor({
 	value,
 	onValueChange,
+	onSourceRemoved,
 	tools,
 	nodes,
 }: {
 	value?: string;
 	onValueChange?: (value: string) => void;
+	onSourceRemoved?: (removedSources: SourceNode[]) => void;
 	tools?: (editor: Editor) => ReactNode;
 	nodes?: Node[];
 }) {
+	const previousContentRef = useRef<string | undefined>(value);
+
 	const extensions = useMemo(
 		() =>
 			nodes === undefined
@@ -145,9 +153,16 @@ export function TextEditor({
 					],
 		[nodes],
 	);
+
+	// Create a key to force re-mount when nodes change
+	const editorKey = useMemo(() => {
+		return nodes ? JSON.stringify(nodes.map((n) => n.id).sort()) : "no-nodes";
+	}, [nodes]);
+
 	return (
 		<div className="flex flex-col h-full w-full">
 			<EditorProvider
+				key={editorKey}
 				slotBefore={<Toolbar tools={tools} />}
 				extensions={extensions}
 				content={
@@ -161,7 +176,24 @@ export function TextEditor({
 					className: "flex-1 overflow-hidden",
 				}}
 				onUpdate={(p) => {
-					onValueChange?.(JSON.stringify(p.editor.getJSON()));
+					const newJson = p.editor.getJSON();
+					const newContent = JSON.stringify(newJson);
+
+					// Check for removed sources if callback is provided
+					if (onSourceRemoved && previousContentRef.current) {
+						try {
+							const oldJson = JSON.parse(previousContentRef.current);
+							const removedSources = findRemovedSources(oldJson, newJson);
+							if (removedSources.length > 0) {
+								onSourceRemoved(removedSources);
+							}
+						} catch (error) {
+							console.error("Error checking for removed sources:", error);
+						}
+					}
+
+					previousContentRef.current = newContent;
+					onValueChange?.(newContent);
 				}}
 				immediatelyRender={false}
 				editorProps={{
@@ -170,7 +202,24 @@ export function TextEditor({
 							"prompt-editor border-[0.5px] border-white-900 rounded-[8px] p-[16px] h-full overflow-y-auto",
 					},
 				}}
-			/>
+			>
+				<NodeUpdater nodes={nodes} />
+			</EditorProvider>
 		</div>
 	);
+}
+
+function NodeUpdater({ nodes }: { nodes?: Node[] }) {
+	const { editor } = useCurrentEditor();
+
+	useEffect(() => {
+		if (editor && nodes) {
+			// Update the Source extension storage when nodes change
+			if (editor.storage.Source) {
+				editor.storage.Source.nodes = nodes;
+			}
+		}
+	}, [editor, nodes]);
+
+	return null;
 }
