@@ -25,6 +25,13 @@ export function containsNodeReference(text: string, nodeId: NodeId): boolean {
 }
 
 /**
+ * Check if text contains specific node reference (nodeId:outputId)
+ */
+export function containsSpecificNodeReference(text: string, nodeId: NodeId, outputId: OutputId): boolean {
+	return text.includes(formatNodeReference(nodeId, outputId));
+}
+
+/**
  * Find next node reference for a specific nodeId
  * Returns the start and end indices, or null if not found
  */
