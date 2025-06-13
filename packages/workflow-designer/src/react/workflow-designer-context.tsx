@@ -29,7 +29,14 @@ import {
 	useGiselleEngine,
 } from "@giselle-sdk/giselle-engine/react";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
-import { isClonedFileDataPayload } from "@giselle-sdk/node-utils";
+import {
+	cleanupNodeReferencesInText,
+	isClonedFileDataPayload,
+} from "@giselle-sdk/node-utils";
+import {
+	containsNodeReference,
+	isJsonContent,
+} from "@giselle-sdk/text-editor-utils";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import {
 	type ConnectionCloneStrategy,
@@ -408,11 +415,57 @@ export function WorkflowDesignerProvider({
 		[setAndSaveWorkspace],
 	);
 
-	const deleteNode = useCallback(
-		async (nodeId: NodeId | string) => {
-			const deletedNode = workflowDesignerRef.current.deleteNode(nodeId);
+	const handleDeleteNodeCleanup = useCallback(
+		(unsafeNodeId: string | NodeId) => {
+			const deletedNodeId = NodeId.parse(unsafeNodeId);
+			const currentWorkspace = workflowDesignerRef.current.getData();
+
+			// Process nodes and clean up references
+			for (const node of currentWorkspace.nodes) {
+				// Check if node contains reference to deleted node
+				const hasReference = Object.values(node.content).some((value) => {
+					if (typeof value === "string" && value.length > 0) {
+						return (
+							containsNodeReference(value, deletedNodeId) ||
+							(isJsonContent(value) &&
+								value.includes(`"id":"${deletedNodeId}"`))
+						);
+					}
+					return false;
+				});
+
+				// Skip if no reference found
+				if (!hasReference) {
+					continue;
+				}
+
+				// Clean up all string fields
+				let hasChanges = false;
+				const updatedContent = { ...node.content };
+				for (const [key, value] of Object.entries(node.content)) {
+					if (typeof value === "string" && value.length > 0) {
+						const cleaned = cleanupNodeReferencesInText(value, deletedNodeId);
+						if (cleaned !== value) {
+							(updatedContent as Record<string, unknown>)[key] = cleaned;
+							hasChanges = true;
+						}
+					}
+				}
+
+				// Update node if changes were made
+				if (hasChanges) {
+					workflowDesignerRef.current.updateNodeData(node, {
+						content: updatedContent,
+					} as Partial<typeof node>);
+				}
+			}
+		},
+		[],
+	);
+
+	const handleDeleteTriggerCleanup = useCallback(
+		async (deletedNode: unknown) => {
 			if (
-				deletedNode &&
 				isTriggerNode(deletedNode) &&
 				deletedNode.content.state.status === "configured"
 			) {
@@ -424,9 +477,20 @@ export function WorkflowDesignerProvider({
 					console.error("Failed to delete trigger", error);
 				}
 			}
+		},
+		[client],
+	);
+
+	const deleteNode = useCallback(
+		async (nodeId: NodeId | string) => {
+			const deletedNode = workflowDesignerRef.current.deleteNode(nodeId);
+			if (deletedNode) {
+				handleDeleteNodeCleanup(nodeId);
+				await handleDeleteTriggerCleanup(deletedNode);
+			}
 			setAndSaveWorkspace();
 		},
-		[setAndSaveWorkspace, client],
+		[setAndSaveWorkspace, handleDeleteNodeCleanup, handleDeleteTriggerCleanup],
 	);
 
 	const deleteConnection = useCallback(
