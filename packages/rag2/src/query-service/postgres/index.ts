@@ -1,3 +1,4 @@
+import { escapeIdentifier } from "pg";
 import * as pgvector from "pgvector/pg";
 import type { z } from "zod/v4";
 import { ensurePgVectorTypes } from "../../database/pgvector-registry";
@@ -61,7 +62,7 @@ export class PostgresQueryService<
 
 			for (const [column, value] of Object.entries(filters)) {
 				if (typeof column === "string") {
-					whereConditions.push(`"${column}" = $${paramIndex}`);
+					whereConditions.push(`${escapeIdentifier(column)} = $${paramIndex}`);
 					values.push(value);
 					paramIndex++;
 				}
@@ -74,19 +75,25 @@ export class PostgresQueryService<
 				)
 				.map(([metadataKey, dbColumn]) => ({
 					metadataKey,
-					dbColumn: typeof dbColumn === "string" ? `"${dbColumn}"` : "",
+					dbColumn:
+						typeof dbColumn === "string" ? escapeIdentifier(dbColumn) : "",
 				}))
 				.filter((item) => item.dbColumn !== "");
 
 			const sql = `
         SELECT
-          "${columnMapping.chunkContent}" as content,
-          "${columnMapping.chunkIndex}" as index,
-          ${metadataColumns.map(({ dbColumn, metadataKey }) => `${dbColumn} as "${metadataKey}"`).join(", ")}${metadataColumns.length > 0 ? "," : ""}
-          1 - ("${columnMapping.embedding}" <=> $1) as similarity
-        FROM "${tableName}"
+          ${escapeIdentifier(columnMapping.chunkContent)} as content,
+          ${escapeIdentifier(columnMapping.chunkIndex)} as index,
+          ${metadataColumns
+						.map(
+							({ dbColumn, metadataKey }) =>
+								`${dbColumn} as ${escapeIdentifier(metadataKey)}`,
+						)
+						.join(", ")}${metadataColumns.length > 0 ? "," : ""}
+          1 - (${escapeIdentifier(columnMapping.embedding)} <=> $1) as similarity
+        FROM ${escapeIdentifier(tableName)}
         ${whereConditions.length > 0 ? `WHERE ${whereConditions.join(" AND ")}` : ""}
-        ORDER BY "${columnMapping.embedding}" <=> $1
+        ORDER BY ${escapeIdentifier(columnMapping.embedding)} <=> $1
         LIMIT ${limit}
       `;
 
