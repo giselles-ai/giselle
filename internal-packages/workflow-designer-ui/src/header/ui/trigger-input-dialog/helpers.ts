@@ -15,7 +15,7 @@ import type { z } from "zod";
 export function buttonLabel(node: TriggerNode) {
 	switch (node.content.provider) {
 		case "manual":
-			return "Start Manual Flow";
+			return "Start Manual Workflow";
 		case "github":
 			return "Test with dummy data";
 		default: {

@@ -184,7 +184,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 								)}
 							>
 								<option value="text">Text</option>
-								<option value="multiline-text">Text(multi-line)</option>
+								<option value="multiline-text">Text (multi-line)</option>
 								<option value="number">Number</option>
 							</select>
 						</div>
