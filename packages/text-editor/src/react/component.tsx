@@ -1,6 +1,6 @@
 import type { Node } from "@giselle-sdk/data-type";
 import {
-	type SourceNode,
+	type NodeOutputReference,
 	extensions as baseExtensions,
 	findRemovedSources,
 } from "@giselle-sdk/text-editor-utils";
@@ -135,7 +135,7 @@ export function TextEditor({
 }: {
 	value?: string;
 	onValueChange?: (value: string) => void;
-	onSourceRemoved?: (removedSources: SourceNode[]) => void;
+	onSourceRemoved?: (removedSources: NodeOutputReference[]) => void;
 	tools?: (editor: Editor) => ReactNode;
 	nodes?: Node[];
 }) {

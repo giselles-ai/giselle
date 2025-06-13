@@ -1,7 +1,7 @@
 import type { NodeId, OutputId } from "@giselle-sdk/data-type";
 import type { JSONContent } from "@tiptap/core";
 
-export interface SourceNode {
+export interface NodeOutputReference {
 	nodeId: NodeId;
 	outputId: OutputId;
 }
@@ -9,8 +9,10 @@ export interface SourceNode {
 /**
  * Extract all Source nodes from TipTap JSONContent
  */
-export function extractSourceNodes(content: JSONContent): SourceNode[] {
-	const sources: SourceNode[] = [];
+export function extractSourceNodes(
+	content: JSONContent,
+): NodeOutputReference[] {
+	const sources: NodeOutputReference[] = [];
 
 	function traverse(node: JSONContent) {
 		if (node.type === "Source") {
@@ -23,7 +25,7 @@ export function extractSourceNodes(content: JSONContent): SourceNode[] {
 			}
 			// Log any Source nodes with incomplete attrs for debugging
 			else {
-				console.log('Found Source node with incomplete attrs:', node);
+				console.log("Found Source node with incomplete attrs:", node);
 			}
 		}
 
@@ -44,7 +46,7 @@ export function extractSourceNodes(content: JSONContent): SourceNode[] {
 export function findRemovedSources(
 	oldContent: JSONContent,
 	newContent: JSONContent,
-): SourceNode[] {
+): NodeOutputReference[] {
 	const oldSources = extractSourceNodes(oldContent);
 	const newSources = extractSourceNodes(newContent);
 

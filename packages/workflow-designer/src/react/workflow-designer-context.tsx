@@ -35,7 +35,7 @@ import {
 	isClonedFileDataPayload,
 } from "@giselle-sdk/node-utils";
 import {
-	type SourceNode,
+	type NodeOutputReference,
 	containsNodeReference,
 	containsSpecificNodeReference,
 	isJsonContent,
@@ -88,7 +88,7 @@ export interface WorkflowDesignerContextValue
 	) => Promise<Node | undefined>;
 	deleteNode: (nodeId: NodeId | string) => Promise<void>;
 	deleteConnectionWithCleanup: (connectionId: ConnectionId) => void;
-	handleSourceRemoved: (removedSources: SourceNode[]) => void;
+	handleSourceRemoved: (removedSources: NodeOutputReference[]) => void;
 	llmProviders: LanguageModelProvider[];
 	isLoading: boolean;
 }
@@ -442,7 +442,7 @@ export function WorkflowDesignerProvider({
 	);
 
 	const handleSourceRemoved = useCallback(
-		(removedSources: SourceNode[]) => {
+		(removedSources: NodeOutputReference[]) => {
 			const currentWorkspace = workflowDesignerRef.current.getData();
 
 			for (const removedSource of removedSources) {
@@ -501,8 +501,8 @@ export function WorkflowDesignerProvider({
 			);
 
 			if (connection) {
-				// Create a SourceNode object for the specific connection being removed
-				const removedSource: SourceNode = {
+				// Create a NodeOutputReference object for the specific connection being removed
+				const removedSource: NodeOutputReference = {
 					nodeId: connection.outputNode.id,
 					outputId: connection.outputId,
 				};
