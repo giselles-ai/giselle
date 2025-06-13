@@ -1,16 +1,24 @@
 /**
- * RAG2 QueryService utilities and factories
+ * RAG3 default settings and utilities
  */
 
 // Re-export types
-export type { QueryServiceConfig } from "./types";
+export type {
+	ChunkStoreConfig,
+	QueryServiceConfig,
+	SimpleIngestConfig,
+} from "./types";
 
 // Re-export constants and utilities
 export {
 	createColumnMapping,
+	createDefaultChunker,
 	createDefaultEmbedder,
-	DEFAULT_REQUIRED_COLUMNS,
 } from "./utils";
 
 // Re-export factory functions
-export { createQueryService } from "./factories";
+export {
+	createChunkStore,
+	createIngestPipeline,
+	createQueryService,
+} from "./factories";

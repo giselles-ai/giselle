@@ -1049,6 +1049,9 @@ importers:
       '@giselle-sdk/rag':
         specifier: workspace:*
         version: link:../rag
+      '@giselle-sdk/rag2':
+        specifier: workspace:*
+        version: link:../rag2
       '@octokit/auth-app':
         specifier: 'catalog:'
         version: 8.0.1

@@ -9,9 +9,26 @@ import type {
 	GitHubQueryContext,
 	GitHubVectorStoreQueryService,
 } from "@giselle-sdk/giselle-engine";
-import { type DatabaseConfig, createQueryService } from "@giselle-sdk/rag2";
+import {
+	type DatabaseConfig,
+	createChunkStore,
+	createQueryService,
+} from "@giselle-sdk/rag2";
 import { and, eq, getTableName } from "drizzle-orm";
 import { z } from "zod/v4";
+
+/**
+ * GitHub chunk metadata schema and type for RAG storage
+ */
+export const githubChunkMetadataSchema = z.object({
+	repositoryIndexDbId: z.number(),
+	commitSha: z.string(),
+	fileSha: z.string(),
+	path: z.string(),
+	nodeId: z.string(),
+});
+
+export type GitHubChunkMetadata = z.infer<typeof githubChunkMetadataSchema>;
 
 /**
  * Create PostgreSQL connection config from environment
@@ -22,6 +39,31 @@ function createDatabaseConfig(): DatabaseConfig {
 		throw new Error("POSTGRES_URL environment variable is required");
 	}
 	return { connectionString: postgresUrl };
+}
+
+/**
+ * GitHub chunk store factory - for ingestion pipeline
+ */
+export function createGitHubChunkStore(repositoryIndexDbId: number) {
+	return createChunkStore<GitHubChunkMetadata>({
+		database: createDatabaseConfig(),
+		tableName: getTableName(githubRepositoryEmbeddings),
+		metadataSchema: githubChunkMetadataSchema,
+		staticContext: { repository_index_db_id: repositoryIndexDbId },
+		requiredColumnOverrides: {
+			documentKey: "path",
+			// (default)
+			// chunkContent: "chunk_content",
+			// chunkIndex: "chunk_index",
+			// embedding: "embedding" (default)
+		},
+		// Metadata fields will auto-convert from camelCase to snake_case:
+		// repositoryIndexDbId -> repository_index_db_id
+		// commitSha -> commit_sha
+		// fileSha -> file_sha
+		// path -> path
+		// nodeId -> node_id
+	});
 }
 
 /**

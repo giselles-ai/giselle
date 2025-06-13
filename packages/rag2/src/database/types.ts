@@ -36,15 +36,21 @@ export interface DatabaseConfig {
 	};
 }
 
-// define required columns
-export interface RequiredColumns {
-	documentKey: string;
-	chunkContent: string;
-	chunkIndex: string;
-	embedding: string;
-}
+// define required column keys first
+export const REQUIRED_COLUMN_KEYS = [
+	"documentKey",
+	"chunkContent",
+	"chunkIndex",
+	"embedding",
+] as const;
+
+// derive RequiredColumns type from keys
+export type RequiredColumns = Record<
+	(typeof REQUIRED_COLUMN_KEYS)[number],
+	string
+>;
 
 // define column mapping (required columns are enforced)
-export type ColumnMapping<TMetadata> = RequiredColumns & {
-	[K in keyof TMetadata]: string;
+export type ColumnMapping<TMetadata> = Readonly<RequiredColumns> & {
+	[K in Exclude<keyof TMetadata, keyof RequiredColumns>]: string;
 };
