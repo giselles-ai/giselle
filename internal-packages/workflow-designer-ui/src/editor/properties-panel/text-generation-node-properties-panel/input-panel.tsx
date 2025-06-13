@@ -35,7 +35,7 @@ export function InputPanel({
 }: {
 	node: TextGenerationNode;
 }) {
-	const { data, addConnection, deleteConnection, updateNodeData } =
+	const { data, addConnection, deleteConnectionWithCleanup, updateNodeData } =
 		useWorkflowDesigner();
 	const outputs = useMemo<OutputWithDetails[]>(() => {
 		const tmp: OutputWithDetails[] = [];
@@ -114,7 +114,7 @@ export function InputPanel({
 				if (connection === undefined) {
 					continue;
 				}
-				deleteConnection(connection.id);
+				deleteConnectionWithCleanup(connection.id);
 
 				mutableInputs = mutableInputs.filter(
 					(input) => input.id !== connection.inputId,
@@ -129,21 +129,21 @@ export function InputPanel({
 			data.nodes,
 			data.connections,
 			addConnection,
-			deleteConnection,
+			deleteConnectionWithCleanup,
 			updateNodeData,
 		],
 	);
 
 	const handleRemove = useCallback(
 		(connection: Connection) => {
-			deleteConnection(connection.id);
+			deleteConnectionWithCleanup(connection.id);
 			updateNodeData(textGenerationNode, {
 				inputs: textGenerationNode.inputs.filter(
 					(input) => input.id !== connection.inputId,
 				),
 			});
 		},
-		[textGenerationNode, deleteConnection, updateNodeData],
+		[textGenerationNode, deleteConnectionWithCleanup, updateNodeData],
 	);
 
 	if (textGenerationNode.inputs.length === 0) {

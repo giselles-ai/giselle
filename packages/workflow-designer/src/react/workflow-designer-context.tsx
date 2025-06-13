@@ -29,7 +29,17 @@ import {
 	useGiselleEngine,
 } from "@giselle-sdk/giselle-engine/react";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
-import { isClonedFileDataPayload } from "@giselle-sdk/node-utils";
+import {
+	cleanupNodeReferencesInText,
+	cleanupSpecificNodeReferenceInText,
+	isClonedFileDataPayload,
+} from "@giselle-sdk/node-utils";
+import {
+	type SourceNode,
+	containsNodeReference,
+	containsSpecificNodeReference,
+	isJsonContent,
+} from "@giselle-sdk/text-editor-utils";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import {
 	type ConnectionCloneStrategy,
@@ -77,6 +87,8 @@ export interface WorkflowDesignerContextValue
 		},
 	) => Promise<Node | undefined>;
 	deleteNode: (nodeId: NodeId | string) => Promise<void>;
+	deleteConnectionWithCleanup: (connectionId: ConnectionId) => void;
+	handleSourceRemoved: (removedSources: SourceNode[]) => void;
 	llmProviders: LanguageModelProvider[];
 	isLoading: boolean;
 }
@@ -429,6 +441,127 @@ export function WorkflowDesignerProvider({
 		[setAndSaveWorkspace, client],
 	);
 
+	const handleSourceRemoved = useCallback(
+		(removedSources: SourceNode[]) => {
+			const currentWorkspace = workflowDesignerRef.current.getData();
+
+			for (const removedSource of removedSources) {
+				// Clean up references to this source in all nodes
+				for (const node of currentWorkspace.nodes) {
+					const hasReference = Object.values(node.content).some((value) => {
+						if (typeof value === "string" && value.length > 0) {
+							return (
+								containsNodeReference(value, removedSource.nodeId) ||
+								(isJsonContent(value) &&
+									value.includes(`"id":"${removedSource.nodeId}"`))
+							);
+						}
+						return false;
+					});
+
+					if (!hasReference) {
+						continue;
+					}
+
+					// Clean up all string fields
+					let hasChanges = false;
+					const updatedContent = { ...node.content };
+					for (const [key, value] of Object.entries(node.content)) {
+						if (typeof value === "string" && value.length > 0) {
+							const cleaned = cleanupNodeReferencesInText(
+								value,
+								removedSource.nodeId,
+							);
+							if (cleaned !== value) {
+								(updatedContent as Record<string, unknown>)[key] = cleaned;
+								hasChanges = true;
+							}
+						}
+					}
+
+					// Update node if changes were made
+					if (hasChanges) {
+						workflowDesignerRef.current.updateNodeData(node, {
+							content: updatedContent,
+						} as Partial<typeof node>);
+					}
+				}
+			}
+
+			setAndSaveWorkspace();
+		},
+		[setAndSaveWorkspace],
+	);
+
+	const deleteConnectionWithCleanup = useCallback(
+		(connectionId: ConnectionId) => {
+			const currentWorkspace = workflowDesignerRef.current.getData();
+			const connection = currentWorkspace.connections.find(
+				(conn) => conn.id === connectionId,
+			);
+
+			if (connection) {
+				// Create a SourceNode object for the specific connection being removed
+				const removedSource: SourceNode = {
+					nodeId: connection.outputNode.id,
+					outputId: connection.outputId,
+				};
+
+				// Clean up references to this specific connection in all text fields
+				for (const node of currentWorkspace.nodes) {
+					const hasReference = Object.values(node.content).some((value) => {
+						if (typeof value === "string" && value.length > 0) {
+							return (
+								containsSpecificNodeReference(
+									value,
+									removedSource.nodeId,
+									removedSource.outputId,
+								) ||
+								(isJsonContent(value) &&
+									value.includes(`"id":"${removedSource.nodeId}"`) &&
+									value.includes(`"outputId":"${removedSource.outputId}"`))
+							);
+						}
+						return false;
+					});
+
+					if (!hasReference) {
+						continue;
+					}
+
+					// Clean up all string fields
+					let hasChanges = false;
+					const updatedContent = { ...node.content };
+					for (const [key, value] of Object.entries(node.content)) {
+						if (typeof value === "string" && value.length > 0) {
+							const cleaned = cleanupSpecificNodeReferenceInText(
+								value,
+								removedSource.nodeId,
+								removedSource.outputId,
+							);
+							if (cleaned !== value) {
+								(updatedContent as Record<string, unknown>)[key] = cleaned;
+								hasChanges = true;
+							}
+						}
+					}
+
+					// Update node if changes were made
+					if (hasChanges) {
+						workflowDesignerRef.current.updateNodeData(node, {
+							content: updatedContent,
+						} as Partial<typeof node>);
+					}
+				}
+			}
+
+			// Perform the actual connection deletion
+			workflowDesignerRef.current.deleteConnection(connectionId);
+			setAndSaveWorkspace();
+		},
+		[setAndSaveWorkspace],
+	);
+
 	const deleteConnection = useCallback(
 		(connectionId: ConnectionId) => {
 			workflowDesignerRef.current.deleteConnection(connectionId);
@@ -536,6 +669,8 @@ export function WorkflowDesignerProvider({
 				updateNodeDataContent,
 				setUiNodeState,
 				deleteNode,
+				deleteConnectionWithCleanup,
+				handleSourceRemoved,
 				deleteConnection,
 				uploadFile,
 				removeFile,
