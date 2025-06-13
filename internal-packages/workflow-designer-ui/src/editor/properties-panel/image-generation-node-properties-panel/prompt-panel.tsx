@@ -25,7 +25,7 @@ export function PromptPanel({
 }: {
 	node: ImageGenerationNode;
 }) {
-	const { updateNodeDataContent } = useWorkflowDesigner();
+	const { updateNodeDataContent, handleSourceRemoved } = useWorkflowDesigner();
 	const { all: connectedSources } = useConnectedSources(node);
 	const nodes = useMemo(
 		() =>
@@ -42,6 +42,7 @@ export function PromptPanel({
 			onValueChange={(value) => {
 				updateNodeDataContent(node, { prompt: value });
 			}}
+			onSourceRemoved={handleSourceRemoved}
 			nodes={nodes}
 			tools={(editor) => (
 				<DropdownMenu.Root>

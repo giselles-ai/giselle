@@ -113,7 +113,7 @@ function DataSourceDisplayBar({
 }
 
 export function QueryPanel({ node }: { node: QueryNode }) {
-	const { updateNodeDataContent } = useWorkflowDesigner();
+	const { updateNodeDataContent, handleSourceRemoved } = useWorkflowDesigner();
 	const { all: connectedInputs } = useConnectedSources(node);
 	const connectedDatasourceInputs = useMemo(
 		() =>
@@ -138,6 +138,7 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 					onValueChange={(value) => {
 						updateNodeDataContent(node, { query: value });
 					}}
+					onSourceRemoved={handleSourceRemoved}
 					nodes={connectedInputsWithoutDatasource.map((input) => input.node)}
 					tools={(editor) => (
 						<DropdownMenu.Root>

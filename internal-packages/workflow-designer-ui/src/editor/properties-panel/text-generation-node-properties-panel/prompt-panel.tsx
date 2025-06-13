@@ -23,7 +23,7 @@ export function PromptPanel({
 }: {
 	node: TextGenerationNode;
 }) {
-	const { updateNodeDataContent } = useWorkflowDesigner();
+	const { updateNodeDataContent, handleSourceRemoved } = useWorkflowDesigner();
 	const { all: connectedSources } = useConnectedOutputs(node);
 	return (
 		<TextEditor
@@ -31,6 +31,7 @@ export function PromptPanel({
 			onValueChange={(value) => {
 				updateNodeDataContent(node, { prompt: value });
 			}}
+			onSourceRemoved={handleSourceRemoved}
 			nodes={connectedSources.map((source) => source.node)}
 			tools={(editor) => (
 				<DropdownMenu.Root>
