@@ -15,8 +15,11 @@ export async function addSecret(args: {
 	value: string;
 	workspaceId: WorkspaceId;
 }) {
-	const encryptedValue =
-		(await args.context.vault?.encrypt(args.value)) ?? args.value;
+	if (!args.context.vault) {
+		throw new Error("Vault unavailable; cannot encrypt secret");
+	}
+
+	const encryptedValue = await args.context.vault.encrypt(args.value);
 
 	const secret: Secret = {
 		id: SecretId.generate(),
