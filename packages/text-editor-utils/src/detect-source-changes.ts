@@ -23,7 +23,7 @@ export function extractSourceNodes(content: JSONContent): SourceNode[] {
 			}
 			// Log any Source nodes with incomplete attrs for debugging
 			else {
-				console.log('Found Source node with incomplete attrs:', node);
+				console.log("Found Source node with incomplete attrs:", node);
 			}
 		}
 
