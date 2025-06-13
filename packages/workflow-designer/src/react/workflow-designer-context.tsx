@@ -1,6 +1,7 @@
 "use client";
 
 import {
+	type ActionNode,
 	type ConnectionId,
 	type FailedFileData,
 	type FileContent,
