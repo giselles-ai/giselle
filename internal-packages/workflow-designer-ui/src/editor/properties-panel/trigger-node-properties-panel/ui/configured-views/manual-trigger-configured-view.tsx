@@ -13,7 +13,7 @@ export function ManualTriggerConfiguredView({
 	const { isLoading, data, enableFlowTrigger, disableFlowTrigger } =
 		useTrigger(node);
 	if (isLoading) {
-		return "loading...";
+		return "Loading...";
 	}
 	if (data === undefined || data.configuration.provider !== "manual") {
 		return "no data";

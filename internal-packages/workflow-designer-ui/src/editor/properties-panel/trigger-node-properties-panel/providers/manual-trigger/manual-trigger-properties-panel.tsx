@@ -105,7 +105,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 		<div className="flex flex-col gap-[16px] px-[16px] py-[16px]">
 			<p className="text-[18px]">Configure Manual Trigger Parameters</p>
 			<p className="text-[14px]">
-				Add parameters that will be requested when this flow is manually
+				Add parameters that will be requested when this workflow is manually
 				triggered.
 			</p>
 

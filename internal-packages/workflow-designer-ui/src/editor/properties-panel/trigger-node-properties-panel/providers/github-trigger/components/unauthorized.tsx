@@ -29,7 +29,7 @@ export function Unauthorized({ authUrl }: { authUrl: string }) {
 	return (
 		<div className="bg-white-900/10 h-[300px] rounded-[8px] flex items-center justify-center">
 			<div className="flex flex-col gap-[8px]">
-				<p>To get started you have to sign into your GitHub account</p>
+				<p>Sign in to your GitHub account to get started</p>
 				<button
 					type="button"
 					className="group cursor-pointer bg-black-900 rounded-[4px] py-[4px] flex items-center justify-center gap-[8px] disabled:opacity-50 disabled:cursor-wait"

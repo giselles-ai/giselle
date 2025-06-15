@@ -32,7 +32,7 @@ export function InstallGitHubApplication({
 		<div className="bg-white-900/10 h-[300px] rounded-[8px] flex items-center justify-center">
 			<div className="flex flex-col gap-[8px]">
 				<p>
-					Install the GitHub application for the accounts you with to Import
+					Install the GitHub application for the accounts you wish to Import
 					from to continue
 				</p>
 				<button
