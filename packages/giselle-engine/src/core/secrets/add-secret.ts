@@ -4,9 +4,8 @@ import {
 	SecretIndex,
 	type WorkspaceId,
 } from "@giselle-sdk/data-type";
-import type { Storage } from "unstorage";
-import { z } from "zod/v4";
 import type { GiselleEngineContext } from "../types";
+import { addWorkspaceIndexItem } from "../utils/workspace-index";
 import { secretPath, workspaceSecretIndexPath } from "./paths";
 
 export async function addSecret(args: {
@@ -28,28 +27,12 @@ export async function addSecret(args: {
 
 	await Promise.all([
 		args.context.storage.setItem(secretPath(secret.id), secret),
-		addWorkspaceSecretIndex({
+		addWorkspaceIndexItem({
 			storage: args.context.storage,
-			secret,
-			workspaceId: args.workspaceId,
+			indexPath: workspaceSecretIndexPath(args.workspaceId),
+			item: secret,
+			itemSchema: SecretIndex,
 		}),
 	]);
 	return secret;
-}
-
-async function addWorkspaceSecretIndex(args: {
-	workspaceId: WorkspaceId;
-	secret: Secret;
-	storage: Storage;
-}) {
-	const workspaceSecretIndexLike = await args.storage.getItem(
-		workspaceSecretIndexPath(args.workspaceId),
-	);
-	const parse = z.array(SecretIndex).safeParse(workspaceSecretIndexLike);
-	const current = parse.success ? parse.data : [];
-
-	await args.storage.setItem(workspaceSecretIndexPath(args.workspaceId), [
-		...current,
-		SecretIndex.parse(args.secret),
-	]);
 }
