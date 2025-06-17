@@ -1,4 +1,4 @@
-# @giselle-sdk/rag2
+# @giselle-sdk/rag
 
 A RAG (Retrieval-Augmented Generation) system built with TypeScript, PostgreSQL,
 and pgvector.
@@ -33,7 +33,7 @@ This package is intended for internal use within the Giselle monorepo.
 Search through vector embeddings with type-safe metadata filtering.
 
 ```typescript
-import { createQueryService } from "@giselle-sdk/rag2";
+import { createQueryService } from "@giselle-sdk/rag";
 import { z } from "zod/v4";
 
 // Define your metadata schema
@@ -84,7 +84,7 @@ import {
   createChunkStore,
   createIngestPipeline,
   type Document,
-} from "@giselle-sdk/rag2";
+} from "@giselle-sdk/rag";
 import { z } from "zod/v4";
 
 // Define schemas

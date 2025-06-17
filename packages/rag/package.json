@@ -1,34 +1,33 @@
 {
 	"name": "@giselle-sdk/rag",
-	"version": "0.0.0",
-	"private": true,
-	"main": "./dist/index.js",
-	"module": "./dist/index.mjs",
-	"types": "./dist/index.d.ts",
+	"version": "0.1.0",
+	"description": "Simplified RAG system with type safety",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"scripts": {
 		"build": "tsup",
 		"check-types": "tsc --noEmit",
-		"clean": "rm -rf .turbo dist node_modules",
-		"format": "biome check --write .",
-		"test": "vitest run"
-	},
-	"exports": {
-		"./package.json": "./package.json",
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.mjs",
-			"require": "./dist/index.js",
-			"default": "./dist/index.js"
-		}
-	},
-	"devDependencies": {
-		"@giselle/giselle-sdk-tsconfig": "workspace:*",
-		"tsup": "catalog:",
-		"vitest": "catalog:",
-		"@types/node": "catalog:"
+		"dev": "tsup --watch",
+		"test": "vitest",
+		"format": "biome check --write ."
 	},
 	"dependencies": {
 		"@ai-sdk/openai": "catalog:",
-		"ai": "catalog:"
-	}
+		"ai": "catalog:",
+		"pg": "catalog:",
+		"pgvector": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"@types/pg": "catalog:",
+		"tsup": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	},
+	"peerDependencies": {
+		"openai": "catalog:"
+	},
+	"keywords": ["rag", "vector-search", "embeddings", "typescript"],
+	"license": "MIT"
 }

@@ -351,9 +351,6 @@ importers:
       '@giselle-sdk/rag':
         specifier: workspace:*
         version: link:../../packages/rag
-      '@giselle-sdk/rag2':
-        specifier: workspace:*
-        version: link:../../packages/rag2
       '@giselle-sdk/supabase-driver':
         specifier: workspace:*
         version: link:../../packages/supabase-driver
@@ -908,9 +905,6 @@ importers:
       '@giselle-sdk/rag':
         specifier: workspace:^
         version: link:../rag
-      '@giselle-sdk/rag2':
-        specifier: workspace:^
-        version: link:../rag2
       '@giselle-sdk/telemetry':
         specifier: workspace:^
         version: link:../telemetry
@@ -1009,9 +1003,6 @@ importers:
       '@giselle-sdk/rag':
         specifier: workspace:*
         version: link:../rag
-      '@giselle-sdk/rag2':
-        specifier: workspace:*
-        version: link:../rag2
       '@octokit/auth-app':
         specifier: 'catalog:'
         version: 8.0.1
@@ -1135,28 +1126,6 @@ importers:
         version: 8.3.5(jiti@2.4.2)(postcss@8.5.5)(typescript@5.7.3)(yaml@2.7.0)
 
   packages/rag:
-    dependencies:
-      '@ai-sdk/openai':
-        specifier: 'catalog:'
-        version: 1.3.18(zod@3.25.28)
-      ai:
-        specifier: 'catalog:'
-        version: 4.3.9(react@19.1.0)(zod@3.25.28)
-    devDependencies:
-      '@giselle/giselle-sdk-tsconfig':
-        specifier: workspace:*
-        version: link:../../tools/tsconfig
-      '@types/node':
-        specifier: 'catalog:'
-        version: 22.14.0
-      tsup:
-        specifier: 'catalog:'
-        version: 8.3.5(jiti@2.4.2)(postcss@8.5.5)(typescript@5.7.3)(yaml@2.7.0)
-      vitest:
-        specifier: 'catalog:'
-        version: 3.1.4(@types/debug@4.1.12)(@types/node@22.14.0)(happy-dom@17.6.1)(jiti@2.4.2)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.39.0)(yaml@2.7.0)
-
-  packages/rag2:
     dependencies:
       '@ai-sdk/openai':
         specifier: 'catalog:'
