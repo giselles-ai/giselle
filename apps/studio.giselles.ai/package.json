@@ -25,7 +25,6 @@
 		"@giselle-sdk/language-model": "workspace:*",
 		"@giselle-sdk/integration": "workspace:*",
 		"@giselle-sdk/rag": "workspace:*",
-		"@giselle-sdk/rag2": "workspace:*",
 		"@giselle-sdk/supabase-driver": "workspace:*",
 		"@giselle-sdk/telemetry": "workspace:*",
 		"@icons-pack/react-simple-icons": "10.0.0",
