@@ -47,7 +47,7 @@ export function GitHubActionPropertiesPanel({
 	if (node.content.command.state.status === "configured") {
 		return (
 			<PanelGroup direction="vertical" className="flex-1 flex flex-col">
-				<Panel defaultSize={50} minSize={20}>
+				<Panel defaultSize={80} minSize={20}>
 					<GitHubActionConfiguredView
 						state={node.content.command.state}
 						nodeId={node.id}
