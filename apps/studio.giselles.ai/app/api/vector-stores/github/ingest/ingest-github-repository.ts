@@ -8,7 +8,7 @@ import {
 	type GitHubBlobLoaderParams,
 	type GitHubBlobMetadata,
 } from "@giselle-sdk/github-tool";
-import { createIngestPipeline } from "@giselle-sdk/rag2";
+import { createIngestPipeline } from "@giselle-sdk/rag";
 import type { Octokit } from "@octokit/core";
 import { and, eq } from "drizzle-orm";
 

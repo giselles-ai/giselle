@@ -2,7 +2,7 @@ import type {
 	Document,
 	DocumentLoader,
 	DocumentLoaderParams,
-} from "@giselle-sdk/rag2";
+} from "@giselle-sdk/rag";
 import type { Octokit } from "@octokit/core";
 
 /**
@@ -45,7 +45,7 @@ interface GitHubBlobResult {
 }
 
 /**
- * GitHub blob loader that implements rag2's DocumentLoader interface
+ * GitHub blob loader that implements rag's DocumentLoader interface
  */
 export class GitHubBlobLoader
 	implements DocumentLoader<GitHubBlobMetadata, GitHubBlobLoaderParams>
