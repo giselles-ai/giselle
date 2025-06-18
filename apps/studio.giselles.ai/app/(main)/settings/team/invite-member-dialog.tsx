@@ -23,6 +23,12 @@ import { useEffect, useState } from "react";
 import { email as emailValidator, parse, pipe, string } from "valibot";
 import { Button } from "../components/button";
 import { type SendInvitationsResult, sendInvitationsAction } from "./actions";
+import {
+	GlassDialogBody,
+	GlassDialogContent,
+	GlassDialogFooter,
+	GlassDialogHeader,
+} from "./components/glass-dialog-content";
 
 type InviteMemberDialogProps = {
 	memberEmails: string[];
@@ -159,7 +165,7 @@ export function InviteMemberDialog({
 				>
 					{/* Outer glow */}
 					<div
-						className="absolute inset-0 rounded-lg blur-[2px] -z-10"
+						className="absolute inset-0 -z-10 rounded-lg blur-[2px]"
 						style={{ backgroundColor: "#6B8FF0", opacity: 0.08 }}
 					/>
 
@@ -180,10 +186,10 @@ export function InviteMemberDialog({
 
 					{/* Content */}
 					<span className="relative z-10 flex items-center gap-2">
-						<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
+						<span className="grid size-4 place-items-center rounded-full bg-primary-200 opacity-50">
 							<Plus className="size-3 text-black-900" />
 						</span>
-						<span className="text-[14px] leading-[20px] font-medium">
+						<span className="text-[14px] font-medium leading-[20px]">
 							Invite Member
 						</span>
 					</span>
@@ -193,158 +199,119 @@ export function InviteMemberDialog({
 				</button>
 			</Dialog.Trigger>
 
-			<Dialog.Portal>
-				<Dialog.Overlay className="fixed inset-0 bg-black/60 z-50" />
-				<div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-					<Dialog.Content
-						className={cn(
-							"w-[90vw] max-w-[500px] max-h-[90vh] overflow-y-auto rounded-[12px] p-6 relative",
-							"shadow-xl focus:outline-none",
-						)}
-						onEscapeKeyDown={handleCloseDialog}
-						onPointerDownOutside={handleCloseDialog}
+			<GlassDialogContent
+				onEscapeKeyDown={handleCloseDialog}
+				onPointerDownOutside={handleCloseDialog}
+			>
+				<GlassDialogHeader
+					title="Invite Team Member"
+					description="Each member added to your team will be charged as an additional seat ($20 per seat) on your Pro Plan subscription."
+					onClose={handleCloseDialog}
+				/>
+				<GlassDialogBody>
+					<form
+						id="invite-member-form"
+						onSubmit={handleSubmit}
+						className="space-y-4"
+						noValidate
 					>
-						{/* Glass effect layers */}
-						<div
-							className="absolute inset-0 rounded-[12px] backdrop-blur-md"
-							style={{
-								background:
-									"linear-gradient(135deg, rgba(150, 150, 150, 0.03) 0%, rgba(60, 90, 160, 0.12) 100%)",
-							}}
-						/>
-						<div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-						<div className="absolute inset-0 rounded-[12px] border border-white/10" />
-
-						<div className="relative z-10">
-							<div className="flex justify-between items-center">
-								<Dialog.Title className="text-[20px] font-medium text-white-400 tracking-tight font-sans">
-									Invite Team Member
-								</Dialog.Title>
-								<Dialog.Close className="rounded-sm opacity-70 text-white-400 hover:opacity-100 focus:outline-none">
-									<X className="h-5 w-5" />
-									<span className="sr-only">Close</span>
-								</Dialog.Close>
-							</div>
-							<Dialog.Description className="text-[14px] text-black-400 font-geist mt-2">
-								Each member added to your team will be charged as an additional
-								seat ($20 per seat) on your Pro Plan subscription.
-							</Dialog.Description>
-
-							<form
-								onSubmit={handleSubmit}
-								className="space-y-4 mt-4"
-								noValidate
-							>
-								<div className="flex items-start gap-3 bg-black/80 p-1 rounded-lg">
-									<div className="flex-grow flex flex-wrap items-center gap-1 min-h-[40px]">
-										{emailList.map((email) => (
-											<div
-												key={email}
-												className="flex items-center bg-white/10 rounded-md px-2.5 py-1.5 mr-2 mb-1 shadow-sm"
-											>
-												<span className="text-white-400 text-[14px] max-w-[180px] truncate">
-													{email}
-												</span>
-												<button
-													type="button"
-													onClick={() => removeEmail(email)}
-													className="ml-1.5 text-black-300 hover:text-white-600"
-												>
-													<X className="h-4 w-4" />
-												</button>
-											</div>
-										))}
-										<input
-											type="text"
-											placeholder={
-												emailList.length > 0
-													? ""
-													: "Email Addresses (separate with commas)"
-											}
-											value={emailInput}
-											onChange={(e) => {
-												setError("");
-												setEmailInput(e.target.value);
-											}}
-											onKeyDown={handleKeyDown}
-											onPaste={handlePaste}
-											className="flex-1 bg-transparent border-none outline-none text-white-400 placeholder-white/30 px-1 py-1 min-w-[200px] text-[14px]"
-											disabled={isLoading}
-										/>
-									</div>
-									<DropdownMenu>
-										<DropdownMenuTrigger asChild>
-											<button
-												type="button"
-												className="flex items-center gap-1 text-white-400 font-medium text-[14px] leading-[16px] font-sans hover:text-white-100 hover:bg-white/5 rounded-md px-3 h-10"
-												disabled={isLoading}
-											>
-												<span className="capitalize">{role}</span>
-												<ChevronDown className="h-4 w-4 opacity-60" />
-											</button>
-										</DropdownMenuTrigger>
-										<DropdownMenuContent
-											align="end"
-											className="p-1 border-[0.25px] border-white/10 rounded-[8px] min-w-[120px] bg-black-850 shadow-none"
-										>
-											<button
-												type="button"
-												onClick={() => setRole("admin")}
-												className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-white-400 capitalize rounded-md"
-											>
-												<span className="inline-flex justify-center items-center w-4 h-4 mr-2">
-													{role === "admin" && <Check className="h-4 w-4" />}
-												</span>
-												Admin
-											</button>
-											<button
-												type="button"
-												onClick={() => setRole("member")}
-												className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-white-400 capitalize rounded-md"
-											>
-												<span className="inline-flex justify-center items-center w-4 h-4 mr-2">
-													{role === "member" && <Check className="h-4 w-4" />}
-												</span>
-												Member
-											</button>
-										</DropdownMenuContent>
-									</DropdownMenu>
-								</div>
-								{error && (
-									<div className="text-error-500 text-sm mt-1">{error}</div>
-								)}
-
-								<div className="flex justify-end items-center mt-6">
-									<div className="flex w-full max-w-[280px] space-x-2">
-										<Button
-											variant="link"
-											onClick={handleCloseDialog}
+						<div className="flex items-start gap-3 rounded-lg bg-black/80 p-1">
+							<div className="flex min-h-[40px] flex-grow flex-wrap items-center gap-1">
+								{emailList.map((email) => (
+									<div
+										key={email}
+										className="mb-1 mr-2 flex items-center rounded-md bg-white/10 px-2.5 py-1.5 shadow-sm"
+									>
+										<span className="max-w-[180px] truncate text-[14px] text-white-400">
+											{email}
+										</span>
+										<button
 											type="button"
-											className="flex-1"
+											onClick={() => removeEmail(email)}
+											className="ml-1.5 text-black-300 hover:text-white-600"
 										>
-											Cancel
-										</Button>
-										<Button
-											type="submit"
-											disabled={isLoading}
-											className="flex-1 rounded-lg px-4 py-2 text-white/80 transition-all duration-200 active:scale-[0.98]"
-											style={{
-												background:
-													"linear-gradient(180deg, #202530 0%, #12151f 100%)",
-												border: "1px solid rgba(0,0,0,0.7)",
-												boxShadow:
-													"inset 0 1px 1px rgba(255,255,255,0.05), 0 2px 8px rgba(5,10,20,0.4), 0 1px 2px rgba(0,0,0,0.3)",
-											}}
-										>
-											{isLoading ? "Sending..." : "Invite"}
-										</Button>
+											<X className="h-4 w-4" />
+										</button>
 									</div>
-								</div>
-							</form>
+								))}
+								<input
+									type="text"
+									placeholder={
+										emailList.length > 0
+											? ""
+											: "Email Addresses (separate with commas)"
+									}
+									value={emailInput}
+									onChange={(e) => {
+										setError("");
+										setEmailInput(e.target.value);
+									}}
+									onKeyDown={handleKeyDown}
+									onPaste={handlePaste}
+									className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-white-400 outline-none placeholder:text-white/30"
+									disabled={isLoading}
+								/>
+							</div>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<button
+										type="button"
+										className="flex h-10 items-center gap-1 rounded-md px-3 font-sans text-[14px] font-medium leading-[16px] text-white-400 hover:bg-white/5 hover:text-white-100"
+										disabled={isLoading}
+									>
+										<span className="capitalize">{role}</span>
+										<ChevronDown className="h-4 w-4 opacity-60" />
+									</button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent
+									align="end"
+									className="min-w-[120px] rounded-[8px] border-[0.25px] border-white/10 bg-black-850 p-1 shadow-none"
+								>
+									<button
+										type="button"
+										onClick={() => setRole("admin")}
+										className="flex w-full items-center rounded-md px-3 py-2 text-left font-sans text-[14px] leading-[16px] text-white-400 hover:bg-white/5"
+									>
+										<span className="mr-2 inline-flex h-4 w-4 items-center justify-center">
+											{role === "admin" && <Check className="h-4 w-4" />}
+										</span>
+										Admin
+									</button>
+									<button
+										type="button"
+										onClick={() => setRole("member")}
+										className="flex w-full items-center rounded-md px-3 py-2 text-left font-sans text-[14px] leading-[16px] text-white-400 hover:bg-white/5"
+									>
+										<span className="mr-2 inline-flex h-4 w-4 items-center justify-center">
+											{role === "member" && <Check className="h-4 w-4" />}
+										</span>
+										Member
+									</button>
+								</DropdownMenuContent>
+							</DropdownMenu>
 						</div>
-					</Dialog.Content>
-				</div>
-			</Dialog.Portal>
+						{error && (
+							<div className="mt-1 text-sm text-error-500">{error}</div>
+						)}
+					</form>
+				</GlassDialogBody>
+				<GlassDialogFooter
+					onCancel={handleCloseDialog}
+					onConfirm={() => {
+						const form = document.getElementById(
+							"invite-member-form",
+						) as HTMLFormElement | null;
+						if (!form) return;
+						if (typeof form.requestSubmit === "function") {
+							form.requestSubmit();
+						} else {
+							form.submit();
+						}
+					}}
+					confirmLabel="Invite"
+					isPending={isLoading}
+				/>
+			</GlassDialogContent>
 		</Dialog.Root>
 	);
 }

@@ -12,8 +12,13 @@
 			"./packages/github-tool/src/graphql-env.d.ts"
 		]
 	},
-	"formatter": { "enabled": true, "indentStyle": "tab" },
-	"organizeImports": { "enabled": true },
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
+	},
+	"organizeImports": {
+		"enabled": true
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -23,5 +28,9 @@
 			}
 		}
 	},
-	"javascript": { "formatter": { "quoteStyle": "double" } }
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double"
+		}
+	}
 }

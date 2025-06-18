@@ -2,11 +2,9 @@ import { agents, db } from "@/drizzle";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 import { ToastProvider } from "@giselles-ai/contexts/toast";
-import { formatTimestamp } from "@giselles-ai/lib/utils";
 import { and, desc, eq, isNotNull } from "drizzle-orm";
-import Link from "next/link";
 import { type ReactNode, Suspense } from "react";
-import { DeleteAgentButton, DuplicateAgentButton, Toasts } from "./components";
+import { AgentGrid, Toasts } from "./components";
 
 function DataList({ label, children }: { label: string; children: ReactNode }) {
 	return (
@@ -45,61 +43,7 @@ async function AgentList() {
 			</div>
 		);
 	}
-	return (
-		<>
-			<div className="flex flex-wrap gap-4">
-				{dbAgents.map((agent) => (
-					<div
-						key={agent.id}
-						className="relative group flex-grow basis-[280px] min-w-[280px] max-w-[376px] h-[160px]"
-					>
-						{/* Menu buttons - positioned absolutely on top of the card */}
-						<div className="absolute top-0 right-[8px] z-10 opacity-60 group-hover:opacity-100 transition-opacity flex">
-							<DuplicateAgentButton
-								agentId={agent.id}
-								agentName={agent.name || "Untitled"}
-							/>
-							<DeleteAgentButton
-								agentId={agent.id}
-								agentName={agent.name || "Untitled"}
-							/>
-						</div>
-
-						<Link href={`/workspaces/${agent.workspaceId}`}>
-							<div className="bg-white-850/10 p-[16px] relative rounded-[8px] transition-all duration-300 hover:shadow-lg h-full flex flex-col">
-								{/* Upper padding area (for menu buttons) */}
-								<div className="h-[20px] mb-1.5" />
-
-								{/* Thumbnail */}
-								{/* <div className="h-[150px] bg-black-80 rounded-[8px] mb-4" /> */}
-
-								<div className="flex-grow">
-									<h3 className="font-sans text-white-400 text-[16px] font-semibold mb-1 line-clamp-2">
-										{agent.name || "Untitled"}
-									</h3>
-								</div>
-
-								<div className="mt-auto">
-									<div className="border-t-[0.5px] border-black-400 my-4" />
-									<div className="flex justify-between items-center">
-										<span className="text-white-400 text-xs font-geist truncate max-w-[200px]">
-											Edited by you -{" "}
-											{formatTimestamp.toRelativeTime(
-												new Date(agent.updatedAt).getTime(),
-											)}
-										</span>
-									</div>
-								</div>
-
-								<div className="absolute z-0 inset-0 border-[0.5px] rounded-[8px] mask-fill bg-gradient-to-br from-[#7182AA80] to-[#02075066] bg-origin-border bg-clip-boarder border-transparent transition-all duration-300" />
-								<div className="absolute z-1 inset-0 border-[0.5px] border-white-900 rounded-[8px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-							</div>
-						</Link>
-					</div>
-				))}
-			</div>
-		</>
-	);
+	return <AgentGrid agents={dbAgents} />;
 }
 
 export default function AgentListV2Page() {

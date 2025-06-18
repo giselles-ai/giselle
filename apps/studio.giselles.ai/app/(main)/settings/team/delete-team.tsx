@@ -5,6 +5,11 @@ import { useActionState, useState } from "react";
 import { Alert, AlertDescription } from "../components/alert";
 import { Button } from "../components/button";
 import { deleteTeam } from "./actions";
+import {
+	GlassDialogContent,
+	GlassDialogFooter,
+	GlassDialogHeader,
+} from "./components/glass-dialog-content";
 
 export function DeleteTeam() {
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -35,62 +40,37 @@ export function DeleteTeam() {
 					</Button>
 				</Dialog.Trigger>
 			</div>
-			<Dialog.Portal>
-				<Dialog.Overlay className="fixed inset-0 bg-black/60 z-50" />
-				<div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-					<Dialog.Content
-						className="w-[90vw] max-w-[420px] max-h-[90vh] overflow-y-auto rounded-[12px] p-6 relative shadow-xl focus:outline-none"
-						onEscapeKeyDown={handleCloseDialog}
-						onPointerDownOutside={handleCloseDialog}
+			<GlassDialogContent
+				onEscapeKeyDown={handleCloseDialog}
+				onPointerDownOutside={handleCloseDialog}
+				variant="destructive"
+			>
+				<GlassDialogHeader
+					title="Delete Team"
+					description="This action cannot be undone. This will permanently delete the team and remove all members."
+					onClose={handleCloseDialog}
+					variant="destructive"
+				/>
+				{state.error !== "" && (
+					<Alert
+						variant="destructive"
+						className="mt-2 border-error-900/20 bg-error-900/5"
 					>
-						{/* Glass effect layers */}
-						<div
-							className="absolute inset-0 rounded-[12px] backdrop-blur-md"
-							style={{
-								background:
-									"linear-gradient(135deg, rgba(241, 91, 108, 0.03) 0%, rgba(241, 91, 108, 0.12) 100%)",
-							}}
-						/>
-						<div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-						<div className="absolute inset-0 rounded-[12px] border border-error-900/80" />
-
-						<div className="relative z-10 space-y-6">
-							<div className="w-full">
-								<Dialog.Title className="text-error-900 font-bold text-[20px] leading-[28px] font-sans text-center">
-									Delete Team
-								</Dialog.Title>
-							</div>
-							<p className="text-error-900 font-medium text-[14px] leading-[24px] text-left">
-								This action cannot be undone. This will permanently delete the
-								team and remove all members.
-							</p>
-							{state.error !== "" && (
-								<Alert
-									variant="destructive"
-									className="mt-2 bg-error-900/5 border-error-900/20"
-								>
-									<AlertDescription className="text-red-900/50 font-medium text-[12px] leading-[20.4px] tracking-normal font-geist">
-										{state.error}
-									</AlertDescription>
-								</Alert>
-							)}
-							<form action={action} className="flex justify-end space-x-4">
-								<Button
-									type="button"
-									variant="link"
-									onClick={handleCloseDialog}
-									disabled={pending}
-								>
-									Cancel
-								</Button>
-								<Button type="submit" variant="destructive" disabled={pending}>
-									{pending ? "Deleting..." : "Delete Team"}
-								</Button>
-							</form>
-						</div>
-					</Dialog.Content>
-				</div>
-			</Dialog.Portal>
+						<AlertDescription className="font-geist text-[12px] font-medium leading-[20.4px] tracking-normal text-red-900/50">
+							{state.error}
+						</AlertDescription>
+					</Alert>
+				)}
+				<form id="delete-team-form" action={action} className="mt-4 space-y-0">
+					<GlassDialogFooter
+						onCancel={handleCloseDialog}
+						confirmLabel={pending ? "Deleting..." : "Delete Team"}
+						isPending={pending}
+						variant="destructive"
+						confirmButtonType="submit"
+					/>
+				</form>
+			</GlassDialogContent>
 		</Dialog.Root>
 	);
 }

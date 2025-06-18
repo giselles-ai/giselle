@@ -15,6 +15,12 @@ import {
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { updateTeamName } from "./actions";
+import {
+	GlassDialogBody,
+	GlassDialogContent,
+	GlassDialogFooter,
+	GlassDialogHeader,
+} from "./components/glass-dialog-content";
 
 const TeamNameSchema = pipe(
 	string(),
@@ -93,75 +99,51 @@ export function TeamNameForm({ id: teamId, name }: Team) {
 								Edit
 							</Button>
 						</Dialog.Trigger>
-						<Dialog.Portal>
-							<Dialog.Overlay className="fixed inset-0 bg-black/60 z-50" />
-							<div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-								<Dialog.Content
-									className="w-[90vw] max-w-[420px] max-h-[90vh] overflow-y-auto rounded-[12px] p-6 relative shadow-xl focus:outline-none"
-									onEscapeKeyDown={handleCancelTeamName}
-									onPointerDownOutside={handleCancelTeamName}
+						<GlassDialogContent
+							onEscapeKeyDown={handleCancelTeamName}
+							onPointerDownOutside={handleCancelTeamName}
+						>
+							<GlassDialogHeader
+								title="Change Your Team Name"
+								description="This is your team's display name in Giselle. You can use your company name or department."
+								onClose={handleCancelTeamName}
+							/>
+							<GlassDialogBody>
+								<form
+									id="team-name-form"
+									className="flex flex-col gap-y-4"
+									onSubmit={(e) => {
+										e.preventDefault();
+										handleSaveTeamName();
+									}}
 								>
-									{/* Glass effect layers */}
-									<div
-										className="absolute inset-0 rounded-[12px] backdrop-blur-md"
-										style={{
-											background:
-												"linear-gradient(135deg, rgba(150, 150, 150, 0.03) 0%, rgba(60, 90, 160, 0.12) 100%)",
-										}}
-									/>
-									<div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-									<div className="absolute inset-0 rounded-[12px] border border-white/10" />
-
-									<div className="relative z-10 space-y-6">
-										<div className="flex justify-between items-center">
-											<Dialog.Title className="text-[20px] font-medium text-white-400 tracking-tight font-sans">
-												Change Your Team Name
-											</Dialog.Title>
-										</div>
-
-										<form
-											className="flex flex-col gap-y-4"
-											onSubmit={(e) => {
-												e.preventDefault();
-												handleSaveTeamName();
+									<div className="flex flex-col gap-y-2">
+										<Input
+											id="tempTeamName"
+											value={tempTeamName}
+											onChange={handleChange}
+											className="h-11 rounded-lg px-4 text-white placeholder-white/40 focus:outline-none focus:ring-0"
+											style={{
+												background: "#00020A",
+												boxShadow: "inset 0 1px 4px rgba(0,0,0,0.5)",
 											}}
-										>
-											<div className="flex flex-col gap-y-2">
-												<Input
-													id="tempTeamName"
-													value={tempTeamName}
-													onChange={handleChange}
-													className="h-11 px-4 rounded-lg text-white placeholder-white/40 focus:ring-0 focus:outline-none"
-													style={{
-														background: "#00020A",
-														boxShadow: "inset 0 1px 4px rgba(0,0,0,0.5)",
-													}}
-													disabled={isLoading}
-												/>
-												{error && (
-													<p className="text-[12px] leading-[20.4px] text-error-900 font-geist">
-														{error}
-													</p>
-												)}
-											</div>
-											<div className="flex justify-end space-x-2">
-												<Button
-													type="button"
-													variant="link"
-													onClick={handleCancelTeamName}
-													disabled={isLoading}
-												>
-													Cancel
-												</Button>
-												<Button type="submit" disabled={isLoading || !!error}>
-													{isLoading ? "Saving..." : "Save"}
-												</Button>
-											</div>
-										</form>
+											disabled={isLoading}
+										/>
+										{error && (
+											<p className="font-geist text-[12px] leading-[20.4px] text-error-900">
+												{error}
+											</p>
+										)}
 									</div>
-								</Dialog.Content>
-							</div>
-						</Dialog.Portal>
+									<GlassDialogFooter
+										onCancel={handleCancelTeamName}
+										confirmLabel="Save"
+										isPending={isLoading}
+										confirmButtonType="submit"
+									/>
+								</form>
+							</GlassDialogBody>
+						</GlassDialogContent>
 					</Dialog.Root>
 				),
 			}}

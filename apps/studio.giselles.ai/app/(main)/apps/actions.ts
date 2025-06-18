@@ -34,7 +34,6 @@ type DeleteAgentResult =
 
 export async function copyAgent(
 	agentId: AgentId,
-	_formData: FormData,
 ): Promise<AgentDuplicationResult> {
 	if (typeof agentId !== "string" || agentId.length === 0) {
 		return { result: "error", message: "Please fill in the agent id" };
@@ -93,10 +92,7 @@ export async function copyAgent(
 	}
 }
 
-export async function deleteAgent(
-	agentId: string,
-	formData: FormData,
-): Promise<DeleteAgentResult> {
+export async function deleteAgent(agentId: string): Promise<DeleteAgentResult> {
 	if (typeof agentId !== "string" || agentId.length === 0) {
 		return { result: "error", message: "Invalid agent id" };
 	}

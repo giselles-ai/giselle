@@ -16,7 +16,7 @@ export function AgentUsageDialog({ activities }: AgentUsageDialogProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button>View All Logs</Button>
+				<Button variant="primary">View All Logs</Button>
 			</DialogTrigger>
 			<DialogContent className="border-[0.5px] border-black-400 px-[24px] pt-[16px] pb-[24px] bg-black-850 max-w-7xl">
 				<DialogHeader>
