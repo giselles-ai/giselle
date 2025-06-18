@@ -20,26 +20,24 @@ const defaultConfigurations: GoogleLanguageModelConfigurations = {
 
 export const GoogleLanguageModelId = z
 	.enum([
-		"gemini-2.5-pro-preview-06-05",
-		"gemini-2.5-flash-preview-05-20",
+		"gemini-2.5-pro",
+		"gemini-2.5-flash",
 		"gemini-2.5-flash-lite-preview-06-17",
-		"gemini-2.0-flash",
-		"gemini-2.0-flash-lite",
 	])
 	.catch((ctx) => {
 		if (typeof ctx.value !== "string") {
-			return "gemini-2.0-flash";
+			return "gemini-2.5-flash";
 		}
 		if (ctx.value.startsWith("gemini-2.5-pro-preview-")) {
-			return "gemini-2.5-pro-preview-06-05";
+			return "gemini-2.5-pro";
 		}
 		if (ctx.value.startsWith("gemini-2.5-flash-preview-")) {
-			return "gemini-2.5-flash-preview-05-20";
+			return "gemini-2.5-flash";
 		}
 		if (ctx.value.startsWith("gemini-2.5-flash-lite-preview-")) {
 			return "gemini-2.5-flash-lite-preview-06-17";
 		}
-		return "gemini-2.0-flash";
+		return "gemini-2.5-flash";
 	});
 
 const GoogleLanguageModel = LanguageModelBase.extend({
@@ -49,9 +47,9 @@ const GoogleLanguageModel = LanguageModelBase.extend({
 });
 type GoogleLanguageModel = z.infer<typeof GoogleLanguageModel>;
 
-const gemini25ProPreview: GoogleLanguageModel = {
+const gemini25Pro: GoogleLanguageModel = {
 	provider: "google",
-	id: "gemini-2.5-pro-preview-06-05",
+	id: "gemini-2.5-pro",
 	capabilities:
 		Capability.TextGeneration |
 		Capability.GenericFileInput |
@@ -61,9 +59,9 @@ const gemini25ProPreview: GoogleLanguageModel = {
 	configurations: defaultConfigurations,
 };
 
-const gemini25FlashPreview: GoogleLanguageModel = {
+const gemini25Flash: GoogleLanguageModel = {
 	provider: "google",
-	id: "gemini-2.5-flash-preview-05-20",
+	id: "gemini-2.5-flash",
 	capabilities:
 		Capability.TextGeneration |
 		Capability.GenericFileInput |
@@ -84,35 +82,7 @@ const gemini25FlashLitePreview: GoogleLanguageModel = {
 	configurations: defaultConfigurations,
 };
 
-const gemini20Flash: GoogleLanguageModel = {
-	provider: "google",
-	id: "gemini-2.0-flash",
-	capabilities:
-		Capability.TextGeneration |
-		Capability.OptionalSearchGrounding |
-		Capability.GenericFileInput,
-	tier: Tier.enum.free,
-	configurations: defaultConfigurations,
-};
-
-const gemini20FlashLite: GoogleLanguageModel = {
-	provider: "google",
-	id: "gemini-2.0-flash-lite",
-	capabilities:
-		Capability.TextGeneration |
-		Capability.OptionalSearchGrounding |
-		Capability.GenericFileInput,
-	tier: Tier.enum.free,
-	configurations: defaultConfigurations,
-};
-
-export const models = [
-	gemini25ProPreview,
-	gemini25FlashPreview,
-	gemini25FlashLitePreview,
-	gemini20Flash,
-	gemini20FlashLite,
-];
+export const models = [gemini25Pro, gemini25Flash, gemini25FlashLitePreview];
 
 export const LanguageModel = GoogleLanguageModel;
 export type LanguageModel = GoogleLanguageModel;
