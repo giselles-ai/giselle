@@ -29,7 +29,7 @@
 				"type": "textGeneration",
 				"llm": {
 					"provider": "google",
-					"id": "gemini-2.5-flash-preview-05-20",
+					"id": "gemini-2.5-flash",
 					"configurations": {
 						"temperature": 0.7,
 						"topP": 1,

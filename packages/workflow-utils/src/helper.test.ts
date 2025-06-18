@@ -264,7 +264,7 @@ describe("Test with complex workflow", () => {
 		},
 		{
 			id: "nd-daF6m8YshVoiBARi",
-			name: "gemini-2.0-flash-0012",
+			name: "gemini-2.5-flash-0012",
 			type: "operation",
 			inputs: [
 				{ id: "inp-rVg0GxYPFNnFUvJd", label: "Input" },
@@ -281,7 +281,7 @@ describe("Test with complex workflow", () => {
 				type: "textGeneration",
 				llm: {
 					provider: "google",
-					id: "gemini-2.0-flash-001",
+					id: "gemini-2.5-flash",
 					configurations: {
 						temperature: 0.7,
 						topP: 1,
@@ -305,7 +305,7 @@ describe("Test with complex workflow", () => {
 				type: "textGeneration",
 				llm: {
 					provider: "google",
-					id: "gemini-2.0-flash-001",
+					id: "gemini-2.5-flash",
 					configurations: {
 						temperature: 0.7,
 						topP: 1,
