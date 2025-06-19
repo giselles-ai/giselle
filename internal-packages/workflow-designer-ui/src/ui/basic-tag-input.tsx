@@ -13,6 +13,7 @@ export type BasicTagInputProps = {
 	placeholder?: string;
 	validateInput?: (input: string) => { isValid: boolean; message?: string };
 	emptyStateText?: string;
+	externalMaxReached?: boolean;
 };
 
 export function BasicTagInput({
@@ -22,6 +23,7 @@ export function BasicTagInput({
 	placeholder = "Type and press Enter",
 	validateInput,
 	emptyStateText = "No tags added yet",
+	externalMaxReached,
 }: BasicTagInputProps) {
 	// Local state for managing tags
 	const [tags, setTags] = useState<string[]>(initialTags);
@@ -38,7 +40,10 @@ export function BasicTagInput({
 	}, [tags]);
 
 	// Check if maximum domains limit reached
-	const isMaxReached = tags.length >= MAX_DOMAINS;
+	const isMaxReached =
+		externalMaxReached !== undefined
+			? externalMaxReached
+			: tags.length >= MAX_DOMAINS;
 
 	// Generate ID for input field
 	const inputId = `tag-input-${label.toLowerCase().replace(/\s+/g, "-")}`;

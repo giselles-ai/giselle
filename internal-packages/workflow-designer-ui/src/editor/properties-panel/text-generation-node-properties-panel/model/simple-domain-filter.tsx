@@ -148,6 +148,7 @@ export function SimpleDomainFilter({
 					placeholder="Enter domain to include (e.g., example.com)"
 					validateInput={validateAllowDomain}
 					emptyStateText="No domains added yet"
+					externalMaxReached={isMaxReached}
 				/>
 
 				{/* Deny list */}
@@ -158,6 +159,7 @@ export function SimpleDomainFilter({
 					placeholder="Enter domain to exclude"
 					validateInput={validateDenyDomain}
 					emptyStateText="No domains added yet"
+					externalMaxReached={isMaxReached}
 				/>
 			</div>
 		</div>
