@@ -1,0 +1,130 @@
+{
+	"id": "wrks-gIcQiTlBxLu2BQcK",
+	"schemaVersion": "20250221",
+	"nodes": [
+		{
+			"id": "nd-Ehx209eNdnGKpOTs",
+			"type": "variable",
+			"inputs": [],
+			"outputs": [
+				{ "id": "otp-OlARAGWfHNWl7i6V", "label": "Output", "accessor": "text" }
+			],
+			"content": {
+				"type": "text",
+				"text": "Agentic editing"
+			}
+		},
+		{
+			"id": "nd-TjDbWuR7noy7qtmL",
+			"type": "operation",
+			"inputs": [
+				{
+					"id": "inp-V4wOw0mNcbYhr4qo",
+					"label": "Input",
+					"accessor": "inp-V4wOw0mNcbYhr4qo"
+				},
+				{
+					"id": "inp-EqTDFbeYhGKdof3d",
+					"label": "Input",
+					"accessor": "inp-EqTDFbeYhGKdof3d"
+				}
+			],
+			"outputs": [
+				{
+					"id": "otp-KERVXHMpx5fyLcGv",
+					"label": "Output",
+					"accessor": "generated-text"
+				}
+			],
+			"content": {
+				"type": "textGeneration",
+				"llm": {
+					"provider": "openai",
+					"id": "o3",
+					"configurations": {
+						"temperature": 0.7,
+						"topP": 1,
+						"presencePenalty": 0,
+						"frequencyPenalty": 0
+					}
+				},
+				"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Please translate following text in \"},{\"type\":\"Source\",\"attrs\":{\"node\":{\"id\":\"nd-EvtraAYLc3SoHIFZ\",\"type\":\"operation\",\"content\":{\"type\":\"trigger\"}},\"outputId\":\"otp-kYOK2a9LJEvsTIHR\"}},{\"type\":\"text\",\"text\":\" :\"}]},{\"type\":\"paragraph\"},{\"type\":\"paragraph\",\"content\":[{\"type\":\"Source\",\"attrs\":{\"node\":{\"id\":\"nd-Ehx209eNdnGKpOTs\", \"type\":\"variable\",\"content\":{\"type\":\"text\"}},\"outputId\":\"otp-OlARAGWfHNWl7i6V\"}},{\"type\":\"text\",\"text\":\" \"}]}]}"
+			}
+		},
+		{
+			"id": "nd-EvtraAYLc3SoHIFZ",
+			"name": "Manual Trigger",
+			"type": "operation",
+			"inputs": [],
+			"outputs": [
+				{
+					"id": "otp-kYOK2a9LJEvsTIHR",
+					"label": "Language",
+					"accessor": "mntgp-xfqiGhufFdyPX7Lc"
+				}
+			],
+			"content": {
+				"type": "trigger",
+				"provider": "manual",
+				"state": {
+					"status": "configured",
+					"flowTriggerId": "fltg-8bGVKlQ1jdqhe5EO"
+				}
+			}
+		}
+	],
+	"connections": [
+		{
+			"id": "cnnc-f7mqIdp2kwwPpkwt",
+			"outputNode": {
+				"id": "nd-Ehx209eNdnGKpOTs",
+				"type": "variable",
+				"content": { "type": "text" }
+			},
+			"outputId": "otp-OlARAGWfHNWl7i6V",
+			"inputNode": {
+				"id": "nd-TjDbWuR7noy7qtmL",
+				"type": "operation",
+				"content": { "type": "textGeneration" }
+			},
+			"inputId": "inp-V4wOw0mNcbYhr4qo"
+		},
+		{
+			"id": "cnnc-bJdKEgXPvGxpfOUp",
+			"outputNode": {
+				"id": "nd-EvtraAYLc3SoHIFZ",
+				"type": "operation",
+				"content": { "type": "trigger" }
+			},
+			"outputId": "otp-kYOK2a9LJEvsTIHR",
+			"inputNode": {
+				"id": "nd-TjDbWuR7noy7qtmL",
+				"type": "operation",
+				"content": { "type": "textGeneration" }
+			},
+			"inputId": "inp-EqTDFbeYhGKdof3d"
+		}
+	],
+	"ui": {
+		"nodeState": {
+			"nd-Ehx209eNdnGKpOTs": {
+				"position": { "x": 237.66960828481263, "y": 624.1130721898751 },
+				"selected": false
+			},
+			"nd-TjDbWuR7noy7qtmL": {
+				"position": { "x": 536, "y": 508 },
+				"selected": false,
+				"tab": "prompt"
+			},
+			"nd-EvtraAYLc3SoHIFZ": {
+				"position": { "x": 315, "y": 769.0152429303928 },
+				"selected": false
+			}
+		},
+		"viewport": {
+			"x": -8.204498459463167,
+			"y": 68.54775797404307,
+			"zoom": 0.5624717969787852
+		}
+	}
+}

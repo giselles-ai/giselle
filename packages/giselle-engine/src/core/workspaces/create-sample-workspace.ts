@@ -8,11 +8,9 @@ import {
 	type NodeUIState,
 	type Output,
 	OutputId,
-	type UIState,
 	type Workspace,
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
-import { buildWorkflowMap } from "@giselle-sdk/workflow-utils";
 import type { GiselleEngineContext } from "../types";
 import { copyFiles, getWorkspace, setWorkspace } from "./utils";
 
@@ -99,16 +97,6 @@ export async function createSampleWorkspace(args: {
 		}
 		newNodeState[NodeId.parse(newNodeId)] = nodeState;
 	}
-	const newUi: UIState = {
-		...templateWorkspace.ui,
-		nodeState: newNodeState,
-	};
-	const workflows = Array.from(
-		buildWorkflowMap(
-			new Map(newNodes.map((node) => [node.id, node])),
-			new Map(newConnections.map((connection) => [connection.id, connection])),
-		).values(),
-	);
 	const newWorkspaceId = WorkspaceId.generate();
 	const newWorkspace = {
 		...templateWorkspace,

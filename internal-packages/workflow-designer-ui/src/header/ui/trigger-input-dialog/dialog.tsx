@@ -32,10 +32,7 @@ export function TriggerInputDialog({
 		[trigger],
 	);
 
-	const flow = useMemo(
-		() => buildWorkflowFromNode(node.id, data.nodes, data.connections),
-		[node.id, data.nodes, data.connections],
-	);
+	const flow = useMemo(() => buildWorkflowFromNode(node, data), [node, data]);
 
 	const requiresActionNodes = useMemo(
 		() =>

@@ -239,11 +239,14 @@ export async function runFlow(args: {
 		workspaceId: trigger.workspaceId,
 	});
 
-	const flow = buildWorkflowFromNode(
-		trigger.nodeId,
-		workspace.nodes,
-		workspace.connections,
+	const triggerNode = workspace.nodes.find(
+		(node) => node.id === trigger.nodeId,
 	);
+	if (triggerNode === undefined) {
+		return;
+	}
+
+	const flow = buildWorkflowFromNode(triggerNode, workspace);
 	if (flow === null) {
 		return;
 	}

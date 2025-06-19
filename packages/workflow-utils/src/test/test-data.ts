@@ -1,5 +1,48 @@
 import type { Connection, Node } from "@giselle-sdk/data-type";
 
+/**
+ * Test workspace with multiple workflow chains
+ *
+ * Workflow Structure:
+ *
+ * Flow 1: Manual trigger chain
+ * - Manual Trigger (nd-y7lLktmB...)
+ *   - Status: unconfigured
+ *   - Output: connects to →
+ * - Text Generation (nd-7cHfwxtE...)
+ *   - Model: gemini-2.5-flash
+ *   - Prompt: "Hello"
+ *   - Output: connects to →
+ * - Text Generation (nd-1aXA3izp...)
+ *   - Model: gemini-2.5-flash
+ *
+ * Flow 2: Standalone text generation chain
+ * - Text Generation (nd-bDa47yWh...)
+ *   - Model: gemini-2.5-pro
+ *   - No inputs
+ *   - Output: connects to →
+ * - Text Generation (nd-d4TuvXgS...)
+ *   - Model: gemini-2.5-flash
+ *
+ * Flow 3: GitHub issue trigger chain
+ * - GitHub Trigger (nd-jm0L6gvH...)
+ *   - Name: "Created an issue"
+ *   - Status: unconfigured
+ *   - Outputs:
+ *     • title
+ *     • body
+ *     • repositoryOwner
+ *     • repositoryName
+ *   - Output: title connects to →
+ * - Text Generation (nd-4KPG1AiU...)
+ *   - Model: gpt-4o
+ *
+ * Node Summary:
+ * - Total nodes: 7
+ * - Triggers: 2 (Manual, GitHub)
+ * - Text Generation: 5 (3x gemini-2.5-flash-lite, 1x gemini-2.5-pro, 1x gpt-4o)
+ * - Connections: 4
+ */
 export const testWorkspace1 = {
 	id: "wrks-y9HldH2r4OzHlKhd",
 	schemaVersion: "20250221",
