@@ -132,6 +132,7 @@ export function SearchDomainFilterEnhanced({
 				onRemoveDomain={handleRemoveIncludeDomain}
 				placeholder={includePlaceholder}
 				label="Allow List"
+				maxReached={isMaxReached}
 			/>
 
 			{/* Exclude domain input and tags */}
@@ -141,6 +142,7 @@ export function SearchDomainFilterEnhanced({
 				onRemoveDomain={handleRemoveExcludeDomain}
 				placeholder={excludePlaceholder}
 				label="Deny List"
+				maxReached={isMaxReached}
 			/>
 		</div>
 	);

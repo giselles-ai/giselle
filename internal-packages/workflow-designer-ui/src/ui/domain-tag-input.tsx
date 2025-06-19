@@ -18,6 +18,11 @@ type DomainTagInputProps = {
 	placeholder?: string;
 	className?: string;
 	label?: string;
+	/**
+	 * When provided, overrides the internal max domains check.
+	 * This allows parent components to enforce a global limit.
+	 */
+	maxReached?: boolean;
 };
 
 export function DomainTagInput({
@@ -27,11 +32,13 @@ export function DomainTagInput({
 	placeholder = "Enter text to add",
 	className = "",
 	label,
+	maxReached: maxReachedProp,
 }: DomainTagInputProps) {
 	const [inputValue, setInputValue] = useState("");
 
-	// Check if maximum domains limit reached
-	const isMaxReached = domains.length >= MAX_DOMAINS;
+	// Check if maximum domains limit reached. Allow parent components to
+	// override the calculation when enforcing a global domain limit.
+	const isMaxReached = maxReachedProp ?? domains.length >= MAX_DOMAINS;
 
 	const handleAddDomain = () => {
 		const value = inputValue.trim();
