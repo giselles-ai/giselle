@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { type DomainTag, DomainTagInput } from "./domain-tag-input";
-
-const MAX_DOMAINS = 10;
+import {
+	type DomainTag,
+	DomainTagInput,
+	MAX_DOMAINS,
+} from "./domain-tag-input";
 
 export type SearchDomainFilterEnhancedProps = {
 	onFilterChange?: (include: string[], exclude: string[]) => void;
@@ -131,6 +133,7 @@ export function SearchDomainFilterEnhanced({
 				onAddDomain={handleAddIncludeDomain}
 				onRemoveDomain={handleRemoveIncludeDomain}
 				placeholder={includePlaceholder}
+				isMaxReached={isMaxReached}
 				label="Allow List"
 			/>
 
@@ -140,6 +143,7 @@ export function SearchDomainFilterEnhanced({
 				onAddDomain={handleAddExcludeDomain}
 				onRemoveDomain={handleRemoveExcludeDomain}
 				placeholder={excludePlaceholder}
+				isMaxReached={isMaxReached}
 				label="Deny List"
 			/>
 		</div>

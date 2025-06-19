@@ -9,7 +9,7 @@ export type DomainTag = {
 };
 
 // Maximum number of domains allowed
-const MAX_DOMAINS = 10;
+export const MAX_DOMAINS = 10;
 
 type DomainTagInputProps = {
 	domains: DomainTag[];
@@ -18,6 +18,12 @@ type DomainTagInputProps = {
 	placeholder?: string;
 	className?: string;
 	label?: string;
+	/**
+	 * Indicates whether the maximum allowed number of domains
+	 * has been reached. When provided, this value overrides the
+	 * default per-list validation.
+	 */
+	isMaxReached?: boolean;
 };
 
 export function DomainTagInput({
@@ -27,18 +33,19 @@ export function DomainTagInput({
 	placeholder = "Enter text to add",
 	className = "",
 	label,
+	isMaxReached,
 }: DomainTagInputProps) {
 	const [inputValue, setInputValue] = useState("");
 
-	// Check if maximum domains limit reached
-	const isMaxReached = domains.length >= MAX_DOMAINS;
+	// Determine if adding new domains should be disabled
+	const maxReached = isMaxReached ?? domains.length >= MAX_DOMAINS;
 
 	const handleAddDomain = () => {
 		const value = inputValue.trim();
 		if (!value) return;
 
 		// Prevent adding if max limit reached
-		if (isMaxReached) return;
+		if (maxReached) return;
 
 		onAddDomain(value);
 		setInputValue("");
@@ -80,7 +87,7 @@ export function DomainTagInput({
 			</div>
 
 			{/* Maximum domains warning */}
-			{isMaxReached && (
+			{maxReached && (
 				<div className="ml-[150px] mb-4">
 					<p className="max-domains-warning text-red-700 text-[12px]">
 						You can add up to {MAX_DOMAINS} domains only.
@@ -101,13 +108,13 @@ export function DomainTagInput({
 						onChange={(e) => setInputValue(e.target.value)}
 						onKeyDown={handleKeyDown}
 						maxLength={100}
-						disabled={isMaxReached}
+						disabled={maxReached}
 					/>
 					<Button
 						className="ml-2 px-2 py-1 text-sm text-gray-300 opacity-50 hover:opacity-100"
 						variant="ghost"
 						onClick={handleAddDomain}
-						disabled={!inputValue.trim() || isMaxReached}
+						disabled={!inputValue.trim() || maxReached}
 					>
 						Add
 					</Button>
