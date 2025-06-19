@@ -16,11 +16,10 @@ export function Button({
 	variant: style = "subtle",
 	...props
 }: ButtonProps) {
-	console.log(style);
 	return (
 		<button
 			className={clsx(
-				"flex items-center gap-[4px] px-[8px] py-[2px] rounded-[2px] outline-none",
+				"flex items-center justify-between gap-[4px] px-[8px] py-[2px] rounded-[2px] outline-none",
 				"data-[style=filled]:bg-background data-[style=filled]:border data-[style=filled]:border-border",
 				"cursor-pointer hover:bg-ghost-element-hover transition-colors",
 				className,
@@ -28,9 +27,9 @@ export function Button({
 			data-style={style}
 			{...props}
 		>
-			{leftIcon}
+			{leftIcon && <div className="*:size-[13px]">{leftIcon}</div>}
 			<div className="text-[13px] text-text">{children}</div>
-			{rightIcon}
+			{rightIcon && <div className="*:size-[13px]">{rightIcon}</div>}
 		</button>
 	);
 }

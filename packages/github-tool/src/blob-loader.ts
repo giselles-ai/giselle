@@ -1,23 +1,7 @@
-import type {
-	Document,
-	DocumentLoader,
-	DocumentLoaderParams,
-} from "@giselle-sdk/rag";
+import type { Document, DocumentLoader } from "@giselle-sdk/rag";
 import type { Octokit } from "@octokit/core";
 
-/**
- * GitHub repository loading parameters
- */
-export interface GitHubBlobLoaderParams extends DocumentLoaderParams {
-	owner: string;
-	repo: string;
-	commitSha: string;
-}
-
-/**
- * GitHub blob metadata
- */
-export type GitHubBlobMetadata = {
+type GitHubBlobMetadata = {
 	owner: string;
 	repo: string;
 	commitSha: string;
@@ -26,27 +10,12 @@ export type GitHubBlobMetadata = {
 	nodeId: string;
 };
 
-/**
- * Parameters for loading a GitHub blob
- */
-interface GitHubLoadBlobParams {
+type GitHubBlobLoaderParams = {
 	owner: string;
 	repo: string;
-	path: string;
-	fileSha: string;
-}
+	commitSha: string;
+};
 
-/**
- * Result of a GitHub blob loading operation
- */
-interface GitHubBlobResult {
-	content: string;
-	metadata: GitHubBlobMetadata;
-}
-
-/**
- * GitHub blob loader that implements rag's DocumentLoader interface
- */
 export class GitHubBlobLoader
 	implements DocumentLoader<GitHubBlobMetadata, GitHubBlobLoaderParams>
 {
@@ -68,7 +37,6 @@ export class GitHubBlobLoader
 
 		console.log(`Loading repository ${owner}/${repo} at commit ${commitSha}`);
 
-		// Traverse the repository tree
 		for await (const entry of traverseTree(
 			this.octokit,
 			owner,
@@ -82,7 +50,6 @@ export class GitHubBlobLoader
 				continue;
 			}
 
-			// Skip files that are too large
 			if (size > this.maxBlobSize) {
 				console.warn(
 					`Blob size is too large: ${size} bytes, skipping: ${path}`,
@@ -90,19 +57,16 @@ export class GitHubBlobLoader
 				continue;
 			}
 
-			// Load the blob
 			const blob = await loadBlob(
 				this.octokit,
 				{ owner, repo, path, fileSha },
 				commitSha,
 			);
 
-			// Skip binary files
 			if (blob === null) {
 				continue;
 			}
 
-			// Yield as document
 			yield {
 				content: blob.content,
 				metadata: blob.metadata,
@@ -111,16 +75,20 @@ export class GitHubBlobLoader
 	}
 }
 
-/**
- * Loads a GitHub blob (file) by SHA
- */
+type GitHubLoadBlobParams = {
+	owner: string;
+	repo: string;
+	path: string;
+	fileSha: string;
+};
+
 async function loadBlob(
 	octokit: Octokit,
 	params: GitHubLoadBlobParams,
 	commitSha: string,
 	currentAttempt = 0,
 	maxAttempt = 3,
-): Promise<GitHubBlobResult | null> {
+) {
 	const { owner, repo, path, fileSha } = params;
 
 	// Fetch blob from GitHub API
@@ -135,14 +103,12 @@ async function loadBlob(
 		},
 	);
 
-	// Handle server errors with retry logic
 	if (status >= 500) {
 		if (currentAttempt >= maxAttempt) {
 			throw new Error(
 				`Network error: ${status} when fetching ${owner}/${repo}/${fileSha}`,
 			);
 		}
-		// exponential backoff
 		await new Promise((resolve) =>
 			setTimeout(resolve, 2 ** currentAttempt * 100),
 		);
@@ -154,7 +120,6 @@ async function loadBlob(
 		return null;
 	}
 
-	// Decode base64 content
 	const contentInBytes = Buffer.from(blobData.content, "base64");
 
 	// Check if the content is binary

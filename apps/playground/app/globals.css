@@ -2,6 +2,7 @@
 @import "../../../internal-packages/workflow-designer-ui/src/app/globals.css";
 
 @source "../../../internal-packages/workflow-designer-ui/src";
+@source "../../../internal-packages/ui";
 @source "../../../packages/text-editor/src/react/";
 
 @theme {
@@ -90,6 +91,7 @@
 
 	--font-accent: var(--font-dm-sans);
 	--font-sans: var(--font-dm-sans);
+	--font-mono: var(--font-dm-mono);
 }
 
 @layer components {

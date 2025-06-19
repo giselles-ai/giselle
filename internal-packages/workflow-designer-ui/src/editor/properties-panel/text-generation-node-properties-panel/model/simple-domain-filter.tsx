@@ -78,15 +78,48 @@ export function SimpleDomainFilter({
 		onSearchDomainFilterChange(combined);
 	};
 
-	// Domain name validation function
-	const validateDomainName = (input: string) => {
+	// Domain name validation functions for the allow and deny lists
+	const validateAllowDomain = (input: string) => {
 		if (!isValidDomain(input)) {
 			return {
 				isValid: false,
 				message: `'${input}' is not a valid domain name (e.g., example.com)`,
 			};
 		}
+		if (allowList.includes(input)) {
+			return {
+				isValid: false,
+				message: "This domain is already in the Allow list.",
+			};
+		}
+		if (denyList.includes(input)) {
+			return {
+				isValid: false,
+				message: "This domain is already in the Deny list.",
+			};
+		}
+		return { isValid: true };
+	};
 
+	const validateDenyDomain = (input: string) => {
+		if (!isValidDomain(input)) {
+			return {
+				isValid: false,
+				message: `'${input}' is not a valid domain name (e.g., example.com)`,
+			};
+		}
+		if (denyList.includes(input)) {
+			return {
+				isValid: false,
+				message: "This domain is already in the Deny list.",
+			};
+		}
+		if (allowList.includes(input)) {
+			return {
+				isValid: false,
+				message: "This domain is already in the Allow list.",
+			};
+		}
 		return { isValid: true };
 	};
 
@@ -113,7 +146,7 @@ export function SimpleDomainFilter({
 					onTagsChange={handleAllowListChange}
 					label="Allow List"
 					placeholder="Enter domain to include (e.g., example.com)"
-					validateInput={validateDomainName}
+					validateInput={validateAllowDomain}
 					emptyStateText="No domains added yet"
 				/>
 
@@ -123,7 +156,7 @@ export function SimpleDomainFilter({
 					onTagsChange={handleDenyListChange}
 					label="Deny List"
 					placeholder="Enter domain to exclude"
-					validateInput={validateDomainName}
+					validateInput={validateDenyDomain}
 					emptyStateText="No domains added yet"
 				/>
 			</div>

@@ -10,6 +10,7 @@ import { Dialog } from "radix-ui";
 import { type FormEventHandler, useCallback, useState } from "react";
 import useSWR from "swr";
 import { WebPageFileIcon } from "../../../icons";
+import { useToasts } from "../../../ui/toast";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
@@ -122,14 +123,33 @@ function WebPageListItem({
 export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 	const client = useGiselleEngine();
 	const { data, updateName, updateNodeDataContent } = useWorkflowDesigner();
+	const { error } = useToasts();
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		async (e) => {
 			e.preventDefault();
 
 			const formData = new FormData(e.currentTarget);
-			const urls = formData.get("urls")?.toString().split("\n") || [];
+			const urls =
+				formData
+					.get("urls")
+					?.toString()
+					.split("\n")
+					.map((u) => u.trim())
+					.filter((u) => u.length > 0) || [];
 			if (urls.length === 0) {
-				// @todo show error
+				error("Please enter at least one valid URL.");
+				return;
+			}
+
+			try {
+				for (const url of urls) {
+					const parsed = new URL(url);
+					if (parsed.protocol !== "https:") {
+						throw new Error("Invalid protocol");
+					}
+				}
+			} catch {
+				error("Invalid URL format. Use https://");
 				return;
 			}
 
@@ -160,7 +180,7 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 				}),
 			);
 		},
-		[client, data.id, node, updateNodeDataContent],
+		[client, data.id, node, updateNodeDataContent, error],
 	);
 
 	const removeWebPage = useCallback(

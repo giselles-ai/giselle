@@ -11,8 +11,12 @@ import {
 	type Viewport,
 	type Workspace,
 	generateInitialWorkspace,
+	isImageGenerationNode,
+	isQueryNode,
+	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { nodeFactories } from "@giselle-sdk/node-utils";
+import { cleanupSpecificNodeReferenceInText } from "@giselle-sdk/text-editor-utils";
 import { isSupportedConnection } from "./is-supported-connection";
 
 interface AddNodeOptions {
@@ -214,9 +218,93 @@ export function WorkflowDesigner({
 		ui.viewport = viewport;
 	}
 	function deleteConnection(connectionId: ConnectionId) {
+		const connectionToDelete = connections.find(
+			(connection) => connection.id === connectionId,
+		);
+
+		// First delete the connection
 		connections = connections.filter(
 			(connection) => connection.id !== connectionId,
 		);
+
+		// Then clean up node references ONLY in the input node
+		if (!connectionToDelete) return;
+
+		const inputNode = nodes.find(
+			(node) => node.id === connectionToDelete.inputNode.id,
+		);
+		if (!inputNode) return;
+
+		// Clean up text references only in the node that had the connection
+		// Only operation nodes have text fields that can contain references
+		if (inputNode.type !== "operation") return;
+
+		switch (inputNode.content.type) {
+			case "textGeneration": {
+				if (!isTextGenerationNode(inputNode) || !inputNode.content.prompt) {
+					return;
+				}
+				const cleanedPrompt = cleanupSpecificNodeReferenceInText(
+					inputNode.content.prompt,
+					connectionToDelete.outputNode.id,
+					connectionToDelete.outputId,
+				);
+				if (cleanedPrompt !== inputNode.content.prompt) {
+					updateNodeData(inputNode, {
+						content: {
+							...inputNode.content,
+							prompt: cleanedPrompt,
+						},
+					});
+				}
+				return;
+			}
+			case "imageGeneration": {
+				if (!isImageGenerationNode(inputNode) || !inputNode.content.prompt) {
+					return;
+				}
+				const cleanedPrompt = cleanupSpecificNodeReferenceInText(
+					inputNode.content.prompt,
+					connectionToDelete.outputNode.id,
+					connectionToDelete.outputId,
+				);
+				if (cleanedPrompt !== inputNode.content.prompt) {
+					updateNodeData(inputNode, {
+						content: {
+							...inputNode.content,
+							prompt: cleanedPrompt,
+						},
+					});
+				}
+				return;
+			}
+			case "query": {
+				if (!isQueryNode(inputNode) || !inputNode.content.query) return;
+				const cleanedQuery = cleanupSpecificNodeReferenceInText(
+					inputNode.content.query,
+					connectionToDelete.outputNode.id,
+					connectionToDelete.outputId,
+				);
+				if (cleanedQuery !== inputNode.content.query) {
+					updateNodeData(inputNode, {
+						content: {
+							...inputNode.content,
+							query: cleanedQuery,
+						},
+					});
+				}
+				return;
+			}
+			case "action":
+			case "trigger":
+				// These node types don't have text fields that need cleanup
+				return;
+			default: {
+				// Exhaustive check: if a new node type is added, this will cause a TypeScript error
+				const _exhaustiveCheck: never = inputNode.content.type;
+				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
+			}
+		}
 	}
 	function deleteNode(unsafeNodeId: string | NodeId) {
 		const deleteNodeId = NodeId.parse(unsafeNodeId);

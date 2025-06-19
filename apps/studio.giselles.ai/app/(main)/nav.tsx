@@ -51,11 +51,11 @@ export const Nav: FC<NavProps> = ({ githubVectorStoreFlag }) => {
 			<div className="flex items-center space-x-[12px]">
 				{filteredMenuItems.map((item, index) => {
 					const isActive = index === bestMatchIndex;
-
 					return (
 						<Link
 							key={item.path}
 							href={item.path}
+							aria-label={`${item.name} menu`}
 							className={`text-[16px] font-sans font-medium transition-colors px-2 py-2 relative rounded-md
 							${
 								isActive

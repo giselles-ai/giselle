@@ -1,8 +1,6 @@
-export interface Chunker {
-	/**
-	 * Split text into chunks
-	 * @param text The text to split
-	 * @returns The array of chunks
-	 */
-	chunk(text: string): string[];
-}
+/**
+ * Function type for chunking text into smaller pieces
+ * @param text The text to split
+ * @returns The array of chunks
+ */
+export type ChunkerFunction = (text: string) => string[];

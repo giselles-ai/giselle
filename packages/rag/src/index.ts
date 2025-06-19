@@ -22,55 +22,47 @@ export type {
 } from "./document-loader";
 
 // Chunk Store
-export { PostgresChunkStore } from "./chunk-store";
+export { createPostgresChunkStore } from "./chunk-store";
 export type {
 	Chunk,
 	ChunkStore,
 	ChunkWithEmbedding,
-	PostgresChunkStoreConfig,
 } from "./chunk-store";
 
 // Query Service
 export { PostgresQueryService } from "./query-service";
 export type {
 	DistanceFunction,
-	PostgresQueryServiceConfig,
 	QueryResult,
 	QueryService,
 } from "./query-service";
 
 // Embedder
-export { OpenAIEmbedder } from "./embedder";
-export type { Embedder, OpenAIEmbedderConfig } from "./embedder";
+export { createOpenAIEmbedder, createDefaultEmbedder } from "./embedder";
+export type { EmbedderFunction, OpenAIEmbedderConfig } from "./embedder";
 
 // Chunker
-export { LineChunker } from "./chunker";
-export type { Chunker, LineChunkerOptions } from "./chunker";
+export { createLineChunker, createDefaultChunker } from "./chunker";
+export type { ChunkerFunction, LineChunkerOptions } from "./chunker";
 
 // Ingest Pipeline
 export {
-	IngestPipeline,
+	createIngestPipeline,
 	type IngestError,
-	type IngestPipelineConfig,
 	type IngestProgress,
 	type IngestResult,
 } from "./ingest";
 
 // Simplified API with smart defaults
 export {
-	// Factory functions
-	createChunkStore,
-	// Utilities
-	createColumnMapping,
-	createDefaultChunker,
-	// Default instances
-	createDefaultEmbedder,
-	createIngestPipeline,
+	// Query Service factory
 	createQueryService,
 	// Types
-	type ChunkStoreConfig,
 	type QueryServiceConfig,
 } from "./factories";
+
+// Database utilities
+export { createColumnMapping } from "./database";
 
 // Enhanced errors (additional classes and utilities)
 export {

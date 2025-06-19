@@ -156,7 +156,7 @@ export function TriggerInputDialog({
 									</ul>
 									<p className="text-red-700 text-[12px] mt-[8px]">
 										Please connect all required inputs in the workflow designer
-										before running this flow.
+										before running.
 									</p>
 								</div>
 							</div>
@@ -240,8 +240,8 @@ export function TriggerInputDialog({
 							{isSubmitting
 								? "Running..."
 								: requiresActionNodes.length > 0
-									? "Fix connections to run"
-									: "Run with params"}
+									? "Fix Connections to Run"
+									: "Run"}
 						</Button>
 					</div>
 				</form>

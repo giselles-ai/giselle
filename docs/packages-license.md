@@ -3628,7 +3628,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/node"></a>
-### @tailwindcss/node v4.0.9
+### @tailwindcss/node v4.1.10
 #### 
 
 ##### Paths
@@ -3639,7 +3639,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/oxide"></a>
-### @tailwindcss/oxide v4.0.9
+### @tailwindcss/oxide v4.1.10
 #### 
 
 ##### Paths
@@ -3650,7 +3650,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/oxide-linux-x64-gnu"></a>
-### @tailwindcss/oxide-linux-x64-gnu v4.0.9
+### @tailwindcss/oxide-linux-x64-gnu v4.1.10
 #### 
 
 ##### Paths
@@ -3661,7 +3661,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/oxide-linux-x64-musl"></a>
-### @tailwindcss/oxide-linux-x64-musl v4.0.9
+### @tailwindcss/oxide-linux-x64-musl v4.1.10
 #### 
 
 ##### Paths
@@ -3672,7 +3672,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/postcss"></a>
-### @tailwindcss/postcss v4.0.9
+### @tailwindcss/postcss v4.1.10
 #### 
 
 ##### Paths
@@ -6701,7 +6701,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="detect-libc"></a>
-### detect-libc v1.0.3
+### detect-libc v2.0.3
 #### 
 
 ##### Paths
@@ -9033,7 +9033,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="lightningcss"></a>
-### lightningcss v1.29.1
+### lightningcss v1.30.1
 #### 
 
 ##### Paths
@@ -9044,7 +9044,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="lightningcss-linux-x64-gnu"></a>
-### lightningcss-linux-x64-gnu v1.29.1
+### lightningcss-linux-x64-gnu v1.30.1
 #### 
 
 ##### Paths
@@ -9055,7 +9055,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="lightningcss-linux-x64-musl"></a>
-### lightningcss-linux-x64-musl v1.29.1
+### lightningcss-linux-x64-musl v1.30.1
 #### 
 
 ##### Paths
@@ -12920,7 +12920,7 @@ Unknown manually approved
 
 
 <a name="tailwindcss"></a>
-### tailwindcss v4.0.9
+### tailwindcss v4.1.10
 #### 
 
 ##### Paths

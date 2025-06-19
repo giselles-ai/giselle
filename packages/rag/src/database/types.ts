@@ -1,18 +1,10 @@
 import { z } from "zod/v4";
 
 export const DatabaseConfigSchema = z.object({
-	connectionString: z
-		.string()
-		.min(1, "Connection string cannot be empty")
-		.url("Connection string must be a valid URL"),
+	connectionString: z.string().min(1, "Connection string cannot be empty"),
 	poolConfig: z
 		.object({
-			max: z
-				.number()
-				.int()
-				.positive("Pool max must be positive")
-				.max(100, "Pool max cannot exceed 100")
-				.optional(),
+			max: z.number().int().positive("Pool max must be positive").optional(),
 			idleTimeoutMillis: z
 				.number()
 				.int()
@@ -36,7 +28,6 @@ export interface DatabaseConfig {
 	};
 }
 
-// define required column keys first
 export const REQUIRED_COLUMN_KEYS = [
 	"documentKey",
 	"chunkContent",
@@ -44,13 +35,11 @@ export const REQUIRED_COLUMN_KEYS = [
 	"embedding",
 ] as const;
 
-// derive RequiredColumns type from keys
 export type RequiredColumns = Record<
 	(typeof REQUIRED_COLUMN_KEYS)[number],
 	string
 >;
 
-// define column mapping (required columns are enforced)
 export type ColumnMapping<TMetadata> = Readonly<RequiredColumns> & {
 	[K in Exclude<keyof TMetadata, keyof RequiredColumns>]: string;
 };

@@ -6,6 +6,7 @@ import {
 	type ImageGenerationNode,
 	type TextGenerationNode,
 	isImageGenerationNode,
+	isQueryNode,
 	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
 import {
@@ -389,6 +390,10 @@ export async function emitTelemetry(
 	try {
 		const operationNode = generation.context.operationNode;
 		const nodeType = operationNode.content.type;
+
+		if (isQueryNode(operationNode)) {
+			return;
+		}
 
 		if (
 			!isTextGenerationNode(operationNode) &&

@@ -48,7 +48,9 @@ export function InputPanel({
 			}
 			for (const output of node.outputs) {
 				const connection = connectionToThisNode.find(
-					(connection) => connection.outputId === output.id,
+					(connection) =>
+						connection.outputId === output.id &&
+						connection.outputNode.id === node.id,
 				);
 				tmp.push({
 					...output,

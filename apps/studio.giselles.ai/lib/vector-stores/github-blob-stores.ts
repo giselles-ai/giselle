@@ -11,7 +11,8 @@ import type {
 } from "@giselle-sdk/giselle-engine";
 import {
 	type DatabaseConfig,
-	createChunkStore,
+	createColumnMapping,
+	createPostgresChunkStore,
 	createQueryService,
 } from "@giselle-sdk/rag";
 import { and, eq, getTableName } from "drizzle-orm";
@@ -30,9 +31,6 @@ export const githubChunkMetadataSchema = z.object({
 
 export type GitHubChunkMetadata = z.infer<typeof githubChunkMetadataSchema>;
 
-/**
- * Create PostgreSQL connection config from environment
- */
 function createDatabaseConfig(): DatabaseConfig {
 	const postgresUrl = process.env.POSTGRES_URL;
 	if (!postgresUrl) {
@@ -42,27 +40,24 @@ function createDatabaseConfig(): DatabaseConfig {
 }
 
 /**
- * GitHub chunk store factory - for ingestion pipeline
+ * GitHub Blob chunk store factory - for ingestion pipeline
  */
-export function createGitHubChunkStore(repositoryIndexDbId: number) {
-	return createChunkStore<GitHubChunkMetadata>({
-		database: createDatabaseConfig(),
-		tableName: getTableName(githubRepositoryEmbeddings),
+export function createGitHubBlobChunkStore(repositoryIndexDbId: number) {
+	const columnMapping = createColumnMapping({
 		metadataSchema: githubChunkMetadataSchema,
-		staticContext: { repository_index_db_id: repositoryIndexDbId },
 		requiredColumnOverrides: {
 			documentKey: "path",
-			// (default)
-			// chunkContent: "chunk_content",
-			// chunkIndex: "chunk_index",
-			// embedding: "embedding" (default)
 		},
-		// Metadata fields will auto-convert from camelCase to snake_case:
-		// repositoryIndexDbId -> repository_index_db_id
-		// commitSha -> commit_sha
-		// fileSha -> file_sha
-		// path -> path
-		// nodeId -> node_id
+	});
+
+	return createPostgresChunkStore({
+		database: createDatabaseConfig(),
+		tableName: getTableName(githubRepositoryEmbeddings),
+		columnMapping,
+		metadataSchema: githubChunkMetadataSchema,
+		scope: {
+			repository_index_db_id: repositoryIndexDbId,
+		},
 	});
 }
 

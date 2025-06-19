@@ -20,20 +20,27 @@ const defaultConfigurations: OpenAILanguageModelConfigurations = {
 	frequencyPenalty: 0.0,
 };
 
-const OpenAILanguageModelId = z
-	.enum([
-		"gpt-4o",
-		"gpt-4o-mini",
-		"o1-preview",
-		"o1-mini",
-		"o3",
-		"o3-mini",
-		"o4-mini",
-		"gpt-4.1",
-		"gpt-4.1-mini",
-		"gpt-4.1-nano",
-	])
-	.catch("gpt-4o-mini");
+export const OpenAILanguageModelId = z
+	.enum(["gpt-4o", "o3", "o4-mini", "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano"])
+	.catch((ctx) => {
+		if (typeof ctx.value !== "string") {
+			return "gpt-4.1-nano";
+		}
+		const v = ctx.value;
+		if (v === "o1") {
+			return "o3";
+		}
+		if (v === "o3-mini" || v === "o1-mini") {
+			return "o4-mini";
+		}
+		if (v === "gpt-4o-mini") {
+			return "gpt-4.1-mini";
+		}
+		if (v === "gpt-4-turbo" || v === "gpt-4" || v === "gpt-3.5-turbo") {
+			return "gpt-4o";
+		}
+		return "gpt-4.1-nano";
+	});
 
 const OpenAILanguageModel = LanguageModelBase.extend({
 	id: OpenAILanguageModelId,
@@ -53,45 +60,10 @@ const gpt4o: OpenAILanguageModel = {
 	configurations: defaultConfigurations,
 };
 
-const gpt4oMini: OpenAILanguageModel = {
-	provider: "openai",
-	id: "gpt-4o-mini",
-	capabilities:
-		Capability.ImageFileInput |
-		Capability.TextGeneration |
-		Capability.OptionalSearchGrounding,
-	tier: Tier.enum.free,
-	configurations: defaultConfigurations,
-};
-
-const o1Preview: OpenAILanguageModel = {
-	provider: "openai",
-	id: "o1-preview",
-	capabilities: Capability.TextGeneration,
-	tier: Tier.enum.free,
-	configurations: defaultConfigurations,
-};
-
-const o1Mini: OpenAILanguageModel = {
-	provider: "openai",
-	id: "o1-mini",
-	capabilities: Capability.TextGeneration,
-	tier: Tier.enum.free,
-	configurations: defaultConfigurations,
-};
-
 const o3: OpenAILanguageModel = {
 	provider: "openai",
 	id: "o3",
 	capabilities: Capability.ImageFileInput | Capability.TextGeneration,
-	tier: Tier.enum.pro,
-	configurations: defaultConfigurations,
-};
-
-const o3Mini: OpenAILanguageModel = {
-	provider: "openai",
-	id: "o3-mini",
-	capabilities: Capability.TextGeneration,
 	tier: Tier.enum.pro,
 	configurations: defaultConfigurations,
 };
@@ -122,7 +94,7 @@ const gpt41mini: OpenAILanguageModel = {
 		Capability.ImageFileInput |
 		Capability.TextGeneration |
 		Capability.OptionalSearchGrounding,
-	tier: Tier.enum.pro,
+	tier: Tier.enum.free,
 	configurations: defaultConfigurations,
 };
 
@@ -130,20 +102,11 @@ const gpt41nano: OpenAILanguageModel = {
 	provider: "openai",
 	id: "gpt-4.1-nano",
 	capabilities: Capability.ImageFileInput | Capability.TextGeneration,
-	tier: Tier.enum.pro,
+	tier: Tier.enum.free,
 	configurations: defaultConfigurations,
 };
 
-export const models = [
-	gpt4o,
-	gpt4oMini,
-	o3,
-	o3Mini,
-	o4Mini,
-	gpt41,
-	gpt41mini,
-	gpt41nano,
-];
+export const models = [gpt4o, o3, o4Mini, gpt41, gpt41mini, gpt41nano];
 
 export const LanguageModel = OpenAILanguageModel;
 export type LanguageModel = OpenAILanguageModel;

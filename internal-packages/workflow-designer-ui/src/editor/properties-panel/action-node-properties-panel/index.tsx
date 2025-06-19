@@ -67,7 +67,7 @@ export function ActionNodePropertiesPanel({
 				action={
 					node.content.command.state.status === "unconfigured" ? null : (
 						<Button type="button" onClick={handleClick}>
-							Action
+							Run Action
 						</Button>
 					)
 				}

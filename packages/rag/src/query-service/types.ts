@@ -1,7 +1,4 @@
-export interface Chunk {
-	content: string;
-	index: number;
-}
+import type { Chunk } from "../chunk-store/types";
 
 export interface QueryResult<
 	TMetadata extends Record<string, unknown> = Record<string, never>,

@@ -195,7 +195,7 @@ export function SelectRepository({
 											type="submit"
 											className="rounded-[4px] px-[12px] h-[30px] bg-white-900 text-black-900 cursor-pointer"
 										>
-											Set up
+											Set Up
 										</button>
 									</form>
 								</li>

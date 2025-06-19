@@ -32,3 +32,4 @@ Follow these guidelines when editing this repository.
 
 ## Communication
 - Correct grammar in commit messages, code comments, and PR comments.
+- Git branch names must always be written in English.

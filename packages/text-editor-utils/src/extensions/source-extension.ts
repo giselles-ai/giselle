@@ -1,5 +1,14 @@
 import type { NodeReference, OutputId } from "@giselle-sdk/data-type";
-import { Node, mergeAttributes, nodeInputRule } from "@tiptap/core";
+import type { JSONContent } from "@tiptap/core";
+import { Node } from "@tiptap/core";
+
+export interface SourceJSONContent extends JSONContent {
+	type: "Source";
+	attrs: {
+		node: NodeReference;
+		outputId: OutputId;
+	};
+}
 
 export function createSourceExtensionJSONContent({
 	node,
@@ -11,7 +20,7 @@ export function createSourceExtensionJSONContent({
 			node,
 			outputId,
 		},
-	};
+	} satisfies SourceJSONContent;
 }
 
 export const SourceExtension = Node.create({

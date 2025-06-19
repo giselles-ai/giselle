@@ -50,6 +50,19 @@ export function buildWorkflowFromNode(
 		downstreamNodeIdMap,
 	);
 
+	// Include variable nodes that provide inputs to the downstream nodes
+	for (const connection of connectionMap.values()) {
+		if (
+			downstreamNodeMap.has(connection.inputNode.id) &&
+			connection.outputNode.type === "variable"
+		) {
+			const variableNode = nodeMap.get(connection.outputNode.id);
+			if (variableNode) {
+				downstreamNodeMap.set(variableNode.id, variableNode);
+			}
+		}
+	}
+
 	// Find all connections between the connected nodes
 	const connectedConnectionMap = findConnectedConnectionMap(
 		new Set(downstreamNodeMap.keys()),

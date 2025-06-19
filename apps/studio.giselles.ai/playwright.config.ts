@@ -30,6 +30,8 @@ export default defineConfig({
 
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: "on-first-retry",
+		// Use the saved storage state for all tests
+		storageState: "./tests/e2e/.auth/storageState.json",
 	},
 
 	/* Configure projects for major browsers */
@@ -76,4 +78,7 @@ export default defineConfig({
 	//   url: 'http://127.0.0.1:3000',
 	//   reuseExistingServer: !process.env.CI,
 	// },
+
+	// Add globalSetup to generate storageState.json before tests
+	globalSetup: "./tests/e2e/global-setup.ts",
 });

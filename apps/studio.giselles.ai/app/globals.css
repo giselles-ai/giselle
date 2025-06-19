@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "../../../internal-packages/workflow-designer-ui/src/app/globals.css";
 
+@source "../../../internal-packages/ui";
 @source "../../../internal-packages/workflow-designer-ui/src";
 @source "../../../packages/text-editor/src/react/";
 
@@ -278,6 +279,8 @@
 	--color-error-900: var(--color-red-900);
 
 	--font-accent: var(--font-dm-sans);
+	--font-sans: var(--font-dm-sans);
+	--font-mono: var(--font-dm-mono);
 }
 
 @layer components {

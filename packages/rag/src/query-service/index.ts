@@ -1,6 +1,6 @@
-export type { Chunk, QueryResult, QueryService } from "./types";
 export {
 	PostgresQueryService,
-	type PostgresQueryServiceConfig,
 	type DistanceFunction,
+	type PostgresQueryServiceConfig,
 } from "./postgres";
+export type { QueryResult, QueryService } from "./types";

@@ -67,21 +67,6 @@ export const openAiTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"gpt-4o-mini": {
-		prices: [
-			{
-				validFrom: "2025-05-12T00:00:00Z",
-				price: {
-					input: {
-						costPerMegaToken: 0.15,
-					},
-					output: {
-						costPerMegaToken: 0.6,
-					},
-				},
-			},
-		],
-	},
 	o3: {
 		prices: [
 			{
@@ -103,21 +88,6 @@ export const openAiTokenPricing: ModelPriceTable = {
 					},
 					output: {
 						costPerMegaToken: 8.0,
-					},
-				},
-			},
-		],
-	},
-	"o3-mini": {
-		prices: [
-			{
-				validFrom: "2025-05-12T00:00:00Z",
-				price: {
-					input: {
-						costPerMegaToken: 1.1,
-					},
-					output: {
-						costPerMegaToken: 4.4,
 					},
 				},
 			},
@@ -221,7 +191,7 @@ export const anthropicTokenPricing: ModelPriceTable = {
 
 export const googleTokenPricing: ModelPriceTable = {
 	// https://ai.google.dev/gemini-api/docs/pricing
-	"gemini-2.5-flash-preview-05-20": {
+	"gemini-2.5-flash": {
 		prices: [
 			{
 				validFrom: "2025-06-01T00:00:00Z",
@@ -237,25 +207,10 @@ export const googleTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"gemini-2.5-pro-preview-06-05": {
+	"gemini-2.5-flash-lite-preview-06-17": {
 		prices: [
 			{
-				validFrom: "2025-06-12T02:00:00Z",
-				price: {
-					input: {
-						costPerMegaToken: 1.25,
-					},
-					output: {
-						costPerMegaToken: 10.0,
-					},
-				},
-			},
-		],
-	},
-	"gemini-2.0-flash": {
-		prices: [
-			{
-				validFrom: "2025-05-20T00:00:00Z",
+				validFrom: "2025-06-18T02:00:00Z",
 				price: {
 					input: {
 						costPerMegaToken: 0.1,
@@ -267,16 +222,16 @@ export const googleTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"gemini-2.0-flash-lite": {
+	"gemini-2.5-pro": {
 		prices: [
 			{
-				validFrom: "2025-06-01T00:00:00Z",
+				validFrom: "2025-06-12T02:00:00Z",
 				price: {
 					input: {
-						costPerMegaToken: 0.075,
+						costPerMegaToken: 1.25,
 					},
 					output: {
-						costPerMegaToken: 0.3,
+						costPerMegaToken: 10.0,
 					},
 				},
 			},

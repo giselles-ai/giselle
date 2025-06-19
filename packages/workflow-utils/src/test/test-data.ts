@@ -21,7 +21,7 @@ export const testWorkspace1 = {
 				type: "textGeneration",
 				llm: {
 					provider: "google",
-					id: "gemini-2.0-flash",
+					id: "gemini-2.5-flash-lite-preview-06-17",
 					configurations: {
 						temperature: 0.7,
 						topP: 1,
@@ -67,7 +67,7 @@ export const testWorkspace1 = {
 				type: "textGeneration",
 				llm: {
 					provider: "google",
-					id: "gemini-2.0-flash",
+					id: "gemini-2.5-flash-lite-preview-06-17",
 					configurations: {
 						temperature: 0.7,
 						topP: 1,
@@ -93,7 +93,7 @@ export const testWorkspace1 = {
 				type: "textGeneration",
 				llm: {
 					provider: "google",
-					id: "gemini-2.5-pro-preview-06-05",
+					id: "gemini-2.5-pro",
 					configurations: {
 						temperature: 0.7,
 						topP: 1,
@@ -119,7 +119,7 @@ export const testWorkspace1 = {
 				type: "textGeneration",
 				llm: {
 					provider: "google",
-					id: "gemini-2.0-flash",
+					id: "gemini-2.5-flash-lite-preview-06-17",
 					configurations: {
 						temperature: 0.7,
 						topP: 1,

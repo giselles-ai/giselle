@@ -1,3 +1,4 @@
+import { compressLargeDiff } from "./lib/diff-compression";
 import { octokit } from "./octokit";
 import { getRepositoryFullname } from "./repository";
 import type { GitHubAuthConfig } from "./types";
@@ -6,6 +7,7 @@ export async function getPullRequestDiff(args: {
 	repositoryNodeId: string;
 	pullNumber: number;
 	authConfig: GitHubAuthConfig;
+	maxSize?: number;
 }) {
 	const client = octokit(args.authConfig);
 	const repo = await getRepositoryFullname(
@@ -29,7 +31,8 @@ export async function getPullRequestDiff(args: {
 			},
 		},
 	);
-	return response.data as unknown as string;
+	const diff = response.data as unknown as string;
+	return compressLargeDiff(diff, args.maxSize);
 }
 
 export async function getPullRequestReviewComment(args: {

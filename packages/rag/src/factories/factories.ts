@@ -1,20 +1,9 @@
-import type { PostgresChunkStoreConfig } from "../chunk-store/postgres";
-import { PostgresChunkStore } from "../chunk-store/postgres";
-import type { DocumentLoaderParams } from "../document-loader";
+import { createColumnMapping } from "../database/utils";
+import { createDefaultEmbedder } from "../embedder";
 import { ValidationError } from "../errors";
-import { IngestPipeline } from "../ingest";
 import type { PostgresQueryServiceConfig } from "../query-service/postgres";
 import { PostgresQueryService } from "../query-service/postgres";
-import type {
-	ChunkStoreConfig,
-	IngestPipelineConfig,
-	QueryServiceConfig,
-} from "./types";
-import {
-	createColumnMapping,
-	createDefaultChunker,
-	createDefaultEmbedder,
-} from "./utils";
+import type { QueryServiceConfig } from "./types";
 
 /**
  * validate database config
@@ -69,33 +58,6 @@ function validateDatabaseConfig(database: {
 }
 
 /**
- * create chunk store
- */
-export function createChunkStore<
-	TMetadata extends Record<string, unknown> = Record<string, never>,
->(options: ChunkStoreConfig<TMetadata>): PostgresChunkStore<TMetadata> {
-	const database = validateDatabaseConfig(options.database);
-
-	const columnMapping =
-		options.columnMapping ||
-		createColumnMapping({
-			metadataSchema: options.metadataSchema,
-			requiredColumnOverrides: options.requiredColumnOverrides,
-			metadataColumnOverrides: options.metadataColumnOverrides,
-		});
-
-	const config: PostgresChunkStoreConfig<TMetadata> = {
-		database,
-		tableName: options.tableName,
-		columnMapping,
-		staticContext: options.staticContext,
-		metadataSchema: options.metadataSchema,
-	};
-
-	return new PostgresChunkStore(config);
-}
-
-/**
  * create query service
  */
 export function createQueryService<
@@ -124,39 +86,4 @@ export function createQueryService<
 	};
 
 	return new PostgresQueryService(config);
-}
-
-/**
- * simplified ingest pipeline creation function
- * hide the details of chunker and embedder, and use default settings
- */
-export function createIngestPipeline<
-	TSourceMetadata extends Record<string, unknown>,
-	TTargetMetadata extends Record<string, unknown> = TSourceMetadata,
-	TParams extends DocumentLoaderParams = DocumentLoaderParams,
->(config: IngestPipelineConfig<TSourceMetadata, TTargetMetadata, TParams>) {
-	const {
-		documentLoader,
-		chunkStore,
-		documentKey,
-		metadataTransform,
-		options = {},
-	} = config;
-
-	// use default embedder and chunker
-	const embedder = createDefaultEmbedder();
-	const chunker = createDefaultChunker();
-
-	return new IngestPipeline({
-		documentLoader,
-		chunker,
-		embedder,
-		chunkStore,
-		documentKey,
-		metadataTransform,
-		options: {
-			maxBatchSize: options.maxBatchSize ?? 50,
-			onProgress: options.onProgress,
-		},
-	});
 }

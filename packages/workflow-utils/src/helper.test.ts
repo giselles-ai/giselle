@@ -29,7 +29,7 @@ const sampleNodes: Node[] = [
 			type: "textGeneration",
 			llm: {
 				provider: "openai",
-				id: "gpt-4o-mini",
+				id: "gpt-4.1-mini",
 				configurations: {
 					temperature: 0.7,
 					topP: 1,

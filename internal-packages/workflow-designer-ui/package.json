@@ -11,6 +11,7 @@
 		".": "./src/index.ts"
 	},
 	"dependencies": {
+		"@giselle-internal/ui": "workspace:^",
 		"@giselle-sdk/data-type": "workspace:*",
 		"@giselle-sdk/flow": "workspace:^",
 		"@giselle-sdk/giselle-engine": "workspace:*",

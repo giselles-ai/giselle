@@ -138,25 +138,12 @@ export class DatabaseError extends RagError {
 			{ ...context, operation },
 		);
 	}
-
-	static tableNotFound(tableName: string, context?: Record<string, unknown>) {
-		return new DatabaseError(
-			`Table '${tableName}' does not exist`,
-			"TABLE_NOT_FOUND",
-			undefined,
-			{ ...context, tableName },
-		);
-	}
 }
 
 export type DatabaseErrorCode =
 	| "CONNECTION_FAILED"
 	| "QUERY_FAILED"
-	| "TRANSACTION_FAILED"
-	| "TABLE_NOT_FOUND"
-	| "CONSTRAINT_VIOLATION"
-	| "TIMEOUT"
-	| "UNKNOWN";
+	| "TRANSACTION_FAILED";
 
 /**
  * Embedding generation error
@@ -184,36 +171,9 @@ export class EmbeddingError extends RagError {
 			context,
 		);
 	}
-
-	static rateLimitExceeded(
-		retryAfter?: number,
-		context?: Record<string, unknown>,
-	) {
-		return new EmbeddingError(
-			"Embedding API rate limit exceeded",
-			"RATE_LIMIT_EXCEEDED",
-			undefined,
-			{ ...context, retryAfter },
-		);
-	}
-
-	static invalidInput(input: string, context?: Record<string, unknown>) {
-		return new EmbeddingError(
-			"Invalid input for embedding generation",
-			"INVALID_INPUT",
-			undefined,
-			{ ...context, input: `${input.substring(0, 100)}...` },
-		);
-	}
 }
 
-export type EmbeddingErrorCode =
-	| "API_ERROR"
-	| "RATE_LIMIT_EXCEEDED"
-	| "INVALID_INPUT"
-	| "TIMEOUT"
-	| "QUOTA_EXCEEDED"
-	| "UNKNOWN";
+export type EmbeddingErrorCode = "API_ERROR";
 
 /**
  * Configuration error
@@ -272,17 +232,6 @@ export class OperationError extends RagError {
 	/**
 	 * Helper to create common operation errors
 	 */
-	static documentNotFound(
-		documentKey: string,
-		context?: Record<string, unknown>,
-	) {
-		return new OperationError(
-			`Document with key '${documentKey}' not found`,
-			"DOCUMENT_NOT_FOUND",
-			{ ...context, documentKey },
-		);
-	}
-
 	static invalidOperation(
 		operation: string,
 		reason: string,
@@ -296,12 +245,7 @@ export class OperationError extends RagError {
 	}
 }
 
-export type OperationErrorCode =
-	| "DOCUMENT_NOT_FOUND"
-	| "INVALID_OPERATION"
-	| "RESOURCE_BUSY"
-	| "INSUFFICIENT_PERMISSIONS"
-	| "UNKNOWN";
+export type OperationErrorCode = "INVALID_OPERATION";
 
 /**
  * Utility function for error handling
@@ -330,18 +274,18 @@ export function isErrorCode<T extends string>(
 /**
  * Helper for type-safe error handling
  */
-export function handleError<T extends RagError>(
+export function handleError<
+	T extends Record<string, (error: RagError & { code: string }) => void>,
+>(
 	error: unknown,
-	handlers: {
-		[K in T["code"]]?: (error: T & { code: K }) => void;
-	} & {
+	handlers: T & {
 		default?: (error: unknown) => void;
 	},
 ): void {
-	if (error instanceof RagError) {
-		const handler = handlers[error.code as T["code"]];
+	if (error instanceof RagError && error.code in handlers) {
+		const handler = handlers[error.code];
 		if (handler) {
-			handler(error as T & { code: T["code"] });
+			handler(error);
 			return;
 		}
 	}

@@ -99,51 +99,24 @@
 
 	/* status */
 	--color-conflict: #dec184;
-	--color-conflict-background: #dec184;
-	--color-conflict-border: #5d4c2f;
 	--color-created: #a1c181;
-	--color-created-background: #a1c181;
-	--color-created-border: #38482f;
 	--color-deleted: #d07277;
-	--color-deleted-background: #d07277;
-	--color-deleted-border: #4c2b2c;
 	--color-error: #d07277;
-	--color-error-background: #d07277;
-	--color-error-border: #4c2b2c;
 	--color-hidden: #878a98;
-	--color-hidden-background: #696b77;
-	--color-hidden-border: #414754;
 	--color-hint: #788ca6;
-	--color-hint-background: #5a6f89;
-	--color-hint-border: #293b5b;
 	--color-ignored: #878a98;
-	--color-ignored-background: #696b77;
-	--color-ignored-border: #464b57;
 	--color-info: #74ade8;
-	--color-info-background: #74ade8;
-	--color-info-border: #293b5b;
 	--color-modified: #dec184;
-	--color-modified-background: #dec184;
-	--color-modified-border: #5d4c2f;
 	--color-predictive: #5a6a87;
-	--color-predictive-background: #5a6a87;
-	--color-predictive-border: #38482f;
 	--color-renamed: #74ade8;
-	--color-renamed-background: #74ade8;
-	--color-renamed-border: #293b5b;
 	--color-success: #a1c181;
-	--color-success-background: #a1c181;
-	--color-success-border: #38482f;
 	--color-unreachable: #a9afbc;
-	--color-unreachable-background: #838994;
-	--color-unreachable-border: #464b57;
 	--color-warning: #dec184;
-	--color-warning-background: #dec184;
-	--color-warning-border: #5d4c2f;
 
 	--animate-pop-pop-1: pop-pop 2.1s steps(1) infinite;
 	--animate-pop-pop-2: pop-pop 2.1s steps(1) 0.7s infinite;
 	--animate-pop-pop-3: pop-pop 2.1s steps(1) 1.4s infinite;
+
 	@keyframes pop-pop {
 		0% {
 			transform: translateY(0);

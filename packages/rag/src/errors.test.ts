@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { z } from "zod/v4";
+import { ZodError, z } from "zod/v4";
 import {
 	ConfigurationError,
 	DatabaseError,
@@ -99,15 +99,6 @@ describe("Enhanced Error System", () => {
 			expect(error.context?.operation).toBe(operation);
 			expect(error.context?.documentKey).toBe("doc1");
 		});
-
-		it("should create table not found error", () => {
-			const tableName = "missing_table";
-			const error = DatabaseError.tableNotFound(tableName);
-
-			expect(error.code).toBe("TABLE_NOT_FOUND");
-			expect(error.message).toContain(tableName);
-			expect(error.context?.tableName).toBe(tableName);
-		});
 	});
 
 	describe("EmbeddingError", () => {
@@ -121,25 +112,6 @@ describe("Enhanced Error System", () => {
 			expect(error.category).toBe("embedding");
 			expect(error.cause).toBe(apiError);
 			expect(error.context?.model).toBe("text-embedding-ada-002");
-		});
-
-		it("should create rate limit error", () => {
-			const error = EmbeddingError.rateLimitExceeded(60, {
-				requestId: "req_123",
-			});
-
-			expect(error.code).toBe("RATE_LIMIT_EXCEEDED");
-			expect(error.context?.retryAfter).toBe(60);
-			expect(error.context?.requestId).toBe("req_123");
-		});
-
-		it("should create invalid input error", () => {
-			const longInput = "a".repeat(200);
-			const error = EmbeddingError.invalidInput(longInput);
-
-			expect(error.code).toBe("INVALID_INPUT");
-			expect(error.context?.input).toContain("...");
-			expect((error.context?.input as string).length).toBeLessThan(200);
 		});
 	});
 
@@ -171,17 +143,6 @@ describe("Enhanced Error System", () => {
 	});
 
 	describe("OperationError", () => {
-		it("should create document not found error", () => {
-			const error = OperationError.documentNotFound("doc123", {
-				operation: "delete",
-			});
-
-			expect(error.code).toBe("DOCUMENT_NOT_FOUND");
-			expect(error.category).toBe("operation");
-			expect(error.context?.documentKey).toBe("doc123");
-			expect(error.context?.operation).toBe("delete");
-		});
-
 		it("should create invalid operation error", () => {
 			const error = OperationError.invalidOperation(
 				"search",
@@ -198,7 +159,7 @@ describe("Enhanced Error System", () => {
 	describe("Error Utilities", () => {
 		it("should check error category", () => {
 			const dbError = DatabaseError.connectionFailed();
-			const validationError = ValidationError.fromZodError(new z.ZodError([]));
+			const validationError = ValidationError.fromZodError(new ZodError([]));
 
 			expect(isErrorCategory(dbError, "database")).toBe(true);
 			expect(isErrorCategory(dbError, "validation")).toBe(false);
@@ -220,7 +181,7 @@ describe("Enhanced Error System", () => {
 
 		it("should handle errors with type safety", () => {
 			const dbError = DatabaseError.queryFailed("SELECT 1");
-			const embeddingError = EmbeddingError.rateLimitExceeded(30);
+			const embeddingError = EmbeddingError.apiError();
 			const genericError = new Error("Unknown error");
 
 			let handledError: string | null = null;
@@ -239,14 +200,14 @@ describe("Enhanced Error System", () => {
 			// Test embedding error handling
 			handledError = null;
 			handleError(embeddingError, {
-				RATE_LIMIT_EXCEEDED: (error) => {
-					handledError = `Rate limit: ${error.context?.retryAfter}s`;
+				API_ERROR: (error) => {
+					handledError = `API Error: ${error.message}`;
 				},
 				default: () => {
 					handledError = "Unknown";
 				},
 			});
-			expect(handledError).toBe("Rate limit: 30s");
+			expect(handledError).toBe("API Error: Embedding API request failed");
 
 			// Test generic error handling
 			handledError = null;

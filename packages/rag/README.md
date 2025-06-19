@@ -133,26 +133,24 @@ const documentLoader = {
 // additional data for chunk metadata
 const repositoryId = getRepositoryId();
 
-// Create ingest pipeline
-const pipeline = createIngestPipeline({
+// Create ingest pipeline function
+const ingest = createIngestPipeline({
   documentLoader,
   chunkStore,
   documentKey: (doc) => doc.metadata.filePath,
   metadataTransform: (documentMetadata) => ({
-    repository_id: repositoryId,
+    repositoryId,
     filePath: documentMetadata.filePath,
     commitSha: documentMetadata.commitSha,
   }),
-  options: {
-    maxBatchSize: 50,
-    onProgress: (progress) => {
-      console.log(`Processed: ${progress.processedDocuments}`);
-    },
+  maxBatchSize: 50,
+  onProgress: (progress) => {
+    console.log(`Processed: ${progress.processedDocuments}`);
   },
 });
 
 // Run ingestion
-const result = await pipeline.ingest({});
+const result = await ingest({});
 console.log(`Successfully processed ${result.successfulDocuments} documents`);
 ```
 
@@ -190,16 +188,20 @@ interface IngestResult {
 }
 ```
 
-### Factory Functions
+### Core API
 
+#### Factory Functions
+
+- `createIngestPipeline<TDocMetadata, TStore>(options)` - Creates a document
+  processing pipeline function with automatic chunking and embedding. The chunk
+  metadata type is inferred from the provided chunk store for type safety
 - `createQueryService<TContext, TMetadata>(config)` - Creates a new query
   service
 - `createChunkStore<TMetadata>(config)` - Creates a new chunk store
-- `createIngestPipeline<TSource, TTarget>(config)` - Creates a new ingest
-  pipeline
 - `createDefaultEmbedder()` - Creates OpenAI embedder with default settings
 - `createDefaultChunker()` - Creates line-based chunker with default settings
 - `createColumnMapping(options)` - Creates database column mapping
+
 
 ## Environment Variables
 

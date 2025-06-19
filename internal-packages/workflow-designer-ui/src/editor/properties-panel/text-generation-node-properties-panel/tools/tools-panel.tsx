@@ -16,6 +16,7 @@ import {
 	useTransition,
 } from "react";
 import { z } from "zod/v4";
+import { useWorkspaceSecrets } from "../../../lib/use-workspace-secrets";
 import { GitHubIcon } from "../../../tool";
 import { Button } from "./ui/button";
 import {
@@ -26,7 +27,8 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "./ui/dialog";
-import { DropdownMenu } from "./ui/dropdown-menu";
+import { EmptyState } from "./ui/empty-state";
+import { Select } from "./ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
 const GitHubToolSetupSecretType = {
@@ -47,7 +49,9 @@ const GitHubToolSetupPayload = z.discriminatedUnion("secretType", [
 
 function GitHubToolSetting({ node }: { node: TextGenerationNode }) {
 	const [presentDialog, setPresentDialog] = useState(false);
-	const { updateNodeDataContent, data } = useWorkflowDesigner();
+	const [tabValue, setTabValue] = useState("create");
+	const { updateNodeDataContent, data: workspace } = useWorkflowDesigner();
+	const { isLoading, data, mutate } = useWorkspaceSecrets();
 	const client = useGiselleEngine();
 	const [isPending, startTransition] = useTransition();
 	const setupGitHubTool = useCallback<React.FormEventHandler<HTMLFormElement>>(
@@ -66,44 +70,57 @@ function GitHubToolSetting({ node }: { node: TextGenerationNode }) {
 			});
 			if (!parse.success) {
 				/** @todo Implement error handling */
+				console.log(parse.error);
 				return;
 			}
 			const payload = parse.data;
 			switch (payload.secretType) {
 				case "create":
-					{
-						startTransition(async () => {
-							const result = await client.addSecret({
-								workspaceId: data.id,
-								label: payload.label,
-								value: payload.value,
-							});
-							updateNodeDataContent(node, {
-								...node.content,
-								tools: {
-									...node.content.tools,
-									github: {
-										tools: [],
-										auth: {
-											type: "secret",
-											secretId: result.secretId,
-										},
+					startTransition(async () => {
+						const result = await client.addSecret({
+							workspaceId: workspace.id,
+							label: payload.label,
+							value: payload.value,
+						});
+						mutate([...(data ?? []), result.secret]);
+						updateNodeDataContent(node, {
+							...node.content,
+							tools: {
+								...node.content.tools,
+								github: {
+									tools: [],
+									auth: {
+										type: "secret",
+										secretId: result.secret.id,
 									},
 								},
-							});
-							setPresentDialog(false);
+							},
 						});
-					}
+					});
 					break;
 				case "select":
+					updateNodeDataContent(node, {
+						...node.content,
+						tools: {
+							...node.content.tools,
+							github: {
+								tools: [],
+								auth: {
+									type: "secret",
+									secretId: payload.secretId,
+								},
+							},
+						},
+					});
 					break;
 				default: {
 					const _exhaustiveCheck: never = payload;
 					throw new Error(`Unhandled secretType: ${_exhaustiveCheck}`);
 				}
 			}
+			setPresentDialog(false);
 		},
-		[node, updateNodeDataContent, client, data.id],
+		[node, updateNodeDataContent, client, workspace.id, data, mutate],
 	);
 	return (
 		<ToolList.Dialog
@@ -117,7 +134,7 @@ function GitHubToolSetting({ node }: { node: TextGenerationNode }) {
 				title="Conenct to GitHub"
 				description="How would you like to add your Personal Access Token (PAT)? "
 			/>
-			<Tabs defaultValue="create">
+			<Tabs value={tabValue} onValueChange={setTabValue}>
 				<TabsList className="mb-[12px]">
 					<TabsTrigger value="create">Paste New Token</TabsTrigger>
 					<TabsTrigger value="select">Use Saved Token</TabsTrigger>
@@ -180,30 +197,50 @@ function GitHubToolSetting({ node }: { node: TextGenerationNode }) {
 					</div>
 				</TabsContent>
 				<TabsContent value="select">
-					<p className="text-[11px] text-text-muted my-[4px]">
-						Pick one of your encrypted tokens to connect.
-					</p>
-					<input
-						type="hidden"
-						name="secretType"
-						value={GitHubToolSetupSecretType.create}
-					/>
-					<fieldset className="flex flex-col">
-						<label htmlFor="label" className="text-text text-[13px] mb-[2px]">
-							Select a saved token
-						</label>
-						<div>
-							<DropdownMenu
-								placeholder="Choose a token… "
-								items={[
-									{ id: "token1", label: "Token 1" },
-									{ id: "token2", label: "Token 2" },
-									{ id: "token3", label: "Token 3" },
-								]}
-								renderItem={(item) => item.label}
-							/>
-						</div>
-					</fieldset>
+					{isLoading ? (
+						<p>Loading...</p>
+					) : (
+						<>
+							{(data ?? []).length < 1 ? (
+								<EmptyState description="No saved tokens yet">
+									<Button
+										onClick={() => setTabValue("create")}
+										leftIcon={<PlusIcon />}
+									>
+										Save First Token
+									</Button>
+								</EmptyState>
+							) : (
+								<>
+									<p className="text-[11px] text-text-muted my-[4px]">
+										Pick one of your encrypted tokens to connect.
+									</p>
+									<input
+										type="hidden"
+										name="secretType"
+										value={GitHubToolSetupSecretType.select}
+									/>
+									<fieldset className="flex flex-col">
+										<label
+											htmlFor="label"
+											className="text-text text-[13px] mb-[2px]"
+										>
+											Select a saved token
+										</label>
+										<div>
+											<Select
+												name="secretId"
+												placeholder="Choose a token… "
+												options={data ?? []}
+												renderOption={(option) => option.label}
+												widthClassName="w-[180px]"
+											/>
+										</div>
+									</fieldset>
+								</>
+							)}
+						</>
+					)}
 				</TabsContent>
 			</Tabs>
 		</ToolList.Dialog>

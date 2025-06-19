@@ -9,6 +9,7 @@ import { copyFiles, getWorkspace, setWorkspace } from "./utils";
 export async function copyWorkspace(args: {
 	context: GiselleEngineContext;
 	workspaceId: WorkspaceId;
+	name?: string;
 }) {
 	const sourceWorkspace = await getWorkspace({
 		storage: args.context.storage,
@@ -19,7 +20,7 @@ export async function copyWorkspace(args: {
 
 	const workspaceCopy: Workspace = {
 		...newWorkspace,
-		name: `Copy of ${sourceWorkspace.name ?? ""}`,
+		name: args.name ?? `Copy of ${sourceWorkspace.name ?? ""}`,
 		nodes: sourceWorkspace.nodes,
 		connections: sourceWorkspace.connections,
 		ui: sourceWorkspace.ui,

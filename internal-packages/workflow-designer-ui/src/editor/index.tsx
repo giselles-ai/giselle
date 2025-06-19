@@ -30,10 +30,13 @@ import { edgeTypes } from "./connector";
 import { type ConnectorType, GradientDef } from "./connector/component";
 import { ContextMenu } from "./context-menu";
 import type { ContextMenuProps } from "./context-menu/types";
+import { DataSourceTable } from "./data-source";
 import { KeyboardShortcuts } from "./keyboard-shortcuts";
 import { type GiselleWorkflowDesignerNode, nodeTypes } from "./node";
 import { PropertiesPanel } from "./properties-panel";
 import { RunButton } from "./run-button";
+import { RunHistoryTable } from "./run-history/run-history-table";
+import { SecretTable } from "./secret/secret-table";
 import { SideMenu } from "./side-menu";
 import {
 	FloatingNodePreview,
@@ -506,6 +509,25 @@ export function Editor({
 														)}
 													</Panel>
 												</PanelGroup>
+											</Tabs.Content>
+											<Tabs.Content
+												value="secret"
+												className="h-full outline-none"
+											>
+												<SecretTable />
+											</Tabs.Content>
+
+											<Tabs.Content
+												value="run-history"
+												className="h-full outline-none"
+											>
+												<RunHistoryTable />
+											</Tabs.Content>
+											<Tabs.Content
+												value="datasource"
+												className="h-full outline-none"
+											>
+												<DataSourceTable />
 											</Tabs.Content>
 										</Panel>
 									</PanelGroup>

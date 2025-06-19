@@ -67,10 +67,15 @@ export async function copyAgent(
 		}
 
 		const newAgentId = `agnt_${createId()}` as AgentId;
-		const workspace = await giselleEngine.copyWorkspace(agent.workspaceId);
+		const baseName = agent.name?.trim() || agentId;
+		const newName = `Copy of ${baseName}`;
+		const workspace = await giselleEngine.copyWorkspace(
+			agent.workspaceId,
+			newName,
+		);
 		await db.insert(agents).values({
 			id: newAgentId,
-			name: `Copy of ${agent.name ?? agentId}`,
+			name: newName,
 			teamDbId: team.dbId,
 			creatorDbId: user.dbId,
 			graphUrl: agent.graphUrl, // TODO: This field is not used in the new playground and will be removed in the future

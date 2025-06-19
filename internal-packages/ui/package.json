@@ -1,0 +1,33 @@
+{
+	"name": "@giselle-internal/ui",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"clean": "rm -rf node_modules",
+		"check-types": "tsc --noEmit",
+		"format": "biome check --write ."
+	},
+	"exports": {
+		"./table": "./components/table.tsx",
+		"./empty-state": "./components/empty-state.tsx",
+		"./dialog": "./components/dialog.tsx",
+		"./button": "./components/button.tsx",
+		"./select": "./components/select.tsx",
+		"./note": "./components/note.tsx"
+	},
+	"dependencies": {
+		"clsx": "catalog:",
+		"lucide-react": "catalog:",
+		"radix-ui": "catalog:",
+		"react": "catalog:",
+		"react-dom": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@giselle/giselle-sdk-tsconfig": "workspace:^",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"tailwindcss": "catalog:",
+		"typescript": "catalog:"
+	}
+}

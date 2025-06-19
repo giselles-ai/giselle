@@ -1,24 +1,9 @@
 /**
- * RAG2 default settings and utilities
+ * QueryService factory (to be removed in separate PR)
  */
 
 // Re-export types
-export type {
-	ChunkStoreConfig,
-	QueryServiceConfig,
-	IngestPipelineConfig,
-} from "./types";
+export type { QueryServiceConfig } from "./types";
 
-// Re-export constants and utilities
-export {
-	createColumnMapping,
-	createDefaultChunker,
-	createDefaultEmbedder,
-} from "./utils";
-
-// Re-export factory functions
-export {
-	createChunkStore,
-	createIngestPipeline,
-	createQueryService,
-} from "./factories";
+// Re-export factory functions (only QueryService remains)
+export { createQueryService } from "./factories";

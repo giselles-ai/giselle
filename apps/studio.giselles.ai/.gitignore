@@ -53,3 +53,5 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+.auth/
+tests/e2e/.auth/

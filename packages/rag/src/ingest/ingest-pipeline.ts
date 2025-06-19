@@ -1,100 +1,156 @@
-import type { ChunkStore } from "../chunk-store/types";
-import type { Chunker } from "../chunker/types";
+import type { ChunkStore, ChunkWithEmbedding } from "../chunk-store/types";
+import { createDefaultChunker } from "../chunker";
+import type { ChunkerFunction } from "../chunker/types";
 import type {
 	Document,
 	DocumentLoader,
 	DocumentLoaderParams,
 } from "../document-loader/types";
-import type { Embedder } from "../embedder/types";
+import { createDefaultEmbedder } from "../embedder";
+import type { EmbedderFunction } from "../embedder/types";
 import { OperationError } from "../errors";
+import type { IngestError, IngestProgress, IngestResult } from "./types";
+
+// Type helper to extract metadata type from ChunkStore
+type InferChunkMetadata<T> = T extends ChunkStore<infer M> ? M : never;
+
+export interface IngestPipelineOptions<
+	TDocMetadata extends Record<string, unknown>,
+	TStore extends ChunkStore<Record<string, unknown>>,
+> {
+	// Required configuration
+	documentLoader: DocumentLoader<TDocMetadata, DocumentLoaderParams>;
+	chunkStore: TStore;
+	documentKey: (document: Document<TDocMetadata>) => string;
+	metadataTransform: (metadata: TDocMetadata) => InferChunkMetadata<TStore>;
+
+	// Optional processors
+	chunker?: ChunkerFunction;
+	embedder?: EmbedderFunction;
+
+	// Optional settings
+	maxBatchSize?: number;
+	maxRetries?: number;
+	retryDelay?: number;
+	onProgress?: (progress: IngestProgress) => void;
+	onError?: (error: IngestError) => void;
+}
+
+const DEFAULT_MAX_BATCH_SIZE = 100;
+const DEFAULT_MAX_RETRIES = 3;
+const DEFAULT_RETRY_DELAY = 1000;
+
+export type IngestFunction = (
+	params: DocumentLoaderParams,
+) => Promise<IngestResult>;
 
 /**
- * Config for IngestPipeline
+ * Create an ingest pipeline function with the given options
  */
-export interface IngestPipelineConfig<
-	TSourceMetadata extends Record<string, unknown>,
-	TTargetMetadata extends Record<string, unknown> = TSourceMetadata,
-	TParams extends DocumentLoaderParams = DocumentLoaderParams,
-> {
-	documentLoader: DocumentLoader<TSourceMetadata, TParams>;
-	chunker: Chunker;
-	embedder: Embedder;
-	chunkStore: ChunkStore<TTargetMetadata>;
+export function createIngestPipeline<
+	TDocMetadata extends Record<string, unknown>,
+	TStore extends ChunkStore<Record<string, unknown>>,
+>(options: IngestPipelineOptions<TDocMetadata, TStore>): IngestFunction {
+	// Extract and set defaults for all options
+	const {
+		documentLoader,
+		chunkStore,
+		documentKey,
+		metadataTransform,
+		chunker = createDefaultChunker(),
+		embedder = createDefaultEmbedder(),
+		maxBatchSize = DEFAULT_MAX_BATCH_SIZE,
+		maxRetries = DEFAULT_MAX_RETRIES,
+		retryDelay = DEFAULT_RETRY_DELAY,
+		onProgress = () => {},
+		onError = () => {},
+	} = options;
+
 	/**
-	 * Function to extract document key from a document
-	 * This is used to uniquely identify documents in the chunk store
+	 * Process a single document with retry logic
 	 */
-	documentKey: (document: Document<TSourceMetadata>) => string;
-	/**
-	 * Metadata transformation function
-	 */
-	metadataTransform: (metadata: TSourceMetadata) => TTargetMetadata;
-	// options
-	options?: {
-		maxBatchSize?: number; // batch size for embedding
-		maxRetries?: number; // number of retries
-		retryDelay?: number; // retry interval (milliseconds)
-		onProgress?: (progress: IngestProgress) => void;
-		onError?: (error: IngestError) => void;
-	};
-}
+	async function processDocument(
+		document: Document<TDocMetadata>,
+		docKey: string,
+	): Promise<void> {
+		const targetMetadata = metadataTransform(document.metadata);
 
-export interface IngestProgress {
-	currentDocument?: string;
-	processedDocuments: number;
-}
+		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+			try {
+				const chunkTexts = chunker(document.content);
+				const chunks: ChunkWithEmbedding[] = [];
 
-export interface IngestError {
-	document: string;
-	error: Error;
-	willRetry: boolean;
-	attemptNumber: number;
-}
+				// Batch embedding to improve performance
+				for (let i = 0; i < chunkTexts.length; i += maxBatchSize) {
+					const batch = chunkTexts.slice(i, i + maxBatchSize);
+					const embeddings = await embedder.embedMany(batch);
 
-export interface IngestResult {
-	totalDocuments: number;
-	successfulDocuments: number;
-	failedDocuments: number;
-	errors: Array<{ document: string; error: Error }>;
-}
+					for (let j = 0; j < batch.length; j++) {
+						chunks.push({
+							content: batch[j],
+							index: i + j,
+							embedding: embeddings[j],
+						});
+					}
+				}
 
-export class IngestPipeline<
-	TSourceMetadata extends Record<string, unknown>,
-	TTargetMetadata extends Record<string, unknown> = TSourceMetadata,
-	TParams extends DocumentLoaderParams = DocumentLoaderParams,
-> {
-	private documentLoader: DocumentLoader<TSourceMetadata, TParams>;
-	private chunker: Chunker;
-	private embedder: Embedder;
-	private chunkStore: ChunkStore<TTargetMetadata>;
-	private documentKey: (document: Document<TSourceMetadata>) => string;
-	private metadataTransform: (metadata: TSourceMetadata) => TTargetMetadata;
-	private options: Required<
-		NonNullable<
-			IngestPipelineConfig<TSourceMetadata, TTargetMetadata, TParams>["options"]
-		>
-	>;
+				await chunkStore.insert(docKey, chunks, targetMetadata);
+				return;
+			} catch (error) {
+				const isLastAttempt = attempt === maxRetries;
 
-	constructor(
-		config: IngestPipelineConfig<TSourceMetadata, TTargetMetadata, TParams>,
-	) {
-		this.documentLoader = config.documentLoader;
-		this.chunker = config.chunker;
-		this.embedder = config.embedder;
-		this.chunkStore = config.chunkStore;
-		this.documentKey = config.documentKey;
-		this.metadataTransform = config.metadataTransform;
-		this.options = {
-			maxBatchSize: 100,
-			maxRetries: 3,
-			retryDelay: 1000,
-			onProgress: () => {},
-			onError: () => {},
-			...config.options,
-		};
+				onError({
+					document: docKey,
+					error: error instanceof Error ? error : new Error(String(error)),
+					willRetry: !isLastAttempt,
+					attemptNumber: attempt,
+				});
+
+				if (isLastAttempt) {
+					throw error;
+				}
+
+				const delay = retryDelay * 2 ** (attempt - 1);
+				await new Promise((resolve) => setTimeout(resolve, delay));
+			}
+		}
 	}
 
-	async ingest(params: TParams): Promise<IngestResult> {
+	/**
+	 * Process a batch of documents
+	 */
+	async function processBatch(
+		documents: Array<Document<TDocMetadata>>,
+		result: IngestResult,
+		progress: IngestProgress,
+	): Promise<void> {
+		for (const document of documents) {
+			const docKey = documentKey(document);
+			progress.currentDocument = docKey;
+
+			try {
+				await processDocument(document, docKey);
+				result.successfulDocuments++;
+				progress.processedDocuments++;
+			} catch (error) {
+				result.failedDocuments++;
+				progress.processedDocuments++;
+				result.errors.push({
+					document: docKey,
+					error: error instanceof Error ? error : new Error(String(error)),
+				});
+			}
+
+			onProgress(progress);
+		}
+	}
+
+	/**
+	 * The main ingest function
+	 */
+	return async function ingest(
+		params: DocumentLoaderParams,
+	): Promise<IngestResult> {
 		const result: IngestResult = {
 			totalDocuments: 0,
 			successfulDocuments: 0,
@@ -108,24 +164,20 @@ export class IngestPipeline<
 		};
 
 		try {
-			// Collect documents into batches for more efficient processing
-			const documentBatch: Array<Document<TSourceMetadata>> = [];
+			const documentBatch: Array<Document<TDocMetadata>> = [];
 
-			// process documents in batches
-			for await (const document of this.documentLoader.load(params)) {
+			for await (const document of documentLoader.load(params)) {
 				result.totalDocuments++;
 				documentBatch.push(document);
 
-				// Process batch when it reaches the configured size
-				if (documentBatch.length >= this.options.maxBatchSize) {
-					await this.processBatch(documentBatch, result, progress);
-					documentBatch.length = 0; // Clear the batch
+				if (documentBatch.length >= maxBatchSize) {
+					await processBatch(documentBatch, result, progress);
+					documentBatch.length = 0;
 				}
 			}
 
-			// Process any remaining documents in the final batch
 			if (documentBatch.length > 0) {
-				await this.processBatch(documentBatch, result, progress);
+				await processBatch(documentBatch, result, progress);
 			}
 		} catch (error) {
 			throw OperationError.invalidOperation(
@@ -136,103 +188,5 @@ export class IngestPipeline<
 		}
 
 		return result;
-	}
-
-	/**
-	 * Process a batch of documents efficiently with optimized connection usage
-	 */
-	private async processBatch(
-		documents: Array<Document<TSourceMetadata>>,
-		result: IngestResult,
-		progress: IngestProgress,
-	): Promise<void> {
-		// Process documents sequentially within the batch
-		// This maintains the existing single-document transaction model
-		// while grouping documents for better overall efficiency
-		for (const document of documents) {
-			progress.currentDocument = this.getDocumentKey(document);
-
-			try {
-				await this.processDocument(document);
-				result.successfulDocuments++;
-				progress.processedDocuments++;
-			} catch (error) {
-				result.failedDocuments++;
-				progress.processedDocuments++;
-				result.errors.push({
-					document: progress.currentDocument,
-					error: error instanceof Error ? error : new Error(String(error)),
-				});
-			}
-
-			this.options.onProgress(progress);
-		}
-	}
-
-	private async processDocument(
-		document: Document<TSourceMetadata>,
-	): Promise<void> {
-		const documentKey = this.getDocumentKey(document);
-
-		// apply metadata transformation
-		const targetMetadata = this.getTargetMetadata(document.metadata);
-
-		// with retry logic
-		for (let attempt = 1; attempt <= this.options.maxRetries; attempt++) {
-			try {
-				// chunking
-				const chunkTexts = this.chunker.chunk(document.content);
-
-				// batch embedding
-				const chunks = [];
-				for (let i = 0; i < chunkTexts.length; i += this.options.maxBatchSize) {
-					const batch = chunkTexts.slice(i, i + this.options.maxBatchSize);
-					const embeddings = await this.embedder.embedMany(batch);
-
-					for (let j = 0; j < batch.length; j++) {
-						chunks.push({
-							content: batch[j],
-							index: i + j,
-							embedding: embeddings[j],
-						});
-					}
-				}
-
-				// save with transformed metadata
-				await this.chunkStore.insert(documentKey, chunks, targetMetadata);
-				return;
-			} catch (error) {
-				const isLastAttempt = attempt === this.options.maxRetries;
-
-				this.options.onError({
-					document: documentKey,
-					error: error instanceof Error ? error : new Error(String(error)),
-					willRetry: !isLastAttempt,
-					attemptNumber: attempt,
-				});
-
-				if (isLastAttempt) {
-					throw error;
-				}
-
-				// exponential backoff
-				const delay = this.options.retryDelay * 2 ** (attempt - 1);
-				await new Promise((resolve) => setTimeout(resolve, delay));
-			}
-		}
-	}
-
-	/**
-	 * metadata transformation
-	 */
-	private getTargetMetadata(sourceMetadata: TSourceMetadata): TTargetMetadata {
-		return this.metadataTransform(sourceMetadata);
-	}
-
-	/**
-	 * Get document key using the provided documentKey function
-	 */
-	private getDocumentKey(document: Document<TSourceMetadata>): string {
-		return this.documentKey(document);
-	}
+	};
 }

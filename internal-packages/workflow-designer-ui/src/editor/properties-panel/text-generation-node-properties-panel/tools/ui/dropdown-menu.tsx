@@ -2,6 +2,7 @@ import clsx from "clsx/lite";
 import { ChevronDownIcon } from "lucide-react";
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 import { Button } from "./button";
+import { PopoverContent } from "./popover";
 
 type Identifiable = {
 	id: string;
@@ -30,18 +31,22 @@ export function DropdownMenu<T extends Identifiable>({
 			<DropdownMenuPrimitive.Portal>
 				<DropdownMenuPrimitive.Content
 					sideOffset={4}
-					className={clsx(
-						"rounded-[2px] w-(--radix-dropdown-menu-trigger-width) bg-panel-background z-50",
-						"p-[4px] border border-border-variant shadow-md",
-						"**:data-item:text-text **:data-item:outline-none **:data-item:cursor-pointer **:data-item:hover:bg-ghost-element-hover",
-						"**:data-item:rounded-[2px] **:data-item:px-[8px] **:data-item:py-[4px] **:data-item:text-[14px]",
-					)}
+					className={clsx("w-(--radix-dropdown-menu-trigger-width) z-50")}
 				>
-					{items.map((item) => (
-						<DropdownMenuPrimitive.Item data-item key={item.id}>
-							{renderItem(item)}
-						</DropdownMenuPrimitive.Item>
-					))}
+					<PopoverContent>
+						{items.map((item) => (
+							<DropdownMenuPrimitive.Item
+								data-item
+								key={item.id}
+								className={clsx(
+									"text-text outline-none cursor-pointer hover:bg-ghost-element-hover",
+									"rounded-[2px] px-[8px] py-[2px] text-[14px]",
+								)}
+							>
+								{renderItem(item)}
+							</DropdownMenuPrimitive.Item>
+						))}
+					</PopoverContent>
 				</DropdownMenuPrimitive.Content>
 			</DropdownMenuPrimitive.Portal>
 		</DropdownMenuPrimitive.Root>

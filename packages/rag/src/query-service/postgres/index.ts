@@ -1,10 +1,16 @@
+import { escapeIdentifier } from "pg";
 import * as pgvector from "pgvector/pg";
 import type { z } from "zod/v4";
 import { PoolManager } from "../../database/postgres";
 import { ensurePgVectorTypes } from "../../database/postgres/pgvector-registry";
 import type { ColumnMapping, DatabaseConfig } from "../../database/types";
-import type { Embedder } from "../../embedder/types";
-import { DatabaseError, EmbeddingError, ValidationError } from "../../errors";
+import type { EmbedderFunction } from "../../embedder/types";
+import {
+	ConfigurationError,
+	DatabaseError,
+	EmbeddingError,
+	ValidationError,
+} from "../../errors";
 import type { QueryResult, QueryService } from "../types";
 
 export type DistanceFunction = "cosine" | "euclidean" | "inner_product";
@@ -12,7 +18,7 @@ export type DistanceFunction = "cosine" | "euclidean" | "inner_product";
 export interface PostgresQueryServiceConfig<TContext, TMetadata> {
 	database: DatabaseConfig;
 	tableName: string;
-	embedder: Embedder;
+	embedder: EmbedderFunction;
 	columnMapping: ColumnMapping<TMetadata>;
 	// context to filter
 	contextToFilter: (
@@ -60,11 +66,9 @@ export class PostgresQueryService<
 			let paramIndex = 2;
 
 			for (const [column, value] of Object.entries(filters)) {
-				if (typeof column === "string") {
-					whereConditions.push(`"${column}" = $${paramIndex}`);
-					values.push(value);
-					paramIndex++;
-				}
+				whereConditions.push(`${escapeIdentifier(column)} = $${paramIndex}`);
+				values.push(value);
+				paramIndex++;
 			}
 
 			const metadataColumns = Object.entries(columnMapping)
@@ -72,24 +76,42 @@ export class PostgresQueryService<
 					([key]) =>
 						!["documentKey", "content", "index", "embedding"].includes(key),
 				)
-				.map(([metadataKey, dbColumn]) => ({
-					metadataKey,
-					dbColumn: typeof dbColumn === "string" ? `"${dbColumn}"` : "",
-				}))
-				.filter((item) => item.dbColumn !== "");
+				.map(([metadataKey, dbColumn]) => {
+					if (typeof dbColumn !== "string") {
+						throw ConfigurationError.invalidValue(
+							`columnMapping.${metadataKey}`,
+							dbColumn,
+							"string",
+							{
+								operation: "validateColumnMapping",
+								metadataKey,
+							},
+						);
+					}
+					return {
+						metadataKey,
+						dbColumn: escapeIdentifier(dbColumn),
+					};
+				});
 
 			const sql = `
         SELECT
-          "${columnMapping.chunkContent}" as content,
-          "${columnMapping.chunkIndex}" as index,
-          ${metadataColumns.map(({ dbColumn, metadataKey }) => `${dbColumn} as "${metadataKey}"`).join(", ")}${metadataColumns.length > 0 ? "," : ""}
-          1 - ("${columnMapping.embedding}" <=> $1) as similarity
-        FROM "${tableName}"
+          ${escapeIdentifier(columnMapping.chunkContent)} as content,
+          ${escapeIdentifier(columnMapping.chunkIndex)} as index,
+          ${metadataColumns
+						.map(
+							({ dbColumn, metadataKey }) =>
+								`${dbColumn} as ${escapeIdentifier(metadataKey)}`,
+						)
+						.join(", ")}${metadataColumns.length > 0 ? "," : ""}
+          1 - (${escapeIdentifier(columnMapping.embedding)} <=> $1) as similarity
+        FROM ${escapeIdentifier(tableName)}
         ${whereConditions.length > 0 ? `WHERE ${whereConditions.join(" AND ")}` : ""}
-        ORDER BY "${columnMapping.embedding}" <=> $1
-        LIMIT ${limit}
+        ORDER BY ${escapeIdentifier(columnMapping.embedding)} <=> $1
+        LIMIT $${paramIndex}
       `;
 
+			values.push(limit);
 			const result = await pool.query(sql, values);
 
 			return result.rows.map((row) => {

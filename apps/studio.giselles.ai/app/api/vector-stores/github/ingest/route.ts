@@ -1,7 +1,7 @@
 import { fetchDefaultBranchHead } from "@giselle-sdk/github-tool";
 import { captureException } from "@sentry/nextjs";
 import type { NextRequest } from "next/server";
-import { ingestGitHubRepository } from "./ingest-github-repository";
+import { ingestGitHubBlobs } from "./ingest-github-repository";
 import {
 	buildOctokit,
 	fetchTargetGitHubRepositories,
@@ -25,7 +25,6 @@ export async function GET(request: NextRequest) {
 			targetGitHubRepository;
 
 		try {
-			// Update status to running
 			await updateRepositoryStatus(dbId, "running");
 
 			const octokitClient = buildOctokit(installationId);
@@ -36,13 +35,12 @@ export async function GET(request: NextRequest) {
 				commitSha: commit.sha,
 			};
 
-			await ingestGitHubRepository({
+			await ingestGitHubBlobs({
 				octokitClient,
 				source,
 				teamDbId,
 			});
 
-			// Update status to completed
 			await updateRepositoryStatus(dbId, "completed", commit.sha);
 		} catch (error) {
 			console.error(`Failed to ingest ${owner}/${repo}:`, error);

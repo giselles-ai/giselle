@@ -152,7 +152,7 @@ function Unauthorized({
 	return (
 		<div className="bg-white-900/10 h-[300px] rounded-[8px] flex items-center justify-center">
 			<div className="flex flex-col gap-[8px]">
-				<p>To get started you have to sign into your GitHub account</p>
+				<p>Sign in to your GitHub account to get started</p>
 				<button
 					type="button"
 					className="group cursor-pointer bg-black-900 rounded-[4px] py-[4px] flex items-center justify-center gap-[8px] disabled:opacity-50 disabled:cursor-wait"
@@ -288,7 +288,7 @@ function Installed({
 
 			const commandId = formData.get("commandId");
 			if (typeof commandId !== "string" || commandId.length === 0) {
-				throw new Error("unexpected request");
+				throw new Error("Unexpected request");
 			}
 
 			/** @todo remove type assertion */
@@ -339,7 +339,7 @@ function Installed({
 
 	return (
 		<div className="flex flex-col gap-[16px] px-[16px]">
-			<p className="text-[18px]">Setup GitHub Action</p>
+			<p className="text-[18px]">Set Up GitHub Action</p>
 			{step.state === "select-repository" && (
 				<SelectRepository
 					installations={installations}
@@ -384,7 +384,7 @@ function Installed({
 						type="submit"
 						className="h-[28px] rounded-[8px] bg-white-800 text-[14px] cursor-pointer text-black-800 font-[700] px-[16px] font-accent disabled:opacity-50"
 					>
-						Setup Action
+						Set Up Action
 					</button>
 				</form>
 			)}
