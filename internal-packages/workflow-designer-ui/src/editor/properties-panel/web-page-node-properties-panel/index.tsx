@@ -109,6 +109,21 @@ function WebPageListItem({
 					</a>
 				</div>
 			)}
+			{webpage.status === "failed" && (
+				<div>
+					<p className="text-error-900 font-sans">
+						Failed to fetch: {webpage.errorMessage}
+					</p>
+					<a
+						href={webpage.url}
+						target="_blank"
+						rel="noreferrer"
+						className="text-[14px] underline"
+					>
+						{webpage.url}
+					</a>
+				</div>
+			)}
 			<button
 				type="button"
 				onClick={onRemove}
@@ -166,17 +181,33 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 					updateNodeDataContent(node, {
 						webpages,
 					});
-					const addedWebPage = await client.addWebPage({
-						webpage: newWebPage,
-						workspaceId: data.id,
-					});
-					webpages = [
-						...webpages.filter((webpage) => webpage.id !== addedWebPage.id),
-						addedWebPage,
-					];
-					updateNodeDataContent(node, {
-						webpages,
-					});
+					try {
+						const addedWebPage = await client.addWebPage({
+							webpage: newWebPage,
+							workspaceId: data.id,
+						});
+						webpages = [
+							...webpages.filter((webpage) => webpage.id !== addedWebPage.id),
+							addedWebPage,
+						];
+						updateNodeDataContent(node, {
+							webpages,
+						});
+					} catch (err) {
+						const failedWebPage: WebPage = {
+							id: newWebPage.id,
+							status: "failed",
+							url: newWebPage.url,
+							errorMessage: newWebPage.url,
+						};
+						webpages = [
+							...webpages.filter((webpage) => webpage.id !== failedWebPage.id),
+							failedWebPage,
+						];
+						updateNodeDataContent(node, {
+							webpages,
+						});
+					}
 				}),
 			);
 		},
