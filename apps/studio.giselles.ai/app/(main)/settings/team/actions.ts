@@ -300,21 +300,12 @@ export async function deleteTeamMember(formData: FormData) {
 			throw new Error("Invalid role");
 		}
 
-		// 1. Get current team and verify admin permission
+		// 1. Get current team and current user info
 		const currentTeam = await fetchCurrentTeam();
 		const currentUserRoleResult = await getCurrentUserRole();
-
-		if (
-			!currentUserRoleResult.success ||
-			currentUserRoleResult.data !== "admin"
-		) {
-			throw new Error("Only admin users can remove team members");
-		}
-
-		// 2. Get current user info to check if deleting self
 		const supabaseUser = await getUser();
-		const currentUser = await db
-			.select({ id: users.id })
+		const [currentUser] = await db
+			.select({ id: users.id, dbId: users.dbId })
 			.from(users)
 			.innerJoin(
 				supabaseUserMappings,
@@ -323,9 +314,17 @@ export async function deleteTeamMember(formData: FormData) {
 			.where(eq(supabaseUserMappings.supabaseUserId, supabaseUser.id))
 			.limit(1);
 
-		const isDeletingSelf = currentUser[0].id === userId;
+		const isDeletingSelf = currentUser.id === userId;
 
-		// 3. Get target user's dbId from users table
+		// Only admins can remove other members
+		if (
+			!isDeletingSelf &&
+			(!currentUserRoleResult.success || currentUserRoleResult.data !== "admin")
+		) {
+			throw new Error("Only admin users can remove team members");
+		}
+
+		// 2. Get target user's dbId from users table
 		const user = await db
 			.select({ dbId: users.dbId })
 			.from(users)
@@ -334,6 +333,16 @@ export async function deleteTeamMember(formData: FormData) {
 
 		if (user.length === 0) {
 			throw new Error("User not found");
+		}
+
+		// 3. Ensure the team will still have at least one member
+		const memberCount = await db
+			.select({ count: count() })
+			.from(teamMemberships)
+			.where(eq(teamMemberships.teamDbId, currentTeam.dbId));
+
+		if (memberCount[0].count === 1) {
+			throw new Error("Cannot remove the last member from the team");
 		}
 
 		// 4. Check if user is an admin and if they are the last admin
