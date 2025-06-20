@@ -1,5 +1,6 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
+
 const nextConfig: NextConfig = {
 	eslint: {
 		// Warning: This allows production builds to successfully complete even if
@@ -107,7 +108,7 @@ export default withSentryConfig(nextConfig, {
 	// tunnelRoute: "/monitoring",
 
 	// Hides source maps from generated client bundles
-	hideSourceMaps: true,
+	// hideSourceMaps: true,
 
 	// Automatically tree-shake Sentry logger statements to reduce bundle size
 	disableLogger: true,
