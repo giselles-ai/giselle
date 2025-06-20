@@ -108,6 +108,7 @@ export const agents = pgTable(
 			.notNull()
 			.references(() => teams.dbId, { onDelete: "cascade" }),
 		name: text("name"),
+		// TODO: DEPRECATED - graphUrl is legacy field, not used in new architecture, kept only for cleanup of existing data
 		graphUrl: text("graph_url"),
 		// TODO: add notNull constrain when new architecture released
 		workspaceId: text("workspace_id").$type<WorkspaceId>(),

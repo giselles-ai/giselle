@@ -1,8 +1,6 @@
 import { agents, db } from "@/drizzle";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
-import { putGraph } from "@giselles-ai/actions";
-import { initGraph } from "@giselles-ai/lib/utils";
 import { createId } from "@paralleldrive/cuid2";
 import { ExternalLink } from "lucide-react";
 import { redirect } from "next/navigation";
@@ -16,17 +14,15 @@ export default function Layout({
 }) {
 	async function createAgent() {
 		"use server";
-		const graph = initGraph();
 		const agentId = `agnt_${createId()}` as const;
-		const { url } = await putGraph(graph);
 		const user = await fetchCurrentUser();
 		const team = await fetchCurrentTeam();
 		const workspace = await giselleEngine.createWorkspace();
+
 		await db.insert(agents).values({
 			id: agentId,
 			teamDbId: team.dbId,
 			creatorDbId: user.dbId,
-			graphUrl: url,
 			workspaceId: workspace.id,
 		});
 		redirect(`/workspaces/${workspace.id}`);
