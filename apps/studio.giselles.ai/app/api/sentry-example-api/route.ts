@@ -12,4 +12,5 @@ export function GET() {
 	throw new SentryExampleAPIError(
 		"This error is raised on the backend called by the example page.",
 	);
+	return NextResponse.json({ error: "An error occurred" });
 }
