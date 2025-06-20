@@ -3,7 +3,7 @@
 
 ## Summary
 * 1059 MIT
-* 110 Apache 2.0
+* 108 Apache 2.0
 * 60 ISC
 * 34 New BSD
 * 17 Simplified BSD
@@ -1967,7 +1967,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-amqplib"></a>
-### @opentelemetry/instrumentation-amqplib v0.45.0
+### @opentelemetry/instrumentation-amqplib v0.46.1
 #### 
 
 ##### Paths
@@ -1978,7 +1978,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-connect"></a>
-### @opentelemetry/instrumentation-connect v0.42.0
+### @opentelemetry/instrumentation-connect v0.43.1
 #### 
 
 ##### Paths
@@ -1989,7 +1989,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-dataloader"></a>
-### @opentelemetry/instrumentation-dataloader v0.15.0
+### @opentelemetry/instrumentation-dataloader v0.16.1
 #### 
 
 ##### Paths
@@ -2000,18 +2000,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-express"></a>
-### @opentelemetry/instrumentation-express v0.46.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
-
-
-
-<a name="@opentelemetry/instrumentation-fastify"></a>
-### @opentelemetry/instrumentation-fastify v0.43.0
+### @opentelemetry/instrumentation-express v0.47.1
 #### 
 
 ##### Paths
@@ -2022,7 +2011,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-fs"></a>
-### @opentelemetry/instrumentation-fs v0.18.0
+### @opentelemetry/instrumentation-fs v0.19.1
 #### 
 
 ##### Paths
@@ -2033,7 +2022,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-generic-pool"></a>
-### @opentelemetry/instrumentation-generic-pool v0.42.0
+### @opentelemetry/instrumentation-generic-pool v0.43.1
 #### 
 
 ##### Paths
@@ -2044,7 +2033,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-graphql"></a>
-### @opentelemetry/instrumentation-graphql v0.46.0
+### @opentelemetry/instrumentation-graphql v0.47.1
 #### 
 
 ##### Paths
@@ -2055,7 +2044,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-hapi"></a>
-### @opentelemetry/instrumentation-hapi v0.44.0
+### @opentelemetry/instrumentation-hapi v0.45.2
 #### 
 
 ##### Paths
@@ -2066,7 +2055,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-http"></a>
-### @opentelemetry/instrumentation-http v0.56.0
+### @opentelemetry/instrumentation-http v0.57.2
 #### 
 
 ##### Paths
@@ -2077,7 +2066,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-ioredis"></a>
-### @opentelemetry/instrumentation-ioredis v0.46.0
+### @opentelemetry/instrumentation-ioredis v0.47.1
 #### 
 
 ##### Paths
@@ -2088,7 +2077,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-kafkajs"></a>
-### @opentelemetry/instrumentation-kafkajs v0.6.0
+### @opentelemetry/instrumentation-kafkajs v0.7.1
 #### 
 
 ##### Paths
@@ -2099,7 +2088,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-knex"></a>
-### @opentelemetry/instrumentation-knex v0.43.0
+### @opentelemetry/instrumentation-knex v0.44.1
 #### 
 
 ##### Paths
@@ -2110,7 +2099,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-koa"></a>
-### @opentelemetry/instrumentation-koa v0.46.0
+### @opentelemetry/instrumentation-koa v0.47.1
 #### 
 
 ##### Paths
@@ -2121,7 +2110,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-lru-memoizer"></a>
-### @opentelemetry/instrumentation-lru-memoizer v0.43.0
+### @opentelemetry/instrumentation-lru-memoizer v0.44.1
 #### 
 
 ##### Paths
@@ -2132,7 +2121,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-mongodb"></a>
-### @opentelemetry/instrumentation-mongodb v0.50.0
+### @opentelemetry/instrumentation-mongodb v0.52.0
 #### 
 
 ##### Paths
@@ -2143,7 +2132,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-mongoose"></a>
-### @opentelemetry/instrumentation-mongoose v0.45.0
+### @opentelemetry/instrumentation-mongoose v0.46.1
 #### 
 
 ##### Paths
@@ -2154,7 +2143,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-mysql"></a>
-### @opentelemetry/instrumentation-mysql v0.44.0
+### @opentelemetry/instrumentation-mysql v0.45.1
 #### 
 
 ##### Paths
@@ -2165,18 +2154,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-mysql2"></a>
-### @opentelemetry/instrumentation-mysql2 v0.44.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
-
-
-
-<a name="@opentelemetry/instrumentation-nestjs-core"></a>
-### @opentelemetry/instrumentation-nestjs-core v0.43.0
+### @opentelemetry/instrumentation-mysql2 v0.45.2
 #### 
 
 ##### Paths
@@ -2187,7 +2165,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-pg"></a>
-### @opentelemetry/instrumentation-pg v0.49.0
+### @opentelemetry/instrumentation-pg v0.51.1
 #### 
 
 ##### Paths
@@ -2198,7 +2176,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-redis-4"></a>
-### @opentelemetry/instrumentation-redis-4 v0.45.0
+### @opentelemetry/instrumentation-redis-4 v0.46.1
 #### 
 
 ##### Paths
@@ -2209,7 +2187,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-tedious"></a>
-### @opentelemetry/instrumentation-tedious v0.17.0
+### @opentelemetry/instrumentation-tedious v0.18.1
 #### 
 
 ##### Paths
@@ -2220,7 +2198,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-undici"></a>
-### @opentelemetry/instrumentation-undici v0.9.0
+### @opentelemetry/instrumentation-undici v0.10.1
 #### 
 
 ##### Paths
@@ -2473,7 +2451,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@prisma/instrumentation"></a>
-### @prisma/instrumentation v5.22.0
+### @prisma/instrumentation v6.8.2
 #### 
 
 ##### Paths
@@ -3287,7 +3265,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry-internal/browser-utils"></a>
-### @sentry-internal/browser-utils v8.49.0
+### @sentry-internal/browser-utils v9.30.0
 #### 
 
 ##### Paths
@@ -3298,7 +3276,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry-internal/feedback"></a>
-### @sentry-internal/feedback v8.49.0
+### @sentry-internal/feedback v9.30.0
 #### 
 
 ##### Paths
@@ -3309,7 +3287,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry-internal/replay"></a>
-### @sentry-internal/replay v8.49.0
+### @sentry-internal/replay v9.30.0
 #### 
 
 ##### Paths
@@ -3320,7 +3298,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry-internal/replay-canvas"></a>
-### @sentry-internal/replay-canvas v8.49.0
+### @sentry-internal/replay-canvas v9.30.0
 #### 
 
 ##### Paths
@@ -3342,7 +3320,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/babel-plugin-component-annotate"></a>
-### @sentry/babel-plugin-component-annotate v2.22.7
+### @sentry/babel-plugin-component-annotate v3.5.0
 #### 
 
 ##### Paths
@@ -3353,7 +3331,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/browser"></a>
-### @sentry/browser v8.49.0
+### @sentry/browser v9.30.0
 #### 
 
 ##### Paths
@@ -3364,7 +3342,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/bundler-plugin-core"></a>
-### @sentry/bundler-plugin-core v2.22.7
+### @sentry/bundler-plugin-core v3.5.0
 #### 
 
 ##### Paths
@@ -3386,7 +3364,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/cli-linux-x64"></a>
-### @sentry/cli-linux-x64 v2.39.1
+### @sentry/cli-linux-x64 v2.42.2
 #### 
 
 ##### Paths
@@ -3419,7 +3397,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/nextjs"></a>
-### @sentry/nextjs v8.49.0
+### @sentry/nextjs v9.30.0
 #### 
 
 ##### Paths
@@ -3441,7 +3419,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/opentelemetry"></a>
-### @sentry/opentelemetry v8.49.0
+### @sentry/opentelemetry v9.30.0
 #### 
 
 ##### Paths
@@ -3452,7 +3430,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/react"></a>
-### @sentry/react v8.49.0
+### @sentry/react v9.30.0
 #### 
 
 ##### Paths
@@ -3485,7 +3463,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/vercel-edge"></a>
-### @sentry/vercel-edge v8.49.0
+### @sentry/vercel-edge v9.30.0
 #### 
 
 ##### Paths
@@ -3496,7 +3474,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/webpack-plugin"></a>
-### @sentry/webpack-plugin v2.22.7
+### @sentry/webpack-plugin v3.5.0
 #### 
 
 ##### Paths
@@ -4068,7 +4046,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@types/connect"></a>
-### @types/connect v3.4.36
+### @types/connect v3.4.38
 #### 
 
 ##### Paths
@@ -7350,7 +7328,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fdir"></a>
-### fdir v6.4.3
+### fdir v6.4.4
 #### 
 
 ##### Paths
@@ -12113,7 +12091,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="rollup"></a>
-### rollup v3.29.5
+### rollup v4.34.4
 #### 
 
 ##### Paths
