@@ -62,7 +62,7 @@
 		"@radix-ui/react-toast": "1.2.2",
 		"@radix-ui/react-toggle-group": "1.1.0",
 		"@radix-ui/react-tooltip": "1.1.4",
-		"@sentry/nextjs": "8.49.0",
+		"@sentry/nextjs": "9.30.0",
 		"@sentry/wizard": "3.38.0",
 		"@supabase/auth-js": "2.70.0",
 		"@supabase/ssr": "0.6.1",
@@ -140,5 +140,7 @@
 		"vite-tsconfig-paths": "5.1.4",
 		"vitest": "catalog:"
 	},
-	"trustedDependencies": ["@sentry/cli"]
+	"trustedDependencies": [
+		"@sentry/cli"
+	]
 }
