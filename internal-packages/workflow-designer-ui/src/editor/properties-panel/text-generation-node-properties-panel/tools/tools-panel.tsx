@@ -181,7 +181,10 @@ function GitHubToolSetting({ node }: { node: TextGenerationNode }) {
 								</a>
 							</div>
 							<input
-								type="text"
+								type="password"
+								autoComplete="off"
+								data-1p-ignore
+								data-lpignore="true"
 								id="pat"
 								name="value"
 								className={clsx(
