@@ -22,10 +22,7 @@ export async function ingestGitHubBlobs(params: {
 		params.teamDbId,
 	);
 
-	const processedPaths = await loadProcessedPaths(
-		repositoryIndexDbId,
-		params.source.commitSha,
-	);
+	const processedPaths = await loadProcessedPaths(repositoryIndexDbId);
 	const githubLoader = createGitHubBlobLoader(params.octokitClient, {
 		maxBlobSize: 1 * 1024 * 1024,
 		shouldSkip: (path) => processedPaths.has(path),
@@ -81,19 +78,20 @@ async function getRepositoryIndexDbId(
 
 /**
  * Load processed file paths into memory for fast lookup
+ *
+ * Note: We don't filter by commitSha because:
+ * - Each repositoryIndexDbId contains only one commit's data at a time
+ * - The unique constraint on (repositoryIndexDbId, path, chunkIndex) prevents duplicates
+ * - For continuation purposes, we want to skip all previously processed files regardless of commitSha
  */
 async function loadProcessedPaths(
 	repositoryIndexDbId: number,
-	commitSha: string,
 ): Promise<Set<string>> {
 	const result = await db
 		.selectDistinct({ path: githubRepositoryEmbeddings.path })
 		.from(githubRepositoryEmbeddings)
 		.where(
-			and(
-				eq(githubRepositoryEmbeddings.repositoryIndexDbId, repositoryIndexDbId),
-				eq(githubRepositoryEmbeddings.commitSha, commitSha),
-			),
+			eq(githubRepositoryEmbeddings.repositoryIndexDbId, repositoryIndexDbId),
 		);
 
 	return new Set(result.map((r) => r.path));
