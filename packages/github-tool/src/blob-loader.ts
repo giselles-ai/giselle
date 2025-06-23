@@ -16,9 +16,14 @@ type GitHubBlobLoaderParams = {
 	commitSha: string;
 };
 
+export type GitHubBlobLoaderOptions = {
+	maxBlobSize?: number;
+	shouldSkip?: (path: string) => boolean | Promise<boolean>;
+};
+
 export function createGitHubBlobLoader(
 	octokit: Octokit,
-	options?: { maxBlobSize?: number },
+	options?: GitHubBlobLoaderOptions,
 ): DocumentLoader<GitHubBlobMetadata, GitHubBlobLoaderParams> {
 	const maxBlobSize = options?.maxBlobSize ?? 1024 * 1024; // 1MB default
 
@@ -41,6 +46,12 @@ export function createGitHubBlobLoader(
 				console.warn(
 					`Blob size is too large: ${size} bytes, skipping: ${path}`,
 				);
+				continue;
+			}
+
+			// Check if this file should be skipped
+			if (options?.shouldSkip && (await options.shouldSkip(path))) {
+				console.log(`Skipping already processed file: ${path}`);
 				continue;
 			}
 

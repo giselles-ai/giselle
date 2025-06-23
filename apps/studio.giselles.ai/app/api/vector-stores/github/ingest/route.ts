@@ -18,6 +18,10 @@ export async function GET(request: NextRequest) {
 		});
 	}
 
+	// DEBUG: Get debug commit SHA from URL parameters
+	const searchParams = request.nextUrl.searchParams;
+	const debugCommitSha = searchParams.get("commitSha");
+
 	const targetGitHubRepositories = await fetchTargetGitHubRepositories();
 
 	for (const targetGitHubRepository of targetGitHubRepositories) {
@@ -29,11 +33,21 @@ export async function GET(request: NextRequest) {
 
 			const octokitClient = buildOctokit(installationId);
 			const commit = await fetchDefaultBranchHead(octokitClient, owner, repo);
+
+			// DEBUG: Use debug commit SHA if provided, otherwise use latest commit
+			const commitSha = debugCommitSha ?? commit.sha;
+
 			const source = {
 				owner,
 				repo,
-				commitSha: commit.sha,
+				commitSha,
 			};
+
+			console.log(
+				`Starting ingestion for ${owner}/${repo} at commit ${commitSha}${
+					debugCommitSha ? " (debug mode)" : ""
+				}`,
+			);
 
 			await ingestGitHubBlobs({
 				octokitClient,
@@ -41,7 +55,7 @@ export async function GET(request: NextRequest) {
 				teamDbId,
 			});
 
-			await updateRepositoryStatus(dbId, "completed", commit.sha);
+			await updateRepositoryStatus(dbId, "completed", commitSha);
 		} catch (error) {
 			console.error(`Failed to ingest ${owner}/${repo}:`, error);
 			captureException(error, {
