@@ -5,4 +5,5 @@ export type TargetGitHubRepository = {
 	teamDbId: number;
 	installationId: number;
 	lastIngestedCommitSha: string | null;
+	currentIngestionCommitSha: string | null;
 };

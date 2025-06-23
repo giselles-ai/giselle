@@ -1,4 +1,8 @@
-import { db, githubRepositoryIndex } from "@/drizzle";
+import {
+	type GitHubRepositoryIndexStatus,
+	db,
+	githubRepositoryIndex,
+} from "@/drizzle";
 import { octokit } from "@giselle-sdk/github-tool";
 import { eq, or } from "drizzle-orm";
 import type { TargetGitHubRepository } from "./types";
@@ -31,6 +35,8 @@ export async function fetchTargetGitHubRepositories(): Promise<
 			repo: githubRepositoryIndex.repo,
 			installationId: githubRepositoryIndex.installationId,
 			lastIngestedCommitSha: githubRepositoryIndex.lastIngestedCommitSha,
+			currentIngestionCommitSha:
+				githubRepositoryIndex.currentIngestionCommitSha,
 			teamDbId: githubRepositoryIndex.teamDbId,
 		})
 		.from(githubRepositoryIndex)
@@ -47,6 +53,7 @@ export async function fetchTargetGitHubRepositories(): Promise<
 		repo: record.repo,
 		installationId: record.installationId,
 		lastIngestedCommitSha: record.lastIngestedCommitSha,
+		currentIngestionCommitSha: record.currentIngestionCommitSha,
 		teamDbId: record.teamDbId,
 	}));
 }
@@ -56,14 +63,26 @@ export async function fetchTargetGitHubRepositories(): Promise<
  */
 export async function updateRepositoryStatus(
 	dbId: number,
-	status: "idle" | "running" | "failed" | "completed",
-	commitSha?: string,
+	status: Exclude<GitHubRepositoryIndexStatus, "idle">,
+	commitSha: string,
 ): Promise<void> {
+	let currentIngestionCommitSha: string | null = null;
+	let lastIngestedCommitSha: string | null = null;
+
+	if (status === "completed") {
+		currentIngestionCommitSha = null;
+		lastIngestedCommitSha = commitSha;
+	} else {
+		currentIngestionCommitSha = commitSha;
+		lastIngestedCommitSha = null;
+	}
+
 	await db
 		.update(githubRepositoryIndex)
 		.set({
 			status,
-			lastIngestedCommitSha: commitSha || null,
+			lastIngestedCommitSha,
+			currentIngestionCommitSha,
 		})
 		.where(eq(githubRepositoryIndex.dbId, dbId));
 }
