@@ -1,6 +1,6 @@
 import { db, githubRepositoryIndex } from "@/drizzle";
 import { octokit } from "@giselle-sdk/github-tool";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import type { TargetGitHubRepository } from "./types";
 
 export function buildOctokit(installationId: number) {
@@ -34,7 +34,12 @@ export async function fetchTargetGitHubRepositories(): Promise<
 			teamDbId: githubRepositoryIndex.teamDbId,
 		})
 		.from(githubRepositoryIndex)
-		.where(eq(githubRepositoryIndex.status, "idle"));
+		.where(
+			or(
+				eq(githubRepositoryIndex.status, "idle"),
+				eq(githubRepositoryIndex.status, "running"),
+			),
+		);
 
 	return records.map((record) => ({
 		dbId: record.dbId,
