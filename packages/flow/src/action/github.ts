@@ -47,7 +47,7 @@ export const githubReplyPullRequestReviewCommentAction = {
 	provider,
 	command: {
 		id: "github.reply.pullRequestReviewComment",
-		label: "Reply Pull Request Review Comment",
+		label: "Reply to Pull Request Review Comment",
 		parameters: z.object({
 			pullNumber: z.coerce.number(),
 			commentId: z.coerce.number(),

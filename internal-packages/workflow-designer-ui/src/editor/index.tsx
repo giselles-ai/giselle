@@ -44,7 +44,9 @@ import { KeyboardShortcuts } from "./keyboard-shortcuts";
 import { LeftIconBar } from "./left-icon-bar";
 import { type GiselleWorkflowDesignerNode, nodeTypes } from "./node";
 import { PropertiesPanel } from "./properties-panel";
+import { RunButton } from "./run-button";
 import { RunHistoryPlaceholder } from "./run-history-placeholder";
+import { RunHistoryTable } from "./run-history/run-history-table";
 import { SecretTable } from "./secret/secret-table";
 import { SideMenu } from "./side-menu";
 import {

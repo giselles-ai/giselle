@@ -24,9 +24,16 @@ const FetchedWebPage = WebPageBase.extend({
 });
 export type FetchedWebPage = z.infer<typeof FetchedWebPage>;
 
+const FailedWebPage = WebPageBase.extend({
+	status: z.literal("failed"),
+	errorMessage: z.string(),
+});
+export type FailedWebPage = z.infer<typeof FailedWebPage>;
+
 export const WebPage = z.discriminatedUnion("status", [
 	FetchingWebPage,
 	FetchedWebPage,
+	FailedWebPage,
 ]);
 export type WebPage = z.infer<typeof WebPage>;
 

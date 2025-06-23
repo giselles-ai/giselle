@@ -1,9 +1,9 @@
 {
-	"extends": "../../tools/tsconfig/node.json",
+	"extends": "../../tools/tsconfig/ts-library.json",
 	"compilerOptions": {
 		"outDir": "./dist",
 		"rootDir": "./src"
 	},
-	"include": ["src/**/*.ts"],
-	"exclude": ["node_modules", "dist"]
+	"include": ["src/**/*"],
+	"exclude": ["dist", "node_modules", "**/*.test.ts"]
 }

@@ -13,10 +13,10 @@ export function GitHubTriggerConfiguredView({
 	const { isLoading, data, enableFlowTrigger, disableFlowTrigger } =
 		useGitHubTrigger(flowTriggerId);
 	if (isLoading) {
-		return "loading...";
+		return "Loading...";
 	}
 	if (data === undefined) {
-		return "no data";
+		return "No Data";
 	}
 
 	return (
@@ -27,18 +27,18 @@ export function GitHubTriggerConfiguredView({
 					<div className="flex gap-[6px]">
 						{data.trigger.enable ? (
 							<>
-								<span>Enable</span>
+								<span>Enabled</span>
 								<button
 									type="button"
 									onClick={disableFlowTrigger}
 									className="text-blue-900 cursor-pointer outline-none hover:underline"
 								>
-									→ Disable Trigger
+									→ Disable
 								</button>
 							</>
 						) : (
 							<>
-								<span>Disable</span>
+								<span>Disabled</span>
 								<button
 									type="button"
 									onClick={enableFlowTrigger}

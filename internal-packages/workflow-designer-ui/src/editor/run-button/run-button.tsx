@@ -66,15 +66,11 @@ export function RunButton() {
 
 	const startOperationFlow = useCallback(
 		async (startingNode: OperationNode) => {
-			const flow = buildWorkflowFromNode(
-				startingNode.id,
-				data.nodes,
-				data.connections,
-			);
+			const flow = buildWorkflowFromNode(startingNode, data);
 
 			await startFlow(flow, [], {});
 		},
-		[startFlow, data.nodes, data.connections],
+		[startFlow, data],
 	);
 
 	if (startingNodes.length === 0) {

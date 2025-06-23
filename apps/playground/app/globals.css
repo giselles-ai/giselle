@@ -98,6 +98,7 @@
 
 	--font-accent: var(--font-dm-sans);
 	--font-sans: var(--font-dm-sans);
+	--font-mono: var(--font-dm-mono);
 }
 
 @layer components {

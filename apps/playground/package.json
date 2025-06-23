@@ -25,6 +25,7 @@
 		"@xyflow/react": "catalog:",
 		"geist": "1.3.1",
 		"giselle-sdk": "workspace:^",
+		"happy-dom": "catalog:",
 		"jsdom": "catalog:",
 		"lucide-react": "catalog:",
 		"next": "catalog:",

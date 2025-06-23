@@ -28,6 +28,8 @@ export function SimpleDomainFilter({
 	// Calculate total domains and check if max is reached
 	const totalDomains = allowList.length + denyList.length;
 	const isMaxReached = totalDomains >= MAX_DOMAINS;
+	const getMaxReachedMessage = () =>
+		`You can add up to ${MAX_DOMAINS} domains only (combined Allow and Deny lists).`;
 
 	// Set initial data
 	useEffect(() => {
@@ -48,7 +50,6 @@ export function SimpleDomainFilter({
 
 	// Handle Allow list changes
 	const handleAllowListChange = (newTags: string[]) => {
-		// Check if adding would exceed limit
 		const totalAfterChange = newTags.length + denyList.length;
 		if (totalAfterChange > MAX_DOMAINS) {
 			return; // Don't allow adding beyond limit
@@ -59,7 +60,6 @@ export function SimpleDomainFilter({
 
 	// Handle Deny list changes
 	const handleDenyListChange = (newTags: string[]) => {
-		// Check if adding would exceed limit
 		const totalAfterChange = allowList.length + newTags.length;
 		if (totalAfterChange > MAX_DOMAINS) {
 			return; // Don't allow adding beyond limit
@@ -78,15 +78,60 @@ export function SimpleDomainFilter({
 		onSearchDomainFilterChange(combined);
 	};
 
-	// Domain name validation function
-	const validateDomainName = (input: string) => {
+	// Domain name validation functions for the allow and deny lists
+	const validateAllowDomain = (input: string) => {
+		if (isMaxReached) {
+			return {
+				isValid: false,
+				message: getMaxReachedMessage(),
+			};
+		}
 		if (!isValidDomain(input)) {
 			return {
 				isValid: false,
 				message: `'${input}' is not a valid domain name (e.g., example.com)`,
 			};
 		}
+		if (allowList.includes(input)) {
+			return {
+				isValid: false,
+				message: "This domain is already in the Allow list.",
+			};
+		}
+		if (denyList.includes(input)) {
+			return {
+				isValid: false,
+				message: "This domain is already in the Deny list.",
+			};
+		}
+		return { isValid: true };
+	};
 
+	const validateDenyDomain = (input: string) => {
+		if (isMaxReached) {
+			return {
+				isValid: false,
+				message: getMaxReachedMessage(),
+			};
+		}
+		if (!isValidDomain(input)) {
+			return {
+				isValid: false,
+				message: `'${input}' is not a valid domain name (e.g., example.com)`,
+			};
+		}
+		if (denyList.includes(input)) {
+			return {
+				isValid: false,
+				message: "This domain is already in the Deny list.",
+			};
+		}
+		if (allowList.includes(input)) {
+			return {
+				isValid: false,
+				message: "This domain is already in the Allow list.",
+			};
+		}
 		return { isValid: true };
 	};
 
@@ -103,8 +148,15 @@ export function SimpleDomainFilter({
 
 			{/* Display domain count */}
 			<div className="mb-4 text-[13px] text-gray-400">
-				Total domains: {totalDomains}/{MAX_DOMAINS}
+				Total domains: {totalDomains}/{MAX_DOMAINS} (combined Allow and Deny
+				lists)
 			</div>
+
+			{isMaxReached && (
+				<div className="mb-4 text-red-700 text-[12px]">
+					{getMaxReachedMessage()}
+				</div>
+			)}
 
 			<div className="space-y-4">
 				{/* Allow list */}
@@ -113,7 +165,7 @@ export function SimpleDomainFilter({
 					onTagsChange={handleAllowListChange}
 					label="Allow List"
 					placeholder="Enter domain to include (e.g., example.com)"
-					validateInput={validateDomainName}
+					validateInput={validateAllowDomain}
 					emptyStateText="No domains added yet"
 				/>
 
@@ -123,7 +175,7 @@ export function SimpleDomainFilter({
 					onTagsChange={handleDenyListChange}
 					label="Deny List"
 					placeholder="Enter domain to exclude"
-					validateInput={validateDomainName}
+					validateInput={validateDenyDomain}
 					emptyStateText="No domains added yet"
 				/>
 			</div>

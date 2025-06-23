@@ -19,13 +19,18 @@ import type { DataSourceProviderObject } from "./data-source/types/object";
 import { copyFile, getFileText, removeFile, uploadFile } from "./files";
 import {
 	type ConfigureTriggerInput,
+	type PatchDelta,
 	configureTrigger,
+	createRun,
 	deleteTrigger,
 	getTrigger,
+	getWorkspaceFlowRuns,
+	patchRun,
 	resolveTrigger,
 	runFlow,
 	setTrigger,
 } from "./flows";
+import type { FlowRunId } from "./flows/run/object";
 import {
 	type TelemetrySettings,
 	cancelGeneration,
@@ -56,6 +61,7 @@ import {
 export * from "./types";
 export * from "./vault";
 export * from "./vector-store";
+export { FlowRunId } from "./flows";
 
 export function GiselleEngine(config: GiselleEngineConfig) {
 	const context: GiselleEngineContext = {
@@ -65,8 +71,8 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		callbacks: config.callbacks,
 	};
 	return {
-		copyWorkspace: async (workspaceId: WorkspaceId) => {
-			return await copyWorkspace({ context, workspaceId });
+		copyWorkspace: async (workspaceId: WorkspaceId, name?: string) => {
+			return await copyWorkspace({ context, workspaceId, name });
 		},
 		createWorkspace: async () => {
 			return await createWorkspace({ context });
@@ -227,6 +233,24 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			workspaceId: WorkspaceId;
 		}) {
 			return await getWorkspaceDataSources({ ...args, context });
+		},
+		createRun(args: {
+			workspaceId: WorkspaceId;
+			jobsCount: number;
+			trigger: string;
+		}) {
+			return createRun({ ...args, context });
+		},
+		patchRun(args: {
+			flowRunId: FlowRunId;
+			delta: PatchDelta;
+		}) {
+			return patchRun({ ...args, context });
+		},
+		getWorkspaceFlowRuns(args: {
+			workspaceId: WorkspaceId;
+		}) {
+			return getWorkspaceFlowRuns({ ...args, context });
 		},
 	};
 }

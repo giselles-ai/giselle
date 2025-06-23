@@ -5,23 +5,57 @@ import {
 	githubRepositoryIndex,
 	teams,
 } from "@/drizzle";
-import type {
-	GitHubQueryContext,
-	GitHubVectorStoreQueryService,
-} from "@giselle-sdk/giselle-engine";
-import { type DatabaseConfig, createQueryService } from "@giselle-sdk/rag2";
+import type { GitHubQueryContext } from "@giselle-sdk/giselle-engine";
+import {
+	type DatabaseConfig,
+	createColumnMapping,
+	createPostgresChunkStore,
+	createPostgresQueryService,
+} from "@giselle-sdk/rag";
 import { and, eq, getTableName } from "drizzle-orm";
 import { z } from "zod/v4";
 
 /**
- * Create PostgreSQL connection config from environment
+ * GitHub chunk metadata schema and type for RAG storage
  */
+export const githubChunkMetadataSchema = z.object({
+	repositoryIndexDbId: z.number(),
+	commitSha: z.string(),
+	fileSha: z.string(),
+	path: z.string(),
+	nodeId: z.string(),
+});
+
+export type GitHubChunkMetadata = z.infer<typeof githubChunkMetadataSchema>;
+
 function createDatabaseConfig(): DatabaseConfig {
 	const postgresUrl = process.env.POSTGRES_URL;
 	if (!postgresUrl) {
 		throw new Error("POSTGRES_URL environment variable is required");
 	}
 	return { connectionString: postgresUrl };
+}
+
+/**
+ * GitHub Blob chunk store factory - for ingestion pipeline
+ */
+export function createGitHubBlobChunkStore(repositoryIndexDbId: number) {
+	const columnMapping = createColumnMapping({
+		metadataSchema: githubChunkMetadataSchema,
+		requiredColumnOverrides: {
+			documentKey: "path",
+		},
+	});
+
+	return createPostgresChunkStore({
+		database: createDatabaseConfig(),
+		tableName: getTableName(githubRepositoryEmbeddings),
+		columnMapping,
+		metadataSchema: githubChunkMetadataSchema,
+		scope: {
+			repository_index_db_id: repositoryIndexDbId,
+		},
+	});
 }
 
 /**
@@ -86,33 +120,16 @@ const githubQueryMetadataSchema = z.object({
 	path: z.string(),
 	nodeId: z.string(),
 });
-type GitHubQueryMetadata = z.infer<typeof githubQueryMetadataSchema>;
-
-/**
- * GitHub query service factory - for RAG queries
- */
-export function createGitHubQueryService(): GitHubVectorStoreQueryService<GitHubQueryMetadata> {
-	return createQueryService<GitHubQueryContext, GitHubQueryMetadata>({
-		database: createDatabaseConfig(),
-		tableName: getTableName(githubRepositoryEmbeddings),
-		metadataSchema: githubQueryMetadataSchema,
-		contextToFilter: resolveGitHubEmbeddingFilter,
-		requiredColumnOverrides: {
-			documentKey: "path",
-			// (default)
-			// chunkContent: "chunk_content",
-			// chunkIndex: "chunk_index",
-			// embedding: "embedding"
-		},
-		// Metadata fields will auto-convert from camelCase to snake_case:
-		// commitSha -> commit_sha
-		// fileSha -> file_sha
-		// path -> path
-		// nodeId -> node_id
-	});
-}
 
 /**
  * Pre-configured GitHub query service instance
  */
-export const gitHubQueryService = createGitHubQueryService();
+export const gitHubQueryService = createPostgresQueryService({
+	database: createDatabaseConfig(),
+	tableName: getTableName(githubRepositoryEmbeddings),
+	metadataSchema: githubQueryMetadataSchema,
+	contextToFilter: resolveGitHubEmbeddingFilter,
+	requiredColumnOverrides: {
+		documentKey: "path",
+	},
+});

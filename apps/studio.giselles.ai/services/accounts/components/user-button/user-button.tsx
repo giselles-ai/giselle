@@ -29,7 +29,7 @@ export const UserButton: FC = async () => {
 
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger className="cursor-pointer">
+			<DropdownMenuTrigger className="cursor-pointer" aria-label="Profile menu">
 				<AvatarImage
 					className="w-9 h-9 rounded-full"
 					avatarUrl={avatarUrl}
@@ -56,6 +56,7 @@ export const UserButton: FC = async () => {
 						<Link
 							href="/settings/account"
 							className="block px-2 py-1.5 w-full text-white-400 font-medium text-[14px] leading-[14px] font-geist"
+							aria-label="Account settings"
 						>
 							Account Settings
 						</Link>

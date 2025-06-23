@@ -59,7 +59,6 @@ export async function useGenerationExecutor<T>(args: {
 		...args.generation,
 		status: "running",
 		messages: [],
-		queuedAt: args.generation.queuedAt ?? Date.now(),
 		startedAt: Date.now(),
 	};
 	const setGeneration = async (generation: Generation) => {

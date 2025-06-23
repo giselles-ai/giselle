@@ -61,7 +61,7 @@ export function GitHubActionConfiguredView({
 				<p className="text-[14px] py-[1.5px] text-white-400">Repository</p>
 				<div className="px-[12px] pt-[6px]">
 					{isLoading || data === undefined ? (
-						<p>loading...</p>
+						<p>Loading...</p>
 					) : (
 						<GitHubRepositoryBlock
 							owner={data.fullname.owner}

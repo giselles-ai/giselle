@@ -1,6 +1,5 @@
 import {
 	type Connection,
-	type ConnectionId,
 	type Job,
 	JobId,
 	Node,
@@ -10,158 +9,6 @@ import {
 	type WorkflowId,
 	isOperationNode,
 } from "@giselle-sdk/data-type";
-
-type ConnectedNodeIdMap = Map<NodeId, Set<NodeId>>;
-
-/**
- * Creates a map of node IDs to their connected node IDs.
- * This maintains a bidirectional mapping of connections between nodes.
- */
-export function createConnectedNodeIdMap(
-	connectionSet: Set<Connection>,
-	nodeIdSet: Set<NodeId>,
-) {
-	const connectionMap: ConnectedNodeIdMap = new Map();
-	for (const connection of connectionSet) {
-		if (
-			!nodeIdSet.has(connection.outputNode.id) ||
-			!nodeIdSet.has(connection.inputNode.id)
-		) {
-			continue;
-		}
-		if (!connectionMap.has(connection.outputNode.id)) {
-			connectionMap.set(connection.outputNode.id, new Set());
-		}
-		const sourceSet = connectionMap.get(connection.outputNode.id);
-		if (sourceSet) {
-			sourceSet.add(connection.inputNode.id);
-		}
-
-		if (!connectionMap.has(connection.inputNode.id)) {
-			connectionMap.set(connection.inputNode.id, new Set());
-		}
-		const targetSet = connectionMap.get(connection.inputNode.id);
-		if (targetSet) {
-			targetSet.add(connection.outputNode.id);
-		}
-	}
-	return connectionMap;
-}
-
-/**
- * Creates a map of node IDs to their downstream node IDs (output direction only).
- */
-export function createDownstreamNodeIdMap(
-	connectionSet: Set<Connection>,
-	nodeIdSet: Set<NodeId>,
-) {
-	const downstreamMap = new Map<NodeId, Set<NodeId>>();
-	for (const connection of connectionSet) {
-		if (
-			!nodeIdSet.has(connection.outputNode.id) ||
-			!nodeIdSet.has(connection.inputNode.id)
-		) {
-			continue;
-		}
-		if (!downstreamMap.has(connection.outputNode.id)) {
-			downstreamMap.set(connection.outputNode.id, new Set());
-		}
-		const downstreamSet = downstreamMap.get(connection.outputNode.id);
-		if (downstreamSet) {
-			downstreamSet.add(connection.inputNode.id);
-		}
-	}
-	return downstreamMap;
-}
-
-/**
- * Finds all downstream nodes from a starting node using breadth-first search.
- * Only follows output direction connections.
- * Returns a map of node IDs to their node objects.
- */
-export function findDownstreamNodeMap(
-	startNodeId: NodeId,
-	nodeMap: Map<NodeId, NodeLike>,
-	downstreamMap: Map<NodeId, Set<NodeId>>,
-): Map<NodeId, NodeLike> {
-	const connectedNodeMap = new Map<NodeId, NodeLike>();
-	const stack: NodeId[] = [startNodeId];
-
-	while (stack.length > 0) {
-		const currentNodeId = stack.pop() || startNodeId;
-		if (connectedNodeMap.has(currentNodeId)) continue;
-		const currentNode = nodeMap.get(currentNodeId);
-		if (currentNode === undefined) continue;
-
-		connectedNodeMap.set(currentNodeId, currentNode);
-
-		const downstreamNodeIdSet = downstreamMap.get(currentNodeId);
-		if (downstreamNodeIdSet) {
-			for (const downstreamNodeId of downstreamNodeIdSet) {
-				if (!connectedNodeMap.has(downstreamNodeId)) {
-					stack.push(downstreamNodeId);
-				}
-			}
-		}
-	}
-
-	return connectedNodeMap;
-}
-
-/**
- * Finds all nodes connected to a starting node using breadth-first search.
- * Returns a map of node IDs to their node objects.
- */
-export function findConnectedNodeMap(
-	startNodeId: NodeId,
-	nodeMap: Map<NodeId, NodeLike>,
-	connectionMap: ConnectedNodeIdMap,
-): Map<NodeId, NodeLike> {
-	const connectedNodeMap = new Map<NodeId, NodeLike>();
-	const stack: NodeId[] = [startNodeId];
-
-	while (stack.length > 0) {
-		const currentNodeId = stack.pop() || startNodeId;
-		if (connectedNodeMap.has(currentNodeId)) continue;
-		const currentNode = nodeMap.get(currentNodeId);
-		if (currentNode === undefined) continue;
-
-		connectedNodeMap.set(currentNodeId, currentNode);
-
-		const connectedNodeIdSet = connectionMap.get(currentNodeId);
-		if (connectedNodeIdSet) {
-			for (const connectedNodeId of connectedNodeIdSet) {
-				if (!connectedNodeMap.has(connectedNodeId)) {
-					stack.push(connectedNodeId);
-				}
-			}
-		}
-	}
-
-	return connectedNodeMap;
-}
-
-/**
- * Finds all connections between a set of connected nodes.
- * Returns a map of connection IDs to their connection objects.
- */
-export function findConnectedConnectionMap(
-	connectedNodeIdSet: Set<NodeId>,
-	allConnectionSet: Set<Connection>,
-) {
-	const connectedConnectionMap = new Map<ConnectionId, Connection>();
-
-	for (const connection of allConnectionSet) {
-		if (
-			connectedNodeIdSet.has(connection.outputNode.id) &&
-			connectedNodeIdSet.has(connection.inputNode.id)
-		) {
-			connectedConnectionMap.set(connection.id, connection);
-		}
-	}
-
-	return connectedConnectionMap;
-}
 
 /**
  * Converts a directed graph into a sequence of jobs with steps based on topological sorting.
@@ -174,13 +21,16 @@ export function findConnectedConnectionMap(
  * @param nodeSet The set of nodes in the workflow
  * @param connectionSet The set of connections between nodes
  * @param workflowId The ID of the workflow
- * @returns Map of job IDs to job objects
+ * @returns Array of jobs for the workflow
  */
-export function createJobMap(
-	nodeSet: Set<NodeLike>,
-	connectionSet: Set<Connection>,
+export function buildJobList(
+	nodes: NodeLike[],
+	connections: Connection[],
 	workflowId: WorkflowId,
 ) {
+	const nodeSet = new Set(nodes);
+	const connectionSet = new Set(connections);
+
 	/**
 	 * Calculates the number of incoming edges for each node.
 	 * Handles duplicate connections between the same nodes.
@@ -188,25 +38,25 @@ export function createJobMap(
 	const calculateInDegrees = (
 		nodeIdSet: Set<NodeId>,
 		connectionSet: Set<Connection>,
-	): Map<string, number> => {
-		const inDegrees = new Map<NodeId, number>();
-		const processedNodeIdSet = new Map<NodeId, Set<NodeId>>();
+	): Record<NodeId, number> => {
+		const inDegrees: Record<NodeId, number> = {};
+		const processedNodeIdRecord: Record<NodeId, Set<NodeId>> = {};
 
 		for (const nodeId of nodeIdSet) {
-			inDegrees.set(nodeId, 0);
+			inDegrees[nodeId] = 0;
 		}
 
 		for (const conn of connectionSet) {
 			const processedOutputNodes =
-				processedNodeIdSet.get(conn.inputNode.id) ?? new Set();
-			if (processedOutputNodes?.has(conn.outputNode.id)) {
+				processedNodeIdRecord[conn.inputNode.id] ?? new Set();
+			if (processedOutputNodes.has(conn.outputNode.id)) {
 				continue;
 			}
 			processedOutputNodes.add(conn.outputNode.id);
-			processedNodeIdSet.set(conn.inputNode.id, processedOutputNodes);
+			processedNodeIdRecord[conn.inputNode.id] = processedOutputNodes;
 
-			const currentDegree = inDegrees.get(conn.inputNode.id) || 0;
-			inDegrees.set(conn.inputNode.id, currentDegree + 1);
+			const currentDegree = inDegrees[conn.inputNode.id] || 0;
+			inDegrees[conn.inputNode.id] = currentDegree + 1;
 		}
 
 		return inDegrees;
@@ -243,7 +93,7 @@ export function createJobMap(
 
 		// Add all nodes with no incoming edges to the first level
 		for (const nodeId of nodeIdSet) {
-			if (inDegrees.get(nodeId) === 0) {
+			if (inDegrees[nodeId] === 0) {
 				currentLevel.add(nodeId);
 			}
 		}
@@ -256,8 +106,8 @@ export function createJobMap(
 			for (const nodeId of currentLevel) {
 				const childrenNodeIdSet = getChildNodes(nodeId, connectionSet);
 				for (const childNodeId of childrenNodeIdSet) {
-					const newDegree = (inDegrees.get(childNodeId) || 0) - 1;
-					inDegrees.set(childNodeId, newDegree);
+					const newDegree = (inDegrees[childNodeId] || 0) - 1;
+					inDegrees[childNodeId] = newDegree;
 					if (newDegree === 0) {
 						nextLevel.add(childNodeId);
 					}
@@ -289,7 +139,7 @@ export function createJobMap(
 	const levels = topologicalSort(operationNodeIdSet, operationConnectionSet);
 
 	// Create jobs based on the topological levels
-	const jobMap = new Map<JobId, Job>();
+	const jobs: Job[] = [];
 	for (const level of levels) {
 		const jobId = JobId.generate();
 		const nodes = Array.from(nodeSet)
@@ -335,7 +185,7 @@ export function createJobMap(
 			operations,
 			workflowId,
 		} satisfies Job;
-		jobMap.set(job.id, job);
+		jobs.push(job);
 	}
-	return jobMap;
+	return jobs;
 }

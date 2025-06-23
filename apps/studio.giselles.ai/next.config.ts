@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
 		"pino",
 		"pino-pretty",
 		"unstorage",
+		"happy-dom",
 	],
 	images: {
 		remotePatterns: [

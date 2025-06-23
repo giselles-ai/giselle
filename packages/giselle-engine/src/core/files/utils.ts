@@ -6,7 +6,7 @@ export function filePath(params: { fileId: FileId } & GenerationOrigin) {
 			return `workspaces/${params.id}/files/${params.fileId}/${params.fileId}`;
 
 		case "run":
-			return `runs/${params.id}/files/${params.fileId}/${params.fileId}`;
+			return `workspaces/${params.workspaceId}/files/${params.fileId}/${params.fileId}`;
 		default: {
 			const _exhaustiveCheck: never = params;
 			return _exhaustiveCheck;

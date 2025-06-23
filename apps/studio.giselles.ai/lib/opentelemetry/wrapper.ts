@@ -3,7 +3,6 @@ import { db } from "@/drizzle";
 import type { AgentId } from "@giselles-ai/types";
 import { waitUntil } from "@vercel/functions";
 import type { LanguageModelUsage, LanguageModelV1 } from "ai";
-import type { Strategy } from "unstructured-client/sdk/models/shared";
 import { captureError } from "./log";
 import type { LogSchema, OtelLoggerWrapper } from "./types";
 import {
@@ -93,61 +92,9 @@ async function withMeasurement<T>(
 }
 
 const APICallBasedService = {
-	Unstructured: ExternalServiceName.Unstructured,
-	VercelBlob: ExternalServiceName.VercelBlob,
 	Tavily: ExternalServiceName.Tavily,
 } as const;
 
-export const VercelBlobOperation = {
-	Copy: {
-		type: "copy" as const,
-		measure: (result: { size: number }) => ({
-			blobSizeStored: result.size,
-		}),
-	},
-	Put: {
-		type: "put" as const,
-		measure: (result: { size: number }) => ({
-			blobSizeStored: result.size,
-		}),
-	},
-	Fetch: {
-		type: "fetch" as const,
-		measure: (result: { size: number }) => ({
-			blobSizeTransfered: result.size,
-		}),
-	},
-	Del: {
-		type: "del" as const,
-		measure: (result: { size: number }) => ({
-			blobSizeStored: -result.size,
-		}),
-	},
-	List: {
-		type: "list" as const,
-		measure: (result: { size: number }) => ({
-			blobSizeTransfered: result.size,
-		}),
-	},
-} as const;
-
-type VercelBlobOperationType =
-	(typeof VercelBlobOperation)[keyof typeof VercelBlobOperation];
-
-export function withCountMeasurement<T>(
-	logger: OtelLoggerWrapper,
-	operation: () => Promise<T>,
-	externalServiceName: typeof APICallBasedService.Unstructured,
-	measurementStartTime: number | undefined,
-	strategy: Strategy,
-): Promise<T>;
-export function withCountMeasurement<T>(
-	logger: OtelLoggerWrapper,
-	operation: () => Promise<T>,
-	externalServiceName: typeof APICallBasedService.VercelBlob,
-	measurementStartTime: number | undefined,
-	blobOperation: VercelBlobOperationType,
-): Promise<T>;
 export function withCountMeasurement<T>(
 	logger: OtelLoggerWrapper,
 	operation: () => Promise<T>,
@@ -159,7 +106,6 @@ export async function withCountMeasurement<T>(
 	operation: () => Promise<T>,
 	externalServiceName: (typeof APICallBasedService)[keyof typeof APICallBasedService],
 	measurementStartTime?: number,
-	strategyOrOptions?: Strategy | VercelBlobOperationType | undefined,
 ): Promise<T> {
 	const isR06User = await isRoute06User();
 	const measurementScope = await getCurrentMeasurementScope();
@@ -173,31 +119,6 @@ export async function withCountMeasurement<T>(
 			isR06User,
 			requestCount: 1,
 		};
-
-		if (externalServiceName === APICallBasedService.Unstructured) {
-			if (!strategyOrOptions) {
-				logger.error(
-					new Error("'strategy' is required for Unstructured service"),
-					"missing required strategy parameter",
-				);
-			}
-			return {
-				...baseMetrics,
-				externalServiceName,
-				strategy: strategyOrOptions as Strategy,
-			};
-		}
-
-		if (externalServiceName === APICallBasedService.VercelBlob) {
-			const operation = strategyOrOptions as VercelBlobOperationType;
-			const operationResult = operation.measure(result as { size: number });
-			return {
-				...baseMetrics,
-				externalServiceName,
-				operationType: operation.type,
-				...operationResult,
-			} as RequestCountSchema;
-		}
 
 		return {
 			...baseMetrics,

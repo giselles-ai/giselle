@@ -1,17 +1,6 @@
 "use client";
 
 import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
@@ -19,9 +8,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { TeamRole } from "@/drizzle";
 import { useToast } from "@/packages/contexts/toast";
+import * as Dialog from "@radix-ui/react-dialog";
 import { Copy, Ellipsis, RefreshCw, Trash2 } from "lucide-react";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { resendInvitationAction, revokeInvitationAction } from "./actions";
+import {
+	GlassDialogContent,
+	GlassDialogFooter,
+	GlassDialogHeader,
+} from "./components/glass-dialog-content";
 import { LocalDateTime } from "./components/local-date-time";
 
 export type InvitationListItemProps = {
@@ -41,57 +36,8 @@ export function InvitationListItem({
 	const [error, setError] = useState("");
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [dropdownOpen, setDropdownOpen] = useState(false);
-	const resendFormRef = useRef<HTMLFormElement>(null);
-
-	// server actions
-	const [revokeState, revoke, revokePending] = useActionState(
-		revokeInvitationAction,
-		undefined,
-	);
-	const [resendState, resend, resendPending] = useActionState(
-		resendInvitationAction,
-		undefined,
-	);
-
-	// toasts & close behavior
-	useEffect(() => {
-		if (!revokeState || revokePending) {
-			return;
-		}
-		if (revokeState.success) {
-			addToast({
-				title: "Success",
-				message: "Invitation revoked!",
-				type: "success",
-			});
-			setDialogOpen(false);
-			setDropdownOpen(false);
-		} else if (!revokeState.success) {
-			// revokeState.success is false => error property exists
-			const err = revokeState.error;
-			addToast({ title: "Error", message: err, type: "error" });
-			setError(err);
-		}
-	}, [revokePending, revokeState, addToast]);
-
-	// react to resend result
-	useEffect(() => {
-		if (!resendState || resendPending) {
-			return;
-		}
-
-		if (resendState.success) {
-			addToast({
-				title: "Success",
-				message: "Invitation resent!",
-				type: "success",
-			});
-			setDropdownOpen(false);
-		} else if (!resendState.success) {
-			const err = resendState.error;
-			addToast({ title: "Error", message: err, type: "error" });
-		}
-	}, [resendPending, resendState, addToast]);
+	const [isResendPending, startResendTransition] = useTransition();
+	const [isRevokePending, startRevokeTransition] = useTransition();
 
 	const expired = expiredAt.getTime() < Date.now();
 
@@ -115,6 +61,45 @@ export function InvitationListItem({
 				type: "error",
 			});
 		}
+	};
+
+	const handleResend = () => {
+		startResendTransition(async () => {
+			const formData = new FormData();
+			formData.append("token", token);
+			const res = await resendInvitationAction(undefined, formData);
+			if (res.success) {
+				addToast({
+					title: "Success",
+					message: "Invitation resent!",
+					type: "success",
+				});
+				setDropdownOpen(false);
+			} else {
+				addToast({ title: "Error", message: res.error, type: "error" });
+			}
+		});
+	};
+
+	const handleConfirmRevoke = () => {
+		startRevokeTransition(async () => {
+			const formData = new FormData();
+			formData.append("token", token);
+			const res = await revokeInvitationAction(undefined, formData);
+			if (res.success) {
+				addToast({
+					title: "Success",
+					message: "Invitation revoked!",
+					type: "success",
+				});
+				setDialogOpen(false);
+				setDropdownOpen(false);
+			} else {
+				const err = res.error;
+				addToast({ title: "Error", message: err, type: "error" });
+				setError(err);
+			}
+		});
 	};
 
 	return (
@@ -166,19 +151,16 @@ export function InvitationListItem({
 							>
 								<Copy className="h-4 w-4 mr-2" /> Copy invite link
 							</DropdownMenuItem>
-							<form action={resend} ref={resendFormRef} className="contents">
-								<input type="hidden" name="token" value={token} />
-							</form>
 							<DropdownMenuItem
 								onSelect={(e) => {
 									e.preventDefault();
-									resendFormRef.current?.requestSubmit();
+									handleResend();
 								}}
-								disabled={resendPending}
+								disabled={isResendPending}
 								className="flex items-center px-4 py-3 font-medium text-[14px] leading-[16px] text-white-400 hover:bg-white/5 rounded-md"
 								title="Resend invitation"
 							>
-								{resendPending ? (
+								{isResendPending ? (
 									<>
 										<RefreshCw className="h-4 w-4 animate-spin mr-2" />{" "}
 										Processing...
@@ -189,15 +171,15 @@ export function InvitationListItem({
 									</>
 								)}
 							</DropdownMenuItem>
-							<AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-								<AlertDialogTrigger asChild>
+							<Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+								<Dialog.Trigger asChild>
 									<DropdownMenuItem
 										onSelect={(e) => e.preventDefault()}
-										disabled={revokePending}
+										disabled={isRevokePending}
 										className="flex items-center w-full px-4 py-3 font-medium text-[14px] leading-[16px] text-error-900 hover:bg-error-900/20 rounded-md"
 										title="Revoke invitation"
 									>
-										{revokePending ? (
+										{isRevokePending ? (
 											<>
 												<RefreshCw className="h-4 w-4 animate-spin mr-2" />{" "}
 												Processing...
@@ -208,37 +190,23 @@ export function InvitationListItem({
 											</>
 										)}
 									</DropdownMenuItem>
-								</AlertDialogTrigger>
-								<AlertDialogContent className="border-[0.5px] border-black-400 rounded-[8px] bg-black-850">
-									<AlertDialogHeader>
-										<AlertDialogTitle className="text-white-400 text-[20px] leading-[29px] font-geist">
-											Revoke Invitation
-										</AlertDialogTitle>
-										<AlertDialogDescription className="text-black-400 text-[14px] leading-[20.4px]">
-											This will permanently revoke this invitation and prevent
-											the user from joining your team.
-										</AlertDialogDescription>
-									</AlertDialogHeader>
-									<AlertDialogFooter className="mt-4">
-										<AlertDialogCancel
-											className="py-2 px-4 border-[0.5px] border-black-400 rounded-[8px] font-sans"
-											disabled={revokePending}
-										>
-											Cancel
-										</AlertDialogCancel>
-										<form action={revoke} className="contents">
-											<input type="hidden" name="token" value={token} />
-											<AlertDialogAction
-												type="submit"
-												disabled={revokePending}
-												className="py-2 px-4 bg-error-900 rounded-[8px] text-white-400 font-sans"
-											>
-												Revoke
-											</AlertDialogAction>
-										</form>
-									</AlertDialogFooter>
-								</AlertDialogContent>
-							</AlertDialog>
+								</Dialog.Trigger>
+								<GlassDialogContent variant="destructive">
+									<GlassDialogHeader
+										title="Revoke Invitation"
+										description="This will permanently revoke this invitation and prevent the user from joining your team."
+										variant="destructive"
+										onClose={() => setDialogOpen(false)}
+									/>
+									<GlassDialogFooter
+										variant="destructive"
+										onCancel={() => setDialogOpen(false)}
+										onConfirm={handleConfirmRevoke}
+										confirmLabel="Revoke"
+										isPending={isRevokePending}
+									/>
+								</GlassDialogContent>
+							</Dialog.Root>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</div>

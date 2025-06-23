@@ -1,6 +1,7 @@
 import { logger } from "@/lib/logger";
 import { GaxiosError } from "gaxios";
-import { google } from "googleapis";
+import { OAuth2Client } from "google-auth-library";
+import { oauth2 as googleOAuth2 } from "googleapis/build/src/apis/oauth2";
 
 export function buildGoogleUserClient(token: GoogleUserCredential) {
 	const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
@@ -75,7 +76,7 @@ class GoogleUserClient {
 				"getting user info",
 			);
 
-			const oauth2 = google.oauth2({
+			const oauth2 = googleOAuth2({
 				version: "v2",
 				auth: authClient,
 			});
@@ -108,7 +109,7 @@ class GoogleUserClient {
 	}
 
 	private buildClient() {
-		const client = new google.auth.OAuth2(
+		const client = new OAuth2Client(
 			this.clientId,
 			this.clientSecret,
 			process.env.NEXT_PUBLIC_SITE_URL,

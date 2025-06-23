@@ -1,0 +1,137 @@
+===== CHUNK 1 =====
+# Test Documentation
+
+This is a sample markdown document for testing the LineChunker functionality.
+
+## Introduction
+===== CHUNK 2 =====
+## Introduction
+
+The purpose of this document is to provide a realistic test fixture for chunking markdown content. It includes various markdown elements like headers, paragraphs, lists, and code blocks.
+
+## Features
+===== CHUNK 3 =====
+## Features
+
+### Basic Text Processing
+
+The chunker should handle regular paragraphs effectively. This includes:
+===== CHUNK 4 =====
+The chunker should handle regular paragraphs effectively. This includes:
+
+- Short sentences
+- Medium-length paragraphs with multiple sentences that explain concepts in detail
+- Long paragraphs that might need to be split across chunks
+===== CHUNK 5 =====
+- Long paragraphs that might need to be split across chunks
+
+### Code Blocks
+
+Here's an example of TypeScript code:
+===== CHUNK 6 =====
+Here's an example of TypeScript code:
+
+```typescript
+interface ChunkerOptions {
+  maxLines: number;
+===== CHUNK 7 =====
+  maxLines: number;
+  overlap: number;
+  maxChars: number;
+}
+
+===== CHUNK 8 =====
+
+class Chunker {
+  constructor(private options: ChunkerOptions) {}
+  
+  chunk(text: string): string[] {
+===== CHUNK 9 =====
+  chunk(text: string): string[] {
+    // Implementation details
+    return [];
+  }
+}
+===== CHUNK 10 =====
+}
+```
+
+### Lists and Enumerations
+
+===== CHUNK 11 =====
+
+1. **Ordered lists** with various items
+2. **Nested content** that includes:
+   - Sub-items with details
+   - Multiple levels of nesting
+===== CHUNK 12 =====
+   - Multiple levels of nesting
+   - Different formatting styles
+3. **Mixed content** combining text and code
+
+### Tables
+===== CHUNK 13 =====
+### Tables
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| Line-based chunking | Split by line count | ✓ |
+===== CHUNK 14 =====
+| Line-based chunking | Split by line count | ✓ |
+| Character limit | Enforce max chars | ✓ |
+| Overlap support | Configurable overlap | ✓ |
+
+## Advanced Usage
+===== CHUNK 15 =====
+## Advanced Usage
+
+### Configuration Examples
+
+The chunker can be configured in various ways:
+===== CHUNK 16 =====
+The chunker can be configured in various ways:
+
+```typescript
+// Default configuration
+const chunker1 = new LineChunker();
+===== CHUNK 17 =====
+const chunker1 = new LineChunker();
+
+// Custom line limit
+const chunker2 = new LineChunker({
+  maxLines: 50,
+===== CHUNK 18 =====
+  maxLines: 50,
+  overlap: 10
+});
+
+// Character-based limits
+===== CHUNK 19 =====
+// Character-based limits
+const chunker3 = new LineChunker({
+  maxLines: 100,
+  maxChars: 1000,
+  overlap: 20
+===== CHUNK 20 =====
+  overlap: 20
+});
+```
+
+### Best Practices
+===== CHUNK 21 =====
+### Best Practices
+
+When using the chunker, consider these guidelines:
+
+1. **Choose appropriate chunk sizes** based on your use case
+===== CHUNK 22 =====
+1. **Choose appropriate chunk sizes** based on your use case
+2. **Set overlap** to maintain context between chunks
+3. **Monitor performance** with large documents
+4. **Test edge cases** thoroughly
+
+===== CHUNK 23 =====
+
+## Conclusion
+
+This test document covers various markdown elements and should provide good coverage for testing the chunking algorithm. The chunker should handle all these elements gracefully while respecting the configured limits.

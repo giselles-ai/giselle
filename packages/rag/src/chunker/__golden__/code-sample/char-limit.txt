@@ -1,0 +1,159 @@
+===== CHUNK 1 =====
+// @ts-nocheck
+// Sample TypeScript code for testing chunking behavior
+// This is a test fixture representing typical code structure
+
+export interface User {
+	id: string;
+	name: string;
+===== CHUNK 2 =====
+	email: string;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+export interface Post {
+	id: string;
+	title: string;
+	content: string;
+	authorId: string;
+	tags: string[];
+	published: boolean;
+===== CHUNK 3 =====
+	publishedAt?: Date;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+export class UserService {
+	constructor(private readonly db: Database) {}
+
+	async findById(id: string): Promise<User | null> {
+===== CHUNK 4 =====
+		const user = await this.db.users.findUnique({
+			where: { id },
+		});
+		return user;
+	}
+
+	async findByEmail(email: string): Promise<User | null> {
+		const user = await this.db.users.findUnique({
+===== CHUNK 5 =====
+			where: { email },
+		});
+		return user;
+	}
+
+	async create(data: CreateUserInput): Promise<User> {
+		const user = await this.db.users.create({
+			data: {
+				...data,
+				createdAt: new Date(),
+===== CHUNK 6 =====
+				updatedAt: new Date(),
+			},
+		});
+		return user;
+	}
+
+	async update(id: string, data: UpdateUserInput): Promise<User> {
+		const user = await this.db.users.update({
+			where: { id },
+			data: {
+===== CHUNK 7 =====
+				...data,
+				updatedAt: new Date(),
+			},
+		});
+		return user;
+	}
+
+	async delete(id: string): Promise<void> {
+		await this.db.users.delete({
+			where: { id },
+		});
+	}
+}
+
+===== CHUNK 8 =====
+export class PostService {
+	constructor(private readonly db: Database) {}
+
+	async findById(id: string): Promise<Post | null> {
+		const post = await this.db.posts.findUnique({
+			where: { id },
+===== CHUNK 9 =====
+			include: { author: true },
+		});
+		return post;
+	}
+
+	async findByAuthor(authorId: string): Promise<Post[]> {
+		const posts = await this.db.posts.findMany({
+			where: { authorId },
+===== CHUNK 10 =====
+			orderBy: { createdAt: "desc" },
+		});
+		return posts;
+	}
+
+	async findPublished(): Promise<Post[]> {
+		const posts = await this.db.posts.findMany({
+			where: { published: true },
+===== CHUNK 11 =====
+			orderBy: { publishedAt: "desc" },
+		});
+		return posts;
+	}
+
+	async create(data: CreatePostInput): Promise<Post> {
+		const post = await this.db.posts.create({
+			data: {
+				...data,
+===== CHUNK 12 =====
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+		return post;
+	}
+
+	async publish(id: string): Promise<Post> {
+		const post = await this.db.posts.update({
+			where: { id },
+===== CHUNK 13 =====
+			data: {
+				published: true,
+				publishedAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+		return post;
+	}
+}
+
+// Database interface
+interface Database {
+	users: unknown;
+	posts: unknown;
+}
+
+===== CHUNK 14 =====
+// Input types
+interface CreateUserInput {
+	name: string;
+	email: string;
+}
+
+interface UpdateUserInput {
+	name?: string;
+	email?: string;
+}
+
+interface CreatePostInput {
+	title: string;
+===== CHUNK 15 =====
+	content: string;
+	authorId: string;
+	tags: string[];
+}

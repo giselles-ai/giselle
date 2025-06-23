@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 1059 MIT
+* 1054 MIT
 * 110 Apache 2.0
 * 60 ISC
 * 34 New BSD
@@ -10,20 +10,19 @@
 * 5 BlueOak-1.0.0
 * 3 MIT OR Apache-2.0
 * 3 Mozilla Public License 2.0
-* 2 LGPL-3.0-or-later
 * 2 MIT-0
+* 2 LGPL-3.0-or-later
 * 2 The Unlicense
-* 1 Python-2.0
-* 1 CC-BY-4.0
-* 1 SIL OPEN FONT LICENSE
-* 1 (AFL-2.1 OR BSD-3-Clause)
-* 1 (MIT AND Zlib)
-* 1 (BSD-2-Clause OR MIT OR Apache-2.0)
-* 1 (MIT OR Apache-2.0)
-* 1 Unknown
-* 1 BSD Zero Clause License
-* 1 (MIT OR CC0-1.0)
 * 1 BSD
+* 1 (MIT OR CC0-1.0)
+* 1 BSD Zero Clause License
+* 1 Unknown
+* 1 (MIT OR Apache-2.0)
+* 1 (BSD-2-Clause OR MIT OR Apache-2.0)
+* 1 (AFL-2.1 OR BSD-3-Clause)
+* 1 SIL OPEN FONT LICENSE
+* 1 CC-BY-4.0
+* 1 Python-2.0
 
 
 
@@ -2408,28 +2407,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@paralleldrive/cuid2"></a>
 ### @paralleldrive/cuid2 v2.2.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@pdf-lib/standard-fonts"></a>
-### @pdf-lib/standard-fonts v1.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@pdf-lib/upng"></a>
-### @pdf-lib/upng v1.0.1
 #### 
 
 ##### Paths
@@ -5294,17 +5271,6 @@ Python-2.0 manually approved
 
 <a name="astral-regex"></a>
 ### astral-regex v2.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="async"></a>
-### async v3.2.6
 #### 
 
 ##### Paths
@@ -10693,17 +10659,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="pako"></a>
-### pako v1.0.11
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-(MIT AND Zlib) permitted
-
-
-
 <a name="param-case"></a>
 ### param-case v2.1.1
 #### 
@@ -10893,17 +10848,6 @@ BlueOak-1.0.0 permitted
 
 <a name="pathval"></a>
 ### pathval v2.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="pdf-lib"></a>
-### pdf-lib v1.17.1
 #### 
 
 ##### Paths
@@ -13680,17 +13624,6 @@ Unknown manually approved
 
 <a name="unstorage"></a>
 ### unstorage v1.14.4
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="unstructured-client"></a>
-### unstructured-client v0.18.1
 #### 
 
 ##### Paths

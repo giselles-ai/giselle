@@ -12,7 +12,6 @@ import {
 	isQueryNode,
 	isTextNode,
 } from "@giselle-sdk/data-type";
-import { query as queryRag } from "@giselle-sdk/rag";
 import {
 	isJsonContent,
 	jsonContentToText,
@@ -250,12 +249,9 @@ async function queryVectorStore(
 		return [];
 	}
 
-	const { vectorStoreQueryFunctions, vectorStoreQueryServices } = context;
-	if (
-		vectorStoreQueryFunctions === undefined &&
-		vectorStoreQueryServices === undefined
-	) {
-		throw new Error("No vector store query function or service provided");
+	const { vectorStoreQueryServices } = context;
+	if (vectorStoreQueryServices === undefined) {
+		throw new Error("No vector store query service provided");
 	}
 
 	// Default values for query parameters
@@ -275,72 +271,35 @@ async function queryVectorStore(
 					case "github": {
 						const { owner, repo } = state;
 
-						// Try rag2 service first (preferred)
-						if (vectorStoreQueryServices?.github) {
-							console.log("Using rag2 QueryService for GitHub vector store");
-							const queryContext: GitHubQueryContext = {
-								workspaceId,
-								owner,
-								repo,
-							};
-							const res = await vectorStoreQueryServices.github.search(
-								query,
-								queryContext,
-								LIMIT,
-							);
-							return {
-								type: "vector-store" as const,
-								source,
-								records: res.map((result) => ({
-									chunkContent: result.chunk.content,
-									chunkIndex: result.chunk.index,
-									score: result.similarity,
-									metadata: Object.fromEntries(
-										Object.entries(result.metadata ?? {}).map(([k, v]) => [
-											k,
-											String(v),
-										]),
-									),
-								})),
-							};
+						if (!vectorStoreQueryServices?.github) {
+							throw new Error("No github vector store query service provided");
 						}
 
-						// Fallback to legacy rag function
-						if (vectorStoreQueryFunctions?.github) {
-							console.log(
-								"Using legacy rag QueryFunction for GitHub vector store",
-							);
-							const res = await queryRag({
-								question: query,
-								limit: LIMIT,
-								similarityThreshold: SIMILARITY_THRESHOLD,
-								filters: {
-									workspaceId,
-									owner,
-									repo,
-								},
-								queryFunction: vectorStoreQueryFunctions.github,
-							});
-							return {
-								type: "vector-store" as const,
-								source,
-								records: res.map((record) => ({
-									chunkContent: record.chunk.content,
-									chunkIndex: record.chunk.index,
-									score: record.score,
-									metadata: Object.fromEntries(
-										Object.entries(record.metadata ?? {}).map(([k, v]) => [
-											k,
-											String(v),
-										]),
-									),
-								})),
-							};
-						}
-
-						throw new Error(
-							"No github vector store query function or service provided",
+						const queryContext: GitHubQueryContext = {
+							workspaceId,
+							owner,
+							repo,
+						};
+						const res = await vectorStoreQueryServices.github.search(
+							query,
+							queryContext,
+							LIMIT,
 						);
+						return {
+							type: "vector-store" as const,
+							source,
+							records: res.map((result) => ({
+								chunkContent: result.chunk.content,
+								chunkIndex: result.chunk.index,
+								score: result.similarity,
+								metadata: Object.fromEntries(
+									Object.entries(result.metadata ?? {}).map(([k, v]) => [
+										k,
+										String(v),
+									]),
+								),
+							})),
+						};
 					}
 					default: {
 						const _exhaustiveCheck: never = provider;

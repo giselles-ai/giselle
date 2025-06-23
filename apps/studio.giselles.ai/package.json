@@ -8,7 +8,7 @@
 	"scripts": {
 		"dev": "SENTRY_SUPPRESS_TURBOPACK_WARNING=1 next dev --turbopack",
 		"dev-debug": "LOGLEVEL=debug pnpm run dev",
-		"build": "next build --turbopack",
+		"build": "next build",
 		"start": "next start",
 		"format": "biome check --write .",
 		"lint": "next lint",
@@ -25,7 +25,6 @@
 		"@giselle-sdk/integration": "workspace:*",
 		"@giselle-sdk/language-model": "workspace:*",
 		"@giselle-sdk/rag": "workspace:*",
-		"@giselle-sdk/rag2": "workspace:*",
 		"@giselle-sdk/supabase-driver": "workspace:*",
 		"@giselle-sdk/telemetry": "workspace:*",
 		"@giselle-sdk/vector-store-adapters": "workspace:*",
@@ -89,6 +88,7 @@
 		"giselle-sdk": "workspace:*",
 		"google-auth-library": "9.15.0",
 		"googleapis": "144.0.0",
+		"happy-dom": "catalog:",
 		"import-in-the-middle": "1.13.1",
 		"input-otp": "1.4.2",
 		"jsdom": "catalog:",
@@ -113,7 +113,6 @@
 		"tiny-invariant": "1.3.3",
 		"ts-pattern": "5.2.0",
 		"unstorage": "catalog:",
-		"unstructured-client": "0.18.1",
 		"valibot": "0.37.0",
 		"zod": "catalog:"
 	},

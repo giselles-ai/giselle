@@ -1,0 +1,2870 @@
+diff --git a/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/ingest-github-repository.ts b/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/ingest-github-repository.ts
+new file mode 100644
+index 000000000..b5ad8bde7
+--- /dev/null
++++ b/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/ingest-github-repository.ts
+@@ -0,0 +1,90 @@
++import { db, githubRepositoryIndex } from "@/drizzle";
++import {
++	type GitHubChunkMetadata,
++	createGitHubChunkStore,
++} from "@/lib/vector-stores/github-blob-stores";
++import {
++	GitHubBlobLoader,
++	type GitHubBlobLoaderParams,
++	type GitHubBlobMetadata,
++} from "@giselle-sdk/github-tool";
++import { createIngestPipeline } from "@giselle-sdk/rag2";
++import type { Octokit } from "@octokit/core";
++import { and, eq } from "drizzle-orm";
++
++/**
++ * Main GitHub repository ingestion coordination
++ */
++export async function ingestGitHubRepository(params: {
++	octokitClient: Octokit;
++	source: { owner: string; repo: string; commitSha: string };
++	teamDbId: number;
++}): Promise<void> {
++	const repositoryIndexDbId = await getRepositoryIndexDbId(
++		params.source,
++		params.teamDbId,
++	);
++
++	const githubLoader = new GitHubBlobLoader(params.octokitClient, {
++		maxBlobSize: 1 * 1024 * 1024,
++	});
++	const chunkStore = createGitHubChunkStore(repositoryIndexDbId);
++
++	const pipeline = createIngestPipeline<
++		GitHubBlobMetadata,
++		GitHubChunkMetadata,
++		GitHubBlobLoaderParams
++	>({
++		documentLoader: githubLoader,
++		chunkStore,
++		documentKey: (document) => document.metadata.path,
++		metadataTransform: (metadata: GitHubBlobMetadata): GitHubChunkMetadata => ({
++			repositoryIndexDbId,
++			commitSha: metadata.commitSha,
++			fileSha: metadata.fileSha,
++			path: metadata.path,
++			nodeId: metadata.nodeId,
++		}),
++		options: {
++			maxBatchSize: 50,
++			onProgress: (progress) => {
++				console.log(
++					`Ingesting... (${progress.processedDocuments}) ${progress.currentDocument}`,
++				);
++			},
++		},
++	});
++
++	const result = await pipeline.ingest(params.source);
++	console.log(
++		`Ingested from ${result.totalDocuments} documents with success: ${result.successfulDocuments}, failure: ${result.failedDocuments}`,
++	);
++}
++
++/**
++ * Get repository index database ID
++ */
++async function getRepositoryIndexDbId(
++	source: { owner: string; repo: string },
++	teamDbId: number,
++): Promise<number> {
++	const repositoryIndex = await db
++		.select({ dbId: githubRepositoryIndex.dbId })
++		.from(githubRepositoryIndex)
++		.where(
++			and(
++				eq(githubRepositoryIndex.owner, source.owner),
++				eq(githubRepositoryIndex.repo, source.repo),
++				eq(githubRepositoryIndex.teamDbId, teamDbId),
++			),
++		)
++		.limit(1);
++
++	if (repositoryIndex.length === 0) {
++		throw new Error(
++			`Repository index not found: ${source.owner}/${source.repo}`,
++		);
++	}
++
++	return repositoryIndex[0].dbId;
++}
+diff --git a/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/route.ts b/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/route.ts
+index c30cd0971..f7387a494 100644
+--- a/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/route.ts
++++ b/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/route.ts
+@@ -1,41 +1,15 @@
+-import {
+-	db,
+-	githubRepositoryEmbeddings,
+-	githubRepositoryIndex,
+-} from "@/drizzle";
+-import {
+-	GitHubBlobLoader,
+-	type GitHubBlobMetadata,
+-	type GithubRepositoryParams,
+-	octokit,
+-} from "@giselle-sdk/github-tool";
+-import {
+-	type BaseEmbedding,
+-	type EmbeddingStore,
+-	ingest,
+-} from "@giselle-sdk/rag";
++import { fetchDefaultBranchHead } from "@giselle-sdk/github-tool";
+ import { captureException } from "@sentry/nextjs";
+-import { and, eq } from "drizzle-orm";
+ import type { NextRequest } from "next/server";
++import { ingestGitHubRepository } from "./ingest-github-repository";
++import {
++	buildOctokit,
++	fetchTargetGitHubRepositories,
++	updateRepositoryStatus,
++} from "./utils";
+ 
+ export const maxDuration = 800;
+ 
+-/**
+- * GitHub repository embedding data structure
+- */
+-interface GitHubRepositoryEmbedding {
+-	owner: string;
+-	repo: string;
+-	commitSha: string;
+-	fileSha: string;
+-	path: string;
+-	nodeId: string;
+-	chunkIndex: number;
+-	chunkContent: string;
+-	embedding: number[];
+-}
+-
+-// ingest GitHub Code
+ export async function GET(request: NextRequest) {
+ 	const authHeader = request.headers.get("authorization");
+ 	if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+@@ -47,305 +21,37 @@ export async function GET(request: NextRequest) {
+ 	const targetGitHubRepositories = await fetchTargetGitHubRepositories();
+ 
+ 	for (const targetGitHubRepository of targetGitHubRepositories) {
+-		const { owner, repo, installationId, lastIngestedCommitSha, teamDbId } =
++		const { owner, repo, installationId, teamDbId, dbId } =
+ 			targetGitHubRepository;
+ 
+-		const appId = process.env.GITHUB_APP_ID;
+-		if (!appId) {
+-			throw new Error("GITHUB_APP_ID is empty");
+-		}
+-		const privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+-		if (!privateKey) {
+-			throw new Error("GITHUB_APP_PRIVATE_KEY is empty");
+-		}
+-
+-		const octokitClient = octokit({
+-			strategy: "app-installation",
+-			appId,
+-			privateKey,
+-			installationId,
+-		});
+-
+-		// Create GitHub repository loader
+-		const loader = new GitHubBlobLoader(octokitClient, {
+-			maxBlobSize: 1 * 1024 * 1024, // 1MB limit
+-		});
+-
+-		const source: GithubRepositoryParams = {
+-			owner,
+-			repo,
+-		};
+-
+-		const embeddingStore = new GitHubRepositoryEmbeddingStoreImpl(teamDbId);
+-
+-		// Ingest using the RAG package
+-		await ingest({
+-			source,
+-			loader,
+-			store: embeddingStore,
+-			transformEmbedding: transformGitHubEmbedding,
+-		});
+-	}
+-
+-	return new Response("ok", { status: 200 });
+-}
+-
+-/**
+- * Transform base embedding to GitHub repository embedding
+- */
+-function transformGitHubEmbedding(
+-	baseEmbedding: BaseEmbedding,
+-	metadata: GitHubBlobMetadata,
+-): GitHubRepositoryEmbedding {
+-	return {
+-		owner: metadata.owner,
+-		repo: metadata.repo,
+-		commitSha: metadata.commitSha,
+-		fileSha: metadata.fileSha,
+-		path: metadata.path,
+-		nodeId: metadata.nodeId,
+-		chunkIndex: baseEmbedding.chunkIndex,
+-		chunkContent: baseEmbedding.chunkContent,
+-		embedding: baseEmbedding.embedding,
+-	};
+-}
+-
+-type TargetGitHubRepository = {
+-	owner: string;
+-	repo: string;
+-	teamDbId: number;
+-	installationId: number;
+-	lastIngestedCommitSha: string | null;
+-};
+-
+-async function fetchTargetGitHubRepositories(): Promise<
+-	TargetGitHubRepository[]
+-> {
+-	const records = await db
+-		.select({
+-			owner: githubRepositoryIndex.owner,
+-			repo: githubRepositoryIndex.repo,
+-			installationId: githubRepositoryIndex.installationId,
+-			lastIngestedCommitSha: githubRepositoryIndex.lastIngestedCommitSha,
+-			teamDbId: githubRepositoryIndex.teamDbId,
+-		})
+-		.from(githubRepositoryIndex)
+-		.where(eq(githubRepositoryIndex.status, "idle"));
+-
+-	return records.map((record) => ({
+-		owner: record.owner,
+-		repo: record.repo,
+-		installationId: record.installationId,
+-		lastIngestedCommitSha: record.lastIngestedCommitSha,
+-		teamDbId: record.teamDbId,
+-	}));
+-}
+-
+-/**
+- * Implementation of EmbeddingStore for GitHub repositories
+- */
+-class GitHubRepositoryEmbeddingStoreImpl
+-	implements EmbeddingStore<GitHubRepositoryEmbedding>
+-{
+-	private teamDbId: number;
+-	constructor(teamDbId: number) {
+-		this.teamDbId = teamDbId;
+-	}
+-
+-	private getRepositoryIndexDbId(owner: string, repo: string) {
+-		return this.withPgRetry(async () => {
+-			const records = await db
+-				.select({ dbId: githubRepositoryIndex.dbId })
+-				.from(githubRepositoryIndex)
+-				.where(
+-					and(
+-						eq(githubRepositoryIndex.owner, owner),
+-						eq(githubRepositoryIndex.repo, repo),
+-						eq(githubRepositoryIndex.teamDbId, this.teamDbId),
+-					),
+-				)
+-				.limit(1);
+-			const repositoryIndex = records[0];
+-			if (repositoryIndex == null) {
+-				throw new Error(`Repository index not found: ${owner}/${repo}`);
+-			}
+-			return repositoryIndex.dbId;
+-		});
+-	}
+-
+-	async insertEmbedding(data: GitHubRepositoryEmbedding): Promise<void> {
+-		const repositoryIndexDbId = await this.getRepositoryIndexDbId(
+-			data.owner,
+-			data.repo,
+-		);
+-		await this.withPgRetry(async () => {
+-			await db
+-				.insert(githubRepositoryEmbeddings)
+-				.values({
+-					repositoryIndexDbId,
+-					commitSha: data.commitSha,
+-					fileSha: data.fileSha,
+-					path: data.path,
+-					nodeId: data.nodeId,
+-					embedding: data.embedding,
+-					chunkIndex: data.chunkIndex,
+-					chunkContent: data.chunkContent,
+-				})
+-				.onConflictDoNothing();
+-		});
+-	}
+-
+-	async deleteEmbedding(
+-		key: Partial<GitHubRepositoryEmbedding>,
+-	): Promise<void> {
+-		if (key.owner != null && key.repo != null && key.path != null) {
+-			const { owner, repo, path } = key;
++		try {
++			// Update status to running
++			await updateRepositoryStatus(dbId, "running");
+ 
+-			const repositoryIndexDbId = await this.getRepositoryIndexDbId(
++			const octokitClient = buildOctokit(installationId);
++			const commit = await fetchDefaultBranchHead(octokitClient, owner, repo);
++			const source = {
+ 				owner,
+ 				repo,
+-			);
+-			await this.withPgRetry(async () => {
+-				await db
+-					.delete(githubRepositoryEmbeddings)
+-					.where(
+-						and(
+-							eq(
+-								githubRepositoryEmbeddings.repositoryIndexDbId,
+-								repositoryIndexDbId,
+-							),
+-							eq(githubRepositoryEmbeddings.path, path),
+-						),
+-					);
+-			});
+-		}
+-	}
+-
+-	async updateEmbedding(data: GitHubRepositoryEmbedding): Promise<void> {
+-		// retry is done in deleteEmbedding and insertEmbedding
+-		await this.deleteEmbedding(data);
+-		await this.insertEmbedding(data);
+-	}
+-
+-	async startIngestion(params: Record<string, unknown>): Promise<void> {
+-		const source = params.source as GithubRepositoryParams;
+-		if (!source) {
+-			console.warn("startIngestion: source is missing", params);
+-			return;
+-		}
+-
+-		await this.withPgRetry(async () => {
+-			await db
+-				.update(githubRepositoryIndex)
+-				.set({ status: "running" })
+-				.where(
+-					and(
+-						eq(githubRepositoryIndex.owner, source.owner),
+-						eq(githubRepositoryIndex.repo, source.repo),
+-					),
+-				);
+-		});
+-	}
+-
+-	async completeIngestion(params: Record<string, unknown>): Promise<void> {
+-		const source = params.source as GithubRepositoryParams;
+-		if (!source) {
+-			console.warn("completeIngestion: source is missing", params);
+-			return;
+-		}
++				commitSha: commit.sha,
++			};
+ 
+-		const commitSha = params.commitSha as string;
+-		await this.withPgRetry(async () => {
+-			await db
+-				.update(githubRepositoryIndex)
+-				.set({
+-					status: "completed",
+-					lastIngestedCommitSha: commitSha,
+-				})
+-				.where(
+-					and(
+-						eq(githubRepositoryIndex.owner, source.owner),
+-						eq(githubRepositoryIndex.repo, source.repo),
+-					),
+-				);
+-		});
+-	}
+-
+-	async failIngestion(
+-		params: Record<string, unknown>,
+-		error: Error,
+-	): Promise<void> {
+-		const source = params.source as GithubRepositoryParams;
+-		if (!source) {
+-			console.warn("failIngestion: source is missing", params);
+-			captureException(error);
+-			return;
+-		}
+-
+-		captureException(error, {
+-			extra: {
+-				owner: source.owner,
+-				repo: source.repo,
+-			},
+-		});
+-		await this.withPgRetry(async () => {
+-			await db
+-				.update(githubRepositoryIndex)
+-				.set({ status: "failed" })
+-				.where(
+-					and(
+-						eq(githubRepositoryIndex.owner, source.owner),
+-						eq(githubRepositoryIndex.repo, source.repo),
+-					),
+-				);
+-		});
+-	}
+-
+-	// ingesting job may be a long running job, so it would be better to care transient errors
+-	// https://www.postgresql.org/docs/16/errcodes-appendix.html
+-	private TRANSIENT_CODES = new Set([
+-		// Class 08 - Connection Exception
+-		"08000",
+-		"08003",
+-		"08006",
+-		"08001",
+-		"08004",
+-		"08007",
+-		// Class 53 - Resource Exception
+-		"53300", // too_many_connections
+-		// Class 40 - Transaction Rollback
+-		"40001", // serialization_failure
+-		"40P01", // deadlock_detected
+-	]);
++			await ingestGitHubRepository({
++				octokitClient,
++				source,
++				teamDbId,
++			});
+ 
+-	private isTransientError(error: unknown) {
+-		if (
+-			typeof error === "object" &&
+-			error !== null &&
+-			"code" in error &&
+-			typeof error.code === "string"
+-		) {
+-			return this.TRANSIENT_CODES.has(error.code);
++			// Update status to completed
++			await updateRepositoryStatus(dbId, "completed", commit.sha);
++		} catch (error) {
++			console.error(`Failed to ingest ${owner}/${repo}:`, error);
++			captureException(error, {
++				extra: { owner, repo },
++			});
++			await updateRepositoryStatus(dbId, "failed");
+ 		}
+-		return false;
+ 	}
+ 
+-	private async withPgRetry<T>(
+-		fn: () => Promise<T>,
+-		attempt = 0,
+-		maxAttempts = 4,
+-	): Promise<T> {
+-		try {
+-			return await fn();
+-		} catch (error: unknown) {
+-			if (!this.isTransientError(error)) {
+-				throw error;
+-			}
+-			if (attempt >= maxAttempts) {
+-				throw error;
+-			}
+-			await new Promise((r) => setTimeout(r, 100 * 2 ** attempt));
+-			return this.withPgRetry(fn, attempt + 1, maxAttempts);
+-		}
+-	}
++	return new Response("ok", { status: 200 });
+ }
+diff --git a/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/types.ts b/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/types.ts
+new file mode 100644
+index 000000000..1b357b265
+--- /dev/null
++++ b/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/types.ts
+@@ -0,0 +1,8 @@
++export type TargetGitHubRepository = {
++	dbId: number;
++	owner: string;
++	repo: string;
++	teamDbId: number;
++	installationId: number;
++	lastIngestedCommitSha: string | null;
++};
+diff --git a/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/utils.ts b/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/utils.ts
+new file mode 100644
+index 000000000..972c880fd
+--- /dev/null
++++ b/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/utils.ts
+@@ -0,0 +1,64 @@
++import { db, githubRepositoryIndex } from "@/drizzle";
++import { octokit } from "@giselle-sdk/github-tool";
++import { eq } from "drizzle-orm";
++import type { TargetGitHubRepository } from "./types";
++
++export function buildOctokit(installationId: number) {
++	const appId = process.env.GITHUB_APP_ID;
++	if (!appId) {
++		throw new Error("GITHUB_APP_ID is empty");
++	}
++	const privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
++	if (!privateKey) {
++		throw new Error("GITHUB_APP_PRIVATE_KEY is empty");
++	}
++
++	return octokit({
++		strategy: "app-installation",
++		appId,
++		privateKey,
++		installationId,
++	});
++}
++
++export async function fetchTargetGitHubRepositories(): Promise<
++	TargetGitHubRepository[]
++> {
++	const records = await db
++		.select({
++			dbId: githubRepositoryIndex.dbId,
++			owner: githubRepositoryIndex.owner,
++			repo: githubRepositoryIndex.repo,
++			installationId: githubRepositoryIndex.installationId,
++			lastIngestedCommitSha: githubRepositoryIndex.lastIngestedCommitSha,
++			teamDbId: githubRepositoryIndex.teamDbId,
++		})
++		.from(githubRepositoryIndex)
++		.where(eq(githubRepositoryIndex.status, "idle"));
++
++	return records.map((record) => ({
++		dbId: record.dbId,
++		owner: record.owner,
++		repo: record.repo,
++		installationId: record.installationId,
++		lastIngestedCommitSha: record.lastIngestedCommitSha,
++		teamDbId: record.teamDbId,
++	}));
++}
++
++/**
++ * Update the ingestion status of a repository
++ */
++export async function updateRepositoryStatus(
++	dbId: number,
++	status: "idle" | "running" | "failed" | "completed",
++	commitSha?: string,
++): Promise<void> {
++	await db
++		.update(githubRepositoryIndex)
++		.set({
++			status,
++			lastIngestedCommitSha: commitSha || null,
++		})
++		.where(eq(githubRepositoryIndex.dbId, dbId));
++}
+diff --git a/apps/studio.giselles.ai/lib/vector-stores/github-blob-stores.ts b/apps/studio.giselles.ai/lib/vector-stores/github-blob-stores.ts
+index 59f2c2fb2..21602c8fb 100644
+--- a/apps/studio.giselles.ai/lib/vector-stores/github-blob-stores.ts
++++ b/apps/studio.giselles.ai/lib/vector-stores/github-blob-stores.ts
+@@ -9,10 +9,27 @@ import type {
+ 	GitHubQueryContext,
+ 	GitHubVectorStoreQueryService,
+ } from "@giselle-sdk/giselle-engine";
+-import { type DatabaseConfig, createQueryService } from "@giselle-sdk/rag2";
++import {
++	type DatabaseConfig,
++	createChunkStore,
++	createQueryService,
++} from "@giselle-sdk/rag2";
+ import { and, eq, getTableName } from "drizzle-orm";
+ import { z } from "zod/v4";
+ 
++/**
++ * GitHub chunk metadata schema and type for RAG storage
++ */
++export const githubChunkMetadataSchema = z.object({
++	repositoryIndexDbId: z.number(),
++	commitSha: z.string(),
++	fileSha: z.string(),
++	path: z.string(),
++	nodeId: z.string(),
++});
++
++export type GitHubChunkMetadata = z.infer<typeof githubChunkMetadataSchema>;
++
+ /**
+  * Create PostgreSQL connection config from environment
+  */
+@@ -24,6 +41,31 @@ function createDatabaseConfig(): DatabaseConfig {
+ 	return { connectionString: postgresUrl };
+ }
+ 
++/**
++ * GitHub chunk store factory - for ingestion pipeline
++ */
++export function createGitHubChunkStore(repositoryIndexDbId: number) {
++	return createChunkStore<GitHubChunkMetadata>({
++		database: createDatabaseConfig(),
++		tableName: getTableName(githubRepositoryEmbeddings),
++		metadataSchema: githubChunkMetadataSchema,
++		staticContext: { repository_index_db_id: repositoryIndexDbId },
++		requiredColumnOverrides: {
++			documentKey: "path",
++			// (default)
++			// chunkContent: "chunk_content",
++			// chunkIndex: "chunk_index",
++			// embedding: "embedding" (default)
++		},
++		// Metadata fields will auto-convert from camelCase to snake_case:
++		// repositoryIndexDbId -> repository_index_db_id
++		// commitSha -> commit_sha
++		// fileSha -> file_sha
++		// path -> path
++		// nodeId -> node_id
++	});
++}
++
+ /**
+  * Context resolver - handles complex DB resolution logic for GitHub queries
+  */
+diff --git a/packages/github-tool/package.json b/packages/github-tool/package.json
+index dc5ff847b..056bb95fb 100644
+--- a/packages/github-tool/package.json
++++ b/packages/github-tool/package.json
+@@ -30,6 +30,7 @@
+ 	},
+ 	"dependencies": {
+ 		"@giselle-sdk/rag": "workspace:*",
++		"@giselle-sdk/rag2": "workspace:*",
+ 		"@octokit/auth-app": "catalog:",
+ 		"@octokit/core": "catalog:",
+ 		"@octokit/graphql": "catalog:",
+diff --git a/packages/github-tool/src/blob-loader.ts b/packages/github-tool/src/blob-loader.ts
+index 546518682..2c395976a 100644
+--- a/packages/github-tool/src/blob-loader.ts
++++ b/packages/github-tool/src/blob-loader.ts
+@@ -1,17 +1,30 @@
+-import type { ContentLoader, LoaderResult } from "@giselle-sdk/rag";
++import type {
++	Document,
++	DocumentLoader,
++	DocumentLoaderParams,
++} from "@giselle-sdk/rag2";
+ import type { Octokit } from "@octokit/core";
+ 
+ /**
+- * blob loader metadata
++ * GitHub repository loading parameters
+  */
+-export interface GitHubBlobMetadata {
++export interface GitHubBlobLoaderParams extends DocumentLoaderParams {
++	owner: string;
++	repo: string;
++	commitSha: string;
++}
++
++/**
++ * GitHub blob metadata
++ */
++export type GitHubBlobMetadata = {
+ 	owner: string;
+ 	repo: string;
+ 	commitSha: string;
+ 	fileSha: string;
+ 	path: string;
+ 	nodeId: string;
+-}
++};
+ 
+ /**
+  * Parameters for loading a GitHub blob
+@@ -32,50 +45,26 @@ interface GitHubBlobResult {
+ }
+ 
+ /**
+- * GitHub repository loading parameters
+- */
+-export interface GithubRepositoryParams {
+-	owner: string;
+-	repo: string;
+-	commitSha?: string;
+-	baseCommitSha?: string; // for diffing
+-}
+-
+-/**
+- * GitHub repository loader that streams files
++ * GitHub blob loader that implements rag2's DocumentLoader interface
+  */
+ export class GitHubBlobLoader
+-	implements ContentLoader<GithubRepositoryParams, GitHubBlobMetadata>
++	implements DocumentLoader<GitHubBlobMetadata, GitHubBlobLoaderParams>
+ {
+-	private octokit: Octokit;
+-	private options: { maxBlobSize: number };
++	private readonly maxBlobSize: number;
+ 
+ 	constructor(
+-		octokit: Octokit,
+-		options: {
+-			maxBlobSize: number;
++		private octokit: Octokit,
++		options?: {
++			maxBlobSize?: number;
+ 		},
+ 	) {
+-		this.octokit = octokit;
+-		this.options = options;
++		this.maxBlobSize = options?.maxBlobSize ?? 1024 * 1024; // 1MB default
+ 	}
+ 
+-	/**
+-	 * Load content from a repository as a stream
+-	 */
+-	async *loadStream(
+-		params: GithubRepositoryParams,
+-	): AsyncIterable<LoaderResult<GitHubBlobMetadata>> {
+-		const { owner, repo } = params;
+-		let commitSha = params.commitSha;
+-		if (!commitSha) {
+-			const defaultBranchHead = await fetchDefaultBranchHead(
+-				this.octokit,
+-				owner,
+-				repo,
+-			);
+-			commitSha = defaultBranchHead.sha;
+-		}
++	async *load(
++		params: GitHubBlobLoaderParams,
++	): AsyncIterable<Document<GitHubBlobMetadata>> {
++		const { owner, repo, commitSha } = params;
+ 
+ 		console.log(`Loading repository ${owner}/${repo} at commit ${commitSha}`);
+ 
+@@ -94,7 +83,7 @@ export class GitHubBlobLoader
+ 			}
+ 
+ 			// Skip files that are too large
+-			if (size > this.options.maxBlobSize) {
++			if (size > this.maxBlobSize) {
+ 				console.warn(
+ 					`Blob size is too large: ${size} bytes, skipping: ${path}`,
+ 				);
+@@ -228,7 +217,7 @@ async function* traverseTree(
+ /**
+  * Get the default branch HEAD commit for a GitHub repository
+  */
+-async function fetchDefaultBranchHead(
++export async function fetchDefaultBranchHead(
+ 	octokit: Octokit,
+ 	owner: string,
+ 	repo: string,
+diff --git a/packages/rag2/README.md b/packages/rag2/README.md
+index 32d183246..022caa0aa 100644
+--- a/packages/rag2/README.md
++++ b/packages/rag2/README.md
+@@ -13,6 +13,15 @@ and pgvector.
+ - **Connection pooling** for production performance
+ - **Comprehensive error handling** with structured error types
+ 
++### Ingest Pipeline
++
++- **Document processing** with configurable chunking strategies
++- **Batch embedding** for efficient processing
++- **Metadata transformation** with schema validation
++- **Retry logic** with exponential backoff
++- **Progress tracking** and error reporting
++- **Transaction safety** with automatic rollback
++
+ ## Installation
+ 
+ This package is intended for internal use within the Giselle monorepo.
+@@ -66,6 +75,87 @@ results.forEach((result) => {
+ });
+ ```
+ 
++### Ingest Pipeline
++
++Process and store documents with automatic chunking and embedding.
++
++```typescript
++import {
++  createChunkStore,
++  createIngestPipeline,
++  type Document,
++} from "@giselle-sdk/rag2";
++import { z } from "zod/v4";
++
++// Define schemas
++const ChunkMetadataSchema = z.object({
++  repositoryId: z.string(),
++  filePath: z.string(),
++  commitSha: z.string(),
++});
++
++type ChunkMetadata = z.infer<typeof ChunkMetadataSchema>;
++
++// Create chunk store
++const chunkStore = createChunkStore<ChunkMetadata>({
++  database: {
++    connectionString: process.env.DATABASE_URL!,
++    poolConfig: { max: 20 },
++  },
++  tableName: "document_embeddings",
++  metadataSchema: ChunkMetadataSchema,
++  staticContext: { processed_at: new Date().toISOString() },
++});
++
++const DocumentMetadata = {
++  owner: z.string(),
++  repo: z.string(),
++  filePath: z.string(),
++  commitSha: z.string(),
++};
++
++// Create document loader
++const documentLoader = {
++  async *load(params: unknown): AsyncIterable<Document<DocumentMetadata>> {
++    // Your document loading logic here
++    yield {
++      content: "Example document content...",
++      metadata: {
++        owner: "owner",
++        repo: "repo",
++        filePath: "src/example.ts",
++        commitSha: "abc123",
++      },
++    };
++  },
++};
++
++// additional data for chunk metadata
++const repositoryId = getRepositoryId();
++
++// Create ingest pipeline
++const pipeline = createIngestPipeline({
++  documentLoader,
++  chunkStore,
++  documentKey: (doc) => doc.metadata.filePath,
++  metadataTransform: (documentMetadata) => ({
++    repository_id: repositoryId,
++    filePath: documentMetadata.filePath,
++    commitSha: documentMetadata.commitSha,
++  }),
++  options: {
++    maxBatchSize: 50,
++    onProgress: (progress) => {
++      console.log(`Processed: ${progress.processedDocuments}`);
++    },
++  },
++});
++
++// Run ingestion
++const result = await pipeline.ingest({});
++console.log(`Successfully processed ${result.successfulDocuments} documents`);
++```
++
+ ## API
+ 
+ ### Query Service
+@@ -84,11 +174,31 @@ interface QueryResult<TMetadata> {
+ }
+ ```
+ 
++### Ingest Pipeline
++
++The ingest pipeline returns an `IngestResult`:
++
++```typescript
++interface IngestResult {
++  totalDocuments: number;
++  successfulDocuments: number;
++  failedDocuments: number;
++  errors: Array<{
++    document: string;
++    error: Error;
++  }>;
++}
++```
++
+ ### Factory Functions
+ 
+ - `createQueryService<TContext, TMetadata>(config)` - Creates a new query
+   service
++- `createChunkStore<TMetadata>(config)` - Creates a new chunk store
++- `createIngestPipeline<TSource, TTarget>(config)` - Creates a new ingest
++  pipeline
+ - `createDefaultEmbedder()` - Creates OpenAI embedder with default settings
++- `createDefaultChunker()` - Creates line-based chunker with default settings
+ - `createColumnMapping(options)` - Creates database column mapping
+ 
+ ## Environment Variables
+diff --git a/packages/rag2/src/chunk-store/index.ts b/packages/rag2/src/chunk-store/index.ts
+new file mode 100644
+index 000000000..0b92d7e6f
+--- /dev/null
++++ b/packages/rag2/src/chunk-store/index.ts
+@@ -0,0 +1,5 @@
++export type { Chunk, ChunkWithEmbedding, ChunkStore } from "./types";
++export {
++	PostgresChunkStore,
++	type PostgresChunkStoreConfig,
++} from "./postgres";
+diff --git a/packages/rag2/src/chunk-store/postgres/index.ts b/packages/rag2/src/chunk-store/postgres/index.ts
+new file mode 100644
+index 000000000..0d90e059b
+--- /dev/null
++++ b/packages/rag2/src/chunk-store/postgres/index.ts
+@@ -0,0 +1,274 @@
++import type { PoolClient } from "pg";
++import { escapeIdentifier } from "pg";
++import * as pgvector from "pgvector/pg";
++import type { z } from "zod/v4";
++import { PoolManager } from "../../database/postgres";
++import { ensurePgVectorTypes } from "../../database/postgres/pgvector-registry";
++import {
++	type ColumnMapping,
++	type DatabaseConfig,
++	REQUIRED_COLUMN_KEYS,
++} from "../../database/types";
++import { DatabaseError, ValidationError } from "../../errors";
++import type { ChunkStore, ChunkWithEmbedding } from "../types";
++
++/**
++ * Performance constants for batch operations
++ */
++const PERFORMANCE_CONSTANTS = {
++	/**
++	 * Maximum number of records to insert in a single batch
++	 * Limited by PostgreSQL parameter limit (typically 65535)
++	 * With ~10 columns per record, this allows safe batching
++	 */
++	MAX_BATCH_SIZE: 5000,
++} as const;
++
++export interface PostgresChunkStoreConfig<TMetadata> {
++	database: DatabaseConfig;
++	tableName: string;
++	columnMapping: ColumnMapping<TMetadata>;
++	// Zod schema for metadata validation
++	metadataSchema: z.ZodType<TMetadata>;
++	// static context to be applied to all records
++	staticContext?: Record<string, unknown>;
++}
++
++export class PostgresChunkStore<
++	TMetadata extends Record<string, unknown> = Record<string, never>,
++> implements ChunkStore<TMetadata>
++{
++	constructor(private config: PostgresChunkStoreConfig<TMetadata>) {}
++
++	async insert(
++		documentKey: string,
++		chunks: ChunkWithEmbedding[],
++		metadata: TMetadata,
++	): Promise<void> {
++		const {
++			database,
++			tableName,
++			columnMapping,
++			staticContext = {},
++			metadataSchema,
++		} = this.config;
++
++		// Validate metadata first (fail fast)
++		const result = metadataSchema.safeParse(metadata);
++		if (!result.success) {
++			throw ValidationError.fromZodError(result.error, {
++				operation: "insert",
++				documentKey,
++				tableName,
++			});
++		}
++
++		// Early return for empty chunks
++		if (chunks.length === 0) {
++			return;
++		}
++
++		const pool = PoolManager.getPool(database);
++		const client = await pool.connect();
++
++		try {
++			// Register pgvector types once per connection
++			await ensurePgVectorTypes(client, database.connectionString);
++
++			// Start transaction
++			await client.query("BEGIN");
++
++			// Delete existing chunks for this document
++			await this.deleteByDocumentKeyInternal(documentKey, client);
++
++			// Prepare all records for batch insert
++			const records = chunks.map((chunk) => ({
++				record: {
++					[columnMapping.documentKey]: documentKey,
++					[columnMapping.chunkContent]: chunk.content,
++					[columnMapping.chunkIndex]: chunk.index,
++					// map metadata
++					...this.mapMetadata(metadata, columnMapping),
++					// add static context
++					...staticContext,
++				},
++				embedding: {
++					embeddingColumn: columnMapping.embedding,
++					embeddingValue: chunk.embedding,
++				},
++			}));
++
++			// Batch insert all chunks in a single query
++			await this.insertRecords(client, tableName, records);
++
++			await client.query("COMMIT");
++		} catch (error) {
++			await client.query("ROLLBACK");
++			if (error instanceof ValidationError) {
++				throw error;
++			}
++			throw DatabaseError.transactionFailed(
++				"chunk insertion",
++				error instanceof Error ? error : undefined,
++				{
++					operation: "insert",
++					documentKey,
++					tableName,
++					chunkCount: chunks.length,
++				},
++			);
++		} finally {
++			client.release();
++		}
++	}
++
++	async deleteByDocumentKey(documentKey: string): Promise<void> {
++		const pool = PoolManager.getPool(this.config.database);
++		const client = await pool.connect();
++
++		try {
++			// Register pgvector types and execute deletion in single connection
++			await ensurePgVectorTypes(client, this.config.database.connectionString);
++			await this.deleteByDocumentKeyInternal(documentKey, client);
++		} catch (error) {
++			throw DatabaseError.queryFailed(
++				`DELETE FROM ${this.config.tableName}`,
++				error instanceof Error ? error : undefined,
++				{
++					operation: "deleteByDocumentKey",
++					documentKey,
++					tableName: this.config.tableName,
++				},
++			);
++		} finally {
++			client.release();
++		}
++	}
++
++	private async deleteByDocumentKeyInternal(
++		documentKey: string,
++		client: PoolClient,
++	): Promise<void> {
++		const { tableName, columnMapping, staticContext = {} } = this.config;
++
++		let query = `
++      DELETE FROM ${escapeIdentifier(tableName)}
++      WHERE ${escapeIdentifier(columnMapping.documentKey)} = $1
++    `;
++
++		const queryParams: unknown[] = [documentKey];
++
++		// Add static context conditions
++		for (const [key, value] of Object.entries(staticContext)) {
++			queryParams.push(value);
++			query += ` AND ${escapeIdentifier(key)} = $${queryParams.length}`;
++		}
++
++		await client.query(query, queryParams);
++	}
++
++	/**
++	 * Batch insert multiple records using optimal batching strategy
++	 */
++	private async insertRecords(
++		client: PoolClient,
++		tableName: string,
++		records: Array<{
++			record: Record<string, unknown>;
++			embedding: {
++				embeddingColumn: string;
++				embeddingValue: number[];
++			};
++		}>,
++	): Promise<void> {
++		if (records.length === 0) {
++			return;
++		}
++
++		// Process in batches if records exceed safe limit
++		if (records.length > PERFORMANCE_CONSTANTS.MAX_BATCH_SIZE) {
++			for (
++				let i = 0;
++				i < records.length;
++				i += PERFORMANCE_CONSTANTS.MAX_BATCH_SIZE
++			) {
++				const batch = records.slice(
++					i,
++					i + PERFORMANCE_CONSTANTS.MAX_BATCH_SIZE,
++				);
++				await this.insertRecordsBatch(client, tableName, batch);
++			}
++			return;
++		}
++
++		// Single batch insert for smaller datasets
++		await this.insertRecordsBatch(client, tableName, records);
++	}
++
++	/**
++	 * Insert a single batch of records
++	 */
++	private async insertRecordsBatch(
++		client: PoolClient,
++		tableName: string,
++		records: Array<{
++			record: Record<string, unknown>;
++			embedding: {
++				embeddingColumn: string;
++				embeddingValue: number[];
++			};
++		}>,
++	): Promise<void> {
++		// Get column names from the first record (all records should have same structure)
++		const firstRecord = records[0];
++		const columns = Object.keys(firstRecord.record);
++		columns.push(firstRecord.embedding.embeddingColumn);
++
++		// Build values array for all records
++		const allValues: unknown[] = [];
++		const valuePlaceholders: string[] = [];
++
++		records.forEach((item, recordIndex) => {
++			const recordValues = Object.values(item.record);
++			recordValues.push(pgvector.toSql(item.embedding.embeddingValue));
++
++			// Add values to the flat array
++			allValues.push(...recordValues);
++
++			// Create placeholders for this record
++			const startIndex = recordIndex * columns.length;
++			const placeholders = columns.map(
++				(_, colIndex) => `$${startIndex + colIndex + 1}`,
++			);
++			valuePlaceholders.push(`(${placeholders.join(", ")})`);
++		});
++
++		const query = `
++			INSERT INTO ${escapeIdentifier(tableName)}
++			(${columns.map((c) => escapeIdentifier(c)).join(", ")})
++			VALUES ${valuePlaceholders.join(", ")}
++		`;
++
++		await client.query(query, allValues);
++	}
++
++	private mapMetadata(
++		metadata: TMetadata,
++		mapping: Record<string, string>,
++	): Record<string, unknown> {
++		const result: Record<string, unknown> = {};
++
++		const metadataObj = metadata;
++		for (const [key, value] of Object.entries(metadataObj)) {
++			if (
++				key in mapping &&
++				!(REQUIRED_COLUMN_KEYS as readonly string[]).includes(key)
++			) {
++				const columnName = mapping[key as keyof typeof mapping];
++				result[columnName] = value;
++			}
++		}
++
++		return result;
++	}
++}
+diff --git a/packages/rag2/src/chunk-store/postgres/metadata-validation.test.ts b/packages/rag2/src/chunk-store/postgres/metadata-validation.test.ts
+new file mode 100644
+index 000000000..984a23e28
+--- /dev/null
++++ b/packages/rag2/src/chunk-store/postgres/metadata-validation.test.ts
+@@ -0,0 +1,148 @@
++import { describe, expect, it, vi } from "vitest";
++import { z } from "zod/v4";
++import { ValidationError } from "../../errors";
++import { PostgresChunkStore } from "./index";
++
++// Mock dependencies
++vi.mock("../../database/postgres", () => ({
++	PoolManager: {
++		getPool: vi.fn().mockReturnValue({
++			connect: vi.fn().mockResolvedValue({
++				query: vi.fn().mockResolvedValue({ rows: [] }),
++				release: vi.fn(),
++			}),
++		}),
++	},
++}));
++
++vi.mock("pgvector/pg", () => ({
++	toSql: vi.fn((arr) => `[${arr.join(",")}]`),
++	registerTypes: vi.fn().mockResolvedValue(undefined),
++}));
++
++describe("PostgresChunkStore with metadata validation", () => {
++	const mockDatabaseConfig = {
++		connectionString: "postgresql://test",
++	};
++
++	const mockColumnMapping = {
++		documentKey: "document_key",
++		chunkContent: "content",
++		chunkIndex: "index",
++		embedding: "embedding",
++		title: "title",
++		author: "author",
++		publishedAt: "published_at",
++	};
++
++	it("should insert chunks with valid metadata when schema is provided", async () => {
++		const metadataSchema = z.object({
++			title: z.string(),
++			author: z.string(),
++			publishedAt: z.date(),
++		});
++
++		const store = new PostgresChunkStore({
++			database: mockDatabaseConfig,
++			tableName: "test_chunks",
++			columnMapping: mockColumnMapping,
++			metadataSchema,
++		});
++
++		const validMetadata = {
++			title: "Test Document",
++			author: "Test Author",
++			publishedAt: new Date("2024-01-01"),
++		};
++
++		const chunks = [
++			{
++				content: "Test content",
++				index: 0,
++				embedding: [1, 2, 3],
++			},
++		];
++
++		// Should not throw
++		await expect(
++			store.insert("doc1", chunks, validMetadata),
++		).resolves.toBeUndefined();
++	});
++
++	it("should throw ValidationError with invalid metadata when schema is provided", async () => {
++		const metadataSchema = z.object({
++			title: z.string(),
++			author: z.string(),
++			publishedAt: z.date(),
++		});
++
++		const store = new PostgresChunkStore({
++			database: mockDatabaseConfig,
++			tableName: "test_chunks",
++			columnMapping: mockColumnMapping,
++			metadataSchema,
++		});
++
++		const invalidMetadata = {
++			title: "Test Document",
++			author: 123 as unknown as string, // Invalid: should be string
++			publishedAt: new Date(),
++		};
++
++		const chunks = [
++			{
++				content: "Test content",
++				index: 0,
++				embedding: [1, 2, 3],
++			},
++		];
++
++		await expect(store.insert("doc1", chunks, invalidMetadata)).rejects.toThrow(
++			ValidationError,
++		);
++	});
++
++	it("should provide detailed error information for validation failures", async () => {
++		const metadataSchema = z.object({
++			title: z.string().min(1),
++			author: z.string(),
++			tags: z.array(z.string()),
++			count: z.number().positive(),
++		});
++
++		const store = new PostgresChunkStore({
++			database: mockDatabaseConfig,
++			tableName: "test_chunks",
++			columnMapping: {
++				...mockColumnMapping,
++				tags: "tags",
++				count: "count",
++			},
++			metadataSchema,
++		});
++
++		const invalidMetadata = {
++			title: "", // Too short
++			author: "Author",
++			tags: ["valid", 123 as unknown as string], // Contains non-string
++			count: -5, // Not positive
++		};
++
++		const chunks = [
++			{
++				content: "Test content",
++				index: 0,
++				embedding: [1, 2, 3],
++			},
++		];
++
++		try {
++			await store.insert("doc1", chunks, invalidMetadata);
++			expect.fail("Should have thrown ValidationError");
++		} catch (error) {
++			expect(error).toBeInstanceOf(ValidationError);
++			expect(error.message).toContain("Validation failed");
++			expect(error.zodError).toBeDefined();
++		}
++	});
++});
+diff --git a/packages/rag2/src/chunk-store/types.ts b/packages/rag2/src/chunk-store/types.ts
+new file mode 100644
+index 000000000..6cee26c3a
+--- /dev/null
++++ b/packages/rag2/src/chunk-store/types.ts
+@@ -0,0 +1,30 @@
++export interface Chunk {
++	content: string;
++	index: number;
++}
++
++export interface ChunkWithEmbedding extends Chunk {
++	embedding: number[];
++}
++
++export interface ChunkStore<
++	TMetadata extends Record<string, unknown> = Record<string, never>,
++> {
++	/**
++	 * Insert chunks into the chunk store
++	 * @param documentKey The unique key of the document
++	 * @param chunks The chunks with embeddings
++	 * @param metadata The document metadata
++	 */
++	insert(
++		documentKey: string,
++		chunks: ChunkWithEmbedding[],
++		metadata: TMetadata,
++	): Promise<void>;
++
++	/**
++	 * Delete chunks associated with a document key
++	 * @param documentKey The unique key of the document
++	 */
++	deleteByDocumentKey(documentKey: string): Promise<void>;
++}
+diff --git a/packages/rag2/src/chunker/index.ts b/packages/rag2/src/chunker/index.ts
+new file mode 100644
+index 000000000..0db28ed8c
+--- /dev/null
++++ b/packages/rag2/src/chunker/index.ts
+@@ -0,0 +1,2 @@
++export type { Chunker } from "./types";
++export { LineChunker, type LineChunkerOptions } from "./line-chunker";
+diff --git a/packages/rag2/src/chunker/line-chunker.test.ts b/packages/rag2/src/chunker/line-chunker.test.ts
+new file mode 100644
+index 000000000..10d0c4b3c
+--- /dev/null
++++ b/packages/rag2/src/chunker/line-chunker.test.ts
+@@ -0,0 +1,282 @@
++import { describe, expect, it } from "vitest";
++import { LineChunker } from "./line-chunker";
++
++describe("LineChunker", () => {
++	describe("Basic functionality", () => {
++		it("should split text into chunks based on line count", () => {
++			const chunker = new LineChunker({
++				maxLines: 3,
++				overlap: 0,
++			});
++			const text = "line1\nline2\nline3\nline4\nline5\nline6\nline7\nline8";
++
++			const chunks = chunker.chunk(text);
++
++			expect(chunks.length).toBeGreaterThan(1);
++			for (const chunk of chunks) {
++				expect(chunk.trim().length).toBeGreaterThan(0);
++			}
++
++			// Each chunk should have at most 3 lines (except possibly the last)
++			for (let i = 0; i < chunks.length - 1; i++) {
++				const lineCount = chunks[i].split("\n").length;
++				expect(lineCount).toBeLessThanOrEqual(3);
++			}
++		});
++
++		it("should handle empty text", () => {
++			const chunker = new LineChunker();
++			const chunks = chunker.chunk("");
++
++			expect(chunks).toEqual([]);
++		});
++
++		it("should handle single line text", () => {
++			const chunker = new LineChunker();
++			const text = "This is a single line of text";
++
++			const chunks = chunker.chunk(text);
++
++			expect(chunks).toEqual([text]);
++		});
++
++		it("should apply overlap when configured", () => {
++			const chunker = new LineChunker({
++				maxLines: 3,
++				overlap: 1,
++			});
++			const text = "line1\nline2\nline3\nline4\nline5\nline6";
++
++			const chunks = chunker.chunk(text);
++
++			expect(chunks.length).toBeGreaterThan(1);
++			// Verify overlap by checking that consecutive chunks share content
++			for (let i = 0; i < chunks.length - 1; i++) {
++				const currentChunk = chunks[i];
++				const nextChunk = chunks[i + 1];
++				// Should have some overlapping content
++				expect(currentChunk.length).toBeGreaterThan(0);
++				expect(nextChunk.length).toBeGreaterThan(0);
++			}
++		});
++
++		it("should respect maxChars limit", () => {
++			const chunker = new LineChunker({
++				maxLines: 100,
++				maxChars: 50,
++				overlap: 0,
++			});
++			const longLine = "a".repeat(100);
++			const text = `${longLine}\nshort line`;
++
++			const chunks = chunker.chunk(text);
++
++			expect(chunks.length).toBeGreaterThan(1);
++			for (const chunk of chunks) {
++				expect(chunk.length).toBeLessThanOrEqual(50);
++			}
++		});
++	});
++
++	describe("Configuration validation", () => {
++		it("should use default values when no options provided", () => {
++			expect(() => new LineChunker()).not.toThrow();
++		});
++
++		it("should validate maxLines is positive", () => {
++			expect(() => new LineChunker({ maxLines: 0 })).toThrow();
++			expect(() => new LineChunker({ maxLines: -1 })).toThrow();
++		});
++
++		it("should validate overlap is non-negative", () => {
++			expect(() => new LineChunker({ overlap: -1 })).toThrow();
++		});
++
++		it("should validate overlap is less than maxLines", () => {
++			expect(() => new LineChunker({ maxLines: 5, overlap: 5 })).toThrow();
++			expect(() => new LineChunker({ maxLines: 5, overlap: 6 })).toThrow();
++		});
++
++		it("should validate maxChars is positive", () => {
++			expect(() => new LineChunker({ maxChars: 0 })).toThrow();
++			expect(() => new LineChunker({ maxChars: -1 })).toThrow();
++		});
++
++		it("should enforce maximum limits", () => {
++			expect(() => new LineChunker({ maxLines: 1001 })).toThrow();
++			expect(() => new LineChunker({ maxChars: 100001 })).toThrow();
++		});
++	});
++
++	describe("Edge cases", () => {
++		it("should handle text with only newlines", () => {
++			const chunker = new LineChunker({ maxLines: 2, overlap: 0 });
++			const text = "\n\n\n\n\n";
++
++			const chunks = chunker.chunk(text);
++
++			// Empty lines might be filtered out, so we check for either empty array or chunks
++			expect(chunks.length).toBeGreaterThanOrEqual(0);
++		});
++
++		it("should handle text without newlines", () => {
++			const chunker = new LineChunker({ maxLines: 3, overlap: 0 });
++			const text = "This is a single line without any newline characters";
++
++			const chunks = chunker.chunk(text);
++
++			expect(chunks).toEqual([text]);
++		});
++
++		it("should handle mixed line endings", () => {
++			const chunker = new LineChunker({ maxLines: 2, overlap: 0 });
++			const text = "line1\nline2\rline3\r\nline4";
++
++			const chunks = chunker.chunk(text);
++
++			expect(chunks.length).toBeGreaterThan(1);
++			expect(chunks.join("")).toContain("line1");
++			expect(chunks.join("")).toContain("line4");
++		});
++
++		it("should handle very long lines with character splitting", () => {
++			const chunker = new LineChunker({
++				maxLines: 10,
++				maxChars: 20,
++				overlap: 0,
++			});
++			const longLine = "x".repeat(100);
++
++			const chunks = chunker.chunk(longLine);
++
++			expect(chunks.length).toBeGreaterThan(1);
++			for (const chunk of chunks) {
++				expect(chunk.length).toBeLessThanOrEqual(20);
++			}
++		});
++
++		it("should handle large overlap values gracefully", () => {
++			const chunker = new LineChunker({
++				maxLines: 10,
++				overlap: 8,
++			});
++			const text = Array.from({ length: 20 }, (_, i) => `line${i}`).join("\n");
++
++			const chunks = chunker.chunk(text);
++
++			expect(chunks.length).toBeGreaterThan(1);
++			// Should still make progress despite large overlap
++			expect(chunks[0]).not.toEqual(chunks[1]);
++		});
++
++		it("should terminate properly when overlap exceeds remaining content", () => {
++			const chunker = new LineChunker({
++				maxLines: 50,
++				overlap: 30,
++			});
++			// Create text with 40 lines - last chunk will have overlap > remaining content
++			const text = Array.from({ length: 40 }, (_, i) => `line${i + 1}`).join(
++				"\n",
++			);
++
++			const chunks = chunker.chunk(text);
++
++			// Should not create excessive small chunks at the end
++			expect(chunks.length).toBeLessThan(10);
++			// Should not have many 1-line chunks (indicates proper termination)
++			const singleLineChunks = chunks.filter(
++				(chunk) => chunk.split("\n").length === 1,
++			);
++			expect(singleLineChunks.length).toBeLessThan(5);
++		});
++	});
++
++	describe("Complex scenarios", () => {
++		it("should handle realistic code-like content", () => {
++			const chunker = new LineChunker({
++				maxLines: 5,
++				overlap: 1,
++			});
++			const codeContent = `function example() {
++	const value = "hello";
++	if (value) {
++		console.log(value);
++	}
++	return value;
++}
++
++function another() {
++	return "world";
++}`;
++
++			const chunks = chunker.chunk(codeContent);
++
++			expect(chunks.length).toBeGreaterThan(1);
++			// Verify that all original content is preserved
++			const rejoined = chunks.join("");
++			expect(rejoined).toContain("function example");
++			expect(rejoined).toContain("function another");
++		});
++
++		it("should maintain content integrity with overlap", () => {
++			const chunker = new LineChunker({
++				maxLines: 3,
++				overlap: 1,
++			});
++			const lines = Array.from({ length: 10 }, (_, i) => `Line ${i + 1}`);
++			const text = lines.join("\n");
++
++			const chunks = chunker.chunk(text);
++
++			// Verify no content is lost
++			const allChunkContent = chunks.join("");
++			for (const line of lines) {
++				expect(allChunkContent).toContain(line);
++			}
++		});
++
++		it("should handle documents with varying line lengths", () => {
++			const chunker = new LineChunker({
++				maxLines: 3,
++				maxChars: 100,
++				overlap: 0,
++			});
++			const text = [
++				"Short",
++				"This is a medium length line with some content",
++				"X".repeat(150), // Very long line
++				"Another short line",
++				"Final line",
++			].join("\n");
++
++			const chunks = chunker.chunk(text);
++
++			expect(chunks.length).toBeGreaterThan(1);
++			// Long line should be split by character limit
++			const hasLongChunk = chunks.some((chunk) =>
++				chunk.includes("X".repeat(50)),
++			);
++			expect(hasLongChunk).toBe(true);
++		});
++	});
++
++	describe("Performance considerations", () => {
++		it("should handle moderately large documents efficiently", () => {
++			const chunker = new LineChunker({
++				maxLines: 50,
++				overlap: 5,
++			});
++			const largeText = Array.from(
++				{ length: 1000 },
++				(_, i) => `Line ${i + 1}`,
++			).join("\n");
++
++			const startTime = Date.now();
++			const chunks = chunker.chunk(largeText);
++			const endTime = Date.now();
++
++			expect(chunks.length).toBeGreaterThan(10);
++			expect(endTime - startTime).toBeLessThan(1000); // Should complete within 1 second
++		});
++	});
++});
+diff --git a/packages/rag2/src/chunker/line-chunker.ts b/packages/rag2/src/chunker/line-chunker.ts
+new file mode 100644
+index 000000000..12e884a0e
+--- /dev/null
++++ b/packages/rag2/src/chunker/line-chunker.ts
+@@ -0,0 +1,306 @@
++import { z } from "zod/v4";
++import { ConfigurationError } from "../errors";
++import type { Chunker } from "./types";
++
++const LineChunkerOptionsSchema = z
++	.object({
++		/**
++		 * Maximum number of lines per chunk
++		 * Default: 150
++		 */
++		maxLines: z
++			.number()
++			.int()
++			.positive("maxLines must be positive")
++			.max(1000, "maxLines cannot exceed 1000")
++			.optional()
++			.default(150),
++		/**
++		 * Number of lines to overlap between chunks
++		 * Default: 30
++		 */
++		overlap: z
++			.number()
++			.int()
++			.nonnegative("overlap must be non-negative")
++			.optional()
++			.default(30),
++		/**
++		 * Maximum characters per chunk before splitting
++		 * Default: 10000
++		 */
++		maxChars: z
++			.number()
++			.int()
++			.positive("maxChars must be positive")
++			.max(100000, "maxChars cannot exceed 100000")
++			.optional()
++			.default(10000),
++	})
++	.refine((data) => data.overlap < data.maxLines, {
++		message: "overlap must be less than maxLines",
++		path: ["overlap"],
++	});
++export type LineChunkerOptions = z.input<typeof LineChunkerOptionsSchema>;
++
++enum ShrinkMode {
++	OVERLAP_REDUCTION = "overlap_reduction",
++	LINE_REDUCTION = "line_reduction",
++	CHARACTER_SPLIT = "character_split",
++}
++
++interface ChunkInfo {
++	startIndex: number;
++	endIndex: number;
++	content: string;
++	currentOverlap: number;
++	lines: string[];
++}
++
++export class LineChunker implements Chunker {
++	private maxLines: number;
++	private overlap: number;
++	private maxChars: number;
++
++	constructor(options: LineChunkerOptions = {}) {
++		// Validate configuration with Zod
++		const validationResult = LineChunkerOptionsSchema.safeParse(options);
++		if (!validationResult.success) {
++			throw ConfigurationError.invalidValue(
++				"LineChunkerOptions",
++				options,
++				"Valid chunker configuration",
++				{
++					operation: "constructor",
++					validationErrors: validationResult.error.issues,
++				},
++			);
++		}
++
++		// Use validated and defaulted values
++		const validatedOptions = validationResult.data;
++		this.maxLines = validatedOptions.maxLines;
++		this.overlap = validatedOptions.overlap;
++		this.maxChars = validatedOptions.maxChars;
++	}
++
++	/**
++	 * Split text into chunks based on lines with gradual overlap reduction strategy
++	 *
++	 * Flow:
++	 * 1. Start: i = 0, wasLineSplit = false
++	 * 2. While i < lines.length:
++	 *    a. Create chunk: currentOverlap = (isFirstChunk || wasLineSplit) ? 0 : overlapSetting
++	 *    b. Reset wasLineSplit = false
++	 *    c. Check if content exceeds maxChars:
++	 *       - If No: Confirm chunk
++	 *       - If Yes: Check if currentOverlap > 0:
++	 *         - If Yes: Gradual overlap reduction (overlap = floor(overlap/2), adjust start position)
++	 *         - If No: Check if lineCount > 1:
++	 *           - If Yes: Gradual line reduction (end = end - 1)
++	 *           - If No: Character split execution, set wasLineSplit = true, i = end
++	 *    d. Add chunk and calculate next position: i = start + actualChunkSize - effectiveOverlap
++	 * 3. Return chunks (filter empty)
++	 */
++	chunk(text: string): string[] {
++		const lines = text.split("\n");
++		const chunks: string[] = [];
++
++		let i = 0;
++		let wasLineSplit = false;
++
++		while (i < lines.length) {
++			const isFirstChunk = chunks.length === 0;
++			const shouldOverlap = this.shouldUseOverlap(isFirstChunk, wasLineSplit);
++			const initialOverlap = shouldOverlap ? this.overlap : 0;
++
++			// Create initial chunk
++			let chunkInfo = this.createInitialChunk(i, lines, initialOverlap);
++
++			// Reset wasLineSplit for each chunk
++			wasLineSplit = false;
++
++			// Shrinking loop: reduce chunk size until it fits maxChars
++			let characterSplit = false;
++			while (chunkInfo.content.length > this.maxChars) {
++				const shrinkMode = this.getShrinkMode(chunkInfo);
++				let reduced: ChunkInfo | null = null;
++
++				switch (shrinkMode) {
++					case ShrinkMode.OVERLAP_REDUCTION:
++						reduced = this.reduceOverlapGradually(chunkInfo, lines);
++						break;
++					case ShrinkMode.LINE_REDUCTION:
++						reduced = this.reduceLineCountGradually(chunkInfo, lines);
++						break;
++					case ShrinkMode.CHARACTER_SPLIT: {
++						const splitChunks = this.splitLongContent(chunkInfo.content);
++						chunks.push(...splitChunks);
++						wasLineSplit = true;
++						i = chunkInfo.endIndex;
++						characterSplit = true;
++						break;
++					}
++				}
++
++				if (reduced === null || characterSplit) {
++					break;
++				}
++				chunkInfo = reduced;
++			}
++
++			// Only process normal chunk if we didn't do character splitting
++			if (!characterSplit) {
++				if (chunkInfo.content.length > 0) {
++					chunks.push(chunkInfo.content);
++				}
++				i = this.nextStartIndex(chunkInfo, wasLineSplit, lines.length);
++			}
++		}
++
++		return chunks.filter((chunk) => chunk.trim().length > 0);
++	}
++
++	/**
++	 * Determine the appropriate shrink mode for a chunk that exceeds maxChars
++	 */
++	private getShrinkMode(chunkInfo: ChunkInfo): ShrinkMode {
++		if (chunkInfo.currentOverlap > 0) {
++			return ShrinkMode.OVERLAP_REDUCTION;
++		}
++		const currentLineCount = chunkInfo.endIndex - chunkInfo.startIndex;
++		if (currentLineCount > 1) {
++			return ShrinkMode.LINE_REDUCTION;
++		}
++		return ShrinkMode.CHARACTER_SPLIT;
++	}
++
++	/**
++	 * Determine if overlap should be used for the current chunk
++	 */
++	private shouldUseOverlap(
++		isFirstChunk: boolean,
++		wasLineSplit: boolean,
++	): boolean {
++		return !isFirstChunk && !wasLineSplit;
++	}
++
++	/**
++	 * Calculate next starting position based on chunk info and line split status
++	 */
++	private nextStartIndex(
++		chunkInfo: ChunkInfo,
++		wasLineSplit: boolean,
++		totalLines: number,
++	): number {
++		const actualChunkSize = chunkInfo.endIndex - chunkInfo.startIndex;
++		const effectiveOverlap = wasLineSplit ? 0 : this.overlap;
++		const nextPosition =
++			chunkInfo.startIndex + actualChunkSize - effectiveOverlap;
++
++		// If we've processed all lines, return the end index to terminate the loop
++		if (chunkInfo.endIndex >= totalLines) {
++			return chunkInfo.endIndex;
++		}
++
++		// Ensure progress by advancing at least 1 position
++		return Math.max(nextPosition, chunkInfo.startIndex + 1);
++	}
++
++	/**
++	 * Build chunk information from boundary indices
++	 */
++	private buildChunk(
++		startIndex: number,
++		endIndex: number,
++		lines: string[],
++		currentOverlap: number,
++	): ChunkInfo {
++		const chunkLines = lines.slice(startIndex, endIndex);
++		const content = chunkLines.join("\n").trim();
++
++		return {
++			startIndex,
++			endIndex,
++			content,
++			currentOverlap,
++			lines: chunkLines,
++		};
++	}
++
++	/**
++	 * Create initial chunk information
++	 */
++	private createInitialChunk(
++		startIndex: number,
++		lines: string[],
++		initialOverlap: number,
++	): ChunkInfo {
++		const endIndex = Math.min(startIndex + this.maxLines, lines.length);
++		return this.buildChunk(startIndex, endIndex, lines, initialOverlap);
++	}
++
++	/**
++	 * Reduce overlap gradually and adjust chunk accordingly
++	 * Returns null if overlap cannot be reduced further (already 0)
++	 */
++	private reduceOverlapGradually(
++		chunkInfo: ChunkInfo,
++		lines: string[],
++	): ChunkInfo | null {
++		if (chunkInfo.currentOverlap === 0) {
++			return null;
++		}
++
++		// Reduce overlap by half (rounded down)
++		const newOverlap = Math.floor(chunkInfo.currentOverlap / 2);
++
++		// Calculate how many lines we're reducing the overlap by
++		const overlapReduction = chunkInfo.currentOverlap - newOverlap;
++
++		// Adjust start position forward by the overlap reduction
++		const newStartIndex = chunkInfo.startIndex + overlapReduction;
++
++		// Keep the same end position to maintain fixed end boundary
++		const newEndIndex = chunkInfo.endIndex;
++
++		return this.buildChunk(newStartIndex, newEndIndex, lines, newOverlap);
++	}
++
++	/**
++	 * Reduce line count gradually when overlap reduction is not sufficient
++	 * Returns null if only one line remains (cannot reduce further)
++	 */
++	private reduceLineCountGradually(
++		chunkInfo: ChunkInfo,
++		lines: string[],
++	): ChunkInfo | null {
++		const currentLineCount = chunkInfo.endIndex - chunkInfo.startIndex;
++
++		if (currentLineCount <= 1) {
++			return null;
++		}
++
++		// Reduce by one line from the end
++		const newEndIndex = chunkInfo.endIndex - 1;
++
++		return this.buildChunk(
++			chunkInfo.startIndex,
++			newEndIndex,
++			lines,
++			chunkInfo.currentOverlap,
++		);
++	}
++
++	/**
++	 * Split long content into smaller chunks
++	 * This is only used for single lines that exceed maxChars
++	 */
++	private splitLongContent(content: string): string[] {
++		return Array.from(
++			{ length: Math.ceil(content.length / this.maxChars) },
++			(_, k) =>
++				content.slice(k * this.maxChars, (k + 1) * this.maxChars).trim(),
++		).filter(Boolean);
++	}
++}
+diff --git a/packages/rag2/src/chunker/types.ts b/packages/rag2/src/chunker/types.ts
+new file mode 100644
+index 000000000..b9c19bcff
+--- /dev/null
++++ b/packages/rag2/src/chunker/types.ts
+@@ -0,0 +1,8 @@
++export interface Chunker {
++	/**
++	 * Split text into chunks
++	 * @param text The text to split
++	 * @returns The array of chunks
++	 */
++	chunk(text: string): string[];
++}
+diff --git a/packages/rag2/src/database/index.ts b/packages/rag2/src/database/index.ts
+index fcdf1b6f6..c7241003d 100644
+--- a/packages/rag2/src/database/index.ts
++++ b/packages/rag2/src/database/index.ts
+@@ -1,3 +1,6 @@
+ export { PoolManager } from "./postgres";
+-export { ensurePgVectorTypes, clearPgVectorCache } from "./pgvector-registry";
++export {
++	clearPgVectorCache,
++	ensurePgVectorTypes,
++} from "./postgres/pgvector-registry";
+ export type { ColumnMapping, DatabaseConfig, RequiredColumns } from "./types";
+diff --git a/packages/rag2/src/database/pgvector-registry.ts b/packages/rag2/src/database/postgres/pgvector-registry.ts
+similarity index 100%
+rename from packages/rag2/src/database/pgvector-registry.ts
+rename to packages/rag2/src/database/postgres/pgvector-registry.ts
+diff --git a/packages/rag2/src/database/types.ts b/packages/rag2/src/database/types.ts
+index fa651030b..19f53b5f2 100644
+--- a/packages/rag2/src/database/types.ts
++++ b/packages/rag2/src/database/types.ts
+@@ -36,15 +36,21 @@ export interface DatabaseConfig {
+ 	};
+ }
+ 
+-// define required columns
+-export interface RequiredColumns {
+-	documentKey: string;
+-	chunkContent: string;
+-	chunkIndex: string;
+-	embedding: string;
+-}
++// define required column keys first
++export const REQUIRED_COLUMN_KEYS = [
++	"documentKey",
++	"chunkContent",
++	"chunkIndex",
++	"embedding",
++] as const;
++
++// derive RequiredColumns type from keys
++export type RequiredColumns = Record<
++	(typeof REQUIRED_COLUMN_KEYS)[number],
++	string
++>;
+ 
+ // define column mapping (required columns are enforced)
+-export type ColumnMapping<TMetadata> = RequiredColumns & {
+-	[K in keyof TMetadata]: string;
++export type ColumnMapping<TMetadata> = Readonly<RequiredColumns> & {
++	[K in Exclude<keyof TMetadata, keyof RequiredColumns>]: string;
+ };
+diff --git a/packages/rag2/src/document-loader/index.ts b/packages/rag2/src/document-loader/index.ts
+new file mode 100644
+index 000000000..baf5cf611
+--- /dev/null
++++ b/packages/rag2/src/document-loader/index.ts
+@@ -0,0 +1 @@
++export type { Document, DocumentLoader, DocumentLoaderParams } from "./types";
+diff --git a/packages/rag2/src/document-loader/types.ts b/packages/rag2/src/document-loader/types.ts
+new file mode 100644
+index 000000000..523db71ea
+--- /dev/null
++++ b/packages/rag2/src/document-loader/types.ts
+@@ -0,0 +1,22 @@
++export interface Document<
++	TMetadata extends Record<string, unknown> = Record<string, never>,
++> {
++	content: string;
++	metadata: TMetadata;
++}
++
++export interface DocumentLoaderParams {
++	[key: string]: unknown;
++}
++
++export interface DocumentLoader<
++	TMetadata extends Record<string, unknown> = Record<string, never>,
++	TParams extends DocumentLoaderParams = DocumentLoaderParams,
++> {
++	/**
++	 * Load documents asynchronously
++	 * @param params loader-specific parameters
++	 * @returns AsyncIterable of Document
++	 */
++	load(params: TParams): AsyncIterable<Document<TMetadata>>;
++}
+diff --git a/packages/rag2/src/factories/factories.ts b/packages/rag2/src/factories/factories.ts
+index 68fe33a80..6b1b5cce1 100644
+--- a/packages/rag2/src/factories/factories.ts
++++ b/packages/rag2/src/factories/factories.ts
+@@ -1,8 +1,20 @@
++import type { PostgresChunkStoreConfig } from "../chunk-store/postgres";
++import { PostgresChunkStore } from "../chunk-store/postgres";
++import type { DocumentLoaderParams } from "../document-loader";
+ import { ValidationError } from "../errors";
++import { IngestPipeline } from "../ingest";
+ import type { PostgresQueryServiceConfig } from "../query-service/postgres";
+ import { PostgresQueryService } from "../query-service/postgres";
+-import type { QueryServiceConfig } from "./types";
+-import { createColumnMapping, createDefaultEmbedder } from "./utils";
++import type {
++	ChunkStoreConfig,
++	IngestPipelineConfig,
++	QueryServiceConfig,
++} from "./types";
++import {
++	createColumnMapping,
++	createDefaultChunker,
++	createDefaultEmbedder,
++} from "./utils";
+ 
+ /**
+  * validate database config
+@@ -56,6 +68,33 @@ function validateDatabaseConfig(database: {
+ 	return database;
+ }
+ 
++/**
++ * create chunk store
++ */
++export function createChunkStore<
++	TMetadata extends Record<string, unknown> = Record<string, never>,
++>(options: ChunkStoreConfig<TMetadata>): PostgresChunkStore<TMetadata> {
++	const database = validateDatabaseConfig(options.database);
++
++	const columnMapping =
++		options.columnMapping ||
++		createColumnMapping({
++			metadataSchema: options.metadataSchema,
++			requiredColumnOverrides: options.requiredColumnOverrides,
++			metadataColumnOverrides: options.metadataColumnOverrides,
++		});
++
++	const config: PostgresChunkStoreConfig<TMetadata> = {
++		database,
++		tableName: options.tableName,
++		columnMapping,
++		staticContext: options.staticContext,
++		metadataSchema: options.metadataSchema,
++	};
++
++	return new PostgresChunkStore(config);
++}
++
+ /**
+  * create query service
+  */
+@@ -75,7 +114,6 @@ export function createQueryService<
+ 			metadataColumnOverrides: options.metadataColumnOverrides,
+ 		});
+ 
+-	// build PostgresQueryServiceConfig
+ 	const config: PostgresQueryServiceConfig<TContext, TMetadata> = {
+ 		database,
+ 		tableName: options.tableName,
+@@ -87,3 +125,38 @@ export function createQueryService<
+ 
+ 	return new PostgresQueryService(config);
+ }
++
++/**
++ * simplified ingest pipeline creation function
++ * hide the details of chunker and embedder, and use default settings
++ */
++export function createIngestPipeline<
++	TSourceMetadata extends Record<string, unknown>,
++	TTargetMetadata extends Record<string, unknown> = TSourceMetadata,
++	TParams extends DocumentLoaderParams = DocumentLoaderParams,
++>(config: IngestPipelineConfig<TSourceMetadata, TTargetMetadata, TParams>) {
++	const {
++		documentLoader,
++		chunkStore,
++		documentKey,
++		metadataTransform,
++		options = {},
++	} = config;
++
++	// use default embedder and chunker
++	const embedder = createDefaultEmbedder();
++	const chunker = createDefaultChunker();
++
++	return new IngestPipeline({
++		documentLoader,
++		chunker,
++		embedder,
++		chunkStore,
++		documentKey,
++		metadataTransform,
++		options: {
++			maxBatchSize: options.maxBatchSize ?? 50,
++			onProgress: options.onProgress,
++		},
++	});
++}
+diff --git a/packages/rag2/src/factories/index.ts b/packages/rag2/src/factories/index.ts
+index 5bd0fe108..055418f49 100644
+--- a/packages/rag2/src/factories/index.ts
++++ b/packages/rag2/src/factories/index.ts
+@@ -1,16 +1,24 @@
+ /**
+- * RAG2 QueryService utilities and factories
++ * RAG2 default settings and utilities
+  */
+ 
+ // Re-export types
+-export type { QueryServiceConfig } from "./types";
++export type {
++	ChunkStoreConfig,
++	QueryServiceConfig,
++	IngestPipelineConfig,
++} from "./types";
+ 
+ // Re-export constants and utilities
+ export {
+ 	createColumnMapping,
++	createDefaultChunker,
+ 	createDefaultEmbedder,
+-	DEFAULT_REQUIRED_COLUMNS,
+ } from "./utils";
+ 
+ // Re-export factory functions
+-export { createQueryService } from "./factories";
++export {
++	createChunkStore,
++	createIngestPipeline,
++	createQueryService,
++} from "./factories";
+diff --git a/packages/rag2/src/factories/types.ts b/packages/rag2/src/factories/types.ts
+index 299283d56..e8757a25c 100644
+--- a/packages/rag2/src/factories/types.ts
++++ b/packages/rag2/src/factories/types.ts
+@@ -1,7 +1,54 @@
+ import type { z } from "zod/v4";
++import type { ChunkStore } from "../chunk-store";
+ import type { ColumnMapping, RequiredColumns } from "../database/types";
++import type {
++	Document,
++	DocumentLoader,
++	DocumentLoaderParams,
++} from "../document-loader";
+ import type { Embedder } from "../embedder";
+ 
++/**
++ * chunk store config
++ */
++export interface ChunkStoreConfig<TMetadata extends Record<string, unknown>> {
++	/**
++	 * database config
++	 */
++	database: {
++		connectionString: string;
++		poolConfig?: {
++			max?: number;
++			idleTimeoutMillis?: number;
++			connectionTimeoutMillis?: number;
++		};
++	};
++	/**
++	 * table name
++	 */
++	tableName: string;
++	/**
++	 * metadata schema
++	 */
++	metadataSchema: z.ZodType<TMetadata>;
++	/**
++	 * required column overrides
++	 */
++	requiredColumnOverrides?: Partial<RequiredColumns>;
++	/**
++	 * metadata column overrides
++	 */
++	metadataColumnOverrides?: Partial<Record<keyof TMetadata, string>>;
++	/**
++	 * column mapping
++	 */
++	columnMapping?: ColumnMapping<TMetadata>;
++	/**
++	 * static context
++	 */
++	staticContext?: Record<string, unknown>;
++}
++
+ /**
+  * query service config
+  */
+@@ -52,3 +99,39 @@ export interface QueryServiceConfig<
+ 	 */
+ 	columnMapping?: ColumnMapping<TMetadata>;
+ }
++
++/**
++ * ingest pipeline config
++ */
++export interface IngestPipelineConfig<
++	TSourceMetadata extends Record<string, unknown>,
++	TTargetMetadata extends Record<string, unknown> = TSourceMetadata,
++	TParams extends DocumentLoaderParams = DocumentLoaderParams,
++> {
++	/**
++	 * document loader
++	 */
++	documentLoader: DocumentLoader<TSourceMetadata, TParams>;
++	/**
++	 * chunk store
++	 */
++	chunkStore: ChunkStore<TTargetMetadata>;
++	/**
++	 * document key function
++	 */
++	documentKey: (document: Document<TSourceMetadata>) => string;
++	/**
++	 * metadata transform function
++	 */
++	metadataTransform: (metadata: TSourceMetadata) => TTargetMetadata;
++	/**
++	 * pipeline options
++	 */
++	options?: {
++		maxBatchSize?: number;
++		onProgress?: (progress: {
++			processedDocuments: number;
++			currentDocument?: string;
++		}) => void;
++	};
++}
+diff --git a/packages/rag2/src/factories/utils.ts b/packages/rag2/src/factories/utils.ts
+index 3a1388a1e..0aa3d44fc 100644
+--- a/packages/rag2/src/factories/utils.ts
++++ b/packages/rag2/src/factories/utils.ts
+@@ -1,5 +1,7 @@
+ import type { z } from "zod/v4";
++import { LineChunker } from "../chunker";
+ import type { ColumnMapping, RequiredColumns } from "../database/types";
++import { REQUIRED_COLUMN_KEYS } from "../database/types";
+ import { OpenAIEmbedder } from "../embedder";
+ 
+ /**
+@@ -10,12 +12,21 @@ const FACTORY_DEFAULTS = {
+ 	 * Default OpenAI embedding model
+ 	 */
+ 	OPENAI_MODEL: "text-embedding-3-small",
++
++	/**
++	 * Default line chunker configuration
++	 */
++	CHUNKER: {
++		MAX_LINES: 150,
++		OVERLAP: 30,
++		MAX_CHARS: 10000,
++	},
+ } as const;
+ 
+ /**
+  * Default mapping for required columns
+  */
+-export const DEFAULT_REQUIRED_COLUMNS: RequiredColumns = {
++const DEFAULT_REQUIRED_COLUMNS: RequiredColumns = {
+ 	documentKey: "document_key",
+ 	chunkContent: "chunk_content",
+ 	chunkIndex: "chunk_index",
+@@ -58,14 +69,7 @@ function validateColumnMapping<TMetadata extends Record<string, unknown>>(
+ 	metadataSchema: z.ZodType<TMetadata>,
+ ): obj is ColumnMapping<TMetadata> {
+ 	// Check that all required columns are present
+-	const requiredKeys: (keyof RequiredColumns)[] = [
+-		"documentKey",
+-		"chunkContent",
+-		"chunkIndex",
+-		"embedding",
+-	];
+-
+-	for (const key of requiredKeys) {
++	for (const key of REQUIRED_COLUMN_KEYS) {
+ 		if (!(key in obj) || typeof obj[key] !== "string") {
+ 			return false;
+ 		}
+@@ -155,3 +159,14 @@ export function createDefaultEmbedder() {
+ 		model: FACTORY_DEFAULTS.OPENAI_MODEL,
+ 	});
+ }
++
++/**
++ * create default chunker
++ */
++export function createDefaultChunker() {
++	return new LineChunker({
++		maxLines: FACTORY_DEFAULTS.CHUNKER.MAX_LINES,
++		overlap: FACTORY_DEFAULTS.CHUNKER.OVERLAP,
++		maxChars: FACTORY_DEFAULTS.CHUNKER.MAX_CHARS,
++	});
++}
+diff --git a/packages/rag2/src/index.ts b/packages/rag2/src/index.ts
+index 87e6eedcf..0671960e9 100644
+--- a/packages/rag2/src/index.ts
++++ b/packages/rag2/src/index.ts
+@@ -14,10 +14,25 @@ export type {
+ 	RequiredColumns,
+ } from "./database";
+ 
++// Document Loader
++export type {
++	Document,
++	DocumentLoader,
++	DocumentLoaderParams,
++} from "./document-loader";
++
++// Chunk Store
++export { PostgresChunkStore } from "./chunk-store";
++export type {
++	Chunk,
++	ChunkStore,
++	ChunkWithEmbedding,
++	PostgresChunkStoreConfig,
++} from "./chunk-store";
++
+ // Query Service
+ export { PostgresQueryService } from "./query-service";
+ export type {
+-	Chunk,
+ 	DistanceFunction,
+ 	PostgresQueryServiceConfig,
+ 	QueryResult,
+@@ -28,15 +43,32 @@ export type {
+ export { OpenAIEmbedder } from "./embedder";
+ export type { Embedder, OpenAIEmbedderConfig } from "./embedder";
+ 
++// Chunker
++export { LineChunker } from "./chunker";
++export type { Chunker, LineChunkerOptions } from "./chunker";
++
++// Ingest Pipeline
++export {
++	IngestPipeline,
++	type IngestError,
++	type IngestPipelineConfig,
++	type IngestProgress,
++	type IngestResult,
++} from "./ingest";
++
+ // Simplified API with smart defaults
+ export {
++	// Factory functions
++	createChunkStore,
+ 	// Utilities
+ 	createColumnMapping,
++	createDefaultChunker,
+ 	// Default instances
+ 	createDefaultEmbedder,
++	createIngestPipeline,
+ 	createQueryService,
+-	DEFAULT_REQUIRED_COLUMNS,
+ 	// Types
++	type ChunkStoreConfig,
+ 	type QueryServiceConfig,
+ } from "./factories";
+ 
+diff --git a/packages/rag2/src/ingest/index.ts b/packages/rag2/src/ingest/index.ts
+new file mode 100644
+index 000000000..ba6a0a84b
+--- /dev/null
++++ b/packages/rag2/src/ingest/index.ts
+@@ -0,0 +1,7 @@
++export {
++	IngestPipeline,
++	type IngestPipelineConfig,
++	type IngestProgress,
++	type IngestError,
++	type IngestResult,
++} from "./ingest-pipeline";
+diff --git a/packages/rag2/src/ingest/ingest-pipeline.test.ts b/packages/rag2/src/ingest/ingest-pipeline.test.ts
+new file mode 100644
+index 000000000..0e4721d10
+--- /dev/null
++++ b/packages/rag2/src/ingest/ingest-pipeline.test.ts
+@@ -0,0 +1,122 @@
++import { beforeEach, describe, expect, it, vi } from "vitest";
++import type { ChunkStore } from "../chunk-store/types";
++import type { Chunker } from "../chunker/types";
++import type { DocumentLoader } from "../document-loader/types";
++import type { Embedder } from "../embedder/types";
++import { IngestPipeline } from "./ingest-pipeline";
++
++describe("IngestPipeline", () => {
++	let mockDocumentLoader: DocumentLoader<{ path: string }>;
++	let mockChunker: Chunker;
++	let mockEmbedder: Embedder;
++	let mockChunkStore: ChunkStore<{ path: string }>;
++
++	beforeEach(() => {
++		mockDocumentLoader = {
++			// @ts-expect-error - this is a mock
++			*load() {
++				yield { content: "doc1", metadata: { path: "file1.txt" } };
++				yield { content: "doc2", metadata: { path: "file2.txt" } };
++			},
++		};
++
++		mockChunker = {
++			chunk: vi.fn((text) => [`chunk1 of ${text}`, `chunk2 of ${text}`]),
++		};
++
++		mockEmbedder = {
++			embed: vi.fn(async () => [0.1, 0.2, 0.3]),
++			embedMany: vi.fn(async (texts) => texts.map(() => [0.1, 0.2, 0.3])),
++		};
++
++		mockChunkStore = {
++			insert: vi.fn(async () => {}),
++			deleteByDocumentKey: vi.fn(async () => {}),
++		};
++	});
++
++	it("should process documents through the pipeline", async () => {
++		const pipeline = new IngestPipeline({
++			documentLoader: mockDocumentLoader,
++			chunker: mockChunker,
++			embedder: mockEmbedder,
++			chunkStore: mockChunkStore,
++			documentKey: (doc) => doc.metadata.path,
++			metadataTransform: (metadata) => metadata,
++		});
++
++		const result = await pipeline.ingest({});
++
++		expect(result.totalDocuments).toBe(2);
++		expect(result.successfulDocuments).toBe(2);
++		expect(result.failedDocuments).toBe(0);
++		expect(mockChunker.chunk).toHaveBeenCalledTimes(2);
++		expect(mockEmbedder.embedMany).toHaveBeenCalled();
++		expect(mockChunkStore.insert).toHaveBeenCalledTimes(2);
++	});
++
++	it("should handle errors and retry", async () => {
++		const failingChunkStore = {
++			...mockChunkStore,
++			insert: vi
++				.fn()
++				.mockRejectedValueOnce(new Error("First attempt failed"))
++				.mockResolvedValueOnce(undefined),
++		};
++
++		const pipeline = new IngestPipeline({
++			documentLoader: mockDocumentLoader,
++			chunker: mockChunker,
++			embedder: mockEmbedder,
++			chunkStore: failingChunkStore,
++			documentKey: (doc) => doc.metadata.path,
++			metadataTransform: (metadata) => metadata,
++			options: {
++				maxRetries: 2,
++				retryDelay: 10,
++			},
++		});
++
++		const result = await pipeline.ingest({});
++
++		expect(result.successfulDocuments).toBe(2);
++		expect(failingChunkStore.insert).toHaveBeenCalledTimes(3); // 1 fail + 1 success for first doc, 1 success for second doc
++	});
++
++	it("should call progress callback", async () => {
++		const onProgress = vi.fn();
++
++		const pipeline = new IngestPipeline({
++			documentLoader: mockDocumentLoader,
++			chunker: mockChunker,
++			embedder: mockEmbedder,
++			chunkStore: mockChunkStore,
++			documentKey: (doc) => doc.metadata.path,
++			metadataTransform: (metadata) => metadata,
++			options: { onProgress },
++		});
++
++		await pipeline.ingest({});
++
++		expect(onProgress).toHaveBeenCalled();
++		const lastCall = onProgress.mock.calls[onProgress.mock.calls.length - 1][0];
++		expect(lastCall.processedDocuments).toBe(2);
++	});
++
++	it("should handle batch processing", async () => {
++		const pipeline = new IngestPipeline({
++			documentLoader: mockDocumentLoader,
++			chunker: mockChunker,
++			embedder: mockEmbedder,
++			chunkStore: mockChunkStore,
++			documentKey: (doc) => doc.metadata.path,
++			metadataTransform: (metadata) => metadata,
++			options: { maxBatchSize: 1 },
++		});
++
++		await pipeline.ingest({});
++
++		// With batch size 1 and 2 chunks per document, should call embedMany 4 times
++		expect(mockEmbedder.embedMany).toHaveBeenCalledTimes(4);
++	});
++});
+diff --git a/packages/rag2/src/ingest/ingest-pipeline.ts b/packages/rag2/src/ingest/ingest-pipeline.ts
+new file mode 100644
+index 000000000..38a40011a
+--- /dev/null
++++ b/packages/rag2/src/ingest/ingest-pipeline.ts
+@@ -0,0 +1,238 @@
++import type { ChunkStore } from "../chunk-store/types";
++import type { Chunker } from "../chunker/types";
++import type {
++	Document,
++	DocumentLoader,
++	DocumentLoaderParams,
++} from "../document-loader/types";
++import type { Embedder } from "../embedder/types";
++import { OperationError } from "../errors";
++
++/**
++ * Config for IngestPipeline
++ */
++export interface IngestPipelineConfig<
++	TSourceMetadata extends Record<string, unknown>,
++	TTargetMetadata extends Record<string, unknown> = TSourceMetadata,
++	TParams extends DocumentLoaderParams = DocumentLoaderParams,
++> {
++	documentLoader: DocumentLoader<TSourceMetadata, TParams>;
++	chunker: Chunker;
++	embedder: Embedder;
++	chunkStore: ChunkStore<TTargetMetadata>;
++	/**
++	 * Function to extract document key from a document
++	 * This is used to uniquely identify documents in the chunk store
++	 */
++	documentKey: (document: Document<TSourceMetadata>) => string;
++	/**
++	 * Metadata transformation function
++	 */
++	metadataTransform: (metadata: TSourceMetadata) => TTargetMetadata;
++	// options
++	options?: {
++		maxBatchSize?: number; // batch size for embedding
++		maxRetries?: number; // number of retries
++		retryDelay?: number; // retry interval (milliseconds)
++		onProgress?: (progress: IngestProgress) => void;
++		onError?: (error: IngestError) => void;
++	};
++}
++
++export interface IngestProgress {
++	currentDocument?: string;
++	processedDocuments: number;
++}
++
++export interface IngestError {
++	document: string;
++	error: Error;
++	willRetry: boolean;
++	attemptNumber: number;
++}
++
++export interface IngestResult {
++	totalDocuments: number;
++	successfulDocuments: number;
++	failedDocuments: number;
++	errors: Array<{ document: string; error: Error }>;
++}
++
++export class IngestPipeline<
++	TSourceMetadata extends Record<string, unknown>,
++	TTargetMetadata extends Record<string, unknown> = TSourceMetadata,
++	TParams extends DocumentLoaderParams = DocumentLoaderParams,
++> {
++	private documentLoader: DocumentLoader<TSourceMetadata, TParams>;
++	private chunker: Chunker;
++	private embedder: Embedder;
++	private chunkStore: ChunkStore<TTargetMetadata>;
++	private documentKey: (document: Document<TSourceMetadata>) => string;
++	private metadataTransform: (metadata: TSourceMetadata) => TTargetMetadata;
++	private options: Required<
++		NonNullable<
++			IngestPipelineConfig<TSourceMetadata, TTargetMetadata, TParams>["options"]
++		>
++	>;
++
++	constructor(
++		config: IngestPipelineConfig<TSourceMetadata, TTargetMetadata, TParams>,
++	) {
++		this.documentLoader = config.documentLoader;
++		this.chunker = config.chunker;
++		this.embedder = config.embedder;
++		this.chunkStore = config.chunkStore;
++		this.documentKey = config.documentKey;
++		this.metadataTransform = config.metadataTransform;
++		this.options = {
++			maxBatchSize: 100,
++			maxRetries: 3,
++			retryDelay: 1000,
++			onProgress: () => {},
++			onError: () => {},
++			...config.options,
++		};
++	}
++
++	async ingest(params: TParams): Promise<IngestResult> {
++		const result: IngestResult = {
++			totalDocuments: 0,
++			successfulDocuments: 0,
++			failedDocuments: 0,
++			errors: [],
++		};
++
++		const progress: IngestProgress = {
++			processedDocuments: 0,
++			currentDocument: undefined,
++		};
++
++		try {
++			// Collect documents into batches for more efficient processing
++			const documentBatch: Array<Document<TSourceMetadata>> = [];
++
++			// process documents in batches
++			for await (const document of this.documentLoader.load(params)) {
++				result.totalDocuments++;
++				documentBatch.push(document);
++
++				// Process batch when it reaches the configured size
++				if (documentBatch.length >= this.options.maxBatchSize) {
++					await this.processBatch(documentBatch, result, progress);
++					documentBatch.length = 0; // Clear the batch
++				}
++			}
++
++			// Process any remaining documents in the final batch
++			if (documentBatch.length > 0) {
++				await this.processBatch(documentBatch, result, progress);
++			}
++		} catch (error) {
++			throw OperationError.invalidOperation(
++				"ingestion pipeline",
++				"Failed to complete ingestion pipeline",
++				{ cause: error instanceof Error ? error.message : String(error) },
++			);
++		}
++
++		return result;
++	}
++
++	/**
++	 * Process a batch of documents efficiently with optimized connection usage
++	 */
++	private async processBatch(
++		documents: Array<Document<TSourceMetadata>>,
++		result: IngestResult,
++		progress: IngestProgress,
++	): Promise<void> {
++		// Process documents sequentially within the batch
++		// This maintains the existing single-document transaction model
++		// while grouping documents for better overall efficiency
++		for (const document of documents) {
++			progress.currentDocument = this.getDocumentKey(document);
++
++			try {
++				await this.processDocument(document);
++				result.successfulDocuments++;
++				progress.processedDocuments++;
++			} catch (error) {
++				result.failedDocuments++;
++				progress.processedDocuments++;
++				result.errors.push({
++					document: progress.currentDocument,
++					error: error instanceof Error ? error : new Error(String(error)),
++				});
++			}
++
++			this.options.onProgress(progress);
++		}
++	}
++
++	private async processDocument(
++		document: Document<TSourceMetadata>,
++	): Promise<void> {
++		const documentKey = this.getDocumentKey(document);
++
++		// apply metadata transformation
++		const targetMetadata = this.getTargetMetadata(document.metadata);
++
++		// with retry logic
++		for (let attempt = 1; attempt <= this.options.maxRetries; attempt++) {
++			try {
++				// chunking
++				const chunkTexts = this.chunker.chunk(document.content);
++
++				// batch embedding
++				const chunks = [];
++				for (let i = 0; i < chunkTexts.length; i += this.options.maxBatchSize) {
++					const batch = chunkTexts.slice(i, i + this.options.maxBatchSize);
++					const embeddings = await this.embedder.embedMany(batch);
++
++					for (let j = 0; j < batch.length; j++) {
++						chunks.push({
++							content: batch[j],
++							index: i + j,
++							embedding: embeddings[j],
++						});
++					}
++				}
++
++				// save with transformed metadata
++				await this.chunkStore.insert(documentKey, chunks, targetMetadata);
++				return;
++			} catch (error) {
++				const isLastAttempt = attempt === this.options.maxRetries;
++
++				this.options.onError({
++					document: documentKey,
++					error: error instanceof Error ? error : new Error(String(error)),
++					willRetry: !isLastAttempt,
++					attemptNumber: attempt,
++				});
++
++				if (isLastAttempt) {
++					throw error;
++				}
++
++				// exponential backoff
++				const delay = this.options.retryDelay * 2 ** (attempt - 1);
++				await new Promise((resolve) => setTimeout(resolve, delay));
++			}
++		}
++	}
++
++	/**
++	 * metadata transformation
++	 */
++	private getTargetMetadata(sourceMetadata: TSourceMetadata): TTargetMetadata {
++		return this.metadataTransform(sourceMetadata);
++	}
++
++	/**
++	 * Get document key using the provided documentKey function
++	 */
++	private getDocumentKey(document: Document<TSourceMetadata>): string {
++		return this.documentKey(document);
++	}
++}
+diff --git a/packages/rag2/src/query-service/postgres/index.ts b/packages/rag2/src/query-service/postgres/index.ts
+index 0c95ac6ee..629cd212c 100644
+--- a/packages/rag2/src/query-service/postgres/index.ts
++++ b/packages/rag2/src/query-service/postgres/index.ts
+@@ -1,7 +1,7 @@
+ import * as pgvector from "pgvector/pg";
+ import type { z } from "zod/v4";
+-import { ensurePgVectorTypes } from "../../database/pgvector-registry";
+ import { PoolManager } from "../../database/postgres";
++import { ensurePgVectorTypes } from "../../database/postgres/pgvector-registry";
+ import type { ColumnMapping, DatabaseConfig } from "../../database/types";
+ import type { Embedder } from "../../embedder/types";
+ import { DatabaseError, EmbeddingError, ValidationError } from "../../errors";
+diff --git a/pnpm-lock.yaml b/pnpm-lock.yaml
+index 82b06065e..54646f804 100644
+--- a/pnpm-lock.yaml
++++ b/pnpm-lock.yaml
+@@ -1009,6 +1009,9 @@ importers:
+       '@giselle-sdk/rag':
+         specifier: workspace:*
+         version: link:../rag
++      '@giselle-sdk/rag2':
++        specifier: workspace:*
++        version: link:../rag2
+       '@octokit/auth-app':
+         specifier: 'catalog:'
+         version: 8.0.1

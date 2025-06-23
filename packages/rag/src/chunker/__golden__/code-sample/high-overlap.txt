@@ -1,0 +1,757 @@
+===== CHUNK 1 =====
+// @ts-nocheck
+// Sample TypeScript code for testing chunking behavior
+// This is a test fixture representing typical code structure
+
+export interface User {
+	id: string;
+	name: string;
+	email: string;
+	createdAt: Date;
+	updatedAt: Date;
+===== CHUNK 2 =====
+// This is a test fixture representing typical code structure
+
+export interface User {
+	id: string;
+	name: string;
+	email: string;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+===== CHUNK 3 =====
+export interface User {
+	id: string;
+	name: string;
+	email: string;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+export interface Post {
+	id: string;
+===== CHUNK 4 =====
+	name: string;
+	email: string;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+export interface Post {
+	id: string;
+	title: string;
+	content: string;
+===== CHUNK 5 =====
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+export interface Post {
+	id: string;
+	title: string;
+	content: string;
+	authorId: string;
+	tags: string[];
+===== CHUNK 6 =====
+}
+
+export interface Post {
+	id: string;
+	title: string;
+	content: string;
+	authorId: string;
+	tags: string[];
+	published: boolean;
+	publishedAt?: Date;
+===== CHUNK 7 =====
+export interface Post {
+	id: string;
+	title: string;
+	content: string;
+	authorId: string;
+	tags: string[];
+	published: boolean;
+	publishedAt?: Date;
+	createdAt: Date;
+	updatedAt: Date;
+===== CHUNK 8 =====
+	title: string;
+	content: string;
+	authorId: string;
+	tags: string[];
+	published: boolean;
+	publishedAt?: Date;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+===== CHUNK 9 =====
+	authorId: string;
+	tags: string[];
+	published: boolean;
+	publishedAt?: Date;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+export class UserService {
+	constructor(private readonly db: Database) {}
+===== CHUNK 10 =====
+	published: boolean;
+	publishedAt?: Date;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+export class UserService {
+	constructor(private readonly db: Database) {}
+
+	async findById(id: string): Promise<User | null> {
+===== CHUNK 11 =====
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+export class UserService {
+	constructor(private readonly db: Database) {}
+
+	async findById(id: string): Promise<User | null> {
+		const user = await this.db.users.findUnique({
+			where: { id },
+===== CHUNK 12 =====
+}
+
+export class UserService {
+	constructor(private readonly db: Database) {}
+
+	async findById(id: string): Promise<User | null> {
+		const user = await this.db.users.findUnique({
+			where: { id },
+		});
+		return user;
+===== CHUNK 13 =====
+export class UserService {
+	constructor(private readonly db: Database) {}
+
+	async findById(id: string): Promise<User | null> {
+		const user = await this.db.users.findUnique({
+			where: { id },
+		});
+		return user;
+	}
+
+===== CHUNK 14 =====
+
+	async findById(id: string): Promise<User | null> {
+		const user = await this.db.users.findUnique({
+			where: { id },
+		});
+		return user;
+	}
+
+	async findByEmail(email: string): Promise<User | null> {
+		const user = await this.db.users.findUnique({
+===== CHUNK 15 =====
+		const user = await this.db.users.findUnique({
+			where: { id },
+		});
+		return user;
+	}
+
+	async findByEmail(email: string): Promise<User | null> {
+		const user = await this.db.users.findUnique({
+			where: { email },
+		});
+===== CHUNK 16 =====
+		});
+		return user;
+	}
+
+	async findByEmail(email: string): Promise<User | null> {
+		const user = await this.db.users.findUnique({
+			where: { email },
+		});
+		return user;
+	}
+===== CHUNK 17 =====
+	}
+
+	async findByEmail(email: string): Promise<User | null> {
+		const user = await this.db.users.findUnique({
+			where: { email },
+		});
+		return user;
+	}
+
+	async create(data: CreateUserInput): Promise<User> {
+===== CHUNK 18 =====
+	async findByEmail(email: string): Promise<User | null> {
+		const user = await this.db.users.findUnique({
+			where: { email },
+		});
+		return user;
+	}
+
+	async create(data: CreateUserInput): Promise<User> {
+		const user = await this.db.users.create({
+			data: {
+===== CHUNK 19 =====
+			where: { email },
+		});
+		return user;
+	}
+
+	async create(data: CreateUserInput): Promise<User> {
+		const user = await this.db.users.create({
+			data: {
+				...data,
+				createdAt: new Date(),
+===== CHUNK 20 =====
+		return user;
+	}
+
+	async create(data: CreateUserInput): Promise<User> {
+		const user = await this.db.users.create({
+			data: {
+				...data,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			},
+===== CHUNK 21 =====
+
+	async create(data: CreateUserInput): Promise<User> {
+		const user = await this.db.users.create({
+			data: {
+				...data,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+		return user;
+===== CHUNK 22 =====
+		const user = await this.db.users.create({
+			data: {
+				...data,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+		return user;
+	}
+
+===== CHUNK 23 =====
+				...data,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+		return user;
+	}
+
+	async update(id: string, data: UpdateUserInput): Promise<User> {
+		const user = await this.db.users.update({
+===== CHUNK 24 =====
+				updatedAt: new Date(),
+			},
+		});
+		return user;
+	}
+
+	async update(id: string, data: UpdateUserInput): Promise<User> {
+		const user = await this.db.users.update({
+			where: { id },
+			data: {
+===== CHUNK 25 =====
+		});
+		return user;
+	}
+
+	async update(id: string, data: UpdateUserInput): Promise<User> {
+		const user = await this.db.users.update({
+			where: { id },
+			data: {
+				...data,
+				updatedAt: new Date(),
+===== CHUNK 26 =====
+	}
+
+	async update(id: string, data: UpdateUserInput): Promise<User> {
+		const user = await this.db.users.update({
+			where: { id },
+			data: {
+				...data,
+				updatedAt: new Date(),
+			},
+		});
+===== CHUNK 27 =====
+	async update(id: string, data: UpdateUserInput): Promise<User> {
+		const user = await this.db.users.update({
+			where: { id },
+			data: {
+				...data,
+				updatedAt: new Date(),
+			},
+		});
+		return user;
+	}
+===== CHUNK 28 =====
+			where: { id },
+			data: {
+				...data,
+				updatedAt: new Date(),
+			},
+		});
+		return user;
+	}
+
+	async delete(id: string): Promise<void> {
+===== CHUNK 29 =====
+				...data,
+				updatedAt: new Date(),
+			},
+		});
+		return user;
+	}
+
+	async delete(id: string): Promise<void> {
+		await this.db.users.delete({
+			where: { id },
+===== CHUNK 30 =====
+			},
+		});
+		return user;
+	}
+
+	async delete(id: string): Promise<void> {
+		await this.db.users.delete({
+			where: { id },
+		});
+	}
+===== CHUNK 31 =====
+		return user;
+	}
+
+	async delete(id: string): Promise<void> {
+		await this.db.users.delete({
+			where: { id },
+		});
+	}
+}
+
+===== CHUNK 32 =====
+
+	async delete(id: string): Promise<void> {
+		await this.db.users.delete({
+			where: { id },
+		});
+	}
+}
+
+export class PostService {
+	constructor(private readonly db: Database) {}
+===== CHUNK 33 =====
+		await this.db.users.delete({
+			where: { id },
+		});
+	}
+}
+
+export class PostService {
+	constructor(private readonly db: Database) {}
+
+	async findById(id: string): Promise<Post | null> {
+===== CHUNK 34 =====
+		});
+	}
+}
+
+export class PostService {
+	constructor(private readonly db: Database) {}
+
+	async findById(id: string): Promise<Post | null> {
+		const post = await this.db.posts.findUnique({
+			where: { id },
+===== CHUNK 35 =====
+}
+
+export class PostService {
+	constructor(private readonly db: Database) {}
+
+	async findById(id: string): Promise<Post | null> {
+		const post = await this.db.posts.findUnique({
+			where: { id },
+			include: { author: true },
+		});
+===== CHUNK 36 =====
+export class PostService {
+	constructor(private readonly db: Database) {}
+
+	async findById(id: string): Promise<Post | null> {
+		const post = await this.db.posts.findUnique({
+			where: { id },
+			include: { author: true },
+		});
+		return post;
+	}
+===== CHUNK 37 =====
+
+	async findById(id: string): Promise<Post | null> {
+		const post = await this.db.posts.findUnique({
+			where: { id },
+			include: { author: true },
+		});
+		return post;
+	}
+
+	async findByAuthor(authorId: string): Promise<Post[]> {
+===== CHUNK 38 =====
+		const post = await this.db.posts.findUnique({
+			where: { id },
+			include: { author: true },
+		});
+		return post;
+	}
+
+	async findByAuthor(authorId: string): Promise<Post[]> {
+		const posts = await this.db.posts.findMany({
+			where: { authorId },
+===== CHUNK 39 =====
+			include: { author: true },
+		});
+		return post;
+	}
+
+	async findByAuthor(authorId: string): Promise<Post[]> {
+		const posts = await this.db.posts.findMany({
+			where: { authorId },
+			orderBy: { createdAt: "desc" },
+		});
+===== CHUNK 40 =====
+		return post;
+	}
+
+	async findByAuthor(authorId: string): Promise<Post[]> {
+		const posts = await this.db.posts.findMany({
+			where: { authorId },
+			orderBy: { createdAt: "desc" },
+		});
+		return posts;
+	}
+===== CHUNK 41 =====
+
+	async findByAuthor(authorId: string): Promise<Post[]> {
+		const posts = await this.db.posts.findMany({
+			where: { authorId },
+			orderBy: { createdAt: "desc" },
+		});
+		return posts;
+	}
+
+	async findPublished(): Promise<Post[]> {
+===== CHUNK 42 =====
+		const posts = await this.db.posts.findMany({
+			where: { authorId },
+			orderBy: { createdAt: "desc" },
+		});
+		return posts;
+	}
+
+	async findPublished(): Promise<Post[]> {
+		const posts = await this.db.posts.findMany({
+			where: { published: true },
+===== CHUNK 43 =====
+			orderBy: { createdAt: "desc" },
+		});
+		return posts;
+	}
+
+	async findPublished(): Promise<Post[]> {
+		const posts = await this.db.posts.findMany({
+			where: { published: true },
+			orderBy: { publishedAt: "desc" },
+		});
+===== CHUNK 44 =====
+		return posts;
+	}
+
+	async findPublished(): Promise<Post[]> {
+		const posts = await this.db.posts.findMany({
+			where: { published: true },
+			orderBy: { publishedAt: "desc" },
+		});
+		return posts;
+	}
+===== CHUNK 45 =====
+
+	async findPublished(): Promise<Post[]> {
+		const posts = await this.db.posts.findMany({
+			where: { published: true },
+			orderBy: { publishedAt: "desc" },
+		});
+		return posts;
+	}
+
+	async create(data: CreatePostInput): Promise<Post> {
+===== CHUNK 46 =====
+		const posts = await this.db.posts.findMany({
+			where: { published: true },
+			orderBy: { publishedAt: "desc" },
+		});
+		return posts;
+	}
+
+	async create(data: CreatePostInput): Promise<Post> {
+		const post = await this.db.posts.create({
+			data: {
+===== CHUNK 47 =====
+			orderBy: { publishedAt: "desc" },
+		});
+		return posts;
+	}
+
+	async create(data: CreatePostInput): Promise<Post> {
+		const post = await this.db.posts.create({
+			data: {
+				...data,
+				createdAt: new Date(),
+===== CHUNK 48 =====
+		return posts;
+	}
+
+	async create(data: CreatePostInput): Promise<Post> {
+		const post = await this.db.posts.create({
+			data: {
+				...data,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			},
+===== CHUNK 49 =====
+
+	async create(data: CreatePostInput): Promise<Post> {
+		const post = await this.db.posts.create({
+			data: {
+				...data,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+		return post;
+===== CHUNK 50 =====
+		const post = await this.db.posts.create({
+			data: {
+				...data,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+		return post;
+	}
+
+===== CHUNK 51 =====
+				...data,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+		return post;
+	}
+
+	async publish(id: string): Promise<Post> {
+		const post = await this.db.posts.update({
+===== CHUNK 52 =====
+				updatedAt: new Date(),
+			},
+		});
+		return post;
+	}
+
+	async publish(id: string): Promise<Post> {
+		const post = await this.db.posts.update({
+			where: { id },
+			data: {
+===== CHUNK 53 =====
+		});
+		return post;
+	}
+
+	async publish(id: string): Promise<Post> {
+		const post = await this.db.posts.update({
+			where: { id },
+			data: {
+				published: true,
+				publishedAt: new Date(),
+===== CHUNK 54 =====
+	}
+
+	async publish(id: string): Promise<Post> {
+		const post = await this.db.posts.update({
+			where: { id },
+			data: {
+				published: true,
+				publishedAt: new Date(),
+				updatedAt: new Date(),
+			},
+===== CHUNK 55 =====
+	async publish(id: string): Promise<Post> {
+		const post = await this.db.posts.update({
+			where: { id },
+			data: {
+				published: true,
+				publishedAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+		return post;
+===== CHUNK 56 =====
+			where: { id },
+			data: {
+				published: true,
+				publishedAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+		return post;
+	}
+}
+===== CHUNK 57 =====
+				published: true,
+				publishedAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+		return post;
+	}
+}
+
+// Database interface
+===== CHUNK 58 =====
+				updatedAt: new Date(),
+			},
+		});
+		return post;
+	}
+}
+
+// Database interface
+interface Database {
+	users: unknown;
+===== CHUNK 59 =====
+		});
+		return post;
+	}
+}
+
+// Database interface
+interface Database {
+	users: unknown;
+	posts: unknown;
+}
+===== CHUNK 60 =====
+	}
+}
+
+// Database interface
+interface Database {
+	users: unknown;
+	posts: unknown;
+}
+
+// Input types
+===== CHUNK 61 =====
+
+// Database interface
+interface Database {
+	users: unknown;
+	posts: unknown;
+}
+
+// Input types
+interface CreateUserInput {
+	name: string;
+===== CHUNK 62 =====
+interface Database {
+	users: unknown;
+	posts: unknown;
+}
+
+// Input types
+interface CreateUserInput {
+	name: string;
+	email: string;
+}
+===== CHUNK 63 =====
+	posts: unknown;
+}
+
+// Input types
+interface CreateUserInput {
+	name: string;
+	email: string;
+}
+
+interface UpdateUserInput {
+===== CHUNK 64 =====
+
+// Input types
+interface CreateUserInput {
+	name: string;
+	email: string;
+}
+
+interface UpdateUserInput {
+	name?: string;
+	email?: string;
+===== CHUNK 65 =====
+interface CreateUserInput {
+	name: string;
+	email: string;
+}
+
+interface UpdateUserInput {
+	name?: string;
+	email?: string;
+}
+
+===== CHUNK 66 =====
+	email: string;
+}
+
+interface UpdateUserInput {
+	name?: string;
+	email?: string;
+}
+
+interface CreatePostInput {
+	title: string;
+===== CHUNK 67 =====
+
+interface UpdateUserInput {
+	name?: string;
+	email?: string;
+}
+
+interface CreatePostInput {
+	title: string;
+	content: string;
+	authorId: string;
+===== CHUNK 68 =====
+	name?: string;
+	email?: string;
+}
+
+interface CreatePostInput {
+	title: string;
+	content: string;
+	authorId: string;
+	tags: string[];
+}
+===== CHUNK 69 =====
+}
+
+interface CreatePostInput {
+	title: string;
+	content: string;
+	authorId: string;
+	tags: string[];
+}

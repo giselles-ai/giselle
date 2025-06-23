@@ -73,6 +73,8 @@ export function SearchDomainFilterPanel({
 
 	const totalDomains = allowlist.length + denylist.length;
 	const isMaxReached = totalDomains >= MAX_DOMAINS;
+	const getMaxReachedMessage = () =>
+		`You can add up to ${MAX_DOMAINS} domains only (combined Allow and Deny lists).`;
 
 	function updateDomainFilter(newAllow: string[], newDeny: string[]) {
 		const merged = [...newAllow, ...newDeny];
@@ -110,8 +112,15 @@ export function SearchDomainFilterPanel({
 
 			{/* Display domain count */}
 			<div className="mb-4 text-[13px] text-gray-400">
-				Total domains: {totalDomains}/{MAX_DOMAINS}
+				Total domains: {totalDomains}/{MAX_DOMAINS} (combined Allow and Deny
+				lists)
 			</div>
+
+			{isMaxReached && (
+				<div className="mb-4 text-red-700 text-[12px]">
+					{getMaxReachedMessage()}
+				</div>
+			)}
 
 			<SimpleDomainInput
 				label="Allow List"

@@ -46,7 +46,7 @@ interface StartGenerationOptions {
 	onGenerationStarted?: (generation: RunningGeneration) => void;
 	onGenerationCompleted?: (generation: CompletedGeneration) => void;
 	onGenerationCancelled?: (generation: CancelledGeneration) => void;
-	onGenerationFailed?: (generation: FailedGeneration) => void;
+	onGenerationFailed?: (generation: FailedGeneration) => void | Promise<void>;
 	onUpdateMessages?: (generation: RunningGeneration) => void;
 }
 export type StartGeneration = (

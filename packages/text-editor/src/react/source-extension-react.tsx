@@ -10,13 +10,29 @@ import clsx from "clsx/lite";
 import { useMemo } from "react";
 
 const Component = (props: NodeViewProps) => {
-	const node = useMemo(
-		() =>
-			GiselleNode.array()
-				.parse(props.editor.storage.Source.nodes)
-				.find((node) => node.id === props.node.attrs.node.id),
-		[props.editor, props.node.attrs.node],
-	);
+	const node = useMemo(() => {
+		// Try storage first (updated by lifecycle hooks), then fallback to options
+		let nodes = props.editor.storage.Source?.nodes;
+
+		if (!nodes || nodes.length === 0) {
+			// Fallback to extension options
+			const sourceExtension = props.editor.extensionManager.extensions.find(
+				(ext) => ext.name === "Source",
+			);
+			nodes = sourceExtension?.options?.nodes;
+		}
+
+		if (!nodes) {
+			return undefined;
+		}
+
+		const parsedNodes = GiselleNode.array().parse(nodes);
+		const foundNode = parsedNodes.find(
+			(node) => node.id === props.node.attrs.node.id,
+		);
+
+		return foundNode;
+	}, [props.editor, props.node.attrs.node]);
 
 	const output = useMemo(
 		() =>
@@ -78,6 +94,10 @@ export const SourceExtensionReact = SourceExtension.extend<
 	},
 
 	onBeforeCreate() {
+		this.storage.nodes = this.options.nodes;
+	},
+
+	onCreate() {
 		this.storage.nodes = this.options.nodes;
 	},
 

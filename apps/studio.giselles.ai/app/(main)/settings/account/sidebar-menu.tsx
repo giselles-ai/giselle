@@ -20,6 +20,7 @@ export function SidebarMenu() {
 					<Link
 						key={link.href}
 						href={link.href}
+						aria-label={`${link.label} settings`}
 						className={cn(
 							"text-[16px] font-sans font-medium rounded-lg px-4 py-1 hover:bg-white/5",
 							{

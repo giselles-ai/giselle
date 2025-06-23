@@ -1,6 +1,3 @@
-import { Defuddle } from "defuddle/node";
-import { Window } from "happy-dom";
-import TurndownService from "turndown";
 import { z } from "zod";
 
 export const selfMadeProviderName = "self-made" as const;
@@ -19,12 +16,6 @@ export type SelfMadeScrapeResult = {
 	html: string;
 	markdown: string;
 };
-
-const turndownService = new TurndownService({
-	headingStyle: "atx", // Use # heading style for headings
-	codeBlockStyle: "fenced", // Use ``` fenced style for code blocks
-	bulletListMarker: "*", // Use * as the bullet list marker
-});
 
 /**
  * Scrapes the content of a given URL and returns the result in the specified formats.
@@ -49,25 +40,46 @@ export async function scrapeUrl(
 	if (!res.ok) {
 		throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
 	}
-	const html = await res.text();
-	// Extract title from HTML
-	const match = html.match(/<title>([\s\S]*?)<\/title>/i);
-	const title = match ? match[1].trim() : "";
+	const content = await res.text();
+	const contentType = res.headers.get("content-type") || "";
+
+	// Check if the content is already plain text/markdown
+	const normalizedUrl = url.toLowerCase();
+	const isPlainText =
+		contentType.includes("text/plain") ||
+		contentType.includes("text/markdown") ||
+		contentType.includes("text/x-markdown") ||
+		contentType.includes("application/markdown") ||
+		normalizedUrl.endsWith(".txt") ||
+		normalizedUrl.endsWith(".md") ||
+		!content.trim().startsWith("<");
+
+	// Extract title from HTML (only if it's HTML content)
+	const match = content.match(/<title>([\s\S]*?)<\/title>/i);
+	const title = match ? match[1].trim() : url.split("/").pop() || "Untitled";
 
 	let markdown = "";
 	if (formats.includes("markdown")) {
-		const window = new Window({ url });
-		window.document.body.innerHTML = html;
-		const result = await Defuddle(window, url, {
-			markdown: true,
-		});
-		markdown = result.content;
+		if (isPlainText) {
+			// If it's already plain text/markdown, use it directly
+			markdown = content;
+		} else {
+			// If it's HTML, convert it to markdown
+			const Window = (await import("happy-dom")).Window;
+			const window = new Window({ url });
+			window.document.body.innerHTML = content;
+			const Defuddle = (await import("defuddle/node")).Defuddle;
+			const result = await Defuddle(window, url, {
+				markdown: true,
+			});
+			markdown = result.content;
+		}
 	}
 
 	return {
 		url,
 		title,
-		html: formats.includes("html") ? html : "",
+		html: formats.includes("html") ? content : "",
 		markdown: formats.includes("markdown") ? markdown : "",
 	};
 }
