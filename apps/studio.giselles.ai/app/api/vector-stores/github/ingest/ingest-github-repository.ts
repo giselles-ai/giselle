@@ -22,12 +22,10 @@ export async function ingestGitHubBlobs(params: {
 		params.teamDbId,
 	);
 
-	// Load processed paths into memory for fast lookup
 	const processedPaths = await loadProcessedPaths(
 		repositoryIndexDbId,
 		params.source.commitSha,
 	);
-
 	const githubLoader = createGitHubBlobLoader(params.octokitClient, {
 		maxBlobSize: 1 * 1024 * 1024,
 		shouldSkip: (path) => processedPaths.has(path),
