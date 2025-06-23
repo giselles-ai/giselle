@@ -4,7 +4,7 @@ import {
 	githubRepositoryIndex,
 } from "@/drizzle";
 import { octokit } from "@giselle-sdk/github-tool";
-import { eq, or } from "drizzle-orm";
+import { and, eq, lt, or } from "drizzle-orm";
 import type { TargetGitHubRepository } from "./types";
 
 export function buildOctokit(installationId: number) {
@@ -28,6 +28,9 @@ export function buildOctokit(installationId: number) {
 export async function fetchTargetGitHubRepositories(): Promise<
 	TargetGitHubRepository[]
 > {
+	// Consider running status as stale if it hasn't been updated for 15 minutes (> 800 seconds)
+	const staleThreshold = new Date(Date.now() - 15 * 60 * 1000);
+
 	const records = await db
 		.select({
 			dbId: githubRepositoryIndex.dbId,
@@ -43,8 +46,11 @@ export async function fetchTargetGitHubRepositories(): Promise<
 		.where(
 			or(
 				eq(githubRepositoryIndex.status, "idle"),
-				eq(githubRepositoryIndex.status, "running"),
 				eq(githubRepositoryIndex.status, "failed"),
+				and(
+					eq(githubRepositoryIndex.status, "running"),
+					lt(githubRepositoryIndex.updatedAt, staleThreshold),
+				),
 			),
 		);
 
@@ -67,23 +73,20 @@ export async function updateRepositoryStatus(
 	status: Exclude<GitHubRepositoryIndexStatus, "idle">,
 	commitSha: string,
 ): Promise<void> {
-	let currentIngestionCommitSha: string | null = null;
-	let lastIngestedCommitSha: string | null = null;
+	const updates: Partial<typeof githubRepositoryIndex.$inferInsert> = {
+		status,
+	};
 
 	if (status === "completed") {
-		currentIngestionCommitSha = null;
-		lastIngestedCommitSha = commitSha;
+		// Clear current ingestion and update last successful ingestion
+		updates.currentIngestionCommitSha = null;
+		updates.lastIngestedCommitSha = commitSha;
 	} else {
-		currentIngestionCommitSha = commitSha;
-		lastIngestedCommitSha = null;
+		updates.currentIngestionCommitSha = commitSha;
 	}
 
 	await db
 		.update(githubRepositoryIndex)
-		.set({
-			status,
-			lastIngestedCommitSha,
-			currentIngestionCommitSha,
-		})
+		.set(updates)
 		.where(eq(githubRepositoryIndex.dbId, dbId));
 }
