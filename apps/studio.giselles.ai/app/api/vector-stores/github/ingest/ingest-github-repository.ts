@@ -78,11 +78,6 @@ async function getRepositoryIndexDbId(
 
 /**
  * Load processed file paths into memory for fast lookup
- *
- * Note: We don't filter by commitSha because:
- * - Each repositoryIndexDbId contains only one commit's data at a time
- * - The unique constraint on (repositoryIndexDbId, path, chunkIndex) prevents duplicates
- * - For continuation purposes, we want to skip all previously processed files regardless of commitSha
  */
 async function loadProcessedPaths(
 	repositoryIndexDbId: number,
