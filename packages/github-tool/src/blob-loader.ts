@@ -49,7 +49,6 @@ export function createGitHubBlobLoader(
 				continue;
 			}
 
-			// Check if this file should be skipped
 			if (options?.shouldSkip && (await options.shouldSkip(path))) {
 				continue;
 			}
