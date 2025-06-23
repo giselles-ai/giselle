@@ -18,24 +18,29 @@ export async function GET(request: NextRequest) {
 		});
 	}
 
-	// DEBUG: Get debug commit SHA from URL parameters
-	const searchParams = request.nextUrl.searchParams;
-	const debugCommitSha = searchParams.get("commitSha");
-
 	const targetGitHubRepositories = await fetchTargetGitHubRepositories();
 
 	for (const targetGitHubRepository of targetGitHubRepositories) {
-		const { owner, repo, installationId, teamDbId, dbId } =
-			targetGitHubRepository;
+		const {
+			owner,
+			repo,
+			installationId,
+			teamDbId,
+			dbId,
+			currentIngestionCommitSha,
+		} = targetGitHubRepository;
+		const octokitClient = buildOctokit(installationId);
+
+		let commitSha: string;
+		if (currentIngestionCommitSha != null) {
+			commitSha = currentIngestionCommitSha;
+		} else {
+			const commit = await fetchDefaultBranchHead(octokitClient, owner, repo);
+			commitSha = commit.sha;
+		}
 
 		try {
-			await updateRepositoryStatus(dbId, "running");
-
-			const octokitClient = buildOctokit(installationId);
-			const commit = await fetchDefaultBranchHead(octokitClient, owner, repo);
-
-			// DEBUG: Use debug commit SHA if provided, otherwise use latest commit
-			const commitSha = debugCommitSha ?? commit.sha;
+			await updateRepositoryStatus(dbId, "running", commitSha);
 
 			const source = {
 				owner,
@@ -44,9 +49,7 @@ export async function GET(request: NextRequest) {
 			};
 
 			console.log(
-				`Starting ingestion for ${owner}/${repo} at commit ${commitSha}${
-					debugCommitSha ? " (debug mode)" : ""
-				}`,
+				`Starting ingestion for ${owner}/${repo} at commit ${commitSha}`,
 			);
 
 			await ingestGitHubBlobs({
@@ -61,7 +64,7 @@ export async function GET(request: NextRequest) {
 			captureException(error, {
 				extra: { owner, repo },
 			});
-			await updateRepositoryStatus(dbId, "failed");
+			await updateRepositoryStatus(dbId, "failed", commitSha);
 		}
 	}
 
