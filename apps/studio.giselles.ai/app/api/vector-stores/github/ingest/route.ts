@@ -48,10 +48,6 @@ export async function GET(request: NextRequest) {
 				commitSha,
 			};
 
-			console.log(
-				`Starting ingestion for ${owner}/${repo} at commit ${commitSha}`,
-			);
-
 			await ingestGitHubBlobs({
 				octokitClient,
 				source,
