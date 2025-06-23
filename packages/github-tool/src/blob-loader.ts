@@ -51,7 +51,6 @@ export function createGitHubBlobLoader(
 
 			// Check if this file should be skipped
 			if (options?.shouldSkip && (await options.shouldSkip(path))) {
-				console.log(`Skipping already processed file: ${path}`);
 				continue;
 			}
 

@@ -27,7 +27,6 @@ export async function ingestGitHubBlobs(params: {
 		repositoryIndexDbId,
 		params.source.commitSha,
 	);
-	console.log(`Loaded ${processedPaths.size} already processed paths`);
 
 	const githubLoader = createGitHubBlobLoader(params.octokitClient, {
 		maxBlobSize: 1 * 1024 * 1024,
