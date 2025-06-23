@@ -239,6 +239,13 @@
 			"when": 1747029097419,
 			"tag": "0033_eminent_white_tiger",
 			"breakpoints": true
+		},
+		{
+			"idx": 34,
+			"version": "7",
+			"when": 1750659772815,
+			"tag": "0034_empty_retro_girl",
+			"breakpoints": true
 		}
 	]
 }

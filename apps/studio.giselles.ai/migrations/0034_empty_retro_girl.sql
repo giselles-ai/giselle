@@ -1,0 +1,1 @@
+ALTER TABLE "github_repository_index" ADD COLUMN "current_ingestion_commit_sha" text;
