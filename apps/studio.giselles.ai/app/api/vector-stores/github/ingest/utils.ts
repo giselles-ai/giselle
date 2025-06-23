@@ -44,6 +44,7 @@ export async function fetchTargetGitHubRepositories(): Promise<
 			or(
 				eq(githubRepositoryIndex.status, "idle"),
 				eq(githubRepositoryIndex.status, "running"),
+				eq(githubRepositoryIndex.status, "failed"),
 			),
 		);
 
