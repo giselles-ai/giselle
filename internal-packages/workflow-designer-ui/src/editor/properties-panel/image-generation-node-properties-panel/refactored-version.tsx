@@ -1,78 +1,33 @@
 import type { ImageGenerationNode } from "@giselle-sdk/data-type";
-import clsx from "clsx/lite";
-import { useNodeGenerations, useWorkflowDesigner } from "giselle-sdk/react";
-import { CommandIcon, CornerDownLeft } from "lucide-react";
-import { Tabs } from "radix-ui";
-import { useCallback, useMemo } from "react";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { useUsageLimitsReached } from "../../../hooks/usage-limits";
+import { useWorkflowDesigner } from "giselle-sdk/react";
+import { useMemo } from "react";
 import { NodeIcon } from "../../../icons/node";
-import { Button } from "../../../ui/button";
-import { useToasts } from "../../../ui/toast";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
-import { KeyboardShortcuts } from "../../components/keyboard-shortcuts";
-import {
-	PropertiesPanelContent,
-	PropertiesPanelHeader,
-	PropertiesPanelRoot,
-	type TabConfig,
-	TabbedPropertiesPanel,
-} from "../ui";
+import { useNodeGeneration } from "../hooks/use-node-generation";
+import { type TabConfig, TabbedPropertiesPanel } from "../ui";
 import { GenerationPanel } from "./generation-panel";
 import { InputPanel } from "./input-panel";
 import { FalModelPanel, OpenAIImageModelPanel } from "./models";
 import { PromptPanel } from "./prompt-panel";
 import { useConnectedSources } from "./sources";
 
-export function ImageGenerationNodePropertiesPanel({
+export function RefactoredImageGenerationNodePropertiesPanel({
 	node,
 }: {
 	node: ImageGenerationNode;
 }) {
-	const {
-		data,
-		updateNodeDataContent,
-		updateNodeData,
-		setUiNodeState,
-		deleteConnection,
-	} = useWorkflowDesigner();
-	const { createAndStartGeneration, isGenerating, stopGeneration } =
-		useNodeGenerations({
-			nodeId: node.id,
-			origin: { type: "workspace", id: data.id },
-		});
+	const { updateNodeDataContent, updateNodeData } = useWorkflowDesigner();
 	const { all: connectedSources } = useConnectedSources(node);
-	const usageLimitsReached = useUsageLimitsReached();
-	const { error } = useToasts();
 
-	const generateText = useCallback(() => {
-		if (usageLimitsReached) {
-			error("Please upgrade your plan to continue using this feature.");
-			return;
-		}
-
-		createAndStartGeneration({
-			origin: {
-				type: "workspace",
-				id: data.id,
-			},
-			operationNode: node,
-			sourceNodes: connectedSources.map(
-				(connectedSource) => connectedSource.node,
-			),
-			connections: data.connections.filter(
-				(connection) => connection.inputNode.id === node.id,
-			),
-		});
-	}, [
-		connectedSources,
-		data.id,
-		data.connections,
+	// Use shared generation hook
+	const generation = useNodeGeneration({
 		node,
-		createAndStartGeneration,
-		usageLimitsReached,
-		error,
-	]);
+		getConnectedSources: () => connectedSources,
+		validateGeneration: () => {
+			// Add validation logic if needed
+			return true;
+		},
+	});
 
 	// Model panel component based on provider
 	const modelPanel = useMemo(() => {
@@ -130,12 +85,15 @@ export function ImageGenerationNodePropertiesPanel({
 
 	// Bottom panel (generation results)
 	const bottomPanel = (
-		<GenerationPanel node={node} onClickGenerateButton={generateText} />
+		<GenerationPanel
+			node={node}
+			onClickGenerateButton={generation.handleGenerate}
+		/>
 	);
 
 	return (
 		<>
-			{usageLimitsReached && <UsageLimitWarning />}
+			{generation.disabled && <UsageLimitWarning />}
 			<TabbedPropertiesPanel
 				node={node}
 				icon={<NodeIcon node={node} className="size-[20px] text-black-900" />}
@@ -145,20 +103,13 @@ export function ImageGenerationNodePropertiesPanel({
 				defaultTab="prompt"
 				bottomPanel={bottomPanel}
 				generationConfig={{
-					isGenerating: isGenerating,
-					onGenerate: () => {
-						if (isGenerating) {
-							stopGeneration();
-						} else {
-							generateText();
-						}
-					},
-					onStop: stopGeneration,
+					isGenerating: generation.isGenerating,
+					onGenerate: generation.handleGenerate,
+					onStop: generation.handleStop,
 					generateLabel: "Generate",
-					disabled: usageLimitsReached || isGenerating,
+					disabled: generation.disabled,
 				}}
 				enableKeyboardShortcuts={true}
-				disablePadding={true}
 			/>
 		</>
 	);

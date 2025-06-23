@@ -8,7 +8,7 @@ import { useNodeGenerations, useWorkflowDesigner } from "giselle-sdk/react";
 import { useCallback, useEffect, useState } from "react";
 import { StackBlicksIcon, WilliIcon } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";
-import { GenerationView } from "../../../ui/generation-view";
+import { ImageGenerationView } from "../../../ui/image-generation-view";
 
 function Empty({ onGenerate }: { onGenerate?: () => void }) {
 	return (
@@ -101,7 +101,7 @@ export function GenerationPanel({
 			</div>
 			<div className="pt-[16px] pb-[12px] px-[16px] h-full overflow-hidden">
 				<div className="h-full overflow-x-auto">
-					<GenerationView generation={currentGeneration} />
+					<ImageGenerationView generation={currentGeneration} />
 				</div>
 			</div>
 		</div>

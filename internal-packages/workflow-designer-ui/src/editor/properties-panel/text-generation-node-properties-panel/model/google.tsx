@@ -26,34 +26,41 @@ export function GoogleModelPanel({
 
 	return (
 		<div className="flex flex-col gap-[34px]">
-			<Select
-				value={googleLanguageModel.id}
-				onValueChange={(value) => {
-					onModelChange(
-						GoogleLanguageModelData.parse({
-							...googleLanguageModel,
-							id: value,
-						}),
-					);
-				}}
-			>
-				<SelectTrigger>
-					<SelectValue placeholder="Select a LLM" />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectGroup>
-						{googleLanguageModels.map((googleLanguageModel) => (
-							<SelectItem
-								key={googleLanguageModel.id}
-								value={googleLanguageModel.id}
-								disabled={!languageModelAvailable(googleLanguageModel, limits)}
-							>
-								{googleLanguageModel.id}
-							</SelectItem>
-						))}
-					</SelectGroup>
-				</SelectContent>
-			</Select>
+			<div className="grid grid-cols-2 gap-[24px]">
+				<div className="flex flex-col col-span-2">
+					<div className="text-[14px] py-[1.5px]">Model</div>
+					<Select
+						value={googleLanguageModel.id}
+						onValueChange={(value) => {
+							onModelChange(
+								GoogleLanguageModelData.parse({
+									...googleLanguageModel,
+									id: value,
+								}),
+							);
+						}}
+					>
+						<SelectTrigger className="border-[2px]">
+							<SelectValue placeholder="Select a LLM" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								{googleLanguageModels.map((googleLanguageModel) => (
+									<SelectItem
+										key={googleLanguageModel.id}
+										value={googleLanguageModel.id}
+										disabled={
+											!languageModelAvailable(googleLanguageModel, limits)
+										}
+									>
+										{googleLanguageModel.id}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						</SelectContent>
+					</Select>
+				</div>
+			</div>
 			<div>
 				<div className="grid grid-cols-2 gap-[24px]">
 					<Slider

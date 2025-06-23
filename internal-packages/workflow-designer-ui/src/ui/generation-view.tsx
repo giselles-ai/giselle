@@ -12,22 +12,10 @@ import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 import { Accordion } from "radix-ui";
 import { useMemo } from "react";
 import { WilliIcon } from "../icons";
+import { GeneratingPlaceholder } from "./generating-placeholder";
 import { MemoizedMarkdown } from "./memoized-markdown";
 
-function Spinner() {
-	return (
-		<div className="flex gap-[12px] text-black-400">
-			<WilliIcon className="w-[20px] h-[20px] animate-pop-pop-1" />
-			<WilliIcon className="w-[20px] h-[20px] animate-pop-pop-2" />
-			<WilliIcon className="w-[20px] h-[20px] animate-pop-pop-3" />
-		</div>
-	);
-}
-export function GenerationView({
-	generation,
-}: {
-	generation: Generation;
-}) {
+export function GenerationView({ generation }: { generation: Generation }) {
 	const client = useGiselleEngine();
 	const generatedMessages = useMemo(
 		() =>
@@ -48,7 +36,7 @@ export function GenerationView({
 	) {
 		return (
 			<div className="pt-[8px]">
-				<Spinner />
+				<GeneratingPlaceholder height="120px" />
 			</div>
 		);
 	}
@@ -163,7 +151,7 @@ export function GenerationView({
 
 			{generation.status !== "completed" &&
 				generation.status !== "cancelled" &&
-				// Show the spinner only when there is no reasoning part
+				// Show the placeholder only when there is no reasoning part
 				!generatedMessages.some((message) =>
 					message.parts?.some(
 						(part) =>
@@ -171,32 +159,9 @@ export function GenerationView({
 					),
 				) && (
 					<div className="pt-[8px]">
-						<Spinner />
+						<GeneratingPlaceholder height="120px" />
 					</div>
 				)}
 		</>
 	);
 }
-
-// function ToolBlock({
-// 	generation,
-// 	contextNodeId,
-// }: {
-// 	contextNodeId: NodeId;
-// 	generation: RunningGeneration | CompletedGeneration | CancelledGeneration;
-// }) {
-// 	const contextNode = useMemo(
-// 		() =>
-// 			generation.context.sourceNodes.find(
-// 				(sourceNode) => sourceNode.id === contextNodeId,
-// 			),
-// 		[generation, contextNodeId],
-// 	);
-// 	if (contextNode === undefined) {
-// 		return null;
-// 	}
-// 	if (contextNode.content.type === "file") {
-// 		return contextNode.content.files.map((file) => file.name).join(", ");
-// 	}
-// 	return null;
-// }

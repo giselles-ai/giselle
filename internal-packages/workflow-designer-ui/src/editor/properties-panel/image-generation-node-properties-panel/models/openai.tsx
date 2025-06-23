@@ -28,38 +28,41 @@ export function OpenAIImageModelPanel({
 
 	return (
 		<div className="flex flex-col gap-[34px]">
-			<Select
-				value={languageModel.id}
-				onValueChange={(value) => {
-					onModelChange(
-						OpenAIImageLanguageModelData.parse({
-							...languageModel,
-							id: value,
-						}),
-					);
-				}}
-			>
-				<SelectTrigger>
-					<SelectValue placeholder="Select a LLM" />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectGroup>
-						{openaiImageModels.map((openaiImageModel) => (
-							<SelectItem
-								key={openaiImageModel.id}
-								value={openaiImageModel.id}
-								disabled={!languageModelAvailable(openaiImageModel, limits)}
-							>
-								{openaiImageModel.id}
-							</SelectItem>
-						))}
-					</SelectGroup>
-				</SelectContent>
-			</Select>
+			<div className="grid grid-cols-2 gap-[24px]">
+				<div className="flex flex-col col-span-2">
+					<div className="text-[14px] py-[1.5px]">Model</div>
+					<Select
+						value={languageModel.id}
+						onValueChange={(value) => {
+							onModelChange(
+								OpenAIImageLanguageModelData.parse({
+									...languageModel,
+									id: value,
+								}),
+							);
+						}}
+					>
+						<SelectTrigger className="border-[2px]">
+							<SelectValue placeholder="Select a LLM" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								{openaiImageModels.map((openaiImageModel) => (
+									<SelectItem
+										key={openaiImageModel.id}
+										value={openaiImageModel.id}
+										disabled={!languageModelAvailable(openaiImageModel, limits)}
+									>
+										{openaiImageModel.id}
+									</SelectItem>
+								))}
+							</SelectGroup>
+						</SelectContent>
+					</Select>
+				</div>
 
-			<div className="grid grid-cols-2 gap-[16px]">
-				<div className="space-y-[4px]">
-					<p>Size</p>
+				<div className="flex flex-col">
+					<div className="text-[14px] py-[1.5px]">Size</div>
 					<Select
 						value={languageModel.configurations.size}
 						onValueChange={(value) => {
@@ -92,8 +95,8 @@ export function OpenAIImageModelPanel({
 					</Select>
 				</div>
 
-				<div className="space-y-[4px]">
-					<p>Quality</p>
+				<div className="flex flex-col">
+					<div className="text-[14px] py-[1.5px]">Quality</div>
 					<Select
 						value={languageModel.configurations.quality}
 						onValueChange={(value) => {
@@ -126,8 +129,8 @@ export function OpenAIImageModelPanel({
 					</Select>
 				</div>
 
-				<div className="space-y-[4px]">
-					<p>Background</p>
+				<div className="flex flex-col">
+					<div className="text-[14px] py-[1.5px]">Background</div>
 					<Select
 						value={languageModel.configurations.background}
 						onValueChange={(value) => {
@@ -160,8 +163,8 @@ export function OpenAIImageModelPanel({
 					</Select>
 				</div>
 
-				<div className="space-y-[4px]">
-					<p>Moderation</p>
+				<div className="flex flex-col">
+					<div className="text-[14px] py-[1.5px]">Moderation</div>
 					<Select
 						value={languageModel.configurations.moderation}
 						onValueChange={(value) => {
