@@ -7,6 +7,5 @@ export type {
 	ColumnMapping,
 	DatabaseConfig,
 	RequiredColumns,
-	SystemColumns,
 } from "./types";
 export { createColumnMapping } from "./utils";

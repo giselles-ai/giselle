@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import type { ColumnMapping, RequiredColumns, SystemColumns } from "./types";
+import type { ColumnMapping, RequiredColumns } from "./types";
 import { REQUIRED_COLUMN_KEYS } from "./types";
 
 const DEFAULT_REQUIRED_COLUMNS: RequiredColumns = {
@@ -7,6 +7,7 @@ const DEFAULT_REQUIRED_COLUMNS: RequiredColumns = {
 	chunkContent: "chunk_content",
 	chunkIndex: "chunk_index",
 	embedding: "embedding",
+	version: "version",
 } as const;
 
 function toSnakeCase(str: string): string {
@@ -60,14 +61,9 @@ export function createColumnMapping<
 	metadataSchema: TSchema;
 	requiredColumnOverrides?: Partial<RequiredColumns>;
 	metadataColumnOverrides?: Partial<Record<keyof z.infer<TSchema>, string>>;
-	systemColumns?: SystemColumns;
 }): ColumnMapping<z.infer<TSchema>> {
-	const {
-		metadataSchema,
-		requiredColumnOverrides,
-		metadataColumnOverrides,
-		systemColumns,
-	} = options;
+	const { metadataSchema, requiredColumnOverrides, metadataColumnOverrides } =
+		options;
 
 	type TMetadata = z.infer<TSchema>;
 
@@ -85,11 +81,7 @@ export function createColumnMapping<
 		return [fieldName, customMapping ?? toSnakeCase(fieldName)];
 	});
 
-	const allEntries = [
-		...Object.entries(requiredColumns),
-		...metadataEntries,
-		...(systemColumns ? Object.entries(systemColumns) : []),
-	];
+	const allEntries = [...Object.entries(requiredColumns), ...metadataEntries];
 	const result = Object.fromEntries(allEntries);
 
 	if (!validateColumnMapping(result, metadataSchema)) {

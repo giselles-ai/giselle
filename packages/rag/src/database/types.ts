@@ -33,6 +33,7 @@ export const REQUIRED_COLUMN_KEYS = [
 	"chunkContent",
 	"chunkIndex",
 	"embedding",
+	"version",
 ] as const;
 
 export type RequiredColumns = Record<
@@ -40,10 +41,6 @@ export type RequiredColumns = Record<
 	string
 >;
 
-export interface SystemColumns {
-	version?: string;
-}
-
 export type ColumnMapping<TMetadata> = Readonly<RequiredColumns> & {
 	[K in Exclude<keyof TMetadata, keyof RequiredColumns>]: string;
-} & SystemColumns;
+};

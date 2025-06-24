@@ -96,7 +96,7 @@ export function createPostgresChunkStore<
 	/**
 	 * Delete chunks by document key
 	 */
-	const delete = async (documentKey: string): Promise<void> => {
+	const deleteByKey = async (documentKey: string): Promise<void> => {
 		const pool = PoolManager.getPool(database);
 		const client = await pool.connect();
 
@@ -240,7 +240,7 @@ export function createPostgresChunkStore<
 
 	return {
 		insert,
-		delete: deleteByDocumentKey,
+		delete: deleteByKey,
 		deleteBatch,
 		getDocumentVersions,
 	};
