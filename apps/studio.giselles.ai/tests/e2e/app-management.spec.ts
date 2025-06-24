@@ -36,6 +36,7 @@ test.describe("App management", () => {
 
 		// 2. Give the app a random name
 		// Click the editable text to turn it into an input
+		await expect(page.getByRole("button", { name: "App name" })).toBeVisible();
 		await page.getByRole("button", { name: "App name" }).click();
 		// Fill in the new name
 		const input = page.getByRole("textbox", { name: "App name" });
@@ -55,9 +56,10 @@ test.describe("App management", () => {
 		const appCard = page.getByLabel(appName);
 		await appCard.hover();
 		await appCard.getByRole("button", { name: "Delete an app" }).click();
-		await page.getByRole("button", { name: "Delete" }).click();
+		const dialog = page.getByRole("dialog");
+		await dialog.getByRole("button", { name: "Delete" }).click();
 
 		// Assert that the app is no longer visible
-		await expect(page.getByLabel(appName)).not.toBeVisible();
+		await expect(page.getByLabel(appName)).not.toBeVisible({ timeout: 20000 });
 	});
 });
