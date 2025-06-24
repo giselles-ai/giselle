@@ -56,7 +56,8 @@ test.describe("App management", () => {
 		const appCard = page.getByLabel(appName);
 		await appCard.hover();
 		await appCard.getByRole("button", { name: "Delete an app" }).click();
-		await page.getByRole("button", { name: "Delete" }).click();
+		const dialog = page.getByRole("dialog");
+		await dialog.getByRole("button", { name: "Delete" }).click();
 
 		// Assert that the app is no longer visible
 		await expect(page.getByLabel(appName)).not.toBeVisible({ timeout: 15000 });
