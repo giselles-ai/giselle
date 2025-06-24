@@ -27,4 +27,15 @@ export interface ChunkStore<
 	 * @param documentKey The unique key of the document
 	 */
 	deleteByDocumentKey(documentKey: string): Promise<void>;
+
+	/**
+	 * Get document versions for differential ingestion
+	 * @returns Array of document keys with their versions
+	 */
+	getDocumentVersions?(): Promise<
+		Array<{
+			documentKey: string;
+			version: string;
+		}>
+	>;
 }

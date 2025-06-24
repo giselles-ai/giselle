@@ -45,6 +45,9 @@ export function createGitHubBlobChunkStore(repositoryIndexDbId: number) {
 		requiredColumnOverrides: {
 			documentKey: "path",
 		},
+		systemColumns: {
+			version: "file_sha",
+		},
 	});
 
 	return createPostgresChunkStore({

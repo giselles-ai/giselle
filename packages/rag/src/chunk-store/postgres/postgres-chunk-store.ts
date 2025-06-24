@@ -1,8 +1,13 @@
+import { escapeIdentifier } from "pg";
 import type { z } from "zod/v4";
 import { PoolManager } from "../../database/postgres";
 import { ensurePgVectorTypes } from "../../database/postgres/pgvector-registry";
 import type { ColumnMapping, DatabaseConfig } from "../../database/types";
-import { DatabaseError, ValidationError } from "../../errors";
+import {
+	ConfigurationError,
+	DatabaseError,
+	ValidationError,
+} from "../../errors";
 import type { ChunkStore, ChunkWithEmbedding } from "../types";
 import {
 	deleteChunksByDocumentKey,
@@ -119,8 +124,68 @@ export function createPostgresChunkStore<
 		}
 	}
 
+	/**
+	 * Get document versions for differential ingestion
+	 */
+	async function getDocumentVersions(): Promise<
+		Array<{
+			documentKey: string;
+			version: string;
+		}>
+	> {
+		// Check version column before connecting to DB
+		if (!columnMapping.version) {
+			throw ConfigurationError.missingField("columnMapping.version", {
+				hint: "Please provide systemColumns.version when calling createColumnMapping",
+			});
+		}
+
+		const pool = PoolManager.getPool(database);
+		const client = await pool.connect();
+
+		try {
+			await ensurePgVectorTypes(client, database.connectionString);
+
+			// Build scope conditions
+			const scopeConditions = Object.entries(scope)
+				.map(([key, _], index) => `${escapeIdentifier(key)} = $${index + 1}`)
+				.join(" AND ");
+
+			const scopeValues = Object.values(scope);
+
+			const versionColumn = columnMapping.version;
+
+			const query = `
+				SELECT DISTINCT 
+					${escapeIdentifier(columnMapping.documentKey)} as document_key,
+					${escapeIdentifier(versionColumn)} as version
+				FROM ${escapeIdentifier(tableName)}
+				WHERE ${scopeConditions}
+					AND ${escapeIdentifier(versionColumn)} IS NOT NULL
+			`;
+
+			const result = await client.query(query, scopeValues);
+			return result.rows.map((row) => ({
+				documentKey: row.document_key,
+				version: row.version,
+			}));
+		} catch (error) {
+			throw DatabaseError.queryFailed(
+				`SELECT DISTINCT FROM ${tableName}`,
+				error instanceof Error ? error : undefined,
+				{
+					operation: "getDocumentVersions",
+					tableName,
+				},
+			);
+		} finally {
+			client.release();
+		}
+	}
+
 	return {
 		insert,
 		deleteByDocumentKey,
+		getDocumentVersions,
 	};
 }
