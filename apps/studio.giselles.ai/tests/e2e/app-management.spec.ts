@@ -36,6 +36,7 @@ test.describe("App management", () => {
 
 		// 2. Give the app a random name
 		// Click the editable text to turn it into an input
+		await expect(page.getByRole("button", { name: "App name" })).toBeVisible();
 		await page.getByRole("button", { name: "App name" }).click();
 		// Fill in the new name
 		const input = page.getByRole("textbox", { name: "App name" });
