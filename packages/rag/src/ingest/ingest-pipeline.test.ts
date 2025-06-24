@@ -6,28 +6,32 @@ import type { EmbedderFunction } from "../embedder/types";
 import { createIngestPipeline } from "./ingest-pipeline";
 
 describe("createIngestPipeline", () => {
-	let mockDocumentLoader: DocumentLoader<{ path: string }>;
+	let mockDocumentLoader: DocumentLoader<{ path: string; version: string }>;
 	let mockChunker: ChunkerFunction;
 	let mockEmbedder: EmbedderFunction;
-	let mockChunkStore: ChunkStore<{ path: string }>;
+	let mockChunkStore: ChunkStore<{ path: string; version: string }> & {
+		getDocumentVersions: () => Promise<
+			Array<{ documentKey: string; version: string }>
+		>;
+	};
 
 	beforeEach(() => {
 		mockDocumentLoader = {
 			async *loadMetadata() {
-				yield await Promise.resolve({ path: "file1.txt" });
-				yield await Promise.resolve({ path: "file2.txt" });
+				yield await Promise.resolve({ path: "file1.txt", version: "v1" });
+				yield await Promise.resolve({ path: "file2.txt", version: "v2" });
 			},
-			async loadDocument(metadata: { path: string }) {
+			async loadDocument(metadata: { path: string; version: string }) {
 				if (metadata.path === "file1.txt") {
 					return await Promise.resolve({
 						content: "doc1",
-						metadata: { path: "file1.txt" },
+						metadata: { path: "file1.txt", version: "v1" },
 					});
 				}
 				if (metadata.path === "file2.txt") {
 					return await Promise.resolve({
 						content: "doc2",
-						metadata: { path: "file2.txt" },
+						metadata: { path: "file2.txt", version: "v2" },
 					});
 				}
 				return await Promise.resolve(null);
@@ -44,16 +48,18 @@ describe("createIngestPipeline", () => {
 		mockChunkStore = {
 			insert: vi.fn(async () => {}),
 			deleteByDocumentKey: vi.fn(async () => {}),
+			getDocumentVersions: vi.fn(async () => []),
 		};
 	});
 
-	it("should process documents through the pipeline", async () => {
+	it("should process new documents through the pipeline", async () => {
 		const ingest = createIngestPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
 			embedder: mockEmbedder,
 			chunkStore: mockChunkStore,
 			documentKey: (metadata) => metadata.path,
+			documentVersion: (metadata) => metadata.version,
 			metadataTransform: (metadata) => metadata,
 		});
 
@@ -74,6 +80,7 @@ describe("createIngestPipeline", () => {
 				.fn()
 				.mockRejectedValueOnce(new Error("First attempt failed"))
 				.mockResolvedValueOnce(undefined),
+			getDocumentVersions: vi.fn(async () => []),
 		};
 
 		const ingest = createIngestPipeline({
@@ -82,6 +89,7 @@ describe("createIngestPipeline", () => {
 			embedder: mockEmbedder,
 			chunkStore: failingChunkStore,
 			documentKey: (metadata) => metadata.path,
+			documentVersion: (metadata) => metadata.version,
 			metadataTransform: (metadata) => metadata,
 			maxRetries: 2,
 			retryDelay: 10,
@@ -102,6 +110,7 @@ describe("createIngestPipeline", () => {
 			embedder: mockEmbedder,
 			chunkStore: mockChunkStore,
 			documentKey: (metadata) => metadata.path,
+			documentVersion: (metadata) => metadata.version,
 			metadataTransform: (metadata) => metadata,
 			onProgress,
 		});
@@ -120,6 +129,7 @@ describe("createIngestPipeline", () => {
 			embedder: mockEmbedder,
 			chunkStore: mockChunkStore,
 			documentKey: (metadata) => metadata.path,
+			documentVersion: (metadata) => metadata.version,
 			metadataTransform: (metadata) => metadata,
 			maxBatchSize: 1,
 		});
@@ -128,5 +138,115 @@ describe("createIngestPipeline", () => {
 
 		// With batch size 1 and 2 chunks per document, should call embedMany 4 times
 		expect(mockEmbedder.embedMany).toHaveBeenCalledTimes(4);
+	});
+});
+
+describe("createIngestPipeline - differential ingestion", () => {
+	let mockDocumentLoader: DocumentLoader<{ path: string; sha: string }>;
+	let mockChunker: ChunkerFunction;
+	let mockEmbedder: EmbedderFunction;
+	let mockChunkStore: ChunkStore<{ path: string; sha: string }> & {
+		getDocumentVersions: () => Promise<
+			Array<{ documentKey: string; version: string }>
+		>;
+	};
+
+	beforeEach(() => {
+		mockDocumentLoader = {
+			async *loadMetadata() {
+				yield await Promise.resolve({ path: "file1.txt", sha: "sha1-new" });
+				yield await Promise.resolve({ path: "file2.txt", sha: "sha2-same" });
+				yield await Promise.resolve({ path: "file3.txt", sha: "sha3-new" });
+			},
+			async loadDocument(metadata: { path: string; sha: string }) {
+				return await Promise.resolve({
+					content: `content of ${metadata.path}`,
+					metadata,
+				});
+			},
+		};
+
+		mockChunker = vi.fn((text) => [`chunk1 of ${text}`, `chunk2 of ${text}`]);
+
+		mockEmbedder = {
+			embed: vi.fn(async () => [0.1, 0.2, 0.3]),
+			embedMany: vi.fn(async (texts) => texts.map(() => [0.1, 0.2, 0.3])),
+		};
+
+		mockChunkStore = {
+			insert: vi.fn(async () => {}),
+			deleteByDocumentKey: vi.fn(async () => {}),
+			getDocumentVersions: vi.fn(async () => [
+				{ documentKey: "file1.txt", version: "sha1-old" },
+				{ documentKey: "file2.txt", version: "sha2-same" },
+				{ documentKey: "file4.txt", version: "sha4-deleted" },
+			]),
+		};
+	});
+
+	it("should detect new, updated, and deleted documents", async () => {
+		const ingest = createIngestPipeline({
+			documentLoader: mockDocumentLoader,
+			chunker: mockChunker,
+			embedder: mockEmbedder,
+			chunkStore: mockChunkStore,
+			documentKey: (metadata) => metadata.path,
+			metadataTransform: (metadata) => metadata,
+			documentVersion: (metadata) => metadata.sha,
+		});
+
+		const result = await ingest();
+
+		// Should process only new and updated documents (file1.txt and file3.txt)
+		expect(result.totalDocuments).toBe(2);
+		expect(result.successfulDocuments).toBe(2);
+		expect(result.failedDocuments).toBe(0);
+
+		// Should call insert for new and updated documents
+		expect(mockChunkStore.insert).toHaveBeenCalledTimes(2);
+		expect(mockChunkStore.insert).toHaveBeenCalledWith(
+			"file1.txt",
+			expect.any(Array),
+			{ path: "file1.txt", sha: "sha1-new" },
+		);
+		expect(mockChunkStore.insert).toHaveBeenCalledWith(
+			"file3.txt",
+			expect.any(Array),
+			{ path: "file3.txt", sha: "sha3-new" },
+		);
+
+		// Should delete removed document
+		expect(mockChunkStore.deleteByDocumentKey).toHaveBeenCalledTimes(1);
+		expect(mockChunkStore.deleteByDocumentKey).toHaveBeenCalledWith(
+			"file4.txt",
+		);
+	});
+
+	it("should handle deletion errors gracefully", async () => {
+		const failingChunkStore = {
+			...mockChunkStore,
+			deleteByDocumentKey: vi
+				.fn()
+				.mockRejectedValueOnce(new Error("Delete failed")),
+		};
+
+		const ingest = createIngestPipeline({
+			documentLoader: mockDocumentLoader,
+			chunker: mockChunker,
+			embedder: mockEmbedder,
+			chunkStore: failingChunkStore,
+			documentKey: (metadata) => metadata.path,
+			metadataTransform: (metadata) => metadata,
+			documentVersion: (metadata) => metadata.sha,
+		});
+
+		const result = await ingest();
+
+		// Should still process new/updated documents successfully
+		expect(result.totalDocuments).toBe(2);
+		expect(result.successfulDocuments).toBe(2);
+		expect(result.errors).toHaveLength(1);
+		expect(result.errors[0].document).toBe("file4.txt");
+		expect(result.errors[0].error.message).toBe("Delete failed");
 	});
 });

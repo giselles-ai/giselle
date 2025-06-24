@@ -10,22 +10,25 @@ import type { IngestError, IngestProgress, IngestResult } from "./types";
 // Type helper to extract metadata type from ChunkStore
 type InferChunkMetadata<T> = T extends ChunkStore<infer M> ? M : never;
 
+// ChunkStore with required getDocumentVersions method
+type ChunkStoreWithVersions<TMetadata extends Record<string, unknown>> =
+	ChunkStore<TMetadata> &
+		Required<Pick<ChunkStore<TMetadata>, "getDocumentVersions">>;
+
 export interface IngestPipelineOptions<
 	TDocMetadata extends Record<string, unknown>,
-	TStore extends ChunkStore<Record<string, unknown>>,
+	TStore extends ChunkStoreWithVersions<Record<string, unknown>>,
 > {
 	// Required configuration
 	documentLoader: DocumentLoader<TDocMetadata>;
 	chunkStore: TStore;
 	documentKey: (metadata: TDocMetadata) => string;
+	documentVersion: (metadata: TDocMetadata) => string;
 	metadataTransform: (metadata: TDocMetadata) => InferChunkMetadata<TStore>;
 
 	// Optional processors
 	chunker?: ChunkerFunction;
 	embedder?: EmbedderFunction;
-
-	// Optional filters
-	shouldSkip?: (metadata: TDocMetadata) => boolean;
 
 	// Optional settings
 	maxBatchSize?: number;
@@ -42,21 +45,21 @@ const DEFAULT_RETRY_DELAY = 1000;
 export type IngestFunction = () => Promise<IngestResult>;
 
 /**
- * Create an ingest pipeline function with the given options
+ * Create a differential ingest pipeline that only processes new or changed documents
  */
 export function createIngestPipeline<
 	TDocMetadata extends Record<string, unknown>,
-	TStore extends ChunkStore<Record<string, unknown>>,
+	TStore extends ChunkStoreWithVersions<Record<string, unknown>>,
 >(options: IngestPipelineOptions<TDocMetadata, TStore>): IngestFunction {
 	// Extract and set defaults for all options
 	const {
 		documentLoader,
 		chunkStore,
 		documentKey,
+		documentVersion,
 		metadataTransform,
 		chunker = createDefaultChunker(),
 		embedder = createDefaultEmbedder(),
-		shouldSkip,
 		maxBatchSize = DEFAULT_MAX_BATCH_SIZE,
 		maxRetries = DEFAULT_MAX_RETRIES,
 		retryDelay = DEFAULT_RETRY_DELAY,
@@ -147,7 +150,7 @@ export function createIngestPipeline<
 	}
 
 	/**
-	 * The main ingest function
+	 * The main differential ingest function
 	 */
 	return async function ingest(): Promise<IngestResult> {
 		const result: IngestResult = {
@@ -163,17 +166,31 @@ export function createIngestPipeline<
 		};
 
 		try {
+			// Get existing document versions
+			const existingDocs = await chunkStore.getDocumentVersions();
+			const existingVersions = new Map(
+				existingDocs.map((doc) => [doc.documentKey, doc.version]),
+			);
+
+			// Track which documents we've seen
+			const seenDocuments = new Set<string>();
 			const documentBatch: Array<Document<TDocMetadata>> = [];
 
-			// Load all metadata and then load documents
+			// Process all documents from the loader
 			for await (const metadata of documentLoader.loadMetadata()) {
-				// Check if this document should be skipped
-				if (shouldSkip?.(metadata)) {
+				const docKey = documentKey(metadata);
+				const newVersion = documentVersion(metadata);
+				seenDocuments.add(docKey);
+
+				// Check if document needs update
+				const existingVersion = existingVersions.get(docKey);
+				if (existingVersion === newVersion) {
+					// Document hasn't changed, skip it
 					continue;
 				}
 
+				// Load and process the document
 				const document = await documentLoader.loadDocument(metadata);
-
 				if (!document) {
 					continue;
 				}
@@ -187,13 +204,36 @@ export function createIngestPipeline<
 				}
 			}
 
+			// Process remaining documents
 			if (documentBatch.length > 0) {
 				await processBatch(documentBatch, result, progress);
 			}
+
+			// Delete documents that no longer exist
+			const deletionTasks: Array<string> = [];
+			for (const [docKey] of existingVersions) {
+				if (!seenDocuments.has(docKey)) {
+					deletionTasks.push(docKey);
+				}
+			}
+
+			// Process deletions
+			for (const docKey of deletionTasks) {
+				try {
+					await chunkStore.deleteByDocumentKey(docKey);
+					progress.processedDocuments++;
+					onProgress(progress);
+				} catch (error) {
+					result.errors.push({
+						document: docKey,
+						error: error instanceof Error ? error : new Error(String(error)),
+					});
+				}
+			}
 		} catch (error) {
 			throw OperationError.invalidOperation(
-				"ingestion pipeline",
-				"Failed to complete ingestion pipeline",
+				"differential ingestion",
+				"Failed to complete differential ingestion",
 				{ cause: error instanceof Error ? error.message : String(error) },
 			);
 		}
