@@ -53,6 +53,9 @@ export function createGitHubBlobLoader(
 				commitSha,
 				fileSha,
 				path,
+				// TODO: We can consider removing this from metadata.
+				// - nodeId is not used for now and
+				// - Tree API doesn't have nodeId.
 				nodeId: "",
 			};
 		}
