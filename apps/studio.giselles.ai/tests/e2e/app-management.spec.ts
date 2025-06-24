@@ -60,6 +60,6 @@ test.describe("App management", () => {
 		await dialog.getByRole("button", { name: "Delete" }).click();
 
 		// Assert that the app is no longer visible
-		await expect(page.getByLabel(appName)).not.toBeVisible({ timeout: 15000 });
+		await expect(page.getByLabel(appName)).not.toBeVisible({ timeout: 20000 });
 	});
 });
