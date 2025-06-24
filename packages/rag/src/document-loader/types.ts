@@ -13,7 +13,6 @@ export interface Document<
  */
 export interface DocumentLoader<
 	TMetadata extends Record<string, unknown> = Record<string, never>,
-	TDocumentKey = string,
 > {
 	/**
 	 * Load metadata for all documents (lightweight operation)
@@ -22,9 +21,9 @@ export interface DocumentLoader<
 	loadMetadata(): AsyncIterable<TMetadata>;
 
 	/**
-	 * Load a specific document by its key
-	 * @param documentKey The key identifying the document
+	 * Load a specific document by its metadata
+	 * @param metadata The metadata identifying the document
 	 * @returns The document with content, or null if not found
 	 */
-	loadDocument(documentKey: TDocumentKey): Promise<Document<TMetadata> | null>;
+	loadDocument(metadata: TMetadata): Promise<Document<TMetadata> | null>;
 }

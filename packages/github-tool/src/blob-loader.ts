@@ -24,7 +24,7 @@ export function createGitHubBlobLoader(
 	octokit: Octokit,
 	params: GitHubBlobLoaderParams,
 	options: GitHubBlobLoaderOptions = {},
-): DocumentLoader<GitHubBlobMetadata, string> {
+): DocumentLoader<GitHubBlobMetadata> {
 	const { maxBlobSize = 1024 * 1024 } = options;
 
 	const { owner, repo, commitSha } = params;
@@ -62,33 +62,24 @@ export function createGitHubBlobLoader(
 	};
 
 	const loadDocument = async (
-		documentKey: string,
+		metadata: GitHubBlobMetadata,
 	): Promise<Document<GitHubBlobMetadata> | null> => {
-		// For GitHub, documentKey is the file path
-		const path = documentKey;
+		const { path, fileSha } = metadata;
 
-		// First, we need to get the fileSha for this path
-		// This requires traversing the tree to find the entry
-		for await (const entry of traverseTree(octokit, owner, repo, commitSha)) {
-			if (entry.path === path && entry.type === "blob" && entry.sha) {
-				const blob = await loadBlob(
-					octokit,
-					{ owner, repo, path, fileSha: entry.sha },
-					commitSha,
-				);
+		const blob = await loadBlob(
+			octokit,
+			{ owner, repo, path, fileSha },
+			commitSha,
+		);
 
-				if (blob === null) {
-					return null;
-				}
-
-				return {
-					content: blob.content,
-					metadata: blob.metadata,
-				};
-			}
+		if (blob === null) {
+			return null;
 		}
-		// Document not found
-		return null;
+
+		return {
+			content: blob.content,
+			metadata: blob.metadata,
+		};
 	};
 
 	return { loadMetadata, loadDocument };

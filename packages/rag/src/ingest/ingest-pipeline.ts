@@ -15,7 +15,7 @@ export interface IngestPipelineOptions<
 	TStore extends ChunkStore<Record<string, unknown>>,
 > {
 	// Required configuration
-	documentLoader: DocumentLoader<TDocMetadata, string>;
+	documentLoader: DocumentLoader<TDocMetadata>;
 	chunkStore: TStore;
 	documentKey: (metadata: TDocMetadata) => string;
 	metadataTransform: (metadata: TDocMetadata) => InferChunkMetadata<TStore>;
@@ -69,7 +69,6 @@ export function createIngestPipeline<
 	 */
 	async function processDocument(
 		document: Document<TDocMetadata>,
-		docKey: string,
 	): Promise<void> {
 		const targetMetadata = metadataTransform(document.metadata);
 
@@ -92,13 +91,17 @@ export function createIngestPipeline<
 					}
 				}
 
-				await chunkStore.insert(docKey, chunks, targetMetadata);
+				await chunkStore.insert(
+					documentKey(document.metadata),
+					chunks,
+					targetMetadata,
+				);
 				return;
 			} catch (error) {
 				const isLastAttempt = attempt === maxRetries;
 
 				onError({
-					document: String(docKey),
+					document: documentKey(document.metadata),
 					error: error instanceof Error ? error : new Error(String(error)),
 					willRetry: !isLastAttempt,
 					attemptNumber: attempt,
@@ -124,17 +127,17 @@ export function createIngestPipeline<
 	): Promise<void> {
 		for (const document of documents) {
 			const docKey = documentKey(document.metadata);
-			progress.currentDocument = String(docKey);
+			progress.currentDocument = docKey;
 
 			try {
-				await processDocument(document, docKey);
+				await processDocument(document);
 				result.successfulDocuments++;
 				progress.processedDocuments++;
 			} catch (error) {
 				result.failedDocuments++;
 				progress.processedDocuments++;
 				result.errors.push({
-					document: String(docKey),
+					document: docKey,
 					error: error instanceof Error ? error : new Error(String(error)),
 				});
 			}
@@ -169,8 +172,7 @@ export function createIngestPipeline<
 					continue;
 				}
 
-				const key = documentKey(metadata);
-				const document = await documentLoader.loadDocument(key);
+				const document = await documentLoader.loadDocument(metadata);
 
 				if (!document) {
 					continue;
