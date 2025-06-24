@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
 			await ingestGitHubBlobs({
 				octokitClient,
 				source,
-				teamDbId,
+				repositoryIndexDbId: dbId,
 			});
 
 			await updateRepositoryStatus(dbId, "completed", commitSha);

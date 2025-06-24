@@ -1,13 +1,9 @@
-import {
-	db,
-	githubRepositoryEmbeddings,
-	githubRepositoryIndex,
-} from "@/drizzle";
+import { db, githubRepositoryEmbeddings } from "@/drizzle";
 import { createGitHubBlobChunkStore } from "@/lib/vector-stores/github-blob-stores";
 import { createGitHubBlobLoader } from "@giselle-sdk/github-tool";
 import { createIngestPipeline } from "@giselle-sdk/rag";
 import type { Octokit } from "@octokit/core";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 /**
  * Main GitHub repository ingestion coordination
@@ -15,79 +11,60 @@ import { and, eq } from "drizzle-orm";
 export async function ingestGitHubBlobs(params: {
 	octokitClient: Octokit;
 	source: { owner: string; repo: string; commitSha: string };
-	teamDbId: number;
+	repositoryIndexDbId: number;
 }): Promise<void> {
-	const repositoryIndexDbId = await getRepositoryIndexDbId(
-		params.source,
-		params.teamDbId,
+	const processedFiles = await loadProcessedFiles(params.repositoryIndexDbId);
+	const githubLoader = createGitHubBlobLoader(
+		params.octokitClient,
+		{
+			owner: params.source.owner,
+			repo: params.source.repo,
+			commitSha: params.source.commitSha,
+		},
+		{
+			maxBlobSize: 1 * 1024 * 1024,
+		},
 	);
-
-	const processedPaths = await loadProcessedPaths(repositoryIndexDbId);
-	const githubLoader = createGitHubBlobLoader(params.octokitClient, {
-		maxBlobSize: 1 * 1024 * 1024,
-		shouldSkip: (path) => processedPaths.has(path),
-	});
-	const chunkStore = createGitHubBlobChunkStore(repositoryIndexDbId);
+	const chunkStore = createGitHubBlobChunkStore(params.repositoryIndexDbId);
 
 	const ingest = createIngestPipeline({
 		documentLoader: githubLoader,
 		chunkStore,
-		documentKey: (document) => document.metadata.path,
+		documentKey: (metadata) => metadata.path,
 		metadataTransform: (metadata) => ({
-			repositoryIndexDbId,
+			repositoryIndexDbId: params.repositoryIndexDbId,
 			commitSha: metadata.commitSha,
 			fileSha: metadata.fileSha,
 			path: metadata.path,
 			nodeId: metadata.nodeId,
 		}),
+		shouldSkip: (metadata) => {
+			const existingFileSha = processedFiles.get(metadata.path);
+			return existingFileSha === metadata.fileSha;
+		},
 	});
 
-	const result = await ingest(params.source);
+	const result = await ingest();
 	console.log(
 		`Ingested from ${result.totalDocuments} documents with success: ${result.successfulDocuments}, failure: ${result.failedDocuments}`,
 	);
 }
 
 /**
- * Get repository index database ID
+ * Load processed files with their fileSha for fast lookup
  */
-async function getRepositoryIndexDbId(
-	source: { owner: string; repo: string },
-	teamDbId: number,
-): Promise<number> {
-	const repositoryIndex = await db
-		.select({ dbId: githubRepositoryIndex.dbId })
-		.from(githubRepositoryIndex)
-		.where(
-			and(
-				eq(githubRepositoryIndex.owner, source.owner),
-				eq(githubRepositoryIndex.repo, source.repo),
-				eq(githubRepositoryIndex.teamDbId, teamDbId),
-			),
-		)
-		.limit(1);
-
-	if (repositoryIndex.length === 0) {
-		throw new Error(
-			`Repository index not found: ${source.owner}/${source.repo}`,
-		);
-	}
-
-	return repositoryIndex[0].dbId;
-}
-
-/**
- * Load processed file paths into memory for fast lookup
- */
-async function loadProcessedPaths(
+async function loadProcessedFiles(
 	repositoryIndexDbId: number,
-): Promise<Set<string>> {
+): Promise<Map<string, string>> {
 	const result = await db
-		.selectDistinct({ path: githubRepositoryEmbeddings.path })
+		.selectDistinct({
+			path: githubRepositoryEmbeddings.path,
+			fileSha: githubRepositoryEmbeddings.fileSha,
+		})
 		.from(githubRepositoryEmbeddings)
 		.where(
 			eq(githubRepositoryEmbeddings.repositoryIndexDbId, repositoryIndexDbId),
 		);
 
-	return new Set(result.map((r) => r.path));
+	return new Map(result.map((r) => [r.path, r.fileSha]));
 }

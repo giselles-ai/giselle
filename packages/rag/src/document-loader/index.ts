@@ -1,1 +1,1 @@
-export type { Document, DocumentLoader, DocumentLoaderParams } from "./types";
+export type { Document, DocumentLoader } from "./types";

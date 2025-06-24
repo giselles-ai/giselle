@@ -1,11 +1,7 @@
 import type { ChunkStore, ChunkWithEmbedding } from "../chunk-store/types";
 import { createDefaultChunker } from "../chunker";
 import type { ChunkerFunction } from "../chunker/types";
-import type {
-	Document,
-	DocumentLoader,
-	DocumentLoaderParams,
-} from "../document-loader/types";
+import type { Document, DocumentLoader } from "../document-loader/types";
 import { createDefaultEmbedder } from "../embedder";
 import type { EmbedderFunction } from "../embedder/types";
 import { OperationError } from "../errors";
@@ -19,14 +15,17 @@ export interface IngestPipelineOptions<
 	TStore extends ChunkStore<Record<string, unknown>>,
 > {
 	// Required configuration
-	documentLoader: DocumentLoader<TDocMetadata, DocumentLoaderParams>;
+	documentLoader: DocumentLoader<TDocMetadata, string>;
 	chunkStore: TStore;
-	documentKey: (document: Document<TDocMetadata>) => string;
+	documentKey: (metadata: TDocMetadata) => string;
 	metadataTransform: (metadata: TDocMetadata) => InferChunkMetadata<TStore>;
 
 	// Optional processors
 	chunker?: ChunkerFunction;
 	embedder?: EmbedderFunction;
+
+	// Optional filters
+	shouldSkip?: (metadata: TDocMetadata) => boolean;
 
 	// Optional settings
 	maxBatchSize?: number;
@@ -40,9 +39,7 @@ const DEFAULT_MAX_BATCH_SIZE = 100;
 const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_RETRY_DELAY = 1000;
 
-export type IngestFunction = (
-	params: DocumentLoaderParams,
-) => Promise<IngestResult>;
+export type IngestFunction = () => Promise<IngestResult>;
 
 /**
  * Create an ingest pipeline function with the given options
@@ -59,6 +56,7 @@ export function createIngestPipeline<
 		metadataTransform,
 		chunker = createDefaultChunker(),
 		embedder = createDefaultEmbedder(),
+		shouldSkip,
 		maxBatchSize = DEFAULT_MAX_BATCH_SIZE,
 		maxRetries = DEFAULT_MAX_RETRIES,
 		retryDelay = DEFAULT_RETRY_DELAY,
@@ -100,7 +98,7 @@ export function createIngestPipeline<
 				const isLastAttempt = attempt === maxRetries;
 
 				onError({
-					document: docKey,
+					document: String(docKey),
 					error: error instanceof Error ? error : new Error(String(error)),
 					willRetry: !isLastAttempt,
 					attemptNumber: attempt,
@@ -125,8 +123,8 @@ export function createIngestPipeline<
 		progress: IngestProgress,
 	): Promise<void> {
 		for (const document of documents) {
-			const docKey = documentKey(document);
-			progress.currentDocument = docKey;
+			const docKey = documentKey(document.metadata);
+			progress.currentDocument = String(docKey);
 
 			try {
 				await processDocument(document, docKey);
@@ -136,7 +134,7 @@ export function createIngestPipeline<
 				result.failedDocuments++;
 				progress.processedDocuments++;
 				result.errors.push({
-					document: docKey,
+					document: String(docKey),
 					error: error instanceof Error ? error : new Error(String(error)),
 				});
 			}
@@ -148,9 +146,7 @@ export function createIngestPipeline<
 	/**
 	 * The main ingest function
 	 */
-	return async function ingest(
-		params: DocumentLoaderParams,
-	): Promise<IngestResult> {
+	return async function ingest(): Promise<IngestResult> {
 		const result: IngestResult = {
 			totalDocuments: 0,
 			successfulDocuments: 0,
@@ -166,7 +162,20 @@ export function createIngestPipeline<
 		try {
 			const documentBatch: Array<Document<TDocMetadata>> = [];
 
-			for await (const document of documentLoader.load(params)) {
+			// Load all metadata and then load documents
+			for await (const metadata of documentLoader.loadMetadata()) {
+				// Check if this document should be skipped
+				if (shouldSkip?.(metadata)) {
+					continue;
+				}
+
+				const key = documentKey(metadata);
+				const document = await documentLoader.loadDocument(key);
+
+				if (!document) {
+					continue;
+				}
+
 				result.totalDocuments++;
 				documentBatch.push(document);
 
