@@ -1,7 +1,7 @@
 import type { Document, DocumentLoader } from "@giselle-sdk/rag";
 import type { Octokit } from "@octokit/core";
 
-type GitHubBlobMetadata = {
+export type GitHubBlobMetadata = {
 	owner: string;
 	repo: string;
 	commitSha: string;
@@ -10,7 +10,7 @@ type GitHubBlobMetadata = {
 	nodeId: string;
 };
 
-type GitHubBlobLoaderParams = {
+export type GitHubBlobLoaderParams = {
 	owner: string;
 	repo: string;
 	commitSha: string;
@@ -18,21 +18,19 @@ type GitHubBlobLoaderParams = {
 
 export type GitHubBlobLoaderOptions = {
 	maxBlobSize?: number;
-	shouldSkip?: (path: string) => boolean | Promise<boolean>;
 };
 
 export function createGitHubBlobLoader(
 	octokit: Octokit,
-	options?: GitHubBlobLoaderOptions,
-): DocumentLoader<GitHubBlobMetadata, GitHubBlobLoaderParams> {
-	const maxBlobSize = options?.maxBlobSize ?? 1024 * 1024; // 1MB default
+	params: GitHubBlobLoaderParams,
+	options: GitHubBlobLoaderOptions = {},
+): DocumentLoader<GitHubBlobMetadata, string> {
+	const { maxBlobSize = 1024 * 1024 } = options;
 
-	const load = async function* (
-		params: GitHubBlobLoaderParams,
-	): AsyncIterable<Document<GitHubBlobMetadata>> {
-		const { owner, repo, commitSha } = params;
+	const { owner, repo, commitSha } = params;
 
-		console.log(`Loading repository ${owner}/${repo} at commit ${commitSha}`);
+	const loadMetadata = async function* (): AsyncIterable<GitHubBlobMetadata> {
+		console.log(`Loading metadata for ${owner}/${repo} at commit ${commitSha}`);
 
 		for await (const entry of traverseTree(octokit, owner, repo, commitSha)) {
 			const { path, type, sha: fileSha, size } = entry;
@@ -49,28 +47,48 @@ export function createGitHubBlobLoader(
 				continue;
 			}
 
-			if (options?.shouldSkip && (await options.shouldSkip(path))) {
-				continue;
-			}
-
-			const blob = await loadBlob(
-				octokit,
-				{ owner, repo, path, fileSha },
-				commitSha,
-			);
-
-			if (blob === null) {
-				continue;
-			}
-
 			yield {
-				content: blob.content,
-				metadata: blob.metadata,
+				owner,
+				repo,
+				commitSha,
+				fileSha,
+				path,
+				nodeId: "",
 			};
 		}
 	};
 
-	return { load };
+	const loadDocument = async (
+		documentKey: string,
+	): Promise<Document<GitHubBlobMetadata> | null> => {
+		// For GitHub, documentKey is the file path
+		const path = documentKey;
+
+		// First, we need to get the fileSha for this path
+		// This requires traversing the tree to find the entry
+		for await (const entry of traverseTree(octokit, owner, repo, commitSha)) {
+			if (entry.path === path && entry.type === "blob" && entry.sha) {
+				const blob = await loadBlob(
+					octokit,
+					{ owner, repo, path, fileSha: entry.sha },
+					commitSha,
+				);
+
+				if (blob === null) {
+					return null;
+				}
+
+				return {
+					content: blob.content,
+					metadata: blob.metadata,
+				};
+			}
+		}
+		// Document not found
+		return null;
+	};
+
+	return { loadMetadata, loadDocument };
 }
 
 type GitHubLoadBlobParams = {
