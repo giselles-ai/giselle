@@ -47,7 +47,8 @@ describe("createIngestPipeline", () => {
 
 		mockChunkStore = {
 			insert: vi.fn(async () => {}),
-			deleteByDocumentKey: vi.fn(async () => {}),
+			delete: vi.fn(async () => {}),
+			deleteBatch: vi.fn(async () => {}),
 			getDocumentVersions: vi.fn(async () => []),
 		};
 	});
@@ -80,7 +81,6 @@ describe("createIngestPipeline", () => {
 				.fn()
 				.mockRejectedValueOnce(new Error("First attempt failed"))
 				.mockResolvedValueOnce(undefined),
-			getDocumentVersions: vi.fn(async () => []),
 		};
 
 		const ingest = createIngestPipeline({
@@ -175,7 +175,8 @@ describe("createIngestPipeline - differential ingestion", () => {
 
 		mockChunkStore = {
 			insert: vi.fn(async () => {}),
-			deleteByDocumentKey: vi.fn(async () => {}),
+			delete: vi.fn(async () => {}),
+			deleteBatch: vi.fn(async () => {}),
 			getDocumentVersions: vi.fn(async () => [
 				{ documentKey: "file1.txt", version: "sha1-old" },
 				{ documentKey: "file2.txt", version: "sha2-same" },
@@ -216,18 +217,17 @@ describe("createIngestPipeline - differential ingestion", () => {
 		);
 
 		// Should delete removed document
-		expect(mockChunkStore.deleteByDocumentKey).toHaveBeenCalledTimes(1);
-		expect(mockChunkStore.deleteByDocumentKey).toHaveBeenCalledWith(
-			"file4.txt",
-		);
+		expect(mockChunkStore.deleteBatch).toHaveBeenCalledTimes(1);
+		expect(mockChunkStore.deleteBatch).toHaveBeenCalledWith(["file4.txt"]);
 	});
 
 	it("should handle deletion errors gracefully", async () => {
 		const failingChunkStore = {
 			...mockChunkStore,
-			deleteByDocumentKey: vi
+			deleteBatch: vi
 				.fn()
-				.mockRejectedValueOnce(new Error("Delete failed")),
+				.mockRejectedValueOnce(new Error("Batch delete failed")),
+			delete: vi.fn().mockRejectedValueOnce(new Error("Delete failed")),
 		};
 
 		const ingest = createIngestPipeline({

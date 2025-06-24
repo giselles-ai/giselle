@@ -26,13 +26,19 @@ export interface ChunkStore<
 	 * Delete chunks associated with a document key
 	 * @param documentKey The unique key of the document
 	 */
-	deleteByDocumentKey(documentKey: string): Promise<void>;
+	delete(documentKey: string): Promise<void>;
+
+	/**
+	 * Delete chunks associated with multiple document keys
+	 * @param documentKeys Array of document keys to delete
+	 */
+	deleteBatch(documentKeys: string[]): Promise<void>;
 
 	/**
 	 * Get document versions for differential ingestion
 	 * @returns Array of document keys with their versions
 	 */
-	getDocumentVersions?(): Promise<
+	getDocumentVersions(): Promise<
 		Array<{
 			documentKey: string;
 			version: string;

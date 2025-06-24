@@ -10,14 +10,9 @@ import type { IngestError, IngestProgress, IngestResult } from "./types";
 // Type helper to extract metadata type from ChunkStore
 type InferChunkMetadata<T> = T extends ChunkStore<infer M> ? M : never;
 
-// ChunkStore with required getDocumentVersions method
-type ChunkStoreWithVersions<TMetadata extends Record<string, unknown>> =
-	ChunkStore<TMetadata> &
-		Required<Pick<ChunkStore<TMetadata>, "getDocumentVersions">>;
-
 export interface IngestPipelineOptions<
 	TDocMetadata extends Record<string, unknown>,
-	TStore extends ChunkStoreWithVersions<Record<string, unknown>>,
+	TStore extends ChunkStore<Record<string, unknown>>,
 > {
 	// Required configuration
 	documentLoader: DocumentLoader<TDocMetadata>;
@@ -49,7 +44,7 @@ export type IngestFunction = () => Promise<IngestResult>;
  */
 export function createIngestPipeline<
 	TDocMetadata extends Record<string, unknown>,
-	TStore extends ChunkStoreWithVersions<Record<string, unknown>>,
+	TStore extends ChunkStore<Record<string, unknown>>,
 >(options: IngestPipelineOptions<TDocMetadata, TStore>): IngestFunction {
 	// Extract and set defaults for all options
 	const {
@@ -217,17 +212,27 @@ export function createIngestPipeline<
 				}
 			}
 
-			// Process deletions
-			for (const docKey of deletionTasks) {
+			// Process deletions using batch delete
+			if (deletionTasks.length > 0) {
 				try {
-					await chunkStore.deleteByDocumentKey(docKey);
-					progress.processedDocuments++;
+					await chunkStore.deleteBatch(deletionTasks);
+					progress.processedDocuments += deletionTasks.length;
 					onProgress(progress);
 				} catch (error) {
-					result.errors.push({
-						document: docKey,
-						error: error instanceof Error ? error : new Error(String(error)),
-					});
+					// If batch delete fails, fall back to individual deletes
+					for (const docKey of deletionTasks) {
+						try {
+							await chunkStore.delete(docKey);
+							progress.processedDocuments++;
+							onProgress(progress);
+						} catch (error) {
+							result.errors.push({
+								document: docKey,
+								error:
+									error instanceof Error ? error : new Error(String(error)),
+							});
+						}
+					}
 				}
 			}
 		} catch (error) {

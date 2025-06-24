@@ -1,9 +1,7 @@
-import { db, githubRepositoryEmbeddings } from "@/drizzle";
 import { createGitHubBlobChunkStore } from "@/lib/vector-stores/github-blob-stores";
 import { createGitHubBlobLoader } from "@giselle-sdk/github-tool";
 import { createIngestPipeline } from "@giselle-sdk/rag";
 import type { Octokit } from "@octokit/core";
-import { eq } from "drizzle-orm";
 
 /**
  * Main GitHub repository ingestion coordination
@@ -13,7 +11,6 @@ export async function ingestGitHubBlobs(params: {
 	source: { owner: string; repo: string; commitSha: string };
 	repositoryIndexDbId: number;
 }): Promise<void> {
-	const processedFiles = await loadProcessedFiles(params.repositoryIndexDbId);
 	const githubLoader = createGitHubBlobLoader(
 		params.octokitClient,
 		{
@@ -31,6 +28,7 @@ export async function ingestGitHubBlobs(params: {
 		documentLoader: githubLoader,
 		chunkStore,
 		documentKey: (metadata) => metadata.path,
+		documentVersion: (metadata) => metadata.fileSha,
 		metadataTransform: (metadata) => ({
 			repositoryIndexDbId: params.repositoryIndexDbId,
 			commitSha: metadata.commitSha,
@@ -38,33 +36,10 @@ export async function ingestGitHubBlobs(params: {
 			path: metadata.path,
 			nodeId: metadata.nodeId,
 		}),
-		shouldSkip: (metadata) => {
-			const existingFileSha = processedFiles.get(metadata.path);
-			return existingFileSha === metadata.fileSha;
-		},
 	});
 
 	const result = await ingest();
 	console.log(
 		`Ingested from ${result.totalDocuments} documents with success: ${result.successfulDocuments}, failure: ${result.failedDocuments}`,
 	);
-}
-
-/**
- * Load processed files with their fileSha for fast lookup
- */
-async function loadProcessedFiles(
-	repositoryIndexDbId: number,
-): Promise<Map<string, string>> {
-	const result = await db
-		.selectDistinct({
-			path: githubRepositoryEmbeddings.path,
-			fileSha: githubRepositoryEmbeddings.fileSha,
-		})
-		.from(githubRepositoryEmbeddings)
-		.where(
-			eq(githubRepositoryEmbeddings.repositoryIndexDbId, repositoryIndexDbId),
-		);
-
-	return new Map(result.map((r) => [r.path, r.fileSha]));
 }

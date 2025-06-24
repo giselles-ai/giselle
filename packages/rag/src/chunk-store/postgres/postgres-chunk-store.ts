@@ -96,7 +96,7 @@ export function createPostgresChunkStore<
 	/**
 	 * Delete chunks by document key
 	 */
-	async function deleteByDocumentKey(documentKey: string): Promise<void> {
+	const delete = async (documentKey: string): Promise<void> => {
 		const pool = PoolManager.getPool(database);
 		const client = await pool.connect();
 
@@ -116,6 +116,61 @@ export function createPostgresChunkStore<
 				{
 					operation: "deleteByDocumentKey",
 					documentKey,
+					tableName,
+				},
+			);
+		} finally {
+			client.release();
+		}
+	};
+
+	/**
+	 * Delete chunks associated with multiple document keys
+	 */
+	async function deleteBatch(documentKeys: string[]): Promise<void> {
+		if (documentKeys.length === 0) {
+			return;
+		}
+
+		const pool = PoolManager.getPool(database);
+		const client = await pool.connect();
+
+		try {
+			await ensurePgVectorTypes(client, database.connectionString);
+			await client.query("BEGIN");
+
+			// Build scope conditions
+			const scopeConditions = Object.entries(scope)
+				.map(
+					(_, index) =>
+						`${escapeIdentifier(Object.keys(scope)[index])} = $${index + 1}`,
+				)
+				.join(" AND ");
+
+			// Create placeholders for document keys
+			const scopeValueCount = Object.keys(scope).length;
+			const documentKeyPlaceholders = documentKeys
+				.map((_, index) => `$${scopeValueCount + index + 1}`)
+				.join(", ");
+
+			const query = `
+				DELETE FROM ${escapeIdentifier(tableName)}
+				WHERE ${scopeConditions}
+					AND ${escapeIdentifier(columnMapping.documentKey)} IN (${documentKeyPlaceholders})
+			`;
+
+			const queryValues = [...Object.values(scope), ...documentKeys];
+			await client.query(query, queryValues);
+
+			await client.query("COMMIT");
+		} catch (error) {
+			await client.query("ROLLBACK");
+			throw DatabaseError.transactionFailed(
+				"batch deletion",
+				error instanceof Error ? error : undefined,
+				{
+					operation: "deleteBatch",
+					documentKeyCount: documentKeys.length,
 					tableName,
 				},
 			);
@@ -156,7 +211,7 @@ export function createPostgresChunkStore<
 			const versionColumn = columnMapping.version;
 
 			const query = `
-				SELECT DISTINCT 
+				SELECT DISTINCT
 					${escapeIdentifier(columnMapping.documentKey)} as document_key,
 					${escapeIdentifier(versionColumn)} as version
 				FROM ${escapeIdentifier(tableName)}
@@ -185,7 +240,8 @@ export function createPostgresChunkStore<
 
 	return {
 		insert,
-		deleteByDocumentKey,
+		delete: deleteByDocumentKey,
+		deleteBatch,
 		getDocumentVersions,
 	};
 }
