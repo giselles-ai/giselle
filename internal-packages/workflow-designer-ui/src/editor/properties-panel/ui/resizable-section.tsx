@@ -107,12 +107,12 @@ export function ResizableSectionHandleWithIcon({
 				isVertical
 					? [
 							"h-[12px] cursor-row-resize",
-							"after:content-[''] after:h-[3px] after:w-[32px] after:bg-[#3a3f44] after:rounded-full",
+							"after:content-[''] after:h-[3px] after:w-[32px] after:bg-[#6b7280] after:rounded-full",
 							"hover:after:bg-[#4a90e2]",
 						]
 					: [
 							"w-[12px] cursor-col-resize",
-							"after:content-[''] after:w-[3px] after:h-[32px] after:bg-[#3a3f44] after:rounded-full",
+							"after:content-[''] after:w-[3px] after:h-[32px] after:bg-[#6b7280] after:rounded-full",
 							"hover:after:bg-[#4a90e2]",
 						],
 				className,
