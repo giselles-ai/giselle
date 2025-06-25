@@ -26,16 +26,14 @@ export async function GET(request: NextRequest) {
 		const { owner, repo, installationId, dbId } = targetGitHubRepository;
 		const octokitClient = buildOctokit(installationId);
 
-		const commit = await fetchDefaultBranchHead(octokitClient, owner, repo);
-		const commitSha = commit.sha;
-
 		try {
 			await updateRepositoryStatusToRunning(dbId);
+			const commit = await fetchDefaultBranchHead(octokitClient, owner, repo);
 
 			const source = {
 				owner,
 				repo,
-				commitSha,
+				commitSha: commit.sha,
 			};
 
 			await ingestGitHubBlobs({
@@ -44,7 +42,7 @@ export async function GET(request: NextRequest) {
 				repositoryIndexDbId: dbId,
 			});
 
-			await updateRepositoryStatusToCompleted(dbId, commitSha);
+			await updateRepositoryStatusToCompleted(dbId, commit.sha);
 		} catch (error) {
 			console.error(`Failed to ingest ${owner}/${repo}:`, error);
 			captureException(error, {
