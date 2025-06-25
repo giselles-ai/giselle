@@ -3,9 +3,9 @@ import type { ChunkStore } from "../chunk-store/types";
 import type { ChunkerFunction } from "../chunker/types";
 import type { DocumentLoader } from "../document-loader/types";
 import type { EmbedderFunction } from "../embedder/types";
-import { createIngestPipeline } from "./ingest-pipeline";
+import { createPipeline } from "./pipeline";
 
-describe("createIngestPipeline", () => {
+describe("createPipeline", () => {
 	let mockDocumentLoader: DocumentLoader<{ path: string; version: string }>;
 	let mockChunker: ChunkerFunction;
 	let mockEmbedder: EmbedderFunction;
@@ -54,7 +54,7 @@ describe("createIngestPipeline", () => {
 	});
 
 	it("should process new documents through the pipeline", async () => {
-		const ingest = createIngestPipeline({
+		const ingest = createPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
 			embedder: mockEmbedder,
@@ -83,7 +83,7 @@ describe("createIngestPipeline", () => {
 				.mockResolvedValueOnce(undefined),
 		};
 
-		const ingest = createIngestPipeline({
+		const ingest = createPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
 			embedder: mockEmbedder,
@@ -104,7 +104,7 @@ describe("createIngestPipeline", () => {
 	it("should call progress callback", async () => {
 		const onProgress = vi.fn();
 
-		const ingest = createIngestPipeline({
+		const ingest = createPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
 			embedder: mockEmbedder,
@@ -123,7 +123,7 @@ describe("createIngestPipeline", () => {
 	});
 
 	it("should handle batch processing", async () => {
-		const ingest = createIngestPipeline({
+		const ingest = createPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
 			embedder: mockEmbedder,
@@ -141,7 +141,7 @@ describe("createIngestPipeline", () => {
 	});
 });
 
-describe("createIngestPipeline", () => {
+describe("createPipeline", () => {
 	let mockDocumentLoader: DocumentLoader<{ path: string; sha: string }>;
 	let mockChunker: ChunkerFunction;
 	let mockEmbedder: EmbedderFunction;
@@ -186,7 +186,7 @@ describe("createIngestPipeline", () => {
 	});
 
 	it("should detect new, updated, and deleted documents", async () => {
-		const ingest = createIngestPipeline({
+		const ingest = createPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
 			embedder: mockEmbedder,
@@ -221,7 +221,7 @@ describe("createIngestPipeline", () => {
 		expect(mockChunkStore.deleteBatch).toHaveBeenCalledWith(["file4.txt"]);
 	});
 
-	it("should handle deletion errors and throw OperationError", async () => {
+	it("should handle deletion errors without throwing", async () => {
 		const failingChunkStore = {
 			...mockChunkStore,
 			deleteBatch: vi
@@ -229,7 +229,7 @@ describe("createIngestPipeline", () => {
 				.mockRejectedValueOnce(new Error("Batch delete failed")),
 		};
 
-		const ingest = createIngestPipeline({
+		const ingest = createPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
 			embedder: mockEmbedder,
@@ -239,9 +239,14 @@ describe("createIngestPipeline", () => {
 			documentVersion: (metadata) => metadata.sha,
 		});
 
-		// The ingest should throw an OperationError when deleteBatch fails
-		await expect(ingest()).rejects.toThrow(
-			"Failed to complete ingestion pipeline",
-		);
+		// The ingest should complete successfully but include the error in results
+		const result = await ingest();
+		
+		expect(result.totalDocuments).toBe(2);
+		expect(result.successfulDocuments).toBe(2);
+		expect(result.failedDocuments).toBe(0);
+		expect(result.errors).toHaveLength(1);
+		expect(result.errors[0].document).toBe("batch-delete: file4.txt");
+		expect(result.errors[0].error.message).toBe("Batch delete failed");
 	});
 });

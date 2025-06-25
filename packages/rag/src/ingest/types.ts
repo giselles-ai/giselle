@@ -6,8 +6,8 @@ export interface IngestProgress {
 export interface IngestError {
 	document: string;
 	error: Error;
-	willRetry: boolean;
-	attemptNumber: number;
+	willRetry?: boolean;
+	attemptNumber?: number;
 }
 
 export interface IngestResult {

@@ -1,13 +1,16 @@
-import type { ChunkStore, ChunkWithEmbedding } from "../chunk-store/types";
+import type { ChunkStore } from "../chunk-store/types";
 import { createDefaultChunker } from "../chunker";
 import type { ChunkerFunction } from "../chunker/types";
-import type { Document, DocumentLoader } from "../document-loader/types";
+import type { DocumentLoader } from "../document-loader/types";
 import { createDefaultEmbedder } from "../embedder";
 import type { EmbedderFunction } from "../embedder/types";
+import type { Document } from "../document-loader/types";
 import { OperationError } from "../errors";
+import { embedContent } from "./embedder";
+import { retryOperation } from "./retry";
 import type { IngestError, IngestProgress, IngestResult } from "./types";
+import { createVersionTracker } from "./version-tracker";
 
-// Type helper to extract metadata type from ChunkStore
 type InferChunkMetadata<T> = T extends ChunkStore<infer M> ? M : never;
 
 export interface IngestPipelineOptions<
@@ -42,11 +45,10 @@ export type IngestFunction = () => Promise<IngestResult>;
 /**
  * Create an ingest pipeline function with the given options
  */
-export function createIngestPipeline<
+export function createPipeline<
 	TDocMetadata extends Record<string, unknown>,
 	TStore extends ChunkStore<Record<string, unknown>>,
 >(options: IngestPipelineOptions<TDocMetadata, TStore>): IngestFunction {
-	// Extract and set defaults for all options
 	const {
 		documentLoader,
 		chunkStore,
@@ -63,67 +65,7 @@ export function createIngestPipeline<
 	} = options;
 
 	/**
-	 * Create chunks with embeddings from document content
-	 */
-	async function createChunksWithEmbeddings(
-		content: string,
-	): Promise<ChunkWithEmbedding[]> {
-		const chunkTexts = chunker(content);
-		const chunks: ChunkWithEmbedding[] = [];
-
-		// Batch embedding to improve performance
-		for (let i = 0; i < chunkTexts.length; i += maxBatchSize) {
-			const batch = chunkTexts.slice(i, i + maxBatchSize);
-			const embeddings = await embedder.embedMany(batch);
-
-			for (let j = 0; j < batch.length; j++) {
-				chunks.push({
-					content: batch[j],
-					index: i + j,
-					embedding: embeddings[j],
-				});
-			}
-		}
-
-		return chunks;
-	}
-
-	/**
-	 * Execute an operation with retry logic
-	 */
-	async function withRetry<T>(
-		operation: () => Promise<T>,
-		documentKey: string,
-	): Promise<T> {
-		const attemptOperation = async (attempt = 1): Promise<T> => {
-			try {
-				return await operation();
-			} catch (error) {
-				const isLastAttempt = attempt >= maxRetries;
-
-				onError({
-					document: documentKey,
-					error: error instanceof Error ? error : new Error(String(error)),
-					willRetry: !isLastAttempt,
-					attemptNumber: attempt,
-				});
-
-				if (isLastAttempt) {
-					throw error;
-				}
-
-				const delay = retryDelay * 2 ** (attempt - 1);
-				await new Promise((resolve) => setTimeout(resolve, delay));
-
-				return attemptOperation(attempt + 1);
-			}
-		};
-
-		return attemptOperation();
-	}
-
-	/**
-	 * Process a single document with retry logic
+	 * Process a single document
 	 */
 	async function processDocument(
 		document: Document<TDocMetadata>,
@@ -131,10 +73,23 @@ export function createIngestPipeline<
 		const docKey = documentKey(document.metadata);
 		const targetMetadata = metadataTransform(document.metadata);
 
-		await withRetry(async () => {
-			const chunks = await createChunksWithEmbeddings(document.content);
-			await chunkStore.insert(docKey, chunks, targetMetadata);
-		}, docKey);
+		await retryOperation(
+			async () => {
+				const chunks = await embedContent(
+					document.content,
+					chunker,
+					embedder,
+					maxBatchSize,
+				);
+				await chunkStore.insert(docKey, chunks, targetMetadata);
+			},
+			{
+				maxRetries,
+				retryDelay,
+				onError,
+				context: docKey,
+			},
+		);
 	}
 
 	/**
@@ -154,20 +109,20 @@ export function createIngestPipeline<
 		};
 
 		try {
+			// Initialize version tracking
 			const existingDocs = await chunkStore.getDocumentVersions();
 			const existingVersions = new Map(
 				existingDocs.map((doc) => [doc.documentKey, doc.version]),
 			);
+			const versionTracker = createVersionTracker(existingVersions);
 
-			const seenDocuments = new Set<string>();
-
+			// Process all documents
 			for await (const metadata of documentLoader.loadMetadata()) {
 				const docKey = documentKey(metadata);
 				const newVersion = documentVersion(metadata);
-				seenDocuments.add(docKey);
+				versionTracker.trackSeen(docKey);
 
-				const existingVersion = existingVersions.get(docKey);
-				if (existingVersion === newVersion) {
+				if (!versionTracker.isUpdateNeeded(docKey, newVersion)) {
 					continue;
 				}
 
@@ -182,39 +137,38 @@ export function createIngestPipeline<
 				try {
 					await processDocument(document);
 					result.successfulDocuments++;
-					progress.processedDocuments++;
 				} catch (error) {
 					result.failedDocuments++;
-					progress.processedDocuments++;
 					result.errors.push({
 						document: docKey,
 						error: error instanceof Error ? error : new Error(String(error)),
 					});
 				}
 
-				onProgress(progress);
+				progress.processedDocuments++;
+				onProgress?.(progress);
 			}
 
-			const deletionTasks: Array<string> = [];
-			for (const [docKey] of existingVersions) {
-				if (!seenDocuments.has(docKey)) {
-					deletionTasks.push(docKey);
-				}
-			}
-
-			if (deletionTasks.length > 0) {
+			// Handle orphaned documents
+			const orphanedKeys = versionTracker.getOrphaned();
+			if (orphanedKeys.length > 0) {
 				try {
-					await chunkStore.deleteBatch(deletionTasks);
-					progress.processedDocuments += deletionTasks.length;
-					onProgress(progress);
+					await chunkStore.deleteBatch(orphanedKeys);
+					const deletedCount = orphanedKeys.length;
+
+					if (onProgress) {
+						progress.processedDocuments += deletedCount;
+						onProgress(progress);
+					}
 				} catch (error) {
 					result.errors.push({
-						document: `batch-delete: ${deletionTasks.join(", ")}`,
+						document: `batch-delete: ${orphanedKeys.join(", ")}`,
 						error: error instanceof Error ? error : new Error(String(error)),
 					});
-					throw error;
 				}
 			}
+
+			return result;
 		} catch (error) {
 			throw OperationError.invalidOperation(
 				"ingestion pipeline",
@@ -222,7 +176,5 @@ export function createIngestPipeline<
 				{ cause: error instanceof Error ? error.message : String(error) },
 			);
 		}
-
-		return result;
 	};
 }
