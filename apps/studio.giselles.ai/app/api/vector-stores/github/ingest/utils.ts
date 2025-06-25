@@ -30,6 +30,8 @@ export async function fetchTargetGitHubRepositories(): Promise<
 > {
 	// To prevent the race condition, consider running status as stale if it hasn't been updated for 15 minutes (> 800 seconds)
 	const staleThreshold = new Date(Date.now() - 15 * 60 * 1000);
+	// To update repository which updated more than 24 hours ago
+	const outdatedThreshold = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
 	const records = await db
 		.select({
@@ -48,6 +50,10 @@ export async function fetchTargetGitHubRepositories(): Promise<
 				and(
 					eq(githubRepositoryIndex.status, "running"),
 					lt(githubRepositoryIndex.updatedAt, staleThreshold),
+				),
+				and(
+					eq(githubRepositoryIndex.status, "completed"),
+					lt(githubRepositoryIndex.updatedAt, outdatedThreshold),
 				),
 			),
 		);
