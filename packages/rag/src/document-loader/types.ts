@@ -1,6 +1,3 @@
-/**
- * Document with content and metadata
- */
 export interface Document<
 	TMetadata extends Record<string, unknown> = Record<string, never>,
 > {
@@ -8,9 +5,6 @@ export interface Document<
 	metadata: TMetadata;
 }
 
-/**
- * Document loader interface for selective document loading.
- */
 export interface DocumentLoader<
 	TMetadata extends Record<string, unknown> = Record<string, never>,
 > {
