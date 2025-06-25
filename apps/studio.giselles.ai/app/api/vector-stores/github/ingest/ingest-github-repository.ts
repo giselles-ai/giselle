@@ -1,6 +1,6 @@
 import { createGitHubBlobChunkStore } from "@/lib/vector-stores/github-blob-stores";
 import { createGitHubBlobLoader } from "@giselle-sdk/github-tool";
-import { createIngestPipeline } from "@giselle-sdk/rag";
+import { createPipeline } from "@giselle-sdk/rag";
 import type { Octokit } from "@octokit/core";
 
 /**
@@ -24,7 +24,7 @@ export async function ingestGitHubBlobs(params: {
 	);
 	const chunkStore = createGitHubBlobChunkStore(params.repositoryIndexDbId);
 
-	const ingest = createIngestPipeline({
+	const ingest = createPipeline({
 		documentLoader: githubLoader,
 		chunkStore,
 		documentKey: (metadata) => metadata.path,
