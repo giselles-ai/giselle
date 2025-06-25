@@ -30,8 +30,6 @@ export function createGitHubBlobLoader(
 	const { owner, repo, commitSha } = params;
 
 	const loadMetadata = async function* (): AsyncIterable<GitHubBlobMetadata> {
-		console.log(`Loading metadata for ${owner}/${repo} at commit ${commitSha}`);
-
 		for await (const entry of traverseTree(octokit, owner, repo, commitSha)) {
 			const { path, type, sha: fileSha, size } = entry;
 
