@@ -17,10 +17,12 @@ and pgvector.
 
 - **Document processing** with configurable chunking strategies
 - **Batch embedding** for efficient processing
+- **Differential ingestion** with version tracking and unchanged document
+  detection
+- **Orphaned document cleanup** for efficient storage management
 - **Metadata transformation** with schema validation
 - **Retry logic** with exponential backoff
 - **Progress tracking** and error reporting
-- **Transaction safety** with automatic rollback
 
 ## Installation
 
@@ -81,9 +83,10 @@ Process and store documents with automatic chunking and embedding.
 
 ```typescript
 import {
-  createChunkStore,
-  createIngestPipeline,
+  createPipeline,
+  createPostgresChunkStore,
   type Document,
+  type DocumentLoader,
 } from "@giselle-sdk/rag";
 import { z } from "zod/v4";
 
@@ -96,8 +99,16 @@ const ChunkMetadataSchema = z.object({
 
 type ChunkMetadata = z.infer<typeof ChunkMetadataSchema>;
 
+// Document metadata type
+type DocMetadata = {
+  owner: string;
+  repo: string;
+  filePath: string;
+  commitSha: string;
+};
+
 // Create chunk store
-const chunkStore = createChunkStore<ChunkMetadata>({
+const chunkStore = createPostgresChunkStore<ChunkMetadata>({
   database: {
     connectionString: process.env.DATABASE_URL!,
     poolConfig: { max: 20 },
@@ -107,34 +118,34 @@ const chunkStore = createChunkStore<ChunkMetadata>({
   staticContext: { processed_at: new Date().toISOString() },
 });
 
-const DocumentMetadata = {
-  owner: z.string(),
-  repo: z.string(),
-  filePath: z.string(),
-  commitSha: z.string(),
-};
-
-// Create document loader
-const documentLoader = {
-  async *load(params: unknown): AsyncIterable<Document<DocumentMetadata>> {
-    // Your document loading logic here
+// Create document loader with metadata support
+const documentLoader: DocumentLoader<DocMetadata> = {
+  async *loadMetadata(): AsyncIterable<DocMetadata> {
+    // Load lightweight metadata for version checking
     yield {
+      owner: "myorg",
+      repo: "myrepo",
+      filePath: "src/example.ts",
+      commitSha: "abc123",
+    };
+  },
+
+  async loadDocument(
+    metadata: DocMetadata,
+  ): Promise<Document<DocMetadata> | null> {
+    // Load full document content based on metadata
+    return {
       content: "Example document content...",
-      metadata: {
-        owner: "owner",
-        repo: "repo",
-        filePath: "src/example.ts",
-        commitSha: "abc123",
-      },
+      metadata: metadata,
     };
   },
 };
 
 // additional data for chunk metadata
-const repositoryId = getRepositoryId();
+const repositoryId = "myorg/myrepo";
 
-// Create ingest pipeline function
-const ingest = createIngestPipeline({
+// Create ingest pipeline function with version tracking
+const ingest = createPipeline({
   documentLoader,
   chunkStore,
   documentKey: (doc) => doc.metadata.filePath,
@@ -143,6 +154,7 @@ const ingest = createIngestPipeline({
     filePath: documentMetadata.filePath,
     commitSha: documentMetadata.commitSha,
   }),
+  documentVersion: (doc) => doc.metadata.commitSha, // Enable differential ingestion
   maxBatchSize: 50,
   onProgress: (progress) => {
     console.log(`Processed: ${progress.processedDocuments}`);
@@ -188,25 +200,73 @@ interface IngestResult {
 }
 ```
 
+### Document Loader
+
+Document loaders must implement this interface:
+
+```typescript
+interface DocumentLoader<TMetadata> {
+  // Load lightweight metadata for version checking
+  loadMetadata(): AsyncIterable<TMetadata>;
+
+  // Load full document content based on metadata
+  loadDocument(
+    metadata: TMetadata,
+  ): Promise<Document<TMetadata> | null>;
+}
+```
+
 ### Core API
 
 #### Factory Functions
 
-- `createIngestPipeline<TDocMetadata, TStore>(options)` - Creates a document
+- `createPipeline<TDocMetadata, TStore>(options)` - Creates a document
   processing pipeline function with automatic chunking and embedding. The chunk
   metadata type is inferred from the provided chunk store for type safety
-- `createQueryService<TContext, TMetadata>(config)` - Creates a new query
-  service
-- `createChunkStore<TMetadata>(config)` - Creates a new chunk store
+- `createPostgresQueryService<TContext, TMetadata>(config)` - Creates a
+  PostgreSQL-based query service
+- `createPostgresChunkStore<TMetadata>(config)` - Creates a PostgreSQL-based
+  chunk store
 - `createDefaultEmbedder()` - Creates OpenAI embedder with default settings
 - `createDefaultChunker()` - Creates line-based chunker with default settings
+- `createOpenAIEmbedder(config)` - Creates OpenAI embedder with custom
+  configuration
+- `createLineChunker(options)` - Creates line-based chunker with custom options
 - `createColumnMapping(options)` - Creates database column mapping
 
+#### Chunk Store Methods
+
+- `insert(documentKey, chunks, metadata)` - Insert chunks for a document
+- `delete(documentKey)` - Delete all chunks for a document
+- `deleteBatch(documentKeys)` - Delete chunks for multiple documents
+- `getDocumentVersions()` - Get all document keys and their versions
 
 ## Environment Variables
 
 - `OPENAI_API_KEY`: Required for the default OpenAI embedder
 - `DATABASE_URL`: PostgreSQL connection string with pgvector extension
+
+## Advanced Features
+
+### Error Handling
+
+The package provides structured error types:
+
+- `OperationError` - General operation failures
+- `DatabaseError` - Database-related errors
+- `ValidationError` - Schema validation errors
+- `ConfigurationError` - Configuration issues
+
+### Connection Pool Management
+
+Use `PoolManager` for efficient connection management:
+
+```typescript
+import { PoolManager } from "@giselle-sdk/rag";
+
+const poolManager = new PoolManager();
+const pool = poolManager.getPool(connectionString, poolConfig);
+```
 
 ## Development
 
