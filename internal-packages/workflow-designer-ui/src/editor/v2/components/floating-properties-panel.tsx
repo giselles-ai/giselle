@@ -99,7 +99,7 @@ export function FloatingPropertiesPanel({
 			<div
 				ref={panelRef}
 				className={clsx(
-					"h-full bg-surface-background border border-border rounded-lg shadow-2xl pointer-events-auto relative",
+					"h-full pointer-events-auto relative rounded-[12px] shadow-xl",
 					"transform transition-all duration-300 ease-out",
 					isOpen
 						? "translate-x-0 opacity-100"
@@ -109,6 +109,21 @@ export function FloatingPropertiesPanel({
 					className,
 				)}
 			>
+				{/* Glass effect background with backdrop blur */}
+				<div
+					className="absolute inset-0 -z-10 rounded-[12px] backdrop-blur-md"
+					style={{
+						background:
+							"linear-gradient(135deg, rgba(150, 150, 150, 0.03) 0%, rgba(60, 90, 160, 0.12) 100%)",
+					}}
+				/>
+
+				{/* Top gradient line */}
+				<div className="absolute -z-10 top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+
+				{/* Border */}
+				<div className="absolute -z-10 inset-0 rounded-[12px] border border-white/10" />
+
 				{/* Resize handle */}
 				<div
 					className={clsx(
@@ -123,7 +138,7 @@ export function FloatingPropertiesPanel({
 				{/* Content */}
 				<div
 					className={clsx(
-						"h-full overflow-hidden",
+						"h-full overflow-hidden relative z-10",
 						position === "right" ? "pl-1" : "pr-1",
 					)}
 				>
