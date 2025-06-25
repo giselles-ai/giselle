@@ -1,4 +1,3 @@
-import { escapeIdentifier } from "pg";
 import type { z } from "zod/v4";
 import { PoolManager } from "../../database/postgres";
 import { ensurePgVectorTypes } from "../../database/postgres/pgvector-registry";
@@ -11,8 +10,10 @@ import {
 import type { ChunkStore, ChunkWithEmbedding } from "../types";
 import {
 	deleteChunksByDocumentKey,
+	deleteChunksByDocumentKeys,
 	insertChunkRecords,
 	prepareChunkRecords,
+	queryDocumentVersions,
 } from "./utils";
 
 /**
@@ -96,7 +97,7 @@ export function createPostgresChunkStore<
 	/**
 	 * Delete chunks by document key
 	 */
-	const deleteByKey = async (documentKey: string): Promise<void> => {
+	async function deleteByKey(documentKey: string): Promise<void> {
 		const pool = PoolManager.getPool(database);
 		const client = await pool.connect();
 
@@ -122,7 +123,7 @@ export function createPostgresChunkStore<
 		} finally {
 			client.release();
 		}
-	};
+	}
 
 	/**
 	 * Delete chunks associated with multiple document keys
@@ -137,36 +138,17 @@ export function createPostgresChunkStore<
 
 		try {
 			await ensurePgVectorTypes(client, database.connectionString);
-			await client.query("BEGIN");
 
-			// Build scope conditions
-			const scopeConditions = Object.entries(scope)
-				.map(
-					(_, index) =>
-						`${escapeIdentifier(Object.keys(scope)[index])} = $${index + 1}`,
-				)
-				.join(" AND ");
-
-			// Create placeholders for document keys
-			const scopeValueCount = Object.keys(scope).length;
-			const documentKeyPlaceholders = documentKeys
-				.map((_, index) => `$${scopeValueCount + index + 1}`)
-				.join(", ");
-
-			const query = `
-				DELETE FROM ${escapeIdentifier(tableName)}
-				WHERE ${scopeConditions}
-					AND ${escapeIdentifier(columnMapping.documentKey)} IN (${documentKeyPlaceholders})
-			`;
-
-			const queryValues = [...Object.values(scope), ...documentKeys];
-			await client.query(query, queryValues);
-
-			await client.query("COMMIT");
+			await deleteChunksByDocumentKeys(
+				client,
+				tableName,
+				documentKeys,
+				columnMapping.documentKey,
+				scope,
+			);
 		} catch (error) {
-			await client.query("ROLLBACK");
-			throw DatabaseError.transactionFailed(
-				"batch deletion",
+			throw DatabaseError.queryFailed(
+				`DELETE FROM ${tableName}`,
 				error instanceof Error ? error : undefined,
 				{
 					operation: "deleteBatch",
@@ -201,29 +183,13 @@ export function createPostgresChunkStore<
 		try {
 			await ensurePgVectorTypes(client, database.connectionString);
 
-			// Build scope conditions
-			const scopeConditions = Object.entries(scope)
-				.map(([key, _], index) => `${escapeIdentifier(key)} = $${index + 1}`)
-				.join(" AND ");
-
-			const scopeValues = Object.values(scope);
-
-			const versionColumn = columnMapping.version;
-
-			const query = `
-				SELECT DISTINCT
-					${escapeIdentifier(columnMapping.documentKey)} as document_key,
-					${escapeIdentifier(versionColumn)} as version
-				FROM ${escapeIdentifier(tableName)}
-				WHERE ${scopeConditions}
-					AND ${escapeIdentifier(versionColumn)} IS NOT NULL
-			`;
-
-			const result = await client.query(query, scopeValues);
-			return result.rows.map((row) => ({
-				documentKey: row.document_key,
-				version: row.version,
-			}));
+			return await queryDocumentVersions(
+				client,
+				tableName,
+				columnMapping.documentKey,
+				columnMapping.version,
+				scope,
+			);
 		} catch (error) {
 			throw DatabaseError.queryFailed(
 				`SELECT DISTINCT FROM ${tableName}`,

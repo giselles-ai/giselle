@@ -192,3 +192,76 @@ export async function insertChunkRecords(
 	// Single batch insert for smaller datasets
 	await insertRecordsBatch(client, tableName, records);
 }
+
+/**
+ * Delete chunks by multiple document keys
+ */
+export async function deleteChunksByDocumentKeys(
+	client: PoolClient,
+	tableName: string,
+	documentKeys: string[],
+	documentKeyColumn: string,
+	scope: Record<string, unknown>,
+): Promise<void> {
+	if (documentKeys.length === 0) {
+		return;
+	}
+
+	const scopeConditions = Object.entries(scope)
+		.map(
+			(_, index) =>
+				`${escapeIdentifier(Object.keys(scope)[index])} = $${index + 1}`,
+		)
+		.join(" AND ");
+
+	const scopeValueCount = Object.keys(scope).length;
+	const documentKeyPlaceholders = documentKeys
+		.map((_, index) => `$${scopeValueCount + index + 1}`)
+		.join(", ");
+
+	const query = `
+		DELETE FROM ${escapeIdentifier(tableName)}
+		WHERE ${scopeConditions}
+			AND ${escapeIdentifier(documentKeyColumn)} IN (${documentKeyPlaceholders})
+	`;
+
+	const queryValues = [...Object.values(scope), ...documentKeys];
+	await client.query(query, queryValues);
+}
+
+/**
+ * Get document versions for differential ingestion
+ */
+export async function queryDocumentVersions(
+	client: PoolClient,
+	tableName: string,
+	documentKeyColumn: string,
+	versionColumn: string,
+	scope: Record<string, unknown>,
+): Promise<
+	Array<{
+		documentKey: string;
+		version: string;
+	}>
+> {
+	const scopeConditions = Object.entries(scope)
+		.map(([key, _], index) => `${escapeIdentifier(key)} = $${index + 1}`)
+		.join(" AND ");
+
+	const scopeValues = Object.values(scope);
+
+	const query = `
+		SELECT DISTINCT
+			${escapeIdentifier(documentKeyColumn)} as document_key,
+			${escapeIdentifier(versionColumn)} as version
+		FROM ${escapeIdentifier(tableName)}
+		WHERE ${scopeConditions}
+			AND ${escapeIdentifier(versionColumn)} IS NOT NULL
+	`;
+
+	const result = await client.query(query, scopeValues);
+	return result.rows.map((row) => ({
+		documentKey: row.document_key,
+		version: row.version,
+	}));
+}
