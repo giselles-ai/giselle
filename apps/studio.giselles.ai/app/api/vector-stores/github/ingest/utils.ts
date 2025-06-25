@@ -38,8 +38,6 @@ export async function fetchTargetGitHubRepositories(): Promise<
 			repo: githubRepositoryIndex.repo,
 			installationId: githubRepositoryIndex.installationId,
 			lastIngestedCommitSha: githubRepositoryIndex.lastIngestedCommitSha,
-			currentIngestionCommitSha:
-				githubRepositoryIndex.currentIngestionCommitSha,
 			teamDbId: githubRepositoryIndex.teamDbId,
 		})
 		.from(githubRepositoryIndex)
@@ -60,29 +58,36 @@ export async function fetchTargetGitHubRepositories(): Promise<
 		repo: record.repo,
 		installationId: record.installationId,
 		lastIngestedCommitSha: record.lastIngestedCommitSha,
-		currentIngestionCommitSha: record.currentIngestionCommitSha,
 		teamDbId: record.teamDbId,
 	}));
 }
 
-/**
- * Update the ingestion status of a repository
- */
-export async function updateRepositoryStatus(
+export async function updateRepositoryStatusToRunning(dbId: number) {
+	await updateRepositoryStatus(dbId, "running");
+}
+
+export async function updateRepositoryStatusToCompleted(
+	dbId: number,
+	commitSha: string,
+) {
+	await updateRepositoryStatus(dbId, "completed", commitSha);
+}
+
+export async function updateRepositoryStatusToFailed(dbId: number) {
+	await updateRepositoryStatus(dbId, "failed");
+}
+
+async function updateRepositoryStatus(
 	dbId: number,
 	status: Exclude<GitHubRepositoryIndexStatus, "idle">,
-	commitSha: string,
+	commitSha?: string,
 ): Promise<void> {
 	const updates: Partial<typeof githubRepositoryIndex.$inferInsert> = {
 		status,
 	};
 
-	if (status === "completed") {
-		// Clear current ingestion and update last successful ingestion
-		updates.currentIngestionCommitSha = null;
+	if (commitSha != null) {
 		updates.lastIngestedCommitSha = commitSha;
-	} else {
-		updates.currentIngestionCommitSha = commitSha;
 	}
 
 	await db

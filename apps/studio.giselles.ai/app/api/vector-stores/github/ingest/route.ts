@@ -5,7 +5,9 @@ import { ingestGitHubBlobs } from "./ingest-github-repository";
 import {
 	buildOctokit,
 	fetchTargetGitHubRepositories,
-	updateRepositoryStatus,
+	updateRepositoryStatusToCompleted,
+	updateRepositoryStatusToFailed,
+	updateRepositoryStatusToRunning,
 } from "./utils";
 
 export const maxDuration = 800;
@@ -21,26 +23,14 @@ export async function GET(request: NextRequest) {
 	const targetGitHubRepositories = await fetchTargetGitHubRepositories();
 
 	for (const targetGitHubRepository of targetGitHubRepositories) {
-		const {
-			owner,
-			repo,
-			installationId,
-			teamDbId,
-			dbId,
-			currentIngestionCommitSha,
-		} = targetGitHubRepository;
+		const { owner, repo, installationId, dbId } = targetGitHubRepository;
 		const octokitClient = buildOctokit(installationId);
 
-		let commitSha: string;
-		if (currentIngestionCommitSha != null) {
-			commitSha = currentIngestionCommitSha;
-		} else {
-			const commit = await fetchDefaultBranchHead(octokitClient, owner, repo);
-			commitSha = commit.sha;
-		}
+		const commit = await fetchDefaultBranchHead(octokitClient, owner, repo);
+		const commitSha = commit.sha;
 
 		try {
-			await updateRepositoryStatus(dbId, "running", commitSha);
+			await updateRepositoryStatusToRunning(dbId);
 
 			const source = {
 				owner,
@@ -54,13 +44,13 @@ export async function GET(request: NextRequest) {
 				repositoryIndexDbId: dbId,
 			});
 
-			await updateRepositoryStatus(dbId, "completed", commitSha);
+			await updateRepositoryStatusToCompleted(dbId, commitSha);
 		} catch (error) {
 			console.error(`Failed to ingest ${owner}/${repo}:`, error);
 			captureException(error, {
 				extra: { owner, repo },
 			});
-			await updateRepositoryStatus(dbId, "failed", commitSha);
+			await updateRepositoryStatusToFailed(dbId);
 		}
 	}
 
