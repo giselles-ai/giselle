@@ -138,8 +138,8 @@ export function FloatingPropertiesPanel({
 				{/* Content */}
 				<div
 					className={clsx(
-						"h-full overflow-hidden relative z-10",
-						position === "right" ? "pl-1" : "pr-1",
+						"h-full overflow-hidden relative z-10 px-2 pb-2",
+						position === "right" ? "pl-3" : "pr-3",
 					)}
 				>
 					{children}
