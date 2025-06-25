@@ -9,6 +9,10 @@ import { useCallback, useEffect, useState } from "react";
 import { StackBlicksIcon, WilliIcon } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";
 import { GenerationView } from "../../../ui/generation-view";
+import {
+	getGenerationContentClasses,
+	getGenerationHeaderClasses,
+} from "../ui/panel-spacing";
 
 function Empty({ onGenerate }: { onGenerate?: () => void }) {
 	return (
@@ -30,18 +34,24 @@ function Empty({ onGenerate }: { onGenerate?: () => void }) {
 					</button>
 				)}
 				<style jsx>{`
-					.generate-star {
-						display: inline-block;
-					}
-					button:hover .generate-star {
-						animation: rotateStar 0.7s ease-in-out;
-					}
-					@keyframes rotateStar {
-						0% { transform: rotate(0deg) scale(1); }
-						50% { transform: rotate(180deg) scale(1.5); }
-						100% { transform: rotate(360deg) scale(1); }
-					}
-				`}</style>
+          .generate-star {
+            display: inline-block;
+          }
+          button:hover .generate-star {
+            animation: rotateStar 0.7s ease-in-out;
+          }
+          @keyframes rotateStar {
+            0% {
+              transform: rotate(0deg) scale(1);
+            }
+            50% {
+              transform: rotate(180deg) scale(1.5);
+            }
+            100% {
+              transform: rotate(360deg) scale(1);
+            }
+          }
+        `}</style>
 			</EmptyState>
 		</div>
 	);
@@ -50,7 +60,10 @@ function Empty({ onGenerate }: { onGenerate?: () => void }) {
 export function GenerationPanel({
 	node,
 	onClickGenerateButton,
-}: { node: ImageGenerationNode; onClickGenerateButton?: () => void }) {
+}: {
+	node: ImageGenerationNode;
+	onClickGenerateButton?: () => void;
+}) {
 	const { data } = useWorkflowDesigner();
 	const { generations } = useNodeGenerations({
 		nodeId: node.id,
@@ -80,12 +93,7 @@ export function GenerationPanel({
 	}
 	return (
 		<div className="bg-white-900/10 h-full rounded-[8px] flex flex-col">
-			<div
-				className={clsx(
-					"border-b border-white-400/20 py-[12px] px-[16px] flex items-center gap-[8px]",
-					"**:data-header-text:font-[700]",
-				)}
-			>
+			<div className={clsx(getGenerationHeaderClasses())}>
 				{(currentGeneration.status === "created" ||
 					currentGeneration.status === "queued" ||
 					currentGeneration.status === "running") && (
@@ -99,7 +107,7 @@ export function GenerationPanel({
 					<p data-header-text>Result</p>
 				)}
 			</div>
-			<div className="pt-[16px] pb-[12px] px-[16px] h-full overflow-hidden">
+			<div className={getGenerationContentClasses()}>
 				<div className="h-full overflow-x-auto">
 					<GenerationView generation={currentGeneration} />
 				</div>

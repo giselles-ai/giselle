@@ -5,14 +5,17 @@ import { defaultName } from "@giselle-sdk/node-utils";
 import { useFeatureFlag } from "giselle-sdk/react";
 import type { ReactNode } from "react";
 import { EditableText } from "../../../ui/editable-text";
+import {
+	PANEL_SPACING,
+	getContentClasses,
+	getHeaderClasses,
+} from "./panel-spacing";
 
-export function PropertiesPanelRoot({
-	children,
-}: {
-	children: ReactNode;
-}) {
+export function PropertiesPanelRoot({ children }: { children: ReactNode }) {
 	return (
-		<div className="h-full w-full flex flex-col gap-[8px] overflow-hidden">
+		<div
+			className={`${PANEL_SPACING.LAYOUT.FULL_HEIGHT} ${PANEL_SPACING.LAYOUT.FULL_WIDTH} ${PANEL_SPACING.LAYOUT.FLEX_COL} ${PANEL_SPACING.CONTENT.GAP} ${PANEL_SPACING.LAYOUT.OVERFLOW_HIDDEN}`}
+		>
 			{children}
 		</div>
 	);
@@ -34,9 +37,11 @@ export function PropertiesPanelHeader({
 	const { sidemenu } = useFeatureFlag();
 	if (sidemenu) {
 		return (
-			<div className="h-[48px] flex justify-between items-center px-[16px] pt-[16px] shrink-0">
-				<div className="flex gap-[8px] items-center">
-					<div className="w-[28px] h-[28px] bg-white-900 rounded-[4px] flex items-center justify-center">
+			<div className={getHeaderClasses(sidemenu)}>
+				<div className={`flex ${PANEL_SPACING.HEADER.ICON_GAP} items-center`}>
+					<div
+						className={`w-[${PANEL_SPACING.HEADER.ICON_SIZE}] h-[${PANEL_SPACING.HEADER.ICON_SIZE}] bg-white-900 rounded-[4px] flex items-center justify-center`}
+					>
 						{icon}
 					</div>
 					<div>
@@ -67,9 +72,11 @@ export function PropertiesPanelHeader({
 		);
 	}
 	return (
-		<div className="h-[48px] flex justify-between items-center pl-0 pr-[16px] shrink-0">
-			<div className="flex gap-[8px] items-center">
-				<div className="w-[28px] h-[28px] bg-white-900 rounded-[4px] flex items-center justify-center">
+		<div className={getHeaderClasses(sidemenu)}>
+			<div className={`flex ${PANEL_SPACING.HEADER.ICON_GAP} items-center`}>
+				<div
+					className={`w-[${PANEL_SPACING.HEADER.ICON_SIZE}] h-[${PANEL_SPACING.HEADER.ICON_SIZE}] bg-white-900 rounded-[4px] flex items-center justify-center`}
+				>
 					{icon}
 				</div>
 				<div>
@@ -98,22 +105,7 @@ export function PropertiesPanelHeader({
 	);
 }
 
-export function PropertiesPanelContent({
-	children,
-}: {
-	children: ReactNode;
-}) {
+export function PropertiesPanelContent({ children }: { children: ReactNode }) {
 	const { sidemenu } = useFeatureFlag();
-	if (sidemenu) {
-		return (
-			<div className="px-[16px] flex-1 h-full flex flex-col overflow-hidden">
-				{children}
-			</div>
-		);
-	}
-	return (
-		<div className="pl-0 pr-[16px] flex-1 h-full flex flex-col overflow-hidden">
-			{children}
-		</div>
-	);
+	return <div className={getContentClasses(sidemenu)}>{children}</div>;
 }
