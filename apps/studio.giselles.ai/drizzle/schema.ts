@@ -289,7 +289,6 @@ export const githubRepositoryIndex = pgTable(
 			.references(() => teams.dbId, { onDelete: "cascade" }),
 		installationId: integer("installation_id").notNull(),
 		lastIngestedCommitSha: text("last_ingested_commit_sha"),
-		currentIngestionCommitSha: text("current_ingestion_commit_sha"),
 		status: text("status")
 			.notNull()
 			.$type<GitHubRepositoryIndexStatus>()
