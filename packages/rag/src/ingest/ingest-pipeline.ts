@@ -40,7 +40,7 @@ const DEFAULT_RETRY_DELAY = 1000;
 export type IngestFunction = () => Promise<IngestResult>;
 
 /**
- * Create a differential ingest pipeline that only processes new or changed documents
+ * Create an ingest pipeline function with the given options
  */
 export function createIngestPipeline<
 	TDocMetadata extends Record<string, unknown>,
@@ -63,43 +63,46 @@ export function createIngestPipeline<
 	} = options;
 
 	/**
-	 * Process a single document with retry logic
+	 * Create chunks with embeddings from document content
 	 */
-	async function processDocument(
-		document: Document<TDocMetadata>,
-	): Promise<void> {
-		const targetMetadata = metadataTransform(document.metadata);
+	async function createChunksWithEmbeddings(
+		content: string,
+	): Promise<ChunkWithEmbedding[]> {
+		const chunkTexts = chunker(content);
+		const chunks: ChunkWithEmbedding[] = [];
 
-		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+		// Batch embedding to improve performance
+		for (let i = 0; i < chunkTexts.length; i += maxBatchSize) {
+			const batch = chunkTexts.slice(i, i + maxBatchSize);
+			const embeddings = await embedder.embedMany(batch);
+
+			for (let j = 0; j < batch.length; j++) {
+				chunks.push({
+					content: batch[j],
+					index: i + j,
+					embedding: embeddings[j],
+				});
+			}
+		}
+
+		return chunks;
+	}
+
+	/**
+	 * Execute an operation with retry logic
+	 */
+	async function withRetry<T>(
+		operation: () => Promise<T>,
+		documentKey: string,
+	): Promise<T> {
+		const attemptOperation = async (attempt = 1): Promise<T> => {
 			try {
-				const chunkTexts = chunker(document.content);
-				const chunks: ChunkWithEmbedding[] = [];
-
-				// Batch embedding to improve performance
-				for (let i = 0; i < chunkTexts.length; i += maxBatchSize) {
-					const batch = chunkTexts.slice(i, i + maxBatchSize);
-					const embeddings = await embedder.embedMany(batch);
-
-					for (let j = 0; j < batch.length; j++) {
-						chunks.push({
-							content: batch[j],
-							index: i + j,
-							embedding: embeddings[j],
-						});
-					}
-				}
-
-				await chunkStore.insert(
-					documentKey(document.metadata),
-					chunks,
-					targetMetadata,
-				);
-				return;
+				return await operation();
 			} catch (error) {
-				const isLastAttempt = attempt === maxRetries;
+				const isLastAttempt = attempt >= maxRetries;
 
 				onError({
-					document: documentKey(document.metadata),
+					document: documentKey,
 					error: error instanceof Error ? error : new Error(String(error)),
 					willRetry: !isLastAttempt,
 					attemptNumber: attempt,
@@ -111,41 +114,31 @@ export function createIngestPipeline<
 
 				const delay = retryDelay * 2 ** (attempt - 1);
 				await new Promise((resolve) => setTimeout(resolve, delay));
+
+				return attemptOperation(attempt + 1);
 			}
-		}
+		};
+
+		return attemptOperation();
 	}
 
 	/**
-	 * Process a batch of documents
+	 * Process a single document with retry logic
 	 */
-	async function processBatch(
-		documents: Array<Document<TDocMetadata>>,
-		result: IngestResult,
-		progress: IngestProgress,
+	async function processDocument(
+		document: Document<TDocMetadata>,
 	): Promise<void> {
-		for (const document of documents) {
-			const docKey = documentKey(document.metadata);
-			progress.currentDocument = docKey;
+		const docKey = documentKey(document.metadata);
+		const targetMetadata = metadataTransform(document.metadata);
 
-			try {
-				await processDocument(document);
-				result.successfulDocuments++;
-				progress.processedDocuments++;
-			} catch (error) {
-				result.failedDocuments++;
-				progress.processedDocuments++;
-				result.errors.push({
-					document: docKey,
-					error: error instanceof Error ? error : new Error(String(error)),
-				});
-			}
-
-			onProgress(progress);
-		}
+		await withRetry(async () => {
+			const chunks = await createChunksWithEmbeddings(document.content);
+			await chunkStore.insert(docKey, chunks, targetMetadata);
+		}, docKey);
 	}
 
 	/**
-	 * The main differential ingest function
+	 * The main ingest function
 	 */
 	return async function ingest(): Promise<IngestResult> {
 		const result: IngestResult = {
@@ -161,50 +154,47 @@ export function createIngestPipeline<
 		};
 
 		try {
-			// Get existing document versions
 			const existingDocs = await chunkStore.getDocumentVersions();
 			const existingVersions = new Map(
 				existingDocs.map((doc) => [doc.documentKey, doc.version]),
 			);
 
-			// Track which documents we've seen
 			const seenDocuments = new Set<string>();
-			const documentBatch: Array<Document<TDocMetadata>> = [];
 
-			// Process all documents from the loader
 			for await (const metadata of documentLoader.loadMetadata()) {
 				const docKey = documentKey(metadata);
 				const newVersion = documentVersion(metadata);
 				seenDocuments.add(docKey);
 
-				// Check if document needs update
 				const existingVersion = existingVersions.get(docKey);
 				if (existingVersion === newVersion) {
-					// Document hasn't changed, skip it
 					continue;
 				}
 
-				// Load and process the document
 				const document = await documentLoader.loadDocument(metadata);
 				if (!document) {
 					continue;
 				}
 
 				result.totalDocuments++;
-				documentBatch.push(document);
+				progress.currentDocument = docKey;
 
-				if (documentBatch.length >= maxBatchSize) {
-					await processBatch(documentBatch, result, progress);
-					documentBatch.length = 0;
+				try {
+					await processDocument(document);
+					result.successfulDocuments++;
+					progress.processedDocuments++;
+				} catch (error) {
+					result.failedDocuments++;
+					progress.processedDocuments++;
+					result.errors.push({
+						document: docKey,
+						error: error instanceof Error ? error : new Error(String(error)),
+					});
 				}
+
+				onProgress(progress);
 			}
 
-			// Process remaining documents
-			if (documentBatch.length > 0) {
-				await processBatch(documentBatch, result, progress);
-			}
-
-			// Delete documents that no longer exist
 			const deletionTasks: Array<string> = [];
 			for (const [docKey] of existingVersions) {
 				if (!seenDocuments.has(docKey)) {
@@ -212,33 +202,23 @@ export function createIngestPipeline<
 				}
 			}
 
-			// Process deletions using batch delete
 			if (deletionTasks.length > 0) {
 				try {
 					await chunkStore.deleteBatch(deletionTasks);
 					progress.processedDocuments += deletionTasks.length;
 					onProgress(progress);
 				} catch (error) {
-					// If batch delete fails, fall back to individual deletes
-					for (const docKey of deletionTasks) {
-						try {
-							await chunkStore.delete(docKey);
-							progress.processedDocuments++;
-							onProgress(progress);
-						} catch (error) {
-							result.errors.push({
-								document: docKey,
-								error:
-									error instanceof Error ? error : new Error(String(error)),
-							});
-						}
-					}
+					result.errors.push({
+						document: `batch-delete: ${deletionTasks.join(", ")}`,
+						error: error instanceof Error ? error : new Error(String(error)),
+					});
+					throw error;
 				}
 			}
 		} catch (error) {
 			throw OperationError.invalidOperation(
-				"differential ingestion",
-				"Failed to complete differential ingestion",
+				"ingestion pipeline",
+				"Failed to complete ingestion pipeline",
 				{ cause: error instanceof Error ? error.message : String(error) },
 			);
 		}
