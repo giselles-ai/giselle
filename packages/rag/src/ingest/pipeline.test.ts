@@ -241,7 +241,7 @@ describe("createPipeline", () => {
 
 		// The ingest should complete successfully but include the error in results
 		const result = await ingest();
-		
+
 		expect(result.totalDocuments).toBe(2);
 		expect(result.successfulDocuments).toBe(2);
 		expect(result.failedDocuments).toBe(0);
