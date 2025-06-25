@@ -141,7 +141,7 @@ describe("createIngestPipeline", () => {
 	});
 });
 
-describe("createIngestPipeline - differential ingestion", () => {
+describe("createIngestPipeline", () => {
 	let mockDocumentLoader: DocumentLoader<{ path: string; sha: string }>;
 	let mockChunker: ChunkerFunction;
 	let mockEmbedder: EmbedderFunction;
@@ -221,13 +221,12 @@ describe("createIngestPipeline - differential ingestion", () => {
 		expect(mockChunkStore.deleteBatch).toHaveBeenCalledWith(["file4.txt"]);
 	});
 
-	it("should handle deletion errors gracefully", async () => {
+	it("should handle deletion errors and throw OperationError", async () => {
 		const failingChunkStore = {
 			...mockChunkStore,
 			deleteBatch: vi
 				.fn()
 				.mockRejectedValueOnce(new Error("Batch delete failed")),
-			delete: vi.fn().mockRejectedValueOnce(new Error("Delete failed")),
 		};
 
 		const ingest = createIngestPipeline({
@@ -240,13 +239,9 @@ describe("createIngestPipeline - differential ingestion", () => {
 			documentVersion: (metadata) => metadata.sha,
 		});
 
-		const result = await ingest();
-
-		// Should still process new/updated documents successfully
-		expect(result.totalDocuments).toBe(2);
-		expect(result.successfulDocuments).toBe(2);
-		expect(result.errors).toHaveLength(1);
-		expect(result.errors[0].document).toBe("file4.txt");
-		expect(result.errors[0].error.message).toBe("Delete failed");
+		// The ingest should throw an OperationError when deleteBatch fails
+		await expect(ingest()).rejects.toThrow(
+			"Failed to complete ingestion pipeline",
+		);
 	});
 });
