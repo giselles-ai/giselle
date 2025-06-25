@@ -21,36 +21,42 @@ export async function GET(request: NextRequest) {
 	}
 
 	const targetGitHubRepositories = await fetchTargetGitHubRepositories();
-
-	for (const targetGitHubRepository of targetGitHubRepositories) {
-		const { owner, repo, installationId, dbId } = targetGitHubRepository;
-		const octokitClient = buildOctokit(installationId);
-
-		try {
-			await updateRepositoryStatusToRunning(dbId);
-			const commit = await fetchDefaultBranchHead(octokitClient, owner, repo);
-
-			const source = {
-				owner,
-				repo,
-				commitSha: commit.sha,
-			};
-
-			await ingestGitHubBlobs({
-				octokitClient,
-				source,
-				repositoryIndexDbId: dbId,
-			});
-
-			await updateRepositoryStatusToCompleted(dbId, commit.sha);
-		} catch (error) {
-			console.error(`Failed to ingest ${owner}/${repo}:`, error);
-			captureException(error, {
-				extra: { owner, repo },
-			});
-			await updateRepositoryStatusToFailed(dbId);
-		}
-	}
+	await Promise.all(targetGitHubRepositories.map(ingestRepository));
 
 	return new Response("ok", { status: 200 });
+}
+
+async function ingestRepository(targetGitHubRepository: {
+	owner: string;
+	repo: string;
+	installationId: number;
+	dbId: number;
+}) {
+	const { owner, repo, installationId, dbId } = targetGitHubRepository;
+	const octokitClient = buildOctokit(installationId);
+
+	try {
+		await updateRepositoryStatusToRunning(dbId);
+		const commit = await fetchDefaultBranchHead(octokitClient, owner, repo);
+
+		const source = {
+			owner,
+			repo,
+			commitSha: commit.sha,
+		};
+
+		await ingestGitHubBlobs({
+			octokitClient,
+			source,
+			repositoryIndexDbId: dbId,
+		});
+
+		await updateRepositoryStatusToCompleted(dbId, commit.sha);
+	} catch (error) {
+		console.error(`Failed to ingest ${owner}/${repo}:`, error);
+		captureException(error, {
+			extra: { owner, repo },
+		});
+		await updateRepositoryStatusToFailed(dbId);
+	}
 }
