@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
-/* Glassmorphic Button Styles */
-.glassmorphic-button {
+/* glass Button Styles */
+.glass-button {
 	box-shadow:
 		0 8px 20px rgba(107, 143, 240, 0.2),
 		0 3px 10px rgba(107, 143, 240, 0.15),
@@ -10,12 +10,12 @@
 		0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
-.glassmorphic-button-outer-glow {
+.glass-button-outer-glow {
 	background-color: #6b8ff0;
 	opacity: 0.08;
 }
 
-.glassmorphic-button-background {
+.glass-button-background {
 	background: linear-gradient(
 		135deg,
 		rgba(255, 255, 255, 0.15) 0%,
@@ -24,7 +24,7 @@
 	);
 }
 
-.glassmorphic-button-top-reflection {
+.glass-button-top-reflection {
 	background: linear-gradient(
 		to right,
 		transparent,
@@ -33,10 +33,10 @@
 	);
 }
 
-.glassmorphic-button-border {
+.glass-button-border {
 	border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.glassmorphic-button-hover-overlay {
+.glass-button-hover-overlay {
 	background: linear-gradient(to top, transparent, rgba(255, 255, 255, 0.1));
 }
