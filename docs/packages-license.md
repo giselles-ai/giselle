@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 1054 MIT
+* 1055 MIT
 * 108 Apache 2.0
 * 60 ISC
 * 34 New BSD
@@ -13327,6 +13327,17 @@ Unknown manually approved
 
 <a name="turbo"></a>
 ### turbo v2.0.9
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="turbo-ignore"></a>
+### turbo-ignore v2.5.4
 #### 
 
 ##### Paths
