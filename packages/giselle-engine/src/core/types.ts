@@ -6,10 +6,10 @@ import type {
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
 import type { QueryService } from "@giselle-sdk/rag";
 import type { Storage } from "unstorage";
+import type { VectorStore } from "./experimental_vector-store/types/interface";
 import type { GenerationCompleteOption, TelemetrySettings } from "./telemetry";
 import type { UsageLimits } from "./usage-limits";
 import type { Vault } from "./vault";
-import type { VectorStore } from "./vector-store/types/interface";
 
 export interface GiselleEngineContext {
 	storage: Storage;

@@ -5,18 +5,19 @@ export interface Document<
 	metadata: TMetadata;
 }
 
-export interface DocumentLoaderParams {
-	[key: string]: unknown;
-}
-
 export interface DocumentLoader<
 	TMetadata extends Record<string, unknown> = Record<string, never>,
-	TParams extends DocumentLoaderParams = DocumentLoaderParams,
 > {
 	/**
-	 * Load documents asynchronously
-	 * @param params loader-specific parameters
-	 * @returns AsyncIterable of Document
+	 * Load metadata for all documents (lightweight operation)
+	 * @returns AsyncIterable of metadata
 	 */
-	load(params: TParams): AsyncIterable<Document<TMetadata>>;
+	loadMetadata(): AsyncIterable<TMetadata>;
+
+	/**
+	 * Load a specific document by its metadata
+	 * @param metadata The metadata identifying the document
+	 * @returns The document with content, or null if not found
+	 */
+	loadDocument(metadata: TMetadata): Promise<Document<TMetadata> | null>;
 }
