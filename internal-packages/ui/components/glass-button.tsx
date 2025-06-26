@@ -67,3 +67,9 @@ export function AddDataSourceButton({ onClick }: { onClick?: () => void }) {
 		</GlassButton>
 	);
 }
+
+// Backward compatibility exports
+export const GlassmorphicButton = GlassButton;
+export type GlassmorphicButtonProps = GlassButtonProps;
+export { GlassButton as glassButton };
+export { GlassButton as glassmorphicButton };

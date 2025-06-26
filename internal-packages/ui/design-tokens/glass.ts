@@ -79,3 +79,10 @@ export const getTopHighlightStyles = () => ({
 
 // Note: glass button styles are now implemented as CSS classes
 // in style.css for better performance and maintainability
+
+// Backward compatibility exports
+export const glassmorphicTokens = glassTokens;
+export type GlassmorphicTokens = glassTokens;
+export const getGlassmorphicStyles = getGlassStyles;
+export const getGlassmorphicButtonStyles = getGlassButtonStyles;
+export const getGlassmorphicTopHighlightStyles = getTopHighlightStyles;
