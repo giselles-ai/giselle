@@ -32,6 +32,7 @@ import { useToasts } from "../../../ui/toast";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { KeyboardShortcuts } from "../../components/keyboard-shortcuts";
 import {
+	COMMON_STYLES,
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
@@ -177,7 +178,7 @@ export function TextGenerationNodePropertiesPanel({
 								/>
 							</PropertiesPanelContent>
 						</Panel>
-						<PanelResizeHandle className="h-[12px] flex items-center justify-center cursor-row-resize">
+						<PanelResizeHandle className={COMMON_STYLES.panelResizeHandle}>
 							<ResizeHandle direction="vertical" />
 						</PanelResizeHandle>
 						<Panel>

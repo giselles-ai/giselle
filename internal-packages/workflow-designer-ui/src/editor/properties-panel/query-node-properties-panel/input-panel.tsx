@@ -34,6 +34,7 @@ import {
 	TriggerIcon,
 } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";
+import { COMMON_STYLES, ConnectionListItem } from "../ui";
 import {
 	type Source,
 	useConnectedSources,
@@ -281,48 +282,6 @@ function SourceListRoot({
 		</div>
 	);
 }
-function SourceListItem({
-	icon,
-	title,
-	subtitle,
-	onRemove,
-}: {
-	icon: ReactNode;
-	title: string;
-	subtitle: string;
-	onRemove: () => void;
-}) {
-	return (
-		<div
-			className={clsx(
-				"group flex items-center",
-				"border border-white-900/20 rounded-[8px] h-[60px]",
-			)}
-		>
-			<div className="w-[60px] flex items-center justify-center">{icon}</div>
-			<div className="w-[1px] h-full border-l border-white-900/20" />
-			<div className="px-[16px] flex-1 flex items-center justify-between">
-				<div className="flex flex-col gap-[4px]">
-					<p className="text=[16px]">{title}</p>
-					<div className="text-[10px] text-black-400">
-						<p className="line-clamp-1">{subtitle}</p>
-					</div>
-				</div>
-				<button
-					type="button"
-					className={clsx(
-						"hidden group-hover:block",
-						"p-[4px] rounded-[4px]",
-						"bg-transparent hover:bg-black-300/50 transition-colors",
-					)}
-					onClick={onRemove}
-				>
-					<TrashIcon className="w-[18px] h-[18px] text-white-900" />
-				</button>
-			</div>
-		</div>
-	);
-}
 
 export function InputPanel({
 	node: queryNode,
@@ -470,11 +429,9 @@ export function InputPanel({
 				{connectedSources.datastore.length > 0 && (
 					<SourceListRoot title="Datastore Sources">
 						{connectedSources.datastore.map((source) => (
-							<SourceListItem
-								icon={
-									<DatabaseZapIcon className="size-[24px] text-white-900" />
-								}
+							<ConnectionListItem
 								key={source.connection.id}
+								icon={<DatabaseZapIcon className="size-[24px] text-white-900" />}
 								title={`${source.node.name ?? "Datastore"} / ${source.output.label}`}
 								subtitle={source.node.content.source.provider}
 								onRemove={() => handleRemove(source.connection)}
@@ -485,11 +442,9 @@ export function InputPanel({
 				{connectedSources.generation.length > 0 && (
 					<SourceListRoot title="Generated Sources">
 						{connectedSources.generation.map((source) => (
-							<SourceListItem
-								icon={
-									<GeneratedContentIcon className="size-[24px] text-white-900" />
-								}
+							<ConnectionListItem
 								key={source.connection.id}
+								icon={<GeneratedContentIcon className="size-[24px] text-white-900" />}
 								title={`${source.node.name ?? source.node.content.llm.id} / ${source.output.label}`}
 								subtitle={source.node.content.llm.provider}
 								onRemove={() => handleRemove(source.connection)}
@@ -500,7 +455,8 @@ export function InputPanel({
 				{connectedSources.action.length > 0 && (
 					<SourceListRoot title="Action Sources">
 						{connectedSources.action.map((source) => (
-							<SourceListItem
+							<ConnectionListItem
+								key={source.connection.id}
 								icon={
 									source.node.content.command.provider === "github" ? (
 										<GitHubIcon className="size-[24px] text-white-900" />
@@ -508,7 +464,6 @@ export function InputPanel({
 										<WorkflowIcon className="size-[24px] text-white-900" />
 									)
 								}
-								key={source.connection.id}
 								title={`${source.node.name ?? "Action"} / ${source.output.label}`}
 								subtitle={source.node.content.command.provider}
 								onRemove={() => handleRemove(source.connection)}
@@ -519,7 +474,8 @@ export function InputPanel({
 				{connectedSources.trigger.length > 0 && (
 					<SourceListRoot title="Trigger Sources">
 						{connectedSources.trigger.map((source) => (
-							<SourceListItem
+							<ConnectionListItem
+								key={source.connection.id}
 								icon={
 									source.node.content.provider === "github" ? (
 										<GitHubIcon className="size-[24px] text-white-900" />
@@ -527,7 +483,6 @@ export function InputPanel({
 										<TriggerIcon className="size-[24px] text-white-900" />
 									)
 								}
-								key={source.connection.id}
 								title={`${source.node.name ?? "Trigger"} / ${source.output.label}`}
 								subtitle={source.node.content.provider}
 								onRemove={() => handleRemove(source.connection)}
@@ -560,11 +515,9 @@ export function InputPanel({
 									}
 
 									return (
-										<SourceListItem
-											icon={
-												<PromptIcon className="size-[24px] text-white-900" />
-											}
+										<ConnectionListItem
 											key={source.connection.id}
+											icon={<PromptIcon className="size-[24px] text-white-900" />}
 											title={`${source.node.name ?? "Text"} / ${source.output.label}`}
 											subtitle={text}
 											onRemove={() => handleRemove(source.connection)}
@@ -573,11 +526,9 @@ export function InputPanel({
 								}
 								case "github":
 									return (
-										<SourceListItem
-											icon={
-												<GitHubIcon className="size-[24px] text-white-900" />
-											}
+										<ConnectionListItem
 											key={source.connection.id}
+											icon={<GitHubIcon className="size-[24px] text-white-900" />}
 											title={`${source.node.name ?? "GitHub"} / ${source.output.label}`}
 											subtitle="GitHub"
 											onRemove={() => handleRemove(source.connection)}
@@ -585,11 +536,9 @@ export function InputPanel({
 									);
 								case "vectorStore":
 									return (
-										<SourceListItem
-											icon={
-												<DatabaseZapIcon className="size-[24px] text-white-900" />
-											}
+										<ConnectionListItem
 											key={source.connection.id}
+											icon={<DatabaseZapIcon className="size-[24px] text-white-900" />}
 											title={`${source.node.name ?? "Vector Store"} / ${source.output.label}`}
 											subtitle={`${source.node.content.source.provider} / ${source.node.content.source.state.status}`}
 											onRemove={() => handleRemove(source.connection)}

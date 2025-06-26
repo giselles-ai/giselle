@@ -41,16 +41,16 @@ export function PropertiesPanelHeader({
 				<div className={`flex ${PANEL_SPACING.HEADER.ICON_GAP} items-center`}>
 					<div
 						className={
-							layoutV2 
+							layoutV2
 								? "bg-white-900 rounded-[4px] flex items-center justify-center"
 								: `w-[${PANEL_SPACING.HEADER.ICON_SIZE}] h-[${PANEL_SPACING.HEADER.ICON_SIZE}] bg-white-900 rounded-[4px] flex items-center justify-center`
 						}
 						style={
-							layoutV2 
+							layoutV2
 								? {
-									width: PANEL_SPACING.HEADER.ICON_SIZE,
-									height: PANEL_SPACING.HEADER.ICON_SIZE,
-								}
+										width: PANEL_SPACING.HEADER.ICON_SIZE,
+										height: PANEL_SPACING.HEADER.ICON_SIZE,
+									}
 								: undefined
 						}
 					>
@@ -88,16 +88,16 @@ export function PropertiesPanelHeader({
 			<div className={`flex ${PANEL_SPACING.HEADER.ICON_GAP} items-center`}>
 				<div
 					className={
-						layoutV2 
+						layoutV2
 							? "bg-white-900 rounded-[4px] flex items-center justify-center"
 							: `w-[${PANEL_SPACING.HEADER.ICON_SIZE}] h-[${PANEL_SPACING.HEADER.ICON_SIZE}] bg-white-900 rounded-[4px] flex items-center justify-center`
 					}
 					style={
-						layoutV2 
+						layoutV2
 							? {
-								width: PANEL_SPACING.HEADER.ICON_SIZE,
-								height: PANEL_SPACING.HEADER.ICON_SIZE,
-							}
+									width: PANEL_SPACING.HEADER.ICON_SIZE,
+									height: PANEL_SPACING.HEADER.ICON_SIZE,
+								}
 							: undefined
 					}
 				>

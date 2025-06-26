@@ -1,7 +1,7 @@
 import { db, githubRepositoryIndex } from "@/drizzle";
 import { createGitHubBlobChunkStore } from "@/lib/vector-stores/github-blob-stores";
 import { createGitHubBlobLoader } from "@giselle-sdk/github-tool";
-import { createPipeline } from "@giselle-sdk/rag";
+import { createIngestPipeline } from "@giselle-sdk/rag";
 import type { Octokit } from "@octokit/core";
 import { and, eq } from "drizzle-orm";
 
@@ -18,18 +18,15 @@ export async function ingestGitHubBlobs(params: {
 		params.teamDbId,
 	);
 
-	const githubLoader = createGitHubBlobLoader(
-		params.octokitClient,
-		params.source,
-		{ maxBlobSize: 1 * 1024 * 1024 },
-	);
+	const githubLoader = createGitHubBlobLoader(params.octokitClient, {
+		maxBlobSize: 1 * 1024 * 1024,
+	});
 	const chunkStore = createGitHubBlobChunkStore(repositoryIndexDbId);
 
-	const ingest = createPipeline({
+	const ingest = createIngestPipeline({
 		documentLoader: githubLoader,
 		chunkStore,
-		documentKey: (metadata) => metadata.path,
-		documentVersion: (metadata) => metadata.fileSha,
+		documentKey: (document) => document.metadata.path,
 		metadataTransform: (metadata) => ({
 			repositoryIndexDbId,
 			commitSha: metadata.commitSha,
@@ -39,7 +36,7 @@ export async function ingestGitHubBlobs(params: {
 		}),
 	});
 
-	const result = await ingest();
+	const result = await ingest(params.source);
 	console.log(
 		`Ingested from ${result.totalDocuments} documents with success: ${result.successfulDocuments}, failure: ${result.failedDocuments}`,
 	);

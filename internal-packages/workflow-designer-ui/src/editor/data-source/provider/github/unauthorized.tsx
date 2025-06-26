@@ -2,6 +2,7 @@ import { useIntegration } from "@giselle-sdk/giselle-engine/react";
 import { useCallback, useEffect, useTransition } from "react";
 import { GitHubIcon, SpinnerIcon } from "../../../../icons";
 import { usePopupWindow } from "../../../lib/use-popup-window";
+import { COMMON_STYLES } from "../../../properties-panel/ui";
 
 export function Unauthorized({ authUrl }: { authUrl: string }) {
 	const { refresh } = useIntegration();
@@ -27,7 +28,7 @@ export function Unauthorized({ authUrl }: { authUrl: string }) {
 	}, [handleInstallationMessage]);
 
 	return (
-		<div className="bg-white-900/10 h-[300px] rounded-[8px] flex items-center justify-center">
+		<div className={COMMON_STYLES.githubAuthContainer}>
 			<div className="flex flex-col gap-[8px]">
 				<p>To get started you have to sign into your GitHub account</p>
 				<button

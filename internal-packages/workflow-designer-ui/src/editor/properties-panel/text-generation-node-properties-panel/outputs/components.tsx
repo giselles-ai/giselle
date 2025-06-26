@@ -14,6 +14,7 @@ import {
 	useCallback,
 	useState,
 } from "react";
+import { COMMON_STYLES } from "../../ui";
 import type { OutputWithDetails } from "./types";
 import { useCategoriedOutputs } from "./use-categoried-outputs";
 
@@ -303,7 +304,7 @@ export function ConnectedOutputListItem({
 				"border border-white-900/20 rounded-[8px] h-[60px]",
 			)}
 		>
-			<div className="w-[60px] flex items-center justify-center">{icon}</div>
+			<div className={COMMON_STYLES.iconContainer}>{icon}</div>
 			<div className="w-[1px] h-full border-l border-white-900/20" />
 			<div className="px-[16px] flex-1 flex items-center justify-between">
 				<div className="flex flex-col gap-[4px]">

@@ -16,20 +16,19 @@ type GitHubBlobLoaderParams = {
 	commitSha: string;
 };
 
-type GitHubBlobLoaderOptions = {
-	maxBlobSize?: number;
-};
-
 export function createGitHubBlobLoader(
 	octokit: Octokit,
-	params: GitHubBlobLoaderParams,
-	options: GitHubBlobLoaderOptions = {},
-): DocumentLoader<GitHubBlobMetadata> {
-	const { maxBlobSize = 1024 * 1024 } = options;
+	options?: { maxBlobSize?: number },
+): DocumentLoader<GitHubBlobMetadata, GitHubBlobLoaderParams> {
+	const maxBlobSize = options?.maxBlobSize ?? 1024 * 1024; // 1MB default
 
-	const { owner, repo, commitSha } = params;
+	const load = async function* (
+		params: GitHubBlobLoaderParams,
+	): AsyncIterable<Document<GitHubBlobMetadata>> {
+		const { owner, repo, commitSha } = params;
 
-	const loadMetadata = async function* (): AsyncIterable<GitHubBlobMetadata> {
+		console.log(`Loading repository ${owner}/${repo} at commit ${commitSha}`);
+
 		for await (const entry of traverseTree(octokit, owner, repo, commitSha)) {
 			const { path, type, sha: fileSha, size } = entry;
 
@@ -45,42 +44,24 @@ export function createGitHubBlobLoader(
 				continue;
 			}
 
-			yield {
-				owner,
-				repo,
+			const blob = await loadBlob(
+				octokit,
+				{ owner, repo, path, fileSha },
 				commitSha,
-				fileSha,
-				path,
-				// TODO: We can consider removing this from metadata.
-				// - nodeId is not used for now and
-				// - Tree API doesn't have nodeId.
-				nodeId: "",
+			);
+
+			if (blob === null) {
+				continue;
+			}
+
+			yield {
+				content: blob.content,
+				metadata: blob.metadata,
 			};
 		}
 	};
 
-	const loadDocument = async (
-		metadata: GitHubBlobMetadata,
-	): Promise<Document<GitHubBlobMetadata> | null> => {
-		const { path, fileSha } = metadata;
-
-		const blob = await loadBlob(
-			octokit,
-			{ owner, repo, path, fileSha },
-			commitSha,
-		);
-
-		if (blob === null) {
-			return null;
-		}
-
-		return {
-			content: blob.content,
-			metadata: blob.metadata,
-		};
-	};
-
-	return { loadMetadata, loadDocument };
+	return { load };
 }
 
 type GitHubLoadBlobParams = {

@@ -23,12 +23,12 @@ import {
 } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";
 import {
-	ConnectedOutputListItem,
 	ConnectedOutputListRoot,
 	type OutputWithDetails,
 	SelectOutputPopover,
 	useConnectedOutputs,
 } from "./outputs";
+import { COMMON_STYLES, ConnectionListItem } from "../ui";
 
 export function InputPanel({
 	node: textGenerationNode,
@@ -180,11 +180,11 @@ export function InputPanel({
 				{connectedOutputs.trigger.length > 0 && (
 					<ConnectedOutputListRoot title="Generated Sources">
 						{connectedOutputs.trigger.map((source) => (
-							<ConnectedOutputListItem
+							<ConnectionListItem
+								key={source.connection.id}
 								icon={
 									<GeneratedContentIcon className="size-[24px] text-white-900" />
 								}
-								key={source.connection.id}
 								title={source.node.name ?? defaultName(source.node)}
 								subtitle=""
 								onRemove={() => handleRemove(source.connection)}
@@ -195,11 +195,11 @@ export function InputPanel({
 				{connectedOutputs.generation.length > 0 && (
 					<ConnectedOutputListRoot title="Generated Sources">
 						{connectedOutputs.generation.map((source) => (
-							<ConnectedOutputListItem
+							<ConnectionListItem
+								key={source.connection.id}
 								icon={
 									<GeneratedContentIcon className="size-[24px] text-white-900" />
 								}
-								key={source.connection.id}
 								title={`${source.node.name ?? source.node.content.llm.id} / ${source.label}`}
 								subtitle={source.node.content.llm.provider}
 								onRemove={() => handleRemove(source.connection)}
@@ -210,9 +210,9 @@ export function InputPanel({
 				{connectedOutputs.action.length > 0 && (
 					<ConnectedOutputListRoot title="Generated Sources">
 						{connectedOutputs.action.map((source) => (
-							<ConnectedOutputListItem
-								icon={<GitHubIcon className="size-[24px] text-white-900" />}
+							<ConnectionListItem
 								key={source.connection.id}
+								icon={<GitHubIcon className="size-[24px] text-white-900" />}
 								title={source.node.name ?? defaultName(source.node)}
 								subtitle={""}
 								onRemove={() => handleRemove(source.connection)}
@@ -236,11 +236,11 @@ export function InputPanel({
 									}
 
 									return (
-										<ConnectedOutputListItem
+										<ConnectionListItem
+											key={source.connection.id}
 											icon={
 												<PromptIcon className="size-[24px] text-white-900" />
 											}
-											key={source.connection.id}
 											title={`${source.node.name ?? "Text"} / ${source.label}`}
 											subtitle={text}
 											onRemove={() => handleRemove(source.connection)}
@@ -249,11 +249,11 @@ export function InputPanel({
 								}
 								case "file":
 									return (
-										<ConnectedOutputListItem
+										<ConnectionListItem
+											key={source.connection.id}
 											icon={
 												<PdfFileIcon className="size-[24px] text-white-900" />
 											}
-											key={source.connection.id}
 											title={`${source.node.name ?? "PDF Files"} / ${source.label}`}
 											subtitle={`${source.node.content.files.length} ${pluralize("file", source.node.content.files.length)}`}
 											onRemove={() => handleRemove(source.connection)}
@@ -261,11 +261,11 @@ export function InputPanel({
 									);
 								case "github":
 									return (
-										<ConnectedOutputListItem
+										<ConnectionListItem
+											key={source.connection.id}
 											icon={
 												<GitHubIcon className="size-[24px] text-white-900" />
 											}
-											key={source.connection.id}
 											title={`${source.node.name ?? "GitHub"} / ${source.label}`}
 											subtitle={"todo"}
 											onRemove={() => handleRemove(source.connection)}
@@ -273,11 +273,11 @@ export function InputPanel({
 									);
 								case "webPage":
 									return (
-										<ConnectedOutputListItem
+										<ConnectionListItem
+											key={source.connection.id}
 											icon={
 												<WebPageFileIcon className="size-[24px] text-white-900" />
 											}
-											key={source.connection.id}
 											title={`${source.node.name ?? "WebPage"} / ${source.label}`}
 											subtitle={""}
 											onRemove={() => handleRemove(source.connection)}
@@ -299,7 +299,7 @@ export function InputPanel({
 				{connectedOutputs.query.length > 0 && (
 					<ConnectedOutputListRoot title="Query Sources">
 						{connectedOutputs.query.map((source) => (
-							<ConnectedOutputListItem
+							<ConnectionListItem
 								key={source.connection.id}
 								icon={
 									<DatabaseZapIcon className="size-[24px] text-white-900" />

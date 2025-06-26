@@ -51,7 +51,7 @@ export function TextGenerationTabContent({
 	sidemenu,
 }: TextGenerationTabContentProps) {
 	const { layoutV2 } = useFeatureFlag();
-	
+
 	return (
 		<>
 			<Tabs.Root

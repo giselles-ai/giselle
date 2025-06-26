@@ -1,6 +1,31 @@
 {
 	"extends": ["//"],
 	"tasks": {
+		"build": {
+			"env": [
+				"*_API_KEY",
+				"*_SECRET",
+				"GITHUB_*",
+				"LANGFUSE_*",
+				"POSTGRES_*",
+				"SIGNOZ_*",
+				"STRIPE_*",
+				"SMTP_*",
+				"SUPABASE_*",
+				"GTM_ID",
+				"SENTRY_AUTH_TOKEN",
+				"BLOB_READ_WRITE_TOKEN",
+				"SEND_EMAIL_DEBUG",
+				"SAMPLE_APP_WORKSPACE_ID"
+			],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				".env.production.local",
+				".env.local",
+				".env.production",
+				".env"
+			]
+		},
 		"dev": {
 			"inputs": [
 				"$TURBO_DEFAULT$",

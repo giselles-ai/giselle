@@ -60,11 +60,10 @@ import {
 } from "./workspaces";
 export * from "./types";
 export * from "./vault";
-export * from "./experimental_vector-store";
+export * from "./vector-store";
 export { FlowRunId } from "./flows";
 export * from "./usage-limits";
 export * from "./integrations";
-export * from "./vector-store";
 export * from "./telemetry";
 
 export function GiselleEngine(config: GiselleEngineConfig) {
