@@ -8,6 +8,7 @@ import {
 } from "@giselle-sdk/data-type";
 import type { Node, Workspace } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
+import { useFeatureFlag } from "giselle-sdk/react";
 import { Tabs } from "radix-ui";
 import { InputPanel } from "./input-panel";
 import {
@@ -49,6 +50,8 @@ export function TextGenerationTabContent({
 	githubTools,
 	sidemenu,
 }: TextGenerationTabContentProps) {
+	const { layoutV2 } = useFeatureFlag();
+	
 	return (
 		<>
 			<Tabs.Root
@@ -341,6 +344,7 @@ export function TextGenerationTabContent({
 					)}
 				</Tabs.Content>
 			</Tabs.Root>
+			{!layoutV2 && <div className="h-[16px]" />}
 		</>
 	);
 }

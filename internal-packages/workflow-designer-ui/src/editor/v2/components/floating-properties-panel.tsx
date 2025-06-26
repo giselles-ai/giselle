@@ -2,6 +2,7 @@
 
 import clsx from "clsx/lite";
 import { type ReactNode, useCallback, useRef, useState } from "react";
+import { ResizeHandle } from "../../properties-panel/ui/resizable-section";
 
 interface FloatingPropertiesPanelProps {
 	isOpen: boolean;
@@ -54,7 +55,12 @@ export function FloatingPropertiesPanel({
 
 	const handleMouseDown = useCallback(
 		(e: React.MouseEvent) => {
+			console.log("Resize handle mousedown triggered", {
+				clientX: e.clientX,
+				width,
+			});
 			e.preventDefault();
+			e.stopPropagation();
 			setIsResizing(true);
 
 			const startX = e.clientX;
@@ -75,6 +81,7 @@ export function FloatingPropertiesPanel({
 			const throttledMouseMove = throttle(handleMouseMove, 16); // ~60fps throttling
 
 			const handleMouseUp = () => {
+				console.log("Resize handle mouseup triggered");
 				setIsResizing(false);
 				document.removeEventListener("mousemove", throttledMouseMove);
 				document.removeEventListener("mouseup", handleMouseUp);
@@ -100,12 +107,12 @@ export function FloatingPropertiesPanel({
 				ref={panelRef}
 				className={clsx(
 					"h-full pointer-events-auto relative rounded-[12px] shadow-xl",
-					"transform transition-all duration-300 ease-out",
 					isOpen
 						? "translate-x-0 opacity-100"
 						: position === "right"
 							? "translate-x-full opacity-0"
 							: "-translate-x-full opacity-0",
+					!isResizing && "transform transition-all duration-300 ease-out",
 					className,
 				)}
 			>
@@ -125,25 +132,15 @@ export function FloatingPropertiesPanel({
 				<div className="absolute -z-10 inset-0 rounded-[12px] border border-white/10" />
 
 				{/* Resize handle */}
-				<div
+				<ResizeHandle
+					direction="horizontal"
 					className={clsx(
-						"absolute top-0 bottom-0 w-[12px] cursor-ew-resize group",
+						"absolute top-0 bottom-0 z-20",
 						position === "right" ? "left-0" : "right-0",
 					)}
 					onMouseDown={handleMouseDown}
-				>
-					<div
-						className={clsx(
-							"my-[12px] flex h-full items-center justify-center",
-							"transition-colors duration-200",
-							isResizing
-								? "bg-[#4a90e2]/30"
-								: "bg-transparent group-hover:bg-[#4a90e2]/20",
-						)}
-					>
-						<div className="h-8 w-[3px] rounded-full bg-border" />
-					</div>
-				</div>
+					style={{ pointerEvents: "auto" }}
+				/>
 
 				{/* Content */}
 				<div

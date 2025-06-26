@@ -34,17 +34,25 @@ export function PropertiesPanelHeader({
 	onChangeName?: (name?: string) => void;
 	action?: ReactNode;
 }) {
-	const { sidemenu } = useFeatureFlag();
+	const { sidemenu, layoutV2 } = useFeatureFlag();
 	if (sidemenu) {
 		return (
 			<div className={getHeaderClasses(sidemenu)}>
 				<div className={`flex ${PANEL_SPACING.HEADER.ICON_GAP} items-center`}>
 					<div
-						className="bg-white-900 rounded-[4px] flex items-center justify-center"
-						style={{
-							width: PANEL_SPACING.HEADER.ICON_SIZE,
-							height: PANEL_SPACING.HEADER.ICON_SIZE,
-						}}
+						className={
+							layoutV2 
+								? "bg-white-900 rounded-[4px] flex items-center justify-center"
+								: `w-[${PANEL_SPACING.HEADER.ICON_SIZE}] h-[${PANEL_SPACING.HEADER.ICON_SIZE}] bg-white-900 rounded-[4px] flex items-center justify-center`
+						}
+						style={
+							layoutV2 
+								? {
+									width: PANEL_SPACING.HEADER.ICON_SIZE,
+									height: PANEL_SPACING.HEADER.ICON_SIZE,
+								}
+								: undefined
+						}
 					>
 						{icon}
 					</div>
@@ -79,11 +87,19 @@ export function PropertiesPanelHeader({
 		<div className={getHeaderClasses(sidemenu)}>
 			<div className={`flex ${PANEL_SPACING.HEADER.ICON_GAP} items-center`}>
 				<div
-					className="bg-white-900 rounded-[4px] flex items-center justify-center"
-					style={{
-						width: PANEL_SPACING.HEADER.ICON_SIZE,
-						height: PANEL_SPACING.HEADER.ICON_SIZE,
-					}}
+					className={
+						layoutV2 
+							? "bg-white-900 rounded-[4px] flex items-center justify-center"
+							: `w-[${PANEL_SPACING.HEADER.ICON_SIZE}] h-[${PANEL_SPACING.HEADER.ICON_SIZE}] bg-white-900 rounded-[4px] flex items-center justify-center`
+					}
+					style={
+						layoutV2 
+							? {
+								width: PANEL_SPACING.HEADER.ICON_SIZE,
+								height: PANEL_SPACING.HEADER.ICON_SIZE,
+							}
+							: undefined
+					}
 				>
 					{icon}
 				</div>
