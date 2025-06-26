@@ -263,6 +263,9 @@ importers:
       '@xyflow/react':
         specifier: 'catalog:'
         version: 12.4.1(@types/react@19.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      clsx:
+        specifier: 'catalog:'
+        version: 2.1.1
       geist:
         specifier: 1.3.1
         version: 1.3.1(next@15.3.0(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.53.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
@@ -1114,15 +1117,15 @@ importers:
       '@giselle-sdk/flow':
         specifier: workspace:*
         version: link:../flow
+      '@giselle-sdk/giselle-engine':
+        specifier: workspace:^
+        version: link:../giselle-engine
       '@giselle-sdk/language-model':
         specifier: workspace:*
         version: link:../language-model
       '@giselle-sdk/text-editor-utils':
         specifier: workspace:*
         version: link:../text-editor-utils
-      '@giselle-sdk/vector-store':
-        specifier: workspace:*
-        version: link:../vector-store
       '@tiptap/react':
         specifier: 'catalog:'
         version: 2.11.5(@tiptap/core@2.11.5(@tiptap/pm@2.11.5))(@tiptap/pm@2.11.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1420,9 +1423,6 @@ importers:
       '@giselle-sdk/giselle-engine':
         specifier: workspace:^
         version: link:../giselle-engine
-      '@giselle-sdk/vector-store':
-        specifier: workspace:^
-        version: link:../vector-store
       '@giselle-sdk/workflow-designer':
         specifier: workspace:^
         version: link:../workflow-designer
