@@ -35,9 +35,6 @@ import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
-	ResizableSection,
-	ResizableSectionGroup,
-	ResizableSectionHandle,
 } from "../ui";
 import { GenerationPanel } from "./generation-panel";
 import { useConnectedOutputs } from "./outputs";
@@ -63,7 +60,6 @@ export function TextGenerationNodePropertiesPanel({
 	const { all: connectedSources } = useConnectedOutputs(node);
 	const usageLimitsReached = useUsageLimitsReached();
 	const { error } = useToasts();
-	const { layoutV2 } = useFeatureFlag();
 
 	const uiState = useMemo(() => data.ui.nodeState[node.id], [data, node.id]);
 
@@ -159,65 +155,38 @@ export function TextGenerationNodePropertiesPanel({
 			/>
 
 			<PropertiesPanelContent>
-				{layoutV2 ? (
-					<ResizableSectionGroup>
-						<ResizableSection
-							title="Configuration"
-							defaultSize={70}
-							minSize={30}
-						>
-							<div className="p-4">
-								<TextGenerationTabContent
-									node={node}
-									uiState={uiState}
-									setUiNodeState={setUiNodeState}
-									updateNodeDataContent={updateNodeDataContent}
-									updateNodeData={updateNodeData}
-									data={data}
-									deleteConnection={deleteConnection}
-									githubTools={githubTools}
-									sidemenu={sidemenu}
-								/>
-							</div>
-						</ResizableSection>
-						<ResizableSectionHandle />
-						<ResizableSection title="Generation" defaultSize={30}>
-							<div className="p-4">
-								<GenerationPanel
-									node={node}
-									onClickGenerateButton={generateText}
-								/>
-							</div>
-						</ResizableSection>
-					</ResizableSectionGroup>
-				) : (
-					<PanelGroup direction="vertical" className="flex-1 flex flex-col">
-						<Panel>
-							<PropertiesPanelContent>
-								<TextGenerationTabContent
-									node={node}
-									uiState={uiState}
-									setUiNodeState={setUiNodeState}
-									updateNodeDataContent={updateNodeDataContent}
-									updateNodeData={updateNodeData}
-									data={data}
-									deleteConnection={deleteConnection}
-									githubTools={githubTools}
-									sidemenu={sidemenu}
-								/>
-							</PropertiesPanelContent>
-						</Panel>
-						<ResizableSectionHandle />
-						<Panel>
-							<PropertiesPanelContent>
-								<GenerationPanel
-									node={node}
-									onClickGenerateButton={generateText}
-								/>
-							</PropertiesPanelContent>
-						</Panel>
-					</PanelGroup>
-				)}
+				<PanelGroup direction="vertical" className="flex-1 flex flex-col">
+					<Panel>
+						<PropertiesPanelContent>
+							<TextGenerationTabContent
+								node={node}
+								uiState={uiState}
+								setUiNodeState={setUiNodeState}
+								updateNodeDataContent={updateNodeDataContent}
+								updateNodeData={updateNodeData}
+								data={data}
+								deleteConnection={deleteConnection}
+								githubTools={githubTools}
+								sidemenu={sidemenu}
+							/>
+						</PropertiesPanelContent>
+					</Panel>
+					<PanelResizeHandle
+						className={clsx(
+							"h-[12px] flex items-center justify-center cursor-row-resize",
+							"after:content-[''] after:h-[3px] after:w-[32px] after:bg-[#a9afbc] after:rounded-full",
+							"hover:after:bg-[#4a90e2]",
+						)}
+					/>
+					<Panel>
+						<PropertiesPanelContent>
+							<GenerationPanel
+								node={node}
+								onClickGenerateButton={generateText}
+							/>
+						</PropertiesPanelContent>
+					</Panel>
+				</PanelGroup>
 			</PropertiesPanelContent>
 			<KeyboardShortcuts
 				generate={() => {

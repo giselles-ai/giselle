@@ -341,7 +341,6 @@ export function TextGenerationTabContent({
 					)}
 				</Tabs.Content>
 			</Tabs.Root>
-			<div className="h-[16px]" />
 		</>
 	);
 }

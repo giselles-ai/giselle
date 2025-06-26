@@ -94,7 +94,16 @@ export function Toolbar() {
 	const { llmProviders } = useWorkflowDesigner();
 	const limits = useUsageLimits();
 	const { githubVectorStore, webSearchAction } = useFeatureFlag();
-	const vectorStore = useVectorStore();
+
+	// Safely handle useVectorStore in case VectorStoreProvider is not available
+	let vectorStore: { github?: unknown } | null = null;
+	try {
+		vectorStore = useVectorStore();
+	} catch (error) {
+		// VectorStoreProvider not available, use fallback
+		console.warn("VectorStoreProvider not available, using fallback");
+	}
+
 	const canUseGithubVectorStore = useMemo(
 		() => !!vectorStore?.github && githubVectorStore,
 		[vectorStore, githubVectorStore],
