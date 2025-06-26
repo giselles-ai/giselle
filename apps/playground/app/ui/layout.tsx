@@ -1,15 +1,21 @@
+import fs from "node:fs";
+import path from "node:path";
 import { NavLink } from "./nav-link";
 
-const components = [
-	{
-		id: "button",
-		name: "Button",
-	},
-	{
-		id: "dialog",
-		name: "Dialog",
-	},
-];
+function loadComponents() {
+	const uiDir = path.join(process.cwd(), "app/ui");
+	const entries = fs.readdirSync(uiDir, { withFileTypes: true });
+
+	return entries
+		.filter((entry) => entry.isDirectory())
+		.map((entry) => ({
+			id: entry.name,
+			name: entry.name.charAt(0).toUpperCase() + entry.name.slice(1),
+		}))
+		.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+const components = loadComponents();
 export default function ({
 	children,
 }: {
