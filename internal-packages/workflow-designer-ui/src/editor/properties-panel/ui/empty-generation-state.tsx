@@ -51,4 +51,4 @@ export function EmptyGenerationState({
 			</EmptyState>
 		</div>
 	);
-} 
+}

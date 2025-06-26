@@ -9,8 +9,8 @@ import { ArrowDownIcon, ArrowUpIcon, TimerIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { StackBlicksIcon } from "../../../icons";
 import ClipboardButton from "../../../ui/clipboard-button";
-import { EmptyGenerationState } from "../ui";
 import { GenerationView } from "../../../ui/generation-view";
+import { EmptyGenerationState } from "../ui";
 import { COMMON_STYLES } from "../ui";
 
 // Helper function to format execution time

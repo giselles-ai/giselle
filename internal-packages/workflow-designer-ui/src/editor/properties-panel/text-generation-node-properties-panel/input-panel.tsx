@@ -22,13 +22,13 @@ import {
 	WebPageFileIcon,
 } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";
+import { COMMON_STYLES, ConnectionListItem } from "../ui";
 import {
 	ConnectedOutputListRoot,
 	type OutputWithDetails,
 	SelectOutputPopover,
 	useConnectedOutputs,
 } from "./outputs";
-import { COMMON_STYLES, ConnectionListItem } from "../ui";
 
 export function InputPanel({
 	node: textGenerationNode,

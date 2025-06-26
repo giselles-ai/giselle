@@ -426,7 +426,9 @@ export function InputPanel({
 						{connectedSources.generation.map((source) => (
 							<ConnectionListItem
 								key={source.connection.id}
-								icon={<GeneratedContentIcon className="size-[24px] text-white-900" />}
+								icon={
+									<GeneratedContentIcon className="size-[24px] text-white-900" />
+								}
 								title={`${source.node.name ?? source.node.content.llm.id} / ${source.output.label}`}
 								subtitle={source.node.content.llm.provider}
 								onRemove={() => handleRemove(source.connection)}
@@ -465,14 +467,16 @@ export function InputPanel({
 									return (
 										<ConnectionListItem
 											key={source.connection.id}
-											icon={<PromptIcon className="size-[24px] text-white-900" />}
+											icon={
+												<PromptIcon className="size-[24px] text-white-900" />
+											}
 											title={`${source.node.name ?? "Text"} / ${source.output.label}`}
 											subtitle={text}
 											onRemove={() => handleRemove(source.connection)}
 										/>
 									);
 								}
-								case "file":
+								case "file": {
 									if (!isFileNode(source.node)) {
 										throw new Error(
 											`Expected file node, got ${source.node.content.type}`,
@@ -483,12 +487,15 @@ export function InputPanel({
 									return (
 										<ConnectionListItem
 											key={source.connection.id}
-											icon={<PdfFileIcon className="size-[24px] text-white-900" />}
+											icon={
+												<PdfFileIcon className="size-[24px] text-white-900" />
+											}
 											title={`${source.node.name ?? "PDF Files"} / ${source.output.label}`}
 											subtitle={`${source.node.content.files.length} ${pluralize("file", source.node.content.files.length)}`}
 											onRemove={() => handleRemove(source.connection)}
 										/>
 									);
+								}
 								case "github":
 									throw new Error("github node is deprecated");
 								case "vectorStore":
@@ -510,7 +517,9 @@ export function InputPanel({
 						{connectedSources.query.map((source) => (
 							<ConnectionListItem
 								key={source.connection.id}
-								icon={<DatabaseZapIcon className="size-[24px] text-white-900" />}
+								icon={
+									<DatabaseZapIcon className="size-[24px] text-white-900" />
+								}
 								title={`${source.node.name ?? "Query"} / ${source.output.label}`}
 								subtitle=""
 								onRemove={() => handleRemove(source.connection)}

@@ -431,7 +431,9 @@ export function InputPanel({
 						{connectedSources.datastore.map((source) => (
 							<ConnectionListItem
 								key={source.connection.id}
-								icon={<DatabaseZapIcon className="size-[24px] text-white-900" />}
+								icon={
+									<DatabaseZapIcon className="size-[24px] text-white-900" />
+								}
 								title={`${source.node.name ?? "Datastore"} / ${source.output.label}`}
 								subtitle={source.node.content.source.provider}
 								onRemove={() => handleRemove(source.connection)}
@@ -444,7 +446,9 @@ export function InputPanel({
 						{connectedSources.generation.map((source) => (
 							<ConnectionListItem
 								key={source.connection.id}
-								icon={<GeneratedContentIcon className="size-[24px] text-white-900" />}
+								icon={
+									<GeneratedContentIcon className="size-[24px] text-white-900" />
+								}
 								title={`${source.node.name ?? source.node.content.llm.id} / ${source.output.label}`}
 								subtitle={source.node.content.llm.provider}
 								onRemove={() => handleRemove(source.connection)}
@@ -517,7 +521,9 @@ export function InputPanel({
 									return (
 										<ConnectionListItem
 											key={source.connection.id}
-											icon={<PromptIcon className="size-[24px] text-white-900" />}
+											icon={
+												<PromptIcon className="size-[24px] text-white-900" />
+											}
 											title={`${source.node.name ?? "Text"} / ${source.output.label}`}
 											subtitle={text}
 											onRemove={() => handleRemove(source.connection)}
@@ -528,7 +534,9 @@ export function InputPanel({
 									return (
 										<ConnectionListItem
 											key={source.connection.id}
-											icon={<GitHubIcon className="size-[24px] text-white-900" />}
+											icon={
+												<GitHubIcon className="size-[24px] text-white-900" />
+											}
 											title={`${source.node.name ?? "GitHub"} / ${source.output.label}`}
 											subtitle="GitHub"
 											onRemove={() => handleRemove(source.connection)}
@@ -538,7 +546,9 @@ export function InputPanel({
 									return (
 										<ConnectionListItem
 											key={source.connection.id}
-											icon={<DatabaseZapIcon className="size-[24px] text-white-900" />}
+											icon={
+												<DatabaseZapIcon className="size-[24px] text-white-900" />
+											}
 											title={`${source.node.name ?? "Vector Store"} / ${source.output.label}`}
 											subtitle={`${source.node.content.source.provider} / ${source.node.content.source.state.status}`}
 											onRemove={() => handleRemove(source.connection)}

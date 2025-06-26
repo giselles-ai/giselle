@@ -3,8 +3,8 @@ import clsx from "clsx/lite";
 import { useNodeGenerations, useWorkflowDesigner } from "giselle-sdk/react";
 import { useCallback, useEffect, useState } from "react";
 import { StackBlicksIcon } from "../../../icons";
-import { EmptyGenerationState } from "../ui";
 import { QueryResultView } from "../../../ui/query-result-view";
+import { EmptyGenerationState } from "../ui";
 import { COMMON_STYLES } from "../ui";
 
 export function GenerationPanel({

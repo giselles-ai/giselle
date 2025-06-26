@@ -51,4 +51,4 @@ export function ConnectionListItem({
 			</div>
 		</div>
 	);
-} 
+}
