@@ -39,7 +39,7 @@ import {
 import { DatabaseZapIcon, LucideSearch, WorkflowIcon } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
 import { useEffect, useState } from "react";
-import { GlassmorphicContainer } from "../../../ui/glassmorphic-container";
+import { glassContainer } from "../../../ui/glass-container";
 import { Tooltip } from "../../../ui/tooltip";
 import { isToolAction } from "../types";
 import {
@@ -213,10 +213,7 @@ export function Toolbar() {
 	};
 
 	return (
-		<GlassmorphicContainer
-			className="rounded-[8px] p-0"
-			showDecorations={false}
-		>
+		<glassContainer className="rounded-[8px] p-0" showDecorations={false}>
 			<div className="relative -p-8">
 				<div className="flex divide-x divide-[hsla(232,36%,72%,0.2)] items-center py-[1px]">
 					<ToggleGroup.Root
@@ -967,6 +964,6 @@ export function Toolbar() {
 					</ToggleGroup.Root>
 				</div>
 			</div>
-		</GlassmorphicContainer>
+		</glassContainer>
 	);
 }

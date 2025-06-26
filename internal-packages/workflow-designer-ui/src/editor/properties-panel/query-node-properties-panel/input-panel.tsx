@@ -37,8 +37,8 @@ import {
 	getGlassButtonStyles,
 	getGlassStyles,
 	getTopHighlightStyles,
-	glassmorphicTokens,
-} from "../../../ui/design-tokens/glassmorphic";
+	glassTokens,
+} from "../../../ui/design-tokens/glass";
 import { EmptyState } from "../../../ui/empty-state";
 import {
 	type Source,
@@ -155,9 +155,9 @@ function SourceSelect({
 					<div
 						className="absolute inset-0"
 						style={{
-							borderRadius: glassmorphicTokens.borders.radius.modal,
-							backdropFilter: glassmorphicTokens.effects.blur.medium,
-							background: glassmorphicTokens.colors.glass.background,
+							borderRadius: glassTokens.borders.radius.modal,
+							backdropFilter: glassTokens.effects.blur.medium,
+							background: glassTokens.colors.glass.background,
 						}}
 					/>
 					<div
@@ -167,8 +167,8 @@ function SourceSelect({
 					<div
 						className="absolute inset-0"
 						style={{
-							borderRadius: glassmorphicTokens.borders.radius.modal,
-							border: `1px solid ${glassmorphicTokens.colors.glass.border}`,
+							borderRadius: glassTokens.borders.radius.modal,
+							border: `1px solid ${glassTokens.colors.glass.border}`,
 						}}
 					/>
 					<ToggleGroup.Root
@@ -274,8 +274,8 @@ function SourceSelect({
 								}}
 								className={clsx(
 									"h-[32px] w-full flex items-center justify-center gap-[4px] text-[14px] px-4 py-2 cursor-pointer whitespace-nowrap",
-									glassmorphicTokens.transitions.default,
-									glassmorphicTokens.transitions.button,
+									glassTokens.transitions.default,
+									glassTokens.transitions.button,
 								)}
 								style={getGlassButtonStyles()}
 							>

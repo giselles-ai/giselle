@@ -12,7 +12,7 @@
 		"./empty-state": "./components/empty-state.tsx",
 		"./dialog": "./components/dialog.tsx",
 		"./button": "./components/button.tsx",
-		"./glassmorphic-button": "./components/glassmorphic-button.tsx",
+		"./glass-button": "./components/glass-button.tsx",
 		"./select": "./components/select.tsx",
 		"./note": "./components/note.tsx"
 	},
