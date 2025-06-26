@@ -127,13 +127,23 @@ export function FloatingPropertiesPanel({
 				{/* Resize handle */}
 				<div
 					className={clsx(
-						"absolute top-0 bottom-0 w-1 cursor-ew-resize hover:bg-primary-500 transition-colors",
+						"absolute top-0 bottom-0 w-[12px] cursor-ew-resize group",
 						position === "right" ? "left-0" : "right-0",
-						"bg-transparent hover:bg-opacity-50",
-						isResizing && "bg-primary-500 bg-opacity-50",
 					)}
 					onMouseDown={handleMouseDown}
-				/>
+				>
+					<div
+						className={clsx(
+							"my-[12px] flex h-full items-center justify-center",
+							"transition-colors duration-200",
+							isResizing
+								? "bg-[#4a90e2]/30"
+								: "bg-transparent group-hover:bg-[#4a90e2]/20",
+						)}
+					>
+						<div className="h-8 w-[3px] rounded-full bg-border" />
+					</div>
+				</div>
 
 				{/* Content */}
 				<div

@@ -40,7 +40,11 @@ export function PropertiesPanelHeader({
 			<div className={getHeaderClasses(sidemenu)}>
 				<div className={`flex ${PANEL_SPACING.HEADER.ICON_GAP} items-center`}>
 					<div
-						className={`w-[${PANEL_SPACING.HEADER.ICON_SIZE}] h-[${PANEL_SPACING.HEADER.ICON_SIZE}] bg-white-900 rounded-[4px] flex items-center justify-center`}
+						className="bg-white-900 rounded-[4px] flex items-center justify-center"
+						style={{
+							width: PANEL_SPACING.HEADER.ICON_SIZE,
+							height: PANEL_SPACING.HEADER.ICON_SIZE,
+						}}
 					>
 						{icon}
 					</div>
@@ -75,7 +79,11 @@ export function PropertiesPanelHeader({
 		<div className={getHeaderClasses(sidemenu)}>
 			<div className={`flex ${PANEL_SPACING.HEADER.ICON_GAP} items-center`}>
 				<div
-					className={`w-[${PANEL_SPACING.HEADER.ICON_SIZE}] h-[${PANEL_SPACING.HEADER.ICON_SIZE}] bg-white-900 rounded-[4px] flex items-center justify-center`}
+					className="bg-white-900 rounded-[4px] flex items-center justify-center"
+					style={{
+						width: PANEL_SPACING.HEADER.ICON_SIZE,
+						height: PANEL_SPACING.HEADER.ICON_SIZE,
+					}}
 				>
 					{icon}
 				</div>

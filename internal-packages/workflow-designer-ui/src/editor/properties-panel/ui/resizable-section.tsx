@@ -79,12 +79,12 @@ export function ResizableSectionHandle({
 				"transition-colors duration-100 ease-in-out",
 				isVertical
 					? [
-							"h-[1px] bg-border cursor-row-resize",
+							"h-[3px] bg-border cursor-row-resize",
 							"data-[resize-handle-state=hover]:bg-[#4a90e2]",
 							"data-[resize-handle-state=drag]:bg-[#4a90e2]",
 						]
 					: [
-							"w-[1px] bg-border cursor-col-resize",
+							"w-[3px] bg-border cursor-col-resize",
 							"data-[resize-handle-state=hover]:bg-[#4a90e2]",
 							"data-[resize-handle-state=drag]:bg-[#4a90e2]",
 						],
