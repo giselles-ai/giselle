@@ -407,37 +407,13 @@ export function Editor({
 			return;
 		}
 		if (selectedNodes.length === 1) {
-			expand.current = true;
-			rightPanelWidthMotionValue.set(50);
-			rightPanelRef.current.resize(50);
-		} else {
-			collapse.current = true;
-			rightPanelWidthMotionValue.set(0);
-			rightPanelRef.current.resize(0);
-		}
-	}, [selectedNodes.length, rightPanelWidthMotionValue]);
-
-	useAnimationFrame(() => {
-		if (!rightPanelRef.current) {
-			return;
-		}
-		const rightPanelWidth = rightPanelWidthMotionValue.get();
-		if (expand.current) {
-			rightPanelRef.current.resize(rightPanelWidth);
-			if (rightPanelWidth === 50) {
-				expand.current = false;
-				collapse.current = false;
+			// Only resize if panel is currently collapsed (size 0)
+			if (rightPanelRef.current.getSize() === 0) {
+				rightPanelRef.current.resize(25);
 			}
-		} else if (collapse.current) {
-			rightPanelRef.current.resize(rightPanelWidth);
-			if (rightPanelWidth === 0) {
-				expand.current = false;
-				collapse.current = false;
-			}
-		} else {
-			rightPanelWidthMotionValue.jump(rightPanelRef.current.getSize());
 		}
-	});
+		// Allow manual control - don't force collapse when no nodes selected
+	}, [selectedNodes.length]);
 
 	const [isTourOpen, setIsTourOpen] = useState(data.nodes.length === 0);
 
@@ -471,41 +447,39 @@ export function Editor({
 										direction="horizontal"
 										className="bg-black-900 h-full flex pr-[16px] py-[16px]"
 									>
-										<Panel defaultSize={10}>
+										<Panel defaultSize={15} minSize={10} maxSize={40}>
 											<SideMenu />
 										</Panel>
 
 										<PanelResizeHandle
 											className={clsx(
-												"group pt-[16px] pb-[32px] h-full pl-[3px]",
+												"w-[12px] my-[12px] flex items-center justify-center cursor-col-resize",
+												"data-[resize-handle-state=hover]:bg-[#4a90e2]/20 data-[resize-handle-state=drag]:bg-[#4a90e2]/30",
 											)}
 										>
-											<div className="w-[2px] h-full bg-transparent group-data-[resize-handle-state=hover]:bg-black-400 group-data-[resize-handle-state=drag]:bg-black-400 transition-colors" />
+											<div className="w-[3px] h-[32px] bg-border rounded-full" />
 										</PanelResizeHandle>
 										<Panel className="flex-1 border border-border rounded-[12px]">
 											<Tabs.Content value="builder" className="h-full">
 												<PanelGroup direction="horizontal">
-													<Panel>
+													<Panel minSize={20}>
 														<NodeCanvas />
 													</Panel>
 													<PanelResizeHandle
 														className={clsx(
-															"w-[1px] bg-border cursor-col-resize",
-															"data-[resize-handle-state=hover]:bg-[#4a90e2]",
-															"opacity-0 data-[right-panel=show]:opacity-100 transition-opacity",
+															"w-[12px] my-[12px] flex items-center justify-center cursor-col-resize",
+															"data-[resize-handle-state=hover]:bg-[#4a90e2]/20 data-[resize-handle-state=drag]:bg-[#4a90e2]/30",
 														)}
-														data-right-panel={
-															selectedNodes.length === 1 ? "show" : "hide"
-														}
-													/>
+													>
+														<div className="w-[3px] h-[32px] bg-border rounded-full" />
+													</PanelResizeHandle>
 													<Panel
 														id="right-panel"
 														className="flex bg-surface-background"
 														ref={rightPanelRef}
 														defaultSize={0}
-														data-right-panel={
-															selectedNodes.length === 1 ? "show" : "hide"
-														}
+														minSize={0}
+														maxSize={50}
 													>
 														{selectedNodes.length === 1 && (
 															<div className="flex-1 overflow-hidden">
@@ -572,6 +546,7 @@ export function Editor({
 								<Panel
 									className="flex-1 px-[16px] pb-[16px] pr-0"
 									defaultSize={100}
+									minSize={30}
 								>
 									<div className="h-full flex">
 										<NodeCanvas />
@@ -580,16 +555,19 @@ export function Editor({
 
 								<PanelResizeHandle
 									className={clsx(
-										"w-[12px] flex items-center justify-center cursor-col-resize",
-										"after:content-[''] after:w-[3px] after:h-[32px] after:bg-[#3a3f44] after:rounded-full",
-										"hover:after:bg-[#4a90e2]",
+										"w-[12px] my-[12px] flex items-center justify-center cursor-col-resize",
+										"data-[resize-handle-state=hover]:bg-[#4a90e2]/20 data-[resize-handle-state=drag]:bg-[#4a90e2]/30",
 									)}
-								/>
+								>
+									<div className="w-[3px] h-[32px] bg-border rounded-full" />
+								</PanelResizeHandle>
 								<Panel
 									id="right-panel"
 									className="flex py-[16px]"
 									ref={rightPanelRef}
 									defaultSize={0}
+									minSize={0}
+									maxSize={50}
 								>
 									{selectedNodes.length === 1 && (
 										<div className="flex-1 overflow-hidden">

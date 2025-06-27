@@ -152,7 +152,7 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 								</Tabs.Content>
 							</Tabs.Root>
 						</Panel>
-						<PanelResizeHandle className="h-[1px] bg-black-700/50 data-[resize-handle-state=drag]:bg-black-600 transition-colors duration-100 ease-in-out" />
+						<PanelResizeHandle className="h-[3px] bg-black-700/50 data-[resize-handle-state=drag]:bg-black-600 transition-colors duration-100 ease-in-out" />
 						<Panel defaultSize={50} minSize={20}>
 							<GenerationPanel node={node} onClickGenerateButton={generate} />
 						</Panel>

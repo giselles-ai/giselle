@@ -32,12 +32,14 @@ import { useToasts } from "../../../ui/toast";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { KeyboardShortcuts } from "../../components/keyboard-shortcuts";
 import {
+	COMMON_STYLES,
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
 	ResizableSection,
 	ResizableSectionGroup,
 	ResizableSectionHandle,
+	ResizeHandle,
 } from "../ui";
 import { GenerationPanel } from "./generation-panel";
 import { useConnectedOutputs } from "./outputs";
@@ -160,6 +162,35 @@ export function TextGenerationNodePropertiesPanel({
 
 			<PropertiesPanelContent>
 				{layoutV2 ? (
+					<PanelGroup direction="vertical" className="flex-1 flex flex-col">
+						<Panel>
+							<PropertiesPanelContent>
+								<TextGenerationTabContent
+									node={node}
+									uiState={uiState}
+									setUiNodeState={setUiNodeState}
+									updateNodeDataContent={updateNodeDataContent}
+									updateNodeData={updateNodeData}
+									data={data}
+									deleteConnection={deleteConnection}
+									githubTools={githubTools}
+									sidemenu={sidemenu}
+								/>
+							</PropertiesPanelContent>
+						</Panel>
+						<PanelResizeHandle className={COMMON_STYLES.panelResizeHandle}>
+							<ResizeHandle direction="vertical" />
+						</PanelResizeHandle>
+						<Panel>
+							<PropertiesPanelContent>
+								<GenerationPanel
+									node={node}
+									onClickGenerateButton={generateText}
+								/>
+							</PropertiesPanelContent>
+						</Panel>
+					</PanelGroup>
+				) : (
 					<ResizableSectionGroup>
 						<ResizableSection
 							title="Configuration"
@@ -190,33 +221,6 @@ export function TextGenerationNodePropertiesPanel({
 							</div>
 						</ResizableSection>
 					</ResizableSectionGroup>
-				) : (
-					<PanelGroup direction="vertical" className="flex-1 flex flex-col">
-						<Panel>
-							<PropertiesPanelContent>
-								<TextGenerationTabContent
-									node={node}
-									uiState={uiState}
-									setUiNodeState={setUiNodeState}
-									updateNodeDataContent={updateNodeDataContent}
-									updateNodeData={updateNodeData}
-									data={data}
-									deleteConnection={deleteConnection}
-									githubTools={githubTools}
-									sidemenu={sidemenu}
-								/>
-							</PropertiesPanelContent>
-						</Panel>
-						<ResizableSectionHandle />
-						<Panel>
-							<PropertiesPanelContent>
-								<GenerationPanel
-									node={node}
-									onClickGenerateButton={generateText}
-								/>
-							</PropertiesPanelContent>
-						</Panel>
-					</PanelGroup>
 				)}
 			</PropertiesPanelContent>
 			<KeyboardShortcuts

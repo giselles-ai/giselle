@@ -12,9 +12,11 @@ import { useToasts } from "../../../ui/toast";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { KeyboardShortcuts } from "../../components/keyboard-shortcuts";
 import {
+	COMMON_STYLES,
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
+	ResizeHandle,
 } from "../ui";
 import { GenerationPanel } from "./generation-panel";
 import { InputPanel } from "./input-panel";
@@ -177,13 +179,9 @@ export function ImageGenerationNodePropertiesPanel({
 						</Tabs.Root>
 					</PropertiesPanelContent>
 				</Panel>
-				<PanelResizeHandle
-					className={clsx(
-						"h-[12px] flex items-center justify-center cursor-row-resize",
-						"after:content-[''] after:h-[3px] after:w-[32px] after:bg-[#3a3f44] after:rounded-full",
-						"hover:after:bg-[#4a90e2]",
-					)}
-				/>
+				<PanelResizeHandle className={COMMON_STYLES.panelResizeHandle}>
+					<ResizeHandle direction="vertical" />
+				</PanelResizeHandle>
 				<Panel>
 					<PropertiesPanelContent>
 						<GenerationPanel node={node} onClickGenerateButton={generateText} />
