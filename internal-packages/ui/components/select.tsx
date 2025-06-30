@@ -2,6 +2,7 @@ import clsx from "clsx/lite";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import { Select as SelectPrimitive } from "radix-ui";
 import { Button } from "./button";
+import { PopoverContent } from "./popover";
 
 type Identifiable = {
 	id: string | number;
@@ -53,51 +54,33 @@ export function Select<T extends Identifiable>({
 				<SelectPrimitive.Content
 					position="popper"
 					sideOffset={4}
-					className={clsx("w-(--radix-select-trigger-width) z-70")}
+					className={clsx("w-(--radix-select-trigger-width) z-20")}
 				>
-					<div
-						className={clsx(
-							"rounded-[8px] p-[4px] relative overflow-hidden",
-							"shadow-xl focus:outline-none",
-						)}
-					>
-						{/* Glass effect layers */}
-						<div
-							className="absolute inset-0 rounded-[8px] backdrop-blur-md"
-							style={{
-								background:
-									"linear-gradient(135deg, rgba(150, 150, 150, 0.03) 0%, rgba(60, 90, 160, 0.12) 100%)",
-							}}
-						/>
-						<div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-						<div className="absolute inset-0 rounded-[8px] border border-white/10" />
-
-						<div className="relative z-10">
-							<SelectPrimitive.Viewport>
-								{options.map((option) => (
-									<SelectPrimitive.Item
-										key={option.id}
-										value={
-											renderValue ? `${renderValue(option)}` : `${option.id}`
-										}
-										className={clsx(
-											"text-white-400 outline-none cursor-pointer hover:bg-white/10",
-											"rounded-[4px] px-[8px] py-[6px] text-[14px]",
-											"flex items-center justify-between gap-[4px]",
-											"transition-colors duration-200",
-										)}
-									>
-										<SelectPrimitive.ItemText>
-											{renderOption(option)}
-										</SelectPrimitive.ItemText>
-										<SelectPrimitive.ItemIndicator>
-											<CheckIcon className="size-[13px] text-white-400" />
-										</SelectPrimitive.ItemIndicator>
-									</SelectPrimitive.Item>
-								))}
-							</SelectPrimitive.Viewport>
-						</div>
-					</div>
+					<PopoverContent>
+						<SelectPrimitive.Viewport>
+							{options.map((option) => (
+								<SelectPrimitive.Item
+									key={option.id}
+									value={
+										renderValue ? `${renderValue(option)}` : `${option.id}`
+									}
+									className={clsx(
+										"text-white-400 outline-none cursor-pointer hover:bg-white/10",
+										"rounded-[4px] px-[8px] py-[6px] text-[14px]",
+										"flex items-center justify-between gap-[4px]",
+										"transition-colors duration-200",
+									)}
+								>
+									<SelectPrimitive.ItemText>
+										{renderOption(option)}
+									</SelectPrimitive.ItemText>
+									<SelectPrimitive.ItemIndicator>
+										<CheckIcon className="size-[13px] text-white-400" />
+									</SelectPrimitive.ItemIndicator>
+								</SelectPrimitive.Item>
+							))}
+						</SelectPrimitive.Viewport>
+					</PopoverContent>
 				</SelectPrimitive.Content>
 			</SelectPrimitive.Portal>
 		</SelectPrimitive.Root>
