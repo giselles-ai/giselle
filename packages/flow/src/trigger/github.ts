@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import type { TriggerBase } from "../base";
 
 export const provider = "github" as const;

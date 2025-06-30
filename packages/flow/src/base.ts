@@ -1,11 +1,11 @@
-import type { z } from "zod";
+import type { ZodRawShape, z } from "zod/v4";
 
 export interface TriggerEvent {
 	id: string;
 	label: string;
 	description?: string;
-	payloads?: z.AnyZodObject;
-	conditions?: z.AnyZodObject;
+	payloads?: z.ZodObject<ZodRawShape>;
+	conditions?: z.ZodObject<ZodRawShape>;
 }
 export interface TriggerBase {
 	provider: string;
@@ -16,7 +16,7 @@ export interface ActionCommand {
 	id: string;
 	label: string;
 	description?: string;
-	parameters?: z.AnyZodObject;
+	parameters?: z.ZodObject<ZodRawShape>;
 }
 
 export interface ActionBase {

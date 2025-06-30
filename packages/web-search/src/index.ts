@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import { SelfMadeWebSearchProvider, selfMadeProviderName } from "./self-made";
 export { type WebSearchResult, webSearch } from "./web-search";
 export { scrapeUrl as selfMadeScrapeUrl } from "./self-made";

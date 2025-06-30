@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export const ViewState = z.enum(["editor", "viewer", "integrator"]);
 export type ViewState = z.infer<typeof ViewState>;

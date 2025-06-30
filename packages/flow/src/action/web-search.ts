@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import type { ActionBase } from "../base";
 
 export const provider = "web-search" as const;

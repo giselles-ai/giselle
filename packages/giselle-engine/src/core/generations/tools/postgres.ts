@@ -1,6 +1,6 @@
 import { tool } from "ai";
 import { Pool } from "pg";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export function createPostgresTools(connectionString: string) {
 	const pool = new Pool({ connectionString });

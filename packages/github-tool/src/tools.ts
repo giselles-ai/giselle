@@ -1,6 +1,6 @@
 import type { Octokit } from "@octokit/core";
 import { tool } from "ai";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export function githubTools(octokit: Octokit) {
 	return {
