@@ -53,9 +53,12 @@ async function processRepository(
 
 		await updateRepositoryStatusToCompleted(dbId, commit.sha);
 	} catch (error) {
-		console.error(`Failed to ingest ${owner}/${repo}:`, error);
+		console.error(
+			`Failed to ingest GitHub Repository: teamDbId=${teamDbId}, repository=${owner}/${repo}`,
+			error,
+		);
 		captureException(error, {
-			extra: { owner, repo },
+			extra: { owner, repo, teamDbId },
 		});
 		await updateRepositoryStatusToFailed(dbId);
 	}

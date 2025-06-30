@@ -1,5 +1,6 @@
 import type { Document, DocumentLoader } from "@giselle-sdk/rag";
 import type { Octokit } from "@octokit/core";
+import { RequestError } from "@octokit/request-error";
 
 type GitHubBlobMetadata = {
 	owner: string;
@@ -57,11 +58,7 @@ export function createGitHubBlobLoader(
 	): Promise<Document<GitHubBlobMetadata> | null> => {
 		const { path, fileSha } = metadata;
 
-		const blob = await loadBlob(
-			octokit,
-			{ owner, repo, path, fileSha },
-			commitSha,
-		);
+		const blob = await loadBlob(octokit, { owner, repo, path, fileSha });
 
 		if (blob === null) {
 			return null;
@@ -76,6 +73,58 @@ export function createGitHubBlobLoader(
 	return { loadMetadata, loadDocument };
 }
 
+/**
+ * Execute an Octokit request with retry logic for 5xx errors
+ */
+async function executeWithRetry<T>(
+	operation: () => Promise<T>,
+	resourceType: string,
+	resourcePath: string,
+	currentAttempt = 0,
+	maxAttempt = 3,
+): Promise<T> {
+	try {
+		return await operation();
+	} catch (error) {
+		if (error instanceof RequestError) {
+			// Handle 5xx errors with retry
+			if (error.status && error.status >= 500) {
+				if (currentAttempt >= maxAttempt) {
+					throw new Error(
+						`GitHub Server error: ${error.status} when fetching ${resourceType} ${resourcePath}`,
+					);
+				}
+				await new Promise((resolve) =>
+					setTimeout(resolve, 2 ** currentAttempt * 1000),
+				);
+				return executeWithRetry(
+					operation,
+					resourceType,
+					resourcePath,
+					currentAttempt + 1,
+					maxAttempt,
+				);
+			}
+
+			// Handle 404 errors with helpful message
+			if (error.status === 404) {
+				throw new Error(
+					`${resourceType} not found: ${resourcePath}. This may be due to insufficient permissions or the resource being private/deleted.`,
+				);
+			}
+
+			// Other 4xx errors (including rate limit: 403, 429)
+			if (error.status && error.status >= 400 && error.status < 500) {
+				throw new Error(
+					`GitHub API error ${error.status}: ${error.message} when fetching ${resourceType} ${resourcePath}`,
+				);
+			}
+		}
+		// Re-throw any other errors
+		throw error;
+	}
+}
+
 type GitHubLoadBlobParams = {
 	owner: string;
 	repo: string;
@@ -86,35 +135,22 @@ type GitHubLoadBlobParams = {
 async function loadBlob(
 	octokit: Octokit,
 	params: GitHubLoadBlobParams,
-	commitSha: string,
-	currentAttempt = 0,
-	maxAttempt = 3,
-) {
+): Promise<{ content: string; metadata: GitHubBlobMetadata } | null> {
 	const { owner, repo, path, fileSha } = params;
 
 	// Fetch blob from GitHub API
 	// Note: This endpoint supports blobs up to 100 megabytes in size.
 	// https://docs.github.com/en/rest/git/blobs#get-a-blob
-	const { data: blobData, status } = await octokit.request(
-		"GET /repos/{owner}/{repo}/git/blobs/{file_sha}",
-		{
-			owner,
-			repo,
-			file_sha: fileSha,
-		},
+	const { data: blobData } = await executeWithRetry(
+		() =>
+			octokit.request("GET /repos/{owner}/{repo}/git/blobs/{file_sha}", {
+				owner,
+				repo,
+				file_sha: fileSha,
+			}),
+		"Blob",
+		`${owner}/${repo}/${fileSha} at path ${path}`,
 	);
-
-	if (status >= 500) {
-		if (currentAttempt >= maxAttempt) {
-			throw new Error(
-				`Network error: ${status} when fetching ${owner}/${repo}/${fileSha}`,
-			);
-		}
-		await new Promise((resolve) =>
-			setTimeout(resolve, 2 ** currentAttempt * 100),
-		);
-		return loadBlob(octokit, params, commitSha, currentAttempt + 1, maxAttempt);
-	}
 
 	// Only support base64 encoded content
 	if (blobData.encoding !== "base64") {
@@ -151,15 +187,28 @@ async function* traverseTree(
 	owner: string,
 	repo: string,
 	treeSha: string,
-) {
-	const { data: treeData } = await octokit.request(
-		"GET /repos/{owner}/{repo}/git/trees/{tree_sha}",
-		{
-			owner,
-			repo,
-			tree_sha: treeSha,
-			recursive: "true",
-		},
+): AsyncGenerator<
+	{
+		path?: string;
+		mode?: string;
+		type?: string;
+		sha?: string;
+		size?: number;
+		url?: string;
+	},
+	void,
+	unknown
+> {
+	const { data: treeData } = await executeWithRetry(
+		() =>
+			octokit.request("GET /repos/{owner}/{repo}/git/trees/{tree_sha}", {
+				owner,
+				repo,
+				tree_sha: treeSha,
+				recursive: "true",
+			}),
+		"Tree",
+		`${owner}/${repo}/${treeSha}`,
 	);
 
 	if (treeData.truncated) {
@@ -186,21 +235,25 @@ export async function fetchDefaultBranchHead(
 	owner: string,
 	repo: string,
 ) {
-	const { data: repoData } = await octokit.request(
-		"GET /repos/{owner}/{repo}",
-		{
-			owner,
-			repo,
-		},
+	const { data: repoData } = await executeWithRetry(
+		() =>
+			octokit.request("GET /repos/{owner}/{repo}", {
+				owner,
+				repo,
+			}),
+		"Repository",
+		`${owner}/${repo}`,
 	);
 	const defaultBranch = repoData.default_branch;
-	const { data: branchData } = await octokit.request(
-		"GET /repos/{owner}/{repo}/branches/{branch}",
-		{
-			owner,
-			repo,
-			branch: defaultBranch,
-		},
+	const { data: branchData } = await executeWithRetry(
+		() =>
+			octokit.request("GET /repos/{owner}/{repo}/branches/{branch}", {
+				owner,
+				repo,
+				branch: defaultBranch,
+			}),
+		"Branch",
+		`${owner}/${repo}/${defaultBranch}`,
 	);
 	return branchData.commit;
 }
