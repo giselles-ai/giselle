@@ -139,7 +139,6 @@ export async function leaveTeam(
 	const formData = new FormData();
 	formData.set("userId", userId);
 	formData.set("role", role);
-	// FIXME: Current implementation requires current user to be an admin of the team. It's better to allow any user to leave the team.
 	const result = await deleteTeamMember(formData);
 
 	if (result.success) {
