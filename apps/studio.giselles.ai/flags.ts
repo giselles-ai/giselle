@@ -40,19 +40,6 @@ export const githubToolsFlag = flag<boolean>({
 	],
 });
 
-export const githubVectorStoreFlag = flag<boolean>({
-	key: "github-vector-store",
-	decide() {
-		return true;
-	},
-	description: "Enable GitHub Vector Store",
-	defaultValue: true,
-	options: [
-		{ value: false, label: "disable" },
-		{ value: true, label: "Enable" },
-	],
-});
-
 export const webSearchActionFlag = flag<boolean>({
 	key: "web-search-action",
 	decide() {

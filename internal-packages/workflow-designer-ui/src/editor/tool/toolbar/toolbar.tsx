@@ -93,11 +93,11 @@ export function Toolbar() {
 	const [selectedCategory, setSelectedCategory] = useState<string>("All");
 	const { llmProviders } = useWorkflowDesigner();
 	const limits = useUsageLimits();
-	const { githubVectorStore, webSearchAction } = useFeatureFlag();
+	const { webSearchAction } = useFeatureFlag();
 	const vectorStore = useVectorStore();
 	const canUseGithubVectorStore = useMemo(
-		() => !!vectorStore?.github && githubVectorStore,
-		[vectorStore, githubVectorStore],
+		() => !!vectorStore?.github,
+		[vectorStore],
 	);
 
 	const modelsFilteredBySearchOnly = languageModels

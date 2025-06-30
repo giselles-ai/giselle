@@ -2,7 +2,6 @@ import { getGitHubVectorStores } from "@/app/services/vector-store";
 import { db } from "@/drizzle";
 import {
 	githubToolsFlag,
-	githubVectorStoreFlag,
 	layoutV2Flag,
 	runV3Flag,
 	sidemenuFlag,
@@ -41,7 +40,6 @@ export default async function Layout({
 		return notFound();
 	}
 	const usageLimits = await getUsageLimitsForTeam(currentTeam);
-	const githubVectorStore = await githubVectorStoreFlag();
 	const gitHubVectorStores = await getGitHubVectorStores(currentTeam.dbId);
 	const runV3 = await runV3Flag();
 	const sidemenu = await sidemenuFlag();
@@ -74,7 +72,6 @@ export default async function Layout({
 				},
 			}}
 			featureFlag={{
-				githubVectorStore,
 				runV3,
 				sidemenu,
 				githubTools,

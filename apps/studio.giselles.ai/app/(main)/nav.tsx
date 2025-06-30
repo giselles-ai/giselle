@@ -14,12 +14,7 @@ const menuItems = [
 	{ name: "Team Settings", path: "/settings/team" },
 ];
 
-// receive githubVectorStoreFlag as props
-interface NavProps {
-	githubVectorStoreFlag: boolean;
-}
-
-export const Nav: FC<NavProps> = ({ githubVectorStoreFlag }) => {
+export const Nav: FC = () => {
 	const pathname = usePathname();
 
 	// hide nav on settings/account page
@@ -27,16 +22,11 @@ export const Nav: FC<NavProps> = ({ githubVectorStoreFlag }) => {
 		return null;
 	}
 
-	// remove Vector Store link
-	const filteredMenuItems = githubVectorStoreFlag
-		? menuItems
-		: menuItems.filter((item) => item.name !== "Vector Stores");
-
 	// find the best match path
 	let bestMatchPath = "";
 	let bestMatchIndex = -1;
 
-	filteredMenuItems.forEach((item, index) => {
+	menuItems.forEach((item, index) => {
 		if (
 			pathname.startsWith(item.path) &&
 			item.path.length > bestMatchPath.length
@@ -49,7 +39,7 @@ export const Nav: FC<NavProps> = ({ githubVectorStoreFlag }) => {
 	return (
 		<div className="flex items-center px-[24px] py-0 border-t border-black-900/50">
 			<div className="flex items-center space-x-[12px]">
-				{filteredMenuItems.map((item, index) => {
+				{menuItems.map((item, index) => {
 					const isActive = index === bestMatchIndex;
 					return (
 						<Link

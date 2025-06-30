@@ -1,7 +1,6 @@
 import { createContext, useContext } from "react";
 
 export interface FeatureFlagContextValue {
-	githubVectorStore: boolean;
 	runV3: boolean;
 	sidemenu: boolean;
 	githubTools: boolean;

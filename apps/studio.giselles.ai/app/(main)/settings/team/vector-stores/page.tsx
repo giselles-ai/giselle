@@ -1,21 +1,14 @@
 import { Card } from "@/components/ui/card";
 import { db, githubRepositoryIndex } from "@/drizzle";
-import { githubVectorStoreFlag } from "@/flags";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 import { desc, eq } from "drizzle-orm";
 import { AlertCircle, ExternalLink } from "lucide-react";
-import { notFound } from "next/navigation";
 import { deleteRepositoryIndex, registerRepositoryIndex } from "./actions";
 import { RepositoryItem } from "./repository-item";
 import { RepositoryRegistrationDialog } from "./repository-registration-dialog";
 
 export default async function TeamVectorStorePage() {
-	const vectorStoreFlag = await githubVectorStoreFlag();
-	if (!vectorStoreFlag) {
-		return notFound();
-	}
-
 	const githubIdentityState = await getGitHubIdentityState();
 	if (
 		githubIdentityState.status === "unauthorized" ||

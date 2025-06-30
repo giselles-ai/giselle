@@ -1,13 +1,11 @@
 import { GiselleLogo } from "@/components/giselle-logo";
-import { githubVectorStoreFlag } from "@/flags";
 import { UserButton } from "@/services/accounts/components";
 import { TeamSelection } from "@/services/teams/components/team-selection";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Nav } from "./nav";
 
-export default async function Layout({ children }: { children: ReactNode }) {
-	const githubVectorStore = await githubVectorStoreFlag();
+export default function Layout({ children }: { children: ReactNode }) {
 	return (
 		<div className="h-screen overflow-y-hidden bg-black-900 flex flex-col">
 			<header className="flex flex-col">
@@ -33,7 +31,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
 					</div>
 				</div>
 
-				<Nav githubVectorStoreFlag={githubVectorStore} />
+				<Nav />
 
 				{/* Border line below navigation */}
 				<div className="h-[1px] w-full bg-black-70/50" />
