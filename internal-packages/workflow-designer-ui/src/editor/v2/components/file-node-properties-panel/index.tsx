@@ -1,11 +1,11 @@
 import type { FileCategory, FileNode } from "@giselle-sdk/data-type";
 import { useFeatureFlag, useWorkflowDesigner } from "giselle-sdk/react";
-import { FileNodeIcon } from "../../../icons/node";
+import { FileNodeIcon } from "../../../../icons/node";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
-} from "../ui";
+} from "../../../properties-panel/ui";
 import { FilePanel } from "./file-panel";
 import type { FileTypeConfig } from "./file-panel-type";
 
@@ -27,7 +27,18 @@ const fileType: Record<FileCategory, FileTypeConfig> = {
 
 export function FileNodePropertiesPanel({ node }: { node: FileNode }) {
 	const { updateNodeData } = useWorkflowDesigner();
-	const { layoutV2 } = useFeatureFlag();
+	const { layoutV2, sidemenu } = useFeatureFlag();
+
+	const getFilePanelContent = () => {
+		if (layoutV2) {
+			return (
+				<div className={sidemenu ? "p-4" : "pl-0 pr-4 py-4"}>
+					<FilePanel node={node} config={fileType[node.content.category]} />
+				</div>
+			);
+		}
+		return <FilePanel node={node} config={fileType[node.content.category]} />;
+	};
 
 	return (
 		<PropertiesPanelRoot>
@@ -40,9 +51,7 @@ export function FileNodePropertiesPanel({ node }: { node: FileNode }) {
 					updateNodeData(node, { name });
 				}}
 			/>
-			<PropertiesPanelContent>
-				<FilePanel node={node} config={fileType[node.content.category]} />
-			</PropertiesPanelContent>
+			<PropertiesPanelContent>{getFilePanelContent()}</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);
 }

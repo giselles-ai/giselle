@@ -159,7 +159,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 								id="param-name"
 								name="name"
 								type="text"
-								placeholder="e.g., Title, Message, Priority"
+								placeholder="Write the parameter name"
 								className={clsx(
 									"w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
 									"border-[1px] border-white-900",

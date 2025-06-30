@@ -1,13 +1,14 @@
 import type { FileData, FileNode } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
+import { useFeatureFlag } from "giselle-sdk/react";
 import { ArrowUpFromLineIcon, FileXIcon, TrashIcon } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { toRelativeTime } from "../../../helper/datetime";
-import { TriangleAlert } from "../../../icons";
-import { FileNodeIcon } from "../../../icons/node";
-import { useToasts } from "../../../ui/toast";
-import { RemoveButton } from "../ui";
+import { toRelativeTime } from "../../../../helper/datetime";
+import { TriangleAlert } from "../../../../icons";
+import { FileNodeIcon } from "../../../../icons/node";
+import { useToasts } from "../../../../ui/toast";
+import { RemoveButton } from "../../../properties-panel/ui";
 import type { FilePanelProps } from "./file-panel-type";
 import { useFileNode } from "./use-file-node";
 
@@ -245,14 +246,39 @@ export function FilePanel({ node, config }: FilePanelProps) {
 		}
 	}, [handlePaste, node.content.category]);
 
+	const { sidemenu } = useFeatureFlag();
+
+	const getContentClasses = () => {
+		if (sidemenu) {
+			return "px-[16px]";
+		}
+		return "pl-0 pr-[16px]";
+	};
+
 	return (
 		<div
 			ref={panelRef}
 			className="relative z-10 flex flex-col gap-[2px] h-full text-[14px] text-black-300 outline-none"
 			tabIndex={-1}
 		>
-			<div>
-				<div>
+			<div className={getContentClasses()}>
+				{node.content.files.length > 0 && (
+					<div className="pb-[16px]">
+						<h3 className="text-[14px] font-semibold text-white-800 mb-[8px]">
+							Added Files
+						</h3>
+						<div className="flex flex-col gap-[8px]">
+							{node.content.files.map((file) => (
+								<FileListItem
+									key={file.id}
+									fileData={file}
+									onRemove={removeFile}
+								/>
+							))}
+						</div>
+					</div>
+				)}
+				<div className="py-[16px]">
 					<div
 						className={clsx(
 							"group h-[300px] p-[8px]",
@@ -267,7 +293,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 					>
 						<div
 							className={clsx(
-								"h-full flex flex-col justify-center items-center gap-[16px] px-[24px] py-[16px]",
+								"h-full flex flex-col justify-center items-center gap-[16px] px-[24px] py-[10px]",
 								"border border-dotted rounded-[8px] border-transparent",
 								"group-data-[dragging=true]:border-black-400",
 								"group-data-[dragging=true]:group-data-[valid=false]:border-error-900",
@@ -334,22 +360,6 @@ export function FilePanel({ node, config }: FilePanelProps) {
 						</div>
 					</div>
 				</div>
-				{node.content.files.length > 0 && (
-					<div className="mt-[24px]">
-						<h3 className="text-[14px] font-semibold text-white-800 mb-[8px]">
-							Added Files
-						</h3>
-						<div className="flex flex-col gap-[8px]">
-							{node.content.files.map((file) => (
-								<FileListItem
-									key={file.id}
-									fileData={file}
-									onRemove={removeFile}
-								/>
-							))}
-						</div>
-					</div>
-				)}
 			</div>
 		</div>
 	);
@@ -363,52 +373,62 @@ function FileListItem({
 	onRemove: (file: FileData) => void;
 }) {
 	return (
-		<div className="flex items-center justify-between hover:bg-black-50/50 transition-colors rounded-[8px] group">
-			<div className="flex items-center gap-[12px] flex-1 min-w-0">
-				<svg
-					width="16"
-					height="16"
-					viewBox="0 0 24 24"
-					fill="none"
-					className="text-white-400 shrink-0"
-					role="img"
-					aria-label="File icon"
-				>
-					<path
-						d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-						stroke="currentColor"
-						strokeWidth="2"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-					/>
-					<polyline
-						points="14,2 14,8 20,8"
-						stroke="currentColor"
-						strokeWidth="2"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-					/>
-				</svg>
-				<div className="min-w-0 flex-1">
-					<p className="text-[14px] text-white-800 truncate font-medium">
-						{fileData.name}
-					</p>
-					{fileData.status === "uploading" && (
-						<p className="text-[12px] text-black-400">Uploading...</p>
+		<div className="flex items-center overflow-x-hidden group justify-between bg-black-100 hover:bg-white-900/10 transition-colors p-[8px] rounded-[8px]">
+			<div className="flex items-center overflow-x-hidden">
+				<div className="overflow-x-hidden">
+					<p className="truncate">{fileData.name}</p>
+					{fileData.status === "uploading" && <p>Uploading...</p>}
+					{fileData.status === "uploaded" && (
+						<p className="text-black-50">
+							{toRelativeTime(fileData.uploadedAt)}
+						</p>
 					)}
-					{fileData.status === "failed" && (
-						<p className="text-[12px] text-error-900">Upload failed</p>
-					)}
+					{fileData.status === "failed" && <p>Failed</p>}
 				</div>
 			</div>
 
-			<button
-				type="button"
-				onClick={() => onRemove(fileData)}
-				className="w-[32px] h-[32px] rounded-[6px] flex items-center justify-center hover:bg-black-100 transition-colors opacity-0 group-hover:opacity-100 shrink-0"
-			>
-				<TrashIcon size={16} className="text-black-400 hover:text-white-800" />
-			</button>
+			{fileData.status === "failed" ? (
+				<RemoveButton onClick={() => onRemove(fileData)} />
+			) : (
+				<Dialog.Root>
+					<Dialog.Trigger asChild>
+						<RemoveButton />
+					</Dialog.Trigger>
+					<Dialog.Portal>
+						<Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-50" />
+						<Dialog.Content className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[400px] bg-black-900 rounded-[12px] p-[24px] shadow-xl z-50 border border-black-400">
+							<Dialog.Title className="text-[18px] font-semibold text-white-800 mb-4">
+								Confirm Removal
+							</Dialog.Title>
+							<Dialog.Description className="text-[14px] text-white-400 mb-6">
+								Are you sure you want to remove this file?
+							</Dialog.Description>
+							<div className="flex justify-end gap-[12px]">
+								<Dialog.Close asChild>
+									<button
+										type="button"
+										className="py-[8px] px-[16px] rounded-[8px] text-[14px] font-medium bg-transparent text-white-800 border border-black-400 hover:bg-white-900/10"
+									>
+										Cancel
+									</button>
+								</Dialog.Close>
+								<button
+									type="button"
+									className="py-[8px] px-[16px] rounded-[8px] text-[14px] font-medium bg-error-900 text-white-800 hover:bg-error-900/80"
+									onClick={() => onRemove(fileData)}
+								>
+									Remove
+								</button>
+							</div>
+							<Dialog.Close
+								className="hidden"
+								tabIndex={-1}
+								aria-hidden="true"
+							/>
+						</Dialog.Content>
+					</Dialog.Portal>
+				</Dialog.Root>
+			)}
 		</div>
 	);
 }
