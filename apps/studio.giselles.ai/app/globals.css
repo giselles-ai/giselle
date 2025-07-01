@@ -1,40 +1,215 @@
 @import "tailwindcss";
-@import "../../../internal-packages/ui/style.css";
 @import "../../../internal-packages/workflow-designer-ui/src/app/globals.css";
 
 @source "../../../internal-packages/ui";
 @source "../../../internal-packages/workflow-designer-ui/src";
 @source "../../../packages/text-editor/src/react/";
 
+@config '../tailwind.config.ts';
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--color-gray-200, currentColor);
+	}
+}
+
+@layer base {
+	:root {
+		--background: 0 0% 100%;
+		--foreground: 240 10% 3.9%;
+
+		--card: 0 0% 100%;
+		--card-foreground: 240 10% 3.9%;
+
+		--popover: 0 0% 100%;
+		--popover-foreground: 240 10% 3.9%;
+
+		--primary: 240 5.9% 10%;
+		--primary-foreground: 0 0% 98%;
+
+		--secondary: 240 4.8% 95.9%;
+		--secondary-foreground: 240 5.9% 10%;
+
+		--muted: 240 4.8% 95.9%;
+		--muted-foreground: 240 3.8% 46.1%;
+
+		--accent: 240 4.8% 95.9%;
+		--accent-foreground: 240 5.9% 10%;
+
+		--destructive: 0 84.2% 60.2%;
+		--destructive-foreground: 0 0% 98%;
+
+		--border: 240 5.9% 90%;
+		--input: 240 5.9% 90%;
+		--ring: 240 10% 3.9%;
+
+		--radius: 0.5rem;
+
+		--rosepine_base: 246 24% 17%;
+		--rosepine_surface: 248 24% 20%;
+		--rosepine_overlay: 248 21% 26%;
+		--rosepine_muted: 249 12% 47%;
+		--rosepine_subtle: 248 15% 61%;
+		--rosepine_text: 245 50% 91%;
+		--rosepine_love: 343 76% 68%;
+		--rosepine_gold: 35 88% 72%;
+		--rosepine_rose: 2 66% 75%;
+		--rosepine_pine: 197 48% 47%;
+		--rosepine_foam: 189 43% 73%;
+		--rosepine_iris: 267 57% 78%;
+		--rosepine_highlightLow: 245 22% 20%;
+		--rosepine_highlightMed: 247 16% 30%;
+		--rosepine_highlightHigh: 249 15% 38%;
+
+		--white-300: #97a2be;
+	}
+
+	.dark {
+		--background: 240 10% 3.9%;
+		--foreground: 0 0% 98%;
+
+		--card: 240 10% 3.9%;
+		--card-foreground: 0 0% 98%;
+
+		--popover: 240 10% 3.9%;
+		--popover-foreground: 0 0% 98%;
+
+		--primary: 0 0% 98%;
+		--primary-foreground: 240 5.9% 10%;
+		--primary_900: 219, 90%, 52%;
+		--primary_400: 224, 82%, 68%;
+		--primary_200: 212, 79%, 87%;
+		--primary_100: 192, 73%, 84%;
+
+		--secondary: 240 3.7% 15.9%;
+		--secondary-foreground: 0 0% 98%;
+
+		--muted: 240 3.7% 15.9%;
+		--muted-foreground: 240 5% 64.9%;
+
+		--accent: 240 3.7% 15.9%;
+		--accent-foreground: 0 0% 98%;
+
+		--destructive: 0 62.8% 30.6%;
+		--destructive-foreground: 0 0% 98%;
+
+		--error_900: 344, 100%, 62%;
+
+		--warning_900: 51, 100%, 66%;
+
+		--border: 240 3.7% 15.9%;
+		--input: 240 3.7% 15.9%;
+		--ring: 240 4.9% 83.9%;
+
+		--black_900: 229, 100%, 2%;
+		--black_850: 231, 62%, 6%;
+		--black_820: 207, 27%, 15%;
+		--black_800: 231, 47%, 22%;
+		--black_600: 222, 17%, 53%;
+		--black_400: 222, 21%, 40%;
+		--black_350: 207, 11%, 47%;
+		--black_300: 222, 21%, 50%;
+		--black_250: 222, 57%, 73%;
+		--black_100: 234 91% 5%;
+		--black_80: 218 58% 21%;
+		--black_70: 222 21% 40%;
+		--black_50: 222 21% 40%;
+		--black_40: 207 12% 57%;
+		--black_30: 207 19% 77%;
+		--black_-30: 192 73% 84%;
+		--black_-50: 210 58% 71%;
+		--black_-70: 202 52% 46%;
+
+		--green: 142 100% 68%;
+
+		--white: 30 100% 98%;
+		--white_900: 220, 60%, 98%;
+		--white_850: 0, 0%, 96%;
+		--white_800: 207, 43%, 91%;
+		--white_400: 207, 16%, 75%;
+		--white_350: 207, 19%, 77%;
+		--white_300: 220, 24%, 67%;
+		--white_30: 0, 0%, 100%;
+
+		--red_900: 344, 100%, 62%;
+		--red_50: 359 100% 66%;
+
+		--blue_80: 224, 82%, 68%;
+	}
+}
+
+@layer base {
+	.mask-fill {
+		-webkit-mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0); /* Two mask layers */
+		-webkit-mask-clip: padding-box, border-box; /* Drawing area range for each layer */
+		-webkit-mask-composite: destination-out; /* Draw areas where layers do not overlap */
+	}
+}
+
+.giselle-flow .react-flow__pane.selection {
+	cursor: default;
+}
+.giselle-flow[data-floating-node="true"] .react-flow__pane.selection {
+	cursor: crosshair;
+}
+.giselle-flow .react-flow__node.selectable {
+	cursor: default;
+}
+.giselle-flow .react-flow__node.draggable.dragging {
+	cursor: default;
+}
+.giselle-flow .react-flow__edge.selectable {
+	cursor: default;
+}
+
+.prose-giselle {
+	--tw-prose-body: var(--black_30);
+	--tw-prose-headings: var(--black_30);
+	--tw-prose-lead: var(--black_30);
+	--tw-prose-links: var(--black_30);
+	--tw-prose-bold: var(--black_30);
+	--tw-prose-counters: var(--black_30);
+	--tw-prose-bullets: var(--black_30);
+	--tw-prose-hr: var(--black_30);
+	--tw-prose-quotes: var(--black_30);
+	--tw-prose-quote-borders: var(--black_30);
+	--tw-prose-captions: var(--black_30);
+	--tw-prose-code: var(--black_30);
+	--tw-prose-pre-code: var(--black_30);
+	--tw-prose-pre-bg: var(--black_80);
+	--tw-prose-th-borders: var(--black_30);
+	--tw-prose-td-borders: var(--black_30);
+}
+
 @theme {
 	--color-black-950: hsl(0, 0%, 0%);
 	--color-black-900: hsl(229, 100%, 2%);
 	--color-black-850: hsl(231, 62%, 6%);
-	--color-black-820: hsl(207, 27%, 15%);
 	--color-black-800: hsl(231, 47%, 22%);
-	--color-black-600: hsl(222, 17%, 53%);
+	--color-black-750: hsl(227, 30%, 12%);
 	--color-black-400: hsl(222, 21%, 40%);
-	--color-black-350: hsl(207, 11%, 47%);
 	--color-black-300: hsl(222, 21%, 50%);
-	--color-black-250: hsl(222, 57%, 73%);
-	--color-black-100: hsl(234, 91%, 5%);
-	--color-black-80: hsl(218, 58%, 21%);
-	--color-black-70: hsl(222, 21%, 40%);
-	--color-black-50: hsl(222, 21%, 40%);
-	--color-black-40: hsl(207, 12%, 57%);
-	--color-black-30: hsl(207, 19%, 77%);
-	--color-black--30: hsl(192, 73%, 84%);
-	--color-black--50: hsl(210, 58%, 71%);
-	--color-black--70: hsl(202, 52%, 46%);
+	--color-black-200: hsl(209, 17%, 75%);
+	--color-black: hsl(229 100% 2%);
 
 	--color-white-950: hsl(0 0% 100%);
 	--color-white-900: hsl(220, 60%, 98%);
 	--color-white-850: hsl(0, 0%, 96%);
 	--color-white-800: hsl(207, 43%, 91%);
 	--color-white-400: hsl(207, 16%, 75%);
-	--color-white-350: hsl(207, 19%, 77%);
-	--color-white-300: hsl(220, 24%, 67%);
-	--color-white-30: hsl(0, 0%, 100%);
 
 	--color-blue-950: hsl(219, 90%, 52%);
 	--color-blue-900: hsl(219, 90%, 52%);
@@ -287,5 +462,75 @@
 		pre code::after {
 			content: none;
 		}
+	}
+
+	/* Auth Container Styles */
+	.auth-glass-container {
+		/* Moved to Tailwind utilities inside AuthContainer component */
+	}
+
+	.auth-gradient-border {
+		@apply absolute inset-0 rounded-2xl pointer-events-none;
+		background: linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.4),
+			rgba(255, 255, 255, 0.1)
+		);
+		mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+		mask-composite: xor;
+		-webkit-mask: linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		-webkit-mask-composite: xor;
+		padding: 1px;
+	}
+
+	.auth-corner-dot {
+		@apply absolute w-1 h-1 rounded-full;
+		background-color: hsl(192, 73%, 84%);
+		box-shadow: 0 0 16px hsla(192, 73%, 84%, 0.6);
+	}
+
+	.auth-corner-dot--top-left {
+		@apply top-4 left-4;
+	}
+
+	.auth-corner-dot--top-right {
+		@apply top-4 right-4;
+	}
+
+	.auth-corner-dot--bottom-left {
+		@apply bottom-4 left-4;
+	}
+
+	.auth-corner-dot--bottom-right {
+		@apply bottom-4 right-4;
+	}
+
+	.auth-container-header {
+		@apply text-center mb-[50px];
+	}
+
+	.auth-container-title {
+		@apply text-[20px] font-[500] text-gray-200 font-sans mb-4;
+	}
+
+	.auth-container-description {
+		@apply text-[14px] font-sans text-black-200;
+	}
+
+	.auth-form-section {
+		@apply mb-6;
+	}
+
+	.auth-legal-section {
+		@apply text-center mb-8;
+	}
+
+	.auth-action-section {
+		@apply text-center mb-7.5;
+	}
+
+	.auth-divider-section {
+		@apply py-2;
 	}
 }
