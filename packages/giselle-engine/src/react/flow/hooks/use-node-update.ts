@@ -1,16 +1,12 @@
-import type { NodeBase, Workspace } from "@giselle-sdk/data-type";
+import type { NodeBase } from "@giselle-sdk/data-type";
 import { useCallback } from "react";
+import type { WorkspaceAction } from "./use-workspace-reducer";
 
-export function useNodeUpdate(
-	setWorkspace: React.Dispatch<React.SetStateAction<Workspace>>,
-) {
+export function useNodeUpdate(dispatch: React.Dispatch<WorkspaceAction>) {
 	return useCallback(
 		<T extends NodeBase>(node: T, data: Partial<T>) => {
-			setWorkspace((ws) => ({
-				...ws,
-				nodes: ws.nodes.map((n) => (n.id === node.id ? { ...n, ...data } : n)),
-			}));
+			dispatch({ type: "UPDATE_NODE", nodeId: node.id, data });
 		},
-		[setWorkspace],
+		[dispatch],
 	);
 }

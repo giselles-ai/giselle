@@ -4,15 +4,16 @@ import { nodeFactories } from "../../../utils";
 import type { ConnectionCloneStrategy } from "../types";
 import { isSupportedConnection } from "../utils";
 import { useAddConnection } from "./use-connection";
+import type { WorkspaceAction } from "./use-workspace-reducer";
 
 const DEFAULT_CONNECTION_CLONE_STRATEGY: ConnectionCloneStrategy =
 	"inputs-only";
 
 export function useCopyNode(
 	workspace: Workspace,
-	setWorkspace: React.Dispatch<React.SetStateAction<Workspace>>,
+	dispatch: React.Dispatch<WorkspaceAction>,
 ) {
-	const addConnection = useAddConnection(setWorkspace);
+	const addConnection = useAddConnection(dispatch);
 	return useCallback(
 		(
 			sourceNode: Node,
@@ -23,13 +24,7 @@ export function useCopyNode(
 		): Node | undefined => {
 			const { newNode, inputIdMap, outputIdMap } =
 				nodeFactories.clone(sourceNode);
-			setWorkspace((ws) => {
-				const ui = { ...ws.ui, nodeState: { ...ws.ui.nodeState } };
-				if (options?.ui) {
-					ui.nodeState[newNode.id] = options.ui;
-				}
-				return { ...ws, nodes: [...ws.nodes, newNode], ui };
-			});
+			dispatch({ type: "ADD_NODE", node: newNode, ui: options?.ui });
 			const strategy =
 				options?.connectionCloneStrategy ?? DEFAULT_CONNECTION_CLONE_STRATEGY;
 			for (const originalConnection of workspace.connections) {
@@ -95,6 +90,6 @@ export function useCopyNode(
 			}
 			return newNode;
 		},
-		[workspace, setWorkspace, addConnection],
+		[workspace, dispatch, addConnection],
 	);
 }

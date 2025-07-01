@@ -4,3 +4,4 @@ export * from "./use-connection";
 export * from "./use-node-update";
 export * from "./use-properties-panel";
 export * from "./use-workflow-designer";
+export * from "./use-workspace-reducer";
