@@ -14,7 +14,7 @@ import {
 	createUploadingFileData,
 } from "@giselle-sdk/data-type";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
-import { createContext, useCallback, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import { APICallError } from "../errors";
 import { useGiselleEngine } from "../use-giselle-engine";
 
@@ -24,6 +24,7 @@ import {
 	useCopyNode,
 	useNodeUpdate,
 	usePropertiesPanel,
+	useWorkspaceReducer,
 } from "./hooks";
 import type { WorkflowDesignerContextValue } from "./types";
 import { isSupportedConnection } from "./utils";
@@ -33,8 +34,6 @@ const DEFAULT_SAVE_DELAY = 1000;
 export const WorkflowDesignerContext = createContext<
 	WorkflowDesignerContextValue | undefined
 >(undefined);
-
-type Timer = ReturnType<typeof setTimeout>;
 
 export function WorkflowDesignerProvider({
 	children,
@@ -50,15 +49,24 @@ export function WorkflowDesignerProvider({
 	saveWorkflowDelay?: number;
 }) {
 	const client = useGiselleEngine();
-	const [workspace, setWorkspace] = useState(data);
-	const persistTimeoutRef = useRef<Timer | null>(null);
+	const { workspace, dispatch } = useWorkspaceReducer(
+		data,
+		async (ws) => {
+			try {
+				await client.updateWorkspace({ workspace: ws });
+			} catch (error) {
+				console.error("Failed to persist graph:", error);
+			}
+		},
+		saveWorkflowDelay,
+	);
 	const [isLoading, setIsLoading] = useState(true);
 	const [llmProviders, setLLMProviders] = useState<LanguageModelProvider[]>([]);
 
-	const addNode = useAddNode(setWorkspace);
-	const addConnection = useAddConnection(setWorkspace);
-	const updateNodeData = useNodeUpdate(setWorkspace);
-	const copyNode = useCopyNode(workspace, setWorkspace);
+	const addNode = useAddNode(dispatch);
+	const addConnection = useAddConnection(dispatch);
+	const updateNodeData = useNodeUpdate(dispatch);
+	const copyNode = useCopyNode(workspace, dispatch);
 
 	useEffect(() => {
 		client
@@ -67,96 +75,49 @@ export function WorkflowDesignerProvider({
 			.then(() => setIsLoading(false));
 	}, [client]);
 
-	const saveWorkspace = useCallback(async () => {
-		try {
-			await client.updateWorkspace({ workspace });
-		} catch (error) {
-			console.error("Failed to persist graph:", error);
-		}
-	}, [client, workspace]);
-
-	const scheduleSave = useCallback(
-		(delay?: number) => {
-			if (persistTimeoutRef.current) {
-				clearTimeout(persistTimeoutRef.current);
-			}
-			if (delay === 0) {
-				void saveWorkspace();
-				return;
-			}
-			persistTimeoutRef.current = setTimeout(
-				saveWorkspace,
-				delay ?? saveWorkflowDelay,
-			);
-		},
-		[saveWorkspace, saveWorkflowDelay],
-	);
-
 	const setUiNodeState = useCallback(
 		(
 			nodeId: string | NodeId,
 			ui: Partial<NodeUIState>,
 			options?: { save?: boolean },
 		) => {
-			setWorkspace((ws) => {
-				const id = NodeId.parse(nodeId);
-				const nodeState = ws.ui.nodeState[id] ?? {};
-				return {
-					...ws,
-					ui: {
-						...ws.ui,
-						nodeState: {
-							...ws.ui.nodeState,
-							[id]: { ...nodeState, ...ui },
-						},
-					},
-				};
+			dispatch({
+				type: "SET_UI_NODE_STATE",
+				nodeId: NodeId.parse(nodeId),
+				ui,
+				save: options?.save,
+				skipSave: !options?.save,
 			});
-			if (options?.save) {
-				scheduleSave();
-			}
 		},
-		[scheduleSave],
+		[dispatch],
 	);
 
 	const setUiViewport = useCallback(
 		(viewport: Viewport) => {
-			setWorkspace((ws) => ({ ...ws, ui: { ...ws.ui, viewport } }));
-			scheduleSave();
+			dispatch({ type: "SET_UI_VIEWPORT", viewport });
 		},
-		[scheduleSave],
+		[dispatch],
 	);
 
 	const updateName = useCallback(
 		(newName: string | undefined) => {
-			setWorkspace((ws) => ({ ...ws, name: newName }));
-			scheduleSave();
+			dispatch({ type: "UPDATE_WORKSPACE_NAME", name: newName });
 		},
-		[scheduleSave],
+		[dispatch],
 	);
 
 	const deleteNode = useCallback(
-		async (nodeId: NodeId | string) => {
-			setWorkspace((ws) => {
-				const id = NodeId.parse(nodeId);
-				const ui = { ...ws.ui };
-				delete ui.nodeState[id];
-				return { ...ws, ui, nodes: ws.nodes.filter((n) => n.id !== id) };
-			});
-			scheduleSave();
+		(nodeId: NodeId | string) => {
+			dispatch({ type: "DELETE_NODE", nodeId: NodeId.parse(nodeId) });
 		},
-		[scheduleSave],
+		[dispatch],
 	);
 
 	const deleteConnection = useCallback(
 		(connectionId: ConnectionId) => {
-			setWorkspace((ws) => ({
-				...ws,
-				connections: ws.connections.filter((c) => c.id !== connectionId),
-			}));
-			scheduleSave();
+			dispatch({ type: "DELETE_CONNECTION", connectionId });
 		},
-		[scheduleSave],
+		[dispatch],
 	);
 
 	const updateNodeDataContent = useCallback(
@@ -164,9 +125,8 @@ export function WorkflowDesignerProvider({
 			updateNodeData(node, {
 				content: { ...node.content, ...content },
 			} as Partial<T>);
-			scheduleSave();
 		},
-		[updateNodeData, scheduleSave],
+		[updateNodeData],
 	);
 
 	const isSupportedConnectionCb = useCallback(isSupportedConnection, []);
@@ -239,9 +199,9 @@ export function WorkflowDesignerProvider({
 				workspaceId: data.id,
 				fileId: uploadedFile.id,
 			});
-			scheduleSave();
+			dispatch({ type: "NO_OP" });
 		},
-		[scheduleSave, client, data.id],
+		[client, data.id, dispatch],
 	);
 
 	const propertiesPanelHelper = usePropertiesPanel();
