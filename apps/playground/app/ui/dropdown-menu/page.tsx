@@ -24,6 +24,35 @@ export default function () {
 						</div>
 					</div>
 				</div>
+				<div>
+					<p className="text-text mb-2 text-sm">Group</p>
+					<div className="bg-transparent p-8 rounded-[4px] border border-border shadow-sm text-sans">
+						<div className="space-y-4">
+							<DropdownMenu
+								items={[
+									{
+										id: "fruits",
+										groupLabel: "Fruits",
+										items: [
+											{ id: 1, name: "apple" },
+											{ id: 2, name: "banana" },
+										],
+									},
+									{
+										id: "vegetables",
+										groupLabel: "Vegetables",
+										items: [
+											{ id: 3, name: "carrot" },
+											{ id: 4, name: "broccoli" },
+										],
+									},
+								]}
+								renderItem={(option) => option.name}
+								trigger={<Button>Group</Button>}
+							/>
+						</div>
+					</div>
+				</div>
 			</div>
 		</>
 	);
