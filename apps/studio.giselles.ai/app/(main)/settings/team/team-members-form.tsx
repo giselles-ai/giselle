@@ -4,7 +4,6 @@ import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import {
 	email,
-	type InferInput,
 	maxLength,
 	minLength,
 	object,
@@ -33,8 +32,6 @@ const TeamMemberSchema = object({
 	),
 	role: picklist(["admin", "member"] as const),
 });
-
-type TeamMemberSchema = InferInput<typeof TeamMemberSchema>;
 
 export function TeamMembersForm() {
 	const [email, setEmail] = useState("");

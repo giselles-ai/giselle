@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { type AuthError, createClient } from "@/lib/supabase";
 
 export async function login(
-	prevState: AuthError | null,
+	_prevState: AuthError | null,
 	formData: FormData,
 ): Promise<AuthError | null> {
 	const supabase = await createClient();
@@ -15,7 +15,7 @@ export async function login(
 		email: formData.get("email") as string,
 		password: formData.get("password") as string,
 	};
-	const { data, error } = await supabase.auth.signInWithPassword(credentails);
+	const { error } = await supabase.auth.signInWithPassword(credentails);
 
 	if (error) {
 		return {

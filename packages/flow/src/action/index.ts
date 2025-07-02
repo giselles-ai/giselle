@@ -1,8 +1,5 @@
-import { actions as githubActions, provider as githubProvider } from "./github";
-import {
-	actions as webSearchActions,
-	provider as webSearchProvider,
-} from "./web-search";
+import { provider as githubProvider } from "./github";
+import { provider as webSearchProvider } from "./web-search";
 
 export {
 	type ActionCommandId as GitHubActionCommandId,

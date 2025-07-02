@@ -1,6 +1,5 @@
 import {
 	type GenerationContext,
-	type OutputId as InputId,
 	isCompletedGeneration,
 	type NodeId,
 	type Output,
@@ -34,7 +33,7 @@ export async function connectionResolver(args: {
 	}
 	let output: Output | undefined;
 	for (const sourceNode of args.context.sourceNodes) {
-		for (const sourceOutput of sourceNode.outputs) {
+		for (const _sourceOutput of sourceNode.outputs) {
 			// if (sourceOutput.accessor === args.inputAccessor) {
 			// 	output = sourceOutput;
 			// 	break;

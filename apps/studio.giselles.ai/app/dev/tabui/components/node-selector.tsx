@@ -30,7 +30,11 @@ export const NodeSelector: FC<NodeSelectorProps> = ({
 	return (
 		<div className={`grid gap-1 ${className}`}>
 			<div className="flex justify-center">
+				{/* biome-ignore lint/a11y/noStaticElementInteractions: draggable element needs interaction */}
+				{/* biome-ignore lint/a11y/useSemanticElements: draggable elements must be div */}
 				<div
+					role="button"
+					tabIndex={0}
 					draggable
 					onDragStart={handleDragStart(nodeClassName)}
 					className="opacity-[.9999]"

@@ -6,7 +6,6 @@ import {
 import { useWorkflowDesigner } from "@giselle-sdk/giselle-engine/react";
 import { TextEditor } from "@giselle-sdk/text-editor/react-internal";
 import { createSourceExtensionJSONContent } from "@giselle-sdk/text-editor-utils";
-import clsx from "clsx/lite";
 import { AtSignIcon } from "lucide-react";
 import { type OutputWithDetails, useConnectedOutputs } from "./outputs";
 

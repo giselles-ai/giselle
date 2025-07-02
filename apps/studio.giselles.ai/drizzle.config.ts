@@ -9,7 +9,7 @@ export default defineConfig({
 	out: "./migrations",
 	dialect: "postgresql",
 	dbCredentials: {
-		// biome-ignore lint/style/noNonNullAssertion: <explanation>
+		// biome-ignore lint/style/noNonNullAssertion: Environment variable is required for drizzle config
 		url: process.env.POSTGRES_URL!,
 	},
 });

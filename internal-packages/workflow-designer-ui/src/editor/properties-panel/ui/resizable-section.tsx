@@ -123,6 +123,7 @@ export function ResizeHandle({
 	const isVertical = direction === "vertical";
 
 	return (
+		// biome-ignore lint/a11y/noStaticElementInteractions: resize handle requires mouse interaction
 		<div
 			className={clsx(
 				"transition-colors duration-200 flex items-center justify-center group",

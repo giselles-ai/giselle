@@ -1,7 +1,3 @@
-import type {
-	CompletedGeneration,
-	RunningGeneration,
-} from "@giselle-sdk/data-type";
 import type { TelemetrySettings as AI_TelemetrySettings } from "ai";
 
 export interface TelemetrySettings {

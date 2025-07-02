@@ -1,10 +1,7 @@
 import clsx from "clsx";
 import type { SVGProps } from "react";
 
-export function TriangleAlert({
-	className,
-	...props
-}: SVGProps<SVGSVGElement>) {
+export function TriangleAlert({ className }: SVGProps<SVGSVGElement>) {
 	return (
 		<svg
 			width="32"

@@ -90,7 +90,7 @@ export function Toolbar() {
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("All");
 	const { llmProviders } = useWorkflowDesigner();
-	const limits = useUsageLimits();
+	const _limits = useUsageLimits();
 	const { webSearchAction } = useFeatureFlag();
 	const vectorStore = useVectorStore();
 	const canUseGithubVectorStore = useMemo(
@@ -253,142 +253,136 @@ export function Toolbar() {
 						}
 					}}
 				>
-					<>
-						<ToggleGroup.Item
-							value="selectTrigger"
-							data-tool
-							className="relative"
-						>
-							<Tooltip text={<TooltipAndHotkey text="Trigger" hotkey="t" />}>
-								<TriggerIcon data-icon />
-							</Tooltip>
-							{selectedTool?.action === "selectTrigger" && (
-								<Popover.Root open={true}>
-									<Popover.Anchor />
-									<Popover.Portal>
-										<Popover.Content
-											className={clsx(
-												"relative rounded-[8px] px-[8px] py-[8px] min-w-[200px]",
-												"bg-[hsla(255,_40%,_98%,_0.04)] text-white-900",
-												"backdrop-blur-[4px]",
-											)}
-											sideOffset={42}
-										>
-											<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-border border-transparent" />
-											<div className="relative flex flex-col gap-[8px]">
-												<ToggleGroup.Root
-													type="single"
-													className={clsx(
-														"flex flex-col gap-[8px]",
-														"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-														"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-white-900/10",
-														"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
-													)}
-													onValueChange={(value) => {
-														setSelectedTool(
-															addNodeTool(
-																createTriggerNode(value as TriggerProvider),
-															),
-														);
-													}}
-												>
-													{triggerProviders.map((triggerProvider) => (
+					<ToggleGroup.Item
+						value="selectTrigger"
+						data-tool
+						className="relative"
+					>
+						<Tooltip text={<TooltipAndHotkey text="Trigger" hotkey="t" />}>
+							<TriggerIcon data-icon />
+						</Tooltip>
+						{selectedTool?.action === "selectTrigger" && (
+							<Popover.Root open={true}>
+								<Popover.Anchor />
+								<Popover.Portal>
+									<Popover.Content
+										className={clsx(
+											"relative rounded-[8px] px-[8px] py-[8px] min-w-[200px]",
+											"bg-[hsla(255,_40%,_98%,_0.04)] text-white-900",
+											"backdrop-blur-[4px]",
+										)}
+										sideOffset={42}
+									>
+										<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-border border-transparent" />
+										<div className="relative flex flex-col gap-[8px]">
+											<ToggleGroup.Root
+												type="single"
+												className={clsx(
+													"flex flex-col gap-[8px]",
+													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-white-900/10",
+													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
+												)}
+												onValueChange={(value) => {
+													setSelectedTool(
+														addNodeTool(
+															createTriggerNode(value as TriggerProvider),
+														),
+													);
+												}}
+											>
+												{triggerProviders.map((triggerProvider) => (
+													<ToggleGroup.Item
+														key={triggerProvider}
+														value={triggerProvider}
+														data-tool
+													>
+														{triggerProvider === "manual" && (
+															<TriggerIcon className="size-[20px] shrink-0" />
+														)}
+														{triggerProvider === "github" && (
+															<GitHubIcon className="size-[20px] shrink-0" />
+														)}
+
+														<p className="text-[14px]">
+															{triggerNodeDefaultName(triggerProvider)}
+														</p>
+													</ToggleGroup.Item>
+												))}
+											</ToggleGroup.Root>
+										</div>
+									</Popover.Content>
+								</Popover.Portal>
+							</Popover.Root>
+						)}
+					</ToggleGroup.Item>
+
+					<ToggleGroup.Item value="selectAction" data-tool className="relative">
+						<Tooltip text={<TooltipAndHotkey text="Action" hotkey="a" />}>
+							<WorkflowIcon data-icon />
+						</Tooltip>
+						{selectedTool?.action === "selectAction" && (
+							<Popover.Root open={true}>
+								<Popover.Anchor />
+								<Popover.Portal>
+									<Popover.Content
+										className={clsx(
+											"relative rounded-[8px] px-[8px] py-[8px]",
+											"bg-[hsla(255,_40%,_98%,_0.04)] text-white-900",
+											"backdrop-blur-[4px]",
+										)}
+										sideOffset={42}
+									>
+										<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-border border-transparent" />
+										<div className="relative flex flex-col gap-[8px]">
+											<ToggleGroup.Root
+												type="single"
+												className={clsx(
+													"flex flex-col gap-[8px]",
+													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-white-900/10",
+													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
+												)}
+												onValueChange={(value) => {
+													setSelectedTool(
+														addNodeTool(
+															createActionNode(value as ActionProvider),
+														),
+													);
+												}}
+											>
+												{actionProviders
+													.filter((actionProvider) => {
+														// Filter based on feature flags
+														if (actionProvider === "web-search") {
+															return webSearchAction;
+														}
+														return true; // Show other providers by default
+													})
+													.map((actionProvider) => (
 														<ToggleGroup.Item
-															key={triggerProvider}
-															value={triggerProvider}
+															key={actionProvider}
+															value={actionProvider}
 															data-tool
 														>
-															{triggerProvider === "manual" && (
-																<TriggerIcon className="size-[20px] shrink-0" />
-															)}
-															{triggerProvider === "github" && (
+															{actionProvider === "github" && (
 																<GitHubIcon className="size-[20px] shrink-0" />
 															)}
-
+															{actionProvider === "web-search" && (
+																<SearchIcon className="size-[20px] shrink-0" />
+															)}
 															<p className="text-[14px]">
-																{triggerNodeDefaultName(triggerProvider)}
+																{actionNodeDefaultName(actionProvider)}
 															</p>
 														</ToggleGroup.Item>
 													))}
-												</ToggleGroup.Root>
-											</div>
-										</Popover.Content>
-									</Popover.Portal>
-								</Popover.Root>
-							)}
-						</ToggleGroup.Item>
-
-						<ToggleGroup.Item
-							value="selectAction"
-							data-tool
-							className="relative"
-						>
-							<Tooltip text={<TooltipAndHotkey text="Action" hotkey="a" />}>
-								<WorkflowIcon data-icon />
-							</Tooltip>
-							{selectedTool?.action === "selectAction" && (
-								<Popover.Root open={true}>
-									<Popover.Anchor />
-									<Popover.Portal>
-										<Popover.Content
-											className={clsx(
-												"relative rounded-[8px] px-[8px] py-[8px]",
-												"bg-[hsla(255,_40%,_98%,_0.04)] text-white-900",
-												"backdrop-blur-[4px]",
-											)}
-											sideOffset={42}
-										>
-											<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-border border-transparent" />
-											<div className="relative flex flex-col gap-[8px]">
-												<ToggleGroup.Root
-													type="single"
-													className={clsx(
-														"flex flex-col gap-[8px]",
-														"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-														"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-white-900/10",
-														"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
-													)}
-													onValueChange={(value) => {
-														setSelectedTool(
-															addNodeTool(
-																createActionNode(value as ActionProvider),
-															),
-														);
-													}}
-												>
-													{actionProviders
-														.filter((actionProvider) => {
-															// Filter based on feature flags
-															if (actionProvider === "web-search") {
-																return webSearchAction;
-															}
-															return true; // Show other providers by default
-														})
-														.map((actionProvider) => (
-															<ToggleGroup.Item
-																key={actionProvider}
-																value={actionProvider}
-																data-tool
-															>
-																{actionProvider === "github" && (
-																	<GitHubIcon className="size-[20px] shrink-0" />
-																)}
-																{actionProvider === "web-search" && (
-																	<SearchIcon className="size-[20px] shrink-0" />
-																)}
-																<p className="text-[14px]">
-																	{actionNodeDefaultName(actionProvider)}
-																</p>
-															</ToggleGroup.Item>
-														))}
-												</ToggleGroup.Root>
-											</div>
-										</Popover.Content>
-									</Popover.Portal>
-								</Popover.Root>
-							)}
-						</ToggleGroup.Item>
-					</>
+											</ToggleGroup.Root>
+										</div>
+									</Popover.Content>
+								</Popover.Portal>
+							</Popover.Root>
+						)}
+					</ToggleGroup.Item>
 
 					<ToggleGroup.Item
 						value="selectLanguageModel"

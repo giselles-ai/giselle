@@ -510,8 +510,8 @@ export async function getAgentActivities({
 }
 
 export async function deleteTeam(
-	prevState: { error: string },
-	formData: FormData,
+	_prevState: { error: string },
+	_formData: FormData,
 ) {
 	try {
 		// Get current user's info and team
@@ -715,7 +715,7 @@ export type ActionResult =
 	| { success: false; error: string };
 
 export async function revokeInvitationAction(
-	prevState: ActionResult | undefined,
+	_prevState: ActionResult | undefined,
 	formData: FormData,
 ): Promise<ActionResult> {
 	const token = formData.get("token") as string;
@@ -733,7 +733,7 @@ export async function revokeInvitationAction(
 }
 
 export async function resendInvitationAction(
-	prevState: ActionResult | undefined,
+	_prevState: ActionResult | undefined,
 	formData: FormData,
 ): Promise<ActionResult> {
 	const token = formData.get("token") as string;

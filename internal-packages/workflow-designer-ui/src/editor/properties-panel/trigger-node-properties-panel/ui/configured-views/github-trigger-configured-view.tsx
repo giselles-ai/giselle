@@ -82,7 +82,6 @@ export function GitHubTriggerConfiguredView({
 							</span>
 							<ClipboardButton
 								text={`/${data.trigger.configuration.event.conditions.callsign}`}
-								className="text-black-400 hover:text-black-300"
 								sizeClassName="h-[16px] w-[16px]"
 							/>
 						</div>

@@ -3,7 +3,6 @@ import { z } from "zod/v4";
 const VectorStoreContentBase = z.object({
 	type: z.literal("vectorStore"),
 });
-type VectorStoreContentBase = z.infer<typeof VectorStoreContentBase>;
 
 export const GitHubVectorStoreSource = z.object({
 	provider: z.literal("github"),

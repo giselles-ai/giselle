@@ -171,7 +171,7 @@ function extractInputOutputForTextGeneration(
 }
 
 function extractInputForImageGeneration(
-	generation: CompletedGeneration,
+	_generation: CompletedGeneration,
 	operationNode: ImageGenerationNode,
 ) {
 	const input = extractPromptInput(operationNode);

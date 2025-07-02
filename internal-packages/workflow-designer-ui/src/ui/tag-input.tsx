@@ -1,5 +1,5 @@
 import { XIcon } from "lucide-react";
-import React, { type KeyboardEvent, useState } from "react";
+import { type KeyboardEvent, useState } from "react";
 import { Button } from "./button";
 
 export type Tag = {

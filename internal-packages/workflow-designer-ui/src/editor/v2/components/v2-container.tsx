@@ -13,14 +13,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle-engine/react";
-import {
-	type RefObject,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Background } from "../../../ui/background";
 import { useToasts } from "../../../ui/toast";
 import { edgeTypes } from "../../connector";
@@ -30,7 +23,7 @@ import type { ContextMenuProps } from "../../context-menu/types";
 import { type GiselleWorkflowDesignerNode, nodeTypes } from "../../node";
 import { PropertiesPanel } from "../../properties-panel";
 import { FloatingNodePreview, Toolbar, useToolbar } from "../../tool";
-import type { LeftPanelValue, V2LayoutState } from "../state";
+import type { V2LayoutState } from "../state";
 import { FloatingPropertiesPanel } from "./floating-properties-panel";
 import { PanelWrapper } from "./resizable-panel";
 

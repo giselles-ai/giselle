@@ -5,11 +5,6 @@ import { usePathname } from "next/navigation";
 import { useMemo, useRef } from "react";
 import { FreeTag } from "@/components/free-tag";
 import { ProTag } from "@/components/pro-tag";
-import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
 	Select,
 	SelectContent,
@@ -17,7 +12,6 @@ import {
 	SelectSeparator,
 	SelectTrigger,
 } from "@/components/ui/select";
-import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { selectTeam } from "../actions/select-team";
 import type { Team } from "../types";
 

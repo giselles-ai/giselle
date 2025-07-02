@@ -149,7 +149,7 @@ export function parseGitHubUrl(url: string): GitHubUrlInfo | null {
 			default:
 				return null;
 		}
-	} catch (error) {
+	} catch (_error) {
 		return null;
 	}
 }

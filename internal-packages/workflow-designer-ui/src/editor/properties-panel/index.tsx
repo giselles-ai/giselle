@@ -34,62 +34,60 @@ export function PropertiesPanel() {
 	);
 	return (
 		<div className={clsx("h-full text-white-900")}>
-			<>
-				{isTextGenerationNode(selectedNodes[0]) && (
-					<TextGenerationNodePropertiesPanel
-						node={selectedNodes[0]}
-						key={selectedNodes[0].id}
-					/>
-				)}
-				{isImageGenerationNode(selectedNodes[0]) && (
-					<ImageGenerationNodePropertiesPanel
-						node={selectedNodes[0]}
-						key={selectedNodes[0].id}
-					/>
-				)}
-				{isTextNode(selectedNodes[0]) && (
-					<TextNodePropertiesPanel
-						node={selectedNodes[0]}
-						key={selectedNodes[0].id}
-					/>
-				)}
-				{isFileNode(selectedNodes[0]) && (
-					<FileNodePropertiesPanel
-						node={selectedNodes[0]}
-						key={selectedNodes[0].id}
-					/>
-				)}
-				{isWebPageNode(selectedNodes[0]) && (
-					<WebPageNodePropertiesPanel
-						node={selectedNodes[0]}
-						key={selectedNodes[0].id}
-					/>
-				)}
-				{isTriggerNode(selectedNodes[0]) && (
-					<TriggerNodePropertiesPanel
-						node={selectedNodes[0]}
-						key={selectedNodes[0].id}
-					/>
-				)}
-				{isActionNode(selectedNodes[0]) && (
-					<ActionNodePropertiesPanel
-						node={selectedNodes[0]}
-						key={selectedNodes[0].id}
-					/>
-				)}
-				{isVectorStoreNode(selectedNodes[0]) && (
-					<VectorStoreNodePropertiesPanel
-						node={selectedNodes[0]}
-						key={selectedNodes[0].id}
-					/>
-				)}
-				{isQueryNode(selectedNodes[0]) && (
-					<QueryNodePropertiesPanel
-						node={selectedNodes[0]}
-						key={selectedNodes[0].id}
-					/>
-				)}
-			</>
+			{isTextGenerationNode(selectedNodes[0]) && (
+				<TextGenerationNodePropertiesPanel
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
+			{isImageGenerationNode(selectedNodes[0]) && (
+				<ImageGenerationNodePropertiesPanel
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
+			{isTextNode(selectedNodes[0]) && (
+				<TextNodePropertiesPanel
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
+			{isFileNode(selectedNodes[0]) && (
+				<FileNodePropertiesPanel
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
+			{isWebPageNode(selectedNodes[0]) && (
+				<WebPageNodePropertiesPanel
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
+			{isTriggerNode(selectedNodes[0]) && (
+				<TriggerNodePropertiesPanel
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
+			{isActionNode(selectedNodes[0]) && (
+				<ActionNodePropertiesPanel
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
+			{isVectorStoreNode(selectedNodes[0]) && (
+				<VectorStoreNodePropertiesPanel
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
+			{isQueryNode(selectedNodes[0]) && (
+				<QueryNodePropertiesPanel
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
 		</div>
 	);
 }

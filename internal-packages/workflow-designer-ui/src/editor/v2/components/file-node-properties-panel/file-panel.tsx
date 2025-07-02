@@ -1,7 +1,7 @@
-import type { FileData, FileNode } from "@giselle-sdk/data-type";
+import type { FileData } from "@giselle-sdk/data-type";
 import { useFeatureFlag } from "@giselle-sdk/giselle-engine/react";
 import clsx from "clsx/lite";
-import { ArrowUpFromLineIcon, FileXIcon, TrashIcon } from "lucide-react";
+import { ArrowUpFromLineIcon, FileXIcon } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toRelativeTime } from "../../../../helper/datetime";
@@ -279,6 +279,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 					</div>
 				)}
 				<div className="py-[16px]">
+					{/* biome-ignore lint/a11y/noStaticElementInteractions: drag-and-drop area needs interaction */}
 					<div
 						className={clsx(
 							"group h-[300px] p-[8px]",
@@ -300,26 +301,24 @@ export function FilePanel({ node, config }: FilePanelProps) {
 							)}
 						>
 							{isDragging ? (
-								<>
-									{isValidFile ? (
-										<>
-											<FileNodeIcon
-												node={node}
-												className="size-[30px] text-black-400"
-											/>
-											<p className="text-center text-white-400">
-												Drop to upload your {config.label} files
-											</p>
-										</>
-									) : (
-										<>
-											<TriangleAlert className="size-[30px] text-error-900" />
-											<p className="text-center text-error-900">
-												Only {config.label} files are allowed
-											</p>
-										</>
-									)}
-								</>
+								isValidFile ? (
+									<>
+										<FileNodeIcon
+											node={node}
+											className="size-[30px] text-black-400"
+										/>
+										<p className="text-center text-white-400">
+											Drop to upload your {config.label} files
+										</p>
+									</>
+								) : (
+									<>
+										<TriangleAlert className="size-[30px] text-error-900" />
+										<p className="text-center text-error-900">
+											Only {config.label} files are allowed
+										</p>
+									</>
+								)
 							) : !isValidFile ? (
 								<>
 									<FileXIcon className="size-[30px] text-error-900" />

@@ -1,6 +1,5 @@
 import {
 	type CompletedGeneration,
-	type FileData,
 	type FileId,
 	type Generation,
 	GenerationContext,

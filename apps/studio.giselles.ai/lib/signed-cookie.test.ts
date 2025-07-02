@@ -8,8 +8,8 @@ const mockCookieStore = {
 		const value = this.cookies.get(name);
 		return value ? { value } : null;
 	},
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	set(name: string, value: string, options: any) {
+	// biome-ignore lint/suspicious/noExplicitAny: Cookie options can vary and testing doesn't need strict typing
+	set(name: string, value: string, _options: any) {
 		this.cookies.set(name, value);
 	},
 };

@@ -57,7 +57,7 @@ export const PANEL_HEADER = {
 /**
  * Get header classes based on sidemenu flag
  */
-export function getHeaderClasses(sidemenu: boolean): string {
+export function getHeaderClasses(_sidemenu: boolean): string {
 	const baseClasses = [
 		PANEL_SPACING.HEADER.HEIGHT,
 		"flex justify-between items-center",
@@ -71,7 +71,7 @@ export function getHeaderClasses(sidemenu: boolean): string {
 /**
  * Get content classes based on sidemenu flag
  */
-export function getContentClasses(sidemenu: boolean): string {
+export function getContentClasses(_sidemenu: boolean): string {
 	return [
 		PANEL_SPACING.LAYOUT.FLEX_1,
 		PANEL_SPACING.LAYOUT.FULL_HEIGHT,

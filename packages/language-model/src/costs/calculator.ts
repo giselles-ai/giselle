@@ -1,7 +1,6 @@
 import type { ModelPriceTable } from "./model-prices";
 import { getValidPricing } from "./model-prices";
-import type { BaseTokenPrice, Cost, TokenBasedPricing } from "./pricing";
-import { tokensToMegaTokens } from "./pricing";
+import type { Cost, TokenBasedPricing } from "./pricing";
 import type { ModelTokenUsage } from "./usage";
 
 /**
@@ -54,7 +53,7 @@ export abstract class BaseCostCalculator implements CostCalculator {
 export class DefaultCostCalculator implements CostCalculator {
 	constructor(private readonly provider: string) {}
 
-	calculate(modelId: string, usage: ModelTokenUsage): CostResultForDisplay {
+	calculate(modelId: string, _usage: ModelTokenUsage): CostResultForDisplay {
 		console.log(
 			`Cost calculation not implemented for provider: ${this.provider}, model: ${modelId}`,
 		);

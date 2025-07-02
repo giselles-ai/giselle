@@ -197,7 +197,7 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 						updateNodeDataContent(node, {
 							webpages,
 						});
-					} catch (err) {
+					} catch (_err) {
 						const failedWebPage: WebPage = {
 							id: newWebPage.id,
 							status: "failed",

@@ -102,7 +102,7 @@ export function CustomXyFlowNode({
 	data,
 	selected,
 }: NodeProps<GiselleWorkflowDesignerNode>) {
-	const { data: workspace, updateNodeData } = useWorkflowDesigner();
+	const { data: workspace } = useWorkflowDesigner();
 	const connectedInputIds = useMemo(
 		() =>
 			workspace.connections
@@ -342,7 +342,7 @@ export function NodeComponent({
 							}}
 						/>
 						<div className="flex items-center gap-[2px] pl-[4px] text-[10px] font-mono [&>*:not(:last-child)]:after:content-['/'] [&>*:not(:last-child)]:after:ml-[2px] [&>*:not(:last-child)]:after:text-white-300">
-							{metadataTexts.map((item, index) => (
+							{metadataTexts.map((item, _index) => (
 								<div key={item.label} className="text-[10px] text-white-400">
 									{selected ? (
 										<Tooltip text={item.tooltip} variant="dark">

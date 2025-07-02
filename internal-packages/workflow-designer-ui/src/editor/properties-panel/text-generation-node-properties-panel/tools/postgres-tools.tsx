@@ -6,7 +6,7 @@ import {
 import { CheckIcon, DatabaseIcon, TrashIcon } from "lucide-react";
 import { Switch } from "../../../../ui/switch";
 
-const POSTGRES_TOOL_CATEGORIES = [
+const _POSTGRES_TOOL_CATEGORIES = [
 	{
 		label: "Schema",
 		tools: ["getTableStructure"],

@@ -110,7 +110,7 @@ export async function withCountMeasurement<T>(
 	const isR06User = await isRoute06User();
 	const measurementScope = await getCurrentMeasurementScope();
 	const measurement: MeasurementSchema<T> = (
-		result,
+		_result,
 		duration,
 	): RequestCountSchema => {
 		const baseMetrics = {
@@ -135,7 +135,7 @@ export async function withTokenMeasurement<
 	logger: OtelLoggerWrapper,
 	operation: () => Promise<T>,
 	model: LanguageModelV1,
-	agentId: AgentId,
+	_agentId: AgentId,
 	measurementStartTime?: number,
 ): Promise<T> {
 	const { externalServiceName, modelId } = getModelInfo(

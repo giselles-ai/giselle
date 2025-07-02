@@ -147,46 +147,42 @@ function PostgresToolConnectionDialog({
 				<TabsContent value="select">
 					{isLoading ? (
 						<p>Loading...</p>
+					) : (secrets ?? []).length < 1 ? (
+						<EmptyState description="No saved tokens yet">
+							<Button
+								onClick={() => setTabValue("create")}
+								leftIcon={<PlusIcon />}
+							>
+								Save First connection string
+							</Button>
+						</EmptyState>
 					) : (
 						<>
-							{(secrets ?? []).length < 1 ? (
-								<EmptyState description="No saved tokens yet">
-									<Button
-										onClick={() => setTabValue("create")}
-										leftIcon={<PlusIcon />}
-									>
-										Save First connection string
-									</Button>
-								</EmptyState>
-							) : (
-								<>
-									<p className="text-[11px] text-text-muted my-[4px]">
-										Pick one of your encrypted string to connect.
-									</p>
-									<Input
-										type="hidden"
-										name="secretType"
-										value={ToolProviderSecretType.enum.select}
+							<p className="text-[11px] text-text-muted my-[4px]">
+								Pick one of your encrypted string to connect.
+							</p>
+							<Input
+								type="hidden"
+								name="secretType"
+								value={ToolProviderSecretType.enum.select}
+							/>
+							<fieldset className="flex flex-col">
+								<label
+									htmlFor="label"
+									className="text-text text-[13px] mb-[2px]"
+								>
+									Select a saved connection string
+								</label>
+								<div>
+									<Select
+										name="secretId"
+										placeholder="Choose a connection string… "
+										options={secrets ?? []}
+										renderOption={(option) => option.label}
+										widthClassName="w-[180px]"
 									/>
-									<fieldset className="flex flex-col">
-										<label
-											htmlFor="label"
-											className="text-text text-[13px] mb-[2px]"
-										>
-											Select a saved connection string
-										</label>
-										<div>
-											<Select
-												name="secretId"
-												placeholder="Choose a connection string… "
-												options={secrets ?? []}
-												renderOption={(option) => option.label}
-												widthClassName="w-[180px]"
-											/>
-										</div>
-									</fieldset>
-								</>
-							)}
+								</div>
+							</fieldset>
 						</>
 					)}
 				</TabsContent>

@@ -148,7 +148,7 @@ do {
 						.upload(newPathname, file, {
 							contentType: metadata.contentType,
 						});
-					const data = result.data;
+					const _data = result.data;
 					const error = result.error;
 
 					if (error) {

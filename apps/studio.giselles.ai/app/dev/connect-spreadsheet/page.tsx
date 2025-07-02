@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
-import { db, oauthCredentials, supabaseUserMappings } from "@/drizzle";
+import { db, oauthCredentials } from "@/drizzle";
 import { getSession, signIn, signOut } from "./_utils/auth";
 import { GoogleSheetsSelection } from "./google-sheets-selection";
 

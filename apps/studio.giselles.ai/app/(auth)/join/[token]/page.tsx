@@ -25,7 +25,7 @@ export default async function Page({
 	let user: User | null = null;
 	try {
 		user = await getUser();
-	} catch (e) {
+	} catch (_e) {
 		// redirect to signup page
 		redirect(`/join/${encodeURIComponent(tokenParam)}/signup`);
 	}

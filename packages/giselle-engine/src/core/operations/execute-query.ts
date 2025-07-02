@@ -25,7 +25,7 @@ import {
 } from "../generations/utils";
 import type { GiselleEngineContext, GitHubQueryContext } from "../types";
 
-export async function executeQuery(args: {
+export function executeQuery(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
 }) {
@@ -261,7 +261,7 @@ async function queryVectorStore(
 	// Default values for query parameters
 	// TODO: Make these configurable via the UI
 	const LIMIT = 10;
-	const SIMILARITY_THRESHOLD = 0.2;
+	const _SIMILARITY_THRESHOLD = 0.2;
 
 	const results = await Promise.all(
 		vectorStoreNodes

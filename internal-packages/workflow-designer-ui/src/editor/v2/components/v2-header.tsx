@@ -127,7 +127,7 @@ export function V2Header({
 									</span>
 								)
 							}
-							onSelect={(event, item) => {
+							onSelect={(_event, item) => {
 								if (!item.disabled && item.action) {
 									item.action();
 								}

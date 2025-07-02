@@ -8,7 +8,7 @@ export function isJsonContent(args: unknown): args is JSONContent {
 	if (typeof args === "string") {
 		try {
 			candidate = JSON.parse(args);
-		} catch (error) {
+		} catch (_error) {
 			return false;
 		}
 	}

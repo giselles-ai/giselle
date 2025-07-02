@@ -1,10 +1,4 @@
-import clsx from "clsx/lite";
-import type { FC, SVGProps } from "react";
-
-export function CircleCheckIcon({
-	className,
-	...props
-}: SVGProps<SVGSVGElement>) {
+export function CircleCheckIcon() {
 	return (
 		<svg
 			width="20"

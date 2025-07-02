@@ -5,7 +5,7 @@ import { type AuthError, createClient } from "@/lib/supabase";
 import { initializeAccount } from "@/services/accounts";
 
 export const verifyEmail = async (
-	prevState: null | AuthError,
+	_prevState: null | AuthError,
 	formData: FormData,
 ): Promise<AuthError | null> => {
 	const verificationEmail = formData.get("verificationEmail") as string;
@@ -33,7 +33,7 @@ export const verifyEmail = async (
 		};
 	}
 
-	const user = await initializeAccount(
+	const _user = await initializeAccount(
 		supabaseData.user.id,
 		supabaseData.user.email,
 	);
@@ -42,7 +42,7 @@ export const verifyEmail = async (
 };
 
 export const resendOtp = async (
-	prevState: null | AuthError,
+	_prevState: null | AuthError,
 	formData: FormData,
 ): Promise<AuthError | null> => {
 	const verificationEmail = formData.get("verificationEmail") as string;

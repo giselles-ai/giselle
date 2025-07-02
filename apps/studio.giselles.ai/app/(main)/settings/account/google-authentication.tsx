@@ -8,7 +8,7 @@ import {
 	reconnectGoogleIdentity,
 } from "./actions";
 
-const provider = "google";
+const _provider = "google";
 
 export async function GoogleAuthentication() {
 	const identityState = await getGoogleIdentityState();

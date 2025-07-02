@@ -9,12 +9,7 @@ interface NoteProps {
 	action?: React.ReactNode;
 }
 
-export function Note({
-	children,
-	type = "error",
-	fill = false,
-	action,
-}: NoteProps) {
+export function Note({ children, type = "error", action }: NoteProps) {
 	return (
 		<div
 			className={clsx(

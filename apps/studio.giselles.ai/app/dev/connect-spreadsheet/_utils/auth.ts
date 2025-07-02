@@ -1,7 +1,7 @@
 import { and, eq, sql } from "drizzle-orm/sql";
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import { db, oauthCredentials, supabaseUserMappings, users } from "@/drizzle";
+import { db, oauthCredentials, supabaseUserMappings } from "@/drizzle";
 import { getUser } from "@/lib/supabase";
 
 export async function getSession() {

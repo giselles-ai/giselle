@@ -61,7 +61,7 @@ export default function () {
 								]}
 								renderItem={(option) => option.name}
 								trigger={<Button>Group Example</Button>}
-								onSelect={(event, option) => {
+								onSelect={(_event, option) => {
 									console.log("Selected:", option);
 								}}
 							/>

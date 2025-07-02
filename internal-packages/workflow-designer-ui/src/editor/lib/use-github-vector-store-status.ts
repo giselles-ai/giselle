@@ -1,4 +1,4 @@
-import type { Node, VectorStoreNode } from "@giselle-sdk/data-type";
+import type { Node } from "@giselle-sdk/data-type";
 import { isVectorStoreNode } from "@giselle-sdk/data-type";
 import { useVectorStore } from "@giselle-sdk/giselle-engine/react";
 import { useMemo } from "react";

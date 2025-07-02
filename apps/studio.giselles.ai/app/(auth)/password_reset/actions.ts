@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 
 export const sendPasswordResetEmail = async (
-	prevState: AuthError | null,
+	_prevState: AuthError | null,
 	formData: FormData,
 ): Promise<AuthError | null> => {
 	const email = formData.get("email");

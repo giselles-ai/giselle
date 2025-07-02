@@ -207,7 +207,7 @@ async function loadBlob(
 				path,
 			},
 		};
-	} catch (error: unknown) {
+	} catch (_error: unknown) {
 		// Binary content will throw an error when trying to decode
 		return null;
 	}

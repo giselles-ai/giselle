@@ -19,8 +19,6 @@ export const TierAccess: Record<Tier, Tier[]> = {
 	[Tier.enum.pro]: [Tier.enum.free, Tier.enum.pro],
 };
 
-type Capabilities = number;
-
 export const Capabilities = z.number();
 
 export const LanguageModelBase = z.object({

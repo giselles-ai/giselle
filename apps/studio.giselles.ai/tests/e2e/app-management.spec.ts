@@ -9,7 +9,7 @@ test.describe("App management", () => {
 
 	test("Create and delete an app", async ({ page }) => {
 		// Generate a random app name
-		const appName = `test-app-${Math.random().toString(36).substring(7)}`;
+		const _appName = `test-app-${Math.random().toString(36).substring(7)}`;
 
 		// Go to the Apps page
 		await page.goto(`${baseUrl}/apps`);

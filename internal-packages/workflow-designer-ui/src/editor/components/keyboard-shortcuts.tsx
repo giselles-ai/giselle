@@ -16,5 +16,5 @@ export function KeyboardShortcuts({ generate }: { generate: () => void }) {
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [generate]);
 
-	return <></>;
+	return null;
 }

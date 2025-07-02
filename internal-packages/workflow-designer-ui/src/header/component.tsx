@@ -9,10 +9,9 @@ import {
 	useFeatureFlag,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle-engine/react";
-import clsx from "clsx/lite";
 import { PlayIcon } from "lucide-react";
 import Link from "next/link";
-import { Dialog, VisuallyHidden } from "radix-ui";
+import { Dialog } from "radix-ui";
 import { type ReactNode, useCallback, useMemo, useState } from "react";
 import { EditableText } from "../editor/properties-panel/ui";
 import { GiselleLogo } from "../icons";
@@ -85,48 +84,44 @@ function Trigger() {
 
 					{triggerNodes.length === 1 ? (
 						<TriggerInputDialog node={triggerNodes[0]} onClose={handleClose} />
+					) : selectedTriggerNode ? (
+						<TriggerInputDialog
+							node={selectedTriggerNode}
+							onClose={handleClose}
+						/>
 					) : (
-						<>
-							{selectedTriggerNode ? (
-								<TriggerInputDialog
-									node={selectedTriggerNode}
-									onClose={handleClose}
-								/>
-							) : (
-								// Show trigger selection
-								<div className="space-y-4">
-									<h3 className="text-white-900 text-[16px] font-medium mb-2">
-										Select a trigger to execute
-									</h3>
-									<div className="space-y-2">
-										{triggerNodes.map((triggerNode) => (
-											<button
-												type="button"
-												key={triggerNode.id}
-												className="w-full text-left text-white-900 p-3 border border-black-400 rounded-[6px] hover:bg-black-800 flex items-center gap-2"
-												onClick={() => handleTriggerSelect(triggerNode)}
-											>
-												<PlayIcon className="size-[14px] shrink-0 fill-white-900" />
-												<div className="flex flex-col">
-													<span className="font-medium">
-														{triggerNode.name ??
-															triggerNodeDefaultName(
-																triggerNode.content.provider,
-															)}{" "}
-														<span className="text-[10px] text-white-300 font-mono">
-															(id:{triggerNode.id.substring(3, 11)})
-														</span>
-													</span>
-													<span className="text-white-700 text-xs">
-														{buttonLabel(triggerNode)}
-													</span>
-												</div>
-											</button>
-										))}
-									</div>
-								</div>
-							)}
-						</>
+						// Show trigger selection
+						<div className="space-y-4">
+							<h3 className="text-white-900 text-[16px] font-medium mb-2">
+								Select a trigger to execute
+							</h3>
+							<div className="space-y-2">
+								{triggerNodes.map((triggerNode) => (
+									<button
+										type="button"
+										key={triggerNode.id}
+										className="w-full text-left text-white-900 p-3 border border-black-400 rounded-[6px] hover:bg-black-800 flex items-center gap-2"
+										onClick={() => handleTriggerSelect(triggerNode)}
+									>
+										<PlayIcon className="size-[14px] shrink-0 fill-white-900" />
+										<div className="flex flex-col">
+											<span className="font-medium">
+												{triggerNode.name ??
+													triggerNodeDefaultName(
+														triggerNode.content.provider,
+													)}{" "}
+												<span className="text-[10px] text-white-300 font-mono">
+													(id:{triggerNode.id.substring(3, 11)})
+												</span>
+											</span>
+											<span className="text-white-700 text-xs">
+												{buttonLabel(triggerNode)}
+											</span>
+										</div>
+									</button>
+								))}
+							</div>
+						</div>
 					)}
 				</Dialog.Content>
 			</Dialog.Portal>
@@ -148,7 +143,7 @@ export function Header({
 	shareFeatureFlag?: boolean;
 }) {
 	const { data, updateName } = useWorkflowDesigner();
-	const [openSettings, setOpenSettings] = useState(false);
+	const [_openSettings, _setOpenSettings] = useState(false);
 	const [openShareModal, setOpenShareModal] = useState(false);
 	const { runV3 } = useFeatureFlag();
 
@@ -212,11 +207,7 @@ export function Header({
 					)}
 				</div>
 
-				<ShareModal
-					open={openShareModal}
-					onOpenChange={setOpenShareModal}
-					appId={data.id}
-				/>
+				<ShareModal open={openShareModal} onOpenChange={setOpenShareModal} />
 
 				<style jsx global>{`
 				@keyframes softFade {

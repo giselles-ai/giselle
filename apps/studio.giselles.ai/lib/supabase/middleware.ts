@@ -6,8 +6,7 @@ export const supabaseMiddleware = (
 	guardCallback?: (
 		user: User | null,
 		request: NextRequest,
-		// biome-ignore lint/suspicious/noConfusingVoidType:
-	) => Promise<NextResponse | void>,
+	) => Promise<NextResponse | undefined>,
 ) => {
 	return async (request: NextRequest) => {
 		let supabaseResponse = NextResponse.next({
@@ -38,7 +37,6 @@ export const supabaseMiddleware = (
 
 		const {
 			data: { user },
-			error,
 		} = await supabase.auth.getUser();
 		const response = guardCallback?.(user, request);
 		if (response != null) {

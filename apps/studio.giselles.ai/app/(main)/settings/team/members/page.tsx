@@ -2,7 +2,7 @@ import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import { Card } from "../../components/card";
 import { getCurrentUserRole, getTeamMembers } from "../actions";
-import { type Invitation, listInvitations } from "../invitation";
+import { listInvitations } from "../invitation";
 import { InviteMemberDialog } from "../invite-member-dialog";
 import { TeamMembersList } from "../team-members-list";
 

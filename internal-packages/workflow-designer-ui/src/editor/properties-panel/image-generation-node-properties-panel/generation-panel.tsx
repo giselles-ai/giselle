@@ -1,15 +1,11 @@
-import type {
-	Generation,
-	ImageGenerationNode,
-	TextGenerationNode,
-} from "@giselle-sdk/data-type";
+import type { Generation, ImageGenerationNode } from "@giselle-sdk/data-type";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle-engine/react";
 import clsx from "clsx/lite";
 import { useCallback, useEffect, useState } from "react";
-import { StackBlicksIcon, WilliIcon } from "../../../icons";
+import { StackBlicksIcon } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";
 import { GenerationView } from "../../../ui/generation-view";
 import {

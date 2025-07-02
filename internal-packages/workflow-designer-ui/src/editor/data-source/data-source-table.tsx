@@ -5,7 +5,6 @@ import {
 	DialogDescription,
 	DialogFooter,
 	DialogTitle,
-	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
 import { EmptyState } from "@giselle-internal/ui/empty-state";
 import { Select } from "@giselle-internal/ui/select";
@@ -13,7 +12,6 @@ import {
 	useGiselleEngine,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle-engine/react";
-import clsx from "clsx/lite";
 import { PlusIcon } from "lucide-react";
 import { useCallback, useState, useTransition } from "react";
 import { z } from "zod/v4";

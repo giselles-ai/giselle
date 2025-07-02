@@ -192,7 +192,6 @@ export function GenerationPanel({
 					<ClipboardButton
 						text={getGenerationTextContent(currentGeneration)}
 						tooltip="Copy to clipboard"
-						className="text-black-400 hover:text-black-300"
 					/>
 				)}
 			</div>

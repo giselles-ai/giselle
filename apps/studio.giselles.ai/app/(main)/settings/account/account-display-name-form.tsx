@@ -1,6 +1,5 @@
 "use client";
 
-import { Camera } from "lucide-react";
 import { useState } from "react";
 import type { users } from "@/drizzle";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
@@ -17,10 +16,10 @@ export function AccountDisplayNameForm({
 	avatarUrl: typeof users.$inferSelect.avatarUrl;
 	alt?: string;
 }) {
-	const [displayName, setDisplayName] = useState(
+	const [displayName, _setDisplayName] = useState(
 		_displayName ?? "No display name",
 	);
-	const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(
+	const [currentAvatarUrl, _setCurrentAvatarUrl] = useState<string | null>(
 		avatarUrl,
 	);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);

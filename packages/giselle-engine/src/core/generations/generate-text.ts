@@ -30,7 +30,7 @@ export type PerplexityProviderOptions = {
 	search_domain_filter?: string[];
 };
 
-export async function generateText(args: {
+export function generateText(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
 	telemetry?: TelemetrySettings;
@@ -45,7 +45,6 @@ export async function generateText(args: {
 			setGeneration,
 			fileResolver,
 			generationContentResolver,
-			workspaceId,
 			completeGeneration,
 		}) => {
 			const operationNode = generationContext.operationNode;
@@ -236,7 +235,7 @@ export async function generateText(args: {
 							sources,
 						});
 					}
-					const completedGeneration = await completeGeneration({
+					const _completedGeneration = await completeGeneration({
 						outputs: generationOutputs,
 						usage: event.usage,
 						messages: appendResponseMessages({

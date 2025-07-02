@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { type DomainTag, DomainTagInput } from "./domain-tag-input";
 
 const MAX_DOMAINS = 10;

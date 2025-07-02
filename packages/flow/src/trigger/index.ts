@@ -1,11 +1,5 @@
-import {
-	provider as githubProvider,
-	triggers as githubTriggers,
-} from "./github";
-import {
-	provider as manualProvider,
-	triggers as manualTriggers,
-} from "./manual";
+import { provider as githubProvider } from "./github";
+import { provider as manualProvider } from "./manual";
 
 export {
 	type TriggerEventId as GitHubTriggerEventId,

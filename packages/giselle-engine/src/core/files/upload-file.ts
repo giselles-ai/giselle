@@ -20,6 +20,6 @@ export async function uploadFile(args: {
 	);
 }
 
-async function fileToBuffer(file: File): Promise<Buffer> {
+function fileToBuffer(file: File): Promise<Buffer> {
 	return file.arrayBuffer().then((buffer) => Buffer.from(buffer));
 }

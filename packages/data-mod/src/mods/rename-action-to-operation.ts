@@ -91,7 +91,7 @@ export function renameActionToOperation(data: unknown, issue: $ZodIssue) {
 						transformedNode,
 					);
 					// Remove the old field properly with delete
-					const templateInNewData = getValueAtPath(newData, templatePath);
+					const _templateInNewData = getValueAtPath(newData, templatePath);
 					return newData;
 				}
 
@@ -148,7 +148,10 @@ export function renameActionToOperation(data: unknown, issue: $ZodIssue) {
 					context.actionNode,
 				);
 				// Remove the old field using delete instead of undefined
-				const contextInNewData = getValueAtPath(newData, generationContextPath);
+				const _contextInNewData = getValueAtPath(
+					newData,
+					generationContextPath,
+				);
 				return newData;
 			}
 		}

@@ -1,8 +1,7 @@
 import clsx from "clsx";
 import { CheckIcon, ChevronDownIcon, CopyIcon, XIcon } from "lucide-react";
-import { Dialog, DropdownMenu, RadioGroup } from "radix-ui";
+import { Dialog, DropdownMenu } from "radix-ui";
 import { useState } from "react";
-import { Button } from "./button";
 
 type SharePermission = "edit" | "view";
 type AccessScope = "team" | "anyone";
@@ -10,11 +9,9 @@ type AccessScope = "team" | "anyone";
 export function ShareModal({
 	open,
 	onOpenChange,
-	appId = "example-app-123",
 }: {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	appId?: string;
 }) {
 	const [permission, setPermission] = useState<SharePermission>("view");
 	const [accessScope, setAccessScope] = useState<AccessScope>("team");

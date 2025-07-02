@@ -151,15 +151,7 @@ export class PixelBasedUsageCalculator implements UsageCalculator {
 }
 
 export class ImageCountBasedUsageCalculator implements UsageCalculator {
-	calculateUsage({
-		width,
-		height,
-		n,
-	}: {
-		width: number;
-		height: number;
-		n: number;
-	}) {
+	calculateUsage({ n }: { width: number; height: number; n: number }) {
 		return {
 			output: n,
 			unit: "IMAGES" as const,

@@ -11,7 +11,6 @@ import {
 import { Button } from "@/app/(main)/settings/components/button";
 import {
 	Card,
-	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,

@@ -1,14 +1,10 @@
 import {
-	type CancelledGeneration,
-	type CompletedGeneration,
 	type Generation,
 	isCompletedGeneration,
 	isFailedGeneration,
-	type NodeId,
-	type RunningGeneration,
 } from "@giselle-sdk/data-type";
 import { useGiselleEngine } from "@giselle-sdk/giselle-engine/react";
-import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import { Accordion } from "radix-ui";
 import { useMemo } from "react";
 import { WilliIcon } from "../icons";

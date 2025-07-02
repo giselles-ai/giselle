@@ -5,7 +5,7 @@ import {
 	Capability,
 	hasCapability,
 } from "@giselle-sdk/language-model";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo } from "react";
 import {
 	Select,
 	SelectContent,

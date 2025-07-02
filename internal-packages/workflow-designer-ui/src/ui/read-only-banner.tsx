@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { EyeIcon, XIcon } from "lucide-react";
-import React from "react";
 
 interface ReadOnlyBannerProps {
 	className?: string;

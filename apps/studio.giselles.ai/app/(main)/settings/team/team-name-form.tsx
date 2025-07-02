@@ -2,14 +2,7 @@
 
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
-import {
-	type InferInput,
-	maxLength,
-	minLength,
-	parse,
-	pipe,
-	string,
-} from "valibot";
+import { maxLength, minLength, parse, pipe, string } from "valibot";
 import { Input } from "@/components/ui/input";
 import type { Team } from "@/services/teams/types";
 import { Button } from "../components/button";
@@ -27,8 +20,6 @@ const TeamNameSchema = pipe(
 	minLength(1, "Team name is required"),
 	maxLength(256, "Team name must be 256 characters or less"),
 );
-
-type TeamNameSchema = InferInput<typeof TeamNameSchema>;
 
 export function TeamNameForm({ id: teamId, name }: Team) {
 	const [isEditingTeam, setIsEditingTeam] = useState(false);

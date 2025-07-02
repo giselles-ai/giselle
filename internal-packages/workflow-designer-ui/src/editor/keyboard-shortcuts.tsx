@@ -54,5 +54,5 @@ export function KeyboardShortcuts() {
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [setSelectedTool, duplicateNode]);
 
-	return <></>;
+	return null;
 }

@@ -1,4 +1,4 @@
-import type { Workspace, WorkspaceId } from "@giselle-sdk/data-type";
+import type { Workspace } from "@giselle-sdk/data-type";
 import type { GiselleEngineContext } from "../types";
 import { setWorkspace } from "./utils";
 

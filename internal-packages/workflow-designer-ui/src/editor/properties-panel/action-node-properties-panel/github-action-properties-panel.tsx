@@ -38,7 +38,6 @@ import { GitHubActionConfiguredView } from "./ui/github-action-configured-view";
 
 export function GitHubActionPropertiesPanel({
 	node,
-	onRun,
 }: {
 	node: ActionNode;
 	onRun?: () => void;

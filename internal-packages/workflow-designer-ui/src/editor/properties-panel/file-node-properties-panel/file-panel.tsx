@@ -1,13 +1,10 @@
-import type { FileData, FileNode } from "@giselle-sdk/data-type";
+import type { FileData } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
 import { ArrowUpFromLineIcon, FileXIcon, TrashIcon } from "lucide-react";
-import { Dialog } from "radix-ui";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { toRelativeTime } from "../../../helper/datetime";
 import { TriangleAlert } from "../../../icons";
 import { FileNodeIcon } from "../../../icons/node";
 import { useToasts } from "../../../ui/toast";
-import { RemoveButton } from "../ui";
 import type { FilePanelProps } from "./file-panel-type";
 import { useFileNode } from "./use-file-node";
 
@@ -253,7 +250,11 @@ export function FilePanel({ node, config }: FilePanelProps) {
 		>
 			<div>
 				<div>
+					{/* biome-ignore lint/a11y/noStaticElementInteractions: drag-and-drop area needs interaction */}
+					{/* biome-ignore lint/a11y/useSemanticElements: div is required for drag-and-drop functionality */}
 					<div
+						role="region"
+						aria-label="File upload area"
 						className={clsx(
 							"group h-[300px] p-[8px]",
 							"border border-black-400 rounded-[8px]",
@@ -274,26 +275,24 @@ export function FilePanel({ node, config }: FilePanelProps) {
 							)}
 						>
 							{isDragging ? (
-								<>
-									{isValidFile ? (
-										<>
-											<FileNodeIcon
-												node={node}
-												className="size-[30px] text-black-400"
-											/>
-											<p className="text-center text-white-400">
-												Drop to upload your {config.label} files
-											</p>
-										</>
-									) : (
-										<>
-											<TriangleAlert className="size-[30px] text-error-900" />
-											<p className="text-center text-error-900">
-												Only {config.label} files are allowed
-											</p>
-										</>
-									)}
-								</>
+								isValidFile ? (
+									<>
+										<FileNodeIcon
+											node={node}
+											className="size-[30px] text-black-400"
+										/>
+										<p className="text-center text-white-400">
+											Drop to upload your {config.label} files
+										</p>
+									</>
+								) : (
+									<>
+										<TriangleAlert className="size-[30px] text-error-900" />
+										<p className="text-center text-error-900">
+											Only {config.label} files are allowed
+										</p>
+									</>
+								)
 							) : !isValidFile ? (
 								<>
 									<FileXIcon className="size-[30px] text-error-900" />

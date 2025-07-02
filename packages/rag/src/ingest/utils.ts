@@ -13,7 +13,7 @@ const DEFAULT_RETRY_DELAY = 1000;
 /**
  * Execute an operation with retry logic
  */
-export async function retryOperation<T>(
+export function retryOperation<T>(
 	operation: () => Promise<T>,
 	options: RetryOptions = {},
 ): Promise<T> {

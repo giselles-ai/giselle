@@ -1,28 +1,16 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import {
-	Check,
-	ChevronDown,
-	Copy,
-	Ellipsis,
-	Plus,
-	RefreshCw,
-	Trash2,
-	X,
-} from "lucide-react";
+import { Check, ChevronDown, Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { email as emailValidator, parse, pipe, string } from "valibot";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { GlassButton } from "@/components/ui/glass-button";
 import type { TeamRole } from "@/drizzle";
-import { cn } from "@/lib/utils";
-import { Button } from "../components/button";
 import { type SendInvitationsResult, sendInvitationsAction } from "./actions";
 import {
 	GlassDialogBody,

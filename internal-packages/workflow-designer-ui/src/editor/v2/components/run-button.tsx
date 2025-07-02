@@ -17,7 +17,6 @@ import {
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle-engine/react";
 import { buildWorkflowFromNode } from "@giselle-sdk/workflow-utils";
-import clsx from "clsx/lite";
 import { PlayIcon } from "lucide-react";
 import {
 	type ButtonHTMLAttributes,

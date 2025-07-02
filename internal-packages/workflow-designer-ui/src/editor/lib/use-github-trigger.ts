@@ -51,7 +51,7 @@ export function useGitHubTrigger(flowTriggerId: FlowTriggerId) {
 		[trigger, githubRepositoryFullnameData],
 	);
 	const setFlowTrigger = useCallback(
-		async (newValue: Partial<FlowTrigger>) => {
+		(newValue: Partial<FlowTrigger>) => {
 			if (trigger === undefined) {
 				return;
 			}

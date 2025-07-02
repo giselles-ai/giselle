@@ -55,7 +55,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	}, []);
 
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
-		async (e) => {
+		(e) => {
 			e.preventDefault();
 			if (parameters.length === 0) {
 				/** @todo error handling */

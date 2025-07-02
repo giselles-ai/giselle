@@ -1,7 +1,7 @@
 "use client";
 
 import Avatar from "boring-avatars";
-import { Check, ChevronDown, X } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import {
 	AlertDialog,
@@ -19,15 +19,7 @@ import {
 	DropdownMenuContent,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import type { TeamRole } from "@/drizzle";
-import { Button } from "../components/button";
 import { deleteTeamMember, updateTeamMemberRole } from "./actions";
 
 type TeamMemberListItemProps = {
@@ -49,7 +41,6 @@ export function TeamMemberListItem({
 	currentUserRole,
 	isProPlan,
 	currentUserId,
-	profileImage = null,
 }: TeamMemberListItemProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState("");

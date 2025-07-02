@@ -31,7 +31,7 @@ function createEnsureWebhookEventMock(shouldMatch = true) {
 		.mockImplementation(
 			<T extends WebhookEventName>(
 				event: WebhookEvent<WebhookEventName>,
-				expectedName: T,
+				_expectedName: T,
 			): event is WebhookEvent<T> => shouldMatch,
 		) as unknown as typeof ensureWebhookEvent;
 }
@@ -674,7 +674,7 @@ describe("GitHub Event Handlers", () => {
 			});
 
 			// Act
-			const result = await processEvent({
+			const _result = await processEvent({
 				event,
 				context: {
 					llmProviders: [],

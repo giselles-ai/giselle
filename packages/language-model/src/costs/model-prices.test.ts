@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { getValidPricing, type ModelPriceTable } from "./model-prices";
-import type { ModelPrice } from "./pricing";
 
 describe("getValidPricing", () => {
 	it("should return the price", () => {

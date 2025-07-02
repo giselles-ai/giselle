@@ -44,7 +44,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 		return null;
 	}
 
-	const color = getDeterministicColor(agent.id);
+	const _color = getDeterministicColor(agent.id);
 
 	const [relativeTime, setRelativeTime] = useState("");
 
@@ -60,6 +60,8 @@ export function AgentCard({ agent }: AgentCardProps) {
 	}, [agent.updatedAt]);
 
 	return (
+		// biome-ignore lint/a11y/noStaticElementInteractions: onMouseMove is only for visual effect, not interactive
+		// biome-ignore lint/a11y/useAriaPropsSupportedByRole: aria-label is descriptive for hover effects
 		<div
 			onMouseMove={handleMouseMove}
 			aria-label={agent.name || "Untitled app"}

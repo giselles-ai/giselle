@@ -1,4 +1,3 @@
-import type { SVGAttributes } from "lucide-react";
 import type { FC, SVGProps } from "react";
 
 export const GiselleLogo: FC<SVGProps<SVGSVGElement>> = (props) => {

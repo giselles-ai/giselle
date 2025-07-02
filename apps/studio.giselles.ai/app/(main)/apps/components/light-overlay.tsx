@@ -1,12 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import {
-	BACKDROP_STYLES,
-	CSS_VARS,
-	MASK_GRADIENTS,
-	Z_INDEX,
-} from "./constants";
+import { BACKDROP_STYLES, MASK_GRADIENTS, Z_INDEX } from "./constants";
 
 type LightOverlayProps = {
 	fadeRef?: React.RefObject<HTMLDivElement | null>;
@@ -15,7 +10,7 @@ type LightOverlayProps = {
 const createOverlayStyle = (
 	maskImage: string,
 	willChange: string,
-	zIndex: number,
+	_zIndex: number,
 	additionalStyles?: CSSProperties,
 ): CSSProperties => ({
 	backdropFilter: BACKDROP_STYLES.filter,

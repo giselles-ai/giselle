@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import React, { useMemo } from "react";
 import { WilliIcon } from "../icons/willi";
 import { Tooltip } from "./tooltip";
 
@@ -41,7 +40,7 @@ interface UserAvatarProps {
 }
 
 // Get a random color from the WILLI_COLORS array
-function getRandomColor() {
+function _getRandomColor() {
 	return WILLI_COLORS[Math.floor(Math.random() * WILLI_COLORS.length)];
 }
 

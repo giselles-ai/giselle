@@ -78,7 +78,7 @@ export async function handleWebhook(args: {
 	const webhookEventNames = Object.keys(args.on) as EmitterWebhookEventName[];
 	for (const webhookEventName of webhookEventNames) {
 		eventHandler.on(webhookEventName, async (event) => {
-			const typedEvent = {
+			const _typedEvent = {
 				name: webhookEventName,
 				data: event,
 			};

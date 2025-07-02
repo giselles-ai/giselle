@@ -19,7 +19,7 @@ export function supabaseVaultDriver(
 	const supabase = createClient(url, serviceKey);
 
 	return {
-		async encrypt(plaintext, options): Promise<string> {
+		async encrypt(plaintext, _options): Promise<string> {
 			// Create a secret in the Supabase Vault
 			const { data, error } = await supabase.rpc("create_secret", {
 				plaintext,

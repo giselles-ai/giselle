@@ -1,9 +1,9 @@
-import type { VectorStoreId, VectorStoreObject } from "./object";
+import type { VectorStoreObject } from "./object";
 
 type CreateVectorStore = () => Promise<VectorStoreObject>;
-type RetrieveVectorStore = (parameters: {
-	vectorStoreId: VectorStoreId;
-}) => Promise<VectorStoreObject>;
+// type RetrieveVectorStore = (parameters: {
+// 	vectorStoreId: VectorStoreId;
+// }) => Promise<VectorStoreObject>;
 // type DeleteVectorStore = () => Promise<void>;
 // type SearchVectorStore = () => Promise<void>;
 // type AddFile = (parameters: {

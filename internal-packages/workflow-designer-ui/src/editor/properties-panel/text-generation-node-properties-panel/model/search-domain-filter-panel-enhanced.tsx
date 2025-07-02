@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { SearchDomainFilterEnhanced } from "../../../../ui/search-domain-filter-enhanced";
 
 export function SearchDomainFilterPanelEnhanced({

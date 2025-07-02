@@ -116,7 +116,7 @@ export default defineDriver((options: SupabaseStorageDriverOptions) => {
 			const cacheControl = opts?.cacheControlMaxAge;
 			const contentType = opts?.contentType;
 
-			const { data, error } = await supabase.storage
+			const { error } = await supabase.storage
 				.from(bucket)
 				.upload(r(key), value, {
 					upsert: true,
@@ -191,7 +191,7 @@ export default defineDriver((options: SupabaseStorageDriverOptions) => {
 			// No specific cleanup needed for Supabase client
 		},
 
-		async watch(_callback) {
+		watch(_callback) {
 			// Supabase doesn't support file watching natively
 			// Return unwatch function
 			return () => {};

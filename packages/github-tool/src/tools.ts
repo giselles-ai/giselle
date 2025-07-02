@@ -519,7 +519,7 @@ export function githubTools(octokit: Octokit) {
 					.describe("Optional: reason the session was created")
 					.optional(),
 			}),
-			execute: async (params) => {
+			execute: async (_params) => {
 				const response = await octokit.request("GET /user");
 				return response.data;
 			},

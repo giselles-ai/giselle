@@ -17,12 +17,11 @@ import { useConnectedInputs } from "./lib";
 export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 	const { data, updateNodeData, setUiNodeState } = useWorkflowDesigner();
 	const { isValid, connectedInputs } = useConnectedInputs(node.id, node.inputs);
-	const { createAndStartGeneration, isGenerating, stopGeneration } =
-		useNodeGenerations({
-			nodeId: node.id,
-			origin: { type: "workspace", id: data.id },
-		});
-	const handleClick = useCallback(async () => {
+	const { createAndStartGeneration } = useNodeGenerations({
+		nodeId: node.id,
+		origin: { type: "workspace", id: data.id },
+	});
+	const handleClick = useCallback(() => {
 		if (!isValid) {
 			setUiNodeState(node.id, {
 				showError: true,

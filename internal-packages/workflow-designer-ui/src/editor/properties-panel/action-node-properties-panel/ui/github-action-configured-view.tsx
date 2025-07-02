@@ -10,7 +10,7 @@ import {
 	type NodeId,
 	type OutputId,
 } from "@giselle-sdk/data-type";
-import { githubActionIdToLabel, githubActions } from "@giselle-sdk/flow";
+import { githubActionIdToLabel } from "@giselle-sdk/flow";
 import {
 	defaultName,
 	useFeatureFlag,

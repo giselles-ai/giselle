@@ -1,6 +1,5 @@
 import { useReactFlow } from "@xyflow/react";
 import { useEffect, useState } from "react";
-import { useToolbar } from "./tool";
 
 export function Debug() {
 	// const { selectedTool } = useToolbar();

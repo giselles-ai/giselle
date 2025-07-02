@@ -2,7 +2,7 @@
 
 import * as Dialog from "@radix-ui/react-dialog";
 import { Copy, Ellipsis, RefreshCw, Trash2 } from "lucide-react";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,

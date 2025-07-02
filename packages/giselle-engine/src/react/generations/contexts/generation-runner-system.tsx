@@ -66,9 +66,9 @@ export interface FetchNodeGenerationsParams {
 	nodeId: NodeId;
 	origin: GenerationOrigin;
 }
-type FetchNodeGenerations = (
-	params: FetchNodeGenerationsParams,
-) => Promise<void>;
+// type FetchNodeGenerations = (
+// 	params: FetchNodeGenerationsParams,
+// ) => Promise<void>;
 
 interface GenerationRunnerSystemContextType {
 	generateTextApi: string;

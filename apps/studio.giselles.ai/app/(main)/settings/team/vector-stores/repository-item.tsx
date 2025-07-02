@@ -1,7 +1,7 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { AlertCircle, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import { useState, useTransition } from "react";
 import type {
 	GitHubRepositoryIndexStatus,
