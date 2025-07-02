@@ -4,7 +4,9 @@ import { Alert, AlertDescription, AlertTitle } from "../../components/alert";
 
 export function AgentTimeUsageForFreePlan({
 	usedMinutes,
-}: { usedMinutes: number }) {
+}: {
+	usedMinutes: number;
+}) {
 	const includedMinutes = AGENT_TIME_CHARGE_LIMIT_MINUTES.FREE;
 	const warningMessage =
 		"Your free plan limit is almost reached. Upgrade to Pro for unlimited usage.";
@@ -22,7 +24,9 @@ export function AgentTimeUsageForFreePlan({
 
 export function AgentTimeUsageForProPlan({
 	usedMinutes,
-}: { usedMinutes: number }) {
+}: {
+	usedMinutes: number;
+}) {
 	const includedMinutes = AGENT_TIME_CHARGE_LIMIT_MINUTES.PRO;
 	const warningMessage =
 		"Getting close to your monthly limit. Usage beyond this limit will be billed additionally";

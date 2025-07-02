@@ -1,9 +1,9 @@
 "use server";
 
+import { and, eq } from "drizzle-orm";
 import { agents, db, supabaseUserMappings, teamMemberships } from "@/drizzle";
 import { getUser } from "@/lib/supabase";
 import type { AgentId } from "@/services/agents";
-import { and, eq } from "drizzle-orm";
 
 export const getTeamMembershipByAgentId = async (
 	agentId: AgentId,

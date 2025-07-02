@@ -1,5 +1,5 @@
-import { stripe } from "@/services/external/stripe";
 import type Stripe from "stripe";
+import { stripe } from "@/services/external/stripe";
 
 export async function handleInvoiceCreation(invoice: Stripe.Invoice) {
 	if (!invoice.subscription || typeof invoice.subscription !== "string") {

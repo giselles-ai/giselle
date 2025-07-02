@@ -1,11 +1,11 @@
-import { GlassButton } from "@/components/ui/glass-button";
-import { agents, db } from "@/drizzle";
-import { fetchCurrentUser } from "@/services/accounts";
-import { fetchCurrentTeam } from "@/services/teams";
 import { createId } from "@paralleldrive/cuid2";
 import { ExternalLink, Plus } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
+import { GlassButton } from "@/components/ui/glass-button";
+import { agents, db } from "@/drizzle";
+import { fetchCurrentUser } from "@/services/accounts";
+import { fetchCurrentTeam } from "@/services/teams";
 import { giselleEngine } from "../../giselle-engine";
 
 export default function Layout({ children }: { children: ReactNode }) {

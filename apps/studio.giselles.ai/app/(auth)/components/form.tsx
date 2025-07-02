@@ -1,12 +1,12 @@
 "use client";
 
+import { TriangleAlertIcon } from "lucide-react";
+import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { AuthError } from "@/lib/supabase";
-import { TriangleAlertIcon } from "lucide-react";
-import Link from "next/link";
 
 type FormProps<T extends Record<string, string | undefined>> = {
 	authError: AuthError | null;

@@ -1,7 +1,5 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import type { Team } from "@/services/teams/types";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import {
@@ -12,6 +10,8 @@ import {
 	pipe,
 	string,
 } from "valibot";
+import { Input } from "@/components/ui/input";
+import type { Team } from "@/services/teams/types";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { updateTeamName } from "./actions";

@@ -1,7 +1,7 @@
 "use server";
 
-import { createClient } from "@/lib/supabase";
 import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase";
 
 export async function signupJoin(formData: FormData) {
 	const token = formData.get("token") as string;

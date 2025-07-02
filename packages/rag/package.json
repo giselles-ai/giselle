@@ -28,6 +28,11 @@
 	"peerDependencies": {
 		"openai": "catalog:"
 	},
-	"keywords": ["rag", "vector-search", "embeddings", "typescript"],
+	"keywords": [
+		"rag",
+		"vector-search",
+		"embeddings",
+		"typescript"
+	],
 	"license": "MIT"
 }

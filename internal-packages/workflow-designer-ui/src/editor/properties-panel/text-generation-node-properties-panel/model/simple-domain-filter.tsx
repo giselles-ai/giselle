@@ -8,7 +8,7 @@ const isValidDomain = (domain: string): boolean => {
 	// Simple domain name validation
 	// Basic domain name patterns: example.com, sub.example.co.jp, etc.
 	const domainRegex =
-		/^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+		/^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
 	return domainRegex.test(domain);
 };
 

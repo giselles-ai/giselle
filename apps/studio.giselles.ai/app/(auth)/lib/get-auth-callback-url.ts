@@ -4,7 +4,10 @@ import type { OAuthProvider } from "@/services/accounts";
 export function getAuthCallbackUrl({
 	next = "/",
 	provider,
-}: { next?: string; provider: OAuthProvider }): string {
+}: {
+	next?: string;
+	provider: OAuthProvider;
+}): string {
 	if (!provider) {
 		throw new Error("Provider is required");
 	}

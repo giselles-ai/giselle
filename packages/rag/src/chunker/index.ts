@@ -1,5 +1,6 @@
 export { createLineChunker, type LineChunkerOptions } from "./line-chunker";
 export type { ChunkerFunction } from "./types";
+
 import { createLineChunker } from "./line-chunker";
 
 /**

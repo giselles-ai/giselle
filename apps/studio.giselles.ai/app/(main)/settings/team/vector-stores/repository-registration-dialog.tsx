@@ -1,5 +1,8 @@
 "use client";
 
+import * as Dialog from "@radix-ui/react-dialog";
+import { Check, ChevronDown, Plus } from "lucide-react";
+import { useState, useTransition } from "react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -7,9 +10,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { GlassButton } from "@/components/ui/glass-button";
-import * as Dialog from "@radix-ui/react-dialog";
-import { Check, ChevronDown, Plus } from "lucide-react";
-import { useState, useTransition } from "react";
 import {
 	GlassDialogBody,
 	GlassDialogContent,

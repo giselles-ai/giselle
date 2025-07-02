@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { DM_Mono, DM_Sans } from "next/font/google";
 import { Suspense } from "react";
+import { ThemeProvider } from "@/components/theme-provider";
 import { PostHogPageView } from "./posthog-page-view";
 import { PHProvider } from "./providers";
 

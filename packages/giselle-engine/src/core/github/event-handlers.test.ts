@@ -1,10 +1,10 @@
 import type { FlowTrigger } from "@giselle-sdk/data-type";
 import { FlowTriggerId } from "@giselle-sdk/data-type";
 import type {
+	ensureWebhookEvent,
 	GitHubAuthConfig,
 	WebhookEvent,
 	WebhookEventName,
-	ensureWebhookEvent,
 } from "@giselle-sdk/github-tool";
 import { createStorage } from "unstorage";
 import memoryDriver from "unstorage/drivers/memory";

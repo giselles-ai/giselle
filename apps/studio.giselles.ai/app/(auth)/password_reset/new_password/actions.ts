@@ -1,8 +1,8 @@
 "use server";
 
-import { createClient } from "@/lib/supabase";
 import type { AuthError } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase";
 
 interface SerializableError {
 	name: AuthError["name"];

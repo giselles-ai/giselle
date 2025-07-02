@@ -1,8 +1,8 @@
 import { getUser } from "@/lib/supabase";
 import {
+	buildGoogleUserClient,
 	type GoogleUserClient,
 	type GoogleUserData,
-	buildGoogleUserClient,
 	needsAuthorization,
 } from "../external/google";
 import { getOauthCredential } from "./oauth-credentials";

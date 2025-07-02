@@ -1,6 +1,6 @@
-import type { GoogleUserData } from "@/services/external/google";
 import { SiGoogle } from "@icons-pack/react-simple-icons";
 import { TriangleAlertIcon } from "lucide-react";
+import type { GoogleUserData } from "@/services/external/google";
 import { Alert, AlertDescription, AlertTitle } from "./alert";
 import { Card } from "./card";
 

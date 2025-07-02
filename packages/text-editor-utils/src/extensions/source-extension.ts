@@ -13,7 +13,10 @@ export interface SourceJSONContent extends JSONContent {
 export function createSourceExtensionJSONContent({
 	node,
 	outputId,
-}: { node: NodeReference; outputId: OutputId }) {
+}: {
+	node: NodeReference;
+	outputId: OutputId;
+}) {
 	return {
 		type: "Source",
 		attrs: {

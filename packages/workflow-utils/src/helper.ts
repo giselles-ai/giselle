@@ -1,5 +1,6 @@
 import {
 	type Connection,
+	isOperationNode,
 	type Job,
 	JobId,
 	Node,
@@ -7,7 +8,6 @@ import {
 	type NodeLike,
 	type Operation,
 	type WorkflowId,
-	isOperationNode,
 } from "@giselle-sdk/data-type";
 
 /**

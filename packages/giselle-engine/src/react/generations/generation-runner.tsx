@@ -20,11 +20,7 @@ function useOnce(fn: () => void) {
 		once.current = true;
 	}, [fn]);
 }
-export function GenerationRunner({
-	generation,
-}: {
-	generation: Generation;
-}) {
+export function GenerationRunner({ generation }: { generation: Generation }) {
 	if (generation.status === "created") {
 		return null;
 	}
@@ -47,11 +43,7 @@ export function GenerationRunner({
 	}
 }
 
-function TextGenerationRunner({
-	generation,
-}: {
-	generation: Generation;
-}) {
+function TextGenerationRunner({ generation }: { generation: Generation }) {
 	if (generation.status === "created") {
 		return null;
 	}
@@ -73,11 +65,7 @@ function TextGenerationRunner({
 	}
 }
 
-function CompletionRunner({
-	generation,
-}: {
-	generation: Generation;
-}) {
+function CompletionRunner({ generation }: { generation: Generation }) {
 	const {
 		generateTextApi,
 		updateGenerationStatusToRunning,
@@ -123,11 +111,7 @@ function CompletionRunner({
 	return null;
 }
 
-function ImageGenerationRunner({
-	generation,
-}: {
-	generation: Generation;
-}) {
+function ImageGenerationRunner({ generation }: { generation: Generation }) {
 	const {
 		updateGenerationStatusToComplete,
 		updateGenerationStatusToRunning,
@@ -156,11 +140,7 @@ function ImageGenerationRunner({
 	return null;
 }
 
-function TriggerRunner({
-	generation,
-}: {
-	generation: Generation;
-}) {
+function TriggerRunner({ generation }: { generation: Generation }) {
 	const {
 		updateGenerationStatusToComplete,
 		updateGenerationStatusToRunning,
@@ -187,11 +167,7 @@ function TriggerRunner({
 	return null;
 }
 
-function ActionRunner({
-	generation,
-}: {
-	generation: Generation;
-}) {
+function ActionRunner({ generation }: { generation: Generation }) {
 	const {
 		updateGenerationStatusToComplete,
 		updateGenerationStatusToRunning,
@@ -218,11 +194,7 @@ function ActionRunner({
 	return null;
 }
 
-function QueryRunner({
-	generation,
-}: {
-	generation: Generation;
-}) {
+function QueryRunner({ generation }: { generation: Generation }) {
 	const {
 		updateGenerationStatusToComplete,
 		updateGenerationStatusToRunning,

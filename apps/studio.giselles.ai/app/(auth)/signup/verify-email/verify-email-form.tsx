@@ -1,5 +1,7 @@
 "use client";
 
+import { TriangleAlertIcon } from "lucide-react";
+import { type FC, useActionState, useCallback, useRef } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { ClickableText } from "@/components/ui/clickable-text";
@@ -9,8 +11,6 @@ import {
 	InputOTPSeparator,
 	InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { TriangleAlertIcon } from "lucide-react";
-import { type FC, useActionState, useCallback, useRef } from "react";
 import { ActionPrompt } from "../../components/action-prompt";
 import { useSignupContext } from "../context";
 import { resendOtp, verifyEmail } from "./verify-email";

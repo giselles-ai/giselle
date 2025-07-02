@@ -1,5 +1,7 @@
 "use server";
 
+import { createId } from "@paralleldrive/cuid2";
+import type { User } from "@supabase/auth-js";
 import { giselleEngine } from "@/app/giselle-engine";
 import {
 	agents,
@@ -11,8 +13,6 @@ import {
 } from "@/drizzle";
 import { isEmailFromRoute06 } from "@/lib/utils";
 import { createTeamId } from "@/services/teams/utils";
-import { createId } from "@paralleldrive/cuid2";
-import type { User } from "@supabase/auth-js";
 
 export const initializeAccount = async (
 	supabaseUserId: User["id"],

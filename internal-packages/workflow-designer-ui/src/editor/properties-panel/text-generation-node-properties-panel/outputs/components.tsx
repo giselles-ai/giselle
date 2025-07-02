@@ -1,8 +1,8 @@
 import {
-	OutputId,
-	type TextGenerationNode,
 	isImageGenerationNode,
 	isTextGenerationNode,
+	OutputId,
+	type TextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle-engine/react";
 import clsx from "clsx/lite";
@@ -20,7 +20,10 @@ import { useCategoriedOutputs } from "./use-categoried-outputs";
 function OutputToggleItem({
 	input,
 	disabled = false,
-}: { input: OutputWithDetails; disabled?: boolean }) {
+}: {
+	input: OutputWithDetails;
+	disabled?: boolean;
+}) {
 	const getDisplayName = () => {
 		if (isTextGenerationNode(input.node) || isImageGenerationNode(input.node)) {
 			return input.node.name ?? input.node.content.llm.id;

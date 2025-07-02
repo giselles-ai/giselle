@@ -1,4 +1,4 @@
-import { type OAuthProvider, connectIdentity } from "@/services/accounts";
+import { connectIdentity, type OAuthProvider } from "@/services/accounts";
 
 export async function GET(
 	request: Request,

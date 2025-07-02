@@ -6,8 +6,8 @@ import {
 import {
 	BaseEdge,
 	type EdgeProps,
-	type Edge as XYFlowEdge,
 	getBezierPath,
+	type Edge as XYFlowEdge,
 } from "@xyflow/react";
 import clsx from "clsx/lite";
 import type { PropsWithChildren } from "react";

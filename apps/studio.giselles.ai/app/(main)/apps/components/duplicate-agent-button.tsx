@@ -1,5 +1,10 @@
 "use client";
 
+import { useToast } from "@giselles-ai/contexts/toast";
+import * as Dialog from "@radix-ui/react-dialog";
+import { CopyIcon, LoaderCircleIcon } from "lucide-react";
+import { redirect } from "next/navigation";
+import { useState, useTransition } from "react";
 import {
 	Tooltip,
 	TooltipContent,
@@ -7,11 +12,6 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { AgentId } from "@/services/agents";
-import { useToast } from "@giselles-ai/contexts/toast";
-import * as Dialog from "@radix-ui/react-dialog";
-import { CopyIcon, LoaderCircleIcon } from "lucide-react";
-import { redirect } from "next/navigation";
-import { useState, useTransition } from "react";
 import {
 	GlassDialogContent,
 	GlassDialogFooter,
@@ -22,7 +22,10 @@ import { copyAgent } from "../actions";
 export function DuplicateAgentButton({
 	agentId,
 	agentName,
-}: { agentId: AgentId; agentName: string | null }) {
+}: {
+	agentId: AgentId;
+	agentName: string | null;
+}) {
 	const [isPending, startTransition] = useTransition();
 	const [open, setOpen] = useState(false);
 	const { addToast } = useToast();

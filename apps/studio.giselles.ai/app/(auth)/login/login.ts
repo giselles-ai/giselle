@@ -1,7 +1,7 @@
 "use server";
 
-import { type AuthError, createClient } from "@/lib/supabase";
 import { redirect } from "next/navigation";
+import { type AuthError, createClient } from "@/lib/supabase";
 
 export async function login(
 	prevState: AuthError | null,

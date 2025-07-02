@@ -1,3 +1,5 @@
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -6,8 +8,6 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
 import { IMAGE_CONSTRAINTS } from "../constants";
 
 const ACCEPTED_FILE_TYPES = IMAGE_CONSTRAINTS.formats.join(",");

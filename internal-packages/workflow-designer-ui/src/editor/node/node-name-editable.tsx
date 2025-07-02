@@ -3,7 +3,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 export function NodeNameEditable({
 	name,
 	onNodeNameChange,
-}: { name: string; onNodeNameChange?: (name: string) => void }) {
+}: {
+	name: string;
+	onNodeNameChange?: (name: string) => void;
+}) {
 	const [editing, setEditing] = useState(false);
 	const ref = useRef<HTMLInputElement>(null);
 	useEffect(() => {

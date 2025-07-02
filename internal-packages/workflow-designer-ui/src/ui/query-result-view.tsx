@@ -168,11 +168,7 @@ function DataSourceTab({
 	);
 }
 
-function QueryResultCard({
-	result,
-}: {
-	result: QueryResultData;
-}) {
+function QueryResultCard({ result }: { result: QueryResultData }) {
 	const [expandedRecords, setExpandedRecords] = useState<Set<number>>(
 		new Set(),
 	);
@@ -249,11 +245,7 @@ function QueryResultCard({
 	);
 }
 
-export function QueryResultView({
-	generation,
-}: {
-	generation: Generation;
-}) {
+export function QueryResultView({ generation }: { generation: Generation }) {
 	const [activeTabIndex, setActiveTabIndex] = useState(0);
 
 	if (isFailedGeneration(generation)) {

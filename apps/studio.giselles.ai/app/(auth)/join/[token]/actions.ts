@@ -1,9 +1,9 @@
 "use server";
 
-import { revokeInvitation } from "@/app/(main)/settings/team/invitation";
-import { createClient } from "@/lib/supabase/server";
 import { captureException } from "@sentry/nextjs";
 import { redirect } from "next/navigation";
+import { revokeInvitation } from "@/app/(main)/settings/team/invitation";
+import { createClient } from "@/lib/supabase/server";
 import { JoinError } from "./errors";
 import { acceptInvitation } from "./invitation";
 

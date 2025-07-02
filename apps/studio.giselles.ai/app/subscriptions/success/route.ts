@@ -1,9 +1,9 @@
-import { db, subscriptions, teams } from "@/drizzle";
-import { getGiselleSession, updateGiselleSession } from "@/lib/giselle-session";
-import { stripe } from "@/services/external/stripe";
 import { captureException } from "@sentry/nextjs";
 import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
+import { db, subscriptions, teams } from "@/drizzle";
+import { getGiselleSession, updateGiselleSession } from "@/lib/giselle-session";
+import { stripe } from "@/services/external/stripe";
 
 export async function GET(_request: Request) {
 	const session = await getGiselleSession();

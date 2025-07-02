@@ -1,4 +1,4 @@
-import { type ReactNode, createContext, useContext } from "react";
+import { createContext, type ReactNode, useContext } from "react";
 import type { UsageLimits } from "../../core";
 
 export const UsageLimitsContext = createContext<UsageLimits | undefined>(
@@ -8,7 +8,10 @@ export const UsageLimitsContext = createContext<UsageLimits | undefined>(
 export function UsageLimitsProvider({
 	children,
 	limits,
-}: { children: ReactNode; limits?: UsageLimits }) {
+}: {
+	children: ReactNode;
+	limits?: UsageLimits;
+}) {
 	return (
 		<UsageLimitsContext.Provider value={limits}>
 			{children}

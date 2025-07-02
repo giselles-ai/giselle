@@ -27,7 +27,9 @@ const secretTags = ["github-access-token"];
 
 export function GitHubToolConfigurationDialog({
 	node,
-}: { node: TextGenerationNode }) {
+}: {
+	node: TextGenerationNode;
+}) {
 	const {
 		presentDialog,
 		setPresentDialog,

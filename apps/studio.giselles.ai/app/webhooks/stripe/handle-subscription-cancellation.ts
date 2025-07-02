@@ -1,7 +1,7 @@
-import { db } from "@/drizzle/db";
-import { subscriptions, teamMemberships } from "@/drizzle/schema";
 import { and, eq, ne } from "drizzle-orm";
 import type Stripe from "stripe";
+import { db } from "@/drizzle/db";
+import { subscriptions, teamMemberships } from "@/drizzle/schema";
 
 export async function handleSubscriptionCancellation(
 	subscription: Stripe.Subscription,

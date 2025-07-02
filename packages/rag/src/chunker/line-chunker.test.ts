@@ -1,15 +1,15 @@
 import {
 	existsSync,
 	mkdirSync,
-	readFileSync,
 	readdirSync,
+	readFileSync,
 	statSync,
 	writeFileSync,
 } from "node:fs";
 import { basename, dirname, extname, join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 import { DEFAULT_CHUNKER_CONFIG } from "./index";
-import { type LineChunkerOptions, createLineChunker } from "./line-chunker";
+import { createLineChunker, type LineChunkerOptions } from "./line-chunker";
 
 const FIXTURES_DIR = join(__dirname, "__fixtures__");
 const GOLDEN_DIR = join(__dirname, "__golden__");

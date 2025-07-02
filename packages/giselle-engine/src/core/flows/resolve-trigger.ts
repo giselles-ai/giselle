@@ -3,8 +3,8 @@ import {
 	GenerationContext,
 	type GenerationContextInput,
 	type GenerationOutput,
-	type QueuedGeneration,
 	isTriggerNode,
+	type QueuedGeneration,
 } from "@giselle-sdk/data-type";
 import { githubTriggers } from "@giselle-sdk/flow";
 import { internalSetGeneration } from "../generations/internal/set-generation";

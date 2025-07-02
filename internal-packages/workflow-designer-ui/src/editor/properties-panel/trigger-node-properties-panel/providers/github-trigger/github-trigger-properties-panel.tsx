@@ -6,9 +6,9 @@ import {
 } from "@giselle-sdk/data-type";
 import { type GitHubTriggerEventId, githubTriggers } from "@giselle-sdk/flow";
 import type { GitHubIntegrationInstallation } from "@giselle-sdk/giselle-engine";
-import { useIntegration } from "@giselle-sdk/giselle-engine/react";
 import {
 	useGiselleEngine,
+	useIntegration,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle-engine/react";
 import clsx from "clsx/lite";

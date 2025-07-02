@@ -163,7 +163,7 @@ function replaceEncodedData(content: string): string {
 
 	// Replace multiline base64 blocks (common in diffs)
 	result = result.replace(
-		/(\+|\-|\s)([A-Za-z0-9+/]{40,}[=]{0,2}(\n(\+|\-|\s)[A-Za-z0-9+/]{40,}[=]{0,2}){3,})/g,
+		/(\+|-|\s)([A-Za-z0-9+/]{40,}[=]{0,2}(\n(\+|-|\s)[A-Za-z0-9+/]{40,}[=]{0,2}){3,})/g,
 		"$1<ENCODED DATA>",
 	);
 

@@ -2,9 +2,9 @@ export {
 	AnthropicIcon,
 	AudioIcon,
 	DocumentIcon,
-	GenNodeIcon,
 	GenerateImageIcon,
 	GenerateTextIcon,
+	GenNodeIcon,
 	GitHubIcon,
 	GoogleWhiteIcon,
 	OpenaiIcon,
@@ -18,7 +18,7 @@ export {
 	TriggerIcon,
 	UploadIcon,
 	VideoIcon,
-	WilliIcon,
 	WebPageFileIcon,
+	WilliIcon,
 } from "../../../../icons";
 export { ImageGenerationNodeIcon } from "../../../../icons/node";

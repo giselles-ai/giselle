@@ -1,4 +1,4 @@
-import { type ReactNode, createContext, useContext } from "react";
+import { createContext, type ReactNode, useContext } from "react";
 import type { TelemetrySettings } from "../../core/telemetry";
 
 export const TelemetryContext = createContext<TelemetrySettings | undefined>(
@@ -8,7 +8,10 @@ export const TelemetryContext = createContext<TelemetrySettings | undefined>(
 export function TelemetryProvider({
 	children,
 	settings,
-}: { children: ReactNode; settings?: TelemetrySettings }) {
+}: {
+	children: ReactNode;
+	settings?: TelemetrySettings;
+}) {
 	return (
 		<TelemetryContext.Provider value={settings}>
 			{children}

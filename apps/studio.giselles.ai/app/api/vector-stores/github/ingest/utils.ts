@@ -1,6 +1,6 @@
-import { db, githubRepositoryIndex } from "@/drizzle";
 import { octokit } from "@giselle-sdk/github-tool";
 import { and, eq, isNotNull, lt, or } from "drizzle-orm";
+import { db, githubRepositoryIndex } from "@/drizzle";
 import type { TargetGitHubRepository } from "./types";
 
 export function buildOctokit(installationId: number) {

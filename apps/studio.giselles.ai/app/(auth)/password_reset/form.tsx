@@ -1,10 +1,10 @@
 "use client";
 
+import { TriangleAlertIcon } from "lucide-react";
+import { type FC, useActionState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
-import { TriangleAlertIcon } from "lucide-react";
-import { type FC, useActionState } from "react";
 import { sendPasswordResetEmail } from "./actions";
 
 export const Form: FC = () => {

@@ -1,5 +1,5 @@
-import { ClickableText } from "@/components/ui/clickable-text";
 import Link from "next/link";
+import { ClickableText } from "@/components/ui/clickable-text";
 import { ActionPrompt } from "../components/action-prompt";
 
 export default function NotFound() {

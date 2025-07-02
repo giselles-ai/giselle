@@ -1,8 +1,8 @@
-import { ClickableText } from "@/components/ui/clickable-text";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import type { components } from "@octokit/openapi-types";
 import { TriangleAlertIcon } from "lucide-react";
 import Link from "next/link";
+import { ClickableText } from "@/components/ui/clickable-text";
 import { Alert, AlertDescription, AlertTitle } from "./alert";
 import { Card } from "./card";
 

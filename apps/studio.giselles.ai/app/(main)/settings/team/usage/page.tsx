@@ -1,6 +1,6 @@
+import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
-import { Suspense } from "react";
 import { AgentTimeCharge } from "../agent-time-charge";
 import { AgentUsage } from "../agent-usage";
 

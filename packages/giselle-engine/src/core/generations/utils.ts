@@ -8,6 +8,8 @@ import {
 	type GenerationId,
 	type GenerationOutput,
 	type ImageGenerationNode,
+	isImageGenerationNode,
+	isTextGenerationNode,
 	type Node,
 	NodeGenerationIndex,
 	NodeId,
@@ -16,8 +18,6 @@ import {
 	type TextGenerationNode,
 	type WebPageContent,
 	type WorkspaceId,
-	isImageGenerationNode,
-	isTextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { hasTierAccess, languageModels } from "@giselle-sdk/language-model";
 import {

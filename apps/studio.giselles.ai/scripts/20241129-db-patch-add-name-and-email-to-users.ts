@@ -13,9 +13,9 @@
  * - Proper database permissions for UPDATE operations
  */
 
-import { db, supabaseUserMappings, users as usersSchema } from "@/drizzle";
 import { createClient } from "@supabase/supabase-js";
 import { sql } from "drizzle-orm";
+import { db, supabaseUserMappings, users as usersSchema } from "@/drizzle";
 
 async function main() {
 	const url = process.env.NEXT_PUBLIC_SUPABASE_URL as string;

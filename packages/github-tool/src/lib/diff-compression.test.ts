@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { PR_22_DIFF, PR_1118_DIFF } from "./__fixtures__";
-import { type FileDiff, compressLargeDiff } from "./diff-compression";
+import { compressLargeDiff, type FileDiff } from "./diff-compression";
 
 describe("diff compression", () => {
 	it("should return original diff when under maxSize", () => {

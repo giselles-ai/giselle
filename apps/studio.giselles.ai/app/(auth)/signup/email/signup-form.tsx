@@ -1,12 +1,12 @@
 "use client";
 
-import type { AuthError } from "@/lib/supabase";
 import { type FC, useActionState, useState } from "react";
 import { safeParse } from "valibot";
+import type { AuthError } from "@/lib/supabase";
 import { Form } from "../../components";
 import { useSignupContext } from "../context";
 import { signup } from "./signup";
-import { type ValidationErrors, signupSchema } from "./validations";
+import { signupSchema, type ValidationErrors } from "./validations";
 
 export const SignupForm: FC = () => {
 	const { dispatch } = useSignupContext();

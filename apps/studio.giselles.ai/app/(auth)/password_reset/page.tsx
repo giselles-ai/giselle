@@ -1,6 +1,6 @@
-import { ClickableText } from "@/components/ui/clickable-text";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
+import { ClickableText } from "@/components/ui/clickable-text";
 import { AuthContainer, AuthContainerHeader } from "../components";
 import { ActionPrompt } from "../components/action-prompt";
 import { Form } from "./form";

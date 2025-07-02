@@ -1,10 +1,5 @@
-import { logger as pinoLogger } from "@/lib/logger";
-import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
-import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
-import { captureException } from "@sentry/nextjs";
-import type { LogSchema, OtelLoggerWrapper } from "./types";
-
 import type { AnyValue, Logger } from "@opentelemetry/api-logs";
+import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
 import { Resource } from "@opentelemetry/resources";
 import {
 	type LogRecord as BaseLogRecord,
@@ -12,7 +7,11 @@ import {
 	ConsoleLogRecordExporter,
 	LoggerProvider,
 } from "@opentelemetry/sdk-logs";
+import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
+import { captureException } from "@sentry/nextjs";
+import { logger as pinoLogger } from "@/lib/logger";
 import { headers } from "./base";
+import type { LogSchema, OtelLoggerWrapper } from "./types";
 
 interface LogRecord extends BaseLogRecord {
 	severityText: SeverityText;

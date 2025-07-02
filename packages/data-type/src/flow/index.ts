@@ -2,6 +2,7 @@ import { z } from "zod/v4";
 import { NodeId } from "../node";
 import { WorkspaceId } from "../workspace";
 import { FlowTriggerId, GitHubFlowTrigger, ManualFlowTrigger } from "./trigger";
+
 export * from "./trigger";
 
 export const FlowTrigger = z.object({

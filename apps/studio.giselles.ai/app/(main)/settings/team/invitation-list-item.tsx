@@ -1,5 +1,8 @@
 "use client";
 
+import * as Dialog from "@radix-ui/react-dialog";
+import { Copy, Ellipsis, RefreshCw, Trash2 } from "lucide-react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -8,9 +11,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { TeamRole } from "@/drizzle";
 import { useToast } from "@/packages/contexts/toast";
-import * as Dialog from "@radix-ui/react-dialog";
-import { Copy, Ellipsis, RefreshCw, Trash2 } from "lucide-react";
-import { useEffect, useRef, useState, useTransition } from "react";
 import { resendInvitationAction, revokeInvitationAction } from "./actions";
 import {
 	GlassDialogContent,

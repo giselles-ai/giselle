@@ -16,11 +16,7 @@ function ensureTools(key: keyof ToolSet, node: TextGenerationNode): string[] {
 	return [];
 }
 
-export function ToolsPanel({
-	node,
-}: {
-	node: TextGenerationNode;
-}) {
+export function ToolsPanel({ node }: { node: TextGenerationNode }) {
 	return (
 		<div className="text-white-400 space-y-[16px]">
 			{toolProviders.map((provider) => (

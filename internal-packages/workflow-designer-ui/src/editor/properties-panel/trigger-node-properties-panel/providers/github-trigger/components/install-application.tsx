@@ -5,7 +5,9 @@ import { usePopupWindow } from "../../../hooks/use-popup-window";
 
 export function InstallGitHubApplication({
 	installationUrl,
-}: { installationUrl: string }) {
+}: {
+	installationUrl: string;
+}) {
 	const [isPending, startTransition] = useTransition();
 	const { refresh } = useIntegration();
 	const { open } = usePopupWindow(installationUrl);

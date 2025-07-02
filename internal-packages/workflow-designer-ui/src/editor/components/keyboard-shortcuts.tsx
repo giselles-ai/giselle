@@ -1,10 +1,6 @@
 import { useEffect } from "react";
 
-export function KeyboardShortcuts({
-	generate,
-}: {
-	generate: () => void;
-}) {
+export function KeyboardShortcuts({ generate }: { generate: () => void }) {
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);

@@ -1,11 +1,11 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { GitHubAppInstallButton } from "@/packages/components/github-app-install-button";
-import { getGitHubIdentityState } from "@/services/accounts";
-import { gitHubAppInstallURL } from "@/services/external/github";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import type { components } from "@octokit/openapi-types";
 import { TriangleAlertIcon } from "lucide-react";
 import Link from "next/link";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { GitHubAppInstallButton } from "@/packages/components/github-app-install-button";
+import { getGitHubIdentityState } from "@/services/accounts";
+import { gitHubAppInstallURL } from "@/services/external/github";
 import { Button } from "../../components/button";
 import { Card } from "../../components/card";
 

@@ -1,5 +1,5 @@
-import { db, githubRepositoryIndex } from "@/drizzle";
 import { and, eq } from "drizzle-orm";
+import { db, githubRepositoryIndex } from "@/drizzle";
 
 export async function getGitHubVectorStores(teamDbId: number) {
 	const vectorStores = await db

@@ -1,8 +1,8 @@
 "use server";
 
-import { createClient } from "@/lib/supabase";
 import { captureException } from "@sentry/nextjs";
 import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase";
 import { JoinError } from "../errors";
 import { acceptInvitation } from "../invitation";
 

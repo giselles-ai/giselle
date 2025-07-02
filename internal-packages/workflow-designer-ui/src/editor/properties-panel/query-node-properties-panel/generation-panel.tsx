@@ -49,7 +49,10 @@ function Empty({ onGenerate }: { onGenerate?: () => void }) {
 export function GenerationPanel({
 	node,
 	onClickGenerateButton,
-}: { node: QueryNode; onClickGenerateButton?: () => void }) {
+}: {
+	node: QueryNode;
+	onClickGenerateButton?: () => void;
+}) {
 	const { data } = useWorkflowDesigner();
 	const { generations } = useNodeGenerations({
 		nodeId: node.id,

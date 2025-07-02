@@ -4,8 +4,8 @@ import clsx from "clsx/lite";
 import {
 	Check,
 	ChevronDown,
-	ChevronUp,
 	ChevronsUpDownIcon,
+	ChevronUp,
 } from "lucide-react";
 import { Select as SelectPrimitive } from "radix-ui";
 

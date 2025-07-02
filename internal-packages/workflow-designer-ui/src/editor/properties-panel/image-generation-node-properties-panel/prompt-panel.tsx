@@ -1,12 +1,12 @@
 import {
 	ConnectionId,
 	type ImageGenerationNode,
-	Node,
 	isTextGenerationNode,
+	Node,
 } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle-engine/react";
-import { createSourceExtensionJSONContent } from "@giselle-sdk/text-editor-utils";
 import { TextEditor } from "@giselle-sdk/text-editor/react-internal";
+import { createSourceExtensionJSONContent } from "@giselle-sdk/text-editor-utils";
 import clsx from "clsx/lite";
 import { AtSignIcon } from "lucide-react";
 import { DropdownMenu, Toolbar } from "radix-ui";
@@ -20,11 +20,7 @@ function getDefaultNodeName(source: Source): string {
 	return source.node.type;
 }
 
-export function PromptPanel({
-	node,
-}: {
-	node: ImageGenerationNode;
-}) {
+export function PromptPanel({ node }: { node: ImageGenerationNode }) {
 	const { updateNodeDataContent } = useWorkflowDesigner();
 	const { all: connectedSources } = useConnectedSources(node);
 	const nodes = useMemo(

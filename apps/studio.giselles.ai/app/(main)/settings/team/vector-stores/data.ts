@@ -1,8 +1,8 @@
+import type { components } from "@octokit/openapi-types";
+import { desc, eq } from "drizzle-orm";
 import { db, githubRepositoryIndex } from "@/drizzle";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
-import type { components } from "@octokit/openapi-types";
-import { desc, eq } from "drizzle-orm";
 import type { InstallationWithRepos } from "./types";
 
 export async function getGitHubRepositoryIndexes() {

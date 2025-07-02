@@ -1,5 +1,9 @@
 "use server";
 
+import type { User } from "@supabase/supabase-js";
+import { eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
+import invariant from "tiny-invariant";
 import {
 	db,
 	supabaseUserMappings,
@@ -10,10 +14,6 @@ import {
 import { updateGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
 import { isEmailFromRoute06 } from "@/lib/utils";
-import type { User } from "@supabase/supabase-js";
-import { eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
-import invariant from "tiny-invariant";
 import {
 	DRAFT_TEAM_NAME_METADATA_KEY,
 	DRAFT_TEAM_USER_DB_ID_METADATA_KEY,

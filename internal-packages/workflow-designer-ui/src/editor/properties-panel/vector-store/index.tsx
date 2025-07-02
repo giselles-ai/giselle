@@ -31,11 +31,7 @@ export function VectorStoreNodePropertiesPanel({
 	);
 }
 
-function PropertiesPanel({
-	node,
-}: {
-	node: VectorStoreNode;
-}) {
+function PropertiesPanel({ node }: { node: VectorStoreNode }) {
 	switch (node.content.source.provider) {
 		case "github":
 			return <GitHubVectorStoreNodePropertiesPanel node={node} />;

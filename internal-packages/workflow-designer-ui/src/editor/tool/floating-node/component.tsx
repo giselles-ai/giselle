@@ -3,11 +3,7 @@ import { NodeComponent } from "../../node";
 import type { Tool } from "../types";
 import { useMousePosition } from "./state";
 
-export const FloatingNodePreview = ({
-	node,
-}: {
-	node: Node;
-}) => {
+export const FloatingNodePreview = ({ node }: { node: Node }) => {
 	const mousePosition = useMousePosition();
 
 	return (

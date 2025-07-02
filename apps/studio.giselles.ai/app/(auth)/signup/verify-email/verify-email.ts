@@ -1,8 +1,8 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { type AuthError, createClient } from "@/lib/supabase";
 import { initializeAccount } from "@/services/accounts";
-import { redirect } from "next/navigation";
 
 export const verifyEmail = async (
 	prevState: null | AuthError,

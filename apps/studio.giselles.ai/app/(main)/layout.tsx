@@ -1,8 +1,8 @@
+import Link from "next/link";
+import type { ReactNode } from "react";
 import { GiselleLogo } from "@/components/giselle-logo";
 import { UserButton } from "@/services/accounts/components";
 import { TeamSelection } from "@/services/teams/components/team-selection";
-import Link from "next/link";
-import type { ReactNode } from "react";
 import { Nav } from "./nav";
 
 export default function Layout({ children }: { children: ReactNode }) {

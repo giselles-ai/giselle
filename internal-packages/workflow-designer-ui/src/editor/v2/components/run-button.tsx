@@ -7,13 +7,15 @@ import {
 } from "@giselle-internal/ui/dialog";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import {
-	type NodeLike,
-	type OperationNode,
 	isOperationNode,
 	isTriggerNode,
+	type NodeLike,
+	type OperationNode,
 } from "@giselle-sdk/data-type";
-import { defaultName } from "@giselle-sdk/giselle-engine/react";
-import { useWorkflowDesigner } from "@giselle-sdk/giselle-engine/react";
+import {
+	defaultName,
+	useWorkflowDesigner,
+} from "@giselle-sdk/giselle-engine/react";
 import { buildWorkflowFromNode } from "@giselle-sdk/workflow-utils";
 import clsx from "clsx/lite";
 import { PlayIcon } from "lucide-react";

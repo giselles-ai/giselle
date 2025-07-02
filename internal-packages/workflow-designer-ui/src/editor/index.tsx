@@ -1,15 +1,15 @@
 "use client";
 
-import { InputId, OutputId, isActionNode } from "@giselle-sdk/data-type";
+import { InputId, isActionNode, OutputId } from "@giselle-sdk/data-type";
 import {
 	type Connection,
 	type Edge,
 	type IsValidConnection,
 	ReactFlow,
 	ReactFlowProvider,
-	Panel as XYFlowPanel,
 	useReactFlow,
 	useUpdateNodeInternals,
+	Panel as XYFlowPanel,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import {
@@ -49,7 +49,7 @@ import {
 	useToolbar,
 } from "./tool";
 import { V2Placeholder } from "./v2";
-import { WorkspaceTour, tourSteps } from "./workspace-tour";
+import { tourSteps, WorkspaceTour } from "./workspace-tour";
 
 function NodeCanvas() {
 	const {

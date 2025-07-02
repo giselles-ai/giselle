@@ -1,9 +1,9 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import React from "react";
+import { cn } from "@/lib/utils";
 import { buttonVariants } from "../../components/button";
 
 type GlassDialogContentProps = React.ComponentPropsWithoutRef<
@@ -103,7 +103,9 @@ export const GlassDialogHeader = ({
 
 export const GlassDialogBody = ({
 	children,
-}: { children: React.ReactNode }) => <div className="mt-4">{children}</div>;
+}: {
+	children: React.ReactNode;
+}) => <div className="mt-4">{children}</div>;
 
 type GlassDialogFooterProps = {
 	onCancel: () => void;

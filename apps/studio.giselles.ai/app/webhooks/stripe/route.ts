@@ -1,7 +1,7 @@
+import type Stripe from "stripe";
 import { stripe } from "@/services/external/stripe";
 import { upsertSubscription } from "@/services/external/stripe/actions/upsert-subscription";
 import { reportUserSeatUsage } from "@/services/usage-based-billing";
-import type Stripe from "stripe";
 import { handleInvoiceCreation } from "./handle-invoice-creation";
 import { handleSubscriptionCancellation } from "./handle-subscription-cancellation";
 

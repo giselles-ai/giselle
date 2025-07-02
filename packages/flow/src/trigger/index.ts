@@ -8,9 +8,9 @@ import {
 } from "./manual";
 
 export {
-	triggers as githubTriggers,
-	triggerIdToLabel as githubTriggerIdToLabel,
 	type TriggerEventId as GitHubTriggerEventId,
+	triggerIdToLabel as githubTriggerIdToLabel,
+	triggers as githubTriggers,
 } from "./github";
 export { triggers as manualTriggers } from "./manual";
 

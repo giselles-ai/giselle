@@ -5,18 +5,18 @@ import {
 } from "./web-search";
 
 export {
-	actions as githubActions,
-	provider as githubProvider,
 	type ActionCommandId as GitHubActionCommandId,
 	actionIdToLabel as githubActionIdToLabel,
+	actions as githubActions,
 	type GitHubAction,
+	provider as githubProvider,
 } from "./github";
 
 export {
-	actions as webSearchActions,
-	provider as webSearchProvider,
 	type ActionCommandId as WebSearchActionCommandId,
 	actionIdToLabel as webSearchActionIdToLabel,
+	actions as webSearchActions,
+	provider as webSearchProvider,
 	type WebSearchAction,
 } from "./web-search";
 

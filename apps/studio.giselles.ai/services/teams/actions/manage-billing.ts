@@ -1,8 +1,8 @@
 "use server";
 
-import { stripe } from "@/services/external/stripe";
 import { redirect } from "next/navigation";
 import invariant from "tiny-invariant";
+import { stripe } from "@/services/external/stripe";
 
 export async function manageBilling(subscriptionId: string) {
 	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;

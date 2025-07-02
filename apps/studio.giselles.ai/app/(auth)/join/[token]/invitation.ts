@@ -1,17 +1,17 @@
+import type { User } from "@supabase/supabase-js";
+import { and, eq, isNull } from "drizzle-orm";
 import {
-	type TeamRole,
 	db,
 	db as dbInstance,
 	invitations,
 	supabaseUserMappings,
+	type TeamRole,
 	teamMemberships,
 	teams,
 	users,
 } from "@/drizzle";
 import { getUser } from "@/lib/supabase/get-user";
 import type { TeamId } from "@/services/teams";
-import type { User } from "@supabase/supabase-js";
-import { and, eq, isNull } from "drizzle-orm";
 import { JoinError } from "./errors";
 
 export type InvitationToken = {

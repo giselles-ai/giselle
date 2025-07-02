@@ -3,9 +3,10 @@
  *
  * Error codes: https://docs.stripe.com/billing/subscriptions/usage-based/recording-usage-api#error-codes
  */
-import { stripe } from "@/services/external/stripe";
+
 import { captureEvent, captureException } from "@sentry/nextjs";
 import type Stripe from "stripe";
+import { stripe } from "@/services/external/stripe";
 
 const relevantEvents = new Set([
 	"v1.billing.meter.error_report_triggered",

@@ -1,7 +1,7 @@
-import { db, supabaseUserMappings, users } from "@/drizzle";
-import { getUser } from "@/lib/supabase";
 import { eq } from "drizzle-orm";
 import { cache } from "react";
+import { db, supabaseUserMappings, users } from "@/drizzle";
+import { getUser } from "@/lib/supabase";
 
 async function fetchCurrentUser() {
 	const supabaseUser = await getUser();

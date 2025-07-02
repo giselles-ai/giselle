@@ -4,6 +4,6 @@ export * from "./generation";
 export * from "./integrations";
 export * from "./node";
 export * from "./run";
+export * from "./secret";
 export * from "./workflow";
 export * from "./workspace";
-export * from "./secret";

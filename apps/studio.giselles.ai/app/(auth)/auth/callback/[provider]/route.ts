@@ -1,11 +1,12 @@
 // The client you created from the Server-Side Auth instructions
-import { db, oauthCredentials, supabaseUserMappings, users } from "@/drizzle";
-import { logger } from "@/lib/logger";
-import { createClient } from "@/lib/supabase";
-import { type OAuthProvider, initializeAccount } from "@/services/accounts";
+
 import type { Session, User } from "@supabase/supabase-js";
 import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
+import { db, oauthCredentials, supabaseUserMappings, users } from "@/drizzle";
+import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase";
+import { initializeAccount, type OAuthProvider } from "@/services/accounts";
 
 export async function GET(
 	request: NextRequest,

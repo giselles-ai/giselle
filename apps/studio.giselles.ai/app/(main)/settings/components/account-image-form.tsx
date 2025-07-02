@@ -1,9 +1,9 @@
 "use client";
 
-import type { users } from "@/drizzle";
-import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { Camera } from "lucide-react";
 import { useState } from "react";
+import type { users } from "@/drizzle";
+import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { updateAvatar } from "../account/actions";
 import { AvatarUpload } from "./avatar-upload";
 

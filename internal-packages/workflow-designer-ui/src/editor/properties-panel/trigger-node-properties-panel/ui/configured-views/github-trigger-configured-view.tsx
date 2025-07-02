@@ -1,9 +1,9 @@
 import type { FlowTriggerId } from "@giselle-sdk/data-type";
 import { githubTriggerIdToLabel } from "@giselle-sdk/flow";
 import { UserIcon } from "lucide-react";
-import { GitHubRepositoryBlock } from "../";
 import ClipboardButton from "../../../../../ui/clipboard-button";
 import { useGitHubTrigger } from "../../../../lib/use-github-trigger";
+import { GitHubRepositoryBlock } from "../";
 
 export function GitHubTriggerConfiguredView({
 	flowTriggerId,

@@ -1,6 +1,6 @@
+import { redirect } from "next/navigation";
 import { deleteOauthCredential, getAuthCallbackUrl } from "@/app/(auth)/lib";
 import { createClient, getUser } from "@/lib/supabase";
-import { redirect } from "next/navigation";
 import type { OAuthProvider } from "./oauth-credentials";
 
 export async function connectIdentity(provider: OAuthProvider, next: string) {

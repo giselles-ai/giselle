@@ -1,11 +1,11 @@
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import {
-	type TextGenerationNode,
 	isTextGenerationNode,
+	type TextGenerationNode,
 } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle-engine/react";
-import { createSourceExtensionJSONContent } from "@giselle-sdk/text-editor-utils";
 import { TextEditor } from "@giselle-sdk/text-editor/react-internal";
+import { createSourceExtensionJSONContent } from "@giselle-sdk/text-editor-utils";
 import clsx from "clsx/lite";
 import { AtSignIcon } from "lucide-react";
 import { type OutputWithDetails, useConnectedOutputs } from "./outputs";

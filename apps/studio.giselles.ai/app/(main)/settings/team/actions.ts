@@ -1,15 +1,19 @@
 "use server";
 
+import * as Sentry from "@sentry/nextjs";
+import { and, asc, count, desc, eq, ne } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import {
-	type TeamRole,
-	type UserId,
 	agentActivities,
 	agents,
 	db,
 	subscriptions,
 	supabaseUserMappings,
+	type TeamRole,
 	teamMemberships,
 	teams,
+	type UserId,
 	users,
 } from "@/drizzle";
 import { updateGiselleSession } from "@/lib/giselle-session";
@@ -19,13 +23,9 @@ import { stripe } from "@/services/external/stripe";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import type { CurrentTeam, TeamId } from "@/services/teams/types";
 import { reportUserSeatUsage } from "@/services/usage-based-billing";
-import * as Sentry from "@sentry/nextjs";
-import { and, asc, count, desc, eq, ne } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import {
-	type Invitation,
 	createInvitation,
+	type Invitation,
 	listInvitations,
 	revokeInvitation,
 	sendInvitationEmail,
@@ -453,7 +453,9 @@ export async function getCurrentUserRole() {
 
 export async function getAgentActivities({
 	limit = 50,
-}: { limit?: number } = {}) {
+}: {
+	limit?: number;
+} = {}) {
 	try {
 		const currentTeam = await fetchCurrentTeam();
 

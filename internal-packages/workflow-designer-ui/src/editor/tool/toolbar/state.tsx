@@ -2,7 +2,7 @@
 
 import type { Node, VectorStoreContent } from "@giselle-sdk/data-type";
 import { nodeFactories } from "@giselle-sdk/giselle-engine/react";
-import { type ReactNode, createContext, useContext, useState } from "react";
+import { createContext, type ReactNode, useContext, useState } from "react";
 import type {
 	AddNodeTool,
 	MoveTool,
@@ -23,11 +23,7 @@ interface ToolbarContext {
 
 const ToolbarContext = createContext<ToolbarContext | undefined>(undefined);
 
-export function ToolbarContextProvider({
-	children,
-}: {
-	children: ReactNode;
-}) {
+export function ToolbarContextProvider({ children }: { children: ReactNode }) {
 	const [selectedTool, setSelectedTool] = useState<Tool>({
 		action: "move",
 		category: "move",

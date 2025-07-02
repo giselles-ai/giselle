@@ -1,8 +1,5 @@
 "use server";
 
-import { db, type githubIntegrationSettings } from "@/drizzle";
-import { getGitHubIdentityState } from "@/services/accounts";
-import { gitHubAppInstallURL } from "@/services/external/github";
 import type {
 	GitHubIntegrationErrorState,
 	GitHubIntegrationInstalledState,
@@ -10,6 +7,9 @@ import type {
 	GitHubIntegrationNotInstalledState,
 	GitHubIntegrationUnauthorizedState,
 } from "@giselle-sdk/giselle-engine";
+import { db, type githubIntegrationSettings } from "@/drizzle";
+import { getGitHubIdentityState } from "@/services/accounts";
+import { gitHubAppInstallURL } from "@/services/external/github";
 
 export async function getGitHubIntegrationState(
 	agentDbId: number,

@@ -1,10 +1,10 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { getAuthCallbackUrl } from "@/app/(auth)/lib";
 import { logger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase";
 import type { OAuthProvider } from "@/services/accounts";
-import { redirect } from "next/navigation";
 
 async function authorizeOAuth(provider: OAuthProvider) {
 	const supabase = await createClient();

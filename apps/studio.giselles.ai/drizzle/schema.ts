@@ -1,9 +1,3 @@
-import type { AgentId } from "@/services/agents/types";
-import type {
-	GitHubNextAction,
-	GitHubTriggerEvent,
-} from "@/services/external/github/types";
-import type { TeamId } from "@/services/teams/types";
 import type { WorkspaceId } from "@giselle-sdk/data-type";
 import type {
 	FlowId,
@@ -26,6 +20,12 @@ import {
 	vector,
 } from "drizzle-orm/pg-core";
 import type { Stripe } from "stripe";
+import type { AgentId } from "@/services/agents/types";
+import type {
+	GitHubNextAction,
+	GitHubTriggerEvent,
+} from "@/services/external/github/types";
+import type { TeamId } from "@/services/teams/types";
 
 export const subscriptions = pgTable("subscriptions", {
 	// Subscription ID from Stripe, e.g. sub_1234.

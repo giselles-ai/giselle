@@ -7,24 +7,35 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"ignore": [
-			"./packages/github-tool/schema.graphql",
-			"./packages/github-tool/src/graphql-env.d.ts"
+		"includes": [
+			"**",
+			"!packages/github-tool/schema.graphql",
+			"!packages/github-tool/src/graphql-env.d.ts"
 		]
 	},
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab"
 	},
-	"organizeImports": {
-		"enabled": true
-	},
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"linter": {
 		"enabled": true,
 		"rules": {
 			"recommended": true,
 			"suspicious": {
 				"useAwait": "error"
+			},
+			"style": {
+				"noParameterAssign": "error",
+				"useAsConstAssertion": "error",
+				"useDefaultParameterLast": "error",
+				"useEnumInitializers": "error",
+				"useSelfClosingElements": "error",
+				"useSingleVarDeclarator": "error",
+				"noUnusedTemplateLiteral": "error",
+				"useNumberNamespace": "error",
+				"noInferrableTypes": "error",
+				"noUselessElse": "error"
 			}
 		}
 	},

@@ -2,10 +2,10 @@ import {
 	type CancelledGeneration,
 	type CompletedGeneration,
 	type Generation,
-	type NodeId,
-	type RunningGeneration,
 	isCompletedGeneration,
 	isFailedGeneration,
+	type NodeId,
+	type RunningGeneration,
 } from "@giselle-sdk/data-type";
 import { useGiselleEngine } from "@giselle-sdk/giselle-engine/react";
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
@@ -23,11 +23,7 @@ function Spinner() {
 		</div>
 	);
 }
-export function GenerationView({
-	generation,
-}: {
-	generation: Generation;
-}) {
+export function GenerationView({ generation }: { generation: Generation }) {
 	const client = useGiselleEngine();
 	const generatedMessages = useMemo(
 		() =>

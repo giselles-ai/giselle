@@ -1,8 +1,8 @@
 import {
-	type NodeLike,
 	isImageGenerationNode,
 	isTextGenerationNode,
 	isVectorStoreNode,
+	type NodeLike,
 } from "@giselle-sdk/data-type";
 import { useMemo } from "react";
 import { NodeIcon } from "../icons/node";

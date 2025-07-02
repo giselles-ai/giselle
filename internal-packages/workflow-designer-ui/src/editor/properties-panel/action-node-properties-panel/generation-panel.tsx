@@ -6,11 +6,7 @@ import {
 import clsx from "clsx/lite";
 import { useEffect, useState } from "react";
 
-export function GenerationPanel({
-	node,
-}: {
-	node: ActionNode;
-}) {
+export function GenerationPanel({ node }: { node: ActionNode }) {
 	const { data } = useWorkflowDesigner();
 	const { generations } = useNodeGenerations({
 		nodeId: node.id,

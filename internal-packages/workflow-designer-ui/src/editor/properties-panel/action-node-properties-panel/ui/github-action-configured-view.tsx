@@ -4,15 +4,16 @@ import {
 	type ConnectionId,
 	type GitHubActionCommandConfiguredState,
 	type Input,
+	isTextGenerationNode,
+	isTextNode,
 	type Node,
 	type NodeId,
 	type OutputId,
-	isTextGenerationNode,
-	isTextNode,
 } from "@giselle-sdk/data-type";
 import { githubActionIdToLabel, githubActions } from "@giselle-sdk/flow";
-import { defaultName, useFeatureFlag } from "@giselle-sdk/giselle-engine/react";
 import {
+	defaultName,
+	useFeatureFlag,
 	useGiselleEngine,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle-engine/react";

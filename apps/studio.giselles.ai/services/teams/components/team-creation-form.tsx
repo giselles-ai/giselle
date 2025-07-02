@@ -1,5 +1,9 @@
 "use client";
 
+import * as Dialog from "@radix-ui/react-dialog";
+import { AlertCircle, UserPlus, X } from "lucide-react";
+import { useState } from "react";
+import { useFormStatus } from "react-dom";
 import {
 	Alert,
 	AlertDescription,
@@ -16,16 +20,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
-import * as Dialog from "@radix-ui/react-dialog";
-import { AlertCircle, UserPlus, X } from "lucide-react";
-import { useState } from "react";
-import { useFormStatus } from "react-dom";
 import { createTeam } from "../actions/create-team";
 
 function Submit({
 	selectedPlan,
 	teamName,
-}: { selectedPlan: string; teamName: string }) {
+}: {
+	selectedPlan: string;
+	teamName: string;
+}) {
 	const { pending } = useFormStatus();
 	const isDisabled = pending || !teamName || !selectedPlan;
 

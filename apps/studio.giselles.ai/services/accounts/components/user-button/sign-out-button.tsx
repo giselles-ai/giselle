@@ -1,9 +1,9 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { cn } from "@/lib/utils";
 import { signOut } from "../../actions/sign-out";
 
 export const SignOutButton = React.forwardRef<

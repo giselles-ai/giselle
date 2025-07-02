@@ -1,5 +1,8 @@
 "use client";
 
+import Avatar from "boring-avatars";
+import { Check, ChevronDown, X } from "lucide-react";
+import { useState } from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -24,9 +27,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import type { TeamRole } from "@/drizzle";
-import Avatar from "boring-avatars";
-import { Check, ChevronDown, X } from "lucide-react";
-import { useState } from "react";
 import { Button } from "../components/button";
 import { deleteTeamMember, updateTeamMemberRole } from "./actions";
 

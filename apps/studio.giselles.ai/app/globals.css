@@ -312,9 +312,12 @@
 			rgba(255, 255, 255, 0.4),
 			rgba(255, 255, 255, 0.1)
 		);
-		mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+		mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
 		mask-composite: xor;
-		-webkit-mask: linear-gradient(#fff 0 0) content-box,
+		-webkit-mask:
+			linear-gradient(#fff 0 0) content-box,
 			linear-gradient(#fff 0 0);
 		-webkit-mask-composite: xor;
 		padding: 1px;

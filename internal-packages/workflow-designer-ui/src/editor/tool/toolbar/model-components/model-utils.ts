@@ -1,7 +1,7 @@
 import {
 	Capability,
-	type LanguageModel,
 	hasCapability,
+	type LanguageModel,
 } from "@giselle-sdk/language-model";
 
 export function filterModelsByCategory(

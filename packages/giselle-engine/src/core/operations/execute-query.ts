@@ -1,6 +1,9 @@
 import {
 	GenerationContext,
 	type GenerationOutput,
+	isCompletedGeneration,
+	isQueryNode,
+	isTextNode,
 	NodeId,
 	type Output,
 	OutputId,
@@ -8,9 +11,6 @@ import {
 	type RunningGeneration,
 	type VectorStoreNode,
 	type WorkspaceId,
-	isCompletedGeneration,
-	isQueryNode,
-	isTextNode,
 } from "@giselle-sdk/data-type";
 import {
 	isJsonContent,

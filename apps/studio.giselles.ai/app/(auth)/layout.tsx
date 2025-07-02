@@ -1,5 +1,5 @@
-import { GiselleLogo } from "@/components/giselle-logo";
 import type { ReactNode } from "react";
+import { GiselleLogo } from "@/components/giselle-logo";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
 	return (

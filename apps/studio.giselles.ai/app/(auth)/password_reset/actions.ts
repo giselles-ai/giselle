@@ -1,8 +1,8 @@
 "use server";
 
-import { createClient } from "@/lib/supabase";
 import { AuthError } from "@supabase/auth-js";
 import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase";
 
 export const sendPasswordResetEmail = async (
 	prevState: AuthError | null,

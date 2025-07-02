@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { SiGithub, SiGoogle } from "@icons-pack/react-simple-icons";
 import type { FC } from "react";
+import { Button } from "@/components/ui/button";
 import { authorizeGitHub, authorizeGoogle } from "../actions";
 
 type OauthProvidersProps = {

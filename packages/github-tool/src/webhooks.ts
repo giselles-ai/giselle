@@ -1,13 +1,14 @@
 import {
+	createEventHandler,
 	type EmitterWebhookEvent,
 	type EmitterWebhookEventName,
 	Webhooks,
-	createEventHandler,
 } from "@octokit/webhooks";
 import { GitHubWebhookUnauthorizedError } from "./errors";
+
 export type {
-	EmitterWebhookEventName as WebhookEventName,
 	EmitterWebhookEvent,
+	EmitterWebhookEventName as WebhookEventName,
 } from "@octokit/webhooks";
 
 // biome-ignore lint/suspicious/noExplicitAny: Default generic parameter uses any for compatibility
@@ -45,7 +46,10 @@ export function isWebhookEvent(value: unknown): value is WebhookEvent {
 export async function verifyRequest({
 	secret,
 	request,
-}: { secret: string; request: Request }) {
+}: {
+	secret: string;
+	request: Request;
+}) {
 	const webhooks = new Webhooks({ secret });
 
 	const signature = request.headers.get("x-hub-signature-256") ?? "";

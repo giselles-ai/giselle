@@ -1,13 +1,13 @@
 import type { LanguageModel } from "@giselle-sdk/language-model";
 import clsx from "clsx/lite";
 import type { ToggleGroup } from "radix-ui";
-import { ProTag } from "../components";
 import {
 	AnthropicIcon,
 	GoogleWhiteIcon,
 	ImageGenerationNodeIcon,
 	OpenaiIcon,
 	PerplexityIcon,
+	ProTag,
 } from "../components";
 
 export function LanguageModelListItem({

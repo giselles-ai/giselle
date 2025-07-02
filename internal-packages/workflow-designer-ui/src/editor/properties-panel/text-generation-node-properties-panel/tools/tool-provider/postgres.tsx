@@ -21,7 +21,9 @@ const secretTags = ["postgres-connection-string"];
 
 export function PostgresToolConfigurationDialog({
 	node,
-}: { node: TextGenerationNode }) {
+}: {
+	node: TextGenerationNode;
+}) {
 	const {
 		presentDialog,
 		setPresentDialog,

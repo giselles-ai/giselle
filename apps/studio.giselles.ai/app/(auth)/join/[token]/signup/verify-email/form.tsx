@@ -1,5 +1,7 @@
 "use client";
 
+import { TriangleAlertIcon } from "lucide-react";
+import { useCallback, useState, useTransition } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,14 +10,15 @@ import {
 	InputOTPSeparator,
 	InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { TriangleAlertIcon } from "lucide-react";
-import { useCallback, useState, useTransition } from "react";
 import { resendJoinOtp, verifyJoinEmail } from "./actions";
 
 export function JoinVerifyForm({
 	invitedEmail,
 	invitationToken,
-}: { invitedEmail: string; invitationToken: string }) {
+}: {
+	invitedEmail: string;
+	invitationToken: string;
+}) {
 	const [error, setError] = useState<string | null>(null);
 	const [isPending, startTransition] = useTransition();
 	const [resendState, setResendState] = useState<{

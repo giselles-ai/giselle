@@ -5,11 +5,11 @@ import {
 	DatabaseError,
 	DocumentLoaderError,
 	EmbeddingError,
-	OperationError,
-	ValidationError,
 	handleError,
 	isErrorCategory,
 	isErrorCode,
+	OperationError,
+	ValidationError,
 } from "./errors";
 
 describe("Enhanced Error System", () => {

@@ -1,5 +1,5 @@
-import { getGoogleIdentityState } from "@/services/accounts";
 import { TriangleAlert } from "lucide-react";
+import { getGoogleIdentityState } from "@/services/accounts";
 import { Button } from "../components/button";
 import { GoogleAuthenticationPresentation } from "../components/google-authentication-presentation";
 import {

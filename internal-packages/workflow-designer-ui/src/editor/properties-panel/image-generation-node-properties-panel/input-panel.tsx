@@ -3,11 +3,11 @@ import {
 	type ImageGenerationNode,
 	type Input,
 	InputId,
-	OutputId,
 	isFileNode,
 	isImageGenerationNode,
 	isTextGenerationNode,
 	isTextNode,
+	OutputId,
 } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle-engine/react";
 import {
@@ -36,7 +36,10 @@ import {
 function SourceToggleItem({
 	source,
 	disabled = false,
-}: { source: Source; disabled?: boolean }) {
+}: {
+	source: Source;
+	disabled?: boolean;
+}) {
 	const getDisplayName = () => {
 		if (
 			isTextGenerationNode(source.node) ||

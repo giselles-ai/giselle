@@ -19,11 +19,6 @@ import {
 } from "lucide-react";
 import "@xyflow/react/dist/style.css";
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
-import {
 	Background,
 	Panel,
 	ReactFlow,
@@ -31,11 +26,17 @@ import {
 	SelectionMode,
 } from "@xyflow/react";
 import { useState } from "react";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import { type AppNode, nodeTypes } from "./components/custom-node";
 import { NodeSelector } from "./components/node-selector";
 import { Spinner } from "./components/spinner";
 import { TabContent, TabProvider, TabTrigger } from "./components/tab";
 import { DnDProvider } from "./contexts/drag-and-drop";
+
 const initialNodes: AppNode[] = [
 	{
 		id: "1",

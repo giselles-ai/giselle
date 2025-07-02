@@ -1,8 +1,8 @@
 import {
 	FlowTrigger,
 	FlowTriggerId,
-	type TriggerNode,
 	isTriggerNode,
+	type TriggerNode,
 } from "@giselle-sdk/data-type";
 import type { z } from "zod/v4";
 import { addGitHubRepositoryIntegrationIndex } from "../integrations/utils";

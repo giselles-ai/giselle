@@ -1,3 +1,7 @@
+import { WorkspaceId } from "@giselle-sdk/data-type";
+import { WorkspaceProvider } from "@giselle-sdk/giselle-engine/react";
+import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 import { getGitHubVectorStores } from "@/app/services/vector-store";
 import { db } from "@/drizzle";
 import {
@@ -12,10 +16,6 @@ import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { getUsageLimitsForTeam } from "@/packages/lib/usage-limits";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
-import { WorkspaceId } from "@giselle-sdk/data-type";
-import { WorkspaceProvider } from "@giselle-sdk/giselle-engine/react";
-import { notFound } from "next/navigation";
-import type { ReactNode } from "react";
 
 export default async function Layout({
 	params,

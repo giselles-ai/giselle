@@ -1,3 +1,6 @@
+import { Plus } from "lucide-react";
+import Link from "next/link";
+import type { FC } from "react";
 import { getAccountInfo } from "@/app/(main)/settings/account/actions";
 import { Button } from "@/app/(main)/settings/components/button";
 import {
@@ -15,9 +18,6 @@ import {
 } from "@/services/teams";
 import { upgradeTeam } from "@/services/teams/actions/upgrade-team";
 import TeamCreation from "@/services/teams/components/team-creation";
-import { Plus } from "lucide-react";
-import Link from "next/link";
-import type { FC } from "react";
 import { AvatarImage } from "./avatar-image";
 import { SignOutButton } from "./sign-out-button";
 

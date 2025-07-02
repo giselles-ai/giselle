@@ -2,6 +2,7 @@ import { z } from "zod/v4";
 import { Connection } from "../connection";
 import { NodeId, NodeLike, NodeUIState } from "../node";
 import { WorkspaceId } from "./id";
+
 export { WorkspaceId } from "./id";
 
 export const WorkspaceSchemaVersion = z.enum(["20250221"]);

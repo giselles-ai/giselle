@@ -5,6 +5,7 @@ import {
 	type Generation,
 	GenerationContext,
 	type GenerationOutput,
+	isCompletedGeneration,
 	type Message,
 	type NodeId,
 	type Output,
@@ -12,7 +13,6 @@ import {
 	type QueuedGeneration,
 	type RunningGeneration,
 	type WorkspaceId,
-	isCompletedGeneration,
 } from "@giselle-sdk/data-type";
 import type { DataContent } from "ai";
 import { UsageLimitError } from "../../error";

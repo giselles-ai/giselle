@@ -1,5 +1,5 @@
-import { Card } from "@/components/ui/card";
 import { AlertCircle, ExternalLink } from "lucide-react";
+import { Card } from "@/components/ui/card";
 import { Button } from "../../components/button";
 
 function VectorStoreHeader({ title }: { title: string }) {
@@ -52,7 +52,9 @@ export function GitHubAuthRequiredCard() {
 
 export function GitHubAuthErrorCard({
 	errorMessage,
-}: { errorMessage: string }) {
+}: {
+	errorMessage: string;
+}) {
 	return (
 		<div className="flex flex-col gap-[24px]">
 			<VectorStoreHeader title="Vector Store" />

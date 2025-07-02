@@ -1,5 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { GitHubAuthentication } from "../github-authentication";
 import { GoogleAuthentication } from "../google-authentication";
 

@@ -5,7 +5,11 @@ export function CategoryTab({
 	isActive,
 	children,
 	onClick,
-}: { isActive: boolean; children: ReactNode; onClick: () => void }) {
+}: {
+	isActive: boolean;
+	children: ReactNode;
+	onClick: () => void;
+}) {
 	return (
 		<button
 			type="button"

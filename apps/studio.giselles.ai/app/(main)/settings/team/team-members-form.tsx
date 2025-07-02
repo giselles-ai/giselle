@@ -1,18 +1,10 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import {
-	type InferInput,
 	email,
+	type InferInput,
 	maxLength,
 	minLength,
 	object,
@@ -21,6 +13,14 @@ import {
 	pipe,
 	string,
 } from "valibot";
+import { Input } from "@/components/ui/input";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Button } from "../components/button";
 import { addTeamMember } from "./actions";
 

@@ -5,11 +5,7 @@ import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 import { useEffect } from "react";
 
-export function PHProvider({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
+export function PHProvider({ children }: { children: React.ReactNode }) {
 	if (process.env.NEXT_PUBLIC_ENABLE_POSTHOG !== "true") {
 		return <>{children}</>;
 	}

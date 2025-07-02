@@ -1,7 +1,7 @@
-import { refreshOauthCredential } from "@/app/(auth)/lib";
 import { Octokit } from "@octokit/core";
 import { RequestError } from "@octokit/request-error";
 import * as Sentry from "@sentry/nextjs";
+import { refreshOauthCredential } from "@/app/(auth)/lib";
 
 // MARK: Factory method
 

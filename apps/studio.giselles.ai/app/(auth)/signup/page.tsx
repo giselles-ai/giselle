@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
-import { ClickableText } from "@/components/ui/clickable-text";
 import { MailIcon } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ClickableText } from "@/components/ui/clickable-text";
 import { AuthContainer, AuthContainerHeader } from "../components";
 import { ActionPrompt } from "../components/action-prompt";
 import { Divider } from "../components/divider";

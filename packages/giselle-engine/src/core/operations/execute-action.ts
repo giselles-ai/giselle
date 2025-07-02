@@ -2,11 +2,11 @@ import {
 	type GenerationContext,
 	type GenerationOutput,
 	type GitHubActionCommandConfiguredState,
+	isActionNode,
+	isTextNode,
 	type NodeId,
 	type OutputId,
 	type QueuedGeneration,
-	isActionNode,
-	isTextNode,
 } from "@giselle-sdk/data-type";
 import { githubActions } from "@giselle-sdk/flow";
 import {

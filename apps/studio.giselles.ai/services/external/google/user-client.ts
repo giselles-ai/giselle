@@ -1,7 +1,7 @@
-import { logger } from "@/lib/logger";
 import { GaxiosError } from "gaxios";
 import { OAuth2Client } from "google-auth-library";
 import { oauth2 as googleOAuth2 } from "googleapis/build/src/apis/oauth2";
+import { logger } from "@/lib/logger";
 
 export function buildGoogleUserClient(token: GoogleUserCredential) {
 	const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID;

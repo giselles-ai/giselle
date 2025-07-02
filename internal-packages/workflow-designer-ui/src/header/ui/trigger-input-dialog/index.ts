@@ -1,8 +1,8 @@
 export { Button } from "./button";
+export { TriggerInputDialog } from "./dialog";
 export {
 	buttonLabel,
-	type FormInput,
 	createInputsFromTrigger,
+	type FormInput,
 	parseFormInputs,
 } from "./helpers";
-export { TriggerInputDialog } from "./dialog";

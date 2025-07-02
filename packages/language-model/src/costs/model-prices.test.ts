@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type ModelPriceTable, getValidPricing } from "./model-prices";
+import { getValidPricing, type ModelPriceTable } from "./model-prices";
 import type { ModelPrice } from "./pricing";
 
 describe("getValidPricing", () => {

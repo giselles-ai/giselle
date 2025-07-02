@@ -1,8 +1,8 @@
 import {
 	type ActionNode,
 	type Input,
-	type TriggerNode,
 	isActionNode,
+	type TriggerNode,
 } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle-engine/react";
 import { buildWorkflowFromNode } from "@giselle-sdk/workflow-utils";
@@ -14,16 +14,19 @@ import { useFlowController } from "../../../hooks/use-flow-controller";
 import { useTrigger } from "../../../hooks/use-trigger";
 import { Button } from "./button";
 import {
-	type FormInput,
 	buttonLabel,
 	createInputsFromTrigger,
+	type FormInput,
 	parseFormInputs,
 } from "./helpers";
 
 export function TriggerInputDialog({
 	node,
 	onClose,
-}: { node: TriggerNode; onClose: () => void }) {
+}: {
+	node: TriggerNode;
+	onClose: () => void;
+}) {
 	const { data: trigger, isLoading } = useTrigger(node);
 	const { data } = useWorkflowDesigner();
 

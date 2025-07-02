@@ -1,3 +1,4 @@
+import { and, asc, eq } from "drizzle-orm";
 import {
 	db,
 	subscriptions,
@@ -6,7 +7,6 @@ import {
 	teams,
 } from "@/drizzle";
 import { getUser } from "@/lib/supabase";
-import { and, asc, eq } from "drizzle-orm";
 
 /**
  * fetch teams for the current user

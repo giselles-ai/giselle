@@ -98,7 +98,10 @@ function getGenerationTextContent(generation: Generation): string {
 export function GenerationPanel({
 	node,
 	onClickGenerateButton,
-}: { node: TextGenerationNode; onClickGenerateButton?: () => void }) {
+}: {
+	node: TextGenerationNode;
+	onClickGenerateButton?: () => void;
+}) {
 	const { data } = useWorkflowDesigner();
 	const { generations } = useNodeGenerations({
 		nodeId: node.id,

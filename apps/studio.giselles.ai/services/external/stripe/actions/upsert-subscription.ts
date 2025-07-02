@@ -1,3 +1,5 @@
+import { eq } from "drizzle-orm";
+import type Stripe from "stripe";
 import { db, subscriptions, teamMemberships, teams } from "@/drizzle";
 import {
 	DRAFT_TEAM_NAME_METADATA_KEY,
@@ -5,8 +7,6 @@ import {
 	UPGRADING_TEAM_DB_ID_KEY,
 } from "@/services/teams/constants";
 import { createTeamId } from "@/services/teams/utils";
-import { eq } from "drizzle-orm";
-import type Stripe from "stripe";
 import { stripe } from "../config";
 
 const timestampToDateTime = (timestamp: number) => new Date(timestamp * 1000);

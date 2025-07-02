@@ -1,10 +1,10 @@
+import { Plus } from "lucide-react";
 import { GlassButton } from "@/components/ui/glass-button";
 import { ToastProvider } from "@/packages/contexts/toast";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";
 import TeamCreation from "@/services/teams/components/team-creation";
 import { isProPlan } from "@/services/teams/utils";
-import { Plus } from "lucide-react";
 import UserTeams from "./user-teams";
 
 export default async function AccountSettingPage() {

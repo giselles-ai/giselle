@@ -1,6 +1,7 @@
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
+
 const nextConfig: NextConfig = {
 	eslint: {
 		// Warning: This allows production builds to successfully complete even if

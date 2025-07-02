@@ -5,10 +5,10 @@ import type {
 } from "@giselle-sdk/data-type";
 import type { githubTriggers } from "@giselle-sdk/flow";
 import {
-	type WebhookEvent,
 	ensureWebhookEvent,
 	getPullRequestDiff,
 	getPullRequestReviewComment,
+	type WebhookEvent,
 } from "@giselle-sdk/github-tool";
 import { parseCommand } from "./utils";
 

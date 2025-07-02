@@ -3,7 +3,9 @@ import { SidebarMenu } from "./sidebar-menu";
 
 export default function SettingsAccountLayout({
 	children,
-}: { children: ReactNode }) {
+}: {
+	children: ReactNode;
+}) {
 	return (
 		<div className="h-full bg-black-900">
 			<div className="flex-1 max-w-[1200px] w-full flex min-h-[calc(100vh-64px)] pl-[40px]">

@@ -1,7 +1,7 @@
+import Link from "next/link";
 import { ActionPrompt } from "@/app/(auth)/components/action-prompt";
 import { Button } from "@/components/ui/button";
 import { ClickableText } from "@/components/ui/clickable-text";
-import Link from "next/link";
 import { signoutUser } from "./actions";
 import type { ErrorCode } from "./errors";
 
@@ -61,7 +61,10 @@ export function ExpiredError() {
 export function WrongEmailError({
 	teamName,
 	token,
-}: { teamName: string; token: string }) {
+}: {
+	teamName: string;
+	token: string;
+}) {
 	return (
 		<ErrorPageLayout>
 			<div className="text-center">

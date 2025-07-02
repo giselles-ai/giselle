@@ -1,17 +1,18 @@
 import { graphql as gql } from "./graphql";
-export * from "./blob-loader";
+
 export * from "./blob-download-loader";
+export * from "./blob-loader";
+export * from "./discussions";
+export * from "./errors";
+export * from "./installtion";
 export * from "./issues";
 export * from "./octokit";
+export * from "./pull-requests";
+export * from "./reactions";
 export * from "./repository";
 export * from "./tools";
 export * from "./types";
-export * from "./reactions";
 export * from "./webhooks";
-export * from "./errors";
-export * from "./pull-requests";
-export * from "./discussions";
-export * from "./installtion";
 
 export const IssueNodeIdQuery = gql(/* GraphQL */ `
   query IssueNodeIdQuery($name: String!, $owner: String!, $issueNumber: Int!) {

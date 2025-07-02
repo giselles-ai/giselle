@@ -1,5 +1,10 @@
 "use client";
 
+import { useToast } from "@giselles-ai/contexts/toast";
+import * as Dialog from "@radix-ui/react-dialog";
+import { LoaderCircleIcon, TrashIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import {
 	Tooltip,
 	TooltipContent,
@@ -7,11 +12,6 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { AgentId } from "@/services/agents";
-import { useToast } from "@giselles-ai/contexts/toast";
-import * as Dialog from "@radix-ui/react-dialog";
-import { LoaderCircleIcon, TrashIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
 import {
 	GlassDialogContent,
 	GlassDialogFooter,

@@ -1,2 +1,2 @@
-export * from "./trigger";
 export * from "./action";
+export * from "./trigger";

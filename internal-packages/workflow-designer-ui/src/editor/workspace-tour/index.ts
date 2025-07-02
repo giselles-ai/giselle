@@ -1,2 +1,2 @@
-export * from "./workspace-tour";
 export * from "./steps";
+export * from "./workspace-tour";

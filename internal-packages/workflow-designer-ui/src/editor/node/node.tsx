@@ -4,6 +4,9 @@ import {
 	GitHubNode,
 	ImageGenerationNode,
 	type InputId,
+	isImageGenerationNode,
+	isTextGenerationNode,
+	isTriggerNode,
 	type Node,
 	type OutputId,
 	QueryNode,
@@ -12,12 +15,9 @@ import {
 	TriggerNode,
 	VectorStoreNode,
 	WebPageNode,
-	isImageGenerationNode,
-	isTextGenerationNode,
-	isTriggerNode,
 } from "@giselle-sdk/data-type";
-import { defaultName } from "@giselle-sdk/giselle-engine/react";
 import {
+	defaultName,
 	useNodeGenerations,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle-engine/react";

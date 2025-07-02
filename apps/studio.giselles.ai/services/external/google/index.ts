@@ -1,6 +1,6 @@
 export {
 	buildGoogleUserClient,
-	needsAuthorization,
 	type GoogleUserClient,
 	type GoogleUserData,
+	needsAuthorization,
 } from "./user-client";

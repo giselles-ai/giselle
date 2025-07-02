@@ -5,6 +5,6 @@ export {
 } from "./app";
 export {
 	buildGitHubUserClient,
-	needsAuthorization,
 	type GitHubUserClient,
+	needsAuthorization,
 } from "./user-client";

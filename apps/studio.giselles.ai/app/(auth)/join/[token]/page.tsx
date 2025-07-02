@@ -1,15 +1,17 @@
-import { Button } from "@/components/ui/button";
-import { getUser } from "@/lib/supabase";
 import type { User } from "@supabase/auth-js";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { getUser } from "@/lib/supabase";
 import { declineInvitation, joinTeam } from "./actions";
 import { ExpiredError, WrongEmailError } from "./error-components";
 import { fetchInvitationToken } from "./invitation";
 
 export default async function Page({
 	params,
-}: { params: Promise<{ token: string }> }) {
+}: {
+	params: Promise<{ token: string }>;
+}) {
 	const { token: tokenParam } = await params;
 
 	const token = await fetchInvitationToken(tokenParam);

@@ -1,2 +1,2 @@
-export type { Chunk, ChunkWithEmbedding, ChunkStore } from "./types";
 export { createPostgresChunkStore } from "./postgres";
+export type { Chunk, ChunkStore, ChunkWithEmbedding } from "./types";
