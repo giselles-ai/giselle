@@ -141,6 +141,9 @@ catalogs:
     highlight.js:
       specifier: 11.11.1
       version: 11.11.1
+    js-tiktoken:
+      specifier: 1.0.20
+      version: 1.0.20
     jsdom:
       specifier: 26.1.0
       version: 26.1.0
@@ -1107,6 +1110,9 @@ importers:
       ai:
         specifier: 'catalog:'
         version: 4.3.9(react@19.1.0)(zod@3.25.28)
+      js-tiktoken:
+        specifier: 'catalog:'
+        version: 1.0.20
       openai:
         specifier: 'catalog:'
         version: 5.3.0(ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@6.0.5))(zod@3.25.28)
@@ -6839,6 +6845,9 @@ packages:
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
     engines: {node: '>=10'}
+
+  js-tiktoken@1.0.20:
+    resolution: {integrity: sha512-Xlaqhhs8VfCd6Sh7a1cFkZHQbYTLCwVJJWiHVxBYzLPxW0XsoxBy1hitmjkdIjD3Aon5BXLHFwU5O8WUx6HH+A==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -15557,6 +15566,10 @@ snapshots:
   jose@5.9.6: {}
 
   joycon@3.1.1: {}
+
+  js-tiktoken@1.0.20:
+    dependencies:
+      base64-js: 1.5.1
 
   js-tokens@4.0.0: {}
 

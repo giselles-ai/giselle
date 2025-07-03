@@ -84,3 +84,4 @@ catalog:
   jsdom: 26.1.0
   tar: 7.4.3
   "@types/tar": 6.1.13
+  "js-tiktoken": 1.0.20
