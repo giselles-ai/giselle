@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 1066 MIT
+* 1067 MIT
 * 108 Apache 2.0
 * 60 ISC
 * 34 New BSD
@@ -8847,6 +8847,17 @@ BlueOak-1.0.0 permitted
 
 <a name="joycon"></a>
 ### joycon v3.1.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="js-tiktoken"></a>
+### js-tiktoken v1.0.20
 #### 
 
 ##### Paths
