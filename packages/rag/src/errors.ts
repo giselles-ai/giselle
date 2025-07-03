@@ -172,9 +172,13 @@ export class EmbeddingError extends RagError {
 			context,
 		);
 	}
+
+	static inputTooLong(message: string, context?: Record<string, unknown>) {
+		return new EmbeddingError(message, "INPUT_TOO_LONG", undefined, context);
+	}
 }
 
-export type EmbeddingErrorCode = "API_ERROR";
+export type EmbeddingErrorCode = "API_ERROR" | "INPUT_TOO_LONG";
 
 /**
  * Configuration error
