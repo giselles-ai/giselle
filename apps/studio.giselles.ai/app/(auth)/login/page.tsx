@@ -5,15 +5,17 @@ import { ActionPrompt } from "../components/action-prompt";
 import { Divider } from "../components/divider";
 import { LegalConsent } from "../components/legal-consent";
 import { OAuthProviders } from "../components/oauth-providers";
+import type { AuthPageProps } from "../types";
 import { LoginForm } from "./login-form";
 
-export default function Page() {
+export default async function Page({ searchParams }: AuthPageProps) {
+	const { returnUrl } = await searchParams;
 	return (
 		<AuthContainer title="Welcome Back">
 			<AuthContainerHeader title="Log in to Giselle" />
 
 			<div className="auth-form-section">
-				<OAuthProviders labelPrefix="Continue" />
+				<OAuthProviders labelPrefix="Continue" returnUrl={returnUrl} />
 			</div>
 
 			<div className="auth-divider-section">
@@ -21,7 +23,7 @@ export default function Page() {
 			</div>
 
 			<div className="auth-form-section">
-				<LoginForm />
+				<LoginForm returnUrl={returnUrl} />
 			</div>
 
 			<div className="auth-legal-section">

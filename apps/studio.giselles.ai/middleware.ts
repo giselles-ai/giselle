@@ -13,7 +13,9 @@ export default supabaseMiddleware(async (user, request) => {
 	if (user == null) {
 		// no user, potentially respond by redirecting the user to the login page
 		const url = request.nextUrl.clone();
+		const returnUrl = request.nextUrl.pathname + request.nextUrl.search;
 		url.pathname = "/login";
+		url.searchParams.set("returnUrl", returnUrl);
 		return NextResponse.redirect(url);
 	}
 });
