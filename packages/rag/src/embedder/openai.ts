@@ -1,6 +1,6 @@
 import { openai } from "@ai-sdk/openai";
 import { embed, embedMany } from "ai";
-import { type Tiktoken, encodingForModel } from "js-tiktoken";
+import { encodingForModel, type Tiktoken } from "js-tiktoken";
 import { EmbeddingError } from "../errors";
 import type { EmbedderFunction } from "./types";
 
