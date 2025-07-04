@@ -145,11 +145,10 @@ function DataSourceTab({
 			type="button"
 			onClick={onClick}
 			className={clsx(
-				"relative flex items-center gap-[8px] px-[16px] py-[12px] transition-all whitespace-nowrap flex-shrink-0",
-				"border-b-2 -mb-[2px] z-10",
+				"flex items-center gap-[8px] px-[16px] py-[4px] border-b cursor-pointer",
 				isActive
-					? "border-blue-400 text-white-900 bg-white-900/5"
-					: "border-transparent text-white-600 hover:text-white-800 hover:border-white-900/30",
+					? "text-white-900 border-white-900"
+					: "text-black-400 border-transparent",
 			)}
 		>
 			{isGitHub && <GitHubIcon className="w-[14px] h-[14px]" />}
@@ -174,13 +173,15 @@ function QueryResultCard({ result }: { result: QueryResultData }) {
 	);
 
 	const toggleRecord = (recordIndex: number) => {
-		const newExpanded = new Set(expandedRecords);
-		if (newExpanded.has(recordIndex)) {
-			newExpanded.delete(recordIndex);
-		} else {
-			newExpanded.add(recordIndex);
-		}
-		setExpandedRecords(newExpanded);
+		setExpandedRecords((prev) => {
+			const newExpanded = new Set(prev);
+			if (newExpanded.has(recordIndex)) {
+				newExpanded.delete(recordIndex);
+			} else {
+				newExpanded.add(recordIndex);
+			}
+			return newExpanded;
+		});
 	};
 
 	if (result.type !== "vector-store") {
@@ -211,7 +212,7 @@ function QueryResultCard({ result }: { result: QueryResultData }) {
 				>
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-[8px] flex-wrap">
-							<span className="text-[12px] font-medium text-white-700">
+							<span className="text-[12px] font-semibold text-white-700">
 								Chunk #{record.chunkIndex}
 							</span>
 						</div>
@@ -293,7 +294,7 @@ export function QueryResultView({ generation }: { generation: Generation }) {
 				</div>
 
 				{/* Tab Navigation */}
-				<div className="border-b border-white-900/20">
+				<div>
 					<div className="overflow-x-auto">
 						<div className="flex gap-[0px] min-w-full">
 							{queryResults.map((result, index) => (

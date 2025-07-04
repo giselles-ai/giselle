@@ -125,12 +125,14 @@ export function TextEditor({
 	tools,
 	nodes,
 	placeholder,
+	header,
 }: {
 	value?: string;
 	onValueChange?: (value: string) => void;
 	tools?: (editor: Editor) => ReactNode;
 	nodes?: Node[];
 	placeholder?: string;
+	header?: ReactNode;
 }) {
 	const extensions = useMemo(() => {
 		return nodes === undefined
@@ -146,7 +148,12 @@ export function TextEditor({
 	return (
 		<div className="flex flex-col h-full w-full">
 			<EditorProvider
-				slotBefore={<Toolbar tools={tools} />}
+				slotBefore={
+					<>
+						<Toolbar tools={tools} />
+						{header && <div className="mb-2">{header}</div>}
+					</>
+				}
 				extensions={extensions}
 				content={
 					value === undefined

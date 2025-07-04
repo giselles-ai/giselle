@@ -3,27 +3,12 @@ import { ToastProvider } from "@giselles-ai/contexts/toast";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
 import { and, desc, eq, isNotNull } from "drizzle-orm";
 import Link from "next/link";
-import { type ReactNode, Suspense } from "react";
+import { Suspense } from "react";
 import { agents, db } from "@/drizzle";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 import { DeleteAgentButton } from "../components/delete-agent-button";
 import { DuplicateAgentButton } from "../components/duplicate-agent-button";
-
-function _DataList({
-	label,
-	children,
-}: {
-	label: string;
-	children: ReactNode;
-}) {
-	return (
-		<div className="text-black-30">
-			<p className="text-[12px]">{label}</p>
-			<div className="font-bold">{children}</div>
-		</div>
-	);
-}
 
 async function MyAgentList() {
 	const [currentTeam, currentUser] = await Promise.all([

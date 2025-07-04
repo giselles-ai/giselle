@@ -407,14 +407,23 @@ export function Editor({
 
 	const [showReadOnlyBanner, setShowReadOnlyBanner] = useState(isReadOnly);
 
+	// Function to convert 380px to a percentage
+	const getPercentageForPixels = (pixels: number) => {
+		const containerWidth = window.innerWidth - 16 - 16; // padding分を引く
+		const sideMenuWidth = containerWidth * 0.1; // サイドメニューの10%
+		const availableWidth = containerWidth - sideMenuWidth;
+		return (pixels / availableWidth) * 100;
+	};
+
 	useEffect(() => {
 		if (!rightPanelRef.current) {
 			return;
 		}
 		if (selectedNodes.length === 1) {
 			expand.current = true;
-			rightPanelWidthMotionValue.set(50);
-			rightPanelRef.current.resize(50);
+			const targetPercentage = getPercentageForPixels(380);
+			rightPanelWidthMotionValue.set(targetPercentage);
+			rightPanelRef.current.resize(targetPercentage);
 		} else {
 			collapse.current = true;
 			rightPanelWidthMotionValue.set(0);
@@ -429,7 +438,8 @@ export function Editor({
 		const rightPanelWidth = rightPanelWidthMotionValue.get();
 		if (expand.current) {
 			rightPanelRef.current.resize(rightPanelWidth);
-			if (rightPanelWidth === 50) {
+			const targetPercentage = getPercentageForPixels(380);
+			if (Math.abs(rightPanelWidth - targetPercentage) < 0.1) {
 				expand.current = false;
 				collapse.current = false;
 			}

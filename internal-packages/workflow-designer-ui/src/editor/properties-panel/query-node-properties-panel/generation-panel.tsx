@@ -29,18 +29,24 @@ function Empty({ onGenerate }: { onGenerate?: () => void }) {
 					</button>
 				)}
 				<style jsx>{`
-					.generate-star {
-						display: inline-block;
-					}
-					button:hover .generate-star {
-						animation: rotateStar 0.7s ease-in-out;
-					}
-					@keyframes rotateStar {
-						0% { transform: rotate(0deg) scale(1); }
-						50% { transform: rotate(180deg) scale(1.5); }
-						100% { transform: rotate(360deg) scale(1); }
-					}
-				`}</style>
+          .generate-star {
+            display: inline-block;
+          }
+          button:hover .generate-star {
+            animation: rotateStar 0.7s ease-in-out;
+          }
+          @keyframes rotateStar {
+            0% {
+              transform: rotate(0deg) scale(1);
+            }
+            50% {
+              transform: rotate(180deg) scale(1.5);
+            }
+            100% {
+              transform: rotate(360deg) scale(1);
+            }
+          }
+        `}</style>
 			</EmptyState>
 		</div>
 	);
