@@ -13,7 +13,6 @@ import {
 	type VectorStoreNode,
 	type WorkspaceId,
 } from "@giselle-sdk/data-type";
-import { EmbeddingError } from "@giselle-sdk/rag";
 import {
 	isJsonContent,
 	jsonContentToText,
@@ -85,26 +84,6 @@ export function executeQuery(args: {
 					outputs,
 				});
 			} catch (error) {
-				if (
-					error instanceof EmbeddingError &&
-					error.code === "INPUT_TOO_LONG"
-				) {
-					const failedGeneration = {
-						...runningGeneration,
-						status: "failed",
-						failedAt: Date.now(),
-						error: {
-							name: "ValidationError",
-							message: error.message,
-							dump: error,
-						},
-					} satisfies FailedGeneration;
-
-					await setGeneration(failedGeneration);
-					return;
-				}
-
-				// For other errors, set failed generation and re-throw
 				const failedGeneration = {
 					...runningGeneration,
 					status: "failed",
