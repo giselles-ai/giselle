@@ -1,6 +1,5 @@
 import clsx from "clsx/lite";
 import { Switch } from "radix-ui";
-import type { ReactNode } from "react";
 
 export function Toggle({
 	name,

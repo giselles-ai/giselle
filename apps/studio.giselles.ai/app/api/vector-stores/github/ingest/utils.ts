@@ -79,6 +79,7 @@ export async function fetchTargetGitHubRepositories(): Promise<
 		installationId: record.installationId,
 		lastIngestedCommitSha: record.lastIngestedCommitSha,
 		teamDbId: record.teamDbId,
+		status: record.status,
 	}));
 }
 

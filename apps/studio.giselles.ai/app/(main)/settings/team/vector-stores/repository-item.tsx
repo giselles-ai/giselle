@@ -60,29 +60,28 @@ export function RepositoryItem({
 					>
 						{repositoryIndex.owner}/{repositoryIndex.repo}
 					</a>
+
 					<span className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
 						Updated {getRelativeTimeString(repositoryIndex.updatedAt)}
 					</span>
 				</div>
 				<div className="flex items-center gap-3">
 					<div className="flex flex-col items-end gap-1">
-						<div className="flex items-center gap-3">
-							<StatusBadge
-								status={repositoryIndex.status}
-								onVerify={
-									repositoryIndex.status === "failed" &&
-									repositoryIndex.errorCode === "DOCUMENT_NOT_FOUND"
-										? () => setShowDiagnosticModal(true)
-										: undefined
-								}
-							/>
-							{repositoryIndex.lastIngestedCommitSha && (
-								<span className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
-									Last Ingested:{" "}
-									{repositoryIndex.lastIngestedCommitSha.substring(0, 7)}
-								</span>
-							)}
-						</div>
+						<StatusBadge
+							status={repositoryIndex.status}
+							onVerify={
+								repositoryIndex.status === "failed" &&
+								repositoryIndex.errorCode === "DOCUMENT_NOT_FOUND"
+									? () => setShowDiagnosticModal(true)
+									: undefined
+							}
+						/>
+						{repositoryIndex.lastIngestedCommitSha && (
+							<span className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
+								Last Ingested:{" "}
+								{repositoryIndex.lastIngestedCommitSha.substring(0, 7)}
+							</span>
+						)}
 						{repositoryIndex.status === "failed" &&
 							repositoryIndex.errorCode && (
 								<span className="text-red-400 font-medium text-[12px] leading-[20.4px] font-geist">
@@ -171,6 +170,18 @@ const STATUS_CONFIG = {
 	failed: { dotColor: "bg-[#FF3D71]", label: "error" },
 } as const;
 
+const BADGE_STYLES = {
+	button:
+		"flex items-center px-2 py-1 rounded-full border border-white/20 w-auto hover:bg-white/5 transition-colors duration-200",
+	container:
+		"flex items-center px-2 py-1 rounded-full border border-white/20 w-[80px]",
+	dot: "w-2 h-2 rounded-full shrink-0",
+	text: "text-black-400 text-[12px] leading-[14px] font-medium font-geist flex-1 text-center ml-1.5",
+	checkText: "text-[#1663F3] text-[12px] leading-[14px] font-medium font-geist",
+	checkIcon: "text-[#1663F3] text-[10px] ml-0.5",
+	separator: "text-black-400 text-[12px] mx-1",
+} as const;
+
 function StatusBadge({
 	status,
 	onVerify,
@@ -185,17 +196,13 @@ function StatusBadge({
 
 	const badgeContent = (
 		<>
-			<div className={`w-2 h-2 rounded-full ${config.dotColor} shrink-0`} />
-			<span className="text-black-400 text-[12px] leading-[14px] font-medium font-geist flex-1 text-center ml-1.5">
-				{config.label}
-			</span>
+			<div className={`${BADGE_STYLES.dot} ${config.dotColor}`} />
+			<span className={BADGE_STYLES.text}>{config.label}</span>
 			{status === "failed" && onVerify && (
 				<>
-					<span className="text-black-400 text-[12px] mx-1">•</span>
-					<span className="text-[#1663F3] text-[12px] leading-[14px] font-medium font-geist">
-						Check
-					</span>
-					<span className="text-[#1663F3] text-[10px] ml-0.5">↗</span>
+					<span className={BADGE_STYLES.separator}>•</span>
+					<span className={BADGE_STYLES.checkText}>Check</span>
+					<span className={BADGE_STYLES.checkIcon}>↗</span>
 				</>
 			)}
 		</>
@@ -203,21 +210,13 @@ function StatusBadge({
 
 	if (onVerify) {
 		return (
-			<button
-				type="button"
-				onClick={onVerify}
-				className="flex items-center px-2 py-1 rounded-full border border-white/20 w-auto hover:bg-white/5 transition-colors duration-200"
-			>
+			<button type="button" onClick={onVerify} className={BADGE_STYLES.button}>
 				{badgeContent}
 			</button>
 		);
 	}
 
-	return (
-		<div className="flex items-center px-2 py-1 rounded-full border border-white/20 w-[80px]">
-			{badgeContent}
-		</div>
-	);
+	return <div className={BADGE_STYLES.container}>{badgeContent}</div>;
 }
 
 function formatRetryTime(retryAfter: Date): string {

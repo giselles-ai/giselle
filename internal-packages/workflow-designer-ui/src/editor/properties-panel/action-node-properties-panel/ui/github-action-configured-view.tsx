@@ -13,13 +13,12 @@ import {
 import { githubActionIdToLabel } from "@giselle-sdk/flow";
 import {
 	defaultName,
-	useFeatureFlag,
 	useGiselleEngine,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle-engine/react";
 import clsx from "clsx/lite";
 import { TrashIcon, TriangleAlert } from "lucide-react";
-import { DropdownMenu as RadixDropdownMenu } from "radix-ui";
+
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
 import { NodeIcon } from "../../../../icons/node";
@@ -215,89 +214,20 @@ function SelectOutputPopover({
 		[node, addConnection, input],
 	);
 
-	const { layoutV2 } = useFeatureFlag();
-	if (layoutV2) {
-		return (
-			<DropdownMenu
-				trigger={<Button>Select Source</Button>}
-				items={groupedOutputs.map((groupedOutput) => ({
-					groupId: groupedOutput.label,
-					groupLabel: groupedOutput.label,
-					items: groupedOutput.nodes,
-				}))}
-				renderItem={(item) => (
-					<p className="text-[12px] truncate">
-						{item.node.name ?? defaultName(item.node)} / {item.label}
-					</p>
-				)}
-				onSelect={(_event, item) => handleSelectOutput(item.node, item.id)}
-			/>
-		);
-	}
-
 	return (
-		<RadixDropdownMenu.Root>
-			<RadixDropdownMenu.Trigger
-				className={clsx(
-					"flex items-center cursor-pointer p-[10px] rounded-[8px]",
-					"border border-transparent hover:border-white-800",
-					"text-[12px] font-[700] text-white-800",
-					"transition-colors",
-				)}
-			>
-				Select Source
-			</RadixDropdownMenu.Trigger>
-			<RadixDropdownMenu.Portal>
-				<RadixDropdownMenu.Content
-					className={clsx(
-						"relative w-[300px] py-[8px]",
-						"rounded-[8px] border-[1px] bg-black-900/60 backdrop-blur-[8px]",
-						"shadow-[-2px_-1px_0px_0px_rgba(0,0,0,0.1),1px_1px_8px_0px_rgba(0,0,0,0.25)]",
-					)}
-					align="end"
-				>
-					<div
-						className={clsx(
-							"absolute z-0 rounded-[8px] inset-0 border-[1px] mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent",
-							"from-[hsl(232,_36%,_72%)]/40 to-[hsl(218,_58%,_21%)]/90",
-						)}
-					/>
-					<div className="relative max-h-[300px] flex flex-col">
-						<div className="grow flex flex-col pb-[8px] gap-[8px] overflow-y-auto min-h-0">
-							{groupedOutputs.map((groupedOutput) =>
-								groupedOutput.nodes.length === 0 ? null : (
-									<RadixDropdownMenu.Group
-										className="flex flex-col px-[8px]"
-										key={groupedOutput.label}
-									>
-										<RadixDropdownMenu.Label className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
-											{groupedOutput.label}
-										</RadixDropdownMenu.Label>
-										{groupedOutput.nodes.map((output) => (
-											<RadixDropdownMenu.Item
-												key={output.id}
-												className={clsx(
-													"group flex p-[8px] justify-between rounded-[8px] hover:bg-primary-900/50 transition-colors cursor-pointer",
-													"text-white-400",
-													"data-[disabled]:text-white-850/30 data-[disabled]:pointer-events-none",
-												)}
-												textValue={output.id}
-												onSelect={() =>
-													handleSelectOutput(output.node, output.id)
-												}
-											>
-												<p className="text-[12px] truncate">
-													{defaultName(output.node)} / {output.label}
-												</p>
-											</RadixDropdownMenu.Item>
-										))}
-									</RadixDropdownMenu.Group>
-								),
-							)}
-						</div>
-					</div>
-				</RadixDropdownMenu.Content>
-			</RadixDropdownMenu.Portal>
-		</RadixDropdownMenu.Root>
+		<DropdownMenu
+			trigger={<Button>Select Source</Button>}
+			items={groupedOutputs.map((groupedOutput) => ({
+				groupId: groupedOutput.label,
+				groupLabel: groupedOutput.label,
+				items: groupedOutput.nodes,
+			}))}
+			renderItem={(item) => (
+				<p className="text-[12px] truncate">
+					{item.node.name ?? defaultName(item.node)} / {item.label}
+				</p>
+			)}
+			onSelect={(_event, item) => handleSelectOutput(item.node, item.id)}
+		/>
 	);
 }

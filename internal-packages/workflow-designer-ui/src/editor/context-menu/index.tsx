@@ -1,3 +1,6 @@
+import { Button } from "@giselle-internal/ui/button";
+import { PopoverContent } from "@giselle-internal/ui/popover";
+import { useWorkflowDesigner } from "@giselle-sdk/giselle-engine/react";
 import { useCallback } from "react";
 import { useToasts } from "../../ui/toast";
 import { useDuplicateNode } from "../node";
@@ -12,6 +15,7 @@ export function ContextMenu({
 	onClose,
 }: ContextMenuProps) {
 	const duplicateNode = useDuplicateNode();
+	const { deleteNode } = useWorkflowDesigner();
 	const toast = useToasts();
 
 	const handleDuplicate = useCallback(() => {
@@ -19,21 +23,36 @@ export function ContextMenu({
 		onClose();
 	}, [id, duplicateNode, toast, onClose]);
 
+	const handleDelete = useCallback(() => {
+		deleteNode(id);
+		onClose();
+	}, [id, deleteNode, onClose]);
+
 	return (
 		<div
 			style={{ top, left, right, bottom }}
-			className="fixed bg-[#1a1a1a] border border-[#333] rounded-md p-1 z-[1000] shadow-lg"
+			className="fixed z-[1000]"
 			role="menu"
 			aria-label="Node actions"
 		>
-			<button
-				type="button"
-				className="w-full px-3 py-2 text-white bg-transparent border-none cursor-pointer text-left whitespace-nowrap hover:bg-[#333] focus:outline-none focus:bg-[#444] rounded-sm block"
-				onClick={handleDuplicate}
-				role="menuitem"
-			>
-				Duplicate Node
-			</button>
+			<PopoverContent>
+				<Button
+					variant="subtle"
+					size="default"
+					onClick={handleDuplicate}
+					className="w-full justify-start [&>div]:text-[12px]"
+				>
+					Duplicate
+				</Button>
+				<Button
+					variant="subtle"
+					size="default"
+					onClick={handleDelete}
+					className="w-full justify-start text-red-400 hover:text-red-300 [&>div]:text-[12px]"
+				>
+					Delete
+				</Button>
+			</PopoverContent>
 		</div>
 	);
 }

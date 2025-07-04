@@ -8,6 +8,52 @@ import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
 import { GitHubIcon, WilliIcon } from "../icons";
 
+// Score display constants for better performance
+const SCORE_THRESHOLDS = {
+	HIGH: 0.8,
+	MEDIUM: 0.5,
+} as const;
+
+const SCORE_COLORS = {
+	HIGH: "bg-green-500",
+	MEDIUM: "bg-yellow-500",
+	LOW: "bg-gray-500",
+} as const;
+
+const SCORE_TEXT_COLORS = {
+	HIGH: "text-green-400",
+	MEDIUM: "text-yellow-400",
+	LOW: "text-gray-400",
+} as const;
+
+const getScoreColor = (score: number): string => {
+	if (score > SCORE_THRESHOLDS.HIGH) return SCORE_COLORS.HIGH;
+	if (score > SCORE_THRESHOLDS.MEDIUM) return SCORE_COLORS.MEDIUM;
+	return SCORE_COLORS.LOW;
+};
+
+const getScoreTextColor = (score: number): string => {
+	if (score > SCORE_THRESHOLDS.HIGH) return SCORE_TEXT_COLORS.HIGH;
+	if (score > SCORE_THRESHOLDS.MEDIUM) return SCORE_TEXT_COLORS.MEDIUM;
+	return SCORE_TEXT_COLORS.LOW;
+};
+
+// Common UI component styles
+const CARD_STYLES = {
+	base: "bg-white-900/5 rounded-[8px] border border-white-900/10",
+	record: "p-[12px] space-y-[8px]",
+	message: "p-[16px]",
+} as const;
+
+const TEXT_STYLES = {
+	chunk: "text-[12px] font-semibold text-white-700",
+	tabLabel: "text-[13px] font-medium",
+	recordCount: "text-[11px] font-medium",
+	content:
+		"text-[12px] text-white-800 whitespace-pre-wrap font-mono leading-relaxed",
+	header: "text-[12px] text-white-600",
+} as const;
+
 function Spinner() {
 	return (
 		<div className="flex gap-[12px] text-black-400">
@@ -19,18 +65,6 @@ function Spinner() {
 }
 
 function ScoreIndicator({ score }: { score: number }) {
-	const getScoreColor = (score: number) => {
-		if (score > 0.8) return "bg-green-500";
-		if (score > 0.5) return "bg-yellow-500";
-		return "bg-gray-500";
-	};
-
-	const getScoreText = (score: number) => {
-		if (score > 0.8) return "text-green-400";
-		if (score > 0.5) return "text-yellow-400";
-		return "text-gray-400";
-	};
-
 	return (
 		<div className="flex items-center gap-[8px]">
 			<div className="w-[60px] h-[4px] bg-gray-700 rounded-full overflow-hidden">
@@ -42,7 +76,9 @@ function ScoreIndicator({ score }: { score: number }) {
 					style={{ width: `${score * 100}%` }}
 				/>
 			</div>
-			<span className={clsx("text-[12px] font-medium", getScoreText(score))}>
+			<span
+				className={clsx("text-[12px] font-medium", getScoreTextColor(score))}
+			>
 				{(score * 100).toFixed(0)}%
 			</span>
 		</div>
@@ -64,9 +100,7 @@ function ContentPreview({
 
 	return (
 		<div className="space-y-[8px]">
-			<pre className="text-[12px] text-white-800 whitespace-pre-wrap font-mono leading-relaxed">
-				{displayContent}
-			</pre>
+			<pre className={TEXT_STYLES.content}>{displayContent}</pre>
 			{shouldShowToggle && (
 				<button
 					type="button"
@@ -145,15 +179,14 @@ function DataSourceTab({
 			type="button"
 			onClick={onClick}
 			className={clsx(
-				"relative flex items-center gap-[8px] px-[16px] py-[12px] transition-all whitespace-nowrap flex-shrink-0",
-				"border-b-2 -mb-[2px] z-10",
+				"flex items-center gap-[8px] px-[16px] py-[4px] border-b cursor-pointer",
 				isActive
-					? "border-blue-400 text-white-900 bg-white-900/5"
-					: "border-transparent text-white-600 hover:text-white-800 hover:border-white-900/30",
+					? "text-white-900 border-white-900"
+					: "text-black-400 border-transparent",
 			)}
 		>
 			{isGitHub && <GitHubIcon className="w-[14px] h-[14px]" />}
-			<span className="text-[13px] font-medium">{displayName}</span>
+			<span className={TEXT_STYLES.tabLabel}>{displayName}</span>
 			<div
 				className={clsx(
 					"flex items-center gap-[4px] px-[6px] py-[1px] rounded-[6px]",
@@ -162,7 +195,7 @@ function DataSourceTab({
 						: "bg-white-900/10 text-white-700",
 				)}
 			>
-				<span className="text-[11px] font-medium">{recordCount}</span>
+				<span className={TEXT_STYLES.recordCount}>{recordCount}</span>
 			</div>
 		</button>
 	);
@@ -185,7 +218,7 @@ function QueryResultCard({ result }: { result: QueryResultData }) {
 
 	if (result.type !== "vector-store") {
 		return (
-			<div className="bg-white-900/5 rounded-[8px] p-[16px] border border-white-900/10">
+			<div className={clsx(CARD_STYLES.base, CARD_STYLES.message)}>
 				<p className="text-white-600 text-[14px]">
 					Unsupported result type: {result.type}
 				</p>
@@ -196,7 +229,7 @@ function QueryResultCard({ result }: { result: QueryResultData }) {
 	const { records } = result;
 	if (!records) {
 		return (
-			<div className="bg-white-900/5 rounded-[8px] p-[16px] border border-white-900/10">
+			<div className={clsx(CARD_STYLES.base, CARD_STYLES.message)}>
 				<p className="text-white-600 text-[14px]">No records found</p>
 			</div>
 		);
@@ -207,11 +240,11 @@ function QueryResultCard({ result }: { result: QueryResultData }) {
 			{records.map((record, recordIndex) => (
 				<div
 					key={`record-${recordIndex}-${record.chunkIndex}`}
-					className="bg-white-900/5 rounded-[8px] p-[12px] space-y-[8px] border border-white-900/10"
+					className={clsx(CARD_STYLES.base, CARD_STYLES.record)}
 				>
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-[8px] flex-wrap">
-							<span className="text-[12px] font-medium text-white-700">
+							<span className={TEXT_STYLES.chunk}>
 								Chunk #{record.chunkIndex}
 							</span>
 						</div>
@@ -269,7 +302,13 @@ export function QueryResultView({ generation }: { generation: Generation }) {
 
 		if (queryResults.length === 0) {
 			return (
-				<div className="text-white-600 text-[14px] p-[16px] bg-white-900/5 rounded-[8px] border border-white-900/10 text-center">
+				<div
+					className={clsx(
+						CARD_STYLES.base,
+						CARD_STYLES.message,
+						"text-white-600 text-[14px] text-center",
+					)}
+				>
 					No search results found
 				</div>
 			);
@@ -285,7 +324,7 @@ export function QueryResultView({ generation }: { generation: Generation }) {
 			<div className="space-y-[16px]">
 				{/* Header */}
 				<div className="flex items-center gap-[12px] py-[8px]">
-					<p className="text-[12px] text-white-600">
+					<p className={TEXT_STYLES.header}>
 						Found {totalRecords} result{totalRecords !== 1 ? "s" : ""} in{" "}
 						{queryResults.length} data source
 						{queryResults.length !== 1 ? "s" : ""}
@@ -293,7 +332,7 @@ export function QueryResultView({ generation }: { generation: Generation }) {
 				</div>
 
 				{/* Tab Navigation */}
-				<div className="border-b border-white-900/20">
+				<div>
 					<div className="overflow-x-auto">
 						<div className="flex gap-[0px] min-w-full">
 							{queryResults.map((result, index) => (
