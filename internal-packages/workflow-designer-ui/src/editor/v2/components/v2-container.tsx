@@ -158,11 +158,7 @@ function V2NodeCanvas() {
 				const targetNode = data.nodes.find(
 					(node) => node.id === connection.inputNode.id,
 				);
-				if (
-					targetNode &&
-					targetNode.type === "operation" &&
-					targetNode.content.type !== "action"
-				) {
+				if (targetNode && !isActionNode(targetNode)) {
 					const updatedInputs = targetNode.inputs.filter(
 						(input) => input.id !== connection.inputId,
 					);
