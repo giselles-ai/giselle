@@ -5,14 +5,14 @@ import type React from "react";
 interface NoteProps {
 	children: React.ReactNode;
 	type?: "error" | "warning" | "success" | "info";
-	fill?: boolean;
+
 	action?: React.ReactNode;
 }
 
 export function Note({
 	children,
 	type = "error",
-	fill = false,
+
 	action,
 }: NoteProps) {
 	return (

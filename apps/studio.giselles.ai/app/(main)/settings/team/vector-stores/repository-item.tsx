@@ -60,29 +60,28 @@ export function RepositoryItem({
 					>
 						{repositoryIndex.owner}/{repositoryIndex.repo}
 					</a>
+
 					<span className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
 						Updated {getRelativeTimeString(repositoryIndex.updatedAt)}
 					</span>
 				</div>
 				<div className="flex items-center gap-3">
 					<div className="flex flex-col items-end gap-1">
-						<div className="flex items-center gap-3">
-							<StatusBadge
-								status={repositoryIndex.status}
-								onVerify={
-									repositoryIndex.status === "failed" &&
-									repositoryIndex.errorCode === "DOCUMENT_NOT_FOUND"
-										? () => setShowDiagnosticModal(true)
-										: undefined
-								}
-							/>
-							{repositoryIndex.lastIngestedCommitSha && (
-								<span className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
-									Last Ingested:{" "}
-									{repositoryIndex.lastIngestedCommitSha.substring(0, 7)}
-								</span>
-							)}
-						</div>
+						<StatusBadge
+							status={repositoryIndex.status}
+							onVerify={
+								repositoryIndex.status === "failed" &&
+								repositoryIndex.errorCode === "DOCUMENT_NOT_FOUND"
+									? () => setShowDiagnosticModal(true)
+									: undefined
+							}
+						/>
+						{repositoryIndex.lastIngestedCommitSha && (
+							<span className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
+								Last Ingested:{" "}
+								{repositoryIndex.lastIngestedCommitSha.substring(0, 7)}
+							</span>
+						)}
 						{repositoryIndex.status === "failed" &&
 							repositoryIndex.errorCode && (
 								<span className="text-red-400 font-medium text-[12px] leading-[20.4px] font-geist">
