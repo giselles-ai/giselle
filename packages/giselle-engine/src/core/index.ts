@@ -61,6 +61,7 @@ import {
 export * from "./types";
 export * from "./vault";
 export * from "./experimental_vector-store";
+export * from "./experimental_storage";
 export { FlowRunId } from "./flows";
 export * from "./usage-limits";
 export * from "./integrations";
