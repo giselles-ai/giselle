@@ -24,6 +24,8 @@
 		"tsup": "catalog:"
 	},
 	"dependencies": {
-		"@supabase/supabase-js": "catalog:"
+		"@supabase/supabase-js": "catalog:",
+		"@aws-sdk/client-s3": "catalog:",
+		"zod": "catalog:"
 	}
 }
