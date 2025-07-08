@@ -25,7 +25,7 @@ export const config: MiddlewareConfig = {
 		"/apps/:path*",
 		"/settings/:path*",
 		"/workspaces/:path*",
-		"/api/giselle/:path*",
+		"/((?!api/giselle/experimental_github-webhook)api/giselle/:path*)",
 		"/connected",
 		"/github/:path*",
 		"/subscriptions/:path*",
