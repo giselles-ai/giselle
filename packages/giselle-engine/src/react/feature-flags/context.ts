@@ -8,6 +8,7 @@ export interface FeatureFlagContextValue {
 	layoutV2: boolean;
 	layoutV3: boolean;
 	experimental_storage: boolean;
+	stage: boolean;
 }
 export const FeatureFlagContext = createContext<
 	FeatureFlagContextValue | undefined

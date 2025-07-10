@@ -21,6 +21,7 @@ export default async function Layout({
 				layoutV2: true,
 				layoutV3: true,
 				experimental_storage: true,
+				stage: true,
 			}}
 		>
 			{children}

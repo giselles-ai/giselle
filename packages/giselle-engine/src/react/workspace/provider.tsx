@@ -64,6 +64,7 @@ export function WorkspaceProvider({
 				layoutV2: featureFlag?.layoutV2 ?? false,
 				layoutV3: featureFlag?.layoutV3 ?? false,
 				experimental_storage: featureFlag?.experimental_storage ?? false,
+				stage: featureFlag?.stage ?? false,
 			}}
 		>
 			<TelemetryProvider settings={telemetry}>

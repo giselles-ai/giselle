@@ -10,6 +10,7 @@ import {
 	layoutV3Flag,
 	runV3Flag,
 	sidemenuFlag,
+	stageFlag,
 	webSearchActionFlag,
 } from "@/flags";
 import { getGitHubVectorStores } from "@/lib/vector-stores/github";
@@ -50,6 +51,7 @@ export default async function Layout({
 	const layoutV2 = await layoutV2Flag();
 	const layoutV3 = await layoutV3Flag();
 	const experimental_storage = await experimental_storageFlag();
+	const stage = await stageFlag();
 	return (
 		<WorkspaceProvider
 			workspaceId={workspaceId}
@@ -83,6 +85,7 @@ export default async function Layout({
 				layoutV2,
 				layoutV3,
 				experimental_storage,
+				stage,
 			}}
 		>
 			{children}
