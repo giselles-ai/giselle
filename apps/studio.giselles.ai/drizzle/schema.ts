@@ -329,9 +329,9 @@ export const flowTriggers = pgTable(
 			.notNull()
 			.$onUpdate(() => new Date()),
 	},
-	(table) => ({
-		sdkFlowTriggerId: uniqueIndex().on(table.sdkFlowTriggerId),
-		teamDbIdIdx: index().on(table.teamDbId),
-		stagedIdx: index().on(table.staged),
-	}),
+	(table) => [
+		uniqueIndex().on(table.sdkFlowTriggerId),
+		index().on(table.teamDbId),
+		index().on(table.staged),
+	],
 );
