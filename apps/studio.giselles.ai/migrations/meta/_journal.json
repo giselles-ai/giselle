@@ -253,6 +253,13 @@
 			"when": 1751350483095,
 			"tag": "0035_big_the_hunter",
 			"breakpoints": true
+		},
+		{
+			"idx": 36,
+			"version": "7",
+			"when": 1752216310233,
+			"tag": "0036_workable_hiroim",
+			"breakpoints": true
 		}
 	]
 }

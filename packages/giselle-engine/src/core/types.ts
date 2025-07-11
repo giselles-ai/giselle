@@ -1,4 +1,8 @@
-import type { CompletedGeneration, WorkspaceId } from "@giselle-sdk/data-type";
+import type {
+	CompletedGeneration,
+	FlowTrigger,
+	WorkspaceId,
+} from "@giselle-sdk/data-type";
 import type {
 	GitHubInstallationAppAuth,
 	GitHubPersonalAccessTokenAuth,
@@ -36,6 +40,7 @@ export interface GiselleEngineContext {
 			generation: CompletedGeneration,
 			options: GenerationCompleteOption,
 		) => Promise<void>;
+		flowTriggerUpdate?: (flowTrigger: FlowTrigger) => Promise<void>;
 	};
 	vectorStore?: VectorStore;
 }
@@ -111,6 +116,7 @@ export interface GiselleEngineConfig {
 			generation: CompletedGeneration,
 			options: GenerationCompleteOption,
 		) => Promise<void>;
+		flowTriggerUpdate?: (flowTrigger: FlowTrigger) => Promise<void>;
 	};
 	vectorStore?: VectorStore;
 }
