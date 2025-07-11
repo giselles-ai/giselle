@@ -1,6 +1,6 @@
+import { Card } from "@/components/ui/card";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
-import { Card } from "../../components/card";
 import { getCurrentUserRole, getTeamMembers } from "../actions";
 import { listInvitations } from "../invitation";
 import { InviteMemberDialog } from "../invite-member-dialog";

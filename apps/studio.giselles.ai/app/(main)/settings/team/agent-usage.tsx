@@ -1,4 +1,4 @@
-import { Card } from "../components/card";
+import { Card } from "@/components/ui/card";
 import { getAgentActivities } from "./actions";
 import { AgentUsageDialog } from "./agent-usage-dialog";
 import { AgentUsageTable } from "./agent-usage-table";

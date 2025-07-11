@@ -5,11 +5,11 @@ import { ImageIcon, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { maxLength, minLength, parse, pipe, string } from "valibot";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { users } from "@/drizzle";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { updateAvatar, updateDisplayName } from "../account/actions";
-import { Button } from "../components/button";
 import { IMAGE_CONSTRAINTS } from "../constants";
 
 const ACCEPTED_FILE_TYPES = IMAGE_CONSTRAINTS.formats.join(",");

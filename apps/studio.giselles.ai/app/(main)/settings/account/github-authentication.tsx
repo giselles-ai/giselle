@@ -1,8 +1,8 @@
 "use server";
 
 import { TriangleAlert } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { getGitHubIdentityState } from "@/services/accounts";
-import { Button } from "../components/button";
 import { GitHubAuthenticationPresentation } from "../components/github-authentication-presentation";
 import {
 	connectGitHubIdentity,

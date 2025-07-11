@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import type { users } from "@/drizzle";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
-import { Button } from "../components/button";
-import { Card } from "../components/card";
 import { ProfileEditModal } from "../components/profile-edit-modal";
 
 export function AccountDisplayNameForm({

@@ -13,8 +13,19 @@ export function useGitHubTrigger(flowTriggerId: FlowTriggerId) {
 		isLoading: isLoadingFlowTriggerData,
 		data: trigger,
 		mutate,
-	} = useSWR(`/triggers/${flowTriggerId}`, () =>
-		client.getTrigger({ flowTriggerId }).then((res) => res.trigger),
+		error: triggerError,
+	} = useSWR(
+		`/triggers/${flowTriggerId}`,
+		async () => {
+			try {
+				const res = await client.getTrigger({ flowTriggerId });
+				return res.trigger;
+			} catch (error) {
+				console.error("Failed to get trigger:", error);
+				throw error;
+			}
+		},
+		{ revalidateOnFocus: false, shouldRetryOnError: true },
 	);
 
 	const {
@@ -51,38 +62,58 @@ export function useGitHubTrigger(flowTriggerId: FlowTriggerId) {
 		[trigger, githubRepositoryFullnameData],
 	);
 	const setFlowTrigger = useCallback(
-		(newValue: Partial<FlowTrigger>) => {
+		async (newValue: Partial<FlowTrigger>) => {
 			if (trigger === undefined) {
-				return;
+				throw new Error("Cannot update trigger: trigger is undefined");
 			}
-			mutate(
-				async () => {
-					const newData = {
-						...trigger,
-						...newValue,
-					} satisfies FlowTrigger;
-					await client.setTrigger({ trigger: newData });
-					return newData;
-				},
-				{
-					optimisticData: () => ({
-						...trigger,
-						...newValue,
-					}),
-				},
-			);
+			try {
+				return await mutate(
+					async () => {
+						const newData = {
+							...trigger,
+							...newValue,
+						} satisfies FlowTrigger;
+						await client.setTrigger({ trigger: newData });
+						return newData;
+					},
+					{
+						optimisticData: () => ({
+							...trigger,
+							...newValue,
+						}),
+						revalidate: true,
+						populateCache: true,
+						throwOnError: true,
+					},
+				);
+			} catch (error) {
+				console.error("Failed to set flow trigger:", error);
+				throw error;
+			}
 		},
 		[client, mutate, trigger],
 	);
 	const enableFlowTrigger = useCallback(async () => {
-		await setFlowTrigger({ enable: true });
+		try {
+			return await setFlowTrigger({ enable: true });
+		} catch (error) {
+			console.error("Failed to enable flow trigger:", error);
+			throw error;
+		}
 	}, [setFlowTrigger]);
+
 	const disableFlowTrigger = useCallback(async () => {
-		await setFlowTrigger({ enable: false });
+		try {
+			return await setFlowTrigger({ enable: false });
+		} catch (error) {
+			console.error("Failed to disable flow trigger:", error);
+			throw error;
+		}
 	}, [setFlowTrigger]);
 	return {
 		isLoading: isLoadingFlowTriggerData || isLoadingGitHubRepositoryFullname,
 		data,
+		error: triggerError,
 		enableFlowTrigger,
 		disableFlowTrigger,
 	};

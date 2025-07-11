@@ -18,7 +18,7 @@ export function SearchDomainFilter({
 	defaultIncludeDomains = [],
 	defaultExcludeDomains = [],
 }: SearchDomainFilterProps) {
-	// 初期タグを生成
+	// Generate initial tags
 	const createInitialTags = (domains: string[]): Tag[] => {
 		return domains.map((domain) => ({
 			id: domain,
@@ -33,7 +33,7 @@ export function SearchDomainFilter({
 		createInitialTags(defaultExcludeDomains),
 	);
 
-	// 親コンポーネントに変更を通知
+	// Notify parent component of changes
 	useEffect(() => {
 		if (onFilterChange) {
 			const includeValues = includeTags.map((tag) => tag.label);
@@ -42,9 +42,9 @@ export function SearchDomainFilter({
 		}
 	}, [includeTags, excludeTags, onFilterChange]);
 
-	// includeタグの追加
+	// Add include tag
 	const handleAddIncludeTag = (value: string) => {
-		// 重複チェック
+		// Check for duplicates
 		if (includeTags.some((tag) => tag.label === value)) {
 			return;
 		}
@@ -56,14 +56,14 @@ export function SearchDomainFilter({
 		setIncludeTags([...includeTags, newTag]);
 	};
 
-	// includeタグの削除
+	// Remove include tag
 	const handleRemoveIncludeTag = (id: string) => {
 		setIncludeTags(includeTags.filter((tag) => tag.id !== id));
 	};
 
-	// excludeタグの追加
+	// Add exclude tag
 	const handleAddExcludeTag = (value: string) => {
-		// 重複チェック
+		// Check for duplicates
 		if (excludeTags.some((tag) => tag.label === value)) {
 			return;
 		}
@@ -75,14 +75,14 @@ export function SearchDomainFilter({
 		setExcludeTags([...excludeTags, newTag]);
 	};
 
-	// excludeタグの削除
+	// Remove exclude tag
 	const handleRemoveExcludeTag = (id: string) => {
 		setExcludeTags(excludeTags.filter((tag) => tag.id !== id));
 	};
 
 	return (
 		<div className={`flex flex-col gap-4 ${className}`}>
-			{/* Include フィルター */}
+			{/* Include filter */}
 			<TagInput
 				label="Include Domains"
 				tags={includeTags}
@@ -93,7 +93,7 @@ export function SearchDomainFilter({
 				className="text-white"
 			/>
 
-			{/* Exclude フィルター */}
+			{/* Exclude filter */}
 			<TagInput
 				label="Exclude Domains"
 				tags={excludeTags}
@@ -107,7 +107,7 @@ export function SearchDomainFilter({
 	);
 }
 
-// 使用例
+// Usage example
 export function SearchDomainFilterExample() {
 	const handleFilterChange = (include: string[], exclude: string[]) => {
 		console.log("Include domains:", include);

@@ -8,7 +8,7 @@ import {
 	Alert,
 	AlertDescription,
 } from "@/app/(main)/settings/components/alert";
-import { Button } from "@/app/(main)/settings/components/button";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardDescription,

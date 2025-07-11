@@ -3,8 +3,8 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import React from "react";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "../../components/button";
 
 type GlassDialogContentProps = React.ComponentPropsWithoutRef<
 	typeof Dialog.Content
@@ -130,7 +130,7 @@ export const GlassDialogFooter = ({
 				type="button"
 				onClick={onCancel}
 				disabled={isPending}
-				className={buttonVariants({ variant: "link" })}
+				className={buttonVariants({ variant: "glass-link" })}
 				aria-label="Cancel"
 			>
 				Cancel
@@ -141,7 +141,8 @@ export const GlassDialogFooter = ({
 				disabled={isPending}
 				className={cn(
 					buttonVariants({
-						variant: variant === "destructive" ? "destructive" : "primary",
+						variant:
+							variant === "destructive" ? "glass-destructive" : "glass-primary",
 					}),
 					"whitespace-nowrap",
 				)}

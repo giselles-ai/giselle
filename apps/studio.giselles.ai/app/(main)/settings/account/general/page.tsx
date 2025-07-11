@@ -1,7 +1,7 @@
 import { ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { SignOutButton } from "@/services/accounts/components/user-button/sign-out-button";
-import { Button } from "../../components/button";
-import { Card } from "../../components/card";
 import { Field } from "../../components/field";
 import { AccountDisplayNameForm } from "../account-display-name-form";
 import { getAccountInfo } from "../actions";

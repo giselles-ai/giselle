@@ -3,10 +3,10 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { maxLength, minLength, parse, pipe, string } from "valibot";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import type { Team } from "@/services/teams/types";
-import { Button } from "../components/button";
-import { Card } from "../components/card";
 import { updateTeamName } from "./actions";
 import {
 	GlassDialogBody,

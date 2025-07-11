@@ -34,7 +34,7 @@ export function ModelProviderGroup({
 			<h3 className="text-white-400 text-[14px] px-[4px]">
 				{getProviderName(provider)}
 			</h3>
-			<div className="flex flex-col gap-[4px]">
+			<div className="flex flex-col gap-[16px]">
 				{models.map((model) => (
 					<button
 						type="button"

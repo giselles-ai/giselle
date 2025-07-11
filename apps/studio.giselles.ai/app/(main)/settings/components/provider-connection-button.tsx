@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useActionState } from "react";
-import { Button } from "./button";
+import { Button } from "@/components/ui/button";
 
 type ButtonWithActionProps = {
 	action: () => Promise<void>;

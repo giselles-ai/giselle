@@ -1,6 +1,6 @@
+import { Card } from "@/components/ui/card";
 import { calculateAgentTimeUsageMs } from "@/services/agents/activities";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
-import { Card } from "../components/card";
 import {
 	AgentTimeUsageForFreePlan,
 	AgentTimeUsageForProPlan,

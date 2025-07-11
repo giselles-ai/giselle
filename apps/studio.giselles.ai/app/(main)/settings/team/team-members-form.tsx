@@ -12,6 +12,7 @@ import {
 	pipe,
 	string,
 } from "valibot";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
 	Select,
@@ -20,7 +21,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Button } from "../components/button";
 import { addTeamMember } from "./actions";
 
 const TeamMemberSchema = object({

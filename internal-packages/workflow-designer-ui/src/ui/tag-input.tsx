@@ -21,7 +21,7 @@ export function TagInput({
 	tags,
 	onAddTag,
 	onRemoveTag,
-	placeholder = "タグを入力...",
+	placeholder = "Enter tags...",
 	className = "",
 	label,
 	buttonLabel = "Add",
@@ -52,7 +52,7 @@ export function TagInput({
 				</label>
 			)}
 			<div className={`flex flex-col gap-2 ${className}`}>
-				{/* タグ表示エリア */}
+				{/* Tag display area */}
 				{tags.length > 0 && (
 					<div className="flex flex-wrap gap-2 mb-2">
 						{tags.map((tag) => (
@@ -73,7 +73,7 @@ export function TagInput({
 					</div>
 				)}
 
-				{/* 入力エリア */}
+				{/* Input area */}
 				<div className="flex w-full">
 					<input
 						id={inputId}
@@ -97,7 +97,7 @@ export function TagInput({
 	);
 }
 
-// 簡単な使用例
+// Simple usage example
 export function TagInputExample() {
 	const [tags, setTags] = useState<Tag[]>([]);
 
@@ -119,8 +119,8 @@ export function TagInputExample() {
 				tags={tags}
 				onAddTag={handleAddTag}
 				onRemoveTag={handleRemoveTag}
-				placeholder="タグを追加"
-				buttonLabel="追加"
+				placeholder="Add tags"
+				buttonLabel="Add"
 			/>
 		</div>
 	);

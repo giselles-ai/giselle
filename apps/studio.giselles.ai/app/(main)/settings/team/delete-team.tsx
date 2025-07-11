@@ -2,8 +2,8 @@
 
 import * as Dialog from "@radix-ui/react-dialog";
 import { useActionState, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "../components/alert";
-import { Button } from "../components/button";
 import { deleteTeam } from "./actions";
 import {
 	GlassDialogContent,

@@ -2,7 +2,7 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import type { FC } from "react";
 import { getAccountInfo } from "@/app/(main)/settings/account/actions";
-import { Button } from "@/app/(main)/settings/components/button";
+import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,

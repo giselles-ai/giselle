@@ -2,9 +2,9 @@ import { SiGithub } from "@icons-pack/react-simple-icons";
 import type { components } from "@octokit/openapi-types";
 import { TriangleAlertIcon } from "lucide-react";
 import Link from "next/link";
+import { Card } from "@/components/ui/card";
 import { ClickableText } from "@/components/ui/clickable-text";
 import { Alert, AlertDescription, AlertTitle } from "./alert";
-import { Card } from "./card";
 
 type GitHubUser = components["schemas"]["simple-user"];
 

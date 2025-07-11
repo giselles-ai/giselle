@@ -21,6 +21,12 @@ function ConnectedNodeRunning({
 	inputNodeId: NodeId;
 }>) {
 	const { data } = useWorkflowDesigner();
+
+	// Add null check for data to prevent "data.filter is not a function" error
+	if (!data || !data.id) {
+		return null;
+	}
+
 	const { currentGeneration: inputNodeCurrentGeneration } = useNodeGenerations({
 		nodeId: inputNodeId,
 		origin: { type: "workspace", id: data.id },

@@ -18,11 +18,11 @@ export function ReadOnlyBanner({
 	const getMessage = () => {
 		switch (userRole) {
 			case "guest":
-				return "ゲストモード：このAppは読み取り専用です。プレビューのみ実行できます。";
+				return "Guest Mode: This app is read-only. You can only run previews.";
 			case "viewer":
 				return "Read-only access: You can view this app but require permissions to edit.";
 			default:
-				return "読み取り専用モード";
+				return "Read-only Mode";
 		}
 	};
 

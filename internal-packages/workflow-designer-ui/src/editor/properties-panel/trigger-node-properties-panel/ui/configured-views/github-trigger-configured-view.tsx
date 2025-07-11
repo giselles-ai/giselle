@@ -1,8 +1,20 @@
 import type { FlowTriggerId } from "@giselle-sdk/data-type";
 import { githubTriggerIdToLabel } from "@giselle-sdk/flow";
-import { UserIcon } from "lucide-react";
+import clsx from "clsx/lite";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { useState } from "react";
 import ClipboardButton from "../../../../../ui/clipboard-button";
 import { useGitHubTrigger } from "../../../../lib/use-github-trigger";
+import {
+	IssueClosedIcon,
+	IssueCommentCreatedIcon,
+	IssueCreatedIcon,
+	PullRequestClosedIcon,
+	PullRequestCommentCreatedIcon,
+	PullRequestOpenedIcon,
+	PullRequestReadyForReviewIcon,
+	PullRequestReviewCommentCreatedIcon,
+} from "../../providers/github-trigger/components/icons";
 import { GitHubRepositoryBlock } from "../";
 
 export function GitHubTriggerConfiguredView({
@@ -12,6 +24,9 @@ export function GitHubTriggerConfiguredView({
 }) {
 	const { isLoading, data, enableFlowTrigger, disableFlowTrigger } =
 		useGitHubTrigger(flowTriggerId);
+	const [actionInProgress, setActionInProgress] = useState(false);
+	const [actionError, setActionError] = useState<Error | null>(null);
+
 	if (isLoading) {
 		return "Loading...";
 	}
@@ -19,52 +34,179 @@ export function GitHubTriggerConfiguredView({
 		return "No Data";
 	}
 
+	const handleEnableFlowTrigger = async () => {
+		try {
+			setActionInProgress(true);
+			setActionError(null);
+			await enableFlowTrigger();
+		} catch (error) {
+			setActionError(error instanceof Error ? error : new Error(String(error)));
+		} finally {
+			setActionInProgress(false);
+		}
+	};
+
+	const handleDisableFlowTrigger = async () => {
+		try {
+			setActionInProgress(true);
+			setActionError(null);
+			await disableFlowTrigger();
+		} catch (error) {
+			setActionError(error instanceof Error ? error : new Error(String(error)));
+		} finally {
+			setActionInProgress(false);
+		}
+	};
+
 	return (
-		<div className="flex flex-col gap-[16px] p-0 overflow-y-auto">
-			<div className="space-y-[4px]">
-				<p className="text-[14px] py-[1.5px] text-white-400">State</p>
-				<div className="px-[16px] py-[9px] w-full bg-transparent text-[14px]">
-					<div className="flex gap-[6px]">
-						{data.trigger.enable ? (
-							<>
-								<span>Enabled</span>
+		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
+			<div className="flex flex-col">
+				<div className="flex flex-row items-center justify-between">
+					<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">State</p>
+
+					{/* Divider */}
+					<div className="flex-grow mx-[12px] h-[1px] bg-black-200/30" />
+
+					<div className="relative">
+						{/* Background container */}
+						<div className="w-[150px] h-[28px] bg-[#2A2A36] rounded-full flex items-center overflow-hidden">
+							{/* Sliding highlight */}
+							<div
+								className={clsx(
+									"absolute w-[75px] h-[28px] rounded-full transition-transform duration-300 ease-in-out",
+									data.trigger.enable
+										? "translate-x-[75px] bg-primary-900"
+										: "translate-x-0 bg-[#3F3F4A]",
+								)}
+							/>
+
+							{/* Button labels - always visible, change opacity based on state */}
+							<div className="absolute inset-0 flex">
 								<button
 									type="button"
-									onClick={disableFlowTrigger}
-									className="text-blue-900 cursor-pointer outline-none hover:underline"
+									onClick={handleDisableFlowTrigger}
+									disabled={actionInProgress || !data.trigger.enable}
+									className="flex-1 flex items-center justify-center px-0.5 relative"
 								>
-									→ Disable
+									{actionInProgress && !data.trigger.enable && (
+										<Loader2 className="h-3 w-3 animate-spin absolute left-2" />
+									)}
+									<span
+										className={clsx(
+											"text-[12px] font-medium transition-colors duration-200",
+											!data.trigger.enable ? "text-white" : "text-white/40",
+										)}
+									>
+										Disabled
+									</span>
 								</button>
-							</>
-						) : (
-							<>
-								<span>Disabled</span>
 								<button
 									type="button"
-									onClick={enableFlowTrigger}
-									className="text-blue-900 cursor-pointer outline-none hover:underline"
+									onClick={handleEnableFlowTrigger}
+									disabled={actionInProgress || data.trigger.enable}
+									className="flex-1 flex items-center justify-center px-0.5 relative"
 								>
-									→ Enable
+									{actionInProgress && data.trigger.enable && (
+										<Loader2 className="h-3 w-3 animate-spin absolute left-2" />
+									)}
+									<span
+										className={clsx(
+											"text-[12px] font-medium transition-colors duration-200",
+											data.trigger.enable
+												? "text-white font-semibold"
+												: "text-white/40",
+										)}
+									>
+										Enable
+									</span>
 								</button>
-							</>
-						)}
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
+			{actionError && (
+				<div className="bg-red-500/10 border border-red-500/30 rounded-md p-2 mt-2 flex items-center space-x-2">
+					<AlertCircle className="h-4 w-4 text-red-500" />
+					<span className="text-red-500 text-xs">
+						{actionError.message || "Failed to update trigger state"}
+					</span>
+				</div>
+			)}
 			<div className="space-y-[4px]">
-				<p className="text-[14px] py-[1.5px] text-white-400">Repository</p>
-				<div className="px-[12px] pt-[6px]">
-					<GitHubRepositoryBlock
-						owner={data.githubRepositoryFullname.owner}
-						repo={data.githubRepositoryFullname.repo}
-					/>
+				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Event Type</p>
+				<div className="px-[4px] py-0 w-full bg-transparent text-[14px] flex items-center">
+					<div className="pr-0 p-2 rounded-lg flex-shrink-0 flex items-center justify-center">
+						{data.trigger.configuration.event.id === "github.issue.created" && (
+							<IssueCreatedIcon size={18} className="text-white" />
+						)}
+						{data.trigger.configuration.event.id === "github.issue.closed" && (
+							<IssueClosedIcon size={18} className="text-white" />
+						)}
+						{data.trigger.configuration.event.id ===
+							"github.issue_comment.created" && (
+							<IssueCommentCreatedIcon size={18} className="text-white" />
+						)}
+						{data.trigger.configuration.event.id ===
+							"github.pull_request_comment.created" && (
+							<PullRequestCommentCreatedIcon size={18} className="text-white" />
+						)}
+						{data.trigger.configuration.event.id ===
+							"github.pull_request_review_comment.created" && (
+							<PullRequestReviewCommentCreatedIcon
+								size={18}
+								className="text-white"
+							/>
+						)}
+						{data.trigger.configuration.event.id ===
+							"github.pull_request.opened" && (
+							<PullRequestOpenedIcon size={18} className="text-white" />
+						)}
+						{data.trigger.configuration.event.id ===
+							"github.pull_request.ready_for_review" && (
+							<PullRequestReadyForReviewIcon size={18} className="text-white" />
+						)}
+						{data.trigger.configuration.event.id ===
+							"github.pull_request.closed" && (
+							<PullRequestClosedIcon size={18} className="text-white" />
+						)}
+						{![
+							"github.issue.created",
+							"github.issue.closed",
+							"github.issue_comment.created",
+							"github.pull_request_comment.created",
+							"github.pull_request_review_comment.created",
+							"github.pull_request.opened",
+							"github.pull_request.ready_for_review",
+							"github.pull_request.closed",
+						].includes(data.trigger.configuration.event.id) && (
+							<svg
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+								className="text-white"
+								aria-label="GitHub trigger"
+							>
+								<title>GitHub trigger</title>
+								<path d="M0 24H24V0H0V24Z" fill="currentColor" />
+							</svg>
+						)}
+					</div>
+					<span className="pl-2">
+						{githubTriggerIdToLabel(data.trigger.configuration.event.id)}
+					</span>
 				</div>
 			</div>
 
 			<div className="space-y-[4px]">
-				<p className="text-[14px] py-[1.5px] text-white-400">Event Type</p>
-				<div className="px-[16px] py-[9px] w-full bg-transparent text-[14px]">
-					{githubTriggerIdToLabel(data.trigger.configuration.event.id)}
+				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Repository</p>
+				<div className="px-[4px] pt-[6px]">
+					<GitHubRepositoryBlock
+						owner={data.githubRepositoryFullname.owner}
+						repo={data.githubRepositoryFullname.repo}
+					/>
 				</div>
 			</div>
 			{(data.trigger.configuration.event.id ===
@@ -75,8 +217,8 @@ export function GitHubTriggerConfiguredView({
 					"github.pull_request_review_comment.created") && (
 				<div>
 					<div className="space-y-[4px]">
-						<p className="text-[14px] py-[1.5px] text-white-400">Call sign</p>
-						<div className="px-[16px] py-[9px] w-full bg-transparent text-[14px] flex items-center gap-[8px]">
+						<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Call sign</p>
+						<div className="px-[4px] py-[9px] w-full bg-transparent text-[14px] flex items-center gap-[8px]">
 							<span>
 								/{data.trigger.configuration.event.conditions.callsign}
 							</span>
@@ -86,47 +228,13 @@ export function GitHubTriggerConfiguredView({
 								sizeClassName="h-[16px] w-[16px]"
 							/>
 						</div>
-					</div>
-					<div className="border border-black-800 rounded-[4px] overflow-hidden ml-[16px] pointer-events-none">
-						<div className="bg-black-850 p-[8px] border-b border-black-800">
-							<h3 className="text-[14px] text-black-300">
-								GitHub Usage Example
-							</h3>
-						</div>
-						<div className="p-4 bg-[#0d1117] flex gap-[8px]">
-							<div>
-								<div className="rounded-full bg-black-800 p-[6px]">
-									<UserIcon className="size-[18px]" />
-								</div>
-							</div>
-							<div className="flex-1">
-								<div className="flex items-start gap-3 mb-2">
-									<h2 className="text-[16px]">Add a comment</h2>
-								</div>
-								<div className="border border-[#30363d] rounded-md overflow-hidden">
-									{/* Tab Navigation */}
-									<div className="border-b border-[#30363d] bg-[#161b22] flex">
-										<div className="border-b-2 border-[#f78166] px-4 py-2 text-sm">
-											Write
-										</div>
-										<div className="px-4 py-2 text-sm text-gray-400">
-											Preview
-										</div>
-									</div>
-
-									<div className="min-h-[150px] p-4 bg-[#0d1117] text-gray-400 border-b border-[#30363d]">
-										/{data.trigger.configuration.event.conditions.callsign}{" "}
-										[enter your request...]
-									</div>
-
-									<div className="flex items-center justify-end p-[6px] bg-[#161b22]">
-										<div className="px-3 py-1.5 bg-[#238636] text-white text-sm rounded-md">
-											Comment
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
+						<p className="text-[12px] text-white-400 px-[4px]">
+							Use{" "}
+							<span className="text-blue-400 font-medium">
+								/{data.trigger.configuration.event.conditions.callsign}
+							</span>{" "}
+							in GitHub comments to trigger this workflow.
+						</p>
 					</div>
 				</div>
 			)}
