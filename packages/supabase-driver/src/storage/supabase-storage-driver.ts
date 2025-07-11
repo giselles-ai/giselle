@@ -6,11 +6,13 @@ import {
 	PutObjectCommand,
 	S3Client,
 } from "@aws-sdk/client-s3";
-import type {
-	GetJsonParams,
-	GiselleStorage,
-	JsonSchema,
-	SetJsonParams,
+import {
+	type BlobLike,
+	blobLikeToUint8Array,
+	type GetJsonParams,
+	type GiselleStorage,
+	type JsonSchema,
+	type SetJsonParams,
 } from "@giselle-sdk/giselle-engine";
 import type { z } from "zod/v4";
 
@@ -97,9 +99,13 @@ export function supabaseStorageDriver(
 			return await streamToUint8Array(res.Body as Readable);
 		},
 
-		async setBlob(path: string, data: Uint8Array): Promise<void> {
+		async setBlob(path: string, data: BlobLike): Promise<void> {
 			await client.send(
-				new PutObjectCommand({ Bucket: config.bucket, Key: path, Body: data }),
+				new PutObjectCommand({
+					Bucket: config.bucket,
+					Key: path,
+					Body: blobLikeToUint8Array(data),
+				}),
 			);
 		},
 
