@@ -79,13 +79,13 @@ export default async function Layout({
 			}}
 			featureFlag={{
 				runV3,
-				sidemenu: true,
+				sidemenu,
 				githubTools,
 				webSearchAction,
-				layoutV2: true,
+				layoutV2,
 				layoutV3,
 				experimental_storage,
-				stage: true,
+				stage,
 			}}
 			flowTrigger={{
 				callbacks: {
