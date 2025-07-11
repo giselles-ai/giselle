@@ -92,12 +92,9 @@ export const teamMemberships = pgTable(
 			.references(() => teams.dbId, { onDelete: "cascade" }),
 		role: text("role").notNull().$type<TeamRole>(),
 	},
-	(teamMembership) => ({
-		teamMembershipsUserTeamUnique: unique().on(
-			teamMembership.userDbId,
-			teamMembership.teamDbId,
-		),
-	}),
+	(teamMembership) => [
+		unique().on(teamMembership.userDbId, teamMembership.teamDbId),
+	],
 );
 
 export const agents = pgTable(
@@ -122,9 +119,7 @@ export const agents = pgTable(
 			.notNull()
 			.references(() => users.dbId),
 	},
-	(table) => ({
-		teamDbIdIdx: index().on(table.teamDbId),
-	}),
+	(table) => [index().on(table.teamDbId)],
 );
 export const agentsRelations = relations(agents, ({ one }) => ({
 	team: one(teams, {
@@ -150,13 +145,9 @@ export const oauthCredentials = pgTable(
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at").defaultNow().notNull(),
 	},
-	(table) => ({
-		oauthCredentialsUserIdProviderProviderAccountIdUnique: unique().on(
-			table.userId,
-			table.provider,
-			table.providerAccountId,
-		),
-	}),
+	(table) => [
+		unique().on(table.userId, table.provider, table.providerAccountId),
+	],
 );
 
 export const githubIntegrationSettings = pgTable(
@@ -192,10 +183,7 @@ export const agentActivities = pgTable(
 			() => agentTimeUsageReports.dbId,
 		),
 	},
-	(table) => ({
-		agentDbIdIdx: index().on(table.agentDbId),
-		endedAtIdx: index().on(table.endedAt),
-	}),
+	(table) => [index().on(table.agentDbId), index().on(table.endedAt)],
 );
 
 export const agentTimeUsageReports = pgTable(
@@ -210,11 +198,11 @@ export const agentTimeUsageReports = pgTable(
 		stripeMeterEventId: text("stripe_meter_event_id").notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 	},
-	(table) => ({
-		teamDbIdIdx: index().on(table.teamDbId),
-		createdAtIdx: index().on(table.createdAt),
-		stripeMeterEventIdIdx: index().on(table.stripeMeterEventId),
-	}),
+	(table) => [
+		index().on(table.teamDbId),
+		index().on(table.createdAt),
+		index().on(table.stripeMeterEventId),
+	],
 );
 
 export const userSeatUsageReports = pgTable(
@@ -231,11 +219,11 @@ export const userSeatUsageReports = pgTable(
 		isDelta: boolean("is_delta").notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 	},
-	(table) => ({
-		teamDbIdIdx: index().on(table.teamDbId),
-		createdAtIdx: index().on(table.createdAt),
-		stripeMeterEventIdIdx: index().on(table.stripeMeterEventId),
-	}),
+	(table) => [
+		index().on(table.teamDbId),
+		index().on(table.createdAt),
+		index().on(table.stripeMeterEventId),
+	],
 );
 
 export const agentTimeRestrictions = pgTable(
@@ -247,9 +235,7 @@ export const agentTimeRestrictions = pgTable(
 			.primaryKey(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 	},
-	(table) => ({
-		teamDbIdIdx: index().on(table.teamDbId),
-	}),
+	(table) => [index().on(table.teamDbId)],
 );
 
 export const invitations = pgTable(
@@ -268,9 +254,7 @@ export const invitations = pgTable(
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		revokedAt: timestamp("revoked_at"),
 	},
-	(table) => ({
-		teamDbIdRevokedAtIdx: index().on(table.teamDbId, table.revokedAt),
-	}),
+	(table) => [index().on(table.teamDbId, table.revokedAt)],
 );
 
 export type GitHubRepositoryIndexStatus =
@@ -302,11 +286,11 @@ export const githubRepositoryIndex = pgTable(
 			.notNull()
 			.$onUpdate(() => new Date()),
 	},
-	(table) => ({
-		ownerRepoTeamUnique: unique().on(table.owner, table.repo, table.teamDbId),
-		teamDbIdIdx: index().on(table.teamDbId),
-		statusIdx: index().on(table.status),
-	}),
+	(table) => [
+		unique().on(table.owner, table.repo, table.teamDbId),
+		index().on(table.teamDbId),
+		index().on(table.status),
+	],
 );
 
 export const githubRepositoryEmbeddings = pgTable(
@@ -323,17 +307,10 @@ export const githubRepositoryEmbeddings = pgTable(
 		chunkIndex: integer("chunk_index").notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 	},
-	(table) => ({
-		repositoryIndexDbIdFilePathChunkIndexUnique: unique().on(
-			table.repositoryIndexDbId,
-			table.path,
-			table.chunkIndex,
-		),
-		embeddingIndex: index().using(
-			"hnsw",
-			table.embedding.op("vector_cosine_ops"),
-		),
-	}),
+	(table) => [
+		unique().on(table.repositoryIndexDbId, table.path, table.chunkIndex),
+		index().using("hnsw", table.embedding.op("vector_cosine_ops")),
+	],
 );
 
 export const flowTriggers = pgTable(
