@@ -90,7 +90,7 @@ export default async function Layout({
 			flowTrigger={{
 				callbacks: {
 					flowTriggerUpdate: async (flowTrigger) => {
-					'use server'
+						"use server";
 						await db
 							.insert(flowTriggers)
 							.values({
