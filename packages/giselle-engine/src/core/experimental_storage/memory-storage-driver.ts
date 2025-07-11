@@ -1,6 +1,6 @@
 import type { z } from "zod/v4";
-import type { BlobLike } from "./types/blob-like";
 import type {
+	BlobLike,
 	GetJsonParams,
 	GiselleStorage,
 	JsonSchema,
