@@ -17,6 +17,7 @@ import {
 	text,
 	timestamp,
 	unique,
+	uniqueIndex,
 	vector,
 } from "drizzle-orm/pg-core";
 import type { Stripe } from "stripe";
@@ -352,6 +353,7 @@ export const flowTriggers = pgTable(
 			.$onUpdate(() => new Date()),
 	},
 	(table) => ({
+		sdkFlowTriggerId: uniqueIndex().on(table.sdkFlowTriggerId),
 		teamDbIdIdx: index().on(table.teamDbId),
 		stagedIdx: index().on(table.staged),
 	}),

@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "flow_triggers_flow_trigger_id_index" ON "flow_triggers" USING btree ("flow_trigger_id");
