@@ -7,7 +7,6 @@ import {
 	S3Client,
 } from "@aws-sdk/client-s3";
 import {
-	type BlobLike,
 	blobLikeToUint8Array,
 	type GetJsonParams,
 	type GiselleStorage,
@@ -99,7 +98,7 @@ export function supabaseStorageDriver(
 			return await streamToUint8Array(res.Body as Readable);
 		},
 
-		async setBlob(path: string, data: BlobLike): Promise<void> {
+		async setBlob(path, data): Promise<void> {
 			await client.send(
 				new PutObjectCommand({
 					Bucket: config.bucket,
