@@ -2,7 +2,7 @@ import { FlowTrigger, type FlowTriggerId } from "@giselle-sdk/data-type";
 import type { Storage } from "unstorage";
 import { removeGitHubRepositoryIntegrationIndex } from "../integrations/utils";
 
-export function flowTriggerPath(params: { flowTriggerId: FlowTriggerId }) {
+function flowTriggerPath(params: { flowTriggerId: FlowTriggerId }) {
 	return `flow-triggers/${params.flowTriggerId}.json`;
 }
 

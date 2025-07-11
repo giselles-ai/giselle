@@ -74,7 +74,7 @@ export async function processRepository(
  * @param error The error to extract information from
  * @returns Error code and retry time
  */
-export function extractErrorInfo(error: unknown): {
+function extractErrorInfo(error: unknown): {
 	errorCode: string;
 	retryAfter: Date | null;
 } {

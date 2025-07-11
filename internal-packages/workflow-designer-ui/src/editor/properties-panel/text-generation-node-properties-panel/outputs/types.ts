@@ -5,11 +5,10 @@ import type {
 	Output,
 } from "@giselle-sdk/data-type";
 
-export type UnconnectedOutputWithDetails<T extends NodeBase = NodeLike> =
-	Output & {
-		node: T;
-		connection?: never;
-	};
+type UnconnectedOutputWithDetails<T extends NodeBase = NodeLike> = Output & {
+	node: T;
+	connection?: never;
+};
 export type ConnectedOutputWithDetails<T extends NodeBase = NodeLike> =
 	Output & {
 		node: T;

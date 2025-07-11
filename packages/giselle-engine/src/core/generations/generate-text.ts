@@ -26,7 +26,7 @@ import type { PreparedToolSet, TelemetrySettings } from "./types";
 import { buildMessageObject } from "./utils";
 
 // PerplexityProviderOptions is not exported from @ai-sdk/perplexity, so we define it here based on the model configuration
-export type PerplexityProviderOptions = {
+type PerplexityProviderOptions = {
 	search_domain_filter?: string[];
 };
 

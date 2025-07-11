@@ -2,11 +2,11 @@ import { z } from "zod";
 import type { TriggerBase } from "../base";
 
 export const provider = "github" as const;
-export interface GitHubTrigger extends TriggerBase {
+interface GitHubTrigger extends TriggerBase {
 	provider: typeof provider;
 }
 
-export const githubIssueCreatedTrigger = {
+const githubIssueCreatedTrigger = {
 	provider,
 	event: {
 		id: "github.issue.created",
@@ -19,7 +19,7 @@ export const githubIssueCreatedTrigger = {
 	},
 } as const satisfies GitHubTrigger;
 
-export const githubIssueClosedTrigger = {
+const githubIssueClosedTrigger = {
 	provider,
 	event: {
 		id: "github.issue.closed",
@@ -32,7 +32,7 @@ export const githubIssueClosedTrigger = {
 	},
 } as const satisfies GitHubTrigger;
 
-export const githubIssueCommentCreatedTrigger = {
+const githubIssueCommentCreatedTrigger = {
 	provider,
 	event: {
 		id: "github.issue_comment.created",
@@ -49,7 +49,7 @@ export const githubIssueCommentCreatedTrigger = {
 	},
 } as const satisfies GitHubTrigger;
 
-export const githubPullRequestCommentCreatedTrigger = {
+const githubPullRequestCommentCreatedTrigger = {
 	provider,
 	event: {
 		id: "github.pull_request_comment.created",
@@ -67,7 +67,7 @@ export const githubPullRequestCommentCreatedTrigger = {
 	},
 } as const satisfies GitHubTrigger;
 
-export const githubPullRequestReviewCommentCreatedTrigger = {
+const githubPullRequestReviewCommentCreatedTrigger = {
 	provider,
 	event: {
 		id: "github.pull_request_review_comment.created",
@@ -87,7 +87,7 @@ export const githubPullRequestReviewCommentCreatedTrigger = {
 	},
 } as const satisfies GitHubTrigger;
 
-export const githubPullRequestOpenedTrigger = {
+const githubPullRequestOpenedTrigger = {
 	provider,
 	event: {
 		id: "github.pull_request.opened",
@@ -102,7 +102,7 @@ export const githubPullRequestOpenedTrigger = {
 	},
 } as const satisfies GitHubTrigger;
 
-export const githubPullRequestReadyForReviewTrigger = {
+const githubPullRequestReadyForReviewTrigger = {
 	provider,
 	event: {
 		id: "github.pull_request.ready_for_review",
@@ -117,7 +117,7 @@ export const githubPullRequestReadyForReviewTrigger = {
 	},
 } as const satisfies GitHubTrigger;
 
-export const githubPullRequestClosedTrigger = {
+const githubPullRequestClosedTrigger = {
 	provider,
 	event: {
 		id: "github.pull_request.closed",

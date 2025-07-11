@@ -63,7 +63,7 @@ class FileSizeExceededError extends FileUploadError {
 	}
 }
 
-export function formatFileSize(size: number): string {
+function formatFileSize(size: number): string {
 	const units = ["B", "KB", "MB", "GB", "TB"];
 	let formattedSize = size;
 	let i = 0;

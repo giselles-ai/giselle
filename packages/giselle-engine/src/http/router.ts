@@ -438,10 +438,6 @@ export const createJsonRouters = {
 		}),
 } as const;
 
-export const jsonRouterPaths = Object.keys(
-	createJsonRouters,
-) as JsonRouterPaths[];
-
 // Export the types at module level
 export type JsonRouterPaths = keyof typeof createJsonRouters;
 export type JsonRouterHandlers = {
@@ -476,10 +472,6 @@ export const createFormDataRouters = {
 			},
 		}),
 } as const;
-
-export const formDataRouterPaths = Object.keys(
-	createFormDataRouters,
-) as JsonRouterPaths[];
 
 // Export the types at module level
 export type FormDataRouterPaths = keyof typeof createFormDataRouters;

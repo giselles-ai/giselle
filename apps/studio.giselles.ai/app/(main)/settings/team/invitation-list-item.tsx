@@ -19,7 +19,7 @@ import {
 } from "./components/glass-dialog-content";
 import { LocalDateTime } from "./components/local-date-time";
 
-export type InvitationListItemProps = {
+type InvitationListItemProps = {
 	token: string;
 	email: string;
 	role: TeamRole;

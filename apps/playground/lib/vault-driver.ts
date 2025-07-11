@@ -6,7 +6,7 @@ import {
 } from "node:crypto";
 import type { VaultDriver } from "@giselle-sdk/giselle-engine";
 
-export interface NodeVaultDriverConfig {
+interface NodeVaultDriverConfig {
 	/** Secret passphrase used to derive the encryption key */
 	secret: string;
 }

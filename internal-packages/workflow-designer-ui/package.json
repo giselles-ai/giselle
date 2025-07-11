@@ -21,7 +21,6 @@
 		"@giselle-sdk/workflow-utils": "workspace:^",
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
 		"@xyflow/react": "catalog:",
-		"ai": "catalog:",
 		"clsx": "catalog:",
 		"lucide-react": "catalog:",
 		"marked": "catalog:",
@@ -43,7 +42,6 @@
 		"@types/pluralize": "catalog:",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
-		"tailwindcss": "catalog:",
 		"typescript": "catalog:"
 	}
 }

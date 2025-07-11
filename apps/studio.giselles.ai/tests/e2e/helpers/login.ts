@@ -26,7 +26,3 @@ export async function performLogin(
 		await page.getByRole("button", { name: "Log in" }).click();
 	}
 }
-
-export async function navigateToLoginPage(page: Page, baseUrl: string) {
-	await page.goto(`${baseUrl}/login`);
-}

@@ -13,7 +13,7 @@ export const signupSchema = v.object({
 	),
 });
 
-export type SignupForm = v.InferOutput<typeof signupSchema>;
+type SignupForm = v.InferOutput<typeof signupSchema>;
 
 export type ValidationErrors = {
 	[K in keyof SignupForm]?: string;

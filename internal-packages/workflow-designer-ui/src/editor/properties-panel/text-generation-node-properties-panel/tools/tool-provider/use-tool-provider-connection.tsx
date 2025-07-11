@@ -25,10 +25,6 @@ const ToolProviderSetupPayload = z.discriminatedUnion("secretType", [
 	}),
 ]);
 
-export type ToolProviderSecretType =
-	(typeof ToolProviderSecretTypeValue)[keyof typeof ToolProviderSecretTypeValue];
-export type ToolProviderSetupPayload = z.infer<typeof ToolProviderSetupPayload>;
-
 export function useToolProviderConnection<T extends keyof ToolSet>(config: {
 	secretTags: string[];
 	toolKey: T;

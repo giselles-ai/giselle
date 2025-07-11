@@ -260,7 +260,7 @@ interface ConfigureActionStep {
 	installationId: number;
 	actionId: string;
 }
-export type GitHubActionSetupStep =
+type GitHubActionSetupStep =
 	| SelectRepositoryStep
 	| SelectActionStep
 	| ConfigureActionStep;

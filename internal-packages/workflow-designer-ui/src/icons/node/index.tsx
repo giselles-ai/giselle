@@ -29,7 +29,6 @@ import { WebPageFileIcon } from "../web-page-file";
 
 export * from "./file-node";
 export * from "./image-generation-node";
-export * from "./text-generation-node";
 
 export function NodeIcon({
 	node,

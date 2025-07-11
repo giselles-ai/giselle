@@ -23,7 +23,5 @@
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
 		"tsup": "catalog:"
 	},
-	"dependencies": {
-		"@giselle-sdk/data-type": "workspace:^"
-	}
+	"dependencies": {}
 }

@@ -22,16 +22,13 @@
 		}
 	},
 	"devDependencies": {
-		"@giselle/giselle-sdk-tsconfig": "workspace:*",
 		"@types/node": "catalog:",
-		"@types/turndown": "catalog:",
 		"tsup": "catalog:",
 		"vitest": "catalog:"
 	},
 	"dependencies": {
 		"defuddle": "catalog:",
 		"happy-dom": "catalog:",
-		"turndown": "catalog:",
 		"zod": "catalog:"
 	}
 }

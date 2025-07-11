@@ -10,7 +10,7 @@ export type SelfMadeWebSearchProvider = z.infer<
 	typeof SelfMadeWebSearchProvider
 >;
 
-export type SelfMadeScrapeResult = {
+type SelfMadeScrapeResult = {
 	url: string;
 	title: string;
 	html: string;

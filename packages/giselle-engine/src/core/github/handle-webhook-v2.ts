@@ -100,7 +100,7 @@ function hasRequiredPayloadProps(event: unknown): event is {
 		"id" in event.data.payload.installation
 	);
 }
-export interface ProcessDeps {
+interface ProcessDeps {
 	getFlowTrigger: typeof getFlowTrigger;
 	getGitHubRepositoryIntegrationIndex: typeof getGitHubRepositoryIntegrationIndex;
 }

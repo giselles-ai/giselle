@@ -117,78 +117,6 @@ export async function getTeamMembers() {
 	}
 }
 
-export async function addTeamMember(formData: FormData) {
-	try {
-		const email = formData.get("email") as string;
-		const role = formData.get("role") as string;
-
-		if (!isTeamRole(role)) {
-			throw new Error("Invalid role");
-		}
-
-		// 1. Get current team
-		const currentTeam = await fetchCurrentTeam();
-		if (!isProPlan(currentTeam)) {
-			throw new Error("Only pro plan teams can add members");
-		}
-
-		// 2. Get current user role and verify admin permission
-		const currentUserRoleResult = await getCurrentUserRole();
-		if (
-			!currentUserRoleResult.success ||
-			currentUserRoleResult.data !== "admin"
-		) {
-			throw new Error("Only admin users can add team members");
-		}
-
-		// 3. Find user by email
-		const user = await db
-			.select()
-			.from(users)
-			.where(eq(users.email, email))
-			.limit(1);
-
-		if (user.length === 0) {
-			throw new Error("User not found");
-		}
-
-		// 4. Check if user is already a team member
-		const existingMembership = await db
-			.select()
-			.from(teamMemberships)
-			.where(
-				and(
-					eq(teamMemberships.teamDbId, currentTeam.dbId),
-					eq(teamMemberships.userDbId, user[0].dbId),
-				),
-			);
-
-		if (existingMembership.length > 0) {
-			throw new Error("This email address is already a team member");
-		}
-
-		// 5. Create team membership
-		await db.insert(teamMemberships).values({
-			teamDbId: currentTeam.dbId,
-			userDbId: user[0].dbId,
-			role,
-		});
-
-		await handleMemberChange(currentTeam);
-		revalidatePath("/settings/team");
-
-		return { success: true };
-	} catch (error) {
-		console.error("Failed to add team member:", error);
-
-		return {
-			success: false,
-			error:
-				error instanceof Error ? error.message : "Failed to add team member",
-		};
-	}
-}
-
 export async function updateTeamMemberRole(formData: FormData) {
 	try {
 		const userId = formData.get("userId") as string;
@@ -710,9 +638,7 @@ export async function sendInvitationsAction(
 }
 
 // Define a unified result type for actions
-export type ActionResult =
-	| { success: true }
-	| { success: false; error: string };
+type ActionResult = { success: true } | { success: false; error: string };
 
 export async function revokeInvitationAction(
 	_prevState: ActionResult | undefined,

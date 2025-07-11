@@ -38,7 +38,7 @@ type GithubEventInputMap = {
 	};
 };
 
-export const githubEventInputs: GithubEventInputMap = {
+const githubEventInputs: GithubEventInputMap = {
 	"github.issue.created": {
 		issueNumber: { label: "Issue Number", type: "number", required: true },
 		title: { label: "Title", type: "text", required: true },
@@ -189,7 +189,7 @@ export function parseFormInputs(inputs: FormInput[], formData: FormData) {
 	return { errors, values };
 }
 
-export function toParameterItems(
+function toParameterItems(
 	inputs: FormInput[],
 	values: Record<string, string | number>,
 ): ParameterItem[] {

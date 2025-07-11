@@ -3,7 +3,7 @@ import { Node, Workspace, type WorkspaceId } from "@giselle-sdk/data-type";
 import type { Storage } from "unstorage";
 import type { GiselleStorage } from "../experimental_storage";
 
-export function workspacePath(workspaceId: WorkspaceId) {
+function workspacePath(workspaceId: WorkspaceId) {
 	return `workspaces/${workspaceId}/workspace.json`;
 }
 

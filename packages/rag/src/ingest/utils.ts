@@ -1,6 +1,6 @@
 import type { IngestError } from "./types";
 
-export interface RetryOptions {
+interface RetryOptions {
 	maxRetries?: number;
 	retryDelay?: number;
 	onError?: (error: IngestError) => void;

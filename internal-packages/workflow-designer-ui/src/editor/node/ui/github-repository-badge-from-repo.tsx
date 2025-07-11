@@ -2,7 +2,7 @@ import { useGiselleEngine } from "@giselle-sdk/giselle-engine/react";
 import useSWR from "swr";
 import { GitHubRepositoryBadge } from "./github-repository-badge";
 
-export interface GitHubRepositoryBadgeFromRepoProps {
+interface GitHubRepositoryBadgeFromRepoProps {
 	installationId: number;
 	repositoryNodeId: string;
 }
@@ -42,5 +42,3 @@ export function GitHubRepositoryBadgeFromRepo({
 		/>
 	);
 }
-
-export default GitHubRepositoryBadgeFromRepo;

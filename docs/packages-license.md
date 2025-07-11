@@ -2,10 +2,10 @@
 
 
 ## Summary
-* 1049 MIT
+* 1056 MIT
 * 193 Apache 2.0
-* 59 ISC
-* 34 New BSD
+* 61 ISC
+* 35 New BSD
 * 17 Simplified BSD
 * 5 BlueOak-1.0.0
 * 3 MIT OR Apache-2.0
@@ -2798,6 +2798,28 @@ LGPL-3.0-or-later permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
+<a name="@oxc-resolver/binding-linux-x64-gnu"></a>
+### @oxc-resolver/binding-linux-x64-gnu v11.5.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@oxc-resolver/binding-linux-x64-musl"></a>
+### @oxc-resolver/binding-linux-x64-musl v11.5.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
 
 
 
@@ -8250,6 +8272,17 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="fd-package-json"></a>
+### fd-package-json v2.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="fdir"></a>
 ### fdir v6.4.4
 #### 
@@ -8351,6 +8384,17 @@ BlueOak-1.0.0 permitted
 
 <a name="form-data-encoder"></a>
 ### form-data-encoder v1.7.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="formatly"></a>
+### formatly v0.2.4
 #### 
 
 ##### Paths
@@ -9878,6 +9922,17 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="knip"></a>
+### knip v5.61.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
+
+
+
 <a name="langfuse"></a>
 ### langfuse v3.26.0
 #### 
@@ -11088,6 +11143,17 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="napi-postinstall"></a>
+### napi-postinstall v0.3.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="neo-async"></a>
 ### neo-async v2.6.2
 #### 
@@ -11464,6 +11530,17 @@ MIT-0 permitted
 
 <a name="outdent"></a>
 ### outdent v0.5.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="oxc-resolver"></a>
+### oxc-resolver v11.5.2
 #### 
 
 ##### Paths
@@ -13310,6 +13387,17 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="smol-toml"></a>
+### smol-toml v1.4.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD</a> permitted
+
+
+
 <a name="snake-case"></a>
 ### snake-case v2.1.0
 #### 
@@ -14792,6 +14880,17 @@ Unknown manually approved
 
 
 
+<a name="walk-up-path"></a>
+### walk-up-path v4.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
+
+
+
 <a name="watchpack"></a>
 ### watchpack v2.4.2
 #### 
@@ -15174,6 +15273,17 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
+
+
+
+<a name="zod-validation-error"></a>
+### zod-validation-error v3.5.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
 
 
 

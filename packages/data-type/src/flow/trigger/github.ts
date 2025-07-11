@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 
-export const Provider = z.literal("github");
+const Provider = z.literal("github");
 
 const IssueCreated = z.object({
 	id: z.literal("github.issue.created"),

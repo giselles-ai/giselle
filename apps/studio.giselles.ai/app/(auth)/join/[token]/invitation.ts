@@ -17,7 +17,7 @@ import type { TeamId } from "@/services/teams";
 import type * as schema from "../../../../drizzle/schema";
 import { JoinError } from "./errors";
 
-export type InvitationToken = {
+type InvitationToken = {
 	token: string;
 	teamId: TeamId;
 	teamDbId: number;

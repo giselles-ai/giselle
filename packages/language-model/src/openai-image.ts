@@ -9,14 +9,14 @@ export const moderation = z.enum(["auto", "low"]);
 
 export const background = z.enum(["transparent", "opaque", "auto"]);
 
-export const OpenAIImageModelConfigurations = z.object({
+const OpenAIImageModelConfigurations = z.object({
 	n: z.number(),
 	size,
 	quality,
 	moderation,
 	background,
 });
-export type OpenAIImageModelConfiguration = z.infer<
+type OpenAIImageModelConfiguration = z.infer<
 	typeof OpenAIImageModelConfigurations
 >;
 
@@ -50,7 +50,7 @@ export const models = [openaiGptImage1];
 export const LanguageModel = OpenAIImageLanguageModel;
 export type LanguageModel = OpenAIImageLanguageModel;
 
-export interface OpenAIImageGenerationParams {
+interface OpenAIImageGenerationParams {
 	width: number;
 	height: number;
 	quality: "auto" | "low" | "medium" | "high";

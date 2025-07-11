@@ -1,6 +1,6 @@
 import { GitHubIcon } from "../../../icons";
 
-export interface GitHubRepositoryBadgeProps {
+interface GitHubRepositoryBadgeProps {
 	owner: string;
 	repo: string;
 }
@@ -23,5 +23,3 @@ export function GitHubRepositoryBadge({
 		</div>
 	);
 }
-
-export default GitHubRepositoryBadge;

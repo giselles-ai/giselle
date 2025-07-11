@@ -3,11 +3,11 @@ import type { ActionBase } from "../base";
 
 export const provider = "web-search" as const;
 
-export interface WebSearchActionBase extends ActionBase {
+interface WebSearchActionBase extends ActionBase {
 	provider: typeof provider;
 }
 
-export const webSearchFetchAction = {
+const webSearchFetchAction = {
 	provider,
 	command: {
 		id: "web-search.fetch",

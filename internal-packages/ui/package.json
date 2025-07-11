@@ -24,14 +24,12 @@
 		"lucide-react": "catalog:",
 		"radix-ui": "catalog:",
 		"react": "catalog:",
-		"react-dom": "catalog:",
-		"zod": "catalog:"
+		"react-dom": "catalog:"
 	},
 	"devDependencies": {
 		"@giselle/giselle-sdk-tsconfig": "workspace:^",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
-		"tailwindcss": "catalog:",
 		"typescript": "catalog:"
 	}
 }

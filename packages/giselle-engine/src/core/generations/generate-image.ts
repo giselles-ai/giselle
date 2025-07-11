@@ -240,7 +240,7 @@ async function generateImageWithFal({
 	return generationOutputs;
 }
 
-export async function generateImageWithOpenAI({
+async function generateImageWithOpenAI({
 	messages,
 	generationContext,
 	runningGeneration,

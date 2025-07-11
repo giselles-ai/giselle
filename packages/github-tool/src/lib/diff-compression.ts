@@ -1,4 +1,4 @@
-export interface FileDiff {
+interface FileDiff {
 	fileName: string;
 	content: string;
 	size: number;

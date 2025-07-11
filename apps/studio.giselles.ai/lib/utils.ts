@@ -14,7 +14,7 @@ export const isEmailFromRoute06 = (email: string): boolean => {
  * Error thrown when the maximum number of retries is exceeded.
  * This error contains an array of errors that occurred during the retry attempts.
  */
-export class MaxRetriesExceededError extends Error {
+class MaxRetriesExceededError extends Error {
 	readonly errors: unknown[];
 
 	constructor(errors: unknown[]) {
@@ -25,7 +25,7 @@ export class MaxRetriesExceededError extends Error {
 	}
 }
 
-export type RetryOptions = {
+type RetryOptions = {
 	maxRetries: number;
 	onRetry?: (retryCount: number, error: unknown) => void;
 	shouldAbort?: (error: unknown) => boolean;

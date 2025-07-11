@@ -6,7 +6,7 @@ import type {
 	VectorStoreNode,
 } from "@giselle-sdk/data-type";
 
-export interface UnconnectedSource<T extends NodeBase = NodeLike> {
+interface UnconnectedSource<T extends NodeBase = NodeLike> {
 	output: Output;
 	node: T;
 	connection?: never;

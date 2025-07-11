@@ -3,9 +3,9 @@ import {
 	scrapeUrl as selfMadeScrapeUrl,
 } from "./self-made";
 
-export type AllowedFormats = "html" | "markdown";
+type AllowedFormats = "html" | "markdown";
 
-export interface WebSearchConfig {
+interface WebSearchConfig {
 	provider: typeof selfMadeProviderName;
 }
 
@@ -16,7 +16,7 @@ export type WebSearchResult = {
 	markdown: string;
 };
 
-export interface WebSearchTool {
+interface WebSearchTool {
 	fetchUrl: (
 		url: string,
 		formats?: AllowedFormats[],

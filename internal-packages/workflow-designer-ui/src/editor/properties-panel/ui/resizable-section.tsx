@@ -101,19 +101,6 @@ export function ResizableSectionHandle({
 	);
 }
 
-export function ResizableSectionHandleWithIcon({
-	direction = "vertical",
-	className,
-}: ResizableSectionHandleProps) {
-	return (
-		<PanelResizeHandle
-			className={clsx("flex items-center justify-center", className)}
-		>
-			<ResizeHandle direction={direction} />
-		</PanelResizeHandle>
-	);
-}
-
 export function ResizeHandle({
 	direction = "vertical",
 	className,

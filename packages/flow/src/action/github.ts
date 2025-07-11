@@ -3,11 +3,11 @@ import type { ActionBase } from "../base";
 
 export const provider = "github" as const;
 
-export interface GitHubActionBase extends ActionBase {
+interface GitHubActionBase extends ActionBase {
 	provider: typeof provider;
 }
 
-export const githubCreateIssueAction = {
+const githubCreateIssueAction = {
 	provider,
 	command: {
 		id: "github.create.issue",
@@ -19,7 +19,7 @@ export const githubCreateIssueAction = {
 	},
 } as const satisfies GitHubActionBase;
 
-export const githubCreateIssueCommentAction = {
+const githubCreateIssueCommentAction = {
 	provider,
 	command: {
 		id: "github.create.issueComment",
@@ -31,7 +31,7 @@ export const githubCreateIssueCommentAction = {
 	},
 } as const satisfies GitHubActionBase;
 
-export const githubCreatePullRequestCommentAction = {
+const githubCreatePullRequestCommentAction = {
 	provider,
 	command: {
 		id: "github.create.pullRequestComment",
@@ -43,7 +43,7 @@ export const githubCreatePullRequestCommentAction = {
 	},
 } as const satisfies GitHubActionBase;
 
-export const githubReplyPullRequestReviewCommentAction = {
+const githubReplyPullRequestReviewCommentAction = {
 	provider,
 	command: {
 		id: "github.reply.pullRequestReviewComment",
@@ -56,7 +56,7 @@ export const githubReplyPullRequestReviewCommentAction = {
 	},
 } as const satisfies GitHubActionBase;
 
-export const githubGetDiscussionAction = {
+const githubGetDiscussionAction = {
 	provider,
 	command: {
 		id: "github.get.discussion",

@@ -1,7 +1,7 @@
 "use client";
 
-import type { Node, VectorStoreContent } from "@giselle-sdk/data-type";
-import { nodeFactories } from "@giselle-sdk/giselle-engine/react";
+import type { Node } from "@giselle-sdk/data-type";
+
 import { createContext, type ReactNode, useContext, useState } from "react";
 import type {
 	AddNodeTool,
@@ -110,14 +110,4 @@ export function selectActionTool() {
 		action: "selectAction",
 		category: "edit",
 	} satisfies SelectEnviromentActionTool;
-}
-
-export function vectorStoreNode(
-	provider: VectorStoreContent["source"]["provider"],
-) {
-	return nodeFactories.create("vectorStore", provider);
-}
-
-export function webPageNode() {
-	return nodeFactories.create("webPage");
 }

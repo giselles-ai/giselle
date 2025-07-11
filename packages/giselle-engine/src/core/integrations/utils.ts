@@ -4,9 +4,7 @@ import {
 } from "@giselle-sdk/data-type";
 import type { Storage } from "unstorage";
 
-export function getGitHubRepositoryIntegrationPath(
-	repositoryNodeId: string,
-): string {
+function getGitHubRepositoryIntegrationPath(repositoryNodeId: string): string {
 	return `integrations/github/repositories/${repositoryNodeId}.json`;
 }
 

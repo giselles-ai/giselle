@@ -7,7 +7,7 @@ import { MousePositionProvider, ToolbarContextProvider } from "../../tool";
 
 type ProviderComponent = React.FC<{ children: ReactNode }>;
 
-export function composeProviders(...providers: ProviderComponent[]) {
+function composeProviders(...providers: ProviderComponent[]) {
 	return ({ children }: { children: ReactNode }) => {
 		let wrapped = children;
 

@@ -3,7 +3,7 @@ import { embed, embedMany, type TelemetrySettings } from "ai";
 import { EmbeddingError } from "../errors";
 import type { EmbedderFunction } from "./types";
 
-export type OpenAIEmbeddingModel =
+type OpenAIEmbeddingModel =
 	| "text-embedding-3-small"
 	| "text-embedding-3-large"
 	| "text-embedding-ada-002";

@@ -1,4 +1,4 @@
-export type GitHubUrlInfo =
+type GitHubUrlInfo =
 	| { owner: string; repo: string; type: "issue"; issueNumber: number }
 	| {
 			owner: string;
@@ -154,7 +154,7 @@ export function parseGitHubUrl(url: string): GitHubUrlInfo | null {
 	}
 }
 
-export interface Command {
+interface Command {
 	callsign: string;
 	content: string;
 }

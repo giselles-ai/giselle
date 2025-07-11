@@ -24,25 +24,20 @@
 	},
 	"devDependencies": {
 		"@giselle/giselle-sdk-tsconfig": "workspace:*",
-		"@graphql-codegen/cli": "catalog:",
-		"@graphql-codegen/client-preset": "catalog:",
 		"@octokit/openapi-types": "catalog:",
 		"@types/node": "catalog:",
 		"tsup": "catalog:",
-		"vitest": "catalog:",
-		"@types/tar": "catalog:"
+		"vitest": "catalog:"
 	},
 	"dependencies": {
 		"@giselle-sdk/rag": "workspace:*",
 		"@octokit/auth-app": "catalog:",
 		"@octokit/core": "catalog:",
-		"@octokit/graphql": "catalog:",
 		"@octokit/request-error": "catalog:",
 		"@octokit/webhooks": "catalog:",
 		"@urql/core": "catalog:",
 		"ai": "catalog:",
 		"gql.tada": "catalog:",
-		"graphql": "catalog:",
 		"urql": "catalog:",
 		"zod": "catalog:",
 		"tar": "catalog:"

@@ -16,21 +16,14 @@
 		"format": "biome check --write ."
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "catalog:",
 		"@giselle-internal/ui": "workspace:^",
 		"@giselle-internal/workflow-designer-ui": "workspace:*",
 		"@giselle-sdk/data-type": "workspace:*",
 		"@giselle-sdk/giselle-engine": "workspace:*",
 		"@giselle-sdk/supabase-driver": "workspace:^",
 		"@supabase/supabase-js": "catalog:",
-		"@xyflow/react": "catalog:",
 		"clsx": "catalog:",
-		"geist": "1.3.1",
-		"happy-dom": "catalog:",
-		"jsdom": "catalog:",
-		"lucide-react": "catalog:",
 		"next": "catalog:",
-		"pg": "catalog:",
 		"react": "catalog:",
 		"react-dom": "catalog:",
 		"unstorage": "catalog:"
@@ -38,14 +31,10 @@
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
 		"@tailwindcss/postcss": "catalog:",
-		"@tailwindcss/typography": "catalog:",
 		"@types/node": "catalog:",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
-		"node-loader": "catalog:",
 		"postcss": "catalog:",
-		"tailwindcss": "catalog:",
-		"tailwindcss-animate": "catalog:",
 		"typescript": "catalog:"
 	}
 }

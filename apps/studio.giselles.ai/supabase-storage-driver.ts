@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { defineDriver, joinKeys } from "unstorage";
 
-export interface SupabaseStorageDriverOptions {
+interface SupabaseStorageDriverOptions {
 	supabaseUrl: string;
 	supabaseServiceKey: string;
 	bucket: string;

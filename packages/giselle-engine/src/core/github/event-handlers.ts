@@ -107,7 +107,7 @@ export type EventHandlerArgs<TEventName extends WebhookEventName> = {
 	deps: EventHandlerDependencies;
 };
 
-export type EventHandlerResult = {
+type EventHandlerResult = {
 	shouldRun: boolean;
 	reactionNodeId?: string;
 };
@@ -301,7 +301,7 @@ export function handlePullRequestClosed<TEventName extends WebhookEventName>(
 	return { shouldRun: true, reactionNodeId: pullRequest.node_id };
 }
 
-export const eventHandlers = [
+const eventHandlers = [
 	handleIssueOpened,
 	handleIssueClosed,
 	handleIssueCommentCreated,

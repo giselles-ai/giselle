@@ -95,7 +95,7 @@ interface InputCallsignStep {
 	installationId: number;
 	eventId: string;
 }
-export type GitHubTriggerSetupStep =
+type GitHubTriggerSetupStep =
 	| SelectRepositoryStep
 	| SelectEventStep
 	| InputCallsignStep;

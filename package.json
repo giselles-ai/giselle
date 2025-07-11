@@ -13,12 +13,14 @@
 		"dev:studio.giselles.ai": "NODE_NO_WARNINGS=1 turbo dev --filter studio.giselles.ai",
 		"changeset": "changeset",
 		"version": "changeset version",
-		"test": "turbo test"
+		"test": "turbo test",
+		"knip": "knip"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
 		"@changesets/cli": "^2.28.1",
-		"@turbo/gen": "catalog:",
+		"@types/node": "catalog:",
+		"knip": "5.61.3",
 		"turbo": "2.4.2",
 		"typescript": "catalog:"
 	},

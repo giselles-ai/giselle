@@ -5,7 +5,7 @@ import { VectorStoreId } from "../../experimental_vector-store/types/object";
 
 export const DataSourceId = createIdGenerator("ds");
 export type DataSourceId = z.infer<typeof DataSourceId.schema>;
-export const DataSourceObjectBase = z.object({
+const DataSourceObjectBase = z.object({
 	id: DataSourceId.schema,
 	status: z.enum(["inProgress", "completed", "failed"]),
 	vectorStoreId: VectorStoreId.schema,

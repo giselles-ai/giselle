@@ -29,15 +29,9 @@ import type { Storage } from "unstorage";
 import type { GiselleStorage } from "../experimental_storage";
 import type { GiselleEngineContext } from "../types";
 
-export interface GeneratedImageData {
+interface GeneratedImageData {
 	uint8Array: Uint8Array;
 	base64: string;
-}
-
-export interface FileIndex {
-	nodeId: NodeId;
-	start: number;
-	end: number;
 }
 
 export async function buildMessageObject(
@@ -434,29 +428,6 @@ function getFilesDescription(
 	return `${getOrdinal(currentCount + 1)} attached file`;
 }
 
-export async function getRedirectedUrlAndTitle(url: string) {
-	// Make the request with fetch and set redirect to 'follow'
-	const response = await fetch(url, {
-		redirect: "follow", // This automatically follows redirects
-	});
-
-	// Get the final URL after redirects
-	const finalUrl = response.url;
-
-	// Get the HTML content
-	const html = await response.text();
-
-	// Extract title using a simple regex pattern
-	const titleMatch = html.match(/<title[^>]*>(.*?)<\/title>/i);
-	const title = titleMatch ? titleMatch[1].trim() : "No title found";
-
-	return {
-		originalUrl: url,
-		redirectedUrl: finalUrl,
-		title: title,
-	};
-}
-
 async function buildGenerationMessageForImageGeneration(
 	node: ImageGenerationNode,
 	contextNodes: Node[],
@@ -585,10 +556,7 @@ async function buildGenerationMessageForImageGeneration(
 	];
 }
 
-export function generatedImagePath(
-	generationId: GenerationId,
-	filename: string,
-) {
+function generatedImagePath(generationId: GenerationId, filename: string) {
 	return `generations/${generationId}/generated-images/${filename}`;
 }
 

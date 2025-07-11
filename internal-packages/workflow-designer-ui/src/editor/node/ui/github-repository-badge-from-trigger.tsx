@@ -2,7 +2,7 @@ import type { FlowTriggerId } from "@giselle-sdk/data-type";
 import { useGitHubTrigger } from "../../lib/use-github-trigger";
 import { GitHubRepositoryBadge } from "./github-repository-badge";
 
-export interface GitHubRepositoryBadgeFromTriggerProps {
+interface GitHubRepositoryBadgeFromTriggerProps {
 	flowTriggerId: FlowTriggerId;
 }
 
@@ -29,5 +29,3 @@ export function GitHubRepositoryBadgeFromTrigger({
 		/>
 	);
 }
-
-export default GitHubRepositoryBadgeFromTrigger;

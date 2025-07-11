@@ -1,7 +1,7 @@
 /**
  * Base error class for all email-related errors
  */
-export class EmailError extends Error {
+class EmailError extends Error {
 	constructor(message: string) {
 		super(message);
 		this.name = this.constructor.name;

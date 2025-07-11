@@ -4,12 +4,12 @@ export type DocumentLoaderErrorCode =
 	| "DOCUMENT_RATE_LIMITED"
 	| "DOCUMENT_TOO_LARGE";
 
-export type Installation = {
+type Installation = {
 	id: number;
 	name: string;
 };
 
-export type Repository = {
+type Repository = {
 	id: number;
 	owner: string;
 	name: string;

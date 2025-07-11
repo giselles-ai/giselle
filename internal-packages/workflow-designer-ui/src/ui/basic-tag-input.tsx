@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 const MAX_DOMAINS = 10;
 
 // Basic tag input component that allows managing tags externally
-export type BasicTagInputProps = {
+type BasicTagInputProps = {
 	initialTags?: string[];
 	onTagsChange?: (tags: string[]) => void;
 	label?: string;

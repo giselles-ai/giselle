@@ -13,11 +13,11 @@ export const falImageGenerationSizes = z.enum([
 	imageGenerationSize16x9.value,
 ]);
 
-export const FalLanguageModelConfigurations = z.object({
+const FalLanguageModelConfigurations = z.object({
 	n: z.number(),
 	size: falImageGenerationSizes,
 });
-export type FalLanguageModelConfigurations = z.infer<
+type FalLanguageModelConfigurations = z.infer<
 	typeof FalLanguageModelConfigurations
 >;
 
@@ -134,7 +134,7 @@ export function getImageGenerationModelProvider(
 	return undefined;
 }
 
-export interface FalImageGenerationParams {
+interface FalImageGenerationParams {
 	width: number;
 	height: number;
 	n: number;

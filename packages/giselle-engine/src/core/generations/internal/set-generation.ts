@@ -68,9 +68,7 @@ export async function internalSetGeneration(params: {
 	}
 }
 
-export function toNodeGenerationIndex(
-	generation: Generation,
-): NodeGenerationIndex {
+function toNodeGenerationIndex(generation: Generation): NodeGenerationIndex {
 	return {
 		id: generation.id,
 		nodeId: generation.context.operationNode.id,

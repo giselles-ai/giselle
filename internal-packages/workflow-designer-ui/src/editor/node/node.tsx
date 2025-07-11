@@ -98,7 +98,7 @@ export const nodeTypes: NodeTypes = {
 	[WebPageNode.shape.content.shape.type.value]: CustomXyFlowNode,
 };
 
-export function CustomXyFlowNode({
+function CustomXyFlowNode({
 	data,
 	selected,
 }: NodeProps<GiselleWorkflowDesignerNode>) {
