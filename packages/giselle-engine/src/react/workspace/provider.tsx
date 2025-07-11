@@ -8,6 +8,10 @@ import {
 	type FeatureFlagContextValue,
 } from "../feature-flags";
 import { WorkflowDesignerProvider } from "../flow";
+import {
+	FlowTriggerContext,
+	type FlowTriggerContextValue,
+} from "../flow-trigger/context";
 import { GenerationRunnerSystemProvider } from "../generations";
 import {
 	IntegrationProvider,
@@ -29,6 +33,7 @@ export function WorkspaceProvider({
 	telemetry,
 	featureFlag,
 	vectorStore,
+	flowTrigger,
 }: {
 	children: ReactNode;
 	workspaceId: WorkspaceId;
@@ -37,6 +42,7 @@ export function WorkspaceProvider({
 	telemetry?: TelemetrySettings;
 	featureFlag?: FeatureFlagContextValue;
 	vectorStore?: VectorStoreContextValue;
+	flowTrigger?: FlowTriggerContextValue;
 }) {
 	const client = useGiselleEngine();
 
@@ -68,17 +74,19 @@ export function WorkspaceProvider({
 			}}
 		>
 			<TelemetryProvider settings={telemetry}>
-				<UsageLimitsProvider limits={usageLimits}>
-					<IntegrationProvider {...integration}>
-						<VectorStoreProvider value={vectorStore}>
-							<WorkflowDesignerProvider data={workspace}>
-								<GenerationRunnerSystemProvider>
-									{children}
-								</GenerationRunnerSystemProvider>
-							</WorkflowDesignerProvider>
-						</VectorStoreProvider>
-					</IntegrationProvider>
-				</UsageLimitsProvider>
+				<FlowTriggerContext value={flowTrigger}>
+					<UsageLimitsProvider limits={usageLimits}>
+						<IntegrationProvider {...integration}>
+							<VectorStoreProvider value={vectorStore}>
+								<WorkflowDesignerProvider data={workspace}>
+									<GenerationRunnerSystemProvider>
+										{children}
+									</GenerationRunnerSystemProvider>
+								</WorkflowDesignerProvider>
+							</VectorStoreProvider>
+						</IntegrationProvider>
+					</UsageLimitsProvider>
+				</FlowTriggerContext>
 			</TelemetryProvider>
 		</FeatureFlagContext>
 	);
