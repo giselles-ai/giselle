@@ -2,7 +2,7 @@ import { WorkspaceId } from "@giselle-sdk/data-type";
 import { WorkspaceProvider } from "@giselle-sdk/giselle-engine/react";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
-import { db } from "@/drizzle";
+import { db, flowTriggers } from "@/drizzle";
 import {
 	experimental_storageFlag,
 	githubToolsFlag,
@@ -79,13 +79,38 @@ export default async function Layout({
 			}}
 			featureFlag={{
 				runV3,
-				sidemenu,
+				sidemenu: true,
 				githubTools,
 				webSearchAction,
-				layoutV2,
+				layoutV2: true,
 				layoutV3,
 				experimental_storage,
-				stage,
+				stage: true,
+			}}
+			flowTrigger={{
+				callbacks: {
+					flowTriggerUpdate: async (flowTrigger) => {
+					'use server'
+						await db
+							.insert(flowTriggers)
+							.values({
+								teamDbId: currentTeam.dbId,
+								sdkFlowTriggerId: flowTrigger.id,
+								sdkWorkspaceId: flowTrigger.workspaceId,
+								staged:
+									flowTrigger.configuration.provider === "manual" &&
+									flowTrigger.configuration.staged,
+							})
+							.onConflictDoUpdate({
+								target: flowTriggers.dbId,
+								set: {
+									staged:
+										flowTrigger.configuration.provider === "manual" &&
+										flowTrigger.configuration.staged,
+								},
+							});
+					},
+				},
 			}}
 		>
 			{children}

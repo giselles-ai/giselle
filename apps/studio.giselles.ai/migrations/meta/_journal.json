@@ -260,6 +260,13 @@
 			"when": 1752216310233,
 			"tag": "0036_workable_hiroim",
 			"breakpoints": true
+		},
+		{
+			"idx": 37,
+			"version": "7",
+			"when": 1752221767858,
+			"tag": "0037_safe_korvac",
+			"breakpoints": true
 		}
 	]
 }
