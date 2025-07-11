@@ -11,7 +11,7 @@ import { WorkflowDesignerProvider } from "../flow";
 import {
 	FlowTriggerContext,
 	type FlowTriggerContextValue,
-} from "../flow-trigger/context";
+} from "../flow-trigger";
 import { GenerationRunnerSystemProvider } from "../generations";
 import {
 	IntegrationProvider,
