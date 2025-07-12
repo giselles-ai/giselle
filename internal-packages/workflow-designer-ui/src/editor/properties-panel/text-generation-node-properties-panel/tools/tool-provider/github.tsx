@@ -167,12 +167,12 @@ function GitHubToolConnectionDialog({
 					{isLoading ? (
 						<p>Loading...</p>
 					) : (secrets ?? []).length < 1 ? (
-						<EmptyState description="No saved tokens yet">
+						<EmptyState description="No saved tokens.">
 							<Button
 								onClick={() => setTabValue("create")}
 								leftIcon={<PlusIcon />}
 							>
-								Save First Token
+								Add a Token
 							</Button>
 						</EmptyState>
 					) : (
@@ -190,7 +190,7 @@ function GitHubToolConnectionDialog({
 									htmlFor="label"
 									className="text-text text-[13px] mb-[2px]"
 								>
-									Select a saved token
+									Select a Saved Token
 								</label>
 								<div>
 									<Select
@@ -314,8 +314,8 @@ function GitHubToolConfigurationDialogInternal({
 
 	return (
 		<ToolConfigurationDialog
-			title="Configuration of GitHub"
-			description="Select the GitHub tools you want to enable"
+			title="GitHub Configuration"
+			description="Select the GitHub tools you want to enable."
 			onSubmit={updateAvailableTools}
 			submitting={false}
 			trigger={
@@ -323,7 +323,7 @@ function GitHubToolConfigurationDialogInternal({
 					type="button"
 					leftIcon={<Settings2Icon data-dialog-trigger-icon />}
 				>
-					Configuration
+					Configure
 				</Button>
 			}
 			open={open}
@@ -349,7 +349,7 @@ function GitHubToolConfigurationDialogInternal({
 						leftIcon={<TrashIcon className="size-[12px]" />}
 						size="compact"
 					>
-						Reset key
+						Reset
 					</Button>
 				</div>
 				<div className="flex flex-col gap-6">

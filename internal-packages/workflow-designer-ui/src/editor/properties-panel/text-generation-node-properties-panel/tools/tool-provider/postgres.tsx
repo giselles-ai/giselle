@@ -85,7 +85,7 @@ function PostgresToolConnectionDialog({
 	return (
 		<ToolConfigurationDialog
 			title="Connect to PostgreSQL"
-			description="How would you like to set database url?"
+			description="How would you like to connect to your database?"
 			onSubmit={onSubmit}
 			submitting={isPending}
 			trigger={
@@ -103,8 +103,8 @@ function PostgresToolConnectionDialog({
 				}
 			>
 				<TabsList className="mb-[12px]">
-					<TabsTrigger value="create">Paste connection string</TabsTrigger>
-					<TabsTrigger value="select">Use Saved string</TabsTrigger>
+					<TabsTrigger value="create">Paste Connection String</TabsTrigger>
+					<TabsTrigger value="select">Use Saved Connection String</TabsTrigger>
 				</TabsList>
 				<TabsContent value="create">
 					<Input
@@ -148,18 +148,18 @@ function PostgresToolConnectionDialog({
 					{isLoading ? (
 						<p>Loading...</p>
 					) : (secrets ?? []).length < 1 ? (
-						<EmptyState description="No saved tokens yet">
+						<EmptyState description="No saved connection strings.">
 							<Button
 								onClick={() => setTabValue("create")}
 								leftIcon={<PlusIcon />}
 							>
-								Save First connection string
+								Add a Connection
 							</Button>
 						</EmptyState>
 					) : (
 						<>
 							<p className="text-[11px] text-text-muted my-[4px]">
-								Pick one of your encrypted string to connect.
+								Pick one of your encrypted connection strings.
 							</p>
 							<Input
 								type="hidden"
@@ -171,7 +171,7 @@ function PostgresToolConnectionDialog({
 									htmlFor="label"
 									className="text-text text-[13px] mb-[2px]"
 								>
-									Select a saved connection string
+									Select a Saved Connection String
 								</label>
 								<div>
 									<Select
@@ -241,8 +241,8 @@ function PostgresToolConfigurationDialogInternal({
 
 	return (
 		<ToolConfigurationDialog
-			title="Configuration of PostgreSQL"
-			description="Select the PostgreSQL tools you want to enable"
+			title="PostgreSQL Configuration"
+			description="Select the PostgreSQL tools you want to enable."
 			onSubmit={updateAvailableTools}
 			submitting={false}
 			trigger={
@@ -250,7 +250,7 @@ function PostgresToolConfigurationDialogInternal({
 					type="button"
 					leftIcon={<Settings2Icon data-dialog-trigger-icon />}
 				>
-					Configuration
+					Configure
 				</Button>
 			}
 			open={open}
