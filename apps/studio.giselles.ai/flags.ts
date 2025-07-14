@@ -173,3 +173,23 @@ export const stageFlag = flag<boolean>({
 		{ value: true, label: "Enable" },
 	],
 });
+
+export const stripeBasilMigrationFlag = flag<boolean>({
+	key: "stripe-basil-migration",
+	async decide() {
+		if (process.env.NODE_ENV === "development") {
+			return takeLocalEnv("STRIPE_BASIL_MIGRATION_FLAG");
+		}
+		const edgeConfig = await get(`flag__${this.key}`);
+		if (edgeConfig === undefined) {
+			return false;
+		}
+		return edgeConfig === true || edgeConfig === "true";
+	},
+	description: "Enable Stripe Basil API Migration",
+	defaultValue: false,
+	options: [
+		{ value: false, label: "Acacia (Current)" },
+		{ value: true, label: "Basil (New)" },
+	],
+});
