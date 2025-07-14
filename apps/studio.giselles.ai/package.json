@@ -106,7 +106,7 @@
 		"react": "catalog:",
 		"react-dom": "catalog:",
 		"require-in-the-middle": "7.5.2",
-		"stripe": "17.4.0",
+		"stripe": "^18.0.0",
 		"swr": "2.2.5",
 		"tailwind-merge": "2.6.0",
 		"tailwindcss-animate": "1.0.7",
