@@ -22,7 +22,9 @@ export async function POST(req: Request) {
 		if (!sig || !webhookSecret)
 			return new Response("Webhook secret not found.", { status: 400 });
 		event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
-		console.log(`🔔  Webhook received: ${event.type}`);
+		console.log(
+			`🔔  Webhook received: ${event.type} (API version: ${event.api_version})`,
+		);
 
 		// biome-ignore lint: lint/suspicious/noExplicitAny: @todo error handling
 	} catch (err: any) {
