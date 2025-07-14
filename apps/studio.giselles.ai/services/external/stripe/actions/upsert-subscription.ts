@@ -11,6 +11,38 @@ import { stripe } from "../config";
 
 const timestampToDateTime = (timestamp: number) => new Date(timestamp * 1000);
 
+// Helper function to get subscription period with backward compatibility
+const getSubscriptionPeriod = (subscription: Stripe.Subscription) => {
+	// Basil API: periods are on subscription items
+	const firstItem = subscription.items?.data?.[0];
+	if (firstItem && "current_period_start" in firstItem) {
+		// Type assertion for Basil API structure
+		const basilItem = firstItem as Stripe.SubscriptionItem & {
+			current_period_start: number;
+			current_period_end: number;
+		};
+		return {
+			currentPeriodStart: basilItem.current_period_start,
+			currentPeriodEnd: basilItem.current_period_end,
+		};
+	}
+
+	// Acacia API: periods are on subscription object
+	if ("current_period_start" in subscription) {
+		// Type assertion for Acacia API structure
+		const acaciaSubscription = subscription as Stripe.Subscription & {
+			current_period_start: number;
+			current_period_end: number;
+		};
+		return {
+			currentPeriodStart: acaciaSubscription.current_period_start,
+			currentPeriodEnd: acaciaSubscription.current_period_end,
+		};
+	}
+
+	throw new Error("Unable to determine subscription period from API response");
+};
+
 export const upsertSubscription = async (subscriptionId: string) => {
 	const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 	const existingSubscriptionRecord = await db
@@ -116,6 +148,8 @@ async function insertSubscription(
 	subscription: Stripe.Subscription,
 	teamDbId: number,
 ) {
+	const period = getSubscriptionPeriod(subscription);
+
 	await tx.insert(subscriptions).values({
 		id: subscription.id,
 		teamDbId: teamDbId,
@@ -129,8 +163,8 @@ async function insertSubscription(
 			subscription.canceled_at !== null
 				? timestampToDateTime(subscription.canceled_at)
 				: null,
-		currentPeriodStart: timestampToDateTime(subscription.current_period_start),
-		currentPeriodEnd: timestampToDateTime(subscription.current_period_end),
+		currentPeriodStart: timestampToDateTime(period.currentPeriodStart),
+		currentPeriodEnd: timestampToDateTime(period.currentPeriodEnd),
 		created: timestampToDateTime(subscription.created),
 		endedAt:
 			subscription.ended_at !== null
@@ -148,6 +182,8 @@ async function insertSubscription(
 }
 
 async function updateSubscription(subscription: Stripe.Subscription) {
+	const period = getSubscriptionPeriod(subscription);
+
 	await db
 		.update(subscriptions)
 		.set({
@@ -161,10 +197,8 @@ async function updateSubscription(subscription: Stripe.Subscription) {
 				subscription.canceled_at !== null
 					? timestampToDateTime(subscription.canceled_at)
 					: null,
-			currentPeriodStart: timestampToDateTime(
-				subscription.current_period_start,
-			),
-			currentPeriodEnd: timestampToDateTime(subscription.current_period_end),
+			currentPeriodStart: timestampToDateTime(period.currentPeriodStart),
+			currentPeriodEnd: timestampToDateTime(period.currentPeriodEnd),
 			created: timestampToDateTime(subscription.created),
 			endedAt:
 				subscription.ended_at !== null
