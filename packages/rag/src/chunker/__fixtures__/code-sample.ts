@@ -1,0 +1,144 @@
+// @ts-nocheck
+// Sample TypeScript code for testing chunking behavior
+// This is a test fixture representing typical code structure
+
+export interface User {
+	id: string;
+	name: string;
+	email: string;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+export interface Post {
+	id: string;
+	title: string;
+	content: string;
+	authorId: string;
+	tags: string[];
+	published: boolean;
+	publishedAt?: Date;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+export class UserService {
+	constructor(private readonly db: Database) {}
+
+	async findById(id: string): Promise<User | null> {
+		const user = await this.db.users.findUnique({
+			where: { id },
+		});
+		return user;
+	}
+
+	async findByEmail(email: string): Promise<User | null> {
+		const user = await this.db.users.findUnique({
+			where: { email },
+		});
+		return user;
+	}
+
+	async create(data: CreateUserInput): Promise<User> {
+		const user = await this.db.users.create({
+			data: {
+				...data,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+		return user;
+	}
+
+	async update(id: string, data: UpdateUserInput): Promise<User> {
+		const user = await this.db.users.update({
+			where: { id },
+			data: {
+				...data,
+				updatedAt: new Date(),
+			},
+		});
+		return user;
+	}
+
+	async delete(id: string): Promise<void> {
+		await this.db.users.delete({
+			where: { id },
+		});
+	}
+}
+
+export class PostService {
+	constructor(private readonly db: Database) {}
+
+	async findById(id: string): Promise<Post | null> {
+		const post = await this.db.posts.findUnique({
+			where: { id },
+			include: { author: true },
+		});
+		return post;
+	}
+
+	async findByAuthor(authorId: string): Promise<Post[]> {
+		const posts = await this.db.posts.findMany({
+			where: { authorId },
+			orderBy: { createdAt: "desc" },
+		});
+		return posts;
+	}
+
+	async findPublished(): Promise<Post[]> {
+		const posts = await this.db.posts.findMany({
+			where: { published: true },
+			orderBy: { publishedAt: "desc" },
+		});
+		return posts;
+	}
+
+	async create(data: CreatePostInput): Promise<Post> {
+		const post = await this.db.posts.create({
+			data: {
+				...data,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+		return post;
+	}
+
+	async publish(id: string): Promise<Post> {
+		const post = await this.db.posts.update({
+			where: { id },
+			data: {
+				published: true,
+				publishedAt: new Date(),
+				updatedAt: new Date(),
+			},
+		});
+		return post;
+	}
+}
+
+// Database interface
+interface Database {
+	users: unknown;
+	posts: unknown;
+}
+
+// Input types
+interface CreateUserInput {
+	name: string;
+	email: string;
+}
+
+interface UpdateUserInput {
+	name?: string;
+	email?: string;
+}
+
+interface CreatePostInput {
+	title: string;
+	content: string;
+	authorId: string;
+	tags: string[];
+}
