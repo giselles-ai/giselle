@@ -13590,7 +13590,7 @@ Unknown manually approved
 
 
 <a name="stripe"></a>
-### stripe v17.4.0
+### stripe v18.3.0
 #### 
 
 ##### Paths
