@@ -3,5 +3,6 @@
 
 	// Knip's biome plugin does not support biome 2.0
 	// https://github.com/webpro-nl/knip/issues/1154
-	"biome": false
+	"biome": false,
+	"ignore": ["**/__fixtures__/**"]
 }
