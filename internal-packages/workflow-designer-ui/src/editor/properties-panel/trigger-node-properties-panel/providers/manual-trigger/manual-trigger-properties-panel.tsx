@@ -15,10 +15,14 @@ import { PlusIcon, TrashIcon } from "lucide-react";
 import {
   type FormEventHandler,
   useCallback,
+  useEffect,
+  useRef,
   useState,
   useTransition,
 } from "react";
 import { SpinnerIcon } from "../../../../../icons";
+import { Check, ChevronDown } from "lucide-react";
+import { Button } from "@giselle-internal/ui/button";
 import { ManualTriggerConfiguredView } from "../../ui";
 
 export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
@@ -26,6 +30,9 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
   const client = useGiselleEngine();
   const [isPending, startTransition] = useTransition();
   const [parameters, setParameters] = useState<ManualTriggerParameter[]>([]);
+  const [selectedType, setSelectedType] = useState("text");
+  const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const { experimental_storage } = useFeatureFlag();
 
   const handleAddParameter = useCallback<FormEventHandler<HTMLFormElement>>(
@@ -33,7 +40,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
       e.preventDefault();
       const formData = new FormData(e.currentTarget);
       const name = formData.get("name") as string;
-      const type = formData.get("type") as string;
+      const type = selectedType;
       const required = formData.get("required") !== null;
 
       const parse = ManualTriggerParameter.safeParse({
@@ -48,13 +55,40 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
       }
       setParameters((prev) => [...prev, parse.data]);
       e.currentTarget.reset();
+      setSelectedType("text");
     },
-    [],
+    [selectedType],
   );
 
   const handleRemoveParameter = useCallback((id: string) => {
     setParameters((prev) => prev.filter((param) => param.id !== id));
   }, []);
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsTypeDropdownOpen(false);
+      }
+    };
+
+    if (isTypeDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isTypeDropdownOpen]);
+
+  const typeOptions = [
+    { id: "text", label: "Text" },
+    { id: "multiline-text", label: "Text (multi-line)" },
+    { id: "number", label: "Number" },
+  ];
 
   const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
     (e) => {
@@ -175,39 +209,60 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
               <div className="w-[100px]">
                 <label
                   htmlFor="param-type"
-                  className="text-[12px] text-black-500 mb-[4px] block"
+                  className="text-[12px] text-black-500 mb-[4px] block leading-[16px]"
                 >
                   Type
                 </label>
-                <select
-                  id="param-type"
-                  name="type"
-                  className={clsx(
-                    "w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
-                    "border-[1px] border-white-900",
-                    "text-[14px]",
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsTypeDropdownOpen(!isTypeDropdownOpen)}
+                    className="w-full px-3 py-2 bg-black-300/20 rounded-[8px] text-white-400 text-[14px] font-geist cursor-pointer text-left flex items-center justify-between"
+                  >
+                    <span className="text-[#F7F9FD]">
+                      {typeOptions.find((opt) => opt.id === selectedType)
+                        ?.label || "Text"}
+                    </span>
+                    <ChevronDown className="h-4 w-4 text-white/60" />
+                  </button>
+                  {isTypeDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-1 z-50 rounded-[8px] border-[0.25px] border-white/10 bg-black-850 p-1 shadow-none">
+                      {typeOptions.map((option) => (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedType(option.id);
+                            setIsTypeDropdownOpen(false);
+                          }}
+                          className="flex w-full items-center rounded-md px-3 py-2 text-left font-sans text-[14px] leading-[16px] text-[#F7F9FD] hover:bg-white/5"
+                        >
+                          <span className="mr-2 inline-flex h-4 w-4 items-center justify-center">
+                            {selectedType === option.id && (
+                              <Check className="h-4 w-4" />
+                            )}
+                          </span>
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
                   )}
-                >
-                  <option value="text">Text</option>
-                  <option value="multiline-text">Text (multi-line)</option>
-                  <option value="number">Number</option>
-                </select>
+                </div>
               </div>
-              <div className="flex items-center h-[42px] ml-[4px]">
+              <div className="w-auto">
                 <label
                   htmlFor="param-required"
-                  className="flex items-center gap-[4px] cursor-pointer"
+                  className="text-[12px] text-black-500 mb-[4px] block leading-[16px]"
                 >
-                  <input id="param-required" type="checkbox" name="required" />
-                  <span className="text-[12px]">Required</span>
+                  Required
                 </label>
+                <div className="flex items-center justify-center h-[37px]">
+                  <input id="param-required" type="checkbox" name="required" />
+                </div>
               </div>
-              <button
-                type="submit"
-                className="bg-white-800 text-black-900 h-[42px] w-[42px] rounded-full flex items-center justify-center disabled:opacity-50"
-              >
-                <PlusIcon className="size-[18px]" />
-              </button>
+              <Button type="submit" variant="solid" size="large">
+                Add
+              </Button>
             </form>
           </div>
         </div>
