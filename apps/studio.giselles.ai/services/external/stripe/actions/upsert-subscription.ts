@@ -11,6 +11,26 @@ import { stripe } from "../config";
 
 const timestampToDateTime = (timestamp: number) => new Date(timestamp * 1000);
 
+// Helper function to get subscription period from Basil API
+// In Basil, periods are on subscription items instead of subscription
+const getSubscriptionPeriod = (subscription: Stripe.Subscription) => {
+	const firstItem = subscription.items?.data?.[0];
+	if (!firstItem) {
+		throw new Error("Subscription has no items");
+	}
+
+	// Type assertion for Basil API structure
+	const itemWithPeriod = firstItem as Stripe.SubscriptionItem & {
+		current_period_start: number;
+		current_period_end: number;
+	};
+
+	return {
+		currentPeriodStart: itemWithPeriod.current_period_start,
+		currentPeriodEnd: itemWithPeriod.current_period_end,
+	};
+};
+
 export const upsertSubscription = async (subscriptionId: string) => {
 	const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 	const existingSubscriptionRecord = await db
@@ -116,6 +136,8 @@ async function insertSubscription(
 	subscription: Stripe.Subscription,
 	teamDbId: number,
 ) {
+	const period = getSubscriptionPeriod(subscription);
+
 	await tx.insert(subscriptions).values({
 		id: subscription.id,
 		teamDbId: teamDbId,
@@ -129,8 +151,8 @@ async function insertSubscription(
 			subscription.canceled_at !== null
 				? timestampToDateTime(subscription.canceled_at)
 				: null,
-		currentPeriodStart: timestampToDateTime(subscription.current_period_start),
-		currentPeriodEnd: timestampToDateTime(subscription.current_period_end),
+		currentPeriodStart: timestampToDateTime(period.currentPeriodStart),
+		currentPeriodEnd: timestampToDateTime(period.currentPeriodEnd),
 		created: timestampToDateTime(subscription.created),
 		endedAt:
 			subscription.ended_at !== null
@@ -148,6 +170,8 @@ async function insertSubscription(
 }
 
 async function updateSubscription(subscription: Stripe.Subscription) {
+	const period = getSubscriptionPeriod(subscription);
+
 	await db
 		.update(subscriptions)
 		.set({
@@ -161,10 +185,8 @@ async function updateSubscription(subscription: Stripe.Subscription) {
 				subscription.canceled_at !== null
 					? timestampToDateTime(subscription.canceled_at)
 					: null,
-			currentPeriodStart: timestampToDateTime(
-				subscription.current_period_start,
-			),
-			currentPeriodEnd: timestampToDateTime(subscription.current_period_end),
+			currentPeriodStart: timestampToDateTime(period.currentPeriodStart),
+			currentPeriodEnd: timestampToDateTime(period.currentPeriodEnd),
 			created: timestampToDateTime(subscription.created),
 			endedAt:
 				subscription.ended_at !== null

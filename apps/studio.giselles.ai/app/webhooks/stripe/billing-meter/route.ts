@@ -36,19 +36,22 @@ export async function POST(req: Request) {
 		});
 	}
 
-	const event = await stripe.v2.core.events.retrieve(thinEvent.id);
+	const eventResponse = await stripe.v2.core.events.retrieve(thinEvent.id);
+	// Type assertion for v2 event structure
+	const event = (eventResponse as { data: any }).data;
+
 	try {
 		console.error(
 			`
 				Stripe Billing Meter Error Report:
-				Period: ${event.data.validation_start} - ${event.data.validation_end}
-				Summary: ${event.data.developer_message_summary}
-				Error Count: ${event.data.reason.error_count}`
+				Period: ${event.validation_start} - ${event.validation_end}
+				Summary: ${event.developer_message_summary}
+				Error Count: ${event.reason.error_count}`
 				.trim()
 				.replace(/^\s+/gm, "    "),
 		);
 
-		for (const errorType of event.data.reason.error_types) {
+		for (const errorType of event.reason.error_types) {
 			console.error(
 				`Error Type: ${errorType.code} (${errorType.error_count} occurrences)`,
 			);
@@ -73,11 +76,11 @@ export async function POST(req: Request) {
 			level: "error",
 			extra: {
 				validationPeriod: {
-					start: event.data.validation_start,
-					end: event.data.validation_end,
+					start: event.validation_start,
+					end: event.validation_end,
 				},
-				summary: event.data.developer_message_summary,
-				errors: event.data.reason.error_types,
+				summary: event.developer_message_summary,
+				errors: event.reason.error_types,
 				relatedObject: "related_object" in event ? event.related_object : null,
 			},
 		});
