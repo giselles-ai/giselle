@@ -10,8 +10,8 @@ import {
   useGiselleEngine,
   useWorkflowDesigner,
 } from "@giselle-sdk/giselle-engine/react";
-import clsx from "clsx/lite";
-import { PlusIcon, TrashIcon } from "lucide-react";
+
+import { Check, ChevronDown, PlusIcon, TrashIcon } from "lucide-react";
 import {
   type FormEventHandler,
   useCallback,
@@ -21,9 +21,14 @@ import {
   useTransition,
 } from "react";
 import { SpinnerIcon } from "../../../../../icons";
-import { Check, ChevronDown } from "lucide-react";
 import { Button } from "@giselle-internal/ui/button";
 import { ManualTriggerConfiguredView } from "../../ui";
+
+const TYPE_OPTIONS = [
+  { id: "text", label: "Text" },
+  { id: "multiline-text", label: "Text (multi-line)" },
+  { id: "number", label: "Number" },
+] as const;
 
 export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
   const { data: workspace, updateNodeData } = useWorkflowDesigner();
@@ -40,22 +45,22 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
       e.preventDefault();
       const formData = new FormData(e.currentTarget);
       const name = formData.get("name") as string;
-      const type = selectedType;
       const required = formData.get("required") !== null;
+
+      if (!name.trim()) return;
 
       const parse = ManualTriggerParameter.safeParse({
         id: ManualTriggerParameterId.generate(),
-        name,
-        type,
+        name: name.trim(),
+        type: selectedType,
         required,
       });
-      if (!parse.success) {
-        /** @todo error handling */
-        return;
+
+      if (parse.success) {
+        setParameters((prev) => [...prev, parse.data]);
+        e.currentTarget.reset();
+        setSelectedType("text");
       }
-      setParameters((prev) => [...prev, parse.data]);
-      e.currentTarget.reset();
-      setSelectedType("text");
     },
     [selectedType],
   );
@@ -66,6 +71,8 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 
   // Handle click outside to close dropdown
   useEffect(() => {
+    if (!isTypeDropdownOpen) return;
+
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -75,28 +82,14 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
       }
     };
 
-    if (isTypeDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isTypeDropdownOpen]);
-
-  const typeOptions = [
-    { id: "text", label: "Text" },
-    { id: "multiline-text", label: "Text (multi-line)" },
-    { id: "number", label: "Number" },
-  ];
 
   const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
     (e) => {
       e.preventDefault();
-      if (parameters.length === 0) {
-        /** @todo error handling */
-        return;
-      }
+      if (parameters.length === 0) return;
 
       const outputs: Output[] = parameters.map((param) => ({
         id: OutputId.generate(),
@@ -134,7 +127,14 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
         });
       });
     },
-    [parameters, client, node, workspace?.id, updateNodeData],
+    [
+      parameters,
+      client,
+      node,
+      workspace?.id,
+      updateNodeData,
+      experimental_storage,
+    ],
   );
 
   if (node.content.state.status === "configured") {
@@ -220,14 +220,14 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
                     className="w-full px-3 py-2 bg-black-300/20 rounded-[8px] text-white-400 text-[14px] font-geist cursor-pointer text-left flex items-center justify-between"
                   >
                     <span className="text-[#F7F9FD]">
-                      {typeOptions.find((opt) => opt.id === selectedType)
+                      {TYPE_OPTIONS.find((opt) => opt.id === selectedType)
                         ?.label || "Text"}
                     </span>
                     <ChevronDown className="h-4 w-4 text-white/60" />
                   </button>
                   {isTypeDropdownOpen && (
                     <div className="absolute top-full left-0 right-0 mt-1 z-50 rounded-[8px] border-[0.25px] border-white/10 bg-black-850 p-1 shadow-none">
-                      {typeOptions.map((option) => (
+                      {TYPE_OPTIONS.map((option) => (
                         <button
                           key={option.id}
                           type="button"
