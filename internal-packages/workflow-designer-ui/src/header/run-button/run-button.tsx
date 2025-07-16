@@ -118,20 +118,31 @@ export function RunButton() {
 										<NodeSelectItem node={startingNode} />
 									</Dialog.Trigger>
 									<Dialog.Portal>
-										<Dialog.Overlay className="fixed inset-0 bg-black/25 z-50" />
-										<Dialog.Content className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] w-[400px] bg-black-900 rounded-[12px] p-[24px] shadow-xl z-50 overflow-hidden border border-black-400 outline-none">
-											<Dialog.Title className="sr-only">
-												Override inputs to test workflow
-											</Dialog.Title>
+										<Dialog.Overlay className="fixed inset-0 z-50 bg-black/60" />
+										<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+											<Dialog.Content className="relative z-10 w-[90vw] max-w-[500px] max-h-[90vh] overflow-y-auto rounded-[12px] p-6 shadow-xl focus:outline-none">
+												<div
+													className="absolute inset-0 -z-10 rounded-[12px] backdrop-blur-md"
+													style={{
+														background:
+															"linear-gradient(135deg, rgba(150, 150, 150, 0.03) 0%, rgba(60, 90, 160, 0.12) 100%)",
+													}}
+												/>
+												<div className="absolute -z-10 top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+												<div className="absolute -z-10 inset-0 rounded-[12px] border border-white/10" />
+												<Dialog.Title className="sr-only">
+													Override inputs to test workflow
+												</Dialog.Title>
 
-											<TriggerInputDialog
-												node={startingNode}
-												onClose={() => {
-													setIsDropdownOpen(false);
-													setOpenDialogNodeId(null);
-												}}
-											/>
-										</Dialog.Content>
+												<TriggerInputDialog
+													node={startingNode}
+													onClose={() => {
+														setIsDropdownOpen(false);
+														setOpenDialogNodeId(null);
+													}}
+												/>
+											</Dialog.Content>
+										</div>
 									</Dialog.Portal>
 								</Dialog.Root>
 							) : (

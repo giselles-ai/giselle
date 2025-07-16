@@ -1,6 +1,5 @@
 "use client";
 
-import clsx from "clsx/lite";
 import { XIcon } from "lucide-react";
 import { Toast as ToastPrimitive } from "radix-ui";
 import {
@@ -77,21 +76,19 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 				{toasts.map((toast) => (
 					<ToastPrimitive.Root
 						key={toast.id}
-						className={clsx(
-							"group relative rounded-[8px] backdrop-blur-[4px]",
-							"data-[type=info]:bg-white-900/60",
-							"data-[type=error]:bg-error-900/60",
-						)}
+						className="group relative rounded-[12px] shadow-xl"
 						data-type={toast.type}
 						duration={toast.preserve ? Number.POSITIVE_INFINITY : undefined}
 					>
 						<div
-							className={clsx(
-								"absolute z-0 rounded-[8px] inset-0 border-[1px] mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder border-transparent",
-								"group-data-[type=info]:from-[hsl(232,_36%,_72%)]/40 to-[hsl(218,_58%,_21%)]/90",
-								"group-data-[type=error]:from-[hsl(344,_23%,_76%)]/40 to-[hsl(344,_91%,_25%)]/90",
-							)}
+							className="absolute inset-0 -z-10 rounded-[12px] backdrop-blur-md"
+							style={{
+								background:
+									"linear-gradient(135deg, rgba(150, 150, 150, 0.03) 0%, rgba(60, 90, 160, 0.12) 100%)",
+							}}
 						/>
+						<div className="absolute -z-10 top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+						<div className="absolute -z-10 inset-0 rounded-[12px] border border-white/10" />
 						<div className="relative text-white-900 px-[16px] py-[16px]">
 							<div className="flex justify-between items-center gap-[4px]">
 								<ToastPrimitive.Title className="text-[14px] flex items-center gap-[8px]">
@@ -101,7 +98,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 									<XIcon size={18} />
 								</ToastPrimitive.Close>
 							</div>
-							<div>
+							<div className="mt-3">
 								{toast.action && (
 									<ToastPrimitive.Action altText="button" asChild>
 										{toast.action}

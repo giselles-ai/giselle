@@ -7,12 +7,12 @@ import {
 import { useWorkflowDesigner } from "@giselle-sdk/giselle-engine/react";
 import { buildWorkflowFromNode } from "@giselle-sdk/workflow-utils";
 import { clsx } from "clsx/lite";
-import { AlertTriangleIcon, PlayIcon, XIcon } from "lucide-react";
+import { AlertTriangleIcon, XIcon } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { type FormEventHandler, useCallback, useMemo, useState } from "react";
 import { useFlowController } from "../../../hooks/use-flow-controller";
 import { useTrigger } from "../../../hooks/use-trigger";
-import { Button } from "./button";
+
 import {
 	buttonLabel,
 	createInputsFromTrigger,
@@ -103,7 +103,7 @@ export function TriggerInputDialog({
 	return (
 		<>
 			<div className="flex justify-between items-center mb-[14px]">
-				<h2 className="font-accent text-[18px] font-bold text-primary-100 drop-shadow-[0_0_10px_#0087F6]">
+				<h2 className="font-sans text-[20px] font-medium tracking-tight text-white-400">
 					{buttonLabel(node)}
 				</h2>
 				<div className="flex gap-[12px]">
@@ -122,7 +122,7 @@ export function TriggerInputDialog({
 					className="flex-1 flex flex-col gap-[14px] relative text-white-800 overflow-y-hidden"
 					onSubmit={handleSubmit}
 				>
-					<p className="text-[12px] mb-[8px] text-black-400 font-sans font-semibold">
+					<p className="font-geist mt-2 text-[14px] text-black-400">
 						Execute this flow with custom input values
 					</p>
 
@@ -183,7 +183,7 @@ export function TriggerInputDialog({
 											id={input.name}
 											className={clsx(
 												"w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
-												"border-[1px]",
+												"border-[0.5px]",
 												validationErrors[input.name]
 													? "border-red-500"
 													: "border-white-900",
@@ -197,7 +197,7 @@ export function TriggerInputDialog({
 											id={input.name}
 											className={clsx(
 												"w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
-												"border-[1px]",
+												"border-[0.5px]",
 												validationErrors[input.name]
 													? "border-red-500"
 													: "border-white-900",
@@ -213,7 +213,7 @@ export function TriggerInputDialog({
 											id={input.name}
 											className={clsx(
 												"w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
-												"border-[1px]",
+												"border-[0.5px]",
 												validationErrors[input.name]
 													? "border-red-500"
 													: "border-white-900",
@@ -230,19 +230,34 @@ export function TriggerInputDialog({
 							);
 						})}
 					</div>
-					<div className="flex justify-end">
-						<Button
+					<div className="mt-6 flex justify-end gap-x-3">
+						<button
+							type="button"
+							onClick={onClose}
+							disabled={isSubmitting}
+							className="relative inline-flex items-center justify-center rounded-lg border-t border-b border-t-white/20 border-b-black/20 px-6 py-2 text-sm font-medium text-white shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_-1px_0_rgba(0,0,0,0.2)_inset,0_0_0_1px_rgba(255,255,255,0.08)] transition-all duration-300 hover:shadow-[0_1px_0_rgba(255,255,255,0.1)_inset,0_-1px_0_rgba(0,0,0,0.2)_inset,0_0_0_1px_rgba(255,255,255,0.1)] bg-black/20 border border-white/10 shadow-[inset_0_0_4px_rgba(0,0,0,0.4)] hover:shadow-[inset_0_0_6px_rgba(0,0,0,0.6)]"
+							aria-label="Cancel"
+						>
+							Cancel
+						</button>
+						<button
 							type="submit"
-							loading={isSubmitting}
-							disabled={requiresActionNodes.length > 0}
-							leftIcon={<PlayIcon className="size-[14px] fill-black-900" />}
+							disabled={isSubmitting || requiresActionNodes.length > 0}
+							className="relative inline-flex items-center justify-center rounded-lg border-t border-b border-t-white/20 border-b-black/20 px-6 py-2 text-sm font-medium text-white shadow-[0_1px_0_rgba(255,255,255,0.05)_inset,0_-1px_0_rgba(0,0,0,0.2)_inset,0_0_0_1px_rgba(255,255,255,0.08)] transition-all duration-300 hover:shadow-[0_1px_0_rgba(255,255,255,0.1)_inset,0_-1px_0_rgba(0,0,0,0.2)_inset,0_0_0_1px_rgba(255,255,255,0.1)] text-white/80 bg-gradient-to-b from-[#202530] to-[#12151f] border border-[rgba(0,0,0,0.7)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)] transition-all duration-200 active:scale-[0.98] whitespace-nowrap"
+							aria-label={
+								isSubmitting
+									? "Processing..."
+									: requiresActionNodes.length > 0
+										? "Fix Connections to Run"
+										: "Run"
+							}
 						>
 							{isSubmitting
-								? "Running..."
+								? "Processing..."
 								: requiresActionNodes.length > 0
 									? "Fix Connections to Run"
 									: "Run"}
-						</Button>
+						</button>
 					</div>
 				</form>
 			</div>
