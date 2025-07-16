@@ -21,7 +21,8 @@ import { ShareModal } from "../ui/share-modal";
 import { ToastProvider } from "../ui/toast";
 import { UserPresence } from "../ui/user-presence";
 import { RunButton } from "./run-button";
-import { Button, buttonLabel, TriggerInputDialog } from "./ui";
+import { Button } from "./run-button/ui/button";
+import { buttonLabel, TriggerInputDialog } from "./ui";
 
 function Trigger() {
 	const { data } = useWorkflowDesigner();
