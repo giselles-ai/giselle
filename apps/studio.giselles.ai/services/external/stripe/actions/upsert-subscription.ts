@@ -15,19 +15,21 @@ const timestampToDateTime = (timestamp: number) => new Date(timestamp * 1000);
 // In Basil, periods are on subscription items instead of subscription
 const getSubscriptionPeriod = (subscription: Stripe.Subscription) => {
 	const firstItem = subscription.items?.data?.[0];
-	if (!firstItem) {
-		throw new Error("Subscription has no items");
-	}
 
 	// Type assertion for Basil API structure
-	const itemWithPeriod = firstItem as Stripe.SubscriptionItem & {
-		current_period_start: number;
-		current_period_end: number;
-	};
+	const itemWithPeriod = firstItem as
+		| (Stripe.SubscriptionItem & {
+				current_period_start?: number;
+				current_period_end?: number;
+		  })
+		| undefined;
+
+	const start = itemWithPeriod?.current_period_start;
+	const end = itemWithPeriod?.current_period_end;
 
 	return {
-		currentPeriodStart: itemWithPeriod.current_period_start,
-		currentPeriodEnd: itemWithPeriod.current_period_end,
+		currentPeriodStart: start ?? 0,
+		currentPeriodEnd: end ?? 0,
 	};
 };
 
