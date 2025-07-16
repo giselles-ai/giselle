@@ -14,15 +14,26 @@ const timestampToDateTime = (timestamp: number) => new Date(timestamp * 1000);
 // Helper function to get subscription period from Basil API
 // In Basil, periods are on subscription items instead of subscription
 const getSubscriptionPeriod = (subscription: Stripe.Subscription) => {
-	const firstItem = subscription.items?.data?.[0];
+	const proPlanPriceId = process.env.STRIPE_PRO_PLAN_PRICE_ID;
+	if (!proPlanPriceId) {
+		throw new Error("STRIPE_PRO_PLAN_PRICE_ID is not set");
+	}
+
+	// Find the Pro Plan item specifically
+	const proPlanItem = subscription.items?.data?.find(
+		(item) =>
+			typeof item.price === "object" && item.price.id === proPlanPriceId,
+	);
+
+	if (!proPlanItem) {
+		throw new Error("Pro Plan item not found in subscription");
+	}
 
 	// Type assertion for Basil API structure
-	const itemWithPeriod = firstItem as
-		| (Stripe.SubscriptionItem & {
-				current_period_start?: number;
-				current_period_end?: number;
-		  })
-		| undefined;
+	const itemWithPeriod = proPlanItem as Stripe.SubscriptionItem & {
+		current_period_start?: number;
+		current_period_end?: number;
+	};
 
 	const start = itemWithPeriod?.current_period_start;
 	const end = itemWithPeriod?.current_period_end;
