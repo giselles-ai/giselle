@@ -1,18 +1,60 @@
 import type { components } from "@octokit/openapi-types";
 import { desc, eq } from "drizzle-orm";
-import { db, githubRepositoryIndex } from "@/drizzle";
+import {
+	db,
+	githubRepositoryContentStatus,
+	githubRepositoryIndex,
+} from "@/drizzle";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
-import type { InstallationWithRepos } from "./types";
+import type {
+	InstallationWithRepos,
+	RepositoryWithContentStatuses,
+} from "./types";
 
-export async function getGitHubRepositoryIndexes() {
+export async function getGitHubRepositoryIndexes(): Promise<
+	RepositoryWithContentStatuses[]
+> {
 	const team = await fetchCurrentTeam();
+
 	const records = await db
-		.select()
+		.select({
+			repository: githubRepositoryIndex,
+			contentStatus: githubRepositoryContentStatus,
+		})
 		.from(githubRepositoryIndex)
+		.leftJoin(
+			githubRepositoryContentStatus,
+			eq(
+				githubRepositoryContentStatus.repositoryIndexDbId,
+				githubRepositoryIndex.dbId,
+			),
+		)
 		.where(eq(githubRepositoryIndex.teamDbId, team.dbId))
 		.orderBy(desc(githubRepositoryIndex.dbId));
-	return records;
+
+	// Group by repository
+	const repositoryMap = new Map<number, RepositoryWithContentStatuses>();
+
+	for (const record of records) {
+		const { repository, contentStatus } = record;
+
+		if (!repositoryMap.has(repository.dbId)) {
+			repositoryMap.set(repository.dbId, {
+				...repository,
+				contentStatuses: [],
+			});
+		}
+
+		if (contentStatus) {
+			const repo = repositoryMap.get(repository.dbId);
+			if (repo) {
+				repo.contentStatuses.push(contentStatus);
+			}
+		}
+	}
+
+	return Array.from(repositoryMap.values());
 }
 
 export async function getInstallationsWithRepos(): Promise<

@@ -6,8 +6,13 @@ import { createPipeline } from "@giselle-sdk/rag";
 import type { Octokit } from "@octokit/core";
 import type { TelemetrySettings } from "ai";
 import { and, eq } from "drizzle-orm";
-import { db, githubRepositoryIndex } from "@/drizzle";
+import {
+	db,
+	githubRepositoryContentStatus,
+	githubRepositoryIndex,
+} from "@/drizzle";
 import { createGitHubBlobChunkStore } from "./chunk-store";
+import { safeParseContentStatusMetadata } from "./content-metadata-schema";
 
 /**
  * Ingest GitHub blobs into the vector store
@@ -59,12 +64,22 @@ async function getRepositoryIndexInfo(
 	source: { owner: string; repo: string },
 	teamDbId: number,
 ): Promise<{ repositoryIndexDbId: number; isInitialIngest: boolean }> {
-	const repositoryIndex = await db
+	const result = await db
 		.select({
 			dbId: githubRepositoryIndex.dbId,
-			lastIngestedCommitSha: githubRepositoryIndex.lastIngestedCommitSha,
+			contentStatus: githubRepositoryContentStatus,
 		})
 		.from(githubRepositoryIndex)
+		.leftJoin(
+			githubRepositoryContentStatus,
+			and(
+				eq(
+					githubRepositoryContentStatus.repositoryIndexDbId,
+					githubRepositoryIndex.dbId,
+				),
+				eq(githubRepositoryContentStatus.contentType, "blob"),
+			),
+		)
 		.where(
 			and(
 				eq(githubRepositoryIndex.owner, source.owner),
@@ -74,14 +89,30 @@ async function getRepositoryIndexInfo(
 		)
 		.limit(1);
 
-	if (repositoryIndex.length === 0) {
+	if (result.length === 0) {
 		throw new Error(
 			`Repository index not found: ${source.owner}/${source.repo}`,
 		);
 	}
 
-	const { dbId, lastIngestedCommitSha } = repositoryIndex[0];
-	const isInitialIngest = lastIngestedCommitSha === null;
+	const { dbId, contentStatus } = result[0];
+	if (!contentStatus) {
+		throw new Error(
+			`Blob content status not found for repository: ${source.owner}/${source.repo}`,
+		);
+	}
+	const parseResult = safeParseContentStatusMetadata(
+		contentStatus.metadata,
+		contentStatus.contentType,
+	);
+	if (!parseResult.success) {
+		console.warn(
+			`Invalid ingest state for repository: ${source.owner}/${source.repo}, error: ${parseResult.error}`,
+		);
+	}
+	const metadata = parseResult.success ? parseResult.data : null;
+	const isInitialIngest =
+		metadata?.contentType === "blob" ? !metadata.lastIngestedCommitSha : true;
 
 	return { repositoryIndexDbId: dbId, isInitialIngest };
 }

@@ -4,11 +4,16 @@ import { createId } from "@paralleldrive/cuid2";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
-import { db, githubRepositoryIndex } from "@/drizzle";
+import {
+	db,
+	githubRepositoryContentStatus,
+	githubRepositoryIndex,
+} from "@/drizzle";
 import {
 	processRepository,
 	type TargetGitHubRepository,
 } from "@/lib/vector-stores/github";
+import { safeParseContentStatusMetadata } from "@/lib/vector-stores/github/ingest/content-metadata-schema";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { buildAppInstallationClient } from "@/services/external/github";
@@ -78,12 +83,22 @@ export async function registerRepositoryIndex(
 		}
 
 		const newIndexId = `gthbi_${createId()}` as GitHubRepositoryIndexId;
-		await db.insert(githubRepositoryIndex).values({
-			id: newIndexId,
-			owner,
-			repo,
-			teamDbId: team.dbId,
-			installationId,
+		const [newRepository] = await db
+			.insert(githubRepositoryIndex)
+			.values({
+				id: newIndexId,
+				owner,
+				repo,
+				teamDbId: team.dbId,
+				installationId,
+			})
+			.returning({ dbId: githubRepositoryIndex.dbId });
+
+		await db.insert(githubRepositoryContentStatus).values({
+			repositoryIndexDbId: newRepository.dbId,
+			contentType: "blob",
+			enabled: true,
+			status: "idle",
 		});
 
 		revalidatePath("/settings/team/vector-stores");
@@ -201,9 +216,6 @@ export async function updateRepositoryInstallation(
 		.update(githubRepositoryIndex)
 		.set({
 			installationId: newInstallationId,
-			status: "idle",
-			errorCode: null,
-			retryAfter: null,
 		})
 		.where(
 			and(
@@ -211,6 +223,31 @@ export async function updateRepositoryInstallation(
 				eq(githubRepositoryIndex.id, indexId),
 			),
 		);
+
+	const [repository] = await db
+		.select({ dbId: githubRepositoryIndex.dbId })
+		.from(githubRepositoryIndex)
+		.where(
+			and(
+				eq(githubRepositoryIndex.teamDbId, team.dbId),
+				eq(githubRepositoryIndex.id, indexId),
+			),
+		)
+		.limit(1);
+
+	if (repository) {
+		await db
+			.update(githubRepositoryContentStatus)
+			.set({
+				status: "idle",
+				errorCode: null,
+				retryAfter: null,
+			})
+			.where(
+				eq(githubRepositoryContentStatus.repositoryIndexDbId, repository.dbId),
+				// we don't have to watch content type because we are updating the whole contents for the repository
+			);
+	}
 
 	revalidatePath("/settings/team/vector-stores");
 }
@@ -222,7 +259,7 @@ export async function triggerManualIngest(
 		const team = await fetchCurrentTeam();
 		const now = new Date();
 
-		const [repositoryIndex] = await db
+		const repositoryResult = await db
 			.select()
 			.from(githubRepositoryIndex)
 			.where(
@@ -232,25 +269,72 @@ export async function triggerManualIngest(
 				),
 			)
 			.limit(1);
-		if (!repositoryIndex) {
+
+		if (repositoryResult.length === 0) {
 			return {
 				success: false,
 				error: "Repository not found",
 			};
 		}
 
-		const canIngest =
-			repositoryIndex.status === "idle" ||
-			repositoryIndex.status === "completed" ||
-			(repositoryIndex.status === "failed" &&
-				repositoryIndex.retryAfter &&
-				repositoryIndex.retryAfter <= now);
-		if (!canIngest) {
+		const repositoryIndex = repositoryResult[0];
+		const contentStatuses = await db
+			.select()
+			.from(githubRepositoryContentStatus)
+			.where(
+				eq(
+					githubRepositoryContentStatus.repositoryIndexDbId,
+					repositoryIndex.dbId,
+				),
+			);
+
+		let canIngestAll = true;
+		let blockingReason: string | null = null;
+		for (const contentStatus of contentStatuses) {
+			if (!contentStatus.enabled) {
+				continue; // Skip disabled content types
+			}
+
+			const canIngestThis =
+				contentStatus.status === "idle" ||
+				contentStatus.status === "completed" ||
+				(contentStatus.status === "failed" &&
+					contentStatus.retryAfter &&
+					contentStatus.retryAfter <= now);
+
+			if (!canIngestThis) {
+				canIngestAll = false;
+				blockingReason = `Repository cannot be ingested at this time (${contentStatus.contentType} is blocking)`;
+				break;
+			}
+		}
+
+		if (!canIngestAll) {
 			return {
 				success: false,
-				error: "Repository cannot be ingested at this time",
+				error: blockingReason || "Repository cannot be ingested at this time",
 			};
 		}
+
+		const blobContentStatus = contentStatuses.find(
+			(cs) => cs.contentType === "blob",
+		);
+		if (!blobContentStatus) {
+			throw new Error(
+				`Repository ${repositoryIndex.dbId} does not have a blob content status`,
+			);
+		}
+
+		const parseResult = safeParseContentStatusMetadata(
+			blobContentStatus.metadata,
+			blobContentStatus.contentType,
+		);
+		if (!parseResult.success) {
+			console.warn(
+				`Invalid ingest state for repository ${repositoryIndex.dbId}: ${parseResult.error}`,
+			);
+		}
+		const metadata = parseResult.success ? parseResult.data : null;
 
 		const targetRepository: TargetGitHubRepository = {
 			dbId: repositoryIndex.dbId,
@@ -258,7 +342,10 @@ export async function triggerManualIngest(
 			repo: repositoryIndex.repo,
 			teamDbId: repositoryIndex.teamDbId,
 			installationId: repositoryIndex.installationId,
-			lastIngestedCommitSha: repositoryIndex.lastIngestedCommitSha,
+			lastIngestedCommitSha:
+				metadata?.contentType === "blob"
+					? (metadata.lastIngestedCommitSha ?? null)
+					: null,
 		};
 
 		// Execute ingest in background using after()

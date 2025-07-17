@@ -1,5 +1,9 @@
 import { and, eq } from "drizzle-orm";
-import { db, githubRepositoryIndex } from "@/drizzle";
+import {
+	db,
+	githubRepositoryContentStatus,
+	githubRepositoryIndex,
+} from "@/drizzle";
 
 export async function getGitHubVectorStores(teamDbId: number) {
 	const vectorStores = await db
@@ -9,10 +13,21 @@ export async function getGitHubVectorStores(teamDbId: number) {
 			repo: githubRepositoryIndex.repo,
 		})
 		.from(githubRepositoryIndex)
+		.innerJoin(
+			githubRepositoryContentStatus,
+			and(
+				eq(
+					githubRepositoryContentStatus.repositoryIndexDbId,
+					githubRepositoryIndex.dbId,
+				),
+				eq(githubRepositoryContentStatus.contentType, "blob"),
+			),
+		)
 		.where(
 			and(
 				eq(githubRepositoryIndex.teamDbId, teamDbId),
-				eq(githubRepositoryIndex.status, "completed"),
+				eq(githubRepositoryContentStatus.status, "completed"),
+				eq(githubRepositoryContentStatus.enabled, true),
 			),
 		);
 	return vectorStores.map((vectorStore) => ({

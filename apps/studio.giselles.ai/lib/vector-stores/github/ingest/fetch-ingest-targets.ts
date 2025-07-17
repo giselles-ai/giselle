@@ -1,6 +1,11 @@
 import { and, eq, isNotNull, lt, or } from "drizzle-orm";
-import { db, githubRepositoryIndex } from "@/drizzle";
+import {
+	db,
+	githubRepositoryContentStatus,
+	githubRepositoryIndex,
+} from "@/drizzle";
 import type { TargetGitHubRepository } from "../types";
+import { safeParseContentStatusMetadata } from "./content-metadata-schema";
 
 const STALE_THRESHOLD_MINUTES = 15;
 const OUTDATED_THRESHOLD_MINUTES = 24 * 60; // 24 hours
@@ -34,36 +39,70 @@ export async function fetchIngestTargets(): Promise<TargetGitHubRepository[]> {
 			owner: githubRepositoryIndex.owner,
 			repo: githubRepositoryIndex.repo,
 			installationId: githubRepositoryIndex.installationId,
-			lastIngestedCommitSha: githubRepositoryIndex.lastIngestedCommitSha,
 			teamDbId: githubRepositoryIndex.teamDbId,
-			status: githubRepositoryIndex.status,
+			contentStatus: githubRepositoryContentStatus,
 		})
 		.from(githubRepositoryIndex)
+		.leftJoin(
+			githubRepositoryContentStatus,
+			eq(
+				githubRepositoryContentStatus.repositoryIndexDbId,
+				githubRepositoryIndex.dbId,
+			),
+		)
 		.where(
-			or(
-				eq(githubRepositoryIndex.status, "idle"),
-				and(
-					eq(githubRepositoryIndex.status, "failed"),
-					isNotNull(githubRepositoryIndex.retryAfter),
-					lt(githubRepositoryIndex.retryAfter, now),
-				),
-				and(
-					eq(githubRepositoryIndex.status, "running"),
-					lt(githubRepositoryIndex.updatedAt, staleThreshold),
-				),
-				and(
-					eq(githubRepositoryIndex.status, "completed"),
-					lt(githubRepositoryIndex.updatedAt, outdatedThreshold),
+			and(
+				eq(githubRepositoryContentStatus.enabled, true),
+				or(
+					// idle
+					eq(githubRepositoryContentStatus.status, "idle"),
+					// failed and retryAfter has passed
+					and(
+						eq(githubRepositoryContentStatus.status, "failed"),
+						isNotNull(githubRepositoryContentStatus.retryAfter),
+						lt(githubRepositoryContentStatus.retryAfter, now),
+					),
+					// running and stale
+					and(
+						eq(githubRepositoryContentStatus.status, "running"),
+						lt(githubRepositoryContentStatus.updatedAt, staleThreshold),
+					),
+					// completed and outdated
+					and(
+						eq(githubRepositoryContentStatus.status, "completed"),
+						lt(githubRepositoryContentStatus.updatedAt, outdatedThreshold),
+					),
 				),
 			),
 		);
 
-	return records.map((record) => ({
-		dbId: record.dbId,
-		owner: record.owner,
-		repo: record.repo,
-		installationId: record.installationId,
-		lastIngestedCommitSha: record.lastIngestedCommitSha,
-		teamDbId: record.teamDbId,
-	}));
+	return records.map((record) => {
+		if (!record.contentStatus) {
+			throw new Error(
+				`Repository ${record.dbId} does not have a content status`,
+			);
+		}
+		const parseResult = safeParseContentStatusMetadata(
+			record.contentStatus.metadata,
+			record.contentStatus.contentType,
+		);
+		if (!parseResult.success) {
+			console.warn(
+				`Invalid metadata for repository ${record.owner}/${record.repo} (dbId: ${record.dbId}): ${parseResult.error}`,
+			);
+		}
+		const metadata = parseResult.success ? parseResult.data : null;
+
+		return {
+			dbId: record.dbId,
+			owner: record.owner,
+			repo: record.repo,
+			installationId: record.installationId,
+			lastIngestedCommitSha:
+				metadata?.contentType === "blob"
+					? (metadata.lastIngestedCommitSha ?? null)
+					: null,
+			teamDbId: record.teamDbId,
+		};
+	});
 }
