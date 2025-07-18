@@ -31,9 +31,9 @@ const sequences = [
 		count: 4,
 		status: "success",
 		steps: [
-			{ text: "Generate Query", status: "success" },
-			{ text: "Ingest", status: "success" },
-			{ text: "Search", status: "success" },
+			{ id: "step-1-1", text: "Generate Query", status: "success" },
+			{ id: "step-1-2", text: "Ingest", status: "success" },
+			{ id: "step-1-3", text: "Search", status: "success" },
 		],
 	},
 	{
@@ -42,9 +42,9 @@ const sequences = [
 		count: 1,
 		status: "in-progress",
 		steps: [
-			{ text: "Initialize", status: "success" },
-			{ text: "Process", status: "in-progress" },
-			{ text: "Complete", status: "pending" },
+			{ id: "step-2-1", text: "Initialize", status: "success" },
+			{ id: "step-2-2", text: "Process", status: "in-progress" },
+			{ id: "step-2-3", text: "Complete", status: "pending" },
 		],
 	},
 	{
@@ -53,8 +53,8 @@ const sequences = [
 		count: 1,
 		status: "failed",
 		steps: [
-			{ text: "Load Assets", status: "success" },
-			{ text: "Generate Sound", status: "failed" },
+			{ id: "step-3-1", text: "Load Assets", status: "success" },
+			{ id: "step-3-2", text: "Generate Sound", status: "failed" },
 		],
 	},
 	{
@@ -70,9 +70,9 @@ const sequences = [
 		count: 1,
 		status: "warning",
 		steps: [
-			{ text: "Analyze", status: "success" },
-			{ text: "Synthesize", status: "warning" },
-			{ text: "Export", status: "pending" },
+			{ id: "step-5-1", text: "Analyze", status: "success" },
+			{ id: "step-5-2", text: "Synthesize", status: "warning" },
+			{ id: "step-5-3", text: "Export", status: "pending" },
 		],
 	},
 	{
@@ -82,8 +82,8 @@ const sequences = [
 		count: 1,
 		status: "success",
 		steps: [
-			{ text: "Setup", status: "success" },
-			{ text: "Render", status: "success" },
+			{ id: "step-6-1", text: "Setup", status: "success" },
+			{ id: "step-6-2", text: "Render", status: "success" },
 		],
 	},
 ] as const;
@@ -178,9 +178,9 @@ const AgentWorkspace = () => {
 									<Accordion.Content className="pl-[2px] ml-[10px] border-l border-border overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
 										<div className="py-[8px]">
 											<div className="space-y-2 pl-[8px]">
-												{sequence.steps.map((step, vIndex) => (
+												{sequence.steps.map((step) => (
 													<div
-														key={`${sequence.id}-step-${vIndex}`}
+														key={step.id}
 														className="flex items-center gap-[4px] text-[11px] text-text-muted relative"
 													>
 														<div>
