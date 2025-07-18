@@ -2,13 +2,14 @@
 
 import { Button } from "@giselle-internal/ui/button";
 import {
+	AlertCircle,
 	ArrowLeft,
 	CheckIcon,
 	ChevronDownIcon,
 	ChevronLeft,
 	ChevronsRight,
+	CircleDashedIcon,
 	Clock,
-	FileText,
 	Lightbulb,
 	MessageSquare,
 	Minus,
@@ -17,6 +18,8 @@ import {
 	Plus,
 	RefreshCw,
 	Sparkles,
+	XCircle,
+    XIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Accordion } from "radix-ui";
@@ -27,7 +30,6 @@ const sequences = [
 		name: "Sequence 1",
 		count: 4,
 		status: "success",
-		icon: <CheckIcon className="text-success size-[16px]" />,
 		steps: [
 			{ text: "Generate Query", status: "success" },
 			{ text: "Ingest", status: "success" },
@@ -36,7 +38,6 @@ const sequences = [
 	},
 	{
 		id: "seq-2",
-		icon: <FileText size={16} />,
 		name: "cyberpunk_roguelike_sy",
 		count: 1,
 		status: "in-progress",
@@ -48,7 +49,6 @@ const sequences = [
 	},
 	{
 		id: "seq-3",
-		icon: <FileText size={16} />,
 		name: "futuristic_sword_slash",
 		count: 1,
 		status: "failed",
@@ -59,7 +59,6 @@ const sequences = [
 	},
 	{
 		id: "seq-4",
-		icon: <FileText size={16} />,
 		name: "player_damage_sound_ef",
 		count: 1,
 		status: "pending",
@@ -67,7 +66,6 @@ const sequences = [
 	},
 	{
 		id: "seq-5",
-		icon: <FileText size={16} />,
 		name: "drone_destruction_soun",
 		count: 1,
 		status: "warning",
@@ -79,7 +77,7 @@ const sequences = [
 	},
 	{
 		id: "seq-6",
-		icon: <FileText size={16} />,
+
 		name: "digital_dash_blink_sou",
 		count: 1,
 		status: "success",
@@ -107,9 +105,9 @@ const AgentWorkspace = () => {
 						</Button>
 					</div>
 
-					<div className="bg-card p-3 rounded-lg space-y-3">
+					<div className="rounded-lg space-y-3">
 						<div className="flex items-start gap-3">
-							<h2 className="font-semibold">Agent Workspace</h2>
+							<h2>Create pull request</h2>
 						</div>
 						{/* <div className="flex bg-secondary rounded-md p-1 text-sm">
 							<button className="flex-1 text-muted-foreground py-1 px-2 rounded">
@@ -139,7 +137,21 @@ const AgentWorkspace = () => {
 									<Accordion.Header className="border border-border rounded-[8px] p-[8px] flex justify-between items-center">
 										<div className="flex items-center gap-2">
 											<div className="text-muted-foreground">
-												{sequence.icon}
+												{sequence.status === "success" && (
+													<CheckIcon className="text-success size-[16px]" />
+												)}
+												{sequence.status === "in-progress" && (
+													<RefreshCw className="text-info size-[16px] animate-spin" />
+												)}
+												{sequence.status === "failed" && (
+													<XIcon className="text-error size-[16px]" />
+												)}
+												{sequence.status === "pending" && (
+													<CircleDashedIcon className="text-text-muted size-[16px]" />
+												)}
+												{sequence.status === "warning" && (
+													<AlertCircle className="text-warning size-[16px]" />
+												)}
 											</div>
 											<span className="text-sm">{sequence.name}</span>
 										</div>
