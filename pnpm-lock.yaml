@@ -6,39 +6,15 @@ settings:
 
 catalogs:
   default:
-    '@ai-sdk/anthropic':
-      specifier: 1.2.10
-      version: 1.2.10
-    '@ai-sdk/fal':
-      specifier: 0.1.8
-      version: 0.1.8
-    '@ai-sdk/google':
-      specifier: 1.2.13
-      version: 1.2.13
     '@ai-sdk/openai':
       specifier: 1.3.18
       version: 1.3.18
-    '@ai-sdk/perplexity':
-      specifier: 1.1.7
-      version: 1.1.7
-    '@ai-sdk/react':
-      specifier: 1.2.9
-      version: 1.2.9
     '@aws-sdk/client-s3':
       specifier: 3.842.0
       version: 3.842.0
     '@biomejs/biome':
       specifier: 2.0.6
       version: 2.0.6
-    '@fal-ai/client':
-      specifier: 1.3.0
-      version: 1.3.0
-    '@graphql-codegen/cli':
-      specifier: 5.0.5
-      version: 5.0.5
-    '@graphql-codegen/client-preset':
-      specifier: 4.7.0
-      version: 4.7.0
     '@next/env':
       specifier: 15.3.4
       version: 15.3.4
@@ -51,9 +27,6 @@ catalogs:
     '@octokit/core':
       specifier: 7.0.2
       version: 7.0.2
-    '@octokit/graphql':
-      specifier: 9.0.1
-      version: 9.0.1
     '@octokit/openapi-types':
       specifier: 25.1.0
       version: 25.1.0
@@ -75,168 +48,48 @@ catalogs:
     '@tailwindcss/postcss':
       specifier: 4.1.10
       version: 4.1.10
-    '@tailwindcss/typography':
-      specifier: 0.5.16
-      version: 0.5.16
-    '@tiptap/core':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/extension-code-block-lowlight':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/extension-placeholder':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/html':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/react':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@tiptap/starter-kit':
-      specifier: 2.11.5
-      version: 2.11.5
-    '@turbo/gen':
-      specifier: 2.3.3
-      version: 2.3.3
     '@types/node':
       specifier: 22.14.0
       version: 22.14.0
-    '@types/pg':
-      specifier: 8.11.13
-      version: 8.11.13
-    '@types/pluralize':
-      specifier: 0.0.33
-      version: 0.0.33
     '@types/react':
       specifier: 19.1.0
       version: 19.1.0
     '@types/react-dom':
       specifier: 19.1.2
       version: 19.1.2
-    '@types/tar':
-      specifier: 6.1.13
-      version: 6.1.13
-    '@types/turndown':
-      specifier: 5.0.5
-      version: 5.0.5
-    '@urql/core':
-      specifier: 5.1.1
-      version: 5.1.1
     '@vercel/edge-config':
       specifier: 1.4.0
       version: 1.4.0
-    '@xyflow/react':
-      specifier: 12.4.1
-      version: 12.4.1
     ai:
       specifier: 4.3.9
       version: 4.3.9
-    clsx:
-      specifier: 2.1.1
-      version: 2.1.1
-    defuddle:
-      specifier: 0.6.4
-      version: 0.6.4
-    gql.tada:
-      specifier: 1.8.10
-      version: 1.8.10
-    graphql:
-      specifier: 16.10.0
-      version: 16.10.0
     happy-dom:
       specifier: 17.6.1
       version: 17.6.1
-    highlight.js:
-      specifier: 11.11.1
-      version: 11.11.1
     jsdom:
       specifier: 26.1.0
       version: 26.1.0
-    langfuse:
-      specifier: 3.37.0
-      version: 3.37.0
-    langfuse-core:
-      specifier: 3.37.0
-      version: 3.37.0
-    lowlight:
-      specifier: 3.3.0
-      version: 3.3.0
-    lucide-react:
-      specifier: 0.473.0
-      version: 0.473.0
-    marked:
-      specifier: 15.0.7
-      version: 15.0.7
-    motion:
-      specifier: 12.3.1
-      version: 12.3.1
-    nanoid:
-      specifier: 5.0.9
-      version: 5.0.9
     next:
       specifier: 15.3.4
       version: 15.3.4
-    node-loader:
-      specifier: 2.1.0
-      version: 2.1.0
-    openai:
-      specifier: 5.3.0
-      version: 5.3.0
     pg:
       specifier: 8.14.1
       version: 8.14.1
-    pgvector:
-      specifier: 0.2.1
-      version: 0.2.1
-    pluralize:
-      specifier: 8.0.0
-      version: 8.0.0
     postcss:
       specifier: 8.5.5
       version: 8.5.5
-    radix-ui:
-      specifier: 1.1.2
-      version: 1.1.2
     react:
       specifier: 19.1.0
       version: 19.1.0
     react-dom:
       specifier: 19.1.0
       version: 19.1.0
-    react-markdown:
-      specifier: 9.0.3
-      version: 9.0.3
-    react-resizable-panels:
-      specifier: 2.1.7
-      version: 2.1.7
-    swr:
-      specifier: 2.2.5
-      version: 2.2.5
     tailwindcss:
       specifier: 4.1.10
       version: 4.1.10
-    tailwindcss-animate:
-      specifier: 1.0.7
-      version: 1.0.7
-    tar:
-      specifier: 7.4.3
-      version: 7.4.3
-    tsup:
-      specifier: 8.3.5
-      version: 8.3.5
-    turndown:
-      specifier: 7.2.0
-      version: 7.2.0
-    typescript:
-      specifier: 5.7.3
-      version: 5.7.3
     unstorage:
       specifier: 1.14.4
       version: 1.14.4
-    urql:
-      specifier: 4.2.2
-      version: 4.2.2
     vitest:
       specifier: 3.2.4
       version: 3.2.4
@@ -301,7 +154,7 @@ importers:
         version: 2.1.1
       geist:
         specifier: 1.3.1
-        version: 1.3.1(next@15.3.4(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.53.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
+        version: 1.3.1(next@15.3.4(@opentelemetry/api@1.9.0)(@playwright/test@1.53.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       happy-dom:
         specifier: 'catalog:'
         version: 17.6.1
@@ -16069,6 +15922,10 @@ snapshots:
       - supports-color
 
   geist@1.3.1(next@15.3.4(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.53.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)):
+    dependencies:
+      next: 15.3.4(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.53.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+
+  geist@1.3.1(next@15.3.4(@opentelemetry/api@1.9.0)(@playwright/test@1.53.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)):
     dependencies:
       next: 15.3.4(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.53.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
 
