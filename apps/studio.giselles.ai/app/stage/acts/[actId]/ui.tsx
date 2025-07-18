@@ -26,28 +26,43 @@ const sequences = [
 		id: "seq-1",
 		name: "Sequence 1",
 		count: 4,
+		status: "success",
 		icon: <CheckIcon className="text-success size-[16px]" />,
-		steps: ["Generate Query", "Ingest", "Search"],
+		steps: [
+			{ text: "Generate Query", status: "success" },
+			{ text: "Ingest", status: "success" },
+			{ text: "Search", status: "success" },
+		],
 	},
 	{
 		id: "seq-2",
 		icon: <FileText size={16} />,
 		name: "cyberpunk_roguelike_sy",
 		count: 1,
-		steps: [],
+		status: "in-progress",
+		steps: [
+			{ text: "Initialize", status: "success" },
+			{ text: "Process", status: "in-progress" },
+			{ text: "Complete", status: "pending" },
+		],
 	},
 	{
 		id: "seq-3",
 		icon: <FileText size={16} />,
 		name: "futuristic_sword_slash",
 		count: 1,
-		steps: [],
+		status: "failed",
+		steps: [
+			{ text: "Load Assets", status: "success" },
+			{ text: "Generate Sound", status: "failed" },
+		],
 	},
 	{
 		id: "seq-4",
 		icon: <FileText size={16} />,
 		name: "player_damage_sound_ef",
 		count: 1,
+		status: "pending",
 		steps: [],
 	},
 	{
@@ -55,14 +70,23 @@ const sequences = [
 		icon: <FileText size={16} />,
 		name: "drone_destruction_soun",
 		count: 1,
-		steps: [],
+		status: "warning",
+		steps: [
+			{ text: "Analyze", status: "success" },
+			{ text: "Synthesize", status: "warning" },
+			{ text: "Export", status: "pending" },
+		],
 	},
 	{
 		id: "seq-6",
 		icon: <FileText size={16} />,
 		name: "digital_dash_blink_sou",
 		count: 1,
-		steps: [],
+		status: "success",
+		steps: [
+			{ text: "Setup", status: "success" },
+			{ text: "Render", status: "success" },
+		],
 	},
 ] as const;
 
@@ -145,13 +169,13 @@ const AgentWorkspace = () => {
 												<span>Steps</span>
 											</div>
 											<div className="space-y-2 pl-[8px]">
-												{sequence.steps.map((version, vIndex) => (
+												{sequence.steps.map((step, vIndex) => (
 													<div
-														key={vIndex}
+														key={`${sequence.id}-step-${vIndex}`}
 														className="flex items-center gap-2 text-[11px] text-text-muted relative"
 													>
 														<Clock size={14} />
-														<span>{version}</span>
+														<span>{step.text}</span>
 													</div>
 												))}
 											</div>
@@ -176,7 +200,10 @@ const AgentWorkspace = () => {
 								</p>
 							</div>
 						</div>
-						<button className="bg-accent/20 text-accent text-xs font-bold py-1 px-3 rounded-full border border-accent">
+						<button
+							type="button"
+							className="bg-accent/20 text-accent text-xs font-bold py-1 px-3 rounded-full border border-accent"
+						>
 							TRIAL
 						</button>
 					</div>
@@ -186,20 +213,35 @@ const AgentWorkspace = () => {
 				<main className="flex-1 flex flex-col">
 					<header className="flex items-center justify-between p-3 border-b border-border">
 						<div className="flex items-center gap-2">
-							<button className="p-2 rounded-md hover:bg-secondary">
+							<button
+								type="button"
+								className="p-2 rounded-md hover:bg-secondary"
+							>
 								<MessageSquare size={18} className="text-muted-foreground" />
 							</button>
-							<button className="p-2 rounded-md hover:bg-secondary">
+							<button
+								type="button"
+								className="p-2 rounded-md hover:bg-secondary"
+							>
 								<Plus size={18} className="text-muted-foreground" />
 							</button>
-							<button className="p-2 rounded-md hover:bg-secondary">
+							<button
+								type="button"
+								className="p-2 rounded-md hover:bg-secondary"
+							>
 								<ChevronsRight size={18} className="text-muted-foreground" />
 							</button>
 							<div className="w-px h-6 bg-border mx-2"></div>
-							<button className="bg-primary text-primary-foreground text-sm font-semibold px-4 py-1.5 rounded-md shadow-md shadow-primary/20">
+							<button
+								type="button"
+								className="bg-primary text-primary-foreground text-sm font-semibold px-4 py-1.5 rounded-md shadow-md shadow-primary/20"
+							>
 								Share
 							</button>
-							<button className="p-2 rounded-md hover:bg-secondary">
+							<button
+								type="button"
+								className="p-2 rounded-md hover:bg-secondary"
+							>
 								<ChevronLeft size={18} className="text-muted-foreground" />
 							</button>
 						</div>
@@ -226,13 +268,15 @@ const AgentWorkspace = () => {
 								<div className="border-t border-border"></div>
 								<div className="space-y-2">
 									<h4 className="text-lg font-bold">
-										Game Design Document: Chrono//Breach
+										Game Design Document: Chrono{/* Breach */}
 									</h4>
 									<h5 className="text-md font-semibold">
 										1. Executive Summary
 									</h5>
 									<p className="text-muted-foreground text-sm">
-										<span className="text-primary-light">Chrono//Breach</span>{" "}
+										<span className="text-primary-light">
+											Chrono{/* Breach */}
+										</span>{" "}
 										is a 2D action roguelike set in a collapsing digital
 										reality. Players take on the role of Aya, a brilliant
 										high-school student and coder...
@@ -267,13 +311,22 @@ const AgentWorkspace = () => {
 					<footer className="p-4 border-t border-border">
 						<div className="flex items-center gap-4 max-w-4xl mx-auto">
 							<div className="flex items-center gap-2">
-								<button className="p-2 rounded-md hover:bg-secondary">
+								<button
+									type="button"
+									className="p-2 rounded-md hover:bg-secondary"
+								>
 									<Plus size={18} />
 								</button>
-								<button className="p-2 rounded-md hover:bg-secondary">
+								<button
+									type="button"
+									className="p-2 rounded-md hover:bg-secondary"
+								>
 									<Minus size={18} />
 								</button>
-								<button className="p-2 rounded-md bg-primary/20 text-primary">
+								<button
+									type="button"
+									className="p-2 rounded-md bg-primary/20 text-primary"
+								>
 									<Lightbulb size={18} />
 								</button>
 							</div>
@@ -283,7 +336,10 @@ const AgentWorkspace = () => {
 									placeholder="Ask Agent Neo for your task and requirements"
 									className="w-full bg-card border border-border rounded-lg py-3 pl-4 pr-12 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
 								/>
-								<button className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground text-background p-1.5 rounded-md">
+								<button
+									type="button"
+									className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground text-background p-1.5 rounded-md"
+								>
 									<Plus size={20} />
 								</button>
 							</div>
