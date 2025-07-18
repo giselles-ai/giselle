@@ -29,7 +29,7 @@ const metadataSchemaMap = {
 	blob: blobMetadataSchema,
 } as const;
 
-export type ContentMetadataMap = {
+type ContentMetadataMap = {
 	blob: z.infer<typeof blobMetadataSchema>;
 };
 
