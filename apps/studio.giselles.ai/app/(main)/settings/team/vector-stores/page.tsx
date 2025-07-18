@@ -6,8 +6,8 @@ import {
 	triggerManualIngest,
 } from "./actions";
 import {
+	getGitHubRepositoryIndexes,
 	getInstallationsWithRepos,
-	getRepositoriesWithContentStatuses,
 } from "./data";
 
 import { RepositoryList } from "./repository-list";
@@ -42,7 +42,7 @@ export default async function TeamVectorStorePage() {
 
 	const [installationsWithRepos, repositoryIndexes] = await Promise.all([
 		getInstallationsWithRepos(),
-		getRepositoriesWithContentStatuses(),
+		getGitHubRepositoryIndexes(),
 	]);
 
 	return (

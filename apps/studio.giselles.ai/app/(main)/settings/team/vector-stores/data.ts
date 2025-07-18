@@ -55,12 +55,6 @@ export async function getGitHubRepositoryIndexes(): Promise<
 	return Array.from(repositoryMap.values());
 }
 
-export function getRepositoriesWithContentStatuses(): Promise<
-	RepositoryWithStatuses[]
-> {
-	return getGitHubRepositoryIndexes();
-}
-
 export async function getInstallationsWithRepos(): Promise<
 	InstallationWithRepos[]
 > {
