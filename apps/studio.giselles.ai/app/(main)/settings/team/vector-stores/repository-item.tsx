@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { GitHubRepositoryIndexStatus } from "@/drizzle";
 import { cn } from "@/lib/utils";
-import { safeParseContentStatusMetadata } from "@/lib/vector-stores/github/ingest/content-metadata-schema";
+import { safeParseContentStatusMetadata } from "@/lib/vector-stores/github/types";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import {
 	GlassDialogContent,

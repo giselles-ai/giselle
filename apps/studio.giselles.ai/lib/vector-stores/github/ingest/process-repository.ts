@@ -3,9 +3,9 @@ import { DocumentLoaderError, RagError } from "@giselle-sdk/rag";
 import { captureException } from "@sentry/nextjs";
 import { and, eq } from "drizzle-orm";
 import { db, githubRepositoryContentStatus } from "@/drizzle";
-import type { RepositoryWithStatuses } from "../shared-types";
+import type { RepositoryWithStatuses } from "../types";
+import { createBlobContentMetadata } from "../types";
 import { buildOctokit } from "./build-octokit";
-import { createBlobContentMetadata } from "./content-metadata-schema";
 import { ingestGitHubBlobs } from "./ingest-github-blobs";
 import { createIngestTelemetrySettings } from "./telemetry";
 

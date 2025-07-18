@@ -11,8 +11,8 @@ import {
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
 } from "@/drizzle";
+import { safeParseContentStatusMetadata } from "../types";
 import { createGitHubBlobChunkStore } from "./chunk-store";
-import { safeParseContentStatusMetadata } from "./content-metadata-schema";
 
 /**
  * Ingest GitHub blobs into the vector store

@@ -4,7 +4,7 @@ import {
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
 } from "@/drizzle";
-import type { RepositoryWithStatuses } from "../shared-types";
+import type { RepositoryWithStatuses } from "../types";
 
 const STALE_THRESHOLD_MINUTES = 15;
 const OUTDATED_THRESHOLD_MINUTES = 24 * 60; // 24 hours

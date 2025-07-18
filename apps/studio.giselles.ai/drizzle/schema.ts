@@ -16,7 +16,7 @@ import {
 	vector,
 } from "drizzle-orm/pg-core";
 import type { Stripe } from "stripe";
-import type { ContentStatusMetadata } from "@/lib/vector-stores/github/ingest/content-metadata-schema";
+import type { ContentStatusMetadata } from "@/lib/vector-stores/github/types";
 import type { AgentId } from "@/services/agents/types";
 import type { TeamId } from "@/services/teams/types";
 
