@@ -37,21 +37,37 @@ export async function POST(req: Request) {
 	}
 
 	const eventResponse = await stripe.v2.core.events.retrieve(thinEvent.id);
-	// Type assertion for v2 event structure
-	const event = (eventResponse as { data: any }).data;
+	const event = eventResponse as Stripe.V2.Event;
+
+	// Type narrowing based on event type
+	if (
+		event.type !== "v1.billing.meter.error_report_triggered" &&
+		event.type !== "v1.billing.meter.no_meter_found"
+	) {
+		return new Response(`Unexpected event type: ${event.type}`, {
+			status: 400,
+		});
+	}
+
+	// Now TypeScript knows this is one of the billing meter event types
+	const billingMeterEvent = event as
+		| Stripe.Events.V1BillingMeterErrorReportTriggeredEvent
+		| Stripe.Events.V1BillingMeterNoMeterFoundEvent;
 
 	try {
+		const eventData = billingMeterEvent.data;
+
 		console.error(
 			`
 				Stripe Billing Meter Error Report:
-				Period: ${event.validation_start} - ${event.validation_end}
-				Summary: ${event.developer_message_summary}
-				Error Count: ${event.reason.error_count}`
+				Period: ${eventData.validation_start} - ${eventData.validation_end}
+				Summary: ${eventData.developer_message_summary}
+				Error Count: ${eventData.reason.error_count}`
 				.trim()
 				.replace(/^\s+/gm, "    "),
 		);
 
-		for (const errorType of event.reason.error_types) {
+		for (const errorType of eventData.reason.error_types) {
 			console.error(
 				`Error Type: ${errorType.code} (${errorType.error_count} occurrences)`,
 			);
@@ -59,13 +75,16 @@ export async function POST(req: Request) {
 				console.error(`  - ${error.error_message}`);
 			}
 		}
-		if ("related_object" in event && event.related_object != null) {
+		if (
+			"related_object" in billingMeterEvent &&
+			billingMeterEvent.related_object != null
+		) {
 			console.error(
 				`
 				Related Object:
-        ID: ${event.related_object.id}
-        Type: ${event.related_object.type}
-        URL: ${event.related_object.url}`
+        ID: ${billingMeterEvent.related_object.id}
+        Type: ${billingMeterEvent.related_object.type}
+        URL: ${billingMeterEvent.related_object.url}`
 					.trim()
 					.replace(/^\s+/gm, "    "),
 			);
@@ -76,12 +95,15 @@ export async function POST(req: Request) {
 			level: "error",
 			extra: {
 				validationPeriod: {
-					start: event.validation_start,
-					end: event.validation_end,
+					start: eventData.validation_start,
+					end: eventData.validation_end,
 				},
-				summary: event.developer_message_summary,
-				errors: event.reason.error_types,
-				relatedObject: "related_object" in event ? event.related_object : null,
+				summary: eventData.developer_message_summary,
+				errors: eventData.reason.error_types,
+				relatedObject:
+					"related_object" in billingMeterEvent
+						? billingMeterEvent.related_object
+						: null,
 			},
 		});
 	} catch (error) {
