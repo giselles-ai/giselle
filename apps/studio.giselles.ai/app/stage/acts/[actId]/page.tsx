@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { stageFlag } from "@/flags";
-import AgentWorkspace from "./ui";
 
 /** ActId is a string with 'flrn-' removed from FlowRunId. */
 type ActId = string;
@@ -22,5 +21,5 @@ export default async function ({
 	}
 	const { actId } = await params;
 
-	return <AgentWorkspace />;
+	return null;
 }
