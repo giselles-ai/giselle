@@ -54,6 +54,7 @@ export function TeamMembersList({
 						email={invitation.email}
 						role={invitation.role}
 						expiredAt={invitation.expiredAt}
+						currentUserRole={currentUserRole}
 					/>
 				))}
 			{toasts.map((toast) => (

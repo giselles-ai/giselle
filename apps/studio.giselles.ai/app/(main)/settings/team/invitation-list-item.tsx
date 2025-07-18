@@ -24,6 +24,7 @@ type InvitationListItemProps = {
 	email: string;
 	role: TeamRole;
 	expiredAt: Date;
+	currentUserRole: TeamRole;
 };
 
 export function InvitationListItem({
@@ -31,6 +32,7 @@ export function InvitationListItem({
 	email,
 	role,
 	expiredAt,
+	currentUserRole,
 }: InvitationListItemProps) {
 	const { addToast } = useToast();
 	const [error, setError] = useState("");
@@ -129,86 +131,88 @@ export function InvitationListItem({
 					<span className="capitalize text-white-400 font-medium text-[14px] leading-[16px] text-end font-sans">
 						{role}
 					</span>
-					<DropdownMenu
-						modal={false}
-						open={dropdownOpen}
-						onOpenChange={setDropdownOpen}
-					>
-						<DropdownMenuTrigger className="cursor-pointer">
-							<Ellipsis className="text-white-350" />
-						</DropdownMenuTrigger>
-						<DropdownMenuContent
-							align="end"
-							className="p-1 border-[0.25px] border-white/10 rounded-[8px] min-w-[165px] bg-black-900 shadow-none"
+					{currentUserRole === "admin" && (
+						<DropdownMenu
+							modal={false}
+							open={dropdownOpen}
+							onOpenChange={setDropdownOpen}
 						>
-							<DropdownMenuItem
-								onSelect={(e) => {
-									e.preventDefault();
-									handleCopy();
-								}}
-								className="flex items-center px-4 py-3 font-medium text-[14px] leading-[16px] text-white-400 hover:bg-white/5 rounded-md focus:outline-none"
-								title="Copy invite link"
+							<DropdownMenuTrigger className="cursor-pointer">
+								<Ellipsis className="text-white-350" />
+							</DropdownMenuTrigger>
+							<DropdownMenuContent
+								align="end"
+								className="p-1 border-[0.25px] border-white/10 rounded-[8px] min-w-[165px] bg-black-900 shadow-none"
 							>
-								<Copy className="h-4 w-4 mr-2" /> Copy invite link
-							</DropdownMenuItem>
-							<DropdownMenuItem
-								onSelect={(e) => {
-									e.preventDefault();
-									handleResend();
-								}}
-								disabled={isResendPending}
-								className="flex items-center px-4 py-3 font-medium text-[14px] leading-[16px] text-white-400 hover:bg-white/5 rounded-md"
-								title="Resend invitation"
-							>
-								{isResendPending ? (
-									<>
-										<RefreshCw className="h-4 w-4 animate-spin mr-2" />{" "}
-										Processing...
-									</>
-								) : (
-									<>
-										<RefreshCw className="h-4 w-4 mr-2" /> Resend invitation
-									</>
-								)}
-							</DropdownMenuItem>
-							<Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
-								<Dialog.Trigger asChild>
-									<DropdownMenuItem
-										onSelect={(e) => e.preventDefault()}
-										disabled={isRevokePending}
-										className="flex items-center w-full px-4 py-3 font-medium text-[14px] leading-[16px] text-error-900 hover:bg-error-900/20 rounded-md"
-										title="Revoke invitation"
-									>
-										{isRevokePending ? (
-											<>
-												<RefreshCw className="h-4 w-4 animate-spin mr-2" />{" "}
-												Processing...
-											</>
-										) : (
-											<>
-												<Trash2 className="h-4 w-4 mr-2" /> Revoke invitation
-											</>
-										)}
-									</DropdownMenuItem>
-								</Dialog.Trigger>
-								<GlassDialogContent variant="destructive">
-									<GlassDialogHeader
-										title="Revoke Invitation"
-										description="This will permanently revoke this invitation and prevent the user from joining your team."
-										variant="destructive"
-										onClose={() => setDialogOpen(false)}
-									/>
-									<GlassDialogFooter
-										variant="destructive"
-										onCancel={() => setDialogOpen(false)}
-										onConfirm={handleConfirmRevoke}
-										confirmLabel="Revoke"
-										isPending={isRevokePending}
-									/>
-								</GlassDialogContent>
-							</Dialog.Root>
-						</DropdownMenuContent>
-					</DropdownMenu>
+								<DropdownMenuItem
+									onSelect={(e) => {
+										e.preventDefault();
+										handleCopy();
+									}}
+									className="flex items-center px-4 py-3 font-medium text-[14px] leading-[16px] text-white-400 hover:bg-white/5 rounded-md focus:outline-none"
+									title="Copy invite link"
+								>
+									<Copy className="h-4 w-4 mr-2" /> Copy invite link
+								</DropdownMenuItem>
+								<DropdownMenuItem
+									onSelect={(e) => {
+										e.preventDefault();
+										handleResend();
+									}}
+									disabled={isResendPending}
+									className="flex items-center px-4 py-3 font-medium text-[14px] leading-[16px] text-white-400 hover:bg-white/5 rounded-md"
+									title="Resend invitation"
+								>
+									{isResendPending ? (
+										<>
+											<RefreshCw className="h-4 w-4 animate-spin mr-2" />{" "}
+											Processing...
+										</>
+									) : (
+										<>
+											<RefreshCw className="h-4 w-4 mr-2" /> Resend invitation
+										</>
+									)}
+								</DropdownMenuItem>
+								<Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+									<Dialog.Trigger asChild>
+										<DropdownMenuItem
+											onSelect={(e) => e.preventDefault()}
+											disabled={isRevokePending}
+											className="flex items-center w-full px-4 py-3 font-medium text-[14px] leading-[16px] text-error-900 hover:bg-error-900/20 rounded-md"
+											title="Revoke invitation"
+										>
+											{isRevokePending ? (
+												<>
+													<RefreshCw className="h-4 w-4 animate-spin mr-2" />{" "}
+													Processing...
+												</>
+											) : (
+												<>
+													<Trash2 className="h-4 w-4 mr-2" /> Revoke invitation
+												</>
+											)}
+										</DropdownMenuItem>
+									</Dialog.Trigger>
+									<GlassDialogContent variant="destructive">
+										<GlassDialogHeader
+											title="Revoke Invitation"
+											description="This will permanently revoke this invitation and prevent the user from joining your team."
+											variant="destructive"
+											onClose={() => setDialogOpen(false)}
+										/>
+										<GlassDialogFooter
+											variant="destructive"
+											onCancel={() => setDialogOpen(false)}
+											onConfirm={handleConfirmRevoke}
+											confirmLabel="Revoke"
+											isPending={isRevokePending}
+										/>
+									</GlassDialogContent>
+								</Dialog.Root>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					)}
 				</div>
 			</div>
 			{error && (

@@ -646,6 +646,15 @@ export async function revokeInvitationAction(
 ): Promise<ActionResult> {
 	const token = formData.get("token") as string;
 	try {
+		// Check if current user is admin
+		const currentUserRoleResult = await getCurrentUserRole();
+		if (
+			!currentUserRoleResult.success ||
+			currentUserRoleResult.data !== "admin"
+		) {
+			throw new Error("Only admin users can revoke invitations");
+		}
+
 		await revokeInvitation(token);
 		revalidatePath("/settings/team/members");
 		return { success: true };
@@ -664,6 +673,15 @@ export async function resendInvitationAction(
 ): Promise<ActionResult> {
 	const token = formData.get("token") as string;
 	try {
+		// Check if current user is admin
+		const currentUserRoleResult = await getCurrentUserRole();
+		if (
+			!currentUserRoleResult.success ||
+			currentUserRoleResult.data !== "admin"
+		) {
+			throw new Error("Only admin users can resend invitations");
+		}
+
 		const invitations = await listInvitations();
 		const invitation = invitations.find((inv) => inv.token === token);
 		if (!invitation) {
