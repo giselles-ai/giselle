@@ -18,7 +18,7 @@ import type { DiagnosticResult } from "./types";
 type DiagnosticModalProps = {
 	repositoryIndex: RepositoryWithStatuses;
 	open: boolean;
-	onOpenChange: (open: boolean) => void;
+	setOpen: (open: boolean) => void;
 	onComplete?: () => void;
 	onDelete?: () => void;
 };
@@ -26,7 +26,7 @@ type DiagnosticModalProps = {
 export function DiagnosticModal({
 	repositoryIndex,
 	open,
-	onOpenChange,
+	setOpen,
 	onComplete,
 	onDelete,
 }: DiagnosticModalProps) {
@@ -72,7 +72,7 @@ export function DiagnosticModal({
 						diagnosisResult.newInstallationId,
 					);
 					onComplete?.();
-					onOpenChange(false);
+					setOpen(false);
 				}
 			} catch (error) {
 				console.error("Failed to fix repository:", error);
@@ -82,7 +82,7 @@ export function DiagnosticModal({
 		repositoryIndex.repository.id,
 		diagnosisResult,
 		onComplete,
-		onOpenChange,
+		setOpen,
 	]);
 
 	const renderDiagnosisResult = () => {
@@ -121,12 +121,12 @@ export function DiagnosticModal({
 	};
 
 	return (
-		<Dialog.Root open={open} onOpenChange={onOpenChange}>
+		<Dialog.Root open={open} onOpenChange={setOpen}>
 			<GlassDialogContent>
 				<GlassDialogHeader
 					title="Checking Repository Access"
 					description={`${repositoryIndex.repository.owner}/${repositoryIndex.repository.repo}`}
-					onClose={() => onOpenChange(false)}
+					onClose={() => setOpen(false)}
 				/>
 
 				<div className="py-6">
@@ -144,13 +144,13 @@ export function DiagnosticModal({
 
 				{diagnosisResult && (
 					<GlassDialogFooter
-						onCancel={() => onOpenChange(false)}
+						onCancel={() => setOpen(false)}
 						onConfirm={
 							diagnosisResult.canBeFixed
 								? handleFix
 								: () => {
 										onDelete?.();
-										onOpenChange(false);
+										setOpen(false);
 									}
 						}
 						confirmLabel={
@@ -165,7 +165,7 @@ export function DiagnosticModal({
 
 				{!diagnosisResult && (
 					<GlassDialogFooter
-						onCancel={() => onOpenChange(false)}
+						onCancel={() => setOpen(false)}
 						isPending={isDiagnosing}
 						confirmLabel="Processing..."
 					/>

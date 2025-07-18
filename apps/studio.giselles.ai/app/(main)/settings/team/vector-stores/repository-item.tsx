@@ -210,7 +210,7 @@ export function RepositoryItem({
 			<DiagnosticModal
 				repositoryIndex={repositoryIndex}
 				open={showDiagnosticModal}
-				onOpenChange={setShowDiagnosticModal}
+				setOpen={setShowDiagnosticModal}
 				onComplete={() => {
 					// Refresh will happen via revalidatePath in the action
 				}}
