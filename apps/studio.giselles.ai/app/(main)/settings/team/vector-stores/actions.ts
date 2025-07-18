@@ -343,7 +343,7 @@ export async function triggerManualIngest(
 			teamDbId: repositoryIndex.teamDbId,
 			installationId: repositoryIndex.installationId,
 			lastIngestedCommitSha:
-				metadata?.contentType === "blob"
+				blobContentStatus.contentType === "blob" && metadata
 					? (metadata.lastIngestedCommitSha ?? null)
 					: null,
 		};

@@ -112,7 +112,9 @@ async function getRepositoryIndexInfo(
 	}
 	const metadata = parseResult.success ? parseResult.data : null;
 	const isInitialIngest =
-		metadata?.contentType === "blob" ? !metadata.lastIngestedCommitSha : true;
+		contentStatus.contentType === "blob" && metadata
+			? !metadata.lastIngestedCommitSha
+			: true;
 
 	return { repositoryIndexDbId: dbId, isInitialIngest };
 }

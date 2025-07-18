@@ -79,10 +79,7 @@ export async function getRepositoryIndexesWithContentStatus(): Promise<
 			blobStatus.metadata,
 			"blob",
 		);
-		const parsedMetadata =
-			parseResult.success && parseResult.data?.contentType === "blob"
-				? parseResult.data
-				: null;
+		const parsedMetadata = parseResult.success ? parseResult.data : null;
 
 		return {
 			id: repository.id,

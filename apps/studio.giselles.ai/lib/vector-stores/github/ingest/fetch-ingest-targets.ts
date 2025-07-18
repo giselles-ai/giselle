@@ -99,7 +99,7 @@ export async function fetchIngestTargets(): Promise<TargetGitHubRepository[]> {
 			repo: record.repo,
 			installationId: record.installationId,
 			lastIngestedCommitSha:
-				metadata?.contentType === "blob"
+				record.contentStatus.contentType === "blob" && metadata
 					? (metadata.lastIngestedCommitSha ?? null)
 					: null,
 			teamDbId: record.teamDbId,
