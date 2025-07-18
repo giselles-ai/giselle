@@ -19,7 +19,7 @@ import {
 	RefreshCw,
 	Sparkles,
 	XCircle,
-    XIcon,
+	XIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Accordion } from "radix-ui";
@@ -186,7 +186,23 @@ const AgentWorkspace = () => {
 														key={`${sequence.id}-step-${vIndex}`}
 														className="flex items-center gap-2 text-[11px] text-text-muted relative"
 													>
-														<Clock size={14} />
+														<div>
+															{step.status === "success" && (
+																<CheckIcon className="text-success size-[14px]" />
+															)}
+															{step.status === "in-progress" && (
+																<RefreshCw className="text-info size-[14px] animate-spin" />
+															)}
+															{step.status === "failed" && (
+																<XIcon className="text-error size-[14px]" />
+															)}
+															{step.status === "pending" && (
+																<CircleDashedIcon className="text-text-muted size-[14px]" />
+															)}
+															{step.status === "warning" && (
+																<AlertCircle className="text-warning size-[14px]" />
+															)}
+														</div>
 														<span>{step.text}</span>
 													</div>
 												))}
