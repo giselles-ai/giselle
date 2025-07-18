@@ -11,19 +11,13 @@ import {
 } from "@/drizzle";
 import {
 	processRepository,
-	type TargetGitHubRepository,
+	type RepositoryWithStatuses,
 } from "@/lib/vector-stores/github";
-import { safeParseContentStatusMetadata } from "@/lib/vector-stores/github/ingest/content-metadata-schema";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { buildAppInstallationClient } from "@/services/external/github";
 import { fetchCurrentTeam } from "@/services/teams";
 import type { ActionResult, DiagnosticResult } from "./types";
-
-type RepositoryWithStatuses = {
-	repository: typeof githubRepositoryIndex.$inferSelect;
-	contentStatuses: (typeof githubRepositoryContentStatus.$inferSelect)[];
-};
 
 type IngestabilityCheck = {
 	canIngest: boolean;
@@ -286,11 +280,7 @@ export async function triggerManualIngest(
 			};
 		}
 
-		const targetRepository = buildTargetRepository(
-			repositoryData.repository,
-			repositoryData.contentStatuses,
-		);
-		executeManualIngest(targetRepository);
+		executeManualIngest(repositoryData);
 
 		// Immediately revalidate to show "running" status
 		revalidatePath("/settings/team/vector-stores");
@@ -379,42 +369,10 @@ function checkIngestability(
 }
 
 /**
- * Build target repository object for ingestion
- */
-function buildTargetRepository(
-	repository: typeof githubRepositoryIndex.$inferSelect,
-	contentStatuses: (typeof githubRepositoryContentStatus.$inferSelect)[],
-): TargetGitHubRepository {
-	const blobContentStatus = contentStatuses.find(
-		(cs) => cs.contentType === "blob",
-	);
-
-	let lastIngestedCommitSha: string | null = null;
-	if (blobContentStatus) {
-		const parseResult = safeParseContentStatusMetadata(
-			blobContentStatus.metadata,
-			blobContentStatus.contentType,
-		);
-		if (parseResult.success && parseResult.data) {
-			lastIngestedCommitSha = parseResult.data.lastIngestedCommitSha ?? null;
-		}
-	}
-
-	return {
-		dbId: repository.dbId,
-		owner: repository.owner,
-		repo: repository.repo,
-		teamDbId: repository.teamDbId,
-		installationId: repository.installationId,
-		lastIngestedCommitSha,
-	};
-}
-
-/**
  * Execute manual ingest for a repository
  */
-function executeManualIngest(targetRepository: TargetGitHubRepository): void {
+function executeManualIngest(repositoryData: RepositoryWithStatuses): void {
 	after(async () => {
-		await processRepository(targetRepository);
+		await processRepository(repositoryData);
 	});
 }

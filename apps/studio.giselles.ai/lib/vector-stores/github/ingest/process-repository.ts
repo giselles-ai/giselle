@@ -3,7 +3,7 @@ import { DocumentLoaderError, RagError } from "@giselle-sdk/rag";
 import { captureException } from "@sentry/nextjs";
 import { and, eq } from "drizzle-orm";
 import { db, githubRepositoryContentStatus } from "@/drizzle";
-import type { TargetGitHubRepository } from "../types";
+import type { RepositoryWithStatuses } from "../shared-types";
 import { buildOctokit } from "./build-octokit";
 import { createBlobContentMetadata } from "./content-metadata-schema";
 import { ingestGitHubBlobs } from "./ingest-github-blobs";
@@ -14,10 +14,10 @@ import { createIngestTelemetrySettings } from "./telemetry";
  * This is the main entry point for ingesting a repository
  */
 export async function processRepository(
-	targetGitHubRepository: TargetGitHubRepository,
+	repositoryData: RepositoryWithStatuses,
 ) {
 	const { owner, repo, installationId, teamDbId, dbId } =
-		targetGitHubRepository;
+		repositoryData.repository;
 
 	try {
 		await updateRepositoryStatusToRunning(dbId);

@@ -4,8 +4,7 @@ import {
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
 } from "@/drizzle";
-import type { TargetGitHubRepository } from "../types";
-import { safeParseContentStatusMetadata } from "./content-metadata-schema";
+import type { RepositoryWithStatuses } from "../shared-types";
 
 const STALE_THRESHOLD_MINUTES = 15;
 const OUTDATED_THRESHOLD_MINUTES = 24 * 60; // 24 hours
@@ -21,7 +20,7 @@ const OUTDATED_THRESHOLD_MINUTES = 24 * 60; // 24 hours
  *
  * @returns Repositories to ingest
  */
-export async function fetchIngestTargets(): Promise<TargetGitHubRepository[]> {
+export async function fetchIngestTargets(): Promise<RepositoryWithStatuses[]> {
 	// To prevent the race condition, consider running status as stale if it hasn't been updated for 15 minutes (> 800 seconds)
 	const staleThreshold = new Date(
 		Date.now() - STALE_THRESHOLD_MINUTES * 60 * 1000,
@@ -33,13 +32,10 @@ export async function fetchIngestTargets(): Promise<TargetGitHubRepository[]> {
 	// Current time for retryAfter comparison
 	const now = new Date();
 
-	const records = await db
+	// First, get all repositories with their content statuses
+	const repositories = await db
 		.select({
-			dbId: githubRepositoryIndex.dbId,
-			owner: githubRepositoryIndex.owner,
-			repo: githubRepositoryIndex.repo,
-			installationId: githubRepositoryIndex.installationId,
-			teamDbId: githubRepositoryIndex.teamDbId,
+			repository: githubRepositoryIndex,
 			contentStatus: githubRepositoryContentStatus,
 		})
 		.from(githubRepositoryIndex)
@@ -72,25 +68,26 @@ export async function fetchIngestTargets(): Promise<TargetGitHubRepository[]> {
 			),
 		);
 
-	return records.map((record) => {
-		if (!record.contentStatus) {
-			throw new Error(
-				`Repository ${record.dbId} does not have a content status`,
-			);
-		}
-		const parseResult = safeParseContentStatusMetadata(
-			record.contentStatus.metadata,
-			record.contentStatus.contentType,
-		);
-		const metadata = parseResult.success ? parseResult.data : null;
+	// Group by repository
+	const repositoryMap = new Map<number, RepositoryWithStatuses>();
 
-		return {
-			dbId: record.dbId,
-			owner: record.owner,
-			repo: record.repo,
-			installationId: record.installationId,
-			lastIngestedCommitSha: metadata?.lastIngestedCommitSha ?? null,
-			teamDbId: record.teamDbId,
-		};
-	});
+	for (const record of repositories) {
+		const { repository, contentStatus } = record;
+
+		if (!repositoryMap.has(repository.dbId)) {
+			repositoryMap.set(repository.dbId, {
+				repository,
+				contentStatuses: [],
+			});
+		}
+
+		if (contentStatus) {
+			const repo = repositoryMap.get(repository.dbId);
+			if (repo) {
+				repo.contentStatuses.push(contentStatus);
+			}
+		}
+	}
+
+	return Array.from(repositoryMap.values());
 }
