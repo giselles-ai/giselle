@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Act, Sequence } from "../object";
+import type { Act } from "../object";
 import { Nav } from "./ui/nav";
 
 const actData: Act = {
@@ -69,9 +69,9 @@ const actData: Act = {
 	],
 };
 
-async function fetchAct(actId: string) {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return actData
+async function fetchAct(_actId: string) {
+	await new Promise((resolve) => setTimeout(resolve, 1000));
+	return actData;
 }
 
 export default async function ({
@@ -81,7 +81,7 @@ export default async function ({
 	params: Promise<{ actId: string }>;
 }>) {
 	const { actId } = await params;
-	const act = await fetchAct(actId)
+	const act = await fetchAct(actId);
 	return (
 		<div className="bg-background text-foreground min-h-screen flex flex-col font-sans">
 			<div className="flex-grow flex">

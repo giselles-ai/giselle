@@ -9,6 +9,7 @@ import {
 	XIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Accordion } from "radix-ui";
 import type { Act } from "../../object";
 
@@ -17,6 +18,7 @@ interface NavProps {
 }
 
 export function Nav({ act }: NavProps) {
+	const pathname = usePathname();
 	return (
 		<Accordion.Root type="multiple" className="flex flex-col gap-[8px]">
 			{act.sequences.map((sequence) => (
@@ -54,7 +56,12 @@ export function Nav({ act }: NavProps) {
 									<Link
 										href={`/stage/acts/${act.id}/${step.id}`}
 										key={step.id}
-										className="flex items-center gap-[4px] text-[11px] text-text-muted relative"
+										className="flex items-center gap-[4px] text-[11px] text-text-muted bg-transparent hover:bg-ghost-element-hover rounded-[4px] px-[4px] py-[1px] transition-colors data-[state=active]:bg-ghost-element-active"
+										data-state={
+											pathname === `/stage/acts/${act.id}/${step.id}`
+												? "active"
+												: ""
+										}
 									>
 										<div>
 											{step.status === "success" && (
