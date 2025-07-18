@@ -175,32 +175,29 @@ const AgentWorkspace = () => {
 										</Accordion.Trigger>
 									</Accordion.Header>
 
-									<Accordion.Content className="pl-[12px] ml-[12px] border-l border-border overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
+									<Accordion.Content className="pl-[2px] ml-[10px] border-l border-border overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
 										<div className="py-[8px]">
-											<div className="text-[12px] text-text-muted mb-[6px]">
-												<span>Steps</span>
-											</div>
 											<div className="space-y-2 pl-[8px]">
 												{sequence.steps.map((step, vIndex) => (
 													<div
 														key={`${sequence.id}-step-${vIndex}`}
-														className="flex items-center gap-2 text-[11px] text-text-muted relative"
+														className="flex items-center gap-[4px] text-[11px] text-text-muted relative"
 													>
 														<div>
 															{step.status === "success" && (
-																<CheckIcon className="text-success size-[14px]" />
+																<CheckIcon className="text-success size-[12px]" />
 															)}
 															{step.status === "in-progress" && (
-																<RefreshCw className="text-info size-[14px] animate-spin" />
+																<RefreshCw className="text-info size-[12px] animate-spin" />
 															)}
 															{step.status === "failed" && (
-																<XIcon className="text-error size-[14px]" />
+																<XIcon className="text-error size-[12px]" />
 															)}
 															{step.status === "pending" && (
-																<CircleDashedIcon className="text-text-muted size-[14px]" />
+																<CircleDashedIcon className="text-text-muted size-[12px]" />
 															)}
 															{step.status === "warning" && (
-																<AlertCircle className="text-warning size-[14px]" />
+																<AlertCircle className="text-warning size-[12px]" />
 															)}
 														</div>
 														<span>{step.text}</span>
