@@ -105,16 +105,12 @@ async function getRepositoryIndexInfo(
 		contentStatus.metadata,
 		contentStatus.contentType,
 	);
-	if (!parseResult.success) {
-		console.warn(
-			`Invalid ingest state for repository: ${source.owner}/${source.repo}, error: ${parseResult.error}`,
-		);
-	}
-	const metadata = parseResult.success ? parseResult.data : null;
+
+	// If parsing fails or no lastIngestedCommitSha exists, treat as initial ingest
 	const isInitialIngest =
-		contentStatus.contentType === "blob" && metadata
-			? !metadata.lastIngestedCommitSha
-			: true;
+		!parseResult.success ||
+		!parseResult.data ||
+		!parseResult.data.lastIngestedCommitSha;
 
 	return { repositoryIndexDbId: dbId, isInitialIngest };
 }

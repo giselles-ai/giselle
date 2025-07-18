@@ -20,14 +20,18 @@ export type ContentMetadataMap = {
 	blob: z.infer<typeof blobMetadataSchema>;
 };
 
-export type ContentStatusMetadata = ContentMetadataMap[keyof ContentMetadataMap] | null;
+export type ContentStatusMetadata =
+	| ContentMetadataMap[keyof ContentMetadataMap]
+	| null;
 
 type ContentMetadataFor<T extends GitHubRepositoryContentType> =
 	T extends keyof ContentMetadataMap ? ContentMetadataMap[T] : never;
 
 type BlobContentMetadata = z.infer<typeof blobMetadataSchema>;
 
-export function safeParseContentStatusMetadata<T extends GitHubRepositoryContentType>(
+export function safeParseContentStatusMetadata<
+	T extends GitHubRepositoryContentType,
+>(
 	metadata: unknown,
 	contentType: T,
 ):
@@ -38,12 +42,13 @@ export function safeParseContentStatusMetadata<T extends GitHubRepositoryContent
 	}
 
 	// Get the appropriate schema for the content type
-	const schema = metadataSchemaMap[contentType as keyof typeof metadataSchemaMap];
+	const schema =
+		metadataSchemaMap[contentType as keyof typeof metadataSchemaMap];
 
 	if (!schema) {
 		return {
 			success: false,
-			error: `No metadata schema defined for content type: ${contentType}`
+			error: `No metadata schema defined for content type: ${contentType}`,
 		};
 	}
 

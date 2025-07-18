@@ -54,20 +54,16 @@ export async function fetchIngestTargets(): Promise<TargetGitHubRepository[]> {
 			and(
 				eq(githubRepositoryContentStatus.enabled, true),
 				or(
-					// idle
 					eq(githubRepositoryContentStatus.status, "idle"),
-					// failed and retryAfter has passed
 					and(
 						eq(githubRepositoryContentStatus.status, "failed"),
 						isNotNull(githubRepositoryContentStatus.retryAfter),
 						lt(githubRepositoryContentStatus.retryAfter, now),
 					),
-					// running and stale
 					and(
 						eq(githubRepositoryContentStatus.status, "running"),
 						lt(githubRepositoryContentStatus.updatedAt, staleThreshold),
 					),
-					// completed and outdated
 					and(
 						eq(githubRepositoryContentStatus.status, "completed"),
 						lt(githubRepositoryContentStatus.updatedAt, outdatedThreshold),
@@ -86,11 +82,6 @@ export async function fetchIngestTargets(): Promise<TargetGitHubRepository[]> {
 			record.contentStatus.metadata,
 			record.contentStatus.contentType,
 		);
-		if (!parseResult.success) {
-			console.warn(
-				`Invalid metadata for repository ${record.owner}/${record.repo} (dbId: ${record.dbId}): ${parseResult.error}`,
-			);
-		}
 		const metadata = parseResult.success ? parseResult.data : null;
 
 		return {
@@ -98,10 +89,7 @@ export async function fetchIngestTargets(): Promise<TargetGitHubRepository[]> {
 			owner: record.owner,
 			repo: record.repo,
 			installationId: record.installationId,
-			lastIngestedCommitSha:
-				record.contentStatus.contentType === "blob" && metadata
-					? (metadata.lastIngestedCommitSha ?? null)
-					: null,
+			lastIngestedCommitSha: metadata?.lastIngestedCommitSha ?? null,
 			teamDbId: record.teamDbId,
 		};
 	});
