@@ -21,59 +21,52 @@ import {
 import { useRouter } from "next/navigation";
 import { Accordion } from "radix-ui";
 
-const AgentWorkspace = () => {
-	const sequences = [
-		{
-			id: "seq-1",
-			name: "Sequence 1",
-			count: 4,
-			active: true,
-			icon: <CheckIcon className="text-success size-[16px]" />,
-			steps: ["Generate Query", "Ingest", "Search"],
-		},
-		{
-			id: "seq-2",
-			icon: <FileText size={16} />,
-			name: "cyberpunk_roguelike_sy",
-			count: 1,
-			active: false,
-			steps: [],
-		},
-		{
-			id: "seq-3",
-			icon: <FileText size={16} />,
-			name: "futuristic_sword_slash",
-			count: 1,
-			active: false,
-			steps: [],
-		},
-		{
-			id: "seq-4",
-			icon: <FileText size={16} />,
-			name: "player_damage_sound_ef",
-			count: 1,
-			active: false,
-			steps: [],
-		},
-		{
-			id: "seq-5",
-			icon: <FileText size={16} />,
-			name: "drone_destruction_soun",
-			count: 1,
-			active: false,
-			steps: [],
-		},
-		{
-			id: "seq-6",
-			icon: <FileText size={16} />,
-			name: "digital_dash_blink_sou",
-			count: 1,
-			active: false,
-			steps: [],
-		},
-	] as const;
+const sequences = [
+	{
+		id: "seq-1",
+		name: "Sequence 1",
+		count: 4,
+		icon: <CheckIcon className="text-success size-[16px]" />,
+		steps: ["Generate Query", "Ingest", "Search"],
+	},
+	{
+		id: "seq-2",
+		icon: <FileText size={16} />,
+		name: "cyberpunk_roguelike_sy",
+		count: 1,
+		steps: [],
+	},
+	{
+		id: "seq-3",
+		icon: <FileText size={16} />,
+		name: "futuristic_sword_slash",
+		count: 1,
+		steps: [],
+	},
+	{
+		id: "seq-4",
+		icon: <FileText size={16} />,
+		name: "player_damage_sound_ef",
+		count: 1,
+		steps: [],
+	},
+	{
+		id: "seq-5",
+		icon: <FileText size={16} />,
+		name: "drone_destruction_soun",
+		count: 1,
+		steps: [],
+	},
+	{
+		id: "seq-6",
+		icon: <FileText size={16} />,
+		name: "digital_dash_blink_sou",
+		count: 1,
+		steps: [],
+	},
+] as const;
 
-	const steps = ["Generate Query", "Ingest", "Search"];
+const AgentWorkspace = () => {
 	const router = useRouter();
 
 	return (
@@ -141,7 +134,7 @@ const AgentWorkspace = () => {
 											/>
 										)}
 									</div> */}
-										<Accordion.Trigger className="group p-[2px] hover:bg-ghost-element-hover rounded-[4px] cursor-pointer outline-none">
+										<Accordion.Trigger className="group p-[2px] hover:bg-ghost-element-hover rounded-[4px] cursor-pointer outline-none data-[state=open]:bg-ghost-element-active">
 											<ChevronDownIcon className="text-text-muted size-[14px] group-data-[state=open]:rotate-180 transition-transform" />
 										</Accordion.Trigger>
 									</Accordion.Header>
