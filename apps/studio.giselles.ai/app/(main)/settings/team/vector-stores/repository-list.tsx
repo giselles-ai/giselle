@@ -1,10 +1,10 @@
 import { Card } from "@/components/ui/card";
-import type { githubRepositoryIndex } from "@/drizzle";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import { RepositoryItem } from "./repository-item";
+import type { RepositoryIndexWithContentStatus } from "./types";
 
 type RepositoryListProps = {
-	repositoryIndexes: (typeof githubRepositoryIndex.$inferSelect)[];
+	repositoryIndexes: RepositoryIndexWithContentStatus[];
 	deleteRepositoryIndexAction: (
 		indexId: GitHubRepositoryIndexId,
 	) => Promise<void>;

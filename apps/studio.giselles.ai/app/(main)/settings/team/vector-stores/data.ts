@@ -5,10 +5,12 @@ import {
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
 } from "@/drizzle";
+import { safeParseContentStatusMetadata } from "@/lib/vector-stores/github/ingest/content-metadata-schema";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 import type {
 	InstallationWithRepos,
+	RepositoryIndexWithContentStatus,
 	RepositoryWithContentStatuses,
 } from "./types";
 
@@ -55,6 +57,54 @@ export async function getGitHubRepositoryIndexes(): Promise<
 	}
 
 	return Array.from(repositoryMap.values());
+}
+
+export async function getRepositoryIndexesWithContentStatus(): Promise<
+	RepositoryIndexWithContentStatus[]
+> {
+	const repositories = await getGitHubRepositoryIndexes();
+
+	return repositories.map((repository) => {
+		const blobStatus = repository.contentStatuses.find(
+			(cs) => cs.contentType === "blob",
+		);
+
+		if (!blobStatus) {
+			throw new Error(
+				`Repository ${repository.dbId} missing blob content status`,
+			);
+		}
+
+		const parseResult = safeParseContentStatusMetadata(
+			blobStatus.metadata,
+			"blob",
+		);
+		const parsedMetadata =
+			parseResult.success && parseResult.data?.contentType === "blob"
+				? parseResult.data
+				: null;
+
+		return {
+			id: repository.id,
+			dbId: repository.dbId,
+			owner: repository.owner,
+			repo: repository.repo,
+			teamDbId: repository.teamDbId,
+			installationId: repository.installationId,
+			createdAt: repository.createdAt,
+			updatedAt: repository.updatedAt,
+			blobStatus: {
+				contentType: blobStatus.contentType,
+				enabled: blobStatus.enabled,
+				status: blobStatus.status,
+				lastSyncedAt: blobStatus.lastSyncedAt,
+				metadata: parsedMetadata,
+				errorCode: blobStatus.errorCode,
+				retryAfter: blobStatus.retryAfter,
+				updatedAt: blobStatus.updatedAt,
+			},
+		};
+	});
 }
 
 export async function getInstallationsWithRepos(): Promise<

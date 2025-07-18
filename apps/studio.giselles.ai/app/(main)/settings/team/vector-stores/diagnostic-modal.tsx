@@ -3,7 +3,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Check, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import type { githubRepositoryIndex } from "@/drizzle";
 import {
 	GlassDialogContent,
 	GlassDialogFooter,
@@ -13,10 +12,13 @@ import {
 	diagnoseRepositoryConnection,
 	updateRepositoryInstallation,
 } from "./actions";
-import type { DiagnosticResult } from "./types";
+import type {
+	DiagnosticResult,
+	RepositoryIndexWithContentStatus,
+} from "./types";
 
 type DiagnosticModalProps = {
-	repositoryIndex: typeof githubRepositoryIndex.$inferSelect;
+	repositoryIndex: RepositoryIndexWithContentStatus;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	onComplete?: () => void;

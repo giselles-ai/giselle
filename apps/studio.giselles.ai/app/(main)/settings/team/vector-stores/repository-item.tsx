@@ -10,10 +10,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type {
-	GitHubRepositoryIndexStatus,
-	githubRepositoryIndex,
-} from "@/drizzle";
+import type { GitHubRepositoryIndexStatus } from "@/drizzle";
 import { cn } from "@/lib/utils";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import {
@@ -23,10 +20,13 @@ import {
 } from "../components/glass-dialog-content";
 import { DiagnosticModal } from "./diagnostic-modal";
 import { getErrorMessage } from "./error-messages";
-import type { DocumentLoaderErrorCode } from "./types";
+import type {
+	DocumentLoaderErrorCode,
+	RepositoryIndexWithContentStatus,
+} from "./types";
 
 type RepositoryItemProps = {
-	repositoryIndex: typeof githubRepositoryIndex.$inferSelect;
+	repositoryIndex: RepositoryIndexWithContentStatus;
 	deleteRepositoryIndexAction: (
 		indexId: GitHubRepositoryIndexId,
 	) => Promise<void>;
@@ -72,11 +72,11 @@ export function RepositoryItem({
 	// Check if manual ingest is allowed
 	const now = new Date();
 	const canManuallyIngest =
-		repositoryIndex.status === "idle" ||
-		repositoryIndex.status === "completed" ||
-		(repositoryIndex.status === "failed" &&
-			repositoryIndex.retryAfter &&
-			new Date(repositoryIndex.retryAfter) <= now);
+		repositoryIndex.blobStatus.status === "idle" ||
+		repositoryIndex.blobStatus.status === "completed" ||
+		(repositoryIndex.blobStatus.status === "failed" &&
+			repositoryIndex.blobStatus.retryAfter &&
+			new Date(repositoryIndex.blobStatus.retryAfter) <= now);
 
 	return (
 		<div
@@ -102,28 +102,34 @@ export function RepositoryItem({
 				<div className="flex items-center gap-3">
 					<div className="flex flex-col items-end gap-1">
 						<StatusBadge
-							status={isIngesting ? "running" : repositoryIndex.status}
+							status={
+								isIngesting ? "running" : repositoryIndex.blobStatus.status
+							}
 							onVerify={
-								repositoryIndex.status === "failed" &&
-								repositoryIndex.errorCode === "DOCUMENT_NOT_FOUND"
+								repositoryIndex.blobStatus.status === "failed" &&
+								repositoryIndex.blobStatus.errorCode === "DOCUMENT_NOT_FOUND"
 									? () => setShowDiagnosticModal(true)
 									: undefined
 							}
 						/>
-						{repositoryIndex.lastIngestedCommitSha && (
+						{repositoryIndex.blobStatus.metadata?.lastIngestedCommitSha && (
 							<span className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
 								Last Ingested:{" "}
-								{repositoryIndex.lastIngestedCommitSha.substring(0, 7)}
+								{repositoryIndex.blobStatus.metadata.lastIngestedCommitSha.substring(
+									0,
+									7,
+								)}
 							</span>
 						)}
-						{repositoryIndex.status === "failed" &&
-							repositoryIndex.errorCode && (
+						{repositoryIndex.blobStatus.status === "failed" &&
+							repositoryIndex.blobStatus.errorCode && (
 								<span className="text-red-400 font-medium text-[12px] leading-[20.4px] font-geist">
 									{getErrorMessage(
-										repositoryIndex.errorCode as DocumentLoaderErrorCode,
+										repositoryIndex.blobStatus
+											.errorCode as DocumentLoaderErrorCode,
 									)}
-									{repositoryIndex.retryAfter &&
-										` Retrying in ${formatRetryTime(repositoryIndex.retryAfter)}.`}
+									{repositoryIndex.blobStatus.retryAfter &&
+										` Retrying in ${formatRetryTime(repositoryIndex.blobStatus.retryAfter)}.`}
 								</span>
 							)}
 					</div>

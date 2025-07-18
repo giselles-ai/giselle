@@ -1,12 +1,14 @@
 import { ExternalLink } from "lucide-react";
-import { safeParseContentStatusMetadata } from "@/lib/vector-stores/github/ingest/content-metadata-schema";
 import { getGitHubIdentityState } from "@/services/accounts";
 import {
 	deleteRepositoryIndex,
 	registerRepositoryIndex,
 	triggerManualIngest,
 } from "./actions";
-import { getGitHubRepositoryIndexes, getInstallationsWithRepos } from "./data";
+import {
+	getInstallationsWithRepos,
+	getRepositoryIndexesWithContentStatus,
+} from "./data";
 
 import { RepositoryList } from "./repository-list";
 import { RepositoryRegistrationDialog } from "./repository-registration-dialog";
@@ -15,7 +17,6 @@ import {
 	GitHubAuthErrorCard,
 	GitHubAuthRequiredCard,
 } from "./status-cards";
-import type { RepositoryWithContentStatuses } from "./types";
 
 export default async function TeamVectorStorePage() {
 	const githubIdentityState = await getGitHubIdentityState();
@@ -41,7 +42,7 @@ export default async function TeamVectorStorePage() {
 
 	const [installationsWithRepos, repositoryIndexes] = await Promise.all([
 		getInstallationsWithRepos(),
-		getGitHubRepositoryIndexes(),
+		getRepositoryIndexesWithContentStatus(),
 	]);
 
 	return (
@@ -73,36 +74,7 @@ export default async function TeamVectorStorePage() {
 			</div>
 
 			<RepositoryList
-				repositoryIndexes={repositoryIndexes.map(
-					(repository: RepositoryWithContentStatuses) => {
-						const blobStatus = repository.contentStatuses.find(
-							(cs) => cs.contentType === "blob",
-						);
-
-						if (blobStatus == null) {
-							throw new Error(
-								`Repository (${repository.dbId}) does not have a blob content status`,
-							);
-						}
-
-						return {
-							...repository,
-							status: blobStatus.status,
-							errorCode: blobStatus.errorCode,
-							retryAfter: blobStatus.retryAfter,
-							lastIngestedCommitSha: (() => {
-								const parseResult = safeParseContentStatusMetadata(
-									blobStatus.metadata,
-									blobStatus.contentType,
-								);
-								return parseResult.success &&
-									parseResult.data?.contentType === "blob"
-									? (parseResult.data.lastIngestedCommitSha ?? null)
-									: null;
-							})(),
-						};
-					},
-				)}
+				repositoryIndexes={repositoryIndexes}
 				deleteRepositoryIndexAction={deleteRepositoryIndex}
 				triggerManualIngestAction={triggerManualIngest}
 			/>

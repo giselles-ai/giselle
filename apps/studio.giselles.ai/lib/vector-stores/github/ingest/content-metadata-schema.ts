@@ -20,7 +20,7 @@ const contentStatusMetadataSchema = z
 	])
 	.nullable();
 
-type ContentStatusMetadata = z.infer<typeof contentStatusMetadataSchema>;
+export type ContentStatusMetadata = z.infer<typeof contentStatusMetadataSchema>;
 type BlobContentMetadata = z.infer<typeof blobContentMetadataSchema>;
 
 export function safeParseContentStatusMetadata(
