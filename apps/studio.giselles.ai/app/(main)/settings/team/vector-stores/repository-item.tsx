@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { GitHubRepositoryIndexStatus } from "@/drizzle";
 import { cn } from "@/lib/utils";
+import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import { safeParseContentStatusMetadata } from "@/lib/vector-stores/github/types";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import {
@@ -21,13 +22,10 @@ import {
 } from "../components/glass-dialog-content";
 import { DiagnosticModal } from "./diagnostic-modal";
 import { getErrorMessage } from "./error-messages";
-import type {
-	DocumentLoaderErrorCode,
-	RepositoryWithContentStatuses,
-} from "./types";
+import type { DocumentLoaderErrorCode } from "./types";
 
 type RepositoryItemProps = {
-	repositoryIndex: RepositoryWithContentStatuses;
+	repositoryIndex: RepositoryWithStatuses;
 	deleteRepositoryIndexAction: (
 		indexId: GitHubRepositoryIndexId,
 	) => Promise<void>;
@@ -49,7 +47,7 @@ export function RepositoryItem({
 	const handleDelete = () => {
 		startTransition(async () => {
 			try {
-				await deleteRepositoryIndexAction(repositoryIndex.id);
+				await deleteRepositoryIndexAction(repositoryIndex.repository.id);
 				setShowDeleteDialog(false);
 			} catch (error) {
 				console.error(error);
@@ -60,7 +58,9 @@ export function RepositoryItem({
 	const handleManualIngest = () => {
 		startIngestTransition(async () => {
 			try {
-				const result = await triggerManualIngestAction(repositoryIndex.id);
+				const result = await triggerManualIngestAction(
+					repositoryIndex.repository.id,
+				);
 				if (!result.success) {
 					console.error("Failed to trigger manual ingest:", result.error);
 				}
@@ -77,7 +77,7 @@ export function RepositoryItem({
 
 	if (!blobStatus) {
 		throw new Error(
-			`Repository ${repositoryIndex.dbId} missing blob content status`,
+			`Repository ${repositoryIndex.repository.dbId} missing blob content status`,
 		);
 	}
 
@@ -106,16 +106,17 @@ export function RepositoryItem({
 			<div className="flex items-center justify-between gap-4">
 				<div className="flex flex-col gap-1">
 					<a
-						href={`https://github.com/${repositoryIndex.owner}/${repositoryIndex.repo}`}
+						href={`https://github.com/${repositoryIndex.repository.owner}/${repositoryIndex.repository.repo}`}
 						target="_blank"
 						rel="noopener noreferrer"
 						className="text-[#1663F3] font-medium text-[16px] leading-[22.4px] font-geist hover:text-[#0f4cd1] transition-colors duration-200"
 					>
-						{repositoryIndex.owner}/{repositoryIndex.repo}
+						{repositoryIndex.repository.owner}/{repositoryIndex.repository.repo}
 					</a>
 
 					<span className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
-						Updated {getRelativeTimeString(repositoryIndex.updatedAt)}
+						Updated{" "}
+						{getRelativeTimeString(repositoryIndex.repository.updatedAt)}
 					</span>
 				</div>
 				<div className="flex items-center gap-3">
@@ -191,7 +192,7 @@ export function RepositoryItem({
 						<GlassDialogContent variant="destructive">
 							<GlassDialogHeader
 								title="Delete Repository"
-								description={`This action cannot be undone. This will permanently delete the repository "${repositoryIndex.owner}/${repositoryIndex.repo}" from your Vector Stores.`}
+								description={`This action cannot be undone. This will permanently delete the repository "${repositoryIndex.repository.owner}/${repositoryIndex.repository.repo}" from your Vector Stores.`}
 								onClose={() => setShowDeleteDialog(false)}
 								variant="destructive"
 							/>

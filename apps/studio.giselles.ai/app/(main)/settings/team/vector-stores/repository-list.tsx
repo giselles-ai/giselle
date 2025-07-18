@@ -1,10 +1,10 @@
 import { Card } from "@/components/ui/card";
+import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import { RepositoryItem } from "./repository-item";
-import type { RepositoryWithContentStatuses } from "./types";
 
 type RepositoryListProps = {
-	repositoryIndexes: RepositoryWithContentStatuses[];
+	repositoryIndexes: RepositoryWithStatuses[];
 	deleteRepositoryIndexAction: (
 		indexId: GitHubRepositoryIndexId,
 	) => Promise<void>;
@@ -37,7 +37,7 @@ export function RepositoryList({
 					<div className="space-y-4">
 						{repositoryIndexes.map((index) => (
 							<RepositoryItem
-								key={index.id}
+								key={index.repository.id}
 								repositoryIndex={index}
 								deleteRepositoryIndexAction={deleteRepositoryIndexAction}
 								triggerManualIngestAction={triggerManualIngestAction}

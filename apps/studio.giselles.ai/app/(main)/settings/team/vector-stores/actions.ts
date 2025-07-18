@@ -255,6 +255,9 @@ export async function updateRepositoryInstallation(
 	revalidatePath("/settings/team/vector-stores");
 }
 
+/**
+ * Trigger a manual ingest for a GitHub repository index if it is eligible.
+ */
 export async function triggerManualIngest(
 	indexId: GitHubRepositoryIndexId,
 ): Promise<ActionResult> {
@@ -302,7 +305,6 @@ async function fetchRepositoryWithStatuses(
 	repositoryIndexId: GitHubRepositoryIndexId,
 	teamDbId: number,
 ): Promise<RepositoryWithStatuses | null> {
-	// Get repository index
 	const repositoryResult = await db
 		.select()
 		.from(githubRepositoryIndex)
@@ -312,21 +314,17 @@ async function fetchRepositoryWithStatuses(
 				eq(githubRepositoryIndex.teamDbId, teamDbId),
 			),
 		);
-
 	if (repositoryResult.length === 0) {
 		return null;
 	}
-
 	const repository = repositoryResult[0];
 
-	// Get all content statuses for this repository
 	const contentStatuses = await db
 		.select()
 		.from(githubRepositoryContentStatus)
 		.where(
 			eq(githubRepositoryContentStatus.repositoryIndexDbId, repository.dbId),
 		);
-
 	return { repository, contentStatuses };
 }
 

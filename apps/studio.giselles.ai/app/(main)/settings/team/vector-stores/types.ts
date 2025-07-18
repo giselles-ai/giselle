@@ -34,16 +34,3 @@ export type DiagnosticResult =
 			reason: "no-installation" | "repository-not-found" | "diagnosis-failed";
 			errorMessage?: string;
 	  };
-
-import type {
-	githubRepositoryContentStatus,
-	githubRepositoryIndex,
-} from "@/drizzle";
-
-/**
- * Repository with all its content statuses from the database
- */
-export type RepositoryWithContentStatuses =
-	typeof githubRepositoryIndex.$inferSelect & {
-		contentStatuses: (typeof githubRepositoryContentStatus.$inferSelect)[];
-	};

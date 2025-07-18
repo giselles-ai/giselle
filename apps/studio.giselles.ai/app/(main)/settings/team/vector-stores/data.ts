@@ -5,15 +5,13 @@ import {
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
 } from "@/drizzle";
+import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
-import type {
-	InstallationWithRepos,
-	RepositoryWithContentStatuses,
-} from "./types";
+import type { InstallationWithRepos } from "./types";
 
 export async function getGitHubRepositoryIndexes(): Promise<
-	RepositoryWithContentStatuses[]
+	RepositoryWithStatuses[]
 > {
 	const team = await fetchCurrentTeam();
 
@@ -34,14 +32,14 @@ export async function getGitHubRepositoryIndexes(): Promise<
 		.orderBy(desc(githubRepositoryIndex.dbId));
 
 	// Group by repository
-	const repositoryMap = new Map<number, RepositoryWithContentStatuses>();
+	const repositoryMap = new Map<number, RepositoryWithStatuses>();
 
 	for (const record of records) {
 		const { repository, contentStatus } = record;
 
 		if (!repositoryMap.has(repository.dbId)) {
 			repositoryMap.set(repository.dbId, {
-				...repository,
+				repository,
 				contentStatuses: [],
 			});
 		}
@@ -58,7 +56,7 @@ export async function getGitHubRepositoryIndexes(): Promise<
 }
 
 export function getRepositoriesWithContentStatuses(): Promise<
-	RepositoryWithContentStatuses[]
+	RepositoryWithStatuses[]
 > {
 	return getGitHubRepositoryIndexes();
 }

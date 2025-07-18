@@ -3,6 +3,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Check, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
+import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import {
 	GlassDialogContent,
 	GlassDialogFooter,
@@ -12,10 +13,10 @@ import {
 	diagnoseRepositoryConnection,
 	updateRepositoryInstallation,
 } from "./actions";
-import type { DiagnosticResult, RepositoryWithContentStatuses } from "./types";
+import type { DiagnosticResult } from "./types";
 
 type DiagnosticModalProps = {
-	repositoryIndex: RepositoryWithContentStatuses;
+	repositoryIndex: RepositoryWithStatuses;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	onComplete?: () => void;
@@ -38,7 +39,9 @@ export function DiagnosticModal({
 		setIsDiagnosing(true);
 
 		try {
-			const result = await diagnoseRepositoryConnection(repositoryIndex.id);
+			const result = await diagnoseRepositoryConnection(
+				repositoryIndex.repository.id,
+			);
 			setDiagnosisResult(result);
 		} catch (error) {
 			console.error("Diagnosis failed:", error);
@@ -50,7 +53,7 @@ export function DiagnosticModal({
 		} finally {
 			setIsDiagnosing(false);
 		}
-	}, [repositoryIndex.id]);
+	}, [repositoryIndex.repository.id]);
 
 	useEffect(() => {
 		if (open) {
@@ -65,7 +68,7 @@ export function DiagnosticModal({
 			try {
 				if (diagnosisResult?.canBeFixed) {
 					await updateRepositoryInstallation(
-						repositoryIndex.id,
+						repositoryIndex.repository.id,
 						diagnosisResult.newInstallationId,
 					);
 					onComplete?.();
@@ -75,7 +78,12 @@ export function DiagnosticModal({
 				console.error("Failed to fix repository:", error);
 			}
 		});
-	}, [repositoryIndex.id, diagnosisResult, onComplete, onOpenChange]);
+	}, [
+		repositoryIndex.repository.id,
+		diagnosisResult,
+		onComplete,
+		onOpenChange,
+	]);
 
 	const renderDiagnosisResult = () => {
 		if (!diagnosisResult) return null;
@@ -117,7 +125,7 @@ export function DiagnosticModal({
 			<GlassDialogContent>
 				<GlassDialogHeader
 					title="Checking Repository Access"
-					description={`${repositoryIndex.owner}/${repositoryIndex.repo}`}
+					description={`${repositoryIndex.repository.owner}/${repositoryIndex.repository.repo}`}
 					onClose={() => onOpenChange(false)}
 				/>
 
