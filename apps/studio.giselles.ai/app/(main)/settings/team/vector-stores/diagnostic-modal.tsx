@@ -40,9 +40,7 @@ export function DiagnosticModal({
 		setIsDiagnosing(true);
 
 		try {
-			const result = await diagnoseRepositoryConnection(
-				repositoryIndex.id,
-			);
+			const result = await diagnoseRepositoryConnection(repositoryIndex.id);
 			setDiagnosisResult(result);
 		} catch (error) {
 			console.error("Diagnosis failed:", error);
@@ -79,12 +77,7 @@ export function DiagnosticModal({
 				console.error("Failed to fix repository:", error);
 			}
 		});
-	}, [
-		repositoryIndex.id,
-		diagnosisResult,
-		onComplete,
-		setOpen,
-	]);
+	}, [repositoryIndex.id, diagnosisResult, onComplete, setOpen]);
 
 	const renderDiagnosisResult = () => {
 		if (!diagnosisResult) return null;

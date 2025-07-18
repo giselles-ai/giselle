@@ -5,10 +5,7 @@ import {
 	registerRepositoryIndex,
 	triggerManualIngest,
 } from "./actions";
-import {
-	getGitHubRepositoryIndexes,
-	getInstallationsWithRepos,
-} from "./data";
+import { getGitHubRepositoryIndexes, getInstallationsWithRepos } from "./data";
 
 import { RepositoryList } from "./repository-list";
 import { RepositoryRegistrationDialog } from "./repository-registration-dialog";

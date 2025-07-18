@@ -59,9 +59,7 @@ export function RepositoryItem({
 	const handleManualIngest = () => {
 		startIngestTransition(async () => {
 			try {
-				const result = await triggerManualIngestAction(
-					repositoryIndex.id,
-				);
+				const result = await triggerManualIngestAction(repositoryIndex.id);
 				if (!result.success) {
 					console.error("Failed to trigger manual ingest:", result.error);
 				}
@@ -72,9 +70,7 @@ export function RepositoryItem({
 	};
 
 	// Get the blob status
-	const blobStatus = contentStatuses.find(
-		(cs) => cs.contentType === "blob",
-	);
+	const blobStatus = contentStatuses.find((cs) => cs.contentType === "blob");
 
 	if (!blobStatus) {
 		throw new Error(
@@ -116,8 +112,7 @@ export function RepositoryItem({
 					</a>
 
 					<span className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
-						Updated{" "}
-						{getRelativeTimeString(repositoryIndex.updatedAt)}
+						Updated {getRelativeTimeString(repositoryIndex.updatedAt)}
 					</span>
 				</div>
 				<div className="flex items-center gap-3">
