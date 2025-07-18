@@ -3,7 +3,6 @@ import type { Act, Sequence } from "../object";
 import { Nav } from "./ui/nav";
 
 const actData: Act = {
-  
 	id: "act-1",
 	sequences: [
 		{
