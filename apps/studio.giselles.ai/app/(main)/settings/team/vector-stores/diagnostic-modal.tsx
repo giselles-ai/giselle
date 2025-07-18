@@ -16,7 +16,7 @@ import {
 import type { DiagnosticResult } from "./types";
 
 type DiagnosticModalProps = {
-	repositoryIndex: RepositoryWithStatuses;
+	repositoryData: RepositoryWithStatuses;
 	open: boolean;
 	setOpen: (open: boolean) => void;
 	onComplete?: () => void;
@@ -24,12 +24,13 @@ type DiagnosticModalProps = {
 };
 
 export function DiagnosticModal({
-	repositoryIndex,
+	repositoryData,
 	open,
 	setOpen,
 	onComplete,
 	onDelete,
 }: DiagnosticModalProps) {
+	const { repositoryIndex } = repositoryData;
 	const [diagnosisResult, setDiagnosisResult] =
 		useState<DiagnosticResult | null>(null);
 	const [isFixing, startFixTransition] = useTransition();
@@ -40,7 +41,7 @@ export function DiagnosticModal({
 
 		try {
 			const result = await diagnoseRepositoryConnection(
-				repositoryIndex.repository.id,
+				repositoryIndex.id,
 			);
 			setDiagnosisResult(result);
 		} catch (error) {
@@ -53,7 +54,7 @@ export function DiagnosticModal({
 		} finally {
 			setIsDiagnosing(false);
 		}
-	}, [repositoryIndex.repository.id]);
+	}, [repositoryIndex.id]);
 
 	useEffect(() => {
 		if (open) {
@@ -68,7 +69,7 @@ export function DiagnosticModal({
 			try {
 				if (diagnosisResult?.canBeFixed) {
 					await updateRepositoryInstallation(
-						repositoryIndex.repository.id,
+						repositoryIndex.id,
 						diagnosisResult.newInstallationId,
 					);
 					onComplete?.();
@@ -79,7 +80,7 @@ export function DiagnosticModal({
 			}
 		});
 	}, [
-		repositoryIndex.repository.id,
+		repositoryIndex.id,
 		diagnosisResult,
 		onComplete,
 		setOpen,
@@ -125,7 +126,7 @@ export function DiagnosticModal({
 			<GlassDialogContent>
 				<GlassDialogHeader
 					title="Checking Repository Access"
-					description={`${repositoryIndex.repository.owner}/${repositoryIndex.repository.repo}`}
+					description={`${repositoryIndex.owner}/${repositoryIndex.repo}`}
 					onClose={() => setOpen(false)}
 				/>
 

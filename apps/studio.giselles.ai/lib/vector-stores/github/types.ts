@@ -9,7 +9,7 @@ import type {
  * Repository with all its content statuses
  */
 export type RepositoryWithStatuses = {
-	repository: typeof githubRepositoryIndex.$inferSelect;
+	repositoryIndex: typeof githubRepositoryIndex.$inferSelect;
 	contentStatuses: (typeof githubRepositoryContentStatus.$inferSelect)[];
 };
 

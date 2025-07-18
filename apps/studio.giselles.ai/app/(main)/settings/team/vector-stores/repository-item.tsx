@@ -25,7 +25,7 @@ import { getErrorMessage } from "./error-messages";
 import type { DocumentLoaderErrorCode } from "./types";
 
 type RepositoryItemProps = {
-	repositoryIndex: RepositoryWithStatuses;
+	repositoryData: RepositoryWithStatuses;
 	deleteRepositoryIndexAction: (
 		indexId: GitHubRepositoryIndexId,
 	) => Promise<void>;
@@ -35,10 +35,11 @@ type RepositoryItemProps = {
 };
 
 export function RepositoryItem({
-	repositoryIndex,
+	repositoryData,
 	deleteRepositoryIndexAction,
 	triggerManualIngestAction,
 }: RepositoryItemProps) {
+	const { repositoryIndex, contentStatuses } = repositoryData;
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [showDiagnosticModal, setShowDiagnosticModal] = useState(false);
 	const [isPending, startTransition] = useTransition();
@@ -47,7 +48,7 @@ export function RepositoryItem({
 	const handleDelete = () => {
 		startTransition(async () => {
 			try {
-				await deleteRepositoryIndexAction(repositoryIndex.repository.id);
+				await deleteRepositoryIndexAction(repositoryIndex.id);
 				setShowDeleteDialog(false);
 			} catch (error) {
 				console.error(error);
@@ -59,7 +60,7 @@ export function RepositoryItem({
 		startIngestTransition(async () => {
 			try {
 				const result = await triggerManualIngestAction(
-					repositoryIndex.repository.id,
+					repositoryIndex.id,
 				);
 				if (!result.success) {
 					console.error("Failed to trigger manual ingest:", result.error);
@@ -71,13 +72,13 @@ export function RepositoryItem({
 	};
 
 	// Get the blob status
-	const blobStatus = repositoryIndex.contentStatuses.find(
+	const blobStatus = contentStatuses.find(
 		(cs) => cs.contentType === "blob",
 	);
 
 	if (!blobStatus) {
 		throw new Error(
-			`Repository ${repositoryIndex.repository.dbId} missing blob content status`,
+			`Repository ${repositoryIndex.dbId} missing blob content status`,
 		);
 	}
 
@@ -106,17 +107,17 @@ export function RepositoryItem({
 			<div className="flex items-center justify-between gap-4">
 				<div className="flex flex-col gap-1">
 					<a
-						href={`https://github.com/${repositoryIndex.repository.owner}/${repositoryIndex.repository.repo}`}
+						href={`https://github.com/${repositoryIndex.owner}/${repositoryIndex.repo}`}
 						target="_blank"
 						rel="noopener noreferrer"
 						className="text-[#1663F3] font-medium text-[16px] leading-[22.4px] font-geist hover:text-[#0f4cd1] transition-colors duration-200"
 					>
-						{repositoryIndex.repository.owner}/{repositoryIndex.repository.repo}
+						{repositoryIndex.owner}/{repositoryIndex.repo}
 					</a>
 
 					<span className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
 						Updated{" "}
-						{getRelativeTimeString(repositoryIndex.repository.updatedAt)}
+						{getRelativeTimeString(repositoryIndex.updatedAt)}
 					</span>
 				</div>
 				<div className="flex items-center gap-3">
@@ -192,7 +193,7 @@ export function RepositoryItem({
 						<GlassDialogContent variant="destructive">
 							<GlassDialogHeader
 								title="Delete Repository"
-								description={`This action cannot be undone. This will permanently delete the repository "${repositoryIndex.repository.owner}/${repositoryIndex.repository.repo}" from your Vector Stores.`}
+								description={`This action cannot be undone. This will permanently delete the repository "${repositoryIndex.owner}/${repositoryIndex.repo}" from your Vector Stores.`}
 								onClose={() => setShowDeleteDialog(false)}
 								variant="destructive"
 							/>
@@ -208,7 +209,7 @@ export function RepositoryItem({
 				</div>
 			</div>
 			<DiagnosticModal
-				repositoryIndex={repositoryIndex}
+				repositoryData={repositoryData}
 				open={showDiagnosticModal}
 				setOpen={setShowDiagnosticModal}
 				onComplete={() => {

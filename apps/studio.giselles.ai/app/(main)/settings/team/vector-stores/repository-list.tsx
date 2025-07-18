@@ -4,7 +4,7 @@ import type { GitHubRepositoryIndexId } from "@/packages/types";
 import { RepositoryItem } from "./repository-item";
 
 type RepositoryListProps = {
-	repositoryIndexes: RepositoryWithStatuses[];
+	repositories: RepositoryWithStatuses[];
 	deleteRepositoryIndexAction: (
 		indexId: GitHubRepositoryIndexId,
 	) => Promise<void>;
@@ -14,7 +14,7 @@ type RepositoryListProps = {
 };
 
 export function RepositoryList({
-	repositoryIndexes,
+	repositories,
 	deleteRepositoryIndexAction,
 	triggerManualIngestAction,
 }: RepositoryListProps) {
@@ -33,12 +33,12 @@ export function RepositoryList({
 					</div>
 				</div>
 
-				{repositoryIndexes.length > 0 ? (
+				{repositories.length > 0 ? (
 					<div className="space-y-4">
-						{repositoryIndexes.map((index) => (
+						{repositories.map((repo) => (
 							<RepositoryItem
-								key={index.repository.id}
-								repositoryIndex={index}
+								key={repo.repositoryIndex.id}
+								repositoryData={repo}
 								deleteRepositoryIndexAction={deleteRepositoryIndexAction}
 								triggerManualIngestAction={triggerManualIngestAction}
 							/>

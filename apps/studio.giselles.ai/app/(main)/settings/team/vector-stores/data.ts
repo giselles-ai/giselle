@@ -17,7 +17,7 @@ export async function getGitHubRepositoryIndexes(): Promise<
 
 	const records = await db
 		.select({
-			repository: githubRepositoryIndex,
+			repositoryIndex: githubRepositoryIndex,
 			contentStatus: githubRepositoryContentStatus,
 		})
 		.from(githubRepositoryIndex)
@@ -35,17 +35,17 @@ export async function getGitHubRepositoryIndexes(): Promise<
 	const repositoryMap = new Map<number, RepositoryWithStatuses>();
 
 	for (const record of records) {
-		const { repository, contentStatus } = record;
+		const { repositoryIndex, contentStatus } = record;
 
-		if (!repositoryMap.has(repository.dbId)) {
-			repositoryMap.set(repository.dbId, {
-				repository,
+		if (!repositoryMap.has(repositoryIndex.dbId)) {
+			repositoryMap.set(repositoryIndex.dbId, {
+				repositoryIndex,
 				contentStatuses: [],
 			});
 		}
 
 		if (contentStatus) {
-			const repo = repositoryMap.get(repository.dbId);
+			const repo = repositoryMap.get(repositoryIndex.dbId);
 			if (repo) {
 				repo.contentStatuses.push(contentStatus);
 			}

@@ -305,7 +305,7 @@ async function fetchRepositoryWithStatuses(
 	repositoryIndexId: GitHubRepositoryIndexId,
 	teamDbId: number,
 ): Promise<RepositoryWithStatuses | null> {
-	const repositoryResult = await db
+	const repositoryIndexResult = await db
 		.select()
 		.from(githubRepositoryIndex)
 		.where(
@@ -314,18 +314,21 @@ async function fetchRepositoryWithStatuses(
 				eq(githubRepositoryIndex.teamDbId, teamDbId),
 			),
 		);
-	if (repositoryResult.length === 0) {
+	if (repositoryIndexResult.length === 0) {
 		return null;
 	}
-	const repository = repositoryResult[0];
+	const repositoryIndex = repositoryIndexResult[0];
 
 	const contentStatuses = await db
 		.select()
 		.from(githubRepositoryContentStatus)
 		.where(
-			eq(githubRepositoryContentStatus.repositoryIndexDbId, repository.dbId),
+			eq(
+				githubRepositoryContentStatus.repositoryIndexDbId,
+				repositoryIndex.dbId,
+			),
 		);
-	return { repository, contentStatuses };
+	return { repositoryIndex, contentStatuses };
 }
 
 /**

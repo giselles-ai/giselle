@@ -35,7 +35,7 @@ export async function fetchIngestTargets(): Promise<RepositoryWithStatuses[]> {
 	// First, get all repositories with their content statuses
 	const repositories = await db
 		.select({
-			repository: githubRepositoryIndex,
+			repositoryIndex: githubRepositoryIndex,
 			contentStatus: githubRepositoryContentStatus,
 		})
 		.from(githubRepositoryIndex)
@@ -72,17 +72,17 @@ export async function fetchIngestTargets(): Promise<RepositoryWithStatuses[]> {
 	const repositoryMap = new Map<number, RepositoryWithStatuses>();
 
 	for (const record of repositories) {
-		const { repository, contentStatus } = record;
+		const { repositoryIndex, contentStatus } = record;
 
-		if (!repositoryMap.has(repository.dbId)) {
-			repositoryMap.set(repository.dbId, {
-				repository,
+		if (!repositoryMap.has(repositoryIndex.dbId)) {
+			repositoryMap.set(repositoryIndex.dbId, {
+				repositoryIndex,
 				contentStatuses: [],
 			});
 		}
 
 		if (contentStatus) {
-			const repo = repositoryMap.get(repository.dbId);
+			const repo = repositoryMap.get(repositoryIndex.dbId);
 			if (repo) {
 				repo.contentStatuses.push(contentStatus);
 			}

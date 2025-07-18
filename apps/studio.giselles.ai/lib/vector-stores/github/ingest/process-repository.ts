@@ -17,7 +17,7 @@ export async function processRepository(
 	repositoryData: RepositoryWithStatuses,
 ) {
 	const { owner, repo, installationId, teamDbId, dbId } =
-		repositoryData.repository;
+		repositoryData.repositoryIndex;
 
 	try {
 		await updateRepositoryStatusToRunning(dbId);
