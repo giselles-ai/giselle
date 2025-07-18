@@ -3,7 +3,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Check, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import type { githubRepositoryIndex } from "@/drizzle";
+import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import {
 	GlassDialogContent,
 	GlassDialogFooter,
@@ -16,20 +16,21 @@ import {
 import type { DiagnosticResult } from "./types";
 
 type DiagnosticModalProps = {
-	repositoryIndex: typeof githubRepositoryIndex.$inferSelect;
+	repositoryData: RepositoryWithStatuses;
 	open: boolean;
-	onOpenChange: (open: boolean) => void;
+	setOpen: (open: boolean) => void;
 	onComplete?: () => void;
 	onDelete?: () => void;
 };
 
 export function DiagnosticModal({
-	repositoryIndex,
+	repositoryData,
 	open,
-	onOpenChange,
+	setOpen,
 	onComplete,
 	onDelete,
 }: DiagnosticModalProps) {
+	const { repositoryIndex } = repositoryData;
 	const [diagnosisResult, setDiagnosisResult] =
 		useState<DiagnosticResult | null>(null);
 	const [isFixing, startFixTransition] = useTransition();
@@ -70,13 +71,13 @@ export function DiagnosticModal({
 						diagnosisResult.newInstallationId,
 					);
 					onComplete?.();
-					onOpenChange(false);
+					setOpen(false);
 				}
 			} catch (error) {
 				console.error("Failed to fix repository:", error);
 			}
 		});
-	}, [repositoryIndex.id, diagnosisResult, onComplete, onOpenChange]);
+	}, [repositoryIndex.id, diagnosisResult, onComplete, setOpen]);
 
 	const renderDiagnosisResult = () => {
 		if (!diagnosisResult) return null;
@@ -114,12 +115,12 @@ export function DiagnosticModal({
 	};
 
 	return (
-		<Dialog.Root open={open} onOpenChange={onOpenChange}>
+		<Dialog.Root open={open} onOpenChange={setOpen}>
 			<GlassDialogContent>
 				<GlassDialogHeader
 					title="Checking Repository Access"
 					description={`${repositoryIndex.owner}/${repositoryIndex.repo}`}
-					onClose={() => onOpenChange(false)}
+					onClose={() => setOpen(false)}
 				/>
 
 				<div className="py-6">
@@ -137,13 +138,13 @@ export function DiagnosticModal({
 
 				{diagnosisResult && (
 					<GlassDialogFooter
-						onCancel={() => onOpenChange(false)}
+						onCancel={() => setOpen(false)}
 						onConfirm={
 							diagnosisResult.canBeFixed
 								? handleFix
 								: () => {
 										onDelete?.();
-										onOpenChange(false);
+										setOpen(false);
 									}
 						}
 						confirmLabel={
@@ -158,7 +159,7 @@ export function DiagnosticModal({
 
 				{!diagnosisResult && (
 					<GlassDialogFooter
-						onCancel={() => onOpenChange(false)}
+						onCancel={() => setOpen(false)}
 						isPending={isDiagnosing}
 						confirmLabel="Processing..."
 					/>

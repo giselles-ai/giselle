@@ -4,17 +4,25 @@ import { createId } from "@paralleldrive/cuid2";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
-import { db, githubRepositoryIndex } from "@/drizzle";
+import {
+	db,
+	githubRepositoryContentStatus,
+	githubRepositoryIndex,
+} from "@/drizzle";
 import {
 	processRepository,
-	type TargetGitHubRepository,
+	type RepositoryWithStatuses,
 } from "@/lib/vector-stores/github";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { buildAppInstallationClient } from "@/services/external/github";
 import { fetchCurrentTeam } from "@/services/teams";
-
 import type { ActionResult, DiagnosticResult } from "./types";
+
+type IngestabilityCheck = {
+	canIngest: boolean;
+	reason?: string;
+};
 
 export async function registerRepositoryIndex(
 	owner: string,
@@ -78,12 +86,22 @@ export async function registerRepositoryIndex(
 		}
 
 		const newIndexId = `gthbi_${createId()}` as GitHubRepositoryIndexId;
-		await db.insert(githubRepositoryIndex).values({
-			id: newIndexId,
-			owner,
-			repo,
-			teamDbId: team.dbId,
-			installationId,
+		const [newRepository] = await db
+			.insert(githubRepositoryIndex)
+			.values({
+				id: newIndexId,
+				owner,
+				repo,
+				teamDbId: team.dbId,
+				installationId,
+			})
+			.returning({ dbId: githubRepositoryIndex.dbId });
+
+		await db.insert(githubRepositoryContentStatus).values({
+			repositoryIndexDbId: newRepository.dbId,
+			contentType: "blob",
+			enabled: true,
+			status: "idle",
 		});
 
 		revalidatePath("/settings/team/vector-stores");
@@ -201,9 +219,6 @@ export async function updateRepositoryInstallation(
 		.update(githubRepositoryIndex)
 		.set({
 			installationId: newInstallationId,
-			status: "idle",
-			errorCode: null,
-			retryAfter: null,
 		})
 		.where(
 			and(
@@ -212,59 +227,64 @@ export async function updateRepositoryInstallation(
 			),
 		);
 
+	const [repository] = await db
+		.select({ dbId: githubRepositoryIndex.dbId })
+		.from(githubRepositoryIndex)
+		.where(
+			and(
+				eq(githubRepositoryIndex.teamDbId, team.dbId),
+				eq(githubRepositoryIndex.id, indexId),
+			),
+		)
+		.limit(1);
+
+	if (repository) {
+		await db
+			.update(githubRepositoryContentStatus)
+			.set({
+				status: "idle",
+				errorCode: null,
+				retryAfter: null,
+			})
+			.where(
+				eq(githubRepositoryContentStatus.repositoryIndexDbId, repository.dbId),
+				// we don't have to watch content type because we are updating the whole contents for the repository
+			);
+	}
+
 	revalidatePath("/settings/team/vector-stores");
 }
 
+/**
+ * Trigger a manual ingest for a GitHub repository index if it is eligible.
+ */
 export async function triggerManualIngest(
 	indexId: GitHubRepositoryIndexId,
 ): Promise<ActionResult> {
 	try {
 		const team = await fetchCurrentTeam();
-		const now = new Date();
 
-		const [repositoryIndex] = await db
-			.select()
-			.from(githubRepositoryIndex)
-			.where(
-				and(
-					eq(githubRepositoryIndex.teamDbId, team.dbId),
-					eq(githubRepositoryIndex.id, indexId),
-				),
-			)
-			.limit(1);
-		if (!repositoryIndex) {
+		const repositoryData = await fetchRepositoryWithStatuses(
+			indexId,
+			team.dbId,
+		);
+		if (!repositoryData) {
 			return {
 				success: false,
 				error: "Repository not found",
 			};
 		}
 
-		const canIngest =
-			repositoryIndex.status === "idle" ||
-			repositoryIndex.status === "completed" ||
-			(repositoryIndex.status === "failed" &&
-				repositoryIndex.retryAfter &&
-				repositoryIndex.retryAfter <= now);
-		if (!canIngest) {
+		const ingestCheck = checkIngestability(repositoryData.contentStatuses);
+		if (!ingestCheck.canIngest) {
 			return {
 				success: false,
-				error: "Repository cannot be ingested at this time",
+				error: ingestCheck.reason || "Cannot ingest repository",
 			};
 		}
 
-		const targetRepository: TargetGitHubRepository = {
-			dbId: repositoryIndex.dbId,
-			owner: repositoryIndex.owner,
-			repo: repositoryIndex.repo,
-			teamDbId: repositoryIndex.teamDbId,
-			installationId: repositoryIndex.installationId,
-			lastIngestedCommitSha: repositoryIndex.lastIngestedCommitSha,
-		};
+		executeManualIngest(repositoryData);
 
-		// Execute ingest in background using after()
-		after(async () => {
-			await processRepository(targetRepository);
-		});
 		// Immediately revalidate to show "running" status
 		revalidatePath("/settings/team/vector-stores");
 
@@ -276,4 +296,84 @@ export async function triggerManualIngest(
 			error: "Failed to trigger manual ingest",
 		};
 	}
+}
+
+/**
+ * Fetch repository with all its content statuses
+ */
+async function fetchRepositoryWithStatuses(
+	repositoryIndexId: GitHubRepositoryIndexId,
+	teamDbId: number,
+): Promise<RepositoryWithStatuses | null> {
+	const repositoryIndexResult = await db
+		.select()
+		.from(githubRepositoryIndex)
+		.where(
+			and(
+				eq(githubRepositoryIndex.id, repositoryIndexId),
+				eq(githubRepositoryIndex.teamDbId, teamDbId),
+			),
+		);
+	if (repositoryIndexResult.length === 0) {
+		return null;
+	}
+	const repositoryIndex = repositoryIndexResult[0];
+
+	const contentStatuses = await db
+		.select()
+		.from(githubRepositoryContentStatus)
+		.where(
+			eq(
+				githubRepositoryContentStatus.repositoryIndexDbId,
+				repositoryIndex.dbId,
+			),
+		);
+	return { repositoryIndex, contentStatuses };
+}
+
+/**
+ * Check if repository can be ingested based on content statuses
+ */
+function checkIngestability(
+	contentStatuses: (typeof githubRepositoryContentStatus.$inferSelect)[],
+	now: Date = new Date(),
+): IngestabilityCheck {
+	for (const contentStatus of contentStatuses) {
+		if (!contentStatus.enabled) {
+			continue;
+		}
+
+		const canIngestThis =
+			contentStatus.status === "idle" ||
+			contentStatus.status === "completed" ||
+			(contentStatus.status === "failed" &&
+				contentStatus.retryAfter &&
+				contentStatus.retryAfter <= now);
+
+		if (!canIngestThis) {
+			return {
+				canIngest: false,
+				reason: `Repository cannot be ingested at this time (${contentStatus.contentType} is blocking)`,
+			};
+		}
+	}
+
+	const hasBlobStatus = contentStatuses.some((cs) => cs.contentType === "blob");
+	if (!hasBlobStatus) {
+		return {
+			canIngest: false,
+			reason: "Repository does not have a blob content status",
+		};
+	}
+
+	return { canIngest: true };
+}
+
+/**
+ * Execute manual ingest for a repository
+ */
+function executeManualIngest(repositoryData: RepositoryWithStatuses): void {
+	after(async () => {
+		await processRepository(repositoryData);
+	});
 }

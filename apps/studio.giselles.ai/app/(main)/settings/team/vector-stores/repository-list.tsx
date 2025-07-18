@@ -1,10 +1,10 @@
 import { Card } from "@/components/ui/card";
-import type { githubRepositoryIndex } from "@/drizzle";
+import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import { RepositoryItem } from "./repository-item";
 
 type RepositoryListProps = {
-	repositoryIndexes: (typeof githubRepositoryIndex.$inferSelect)[];
+	repositories: RepositoryWithStatuses[];
 	deleteRepositoryIndexAction: (
 		indexId: GitHubRepositoryIndexId,
 	) => Promise<void>;
@@ -14,7 +14,7 @@ type RepositoryListProps = {
 };
 
 export function RepositoryList({
-	repositoryIndexes,
+	repositories,
 	deleteRepositoryIndexAction,
 	triggerManualIngestAction,
 }: RepositoryListProps) {
@@ -33,12 +33,12 @@ export function RepositoryList({
 					</div>
 				</div>
 
-				{repositoryIndexes.length > 0 ? (
+				{repositories.length > 0 ? (
 					<div className="space-y-4">
-						{repositoryIndexes.map((index) => (
+						{repositories.map((repo) => (
 							<RepositoryItem
-								key={index.id}
-								repositoryIndex={index}
+								key={repo.repositoryIndex.id}
+								repositoryData={repo}
 								deleteRepositoryIndexAction={deleteRepositoryIndexAction}
 								triggerManualIngestAction={triggerManualIngestAction}
 							/>

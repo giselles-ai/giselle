@@ -6,7 +6,6 @@ import {
 	triggerManualIngest,
 } from "./actions";
 import { getGitHubRepositoryIndexes, getInstallationsWithRepos } from "./data";
-
 import { RepositoryList } from "./repository-list";
 import { RepositoryRegistrationDialog } from "./repository-registration-dialog";
 import {
@@ -71,7 +70,7 @@ export default async function TeamVectorStorePage() {
 			</div>
 
 			<RepositoryList
-				repositoryIndexes={repositoryIndexes}
+				repositories={repositoryIndexes}
 				deleteRepositoryIndexAction={deleteRepositoryIndex}
 				triggerManualIngestAction={triggerManualIngest}
 			/>

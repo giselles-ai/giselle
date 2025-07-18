@@ -1,9 +1,10 @@
 import { fetchDefaultBranchHead } from "@giselle-sdk/github-tool";
 import { DocumentLoaderError, RagError } from "@giselle-sdk/rag";
 import { captureException } from "@sentry/nextjs";
-import { eq } from "drizzle-orm";
-import { db, githubRepositoryIndex } from "@/drizzle";
-import type { TargetGitHubRepository } from "../types";
+import { and, eq } from "drizzle-orm";
+import { db, githubRepositoryContentStatus } from "@/drizzle";
+import type { RepositoryWithStatuses } from "../types";
+import { createBlobContentMetadata } from "../types";
 import { buildOctokit } from "./build-octokit";
 import { ingestGitHubBlobs } from "./ingest-github-blobs";
 import { createIngestTelemetrySettings } from "./telemetry";
@@ -13,10 +14,10 @@ import { createIngestTelemetrySettings } from "./telemetry";
  * This is the main entry point for ingesting a repository
  */
 export async function processRepository(
-	targetGitHubRepository: TargetGitHubRepository,
+	repositoryData: RepositoryWithStatuses,
 ) {
 	const { owner, repo, installationId, teamDbId, dbId } =
-		targetGitHubRepository;
+		repositoryData.repositoryIndex;
 
 	try {
 		await updateRepositoryStatusToRunning(dbId);
@@ -117,38 +118,69 @@ function extractErrorInfo(error: unknown): {
 }
 
 /**
- * Update repository status to running
+ * Update repository blob content status to running
  */
 async function updateRepositoryStatusToRunning(dbId: number) {
+	// Ensure content status record exists
+	const [existing] = await db
+		.select()
+		.from(githubRepositoryContentStatus)
+		.where(
+			and(
+				eq(githubRepositoryContentStatus.repositoryIndexDbId, dbId),
+				eq(githubRepositoryContentStatus.contentType, "blob"),
+			),
+		)
+		.limit(1);
+
+	if (!existing) {
+		throw new Error(
+			`Blob content status not found for repository dbId: ${dbId}`,
+		);
+	}
+
 	await db
-		.update(githubRepositoryIndex)
+		.update(githubRepositoryContentStatus)
 		.set({
 			status: "running",
 		})
-		.where(eq(githubRepositoryIndex.dbId, dbId));
+		.where(
+			and(
+				eq(githubRepositoryContentStatus.repositoryIndexDbId, dbId),
+				eq(githubRepositoryContentStatus.contentType, "blob"),
+			),
+		);
 }
 
 /**
- * Update repository status to completed
+ * Update repository blob content status to completed
  */
 async function updateRepositoryStatusToCompleted(
 	dbId: number,
 	commitSha: string,
 ) {
 	await db
-		.update(githubRepositoryIndex)
+		.update(githubRepositoryContentStatus)
 		.set({
 			status: "completed",
-			lastIngestedCommitSha: commitSha,
+			metadata: createBlobContentMetadata({
+				lastIngestedCommitSha: commitSha,
+			}),
+			lastSyncedAt: new Date(),
 			// clear error info
 			errorCode: null,
 			retryAfter: null,
 		})
-		.where(eq(githubRepositoryIndex.dbId, dbId));
+		.where(
+			and(
+				eq(githubRepositoryContentStatus.repositoryIndexDbId, dbId),
+				eq(githubRepositoryContentStatus.contentType, "blob"),
+			),
+		);
 }
 
 /**
- * Update repository status to failed
+ * Update repository blob content status to failed
  */
 async function updateRepositoryStatusToFailed(
 	dbId: number,
@@ -158,11 +190,16 @@ async function updateRepositoryStatusToFailed(
 	},
 ) {
 	await db
-		.update(githubRepositoryIndex)
+		.update(githubRepositoryContentStatus)
 		.set({
 			status: "failed",
 			errorCode: errorInfo.errorCode,
 			retryAfter: errorInfo.retryAfter,
 		})
-		.where(eq(githubRepositoryIndex.dbId, dbId));
+		.where(
+			and(
+				eq(githubRepositoryContentStatus.repositoryIndexDbId, dbId),
+				eq(githubRepositoryContentStatus.contentType, "blob"),
+			),
+		);
 }
