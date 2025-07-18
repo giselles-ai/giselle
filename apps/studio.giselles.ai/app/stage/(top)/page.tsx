@@ -14,11 +14,11 @@ import { defaultName } from "@giselle-sdk/giselle-engine";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { after } from "next/server";
+import { giselleEngine } from "@/app/giselle-engine";
 import { acts as actsSchema, db } from "@/drizzle";
 import { experimental_storageFlag, stageFlag } from "@/flags";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";
-import { giselleEngine } from "../giselle-engine";
 import { type FlowTriggerUIItem, Form } from "./form";
 
 // The maximum duration of server actions on this page is extended to 800 seconds through enabled fluid compute.
