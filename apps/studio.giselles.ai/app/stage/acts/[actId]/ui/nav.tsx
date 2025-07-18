@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Accordion } from "radix-ui";
-import type { Act, Sequence } from "../../object";
+import type { Act } from "../../object";
 
 interface NavProps {
 	act: Act;

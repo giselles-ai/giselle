@@ -2,73 +2,77 @@ import Link from "next/link";
 import type { Act, Sequence } from "../object";
 import { Nav } from "./ui/nav";
 
-const sequences: Sequence[] = [
-	{
-		id: "seq-1",
-		name: "Sequence 1",
-		count: 4,
-		status: "success",
-		steps: [
-			{ id: "step-1-1", text: "Generate Query", status: "success" },
-			{ id: "step-1-2", text: "Ingest", status: "success" },
-			{ id: "step-1-3", text: "Search", status: "success" },
-		],
-	},
-	{
-		id: "seq-2",
-		name: "cyberpunk_roguelike_sy",
-		count: 1,
-		status: "in-progress",
-		steps: [
-			{ id: "step-2-1", text: "Initialize", status: "success" },
-			{ id: "step-2-2", text: "Process", status: "in-progress" },
-			{ id: "step-2-3", text: "Complete", status: "pending" },
-		],
-	},
-	{
-		id: "seq-3",
-		name: "futuristic_sword_slash",
-		count: 1,
-		status: "failed",
-		steps: [
-			{ id: "step-3-1", text: "Load Assets", status: "success" },
-			{ id: "step-3-2", text: "Generate Sound", status: "failed" },
-		],
-	},
-	{
-		id: "seq-4",
-		name: "player_damage_sound_ef",
-		count: 1,
-		status: "pending",
-		steps: [],
-	},
-	{
-		id: "seq-5",
-		name: "drone_destruction_soun",
-		count: 1,
-		status: "warning",
-		steps: [
-			{ id: "step-5-1", text: "Analyze", status: "success" },
-			{ id: "step-5-2", text: "Synthesize", status: "warning" },
-			{ id: "step-5-3", text: "Export", status: "pending" },
-		],
-	},
-	{
-		id: "seq-6",
+const actData: Act = {
+  
+	id: "act-1",
+	sequences: [
+		{
+			id: "seq-1",
+			name: "Sequence 1",
+			count: 4,
+			status: "success",
+			steps: [
+				{ id: "step-1-1", text: "Generate Query", status: "success" },
+				{ id: "step-1-2", text: "Ingest", status: "success" },
+				{ id: "step-1-3", text: "Search", status: "success" },
+			],
+		},
+		{
+			id: "seq-2",
+			name: "cyberpunk_roguelike_sy",
+			count: 1,
+			status: "in-progress",
+			steps: [
+				{ id: "step-2-1", text: "Initialize", status: "success" },
+				{ id: "step-2-2", text: "Process", status: "in-progress" },
+				{ id: "step-2-3", text: "Complete", status: "pending" },
+			],
+		},
+		{
+			id: "seq-3",
+			name: "futuristic_sword_slash",
+			count: 1,
+			status: "failed",
+			steps: [
+				{ id: "step-3-1", text: "Load Assets", status: "success" },
+				{ id: "step-3-2", text: "Generate Sound", status: "failed" },
+			],
+		},
+		{
+			id: "seq-4",
+			name: "player_damage_sound_ef",
+			count: 1,
+			status: "pending",
+			steps: [],
+		},
+		{
+			id: "seq-5",
+			name: "drone_destruction_soun",
+			count: 1,
+			status: "warning",
+			steps: [
+				{ id: "step-5-1", text: "Analyze", status: "success" },
+				{ id: "step-5-2", text: "Synthesize", status: "warning" },
+				{ id: "step-5-3", text: "Export", status: "pending" },
+			],
+		},
+		{
+			id: "seq-6",
 
-		name: "digital_dash_blink_sou",
-		count: 1,
-		status: "success",
-		steps: [
-			{ id: "step-6-1", text: "Setup", status: "success" },
-			{ id: "step-6-2", text: "Render", status: "success" },
-		],
-	},
-];
+			name: "digital_dash_blink_sou",
+			count: 1,
+			status: "success",
+			steps: [
+				{ id: "step-6-1", text: "Setup", status: "success" },
+				{ id: "step-6-2", text: "Render", status: "success" },
+			],
+		},
+	],
+};
 
-const act: Act = {
-  id: 'act-1',
-  sequences,
+async function fetchAct(actId: string) {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  return actData
 }
 
 export default async function ({
@@ -78,6 +82,7 @@ export default async function ({
 	params: Promise<{ actId: string }>;
 }>) {
 	const { actId } = await params;
+	const act = await fetchAct(actId)
 	return (
 		<div className="bg-background text-foreground min-h-screen flex flex-col font-sans">
 			<div className="flex-grow flex">
@@ -113,7 +118,7 @@ export default async function ({
 								</span>
 							</div>
 						</div> */}
-            <Nav act={act} />
+						<Nav act={act} />
 					</div>
 
 					<div className="flex items-center justify-between p-2 border-t border-border">
