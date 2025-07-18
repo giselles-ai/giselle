@@ -20,6 +20,8 @@ export async function getGitHubVectorStores(teamDbId: number) {
 					githubRepositoryContentStatus.repositoryIndexDbId,
 					githubRepositoryIndex.dbId,
 				),
+				// currently only support blob content type
+				// TODO: support pull requests
 				eq(githubRepositoryContentStatus.contentType, "blob"),
 			),
 		)
