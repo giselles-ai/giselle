@@ -12,7 +12,7 @@ import {
 	TrashIcon,
 } from "lucide-react";
 import { Checkbox } from "radix-ui";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
 	ToolConfigurationDialog,
@@ -24,6 +24,14 @@ import {
 } from "./use-tool-provider-connection";
 
 const secretTags = ["github-access-token"];
+
+// GitHub Personal Access Token validation
+function isValidGitHubPAT(token: string): boolean {
+	// GitHub PAT formats (personal access tokens only):
+	// Classic PAT: ghp_ followed by 36 alphanumeric characters (total 40 chars)
+	// Fine-grained PAT: github_pat_ followed by 82 alphanumeric characters (total 93 chars)
+	return /^(ghp_[a-zA-Z0-9]{36}|github_pat_[a-zA-Z0-9_]{82})$/.test(token);
+}
 
 export function GitHubToolConfigurationDialog({
 	node,
@@ -91,11 +99,35 @@ function GitHubToolConnectionDialog({
 	secrets: { id: string; label: string }[] | undefined;
 	onSubmit: React.FormEventHandler<HTMLFormElement>;
 }) {
+	const [tokenValue, setTokenValue] = useState("");
+	const [tokenError, setTokenError] = useState<string | null>(null);
+
+	const handleTokenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const value = e.target.value;
+		setTokenValue(value);
+
+		if (value && !isValidGitHubPAT(value)) {
+			setTokenError(
+				"Invalid token format. GitHub Personal Access Tokens should start with ghp_ (classic) or github_pat_ (fine-grained)",
+			);
+		} else {
+			setTokenError(null);
+		}
+	};
+
+	const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		if (tabValue === "create" && tokenValue && !isValidGitHubPAT(tokenValue)) {
+			e.preventDefault();
+			return;
+		}
+		onSubmit(e);
+	};
+
 	return (
 		<ToolConfigurationDialog
 			title="Connect to GitHub"
 			description="How would you like to add your Personal Access Token (PAT)?"
-			onSubmit={onSubmit}
+			onSubmit={handleFormSubmit}
 			submitting={isPending}
 			trigger={
 				<Button type="button" leftIcon={<PlusIcon data-dialog-trigger-icon />}>
@@ -155,11 +187,25 @@ function GitHubToolConnectionDialog({
 								data-lpignore="true"
 								id="pat"
 								name="value"
+								value={tokenValue}
+								onChange={handleTokenChange}
+								aria-invalid={!!tokenError}
+								aria-describedby={tokenError ? "pat-error" : undefined}
 							/>
-							<p className="text-[11px] text-text-muted px-[4px] mt-[1px]">
-								We’ll encrypt the token with authenticated encryption before
-								saving it.
-							</p>
+							{tokenError ? (
+								<p
+									id="pat-error"
+									className="text-[11px] text-red-600 px-[4px] mt-[1px]"
+									role="alert"
+								>
+									{tokenError}
+								</p>
+							) : (
+								<p className="text-[11px] text-text-muted px-[4px] mt-[1px]">
+									We'll encrypt the token with authenticated encryption before
+									saving it.
+								</p>
+							)}
 						</fieldset>
 					</div>
 				</TabsContent>
