@@ -7,7 +7,7 @@ import {
 } from "./actions";
 import {
 	getInstallationsWithRepos,
-	getRepositoryIndexesWithContentStatus,
+	getRepositoriesWithContentStatuses,
 } from "./data";
 
 import { RepositoryList } from "./repository-list";
@@ -42,7 +42,7 @@ export default async function TeamVectorStorePage() {
 
 	const [installationsWithRepos, repositoryIndexes] = await Promise.all([
 		getInstallationsWithRepos(),
-		getRepositoryIndexesWithContentStatus(),
+		getRepositoriesWithContentStatuses(),
 	]);
 
 	return (

@@ -12,13 +12,10 @@ import {
 	diagnoseRepositoryConnection,
 	updateRepositoryInstallation,
 } from "./actions";
-import type {
-	DiagnosticResult,
-	RepositoryIndexWithContentStatus,
-} from "./types";
+import type { DiagnosticResult, RepositoryWithContentStatuses } from "./types";
 
 type DiagnosticModalProps = {
-	repositoryIndex: RepositoryIndexWithContentStatus;
+	repositoryIndex: RepositoryWithContentStatuses;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	onComplete?: () => void;

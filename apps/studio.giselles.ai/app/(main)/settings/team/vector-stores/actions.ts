@@ -21,6 +21,108 @@ import { fetchCurrentTeam } from "@/services/teams";
 
 import type { ActionResult, DiagnosticResult } from "./types";
 
+type CanIngestResult =
+	| { canIngest: true; targetRepository: TargetGitHubRepository }
+	| { canIngest: false; reason: string };
+
+/**
+ * Check if a repository can be ingested and prepare the target repository data
+ */
+async function canIngestRepository(
+	repositoryIndexId: GitHubRepositoryIndexId,
+	teamDbId: number,
+): Promise<CanIngestResult> {
+	const now = new Date();
+
+	// Get repository index
+	const repositoryResult = await db
+		.select()
+		.from(githubRepositoryIndex)
+		.where(
+			and(
+				eq(githubRepositoryIndex.id, repositoryIndexId),
+				eq(githubRepositoryIndex.teamDbId, teamDbId),
+			),
+		);
+
+	if (repositoryResult.length === 0) {
+		return { canIngest: false, reason: "Repository not found" };
+	}
+
+	const repositoryIndex = repositoryResult[0];
+
+	// Get all content statuses for this repository
+	const contentStatuses = await db
+		.select()
+		.from(githubRepositoryContentStatus)
+		.where(
+			eq(
+				githubRepositoryContentStatus.repositoryIndexDbId,
+				repositoryIndex.dbId,
+			),
+		);
+
+	// Check if any enabled content type is blocking
+	for (const contentStatus of contentStatuses) {
+		if (!contentStatus.enabled) {
+			continue; // Skip disabled content types
+		}
+
+		const canIngestThis =
+			contentStatus.status === "idle" ||
+			contentStatus.status === "completed" ||
+			(contentStatus.status === "failed" &&
+				contentStatus.retryAfter &&
+				contentStatus.retryAfter <= now);
+
+		if (!canIngestThis) {
+			return {
+				canIngest: false,
+				reason: `Repository cannot be ingested at this time (${contentStatus.contentType} is blocking)`,
+			};
+		}
+	}
+
+	// Get blob content status for metadata
+	const blobContentStatus = contentStatuses.find(
+		(cs) => cs.contentType === "blob",
+	);
+	if (!blobContentStatus) {
+		return {
+			canIngest: false,
+			reason: "Repository does not have a blob content status",
+		};
+	}
+
+	// Parse metadata
+	const parseResult = safeParseContentStatusMetadata(
+		blobContentStatus.metadata,
+		blobContentStatus.contentType,
+	);
+	const metadata = parseResult.success ? parseResult.data : null;
+
+	// Prepare target repository
+	const targetRepository: TargetGitHubRepository = {
+		dbId: repositoryIndex.dbId,
+		owner: repositoryIndex.owner,
+		repo: repositoryIndex.repo,
+		teamDbId: repositoryIndex.teamDbId,
+		installationId: repositoryIndex.installationId,
+		lastIngestedCommitSha: metadata?.lastIngestedCommitSha ?? null,
+	};
+
+	return { canIngest: true, targetRepository };
+}
+
+/**
+ * Execute manual ingest for a repository
+ */
+function executeManualIngest(targetRepository: TargetGitHubRepository): void {
+	after(async () => {
+		await processRepository(targetRepository);
+	});
+}
+
 export async function registerRepositoryIndex(
 	owner: string,
 	repo: string,
@@ -257,101 +359,20 @@ export async function triggerManualIngest(
 ): Promise<ActionResult> {
 	try {
 		const team = await fetchCurrentTeam();
-		const now = new Date();
 
-		const repositoryResult = await db
-			.select()
-			.from(githubRepositoryIndex)
-			.where(
-				and(
-					eq(githubRepositoryIndex.teamDbId, team.dbId),
-					eq(githubRepositoryIndex.id, indexId),
-				),
-			)
-			.limit(1);
+		// Check if repository can be ingested
+		const result = await canIngestRepository(indexId, team.dbId);
 
-		if (repositoryResult.length === 0) {
+		if (!result.canIngest) {
 			return {
 				success: false,
-				error: "Repository not found",
+				error: result.reason,
 			};
 		}
 
-		const repositoryIndex = repositoryResult[0];
-		const contentStatuses = await db
-			.select()
-			.from(githubRepositoryContentStatus)
-			.where(
-				eq(
-					githubRepositoryContentStatus.repositoryIndexDbId,
-					repositoryIndex.dbId,
-				),
-			);
+		// Execute the ingest
+		executeManualIngest(result.targetRepository);
 
-		let canIngestAll = true;
-		let blockingReason: string | null = null;
-		for (const contentStatus of contentStatuses) {
-			if (!contentStatus.enabled) {
-				continue; // Skip disabled content types
-			}
-
-			const canIngestThis =
-				contentStatus.status === "idle" ||
-				contentStatus.status === "completed" ||
-				(contentStatus.status === "failed" &&
-					contentStatus.retryAfter &&
-					contentStatus.retryAfter <= now);
-
-			if (!canIngestThis) {
-				canIngestAll = false;
-				blockingReason = `Repository cannot be ingested at this time (${contentStatus.contentType} is blocking)`;
-				break;
-			}
-		}
-
-		if (!canIngestAll) {
-			return {
-				success: false,
-				error: blockingReason || "Repository cannot be ingested at this time",
-			};
-		}
-
-		const blobContentStatus = contentStatuses.find(
-			(cs) => cs.contentType === "blob",
-		);
-		if (!blobContentStatus) {
-			throw new Error(
-				`Repository ${repositoryIndex.dbId} does not have a blob content status`,
-			);
-		}
-
-		const parseResult = safeParseContentStatusMetadata(
-			blobContentStatus.metadata,
-			blobContentStatus.contentType,
-		);
-		if (!parseResult.success) {
-			console.warn(
-				`Invalid ingest state for repository ${repositoryIndex.dbId}: ${parseResult.error}`,
-			);
-		}
-		const metadata = parseResult.success ? parseResult.data : null;
-
-		const targetRepository: TargetGitHubRepository = {
-			dbId: repositoryIndex.dbId,
-			owner: repositoryIndex.owner,
-			repo: repositoryIndex.repo,
-			teamDbId: repositoryIndex.teamDbId,
-			installationId: repositoryIndex.installationId,
-			lastIngestedCommitSha:
-				blobContentStatus.contentType === "blob" && metadata
-					? (metadata.lastIngestedCommitSha ?? null)
-					: null,
-		};
-
-		// Execute ingest in background using after()
-		after(async () => {
-			await processRepository(targetRepository);
-		});
 		// Immediately revalidate to show "running" status
 		revalidatePath("/settings/team/vector-stores");
 

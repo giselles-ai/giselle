@@ -1,10 +1,10 @@
 import { Card } from "@/components/ui/card";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import { RepositoryItem } from "./repository-item";
-import type { RepositoryIndexWithContentStatus } from "./types";
+import type { RepositoryWithContentStatuses } from "./types";
 
 type RepositoryListProps = {
-	repositoryIndexes: RepositoryIndexWithContentStatus[];
+	repositoryIndexes: RepositoryWithContentStatuses[];
 	deleteRepositoryIndexAction: (
 		indexId: GitHubRepositoryIndexId,
 	) => Promise<void>;

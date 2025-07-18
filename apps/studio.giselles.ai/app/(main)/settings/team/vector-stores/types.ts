@@ -39,24 +39,11 @@ import type {
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
 } from "@/drizzle";
-import type { ContentStatusMetadata } from "@/lib/vector-stores/github/ingest/content-metadata-schema";
 
+/**
+ * Repository with all its content statuses from the database
+ */
 export type RepositoryWithContentStatuses =
 	typeof githubRepositoryIndex.$inferSelect & {
 		contentStatuses: (typeof githubRepositoryContentStatus.$inferSelect)[];
 	};
-
-type ContentStatusWithParsedMetadata = Omit<
-	typeof githubRepositoryContentStatus.$inferSelect,
-	"metadata" | "dbId" | "repositoryIndexDbId"
-> & {
-	metadata: ContentStatusMetadata;
-};
-
-export type RepositoryIndexWithContentStatus = Omit<
-	typeof githubRepositoryIndex.$inferSelect,
-	"status" | "errorCode" | "retryAfter" | "lastIngestedCommitSha"
-> & {
-	blobStatus: ContentStatusWithParsedMetadata;
-	// TODO: pullRequestsStatus?: ContentStatusWithParsedMetadata;
-};
