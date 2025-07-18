@@ -11,6 +11,7 @@ import {
 	type WorkspaceId,
 } from "@giselle-sdk/data-type";
 import { defaultName } from "@giselle-sdk/giselle-engine";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { after } from "next/server";
 import { acts as actsSchema, db } from "@/drizzle";
@@ -160,7 +161,15 @@ export default async function StagePage() {
 										</div>
 									</TableCell>
 									<TableCell className="text-center">-</TableCell>
-									<TableCell className="text-center">-</TableCell>
+									<TableCell className="text-right">
+										<div className="flex justify-end">
+											<Link
+												href={`/stage/acts/${task.sdkFlowRunId.substring(5)}`}
+											>
+												Details
+											</Link>
+										</div>
+									</TableCell>
 								</TableRow>
 							);
 						})}
