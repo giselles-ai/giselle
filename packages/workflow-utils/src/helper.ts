@@ -1,29 +1,29 @@
 import {
 	type Connection,
 	isOperationNode,
-	type Job,
-	JobId,
 	Node,
 	type NodeId,
 	type NodeLike,
-	type Operation,
+	type Sequence,
+	SequenceId,
+	type Step,
 	type WorkflowId,
 } from "@giselle-sdk/data-type";
 
 /**
- * Converts a directed graph into a sequence of jobs with steps based on topological sorting.
+ * Converts a directed graph into a sequence of sequences with steps based on topological sorting.
  *
- * Input Graph:          Output Jobs:
- * A → B → D             Job1: [A]
- * ↓   ↓                 Job2: [B, C]
- * C → E                 Job3: [D, E]
+ * Input Graph:          Output Sequences:
+ * A → B → D             Sequence1: [A]
+ * ↓   ↓                 Sequence2: [B, C]
+ * C → E                 Sequence3: [D, E]
  *
  * @param nodeSet The set of nodes in the workflow
  * @param connectionSet The set of connections between nodes
  * @param workflowId The ID of the workflow
- * @returns Array of jobs for the workflow
+ * @returns Array of sequences for the workflow
  */
-export function buildJobList(
+export function buildSequenceList(
 	nodes: NodeLike[],
 	connections: Connection[],
 	workflowId: WorkflowId,
@@ -138,14 +138,14 @@ export function buildJobList(
 	}
 	const levels = topologicalSort(operationNodeIdSet, operationConnectionSet);
 
-	// Create jobs based on the topological levels
-	const jobs: Job[] = [];
+	// Create sequences based on the topological levels
+	const sequences: Sequence[] = [];
 	for (const level of levels) {
-		const jobId = JobId.generate();
+		const sequenceId = SequenceId.generate();
 		const nodes = Array.from(nodeSet)
 			.filter((node) => level.has(node.id))
 			.filter((node) => isOperationNode(node));
-		const operations = nodes.map((node) => {
+		const steps = nodes.map((node) => {
 			const connectionArray = Array.from(connectionSet);
 			const nodeArray = Array.from(nodeSet);
 
@@ -177,15 +177,15 @@ export function buildJobList(
 				node,
 				sourceNodes,
 				connections: connectedConnections,
-			} satisfies Operation;
+			} satisfies Step;
 		});
 
-		const job = {
-			id: jobId,
-			operations,
+		const sequence = {
+			id: sequenceId,
+			steps,
 			workflowId,
-		} satisfies Job;
-		jobs.push(job);
+		} satisfies Sequence;
+		sequences.push(sequence);
 	}
-	return jobs;
+	return sequences;
 }

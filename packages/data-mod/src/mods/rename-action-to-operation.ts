@@ -45,10 +45,20 @@ function transformNodeTypes(obj: unknown): unknown {
 		result.operationNode = transformedActionNode;
 	}
 
-	// If this has an actions array, rename to operations
+	// If this has an actions array, rename to operations (legacy) or steps (current)
 	if ("actions" in result && Array.isArray(result.actions)) {
+		// Transform to operations for backward compatibility
 		result.operations = result.actions.map((action) =>
 			transformNodeTypes(action),
+		);
+		// Also create steps for new format
+		result.steps = result.actions.map((action) => transformNodeTypes(action));
+	}
+
+	// If this has a jobs array, also create sequences for new format
+	if ("jobs" in result && Array.isArray(result.jobs)) {
+		result.sequences = result.jobs.map((job: unknown) =>
+			transformNodeTypes(job),
 		);
 	}
 
@@ -157,17 +167,36 @@ export function renameActionToOperation(data: unknown, issue: $ZodIssue) {
 		}
 	}
 
-	// Case 3: Handle Job actions array rename to operations in job
-	if (issue.code === "invalid_type" && issue.path.includes("operations")) {
-		// Try to find the job object by looking at parent paths
-		const jobPath = issue.path.slice(0, issue.path.indexOf("operations"));
-		const job = getValueAtPath(data, jobPath);
+	// Case 3: Handle Job actions array rename to operations/steps in job/sequence
+	if (
+		issue.code === "invalid_type" &&
+		(issue.path.includes("operations") || issue.path.includes("steps"))
+	) {
+		// Try to find the job/sequence object by looking at parent paths
+		const operationPath = issue.path.includes("operations")
+			? issue.path.slice(0, issue.path.indexOf("operations"))
+			: issue.path.slice(0, issue.path.indexOf("steps"));
+		const jobOrSequence = getValueAtPath(data, operationPath);
 		// Look for a parent with 'actions' array
-		if (job && typeof job === "object") {
+		if (jobOrSequence && typeof jobOrSequence === "object") {
 			// Check if this object has an actions array that we need to migrate
-			if (Array.isArray(job.actions)) {
-				// Copy the actions array to operations
-				setValueAtPath(newData, [...jobPath, "operations"], job.actions);
+			if (Array.isArray(jobOrSequence.actions)) {
+				// Copy the actions array to operations (legacy compatibility)
+				if (issue.path.includes("operations")) {
+					setValueAtPath(
+						newData,
+						[...operationPath, "operations"],
+						jobOrSequence.actions,
+					);
+				}
+				// Copy the actions array to steps (current format)
+				if (issue.path.includes("steps")) {
+					setValueAtPath(
+						newData,
+						[...operationPath, "steps"],
+						jobOrSequence.actions,
+					);
+				}
 				return newData;
 			}
 		}
@@ -176,6 +205,26 @@ export function renameActionToOperation(data: unknown, issue: $ZodIssue) {
 		if (issue.path.includes("editingWorkflows")) {
 			// Use the deep transformer for complex workflow structures
 			return transformNodeTypes(data);
+		}
+	}
+
+	// Case 4: Handle jobs array rename to sequences
+	if (issue.code === "invalid_type" && issue.path.includes("sequences")) {
+		// Try to find the workflow object by looking at parent paths
+		const sequencePath = issue.path.slice(0, issue.path.indexOf("sequences"));
+		const workflow = getValueAtPath(data, sequencePath);
+		// Look for a parent with 'jobs' array
+		if (workflow && typeof workflow === "object") {
+			// Check if this object has a jobs array that we need to migrate
+			if (Array.isArray(workflow.jobs)) {
+				// Copy the jobs array to sequences (current format)
+				setValueAtPath(
+					newData,
+					[...sequencePath, "sequences"],
+					workflow.jobs.map((job: unknown) => transformNodeTypes(job)),
+				);
+				return newData;
+			}
 		}
 	}
 

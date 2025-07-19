@@ -39,7 +39,7 @@ export async function createAndRunFlow(args: {
 		context: args.context,
 		trigger: trigger.configuration.provider,
 		workspaceId: trigger.workspaceId,
-		jobsCount: workflow.jobs.length,
+		jobsCount: workflow.sequences.length,
 	});
 	await Promise.all([
 		args.context.storage.setItem(flowRunPath(flowRun.id), flowRun),

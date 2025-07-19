@@ -101,7 +101,7 @@ export default async function StagePage() {
 					}
 					const run = await giselleEngine.createRun({
 						workspaceId: payloads.flowTrigger.workspaceId,
-						jobsCount: build.workflow.jobs.length,
+						jobsCount: build.workflow.sequences.length,
 						trigger: "studio",
 					});
 

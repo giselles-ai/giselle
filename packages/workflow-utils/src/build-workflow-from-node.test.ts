@@ -35,8 +35,8 @@ describe("buildWorkflowForNode with testWorkspace1", () => {
 			// The workflow should contain 3 nodes: Manual trigger, Text Generation, Text Generation
 			expect(result.nodes.length).toBe(3);
 
-			// The workflow should have 3 jobs, one for each node in the correct order
-			expect(result.jobs.length).toBe(3);
+			// The workflow should have 3 sequences, one for each node in the correct order
+			expect(result.sequences.length).toBe(3);
 
 			// Check if specific nodes are included in the workflow
 			const nodeIds = result.nodes.map((node) => node.id).sort();
@@ -50,26 +50,26 @@ describe("buildWorkflowForNode with testWorkspace1", () => {
 			expect(nodeIds).not.toContain("nd-jm0L6gvHk4U0eAlz"); // From different workflow
 			expect(nodeIds).not.toContain("nd-4KPG1AiUA0mGN94i"); // From different workflow
 
-			// Check job dependencies
-			// First job should be the Manual trigger node
-			const job1 = result.jobs[0];
-			expect(job1.operations.length).toBe(1);
-			expect(job1.operations[0].node.id).toBe("nd-y7lLktmBplRvcSov");
-			expect(job1.operations[0].sourceNodes.length).toBe(0);
+			// Check sequence dependencies
+			// First sequence should be the Manual trigger node
+			const sequence1 = result.sequences[0];
+			expect(sequence1.steps.length).toBe(1);
+			expect(sequence1.steps[0].node.id).toBe("nd-y7lLktmBplRvcSov");
+			expect(sequence1.steps[0].sourceNodes.length).toBe(0);
 
-			// Second job should be the first Text Generation node
-			const job2 = result.jobs[1];
-			expect(job2.operations.length).toBe(1);
-			expect(job2.operations[0].node.id).toBe("nd-7cHfwxtERI9CPAIt");
-			expect(job2.operations[0].sourceNodes.length).toBe(1);
-			expect(job2.operations[0].sourceNodes[0].id).toBe("nd-y7lLktmBplRvcSov");
+			// Second sequence should be the first Text Generation node
+			const sequence2 = result.sequences[1];
+			expect(sequence2.steps.length).toBe(1);
+			expect(sequence2.steps[0].node.id).toBe("nd-7cHfwxtERI9CPAIt");
+			expect(sequence2.steps[0].sourceNodes.length).toBe(1);
+			expect(sequence2.steps[0].sourceNodes[0].id).toBe("nd-y7lLktmBplRvcSov");
 
-			// Third job should be the second Text Generation node
-			const job3 = result.jobs[2];
-			expect(job3.operations.length).toBe(1);
-			expect(job3.operations[0].node.id).toBe("nd-1aXA3izp1yV48mPH");
-			expect(job3.operations[0].sourceNodes.length).toBe(1);
-			expect(job3.operations[0].sourceNodes[0].id).toBe("nd-7cHfwxtERI9CPAIt");
+			// Third sequence should be the second Text Generation node
+			const sequence3 = result.sequences[2];
+			expect(sequence3.steps.length).toBe(1);
+			expect(sequence3.steps[0].node.id).toBe("nd-1aXA3izp1yV48mPH");
+			expect(sequence3.steps[0].sourceNodes.length).toBe(1);
+			expect(sequence3.steps[0].sourceNodes[0].id).toBe("nd-7cHfwxtERI9CPAIt");
 		}
 	});
 });
@@ -95,54 +95,54 @@ describe("buildWorkflowForNode with fixture/workspace1", () => {
 		result = buildWorkflowFromNode(node, workspaceData);
 	});
 
-	it("should build a workflow with 3 jobs", () => {
+	it("should build a workflow with 3 sequences", () => {
 		expect(result).not.toBeNull();
-		expect(result?.jobs.length).toBe(3);
+		expect(result?.sequences.length).toBe(3);
 	});
 
-	it("should have first job with one operation that is a manualTrigger", () => {
+	it("should have first sequence with one step that is a manualTrigger", () => {
 		expect(result).not.toBeNull();
 		if (result) {
-			const firstJob = result.jobs[0];
-			expect(firstJob.operations.length).toBe(1);
-			expect(firstJob.operations[0].node.id).toBe("nd-qRt17h0TP7nQd4Xk");
-			expect(firstJob.operations[0].node.content.type).toBe("trigger");
+			const firstSequence = result.sequences[0];
+			expect(firstSequence.steps.length).toBe(1);
+			expect(firstSequence.steps[0].node.id).toBe("nd-qRt17h0TP7nQd4Xk");
+			expect(firstSequence.steps[0].node.content.type).toBe("trigger");
 		}
 	});
 
-	it("should have second job with one operation that is a textGeneration", () => {
+	it("should have second sequence with one step that is a textGeneration", () => {
 		expect(result).not.toBeNull();
 		if (result) {
-			const secondJob = result.jobs[1];
-			expect(secondJob.operations.length).toBe(1);
-			expect(secondJob.operations[0].node.id).toBe("nd-LsNVgNj3s1xJjreL");
-			expect(secondJob.operations[0].node.content.type).toBe("textGeneration");
+			const secondSequence = result.sequences[1];
+			expect(secondSequence.steps.length).toBe(1);
+			expect(secondSequence.steps[0].node.id).toBe("nd-LsNVgNj3s1xJjreL");
+			expect(secondSequence.steps[0].node.content.type).toBe("textGeneration");
 		}
 	});
 
-	it("should have third job with one operation that is an action", () => {
+	it("should have third sequence with one step that is an action", () => {
 		expect(result).not.toBeNull();
 		if (result) {
-			const thirdJob = result.jobs[2];
-			expect(thirdJob.operations.length).toBe(1);
-			expect(thirdJob.operations[0].node.id).toBe("nd-c2tg86XNmMef5SUj");
-			expect(thirdJob.operations[0].node.content.type).toBe("action");
+			const thirdSequence = result.sequences[2];
+			expect(thirdSequence.steps.length).toBe(1);
+			expect(thirdSequence.steps[0].node.id).toBe("nd-c2tg86XNmMef5SUj");
+			expect(thirdSequence.steps[0].node.content.type).toBe("action");
 		}
 	});
 
-	it("should have the first job's node included in the third job's sourceNodes", () => {
+	it("should have the first sequence's node included in the third sequence's sourceNodes", () => {
 		expect(result).not.toBeNull();
 		if (result) {
-			const firstJobNodeId = "nd-qRt17h0TP7nQd4Xk";
-			const secondJobNodeId = "nd-LsNVgNj3s1xJjreL";
-			const thirdJob = result.jobs[2];
+			const firstSequenceNodeId = "nd-qRt17h0TP7nQd4Xk";
+			const secondSequenceNodeId = "nd-LsNVgNj3s1xJjreL";
+			const thirdSequence = result.sequences[2];
 
-			// Check if the sourceNodes of the third job include the first job's node
-			const sourceNodeIds = thirdJob.operations[0].sourceNodes.map(
+			// Check if the sourceNodes of the third sequence include the first sequence's node
+			const sourceNodeIds = thirdSequence.steps[0].sourceNodes.map(
 				(node) => node.id,
 			);
-			expect(sourceNodeIds).toContain(firstJobNodeId);
-			expect(sourceNodeIds).toContain(secondJobNodeId);
+			expect(sourceNodeIds).toContain(firstSequenceNodeId);
+			expect(sourceNodeIds).toContain(secondSequenceNodeId);
 		}
 	});
 });
@@ -170,57 +170,57 @@ describe("buildWorkflowForNode with testWorkspace2", () => {
 		result = buildWorkflowFromNode(node, workspaceData);
 	});
 
-	it("should build a workflow with 3 jobs", () => {
+	it("should build a workflow with 3 sequences", () => {
 		expect(result).not.toBeNull();
-		expect(result?.jobs.length).toBe(3);
+		expect(result?.sequences.length).toBe(3);
 	});
 
-	it("should have first job with one operation that is a GitHub trigger", () => {
+	it("should have first sequence with one step that is a GitHub trigger", () => {
 		expect(result).not.toBeNull();
 		if (result) {
-			const firstJob = result.jobs[0];
-			expect(firstJob.operations.length).toBe(1);
-			expect(firstJob.operations[0].node.id).toBe("nd-Z6YHBDO456UNY6N4");
-			expect(firstJob.operations[0].node.content.type).toBe("trigger");
-			if (isTriggerNode(firstJob.operations[0].node)) {
-				expect(firstJob.operations[0].node.content.provider).toBe("github");
+			const firstSequence = result.sequences[0];
+			expect(firstSequence.steps.length).toBe(1);
+			expect(firstSequence.steps[0].node.id).toBe("nd-Z6YHBDO456UNY6N4");
+			expect(firstSequence.steps[0].node.content.type).toBe("trigger");
+			if (isTriggerNode(firstSequence.steps[0].node)) {
+				expect(firstSequence.steps[0].node.content.provider).toBe("github");
 			}
-			expect(firstJob.operations[0].sourceNodes.length).toBe(0);
+			expect(firstSequence.steps[0].sourceNodes.length).toBe(0);
 		}
 	});
 
-	it("should have second job with one operation that is a text generation", () => {
+	it("should have second sequence with one step that is a text generation", () => {
 		expect(result).not.toBeNull();
 		if (result) {
-			const secondJob = result.jobs[1];
-			expect(secondJob.operations.length).toBe(1);
-			expect(secondJob.operations[0].node.id).toBe("nd-Q68VP2EDCXck0DZg");
-			expect(secondJob.operations[0].node.content.type).toBe("textGeneration");
-			expect(secondJob.operations[0].sourceNodes.length).toBe(1);
-			expect(secondJob.operations[0].sourceNodes[0].id).toBe(
+			const secondSequence = result.sequences[1];
+			expect(secondSequence.steps.length).toBe(1);
+			expect(secondSequence.steps[0].node.id).toBe("nd-Q68VP2EDCXck0DZg");
+			expect(secondSequence.steps[0].node.content.type).toBe("textGeneration");
+			expect(secondSequence.steps[0].sourceNodes.length).toBe(1);
+			expect(secondSequence.steps[0].sourceNodes[0].id).toBe(
 				"nd-Z6YHBDO456UNY6N4",
 			);
 		}
 	});
 
-	it("should have third job with one operation that is a GitHub action", () => {
+	it("should have third sequence with one step that is a GitHub action", () => {
 		expect(result).not.toBeNull();
 		if (result) {
-			const thirdJob = result.jobs[2];
-			expect(thirdJob.operations.length).toBe(1);
-			expect(thirdJob.operations[0].node.id).toBe("nd-9erM0USHKLZVTMsL");
-			expect(thirdJob.operations[0].node.content.type).toBe("action");
+			const thirdSequence = result.sequences[2];
+			expect(thirdSequence.steps.length).toBe(1);
+			expect(thirdSequence.steps[0].node.id).toBe("nd-9erM0USHKLZVTMsL");
+			expect(thirdSequence.steps[0].node.content.type).toBe("action");
 		}
 	});
 
-	it("should have the third job's sourceNodes include both trigger and text generation nodes", () => {
+	it("should have the third sequence's sourceNodes include both trigger and text generation nodes", () => {
 		expect(result).not.toBeNull();
 		if (result) {
 			const triggerNodeId = "nd-Z6YHBDO456UNY6N4";
 			const textGenNodeId = "nd-Q68VP2EDCXck0DZg";
-			const thirdJob = result.jobs[2];
+			const thirdSequence = result.sequences[2];
 
-			const sourceNodeIds = thirdJob.operations[0].sourceNodes.map(
+			const sourceNodeIds = thirdSequence.steps[0].sourceNodes.map(
 				(node) => node.id,
 			);
 			expect(sourceNodeIds).toContain(triggerNodeId);
@@ -290,13 +290,13 @@ describe("buildWorkflowForNode with testWorkspace3", () => {
 		result = buildWorkflowFromNode(node, workspaceData);
 	});
 
-	it("should build a workflow with 2 jobs", () => {
+	it("should build a workflow with 2 sequences", () => {
 		expect(result).not.toBeNull();
-		expect(result?.jobs.length).toBe(2);
+		expect(result?.sequences.length).toBe(2);
 	});
 
-	it("should build a workflow with first job has one operation", () => {
+	it("should build a workflow with first sequence has one step", () => {
 		expect(result).not.toBeNull();
-		expect(result?.jobs[0].operations).toHaveLength(1);
+		expect(result?.sequences[0].steps).toHaveLength(1);
 	});
 });

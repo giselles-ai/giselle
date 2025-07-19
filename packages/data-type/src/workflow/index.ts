@@ -3,28 +3,28 @@ import { z } from "zod/v4";
 import { Connection } from "../connection";
 import { Node, NodeLike, OperationNode } from "../node";
 
-export const JobId = createIdGenerator("jb");
-export type JobId = z.infer<typeof JobId.schema>;
+export const SequenceId = createIdGenerator("sq");
+export type SequenceId = z.infer<typeof SequenceId.schema>;
 export const WorkflowId = createIdGenerator("wf");
 export type WorkflowId = z.infer<typeof WorkflowId.schema>;
 
-export const Operation = z.object({
+export const Step = z.object({
 	node: OperationNode,
 	sourceNodes: z.array(Node),
 	connections: z.array(Connection),
 });
-export type Operation = z.infer<typeof Operation>;
+export type Step = z.infer<typeof Step>;
 
-export const Job = z.object({
-	id: JobId.schema,
+export const Sequence = z.object({
+	id: SequenceId.schema,
 	workflowId: WorkflowId.schema,
-	operations: z.array(Operation),
+	steps: z.array(Step),
 });
-export type Job = z.infer<typeof Job>;
+export type Sequence = z.infer<typeof Sequence>;
 
 export const Workflow = z.object({
 	id: WorkflowId.schema,
-	jobs: z.array(Job),
+	sequences: z.array(Sequence),
 	nodes: z.array(NodeLike),
 });
 export type Workflow = z.infer<typeof Workflow>;
