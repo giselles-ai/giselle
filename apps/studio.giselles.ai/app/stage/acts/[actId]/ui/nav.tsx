@@ -56,14 +56,14 @@ export function Nav({ act }: NavProps) {
 									<Link
 										href={`/stage/acts/${act.id}/${step.id}`}
 										key={step.id}
-										className="flex items-center gap-[4px] text-[11px] text-text-muted bg-transparent hover:bg-ghost-element-hover rounded-[4px] px-[4px] py-[1px] transition-colors data-[state=active]:bg-ghost-element-active"
+										className="group flex items-center justify-between text-[11px] text-text-muted bg-transparent hover:bg-ghost-element-hover rounded-[4px] px-[4px] py-[2px] transition-colors data-[state=active]:bg-ghost-element-active"
 										data-state={
 											pathname === `/stage/acts/${act.id}/${step.id}`
 												? "active"
 												: ""
 										}
 									>
-										<div>
+										<div className="flex items-center gap-[4px] ">
 											{step.status === "success" && (
 												<CheckIcon className="text-success size-[12px]" />
 											)}
@@ -79,8 +79,11 @@ export function Nav({ act }: NavProps) {
 											{step.status === "warning" && (
 												<AlertCircle className="text-warning size-[12px]" />
 											)}
+											<span>{step.text}</span>
 										</div>
-										<span>{step.text}</span>
+										<span className="opacity-0 group-hover:opacity-100 group-data-[state=active]:hidden transition-opacity">
+											Show
+										</span>
 									</Link>
 								))}
 							</div>

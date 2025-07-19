@@ -1,3 +1,4 @@
+import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import type { Act } from "../object";
 import { Nav } from "./ui/nav";
@@ -156,15 +157,19 @@ export default async function ({
 	return (
 		<div className="bg-surface-background text-foreground h-screen flex font-sans">
 			{/* Left Sidebar */}
-			<aside className="w-[300px] flex flex-col py-2 px-[24px] space-y-4">
-				<div className="-ml-[24px]">
-					<Link href="/stage">Back</Link>
+			<aside className="w-[300px] flex flex-col pl-[24px] border-[2px] border-transparent my-[8px]">
+				<div className="text-[12px] text-text-muted mb-[4px] pt-[16px]">
+					<Link
+						href="/stage"
+						className="flex items-center gap-[2px] -ml-[12px]"
+					>
+						<ArrowLeftIcon className="size-[12px]" />
+						<span>Back</span>
+					</Link>
 				</div>
 
-				<div className="rounded-lg space-y-3">
-					<div className="flex items-start gap-3">
-						<h2>Create pull request</h2>
-					</div>
+				<div className="mb-[24px]">
+					<h2>Create pull request</h2>
 					{/* <div className="flex bg-secondary rounded-md p-1 text-sm">
 							<button className="flex-1 text-muted-foreground py-1 px-2 rounded">
 								Steps
@@ -190,7 +195,7 @@ export default async function ({
 					<Nav act={act} />
 				</div>
 
-				<div className="flex items-center justify-between p-2 border-t border-border">
+				{/* <div className="flex items-center justify-between p-2 border-t border-border">
 					<div className="flex items-center gap-3">
 						<img
 							src="/placeholder.svg?width=40&height=40"
@@ -210,7 +215,7 @@ export default async function ({
 					>
 						TRIAL
 					</button>
-				</div>
+				</div> */}
 			</aside>
 
 			<main className="m-[8px] flex flex-1 border-[2px] border-border-variant rounded-[8px] bg-background overflow-hidden">
