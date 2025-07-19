@@ -154,7 +154,7 @@ export default async function ({
 	const { actId } = await params;
 	const act = await fetchAct(actId);
 	return (
-		<div className="bg-surface-background text-foreground min-h-screen flex font-sans">
+		<div className="bg-surface-background text-foreground h-screen flex font-sans">
 			{/* Left Sidebar */}
 			<aside className="w-[300px] flex flex-col py-2 px-[24px] space-y-4">
 				<div className="-ml-[24px]">
@@ -213,7 +213,9 @@ export default async function ({
 				</div>
 			</aside>
 
-			<main className="m-[8px] flex flex-1 border-[2px] border-border-variant rounded-[8px] bg-background p-[16px]">{children}</main>
+			<main className="m-[8px] flex flex-1 border-[2px] border-border-variant rounded-[8px] bg-background overflow-hidden">
+				{children}
+			</main>
 		</div>
 	);
 }

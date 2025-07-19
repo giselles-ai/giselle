@@ -9,7 +9,7 @@ export interface Step {
 	generationId: GenerationId;
 }
 
-export interface Sequence {
+interface Sequence {
 	id: string;
 	name: string;
 	count: number;

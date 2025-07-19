@@ -1,8 +1,9 @@
-import { experimental_storageFlag } from "@/flags";
-import type { Step } from "../../object";
-import { giselleEngine } from "@/app/giselle-engine";
+import { NodeIcon } from "@giselles-ai/icons/node";
 import { notFound } from "next/navigation";
-import { defaultName } from "@giselle-sdk/giselle-engine";
+import { giselleEngine } from "@/app/giselle-engine";
+import { experimental_storageFlag } from "@/flags";
+import { GenerationView } from "../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
+import type { Step } from "../../object";
 
 async function fetchStep(_actId: string, _stepId: string) {
 	await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -13,6 +14,7 @@ async function fetchStep(_actId: string, _stepId: string) {
 		generationId: "gnr-Q7IQPMn4dSpzfDVS",
 	} satisfies Step;
 }
+
 export default async function ({
 	params,
 }: {
@@ -29,24 +31,31 @@ export default async function ({
 		return notFound();
 	}
 
-	// switch (generation.status) {
-	// 	case "queued":
-	// 		return <p>queued</p>;
-	// 	case "created":
-	// 		return <p>created</p>;
-	// 	case "running":
-	// 		return <p>running</p>;
-	// 	case "completed":
-	// 		return <p>completed</p>;
-	// 	case "failed":
-	// 		return <p>failed</p>;
-	//    case 'cancelled':
-	//      return <p>cancelled</p>;
-	// 	default: {
-	// 		const _exhaustiveCheck: never = generation;
-	// 		throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
-	// 	}
-	// }
-
-  return <div>{defaultName(generation.context.operationNode)}</div>;
+	return (
+		<div className="flex flex-col w-full">
+			<header className="bg-tab-active-background p-[16px] flex items-center">
+				<div className="flex items-center gap-[6px]">
+					<div className="p-[8px] bg-element-active rounded-[4px]">
+						<NodeIcon
+							node={generation.context.operationNode}
+							className="size-[16px]"
+						/>
+					</div>
+					<div className="flex flex-col">
+						<div className="text-[14px]">Generate Query</div>
+						<div className="text text-text-muted text-[10px] flex items-center gap-[4px]">
+							<span>gpt-4o</span>
+							<div className="size-[2px] rounded-full bg-text-muted" />
+							<span>Finished: 07/17/2025, 10:48 AM</span>
+						</div>
+					</div>
+				</div>
+			</header>
+			<main className="p-[16px] overflow-y-auto">
+				<div className="max-w-[600px] mx-auto">
+					<GenerationView generation={generation} />
+				</div>
+			</main>
+		</div>
+	);
 }
