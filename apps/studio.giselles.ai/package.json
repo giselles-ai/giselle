@@ -85,6 +85,7 @@
 		"pg": "catalog:",
 		"pino": "9.5.0",
 		"posthog-js": "1.194.2",
+		"radix-ui": "catalog:",
 		"react": "catalog:",
 		"react-dom": "catalog:",
 		"require-in-the-middle": "7.5.2",
