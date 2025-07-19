@@ -14,15 +14,6 @@ export * from "./output";
 export const GenerationId = createIdGenerator("gnr");
 export type GenerationId = z.infer<typeof GenerationId.schema>;
 
-export const GenerationTypeWorkspace = z.literal("workspace");
-export type GenerationTypeWorkspace = z.infer<typeof GenerationTypeWorkspace>;
-export const GenerationTypeRun = z.literal("run");
-export type GenerationTypeRun = z.infer<typeof GenerationTypeRun>;
-export const GenerationType = z.union([
-	GenerationTypeWorkspace,
-	GenerationTypeRun,
-]);
-export type GenerationType = z.infer<typeof GenerationType>;
 export const Message = z.custom<AISdkMessage>();
 export type Message = z.infer<typeof Message>;
 
