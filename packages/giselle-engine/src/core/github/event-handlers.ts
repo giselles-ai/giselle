@@ -1,7 +1,7 @@
 import {
 	type FlowTrigger,
 	isTriggerNode,
-	type Job,
+	type Sequence,
 } from "@giselle-sdk/data-type";
 import type {
 	addReaction,
@@ -19,7 +19,7 @@ import type { createAndRunFlow } from "../flows";
 import type { GiselleEngineContext } from "../types";
 import type { parseCommand } from "./utils";
 
-type ProgressTableRow = Job & {
+type ProgressTableRow = Sequence & {
 	status: "queued" | "running" | "complete" | "failed" | "skipped";
 	updatedAt: Date | undefined;
 };
@@ -56,8 +56,8 @@ function buildProgressTable(data: ProgressTableData) {
 	const header = "| Step | Nodes | Status | Updated(UTC) |";
 	const separator = "| --- | --- | --- | --- |";
 	const rows = data.map((row, i) => {
-		const names = row.operations
-			.map((op) => op.node.name ?? op.node.id)
+		const names = row.steps
+			.map((step) => step.node.name ?? step.node.id)
 			.join(", ");
 		let status = "";
 		switch (row.status) {
@@ -389,15 +389,13 @@ export async function processEvent<TEventName extends WebhookEventName>(
 			],
 			callbacks: {
 				flowCreate: async ({ flow }) => {
-					progressTableData = flow.jobs
+					progressTableData = flow.sequences
 						.filter(
-							(job) =>
-								!job.operations.some((operation) =>
-									isTriggerNode(operation.node),
-								),
+							(sequence) =>
+								!sequence.steps.some((step) => isTriggerNode(step.node)),
 						)
-						.map((job) => ({
-							...job,
+						.map((sequence) => ({
+							...sequence,
 							status: "queued",
 							updatedAt: undefined,
 						}));
@@ -450,9 +448,9 @@ export async function processEvent<TEventName extends WebhookEventName>(
 						createdComment = { id: comment.id, type: "review" };
 					}
 				},
-				jobStart: async ({ job }) => {
+				sequenceStart: async ({ sequence }) => {
 					progressTableData = progressTableData.map((row) =>
-						row.id === job.id
+						row.id === sequence.id
 							? { ...row, status: "running", updatedAt: new Date() }
 							: row,
 					);
@@ -460,9 +458,9 @@ export async function processEvent<TEventName extends WebhookEventName>(
 						`Running flow...\n\n${buildProgressTable(progressTableData)}`,
 					);
 				},
-				jobComplete: async ({ job }) => {
+				sequenceComplete: async ({ sequence }) => {
 					progressTableData = progressTableData.map((row) =>
-						row.id === job.id
+						row.id === sequence.id
 							? { ...row, status: "complete", updatedAt: new Date() }
 							: row,
 					);
@@ -470,10 +468,10 @@ export async function processEvent<TEventName extends WebhookEventName>(
 						`Running flow...\n\n${buildProgressTable(progressTableData)}`,
 					);
 				},
-				jobFail: async ({ job }) => {
+				sequenceFail: async ({ sequence }) => {
 					hasFlowError = true;
 					progressTableData = progressTableData.map((row) =>
-						row.id === job.id
+						row.id === sequence.id
 							? { ...row, status: "failed", updatedAt: new Date() }
 							: row,
 					);
@@ -481,9 +479,9 @@ export async function processEvent<TEventName extends WebhookEventName>(
 						`Running flow...\n\n${buildProgressTable(progressTableData)}`,
 					);
 				},
-				jobSkip: async ({ job }) => {
+				sequenceSkip: async ({ sequence }) => {
 					progressTableData = progressTableData.map((row) =>
-						row.id === job.id
+						row.id === sequence.id
 							? { ...row, status: "skipped", updatedAt: new Date() }
 							: row,
 					);
@@ -494,7 +492,7 @@ export async function processEvent<TEventName extends WebhookEventName>(
 			},
 		});
 		const greeting = hasFlowError
-			? "Unexpected error on runinng flow"
+			? "Unexpected error on running flow"
 			: "Finished running flow.";
 		await updateComment(
 			`${greeting}\n\n${buildProgressTable(progressTableData)}`,

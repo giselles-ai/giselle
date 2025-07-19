@@ -3,7 +3,7 @@ import {
 	WorkflowId,
 	type Workspace,
 } from "@giselle-sdk/data-type";
-import { buildJobList } from "./helper";
+import { buildSequenceList } from "./helper";
 import { sliceGraphFromNode } from "./slice-graph-from-node";
 
 export function buildWorkflowFromNode(
@@ -14,11 +14,11 @@ export function buildWorkflowFromNode(
 
 	const workflowId = WorkflowId.generate();
 
-	const jobList = buildJobList(nodes, connections, workflowId);
+	const sequenceList = buildSequenceList(nodes, connections, workflowId);
 
 	return {
 		id: workflowId,
-		jobs: jobList,
+		sequences: sequenceList,
 		nodes: nodes,
 	};
 }

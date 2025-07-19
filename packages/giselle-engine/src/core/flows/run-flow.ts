@@ -2,9 +2,9 @@ import {
 	type FailedGeneration,
 	type GenerationContextInput,
 	GenerationId,
-	type Job,
 	type QueuedGeneration,
 	type RunId,
+	type Sequence,
 	type Workflow,
 	type WorkspaceId,
 } from "@giselle-sdk/data-type";
@@ -18,28 +18,27 @@ import { resolveTrigger } from "./resolve-trigger";
 import type { FlowRunId } from "./run/object";
 
 export interface RunFlowCallbacks {
-	jobStart?: (args: { job: Job }) => void | Promise<void>;
-	jobFail?: (args: { job: Job }) => void | Promise<void>;
-	jobComplete?: (args: { job: Job }) => void | Promise<void>;
-	jobSkip?: (args: { job: Job }) => void | Promise<void>;
+	sequenceStart?: (args: { sequence: Sequence }) => void | Promise<void>;
+	sequenceFail?: (args: { sequence: Sequence }) => void | Promise<void>;
+	sequenceComplete?: (args: { sequence: Sequence }) => void | Promise<void>;
+	sequenceSkip?: (args: { sequence: Sequence }) => void | Promise<void>;
 }
 
 function createQueuedGeneration(args: {
-	operation: Job["operations"][number];
+	step: Sequence["steps"][number];
 	runId: RunId;
 	workspaceId: WorkspaceId;
 	triggerInputs?: GenerationContextInput[];
 }) {
-	const { operation, runId, workspaceId, triggerInputs } = args;
+	const { step, runId, workspaceId, triggerInputs } = args;
 	return {
 		id: GenerationId.generate(),
 		context: {
-			operationNode: operation.node,
-			connections: operation.connections,
-			sourceNodes: operation.sourceNodes,
+			operationNode: step.node,
+			connections: step.connections,
+			sourceNodes: step.sourceNodes,
 			origin: { type: "run", id: runId, workspaceId },
-			inputs:
-				operation.node.content.type === "trigger" ? (triggerInputs ?? []) : [],
+			inputs: step.node.content.type === "trigger" ? (triggerInputs ?? []) : [],
 		},
 		status: "queued",
 		createdAt: Date.now(),
@@ -47,10 +46,10 @@ function createQueuedGeneration(args: {
 	} satisfies QueuedGeneration;
 }
 
-async function executeOperation(args: {
+async function executeStep(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
-	node: Job["operations"][number]["node"];
+	node: Sequence["steps"][number]["node"];
 	flowRunId: FlowRunId;
 	useExperimentalStorage: boolean;
 }): Promise<boolean> {
@@ -118,13 +117,13 @@ async function executeOperation(args: {
 			return false;
 		default: {
 			const _exhaustiveCheck: never = node.content;
-			throw new Error(`Unhandled operation type: ${_exhaustiveCheck}`);
+			throw new Error(`Unhandled step type: ${_exhaustiveCheck}`);
 		}
 	}
 }
 
-async function runJob(args: {
-	job: Job;
+async function runSequence(args: {
+	sequence: Sequence;
 	context: GiselleEngineContext;
 	flowRunId: FlowRunId;
 	runId: RunId;
@@ -134,7 +133,7 @@ async function runJob(args: {
 	useExperimentalStorage: boolean;
 }): Promise<boolean> {
 	const {
-		job,
+		sequence,
 		context,
 		flowRunId,
 		runId,
@@ -144,7 +143,7 @@ async function runJob(args: {
 		useExperimentalStorage,
 	} = args;
 
-	await callbacks?.jobStart?.({ job });
+	await callbacks?.sequenceStart?.({ sequence });
 	await patchRun({
 		context,
 		flowRunId,
@@ -154,40 +153,40 @@ async function runJob(args: {
 		},
 	});
 
-	let hasJobError = false;
+	let hasSequenceError = false;
 
-	const operationDurations = await Promise.all(
-		job.operations.map(async (operation) => {
+	const stepDurations = await Promise.all(
+		sequence.steps.map(async (step) => {
 			const generation = createQueuedGeneration({
-				operation,
+				step,
 				runId,
 				workspaceId,
 				triggerInputs,
 			});
 
-			const operationStart = Date.now();
-			const errored = await executeOperation({
+			const stepStart = Date.now();
+			const errored = await executeStep({
 				context,
 				generation,
-				node: operation.node,
+				node: step.node,
 				flowRunId,
 				useExperimentalStorage,
 			});
-			const duration = Date.now() - operationStart;
+			const duration = Date.now() - stepStart;
 
 			if (errored) {
-				hasJobError = true;
+				hasSequenceError = true;
 			}
 
 			return duration;
 		}),
 	);
 
-	const totalTaskDuration = operationDurations.reduce((sum, d) => sum + d, 0);
+	const totalTaskDuration = stepDurations.reduce((sum, d) => sum + d, 0);
 
-	if (hasJobError) {
+	if (hasSequenceError) {
 		await Promise.all([
-			callbacks?.jobFail?.({ job }),
+			callbacks?.sequenceFail?.({ sequence }),
 			patchRun({
 				context,
 				flowRunId,
@@ -200,7 +199,7 @@ async function runJob(args: {
 		]);
 	} else {
 		await Promise.all([
-			callbacks?.jobComplete?.({ job }),
+			callbacks?.sequenceComplete?.({ sequence }),
 			patchRun({
 				context,
 				flowRunId,
@@ -213,7 +212,7 @@ async function runJob(args: {
 		]);
 	}
 
-	return hasJobError;
+	return hasSequenceError;
 }
 
 export async function runFlow(args: {
@@ -228,10 +227,10 @@ export async function runFlow(args: {
 }) {
 	const flowStart = Date.now();
 
-	for (let i = 0; i < args.flow.jobs.length; i++) {
-		const job = args.flow.jobs[i];
-		const errored = await runJob({
-			job,
+	for (let i = 0; i < args.flow.sequences.length; i++) {
+		const sequence = args.flow.sequences[i];
+		const errored = await runSequence({
+			sequence,
 			context: args.context,
 			flowRunId: args.flowRunId,
 			runId: args.runId,
@@ -242,9 +241,11 @@ export async function runFlow(args: {
 		});
 
 		if (errored) {
-			// Skip remaining jobs
-			for (let j = i + 1; j < args.flow.jobs.length; j++) {
-				await args.callbacks?.jobSkip?.({ job: args.flow.jobs[j] });
+			// Skip remaining sequences
+			for (let j = i + 1; j < args.flow.sequences.length; j++) {
+				await args.callbacks?.sequenceSkip?.({
+					sequence: args.flow.sequences[j],
+				});
 			}
 
 			await patchRun({
@@ -259,7 +260,7 @@ export async function runFlow(args: {
 		}
 	}
 
-	// All jobs completed successfully
+	// All sequences completed successfully
 	await patchRun({
 		context: args.context,
 		flowRunId: args.flowRunId,

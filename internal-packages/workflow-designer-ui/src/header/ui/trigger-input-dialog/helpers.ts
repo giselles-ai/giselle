@@ -234,10 +234,10 @@ export function createGenerationsForFlow(
 	workspaceId: WorkspaceId,
 ) {
 	const generations: Generation[] = [];
-	for (const job of flow.jobs) {
-		for (const operation of job.operations) {
+	for (const sequence of flow.sequences) {
+		for (const step of sequence.steps) {
 			const parameterItems =
-				operation.node.content.type === "trigger"
+				step.node.content.type === "trigger"
 					? toParameterItems(inputs, values)
 					: [];
 			const generation = createGeneration({
@@ -246,9 +246,9 @@ export function createGenerationsForFlow(
 					parameterItems.length > 0
 						? [{ type: "parameters", items: parameterItems }]
 						: [],
-				operationNode: operation.node,
-				sourceNodes: operation.sourceNodes,
-				connections: operation.connections,
+				operationNode: step.node,
+				sourceNodes: step.sourceNodes,
+				connections: step.connections,
 			});
 			generations.push(generation);
 		}

@@ -45,15 +45,15 @@ export function useFlowController() {
 		[client],
 	);
 
-	const runOperation = useCallback(
+	const runStep = useCallback(
 		async (
 			runId: FlowRunId,
-			operation: Workflow["jobs"][number]["operations"][number],
+			step: Workflow["sequences"][number]["steps"][number],
 			generations: Generation[],
-			jobStartedAt: number,
+			sequenceStartedAt: number,
 		) => {
 			const generation = generations.find(
-				(g) => g.context.operationNode.id === operation.node.id,
+				(g) => g.context.operationNode.id === step.node.id,
 			);
 			if (generation === undefined || cancelRef.current) {
 				return { duration: 0, hasError: false };
@@ -65,16 +65,16 @@ export function useFlowController() {
 					await patchRunAnnotations(runId, failedGeneration.error.message);
 				},
 			});
-			return { duration: Date.now() - jobStartedAt, hasError };
+			return { duration: Date.now() - sequenceStartedAt, hasError };
 		},
 		[patchRunAnnotations, startGeneration],
 	);
 
-	const runJob = useCallback(
+	const runSequence = useCallback(
 		async (
 			runId: FlowRunId,
-			job: Workflow["jobs"][number],
-			jobIndex: number,
+			sequence: Workflow["sequences"][number],
+			sequenceIndex: number,
 			generations: Generation[],
 			onComplete?: () => void,
 		) => {
@@ -86,31 +86,31 @@ export function useFlowController() {
 				},
 			});
 
-			const jobStartedAt = Date.now();
+			const sequenceStartedAt = Date.now();
 			let totalTasks = 0;
-			let hasJobError = false;
+			let hasSequenceError = false;
 			await Promise.all(
-				job.operations.map(async (operation) => {
-					const { duration, hasError } = await runOperation(
+				sequence.steps.map(async (step) => {
+					const { duration, hasError } = await runStep(
 						runId,
-						operation,
+						step,
 						generations,
-						jobStartedAt,
+						sequenceStartedAt,
 					);
 					totalTasks += duration;
 					if (hasError) {
-						hasJobError = true;
+						hasSequenceError = true;
 					}
 				}),
 			);
 
-			if (jobIndex === 0 && onComplete) {
+			if (sequenceIndex === 0 && onComplete) {
 				onComplete();
 			}
 
 			await client.patchRun({
 				flowRunId: runId,
-				delta: hasJobError
+				delta: hasSequenceError
 					? {
 							"steps.failed": { increment: 1 },
 							"steps.inProgress": { decrement: 1 },
@@ -123,9 +123,9 @@ export function useFlowController() {
 						},
 			});
 
-			return hasJobError;
+			return hasSequenceError;
 		},
-		[client, runOperation],
+		[client, runStep],
 	);
 
 	const finalizeRun = useCallback(
@@ -177,29 +177,37 @@ export function useFlowController() {
 
 			const { run } = await client.createRun({
 				workspaceId: data.id,
-				jobsCount: flow.jobs.length,
+				jobsCount: flow.sequences.length,
 				trigger: "manual",
 			});
 
 			const flowStartedAt = Date.now();
 			let hasFlowError = false;
 
-			for (const [jobIndex, job] of flow.jobs.entries()) {
-				const jobErrored = await runJob(
+			for (const [sequenceIndex, sequence] of flow.sequences.entries()) {
+				const sequenceErrored = await runSequence(
 					run.id,
-					job,
-					jobIndex,
+					sequence,
+					sequenceIndex,
 					generations,
 					onComplete,
 				);
-				if (jobErrored) {
+				if (sequenceErrored) {
 					hasFlowError = true;
 				}
 			}
 
 			await finalizeRun(run.id, hasFlowError, flowStartedAt);
 		},
-		[createGeneration, data.id, info, stopFlow, client, runJob, finalizeRun],
+		[
+			createGeneration,
+			data.id,
+			info,
+			stopFlow,
+			client,
+			runSequence,
+			finalizeRun,
+		],
 	);
 
 	return { startFlow };

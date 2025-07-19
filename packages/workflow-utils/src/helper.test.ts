@@ -1,6 +1,6 @@
 import type { Connection, Node, WorkflowId } from "@giselle-sdk/data-type";
 import { describe, expect, test } from "vitest";
-import { buildJobList } from "./helper";
+import { buildSequenceList } from "./helper";
 
 // Sample data for tests based on provided workflow JSON
 const sampleNodes: Node[] = [
@@ -78,35 +78,39 @@ const sampleConnections: Connection[] = [
 
 const workflowId = "wf-N5RH1s46zdx3XjQj" as WorkflowId;
 
-describe("buildJobList", () => {
-	test("should create jobs for the sample workflow", () => {
-		const result = buildJobList(sampleNodes, sampleConnections, workflowId);
+describe("buildSequenceList", () => {
+	test("should create sequences for the sample workflow", () => {
+		const result = buildSequenceList(
+			sampleNodes,
+			sampleConnections,
+			workflowId,
+		);
 
 		expect(Array.isArray(result)).toBe(true);
-		expect(result.length).toBe(2); // Two jobs because of the dependency structure
+		expect(result.length).toBe(2); // Two sequences because of the dependency structure
 
-		const jobsArray = result;
+		const sequencesArray = result;
 
-		// First job should contain the first node (which has no inputs)
-		expect(jobsArray[0].workflowId).toBe(workflowId);
-		expect(jobsArray[0].operations.length).toBe(1);
-		expect(jobsArray[0].operations[0].node.id).toBe("nd-KzXeXSIffRIMwZtX");
+		// First sequence should contain the first node (which has no inputs)
+		expect(sequencesArray[0].workflowId).toBe(workflowId);
+		expect(sequencesArray[0].steps.length).toBe(1);
+		expect(sequencesArray[0].steps[0].node.id).toBe("nd-KzXeXSIffRIMwZtX");
 
-		// Second job should contain the second node (which depends on the first)
-		expect(jobsArray[1].workflowId).toBe(workflowId);
-		expect(jobsArray[1].operations.length).toBe(1);
-		expect(jobsArray[1].operations[0].node.id).toBe("nd-P2EllMigi6Tm6gij");
+		// Second sequence should contain the second node (which depends on the first)
+		expect(sequencesArray[1].workflowId).toBe(workflowId);
+		expect(sequencesArray[1].steps.length).toBe(1);
+		expect(sequencesArray[1].steps[0].node.id).toBe("nd-P2EllMigi6Tm6gij");
 
 		// Check generation templates
-		expect(jobsArray[0].operations[0].sourceNodes.length).toBe(0);
-		expect(jobsArray[1].operations[0].sourceNodes.length).toBe(1);
-		expect(jobsArray[1].operations[0].sourceNodes[0].id).toBe(
+		expect(sequencesArray[0].steps[0].sourceNodes.length).toBe(0);
+		expect(sequencesArray[1].steps[0].sourceNodes.length).toBe(1);
+		expect(sequencesArray[1].steps[0].sourceNodes[0].id).toBe(
 			"nd-KzXeXSIffRIMwZtX",
 		);
 	});
 
 	test("should handle empty node set", () => {
-		const result = buildJobList([], [], workflowId);
+		const result = buildSequenceList([], [], workflowId);
 
 		expect(result.length).toBe(0);
 	});
@@ -250,48 +254,48 @@ describe("Test with complex workflow", () => {
 	// Setup helper variables
 	const complexWorkflowId = "wf-fgEzJutLbpYu1Hj3" as WorkflowId;
 
-	test("should create correct job map for complex workflow", () => {
-		const result = buildJobList(
+	test("should create correct sequence map for complex workflow", () => {
+		const result = buildSequenceList(
 			complexNodes,
 			complexConnections,
 			complexWorkflowId,
 		);
 
-		const jobsArray = result;
+		const sequencesArray = result;
 
-		expect(result.length).toBe(2); // Two jobs: one for source node and one for dependent nodes
+		expect(result.length).toBe(2); // Two sequences: one for source node and one for dependent nodes
 
-		// First job should contain the first node (which has no inputs)
-		expect(jobsArray[0].workflowId).toBe(complexWorkflowId);
-		expect(jobsArray[0].operations.length).toBe(1);
-		expect(jobsArray[0].operations[0].node.id).toBe("nd-E89xeYnFyQUGxdCL");
+		// First sequence should contain the first node (which has no inputs)
+		expect(sequencesArray[0].workflowId).toBe(complexWorkflowId);
+		expect(sequencesArray[0].steps.length).toBe(1);
+		expect(sequencesArray[0].steps[0].node.id).toBe("nd-E89xeYnFyQUGxdCL");
 
-		// Second job should contain both dependent nodes
-		expect(jobsArray[1].workflowId).toBe(complexWorkflowId);
-		expect(jobsArray[1].operations.length).toBe(2);
+		// Second sequence should contain both dependent nodes
+		expect(sequencesArray[1].workflowId).toBe(complexWorkflowId);
+		expect(sequencesArray[1].steps.length).toBe(2);
 
-		// Get the node IDs from the second job
-		const secondJobNodeIds = jobsArray[1].operations
-			.map((operation) => operation.node.id)
+		// Get the node IDs from the second sequence
+		const secondSequenceNodeIds = sequencesArray[1].steps
+			.map((step) => step.node.id)
 			.sort();
-		expect(secondJobNodeIds).toEqual(
+		expect(secondSequenceNodeIds).toEqual(
 			["nd-daF6m8YshVoiBARi", "nd-ixIefYTHjZVhpEGq"].sort(),
 		);
 
-		// Check generation templates for first job
-		expect(jobsArray[0].operations[0].sourceNodes.length).toBe(0);
+		// Check generation templates for first sequence
+		expect(sequencesArray[0].steps[0].sourceNodes.length).toBe(0);
 
-		// Check generation templates for second job nodes
+		// Check generation templates for second sequence nodes
 		// Find the node with id nd-ixIefYTHjZVhpEGq
-		const ixIefYTHjZVhpEGqNode = jobsArray[1].operations.find(
-			(operation) => operation.node.id === "nd-ixIefYTHjZVhpEGq",
+		const ixIefYTHjZVhpEGqNode = sequencesArray[1].steps.find(
+			(step) => step.node.id === "nd-ixIefYTHjZVhpEGq",
 		);
 		expect(ixIefYTHjZVhpEGqNode?.sourceNodes.length).toBe(1);
 		expect(ixIefYTHjZVhpEGqNode?.sourceNodes[0].id).toBe("nd-E89xeYnFyQUGxdCL");
 
 		// Find the node with id nd-daF6m8YshVoiBARi
-		const daF6m8YshVoiBARiNode = jobsArray[1].operations.find(
-			(operation) => operation.node.id === "nd-daF6m8YshVoiBARi",
+		const daF6m8YshVoiBARiNode = sequencesArray[1].steps.find(
+			(step) => step.node.id === "nd-daF6m8YshVoiBARi",
 		);
 		expect(daF6m8YshVoiBARiNode?.sourceNodes.length).toBe(2);
 		expect(daF6m8YshVoiBARiNode?.sourceNodes[0].id).toBe("nd-E89xeYnFyQUGxdCL");
