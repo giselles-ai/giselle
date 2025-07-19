@@ -3,7 +3,7 @@ import { z } from "zod/v4";
 import { Connection } from "../connection";
 import { Node, NodeLike, OperationNode } from "../node";
 
-export const SequenceId = createIdGenerator("jb");
+export const SequenceId = createIdGenerator("sq");
 export type SequenceId = z.infer<typeof SequenceId.schema>;
 export const WorkflowId = createIdGenerator("wf");
 export type WorkflowId = z.infer<typeof WorkflowId.schema>;
