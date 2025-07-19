@@ -1,5 +1,8 @@
+import { experimental_storageFlag } from "@/flags";
 import type { Step } from "../../object";
-import { ActPanel } from "./ui/act-panel";
+import { giselleEngine } from "@/app/giselle-engine";
+import { notFound } from "next/navigation";
+import { defaultName } from "@giselle-sdk/giselle-engine";
 
 async function fetchStep(_actId: string, _stepId: string) {
 	await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -15,16 +18,16 @@ export default async function ({
 }: {
 	params: Promise<{ actId: string; stepId: string }>;
 }) {
-	// const { actId, stepId } = await params;
-	// const step = await fetchStep(actId, stepId);
-	// const useExperimentalStorage = await experimental_storageFlag();
-	// const generation = await giselleEngine.getGeneration(
-	// 	step.generationId,
-	// 	useExperimentalStorage,
-	// );
-	// if (generation === undefined) {
-	// 	return notFound();
-	// }
+	const { actId, stepId } = await params;
+	const step = await fetchStep(actId, stepId);
+	const useExperimentalStorage = await experimental_storageFlag();
+	const generation = await giselleEngine.getGeneration(
+		step.generationId,
+		useExperimentalStorage,
+	);
+	if (generation === undefined) {
+		return notFound();
+	}
 
 	// switch (generation.status) {
 	// 	case "queued":
@@ -44,5 +47,6 @@ export default async function ({
 	// 		throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
 	// 	}
 	// }
-	return <div>hellos</div>;
+
+  return <div>{defaultName(generation.context.operationNode)}</div>;
 }
