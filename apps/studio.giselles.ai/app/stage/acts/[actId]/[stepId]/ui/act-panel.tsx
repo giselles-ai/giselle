@@ -1,9 +1,5 @@
-'use client'
+"use client";
 
 export function ActPanel() {
- return (
-   <div className="m-[8px] border border-border h-full">
-
-   </div>
- )
+	return <div className="m-[8px] border border-border h-full"></div>;
 }
