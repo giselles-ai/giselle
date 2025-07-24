@@ -172,7 +172,7 @@ export function NodeIcon({
 					return <WebPageFileIcon {...props} data-content-type-icon />;
 				case "github":
 					return <GitHubIcon {...props} />;
-				case "vectorStore":
+				case "vectorStore": {
 					if (!isVectorStoreNode(node)) {
 						throw new Error(
 							`Expected VectorStoreNode, got ${JSON.stringify(node)}`,
@@ -188,6 +188,7 @@ export function NodeIcon({
 							throw new Error(`Unhandled node type: ${provider}`);
 						}
 					}
+				}
 				default: {
 					const _exhaustiveCheck: never = node.content.type;
 					throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);

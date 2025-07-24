@@ -89,7 +89,7 @@ export function Toolbar() {
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("All");
 	const { llmProviders } = useWorkflowDesigner();
-	const { webSearchAction } = useFeatureFlag();
+	const { webSearchAction, pullRequestVectorStore } = useFeatureFlag();
 	const vectorStore = useVectorStore();
 	const canUseGithubVectorStore = useMemo(
 		() => !!vectorStore?.github,
@@ -954,22 +954,19 @@ export function Toolbar() {
 													<p className="text-[14px]">Plain Text</p>
 												</ToggleGroup.Item>
 												{canUseGithubVectorStore && (
-													<>
-														<ToggleGroup.Item
-															value="githubVectorStore"
-															data-tool
-														>
-															<GitHubIcon className="w-[20px] h-[20px]" />
-															<p className="text-[14px]">GitHub (Code)</p>
-														</ToggleGroup.Item>
-														<ToggleGroup.Item
-															value="githubPullRequestVectorStore"
-															data-tool
-														>
-															<GitHubIcon className="w-[20px] h-[20px]" />
-															<p className="text-[14px]">GitHub PR</p>
-														</ToggleGroup.Item>
-													</>
+													<ToggleGroup.Item value="githubVectorStore" data-tool>
+														<GitHubIcon className="w-[20px] h-[20px]" />
+														<p className="text-[14px]">GitHub (Code)</p>
+													</ToggleGroup.Item>
+												)}
+												{canUseGithubVectorStore && pullRequestVectorStore && (
+													<ToggleGroup.Item
+														value="githubPullRequestVectorStore"
+														data-tool
+													>
+														<GitHubIcon className="w-[20px] h-[20px]" />
+														<p className="text-[14px]">GitHub PR</p>
+													</ToggleGroup.Item>
 												)}
 												<ToggleGroup.Item value="webPage" data-tool>
 													<WebPageFileIcon className="w-[20px] h-[20px]" />
