@@ -16,7 +16,6 @@ export const gitHubPullRequestQueryService = createPostgresQueryService({
 		mergedAt: z.date(),
 		contentType: z.string(),
 		contentId: z.string(),
-		documentKey: z.string(),
 	}),
 	contextToFilter: resolveGitHubPullRequestEmbeddingFilter,
 });

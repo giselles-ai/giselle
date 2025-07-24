@@ -31,9 +31,7 @@ export interface GiselleEngineContext {
 	vault: Vault;
 	vectorStoreQueryServices?: {
 		github?: GitHubVectorStoreQueryService<Record<string, unknown>>;
-		githubPullRequest?: GitHubPullRequestVectorStoreQueryService<
-			Record<string, unknown>
-		>;
+		githubPullRequest?: GitHubVectorStoreQueryService<Record<string, unknown>>;
 	};
 	callbacks?: {
 		generationComplete: (
@@ -90,19 +88,9 @@ export interface GitHubQueryContext {
 	repo: string;
 }
 
-export interface GitHubPullRequestQueryContext {
-	workspaceId: WorkspaceId;
-	owner: string;
-	repo: string;
-}
-
 export type GitHubVectorStoreQueryService<
 	M extends Record<string, unknown> = Record<string, never>,
 > = QueryService<GitHubQueryContext, M>;
-
-export type GitHubPullRequestVectorStoreQueryService<
-	M extends Record<string, unknown> = Record<string, never>,
-> = QueryService<GitHubPullRequestQueryContext, M>;
 
 export interface GiselleEngineConfig {
 	storage: Storage;
@@ -120,9 +108,7 @@ export interface GiselleEngineConfig {
 	vault: Vault;
 	vectorStoreQueryServices?: {
 		github?: GitHubVectorStoreQueryService<Record<string, unknown>>;
-		githubPullRequest?: GitHubPullRequestVectorStoreQueryService<
-			Record<string, unknown>
-		>;
+		githubPullRequest?: GitHubVectorStoreQueryService<Record<string, unknown>>;
 	};
 	callbacks?: {
 		generationComplete: (

@@ -30,11 +30,7 @@ import {
 	queryResultToText,
 } from "../generations/utils";
 import type { TelemetrySettings } from "../telemetry";
-import type {
-	GiselleEngineContext,
-	GitHubPullRequestQueryContext,
-	GitHubQueryContext,
-} from "../types";
+import type { GiselleEngineContext, GitHubQueryContext } from "../types";
 
 export function executeQuery(args: {
 	context: GiselleEngineContext;
@@ -351,7 +347,7 @@ async function queryVectorStore(
 							);
 						}
 
-						const queryContext: GitHubPullRequestQueryContext = {
+						const queryContext: GitHubQueryContext = {
 							workspaceId,
 							owner,
 							repo,
