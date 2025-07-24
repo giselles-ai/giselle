@@ -1,7 +1,9 @@
 import { Card } from "@/components/ui/card";
+import type { GitHubRepositoryContentType } from "@/drizzle";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import { RepositoryItem } from "./repository-item";
+import { RepositoryItemBlobOnly } from "./repository-item-blob-only";
 
 type RepositoryListProps = {
 	repositories: RepositoryWithStatuses[];
@@ -11,12 +13,22 @@ type RepositoryListProps = {
 	triggerManualIngestAction: (
 		indexId: GitHubRepositoryIndexId,
 	) => Promise<{ success: boolean; error?: string }>;
+	updateRepositoryContentTypesAction: (
+		repositoryIndexId: string,
+		contentTypes: {
+			contentType: GitHubRepositoryContentType;
+			enabled: boolean;
+		}[],
+	) => Promise<{ success: boolean; error?: string }>;
+	isPullRequestEnabled: boolean;
 };
 
 export function RepositoryList({
 	repositories,
 	deleteRepositoryIndexAction,
 	triggerManualIngestAction,
+	updateRepositoryContentTypesAction,
+	isPullRequestEnabled,
 }: RepositoryListProps) {
 	return (
 		<div className="flex flex-col gap-y-[16px]">
@@ -35,14 +47,26 @@ export function RepositoryList({
 
 				{repositories.length > 0 ? (
 					<div className="space-y-4">
-						{repositories.map((repo) => (
-							<RepositoryItem
-								key={repo.repositoryIndex.id}
-								repositoryData={repo}
-								deleteRepositoryIndexAction={deleteRepositoryIndexAction}
-								triggerManualIngestAction={triggerManualIngestAction}
-							/>
-						))}
+						{repositories.map((repo) =>
+							isPullRequestEnabled ? (
+								<RepositoryItem
+									key={repo.repositoryIndex.id}
+									repositoryData={repo}
+									deleteRepositoryIndexAction={deleteRepositoryIndexAction}
+									triggerManualIngestAction={triggerManualIngestAction}
+									updateRepositoryContentTypesAction={
+										updateRepositoryContentTypesAction
+									}
+								/>
+							) : (
+								<RepositoryItemBlobOnly
+									key={repo.repositoryIndex.id}
+									repositoryData={repo}
+									deleteRepositoryIndexAction={deleteRepositoryIndexAction}
+									triggerManualIngestAction={triggerManualIngestAction}
+								/>
+							),
+						)}
 					</div>
 				) : (
 					<EmptyRepositoryCard />

@@ -1,7 +1,7 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { Check, ChevronDown, Plus } from "lucide-react";
+import { Check, ChevronDown, Code, GitPullRequest, Plus } from "lucide-react";
 import { useState, useTransition } from "react";
 import {
 	DropdownMenu,
@@ -9,6 +9,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { GlassButton } from "@/components/ui/glass-button";
+import type { GitHubRepositoryContentType } from "@/drizzle";
 import {
 	GlassDialogBody,
 	GlassDialogContent,
@@ -23,18 +24,28 @@ type RepositoryRegistrationDialogProps = {
 		owner: string,
 		repo: string,
 		installationId: number,
+		contentTypes?: {
+			contentType: GitHubRepositoryContentType;
+			enabled: boolean;
+		}[],
 	) => Promise<ActionResult>;
+	isPullRequestEnabled: boolean;
 };
 
 export function RepositoryRegistrationDialog({
 	installationsWithRepos,
 	registerRepositoryIndexAction,
+	isPullRequestEnabled,
 }: RepositoryRegistrationDialogProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [ownerId, setOwnerId] = useState<string>("");
 	const [repositoryId, setRepositoryId] = useState<string>("");
 	const [error, setError] = useState("");
 	const [isPending, startTransition] = useTransition();
+	const [contentConfig, setContentConfig] = useState({
+		code: { enabled: true },
+		pullRequests: { enabled: true },
+	});
 
 	const selectedInstallation = installationsWithRepos.find(
 		(i) => String(i.installation.id) === ownerId,
@@ -69,15 +80,33 @@ export function RepositoryRegistrationDialog({
 				setError("Repository not found");
 				return;
 			}
+			const contentTypes: {
+				contentType: GitHubRepositoryContentType;
+				enabled: boolean;
+			}[] = isPullRequestEnabled
+				? [
+						{ contentType: "blob", enabled: contentConfig.code.enabled },
+						{
+							contentType: "pull_request",
+							enabled: contentConfig.pullRequests.enabled,
+						},
+					]
+				: [{ contentType: "blob", enabled: true }];
+
 			const result = await registerRepositoryIndexAction(
 				owner,
 				repo,
 				Number(ownerId),
+				contentTypes,
 			);
 			if (result.success) {
 				setIsOpen(false);
 				setOwnerId("");
 				setRepositoryId("");
+				setContentConfig({
+					code: { enabled: true },
+					pullRequests: { enabled: true },
+				});
 			} else {
 				setError(result.error);
 			}
@@ -230,6 +259,43 @@ export function RepositoryRegistrationDialog({
 							</div>
 						</div>
 
+						{/* Sources to Ingest Section */}
+						{isPullRequestEnabled && (
+							<div className="flex flex-col gap-y-2">
+								<div className="text-white-400 text-[14px] leading-[16.8px] font-sans">
+									Sources to Ingest
+								</div>
+
+								<div className="space-y-3">
+									{/* Code Configuration */}
+									<ContentTypeToggle
+										icon={Code}
+										label="Code"
+										description="Ingest source code files from the repository"
+										enabled={contentConfig.code.enabled}
+										onToggle={(enabled) =>
+											setContentConfig({ ...contentConfig, code: { enabled } })
+										}
+										disabled={true} // Code is mandatory
+									/>
+
+									{/* Pull Requests Configuration */}
+									<ContentTypeToggle
+										icon={GitPullRequest}
+										label="Pull Requests"
+										description="Ingest merged pull request content and discussions"
+										enabled={contentConfig.pullRequests.enabled}
+										onToggle={(enabled) =>
+											setContentConfig({
+												...contentConfig,
+												pullRequests: { enabled },
+											})
+										}
+									/>
+								</div>
+							</div>
+						)}
+
 						{error && (
 							<div className="mt-1 text-sm text-error-500">{error}</div>
 						)}
@@ -253,5 +319,60 @@ export function RepositoryRegistrationDialog({
 				/>
 			</GlassDialogContent>
 		</Dialog.Root>
+	);
+}
+
+type ContentTypeToggleProps = {
+	icon: React.ElementType;
+	label: string;
+	description: string;
+	enabled: boolean;
+	onToggle: (enabled: boolean) => void;
+	disabled?: boolean;
+};
+
+function ContentTypeToggle({
+	icon: Icon,
+	label,
+	description,
+	enabled,
+	onToggle,
+	disabled,
+}: ContentTypeToggleProps) {
+	return (
+		<div className="bg-black-700/50 rounded-lg p-4">
+			<div className="flex items-center justify-between mb-2">
+				<div className="flex items-center gap-2">
+					<Icon size={18} className="text-gray-400" />
+					<span className="text-white font-medium">{label}</span>
+				</div>
+				<label className="relative inline-flex items-center cursor-pointer">
+					<input
+						type="checkbox"
+						checked={enabled}
+						onChange={(e) => onToggle(e.target.checked)}
+						disabled={disabled}
+						className="sr-only"
+					/>
+					<div
+						className={`w-11 h-6 rounded-full transition-colors ${
+							enabled ? "bg-blue-600" : "bg-gray-600"
+						} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+					>
+						<div
+							className={`absolute w-4 h-4 bg-white rounded-full top-1 transition-transform ${
+								enabled ? "translate-x-6" : "translate-x-1"
+							}`}
+						/>
+					</div>
+				</label>
+			</div>
+			<p className="text-sm text-gray-400">{description}</p>
+			{disabled && (
+				<p className="text-xs text-gray-500 mt-1">
+					(Required - cannot be disabled)
+				</p>
+			)}
+		</div>
 	);
 }

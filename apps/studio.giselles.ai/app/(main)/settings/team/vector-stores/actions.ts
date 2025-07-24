@@ -1,11 +1,12 @@
 "use server";
 
 import { createId } from "@paralleldrive/cuid2";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import {
 	db,
+	type GitHubRepositoryContentType,
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
 } from "@/drizzle";
@@ -28,6 +29,10 @@ export async function registerRepositoryIndex(
 	owner: string,
 	repo: string,
 	installationId: number,
+	contentTypes?: {
+		contentType: GitHubRepositoryContentType;
+		enabled: boolean;
+	}[],
 ): Promise<ActionResult> {
 	try {
 		const team = await fetchCurrentTeam();
@@ -97,12 +102,42 @@ export async function registerRepositoryIndex(
 			})
 			.returning({ dbId: githubRepositoryIndex.dbId });
 
-		await db.insert(githubRepositoryContentStatus).values({
-			repositoryIndexDbId: newRepository.dbId,
-			contentType: "blob",
-			enabled: true,
-			status: "idle",
-		});
+		// Default content types if not provided
+		const defaultContentTypes: {
+			contentType: GitHubRepositoryContentType;
+			enabled: boolean;
+		}[] = [
+			{ contentType: "blob", enabled: true },
+			{ contentType: "pull_request", enabled: true },
+		];
+
+		const contentTypesToCreate = contentTypes || defaultContentTypes;
+
+		// Ensure blob is always enabled
+		const hasBlobEnabled = contentTypesToCreate.some(
+			(ct) => ct.contentType === "blob" && ct.enabled,
+		);
+		if (!hasBlobEnabled) {
+			// Force blob to be enabled
+			const blobIndex = contentTypesToCreate.findIndex(
+				(ct) => ct.contentType === "blob",
+			);
+			if (blobIndex >= 0) {
+				contentTypesToCreate[blobIndex].enabled = true;
+			} else {
+				contentTypesToCreate.push({ contentType: "blob", enabled: true });
+			}
+		}
+
+		// Create content status records
+		for (const contentType of contentTypesToCreate) {
+			await db.insert(githubRepositoryContentStatus).values({
+				repositoryIndexDbId: newRepository.dbId,
+				contentType: contentType.contentType,
+				enabled: contentType.enabled,
+				status: "idle",
+			});
+		}
 
 		revalidatePath("/settings/team/vector-stores");
 		return { success: true };
@@ -376,4 +411,81 @@ function executeManualIngest(repositoryData: RepositoryWithStatuses): void {
 	after(async () => {
 		await processRepository(repositoryData);
 	});
+}
+
+/**
+ * Update content type configurations for a repository
+ */
+export async function updateRepositoryContentTypes(
+	repositoryIndexId: string,
+	contentTypes: {
+		contentType: GitHubRepositoryContentType;
+		enabled: boolean;
+	}[],
+): Promise<ActionResult> {
+	try {
+		const team = await fetchCurrentTeam();
+
+		// Verify the repository belongs to the team
+		const [repository] = await db
+			.select({ dbId: githubRepositoryIndex.dbId })
+			.from(githubRepositoryIndex)
+			.where(
+				and(
+					eq(
+						githubRepositoryIndex.id,
+						repositoryIndexId as GitHubRepositoryIndexId,
+					),
+					eq(githubRepositoryIndex.teamDbId, team.dbId),
+				),
+			)
+			.limit(1);
+
+		if (!repository) {
+			return {
+				success: false,
+				error: "Repository not found",
+			};
+		}
+
+		// Validate that code (blob) is always enabled
+		const blobConfig = contentTypes.find((ct) => ct.contentType === "blob");
+		if (blobConfig && !blobConfig.enabled) {
+			return {
+				success: false,
+				error: "Code content type must remain enabled",
+			};
+		}
+
+		// Update or create content status records using single upsert
+		await db
+			.insert(githubRepositoryContentStatus)
+			.values(
+				contentTypes.map((contentType) => ({
+					repositoryIndexDbId: repository.dbId,
+					contentType: contentType.contentType,
+					enabled: contentType.enabled,
+					status: "idle" as const,
+				})),
+			)
+			.onConflictDoUpdate({
+				target: [
+					githubRepositoryContentStatus.repositoryIndexDbId,
+					githubRepositoryContentStatus.contentType,
+				],
+				set: {
+					enabled: sql`excluded.enabled`,
+					updatedAt: new Date(),
+				},
+			});
+
+		revalidatePath("/settings/team/vector-stores");
+		return { success: true };
+	} catch (error) {
+		console.error("Error updating repository content types:", error);
+		return {
+			success: false,
+			error: "Failed to update content types",
+		};
+	}
 }
