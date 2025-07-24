@@ -1,6 +1,12 @@
 export const githubProvider = "github" as const;
-export type VectorStoreSourceProvider = typeof githubProvider;
-export const vectorStoreSourceProviders = [githubProvider] as const;
+export const githubPullRequestProvider = "githubPullRequest" as const;
+export type VectorStoreSourceProvider =
+	| typeof githubProvider
+	| typeof githubPullRequestProvider;
+export const vectorStoreSourceProviders = [
+	githubProvider,
+	githubPullRequestProvider,
+] as const;
 
 type VectorStoreReference<
 	P extends VectorStoreSourceProvider,
@@ -54,3 +60,17 @@ type GitHubVectorStoreReference = VectorStoreReference<
 export type GitHubVectorStoreInfo = VectorStoreInfo<GitHubVectorStoreReference>;
 export type GitHubVectorStoreIdentifier =
 	VectorStoreIdentifier<GitHubVectorStoreReference>;
+
+// MARK: GitHubPullRequestVectorStore
+
+type GitHubPullRequestVectorStoreReference = VectorStoreReference<
+	"githubPullRequest",
+	{
+		owner: string;
+		repo: string;
+	}
+>;
+export type GitHubPullRequestVectorStoreInfo =
+	VectorStoreInfo<GitHubPullRequestVectorStoreReference>;
+export type GitHubPullRequestVectorStoreIdentifier =
+	VectorStoreIdentifier<GitHubPullRequestVectorStoreReference>;

@@ -19,8 +19,28 @@ export const GitHubVectorStoreSource = z.object({
 });
 export type GitHubVectorStoreSource = z.infer<typeof GitHubVectorStoreSource>;
 
+export const GitHubPullRequestVectorStoreSource = z.object({
+	provider: z.literal("githubPullRequest"),
+	state: z.discriminatedUnion("status", [
+		z.object({
+			status: z.literal("configured"),
+			owner: z.string(),
+			repo: z.string(),
+		}),
+		z.object({
+			status: z.literal("unconfigured"),
+		}),
+	]),
+});
+export type GitHubPullRequestVectorStoreSource = z.infer<
+	typeof GitHubPullRequestVectorStoreSource
+>;
+
 export const VectorStoreContent = VectorStoreContentBase.extend({
-	source: z.discriminatedUnion("provider", [GitHubVectorStoreSource]),
+	source: z.discriminatedUnion("provider", [
+		GitHubVectorStoreSource,
+		GitHubPullRequestVectorStoreSource,
+	]),
 });
 export type VectorStoreContent = z.infer<typeof VectorStoreContent>;
 
