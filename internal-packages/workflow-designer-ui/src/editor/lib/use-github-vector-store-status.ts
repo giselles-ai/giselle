@@ -9,7 +9,8 @@ export function useGitHubVectorStoreStatus(node: Node) {
 
 	return useMemo(() => {
 		if (
-			!isVectorStoreNode(node, "github") ||
+			(!isVectorStoreNode(node, "github") &&
+				!isVectorStoreNode(node, "githubPullRequest")) ||
 			node.content.source.state.status !== "configured"
 		) {
 			return { isOrphaned: false, repositoryId: undefined };

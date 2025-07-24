@@ -178,12 +178,14 @@ export function NodeIcon({
 							`Expected VectorStoreNode, got ${JSON.stringify(node)}`,
 						);
 					}
-					switch (node.content.source.provider) {
+					const provider = node.content.source.provider;
+					switch (provider) {
 						case "github":
+						case "githubPullRequest":
 							return <GitHubIcon {...props} data-content-type-icon />;
 						default: {
-							const _exhaustiveCheck: never = node.content.source.provider;
-							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
+							const _exhaustiveCheck: never = provider;
+							throw new Error(`Unhandled node type: ${provider}`);
 						}
 					}
 				default: {

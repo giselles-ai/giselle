@@ -936,6 +936,14 @@ export function Toolbar() {
 														setSelectedTool(
 															addNodeTool(createVectorStoreNode("github")),
 														);
+													} else if (
+														sourceType === "githubPullRequestVectorStore"
+													) {
+														setSelectedTool(
+															addNodeTool(
+																createVectorStoreNode("githubPullRequest"),
+															),
+														);
 													} else if (sourceType === "webPage") {
 														setSelectedTool(addNodeTool(createWebPageNode()));
 													}
@@ -946,10 +954,22 @@ export function Toolbar() {
 													<p className="text-[14px]">Plain Text</p>
 												</ToggleGroup.Item>
 												{canUseGithubVectorStore && (
-													<ToggleGroup.Item value="githubVectorStore" data-tool>
-														<GitHubIcon className="w-[20px] h-[20px]" />
-														<p className="text-[14px]">GitHub Vector Store</p>
-													</ToggleGroup.Item>
+													<>
+														<ToggleGroup.Item
+															value="githubVectorStore"
+															data-tool
+														>
+															<GitHubIcon className="w-[20px] h-[20px]" />
+															<p className="text-[14px]">GitHub (Code)</p>
+														</ToggleGroup.Item>
+														<ToggleGroup.Item
+															value="githubPullRequestVectorStore"
+															data-tool
+														>
+															<GitHubIcon className="w-[20px] h-[20px]" />
+															<p className="text-[14px]">GitHub PR</p>
+														</ToggleGroup.Item>
+													</>
 												)}
 												<ToggleGroup.Item value="webPage" data-tool>
 													<WebPageFileIcon className="w-[20px] h-[20px]" />

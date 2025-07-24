@@ -53,7 +53,10 @@ export function GitHubNodeInfo({ node }: { node: Node }): ReactElement | null {
 		);
 	}
 
-	if (isVectorStoreNode(node, "github")) {
+	if (
+		isVectorStoreNode(node, "github") ||
+		isVectorStoreNode(node, "githubPullRequest")
+	) {
 		return node.content.source.state.status === "configured" &&
 			!isVectorStoreOrphaned ? (
 			<div className="px-[16px] relative">
