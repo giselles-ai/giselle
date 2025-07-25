@@ -4,6 +4,7 @@ import { and, desc, eq, isNotNull } from "drizzle-orm";
 import { type ReactNode, Suspense } from "react";
 import { agents, db } from "@/drizzle";
 import { fetchCurrentTeam } from "@/services/teams";
+
 import { SearchableAgentList } from "./components/searchable-agent-list";
 
 function _DataList({
@@ -55,7 +56,7 @@ async function AgentList() {
 export default function AgentListV2Page() {
 	return (
 		<ToastProvider>
-			<div className="w-full">
+			<div className="w-full pt-2 pb-2">
 				<Suspense fallback={<p className="text-center py-8">Loading...</p>}>
 					<AgentList />
 				</Suspense>

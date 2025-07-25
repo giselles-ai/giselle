@@ -67,7 +67,7 @@
 	--color-primary-100: var(--color-blue-100);
 
 	--color-text-node-1: hsl(68, 100%, 76%);
-	--color-text-node-2: hsla(68, 100%, 65%, 0.5);
+	--color-text-node-2: hsl(68, 100%, 65%);
 
 	--color-file-node-1: var(--color-chartreuse-900);
 	--color-file-node-2: hsl(69, 99%, 32%);
@@ -81,9 +81,9 @@
 	--color-generation-node-1: hsl(219, 90%, 52%);
 	--color-generation-node-2: hsl(219, 98%, 23%);
 
-	--color-trigger-node-1: hsl(302, 95%, 63%);
-	--color-trigger-node-2: hsl(302, 95%, 63%);
-	--shadow-trigger-node-1: 0px 4px 12px hsla(302, 95%, 63%, 0.3);
+	--color-trigger-node-1: hsl(220, 15%, 50%);
+	--color-trigger-node-2: hsl(220, 15%, 50%);
+	--shadow-trigger-node-1: 0px 4px 12px hsla(220, 15%, 50%, 0.3);
 
 	--color-action-node-1: var(--color-deep-purple-900);
 	--color-action-node-2: hsl(275, 91%, 26%);
@@ -391,5 +391,11 @@
 @layer utilities {
 	.animate-custom-pulse {
 		animation: custom-pulse 1s ease-in-out infinite;
+	}
+}
+
+@layer components {
+	.group[data-selected="true"][data-content-type="trigger"] {
+		box-shadow: 0px 0px 16px 0px hsla(220, 15%, 50%, 0.5);
 	}
 }

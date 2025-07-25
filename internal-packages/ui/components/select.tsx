@@ -1,7 +1,6 @@
 import clsx from "clsx/lite";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import { Select as SelectPrimitive } from "radix-ui";
-import { Button } from "./button";
 import { PopoverContent } from "./popover";
 
 type Identifiable = {
@@ -41,14 +40,19 @@ export function Select<T extends Identifiable>({
 			name={name}
 		>
 			<SelectPrimitive.Trigger id={id} asChild>
-				<Button
+				<button
 					type="button"
-					variant="filled"
-					rightIcon={<ChevronDownIcon className="size-[13px]" />}
-					className={widthClassName}
+					className={clsx(
+						"w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] border border-white-900 text-left text-[14px]",
+						"outline-none focus:outline-none",
+						"transition-colors hover:bg-ghost-element-hover",
+						"data-[placeholder]:text-text-muted",
+						widthClassName,
+					)}
 				>
 					<SelectPrimitive.Value placeholder={placeholder} />
-				</Button>
+					<ChevronDownIcon className="size-[13px] shrink-0 text-text" />
+				</button>
 			</SelectPrimitive.Trigger>
 			<SelectPrimitive.Portal>
 				<SelectPrimitive.Content

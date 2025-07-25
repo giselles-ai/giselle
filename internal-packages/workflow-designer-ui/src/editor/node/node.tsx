@@ -224,7 +224,7 @@ export function NodeComponent({
 				"data-[content-type=action]:from-action-node-1] data-[content-type=action]:to-action-node-2 data-[content-type=action]:shadow-action-node-1",
 				"data-[content-type=query]:from-query-node-1] data-[content-type=query]:to-query-node-2 data-[content-type=query]:shadow-query-node-1",
 				"data-[selected=true]:shadow-[0px_0px_16px_0px]",
-				"data-[selected=true]:data-[content-type=trigger]:shadow-[0px_0px_16px_0px_hsl(302,95%,63%)]",
+				"data-[selected=true]:data-[content-type=trigger]:shadow-[0px_0px_16px_0px_hsl(220,15%,50%)]",
 				"data-[preview=true]:opacity-50",
 				"not-data-preview:min-h-[110px]",
 				requiresSetup && "opacity-80",

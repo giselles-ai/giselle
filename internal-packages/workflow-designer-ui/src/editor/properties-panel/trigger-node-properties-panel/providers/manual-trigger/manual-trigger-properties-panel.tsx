@@ -183,54 +183,45 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 					<div className="space-y-[4px] mt-[16px]">
 						<div className="flex flex-col gap-[8px] rounded-[8px]">
 							<form
-								className="flex gap-[8px] items-end"
+								className="grid grid-cols-[1fr_120px_auto_auto] gap-x-4 gap-y-1 items-end"
 								onSubmit={handleAddParameter}
 							>
-								<div className="flex-1">
-									<label
-										htmlFor="param-name"
-										className="text-[12px] text-black-500 mb-[4px] block"
-									>
-										Parameter Name
-									</label>
-									<input
-										id="param-name"
-										name="name"
-										type="text"
-										placeholder="Write the parameter name"
-										className="w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-[1px] border-white-900 text-[14px]"
-										data-1p-ignore
-									/>
-								</div>
-								<div className="w-[100px]">
-									<label
-										htmlFor="param-type"
-										className="text-[12px] text-black-500 mb-[4px] block leading-[16px]"
-									>
-										Type
-									</label>
-									<Select
-										name="type"
-										options={TYPE_OPTIONS}
-										renderOption={(option) => option.name}
-										placeholder="Select type..."
-										defaultValue="text"
-									/>
-								</div>
-								<div className="w-auto">
-									<label
-										htmlFor="param-required"
-										className="text-[12px] text-black-500 mb-[4px] block leading-[16px]"
-									>
-										Required
-									</label>
-									<div className="flex items-center justify-center h-[37px]">
-										<input
-											id="param-required"
-											type="checkbox"
-											name="required"
-										/>
-									</div>
+								<label
+									htmlFor="param-name"
+									className="text-[12px] text-black-500"
+								>
+									Parameter Name
+								</label>
+								<label
+									htmlFor="param-type"
+									className="text-[12px] text-black-500"
+								>
+									Type
+								</label>
+								<label
+									htmlFor="param-required"
+									className="text-[12px] text-black-500"
+								>
+									Required
+								</label>
+								<div />
+								<input
+									id="param-name"
+									name="name"
+									type="text"
+									placeholder="Write the parameter name"
+									className="w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-[1px] border-white-900 text-[14px]"
+									data-1p-ignore
+								/>
+								<Select
+									name="type"
+									options={TYPE_OPTIONS}
+									renderOption={(option) => option.name}
+									placeholder="Select type..."
+									defaultValue="text"
+								/>
+								<div className="flex items-center justify-center h-[37px]">
+									<input id="param-required" type="checkbox" name="required" />
 								</div>
 								<Button type="submit" variant="filled" size="large">
 									Add
