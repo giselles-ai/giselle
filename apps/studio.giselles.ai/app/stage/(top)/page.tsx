@@ -41,7 +41,10 @@ export default async function StagePage() {
 	}
 	const experimental_storage = await experimental_storageFlag();
 	const teams = await fetchUserTeams();
-	const teamOptions = teams.map((team) => ({ id: team.id, label: team.name }));
+	const teamOptions = teams.map((team) => ({
+		value: team.id,
+		label: team.name,
+	}));
 	const user = await fetchCurrentUser();
 	const dbActs = await db.query.acts.findMany({
 		where: (acts, { eq }) => eq(acts.directorDbId, user.dbId),

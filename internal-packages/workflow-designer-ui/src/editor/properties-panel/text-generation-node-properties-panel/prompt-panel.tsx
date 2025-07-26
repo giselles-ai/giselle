@@ -21,11 +21,16 @@ export function PromptPanel({ node }: { node: TextGenerationNode }) {
 			tools={(editor) => (
 				<DropdownMenu
 					trigger={<AtSignIcon className="w-[18px]" />}
-					items={connectedSources}
-					renderItem={(connectedSource) =>
-						`${defaultName(connectedSource.node)} / ${connectedSource.label}`
+					items={connectedSources.map((source, index) => ({
+						value: index,
+						label: `${defaultName(source.node)} / ${source.label}`,
+						source,
+					}))}
+					renderItem={(item) =>
+						`${defaultName(item.source.node)} / ${item.source.label}`
 					}
-					onSelect={(_, connectedSource) => {
+					onSelect={(_, item) => {
+						const connectedSource = item.source;
 						const embedNode = {
 							outputId: connectedSource.connection.outputId,
 							node: connectedSource.connection.outputNode,

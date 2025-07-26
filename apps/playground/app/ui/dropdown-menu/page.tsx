@@ -2,6 +2,7 @@
 
 import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
+import { FileText, HelpCircle, LogOut, Settings, User } from "lucide-react";
 import { DemoSection } from "../components/demo-section";
 import { UiPage } from "../components/ui-page";
 
@@ -11,11 +12,10 @@ export default function () {
 			<DemoSection label="Basic Demo">
 				<DropdownMenu
 					items={[
-						{ id: 1, name: "apple" },
-						{ id: 2, name: "banana" },
-						{ id: 3, name: "melon" },
+						{ value: 1, label: "apple" },
+						{ value: 2, label: "banana" },
+						{ value: 3, label: "melon" },
 					]}
-					renderItem={(option) => option.name}
 					trigger={<Button>Basic Example</Button>}
 				/>
 			</DemoSection>
@@ -26,35 +26,46 @@ export default function () {
 							groupId: "fruits",
 							groupLabel: "Fruits",
 							items: [
-								{ id: 1, name: "Apple" },
-								{ id: 2, name: "Banana" },
-								{ id: 3, name: "Orange" },
+								{ value: 1, label: "Apple" },
+								{ value: 2, label: "Banana" },
+								{ value: 3, label: "Orange" },
 							],
 						},
 						{
 							groupId: "vegetables",
 							groupLabel: "Vegetables",
 							items: [
-								{ id: 4, name: "Carrot" },
-								{ id: 5, name: "Broccoli" },
-								{ id: 6, name: "Spinach" },
+								{ value: 4, label: "Carrot" },
+								{ value: 5, label: "Broccoli" },
+								{ value: 6, label: "Spinach" },
 							],
 						},
 						{
 							groupId: "grains",
 							groupLabel: "Grains",
 							items: [
-								{ id: 7, name: "Rice" },
-								{ id: 8, name: "Wheat" },
-								{ id: 9, name: "Oats" },
+								{ value: 7, label: "Rice" },
+								{ value: 8, label: "Wheat" },
+								{ value: 9, label: "Oats" },
 							],
 						},
 					]}
-					renderItem={(option) => option.name}
 					trigger={<Button>Group Example</Button>}
 					onSelect={(_event, option) => {
 						console.log("Selected:", option);
 					}}
+				/>
+			</DemoSection>
+			<DemoSection label="Icon Demo">
+				<DropdownMenu
+					items={[
+						{ value: 1, label: "Profile", icon: <User /> },
+						{ value: 2, label: "Documents", icon: <FileText /> },
+						{ value: 3, label: "Settings", icon: <Settings /> },
+						{ value: 4, label: "Help", icon: <HelpCircle /> },
+						{ value: 5, label: "Sign Out", icon: <LogOut /> },
+					]}
+					trigger={<Button>Icon Example</Button>}
 				/>
 			</DemoSection>
 		</UiPage>

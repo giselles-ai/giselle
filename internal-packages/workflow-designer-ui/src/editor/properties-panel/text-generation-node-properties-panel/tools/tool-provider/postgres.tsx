@@ -201,7 +201,7 @@ function PostgresToolConnectionDialog({
 									<Select
 										name="secretId"
 										placeholder="Choose a connection string… "
-										options={secrets ?? []}
+										options={secrets?.map((s) => ({ ...s, value: s.id })) ?? []}
 										renderOption={(option) => option.label}
 										widthClassName="w-[180px]"
 									/>

@@ -282,7 +282,11 @@ function SelectOutputPopover({
 			items={groupedOutputs.map((groupedOutput) => ({
 				groupId: groupedOutput.label,
 				groupLabel: groupedOutput.label,
-				items: groupedOutput.nodes,
+				items: groupedOutput.nodes.map((node) => ({
+					...node,
+					value: node.id,
+					label: `${node.node.name ?? defaultName(node.node)} / ${node.label}`,
+				})),
 			}))}
 			renderItem={(item) => (
 				<p className="text-[12px] truncate">

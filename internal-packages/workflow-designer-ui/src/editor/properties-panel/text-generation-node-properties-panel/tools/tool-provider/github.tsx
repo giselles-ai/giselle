@@ -242,7 +242,7 @@ function GitHubToolConnectionDialog({
 									<Select
 										name="secretId"
 										placeholder="Choose a token… "
-										options={secrets ?? []}
+										options={secrets?.map((s) => ({ ...s, value: s.id })) ?? []}
 										renderOption={(option) => option.label}
 										widthClassName="w-[180px]"
 									/>

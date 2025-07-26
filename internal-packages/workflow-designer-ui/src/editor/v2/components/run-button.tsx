@@ -75,15 +75,21 @@ export function RunButton() {
 		<DropdownMenu
 			open={isDropdownOpen}
 			onOpenChange={setIsDropdownOpen}
-			onSelect={async (_event, startingNode) => {
+			onSelect={async (_event, item) => {
+				const startingNode = item.node;
 				if (!isTriggerNode(startingNode) && isOperationNode(startingNode)) {
 					await createAndStartAct({ startNodeId: startingNode.id, inputs: [] });
 				}
 			}}
-			items={startingNodes}
+			items={startingNodes.map((node) => ({
+				value: node.id,
+				label: node.name ?? defaultName(node),
+				node,
+			}))}
 			renderItemAsChild
-			renderItem={(startingNode) =>
-				isTriggerNode(startingNode) ? (
+			renderItem={(item) => {
+				const startingNode = item.node;
+				return isTriggerNode(startingNode) ? (
 					<Dialog
 						open={openDialogNodeId === startingNode.id}
 						onOpenChange={(isOpen) => {
@@ -112,8 +118,8 @@ export function RunButton() {
 					</Dialog>
 				) : (
 					<NodeSelectItem node={startingNode} />
-				)
-			}
+				);
+			}}
 			trigger={
 				<Button
 					leftIcon={<PlayIcon className="size-[15px] fill-current" />}

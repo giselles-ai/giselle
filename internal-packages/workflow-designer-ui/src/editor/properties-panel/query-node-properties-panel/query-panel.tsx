@@ -149,7 +149,8 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 								</Toolbar.Button>
 							}
 							items={connectedInputsWithoutDatasource.map((source) => ({
-								id: source.connection.id,
+								value: source.connection.id,
+								label: `${defaultName(source.node)} / ${source.output.label}`,
 								source,
 							}))}
 							renderItem={(item) =>

@@ -17,7 +17,7 @@ import {
 
 type TeamId = InferSelectModel<typeof teams>["id"];
 interface TeamOption {
-	id: TeamId;
+	value: TeamId;
 	label: string;
 }
 
@@ -46,7 +46,7 @@ export function Form({
 	flowTriggers: FlowTriggerUIItem[];
 	performStageAction: PerformStageAction;
 }) {
-	const defaultTeamId = useMemo(() => teamOptions[0].id, [teamOptions]);
+	const defaultTeamId = useMemo(() => teamOptions[0].value, [teamOptions]);
 	const [selectedTeamId, setSelectedTeamId] = useState<TeamId>(defaultTeamId);
 	const defaultSelectedFlowTriggerId = useMemo(
 		() =>
@@ -210,12 +210,12 @@ export function Form({
 							filteredFlowTriggers.length === 0
 								? [
 										{
-											id: "no-flow",
+											value: "no-flow",
 											label: "No flows available",
 										},
 									]
 								: filteredFlowTriggers.map((trigger) => ({
-										id: trigger.id,
+										value: trigger.id,
 										label: `${trigger.workspaceName} / ${trigger.label}`,
 									}))
 						}

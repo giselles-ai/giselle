@@ -96,7 +96,7 @@ export function DataSourceTable() {
 								</label>
 								<Select
 									name="provider"
-									options={[{ id: "github", label: "GitHub" }]}
+									options={[{ value: "github", label: "GitHub" }]}
 									renderOption={(option) => option.label}
 									placeholder="Select provider..."
 									value={provider}
