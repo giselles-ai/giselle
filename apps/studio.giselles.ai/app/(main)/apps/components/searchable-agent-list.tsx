@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@giselle-internal/ui/select";
 import {
 	ArrowDownAZ,
 	ArrowUpAZ,
@@ -10,13 +11,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { AgentGrid } from "./agent-grid";
 import { DeleteAgentButton } from "./delete-agent-button";
@@ -108,21 +102,6 @@ export function SearchableAgentList({ agents }: AgentGridProps) {
 		});
 	}, [filteredAgents, sortOption]);
 
-	const getSortLabel = () => {
-		switch (sortOption) {
-			case "name-asc":
-				return "Name (A-Z)";
-			case "name-desc":
-				return "Name (Z-A)";
-			case "date-desc":
-				return "Updated";
-			case "date-asc":
-				return "Oldest";
-			default:
-				return "Sort";
-		}
-	};
-
 	return (
 		<>
 			<div className="mb-6 flex flex-col sm:flex-row gap-3 items-center">
@@ -138,68 +117,33 @@ export function SearchableAgentList({ agents }: AgentGridProps) {
 				</div>
 				<div className="flex gap-2">
 					{/* Sort Dropdown */}
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button
-								variant="link"
-								className="w-auto justify-start gap-2 px-3 py-2 h-10 group [&[data-sort-type='name-asc']_.sort-icon-name-asc]:block [&[data-sort-type='name-desc']_.sort-icon-name-desc]:block [&[data-sort-type='date-desc']_.sort-icon-date]:block [&[data-sort-type='date-asc']_.sort-icon-date]:block"
-								data-sort-type={sortOption}
-							>
-								<ArrowDownAZ className="h-4 w-4 hidden sort-icon-name-asc" />
-								<ArrowUpAZ className="h-4 w-4 hidden sort-icon-name-desc" />
-								<Clock className="h-4 w-4 hidden sort-icon-date" />
-								<span className="text-sm hidden sm:inline">
-									{getSortLabel()}
-								</span>
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent
-							align="end"
-							className="border border-black-600 rounded-lg p-1 min-w-[180px]"
-							style={{
-								background: "rgba(30,35,55,0.95)",
-								backdropFilter: "blur(12px)",
-								WebkitBackdropFilter: "blur(12px)",
-							}}
-						>
-							<DropdownMenuItem
-								onClick={() => setSortOption("date-desc")}
-								className={`text-white hover:bg-black-700 cursor-pointer rounded px-3 py-2 ${
-									sortOption === "date-desc" ? "bg-black-700" : ""
-								}`}
-							>
-								<Clock className="mr-3 h-4 w-4" />
-								Updated
-							</DropdownMenuItem>
-							<DropdownMenuItem
-								onClick={() => setSortOption("date-asc")}
-								className={`text-white hover:bg-black-700 cursor-pointer rounded px-3 py-2 ${
-									sortOption === "date-asc" ? "bg-black-700" : ""
-								}`}
-							>
-								<Clock className="mr-3 h-4 w-4" />
-								Oldest
-							</DropdownMenuItem>
-							<DropdownMenuItem
-								onClick={() => setSortOption("name-asc")}
-								className={`text-white hover:bg-black-700 cursor-pointer rounded px-3 py-2 ${
-									sortOption === "name-asc" ? "bg-black-700" : ""
-								}`}
-							>
-								<ArrowDownAZ className="mr-3 h-4 w-4" />
-								Name (A-Z)
-							</DropdownMenuItem>
-							<DropdownMenuItem
-								onClick={() => setSortOption("name-desc")}
-								className={`text-white hover:bg-black-700 cursor-pointer rounded px-3 py-2 ${
-									sortOption === "name-desc" ? "bg-black-700" : ""
-								}`}
-							>
-								<ArrowUpAZ className="mr-3 h-4 w-4" />
-								Name (Z-A)
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
+					<Select
+						options={[
+							{
+								value: "date-desc",
+								label: "Updated",
+								icon: <Clock className="h-4 w-4" />,
+							},
+							{
+								value: "date-asc",
+								label: "Oldest",
+								icon: <Clock className="h-4 w-4" />,
+							},
+							{
+								value: "name-asc",
+								label: "Name (A-Z)",
+								icon: <ArrowDownAZ className="h-4 w-4" />,
+							},
+							{
+								value: "name-desc",
+								label: "Name (Z-A)",
+								icon: <ArrowUpAZ className="h-4 w-4" />,
+							},
+						]}
+						placeholder="Sort"
+						value={sortOption}
+						onValueChange={(value) => setSortOption(value as SortOption)}
+					/>
 
 					{/* View Mode Toggle */}
 					<div className="flex rounded-lg border border-black-600 overflow-hidden">
