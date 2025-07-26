@@ -13,7 +13,7 @@ import {
 import type { GitHubRepositoryIndexStatus } from "@/drizzle";
 import { cn } from "@/lib/utils";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
-import { safeParseContentStatusMetadata } from "@/lib/vector-stores/github/types";
+import { getContentStatusMetadata } from "@/lib/vector-stores/github/types";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import {
 	GlassDialogContent,
@@ -79,11 +79,7 @@ export function RepositoryItem({
 	}
 
 	// Parse metadata
-	const parseResult = safeParseContentStatusMetadata(
-		blobStatus.metadata,
-		"blob",
-	);
-	const parsedMetadata = parseResult.success ? parseResult.data : null;
+	const parsedMetadata = getContentStatusMetadata(blobStatus.metadata, "blob");
 
 	// Check if manual ingest is allowed
 	const now = new Date();

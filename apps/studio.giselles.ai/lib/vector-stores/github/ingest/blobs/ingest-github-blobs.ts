@@ -11,7 +11,8 @@ import {
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
 } from "@/drizzle";
-import { safeParseContentStatusMetadata } from "../types";
+import { getContentStatusMetadata } from "../../types";
+import { handleIngestErrors } from "../error-handling";
 import { createGitHubBlobChunkStore } from "./chunk-store";
 
 /**
@@ -55,6 +56,9 @@ export async function ingestGitHubBlobs(params: {
 	console.log(
 		`Ingested from ${result.totalDocuments} documents with success: ${result.successfulDocuments}, failure: ${result.failedDocuments}`,
 	);
+
+	// Capture errors to Sentry if any documents failed
+	handleIngestErrors(result, params, "blob");
 }
 
 /**
@@ -64,6 +68,8 @@ async function getRepositoryIndexInfo(
 	source: { owner: string; repo: string },
 	teamDbId: number,
 ): Promise<{ repositoryIndexDbId: number; isInitialIngest: boolean }> {
+	const contentType = "blob";
+
 	const result = await db
 		.select({
 			dbId: githubRepositoryIndex.dbId,
@@ -77,7 +83,7 @@ async function getRepositoryIndexInfo(
 					githubRepositoryContentStatus.repositoryIndexDbId,
 					githubRepositoryIndex.dbId,
 				),
-				eq(githubRepositoryContentStatus.contentType, "blob"),
+				eq(githubRepositoryContentStatus.contentType, contentType),
 			),
 		)
 		.where(
@@ -85,6 +91,7 @@ async function getRepositoryIndexInfo(
 				eq(githubRepositoryIndex.owner, source.owner),
 				eq(githubRepositoryIndex.repo, source.repo),
 				eq(githubRepositoryIndex.teamDbId, teamDbId),
+				eq(githubRepositoryContentStatus.enabled, true),
 			),
 		)
 		.limit(1);
@@ -101,16 +108,13 @@ async function getRepositoryIndexInfo(
 			`Blob content status not found for repository: ${source.owner}/${source.repo}`,
 		);
 	}
-	const parseResult = safeParseContentStatusMetadata(
+	const metadata = getContentStatusMetadata(
 		contentStatus.metadata,
-		contentStatus.contentType,
+		contentType,
 	);
 
-	// If parsing fails or no lastIngestedCommitSha exists, treat as initial ingest
-	const isInitialIngest =
-		!parseResult.success ||
-		!parseResult.data ||
-		!parseResult.data.lastIngestedCommitSha;
+	// If no lastIngestedCommitSha exists, treat as initial ingest
+	const isInitialIngest = !metadata?.lastIngestedCommitSha;
 
 	return { repositoryIndexDbId: dbId, isInitialIngest };
 }

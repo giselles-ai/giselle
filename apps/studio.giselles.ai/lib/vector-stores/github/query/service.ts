@@ -1,8 +1,8 @@
 import { createPostgresQueryService } from "@giselle-sdk/rag";
 import { getTableName } from "drizzle-orm";
+import z from "zod/v4";
 import { githubRepositoryEmbeddings } from "@/drizzle";
 import { createDatabaseConfig } from "../database";
-import { githubQueryMetadataSchema } from "../types";
 import { resolveGitHubEmbeddingFilter } from "./resolver";
 
 /**
@@ -11,6 +11,9 @@ import { resolveGitHubEmbeddingFilter } from "./resolver";
 export const gitHubQueryService = createPostgresQueryService({
 	database: createDatabaseConfig(),
 	tableName: getTableName(githubRepositoryEmbeddings),
-	metadataSchema: githubQueryMetadataSchema,
+	metadataSchema: z.object({
+		fileSha: z.string(),
+		path: z.string(),
+	}),
 	contextToFilter: resolveGitHubEmbeddingFilter,
 });

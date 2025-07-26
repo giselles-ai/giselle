@@ -3,9 +3,9 @@ import {
 	type DocumentLoader,
 	DocumentLoaderError,
 } from "@giselle-sdk/rag";
-import type { Octokit } from "@octokit/core";
 import type { Client } from "urql";
 import { graphql } from "../../client";
+import { octokit } from "../../octokit";
 import type { GitHubAuthConfig } from "../../types";
 import {
 	createCacheKey,
@@ -28,7 +28,6 @@ import type {
 const GRAPHQL_BATCH_SIZE = 50; // GitHub GraphQL API optimal batch size
 
 export function createGitHubPullRequestsLoader(
-	octokit: Octokit,
 	config: GitHubPullRequestsLoaderConfig,
 	authConfig: GitHubAuthConfig,
 ): DocumentLoader<GitHubPullRequestMetadata> {
@@ -77,7 +76,8 @@ export function createGitHubPullRequestsLoader(
 		}
 
 		const promise = (() => {
-			const ctx: DiffFetchContext = { octokit, owner, repo };
+			const octokitClient = octokit(authConfig);
+			const ctx: DiffFetchContext = { octokit: octokitClient, owner, repo };
 			return fetchDiffs(ctx, prNumber);
 		})();
 

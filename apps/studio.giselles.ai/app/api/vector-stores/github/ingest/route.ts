@@ -1,8 +1,6 @@
 import type { NextRequest } from "next/server";
-import {
-	fetchIngestTargets,
-	processRepository,
-} from "@/lib/vector-stores/github";
+import { processRepository } from "@/lib/vector-stores/github";
+import { fetchIngestTargets } from "./fetch-ingest-targets";
 
 export const maxDuration = 800;
 

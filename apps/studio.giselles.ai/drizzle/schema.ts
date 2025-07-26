@@ -352,12 +352,14 @@ export const githubRepositoryEmbeddings = pgTable(
 	],
 );
 
+export const GitHubRepositoryPullRequestContentTypeValues = [
+	"title_body",
+	"comment",
+	"diff",
+] as const;
 export type GitHubRepositoryPullRequestContentType =
-	| "title_body"
-	| "comment"
-	| "diff";
-
-// Document key format for GitHub Pull Request embeddings (e.g., "123:title_body", "123:comment:456", "123:diff:path/to/file.ts")
+	(typeof GitHubRepositoryPullRequestContentTypeValues)[number];
+// Document key format for GitHub Pull Request embeddings (e.g., "123:title_body:", "123:comment:456", "123:diff:path/to/file.ts")
 export type GitHubPullRequestDocumentKey =
 	`${number}:${GitHubRepositoryPullRequestContentType}:${string}`;
 
@@ -372,7 +374,6 @@ export const githubRepositoryPullRequestEmbeddings = pgTable(
 			.$type<GitHubRepositoryPullRequestContentType>()
 			.notNull(),
 		contentId: text("content_id").notNull(),
-		// Composite key for identifying documents (e.g., "123:title_body", "123:comment:456", "123:diff:path/to/file.ts")
 		documentKey: text("document_key")
 			.$type<GitHubPullRequestDocumentKey>()
 			.notNull(),

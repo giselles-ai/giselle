@@ -1,6 +1,7 @@
 import type { PoolClient } from "pg";
 import { escapeIdentifier } from "pg";
 import * as pgvector from "pgvector/pg";
+import { ConfigurationError } from "../../errors";
 import type { ColumnMapping } from "../column-mapping";
 import { REQUIRED_COLUMN_KEYS } from "../column-mapping";
 import type { ChunkWithEmbedding } from "../types";
@@ -254,9 +255,60 @@ export async function queryDocumentVersions(
 			AND ${escapeIdentifier(versionColumn)} IS NOT NULL
 	`;
 
-	const result = await client.query(query, scopeValues);
-	return result.rows.map((row) => ({
-		documentKey: row.document_key,
-		version: row.version,
-	}));
+	const result = await client.query<{
+		document_key: unknown;
+		version: unknown;
+	}>(query, scopeValues);
+	return result.rows.map((row) => {
+		return {
+			documentKey: toColumnString(row.document_key, "documentKey"),
+			version: toColumnString(row.version, "version"),
+		};
+	});
+}
+
+/**
+ * Convert various types to string for database columns
+ */
+function toColumnString(v: unknown, columnName: string): string {
+	if (v == null) {
+		throw new ConfigurationError(
+			`${columnName} column value is null`,
+			columnName,
+			{ value: v },
+		);
+	}
+	if (typeof v === "string") {
+		return v;
+	}
+	if (
+		typeof v === "number" ||
+		typeof v === "bigint" ||
+		typeof v === "boolean"
+	) {
+		return String(v);
+	}
+	if (v instanceof Date) {
+		return v.toISOString();
+	}
+	if (Array.isArray(v)) {
+		throw new ConfigurationError(
+			`${columnName} column has unsupported type: array. Expected string, number, boolean, or Date`,
+			columnName,
+			{ value: v, type: "array" },
+		);
+	}
+	if (typeof v === "object") {
+		throw new ConfigurationError(
+			`${columnName} column has unsupported type: object. Expected string, number, boolean, or Date`,
+			columnName,
+			{ value: v, type: "object" },
+		);
+	}
+
+	throw new ConfigurationError(
+		`${columnName} column has unsupported type: ${typeof v}. Expected string, number, boolean, or Date`,
+		columnName,
+		{ value: v, type: typeof v },
+	);
 }
