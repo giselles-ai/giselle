@@ -11,7 +11,7 @@ const handler: ProxyHandler<Stripe> = {
 			}
 			stripeInstance = new Stripe(key, {
 				// https://github.com/stripe/stripe-node#configuration
-				apiVersion: "2025-06-30.basil",
+				apiVersion: "2025-07-30.basil",
 			});
 		}
 		return stripeInstance[prop as keyof Stripe];
