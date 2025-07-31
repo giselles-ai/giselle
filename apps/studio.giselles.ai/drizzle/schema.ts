@@ -35,8 +35,18 @@ export const subscriptions = pgTable("subscriptions", {
 	cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull(),
 	cancelAt: timestamp("cancel_at"),
 	canceledAt: timestamp("canceled_at"),
+
+	/**
+	 * These fields are removed from the Stripe Subscription object.
+	 * - current_period_start
+	 * - current_period_end
+	 *
+	 * But we keep them for compatibility with existing data.
+	 * New values are populated from subscriptionItem objects.
+	 */
 	currentPeriodStart: timestamp("current_period_start").notNull(),
 	currentPeriodEnd: timestamp("current_period_end").notNull(),
+
 	created: timestamp("created").defaultNow().notNull(),
 	endedAt: timestamp("ended_at"),
 	trialStart: timestamp("trial_start"),
