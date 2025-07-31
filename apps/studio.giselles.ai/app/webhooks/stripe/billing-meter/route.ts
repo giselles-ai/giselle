@@ -15,19 +15,21 @@ const relevantEvents = new Set([
 
 export async function POST(req: Request) {
 	const body = await req.text();
-	const sig = req.headers.get("stripe-signature") as string;
+	const sig = req.headers.get("stripe-signature") ?? "";
 	const webhookSecret = process.env.STRIPE_BILLING_METER_WEBHOOK_SECRET;
-	let thinEvent: Stripe.ThinEvent;
+	if (!sig || !webhookSecret) {
+		return new Response("Webhook secret not found.", { status: 400 });
+	}
 
+	let thinEvent: Stripe.ThinEvent;
 	try {
-		if (!sig || !webhookSecret)
-			return new Response("Webhook secret not found.", { status: 400 });
 		thinEvent = stripe.parseThinEvent(body, sig, webhookSecret);
 		console.log(`🔔  Webhook received: ${thinEvent.type}`);
-	} catch (err: unknown) {
-		console.log(`❌ Error: ${err}`);
+	} catch (err) {
+		const message = err instanceof Error ? err.message : String(err);
+		console.error(`❌ Error parsing webhook: ${message}`);
 		captureException(err);
-		return new Response(`Webhook Error: ${err}`, { status: 400 });
+		return new Response(`Webhook Error: ${message}`, { status: 400 });
 	}
 
 	if (!relevantEvents.has(thinEvent.type)) {
@@ -36,10 +38,15 @@ export async function POST(req: Request) {
 		});
 	}
 
-	const eventResponse = await stripe.v2.core.events.retrieve(thinEvent.id);
-	const event = eventResponse as Stripe.V2.Event;
-
-	// Type narrowing based on event type
+	let event: Stripe.V2.Event;
+	try {
+		event = await stripe.v2.core.events.retrieve(thinEvent.id);
+	} catch (err) {
+		const message = err instanceof Error ? err.message : String(err);
+		console.error(`❌ Error retrieving event: ${message}`);
+		captureException(err);
+		return new Response(`Event retrieval error: ${message}`, { status: 500 });
+	}
 	if (
 		event.type !== "v1.billing.meter.error_report_triggered" &&
 		event.type !== "v1.billing.meter.no_meter_found"
@@ -49,23 +56,16 @@ export async function POST(req: Request) {
 		});
 	}
 
-	// Now TypeScript knows this is one of the billing meter event types
-	const billingMeterEvent = event as
-		| Stripe.Events.V1BillingMeterErrorReportTriggeredEvent
-		| Stripe.Events.V1BillingMeterNoMeterFoundEvent;
-
 	try {
-		const eventData = billingMeterEvent.data;
-
-		console.error(
-			`
-				Stripe Billing Meter Error Report:
-				Period: ${eventData.validation_start} - ${eventData.validation_end}
-				Summary: ${eventData.developer_message_summary}
-				Error Count: ${eventData.reason.error_count}`
-				.trim()
-				.replace(/^\s+/gm, "    "),
-		);
+		const eventData = event.data;
+		const errorReport = [
+			"Stripe Billing Meter Error Report:",
+			`Period: ${eventData.validation_start} -
+  ${eventData.validation_end}`,
+			`Summary: ${eventData.developer_message_summary}`,
+			`Error Count: ${eventData.reason.error_count}`,
+		].join("\n    ");
+		console.error(errorReport);
 
 		for (const errorType of eventData.reason.error_types) {
 			console.error(
@@ -75,35 +75,45 @@ export async function POST(req: Request) {
 				console.error(`  - ${error.error_message}`);
 			}
 		}
-		if (
-			"related_object" in billingMeterEvent &&
-			billingMeterEvent.related_object != null
-		) {
-			console.error(
-				`
-				Related Object:
-        ID: ${billingMeterEvent.related_object.id}
-        Type: ${billingMeterEvent.related_object.type}
-        URL: ${billingMeterEvent.related_object.url}`
-					.trim()
-					.replace(/^\s+/gm, "    "),
-			);
+
+		let relatedObject: Stripe.Event.RelatedObject | undefined;
+		switch (event.type) {
+			case "v1.billing.meter.error_report_triggered":
+				if (event.related_object) {
+					relatedObject = event.related_object;
+					console.error("Related Object:");
+					console.error(`  ID: ${relatedObject.id}`);
+					console.error(`  Type: ${relatedObject.type}`);
+					console.error(`  URL: ${relatedObject.url}`);
+				}
+				break;
+			case "v1.billing.meter.no_meter_found":
+				break;
+			default: {
+				const _exhaustiveCheck: never = event;
+				throw new Error(`Unhandled event type: ${_exhaustiveCheck}`);
+			}
 		}
 
 		captureEvent({
 			message: "Stripe Billing Meter Error",
 			level: "error",
+			tags: {
+				eventType: event.type,
+			},
 			extra: {
 				validationPeriod: {
 					start: eventData.validation_start,
 					end: eventData.validation_end,
 				},
 				summary: eventData.developer_message_summary,
-				errors: eventData.reason.error_types,
-				relatedObject:
-					"related_object" in billingMeterEvent
-						? billingMeterEvent.related_object
-						: null,
+				errorCount: eventData.reason.error_count,
+				errorTypes: eventData.reason.error_types.map((errorType) => ({
+					code: errorType.code,
+					count: errorType.error_count,
+					sampleErrors: errorType.sample_errors,
+				})),
+				relatedObject,
 			},
 		});
 	} catch (error) {
