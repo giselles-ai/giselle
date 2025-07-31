@@ -15,7 +15,7 @@ const relevantEvents = new Set([
 
 export async function POST(req: Request) {
 	const body = await req.text();
-	const sig = req.headers.get("stripe-signature") ?? "";
+	const sig = req.headers.get("stripe-signature");
 	const webhookSecret = process.env.STRIPE_BILLING_METER_WEBHOOK_SECRET;
 	if (!sig || !webhookSecret) {
 		return new Response("Webhook secret not found.", { status: 400 });
