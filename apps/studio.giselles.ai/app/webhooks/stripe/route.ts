@@ -5,6 +5,8 @@ import { reportUserSeatUsage } from "@/services/usage-based-billing";
 import { handleInvoiceCreation } from "./handle-invoice-creation";
 import { handleSubscriptionCancellation } from "./handle-subscription-cancellation";
 
+const EXPECTED_WEBHOOK_VERSION = "basil";
+
 const relevantEvents = new Set([
 	"checkout.session.completed",
 	"customer.subscription.updated",
@@ -13,6 +15,21 @@ const relevantEvents = new Set([
 ]);
 
 export async function POST(req: Request) {
+	// Check webhook version from query parameter
+	const url = new URL(req.url);
+	const webhookVersion = url.searchParams.get("version");
+
+	// Only process webhooks with version=basil
+	// Return 400 for old webhooks to trigger retry after rollback
+	if (webhookVersion !== EXPECTED_WEBHOOK_VERSION) {
+		console.log(
+			"🚫 Rejecting webhook - expected version=%s, got version=%s",
+			EXPECTED_WEBHOOK_VERSION,
+			webhookVersion || "none",
+		);
+		return new Response("Webhook version mismatch", { status: 400 });
+	}
+
 	const body = await req.text();
 	const sig = req.headers.get("stripe-signature") as string;
 	const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
