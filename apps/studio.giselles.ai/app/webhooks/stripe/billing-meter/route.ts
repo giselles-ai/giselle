@@ -15,21 +15,19 @@ const relevantEvents = new Set([
 
 export async function POST(req: Request) {
 	const body = await req.text();
-	const sig = req.headers.get("stripe-signature");
+	const sig = req.headers.get("stripe-signature") as string;
 	const webhookSecret = process.env.STRIPE_BILLING_METER_WEBHOOK_SECRET;
-	if (!sig || !webhookSecret) {
-		return new Response("Webhook secret not found.", { status: 400 });
-	}
-
 	let thinEvent: Stripe.ThinEvent;
+
 	try {
+		if (!sig || !webhookSecret)
+			return new Response("Webhook secret not found.", { status: 400 });
 		thinEvent = stripe.parseThinEvent(body, sig, webhookSecret);
 		console.log(`🔔  Webhook received: ${thinEvent.type}`);
-	} catch (err) {
-		const message = err instanceof Error ? err.message : String(err);
-		console.error(`❌ Error parsing webhook: ${message}`);
+	} catch (err: unknown) {
+		console.log(`❌ Error: ${err}`);
 		captureException(err);
-		return new Response(`Webhook Error: ${message}`, { status: 400 });
+		return new Response(`Webhook Error: ${err}`, { status: 400 });
 	}
 
 	if (!relevantEvents.has(thinEvent.type)) {
@@ -38,15 +36,7 @@ export async function POST(req: Request) {
 		});
 	}
 
-	let event: Stripe.V2.Event;
-	try {
-		event = await stripe.v2.core.events.retrieve(thinEvent.id);
-	} catch (err) {
-		const message = err instanceof Error ? err.message : String(err);
-		console.error(`❌ Error retrieving event: ${message}`);
-		captureException(err);
-		return new Response(`Event retrieval error: ${message}`, { status: 500 });
-	}
+	const event = await stripe.v2.core.events.retrieve(thinEvent.id);
 	if (
 		event.type !== "v1.billing.meter.error_report_triggered" &&
 		event.type !== "v1.billing.meter.no_meter_found"
@@ -57,17 +47,17 @@ export async function POST(req: Request) {
 	}
 
 	try {
-		const eventData = event.data;
-		const errorReport = [
-			"Stripe Billing Meter Error Report:",
-			`Period: ${eventData.validation_start} -
-  ${eventData.validation_end}`,
-			`Summary: ${eventData.developer_message_summary}`,
-			`Error Count: ${eventData.reason.error_count}`,
-		].join("\n    ");
-		console.error(errorReport);
+		console.error(
+			`
+				Stripe Billing Meter Error Report:
+				Period: ${event.data.validation_start} - ${event.data.validation_end}
+				Summary: ${event.data.developer_message_summary}
+				Error Count: ${event.data.reason.error_count}`
+				.trim()
+				.replace(/^\s+/gm, "    "),
+		);
 
-		for (const errorType of eventData.reason.error_types) {
+		for (const errorType of event.data.reason.error_types) {
 			console.error(
 				`Error Type: ${errorType.code} (${errorType.error_count} occurrences)`,
 			);
@@ -75,45 +65,29 @@ export async function POST(req: Request) {
 				console.error(`  - ${error.error_message}`);
 			}
 		}
-
-		let relatedObject: Stripe.Event.RelatedObject | undefined;
-		switch (event.type) {
-			case "v1.billing.meter.error_report_triggered":
-				if (event.related_object) {
-					relatedObject = event.related_object;
-					console.error("Related Object:");
-					console.error(`  ID: ${relatedObject.id}`);
-					console.error(`  Type: ${relatedObject.type}`);
-					console.error(`  URL: ${relatedObject.url}`);
-				}
-				break;
-			case "v1.billing.meter.no_meter_found":
-				break;
-			default: {
-				const _exhaustiveCheck: never = event;
-				throw new Error(`Unhandled event type: ${_exhaustiveCheck}`);
-			}
+		if ("related_object" in event && event.related_object != null) {
+			console.error(
+				`
+				Related Object:
+        ID: ${event.related_object.id}
+        Type: ${event.related_object.type}
+        URL: ${event.related_object.url}`
+					.trim()
+					.replace(/^\s+/gm, "    "),
+			);
 		}
 
 		captureEvent({
 			message: "Stripe Billing Meter Error",
 			level: "error",
-			tags: {
-				eventType: event.type,
-			},
 			extra: {
 				validationPeriod: {
-					start: eventData.validation_start,
-					end: eventData.validation_end,
+					start: event.data.validation_start,
+					end: event.data.validation_end,
 				},
-				summary: eventData.developer_message_summary,
-				errorCount: eventData.reason.error_count,
-				errorTypes: eventData.reason.error_types.map((errorType) => ({
-					code: errorType.code,
-					count: errorType.error_count,
-					sampleErrors: errorType.sample_errors,
-				})),
-				relatedObject,
+				summary: event.data.developer_message_summary,
+				errors: event.data.reason.error_types,
+				relatedObject: "related_object" in event ? event.related_object : null,
 			},
 		});
 	} catch (error) {
