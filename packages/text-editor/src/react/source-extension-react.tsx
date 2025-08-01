@@ -52,16 +52,16 @@ const Component = (props: NodeViewProps) => {
 				data-content-type={node.content.type}
 				className={clsx(
 					"rounded-[4px] px-[4px] py-[2px] border-[1px] transition-colors",
-					"data-[content-type=textGeneration]:bg-primary-900/20 data-[content-type=textGeneration]:text-primary-900",
+					"data-[content-type=textGeneration]:bg-generation-node-1/20 data-[content-type=textGeneration]:text-generation-node-1",
 					"data-[content-type=github]:bg-github-node-1/20 data-[content-type=github]:text-github-node-1",
-					"data-[content-type=text]:bg-node-plaintext-900/20 data-[content-type=text]:text-node-plaintext-900",
-					"data-[content-type=file]:bg-node-data-900/20 data-[content-type=file]:text-node-data-900",
-					"data-[content-type=webPage]:bg-node-data-900/20 data-[content-type=webPage]:text-node-data-900",
+					"data-[content-type=text]:bg-text-node-1/20 data-[content-type=text]:text-text-node-1",
+					"data-[content-type=file]:bg-file-node-1/20 data-[content-type=file]:text-file-node-1",
+					"data-[content-type=webPage]:bg-webPage-node-1/20 data-[content-type=webPage]:text-webPage-node-1",
 					"data-[content-type=action]:bg-action-node-1/20 data-[content-type=action]:text-action-node-1",
 					"data-[content-type=trigger]:bg-trigger-node-1/20 data-[content-type=trigger]:text-trigger-node-1",
 					"data-[content-type=query]:bg-query-node-1/20 data-[content-type=query]:text-query-node-1",
 					"border-transparent data-[selected=true]:border-primary-900",
-					"text-[12px] ",
+					"text-[12px]",
 				)}
 			>
 				{defaultName(node)} / {output?.label}
