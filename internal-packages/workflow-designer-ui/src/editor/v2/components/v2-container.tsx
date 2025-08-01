@@ -27,6 +27,7 @@ import { type ConnectorType, GradientDef } from "../../connector/component";
 import { ContextMenu } from "../../context-menu";
 import type { ContextMenuProps } from "../../context-menu/types";
 import { DataSourceTable } from "../../data-source";
+import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { type GiselleWorkflowDesignerNode, nodeTypes } from "../../node";
 import { PropertiesPanel } from "../../properties-panel";
 import { RunHistoryTable } from "../../run-history/run-history-table";
@@ -63,6 +64,8 @@ function V2NodeCanvas() {
 		null,
 	);
 	const reactFlowRef = useRef<HTMLDivElement>(null);
+
+	useKeyboardShortcuts();
 
 	useEffect(() => {
 		reactFlowInstance.setNodes(
