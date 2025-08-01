@@ -17,7 +17,7 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
-import type { CoreMessage, DataContent, FilePart, ImagePart } from "ai";
+import type { ModelMessage, DataContent, FilePart, ImagePart } from "ai";
 import type { Storage } from "unstorage";
 import {
 	type CompletedGeneration,
@@ -44,7 +44,7 @@ export async function buildMessageObject(
 		nodeId: NodeId,
 		outputId: OutputId,
 	) => Promise<string | undefined>,
-): Promise<CoreMessage[]> {
+): Promise<ModelMessage[]> {
 	switch (node.content.type) {
 		case "textGeneration": {
 			return await buildGenerationMessageForTextGeneration(
@@ -82,7 +82,7 @@ async function buildGenerationMessageForTextGeneration(
 		nodeId: NodeId,
 		outputId: OutputId,
 	) => Promise<string | undefined>,
-): Promise<CoreMessage[]> {
+): Promise<ModelMessage[]> {
 	const llmProvider = node.content.llm.provider;
 	const prompt = node.content.prompt;
 	if (prompt === undefined) {
@@ -383,11 +383,14 @@ async function geWebPageContents(
 			}
 			const data = await fileResolver(webpage.fileId);
 			return {
-				type: "file",
-				data,
-				filename: webpage.title,
-				mimeType: "text/markdown",
-			} satisfies FilePart;
+                type: "file",
+
+                file: {
+                    data,
+                    filename: webpage.title,
+                    mimeType: "text/markdown"
+                }
+            } satisfies FilePart;
 		}),
 	).then((result) => result.filter((data) => data !== null));
 }
@@ -406,11 +409,14 @@ async function getFileContents(
 				case "pdf":
 				case "text":
 					return {
-						type: "file",
-						data,
-						filename: file.name,
-						mimeType: file.type,
-					} satisfies FilePart;
+                        type: "file",
+
+                        file: {
+                            data,
+                            filename: file.name,
+                            mimeType: file.type
+                        }
+                    } satisfies FilePart;
 				case "image":
 					return {
 						type: "image",
@@ -445,7 +451,7 @@ async function buildGenerationMessageForImageGeneration(
 		nodeId: NodeId,
 		outputId: OutputId,
 	) => Promise<string | undefined>,
-): Promise<CoreMessage[]> {
+): Promise<ModelMessage[]> {
 	const prompt = node.content.prompt;
 	if (prompt === undefined) {
 		throw new Error("Prompt cannot be empty");

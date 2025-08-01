@@ -43,8 +43,8 @@ export function GenerationView({ generation }: { generation: Generation }) {
 		);
 	}
 	return (
-		<>
-			{generation.status === "completed" &&
+        <>
+            {generation.status === "completed" &&
 				generation.outputs.map((output) => {
 					if (output.type !== "generated-image") {
 						return null;
@@ -62,7 +62,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 						</div>
 					);
 				})}
-			{generatedMessages.map((message) => (
+            {generatedMessages.map((message) => (
 				<div key={message.id}>
 					{message.parts?.map((part, index) => {
 						const lastPart = message.parts?.length === index + 1;
@@ -70,14 +70,14 @@ export function GenerationView({ generation }: { generation: Generation }) {
 							case "reasoning":
 								if (lastPart) {
 									return (
-										<Accordion.Root
+                                        <Accordion.Root
 											key={`messages.${message.id}.parts.[${index}].reasoning`}
 											type="single"
 											collapsible
 											className="my-[8px]"
 											defaultValue={`messages.${message.id}.parts.[${index}].reasoning`}
 										>
-											<Accordion.Item
+                                            <Accordion.Item
 												value={`messages.${message.id}.parts.[${index}].reasoning`}
 											>
 												<Accordion.Trigger className="group text-white-400 text-[12px] flex items-center gap-[4px] cursor-pointer hover:text-white-800 transition-colors data-[state=open]:text-white-800 outline-none font-sans">
@@ -90,21 +90,21 @@ export function GenerationView({ generation }: { generation: Generation }) {
 													</span>
 												</Accordion.Trigger>
 												<Accordion.Content className="markdown-renderer overflow-hidden italic text-[14px] text-white-400 ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-white-400/20">
-													<MemoizedMarkdown content={part.reasoning} />
+													<MemoizedMarkdown content={part.reasoningText} />
 												</Accordion.Content>
 											</Accordion.Item>
-										</Accordion.Root>
-									);
+                                        </Accordion.Root>
+                                    );
 								}
 								return (
-									<Accordion.Root
+                                    <Accordion.Root
 										key={`messages.${message.id}.parts.[${index}].reason`}
 										type="single"
 										collapsible
 										className="my-[8px]"
 										defaultValue=""
 									>
-										<Accordion.Item
+                                        <Accordion.Item
 											value={`messages.${message.id}.parts.[${index}].reason`}
 										>
 											<Accordion.Trigger className="group text-white-400 text-[12px] flex items-center gap-[4px] cursor-pointer hover:text-white-800 transition-colors data-[state=open]:text-white-800 outline-none font-sans">
@@ -115,11 +115,11 @@ export function GenerationView({ generation }: { generation: Generation }) {
 												<span>Thinking Process</span>
 											</Accordion.Trigger>
 											<Accordion.Content className="markdown-renderer overflow-hidden italic text-[14px] text-white-400 ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-white-400/20">
-												<MemoizedMarkdown content={part.reasoning} />
+												<MemoizedMarkdown content={part.reasoningText} />
 											</Accordion.Content>
 										</Accordion.Item>
-									</Accordion.Root>
-								);
+                                    </Accordion.Root>
+                                );
 
 							case "text":
 								return (
@@ -150,8 +150,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 					})}
 				</div>
 			))}
-
-			{generation.status !== "completed" &&
+            {generation.status !== "completed" &&
 				generation.status !== "cancelled" &&
 				// Show the spinner only when there is no reasoning part
 				!generatedMessages.some((message) =>
@@ -164,8 +163,8 @@ export function GenerationView({ generation }: { generation: Generation }) {
 						<Spinner />
 					</div>
 				)}
-		</>
-	);
+        </>
+    );
 }
 
 // function ToolBlock({

@@ -51,11 +51,11 @@ function WebPageListItem({
 	);
 
 	return (
-		<li
+        <li
 			key={webpage.id}
 			className="group bg-white-850/10 p-[8px] rounded-[8px] flex items-center justify-between gap-[8px]"
 		>
-			{webpage.status === "fetched" && (
+            {webpage.status === "fetched" && (
 				<Dialog.Root open={open} onOpenChange={setOpen}>
 					<Dialog.Trigger asChild>
 						<button
@@ -94,14 +94,14 @@ function WebPageListItem({
 								<p className="text-white-400">Loading...</p>
 							) : (
 								<div className="whitespace-pre-wrap text-white">
-									{data?.text}
+									{data?.text.text}
 								</div>
 							)}
 						</Dialog.Content>
 					</Dialog.Portal>
 				</Dialog.Root>
 			)}
-			{webpage.status === "fetching" && (
+            {webpage.status === "fetching" && (
 				<div>
 					<p className="font-sans bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-[rgba(200,200,200,_1)] via-[rgba(100,100,100,_0.5)] to-[rgba(200,200,200,_1)] text-transparent animate-shimmer">
 						Fetching...
@@ -116,7 +116,7 @@ function WebPageListItem({
 					</a>
 				</div>
 			)}
-			{webpage.status === "failed" && (
+            {webpage.status === "failed" && (
 				<div>
 					<p className="text-error-900 font-sans">
 						Failed to fetch: {webpage.errorMessage}
@@ -131,15 +131,15 @@ function WebPageListItem({
 					</a>
 				</div>
 			)}
-			<button
+            <button
 				type="button"
 				onClick={onRemove}
 				className="cursor-pointer hidden group-hover:block p-[4px] hover:bg-white-850/10 rounded-[4px] transition-colors"
 			>
 				<TrashIcon className="size-[16px] text-white-600" />
 			</button>
-		</li>
-	);
+        </li>
+    );
 }
 
 export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {

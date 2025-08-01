@@ -51,7 +51,7 @@ export function DataSourceTable() {
 							workspaceId: workspace.id,
 							dataSource: {
 								provider: "github",
-								providerMetadata: {
+								providerOptions: {
 									repositoryNodeId: payload.repositoryNodeId,
 									installationId: payload.installationId,
 								},

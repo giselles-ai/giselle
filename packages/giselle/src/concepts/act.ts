@@ -22,8 +22,8 @@ export const Step = z.object({
 	generationId: GenerationId.schema,
 	duration: z.number(),
 	usage: z.object({
-		promptTokens: z.number(),
-		completionTokens: z.number(),
+		inputTokens: z.number(),
+		outputTokens: z.number(),
 		totalTokens: z.number(),
 	}),
 });
@@ -38,8 +38,8 @@ export const Sequence = z.object({
 		totalTask: z.number(),
 	}),
 	usage: z.object({
-		promptTokens: z.number(),
-		completionTokens: z.number(),
+		inputTokens: z.number(),
+		outputTokens: z.number(),
 		totalTokens: z.number(),
 	}),
 });
@@ -64,8 +64,8 @@ export const Act = z.object({
 		totalTask: z.number(),
 	}),
 	usage: z.object({
-		promptTokens: z.number(),
-		completionTokens: z.number(),
+		inputTokens: z.number(),
+		outputTokens: z.number(),
 		totalTokens: z.number(),
 	}),
 	createdAt: z.number(),

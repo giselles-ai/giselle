@@ -39,14 +39,14 @@ export interface UrlSource {
 	id: string;
 	url: string;
 	title: string;
-	providerMetadata?: ProviderMetadata;
+	providerOptions?: ProviderMetadata;
 }
 export const UrlSource = z.object({
 	sourceType: z.literal("url"),
 	id: z.string(),
 	url: z.url(),
 	title: z.string(),
-	providerMetadata: z.custom<ProviderMetadata>().optional(),
+	providerOptions: z.custom<ProviderMetadata>().optional(),
 }) as z.ZodType<UrlSource>;
 
 export const SourceOutput = GenerationOutputBase.extend({

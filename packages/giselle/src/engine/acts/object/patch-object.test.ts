@@ -24,8 +24,8 @@ describe("patchAct", () => {
 				totalTask: 50,
 			},
 			usage: {
-				promptTokens: 10,
-				completionTokens: 20,
+				inputTokens: 10,
+				outputTokens: 20,
 				totalTokens: 30,
 			},
 			createdAt: Date.now(),
@@ -40,8 +40,8 @@ describe("patchAct", () => {
 						totalTask: 0,
 					},
 					usage: {
-						promptTokens: 0,
-						completionTokens: 0,
+						inputTokens: 0,
+						outputTokens: 0,
 						totalTokens: 0,
 					},
 					steps: [
@@ -52,8 +52,8 @@ describe("patchAct", () => {
 							generationId: "gnr-001" as const,
 							duration: 0,
 							usage: {
-								promptTokens: 0,
-								completionTokens: 0,
+								inputTokens: 0,
+								outputTokens: 0,
 								totalTokens: 0,
 							},
 						},
@@ -64,8 +64,8 @@ describe("patchAct", () => {
 							generationId: "gnr-002" as const,
 							duration: 0,
 							usage: {
-								promptTokens: 0,
-								completionTokens: 0,
+								inputTokens: 0,
+								outputTokens: 0,
 								totalTokens: 0,
 							},
 						},
@@ -76,8 +76,8 @@ describe("patchAct", () => {
 							generationId: "gnr-003" as const,
 							duration: 0,
 							usage: {
-								promptTokens: 0,
-								completionTokens: 0,
+								inputTokens: 0,
+								outputTokens: 0,
 								totalTokens: 0,
 							},
 						},
@@ -91,8 +91,8 @@ describe("patchAct", () => {
 						totalTask: 0,
 					},
 					usage: {
-						promptTokens: 0,
-						completionTokens: 0,
+						inputTokens: 0,
+						outputTokens: 0,
 						totalTokens: 0,
 					},
 					steps: [],

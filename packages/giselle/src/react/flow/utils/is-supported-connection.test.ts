@@ -61,10 +61,13 @@ describe("isSupportedConnection", () => {
 		inputs: [],
 		outputs: [],
 		content: {
-			type: "file",
-			category,
-			files: [],
-		},
+            type: "file",
+
+            file: {
+                category,
+                files: []
+            }
+        },
 	});
 
 	const createActionNode = (id: NodeId): ActionNode => ({

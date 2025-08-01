@@ -5,7 +5,7 @@ import type {
 	OutputId,
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
-import type { DataContent, Message } from "ai";
+import type { DataContent, UIMessage } from "ai";
 import {
 	type CompletedGeneration,
 	type Generation,
@@ -51,7 +51,7 @@ export async function useGenerationExecutor<T>(args: {
 				completionTokens: number;
 				totalTokens: number;
 			};
-			messages?: Message[];
+			messages?: UIMessage[];
 		}) => Promise<CompletedGeneration>;
 	}) => Promise<T>;
 }): Promise<T> {
@@ -179,7 +179,7 @@ export async function useGenerationExecutor<T>(args: {
 			completionTokens: number;
 			totalTokens: number;
 		};
-		messages?: Message[];
+		messages?: UIMessage[];
 	}): Promise<CompletedGeneration> {
 		const completedGeneration = {
 			...runningGeneration,

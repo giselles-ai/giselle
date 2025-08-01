@@ -6,7 +6,7 @@ import { anthropicTokenPricing } from "./costs/model-prices";
 const AnthropicLanguageModelConfigurations = z.object({
 	temperature: z.number(),
 	topP: z.number(),
-	reasoning: z.boolean().default(false),
+	reasoningText: z.boolean().default(false),
 });
 type AnthropicLanguageModelConfigurations = z.infer<
 	typeof AnthropicLanguageModelConfigurations
@@ -15,7 +15,7 @@ type AnthropicLanguageModelConfigurations = z.infer<
 const defaultConfigurations: AnthropicLanguageModelConfigurations = {
 	temperature: 0.7,
 	topP: 1.0,
-	reasoning: false,
+	reasoningText: false,
 };
 
 export const AnthropicLanguageModelId = z

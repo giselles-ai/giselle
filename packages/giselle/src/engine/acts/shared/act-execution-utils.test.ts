@@ -16,7 +16,7 @@ function createTestStep(overrides?: Partial<Step>): Step {
 		name: "Test Step",
 		generationId: "gnr-1" as const,
 		duration: 0,
-		usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+		usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
 		...overrides,
 	};
 }
@@ -26,7 +26,7 @@ function createTestSequence(overrides?: Partial<Sequence>): Sequence {
 		id: "sqn-1" as const,
 		status: "created",
 		duration: { wallClock: 0, totalTask: 0 },
-		usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+		usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
 		steps: [createTestStep()],
 		...overrides,
 	};
@@ -51,7 +51,7 @@ function createTestAct(overrides?: Partial<Act>): Act {
 		},
 		trigger: "manual",
 		duration: { wallClock: 0, totalTask: 0 },
-		usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+		usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
 		createdAt: 0,
 		updatedAt: 0,
 		annotations: [],

@@ -31,7 +31,7 @@ export interface TokenUsage {
 export interface CostCalculator {
 	calculateCost(
 		modelId: string,
-		usage: TokenUsage,
+		usage: LanguageModelUsage,
 	): {
 		inputCost: Cost;
 		outputCost: Cost;

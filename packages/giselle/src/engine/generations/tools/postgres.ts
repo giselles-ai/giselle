@@ -9,7 +9,7 @@ export function createPostgresTools(connectionString: string) {
 			getTableStructure: tool({
 				description:
 					"Returns database table structure sorted by table and position.",
-				parameters: z.object({}),
+				inputSchema: z.object({}),
 				execute: async () => {
 					const client = await pool.connect();
 					const res = await client.query(
@@ -25,7 +25,7 @@ export function createPostgresTools(connectionString: string) {
 			}),
 			query: tool({
 				description: "Run a SQL query",
-				parameters: z.object({
+				inputSchema: z.object({
 					query: z.string().min(1).max(1000),
 				}),
 				execute: async ({ query }) => {

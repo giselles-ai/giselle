@@ -10,7 +10,7 @@ const InternalVectorStoreObjectBase = z.object({
 });
 const InternalOpenAIVectorStoreObject = InternalVectorStoreObjectBase.extend({
 	provider: z.literal("openai"),
-	providerMetadata: z.object({
+	providerOptions: z.object({
 		id: z.string(),
 	}),
 });
@@ -35,7 +35,7 @@ const VectorStoreObjectBase = z.object({
 });
 const OpenAIVectorStoreObject = VectorStoreObjectBase.extend({
 	provider: z.literal("openai"),
-	providerMetadata: z.object({
+	providerOptions: z.object({
 		id: z.string(),
 	}),
 });
@@ -53,7 +53,7 @@ const VectorStoreFileObjectBase = z.object({
 });
 const OpenAIVectorStoreFileObject = VectorStoreFileObjectBase.extend({
 	provider: z.literal("openai"),
-	providerMetadata: z.object({
+	providerOptions: z.object({
 		id: z.string(),
 	}),
 });

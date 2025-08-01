@@ -212,10 +212,10 @@ export function generateText(args: {
 					const reasoningOutput = generationContext.operationNode.outputs.find(
 						(output: Output) => output.accessor === "reasoning",
 					);
-					if (reasoningOutput !== undefined && event.reasoning !== undefined) {
+					if (reasoningOutput !== undefined && event.reasoningText !== undefined) {
 						generationOutputs.push({
 							type: "reasoning",
-							content: event.reasoning,
+							content: event.reasoningText,
 							outputId: reasoningOutput.id,
 						});
 					}
@@ -230,7 +230,7 @@ export function generateText(args: {
 									id: source.id,
 									url: source.url,
 									title: source.title ?? source.url,
-									providerMetadata: source.providerMetadata,
+									providerOptions: source.providerOptions,
 								} satisfies UrlSource;
 							}),
 						);
@@ -326,7 +326,7 @@ function getProviderOptions(languageModelData: TextGenerationLanguageModelData):
 	if (
 		languageModel &&
 		languageModelData.provider === "anthropic" &&
-		languageModelData.configurations.reasoning &&
+		languageModelData.configurations.reasoningText &&
 		hasCapability(languageModel, Capability.Reasoning)
 	) {
 		return {

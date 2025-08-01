@@ -434,10 +434,13 @@ const fileVariableFactoryImpl = {
 			id: NodeId.generate(),
 			type: "variable",
 			content: {
-				type: "file",
-				category,
-				files: [],
-			},
+                type: "file",
+
+                file: {
+                    category,
+                    files: []
+                }
+            },
 			inputs: [],
 			outputs: [
 				{

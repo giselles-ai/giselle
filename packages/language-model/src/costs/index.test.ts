@@ -5,8 +5,8 @@ describe("calculateDisplayCost", () => {
 	describe("Basic cost calculations", () => {
 		it("should calculate display cost for OpenAI model", async () => {
 			const result = await calculateDisplayCost("openai", "gpt-4.1", {
-				promptTokens: 1000,
-				completionTokens: 500,
+				inputTokens: 1000,
+				outputTokens: 500,
 			});
 
 			expect(result).toEqual({
@@ -18,8 +18,8 @@ describe("calculateDisplayCost", () => {
 
 		it("should calculate display cost for OpenAI model with zero tokens", async () => {
 			const result = await calculateDisplayCost("openai", "gpt-4.1", {
-				promptTokens: 0,
-				completionTokens: 0,
+				inputTokens: 0,
+				outputTokens: 0,
 			});
 
 			expect(result).toEqual({
@@ -33,8 +33,8 @@ describe("calculateDisplayCost", () => {
 	describe("Floating point precision", () => {
 		it("should handle very small token counts precisely", async () => {
 			const result = await calculateDisplayCost("openai", "gpt-4.1", {
-				promptTokens: 1,
-				completionTokens: 1,
+				inputTokens: 1,
+				outputTokens: 1,
 			});
 
 			// 1 token = 0.000001 mega tokens

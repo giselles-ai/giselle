@@ -36,9 +36,9 @@ export async function calculateDisplayCost(
 ) {
 	const calculator = createDisplayCostCalculator(provider);
 	const result = await calculator.calculate(modelId, {
-		inputTokens: usage.promptTokens,
-		outputTokens: usage.completionTokens,
-		totalTokens: usage.promptTokens + usage.completionTokens,
+		inputTokens: usage.inputTokens,
+		outputTokens: usage.outputTokens,
+		totalTokens: usage.inputTokens + usage.outputTokens,
 	});
 	return {
 		inputCostForDisplay: result.input,

@@ -101,7 +101,7 @@ export function useGiselleEngine(options?: FetchOptions): GiselleEngineClient {
 			});
 
 			if (!response.ok) {
-				const errorText = await response.text();
+				const errorText = await response.text.text();
 				throw new APICallError({
 					message: errorText || `Error in ${path} operation`,
 					url: `${basePath}/${path}`,

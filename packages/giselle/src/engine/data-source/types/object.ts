@@ -10,7 +10,7 @@ const DataSourceObjectBase = z.object({
 	status: z.enum(["inProgress", "completed", "failed"]),
 	vectorStoreId: VectorStoreId.schema,
 	provider: z.string(),
-	providerMetadata: z.record(
+	providerOptions: z.record(
 		z.string(),
 		z.union([z.string(), z.number(), z.boolean()]),
 	),
@@ -19,7 +19,7 @@ const DataSourceObjectBase = z.object({
 
 const GitHubDataSourceProviderObject = z.object({
 	provider: z.literal("github"),
-	providerMetadata: z.object({
+	providerOptions: z.object({
 		repositoryNodeId: z.string(),
 		installationId: z.number(),
 	}),

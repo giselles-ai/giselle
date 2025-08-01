@@ -18,7 +18,7 @@ export function openaiVectorStore(apiKey: string): VectorStore {
 					total: vectorStore.file_counts.total,
 				},
 				provider: "openai",
-				providerMetadata: {
+				providerOptions: {
 					id: vectorStore.id,
 				},
 			};

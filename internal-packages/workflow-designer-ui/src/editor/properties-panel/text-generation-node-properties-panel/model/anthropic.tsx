@@ -48,8 +48,8 @@ export function AnthropicModelPanel({
 					id: value,
 					configurations: {
 						...anthropicLanguageModel.configurations,
-						reasoning:
-							anthropicLanguageModel.configurations.reasoning &&
+						reasoningText:
+							anthropicLanguageModel.configurations.reasoningText &&
 							hasCapability(newLanguageModel, Capability.Reasoning),
 					},
 				}),
@@ -59,8 +59,8 @@ export function AnthropicModelPanel({
 	);
 
 	return (
-		<div className="flex flex-col gap-[34px]">
-			<Select
+        <div className="flex flex-col gap-[34px]">
+            <Select
 				value={anthropicLanguageModel.id}
 				onValueChange={handleModelChange}
 			>
@@ -83,7 +83,7 @@ export function AnthropicModelPanel({
 					</SelectGroup>
 				</SelectContent>
 			</Select>
-			<div>
+            <div>
 				<div className="grid grid-cols-2 gap-[24px]">
 					<Slider
 						label="Temperature"
@@ -126,14 +126,14 @@ export function AnthropicModelPanel({
 						<Switch
 							label="Reasoning"
 							name="reasoning"
-							checked={anthropicLanguageModel.configurations.reasoning}
+							checked={anthropicLanguageModel.configurations.reasoningText}
 							onCheckedChange={(checked) => {
 								onModelChange(
 									AnthropicLanguageModelData.parse({
 										...anthropicLanguageModel,
 										configurations: {
 											...anthropicLanguageModel.configurations,
-											reasoning: checked,
+											reasoningText: checked,
 										},
 									}),
 								);
@@ -153,6 +153,6 @@ export function AnthropicModelPanel({
 					)}
 				</div>
 			</div>
-		</div>
-	);
+        </div>
+    );
 }

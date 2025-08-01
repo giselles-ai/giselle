@@ -89,7 +89,7 @@ export const createJsonRouters = {
 						input.useExperimentalStorage,
 						input.telemetry,
 					);
-					return stream.toDataStreamResponse({
+					return stream.toUIMessageStreamResponse({
 						sendReasoning: true,
 					});
 				},

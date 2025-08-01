@@ -21,8 +21,8 @@ export const GenerationError = z.object({
 });
 
 export const GenerationUsage = z.object({
-	promptTokens: z.number(),
-	completionTokens: z.number(),
+	inputTokens: z.number(),
+	outputTokens: z.number(),
 	totalTokens: z.number(),
 });
 export type GenerationUsage = z.infer<typeof GenerationUsage>;

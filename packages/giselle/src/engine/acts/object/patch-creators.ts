@@ -133,7 +133,7 @@ const duration = {
 
 // Usage patches
 const usage = {
-	promptTokens: {
+	inputTokens: {
 		set: (value: Act["usage"]["promptTokens"]): Patch => ({
 			path: "usage.promptTokens",
 			set: value,
@@ -147,7 +147,7 @@ const usage = {
 			decrement: value,
 		}),
 	},
-	completionTokens: {
+	outputTokens: {
 		set: (value: Act["usage"]["completionTokens"]): Patch => ({
 			path: "usage.completionTokens",
 			set: value,
@@ -232,7 +232,7 @@ const sequences = (index: number) => ({
 		},
 	},
 	usage: {
-		promptTokens: {
+		inputTokens: {
 			set: (
 				value: Act["sequences"][number]["usage"]["promptTokens"],
 			): Patch => ({
@@ -248,7 +248,7 @@ const sequences = (index: number) => ({
 				decrement: value,
 			}),
 		},
-		completionTokens: {
+		outputTokens: {
 			set: (
 				value: Act["sequences"][number]["usage"]["completionTokens"],
 			): Patch => ({
@@ -315,7 +315,7 @@ const sequences = (index: number) => ({
 			}),
 		},
 		usage: {
-			promptTokens: {
+			inputTokens: {
 				set: (
 					value: Act["sequences"][number]["steps"][number]["usage"]["promptTokens"],
 				): Patch => ({
@@ -331,7 +331,7 @@ const sequences = (index: number) => ({
 					decrement: value,
 				}),
 			},
-			completionTokens: {
+			outputTokens: {
 				set: (
 					value: Act["sequences"][number]["steps"][number]["usage"]["completionTokens"],
 				): Patch => ({

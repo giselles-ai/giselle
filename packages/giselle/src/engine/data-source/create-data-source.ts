@@ -24,7 +24,7 @@ export async function createDataSource(args: {
 				status: "inProgress",
 				vectorStoreId: vectorStore.id,
 				provider: args.dataSource.provider,
-				providerMetadata: args.dataSource.providerMetadata,
+				providerOptions: args.dataSource.providerOptions,
 				workspaceId: args.workspaceId,
 			};
 	}

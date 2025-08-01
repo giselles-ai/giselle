@@ -10,7 +10,7 @@ import {
 	type GeneratedImageData,
 } from "@giselle-sdk/language-model";
 import {
-	type CoreMessage,
+	type ModelMessage,
 	experimental_generateImage as generateImageAiSdk,
 } from "ai";
 import { type ApiMediaContentType, Langfuse, LangfuseMedia } from "langfuse";
@@ -122,7 +122,7 @@ async function generateImageWithFal({
 	operationNode: ImageGenerationNode;
 	generationContext: GenerationContext;
 	runningGeneration: RunningGeneration;
-	messages: CoreMessage[];
+	messages: ModelMessage[];
 	telemetry?: TelemetrySettings;
 	tracer: Langfuse;
 	context: GiselleEngineContext;
@@ -252,7 +252,7 @@ async function generateImageWithOpenAI({
 	telemetry,
 	useExperimentalStorage,
 }: {
-	messages: CoreMessage[];
+	messages: ModelMessage[];
 	generationContext: GenerationContext;
 	runningGeneration: RunningGeneration;
 	languageModelData: OpenAIImageLanguageModelData;

@@ -6,7 +6,7 @@ export function githubTools(octokit: Octokit) {
 	return {
 		addIssueComment: tool({
 			description: "Add a comment to an existing issue",
-			parameters: z.object({
+			inputSchema: z.object({
 				body: z.string().describe("Comment content"),
 				issueNumber: z.number().describe("Issue number to comment on"),
 				owner: z.string().describe("Repository owner"),
@@ -28,7 +28,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		addPullRequestReviewComment: tool({
 			description: "Add a review comment to a pull request",
-			parameters: z.object({
+			inputSchema: z.object({
 				body: z.string().describe("The text of the review comment"),
 				commitId: z
 					.string()
@@ -126,7 +126,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		createBranch: tool({
 			description: "Create a new branch in a GitHub repository",
-			parameters: z.object({
+			inputSchema: z.object({
 				branch: z.string().describe("Name for new branch"),
 				fromBranch: z
 					.string()
@@ -177,7 +177,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		createIssue: tool({
 			description: "Create a new issue in a GitHub repository",
-			parameters: z.object({
+			inputSchema: z.object({
 				assignees: z
 					.array(z.string())
 					.describe("Usernames to assign to this issue")
@@ -212,7 +212,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		createOrUpdateFile: tool({
 			description: "Create or update a single file in a GitHub repository",
-			parameters: z.object({
+			inputSchema: z.object({
 				branch: z.string().describe("Branch to create/update the file in"),
 				content: z.string().describe("Content of the file"),
 				message: z.string().describe("Commit message"),
@@ -250,7 +250,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		createPullRequest: tool({
 			description: "Create a new pull request in a GitHub repository",
-			parameters: z.object({
+			inputSchema: z.object({
 				base: z.string().describe("Branch to merge into"),
 				body: z.string().describe("PR description").optional(),
 				draft: z.boolean().describe("Create as draft PR").optional(),
@@ -294,7 +294,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		createPullRequestReview: tool({
 			description: "Create a review on a pull request",
-			parameters: z.object({
+			inputSchema: z.object({
 				body: z.string().describe("Review comment text").optional(),
 				comments: z
 					.array(z.any())
@@ -332,7 +332,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		createRepository: tool({
 			description: "Create a new GitHub repository in your account",
-			parameters: z.object({
+			inputSchema: z.object({
 				autoInit: z.boolean().describe("Initialize with README").optional(),
 				description: z.string().describe("Repository description").optional(),
 				name: z.string().describe("Repository name"),
@@ -357,7 +357,7 @@ export function githubTools(octokit: Octokit) {
 		forkRepository: tool({
 			description:
 				"Fork a GitHub repository to your account or specified organization",
-			parameters: z.object({
+			inputSchema: z.object({
 				organization: z.string().describe("Organization to fork to").optional(),
 				owner: z.string().describe("Repository owner"),
 				repo: z.string().describe("Repository name"),
@@ -380,7 +380,7 @@ export function githubTools(octokit: Octokit) {
 		getCodeScanningAlert: tool({
 			description:
 				"Get details of a specific code scanning alert in a GitHub repository.",
-			parameters: z.object({
+			inputSchema: z.object({
 				alertNumber: z.number().describe("The number of the alert."),
 				owner: z.string().describe("The owner of the repository."),
 				repo: z.string().describe("The name of the repository."),
@@ -402,7 +402,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		getCommit: tool({
 			description: "Get details for a commit from a GitHub repository",
-			parameters: z.object({
+			inputSchema: z.object({
 				owner: z.string().describe("Repository owner"),
 				page: z
 					.number()
@@ -438,7 +438,7 @@ export function githubTools(octokit: Octokit) {
 		getFileContents: tool({
 			description:
 				"Get the contents of a file or directory from a GitHub repository",
-			parameters: z.object({
+			inputSchema: z.object({
 				branch: z.string().describe("Branch to get contents from").optional(),
 				owner: z
 					.string()
@@ -464,7 +464,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		getIssue: tool({
 			description: "Get details of a specific issue in a GitHub repository",
-			parameters: z.object({
+			inputSchema: z.object({
 				issueNumber: z.number().describe("The number of the issue"),
 				owner: z.string().describe("The owner of the repository"),
 				repo: z.string().describe("The name of the repository"),
@@ -486,7 +486,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		getIssueComments: tool({
 			description: "Get comments for a GitHub issue",
-			parameters: z.object({
+			inputSchema: z.object({
 				issueNumber: z.number().describe("Issue number"),
 				owner: z.string().describe("Repository owner"),
 				page: z.number().describe("Page number").optional(),
@@ -513,7 +513,7 @@ export function githubTools(octokit: Octokit) {
 		getMe: tool({
 			description:
 				'Get details of the authenticated GitHub user. Use this when a request include "me", "my"...',
-			parameters: z.object({
+			inputSchema: z.object({
 				reason: z
 					.string()
 					.describe("Optional: reason the session was created")
@@ -526,7 +526,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		getPullRequest: tool({
 			description: "Get details of a specific pull request",
-			parameters: z.object({
+			inputSchema: z.object({
 				owner: z.string().describe("Repository owner"),
 				pullNumber: z.number().describe("Pull request number"),
 				repo: z.string().describe("Repository name"),
@@ -548,7 +548,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		getPullRequestComments: tool({
 			description: "Get the review comments on a pull request",
-			parameters: z.object({
+			inputSchema: z.object({
 				owner: z.string().describe("Repository owner"),
 				pullNumber: z.number().describe("Pull request number"),
 				repo: z.string().describe("Repository name"),
@@ -570,7 +570,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		getPullRequestFiles: tool({
 			description: "Get the list of files changed in a pull request",
-			parameters: z.object({
+			inputSchema: z.object({
 				owner: z.string().describe("Repository owner"),
 				pullNumber: z.number().describe("Pull request number"),
 				repo: z.string().describe("Repository name"),
@@ -592,7 +592,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		getPullRequestReviews: tool({
 			description: "Get the reviews on a pull request",
-			parameters: z.object({
+			inputSchema: z.object({
 				owner: z.string().describe("Repository owner"),
 				pullNumber: z.number().describe("Pull request number"),
 				repo: z.string().describe("Repository name"),
@@ -615,7 +615,7 @@ export function githubTools(octokit: Octokit) {
 		getPullRequestStatus: tool({
 			description:
 				"Get the combined status of all status checks for a pull request",
-			parameters: z.object({
+			inputSchema: z.object({
 				owner: z.string().describe("Repository owner"),
 				pullNumber: z.number().describe("Pull request number"),
 				repo: z.string().describe("Repository name"),
@@ -650,7 +650,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		listBranches: tool({
 			description: "List branches in a GitHub repository",
-			parameters: z.object({
+			inputSchema: z.object({
 				owner: z.string().describe("Repository owner"),
 				page: z
 					.number()
@@ -683,7 +683,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		listCodeScanningAlerts: tool({
 			description: "List code scanning alerts in a GitHub repository.",
-			parameters: z.object({
+			inputSchema: z.object({
 				owner: z.string().describe("The owner of the repository."),
 				ref: z
 					.string()
@@ -726,7 +726,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		listCommits: tool({
 			description: "Get list of commits of a branch in a GitHub repository",
-			parameters: z.object({
+			inputSchema: z.object({
 				owner: z.string().describe("Repository owner"),
 				page: z
 					.number()
@@ -761,7 +761,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		listIssues: tool({
 			description: "List issues in a GitHub repository with filtering options",
-			parameters: z.object({
+			inputSchema: z.object({
 				direction: z.enum(["asc", "desc"]).optional(),
 				labels: z.array(z.string()).describe("Filter by labels").optional(),
 				owner: z.string().describe("Repository owner"),
@@ -817,7 +817,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		listPullRequests: tool({
 			description: "List and filter repository pull requests",
-			parameters: z.object({
+			inputSchema: z.object({
 				base: z.string().describe("Filter by base branch").optional(),
 				direction: z.enum(["asc", "desc"]).optional(),
 				head: z
@@ -875,7 +875,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		mergePullRequest: tool({
 			description: "Merge a pull request",
-			parameters: z.object({
+			inputSchema: z.object({
 				commitMessage: z
 					.string()
 					.describe("Extra detail for merge commit")
@@ -1017,7 +1017,7 @@ export function githubTools(octokit: Octokit) {
 		// }),
 		searchCode: tool({
 			description: "Search for code across GitHub repositories",
-			parameters: z.object({
+			inputSchema: z.object({
 				order: z.enum(["asc", "desc"]).optional(),
 				page: z
 					.number()
@@ -1053,7 +1053,7 @@ export function githubTools(octokit: Octokit) {
 		searchIssues: tool({
 			description:
 				"Search for issues and pull requests across GitHub repositories",
-			parameters: z.object({
+			inputSchema: z.object({
 				order: z.enum(["asc", "desc"]).optional(),
 				page: z
 					.number()
@@ -1102,7 +1102,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		searchPullRequests: tool({
 			description: "Search for pull requests across GitHub repositories",
-			parameters: z.object({
+			inputSchema: z.object({
 				order: z.enum(["asc", "desc"]).optional(),
 				page: z
 					.number()
@@ -1151,7 +1151,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		searchRepositories: tool({
 			description: "Search for GitHub repositories",
-			parameters: z.object({
+			inputSchema: z.object({
 				page: z
 					.number()
 					.describe("Page number for pagination (min 1)")
@@ -1179,7 +1179,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		searchUsers: tool({
 			description: "Search for GitHub users",
-			parameters: z.object({
+			inputSchema: z.object({
 				order: z.enum(["asc", "desc"]).optional(),
 				page: z
 					.number()
@@ -1211,7 +1211,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		updateIssue: tool({
 			description: "Update an existing issue in a GitHub repository",
-			parameters: z.object({
+			inputSchema: z.object({
 				assignees: z.array(z.string()).describe("New assignees").optional(),
 				body: z.string().describe("New description").optional(),
 				issueNumber: z.number().describe("Issue number to update"),
@@ -1255,7 +1255,7 @@ export function githubTools(octokit: Octokit) {
 		}),
 		updatePullRequest: tool({
 			description: "Update an existing pull request in a GitHub repository",
-			parameters: z.object({
+			inputSchema: z.object({
 				base: z.string().describe("New base branch name").optional(),
 				body: z.string().describe("New description").optional(),
 				maintainerCanModify: z
@@ -1300,7 +1300,7 @@ export function githubTools(octokit: Octokit) {
 		updatePullRequestBranch: tool({
 			description:
 				"Update a pull request branch with the latest changes from the base branch",
-			parameters: z.object({
+			inputSchema: z.object({
 				expectedHeadSha: z
 					.string()
 					.describe("The expected SHA of the pull request's HEAD ref")
