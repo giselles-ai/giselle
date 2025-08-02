@@ -134,7 +134,7 @@ const duration = {
 // Usage patches
 const usage = {
 	inputTokens: {
-		set: (value: Act["usage"]["promptTokens"]): Patch => ({
+		set: (value: Act["usage"]["inputTokens"]): Patch => ({
 			path: "usage.promptTokens",
 			set: value,
 		}),
@@ -148,7 +148,7 @@ const usage = {
 		}),
 	},
 	outputTokens: {
-		set: (value: Act["usage"]["completionTokens"]): Patch => ({
+		set: (value: Act["usage"]["outputTokens"]): Patch => ({
 			path: "usage.completionTokens",
 			set: value,
 		}),
@@ -234,7 +234,7 @@ const sequences = (index: number) => ({
 	usage: {
 		inputTokens: {
 			set: (
-				value: Act["sequences"][number]["usage"]["promptTokens"],
+				value: Act["sequences"][number]["usage"]["inputTokens"],
 			): Patch => ({
 				path: `sequences.${index}.usage.promptTokens`,
 				set: value,
@@ -250,7 +250,7 @@ const sequences = (index: number) => ({
 		},
 		outputTokens: {
 			set: (
-				value: Act["sequences"][number]["usage"]["completionTokens"],
+				value: Act["sequences"][number]["usage"]["outputTokens"],
 			): Patch => ({
 				path: `sequences.${index}.usage.completionTokens`,
 				set: value,
@@ -317,7 +317,7 @@ const sequences = (index: number) => ({
 		usage: {
 			inputTokens: {
 				set: (
-					value: Act["sequences"][number]["steps"][number]["usage"]["promptTokens"],
+					value: Act["sequences"][number]["steps"][number]["usage"]["inputTokens"],
 				): Patch => ({
 					path: `sequences.${index}.steps.${stepIndex}.usage.promptTokens`,
 					set: value,
@@ -333,7 +333,7 @@ const sequences = (index: number) => ({
 			},
 			outputTokens: {
 				set: (
-					value: Act["sequences"][number]["steps"][number]["usage"]["completionTokens"],
+					value: Act["sequences"][number]["steps"][number]["usage"]["outputTokens"],
 				): Patch => ({
 					path: `sequences.${index}.steps.${stepIndex}.usage.completionTokens`,
 					set: value,

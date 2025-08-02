@@ -5,7 +5,6 @@ import type {
 	BlobLike,
 	GetJsonParams,
 	GiselleStorage,
-	JsonSchema,
 	SetJsonParams,
 } from "./types";
 
@@ -19,7 +18,7 @@ async function ensureDir(filePath: string): Promise<void> {
 
 export function fsStorageDriver(config: FsStorageDriverConfig): GiselleStorage {
 	return {
-		async getJson<T extends JsonSchema>(
+		async getJson<T extends z.ZodType>(
 			params: GetJsonParams<T>,
 		): Promise<z.infer<T>> {
 			const fullPath = join(config.root, params.path);
@@ -49,10 +48,10 @@ export function fsStorageDriver(config: FsStorageDriverConfig): GiselleStorage {
 				throw lastError;
 			}
 
-			return params.schema ? params.schema.parse(obj) : obj;
+			return params.schema.parse(obj);
 		},
 
-		async setJson<T extends JsonSchema>(
+		async setJson<T extends z.ZodType>(
 			params: SetJsonParams<T>,
 		): Promise<void> {
 			const fullPath = join(config.root, params.path);

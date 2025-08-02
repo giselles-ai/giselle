@@ -121,8 +121,8 @@ export function GenerationPanel({
 		return <Empty onGenerate={handleGenerate} />;
 	}
 	return (
-        <div className="flex flex-col bg-white-900/10 h-full rounded-[8px] py-[8px]">
-            <div
+		<div className="flex flex-col bg-white-900/10 h-full rounded-[8px] py-[8px]">
+			<div
 				className={clsx(
 					"border-b border-white-400/20 py-[4px] px-[16px] flex items-center gap-[8px]",
 					"**:data-header-text:font-[700]",
@@ -157,24 +157,18 @@ export function GenerationPanel({
 										</span>
 									)}
 
-								<span className="flex items-center gap-[2px]">
-									<ArrowUpIcon className="text-black-400 size-[12px]" />
-									{(
-										currentGeneration as unknown as {
-											usage: { promptTokens: number };
-										}
-									).usage.inputTokens.toLocaleString()}
-									t
-								</span>
-								<span className="flex items-center gap-[2px]">
-									<ArrowDownIcon className="text-black-400 size-[12px]" />
-									{(
-										currentGeneration as unknown as {
-											usage: { completionTokens: number };
-										}
-									).usage.outputTokens.toLocaleString()}
-									t
-								</span>
+								{currentGeneration.usage.inputTokens && (
+									<span className="flex items-center gap-[2px]">
+										<ArrowUpIcon className="text-black-400 size-[12px]" />
+										{currentGeneration.usage.inputTokens.toLocaleString()}t
+									</span>
+								)}
+								{currentGeneration.usage.outputTokens && (
+									<span className="flex items-center gap-[2px]">
+										<ArrowDownIcon className="text-black-400 size-[12px]" />
+										{currentGeneration.usage.outputTokens.toLocaleString()}t
+									</span>
+								)}
 							</div>
 						)}
 				</div>
@@ -187,9 +181,9 @@ export function GenerationPanel({
 					/>
 				)}
 			</div>
-            <div className="flex-1 py-[4px] px-[16px] overflow-y-auto">
+			<div className="flex-1 py-[4px] px-[16px] overflow-y-auto">
 				<GenerationView generation={currentGeneration} />
 			</div>
-        </div>
-    );
+		</div>
+	);
 }

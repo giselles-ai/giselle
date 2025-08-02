@@ -17,7 +17,7 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
-import type { ModelMessage, DataContent, FilePart, ImagePart } from "ai";
+import type { DataContent, FilePart, ImagePart, ModelMessage } from "ai";
 import type { Storage } from "unstorage";
 import {
 	type CompletedGeneration,
@@ -383,14 +383,11 @@ async function geWebPageContents(
 			}
 			const data = await fileResolver(webpage.fileId);
 			return {
-                type: "file",
-
-                file: {
-                    data,
-                    filename: webpage.title,
-                    mimeType: "text/markdown"
-                }
-            } satisfies FilePart;
+				type: "file",
+				data,
+				filename: webpage.title,
+				mediaType: "text/markdown",
+			} satisfies FilePart;
 		}),
 	).then((result) => result.filter((data) => data !== null));
 }
@@ -409,19 +406,16 @@ async function getFileContents(
 				case "pdf":
 				case "text":
 					return {
-                        type: "file",
-
-                        file: {
-                            data,
-                            filename: file.name,
-                            mimeType: file.type
-                        }
-                    } satisfies FilePart;
+						type: "file",
+						data,
+						filename: file.name,
+						mediaType: file.type,
+					} satisfies FilePart;
 				case "image":
 					return {
 						type: "image",
 						image: data,
-						mimeType: file.type,
+						mediaType: file.type,
 					} satisfies ImagePart;
 				default: {
 					const _exhaustiveCheck: never = fileContent.category;

@@ -162,12 +162,11 @@ function extractInputOutputForTextGeneration(
 	operationNode: TextGenerationNode,
 ) {
 	const input = extractPromptInput(operationNode);
-	const assistantMessage = generation.messages?.find(
-		(msg) => msg.role === "assistant",
+	const output = generation.outputs.find(
+		(output) => output.type === "generated-text",
 	);
-	const output = assistantMessage?.content ?? "";
 
-	return { input, output };
+	return { input, output: output?.content };
 }
 
 function extractInputForImageGeneration(
@@ -260,15 +259,10 @@ async function createLangfuseParams(
 
 	const displayCost =
 		type === "text"
-			? await calculateDisplayCost(
-					llm.provider,
-					llm.id,
-					generation.usage ?? {
-						inputTokens: 0,
-						outputTokens: 0,
-						totalTokens: 0,
-					},
-				)
+			? await calculateDisplayCost(llm.provider, llm.id, {
+					inputTokens: generation.usage?.inputTokens ?? 0,
+					outputTokens: generation.usage?.outputTokens ?? 0,
+				})
 			: null;
 
 	return {

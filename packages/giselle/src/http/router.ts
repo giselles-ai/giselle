@@ -8,6 +8,7 @@ import {
 	Workspace,
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
+import { createUIMessageStreamResponse } from "ai";
 import { z } from "zod/v4";
 import { ActId } from "../concepts/identifiers";
 import type { GiselleEngine } from "../engine";
@@ -89,9 +90,7 @@ export const createJsonRouters = {
 						input.useExperimentalStorage,
 						input.telemetry,
 					);
-					return stream.toUIMessageStreamResponse({
-						sendReasoning: true,
-					});
+					return createUIMessageStreamResponse({ stream });
 				},
 			}),
 		),

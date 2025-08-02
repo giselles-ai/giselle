@@ -59,8 +59,8 @@ export function AnthropicModelPanel({
 	);
 
 	return (
-        <div className="flex flex-col gap-[34px]">
-            <Select
+		<div className="flex flex-col gap-[34px]">
+			<Select
 				value={anthropicLanguageModel.id}
 				onValueChange={handleModelChange}
 			>
@@ -83,7 +83,7 @@ export function AnthropicModelPanel({
 					</SelectGroup>
 				</SelectContent>
 			</Select>
-            <div>
+			<div>
 				<div className="grid grid-cols-2 gap-[24px]">
 					<Slider
 						label="Temperature"
@@ -153,6 +153,6 @@ export function AnthropicModelPanel({
 					)}
 				</div>
 			</div>
-        </div>
-    );
+		</div>
+	);
 }

@@ -1,6 +1,6 @@
-import type { Message as AISdkMessage } from "@ai-sdk/react";
-
+import type { LanguageModelV2Usage } from "@ai-sdk/provider";
 import { NodeId } from "@giselle-sdk/data-type";
+import type { UIMessage } from "ai";
 import { z } from "zod/v4";
 import { GenerationId } from "../identifiers";
 import { GenerationContextLike, GenerationOrigin } from "./context";
@@ -10,7 +10,7 @@ export { GenerationId } from "../identifiers";
 export * from "./context";
 export * from "./output";
 
-export const Message = z.custom<AISdkMessage>();
+export const Message = z.custom<UIMessage>();
 export type Message = z.infer<typeof Message>;
 
 // Error schema
@@ -20,11 +20,7 @@ export const GenerationError = z.object({
 	dump: z.any().optional(),
 });
 
-export const GenerationUsage = z.object({
-	inputTokens: z.number(),
-	outputTokens: z.number(),
-	totalTokens: z.number(),
-});
+export const GenerationUsage = z.custom<LanguageModelV2Usage>();
 export type GenerationUsage = z.infer<typeof GenerationUsage>;
 
 export const GenerationBase = z.object({

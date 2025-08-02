@@ -10,8 +10,8 @@ import {
 	type GeneratedImageData,
 } from "@giselle-sdk/language-model";
 import {
-	type ModelMessage,
 	experimental_generateImage as generateImageAiSdk,
+	type ModelMessage,
 } from "ai";
 import { type ApiMediaContentType, Langfuse, LangfuseMedia } from "langfuse";
 import {

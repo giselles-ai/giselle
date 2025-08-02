@@ -1,15 +1,12 @@
-import { AISDKError } from "ai";
 import { z } from "zod/v4";
 import type { Sequence } from "../../concepts/act";
 import { ActId } from "../../concepts/identifiers";
 import { resolveTrigger } from "../flows";
 import {
-	type FailedGeneration,
 	generateImage,
 	generateText,
 	getGeneration,
 	type QueuedGeneration,
-	setGeneration,
 } from "../generations";
 import { executeAction } from "../operations";
 import { executeQuery } from "../operations/execute-query";
@@ -24,6 +21,12 @@ export interface StartActCallbacks {
 	sequenceComplete?: (args: { sequence: Sequence }) => void | Promise<void>;
 	sequenceSkip?: (args: { sequence: Sequence }) => void | Promise<void>;
 }
+
+const sink = new WritableStream({
+	write() {},
+	close() {},
+	abort() {},
+});
 
 async function executeStep(args: {
 	context: GiselleEngineContext;
@@ -42,40 +45,11 @@ async function executeStep(args: {
 				await generateImage({ ...args, useExperimentalStorage: true });
 				break;
 			case "textGeneration": {
-				const result = await generateText({
+				const generateTextStream = await generateText({
 					...args,
 					useExperimentalStorage: true,
 				});
-				let errorOccurred = false;
-				await result.consumeStream({
-					onError: async (error) => {
-						if (AISDKError.isInstance(error)) {
-							errorOccurred = true;
-							const failedGeneration = {
-								...args.generation,
-								status: "failed",
-								startedAt: Date.now(),
-								failedAt: Date.now(),
-								messages: [],
-								error: {
-									name: error.name,
-									message: error.message,
-								},
-							} satisfies FailedGeneration;
-							await Promise.all([
-								setGeneration({
-									...args,
-									generation: failedGeneration,
-									useExperimentalStorage: true,
-								}),
-								args.callbacks?.onFailed?.(args.generation),
-							]);
-						}
-					},
-				});
-				if (errorOccurred) {
-					return;
-				}
+				await generateTextStream.pipeTo(sink);
 				break;
 			}
 			case "trigger":

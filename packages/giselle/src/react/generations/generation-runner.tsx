@@ -1,5 +1,6 @@
 import { useChat } from "@ai-sdk/react";
 import { isTextGenerationNode } from "@giselle-sdk/data-type";
+import { DefaultChatTransport } from "ai";
 import { useEffect, useRef } from "react";
 import {
 	type Generation,
@@ -76,19 +77,29 @@ function CompletionRunner({ generation }: { generation: Generation }) {
 		updateMessages,
 		addStopHandler,
 	} = useGenerationRunnerSystem();
-	const { messages, append, stop } = useChat({
-		api: generateTextApi,
+	const telemetry = useTelemetry();
+	const { messages, sendMessage, stop, status } = useChat({
+		transport: new DefaultChatTransport({
+			api: generateTextApi,
+			body: {
+				generation,
+				telemetry,
+				useExperimentalStorage: experimental_storage,
+			},
+		}),
 		onFinish: async () => {
 			await updateGenerationStatusToComplete(generation.id);
-		},
-		onResponse: async () => {
-			await updateGenerationStatusToRunning(generation.id);
 		},
 		onError: async () => {
 			await updateGenerationStatusToFailure(generation.id);
 		},
 	});
-	const telemetry = useTelemetry();
+	useEffect(() => {
+		if (status !== "streaming") {
+			return;
+		}
+		updateGenerationStatusToRunning(generation.id);
+	}, [status, updateGenerationStatusToRunning, generation.id]);
 	useEffect(() => {
 		if (generation.status !== "running") {
 			return;
@@ -100,16 +111,7 @@ function CompletionRunner({ generation }: { generation: Generation }) {
 			return;
 		}
 		addStopHandler(generation.id, stop);
-		append(
-			{ role: "user", content: "hello" },
-			{
-				body: {
-					generation,
-					telemetry,
-					useExperimentalStorage: experimental_storage,
-				},
-			},
-		);
+		sendMessage({ role: "user", parts: [] });
 	});
 	return null;
 }

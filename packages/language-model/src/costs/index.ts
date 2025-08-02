@@ -32,7 +32,7 @@ export function createDisplayCostCalculator(provider: string): CostCalculator {
 export async function calculateDisplayCost(
 	provider: string,
 	modelId: string,
-	usage: { promptTokens: number; completionTokens: number },
+	usage: { inputTokens: number; outputTokens: number },
 ) {
 	const calculator = createDisplayCostCalculator(provider);
 	const result = await calculator.calculate(modelId, {

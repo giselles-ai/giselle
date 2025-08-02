@@ -1,5 +1,5 @@
-import type { Message } from "@ai-sdk/react";
 import type { NodeId } from "@giselle-sdk/data-type";
+import type { UIMessage } from "ai";
 import {
 	createContext,
 	type Dispatch,
@@ -90,7 +90,10 @@ interface GenerationRunnerSystemContextType {
 	updateGenerationStatusToFailure: (
 		generationId: GenerationId,
 	) => Promise<FailedGeneration>;
-	updateMessages: (generationId: GenerationId, newMessages: Message[]) => void;
+	updateMessages: (
+		generationId: GenerationId,
+		newMessages: UIMessage[],
+	) => void;
 	addStopHandler: (generationId: GenerationId, handler: () => void) => void;
 	stopGenerationRunner: (generationId: GenerationId) => Promise<void>;
 	setGenerations: Dispatch<SetStateAction<Generation[]>>;
@@ -283,7 +286,7 @@ export function GenerationRunnerSystemProvider({
 		[generations],
 	);
 	const updateMessages = useCallback(
-		(updateGenerationId: GenerationId, newMessages: Message[]) => {
+		(updateGenerationId: GenerationId, newMessages: UIMessage[]) => {
 			setGenerations((prevGenerations) =>
 				prevGenerations.map((prevGeneration) =>
 					prevGeneration.id === updateGenerationId &&

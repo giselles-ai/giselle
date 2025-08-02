@@ -17,10 +17,7 @@ import type { RequiredColumns } from "../column-mapping";
 import { createColumnMapping, REQUIRED_COLUMN_KEYS } from "../column-mapping";
 import type { QueryResult } from "../types";
 
-/**
- * Extract metadata from database row
- */
-function extractMetadata<TMetadata extends Record<string, unknown>>(
+function parseMetadata<TMetadata extends Record<string, unknown>>(
 	row: Record<string, unknown>,
 	metadataColumns: Array<{ metadataKey: string; dbColumn: string }>,
 	metadataSchema: z.ZodType<TMetadata>,
@@ -28,90 +25,55 @@ function extractMetadata<TMetadata extends Record<string, unknown>>(
 	const rawMetadata = Object.fromEntries(
 		metadataColumns.map(({ metadataKey }) => [metadataKey, row[metadataKey]]),
 	);
-	return validateMetadata(rawMetadata, metadataSchema);
-}
 
-function validateMetadata<TMetadata>(
-	metadata: unknown,
-	metadataSchema: z.ZodType<TMetadata>,
-): TMetadata {
-	const result = metadataSchema.safeParse(metadata);
+	const result = metadataSchema.safeParse(rawMetadata);
 	if (!result.success) {
 		throw ValidationError.fromZodError(result.error, {
-			operation: "validateMetadata",
+			operation: "parseMetadata",
 			source: "database",
-			metadata,
+			metadata: rawMetadata,
 		});
 	}
 
 	return result.data;
 }
 
-function validateDatabaseConfig(database: {
-	connectionString: string;
-	poolConfig?: {
-		max?: number;
-		idleTimeoutMillis?: number;
-		connectionTimeoutMillis?: number;
-	};
+function validatePoolConfig(poolConfig: {
+	max?: number;
+	idleTimeoutMillis?: number;
+	connectionTimeoutMillis?: number;
 }) {
-	if (!database.connectionString || database.connectionString.length === 0) {
-		throw new ValidationError("Connection string is required", undefined, {
-			operation: "validateDatabaseConfig",
-			field: "connectionString",
-		});
+	const { max, idleTimeoutMillis, connectionTimeoutMillis } = poolConfig;
+
+	if (max !== undefined && (max < 0 || max > 100)) {
+		throw new ValidationError(`Pool max must be between 0 and 100, got ${max}`);
+	}
+
+	if (idleTimeoutMillis !== undefined && idleTimeoutMillis < 0) {
+		throw new ValidationError(
+			`Pool idle timeout must be non-negative, got ${idleTimeoutMillis}`,
+		);
+	}
+
+	if (connectionTimeoutMillis !== undefined && connectionTimeoutMillis < 0) {
+		throw new ValidationError(
+			`Pool connection timeout must be non-negative, got ${connectionTimeoutMillis}`,
+		);
+	}
+}
+
+function validateDatabase(database: DatabaseConfig) {
+	if (!database.connectionString) {
+		throw new ValidationError("Connection string is required");
 	}
 
 	if (database.poolConfig) {
-		if (database.poolConfig.max !== undefined && database.poolConfig.max < 0) {
-			throw new ValidationError("Pool max must be non-negative", undefined, {
-				operation: "validateDatabaseConfig",
-				field: "poolConfig.max",
-			});
-		}
-		if (
-			database.poolConfig.max !== undefined &&
-			database.poolConfig.max > 100
-		) {
-			throw new ValidationError("Pool max must be 100 or less", undefined, {
-				operation: "validateDatabaseConfig",
-				field: "poolConfig.max",
-			});
-		}
-		if (
-			database.poolConfig.idleTimeoutMillis !== undefined &&
-			database.poolConfig.idleTimeoutMillis < 0
-		) {
-			throw new ValidationError(
-				"Pool idle timeout must be non-negative",
-				undefined,
-				{
-					operation: "validateDatabaseConfig",
-					field: "poolConfig.idleTimeoutMillis",
-				},
-			);
-		}
-		if (
-			database.poolConfig.connectionTimeoutMillis !== undefined &&
-			database.poolConfig.connectionTimeoutMillis < 0
-		) {
-			throw new ValidationError(
-				"Pool connection timeout must be non-negative",
-				undefined,
-				{
-					operation: "validateDatabaseConfig",
-					field: "poolConfig.connectionTimeoutMillis",
-				},
-			);
-		}
+		validatePoolConfig(database.poolConfig);
 	}
 
 	return database;
 }
 
-/**
- * Create a PostgreSQL query service
- */
 export function createPostgresQueryService<
 	TContext,
 	TSchema extends z.ZodType<Record<string, unknown>>,
@@ -126,29 +88,22 @@ export function createPostgresQueryService<
 	) => Record<string, unknown> | Promise<Record<string, unknown>>;
 	metadataSchema: TSchema;
 }) {
-	// Validate database config
-	const database = validateDatabaseConfig(config.database);
-
-	// Resolve default embedder if not provided
-	const defaultEmbedder = config.embedder;
-
+	const database = validateDatabase(config.database);
 	const columnMapping = createColumnMapping({
 		metadataSchema: config.metadataSchema,
 		requiredColumnOverrides: config.requiredColumnOverrides,
 		metadataColumnOverrides: config.metadataColumnOverrides,
 	});
 
-	const search = async (
+	async function search(
 		query: string,
 		context: TContext,
 		limit = 10,
 		similarityThreshold?: number,
 		telemetry?: TelemetrySettings,
-	): Promise<QueryResult<z.infer<TSchema>>[]> => {
-		const { tableName, contextToFilter, metadataSchema } = config;
+	): Promise<QueryResult<z.infer<TSchema>>[]> {
 		const pool = PoolManager.getPool(database);
 
-		// register pgvector types using singleton registry
 		const client = await pool.connect();
 		try {
 			await ensurePgVectorTypes(client, database.connectionString);
@@ -156,110 +111,133 @@ export function createPostgresQueryService<
 			client.release();
 		}
 
-		let filters: Record<string, unknown> = {};
-
 		try {
-			// Create embedder with telemetry settings from parameter
-			const embedder = defaultEmbedder || createDefaultEmbedder(telemetry);
-
+			const embedder = config.embedder || createDefaultEmbedder(telemetry);
 			const queryEmbedding = await embedder.embed(query);
+			const filters = await config.contextToFilter(context);
 
-			filters = await contextToFilter(context);
-
-			const whereConditions: string[] = [];
-			const values: unknown[] = [pgvector.toSql(queryEmbedding)];
-			let paramIndex = 2;
-
-			for (const [column, value] of Object.entries(filters)) {
-				whereConditions.push(`${escapeIdentifier(column)} = $${paramIndex}`);
-				values.push(value);
-				paramIndex++;
-			}
-
-			// Add similarity threshold filter if provided
-			if (similarityThreshold !== undefined && similarityThreshold > 0) {
-				whereConditions.push(
-					`1 - (${escapeIdentifier(columnMapping.embedding)} <=> $1) >= $${paramIndex}`,
-				);
-				values.push(similarityThreshold);
-				paramIndex++;
-			}
-
-			const requiredKeys = new Set<string>(REQUIRED_COLUMN_KEYS);
-			const metadataColumns = Object.entries(columnMapping)
-				.filter(([key]) => !requiredKeys.has(key))
-				.map(([metadataKey, dbColumn]) => {
-					if (typeof dbColumn !== "string") {
-						throw ConfigurationError.invalidValue(
-							`columnMapping.${metadataKey}`,
-							dbColumn,
-							"string",
-							{
-								operation: "validateColumnMapping",
-								metadataKey,
-							},
-						);
-					}
-					return {
-						metadataKey,
-						dbColumn: escapeIdentifier(dbColumn),
-					};
-				});
-
-			const sql = `
-        SELECT
-          ${escapeIdentifier(columnMapping.chunkContent)} as content,
-          ${escapeIdentifier(columnMapping.chunkIndex)} as index,
-          ${metadataColumns
-						.map(
-							({ dbColumn, metadataKey }) =>
-								`${dbColumn} as ${escapeIdentifier(metadataKey)}`,
-						)
-						.join(", ")}${metadataColumns.length > 0 ? "," : ""}
-          1 - (${escapeIdentifier(columnMapping.embedding)} <=> $1) as similarity
-        FROM ${escapeIdentifier(tableName)}
-        ${whereConditions.length > 0 ? `WHERE ${whereConditions.join(" AND ")}` : ""}
-        ORDER BY ${escapeIdentifier(columnMapping.embedding)} <=> $1
-        LIMIT $${paramIndex}
-      `;
-
-			values.push(limit);
-			const result = await pool.query(sql, values);
-
-			return result.rows.map((row) => {
-				const metadata = extractMetadata(row, metadataColumns, metadataSchema);
-
-				return {
-					chunk: {
-						content: row.content,
-						index: row.index,
-					},
-					similarity: row.similarity,
-					metadata,
-				};
+			const { sql, values } = buildSearchQuery({
+				tableName: config.tableName,
+				columnMapping,
+				queryEmbedding,
+				filters,
+				limit,
+				similarityThreshold,
 			});
+
+			const result = await pool.query(sql, values);
+			return result.rows.map((row) =>
+				mapRowToResult(row, columnMapping, config.metadataSchema),
+			);
 		} catch (error) {
-			if (error instanceof EmbeddingError) {
-				throw error;
-			}
-			if (error instanceof ValidationError) {
+			if (error instanceof EmbeddingError || error instanceof ValidationError) {
 				throw error;
 			}
 			throw DatabaseError.queryFailed(
 				"vector search query",
 				error instanceof Error ? error : undefined,
-				{
-					operation: "search",
-					query,
-					limit,
-					tableName,
-					contextFilters: JSON.stringify(filters),
-				},
 			);
 		}
-	};
+	}
+
+	return { search };
+}
+
+function buildSearchQuery({
+	tableName,
+	columnMapping,
+	queryEmbedding,
+	filters,
+	limit,
+	similarityThreshold,
+}: {
+	tableName: string;
+	columnMapping: ReturnType<typeof createColumnMapping>;
+	queryEmbedding: number[];
+	filters: Record<string, unknown>;
+	limit: number;
+	similarityThreshold?: number;
+}) {
+	const values: unknown[] = [pgvector.toSql(queryEmbedding)];
+	const whereConditions: string[] = [];
+	let paramIndex = 2;
+
+	for (const [column, value] of Object.entries(filters)) {
+		whereConditions.push(`${escapeIdentifier(column)} = $${paramIndex}`);
+		values.push(value);
+		paramIndex++;
+	}
+
+	if (similarityThreshold !== undefined && similarityThreshold > 0) {
+		whereConditions.push(
+			`1 - (${escapeIdentifier(columnMapping.embedding)} <=> $1) >= $${paramIndex}`,
+		);
+		values.push(similarityThreshold);
+		paramIndex++;
+	}
+
+	const metadataColumns = getMetadataColumns(columnMapping);
+	const metadataSelects = metadataColumns
+		.map(
+			({ dbColumn, metadataKey }) =>
+				`${dbColumn} as ${escapeIdentifier(metadataKey)}`,
+		)
+		.join(", ");
+
+	const sql = `
+		SELECT
+			${escapeIdentifier(columnMapping.chunkContent)} as content,
+			${escapeIdentifier(columnMapping.chunkIndex)} as index,
+			${metadataSelects}${metadataColumns.length > 0 ? "," : ""}
+			1 - (${escapeIdentifier(columnMapping.embedding)} <=> $1) as similarity
+		FROM ${escapeIdentifier(tableName)}
+		${whereConditions.length > 0 ? `WHERE ${whereConditions.join(" AND ")}` : ""}
+		ORDER BY ${escapeIdentifier(columnMapping.embedding)} <=> $1
+		LIMIT $${paramIndex}
+	`;
+
+	values.push(limit);
+	return { sql, values };
+}
+
+function getMetadataColumns(
+	columnMapping: ReturnType<typeof createColumnMapping>,
+) {
+	const requiredKeys = new Set(REQUIRED_COLUMN_KEYS);
+	return Object.entries(columnMapping as Record<string, string>)
+		.filter(
+			([key]) =>
+				!requiredKeys.has(key as (typeof REQUIRED_COLUMN_KEYS)[number]),
+		)
+		.map(([metadataKey, dbColumn]) => {
+			if (typeof dbColumn !== "string") {
+				throw ConfigurationError.invalidValue(
+					`columnMapping.${metadataKey}`,
+					dbColumn,
+					"string",
+				);
+			}
+			return {
+				metadataKey,
+				dbColumn: escapeIdentifier(dbColumn),
+			};
+		});
+}
+
+function mapRowToResult<TSchema extends z.ZodType<Record<string, unknown>>>(
+	row: Record<string, unknown>,
+	columnMapping: ReturnType<typeof createColumnMapping>,
+	metadataSchema: TSchema,
+): QueryResult<z.infer<TSchema>> {
+	const metadataColumns = getMetadataColumns(columnMapping);
+	const metadata = parseMetadata(row, metadataColumns, metadataSchema);
 
 	return {
-		search,
-	};
+		chunk: {
+			content: row.content,
+			index: row.index,
+		},
+		similarity: row.similarity,
+		metadata,
+	} as QueryResult<z.infer<TSchema>>;
 }

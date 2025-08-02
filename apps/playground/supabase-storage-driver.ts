@@ -109,7 +109,7 @@ export default defineDriver((options: SupabaseStorageDriverOptions) => {
 			}
 
 			// Convert Blob to string or Buffer based on the data type
-			return await data.text.text();
+			return await data.text();
 		},
 
 		async setItem(key, value, opts) {

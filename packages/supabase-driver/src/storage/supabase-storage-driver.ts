@@ -11,7 +11,6 @@ import type {
 	BlobLike,
 	GetJsonParams,
 	GiselleStorage,
-	JsonSchema,
 	SetJsonParams,
 } from "@giselle-sdk/giselle";
 import type { z } from "zod/v4";
@@ -52,27 +51,21 @@ export function supabaseStorageDriver(
 	});
 
 	return {
-		async getJson<T extends JsonSchema>(
+		async getJson<T extends z.ZodType>(
 			params: GetJsonParams<T>,
 		): Promise<z.infer<T>> {
-			try {
-				const res = await client.send(
-					new GetObjectCommand({ Bucket: config.bucket, Key: params.path }),
-				);
-				if (!res.Body || !isReadable(res.Body as Readable)) {
-					throw new Error("Invalid body returned from storage");
-				}
-				const bytes = await streamToUint8Array(res.Body as Readable);
-				const obj = JSON.parse(Buffer.from(bytes).toString("utf8"));
-				return params.schema ? params.schema.parse(obj) : obj;
-			} catch (err) {
-				if (err instanceof Error && err.name === "NoSuchKey") {
-					return undefined;
-				}
+			const res = await client.send(
+				new GetObjectCommand({ Bucket: config.bucket, Key: params.path }),
+			);
+			if (!res.Body || !isReadable(res.Body as Readable)) {
+				throw new Error("Invalid body returned from storage");
 			}
+			const bytes = await streamToUint8Array(res.Body as Readable);
+			const obj = JSON.parse(Buffer.from(bytes).toString("utf8"));
+			return params.schema.parse(obj);
 		},
 
-		async setJson<T extends JsonSchema>(
+		async setJson<T extends z.ZodType>(
 			params: SetJsonParams<T>,
 		): Promise<void> {
 			const data = params.schema

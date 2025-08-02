@@ -57,6 +57,7 @@
 		"@ai-sdk/google": "catalog:",
 		"@ai-sdk/openai": "catalog:",
 		"@ai-sdk/perplexity": "catalog:",
+		"@ai-sdk/provider": "2.0.0",
 		"@ai-sdk/react": "catalog:",
 		"@giselle-sdk/flow": "workspace:^",
 		"@giselle-sdk/github-tool": "workspace:^",

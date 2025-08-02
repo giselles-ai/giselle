@@ -91,10 +91,10 @@ export const OpenAIWebSearchTool = z.object({
 	searchContextSize: z.enum(["low", "medium", "high"]).default("medium"),
 	userLocation: z
 		.object({
-			type: z.literal("approximate").optional(),
+			type: z.literal("approximate"),
+			country: z.string().optional(),
 			city: z.string().optional(),
 			region: z.string().optional(),
-			country: z.string().optional(),
 			timezone: z.string().optional(),
 		})
 		.optional(),
