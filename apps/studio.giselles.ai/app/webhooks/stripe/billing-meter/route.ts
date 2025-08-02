@@ -37,6 +37,15 @@ export async function POST(req: Request) {
 	}
 
 	const event = await stripe.v2.core.events.retrieve(thinEvent.id);
+	if (
+		event.type !== "v1.billing.meter.error_report_triggered" &&
+		event.type !== "v1.billing.meter.no_meter_found"
+	) {
+		return new Response(`Unexpected event type: ${event.type}`, {
+			status: 400,
+		});
+	}
+
 	try {
 		console.error(
 			`
