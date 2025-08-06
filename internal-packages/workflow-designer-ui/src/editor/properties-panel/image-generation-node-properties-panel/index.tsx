@@ -86,7 +86,7 @@ export function ImageGenerationNodePropertiesPanel({
 				action={
 					<Button
 						type="button"
-						disabled={usageLimitsReached || isGenerating}
+						disabled={usageLimitsReached}
 						loading={isGenerating}
 						onClick={() => {
 							if (isGenerating) {
