@@ -44,7 +44,7 @@ export function ImageGenerationNodePropertiesPanel({
 
 	const uiState = useMemo(() => data.ui.nodeState[node.id], [data, node.id]);
 
-	const generateText = useCallback(() => {
+	const generateImage = useCallback(() => {
 		if (usageLimitsReached) {
 			error("Please upgrade your plan to continue using this feature.");
 			return;
@@ -92,7 +92,7 @@ export function ImageGenerationNodePropertiesPanel({
 							if (isGenerating) {
 								stopGenerationRunner();
 							} else {
-								generateText();
+								generateImage();
 							}
 						}}
 						className="w-[150px] disabled:cursor-not-allowed disabled:opacity-50"
@@ -180,14 +180,17 @@ export function ImageGenerationNodePropertiesPanel({
 				</PanelResizeHandle>
 				<Panel>
 					<PropertiesPanelContent>
-						<GenerationPanel node={node} onClickGenerateButton={generateText} />
+						<GenerationPanel
+							node={node}
+							onClickGenerateButton={generateImage}
+						/>
 					</PropertiesPanelContent>
 				</Panel>
 			</PanelGroup>
 			<KeyboardShortcuts
 				generate={() => {
 					if (!isGenerating) {
-						generateText();
+						generateImage();
 					}
 				}}
 			/>
