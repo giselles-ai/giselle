@@ -46,6 +46,13 @@ export function GenerationView({ generation }: { generation: Generation }) {
 		<>
 			{generation.status === "completed" &&
 				generation.outputs.map((output) => {
+					if (output.type === "generated-text") {
+						return (
+							<div key={output.outputId} className="markdown-renderer">
+								<MemoizedMarkdown content={output.content} />
+							</div>
+						);
+					}
 					if (output.type !== "generated-image") {
 						return null;
 					}
@@ -130,6 +137,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 										<MemoizedMarkdown content={part.text} />
 									</div>
 								);
+
 							default: {
 								console.warn("unsupport part type");
 								return null;

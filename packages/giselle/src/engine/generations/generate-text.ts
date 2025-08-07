@@ -214,11 +214,81 @@ export function generateText(args: {
 							(output: Output) => output.accessor === "generated-text",
 						);
 					if (generatedTextOutput !== undefined) {
-						generationOutputs.push({
-							type: "generated-text",
-							content: event.text,
-							outputId: generatedTextOutput.id,
-						});
+						// Start with the generated text (which may be empty)
+						let contentWithToolResults = event.text || "";
+
+						// Check if there are tool invocations in steps
+						if (event.steps && event.steps.length > 0) {
+							const toolResults: any[] = [];
+
+							for (const step of event.steps) {
+								// Check content array for tool calls and results
+								if (step.content && Array.isArray(step.content)) {
+									for (const item of step.content) {
+										if (item.type === "tool-call") {
+											const toolCall = item as any;
+											const result = step.content.find(
+												(c: any) =>
+													c.type === "tool-result" &&
+													c.toolCallId === toolCall.toolCallId,
+											);
+											if (result && (result as any).output) {
+												toolResults.push({
+													tool: toolCall.toolName || "unknown",
+													input: toolCall.input || {},
+													output: (result as any).output || {},
+												});
+											}
+										}
+									}
+								}
+
+								// Fallback to old structure
+								if (
+									toolResults.length === 0 &&
+									step.toolCalls &&
+									step.toolCalls.length > 0
+								) {
+									for (const toolCall of step.toolCalls) {
+										const toolResult = step.toolResults?.find(
+											(result: any) =>
+												result.toolCallId === toolCall.toolCallId,
+										);
+
+										if (toolResult) {
+											toolResults.push({
+												tool: (toolCall as any).toolName || "unknown",
+												input: (toolCall as any).args || {},
+												output: (toolResult as any).result || {},
+											});
+										}
+									}
+								}
+							}
+
+							// Add tool results even if there's no generated text
+							if (toolResults.length > 0) {
+								// Add separator only if there's existing text
+								if (contentWithToolResults) {
+									contentWithToolResults += "\n\n";
+								}
+								contentWithToolResults += "## Tool Results\n";
+								for (const result of toolResults) {
+									contentWithToolResults += `\n### ${result.tool}\n`;
+									contentWithToolResults += `**Input:**\n\`\`\`json\n${JSON.stringify(result.input, null, 2)}\n\`\`\`\n`;
+									contentWithToolResults += `**Output:**\n\`\`\`json\n${JSON.stringify(result.output, null, 2)}\n\`\`\`\n`;
+								}
+							}
+						}
+
+						// Only push output if there's content (either text or tool results)
+						if (contentWithToolResults) {
+							generationOutputs.push({
+								type: "generated-text",
+								content: contentWithToolResults,
+								outputId: generatedTextOutput.id,
+							});
+						}
 					}
 
 					const reasoningOutput = generationContext.operationNode.outputs.find(
