@@ -281,14 +281,12 @@ export function generateText(args: {
 							}
 						}
 
-						// Only push output if there's content (either text or tool results)
-						if (contentWithToolResults) {
-							generationOutputs.push({
-								type: "generated-text",
-								content: contentWithToolResults,
-								outputId: generatedTextOutput.id,
-							});
-						}
+						// Always push generated-text output to maintain UI consistency
+						generationOutputs.push({
+							type: "generated-text",
+							content: contentWithToolResults,
+							outputId: generatedTextOutput.id,
+						});
 					}
 
 					const reasoningOutput = generationContext.operationNode.outputs.find(
