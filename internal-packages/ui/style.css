@@ -36,6 +36,8 @@
 	--color-text-placeholder: #878a98;
 	--color-text-disabled: #878a98;
 	--color-text-accent: #74ade8;
+	--color-text-nav-active: #b5c0c9;
+	--color-text-nav-inactive: #515d7b;
 
 	/* panel */
 	--color-panel-background: #2f343e;

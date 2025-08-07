@@ -23,7 +23,7 @@ export function ReloadButton({
 				type="submit"
 				variant="subtle"
 				leftIcon={
-					<RefreshCw className={`w-4 h-4 ${isPending ? "animate-spin" : ""}`} />
+					<RefreshCw className={`w-4 h-4${isPending ? " animate-spin" : ""}`} />
 				}
 				disabled={isPending}
 			>
