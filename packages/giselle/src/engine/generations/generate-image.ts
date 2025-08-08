@@ -109,7 +109,7 @@ export function generateImage(args: {
 				if (error instanceof Error && error.name === "ResponseAborted") {
 					return;
 				}
-				
+
 				const failedGeneration = {
 					...runningGeneration,
 					status: "failed",
@@ -120,9 +120,9 @@ export function generateImage(args: {
 						dump: error,
 					},
 				} satisfies FailedGeneration;
-				
+
 				await setGeneration(failedGeneration);
-        throw error;
+				throw error;
 			}
 		},
 	});
