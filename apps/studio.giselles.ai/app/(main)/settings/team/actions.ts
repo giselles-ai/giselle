@@ -1,6 +1,7 @@
 "use server";
 
 import * as Sentry from "@sentry/nextjs";
+import { put } from "@vercel/blob";
 import { and, asc, count, desc, eq, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -18,6 +19,7 @@ import {
 } from "@/drizzle";
 import { updateGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
+
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import { handleMemberChange } from "@/services/teams/member-change";
@@ -73,8 +75,224 @@ export async function updateTeamName(teamId: TeamId, formData: FormData) {
 
 		return { success: true };
 	} catch (error) {
-		console.error("Failed to update team name:", error);
-		return { success: false, error };
+		if (error instanceof Error) {
+			if (error.message.includes("not found")) {
+				return { success: false, error: "Team not found or access denied" };
+			}
+			return { success: false, error: error.message };
+		}
+		return { success: false, error: "Failed to update team name" };
+	}
+}
+
+export async function updateTeamProfileImage(
+	teamId: TeamId,
+	formData: FormData,
+) {
+	try {
+		const profileImage = formData.get("profileImage") as File;
+		const user = await getUser();
+
+		// Validate input
+		if (!profileImage) {
+			return { success: false, error: "No profile image provided" };
+		}
+
+		if (!teamId) {
+			return { success: false, error: "Team ID is required" };
+		}
+
+		// Validate file type and size
+		const maxSize = 1 * 1024 * 1024; // 1MB
+		const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+		const allowedExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
+
+		// Validate MIME type
+		if (!allowedTypes.includes(profileImage.type)) {
+			return {
+				success: false,
+				error:
+					"Invalid file type. Please upload a JPG, PNG, GIF, or WebP image.",
+			};
+		}
+
+		// Validate file extension as additional check
+		const fileName = profileImage.name.toLowerCase();
+		const hasValidExtension = allowedExtensions.some((ext) =>
+			fileName.endsWith(ext),
+		);
+		if (!hasValidExtension) {
+			return {
+				success: false,
+				error:
+					"Invalid file extension. Please upload a JPG, PNG, GIF, or WebP image.",
+			};
+		}
+
+		// Server-side MIME type validation using file buffer
+		const buffer = await profileImage.arrayBuffer();
+		const bytes = new Uint8Array(buffer);
+
+		// Check magic bytes for actual file type
+		let actualType: string | null = null;
+		if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
+			actualType = "image/jpeg";
+		} else if (
+			bytes[0] === 0x89 &&
+			bytes[1] === 0x50 &&
+			bytes[2] === 0x4e &&
+			bytes[3] === 0x47
+		) {
+			actualType = "image/png";
+		} else if (bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46) {
+			actualType = "image/gif";
+		} else if (
+			bytes[0] === 0x52 &&
+			bytes[1] === 0x49 &&
+			bytes[2] === 0x46 &&
+			bytes[3] === 0x46 &&
+			bytes[8] === 0x57 &&
+			bytes[9] === 0x45 &&
+			bytes[10] === 0x42 &&
+			bytes[11] === 0x50
+		) {
+			actualType = "image/webp";
+		}
+
+		if (!actualType || !allowedTypes.includes(actualType)) {
+			return {
+				success: false,
+				error: "File content does not match allowed image types.",
+			};
+		}
+
+		if (profileImage.size > maxSize) {
+			return {
+				success: false,
+				error: "File size too large. Please upload an image under 1MB.",
+			};
+		}
+
+		// Recreate the File from the buffer to ensure we upload the validated content
+		const validatedFile = new File([buffer], profileImage.name, {
+			type: actualType,
+		});
+
+		// Sanitize filename to prevent path traversal attacks
+		const sanitizeFilename = (name: string): string => {
+			// Remove any directory separators and special characters
+			return name
+				.replace(/[/\\]/g, "_") // Replace forward and back slashes
+				.replace(/\.\./g, "_") // Replace double dots
+				.replace(/[^a-zA-Z0-9._-]/g, "_") // Keep only safe characters
+				.replace(/^[.-]/, "_") // Don't start with dot or dash
+				.slice(0, 255); // Limit filename length
+		};
+
+		// Upload image to Vercel Blob
+		let profileImageUrl: string;
+		try {
+			const sanitizedName = sanitizeFilename(profileImage.name);
+			const filename = `team_${teamId}_${Date.now()}_${sanitizedName}`;
+			const blob = await put(filename, validatedFile, {
+				access: "public",
+				addRandomSuffix: false,
+			});
+			profileImageUrl = blob.url;
+		} catch (uploadError) {
+			if (uploadError instanceof Error) {
+				if (
+					uploadError.message.includes("network") ||
+					uploadError.message.includes("timeout")
+				) {
+					return {
+						success: false,
+						error:
+							"Network error during upload. Please check your connection and try again.",
+					};
+				}
+				if (
+					uploadError.message.includes("storage") ||
+					uploadError.message.includes("quota")
+				) {
+					return {
+						success: false,
+						error: "Storage quota exceeded. Please contact support.",
+					};
+				}
+			}
+			return {
+				success: false,
+				error: "Failed to upload image. Please try again.",
+			};
+		}
+
+		// Update database
+		try {
+			await db.transaction(async (tx) => {
+				const team = await tx
+					.select({ dbId: teams.dbId })
+					.from(teams)
+					.for("update")
+					.innerJoin(teamMemberships, eq(teams.dbId, teamMemberships.teamDbId))
+					.innerJoin(
+						supabaseUserMappings,
+						eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
+					)
+					.where(
+						and(
+							eq(supabaseUserMappings.supabaseUserId, user.id),
+							eq(teams.id, teamId),
+						),
+					);
+
+				if (team.length === 0) {
+					throw new Error(
+						"Team not found or you don't have permission to modify it",
+					);
+				}
+
+				await tx
+					.update(teams)
+					.set({ profileImageUrl })
+					.where(eq(teams.dbId, team[0].dbId));
+			});
+
+			revalidatePath("/settings/team");
+			return { success: true };
+		} catch (dbError) {
+			// More specific database error handling
+			if (dbError instanceof Error) {
+				if (dbError.message.includes("not found")) {
+					return {
+						success: false,
+						error: "Team not found or you don't have permission to modify it",
+					};
+				}
+				if (dbError.message.includes("permission")) {
+					return {
+						success: false,
+						error: "You don't have permission to update this team",
+					};
+				}
+			}
+
+			return {
+				success: false,
+				error: "Failed to save changes to database. Please try again.",
+			};
+		}
+	} catch (error) {
+		if (error instanceof Error) {
+			return {
+				success: false,
+				error: error.message,
+			};
+		}
+		return {
+			success: false,
+			error: "An unexpected error occurred. Please try again.",
+		};
 	}
 }
 
@@ -106,8 +324,6 @@ export async function getTeamMembers() {
 			data: teamMembers,
 		};
 	} catch (error) {
-		console.error("Failed to get team members:", error);
-
 		return {
 			success: false,
 			error:
@@ -202,8 +418,6 @@ export async function updateTeamMemberRole(formData: FormData) {
 			success: true,
 		};
 	} catch (error) {
-		console.error("Failed to update team member role:", error);
-
 		return {
 			success: false,
 			error:
@@ -325,8 +539,6 @@ export async function deleteTeamMember(formData: FormData) {
 
 		return { success: true };
 	} catch (error) {
-		console.error("Failed to delete team member:", error);
-
 		return {
 			success: false,
 			error:
@@ -366,8 +578,6 @@ export async function getCurrentUserRole() {
 			data: result[0].role,
 		};
 	} catch (error) {
-		console.error("Failed to get current user role:", error);
-
 		return {
 			success: false,
 			error:
@@ -424,8 +634,6 @@ export async function getAgentActivities({
 			data: formattedActivities,
 		};
 	} catch (error) {
-		console.error("Failed to get agent activities:", error);
-
 		return {
 			success: false,
 			error:
@@ -490,8 +698,6 @@ export async function deleteTeam(
 		// This ensures that the user is redirected to a valid team context and prevents access to the deleted team's resources.
 		await updateGiselleSession({ teamId: otherTeams[0].teamId });
 	} catch (error) {
-		console.error("Failed to delete team:", error);
-
 		return {
 			error: error instanceof Error ? error.message : "Failed to delete team",
 		};
@@ -520,8 +726,6 @@ export async function getSubscription(subscriptionId: string) {
 			data: dbSubscription,
 		};
 	} catch (error) {
-		console.error("Failed to fetch subscription:", error);
-
 		return {
 			success: false,
 			error:
@@ -564,7 +768,6 @@ export async function sendInvitationsAction(
 				return { email, status: "success" };
 			} catch (error: unknown) {
 				const status = invitation ? "email_error" : "db_error";
-				console.error(`Failed to process invitation for ${email}:`, error);
 				const errorMessage =
 					error instanceof Error
 						? error.message
@@ -583,10 +786,6 @@ export async function sendInvitationsAction(
 			}
 			// Capture unexpected errors in Sentry
 			Sentry.captureException(result.reason);
-			console.error(
-				`Unexpected error processing invitation for ${emails[index]}:`,
-				result.reason,
-			);
 			const reason = result.reason as unknown;
 			const errorMessage =
 				reason instanceof Error
@@ -642,7 +841,6 @@ export async function revokeInvitationAction(
 		revalidatePath("/settings/team/members");
 		return { success: true };
 	} catch (e: unknown) {
-		console.error("Failed to revoke invitation:", e);
 		return {
 			success: false,
 			error: e instanceof Error ? e.message : "Unknown error",
@@ -686,7 +884,6 @@ export async function resendInvitationAction(
 		revalidatePath("/settings/team/members");
 		return { success: true };
 	} catch (e: unknown) {
-		console.error("Failed to resend invitation:", e);
 		return {
 			success: false,
 			error: e instanceof Error ? e.message : "Unknown error",

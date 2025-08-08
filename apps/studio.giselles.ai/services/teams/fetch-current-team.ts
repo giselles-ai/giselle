@@ -37,68 +37,147 @@ const cachedFetchCurrentTeam = cache(fetchCurrentTeam);
 export { cachedFetchCurrentTeam as fetchCurrentTeam };
 
 async function fetchTeam(teamId: TeamId, supabaseUserId: string) {
-	const result = await db
-		.select({
-			id: teams.id,
-			dbId: teams.dbId,
-			name: teams.name,
-			type: teams.type,
-			activeSubscriptionId: subscriptions.id,
-		})
-		.from(teams)
-		// join teamMemberships and supabaseUserMappings to check user's membership
-		.innerJoin(teamMemberships, eq(teams.dbId, teamMemberships.teamDbId))
-		.innerJoin(
-			supabaseUserMappings,
-			eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
-		)
-		.leftJoin(
-			subscriptions,
-			and(
-				eq(subscriptions.teamDbId, teams.dbId),
-				eq(subscriptions.status, "active"),
-			),
-		)
-		.where(
-			and(
-				eq(supabaseUserMappings.supabaseUserId, supabaseUserId),
-				eq(teams.id, teamId),
-			),
-		);
-	if (result.length === 0) {
-		return null;
+	// Try with profileImageUrl first, fallback if column doesn't exist
+	try {
+		const result = await db
+			.select({
+				id: teams.id,
+				dbId: teams.dbId,
+				name: teams.name,
+				profileImageUrl: teams.profileImageUrl,
+				type: teams.type,
+				activeSubscriptionId: subscriptions.id,
+			})
+			.from(teams)
+			// join teamMemberships and supabaseUserMappings to check user's membership
+			.innerJoin(teamMemberships, eq(teams.dbId, teamMemberships.teamDbId))
+			.innerJoin(
+				supabaseUserMappings,
+				eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
+			)
+			.leftJoin(
+				subscriptions,
+				and(
+					eq(subscriptions.teamDbId, teams.dbId),
+					eq(subscriptions.status, "active"),
+				),
+			)
+			.where(
+				and(
+					eq(supabaseUserMappings.supabaseUserId, supabaseUserId),
+					eq(teams.id, teamId),
+				),
+			);
+		if (result.length === 0) {
+			return null;
+		}
+		return result[0];
+	} catch (_error) {
+		// Fallback without profileImageUrl if column doesn't exist
+		const result = await db
+			.select({
+				id: teams.id,
+				dbId: teams.dbId,
+				name: teams.name,
+				type: teams.type,
+				activeSubscriptionId: subscriptions.id,
+			})
+			.from(teams)
+			// join teamMemberships and supabaseUserMappings to check user's membership
+			.innerJoin(teamMemberships, eq(teams.dbId, teamMemberships.teamDbId))
+			.innerJoin(
+				supabaseUserMappings,
+				eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
+			)
+			.leftJoin(
+				subscriptions,
+				and(
+					eq(subscriptions.teamDbId, teams.dbId),
+					eq(subscriptions.status, "active"),
+				),
+			)
+			.where(
+				and(
+					eq(supabaseUserMappings.supabaseUserId, supabaseUserId),
+					eq(teams.id, teamId),
+				),
+			);
+		if (result.length === 0) {
+			return null;
+		}
+		return {
+			...result[0],
+			profileImageUrl: null as string | null,
+		};
 	}
-	return result[0];
 }
 
 async function fetchFirstTeam(supabaseUserId: string) {
-	const team = await db
-		.select({
-			id: teams.id,
-			dbId: teams.dbId,
-			name: teams.name,
-			type: teams.type,
-			activeSubscriptionId: subscriptions.id,
-		})
-		.from(teams)
-		.innerJoin(teamMemberships, eq(teams.dbId, teamMemberships.teamDbId))
-		.innerJoin(
-			supabaseUserMappings,
-			eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
-		)
-		.leftJoin(
-			subscriptions,
-			and(
-				eq(subscriptions.teamDbId, teams.dbId),
-				eq(subscriptions.status, "active"),
-			),
-		)
-		.where(eq(supabaseUserMappings.supabaseUserId, supabaseUserId))
-		.orderBy(asc(teams.dbId))
-		.limit(1);
+	// Try with profileImageUrl first, fallback if column doesn't exist
+	try {
+		const team = await db
+			.select({
+				id: teams.id,
+				dbId: teams.dbId,
+				name: teams.name,
+				profileImageUrl: teams.profileImageUrl,
+				type: teams.type,
+				activeSubscriptionId: subscriptions.id,
+			})
+			.from(teams)
+			.innerJoin(teamMemberships, eq(teams.dbId, teamMemberships.teamDbId))
+			.innerJoin(
+				supabaseUserMappings,
+				eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
+			)
+			.leftJoin(
+				subscriptions,
+				and(
+					eq(subscriptions.teamDbId, teams.dbId),
+					eq(subscriptions.status, "active"),
+				),
+			)
+			.where(eq(supabaseUserMappings.supabaseUserId, supabaseUserId))
+			.orderBy(asc(teams.dbId))
+			.limit(1);
 
-	if (team.length === 0) {
-		throw new Error("User does not have a team");
+		if (team.length === 0) {
+			throw new Error("User does not have a team");
+		}
+		return team[0];
+	} catch (_error) {
+		// Fallback without profileImageUrl if column doesn't exist
+		const team = await db
+			.select({
+				id: teams.id,
+				dbId: teams.dbId,
+				name: teams.name,
+				type: teams.type,
+				activeSubscriptionId: subscriptions.id,
+			})
+			.from(teams)
+			.innerJoin(teamMemberships, eq(teams.dbId, teamMemberships.teamDbId))
+			.innerJoin(
+				supabaseUserMappings,
+				eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
+			)
+			.leftJoin(
+				subscriptions,
+				and(
+					eq(subscriptions.teamDbId, teams.dbId),
+					eq(subscriptions.status, "active"),
+				),
+			)
+			.where(eq(supabaseUserMappings.supabaseUserId, supabaseUserId))
+			.orderBy(asc(teams.dbId))
+			.limit(1);
+
+		if (team.length === 0) {
+			throw new Error("User does not have a team");
+		}
+		return {
+			...team[0],
+			profileImageUrl: null as string | null,
+		};
 	}
-	return team[0];
 }

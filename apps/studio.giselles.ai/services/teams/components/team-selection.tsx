@@ -13,12 +13,14 @@ export async function TeamSelection() {
 	const formattedAllTeams = allTeams.map((team) => ({
 		id: team.id,
 		name: team.name,
+		profileImageUrl: team.profileImageUrl,
 		isPro: isProPlan(team),
 	}));
 
 	const formattedCurrentTeam = {
 		id: currentTeam.id,
 		name: currentTeam.name,
+		profileImageUrl: currentTeam.profileImageUrl,
 		isPro: isProPlan(currentTeam),
 	};
 

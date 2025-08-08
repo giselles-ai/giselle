@@ -1,0 +1,1 @@
+ALTER TABLE "teams" ADD COLUMN "profile_image_url" text;

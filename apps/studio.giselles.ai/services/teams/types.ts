@@ -9,6 +9,7 @@ export type CurrentTeam = {
 	id: typeof teams.$inferSelect.id;
 	dbId: typeof teams.$inferSelect.dbId;
 	name: typeof teams.$inferSelect.name;
+	profileImageUrl?: typeof teams.$inferSelect.profileImageUrl;
 	type: typeof teams.$inferSelect.type;
 	activeSubscriptionId: typeof subscriptions.$inferInsert.id | null;
 };
@@ -16,5 +17,6 @@ export type CurrentTeam = {
 export type Team = {
 	id: typeof teams.$inferSelect.id;
 	name: typeof teams.$inferSelect.name;
+	profileImageUrl?: typeof teams.$inferSelect.profileImageUrl;
 	isPro?: boolean;
 };
