@@ -126,11 +126,16 @@ function SelectLabel({
 }
 SelectLabel.displayName = SelectPrimitive.Label.displayName;
 
-function SelectItem({ children, ...props }: SelectPrimitive.SelectItemProps) {
+function SelectItem({
+	children,
+	className,
+	...props
+}: SelectPrimitive.SelectItemProps) {
 	return (
 		<SelectPrimitive.Item
 			className={clsx(
-				"relative flex w-full cursor-default select-none items-center rounded-[4px] py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-white-900/20 focus:text-white-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+				"relative flex w-full cursor-default select-none items-center rounded-[4px] py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-white/5 focus:text-white-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[highlighted]:bg-white/5 data-[highlighted]:text-white-900",
+				className,
 			)}
 			{...props}
 		>
