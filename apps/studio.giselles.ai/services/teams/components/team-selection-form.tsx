@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { selectTeam } from "../actions/select-team";
 import type { Team } from "../types";
+import { TeamAvatarImage } from "./team-avatar-image";
 
 type TeamSelectionFormProps = {
 	allTeams: Team[];
@@ -59,6 +60,14 @@ export function TeamSelectionForm({
 							currentUser
 						) : (
 							<>
+								<TeamAvatarImage
+									profileImageUrl={currentTeam.profileImageUrl}
+									teamName={currentTeam.name}
+									width={24}
+									height={24}
+									className="w-6 h-6 shrink-0"
+									alt={currentTeam.name}
+								/>
 								<span
 									className="text-[14px] font-geist text-white-400 truncate max-w-[180px]"
 									title={currentTeam.name}
@@ -80,9 +89,17 @@ export function TeamSelectionForm({
 							<SelectItem
 								key={team.id}
 								value={team.id}
-								className="p-1.5 pl-10 rounded-lg focus:bg-white/5 font-geist"
+								className="p-1.5 pl-2 rounded-lg focus:bg-white/5 font-geist"
 							>
 								<div className="flex items-center gap-1.5 pr-1">
+									<TeamAvatarImage
+										profileImageUrl={team.profileImageUrl}
+										teamName={team.name}
+										width={24}
+										height={24}
+										className="w-6 h-6 shrink-0"
+										alt={team.name}
+									/>
 									<span
 										className="truncate max-w-[180px] text-[14px] font-geist text-white-400"
 										title={team.name}
