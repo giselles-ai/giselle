@@ -79,6 +79,63 @@ export async function updateTeamName(teamId: TeamId, formData: FormData) {
 	}
 }
 
+export async function updateTeamProfileImage(
+	teamId: TeamId,
+	formData: FormData,
+) {
+	const profileImage = formData.get("profileImage") as File;
+	const user = await getUser();
+
+	if (!profileImage) {
+		return { success: false, error: "No profile image provided" };
+	}
+
+	try {
+		// Upload the image to your storage service (adjust this based on your upload service)
+		// For now, we'll just store the filename - you'll need to implement actual file upload
+		const filename = `team_${teamId}_${Date.now()}_${profileImage.name}`;
+
+		// TODO: Implement actual file upload to your storage service
+		// const uploadedUrl = await uploadFile(profileImage, filename);
+
+		// For now, we'll use a placeholder URL - replace this with actual upload logic
+		const profileImageUrl = `/uploads/teams/${filename}`;
+
+		await db.transaction(async (tx) => {
+			const team = await tx
+				.select({ dbId: teams.dbId })
+				.from(teams)
+				.for("update")
+				.innerJoin(teamMemberships, eq(teams.dbId, teamMemberships.teamDbId))
+				.innerJoin(
+					supabaseUserMappings,
+					eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
+				)
+				.where(
+					and(
+						eq(supabaseUserMappings.supabaseUserId, user.id),
+						eq(teams.id, teamId),
+					),
+				);
+
+			if (team.length === 0) {
+				throw new Error("Team not found");
+			}
+
+			await tx
+				.update(teams)
+				.set({ profileImageUrl })
+				.where(eq(teams.dbId, team[0].dbId));
+		});
+
+		revalidatePath("/settings/team");
+		return { success: true };
+	} catch (error) {
+		console.error("Failed to update team profile image:", error);
+		return { success: false, error };
+	}
+}
+
 export async function getTeamMembers() {
 	try {
 		// Subquery: Get current user's team

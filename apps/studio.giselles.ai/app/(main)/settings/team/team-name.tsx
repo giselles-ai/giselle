@@ -9,6 +9,7 @@ export async function TeamName() {
 				key={currentTeam.id}
 				id={currentTeam.id}
 				name={currentTeam.name}
+				profileImageUrl={currentTeam.profileImageUrl}
 			/>
 		</div>
 	);
