@@ -78,6 +78,15 @@ export function TeamProfileEditModal({
 		}
 	}, [isOpen, initialTeamName, profileImagePreview]);
 
+	// Clean up object URL on unmount or when preview changes
+	useEffect(() => {
+		return () => {
+			if (profileImagePreview) {
+				URL.revokeObjectURL(profileImagePreview);
+			}
+		};
+	}, [profileImagePreview]);
+
 	// Handle profile image file selection
 	const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setProfileImageError("");
@@ -152,7 +161,6 @@ export function TeamProfileEditModal({
 
 			// Update team name if changed
 			if (teamName !== initialTeamName) {
-				console.log("Updating team name to:", teamName);
 				const formData = new FormData();
 				formData.append("name", teamName);
 				promises.push(updateTeamName(teamId, formData));
@@ -160,11 +168,6 @@ export function TeamProfileEditModal({
 
 			// Update profile image if changed
 			if (selectedProfileImageFile) {
-				console.log("Updating profile image:", {
-					fileName: selectedProfileImageFile.name,
-					fileSize: selectedProfileImageFile.size,
-					fileType: selectedProfileImageFile.type,
-				});
 				const formData = new FormData();
 				formData.append(
 					"profileImage",
@@ -182,7 +185,6 @@ export function TeamProfileEditModal({
 				(result: { success: boolean; error?: unknown }) => !result.success,
 			);
 			if (failedUpdate) {
-				console.error("Failed update details:", failedUpdate);
 				const errorMessage = failedUpdate.error
 					? typeof failedUpdate.error === "string"
 						? failedUpdate.error
@@ -199,22 +201,23 @@ export function TeamProfileEditModal({
 			// Close the modal
 			onClose();
 		} catch (error) {
-			console.error("Failed to save team profile changes:", error);
-
 			// More specific error handling
-			let errorMessage = "Failed to save changes.";
-
 			if (error instanceof Error) {
-				errorMessage = error.message;
-
+				const errorMessage = error.message;
 				// Handle specific error types
-				if (error.message.includes("profile image")) {
+				if (
+					errorMessage.includes("profile image") ||
+					errorMessage.includes("image") ||
+					errorMessage.includes("file")
+				) {
 					setProfileImageError(errorMessage);
+				} else if (errorMessage.includes("name")) {
+					setError(errorMessage);
 				} else {
 					setError(errorMessage);
 				}
 			} else {
-				setError(errorMessage);
+				setError("Failed to save changes. Please try again.");
 			}
 		} finally {
 			setIsLoading(false);
