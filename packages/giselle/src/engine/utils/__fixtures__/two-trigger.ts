@@ -1120,5 +1120,6 @@ export const twoTriggerFixture = {
 			y: 239.6191011184605,
 			zoom: 0.5173435218723061,
 		},
+		focusedArea: "canvas" as const,
 	},
 } satisfies Workspace;

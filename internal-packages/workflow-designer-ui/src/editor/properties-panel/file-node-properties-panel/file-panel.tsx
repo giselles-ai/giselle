@@ -233,8 +233,6 @@ export function FilePanel({ node, config }: FilePanelProps) {
 		// Only add paste listener for image file nodes
 		if (node.content.category === "image" && panelRef.current) {
 			const panelEl = panelRef.current;
-			// Focus the panel when it's mounted to enable paste without clicking
-			panelEl.focus();
 			panelEl.addEventListener("paste", handlePaste);
 			return () => {
 				panelEl.removeEventListener("paste", handlePaste);
@@ -307,7 +305,8 @@ export function FilePanel({ node, config }: FilePanelProps) {
 										<p>Drop {config.label} files here to upload.</p>
 										{node.content.category === "image" && (
 											<p className="text-[12px] text-black-400">
-												You can also paste images from clipboard (Ctrl/Cmd + V)
+												Click here and paste images from clipboard (Ctrl/Cmd +
+												V)
 											</p>
 										)}
 										<div className="flex gap-[8px] justify-center items-center">

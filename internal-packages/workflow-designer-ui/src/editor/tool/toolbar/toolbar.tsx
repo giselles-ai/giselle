@@ -411,7 +411,7 @@ export function Toolbar() {
 						data-tool
 						className="relative"
 					>
-						<Tooltip text={<TooltipAndHotkey text="Generation" hotkey="G" />}>
+						<Tooltip text={<TooltipAndHotkey text="Generation" hotkey="g" />}>
 							<SparklesIcon data-icon />
 						</Tooltip>
 						{selectedTool?.action === "selectLanguageModel" && (

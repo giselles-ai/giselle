@@ -3,6 +3,7 @@ import {
 	type ConnectionId,
 	type FileData,
 	type FileNode,
+	type FocusedArea,
 	type Node,
 	type NodeBase,
 	NodeId,
@@ -26,6 +27,10 @@ export type WorkspaceAction =
 			save?: boolean;
 	  }
 	| { type: "SET_UI_VIEWPORT"; viewport: Viewport }
+	| {
+			type: "SET_UI_FOCUSED_AREA";
+			area: FocusedArea;
+	  }
 	| { type: "UPDATE_WORKSPACE_NAME"; name: string | undefined }
 	| {
 			type: "UPDATE_NODE_CONTENT";
@@ -95,6 +100,9 @@ function workspaceReducer(
 		}
 		case "SET_UI_VIEWPORT": {
 			return { ...state, ui: { ...state.ui, viewport: action.viewport } };
+		}
+		case "SET_UI_FOCUSED_AREA": {
+			return { ...state, ui: { ...state.ui, focusedArea: action.area } };
 		}
 		case "UPDATE_WORKSPACE_NAME": {
 			return { ...state, name: action.name };
