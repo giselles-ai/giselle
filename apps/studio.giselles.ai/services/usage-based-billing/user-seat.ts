@@ -35,7 +35,6 @@ export async function reportUserSeatUsage(
 		createdAt: new Date(stripeEvent.timestamp),
 		userDbIdList: teamMembers,
 		value: currentMemberCount,
-		isDelta: false, // Always false with "last" aggregation
 	});
 }
 
@@ -62,7 +61,6 @@ async function saveUserSeatUsage(params: {
 	createdAt: Date;
 	userDbIdList: number[];
 	value: number;
-	isDelta: boolean;
 }) {
 	await db.insert(userSeatUsageReports).values(params);
 }
