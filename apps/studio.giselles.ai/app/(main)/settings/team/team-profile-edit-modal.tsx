@@ -152,6 +152,7 @@ export function TeamProfileEditModal({
 
 			// Update team name if changed
 			if (teamName !== initialTeamName) {
+				console.log("Updating team name to:", teamName);
 				const formData = new FormData();
 				formData.append("name", teamName);
 				promises.push(updateTeamName(teamId, formData));
@@ -159,6 +160,11 @@ export function TeamProfileEditModal({
 
 			// Update profile image if changed
 			if (selectedProfileImageFile) {
+				console.log("Updating profile image:", {
+					fileName: selectedProfileImageFile.name,
+					fileSize: selectedProfileImageFile.size,
+					fileType: selectedProfileImageFile.type,
+				});
 				const formData = new FormData();
 				formData.append(
 					"profileImage",
@@ -172,9 +178,17 @@ export function TeamProfileEditModal({
 			const results = await Promise.all(promises);
 
 			// Check if any updates failed
-			const failedUpdate = results.find((result) => !result.success);
+			const failedUpdate = results.find(
+				(result: { success: boolean; error?: unknown }) => !result.success,
+			);
 			if (failedUpdate) {
-				throw new Error("Failed to update team profile");
+				console.error("Failed update details:", failedUpdate);
+				const errorMessage = failedUpdate.error
+					? typeof failedUpdate.error === "string"
+						? failedUpdate.error
+						: "Update failed with unknown error"
+					: "Failed to update team profile";
+				throw new Error(errorMessage);
 			}
 
 			// Call success callback if provided
@@ -186,10 +200,21 @@ export function TeamProfileEditModal({
 			onClose();
 		} catch (error) {
 			console.error("Failed to save team profile changes:", error);
+
+			// More specific error handling
+			let errorMessage = "Failed to save changes.";
+
 			if (error instanceof Error) {
-				setError(error.message);
+				errorMessage = error.message;
+
+				// Handle specific error types
+				if (error.message.includes("profile image")) {
+					setProfileImageError(errorMessage);
+				} else {
+					setError(errorMessage);
+				}
 			} else {
-				setError("Failed to save changes.");
+				setError(errorMessage);
 			}
 		} finally {
 			setIsLoading(false);

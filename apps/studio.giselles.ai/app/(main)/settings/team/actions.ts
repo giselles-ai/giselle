@@ -1,6 +1,7 @@
 "use server";
 
 import * as Sentry from "@sentry/nextjs";
+import { put } from "@vercel/blob";
 import { and, asc, count, desc, eq, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -18,6 +19,7 @@ import {
 } from "@/drizzle";
 import { updateGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
+
 import { fetchCurrentUser } from "@/services/accounts";
 import { stripe } from "@/services/external/stripe";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
@@ -83,56 +85,132 @@ export async function updateTeamProfileImage(
 	teamId: TeamId,
 	formData: FormData,
 ) {
-	const profileImage = formData.get("profileImage") as File;
-	const user = await getUser();
-
-	if (!profileImage) {
-		return { success: false, error: "No profile image provided" };
-	}
-
 	try {
-		// Upload the image to your storage service (adjust this based on your upload service)
-		// For now, we'll just store the filename - you'll need to implement actual file upload
-		const filename = `team_${teamId}_${Date.now()}_${profileImage.name}`;
+		const profileImage = formData.get("profileImage") as File;
+		const user = await getUser();
 
-		// TODO: Implement actual file upload to your storage service
-		// const uploadedUrl = await uploadFile(profileImage, filename);
+		// Validate input
+		if (!profileImage) {
+			console.error(
+				"No profile image provided. Form data:",
+				Array.from(formData.entries()),
+			);
+			return { success: false, error: "No profile image provided" };
+		}
 
-		// For now, we'll use a placeholder URL - replace this with actual upload logic
-		const profileImageUrl = `/uploads/teams/${filename}`;
+		if (!teamId) {
+			console.error("No team ID provided");
+			return { success: false, error: "Team ID is required" };
+		}
 
-		await db.transaction(async (tx) => {
-			const team = await tx
-				.select({ dbId: teams.dbId })
-				.from(teams)
-				.for("update")
-				.innerJoin(teamMemberships, eq(teams.dbId, teamMemberships.teamDbId))
-				.innerJoin(
-					supabaseUserMappings,
-					eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
-				)
-				.where(
-					and(
-						eq(supabaseUserMappings.supabaseUserId, user.id),
-						eq(teams.id, teamId),
-					),
-				);
+		// Validate file type and size
+		const maxSize = 1 * 1024 * 1024; // 1MB
+		const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
-			if (team.length === 0) {
-				throw new Error("Team not found");
-			}
+		if (!allowedTypes.includes(profileImage.type)) {
+			return {
+				success: false,
+				error:
+					"Invalid file type. Please upload a JPG, PNG, GIF, or WebP image.",
+			};
+		}
 
-			await tx
-				.update(teams)
-				.set({ profileImageUrl })
-				.where(eq(teams.dbId, team[0].dbId));
+		if (profileImage.size > maxSize) {
+			return {
+				success: false,
+				error: "File size too large. Please upload an image under 1MB.",
+			};
+		}
+
+		console.log("Attempting to upload profile image:", {
+			teamId,
+			name: profileImage.name,
+			size: profileImage.size,
+			type: profileImage.type,
 		});
 
-		revalidatePath("/settings/team");
-		return { success: true };
+		// Upload image to Vercel Blob
+		let profileImageUrl: string;
+		try {
+			const filename = `team_${teamId}_${Date.now()}_${profileImage.name}`;
+			const blob = await put(filename, profileImage, {
+				access: "public",
+				addRandomSuffix: false,
+			});
+			profileImageUrl = blob.url;
+			console.log("Image uploaded successfully:", profileImageUrl);
+		} catch (uploadError) {
+			console.error("Failed to upload image to Vercel Blob:", uploadError);
+			return {
+				success: false,
+				error: "Failed to upload image. Please try again.",
+			};
+		}
+
+		// Update database
+		try {
+			await db.transaction(async (tx) => {
+				const team = await tx
+					.select({ dbId: teams.dbId })
+					.from(teams)
+					.for("update")
+					.innerJoin(teamMemberships, eq(teams.dbId, teamMemberships.teamDbId))
+					.innerJoin(
+						supabaseUserMappings,
+						eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
+					)
+					.where(
+						and(
+							eq(supabaseUserMappings.supabaseUserId, user.id),
+							eq(teams.id, teamId),
+						),
+					);
+
+				if (team.length === 0) {
+					throw new Error(
+						"Team not found or you don't have permission to modify it",
+					);
+				}
+
+				await tx
+					.update(teams)
+					.set({ profileImageUrl })
+					.where(eq(teams.dbId, team[0].dbId));
+			});
+
+			revalidatePath("/settings/team");
+			console.log("Team profile image updated successfully for team:", teamId);
+			return { success: true };
+		} catch (dbError) {
+			console.error("Failed to update team profile image in DB:", dbError);
+
+			// More specific database error handling
+			if (dbError instanceof Error) {
+				if (dbError.message.includes("not found")) {
+					return {
+						success: false,
+						error: "Team not found or you don't have permission to modify it",
+					};
+				}
+				if (dbError.message.includes("permission")) {
+					return {
+						success: false,
+						error: "You don't have permission to update this team",
+					};
+				}
+			}
+
+			return {
+				success: false,
+				error: "Failed to save changes to database. Please try again.",
+			};
+		}
 	} catch (error) {
-		console.error("Failed to update team profile image:", error);
-		return { success: false, error };
+		console.error("Unexpected error in updateTeamProfileImage:", error);
+		return {
+			success: false,
+			error: "An unexpected error occurred. Please try again.",
+		};
 	}
 }
 

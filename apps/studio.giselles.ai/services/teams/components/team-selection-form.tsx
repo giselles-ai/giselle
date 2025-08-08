@@ -89,9 +89,9 @@ export function TeamSelectionForm({
 							<SelectItem
 								key={team.id}
 								value={team.id}
-								className="p-1.5 pl-2 rounded-lg focus:bg-white/5 font-geist"
+								className="relative flex w-full cursor-default select-none items-center rounded-lg p-1.5 pl-2 pr-8 text-sm outline-hidden focus:bg-white/5 font-geist data-disabled:pointer-events-none data-disabled:opacity-50 [&>span:first-child]:absolute [&>span:first-child]:right-2 [&>span:first-child]:left-auto"
 							>
-								<div className="flex items-center gap-1.5 pr-1">
+								<div className="flex items-center gap-1.5 w-full">
 									<TeamAvatarImage
 										profileImageUrl={team.profileImageUrl}
 										teamName={team.name}
@@ -101,7 +101,7 @@ export function TeamSelectionForm({
 										alt={team.name}
 									/>
 									<span
-										className="truncate max-w-[180px] text-[14px] font-geist text-white-400"
+										className="truncate max-w-[140px] text-[14px] font-geist text-white-400 flex-1"
 										title={team.name}
 									>
 										{team.name}
