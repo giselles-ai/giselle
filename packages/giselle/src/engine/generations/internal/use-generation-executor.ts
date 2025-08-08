@@ -35,6 +35,7 @@ export async function useGenerationExecutor<T>(args: {
 	generation: QueuedGeneration;
 	telemetry?: TelemetrySettings;
 	useExperimentalStorage?: boolean;
+	signal?: AbortSignal;
 	execute: (utils: {
 		runningGeneration: RunningGeneration;
 		generationContext: GenerationContext;
@@ -46,6 +47,7 @@ export async function useGenerationExecutor<T>(args: {
 		) => Promise<string | undefined>;
 		workspaceId: WorkspaceId;
 		telemetry?: TelemetrySettings;
+		signal?: AbortSignal;
 		completeGeneration: (args: {
 			outputs: GenerationOutput[];
 			usage?: GenerationUsage;
@@ -212,6 +214,7 @@ export async function useGenerationExecutor<T>(args: {
 		generationContentResolver,
 		workspaceId,
 		telemetry: args.telemetry,
+		signal: args.signal,
 		completeGeneration,
 	});
 }

@@ -10,9 +10,11 @@ type HandlerArgs<TSchema> = TSchema extends z.ZodObject
 	? {
 			input: z.infer<TSchema>;
 			context: GiselleEngineContext;
+			signal?: AbortSignal;
 		}
 	: {
 			context: GiselleEngineContext;
+			signal?: AbortSignal;
 		};
 
 /**
@@ -22,10 +24,12 @@ type HandlerInputArgs<TSchema> = TSchema extends z.ZodObject
 	? {
 			input: TSchema;
 			context: GiselleEngineContext;
+			signal?: AbortSignal;
 		}
 	: {
 			input?: unknown;
 			context: GiselleEngineContext;
+			signal?: AbortSignal;
 		};
 
 /**
@@ -53,12 +57,14 @@ export function createHandler<
 			return await handler({
 				input: validatedInput,
 				context: args.context,
+				signal: args.signal,
 			} as HandlerArgs<TSchema>);
 		}
 
 		// Process request without input validation
 		return await handler({
 			context: args.context,
+			signal: args.signal,
 		} as HandlerArgs<TSchema>);
 	};
 }
