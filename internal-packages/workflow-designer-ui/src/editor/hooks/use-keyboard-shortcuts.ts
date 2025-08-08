@@ -20,11 +20,18 @@ const BROWSER_SHORTCUTS_TO_PREVENT = [
 	// { key: 'p', modifiers: ['meta', 'ctrl'] }, // Print
 ];
 
-export function useKeyboardShortcuts() {
+interface UseKeyboardShortcutsOptions {
+	onGenerate?: () => void;
+}
+
+export function useKeyboardShortcuts(
+	options: UseKeyboardShortcutsOptions = {},
+) {
 	const duplicateNode = useDuplicateNode();
 	const toolbar = useToolbar();
 	const { data } = useWorkflowDesigner();
 	const { copy: handleCopy, paste: handlePaste } = useCopyPasteNode();
+	const { onGenerate } = options;
 
 	// Keep track of key press state to detect keydown (not held)
 	const wasPressed = useRef<{ [key: string]: boolean }>({
@@ -37,6 +44,7 @@ export function useKeyboardShortcuts() {
 		modC: false,
 		modV: false,
 		modD: false,
+		modEnter: false,
 	});
 
 	// Use React Flow's useKeyPress hook with proper options
@@ -51,6 +59,8 @@ export function useKeyboardShortcuts() {
 
 	// Only use keyboard shortcuts when canvas is focused
 	const canUseShortcuts = data.ui.focusedArea === "canvas";
+	// Properties panel shortcuts
+	const canUsePropertiesShortcuts = data.ui.focusedArea === "properties-panel";
 
 	// For modifier key shortcuts - conditionally use them
 	const modCPressed = useKeyPress(
@@ -64,6 +74,14 @@ export function useKeyboardShortcuts() {
 	const modDPressed = useKeyPress(
 		canUseShortcuts ? ["Meta+d", "Control+d"] : null,
 		{ actInsideInputWithModifier: false },
+	);
+
+	// Generate shortcut for properties panel
+	const modEnterPressed = useKeyPress(
+		canUsePropertiesShortcuts && onGenerate
+			? ["Meta+Enter", "Control+Enter"]
+			: null,
+		{ actInsideInputWithModifier: true },
 	);
 
 	// Handle tool shortcuts
@@ -128,6 +146,19 @@ export function useKeyboardShortcuts() {
 		duplicateNode,
 		data.ui.focusedArea,
 	]);
+
+	// Handle generate shortcut for properties panel
+	useEffect(() => {
+		// Only handle shortcuts when properties panel is focused and onGenerate is provided
+		if (data.ui.focusedArea !== "properties-panel" || !onGenerate) return;
+
+		if (modEnterPressed && !wasPressed.current.modEnter) {
+			onGenerate();
+		}
+
+		// Update pressed state
+		wasPressed.current.modEnter = modEnterPressed;
+	}, [modEnterPressed, onGenerate, data.ui.focusedArea]);
 
 	// Return handler for preventing browser default shortcuts
 	const handleKeyDown = useCallback(
