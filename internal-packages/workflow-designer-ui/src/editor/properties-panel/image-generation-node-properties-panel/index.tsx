@@ -13,7 +13,7 @@ import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { NodeIcon } from "../../../icons/node";
 import { Button } from "../../../ui/button";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
-import { KeyboardShortcuts } from "../../components/keyboard-shortcuts";
+import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
@@ -43,6 +43,15 @@ export function ImageGenerationNodePropertiesPanel({
 	const { error } = useToasts();
 
 	const uiState = useMemo(() => data.ui.nodeState[node.id], [data, node.id]);
+
+	// Use keyboard shortcuts hook with generate callback
+	useKeyboardShortcuts({
+		onGenerate: () => {
+			if (!isGenerating) {
+				generateText();
+			}
+		},
+	});
 
 	const generateText = useCallback(() => {
 		if (usageLimitsReached) {
@@ -184,13 +193,6 @@ export function ImageGenerationNodePropertiesPanel({
 					</PropertiesPanelContent>
 				</Panel>
 			</PanelGroup>
-			<KeyboardShortcuts
-				generate={() => {
-					if (!isGenerating) {
-						generateText();
-					}
-				}}
-			/>
 		</PropertiesPanelRoot>
 	);
 }
