@@ -8,7 +8,7 @@ import type {
 	GitHubPersonalAccessTokenAuth,
 } from "@giselle-sdk/github-tool";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
-import type { QueryService } from "@giselle-sdk/rag";
+import type { EmbeddingProfileId, QueryService } from "@giselle-sdk/rag";
 import type { ModelMessage } from "ai";
 import type { Storage } from "unstorage";
 import type { GiselleStorage } from "./experimental_storage";
@@ -103,6 +103,7 @@ export interface GitHubQueryContext {
 	workspaceId: WorkspaceId;
 	owner: string;
 	repo: string;
+	embeddingProfileId: EmbeddingProfileId;
 }
 
 export type GitHubVectorStoreQueryService<

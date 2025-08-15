@@ -5,12 +5,14 @@ import type { z } from "zod/v4";
 import { PoolManager } from "../../database/postgres";
 import { ensurePgVectorTypes } from "../../database/postgres/pgvector-registry";
 import type { DatabaseConfig } from "../../database/types";
-import type { EmbedderFunction } from "../../embedder";
-import { createOpenAIEmbedder } from "../../embedder";
+import type { EmbeddingProfileId } from "../../embedder/profiles";
+import {
+	createEmbedderFromProfile,
+	EMBEDDING_PROFILES,
+} from "../../embedder/profiles";
 import {
 	ConfigurationError,
 	DatabaseError,
-	EmbeddingError,
 	ValidationError,
 } from "../../errors";
 import type { RequiredColumns } from "../column-mapping";
@@ -80,7 +82,7 @@ export function createPostgresQueryService<
 >(config: {
 	database: DatabaseConfig;
 	tableName: string;
-	embedder?: EmbedderFunction;
+	contextToEmbeddingProfileId: (context: TContext) => EmbeddingProfileId;
 	requiredColumnOverrides?: Partial<RequiredColumns>;
 	metadataColumnOverrides?: Partial<Record<keyof z.infer<TSchema>, string>>;
 	contextToFilter: (
@@ -116,37 +118,42 @@ export function createPostgresQueryService<
 		}
 
 		try {
-			// Use provided embedder or fall back to default OpenAI text-embedding-3-small
-			const embedder =
-				config.embedder ||
-				(() => {
-					const apiKey = process.env.OPENAI_API_KEY;
-					if (!apiKey) {
-						throw new ConfigurationError(
-							"OPENAI_API_KEY environment variable is required when no embedder is provided",
-						);
-					}
-					return createOpenAIEmbedder({
-						model: "text-embedding-3-small",
-						apiKey,
-						telemetry,
-					});
-				})();
-			const queryEmbedding = await embedder.embed(query);
-			const filters = await config.contextToFilter(context);
+			const profileId = config.contextToEmbeddingProfileId(context);
+			const profile = EMBEDDING_PROFILES[profileId];
+			if (!profile) {
+				throw new ConfigurationError(
+					`Invalid embedding profile ID: ${profileId}. Valid IDs are: ${Object.keys(EMBEDDING_PROFILES).join(", ")}`,
+				);
+			}
 
-			// Add hardcoded embedding profile filters for index usage
-			const enrichedFilters = {
-				...filters,
-				embedding_profile_id: 1,
-				embedding_dimensions: 1536,
+			const apiKey =
+				process.env[
+					profile.provider === "openai" ? "OPENAI_API_KEY" : "GOOGLE_API_KEY"
+				];
+			if (!apiKey) {
+				throw new ConfigurationError(
+					`No API key found for embedding profile ${profileId}`,
+				);
+			}
+
+			const embedder = createEmbedderFromProfile(profileId, apiKey, {
+				telemetry,
+			});
+			const queryEmbedding = await embedder.embed(query);
+
+			const baseFilter = await config.contextToFilter(context);
+			// Enrich filter with embedding profile
+			const filters = {
+				...baseFilter,
+				embedding_profile_id: profileId,
+				embedding_dimensions: profile.dimensions,
 			};
 
 			const { sql, values } = buildSearchQuery({
 				tableName: config.tableName,
 				columnMapping,
 				queryEmbedding,
-				filters: enrichedFilters,
+				filters,
 				limit,
 				similarityThreshold,
 			});
@@ -163,7 +170,7 @@ export function createPostgresQueryService<
 
 			return mappedResults;
 		} catch (error) {
-			if (error instanceof EmbeddingError || error instanceof ValidationError) {
+			if (error instanceof ValidationError) {
 				throw error;
 			}
 			throw DatabaseError.queryFailed(

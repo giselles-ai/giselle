@@ -2,6 +2,7 @@ import {
 	createGitHubPullRequestsLoader,
 	type GitHubAuthConfig,
 } from "@giselle-sdk/github-tool";
+import type { EmbeddingProfileId } from "@giselle-sdk/rag";
 import { createPipeline } from "@giselle-sdk/rag";
 import type { TelemetrySettings } from "ai";
 import { and, eq } from "drizzle-orm";
@@ -21,6 +22,7 @@ export async function ingestGitHubPullRequests(params: {
 	githubAuthConfig: GitHubAuthConfig;
 	source: { owner: string; repo: string };
 	teamDbId: number;
+	embeddingProfileId: EmbeddingProfileId;
 	telemetry?: TelemetrySettings;
 }): Promise<void> {
 	const { repositoryIndexDbId } = await getRepositoryIndexInfo(
@@ -31,7 +33,10 @@ export async function ingestGitHubPullRequests(params: {
 		params.source,
 		params.githubAuthConfig,
 	);
-	const chunkStore = createGitHubPullRequestChunkStore(repositoryIndexDbId);
+	const chunkStore = createGitHubPullRequestChunkStore(
+		repositoryIndexDbId,
+		params.embeddingProfileId,
+	);
 
 	const ingest = createPipeline({
 		documentLoader,
@@ -49,6 +54,7 @@ export async function ingestGitHubPullRequests(params: {
 			mergedAt: new Date(metadata.mergedAt),
 			prNumber: metadata.prNumber,
 		}),
+		embeddingProfileId: params.embeddingProfileId,
 		telemetry: params.telemetry,
 	});
 

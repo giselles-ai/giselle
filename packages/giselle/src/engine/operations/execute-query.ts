@@ -9,6 +9,7 @@ import {
 	type VectorStoreNode,
 	type WorkspaceId,
 } from "@giselle-sdk/data-type";
+import type { EmbeddingProfileId } from "@giselle-sdk/rag";
 import {
 	isJsonContent,
 	jsonContentToText,
@@ -314,6 +315,7 @@ async function queryVectorStore(
 							workspaceId,
 							owner,
 							repo,
+							embeddingProfileId: 1 as EmbeddingProfileId, // TODO: Get from VectorStoreNode when UI is implemented
 						};
 
 						if (contentType === "pull_request") {

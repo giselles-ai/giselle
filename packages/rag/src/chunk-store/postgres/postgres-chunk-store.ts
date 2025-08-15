@@ -2,6 +2,7 @@ import type { z } from "zod/v4";
 import { PoolManager } from "../../database/postgres";
 import { ensurePgVectorTypes } from "../../database/postgres/pgvector-registry";
 import type { DatabaseConfig } from "../../database/types";
+import { EMBEDDING_PROFILES } from "../../embedder/profiles";
 import {
 	ConfigurationError,
 	DatabaseError,
@@ -28,6 +29,7 @@ export function createPostgresChunkStore<
 	tableName: string;
 	metadataSchema: TSchema;
 	scope: Record<string, unknown>;
+	embeddingProfileId: number;
 	requiredColumnOverrides?: Partial<RequiredColumns>;
 	metadataColumnOverrides?: Partial<Record<keyof z.infer<TSchema>, string>>;
 }): ChunkStore<z.infer<TSchema>> {
@@ -36,6 +38,7 @@ export function createPostgresChunkStore<
 		tableName,
 		metadataSchema,
 		scope,
+		embeddingProfileId,
 		requiredColumnOverrides,
 		metadataColumnOverrides,
 	} = config;
@@ -46,11 +49,23 @@ export function createPostgresChunkStore<
 		metadataColumnOverrides,
 	});
 
-	// Hardcoded embedding profile for now (OpenAI text-embedding-3-small)
+	// Validate and enrich scope with embedding profile info
+	const profile =
+		EMBEDDING_PROFILES[embeddingProfileId as keyof typeof EMBEDDING_PROFILES];
+	if (!profile) {
+		throw new ConfigurationError(
+			`Invalid embedding profile ID: ${embeddingProfileId}. Valid IDs are: ${Object.keys(EMBEDDING_PROFILES).join(", ")}`,
+		);
+	}
+	if (!profile.dimensions) {
+		throw new ConfigurationError(
+			`Embedding profile ${embeddingProfileId} is missing dimensions`,
+		);
+	}
 	const enrichedScope = {
 		...scope,
-		embedding_profile_id: 1,
-		embedding_dimensions: 1536,
+		embedding_profile_id: embeddingProfileId,
+		embedding_dimensions: profile.dimensions,
 	};
 
 	/**

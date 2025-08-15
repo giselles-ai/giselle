@@ -3,7 +3,11 @@ import type { ChunkStore } from "../chunk-store/types";
 import { createDefaultChunker } from "../chunker";
 import type { ChunkerFunction } from "../chunker/types";
 import type { Document, DocumentLoader } from "../document-loader/types";
-import { createOpenAIEmbedder } from "../embedder";
+import type { EmbeddingProfileId } from "../embedder/profiles";
+import {
+	createEmbedderFromProfile,
+	EMBEDDING_PROFILES,
+} from "../embedder/profiles";
 import type { EmbedderFunction } from "../embedder/types";
 import { ConfigurationError, OperationError } from "../errors";
 import { embedContent } from "./embedder";
@@ -27,7 +31,7 @@ export interface IngestPipelineOptions<
 
 	// Optional processors
 	chunker?: ChunkerFunction;
-	embedder?: EmbedderFunction;
+	embeddingProfileId: EmbeddingProfileId;
 
 	// Optional settings
 	maxBatchSize?: number;
@@ -64,7 +68,6 @@ export function createPipeline<
 		documentVersion,
 		metadataTransform,
 		chunker = createDefaultChunker(),
-		embedder,
 		maxBatchSize = DEFAULT_MAX_BATCH_SIZE,
 		maxRetries = DEFAULT_MAX_RETRIES,
 		retryDelay = DEFAULT_RETRY_DELAY,
@@ -74,22 +77,28 @@ export function createPipeline<
 		telemetry,
 	} = options;
 
-	// Use provided embedder or fall back to default OpenAI text-embedding-3-small
-	const resolvedEmbedder =
-		embedder ||
-		(() => {
-			const apiKey = process.env.OPENAI_API_KEY;
-			if (!apiKey) {
-				throw new ConfigurationError(
-					"OPENAI_API_KEY environment variable is required when no embedder is provided",
-				);
-			}
-			return createOpenAIEmbedder({
-				model: "text-embedding-3-small",
-				apiKey,
-				telemetry,
-			});
-		})();
+	const profile = EMBEDDING_PROFILES[options.embeddingProfileId];
+	if (!profile) {
+		throw new ConfigurationError(
+			`Invalid embedding profile ID: ${options.embeddingProfileId}`,
+		);
+	}
+
+	const apiKey =
+		process.env[
+			profile.provider === "openai" ? "OPENAI_API_KEY" : "GOOGLE_API_KEY"
+		];
+	if (!apiKey) {
+		throw new ConfigurationError(
+			`No API key found for embedding profile ${options.embeddingProfileId}`,
+		);
+	}
+
+	const resolvedEmbedder = createEmbedderFromProfile(
+		options.embeddingProfileId,
+		apiKey,
+		{ telemetry },
+	);
 
 	/**
 	 * Process a single document

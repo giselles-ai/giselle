@@ -10,6 +10,7 @@ import {
 	type githubRepositoryIndex,
 	githubRepositoryPullRequestEmbeddings,
 } from "@/drizzle";
+import { getEnabledEmbeddingProfiles } from "../embedding-profiles";
 import type { RepositoryWithStatuses } from "../types";
 import { createBlobMetadata, createPullRequestMetadata } from "../types";
 import { ingestGitHubBlobs } from "./blobs/ingest-github-blobs";
@@ -33,16 +34,20 @@ const CONTENT_PROCESSORS: Record<
 	ContentProcessor
 > = {
 	blob: async ({ repositoryIndex, telemetry }) => {
-		const { owner, repo, installationId, teamDbId } = repositoryIndex;
+		const { owner, repo, installationId, teamDbId, dbId } = repositoryIndex;
 		const octokit = buildOctokit(installationId);
 		const commit = await fetchDefaultBranchHead(octokit, owner, repo);
 
-		await ingestGitHubBlobs({
-			octokitClient: octokit,
-			source: { owner, repo, commitSha: commit.sha },
-			teamDbId,
-			telemetry,
-		});
+		const enabledEmbeddingProfiles = await getEnabledEmbeddingProfiles(dbId);
+		for (const profileId of enabledEmbeddingProfiles) {
+			await ingestGitHubBlobs({
+				octokitClient: octokit,
+				source: { owner, repo, commitSha: commit.sha },
+				teamDbId,
+				embeddingProfileId: profileId,
+				telemetry,
+			});
+		}
 
 		return {
 			metadata: createBlobMetadata({ lastIngestedCommitSha: commit.sha }),
@@ -52,12 +57,16 @@ const CONTENT_PROCESSORS: Record<
 	pull_request: async ({ repositoryIndex, telemetry }) => {
 		const { owner, repo, installationId, teamDbId, dbId } = repositoryIndex;
 
-		await ingestGitHubPullRequests({
-			githubAuthConfig: buildGitHubAuthConfig(installationId),
-			source: { owner, repo },
-			teamDbId,
-			telemetry,
-		});
+		const enabledEmbeddingProfiles = await getEnabledEmbeddingProfiles(dbId);
+		for (const profileId of enabledEmbeddingProfiles) {
+			await ingestGitHubPullRequests({
+				githubAuthConfig: buildGitHubAuthConfig(installationId),
+				source: { owner, repo },
+				teamDbId,
+				embeddingProfileId: profileId,
+				telemetry,
+			});
+		}
 
 		const lastPrNumber = await getLastIngestedPrNumber(dbId);
 		return {

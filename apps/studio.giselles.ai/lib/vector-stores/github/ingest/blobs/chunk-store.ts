@@ -1,3 +1,4 @@
+import type { EmbeddingProfileId } from "@giselle-sdk/rag";
 import { createPostgresChunkStore } from "@giselle-sdk/rag";
 import { getTableName } from "drizzle-orm";
 import z from "zod/v4";
@@ -7,7 +8,10 @@ import { createDatabaseConfig } from "../../database";
 /**
  * GitHub Blob chunk store factory - for ingestion pipeline
  */
-export function createGitHubBlobChunkStore(repositoryIndexDbId: number) {
+export function createGitHubBlobChunkStore(
+	repositoryIndexDbId: number,
+	embeddingProfileId: EmbeddingProfileId,
+) {
 	return createPostgresChunkStore({
 		database: createDatabaseConfig(),
 		tableName: getTableName(githubRepositoryEmbeddings),
@@ -19,6 +23,7 @@ export function createGitHubBlobChunkStore(repositoryIndexDbId: number) {
 		scope: {
 			repository_index_db_id: repositoryIndexDbId,
 		},
+		embeddingProfileId,
 		requiredColumnOverrides: {
 			documentKey: githubRepositoryEmbeddings.path.name,
 			version: githubRepositoryEmbeddings.fileSha.name,
