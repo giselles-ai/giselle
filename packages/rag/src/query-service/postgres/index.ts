@@ -135,11 +135,18 @@ export function createPostgresQueryService<
 			const queryEmbedding = await embedder.embed(query);
 			const filters = await config.contextToFilter(context);
 
+			// Add hardcoded embedding profile filters for index usage
+			const enrichedFilters = {
+				...filters,
+				embedding_profile_id: 1,
+				embedding_dimensions: 1536,
+			};
+
 			const { sql, values } = buildSearchQuery({
 				tableName: config.tableName,
 				columnMapping,
 				queryEmbedding,
-				filters,
+				filters: enrichedFilters,
 				limit,
 				similarityThreshold,
 			});

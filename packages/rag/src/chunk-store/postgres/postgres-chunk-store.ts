@@ -46,6 +46,13 @@ export function createPostgresChunkStore<
 		metadataColumnOverrides,
 	});
 
+	// Hardcoded embedding profile for now (OpenAI text-embedding-3-small)
+	const enrichedScope = {
+		...scope,
+		embedding_profile_id: 1,
+		embedding_dimensions: 1536,
+	};
+
 	/**
 	 * Insert chunks with metadata
 	 */
@@ -80,7 +87,7 @@ export function createPostgresChunkStore<
 				tableName,
 				documentKey,
 				columnMapping.documentKey,
-				scope,
+				enrichedScope,
 			);
 
 			const records = prepareChunkRecords(
@@ -88,7 +95,7 @@ export function createPostgresChunkStore<
 				chunks,
 				metadata,
 				columnMapping,
-				scope,
+				enrichedScope,
 			);
 			await insertChunkRecords(client, tableName, records);
 
@@ -124,7 +131,7 @@ export function createPostgresChunkStore<
 				tableName,
 				documentKey,
 				columnMapping.documentKey,
-				scope,
+				enrichedScope,
 			);
 		} catch (error) {
 			throw DatabaseError.queryFailed(
@@ -160,7 +167,7 @@ export function createPostgresChunkStore<
 				tableName,
 				documentKeys,
 				columnMapping.documentKey,
-				scope,
+				enrichedScope,
 			);
 		} catch (error) {
 			throw DatabaseError.queryFailed(
@@ -204,7 +211,7 @@ export function createPostgresChunkStore<
 				tableName,
 				columnMapping.documentKey,
 				columnMapping.version,
-				scope,
+				enrichedScope,
 			);
 		} catch (error) {
 			throw DatabaseError.queryFailed(
