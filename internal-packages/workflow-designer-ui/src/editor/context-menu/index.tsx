@@ -3,7 +3,7 @@ import { PopoverContent } from "@giselle-internal/ui/popover";
 import { useToasts } from "@giselle-internal/ui/toast";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
 import { useCallback } from "react";
-import { useDuplicateNode } from "../node";
+import { useNodeManipulation } from "../node";
 import type { ContextMenuProps } from "./types";
 
 export function ContextMenu({
@@ -14,7 +14,7 @@ export function ContextMenu({
 	bottom,
 	onClose,
 }: ContextMenuProps) {
-	const duplicateNode = useDuplicateNode();
+	const { duplicate: duplicateNode } = useNodeManipulation();
 	const { deleteNode } = useWorkflowDesigner();
 	const toast = useToasts();
 

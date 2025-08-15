@@ -490,5 +490,6 @@ export const gourpNodesFixture: Workspace = {
 			"nd-w0tHiwkN3n2ZIP2v": { position: { x: 911, y: 396 } },
 		},
 		viewport: { x: 147, y: -69.5, zoom: 1 },
+		focusedArea: "canvas" as const,
 	},
 };

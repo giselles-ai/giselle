@@ -6,8 +6,10 @@ import {
 	createUploadedFileData,
 	createUploadingFileData,
 	type FileNode,
+	type FocusedArea,
 	type Node,
 	NodeId,
+	type NodeLike,
 	type NodeUIState,
 	type UploadedFileData,
 	type Viewport,
@@ -66,6 +68,7 @@ export function WorkflowDesignerProvider({
 	);
 	const [isLoading, setIsLoading] = useState(true);
 	const [llmProviders, setLLMProviders] = useState<LanguageModelProvider[]>([]);
+	const [copiedNode, setCopiedNode] = useState<NodeLike | null>(null);
 
 	const addNode = useAddNode(dispatch);
 	const addConnection = useAddConnection(dispatch);
@@ -99,6 +102,13 @@ export function WorkflowDesignerProvider({
 	const setUiViewport = useCallback(
 		(viewport: Viewport) => {
 			dispatch({ type: "SET_UI_VIEWPORT", viewport });
+		},
+		[dispatch],
+	);
+
+	const setUiFocusedArea = useCallback(
+		(area: FocusedArea) => {
+			dispatch({ type: "SET_UI_FOCUSED_AREA", area });
 		},
 		[dispatch],
 	);
@@ -232,6 +242,9 @@ export function WorkflowDesignerProvider({
 				setUiViewport,
 				updateName,
 				isSupportedConnection: isSupportedConnectionCb,
+				setUiFocusedArea,
+				copiedNode,
+				setCopiedNode,
 				...propertiesPanelHelper,
 			}}
 		>

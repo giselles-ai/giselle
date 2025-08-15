@@ -23,7 +23,7 @@ import { VectorStoreNodePropertiesPanel } from "./vector-store";
 import { WebPageNodePropertiesPanel } from "./web-page-node-properties-panel";
 
 export function PropertiesPanel() {
-	const { data } = useWorkflowDesigner();
+	const { data, setUiFocusedArea } = useWorkflowDesigner();
 	const selectedNodes = useMemo(
 		() =>
 			Object.entries(data.ui.nodeState)
@@ -33,7 +33,17 @@ export function PropertiesPanel() {
 		[data.ui, data.nodes],
 	);
 	return (
-		<div className={clsx("h-full text-white-900")}>
+		<section
+			className={clsx("h-full text-white-900")}
+			aria-label="Properties Panel"
+			onFocus={() => setUiFocusedArea("properties-panel")}
+			onBlur={(e) => {
+				if (!e.currentTarget.contains(e.relatedTarget)) {
+					setUiFocusedArea("canvas");
+				}
+			}}
+			tabIndex={-1}
+		>
 			{isTextGenerationNode(selectedNodes[0]) && (
 				<TextGenerationNodePropertiesPanel
 					node={selectedNodes[0]}
@@ -88,6 +98,6 @@ export function PropertiesPanel() {
 					key={selectedNodes[0].id}
 				/>
 			)}
-		</div>
+		</section>
 	);
 }

@@ -1,6 +1,7 @@
 import type {
 	ConnectionId,
 	FileNode,
+	FocusedArea,
 	InputId,
 	Node,
 	NodeBase,
@@ -59,4 +60,7 @@ export interface WorkflowDesignerContextValue {
 		outputNode: NodeLike,
 		inputNode: NodeLike,
 	) => { canConnect: boolean; message?: string };
+	setUiFocusedArea: (area: FocusedArea) => void;
+	copiedNode: NodeLike | null;
+	setCopiedNode: (node: NodeLike | null) => void;
 }

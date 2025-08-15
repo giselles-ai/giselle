@@ -364,5 +364,6 @@ export const backwardTraversalFixture = {
 			y: -5.057234271750758,
 			zoom: 1.011139282536896,
 		},
+		focusedArea: "canvas" as const,
 	},
 } satisfies Workspace;
