@@ -1,5 +1,6 @@
 "use server";
 
+import { isEmbeddingProfileId } from "@giselle-sdk/data-type";
 import { createId } from "@paralleldrive/cuid2";
 import { and, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -34,6 +35,7 @@ export async function registerRepositoryIndex(
 		contentType: GitHubRepositoryContentType;
 		enabled: boolean;
 	}[],
+	embeddingProfileIds?: number[],
 ): Promise<ActionResult> {
 	try {
 		const team = await fetchCurrentTeam();
@@ -140,12 +142,18 @@ export async function registerRepositoryIndex(
 			});
 		}
 
-		// Add default embedding profile (ID: 1)
-		// FIXME: receive user input when implementing UI.
-		await db.insert(githubRepositoryEmbeddingProfiles).values({
-			repositoryIndexDbId: newRepository.dbId,
-			embeddingProfileId: 1,
-		});
+		// Create embedding profile records
+		const profilesToCreate = embeddingProfileIds || [1]; // Default to profile 1 if not specified
+		for (const profileId of profilesToCreate) {
+			if (!isEmbeddingProfileId(profileId)) {
+				continue; // Skip invalid profile IDs
+			}
+			await db.insert(githubRepositoryEmbeddingProfiles).values({
+				repositoryIndexDbId: newRepository.dbId,
+				embeddingProfileId: profileId,
+				createdAt: new Date(),
+			});
+		}
 
 		revalidatePath("/settings/team/vector-stores");
 		return { success: true };
@@ -494,6 +502,73 @@ export async function updateRepositoryContentTypes(
 		return {
 			success: false,
 			error: "Failed to update content types",
+		};
+	}
+}
+
+export async function updateRepositoryEmbeddingProfiles(
+	repositoryIndexId: GitHubRepositoryIndexId,
+	embeddingProfileIds: number[],
+): Promise<ActionResult> {
+	try {
+		// Validate at least one profile is selected
+		if (embeddingProfileIds.length === 0) {
+			return {
+				success: false,
+				error: "At least one embedding profile must be selected",
+			};
+		}
+
+		const team = await fetchCurrentTeam();
+
+		// Get the repository
+		const [repository] = await db
+			.select()
+			.from(githubRepositoryIndex)
+			.where(
+				and(
+					eq(githubRepositoryIndex.id, repositoryIndexId),
+					eq(githubRepositoryIndex.teamDbId, team.dbId),
+				),
+			)
+			.limit(1);
+
+		if (!repository) {
+			return {
+				success: false,
+				error: "Repository not found",
+			};
+		}
+
+		// Delete existing profiles and insert new ones (simpler than upsert)
+		await db
+			.delete(githubRepositoryEmbeddingProfiles)
+			.where(
+				eq(
+					githubRepositoryEmbeddingProfiles.repositoryIndexDbId,
+					repository.dbId,
+				),
+			);
+
+		// Insert new profiles
+		for (const profileId of embeddingProfileIds) {
+			if (!isEmbeddingProfileId(profileId)) {
+				continue; // Skip invalid profile IDs
+			}
+			await db.insert(githubRepositoryEmbeddingProfiles).values({
+				repositoryIndexDbId: repository.dbId,
+				embeddingProfileId: profileId,
+				createdAt: new Date(),
+			});
+		}
+
+		revalidatePath("/settings/team/vector-stores");
+		return { success: true };
+	} catch (error) {
+		console.error("Error updating repository embedding profiles:", error);
+		return {
+			success: false,
+			error: "An error occurred while updating embedding profiles",
 		};
 	}
 }

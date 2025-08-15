@@ -6,6 +6,7 @@ import { db, flowTriggers } from "@/drizzle";
 import {
 	experimental_storageFlag,
 	layoutV3Flag,
+	multiEmbeddingFlag,
 	runV3Flag,
 	stageFlag,
 	webSearchActionFlag,
@@ -48,6 +49,7 @@ export default async function Layout({
 	const layoutV3 = await layoutV3Flag();
 	const experimental_storage = await experimental_storageFlag();
 	const stage = await stageFlag();
+	const multiEmbedding = await multiEmbeddingFlag();
 	// return children
 	return (
 		<WorkspaceProvider
@@ -80,6 +82,7 @@ export default async function Layout({
 				layoutV3,
 				experimental_storage,
 				stage,
+				multiEmbedding,
 			}}
 			flowTrigger={{
 				callbacks: {

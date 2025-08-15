@@ -1,13 +1,15 @@
 "use client";
 
+import { EMBEDDING_PROFILES } from "@giselle-sdk/data-type";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Code, GitPullRequest } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import type {
 	GitHubRepositoryContentType,
 	githubRepositoryContentStatus,
 } from "@/drizzle";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
+import type { GitHubRepositoryIndexId } from "@/packages/types";
 import {
 	GlassDialogBody,
 	GlassDialogContent,
@@ -26,6 +28,12 @@ type ConfigureSourcesDialogProps = {
 			enabled: boolean;
 		}[],
 	) => Promise<{ success: boolean; error?: string }>;
+	updateRepositoryEmbeddingProfilesAction?: (
+		repositoryIndexId: GitHubRepositoryIndexId,
+		embeddingProfileIds: number[],
+	) => Promise<{ success: boolean; error?: string }>;
+	enabledProfiles?: number[];
+	multiEmbedding?: boolean;
 };
 
 export function ConfigureSourcesDialog({
@@ -33,6 +41,9 @@ export function ConfigureSourcesDialog({
 	setOpen,
 	repositoryData,
 	updateRepositoryContentTypesAction,
+	updateRepositoryEmbeddingProfilesAction,
+	enabledProfiles = [1],
+	multiEmbedding = false,
 }: ConfigureSourcesDialogProps) {
 	const { repositoryIndex, contentStatuses } = repositoryData;
 	const [isPending, startTransition] = useTransition();
@@ -49,9 +60,20 @@ export function ConfigureSourcesDialog({
 		pullRequests: { enabled: pullRequestStatus?.enabled ?? false },
 	});
 
+	const [selectedProfiles, setSelectedProfiles] =
+		useState<number[]>(enabledProfiles);
+
+	// Reset profiles when dialog opens
+	useEffect(() => {
+		if (open) {
+			setSelectedProfiles(enabledProfiles);
+		}
+	}, [open, enabledProfiles]);
+
 	const handleSave = () => {
 		setError("");
 		startTransition(async () => {
+			// Update content types
 			const contentTypes: {
 				contentType: GitHubRepositoryContentType;
 				enabled: boolean;
@@ -60,16 +82,32 @@ export function ConfigureSourcesDialog({
 				{ contentType: "pull_request", enabled: config.pullRequests.enabled },
 			];
 
-			const result = await updateRepositoryContentTypesAction(
+			const contentResult = await updateRepositoryContentTypesAction(
 				repositoryIndex.id,
 				contentTypes,
 			);
 
-			if (result.success) {
-				setOpen(false);
-			} else {
-				setError(result.error || "Failed to update configuration");
+			if (!contentResult.success) {
+				setError(contentResult.error || "Failed to update content types");
+				return;
 			}
+
+			// Update embedding profiles if feature flag is enabled and action is provided
+			if (multiEmbedding && updateRepositoryEmbeddingProfilesAction) {
+				const profileResult = await updateRepositoryEmbeddingProfilesAction(
+					repositoryIndex.id,
+					selectedProfiles,
+				);
+
+				if (!profileResult.success) {
+					setError(
+						profileResult.error || "Failed to update embedding profiles",
+					);
+					return;
+				}
+			}
+
+			setOpen(false);
 		});
 	};
 
@@ -110,6 +148,63 @@ export function ConfigureSourcesDialog({
 							}
 							status={pullRequestStatus}
 						/>
+
+						{/* Embedding Profiles Section - Only show when feature flag is enabled */}
+						{multiEmbedding && updateRepositoryEmbeddingProfilesAction && (
+							<div className="mt-6">
+								<h3 className="text-white-400 text-[14px] font-medium mb-3">
+									Embedding Models
+								</h3>
+								<div className="text-white-400/60 text-[12px] mb-3">
+									Select at least one embedding model for indexing
+								</div>
+								<div className="space-y-2">
+									{Object.entries(EMBEDDING_PROFILES).map(([id, profile]) => {
+										const profileId = Number(id);
+										const isSelected = selectedProfiles.includes(profileId);
+										const isLastOne =
+											selectedProfiles.length === 1 && isSelected;
+
+										return (
+											<label
+												key={profileId}
+												className="flex items-start gap-3 p-3 rounded-lg bg-black-700/50 hover:bg-black-700/70 transition-colors cursor-pointer"
+											>
+												<input
+													type="checkbox"
+													checked={isSelected}
+													disabled={isPending || isLastOne}
+													onChange={(e) => {
+														if (e.target.checked) {
+															setSelectedProfiles([
+																...selectedProfiles,
+																profileId,
+															]);
+														} else {
+															setSelectedProfiles(
+																selectedProfiles.filter(
+																	(id) => id !== profileId,
+																),
+															);
+														}
+													}}
+													className="mt-1 w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
+												/>
+												<div className="flex-1">
+													<div className="text-white-400 text-[14px] font-medium">
+														{profile.name}
+													</div>
+													<div className="text-white-400/60 text-[12px] mt-1">
+														Provider: {profile.provider} • Dimensions:{" "}
+														{profile.dimensions}
+													</div>
+												</div>
+											</label>
+										);
+									})}
+								</div>
+							</div>
+						)}
 					</div>
 
 					{error && <div className="mt-4 text-sm text-error-500">{error}</div>}

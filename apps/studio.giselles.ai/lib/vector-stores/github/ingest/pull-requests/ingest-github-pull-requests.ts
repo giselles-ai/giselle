@@ -1,8 +1,8 @@
+import type { EmbeddingProfileId } from "@giselle-sdk/data-type";
 import {
 	createGitHubPullRequestsLoader,
 	type GitHubAuthConfig,
 } from "@giselle-sdk/github-tool";
-import type { EmbeddingProfileId } from "@giselle-sdk/rag";
 import { createPipeline } from "@giselle-sdk/rag";
 import type { TelemetrySettings } from "ai";
 import { and, eq } from "drizzle-orm";

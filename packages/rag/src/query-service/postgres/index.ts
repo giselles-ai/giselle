@@ -1,3 +1,7 @@
+import {
+	EMBEDDING_PROFILES,
+	type EmbeddingProfileId,
+} from "@giselle-sdk/data-type";
 import type { TelemetrySettings } from "ai";
 import { escapeIdentifier } from "pg";
 import * as pgvector from "pgvector/pg";
@@ -5,11 +9,7 @@ import type { z } from "zod/v4";
 import { PoolManager } from "../../database/postgres";
 import { ensurePgVectorTypes } from "../../database/postgres/pgvector-registry";
 import type { DatabaseConfig } from "../../database/types";
-import type { EmbeddingProfileId } from "../../embedder/profiles";
-import {
-	createEmbedderFromProfile,
-	EMBEDDING_PROFILES,
-} from "../../embedder/profiles";
+import { createEmbedderFromProfile } from "../../embedder/profiles";
 import {
 	ConfigurationError,
 	DatabaseError,

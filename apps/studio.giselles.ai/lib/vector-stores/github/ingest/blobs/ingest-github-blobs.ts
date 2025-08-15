@@ -1,8 +1,8 @@
+import type { EmbeddingProfileId } from "@giselle-sdk/data-type";
 import {
 	createGitHubArchiveLoader,
 	createGitHubTreeLoader,
 } from "@giselle-sdk/github-tool";
-import type { EmbeddingProfileId } from "@giselle-sdk/rag";
 import { createPipeline } from "@giselle-sdk/rag";
 import type { Octokit } from "@octokit/core";
 import type { TelemetrySettings } from "ai";

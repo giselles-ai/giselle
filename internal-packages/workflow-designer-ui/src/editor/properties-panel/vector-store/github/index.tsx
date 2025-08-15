@@ -1,5 +1,7 @@
 import type { VectorStoreNode } from "@giselle-sdk/data-type";
+import { EMBEDDING_PROFILES } from "@giselle-sdk/data-type";
 import {
+	useFeatureFlag,
 	useVectorStore,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
@@ -19,14 +21,20 @@ export function GitHubVectorStoreNodePropertiesPanel({
 	const { updateNodeData } = useWorkflowDesigner();
 	const vectorStore = useVectorStore();
 	const settingPath = vectorStore?.settingPath;
+	const { multiEmbedding } = useFeatureFlag();
 
 	// Get repository indexes
 	const githubRepositoryIndexes = vectorStore?.githubRepositoryIndexes ?? [];
 
-	// Current content type from node (if configured)
+	// Current content type and profile from node (if configured)
 	const currentContentType =
 		node.content.source.state.status === "configured"
 			? node.content.source.state.contentType
+			: undefined;
+
+	const currentEmbeddingProfileId =
+		node.content.source.state.status === "configured"
+			? node.content.source.state.embeddingProfileId
 			: undefined;
 
 	const { isOrphaned, repositoryId } = useGitHubVectorStoreStatus(node);
@@ -34,6 +42,9 @@ export function GitHubVectorStoreNodePropertiesPanel({
 	const [selectedContentType, setSelectedContentType] = useState<
 		"blob" | "pull_request" | undefined
 	>(currentContentType);
+	const [selectedEmbeddingProfileId, setSelectedEmbeddingProfileId] = useState<
+		number | undefined
+	>(currentEmbeddingProfileId);
 	const dropdownRef = useRef<HTMLDivElement>(null);
 
 	// Get all unique repositories
@@ -96,6 +107,16 @@ export function GitHubVectorStoreNodePropertiesPanel({
 		if (selectedRepo) {
 			setSelectedContentType(contentType);
 
+			// Set default embedding profile
+			// When feature flag is off, always use profile 1
+			// When feature flag is on, use selected or first available profile
+			const profileId = multiEmbedding
+				? selectedEmbeddingProfileId ||
+					selectedRepo.embeddingProfileIds?.[0] ||
+					1
+				: 1;
+			setSelectedEmbeddingProfileId(profileId);
+
 			// Update output label based on content type
 			const updatedOutputs = [...node.outputs];
 			if (updatedOutputs[0]) {
@@ -116,6 +137,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 							owner: selectedRepo.owner,
 							repo: selectedRepo.repo,
 							contentType,
+							embeddingProfileId: profileId,
 						},
 					},
 				},
@@ -303,6 +325,67 @@ export function GitHubVectorStoreNodePropertiesPanel({
 						</div>
 					</div>
 				)}
+
+				{/* Embedding Profile Selection - Only show when feature flag is enabled */}
+				{multiEmbedding &&
+					selectedRepoKey &&
+					selectedContentType &&
+					(() => {
+						const selectedRepo = allRepositories.find(
+							(repo) => `${repo.owner}/${repo.repo}` === selectedRepoKey,
+						);
+						if (!selectedRepo || !selectedRepo.embeddingProfileIds?.length) {
+							return null;
+						}
+
+						return (
+							<div className="mt-[16px]">
+								<p className="text-[14px] py-[1.5px] text-white-400 mb-[8px]">
+									Embedding Model
+								</p>
+								<select
+									value={
+										selectedEmbeddingProfileId ||
+										selectedRepo.embeddingProfileIds[0]
+									}
+									onChange={(e) => {
+										const profileId = Number(e.target.value);
+										setSelectedEmbeddingProfileId(profileId);
+
+										// Update node data with selected profile
+										if (node.content.source.state.status === "configured") {
+											updateNodeData(node, {
+												content: {
+													...node.content,
+													source: {
+														...node.content.source,
+														state: {
+															...node.content.source.state,
+															embeddingProfileId: profileId,
+														},
+													},
+												},
+											});
+										}
+									}}
+									className="w-full px-3 py-2 bg-black-300/20 rounded-[8px] text-white-400 text-[14px] font-geist cursor-pointer"
+								>
+									{selectedRepo.embeddingProfileIds.map((profileId) => {
+										const profile =
+											EMBEDDING_PROFILES[
+												profileId as keyof typeof EMBEDDING_PROFILES
+											];
+										if (!profile) return null;
+										return (
+											<option key={profileId} value={profileId}>
+												{profile.name} ({profile.dimensions} dimensions)
+											</option>
+										);
+									})}
+								</select>
+							</div>
+						);
+					})()}
 
 				{settingPath && (
 					<div className="pt-[8px] flex justify-end">

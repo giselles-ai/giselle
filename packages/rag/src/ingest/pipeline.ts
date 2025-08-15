@@ -1,13 +1,13 @@
+import {
+	EMBEDDING_PROFILES,
+	type EmbeddingProfileId,
+} from "@giselle-sdk/data-type";
 import type { TelemetrySettings } from "ai";
 import type { ChunkStore } from "../chunk-store/types";
 import { createDefaultChunker } from "../chunker";
 import type { ChunkerFunction } from "../chunker/types";
 import type { Document, DocumentLoader } from "../document-loader/types";
-import type { EmbeddingProfileId } from "../embedder/profiles";
-import {
-	createEmbedderFromProfile,
-	EMBEDDING_PROFILES,
-} from "../embedder/profiles";
+import { createEmbedderFromProfile } from "../embedder/profiles";
 import type { EmbedderFunction } from "../embedder/types";
 import { ConfigurationError, OperationError } from "../errors";
 import { embedContent } from "./embedder";

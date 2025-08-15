@@ -6,9 +6,5 @@ export {
 	createOpenAIEmbedder,
 	type OpenAIEmbedderConfig,
 } from "./openai";
-export {
-	createEmbedderFromProfile,
-	EMBEDDING_PROFILES,
-	type EmbeddingProfileId,
-} from "./profiles";
+export { createEmbedderFromProfile } from "./profiles";
 export type { EmbedderFunction } from "./types";

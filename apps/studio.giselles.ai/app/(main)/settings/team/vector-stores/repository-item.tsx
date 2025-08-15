@@ -1,6 +1,7 @@
 "use client";
 
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
+import { EMBEDDING_PROFILES } from "@giselle-sdk/data-type";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
 	Code,
@@ -52,6 +53,11 @@ type RepositoryItemProps = {
 			enabled: boolean;
 		}[],
 	) => Promise<{ success: boolean; error?: string }>;
+	updateRepositoryEmbeddingProfilesAction?: (
+		repositoryIndexId: GitHubRepositoryIndexId,
+		embeddingProfileIds: number[],
+	) => Promise<{ success: boolean; error?: string }>;
+	multiEmbedding?: boolean;
 };
 
 export function RepositoryItem({
@@ -59,8 +65,14 @@ export function RepositoryItem({
 	deleteRepositoryIndexAction,
 	triggerManualIngestAction,
 	updateRepositoryContentTypesAction,
+	updateRepositoryEmbeddingProfilesAction,
+	multiEmbedding = false,
 }: RepositoryItemProps) {
-	const { repositoryIndex, contentStatuses } = repositoryData;
+	const {
+		repositoryIndex,
+		contentStatuses,
+		embeddingProfileIds = [],
+	} = repositoryData;
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [showConfigureDialog, setShowConfigureDialog] = useState(false);
 	const [showDiagnosticModal, setShowDiagnosticModal] = useState(false);
@@ -182,6 +194,30 @@ export function RepositoryItem({
 					</div>
 				</div>
 
+				{/* Embedding Profiles Info - Only show when feature flag is enabled */}
+				{multiEmbedding && embeddingProfileIds.length > 0 && (
+					<div className="mt-3 flex items-center gap-2 flex-wrap">
+						<span className="text-[12px] text-white-400/60">Models:</span>
+						{embeddingProfileIds.map((profileId) => {
+							const profile =
+								EMBEDDING_PROFILES[
+									profileId as keyof typeof EMBEDDING_PROFILES
+								];
+							if (!profile) return null;
+							return (
+								<span
+									key={profileId}
+									className="px-2 py-1 bg-white/5 rounded-md text-[11px] text-white-400"
+								>
+									{profile.provider === "openai" && "OpenAI"}
+									{profile.provider === "google" && "Google"}{" "}
+									{profile.dimensions}D
+								</span>
+							);
+						})}
+					</div>
+				)}
+
 				{/* Divider below repository name */}
 				<div className="border-t border-white/10 my-3"></div>
 
@@ -236,6 +272,11 @@ export function RepositoryItem({
 				setOpen={setShowConfigureDialog}
 				repositoryData={repositoryData}
 				updateRepositoryContentTypesAction={updateRepositoryContentTypesAction}
+				updateRepositoryEmbeddingProfilesAction={
+					updateRepositoryEmbeddingProfilesAction
+				}
+				enabledProfiles={embeddingProfileIds}
+				multiEmbedding={multiEmbedding}
 			/>
 
 			<DiagnosticModal

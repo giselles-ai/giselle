@@ -1,4 +1,4 @@
-import type { EmbeddingProfileId } from "@giselle-sdk/rag";
+import type { EmbeddingProfileId } from "@giselle-sdk/data-type";
 import { eq } from "drizzle-orm";
 import { db, githubRepositoryEmbeddingProfiles } from "@/drizzle";
 

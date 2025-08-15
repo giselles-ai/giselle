@@ -21,18 +21,8 @@ export type EmbeddingModelId = z.infer<typeof EmbeddingModelId>;
 export const EmbeddingDimensions = z.union([z.literal(1536), z.literal(3072)]);
 export type EmbeddingDimensions = z.infer<typeof EmbeddingDimensions>;
 
-export const ModelDimensions = {
-	"text-embedding-3-small": 1536,
-	"text-embedding-3-large": 3072,
-	"gemini-embedding-001": 3072,
-} as const satisfies Record<EmbeddingModelId, EmbeddingDimensions>;
-
-export function getModelDimensions(
-	model: EmbeddingModelId,
-): EmbeddingDimensions {
-	const dimensions = ModelDimensions[model];
-	if (!dimensions) {
-		throw new Error(`Unknown model dimensions for: ${model}`);
-	}
-	return dimensions;
-}
+export {
+	EMBEDDING_PROFILES,
+	type EmbeddingProfileId,
+	isEmbeddingProfileId,
+} from "./profiles";

@@ -115,3 +115,22 @@ export const stageFlag = flag<boolean>({
 		{ value: true, label: "Enable" },
 	],
 });
+
+export const multiEmbeddingFlag = flag<boolean>({
+	key: "multi-embedding",
+	async decide() {
+		if (process.env.NODE_ENV === "development") {
+			return takeLocalEnv("MULTI_EMBEDDING_FLAG");
+		}
+		const edgeConfig = await get(`flag__${this.key}`);
+		if (edgeConfig === undefined) {
+			return false;
+		}
+		return edgeConfig === true || edgeConfig === "true";
+	},
+	description: "Enable multiple embedding profiles",
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+});

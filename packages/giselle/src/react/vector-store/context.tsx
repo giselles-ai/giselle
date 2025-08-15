@@ -7,6 +7,7 @@ export interface VectorStoreContextValue {
 		owner: string;
 		repo: string;
 		availableContentTypes: ("blob" | "pull_request")[];
+		embeddingProfileIds?: number[];
 	}[];
 	settingPath: string;
 }

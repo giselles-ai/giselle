@@ -1,6 +1,7 @@
 import {
 	DEFAULT_MAX_RESULTS,
 	DEFAULT_SIMILARITY_THRESHOLD,
+	type EmbeddingProfileId,
 	isQueryNode,
 	isTextNode,
 	NodeId,
@@ -9,7 +10,6 @@ import {
 	type VectorStoreNode,
 	type WorkspaceId,
 } from "@giselle-sdk/data-type";
-import type { EmbeddingProfileId } from "@giselle-sdk/rag";
 import {
 	isJsonContent,
 	jsonContentToText,
@@ -309,13 +309,14 @@ async function queryVectorStore(
 
 				switch (provider) {
 					case "github": {
-						const { owner, repo, contentType } = state;
+						const { owner, repo, contentType, embeddingProfileId } = state;
 
 						const queryContext: GitHubQueryContext = {
 							workspaceId,
 							owner,
 							repo,
-							embeddingProfileId: 1 as EmbeddingProfileId, // TODO: Get from VectorStoreNode when UI is implemented
+							embeddingProfileId: (embeddingProfileId ??
+								1) as EmbeddingProfileId,
 						};
 
 						if (contentType === "pull_request") {

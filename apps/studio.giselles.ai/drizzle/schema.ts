@@ -1,10 +1,10 @@
 import type {
 	EmbeddingDimensions,
+	EmbeddingProfileId,
 	FlowTriggerId,
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
 import type { ActId } from "@giselle-sdk/giselle";
-import type { EmbeddingProfileId } from "@giselle-sdk/rag";
 import type { GitHubRepositoryIndexId } from "@giselles-ai/types";
 import { relations, sql } from "drizzle-orm";
 import {

@@ -3,6 +3,7 @@ import { desc, eq } from "drizzle-orm";
 import {
 	db,
 	githubRepositoryContentStatus,
+	githubRepositoryEmbeddingProfiles,
 	githubRepositoryIndex,
 } from "@/drizzle";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
@@ -19,6 +20,7 @@ export async function getGitHubRepositoryIndexes(): Promise<
 		.select({
 			repositoryIndex: githubRepositoryIndex,
 			contentStatus: githubRepositoryContentStatus,
+			embeddingProfile: githubRepositoryEmbeddingProfiles,
 		})
 		.from(githubRepositoryIndex)
 		.leftJoin(
@@ -28,26 +30,56 @@ export async function getGitHubRepositoryIndexes(): Promise<
 				githubRepositoryIndex.dbId,
 			),
 		)
+		.leftJoin(
+			githubRepositoryEmbeddingProfiles,
+			eq(
+				githubRepositoryEmbeddingProfiles.repositoryIndexDbId,
+				githubRepositoryIndex.dbId,
+			),
+		)
 		.where(eq(githubRepositoryIndex.teamDbId, team.dbId))
 		.orderBy(desc(githubRepositoryIndex.dbId));
 
 	// Group by repository
-	const repositoryMap = new Map<number, RepositoryWithStatuses>();
+	const repositoryMap = new Map<
+		number,
+		RepositoryWithStatuses & { embeddingProfileIds: number[] }
+	>();
 
 	for (const record of records) {
-		const { repositoryIndex, contentStatus } = record;
+		const { repositoryIndex, contentStatus, embeddingProfile } = record;
 
 		if (!repositoryMap.has(repositoryIndex.dbId)) {
 			repositoryMap.set(repositoryIndex.dbId, {
 				repositoryIndex,
 				contentStatuses: [],
+				embeddingProfileIds: [],
 			});
 		}
 
-		if (contentStatus) {
-			const repo = repositoryMap.get(repositoryIndex.dbId);
-			if (repo) {
-				repo.contentStatuses.push(contentStatus);
+		const repo = repositoryMap.get(repositoryIndex.dbId);
+		if (repo) {
+			if (contentStatus) {
+				// Check if this content status was already added
+				const exists = repo.contentStatuses.some(
+					(cs) =>
+						cs.repositoryIndexDbId === contentStatus.repositoryIndexDbId &&
+						cs.contentType === contentStatus.contentType,
+				);
+				if (!exists) {
+					repo.contentStatuses.push(contentStatus);
+				}
+			}
+
+			if (embeddingProfile) {
+				// Add unique embedding profile IDs
+				if (
+					!repo.embeddingProfileIds.includes(
+						embeddingProfile.embeddingProfileId,
+					)
+				) {
+					repo.embeddingProfileIds.push(embeddingProfile.embeddingProfileId);
+				}
 			}
 		}
 	}
