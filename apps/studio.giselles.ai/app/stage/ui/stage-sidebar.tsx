@@ -18,7 +18,7 @@ import {
 	Sparkles,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -52,6 +52,11 @@ interface BottomItem {
 
 export function StageSidebar({ user }: StageSidebarProps) {
 	const [isCollapsed, setIsCollapsed] = useState(false);
+	const [isClientMounted, setIsClientMounted] = useState(false);
+
+	useEffect(() => {
+		setIsClientMounted(true);
+	}, []);
 
 	const menuItems: MenuItem[] = [
 		{ icon: Sparkles, label: "New task", href: "/stage", active: true },
@@ -135,12 +140,14 @@ export function StageSidebar({ user }: StageSidebarProps) {
 
 					{/* Right side: Icons */}
 					<div className="flex items-center gap-4">
-						<button
-							type="button"
-							className="text-white-700 hover:text-white-900 transition-colors"
-						>
-							<Bell className="w-5 h-5" />
-						</button>
+						{isClientMounted && (
+							<button
+								type="button"
+								className="text-white-700 hover:text-white-900 transition-colors"
+							>
+								<Bell className="w-5 h-5" />
+							</button>
+						)}
 						{user && (
 							<AvatarImage
 								className="w-8 h-8 rounded-full"
