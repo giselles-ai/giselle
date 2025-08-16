@@ -208,12 +208,14 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			generation: QueuedGeneration,
 			useExperimentalStorage: boolean,
 			telemetry?: TelemetrySettings,
+			signal?: AbortSignal,
 		) => {
 			return await generateImage({
 				context,
 				generation,
 				useExperimentalStorage,
 				telemetry,
+				signal,
 			});
 		},
 		getGeneratedImage: async (

@@ -11,6 +11,7 @@ import {
 	type ModelMessage,
 } from "ai";
 import {
+	type FailedGeneration,
 	type GenerationContext,
 	type GenerationOutput,
 	type Image,
@@ -32,62 +33,88 @@ export function generateImage(args: {
 	generation: QueuedGeneration;
 	telemetry?: TelemetrySettings;
 	useExperimentalStorage: boolean;
+	signal?: AbortSignal;
 }) {
 	return useGenerationExecutor({
 		context: args.context,
 		generation: args.generation,
 		useExperimentalStorage: args.useExperimentalStorage,
+		signal: args.signal,
 		execute: async ({
 			runningGeneration,
 			generationContext,
 			fileResolver,
 			generationContentResolver,
 			completeGeneration,
+			setGeneration,
+			signal,
 		}) => {
-			const operationNode = generationContext.operationNode;
-			if (!isImageGenerationNode(operationNode)) {
-				throw new Error("Invalid generation type");
-			}
-
-			const messages = await buildMessageObject(
-				operationNode,
-				generationContext.sourceNodes,
-				fileResolver,
-				generationContentResolver,
-			);
-
-			let generationOutputs: GenerationOutput[] = [];
-			switch (operationNode.content.llm.provider) {
-				case "fal":
-					generationOutputs = await generateImageWithFal({
-						operationNode,
-						messages,
-						runningGeneration,
-						generationContext,
-						context: args.context,
-					});
-					break;
-				case "openai":
-					generationOutputs = await generateImageWithOpenAI({
-						messages,
-						runningGeneration,
-						generationContext,
-						languageModelData: operationNode.content.llm,
-						context: args.context,
-					});
-					break;
-				default: {
-					const _exhaustiveCheck: never = operationNode.content.llm;
-					throw new Error(
-						`Unhandled generation output type: ${_exhaustiveCheck}`,
-					);
+			try {
+				const operationNode = generationContext.operationNode;
+				if (!isImageGenerationNode(operationNode)) {
+					throw new Error("Invalid generation type");
 				}
-			}
 
-			await completeGeneration({
-				inputMessages: messages,
-				outputs: generationOutputs,
-			});
+				const messages = await buildMessageObject(
+					operationNode,
+					generationContext.sourceNodes,
+					fileResolver,
+					generationContentResolver,
+				);
+
+				let generationOutputs: GenerationOutput[] = [];
+				switch (operationNode.content.llm.provider) {
+					case "fal":
+						generationOutputs = await generateImageWithFal({
+							operationNode,
+							messages,
+							runningGeneration,
+							generationContext,
+							context: args.context,
+							signal,
+						});
+						break;
+					case "openai":
+						generationOutputs = await generateImageWithOpenAI({
+							messages,
+							runningGeneration,
+							generationContext,
+							languageModelData: operationNode.content.llm,
+							context: args.context,
+							signal,
+						});
+						break;
+					default: {
+						const _exhaustiveCheck: never = operationNode.content.llm;
+						throw new Error(
+							`Unhandled generation output type: ${_exhaustiveCheck}`,
+						);
+					}
+				}
+
+				await completeGeneration({
+					inputMessages: messages,
+					outputs: generationOutputs,
+				});
+			} catch (error) {
+				if (error instanceof Error && error.name === "ResponseAborted") {
+					return;
+				}
+
+				const failedGeneration = {
+					...runningGeneration,
+					status: "failed",
+					failedAt: Date.now(),
+					error: {
+						name: error instanceof Error ? error.name : "UnknownError",
+						message: error instanceof Error ? error.message : String(error),
+						dump: error,
+					},
+				} satisfies FailedGeneration;
+
+				await setGeneration(failedGeneration);
+				throw error;
+			}
 		},
 	});
 }
@@ -99,6 +126,7 @@ async function generateImageWithFal({
 	messages,
 	context,
 	useExperimentalStorage,
+	signal,
 }: {
 	operationNode: ImageGenerationNode;
 	generationContext: GenerationContext;
@@ -106,6 +134,7 @@ async function generateImageWithFal({
 	messages: ModelMessage[];
 	context: GiselleEngineContext;
 	useExperimentalStorage?: boolean;
+	signal?: AbortSignal;
 }) {
 	let prompt = "";
 	for (const message of messages) {
@@ -125,6 +154,7 @@ async function generateImageWithFal({
 		prompt,
 		n: operationNode.content.llm.configurations.n,
 		size: operationNode.content.llm.configurations.size,
+		abortSignal: signal,
 	});
 
 	const generationOutputs: GenerationOutput[] = [];
@@ -180,6 +210,7 @@ async function generateImageWithOpenAI({
 	languageModelData,
 	context,
 	useExperimentalStorage,
+	signal,
 }: {
 	messages: ModelMessage[];
 	generationContext: GenerationContext;
@@ -187,6 +218,7 @@ async function generateImageWithOpenAI({
 	languageModelData: OpenAIImageLanguageModelData;
 	context: GiselleEngineContext;
 	useExperimentalStorage?: boolean;
+	signal?: AbortSignal;
 }) {
 	let prompt = "";
 	for (const message of messages) {
@@ -205,6 +237,7 @@ async function generateImageWithOpenAI({
 		prompt,
 		n: languageModelData.configurations.n,
 		size: languageModelData.configurations.size,
+		abortSignal: signal,
 		providerOptions: {
 			openai: {
 				...languageModelData.configurations,

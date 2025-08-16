@@ -1,7 +1,7 @@
 import { useChat } from "@ai-sdk/react";
 import { isTextGenerationNode } from "@giselle-sdk/data-type";
 import { DefaultChatTransport } from "ai";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import {
 	type Generation,
 	GenerationContext,
@@ -118,33 +118,67 @@ function ImageGenerationRunner({ generation }: { generation: Generation }) {
 	const {
 		updateGenerationStatusToComplete,
 		updateGenerationStatusToRunning,
+		updateGenerationStatusToFailure,
 		addStopHandler,
 	} = useGenerationRunnerSystem();
 	const { experimental_storage } = useFeatureFlag();
 	const client = useGiselleEngine();
 	const telemetry = useTelemetry();
-	const stop = () => {};
+	const abortControllerRef = useRef<AbortController | null>(null);
+
+	const stop = useCallback(() => {
+		if (abortControllerRef.current) {
+			abortControllerRef.current.abort();
+			abortControllerRef.current = null;
+		}
+	}, []);
+
 	useOnce(() => {
 		if (!isQueuedGeneration(generation)) {
 			return;
 		}
 		addStopHandler(generation.id, stop);
+
+		const abortController = new AbortController();
+		abortControllerRef.current = abortController;
+
 		client
 			.setGeneration({
 				generation,
 				useExperimentalStorage: experimental_storage,
 			})
-			.then(() => {
+			.then(async () => {
 				updateGenerationStatusToRunning(generation.id);
-				client
-					.generateImage({
-						generation,
-						telemetry,
-						useExperimentalStorage: experimental_storage,
-					})
-					.then(() => {
-						updateGenerationStatusToComplete(generation.id);
-					});
+
+				try {
+					await client.generateImage(
+						{
+							generation,
+							telemetry,
+							useExperimentalStorage: experimental_storage,
+						},
+						{ signal: abortController.signal },
+					);
+					updateGenerationStatusToComplete(generation.id);
+				} catch (error) {
+					if (
+						error instanceof DOMException &&
+						error.name === "AbortError" &&
+						abortController.signal.aborted
+					) {
+						return;
+					}
+
+					console.error("Failed to generate image:", error);
+					updateGenerationStatusToFailure(generation.id);
+				}
+			})
+			.catch((error) => {
+				console.error("Failed to set generation:", error);
+				updateGenerationStatusToFailure(generation.id);
+			})
+			.finally(() => {
+				abortControllerRef.current = null;
 			});
 	});
 	return null;

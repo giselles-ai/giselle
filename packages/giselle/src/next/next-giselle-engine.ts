@@ -117,6 +117,7 @@ export function createHttpHandler({
 				return await jsonRouter[routerPath]({
 					// @ts-expect-error
 					input: await getBody(request),
+					signal: request.signal,
 				});
 			} catch (e) {
 				if (e instanceof ZodError) {

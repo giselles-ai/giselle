@@ -44,6 +44,7 @@ export async function useGenerationExecutor<T>(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
 	useExperimentalStorage?: boolean;
+	signal?: AbortSignal;
 	execute: (utils: {
 		runningGeneration: RunningGeneration;
 		generationContext: GenerationContext;
@@ -54,6 +55,7 @@ export async function useGenerationExecutor<T>(args: {
 			outputId: OutputId,
 		) => Promise<string | undefined>;
 		workspaceId: WorkspaceId;
+		signal?: AbortSignal;
 		completeGeneration: CompleteGeneration;
 	}) => Promise<T>;
 }): Promise<T> {
@@ -240,6 +242,7 @@ export async function useGenerationExecutor<T>(args: {
 		fileResolver,
 		generationContentResolver,
 		workspaceId,
+		signal: args.signal,
 		completeGeneration,
 	});
 }
