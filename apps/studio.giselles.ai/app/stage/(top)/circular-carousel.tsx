@@ -122,6 +122,44 @@ export function CircularCarousel({
 		});
 	}, [visibleCards, items.length]);
 
+	// Reset animation state when navigating
+	const resetAnimationState = useCallback(() => {
+		setCenterCardState("normal");
+		setActiveCardIndex(null);
+	}, []);
+
+	// Auto-navigate to selected item when selectedId changes
+	useEffect(() => {
+		if (_selectedId && items.length > 0) {
+			const selectedIndex = items.findIndex((item) => item.id === _selectedId);
+			if (selectedIndex !== -1 && selectedIndex !== currentIndex) {
+				setCurrentIndex(selectedIndex);
+				resetAnimationState();
+
+				// Auto-select the center item after navigation with full animation
+				setTimeout(() => {
+					if (onItemSelect) {
+						onItemSelect(items[selectedIndex]);
+					}
+
+					// Simulate card click animation sequence
+					setCenterCardState("selected");
+					setActiveCardIndex(selectedIndex);
+
+					// Brief delay to show selection state, then start slide down animation
+					setTimeout(() => {
+						setCenterCardState("animating-down");
+
+						// Start slide down animation
+						setTimeout(() => {
+							setCenterCardState("inserted");
+						}, 600);
+					}, 300); // Show selection state for 300ms before animation
+				}, 100);
+			}
+		}
+	}, [_selectedId, items, currentIndex, onItemSelect, resetAnimationState]);
+
 	// Get visible cards around current index
 	const getVisibleCards = () => {
 		const cards = [];
@@ -180,26 +218,34 @@ export function CircularCarousel({
 		};
 	};
 
-	// Reset animation state when navigating
-	const resetAnimationState = useCallback(() => {
-		setCenterCardState("normal");
-		setActiveCardIndex(null);
-	}, []);
-
 	// Navigation functions
 	const moveLeft = useCallback(() => {
 		if (currentIndex > 0) {
+			// If there's currently an inserted item, deselect it first
+			if (centerCardState === "inserted" && onItemDeselect) {
+				onItemDeselect();
+			}
 			setCurrentIndex(currentIndex - 1);
 			resetAnimationState();
 		}
-	}, [currentIndex, resetAnimationState]);
+	}, [currentIndex, resetAnimationState, onItemDeselect, centerCardState]);
 
 	const moveRight = useCallback(() => {
 		if (currentIndex < items.length - 1) {
+			// If there's currently an inserted item, deselect it first
+			if (centerCardState === "inserted" && onItemDeselect) {
+				onItemDeselect();
+			}
 			setCurrentIndex(currentIndex + 1);
 			resetAnimationState();
 		}
-	}, [currentIndex, items.length, resetAnimationState]);
+	}, [
+		currentIndex,
+		items.length,
+		resetAnimationState,
+		onItemDeselect,
+		centerCardState,
+	]);
 
 	// Handle deselection animation
 	const handleDeselect = useCallback(
@@ -256,11 +302,20 @@ export function CircularCarousel({
 				handleCenterCardSelect(originalIndex);
 			} else {
 				// Move clicked card to center
+				// If there's currently an inserted item, deselect it first
+				if (centerCardState === "inserted" && onItemDeselect) {
+					onItemDeselect();
+				}
 				setCurrentIndex(originalIndex);
 				resetAnimationState();
 			}
 		},
-		[handleCenterCardSelect, resetAnimationState],
+		[
+			handleCenterCardSelect,
+			resetAnimationState,
+			onItemDeselect,
+			centerCardState,
+		],
 	);
 
 	// Drag handlers

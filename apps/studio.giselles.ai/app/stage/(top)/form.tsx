@@ -7,7 +7,15 @@ import type { ParameterItem } from "@giselle-sdk/giselle";
 import { SpinnerIcon } from "@giselles-ai/icons/spinner";
 import clsx from "clsx/lite";
 import type { InferSelectModel } from "drizzle-orm";
-import { useActionState, useCallback, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import {
+	useActionState,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import type { teams } from "@/drizzle";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { CircularCarousel } from "./circular-carousel";
@@ -62,12 +70,24 @@ export function Form({
 	flowTriggers: FlowTriggerUIItem[];
 	performStageAction: PerformStageAction;
 }) {
-	const defaultTeamId = useMemo(() => teamOptions[0].value, [teamOptions]);
+	const searchParams = useSearchParams();
+	const urlTeamId = searchParams.get("teamId");
+	const urlWorkspaceId = searchParams.get("workspaceId");
+
+	const defaultTeamId = useMemo(() => {
+		if (urlTeamId && teamOptions.some((team) => team.value === urlTeamId)) {
+			return urlTeamId as TeamId;
+		}
+		return teamOptions[0].value;
+	}, [teamOptions, urlTeamId]);
+
 	const [selectedTeamId, setSelectedTeamId] = useState<TeamId>(defaultTeamId);
 
 	const [selectedFlowTriggerId, setSelectedFlowTriggerId] = useState<
 		FlowTriggerId | undefined
 	>(undefined);
+	const initializedRef = useRef(false);
+	const userHasSelectedRef = useRef(false);
 	const [selectedFilter, setSelectedFilter] = useState<FilterType>("all");
 
 	const [validationErrors, setValidationErrors] = useState<
@@ -97,6 +117,26 @@ export function Form({
 			),
 		[flowTriggers, selectedTeamId],
 	);
+
+	// Pre-select flow trigger based on URL workspace ID (only once on initial load and if user hasn't manually selected)
+	useEffect(() => {
+		if (
+			!initializedRef.current &&
+			!userHasSelectedRef.current &&
+			filteredFlowTriggers.length > 0
+		) {
+			if (urlWorkspaceId) {
+				const matchingTrigger = filteredFlowTriggers.find(
+					(trigger) => trigger.sdkData.workspaceId === urlWorkspaceId,
+				);
+				if (matchingTrigger) {
+					setSelectedFlowTriggerId(matchingTrigger.id);
+					// Don't mark as user-selected for auto-selection from URL
+				}
+			}
+			initializedRef.current = true;
+		}
+	}, [filteredFlowTriggers, urlWorkspaceId]);
 
 	const inputs = useMemo(
 		() =>
@@ -170,6 +210,7 @@ export function Form({
 							value={selectedTeamId}
 							onValueChange={(value) => {
 								setSelectedTeamId(value as TeamId);
+								userHasSelectedRef.current = true;
 								setSelectedFlowTriggerId(undefined);
 							}}
 						/>
@@ -197,9 +238,11 @@ export function Form({
 					}))}
 					selectedId={selectedFlowTriggerId}
 					onItemSelect={(item) => {
+						userHasSelectedRef.current = true;
 						setSelectedFlowTriggerId(item.id as FlowTriggerId);
 					}}
 					onItemDeselect={() => {
+						userHasSelectedRef.current = true;
 						setSelectedFlowTriggerId(undefined);
 					}}
 				/>
