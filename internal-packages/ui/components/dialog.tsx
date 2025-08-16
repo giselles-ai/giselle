@@ -51,7 +51,11 @@ export function DialogDescription({
 
 export function DialogFooter({ children }: PropsWithChildren) {
 	return (
-		<div className={clsx("px-3 py-[8px] flex justify-end -mx-6 mt-[12px]")}>
+		<div
+			className={clsx(
+				"px-3 py-[8px] -mx-6 mt-[12px] ml-auto sticky bottom-0 w-fit",
+			)}
+		>
 			{children}
 		</div>
 	);
