@@ -88,6 +88,16 @@ export async function createAct(
 		),
 	);
 
+	// Handle isolated operation node execution when no connections are found
+	if (nodes.length === 0 && args.nodeId !== undefined) {
+		const isolatedNode = workspace.nodes.find(
+			(node) => node.id === args.nodeId,
+		);
+		if (isolatedNode && isOperationNode(isolatedNode)) {
+			nodes.push(isolatedNode);
+		}
+	}
+
 	const actId = ActId.generate();
 	const levels = buildLevels(nodes, connections);
 
