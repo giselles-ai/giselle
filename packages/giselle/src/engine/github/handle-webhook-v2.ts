@@ -10,7 +10,7 @@ import {
 	updatePullRequestReviewComment,
 	type WebhookEvent,
 	type WebhookEventName,
-} from "@giselle-sdk/github-tool";
+} from "@giselle-sdk/github";
 import { createAndStartAct } from "../acts";
 import { getFlowTrigger } from "../flows/utils";
 import { getGitHubRepositoryIntegrationIndex } from "../integrations/utils";

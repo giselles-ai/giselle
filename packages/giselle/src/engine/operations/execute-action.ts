@@ -13,7 +13,7 @@ import {
 	getDiscussion,
 	getRepositoryFullname,
 	replyPullRequestReviewComment,
-} from "@giselle-sdk/github-tool";
+} from "@giselle-sdk/github";
 import {
 	isJsonContent,
 	jsonContentToText,

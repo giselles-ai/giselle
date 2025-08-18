@@ -7,7 +7,7 @@ import {
 	type Output,
 	type TextGenerationLanguageModelData,
 } from "@giselle-sdk/data-type";
-import { githubTools, octokit } from "@giselle-sdk/github-tool";
+import { githubTools, octokit } from "@giselle-sdk/github";
 import {
 	Capability,
 	hasCapability,

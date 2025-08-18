@@ -13,7 +13,7 @@ index 000000000..b5ad8bde7
 +	GitHubBlobLoader,
 +	type GitHubBlobLoaderParams,
 +	type GitHubBlobMetadata,
-+} from "@giselle-sdk/github-tool";
++} from "@giselle-sdk/github";
 +import { createIngestPipeline } from "@giselle-sdk/rag2";
 +import type { Octokit } from "@octokit/core";
 +import { and, eq } from "drizzle-orm";
@@ -109,13 +109,13 @@ index c30cd0971..f7387a494 100644
 -	type GitHubBlobMetadata,
 -	type GithubRepositoryParams,
 -	octokit,
--} from "@giselle-sdk/github-tool";
+-} from "@giselle-sdk/github";
 -import {
 -	type BaseEmbedding,
 -	type EmbeddingStore,
 -	ingest,
 -} from "@giselle-sdk/rag";
-+import { fetchDefaultBranchHead } from "@giselle-sdk/github-tool";
++import { fetchDefaultBranchHead } from "@giselle-sdk/github";
  import { captureException } from "@sentry/nextjs";
 -import { and, eq } from "drizzle-orm";
  import type { NextRequest } from "next/server";
@@ -497,7 +497,7 @@ index 000000000..972c880fd
 +++ b/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/utils.ts
 @@ -0,0 +1,64 @@
 +import { db, githubRepositoryIndex } from "@/drizzle";
-+import { octokit } from "@giselle-sdk/github-tool";
++import { octokit } from "@giselle-sdk/github";
 +import { eq } from "drizzle-orm";
 +import type { TargetGitHubRepository } from "./types";
 +
@@ -625,10 +625,10 @@ index 59f2c2fb2..21602c8fb 100644
  /**
   * Context resolver - handles complex DB resolution logic for GitHub queries
   */
-diff --git a/packages/github-tool/package.json b/packages/github-tool/package.json
+diff --git a/packages/github/package.json b/packages/github/package.json
 index dc5ff847b..056bb95fb 100644
---- a/packages/github-tool/package.json
-+++ b/packages/github-tool/package.json
+--- a/packages/github/package.json
++++ b/packages/github/package.json
 @@ -30,6 +30,7 @@
  	},
  	"dependencies": {
@@ -637,10 +637,10 @@ index dc5ff847b..056bb95fb 100644
  		"@octokit/auth-app": "catalog:",
  		"@octokit/core": "catalog:",
  		"@octokit/graphql": "catalog:",
-diff --git a/packages/github-tool/src/blob-loader.ts b/packages/github-tool/src/blob-loader.ts
+diff --git a/packages/github/src/blob-loader.ts b/packages/github/src/blob-loader.ts
 index 546518682..2c395976a 100644
---- a/packages/github-tool/src/blob-loader.ts
-+++ b/packages/github-tool/src/blob-loader.ts
+--- a/packages/github/src/blob-loader.ts
++++ b/packages/github/src/blob-loader.ts
 @@ -1,17 +1,30 @@
 -import type { ContentLoader, LoaderResult } from "@giselle-sdk/rag";
 +import type {

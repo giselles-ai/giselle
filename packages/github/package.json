@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-sdk/github-tool",
+	"name": "@giselle-sdk/github",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",

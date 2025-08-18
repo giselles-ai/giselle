@@ -10,7 +10,7 @@ import type {
 	updatePullRequestReviewComment,
 	WebhookEvent,
 	WebhookEventName,
-} from "@giselle-sdk/github-tool";
+} from "@giselle-sdk/github";
 import type { createAndStartAct } from "../acts";
 import type { GiselleEngineContext } from "../types";
 import { getWorkspace } from "../workspaces";

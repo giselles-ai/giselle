@@ -1,4 +1,4 @@
-import type { Installtion, Repository } from "@giselle-sdk/github-tool";
+import type { Installtion, Repository } from "@giselle-sdk/github";
 import { z } from "zod/v4";
 
 export const GitHubIntegrationUnsetState = z.object({

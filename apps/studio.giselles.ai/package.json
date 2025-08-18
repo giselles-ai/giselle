@@ -24,7 +24,7 @@
 		"@giselle-internal/workflow-designer-ui": "workspace:*",
 		"@giselle-sdk/data-type": "workspace:*",
 		"@giselle-sdk/giselle": "workspace:*",
-		"@giselle-sdk/github-tool": "workspace:*",
+		"@giselle-sdk/github": "workspace:*",
 		"@giselle-sdk/langfuse": "workspace:*",
 		"@giselle-sdk/language-model": "workspace:*",
 		"@giselle-sdk/rag": "workspace:*",

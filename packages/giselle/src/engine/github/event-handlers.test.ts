@@ -5,7 +5,7 @@ import type {
 	GitHubAuthConfig,
 	WebhookEvent,
 	WebhookEventName,
-} from "@giselle-sdk/github-tool";
+} from "@giselle-sdk/github";
 import { createStorage } from "unstorage";
 import memoryDriver from "unstorage/drivers/memory";
 import { beforeEach, describe, expect, it, vi } from "vitest";

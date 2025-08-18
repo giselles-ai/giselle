@@ -1,7 +1,7 @@
 import {
 	createGitHubArchiveLoader,
 	createGitHubTreeLoader,
-} from "@giselle-sdk/github-tool";
+} from "@giselle-sdk/github";
 import { createPipeline } from "@giselle-sdk/rag";
 import type { Octokit } from "@octokit/core";
 import type { TelemetrySettings } from "ai";

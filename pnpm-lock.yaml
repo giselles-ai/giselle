@@ -342,9 +342,9 @@ importers:
       '@giselle-sdk/giselle':
         specifier: workspace:*
         version: link:../../packages/giselle
-      '@giselle-sdk/github-tool':
+      '@giselle-sdk/github':
         specifier: workspace:*
-        version: link:../../packages/github-tool
+        version: link:../../packages/github
       '@giselle-sdk/langfuse':
         specifier: workspace:*
         version: link:../../packages/langfuse
@@ -818,9 +818,9 @@ importers:
       '@giselle-sdk/flow':
         specifier: workspace:^
         version: link:../flow
-      '@giselle-sdk/github-tool':
+      '@giselle-sdk/github':
         specifier: workspace:^
-        version: link:../github-tool
+        version: link:../github
       '@giselle-sdk/language-model':
         specifier: workspace:^
         version: link:../language-model
@@ -883,7 +883,7 @@ importers:
         specifier: 'catalog:'
         version: 3.2.4(@types/debug@4.1.12)(@types/node@24.1.0)(happy-dom@17.6.1)(jiti@2.4.2)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.7.0)
 
-  packages/github-tool:
+  packages/github:
     dependencies:
       '@giselle-sdk/rag':
         specifier: workspace:*

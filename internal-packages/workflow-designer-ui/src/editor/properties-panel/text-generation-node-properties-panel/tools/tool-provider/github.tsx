@@ -421,7 +421,7 @@ function GitHubToolConfigurationDialogInternal({
 											</p>
 										</div>
 										<a
-											href={`https://docs.giselles.ai/glossary/github-tools#${encodeURIComponent(
+											href={`https://docs.giselles.ai/glossary/github#${encodeURIComponent(
 												tool.toLowerCase(),
 											)}`}
 											target="_blank"

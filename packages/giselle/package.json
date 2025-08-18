@@ -60,7 +60,7 @@
 		"@ai-sdk/provider": "catalog:",
 		"@ai-sdk/react": "catalog:",
 		"@giselle-sdk/flow": "workspace:^",
-		"@giselle-sdk/github-tool": "workspace:^",
+		"@giselle-sdk/github": "workspace:^",
 		"@giselle-sdk/language-model": "workspace:^",
 		"@giselle-sdk/text-editor-utils": "workspace:^",
 		"@giselle-sdk/web-search": "workspace:^",

@@ -6,7 +6,7 @@ import {
 	OperationNodeLike,
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
-import type { WebhookEvent } from "@giselle-sdk/github-tool";
+import type { WebhookEvent } from "@giselle-sdk/github";
 import { z } from "zod/v4";
 import { ActId } from "../identifiers";
 

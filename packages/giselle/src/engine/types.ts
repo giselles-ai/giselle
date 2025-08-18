@@ -2,7 +2,7 @@ import type { FlowTrigger, WorkspaceId } from "@giselle-sdk/data-type";
 import type {
 	GitHubInstallationAppAuth,
 	GitHubPersonalAccessTokenAuth,
-} from "@giselle-sdk/github-tool";
+} from "@giselle-sdk/github";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
 import type { QueryService } from "@giselle-sdk/rag";
 import type { ModelMessage } from "ai";

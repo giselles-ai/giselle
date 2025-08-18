@@ -1,4 +1,4 @@
-import { fetchDefaultBranchHead } from "@giselle-sdk/github-tool";
+import { fetchDefaultBranchHead } from "@giselle-sdk/github";
 import { DocumentLoaderError, RagError } from "@giselle-sdk/rag";
 import { captureException } from "@sentry/nextjs";
 import type { TelemetrySettings } from "ai";

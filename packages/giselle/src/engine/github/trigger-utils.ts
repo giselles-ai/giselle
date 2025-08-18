@@ -5,7 +5,7 @@ import {
 	getPullRequestDiff,
 	getPullRequestReviewComment,
 	type WebhookEvent,
-} from "@giselle-sdk/github-tool";
+} from "@giselle-sdk/github";
 import type { GenerationOutput } from "../generations";
 import { parseCommand } from "./utils";
 
