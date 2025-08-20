@@ -1,6 +1,7 @@
 import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import type {
+	ActionNode,
 	ConnectionId,
 	GitHubActionCommandConfiguredState,
 	Input,
@@ -34,17 +35,18 @@ function getNodeContentType(node: Node | NodeLike): string {
 }
 
 export function GitHubActionConfiguredView({
-	nodeId,
+	node,
 	inputs,
 	state,
 }: {
-	nodeId: NodeId;
+	node: ActionNode;
 	inputs: Input[];
 	state: GitHubActionCommandConfiguredState;
 }) {
 	const client = useGiselleEngine();
 	const {
 		deleteConnection,
+		updateNodeData,
 		data: { ui },
 	} = useWorkflowDesigner();
 	const { isLoading, data } = useSWR(
@@ -59,7 +61,7 @@ export function GitHubActionConfiguredView({
 			}),
 	);
 
-	const { connectedInputs } = useConnectedInputs(nodeId, inputs);
+	const { connectedInputs } = useConnectedInputs(node.id, inputs);
 
 	const handleClickRemoveButton = useCallback(
 		(connectionId: ConnectionId) => () => {
@@ -72,15 +74,37 @@ export function GitHubActionConfiguredView({
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
 			<div className="space-y-[4px]">
 				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Repository</p>
-				<div className="px-[4px] pt-[6px]">
-					{isLoading || data === undefined ? (
-						<p>Loading...</p>
-					) : (
-						<GitHubRepositoryBlock
-							owner={data.fullname.owner}
-							repo={data.fullname.repo}
-						/>
-					)}
+				<div className="flex justify-between">
+					<div className="px-[4px] pt-[6px]">
+						{isLoading || data === undefined ? (
+							<p>Loading...</p>
+						) : (
+							<GitHubRepositoryBlock
+								owner={data.fullname.owner}
+								repo={data.fullname.repo}
+							/>
+						)}
+					</div>
+					<button
+						type="button"
+						className="bg-primary-900 hover:bg-primary-800 text-white font-medium px-4 py-2 rounded-md text-[14px] transition-colors"
+						onClick={() => {
+							updateNodeData(node, {
+								content: {
+									...node.content,
+									command: {
+										provider: "github",
+										state: {
+											status: "reconfiguring",
+											commandId: state.commandId,
+										},
+									},
+								},
+							});
+						}}
+					>
+						Change Repository
+					</button>
 				</div>
 			</div>
 
@@ -140,10 +164,10 @@ export function GitHubActionConfiguredView({
 											</button>
 										</div>
 									) : (
-										<SelectOutputPopover nodeId={nodeId} input={input} />
+										<SelectOutputPopover nodeId={node.id} input={input} />
 									)}
 								</div>
-								{ui.nodeState[nodeId]?.showError &&
+								{ui.nodeState[node.id]?.showError &&
 									input.isRequired &&
 									input.connectedOutput === undefined && (
 										<div className="flex justify-end">
