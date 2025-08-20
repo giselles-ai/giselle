@@ -21,12 +21,12 @@ export type GitHubActionCommandConfiguredState = z.infer<
 	typeof GitHubActionCommandConfiguredState
 >;
 
-const GitHubActionCommandReconfiguring = z.object({
+const GitHubActionCommandReconfiguringState = z.object({
 	status: z.literal("reconfiguring"),
 	commandId: z.custom<GitHubActionCommandId>(),
 });
-export type GitHubActionCommandReconfiguring = z.infer<
-	typeof GitHubActionCommandReconfiguring
+export type GitHubActionCommandReconfiguringState = z.infer<
+	typeof GitHubActionCommandReconfiguringState
 >;
 
 const GitHubActionCommandData = z.object({
@@ -34,7 +34,7 @@ const GitHubActionCommandData = z.object({
 	state: z.discriminatedUnion("status", [
 		GitHubActionCommandUnconfiguredState,
 		GitHubActionCommandConfiguredState,
-		GitHubActionCommandReconfiguring,
+		GitHubActionCommandReconfiguringState,
 	]),
 });
 export type GitHubActionCommandData = z.infer<typeof GitHubActionCommandData>;
