@@ -66,7 +66,7 @@ export function GitHubTriggerConfiguredView({
 	const [actionInProgress, setActionInProgress] = useState(false);
 	const [actionError, setActionError] = useState<Error | null>(null);
 
-	if (isLoading) {
+	if (isLoading && data === undefined) {
 		return "Loading...";
 	}
 	if (data === undefined) {
