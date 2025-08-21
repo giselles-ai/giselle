@@ -1,6 +1,7 @@
 import {
 	type FlowTriggerId,
 	type GitHubFlowTriggerEvent,
+	type GitHubFlowTriggerEventRequiredCallsign,
 	type Output,
 	OutputId,
 	type TriggerNode,
@@ -26,6 +27,7 @@ import { SelectRepository } from "../../../ui";
 import { GitHubTriggerConfiguredView } from "../../ui";
 import { EventSelectionStep } from "./components/event-selection-step";
 import { EventTypeDisplay } from "./components/event-type-display";
+import { GitHubTriggerReconfiguringView } from "./components/github-trigger-reconfiguring-view";
 import { InstallGitHubApplication } from "./components/install-application";
 import { RepositoryDisplay } from "./components/repository-display";
 import { Unauthorized } from "./components/unauthorized";
@@ -56,14 +58,6 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 				flowTriggerId={node.content.state.flowTriggerId}
 			/>
 		);
-	}
-
-	if (value?.github === undefined) {
-		return "unset";
-	}
-
-	if (value?.github === undefined) {
-		return "unset";
 	}
 
 	switch (value.github.status) {
@@ -140,24 +134,30 @@ function isTriggerRequiringCallsign(eventId: GitHubTriggerEventId): boolean {
 	].includes(eventId);
 }
 
-function Installed({
+export function Installed({
 	installations,
 	node,
 	installationUrl,
+	reconfigStep,
+	flowTriggerId,
+	currentCallsignEvent,
 }: {
 	installations: GitHubIntegrationInstallation[];
 	node: TriggerNode;
 	installationUrl: string;
+	reconfigStep?: SelectRepositoryStep;
+	flowTriggerId?: FlowTriggerId;
+	currentCallsignEvent?: GitHubFlowTriggerEventRequiredCallsign;
 }) {
 	const { experimental_storage } = useFeatureFlag();
-	const [step, setStep] = useState<GitHubTriggerSetupStep>({
-		state: "select-event",
-	});
+	const [step, setStep] = useState<GitHubTriggerSetupStep>(
+		reconfigStep ?? { state: "select-event" },
+	);
 	const { data: workspace, updateNodeData } = useWorkflowDesigner();
 	const client = useGiselleEngine();
 	const [isPending, startTransition] = useTransition();
 	const [eventId, setEventId] = useState<GitHubTriggerEventId>(
-		"github.issue.created",
+		reconfigStep?.eventId ?? "github.issue.created",
 	);
 
 	// Helper function to create callsign events
@@ -242,7 +242,7 @@ function Installed({
 							...node.content,
 							state: {
 								status: "configured",
-								flowTriggerId: triggerId as FlowTriggerId,
+								flowTriggerId: triggerId,
 							},
 						},
 						outputs: [...node.outputs, ...outputs],
@@ -340,7 +340,10 @@ function Installed({
 								type="button"
 								className="flex-1 bg-primary-900 hover:bg-primary-800 text-white font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
 								onClick={() => {
-									if (isTriggerRequiringCallsign(step.eventId)) {
+									if (
+										isTriggerRequiringCallsign(step.eventId) &&
+										node.content.state.status === "unconfigured"
+									) {
 										setStep({
 											state: "input-callsign",
 											eventId: step.eventId,
@@ -352,7 +355,9 @@ function Installed({
 									} else {
 										startTransition(async () => {
 											try {
-												const event = createTriggerEvent(step.eventId);
+												const event =
+													currentCallsignEvent ??
+													createTriggerEvent(step.eventId);
 												const trigger = githubTriggers[step.eventId];
 												const outputs: Output[] = [];
 
@@ -378,6 +383,7 @@ function Installed({
 														},
 													},
 													useExperimentalStorage: experimental_storage,
+													flowTriggerId,
 												});
 
 												updateNodeData(node, {
@@ -385,10 +391,10 @@ function Installed({
 														...node.content,
 														state: {
 															status: "configured",
-															flowTriggerId: triggerId as FlowTriggerId,
+															flowTriggerId: triggerId,
 														},
 													},
-													outputs: [...node.outputs, ...outputs],
+													outputs: flowTriggerId ? node.outputs : outputs,
 													name: `On ${trigger.event.label}`,
 												});
 											} catch (_error) {
