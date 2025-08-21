@@ -1,6 +1,6 @@
 import { triggerProviders } from "@giselle-sdk/flow";
 import { z } from "zod/v4";
-import { FlowTriggerId } from "../../flow/trigger";
+import { FlowTriggerId, GitHubFlowTriggerEvent } from "../../flow/trigger";
 
 export const TriggerProviderLike = z.looseObject({
 	provider: z.string(),
@@ -14,9 +14,15 @@ const TriggerConfiguredState = z.object({
 	status: z.literal("configured"),
 	flowTriggerId: FlowTriggerId.schema,
 });
+const TriggerReconfiguringState = z.object({
+	status: z.literal("reconfiguring"),
+	flowTriggerId: FlowTriggerId.schema,
+	target: z.enum(["repository"]),
+});
 const TriggerConfigurationState = z.discriminatedUnion("status", [
 	TriggerUnconfiguredState,
 	TriggerConfiguredState,
+	TriggerReconfiguringState,
 ]);
 
 export const TriggerContent = z.object({
