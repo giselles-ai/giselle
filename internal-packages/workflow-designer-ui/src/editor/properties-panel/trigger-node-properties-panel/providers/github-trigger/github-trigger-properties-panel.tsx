@@ -33,13 +33,33 @@ import { createTriggerEvent } from "./utils/trigger-configuration";
 
 export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	const { value } = useIntegration();
+	if (value?.github === undefined) {
+		return "unset";
+	}
 
 	if (node.content.state.status === "configured") {
 		return (
 			<GitHubTriggerConfiguredView
 				flowTriggerId={node.content.state.flowTriggerId}
+				node={node}
 			/>
 		);
+	} else if (
+		node.content.state.status === "reconfiguring" &&
+		value.github.status === "installed"
+	) {
+		return (
+			<GitHubTriggerReconfiguringView
+				installations={value.github.installations}
+				node={node}
+				installationUrl={value.github.installationUrl}
+				flowTriggerId={node.content.state.flowTriggerId}
+			/>
+		);
+	}
+
+	if (value?.github === undefined) {
+		return "unset";
 	}
 
 	if (value?.github === undefined) {
