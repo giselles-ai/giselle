@@ -243,6 +243,7 @@ export const createJsonRouters = {
 			input: z.object({
 				trigger: ConfigureTriggerInput,
 				useExperimentalStorage: z.boolean(),
+				flowTriggerId: FlowTriggerId.schema.optional(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({

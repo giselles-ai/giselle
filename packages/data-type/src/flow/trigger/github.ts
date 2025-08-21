@@ -42,6 +42,18 @@ const PullRequestClosed = z.object({
 	id: z.literal("github.pull_request.closed"),
 });
 
+export const GitHubFlowTriggerEventRequiredCallsign = z.discriminatedUnion(
+	"id",
+	[
+		IssueCommentCreated,
+		PullRequestCommentCreated,
+		PullRequestReviewCommentCreated,
+	],
+);
+export type GitHubFlowTriggerEventRequiredCallsign = z.infer<
+	typeof GitHubFlowTriggerEventRequiredCallsign
+>;
+
 export const GitHubFlowTriggerEvent = z.discriminatedUnion("id", [
 	IssueCreated,
 	IssueClosed,
