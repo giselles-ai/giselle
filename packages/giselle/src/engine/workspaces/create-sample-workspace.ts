@@ -104,14 +104,9 @@ async function createSampleWorkspaceFromTemplate(args: {
 	const newWorkspaceId = WorkspaceId.generate();
 
 	// Copy FlowTrigger configurations for configured trigger nodes
-	const configuredTriggerNodes = newNodes.filter(
-		(node): node is TriggerNode =>
-			isTriggerNode(node) && node.content.state.status === "configured",
-	);
-
 	const flowTriggerCopies = await Promise.all(
-		configuredTriggerNodes.map(async (node) => {
-			if (node.content.state.status !== "configured") {
+		newNodes.map(async (node) => {
+			if (!isTriggerNode(node) || node.content.state.status !== "configured") {
 				return null;
 			}
 			const oldFlowTriggerId = node.content.state.flowTriggerId;
