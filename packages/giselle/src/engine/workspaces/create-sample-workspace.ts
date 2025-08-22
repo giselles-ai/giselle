@@ -1,16 +1,20 @@
 import {
 	type Connection,
 	ConnectionId,
+	FlowTriggerId,
 	type Input,
 	InputId,
+	isTriggerNode,
 	NodeId,
 	type NodeLike,
 	type NodeUIState,
 	type Output,
 	OutputId,
+	type TriggerNode,
 	type Workspace,
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
+import { getFlowTrigger, setFlowTrigger } from "../flows/utils";
 import type { GiselleEngineContext } from "../types";
 import { copyFiles, getWorkspace, setWorkspace } from "./utils";
 
@@ -99,8 +103,65 @@ async function createSampleWorkspaceFromTemplate(args: {
 	}
 	const newWorkspaceId = WorkspaceId.generate();
 
-	// Update prompt content with new IDs if present
+	// Copy FlowTrigger configurations for configured trigger nodes
+	const configuredTriggerNodes = newNodes.filter(
+		(node): node is TriggerNode =>
+			isTriggerNode(node) && node.content.state.status === "configured",
+	);
+
+	const flowTriggerCopies = await Promise.all(
+		configuredTriggerNodes.map(async (node) => {
+			if (node.content.state.status !== "configured") {
+				return null;
+			}
+			const oldFlowTriggerId = node.content.state.flowTriggerId;
+			const oldFlowTrigger = await getFlowTrigger({
+				storage: args.context.storage,
+				flowTriggerId: oldFlowTriggerId,
+			});
+
+			if (oldFlowTrigger) {
+				const newFlowTriggerId = FlowTriggerId.generate();
+				const newFlowTrigger = {
+					...oldFlowTrigger,
+					id: newFlowTriggerId,
+					workspaceId: newWorkspaceId,
+					nodeId: node.id,
+				};
+
+				await setFlowTrigger({
+					storage: args.context.storage,
+					flowTrigger: newFlowTrigger,
+				});
+
+				return { oldNodeId: node.id, newFlowTriggerId };
+			}
+			return null;
+		}),
+	);
+
+	// Update prompt content with new IDs and trigger node FlowTrigger IDs
 	const updatedNodes = newNodes.map((node) => {
+		// Update trigger nodes with new FlowTrigger IDs
+		const triggerCopy = flowTriggerCopies.find((c) => c?.oldNodeId === node.id);
+		if (
+			triggerCopy &&
+			isTriggerNode(node) &&
+			node.content.state.status === "configured"
+		) {
+			return {
+				...node,
+				content: {
+					...node.content,
+					state: {
+						...node.content.state,
+						flowTriggerId: triggerCopy.newFlowTriggerId,
+					},
+				},
+			} satisfies TriggerNode;
+		}
+
+		// Update text generation nodes with new IDs in prompts
 		if (
 			node.type === "operation" &&
 			node.content.type === "textGeneration" &&
