@@ -105,17 +105,29 @@ async function createSampleWorkspaceFromTemplate(args: {
 
 	// Copy FlowTrigger configurations for configured trigger nodes
 	const flowTriggerCopies = await Promise.all(
-		newNodes.map(async (node) => {
-			if (!isTriggerNode(node) || node.content.state.status !== "configured") {
-				return null;
-			}
-			const oldFlowTriggerId = node.content.state.flowTriggerId;
-			const oldFlowTrigger = await getFlowTrigger({
-				storage: args.context.storage,
-				flowTriggerId: oldFlowTriggerId,
-			});
+		newNodes
+			.filter(
+				(
+					node,
+				): node is TriggerNode & {
+					content: {
+						state: { status: "configured"; flowTriggerId: FlowTriggerId };
+					};
+				} => isTriggerNode(node) && node.content.state.status === "configured",
+			)
+			.map(async (node) => {
+				const oldFlowTriggerId = node.content.state.flowTriggerId;
+				const oldFlowTrigger = await getFlowTrigger({
+					storage: args.context.storage,
+					flowTriggerId: oldFlowTriggerId,
+				});
 
-			if (oldFlowTrigger) {
+				if (!oldFlowTrigger) {
+					throw new Error(
+						`FlowTrigger ${oldFlowTriggerId} not found for node ${node.id} (template ${templateWorkspace.id})`,
+					);
+				}
+
 				const newFlowTriggerId = FlowTriggerId.generate();
 				const newFlowTrigger = {
 					...oldFlowTrigger,
@@ -129,16 +141,14 @@ async function createSampleWorkspaceFromTemplate(args: {
 					flowTrigger: newFlowTrigger,
 				});
 
-				return { oldNodeId: node.id, newFlowTriggerId };
-			}
-			return null;
-		}),
+				return { nodeId: node.id, newFlowTriggerId };
+			}),
 	);
 
 	// Update prompt content with new IDs and trigger node FlowTrigger IDs
 	const updatedNodes = newNodes.map((node) => {
 		// Update trigger nodes with new FlowTrigger IDs
-		const triggerCopy = flowTriggerCopies.find((c) => c?.oldNodeId === node.id);
+		const triggerCopy = flowTriggerCopies.find((c) => c.nodeId === node.id);
 		if (
 			triggerCopy &&
 			isTriggerNode(node) &&
