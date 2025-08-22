@@ -1,5 +1,5 @@
 import { and, desc, eq, isNotNull } from "drizzle-orm";
-import { acts, agents, db } from "@/drizzle";
+import { acts, agents, db, flowTriggers } from "@/drizzle";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";
 import { ShowcaseClient } from "./showcase-client";
@@ -12,7 +12,7 @@ export default async function StageShowcasePage() {
 		avatarUrl: team.avatarUrl ?? undefined,
 	}));
 
-	// Fetch apps (agents) for all teams
+	// Fetch apps (agents) for all teams that have staged flow triggers
 	const teamAppsMap = new Map();
 	for (const team of teams) {
 		const dbAgents = await db
@@ -23,7 +23,17 @@ export default async function StageShowcasePage() {
 				workspaceId: agents.workspaceId,
 			})
 			.from(agents)
-			.where(and(eq(agents.teamDbId, team.dbId), isNotNull(agents.workspaceId)))
+			.innerJoin(
+				flowTriggers,
+				eq(agents.workspaceId, flowTriggers.sdkWorkspaceId),
+			)
+			.where(
+				and(
+					eq(agents.teamDbId, team.dbId),
+					isNotNull(agents.workspaceId),
+					eq(flowTriggers.staged, true),
+				),
+			)
 			.orderBy(desc(agents.updatedAt));
 
 		teamAppsMap.set(team.id, dbAgents);
