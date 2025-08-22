@@ -1,11 +1,13 @@
 "use server";
 
+import { isTriggerNode } from "@giselle-sdk/data-type";
 import { createId } from "@paralleldrive/cuid2";
 import type { User } from "@supabase/auth-js";
 import { giselleEngine } from "@/app/giselle-engine";
 import {
 	agents,
 	db,
+	flowTriggers,
 	supabaseUserMappings,
 	teamMemberships,
 	teams,
@@ -65,6 +67,32 @@ export const initializeAccount = async (
 				creatorDbId: user.dbId,
 				workspaceId: workspace.id,
 			});
+
+			// Create flowTrigger DB records for staged triggers
+			for (const node of workspace.nodes) {
+				if (
+					!isTriggerNode(node) ||
+					node.content.state.status !== "configured"
+				) {
+					continue;
+				}
+
+				const flowTrigger = await giselleEngine.getTrigger({
+					flowTriggerId: node.content.state.flowTriggerId,
+				});
+				if (
+					flowTrigger &&
+					flowTrigger.configuration.provider === "manual" &&
+					flowTrigger.configuration.staged
+				) {
+					await tx.insert(flowTriggers).values({
+						teamDbId: team.id,
+						sdkFlowTriggerId: node.content.state.flowTriggerId,
+						sdkWorkspaceId: workspace.id,
+						staged: true,
+					});
+				}
+			}
 		}
 
 		return { id: userId };
