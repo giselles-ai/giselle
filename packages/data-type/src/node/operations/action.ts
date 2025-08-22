@@ -24,6 +24,7 @@ export type GitHubActionCommandConfiguredState = z.infer<
 const GitHubActionCommandReconfiguringState = z.object({
 	status: z.literal("reconfiguring"),
 	commandId: z.custom<GitHubActionCommandId>(),
+	target: z.enum(["repository"]),
 });
 export type GitHubActionCommandReconfiguringState = z.infer<
 	typeof GitHubActionCommandReconfiguringState

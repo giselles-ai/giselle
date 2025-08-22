@@ -97,6 +97,7 @@ export function GitHubActionConfiguredView({
 										state: {
 											status: "reconfiguring",
 											commandId: state.commandId,
+											target: "repository",
 										},
 									},
 								},
