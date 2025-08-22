@@ -16,7 +16,7 @@ export default async function StageShowcasePage() {
 	const teamAppsMap = new Map();
 	for (const team of teams) {
 		const dbAgents = await db
-			.select({
+			.selectDistinct({
 				id: agents.id,
 				name: agents.name,
 				updatedAt: agents.updatedAt,
