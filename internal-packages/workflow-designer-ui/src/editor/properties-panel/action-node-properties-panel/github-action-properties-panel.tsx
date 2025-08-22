@@ -450,7 +450,7 @@ function Installed({
 						},
 					},
 					name: action.command.label,
-					inputs,
+					inputs: node.inputs ?? inputs,
 					outputs: node.outputs ?? [
 						{
 							id: OutputId.generate(),
