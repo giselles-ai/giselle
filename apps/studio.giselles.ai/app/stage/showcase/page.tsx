@@ -1,4 +1,4 @@
-import { and, desc, eq, isNotNull, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull } from "drizzle-orm";
 import { acts, agents, db, flowTriggers } from "@/drizzle";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";
@@ -13,8 +13,8 @@ export default async function StageShowcasePage() {
 	}));
 
 	// Fetch apps (agents) for all teams that have staged flow triggers in a single optimized query
-	const teamDbIds = teams.map(t => t.dbId);
-	
+	const teamDbIds = teams.map((t) => t.dbId);
+
 	const allStagedAgents = await db
 		.selectDistinct({
 			id: agents.id,
@@ -33,17 +33,16 @@ export default async function StageShowcasePage() {
 			),
 		)
 		.where(
-			and(
-				inArray(agents.teamDbId, teamDbIds),
-				isNotNull(agents.workspaceId),
-			),
+			and(inArray(agents.teamDbId, teamDbIds), isNotNull(agents.workspaceId)),
 		)
 		.orderBy(desc(agents.updatedAt));
 
 	// Group agents by team
 	const teamAppsMap = new Map();
 	for (const team of teams) {
-		const teamAgents = allStagedAgents.filter(agent => agent.teamDbId === team.dbId);
+		const teamAgents = allStagedAgents.filter(
+			(agent) => agent.teamDbId === team.dbId,
+		);
 		teamAppsMap.set(team.id, teamAgents);
 	}
 
