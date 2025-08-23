@@ -398,7 +398,7 @@ export function Installed({
 														},
 													},
 													outputs: flowTriggerId ? node.outputs : outputs,
-													name: `On ${trigger.event.label}`,
+													name: node.name ?? `On ${trigger.event.label}`,
 												});
 											} catch (_error) {
 												// Error is handled by the UI state
