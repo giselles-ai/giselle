@@ -1,10 +1,7 @@
 import { createIdGenerator } from "@giselle-sdk/utils";
 import type { z } from "zod/v4";
 
-export {
-	GitHubFlowTrigger,
-	GitHubFlowTriggerEvent,
-} from "./github";
+export { GitHubFlowTrigger, GitHubFlowTriggerEvent } from "./github";
 export {
 	ManualFlowTrigger,
 	ManualFlowTriggerEvent,
