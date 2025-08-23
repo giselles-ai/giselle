@@ -357,7 +357,10 @@ export function Installed({
 										startTransition(async () => {
 											try {
 												const enable = currentEnable ?? false;
-												const event = createTriggerEvent(step.eventId, currentCallsign);
+												const event = createTriggerEvent(
+													step.eventId,
+													currentCallsign,
+												);
 												const trigger = githubTriggers[step.eventId];
 												const outputs: Output[] = [];
 

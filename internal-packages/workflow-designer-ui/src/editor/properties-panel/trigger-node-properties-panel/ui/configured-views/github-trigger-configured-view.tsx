@@ -210,7 +210,7 @@ export function GitHubTriggerConfiguredView({
 									state: {
 										status: "reconfiguring",
 										flowTriggerId,
-											},
+									},
 								},
 							});
 						}}
