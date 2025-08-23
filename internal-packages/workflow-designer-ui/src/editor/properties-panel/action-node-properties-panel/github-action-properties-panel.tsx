@@ -441,7 +441,7 @@ function Installed({
 							},
 						},
 					},
-					name: action.command.label,
+					name: node.name ?? action.command.label,
 					inputs: node.inputs ?? inputs,
 					outputs: node.outputs ?? [
 						{
