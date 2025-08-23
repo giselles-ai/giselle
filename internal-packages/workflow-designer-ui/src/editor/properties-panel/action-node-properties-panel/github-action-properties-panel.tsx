@@ -414,16 +414,8 @@ function Installed({
 				});
 			} else if (node.content.command.state.status === "reconfiguring") {
 				// For reconfiguration: change repository and complete configuration
-				/** @todo remove type assertion */
-				const action =
-					githubActions[
-						node.content.command.state.commandId as GitHubActionCommandId
-					];
-
-				// Setup inputs for the action
+				const action = githubActions[node.content.command.state.commandId];
 				const inputs: Input[] = [];
-
-				// Add inputs based on the action type
 				for (const key of action.command.parameters.keyof().options) {
 					// @ts-expect-error shape[parameter] is unreasonable but intentional
 					const schema = action.command.parameters.shape[key] as AnyZodObject;
