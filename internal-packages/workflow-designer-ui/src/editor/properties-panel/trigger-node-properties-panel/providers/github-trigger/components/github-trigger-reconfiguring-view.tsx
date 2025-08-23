@@ -28,13 +28,13 @@ export function GitHubTriggerReconfiguringView({
 		return "Unexpected state";
 	}
 
-	const currentCallsignEvent =
+	const currentCallsign =
 		data.trigger.configuration.event.id === "github.issue_comment.created" ||
 		data.trigger.configuration.event.id ===
 			"github.pull_request_comment.created" ||
 		data.trigger.configuration.event.id ===
 			"github.pull_request_review_comment.created"
-			? data.trigger.configuration.event
+			? data.trigger.configuration.event.conditions.callsign
 			: undefined;
 
 	const reconfigStep = {
@@ -49,7 +49,8 @@ export function GitHubTriggerReconfiguringView({
 			installationUrl={installationUrl}
 			reconfigStep={reconfigStep}
 			flowTriggerId={flowTriggerId}
-			currentCallsignEvent={currentCallsignEvent}
+			currentCallsign={currentCallsign}
+			currentEnable={data.trigger.enable}
 		/>
 	);
 }

@@ -4,7 +4,6 @@ import type { z } from "zod/v4";
 export {
 	GitHubFlowTrigger,
 	GitHubFlowTriggerEvent,
-	GitHubFlowTriggerEventRequiredCallsign,
 } from "./github";
 export {
 	ManualFlowTrigger,
