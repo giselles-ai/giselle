@@ -397,7 +397,7 @@ export function Installed({
 															flowTriggerId: triggerId,
 														},
 													},
-													outputs: flowTriggerId ? node.outputs : outputs,
+													outputs: node.outputs ?? outputs,
 													name: node.name ?? `On ${trigger.event.label}`,
 												});
 											} catch (_error) {
