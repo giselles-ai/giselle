@@ -1,7 +1,7 @@
 import type { FlowTriggerId, TriggerNode } from "@giselle-sdk/data-type";
 import type { GitHubIntegrationInstallation } from "@giselle-sdk/giselle";
-import { useGitHubTrigger } from "../../../../../lib/use-github-trigger";
-import { Installed } from "../github-trigger-properties-panel";
+import { useGitHubTrigger } from "../../../../lib/use-github-trigger";
+import { Installed } from "../../providers/github-trigger/github-trigger-properties-panel";
 
 export function GitHubTriggerReconfiguringView({
 	installations,

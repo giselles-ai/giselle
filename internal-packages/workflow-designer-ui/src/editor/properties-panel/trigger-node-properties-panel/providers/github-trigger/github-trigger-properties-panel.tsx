@@ -26,7 +26,7 @@ import { SelectRepository } from "../../../ui";
 import { GitHubTriggerConfiguredView } from "../../ui";
 import { EventSelectionStep } from "./components/event-selection-step";
 import { EventTypeDisplay } from "./components/event-type-display";
-import { GitHubTriggerReconfiguringView } from "./components/github-trigger-reconfiguring-view";
+import { GitHubTriggerReconfiguringView } from "../../ui/reconfiguring-views/github-trigger-reconfiguring-view";
 import { InstallGitHubApplication } from "./components/install-application";
 import { RepositoryDisplay } from "./components/repository-display";
 import { Unauthorized } from "./components/unauthorized";
