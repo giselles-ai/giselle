@@ -210,6 +210,7 @@ export function GitHubTriggerConfiguredView({
 									state: {
 										status: "reconfiguring",
 										flowTriggerId,
+										enable: data.trigger.enable,
 									},
 								},
 							});

@@ -17,6 +17,7 @@ const TriggerConfiguredState = z.object({
 const TriggerReconfiguringState = z.object({
 	status: z.literal("reconfiguring"),
 	flowTriggerId: FlowTriggerId.schema,
+	enable: z.boolean(),
 });
 const TriggerConfigurationState = z.discriminatedUnion("status", [
 	TriggerUnconfiguredState,

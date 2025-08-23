@@ -355,6 +355,10 @@ export function Installed({
 									} else {
 										startTransition(async () => {
 											try {
+												const enable =
+													node.content.state.status === "reconfiguring"
+														? node.content.state.enable
+														: false;
 												const event =
 													currentCallsignEvent ??
 													createTriggerEvent(step.eventId);
@@ -374,7 +378,7 @@ export function Installed({
 													trigger: {
 														nodeId: node.id,
 														workspaceId: workspace?.id,
-														enable: false,
+														enable,
 														configuration: {
 															provider: "github",
 															repositoryNodeId: step.repoNodeId,
