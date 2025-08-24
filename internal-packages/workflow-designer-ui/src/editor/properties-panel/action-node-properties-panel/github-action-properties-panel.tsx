@@ -414,19 +414,6 @@ function Installed({
 				});
 			} else if (node.content.command.state.status === "reconfiguring") {
 				// For reconfiguration: change repository and complete configuration
-				const action = githubActions[node.content.command.state.commandId];
-				const inputs: Input[] = [];
-				for (const key of action.command.parameters.keyof().options) {
-					// @ts-expect-error shape[parameter] is unreasonable but intentional
-					const schema = action.command.parameters.shape[key] as AnyZodObject;
-					inputs.push({
-						id: InputId.generate(),
-						accessor: key,
-						label: key,
-						isRequired: !schema.isOptional(),
-					});
-				}
-
 				updateNodeData(node, {
 					content: {
 						...node.content,
@@ -434,22 +421,13 @@ function Installed({
 							...node.content.command,
 							provider: "github",
 							state: {
+								...node.content.command.state,
 								status: "configured",
-								commandId: action.command.id,
 								repositoryNodeId: value.repoNodeId,
 								installationId: value.installationId,
 							},
 						},
 					},
-					name: node.name ?? action.command.label,
-					inputs: node.inputs ?? inputs,
-					outputs: node.outputs ?? [
-						{
-							id: OutputId.generate(),
-							label: "output",
-							accessor: "action-result",
-						},
-					],
 				});
 			} else {
 				throw new Error(
