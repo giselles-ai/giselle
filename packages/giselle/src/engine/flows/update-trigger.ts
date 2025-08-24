@@ -46,7 +46,7 @@ export async function updateTrigger(args: {
 			}),
 		]);
 	}
-	
+
 	const updatedTrigger = {
 		...currentTrigger,
 		configuration: {
@@ -60,7 +60,7 @@ export async function updateTrigger(args: {
 		storage: args.context.storage,
 		flowTrigger: updatedTrigger,
 	});
-	
+
 	const workspace = await getWorkspace({
 		storage: args.context.storage,
 		experimental_storage: args.context.experimental_storage,
