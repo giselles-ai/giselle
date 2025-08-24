@@ -28,15 +28,6 @@ export function GitHubTriggerReconfiguringView({
 		return "Unexpected state";
 	}
 
-	const currentCallsign =
-		data.trigger.configuration.event.id === "github.issue_comment.created" ||
-		data.trigger.configuration.event.id ===
-			"github.pull_request_comment.created" ||
-		data.trigger.configuration.event.id ===
-			"github.pull_request_review_comment.created"
-			? data.trigger.configuration.event.conditions.callsign
-			: undefined;
-
 	const reconfigStep = {
 		state: "select-repository" as const,
 		eventId: data.trigger.configuration.event.id,
@@ -49,8 +40,6 @@ export function GitHubTriggerReconfiguringView({
 			installationUrl={installationUrl}
 			reconfigStep={reconfigStep}
 			flowTriggerId={flowTriggerId}
-			currentCallsign={currentCallsign}
-			currentEnable={data.trigger.enable}
 		/>
 	);
 }

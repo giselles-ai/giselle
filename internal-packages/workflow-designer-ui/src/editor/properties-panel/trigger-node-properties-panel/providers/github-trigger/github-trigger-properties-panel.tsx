@@ -139,16 +139,12 @@ export function Installed({
 	installationUrl,
 	reconfigStep,
 	flowTriggerId,
-	currentCallsign,
-	currentEnable,
 }: {
 	installations: GitHubIntegrationInstallation[];
 	node: TriggerNode;
 	installationUrl: string;
 	reconfigStep?: SelectRepositoryStep;
 	flowTriggerId?: FlowTriggerId;
-	currentCallsign?: string;
-	currentEnable?: boolean;
 }) {
 	const { experimental_storage } = useFeatureFlag();
 	const [step, setStep] = useState<GitHubTriggerSetupStep>(
@@ -356,11 +352,7 @@ export function Installed({
 									} else {
 										startTransition(async () => {
 											try {
-												const enable = currentEnable ?? false;
-												const event = createTriggerEvent(
-													step.eventId,
-													currentCallsign,
-												);
+												const event = createTriggerEvent(step.eventId);
 												const trigger = githubTriggers[step.eventId];
 												const outputs: Output[] = [];
 
@@ -390,7 +382,7 @@ export function Installed({
 														trigger: {
 															nodeId: node.id,
 															workspaceId: workspace?.id,
-															enable,
+															enable: false,
 															configuration: {
 																provider: "github",
 																repositoryNodeId: step.repoNodeId,
