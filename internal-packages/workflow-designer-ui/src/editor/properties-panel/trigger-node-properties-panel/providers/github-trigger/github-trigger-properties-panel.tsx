@@ -373,21 +373,35 @@ export function Installed({
 													});
 												}
 
-												const { triggerId } = await client.configureTrigger({
-													trigger: {
-														nodeId: node.id,
-														workspaceId: workspace?.id,
-														enable,
-														configuration: {
-															provider: "github",
-															repositoryNodeId: step.repoNodeId,
-															installationId: step.installationId,
-															event,
+												let triggerId: FlowTriggerId;
+												if (
+													node.content.state.status === "reconfiguring" &&
+													flowTriggerId !== undefined
+												) {
+													const result = await client.updateTrigger({
+														flowTriggerId,
+														repositoryNodeId: step.repoNodeId,
+														installationId: step.installationId,
+														useExperimentalStorage: experimental_storage,
+													});
+													triggerId = result.triggerId;
+												} else {
+													const result = await client.configureTrigger({
+														trigger: {
+															nodeId: node.id,
+															workspaceId: workspace?.id,
+															enable,
+															configuration: {
+																provider: "github",
+																repositoryNodeId: step.repoNodeId,
+																installationId: step.installationId,
+																event,
+															},
 														},
-													},
-													useExperimentalStorage: experimental_storage,
-													flowTriggerId,
-												});
+														useExperimentalStorage: experimental_storage,
+													});
+													triggerId = result.triggerId;
+												}
 
 												updateNodeData(node, {
 													content: {
@@ -397,7 +411,8 @@ export function Installed({
 															flowTriggerId: triggerId,
 														},
 													},
-													outputs: node.outputs ?? outputs,
+													outputs:
+														node.outputs.length > 0 ? node.outputs : outputs,
 													name: node.name ?? `On ${trigger.event.label}`,
 												});
 											} catch (_error) {
