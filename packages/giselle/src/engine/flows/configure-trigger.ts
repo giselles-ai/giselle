@@ -17,9 +17,8 @@ export async function configureTrigger(args: {
 	context: GiselleEngineContext;
 	trigger: ConfigureTriggerInput;
 	useExperimentalStorage: boolean;
-	flowTriggerId?: FlowTriggerId;
 }) {
-	const flowTriggerId = args.flowTriggerId ?? FlowTriggerId.generate();
+	const flowTriggerId = FlowTriggerId.generate();
 	const [workspace] = await Promise.all([
 		getWorkspace({
 			storage: args.context.storage,
