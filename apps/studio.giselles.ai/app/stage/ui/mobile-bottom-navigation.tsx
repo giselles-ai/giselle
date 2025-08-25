@@ -67,31 +67,19 @@ export function MobileBottomNavigation({
 					/>
 				</Link>
 
-				{/* Navigation items */}
-				{navigationItems.map((item) => {
-					const isActive = item.isActive
-						? item.isActive(pathname)
-						: pathname === item.href;
-					const Icon = item.icon;
-
-					// Special handling for New task button
-					if (item.id === "new-task-link") {
-						return (
-							<Button
-								key={item.id}
-								variant="glass"
-								onClick={() => router.push(item.href)}
-								className="flex flex-col items-center justify-center transition-colors flex-1 max-w-16 mx-auto h-auto [&>div]:flex [&>div]:flex-col [&>div]:items-center [&>div]:justify-center [&[data-size]]:px-4 [&[data-size]]:py-3 [&[data-size]]:rounded-2xl"
-							>
-								<Icon className="size-5 flex-shrink-0" />
-							</Button>
-						);
-					}
-
+				{/* Showcase */}
+				{(() => {
+					const showcaseItem = navigationItems.find(
+						(item) => item.id === "showcase-link",
+					);
+					if (!showcaseItem) return null;
+					const isActive = showcaseItem.isActive
+						? showcaseItem.isActive(pathname)
+						: pathname === showcaseItem.href;
+					const Icon = showcaseItem.icon;
 					return (
 						<Link
-							key={item.id}
-							href={item.href}
+							href={showcaseItem.href}
 							className={`flex flex-col items-center justify-center px-3 py-2 transition-colors flex-1 ${
 								isActive
 									? "text-[var(--color-stage-sidebar-text-hover)]"
@@ -101,7 +89,49 @@ export function MobileBottomNavigation({
 							<Icon className="size-5 flex-shrink-0" />
 						</Link>
 					);
-				})}
+				})()}
+
+				{/* New task (center) */}
+				{(() => {
+					const newTaskItem = navigationItems.find(
+						(item) => item.id === "new-task-link",
+					);
+					if (!newTaskItem) return null;
+					const Icon = newTaskItem.icon;
+					return (
+						<Button
+							variant="glass"
+							onClick={() => router.push(newTaskItem.href)}
+							className="flex flex-col items-center justify-center transition-colors flex-1 max-w-16 mx-auto h-auto [&>div]:flex [&>div]:flex-col [&>div]:items-center [&>div]:justify-center [&[data-size]]:px-4 [&[data-size]]:py-3 [&[data-size]]:rounded-2xl"
+						>
+							<Icon className="size-5 flex-shrink-0" />
+						</Button>
+					);
+				})()}
+
+				{/* Tasks */}
+				{(() => {
+					const tasksItem = navigationItems.find(
+						(item) => item.id === "tasks-link",
+					);
+					if (!tasksItem) return null;
+					const isActive = tasksItem.isActive
+						? tasksItem.isActive(pathname)
+						: pathname === tasksItem.href;
+					const Icon = tasksItem.icon;
+					return (
+						<Link
+							href={tasksItem.href}
+							className={`flex flex-col items-center justify-center px-3 py-2 transition-colors flex-1 ${
+								isActive
+									? "text-[var(--color-stage-sidebar-text-hover)]"
+									: "text-[var(--color-stage-sidebar-text)] hover:text-[var(--color-stage-sidebar-text-hover)]"
+							}`}
+						>
+							<Icon className="size-5 flex-shrink-0" />
+						</Link>
+					);
+				})()}
 
 				{/* Right more icon */}
 				<button
