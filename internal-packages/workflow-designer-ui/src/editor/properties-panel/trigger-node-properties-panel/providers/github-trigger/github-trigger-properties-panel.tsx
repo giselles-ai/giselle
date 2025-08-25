@@ -352,7 +352,6 @@ export function Installed({
 									} else {
 										startTransition(async () => {
 											try {
-												const event = createTriggerEvent(step.eventId);
 												const trigger = githubTriggers[step.eventId];
 												const outputs: Output[] = [];
 
@@ -378,6 +377,7 @@ export function Installed({
 													});
 													triggerId = result.triggerId;
 												} else {
+													const event = createTriggerEvent(step.eventId);
 													const result = await client.configureTrigger({
 														trigger: {
 															nodeId: node.id,
