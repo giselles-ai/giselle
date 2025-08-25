@@ -6,16 +6,10 @@ import {
 	DialogFooter,
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
-import clsx from "clsx/lite";
+
 import { X } from "lucide-react";
-import {
-	Card,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ViewTypeSelector } from "@/components/view-type-selector";
+import { useViewPreferences } from "@/hooks/use-view-preferences";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "../../(main)/settings/components/button";
 
@@ -23,17 +17,14 @@ interface SettingsDialogProps {
 	isOpen: boolean;
 	onOpenChange: (open: boolean) => void;
 	isMobile: boolean;
-	isCarouselView: boolean;
-	setIsCarouselView: (value: boolean) => void;
 }
 
 export function SettingsDialog({
 	isOpen,
 	onOpenChange,
 	isMobile,
-	isCarouselView,
-	setIsCarouselView,
 }: SettingsDialogProps) {
+	const { viewType, setViewType } = useViewPreferences();
 	const handleClose = () => onOpenChange(false);
 
 	if (isMobile) {
@@ -66,71 +57,12 @@ export function SettingsDialog({
 
 						<div className="mt-4">
 							{/* View Type Selection */}
-							<div className="mb-6">
-								<Label className="text-white-800 font-medium text-[12px] leading-[20.4px] font-geist">
-									Display Type
-								</Label>
-								<RadioGroup
-									value={isCarouselView ? "carousel" : "list"}
-									onValueChange={(value) =>
-										setIsCarouselView(value === "carousel")
-									}
-									className="grid grid-cols-1 gap-3 mt-2"
-								>
-									<Card
-										className={clsx(
-											"cursor-pointer border-[1px]",
-											!isCarouselView ? "border-blue-500" : "border-white/10",
-										)}
-									>
-										<label htmlFor="list">
-											<CardHeader className="p-3">
-												<div className="flex items-center gap-3">
-													<RadioGroupItem
-														value="list"
-														id="list"
-														className="text-blue-500 data-[state=checked]:border-[1.5px] data-[state=checked]:border-blue-500"
-													/>
-													<div className="flex flex-col gap-1">
-														<CardTitle className="text-white-400 text-[14px] font-sans">
-															List
-														</CardTitle>
-														<CardDescription className="text-black-400 font-medium text-[12px] font-geist">
-															Simple vertical list
-														</CardDescription>
-													</div>
-												</div>
-											</CardHeader>
-										</label>
-									</Card>
-									<Card
-										className={clsx(
-											"cursor-pointer border-[1px]",
-											isCarouselView ? "border-blue-500" : "border-white/10",
-										)}
-									>
-										<label htmlFor="carousel">
-											<CardHeader className="p-3">
-												<div className="flex items-center gap-3">
-													<RadioGroupItem
-														value="carousel"
-														id="carousel"
-														className="text-blue-500 data-[state=checked]:border-[1.5px] data-[state=checked]:border-blue-500"
-													/>
-													<div className="flex flex-col gap-1">
-														<CardTitle className="text-white-400 text-[14px] font-sans">
-															Carousel
-														</CardTitle>
-														<CardDescription className="text-black-400 font-medium text-[12px] font-geist">
-															Interactive circular layout
-														</CardDescription>
-													</div>
-												</div>
-											</CardHeader>
-										</label>
-									</Card>
-								</RadioGroup>
-							</div>
+							<ViewTypeSelector
+								viewType={viewType}
+								onViewTypeChange={setViewType}
+								layout="vertical"
+								className="mb-6"
+							/>
 
 							{/* Font Options */}
 							<div className="mb-6">
@@ -187,69 +119,12 @@ export function SettingsDialog({
 				</div>
 
 				{/* View Type Selection */}
-				<div className="mb-6">
-					<Label className="text-white-800 font-medium text-[12px] leading-[20.4px] font-geist">
-						Display Type
-					</Label>
-					<RadioGroup
-						value={isCarouselView ? "carousel" : "list"}
-						onValueChange={(value) => setIsCarouselView(value === "carousel")}
-						className="grid grid-cols-2 gap-4 mt-2"
-					>
-						<Card
-							className={clsx(
-								"cursor-pointer border-[1px]",
-								!isCarouselView ? "border-blue-500" : "border-white/10",
-							)}
-						>
-							<label htmlFor="list">
-								<CardHeader>
-									<div className="flex flex-col gap-2">
-										<CardTitle className="text-white-400 text-[16px] leading-[27.2px] tracking-normal font-sans">
-											List
-										</CardTitle>
-										<div className="flex items-center mb-2">
-											<RadioGroupItem
-												value="list"
-												id="list"
-												className="text-blue-500 data-[state=checked]:border-[1.5px] data-[state=checked]:border-blue-500"
-											/>
-										</div>
-										<CardDescription className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
-											Simple vertical list
-										</CardDescription>
-									</div>
-								</CardHeader>
-							</label>
-						</Card>
-						<Card
-							className={clsx(
-								"cursor-pointer border-[1px]",
-								isCarouselView ? "border-blue-500" : "border-white/10",
-							)}
-						>
-							<label htmlFor="carousel">
-								<CardHeader>
-									<div className="flex flex-col gap-2">
-										<CardTitle className="text-white-400 text-[16px] leading-[27.2px] tracking-normal font-sans">
-											Carousel
-										</CardTitle>
-										<div className="flex items-center mb-2">
-											<RadioGroupItem
-												value="carousel"
-												id="carousel"
-												className="text-blue-500 data-[state=checked]:border-[1.5px] data-[state=checked]:border-blue-500"
-											/>
-										</div>
-										<CardDescription className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
-											Interactive circular layout
-										</CardDescription>
-									</div>
-								</CardHeader>
-							</label>
-						</Card>
-					</RadioGroup>
-				</div>
+				<ViewTypeSelector
+					viewType={viewType}
+					onViewTypeChange={setViewType}
+					layout="horizontal"
+					className="mb-6"
+				/>
 
 				{/* Font Options */}
 				<div className="mb-6">

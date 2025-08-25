@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import { useViewPreferences } from "@/hooks/use-view-preferences";
 
 export function useUIState() {
 	const [isMobile, setIsMobile] = useState(false);
-	const [isCarouselView, setIsCarouselView] = useState(false);
 	const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+	const { isCarouselView, setIsCarouselView } = useViewPreferences();
 
 	useEffect(() => {
 		const checkMobile = () => {

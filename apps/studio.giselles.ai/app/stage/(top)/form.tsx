@@ -52,7 +52,6 @@ export function Form({
 	const {
 		isMobile,
 		isCarouselView,
-		setIsCarouselView,
 		isSettingsModalOpen,
 		setIsSettingsModalOpen,
 	} = useUIState();
@@ -417,8 +416,6 @@ export function Form({
 				isOpen={isSettingsModalOpen}
 				onOpenChange={setIsSettingsModalOpen}
 				isMobile={isMobile}
-				isCarouselView={isCarouselView}
-				setIsCarouselView={setIsCarouselView}
 			/>
 		</div>
 	);
