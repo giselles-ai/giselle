@@ -1,9 +1,7 @@
-import {
-	type FlowTriggerId,
-	type GitHubFlowTriggerEvent,
-	type Output,
-	OutputId,
-	type TriggerNode,
+import type {
+	FlowTriggerId,
+	GitHubFlowTriggerEvent,
+	TriggerNode,
 } from "@giselle-sdk/data-type";
 import { type GitHubTriggerEventId, githubTriggers } from "@giselle-sdk/flow";
 import type { GitHubIntegrationInstallation } from "@giselle-sdk/giselle";
@@ -29,15 +27,40 @@ import { EventTypeDisplay } from "./components/event-type-display";
 import { InstallGitHubApplication } from "./components/install-application";
 import { RepositoryDisplay } from "./components/repository-display";
 import { Unauthorized } from "./components/unauthorized";
-import { createTriggerEvent } from "./utils/trigger-configuration";
+import { GitHubTriggerTemplateConfiguredView } from "./ui/GitHubTriggerTemplateConfiguredView";
+import {
+	createTriggerEvent,
+	deriveTriggerOutputs,
+} from "./utils/trigger-configuration";
+
+interface TemplateConfiguredState {
+	status: "template-configured";
+	provider: "github";
+	eventId: GitHubTriggerEventId;
+	callsign?: string;
+}
 
 export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	const { value } = useIntegration();
+	const [connectTemplate, setConnectTemplate] = useState(false);
 
 	if (node.content.state.status === "configured") {
 		return (
 			<GitHubTriggerConfiguredView
 				flowTriggerId={node.content.state.flowTriggerId}
+			/>
+		);
+	}
+
+	if (
+		(node.content.state as TemplateConfiguredState).status ===
+			"template-configured" &&
+		!connectTemplate
+	) {
+		return (
+			<GitHubTriggerTemplateConfiguredView
+				node={node}
+				onConnectRepository={() => setConnectTemplate(true)}
 			/>
 		);
 	}
@@ -59,14 +82,18 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 			);
 		case "invalid-credential":
 			return "invalid-credential";
-		case "installed":
+		case "installed": {
+			const templateState = node.content.state as TemplateConfiguredState;
 			return (
 				<Installed
 					installations={value.github.installations}
 					node={node}
 					installationUrl={value.github.installationUrl}
+					initialEvent={connectTemplate ? templateState.eventId : undefined}
+					initialCallsign={connectTemplate ? templateState.callsign : undefined}
 				/>
 			);
+		}
 		case "error":
 			return `GitHub integration error: ${value.github.errorMessage}`;
 		default: {
@@ -124,21 +151,28 @@ function Installed({
 	installations,
 	node,
 	installationUrl,
+	initialEvent,
+	initialCallsign,
 }: {
 	installations: GitHubIntegrationInstallation[];
 	node: TriggerNode;
 	installationUrl: string;
+	initialEvent?: GitHubTriggerEventId;
+	initialCallsign?: string;
 }) {
 	const { experimental_storage } = useFeatureFlag();
-	const [step, setStep] = useState<GitHubTriggerSetupStep>({
-		state: "select-event",
-	});
+	const [step, setStep] = useState<GitHubTriggerSetupStep>(
+		initialEvent
+			? { state: "select-repository", eventId: initialEvent }
+			: { state: "select-event" },
+	);
 	const { data: workspace, updateNodeData } = useWorkflowDesigner();
 	const client = useGiselleEngine();
 	const [isPending, startTransition] = useTransition();
 	const [eventId, setEventId] = useState<GitHubTriggerEventId>(
-		"github.issue.created",
+		initialEvent ?? "github.issue.created",
 	);
+	const [callsign, setCallsign] = useState(initialCallsign ?? "");
 
 	// Helper function to create callsign events
 	const createCallsignEvent = useCallback(
@@ -189,16 +223,7 @@ function Installed({
 				return;
 			}
 
-			const trigger = githubTriggers[event.id];
-			const outputs: Output[] = [];
-
-			for (const key of trigger.event.payloads.keyof().options) {
-				outputs.push({
-					id: OutputId.generate(),
-					label: key,
-					accessor: key,
-				});
-			}
+			const outputs = deriveTriggerOutputs(event.id);
 
 			startTransition(async () => {
 				try {
@@ -226,7 +251,7 @@ function Installed({
 							},
 						},
 						outputs: [...node.outputs, ...outputs],
-						name: `On ${trigger.event.label}`,
+						name: `On ${githubTriggers[event.id].event.label}`,
 					});
 				} catch (_error) {
 					// Error is handled by the UI state
@@ -251,13 +276,33 @@ function Installed({
 			{step.state === "select-event" && (
 				<EventSelectionStep
 					selectedEventId={eventId}
+					callsign={callsign}
 					onSelectEvent={(id) => {
 						setEventId(id);
-						setStep({
-							state: "select-repository",
-							eventId: id,
+					}}
+					onCallsignChange={(v) => setCallsign(v)}
+					onContinue={() => {
+						setStep({ state: "select-repository", eventId });
+					}}
+					onUseAsTemplate={() => {
+						const outputs = deriveTriggerOutputs(eventId);
+						updateNodeData(node, {
+							content: {
+								...node.content,
+								state: {
+									status: "template-configured",
+									provider: "github",
+									eventId,
+									callsign: callsign.length > 0 ? callsign : undefined,
+									outputs,
+									name: `On ${githubTriggers[eventId].event.label} [Repository setup required]`,
+								},
+							},
+							outputs,
+							name: `On ${githubTriggers[eventId].event.label} [Repository setup required]`,
 						});
 					}}
+					canContinue
 				/>
 			)}
 
@@ -333,17 +378,7 @@ function Installed({
 										startTransition(async () => {
 											try {
 												const event = createTriggerEvent(step.eventId);
-												const trigger = githubTriggers[step.eventId];
-												const outputs: Output[] = [];
-
-												for (const key of trigger.event.payloads.keyof()
-													.options) {
-													outputs.push({
-														id: OutputId.generate(),
-														label: key,
-														accessor: key,
-													});
-												}
+												const outputs = deriveTriggerOutputs(step.eventId);
 
 												const { triggerId } = await client.configureTrigger({
 													trigger: {
@@ -369,7 +404,7 @@ function Installed({
 														},
 													},
 													outputs: [...node.outputs, ...outputs],
-													name: `On ${trigger.event.label}`,
+													name: `On ${githubTriggers[step.eventId].event.label}`,
 												});
 											} catch (_error) {
 												// Error is handled by the UI state
