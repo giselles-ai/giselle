@@ -14,19 +14,19 @@ export type NavigationItem = LinkNavigationItem;
 
 export const navigationItems = [
 	{
+		id: "new-task-link",
+		type: "link",
+		icon: SparklesIcon,
+		label: "New task",
+		href: "/stage",
+	},
+	{
 		id: "showcase-link",
 		type: "link",
 		icon: LibraryIcon,
 		label: "Showcase",
 		href: "/stage/showcase",
 		isActive: (pathname: string) => pathname === "/stage/showcase",
-	},
-	{
-		id: "new-task-link",
-		type: "link",
-		icon: SparklesIcon,
-		label: "New task",
-		href: "/stage",
 	},
 	{
 		id: "tasks-link",
