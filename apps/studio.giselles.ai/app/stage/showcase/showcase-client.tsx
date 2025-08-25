@@ -192,8 +192,8 @@ export function ShowcaseClient({
 	);
 
 	return (
-		<div className="flex-1 px-[24px] bg-[var(--color-stage-background)] pt-16 md:pt-0 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 h-full flex flex-col">
-			<div className="py-6 h-full flex flex-col">
+		<div className="flex-1 px-[24px] bg-[var(--color-stage-background)] pt-4 md:pt-0 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 h-full flex flex-col">
+			<div className="py-1 md:py-6 h-full flex flex-col">
 				<div className="flex items-center justify-between px-1 mb-6">
 					<div>
 						<h1
@@ -264,7 +264,7 @@ export function ShowcaseClient({
 				<div className="flex-1 overflow-auto min-h-0">
 					{activeTab === "Apps" && (
 						<>
-							<div className="mb-4 flex flex-col sm:flex-row gap-3 items-center">
+							<div className="mb-4 flex flex-row gap-3 items-center">
 								<div className="relative flex-1 w-full">
 									<Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black-300 h-4 w-4" />
 									<Input
@@ -509,7 +509,7 @@ export function ShowcaseClient({
 
 					{activeTab === "History" && (
 						<>
-							<div className="mb-4 flex flex-col sm:flex-row gap-3 items-center">
+							<div className="mb-4 flex flex-row gap-3 items-center">
 								<div className="relative flex-1 w-full">
 									<Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black-300 h-4 w-4" />
 									<Input
