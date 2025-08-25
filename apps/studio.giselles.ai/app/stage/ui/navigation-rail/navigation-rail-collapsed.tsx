@@ -26,8 +26,8 @@ export function NavigationRailCollapsed({
 					onClick={() => onExpandButtonClick()}
 					className="cursor-e-resize"
 				>
-					<GiselleIcon className="size-6 text-text-muted stroke-1 group-hover:hidden" />
-					<PanelLeftOpenIcon className="size-6 text-text-muted stroke-1 hidden group-hover:block" />
+					<GiselleIcon className="size-6 text-[var(--color-stage-sidebar-text-hover)] stroke-1 group-hover:hidden" />
+					<PanelLeftOpenIcon className="size-6 text-[var(--color-stage-sidebar-text)] stroke-1 hidden group-hover:block" />
 				</MenuButton>
 			</NavigationRailHeader>
 			<NavigationRailContentsContainer>

@@ -24,16 +24,18 @@ export function NavigationRailExpanded({
 			<NavigationRailHeader>
 				<div className="flex items-center justify-start w-full">
 					<div className="size-8 flex justify-center items-center">
-						<GiselleIcon className="size-6 text-text-muted stroke-1 group-hover:hidden shrink-0" />
+						<GiselleIcon className="size-6 text-[var(--color-stage-sidebar-text-hover)] stroke-1 group-hover:hidden shrink-0" />
 					</div>
-					<p className="text-white-900 text-[13px] font-semibold">Stage</p>
+					<p className="text-[var(--color-stage-sidebar-text-hover)] text-[13px] font-semibold">
+						Stage
+					</p>
 				</div>
 				<div className="absolute right-3 top-1.5">
 					<MenuButton
 						onClick={() => onCollapseButtonClick()}
 						className="cursor-w-resize"
 					>
-						<PanelLeftCloseIcon className="size-6 text-text-muted stroke-1" />
+						<PanelLeftCloseIcon className="size-6 text-[var(--color-stage-sidebar-text)] stroke-1" />
 					</MenuButton>
 				</div>
 			</NavigationRailHeader>
