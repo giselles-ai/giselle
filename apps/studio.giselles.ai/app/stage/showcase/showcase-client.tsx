@@ -264,7 +264,7 @@ export function ShowcaseClient({
 				<div className="flex-1 overflow-auto min-h-0">
 					{activeTab === "Apps" && (
 						<>
-							<div className="mb-4 flex flex-row gap-3 items-center">
+							<div className="mb-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
 								<div className="relative flex-1 w-full">
 									<Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black-300 h-4 w-4" />
 									<Input
@@ -509,7 +509,7 @@ export function ShowcaseClient({
 
 					{activeTab === "History" && (
 						<>
-							<div className="mb-4 flex flex-row gap-3 items-center">
+							<div className="mb-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
 								<div className="relative flex-1 w-full">
 									<Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black-300 h-4 w-4" />
 									<Input
