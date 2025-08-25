@@ -3,7 +3,6 @@
 import {
 	Dialog,
 	DialogContent,
-	DialogFooter,
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
 import { PopoverContent } from "@giselle-internal/ui/popover";
@@ -21,10 +20,8 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { cn } from "@/lib/utils";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { SignOutButton } from "@/services/accounts/components/user-button/sign-out-button";
-import { buttonVariants } from "../../../(main)/settings/components/button";
 import type { NavigationRailState, UserDataForNavigationRail } from "./types";
 
 const HELP_ITEMS = [
@@ -319,7 +316,6 @@ export function NavigationRailFooterMenu({
 							<option className="bg-gray-900">Coming Soon</option>
 						</select>
 					</div>
-
 				</DialogContent>
 			</Dialog>
 		</DropdownMenuPrimitive.Root>

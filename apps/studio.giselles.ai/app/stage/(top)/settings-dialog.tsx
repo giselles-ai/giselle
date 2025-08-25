@@ -3,7 +3,6 @@
 import {
 	Dialog,
 	DialogContent,
-	DialogFooter,
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
 import clsx from "clsx/lite";
@@ -16,8 +15,6 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "../../(main)/settings/components/button";
 
 interface SettingsDialogProps {
 	isOpen: boolean;
@@ -141,7 +138,6 @@ export function SettingsDialog({
 									Coming Soon
 								</div>
 							</div>
-
 						</div>
 					</div>
 				</div>
@@ -246,7 +242,6 @@ export function SettingsDialog({
 						<option className="bg-gray-900">Coming Soon</option>
 					</select>
 				</div>
-
 			</DialogContent>
 		</Dialog>
 	);
