@@ -102,7 +102,9 @@ export function Select<T extends SelectOption>({
 									<SelectPrimitive.ItemText>
 										{option.icon ? (
 											<div className="flex items-center gap-2">
-												<span className="h-4 w-4">{option.icon}</span>
+												<div className="h-6 w-6 flex items-center justify-center flex-shrink-0">
+													{option.icon}
+												</div>
 												{renderOption ? renderOption(option) : option.label}
 											</div>
 										) : renderOption ? (
