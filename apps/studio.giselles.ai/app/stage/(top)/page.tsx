@@ -34,8 +34,8 @@ export default async function StagePage({
 	}
 
 	const searchParamsResolved = await searchParams;
-	// Default to 'history' when no filter param, otherwise use the specified filter (including 'all' for reset)
-	const filterType = (searchParamsResolved.filter as FilterType) || "history";
+	// Default to 'all' when no filter param, otherwise use the specified filter
+	const filterType = (searchParamsResolved.filter as FilterType) || "all";
 	const user = await fetchCurrentUser();
 	const teams = await fetchUserTeams();
 	const acts = await fetchEnrichedActs(teams, user);
@@ -64,7 +64,9 @@ export default async function StagePage({
 				actsContent={
 					<div className="space-y-4 py-6 px-4 h-full overflow-y-auto">
 						<div className="flex items-center justify-between">
-							<h2 className="text-[16px] font-sans text-white-100">Tasks</h2>
+							<h2 className="text-[16px] font-sans text-white-100">
+								Latest tasks
+							</h2>
 							<Link
 								href="/stage/acts"
 								className="text-[14px] text-white-100 hover:text-white-80 transition-colors"
