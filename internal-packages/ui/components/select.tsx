@@ -34,6 +34,12 @@ export function Select<T extends SelectOption>({
 	id,
 	renderValue,
 }: SelectProps<T>) {
+	const selectedOption = options.find((option) =>
+		renderValue
+			? `${renderValue(option)}` === value
+			: `${option.value}` === value,
+	);
+
 	return (
 		<SelectPrimitive.Root
 			value={value}
@@ -52,8 +58,25 @@ export function Select<T extends SelectOption>({
 						widthClassName,
 					)}
 				>
-					<SelectPrimitive.Value placeholder={placeholder} />
-					<ChevronDownIcon className="size-[13px] shrink-0 text-text" />
+					<div className="flex items-center gap-2 min-w-0">
+						{selectedOption ? (
+							<>
+								{selectedOption.icon && (
+									<div className="h-6 w-6 flex items-center justify-center flex-shrink-0">
+										{selectedOption.icon}
+									</div>
+								)}
+								<span className="truncate">
+									{renderOption
+										? renderOption(selectedOption)
+										: selectedOption.label}
+								</span>
+							</>
+						) : (
+							<span className="text-text-muted">{placeholder}</span>
+						)}
+					</div>
+					<ChevronDownIcon className="size-[13px] shrink-0 text-text ml-2" />
 				</button>
 			</SelectPrimitive.Trigger>
 			<SelectPrimitive.Portal>
