@@ -20,7 +20,7 @@ import {
 } from "../../../icons";
 import { Button } from "../../../ui/button";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
-import { KeyboardShortcuts } from "../../components/keyboard-shortcuts";
+import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
@@ -53,6 +53,14 @@ export function TextGenerationNodePropertiesPanel({
 	const { error } = useToasts();
 
 	const uiState = useMemo(() => data.ui.nodeState[node.id], [data, node.id]);
+
+	useKeyboardShortcuts({
+		onGenerate: () => {
+			if (!isGenerating) {
+				generateText();
+			}
+		},
+	});
 
 	const generateText = useCallback(() => {
 		if (usageLimitsReached) {
@@ -172,13 +180,6 @@ export function TextGenerationNodePropertiesPanel({
 					</Panel>
 				</PanelGroup>
 			</PropertiesPanelContent>
-			<KeyboardShortcuts
-				generate={() => {
-					if (!isGenerating) {
-						generateText();
-					}
-				}}
-			/>
 		</PropertiesPanelRoot>
 	);
 }

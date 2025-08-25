@@ -13,7 +13,7 @@ import { Tabs } from "radix-ui";
 import { useCallback, useMemo } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Button } from "../../../ui/button";
-import { KeyboardShortcuts } from "../../components/keyboard-shortcuts";
+import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
@@ -42,6 +42,14 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 		}
 		return rawQuery;
 	}, [node.content.query]);
+
+	useKeyboardShortcuts({
+		onGenerate: () => {
+			if (!isGenerating) {
+				generate();
+			}
+		},
+	});
 
 	const generate = useCallback(() => {
 		if (query.length === 0) {
@@ -145,13 +153,6 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 					</Panel>
 				</PanelGroup>
 			</PropertiesPanelContent>
-			<KeyboardShortcuts
-				generate={() => {
-					if (!isGenerating) {
-						generate();
-					}
-				}}
-			/>
 		</PropertiesPanelRoot>
 	);
 }
