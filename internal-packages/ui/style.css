@@ -36,9 +36,19 @@
 	--color-text-placeholder: #878a98;
 	--color-text-disabled: #878a98;
 	--color-text-accent: #74ade8;
+	--color-text-nav-active: #b5c0c9;
+	--color-text-nav-inactive: #515d7b;
 
 	/* panel */
 	--color-panel-background: #2f343e;
+
+	/* stage */
+	--color-stage-background: #030610;
+	--color-stage-form-background: #101520;
+	--shadow-stage-form:
+		0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1),
+		0 0 20px rgba(59, 130, 246, 0.15), 0 0 40px rgba(59, 130, 246, 0.1),
+		inset 0 -1px 0 rgba(59, 130, 246, 0.2);
 
 	/* editor */
 	--color-editor-foreground: #acb2be;

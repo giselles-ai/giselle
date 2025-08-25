@@ -43,7 +43,6 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 		return rawQuery;
 	}, [node.content.query]);
 
-	// Use keyboard shortcuts hook with generate callback
 	useKeyboardShortcuts({
 		onGenerate: () => {
 			if (!isGenerating) {

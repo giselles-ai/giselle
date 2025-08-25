@@ -11,6 +11,7 @@ import { z } from "zod/v4";
 import { ActId } from "../identifiers";
 
 export const GenerationOriginStudio = z.object({
+	actId: z.optional(ActId.schema),
 	workspaceId: WorkspaceId.schema,
 	type: z.literal("studio"),
 });

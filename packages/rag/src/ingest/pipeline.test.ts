@@ -2,16 +2,50 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChunkStore } from "../chunk-store/types";
 import type { ChunkerFunction } from "../chunker/types";
 import type { DocumentLoader } from "../document-loader/types";
-import type { EmbedderFunction } from "../embedder/types";
 import { createPipeline } from "./pipeline";
+
+// Mock the data-type module for EMBEDDING_PROFILES
+vi.mock("@giselle-sdk/data-type", () => ({
+	EMBEDDING_PROFILES: {
+		1: {
+			provider: "openai",
+			model: "text-embedding-3-small",
+			dimensions: 1536,
+			name: "OpenAI text-embedding-3-small",
+		},
+		2: {
+			provider: "openai",
+			model: "text-embedding-3-large",
+			dimensions: 3072,
+			name: "OpenAI text-embedding-3-large",
+		},
+		3: {
+			provider: "google",
+			model: "gemini-embedding-001",
+			dimensions: 3072,
+			name: "Google gemini-embedding-001",
+		},
+	},
+}));
+
+// Mock the embedder/profiles module
+vi.mock("../embedder/profiles", () => ({
+	// biome-ignore lint/correctness/noUnusedFunctionParameters: mock
+	createEmbedderFromProfile: vi.fn((profileId, apiKey, options) => ({
+		embed: vi.fn(async () => [0.1, 0.2, 0.3]),
+		embedMany: vi.fn(async (texts) => texts.map(() => [0.1, 0.2, 0.3])),
+	})),
+}));
 
 describe("createPipeline", () => {
 	let mockDocumentLoader: DocumentLoader<{ path: string; version: string }>;
 	let mockChunker: ChunkerFunction;
-	let mockEmbedder: EmbedderFunction;
 	let mockChunkStore: ChunkStore<{ path: string; version: string }>;
 
 	beforeEach(() => {
+		// Set up mock API key for tests
+		process.env.OPENAI_API_KEY = "test-api-key";
+
 		mockDocumentLoader = {
 			async *loadMetadata() {
 				yield await Promise.resolve({ path: "file1.txt", version: "v1" });
@@ -27,11 +61,6 @@ describe("createPipeline", () => {
 
 		mockChunker = vi.fn((text) => [`chunk1 of ${text}`, `chunk2 of ${text}`]);
 
-		mockEmbedder = {
-			embed: vi.fn(async () => [0.1, 0.2, 0.3]),
-			embedMany: vi.fn(async (texts) => texts.map(() => [0.1, 0.2, 0.3])),
-		};
-
 		mockChunkStore = {
 			insert: vi.fn(async () => {}),
 			delete: vi.fn(async () => {}),
@@ -44,7 +73,7 @@ describe("createPipeline", () => {
 		const ingest = createPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
-			embedder: mockEmbedder,
+			embeddingProfileId: 1,
 			chunkStore: mockChunkStore,
 			documentKey: (metadata) => metadata.path,
 			documentVersion: (metadata) => metadata.version,
@@ -57,7 +86,7 @@ describe("createPipeline", () => {
 		expect(result.successfulDocuments).toBe(2);
 		expect(result.failedDocuments).toBe(0);
 		expect(mockChunker).toHaveBeenCalledTimes(2);
-		expect(mockEmbedder.embedMany).toHaveBeenCalled();
+		// Embedder is now mocked internally via createEmbedderFromProfile
 		expect(mockChunkStore.insert).toHaveBeenCalledTimes(2);
 	});
 
@@ -73,7 +102,7 @@ describe("createPipeline", () => {
 		const ingest = createPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
-			embedder: mockEmbedder,
+			embeddingProfileId: 1,
 			chunkStore: failingChunkStore,
 			documentKey: (metadata) => metadata.path,
 			documentVersion: (metadata) => metadata.version,
@@ -94,7 +123,7 @@ describe("createPipeline", () => {
 		const ingest = createPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
-			embedder: mockEmbedder,
+			embeddingProfileId: 1,
 			chunkStore: mockChunkStore,
 			documentKey: (metadata) => metadata.path,
 			documentVersion: (metadata) => metadata.version,
@@ -113,7 +142,7 @@ describe("createPipeline", () => {
 		const ingest = createPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
-			embedder: mockEmbedder,
+			embeddingProfileId: 1,
 			chunkStore: mockChunkStore,
 			documentKey: (metadata) => metadata.path,
 			documentVersion: (metadata) => metadata.version,
@@ -123,18 +152,21 @@ describe("createPipeline", () => {
 
 		await ingest();
 
-		// With batch size 1 and 2 chunks per document, should call embedMany 4 times
-		expect(mockEmbedder.embedMany).toHaveBeenCalledTimes(4);
+		// Embedder is now mocked internally via createEmbedderFromProfile
+		// Each document produces 2 chunks, so we should have 2 insert calls
+		expect(mockChunkStore.insert).toHaveBeenCalledTimes(2);
 	});
 });
 
 describe("createPipeline with differential ingestion", () => {
 	let mockDocumentLoader: DocumentLoader<{ path: string; sha: string }>;
 	let mockChunker: ChunkerFunction;
-	let mockEmbedder: EmbedderFunction;
 	let mockChunkStore: ChunkStore<{ path: string; sha: string }>;
 
 	beforeEach(() => {
+		// Set up mock API key for tests
+		process.env.OPENAI_API_KEY = "test-api-key";
+
 		mockDocumentLoader = {
 			async *loadMetadata() {
 				yield await Promise.resolve({ path: "file1.txt", sha: "sha1-new" });
@@ -150,11 +182,6 @@ describe("createPipeline with differential ingestion", () => {
 		};
 
 		mockChunker = vi.fn((text) => [`chunk1 of ${text}`, `chunk2 of ${text}`]);
-
-		mockEmbedder = {
-			embed: vi.fn(async () => [0.1, 0.2, 0.3]),
-			embedMany: vi.fn(async (texts) => texts.map(() => [0.1, 0.2, 0.3])),
-		};
 
 		mockChunkStore = {
 			insert: vi.fn(async () => {}),
@@ -172,7 +199,7 @@ describe("createPipeline with differential ingestion", () => {
 		const ingest = createPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
-			embedder: mockEmbedder,
+			embeddingProfileId: 1,
 			chunkStore: mockChunkStore,
 			documentKey: (metadata) => metadata.path,
 			documentVersion: (metadata) => metadata.sha,
@@ -215,7 +242,7 @@ describe("createPipeline with differential ingestion", () => {
 		const ingest = createPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
-			embedder: mockEmbedder,
+			embeddingProfileId: 1,
 			chunkStore: failingChunkStore,
 			documentKey: (metadata) => metadata.path,
 			documentVersion: (metadata) => metadata.sha,
@@ -239,7 +266,7 @@ describe("createPipeline with differential ingestion", () => {
 		const ingest = createPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
-			embedder: mockEmbedder,
+			embeddingProfileId: 1,
 			chunkStore: mockChunkStore,
 			documentKey: (metadata) => metadata.path,
 			documentVersion: (metadata) => metadata.sha,
@@ -269,7 +296,7 @@ describe("createPipeline with differential ingestion", () => {
 		const ingest = createPipeline({
 			documentLoader: mockDocumentLoader,
 			chunker: mockChunker,
-			embedder: mockEmbedder,
+			embeddingProfileId: 1,
 			chunkStore: unchangedChunkStore,
 			documentKey: (metadata) => metadata.path,
 			documentVersion: (metadata) => metadata.sha,

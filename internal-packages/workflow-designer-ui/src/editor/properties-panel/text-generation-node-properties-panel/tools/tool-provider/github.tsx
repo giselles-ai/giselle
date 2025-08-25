@@ -294,14 +294,7 @@ const githubToolCatalog = [
 	},
 	{
 		label: "Code Management",
-		tools: [
-			"createBranch",
-			"createOrUpdateFile",
-			"getCommit",
-			"listCommits",
-			"listCodeScanningAlerts",
-			"getCodeScanningAlert",
-		],
+		tools: ["createBranch", "createOrUpdateFile", "getCommit", "listCommits"],
 	},
 	{
 		label: "Search",
@@ -409,20 +402,38 @@ function GitHubToolConfigurationDialogInternal({
 										className="flex items-center justify-between p-3 hover:bg-black-800/30 cursor-pointer transition-colors"
 										htmlFor={tool}
 									>
-										<Checkbox.Root
-											className="group appearance-none size-[18px] rounded border flex items-center justify-center transition-colors outline-none data-[state=checked]:border-success data-[state=checked]:bg-success"
-											value={tool}
-											id={tool}
-											defaultChecked={node.content.tools?.github?.tools.includes(
-												tool,
-											)}
-											name="tools"
+										<div className="flex items-center flex-1">
+											<Checkbox.Root
+												className="group appearance-none size-[18px] rounded border flex items-center justify-center transition-colors outline-none data-[state=checked]:border-success data-[state=checked]:bg-success"
+												value={tool}
+												id={tool}
+												defaultChecked={
+													!!node.content.tools?.github?.tools?.includes(tool)
+												}
+												name="tools"
+											>
+												<Checkbox.Indicator className="text-background">
+													<CheckIcon className="size-[16px]" />
+												</Checkbox.Indicator>
+											</Checkbox.Root>
+											<p className="text-sm text-text flex-1 pl-[8px]">
+												{tool}
+											</p>
+										</div>
+										<a
+											href={`https://docs.giselles.ai/glossary/github-tools#${encodeURIComponent(
+												tool.toLowerCase(),
+											)}`}
+											target="_blank"
+											rel="noopener"
+											aria-label={`Open docs for ${tool}`}
+											className="flex items-center gap-[4px] text-[13px] text-text-muted hover:bg-ghost-element-hover transition-colors px-[4px] rounded-[2px] ml-2"
+											onMouseDown={(e) => e.stopPropagation()}
+											onClick={(e) => e.stopPropagation()}
 										>
-											<Checkbox.Indicator className="text-background">
-												<CheckIcon className="size-[16px]" />
-											</Checkbox.Indicator>
-										</Checkbox.Root>
-										<p className="text-sm text-text flex-1 pl-[8px]">{tool}</p>
+											<span>Docs</span>
+											<MoveUpRightIcon className="size-[13px]" />
+										</a>
 									</label>
 								))}
 							</div>

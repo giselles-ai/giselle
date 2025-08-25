@@ -86,3 +86,11 @@ export const GenerationOutput = z.discriminatedUnion("type", [
 	QueryResultOutput,
 ]);
 export type GenerationOutput = z.infer<typeof GenerationOutput>;
+
+export const OutputFileBlob = z.object({
+	outputId: OutputId.schema,
+	id: z.string(),
+	contentType: z.string(),
+	bytes: z.custom<Uint8Array<ArrayBufferLike>>(),
+});
+export type OutputFileBlob = z.infer<typeof OutputFileBlob>;

@@ -3,8 +3,9 @@ import type {
 	GiselleIntegrationConfig,
 	LanguageModelProvider,
 } from "@giselle-sdk/giselle";
-import { emitTelemetry, fsStorageDriver } from "@giselle-sdk/giselle";
+import { fsStorageDriver } from "@giselle-sdk/giselle";
 import { NextGiselleEngine } from "@giselle-sdk/giselle/next-internal";
+import { traceGeneration } from "@giselle-sdk/langfuse";
 import { supabaseStorageDriver as experimental_supabaseStorageDriver } from "@giselle-sdk/supabase-driver";
 import { createStorage } from "unstorage";
 import fsDriver from "unstorage/drivers/fs";
@@ -142,14 +143,11 @@ export const giselleEngine = NextGiselleEngine({
 	integrationConfigs,
 	sampleAppWorkspaceId,
 	callbacks: {
-		generationComplete: async (generation, options) => {
+		generationComplete: async (args) => {
 			try {
-				await emitTelemetry(generation, {
-					telemetry: options?.telemetry,
-					storage,
-				});
+				await traceGeneration(args);
 			} catch (error) {
-				console.error("Telemetry emission failed:", error);
+				console.error("Trace generation failed:", error);
 			}
 		},
 	},

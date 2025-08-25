@@ -83,6 +83,7 @@ async function fetchTeamWithSubscription(
 			id: teams.id,
 			dbId: teams.dbId,
 			name: teams.name,
+			avatarUrl: teams.avatarUrl,
 			type: teams.type,
 			activeSubscriptionId: subscriptions.id,
 		})
@@ -104,6 +105,7 @@ async function fetchTeamWithSubscription(
 		id: team.id as TeamId,
 		dbId: team.dbId,
 		name: team.name,
+		avatarUrl: team.avatarUrl,
 		type: team.type,
 		activeSubscriptionId: team.activeSubscriptionId,
 	};

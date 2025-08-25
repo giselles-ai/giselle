@@ -1,7 +1,6 @@
 import type {
 	ConnectionId,
 	FileNode,
-	FocusedArea,
 	InputId,
 	Node,
 	NodeBase,
@@ -9,6 +8,7 @@ import type {
 	NodeLike,
 	NodeUIState,
 	OutputId,
+	ShortcutScope,
 	UploadedFileData,
 	Viewport,
 	Workspace,
@@ -60,7 +60,7 @@ export interface WorkflowDesignerContextValue {
 		outputNode: NodeLike,
 		inputNode: NodeLike,
 	) => { canConnect: boolean; message?: string };
-	setUiFocusedArea: (area: FocusedArea) => void;
+	setCurrentShortcutScope: (scope: ShortcutScope) => void;
 	copiedNode: NodeLike | null;
 	setCopiedNode: (node: NodeLike | null) => void;
 }

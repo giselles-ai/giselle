@@ -3,7 +3,6 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { publicStorage } from "@/app/giselle-engine";
 import {
 	db,
 	supabaseUserMappings,
@@ -20,8 +19,12 @@ import {
 	reconnectIdentity,
 } from "@/services/accounts";
 import { isTeamId } from "@/services/teams";
-import { IMAGE_CONSTRAINTS } from "../constants";
 import { deleteTeamMember } from "../team/actions";
+import {
+	deleteAvatar,
+	uploadAvatar,
+	validateImageFile,
+} from "../utils/avatar-upload";
 
 export async function connectGoogleIdentity() {
 	return await connectIdentity("google", "/settings/account/authentication");
@@ -148,14 +151,6 @@ export async function leaveTeam(
 	return result;
 }
 
-function getExtensionFromMimeType(mimeType: string): string {
-	return (
-		IMAGE_CONSTRAINTS.mimeToExt[
-			mimeType as keyof typeof IMAGE_CONSTRAINTS.mimeToExt
-		] || "jpg"
-	);
-}
-
 export async function updateAvatar(formData: FormData) {
 	try {
 		const supabaseUser = await getUser();
@@ -165,16 +160,10 @@ export async function updateAvatar(formData: FormData) {
 			throw new Error("Missing avatar file");
 		}
 
-		if (!IMAGE_CONSTRAINTS.formats.includes(file.type)) {
-			throw new Error(
-				"Invalid file format. Please upload a JPG, PNG, GIF, or WebP image.",
-			);
-		}
-
-		if (file.size > IMAGE_CONSTRAINTS.maxSize) {
-			throw new Error(
-				`File size exceeds ${IMAGE_CONSTRAINTS.maxSize / (1024 * 1024)}MB limit`,
-			);
+		// Validate the image file
+		const validation = validateImageFile(file);
+		if (!validation.valid) {
+			throw new Error(validation.error);
 		}
 
 		const [currentUser] = await db
@@ -186,40 +175,7 @@ export async function updateAvatar(formData: FormData) {
 			)
 			.where(eq(supabaseUserMappings.supabaseUserId, supabaseUser.id));
 
-		const ext = getExtensionFromMimeType(file.type);
-		const filePath = `avatars/${supabaseUser.id}.${ext}`;
-
-		const arrayBuffer = await file.arrayBuffer();
-		const buffer = Buffer.from(arrayBuffer);
-
-		await publicStorage.setItemRaw(filePath, buffer, {
-			contentType: file.type,
-		});
-
-		if (currentUser?.avatarUrl && currentUser.avatarUrl !== filePath) {
-			try {
-				// Extract file path from URL
-				// From: https://xxx.supabase.co/storage/v1/object/public/public-assets/avatars/supabase-user-id.jpg
-				// To: avatars/user-id.jpg
-				const oldPath = currentUser.avatarUrl.split("/public-assets/")[1];
-
-				if (oldPath) {
-					await publicStorage.removeItem(oldPath);
-					logger.debug("Old avatar file removed:", oldPath);
-				}
-			} catch (error) {
-				// Don't fail the update if cleanup fails
-				logger.error("Failed to remove old avatar:", error);
-			}
-		}
-
-		const avatarUrl = await publicStorage.getItem(filePath, {
-			publicURL: true,
-		});
-		if (typeof avatarUrl !== "string") {
-			throw new Error("Failed to get avatar URL");
-		}
-
+		const avatarUrl = await uploadAvatar(file, "avatars", supabaseUser.id);
 		const userDbIdSubquery = db
 			.select({ userDbId: supabaseUserMappings.userDbId })
 			.from(supabaseUserMappings)
@@ -229,6 +185,16 @@ export async function updateAvatar(formData: FormData) {
 			.update(users)
 			.set({ avatarUrl })
 			.where(eq(users.dbId, userDbIdSubquery));
+
+		// Delete old avatar after successful DB update (failure is acceptable)
+		if (currentUser?.avatarUrl) {
+			try {
+				await deleteAvatar(currentUser.avatarUrl);
+			} catch (error) {
+				// Log error but don't fail the request
+				logger.error("Failed to delete old avatar:", error);
+			}
+		}
 
 		revalidatePath("/settings/account");
 		revalidatePath("/", "layout");

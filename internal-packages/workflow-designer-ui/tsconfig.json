@@ -1,6 +1,6 @@
 {
 	"extends": "@giselle/giselle-sdk-tsconfig/react-library.json",
-	"include": ["next-env.d.ts", "."],
+	"include": ["next-env.d.ts", "global.d.ts", "."],
 	"exclude": ["node_modules"],
 	"compilerOptions": {
 		"target": "ES2018",

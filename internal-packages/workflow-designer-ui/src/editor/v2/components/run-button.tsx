@@ -87,8 +87,13 @@ function useRunAct() {
 		for (const nodeId of item.nodeIds) {
 			setUiNodeState(nodeId, { highlighted: false });
 		}
+
+		const isSingleNodeRun =
+			item.connectionIds.length === 0 && item.nodeIds.length === 1;
+		const nodeId = isSingleNodeRun ? item.nodeIds[0] : undefined;
 		await createAndStartAct({
 			connectionIds: item.connectionIds,
+			nodeId,
 			inputs: [],
 			onActStart(cancel) {
 				info("Workflow submitted successfully", {

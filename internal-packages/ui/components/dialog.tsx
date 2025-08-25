@@ -9,10 +9,10 @@ export const DialogTrigger = DialogPrimitive.Trigger;
 export function DialogContent({ children }: PropsWithChildren) {
 	return (
 		<DialogPortal>
-			<DialogPrimitive.Overlay className="fixed inset-0 bg-black/60 z-20" />
+			<DialogPrimitive.Overlay className="fixed inset-0 bg-black/60 z-50" />
 			<DialogPrimitive.Content
 				className={clsx(
-					"fixed left-[50%] top-[50%] translate-y-[-50%] translate-x-[-50%] w-[500px] z-20 max-h-[75%] overflow-y-auto overflow-x-hidden outline-none",
+					"fixed left-[50%] top-[50%] translate-y-[-50%] translate-x-[-50%] w-[500px] z-50 max-h-[75%] overflow-y-auto overflow-x-hidden outline-none",
 					"bg-(image:--glass-bg)",
 					"border border-glass-border/20 shadow-xl text-text",
 					"p-6 rounded-[12px]",
@@ -51,7 +51,11 @@ export function DialogDescription({
 
 export function DialogFooter({ children }: PropsWithChildren) {
 	return (
-		<div className={clsx("px-3 py-[8px] flex justify-end -mx-6 mt-[12px]")}>
+		<div
+			className={clsx(
+				"px-3 py-[8px] -mx-6 mt-[12px] ml-auto sticky bottom-0 w-fit",
+			)}
+		>
 			{children}
 		</div>
 	);

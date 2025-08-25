@@ -40,11 +40,11 @@ Every API choice you force upon users creates cognitive load. You reduce decisio
 
 ```typescript
 // Inevitable: Uses familiar JavaScript patterns
-async function getUser(id: string): Promise<User | null> {
+async function getUser(id: string) {
   // Returns what you'd expect from JavaScript
 }
 
-function updateUser(user: User, changes: Partial<User>): User {
+function updateUser(user: User, changes: Partial<User>) {
   return { ...user, ...changes };
 }
 
@@ -61,12 +61,12 @@ function getUser(id: string): Promise<Result<User>>;
 Internal complexity is acceptable—even desirable—when it serves a clear purpose. You concentrate complexity in places where it eliminates complexity elsewhere:
 
 ```typescript
-function saveUserToDatabase(user: User): Promise<void> {
+function saveUserToDatabase(user: User) {
   // Handles connection pooling, retries, SQL generation internally
   // User doesn't need to know about database implementation details
 }
 
-function formatCurrency(amount: number, currency = 'USD'): string {
+function formatCurrency(amount: number, currency = 'USD') {
   // Internally handles locale detection, formatting rules, edge cases
   // Simple interface for a complex formatting problem
   return new Intl.NumberFormat('en-US', {
@@ -82,9 +82,9 @@ You choose patterns and names that leverage existing mental models. Developers s
 
 ```typescript
 // Recognizable: follows established patterns
-async function fetchUser(id: string): Promise<User | null>
-function saveUser(user: User): Promise<void>
-function deleteUser(id: string): Promise<boolean>
+async function fetchUser(id: string)
+function saveUser(user: User)
+function deleteUser(id: string)
 
 // Arbitrary: requires memorization
 async function getUserById(id: string): Promise<UserDataResponse>
@@ -98,9 +98,9 @@ Classes introduce accidental complexity through state management, lifecycle conc
 
 ```typescript
 // Inevitable: Plain functions that compose naturally
-function getUser(id: string): Promise<User | null> { ... }
-function saveUser(user: User): Promise<void> { ... }
-function deleteUser(id: string): Promise<boolean> { ... }
+function getUser(id: string) { ... }
+function saveUser(user: User) { ... }
+function deleteUser(id: string) { ... }
 
 // Use them directly - no ceremony
 const user = await getUser('123');
@@ -130,9 +130,8 @@ Use TypeScript's type system to prevent obvious mistakes without creating ceremo
 
 ```typescript
 // Good: Clear function signatures prevent confusion
-function getUser(id: string): Promise<User | null> { }
-function getOrder(id: string): Promise<Order | null> { }
-
+function getUser(id: string) { }
+function getOrder(id: string) { }
 // The function names make the intent clear
 const user = await getUser("user-123");
 const order = await getOrder("order-456");
@@ -141,7 +140,7 @@ const order = await getOrder("order-456");
 type UserId = string & { readonly _brand: 'UserId' };
 type OrderId = string & { readonly _brand: 'OrderId' };
 
-function getUser(id: UserId): Promise<User | null> { }
+function getUser(id: UserId) { }
 // Now you need factories, assertions, and extra complexity
 ```
 
@@ -162,7 +161,7 @@ async function fetchJson<T>(url: string): Promise<T> {
 }
 
 // Keep simple: Internal utility, no need to abstract
-function formatDate(date: Date): string {
+function formatDate(date: Date) {
   return date.toISOString().split('T')[0];
 }
 ```
@@ -173,7 +172,7 @@ When faced with complexity, you ask: "Can I handle this simply so users don't ha
 
 ```typescript
 // Simple approach: Handle common needs directly
-async function saveUserToDatabase(user: User): Promise<void> {
+async function saveUserToDatabase(user: User) {
   // Internally handles connection, retries, validation
   // No configuration needed for common case
 }
@@ -219,7 +218,7 @@ function formatDate(date: Date) {
 }
 
 // Over-engineered: Explicit types for self-evident returns
-export function createUser(data: UserData): User {
+export function createUser(data: UserData) {
   return new User(data);  // The annotation adds no value
 }
 ```
@@ -233,12 +232,20 @@ function processUser(data: unknown): User | ValidationError | null {
 }
 
 // Inevitable: Separate concerns into focused functions
-function validateUser(data: unknown): User | null {
+function validateUser(data: unknown) {
   // Clear binary outcome: success or null
+  if (someCondition) {
+    return null
+  }
+  return user
 }
 
-function getValidationError(data: unknown): string | null {
+function getValidationError(data: unknown) {
   // Single responsibility: error messages
+  if (someCondition) {
+    return null
+  }
+  return validationErrorMessage
 }
 ```
 

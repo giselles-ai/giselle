@@ -46,7 +46,7 @@ function V2NodeCanvas() {
 		data,
 		setUiNodeState,
 		setUiViewport,
-		setUiFocusedArea,
+		setCurrentShortcutScope,
 		deleteNode,
 		deleteConnection,
 		updateNodeData,
@@ -255,7 +255,7 @@ function V2NodeCanvas() {
 					setUiNodeState(node.id, { selected: node.id === nodeClicked.id });
 				}
 				// Always maintain canvas focus when clicking nodes
-				setUiFocusedArea("canvas");
+				setCurrentShortcutScope("canvas");
 			}}
 			onNodeDragStop={(_, __, nodes) => {
 				for (const node of nodes) {
@@ -276,7 +276,7 @@ function V2NodeCanvas() {
 				}
 				reset();
 				// Set canvas focus when clicking on canvas
-				setUiFocusedArea("canvas");
+				setCurrentShortcutScope("canvas");
 			}}
 			onKeyDown={handleKeyDown}
 			tabIndex={0}

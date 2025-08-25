@@ -23,7 +23,7 @@ import { VectorStoreNodePropertiesPanel } from "./vector-store";
 import { WebPageNodePropertiesPanel } from "./web-page-node-properties-panel";
 
 export function PropertiesPanel() {
-	const { data, setUiFocusedArea } = useWorkflowDesigner();
+	const { data, setCurrentShortcutScope } = useWorkflowDesigner();
 	const selectedNodes = useMemo(
 		() =>
 			Object.entries(data.ui.nodeState)
@@ -36,10 +36,10 @@ export function PropertiesPanel() {
 		<section
 			className={clsx("h-full text-white-900")}
 			aria-label="Properties Panel"
-			onFocus={() => setUiFocusedArea("properties-panel")}
+			onFocus={() => setCurrentShortcutScope("properties-panel")}
 			onBlur={(e) => {
 				if (!e.currentTarget.contains(e.relatedTarget)) {
-					setUiFocusedArea("canvas");
+					setCurrentShortcutScope("canvas");
 				}
 			}}
 			tabIndex={-1}

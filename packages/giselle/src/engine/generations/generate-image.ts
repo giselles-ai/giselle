@@ -5,16 +5,13 @@ import {
 	isImageGenerationNode,
 	type OpenAIImageLanguageModelData,
 } from "@giselle-sdk/data-type";
-import {
-	createUsageCalculator,
-	type GeneratedImageData,
-} from "@giselle-sdk/language-model";
+import type { GeneratedImageData } from "@giselle-sdk/language-model";
 import {
 	experimental_generateImage as generateImageAiSdk,
 	type ModelMessage,
 } from "ai";
-import { type ApiMediaContentType, Langfuse, LangfuseMedia } from "langfuse";
 import {
+	type FailedGeneration,
 	type GenerationContext,
 	type GenerationOutput,
 	type Image,
@@ -36,77 +33,90 @@ export function generateImage(args: {
 	generation: QueuedGeneration;
 	telemetry?: TelemetrySettings;
 	useExperimentalStorage: boolean;
+	signal?: AbortSignal;
 }) {
 	return useGenerationExecutor({
 		context: args.context,
 		generation: args.generation,
-		telemetry: args.telemetry,
 		useExperimentalStorage: args.useExperimentalStorage,
+		signal: args.signal,
 		execute: async ({
 			runningGeneration,
 			generationContext,
 			fileResolver,
 			generationContentResolver,
 			completeGeneration,
+			setGeneration,
+			signal,
 		}) => {
-			const operationNode = generationContext.operationNode;
-			if (!isImageGenerationNode(operationNode)) {
-				throw new Error("Invalid generation type");
-			}
-
-			const tracer = new Langfuse();
-			const messages = await buildMessageObject(
-				operationNode,
-				generationContext.sourceNodes,
-				fileResolver,
-				generationContentResolver,
-			);
-
-			let generationOutputs: GenerationOutput[] = [];
-			switch (operationNode.content.llm.provider) {
-				case "fal":
-					generationOutputs = await generateImageWithFal({
-						operationNode,
-						messages,
-						runningGeneration,
-						generationContext,
-						tracer,
-						telemetry: args.telemetry,
-						context: args.context,
-					});
-					break;
-				case "openai":
-					generationOutputs = await generateImageWithOpenAI({
-						messages,
-						runningGeneration,
-						generationContext,
-						languageModelData: operationNode.content.llm,
-						context: args.context,
-						tracer,
-						telemetry: args.telemetry,
-					});
-					break;
-				default: {
-					const _exhaustiveCheck: never = operationNode.content.llm;
-					throw new Error(
-						`Unhandled generation output type: ${_exhaustiveCheck}`,
-					);
+			try {
+				const operationNode = generationContext.operationNode;
+				if (!isImageGenerationNode(operationNode)) {
+					throw new Error("Invalid generation type");
 				}
-			}
 
-			await completeGeneration({
-				outputs: generationOutputs,
-			});
+				const messages = await buildMessageObject(
+					operationNode,
+					generationContext.sourceNodes,
+					fileResolver,
+					generationContentResolver,
+				);
+
+				let generationOutputs: GenerationOutput[] = [];
+				switch (operationNode.content.llm.provider) {
+					case "fal":
+						generationOutputs = await generateImageWithFal({
+							operationNode,
+							messages,
+							runningGeneration,
+							generationContext,
+							context: args.context,
+							signal,
+						});
+						break;
+					case "openai":
+						generationOutputs = await generateImageWithOpenAI({
+							messages,
+							runningGeneration,
+							generationContext,
+							languageModelData: operationNode.content.llm,
+							context: args.context,
+							signal,
+						});
+						break;
+					default: {
+						const _exhaustiveCheck: never = operationNode.content.llm;
+						throw new Error(
+							`Unhandled generation output type: ${_exhaustiveCheck}`,
+						);
+					}
+				}
+
+				await completeGeneration({
+					inputMessages: messages,
+					outputs: generationOutputs,
+				});
+			} catch (error) {
+				if (error instanceof Error && error.name === "ResponseAborted") {
+					return;
+				}
+
+				const failedGeneration = {
+					...runningGeneration,
+					status: "failed",
+					failedAt: Date.now(),
+					error: {
+						name: error instanceof Error ? error.name : "UnknownError",
+						message: error instanceof Error ? error.message : String(error),
+						dump: error,
+					},
+				} satisfies FailedGeneration;
+
+				await setGeneration(failedGeneration);
+				throw error;
+			}
 		},
 	});
-}
-
-function imageDimStringToSize(size: string): { width: number; height: number } {
-	const [width, height] = size.split("x").map(Number);
-	if (Number.isNaN(width) || Number.isNaN(height)) {
-		throw new Error(`Invalid image size format: ${size}`);
-	}
-	return { width, height };
 }
 
 async function generateImageWithFal({
@@ -114,38 +124,18 @@ async function generateImageWithFal({
 	generationContext,
 	runningGeneration,
 	messages,
-	tracer,
-	telemetry,
 	context,
 	useExperimentalStorage,
+	signal,
 }: {
 	operationNode: ImageGenerationNode;
 	generationContext: GenerationContext;
 	runningGeneration: RunningGeneration;
 	messages: ModelMessage[];
-	telemetry?: TelemetrySettings;
-	tracer: Langfuse;
 	context: GiselleEngineContext;
 	useExperimentalStorage?: boolean;
+	signal?: AbortSignal;
 }) {
-	const trace = tracer.trace({
-		name: "ai-sdk/fal",
-		metadata: telemetry?.metadata,
-		input: { messages },
-		tags: ["deprecated"],
-	});
-	const generation = trace.generation({
-		name: "ai-sdk/fal.generateImage",
-		model: operationNode.content.llm.id,
-		modelParameters: operationNode.content.llm.configurations,
-		input: { messages },
-		usage: {
-			input: 0,
-			output: 0,
-			unit: "IMAGES",
-		},
-	});
-
 	let prompt = "";
 	for (const message of messages) {
 		if (!Array.isArray(message.content)) {
@@ -164,6 +154,7 @@ async function generateImageWithFal({
 		prompt,
 		n: operationNode.content.llm.configurations.n,
 		size: operationNode.content.llm.configurations.size,
+		abortSignal: signal,
 	});
 
 	const generationOutputs: GenerationOutput[] = [];
@@ -209,36 +200,6 @@ async function generateImageWithFal({
 		});
 	}
 
-	if (context.telemetry?.isEnabled && generatedImageOutput) {
-		const usageCalculator = createUsageCalculator(operationNode.content.llm.id);
-		const imageSize = imageDimStringToSize(
-			operationNode.content.llm.configurations.size,
-		);
-		await Promise.all([
-			...result.images.map((image) => {
-				const wrappedMedia = new LangfuseMedia({
-					contentType: "image/png" as ApiMediaContentType,
-					contentBytes: Buffer.from(image.uint8Array),
-				});
-
-				generation.update({
-					metadata: {
-						context: wrappedMedia,
-					},
-				});
-			}),
-			(() => {
-				const usage = usageCalculator.calculateUsage({
-					...imageSize,
-					n: operationNode.content.llm.configurations.n,
-				});
-				generation.update({
-					usage,
-				});
-				generation.end();
-			})(),
-		]);
-	}
 	return generationOutputs;
 }
 
@@ -248,37 +209,17 @@ async function generateImageWithOpenAI({
 	runningGeneration,
 	languageModelData,
 	context,
-	tracer,
-	telemetry,
 	useExperimentalStorage,
+	signal,
 }: {
 	messages: ModelMessage[];
 	generationContext: GenerationContext;
 	runningGeneration: RunningGeneration;
 	languageModelData: OpenAIImageLanguageModelData;
 	context: GiselleEngineContext;
-	tracer: Langfuse;
-	telemetry?: TelemetrySettings;
 	useExperimentalStorage?: boolean;
+	signal?: AbortSignal;
 }) {
-	const trace = tracer.trace({
-		name: "ai-sdk/openai",
-		metadata: telemetry?.metadata,
-		input: { messages },
-		tags: ["deprecated"],
-	});
-	const generation = trace.generation({
-		name: "ai-sdk/openai.generateImage",
-		model: languageModelData.id,
-		modelParameters: languageModelData.configurations,
-		input: { messages },
-		usage: {
-			input: 0,
-			output: 0,
-			unit: "IMAGES",
-		},
-	});
-
 	let prompt = "";
 	for (const message of messages) {
 		if (!Array.isArray(message.content)) {
@@ -296,6 +237,7 @@ async function generateImageWithOpenAI({
 		prompt,
 		n: languageModelData.configurations.n,
 		size: languageModelData.configurations.size,
+		abortSignal: signal,
 		providerOptions: {
 			openai: {
 				...languageModelData.configurations,
@@ -345,35 +287,5 @@ async function generateImageWithOpenAI({
 		});
 	}
 
-	if (context.telemetry?.isEnabled && generatedImageOutput) {
-		const usageCalculator = createUsageCalculator(languageModelData.id);
-		const imageSize = imageDimStringToSize(
-			languageModelData.configurations.size,
-		);
-		await Promise.all([
-			...images.map((image) => {
-				const wrappedMedia = new LangfuseMedia({
-					contentType: "image/png" as ApiMediaContentType,
-					contentBytes: Buffer.from(image.uint8Array),
-				});
-
-				generation.update({
-					metadata: {
-						context: wrappedMedia,
-					},
-				});
-			}),
-			(() => {
-				const usage = usageCalculator.calculateUsage({
-					...imageSize,
-					quality: languageModelData.configurations.quality,
-				});
-				generation.update({
-					usage,
-				});
-				generation.end();
-			})(),
-		]);
-	}
 	return generationOutputs;
 }

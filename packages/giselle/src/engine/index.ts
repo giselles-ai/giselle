@@ -116,19 +116,15 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 				useExperimentalStorage,
 			});
 		},
-		getLanguageModelProviders: async () => {
-			return await getLanguageModelProviders({ context });
-		},
+		getLanguageModelProviders: () => getLanguageModelProviders({ context }),
 		generateText: async (
 			generation: QueuedGeneration,
 			useExperimentalStorage: boolean,
-			telemetry?: TelemetrySettings,
 		) => {
 			return await generateText({
 				context,
 				generation,
 				useExperimentalStorage,
-				telemetry,
 			});
 		},
 		getGeneration: async (
@@ -212,12 +208,14 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			generation: QueuedGeneration,
 			useExperimentalStorage: boolean,
 			telemetry?: TelemetrySettings,
+			signal?: AbortSignal,
 		) => {
 			return await generateImage({
 				context,
 				generation,
 				useExperimentalStorage,
 				telemetry,
+				signal,
 			});
 		},
 		getGeneratedImage: async (

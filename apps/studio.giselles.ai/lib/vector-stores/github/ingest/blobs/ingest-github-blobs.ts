@@ -1,3 +1,4 @@
+import type { EmbeddingProfileId } from "@giselle-sdk/data-type";
 import {
 	createGitHubArchiveLoader,
 	createGitHubTreeLoader,
@@ -23,6 +24,7 @@ export async function ingestGitHubBlobs(params: {
 	octokitClient: Octokit;
 	source: { owner: string; repo: string; commitSha: string };
 	teamDbId: number;
+	embeddingProfileId: EmbeddingProfileId;
 	telemetry?: TelemetrySettings;
 }): Promise<void> {
 	const { repositoryIndexDbId, isInitialIngest } = await getRepositoryIndexInfo(
@@ -37,7 +39,10 @@ export async function ingestGitHubBlobs(params: {
 		: createGitHubTreeLoader(params.octokitClient, params.source, {
 				maxBlobSize: 1 * 1024 * 1024,
 			});
-	const chunkStore = createGitHubBlobChunkStore(repositoryIndexDbId);
+	const chunkStore = createGitHubBlobChunkStore(
+		repositoryIndexDbId,
+		params.embeddingProfileId,
+	);
 
 	const ingest = createPipeline({
 		documentLoader: githubLoader,
@@ -49,6 +54,7 @@ export async function ingestGitHubBlobs(params: {
 			fileSha: metadata.fileSha,
 			path: metadata.path,
 		}),
+		embeddingProfileId: params.embeddingProfileId,
 		telemetry: params.telemetry,
 	});
 

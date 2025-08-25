@@ -2,6 +2,7 @@
 	"name": "@giselle-internal/workflow-designer-ui",
 	"version": "0.0.0",
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"clean": "rm -rf node_modules",
 		"check-types": "tsc --noEmit",
@@ -19,14 +20,13 @@
 		"@giselle-sdk/language-model": "workspace:^",
 		"@giselle-sdk/text-editor": "workspace:^",
 		"@giselle-sdk/text-editor-utils": "workspace:^",
-		"@giselle/giselle-sdk-tsconfig": "workspace:*",
 		"@xyflow/react": "catalog:",
 		"clsx": "catalog:",
+		"fast-levenshtein": "catalog:",
 		"lucide-react": "catalog:",
 		"marked": "catalog:",
 		"motion": "catalog:",
 		"next": "catalog:",
-		"fast-levenshtein": "catalog:",
 		"pluralize": "catalog:",
 		"radix-ui": "catalog:",
 		"react": "catalog:",
@@ -39,6 +39,7 @@
 		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@giselle/giselle-sdk-tsconfig": "workspace:*",
 		"@types/fast-levenshtein": "catalog:",
 		"@types/node": "catalog:",
 		"@types/pluralize": "catalog:",

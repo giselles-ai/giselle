@@ -10,7 +10,7 @@ import { Card } from "../components/card";
 import { getSubscription } from "./actions";
 import { LocalDateTime } from "./components/local-date-time";
 import { DeleteTeam } from "./delete-team";
-import { TeamName } from "./team-name";
+import { TeamProfile } from "./team-profile";
 
 export default function TeamPage() {
 	return (
@@ -42,7 +42,7 @@ export default function TeamPage() {
 						</div>
 					}
 				>
-					<TeamName />
+					<TeamProfile />
 				</Suspense>
 
 				{/* Billing Section */}

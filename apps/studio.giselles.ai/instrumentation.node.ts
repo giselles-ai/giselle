@@ -1,10 +1,5 @@
 import { registerOTel } from "@vercel/otel";
 import { LangfuseExporter } from "langfuse-vercel";
-import {
-	logRecordProcessor,
-	metricReader,
-	noopSpanProcessor,
-} from "@/lib/opentelemetry";
 
 /**
  * @link https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#batch-span-processor
@@ -21,9 +16,6 @@ export const waitForLangfuseFlush = () =>
 
 registerOTel({
 	serviceName: "giselle",
-	spanProcessors: [noopSpanProcessor],
-	metricReader,
-	logRecordProcessor,
 	traceExporter: new LangfuseExporter({
 		flushInterval: LANGFUSE_FLUSH_INTERVAL,
 	}),

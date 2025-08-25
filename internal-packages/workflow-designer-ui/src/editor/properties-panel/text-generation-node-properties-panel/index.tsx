@@ -54,7 +54,6 @@ export function TextGenerationNodePropertiesPanel({
 
 	const uiState = useMemo(() => data.ui.nodeState[node.id], [data, node.id]);
 
-	// Use keyboard shortcuts hook with generate callback
 	useKeyboardShortcuts({
 		onGenerate: () => {
 			if (!isGenerating) {

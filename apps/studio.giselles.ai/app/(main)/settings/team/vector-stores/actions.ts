@@ -8,6 +8,7 @@ import {
 	db,
 	type GitHubRepositoryContentType,
 	githubRepositoryContentStatus,
+	githubRepositoryEmbeddingProfiles,
 	githubRepositoryIndex,
 } from "@/drizzle";
 import {
@@ -138,6 +139,13 @@ export async function registerRepositoryIndex(
 				status: "idle",
 			});
 		}
+
+		// Add default embedding profile (ID: 1)
+		// FIXME: receive user input when implementing UI.
+		await db.insert(githubRepositoryEmbeddingProfiles).values({
+			repositoryIndexDbId: newRepository.dbId,
+			embeddingProfileId: 1,
+		});
 
 		revalidatePath("/settings/team/vector-stores");
 		return { success: true };

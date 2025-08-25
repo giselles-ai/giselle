@@ -71,8 +71,8 @@ export const createJsonRouters = {
 		}),
 	getLanguageModelProviders: (giselleEngine: GiselleEngine) =>
 		createHandler({
-			handler: async () => {
-				const providers = await giselleEngine.getLanguageModelProviders();
+			handler: () => {
+				const providers = giselleEngine.getLanguageModelProviders();
 				return JsonResponse.json(providers);
 			},
 		}),
@@ -82,13 +82,11 @@ export const createJsonRouters = {
 				input: z.object({
 					generation: QueuedGeneration,
 					useExperimentalStorage: z.boolean(),
-					telemetry: z.custom<TelemetrySettings>().optional(),
 				}),
 				handler: async ({ input }) => {
 					const stream = await giselleEngine.generateText(
 						input.generation,
 						input.useExperimentalStorage,
-						input.telemetry,
 					);
 					return createUIMessageStreamResponse({ stream });
 				},
@@ -181,11 +179,12 @@ export const createJsonRouters = {
 					useExperimentalStorage: z.boolean(),
 					telemetry: z.custom<TelemetrySettings>().optional(),
 				}),
-				handler: async ({ input }) => {
+				handler: async ({ input, signal }) => {
 					await giselleEngine.generateImage(
 						input.generation,
 						input.useExperimentalStorage,
 						input.telemetry,
+						signal,
 					);
 					return new Response(null, { status: 204 });
 				},

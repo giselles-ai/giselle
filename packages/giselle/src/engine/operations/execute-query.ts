@@ -1,6 +1,7 @@
 import {
 	DEFAULT_MAX_RESULTS,
 	DEFAULT_SIMILARITY_THRESHOLD,
+	type EmbeddingProfileId,
 	isQueryNode,
 	isTextNode,
 	NodeId,
@@ -40,7 +41,6 @@ export function executeQuery(args: {
 	return useGenerationExecutor({
 		context: args.context,
 		generation: args.generation,
-		telemetry: args.telemetry,
 		execute: async ({
 			runningGeneration,
 			generationContext,
@@ -93,6 +93,7 @@ export function executeQuery(args: {
 				];
 
 				await completeGeneration({
+					inputMessages: [],
 					outputs,
 				});
 			} catch (error) {
@@ -313,6 +314,7 @@ async function queryVectorStore(
 							workspaceId,
 							owner,
 							repo,
+							embeddingProfileId: 1 as EmbeddingProfileId, // TODO: Get from VectorStoreNode when UI is implemented
 						};
 
 						if (contentType === "pull_request") {

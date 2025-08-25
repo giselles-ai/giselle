@@ -330,29 +330,6 @@ export function githubTools(octokit: Octokit) {
 				return response.data;
 			},
 		}),
-		getCodeScanningAlert: tool({
-			description:
-				"Get details of a specific code scanning alert in a GitHub repository.",
-			inputSchema: z.object({
-				alertNumber: z.number().describe("The number of the alert."),
-				owner: z.string().describe("The owner of the repository."),
-				repo: z.string().describe("The name of the repository."),
-			}),
-			execute: async (params) => {
-				const { alertNumber, owner, repo } = params;
-
-				const response = await octokit.request(
-					"GET /repos/{owner}/{repo}/code-scanning/alerts/{alert_number}",
-					{
-						owner,
-						repo,
-						alert_number: alertNumber,
-					},
-				);
-
-				return response.data;
-			},
-		}),
 		getCommit: tool({
 			description: "Get details for a commit from a GitHub repository",
 			inputSchema: z.object({
@@ -628,49 +605,6 @@ export function githubTools(octokit: Octokit) {
 						repo,
 						page,
 						per_page: perPage,
-					},
-				);
-
-				return response.data;
-			},
-		}),
-		listCodeScanningAlerts: tool({
-			description: "List code scanning alerts in a GitHub repository.",
-			inputSchema: z.object({
-				owner: z.string().describe("The owner of the repository."),
-				ref: z
-					.string()
-					.describe("The Git reference for the results you want to list.")
-					.optional(),
-				repo: z.string().describe("The name of the repository."),
-				severity: z
-					.enum([
-						"critical",
-						"high",
-						"medium",
-						"low",
-						"warning",
-						"note",
-						"error",
-					])
-					.optional(),
-				state: z.enum(["open", "dismissed", "fixed"]).optional(),
-				toolName: z
-					.string()
-					.describe("The name of the tool used for code scanning.")
-					.optional(),
-			}),
-			execute: async (params) => {
-				const { owner, ref, repo, severity, state } = params;
-
-				const response = await octokit.request(
-					"GET /repos/{owner}/{repo}/code-scanning/alerts",
-					{
-						owner,
-						repo,
-						ref,
-						severity,
-						state,
 					},
 				);
 

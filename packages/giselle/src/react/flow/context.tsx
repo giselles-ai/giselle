@@ -6,11 +6,11 @@ import {
 	createUploadedFileData,
 	createUploadingFileData,
 	type FileNode,
-	type FocusedArea,
 	type Node,
 	NodeId,
 	type NodeLike,
 	type NodeUIState,
+	type ShortcutScope,
 	type UploadedFileData,
 	type Viewport,
 	type Workspace,
@@ -106,9 +106,9 @@ export function WorkflowDesignerProvider({
 		[dispatch],
 	);
 
-	const setUiFocusedArea = useCallback(
-		(area: FocusedArea) => {
-			dispatch({ type: "SET_UI_FOCUSED_AREA", area });
+	const setCurrentShortcutScope = useCallback(
+		(scope: ShortcutScope) => {
+			dispatch({ type: "SET_CURRENT_SHORTCUT_SCOPE", scope });
 		},
 		[dispatch],
 	);
@@ -242,7 +242,7 @@ export function WorkflowDesignerProvider({
 				setUiViewport,
 				updateName,
 				isSupportedConnection: isSupportedConnectionCb,
-				setUiFocusedArea,
+				setCurrentShortcutScope,
 				copiedNode,
 				setCopiedNode,
 				...propertiesPanelHelper,

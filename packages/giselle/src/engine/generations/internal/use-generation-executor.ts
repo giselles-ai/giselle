@@ -5,7 +5,7 @@ import type {
 	OutputId,
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
-import type { DataContent } from "ai";
+import type { DataContent, ModelMessage } from "ai";
 import {
 	type CompletedGeneration,
 	type Generation,
@@ -14,15 +14,16 @@ import {
 	type GenerationUsage,
 	isCompletedGeneration,
 	type Message,
+	type OutputFileBlob,
 	type QueuedGeneration,
 	type RunningGeneration,
 } from "../../../concepts/generation";
 import { UsageLimitError } from "../../error";
 import { filePath } from "../../files/utils";
-import type { TelemetrySettings } from "../../telemetry";
 import type { GiselleEngineContext } from "../../types";
 import {
 	checkUsageLimits,
+	getGeneratedImage,
 	getGeneration,
 	getNodeGenerationIndexes,
 	handleAgentTimeConsumption,
@@ -30,11 +31,21 @@ import {
 } from "../utils";
 import { internalSetGeneration } from "./set-generation";
 
+interface CompleteGenerationArgs {
+	outputs: GenerationOutput[];
+	usage?: GenerationUsage;
+	generateMessages?: Message[];
+	inputMessages: ModelMessage[];
+}
+type CompleteGeneration = (
+	args: CompleteGenerationArgs,
+) => Promise<CompletedGeneration>;
+
 export async function useGenerationExecutor<T>(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
-	telemetry?: TelemetrySettings;
 	useExperimentalStorage?: boolean;
+	signal?: AbortSignal;
 	execute: (utils: {
 		runningGeneration: RunningGeneration;
 		generationContext: GenerationContext;
@@ -45,12 +56,8 @@ export async function useGenerationExecutor<T>(args: {
 			outputId: OutputId,
 		) => Promise<string | undefined>;
 		workspaceId: WorkspaceId;
-		telemetry?: TelemetrySettings;
-		completeGeneration: (args: {
-			outputs: GenerationOutput[];
-			usage?: GenerationUsage;
-			messages?: Message[];
-		}) => Promise<CompletedGeneration>;
+		signal?: AbortSignal;
+		completeGeneration: CompleteGeneration;
 	}) => Promise<T>;
 }): Promise<T> {
 	const generationContext = GenerationContext.parse(args.generation.context);
@@ -169,20 +176,41 @@ export async function useGenerationExecutor<T>(args: {
 	async function completeGeneration({
 		outputs,
 		usage,
-		messages,
-	}: {
-		outputs: GenerationOutput[];
-		usage?: GenerationUsage;
-		messages?: Message[];
-	}): Promise<CompletedGeneration> {
+		inputMessages,
+		generateMessages,
+	}: CompleteGenerationArgs) {
 		const completedGeneration = {
 			...runningGeneration,
 			status: "completed",
 			completedAt: Date.now(),
-			outputs: outputs,
+			outputs,
 			usage,
-			messages: messages ?? [],
+			messages: generateMessages ?? [],
 		} satisfies CompletedGeneration;
+
+		/** @todo create type alias */
+		const outputFileBlobs: OutputFileBlob[] = [];
+		for (const output of outputs) {
+			if (output.type !== "generated-image") {
+				continue;
+			}
+			for (const content of output.contents) {
+				const bytes = await getGeneratedImage({
+					storage: args.context.storage,
+					experimental_storage: args.context.experimental_storage,
+					generation: args.generation,
+					filename: content.filename,
+					useExperimentalStorage: true,
+				});
+
+				outputFileBlobs.push({
+					id: content.id,
+					outputId: output.outputId,
+					contentType: content.contentType,
+					bytes,
+				});
+			}
+		}
 
 		await Promise.all([
 			setGeneration(completedGeneration),
@@ -192,12 +220,11 @@ export async function useGenerationExecutor<T>(args: {
 				onConsumeAgentTime: args.context.onConsumeAgentTime,
 			}),
 			(async () => {
-				const result = await args.context.callbacks?.generationComplete?.(
-					completedGeneration,
-					{
-						telemetry: args.telemetry,
-					},
-				);
+				const result = await args.context.callbacks?.generationComplete?.({
+					generation: completedGeneration,
+					inputMessages,
+					outputFileBlobs,
+				});
 				return result;
 			})(),
 		]);
@@ -211,7 +238,7 @@ export async function useGenerationExecutor<T>(args: {
 		fileResolver,
 		generationContentResolver,
 		workspaceId,
-		telemetry: args.telemetry,
+		signal: args.signal,
 		completeGeneration,
 	});
 }

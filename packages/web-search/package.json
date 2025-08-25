@@ -22,6 +22,7 @@
 		}
 	},
 	"devDependencies": {
+		"@giselle/giselle-sdk-tsconfig": "workspace:^",
 		"@types/node": "catalog:",
 		"tsup": "catalog:",
 		"vitest": "catalog:"

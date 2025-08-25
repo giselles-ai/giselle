@@ -3,12 +3,12 @@ import {
 	type ConnectionId,
 	type FileData,
 	type FileNode,
-	type FocusedArea,
 	type Node,
 	type NodeBase,
 	NodeId,
 	type NodeLike,
 	type NodeUIState,
+	type ShortcutScope,
 	type Viewport,
 	type Workspace,
 } from "@giselle-sdk/data-type";
@@ -28,8 +28,8 @@ export type WorkspaceAction =
 	  }
 	| { type: "SET_UI_VIEWPORT"; viewport: Viewport }
 	| {
-			type: "SET_UI_FOCUSED_AREA";
-			area: FocusedArea;
+			type: "SET_CURRENT_SHORTCUT_SCOPE";
+			scope: ShortcutScope;
 	  }
 	| { type: "UPDATE_WORKSPACE_NAME"; name: string | undefined }
 	| {
@@ -101,8 +101,11 @@ function workspaceReducer(
 		case "SET_UI_VIEWPORT": {
 			return { ...state, ui: { ...state.ui, viewport: action.viewport } };
 		}
-		case "SET_UI_FOCUSED_AREA": {
-			return { ...state, ui: { ...state.ui, focusedArea: action.area } };
+		case "SET_CURRENT_SHORTCUT_SCOPE": {
+			return {
+				...state,
+				ui: { ...state.ui, currentShortcutScope: action.scope },
+			};
 		}
 		case "UPDATE_WORKSPACE_NAME": {
 			return { ...state, name: action.name };

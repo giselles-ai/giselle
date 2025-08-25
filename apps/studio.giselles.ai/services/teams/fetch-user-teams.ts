@@ -13,11 +13,13 @@ import { getUser } from "@/lib/supabase";
  */
 export async function fetchUserTeams() {
 	const user = await getUser();
+
 	const records = await db
 		.select({
 			id: teams.id,
 			dbId: teams.dbId,
 			name: teams.name,
+			avatarUrl: teams.avatarUrl,
 			type: teams.type,
 			activeSubscriptionId: subscriptions.id,
 			role: teamMemberships.role,

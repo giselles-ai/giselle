@@ -68,6 +68,7 @@ export function executeAction(args: {
 				}
 			}
 			await completeGeneration({
+				inputMessages: [],
 				outputs: generationOutputs,
 			});
 		},

@@ -12,13 +12,16 @@
 		"format": "biome check --write ."
 	},
 	"dependencies": {
+		"@ai-sdk/google": "catalog:",
 		"@ai-sdk/openai": "catalog:",
+		"@giselle-sdk/data-type": "workspace:*",
 		"ai": "catalog:",
 		"pg": "catalog:",
 		"pgvector": "catalog:",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@giselle/giselle-sdk-tsconfig": "workspace:^",
 		"@types/node": "catalog:",
 		"@types/pg": "catalog:",
 		"tsup": "catalog:",

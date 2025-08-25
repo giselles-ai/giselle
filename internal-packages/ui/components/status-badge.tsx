@@ -2,6 +2,7 @@ import clsx from "clsx/lite";
 
 interface StatusBadgeProps {
 	status: "error" | "success" | "ignored" | "info" | "warning";
+	variant?: "default" | "dot";
 	className?: string;
 	leftIcon?: React.ReactNode;
 	rightIcon?: React.ReactNode;
@@ -19,13 +20,53 @@ const statusStyles = {
 		"bg-[rgba(var(--color-ignored-rgb),0.05)] text-[var(--color-ignored)] border-[rgba(var(--color-ignored-rgb),0.1)]",
 };
 
+const dotStyles = {
+	error: "bg-[var(--color-error)]",
+	success: "bg-[var(--color-success)]",
+	warning: "bg-[var(--color-warning)]",
+	info: "bg-[var(--color-info)] animate-pulse",
+	ignored: "bg-[var(--color-ignored)]",
+};
+
+const dotTextStyles = {
+	error: "text-[var(--color-error)]",
+	success: "text-[var(--color-success)]",
+	warning: "text-[var(--color-warning)]",
+	info: "text-[var(--color-info)]",
+	ignored: "text-[var(--color-ignored)]",
+};
+
 export function StatusBadge({
 	status,
+	variant = "default",
 	className,
 	leftIcon,
 	rightIcon,
 	children,
 }: React.PropsWithChildren<StatusBadgeProps>) {
+	if (variant === "dot") {
+		return (
+			<div
+				className={clsx(
+					"flex items-center px-2 py-1 rounded-full border border-white/20 w-fit",
+					className,
+				)}
+			>
+				<div
+					className={clsx("w-2 h-2 rounded-full shrink-0", dotStyles[status])}
+				/>
+				<span
+					className={clsx(
+						"text-[12px] leading-[14px] font-medium font-geist ml-1.5",
+						dotTextStyles[status],
+					)}
+				>
+					{children}
+				</span>
+			</div>
+		);
+	}
+
 	return (
 		<div
 			className={clsx("rounded-[4px] p-[1px] w-fit", className)}

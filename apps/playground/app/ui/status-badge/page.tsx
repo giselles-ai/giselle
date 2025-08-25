@@ -87,6 +87,23 @@ export default function () {
 					N/A
 				</StatusBadge>
 			</DemoSection>
+			<DemoSection label="Dot Variant">
+				<StatusBadge status="success" variant="dot">
+					Running
+				</StatusBadge>
+				<StatusBadge status="error" variant="dot">
+					Failed
+				</StatusBadge>
+				<StatusBadge status="warning" variant="dot">
+					Warning
+				</StatusBadge>
+				<StatusBadge status="info" variant="dot">
+					Processing
+				</StatusBadge>
+				<StatusBadge status="ignored" variant="dot">
+					Cancelled
+				</StatusBadge>
+			</DemoSection>
 			<DemoSection label="Different Text Lengths">
 				<StatusBadge status="success">OK</StatusBadge>
 				<StatusBadge status="error">Authentication Failed</StatusBadge>

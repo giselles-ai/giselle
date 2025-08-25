@@ -1,5 +1,5 @@
 {
-	"extends": "@giselle/giselle-sdk-tsconfig/ts-library.json",
+	"extends": "@giselle/giselle-sdk-tsconfig/node-library.json",
 	"include": ["."],
 	"exclude": ["node_modules"]
 }

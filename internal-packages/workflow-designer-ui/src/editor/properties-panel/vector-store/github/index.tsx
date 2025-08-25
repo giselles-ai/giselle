@@ -1,4 +1,5 @@
 import type { VectorStoreNode } from "@giselle-sdk/data-type";
+import { EMBEDDING_PROFILES } from "@giselle-sdk/data-type";
 import {
 	useVectorStore,
 	useWorkflowDesigner,

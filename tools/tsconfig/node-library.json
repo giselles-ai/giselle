@@ -1,24 +1,30 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
-	"display": "Default",
+	"display": "Node Library",
 	"compilerOptions": {
-		"composite": false,
+		"module": "esnext",
+		"target": "esnext",
+		"moduleResolution": "node",
+		"moduleDetection": "force",
+		"lib": ["esnext"],
+		"sourceMap": true,
 		"declaration": true,
 		"declarationMap": true,
-		"sourceMap": true,
+		"composite": false,
 		"inlineSources": false,
-		"moduleResolution": "node",
+		"strict": true,
+		"exactOptionalPropertyTypes": false,
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
 		"isolatedModules": true,
-		"strict": true,
+		"verbatimModuleSyntax": true,
+		"noUncheckedSideEffectImports": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
 		"preserveWatchOutput": true,
-		"target": "es2020",
-		"lib": ["es2020"]
+		"stripInternal": true
 	},
 	"exclude": ["node_modules", "dist", "build", ".next", "coverage"]
 }

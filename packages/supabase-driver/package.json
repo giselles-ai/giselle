@@ -23,11 +23,12 @@
 	},
 	"devDependencies": {
 		"@giselle-sdk/giselle": "workspace:^",
+		"@giselle/giselle-sdk-tsconfig": "workspace:^",
 		"tsup": "catalog:"
 	},
 	"dependencies": {
-		"@supabase/supabase-js": "catalog:",
 		"@aws-sdk/client-s3": "catalog:",
+		"@supabase/supabase-js": "catalog:",
 		"zod": "catalog:"
 	}
 }

@@ -26,7 +26,10 @@ function useKeyAction(
 	key: string | string[],
 	action: () => void,
 	enabled: boolean = false,
-	useKeyPressOptions: { actInsideInputWithModifier?: boolean } = {
+	useKeyPressOptions: {
+		actInsideInputWithModifier?: boolean;
+		preventDefault?: boolean;
+	} = {
 		actInsideInputWithModifier: false,
 	},
 ) {
@@ -44,7 +47,7 @@ function useKeyAction(
 function useToolAction(key: string, toolFunction: () => Tool) {
 	const toolbar = useToolbar();
 	const { data } = useWorkflowDesigner();
-	const isCanvasFocused = data.ui.focusedArea === "canvas";
+	const isCanvasFocused = data.ui.currentShortcutScope === "canvas";
 	const canUseToolShortcuts = isCanvasFocused && !!toolbar;
 
 	useKeyAction(
@@ -69,8 +72,9 @@ export function useKeyboardShortcuts(
 	} = useNodeManipulation();
 	const { onGenerate } = options;
 
-	const isCanvasFocused = data.ui.focusedArea === "canvas";
-	const isPropertiesPanelFocused = data.ui.focusedArea === "properties-panel";
+	const isCanvasFocused = data.ui.currentShortcutScope === "canvas";
+	const isPropertiesPanelFocused =
+		data.ui.currentShortcutScope === "properties-panel";
 
 	// Tool shortcuts using the simplified hook
 	useToolAction("t", selectTriggerTool);
@@ -85,12 +89,17 @@ export function useKeyboardShortcuts(
 		["Meta+Enter", "Control+Enter"],
 		() => onGenerate?.(),
 		isPropertiesPanelFocused && !!onGenerate,
-		{ actInsideInputWithModifier: true }, // Allow inside input fields for properties panel
+		{ actInsideInputWithModifier: true },
 	);
 
 	// Copy/Paste/Duplicate shortcuts
 	useKeyAction(["Meta+c", "Control+c"], handleCopy, isCanvasFocused);
-	useKeyAction(["Meta+v", "Control+v"], handlePaste, isCanvasFocused);
+	useKeyAction(
+		["Meta+v", "Control+v"],
+		handlePaste,
+		isCanvasFocused,
+		{ preventDefault: false }, // Preserve browser paste events for FilePanel listeners
+	);
 	useKeyAction(["Meta+d", "Control+d"], handleDuplicate, isCanvasFocused);
 
 	// Return handler for preventing browser default shortcuts
@@ -115,5 +124,7 @@ export function useKeyboardShortcuts(
 		[isCanvasFocused],
 	);
 
-	return { handleKeyDown };
+	return {
+		handleKeyDown,
+	};
 }

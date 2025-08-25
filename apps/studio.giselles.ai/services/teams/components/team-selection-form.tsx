@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { selectTeam } from "../actions/select-team";
 import type { Team } from "../types";
+import { TeamAvatarImage } from "./team-avatar-image";
 
 type TeamSelectionFormProps = {
 	allTeams: Team[];
@@ -59,6 +60,14 @@ export function TeamSelectionForm({
 							currentUser
 						) : (
 							<>
+								<TeamAvatarImage
+									avatarUrl={currentTeam.avatarUrl}
+									teamName={currentTeam.name}
+									width={24}
+									height={24}
+									className="w-6 h-6 shrink-0"
+									alt={currentTeam.name}
+								/>
 								<span
 									className="text-[14px] font-geist text-white-400 truncate max-w-[180px]"
 									title={currentTeam.name}
@@ -80,11 +89,19 @@ export function TeamSelectionForm({
 							<SelectItem
 								key={team.id}
 								value={team.id}
-								className="p-1.5 pl-10 rounded-lg focus:bg-white/5 font-geist"
+								className="relative flex w-full cursor-default select-none items-center rounded-lg p-1.5 pl-2 pr-8 text-sm outline-hidden focus:bg-white/5 font-geist data-disabled:pointer-events-none data-disabled:opacity-50 [&>span:first-child]:absolute [&>span:first-child]:right-2 [&>span:first-child]:left-auto"
 							>
-								<div className="flex items-center gap-1.5 pr-1">
+								<div className="flex items-center gap-1.5 w-full">
+									<TeamAvatarImage
+										avatarUrl={team.avatarUrl}
+										teamName={team.name}
+										width={24}
+										height={24}
+										className="w-6 h-6 shrink-0"
+										alt={team.name}
+									/>
 									<span
-										className="truncate max-w-[180px] text-[14px] font-geist text-white-400"
+										className="truncate max-w-[140px] text-[14px] font-geist text-white-400 flex-1"
 										title={team.name}
 									>
 										{team.name}

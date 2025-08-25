@@ -1,17 +1,31 @@
-import type { FlowTrigger, WorkspaceId } from "@giselle-sdk/data-type";
+import type {
+	EmbeddingProfileId,
+	FlowTrigger,
+	WorkspaceId,
+} from "@giselle-sdk/data-type";
 import type {
 	GitHubInstallationAppAuth,
 	GitHubPersonalAccessTokenAuth,
 } from "@giselle-sdk/github-tool";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
 import type { QueryService } from "@giselle-sdk/rag";
+import type { ModelMessage } from "ai";
 import type { Storage } from "unstorage";
 import type { GiselleStorage } from "./experimental_storage";
 import type { VectorStore } from "./experimental_vector-store/types/interface";
-import type { CompletedGeneration } from "./generations";
-import type { GenerationCompleteOption, TelemetrySettings } from "./telemetry";
+import type { CompletedGeneration, OutputFileBlob } from "./generations";
+import type { TelemetrySettings } from "./telemetry";
 import type { UsageLimits } from "./usage-limits";
 import type { Vault } from "./vault";
+
+export interface GenerationCompleteCallbackFunctionArgs {
+	generation: CompletedGeneration;
+	inputMessages: ModelMessage[];
+	outputFileBlobs: OutputFileBlob[];
+}
+type GenerationCompleteCallbackFunction = (
+	args: GenerationCompleteCallbackFunctionArgs,
+) => void | Promise<void>;
 
 export interface GiselleEngineContext {
 	storage: Storage;
@@ -34,10 +48,7 @@ export interface GiselleEngineContext {
 		githubPullRequest?: GitHubVectorStoreQueryService<Record<string, unknown>>;
 	};
 	callbacks?: {
-		generationComplete: (
-			generation: CompletedGeneration,
-			options: GenerationCompleteOption,
-		) => Promise<void>;
+		generationComplete?: GenerationCompleteCallbackFunction;
 		flowTriggerUpdate?: (flowTrigger: FlowTrigger) => Promise<void>;
 	};
 	vectorStore?: VectorStore;
@@ -86,6 +97,7 @@ export interface GitHubQueryContext {
 	workspaceId: WorkspaceId;
 	owner: string;
 	repo: string;
+	embeddingProfileId: EmbeddingProfileId;
 }
 
 export type GitHubVectorStoreQueryService<
@@ -111,10 +123,7 @@ export interface GiselleEngineConfig {
 		githubPullRequest?: GitHubVectorStoreQueryService<Record<string, unknown>>;
 	};
 	callbacks?: {
-		generationComplete: (
-			generation: CompletedGeneration,
-			options: GenerationCompleteOption,
-		) => Promise<void>;
+		generationComplete?: GenerationCompleteCallbackFunction;
 		flowTriggerUpdate?: (flowTrigger: FlowTrigger) => Promise<void>;
 	};
 	vectorStore?: VectorStore;

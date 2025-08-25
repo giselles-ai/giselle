@@ -21,6 +21,7 @@
 		"@giselle-internal/workflow-designer-ui": "workspace:*",
 		"@giselle-sdk/data-type": "workspace:*",
 		"@giselle-sdk/giselle": "workspace:*",
+		"@giselle-sdk/langfuse": "workspace:^",
 		"@giselle-sdk/supabase-driver": "workspace:^",
 		"@supabase/supabase-js": "catalog:",
 		"clsx": "catalog:",

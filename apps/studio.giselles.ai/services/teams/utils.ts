@@ -1,7 +1,9 @@
 import { createId } from "@paralleldrive/cuid2";
 import type { CurrentTeam, TeamId } from "./types";
 
-export function isProPlan(team: CurrentTeam) {
+export function isProPlan(
+	team: Pick<CurrentTeam, "activeSubscriptionId" | "type">,
+) {
 	return team.activeSubscriptionId != null || team.type === "internal";
 }
 

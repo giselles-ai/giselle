@@ -1,3 +1,4 @@
+import type { EmbeddingProfileId } from "@giselle-sdk/data-type";
 import { createPostgresChunkStore } from "@giselle-sdk/rag";
 import { getTableName } from "drizzle-orm";
 import z from "zod/v4";
@@ -10,7 +11,10 @@ import { createDatabaseConfig } from "../../database";
 /**
  * GitHub Pull Request chunk store factory - for ingestion pipeline
  */
-export function createGitHubPullRequestChunkStore(repositoryIndexDbId: number) {
+export function createGitHubPullRequestChunkStore(
+	repositoryIndexDbId: number,
+	embeddingProfileId: EmbeddingProfileId,
+) {
 	return createPostgresChunkStore({
 		database: createDatabaseConfig(),
 		tableName: getTableName(githubRepositoryPullRequestEmbeddings),
@@ -24,6 +28,7 @@ export function createGitHubPullRequestChunkStore(repositoryIndexDbId: number) {
 		scope: {
 			repository_index_db_id: repositoryIndexDbId,
 		},
+		embeddingProfileId,
 		requiredColumnOverrides: {
 			version: githubRepositoryPullRequestEmbeddings.mergedAt.name,
 		},

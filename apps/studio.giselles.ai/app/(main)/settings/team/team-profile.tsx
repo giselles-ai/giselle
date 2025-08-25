@@ -1,14 +1,15 @@
 import { fetchCurrentTeam } from "@/services/teams";
-import { TeamNameForm } from "./team-name-form";
+import { TeamProfileCard } from "./team-profile-card";
 
-export async function TeamName() {
+export async function TeamProfile() {
 	const currentTeam = await fetchCurrentTeam();
 	return (
 		<div>
-			<TeamNameForm
+			<TeamProfileCard
 				key={currentTeam.id}
 				id={currentTeam.id}
 				name={currentTeam.name}
+				avatarUrl={currentTeam.avatarUrl}
 			/>
 		</div>
 	);

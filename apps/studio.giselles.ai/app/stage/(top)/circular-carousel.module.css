@@ -1,0 +1,14 @@
+@keyframes gentlePulse {
+	0%,
+	100% {
+		opacity: 0.8;
+	}
+	50% {
+		opacity: 1;
+	}
+}
+
+.pulseAnimation {
+	animation: gentlePulse 2s ease-in-out infinite;
+	filter: drop-shadow(0 0 12px rgba(107, 143, 240, 0.6));
+}

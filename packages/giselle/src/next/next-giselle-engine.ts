@@ -117,6 +117,7 @@ export function createHttpHandler({
 				return await jsonRouter[routerPath]({
 					// @ts-expect-error
 					input: await getBody(request),
+					signal: request.signal,
 				});
 			} catch (e) {
 				if (e instanceof ZodError) {
@@ -134,7 +135,10 @@ export function createHttpHandler({
 			});
 		}
 		/** Experimental implementation for handling webhooks with GiselleEngine */
-		if (routerPath === "experimental_github-webhook") {
+		if (
+			routerPath === "experimental_github-webhook" ||
+			routerPath === "github-webhook"
+		) {
 			try {
 				await verifyRequestAsGitHubWebook({
 					secret: config.integrationConfigs?.github?.authV2.webhookSecret ?? "",

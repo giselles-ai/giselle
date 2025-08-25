@@ -1,3 +1,4 @@
+import { EMBEDDING_PROFILES } from "@giselle-sdk/data-type";
 import type { z } from "zod/v4";
 import { PoolManager } from "../../database/postgres";
 import { ensurePgVectorTypes } from "../../database/postgres/pgvector-registry";
@@ -28,6 +29,7 @@ export function createPostgresChunkStore<
 	tableName: string;
 	metadataSchema: TSchema;
 	scope: Record<string, unknown>;
+	embeddingProfileId: number;
 	requiredColumnOverrides?: Partial<RequiredColumns>;
 	metadataColumnOverrides?: Partial<Record<keyof z.infer<TSchema>, string>>;
 }): ChunkStore<z.infer<TSchema>> {
@@ -36,6 +38,7 @@ export function createPostgresChunkStore<
 		tableName,
 		metadataSchema,
 		scope,
+		embeddingProfileId,
 		requiredColumnOverrides,
 		metadataColumnOverrides,
 	} = config;
@@ -45,6 +48,20 @@ export function createPostgresChunkStore<
 		requiredColumnOverrides,
 		metadataColumnOverrides,
 	});
+
+	// Validate embedding profile
+	const profile =
+		EMBEDDING_PROFILES[embeddingProfileId as keyof typeof EMBEDDING_PROFILES];
+	if (!profile) {
+		throw new ConfigurationError(
+			`Invalid embedding profile ID: ${embeddingProfileId}. Valid IDs are: ${Object.keys(EMBEDDING_PROFILES).join(", ")}`,
+		);
+	}
+	if (!profile.dimensions) {
+		throw new ConfigurationError(
+			`Embedding profile ${embeddingProfileId} is missing dimensions`,
+		);
+	}
 
 	/**
 	 * Insert chunks with metadata
@@ -81,6 +98,8 @@ export function createPostgresChunkStore<
 				documentKey,
 				columnMapping.documentKey,
 				scope,
+				embeddingProfileId,
+				profile.dimensions,
 			);
 
 			const records = prepareChunkRecords(
@@ -89,6 +108,8 @@ export function createPostgresChunkStore<
 				metadata,
 				columnMapping,
 				scope,
+				embeddingProfileId,
+				profile.dimensions,
 			);
 			await insertChunkRecords(client, tableName, records);
 
@@ -125,6 +146,8 @@ export function createPostgresChunkStore<
 				documentKey,
 				columnMapping.documentKey,
 				scope,
+				embeddingProfileId,
+				profile.dimensions,
 			);
 		} catch (error) {
 			throw DatabaseError.queryFailed(
@@ -161,6 +184,8 @@ export function createPostgresChunkStore<
 				documentKeys,
 				columnMapping.documentKey,
 				scope,
+				embeddingProfileId,
+				profile.dimensions,
 			);
 		} catch (error) {
 			throw DatabaseError.queryFailed(
@@ -205,6 +230,8 @@ export function createPostgresChunkStore<
 				columnMapping.documentKey,
 				columnMapping.version,
 				scope,
+				embeddingProfileId,
+				profile.dimensions,
 			);
 		} catch (error) {
 			throw DatabaseError.queryFailed(

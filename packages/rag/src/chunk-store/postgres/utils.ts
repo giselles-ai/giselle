@@ -15,6 +15,16 @@ const PERFORMANCE_CONSTANTS = {
 	MAX_BATCH_SIZE: 5000,
 } as const;
 
+type ChunkRecord = {
+	record: Record<string, unknown>;
+	embedding: {
+		embeddingColumn: string;
+		embeddingValue: number[];
+		embeddingProfileId: number;
+		embeddingDimensions: number;
+	};
+};
+
 /**
  * Map metadata to column names
  */
@@ -65,20 +75,29 @@ export async function deleteChunksByDocumentKey(
 	documentKey: string,
 	documentKeyColumn: string,
 	scope: Record<string, unknown>,
+	embeddingProfileId: number,
+	embeddingDimensions: number,
 ): Promise<void> {
 	const { conditions: scopeConditions, values: scopeValues } =
-		buildScopeConditions(scope, 2);
+		buildScopeConditions(scope, 4);
 
 	let query = `
 		DELETE FROM ${escapeIdentifier(tableName)}
 		WHERE ${escapeIdentifier(documentKeyColumn)} = $1
+			AND embedding_profile_id = $2
+			AND embedding_dimensions = $3
 	`;
 
 	if (scopeConditions) {
 		query += ` AND ${scopeConditions}`;
 	}
 
-	await client.query(query, [documentKey, ...scopeValues]);
+	await client.query(query, [
+		documentKey,
+		embeddingProfileId,
+		embeddingDimensions,
+		...scopeValues,
+	]);
 }
 
 /**
@@ -90,13 +109,9 @@ export function prepareChunkRecords<TMetadata extends Record<string, unknown>>(
 	metadata: TMetadata,
 	columnMapping: ColumnMapping<TMetadata>,
 	scope: Record<string, unknown>,
-): Array<{
-	record: Record<string, unknown>;
-	embedding: {
-		embeddingColumn: string;
-		embeddingValue: number[];
-	};
-}> {
+	embeddingProfileId: number,
+	embeddingDimensions: number,
+): ChunkRecord[] {
 	const metadataColumns = mapMetadataToColumns(metadata, columnMapping);
 
 	return chunks.map((chunk) => ({
@@ -110,6 +125,8 @@ export function prepareChunkRecords<TMetadata extends Record<string, unknown>>(
 		embedding: {
 			embeddingColumn: columnMapping.embedding,
 			embeddingValue: chunk.embedding,
+			embeddingProfileId,
+			embeddingDimensions,
 		},
 	}));
 }
@@ -120,13 +137,7 @@ export function prepareChunkRecords<TMetadata extends Record<string, unknown>>(
 async function insertRecordsBatch(
 	client: PoolClient,
 	tableName: string,
-	records: Array<{
-		record: Record<string, unknown>;
-		embedding: {
-			embeddingColumn: string;
-			embeddingValue: number[];
-		};
-	}>,
+	records: ChunkRecord[],
 ): Promise<void> {
 	if (records.length === 0) {
 		return;
@@ -137,16 +148,25 @@ async function insertRecordsBatch(
 	const columns = [
 		...Object.keys(firstRecord.record),
 		firstRecord.embedding.embeddingColumn,
+		"embedding_profile_id",
+		"embedding_dimensions",
 	];
 	const allValues: unknown[] = [];
 	const valuePlaceholders: string[] = [];
 
 	records.forEach((item, recordIndex) => {
-		const recordValues = columns.map((c) =>
-			c === item.embedding.embeddingColumn
-				? pgvector.toSql(item.embedding.embeddingValue)
-				: item.record[c],
-		);
+		const recordValues = columns.map((c) => {
+			if (c === item.embedding.embeddingColumn) {
+				return pgvector.toSql(item.embedding.embeddingValue);
+			}
+			if (c === "embedding_profile_id") {
+				return item.embedding.embeddingProfileId;
+			}
+			if (c === "embedding_dimensions") {
+				return item.embedding.embeddingDimensions;
+			}
+			return item.record[c];
+		});
 		allValues.push(...recordValues);
 
 		const startIndex = recordIndex * columns.length;
@@ -171,13 +191,7 @@ async function insertRecordsBatch(
 export async function insertChunkRecords(
 	client: PoolClient,
 	tableName: string,
-	records: Array<{
-		record: Record<string, unknown>;
-		embedding: {
-			embeddingColumn: string;
-			embeddingValue: number[];
-		};
-	}>,
+	records: ChunkRecord[],
 ): Promise<void> {
 	// Process in batches if records exceed safe limit
 	if (records.length > PERFORMANCE_CONSTANTS.MAX_BATCH_SIZE) {
@@ -205,27 +219,40 @@ export async function deleteChunksByDocumentKeys(
 	documentKeys: string[],
 	documentKeyColumn: string,
 	scope: Record<string, unknown>,
+	embeddingProfileId: number,
+	embeddingDimensions: number,
 ): Promise<void> {
 	if (documentKeys.length === 0) {
 		return;
 	}
 
 	const { conditions: scopeConditions, values: scopeValues } =
-		buildScopeConditions(scope);
+		buildScopeConditions(scope, 3);
 
-	const scopeValueCount = scopeValues.length;
+	const allValues = [
+		embeddingProfileId,
+		embeddingDimensions,
+		...scopeValues,
+		...documentKeys,
+	];
+	const documentKeyStartIndex = 2 + scopeValues.length + 1;
 	const documentKeyPlaceholders = documentKeys
-		.map((_, index) => `$${scopeValueCount + index + 1}`)
+		.map((_, index) => `$${documentKeyStartIndex + index}`)
 		.join(", ");
 
-	const query = `
+	let query = `
 		DELETE FROM ${escapeIdentifier(tableName)}
-		WHERE ${scopeConditions}
-			AND ${escapeIdentifier(documentKeyColumn)} IN (${documentKeyPlaceholders})
+		WHERE embedding_profile_id = $1
+			AND embedding_dimensions = $2
 	`;
 
-	const queryValues = [...scopeValues, ...documentKeys];
-	await client.query(query, queryValues);
+	if (scopeConditions) {
+		query += ` AND ${scopeConditions}`;
+	}
+
+	query += ` AND ${escapeIdentifier(documentKeyColumn)} IN (${documentKeyPlaceholders})`;
+
+	await client.query(query, allValues);
 }
 
 /**
@@ -237,6 +264,8 @@ export async function queryDocumentVersions(
 	documentKeyColumn: string,
 	versionColumn: string,
 	scope: Record<string, unknown>,
+	embeddingProfileId: number,
+	embeddingDimensions: number,
 ): Promise<
 	Array<{
 		documentKey: string;
@@ -244,21 +273,27 @@ export async function queryDocumentVersions(
 	}>
 > {
 	const { conditions: scopeConditions, values: scopeValues } =
-		buildScopeConditions(scope);
+		buildScopeConditions(scope, 3);
 
-	const query = `
+	let query = `
 		SELECT DISTINCT
 			${escapeIdentifier(documentKeyColumn)} as document_key,
 			${escapeIdentifier(versionColumn)} as version
 		FROM ${escapeIdentifier(tableName)}
-		WHERE ${scopeConditions}
-			AND ${escapeIdentifier(versionColumn)} IS NOT NULL
+		WHERE embedding_profile_id = $1
+			AND embedding_dimensions = $2
 	`;
+
+	if (scopeConditions) {
+		query += ` AND ${scopeConditions}`;
+	}
+
+	query += ` AND ${escapeIdentifier(versionColumn)} IS NOT NULL`;
 
 	const result = await client.query<{
 		document_key: unknown;
 		version: unknown;
-	}>(query, scopeValues);
+	}>(query, [embeddingProfileId, embeddingDimensions, ...scopeValues]);
 	return result.rows.map((row) => {
 		return {
 			documentKey: toColumnString(row.document_key, "documentKey"),

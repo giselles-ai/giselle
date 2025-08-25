@@ -1,9 +1,13 @@
+import {
+	EMBEDDING_PROFILES,
+	type EmbeddingProfileId,
+} from "@giselle-sdk/data-type";
 import type { TelemetrySettings } from "ai";
 import type { ChunkStore } from "../chunk-store/types";
 import { createDefaultChunker } from "../chunker";
 import type { ChunkerFunction } from "../chunker/types";
 import type { Document, DocumentLoader } from "../document-loader/types";
-import { createDefaultEmbedder } from "../embedder";
+import { createEmbedderFromProfile } from "../embedder/profiles";
 import type { EmbedderFunction } from "../embedder/types";
 import { ConfigurationError, OperationError } from "../errors";
 import { embedContent } from "./embedder";
@@ -27,7 +31,7 @@ export interface IngestPipelineOptions<
 
 	// Optional processors
 	chunker?: ChunkerFunction;
-	embedder?: EmbedderFunction;
+	embeddingProfileId: EmbeddingProfileId;
 
 	// Optional settings
 	maxBatchSize?: number;
@@ -64,7 +68,6 @@ export function createPipeline<
 		documentVersion,
 		metadataTransform,
 		chunker = createDefaultChunker(),
-		embedder,
 		maxBatchSize = DEFAULT_MAX_BATCH_SIZE,
 		maxRetries = DEFAULT_MAX_RETRIES,
 		retryDelay = DEFAULT_RETRY_DELAY,
@@ -74,16 +77,28 @@ export function createPipeline<
 		telemetry,
 	} = options;
 
-	let resolvedEmbedder = embedder;
-	if (resolvedEmbedder == null) {
-		try {
-			resolvedEmbedder = createDefaultEmbedder(telemetry);
-		} catch (error) {
-			throw ConfigurationError.missingField("OPENAI_API_KEY", {
-				cause: error instanceof Error ? error.message : String(error),
-			});
-		}
+	const profile = EMBEDDING_PROFILES[options.embeddingProfileId];
+	if (!profile) {
+		throw new ConfigurationError(
+			`Invalid embedding profile ID: ${options.embeddingProfileId}`,
+		);
 	}
+
+	const apiKey =
+		process.env[
+			profile.provider === "openai" ? "OPENAI_API_KEY" : "GOOGLE_API_KEY"
+		];
+	if (!apiKey) {
+		throw new ConfigurationError(
+			`No API key found for embedding profile ${options.embeddingProfileId}`,
+		);
+	}
+
+	const resolvedEmbedder = createEmbedderFromProfile(
+		options.embeddingProfileId,
+		apiKey,
+		{ telemetry },
+	);
 
 	/**
 	 * Process a single document

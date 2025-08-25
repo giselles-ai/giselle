@@ -196,20 +196,47 @@ interface IngestResult {
 #### Factory Functions
 
 - `createPipeline<TDocMetadata, TStore>(options)` - Creates a document
-  processing pipeline function with automatic chunking, embedding, and differential
-  ingestion. The chunk metadata type is inferred from the provided chunk store for
-  type safety. Supports version tracking to only process changed documents
+  processing pipeline function with automatic chunking, embedding, and
+  differential ingestion. The chunk metadata type is inferred from the provided
+  chunk store for type safety. Supports version tracking to only process changed
+  documents
 - `createQueryService<TContext, TMetadata>(config)` - Creates a new query
   service
 - `createChunkStore<TMetadata>(config)` - Creates a new chunk store
-- `createDefaultEmbedder()` - Creates OpenAI embedder with default settings
+- `createOpenAIEmbedder(config)` - Creates OpenAI embedder with custom
+  configuration
+- `createGoogleEmbedder(config)` - Creates Google Gemini embedder
 - `createDefaultChunker()` - Creates line-based chunker with default settings
 - `createColumnMapping(options)` - Creates database column mapping
+
+### Multiple Embedding Models
+
+The library now supports multiple embedding providers:
+
+#### Google Gemini Embeddings
+
+```typescript
+import { createGoogleEmbedder } from "@giselle-sdk/rag";
+
+const embedder = createGoogleEmbedder({
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
+  model: "gemini-embedding-001", // 3072 dimensions
+  maxRetries: 3,
+});
+
+// Use in query service
+const queryService = createPostgresQueryService({
+  // ... other config
+  embedder,
+});
+```
+
 
 
 ## Environment Variables
 
-- `OPENAI_API_KEY`: Required for the default OpenAI embedder
+- `OPENAI_API_KEY`: Required for OpenAI embedders
+- `GOOGLE_GENERATIVE_AI_API_KEY`: Required for Google Gemini embedders
 - `DATABASE_URL`: PostgreSQL connection string with pgvector extension
 
 ## Development

@@ -171,27 +171,6 @@ export function FilePanel({ node, config }: FilePanelProps) {
 		[addFilesInternal, maxFileSize, assertFiles, toasts],
 	);
 
-	const onDrop = useCallback(
-		(e: React.DragEvent<HTMLButtonElement>) => {
-			e.preventDefault();
-			setIsDragging(false);
-			setIsValidFile(true);
-			addFiles(e.dataTransfer.files);
-		},
-		[addFiles],
-	);
-
-	const onFileChange = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			if (!e.target.files) {
-				return;
-			}
-			addFiles(e.target.files);
-			e.target.value = "";
-		},
-		[addFiles],
-	);
-
 	const handlePaste = useCallback(
 		(e: ClipboardEvent) => {
 			const items = e.clipboardData?.items;
@@ -218,12 +197,12 @@ export function FilePanel({ node, config }: FilePanelProps) {
 			}
 
 			if (files.length > 0) {
-				// Create a DataTransfer object to create a FileList
+				// Create a FileList from File[] to use validation path
 				const dataTransfer = new DataTransfer();
 				for (const file of files) {
 					dataTransfer.items.add(file);
 				}
-				addFiles(dataTransfer.files);
+				addFiles(dataTransfer.files); // Use validation path
 			}
 		},
 		[addFiles],
@@ -239,6 +218,27 @@ export function FilePanel({ node, config }: FilePanelProps) {
 			};
 		}
 	}, [handlePaste, node.content.category]);
+
+	const onDrop = useCallback(
+		(e: React.DragEvent<HTMLButtonElement>) => {
+			e.preventDefault();
+			setIsDragging(false);
+			setIsValidFile(true);
+			addFiles(e.dataTransfer.files);
+		},
+		[addFiles],
+	);
+
+	const onFileChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			if (!e.target.files) {
+				return;
+			}
+			addFiles(e.target.files);
+			e.target.value = "";
+		},
+		[addFiles],
+	);
 
 	return (
 		<div

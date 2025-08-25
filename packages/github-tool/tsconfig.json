@@ -1,6 +1,7 @@
 {
-	"extends": "@giselle/giselle-sdk-tsconfig/node.json",
+	"extends": "@giselle/giselle-sdk-tsconfig/node-library.json",
 	"compilerOptions": {
+		"lib": ["esnext", "dom"],
 		"plugins": [
 			{
 				"name": "gql.tada/ts-plugin",

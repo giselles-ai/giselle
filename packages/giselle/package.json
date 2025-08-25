@@ -65,7 +65,6 @@
 		"@giselle-sdk/text-editor-utils": "workspace:^",
 		"@giselle-sdk/web-search": "workspace:^",
 		"ai": "catalog:",
-		"langfuse": "catalog:",
 		"next": "catalog:",
 		"openai": "catalog:",
 		"pg": "catalog:",
