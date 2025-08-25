@@ -1,17 +1,12 @@
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-
-const CAROUSEL_VIEW_KEY = "stage-carousel-view";
 
 export function useUIState() {
 	const [isMobile, setIsMobile] = useState(false);
-	const [isCarouselView, setIsCarouselView] = useState(() => {
-		if (typeof window !== "undefined") {
-			const saved = localStorage.getItem(CAROUSEL_VIEW_KEY);
-			return saved ? JSON.parse(saved) : false;
-		}
-		return false;
-	});
 	const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+	const searchParams = useSearchParams();
+	const router = useRouter();
+	const isCarouselView = searchParams.get("view") === "carousel";
 
 	useEffect(() => {
 		const checkMobile = () => {
@@ -24,11 +19,15 @@ export function useUIState() {
 		return () => window.removeEventListener("resize", checkMobile);
 	}, []);
 
-	useEffect(() => {
-		if (typeof window !== "undefined") {
-			localStorage.setItem(CAROUSEL_VIEW_KEY, JSON.stringify(isCarouselView));
+	const setIsCarouselView = (value: boolean) => {
+		const params = new URLSearchParams(searchParams.toString());
+		if (value) {
+			params.set("view", "carousel");
+		} else {
+			params.delete("view");
 		}
-	}, [isCarouselView]);
+		router.push(`?${params.toString()}`, { scroll: false });
+	};
 
 	return {
 		isMobile,

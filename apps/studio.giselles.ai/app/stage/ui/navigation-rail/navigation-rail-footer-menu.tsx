@@ -9,7 +9,8 @@ import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx/lite";
 import { ChevronRight, ExternalLink, X } from "lucide-react";
 import Link from "next/link";
-import { use, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { use, useCallback, useState } from "react";
 import {
 	Card,
 	CardDescription,
@@ -32,9 +33,24 @@ export function NavigationRailFooterMenu({
 	variant: NavigationRailState;
 }) {
 	const user = use(userPromise);
-	const [isCarouselView, setIsCarouselView] = useState(false);
+	const router = useRouter();
+	const searchParams = useSearchParams();
+	const isCarouselView = searchParams.get("view") === "carousel";
 	const [isDisplayDialogOpen, setIsDisplayDialogOpen] = useState(false);
 	const [dropdownOpen, setDropdownOpen] = useState(false);
+
+	const setIsCarouselView = useCallback(
+		(value: boolean) => {
+			const params = new URLSearchParams(searchParams.toString());
+			if (value) {
+				params.set("view", "carousel");
+			} else {
+				params.delete("view");
+			}
+			router.push(`?${params.toString()}`, { scroll: false });
+		},
+		[router, searchParams],
+	);
 
 	const helpItems = [
 		{
