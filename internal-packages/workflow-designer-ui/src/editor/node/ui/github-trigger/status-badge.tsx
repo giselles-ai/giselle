@@ -6,9 +6,20 @@ import { useGitHubTrigger } from "../../../lib/use-github-trigger";
 export function GitHubTriggerStatusBadge({
 	flowTriggerId,
 }: {
-	flowTriggerId: FlowTriggerId;
+	flowTriggerId?: FlowTriggerId;
 }) {
-	const { isLoading, data } = useGitHubTrigger(flowTriggerId);
+	const { isLoading, data } = useGitHubTrigger(
+		(flowTriggerId ?? "fltg-placeholder") as FlowTriggerId,
+	);
+
+	if (flowTriggerId === undefined) {
+		return (
+			<div className="flex items-center gap-[4px] text-yellow-500 text-[10px]">
+				<Circle className="size-[12px] text-yellow-500 fill-yellow-500" />
+				<span>Repository setup required</span>
+			</div>
+		);
+	}
 
 	if (isLoading) {
 		return null;

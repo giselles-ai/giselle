@@ -320,13 +320,17 @@ export function NodeComponent({
 
 			<div className={clsx("px-[16px] relative")}>
 				{isTriggerNode(node, "github") &&
-					node.content.state.status === "configured" && (
+					(node.content.state.status === "configured" ? (
 						<div className="-mt-[6px]">
 							<GitHubTriggerStatusBadge
 								flowTriggerId={node.content.state.flowTriggerId}
 							/>
 						</div>
-					)}
+					) : node.content.state.status === "template-configured" ? (
+						<div className="-mt-[6px]">
+							<GitHubTriggerStatusBadge />
+						</div>
+					) : null)}
 				<div className="flex items-center gap-[8px]">
 					<div
 						className={clsx(

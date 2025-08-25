@@ -6,12 +6,12 @@ import useSWR from "swr";
 export function useTrigger(node: TriggerNode) {
 	const client = useGiselleEngine();
 	const { isLoading, data, mutate } = useSWR(
-		node.content.state.status === "unconfigured"
-			? null
-			: {
+		node.content.state.status === "configured"
+			? {
 					namespace: "getTrigger",
 					flowTriggerId: node.content.state.flowTriggerId,
-				},
+				}
+			: null,
 		({ flowTriggerId }) =>
 			client.getTrigger({ flowTriggerId }).then((res) => res.trigger),
 	);

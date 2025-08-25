@@ -8,6 +8,7 @@
 
 - Node state:
   - `configured`: Setup completed with `flowTriggerId`. Properties panel shows `GitHubTriggerConfiguredView`.
+  - `template-configured`: Event selected but repository not connected. Shows `GitHubTriggerTemplateConfiguredView` with "Repository setup required" badge.
   - `unconfigured` (implicit): Setup not yet completed. Properties panel drives setup.
   - Enable toggle: `enable: true|false` (controlled via `useGitHubTrigger` in configured view).
 - Integration state (`useIntegration().value.github.status`):
@@ -26,12 +27,15 @@
 flowchart TD
   Start([Open Properties Panel]) --> CheckConfigured{Node state == "configured"}
   CheckConfigured -- yes --> ConfiguredView[Show Configured View\n(GitHubTriggerConfiguredView)]
-  CheckConfigured -- no --> CheckIntegration{Integration github.status}
+  CheckConfigured -- no --> CheckTemplate{Node state == "template-configured"}
+  CheckTemplate -- yes --> TemplateView[Show Template View\n(GitHubTriggerTemplateConfiguredView)]
+  CheckTemplate -- no --> CheckIntegration{Integration github.status}
 
   subgraph Integration
     CheckIntegration -- unauthorized --> Unauthorized["Unauthorized UI\n(Continue with GitHub)"]
     CheckIntegration -- not-installed --> NotInstalled["Install App UI\n(Install)"]
     CheckIntegration -- installed --> Wizard[Start Setup Wizard]
+    TemplateView -- Connect repository --> Wizard
     CheckIntegration -- invalid-credential --> InvalidCred[Show invalid-credential]
     CheckIntegration -- error --> Err[Show error message]
     CheckIntegration -- unset --> Unset[Show unset]
@@ -108,6 +112,8 @@ stateDiagram-v2
 - Callsign events require a non-empty callsign; empty should not proceed.
 - After setup, node name becomes `On ${label}` and outputs list matches event payload keys.
 - Enabling/disabling reflects in status badge without full reload (optimistic UI).
+- Template-configured nodes show badge "Repository setup required" and the name suffix `[Repository setup required]`.
+- "Connect repository" moves a template-configured node to `configured` and removes the suffix.
 
 ```mermaid
 sequenceDiagram
