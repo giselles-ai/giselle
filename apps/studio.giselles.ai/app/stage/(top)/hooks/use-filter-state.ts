@@ -69,9 +69,18 @@ export function useFilterState({ teamOptions }: UseFilterStateProps) {
 		}
 
 		if (!urlFilter) {
-			const savedFilter = getStorageItem(STORAGE_KEYS.FILTER) as FilterType;
-			if (savedFilter) {
-				setSelectedFilter(savedFilter);
+			const savedFilterRaw = getStorageItem(STORAGE_KEYS.FILTER);
+			const allowedFilters: ReadonlyArray<FilterType> = [
+				"all",
+				"history",
+				"latest",
+				"favorites",
+			];
+			if (
+				savedFilterRaw &&
+				(allowedFilters as ReadonlyArray<string>).includes(savedFilterRaw)
+			) {
+				setSelectedFilter(savedFilterRaw as FilterType);
 			}
 		}
 	}, [teamOptions, urlTeamId, urlFilter]);

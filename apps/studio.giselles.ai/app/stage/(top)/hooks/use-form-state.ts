@@ -1,6 +1,6 @@
 import type { FlowTriggerId } from "@giselle-sdk/data-type";
 import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { FlowTriggerUIItem, ValidationErrors } from "../types";
 
 interface UseFormStateProps {
@@ -50,7 +50,8 @@ export function useFormState({ filteredFlowTriggers }: UseFormStateProps) {
 
 	const handleFlowTriggerSelect = (triggerId: FlowTriggerId) => {
 		setHasUserInteracted(true);
-		if (userSelectedId === triggerId) {
+		// Use selectedFlowTriggerId for toggle logic to handle auto-selected items
+		if (selectedFlowTriggerId === triggerId) {
 			setUserSelectedId(undefined);
 		} else {
 			setUserSelectedId(triggerId);
@@ -62,13 +63,20 @@ export function useFormState({ filteredFlowTriggers }: UseFormStateProps) {
 		setUserSelectedId(undefined);
 	};
 
+	// Create a stable ref that updates its current value each render
+	const userHasSelectedRef = useRef<boolean>(false);
+	userHasSelectedRef.current = hasUserInteracted;
+
 	return {
 		selectedFlowTriggerId,
-		setSelectedFlowTriggerId: setUserSelectedId,
+		setSelectedFlowTriggerId: (id?: FlowTriggerId) => {
+			setHasUserInteracted(true);
+			setUserSelectedId(id);
+		},
 		selectedTrigger,
 		validationErrors,
 		setValidationErrors,
-		userHasSelectedRef: { current: hasUserInteracted },
+		userHasSelectedRef,
 		handleFlowTriggerSelect,
 		handleFlowTriggerDeselect,
 	};
