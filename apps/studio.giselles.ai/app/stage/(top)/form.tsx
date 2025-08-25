@@ -7,6 +7,7 @@ import clsx from "clsx/lite";
 import { Settings, X } from "lucide-react";
 
 import { useActionState, useCallback, useMemo } from "react";
+import { useViewPreferences } from "@/hooks/use-view-preferences";
 import { cn } from "@/lib/utils";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { buttonVariants } from "../../(main)/settings/components/button";
@@ -49,12 +50,9 @@ export function Form({
 		handleTeamChange,
 	} = useFilterState({ teamOptions });
 
-	const {
-		isMobile,
-		isCarouselView,
-		isSettingsModalOpen,
-		setIsSettingsModalOpen,
-	} = useUIState();
+	const { isMobile, isSettingsModalOpen, setIsSettingsModalOpen } =
+		useUIState();
+	const { isCarouselView, isHydrated } = useViewPreferences();
 
 	const teamOptionsWithIcons = useMemo(
 		() =>
@@ -210,7 +208,7 @@ export function Form({
 
 			{/* App Selection Container */}
 			<div className="mt-4 flex flex-col justify-start">
-				{isCarouselView ? (
+				{isHydrated && isCarouselView ? (
 					<CircularCarousel
 						items={filteredFlowTriggers.map((trigger) => ({
 							id: trigger.id,
