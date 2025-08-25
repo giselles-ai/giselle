@@ -9,7 +9,7 @@ import {
 import { PopoverContent } from "@giselle-internal/ui/popover";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx/lite";
-import { ChevronRight, ExternalLink } from "lucide-react";
+import { ChevronRight, ExternalLink, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { use, useCallback, useState } from "react";
@@ -225,10 +225,17 @@ export function NavigationRailFooterMenu({
 			{/* Display Type Dialog */}
 			<Dialog open={isDisplayDialogOpen} onOpenChange={setIsDisplayDialogOpen}>
 				<DialogContent>
-					<div className="mb-6">
+					<div className="flex items-center justify-between mb-6">
 						<DialogTitle className="text-[20px] font-medium text-white-400 tracking-tight font-sans">
 							View Style
 						</DialogTitle>
+						<button
+							type="button"
+							onClick={() => setIsDisplayDialogOpen(false)}
+							className="p-1 rounded-lg hover:bg-white/10 transition-colors"
+						>
+							<X className="w-5 h-5 text-white-400" />
+						</button>
 					</div>
 
 					{/* View Type Selection */}
@@ -313,17 +320,6 @@ export function NavigationRailFooterMenu({
 						</select>
 					</div>
 
-					<DialogFooter>
-						<div className="flex justify-end">
-							<button
-								type="button"
-								onClick={() => setIsDisplayDialogOpen(false)}
-								className={cn(buttonVariants({ variant: "link" }))}
-							>
-								Cancel
-							</button>
-						</div>
-					</DialogFooter>
 				</DialogContent>
 			</Dialog>
 		</DropdownMenuPrimitive.Root>
