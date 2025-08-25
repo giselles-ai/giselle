@@ -133,6 +133,7 @@ export function createHttpHandler({
 					console.log(e.message);
 					return new Response("Invalid request body", { status: 400 });
 				}
+				console.log(e);
 				return new Response("Internal Server Error", { status: 500 });
 			}
 		}
