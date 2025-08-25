@@ -13,7 +13,9 @@ export default function StageLayout({ children }: { children: ReactNode }) {
 				<NavigationRail user={data} />
 			</Suspense>
 			<div className="flex-1 pb-16 md:pb-0">{children}</div>
-			<MobileBottomNavigation user={data} />
+			<Suspense fallback="">
+				<MobileBottomNavigation user={data} />
+			</Suspense>
 		</div>
 	);
 }
