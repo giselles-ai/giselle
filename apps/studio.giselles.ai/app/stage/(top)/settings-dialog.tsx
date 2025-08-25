@@ -39,8 +39,8 @@ export function SettingsDialog({
 	if (isMobile) {
 		return (
 			isOpen && (
-				<div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-					<div className="relative z-10 w-[90vw] max-w-[500px] max-h-[90vh] overflow-y-auto rounded-[12px] p-6 shadow-xl focus:outline-none">
+				<div className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center p-4">
+					<div className="relative z-[10000] w-[90vw] max-w-[500px] max-h-[90vh] overflow-y-auto rounded-[12px] p-6 shadow-xl focus:outline-none">
 						<div
 							className="absolute inset-0 -z-10 rounded-[12px] backdrop-blur-md"
 							style={{
