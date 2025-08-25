@@ -1,3 +1,5 @@
+"use client";
+
 import {
 	Dialog,
 	DialogContent,
@@ -106,7 +108,7 @@ export function NavigationRailFooterMenu({
 							<p className="truncate text-text-muted text-sm">
 								{user.displayName ?? user.email}
 							</p>
-							<p className="truncate text-[var(--color-stage-key)] text-[10px]">
+							<p className="truncate text-[var(--color-stage-accent)] text-[10px]">
 								{user.planName}
 							</p>
 						</div>
