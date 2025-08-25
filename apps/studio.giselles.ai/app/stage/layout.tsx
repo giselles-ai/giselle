@@ -1,5 +1,6 @@
 import { type ReactNode, Suspense } from "react";
 import { getSidebarData } from "./query";
+import { MobileBottomNavigation } from "./ui/mobile-bottom-navigation";
 import { MobileHeader } from "./ui/mobile-header";
 import { NavigationRail } from "./ui/navigation-rail";
 
@@ -11,7 +12,8 @@ export default function StageLayout({ children }: { children: ReactNode }) {
 				<MobileHeader />
 				<NavigationRail user={data} />
 			</Suspense>
-			<div className="flex-1">{children}</div>
+			<div className="flex-1 pb-16 md:pb-0">{children}</div>
+			<MobileBottomNavigation user={data} />
 		</div>
 	);
 }
