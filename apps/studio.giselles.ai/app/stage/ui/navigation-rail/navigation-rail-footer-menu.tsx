@@ -25,6 +25,32 @@ import { SignOutButton } from "@/services/accounts/components/user-button/sign-o
 import { buttonVariants } from "../../../(main)/settings/components/button";
 import type { NavigationRailState, UserDataForNavigationRail } from "./types";
 
+const HELP_ITEMS = [
+	{
+		label: "Docs",
+		href: "https://docs.giselles.ai/guides/introduction",
+		external: true,
+	},
+	{
+		label: "Terms",
+		href: "https://giselles.ai/legal/terms",
+		external: true,
+	},
+	{
+		label: "Privacy & Cookies",
+		href: "https://giselles.ai/legal/privacy",
+		external: true,
+	},
+	{
+		label: "Contact Us",
+		href: "mailto:support@giselles.ai",
+		external: true,
+	},
+] as const;
+
+const MENU_ITEM_CLASS =
+	"text-text outline-none cursor-pointer hover:bg-ghost-element-hover rounded-[4px] px-[8px] py-[6px] text-[14px]";
+
 export function NavigationRailFooterMenu({
 	user: userPromise,
 	variant,
@@ -51,29 +77,6 @@ export function NavigationRailFooterMenu({
 		},
 		[router, searchParams],
 	);
-
-	const helpItems = [
-		{
-			label: "Docs",
-			href: "https://docs.giselles.ai/guides/introduction",
-			external: true,
-		},
-		{
-			label: "Terms",
-			href: "https://giselles.ai/legal/terms",
-			external: true,
-		},
-		{
-			label: "Privacy & Cookies",
-			href: "https://giselles.ai/legal/privacy",
-			external: true,
-		},
-		{
-			label: "Contact Us",
-			href: "mailto:support@giselles.ai",
-			external: true,
-		},
-	];
 
 	return (
 		<DropdownMenuPrimitive.Root
@@ -122,7 +125,7 @@ export function NavigationRailFooterMenu({
 					<PopoverContent>
 						{/* Account Settings */}
 						<DropdownMenuPrimitive.Item
-							className="text-text outline-none cursor-pointer hover:bg-ghost-element-hover rounded-[4px] px-[8px] py-[6px] text-[14px] flex items-center justify-between"
+							className={`${MENU_ITEM_CLASS} flex items-center justify-between`}
 							asChild
 						>
 							<Link href="/settings/account" className="w-full">
@@ -132,7 +135,7 @@ export function NavigationRailFooterMenu({
 
 						{/* Display type */}
 						<DropdownMenuPrimitive.Item
-							className="text-text outline-none cursor-pointer hover:bg-ghost-element-hover rounded-[4px] px-[8px] py-[6px] text-[14px]"
+							className={MENU_ITEM_CLASS}
 							onClick={() => {
 								setDropdownOpen(false);
 								setIsDisplayDialogOpen(true);
@@ -143,7 +146,9 @@ export function NavigationRailFooterMenu({
 
 						{/* Help with Submenu */}
 						<DropdownMenuPrimitive.Sub>
-							<DropdownMenuPrimitive.SubTrigger className="text-text outline-none cursor-pointer hover:bg-ghost-element-hover rounded-[4px] px-[8px] py-[6px] text-[14px] flex items-center justify-between w-full">
+							<DropdownMenuPrimitive.SubTrigger
+								className={`${MENU_ITEM_CLASS} flex items-center justify-between w-full`}
+							>
 								Help
 								<ChevronRight className="w-3 h-3" />
 							</DropdownMenuPrimitive.SubTrigger>
@@ -153,10 +158,10 @@ export function NavigationRailFooterMenu({
 									sideOffset={4}
 								>
 									<PopoverContent>
-										{helpItems.map((item) => (
+										{HELP_ITEMS.map((item) => (
 											<DropdownMenuPrimitive.Item
 												key={item.label}
-												className="text-text outline-none cursor-pointer hover:bg-ghost-element-hover rounded-[4px] px-[8px] py-[6px] text-[14px]"
+												className={MENU_ITEM_CLASS}
 												asChild
 											>
 												{item.external ? (
@@ -185,20 +190,14 @@ export function NavigationRailFooterMenu({
 						<DropdownMenuPrimitive.Separator className="h-px bg-white/10 my-1" />
 
 						{/* Lobby */}
-						<DropdownMenuPrimitive.Item
-							className="text-text outline-none cursor-pointer hover:bg-ghost-element-hover rounded-[4px] px-[8px] py-[6px] text-[14px]"
-							asChild
-						>
+						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS} asChild>
 							<Link href="/apps" className="w-full block">
 								Lobby
 							</Link>
 						</DropdownMenuPrimitive.Item>
 
 						{/* Homepage */}
-						<DropdownMenuPrimitive.Item
-							className="text-text outline-none cursor-pointer hover:bg-ghost-element-hover rounded-[4px] px-[8px] py-[6px] text-[14px]"
-							asChild
-						>
+						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS} asChild>
 							<a
 								href="https://giselles.ai"
 								target="_blank"
@@ -214,7 +213,7 @@ export function NavigationRailFooterMenu({
 						<DropdownMenuPrimitive.Separator className="h-px bg-white/10 my-1" />
 
 						{/* Logout */}
-						<DropdownMenuPrimitive.Item className="text-text outline-none cursor-pointer hover:bg-ghost-element-hover rounded-[4px] px-[8px] py-[6px] text-[14px]">
+						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS}>
 							<SignOutButton className="text-[14px]">Log out</SignOutButton>
 						</DropdownMenuPrimitive.Item>
 					</PopoverContent>
