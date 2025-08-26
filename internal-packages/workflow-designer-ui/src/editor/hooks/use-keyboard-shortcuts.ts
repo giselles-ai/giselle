@@ -13,6 +13,8 @@ import {
 } from "../tool/toolbar";
 import type { Tool } from "../tool/types";
 
+type InputShortcutPolicy = "ignore" | "modifierOnly" | "always";
+
 // Browser shortcuts that should be prevented when canvas is focused
 const BROWSER_SHORTCUTS_TO_PREVENT = [
 	{ key: "d", modifiers: ["meta", "ctrl"] }, // Bookmark
@@ -26,14 +28,20 @@ function useKeyAction(
 	key: string | string[],
 	action: () => void,
 	enabled: boolean = false,
-	useKeyPressOptions: {
-		actInsideInputWithModifier?: boolean;
+	options: {
+		inputShortcutPolicy?: InputShortcutPolicy;
 		preventDefault?: boolean;
 	} = {
-		actInsideInputWithModifier: false,
+		inputShortcutPolicy: "ignore",
 	},
 ) {
 	const wasPressed = useRef(false);
+
+	const useKeyPressOptions = {
+		actInsideInputWithModifier: options.inputShortcutPolicy === "modifierOnly",
+		preventDefault: options.preventDefault,
+	};
+
 	const isPressed = useKeyPress(key, useKeyPressOptions);
 
 	useEffect(() => {
@@ -89,7 +97,7 @@ export function useKeyboardShortcuts(
 		["Meta+Enter", "Control+Enter"],
 		() => onGenerate?.(),
 		isPropertiesPanelFocused && !!onGenerate,
-		{ actInsideInputWithModifier: true },
+		{ inputShortcutPolicy: "modifierOnly" },
 	);
 
 	// Copy/Paste/Duplicate shortcuts
