@@ -205,7 +205,7 @@ export function CircularCarousel({
 			? Math.max(0.4, 1 - distanceFromCenter * 0.2)
 			: Math.max(0.6, 1 - distanceFromCenter * 0.15);
 		const scale = 1.0; // All cards same size
-		const zIndex = isCenter ? 50 : Math.max(1, 30 - distanceFromCenter * 5);
+		const zIndex = isCenter ? 10 : Math.max(1, 10 - distanceFromCenter * 2);
 
 		return {
 			x,
@@ -552,7 +552,7 @@ export function CircularCarousel({
 			{/* Gray selection frame - normal state */}
 			{centerCard && centerCardState === "normal" && (
 				<div
-					className="absolute left-1/2 top-1/2 pointer-events-none z-40"
+					className="absolute left-1/2 top-1/2 pointer-events-none z-10"
 					style={{
 						width: "98px", // 90px card + 4px padding on each side
 						height: "128px", // 120px card + 4px padding on each side
@@ -568,7 +568,7 @@ export function CircularCarousel({
 				<button
 					type="button"
 					aria-label="Select current app"
-					className="absolute left-1/2 transform -translate-x-1/2 text-center z-60 cursor-pointer border-none bg-transparent p-0"
+					className="absolute left-1/2 transform -translate-x-1/2 text-center z-5 cursor-pointer border-none bg-transparent p-0"
 					style={{ top: "75%" }}
 					onClick={() => {
 						if (centerCard) {
@@ -596,7 +596,7 @@ export function CircularCarousel({
 				centerCardState === "selected" &&
 				activeCardIndex === centerCard.originalIndex && (
 					<div
-						className="absolute left-1/2 top-1/2 pointer-events-none z-40"
+						className="absolute left-1/2 top-1/2 pointer-events-none z-10"
 						style={{
 							width: "98px", // 90px card + 4px padding on each side
 							height: "128px", // 120px card + 4px padding on each side
@@ -614,7 +614,7 @@ export function CircularCarousel({
 				aria-label="Navigate to previous app"
 				onClick={moveRight}
 				disabled={currentIndex === items.length - 1}
-				className="hidden md:flex absolute left-6 top-1/2 transform -translate-y-1/2 w-10 h-10 border border-white hover:bg-white/10 rounded-full items-center justify-center text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed z-50"
+				className="hidden md:flex absolute left-6 top-1/2 transform -translate-y-1/2 w-10 h-10 border border-white hover:bg-white/10 rounded-full items-center justify-center text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed z-5"
 			>
 				<ChevronLeft size={20} />
 			</button>
@@ -625,7 +625,7 @@ export function CircularCarousel({
 				aria-label="Navigate to next app"
 				onClick={moveLeft}
 				disabled={currentIndex === 0}
-				className="hidden md:flex absolute right-6 top-1/2 transform -translate-y-1/2 w-10 h-10 border border-white hover:bg-white/10 rounded-full items-center justify-center text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed z-50"
+				className="hidden md:flex absolute right-6 top-1/2 transform -translate-y-1/2 w-10 h-10 border border-white hover:bg-white/10 rounded-full items-center justify-center text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed z-5"
 			>
 				<ChevronRight size={20} />
 			</button>
@@ -637,7 +637,7 @@ export function CircularCarousel({
 					<button
 						type="button"
 						aria-label="Deselect current app"
-						className="absolute left-1/2 top-1/2 pointer-events-auto z-60 cursor-pointer border-none bg-transparent p-0"
+						className="absolute left-1/2 top-1/2 pointer-events-auto z-5 cursor-pointer border-none bg-transparent p-0"
 						style={{
 							transform: `translate(-50%, -50%) translate(${centerX}px, ${centerY - radius - 144 + 90}px)`,
 						}}
