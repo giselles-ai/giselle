@@ -45,6 +45,9 @@
 	/* stage */
 	--color-stage-background: #030610;
 	--color-stage-form-background: #101520;
+	--color-stage-sidebar-text: #7084ac;
+	--color-stage-sidebar-text-hover: #f7f9fd;
+	--color-stage-accent: #6b8ff0;
 	--shadow-stage-form:
 		0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1),
 		0 0 20px rgba(59, 130, 246, 0.15), 0 0 40px rgba(59, 130, 246, 0.1),
