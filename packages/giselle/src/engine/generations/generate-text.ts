@@ -198,6 +198,28 @@ export function generateText(args: {
 				args.useAiGateway,
 				args.context.aiGateway,
 			);
+			// Debug: Trigger test error for development
+			if (operationNode.content.prompt?.includes("__TEST_ERROR__")) {
+				// Create and set FailedGeneration directly
+				const failedGeneration = {
+					...runningGeneration,
+					status: "failed",
+					failedAt: Date.now(),
+					error: {
+						name: "TestError",
+						message: "This is a test error for copy button debugging",
+						dump: {
+							testData: "debug info",
+							prompt: operationNode.content.prompt,
+						},
+					},
+				} satisfies FailedGeneration;
+
+				await setGeneration(failedGeneration);
+				// Early return to prevent streaming
+				throw new Error("Test error triggered");
+			}
+
 			const streamTextResult = streamText({
 				model,
 				providerOptions,
