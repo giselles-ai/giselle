@@ -1,7 +1,8 @@
-import { and, desc, eq, isNotNull } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { acts, agents, db } from "@/drizzle";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";
+import { fetchFlowTriggers } from "../(top)/services";
 import { ShowcaseClient } from "./showcase-client";
 
 export default async function StageShowcasePage() {
@@ -12,28 +13,54 @@ export default async function StageShowcasePage() {
 		avatarUrl: team.avatarUrl ?? undefined,
 	}));
 
-	// Fetch apps (agents) for all teams
+	// Fetch only executable apps (using same logic as stage)
+	const user = await fetchCurrentUser();
+	const executableFlowTriggers = await fetchFlowTriggers(teams, "all", user);
+
+	// Group by team and transform to expected App interface
 	const teamAppsMap = new Map();
 	for (const team of teams) {
-		const dbAgents = await db
-			.select({
-				id: agents.id,
-				name: agents.name,
-				updatedAt: agents.updatedAt,
-				workspaceId: agents.workspaceId,
-			})
-			.from(agents)
-			.where(and(eq(agents.teamDbId, team.dbId), isNotNull(agents.workspaceId)))
-			.orderBy(desc(agents.updatedAt));
+		const teamFlowTriggers = executableFlowTriggers.filter(
+			(trigger) => trigger.teamId === team.id,
+		);
 
-		teamAppsMap.set(team.id, dbAgents);
+		// Transform FlowTriggerUIItem to App interface with proper updatedAt
+		const teamApps = await Promise.all(
+			teamFlowTriggers.map(async (trigger) => {
+				try {
+					// Get actual updatedAt from agents table
+					const agent = await db
+						.select({
+							updatedAt: agents.updatedAt,
+						})
+						.from(agents)
+						.where(eq(agents.workspaceId, trigger.sdkData.workspaceId))
+						.limit(1);
+
+					return {
+						id: trigger.id,
+						name: trigger.workspaceName,
+						updatedAt: agent[0]?.updatedAt || new Date(),
+						workspaceId: trigger.sdkData.workspaceId,
+					};
+				} catch {
+					return {
+						id: trigger.id,
+						name: trigger.workspaceName,
+						updatedAt: new Date(),
+						workspaceId: trigger.sdkData.workspaceId,
+					};
+				}
+			}),
+		);
+
+		teamAppsMap.set(team.id, teamApps);
 	}
 
 	// Convert map to plain object for client component
 	const teamApps = Object.fromEntries(teamAppsMap);
 
 	// Fetch execution history (acts) for all teams
-	const user = await fetchCurrentUser();
 	const teamHistoryMap = new Map();
 	for (const team of teams) {
 		const dbActs = await db
