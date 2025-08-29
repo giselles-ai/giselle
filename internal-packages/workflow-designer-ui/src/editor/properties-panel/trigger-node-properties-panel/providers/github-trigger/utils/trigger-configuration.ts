@@ -78,7 +78,7 @@ function isTriggerRequiringCallsign(eventId: GitHubTriggerEventId): boolean {
 /**
  * Generates the outputs for a given trigger
  */
-function generateTriggerOutputs(eventId: GitHubTriggerEventId): Output[] {
+export function deriveTriggerOutputs(eventId: GitHubTriggerEventId): Output[] {
 	const trigger = githubTriggers[eventId];
 	const outputs: Output[] = [];
 
@@ -121,7 +121,7 @@ function createTriggerConfiguration(options: TriggerConfigOptions) {
 	}
 
 	const event = createTriggerEvent(eventId, callsign);
-	const outputs = generateTriggerOutputs(eventId);
+	const outputs = deriveTriggerOutputs(eventId);
 	const name = `On ${githubTriggers[eventId].event.label}`;
 
 	return {
