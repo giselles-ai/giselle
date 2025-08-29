@@ -1325,7 +1325,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@jridgewell/source-map"></a>
-### @jridgewell/source-map v0.3.10
+### @jridgewell/source-map v0.3.11
 #### 
 
 ##### Paths
@@ -6763,7 +6763,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fast-uri"></a>
-### fast-uri v3.0.6
+### fast-uri v3.1.0
 #### 
 
 ##### Paths
@@ -11831,7 +11831,7 @@ Unknown manually approved
 
 
 <a name="vite"></a>
-### vite v6.0.11
+### vite v7.1.3
 #### 
 
 ##### Paths

@@ -30,5 +30,10 @@
 	"packageManager": "pnpm@10.2.1",
 	"engines": {
 		"node": ">=22"
+	},
+	"pnpm": {
+		"overrides": {
+			"vite": "7.1.3"
+		}
 	}
 }
