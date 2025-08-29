@@ -94,6 +94,10 @@ export function createPostgresQueryService<
 		results: QueryResult<z.infer<TSchema>>[],
 		context: TContext,
 	) => Promise<QueryResult<z.infer<TSchema>>[]>;
+	/**
+	 * When true (or resolves to true), omit chunk_content from SELECT to reduce transfer.
+	 */
+	omitChunkContent?: boolean | (() => boolean | Promise<boolean>);
 }) {
 	const database = validateDatabase(config.database);
 	const columnMapping = createColumnMapping({
@@ -146,6 +150,10 @@ export function createPostgresQueryService<
 
 			const filters = await config.contextToFilter(context);
 
+			const omit =
+				typeof config.omitChunkContent === "function"
+					? await config.omitChunkContent()
+					: Boolean(config.omitChunkContent);
 			const { sql, values } = buildSearchQuery({
 				tableName: config.tableName,
 				columnMapping,
@@ -155,6 +163,7 @@ export function createPostgresQueryService<
 				embeddingDimensions: profile.dimensions,
 				limit,
 				similarityThreshold,
+				includeContent: !omit,
 			});
 
 			const result = await pool.query(sql, values);
@@ -191,6 +200,7 @@ function buildSearchQuery({
 	embeddingDimensions,
 	limit,
 	similarityThreshold,
+	includeContent,
 }: {
 	tableName: string;
 	columnMapping: ReturnType<typeof createColumnMapping>;
@@ -200,6 +210,7 @@ function buildSearchQuery({
 	embeddingDimensions: number;
 	limit: number;
 	similarityThreshold?: number;
+	includeContent: boolean;
 }) {
 	const values: unknown[] = [pgvector.toSql(queryEmbedding)];
 	const whereConditions: string[] = [];
@@ -241,17 +252,20 @@ function buildSearchQuery({
 		)
 		.join(", ");
 
+	const selectContent = includeContent
+		? `${escapeIdentifier(columnMapping.chunkContent)} as content,`
+		: "";
 	const sql = `
-		SELECT
-			${escapeIdentifier(columnMapping.chunkContent)} as content,
-			${escapeIdentifier(columnMapping.chunkIndex)} as index,
-			${metadataSelects}${metadataColumns.length > 0 ? "," : ""}
-			1 - (${embeddingCast} <=> $1) as similarity
-		FROM ${escapeIdentifier(tableName)}
-		${whereConditions.length > 0 ? `WHERE ${whereConditions.join(" AND ")}` : ""}
-		ORDER BY ${embeddingCast} <=> $1
-		LIMIT $${paramIndex}
-	`;
+        SELECT
+            ${selectContent}
+            ${escapeIdentifier(columnMapping.chunkIndex)} as index,
+            ${metadataSelects}${metadataColumns.length > 0 ? "," : ""}
+            1 - (${embeddingCast} <=> $1) as similarity
+        FROM ${escapeIdentifier(tableName)}
+        ${whereConditions.length > 0 ? `WHERE ${whereConditions.join(" AND ")}` : ""}
+        ORDER BY ${embeddingCast} <=> $1
+        LIMIT $${paramIndex}
+    `;
 
 	values.push(limit);
 	return { sql, values };
@@ -291,8 +305,8 @@ function mapRowToResult<TSchema extends z.ZodType<Record<string, unknown>>>(
 
 	return {
 		chunk: {
-			content: row.content,
-			index: row.index,
+			content: typeof row.content === "string" ? (row.content as string) : "",
+			index: row.index as number,
 		},
 		similarity: row.similarity,
 		metadata,
