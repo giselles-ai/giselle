@@ -10,6 +10,12 @@ import {
 	type VectorStoreNode,
 	type WorkspaceId,
 } from "@giselle-sdk/data-type";
+import {
+	createGitHubPullRequestsLoader,
+	createGitHubTreeLoader,
+	type GitHubAuthConfig,
+	octokit,
+} from "@giselle-sdk/github-tool";
 import type {
 	EmbeddingCompleteCallback,
 	EmbeddingMetrics,
@@ -366,7 +372,7 @@ async function queryVectorStore(
 									similarityThreshold ?? DEFAULT_SIMILARITY_THRESHOLD,
 									embeddingCallback,
 								);
-								return {
+								const mapped = {
 									type: "vector-store" as const,
 									source,
 									records: res.map((result) => ({
@@ -381,6 +387,20 @@ async function queryVectorStore(
 										),
 									})),
 								};
+								// Hydrate if flag enabled
+								const shouldHydrate =
+									await context.featureFlags?.ragPointerHydration?.();
+								if (shouldHydrate) {
+									await hydrateGitHubBlobResults({
+										context,
+										workspaceId,
+										owner,
+										repo,
+										results: mapped.records,
+										maxToHydrate: maxResults ?? DEFAULT_MAX_RESULTS,
+									});
+								}
+								return mapped;
 							}
 
 							case "pull_request": {
@@ -412,7 +432,7 @@ async function queryVectorStore(
 										similarityThreshold ?? DEFAULT_SIMILARITY_THRESHOLD,
 										embeddingCallback,
 									);
-								return {
+								const mapped = {
 									type: "vector-store" as const,
 									source,
 									records: res.map((result) => ({
@@ -428,6 +448,20 @@ async function queryVectorStore(
 										additional: result.additional,
 									})),
 								};
+								// Hydrate if flag enabled
+								const shouldHydrate =
+									await context.featureFlags?.ragPointerHydration?.();
+								if (shouldHydrate) {
+									await hydrateGitHubPullRequestResults({
+										context,
+										workspaceId,
+										owner,
+										repo,
+										results: mapped.records,
+										maxToHydrate: maxResults ?? DEFAULT_MAX_RESULTS,
+									});
+								}
+								return mapped;
 							}
 
 							default: {
@@ -450,4 +484,154 @@ async function queryVectorStore(
 	);
 
 	return results;
+}
+
+// --- Hydration helpers (GitHub) ---
+async function buildGitHubAuthConfigForRepo(args: {
+	context: GiselleEngineContext;
+	owner: string;
+	repo: string;
+	workspaceId: WorkspaceId;
+}): Promise<GitHubAuthConfig> {
+	const { context, owner, repo, workspaceId } = args;
+	const app = context.integrationConfigs?.github?.authV2;
+	if (!app) {
+		throw new Error("GitHub authV2 configuration is missing");
+	}
+	const installationId =
+		await context.vectorStoreQueryServices?.githubInstallations?.installationIdForRepository(
+			{
+				owner,
+				repo,
+				workspaceId,
+			},
+		);
+	if (!installationId) {
+		throw new Error("GitHub installationId not found for repository");
+	}
+	return {
+		strategy: "app-installation",
+		appId: app.appId,
+		privateKey: app.privateKey,
+		installationId,
+	};
+}
+
+async function hydrateGitHubBlobResults(args: {
+	context: GiselleEngineContext;
+	owner: string;
+	repo: string;
+	workspaceId: WorkspaceId;
+	results: Array<{
+		chunkContent: string;
+		chunkIndex: number;
+		score: number;
+		metadata: Record<string, string>;
+	}>;
+	maxToHydrate: number;
+}) {
+	const { context, owner, repo, workspaceId, results, maxToHydrate } = args;
+	if (results.length === 0) return;
+	const auth = await buildGitHubAuthConfigForRepo({
+		context,
+		owner,
+		repo,
+		workspaceId,
+	});
+	const client = octokit(auth);
+	// loadDocument uses blob API by fileSha; commitSha is not required for it here.
+	const commitSha = "HEAD";
+	const loader = createGitHubTreeLoader(
+		client,
+		{ owner, repo, commitSha },
+		{ maxBlobSize: 1024 * 1024 },
+	);
+	const toHydrate = results.slice(0, maxToHydrate);
+	await Promise.all(
+		toHydrate.map(async (r, i) => {
+			if (r.chunkContent && r.chunkContent.length > 0) return;
+			const path = r.metadata.path;
+			const fileSha = r.metadata.fileSha;
+			if (!path || !fileSha) return;
+			try {
+				// Infer metadata type from loader signature to avoid assertions
+				type BlobMetadata = Parameters<typeof loader.loadDocument>[0];
+				const meta: BlobMetadata = { owner, repo, path, fileSha };
+				const doc = await loader.loadDocument(meta);
+				if (doc && typeof doc.content === "string") {
+					r.chunkContent = doc.content;
+				}
+			} catch (e) {
+				if (i === 0) console.warn("Blob hydration failed for", path, e);
+			}
+		}),
+	);
+}
+
+async function hydrateGitHubPullRequestResults(args: {
+	context: GiselleEngineContext;
+	owner: string;
+	repo: string;
+	workspaceId: WorkspaceId;
+	results: Array<{
+		chunkContent: string;
+		chunkIndex: number;
+		score: number;
+		metadata: Record<string, string>;
+		additional?: Record<string, unknown>;
+	}>;
+	maxToHydrate: number;
+}) {
+	const { context, owner, repo, workspaceId, results, maxToHydrate } = args;
+	if (results.length === 0) return;
+	const auth: GitHubAuthConfig = await buildGitHubAuthConfigForRepo({
+		context,
+		owner,
+		repo,
+		workspaceId,
+	});
+	const loader = createGitHubPullRequestsLoader({ owner, repo }, auth);
+	const toHydrate = results.slice(0, maxToHydrate);
+
+	function isPRContentType(
+		value: string,
+	): value is "title_body" | "comment" | "diff" {
+		return value === "title_body" || value === "comment" || value === "diff";
+	}
+	await Promise.all(
+		toHydrate.map(async (r, i) => {
+			if (r.chunkContent && r.chunkContent.length > 0) return;
+			const prNumberRaw = r.metadata.prNumber;
+			const contentTypeRaw = r.metadata.contentType;
+			const contentId = r.metadata.contentId;
+			if (!prNumberRaw || !contentTypeRaw || !contentId) return;
+			if (!isPRContentType(contentTypeRaw)) return;
+			const prNumberNum = Number(prNumberRaw);
+			if (!Number.isFinite(prNumberNum)) return;
+			try {
+				type PRMetadata = Parameters<typeof loader.loadDocument>[0];
+				const meta: PRMetadata = {
+					owner,
+					repo,
+					prNumber: prNumberNum,
+					contentType: contentTypeRaw,
+					contentId,
+					mergedAt: r.metadata.mergedAt ?? new Date().toISOString(),
+				};
+				const doc = await loader.loadDocument(meta);
+				if (doc && typeof doc.content === "string") {
+					r.chunkContent = doc.content;
+				}
+			} catch (e) {
+				if (i === 0)
+					console.warn(
+						"PR hydration failed for",
+						prNumberNum,
+						contentTypeRaw,
+						contentId,
+						e,
+					);
+			}
+		}),
+	);
 }

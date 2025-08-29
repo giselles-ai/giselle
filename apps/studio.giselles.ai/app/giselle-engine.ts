@@ -16,7 +16,9 @@ import { openaiVectorStore } from "@giselle-sdk/vector-store-adapters";
 import type { ModelMessage, ProviderMetadata } from "ai";
 import { after } from "next/server";
 import { createStorage } from "unstorage";
+import { ragPointerHydrationFlag } from "@/flags";
 import { waitForLangfuseFlush } from "@/instrumentation.node";
+import { installationIdForRepository } from "@/lib/vector-stores/github/query/installation-resolver";
 import { getWorkspaceTeam } from "@/lib/workspaces/get-workspace-team";
 import { fetchUsageLimits } from "@/packages/lib/fetch-usage-limits";
 import { onConsumeAgentTime } from "@/packages/lib/on-consume-agent-time";
@@ -196,9 +198,15 @@ export const giselleEngine = NextGiselleEngine({
 		},
 	},
 	vault,
+	featureFlags: {
+		ragPointerHydration: ragPointerHydrationFlag,
+	},
 	vectorStoreQueryServices: {
 		github: gitHubQueryService,
 		githubPullRequest: gitHubPullRequestQueryService,
+		githubInstallations: {
+			installationIdForRepository,
+		},
 	},
 	callbacks: {
 		generationComplete: (args) => {

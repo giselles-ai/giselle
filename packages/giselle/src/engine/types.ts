@@ -57,9 +57,19 @@ export interface GiselleEngineContext {
 		metadata?: TelemetrySettings["metadata"];
 	};
 	vault: Vault;
+	featureFlags?: {
+		ragPointerHydration: () => Promise<boolean>;
+	};
 	vectorStoreQueryServices?: {
 		github?: GitHubVectorStoreQueryService<Record<string, unknown>>;
 		githubPullRequest?: GitHubVectorStoreQueryService<Record<string, unknown>>;
+		githubInstallations?: {
+			installationIdForRepository: (args: {
+				owner: string;
+				repo: string;
+				workspaceId: WorkspaceId;
+			}) => Promise<number | undefined>;
+		};
 	};
 	callbacks?: {
 		generationComplete?: GenerationCompleteCallbackFunction;
@@ -140,9 +150,19 @@ export interface GiselleEngineConfig {
 	};
 	fetchUsageLimitsFn?: FetchUsageLimitsFn;
 	vault: Vault;
+	featureFlags?: {
+		ragPointerHydration: () => Promise<boolean>;
+	};
 	vectorStoreQueryServices?: {
 		github?: GitHubVectorStoreQueryService<Record<string, unknown>>;
 		githubPullRequest?: GitHubVectorStoreQueryService<Record<string, unknown>>;
+		githubInstallations?: {
+			installationIdForRepository: (args: {
+				owner: string;
+				repo: string;
+				workspaceId: WorkspaceId;
+			}) => Promise<number | undefined>;
+		};
 	};
 	callbacks?: {
 		generationComplete?: GenerationCompleteCallbackFunction;
