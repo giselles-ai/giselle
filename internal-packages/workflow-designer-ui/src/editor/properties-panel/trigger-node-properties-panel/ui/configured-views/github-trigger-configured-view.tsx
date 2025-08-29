@@ -1,5 +1,6 @@
-import type { FlowTriggerId } from "@giselle-sdk/data-type";
+import type { FlowTriggerId, TriggerNode } from "@giselle-sdk/data-type";
 import { githubTriggerIdToLabel } from "@giselle-sdk/flow";
+import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
 import clsx from "clsx/lite";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -54,15 +55,18 @@ const DefaultEventIcon = ({
 
 export function GitHubTriggerConfiguredView({
 	flowTriggerId,
+	node,
 }: {
 	flowTriggerId: FlowTriggerId;
+	node: TriggerNode;
 }) {
+	const { updateNodeData } = useWorkflowDesigner();
 	const { isLoading, data, enableFlowTrigger, disableFlowTrigger } =
 		useGitHubTrigger(flowTriggerId);
 	const [actionInProgress, setActionInProgress] = useState(false);
 	const [actionError, setActionError] = useState<Error | null>(null);
 
-	if (isLoading) {
+	if (isLoading && data === undefined) {
 		return "Loading...";
 	}
 	if (data === undefined) {
@@ -189,11 +193,30 @@ export function GitHubTriggerConfiguredView({
 
 			<div className="space-y-[4px]">
 				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Repository</p>
-				<div className="px-[4px] pt-[6px]">
-					<GitHubRepositoryBlock
-						owner={data.githubRepositoryFullname.owner}
-						repo={data.githubRepositoryFullname.repo}
-					/>
+				<div className="flex justify-between">
+					<div className="px-[4px] pt-[6px]">
+						<GitHubRepositoryBlock
+							owner={data.githubRepositoryFullname.owner}
+							repo={data.githubRepositoryFullname.repo}
+						/>
+					</div>
+					<button
+						type="button"
+						className="bg-primary-900 hover:bg-primary-800 text-white font-medium px-4 py-2 rounded-md text-[14px] transition-colors"
+						onClick={() => {
+							updateNodeData(node, {
+								content: {
+									...node.content,
+									state: {
+										status: "reconfiguring",
+										flowTriggerId,
+									},
+								},
+							});
+						}}
+					>
+						Change Repository
+					</button>
 				</div>
 			</div>
 			{(data.trigger.configuration.event.id ===
