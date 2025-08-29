@@ -6,7 +6,6 @@ export interface FeatureFlagContextValue {
 	layoutV3: boolean;
 	experimental_storage: boolean;
 	stage: boolean;
-	multiEmbedding: boolean;
 	aiGateway: boolean;
 	resumableGeneration: boolean;
 }

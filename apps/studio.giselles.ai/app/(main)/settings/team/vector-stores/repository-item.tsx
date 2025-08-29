@@ -1,6 +1,8 @@
 "use client";
 
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
+import { EMBEDDING_PROFILES } from "@giselle-sdk/data-type";
+import { formatTimestamp } from "@giselles-ai/lib/utils";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
 	Code,
@@ -10,7 +12,7 @@ import {
 	Settings,
 	Trash,
 } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -37,6 +39,14 @@ import { DiagnosticModal } from "./diagnostic-modal";
 import { getErrorMessage } from "./error-messages";
 import type { DocumentLoaderErrorCode } from "./types";
 
+// Status configuration for sync badges
+const STATUS_CONFIG = {
+	idle: { dotColor: "bg-[#B8E8F4]", label: "Idle" },
+	running: { dotColor: "bg-[#39FF7F] animate-custom-pulse", label: "Running" },
+	completed: { dotColor: "bg-[#39FF7F]", label: "Ready" },
+	failed: { dotColor: "bg-[#FF3D71]", label: "Error" },
+} as const;
+
 type RepositoryItemProps = {
 	repositoryData: RepositoryWithStatuses;
 	deleteRepositoryIndexAction: (
@@ -53,7 +63,6 @@ type RepositoryItemProps = {
 		}[],
 		embeddingProfileIds?: number[],
 	) => Promise<{ success: boolean; error?: string }>;
-	multiEmbedding?: boolean;
 };
 
 export function RepositoryItem({
@@ -61,14 +70,18 @@ export function RepositoryItem({
 	deleteRepositoryIndexAction,
 	triggerManualIngestAction,
 	updateRepositoryIndexAction,
-	multiEmbedding = false,
 }: RepositoryItemProps) {
 	const { repositoryIndex, contentStatuses } = repositoryData;
 
-	// For backward compatibility: derive embedding profile IDs from content statuses
-	const embeddingProfileIds = [
-		...new Set(contentStatuses.map((cs) => cs.embeddingProfileId)),
-	];
+	// Derive unique embedding profile IDs from content statuses
+	const embeddingProfileIds = useMemo(
+		() =>
+			[...new Set(contentStatuses.map((cs) => cs.embeddingProfileId))].sort(
+				(a, b) => a - b,
+			),
+		[contentStatuses],
+	);
+
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [showConfigureDialog, setShowConfigureDialog] = useState(false);
 	const [showDiagnosticModal, setShowDiagnosticModal] = useState(false);
@@ -99,18 +112,6 @@ export function RepositoryItem({
 		});
 	};
 
-	// Get content statuses
-	const blobStatus = contentStatuses.find((cs) => cs.contentType === "blob");
-	const pullRequestStatus = contentStatuses.find(
-		(cs) => cs.contentType === "pull_request",
-	);
-
-	if (!blobStatus) {
-		throw new Error(
-			`Repository ${repositoryIndex.dbId} missing blob content status`,
-		);
-	}
-
 	// Check if manual ingest is allowed for any enabled content type
 	const now = new Date();
 	const canManuallyIngest = contentStatuses.some((cs) => {
@@ -131,7 +132,8 @@ export function RepositoryItem({
 			)}
 		>
 			<div className="px-[24px] py-[16px]">
-				<div className="flex items-center justify-between gap-4 mb-4">
+				{/* Repository Header */}
+				<div className="flex items-center justify-between gap-4 mb-3">
 					<a
 						href={`https://github.com/${repositoryIndex.owner}/${repositoryIndex.repo}`}
 						target="_blank"
@@ -145,6 +147,7 @@ export function RepositoryItem({
 							<DropdownMenuTrigger asChild>
 								<button
 									type="button"
+									aria-label="Repository actions menu"
 									className="transition-opacity duration-200 p-2 text-white/60 hover:text-white/80 hover:bg-white/5 rounded-md disabled:opacity-50"
 									disabled={isPending || isIngesting}
 								>
@@ -171,52 +174,37 @@ export function RepositoryItem({
 									Configure Sources
 								</DropdownMenuItem>
 								<DropdownMenuSeparator className="my-1 h-px bg-white/10" />
-								<Dialog.Root
-									open={showDeleteDialog}
-									onOpenChange={setShowDeleteDialog}
+								<DropdownMenuItem
+									onSelect={(e) => {
+										e.preventDefault();
+										setShowDeleteDialog(true);
+									}}
+									className="flex items-center px-3 py-2 text-[14px] leading-[16px] text-error-900 hover:bg-error-900/20 rounded-md"
 								>
-									<Dialog.Trigger asChild>
-										<DropdownMenuItem
-											onClick={() => setShowDeleteDialog(true)}
-											className="flex items-center px-3 py-2 text-[14px] leading-[16px] text-error-900 hover:bg-error-900/20 rounded-md"
-										>
-											<Trash className="h-4 w-4 mr-2" />
-											Delete
-										</DropdownMenuItem>
-									</Dialog.Trigger>
-								</Dialog.Root>
+									<Trash className="h-4 w-4 mr-2" />
+									Delete
+								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</div>
 				</div>
 
-				{/* Divider below repository name */}
-				<div className="border-t border-white/10 my-3"></div>
-
-				{/* Content Type Sections */}
+				{/* Embedding Model Cards */}
 				<div className="space-y-0">
-					{/* Code Section */}
-					<ContentTypeSection
-						contentType="blob"
-						status={blobStatus}
-						isIngesting={isIngesting}
-						onVerify={
-							blobStatus?.status === "failed" &&
-							blobStatus?.errorCode === "DOCUMENT_NOT_FOUND"
-								? () => setShowDiagnosticModal(true)
-								: undefined
-						}
-					/>
-
-					{/* Divider between Code and Pull Requests */}
-					<div className="border-t border-white/10 my-3"></div>
-
-					{/* Pull Requests Section */}
-					<ContentTypeSection
-						contentType="pull_request"
-						status={pullRequestStatus}
-						isIngesting={isIngesting}
-					/>
+					{embeddingProfileIds.map((profileId) => {
+						const profile =
+							EMBEDDING_PROFILES[profileId as keyof typeof EMBEDDING_PROFILES];
+						return (
+							<EmbeddingModelCard
+								key={profileId}
+								profile={profile}
+								profileId={profileId}
+								contentStatuses={contentStatuses}
+								isIngesting={isIngesting}
+								onShowDiagnostic={() => setShowDiagnosticModal(true)}
+							/>
+						);
+					})}
 				</div>
 			</div>
 
@@ -245,7 +233,6 @@ export function RepositoryItem({
 				repositoryData={repositoryData}
 				updateRepositoryIndexAction={updateRepositoryIndexAction}
 				enabledProfiles={embeddingProfileIds}
-				multiEmbedding={multiEmbedding}
 			/>
 
 			<DiagnosticModal
@@ -261,109 +248,83 @@ export function RepositoryItem({
 	);
 }
 
-function getRelativeTimeString(date: Date): string {
-	const now = new Date();
-	const diffInMs = now.getTime() - date.getTime();
-	const diffInSeconds = Math.floor(diffInMs / 1000);
-	const diffInMinutes = Math.floor(diffInSeconds / 60);
-	const diffInHours = Math.floor(diffInMinutes / 60);
-	const diffInDays = Math.floor(diffInHours / 24);
-
-	if (diffInDays > 7) {
-		return date.toLocaleDateString("en-US");
-	}
-	if (diffInDays >= 1) {
-		return diffInDays === 1 ? "yesterday" : `${diffInDays} days ago`;
-	}
-	if (diffInHours >= 1) {
-		return diffInHours === 1 ? "1 hour ago" : `${diffInHours} hours ago`;
-	}
-	if (diffInMinutes >= 1) {
-		return diffInMinutes === 1
-			? "1 minute ago"
-			: `${diffInMinutes} minutes ago`;
-	}
-	return "just now";
-}
-
-const STATUS_CONFIG = {
-	idle: { dotColor: "bg-[#B8E8F4]", label: "Idle" },
-	running: { dotColor: "bg-[#39FF7F] animate-custom-pulse", label: "Running" },
-	completed: { dotColor: "bg-[#39FF7F]", label: "Ready" },
-	failed: { dotColor: "bg-[#FF3D71]", label: "Error" },
-} as const;
-
-function SyncStatusBadge({
-	status,
-	onVerify,
+// Embedding Model Card Component
+function EmbeddingModelCard({
+	profile,
+	profileId,
+	contentStatuses,
+	isIngesting,
+	onShowDiagnostic,
 }: {
-	status: GitHubRepositoryIndexStatus;
-	onVerify?: () => void;
+	profile?: (typeof EMBEDDING_PROFILES)[keyof typeof EMBEDDING_PROFILES];
+	profileId: number;
+	contentStatuses: (typeof githubRepositoryContentStatus.$inferSelect)[];
+	isIngesting: boolean;
+	onShowDiagnostic: () => void;
 }) {
-	const config = STATUS_CONFIG[status] ?? {
-		dotColor: "bg-gray-500",
-		label: "unknown",
-	};
-
-	const badgeContent = (
-		<>
-			<div className={`w-2 h-2 rounded-full ${config.dotColor} shrink-0`} />
-			<span className="text-black-400 text-[12px] leading-[14px] font-medium font-geist flex-1 text-center ml-1.5">
-				{config.label}
-			</span>
-			{status === "failed" && onVerify && (
-				<>
-					<span className="text-black-400 text-[12px] mx-1">•</span>
-					<span className="text-[#1663F3] text-[12px] leading-[14px] font-medium font-geist">
-						Check
-					</span>
-					<span className="text-[#1663F3] text-[10px] ml-0.5">↗</span>
-				</>
-			)}
-		</>
+	// Filter statuses for this embedding profile
+	const profileStatuses = contentStatuses.filter(
+		(cs) => cs.embeddingProfileId === profileId,
 	);
 
-	if (onVerify) {
-		return (
-			<button
-				type="button"
-				onClick={onVerify}
-				className="flex items-center px-2 py-1 rounded-full border border-white/20 w-auto hover:bg-white/5 transition-colors duration-200"
-			>
-				{badgeContent}
-			</button>
-		);
-	}
+	// Get status for each content type
+	const blobStatus = profileStatuses.find((cs) => cs.contentType === "blob");
+	const pullRequestStatus = profileStatuses.find(
+		(cs) => cs.contentType === "pull_request",
+	);
 
 	return (
-		<div className="flex items-center px-2 py-1 rounded-full border border-white/20 w-[80px]">
-			{badgeContent}
+		<div
+			className="rounded-lg p-4 mb-4"
+			style={{
+				background: "linear-gradient(180deg, #202530 0%, #12151f 100%)",
+				border: "0.5px solid rgba(255, 255, 255, 0.15)",
+				boxShadow: "0 2px 8px rgba(5,10,20,0.4), 0 1px 2px rgba(0,0,0,0.3)",
+			}}
+		>
+			{/* Model Header */}
+			<div className="flex items-center gap-2 mb-3">
+				<span className="text-xs text-white/60 bg-white/5 px-2 py-1 rounded font-medium">
+					{profile?.name || `Profile ${profileId}`}
+				</span>
+			</div>
+
+			{/* Content Type Sections */}
+			<div className="space-y-0">
+				{/* Code Section */}
+				<ContentTypeSection
+					contentType="blob"
+					status={blobStatus}
+					isIngesting={isIngesting}
+					onVerify={
+						blobStatus?.status === "failed" &&
+						blobStatus?.errorCode === "DOCUMENT_NOT_FOUND"
+							? onShowDiagnostic
+							: undefined
+					}
+				/>
+
+				{/* Divider between Code and Pull Requests */}
+				<div className="border-t border-white/10 my-3"></div>
+
+				{/* Pull Requests Section */}
+				<ContentTypeSection
+					contentType="pull_request"
+					status={pullRequestStatus}
+					isIngesting={isIngesting}
+					onVerify={
+						pullRequestStatus?.status === "failed" &&
+						pullRequestStatus?.errorCode === "DOCUMENT_NOT_FOUND"
+							? onShowDiagnostic
+							: undefined
+					}
+				/>
+			</div>
 		</div>
 	);
 }
 
-function formatRetryTime(retryAfter: Date): string {
-	const now = new Date();
-	const diffMs = retryAfter.getTime() - now.getTime();
-
-	if (diffMs <= 0) {
-		return "now";
-	}
-
-	const diffSeconds = Math.floor(diffMs / 1000);
-	const diffMinutes = Math.floor(diffSeconds / 60);
-	const diffHours = Math.floor(diffMinutes / 60);
-
-	if (diffHours > 0) {
-		return `${diffHours} hour${diffHours > 1 ? "s" : ""}`;
-	}
-	if (diffMinutes > 0) {
-		return `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""}`;
-	}
-	return `${diffSeconds} second${diffSeconds > 1 ? "s" : ""}`;
-}
-
-// Content Type Section Component
+// Content Type Section Component (from repository-item.tsx)
 type ContentTypeSectionProps = {
 	contentType: GitHubRepositoryContentType;
 	status?: typeof githubRepositoryContentStatus.$inferSelect;
@@ -387,18 +348,13 @@ function ContentTypeSection({
 		const Icon = config.icon;
 
 		return (
-			<div className="bg-black-700/50 rounded-lg p-3 opacity-50">
-				<div className="flex items-center justify-between mb-1">
-					<div className="flex items-center gap-2 text-sm font-medium text-gray-300">
-						<Icon size={16} />
-						<span>{config.label}</span>
-					</div>
-					<div className="flex items-center gap-2">
-						<StatusBadge status="ignored">Disabled</StatusBadge>
-					</div>
+			<div className="flex items-center justify-between">
+				<div className="flex items-center gap-2 text-sm font-medium text-gray-300">
+					<Icon size={16} />
+					<span>{config.label}</span>
 				</div>
-				<div className="text-xs text-gray-500">
-					<span>Not configured</span>
+				<div className="flex items-center gap-2">
+					<StatusBadge status="ignored">Disabled</StatusBadge>
 				</div>
 			</div>
 		);
@@ -443,7 +399,7 @@ function ContentTypeSection({
 	const displayStatus = isIngesting && enabled ? "running" : syncStatus;
 
 	return (
-		<div className="bg-black-700/50 rounded-lg p-3">
+		<div>
 			<div className="flex items-center justify-between mb-1">
 				<div className="flex items-center gap-2 text-sm font-medium text-gray-300">
 					<Icon size={16} />
@@ -468,7 +424,10 @@ function ContentTypeSection({
 			{enabled && (
 				<div className="text-xs text-gray-500 flex justify-between">
 					{lastSyncedAt ? (
-						<span>Last sync: {getRelativeTimeString(lastSyncedAt)}</span>
+						<span>
+							Last sync:{" "}
+							{formatTimestamp.toRelativeTime(new Date(lastSyncedAt).getTime())}
+						</span>
 					) : (
 						<span>Never synced</span>
 					)}
@@ -478,9 +437,63 @@ function ContentTypeSection({
 			{enabled && syncStatus === "failed" && errorCode && (
 				<div className="text-xs text-red-400 mt-1">
 					{getErrorMessage(errorCode as DocumentLoaderErrorCode)}
-					{retryAfter && ` • Retry in ${formatRetryTime(retryAfter)}`}
+					{retryAfter &&
+						` • Retry ${formatTimestamp.toRelativeTime(new Date(retryAfter).getTime())}`}
 				</div>
 			)}
+			{!enabled && contentType === "pull_request" && (
+				<div className="text-xs text-gray-500">Not configured</div>
+			)}
+		</div>
+	);
+}
+
+function SyncStatusBadge({
+	status,
+	onVerify,
+}: {
+	status: GitHubRepositoryIndexStatus;
+	onVerify?: () => void;
+}) {
+	const config = STATUS_CONFIG[status] ?? {
+		dotColor: "bg-gray-500",
+		label: "unknown",
+	};
+
+	const badgeContent = (
+		<>
+			<div className={`w-2 h-2 rounded-full ${config.dotColor} shrink-0`} />
+			<span className="text-black-400 text-[12px] leading-[14px] font-medium font-geist flex-1 text-center ml-1.5">
+				{config.label}
+			</span>
+			{status === "failed" && onVerify && (
+				<>
+					<span className="text-black-400 text-[12px] mx-1">•</span>
+					<span className="text-[#1663F3] text-[12px] leading-[14px] font-medium font-geist">
+						Check
+					</span>
+					<span className="text-[#1663F3] text-[10px] ml-0.5">↗</span>
+				</>
+			)}
+		</>
+	);
+
+	if (onVerify) {
+		return (
+			<button
+				type="button"
+				aria-label="Verify repository status"
+				onClick={onVerify}
+				className="flex items-center px-2 py-1 rounded-full border border-white/20 w-auto hover:bg-white/5 transition-colors duration-200"
+			>
+				{badgeContent}
+			</button>
+		);
+	}
+
+	return (
+		<div className="flex items-center px-2 py-1 rounded-full border border-white/20 w-[80px]">
+			{badgeContent}
 		</div>
 	);
 }

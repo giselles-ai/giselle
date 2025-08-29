@@ -30,7 +30,6 @@ type ConfigureSourcesDialogProps = {
 		embeddingProfileIds?: number[],
 	) => Promise<{ success: boolean; error?: string }>;
 	enabledProfiles?: number[];
-	multiEmbedding?: boolean;
 };
 
 export function ConfigureSourcesDialog({
@@ -39,7 +38,6 @@ export function ConfigureSourcesDialog({
 	repositoryData,
 	updateRepositoryIndexAction,
 	enabledProfiles = [1],
-	multiEmbedding = false,
 }: ConfigureSourcesDialogProps) {
 	const { repositoryIndex, contentStatuses } = repositoryData;
 	const [isPending, startTransition] = useTransition();
@@ -77,13 +75,10 @@ export function ConfigureSourcesDialog({
 				{ contentType: "pull_request", enabled: config.pullRequests.enabled },
 			];
 
-			// Use the current profiles or default to [1] if multi-embedding is disabled
-			const profilesToUse = multiEmbedding ? selectedProfiles : enabledProfiles;
-
 			const result = await updateRepositoryIndexAction(
 				repositoryIndex.id,
 				contentTypes,
-				profilesToUse,
+				selectedProfiles,
 			);
 
 			if (!result.success) {
@@ -133,62 +128,56 @@ export function ConfigureSourcesDialog({
 							status={pullRequestStatus}
 						/>
 
-						{/* Embedding Profiles Section - Only show when feature flag is enabled */}
-						{multiEmbedding && (
-							<div className="mt-6">
-								<h3 className="text-white-400 text-[14px] font-medium mb-3">
-									Embedding Models
-								</h3>
-								<div className="text-white-400/60 text-[12px] mb-3">
-									Select at least one embedding model for indexing
-								</div>
-								<div className="space-y-2">
-									{Object.entries(EMBEDDING_PROFILES).map(([id, profile]) => {
-										const profileId = Number(id);
-										const isSelected = selectedProfiles.includes(profileId);
-										const isLastOne =
-											selectedProfiles.length === 1 && isSelected;
-
-										return (
-											<label
-												key={profileId}
-												className="flex items-start gap-3 p-3 rounded-lg bg-black-700/50 hover:bg-black-700/70 transition-colors cursor-pointer"
-											>
-												<input
-													type="checkbox"
-													checked={isSelected}
-													disabled={isPending || isLastOne}
-													onChange={(e) => {
-														if (e.target.checked) {
-															setSelectedProfiles([
-																...selectedProfiles,
-																profileId,
-															]);
-														} else {
-															setSelectedProfiles(
-																selectedProfiles.filter(
-																	(id) => id !== profileId,
-																),
-															);
-														}
-													}}
-													className="mt-1 w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
-												/>
-												<div className="flex-1">
-													<div className="text-white-400 text-[14px] font-medium">
-														{profile.name}
-													</div>
-													<div className="text-white-400/60 text-[12px] mt-1">
-														Provider: {profile.provider} • Dimensions:{" "}
-														{profile.dimensions}
-													</div>
-												</div>
-											</label>
-										);
-									})}
-								</div>
+						<div className="mt-6">
+							<h3 className="text-white-400 text-[14px] font-medium mb-3">
+								Embedding Models
+							</h3>
+							<div className="text-white-400/60 text-[12px] mb-3">
+								Select at least one embedding model for indexing
 							</div>
-						)}
+							<div className="space-y-2">
+								{Object.entries(EMBEDDING_PROFILES).map(([id, profile]) => {
+									const profileId = Number(id);
+									const isSelected = selectedProfiles.includes(profileId);
+									const isLastOne = selectedProfiles.length === 1 && isSelected;
+
+									return (
+										<label
+											key={profileId}
+											className="flex items-start gap-3 p-3 rounded-lg bg-black-700/50 hover:bg-black-700/70 transition-colors cursor-pointer"
+										>
+											<input
+												type="checkbox"
+												checked={isSelected}
+												disabled={isPending || isLastOne}
+												onChange={(e) => {
+													if (e.target.checked) {
+														setSelectedProfiles([
+															...selectedProfiles,
+															profileId,
+														]);
+													} else {
+														setSelectedProfiles(
+															selectedProfiles.filter((id) => id !== profileId),
+														);
+													}
+												}}
+												className="mt-1 w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
+											/>
+											<div className="flex-1">
+												<div className="text-white-400 text-[14px] font-medium">
+													{profile.name}
+												</div>
+												<div className="text-white-400/60 text-[12px] mt-1">
+													Provider: {profile.provider} • Dimensions:{" "}
+													{profile.dimensions}
+												</div>
+											</div>
+										</label>
+									);
+								})}
+							</div>
+						</div>
 					</div>
 
 					{error && <div className="mt-4 text-sm text-error-500">{error}</div>}

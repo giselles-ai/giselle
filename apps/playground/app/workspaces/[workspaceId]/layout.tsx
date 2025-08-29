@@ -19,7 +19,6 @@ export default async function Layout({
 				layoutV3: true,
 				experimental_storage: true,
 				stage: true,
-				multiEmbedding: false,
 				aiGateway: false,
 				resumableGeneration: false,
 			}}

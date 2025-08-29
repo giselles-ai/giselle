@@ -9,7 +9,6 @@ import {
 	isEmbeddingProfileId,
 } from "@giselle-sdk/data-type";
 import {
-	useFeatureFlag,
 	useVectorStore,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
@@ -28,7 +27,6 @@ export function GitHubVectorStoreNodePropertiesPanel({
 }: GitHubVectorStoreNodePropertiesPanelProps) {
 	const { updateNodeData } = useWorkflowDesigner();
 	const vectorStore = useVectorStore();
-	const { multiEmbedding } = useFeatureFlag();
 	const settingPath = vectorStore?.settingPath;
 
 	// Get repository indexes
@@ -182,7 +180,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 			// When feature flag is off, always use DEFAULT_EMBEDDING_PROFILE_ID
 			// When feature flag is on, use first available profile for the content type
 			let profileId: EmbeddingProfileId = DEFAULT_EMBEDDING_PROFILE_ID;
-			if (multiEmbedding && selectedRepo.contentTypes) {
+			if (selectedRepo.contentTypes) {
 				const contentTypeProfiles = selectedRepo.contentTypes.find(
 					(ct: { contentType: string }) => ct.contentType === contentType,
 				);
@@ -337,9 +335,8 @@ export function GitHubVectorStoreNodePropertiesPanel({
 					</div>
 				)}
 
-				{/* Embedding Profile Selection - Only show when feature flag is enabled */}
-				{multiEmbedding &&
-					selectedRepoKey &&
+				{/* Embedding Profile Selection */}
+				{selectedRepoKey &&
 					selectedContentType &&
 					availableEmbeddingProfiles.length > 0 && (
 						<div className="mt-[16px]">
