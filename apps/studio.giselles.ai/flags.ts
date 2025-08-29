@@ -172,3 +172,23 @@ export const resumableGenerationFlag = flag<boolean>({
 		{ value: true, label: "Enable" },
 	],
 });
+
+// Enable pointer-based retrieval with engine-side hydration (no rerank, no re-chunk)
+export const ragPointerHydrationFlag = flag<boolean>({
+	key: "rag-pointer-hydration",
+	async decide() {
+		if (process.env.NODE_ENV === "development") {
+			return takeLocalEnv("RAG_POINTER_HYDRATION_FLAG");
+		}
+		const edgeConfig = await get(`flag__${this.key}`);
+		if (edgeConfig === undefined) {
+			return false;
+		}
+		return edgeConfig === true || edgeConfig === "true";
+	},
+	description: "Enable pointer-based retrieval + engine hydration",
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+});
