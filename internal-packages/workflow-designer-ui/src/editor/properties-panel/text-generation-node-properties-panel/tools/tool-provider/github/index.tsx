@@ -8,6 +8,7 @@ import {
 	CheckIcon,
 	MoveUpRightIcon,
 	PlusIcon,
+	RefreshCwIcon,
 	Settings2Icon,
 	TrashIcon,
 } from "lucide-react";
@@ -25,6 +26,20 @@ import {
 
 const secretTags = ["github-access-token"];
 
+// Helper function to display token info with label
+function getTokenDisplay(
+	secretId: string,
+	secrets: { id: string; label: string }[],
+): string {
+	const secret = secrets.find((s) => s.id === secretId);
+	if (secret) {
+		return secret.label;
+	}
+
+	// This should not happen - indicates data inconsistency
+	return "⚠️ Token missing - please update";
+}
+
 // GitHub token validation
 function isValidGitHubPAT(token: string): boolean {
 	// GitHub token formats:
@@ -41,6 +56,8 @@ export function GitHubToolConfigurationDialog({
 }: {
 	node: TextGenerationNode;
 }) {
+	const [showUpdateDialog, setShowUpdateDialog] = useState(false);
+
 	const {
 		presentDialog,
 		setPresentDialog,
@@ -51,15 +68,32 @@ export function GitHubToolConfigurationDialog({
 		isLoading,
 		secrets,
 		handleSubmit,
+		currentSecretId,
 	} = useToolProviderConnection({
 		secretTags,
 		toolKey: "github",
 		node,
 		buildToolConfig: (secretId) => ({
-			tools: [],
+			tools: node.content.tools?.github?.tools ?? [],
 			auth: { type: "secret", secretId },
 		}),
+		isUpdatingExistingConfiguration: showUpdateDialog,
 	});
+
+	const handleUpdateSubmit = useCallback<
+		React.FormEventHandler<HTMLFormElement>
+	>(
+		(e) => {
+			if (!e.currentTarget.checkValidity()) {
+				e.preventDefault();
+				return;
+			}
+
+			handleSubmit(e);
+			setShowUpdateDialog(false);
+		},
+		[handleSubmit],
+	);
 
 	if (!isConfigured) {
 		return (
@@ -77,11 +111,30 @@ export function GitHubToolConfigurationDialog({
 	}
 
 	return (
-		<GitHubToolConfigurationDialogInternal
-			node={node}
-			open={presentDialog}
-			onOpenChange={setPresentDialog}
-		/>
+		<>
+			<GitHubToolConfigurationDialogInternal
+				node={node}
+				open={presentDialog}
+				onOpenChange={setPresentDialog}
+				onShowUpdateDialog={() => setShowUpdateDialog(true)}
+				secrets={secrets}
+				currentSecretId={currentSecretId}
+			/>
+			<GitHubToolConnectionDialog
+				open={showUpdateDialog}
+				onOpenChange={setShowUpdateDialog}
+				tabValue={tabValue}
+				setTabValue={setTabValue}
+				isPending={isPending}
+				isLoading={isLoading}
+				secrets={secrets}
+				onSubmit={handleUpdateSubmit}
+				title="Update GitHub Token"
+				description="How would you like to update your Personal Access Token (PAT)?"
+				hideTrigger={true}
+				submitText="Save"
+			/>
+		</>
 	);
 }
 
@@ -94,6 +147,10 @@ function GitHubToolConnectionDialog({
 	isLoading,
 	secrets,
 	onSubmit,
+	title = "Connect to GitHub",
+	description = "How would you like to add your Personal Access Token (PAT)?",
+	hideTrigger = false,
+	submitText = "Save & Connect",
 }: Pick<ToolConfigurationDialogProps, "open" | "onOpenChange"> & {
 	tabValue: "create" | "select";
 	setTabValue: React.Dispatch<React.SetStateAction<"create" | "select">>;
@@ -101,6 +158,10 @@ function GitHubToolConnectionDialog({
 	isLoading: boolean;
 	secrets: { id: string; label: string }[] | undefined;
 	onSubmit: React.FormEventHandler<HTMLFormElement>;
+	title?: string;
+	description?: string;
+	hideTrigger?: boolean;
+	submitText?: string;
 }) {
 	const [tokenValue, setTokenValue] = useState("");
 	const [tokenError, setTokenError] = useState<string | null>(null);
@@ -123,19 +184,35 @@ function GitHubToolConnectionDialog({
 			e.preventDefault();
 			return;
 		}
+
+		if (tabValue === "select") {
+			const formData = new FormData(e.currentTarget);
+			const secretId = formData.get("secretId");
+			if (!secretId || secretId === "") {
+				e.preventDefault();
+				return;
+			}
+		}
+
 		onSubmit(e);
 	};
 
 	return (
 		<ToolConfigurationDialog
-			title="Connect to GitHub"
-			description="How would you like to add your Personal Access Token (PAT)?"
+			title={title}
+			description={description}
 			onSubmit={handleFormSubmit}
 			submitting={isPending}
+			submitText={submitText}
 			trigger={
-				<Button type="button" leftIcon={<PlusIcon data-dialog-trigger-icon />}>
-					Connect
-				</Button>
+				hideTrigger ? null : (
+					<Button
+						type="button"
+						leftIcon={<PlusIcon data-dialog-trigger-icon />}
+					>
+						Connect
+					</Button>
+				)
 			}
 			open={open}
 			onOpenChange={onOpenChange}
@@ -161,7 +238,7 @@ function GitHubToolConnectionDialog({
 							<label htmlFor="label" className="text-text text-[13px] mb-[2px]">
 								Token Name
 							</label>
-							<Input type="text" id="label" name="label" />
+							<Input type="text" id="label" name="label" required />
 							<p className="text-[11px] text-text-muted px-[4px] mt-[1px]">
 								Give this token a short name (e.g. “Prod-bot”). You’ll use it
 								when linking other nodes.
@@ -194,6 +271,7 @@ function GitHubToolConnectionDialog({
 								onChange={handleTokenChange}
 								aria-invalid={!!tokenError}
 								aria-describedby={tokenError ? "pat-error" : undefined}
+								required
 							/>
 							{tokenError ? (
 								<p
@@ -316,8 +394,14 @@ function GitHubToolConfigurationDialogInternal({
 	node,
 	open,
 	onOpenChange,
+	onShowUpdateDialog,
+	secrets,
+	currentSecretId,
 }: Pick<ToolConfigurationDialogProps, "open" | "onOpenChange"> & {
 	node: TextGenerationNode;
+	onShowUpdateDialog: () => void;
+	secrets: { id: string; label: string }[] | undefined;
+	currentSecretId: string | undefined;
 }) {
 	const { updateNodeDataContent } = useWorkflowDesigner();
 
@@ -367,27 +451,45 @@ function GitHubToolConfigurationDialogInternal({
 			onOpenChange={onOpenChange}
 		>
 			<div className="flex flex-col">
-				<div className="flex justify-between items-center border border-border rounded-[4px] px-[6px] py-[3px] text-[13px] mb-[16px]">
-					<div className="flex gap-[6px] items-center">
-						<CheckIcon className="size-[14px] text-green-900" />
-						Token configured.
+				{/* Inline credentials info */}
+				<div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
+					<div className="flex items-center gap-[8px]">
+						<span className="text-[11px] text-text-muted">Current PAT:</span>
+						<span className="text-[11px] text-text px-[6px] py-[1px] bg-background-variant border border-border rounded-[4px] font-medium">
+							{currentSecretId && secrets
+								? getTokenDisplay(currentSecretId, secrets)
+								: "Not configured"}
+						</span>
 					</div>
-					<Button
-						type="button"
-						onClick={() => {
-							updateNodeDataContent(node, {
-								...node.content,
-								tools: {
-									...node.content.tools,
-									github: undefined,
-								},
-							});
-						}}
-						leftIcon={<TrashIcon className="size-[12px]" />}
-						size="compact"
-					>
-						Reset
-					</Button>
+					<div className="flex gap-[8px]">
+						<Button
+							type="button"
+							onClick={onShowUpdateDialog}
+							disabled={!currentSecretId}
+							size="compact"
+							variant="outline"
+							leftIcon={<RefreshCwIcon className="size-[12px]" />}
+						>
+							Update
+						</Button>
+						<Button
+							type="button"
+							onClick={() => {
+								const { github: _removed, ...otherTools } =
+									node.content.tools || {};
+								updateNodeDataContent(node, {
+									...node.content,
+									tools: otherTools,
+								});
+								onOpenChange?.(false);
+							}}
+							leftIcon={<TrashIcon className="size-[12px]" />}
+							size="compact"
+							variant="outline"
+						>
+							Reset
+						</Button>
+					</div>
 				</div>
 				<div className="flex flex-col gap-6">
 					{githubToolCatalog.map((category) => (
