@@ -5,7 +5,10 @@ import type {
 	QueryContext,
 	RunningGeneration,
 } from "@giselle-sdk/giselle";
-import { NextGiselleEngine } from "@giselle-sdk/giselle/next";
+import {
+	getRequestId,
+	NextGiselleEngine,
+} from "@giselle-sdk/giselle/next-internal";
 import { traceEmbedding, traceGeneration } from "@giselle-sdk/langfuse";
 import type { EmbeddingMetrics } from "@giselle-sdk/rag";
 import {
@@ -17,6 +20,7 @@ import type { ModelMessage, ProviderMetadata } from "ai";
 import { after } from "next/server";
 import { createStorage } from "unstorage";
 import { waitForLangfuseFlush } from "@/instrumentation.node";
+import { logger } from "@/lib/logger";
 import { getWorkspaceTeam } from "@/lib/workspaces/get-workspace-team";
 import { fetchUsageLimits } from "@/packages/lib/fetch-usage-limits";
 import { onConsumeAgentTime } from "@/packages/lib/on-consume-agent-time";
@@ -27,7 +31,6 @@ import {
 	isProPlan,
 } from "@/services/teams";
 import supabaseStorageDriver from "@/supabase-storage-driver";
-import { logger } from "../lib/logger";
 import {
 	gitHubPullRequestQueryService,
 	gitHubQueryService,
@@ -105,6 +108,7 @@ async function traceGenerationForTeam(args: {
 	userId: string;
 	team: TeamForPlan;
 	providerMetadata?: ProviderMetadata;
+	requestId?: string;
 }) {
 	const isPro = isProPlan(args.team);
 	const planTag = isPro ? "plan:pro" : "plan:free";
@@ -123,6 +127,7 @@ async function traceGenerationForTeam(args: {
 			userId: args.userId,
 			subscriptionId: args.team.activeSubscriptionId ?? "",
 			providerMetadata: args.providerMetadata,
+			requestId: args.requestId,
 		},
 		sessionId: args.sessionId,
 	});
@@ -203,6 +208,7 @@ export const giselleEngine = NextGiselleEngine({
 	},
 	callbacks: {
 		generationComplete: (args) => {
+			const requestId = getRequestId();
 			after(async () => {
 				try {
 					switch (args.generation.context.origin.type) {
@@ -218,6 +224,7 @@ export const giselleEngine = NextGiselleEngine({
 								userId: "github-app",
 								team,
 								providerMetadata: args.providerMetadata,
+								requestId,
 							});
 							break;
 						}
@@ -235,6 +242,7 @@ export const giselleEngine = NextGiselleEngine({
 								userId: currentUser.id,
 								team: currentTeam,
 								providerMetadata: args.providerMetadata,
+								requestId,
 							});
 							break;
 						}
