@@ -221,16 +221,14 @@ export function generateText(args: {
 				},
 			};
 
-			// Apply step count limit only for non-reasoning models or when tools are present
-			// Reasoning models (like GPT-5) need flexibility for their reasoning chains
-			// Non-reasoning models get a limit to prevent infinite loops
+			// Apply step count limit only for non-reasoning models when tools are present
+			// Reasoning models (like GPT-5) need complete flexibility for their reasoning chains
+			// to avoid "reasoning item without required following item" errors
 			if (!hasReasoningCapability && toolCount > 0) {
 				// For non-reasoning models: limit to tool count + extra buffer for completion
 				streamTextParams.stopWhen = stepCountIs(toolCount + 3);
-			} else if (hasReasoningCapability && toolCount > 0) {
-				// For reasoning models: more generous limit to allow reasoning chains
-				streamTextParams.stopWhen = stepCountIs(Math.max(toolCount * 2, 10));
 			}
+			// No step limit for reasoning models with tools to prevent reasoning chain interruption
 
 			const streamTextResult = streamText(streamTextParams);
 			return streamTextResult.toUIMessageStream({
