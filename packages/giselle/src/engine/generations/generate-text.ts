@@ -14,7 +14,7 @@ import {
 	hasCapability,
 	languageModels,
 } from "@giselle-sdk/language-model";
-import { AISDKError, streamText } from "ai";
+import { AISDKError, stepCountIs, streamText } from "ai";
 import type {
 	FailedGeneration,
 	GenerationOutput,
@@ -201,8 +201,17 @@ export function generateText(args: {
 				args.useAiGateway,
 				args.context.aiGateway,
 			);
+
+			// Check if the model has reasoning capability to determine step limit strategy
+			const hasReasoningCapability = hasCapability(
+				languageModel,
+				Capability.Reasoning,
+			);
+			const toolCount = Object.keys(preparedToolSet.toolSet).length;
+
 			let generationError: unknown | undefined;
-			const streamTextResult = streamText({
+			// Create conditional streamText parameters
+			const streamTextParams: Parameters<typeof streamText>[0] = {
 				model,
 				providerOptions,
 				messages,
@@ -210,7 +219,18 @@ export function generateText(args: {
 				onError: ({ error }) => {
 					generationError = error;
 				},
-			});
+			};
+
+			// Apply step count limit only for non-reasoning models when tools are present
+			// Reasoning models (like GPT-5) need complete flexibility for their reasoning chains
+			// to avoid "reasoning item without required following item" errors
+			if (!hasReasoningCapability && toolCount > 0) {
+				// For non-reasoning models: limit to tool count + extra buffer for completion
+				streamTextParams.stopWhen = stepCountIs(toolCount + 3);
+			}
+			// No step limit for reasoning models with tools to prevent reasoning chain interruption
+
+			const streamTextResult = streamText(streamTextParams);
 			return streamTextResult.toUIMessageStream({
 				sendReasoning: true,
 				onFinish: async ({ messages: generateMessages }) => {
