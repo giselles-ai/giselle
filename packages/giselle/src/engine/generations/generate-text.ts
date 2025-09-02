@@ -209,6 +209,7 @@ export function generateText(args: {
 			);
 			const toolCount = Object.keys(preparedToolSet.toolSet).length;
 
+			let generationError: unknown | undefined;
 			// Create conditional streamText parameters
 			const streamTextParams: Parameters<typeof streamText>[0] = {
 				model,
@@ -231,7 +232,6 @@ export function generateText(args: {
 				streamTextParams.stopWhen = stepCountIs(Math.max(toolCount * 2, 10));
 			}
 
-			let generationError: unknown | undefined;
 			const streamTextResult = streamText(streamTextParams);
 			return streamTextResult.toUIMessageStream({
 				sendReasoning: true,
