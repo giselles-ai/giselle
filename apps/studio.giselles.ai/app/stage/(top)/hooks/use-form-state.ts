@@ -1,6 +1,6 @@
 import type { FlowTriggerId } from "@giselle-sdk/data-type";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import type { FlowTriggerUIItem, ValidationErrors } from "../types";
 
 interface UseFormStateProps {
@@ -11,35 +11,34 @@ export function useFormState({ filteredFlowTriggers }: UseFormStateProps) {
 	const searchParams = useSearchParams();
 	const urlWorkspaceId = searchParams.get("workspaceId");
 
-	const [selectedFlowTriggerId, setSelectedFlowTriggerId] = useState<
+	const [userSelectedId, setUserSelectedId] = useState<
 		FlowTriggerId | undefined
 	>(undefined);
+	const [hasUserInteracted, setHasUserInteracted] = useState(false);
 	const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
 		{},
 	);
 
-	const initializedRef = useRef(false);
-	const userHasSelectedRef = useRef(false);
+	// Calculate auto-selected ID during render
+	const autoSelectedId = useMemo(() => {
+		if (filteredFlowTriggers.length === 0) return undefined;
 
-	// Pre-select flow trigger based on URL workspace ID (only once on initial load and if user hasn't manually selected)
-	useEffect(() => {
-		if (
-			!initializedRef.current &&
-			!userHasSelectedRef.current &&
-			filteredFlowTriggers.length > 0
-		) {
-			if (urlWorkspaceId) {
-				const matchingTrigger = filteredFlowTriggers.find(
-					(trigger) => trigger.sdkData.workspaceId === urlWorkspaceId,
-				);
-				if (matchingTrigger) {
-					setSelectedFlowTriggerId(matchingTrigger.id);
-					// Don't mark as user-selected for auto-selection from URL
-				}
-			}
-			initializedRef.current = true;
+		// First priority: URL workspace ID (from showcase or direct link)
+		if (urlWorkspaceId) {
+			const matchingTrigger = filteredFlowTriggers.find(
+				(trigger) => trigger.sdkData.workspaceId === urlWorkspaceId,
+			);
+			if (matchingTrigger) return matchingTrigger.id;
 		}
+
+		// Second priority: First available app
+		return filteredFlowTriggers[0].id;
 	}, [filteredFlowTriggers, urlWorkspaceId]);
+
+	// Use user selection if they've interacted, otherwise use auto-selection
+	const selectedFlowTriggerId = hasUserInteracted
+		? userSelectedId
+		: autoSelectedId;
 
 	const selectedTrigger = useMemo(
 		() =>
@@ -50,26 +49,26 @@ export function useFormState({ filteredFlowTriggers }: UseFormStateProps) {
 	);
 
 	const handleFlowTriggerSelect = (triggerId: FlowTriggerId) => {
-		userHasSelectedRef.current = true;
-		if (selectedFlowTriggerId === triggerId) {
-			setSelectedFlowTriggerId(undefined);
+		setHasUserInteracted(true);
+		if (userSelectedId === triggerId) {
+			setUserSelectedId(undefined);
 		} else {
-			setSelectedFlowTriggerId(triggerId);
+			setUserSelectedId(triggerId);
 		}
 	};
 
 	const handleFlowTriggerDeselect = () => {
-		userHasSelectedRef.current = true;
-		setSelectedFlowTriggerId(undefined);
+		setHasUserInteracted(true);
+		setUserSelectedId(undefined);
 	};
 
 	return {
 		selectedFlowTriggerId,
-		setSelectedFlowTriggerId,
+		setSelectedFlowTriggerId: setUserSelectedId,
 		selectedTrigger,
 		validationErrors,
 		setValidationErrors,
-		userHasSelectedRef,
+		userHasSelectedRef: { current: hasUserInteracted },
 		handleFlowTriggerSelect,
 		handleFlowTriggerDeselect,
 	};

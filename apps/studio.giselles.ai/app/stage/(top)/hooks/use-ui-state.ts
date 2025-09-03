@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 export function useUIState() {
 	const [isMobile, setIsMobile] = useState(false);
-	const [isCarouselView, setIsCarouselView] = useState(false);
 	const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
 	useEffect(() => {
@@ -18,8 +17,6 @@ export function useUIState() {
 
 	return {
 		isMobile,
-		isCarouselView,
-		setIsCarouselView,
 		isSettingsModalOpen,
 		setIsSettingsModalOpen,
 	};
