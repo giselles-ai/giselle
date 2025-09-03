@@ -15,7 +15,7 @@ export function GitHubRepositoryBadgeFromTrigger({
 }: GitHubRepositoryBadgeFromTriggerProps) {
 	const { isLoading, data } = useGitHubTrigger(flowTriggerId);
 
-	if (isLoading) {
+	if (isLoading && data === undefined) {
 		return null;
 	}
 	if (data === undefined) {

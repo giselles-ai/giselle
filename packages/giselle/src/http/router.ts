@@ -287,6 +287,20 @@ export const createJsonRouters = {
 				});
 			},
 		}),
+	reconfigureGitHubTrigger: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			input: z.object({
+				flowTriggerId: FlowTriggerId.schema,
+				repositoryNodeId: z.string(),
+				installationId: z.number(),
+				useExperimentalStorage: z.boolean(),
+			}),
+			handler: async ({ input }) => {
+				return JsonResponse.json({
+					triggerId: await giselleEngine.reconfigureGitHubTrigger(input),
+				});
+			},
+		}),
 	deleteTrigger: (giselleEngine: GiselleEngine) =>
 		createHandler({
 			input: z.object({ flowTriggerId: FlowTriggerId.schema }),
