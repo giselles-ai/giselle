@@ -68,27 +68,46 @@ function V2NodeCanvas() {
 
 	const { handleKeyDown } = useKeyboardShortcuts();
 
-	useEffect(() => {
-		reactFlowInstance.setNodes(
-			Object.entries(data.ui.nodeState)
-				.map(([nodeId, nodeState]) => {
-					const nodeData = data.nodes.find((node) => node.id === nodeId);
-					if (nodeData === undefined || nodeState === undefined) return null;
-					return {
-						id: nodeId,
-						type: nodeData.content.type,
-						position: { x: nodeState.position.x, y: nodeState.position.y },
-						selected: nodeState.selected,
-						data: { nodeData },
-					} as GiselleWorkflowDesignerNode;
-				})
-				.filter((result) => result !== null),
-		);
-		updateNodeInternals(Object.keys(data.ui.nodeState));
-	}, [data, reactFlowInstance.setNodes, updateNodeInternals]);
+	const nodeCache = useRef<Map<string, GiselleWorkflowDesignerNode>>(new Map());
+	const nodes = useMemo(() => {
+		const next = new Map<string, GiselleWorkflowDesignerNode>();
+		const arr = Object.entries(data.ui.nodeState)
+			.map(([nodeId, nodeState]) => {
+				const nodeData = data.nodes.find((node) => node.id === nodeId);
+				if (nodeData === undefined || nodeState === undefined) return null;
+				const prev = nodeCache.current.get(nodeId);
+				if (
+					prev &&
+					prev.selected === nodeState.selected &&
+					prev.position.x === nodeState.position.x &&
+					prev.position.y === nodeState.position.y &&
+					prev.data.nodeData === nodeData
+				) {
+					next.set(nodeId, prev);
+					return prev;
+				}
+				const node = {
+					id: nodeId,
+					type: nodeData.content.type,
+					position: {
+						x: nodeState.position.x,
+						y: nodeState.position.y,
+					},
+					selected: nodeState.selected,
+					data: { nodeData },
+				} as GiselleWorkflowDesignerNode;
+				next.set(nodeId, node);
+				return node;
+			})
+			.filter(
+				(result): result is GiselleWorkflowDesignerNode => result !== null,
+			);
+		nodeCache.current = next;
+		return arr;
+	}, [data.nodes, data.ui.nodeState]);
 
-	useEffect(() => {
-		reactFlowInstance.setEdges(
+	const edges = useMemo(
+		() =>
 			data.connections.map((connection) => ({
 				id: connection.id,
 				type: "giselleConnector",
@@ -98,8 +117,12 @@ function V2NodeCanvas() {
 				targetHandle: connection.inputId,
 				data: { connection },
 			})),
-		);
-	}, [data, reactFlowInstance.setEdges]);
+		[data.connections],
+	);
+
+	useEffect(() => {
+		updateNodeInternals(nodes.map((node) => node.id));
+	}, [nodes, updateNodeInternals]);
 
 	const handleConnect = useCallback(
 		(connection: Connection) => {
@@ -205,8 +228,8 @@ function V2NodeCanvas() {
 			ref={reactFlowRef}
 			className="giselle-workflow-editor-v3"
 			colorMode="dark"
-			defaultNodes={[]}
-			defaultEdges={[]}
+			nodes={nodes}
+			edges={edges}
 			nodeTypes={nodeTypes}
 			edgeTypes={edgeTypes}
 			defaultViewport={data.ui.viewport}
