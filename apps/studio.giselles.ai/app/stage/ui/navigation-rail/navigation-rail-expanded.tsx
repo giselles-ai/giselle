@@ -1,5 +1,5 @@
 import { GiselleIcon } from "@giselle-internal/workflow-designer-ui";
-import { PanelLeftCloseIcon } from "lucide-react";
+
 import { Suspense } from "react";
 import { MenuButton } from "./menu-button";
 import { navigationItems } from "./navigation-items";
@@ -10,6 +10,7 @@ import { NavigationRailContentsContainer } from "./navigation-rail-contents-cont
 import { NavigationRailFooter } from "./navigation-rail-footer";
 import { NavigationRailFooterMenu } from "./navigation-rail-footer-menu";
 import { NavigationRailHeader } from "./navigation-rail-header";
+import { SimpleChevronLeft } from "./simple-chevron-icons";
 import type { UserDataForNavigationRail } from "./types";
 
 export function NavigationRailExpanded({
@@ -23,17 +24,19 @@ export function NavigationRailExpanded({
 		<NavigationRailContainer variant="expanded">
 			<NavigationRailHeader>
 				<div className="flex items-center justify-start w-full">
-					<div className="size-8 flex justify-center items-center">
-						<GiselleIcon className="size-6 text-text-muted stroke-1 group-hover:hidden shrink-0" />
+					<div className="group size-8 flex justify-center items-center">
+						<GiselleIcon className="size-6 text-[var(--color-stage-sidebar-text-hover)] stroke-1 group-hover:hidden shrink-0" />
 					</div>
-					<p className="text-white-900 text-[13px] font-semibold">Stage</p>
+					<p className="text-[var(--color-stage-sidebar-text-hover)] text-[13px] font-semibold">
+						Stage
+					</p>
 				</div>
 				<div className="absolute right-3 top-1.5">
 					<MenuButton
 						onClick={() => onCollapseButtonClick()}
 						className="cursor-w-resize"
 					>
-						<PanelLeftCloseIcon className="size-6 text-text-muted stroke-1" />
+						<SimpleChevronLeft className="size-5 text-[var(--color-stage-sidebar-text)]" />
 					</MenuButton>
 				</div>
 			</NavigationRailHeader>
