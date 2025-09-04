@@ -3,7 +3,13 @@
 import clsx from "clsx/lite";
 import { XIcon } from "lucide-react";
 import { Toast as ToastPrimitive } from "radix-ui";
-import { createContext, useCallback, useContext, useState } from "react";
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useRef,
+	useState,
+} from "react";
 import { Button } from "./button";
 
 interface Action {
@@ -23,6 +29,10 @@ type AddToastOption = Pick<Toast, "action">;
 interface ToastContextType {
 	info: (message: string, option?: AddToastOption) => void;
 	error: (message: string) => void;
+	progress: {
+		start: (key: string, message: string, option?: AddToastOption) => void;
+		finish: (key: string) => void;
+	};
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -39,6 +49,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
 }) => {
 	const [toasts, setToasts] = useState<Toast[]>([]);
+	const keyMapRef = useRef<Record<string, string>>({});
 
 	const addToast = useCallback((toast: Omit<Toast, "id">) => {
 		const id = Math.random().toString(36).substring(2);
@@ -48,6 +59,38 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 		};
 
 		setToasts((prevToasts) => [...prevToasts, newToast]);
+		return id;
+	}, []);
+
+	const closeToastById = useCallback((id: string) => {
+		setToasts((prevToasts) => prevToasts.filter((t) => t.id !== id));
+	}, []);
+
+	const startProgress = useCallback(
+		(key: string, message: string, option?: AddToastOption) => {
+			const existingId = keyMapRef.current[key];
+			if (existingId) {
+				setToasts((prevToasts) =>
+					prevToasts.filter((t) => t.id !== existingId),
+				);
+			}
+			const id = addToast({
+				message,
+				type: "info",
+				preserve: true,
+				action: option?.action,
+			});
+			keyMapRef.current[key] = id;
+		},
+		[addToast],
+	);
+
+	const finishProgress = useCallback((key: string) => {
+		const id = keyMapRef.current[key];
+		if (id) {
+			setToasts((prevToasts) => prevToasts.filter((t) => t.id !== id));
+			delete keyMapRef.current[key];
+		}
 	}, []);
 
 	const error = useCallback(
@@ -70,7 +113,13 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 	);
 
 	return (
-		<ToastContext.Provider value={{ error, info }}>
+		<ToastContext.Provider
+			value={{
+				error,
+				info,
+				progress: { start: startProgress, finish: finishProgress },
+			}}
+		>
 			<ToastPrimitive.Provider swipeDirection="right">
 				{children}
 				{toasts.map((toast) => (
@@ -83,6 +132,9 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 						)}
 						data-type={toast.type}
 						duration={toast.preserve ? Number.POSITIVE_INFINITY : undefined}
+						onOpenChange={(open) => {
+							if (!open) closeToastById(toast.id);
+						}}
 					>
 						<div
 							className={clsx(

@@ -36,7 +36,7 @@ export function TriggerInputDialog({
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const { createAndStartAct } = useActController();
-	const { info } = useToasts();
+	const { progress } = useToasts();
 
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		async (e) => {
@@ -77,8 +77,8 @@ export function TriggerInputDialog({
 							items: parameterItems,
 						},
 					],
-					onActStart(cancel) {
-						info("Workflow submitted successfully", {
+					onActStart(cancel, actId) {
+						progress.start(actId, "Workflow submitted successfully", {
 							action: {
 								label: "Cancel",
 								onClick: async () => {
@@ -87,13 +87,23 @@ export function TriggerInputDialog({
 							},
 						});
 					},
+					onActComplete: (_hasError, _duration, actId) => {
+						progress.finish(actId);
+					},
 				});
 				onClose();
 			} finally {
 				setIsSubmitting(false);
 			}
 		},
-		[inputs, onClose, connectionIds, createAndStartAct, info],
+		[
+			inputs,
+			onClose,
+			connectionIds,
+			createAndStartAct,
+			progress.start,
+			progress.finish,
+		],
 	);
 
 	if (isLoading) {

@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import type { Generation } from "../../concepts/generation";
 import type { ActExecutorOptions, CreateActInputs } from "../../engine/acts";
 import { executeAct } from "../../engine/acts/shared/act-execution-utils";
@@ -16,10 +16,18 @@ type CreateAndStartActParams = Omit<
 		| "applyPatches"
 		| "generationAdapter"
 		| "onActStart"
-		| "applyPatches"
+		| "onActComplete"
 		| "startGeneration"
 	> & {
-		onActStart: (cancel: () => Promise<void>) => void | Promise<void>;
+		onActStart?: (
+			cancel: () => Promise<void>,
+			actId: string,
+		) => void | Promise<void>;
+		onActComplete?: (
+			hasError: boolean,
+			duration: number,
+			actId: string,
+		) => void | Promise<void>;
 	};
 
 export function useActController() {
@@ -27,7 +35,6 @@ export function useActController() {
 	const client = useGiselleEngine();
 	const { addGenerationRunner, startGenerationRunner, stopGenerationRunner } =
 		useGenerationRunnerSystem();
-	const actGenerationsRef = useRef<Generation[]>([]);
 
 	const createAndStartAct = useCallback(
 		async ({
@@ -44,10 +51,11 @@ export function useActController() {
 				inputs,
 			});
 			addGenerationRunner(generations);
-			actGenerationsRef.current = generations;
+
+			const { onActStart, onActComplete, ...rest } = options;
 
 			await executeAct({
-				...options,
+				...(rest as Omit<ActExecutorOptions, "act">),
 				act,
 				applyPatches: async (actId, patches) => {
 					await client.patchAct({ actId, patches });
@@ -58,14 +66,17 @@ export function useActController() {
 						onGenerationFailed: callbacks?.onFailed,
 					});
 				},
-				onActStart: () => {
-					options.onActStart?.(async () => {
+				onActStart: async () => {
+					await onActStart?.(async () => {
 						await Promise.all(
-							actGenerationsRef.current.map((generation) =>
+							generations.map((generation) =>
 								stopGenerationRunner(generation.id),
 							),
 						);
-					});
+					}, act.id);
+				},
+				onActComplete: async (hasError, duration) => {
+					await onActComplete?.(hasError, duration, act.id);
 				},
 			});
 		},
