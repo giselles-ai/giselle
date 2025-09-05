@@ -1,13 +1,18 @@
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import type { TextGenerationNode } from "@giselle-sdk/data-type";
-import { defaultName, useWorkflowDesigner } from "@giselle-sdk/giselle/react";
+import {
+	defaultName,
+	useWorkflowDesignerStore,
+} from "@giselle-sdk/giselle/react";
 import { TextEditor } from "@giselle-sdk/text-editor/react-internal";
 import { createSourceExtensionJSONContent } from "@giselle-sdk/text-editor-utils";
 import { AtSignIcon } from "lucide-react";
 import { useConnectedOutputs } from "./outputs";
 
 export function PromptPanel({ node }: { node: TextGenerationNode }) {
-	const { updateNodeDataContent } = useWorkflowDesigner();
+	const updateNodeDataContent = useWorkflowDesignerStore(
+		(s) => s.updateNodeDataContent,
+	);
 	const { all: connectedSources } = useConnectedOutputs(node);
 
 	return (

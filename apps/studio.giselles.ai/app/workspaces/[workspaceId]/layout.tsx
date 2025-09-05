@@ -1,7 +1,7 @@
 import { WorkspaceId } from "@giselle-sdk/data-type";
 import {
-	WorkflowDesignerProvider,
 	WorkspaceProvider,
+	ZustandBridgeProvider,
 } from "@giselle-sdk/giselle/react";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
@@ -132,9 +132,7 @@ export default async function Layout({
 				},
 			}}
 		>
-			<WorkflowDesignerProvider data={data}>
-				{children}
-			</WorkflowDesignerProvider>
+			<ZustandBridgeProvider data={data}>{children}</ZustandBridgeProvider>
 		</WorkspaceProvider>
 	);
 }

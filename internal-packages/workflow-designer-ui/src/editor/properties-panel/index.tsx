@@ -9,9 +9,9 @@ import {
 	isVectorStoreNode,
 	isWebPageNode,
 } from "@giselle-sdk/data-type";
-import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
+import { useWorkflowDesignerStore } from "@giselle-sdk/giselle/react";
 import clsx from "clsx/lite";
-import { useMemo } from "react";
+import { useShallow } from "zustand/shallow";
 import { ActionNodePropertiesPanel } from "./action-node-properties-panel";
 import { FileNodePropertiesPanel } from "./file-node-properties-panel";
 import { ImageGenerationNodePropertiesPanel } from "./image-generation-node-properties-panel";
@@ -23,14 +23,15 @@ import { VectorStoreNodePropertiesPanel } from "./vector-store";
 import { WebPageNodePropertiesPanel } from "./web-page-node-properties-panel";
 
 export function PropertiesPanel() {
-	const { data, setCurrentShortcutScope } = useWorkflowDesigner();
-	const selectedNodes = useMemo(
-		() =>
-			Object.entries(data.ui.nodeState)
-				.filter(([_, nodeState]) => nodeState?.selected)
-				.map(([nodeId]) => data.nodes.find((node) => node.id === nodeId))
-				.filter((node) => node !== undefined),
-		[data.ui, data.nodes],
+	const selectedNodes = useWorkflowDesignerStore(
+		useShallow((s) =>
+			s.workspace.nodes.filter(
+				(node) => s.workspace.ui.nodeState[node.id]?.selected,
+			),
+		),
+	);
+	const setCurrentShortcutScope = useWorkflowDesignerStore(
+		(s) => s.setCurrentShortcutScope,
 	);
 	return (
 		<section

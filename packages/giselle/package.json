@@ -50,7 +50,8 @@
 		"@zod/core": "0.11.6",
 		"pino": "catalog:",
 		"tsup": "catalog:",
-		"vitest": "catalog:"
+		"vitest": "catalog:",
+		"zustand": "catalog:"
 	},
 	"dependencies": {
 		"@ai-sdk/anthropic": "catalog:",
@@ -75,5 +76,8 @@
 		"swr": "catalog:",
 		"unstorage": "catalog:",
 		"zod": "catalog:"
+	},
+	"peerDependencies": {
+		"zustand": "catalog:"
 	}
 }

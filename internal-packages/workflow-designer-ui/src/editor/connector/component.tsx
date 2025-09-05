@@ -1,18 +1,12 @@
-import type { Connection, NodeId } from "@giselle-sdk/data-type";
+import type { NodeId } from "@giselle-sdk/data-type";
 import {
 	useNodeGenerations,
-	useWorkflowDesigner,
+	useWorkflowDesignerStore,
 } from "@giselle-sdk/giselle/react";
-import {
-	BaseEdge,
-	type EdgeProps,
-	getBezierPath,
-	type Edge as XYFlowEdge,
-} from "@xyflow/react";
+import { BaseEdge, type EdgeProps, getBezierPath } from "@xyflow/react";
 import clsx from "clsx/lite";
 import type { PropsWithChildren } from "react";
-
-export type ConnectorType = XYFlowEdge<{ connection: Connection }>;
+import { useShallow } from "zustand/shallow";
 
 function ConnectedNodeRunning({
 	inputNodeId,
@@ -20,10 +14,12 @@ function ConnectedNodeRunning({
 }: PropsWithChildren<{
 	inputNodeId: NodeId;
 }>) {
-	const { data } = useWorkflowDesigner();
+	const workspaceId = useWorkflowDesignerStore(
+		useShallow((s) => s.workspace.id),
+	);
 	const { currentGeneration: inputNodeCurrentGeneration } = useNodeGenerations({
 		nodeId: inputNodeId,
-		origin: { type: "studio", workspaceId: data.id },
+		origin: { type: "studio", workspaceId },
 	});
 	if (
 		inputNodeCurrentGeneration?.status === "queued" ||
@@ -42,8 +38,15 @@ export function Connector({
 	targetX,
 	targetY,
 	targetPosition,
-	data,
-}: EdgeProps<ConnectorType>) {
+}: EdgeProps) {
+	const connection = useWorkflowDesignerStore(
+		useShallow((s) =>
+			s.workspace.connections.find((connection) => connection.id === id),
+		),
+	);
+	if (connection === undefined) {
+		return null;
+	}
 	const [edgePath] = getBezierPath({
 		sourceX,
 		sourceY,
@@ -52,16 +55,13 @@ export function Connector({
 		targetY,
 		targetPosition,
 	});
-	if (data == null) {
-		return null;
-	}
 	return (
 		<g
 			className="group"
-			data-output-node-type={data.connection.outputNode.type}
-			data-output-node-content-type={data.connection.outputNode.content.type}
-			data-input-node-type={data.connection.inputNode.type}
-			data-input-node-content-type={data.connection.inputNode.content.type}
+			data-output-node-type={connection.outputNode.type}
+			data-output-node-content-type={connection.outputNode.content.type}
+			data-input-node-type={connection.inputNode.type}
+			data-input-node-content-type={connection.inputNode.content.type}
 		>
 			<BaseEdge
 				id={id}
@@ -95,7 +95,7 @@ export function Connector({
 				)}
 				filter="url(#white-glow-filter)"
 			/>
-			<ConnectedNodeRunning inputNodeId={data.connection.inputNode.id}>
+			<ConnectedNodeRunning inputNodeId={connection.inputNode.id}>
 				<path
 					d={edgePath}
 					stroke="url(#connector-gradient-animation)"
