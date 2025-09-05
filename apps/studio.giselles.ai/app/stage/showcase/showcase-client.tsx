@@ -336,9 +336,12 @@ export function ShowcaseClient({
 							) : (
 								<Card className="gap-0 py-2">
 									{sortedApps.map((app) => (
-										<div
+										<button
 											key={app.id}
-											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-white/10 cursor-pointer"
+											type="button"
+											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-white/10 cursor-pointer hover:bg-white/5 transition-colors w-full text-left"
+											onClick={() => router.push(`/stage/showcase/${app.id}`)}
+											aria-label={`View ${app.name} app details`}
 										>
 											<div className="flex items-center gap-3">
 												<div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 transition-all group-hover:bg-primary-100/20">
@@ -371,7 +374,8 @@ export function ShowcaseClient({
 													type="button"
 													className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-white/20 hover:border-white/40"
 													title="Run app"
-													onClick={() => {
+													onClick={(e) => {
+														e.stopPropagation();
 														if (app.workspaceId) {
 															router.push(
 																`/stage?workspaceId=${app.workspaceId}&teamId=${selectedTeamId}`,
@@ -395,7 +399,8 @@ export function ShowcaseClient({
 														boxShadow:
 															"inset 0 1px 1px rgba(255,255,255,0.05), 0 2px 8px rgba(5,10,20,0.4), 0 1px 2px rgba(0,0,0,0.3)",
 													}}
-													onClick={() => {
+													onClick={(e) => {
+														e.stopPropagation();
 														console.log("🔗 Edit button clicked for app:", {
 															id: app.id,
 															name: app.name,
@@ -411,11 +416,14 @@ export function ShowcaseClient({
 												<button
 													type="button"
 													className="p-1.5 rounded-md text-white/60 hover:text-white transition-colors"
+													onClick={() => {
+														// TODO: Add favorite functionality
+													}}
 												>
 													<Star className="h-4 w-4 hover:fill-current" />
 												</button>
 											</div>
-										</div>
+										</button>
 									))}
 								</Card>
 							)}
