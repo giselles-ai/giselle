@@ -14,7 +14,7 @@ export function useFilterState({ teamOptions }: UseFilterStateProps) {
 	const urlTeamId = searchParams.get("teamId");
 	const urlFilter = searchParams.get("filter") as FilterType;
 
-	// Determine default team ID
+	// Determine default team ID (URL > first available)
 	const defaultTeamId = useMemo(() => {
 		if (urlTeamId && teamOptions.some((team) => team.value === urlTeamId)) {
 			return urlTeamId as TeamId;
@@ -22,11 +22,13 @@ export function useFilterState({ teamOptions }: UseFilterStateProps) {
 		return teamOptions[0]?.value;
 	}, [teamOptions, urlTeamId]);
 
+	// Determine default filter (URL > 'all')
+	const defaultFilter = urlFilter || "all";
+
 	// State
 	const [selectedTeamId, setSelectedTeamId] = useState<TeamId>(defaultTeamId);
-	const [selectedFilter, setSelectedFilter] = useState<FilterType>(
-		urlFilter || "history",
-	);
+	const [selectedFilter, setSelectedFilter] =
+		useState<FilterType>(defaultFilter);
 
 	// Navigation handlers
 	const handleFilterChange = useCallback(
