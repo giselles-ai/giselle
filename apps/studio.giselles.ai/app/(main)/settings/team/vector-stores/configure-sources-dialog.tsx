@@ -97,39 +97,52 @@ export function ConfigureSourcesDialog({
 				onPointerDownOutside={() => setOpen(false)}
 			>
 				<GlassDialogHeader
-					title="Configure Sources"
-					description={`Select which content types to ingest for ${repositoryIndex.owner}/${repositoryIndex.repo}`}
+					title="Configure Vector Stores"
+					description="Configure sources and embedding models for this repository"
 					onClose={() => setOpen(false)}
 				/>
 				<GlassDialogBody>
 					<div className="space-y-6">
-						{/* Code Configuration */}
-						<ContentTypeToggle
-							icon={Code}
-							label="Code"
-							description="Ingest source code files from the repository"
-							enabled={config.code.enabled}
-							onToggle={(enabled) =>
-								setConfig({ ...config, code: { enabled } })
-							}
-							disabled={true} // Code is mandatory
-							status={blobStatus}
-						/>
+						{/* Sources Section */}
+						<div>
+							<h3 className="text-white-400 text-[16px] font-medium">
+								Sources
+							</h3>
+							<div className="text-white-400/60 text-[12px] mb-4">
+								Select which content types to ingest for {repositoryIndex.owner}
+								/{repositoryIndex.repo}
+							</div>
+							<div className="space-y-2">
+								{/* Code Configuration */}
+								<ContentTypeToggle
+									icon={Code}
+									label="Code"
+									description="Ingest source code files from the repository"
+									enabled={config.code.enabled}
+									onToggle={(enabled) =>
+										setConfig({ ...config, code: { enabled } })
+									}
+									disabled={true} // Code is mandatory
+									status={blobStatus}
+								/>
 
-						{/* Pull Requests Configuration */}
-						<ContentTypeToggle
-							icon={GitPullRequest}
-							label="Pull Requests"
-							description="Ingest merged pull request content and discussions"
-							enabled={config.pullRequests.enabled}
-							onToggle={(enabled) =>
-								setConfig({ ...config, pullRequests: { enabled } })
-							}
-							status={pullRequestStatus}
-						/>
+								{/* Pull Requests Configuration */}
+								<ContentTypeToggle
+									icon={GitPullRequest}
+									label="Pull Requests"
+									description="Ingest merged pull request content and discussions"
+									enabled={config.pullRequests.enabled}
+									onToggle={(enabled) =>
+										setConfig({ ...config, pullRequests: { enabled } })
+									}
+									status={pullRequestStatus}
+								/>
+							</div>
+						</div>
 
-						<div className="mt-6">
-							<h3 className="text-white-400 text-[14px] font-medium mb-3">
+						{/* Embedding Models Section */}
+						<div>
+							<h3 className="text-white-400 text-[16px] font-medium">
 								Embedding Models
 							</h3>
 							<div className="text-white-400/60 text-[12px] mb-3">
@@ -144,7 +157,7 @@ export function ConfigureSourcesDialog({
 									return (
 										<label
 											key={profileId}
-											className="flex items-start gap-3 p-3 rounded-lg bg-black-700/50 hover:bg-black-700/70 transition-colors cursor-pointer"
+											className="flex items-start gap-3 p-2 rounded-lg bg-black-700/50 hover:bg-black-700/70 transition-colors cursor-pointer"
 										>
 											<input
 												type="checkbox"
@@ -213,11 +226,11 @@ function ContentTypeToggle({
 	status,
 }: ContentTypeToggleProps) {
 	return (
-		<div className="bg-black-700/50 rounded-lg p-4">
-			<div className="flex items-center justify-between mb-3">
+		<div className="bg-black-700/50 rounded-lg p-2">
+			<div className="flex items-center justify-between mb-1">
 				<div className="flex items-center gap-2">
 					<Icon size={18} className="text-gray-400" />
-					<span className="text-white font-medium">{label}</span>
+					<span className="text-white font-medium text-[14px]">{label}</span>
 				</div>
 				<label className="relative inline-flex items-center cursor-pointer">
 					<input
@@ -240,7 +253,7 @@ function ContentTypeToggle({
 					</div>
 				</label>
 			</div>
-			<p className="text-sm text-gray-400">{description}</p>
+			<p className="text-[12px] text-gray-400">{description}</p>
 			{disabled && (
 				<p className="text-xs text-gray-500 mt-1">
 					(Required - cannot be disabled)
