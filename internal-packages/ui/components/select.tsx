@@ -47,14 +47,16 @@ export function Select<T extends SelectOption>({
 					type="button"
 					className={clsx(
 						"w-full flex justify-between items-center rounded-[8px] h-10 px-[12px] text-left text-[14px]",
-						"outline-none focus:outline-none",
+						"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
 						"bg-white/5 transition-colors hover:bg-ghost-element-hover",
 						"data-[placeholder]:text-text-muted",
 						widthClassName,
 					)}
 				>
-					<SelectPrimitive.Value placeholder={placeholder} />
-					<ChevronDownIcon className="size-[13px] shrink-0 text-text" />
+					<div className="flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap">
+						<SelectPrimitive.Value placeholder={placeholder} />
+					</div>
+					<ChevronDownIcon className="size-[13px] shrink-0 text-text ml-2" />
 				</button>
 			</SelectPrimitive.Trigger>
 			<SelectPrimitive.Portal>

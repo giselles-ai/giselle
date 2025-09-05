@@ -34,7 +34,7 @@ export function Editor({
 	const expand = useRef(false);
 	const collapse = useRef(false);
 
-	// Convert 380px to percentage value
+	// Convert 280px to percentage value
 	const getPercentageForPixels = useCallback((pixels: number) => {
 		const containerWidth = window.innerWidth - 16 - 16; // subtract padding
 		const sideMenuWidth = containerWidth * 0.1; // side menu takes 10%
@@ -48,7 +48,7 @@ export function Editor({
 		}
 		if (selectedNodes.length === 1) {
 			expand.current = true;
-			const targetPercentage = getPercentageForPixels(380);
+			const targetPercentage = getPercentageForPixels(280);
 			rightPanelWidthMotionValue.set(targetPercentage);
 			rightPanelRef.current.resize(targetPercentage);
 		} else {
@@ -69,7 +69,7 @@ export function Editor({
 		const rightPanelWidth = rightPanelWidthMotionValue.get();
 		if (expand.current) {
 			rightPanelRef.current.resize(rightPanelWidth);
-			const targetPercentage = getPercentageForPixels(380);
+			const targetPercentage = getPercentageForPixels(280);
 			if (Math.abs(rightPanelWidth - targetPercentage) < 0.1) {
 				expand.current = false;
 				collapse.current = false;

@@ -157,12 +157,20 @@ export function TeamCreationForm({
 												onValueChange={setSelectedPlan}
 												className="grid grid-cols-2 gap-4"
 											>
-												<Card
-													className={
-														"bg-black-850 border-[0.5px] border-black-400 cursor-pointer"
-													}
+												<button
+													type="button"
+													onClick={() => setSelectedPlan("free")}
+													className="cursor-pointer w-full text-left"
+													aria-label="Select Free plan"
 												>
-													<label htmlFor="free">
+													<Card
+														className={cn(
+															"bg-black-850 border-[0.5px] transition-all duration-200",
+															selectedPlan === "free"
+																? "border-blue-500 bg-blue-500/5"
+																: "border-black-400 hover:border-black-300",
+														)}
+													>
 														<CardHeader>
 															<div className="flex flex-col gap-2">
 																<CardTitle className="text-white-400 text-[16px] leading-[27.2px] tracking-normal font-sans">
@@ -172,14 +180,11 @@ export function TeamCreationForm({
 																	<RadioGroupItem
 																		value="free"
 																		id="free"
-																		className="text-blue-500 data-[state=checked]:border-[1.5px] data-[state=checked]:border-blue-500"
+																		className="text-blue-500 data-[state=checked]:border-[1.5px] data-[state=checked]:border-blue-500 pointer-events-none"
 																	/>
-																	<Label
-																		htmlFor="free"
-																		className="ml-2 text-white-800 font-geist text-[16px]"
-																	>
+																	<span className="ml-2 text-white-800 font-geist text-[16px]">
 																		$0/month
-																	</Label>
+																	</span>
 																</div>
 																<CardDescription className="text-white-400 font-semibold text-[12px] leading-[20.4px] font-geist">
 																	Basic features for personal use
@@ -191,10 +196,22 @@ export function TeamCreationForm({
 																</CardDescription>
 															</div>
 														</CardHeader>
-													</label>
-												</Card>
-												<Card className="bg-black-850 border-[0.5px] border-black-400 cursor-pointer">
-													<label htmlFor="pro">
+													</Card>
+												</button>
+												<button
+													type="button"
+													onClick={() => setSelectedPlan("pro")}
+													className="cursor-pointer w-full text-left"
+													aria-label="Select Pro plan"
+												>
+													<Card
+														className={cn(
+															"bg-black-850 border-[0.5px] transition-all duration-200",
+															selectedPlan === "pro"
+																? "border-primary-900 bg-primary-900/5"
+																: "border-black-400 hover:border-black-300",
+														)}
+													>
 														<CardHeader>
 															<div className="flex flex-col gap-2">
 																<CardTitle className="text-primary-400 text-[16px] leading-[27.2px] tracking-normal font-sans">
@@ -204,14 +221,11 @@ export function TeamCreationForm({
 																	<RadioGroupItem
 																		value="pro"
 																		id="pro"
-																		className="text-primary-900 data-[state=checked]:border-[1.5px] data-[state=checked]:border-primary-900"
+																		className="text-primary-900 data-[state=checked]:border-[1.5px] data-[state=checked]:border-primary-900 pointer-events-none"
 																	/>
-																	<Label
-																		htmlFor="pro"
-																		className="ml-2 text-white-800 font-geist text-[16px]"
-																	>
+																	<span className="ml-2 text-white-800 font-geist text-[16px]">
 																		{proPlanPrice}/month
-																	</Label>
+																	</span>
 																</div>
 																<CardDescription className="text-white-400 font-semibold text-[12px] leading-[20.4px] font-geist">
 																	Advanced features & support
@@ -224,8 +238,8 @@ export function TeamCreationForm({
 																</CardDescription>
 															</div>
 														</CardHeader>
-													</label>
-												</Card>
+													</Card>
+												</button>
 											</RadioGroup>
 										) : (
 											<div className="w-full">

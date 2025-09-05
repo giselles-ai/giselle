@@ -12,12 +12,6 @@ import { CommandIcon, CornerDownLeft } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
-import {
-	AnthropicIcon,
-	GoogleIcon,
-	OpenaiIcon,
-	PerplexityIcon,
-} from "../../../icons";
 import { Button } from "../../../ui/button";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
@@ -29,6 +23,7 @@ import {
 } from "../ui";
 import { GenerationPanel } from "./generation-panel";
 import { useConnectedOutputs } from "./outputs";
+import { ProviderIcon } from "./provider-icon";
 import { TextGenerationTabContent } from "./tab-content";
 
 export function TextGenerationNodePropertiesPanel({
@@ -102,22 +97,7 @@ export function TextGenerationNodePropertiesPanel({
 		<PropertiesPanelRoot>
 			{usageLimitsReached && <UsageLimitWarning />}
 			<PropertiesPanelHeader
-				icon={
-					<>
-						{node.content.llm.provider === "openai" && (
-							<OpenaiIcon className="size-[20px] text-black-900" />
-						)}
-						{node.content.llm.provider === "anthropic" && (
-							<AnthropicIcon className="size-[20px] text-black-900" />
-						)}
-						{node.content.llm.provider === "google" && (
-							<GoogleIcon className="size-[20px]" />
-						)}
-						{node.content.llm.provider === "perplexity" && (
-							<PerplexityIcon className="size-[20px] text-black-900" />
-						)}
-					</>
-				}
+				icon={<ProviderIcon provider={node.content.llm.provider} />}
 				node={node}
 				description={node.content.llm.provider}
 				onChangeName={(name) => {
