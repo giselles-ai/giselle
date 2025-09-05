@@ -9,9 +9,7 @@ export const FalLanguageModelData = FalLanguageModel.pick({
 	id: true,
 	configurations: true,
 });
-export type FalLanguageModelData = z.infer<
-	typeof ImageGenerationLanguageModelData
->;
+export type FalLanguageModelData = z.infer<typeof FalLanguageModelData>;
 
 export const OpenAIImageLanguageModelData = OpenAIImageLanguageModel.pick({
 	provider: true,

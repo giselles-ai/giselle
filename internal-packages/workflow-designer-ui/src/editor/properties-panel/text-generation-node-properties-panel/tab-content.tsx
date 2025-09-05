@@ -161,7 +161,7 @@ export function TextGenerationTabContent({
 				value="model"
 				className="flex-1 flex flex-col overflow-y-auto px-[4px] outline-none"
 			>
-				<div className="grid grid-cols-2 gap-[16px] mb-[16px] max-w-full">
+				<div className="grid grid-cols-2 gap-[16px] mb-[16px] max-w-full border-b border-white-400/20 pb-[16px]">
 					<fieldset className="flex flex-col min-w-0">
 						<label
 							htmlFor="provider"

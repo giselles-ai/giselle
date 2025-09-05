@@ -1,19 +1,8 @@
+import { Select } from "@giselle-internal/ui/select";
 import { FalLanguageModelData } from "@giselle-sdk/data-type";
-import { useUsageLimits } from "@giselle-sdk/giselle/react";
-import {
-	falLanguageModels,
-	imageGenerationSizes,
-} from "@giselle-sdk/language-model";
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "../../../../ui/select";
+
+import { imageGenerationSizes } from "@giselle-sdk/language-model";
 import { Slider } from "../../../../ui/slider";
-import { languageModelAvailable } from "../utils";
 
 export function FalModelPanel({
 	languageModel,
@@ -22,88 +11,49 @@ export function FalModelPanel({
 	languageModel: FalLanguageModelData;
 	onModelChange: (changedValue: FalLanguageModelData) => void;
 }) {
-	const limits = useUsageLimits();
+	const updateConfiguration = (
+		updates: Partial<FalLanguageModelData["configurations"]>,
+	) => {
+		onModelChange(
+			FalLanguageModelData.parse({
+				...languageModel,
+				configurations: {
+					...languageModel.configurations,
+					...updates,
+				},
+			}),
+		);
+	};
 
 	return (
-		<div className="flex flex-col gap-[34px]">
-			<Select
-				value={languageModel.id}
-				onValueChange={(value) => {
-					onModelChange(
-						FalLanguageModelData.parse({
-							...languageModel,
-							id: value,
-						}),
-					);
-				}}
-			>
-				<SelectTrigger>
-					<SelectValue placeholder="Select a LLM" />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectGroup>
-						{falLanguageModels.map((falLanguageModel) => (
-							<SelectItem
-								key={falLanguageModel.id}
-								value={falLanguageModel.id}
-								disabled={!languageModelAvailable(falLanguageModel, limits)}
-							>
-								{falLanguageModel.id}
-							</SelectItem>
-						))}
-					</SelectGroup>
-				</SelectContent>
-			</Select>
-
-			<Select
-				value={languageModel.configurations.size}
-				onValueChange={(value) => {
-					onModelChange(
-						FalLanguageModelData.parse({
-							...languageModel,
-							configurations: {
-								...languageModel.configurations,
-								size: value,
-							},
-						}),
-					);
-				}}
-			>
-				<SelectTrigger>
-					<SelectValue placeholder="Select a Size" />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectGroup>
-						{imageGenerationSizes.options.map((imageGenerationSize) => (
-							<SelectItem key={imageGenerationSize} value={imageGenerationSize}>
-								{imageGenerationSize}
-							</SelectItem>
-						))}
-					</SelectGroup>
-				</SelectContent>
-			</Select>
-			<div>
-				<div className="grid grid-cols-2 gap-[24px]">
-					<Slider
-						label="Number of Images"
-						value={languageModel.configurations.n}
-						max={4.0}
-						min={1.0}
-						step={1.0}
-						onChange={(value) => {
-							onModelChange(
-								FalLanguageModelData.parse({
-									...languageModel,
-									configurations: {
-										...languageModel.configurations,
-										n: value,
-									},
-								}),
-							);
-						}}
-					/>
-				</div>
-			</div>
+		<div className="grid grid-cols-2 gap-[16px]">
+			<fieldset className="flex flex-col">
+				<label htmlFor="size" className="text-text text-[13px] mb-[2px]">
+					Size
+				</label>
+				<Select
+					id="size"
+					placeholder="Select a Size"
+					value={languageModel.configurations.size}
+					onValueChange={(value) =>
+						updateConfiguration({
+							size: value as FalLanguageModelData["configurations"]["size"],
+						})
+					}
+					options={imageGenerationSizes.options.map((imageGenerationSize) => ({
+						value: imageGenerationSize,
+						label: imageGenerationSize,
+					}))}
+				/>
+			</fieldset>
+			<Slider
+				label="Number of Images"
+				value={languageModel.configurations.n}
+				max={4.0}
+				min={1.0}
+				step={1.0}
+				onChange={(value) => updateConfiguration({ n: value })}
+			/>
 		</div>
 	);
 }

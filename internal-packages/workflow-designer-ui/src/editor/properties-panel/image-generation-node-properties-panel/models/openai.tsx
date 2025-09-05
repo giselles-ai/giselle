@@ -1,21 +1,12 @@
+import { Select } from "@giselle-internal/ui/select";
 import { OpenAIImageLanguageModelData } from "@giselle-sdk/data-type";
 import { useUsageLimits } from "@giselle-sdk/giselle/react";
 import {
 	openaiImageBackground,
-	openaiImageModels,
 	openaiImageModeration,
 	openaiImageQuality,
 	openaiImageSize,
 } from "@giselle-sdk/language-model";
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "../../../../ui/select";
-import { languageModelAvailable } from "../utils";
 
 export function OpenAIImageModelPanel({
 	languageModel,
@@ -24,43 +15,18 @@ export function OpenAIImageModelPanel({
 	languageModel: OpenAIImageLanguageModelData;
 	onModelChange: (changedValue: OpenAIImageLanguageModelData) => void;
 }) {
-	const limits = useUsageLimits();
+	const _limits = useUsageLimits();
 
 	return (
-		<div className="flex flex-col gap-[34px]">
-			<Select
-				value={languageModel.id}
-				onValueChange={(value) => {
-					onModelChange(
-						OpenAIImageLanguageModelData.parse({
-							...languageModel,
-							id: value,
-						}),
-					);
-				}}
-			>
-				<SelectTrigger>
-					<SelectValue placeholder="Select a LLM" />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectGroup>
-						{openaiImageModels.map((openaiImageModel) => (
-							<SelectItem
-								key={openaiImageModel.id}
-								value={openaiImageModel.id}
-								disabled={!languageModelAvailable(openaiImageModel, limits)}
-							>
-								{openaiImageModel.id}
-							</SelectItem>
-						))}
-					</SelectGroup>
-				</SelectContent>
-			</Select>
-
-			<div className="grid grid-cols-2 gap-[16px]">
-				<div className="space-y-[4px]">
-					<p>Size</p>
+		<div className="flex flex-col gap-[16px]">
+			<div className="grid grid-cols-2 gap-[24px]">
+				<fieldset className="flex flex-col">
+					<label htmlFor="size" className="text-text text-[13px] mb-[2px]">
+						Size
+					</label>
 					<Select
+						id="size"
+						placeholder="Select a Size"
 						value={languageModel.configurations.size}
 						onValueChange={(value) => {
 							onModelChange(
@@ -73,28 +39,20 @@ export function OpenAIImageModelPanel({
 								}),
 							);
 						}}
-					>
-						<SelectTrigger>
-							<SelectValue placeholder="Select a Size" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectGroup>
-								{openaiImageSize.options.map((imageGenerationSize) => (
-									<SelectItem
-										key={imageGenerationSize}
-										value={imageGenerationSize}
-									>
-										{imageGenerationSize}
-									</SelectItem>
-								))}
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-				</div>
+						options={openaiImageSize.options.map((imageGenerationSize) => ({
+							value: imageGenerationSize,
+							label: imageGenerationSize,
+						}))}
+					/>
+				</fieldset>
 
-				<div className="space-y-[4px]">
-					<p>Quality</p>
+				<fieldset className="flex flex-col">
+					<label htmlFor="quality" className="text-text text-[13px] mb-[2px]">
+						Quality
+					</label>
 					<Select
+						id="quality"
+						placeholder="Select a quality"
 						value={languageModel.configurations.quality}
 						onValueChange={(value) => {
 							onModelChange(
@@ -107,28 +65,23 @@ export function OpenAIImageModelPanel({
 								}),
 							);
 						}}
-					>
-						<SelectTrigger>
-							<SelectValue placeholder="Select a quality" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectGroup>
-								{openaiImageQuality.options.map((openaiImageQuality) => (
-									<SelectItem
-										key={openaiImageQuality}
-										value={openaiImageQuality}
-									>
-										{openaiImageQuality}
-									</SelectItem>
-								))}
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-				</div>
+						options={openaiImageQuality.options.map((openaiImageQuality) => ({
+							value: openaiImageQuality,
+							label: openaiImageQuality,
+						}))}
+					/>
+				</fieldset>
 
-				<div className="space-y-[4px]">
-					<p>Background</p>
+				<fieldset className="flex flex-col">
+					<label
+						htmlFor="background"
+						className="text-text text-[13px] mb-[2px]"
+					>
+						Background
+					</label>
 					<Select
+						id="background"
+						placeholder="Select a background"
 						value={languageModel.configurations.background}
 						onValueChange={(value) => {
 							onModelChange(
@@ -141,28 +94,25 @@ export function OpenAIImageModelPanel({
 								}),
 							);
 						}}
-					>
-						<SelectTrigger>
-							<SelectValue placeholder="Select a background" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectGroup>
-								{openaiImageBackground.options.map((openaiImageBackground) => (
-									<SelectItem
-										key={openaiImageBackground}
-										value={openaiImageBackground}
-									>
-										{openaiImageBackground}
-									</SelectItem>
-								))}
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-				</div>
+						options={openaiImageBackground.options.map(
+							(openaiImageBackground) => ({
+								value: openaiImageBackground,
+								label: openaiImageBackground,
+							}),
+						)}
+					/>
+				</fieldset>
 
-				<div className="space-y-[4px]">
-					<p>Moderation</p>
+				<fieldset className="flex flex-col">
+					<label
+						htmlFor="moderation"
+						className="text-text text-[13px] mb-[2px]"
+					>
+						Moderation
+					</label>
 					<Select
+						id="moderation"
+						placeholder="Select a moderation"
 						value={languageModel.configurations.moderation}
 						onValueChange={(value) => {
 							onModelChange(
@@ -175,24 +125,14 @@ export function OpenAIImageModelPanel({
 								}),
 							);
 						}}
-					>
-						<SelectTrigger>
-							<SelectValue placeholder="Select a moderation" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectGroup>
-								{openaiImageModeration.options.map((openaiImageModeration) => (
-									<SelectItem
-										key={openaiImageModeration}
-										value={openaiImageModeration}
-									>
-										{openaiImageModeration}
-									</SelectItem>
-								))}
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-				</div>
+						options={openaiImageModeration.options.map(
+							(openaiImageModeration) => ({
+								value: openaiImageModeration,
+								label: openaiImageModeration,
+							}),
+						)}
+					/>
+				</fieldset>
 			</div>
 		</div>
 	);

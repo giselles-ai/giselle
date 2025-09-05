@@ -60,28 +60,3 @@ export function getContentClasses(): string {
 		PANEL_SPACING.LAYOUT.OVERFLOW_HIDDEN,
 	].join(" ");
 }
-
-/**
- * Get generation panel header classes
- */
-export function getGenerationHeaderClasses(): string {
-	return [
-		"border-b border-white-400/20",
-		PANEL_SPACING.GENERATION.HEADER_PADDING_Y,
-		"flex items-center",
-		PANEL_SPACING.HEADER.ICON_GAP,
-		"**:data-header-text:font-[700]",
-	].join(" ");
-}
-
-/**
- * Get generation panel content classes
- */
-export function getGenerationContentClasses(): string {
-	return [
-		PANEL_SPACING.GENERATION.CONTENT_PADDING_TOP,
-		PANEL_SPACING.GENERATION.CONTENT_PADDING_BOTTOM,
-		PANEL_SPACING.LAYOUT.FULL_HEIGHT,
-		PANEL_SPACING.LAYOUT.OVERFLOW_HIDDEN,
-	].join(" ");
-}
