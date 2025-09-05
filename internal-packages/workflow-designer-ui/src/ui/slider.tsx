@@ -15,14 +15,14 @@ function SliderInner({
 			{...props}
 		>
 			<SliderPrimitive.Track
-				className="relative h-[2px] w-full grow overflow-hidden bg-transparent 
-				before:content-[''] before:absolute before:inset-0 
+				className="relative h-[2px] w-full grow overflow-hidden bg-transparent
+				before:content-[''] before:absolute before:inset-0
 				before:bg-[repeating-linear-gradient(90deg,#F7F9FD_0px,#F7F9FD_2px,transparent_2px,transparent_4px)]"
 			>
 				<SliderPrimitive.Range className="absolute h-full bg-white-900 rounded-[9999px]" />
 			</SliderPrimitive.Track>
 			<SliderPrimitive.Thumb
-				className="block h-[10px] w-[10px] rounded-full bg-white-900 
+				className="block h-[10px] w-[10px] rounded-full bg-white-900
 				transition-transform hover:scale-110 focus:outline-none focus:ring-0 active:outline-none active:ring-0"
 			/>
 		</SliderPrimitive.Root>
@@ -54,7 +54,7 @@ export function Slider(props: SliderProps) {
 					onValueCommit={(v) => props.onChange?.(v[0])}
 				/>
 				<div className="text-[12px] font-[700] text-white-900 w-[3em] text-right">
-					{value.toFixed(2)}
+					{props.step === 1 ? value.toString() : value.toFixed(2)}
 				</div>
 			</div>
 		</div>

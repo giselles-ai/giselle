@@ -3,7 +3,7 @@
 import { EMBEDDING_PROFILES } from "@giselle-sdk/data-type";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Code, GitPullRequest } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import React, { useState, useTransition } from "react";
 import type {
 	GitHubRepositoryContentType,
 	githubRepositoryContentStatus,
@@ -57,13 +57,6 @@ export function ConfigureSourcesDialog({
 	const [selectedProfiles, setSelectedProfiles] =
 		useState<number[]>(enabledProfiles);
 
-	// Reset profiles when dialog opens
-	useEffect(() => {
-		if (open) {
-			setSelectedProfiles(enabledProfiles);
-		}
-	}, [open, enabledProfiles]);
-
 	const handleSave = () => {
 		setError("");
 		startTransition(async () => {
@@ -90,8 +83,16 @@ export function ConfigureSourcesDialog({
 		});
 	};
 
+	const handleOpenChange = (newOpen: boolean) => {
+		setOpen(newOpen);
+		// Reset profiles when dialog opens
+		if (newOpen) {
+			setSelectedProfiles(enabledProfiles);
+		}
+	};
+
 	return (
-		<Dialog.Root open={open} onOpenChange={setOpen}>
+		<Dialog.Root open={open} onOpenChange={handleOpenChange}>
 			<GlassDialogContent
 				onEscapeKeyDown={() => setOpen(false)}
 				onPointerDownOutside={() => setOpen(false)}
@@ -203,7 +204,7 @@ type ContentTypeToggleProps = {
 	status?: typeof githubRepositoryContentStatus.$inferSelect;
 };
 
-function ContentTypeToggle({
+const ContentTypeToggle = React.memo(function ContentTypeToggle({
 	icon: Icon,
 	label,
 	description,
@@ -251,4 +252,4 @@ function ContentTypeToggle({
 			)}
 		</div>
 	);
-}
+});

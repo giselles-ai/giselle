@@ -185,18 +185,9 @@ function GitHubToolConnectionDialog({
 	};
 
 	const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		if (tabValue === "create" && tokenValue && !isValidGitHubPAT(tokenValue)) {
+		if (tabValue === "create" && tokenError) {
 			e.preventDefault();
 			return;
-		}
-
-		if (tabValue === "select") {
-			const formData = new FormData(e.currentTarget);
-			const secretId = formData.get("secretId");
-			if (!secretId || secretId === "") {
-				e.preventDefault();
-				return;
-			}
 		}
 
 		onSubmit(e);
@@ -216,12 +207,19 @@ function GitHubToolConnectionDialog({
 			description={description}
 			onSubmit={handleFormSubmit}
 			submitting={isPending}
-			submitText={submitText}
+			submitText={
+				tabValue === "select" && (secrets ?? []).length < 1 ? "" : submitText
+			}
+			disabled={
+				(tabValue === "create" && !!tokenError) ||
+				(tabValue === "select" && (secrets ?? []).length < 1)
+			}
 			trigger={
 				hideTrigger ? null : (
 					<Button
 						type="button"
 						leftIcon={<PlusIcon data-dialog-trigger-icon />}
+						variant="link"
 					>
 						Connect
 					</Button>
@@ -264,12 +262,12 @@ function GitHubToolConnectionDialog({
 								</label>
 								<a
 									href="https://github.com/settings/personal-access-tokens"
-									className="flex items-center gap-[4px] text-[13px] text-text-muted hover:bg-ghost-element-hover transition-colors px-[4px] rounded-[2px]"
+									className="flex items-center gap-[4px] text-[13px] text-text-muted transition-colors px-[4px] rounded-[2px]"
 									target="_blank"
 									rel="noreferrer"
 									tabIndex={-1}
 								>
-									<span>GitHub</span>
+									<span className="hover:underline">GitHub</span>
 									<MoveUpRightIcon className="size-[13px]" />
 								</a>
 							</div>
@@ -307,14 +305,20 @@ function GitHubToolConnectionDialog({
 					{isLoading ? (
 						<p>Loading...</p>
 					) : (secrets ?? []).length < 1 ? (
-						<EmptyState description="No saved tokens.">
-							<Button
-								onClick={() => setTabValue("create")}
-								leftIcon={<PlusIcon />}
-							>
-								Add a Token
-							</Button>
-						</EmptyState>
+						<div className="h-[184px] flex flex-col items-center justify-center">
+							<div className="flex-1 flex items-center justify-center">
+								<EmptyState description="No saved tokens." />
+							</div>
+							<div>
+								<Button
+									onClick={() => setTabValue("create")}
+									leftIcon={<PlusIcon />}
+									variant="glass"
+								>
+									Add a Token
+								</Button>
+							</div>
+						</div>
 					) : (
 						<>
 							<p className="text-[11px] text-text-muted my-[4px]">

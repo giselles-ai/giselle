@@ -12,7 +12,7 @@ import {
 	Settings,
 	Trash,
 } from "lucide-react";
-import { useMemo, useState, useTransition } from "react";
+import React, { useCallback, useMemo, useState, useTransition } from "react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -45,6 +45,32 @@ const STATUS_CONFIG = {
 	running: { dotColor: "bg-[#39FF7F] animate-custom-pulse", label: "Running" },
 	completed: { dotColor: "bg-[#39FF7F]", label: "Ready" },
 	failed: { dotColor: "bg-[#FF3D71]", label: "Error" },
+} as const;
+
+// Content type configuration
+const CONTENT_TYPE_CONFIG = {
+	blob: {
+		icon: Code,
+		label: "Code",
+		getMetadataLabel: (parsedMetadata: unknown) =>
+			parsedMetadata &&
+			typeof parsedMetadata === "object" &&
+			parsedMetadata !== null &&
+			"lastIngestedCommitSha" in parsedMetadata
+				? `Commit: ${(parsedMetadata as { lastIngestedCommitSha?: string }).lastIngestedCommitSha?.substring(0, 7) || "none"}`
+				: null,
+	},
+	pull_request: {
+		icon: GitPullRequest,
+		label: "Pull Requests",
+		getMetadataLabel: (parsedMetadata: unknown) =>
+			parsedMetadata &&
+			typeof parsedMetadata === "object" &&
+			parsedMetadata !== null &&
+			"lastIngestedPrNumber" in parsedMetadata
+				? `PR: #${(parsedMetadata as { lastIngestedPrNumber?: number }).lastIngestedPrNumber || "none"}`
+				: null,
+	},
 } as const;
 
 type RepositoryItemProps = {
@@ -88,7 +114,7 @@ export function RepositoryItem({
 	const [isPending, startTransition] = useTransition();
 	const [isIngesting, startIngestTransition] = useTransition();
 
-	const handleDelete = () => {
+	const handleDelete = useCallback(() => {
 		startTransition(async () => {
 			try {
 				await deleteRepositoryIndexAction(repositoryIndex.id);
@@ -97,9 +123,9 @@ export function RepositoryItem({
 				console.error(error);
 			}
 		});
-	};
+	}, [deleteRepositoryIndexAction, repositoryIndex.id]);
 
-	const handleManualIngest = () => {
+	const handleManualIngest = useCallback(() => {
 		startIngestTransition(async () => {
 			try {
 				const result = await triggerManualIngestAction(repositoryIndex.id);
@@ -110,20 +136,22 @@ export function RepositoryItem({
 				console.error("Error triggering manual ingest:", error);
 			}
 		});
-	};
+	}, [triggerManualIngestAction, repositoryIndex.id]);
 
 	// Check if manual ingest is allowed for any enabled content type
-	const now = new Date();
-	const canManuallyIngest = contentStatuses.some((cs) => {
-		if (!cs.enabled) return false;
-		return (
-			cs.status === "idle" ||
-			cs.status === "completed" ||
-			(cs.status === "failed" &&
-				cs.retryAfter &&
-				new Date(cs.retryAfter) <= now)
-		);
-	});
+	const canManuallyIngest = useMemo(() => {
+		const now = new Date();
+		return contentStatuses.some((cs) => {
+			if (!cs.enabled) return false;
+			return (
+				cs.status === "idle" ||
+				cs.status === "completed" ||
+				(cs.status === "failed" &&
+					cs.retryAfter &&
+					new Date(cs.retryAfter) <= now)
+			);
+		});
+	}, [contentStatuses]);
 
 	return (
 		<div
@@ -249,7 +277,7 @@ export function RepositoryItem({
 }
 
 // Embedding Model Card Component
-function EmbeddingModelCard({
+const EmbeddingModelCard = React.memo(function EmbeddingModelCard({
 	profile,
 	profileId,
 	contentStatuses,
@@ -322,7 +350,7 @@ function EmbeddingModelCard({
 			</div>
 		</div>
 	);
-}
+});
 
 // Content Type Section Component (from repository-item.tsx)
 type ContentTypeSectionProps = {
@@ -332,21 +360,17 @@ type ContentTypeSectionProps = {
 	onVerify?: () => void;
 };
 
-function ContentTypeSection({
+const ContentTypeSection = React.memo(function ContentTypeSection({
 	contentType,
 	status,
 	isIngesting,
 	onVerify,
 }: ContentTypeSectionProps) {
+	const config = CONTENT_TYPE_CONFIG[contentType];
+	const Icon = config.icon;
+
 	// Handle case where status doesn't exist (e.g., pull_request not yet configured)
 	if (!status) {
-		const contentConfig = {
-			blob: { icon: Code, label: "Code" },
-			pull_request: { icon: GitPullRequest, label: "Pull Requests" },
-		};
-		const config = contentConfig[contentType];
-		const Icon = config.icon;
-
 		return (
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-2 text-sm font-medium text-gray-300">
@@ -371,29 +395,7 @@ function ContentTypeSection({
 
 	// Parse metadata based on content type
 	const parsedMetadata = getContentStatusMetadata(metadata, contentType);
-
-	// Content type config
-	const contentConfig = {
-		blob: {
-			icon: Code,
-			label: "Code",
-			metadataLabel:
-				parsedMetadata && "lastIngestedCommitSha" in parsedMetadata
-					? `Commit: ${parsedMetadata.lastIngestedCommitSha?.substring(0, 7) || "none"}`
-					: null,
-		},
-		pull_request: {
-			icon: GitPullRequest,
-			label: "Pull Requests",
-			metadataLabel:
-				parsedMetadata && "lastIngestedPrNumber" in parsedMetadata
-					? `PR: #${parsedMetadata.lastIngestedPrNumber || "none"}`
-					: null,
-		},
-	};
-
-	const config = contentConfig[contentType];
-	const Icon = config.icon;
+	const metadataLabel = config.getMetadataLabel(parsedMetadata);
 
 	// Determine display status
 	const displayStatus = isIngesting && enabled ? "running" : syncStatus;
@@ -431,7 +433,7 @@ function ContentTypeSection({
 					) : (
 						<span>Never synced</span>
 					)}
-					{config.metadataLabel && <span>{config.metadataLabel}</span>}
+					{metadataLabel && <span>{metadataLabel}</span>}
 				</div>
 			)}
 			{enabled && syncStatus === "failed" && errorCode && (
@@ -446,9 +448,9 @@ function ContentTypeSection({
 			)}
 		</div>
 	);
-}
+});
 
-function SyncStatusBadge({
+const SyncStatusBadge = React.memo(function SyncStatusBadge({
 	status,
 	onVerify,
 }: {
@@ -456,8 +458,8 @@ function SyncStatusBadge({
 	onVerify?: () => void;
 }) {
 	const config = STATUS_CONFIG[status] ?? {
-		dotColor: "bg-gray-500",
-		label: "unknown",
+		dotColor: "bg-gray-500" as const,
+		label: "unknown" as const,
 	};
 
 	const badgeContent = (
@@ -496,4 +498,4 @@ function SyncStatusBadge({
 			{badgeContent}
 		</div>
 	);
-}
+});

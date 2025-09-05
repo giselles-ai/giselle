@@ -38,6 +38,6 @@ export const toolProviders: ToolProviderDescriptor[] = [
 		renderConfiguration: (node) => (
 			<AnthropicWebSearchToolConfigurationDialog node={node} />
 		),
-		requirement: (node) => node.content.llm.provider === "anthropic",
+		requirement: (_node) => false, // Hidden - now managed in model panel
 	},
 ];

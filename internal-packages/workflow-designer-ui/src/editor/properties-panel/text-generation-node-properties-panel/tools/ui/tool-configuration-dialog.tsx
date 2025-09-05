@@ -51,14 +51,16 @@ export function ToolConfigurationDialog({
 				<form onSubmit={onSubmit}>
 					{children}
 					<DialogFooter>
-						<Button
-							type="submit"
-							variant="solid"
-							disabled={submitting || disabled}
-							size="large"
-						>
-							{submitting ? "..." : submitText}
-						</Button>
+						{submitText && (
+							<Button
+								type="submit"
+								variant="solid"
+								disabled={submitting || disabled}
+								size="large"
+							>
+								{submitting ? "..." : submitText}
+							</Button>
+						)}
 					</DialogFooter>
 				</form>
 			</DialogContent>
