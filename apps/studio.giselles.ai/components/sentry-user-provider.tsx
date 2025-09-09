@@ -17,6 +17,9 @@ export function SentryUserProvider({
 			Sentry.setUser({
 				id: userId,
 			});
+		} else {
+			// Clear user on logout or when unauthenticated
+			Sentry.setUser(null);
 		}
 	}, [userId]);
 
