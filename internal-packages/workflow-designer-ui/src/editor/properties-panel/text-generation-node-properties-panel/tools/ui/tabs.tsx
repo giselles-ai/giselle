@@ -10,10 +10,10 @@ export function TabsList({
 	return (
 		<TabsPrimitive.List
 			className={clsx(
-				"border border-border px-[4px] py-[4px] rounded-[4px] flex justify-center items-center gap-[4px]",
+				"border border-border px-[2px] py-[2px] rounded-[4px] flex justify-center items-center gap-[4px]",
 				"**:data-trigger:flex-1 **:data-trigger:rounded-[4px] **:data-trigger:border **:data-trigger:border-transparent",
 				"**:data-trigger:outline-none **:data-trigger:text-text-muted **:data-trigger:font-accent",
-				"**:data-trigger:text-[13px] **:data-trigger:tracking-wider **:data-trigger:py-[2px]",
+				"**:data-trigger:text-[13px] **:data-trigger:tracking-wider **:data-trigger:py-[3px]",
 				"**:data-trigger:data-[state=active]:bg-tab-active-background **:data-trigger:data-[state=active]:text-text",
 				"**:data-trigger:data-[state=inactive]:cursor-pointer",
 				"**:data-trigger:hover:bg-ghost-element-hover",
@@ -33,7 +33,7 @@ export function TabsTrigger({
 			className={clsx(
 				"flex-1 rounded-[4px] border border-transparent",
 				"outline-none text-text-muted font-accent",
-				"text-[13px] tracking-wider py-[2px]",
+				"text-[13px] tracking-wider py-[3px]",
 				"data-[state=active]:bg-tab-active-background data-[state=active]:text-text",
 				"data-[state=inactive]:cursor-pointer",
 				"hover:bg-ghost-element-hover",

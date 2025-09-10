@@ -102,9 +102,21 @@ function PostgresToolConnectionDialog({
 			description="How would you like to connect to your database?"
 			onSubmit={onSubmit}
 			submitting={isPending}
-			disabled={tabValue === "create" && !!validationError}
+			submitText={
+				tabValue === "select" && (secrets ?? []).length < 1
+					? ""
+					: "Save & Connect"
+			}
+			disabled={
+				(tabValue === "create" && !!validationError) ||
+				(tabValue === "select" && (secrets ?? []).length < 1)
+			}
 			trigger={
-				<Button type="button" leftIcon={<PlusIcon data-dialog-trigger-icon />}>
+				<Button
+					type="button"
+					leftIcon={<PlusIcon data-dialog-trigger-icon />}
+					variant="link"
+				>
 					Connect
 				</Button>
 			}
@@ -132,7 +144,7 @@ function PostgresToolConnectionDialog({
 							<label htmlFor="label" className="text-text text-[13px] mb-[2px]">
 								Connection Name
 							</label>
-							<Input type="text" id="label" name="label" />
+							<Input type="text" id="label" name="label" required />
 							<p className="text-[11px] text-text-muted px-[4px] mt-[1px]">
 								Give this connection a short name (e.g. “Prod-DB”). You’ll use
 								it when linking other nodes.
@@ -154,10 +166,15 @@ function PostgresToolConnectionDialog({
 								value={connectionString}
 								onChange={(e) => handleConnectionStringChange(e.target.value)}
 								className={validationError ? "border-red-500" : ""}
+								aria-invalid={!!validationError}
+								aria-describedby={
+									validationError ? "postgres-conn-error" : undefined
+								}
 							/>
 							{validationError ? (
 								<p className="text-[11px] text-red-500 px-[4px] mt-[1px]">
-									{validationError}
+									{/* id referenced by aria-describedby above */}
+									<span id="postgres-conn-error">{validationError}</span>
 								</p>
 							) : (
 								<p className="text-[11px] text-text-muted px-[4px] mt-[1px]">
@@ -172,14 +189,20 @@ function PostgresToolConnectionDialog({
 					{isLoading ? (
 						<p>Loading...</p>
 					) : (secrets ?? []).length < 1 ? (
-						<EmptyState description="No saved connection strings.">
-							<Button
-								onClick={() => setTabValue("create")}
-								leftIcon={<PlusIcon />}
-							>
-								Add a Connection String
-							</Button>
-						</EmptyState>
+						<div className="h-[140px] flex flex-col items-center justify-center">
+							<div className="flex-1 flex items-center justify-center">
+								<EmptyState description="No saved connection strings." />
+							</div>
+							<div>
+								<Button
+									onClick={() => setTabValue("create")}
+									leftIcon={<PlusIcon />}
+									variant="glass"
+								>
+									Add a Connection String
+								</Button>
+							</div>
+						</div>
 					) : (
 						<>
 							<p className="text-[11px] text-text-muted my-[4px]">
@@ -316,20 +339,24 @@ function PostgresToolConfigurationDialogInternal({
 										className="flex items-center justify-between p-3 hover:bg-black-800/30 cursor-pointer transition-colors"
 										htmlFor={tool}
 									>
-										<Checkbox.Root
-											className="group appearance-none size-[18px] rounded border flex items-center justify-center transition-colors outline-none data-[state=checked]:border-success data-[state=checked]:bg-success"
-											value={tool}
-											id={tool}
-											defaultChecked={node.content.tools?.postgres?.tools.includes(
-												tool,
-											)}
-											name="tools"
-										>
-											<Checkbox.Indicator className="text-background">
-												<CheckIcon className="size-[16px]" />
-											</Checkbox.Indicator>
-										</Checkbox.Root>
-										<p className="text-sm text-text flex-1 pl-[8px]">{tool}</p>
+										<div className="flex items-center flex-1">
+											<Checkbox.Root
+												className="group appearance-none size-[18px] rounded border flex items-center justify-center transition-colors outline-none data-[state=checked]:border-success data-[state=checked]:bg-success"
+												value={tool}
+												id={tool}
+												defaultChecked={node.content.tools?.postgres?.tools.includes(
+													tool,
+												)}
+												name="tools"
+											>
+												<Checkbox.Indicator className="text-background">
+													<CheckIcon className="size-[16px]" />
+												</Checkbox.Indicator>
+											</Checkbox.Root>
+											<p className="text-sm text-text flex-1 pl-[8px]">
+												{tool}
+											</p>
+										</div>
 									</label>
 								))}
 							</div>

@@ -1121,5 +1121,6 @@ export const twoTriggerFixture = {
 			zoom: 0.5173435218723061,
 		},
 		currentShortcutScope: "canvas" as const,
+		selectedConnectionIds: [],
 	},
 } satisfies Workspace;

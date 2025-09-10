@@ -1,4 +1,4 @@
-import type { Node } from "@giselle-sdk/data-type";
+import type { NodeLike } from "@giselle-sdk/data-type";
 import {
 	isActionNode,
 	isTriggerNode,
@@ -24,7 +24,11 @@ function RequiresSetupBadge(): ReactElement {
 	);
 }
 
-export function GitHubNodeInfo({ node }: { node: Node }): ReactElement | null {
+export function GitHubNodeInfo({
+	node,
+}: {
+	node: NodeLike;
+}): ReactElement | null {
 	const { isOrphaned: isVectorStoreOrphaned, isEmbeddingProfileOrphaned } =
 		useGitHubVectorStoreStatus(node);
 

@@ -31,6 +31,7 @@ import {
 	configureTrigger,
 	deleteTrigger,
 	getTrigger,
+	reconfigureGitHubTrigger,
 	resolveTrigger,
 	setTrigger,
 } from "./flows";
@@ -280,6 +281,14 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		},
 		setTrigger: async (args: { trigger: FlowTrigger }) =>
 			setTrigger({ ...args, context }),
+		reconfigureGitHubTrigger: async (args: {
+			flowTriggerId: FlowTriggerId;
+			repositoryNodeId: string;
+			installationId: number;
+			useExperimentalStorage: boolean;
+		}) => {
+			return await reconfigureGitHubTrigger({ ...args, context });
+		},
 		deleteTrigger: async (args: { flowTriggerId: FlowTriggerId }) =>
 			deleteTrigger({ ...args, context }),
 		executeAction: async (args: { generation: QueuedGeneration }) =>

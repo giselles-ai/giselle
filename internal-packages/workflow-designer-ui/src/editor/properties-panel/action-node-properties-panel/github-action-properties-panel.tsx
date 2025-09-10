@@ -103,13 +103,27 @@ export function GitHubActionPropertiesPanel({ node }: { node: ActionNode }) {
 			<div className="flex flex-col h-full">
 				<GitHubActionConfiguredView
 					state={node.content.command.state}
-					nodeId={node.id}
+					node={node}
 					inputs={node.inputs}
 				/>
 				<div className="p-4">
 					<GenerationPanel node={node} />
 				</div>
 			</div>
+		);
+	} else if (
+		node.content.command.state.status === "reconfiguring" &&
+		value?.github?.status === "installed"
+	) {
+		return (
+			<Installed
+				installations={value.github.installations}
+				node={node}
+				installationUrl={value.github.installationUrl}
+				reconfigStep={{
+					state: "select-repository",
+				}}
+			/>
 		);
 	}
 
@@ -316,14 +330,18 @@ function Installed({
 	installations,
 	node,
 	installationUrl,
+	reconfigStep,
 }: {
 	installations: GitHubIntegrationInstallation[];
 	node: ActionNode;
 	installationUrl: string;
+	reconfigStep?: SelectRepositoryStep;
 }) {
-	const [step, setStep] = useState<GitHubActionSetupStep>({
-		state: "select-repository",
-	});
+	const [step, setStep] = useState<GitHubActionSetupStep>(
+		reconfigStep ?? {
+			state: "select-repository",
+		},
+	);
 	const { updateNodeData } = useWorkflowDesigner();
 
 	const handleActionSelect = useCallback(
@@ -378,6 +396,48 @@ function Installed({
 		[node, updateNodeData, step],
 	);
 
+	const handleSelectRepository = useCallback(
+		(value: {
+			installationId: number;
+			owner: string;
+			repo: string;
+			repoNodeId: string;
+		}) => {
+			if (node.content.command.state.status === "unconfigured") {
+				// For new configuration: proceed to next step (action selection)
+				setStep({
+					state: "select-action",
+					installationId: value.installationId,
+					owner: value.owner,
+					repo: value.repo,
+					repoNodeId: value.repoNodeId,
+				});
+			} else if (node.content.command.state.status === "reconfiguring") {
+				// For reconfiguration: change repository and complete configuration
+				updateNodeData(node, {
+					content: {
+						...node.content,
+						command: {
+							...node.content.command,
+							provider: "github",
+							state: {
+								...node.content.command.state,
+								status: "configured",
+								repositoryNodeId: value.repoNodeId,
+								installationId: value.installationId,
+							},
+						},
+					},
+				});
+			} else {
+				throw new Error(
+					`Unexpected status: ${node.content.command.state.status}`,
+				);
+			}
+		},
+		[node, updateNodeData],
+	);
+
 	return (
 		<div className="flex flex-col gap-[16px] px-[4px]">
 			<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Organization</p>
@@ -385,15 +445,7 @@ function Installed({
 				<SelectRepository
 					installations={installations}
 					installationUrl={installationUrl}
-					onSelectRepository={(value) => {
-						setStep({
-							state: "select-action",
-							installationId: value.installationId,
-							owner: value.owner,
-							repo: value.repo,
-							repoNodeId: value.repoNodeId,
-						});
-					}}
+					onSelectRepository={handleSelectRepository}
 				/>
 			)}
 			{step.state === "select-action" && (

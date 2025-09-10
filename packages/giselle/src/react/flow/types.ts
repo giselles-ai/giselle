@@ -1,5 +1,4 @@
 import type {
-	ConnectionId,
 	FileNode,
 	InputId,
 	Node,
@@ -46,7 +45,7 @@ export interface WorkflowDesignerContextValue {
 	) => void;
 	setUiViewport: (viewport: Viewport) => void;
 	deleteNode: (nodeId: NodeId | string) => Promise<void> | void;
-	deleteConnection: (connectionId: ConnectionId) => void;
+	deleteConnection: (connectionIdLike: string) => void;
 	updateName: (name: string | undefined) => void;
 	uploadFile: (
 		files: File[],

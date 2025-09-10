@@ -1,6 +1,7 @@
 import type { NodeId } from "@giselle-sdk/data-type";
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
+import { useShallow } from "zustand/shallow";
 import type {
 	Generation,
 	GenerationOrigin,
@@ -8,6 +9,7 @@ import type {
 import { useFeatureFlag } from "../../feature-flags";
 import { useGiselleEngine } from "../../use-giselle-engine";
 import { useGenerationRunnerSystem } from "../contexts";
+import { useGenerationStore } from "../store";
 
 export function useNodeGenerations({
 	nodeId,
@@ -16,8 +18,14 @@ export function useNodeGenerations({
 	nodeId: NodeId;
 	origin: GenerationOrigin;
 }) {
+	const generations = useGenerationStore(
+		useShallow((s) =>
+			s.generations.filter(
+				(generation) => generation.context.operationNode.id === nodeId,
+			),
+		),
+	);
 	const {
-		generations,
 		createGenerationRunner,
 		startGenerationRunner,
 		createAndStartGenerationRunner,

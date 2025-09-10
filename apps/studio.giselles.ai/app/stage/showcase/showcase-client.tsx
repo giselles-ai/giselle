@@ -34,6 +34,15 @@ interface App {
 	workspaceId: string | null;
 }
 
+interface Playlist {
+	id: string;
+	title: string;
+	description: string;
+	createdAt: Date;
+	updatedAt: Date;
+	appsCount: number;
+}
+
 interface TeamOption {
 	value: string;
 	label: string;
@@ -45,6 +54,36 @@ interface ShowcaseClientProps {
 	teamApps: Record<string, App[]>;
 	teamHistory: Record<string, App[]>;
 }
+
+// Mock playlist data - replace with actual data from props
+const mockPlaylists: Playlist[] = [
+	{
+		id: "1",
+		title: "AI Writing Assistants",
+		description:
+			"A collection of AI agents focused on content creation and writing tasks",
+		createdAt: new Date("2024-01-15"),
+		updatedAt: new Date("2024-01-20"),
+		appsCount: 3,
+	},
+	{
+		id: "2",
+		title: "Data Analysis Tools",
+		description: "Smart agents for data processing and insights generation",
+		createdAt: new Date("2024-01-10"),
+		updatedAt: new Date("2024-01-25"),
+		appsCount: 2,
+	},
+	{
+		id: "3",
+		title: "Customer Support Bots",
+		description:
+			"Automated agents for handling customer inquiries and support tasks",
+		createdAt: new Date("2024-01-05"),
+		updatedAt: new Date("2024-01-22"),
+		appsCount: 4,
+	},
+];
 
 export function ShowcaseClient({
 	teamOptions,
@@ -336,9 +375,12 @@ export function ShowcaseClient({
 							) : (
 								<Card className="gap-0 py-2">
 									{sortedApps.map((app) => (
-										<div
+										<button
 											key={app.id}
-											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-white/10 cursor-pointer"
+											type="button"
+											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-white/10 cursor-pointer hover:bg-white/5 transition-colors w-full text-left"
+											onClick={() => router.push(`/stage/showcase/${app.id}`)}
+											aria-label={`View ${app.name} app details`}
 										>
 											<div className="flex items-center gap-3">
 												<div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 transition-all group-hover:bg-primary-100/20">
@@ -371,7 +413,8 @@ export function ShowcaseClient({
 													type="button"
 													className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-white/20 hover:border-white/40"
 													title="Run app"
-													onClick={() => {
+													onClick={(e) => {
+														e.stopPropagation();
 														if (app.workspaceId) {
 															router.push(
 																`/stage?workspaceId=${app.workspaceId}&teamId=${selectedTeamId}`,
@@ -395,7 +438,8 @@ export function ShowcaseClient({
 														boxShadow:
 															"inset 0 1px 1px rgba(255,255,255,0.05), 0 2px 8px rgba(5,10,20,0.4), 0 1px 2px rgba(0,0,0,0.3)",
 													}}
-													onClick={() => {
+													onClick={(e) => {
+														e.stopPropagation();
 														console.log("🔗 Edit button clicked for app:", {
 															id: app.id,
 															name: app.name,
@@ -411,11 +455,14 @@ export function ShowcaseClient({
 												<button
 													type="button"
 													className="p-1.5 rounded-md text-white/60 hover:text-white transition-colors"
+													onClick={() => {
+														// TODO: Add favorite functionality
+													}}
 												>
 													<Star className="h-4 w-4 hover:fill-current" />
 												</button>
 											</div>
-										</div>
+										</button>
 									))}
 								</Card>
 							)}
@@ -423,88 +470,146 @@ export function ShowcaseClient({
 					)}
 
 					{activeTab === "Playlist" && (
-						<div className="flex justify-center items-center h-full">
-							<div className="grid gap-[8px] justify-center text-center">
-								<h3 className="text-[18px] font-geist font-bold text-black-400">
-									No playlists yet.
-								</h3>
-								<p className="text-[12px] font-geist text-black-400">
-									Please create a new playlist with the 'New Playlist +' button.
-								</p>
-								<div className="mt-4">
-									<Dialog.Root
-										open={isPlaylistDialogOpen}
-										onOpenChange={setIsPlaylistDialogOpen}
+						<>
+							<div className="mb-8 flex justify-start">
+								<Dialog.Root
+									open={isPlaylistDialogOpen}
+									onOpenChange={setIsPlaylistDialogOpen}
+								>
+									<Dialog.Trigger asChild>
+										<GlassButton>New Playlist +</GlassButton>
+									</Dialog.Trigger>
+									<GlassDialogContent
+										onEscapeKeyDown={() => setIsPlaylistDialogOpen(false)}
+										onPointerDownOutside={() => setIsPlaylistDialogOpen(false)}
 									>
-										<Dialog.Trigger asChild>
-											<GlassButton>Create Playlist</GlassButton>
-										</Dialog.Trigger>
-										<GlassDialogContent
-											onEscapeKeyDown={() => setIsPlaylistDialogOpen(false)}
-											onPointerDownOutside={() =>
-												setIsPlaylistDialogOpen(false)
-											}
-										>
-											<GlassDialogHeader
-												title="New Playlist Details"
-												description="Create a new playlist with title, description and thumbnail."
-												onClose={() => setIsPlaylistDialogOpen(false)}
-											/>
-											<GlassDialogBody>
-												<div className="grid gap-4">
-													<div className="grid gap-2">
-														<label
-															htmlFor="title"
-															className="text-sm font-medium text-white"
-														>
-															Title
-														</label>
-														<Input
-															id="title"
-															value={playlistForm.title}
-															onChange={(e) =>
-																setPlaylistForm({
-																	...playlistForm,
-																	title: e.target.value,
-																})
-															}
-															placeholder="Playlist title"
-															className="bg-black-700/50 border-black-600 text-white placeholder:text-black-400"
-														/>
-													</div>
-													<div className="grid gap-2">
-														<label
-															htmlFor="description"
-															className="text-sm font-medium text-white"
-														>
-															Description
-														</label>
-														<textarea
-															id="description"
-															value={playlistForm.description}
-															onChange={(e) =>
-																setPlaylistForm({
-																	...playlistForm,
-																	description: e.target.value,
-																})
-															}
-															placeholder="Playlist description"
-															className="min-h-[80px] px-3 py-2 rounded-md bg-black-700/50 border border-black-600 text-white placeholder:text-black-400 resize-none"
-															rows={3}
-														/>
-													</div>
+										<GlassDialogHeader
+											title="New Playlist Details"
+											description="Create a new playlist with title, description and thumbnail."
+											onClose={() => setIsPlaylistDialogOpen(false)}
+										/>
+										<GlassDialogBody>
+											<div className="grid gap-4">
+												<div className="grid gap-2">
+													<label
+														htmlFor="title"
+														className="text-sm font-medium text-white"
+													>
+														Title
+													</label>
+													<Input
+														id="title"
+														value={playlistForm.title}
+														onChange={(e) =>
+															setPlaylistForm({
+																...playlistForm,
+																title: e.target.value,
+															})
+														}
+														placeholder="Playlist title"
+														className="bg-black-700/50 border-black-600 text-white placeholder:text-black-400"
+													/>
 												</div>
-											</GlassDialogBody>
-											<GlassDialogFooter
-												onCancel={() => setIsPlaylistDialogOpen(false)}
-												onConfirm={handleSavePlaylist}
-												confirmLabel="Save"
-											/>
-										</GlassDialogContent>
-									</Dialog.Root>
-								</div>
+												<div className="grid gap-2">
+													<label
+														htmlFor="description"
+														className="text-sm font-medium text-white"
+													>
+														Description
+													</label>
+													<Input
+														id="description"
+														value={playlistForm.description}
+														onChange={(e) =>
+															setPlaylistForm({
+																...playlistForm,
+																description: e.target.value,
+															})
+														}
+														placeholder="Playlist description"
+														className="bg-black-700/50 border-black-600 text-white placeholder:text-black-400"
+													/>
+												</div>
+											</div>
+										</GlassDialogBody>
+										<GlassDialogFooter
+											onCancel={() => setIsPlaylistDialogOpen(false)}
+											onConfirm={handleSavePlaylist}
+											confirmLabel="Save"
+										/>
+									</GlassDialogContent>
+								</Dialog.Root>
 							</div>
-						</div>
+
+							{mockPlaylists.length > 0 && (
+								<div className="flex flex-wrap gap-6">
+									{mockPlaylists.map((playlist, index) => {
+										// Generate different gradient backgrounds
+										const gradients = [
+											"bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600",
+											"bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600",
+											"bg-gradient-to-br from-green-400 via-blue-500 to-purple-600",
+											"bg-gradient-to-br from-yellow-400 via-orange-500 to-red-600",
+											"bg-gradient-to-br from-blue-400 via-purple-500 to-pink-600",
+											"bg-gradient-to-br from-indigo-400 via-blue-500 to-teal-600",
+										];
+										const gradientClass = gradients[index % gradients.length];
+
+										return (
+											<div key={playlist.id} className="group w-40">
+												{/* Thumbnail area */}
+												<button
+													type="button"
+													onClick={() =>
+														router.push(
+															`/stage/showcase/playlist/${playlist.id}`,
+														)
+													}
+													className="relative w-40 aspect-square overflow-hidden rounded-lg transition-all duration-300 hover:scale-105 mb-3"
+												>
+													<div className={`w-full h-full ${gradientClass}`}>
+														<div className="absolute inset-0 bg-black/20" />
+													</div>
+												</button>
+
+												{/* Text content area */}
+												<button
+													type="button"
+													onClick={() =>
+														router.push(
+															`/stage/showcase/playlist/${playlist.id}`,
+														)
+													}
+													className="w-full text-left"
+												>
+													<h3 className="text-white font-semibold text-base mb-2 group-hover:text-primary-100 transition-colors line-clamp-1">
+														{playlist.title}
+													</h3>
+													<span className="text-white/50 text-xs">
+														{playlist.appsCount}{" "}
+														{playlist.appsCount === 1 ? "app" : "apps"}
+													</span>
+												</button>
+											</div>
+										);
+									})}
+								</div>
+							)}
+
+							{mockPlaylists.length === 0 && (
+								<div className="flex justify-center items-center h-full">
+									<div className="grid gap-[8px] justify-center text-center">
+										<h3 className="text-[18px] font-geist font-bold text-black-400">
+											No playlists yet.
+										</h3>
+										<p className="text-[12px] font-geist text-black-400">
+											Please create a new playlist with the 'New Playlist +'
+											button.
+										</p>
+									</div>
+								</div>
+							)}
+						</>
 					)}
 
 					{activeTab === "History" && (

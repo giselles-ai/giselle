@@ -491,5 +491,6 @@ export const gourpNodesFixture: Workspace = {
 		},
 		viewport: { x: 147, y: -69.5, zoom: 1 },
 		currentShortcutScope: "canvas" as const,
+		selectedConnectionIds: [],
 	},
 };

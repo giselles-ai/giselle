@@ -25,7 +25,7 @@ export function useFilterState({ teamOptions }: UseFilterStateProps) {
 	// State
 	const [selectedTeamId, setSelectedTeamId] = useState<TeamId>(defaultTeamId);
 	const [selectedFilter, setSelectedFilter] = useState<FilterType>(
-		urlFilter || "history",
+		urlFilter || "all",
 	);
 
 	// Navigation handlers

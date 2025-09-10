@@ -3,32 +3,41 @@
 import {
 	InputId,
 	isActionNode,
-	isOperationNode,
+	type NodeId,
 	OutputId,
 } from "@giselle-sdk/data-type";
 import {
 	type Connection,
 	type Edge,
 	type IsValidConnection,
+	type NodeMouseHandler,
+	type OnEdgesChange,
+	type OnNodesChange,
 	ReactFlow,
+	type Node as RFNode,
 	useReactFlow,
 	useUpdateNodeInternals,
 	Panel as XYFlowPanel,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useToasts } from "@giselle-internal/ui/toast";
-import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
+import {
+	isSupportedConnection,
+	useWorkflowDesignerStore,
+	workspaceActions,
+} from "@giselle-sdk/giselle/react";
 import clsx from "clsx/lite";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { useShallow } from "zustand/shallow";
 import { Background } from "../../../ui/background";
 import { edgeTypes } from "../../connector";
-import { type ConnectorType, GradientDef } from "../../connector/component";
+import { GradientDef } from "../../connector/component";
 import { ContextMenu } from "../../context-menu";
 import type { ContextMenuProps } from "../../context-menu/types";
 import { DataSourceTable } from "../../data-source";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
-import { type GiselleWorkflowDesignerNode, nodeTypes } from "../../node";
+import { nodeTypes } from "../../node";
 import { PropertiesPanel } from "../../properties-panel";
 import { RunHistoryTable } from "../../run-history/run-history-table";
 import { SecretTable } from "../../secret/secret-table";
@@ -42,8 +51,19 @@ interface V2ContainerProps extends V2LayoutState {
 }
 
 function V2NodeCanvas() {
+	const data = useWorkflowDesignerStore(
+		useShallow((s) => ({
+			nodes: s.workspace.nodes,
+			connections: s.workspace.connections,
+			nodeState: s.workspace.ui.nodeState,
+			viewport: s.workspace.ui.viewport,
+			selectedConnectionIds: s.workspace.ui.selectedConnectionIds,
+		})),
+	);
+	const nodeIds = useWorkflowDesignerStore(
+		useShallow((s) => s.workspace.nodes.map((node) => node.id)),
+	);
 	const {
-		data,
 		setUiNodeState,
 		setUiViewport,
 		setCurrentShortcutScope,
@@ -52,13 +72,9 @@ function V2NodeCanvas() {
 		updateNodeData,
 		addNode,
 		addConnection,
-		isSupportedConnection,
-	} = useWorkflowDesigner();
-	const reactFlowInstance = useReactFlow<
-		GiselleWorkflowDesignerNode,
-		ConnectorType
-	>();
-	const updateNodeInternals = useUpdateNodeInternals();
+		selectConnection,
+		deselectConnection,
+	} = useWorkflowDesignerStore(useShallow(workspaceActions));
 	const { selectedTool, reset } = useToolbar();
 	const toast = useToasts();
 	const [menu, setMenu] = useState<Omit<ContextMenuProps, "onClose"> | null>(
@@ -66,40 +82,73 @@ function V2NodeCanvas() {
 	);
 	const reactFlowRef = useRef<HTMLDivElement>(null);
 
+	const reactFlowInstance = useReactFlow();
+	const updateNodeInternals = useUpdateNodeInternals();
 	const { handleKeyDown } = useKeyboardShortcuts();
 
-	useEffect(() => {
-		reactFlowInstance.setNodes(
-			Object.entries(data.ui.nodeState)
-				.map(([nodeId, nodeState]) => {
-					const nodeData = data.nodes.find((node) => node.id === nodeId);
-					if (nodeData === undefined || nodeState === undefined) return null;
-					return {
-						id: nodeId,
-						type: nodeData.content.type,
-						position: { x: nodeState.position.x, y: nodeState.position.y },
-						selected: nodeState.selected,
-						data: { nodeData },
-					} as GiselleWorkflowDesignerNode;
-				})
-				.filter((result) => result !== null),
-		);
-		updateNodeInternals(Object.keys(data.ui.nodeState));
-	}, [data, reactFlowInstance.setNodes, updateNodeInternals]);
+	const cacheNodesRef = useRef<Map<NodeId, RFNode>>(new Map());
+	const nodes = useMemo(() => {
+		const next = new Map<NodeId, RFNode>();
+		const arr = data.nodes
+			.map((node) => {
+				const nodeUiState = data.nodeState[node.id];
+				const prev = cacheNodesRef.current.get(node.id);
+				if (nodeUiState === undefined) {
+					return null;
+				}
+				if (
+					prev !== undefined &&
+					prev.selected === nodeUiState.selected &&
+					prev.position.x === nodeUiState.position.x &&
+					prev.position.y === nodeUiState.position.y &&
+					prev.measured?.width === nodeUiState.measured?.width &&
+					prev.measured?.height === nodeUiState.measured?.height
+				) {
+					next.set(node.id, prev);
+					return prev;
+				}
+				const nextNode: RFNode = {
+					id: node.id,
+					type: "giselle",
+					position: nodeUiState.position,
+					selected: nodeUiState.selected,
+					measured: nodeUiState.measured,
+					data: {},
+				};
+				updateNodeInternals(node.id);
+				next.set(node.id, nextNode);
+				return nextNode;
+			})
+			.filter((node) => node !== null);
+		cacheNodesRef.current = next;
+		return arr;
+	}, [data.nodes, data.nodeState, updateNodeInternals]);
 
-	useEffect(() => {
-		reactFlowInstance.setEdges(
-			data.connections.map((connection) => ({
+	const cacheEdgesRef = useRef<Map<string, Edge>>(new Map());
+	const edges = useMemo(() => {
+		const next = new Map<string, Edge>();
+		const arr = data.connections.map((connection) => {
+			const prev = cacheEdgesRef.current.get(connection.id);
+			const selected = data.selectedConnectionIds.includes(connection.id);
+			if (prev !== undefined && selected === prev.selected) {
+				return prev;
+			}
+			const nextEdge: Edge = {
 				id: connection.id,
-				type: "giselleConnector",
 				source: connection.outputNode.id,
 				sourceHandle: connection.outputId,
 				target: connection.inputNode.id,
 				targetHandle: connection.inputId,
+				type: "giselleConnector",
+				selected,
 				data: { connection },
-			})),
-		);
-	}, [data, reactFlowInstance.setEdges]);
+			};
+			next.set(connection.id, nextEdge);
+			return nextEdge;
+		});
+		cacheEdgesRef.current = next;
+		return arr;
+	}, [data.connections, data.selectedConnectionIds]);
 
 	const handleConnect = useCallback(
 		(connection: Connection) => {
@@ -151,39 +200,10 @@ function V2NodeCanvas() {
 				);
 			}
 		},
-		[addConnection, data.nodes, toast, isSupportedConnection, updateNodeData],
+		[addConnection, data.nodes, toast, updateNodeData],
 	);
 
-	const handleEdgesDelete = useCallback(
-		(edgesToDelete: Edge[]) => {
-			for (const edge of edgesToDelete) {
-				const connection = data.connections.find((conn) => conn.id === edge.id);
-				if (!connection) {
-					continue;
-				}
-
-				deleteConnection(connection.id);
-				const targetNode = data.nodes.find(
-					(node) => node.id === connection.inputNode.id,
-				);
-				if (
-					targetNode &&
-					isOperationNode(targetNode) &&
-					!isActionNode(targetNode)
-				) {
-					const updatedInputs = targetNode.inputs.filter(
-						(input) => input.id !== connection.inputId,
-					);
-					updateNodeData(targetNode, {
-						inputs: updatedInputs,
-					});
-				}
-			}
-		},
-		[data.nodes, data.connections, deleteConnection, updateNodeData],
-	);
-
-	const isValidConnection: IsValidConnection<ConnectorType> = (connection) => {
+	const isValidConnection: IsValidConnection = (connection) => {
 		if (
 			!connection.sourceHandle ||
 			!connection.targetHandle ||
@@ -199,105 +219,169 @@ function V2NodeCanvas() {
 					conn.outputId === connection.sourceHandle),
 		);
 	};
+	const handleNodeClick: NodeMouseHandler = useCallback(
+		(_event, nodeClicked) => {
+			for (const nodeId of nodeIds) {
+				setUiNodeState(nodeId, { selected: nodeId === nodeClicked.id });
+			}
+			// Always maintain canvas focus when clicking nodes
+			setCurrentShortcutScope("canvas");
+		},
+		[setCurrentShortcutScope, nodeIds, setUiNodeState],
+	);
+
+	const handleNodesChange: OnNodesChange = useCallback(
+		(nodesChange) => {
+			nodesChange.map((nodeChange) => {
+				switch (nodeChange.type) {
+					case "position": {
+						if (nodeChange.position === undefined) {
+							break;
+						}
+						setUiNodeState(nodeChange.id, { position: nodeChange.position });
+						break;
+					}
+					case "dimensions": {
+						setUiNodeState(nodeChange.id, {
+							measured: {
+								width: nodeChange.dimensions?.width,
+								height: nodeChange.dimensions?.height,
+							},
+						});
+						break;
+					}
+					case "select": {
+						setUiNodeState(nodeChange.id, { selected: nodeChange.selected });
+						break;
+					}
+					case "remove": {
+						for (const connection of data.connections) {
+							if (connection.outputNode.id !== nodeChange.id) {
+								continue;
+							}
+							deleteConnection(connection.id);
+							const connectedNode = data.nodes.find(
+								(node) => node.id === connection.inputNode.id,
+							);
+							if (connectedNode === undefined) {
+								continue;
+							}
+							switch (connectedNode.content.type) {
+								case "textGeneration": {
+									updateNodeData(connectedNode, {
+										inputs: connectedNode.inputs.filter(
+											(input) => input.id !== connection.inputId,
+										),
+									});
+								}
+							}
+						}
+						deleteNode(nodeChange.id);
+						break;
+					}
+				}
+			});
+		},
+		[
+			setUiNodeState,
+			data.connections,
+			data.nodes,
+			deleteConnection,
+			updateNodeData,
+			deleteNode,
+		],
+	);
+
+	const handleEdgesChange: OnEdgesChange = useCallback(
+		(changes) => {
+			for (const change of changes) {
+				switch (change.type) {
+					case "select":
+						if (change.selected) {
+							selectConnection(change.id);
+						} else {
+							deselectConnection(change.id);
+						}
+						break;
+					case "remove": {
+						deleteConnection(change.id);
+						break;
+					}
+				}
+			}
+		},
+		[selectConnection, deleteConnection, deselectConnection],
+	);
+	const handlePanelClick = useCallback(
+		(e: React.MouseEvent) => {
+			setMenu(null);
+			for (const node of data.nodes) {
+				setUiNodeState(node.id, { selected: false });
+			}
+			if (selectedTool?.action === "addNode") {
+				const position = reactFlowInstance.screenToFlowPosition({
+					x: e.clientX,
+					y: e.clientY,
+				});
+				addNode(selectedTool.node, { position });
+			}
+			reset();
+			// Set canvas focus when clicking on canvas
+			setCurrentShortcutScope("canvas");
+			// setSelectedConnectionIds([]);
+		},
+		[
+			data.nodes,
+			setUiNodeState,
+			reactFlowInstance,
+			selectedTool,
+			addNode,
+			reset,
+			setCurrentShortcutScope,
+		],
+	);
+	const handleNodeContextMenu: NodeMouseHandler = useCallback((event, node) => {
+		event.preventDefault();
+		const pane = reactFlowRef.current?.getBoundingClientRect();
+		if (!pane) return;
+		setMenu({
+			id: node.id,
+			top: event.clientY < pane.height - 200 ? event.clientY : undefined,
+			left: event.clientX < pane.width - 200 ? event.clientX : undefined,
+			right:
+				event.clientX >= pane.width - 200
+					? pane.width - event.clientX
+					: undefined,
+			bottom:
+				event.clientY >= pane.height - 200
+					? pane.height - event.clientY
+					: undefined,
+		});
+	}, []);
 
 	return (
-		<ReactFlow<GiselleWorkflowDesignerNode, ConnectorType>
+		<ReactFlow
 			ref={reactFlowRef}
 			className="giselle-workflow-editor-v3"
 			colorMode="dark"
-			defaultNodes={[]}
-			defaultEdges={[]}
+			nodes={nodes}
+			edges={edges}
 			nodeTypes={nodeTypes}
 			edgeTypes={edgeTypes}
-			defaultViewport={data.ui.viewport}
+			defaultViewport={data.viewport}
 			onConnect={handleConnect}
-			onEdgesDelete={handleEdgesDelete}
 			isValidConnection={isValidConnection}
 			panOnScroll={true}
 			zoomOnScroll={false}
 			zoomOnPinch={true}
-			onMoveEnd={(_, viewport) => setUiViewport(viewport)}
-			onNodesChange={async (nodesChange) => {
-				await Promise.all(
-					nodesChange.map(async (nodeChange) => {
-						switch (nodeChange.type) {
-							case "remove": {
-								for (const connection of data.connections) {
-									if (connection.outputNode.id !== nodeChange.id) {
-										continue;
-									}
-									deleteConnection(connection.id);
-									const connectedNode = data.nodes.find(
-										(node) => node.id === connection.inputNode.id,
-									);
-									if (connectedNode === undefined) {
-										continue;
-									}
-									switch (connectedNode.content.type) {
-										case "textGeneration": {
-											updateNodeData(connectedNode, {
-												inputs: connectedNode.inputs.filter(
-													(input) => input.id !== connection.inputId,
-												),
-											});
-										}
-									}
-								}
-								await deleteNode(nodeChange.id);
-								break;
-							}
-						}
-					}),
-				);
-			}}
-			onNodeClick={(_, nodeClicked) => {
-				for (const node of data.nodes) {
-					setUiNodeState(node.id, { selected: node.id === nodeClicked.id });
-				}
-				// Always maintain canvas focus when clicking nodes
-				setCurrentShortcutScope("canvas");
-			}}
-			onNodeDragStop={(_, __, nodes) => {
-				for (const node of nodes) {
-					setUiNodeState(node.id, { position: node.position }, { save: true });
-				}
-			}}
-			onPaneClick={(event) => {
-				setMenu(null);
-				for (const node of data.nodes) {
-					setUiNodeState(node.id, { selected: false });
-				}
-				const position = reactFlowInstance.screenToFlowPosition({
-					x: event.clientX,
-					y: event.clientY,
-				});
-				if (selectedTool?.action === "addNode") {
-					addNode(selectedTool.node, { ui: { position } });
-				}
-				reset();
-				// Set canvas focus when clicking on canvas
-				setCurrentShortcutScope("canvas");
-			}}
-			onKeyDown={handleKeyDown}
 			tabIndex={0}
-			onNodeContextMenu={(event, node) => {
-				event.preventDefault();
-				const pane = reactFlowRef.current?.getBoundingClientRect();
-				if (!pane) return;
-				setMenu({
-					id: node.id,
-					top: event.clientY < pane.height - 200 ? event.clientY : undefined,
-					left: event.clientX < pane.width - 200 ? event.clientX : undefined,
-					right:
-						event.clientX >= pane.width - 200
-							? pane.width - event.clientX
-							: undefined,
-					bottom:
-						event.clientY >= pane.height - 200
-							? pane.height - event.clientY
-							: undefined,
-				});
-			}}
+			onMoveEnd={(_, viewport) => setUiViewport(viewport)}
+			onNodesChange={handleNodesChange}
+			onNodeClick={handleNodeClick}
+			onPaneClick={handlePanelClick}
+			onKeyDown={handleKeyDown}
+			onNodeContextMenu={handleNodeContextMenu}
+			onEdgesChange={handleEdgesChange}
 		>
 			<Background />
 			{selectedTool?.action === "addNode" && (
@@ -312,14 +396,12 @@ function V2NodeCanvas() {
 }
 
 export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
-	const { data } = useWorkflowDesigner();
-	const selectedNodes = useMemo(
-		() =>
-			Object.entries(data.ui.nodeState)
-				.filter(([_, nodeState]) => nodeState?.selected)
-				.map(([nodeId]) => data.nodes.find((node) => node.id === nodeId))
-				.filter((node) => node !== undefined),
-		[data],
+	const selectedNodes = useWorkflowDesignerStore(
+		useShallow((s) =>
+			s.workspace.nodes.filter(
+				(node) => s.workspace.ui.nodeState[node.id]?.selected,
+			),
+		),
 	);
 
 	const isPropertiesPanelOpen = selectedNodes.length === 1;

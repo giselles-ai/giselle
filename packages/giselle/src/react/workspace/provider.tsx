@@ -10,7 +10,7 @@ import {
 	FlowTriggerContext,
 	type FlowTriggerContextValue,
 } from "../flow-trigger";
-import { GenerationRunnerSystemProvider } from "../generations";
+import { ZustandBridgeGenerationProvider } from "../generations";
 import {
 	IntegrationProvider,
 	type IntegrationProviderProps,
@@ -56,9 +56,9 @@ export function WorkspaceProvider({
 					<UsageLimitsProvider limits={usageLimits}>
 						<IntegrationProvider {...integration}>
 							<VectorStoreProvider value={vectorStore}>
-								<GenerationRunnerSystemProvider>
+								<ZustandBridgeGenerationProvider>
 									{children}
-								</GenerationRunnerSystemProvider>
+								</ZustandBridgeGenerationProvider>
 							</VectorStoreProvider>
 						</IntegrationProvider>
 					</UsageLimitsProvider>

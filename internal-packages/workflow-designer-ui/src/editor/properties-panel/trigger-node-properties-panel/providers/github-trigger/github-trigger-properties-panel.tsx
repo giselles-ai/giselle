@@ -24,6 +24,7 @@ import {
 import { Tooltip } from "../../../../../ui/tooltip";
 import { SelectRepository } from "../../../ui";
 import { GitHubTriggerConfiguredView } from "../../ui";
+import { GitHubTriggerReconfiguringView } from "../../ui/reconfiguring-views/github-trigger-reconfiguring-view";
 import { EventSelectionStep } from "./components/event-selection-step";
 import { EventTypeDisplay } from "./components/event-type-display";
 import { InstallGitHubApplication } from "./components/install-application";
@@ -33,17 +34,29 @@ import { createTriggerEvent } from "./utils/trigger-configuration";
 
 export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	const { value } = useIntegration();
+	if (value?.github === undefined) {
+		return "unset";
+	}
 
 	if (node.content.state.status === "configured") {
 		return (
 			<GitHubTriggerConfiguredView
 				flowTriggerId={node.content.state.flowTriggerId}
+				node={node}
 			/>
 		);
-	}
-
-	if (value?.github === undefined) {
-		return "unset";
+	} else if (
+		node.content.state.status === "reconfiguring" &&
+		value.github.status === "installed"
+	) {
+		return (
+			<GitHubTriggerReconfiguringView
+				installations={value.github.installations}
+				node={node}
+				installationUrl={value.github.installationUrl}
+				flowTriggerId={node.content.state.flowTriggerId}
+			/>
+		);
 	}
 
 	switch (value.github.status) {
@@ -120,24 +133,28 @@ function isTriggerRequiringCallsign(eventId: GitHubTriggerEventId): boolean {
 	].includes(eventId);
 }
 
-function Installed({
+export function Installed({
 	installations,
 	node,
 	installationUrl,
+	reconfigStep,
+	flowTriggerId,
 }: {
 	installations: GitHubIntegrationInstallation[];
 	node: TriggerNode;
 	installationUrl: string;
+	reconfigStep?: SelectRepositoryStep;
+	flowTriggerId?: FlowTriggerId;
 }) {
 	const { experimental_storage } = useFeatureFlag();
-	const [step, setStep] = useState<GitHubTriggerSetupStep>({
-		state: "select-event",
-	});
+	const [step, setStep] = useState<GitHubTriggerSetupStep>(
+		reconfigStep ?? { state: "select-event" },
+	);
 	const { data: workspace, updateNodeData } = useWorkflowDesigner();
 	const client = useGiselleEngine();
 	const [isPending, startTransition] = useTransition();
 	const [eventId, setEventId] = useState<GitHubTriggerEventId>(
-		"github.issue.created",
+		reconfigStep?.eventId ?? "github.issue.created",
 	);
 
 	// Helper function to create callsign events
@@ -222,7 +239,7 @@ function Installed({
 							...node.content,
 							state: {
 								status: "configured",
-								flowTriggerId: triggerId as FlowTriggerId,
+								flowTriggerId: triggerId,
 							},
 						},
 						outputs: [...node.outputs, ...outputs],
@@ -320,7 +337,10 @@ function Installed({
 								type="button"
 								className="flex-1 bg-primary-900 hover:bg-primary-800 text-white font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
 								onClick={() => {
-									if (isTriggerRequiringCallsign(step.eventId)) {
+									if (
+										isTriggerRequiringCallsign(step.eventId) &&
+										node.content.state.status === "unconfigured"
+									) {
 										setStep({
 											state: "input-callsign",
 											eventId: step.eventId,
@@ -332,7 +352,6 @@ function Installed({
 									} else {
 										startTransition(async () => {
 											try {
-												const event = createTriggerEvent(step.eventId);
 												const trigger = githubTriggers[step.eventId];
 												const outputs: Output[] = [];
 
@@ -345,31 +364,48 @@ function Installed({
 													});
 												}
 
-												const { triggerId } = await client.configureTrigger({
-													trigger: {
-														nodeId: node.id,
-														workspaceId: workspace?.id,
-														enable: false,
-														configuration: {
-															provider: "github",
-															repositoryNodeId: step.repoNodeId,
-															installationId: step.installationId,
-															event,
+												let triggerId: FlowTriggerId;
+												if (
+													node.content.state.status === "reconfiguring" &&
+													flowTriggerId !== undefined
+												) {
+													const result = await client.reconfigureGitHubTrigger({
+														flowTriggerId,
+														repositoryNodeId: step.repoNodeId,
+														installationId: step.installationId,
+														useExperimentalStorage: experimental_storage,
+													});
+													triggerId = result.triggerId;
+												} else {
+													const event = createTriggerEvent(step.eventId);
+													const result = await client.configureTrigger({
+														trigger: {
+															nodeId: node.id,
+															workspaceId: workspace?.id,
+															enable: false,
+															configuration: {
+																provider: "github",
+																repositoryNodeId: step.repoNodeId,
+																installationId: step.installationId,
+																event,
+															},
 														},
-													},
-													useExperimentalStorage: experimental_storage,
-												});
+														useExperimentalStorage: experimental_storage,
+													});
+													triggerId = result.triggerId;
+												}
 
 												updateNodeData(node, {
 													content: {
 														...node.content,
 														state: {
 															status: "configured",
-															flowTriggerId: triggerId as FlowTriggerId,
+															flowTriggerId: triggerId,
 														},
 													},
-													outputs: [...node.outputs, ...outputs],
-													name: `On ${trigger.event.label}`,
+													outputs:
+														node.outputs.length > 0 ? node.outputs : outputs,
+													name: node.name ?? `On ${trigger.event.label}`,
 												});
 											} catch (_error) {
 												// Error is handled by the UI state

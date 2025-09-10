@@ -13,8 +13,12 @@ export function useGitHubTrigger(flowTriggerId: FlowTriggerId) {
 		isLoading: isLoadingFlowTriggerData,
 		data: trigger,
 		mutate,
-	} = useSWR(`/triggers/${flowTriggerId}`, () =>
-		client.getTrigger({ flowTriggerId }).then((res) => res.trigger),
+	} = useSWR(
+		`/triggers/${flowTriggerId}`,
+		() => client.getTrigger({ flowTriggerId }).then((res) => res.trigger),
+		{
+			keepPreviousData: true,
+		},
 	);
 
 	const {
@@ -32,6 +36,9 @@ export function useGitHubTrigger(flowTriggerId: FlowTriggerId) {
 				installationId,
 				repositoryNodeId,
 			}),
+		{
+			keepPreviousData: true,
+		},
 	);
 	const data = useMemo(
 		() =>

@@ -365,5 +365,6 @@ export const backwardTraversalFixture = {
 			zoom: 1.011139282536896,
 		},
 		currentShortcutScope: "canvas" as const,
+		selectedConnectionIds: [],
 	},
 } satisfies Workspace;

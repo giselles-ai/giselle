@@ -53,6 +53,12 @@ export const NodeUIState = z.object({
 	tab: z.string().optional(),
 	showError: z.boolean().default(false).optional(),
 	highlighted: z.boolean().default(false).optional(),
+	measured: z
+		.object({
+			width: z.number().optional(),
+			height: z.number().optional(),
+		})
+		.optional(),
 });
 export type NodeUIState = z.infer<typeof NodeUIState>;
 

@@ -15,6 +15,7 @@ export function createInputsFromTrigger(
 
 	switch (trigger.configuration.provider) {
 		case "github": {
+			// GitHub triggers don't have configurable parameters
 			return [];
 		}
 		case "manual": {

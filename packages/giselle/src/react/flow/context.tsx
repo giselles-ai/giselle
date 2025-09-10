@@ -1,7 +1,6 @@
 "use client";
 
 import {
-	type ConnectionId,
 	createFailedFileData,
 	createUploadedFileData,
 	createUploadingFileData,
@@ -128,7 +127,7 @@ export function WorkflowDesignerProvider({
 	);
 
 	const deleteConnection = useCallback(
-		(connectionId: ConnectionId) => {
+		(connectionId: string) => {
 			dispatch({ type: "DELETE_CONNECTION", connectionId });
 		},
 		[dispatch],

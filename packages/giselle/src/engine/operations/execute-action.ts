@@ -43,7 +43,7 @@ export function executeAction(args: {
 				throw new Error("Invalid generation type");
 			}
 			const command = operationNode.content.command;
-			if (command.state.status === "unconfigured") {
+			if (command.state.status !== "configured") {
 				throw new Error("Action is not configured");
 			}
 			let generationOutputs: GenerationOutput[] = [];

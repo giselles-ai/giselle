@@ -140,16 +140,13 @@ export function AnthropicModelPanel({
 							}}
 						/>
 					) : (
-						<>
-							{/* Refactor this because it duplicates the Switch component */}
-							<div className="flex flex-col">
-								<div className="flex flex-row items-center justify-between">
-									<p className="text-[14px]">Reasoning</p>
-									<div className="flex-grow mx-[12px] h-[1px] bg-black-200/30" />
-									<p className="text-[12px]">Unsuported</p>
-								</div>
+						<div className="flex flex-col">
+							<div className="flex flex-row items-center justify-between">
+								<p className="text-[14px]">Reasoning</p>
+								<div className="flex-grow mx-[12px] h-[1px] bg-black-200/30" />
+								<p className="text-[12px]">Unsupported</p>
 							</div>
-						</>
+						</div>
 					)}
 				</div>
 			</div>

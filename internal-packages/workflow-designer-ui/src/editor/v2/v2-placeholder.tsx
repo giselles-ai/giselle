@@ -2,9 +2,10 @@
 
 import {
 	useFeatureFlag,
-	useWorkflowDesigner,
+	useWorkflowDesignerStore,
 } from "@giselle-sdk/giselle/react";
 import { useCallback, useState } from "react";
+import { useShallow } from "zustand/shallow";
 import { ReadOnlyBanner } from "../../ui/read-only-banner";
 import { FloatingChat } from "../chat";
 import { tourSteps, WorkspaceTour } from "../workspace-tour";
@@ -21,12 +22,14 @@ export function V2Placeholder({
 	userRole?: "viewer" | "guest" | "editor" | "owner";
 	onNameChange?: (name: string) => Promise<void>;
 }) {
-	const { data } = useWorkflowDesigner();
+	const defaultTour = useWorkflowDesignerStore(
+		useShallow((s) => s.workspace.nodes.length === 0),
+	);
 	const [showReadOnlyBanner, setShowReadOnlyBanner] = useState(isReadOnly);
 	const [layoutState, setLayoutState] = useState<V2LayoutState>({
 		leftPanel: null,
 	});
-	const [isTourOpen, setIsTourOpen] = useState(data.nodes.length === 0);
+	const [isTourOpen, setIsTourOpen] = useState(defaultTour);
 	const [isChatOpen, setIsChatOpen] = useState(false);
 
 	const handleDismissBanner = useCallback(() => {

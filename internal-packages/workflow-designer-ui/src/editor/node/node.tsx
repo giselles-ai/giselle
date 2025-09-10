@@ -1,48 +1,38 @@
 import {
-	ActionNode,
-	FileNode,
-	GitHubNode,
-	ImageGenerationNode,
 	type InputId,
 	isActionNode,
 	isImageGenerationNode,
 	isTextGenerationNode,
 	isTriggerNode,
 	isVectorStoreNode,
-	type Node,
+	type NodeId,
 	type NodeLike,
 	type OutputId,
-	QueryNode,
-	TextGenerationNode,
-	TextNode,
-	TriggerNode,
-	VectorStoreNode,
-	WebPageNode,
 } from "@giselle-sdk/data-type";
 import {
 	defaultName,
-	useNodeGenerations,
-	useWorkflowDesigner,
+	useWorkflowDesignerStore,
 } from "@giselle-sdk/giselle/react";
 import {
 	Handle,
 	type NodeProps,
 	type NodeTypes,
 	Position,
-	type Node as XYFlowNode,
 } from "@xyflow/react";
 import clsx from "clsx/lite";
 import { CheckIcon, SquareIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useRef, useTransition } from "react";
+import { useShallow } from "zustand/shallow";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
 import { Tooltip } from "../../ui/tooltip";
 import { GitHubNodeInfo } from "./ui";
 import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
+import { useCurrentNodeGeneration } from "./use-current-node-generation";
 
 // Helper function to get completion label from node LLM provider
-function getCompletionLabel(node: Node): string {
+function getCompletionLabel(node: NodeLike): string {
 	if (isTextGenerationNode(node) || isImageGenerationNode(node)) {
 		return node.content.llm.provider;
 	}
@@ -63,93 +53,42 @@ function isGitHubNodeRequiresSetup(node: NodeLike): boolean {
 	return false;
 }
 
-type GiselleWorkflowDesignerTextGenerationNode = XYFlowNode<
-	{ nodeData: TextGenerationNode; preview?: boolean },
-	TextGenerationNode["content"]["type"]
->;
-type GiselleWorkflowDesignerImageGenerationNode = XYFlowNode<
-	{ nodeData: ImageGenerationNode; preview?: boolean },
-	TextGenerationNode["content"]["type"]
->;
-type GiselleWorkflowDesignerTextNode = XYFlowNode<
-	{ nodeData: TextNode; preview?: boolean },
-	TextNode["content"]["type"]
->;
-type GiselleWorkflowDesignerFileNode = XYFlowNode<
-	{ nodeData: FileNode; preview?: boolean },
-	FileNode["content"]["type"]
->;
-type GiselleWorkflowGitHubNode = XYFlowNode<
-	{ nodeData: GitHubNode; preview?: boolean },
-	FileNode["content"]["type"]
->;
-type GiselleWorkflowVectorStoreNode = XYFlowNode<
-	{ nodeData: VectorStoreNode; preview?: boolean },
-	VectorStoreNode["content"]["type"]
->;
-type GiselleWorkflowTriggerNode = XYFlowNode<
-	{ nodeData: TriggerNode; preview?: boolean },
-	TriggerNode["content"]["type"]
->;
-type GiselleWorkflowActionNode = XYFlowNode<
-	{ nodeData: ActionNode; preview?: boolean },
-	ActionNode["content"]["type"]
->;
-type GiselleWorkflowQueryNode = XYFlowNode<
-	{ nodeData: QueryNode; preview?: boolean },
-	QueryNode["content"]["type"]
->;
-export type GiselleWorkflowDesignerNode =
-	| GiselleWorkflowDesignerTextGenerationNode
-	| GiselleWorkflowDesignerImageGenerationNode
-	| GiselleWorkflowDesignerTextNode
-	| GiselleWorkflowDesignerFileNode
-	| GiselleWorkflowGitHubNode
-	| GiselleWorkflowVectorStoreNode
-	| GiselleWorkflowTriggerNode
-	| GiselleWorkflowActionNode
-	| GiselleWorkflowQueryNode;
-
 export const nodeTypes: NodeTypes = {
-	[TextGenerationNode.shape.content.shape.type.value]: CustomXyFlowNode,
-	[ImageGenerationNode.shape.content.shape.type.value]: CustomXyFlowNode,
-	[TextNode.shape.content.shape.type.value]: CustomXyFlowNode,
-	[FileNode.shape.content.shape.type.value]: CustomXyFlowNode,
-	[GitHubNode.shape.content.shape.type.value]: CustomXyFlowNode,
-	[VectorStoreNode.shape.content.shape.type.value]: CustomXyFlowNode,
-	[TriggerNode.shape.content.shape.type.value]: CustomXyFlowNode,
-	[ActionNode.shape.content.shape.type.value]: CustomXyFlowNode,
-	[QueryNode.shape.content.shape.type.value]: CustomXyFlowNode,
-	[WebPageNode.shape.content.shape.type.value]: CustomXyFlowNode,
+	giselle: CustomXyFlowNode,
 };
 
-function CustomXyFlowNode({
-	data,
-	selected,
-}: NodeProps<GiselleWorkflowDesignerNode>) {
-	const { data: workspace } = useWorkflowDesigner();
+function CustomXyFlowNode({ id, selected }: NodeProps) {
+	const { node, connections, highlighted } = useWorkflowDesignerStore(
+		useShallow((s) => ({
+			node: s.workspace.nodes.find((node) => node.id === id),
+			connections: s.workspace.connections,
+			highlighted: s.workspace.ui.nodeState[id as NodeId]?.highlighted,
+		})),
+	);
+
 	const connectedInputIds = useMemo(
 		() =>
-			workspace.connections
-				.filter((connection) => connection.inputNode.id === data.nodeData.id)
+			connections
+				.filter((connection) => connection.inputNode.id === id)
 				.map((connection) => connection.inputId),
-		[workspace, data.nodeData.id],
+		[connections, id],
 	);
 	const connectedOutputIds = useMemo(
 		() =>
-			workspace.connections
-				.filter((connection) => connection.outputNode.id === data.nodeData.id)
+			connections
+				.filter((connection) => connection.outputNode.id === id)
 				.map((connection) => connection.outputId),
-		[workspace, data.nodeData.id],
+		[connections, id],
 	);
-	const highlighted = useMemo(
-		() => workspace.ui.nodeState?.[data.nodeData.id]?.highlighted ?? false,
-		[workspace, data.nodeData.id],
-	);
+
+	// Early return if workspace is not yet initialized
+	if (!node) {
+		return null;
+	}
 
 	return (
 		<NodeComponent
-			node={data.nodeData}
+			node={node}
 			selected={selected}
 			highlighted={highlighted}
 			connectedInputIds={connectedInputIds}
@@ -166,18 +105,18 @@ export function NodeComponent({
 	connectedOutputIds,
 	preview = false,
 }: {
-	node: Node;
+	node: NodeLike;
 	selected?: boolean;
 	preview?: boolean;
 	highlighted?: boolean;
 	connectedInputIds?: InputId[];
 	connectedOutputIds?: OutputId[];
 }) {
-	const { updateNodeData, data } = useWorkflowDesigner();
-	const { stopGenerationRunner, currentGeneration } = useNodeGenerations({
-		nodeId: node.id,
-		origin: { type: "studio", workspaceId: data.id },
-	});
+	const updateNodeData = useWorkflowDesignerStore((state) => state.updateNode);
+	const { currentGeneration, stopCurrentGeneration } = useCurrentNodeGeneration(
+		node.id,
+	);
+
 	const prevGenerationStatusRef = useRef(currentGeneration?.status);
 	const [showCompleteLabel, startTransition] = useTransition();
 	useEffect(() => {
@@ -219,9 +158,7 @@ export function NodeComponent({
 			data-preview={preview}
 			data-current-generation-status={currentGeneration?.status}
 			data-vector-store-source-provider={
-				node.content.type === "vectorStore"
-					? node.content.source.provider
-					: undefined
+				isVectorStoreNode(node) ? node.content.source.provider : undefined
 			}
 			className={clsx(
 				"group relative flex flex-col rounded-[16px] py-[16px] gap-[16px] min-w-[180px]",
@@ -271,7 +208,7 @@ export function NodeComponent({
 								type="button"
 								onClick={(e) => {
 									e.stopPropagation();
-									stopGenerationRunner();
+									stopCurrentGeneration();
 								}}
 								className="ml-1 p-1 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors"
 							>
@@ -403,10 +340,10 @@ export function NodeComponent({
 									return;
 								}
 								if (value.trim().length === 0) {
-									updateNodeData(node, { name: undefined });
+									updateNodeData(node.id, { name: undefined });
 									return;
 								}
-								updateNodeData(node, { name: value });
+								updateNodeData(node.id, { name: value });
 							}}
 							onClickToEditMode={(e) => {
 								if (!selected) {

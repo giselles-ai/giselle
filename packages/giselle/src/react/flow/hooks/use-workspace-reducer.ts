@@ -1,6 +1,5 @@
 import {
 	type Connection,
-	type ConnectionId,
 	type FileData,
 	type FileNode,
 	type Node,
@@ -19,7 +18,7 @@ export type WorkspaceAction =
 	| { type: "UPDATE_NODE"; nodeId: NodeId; data: Partial<NodeBase> }
 	| { type: "DELETE_NODE"; nodeId: NodeId }
 	| { type: "ADD_CONNECTION"; connection: Connection }
-	| { type: "DELETE_CONNECTION"; connectionId: ConnectionId }
+	| { type: "DELETE_CONNECTION"; connectionId: string }
 	| {
 			type: "SET_UI_NODE_STATE";
 			nodeId: NodeId;
