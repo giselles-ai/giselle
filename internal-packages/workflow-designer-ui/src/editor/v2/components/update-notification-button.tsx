@@ -1,5 +1,12 @@
 "use client";
 
+import {
+	Dialog,
+	DialogContent,
+	DialogTitle,
+	DialogTrigger,
+} from "@giselle-internal/ui/dialog";
+import { ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
 
 // Custom Megaphone icon from Lucide v0.15.31
@@ -27,25 +34,135 @@ function MegaphoneIcon({ className }: { className?: string }) {
 
 export function UpdateNotificationButton() {
 	const [hasUnreadUpdates, setHasUnreadUpdates] = useState(true);
+	const [isOpen, setIsOpen] = useState(false);
 
 	const handleClick = () => {
 		console.log("Update notification clicked!");
 		setHasUnreadUpdates(false); // Mark as read when clicked
-		// TODO: Open dialog in next step
+		setIsOpen(true); // Open dialog
 	};
 
 	return (
-		<button
-			type="button"
-			onClick={handleClick}
-			className="relative flex items-center justify-center w-[32px] h-[32px] rounded-[6px] bg-transparent hover:bg-white/5 transition-all duration-200 group"
-			aria-label="View updates"
-		>
-			<MegaphoneIcon className="w-[20px] h-[20px] text-white-700 group-hover:opacity-70 transition-all" />
-			{/* Notification dot - only show when there are unread updates */}
-			{hasUnreadUpdates && (
-				<div className="absolute -top-[2px] -right-[2px] w-[8px] h-[8px] bg-[#6B8FF0] rounded-full" />
-			)}
-		</button>
+		<Dialog open={isOpen} onOpenChange={setIsOpen}>
+			<DialogTrigger asChild>
+				<button
+					type="button"
+					onClick={handleClick}
+					className="relative flex items-center justify-center w-[32px] h-[32px] rounded-[6px] bg-transparent hover:bg-white/5 transition-all duration-200 group"
+					aria-label="View updates"
+				>
+					<MegaphoneIcon className="w-[20px] h-[20px] text-white-700 group-hover:opacity-70 transition-all" />
+					{/* Notification dot - only show when there are unread updates */}
+					{hasUnreadUpdates && (
+						<div className="absolute -top-[2px] -right-[2px] w-[8px] h-[8px] bg-[#6B8FF0] rounded-full" />
+					)}
+				</button>
+			</DialogTrigger>
+			<DialogContent>
+				<div className="-m-3">
+					{/* Header */}
+					<div className="mb-[24px] text-center border-b border-white/10 pb-[16px]">
+						<DialogTitle className="text-[20px] font-semibold text-[#F7F9FD]">
+							Latest Updates
+						</DialogTitle>
+					</div>
+
+					{/* Content */}
+					<div className="space-y-[24px] px-[8px]">
+						<button
+							type="button"
+							onClick={() =>
+								console.log("Navigate to Web Search Integration details")
+							}
+							className="w-full border-b border-white/10 pb-[20px] text-left hover:bg-white/5 px-[8px] py-[8px] mb-[16px] transition-colors group cursor-pointer"
+						>
+							<div className="flex items-center justify-between">
+								<div className="flex-1">
+									<div className="flex items-start gap-[8px] mb-[8px]">
+										<span className="text-[12px] font-semibold bg-[#DAFF09] text-[#00020B] px-[8px] py-[2px] rounded-[4px]">
+											NEW
+										</span>
+										<h3 className="text-[16px] font-semibold text-[#F7F9FD] leading-tight">
+											Enhanced Anthropic Web Search Integration
+										</h3>
+									</div>
+									<p className="text-[14px] text-white/70 leading-[1.5]">
+										We've added improved web search configuration with a
+										streamlined UI and better tool management. Now with
+										consistent "Configure" buttons across all tool providers.
+									</p>
+								</div>
+								<ChevronRightIcon className="w-[16px] h-[16px] text-white/40 group-hover:text-white/70 transition-colors ml-[12px] shrink-0" />
+							</div>
+						</button>
+
+						<button
+							type="button"
+							onClick={() =>
+								console.log("Navigate to Zustand State Management details")
+							}
+							className="w-full border-b border-white/10 pb-[20px] text-left hover:bg-white/5 px-[8px] py-[8px] mb-[16px] transition-colors group cursor-pointer"
+						>
+							<div className="flex items-center justify-between">
+								<div className="flex-1">
+									<div className="flex items-start gap-[8px] mb-[8px]">
+										<span className="text-[12px] font-semibold bg-[#DAFF09] text-[#00020B] px-[8px] py-[2px] rounded-[4px]">
+											NEW
+										</span>
+										<h3 className="text-[16px] font-semibold text-[#F7F9FD] leading-tight">
+											Zustand State Management
+										</h3>
+									</div>
+									<p className="text-[14px] text-white/70 leading-[1.5]">
+										We've started rolling out better state management with
+										ZustandBridgeProvider to keep you up to date with more
+										reliable workspace initialization.
+									</p>
+								</div>
+								<ChevronRightIcon className="w-[16px] h-[16px] text-white/40 group-hover:text-white/70 transition-colors ml-[12px] shrink-0" />
+							</div>
+						</button>
+
+						<button
+							type="button"
+							onClick={() =>
+								console.log("Navigate to UI/UX Consistency details")
+							}
+							className="w-full text-left hover:bg-white/5 px-[8px] py-[8px] transition-colors group cursor-pointer"
+						>
+							<div className="flex items-center justify-between">
+								<div className="flex-1">
+									<div className="flex items-start gap-[8px] mb-[8px]">
+										<span className="text-[12px] font-semibold bg-[#08F4EE] text-[#00020B] px-[8px] py-[2px] rounded-[4px]">
+											IMPROVED
+										</span>
+										<h3 className="text-[16px] font-semibold text-[#F7F9FD] leading-tight">
+											UI/UX Consistency Updates
+										</h3>
+									</div>
+									<p className="text-[14px] text-white/70 leading-[1.5]">
+										Ever wanted consistent button styles and hover effects?
+										We've improved icon usage across the entire workspace
+										designer interface.
+									</p>
+								</div>
+								<ChevronRightIcon className="w-[16px] h-[16px] text-white/40 group-hover:text-white/70 transition-colors ml-[12px] shrink-0" />
+							</div>
+						</button>
+					</div>
+
+					{/* Footer */}
+					<div className="pt-[16px]">
+						<button
+							type="button"
+							onClick={() => setIsOpen(false)}
+							className="w-full py-[10px] px-[16px] bg-[#1663F3] hover:bg-[#1247d1] text-[#F7F9FD] text-[14px] font-medium rounded-[6px] transition-colors"
+						>
+							Got it!
+						</button>
+					</div>
+				</div>
+			</DialogContent>
+		</Dialog>
 	);
 }
