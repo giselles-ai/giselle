@@ -85,6 +85,9 @@ export function UpdateNotificationButton() {
 										<h3 className="text-[16px] font-semibold text-[#F7F9FD] leading-tight">
 											Enhanced Anthropic Web Search Integration
 										</h3>
+										<p className="text-[12px] text-white/50 mt-[2px]">
+											Dec 15, 2024
+										</p>
 									</div>
 									<p className="text-[14px] text-white/70 leading-[1.5]">
 										We've added improved web search configuration with a
@@ -112,6 +115,9 @@ export function UpdateNotificationButton() {
 										<h3 className="text-[16px] font-semibold text-[#F7F9FD] leading-tight">
 											Zustand State Management
 										</h3>
+										<p className="text-[12px] text-white/50 mt-[2px]">
+											Dec 12, 2024
+										</p>
 									</div>
 									<p className="text-[14px] text-white/70 leading-[1.5]">
 										We've started rolling out better state management with
@@ -139,6 +145,9 @@ export function UpdateNotificationButton() {
 										<h3 className="text-[16px] font-semibold text-[#F7F9FD] leading-tight">
 											UI/UX Consistency Updates
 										</h3>
+										<p className="text-[12px] text-white/50 mt-[2px]">
+											Dec 10, 2024
+										</p>
 									</div>
 									<p className="text-[14px] text-white/70 leading-[1.5]">
 										Ever wanted consistent button styles and hover effects?
@@ -152,14 +161,16 @@ export function UpdateNotificationButton() {
 					</div>
 
 					{/* Footer */}
-					<div className="pt-[16px]">
-						<button
-							type="button"
+					<div className="pt-[16px] text-center">
+						<a
+							href="https://giselles.ai/blog/category/updates/page/1"
+							target="_blank"
+							rel="noopener noreferrer"
 							onClick={() => setIsOpen(false)}
-							className="w-full py-[10px] px-[16px] bg-[#1663F3] hover:bg-[#1247d1] text-[#F7F9FD] text-[14px] font-medium rounded-[6px] transition-colors"
+							className="text-[14px] text-[#F7F9FD] hover:text-white underline transition-colors cursor-pointer"
 						>
-							Got it!
-						</button>
+							View all
+						</a>
 					</div>
 				</div>
 			</DialogContent>
