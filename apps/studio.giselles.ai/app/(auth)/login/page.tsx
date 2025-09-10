@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SentryUnauthenticatedTest } from "@/components/sentry-unauthenticated-test";
 import { ClickableText } from "@/components/ui/clickable-text";
 import { AuthContainer, AuthContainerHeader } from "../components";
 import { ActionPrompt } from "../components/action-prompt";
@@ -40,6 +41,9 @@ export default async function Page({ searchParams }: AuthPageProps) {
 					}
 				/>
 			</div>
+
+			{/* Sentry unauthenticated user test */}
+			<SentryUnauthenticatedTest />
 		</AuthContainer>
 	);
 }
