@@ -20,6 +20,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 						<TeamSelection />
 					</div>
 					<div className="flex items-center gap-4">
+						<UpdateNotificationButton />
 						<Link
 							href="https://docs.giselles.ai/guides/introduction"
 							target="_blank"
@@ -28,7 +29,6 @@ export default function Layout({ children }: { children: ReactNode }) {
 						>
 							Docs
 						</Link>
-						<UpdateNotificationButton />
 						<UserButton />
 					</div>
 				</div>
