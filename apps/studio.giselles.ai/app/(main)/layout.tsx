@@ -1,3 +1,4 @@
+import { UpdateNotificationButton } from "@giselle-internal/workflow-designer-ui";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { GiselleLogo } from "@/components/giselle-logo";
@@ -27,6 +28,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 						>
 							Docs
 						</Link>
+						<UpdateNotificationButton />
 						<UserButton />
 					</div>
 				</div>

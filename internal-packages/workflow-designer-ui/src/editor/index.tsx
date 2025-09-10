@@ -4,19 +4,21 @@ import "@xyflow/react/dist/style.css";
 import { V2Placeholder } from "./v2";
 
 export function Editor({
-	isReadOnly = false,
-	userRole = "viewer",
-	onFlowNameChange,
+  isReadOnly = false,
+  userRole = "viewer",
+  onFlowNameChange,
 }: {
-	isReadOnly?: boolean;
-	userRole?: "viewer" | "guest" | "editor" | "owner";
-	onFlowNameChange?: (name: string) => Promise<void>;
+  isReadOnly?: boolean;
+  userRole?: "viewer" | "guest" | "editor" | "owner";
+  onFlowNameChange?: (name: string) => Promise<void>;
 }) {
-	return (
-		<V2Placeholder
-			isReadOnly={isReadOnly}
-			userRole={userRole}
-			onNameChange={onFlowNameChange}
-		/>
-	);
+  return (
+    <V2Placeholder
+      isReadOnly={isReadOnly}
+      userRole={userRole}
+      onNameChange={onFlowNameChange}
+    />
+  );
 }
+
+export { UpdateNotificationButton } from "./v2";
