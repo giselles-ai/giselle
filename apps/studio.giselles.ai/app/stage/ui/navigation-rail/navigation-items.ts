@@ -1,5 +1,5 @@
 import { WilliIcon } from "@giselle-internal/workflow-designer-ui";
-import { LibraryIcon, SparklesIcon } from "lucide-react";
+import { LibraryIcon, MegaphoneIcon, SparklesIcon } from "lucide-react";
 
 interface LinkNavigationItem {
 	id: string;
@@ -10,7 +10,15 @@ interface LinkNavigationItem {
 	isActive?: (pathname: string) => boolean;
 }
 
-export type NavigationItem = LinkNavigationItem;
+interface NotificationNavigationItem {
+	id: string;
+	type: "notification";
+	icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+	label: string;
+	onClick: () => void;
+}
+
+export type NavigationItem = LinkNavigationItem | NotificationNavigationItem;
 
 export const navigationItems = [
 	{
@@ -35,5 +43,12 @@ export const navigationItems = [
 		label: "Tasks",
 		href: "/stage/acts",
 		isActive: (pathname: string) => pathname.startsWith("/stage/acts"),
+	},
+	{
+		id: "updates-notification",
+		type: "notification",
+		icon: MegaphoneIcon,
+		label: "Updates",
+		onClick: () => {},
 	},
 ] satisfies NavigationItem[];

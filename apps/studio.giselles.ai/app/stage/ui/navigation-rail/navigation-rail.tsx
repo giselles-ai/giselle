@@ -1,5 +1,6 @@
 "use client";
 
+import { UpdateNotificationProvider } from "@giselle-internal/workflow-designer-ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
 import { NavigationRailCollapsed } from "./navigation-rail-collapsed";
@@ -29,7 +30,7 @@ export function NavigationRail({
 		}
 	}, [state]);
 	return (
-		<>
+		<UpdateNotificationProvider>
 			<AnimatePresence initial={false}>
 				{state === "expanded" && (
 					<motion.div
@@ -85,6 +86,6 @@ export function NavigationRail({
 				animate={spacingAnimationControls}
 				className="border-r border-white/10"
 			/>
-		</>
+		</UpdateNotificationProvider>
 	);
 }
