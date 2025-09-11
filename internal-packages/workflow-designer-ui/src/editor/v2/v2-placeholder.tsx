@@ -9,12 +9,7 @@ import { useShallow } from "zustand/shallow";
 import { ReadOnlyBanner } from "../../ui/read-only-banner";
 import { FloatingChat } from "../chat";
 import { tourSteps, WorkspaceTour } from "../workspace-tour";
-import {
-	UpdateNotificationProvider,
-	V2Container,
-	V2Footer,
-	V2Header,
-} from "./components";
+import { V2Container, V2Footer, V2Header } from "./components";
 import { RootProvider } from "./components/provider";
 import type { LeftPanelValue, V2LayoutState } from "./state";
 
@@ -70,44 +65,42 @@ export function V2Placeholder({
 	const { layoutV3 } = useFeatureFlag();
 
 	return (
-		<UpdateNotificationProvider>
-			<div className="flex-1 overflow-hidden font-sans flex flex-col">
-				{showReadOnlyBanner && isReadOnly && (
-					<ReadOnlyBanner
-						onDismiss={handleDismissBanner}
-						userRole={userRole}
-						className="z-50"
-					/>
-				)}
+		<div className="flex-1 overflow-hidden font-sans flex flex-col">
+			{showReadOnlyBanner && isReadOnly && (
+				<ReadOnlyBanner
+					onDismiss={handleDismissBanner}
+					userRole={userRole}
+					className="z-50"
+				/>
+			)}
 
-				<RootProvider>
-					<V2Header onNameChange={onNameChange} />
-					{layoutV3 ? (
-						<>
-							<V2Container
-								{...layoutState}
-								onLeftPanelClose={handleLeftPanelClose}
-							/>
-							<V2Footer
-								onLeftPanelValueChange={handleLeftPanelValueChange}
-								activePanel={layoutState.leftPanel}
-								chat={{ onToggle: handleChatToggle, isOpen: isChatOpen }}
-							/>
-						</>
-					) : (
+			<RootProvider>
+				<V2Header onNameChange={onNameChange} />
+				{layoutV3 ? (
+					<>
 						<V2Container
 							{...layoutState}
 							onLeftPanelClose={handleLeftPanelClose}
 						/>
-					)}
-				</RootProvider>
-				<WorkspaceTour
-					steps={tourSteps}
-					isOpen={isTourOpen}
-					onOpenChange={setIsTourOpen}
-				/>
-				<FloatingChat isOpen={isChatOpen} onClose={handleChatClose} />
-			</div>
-		</UpdateNotificationProvider>
+						<V2Footer
+							onLeftPanelValueChange={handleLeftPanelValueChange}
+							activePanel={layoutState.leftPanel}
+							chat={{ onToggle: handleChatToggle, isOpen: isChatOpen }}
+						/>
+					</>
+				) : (
+					<V2Container
+						{...layoutState}
+						onLeftPanelClose={handleLeftPanelClose}
+					/>
+				)}
+			</RootProvider>
+			<WorkspaceTour
+				steps={tourSteps}
+				isOpen={isTourOpen}
+				onOpenChange={setIsTourOpen}
+			/>
+			<FloatingChat isOpen={isChatOpen} onClose={handleChatClose} />
+		</div>
 	);
 }
