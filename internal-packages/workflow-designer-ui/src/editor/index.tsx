@@ -21,4 +21,4 @@ export function Editor({
 	);
 }
 
-export { UpdateNotificationButton } from "./v2";
+export { UpdateNotificationButton, UpdateNotificationProvider } from "./v2";

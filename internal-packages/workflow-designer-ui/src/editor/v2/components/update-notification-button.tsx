@@ -7,7 +7,7 @@ import {
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
 import { ChevronRightIcon } from "lucide-react";
-import { useState } from "react";
+import { createContext, type ReactNode, useContext, useState } from "react";
 
 // Custom Megaphone icon from Lucide v0.15.31
 function MegaphoneIcon({ className }: { className?: string }) {
@@ -32,14 +32,79 @@ function MegaphoneIcon({ className }: { className?: string }) {
 	);
 }
 
-export function UpdateNotificationButton() {
+// Global state management for update notifications
+interface UpdateNotificationState {
+	hasUnreadUpdates: boolean;
+	isOpen: boolean;
+	setHasUnreadUpdates: (value: boolean) => void;
+	setIsOpen: (value: boolean) => void;
+	markAsRead: () => void;
+}
+
+const UpdateNotificationContext = createContext<UpdateNotificationState | null>(
+	null,
+);
+
+export function UpdateNotificationProvider({
+	children,
+}: {
+	children: ReactNode;
+}) {
 	const [hasUnreadUpdates, setHasUnreadUpdates] = useState(true);
 	const [isOpen, setIsOpen] = useState(false);
 
+	const markAsRead = () => {
+		setHasUnreadUpdates(false);
+		setIsOpen(true);
+	};
+
+	return (
+		<UpdateNotificationContext.Provider
+			value={{
+				hasUnreadUpdates,
+				isOpen,
+				setHasUnreadUpdates,
+				setIsOpen,
+				markAsRead,
+			}}
+		>
+			{children}
+		</UpdateNotificationContext.Provider>
+	);
+}
+
+export function useUpdateNotification() {
+	const context = useContext(UpdateNotificationContext);
+
+	// If no provider exists, return default local state
+	const [localHasUnreadUpdates, setLocalHasUnreadUpdates] = useState(true);
+	const [localIsOpen, setLocalIsOpen] = useState(false);
+
+	const localMarkAsRead = () => {
+		setLocalHasUnreadUpdates(false);
+		setLocalIsOpen(true);
+	};
+
+	if (!context) {
+		return {
+			hasUnreadUpdates: localHasUnreadUpdates,
+			isOpen: localIsOpen,
+			setHasUnreadUpdates: setLocalHasUnreadUpdates,
+			setIsOpen: setLocalIsOpen,
+			markAsRead: localMarkAsRead,
+		};
+	}
+
+	return context;
+}
+
+export function UpdateNotificationButton() {
+	const { hasUnreadUpdates, isOpen, setIsOpen, markAsRead } =
+		useUpdateNotification();
+
 	const handleClick = () => {
 		console.log("Update notification clicked!");
-		setHasUnreadUpdates(false); // Mark as read when clicked
-		setIsOpen(true); // Open dialog
+		markAsRead();
 	};
 
 	return (
