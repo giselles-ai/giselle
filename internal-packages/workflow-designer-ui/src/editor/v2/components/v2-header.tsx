@@ -12,6 +12,7 @@ import { useRef } from "react";
 import { GiselleIcon } from "../../../icons";
 import { EditableText, type EditableTextRef } from "../../properties-panel/ui";
 import { RunButton } from "./run-button";
+import { UpdateNotificationButton } from "./update-notification-button";
 
 export function V2Header({
 	teamName,
@@ -143,8 +144,11 @@ export function V2Header({
 				</div>
 			</div>
 
-			{/* Right section: Run button */}
-			<RunButton />
+			{/* Right section: Update notification + Run button */}
+			<div className="flex items-center gap-[8px]">
+				<UpdateNotificationButton />
+				<RunButton />
+			</div>
 		</div>
 	);
 }

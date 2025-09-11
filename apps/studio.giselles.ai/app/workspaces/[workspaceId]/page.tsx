@@ -1,4 +1,7 @@
-import { Editor } from "@giselle-internal/workflow-designer-ui";
+import {
+	Editor,
+	UpdateNotificationProvider,
+} from "@giselle-internal/workflow-designer-ui";
 import { WorkspaceId } from "@giselle-sdk/data-type";
 import { updateAgentName } from "./actions";
 
@@ -13,8 +16,10 @@ export default async function Page({
 		await updateAgentName(WorkspaceId.parse(workspaceId), name);
 	}
 	return (
-		<div className="flex flex-col h-screen bg-black-900">
-			<Editor onFlowNameChange={updateName} />
-		</div>
+		<UpdateNotificationProvider>
+			<div className="flex flex-col h-screen bg-black-900">
+				<Editor onFlowNameChange={updateName} />
+			</div>
+		</UpdateNotificationProvider>
 	);
 }

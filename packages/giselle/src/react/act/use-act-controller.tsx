@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import type { Generation } from "../../concepts/generation";
 import type { ActExecutorOptions, CreateActInputs } from "../../engine/acts";
 import { executeAct } from "../../engine/acts/shared/act-execution-utils";
 import { useWorkflowDesigner } from "../flow";
