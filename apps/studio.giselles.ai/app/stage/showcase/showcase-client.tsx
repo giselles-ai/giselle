@@ -415,11 +415,7 @@ export function ShowcaseClient({
 													title="Run app"
 													onClick={(e) => {
 														e.stopPropagation();
-														if (app.workspaceId) {
-															router.push(
-																`/stage?workspaceId=${app.workspaceId}&teamId=${selectedTeamId}`,
-															);
-														}
+														router.push(`/stage?appId=${app.id}`);
 													}}
 												>
 													<Play className="h-3 w-3" />

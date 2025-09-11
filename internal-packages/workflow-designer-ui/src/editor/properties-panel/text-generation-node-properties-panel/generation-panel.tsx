@@ -1,4 +1,7 @@
-import type { TextGenerationNode } from "@giselle-sdk/data-type";
+import {
+	isTextGenerationNode,
+	type TextGenerationNode,
+} from "@giselle-sdk/data-type";
 import type {
 	CompletedGeneration,
 	FailedGeneration,
@@ -113,6 +116,35 @@ function getGenerationErrorContent(generation: Generation): string {
 	return "";
 }
 
+// Helper function to get LLM provider display name
+function getProviderDisplayName(provider: string): string {
+	switch (provider) {
+		case "openai":
+			return "OpenAI";
+		case "anthropic":
+			return "Anthropic";
+		case "google":
+			return "Google";
+		default:
+			return provider;
+	}
+}
+
+// Helper function to get model info from generation context
+function getGenerationModelInfo(generation: Generation): {
+	provider: string;
+	modelId: string;
+} {
+	if (isTextGenerationNode(generation.context.operationNode)) {
+		const content = generation.context.operationNode.content;
+		return {
+			provider: content.llm?.provider || "Unknown",
+			modelId: content.llm?.id || "",
+		};
+	}
+	return { provider: "Unknown", modelId: "" };
+}
+
 export function GenerationPanel({
 	node,
 	onClickGenerateButton,
@@ -150,13 +182,29 @@ export function GenerationPanel({
 						<p data-header-text>Generating...</p>
 					)}
 					{currentGeneration.status === "completed" && (
-						<p data-header-text>Result</p>
+						<p data-header-text>
+							Result{" "}
+							<span className="text-[12px] font-normal">
+								from {(() => {
+									const modelInfo = getGenerationModelInfo(currentGeneration);
+									return `${getProviderDisplayName(modelInfo.provider)} ${modelInfo.modelId}`;
+								})()}
+							</span>
+						</p>
 					)}
 					{currentGeneration.status === "failed" && (
 						<p data-header-text>Error</p>
 					)}
 					{currentGeneration.status === "cancelled" && (
-						<p data-header-text>Result</p>
+						<p data-header-text>
+							Result{" "}
+							<span className="text-[12px] font-normal">
+								from {(() => {
+									const modelInfo = getGenerationModelInfo(currentGeneration);
+									return `${getProviderDisplayName(modelInfo.provider)} ${modelInfo.modelId}`;
+								})()}
+							</span>
+						</p>
 					)}
 					{currentGeneration.status === "completed" &&
 						currentGeneration.usage && (

@@ -1,17 +1,28 @@
 import type { ActId } from "@giselle-sdk/giselle";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getSidebarDataObject } from "./lib/data";
 import { NavSkelton } from "./ui/nav-skelton";
 import { Sidebar } from "./ui/sidebar";
 import "./mobile-scroll.css";
 
+function isValidActId(actId: string): actId is ActId {
+	return actId.startsWith("act-") && actId.length === 20; // "act-" + 16 chars
+}
+
 export default async function ({
 	children,
 	params,
 }: React.PropsWithChildren<{
-	params: Promise<{ actId: ActId }>;
+	params: Promise<{ actId: string }>;
 }>) {
-	const { actId } = await params;
+	const { actId: actIdParam } = await params;
+
+	// Validate actId parameter
+	if (!isValidActId(actIdParam)) {
+		notFound();
+	}
+	const actId: ActId = actIdParam;
 	const data = getSidebarDataObject(actId);
 
 	return (

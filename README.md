@@ -1,54 +1,29 @@
 <div align="center">
   
-  <!-- Retro 80s Header -->
-  <!-- Light Mode -->
-  <div style="color: #010318; margin-bottom: 20px;">
-    <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-bottom: 10px; width: 100%;">
-      <span style="font-size: 14px; font-weight: 900; letter-spacing: 2px; text-align: left;">MADE IN JPN</span>
-      <span style="font-size: 18px;">▼</span>
-      <div style="text-align: right;">
-        <a href="https://github.com/giselles-ai/giselle"><img src="https://img.shields.io/github/stars/giselles-ai/giselle.svg?style=social&label=Star" alt="GitHub stars" style="margin-right: 5px;"></a>
-        <img src="https://img.shields.io/badge/License-Apache2.0-blue.svg" alt="License" style="margin-right: 5px;">
-        <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Dark Mode -->
-  <div style="color: #B8E8F4; text-shadow: 0 0 10px #B8E8F4; margin-bottom: 20px;">
-    <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-bottom: 10px; width: 100%;">
-      <span style="font-size: 14px; font-weight: 900; letter-spacing: 2px; text-align: left;">MADE IN JPN</span>
-      <span style="font-size: 18px;">▼</span>
-      <div style="text-align: right;">
-        <a href="https://github.com/giselles-ai/giselle"><img src="https://img.shields.io/github/stars/giselles-ai/giselle.svg?style=social&label=Star" alt="GitHub stars" style="margin-right: 5px;"></a>
-        <img src="https://img.shields.io/badge/License-Apache2.0-blue.svg" alt="License" style="margin-right: 5px;">
-        <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
-      </div>
-    </div>
-  </div>
+  <a href="https://github.com/giselles-ai/giselle"><img src="https://img.shields.io/github/stars/giselles-ai/giselle.svg?style=social&label=Star" alt="GitHub stars" style="margin-right: 5px;"></a>  <img src="https://img.shields.io/badge/License-Apache2.0-blue.svg" alt="License" style="margin-right: 5px;">
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
+
   
   <img src="./docs/assets/giselle-logo-light.svg#gh-light-mode-only" alt="Giselle logo" height="100">
   <img src="./docs/assets/giselle-logo-dark.svg#gh-dark-mode-only" alt="Giselle logo" height="100">
 
-  <p style="font-size: 18px; color: #666; margin: 20px 0;">the AI agent studio powering product delivery</p>
-
-  <!-- Light Mode Badge -->
-  <a href="https://www.producthunt.com/products/giselle?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-giselle" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=924550&theme=dark&t=1757315890418#gh-light-mode-only" alt="Giselle - AI&#0032;App&#0032;Builder | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
   
-  <!-- Dark Mode Badge -->
-  <a href="https://www.producthunt.com/products/giselle?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-giselle" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=924550&theme=neutral&t=1757315863282#gh-dark-mode-only" alt="Giselle - AI&#0032;App&#0032;Builder | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+  <span style="font-size: 18px; color: #666; margin-left: 15px;">the AI agent studio powering product delivery</span>
+
+
+  <a href="https://www.producthunt.com/products/giselle?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-giselle" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=924550&theme=light&t=1757315890418" alt="Giselle - AI&#0032;App&#0032;Builder | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
   <!-- Demo Video -->
-  <video width="100%" height="auto" controls style="border-radius: 8px; margin-top: 30px;">
-    <source src="./docs/assets/introduction.webm" type="video/webm">
-    Your browser does not support the video tag.
-  </video>
+ <img src="./docs/assets/introducing.gif" alt="Giselle Video" width="100%"> <br/>
+
+▶︎▶︎ [The YouTube video with audio can be found here](https://www.youtube.com/watch?v=g1siFWk0GNs) ◀︎◀︎
+
 
   <!-- Light/Dark Mode GIFs -->
-  <img src="./docs/assets/copy-light.gif#gh-light-mode-only" alt="Giselle Demo" width="400" style="margin-top: 20px; border-radius: 8px;">
-  <img src="./docs/assets/copy-dark.gif#gh-dark-mode-only" alt="Giselle Demo" width="400" style="margin-top: 20px; border-radius: 8px;">
+  <img src="./docs/assets/copy-light.gif#gh-light-mode-only" alt="Giselle Demo" width="400"> <br/>
+  <img src="./docs/assets/copy-dark.gif#gh-dark-mode-only" alt="Giselle Demo" width="400">
+
 </div>
-</thinking>
 
 ## 👋 Introduction
 
@@ -86,11 +61,11 @@ Open [http://localhost:3000](http://localhost:3000) and start building your AI a
 
 <div align="center">
 
-<img src="./docs/assets/featured/pdt1.png" width="100" alt="GitHub AI Operations" style="margin-right: 15px;">
-<img src="./docs/assets/featured/pdt2.png" width="100" alt="Visual Agent Builder" style="margin-right: 15px;">
-<img src="./docs/assets/featured/pdt3.png" width="100" alt="Multi-Model Composition" style="margin-right: 15px;">
-<img src="./docs/assets/featured/pdt4.png" width="100" alt="Knowledge Store" style="margin-right: 15px;">
-<img src="./docs/assets/featured/pdt5.png" width="100" alt="Team Collaboration" style="margin-right: 15px;">
+<img src="./docs/assets/featured/pdt1.png" width="100" alt="GitHub AI Operations" style="margin-right: 25px;">&nbsp;&nbsp;&nbsp;
+<img src="./docs/assets/featured/pdt2.png" width="100" alt="Visual Agent Builder" style="margin-right: 25px;">&nbsp;&nbsp;&nbsp;
+<img src="./docs/assets/featured/pdt3.png" width="100" alt="Multi-Model Composition" style="margin-right: 25px;">&nbsp;&nbsp;&nbsp;
+<img src="./docs/assets/featured/pdt4.png" width="100" alt="Knowledge Store" style="margin-right: 25px;">&nbsp;&nbsp;&nbsp;
+<img src="./docs/assets/featured/pdt5.png" width="100" alt="Team Collaboration" style="margin-right: 25px;">&nbsp;&nbsp;&nbsp;
 <img src="./docs/assets/featured/pdt6.png" width="100" alt="Template Hub">
 
 </div>

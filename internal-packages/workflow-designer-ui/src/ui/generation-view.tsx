@@ -59,7 +59,12 @@ export function GenerationView({ generation }: { generation: Generation }) {
 	}, [generation]);
 
 	if (generation.status === "failed") {
-		return generation.error.message;
+		return (
+			<div>
+				<p>{generation.error.message}</p>
+				<p>id: {generation.id}</p>
+			</div>
+		);
 	}
 
 	if (

@@ -1,3 +1,4 @@
+import { Select } from "@giselle-internal/ui/select";
 import type { Node, Workspace } from "@giselle-sdk/data-type";
 import {
 	isImageGenerationNode,
@@ -7,15 +8,24 @@ import {
 	type TextGenerationNode,
 	type ToolSet,
 } from "@giselle-sdk/data-type";
+import { useUsageLimits } from "@giselle-sdk/giselle/react";
+import {
+	anthropicLanguageModels,
+	googleLanguageModels,
+	openaiLanguageModels,
+	Tier,
+	TierAccess,
+} from "@giselle-sdk/language-model";
 import clsx from "clsx/lite";
 import { Tabs } from "radix-ui";
+import { useCallback, useEffect } from "react";
 import { InputPanel } from "./input-panel";
 import {
 	AnthropicModelPanel,
 	GoogleModelPanel,
 	OpenAIModelPanel,
-	PerplexityModelPanel,
 } from "./model";
+import { createDefaultModelData, updateModelId } from "./model-defaults";
 import { PromptPanel } from "./prompt-panel";
 import { ToolsPanel } from "./tools";
 
@@ -45,6 +55,82 @@ export function TextGenerationTabContent({
 	data,
 	deleteConnection,
 }: TextGenerationTabContentProps) {
+	const usageLimits = useUsageLimits();
+	const userTier = usageLimits?.featureTier ?? Tier.enum.free;
+	const accessibleTiers = TierAccess[userTier];
+
+	// Get all models for current provider, with disabled state for Pro models when user is on free tier
+	const getAvailableModels = useCallback((): Array<{
+		value: string;
+		label: string;
+		disabled?: boolean;
+		tier?: "free" | "pro";
+	}> => {
+		const prepareModelsWithTierInfo = (
+			models: Array<{ id: string; tier: "free" | "pro" }>,
+		) => {
+			return models.map((model) => ({
+				value: model.id,
+				label: model.id,
+				disabled: !accessibleTiers.includes(model.tier),
+				tier: model.tier,
+			}));
+		};
+
+		switch (node.content.llm.provider) {
+			case "openai":
+				return prepareModelsWithTierInfo(openaiLanguageModels);
+			case "anthropic":
+				return prepareModelsWithTierInfo(anthropicLanguageModels);
+			case "google":
+				return prepareModelsWithTierInfo(googleLanguageModels);
+			default:
+				return [];
+		}
+	}, [accessibleTiers, node.content.llm.provider]);
+
+	// Check if current model is accessible to the user
+	const getCurrentModelInfo = useCallback(() => {
+		switch (node.content.llm.provider) {
+			case "openai":
+				return openaiLanguageModels.find((m) => m.id === node.content.llm.id);
+			case "anthropic":
+				return anthropicLanguageModels.find(
+					(m) => m.id === node.content.llm.id,
+				);
+			case "google":
+				return googleLanguageModels.find((m) => m.id === node.content.llm.id);
+			default:
+				return null;
+		}
+	}, [node.content.llm.provider, node.content.llm.id]);
+
+	// Auto-switch to a compatible model if current one is not accessible
+	useEffect(() => {
+		const currentModel = getCurrentModelInfo();
+		if (currentModel && !accessibleTiers.includes(currentModel.tier)) {
+			// Find the first available (non-disabled) model for this provider
+			const availableModels = getAvailableModels();
+			const compatibleModel = availableModels.find((model) => !model.disabled);
+			if (compatibleModel) {
+				const updatedModel = updateModelId(
+					node.content.llm,
+					compatibleModel.value,
+				);
+				updateNodeDataContent(node, {
+					...node.content,
+					llm: updatedModel,
+				});
+			}
+		}
+	}, [
+		accessibleTiers,
+		node,
+		updateNodeDataContent,
+		getAvailableModels,
+		getCurrentModelInfo,
+	]); // Re-run when dependencies change
+
 	return (
 		<Tabs.Root
 			className="flex flex-col gap-[8px] h-full"
@@ -75,6 +161,66 @@ export function TextGenerationTabContent({
 				value="model"
 				className="flex-1 flex flex-col overflow-y-auto px-[4px] outline-none"
 			>
+				<div className="grid grid-cols-2 gap-[16px] mb-[16px] max-w-full">
+					<fieldset className="flex flex-col min-w-0">
+						<label
+							htmlFor="provider"
+							className="text-text text-[13px] mb-[2px]"
+						>
+							Provider
+						</label>
+						<Select
+							id="provider"
+							placeholder="Select a provider"
+							value={node.content.llm.provider}
+							onValueChange={(provider) => {
+								const validProvider = provider as
+									| "openai"
+									| "anthropic"
+									| "google";
+
+								const defaultModel = createDefaultModelData(validProvider);
+
+								updateNodeDataContent(node, {
+									...node.content,
+									llm: defaultModel,
+									tools: {}, // Reset tools when changing provider
+								});
+							}}
+							options={[
+								{ value: "openai", label: "OpenAI" },
+								{ value: "anthropic", label: "Anthropic" },
+								{ value: "google", label: "Google" },
+							]}
+						/>
+					</fieldset>
+
+					<fieldset className="flex flex-col min-w-0">
+						<label htmlFor="model" className="text-text text-[13px] mb-[2px]">
+							Model
+						</label>
+						<Select
+							id="model"
+							placeholder="Select a model"
+							value={node.content.llm.id}
+							widthClassName="w-full"
+							onValueChange={(modelId) => {
+								const updatedModel = updateModelId(node.content.llm, modelId);
+
+								updateNodeDataContent(node, {
+									...node.content,
+									llm: updatedModel,
+								});
+							}}
+							options={getAvailableModels()}
+							renderOption={(option) => (
+								<span className={option.disabled ? "opacity-50" : ""}>
+									{option.label}
+								</span>
+							)}
+						/>
+					</fieldset>
+				</div>
 				{node.content.llm.provider === "openai" && (
 					<OpenAIModelPanel
 						openaiLanguageModel={node.content.llm}
@@ -103,15 +249,20 @@ export function TextGenerationTabContent({
 										}
 									: undefined,
 							};
+							const hasSourceOutput = node.outputs.some(
+								(o) => o.accessor === "source",
+							);
 							const updateOutputs: Output[] = enable
-								? [
-										...node.outputs,
-										{
-											id: OutputId.generate(),
-											label: "Source",
-											accessor: "source",
-										},
-									]
+								? hasSourceOutput
+									? node.outputs
+									: [
+											...node.outputs,
+											{
+												id: OutputId.generate(),
+												label: "Source",
+												accessor: "source",
+											},
+										]
 								: node.outputs.filter((output) => output.accessor !== "source");
 							if (!enable) {
 								const sourceOutput = node.outputs.find(
@@ -196,14 +347,21 @@ export function TextGenerationTabContent({
 											},
 										},
 									},
-									outputs: [
-										...node.outputs,
-										{
-											id: OutputId.generate(),
-											label: "Source",
-											accessor: "source",
-										},
-									],
+									outputs: ((): Output[] => {
+										const hasSourceOutput = node.outputs.some(
+											(o) => o.accessor === "source",
+										);
+										return hasSourceOutput
+											? node.outputs
+											: [
+													...node.outputs,
+													{
+														id: OutputId.generate(),
+														label: "Source",
+														accessor: "source",
+													},
+												];
+									})(),
 								});
 							} else {
 								const sourceOutput = node.outputs.find(
@@ -293,17 +451,6 @@ export function TextGenerationTabContent({
 				{node.content.llm.provider === "anthropic" && (
 					<AnthropicModelPanel
 						anthropicLanguageModel={node.content.llm}
-						onModelChange={(value) =>
-							updateNodeDataContent(node, {
-								...node.content,
-								llm: value,
-							})
-						}
-					/>
-				)}
-				{node.content.llm.provider === "perplexity" && (
-					<PerplexityModelPanel
-						perplexityLanguageModel={node.content.llm}
 						onModelChange={(value) =>
 							updateNodeDataContent(node, {
 								...node.content,

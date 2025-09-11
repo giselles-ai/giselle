@@ -5,18 +5,9 @@ import {
 	Capability,
 	hasCapability,
 } from "@giselle-sdk/language-model";
-import { useCallback, useMemo } from "react";
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "../../../../ui/select";
-import { Slider } from "../../../../ui/slider";
+import { useMemo } from "react";
 import { Switch } from "../../../../ui/switch";
-import { languageModelAvailable } from "./utils";
+import { TemperatureSlider, TopPSlider } from "./shared-model-controls";
 
 export function AnthropicModelPanel({
 	anthropicLanguageModel,
@@ -25,101 +16,30 @@ export function AnthropicModelPanel({
 	anthropicLanguageModel: AnthropicLanguageModelData;
 	onModelChange: (changedValue: AnthropicLanguageModelData) => void;
 }) {
-	const limits = useUsageLimits();
+	useUsageLimits();
 
 	const hasReasoningCapability = useMemo(() => {
 		const languageModel = anthropicLanguageModels.find(
 			(lm) => lm.id === anthropicLanguageModel.id,
 		);
-		return languageModel && hasCapability(languageModel, Capability.Reasoning);
+		return (
+			!!languageModel && hasCapability(languageModel, Capability.Reasoning)
+		);
 	}, [anthropicLanguageModel.id]);
-
-	const handleModelChange = useCallback(
-		(value: string) => {
-			const newLanguageModel = anthropicLanguageModels.find(
-				(model) => model.id === value,
-			);
-			if (newLanguageModel === undefined) {
-				return;
-			}
-			onModelChange(
-				AnthropicLanguageModelData.parse({
-					...anthropicLanguageModel,
-					id: value,
-					configurations: {
-						...anthropicLanguageModel.configurations,
-						reasoningText:
-							anthropicLanguageModel.configurations.reasoningText &&
-							hasCapability(newLanguageModel, Capability.Reasoning),
-					},
-				}),
-			);
-		},
-		[anthropicLanguageModel, onModelChange],
-	);
 
 	return (
 		<div className="flex flex-col gap-[34px]">
-			<Select
-				value={anthropicLanguageModel.id}
-				onValueChange={handleModelChange}
-			>
-				<SelectTrigger>
-					<SelectValue placeholder="Select a LLM" />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectGroup>
-						{anthropicLanguageModels.map((anthropicLanguageModel) => (
-							<SelectItem
-								key={anthropicLanguageModel.id}
-								value={anthropicLanguageModel.id}
-								disabled={
-									!languageModelAvailable(anthropicLanguageModel, limits)
-								}
-							>
-								{anthropicLanguageModel.id}
-							</SelectItem>
-						))}
-					</SelectGroup>
-				</SelectContent>
-			</Select>
 			<div>
 				<div className="grid grid-cols-2 gap-[24px]">
-					<Slider
-						label="Temperature"
-						value={anthropicLanguageModel.configurations.temperature}
-						max={2.0}
-						min={0.0}
-						step={0.01}
-						onChange={(value) => {
-							onModelChange(
-								AnthropicLanguageModelData.parse({
-									...anthropicLanguageModel,
-									configurations: {
-										...anthropicLanguageModel.configurations,
-										temperature: value,
-									},
-								}),
-							);
-						}}
+					<TemperatureSlider
+						onModelChange={onModelChange}
+						modelData={anthropicLanguageModel}
+						parseModelData={AnthropicLanguageModelData.parse}
 					/>
-					<Slider
-						label="Top P"
-						value={anthropicLanguageModel.configurations.topP}
-						max={1.0}
-						min={0.0}
-						step={0.01}
-						onChange={(value) => {
-							onModelChange(
-								AnthropicLanguageModelData.parse({
-									...anthropicLanguageModel,
-									configurations: {
-										...anthropicLanguageModel.configurations,
-										topP: value,
-									},
-								}),
-							);
-						}}
+					<TopPSlider
+						onModelChange={onModelChange}
+						modelData={anthropicLanguageModel}
+						parseModelData={AnthropicLanguageModelData.parse}
 					/>
 
 					{hasReasoningCapability ? (

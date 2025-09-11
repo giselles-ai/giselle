@@ -10,9 +10,9 @@ catalog:
   nanoid: 5.0.9
   tsup: 8.3.5
   "@turbo/gen": 2.3.3
-  next: 15.3.4
-  "@next/env": 15.3.4
-  "@next/third-parties": 15.3.4
+  next: 15.5.2
+  "@next/env": 15.5.2
+  "@next/third-parties": 15.5.2
   unstorage: 1.14.4
   ai: 5.0.29
   "@types/node": 22.14.0
@@ -92,6 +92,6 @@ catalog:
   "@types/tar": 6.1.13
   "@aws-sdk/client-s3": 3.842.0
   "@ai-sdk/provider": 2.0.0
-  nuqs: 2.4.3
+  nuqs: 2.6.0
   pino: 9.9.0
   zustand: 5.0.8

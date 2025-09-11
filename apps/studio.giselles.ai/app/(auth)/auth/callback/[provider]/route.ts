@@ -8,12 +8,22 @@ import { logger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase";
 import { initializeAccount, type OAuthProvider } from "@/services/accounts";
 
+function isValidOAuthProvider(provider: string): provider is OAuthProvider {
+	return provider === "github" || provider === "google";
+}
+
 export async function GET(
 	request: NextRequest,
-	{ params }: { params: Promise<{ provider: OAuthProvider }> },
+	{ params }: { params: Promise<{ provider: string }> },
 ) {
 	const { searchParams, origin } = new URL(request.url);
-	const { provider } = await params;
+	const { provider: providerParam } = await params;
+
+	// Validate provider parameter
+	if (!isValidOAuthProvider(providerParam)) {
+		return new Response(`Invalid provider: ${providerParam}`, { status: 400 });
+	}
+	const provider: OAuthProvider = providerParam;
 
 	logger.debug(
 		{

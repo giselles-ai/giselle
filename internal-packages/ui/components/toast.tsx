@@ -3,7 +3,13 @@
 import clsx from "clsx/lite";
 import { XIcon } from "lucide-react";
 import { Toast as ToastPrimitive } from "radix-ui";
-import { createContext, useCallback, useContext, useState } from "react";
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useMemo,
+	useState,
+} from "react";
 import { Button } from "./button";
 
 interface Action {
@@ -18,11 +24,60 @@ interface Toast {
 	action?: Action;
 }
 
-type AddToastOption = Pick<Toast, "action">;
+type ToastActionOptions = Pick<Toast, "action">;
+
+type ToastOptions = ToastActionOptions & {
+	id?: string;
+	type?: Toast["type"];
+	preserve?: boolean;
+};
+
+type ToastFn = ((message: string, options?: ToastOptions) => string) & {
+	dismiss: (id?: string) => void;
+};
 
 interface ToastContextType {
-	info: (message: string, option?: AddToastOption) => void;
+	toast: ToastFn;
+	info: (message: string, option?: ToastActionOptions) => void;
 	error: (message: string) => void;
+}
+
+function mergeToastWithOptions(
+	existing: Toast,
+	message: string,
+	options?: ToastOptions,
+): Toast {
+	return {
+		...existing,
+		message,
+		type: options?.type ?? existing.type,
+		preserve: options?.preserve ?? existing.preserve,
+		action: options?.action ?? existing.action,
+	};
+}
+
+function upsertToastArray(
+	prev: Toast[],
+	id: string,
+	message: string,
+	options?: ToastOptions,
+): Toast[] {
+	const idx = prev.findIndex((t) => t.id === id);
+	if (idx === -1) {
+		return [
+			...prev,
+			{
+				id,
+				message,
+				type: options?.type ?? "info",
+				preserve: options?.preserve ?? true,
+				action: options?.action,
+			},
+		];
+	}
+	const copy = prev.slice();
+	copy[idx] = mergeToastWithOptions(copy[idx], message, options);
+	return copy;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -40,37 +95,44 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
 	const [toasts, setToasts] = useState<Toast[]>([]);
 
-	const addToast = useCallback((toast: Omit<Toast, "id">) => {
-		const id = Math.random().toString(36).substring(2);
-		const newToast = {
-			...toast,
-			id,
+	const _toast = useMemo(() => {
+		const fn = ((message: string, options?: ToastOptions) => {
+			const id = options?.id ?? Math.random().toString(36).substring(2);
+			setToasts((prev) => upsertToastArray(prev, id, message, options));
+			return id;
+		}) as ToastFn;
+
+		fn.dismiss = (id?: string) => {
+			if (!id) {
+				setToasts([]);
+				return;
+			}
+			setToasts((prev) => prev.filter((t) => t.id !== id));
 		};
 
-		setToasts((prevToasts) => [...prevToasts, newToast]);
+		return fn;
 	}, []);
 
 	const error = useCallback(
 		(message: string) => {
-			addToast({ message, type: "error", preserve: true });
+			_toast(message, { type: "error", preserve: true });
 		},
-		[addToast],
+		[_toast],
 	);
 
 	const info = useCallback(
-		(message: string, option?: AddToastOption) => {
-			addToast({
-				message,
+		(message: string, option?: ToastActionOptions) => {
+			_toast(message, {
 				type: "info",
 				preserve: true,
 				action: option?.action,
 			});
 		},
-		[addToast],
+		[_toast],
 	);
 
 	return (
-		<ToastContext.Provider value={{ error, info }}>
+		<ToastContext.Provider value={{ toast: _toast, info, error }}>
 			<ToastPrimitive.Provider swipeDirection="right">
 				{children}
 				{toasts.map((toast) => (
@@ -83,6 +145,9 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 						)}
 						data-type={toast.type}
 						duration={toast.preserve ? Number.POSITIVE_INFINITY : undefined}
+						onOpenChange={(open) => {
+							if (!open) _toast.dismiss(toast.id);
+						}}
 					>
 						<div
 							className={clsx(

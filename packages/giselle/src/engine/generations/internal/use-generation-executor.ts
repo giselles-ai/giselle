@@ -93,11 +93,15 @@ export async function useGenerationExecutor<T>(args: {
 			throw new Error(`Unhandled origin type: ${_exhaustiveCheck}`);
 		}
 	}
+	const usageLimitCheckStartTime = Date.now();
 	const usageLimitStatus = await checkUsageLimits({
 		workspaceId,
 		generation: args.generation,
 		fetchUsageLimitsFn: args.context.fetchUsageLimitsFn,
 	});
+	args.context.logger.info(
+		`Usage limit check completed in ${Date.now() - usageLimitCheckStartTime}ms`,
+	);
 	if (usageLimitStatus.type === "error") {
 		const failedGeneration: Generation = {
 			...runningGeneration,
@@ -113,11 +117,15 @@ export async function useGenerationExecutor<T>(args: {
 		throw new UsageLimitError(usageLimitStatus.error);
 	}
 	async function fileResolver(fileId: FileId): Promise<DataContent> {
+		const fileRetrievalStartTime = Date.now();
 		const blob = await args.context.storage.getItemRaw(
 			filePath({
 				...runningGeneration.context.origin,
 				fileId,
 			}),
+		);
+		args.context.logger.info(
+			`File retrieval completed in ${Date.now() - fileRetrievalStartTime}ms (fileId: ${fileId})`,
 		);
 		if (blob === undefined) {
 			return new Uint8Array() as DataContent;
@@ -135,6 +143,7 @@ export async function useGenerationExecutor<T>(args: {
 		}
 
 		async function findGenerationByNode(nodeId: NodeId) {
+			const generationLookupStartTime = Date.now();
 			const nodeGenerationIndexes = await getNodeGenerationIndexes({
 				storage: args.context.storage,
 				experimental_storage: args.context.experimental_storage,
@@ -145,18 +154,26 @@ export async function useGenerationExecutor<T>(args: {
 				nodeGenerationIndexes === undefined ||
 				nodeGenerationIndexes.length === 0
 			) {
+				args.context.logger.info(
+					`Generation lookup by node completed in ${Date.now() - generationLookupStartTime}ms (nodeId: ${nodeId}, found: false)`,
+				);
 				return undefined;
 			}
-			return getGeneration({
+			const generation = await getGeneration({
 				storage: args.context.storage,
 				experimental_storage: args.context.experimental_storage,
 				useExperimentalStorage: args.useExperimentalStorage,
 				generationId:
 					nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
 			});
+			args.context.logger.info(
+				`Generation lookup by node completed in ${Date.now() - generationLookupStartTime}ms (nodeId: ${nodeId}, found: true)`,
+			);
+			return generation;
 		}
 
 		async function findGenerationByAct(nodeId: NodeId, actId: ActId) {
+			const actGenerationLookupStartTime = Date.now();
 			const actGenerationIndexes = await getActGenerationIndexes({
 				experimental_storage: args.context.experimental_storage,
 				actId,
@@ -165,14 +182,21 @@ export async function useGenerationExecutor<T>(args: {
 				(actGenerationIndex) => actGenerationIndex.nodeId === nodeId,
 			);
 			if (targetGenerationIndex === undefined) {
+				args.context.logger.info(
+					`Generation lookup by act completed in ${Date.now() - actGenerationLookupStartTime}ms (nodeId: ${nodeId}, actId: ${actId}, found: false)`,
+				);
 				return undefined;
 			}
-			return getGeneration({
+			const generation = await getGeneration({
 				storage: args.context.storage,
 				experimental_storage: args.context.experimental_storage,
 				useExperimentalStorage: args.useExperimentalStorage,
 				generationId: targetGenerationIndex.id,
 			});
+			args.context.logger.info(
+				`Generation lookup by act completed in ${Date.now() - actGenerationLookupStartTime}ms (nodeId: ${nodeId}, actId: ${actId}, found: true)`,
+			);
+			return generation;
 		}
 
 		function findOutput(outputId: OutputId) {
@@ -226,6 +250,7 @@ export async function useGenerationExecutor<T>(args: {
 		generateMessages,
 		providerMetadata,
 	}: CompleteGenerationArgs) {
+		const completionStartTime = Date.now();
 		const completedGeneration = {
 			...runningGeneration,
 			status: "completed",
@@ -237,6 +262,7 @@ export async function useGenerationExecutor<T>(args: {
 
 		/** @todo create type alias */
 		const outputFileBlobs: OutputFileBlob[] = [];
+		const imageProcessingStartTime = Date.now();
 		for (const output of outputs) {
 			if (output.type !== "generated-image") {
 				continue;
@@ -258,7 +284,11 @@ export async function useGenerationExecutor<T>(args: {
 				});
 			}
 		}
+		args.context.logger.info(
+			`Image processing completed in ${Date.now() - imageProcessingStartTime}ms (${outputFileBlobs.length} images)`,
+		);
 
+		const finalProcessingStartTime = Date.now();
 		await Promise.all([
 			setGeneration(completedGeneration),
 			handleAgentTimeConsumption({
@@ -276,6 +306,12 @@ export async function useGenerationExecutor<T>(args: {
 				return result;
 			})(),
 		]);
+		args.context.logger.info(
+			`Final processing completed in ${Date.now() - finalProcessingStartTime}ms`,
+		);
+		args.context.logger.info(
+			`Generation completion total time: ${Date.now() - completionStartTime}ms`,
+		);
 		return completedGeneration;
 	}
 

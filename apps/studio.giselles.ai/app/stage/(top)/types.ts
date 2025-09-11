@@ -51,11 +51,3 @@ export interface ValidationErrors {
 export interface FormValues {
 	[key: string]: string | number;
 }
-
-// Constants
-export const FILTER_OPTIONS: { value: FilterType; label: string }[] = [
-	{ value: "all", label: "All" },
-	{ value: "history", label: "History" },
-	{ value: "latest", label: "Latest" },
-	{ value: "favorites", label: "Favorites" },
-];

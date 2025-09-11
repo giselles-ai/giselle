@@ -1,5 +1,4 @@
-import type { WorkspaceId } from "@giselle-sdk/data-type";
-import type { AgentId } from "@giselles-ai/types";
+import { FlowTriggerId, type WorkspaceId } from "@giselle-sdk/data-type";
 import { and, avg, count, desc, eq, sum } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { giselleEngine } from "@/app/giselle-engine";
@@ -72,8 +71,19 @@ async function extractLLMLabels(workspaceId?: string | null): Promise<string> {
 	}
 }
 
-async function getAppDetails(appId: string) {
+async function getAppDetails(unsafeAppId: string) {
 	try {
+		const result = FlowTriggerId.safeParse(unsafeAppId);
+		if (!result.success) {
+			return null;
+		}
+		const appId = result.data;
+		const app = await db.query.flowTriggers.findFirst({
+			where: (flowTriggers, { eq }) => eq(flowTriggers.sdkFlowTriggerId, appId),
+		});
+		if (app === undefined) {
+			return null;
+		}
 		// Get current user
 		const supabaseUser = await getUser();
 		const [currentUserMapping] = await db
@@ -102,7 +112,7 @@ async function getAppDetails(appId: string) {
 			.from(agents)
 			.leftJoin(teams, eq(agents.teamDbId, teams.dbId))
 			.leftJoin(users, eq(agents.creatorDbId, users.dbId))
-			.where(eq(agents.id, appId as AgentId))
+			.where(eq(agents.workspaceId, app.sdkWorkspaceId))
 			.limit(1);
 
 		if (!agentWithTeam[0]) {

@@ -4,9 +4,9 @@ import { Select } from "@giselle-internal/ui/select";
 import type { FlowTriggerId } from "@giselle-sdk/data-type";
 
 import clsx from "clsx/lite";
-import { Settings, X } from "lucide-react";
+import { X } from "lucide-react";
 
-import { useActionState, useCallback, useMemo } from "react";
+import { useActionState, useCallback, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { buttonVariants } from "../../(main)/settings/components/button";
@@ -18,37 +18,131 @@ import {
 	parseFormInputs,
 	toParameterItems,
 } from "./helpers";
-import { useFilterState } from "./hooks/use-filter-state";
-import { useFormState } from "./hooks/use-form-state";
 import { useUIState } from "./hooks/use-ui-state";
 import { SettingsDialog } from "./settings-dialog";
 import type {
-	FilterType,
 	FlowTriggerUIItem,
 	PerformStageAction,
 	TeamId,
 	TeamOption,
+	ValidationErrors,
 } from "./types";
-import { FILTER_OPTIONS } from "./types";
 
-export function Form({
+function assertNonEmpty<T>(
+	arr: readonly T[],
+	msg: string,
+): asserts arr is readonly [T, ...T[]] {
+	if (arr.length === 0) throw new Error(msg);
+}
+
+/** FlowTrigger is essentially an app (we'll change other parts going forward) */
+type AppId = FlowTriggerId;
+type App = FlowTriggerUIItem;
+
+const displayCategories = {
+	all: { value: "all", label: "All" },
+	history: { value: "history", label: "History" },
+	latest: { value: "latest", label: "Latest" },
+	favorites: { value: "favorites", label: "Favorites" },
+} as const;
+
+type DisplayCategory = keyof typeof displayCategories;
+
+export function FormContainer({
+	flowTriggers: propApps,
 	teamOptions,
-	flowTriggers,
 	performStageAction,
+	defaultAppId: propDefaultAppId,
+	...props
 }: {
 	teamOptions: TeamOption[];
 	flowTriggers: FlowTriggerUIItem[];
 	performStageAction: PerformStageAction;
+	defaultTeamId?: TeamId;
+	defaultAppId?: AppId;
 }) {
-	const {
-		selectedTeamId,
-		setSelectedTeamId,
-		selectedFilter,
-		setSelectedFilter,
-		handleFilterChange,
-		handleTeamChange,
-	} = useFilterState({ teamOptions });
+	const defaultTeamId = useMemo(() => {
+		if (props.defaultTeamId !== undefined) {
+			return props.defaultTeamId;
+		}
+		assertNonEmpty(teamOptions, "No team options available");
+		return teamOptions[0].value;
+	}, [props.defaultTeamId, teamOptions]);
+	const [teamId, setTeamId] = useState<TeamId>(defaultTeamId);
+	const defaultAppId = useMemo(() => {
+		if (propDefaultAppId !== undefined) {
+			return propDefaultAppId;
+		}
+		const app = propApps.find((app) => app.teamId === teamId);
+		return app?.id;
+	}, [teamId, propApps, propDefaultAppId]);
 
+	const [appId, setAppId] = useState<AppId | undefined>(defaultAppId);
+
+	const handleTeamIdChange = useCallback(
+		(newTeamId: TeamId) => {
+			setTeamId(newTeamId);
+			const app = propApps.find((app) => app.teamId === newTeamId);
+			setAppId(app?.id);
+		},
+		[propApps],
+	);
+
+	const handleAppIdChange = useCallback((newAppId: AppId) => {
+		setAppId(newAppId);
+	}, []);
+
+	// TODO: Add filtering logic in the future, currently UI only
+	const [displayCategory, setDisplayCategory] =
+		useState<DisplayCategory>("all");
+	const handleDisplayCategoryChange = useCallback(
+		(newCategory: DisplayCategory) => {
+			setDisplayCategory(newCategory);
+		},
+		[],
+	);
+
+	const apps = useMemo(
+		() => propApps.filter((app) => app.teamId === teamId),
+		[propApps, teamId],
+	);
+
+	return (
+		<Form
+			teamOptions={teamOptions}
+			teamId={teamId}
+			onTeamIdChange={handleTeamIdChange}
+			apps={apps}
+			appId={appId}
+			onAppIdChange={handleAppIdChange}
+			displayCategory={displayCategory}
+			onDisplayCategoryChange={handleDisplayCategoryChange}
+			performStageAction={performStageAction}
+		/>
+	);
+}
+
+function Form({
+	apps,
+	appId,
+	onAppIdChange,
+	teamOptions,
+	teamId,
+	onTeamIdChange,
+	displayCategory,
+	onDisplayCategoryChange,
+	performStageAction,
+}: {
+	teamId: TeamId;
+	teamOptions: TeamOption[];
+	onTeamIdChange: (teamId: TeamId) => void;
+	appId: AppId | undefined;
+	apps: App[];
+	onAppIdChange: (appId: AppId) => void;
+	displayCategory: DisplayCategory;
+	onDisplayCategoryChange: (category: DisplayCategory) => void;
+	performStageAction: PerformStageAction;
+}) {
 	const {
 		isMobile,
 		isCarouselView,
@@ -56,6 +150,10 @@ export function Form({
 		isSettingsModalOpen,
 		setIsSettingsModalOpen,
 	} = useUIState();
+
+	const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
+		{},
+	);
 
 	const teamOptionsWithIcons = useMemo(
 		() =>
@@ -73,33 +171,15 @@ export function Form({
 		[teamOptions],
 	);
 
-	const filteredFlowTriggers = useMemo(
-		() =>
-			flowTriggers.filter(
-				(flowTrigger) => flowTrigger.teamId === selectedTeamId,
-			),
-		[flowTriggers, selectedTeamId],
-	);
-
-	const {
-		selectedFlowTriggerId,
-		setSelectedFlowTriggerId,
-		selectedTrigger,
-		validationErrors,
-		setValidationErrors,
-		userHasSelectedRef,
-		handleFlowTriggerSelect,
-		handleFlowTriggerDeselect,
-	} = useFormState({ filteredFlowTriggers });
-
-	const inputs = useMemo(
-		() => createInputsFromTrigger(selectedTrigger?.sdkData),
-		[selectedTrigger],
-	);
+	const app = useMemo(() => {
+		const app = apps.find((app) => app.id === appId);
+		return app;
+	}, [apps, appId]);
+	const inputs = useMemo(() => createInputsFromTrigger(app?.sdkData), [app]);
 
 	const formAction = useCallback(
 		async (_prevState: unknown, formData: FormData) => {
-			if (selectedFlowTriggerId === undefined) {
+			if (app === undefined) {
 				return null;
 			}
 			const { errors, values } = parseFormInputs(inputs, formData);
@@ -111,30 +191,14 @@ export function Form({
 
 			setValidationErrors({});
 
-			const flowTrigger = filteredFlowTriggers.find(
-				(flowTrigger) => flowTrigger.id === selectedFlowTriggerId,
-			);
-			if (flowTrigger === undefined) {
-				throw new Error(
-					`Flow trigger with ID ${selectedFlowTriggerId} not found`,
-				);
-			}
-
 			await performStageAction({
-				teamId: selectedTeamId,
-				flowTrigger: flowTrigger.sdkData,
+				teamId,
+				flowTrigger: app.sdkData,
 				parameterItems: toParameterItems(inputs, values),
 			});
 			return null;
 		},
-		[
-			inputs,
-			performStageAction,
-			selectedFlowTriggerId,
-			selectedTeamId,
-			filteredFlowTriggers,
-			setValidationErrors,
-		],
+		[inputs, performStageAction, teamId, app],
 	);
 
 	const [, action, isPending] = useActionState(formAction, null);
@@ -150,7 +214,7 @@ export function Form({
 			)}
 		>
 			{/* Settings Icon */}
-			<button
+			{/*<button
 				type="button"
 				onClick={() => setIsSettingsModalOpen(true)}
 				className={clsx(
@@ -160,7 +224,7 @@ export function Form({
 			>
 				<Settings className="w-4 h-4 text-white-400" />
 			</button>
-
+*/}
 			{/* Team Selection Container */}
 			<div className="flex justify-center gap-2">
 				<div
@@ -177,13 +241,9 @@ export function Form({
 							placeholder="Select team"
 							options={teamOptionsWithIcons}
 							renderOption={(o) => o.label}
-							value={selectedTeamId}
+							value={teamId}
 							onValueChange={(value) => {
-								const newTeamId = value as TeamId;
-								setSelectedTeamId(newTeamId);
-								userHasSelectedRef.current = true;
-								setSelectedFlowTriggerId(undefined);
-								handleTeamChange(newTeamId);
+								onTeamIdChange(value as TeamId);
 							}}
 						/>
 					</div>
@@ -192,15 +252,10 @@ export function Form({
 					<Select
 						id="filter"
 						placeholder="Filter"
-						options={FILTER_OPTIONS}
-						renderOption={(o) => o.label}
-						value={selectedFilter}
+						options={Object.values(displayCategories)}
+						value={displayCategory}
 						onValueChange={(value) => {
-							const newFilter = value as FilterType;
-							setSelectedFilter(newFilter);
-							userHasSelectedRef.current = true;
-							setSelectedFlowTriggerId(undefined);
-							handleFilterChange(newFilter);
+							onDisplayCategoryChange(value as DisplayCategory);
 						}}
 					/>
 				</div>
@@ -213,20 +268,19 @@ export function Form({
 			<div className="mt-4 flex flex-col justify-start">
 				{isCarouselView ? (
 					<CircularCarousel
-						items={filteredFlowTriggers.map((trigger) => ({
-							id: trigger.id,
-							name: trigger.workspaceName,
+						items={apps.map((app) => ({
+							id: app.id,
+							name: app.workspaceName,
 							profileImageUrl: undefined,
 						}))}
-						selectedId={selectedFlowTriggerId}
+						selectedId={appId}
 						onItemSelect={(item) => {
-							handleFlowTriggerSelect(item.id as FlowTriggerId);
+							onAppIdChange(item.id as AppId);
 						}}
-						onItemDeselect={handleFlowTriggerDeselect}
 					/>
 				) : (
 					<div className="w-full px-4 max-w-4xl mx-auto">
-						{filteredFlowTriggers.length === 0 ? (
+						{apps.length === 0 ? (
 							<div className="text-center py-8">
 								<p className="text-white-400 text-sm">
 									No apps available for the selected team
@@ -237,21 +291,19 @@ export function Form({
 								<div
 									className={clsx(
 										"grid grid-cols-2 gap-3 overflow-y-auto transition-all duration-300",
-										!isCarouselView && selectedFlowTriggerId !== undefined
-											? "pb-40 max-h-[30vh] md:max-h-[60vh]"
-											: "max-h-[50vh] md:max-h-[70vh] pb-28 md:pb-0",
+										"pb-40 max-h-[30vh] md:max-h-[60vh]",
 									)}
 								>
-									{filteredFlowTriggers.map((trigger) => (
+									{apps.map((app) => (
 										<button
-											key={trigger.id}
+											key={app.id}
 											type="button"
 											onClick={() => {
-												handleFlowTriggerSelect(trigger.id);
+												onAppIdChange(app.id);
 											}}
 											className={clsx(
 												"group flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer relative z-20 w-full text-left",
-												selectedFlowTriggerId === trigger.id
+												appId === app.id
 													? "bg-blue-500/10 border-blue-500/50"
 													: "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20",
 											)}
@@ -265,19 +317,18 @@ export function Form({
 												<p
 													className={clsx(
 														"text-[14px] font-sans truncate",
-														selectedFlowTriggerId === trigger.id
+														appId === app.id
 															? "text-blue-400"
 															: "text-white-900",
 													)}
 												>
-													{trigger.workspaceName || "Untitled"}
+													{app.workspaceName || "Untitled"}
 												</p>
-												{trigger.label &&
-													trigger.label !== "Manual Trigger" && (
-														<p className="text-[12px] font-geist text-white-400 truncate">
-															{trigger.label}
-														</p>
-													)}
+												{app.label && app.label !== "Manual Trigger" && (
+													<p className="text-[12px] font-geist text-white-400 truncate">
+														{app.label}
+													</p>
+												)}
 											</div>
 										</button>
 									))}
@@ -289,7 +340,7 @@ export function Form({
 			</div>
 
 			{/* Slide-up Modal */}
-			{!isCarouselView && selectedFlowTriggerId !== undefined && (
+			{!isCarouselView && app && (
 				<div className="fixed inset-x-0 bottom-0 md:absolute md:left-0 md:right-0 z-50 animate-in slide-in-from-bottom-full duration-300">
 					<div className="relative z-10 rounded-t-2xl shadow-xl focus:outline-none">
 						<div
@@ -310,19 +361,17 @@ export function Form({
 								{/* App Title */}
 								<div className="flex flex-col">
 									<h3 className="font-sans text-[16px] font-medium tracking-tight text-white-100">
-										{selectedTrigger?.workspaceName || "Untitled"}
+										{app.workspaceName || "Untitled"}
 									</h3>
-									{selectedTrigger?.label &&
-										selectedTrigger.label !== "Manual Trigger" && (
-											<p className="text-[12px] text-white-400 font-geist">
-												{selectedTrigger.label}
-											</p>
-										)}
+									{app.label && app.label !== "Manual Trigger" && (
+										<p className="text-[12px] text-white-400 font-geist">
+											{app.label}
+										</p>
+									)}
 								</div>
 							</div>
 							<button
 								type="button"
-								onClick={handleFlowTriggerDeselect}
 								className="rounded-full p-2 text-white-400 opacity-70 hover:opacity-100 hover:bg-white/10 focus:outline-none transition-all"
 							>
 								<X className="h-5 w-5" />
@@ -339,7 +388,6 @@ export function Form({
 							<div className="mt-6 flex justify-end gap-x-3 pb-6">
 								<button
 									type="button"
-									onClick={handleFlowTriggerDeselect}
 									disabled={isPending}
 									className={cn(buttonVariants({ variant: "link" }))}
 								>
@@ -361,7 +409,7 @@ export function Form({
 				</div>
 			)}
 
-			{isCarouselView && filteredFlowTriggers.length > 0 && (
+			{isCarouselView && apps.length > 0 && (
 				<form
 					action={action}
 					className="backdrop-blur-3xl rounded-2xl p-6 text-[14px] text-text resize-none outline-none relative mb-28 md:mb-0"
@@ -382,34 +430,24 @@ export function Form({
 						}}
 					/>
 					<div className="flex flex-col gap-[8px] mb-[8px]">
-						{selectedFlowTriggerId === undefined ? (
-							<div className="text-center py-8">
-								<p className="text-white-400 text-[14px] font-medium font-['DM_Sans']">
-									Please select an app to execute
-								</p>
-							</div>
-						) : (
-							<FormInputRenderer
-								inputs={inputs}
-								validationErrors={validationErrors}
-								isPending={isPending}
-							/>
-						)}
+						<FormInputRenderer
+							inputs={inputs}
+							validationErrors={validationErrors}
+							isPending={isPending}
+						/>
 					</div>
-					{selectedFlowTriggerId !== undefined && (
-						<div className="flex justify-end gap-x-3">
-							<button
-								type="submit"
-								disabled={isPending}
-								className={cn(
-									buttonVariants({ variant: "primary" }),
-									"whitespace-nowrap",
-								)}
-							>
-								{isPending ? "Setting the stage…" : "Start"}
-							</button>
-						</div>
-					)}
+					<div className="flex justify-end gap-x-3">
+						<button
+							type="submit"
+							disabled={isPending}
+							className={cn(
+								buttonVariants({ variant: "primary" }),
+								"whitespace-nowrap",
+							)}
+						>
+							{isPending ? "Setting the stage…" : "Start"}
+						</button>
+					</div>
 				</form>
 			)}
 

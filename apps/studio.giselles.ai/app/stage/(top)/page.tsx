@@ -5,19 +5,18 @@ import {
 	TableCell,
 	TableRow,
 } from "@giselle-internal/ui/table";
+import { FlowTriggerId } from "@giselle-sdk/data-type";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
 import { stageFlag } from "@/flags";
-
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";
 import { performStageAction } from "./actions";
-import { Form } from "./form";
-
+import { FormContainer } from "./form";
 import { ResizableLayout } from "./resizable-layout";
+import { loadSearchParams } from "./search-params";
 import { fetchEnrichedActs, fetchFlowTriggers } from "./services";
-import type { FilterType } from "./types";
+import type { FilterType, TeamId } from "./types";
 
 // The maximum duration of server actions on this page is extended to 800 seconds through enabled fluid compute.
 // https://vercel.com/docs/functions/runtimes#max-duration
@@ -26,7 +25,7 @@ export const maxDuration = 800;
 export default async function StagePage({
 	searchParams,
 }: {
-	searchParams: Promise<{ filter?: string; teamId?: string }>;
+	searchParams: Promise<{ filter?: string; teamId?: string; appId?: string }>;
 }) {
 	const enableStage = await stageFlag();
 	if (!enableStage) {
@@ -41,6 +40,19 @@ export default async function StagePage({
 	const acts = await fetchEnrichedActs(teams, user);
 	const flowTriggers = await fetchFlowTriggers(teams, filterType, user);
 
+	const { appId: unsafeAppId } = await loadSearchParams(searchParams);
+
+	let defaultAppId: FlowTriggerId | undefined;
+	let defaultTeamId: TeamId | undefined;
+	if (unsafeAppId !== undefined) {
+		const result = FlowTriggerId.safeParse(unsafeAppId);
+		if (result.success) {
+			defaultAppId = result.data;
+			defaultTeamId = flowTriggers.find(
+				(trigger) => trigger.sdkData.id === defaultAppId,
+			)?.teamId;
+		}
+	}
 	const teamOptions = teams.map((team) => ({
 		value: team.id,
 		label: team.name,
@@ -54,10 +66,12 @@ export default async function StagePage({
 						<div className="text-center text-[24px] font-mono font-light text-white-100 bg-transparent px-6">
 							What are we perform next ?
 						</div>
-						<Form
+						<FormContainer
 							teamOptions={teamOptions}
 							flowTriggers={flowTriggers}
 							performStageAction={performStageAction}
+							defaultTeamId={defaultTeamId}
+							defaultAppId={defaultAppId}
 						/>
 					</div>
 				}

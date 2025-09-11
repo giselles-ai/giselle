@@ -1,10 +1,6 @@
 "use client";
 
-import {
-	FileCategory,
-	isImageGenerationLanguageModelData,
-	isTextGenerationLanguageModelData,
-} from "@giselle-sdk/data-type";
+import { FileCategory } from "@giselle-sdk/data-type";
 import {
 	type ActionProvider,
 	actionProviders,
@@ -15,15 +11,14 @@ import {
 	actionNodeDefaultName,
 	createActionNode,
 	createFileNode,
-	createImageGenerationNode,
 	createQueryNode,
-	createTextGenerationNode,
 	createTextNode,
 	createTriggerNode,
 	createVectorStoreNode,
 	createWebPageNode,
 	triggerNodeDefaultName,
 	useFeatureFlag,
+	useUsageLimits,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
 import {
@@ -31,6 +26,7 @@ import {
 	hasCapability,
 	type LanguageModel,
 	languageModels,
+	Tier,
 } from "@giselle-sdk/language-model";
 import clsx from "clsx/lite";
 import {
@@ -46,21 +42,15 @@ import { useEffect, useState } from "react";
 import { Tooltip } from "../../../ui/tooltip";
 import { isToolAction } from "../types";
 import {
-	AnthropicIcon,
 	AudioIcon,
 	CapabilityIcon,
 	DocumentIcon,
 	GenerateImageIcon,
 	GenerateTextIcon,
 	GitHubIcon,
-	GoogleWhiteIcon,
-	ImageGenerationNodeIcon,
-	OpenaiIcon,
 	PdfFileIcon,
-	PerplexityIcon,
 	PictureIcon,
 	PromptIcon,
-	ProTag,
 	SearchIcon,
 	TextFileIcon,
 	TooltipAndHotkey,
@@ -72,6 +62,10 @@ import {
 	filterModelsByCategory,
 	filterModelsBySearch,
 	getAvailableModels,
+	isProModelForFreeUser,
+	ModelButton,
+	ProviderIcon,
+	useHoverState,
 } from "./model-components";
 import {
 	addNodeTool,
@@ -86,8 +80,13 @@ import {
 
 export function Toolbar() {
 	const { setSelectedTool, selectedTool } = useToolbar();
-	const [languageModelMouseHovered, setLanguageModelMouseHovered] =
-		useState<LanguageModel | null>(null);
+	const {
+		hoveredModel: languageModelMouseHovered,
+		handleModelHover,
+		handleModelLeave,
+		handleCapabilityPanelEnter,
+		handleCapabilityPanelLeave,
+	} = useHoverState();
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("All");
 	const { llmProviders } = useWorkflowDesigner();
@@ -120,26 +119,37 @@ export function Toolbar() {
 		}
 	}, [searchQuery, modelsFilteredBySearchOnly]);
 
+	// Cleanup is handled by useHoverState hook
+
 	// Models filtered by both search and category
 	const filteredModels = modelsFilteredBySearchOnly.filter((model) =>
 		filterModelsByCategory(model, selectedCategory),
 	);
 
-	// Recommended models for each provider
+	// Get user's tier for recommended models
+	const usageLimits = useUsageLimits();
+	const userTier = usageLimits?.featureTier ?? Tier.enum.free;
+
+	// Recommended models for each provider - adjust based on user tier
+	const isFreeUser = userTier === Tier.enum.free;
 	const openaiModels = getAvailableModels(
-		["gpt-5"],
+		isFreeUser ? ["gpt-5-nano"] : ["gpt-5"],
 		"openai",
 		llmProviders,
 		languageModels,
 	);
 	const anthropicModels = getAvailableModels(
-		["claude-3-opus-20240229", "claude-3-sonnet-20240229"],
+		isFreeUser
+			? ["claude-3-5-haiku-20241022"]
+			: ["claude-3-opus-20240229", "claude-3-sonnet-20240229"],
 		"anthropic",
 		llmProviders,
 		languageModels,
 	);
 	const googleModels = getAvailableModels(
-		["gemini-2.5-pro-exp-03-25", "gemini-1.5-pro-latest", "gemini-1.0-pro"],
+		isFreeUser
+			? ["gemini-2.5-flash-lite-preview-06-17"]
+			: ["gemini-2.5-pro-exp-03-25", "gemini-1.5-pro-latest", "gemini-1.0-pro"],
 		"google",
 		llmProviders,
 		languageModels,
@@ -152,63 +162,20 @@ export function Toolbar() {
 		...googleModels.slice(0, 1),
 	];
 
+	// Hover management is handled by useHoverState hook
+
 	// Rendering function for each model button
-	const renderModelButton = (model: LanguageModel) => {
-		return (
-			<button
-				type="button"
-				key={model.id}
-				className="flex gap-[12px] items-center hover:bg-white-850/10 focus:bg-white-850/10 p-[4px] rounded-[4px]"
-				onClick={() => {
-					const languageModelData = {
-						id: model.id,
-						provider: model.provider,
-						configurations: model.configurations,
-					};
-
-					if (isTextGenerationLanguageModelData(languageModelData)) {
-						setSelectedTool(
-							addNodeTool(createTextGenerationNode(languageModelData)),
-						);
-					}
-
-					if (isImageGenerationLanguageModelData(languageModelData)) {
-						setSelectedTool(
-							addNodeTool(createImageGenerationNode(languageModelData)),
-						);
-					}
-				}}
-				onMouseEnter={() => setLanguageModelMouseHovered(model)}
-				onMouseLeave={() => setLanguageModelMouseHovered(null)}
-			>
-				<div className="flex items-center">
-					{model.provider === "anthropic" && (
-						<AnthropicIcon className="w-[18px] h-[18px]" data-icon />
-					)}
-					{model.provider === "openai" && (
-						<OpenaiIcon className="w-[18px] h-[18px]" data-icon />
-					)}
-					{model.provider === "google" && (
-						<GoogleWhiteIcon className="w-[18px] h-[18px]" data-icon />
-					)}
-					{model.provider === "perplexity" && (
-						<PerplexityIcon className="w-[18px] h-[18px]" data-icon />
-					)}
-					{model.provider === "fal" && (
-						<ImageGenerationNodeIcon
-							modelId={model.id}
-							className="w-[18px] h-[18px]"
-							data-icon
-						/>
-					)}
-				</div>
-				<div className="flex items-center gap-[8px]">
-					<p className="text-[14px] text-left text-nowrap">{model.id}</p>
-					{model.tier === "pro" && <ProTag />}
-				</div>
-			</button>
-		);
-	};
+	const renderModelButton = (model: LanguageModel) => (
+		<ModelButton
+			key={model.id}
+			model={model}
+			userTier={userTier}
+			setSelectedTool={setSelectedTool}
+			addNodeTool={addNodeTool}
+			onMouseEnter={handleModelHover}
+			onMouseLeave={handleModelLeave}
+		/>
+	);
 
 	return (
 		<div className="relative rounded-[8px] overflow-hidden bg-white-900/10">
@@ -533,94 +500,7 @@ export function Toolbar() {
 												{/* Flat list of models with filtering applied */}
 												<div className="flex flex-col gap-[4px] max-h-[200px] overflow-y-auto pr-[4px]">
 													{filteredModels.length > 0 ? (
-														filteredModels.map((model) => (
-															<button
-																type="button"
-																key={model.id}
-																className="flex gap-[12px] items-center hover:bg-white-850/10 focus:bg-white-850/10 p-[4px] rounded-[4px]"
-																onClick={() => {
-																	const languageModelData = {
-																		id: model.id,
-																		provider: model.provider,
-																		configurations: model.configurations,
-																	};
-
-																	if (
-																		isTextGenerationLanguageModelData(
-																			languageModelData,
-																		)
-																	) {
-																		setSelectedTool(
-																			addNodeTool(
-																				createTextGenerationNode(
-																					languageModelData,
-																				),
-																			),
-																		);
-																	}
-
-																	if (
-																		isImageGenerationLanguageModelData(
-																			languageModelData,
-																		)
-																	) {
-																		setSelectedTool(
-																			addNodeTool(
-																				createImageGenerationNode(
-																					languageModelData,
-																				),
-																			),
-																		);
-																	}
-																}}
-																onMouseEnter={() =>
-																	setLanguageModelMouseHovered(model)
-																}
-																onMouseLeave={() =>
-																	setLanguageModelMouseHovered(null)
-																}
-															>
-																<div className="flex items-center">
-																	{model.provider === "anthropic" && (
-																		<AnthropicIcon
-																			className="w-[18px] h-[18px]"
-																			data-icon
-																		/>
-																	)}
-																	{model.provider === "openai" && (
-																		<OpenaiIcon
-																			className="w-[18px] h-[18px]"
-																			data-icon
-																		/>
-																	)}
-																	{model.provider === "google" && (
-																		<GoogleWhiteIcon
-																			className="w-[18px] h-[18px]"
-																			data-icon
-																		/>
-																	)}
-																	{model.provider === "perplexity" && (
-																		<PerplexityIcon
-																			className="w-[18px] h-[18px]"
-																			data-icon
-																		/>
-																	)}
-																	{model.provider === "fal" && (
-																		<ImageGenerationNodeIcon
-																			modelId={model.id}
-																			className="w-[18px] h-[18px]"
-																			data-icon
-																		/>
-																	)}
-																</div>
-																<div className="flex items-center gap-[8px]">
-																	<p className="text-[14px] text-left text-nowrap">
-																		{model.id}
-																	</p>
-																	{model.tier === "pro" && <ProTag />}
-																</div>
-															</button>
-														))
+														filteredModels.map(renderModelButton)
 													) : (
 														<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] p-[8px] text-center">
 															No matching models found
@@ -645,49 +525,45 @@ export function Toolbar() {
 												onOpenAutoFocus={(e) => {
 													e.preventDefault();
 												}}
+												onMouseEnter={handleCapabilityPanelEnter}
+												onMouseLeave={handleCapabilityPanelLeave}
 											>
 												<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-boarder border-transparent" />
+												{/* Pro plan overlay for free users */}
+												{languageModelMouseHovered &&
+													isProModelForFreeUser(
+														languageModelMouseHovered,
+														userTier,
+													) && (
+														<div
+															role="tooltip"
+															className="absolute inset-[2px] z-10 bg-black/80 backdrop-blur-sm rounded-[6px] flex items-center justify-center"
+														>
+															<div className="text-center">
+																<p className="text-blue-400 text-[14px] font-medium mb-3">
+																	This model is available on Pro plan
+																</p>
+																<button
+																	type="button"
+																	className="text-blue-400 hover:text-blue-300 border border-blue-400 hover:border-blue-300 text-[12px] px-4 py-2 rounded-[6px] font-medium transition-colors"
+																	onClick={() => {
+																		window.open("/settings/team", "_blank");
+																	}}
+																>
+																	Upgrade to Pro
+																</button>
+															</div>
+														</div>
+													)}
 												<div className="relative text-white-800 h-[200px]">
 													{languageModelMouseHovered ? (
 														<div className="px-[16px] py-[16px] flex flex-col gap-[24px]">
 															<div className="flex items-start gap-[16px]">
 																<div className="flex items-center shrink-0">
-																	{languageModelMouseHovered.provider ===
-																		"anthropic" && (
-																		<AnthropicIcon
-																			className="size-[24px]"
-																			data-icon
-																		/>
-																	)}
-																	{languageModelMouseHovered.provider ===
-																		"openai" && (
-																		<OpenaiIcon
-																			className="size-[24px]"
-																			data-icon
-																		/>
-																	)}
-																	{languageModelMouseHovered.provider ===
-																		"google" && (
-																		<GoogleWhiteIcon
-																			className="size-[24px]"
-																			data-icon
-																		/>
-																	)}
-																	{languageModelMouseHovered.provider ===
-																		"perplexity" && (
-																		<PerplexityIcon
-																			className="size-[24px]"
-																			data-icon
-																		/>
-																	)}
-																	{languageModelMouseHovered.provider ===
-																		"fal" && (
-																		<ImageGenerationNodeIcon
-																			modelId={languageModelMouseHovered.id}
-																			className="size-[24px]"
-																			data-icon
-																		/>
-																	)}
+																	<ProviderIcon
+																		model={languageModelMouseHovered}
+																		className="size-[24px]"
+																	/>
 																</div>
 																<p className="text-[22px] font-accent leading-none">
 																	{languageModelMouseHovered.id}
@@ -857,7 +733,7 @@ export function Toolbar() {
 														</div>
 													) : (
 														<div className="flex h-full items-center justify-center">
-															<p className="text-[14px] text-black-400">
+															<p className="text-[14px] text-black-400 text-center">
 																Hover over a model to view details
 															</p>
 														</div>

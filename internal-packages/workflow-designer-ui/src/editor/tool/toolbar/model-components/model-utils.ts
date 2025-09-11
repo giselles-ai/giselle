@@ -1,8 +1,20 @@
 import {
+	isImageGenerationLanguageModelData,
+	isTextGenerationLanguageModelData,
+	type Node,
+} from "@giselle-sdk/data-type";
+import {
+	createImageGenerationNode,
+	createTextGenerationNode,
+} from "@giselle-sdk/giselle/react";
+import {
 	Capability,
 	hasCapability,
+	hasTierAccess,
 	type LanguageModel,
+	type Tier,
 } from "@giselle-sdk/language-model";
+import type { AddNodeTool } from "../../types";
 
 export function filterModelsByCategory(
 	model: LanguageModel,
@@ -50,4 +62,41 @@ export function getAvailableModels(
 	return models
 		.filter((m) => m.provider === provider && llmProviders.includes(provider))
 		.slice(0, 1);
+}
+
+export function isProModelForFreeUser(
+	model: LanguageModel,
+	userTier: Tier,
+): boolean {
+	return userTier === "free" && !hasTierAccess(model, userTier);
+}
+
+export function createModelClickHandler(
+	model: LanguageModel,
+	userTier: Tier,
+	setSelectedTool: (tool: AddNodeTool) => void,
+	addNodeTool: (node: Node) => AddNodeTool,
+) {
+	return () => {
+		// Prevent adding pro models for free users
+		if (isProModelForFreeUser(model, userTier)) {
+			return;
+		}
+
+		const languageModelData = {
+			id: model.id,
+			provider: model.provider,
+			configurations: model.configurations,
+		};
+
+		if (isTextGenerationLanguageModelData(languageModelData)) {
+			setSelectedTool(addNodeTool(createTextGenerationNode(languageModelData)));
+		}
+
+		if (isImageGenerationLanguageModelData(languageModelData)) {
+			setSelectedTool(
+				addNodeTool(createImageGenerationNode(languageModelData)),
+			);
+		}
+	};
 }

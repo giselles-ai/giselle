@@ -29,8 +29,7 @@ export function Button({
 				"relative flex items-center justify-center outline-none overflow-hidden",
 				"focus-visible:ring-2 focus-visible:ring-primary-700/60 focus-visible:ring-offset-1",
 				"data-[size=default]:px-[8px] data-[size=default]:py-[2px] data-[size=default]:rounded-[2px] data-[size=default]:gap-[4px]",
-
-				"data-[size=large]:px-4 data-[size=large]:h-[38px] data-[size=large]:rounded-lg data-[size=large]:gap-[6px]",
+				"data-[size=large]:px-6 data-[size=large]:h-[38px] data-[size=large]:rounded-lg data-[size=large]:gap-[6px]",
 				"data-[size=compact]:px-[4px] data-[size=compact]:py-[0px] data-[size=compact]:rounded-[2px] data-[size=compact]:gap-[2px]",
 				"data-[style=subtle]:hover:bg-ghost-element-hover",
 				"data-[style=filled]:bg-background data-[style=filled]:border data-[style=filled]:border-border data-[style=filled]:hover:bg-ghost-element-hover",
