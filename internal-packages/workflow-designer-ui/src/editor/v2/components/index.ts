@@ -1,6 +1,6 @@
 export {
-  UpdateNotificationButton,
-  UpdateNotificationProvider,
+	UpdateNotificationButton,
+	UpdateNotificationProvider,
 } from "./update-notification-button";
 export { V2Container } from "./v2-container";
 export { V2Footer } from "./v2-footer";
