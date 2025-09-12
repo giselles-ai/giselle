@@ -96,6 +96,8 @@ const config: KnipConfig = {
 			entry: ["tests/e2e/global-setup.ts"],
 			ignore: ["scripts/**"],
 			ignoreDependencies: [
+				// readable-stream uses redis internally, so it's required. It's listed as devDependencies in readable-stream but should be peerDependencies.
+				"redis",
 				...serverExternalPackages,
 				...nextPredefinedExternalPackages,
 			],

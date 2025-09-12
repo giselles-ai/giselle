@@ -10,6 +10,7 @@ import type {
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
 import type { EmbeddingMetrics, QueryService } from "@giselle-sdk/rag";
 import type { ModelMessage, ProviderMetadata } from "ai";
+import type { ResumableStreamContext } from "resumable-stream";
 import type { Storage } from "unstorage";
 import type { GiselleLogger } from "../logger/types";
 import type { GiselleStorage } from "./experimental_storage";
@@ -83,6 +84,7 @@ export interface GiselleEngineContext {
 		xTitle: string;
 	};
 	logger: GiselleLogger;
+	resumableStreamContext?: ResumableStreamContext;
 }
 
 interface GitHubInstalltionAppAuthResolver {
@@ -168,4 +170,5 @@ export interface GiselleEngineConfig {
 		xTitle: string;
 	};
 	logger?: GiselleLogger;
+	resumableStreamContext?: ResumableStreamContext;
 }
