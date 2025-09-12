@@ -74,6 +74,28 @@ function formatFileSize(size: number): string {
 	return `${formattedSize} ${units[i]}`;
 }
 
+function generateIncrementalUniqueName(
+	originalName: string,
+	usedNames: Set<string>,
+): string {
+	if (!usedNames.has(originalName)) {
+		usedNames.add(originalName);
+		return originalName;
+	}
+	const lastDot = originalName.lastIndexOf(".");
+	const hasExt = lastDot > 0 && lastDot < originalName.length - 1;
+	const base = hasExt ? originalName.slice(0, lastDot) : originalName;
+	const ext = hasExt ? originalName.slice(lastDot) : "";
+	let i = 1;
+	let candidate = `${base} ${i}${ext}`;
+	while (usedNames.has(candidate)) {
+		i += 1;
+		candidate = `${base} ${i}${ext}`;
+	}
+	usedNames.add(candidate);
+	return candidate;
+}
+
 export function FilePanel({ node, config }: FilePanelProps) {
 	const [isDragging, setIsDragging] = useState(false);
 	const [isValidFile, setIsValidFile] = useState(true);
@@ -157,7 +179,23 @@ export function FilePanel({ node, config }: FilePanelProps) {
 		(fileList: FileList) => {
 			try {
 				assertFiles(fileList);
-				addFilesInternal(Array.from(fileList));
+				const originals = Array.from(fileList);
+				let filesToAdd: File[] = originals;
+				if (node.content.category === "image") {
+					const used = new Set<string>(node.content.files.map((f) => f.name));
+					const renamed: File[] = [];
+					for (const f of originals) {
+						const name = generateIncrementalUniqueName(f.name, used);
+						renamed.push(
+							new File([f], name, {
+								type: f.type,
+								lastModified: f.lastModified,
+							}),
+						);
+					}
+					filesToAdd = renamed;
+				}
+				addFilesInternal(filesToAdd);
 			} catch (e) {
 				if (e instanceof InvalidFileTypeError) {
 					toasts.error(e.message);
@@ -168,7 +206,14 @@ export function FilePanel({ node, config }: FilePanelProps) {
 				}
 			}
 		},
-		[addFilesInternal, maxFileSize, assertFiles, toasts],
+		[
+			addFilesInternal,
+			maxFileSize,
+			assertFiles,
+			toasts,
+			node.content.category,
+			node.content.files,
+		],
 	);
 
 	const handlePaste = useCallback(
