@@ -7,32 +7,32 @@ settings:
 catalogs:
   default:
     '@ai-sdk/anthropic':
-      specifier: 2.0.9
-      version: 2.0.9
+      specifier: 2.0.15
+      version: 2.0.15
     '@ai-sdk/fal':
-      specifier: 1.0.11
-      version: 1.0.11
+      specifier: 1.0.12
+      version: 1.0.12
     '@ai-sdk/gateway':
-      specifier: 1.0.15
-      version: 1.0.15
+      specifier: 1.0.21
+      version: 1.0.21
     '@ai-sdk/google':
-      specifier: 2.0.11
-      version: 2.0.11
+      specifier: 2.0.13
+      version: 2.0.13
     '@ai-sdk/google-vertex':
-      specifier: 3.0.16
-      version: 3.0.16
+      specifier: 3.0.25
+      version: 3.0.25
     '@ai-sdk/openai':
-      specifier: 2.0.23
-      version: 2.0.23
+      specifier: 2.0.28
+      version: 2.0.28
     '@ai-sdk/perplexity':
-      specifier: 2.0.7
-      version: 2.0.7
+      specifier: 2.0.8
+      version: 2.0.8
     '@ai-sdk/provider':
       specifier: 2.0.0
       version: 2.0.0
     '@ai-sdk/react':
-      specifier: 2.0.29
-      version: 2.0.29
+      specifier: 2.0.40
+      version: 2.0.40
     '@aws-sdk/client-s3':
       specifier: 3.842.0
       version: 3.842.0
@@ -124,8 +124,8 @@ catalogs:
       specifier: 12.8.3
       version: 12.8.3
     ai:
-      specifier: 5.0.29
-      version: 5.0.29
+      specifier: 5.0.40
+      version: 5.0.40
     clsx:
       specifier: 2.1.1
       version: 2.1.1
@@ -204,6 +204,9 @@ catalogs:
     react-resizable-panels:
       specifier: 2.1.7
       version: 2.1.7
+    resumable-stream:
+      specifier: 2.2.4
+      version: 2.2.4
     swr:
       specifier: 2.2.5
       version: 2.2.5
@@ -479,7 +482,7 @@ importers:
         version: 1.0.12(next@15.5.2(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.53.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react@19.1.1)
       ai:
         specifier: 'catalog:'
-        version: 5.0.29(zod@3.25.76)
+        version: 5.0.40(zod@3.25.76)
       boring-avatars:
         specifier: 1.11.1
         version: 1.11.1
@@ -518,7 +521,7 @@ importers:
         version: 26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       langfuse-vercel:
         specifier: 3.37.0
-        version: 3.37.0(ai@5.0.29(zod@3.25.76))
+        version: 3.37.0(ai@5.0.40(zod@3.25.76))
       lucide-react:
         specifier: 'catalog:'
         version: 0.473.0(react@19.1.1)
@@ -558,9 +561,15 @@ importers:
       react-resizable-panels:
         specifier: 'catalog:'
         version: 2.1.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      redis:
+        specifier: 5.8.2
+        version: 5.8.2
       require-in-the-middle:
         specifier: 7.5.2
         version: 7.5.2
+      resumable-stream:
+        specifier: 'catalog:'
+        version: 2.2.4
       stripe:
         specifier: 18.4.0
         version: 18.4.0(@types/node@22.14.0)
@@ -770,7 +779,7 @@ importers:
         version: 19.1.7(@types/react@19.1.10)
       ai:
         specifier: 'catalog:'
-        version: 5.0.29(zod@3.25.76)
+        version: 5.0.40(zod@3.25.76)
       pino:
         specifier: 'catalog:'
         version: 9.9.0
@@ -826,31 +835,31 @@ importers:
     dependencies:
       '@ai-sdk/anthropic':
         specifier: 'catalog:'
-        version: 2.0.9(zod@3.25.76)
+        version: 2.0.15(zod@3.25.76)
       '@ai-sdk/fal':
         specifier: 'catalog:'
-        version: 1.0.11(zod@3.25.76)
+        version: 1.0.12(zod@3.25.76)
       '@ai-sdk/gateway':
         specifier: 'catalog:'
-        version: 1.0.15(zod@3.25.76)
+        version: 1.0.21(zod@3.25.76)
       '@ai-sdk/google':
         specifier: 'catalog:'
-        version: 2.0.11(zod@3.25.76)
+        version: 2.0.13(zod@3.25.76)
       '@ai-sdk/google-vertex':
         specifier: 'catalog:'
-        version: 3.0.16(zod@3.25.76)
+        version: 3.0.25(zod@3.25.76)
       '@ai-sdk/openai':
         specifier: 'catalog:'
-        version: 2.0.23(zod@3.25.76)
+        version: 2.0.28(zod@3.25.76)
       '@ai-sdk/perplexity':
         specifier: 'catalog:'
-        version: 2.0.7(zod@3.25.76)
+        version: 2.0.8(zod@3.25.76)
       '@ai-sdk/provider':
         specifier: 'catalog:'
         version: 2.0.0
       '@ai-sdk/react':
         specifier: 'catalog:'
-        version: 2.0.29(react@19.1.1)(zod@3.25.76)
+        version: 2.0.40(react@19.1.1)(zod@3.25.76)
       '@giselle-sdk/flow':
         specifier: workspace:^
         version: link:../flow
@@ -868,7 +877,7 @@ importers:
         version: link:../web-search
       ai:
         specifier: 'catalog:'
-        version: 5.0.29(zod@3.25.76)
+        version: 5.0.40(zod@3.25.76)
       next:
         specifier: 'catalog:'
         version: 15.5.2(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.53.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -915,6 +924,9 @@ importers:
       pino:
         specifier: 'catalog:'
         version: 9.9.0
+      resumable-stream:
+        specifier: 'catalog:'
+        version: 2.2.4
       tsup:
         specifier: 'catalog:'
         version: 8.3.5(jiti@2.4.2)(postcss@8.5.6)(typescript@5.7.3)(yaml@2.7.0)
@@ -947,7 +959,7 @@ importers:
         version: 5.1.1(graphql@16.10.0)
       ai:
         specifier: 'catalog:'
-        version: 5.0.29(zod@3.25.76)
+        version: 5.0.40(zod@3.25.76)
       gql.tada:
         specifier: 'catalog:'
         version: 1.8.10(graphql@16.10.0)(typescript@5.7.3)
@@ -1000,7 +1012,7 @@ importers:
         version: link:../../tools/tsconfig
       ai:
         specifier: 'catalog:'
-        version: 5.0.29(zod@3.25.76)
+        version: 5.0.40(zod@3.25.76)
       tsup:
         specifier: 'catalog:'
         version: 8.3.5(jiti@2.4.2)(postcss@8.5.6)(typescript@5.7.3)(yaml@2.7.0)
@@ -1025,16 +1037,16 @@ importers:
     dependencies:
       '@ai-sdk/google':
         specifier: 'catalog:'
-        version: 2.0.11(zod@3.25.76)
+        version: 2.0.13(zod@3.25.76)
       '@ai-sdk/openai':
         specifier: 'catalog:'
-        version: 2.0.23(zod@3.25.76)
+        version: 2.0.28(zod@3.25.76)
       '@giselle-sdk/data-type':
         specifier: workspace:*
         version: link:../data-type
       ai:
         specifier: 'catalog:'
-        version: 5.0.29(zod@3.25.76)
+        version: 5.0.40(zod@3.25.76)
       openai:
         specifier: 'catalog:'
         version: 5.11.0(ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@6.0.5))(zod@3.25.76)
@@ -1262,50 +1274,50 @@ packages:
       graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
       typescript: ^5.0.0
 
-  '@ai-sdk/anthropic@2.0.9':
-    resolution: {integrity: sha512-1kQgL2A3PeqfEcHHmqy4NxRc8rbgLS71bHBuvDFfDz3VAAyndkilPMCLNDSP2mJVGAej2EMWJ1sShRAxzn70jA==}
+  '@ai-sdk/anthropic@2.0.15':
+    resolution: {integrity: sha512-MxNGoYvKyF7IqMU0k9gogyiJi0/ogwg6i2Baw862BMjM2KJuBcCPqh6/lrpwiDg6pqphGUc+LfjPd6PRFARnng==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4
 
-  '@ai-sdk/fal@1.0.11':
-    resolution: {integrity: sha512-WK0abPDC0/ALovRv2G7EjwP2iMSo4lNWJqzSuoCIde2sq051tuxerSASd5FgerK1LbfsAGHZTkX+s/aPiycCEg==}
+  '@ai-sdk/fal@1.0.12':
+    resolution: {integrity: sha512-yKm1mn0qfmd6WVICyMJU7P6VnnKUxn9h3hY1COLfK6tt1cr6+eAe5N6cIHmUekLb0D29M/shY3jPVpPn4Y1X2Q==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4
 
-  '@ai-sdk/gateway@1.0.15':
-    resolution: {integrity: sha512-xySXoQ29+KbGuGfmDnABx+O6vc7Gj7qugmj1kGpn0rW0rQNn6UKUuvscKMzWyv1Uv05GyC1vqHq8ZhEOLfXscQ==}
+  '@ai-sdk/gateway@1.0.21':
+    resolution: {integrity: sha512-yQPrMb1v0P8GwmmpcCT2DGPfgJVRkJ9QaRRJGO0+Em+wI+Xv3lvHHIc3ImVR3jjVfJPih/cNWWALUgRERfQaxQ==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4
 
-  '@ai-sdk/google-vertex@3.0.16':
-    resolution: {integrity: sha512-tStlnOCRGRqKKJSCOtXhijX4r9kYVK2v+Vs7miJnfvr3sZfO8nRS0xnNhfgu17xuNi5LMMufeCYURTz4lKxzUQ==}
+  '@ai-sdk/google-vertex@3.0.25':
+    resolution: {integrity: sha512-X4VRfFHTMr50wo8qvoA4WmxmehSAMzEAiJ5pPn0/EPB4kxytz53g7BijRBDL+MZpqXRNiwF3taf4p3P1WUMnVA==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4
 
-  '@ai-sdk/google@2.0.11':
-    resolution: {integrity: sha512-dnVIgSz1DZD/0gVau6ifYN3HZFN15HZwC9VjevTFfvrfSfbEvpXj5x/k/zk/0XuQrlQ5g8JiwJtxc9bx24x2xw==}
+  '@ai-sdk/google@2.0.13':
+    resolution: {integrity: sha512-5WauM+IrqbllWT4uXZVrfTnPCSKTtkHGNsD2CYD0JgGfeIOpa285UYCYUi0Z4RtcovwnZitvQABq465FfeLwzA==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4
 
-  '@ai-sdk/openai@2.0.23':
-    resolution: {integrity: sha512-uOXk8HzmMUoCmD0JMX/Y1HC/ABOR/Jza2Z2rkCaJISDYz3fp5pnb6eNjcPRL48JSMzRAGp9UP5p0OpxS06IJZg==}
+  '@ai-sdk/openai@2.0.28':
+    resolution: {integrity: sha512-Z2mG7PjUKbpT8fMexE6yrorxXVzGHSl3jKF293w2i6s9Dc6X81Gf6Z0OGNnkrftLtW4PXr7RZ/9xoyusBZW4uA==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4
 
-  '@ai-sdk/perplexity@2.0.7':
-    resolution: {integrity: sha512-IYRdGDnGsxuQg1OyeiVnOWGDkdqynBO63eY4ArIfXtn+V/qFj1Ha1iFXVRafEpXUKiixPOQnire0R/RUB0v1Eg==}
+  '@ai-sdk/perplexity@2.0.8':
+    resolution: {integrity: sha512-e24PUYXMoXPFhglzO17FEafr2+NljKS8ivHP5Tk0R+aiElfOSqDEjSDsxyL6aBFKzX+Bnrlr33FwfVwz8Ozt2Q==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4
 
-  '@ai-sdk/provider-utils@3.0.7':
-    resolution: {integrity: sha512-o3BS5/t8KnBL3ubP8k3w77AByOypLm+pkIL/DCw0qKkhDbvhCy+L3hRTGPikpdb8WHcylAeKsjgwOxhj4cqTUA==}
+  '@ai-sdk/provider-utils@3.0.8':
+    resolution: {integrity: sha512-cDj1iigu7MW2tgAQeBzOiLhjHOUM9vENsgh4oAVitek0d//WdgfPCsKO3euP7m7LyO/j9a1vr/So+BGNdpFXYw==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4
@@ -1314,8 +1326,8 @@ packages:
     resolution: {integrity: sha512-6o7Y2SeO9vFKB8lArHXehNuusnpddKPk7xqL7T2/b+OvXMRIXUO1rR4wcv1hAFUAT9avGZshty3Wlua/XA7TvA==}
     engines: {node: '>=18'}
 
-  '@ai-sdk/react@2.0.29':
-    resolution: {integrity: sha512-RJeI8k//leBrGtgFT0iPGiralLm78J8N6ZY8X0CCsCj2ldEvhQJSPROKR38oLJS3lLwppTK8sxE9LBomggossg==}
+  '@ai-sdk/react@2.0.40':
+    resolution: {integrity: sha512-NG27F+NOWOzBIWfRNFy12WqkQhHRhaFCGqplc3nf+okV77N2ZiCZjV4AsjVbYsi2Vr7/EdfPnkqqaEAO6HOQrA==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19 || ^19.0.0-rc
@@ -3923,6 +3935,34 @@ packages:
   '@radix-ui/rect@1.1.0':
     resolution: {integrity: sha512-A9+lCBZoaMJlVKcRBz2YByCG+Cp2t6nAnMnNba+XiWxnj6r4JUFqfsgwocMBZU9LPtdxC6wB56ySYpc7LQIoJg==}
 
+  '@redis/bloom@5.8.2':
+    resolution: {integrity: sha512-855DR0ChetZLarblio5eM0yLwxA9Dqq50t8StXKp5bAtLT0G+rZ+eRzzqxl37sPqQKjUudSYypz55o6nNhbz0A==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@redis/client': ^5.8.2
+
+  '@redis/client@5.8.2':
+    resolution: {integrity: sha512-WtMScno3+eBpTac1Uav2zugXEoXqaU23YznwvFgkPwBQVwEHTDgOG7uEAObtZ/Nyn8SmAMbqkEubJaMOvnqdsQ==}
+    engines: {node: '>= 18'}
+
+  '@redis/json@5.8.2':
+    resolution: {integrity: sha512-uxpVfas3I0LccBX9rIfDgJ0dBrUa3+0Gc8sEwmQQH0vHi7C1Rx1Qn8Nv1QWz5bohoeIXMICFZRcyDONvum2l/w==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@redis/client': ^5.8.2
+
+  '@redis/search@5.8.2':
+    resolution: {integrity: sha512-cNv7HlgayavCBXqPXgaS97DRPVWFznuzsAmmuemi2TMCx5scwLiP50TeZvUS06h/MG96YNPe6A0Zt57yayfxwA==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@redis/client': ^5.8.2
+
+  '@redis/time-series@5.8.2':
+    resolution: {integrity: sha512-g2NlHM07fK8H4k+613NBsk3y70R2JIM2dPMSkhIjl2Z17SYvaYKdusz85d7VYOrZBWtDrHV/WD2E3vGu+zni8A==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@redis/client': ^5.8.2
+
   '@remirror/core-constants@3.0.0':
     resolution: {integrity: sha512-42aWfPrimMfDKDi4YegyS7x+/0tlzaqwPQCULLanv3DMIlu96KTJR0fM5isWX2UViOqlGnX6YFgqWepcX+XMNg==}
 
@@ -5086,8 +5126,8 @@ packages:
     resolution: {integrity: sha512-jRR5wdylq8CkOe6hei19GGZnxM6rBGwFl3Bg0YItGDimvjGtAvdZk4Pu6Cl4u4Igsws4a1fd1Vq3ezrhn4KmFw==}
     engines: {node: '>= 14'}
 
-  ai@5.0.29:
-    resolution: {integrity: sha512-jA/d6X5hn3r/PxgZjwzDUMJiEkLBIVVD2gcbpcT/FD4MSLxm5sn6fH1y2VFXVgBEd95mNzQ8ALQubysc6E8Y9g==}
+  ai@5.0.40:
+    resolution: {integrity: sha512-AEKVjVQjnzomEz39f1axnCLtmNRU/BrP12Ou6ztinGhv5u1VxrrRk5qbXugVI0ijeaVwxKQ/SWs0dicUC0qLEA==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4
@@ -5320,6 +5360,10 @@ packages:
   clsx@2.1.1:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
     engines: {node: '>=6'}
+
+  cluster-key-slot@1.1.2:
+    resolution: {integrity: sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==}
+    engines: {node: '>=0.10.0'}
 
   color-convert@2.0.1:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
@@ -7253,6 +7297,10 @@ packages:
     resolution: {integrity: sha512-57frrGM/OCTLqLOAh0mhVA9VBMHd+9U7Zb2THMGdBUoZVOtGbJzjxsYGDJ3A9AYYCP4hn6y1TVbaOfzWtm5GFg==}
     engines: {node: '>= 12.13.0'}
 
+  redis@5.8.2:
+    resolution: {integrity: sha512-31vunZj07++Y1vcFGcnNWEf5jPoTkGARgfWI4+Tk55vdwHxhAvug8VEtW7Cx+/h47NuJTEg/JL77zAwC6E0OeA==}
+    engines: {node: '>= 18'}
+
   regenerator-runtime@0.14.1:
     resolution: {integrity: sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==}
 
@@ -7298,6 +7346,9 @@ packages:
   resolve@1.22.8:
     resolution: {integrity: sha512-oKWePCxqpd6FlLvGV1VU0x7bkPmmCNolxzjMf4NczoDnQcIWrAF+cPtZn5i6n+RfD2d9i0tzpKnG6Yk168yIyw==}
     hasBin: true
+
+  resumable-stream@2.2.4:
+    resolution: {integrity: sha512-1MPxh4IjQVNPR4m4/7zV7/QtBa6qAhrWs+RPTeai8LnO1YnxFaGy+VbYtd0iLGZZ967F+rmOSFsNdm4BeoSYgA==}
 
   retry@0.13.1:
     resolution: {integrity: sha512-XQBQ3I8W1Cge0Seh+6gjj03LbmRFWuoszgK9ooCpwYIrhhoO80pfq4cUkU5DkknwfOfFteRwlZ56PYOGYyFWdg==}
@@ -8282,55 +8333,55 @@ snapshots:
       graphql: 16.10.0
       typescript: 5.7.3
 
-  '@ai-sdk/anthropic@2.0.9(zod@3.25.76)':
+  '@ai-sdk/anthropic@2.0.15(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.7(zod@3.25.76)
+      '@ai-sdk/provider-utils': 3.0.8(zod@3.25.76)
       zod: 3.25.76
 
-  '@ai-sdk/fal@1.0.11(zod@3.25.76)':
+  '@ai-sdk/fal@1.0.12(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.7(zod@3.25.76)
+      '@ai-sdk/provider-utils': 3.0.8(zod@3.25.76)
       zod: 3.25.76
 
-  '@ai-sdk/gateway@1.0.15(zod@3.25.76)':
+  '@ai-sdk/gateway@1.0.21(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.7(zod@3.25.76)
+      '@ai-sdk/provider-utils': 3.0.8(zod@3.25.76)
       zod: 3.25.76
 
-  '@ai-sdk/google-vertex@3.0.16(zod@3.25.76)':
+  '@ai-sdk/google-vertex@3.0.25(zod@3.25.76)':
     dependencies:
-      '@ai-sdk/anthropic': 2.0.9(zod@3.25.76)
-      '@ai-sdk/google': 2.0.11(zod@3.25.76)
+      '@ai-sdk/anthropic': 2.0.15(zod@3.25.76)
+      '@ai-sdk/google': 2.0.13(zod@3.25.76)
       '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.7(zod@3.25.76)
+      '@ai-sdk/provider-utils': 3.0.8(zod@3.25.76)
       google-auth-library: 9.15.0
       zod: 3.25.76
     transitivePeerDependencies:
       - encoding
       - supports-color
 
-  '@ai-sdk/google@2.0.11(zod@3.25.76)':
+  '@ai-sdk/google@2.0.13(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.7(zod@3.25.76)
+      '@ai-sdk/provider-utils': 3.0.8(zod@3.25.76)
       zod: 3.25.76
 
-  '@ai-sdk/openai@2.0.23(zod@3.25.76)':
+  '@ai-sdk/openai@2.0.28(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.7(zod@3.25.76)
+      '@ai-sdk/provider-utils': 3.0.8(zod@3.25.76)
       zod: 3.25.76
 
-  '@ai-sdk/perplexity@2.0.7(zod@3.25.76)':
+  '@ai-sdk/perplexity@2.0.8(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.7(zod@3.25.76)
+      '@ai-sdk/provider-utils': 3.0.8(zod@3.25.76)
       zod: 3.25.76
 
-  '@ai-sdk/provider-utils@3.0.7(zod@3.25.76)':
+  '@ai-sdk/provider-utils@3.0.8(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@standard-schema/spec': 1.0.0
@@ -8341,10 +8392,10 @@ snapshots:
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/react@2.0.29(react@19.1.1)(zod@3.25.76)':
+  '@ai-sdk/react@2.0.40(react@19.1.1)(zod@3.25.76)':
     dependencies:
-      '@ai-sdk/provider-utils': 3.0.7(zod@3.25.76)
-      ai: 5.0.29(zod@3.25.76)
+      '@ai-sdk/provider-utils': 3.0.8(zod@3.25.76)
+      ai: 5.0.40(zod@3.25.76)
       react: 19.1.1
       swr: 2.2.5(react@19.1.1)
       throttleit: 2.1.0
@@ -11270,6 +11321,26 @@ snapshots:
 
   '@radix-ui/rect@1.1.0': {}
 
+  '@redis/bloom@5.8.2(@redis/client@5.8.2)':
+    dependencies:
+      '@redis/client': 5.8.2
+
+  '@redis/client@5.8.2':
+    dependencies:
+      cluster-key-slot: 1.1.2
+
+  '@redis/json@5.8.2(@redis/client@5.8.2)':
+    dependencies:
+      '@redis/client': 5.8.2
+
+  '@redis/search@5.8.2(@redis/client@5.8.2)':
+    dependencies:
+      '@redis/client': 5.8.2
+
+  '@redis/time-series@5.8.2(@redis/client@5.8.2)':
+    dependencies:
+      '@redis/client': 5.8.2
+
   '@remirror/core-constants@3.0.0': {}
 
   '@rollup/plugin-commonjs@28.0.1(rollup@4.35.0)':
@@ -12621,11 +12692,11 @@ snapshots:
 
   agent-base@7.1.3: {}
 
-  ai@5.0.29(zod@3.25.76):
+  ai@5.0.40(zod@3.25.76):
     dependencies:
-      '@ai-sdk/gateway': 1.0.15(zod@3.25.76)
+      '@ai-sdk/gateway': 1.0.21(zod@3.25.76)
       '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.7(zod@3.25.76)
+      '@ai-sdk/provider-utils': 3.0.8(zod@3.25.76)
       '@opentelemetry/api': 1.9.0
       zod: 3.25.76
 
@@ -12835,6 +12906,8 @@ snapshots:
       wrap-ansi: 7.0.0
 
   clsx@2.1.1: {}
+
+  cluster-key-slot@1.1.2: {}
 
   color-convert@2.0.1:
     dependencies:
@@ -13800,9 +13873,9 @@ snapshots:
     dependencies:
       mustache: 4.2.0
 
-  langfuse-vercel@3.37.0(ai@5.0.29(zod@3.25.76)):
+  langfuse-vercel@3.37.0(ai@5.0.40(zod@3.25.76)):
     dependencies:
-      ai: 5.0.29(zod@3.25.76)
+      ai: 5.0.40(zod@3.25.76)
       langfuse: 3.38.4
       langfuse-core: 3.37.0
 
@@ -14991,6 +15064,14 @@ snapshots:
 
   real-require@0.2.0: {}
 
+  redis@5.8.2:
+    dependencies:
+      '@redis/bloom': 5.8.2(@redis/client@5.8.2)
+      '@redis/client': 5.8.2
+      '@redis/json': 5.8.2(@redis/client@5.8.2)
+      '@redis/search': 5.8.2(@redis/client@5.8.2)
+      '@redis/time-series': 5.8.2(@redis/client@5.8.2)
+
   regenerator-runtime@0.14.1: {}
 
   rehype-raw@7.0.0:
@@ -15060,6 +15141,8 @@ snapshots:
       is-core-module: 2.16.1
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
+
+  resumable-stream@2.2.4: {}
 
   retry@0.13.1: {}
 

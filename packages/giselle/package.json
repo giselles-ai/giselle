@@ -49,6 +49,7 @@
 		"@types/react": "catalog:",
 		"@zod/core": "0.11.6",
 		"pino": "catalog:",
+		"resumable-stream": "catalog:",
 		"tsup": "catalog:",
 		"vitest": "catalog:",
 		"zustand": "catalog:"
@@ -78,6 +79,7 @@
 		"zod": "catalog:"
 	},
 	"peerDependencies": {
+		"resumable-stream": "catalog:",
 		"zustand": "catalog:"
 	}
 }

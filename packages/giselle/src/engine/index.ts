@@ -89,6 +89,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		logger: config.logger ?? noopLogger,
 	};
 	return {
+		context,
 		copyWorkspace: async (workspaceId: WorkspaceId, name?: string) => {
 			return await copyWorkspace({ context, workspaceId, name });
 		},

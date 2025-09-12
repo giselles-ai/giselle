@@ -14,7 +14,7 @@ catalog:
   "@next/env": 15.5.2
   "@next/third-parties": 15.5.2
   unstorage: 1.14.4
-  ai: 5.0.29
+  ai: 5.0.40
   "@types/node": 22.14.0
   "@types/react": 19.1.10
   "@types/react-dom": 19.1.7
@@ -30,14 +30,14 @@ catalog:
   clsx: 2.1.1
   "@xyflow/react": 12.8.3
   openai: 5.11.0
-  "@ai-sdk/openai": 2.0.23
-  "@ai-sdk/anthropic": 2.0.9
-  "@ai-sdk/google": 2.0.11
-  "@ai-sdk/google-vertex": 3.0.16
-  "@ai-sdk/perplexity": 2.0.7
-  "@ai-sdk/react": 2.0.29
-  "@ai-sdk/fal": 1.0.11
-  "@ai-sdk/gateway": 1.0.15
+  "@ai-sdk/openai": 2.0.28
+  "@ai-sdk/anthropic": 2.0.15
+  "@ai-sdk/google": 2.0.13
+  "@ai-sdk/google-vertex": 3.0.25
+  "@ai-sdk/perplexity": 2.0.8
+  "@ai-sdk/react": 2.0.40
+  "@ai-sdk/fal": 1.0.12
+  "@ai-sdk/gateway": 1.0.21
   "@tailwindcss/typography": 0.5.16
   tailwindcss-animate: 1.0.7
   react-resizable-panels: 2.1.7
@@ -95,3 +95,5 @@ catalog:
   nuqs: 2.6.0
   pino: 9.9.0
   zustand: 5.0.8
+  resumable-stream: 2.2.4
+  redis: 5.8.2
