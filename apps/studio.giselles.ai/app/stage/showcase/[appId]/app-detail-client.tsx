@@ -1,9 +1,9 @@
 "use client";
 
+import { Button } from "@giselle-internal/ui/button";
 import { Play, Star } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { GlassButton } from "@/components/ui/glass-button";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { RunModal } from "./components/run-modal";
 
@@ -193,13 +193,14 @@ export function AppDetailClient({ appDetails }: AppDetailClientProps) {
 								>
 									Edit
 								</Link>
-								<GlassButton
+								<Button
+									variant="glass"
 									onClick={handleRunClick}
 									className="flex-1 sm:flex-none justify-center"
 								>
 									<Play className="h-3 w-3" />
 									Run
-								</GlassButton>
+								</Button>
 							</div>
 						</div>
 					</div>

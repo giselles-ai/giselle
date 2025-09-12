@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@giselle-internal/ui/button";
+import { Input } from "@giselle-internal/ui/input";
 import { Select } from "@giselle-internal/ui/select";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
@@ -14,8 +16,6 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { GlassButton } from "@/components/ui/glass-button";
-import { Input } from "@/components/ui/input";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { Card } from "../../(main)/settings/components/card";
 import {
@@ -375,14 +375,14 @@ export function ShowcaseClient({
 							) : (
 								<Card className="gap-0 py-2">
 									{sortedApps.map((app) => (
-										<button
+										<div
 											key={app.id}
-											type="button"
-											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-white/10 cursor-pointer hover:bg-white/5 transition-colors w-full text-left"
-											onClick={() => router.push(`/stage/showcase/${app.id}`)}
-											aria-label={`View ${app.name} app details`}
+											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-white/10 hover:bg-white/5 transition-colors w-full text-left"
 										>
-											<div className="flex items-center gap-3">
+											<Link
+												href={`/stage/showcase/${app.id}`}
+												className="flex items-center gap-3 min-w-0"
+											>
 												<div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 transition-all group-hover:bg-primary-100/20">
 													<svg
 														role="img"
@@ -405,7 +405,7 @@ export function ShowcaseClient({
 														Edited {app.updatedAt.toLocaleDateString("en-US")}
 													</p>
 												</div>
-											</div>
+											</Link>
 
 											{/* Action buttons */}
 											<div className="flex items-center gap-2">
@@ -458,7 +458,7 @@ export function ShowcaseClient({
 													<Star className="h-4 w-4 hover:fill-current" />
 												</button>
 											</div>
-										</button>
+										</div>
 									))}
 								</Card>
 							)}
@@ -473,7 +473,7 @@ export function ShowcaseClient({
 									onOpenChange={setIsPlaylistDialogOpen}
 								>
 									<Dialog.Trigger asChild>
-										<GlassButton>New Playlist +</GlassButton>
+										<Button variant="glass">New Playlist +</Button>
 									</Dialog.Trigger>
 									<GlassDialogContent
 										onEscapeKeyDown={() => setIsPlaylistDialogOpen(false)}
