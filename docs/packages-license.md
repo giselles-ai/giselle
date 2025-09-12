@@ -2,9 +2,9 @@
 
 
 ## Summary
-* 815 MIT
-* 184 Apache 2.0
-* 46 ISC
+* 821 MIT
+* 185 Apache 2.0
+* 47 ISC
 * 27 New BSD
 * 13 Simplified BSD
 * 5 BlueOak-1.0.0
@@ -49,7 +49,7 @@
 
 
 <a name="@ai-sdk/anthropic"></a>
-### @ai-sdk/anthropic v2.0.9
+### @ai-sdk/anthropic v2.0.15
 #### 
 
 ##### Paths
@@ -60,7 +60,7 @@
 
 
 <a name="@ai-sdk/fal"></a>
-### @ai-sdk/fal v1.0.11
+### @ai-sdk/fal v1.0.12
 #### 
 
 ##### Paths
@@ -71,7 +71,7 @@
 
 
 <a name="@ai-sdk/gateway"></a>
-### @ai-sdk/gateway v1.0.15
+### @ai-sdk/gateway v1.0.21
 #### 
 
 ##### Paths
@@ -82,7 +82,7 @@
 
 
 <a name="@ai-sdk/google"></a>
-### @ai-sdk/google v2.0.11
+### @ai-sdk/google v2.0.13
 #### 
 
 ##### Paths
@@ -93,7 +93,7 @@
 
 
 <a name="@ai-sdk/google-vertex"></a>
-### @ai-sdk/google-vertex v3.0.16
+### @ai-sdk/google-vertex v3.0.25
 #### 
 
 ##### Paths
@@ -104,7 +104,7 @@
 
 
 <a name="@ai-sdk/openai"></a>
-### @ai-sdk/openai v2.0.23
+### @ai-sdk/openai v2.0.28
 #### 
 
 ##### Paths
@@ -115,7 +115,7 @@
 
 
 <a name="@ai-sdk/perplexity"></a>
-### @ai-sdk/perplexity v2.0.7
+### @ai-sdk/perplexity v2.0.8
 #### 
 
 ##### Paths
@@ -137,7 +137,7 @@
 
 
 <a name="@ai-sdk/provider-utils"></a>
-### @ai-sdk/provider-utils v3.0.7
+### @ai-sdk/provider-utils v3.0.8
 #### 
 
 ##### Paths
@@ -148,7 +148,7 @@
 
 
 <a name="@ai-sdk/react"></a>
-### @ai-sdk/react v2.0.29
+### @ai-sdk/react v2.0.40
 #### 
 
 ##### Paths
@@ -3040,6 +3040,61 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@redis/bloom"></a>
+### @redis/bloom v5.8.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@redis/client"></a>
+### @redis/client v5.8.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@redis/json"></a>
+### @redis/json v5.8.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@redis/search"></a>
+### @redis/search v5.8.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@redis/time-series"></a>
+### @redis/time-series v5.8.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="@remirror/core-constants"></a>
 ### @remirror/core-constants v3.0.0
 #### 
@@ -5186,7 +5241,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="ai"></a>
-### ai v5.0.29
+### ai v5.0.40
 #### 
 
 ##### Paths
@@ -5802,6 +5857,17 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="cluster-key-slot"></a>
+### cluster-key-slot v1.1.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
 
 
 
@@ -10260,6 +10326,17 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="redis"></a>
+### redis v5.8.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="regenerator-runtime"></a>
 ### regenerator-runtime v0.14.1
 #### 
@@ -10389,6 +10466,17 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="resumable-stream"></a>
+### resumable-stream v2.2.4
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
 
 
 
