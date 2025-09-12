@@ -1,7 +1,6 @@
 "use client";
 
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
-import { EMBEDDING_PROFILES } from "@giselle-sdk/data-type";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
 import * as Dialog from "@radix-ui/react-dialog";
 import { MoreVertical, RefreshCw, Settings, Trash } from "lucide-react";
@@ -29,6 +28,7 @@ import {
 import { ConfigureSourcesDialog } from "./configure-sources-dialog";
 import { DiagnosticModal } from "./diagnostic-modal";
 import { getErrorMessage } from "./error-messages";
+import { GITHUB_EMBEDDING_PROFILES } from "./github-embedding-profiles";
 import type { DocumentLoaderErrorCode } from "./types";
 
 // Status configuration for sync badges
@@ -185,7 +185,9 @@ export function RepositoryItem({
 				<div className="grid grid-cols-3 gap-3 w-full">
 					{embeddingProfileIds.map((profileId) => {
 						const profile =
-							EMBEDDING_PROFILES[profileId as keyof typeof EMBEDDING_PROFILES];
+							GITHUB_EMBEDDING_PROFILES[
+								profileId as keyof typeof GITHUB_EMBEDDING_PROFILES
+							];
 						return (
 							<EmbeddingModelCard
 								key={profileId}
@@ -248,7 +250,7 @@ function EmbeddingModelCard({
 	isIngesting,
 	onShowDiagnostic,
 }: {
-	profile?: (typeof EMBEDDING_PROFILES)[keyof typeof EMBEDDING_PROFILES];
+	profile?: (typeof GITHUB_EMBEDDING_PROFILES)[keyof typeof GITHUB_EMBEDDING_PROFILES];
 	profileId: number;
 	contentStatuses: (typeof githubRepositoryContentStatus.$inferSelect)[];
 	isIngesting: boolean;

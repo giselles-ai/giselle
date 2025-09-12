@@ -30,6 +30,12 @@ export const EMBEDDING_PROFILES = {
 		dimensions: 3072 as const,
 		name: "Google gemini-embedding-001",
 	},
+	4: {
+		provider: "cohere" as const,
+		model: "embed-4" as const,
+		dimensions: 1024 as const,
+		name: "Cohere embed-4",
+	},
 } as const satisfies Record<number, EmbeddingProfile>;
 
 export type EmbeddingProfileId = keyof typeof EMBEDDING_PROFILES;

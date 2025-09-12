@@ -1,6 +1,5 @@
 "use client";
 
-import { EMBEDDING_PROFILES } from "@giselle-sdk/data-type";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Code, GitPullRequest } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
@@ -16,6 +15,7 @@ import {
 	GlassDialogFooter,
 	GlassDialogHeader,
 } from "../components/glass-dialog-content";
+import { GITHUB_EMBEDDING_PROFILES } from "./github-embedding-profiles";
 
 type ConfigureSourcesDialogProps = {
 	open: boolean;
@@ -149,46 +149,51 @@ export function ConfigureSourcesDialog({
 								Select at least one embedding model for indexing
 							</div>
 							<div className="space-y-2">
-								{Object.entries(EMBEDDING_PROFILES).map(([id, profile]) => {
-									const profileId = Number(id);
-									const isSelected = selectedProfiles.includes(profileId);
-									const isLastOne = selectedProfiles.length === 1 && isSelected;
+								{Object.entries(GITHUB_EMBEDDING_PROFILES).map(
+									([id, profile]) => {
+										const profileId = Number(id);
+										const isSelected = selectedProfiles.includes(profileId);
+										const isLastOne =
+											selectedProfiles.length === 1 && isSelected;
 
-									return (
-										<label
-											key={profileId}
-											className="flex items-start gap-3 p-2 rounded-lg bg-black-700/50 hover:bg-black-700/70 transition-colors cursor-pointer"
-										>
-											<input
-												type="checkbox"
-												checked={isSelected}
-												disabled={isPending || isLastOne}
-												onChange={(e) => {
-													if (e.target.checked) {
-														setSelectedProfiles([
-															...selectedProfiles,
-															profileId,
-														]);
-													} else {
-														setSelectedProfiles(
-															selectedProfiles.filter((id) => id !== profileId),
-														);
-													}
-												}}
-												className="mt-1 w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
-											/>
-											<div className="flex-1">
-												<div className="text-white-400 text-[14px] font-medium">
-													{profile.name}
+										return (
+											<label
+												key={profileId}
+												className="flex items-start gap-3 p-2 rounded-lg bg-black-700/50 hover:bg-black-700/70 transition-colors cursor-pointer"
+											>
+												<input
+													type="checkbox"
+													checked={isSelected}
+													disabled={isPending || isLastOne}
+													onChange={(e) => {
+														if (e.target.checked) {
+															setSelectedProfiles([
+																...selectedProfiles,
+																profileId,
+															]);
+														} else {
+															setSelectedProfiles(
+																selectedProfiles.filter(
+																	(id) => id !== profileId,
+																),
+															);
+														}
+													}}
+													className="mt-1 w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
+												/>
+												<div className="flex-1">
+													<div className="text-white-400 text-[14px] font-medium">
+														{profile.name}
+													</div>
+													<div className="text-white-400/60 text-[12px] mt-1">
+														Provider: {profile.provider} • Dimensions{" "}
+														{profile.dimensions}
+													</div>
 												</div>
-												<div className="text-white-400/60 text-[12px] mt-1">
-													Provider: {profile.provider} • Dimensions:{" "}
-													{profile.dimensions}
-												</div>
-											</div>
-										</label>
-									);
-								})}
+											</label>
+										);
+									},
+								)}
 							</div>
 						</div>
 					</div>

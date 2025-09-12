@@ -131,7 +131,9 @@ export function createPostgresQueryService<
 				process.env[
 					profile.provider === "openai"
 						? "OPENAI_API_KEY"
-						: "GOOGLE_GENERATIVE_AI_API_KEY"
+						: profile.provider === "google"
+							? "GOOGLE_GENERATIVE_AI_API_KEY"
+							: "COHERE_API_KEY"
 				];
 			if (!apiKey) {
 				throw new ConfigurationError(
