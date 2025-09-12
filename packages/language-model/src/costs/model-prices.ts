@@ -1,9 +1,12 @@
-import type { LanguageModel } from "../google";
+import type { LanguageModel as GoogleTextLanguageModel } from "../google";
+import type { LanguageModel as GoogleImageLanguageModel } from "../google-image";
 import type { ModelPrice } from "./pricing";
 
 export type ModelPriceTable = Record<string, { prices: ModelPrice[] }>;
 
-type GoogleModelId = LanguageModel["id"];
+type GoogleModelId =
+	| GoogleTextLanguageModel["id"]
+	| GoogleImageLanguageModel["id"];
 
 export const openAiTokenPricing: ModelPriceTable = {
 	// https://platform.openai.com/docs/pricing#latest-models
@@ -181,7 +184,18 @@ export const googleTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-} as const satisfies Record<GoogleModelId, { prices: ModelPrice[] }>;
+	"gemini-2.5-flash-image-preview": {
+		prices: [
+			{
+				validFrom: "2025-09-12T00:00:00Z",
+				price: {
+					input: { costPerMegaToken: 0.3 },
+					output: { costPerMegaToken: 30.0 },
+				},
+			},
+		],
+	},
+} satisfies Record<GoogleModelId, { prices: ModelPrice[] }>;
 
 export function getValidPricing(
 	modelId: string,

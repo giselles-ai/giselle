@@ -1,12 +1,16 @@
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { useToasts } from "@giselle-internal/ui/toast";
-import type { ImageGenerationNode } from "@giselle-sdk/data-type";
+import {
+	ImageGenerationLanguageModelProvider,
+	type ImageGenerationNode,
+} from "@giselle-sdk/data-type";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
 import {
 	falLanguageModels,
+	googleImageLanguageModels,
 	openaiImageModels,
 } from "@giselle-sdk/language-model";
 import clsx from "clsx/lite";
@@ -64,6 +68,12 @@ export function ImageGenerationNodePropertiesPanel({
 				}));
 			case "openai":
 				return openaiImageModels.map((model) => ({
+					value: model.id,
+					label: model.id,
+					disabled: !checkEligibility(model),
+				}));
+			case "google":
+				return googleImageLanguageModels.map((model) => ({
 					value: model.id,
 					label: model.id,
 					disabled: !checkEligibility(model),
@@ -195,9 +205,14 @@ export function ImageGenerationNodePropertiesPanel({
 											placeholder="Select a provider"
 											value={node.content.llm.provider}
 											onValueChange={(provider) => {
-												const validProvider = provider as "fal" | "openai";
-												const defaultModel =
-													createDefaultModelData(validProvider);
+												const result =
+													ImageGenerationLanguageModelProvider.safeParse(
+														provider,
+													);
+												if (!result.success) return;
+												const defaultModel = createDefaultModelData(
+													result.data,
+												);
 
 												updateNodeDataContent(node, {
 													...node.content,
@@ -207,6 +222,7 @@ export function ImageGenerationNodePropertiesPanel({
 											options={[
 												{ value: "fal", label: "Fal" },
 												{ value: "openai", label: "OpenAI" },
+												{ value: "google", label: "Google" },
 											]}
 										/>
 									</fieldset>

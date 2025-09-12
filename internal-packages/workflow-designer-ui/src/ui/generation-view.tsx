@@ -63,8 +63,10 @@ function renderImageLoadingGrid(generation: Generation, keyPrefix: string) {
 
 	const config = generation.context.operationNode.content
 		.llm as import("@giselle-sdk/data-type").ImageGenerationLanguageModelData;
-	const imageCount = config.configurations.n || 1;
-
+	let imageCount = 1;
+	if (config.provider !== "google") {
+		imageCount = config.configurations.n;
+	}
 	return (
 		<div className="flex gap-[12px] pt-[8px] overflow-x-auto max-w-full h-full">
 			{Array.from({ length: imageCount }).map((_, index) => (

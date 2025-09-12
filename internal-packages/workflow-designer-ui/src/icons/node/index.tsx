@@ -121,6 +121,13 @@ export function NodeIcon({
 						}
 						case "openai":
 							return <OpenaiIcon {...props} data-content-type-icon />;
+						case "google":
+							// Gemini brand guidelines require using either white or colored icons without modification
+							// See: https://about.google/brand-resource-center/brand-elements/
+							if (/text-white/.test(props.className ?? "")) {
+								return <GoogleWhiteIcon {...props} data-content-type-icon />;
+							}
+							return <GoogleIcon {...props} data-content-type-icon />;
 						default: {
 							const _exhaustiveCheck: never = node.content.llm;
 							throw new Error(`Unhandled LLMProvider: ${_exhaustiveCheck}`);

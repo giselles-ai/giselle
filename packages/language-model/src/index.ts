@@ -12,6 +12,10 @@ import {
 	models as googleLanguageModels,
 } from "./google";
 import {
+	LanguageModel as GoogleImageLanguageModel,
+	models as googleImageLanguageModels,
+} from "./google-image";
+import {
 	LanguageModel as OpenAILanguageModel,
 	models as openaiLanguageModels,
 } from "./openai";
@@ -44,6 +48,7 @@ export { createUsageCalculator } from "./usage-factory";
 export const LanguageModel = z.union([
 	AnthropicLanguageModel,
 	GoogleLanguageModel,
+	GoogleImageLanguageModel,
 	OpenAILanguageModel,
 	OpenAIImageLanguageModel,
 	PerplexityLanguageModel,
@@ -53,6 +58,7 @@ export type LanguageModel = z.infer<typeof LanguageModel>;
 
 export const languageModels = [
 	...googleLanguageModels,
+	...googleImageLanguageModels,
 	...anthropicLanguageModels,
 	...openaiLanguageModels,
 	...openaiImageLanguageModels,
@@ -63,13 +69,15 @@ export const languageModels = [
 export {
 	AnthropicLanguageModel,
 	GoogleLanguageModel,
+	GoogleImageLanguageModel,
 	OpenAILanguageModel,
 	OpenAIImageLanguageModel,
 	PerplexityLanguageModel,
 	FalLanguageModel,
 	anthropicLanguageModels,
-	openaiLanguageModels,
 	googleLanguageModels,
+	googleImageLanguageModels,
+	openaiLanguageModels,
 	perplexityLanguageModels,
 	falLanguageModels,
 };
@@ -77,6 +85,7 @@ export {
 export const LanguageModelProviders = z.enum([
 	AnthropicLanguageModel.shape.provider.value,
 	GoogleLanguageModel.shape.provider.value,
+	GoogleImageLanguageModel.shape.provider.value,
 	OpenAILanguageModel.shape.provider.value,
 	OpenAIImageLanguageModel.shape.provider.value,
 	PerplexityLanguageModel.shape.provider.value,
