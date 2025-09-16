@@ -322,18 +322,16 @@ export function generateContent({
 				},
 			});
 
-			const writer = batchWriter<StreamItem<typeof uiMessageStream>>(
-				(batch) =>
+			const writer = batchWriter<StreamItem<typeof uiMessageStream>>({
+				process: (batch) =>
 					context.experimental_storage.setBlob(
 						generationUiMessagesPath(generation.id),
 						new TextEncoder().encode(
 							batch.map((chunk) => JSON.stringify(chunk)).join("\n"),
 						),
 					),
-				{
-					preserveItems: true,
-				},
-			);
+				preserveItems: true,
+			});
 
 			for await (const chunk of uiMessageStream) {
 				writer.add(chunk);

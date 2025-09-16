@@ -1,11 +1,14 @@
-export function batchWriter<T>(
-	flushFn: (items: T[]) => Promise<void> | void,
-	{
-		intervalMs = 2000,
-		maxItems,
-		preserveItems = false,
-	}: { intervalMs?: number; maxItems?: number; preserveItems?: boolean } = {},
-) {
+export function batchWriter<T>({
+	process,
+	intervalMs = 2000,
+	maxItems,
+	preserveItems = false,
+}: {
+	process: (items: T[]) => Promise<void> | void;
+	intervalMs?: number;
+	maxItems?: number;
+	preserveItems?: boolean;
+}) {
 	let buf: T[] = [];
 	let timer: ReturnType<typeof setInterval> | null = null;
 	let currentFlush: Promise<void> | null = null;
@@ -13,7 +16,7 @@ export function batchWriter<T>(
 
 	const executeFlush = async (items: T[]) => {
 		try {
-			await flushFn(items);
+			await process(items);
 		} catch (error) {
 			// Restore items to buffer on error
 			buf = items.concat(buf);
