@@ -69,6 +69,7 @@ function TextGenerationRunner({ generation }: { generation: Generation }) {
 function CompletionRunner({ generation }: { generation: Generation }) {
 	const { experimental_storage, aiGateway, resumableGeneration } =
 		useFeatureFlag();
+	const client = useGiselleEngine();
 	const {
 		generateTextApi,
 		updateGenerationStatusToRunning,
@@ -112,6 +113,7 @@ function CompletionRunner({ generation }: { generation: Generation }) {
 		}
 		addStopHandler(generation.id, stop);
 		sendMessage({ role: "user", parts: [] });
+		client.generateContent({ generation });
 	});
 	return null;
 }

@@ -1,5 +1,6 @@
 export * from "../../concepts/generation";
 export * from "./cancel-generation";
+export * from "./generate-content";
 export * from "./generate-image";
 export * from "./generate-text";
 export * from "./get-generated-image";

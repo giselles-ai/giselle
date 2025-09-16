@@ -469,6 +469,15 @@ export const createJsonRouters = {
 				});
 			},
 		}),
+	generateContent: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			input: z.object({
+				generation: QueuedGeneration,
+			}),
+			handler: ({ input }) => {
+				return giselleEngine.generateContent({ ...input });
+			},
+		}),
 } as const;
 
 // Export the types at module level

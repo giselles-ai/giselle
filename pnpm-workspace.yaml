@@ -14,7 +14,7 @@ catalog:
   "@next/env": 15.5.2
   "@next/third-parties": 15.5.2
   unstorage: 1.14.4
-  ai: 5.0.29
+  ai: 5.0.44
   "@types/node": 22.14.0
   "@types/react": 19.1.10
   "@types/react-dom": 19.1.7
@@ -30,14 +30,14 @@ catalog:
   clsx: 2.1.1
   "@xyflow/react": 12.8.3
   openai: 5.11.0
-  "@ai-sdk/openai": 2.0.23
-  "@ai-sdk/anthropic": 2.0.9
-  "@ai-sdk/google": 2.0.11
-  "@ai-sdk/google-vertex": 3.0.16
-  "@ai-sdk/perplexity": 2.0.7
-  "@ai-sdk/react": 2.0.29
-  "@ai-sdk/fal": 1.0.11
-  "@ai-sdk/gateway": 1.0.15
+  "@ai-sdk/anthropic": 2.0.17
+  "@ai-sdk/fal": 1.0.13
+  "@ai-sdk/gateway": 1.0.23
+  "@ai-sdk/google": 2.0.14
+  "@ai-sdk/google-vertex": 3.0.27
+  "@ai-sdk/openai": 2.0.30
+  "@ai-sdk/perplexity": 2.0.9
+  "@ai-sdk/react": 2.0.44
   "@tailwindcss/typography": 0.5.16
   tailwindcss-animate: 1.0.7
   react-resizable-panels: 2.1.7
@@ -82,7 +82,7 @@ catalog:
   pg: 8.14.1
   "@types/pg": 8.11.13
   pgvector: 0.2.1
-  swr: 2.2.5
+  swr: 2.3.6
   defuddle: 0.6.4
   "fast-levenshtein": 3.0.0
   "@types/fast-levenshtein": 0.0.4

@@ -39,6 +39,7 @@ import {
 	cancelGeneration,
 	type Generation,
 	type GenerationOrigin,
+	generateContent,
 	generateImage,
 	generateText,
 	getGeneratedImage,
@@ -363,6 +364,9 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		},
 		async flushGenerationIndexQueue() {
 			return await flushGenerationIndexQueue(context.experimental_storage);
+		},
+		generateContent(args: { generation: QueuedGeneration }) {
+			return generateContent({ ...args, context });
 		},
 	};
 }
