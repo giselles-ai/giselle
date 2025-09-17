@@ -135,7 +135,7 @@ export function NavigationRailFooterMenu({
 						</DropdownMenuPrimitive.Sub>
 
 						{/* Separator */}
-						<DropdownMenuPrimitive.Separator className="h-px bg-white/10 my-1" />
+						<DropdownMenuPrimitive.Separator className="h-px bg-border my-1" />
 
 						{/* Lobby */}
 						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS} asChild>
@@ -158,7 +158,7 @@ export function NavigationRailFooterMenu({
 						</DropdownMenuPrimitive.Item>
 
 						{/* Separator */}
-						<DropdownMenuPrimitive.Separator className="h-px bg-white/10 my-1" />
+						<DropdownMenuPrimitive.Separator className="h-px bg-border my-1" />
 
 						{/* Logout */}
 						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS}>

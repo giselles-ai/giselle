@@ -83,7 +83,7 @@ export function NavigationRail({
 					width: "var(--spacing-navigation-rail-expanded)",
 				}}
 				animate={spacingAnimationControls}
-				className="border-r border-white/10"
+				className="border-r border-border"
 			/>
 		</>
 	);
