@@ -72,10 +72,18 @@ function normalizeStatus(status?: number | string): number | undefined {
 
 function isHtmlResponseParseFailure(message: string): boolean {
 	const normalizedMessage = message.toLowerCase();
-	const isUnexpectedToken = normalizedMessage.includes("unexpected token");
-	const hintsHtmlMarkup = normalizedMessage.includes("<");
-	const mentionsInvalidJson = normalizedMessage.includes("not valid json");
-	return isUnexpectedToken && hintsHtmlMarkup && mentionsInvalidJson;
+	const looksLikeHtml =
+		normalizedMessage.includes("<!doctype html") ||
+		normalizedMessage.includes("<html") ||
+		normalizedMessage.includes("<");
+	const hasUnexpectedToken = normalizedMessage.includes("unexpected token");
+	const hasV8Pattern = normalizedMessage.includes("in json at position");
+	const saysNotValidJson =
+		normalizedMessage.includes("not valid json") ||
+		normalizedMessage.includes("is not valid json");
+	return (
+		looksLikeHtml && (hasUnexpectedToken || hasV8Pattern || saysNotValidJson)
+	);
 }
 
 function shouldMaskServiceUnavailability(

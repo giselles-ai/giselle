@@ -50,6 +50,18 @@ describe("createAuthError", () => {
 		);
 	});
 
+	it("masks unexpected token position errors common in V8", () => {
+		const error = buildSupabaseAuthErrorLike({
+			message: "Unexpected token < in JSON at position 0",
+			name: "AuthUnknownError",
+		});
+
+		const result = createAuthError(error);
+
+		expect(result.name).toBe("AuthServiceUnavailableError");
+		expect(result.status).toBe(503);
+	});
+
 	it("normalizes string status values", () => {
 		const error = buildSupabaseAuthErrorLike({
 			message: "Unexpected token '<', \"<!DOCTYPE html\"... is not valid JSON",
