@@ -52,6 +52,7 @@
 	--color-stage-form-background: #101520;
 	--color-stage-sidebar-text: #7084ac;
 	--color-stage-sidebar-text-hover: #f7f9fd;
+	--color-stage-sidebar-icon-hover: rgba(255, 255, 255, 0.1);
 	--color-stage-accent: #6b8ff0;
 	--shadow-stage-form:
 		0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1),

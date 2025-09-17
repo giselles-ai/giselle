@@ -27,7 +27,7 @@ export function NavigationRailCollapsed({
 					className="cursor-e-resize"
 				>
 					<GiselleIcon className="size-6 text-stage-sidebar-text-hover stroke-1 group-hover:hidden" />
-					<ChevronsRightIcon className="size-5 text-stage-sidebar-text-hover stroke-1 hidden group-hover:block" />
+					<ChevronsRightIcon className="size-5 text-stage-sidebar-text-hover stroke-1 hidden group-hover:block transition-colors" />
 				</MenuButton>
 			</NavigationRailHeader>
 			<NavigationRailContentsContainer>

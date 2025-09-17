@@ -15,7 +15,7 @@ export function MenuButton({
 		<button
 			type="button"
 			className={clsx(
-				"group size-8 text-stage-sidebar-text hover:text-stage-sidebar-text-hover transition-colors rounded flex items-center justify-center",
+				"group size-8 text-stage-sidebar-text hover:text-stage-sidebar-text-hover hover:bg-stage-sidebar-icon-hover transition-colors rounded flex items-center justify-center",
 				className,
 			)}
 			onClick={onClick}
