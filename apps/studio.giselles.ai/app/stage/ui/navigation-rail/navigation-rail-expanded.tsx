@@ -24,7 +24,7 @@ export function NavigationRailExpanded({
 			<NavigationRailHeader>
 				<div className="flex items-center justify-start w-full">
 					<div className="size-8 flex justify-center items-center">
-						<GiselleIcon className="size-6 text-stage-sidebar-text-hover stroke-1 shrink-0" />
+						<GiselleIcon className="size-6 text-stage-sidebar-text-hover stroke-1 group-hover:hidden shrink-0" />
 					</div>
 					<p className="text-stage-sidebar-text-hover text-[13px] font-semibold">
 						Stage

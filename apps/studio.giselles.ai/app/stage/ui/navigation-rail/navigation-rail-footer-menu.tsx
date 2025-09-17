@@ -33,7 +33,7 @@ const HELP_ITEMS = [
 ] as const;
 
 const MENU_ITEM_CLASS =
-	"text-text outline-none cursor-pointer hover:bg-ghost-element-hover rounded-[4px] px-[8px] py-[6px] text-[14px]";
+	"text-text outline-none cursor-pointer hover:bg-[var(--color-stage-sidebar-icon-hover)] rounded-[4px] px-[8px] py-[6px] text-[14px]";
 
 export function NavigationRailFooterMenu({
 	user: userPromise,

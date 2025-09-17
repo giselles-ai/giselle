@@ -10,10 +10,38 @@ import {
 	LayoutList,
 	Search,
 } from "lucide-react";
-import { useMemo } from "react";
 
-type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
-type ViewMode = "grid" | "list";
+// Hoist static options and shared classes at module scope for perf and reuse
+const SORT_OPTIONS: Array<SelectOption> = [
+	{
+		value: "date-desc",
+		label: "Updated",
+		icon: <Clock className="h-4 w-4" />,
+	},
+	{
+		value: "date-asc",
+		label: "Oldest",
+		icon: <Clock className="h-4 w-4" />,
+	},
+	{
+		value: "name-asc",
+		label: "Name (A-Z)",
+		icon: <ArrowDownAZ className="h-4 w-4" />,
+	},
+	{
+		value: "name-desc",
+		label: "Name (Z-A)",
+		icon: <ArrowUpAZ className="h-4 w-4" />,
+	},
+];
+
+const toggleBtnActiveClass =
+	"p-3 flex items-center justify-center transition-colors bg-black-600 text-white";
+const toggleBtnInactiveClass =
+	"p-3 flex items-center justify-center transition-colors bg-black-700/50 text-black-300 hover:text-white";
+
+export type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
+export type ViewMode = "grid" | "list";
 
 interface SearchHeaderProps {
 	// search
@@ -55,31 +83,7 @@ export function SearchHeader({
 	const canToggleView =
 		showViewToggle && viewMode != null && !!onViewModeChange;
 
-	const sortOptions: Array<SelectOption> = useMemo(
-		() => [
-			{
-				value: "date-desc",
-				label: "Updated",
-				icon: <Clock className="h-4 w-4" />,
-			},
-			{
-				value: "date-asc",
-				label: "Oldest",
-				icon: <Clock className="h-4 w-4" />,
-			},
-			{
-				value: "name-asc",
-				label: "Name (A-Z)",
-				icon: <ArrowDownAZ className="h-4 w-4" />,
-			},
-			{
-				value: "name-desc",
-				label: "Name (Z-A)",
-				icon: <ArrowUpAZ className="h-4 w-4" />,
-			},
-		],
-		[],
-	);
+	const sortOptions: Array<SelectOption> = SORT_OPTIONS;
 
 	return (
 		<div
@@ -120,11 +124,11 @@ export function SearchHeader({
 						<button
 							type="button"
 							onClick={() => onViewModeChange?.("grid")}
-							className={`p-3 flex items-center justify-center transition-colors ${
+							className={
 								viewMode === "grid"
-									? "bg-black-600 text-white"
-									: "bg-black-700/50 text-black-300 hover:text-white"
-							}`}
+									? toggleBtnActiveClass
+									: toggleBtnInactiveClass
+							}
 							aria-label="Grid view"
 						>
 							<LayoutGrid className="h-4 w-4" />
@@ -133,11 +137,11 @@ export function SearchHeader({
 						<button
 							type="button"
 							onClick={() => onViewModeChange?.("list")}
-							className={`p-3 flex items-center justify-center transition-colors ${
+							className={
 								viewMode === "list"
-									? "bg-black-600 text-white"
-									: "bg-black-700/50 text-black-300 hover:text-white"
-							}`}
+									? toggleBtnActiveClass
+									: toggleBtnInactiveClass
+							}
 							aria-label="List view"
 						>
 							<LayoutList className="h-4 w-4" />
