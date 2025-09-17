@@ -2,15 +2,27 @@
 
 import { captureException } from "@sentry/nextjs";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase";
+import { createAuthError, createClient } from "@/lib/supabase";
 import { initializeAccount } from "@/services/accounts";
 import { JoinError } from "../../errors";
 import { acceptInvitation } from "../../invitation";
 
 export async function verifyJoinEmail(formData: FormData) {
-	const invitedEmail = formData.get("invitedEmail") as string;
-	const otpToken = formData.get("token") as string;
-	const invitationToken = formData.get("invitationToken") as string;
+	const invitedEmailEntry = formData.get("invitedEmail");
+	const otpTokenEntry = formData.get("token");
+	const invitationTokenEntry = formData.get("invitationToken");
+	if (
+		typeof invitedEmailEntry !== "string" ||
+		typeof otpTokenEntry !== "string" ||
+		typeof invitationTokenEntry !== "string"
+	) {
+		return {
+			error: "Invalid verification payload. Please try again.",
+		};
+	}
+	const invitedEmail = invitedEmailEntry;
+	const otpToken = otpTokenEntry;
+	const invitationToken = invitationTokenEntry;
 	const supabase = await createClient();
 	const { data, error } = await supabase.auth.verifyOtp({
 		email: invitedEmail,
@@ -18,7 +30,7 @@ export async function verifyJoinEmail(formData: FormData) {
 		type: "email",
 	});
 	if (error) {
-		return { error: error.message };
+		return { error: createAuthError(error).message };
 	}
 	if (!data.user) {
 		return { error: "No user returned" };
@@ -39,18 +51,28 @@ export async function verifyJoinEmail(formData: FormData) {
 }
 
 export async function resendJoinOtp(formData: FormData) {
-	const invitedEmail = formData.get("invitedEmail") as string;
+	const invitedEmailEntry = formData.get("invitedEmail");
+	if (typeof invitedEmailEntry !== "string") {
+		return {
+			code: "invalid_email",
+			message: "Invalid email address.",
+			status: 400,
+			name: "AuthValidationError",
+		};
+	}
+	const invitedEmail = invitedEmailEntry;
 	const supabase = await createClient();
 	const { error } = await supabase.auth.resend({
 		type: "signup",
 		email: invitedEmail,
 	});
 	if (error) {
+		const mappedError = createAuthError(error);
 		return {
-			code: error.code,
-			message: error.message,
-			status: error.status,
-			name: error.name,
+			code: mappedError.code,
+			message: mappedError.message,
+			status: mappedError.status,
+			name: mappedError.name,
 		};
 	}
 	return {

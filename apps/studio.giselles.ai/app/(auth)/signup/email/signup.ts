@@ -2,20 +2,18 @@
 
 import { redirect } from "next/navigation";
 
-import { createClient } from "@/lib/supabase";
+import { type AuthError, createAuthError, createClient } from "@/lib/supabase";
 
-export async function signup(email: string, password: string) {
+export async function signup(
+	email: string,
+	password: string,
+): Promise<AuthError | null> {
 	const supabase = await createClient();
 
 	const { error } = await supabase.auth.signUp({ email, password });
 
 	if (error != null) {
-		return {
-			code: error.code,
-			status: error.status,
-			message: error.message,
-			name: error.name,
-		};
+		return createAuthError(error);
 	}
 
 	redirect("/signup/verify-email");

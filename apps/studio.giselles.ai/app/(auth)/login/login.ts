@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { isValidReturnUrl } from "@/app/(auth)/lib";
-import { type AuthError, createClient } from "@/lib/supabase";
+import { type AuthError, createAuthError, createClient } from "@/lib/supabase";
 
 export async function login(
 	_prevState: AuthError | null,
@@ -10,22 +10,25 @@ export async function login(
 ): Promise<AuthError | null> {
 	const supabase = await createClient();
 
-	// type-casting here for convenience
-	// in practice, you should validate your inputs
-	const credentails = {
-		email: formData.get("email") as string,
-		password: formData.get("password") as string,
+	const emailEntry = formData.get("email");
+	const passwordEntry = formData.get("password");
+	if (typeof emailEntry !== "string" || typeof passwordEntry !== "string") {
+		return createAuthError({
+			code: "invalid_credentials_payload",
+			message: "Please enter both email and password.",
+			name: "AuthValidationError",
+			status: 400,
+		});
+	}
+	const credentials = {
+		email: emailEntry,
+		password: passwordEntry,
 	};
 	const returnUrlEntry = formData.get("returnUrl");
-	const { error } = await supabase.auth.signInWithPassword(credentails);
+	const { error } = await supabase.auth.signInWithPassword(credentials);
 
 	if (error) {
-		return {
-			code: error.code,
-			status: error.status,
-			message: error.message,
-			name: error.name,
-		};
+		return createAuthError(error);
 	}
 
 	// Validate returnUrl to prevent open redirect attacks

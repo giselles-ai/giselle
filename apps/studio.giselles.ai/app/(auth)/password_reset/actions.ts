@@ -1,8 +1,7 @@
 "use server";
 
-import { AuthError } from "@supabase/auth-js";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase";
+import { type AuthError, createAuthError, createClient } from "@/lib/supabase";
 
 export const sendPasswordResetEmail = async (
 	_prevState: AuthError | null,
@@ -10,14 +9,19 @@ export const sendPasswordResetEmail = async (
 ): Promise<AuthError | null> => {
 	const email = formData.get("email");
 	if (email == null || typeof email !== "string") {
-		return new AuthError("invalid_email");
+		return createAuthError({
+			code: "invalid_email",
+			message: "Please enter a valid email address.",
+			name: "AuthValidationError",
+			status: 422,
+		});
 	}
 	const supabase = await createClient();
 	const { error } = await supabase.auth.resetPasswordForEmail(email, {
 		redirectTo: "/password_reset/new_password",
 	});
 	if (error) {
-		return error;
+		return createAuthError(error);
 	}
 	redirect("/password_reset/sent");
 	return null;
