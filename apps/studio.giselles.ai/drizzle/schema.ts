@@ -5,7 +5,10 @@ import type {
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
 import type { ActId } from "@giselle-sdk/giselle";
-import type { GitHubRepositoryIndexId } from "@giselles-ai/types";
+import type {
+	DocumentVectorStoreId,
+	GitHubRepositoryIndexId,
+} from "@giselles-ai/types";
 import { relations, sql } from "drizzle-orm";
 import {
 	boolean,
@@ -324,6 +327,49 @@ export const githubRepositoryEmbeddingProfiles = pgTable(
 			columns: [table.repositoryIndexDbId],
 			foreignColumns: [githubRepositoryIndex.dbId],
 			name: "gh_repo_emb_profiles_repo_idx_fk",
+		}).onDelete("cascade"),
+	],
+);
+
+export const documentVectorStores = pgTable(
+	"document_vector_stores",
+	{
+		id: text("id").$type<DocumentVectorStoreId>().notNull(),
+		dbId: serial("db_id").primaryKey(),
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		name: text("name").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.notNull()
+			.$onUpdate(() => new Date()),
+	},
+	(table) => [
+		index("doc_vs_team_db_id_idx").on(table.teamDbId),
+		unique("doc_vs_id_unique").on(table.id),
+	],
+);
+
+export const documentEmbeddingProfiles = pgTable(
+	"document_embedding_profiles",
+	{
+		documentVectorStoreDbId: integer("document_vector_store_db_id").notNull(),
+		embeddingProfileId: integer("embedding_profile_id")
+			.$type<EmbeddingProfileId>()
+			.notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => [
+		primaryKey({
+			columns: [table.documentVectorStoreDbId, table.embeddingProfileId],
+			name: "doc_vs_emb_profiles_pk",
+		}),
+		foreignKey({
+			columns: [table.documentVectorStoreDbId],
+			foreignColumns: [documentVectorStores.dbId],
+			name: "doc_vs_emb_profiles_store_fk",
 		}).onDelete("cascade"),
 	],
 );
