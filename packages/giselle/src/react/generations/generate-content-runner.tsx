@@ -1,4 +1,4 @@
-import { createUIMessageStream, readUIMessageStream } from "ai";
+import { createUIMessageStream, readUIMessageStream, type UIMessage } from "ai";
 import { useCallback, useEffect, useRef } from "react";
 import type { Generation } from "../../concepts/generation";
 import { useGiselleEngine } from "../use-giselle-engine";
@@ -61,6 +61,35 @@ export function GenerateContentRunner({
 		useGenerationRunnerSystem();
 	const didRun = useRef(false);
 	const reachedStreamEnd = useRef(false);
+	const messageUpdateQueue = useRef<Map<UIMessage["id"], UIMessage>>(new Map());
+	const pendingUpdate = useRef<number | null>(null);
+
+	const flushMessageUpdates = useCallback(() => {
+		if (messageUpdateQueue.current.size === 0) return;
+
+		const updates = Array.from(messageUpdateQueue.current.values());
+		messageUpdateQueue.current.clear();
+
+		// Apply the latest message for each message ID
+		for (const message of updates) {
+			upsertMessage(generation.id, message);
+		}
+
+		pendingUpdate.current = null;
+	}, [generation.id, upsertMessage]);
+
+	const scheduleMessageUpdate = useCallback(
+		(message: UIMessage) => {
+			// Queue the message update (latest message per ID wins)
+			messageUpdateQueue.current.set(message.id, message);
+
+			// Schedule a flush if not already scheduled
+			if (pendingUpdate.current === null) {
+				pendingUpdate.current = requestAnimationFrame(flushMessageUpdates);
+			}
+		},
+		[flushMessageUpdates],
+	);
 	const processStream = useCallback(async () => {
 		const stream = createUIMessageStream({
 			onError: (error) => {
@@ -70,21 +99,15 @@ export function GenerateContentRunner({
 			async execute({ writer }) {
 				let startByte = 0;
 				while (!reachedStreamEnd.current) {
-					console.log(`get chunk from: ${startByte}`);
 					const data = await client.getGenerationMessageChunks({
 						generationId: generation.id,
 						startByte,
 					});
-					console.log(`received chunk: ${data.messageChunks.length}`);
 					for (const chunk of data.messageChunks) {
-						console.log("chunk is", chunk);
 						const messageChunk = JSON.parse(chunk);
-						console.log(`write message: ${chunk}`);
 						writer.write(messageChunk);
 						startByte = data.range.endByte;
-						console.log(`isStreamEndChunk: ${isStreamEndChunk(messageChunk)}`);
 						if (isStreamEndChunk(messageChunk)) {
-							console.log(`chunk type: ${messageChunk.type}`);
 							reachedStreamEnd.current = true;
 							switch (messageChunk.type) {
 								case "abort":
@@ -110,21 +133,25 @@ export function GenerateContentRunner({
 							}
 						}
 					}
-					console.log(`finished processing chunks`);
 					await new Promise((resolve) => setTimeout(resolve, 1000 * 5));
-					console.log(`next tick with: ${startByte}`);
 				}
 			},
 		});
 
 		for await (const message of readUIMessageStream({ stream })) {
-			console.log("upsert message", message);
-			upsertMessage(generation.id, message);
+			scheduleMessageUpdate(message);
+		}
+
+		// Ensure any remaining updates are flushed when stream ends
+		if (pendingUpdate.current !== null) {
+			cancelAnimationFrame(pendingUpdate.current);
+			flushMessageUpdates();
 		}
 	}, [
 		generation.id,
 		client.getGenerationMessageChunks,
-		upsertMessage,
+		scheduleMessageUpdate,
+		flushMessageUpdates,
 		onFinish,
 		onError,
 		updateGenerationStatusToComplete,
