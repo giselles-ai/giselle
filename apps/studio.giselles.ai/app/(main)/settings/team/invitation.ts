@@ -132,10 +132,20 @@ export async function sendInvitationEmail(invitation: Invitation) {
 }
 
 function buildJoinLink(token: string) {
-	const baseUrl =
-		process.env.NEXT_PUBLIC_SITE_URL || "https://studio.giselles.ai";
+	const explicitBaseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+	if (explicitBaseUrl) {
+		return new URL(`/join/${token}`, explicitBaseUrl).toString();
+	}
 
-	return `${baseUrl}/join/${token}`;
+	const vercelUrl = process.env.VERCEL_URL;
+	if (vercelUrl) {
+		const normalizedBaseUrl = `https://${vercelUrl}`;
+		return new URL(`/join/${token}`, normalizedBaseUrl).toString();
+	}
+
+	throw new Error(
+		"Missing NEXT_PUBLIC_SITE_URL or VERCEL_URL environment variables for invitation links",
+	);
 }
 
 export async function listInvitations(): Promise<Invitation[]> {
