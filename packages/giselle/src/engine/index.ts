@@ -44,6 +44,7 @@ import {
 	generateText,
 	getGeneratedImage,
 	getGeneration,
+	getGenerationMessageChunkss,
 	getNodeGenerations,
 	type QueuedGeneration,
 	setGeneration,
@@ -58,7 +59,11 @@ import { executeAction } from "./operations";
 import { executeQuery } from "./operations/execute-query";
 import { addSecret, deleteSecret, getWorkspaceSecrets } from "./secrets";
 import { addWebPage } from "./sources";
-import type { GiselleEngineConfig, GiselleEngineContext } from "./types";
+import type {
+	GiselleEngineConfig,
+	GiselleEngineContext,
+	WaitUntil,
+} from "./types";
 import {
 	copyWorkspace,
 	createSampleWorkspaces,
@@ -81,6 +86,10 @@ export * from "./usage-limits";
 export * from "./vault";
 export * from "./vector-store";
 
+const defaultWaitUntil: WaitUntil = (promise) => {
+	return promise;
+};
+
 export function GiselleEngine(config: GiselleEngineConfig) {
 	const context: GiselleEngineContext = {
 		...config,
@@ -88,6 +97,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		integrationConfigs: config.integrationConfigs ?? {},
 		callbacks: config.callbacks,
 		logger: config.logger ?? noopLogger,
+		waitUntil: config.waitUntil ?? defaultWaitUntil,
 	};
 	return {
 		copyWorkspace: async (workspaceId: WorkspaceId, name?: string) => {
@@ -367,6 +377,13 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		},
 		generateContent(args: { generation: QueuedGeneration }) {
 			return generateContent({ ...args, context });
+		},
+		getGenerationMessageChunks(args: {
+			generationId: GenerationId;
+			startByte?: number;
+			abortSignal?: AbortSignal;
+		}) {
+			return getGenerationMessageChunkss({ ...args, context });
 		},
 	};
 }

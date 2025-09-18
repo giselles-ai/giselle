@@ -19,7 +19,7 @@ import type {
 	GenerationOutput,
 	QueuedGeneration,
 } from "../../concepts/generation";
-import { generationUiMessagesPath } from "../../concepts/path";
+import { generationUiMessageChunksPath } from "../../concepts/path";
 import { batchWriter } from "../../utils";
 import { decryptSecret } from "../secrets";
 import type { GiselleEngineContext } from "../types";
@@ -33,9 +33,11 @@ type StreamItem<T> = T extends AsyncIterableStream<infer Inner> ? Inner : never;
 export function generateContent({
 	context,
 	generation,
+	abortSignal,
 }: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
+	abortSignal?: AbortSignal;
 }) {
 	context.logger.info(`generate content: ${generation.id}`);
 	return useGenerationExecutor({
@@ -198,145 +200,154 @@ export function generateContent({
 			);
 			let generationError: unknown | undefined;
 			const textGenerationStartTime = Date.now();
-			const streamTextResult = streamText({
-				model,
-				providerOptions,
-				messages,
-				tools: preparedToolSet.toolSet,
-				onError: ({ error }) => {
-					generationError = error;
-				},
-				onFinish: () => {
-					context.logger.info(
-						`Text generation completed in ${Date.now() - textGenerationStartTime}ms`,
-					);
-				},
-			});
-			const uiMessageStream = streamTextResult.toUIMessageStream({
-				onFinish: async ({ messages: generateMessages }) => {
-					context.logger.info(
-						`Text generation stream completed in ${Date.now() - textGenerationStartTime}ms`,
-					);
-					const toolCleanupStartTime = Date.now();
-					await Promise.all(
-						preparedToolSet.cleanupFunctions.map((cleanupFunction) =>
-							cleanupFunction(),
-						),
-					);
-					context.logger.info(
-						`Tool cleanup completed in ${Date.now() - toolCleanupStartTime}ms`,
-					);
-					if (generationError) {
-						if (AISDKError.isInstance(generationError)) {
-							context.logger.error(
-								generationError,
-								`${generation.id} is failed`,
-							);
-						}
-						const errInfo = AISDKError.isInstance(generationError)
-							? { name: generationError.name, message: generationError.message }
-							: {
-									name: "UnknownError",
-									message:
-										generationError instanceof Error
-											? generationError.message
-											: String(generationError),
-								};
 
-						const failedGeneration = {
-							...runningGeneration,
-							status: "failed",
-							failedAt: Date.now(),
-							error: errInfo,
-						} satisfies FailedGeneration;
-
-						await Promise.all([
-							setGeneration(failedGeneration),
-							context.callbacks?.generationFailed?.({
-								generation: failedGeneration,
-								inputMessages: messages,
-							}),
-						]);
-						return;
-					}
-					const generationOutputs: GenerationOutput[] = [];
-					const generatedTextOutput =
-						generationContext.operationNode.outputs.find(
-							(output: Output) => output.accessor === "generated-text",
+			context.waitUntil(async () => {
+				const streamTextResult = streamText({
+					abortSignal,
+					model,
+					providerOptions,
+					messages,
+					tools: preparedToolSet.toolSet,
+					onError: ({ error }) => {
+						generationError = error;
+					},
+					onFinish: () => {
+						context.logger.info(
+							`Text generation completed in ${Date.now() - textGenerationStartTime}ms`,
 						);
-					const textRetrievalStartTime = Date.now();
-					const text = await streamTextResult.text;
-					context.logger.info(
-						`Text retrieval completed in ${Date.now() - textRetrievalStartTime}ms`,
-					);
-					if (generatedTextOutput !== undefined) {
-						generationOutputs.push({
-							type: "generated-text",
-							content: text,
-							outputId: generatedTextOutput.id,
-						});
-					}
+					},
+				});
+				const uiMessageStream = streamTextResult.toUIMessageStream({
+					onFinish: async ({ messages: generateMessages }) => {
+						context.logger.info(
+							`Text generation stream completed in ${Date.now() - textGenerationStartTime}ms`,
+						);
+						const toolCleanupStartTime = Date.now();
+						await Promise.all(
+							preparedToolSet.cleanupFunctions.map((cleanupFunction) =>
+								cleanupFunction(),
+							),
+						);
+						context.logger.info(
+							`Tool cleanup completed in ${Date.now() - toolCleanupStartTime}ms`,
+						);
+						if (generationError) {
+							if (AISDKError.isInstance(generationError)) {
+								context.logger.error(
+									generationError,
+									`${generation.id} is failed`,
+								);
+							}
+							const errInfo = AISDKError.isInstance(generationError)
+								? {
+										name: generationError.name,
+										message: generationError.message,
+									}
+								: {
+										name: "UnknownError",
+										message:
+											generationError instanceof Error
+												? generationError.message
+												: String(generationError),
+									};
 
-					const reasoningRetrievalStartTime = Date.now();
-					const reasoningText = await streamTextResult.reasoningText;
-					context.logger.info(
-						`Reasoning retrieval completed in ${Date.now() - reasoningRetrievalStartTime}ms`,
-					);
-					const reasoningOutput = generationContext.operationNode.outputs.find(
-						(output: Output) => output.accessor === "reasoning",
-					);
-					if (reasoningOutput !== undefined && reasoningText !== undefined) {
-						generationOutputs.push({
-							type: "reasoning",
-							content: reasoningText,
-							outputId: reasoningOutput.id,
-						});
-					}
+							const failedGeneration = {
+								...runningGeneration,
+								status: "failed",
+								failedAt: Date.now(),
+								error: errInfo,
+							} satisfies FailedGeneration;
 
-					const sourceRetrievalStartTime = Date.now();
-					const sources = await streamTextResult.sources;
-					context.logger.info(
-						`Source retrieval completed in ${Date.now() - sourceRetrievalStartTime}ms`,
-					);
-					const sourceOutput = generationContext.operationNode.outputs.find(
-						(output: Output) => output.accessor === "source",
-					);
-					if (sourceOutput !== undefined && sources.length > 0) {
-						generationOutputs.push({
-							type: "source",
-							outputId: sourceOutput.id,
-							sources,
-						});
-					}
-					const generationCompletionStartTime = Date.now();
-					await completeGeneration({
-						inputMessages: messages,
-						outputs: generationOutputs,
-						usage: await streamTextResult.usage,
-						generateMessages: generateMessages,
-						providerMetadata: await streamTextResult.providerMetadata,
-					});
-					context.logger.info(
-						`Generation completion processing finished in ${Date.now() - generationCompletionStartTime}ms`,
-					);
-				},
-			});
+							await Promise.all([
+								setGeneration(failedGeneration),
+								context.callbacks?.generationFailed?.({
+									generation: failedGeneration,
+									inputMessages: messages,
+								}),
+							]);
+							return;
+						}
+						const generationOutputs: GenerationOutput[] = [];
+						const generatedTextOutput =
+							generationContext.operationNode.outputs.find(
+								(output: Output) => output.accessor === "generated-text",
+							);
+						const textRetrievalStartTime = Date.now();
+						const text = await streamTextResult.text;
+						context.logger.info(
+							`Text retrieval completed in ${Date.now() - textRetrievalStartTime}ms`,
+						);
+						if (generatedTextOutput !== undefined) {
+							generationOutputs.push({
+								type: "generated-text",
+								content: text,
+								outputId: generatedTextOutput.id,
+							});
+						}
 
-			const writer = batchWriter<StreamItem<typeof uiMessageStream>>({
-				process: (batch) =>
-					context.experimental_storage.setBlob(
-						generationUiMessagesPath(generation.id),
-						new TextEncoder().encode(
-							batch.map((chunk) => JSON.stringify(chunk)).join("\n"),
+						const reasoningRetrievalStartTime = Date.now();
+						const reasoningText = await streamTextResult.reasoningText;
+						context.logger.info(
+							`Reasoning retrieval completed in ${Date.now() - reasoningRetrievalStartTime}ms`,
+						);
+						const reasoningOutput =
+							generationContext.operationNode.outputs.find(
+								(output: Output) => output.accessor === "reasoning",
+							);
+						if (reasoningOutput !== undefined && reasoningText !== undefined) {
+							generationOutputs.push({
+								type: "reasoning",
+								content: reasoningText,
+								outputId: reasoningOutput.id,
+							});
+						}
+
+						const sourceRetrievalStartTime = Date.now();
+						const sources = await streamTextResult.sources;
+						context.logger.info(
+							`Source retrieval completed in ${Date.now() - sourceRetrievalStartTime}ms`,
+						);
+						const sourceOutput = generationContext.operationNode.outputs.find(
+							(output: Output) => output.accessor === "source",
+						);
+						if (sourceOutput !== undefined && sources.length > 0) {
+							generationOutputs.push({
+								type: "source",
+								outputId: sourceOutput.id,
+								sources,
+							});
+						}
+						const generationCompletionStartTime = Date.now();
+						await completeGeneration({
+							inputMessages: messages,
+							outputs: generationOutputs,
+							usage: await streamTextResult.usage,
+							generateMessages: generateMessages,
+							providerMetadata: await streamTextResult.providerMetadata,
+						});
+						context.logger.info(
+							`Generation completion processing finished in ${Date.now() - generationCompletionStartTime}ms`,
+						);
+					},
+				});
+
+				const writer = batchWriter<StreamItem<typeof uiMessageStream>>({
+					process: (batch) =>
+						context.experimental_storage.setBlob(
+							generationUiMessageChunksPath(generation.id),
+							new TextEncoder().encode(
+								batch.map((chunk) => JSON.stringify(chunk)).join("\n"),
+							),
 						),
-					),
-				preserveItems: true,
-			});
+					preserveItems: true,
+				});
 
-			for await (const chunk of uiMessageStream) {
-				writer.add(chunk);
-			}
-			await writer.close();
+				for await (const chunk of uiMessageStream) {
+					writer.add(chunk);
+				}
+				await writer.close();
+			});
+			return runningGeneration;
 		},
 	});
 }

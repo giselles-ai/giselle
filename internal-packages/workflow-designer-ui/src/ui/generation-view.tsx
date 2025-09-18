@@ -265,7 +265,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 									</div>
 								);
 							default: {
-								console.warn("unsupport part type");
+								// console.warn("unsupport part type");
 								return null;
 							}
 						}

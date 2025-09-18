@@ -474,8 +474,25 @@ export const createJsonRouters = {
 			input: z.object({
 				generation: QueuedGeneration,
 			}),
-			handler: ({ input }) => {
-				return giselleEngine.generateContent({ ...input });
+			handler: async ({ input }) => {
+				const runningGeneration = await giselleEngine.generateContent({
+					...input,
+				});
+				return JsonResponse.json({ generation: runningGeneration });
+			},
+		}),
+	getGenerationMessageChunks: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			input: z.object({
+				generationId: GenerationId.schema,
+				startByte: z.number().optional(),
+			}),
+			handler: async ({ input, signal: abortSignal }) => {
+				const data = await giselleEngine.getGenerationMessageChunks({
+					...input,
+					abortSignal,
+				});
+				return JsonResponse.json(data);
 			},
 		}),
 } as const;

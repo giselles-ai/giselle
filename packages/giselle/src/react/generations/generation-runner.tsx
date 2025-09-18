@@ -1,6 +1,4 @@
-import { useChat } from "@ai-sdk/react";
 import { isTextGenerationNode } from "@giselle-sdk/data-type";
-import { DefaultChatTransport } from "ai";
 import { useCallback, useEffect, useRef } from "react";
 import {
 	type Generation,
@@ -10,6 +8,7 @@ import {
 import { useFeatureFlag } from "../feature-flags";
 import { useGiselleEngine } from "../use-giselle-engine";
 import { useGenerationRunnerSystem } from "./contexts/generation-runner-system";
+import { GenerateContentRunner } from "./generate-content-runner";
 
 function useOnce(fn: () => void) {
 	const once = useRef(false);
@@ -52,70 +51,7 @@ function TextGenerationRunner({ generation }: { generation: Generation }) {
 	if (!isTextGenerationNode(generationContext.operationNode)) {
 		throw new Error("Invalid generation type");
 	}
-	const content = generationContext.operationNode.content;
-	switch (content.llm.provider) {
-		case "openai":
-		case "anthropic":
-		case "google":
-		case "perplexity":
-			return <CompletionRunner generation={generation} />;
-		default: {
-			const _exhaustiveCheck: never = content.llm;
-			return _exhaustiveCheck;
-		}
-	}
-}
-
-function CompletionRunner({ generation }: { generation: Generation }) {
-	const { experimental_storage, aiGateway, resumableGeneration } =
-		useFeatureFlag();
-	const client = useGiselleEngine();
-	const {
-		generateTextApi,
-		updateGenerationStatusToRunning,
-		updateGenerationStatusToComplete,
-		updateGenerationStatusToFailure,
-		updateMessages,
-		addStopHandler,
-	} = useGenerationRunnerSystem();
-	const { messages, sendMessage, stop, status } = useChat({
-		transport: new DefaultChatTransport({
-			api: generateTextApi,
-			body: {
-				generation,
-				useExperimentalStorage: experimental_storage,
-				useAiGateway: aiGateway,
-				useResumableGeneration: resumableGeneration,
-			},
-		}),
-		onFinish: async () => {
-			await updateGenerationStatusToComplete(generation.id);
-		},
-		onError: async () => {
-			await updateGenerationStatusToFailure(generation.id);
-		},
-	});
-	useEffect(() => {
-		if (status !== "streaming") {
-			return;
-		}
-		updateGenerationStatusToRunning(generation.id);
-	}, [status, updateGenerationStatusToRunning, generation.id]);
-	useEffect(() => {
-		if (generation.status !== "running") {
-			return;
-		}
-		updateMessages(generation.id, messages);
-	}, [messages, generation.status, updateMessages, generation.id]);
-	useOnce(() => {
-		if (generation.status !== "queued") {
-			return;
-		}
-		addStopHandler(generation.id, stop);
-		sendMessage({ role: "user", parts: [] });
-		client.generateContent({ generation });
-	});
-	return null;
+	return <GenerateContentRunner generation={generation} />;
 }
 
 function ImageGenerationRunner({ generation }: { generation: Generation }) {

@@ -328,4 +328,5 @@ export const giselleEngine = NextGiselleEngine({
 			process.env.VERCEL_ENV === "preview" ? "Giselle(preview)" : "Giselle",
 	},
 	logger,
+	waitUntil: after,
 });

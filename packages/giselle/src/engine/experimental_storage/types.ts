@@ -19,7 +19,10 @@ type GetJson = <T extends z.ZodType>(
 
 type SetJson = <T extends z.ZodType>(params: SetJsonParams<T>) => Promise<void>;
 
-type GetBlob = (path: string) => Promise<Uint8Array>;
+type GetBlob = (
+	path: string,
+	options?: { range?: { start: number; end?: number } },
+) => Promise<Uint8Array>;
 
 type SetBlob = (path: string, data: BlobLike) => Promise<void>;
 

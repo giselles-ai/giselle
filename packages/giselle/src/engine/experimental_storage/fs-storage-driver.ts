@@ -62,10 +62,47 @@ export function fsStorageDriver(config: FsStorageDriverConfig): GiselleStorage {
 			await fs.writeFile(fullPath, JSON.stringify(data), "utf8");
 		},
 
-		async getBlob(path: string): Promise<Uint8Array> {
+		async getBlob(
+			path: string,
+			options?: { range?: { start: number; end?: number } },
+		): Promise<Uint8Array> {
 			const fullPath = join(config.root, path);
-			const buffer = await fs.readFile(fullPath);
-			return new Uint8Array(buffer);
+
+			if (!options?.range) {
+				const buffer = await fs.readFile(fullPath);
+				return new Uint8Array(buffer);
+			}
+
+			const { start, end } = options.range;
+			const fd = await fs.open(fullPath, "r");
+
+			try {
+				const stats = await fd.stat();
+				const fileSize = stats.size;
+
+				// Clamp start to valid range
+				const actualStart = Math.max(0, Math.min(start, fileSize));
+
+				// If end is not provided, read to end of file
+				// If end is provided, clamp it to valid range
+				const actualEnd =
+					end !== undefined
+						? Math.max(actualStart, Math.min(end, fileSize))
+						: fileSize;
+
+				const length = actualEnd - actualStart;
+
+				if (length <= 0) {
+					return new Uint8Array(0);
+				}
+
+				const buffer = Buffer.allocUnsafe(length);
+				const { bytesRead } = await fd.read(buffer, 0, length, actualStart);
+
+				return new Uint8Array(buffer.subarray(0, bytesRead));
+			} finally {
+				await fd.close();
+			}
 		},
 
 		async setBlob(path: string, data: BlobLike): Promise<void> {
