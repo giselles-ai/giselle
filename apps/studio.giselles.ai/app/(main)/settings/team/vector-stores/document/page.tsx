@@ -1,15 +1,27 @@
 import { ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
-import { Card } from "@/components/ui/card";
 import { docVectorStoreFlag } from "@/flags";
 import { createDocumentVectorStore } from "../actions";
+import type { DocumentVectorStore } from "../data";
+import { getDocumentVectorStores } from "../data";
 import { DocumentVectorStoreCreateDialog } from "../document-store-create-dialog";
+import { DocumentVectorStoreErrorToast } from "../document-vector-store-error-toast";
+import { DocumentVectorStoreList } from "../document-vector-store-list";
 import { VectorStoresNavigationLayout } from "../navigation-layout";
 
 export default async function DocumentVectorStorePage() {
 	const enabled = await docVectorStoreFlag();
 	if (!enabled) {
 		return notFound();
+	}
+
+	let vectorStores: DocumentVectorStore[] = [];
+	let loadError: string | null = null;
+	try {
+		vectorStores = await getDocumentVectorStores();
+	} catch (err) {
+		console.error(err);
+		loadError = "Could not load vector stores. Please try again later.";
 	}
 
 	return (
@@ -39,25 +51,10 @@ export default async function DocumentVectorStorePage() {
 				</div>
 			</div>
 			<VectorStoresNavigationLayout isEnabled={enabled}>
-				<div className="flex flex-col gap-y-[16px]">
-					<Card className="rounded-[8px] bg-transparent p-6 border-0">
-						<div className="flex items-center mb-4">
-							<div>
-								<h4 className="text-white-400 font-medium text-[18px] leading-[21.6px] font-sans">
-									Document Vector Stores
-								</h4>
-								<p className="text-black-400 text-[14px] leading-[20.4px] font-geist mt-1">
-									Create and manage Vector Stores for your documents. PDF
-									ingestion and search will be available here.
-								</p>
-							</div>
-						</div>
-						<div className="text-black-300 text-center py-16 bg-black-300/10 rounded-lg">
-							<div>No document vector stores yet.</div>
-							<div>Use the "New Vector Store" button to create one.</div>
-						</div>
-					</Card>
-				</div>
+				<DocumentVectorStoreList stores={vectorStores} />
+				{loadError ? (
+					<DocumentVectorStoreErrorToast message={loadError} />
+				) : null}
 			</VectorStoresNavigationLayout>
 		</div>
 	);

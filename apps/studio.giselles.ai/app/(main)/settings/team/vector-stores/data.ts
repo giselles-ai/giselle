@@ -2,6 +2,7 @@ import type { components } from "@octokit/openapi-types";
 import { desc, eq } from "drizzle-orm";
 import {
 	db,
+	documentVectorStores,
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
 } from "@/drizzle";
@@ -9,6 +10,8 @@ import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 import type { InstallationWithRepos } from "./types";
+
+export type DocumentVectorStore = typeof documentVectorStores.$inferSelect;
 
 export async function getGitHubRepositoryIndexes(): Promise<
 	RepositoryWithStatuses[]
@@ -53,6 +56,20 @@ export async function getGitHubRepositoryIndexes(): Promise<
 	}
 
 	return Array.from(repositoryMap.values());
+}
+
+export async function getDocumentVectorStores(): Promise<
+	DocumentVectorStore[]
+> {
+	const team = await fetchCurrentTeam();
+
+	const vectorStores = await db
+		.select()
+		.from(documentVectorStores)
+		.where(eq(documentVectorStores.teamDbId, team.dbId))
+		.orderBy(desc(documentVectorStores.createdAt));
+
+	return vectorStores;
 }
 
 export async function getInstallationsWithRepos(): Promise<
