@@ -16,7 +16,7 @@ import {
 	languageModels,
 } from "@giselle-sdk/language-model";
 import type { LanguageModel } from "ai";
-import { AISDKError, streamText } from "ai";
+import { AISDKError, stepCountIs, streamText } from "ai";
 import type {
 	FailedGeneration,
 	GenerationOutput,
@@ -206,11 +206,22 @@ export function generateText(args: {
 			);
 			let generationError: unknown | undefined;
 			const textGenerationStartTime = Date.now();
+			const shouldDisableToolStepLimit =
+				operationNode.content.llm.provider === "openai" &&
+				["gpt-5", "gpt-5-mini", "gpt-5-nano"].includes(
+					operationNode.content.llm.id,
+				);
+			const preparedToolCount = Object.keys(preparedToolSet.toolSet).length;
 			const streamTextResult = streamText({
 				model,
 				providerOptions,
 				messages,
 				tools: preparedToolSet.toolSet,
+				...(shouldDisableToolStepLimit
+					? {}
+					: {
+							stopWhen: stepCountIs(preparedToolCount + 1),
+						}),
 				onError: ({ error }) => {
 					generationError = error;
 				},
