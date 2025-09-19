@@ -12,10 +12,10 @@ import { AvatarImage } from "@/services/accounts/components/user-button/avatar-i
 import { SearchHeader } from "../../(main)/apps/components/search-header";
 import { Card } from "../../(main)/settings/components/card";
 import {
-	GlassDialogBody,
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
+  GlassDialogBody,
+  GlassDialogContent,
+  GlassDialogFooter,
+  GlassDialogHeader,
 } from "../../(main)/settings/team/components/glass-dialog-content";
 import { PageHeader } from "../../ui/page-header";
 import { AppIcon } from "../(top)/app-icon";
@@ -23,93 +23,93 @@ import { AppIcon } from "../(top)/app-icon";
 type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
 
 interface App {
-	id: string;
-	name: string | null;
-	updatedAt: Date;
-	workspaceId: string | null;
+  id: string;
+  name: string | null;
+  updatedAt: Date;
+  workspaceId: string | null;
 }
 
 interface Playlist {
-	id: string;
-	title: string;
-	description: string;
-	createdAt: Date;
-	updatedAt: Date;
-	appsCount: number;
+  id: string;
+  title: string;
+  description: string;
+  createdAt: Date;
+  updatedAt: Date;
+  appsCount: number;
 }
 
 interface TeamOption {
-	value: string;
-	label: string;
-	avatarUrl?: string;
+  value: string;
+  label: string;
+  avatarUrl?: string;
 }
 
 interface ShowcaseClientProps {
-	teamOptions: TeamOption[];
-	teamApps: Record<string, App[]>;
-	teamHistory: Record<string, App[]>;
+  teamOptions: TeamOption[];
+  teamApps: Record<string, App[]>;
+  teamHistory: Record<string, App[]>;
 }
 
 // Mock playlist data - replace with actual data from props
 const mockPlaylists: Playlist[] = [
-	{
-		id: "1",
-		title: "AI Writing Assistants",
-		description:
-			"A collection of AI agents focused on content creation and writing tasks",
-		createdAt: new Date("2024-01-15"),
-		updatedAt: new Date("2024-01-20"),
-		appsCount: 3,
-	},
-	{
-		id: "2",
-		title: "Data Analysis Tools",
-		description: "Smart agents for data processing and insights generation",
-		createdAt: new Date("2024-01-10"),
-		updatedAt: new Date("2024-01-25"),
-		appsCount: 2,
-	},
-	{
-		id: "3",
-		title: "Customer Support Bots",
-		description:
-			"Automated agents for handling customer inquiries and support tasks",
-		createdAt: new Date("2024-01-05"),
-		updatedAt: new Date("2024-01-22"),
-		appsCount: 4,
-	},
+  {
+    id: "1",
+    title: "AI Writing Assistants",
+    description:
+      "A collection of AI agents focused on content creation and writing tasks",
+    createdAt: new Date("2024-01-15"),
+    updatedAt: new Date("2024-01-20"),
+    appsCount: 3,
+  },
+  {
+    id: "2",
+    title: "Data Analysis Tools",
+    description: "Smart agents for data processing and insights generation",
+    createdAt: new Date("2024-01-10"),
+    updatedAt: new Date("2024-01-25"),
+    appsCount: 2,
+  },
+  {
+    id: "3",
+    title: "Customer Support Bots",
+    description:
+      "Automated agents for handling customer inquiries and support tasks",
+    createdAt: new Date("2024-01-05"),
+    updatedAt: new Date("2024-01-22"),
+    appsCount: 4,
+  },
 ];
 
 export function ShowcaseClient({
-	teamOptions,
-	teamApps,
-	teamHistory,
+  teamOptions,
+  teamApps,
+  teamHistory,
 }: ShowcaseClientProps) {
-	const router = useRouter();
-	const [activeTab, setActiveTab] = useState<"Apps" | "Playlist" | "History">(
-		"Apps",
-	);
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<"Apps" | "Playlist" | "History">(
+    "Apps",
+  );
 
-	// Playlist dialog state
-	const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] = useState(false);
-	const [playlistForm, setPlaylistForm] = useState({
-		title: "",
-		description: "",
-	});
+  // Playlist dialog state
+  const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] = useState(false);
+  const [playlistForm, setPlaylistForm] = useState({
+    title: "",
+    description: "",
+  });
 
-	// Apps tab states
-	const [searchQuery, setSearchQuery] = useState("");
-	const [sortOption, setSortOption] = useState<SortOption>("date-desc");
+  // Apps tab states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState<SortOption>("date-desc");
 
-	// Team selection state
-	const [selectedTeamId, setSelectedTeamId] = useState<string>(
-		teamOptions[0]?.value || "",
-	);
+  // Team selection state
+  const [selectedTeamId, setSelectedTeamId] = useState<string>(
+    teamOptions[0]?.value || "",
+  );
 
-	// Add CSS styles for team selection dropdown
-	useEffect(() => {
-		const styleElement = document.createElement("style");
-		styleElement.textContent = `
+  // Add CSS styles for team selection dropdown
+  useEffect(() => {
+    const styleElement = document.createElement("style");
+    styleElement.textContent = `
       .team-select button[type="button"] {
         background-color: rgba(255, 255, 255, 0.05) !important;
         border: none !important;
@@ -127,515 +127,515 @@ export function ShowcaseClient({
         font-size: 14px !important;
       }
     `;
-		document.head.appendChild(styleElement);
+    document.head.appendChild(styleElement);
 
-		return () => {
-			document.head.removeChild(styleElement);
-		};
-	}, []);
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
 
-	// Get apps for selected team
-	const currentApps = useMemo(() => {
-		return teamApps[selectedTeamId] || [];
-	}, [teamApps, selectedTeamId]);
+  // Get apps for selected team
+  const currentApps = useMemo(() => {
+    return teamApps[selectedTeamId] || [];
+  }, [teamApps, selectedTeamId]);
 
-	// Get history for selected team
-	const currentHistory = useMemo(() => {
-		return teamHistory[selectedTeamId] || [];
-	}, [teamHistory, selectedTeamId]);
+  // Get history for selected team
+  const currentHistory = useMemo(() => {
+    return teamHistory[selectedTeamId] || [];
+  }, [teamHistory, selectedTeamId]);
 
-	// Handle playlist form submission
-	const handleSavePlaylist = () => {
-		// TODO: Implement playlist creation logic
-		console.log("Creating playlist:", playlistForm);
-		setIsPlaylistDialogOpen(false);
-		setPlaylistForm({ title: "", description: "" });
-	};
+  // Handle playlist form submission
+  const handleSavePlaylist = () => {
+    // TODO: Implement playlist creation logic
+    console.log("Creating playlist:", playlistForm);
+    setIsPlaylistDialogOpen(false);
+    setPlaylistForm({ title: "", description: "" });
+  };
 
-	// Filter apps based on search query
-	const filteredApps = useMemo(() => {
-		if (!searchQuery) return currentApps;
-		const query = searchQuery.toLowerCase();
-		return currentApps.filter((app) => {
-			const appName = (app.name || "Untitled").toLowerCase();
-			return appName.includes(query);
-		});
-	}, [searchQuery, currentApps]);
+  // Filter apps based on search query
+  const filteredApps = useMemo(() => {
+    if (!searchQuery) return currentApps;
+    const query = searchQuery.toLowerCase();
+    return currentApps.filter((app) => {
+      const appName = (app.name || "Untitled").toLowerCase();
+      return appName.includes(query);
+    });
+  }, [searchQuery, currentApps]);
 
-	// Filter history based on search query
-	const filteredHistory = useMemo(() => {
-		if (!searchQuery) return currentHistory;
-		const query = searchQuery.toLowerCase();
-		return currentHistory.filter((item) => {
-			const itemName = (item.name || "Untitled").toLowerCase();
-			return itemName.includes(query);
-		});
-	}, [searchQuery, currentHistory]);
+  // Filter history based on search query
+  const filteredHistory = useMemo(() => {
+    if (!searchQuery) return currentHistory;
+    const query = searchQuery.toLowerCase();
+    return currentHistory.filter((item) => {
+      const itemName = (item.name || "Untitled").toLowerCase();
+      return itemName.includes(query);
+    });
+  }, [searchQuery, currentHistory]);
 
-	// Sort apps based on selected option
-	const sortedApps = useMemo(() => {
-		return [...filteredApps].sort((a, b) => {
-			switch (sortOption) {
-				case "name-asc":
-					return (a.name || "").localeCompare(b.name || "");
-				case "name-desc":
-					return (b.name || "").localeCompare(a.name || "");
-				case "date-desc":
-					return b.updatedAt.getTime() - a.updatedAt.getTime();
-				case "date-asc":
-					return a.updatedAt.getTime() - b.updatedAt.getTime();
-				default:
-					return 0;
-			}
-		});
-	}, [filteredApps, sortOption]);
+  // Sort apps based on selected option
+  const sortedApps = useMemo(() => {
+    return [...filteredApps].sort((a, b) => {
+      switch (sortOption) {
+        case "name-asc":
+          return (a.name || "").localeCompare(b.name || "");
+        case "name-desc":
+          return (b.name || "").localeCompare(a.name || "");
+        case "date-desc":
+          return b.updatedAt.getTime() - a.updatedAt.getTime();
+        case "date-asc":
+          return a.updatedAt.getTime() - b.updatedAt.getTime();
+        default:
+          return 0;
+      }
+    });
+  }, [filteredApps, sortOption]);
 
-	// Sort history based on selected option
-	const sortedHistory = useMemo(() => {
-		return [...filteredHistory].sort((a, b) => {
-			switch (sortOption) {
-				case "name-asc":
-					return (a.name || "").localeCompare(b.name || "");
-				case "name-desc":
-					return (b.name || "").localeCompare(a.name || "");
-				case "date-desc":
-					return b.updatedAt.getTime() - a.updatedAt.getTime();
-				case "date-asc":
-					return a.updatedAt.getTime() - b.updatedAt.getTime();
-				default:
-					return 0;
-			}
-		});
-	}, [filteredHistory, sortOption]);
+  // Sort history based on selected option
+  const sortedHistory = useMemo(() => {
+    return [...filteredHistory].sort((a, b) => {
+      switch (sortOption) {
+        case "name-asc":
+          return (a.name || "").localeCompare(b.name || "");
+        case "name-desc":
+          return (b.name || "").localeCompare(a.name || "");
+        case "date-desc":
+          return b.updatedAt.getTime() - a.updatedAt.getTime();
+        case "date-asc":
+          return a.updatedAt.getTime() - b.updatedAt.getTime();
+        default:
+          return 0;
+      }
+    });
+  }, [filteredHistory, sortOption]);
 
-	// Team options with icons for the dropdown
-	const teamOptionsWithIcons = useMemo(
-		() =>
-			teamOptions.map((team) => ({
-				...team,
-				icon: team.avatarUrl ? (
-					<AvatarImage
-						avatarUrl={team.avatarUrl}
-						width={16}
-						height={16}
-						alt={team.label}
-					/>
-				) : undefined,
-			})),
-		[teamOptions],
-	);
+  // Team options with icons for the dropdown
+  const teamOptionsWithIcons = useMemo(
+    () =>
+      teamOptions.map((team) => ({
+        ...team,
+        icon: team.avatarUrl ? (
+          <AvatarImage
+            avatarUrl={team.avatarUrl}
+            width={16}
+            height={16}
+            alt={team.label}
+          />
+        ) : undefined,
+      })),
+    [teamOptions],
+  );
 
-	return (
-		<div className="flex-1 px-[24px] bg-[var(--color-stage-background)] pt-16 md:pt-0 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 h-full flex flex-col">
-			<div className="py-6 h-full flex flex-col">
-				<div className="flex items-center justify-between px-1 mb-6">
-					<div>
-						<PageHeader
-							title="Showcase"
-							subtitle="Explore featured workflows and inspiring examples"
-						/>
-					</div>
+  return (
+    <div className="flex-1 px-[24px] bg-[var(--color-stage-background)] pt-16 md:pt-0 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 h-full flex flex-col">
+      <div className="py-6 h-full flex flex-col">
+        <div className="flex items-center justify-between px-1 mb-6">
+          <div>
+            <PageHeader
+              title="Showcase"
+              subtitle="Explore featured workflows and inspiring examples"
+            />
+          </div>
 
-					{/* Team Selection Dropdown */}
-					<div
-						style={
-							{
-								width: "fit-content",
-								minWidth: "auto",
-							} as React.CSSProperties
-						}
-					>
-						<div className="team-select">
-							<Select
-								placeholder="Select team"
-								options={teamOptionsWithIcons}
-								renderOption={(o) => o.label}
-								value={selectedTeamId}
-								onValueChange={(value) => setSelectedTeamId(value)}
-								widthClassName="[&>button]:text-[14px] [&>button]:px-2 [&>button]:py-1 [&>button]:rounded-sm [&>button]:gap-2"
-								triggerClassName="text-text"
-							/>
-						</div>
-					</div>
-				</div>
+          {/* Team Selection Dropdown */}
+          <div
+            style={
+              {
+                width: "fit-content",
+                minWidth: "auto",
+              } as React.CSSProperties
+            }
+          >
+            <div className="team-select">
+              <Select
+                placeholder="Select team"
+                options={teamOptionsWithIcons}
+                renderOption={(o) => o.label}
+                value={selectedTeamId}
+                onValueChange={(value) => setSelectedTeamId(value)}
+                widthClassName="[&>button]:text-[14px] [&>button]:px-2 [&>button]:py-1 [&>button]:rounded-sm [&>button]:gap-2"
+                triggerClassName="text-text"
+              />
+            </div>
+          </div>
+        </div>
 
-				{/* Tabs */}
-				<div className="mb-8">
-					<div className="flex items-center px-0 py-0 border-t border-black-900/50">
-						<div className="flex items-center space-x-[12px]">
-							{["Apps", "Playlist", "History"].map((tab) => {
-								const isActive = activeTab === tab;
-								return (
-									<button
-										key={tab}
-										type="button"
-										onClick={() =>
-											setActiveTab(tab as "Apps" | "Playlist" | "History")
-										}
-										className={`text-[16px] font-sans font-medium transition-colors px-2 py-2 relative rounded-md
+        {/* Tabs */}
+        <div className="mb-8">
+          <div className="flex items-center px-0 py-0 border-t border-black-900/50">
+            <div className="flex items-center space-x-[12px]">
+              {["Apps", "Playlist", "History"].map((tab) => {
+                const isActive = activeTab === tab;
+                return (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() =>
+                      setActiveTab(tab as "Apps" | "Playlist" | "History")
+                    }
+                    className={`text-[16px] font-sans font-medium transition-colors px-2 py-2 relative rounded-md
                     ${
-											isActive
-												? "text-primary-100 [text-shadow:0px_0px_20px_#0087f6] after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[2px] after:bg-primary-100"
-												: "text-[var(--color-tabs-inactive-text)] hover:text-white-100 hover:after:content-[''] hover:after:absolute hover:after:left-0 hover:after:right-0 hover:after:bottom-0 hover:after:h-[2px] hover:after:bg-primary-100"
-										}`}
-									>
-										{tab}
-									</button>
-								);
-							})}
-						</div>
-					</div>
-				</div>
+                      isActive
+                        ? "text-primary-100 [text-shadow:0px_0px_20px_#0087f6] after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[2px] after:bg-primary-100"
+                        : "text-[var(--color-tabs-inactive-text)] hover:text-white-100 hover:after:content-[''] hover:after:absolute hover:after:left-0 hover:after:right-0 hover:after:bottom-0 hover:after:h-[2px] hover:after:bg-primary-100"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
 
-				{/* Content area */}
-				<div className="flex-1 overflow-auto min-h-0">
-					{activeTab === "Apps" && (
-						<>
-							<SearchHeader
-								searchQuery={searchQuery}
-								onSearchChange={setSearchQuery}
-								searchPlaceholder="Search Apps..."
-								sortOption={sortOption}
-								onSortChange={(value) => setSortOption(value as SortOption)}
-							/>
+        {/* Content area */}
+        <div className="flex-1 overflow-auto min-h-0">
+          {activeTab === "Apps" && (
+            <>
+              <SearchHeader
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchPlaceholder="Search Apps..."
+                sortOption={sortOption}
+                onSortChange={(value) => setSortOption(value as SortOption)}
+              />
 
-							{sortedApps.length === 0 ? (
-								searchQuery ? (
-									<div className="flex justify-center items-center h-full mt-12">
-										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
-												No apps found.
-											</h3>
-											<p className="text-[12px] font-geist text-black-400">
-												Try searching with a different keyword.
-											</p>
-										</div>
-									</div>
-								) : (
-									<div className="flex justify-center items-center h-full mt-12">
-										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
-												No apps yet.
-											</h3>
-											<p className="text-[12px] font-geist text-black-400">
-												Please create a new app with the 'New App +' button.
-											</p>
-										</div>
-									</div>
-								)
-							) : (
-								<Card className="gap-0 py-2">
-									{sortedApps.map((app) => (
-										<div
-											key={app.id}
-											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-[var(--color-border)] cursor-pointer"
-										>
-											<Link
-												href={`/stage/showcase/${app.id}`}
-												className="flex items-center gap-3 min-w-0"
-											>
-												<div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 transition-all group-hover:bg-primary-100/20">
-													<AppIcon className="h-5 w-5 text-white/40 transition-colors group-hover:text-primary-100" />
-												</div>
-												<div className="flex flex-col gap-y-1">
-													<p className="text-[14px] font-sans text-text">
-														{app.name || "Untitled"}
-													</p>
-													<p className="text-[12px] font-geist text-text-muted">
-														Edited {app.updatedAt.toLocaleDateString("en-US")}
-													</p>
-												</div>
-											</Link>
+              {sortedApps.length === 0 ? (
+                searchQuery ? (
+                  <div className="flex justify-center items-center h-full mt-12">
+                    <div className="grid gap-[8px] justify-center text-center">
+                      <h3 className="text-[18px] font-geist font-bold text-[var(--color-tabs-inactive-text)]">
+                        No apps found.
+                      </h3>
+                      <p className="text-[12px] font-geist text-[var(--color-tabs-inactive-text)]">
+                        Try searching with a different keyword.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex justify-center items-center h-full mt-12">
+                    <div className="grid gap-[8px] justify-center text-center">
+                      <h3 className="text-[18px] font-geist font-bold text-[var(--color-tabs-inactive-text)]">
+                        No apps yet.
+                      </h3>
+                      <p className="text-[12px] font-geist text-[var(--color-tabs-inactive-text)]">
+                        Please create a new app with the 'New App +' button.
+                      </p>
+                    </div>
+                  </div>
+                )
+              ) : (
+                <Card className="gap-0 py-2">
+                  {sortedApps.map((app) => (
+                    <div
+                      key={app.id}
+                      className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-[var(--color-border)] cursor-pointer"
+                    >
+                      <Link
+                        href={`/stage/showcase/${app.id}`}
+                        className="flex items-center gap-3 min-w-0"
+                      >
+                        <div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 transition-all group-hover:bg-primary-100/20">
+                          <AppIcon className="h-5 w-5 text-white/40 transition-colors group-hover:text-primary-100" />
+                        </div>
+                        <div className="flex flex-col gap-y-1">
+                          <p className="text-[14px] font-sans text-text">
+                            {app.name || "Untitled"}
+                          </p>
+                          <p className="text-[12px] font-geist text-text-muted">
+                            Edited {app.updatedAt.toLocaleDateString("en-US")}
+                          </p>
+                        </div>
+                      </Link>
 
-											{/* Action buttons */}
-											<div className="flex items-center gap-2">
-												<button
-													type="button"
-													className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-white/20 hover:border-white/40"
-													title="Run app"
-													onClick={(e) => {
-														e.stopPropagation();
-														router.push(`/stage?appId=${app.id}`);
-													}}
-												>
-													<Play className="h-3 w-3" />
-												</button>
-												<Link
-													href={
-														app.workspaceId
-															? `/workspaces/${app.workspaceId}`
-															: "/playground"
-													}
-													className="rounded-lg px-3 py-1.5 text-text transition-all duration-200 active:scale-[0.98] text-sm"
-													style={{
-														background:
-															"linear-gradient(180deg, #202530 0%, #12151f 100%)",
-														border: "1px solid rgba(0,0,0,0.7)",
-														boxShadow:
-															"inset 0 1px 1px rgba(255,255,255,0.05), 0 2px 8px rgba(5,10,20,0.4), 0 1px 2px rgba(0,0,0,0.3)",
-													}}
-													onClick={(e) => {
-														e.stopPropagation();
-														console.log("🔗 Edit button clicked for app:", {
-															id: app.id,
-															name: app.name,
-															workspaceId: app.workspaceId,
-															targetUrl: app.workspaceId
-																? `/workspaces/${app.workspaceId}`
-																: "/playground",
-														});
-													}}
-												>
-													Edit
-												</Link>
-												<button
-													type="button"
-													className="p-1.5 rounded-md text-white/60 hover:text-white transition-colors"
-													onClick={() => {
-														// TODO: Add favorite functionality
-													}}
-												>
-													<Star className="h-4 w-4 hover:fill-current" />
-												</button>
-											</div>
-										</div>
-									))}
-								</Card>
-							)}
-						</>
-					)}
+                      {/* Action buttons */}
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-white/20 hover:border-white/40"
+                          title="Run app"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/stage?appId=${app.id}`);
+                          }}
+                        >
+                          <Play className="h-3 w-3" />
+                        </button>
+                        <Link
+                          href={
+                            app.workspaceId
+                              ? `/workspaces/${app.workspaceId}`
+                              : "/playground"
+                          }
+                          className="rounded-lg px-3 py-1.5 text-text transition-all duration-200 active:scale-[0.98] text-sm"
+                          style={{
+                            background:
+                              "linear-gradient(180deg, #202530 0%, #12151f 100%)",
+                            border: "1px solid rgba(0,0,0,0.7)",
+                            boxShadow:
+                              "inset 0 1px 1px rgba(255,255,255,0.05), 0 2px 8px rgba(5,10,20,0.4), 0 1px 2px rgba(0,0,0,0.3)",
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            console.log("🔗 Edit button clicked for app:", {
+                              id: app.id,
+                              name: app.name,
+                              workspaceId: app.workspaceId,
+                              targetUrl: app.workspaceId
+                                ? `/workspaces/${app.workspaceId}`
+                                : "/playground",
+                            });
+                          }}
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          type="button"
+                          className="p-1.5 rounded-md text-white/60 hover:text-white transition-colors"
+                          onClick={() => {
+                            // TODO: Add favorite functionality
+                          }}
+                        >
+                          <Star className="h-4 w-4 hover:fill-current" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </Card>
+              )}
+            </>
+          )}
 
-					{activeTab === "Playlist" && (
-						<>
-							<div className="mb-8 flex justify-start">
-								<Dialog.Root
-									open={isPlaylistDialogOpen}
-									onOpenChange={setIsPlaylistDialogOpen}
-								>
-									<Dialog.Trigger asChild>
-										<GlassButton>New Playlist +</GlassButton>
-									</Dialog.Trigger>
-									<GlassDialogContent
-										onEscapeKeyDown={() => setIsPlaylistDialogOpen(false)}
-										onPointerDownOutside={() => setIsPlaylistDialogOpen(false)}
-									>
-										<GlassDialogHeader
-											title="New Playlist Details"
-											description="Create a new playlist with title, description and thumbnail."
-											onClose={() => setIsPlaylistDialogOpen(false)}
-										/>
-										<GlassDialogBody>
-											<div className="grid gap-4">
-												<div className="grid gap-2">
-													<label
-														htmlFor="title"
-														className="text-sm font-medium text-white"
-													>
-														Title
-													</label>
-													<Input
-														id="title"
-														value={playlistForm.title}
-														onChange={(e) =>
-															setPlaylistForm({
-																...playlistForm,
-																title: e.target.value,
-															})
-														}
-														placeholder="Playlist title"
-														className="bg-black-700/50 border-black-600 text-white placeholder:text-black-400"
-													/>
-												</div>
-												<div className="grid gap-2">
-													<label
-														htmlFor="description"
-														className="text-sm font-medium text-white"
-													>
-														Description
-													</label>
-													<Input
-														id="description"
-														value={playlistForm.description}
-														onChange={(e) =>
-															setPlaylistForm({
-																...playlistForm,
-																description: e.target.value,
-															})
-														}
-														placeholder="Playlist description"
-														className="bg-black-700/50 border-black-600 text-white placeholder:text-black-400"
-													/>
-												</div>
-											</div>
-										</GlassDialogBody>
-										<GlassDialogFooter
-											onCancel={() => setIsPlaylistDialogOpen(false)}
-											onConfirm={handleSavePlaylist}
-											confirmLabel="Save"
-										/>
-									</GlassDialogContent>
-								</Dialog.Root>
-							</div>
+          {activeTab === "Playlist" && (
+            <>
+              <div className="mb-8 flex justify-start">
+                <Dialog.Root
+                  open={isPlaylistDialogOpen}
+                  onOpenChange={setIsPlaylistDialogOpen}
+                >
+                  <Dialog.Trigger asChild>
+                    <GlassButton>New Playlist +</GlassButton>
+                  </Dialog.Trigger>
+                  <GlassDialogContent
+                    onEscapeKeyDown={() => setIsPlaylistDialogOpen(false)}
+                    onPointerDownOutside={() => setIsPlaylistDialogOpen(false)}
+                  >
+                    <GlassDialogHeader
+                      title="New Playlist Details"
+                      description="Create a new playlist with title, description and thumbnail."
+                      onClose={() => setIsPlaylistDialogOpen(false)}
+                    />
+                    <GlassDialogBody>
+                      <div className="grid gap-4">
+                        <div className="grid gap-2">
+                          <label
+                            htmlFor="title"
+                            className="text-sm font-medium text-white"
+                          >
+                            Title
+                          </label>
+                          <Input
+                            id="title"
+                            value={playlistForm.title}
+                            onChange={(e) =>
+                              setPlaylistForm({
+                                ...playlistForm,
+                                title: e.target.value,
+                              })
+                            }
+                            placeholder="Playlist title"
+                            className="bg-black-700/50 border-black-600 text-white placeholder:text-black-400"
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <label
+                            htmlFor="description"
+                            className="text-sm font-medium text-white"
+                          >
+                            Description
+                          </label>
+                          <Input
+                            id="description"
+                            value={playlistForm.description}
+                            onChange={(e) =>
+                              setPlaylistForm({
+                                ...playlistForm,
+                                description: e.target.value,
+                              })
+                            }
+                            placeholder="Playlist description"
+                            className="bg-black-700/50 border-black-600 text-white placeholder:text-black-400"
+                          />
+                        </div>
+                      </div>
+                    </GlassDialogBody>
+                    <GlassDialogFooter
+                      onCancel={() => setIsPlaylistDialogOpen(false)}
+                      onConfirm={handleSavePlaylist}
+                      confirmLabel="Save"
+                    />
+                  </GlassDialogContent>
+                </Dialog.Root>
+              </div>
 
-							{mockPlaylists.length > 0 && (
-								<div className="flex flex-wrap gap-6">
-									{mockPlaylists.map((playlist, index) => {
-										// Generate different gradient backgrounds
-										const gradients = [
-											"bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600",
-											"bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600",
-											"bg-gradient-to-br from-green-400 via-blue-500 to-purple-600",
-											"bg-gradient-to-br from-yellow-400 via-orange-500 to-red-600",
-											"bg-gradient-to-br from-blue-400 via-purple-500 to-pink-600",
-											"bg-gradient-to-br from-indigo-400 via-blue-500 to-teal-600",
-										];
-										const gradientClass = gradients[index % gradients.length];
+              {mockPlaylists.length > 0 && (
+                <div className="flex flex-wrap gap-6">
+                  {mockPlaylists.map((playlist, index) => {
+                    // Generate different gradient backgrounds
+                    const gradients = [
+                      "bg-gradient-to-br from-orange-400 via-pink-500 to-purple-600",
+                      "bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600",
+                      "bg-gradient-to-br from-green-400 via-blue-500 to-purple-600",
+                      "bg-gradient-to-br from-yellow-400 via-orange-500 to-red-600",
+                      "bg-gradient-to-br from-blue-400 via-purple-500 to-pink-600",
+                      "bg-gradient-to-br from-indigo-400 via-blue-500 to-teal-600",
+                    ];
+                    const gradientClass = gradients[index % gradients.length];
 
-										return (
-											<div key={playlist.id} className="group w-40">
-												{/* Thumbnail area */}
-												<button
-													type="button"
-													onClick={() =>
-														router.push(
-															`/stage/showcase/playlist/${playlist.id}`,
-														)
-													}
-													className="relative w-40 aspect-square overflow-hidden rounded-lg transition-all duration-300 hover:scale-105 mb-3"
-												>
-													<div className={`w-full h-full ${gradientClass}`}>
-														<div className="absolute inset-0 bg-black/20" />
-													</div>
-												</button>
+                    return (
+                      <div key={playlist.id} className="group w-40">
+                        {/* Thumbnail area */}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            router.push(
+                              `/stage/showcase/playlist/${playlist.id}`,
+                            )
+                          }
+                          className="relative w-40 aspect-square overflow-hidden rounded-lg transition-all duration-300 hover:scale-105 mb-3"
+                        >
+                          <div className={`w-full h-full ${gradientClass}`}>
+                            <div className="absolute inset-0 bg-black/20" />
+                          </div>
+                        </button>
 
-												{/* Text content area */}
-												<button
-													type="button"
-													onClick={() =>
-														router.push(
-															`/stage/showcase/playlist/${playlist.id}`,
-														)
-													}
-													className="w-full text-left"
-												>
-													<h3 className="text-white font-semibold text-base mb-2 group-hover:text-primary-100 transition-colors line-clamp-1">
-														{playlist.title}
-													</h3>
-													<span className="text-white/50 text-xs">
-														{playlist.appsCount}{" "}
-														{playlist.appsCount === 1 ? "app" : "apps"}
-													</span>
-												</button>
-											</div>
-										);
-									})}
-								</div>
-							)}
+                        {/* Text content area */}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            router.push(
+                              `/stage/showcase/playlist/${playlist.id}`,
+                            )
+                          }
+                          className="w-full text-left"
+                        >
+                          <h3 className="text-white font-semibold text-base mb-2 group-hover:text-primary-100 transition-colors line-clamp-1">
+                            {playlist.title}
+                          </h3>
+                          <span className="text-white/50 text-xs">
+                            {playlist.appsCount}{" "}
+                            {playlist.appsCount === 1 ? "app" : "apps"}
+                          </span>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
-							{mockPlaylists.length === 0 && (
-								<div className="flex justify-center items-center h-full">
-									<div className="grid gap-[8px] justify-center text-center">
-										<h3 className="text-[18px] font-geist font-bold text-black-400">
-											No playlists yet.
-										</h3>
-										<p className="text-[12px] font-geist text-black-400">
-											Please create a new playlist with the 'New Playlist +'
-											button.
-										</p>
-									</div>
-								</div>
-							)}
-						</>
-					)}
+              {mockPlaylists.length === 0 && (
+                <div className="flex justify-center items-center h-full">
+                  <div className="grid gap-[8px] justify-center text-center">
+                    <h3 className="text-[18px] font-geist font-bold text-black-400">
+                      No playlists yet.
+                    </h3>
+                    <p className="text-[12px] font-geist text-black-400">
+                      Please create a new playlist with the 'New Playlist +'
+                      button.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
 
-					{activeTab === "History" && (
-						<>
-							<SearchHeader
-								searchQuery={searchQuery}
-								onSearchChange={setSearchQuery}
-								searchPlaceholder="Search History..."
-								sortOption={sortOption}
-								onSortChange={(value) => setSortOption(value as SortOption)}
-							/>
+          {activeTab === "History" && (
+            <>
+              <SearchHeader
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchPlaceholder="Search History..."
+                sortOption={sortOption}
+                onSortChange={(value) => setSortOption(value as SortOption)}
+              />
 
-							{sortedHistory.length === 0 ? (
-								searchQuery ? (
-									<div className="flex justify-center items-center h-full mt-12">
-										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
-												No history found.
-											</h3>
-											<p className="text-[12px] font-geist text-black-400">
-												Try searching with a different keyword.
-											</p>
-										</div>
-									</div>
-								) : (
-									<div className="flex justify-center items-center h-full mt-12">
-										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
-												No history yet.
-											</h3>
-											<p className="text-[12px] font-geist text-black-400">
-												Execute an app to see your history.
-											</p>
-										</div>
-									</div>
-								)
-							) : (
-								<Card className="gap-0 py-2">
-									{sortedHistory.map((item) => (
-										<div
-											key={item.id}
-											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-[var(--color-border)] cursor-pointer"
-										>
-											<div className="flex items-center gap-3">
-												<div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 transition-all group-hover:bg-primary-100/20">
-													<AppIcon className="h-5 w-5 text-white/40 transition-colors group-hover:text-primary-100" />
-												</div>
-												<div className="flex flex-col gap-y-1">
-													<p className="text-[14px] font-sans text-text">
-														{item.name || "Untitled"}
-													</p>
-													<p className="text-[12px] font-geist text-text-muted">
-														Executed{" "}
-														{item.updatedAt.toLocaleDateString("en-US")}
-													</p>
-												</div>
-											</div>
+              {sortedHistory.length === 0 ? (
+                searchQuery ? (
+                  <div className="flex justify-center items-center h-full mt-12">
+                    <div className="grid gap-[8px] justify-center text-center">
+                      <h3 className="text-[18px] font-geist font-bold text-[var(--color-tabs-inactive-text)]">
+                        No history found.
+                      </h3>
+                      <p className="text-[12px] font-geist text-[var(--color-tabs-inactive-text)]">
+                        Try searching with a different keyword.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex justify-center items-center h-full mt-12">
+                    <div className="grid gap-[8px] justify-center text-center">
+                      <h3 className="text-[18px] font-geist font-bold text-[var(--color-tabs-inactive-text)]">
+                        No history yet.
+                      </h3>
+                      <p className="text-[12px] font-geist text-[var(--color-tabs-inactive-text)]">
+                        Execute an app to see your history.
+                      </p>
+                    </div>
+                  </div>
+                )
+              ) : (
+                <Card className="gap-0 py-2">
+                  {sortedHistory.map((item) => (
+                    <div
+                      key={item.id}
+                      className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-[var(--color-border)] cursor-pointer"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 transition-all group-hover:bg-primary-100/20">
+                          <AppIcon className="h-5 w-5 text-white/40 transition-colors group-hover:text-primary-100" />
+                        </div>
+                        <div className="flex flex-col gap-y-1">
+                          <p className="text-[14px] font-sans text-text">
+                            {item.name || "Untitled"}
+                          </p>
+                          <p className="text-[12px] font-geist text-text-muted">
+                            Executed{" "}
+                            {item.updatedAt.toLocaleDateString("en-US")}
+                          </p>
+                        </div>
+                      </div>
 
-											{/* Action buttons */}
-											<div className="flex items-center gap-2">
-												<button
-													type="button"
-													className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-white/20 hover:border-white/40"
-													title="Re-run app"
-													onClick={() => {
-														if (item.workspaceId) {
-															router.push(
-																`/stage?workspaceId=${item.workspaceId}&teamId=${selectedTeamId}`,
-															);
-														}
-													}}
-												>
-													<RotateCcw className="h-3 w-3" />
-												</button>
+                      {/* Action buttons */}
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-white/20 hover:border-white/40"
+                          title="Re-run app"
+                          onClick={() => {
+                            if (item.workspaceId) {
+                              router.push(
+                                `/stage?workspaceId=${item.workspaceId}&teamId=${selectedTeamId}`,
+                              );
+                            }
+                          }}
+                        >
+                          <RotateCcw className="h-3 w-3" />
+                        </button>
 
-												<button
-													type="button"
-													className="p-1.5 rounded-md text-white/60 hover:text-white transition-colors"
-												>
-													<Star className="h-4 w-4 hover:fill-current" />
-												</button>
-											</div>
-										</div>
-									))}
-								</Card>
-							)}
-						</>
-					)}
-				</div>
-			</div>
-		</div>
-	);
+                        <button
+                          type="button"
+                          className="p-1.5 rounded-md text-white/60 hover:text-white transition-colors"
+                        >
+                          <Star className="h-4 w-4 hover:fill-current" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </Card>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
