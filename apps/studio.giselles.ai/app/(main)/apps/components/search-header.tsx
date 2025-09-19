@@ -92,14 +92,14 @@ export function SearchHeader({
 		>
 			{/* Search */}
 			<div className="relative flex-1 w-full">
-				<Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black-300 h-4 w-4" />
+				<Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted h-4 w-4" />
 				<Input
 					type="text"
 					placeholder={searchPlaceholder}
 					value={searchQuery}
 					onChange={(e) => onSearchChange(e.target.value)}
 					// Classes match /apps usage exactly (force radius/ring like /apps local Input)
-					className="pl-12 pr-4 h-10 w-full bg-black-700/50 text-white placeholder:text-black-400 border-black-600 rounded-[8px] shadow-none focus:border-transparent focus:ring-1 focus:ring-black--50 focus:ring-inset focus:ring-offset-0 focus-visible:border-transparent focus-visible:ring-1 focus-visible:ring-black--50 focus-visible:ring-inset focus-visible:ring-offset-0"
+					className="pl-12 pr-4 h-10 w-full bg-black-700/50 text-white placeholder:text-black-400 border-border rounded-[8px] shadow-none focus:border-transparent focus:ring-1 focus:ring-black--50 focus:ring-inset focus:ring-offset-0 focus-visible:border-transparent focus-visible:ring-1 focus-visible:ring-black--50 focus-visible:ring-inset focus-visible:ring-offset-0"
 				/>
 			</div>
 
@@ -116,27 +116,27 @@ export function SearchHeader({
 
 				{/* Optional view toggle */}
 				{canToggleView ? (
-					<div className="flex rounded-lg border border-black-600 overflow-hidden shrink-0">
+					<div className="flex rounded-lg border border-border overflow-hidden shrink-0">
 						<button
 							type="button"
 							onClick={() => onViewModeChange?.("grid")}
 							className={`p-3 flex items-center justify-center transition-colors ${
 								viewMode === "grid"
 									? "bg-black-600 text-white"
-									: "bg-black-700/50 text-black-300 hover:text-white"
+									: "bg-black-700/50 text-text-muted hover:text-white"
 							}`}
 							aria-label="Grid view"
 						>
 							<LayoutGrid className="h-4 w-4" />
 						</button>
-						<div className="w-px bg-black-600" />
+						<div className="w-px bg-border" />
 						<button
 							type="button"
 							onClick={() => onViewModeChange?.("list")}
 							className={`p-3 flex items-center justify-center transition-colors ${
 								viewMode === "list"
 									? "bg-black-600 text-white"
-									: "bg-black-700/50 text-black-300 hover:text-white"
+									: "bg-black-700/50 text-text-muted hover:text-white"
 							}`}
 							aria-label="List view"
 						>

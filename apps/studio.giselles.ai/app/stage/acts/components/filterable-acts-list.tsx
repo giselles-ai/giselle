@@ -295,38 +295,6 @@ export function FilterableActsList({
 		}
 	}, [searchQuery]);
 
-	// Add custom styles for select components to match /stage page
-	useEffect(() => {
-		const styleId = "acts-select-styles";
-		let styleElement = document.getElementById(styleId);
-
-		if (!styleElement) {
-			styleElement = document.createElement("style");
-			styleElement.id = styleId;
-			styleElement.textContent = `
-				        .status-select button[type="button"] {
-				          background-color: rgba(255, 255, 255, 0.05) !important;
-				          border: none !important;
-				          color: white !important;
-				          font-size: 14px !important;
-				          font-family: inherit !important;
-				        }
-				        .status-select button[type="button"]:hover {
-				          background-color: rgba(255, 255, 255, 0.1) !important;
-				        }
-
-				      `;
-			document.head.appendChild(styleElement);
-		}
-
-		return () => {
-			const existingStyle = document.getElementById(styleId);
-			if (existingStyle) {
-				document.head.removeChild(existingStyle);
-			}
-		};
-	}, []);
-
 	return (
 		<div className="flex-1 px-[24px] bg-[var(--color-stage-background)] pt-16 md:pt-0 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 h-full flex flex-col">
 			<div className="py-6 h-full flex flex-col">
@@ -342,11 +310,8 @@ export function FilterableActsList({
 				{/* Filters */}
 				<div className="flex flex-col md:flex-row gap-4 mb-6">
 					{/* Search */}
-					<div className="search-input relative flex-1">
-						<div
-							className="flex items-center gap-1 flex-wrap w-full pl-2 pr-10 py-1 rounded-[8px] h-10 text-white-900 placeholder-white-600 focus-within:outline-none transition-colors text-[14px]"
-							style={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
-						>
+					<div className="search-input relative flex-1 w-full">
+						<div className="flex items-center gap-1 flex-wrap w-full pl-12 pr-4 h-10 bg-black-700/50 text-white placeholder:text-black-400 border border-border rounded-[8px] shadow-none focus-within:border-transparent focus-within:ring-1 focus-within:ring-black--50 focus-within:ring-inset focus-within:ring-offset-0 text-[14px]">
 							{searchTags.map((tag) => {
 								const [prefix, value] = tag.label.split(":");
 								return (
@@ -378,10 +343,10 @@ export function FilterableActsList({
 								value={inputValue}
 								onChange={(e) => setInputValue(e.target.value)}
 								onKeyDown={handleInputKeyDown}
-								className="flex-1 min-w-0 bg-transparent border-none outline-none text-white-900 placeholder-white-600 text-[14px]"
+								className="flex-1 min-w-0 bg-transparent border-none outline-none text-white placeholder:text-black-400 text-[14px]"
 							/>
 						</div>
-						<Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white-600" />
+						<Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black-300 h-4 w-4" />
 					</div>
 
 					{/* Status Filter and New Task Button Row */}
@@ -393,9 +358,10 @@ export function FilterableActsList({
 									<button
 										type="button"
 										className={clsx(
-											"flex items-center gap-2 rounded-[8px] h-10 px-[12px] text-left text-[14px] w-full",
-											"outline-none focus:outline-none",
-											"transition-colors",
+											"w-full flex justify-between items-center rounded-[8px] h-10 px-[12px] text-left text-[14px]",
+											"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
+											"bg-white/5 transition-colors hover:bg-ghost-element-hover",
+											"data-[placeholder]:text-text-muted",
 										)}
 									>
 										<div className="flex items-center gap-1">
