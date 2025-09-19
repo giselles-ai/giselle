@@ -57,7 +57,10 @@ export function Select<T extends SelectOption>({
 					)}
 				>
 					<div className="flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap">
-						<SelectPrimitive.Value placeholder={placeholder} />
+						<SelectPrimitive.Value
+							placeholder={placeholder}
+							className="flex items-center gap-2"
+						/>
 					</div>
 					<ChevronDownIcon className="size-[13px] shrink-0 text-text ml-2" />
 				</button>
@@ -87,7 +90,9 @@ export function Select<T extends SelectOption>({
 									<SelectPrimitive.ItemText>
 										{option.icon ? (
 											<div className="flex items-center gap-2">
-												<span className="h-4 w-4">{option.icon}</span>
+												<span className="w-6 h-6 flex items-center justify-center shrink-0">
+													{option.icon}
+												</span>
 												{renderOption ? renderOption(option) : option.label}
 											</div>
 										) : renderOption ? (
