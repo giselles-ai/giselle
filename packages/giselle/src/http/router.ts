@@ -92,7 +92,18 @@ export const createJsonRouters = {
 						input.useAiGateway,
 						input.useResumableGeneration,
 					);
-					return createUIMessageStreamResponse({ stream });
+					return createUIMessageStreamResponse({
+						stream,
+						async consumeSseStream({ stream }) {
+							if (giselleEngine.context.resumableStreamContext === undefined) {
+								return;
+							}
+							await giselleEngine.context.resumableStreamContext.createNewResumableStream(
+								input.generation.id,
+								() => stream,
+							);
+						},
+					});
 				},
 			}),
 		),

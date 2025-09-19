@@ -21,7 +21,12 @@
 				"OTEL_*",
 				"GOOGLE_OAUTH_CLIENT_*",
 				"WAITUNTIL_OFFSET_MILLIS",
-				"EDGE_CONFIG"
+				"EDGE_CONFIG",
+				"GOOGLE_VERTEX_*",
+				"GOOGLE_CLIENT_EMAIL",
+				"GOOGLE_PRIVATE_KEY_ID",
+				"GOOGLE_PRIVATE_KEY",
+				"REDIS_URL"
 			],
 			"dependsOn": ["^build"],
 			"inputs": [

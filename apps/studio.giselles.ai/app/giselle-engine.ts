@@ -19,6 +19,7 @@ import {
 import { openaiVectorStore } from "@giselle-sdk/vector-store-adapters";
 import type { ModelMessage, ProviderMetadata } from "ai";
 import { after } from "next/server";
+import { createResumableStreamContext } from "resumable-stream";
 import { createStorage } from "unstorage";
 import { waitForLangfuseFlush } from "@/instrumentation.node";
 import { logger } from "@/lib/logger";
@@ -328,4 +329,7 @@ export const giselleEngine = NextGiselleEngine({
 			process.env.VERCEL_ENV === "preview" ? "Giselle(preview)" : "Giselle",
 	},
 	logger,
+	resumableStreamContext: createResumableStreamContext({
+		waitUntil: after,
+	}),
 });
