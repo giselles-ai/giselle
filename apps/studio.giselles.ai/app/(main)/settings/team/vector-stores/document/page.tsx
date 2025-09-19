@@ -5,6 +5,7 @@ import { createDocumentVectorStore } from "../actions";
 import type { DocumentVectorStore } from "../data";
 import { getDocumentVectorStores } from "../data";
 import { DocumentVectorStoreCreateDialog } from "../document-store-create-dialog";
+import { DocumentVectorStoreErrorToast } from "../document-vector-store-error-toast";
 import { DocumentVectorStoreList } from "../document-vector-store-list";
 import { VectorStoresNavigationLayout } from "../navigation-layout";
 
@@ -15,10 +16,12 @@ export default async function DocumentVectorStorePage() {
 	}
 
 	let vectorStores: DocumentVectorStore[] = [];
+	let loadError: string | null = null;
 	try {
 		vectorStores = await getDocumentVectorStores();
-	} catch (_err) {
-		throw new Error("Could not load vector stores. Please try again later.");
+	} catch (err) {
+		console.error(err);
+		loadError = "Could not load vector stores. Please try again later.";
 	}
 
 	return (
@@ -49,6 +52,9 @@ export default async function DocumentVectorStorePage() {
 			</div>
 			<VectorStoresNavigationLayout isEnabled={enabled}>
 				<DocumentVectorStoreList stores={vectorStores} />
+				{loadError ? (
+					<DocumentVectorStoreErrorToast message={loadError} />
+				) : null}
 			</VectorStoresNavigationLayout>
 		</div>
 	);
