@@ -8,10 +8,7 @@ import { Card } from "../../settings/components/card";
 import { AgentCard } from "./agent-card";
 import { DeleteAgentButton } from "./delete-agent-button";
 import { DuplicateAgentButton } from "./duplicate-agent-button";
-import { SearchHeader } from "./search-header";
-
-type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
-type ViewMode = "grid" | "list";
+import { SearchHeader, type SortOption, type ViewMode } from "./search-header";
 
 export function SearchableAgentList({
 	agents,

@@ -27,7 +27,7 @@ export function NavigationRailCollapsed({
 					className="cursor-e-resize"
 				>
 					<GiselleIcon className="size-6 text-stage-sidebar-text-hover stroke-1 group-hover:hidden" />
-					<ChevronsRightIcon className="size-5 text-stage-sidebar-text-hover stroke-1 hidden group-hover:block" />
+					<ChevronsRightIcon className="size-5 text-stage-sidebar-text-hover stroke-1 hidden group-hover:block transition-colors" />
 				</MenuButton>
 			</NavigationRailHeader>
 			<NavigationRailContentsContainer>
@@ -45,7 +45,7 @@ export function NavigationRailCollapsed({
 			<NavigationRailFooter>
 				<Suspense
 					fallback={
-						<div className="w-full bg-black-800 animate-pulse h-full rounded-md" />
+						<div className="w-full bg-element-background animate-pulse h-full rounded-md" />
 					}
 				>
 					<NavigationRailFooterMenu user={userPromise} variant="collapsed" />

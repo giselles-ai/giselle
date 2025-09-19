@@ -53,7 +53,7 @@ export function NavigationRailExpanded({
 			<NavigationRailFooter>
 				<Suspense
 					fallback={
-						<div className="w-full bg-black-800 animate-pulse h-full rounded-md" />
+						<div className="w-full bg-element-background animate-pulse h-full rounded-md" />
 					}
 				>
 					<NavigationRailFooterMenu user={userPromise} variant="expanded" />

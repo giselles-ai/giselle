@@ -2,7 +2,7 @@
 
 import { PopoverContent } from "@giselle-internal/ui/popover";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import { ChevronRight, ExternalLink } from "lucide-react";
+import { ChevronDown, ChevronRight, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { use } from "react";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
@@ -33,7 +33,7 @@ const HELP_ITEMS = [
 ] as const;
 
 const MENU_ITEM_CLASS =
-	"text-text outline-none cursor-pointer hover:bg-ghost-element-hover rounded-[4px] px-[8px] py-[6px] text-[14px]";
+	"text-text outline-none cursor-pointer hover:bg-[var(--color-stage-sidebar-icon-hover)] rounded-[4px] px-[8px] py-[6px] text-[14px]";
 
 export function NavigationRailFooterMenu({
 	user: userPromise,
@@ -48,7 +48,7 @@ export function NavigationRailFooterMenu({
 		<DropdownMenuPrimitive.Root>
 			<DropdownMenuPrimitive.Trigger asChild>
 				<button
-					className="w-full hover:bg-ghost-element-hover h-full rounded-md cursor-pointer outline-none p-1.5 flex items-center gap-2"
+					className={`group w-full h-full rounded-md cursor-pointer outline-none ${variant === "collapsed" ? "py-0 px-0 data-[state=open]:py-1.5 data-[state=open]:px-1.5" : "py-1.5 px-1.5"} flex items-center ${variant === "collapsed" ? "gap-0 justify-center" : "gap-2"}`}
 					type="button"
 				>
 					<div className="size-8 flex items-center justify-center shrink-0">
@@ -70,16 +70,22 @@ export function NavigationRailFooterMenu({
 							</p>
 						</div>
 					)}
+					{variant !== "collapsed" && (
+						<ChevronDown className="w-3 h-3 ml-auto text-stage-sidebar-text-hover transition-transform duration-200 group-data-[state=open]:rotate-180" />
+					)}
 				</button>
 			</DropdownMenuPrimitive.Trigger>
 			<DropdownMenuPrimitive.Portal>
 				<DropdownMenuPrimitive.Content
 					align={variant === "expanded" ? "center" : "start"}
-					className={`z-50 ${
-						variant === "expanded"
-							? "w-[var(--radix-dropdown-menu-trigger-width)]"
-							: ""
-					}`}
+					sideOffset={8}
+					className={`z-50`}
+					style={{
+						width:
+							variant === "expanded"
+								? "calc(var(--radix-dropdown-menu-trigger-width) + 12px)"
+								: undefined,
+					}}
 				>
 					<PopoverContent>
 						{/* Account Settings */}
@@ -135,7 +141,7 @@ export function NavigationRailFooterMenu({
 						</DropdownMenuPrimitive.Sub>
 
 						{/* Separator */}
-						<DropdownMenuPrimitive.Separator className="h-px bg-white/10 my-1" />
+						<DropdownMenuPrimitive.Separator className="h-px bg-border my-1" />
 
 						{/* Lobby */}
 						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS} asChild>
@@ -158,7 +164,7 @@ export function NavigationRailFooterMenu({
 						</DropdownMenuPrimitive.Item>
 
 						{/* Separator */}
-						<DropdownMenuPrimitive.Separator className="h-px bg-white/10 my-1" />
+						<DropdownMenuPrimitive.Separator className="h-px bg-border my-1" />
 
 						{/* Logout */}
 						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS}>
