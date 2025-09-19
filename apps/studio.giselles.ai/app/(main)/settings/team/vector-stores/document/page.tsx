@@ -2,6 +2,7 @@ import { ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
 import { docVectorStoreFlag } from "@/flags";
 import { createDocumentVectorStore } from "../actions";
+import type { DocumentVectorStore } from "../data";
 import { getDocumentVectorStores } from "../data";
 import { DocumentVectorStoreCreateDialog } from "../document-store-create-dialog";
 import { DocumentVectorStoreList } from "../document-vector-store-list";
@@ -13,7 +14,12 @@ export default async function DocumentVectorStorePage() {
 		return notFound();
 	}
 
-	const vectorStores = await getDocumentVectorStores();
+	let vectorStores: DocumentVectorStore[] = [];
+	try {
+		vectorStores = await getDocumentVectorStores();
+	} catch (_err) {
+		throw new Error("Could not load vector stores. Please try again later.");
+	}
 
 	return (
 		<div className="flex flex-col gap-[24px]">
