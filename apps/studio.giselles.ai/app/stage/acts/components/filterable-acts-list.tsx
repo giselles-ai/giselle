@@ -492,7 +492,7 @@ export function FilterableActsList({
                     return (
                       <TableRow
                         key={act.id}
-                        className="group transition-colors duration-200 cursor-pointer"
+                        className="group transition-colors duration-200 cursor-pointer last:border-b-0"
                         onClick={() => {
                           router.push(act.link);
                         }}
