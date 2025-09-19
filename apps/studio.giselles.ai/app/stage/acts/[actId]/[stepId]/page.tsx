@@ -8,7 +8,6 @@ import {
   type Generation,
   type Step,
   type StepId,
-  GenerationId,
 } from "@giselle-sdk/giselle";
 import { NodeIcon } from "@giselles-ai/icons/node";
 
@@ -83,10 +82,6 @@ export default async function ({
     }
   }
   if (step === undefined) {
-    return notFound();
-  }
-  // Guard invalid generation id to avoid runtime errors
-  if (!GenerationId.safeParse(step.generationId).success) {
     return notFound();
   }
   const generation = await giselleEngine.getGeneration(step.generationId, true);

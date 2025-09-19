@@ -53,6 +53,7 @@ const Component = (props: NodeViewProps) => {
 				className={clsx(
 					"rounded-[4px] px-[4px] py-[2px] border-[1px] transition-colors",
 					"data-[content-type=textGeneration]:bg-generation-node-1/20 data-[content-type=textGeneration]:text-generation-node-1",
+					"data-[content-type=imageGeneration]:bg-image-generation-node-1/20 data-[content-type=imageGeneration]:text-image-generation-node-1",
 					"data-[content-type=github]:bg-github-node-1/20 data-[content-type=github]:text-github-node-1",
 					"data-[content-type=text]:bg-text-node-1/20 data-[content-type=text]:text-text-node-1",
 					"data-[content-type=file]:bg-file-node-1/20 data-[content-type=file]:text-file-node-1",

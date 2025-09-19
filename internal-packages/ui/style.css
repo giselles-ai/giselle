@@ -77,8 +77,6 @@
 	/* ghost */
 	--color-ghost-element-background: #000000;
 	--color-ghost-element-hover: #363c46;
-	/* Subtle hover fill for icon actions (slightly lighter white) */
-	--color-ghost-element-hover-subtle: rgba(255, 255, 255, 0.06);
 	--color-ghost-element-active: #454a56;
 	--color-ghost-element-selected: #454a56;
 	--color-ghost-element-disabled: #2e343e;

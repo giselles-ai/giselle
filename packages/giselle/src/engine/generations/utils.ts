@@ -44,6 +44,10 @@ export async function buildMessageObject(
 		nodeId: NodeId,
 		outputId: OutputId,
 	) => Promise<string | undefined>,
+	imageGenerationResolver: (
+		nodeId: NodeId,
+		outputId: OutputId,
+	) => Promise<ImagePart[] | undefined>,
 ): Promise<ModelMessage[]> {
 	switch (node.content.type) {
 		case "textGeneration": {
@@ -60,6 +64,7 @@ export async function buildMessageObject(
 				contextNodes,
 				fileResolver,
 				textGenerationResolver,
+				imageGenerationResolver,
 			);
 		}
 		case "action":
@@ -445,6 +450,10 @@ async function buildGenerationMessageForImageGeneration(
 		nodeId: NodeId,
 		outputId: OutputId,
 	) => Promise<string | undefined>,
+	imageGenerationResolver: (
+		nodeId: NodeId,
+		outputId: OutputId,
+	) => Promise<ImagePart[] | undefined>,
 ): Promise<ModelMessage[]> {
 	const prompt = node.content.prompt;
 	if (prompt === undefined) {
@@ -539,8 +548,25 @@ async function buildGenerationMessageForImageGeneration(
 				break;
 			}
 
+			case "imageGeneration": {
+				const inputImages = await imageGenerationResolver(
+					contextNode.id,
+					sourceKeyword.outputId,
+				);
+
+				if (inputImages && inputImages.length > 0) {
+					userMessage = userMessage.replace(
+						replaceKeyword,
+						getFilesDescription(attachedFiles.length, inputImages.length),
+					);
+					attachedFiles.push(...inputImages);
+				} else {
+					userMessage = userMessage.replace(replaceKeyword, "");
+				}
+				break;
+			}
+
 			case "github":
-			case "imageGeneration":
 			case "trigger":
 			case "action":
 			case "vectorStore":
@@ -560,6 +586,7 @@ async function buildGenerationMessageForImageGeneration(
 					type: "text",
 					text: userMessage,
 				},
+				...attachedFiles,
 			],
 		},
 	];

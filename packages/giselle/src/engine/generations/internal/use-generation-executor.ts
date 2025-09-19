@@ -4,7 +4,12 @@ import type {
 	OutputId,
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
-import type { DataContent, ModelMessage, ProviderMetadata } from "ai";
+import type {
+	DataContent,
+	ImagePart,
+	ModelMessage,
+	ProviderMetadata,
+} from "ai";
 import {
 	type CompletedGeneration,
 	type Generation,
@@ -20,6 +25,7 @@ import {
 import type { ActId } from "../../../concepts/identifiers";
 import { UsageLimitError } from "../../error";
 import { filePath } from "../../files/utils";
+import type { GeneratedImageContentOutput } from "../../generations";
 import type { GiselleEngineContext } from "../../types";
 import {
 	checkUsageLimits,
@@ -58,6 +64,10 @@ export async function useGenerationExecutor<T>(args: {
 			nodeId: NodeId,
 			outputId: OutputId,
 		) => Promise<string | undefined>;
+		imageGenerationResolver: (
+			nodeId: NodeId,
+			outputId: OutputId,
+		) => Promise<ImagePart[] | undefined>;
 		workspaceId: WorkspaceId;
 		signal?: AbortSignal;
 		completeGeneration: CompleteGeneration;
@@ -132,84 +142,78 @@ export async function useGenerationExecutor<T>(args: {
 		}
 		return blob as DataContent;
 	}
-
-	async function generationContentResolver(nodeId: NodeId, outputId: OutputId) {
-		function findGeneration(nodeId: NodeId) {
-			const actId = runningGeneration.context.origin.actId;
-			if (actId === undefined) {
-				return findGenerationByNode(nodeId);
-			}
-			return findGenerationByAct(nodeId, actId as ActId);
+	function findGeneration(nodeId: NodeId) {
+		const actId = runningGeneration.context.origin.actId;
+		if (actId === undefined) {
+			return findGenerationByNode(nodeId);
 		}
-
-		async function findGenerationByNode(nodeId: NodeId) {
-			const generationLookupStartTime = Date.now();
-			const nodeGenerationIndexes = await getNodeGenerationIndexes({
-				storage: args.context.storage,
-				experimental_storage: args.context.experimental_storage,
-				useExperimentalStorage: args.useExperimentalStorage,
-				nodeId,
-			});
-			if (
-				nodeGenerationIndexes === undefined ||
-				nodeGenerationIndexes.length === 0
-			) {
-				args.context.logger.info(
-					`Generation lookup by node completed in ${Date.now() - generationLookupStartTime}ms (nodeId: ${nodeId}, found: false)`,
-				);
-				return undefined;
-			}
-			const generation = await getGeneration({
-				storage: args.context.storage,
-				experimental_storage: args.context.experimental_storage,
-				useExperimentalStorage: args.useExperimentalStorage,
-				generationId:
-					nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
-			});
+		return findGenerationByAct(nodeId, actId);
+	}
+	async function findGenerationByNode(nodeId: NodeId) {
+		const generationLookupStartTime = Date.now();
+		const nodeGenerationIndexes = await getNodeGenerationIndexes({
+			storage: args.context.storage,
+			experimental_storage: args.context.experimental_storage,
+			useExperimentalStorage: args.useExperimentalStorage,
+			nodeId,
+		});
+		if (
+			nodeGenerationIndexes === undefined ||
+			nodeGenerationIndexes.length === 0
+		) {
 			args.context.logger.info(
-				`Generation lookup by node completed in ${Date.now() - generationLookupStartTime}ms (nodeId: ${nodeId}, found: true)`,
+				`Generation lookup by node completed in ${Date.now() - generationLookupStartTime}ms (nodeId: ${nodeId}, found: false)`,
 			);
-			return generation;
-		}
-
-		async function findGenerationByAct(nodeId: NodeId, actId: ActId) {
-			const actGenerationLookupStartTime = Date.now();
-			const actGenerationIndexes = await getActGenerationIndexes({
-				experimental_storage: args.context.experimental_storage,
-				actId,
-			});
-			const targetGenerationIndex = actGenerationIndexes?.find(
-				(actGenerationIndex) => actGenerationIndex.nodeId === nodeId,
-			);
-			if (targetGenerationIndex === undefined) {
-				args.context.logger.info(
-					`Generation lookup by act completed in ${Date.now() - actGenerationLookupStartTime}ms (nodeId: ${nodeId}, actId: ${actId}, found: false)`,
-				);
-				return undefined;
-			}
-			const generation = await getGeneration({
-				storage: args.context.storage,
-				experimental_storage: args.context.experimental_storage,
-				useExperimentalStorage: args.useExperimentalStorage,
-				generationId: targetGenerationIndex.id,
-			});
-			args.context.logger.info(
-				`Generation lookup by act completed in ${Date.now() - actGenerationLookupStartTime}ms (nodeId: ${nodeId}, actId: ${actId}, found: true)`,
-			);
-			return generation;
-		}
-
-		function findOutput(outputId: OutputId) {
-			for (const sourceNode of runningGeneration.context.sourceNodes) {
-				for (const sourceOutput of sourceNode.outputs) {
-					if (sourceOutput.id === outputId) {
-						return sourceOutput;
-					}
-				}
-			}
 			return undefined;
 		}
-
+		const generation = await getGeneration({
+			storage: args.context.storage,
+			experimental_storage: args.context.experimental_storage,
+			useExperimentalStorage: args.useExperimentalStorage,
+			generationId: nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
+		});
+		args.context.logger.info(
+			`Generation lookup by node completed in ${Date.now() - generationLookupStartTime}ms (nodeId: ${nodeId}, found: true)`,
+		);
+		return generation;
+	}
+	async function findGenerationByAct(nodeId: NodeId, actId: ActId) {
+		const actGenerationLookupStartTime = Date.now();
+		const actGenerationIndexes = await getActGenerationIndexes({
+			experimental_storage: args.context.experimental_storage,
+			actId,
+		});
+		const targetGenerationIndex = actGenerationIndexes?.find(
+			(actGenerationIndex) => actGenerationIndex.nodeId === nodeId,
+		);
+		if (targetGenerationIndex === undefined) {
+			args.context.logger.info(
+				`Generation lookup by act completed in ${Date.now() - actGenerationLookupStartTime}ms (nodeId: ${nodeId}, actId: ${actId}, found: false)`,
+			);
+			return undefined;
+		}
+		const generation = await getGeneration({
+			storage: args.context.storage,
+			experimental_storage: args.context.experimental_storage,
+			useExperimentalStorage: args.useExperimentalStorage,
+			generationId: targetGenerationIndex.id,
+		});
+		args.context.logger.info(
+			`Generation lookup by act completed in ${Date.now() - actGenerationLookupStartTime}ms (nodeId: ${nodeId}, actId: ${actId}, found: true)`,
+		);
+		return generation;
+	}
+	function findOutput(outputId: OutputId) {
+		for (const sourceNode of runningGeneration.context.sourceNodes) {
+			for (const sourceOutput of sourceNode.outputs) {
+				if (sourceOutput.id === outputId) {
+					return sourceOutput;
+				}
+			}
+		}
+		return undefined;
+	}
+	async function generationContentResolver(nodeId: NodeId, outputId: OutputId) {
 		function formatGenerationOutput(generationOutput: GenerationOutput) {
 			switch (generationOutput.type) {
 				case "source":
@@ -241,6 +245,57 @@ export async function useGenerationExecutor<T>(args: {
 		}
 
 		return formatGenerationOutput(generationOutput);
+	}
+	async function imageGenerationResolver(
+		nodeId: NodeId,
+		outputId: OutputId,
+	): Promise<ImagePart[] | undefined> {
+		const generation = await findGeneration(nodeId);
+		if (generation === undefined || !isCompletedGeneration(generation)) {
+			return undefined;
+		}
+
+		const output = findOutput(outputId);
+		if (output === undefined) {
+			return undefined;
+		}
+
+		const imageGenerationOutput = generation.outputs.find(
+			(o): o is GeneratedImageContentOutput =>
+				o.type === "generated-image" && o.outputId === outputId,
+		);
+
+		if (imageGenerationOutput === undefined) {
+			return undefined;
+		}
+
+		const imageParts = await Promise.all(
+			imageGenerationOutput.contents.map(async (content) => {
+				try {
+					const image = await getGeneratedImage({
+						storage: args.context.storage,
+						experimental_storage: args.context.experimental_storage,
+						useExperimentalStorage: args.useExperimentalStorage,
+						generation,
+						filename: content.filename,
+					});
+
+					return {
+						type: "image",
+						image,
+						mediaType: content.contentType,
+					} satisfies ImagePart;
+				} catch (error) {
+					args.context.logger.error(
+						error instanceof Error ? error : new Error(String(error)),
+						`Failed to load generated image: ${content.filename}`,
+					);
+					return undefined;
+				}
+			}),
+		).then((results) => results.filter((result) => result !== undefined));
+
+		return imageParts.length > 0 ? imageParts : undefined;
 	}
 
 	async function completeGeneration({
@@ -321,6 +376,7 @@ export async function useGenerationExecutor<T>(args: {
 		setGeneration,
 		fileResolver,
 		generationContentResolver,
+		imageGenerationResolver,
 		workspaceId,
 		signal: args.signal,
 		completeGeneration,

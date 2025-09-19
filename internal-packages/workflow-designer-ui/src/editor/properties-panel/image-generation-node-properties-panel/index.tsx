@@ -1,10 +1,12 @@
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
+	type ImageGenerationLanguageModelData,
 	ImageGenerationLanguageModelProvider,
 	type ImageGenerationNode,
 } from "@giselle-sdk/data-type";
 import {
+	isSupportedConnection,
 	useNodeGenerations,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
@@ -43,8 +45,13 @@ export function ImageGenerationNodePropertiesPanel({
 }: {
 	node: ImageGenerationNode;
 }) {
-	const { data, updateNodeDataContent, updateNodeData, setUiNodeState } =
-		useWorkflowDesigner();
+	const {
+		data,
+		updateNodeDataContent,
+		updateNodeData,
+		setUiNodeState,
+		deleteConnection,
+	} = useWorkflowDesigner();
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
 			nodeId: node.id,
@@ -85,6 +92,31 @@ export function ImageGenerationNodePropertiesPanel({
 			}
 		}
 	}, [node.content.llm, checkEligibility]);
+
+	const disconnectInvalidConnections = useCallback(
+		(model: ImageGenerationLanguageModelData) => {
+			const connections = data.connections.filter(
+				(c) => c.inputNode.id === node.id,
+			);
+			if (connections.length === 0) return;
+
+			const newInputNode = {
+				...node,
+				content: { ...node.content, llm: model },
+			};
+			for (const connection of connections) {
+				const outputNode = data.nodes.find(
+					(n) => n.id === connection.outputNode.id,
+				);
+				if (!outputNode) continue;
+
+				if (!isSupportedConnection(outputNode, newInputNode).canConnect) {
+					deleteConnection(connection.id);
+				}
+			}
+		},
+		[node, data.connections, data.nodes, deleteConnection],
+	);
 
 	useKeyboardShortcuts({
 		onGenerate: () => {
@@ -219,6 +251,7 @@ export function ImageGenerationNodePropertiesPanel({
 													result.data,
 												);
 
+												disconnectInvalidConnections(defaultModel);
 												updateNodeDataContent(node, {
 													...node.content,
 													llm: defaultModel,
@@ -250,6 +283,7 @@ export function ImageGenerationNodePropertiesPanel({
 													modelId,
 												);
 
+												disconnectInvalidConnections(updatedModel);
 												updateNodeDataContent(node, {
 													...node.content,
 													llm: updatedModel,

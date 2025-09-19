@@ -14,6 +14,9 @@ export const GeneratedTextContentOutput = GenerationOutputBase.extend({
 	type: GeneratedTextOutputType,
 	content: z.string(),
 });
+export type GeneratedImageContentOutput = z.infer<
+	typeof GeneratedImageContentOutput
+>;
 
 export const ImageId = createIdGenerator("img");
 export const Image = z.object({

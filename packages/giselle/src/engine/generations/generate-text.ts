@@ -53,6 +53,7 @@ export function generateText(args: {
 			setGeneration,
 			fileResolver,
 			generationContentResolver,
+			imageGenerationResolver,
 		}) => {
 			const operationNode = generationContext.operationNode;
 			if (!isTextGenerationNode(operationNode)) {
@@ -71,6 +72,7 @@ export function generateText(args: {
 				generationContext.sourceNodes,
 				fileResolver,
 				generationContentResolver,
+				imageGenerationResolver,
 			);
 
 			let preparedToolSet: PreparedToolSet = {

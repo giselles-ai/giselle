@@ -15,6 +15,7 @@ import { NodeId, OutputId } from "@giselle-sdk/data-type";
 import {
 	anthropicLanguageModels,
 	falLanguageModels,
+	googleImageLanguageModels,
 	openaiLanguageModels,
 	perplexityLanguageModels,
 } from "@giselle-sdk/language-model";
@@ -181,19 +182,6 @@ describe("isSupportedConnection", () => {
 	});
 
 	describe("Output node restrictions", () => {
-		test("should reject image generation node as output", () => {
-			const outputNode = createImageGenerationNode("nd-test4");
-			const inputNode = createTextGenerationNode(NodeId.generate());
-
-			const result = isSupportedConnection(outputNode, inputNode);
-
-			expect(result.canConnect).toBe(false);
-			expect(result).toHaveProperty(
-				"message",
-				"Image generation node is not supported as an output",
-			);
-		});
-
 		test("should reject GitHub node as output", () => {
 			const outputNode = createGitHubNode("nd-test6");
 			const inputNode = createTextGenerationNode(NodeId.generate());
@@ -309,7 +297,20 @@ describe("isSupportedConnection", () => {
 		});
 	});
 
-	describe("Image generation node input restrictions", () => {
+	describe("Image generation node restrictions", () => {
+		test("should allow Image Generation Node as input for Google(Nano banana)", () => {
+			const outputNode = createImageGenerationNode(NodeId.generate());
+			const nanoBanana = googleImageLanguageModels.find(
+				(m) => m.id === "gemini-2.5-flash-image-preview",
+			);
+			const inputNode = createImageGenerationNode(
+				NodeId.generate(),
+				nanoBanana,
+			);
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(true);
+		});
 		test("should reject WebPageNode as input", () => {
 			const outputNode = createWebPageNode(NodeId.generate());
 			const inputNode = createImageGenerationNode(NodeId.generate());

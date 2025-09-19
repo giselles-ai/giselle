@@ -9,6 +9,7 @@ export const Capability = {
 	ImageFileInput: 1 << 5,
 	SearchGrounding: 1 << 6,
 	OptionalSearchGrounding: 1 << 7,
+	ImageGenerationInput: 1 << 8,
 } as const;
 
 export const Tier = z.enum(["free", "pro"]);

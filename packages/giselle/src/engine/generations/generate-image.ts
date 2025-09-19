@@ -47,6 +47,7 @@ export function generateImage(args: {
 			generationContext,
 			fileResolver,
 			generationContentResolver,
+			imageGenerationResolver,
 			completeGeneration,
 			setGeneration,
 			signal,
@@ -62,6 +63,7 @@ export function generateImage(args: {
 					generationContext.sourceNodes,
 					fileResolver,
 					generationContentResolver,
+					imageGenerationResolver,
 				);
 
 				let generationOutputs: GenerationOutput[] = [];
@@ -322,26 +324,13 @@ async function generateImageWithGoogle({
 	useExperimentalStorage?: boolean;
 	signal?: AbortSignal;
 }) {
-	let prompt = "";
-	for (const message of messages) {
-		if (!Array.isArray(message.content)) {
-			continue;
-		}
-		for (const content of message.content) {
-			if (content.type !== "text") {
-				continue;
-			}
-			prompt += content.text;
-		}
-	}
-
 	const { files } = await generateText({
-		model: google("gemini-2.5-flash-image-preview"),
+		model: google(languageModelData.id),
 		providerOptions: {
 			google: languageModelData.configurations,
 		},
 		abortSignal: signal,
-		prompt,
+		messages,
 	});
 
 	const images = files.filter((file) => file.mediaType.startsWith("image/"));

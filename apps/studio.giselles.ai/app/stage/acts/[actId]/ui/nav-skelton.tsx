@@ -14,35 +14,35 @@ export function NavSkelton() {
 			{/* Header skeleton */}
 			<div className="mb-6">
 				<div className="flex items-center gap-2 mb-4">
-					<div className="w-4 h-4 bg-ghost-element rounded animate-pulse"></div>
-					<div className="w-12 h-4 bg-ghost-element rounded animate-pulse"></div>
+					<div className="w-4 h-4 bg-gray-600 rounded animate-pulse"></div>
+					<div className="w-12 h-4 bg-gray-600 rounded animate-pulse"></div>
 				</div>
-				<div className="w-32 h-6 bg-ghost-element rounded animate-pulse"></div>
+				<div className="w-32 h-6 bg-gray-600 rounded animate-pulse"></div>
 			</div>
 
 			{/* Sequence sections skeleton */}
 			<div className="space-y-4">
 				{/* Sequence 1 */}
 				<div className="space-y-2">
-					<div className="flex items-center gap-2 p-2 bg-ghost-element rounded animate-pulse">
-						<div className="w-4 h-4 bg-ghost-element rounded"></div>
-						<div className="w-20 h-4 bg-ghost-element rounded"></div>
-						<div className="ml-auto w-4 h-4 bg-ghost-element rounded"></div>
+					<div className="flex items-center gap-2 p-2 bg-gray-700 rounded animate-pulse">
+						<div className="w-4 h-4 bg-gray-600 rounded"></div>
+						<div className="w-20 h-4 bg-gray-600 rounded"></div>
+						<div className="ml-auto w-4 h-4 bg-gray-600 rounded"></div>
 					</div>
 					<div className="ml-6 p-2 animate-pulse">
 						<div className="flex items-center gap-2">
-							<div className="w-4 h-4 bg-ghost-element rounded"></div>
-							<div className="w-28 h-4 bg-ghost-element rounded"></div>
+							<div className="w-4 h-4 bg-gray-600 rounded"></div>
+							<div className="w-28 h-4 bg-gray-600 rounded"></div>
 						</div>
 					</div>
 				</div>
 
 				{/* Sequence 2 */}
 				<div className="space-y-2">
-					<div className="flex items-center gap-2 p-2 bg-ghost-element rounded animate-pulse">
-						<div className="w-4 h-4 bg-ghost-element rounded"></div>
-						<div className="w-20 h-4 bg-ghost-element rounded"></div>
-						<div className="ml-auto w-4 h-4 bg-ghost-element rounded"></div>
+					<div className="flex items-center gap-2 p-2 bg-gray-700 rounded animate-pulse">
+						<div className="w-4 h-4 bg-gray-600 rounded"></div>
+						<div className="w-20 h-4 bg-gray-600 rounded"></div>
+						<div className="ml-auto w-4 h-4 bg-gray-600 rounded"></div>
 					</div>
 					<div className="ml-6 space-y-2">
 						{([24, 16, 12, 12, 16] as const).map((width, index) => (
@@ -52,9 +52,9 @@ export function NavSkelton() {
 								className="flex items-center gap-2 p-1 animate-pulse"
 								style={{ animationDelay: `${index * 0.1}s` }}
 							>
-								<div className="w-4 h-4 bg-ghost-element rounded"></div>
+								<div className="w-4 h-4 bg-gray-600 rounded"></div>
 								<div
-									className={`${widthClasses[width]} h-4 bg-ghost-element rounded`}
+									className={`${widthClasses[width]} h-4 bg-gray-600 rounded`}
 								></div>
 							</div>
 						))}
@@ -63,15 +63,15 @@ export function NavSkelton() {
 
 				{/* Sequence 3 */}
 				<div className="space-y-2">
-					<div className="flex items-center gap-2 p-2 bg-ghost-element rounded animate-pulse">
-						<div className="w-4 h-4 bg-ghost-element rounded"></div>
-						<div className="w-20 h-4 bg-ghost-element rounded"></div>
-						<div className="ml-auto w-4 h-4 bg-ghost-element rounded"></div>
+					<div className="flex items-center gap-2 p-2 bg-gray-700 rounded animate-pulse">
+						<div className="w-4 h-4 bg-gray-600 rounded"></div>
+						<div className="w-20 h-4 bg-gray-600 rounded"></div>
+						<div className="ml-auto w-4 h-4 bg-gray-600 rounded"></div>
 					</div>
 					<div className="ml-6 p-2 animate-pulse">
 						<div className="flex items-center gap-2">
-							<div className="w-4 h-4 bg-ghost-element rounded"></div>
-							<div className="w-20 h-4 bg-ghost-element rounded"></div>
+							<div className="w-4 h-4 bg-gray-600 rounded"></div>
+							<div className="w-20 h-4 bg-gray-600 rounded"></div>
 						</div>
 					</div>
 				</div>

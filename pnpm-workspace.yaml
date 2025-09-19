@@ -3,6 +3,7 @@ packages:
   - internal-packages/*
   - packages/*
   - tools/*
+minimumReleaseAge: 1440
 catalog:
   "@biomejs/biome": 2.0.6
   typescript: 5.7.3

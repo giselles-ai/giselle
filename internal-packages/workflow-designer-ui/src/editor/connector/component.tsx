@@ -75,6 +75,7 @@ export function Connector({
 					"group-data-[output-node-content-type=query]:group-data-[input-node-content-type=textGeneration]:!stroke-[url(#queryToTextGeneration)]",
 					"group-data-[output-node-content-type=action]:group-data-[input-node-content-type=textGeneration]:!stroke-[url(#actionToTextGeneration)]",
 					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#textGenerationToImageGeneration)]",
+					"group-data-[output-node-content-type=imageGeneration]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#imageGenerationToImageGeneration)]",
 					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#fileToImageGeneration)]",
 					"group-data-[output-node-content-type=webPage]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#webPageToImageGeneration)]",
 					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#textToImageGeneration)]",
@@ -152,6 +153,19 @@ export function GradientDef() {
 				>
 					<stop offset="0%" stopColor="var(--color-text-node-1)" />
 					<stop offset="100%" stopColor="var(--color-primary-900)" />
+				</linearGradient>
+				<linearGradient
+					id="imageGenerationToImageGeneration"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-image-generation-node-1)" />
+					<stop
+						offset="100%"
+						stopColor="var(--color-image-generation-node-1)"
+					/>
 				</linearGradient>
 				<linearGradient
 					id="textGenerationToImageGeneration"

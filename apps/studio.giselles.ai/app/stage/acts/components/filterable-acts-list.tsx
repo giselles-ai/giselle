@@ -11,6 +11,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@giselle-internal/ui/table";
+
 import clsx from "clsx/lite";
 import {
 	Archive,
@@ -22,11 +23,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 import { useEffect, useMemo, useState } from "react";
-import { Card } from "../../../(main)/settings/components/card";
-import { PageHeader } from "../../../ui/page-header";
-import { AppIcon } from "../../(top)/app-icon";
-import { IconAction } from "../../ui/icon-action";
 import type { ActWithNavigation, StatusFilter } from "../types";
 
 // GitHub-style search parser
@@ -87,7 +85,6 @@ function hasExplicitStatusFilter(filters: SearchFilters): boolean {
 interface FilterableActsListProps {
 	acts: ActWithNavigation[];
 	onReload?: () => void;
-	onArchive?: (act: ActWithNavigation) => void;
 }
 
 const statusLabels: Record<StatusFilter, string> = {
@@ -107,7 +104,6 @@ const statusColors: Record<StatusFilter, string> = {
 export function FilterableActsList({
 	acts,
 	onReload,
-	onArchive,
 }: FilterableActsListProps) {
 	const router = useRouter();
 	const [searchQuery, setSearchQuery] = useState("is:open");
@@ -116,6 +112,23 @@ export function FilterableActsList({
 		Object.keys(statusLabels) as StatusFilter[],
 	);
 	const [activeTab, setActiveTab] = useState<"open" | "archived">("open");
+
+	const _statusCounts = useMemo(() => {
+		const counts = acts.reduce(
+			(acc, act) => {
+				acc[act.status] = (acc[act.status] || 0) + 1;
+				return acc;
+			},
+			{} as Record<string, number>,
+		);
+
+		return {
+			inProgress: counts.inProgress || 0,
+			completed: counts.completed || 0,
+			failed: counts.failed || 0,
+			cancelled: counts.cancelled || 0,
+		};
+	}, [acts]);
 
 	const filteredActs = useMemo(() => {
 		const searchFilters = parseSearchQuery(searchQuery);
@@ -250,6 +263,22 @@ export function FilterableActsList({
 		}
 	};
 
+	// Handle input change and auto-convert is: filters to tags
+	const _handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const value = e.target.value;
+		setInputValue(value);
+
+		// Auto-convert complete is: filters to searchQuery
+		if (
+			value.endsWith(" ") &&
+			(value.includes("is:open") || value.includes("is:archived"))
+		) {
+			const newQuery = `${searchQuery} ${value.trim()}`.trim();
+			setSearchQuery(newQuery);
+			setInputValue("");
+		}
+	};
+
 	const handleReload = () => {
 		if (onReload) {
 			onReload();
@@ -257,7 +286,6 @@ export function FilterableActsList({
 			window.location.reload();
 		}
 	};
-	const archive = onArchive ?? (() => {});
 
 	// Sync activeTab with searchQuery
 	useEffect(() => {
@@ -268,23 +296,66 @@ export function FilterableActsList({
 		}
 	}, [searchQuery]);
 
+	// Add custom styles for select components to match /stage page
+	useEffect(() => {
+		const styleId = "acts-select-styles";
+		let styleElement = document.getElementById(styleId);
+
+		if (!styleElement) {
+			styleElement = document.createElement("style");
+			styleElement.id = styleId;
+			styleElement.textContent = `
+				        .status-select button[type="button"] {
+				          background-color: rgba(255, 255, 255, 0.05) !important;
+				          border: none !important;
+				          color: white !important;
+				          font-size: 14px !important;
+				          font-family: inherit !important;
+				        }
+				        .status-select button[type="button"]:hover {
+				          background-color: rgba(255, 255, 255, 0.1) !important;
+				        }
+
+				      `;
+			document.head.appendChild(styleElement);
+		}
+
+		return () => {
+			const existingStyle = document.getElementById(styleId);
+			if (existingStyle) {
+				document.head.removeChild(existingStyle);
+			}
+		};
+	}, []);
+
 	return (
 		<div className="flex-1 px-[24px] bg-[var(--color-stage-background)] pt-16 md:pt-0 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 h-full flex flex-col">
 			<div className="py-6 h-full flex flex-col">
 				<div className="flex items-center justify-between px-1 mb-6">
 					<div>
-						<PageHeader
-							title="Tasks"
-							subtitle="View and manage all your running and completed tasks"
-						/>
+						<h1
+							className="text-[30px] font-sans font-medium text-[hsl(192,73%,84%)] mb-2"
+							style={{
+								textShadow:
+									"0 0 20px #0087f6, 0 0 40px #0087f6, 0 0 60px #0087f6",
+							}}
+						>
+							Tasks
+						</h1>
+						<p className="text-sm text-black-400">
+							View and manage all your running and completed tasks
+						</p>
 					</div>
 				</div>
 
 				{/* Filters */}
 				<div className="flex flex-col md:flex-row gap-4 mb-6">
 					{/* Search */}
-					<div className="search-input relative flex-1 w-full">
-						<div className="flex items-center gap-1 flex-wrap w-full pl-12 pr-4 h-10 bg-ghost-element text-text placeholder:text-text-muted border border-border rounded-[8px] shadow-none focus-within:border-transparent focus-within:ring-1 focus-within:ring-black--50 focus-within:ring-inset focus-within:ring-offset-0 text-[14px]">
+					<div className="search-input relative flex-1">
+						<div
+							className="flex items-center gap-1 flex-wrap w-full pl-2 pr-10 py-1 rounded-[8px] h-10 text-white-900 placeholder-white-600 focus-within:outline-none transition-colors text-[14px]"
+							style={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
+						>
 							{searchTags.map((tag) => {
 								const [prefix, value] = tag.label.split(":");
 								return (
@@ -292,13 +363,13 @@ export function FilterableActsList({
 										key={tag.type}
 										className="inline-flex items-center gap-1"
 									>
-										<span className="text-text-muted text-xs">{prefix}:</span>
-										<span className="inline-flex items-center px-2 py-0.5 rounded-md bg-primary-100/20 text-primary-100 text-xs">
+										<span className="text-white-700 text-xs">{prefix}:</span>
+										<span className="inline-flex items-center px-2 py-0.5 bg-blue-600 text-white text-xs rounded-md">
 											{value}
 											<button
 												type="button"
 												onClick={() => handleRemoveTag(tag.type)}
-												className="rounded-full w-3 h-3 flex items-center justify-center text-[10px] leading-none text-primary-100 hover:bg-primary-100/30"
+												className="hover:bg-blue-700 rounded-full w-3 h-3 flex items-center justify-center text-[10px] leading-none"
 											>
 												×
 											</button>
@@ -316,10 +387,10 @@ export function FilterableActsList({
 								value={inputValue}
 								onChange={(e) => setInputValue(e.target.value)}
 								onKeyDown={handleInputKeyDown}
-								className="flex-1 min-w-0 bg-transparent border-none outline-none text-text placeholder:text-[var(--color-tabs-inactive-text)] text-[14px]"
+								className="flex-1 min-w-0 bg-transparent border-none outline-none text-white-900 placeholder-white-600 text-[14px]"
 							/>
 						</div>
-						<Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted h-4 w-4" />
+						<Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white-600" />
 					</div>
 
 					{/* Status Filter and New Task Button Row */}
@@ -331,10 +402,9 @@ export function FilterableActsList({
 									<button
 										type="button"
 										className={clsx(
-											"w-full flex justify-between items-center rounded-[8px] h-10 px-[12px] text-left text-[14px]",
-											"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
-											"bg-white/5 transition-colors hover:bg-ghost-element-hover",
-											"data-[placeholder]:text-text-muted",
+											"flex items-center gap-2 rounded-[8px] h-10 px-[12px] text-left text-[14px] w-full",
+											"outline-none focus:outline-none",
+											"transition-colors",
 										)}
 									>
 										<div className="flex items-center gap-1">
@@ -346,7 +416,7 @@ export function FilterableActsList({
 												{selectedStatuses.map((status) => (
 													<div
 														key={status}
-														className={`w-3 h-3 rounded-full border border-border ${statusColors[status]}`}
+														className={`w-3 h-3 rounded-full border border-black-900 ${statusColors[status]}`}
 													/>
 												))}
 											</div>
@@ -411,46 +481,64 @@ export function FilterableActsList({
 
 				<div className="flex-1 overflow-y-auto">
 					{filteredActs.length === 0 && acts.length > 0 ? (
-						<div className="flex justify-center items-center h-full mt-12">
-							<div className="grid gap-[8px] justify-center text-center">
-								<h3 className="text-[18px] font-geist font-bold text-[var(--color-tabs-inactive-text)]">
-									No tasks found.
-								</h3>
-								<p className="text-[12px] font-geist text-[var(--color-tabs-inactive-text)]">
-									Try searching with a different keyword.
-								</p>
+						<div className="flex flex-col items-center justify-center h-full text-center">
+							<div className="w-16 h-16 bg-gray-600 rounded-full flex items-center justify-center mb-4">
+								<Search className="w-8 h-8 text-gray-400" />
 							</div>
+							<h2 className="text-lg font-medium text-white-100 mb-2">
+								No tasks match your filters
+							</h2>
+							<p className="text-sm text-white-700 mb-6 max-w-sm">
+								Try adjusting your search or filter criteria.
+							</p>
+							<button
+								type="button"
+								onClick={() => {
+									setSearchQuery("");
+									setInputValue("");
+									setSelectedStatuses(
+										Object.keys(statusLabels) as StatusFilter[],
+									);
+								}}
+								className="px-4 py-2 bg-white/10 text-white-900 rounded-lg hover:bg-white/20 transition-colors"
+							>
+								Clear filters
+							</button>
 						</div>
 					) : filteredActs.length === 0 ? (
-						<div className="flex justify-center items-center h-full mt-12">
-							<div className="grid gap-[8px] justify-center text-center">
-								<h3 className="text-[18px] font-geist font-bold text-[var(--color-tabs-inactive-text)]">
-									No tasks yet.
-								</h3>
-								<p className="text-[12px] font-geist text-[var(--color-tabs-inactive-text)]">
-									Start by creating your first task from the main stage page.
-								</p>
+						<div className="flex flex-col items-center justify-center h-full text-center">
+							<div className="w-16 h-16 bg-gray-600 rounded-full flex items-center justify-center mb-4">
+								<span className="text-2xl text-gray-400">📝</span>
 							</div>
+							<h2 className="text-lg font-medium text-white-100 mb-2">
+								No tasks yet
+							</h2>
+							<p className="text-sm text-white-700 mb-6 max-w-sm">
+								Start by creating your first task from the main stage page.
+							</p>
+							<Link href="/stage">
+								<Button variant="solid">Create New Task</Button>
+							</Link>
 						</div>
 					) : (
-						<Card className="gap-0 py-2 overflow-x-auto">
+						<div className="overflow-x-auto">
 							<Table className="table-fixed w-full">
 								<TableHeader>
 									<TableRow>
-										<TableHead className="text-text w-auto max-w-96">
+										<TableHead className="text-white-100 w-auto max-w-96">
 											<div className="flex items-center gap-6">
 												<button
 													type="button"
 													onClick={() => handleTabChange("open")}
 													className={`pb-1 text-xs font-medium transition-colors ${
 														activeTab === "open"
-															? "text-text"
-															: "text-text-muted hover:text-text"
+															? "text-white-100"
+															: "text-gray-600 hover:text-gray-500"
 													}`}
 												>
 													<span className="flex items-center gap-2">
 														Open
-														<span className="bg-ghost-element text-text-muted px-2 py-0.5 rounded-full text-xs font-semibold">
+														<span className="bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full text-xs font-semibold">
 															{acts.length}
 														</span>
 													</span>
@@ -460,29 +548,29 @@ export function FilterableActsList({
 													onClick={() => handleTabChange("archived")}
 													className={`pb-1 text-xs font-medium transition-colors ${
 														activeTab === "archived"
-															? "text-text"
-															: "text-text-muted hover:text-text"
+															? "text-white-100"
+															: "text-gray-600 hover:text-gray-500"
 													}`}
 												>
 													<span className="flex items-center gap-2">
 														Archived
-														<span className="bg-ghost-element text-text-muted px-2 py-0.5 rounded-full text-xs font-semibold">
+														<span className="bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full text-xs font-semibold">
 															0
 														</span>
 													</span>
 												</button>
 											</div>
 										</TableHead>
-										<TableHead className="text-text w-auto hidden md:table-cell">
+										<TableHead className="text-white-100 w-auto hidden md:table-cell">
 											LLM Models
 										</TableHead>
-										<TableHead className="text-text w-auto max-w-80 hidden md:table-cell">
+										<TableHead className="text-white-100 w-auto max-w-80 hidden md:table-cell">
 											Input Values
 										</TableHead>
-										<TableHead className="text-center text-text w-24">
+										<TableHead className="text-center text-white-100 w-24">
 											Status
 										</TableHead>
-										<TableHead className="text-right text-text w-20 hidden md:table-cell">
+										<TableHead className="text-right text-white-100 w-20 hidden md:table-cell">
 											Actions
 										</TableHead>
 									</TableRow>
@@ -492,21 +580,21 @@ export function FilterableActsList({
 										return (
 											<TableRow
 												key={act.id}
-												className="group transition-colors duration-200 cursor-pointer last:border-b-0"
+												className="hover:bg-white/5 transition-colors duration-200 cursor-pointer"
 												onClick={() => {
 													router.push(act.link);
 												}}
 											>
 												<TableCell className="w-auto max-w-96">
 													<div className="flex items-center gap-3">
-														<div className="w-9 h-9 rounded-full bg-ghost-element flex items-center justify-center flex-shrink-0 transition-all group-hover:bg-primary-100/20">
-															<AppIcon className="h-5 w-5 text-text-muted transition-colors group-hover:text-primary-100" />
+														<div className="w-10 h-10 bg-gray-600 rounded-md flex items-center justify-center flex-shrink-0">
+															<span className="text-sm text-gray-400">App</span>
 														</div>
 														<div className="flex flex-col min-w-0">
-															<span className="truncate font-medium text-text">
+															<span className="truncate font-medium text-white-100">
 																{act.workspaceName}
 															</span>
-															<span className="text-sm text-text-muted truncate">
+															<span className="text-sm text-black-600 truncate">
 																{new Date(act.createdAt)
 																	.toISOString()
 																	.slice(0, 19)
@@ -522,28 +610,28 @@ export function FilterableActsList({
 															{act.llmModels.slice(0, 2).map((model) => (
 																<span
 																	key={model}
-																	className="px-2 py-1 text-xs text-text-muted rounded-full border border-border"
+																	className="px-2 py-1 text-xs text-white-700 rounded-full border border-gray-600"
 																>
 																	{model}
 																</span>
 															))}
 															{act.llmModels.length > 2 && (
-																<span className="px-2 py-1 text-xs text-text-muted rounded-full border border-border">
+																<span className="px-2 py-1 text-xs text-white-700 rounded-full border border-gray-600">
 																	+{act.llmModels.length - 2}
 																</span>
 															)}
 														</div>
 													) : (
-														<span className="text-xs text-text-muted">-</span>
+														<span className="text-xs text-white-500">-</span>
 													)}
 												</TableCell>
 												<TableCell className="w-auto max-w-80 hidden md:table-cell">
 													{act.inputValues ? (
-														<span className="text-sm text-text-muted line-clamp-2">
+														<span className="text-sm text-white-700 line-clamp-2">
 															{act.inputValues}
 														</span>
 													) : (
-														<span className="text-xs text-text-muted">-</span>
+														<span className="text-xs text-white-500">-</span>
 													)}
 												</TableCell>
 												<TableCell className="text-center w-24">
@@ -573,35 +661,30 @@ export function FilterableActsList({
 												<TableCell className="text-right w-20 hidden md:table-cell">
 													<div className="flex justify-end items-center gap-2">
 														{act.status === "failed" ? (
-															<IconAction
-																variant="fill"
-																rounded="md"
-																iconSize="sm"
-																title="Reload this task"
-																onClick={(
-																	e: React.MouseEvent<HTMLButtonElement>,
-																) => {
+															<button
+																type="button"
+																onClick={(e) => {
 																	e.stopPropagation();
 																	handleReload();
 																}}
+																className="text-white-700 hover:text-white-900 transition-colors p-1"
+																title="Reload this task"
 															>
-																<RefreshCw />
-															</IconAction>
+																<RefreshCw className="w-3 h-3" />
+															</button>
 														) : (
-															<IconAction
-																variant="fill-subtle"
-																rounded="md"
-																iconSize="sm"
+															<button
+																type="button"
+																className="text-white-700 hover:text-white-900 transition-colors p-1"
 																title="Archive task"
-																onClick={(
-																	e: React.MouseEvent<HTMLButtonElement>,
-																) => {
+																onClick={(e) => {
 																	e.stopPropagation();
-																	archive(act);
+																	// TODO: Implement archive functionality
+																	alert(`Archive task: ${act.workspaceName}`);
 																}}
 															>
-																<Archive />
-															</IconAction>
+																<Archive className="w-4 h-4" />
+															</button>
 														)}
 													</div>
 												</TableCell>
@@ -610,7 +693,7 @@ export function FilterableActsList({
 									})}
 								</TableBody>
 							</Table>
-						</Card>
+						</div>
 					)}
 				</div>
 			</div>
