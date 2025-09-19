@@ -11,7 +11,6 @@ import {
 	TableHeader,
 	TableRow,
 } from "@giselle-internal/ui/table";
-
 import clsx from "clsx/lite";
 import {
 	Archive,
@@ -23,8 +22,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
 import { useEffect, useMemo, useState } from "react";
+import { PageHeader } from "../../../ui/page-header";
 import type { ActWithNavigation, StatusFilter } from "../types";
 
 // GitHub-style search parser
@@ -333,18 +332,10 @@ export function FilterableActsList({
 			<div className="py-6 h-full flex flex-col">
 				<div className="flex items-center justify-between px-1 mb-6">
 					<div>
-						<h1
-							className="text-[30px] font-sans font-medium text-[hsl(192,73%,84%)] mb-2"
-							style={{
-								textShadow:
-									"0 0 20px #0087f6, 0 0 40px #0087f6, 0 0 60px #0087f6",
-							}}
-						>
-							Tasks
-						</h1>
-						<p className="text-sm text-black-400">
-							View and manage all your running and completed tasks
-						</p>
+						<PageHeader
+							title="Tasks"
+							subtitle="View and manage all your running and completed tasks"
+						/>
 					</div>
 				</div>
 

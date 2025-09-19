@@ -17,6 +17,7 @@ import {
 	GlassDialogFooter,
 	GlassDialogHeader,
 } from "../../(main)/settings/team/components/glass-dialog-content";
+import { PageHeader } from "../../ui/page-header";
 
 type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
 
@@ -228,18 +229,10 @@ export function ShowcaseClient({
 			<div className="py-6 h-full flex flex-col">
 				<div className="flex items-center justify-between px-1 mb-6">
 					<div>
-						<h1
-							className="text-[30px] font-sans font-medium text-[hsl(192,73%,84%)] mb-2"
-							style={{
-								textShadow:
-									"0 0 20px #0087f6, 0 0 40px #0087f6, 0 0 60px #0087f6",
-							}}
-						>
-							Showcase
-						</h1>
-						<p className="text-sm text-text-muted">
-							Explore featured workflows and inspiring examples
-						</p>
+						<PageHeader
+							title="Showcase"
+							subtitle="Explore featured workflows and inspiring examples"
+						/>
 					</div>
 
 					{/* Team Selection Dropdown */}
