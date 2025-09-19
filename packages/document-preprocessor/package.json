@@ -1,0 +1,32 @@
+{
+	"name": "@giselle-sdk/document-preprocessor",
+	"version": "0.1.0",
+	"description": "Document preprocessing utilities for text and image extraction",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"scripts": {
+		"build": "tsup",
+		"check-types": "tsc --noEmit",
+		"dev": "tsup --watch",
+		"test": "vitest run",
+		"format": "biome check --write ."
+	},
+	"dependencies": {
+		"@embedpdf/pdfium": "catalog:",
+		"pngjs": "catalog:"
+	},
+	"devDependencies": {
+		"@giselle/giselle-sdk-tsconfig": "workspace:^",
+		"@types/node": "catalog:",
+		"@types/pngjs": "catalog:",
+		"tsup": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	},
+	"keywords": [
+		"pdf",
+		"preprocessing",
+		"rag"
+	],
+	"license": "MIT"
+}

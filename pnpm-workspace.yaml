@@ -84,9 +84,12 @@ catalog:
   "@types/pg": 8.11.13
   pgvector: 0.2.1
   swr: 2.2.5
+  "@embedpdf/pdfium": 1.2.1
+  pngjs: 7.0.0
   defuddle: 0.6.4
   "fast-levenshtein": 3.0.0
   "@types/fast-levenshtein": 0.0.4
+  "@types/pngjs": 6.0.5
   "happy-dom": 17.6.1
   jsdom: 26.1.0
   tar: 7.4.3

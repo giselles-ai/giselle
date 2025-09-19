@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 815 MIT
+* 818 MIT
 * 184 Apache 2.0
 * 46 ISC
 * 27 New BSD
@@ -1093,6 +1093,17 @@ MIT-0 permitted
 
 
 
+<a name="@embedpdf/pdfium"></a>
+### @embedpdf/pdfium v1.2.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="@esbuild-kit/core-utils"></a>
 ### @esbuild-kit/core-utils v3.3.2
 #### 
@@ -1347,7 +1358,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@jridgewell/sourcemap-codec"></a>
-### @jridgewell/sourcemap-codec v1.5.0
+### @jridgewell/sourcemap-codec v1.5.5
 #### 
 
 ##### Paths
@@ -4615,6 +4626,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@types/pluralize"></a>
 ### @types/pluralize v0.0.33
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@types/pngjs"></a>
+### @types/pngjs v6.0.5
 #### 
 
 ##### Paths
@@ -9657,6 +9679,17 @@ BlueOak-1.0.0 permitted
 
 <a name="pluralize"></a>
 ### pluralize v8.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="pngjs"></a>
+### pngjs v7.0.0
 #### 
 
 ##### Paths

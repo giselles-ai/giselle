@@ -39,6 +39,9 @@ catalogs:
     '@biomejs/biome':
       specifier: 2.0.6
       version: 2.0.6
+    '@embedpdf/pdfium':
+      specifier: 1.2.1
+      version: 1.2.1
     '@next/env':
       specifier: 15.5.2
       version: 15.5.2
@@ -102,6 +105,9 @@ catalogs:
     '@types/pluralize':
       specifier: 0.0.33
       version: 0.0.33
+    '@types/pngjs':
+      specifier: 6.0.5
+      version: 6.0.5
     '@types/react':
       specifier: 19.1.10
       version: 19.1.10
@@ -186,6 +192,9 @@ catalogs:
     pluralize:
       specifier: 8.0.0
       version: 8.0.0
+    pngjs:
+      specifier: 7.0.0
+      version: 7.0.0
     postcss:
       specifier: 8.5.5
       version: 8.5.5
@@ -808,6 +817,34 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 3.2.4(@types/debug@4.1.12)(@types/node@24.3.0)(happy-dom@17.6.1)(jiti@2.4.2)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.7.0)
+
+  packages/document-preprocessor:
+    dependencies:
+      '@embedpdf/pdfium':
+        specifier: 'catalog:'
+        version: 1.2.1
+      pngjs:
+        specifier: 'catalog:'
+        version: 7.0.0
+    devDependencies:
+      '@giselle/giselle-sdk-tsconfig':
+        specifier: workspace:^
+        version: link:../../tools/tsconfig
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.14.0
+      '@types/pngjs':
+        specifier: 'catalog:'
+        version: 6.0.5
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.4.2)(postcss@8.5.6)(typescript@5.7.3)(yaml@2.7.0)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.7.3
+      vitest:
+        specifier: 'catalog:'
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@22.14.0)(happy-dom@17.6.1)(jiti@2.4.2)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.7.0)
 
   packages/flow:
     dependencies:
@@ -1700,6 +1737,9 @@ packages:
     resolution: {integrity: sha512-Sd8LcWpZk/SWEeKGE8LT6gMm5MGfX/wm+GPnh1eBEtCpya3vYqn37wYknwAHw92ONoyyREl1hJwxV/Qx2DWNOg==}
     engines: {node: '>=16'}
 
+  '@embedpdf/pdfium@1.2.1':
+    resolution: {integrity: sha512-QWf1jg7EqUlku2q6KYhlXCNfk5IAykFerPuzKJepHTeAEaRcAfu84fJgEsoUTCK4D6dfzVNp2Iuxw6Kv7MpSeg==}
+
   '@emnapi/core@1.4.4':
     resolution: {integrity: sha512-A9CnAbC6ARNMKcIcrQwq6HeHCjpcBZ5wSx4U01WXCqEKlrzB9F9315WDNHkrs2xbx7YjjSxbUYxuN6EQzpcY2g==}
 
@@ -2355,9 +2395,6 @@ packages:
 
   '@jridgewell/source-map@0.3.11':
     resolution: {integrity: sha512-ZMp1V8ZFcPG5dIWnQLr3NSI1MiCU7UETdS/A0G8V/XWHvJv3ZsFqutJn1Y5RPmAPX6F3BiE397OqveU/9NCuIA==}
-
-  '@jridgewell/sourcemap-codec@1.5.0':
-    resolution: {integrity: sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ==}
 
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
@@ -4789,9 +4826,6 @@ packages:
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
 
-  '@types/estree@1.0.7':
-    resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
-
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
@@ -4851,6 +4885,9 @@ packages:
 
   '@types/pluralize@0.0.33':
     resolution: {integrity: sha512-JOqsl+ZoCpP4e8TDke9W79FDcSgPAR0l6pixx2JHkhnRjvShyYiAYw2LVsnA7K08Y6DeOnaU6ujmENO4os/cYg==}
+
+  '@types/pngjs@6.0.5':
+    resolution: {integrity: sha512-0k5eKfrA83JOZPppLtS2C7OUtyNAl2wKNxfyYl9Q5g9lPkgBl/9hNyAu6HuEH2J4XmIv2znEpkDd0SaZVxW6iQ==}
 
   '@types/react-dom@19.1.7':
     resolution: {integrity: sha512-i5ZzwYpqjmrKenzkoLM2Ibzt6mAsM7pxB6BCIouEVVmgiqaMj1TjaK7hnA36hbW5aZv20kx7Lw6hWzPWg0Rurw==}
@@ -6975,6 +7012,10 @@ packages:
     resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
     engines: {node: '>=4'}
 
+  pngjs@7.0.0:
+    resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
+    engines: {node: '>=14.19.0'}
+
   postcss-load-config@6.0.1:
     resolution: {integrity: sha512-oPtTM4oerL+UXmx+93ytZVN82RrlY/wPUV8IeDxFrzIjXOLF1pN+EmKPLbubvKHT2HC20xXsCAH2Z+CKV6Oz/g==}
     engines: {node: '>= 18'}
@@ -7441,6 +7482,7 @@ packages:
   source-map@0.8.0-beta.0:
     resolution: {integrity: sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==}
     engines: {node: '>= 8'}
+    deprecated: The work that was done in this beta branch won't be included in future versions
 
   space-separated-tokens@2.0.2:
     resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
@@ -9136,6 +9178,8 @@ snapshots:
 
   '@edge-runtime/cookies@5.0.2': {}
 
+  '@embedpdf/pdfium@1.2.1': {}
+
   '@emnapi/core@1.4.4':
     dependencies:
       '@emnapi/wasi-threads': 1.0.3
@@ -9536,7 +9580,7 @@ snapshots:
   '@jridgewell/gen-mapping@0.3.8':
     dependencies:
       '@jridgewell/set-array': 1.2.1
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
       '@jridgewell/trace-mapping': 0.3.25
 
   '@jridgewell/resolve-uri@3.1.2': {}
@@ -9548,14 +9592,12 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.30
 
-  '@jridgewell/sourcemap-codec@1.5.0': {}
-
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
   '@jridgewell/trace-mapping@0.3.25':
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
 
   '@jridgewell/trace-mapping@0.3.30':
     dependencies:
@@ -11277,18 +11319,18 @@ snapshots:
       '@rollup/pluginutils': 5.1.4(rollup@4.35.0)
       commondir: 1.0.1
       estree-walker: 2.0.2
-      fdir: 6.4.4(picomatch@4.0.2)
+      fdir: 6.4.4(picomatch@4.0.3)
       is-reference: 1.2.1
       magic-string: 0.30.17
-      picomatch: 4.0.2
+      picomatch: 4.0.3
     optionalDependencies:
       rollup: 4.35.0
 
   '@rollup/pluginutils@5.1.4(rollup@4.35.0)':
     dependencies:
-      '@types/estree': 1.0.7
+      '@types/estree': 1.0.8
       estree-walker: 2.0.2
-      picomatch: 4.0.2
+      picomatch: 4.0.3
     optionalDependencies:
       rollup: 4.35.0
 
@@ -12287,8 +12329,6 @@ snapshots:
 
   '@types/estree@1.0.6': {}
 
-  '@types/estree@1.0.7': {}
-
   '@types/estree@1.0.8': {}
 
   '@types/fast-levenshtein@0.0.4': {}
@@ -12357,6 +12397,10 @@ snapshots:
   '@types/phoenix@1.6.6': {}
 
   '@types/pluralize@0.0.33': {}
+
+  '@types/pngjs@6.0.5':
+    dependencies:
+      '@types/node': 24.3.0
 
   '@types/react-dom@19.1.7(@types/react@19.1.10)':
     dependencies:
@@ -13232,9 +13276,9 @@ snapshots:
     dependencies:
       walk-up-path: 4.0.0
 
-  fdir@6.4.4(picomatch@4.0.2):
+  fdir@6.4.4(picomatch@4.0.3):
     optionalDependencies:
-      picomatch: 4.0.2
+      picomatch: 4.0.3
 
   fdir@6.5.0(picomatch@4.0.3):
     optionalDependencies:
@@ -13669,7 +13713,7 @@ snapshots:
 
   is-reference@1.2.1:
     dependencies:
-      '@types/estree': 1.0.7
+      '@types/estree': 1.0.8
 
   is-stream@2.0.1: {}
 
@@ -13911,11 +13955,11 @@ snapshots:
 
   magic-string@0.30.17:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
 
   magic-string@0.30.8:
     dependencies:
-      '@jridgewell/sourcemap-codec': 1.5.0
+      '@jridgewell/sourcemap-codec': 1.5.5
 
   markdown-it@14.1.0:
     dependencies:
@@ -14633,6 +14677,8 @@ snapshots:
       fsevents: 2.3.2
 
   pluralize@8.0.0: {}
+
+  pngjs@7.0.0: {}
 
   postcss-load-config@6.0.1(jiti@2.4.2)(postcss@8.5.6)(yaml@2.7.0):
     dependencies:
