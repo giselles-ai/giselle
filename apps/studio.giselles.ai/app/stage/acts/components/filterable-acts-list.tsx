@@ -87,6 +87,7 @@ function hasExplicitStatusFilter(filters: SearchFilters): boolean {
 interface FilterableActsListProps {
   acts: ActWithNavigation[];
   onReload?: () => void;
+  onArchive?: (act: ActWithNavigation) => void;
 }
 
 const statusLabels: Record<StatusFilter, string> = {
@@ -106,6 +107,7 @@ const statusColors: Record<StatusFilter, string> = {
 export function FilterableActsList({
   acts,
   onReload,
+  onArchive,
 }: FilterableActsListProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("is:open");
@@ -114,23 +116,6 @@ export function FilterableActsList({
     Object.keys(statusLabels) as StatusFilter[],
   );
   const [activeTab, setActiveTab] = useState<"open" | "archived">("open");
-
-  const _statusCounts = useMemo(() => {
-    const counts = acts.reduce(
-      (acc, act) => {
-        acc[act.status] = (acc[act.status] || 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
-
-    return {
-      inProgress: counts.inProgress || 0,
-      completed: counts.completed || 0,
-      failed: counts.failed || 0,
-      cancelled: counts.cancelled || 0,
-    };
-  }, [acts]);
 
   const filteredActs = useMemo(() => {
     const searchFilters = parseSearchQuery(searchQuery);
@@ -265,22 +250,6 @@ export function FilterableActsList({
     }
   };
 
-  // Handle input change and auto-convert is: filters to tags
-  const _handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setInputValue(value);
-
-    // Auto-convert complete is: filters to searchQuery
-    if (
-      value.endsWith(" ") &&
-      (value.includes("is:open") || value.includes("is:archived"))
-    ) {
-      const newQuery = `${searchQuery} ${value.trim()}`.trim();
-      setSearchQuery(newQuery);
-      setInputValue("");
-    }
-  };
-
   const handleReload = () => {
     if (onReload) {
       onReload();
@@ -288,6 +257,7 @@ export function FilterableActsList({
       window.location.reload();
     }
   };
+  const archive = onArchive ?? (() => {});
 
   // Sync activeTab with searchQuery
   useEffect(() => {
@@ -627,8 +597,7 @@ export function FilterableActsList({
                                   e: React.MouseEvent<HTMLButtonElement>,
                                 ) => {
                                   e.stopPropagation();
-                                  // TODO: Implement archive functionality
-                                  alert(`Archive task: ${act.workspaceName}`);
+                                  archive(act);
                                 }}
                               >
                                 <Archive />
