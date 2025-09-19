@@ -26,18 +26,16 @@ import type { GiselleEngineContext } from "../types";
 import { useGenerationExecutor } from "./internal/use-generation-executor";
 import { createPostgresTools } from "./tools/postgres";
 import type { PreparedToolSet } from "./types";
-import { buildMessageObject } from "./utils";
+import { buildMessageObject, getGeneration } from "./utils";
 
 type StreamItem<T> = T extends AsyncIterableStream<infer Inner> ? Inner : never;
 
 export function generateContent({
 	context,
 	generation,
-	abortSignal,
 }: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
-	abortSignal?: AbortSignal;
 }) {
 	context.logger.info(`generate content: ${generation.id}`);
 	return useGenerationExecutor({
@@ -201,13 +199,26 @@ export function generateContent({
 			let generationError: unknown | undefined;
 			const textGenerationStartTime = Date.now();
 
+			const abortController = new AbortController();
+
 			context.waitUntil(async () => {
 				const streamTextResult = streamText({
-					abortSignal,
+					abortSignal: abortController.signal,
 					model,
 					providerOptions,
 					messages,
 					tools: preparedToolSet.toolSet,
+					onChunk: async () => {
+						const currentGeneration = await getGeneration({
+							storage: context.storage,
+							experimental_storage: context.experimental_storage,
+							useExperimentalStorage: true,
+							generationId: generation.id,
+						});
+						if (currentGeneration?.status === "cancelled") {
+							abortController.abort();
+						}
+					},
 					onError: ({ error }) => {
 						generationError = error;
 					},
