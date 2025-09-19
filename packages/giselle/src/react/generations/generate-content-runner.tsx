@@ -158,10 +158,10 @@ export function GenerateContentRunner({
 	]);
 
 	useEffect(() => {
-		if (generation.status !== "queued") {
+		if (didRun.current) {
 			return;
 		}
-		if (didRun.current) {
+		if (generation.status !== "queued") {
 			return;
 		}
 		didRun.current = true;
