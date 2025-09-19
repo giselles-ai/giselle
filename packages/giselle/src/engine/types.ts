@@ -29,6 +29,14 @@ type WaitUntilCallback<T = unknown> = () => T | Promise<T>;
 
 export type WaitUntil<T = unknown> = (task: WaitUntilTask<T>) => void;
 
+type GenerateContentArgs = {
+	context: GiselleEngineContext;
+	generation: RunningGeneration;
+};
+type GenerateContentProcess =
+	| { type: "self" }
+	| { type: "external"; process: (args: GenerateContentArgs) => Promise<void> };
+
 export interface GenerationCompleteCallbackFunctionArgs {
 	generation: CompletedGeneration;
 	inputMessages: ModelMessage[];
@@ -89,6 +97,7 @@ export interface GiselleEngineContext {
 	};
 	logger: GiselleLogger;
 	waitUntil: WaitUntil;
+	generateContentProcess: GenerateContentProcess;
 }
 
 interface GitHubInstalltionAppAuthResolver {

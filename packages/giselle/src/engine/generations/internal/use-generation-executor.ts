@@ -12,6 +12,7 @@ import {
 	type GenerationOutput,
 	type GenerationUsage,
 	isCompletedGeneration,
+	isQueuedGeneration,
 	type Message,
 	type OutputFileBlob,
 	type QueuedGeneration,
@@ -45,7 +46,7 @@ type CompleteGeneration = (
 
 export async function useGenerationExecutor<T>(args: {
 	context: GiselleEngineContext;
-	generation: QueuedGeneration;
+	generation: QueuedGeneration | RunningGeneration;
 	useExperimentalStorage?: boolean;
 	useResumableGeneration?: boolean;
 	signal?: AbortSignal;
@@ -64,12 +65,18 @@ export async function useGenerationExecutor<T>(args: {
 	}) => Promise<T>;
 }): Promise<T> {
 	const generationContext = GenerationContext.parse(args.generation.context);
-	const runningGeneration: RunningGeneration = {
-		...args.generation,
-		status: "running",
-		messages: [],
-		startedAt: Date.now(),
-	};
+
+	const runningGeneration: RunningGeneration = isQueuedGeneration(
+		args.generation,
+	)
+		? {
+				...args.generation,
+				status: "running",
+				messages: [],
+				startedAt: Date.now(),
+			}
+		: args.generation;
+
 	const setGeneration = async (generation: Generation) => {
 		await internalSetGeneration({
 			storage: args.context.storage,
@@ -78,7 +85,10 @@ export async function useGenerationExecutor<T>(args: {
 			generation,
 		});
 	};
-	await setGeneration(runningGeneration);
+
+	if (isQueuedGeneration(args.generation)) {
+		await setGeneration(runningGeneration);
+	}
 	let workspaceId: WorkspaceId;
 	switch (args.generation.context.origin.type) {
 		case "stage":

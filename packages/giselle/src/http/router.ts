@@ -25,6 +25,7 @@ import {
 	GenerationId,
 	GenerationOrigin,
 	QueuedGeneration,
+	RunningGeneration,
 } from "../engine/generations";
 import { JsonResponse } from "../utils";
 import { createHandler, withUsageLimitErrorHandler } from "./create-handler";
@@ -472,7 +473,7 @@ export const createJsonRouters = {
 	generateContent: (giselleEngine: GiselleEngine) =>
 		createHandler({
 			input: z.object({
-				generation: QueuedGeneration,
+				generation: RunningGeneration,
 			}),
 			handler: async ({ input }) => {
 				const runningGeneration = await giselleEngine.generateContent({
@@ -493,6 +494,18 @@ export const createJsonRouters = {
 					abortSignal,
 				});
 				return JsonResponse.json(data);
+			},
+		}),
+	startContentGeneration: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			input: z.object({
+				generation: Generation,
+			}),
+			handler: async ({ input }) => {
+				const runningGeneration = await giselleEngine.startContentGeneration({
+					...input,
+				});
+				return JsonResponse.json({ generation: runningGeneration });
 			},
 		}),
 } as const;

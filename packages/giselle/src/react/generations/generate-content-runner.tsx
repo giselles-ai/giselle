@@ -166,10 +166,12 @@ export function GenerateContentRunner({
 		}
 		didRun.current = true;
 		addStopHandler(generation.id, stop);
-		client.generateContent({ generation }).then(({ generation }) => {
+		client.startContentGeneration({ generation }).then(({ generation }) => {
 			updateGeneration(generation);
 			processStream();
 		});
 	}, [generation, addStopHandler, client, processStream, updateGeneration]);
+
+	useEffect(() => {}, []);
 	return null;
 }
