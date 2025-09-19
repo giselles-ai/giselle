@@ -3,6 +3,7 @@
 import {
 	DEFAULT_EMBEDDING_PROFILE_ID,
 	EMBEDDING_PROFILES,
+	type EmbeddingProfileId,
 	isEmbeddingProfileId,
 } from "@giselle-sdk/data-type";
 import { createId } from "@paralleldrive/cuid2";
@@ -577,7 +578,7 @@ export async function createDocumentVectorStore(
 
 			const embeddingRows = embeddingProfileIds.map((profileId) => ({
 				documentVectorStoreDbId: insertedStore.dbId,
-				embeddingProfileId: profileId,
+				embeddingProfileId: profileId as EmbeddingProfileId,
 				createdAt: new Date(),
 			}));
 			await tx.insert(documentEmbeddingProfiles).values(embeddingRows);
