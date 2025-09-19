@@ -562,6 +562,9 @@ export async function createDocumentVectorStore(
 			};
 		}
 	}
+	const profileIds = Array.from(
+		new Set(embeddingProfileIds),
+	) as EmbeddingProfileId[];
 	try {
 		const team = await fetchCurrentTeam();
 		const documentVectorStoreId = `dvs_${createId()}` as DocumentVectorStoreId;
@@ -576,12 +579,22 @@ export async function createDocumentVectorStore(
 				})
 				.returning({ dbId: documentVectorStores.dbId });
 
-			const embeddingRows = embeddingProfileIds.map((profileId) => ({
+			const embeddingRows = profileIds.map((profileId) => ({
 				documentVectorStoreDbId: insertedStore.dbId,
-				embeddingProfileId: profileId as EmbeddingProfileId,
+				embeddingProfileId: profileId,
 				createdAt: new Date(),
 			}));
-			await tx.insert(documentEmbeddingProfiles).values(embeddingRows);
+			if (embeddingRows.length > 0) {
+				await tx
+					.insert(documentEmbeddingProfiles)
+					.values(embeddingRows)
+					.onConflictDoNothing({
+						target: [
+							documentEmbeddingProfiles.documentVectorStoreDbId,
+							documentEmbeddingProfiles.embeddingProfileId,
+						],
+					});
+			}
 		});
 
 		revalidatePath("/settings/team/vector-stores/document");
