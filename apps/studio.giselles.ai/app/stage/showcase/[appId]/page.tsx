@@ -227,7 +227,7 @@ async function getAppDetails(unsafeAppId: string) {
 			executionHistory: executionHistory.map((execution) => ({
 				id: execution.id,
 				status: "success", // TODO: Add actual status tracking
-				createdAt: execution.createdAt,
+				createdAt: execution.createdAt.toISOString(),
 				duration: "---", // TODO: Get actual duration from agentActivities
 			})),
 		};

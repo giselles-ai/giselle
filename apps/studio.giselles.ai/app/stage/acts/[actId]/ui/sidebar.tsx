@@ -53,6 +53,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 
 	// Fetch generation data for completed steps and trigger step
 	useEffect(() => {
+		let cancelled = false;
 		const fetchGenerations = async () => {
 			const generationsToFetch: Array<{
 				stepId: string;
@@ -62,7 +63,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 			// Collect all completed steps that need generation data, including trigger step
 			act.sequences.forEach((sequence) => {
 				sequence.steps.forEach((step) => {
-					if (step.status === "completed" && !stepGenerations[step.id]) {
+					if (step.status === "completed") {
 						generationsToFetch.push({
 							stepId: step.id,
 							generationId: step.generationId,
@@ -71,24 +72,40 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 				});
 			});
 
-			// Fetch generation data for each step using giselleEngine
-			for (const { stepId, generationId } of generationsToFetch) {
-				try {
-					const generation = await fetchGenerationData(generationId);
-					if (generation) {
-						setStepGenerations((prev) => ({
-							...prev,
-							[stepId]: generation,
-						}));
+			// Batch fetch all generations in parallel
+			const results = await Promise.all(
+				generationsToFetch.map(async ({ stepId, generationId }) => {
+					try {
+						const generation = await fetchGenerationData(generationId);
+						return generation ? { stepId, generation } : null;
+					} catch (error) {
+						console.warn(
+							`Failed to fetch generation for step ${stepId}:`,
+							error,
+						);
+						return null;
 					}
-				} catch (error) {
-					console.warn(`Failed to fetch generation for step ${stepId}:`, error);
-				}
+				}),
+			);
+
+			if (!cancelled) {
+				setStepGenerations((prev) => {
+					const next = { ...prev };
+					for (const result of results) {
+						if (result && !prev[result.stepId]) {
+							next[result.stepId] = result.generation;
+						}
+					}
+					return next;
+				});
 			}
 		};
 
 		fetchGenerations();
-	}, [act, stepGenerations]);
+		return () => {
+			cancelled = true;
+		};
+	}, [act]);
 
 	// Track when component has mounted to prevent hydration mismatch
 	useEffect(() => {
@@ -209,7 +226,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 				</div>
 
 				{/* Separator Line */}
-				<div className="border-t border-white/10 my-4"></div>
+				<div className="border-t border-border my-4"></div>
 
 				{/* Steps Section */}
 				<div className="space-y-4 pb-4 px-[16px] md:px-[32px] md:flex-1 md:overflow-y-auto md:min-h-0">
@@ -252,12 +269,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 													className="block group"
 													onClick={handleStepClick}
 												>
-													<div
-														className="flex w-full p-4 justify-between items-center rounded-[8px] border border-white/20 bg-transparent hover:bg-white/5 transition-colors"
-														style={{
-															borderColor: "rgba(181, 192, 202, 0.20)",
-														}}
-													>
+													<div className="flex w-full p-4 justify-between items-center rounded-[8px] border border-border bg-transparent hover:bg-white/5 transition-colors">
 														<div className="flex items-center gap-3">
 															{/* Step Icon */}
 															<div className="w-8 h-8 rounded-[8px] bg-white flex items-center justify-center flex-shrink-0">
@@ -296,16 +308,12 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 																<div className="text-white font-bold text-[12px]">
 																	{step.name || "Untitled"}
 																</div>
-																<div
-																	className="flex items-center gap-1 text-[10px] font-medium leading-[1.4]"
-																	style={{ color: "#505D7B" }}
-																>
-																	{step.status === "completed" &&
-																		(() => {
-																			const modelInfo =
-																				getModelInfo(generation);
-																			return <span>{modelInfo.modelName}</span>;
-																		})()}
+																<div className="flex items-center gap-1 text-[10px] font-medium leading-[1.4] text-[var(--color-text-nav-inactive)]">
+																	{step.status === "completed" && generation ? (
+																		<span>
+																			{getModelInfo(generation).modelName}
+																		</span>
+																	) : null}
 																	{step.status === "running" && "Running"}
 																	{step.status === "failed" && "Failed"}
 																	{step.status === "queued" && "Queued"}
@@ -327,7 +335,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 
 												{/* Mobile Accordion Content */}
 												{isExpanded && generation && (
-													<div className="block md:hidden mt-2 bg-white/5 rounded-lg p-4 border border-white/10">
+													<div className="block md:hidden mt-2 bg-white/5 rounded-lg p-4 border border-border">
 														<GenerationView generation={generation} />
 														<MobileActions generation={generation} />
 													</div>
