@@ -33,12 +33,19 @@ export function DeleteAgentButton({
 
 	const handleConfirm = () => {
 		startTransition(async () => {
-			const res = await deleteAgent(agentId);
-			setOpen(false);
-			if (res.result === "success") {
-				router.refresh();
-			} else {
+			try {
+				const res = await deleteAgent(agentId);
+				if (res.result === "success") {
+					router.refresh();
+					return;
+				}
 				addToast({ message: res.message, type: "error" });
+			} catch (error) {
+				const message =
+					error instanceof Error ? error.message : "Failed to delete app";
+				addToast({ message, type: "error" });
+			} finally {
+				setOpen(false);
 			}
 		});
 	};
