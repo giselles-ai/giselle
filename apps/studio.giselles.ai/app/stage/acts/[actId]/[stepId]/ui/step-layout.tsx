@@ -67,7 +67,7 @@ export function StepLayout({ header, children, generation }: StepLayoutProps) {
 
 	return (
 		<div className="flex flex-col w-full h-full">
-			<header className="bg-gray-900/80 border-b md:border-b-0 border-white/10">
+			<header className="bg-gray-900/80 border-b md:border-b-0 border-border">
 				<div className="p-4 md:p-[16px] flex items-center justify-between">
 					{header}
 					<div className="flex items-center gap-1">

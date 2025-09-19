@@ -209,7 +209,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 				</div>
 
 				{/* Separator Line */}
-				<div className="border-t border-white/10 my-4"></div>
+				<div className="border-t border-border my-4"></div>
 
 				{/* Steps Section */}
 				<div className="space-y-4 pb-4 px-[16px] md:px-[32px] md:flex-1 md:overflow-y-auto md:min-h-0">
@@ -252,12 +252,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 													className="block group"
 													onClick={handleStepClick}
 												>
-													<div
-														className="flex w-full p-4 justify-between items-center rounded-[8px] border border-white/20 bg-transparent hover:bg-white/5 transition-colors"
-														style={{
-															borderColor: "rgba(181, 192, 202, 0.20)",
-														}}
-													>
+													<div className="flex w-full p-4 justify-between items-center rounded-[8px] border border-border bg-transparent hover:bg-white/5 transition-colors">
 														<div className="flex items-center gap-3">
 															{/* Step Icon */}
 															<div className="w-8 h-8 rounded-[8px] bg-white flex items-center justify-center flex-shrink-0">
@@ -327,7 +322,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 
 												{/* Mobile Accordion Content */}
 												{isExpanded && generation && (
-													<div className="block md:hidden mt-2 bg-white/5 rounded-lg p-4 border border-white/10">
+													<div className="block md:hidden mt-2 bg-white/5 rounded-lg p-4 border border-border">
 														<GenerationView generation={generation} />
 														<MobileActions generation={generation} />
 													</div>

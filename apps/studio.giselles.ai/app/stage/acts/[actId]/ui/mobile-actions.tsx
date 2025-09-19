@@ -78,7 +78,7 @@ export function MobileActions({ generation }: MobileActionsProps) {
 	};
 
 	return (
-		<div className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-white/10">
+		<div className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-border">
 			<button
 				type="button"
 				className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-white/10 rounded-lg transition-colors group touch-manipulation"
