@@ -40,7 +40,7 @@ interface AppDetails {
 	executionHistory: Array<{
 		id: string;
 		status: string;
-		createdAt: Date;
+		createdAt: string; // ISO string
 		duration: string;
 	}>;
 }
@@ -167,6 +167,11 @@ export function AppDetailClient({ appDetails }: AppDetailClientProps) {
 											? "bg-yellow-500/20 text-yellow-400"
 											: "bg-white/10 text-text hover:bg-white/20"
 									}`}
+									aria-pressed={isFavorite}
+									aria-label={
+										isFavorite ? "Remove from favorites" : "Add to favorites"
+									}
+									title={isFavorite ? "Unfavorite" : "Favorite"}
 								>
 									<Star
 										className={`h-4 w-4 transition-all ${isFavorite ? "fill-current" : "group-hover:fill-current"}`}
@@ -234,15 +239,15 @@ export function AppDetailClient({ appDetails }: AppDetailClientProps) {
 												</StatusBadge>
 												<div>
 													<div className="text-xs text-[var(--color-text-60)]">
-														{new Intl.RelativeTimeFormat("en", {
-															numeric: "auto",
-														}).format(
-															Math.floor(
-																(execution.createdAt.getTime() - Date.now()) /
-																	(1000 * 60 * 60 * 24),
-															),
-															"day",
-														)}
+														{(() => {
+															const created = new Date(execution.createdAt);
+															const days = Math.floor(
+																(created.getTime() - Date.now()) / 86_400_000,
+															);
+															return new Intl.RelativeTimeFormat("en", {
+																numeric: "auto",
+															}).format(days, "day");
+														})()}
 													</div>
 												</div>
 											</div>
@@ -260,7 +265,7 @@ export function AppDetailClient({ appDetails }: AppDetailClientProps) {
 						</div>
 
 						{/* Divider */}
-						<div className="w-full lg:w-px h-px lg:h-auto bg-white/10"></div>
+						<div className="w-full lg:w-px h-px lg:h-auto bg-[var(--color-border)]"></div>
 
 						{/* Right Column - App Details */}
 						<div className="flex-1 rounded-lg p-6">

@@ -99,7 +99,7 @@ export function SearchHeader({
 					value={searchQuery}
 					onChange={(e) => onSearchChange(e.target.value)}
 					// Classes match /apps usage exactly (force radius/ring like /apps local Input)
-					className="pl-12 pr-4 h-10 w-full bg-ghost-element text-text placeholder:text-[var(--color-tabs-inactive-text)] border-border rounded-[8px] shadow-none focus:border-transparent focus:ring-1 focus:ring-black--50 focus:ring-inset focus:ring-offset-0 focus-visible:border-transparent focus-visible:ring-1 focus-visible:ring-black--50 focus-visible:ring-inset focus-visible:ring-offset-0"
+					className="pl-12 pr-4 h-10 w-full bg-ghost-element text-text placeholder:text-[var(--color-tabs-inactive-text)] border-border rounded-[8px] shadow-none focus:border-transparent focus:ring-1 focus:ring-black/50 focus:ring-inset focus:ring-offset-0 focus-visible:border-transparent focus-visible:ring-1 focus-visible:ring-black/50 focus-visible:ring-inset focus-visible:ring-offset-0"
 				/>
 			</div>
 

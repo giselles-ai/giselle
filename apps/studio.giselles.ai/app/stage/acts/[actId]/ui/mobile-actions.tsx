@@ -8,29 +8,27 @@ interface MobileActionsProps {
 	generation: Generation;
 }
 
+function extractAssistantText(generation: Generation): string {
+	if (!("messages" in generation)) return "";
+	const assistantMessages =
+		generation.messages?.filter((m) => m.role === "assistant") ?? [];
+	return assistantMessages
+		.map((m) =>
+			m.parts
+				?.filter((p) => p.type === "text")
+				.map((p) => p.text)
+				.join("\n"),
+		)
+		.filter(Boolean)
+		.join("\n\n");
+}
+
 export function MobileActions({ generation }: MobileActionsProps) {
 	const [copyFeedback, setCopyFeedback] = useState(false);
 
 	const handleCopyToClipboard = async () => {
 		try {
-			// Extract text content from generation
-			let textContent = "";
-
-			if ("messages" in generation) {
-				const assistantMessages =
-					generation.messages?.filter((m) => m.role === "assistant") ?? [];
-
-				textContent = assistantMessages
-					.map((message) =>
-						message.parts
-							?.filter((part) => part.type === "text")
-							.map((part) => part.text)
-							.join("\n"),
-					)
-					.filter(Boolean)
-					.join("\n\n");
-			}
-
+			const textContent = extractAssistantText(generation);
 			if (textContent) {
 				await navigator.clipboard.writeText(textContent);
 				setCopyFeedback(true);
@@ -43,24 +41,7 @@ export function MobileActions({ generation }: MobileActionsProps) {
 
 	const handleDownload = () => {
 		try {
-			// Extract text content for download
-			let textContent = "";
-
-			if ("messages" in generation) {
-				const assistantMessages =
-					generation.messages?.filter((m) => m.role === "assistant") ?? [];
-
-				textContent = assistantMessages
-					.map((message) =>
-						message.parts
-							?.filter((part) => part.type === "text")
-							.map((part) => part.text)
-							.join("\n"),
-					)
-					.filter(Boolean)
-					.join("\n\n");
-			}
-
+			const textContent = extractAssistantText(generation);
 			if (textContent) {
 				const blob = new Blob([textContent], { type: "text/plain" });
 				const url = URL.createObjectURL(blob);
