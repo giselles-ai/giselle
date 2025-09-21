@@ -21,6 +21,7 @@ import type { ModelMessage, ProviderMetadata } from "ai";
 import { after } from "next/server";
 import { createStorage } from "unstorage";
 import { waitForLangfuseFlush } from "@/instrumentation.node";
+import { inngest } from "@/lib/inngest";
 import { logger } from "@/lib/logger";
 import { getWorkspaceTeam } from "@/lib/workspaces/get-workspace-team";
 import { fetchUsageLimits } from "@/packages/lib/fetch-usage-limits";
@@ -329,4 +330,13 @@ export const giselleEngine = NextGiselleEngine({
 	},
 	logger,
 	waitUntil: after,
+});
+
+giselleEngine.setGenerateContentProcess(async ({ generation }) => {
+	await inngest.send({
+		name: "giselle/generate-content",
+		data: {
+			generationId: generation.id,
+		},
+	});
 });

@@ -390,6 +390,14 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		startContentGeneration(args: { generation: Generation }) {
 			return startContentGeneration({ ...args, context });
 		},
+		setGenerateContentProcess(
+			process: (args: {
+				context: GiselleEngineContext;
+				generation: RunningGeneration;
+			}) => Promise<void>,
+		) {
+			context.generateContentProcess = { type: "external", process };
+		},
 	};
 }
 
