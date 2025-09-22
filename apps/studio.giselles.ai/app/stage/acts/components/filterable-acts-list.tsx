@@ -23,9 +23,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
 import { useEffect, useMemo, useState } from "react";
 import type { ActWithNavigation, StatusFilter } from "../types";
+import { Heading } from "./heading";
 
 // GitHub-style search parser
 interface SearchFilters {
@@ -333,15 +333,7 @@ export function FilterableActsList({
 			<div className="py-6 h-full flex flex-col">
 				<div className="flex items-center justify-between px-1 mb-6">
 					<div>
-						<h1
-							className="text-[30px] font-sans font-medium text-[var(--color-text-accent)] mb-2"
-							style={{
-								textShadow:
-									"0 0 20px color-mix(in srgb, currentColor, transparent 80%), 0 0 40px color-mix(in srgb, currentColor, transparent 90%), 0 0 60px color-mix(in srgb, currentColor, transparent 95%)",
-							}}
-						>
-							Tasks
-						</h1>
+						<Heading>Tasks</Heading>
 						<p className="text-sm text-black-400">
 							View and manage all your running and completed tasks
 						</p>
