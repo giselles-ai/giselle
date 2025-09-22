@@ -10,7 +10,7 @@ export function NavigationListItem(
 			return (
 				<Link
 					href={props.href}
-					className="text-[var(--color-stage-sidebar-text)] text-sm flex items-center py-0.5 hover:text-[var(--color-stage-sidebar-text-hover)] rounded-lg px-1"
+					className="text-stage-sidebar-text text-sm flex items-center py-0.5 hover:text-stage-sidebar-text-hover rounded-lg px-1"
 				>
 					<div className="size-8 flex items-center justify-center">
 						<props.icon className="size-4" />
