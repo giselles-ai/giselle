@@ -44,12 +44,14 @@ export function SettingsDialog({
 						<div
 							className="absolute inset-0 -z-10 rounded-[12px] backdrop-blur-md"
 							style={{
-								background:
-									"linear-gradient(135deg, rgba(150, 150, 150, 0.03) 0%, rgba(60, 90, 160, 0.12) 100%)",
+								background: "var(--glass-bg)",
 							}}
 						/>
-						<div className="absolute -z-10 top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-						<div className="absolute -z-10 inset-0 rounded-[12px] border border-white/10" />
+						<div
+							className="absolute -z-10 top-0 left-4 right-4 h-px"
+							style={{ background: "var(--glass-highlight-bg)" }}
+						/>
+						<div className="absolute -z-10 inset-0 rounded-[12px] border border-border" />
 
 						<div className="flex items-center justify-between mb-6">
 							<h2 className="text-[20px] font-medium text-white-400 tracking-tight font-sans">
@@ -80,7 +82,7 @@ export function SettingsDialog({
 									<Card
 										className={clsx(
 											"cursor-pointer border-[1px]",
-											!isCarouselView ? "border-blue-500" : "border-white/10",
+											!isCarouselView ? "border-blue-500" : "border-border",
 										)}
 									>
 										<label htmlFor="list">
@@ -106,7 +108,7 @@ export function SettingsDialog({
 									<Card
 										className={clsx(
 											"cursor-pointer border-[1px]",
-											isCarouselView ? "border-blue-500" : "border-white/10",
+											isCarouselView ? "border-blue-500" : "border-border",
 										)}
 									>
 										<label htmlFor="carousel">
@@ -199,7 +201,7 @@ export function SettingsDialog({
 						<Card
 							className={clsx(
 								"cursor-pointer border-[1px]",
-								!isCarouselView ? "border-blue-500" : "border-white/10",
+								!isCarouselView ? "border-blue-500" : "border-border",
 							)}
 						>
 							<label htmlFor="list">
@@ -225,7 +227,7 @@ export function SettingsDialog({
 						<Card
 							className={clsx(
 								"cursor-pointer border-[1px]",
-								isCarouselView ? "border-blue-500" : "border-white/10",
+								isCarouselView ? "border-blue-500" : "border-border",
 							)}
 						>
 							<label htmlFor="carousel">
@@ -262,7 +264,7 @@ export function SettingsDialog({
 					<select
 						id="font-select"
 						disabled
-						className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white-100 text-sm opacity-50 cursor-not-allowed"
+						className="w-full p-3 bg-white/5 border border-border rounded-lg text-white-100 text-sm opacity-50 cursor-not-allowed"
 					>
 						<option className="bg-gray-900">Coming Soon</option>
 					</select>

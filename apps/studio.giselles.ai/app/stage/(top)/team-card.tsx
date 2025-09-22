@@ -8,7 +8,7 @@ interface TeamCardProps {
 export function TeamCard({ team }: TeamCardProps) {
 	return (
 		<div
-			className="bg-[var(--color-stage-form-background)] border border-white/10 p-3"
+			className="bg-[var(--color-stage-form-background)] border border-border p-3"
 			style={{
 				width: "90px",
 				height: "120px",
@@ -19,7 +19,7 @@ export function TeamCard({ team }: TeamCardProps) {
 		>
 			<div className="space-y-1">
 				<div
-					className="text-[10px] text-white-900 leading-tight overflow-hidden text-left"
+					className="text-[10px] text-text leading-tight overflow-hidden text-left"
 					style={{
 						display: "-webkit-box",
 						WebkitLineClamp: 2,
@@ -33,13 +33,13 @@ export function TeamCard({ team }: TeamCardProps) {
 				</div>
 				<div className="flex justify-center">
 					<div
-						className="bg-gray-600 rounded-sm overflow-hidden flex items-center justify-center"
+						className="bg-ghost-element rounded-sm overflow-hidden flex items-center justify-center"
 						style={{
 							width: "66px",
 							height: "66px",
 						}}
 					>
-						<div className="text-gray-400 text-[12px] text-center">
+						<div className="text-text-muted text-[12px] text-center">
 							No Image
 						</div>
 					</div>

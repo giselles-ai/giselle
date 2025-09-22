@@ -446,7 +446,7 @@ export function CircularCarousel({
 		width: "108px",
 		height: "95px",
 		background:
-			"radial-gradient(ellipse 108px 80px at 50% 100%, rgba(107, 143, 240, 1) 0%, rgba(107, 143, 240, 0.8) 20%, rgba(107, 143, 240, 0.5) 40%, rgba(107, 143, 240, 0.2) 70%, transparent 100%)",
+			"radial-gradient(ellipse 108px 80px at 50% 100%, color-mix(in srgb, var(--color-stage-accent), transparent 0%) 0%, color-mix(in srgb, var(--color-stage-accent), transparent 20%) 20%, color-mix(in srgb, var(--color-stage-accent), transparent 50%) 40%, color-mix(in srgb, var(--color-stage-accent), transparent 80%) 70%, transparent 100%)",
 		filter: "blur(2px)",
 	} as const;
 
@@ -459,7 +459,7 @@ export function CircularCarousel({
 				style={emptyStateContainerStyle}
 			>
 				<div className="text-center">
-					<p className="text-white-400 text-[14px] font-medium font-['DM_Sans']">
+					<p className="text-text-muted text-[14px] font-medium font-['DM_Sans']">
 						No executable apps available. Please select a different team or
 						create a new app.
 					</p>
@@ -557,7 +557,7 @@ export function CircularCarousel({
 						width: "98px", // 90px card + 4px padding on each side
 						height: "128px", // 120px card + 4px padding on each side
 						borderRadius: "4px 4px 16px 4px",
-						border: "2px solid #2E2E2E",
+						border: "2px solid var(--color-border-variant)",
 						transform: `translate(-50%, -50%) translate(${centerX}px, ${centerY - radius - 144}px)`,
 					}}
 				/>
@@ -584,7 +584,7 @@ export function CircularCarousel({
 						}
 					}}
 				>
-					<div className="text-gray-300 text-lg font-medium mb-1 tracking-wide flex justify-center">
+					<div className="text-text-muted text-lg font-medium mb-1 tracking-wide flex justify-center">
 						<ChevronDown size={20} />
 					</div>
 					<div className="mx-auto" style={gradientBackgroundStyle} />
@@ -601,8 +601,9 @@ export function CircularCarousel({
 							width: "98px", // 90px card + 4px padding on each side
 							height: "128px", // 120px card + 4px padding on each side
 							borderRadius: "4px 4px 16px 4px",
-							border: "2px solid var(--primary400, #6B8FF0)",
-							boxShadow: "1px 1px 16px 8px rgba(107, 143, 240, 0.25)",
+							border: "2px solid var(--color-stage-accent)",
+							boxShadow:
+								"1px 1px 16px 8px color-mix(in srgb, var(--color-stage-accent), transparent 75%)",
 							transform: `translate(-50%, -50%) translate(${centerX}px, ${centerY - radius - 144}px)`,
 						}}
 					/>
@@ -614,7 +615,7 @@ export function CircularCarousel({
 				aria-label="Navigate to previous app"
 				onClick={moveRight}
 				disabled={currentIndex === items.length - 1}
-				className="hidden md:flex absolute left-6 top-1/2 transform -translate-y-1/2 w-10 h-10 border border-white hover:bg-white/10 rounded-full items-center justify-center text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed z-50"
+				className="hidden md:flex absolute left-6 top-1/2 transform -translate-y-1/2 w-10 h-10 border border-border hover:bg-ghost-element-hover rounded-full items-center justify-center text-text transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed z-50"
 			>
 				<ChevronLeft size={20} />
 			</button>
@@ -625,7 +626,7 @@ export function CircularCarousel({
 				aria-label="Navigate to next app"
 				onClick={moveLeft}
 				disabled={currentIndex === 0}
-				className="hidden md:flex absolute right-6 top-1/2 transform -translate-y-1/2 w-10 h-10 border border-white hover:bg-white/10 rounded-full items-center justify-center text-white transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed z-50"
+				className="hidden md:flex absolute right-6 top-1/2 transform -translate-y-1/2 w-10 h-10 border border-border hover:bg-ghost-element-hover rounded-full items-center justify-center text-text transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed z-50"
 			>
 				<ChevronRight size={20} />
 			</button>
@@ -655,7 +656,7 @@ export function CircularCarousel({
 							}
 						}}
 					>
-						<div className="text-gray-300 text-lg font-medium flex justify-center">
+						<div className="text-text-muted text-lg font-medium flex justify-center">
 							<ChevronUp size={20} />
 						</div>
 					</button>
