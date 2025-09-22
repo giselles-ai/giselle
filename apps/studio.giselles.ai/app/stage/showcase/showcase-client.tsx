@@ -282,10 +282,10 @@ export function ShowcaseClient({
 								searchQuery ? (
 									<div className="flex justify-center items-center h-full mt-12">
 										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
+											<h3 className="text-[18px] font-bold text-black-400">
 												No apps found.
 											</h3>
-											<p className="text-[12px] font-geist text-black-400">
+											<p className="text-[12px] text-black-400">
 												Try searching with a different keyword.
 											</p>
 										</div>
@@ -293,10 +293,10 @@ export function ShowcaseClient({
 								) : (
 									<div className="flex justify-center items-center h-full mt-12">
 										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
+											<h3 className="text-[18px] font-bold text-black-400">
 												No apps yet.
 											</h3>
-											<p className="text-[12px] font-geist text-black-400">
+											<p className="text-[12px] text-black-400">
 												Please create a new app with the 'New App +' button.
 											</p>
 										</div>
@@ -331,7 +331,7 @@ export function ShowcaseClient({
 													<p className="text-[14px] font-sans text-text">
 														{app.name || "Untitled"}
 													</p>
-													<p className="text-[12px] font-geist text-text-muted">
+													<p className="text-[12px] text-text-muted">
 														Edited {app.updatedAt.toLocaleDateString("en-US")}
 													</p>
 												</div>
@@ -525,10 +525,10 @@ export function ShowcaseClient({
 							{mockPlaylists.length === 0 && (
 								<div className="flex justify-center items-center h-full">
 									<div className="grid gap-[8px] justify-center text-center">
-										<h3 className="text-[18px] font-geist font-bold text-black-400">
+										<h3 className="text-[18px] font-bold text-black-400">
 											No playlists yet.
 										</h3>
-										<p className="text-[12px] font-geist text-black-400">
+										<p className="text-[12px] text-black-400">
 											Please create a new playlist with the 'New Playlist +'
 											button.
 										</p>
@@ -552,10 +552,10 @@ export function ShowcaseClient({
 								searchQuery ? (
 									<div className="flex justify-center items-center h-full mt-12">
 										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
+											<h3 className="text-[18px] font-bold text-black-400">
 												No history found.
 											</h3>
-											<p className="text-[12px] font-geist text-black-400">
+											<p className="text-[12px] text-black-400">
 												Try searching with a different keyword.
 											</p>
 										</div>
@@ -563,10 +563,10 @@ export function ShowcaseClient({
 								) : (
 									<div className="flex justify-center items-center h-full mt-12">
 										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
+											<h3 className="text-[18px] font-bold text-black-400">
 												No history yet.
 											</h3>
-											<p className="text-[12px] font-geist text-black-400">
+											<p className="text-[12px] text-black-400">
 												Execute an app to see your history.
 											</p>
 										</div>
@@ -598,7 +598,7 @@ export function ShowcaseClient({
 													<p className="text-[14px] font-sans text-text">
 														{item.name || "Untitled"}
 													</p>
-													<p className="text-[12px] font-geist text-text-muted">
+													<p className="text-[12px] text-text-muted">
 														Executed{" "}
 														{item.updatedAt.toLocaleDateString("en-US")}
 													</p>

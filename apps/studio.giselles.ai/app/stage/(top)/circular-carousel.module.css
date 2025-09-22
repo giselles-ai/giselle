@@ -10,7 +10,5 @@
 
 .pulseAnimation {
 	animation: gentlePulse 2s ease-in-out infinite;
-	filter: drop-shadow(
-		0 0 12px color-mix(in srgb, var(--color-stage-accent), transparent 40%)
-	);
+	filter: drop-shadow(0 0 12px rgba(107, 143, 240, 0.6));
 }

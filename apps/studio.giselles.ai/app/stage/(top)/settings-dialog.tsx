@@ -69,7 +69,7 @@ export function SettingsDialog({
 						<div className="mt-4">
 							{/* View Type Selection */}
 							<div className="mb-6">
-								<Label className="text-text font-medium text-[12px] leading-[20.4px] font-geist">
+								<Label className="text-text font-medium text-[12px] leading-[20.4px] font-sans">
 									Display Type
 								</Label>
 								<RadioGroup
@@ -97,7 +97,7 @@ export function SettingsDialog({
 														<CardTitle className="text-text text-[14px] font-sans">
 															List
 														</CardTitle>
-														<CardDescription className="text-text-muted font-medium text-[12px] font-geist">
+														<CardDescription className="text-text-muted font-medium text-[12px] font-sans">
 															Simple vertical list
 														</CardDescription>
 													</div>
@@ -123,7 +123,7 @@ export function SettingsDialog({
 														<CardTitle className="text-text text-[14px] font-sans">
 															Carousel
 														</CardTitle>
-														<CardDescription className="text-text-muted font-medium text-[12px] font-geist">
+														<CardDescription className="text-text-muted font-medium text-[12px] font-sans">
 															Interactive circular layout
 														</CardDescription>
 													</div>
@@ -190,7 +190,7 @@ export function SettingsDialog({
 
 				{/* View Type Selection */}
 				<div className="mb-6">
-					<Label className="text-text font-medium text-[12px] leading-[20.4px] font-geist">
+					<Label className="text-text font-medium text-[12px] leading-[20.4px] font-sans">
 						Display Type
 					</Label>
 					<RadioGroup

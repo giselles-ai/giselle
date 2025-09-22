@@ -263,7 +263,7 @@ function Form({
 					<div className="w-full px-4 max-w-4xl mx-auto">
 						{apps.length === 0 ? (
 							<div className="text-center py-8">
-								<p className="text-[12px] font-geist text-text-muted">
+								<p className="text-[12px] text-text-muted">
 									No apps available for the selected team
 								</p>
 							</div>
@@ -285,7 +285,7 @@ function Form({
 											className={clsx(
 												"group flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer relative z-20 w-full text-left",
 												appId === app.id
-													? "bg-[var(--color-stage-accent)]/10 border-[var(--color-stage-accent)]/50"
+													? "bg-primary-100/10 border-primary-100/50"
 													: "bg-ghost-element border-border hover:bg-ghost-element-hover hover:border-border",
 											)}
 										>
@@ -298,15 +298,13 @@ function Form({
 												<p
 													className={clsx(
 														"text-[14px] font-sans truncate",
-														appId === app.id
-															? "text-[var(--color-stage-accent)]"
-															: "text-text",
+														appId === app.id ? "text-primary-100" : "text-text",
 													)}
 												>
 													{app.workspaceName || "Untitled"}
 												</p>
 												{app.label && app.label !== "Manual Trigger" && (
-													<p className="text-[12px] font-geist text-text-muted truncate">
+													<p className="text-[12px] text-text-muted truncate">
 														{app.label}
 													</p>
 												)}
@@ -347,9 +345,7 @@ function Form({
 										{app.workspaceName || "Untitled"}
 									</h3>
 									{app.label && app.label !== "Manual Trigger" && (
-										<p className="text-[12px] text-text-muted font-geist">
-											{app.label}
-										</p>
+										<p className="text-[12px] text-text-muted">{app.label}</p>
 									)}
 								</div>
 							</div>
