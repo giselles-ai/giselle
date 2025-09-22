@@ -729,6 +729,21 @@ export function Toolbar() {
 																		</CapabilityIcon>
 																	</>
 																)}
+																{hasCapability(
+																	languageModelMouseHovered,
+																	Capability.ImageGenerationInput,
+																) && (
+																	<CapabilityIcon
+																		icon={
+																			<PictureIcon
+																				data-icon
+																				className="w-[16px] h-[16px]"
+																			/>
+																		}
+																	>
+																		Input Image Generation
+																	</CapabilityIcon>
+																)}
 															</div>
 														</div>
 													) : (

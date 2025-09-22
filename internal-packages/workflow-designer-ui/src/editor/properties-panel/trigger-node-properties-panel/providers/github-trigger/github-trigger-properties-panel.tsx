@@ -23,6 +23,7 @@ import {
 	useTransition,
 } from "react";
 import { Tooltip } from "../../../../../ui/tooltip";
+import { isPromptEmpty as isEmpty } from "../../../../lib/validate-prompt";
 import { SelectRepository } from "../../../ui";
 import { GitHubTriggerConfiguredView } from "../../ui";
 import { GitHubTriggerReconfiguringView } from "../../ui/reconfiguring-views/github-trigger-reconfiguring-view";
@@ -183,6 +184,8 @@ export function Installed({
 	const [eventId, setEventId] = useState<GitHubTriggerEventId>(
 		reconfigStep?.eventId ?? "github.issue.created",
 	);
+	const [callsignError, setCallsignError] = useState<string | null>(null);
+	const [labelsError, setLabelsError] = useState<string | null>(null);
 
 	// Helper function to create callsign events
 	const createCallsignEvent = useCallback(
@@ -191,8 +194,8 @@ export function Installed({
 			formData: FormData,
 		): GitHubFlowTriggerEvent => {
 			const callsign = formData.get("callsign");
-			if (typeof callsign !== "string" || callsign.length === 0) {
-				throw new Error("Unexpected request");
+			if (typeof callsign !== "string" || isEmpty(callsign)) {
+				throw new Error("Invalid callsign: expected a non-empty string.");
 			}
 			return {
 				id: eventId,
@@ -212,6 +215,7 @@ export function Installed({
 	const handleCallsignSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		(e) => {
 			e.preventDefault();
+			setCallsignError(null);
 
 			if (step.state !== "input-callsign") {
 				throw new Error("Unexpected state");
@@ -219,20 +223,25 @@ export function Installed({
 
 			let event: GitHubFlowTriggerEvent | undefined;
 			const formData = new FormData(e.currentTarget);
+			try {
+				// Create event based on whether it requires callsign
+				if (
+					(CALLSIGN_EVENTS as readonly GitHubTriggerEventId[]).includes(eventId)
+				) {
+					event = createCallsignEvent(eventId, formData);
+				} else {
+					event = createTriggerEvent({ eventId });
+				}
 
-			// Create event based on whether it requires callsign
-			if (
-				(CALLSIGN_EVENTS as readonly GitHubTriggerEventId[]).includes(eventId)
-			) {
-				event = createCallsignEvent(eventId, formData);
-			} else {
-				event = createTriggerEvent({ eventId });
+				if (event === undefined) {
+					return;
+				}
+				configureTrigger(event, step);
+			} catch (error) {
+				setCallsignError(
+					error instanceof Error ? error.message : "Invalid callsign",
+				);
 			}
-
-			if (event === undefined) {
-				return;
-			}
-			configureTrigger(event, step);
 		},
 		[configureTrigger, step, eventId, CALLSIGN_EVENTS, createCallsignEvent],
 	);
@@ -243,6 +252,7 @@ export function Installed({
 			rawLabels: { id: number; value: string }[],
 		) => {
 			e.preventDefault();
+			setLabelsError(null);
 
 			if (step.state !== "input-labels") {
 				throw new Error("Unexpected state");
@@ -253,6 +263,7 @@ export function Installed({
 				.filter((value) => value.length > 0);
 
 			if (validLabels.length === 0) {
+				setLabelsError("At least one label is required");
 				return;
 			}
 
@@ -502,16 +513,22 @@ export function Installed({
 								name="callsign"
 								className={clsx(
 									"group w-full flex justify-between items-center rounded-[8px] py-[8px] pl-[28px] pr-[4px] outline-none focus:outline-none",
-									"border border-white-400 focus:border-white-900",
+									callsignError
+										? "border border-red-500 focus:border-red-400"
+										: "border border-white-400 focus:border-white-900",
 									"text-[14px] bg-transparent",
 								)}
 								placeholder="code-review"
 							/>
 						</div>
-						<p className="text-[12px] text-white-400 pl-2">
-							A callsign is required for issue comment triggers. Examples:
-							/code-review, /check-policy
-						</p>
+						{callsignError ? (
+							<p className="text-[12px] text-red-400 pl-2">{callsignError}</p>
+						) : (
+							<p className="text-[12px] text-white-400 pl-2">
+								A callsign is required for issue comment triggers. Examples:
+								/code-review, /check-policy
+							</p>
+						)}
 					</fieldset>
 
 					<div className="pt-[8px] flex gap-[8px] mt-[12px] px-[4px]">
@@ -519,6 +536,7 @@ export function Installed({
 							type="button"
 							className="flex-1 bg-black-700 hover:bg-black-600 text-white font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
 							onClick={() => {
+								setCallsignError(null);
 								setStep({
 									state: "select-repository",
 									eventId: step.eventId,
@@ -575,6 +593,7 @@ export function Installed({
 					owner={step.owner}
 					repo={step.repo}
 					onBack={() => {
+						setLabelsError(null);
 						setStep({
 							state: "select-repository",
 							eventId: step.eventId,
@@ -582,6 +601,7 @@ export function Installed({
 					}}
 					onSubmit={handleLabelsSubmit}
 					isPending={isTriggerConfigPending}
+					labelsError={labelsError}
 				/>
 			)}
 

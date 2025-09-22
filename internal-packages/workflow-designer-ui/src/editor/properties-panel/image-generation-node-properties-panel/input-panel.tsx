@@ -465,14 +465,29 @@ export function InputPanel({
 				/>
 			</div>
 			<div className="flex flex-col gap-[32px]">
-				{connectedSources.generation.length > 0 && (
-					<SourceListRoot title="Generated Sources">
-						{connectedSources.generation.map((source) => (
+				{connectedSources.generationText.length > 0 && (
+					<SourceListRoot title="Generated Text Sources">
+						{connectedSources.generationText.map((source) => (
 							<SourceListItem
 								icon={
 									<GeneratedContentIcon className="size-[24px] text-white-900" />
 								}
 								key={source.connection.id}
+								title={`${source.node.name ?? source.node.content.llm.id} / ${source.output.label}`}
+								subtitle={source.node.content.llm.provider}
+								onRemove={() => handleRemove(source.connection)}
+							/>
+						))}
+					</SourceListRoot>
+				)}
+				{connectedSources.generationImage.length > 0 && (
+					<SourceListRoot title="Generated Image Sources">
+						{connectedSources.generationImage.map((source) => (
+							<SourceListItem
+								key={source.connection.id}
+								icon={
+									<GeneratedContentIcon className="size-[24px] text-white-900" />
+								}
 								title={`${source.node.name ?? source.node.content.llm.id} / ${source.output.label}`}
 								subtitle={source.node.content.llm.provider}
 								onRemove={() => handleRemove(source.connection)}

@@ -16,7 +16,10 @@ export function useConnectedSources(node: ImageGenerationNode) {
 		const connectionsToThisNode = data.connections.filter(
 			(connection) => connection.inputNode.id === node.id,
 		);
-		const connectedGeneratedSources: ConnectedSource<TextGenerationNode>[] = [];
+		const connectedGeneratedTextSources: ConnectedSource<TextGenerationNode>[] =
+			[];
+		const connectedGeneratedImageSources: ConnectedSource<ImageGenerationNode>[] =
+			[];
 		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
 		const connectedQuerySources: ConnectedSource<QueryNode>[] = [];
 		for (const connection of connectionsToThisNode) {
@@ -37,7 +40,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 				case "operation":
 					switch (node.content.type) {
 						case "textGeneration":
-							connectedGeneratedSources.push({
+							connectedGeneratedTextSources.push({
 								output,
 								node: node as TextGenerationNode,
 								connection,
@@ -51,6 +54,12 @@ export function useConnectedSources(node: ImageGenerationNode) {
 							});
 							break;
 						case "imageGeneration":
+							connectedGeneratedImageSources.push({
+								output,
+								node: node as ImageGenerationNode,
+								connection,
+							});
+							break;
 						case "action":
 						case "trigger":
 							throw new Error("not implemented");
@@ -96,11 +105,13 @@ export function useConnectedSources(node: ImageGenerationNode) {
 
 		return {
 			all: [
-				...connectedGeneratedSources,
+				...connectedGeneratedTextSources,
 				...connectedVariableSources,
 				...connectedQuerySources,
+				...connectedGeneratedImageSources,
 			],
-			generation: connectedGeneratedSources,
+			generationText: connectedGeneratedTextSources,
+			generationImage: connectedGeneratedImageSources,
 			variable: connectedVariableSources,
 			query: connectedQuerySources,
 		};

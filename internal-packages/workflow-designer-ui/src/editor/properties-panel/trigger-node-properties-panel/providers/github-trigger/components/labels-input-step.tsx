@@ -16,6 +16,7 @@ interface LabelsInputStepProps {
 		rawLabels: { id: number; value: string }[],
 	) => void;
 	isPending: boolean;
+	labelsError: string | null;
 }
 
 export function LabelsInputStep({
@@ -25,6 +26,7 @@ export function LabelsInputStep({
 	onBack,
 	onSubmit,
 	isPending,
+	labelsError,
 }: LabelsInputStepProps) {
 	const [labels, setLabels] = useState([{ id: 1, value: "" }]);
 	const [nextId, setNextId] = useState(2);
@@ -70,7 +72,9 @@ export function LabelsInputStep({
 								}
 								className={clsx(
 									"flex-1 rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
-									"border border-white-400 focus:border-white-900",
+									labelsError
+										? "border border-red-500 focus:border-red-400"
+										: "border border-white-400 focus:border-white-900",
 									"text-[14px] bg-transparent",
 								)}
 								placeholder="bug"
@@ -89,6 +93,14 @@ export function LabelsInputStep({
 							)}
 						</div>
 					))}
+					{labelsError ? (
+						<p className="text-[12px] text-red-400 pl-2">{labelsError}</p>
+					) : (
+						<p className="text-[12px] text-white-400 pl-2">
+							Labels are required for issue labeled triggers. Examples: bug,
+							feature, urgent
+						</p>
+					)}
 					<button
 						type="button"
 						onClick={() => {
@@ -101,10 +113,6 @@ export function LabelsInputStep({
 						Add label
 					</button>
 				</div>
-				<p className="text-[12px] text-white-400 pl-2">
-					Labels are required for issue labeled triggers. Examples: bug,
-					feature, urgent
-				</p>
 			</fieldset>
 
 			<div className="pt-[8px] flex gap-[8px] mt-[12px] px-[4px]">
