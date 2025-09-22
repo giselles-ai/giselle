@@ -1,14 +1,9 @@
-"use client";
-
-import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export function useUIState() {
 	const [isMobile, setIsMobile] = useState(false);
+	const [isCarouselView, setIsCarouselView] = useState(false);
 	const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-	const searchParams = useSearchParams();
-	const router = useRouter();
-	const isCarouselView = searchParams.get("view") === "carousel";
 
 	useEffect(() => {
 		const checkMobile = () => {
@@ -20,16 +15,6 @@ export function useUIState() {
 
 		return () => window.removeEventListener("resize", checkMobile);
 	}, []);
-
-	const setIsCarouselView = (value: boolean) => {
-		const params = new URLSearchParams(searchParams.toString());
-		if (value) {
-			params.set("view", "carousel");
-		} else {
-			params.delete("view");
-		}
-		router.push(`?${params.toString()}`, { scroll: false });
-	};
 
 	return {
 		isMobile,
