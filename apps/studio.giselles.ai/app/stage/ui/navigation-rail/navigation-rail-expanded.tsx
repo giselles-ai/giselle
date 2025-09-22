@@ -24,10 +24,10 @@ export function NavigationRailExpanded({
 		<NavigationRailContainer variant="expanded">
 			<NavigationRailHeader>
 				<div className="flex items-center justify-start w-full">
-					<div className="group size-8 flex justify-center items-center">
-						<GiselleIcon className="size-6 text-[var(--color-stage-sidebar-text-hover)] stroke-1 group-hover:hidden shrink-0" />
+					<div className="size-8 flex justify-center items-center">
+						<GiselleIcon className="size-6 text-stage-sidebar-text-hover stroke-1 shrink-0" />
 					</div>
-					<p className="text-[var(--color-stage-sidebar-text-hover)] text-[13px] font-semibold">
+					<p className="text-stage-sidebar-text-hover text-[13px] font-semibold">
 						Stage
 					</p>
 				</div>
@@ -36,7 +36,7 @@ export function NavigationRailExpanded({
 						onClick={() => onCollapseButtonClick()}
 						className="cursor-w-resize"
 					>
-						<SimpleChevronLeft className="size-5 text-[var(--color-stage-sidebar-text)]" />
+						<SimpleChevronLeft className="size-5 text-stage-sidebar-text" />
 					</MenuButton>
 				</div>
 			</NavigationRailHeader>
