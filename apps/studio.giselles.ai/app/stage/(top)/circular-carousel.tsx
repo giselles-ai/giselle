@@ -552,12 +552,11 @@ export function CircularCarousel({
 			{/* Gray selection frame - normal state */}
 			{centerCard && centerCardState === "normal" && (
 				<div
-					className="absolute left-1/2 top-1/2 pointer-events-none z-40"
+					className="absolute left-1/2 top-1/2 pointer-events-none z-40 border-2 border-border-variant"
 					style={{
 						width: "98px", // 90px card + 4px padding on each side
 						height: "128px", // 120px card + 4px padding on each side
 						borderRadius: "4px 4px 16px 4px",
-						border: "2px solid #2E2E2E",
 						transform: `translate(-50%, -50%) translate(${centerX}px, ${centerY - radius - 144}px)`,
 					}}
 				/>
