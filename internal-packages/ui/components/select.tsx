@@ -1,6 +1,7 @@
 import clsx from "clsx/lite";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import { Select as SelectPrimitive } from "radix-ui";
+import { useState } from "react";
 import { PopoverContent } from "./popover";
 
 export type SelectOption = {
@@ -22,6 +23,7 @@ interface SelectProps<T extends SelectOption> {
 	name?: string;
 	id?: string;
 	renderValue?: (options: T) => string | number;
+	showIconInTrigger?: boolean;
 }
 
 export function Select<T extends SelectOption>({
@@ -36,11 +38,25 @@ export function Select<T extends SelectOption>({
 	name,
 	id,
 	renderValue,
+	showIconInTrigger,
 }: SelectProps<T>) {
+	const [internalValue, setInternalValue] = useState<string | undefined>(
+		value ?? defaultValue,
+	);
+	const selectedValue = value ?? internalValue ?? defaultValue;
+	const selectedOption = options.find(
+		(option) =>
+			(renderValue ? `${renderValue(option)}` : `${option.value}`) ===
+			selectedValue,
+	);
+	const handleChange = (next: string) => {
+		onValueChange?.(next);
+		if (showIconInTrigger) setInternalValue(next);
+	};
 	return (
 		<SelectPrimitive.Root
 			value={value}
-			onValueChange={onValueChange}
+			onValueChange={handleChange}
 			defaultValue={defaultValue}
 			name={name}
 		>
@@ -56,8 +72,23 @@ export function Select<T extends SelectOption>({
 						triggerClassName,
 					)}
 				>
-					<div className="flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap">
-						<SelectPrimitive.Value placeholder={placeholder} />
+					<div className="flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap flex items-center gap-3">
+						{showIconInTrigger && selectedOption?.icon ? (
+							<span className="h-6 w-6 shrink-0 rounded-full overflow-hidden">
+								{selectedOption.icon}
+							</span>
+						) : null}
+						{showIconInTrigger ? (
+							<span className="truncate">
+								{selectedOption
+									? renderOption
+										? renderOption(selectedOption as T)
+										: (selectedOption.label as React.ReactNode)
+									: placeholder}
+							</span>
+						) : (
+							<SelectPrimitive.Value placeholder={placeholder} />
+						)}
 					</div>
 					<ChevronDownIcon className="size-[13px] shrink-0 text-text ml-2" />
 				</button>

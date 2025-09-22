@@ -1,6 +1,5 @@
 "use client";
 
-import { Select } from "@giselle-internal/ui/select";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Play, RotateCcw, Star } from "lucide-react";
 import Link from "next/link";
@@ -17,6 +16,7 @@ import {
 	GlassDialogFooter,
 	GlassDialogHeader,
 } from "../../(main)/settings/team/components/glass-dialog-content";
+import { TeamSelect } from "../ui/team-select";
 
 type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
 
@@ -105,32 +105,6 @@ export function ShowcaseClient({
 	);
 
 	// Add CSS styles for team selection dropdown
-	useEffect(() => {
-		const styleElement = document.createElement("style");
-		styleElement.textContent = `
-      .team-select button[type="button"] {
-        background-color: rgba(255, 255, 255, 0.05) !important;
-        border: none !important;
-        color: white !important;
-        font-size: 14px !important;
-        font-family: inherit !important;
-      }
-      .team-select button[type="button"]:hover {
-        background-color: rgba(255, 255, 255, 0.1) !important;
-      }
-      .team-select button[type="button"] svg {
-        margin-left: 8px !important;
-      }
-      .team-select [role="option"] {
-        font-size: 14px !important;
-      }
-    `;
-		document.head.appendChild(styleElement);
-
-		return () => {
-			document.head.removeChild(styleElement);
-		};
-	}, []);
 
 	// Get apps for selected team
 	const currentApps = useMemo(() => {
@@ -252,10 +226,9 @@ export function ShowcaseClient({
 						}
 					>
 						<div className="team-select">
-							<Select
+							<TeamSelect
 								placeholder="Select team"
-								options={teamOptionsWithIcons}
-								renderOption={(o) => o.label}
+								options={teamOptions}
 								value={selectedTeamId}
 								onValueChange={(value) => setSelectedTeamId(value)}
 								widthClassName="[&>button]:text-[14px] [&>button]:px-2 [&>button]:py-1 [&>button]:rounded-sm [&>button]:gap-2"

@@ -2,14 +2,12 @@
 
 import { Select } from "@giselle-internal/ui/select";
 import type { FlowTriggerId } from "@giselle-sdk/data-type";
-
 import clsx from "clsx/lite";
 import { X } from "lucide-react";
-
 import { useActionState, useCallback, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { buttonVariants } from "../../(main)/settings/components/button";
+import { TeamSelect } from "../ui/team-select";
 import { AppIcon } from "./app-icon";
 import { CircularCarousel } from "./circular-carousel";
 import { FormInputRenderer } from "./form-input-renderer";
@@ -155,22 +153,6 @@ function Form({
 		{},
 	);
 
-	const teamOptionsWithIcons = useMemo(
-		() =>
-			teamOptions.map((team) => ({
-				...team,
-				icon: team.avatarUrl ? (
-					<AvatarImage
-						avatarUrl={team.avatarUrl}
-						width={24}
-						height={24}
-						alt={team.label}
-					/>
-				) : undefined,
-			})),
-		[teamOptions],
-	);
-
 	const app = useMemo(() => {
 		const app = apps.find((app) => app.id === appId);
 		return app;
@@ -236,11 +218,10 @@ function Form({
 					}
 				>
 					<div className="team-select">
-						<Select
+						<TeamSelect
 							id="team"
 							placeholder="Select team"
-							options={teamOptionsWithIcons}
-							renderOption={(o) => o.label}
+							options={teamOptions}
 							value={teamId}
 							onValueChange={(value) => {
 								onTeamIdChange(value as TeamId);
