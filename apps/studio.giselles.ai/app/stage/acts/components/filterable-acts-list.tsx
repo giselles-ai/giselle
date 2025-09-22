@@ -306,14 +306,14 @@ export function FilterableActsList({
 			styleElement.id = styleId;
 			styleElement.textContent = `
 				        .status-select button[type="button"] {
-				          background-color: rgba(255, 255, 255, 0.05) !important;
+				          background-color: color-mix(in srgb, var(--color-white), transparent 95%) !important;
 				          border: none !important;
 				          color: white !important;
 				          font-size: 14px !important;
 				          font-family: inherit !important;
 				        }
 				        .status-select button[type="button"]:hover {
-				          background-color: rgba(255, 255, 255, 0.1) !important;
+				          background-color: color-mix(in srgb, var(--color-white), transparent 90%) !important;
 				        }
 
 				      `;
@@ -334,10 +334,10 @@ export function FilterableActsList({
 				<div className="flex items-center justify-between px-1 mb-6">
 					<div>
 						<h1
-							className="text-[30px] font-sans font-medium text-[hsl(192,73%,84%)] mb-2"
+							className="text-[30px] font-sans font-medium text-[var(--color-text-accent)] mb-2"
 							style={{
 								textShadow:
-									"0 0 20px #0087f6, 0 0 40px #0087f6, 0 0 60px #0087f6",
+									"0 0 20px color-mix(in srgb, currentColor, transparent 80%), 0 0 40px color-mix(in srgb, currentColor, transparent 90%), 0 0 60px color-mix(in srgb, currentColor, transparent 95%)",
 							}}
 						>
 							Tasks
@@ -354,7 +354,10 @@ export function FilterableActsList({
 					<div className="search-input relative flex-1">
 						<div
 							className="flex items-center gap-1 flex-wrap w-full pl-2 pr-10 py-1 rounded-[8px] h-10 text-white-900 placeholder-white-600 focus-within:outline-none transition-colors text-[14px]"
-							style={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
+							style={{
+								backgroundColor:
+									"color-mix(in srgb, var(--color-white), transparent 95%)",
+							}}
 						>
 							{searchTags.map((tag) => {
 								const [prefix, value] = tag.label.split(":");
