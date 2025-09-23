@@ -7,6 +7,4 @@ export const noopLogger: GiselleLogger = {
 	warn: noop,
 	error: noop,
 	debug: noop,
-	trace: noop,
-	fatal: noop,
 };

@@ -334,14 +334,14 @@ export const giselleEngine = NextGiselleEngine({
 
 // In Vercel environment, execute generateContent with inngest.
 // In local environment, use Next.js (default behavior).
-const isVercelEnvironment = process.env.VERCEL === "1";
-if (isVercelEnvironment) {
-	giselleEngine.setGenerateContentProcess(async ({ generation }) => {
-		await inngest.send({
-			name: "giselle/generate-content",
-			data: {
-				generationId: generation.id,
-			},
-		});
+// const isVercelEnvironment = process.env.VERCEL === "1";
+// if (isVercelEnvironment) {
+giselleEngine.setGenerateContentProcess(async ({ generation }) => {
+	await inngest.send({
+		name: "giselle/generate-content",
+		data: {
+			generationId: generation.id,
+		},
 	});
-}
+});
+// }

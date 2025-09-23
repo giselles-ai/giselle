@@ -377,7 +377,10 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		async flushGenerationIndexQueue() {
 			return await flushGenerationIndexQueue(context.experimental_storage);
 		},
-		generateContent(args: { generation: RunningGeneration }) {
+		generateContent(args: {
+			generation: RunningGeneration;
+			logger?: GiselleLogger;
+		}) {
 			return generateContent({ ...args, context });
 		},
 		getGenerationMessageChunks(args: {
@@ -405,6 +408,7 @@ export type GiselleEngine = ReturnType<typeof GiselleEngine>;
 
 // Re-export value constructors explicitly
 import { ActId, GenerationId } from "../concepts/identifiers";
+import type { GiselleLogger } from "../logger/types";
 import { startContentGeneration } from "./generations/start-content-generation";
 export { ActId, GenerationId };
 

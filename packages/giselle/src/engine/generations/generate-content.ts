@@ -20,6 +20,7 @@ import type {
 	RunningGeneration,
 } from "../../concepts/generation";
 import { generationUiMessageChunksPath } from "../../concepts/path";
+import type { GiselleLogger } from "../../logger/types";
 import { batchWriter } from "../../utils";
 import { decryptSecret } from "../secrets";
 import type { GiselleEngineContext } from "../types";
@@ -33,11 +34,15 @@ type StreamItem<T> = T extends AsyncIterableStream<infer Inner> ? Inner : never;
 export function generateContent({
 	context,
 	generation,
+	logger: overrideLogger,
 }: {
 	context: GiselleEngineContext;
 	generation: RunningGeneration;
+	logger?: GiselleLogger;
 }) {
-	context.logger.info(`generate content: ${generation.id}`);
+	const logger = overrideLogger ?? context.logger;
+
+	logger.info(`generate content: ${generation.id}`);
 	return useGenerationExecutor({
 		context,
 		generation,
@@ -216,7 +221,7 @@ export function generateContent({
 						useExperimentalStorage: true,
 						generationId: generation.id,
 					});
-					context.logger.debug(
+					logger.debug(
 						{ generationId: generation.id, status: currentGeneration?.status },
 						`streamText onChunk`,
 					);
@@ -225,23 +230,20 @@ export function generateContent({
 					}
 				},
 				onAbort: () => {
-					context.logger.debug(
-						{ generationId: generation.id },
-						"streamText onAbort",
-					);
+					logger.debug({ generationId: generation.id }, "streamText onAbort");
 				},
 				onError: ({ error }) => {
 					generationError = error;
 				},
 				onFinish: () => {
-					context.logger.info(
+					logger.info(
 						`Text generation completed in ${Date.now() - textGenerationStartTime}ms`,
 					);
 				},
 			});
 			const uiMessageStream = streamTextResult.toUIMessageStream({
 				onFinish: async ({ messages: generateMessages }) => {
-					context.logger.info(
+					logger.info(
 						`Text generation stream completed in ${Date.now() - textGenerationStartTime}ms`,
 					);
 					const toolCleanupStartTime = Date.now();
@@ -250,15 +252,12 @@ export function generateContent({
 							cleanupFunction(),
 						),
 					);
-					context.logger.info(
+					logger.info(
 						`Tool cleanup completed in ${Date.now() - toolCleanupStartTime}ms`,
 					);
 					if (generationError) {
 						if (AISDKError.isInstance(generationError)) {
-							context.logger.error(
-								generationError,
-								`${generation.id} is failed`,
-							);
+							logger.error(generationError, `${generation.id} is failed`);
 						}
 						const errInfo = AISDKError.isInstance(generationError)
 							? {
@@ -296,7 +295,7 @@ export function generateContent({
 						);
 					const textRetrievalStartTime = Date.now();
 					const text = await streamTextResult.text;
-					context.logger.info(
+					logger.info(
 						`Text retrieval completed in ${Date.now() - textRetrievalStartTime}ms`,
 					);
 					if (generatedTextOutput !== undefined) {
@@ -309,7 +308,7 @@ export function generateContent({
 
 					const reasoningRetrievalStartTime = Date.now();
 					const reasoningText = await streamTextResult.reasoningText;
-					context.logger.info(
+					logger.info(
 						`Reasoning retrieval completed in ${Date.now() - reasoningRetrievalStartTime}ms`,
 					);
 					const reasoningOutput = generationContext.operationNode.outputs.find(
@@ -325,7 +324,7 @@ export function generateContent({
 
 					const sourceRetrievalStartTime = Date.now();
 					const sources = await streamTextResult.sources;
-					context.logger.info(
+					logger.info(
 						`Source retrieval completed in ${Date.now() - sourceRetrievalStartTime}ms`,
 					);
 					const sourceOutput = generationContext.operationNode.outputs.find(
@@ -346,7 +345,7 @@ export function generateContent({
 						generateMessages: generateMessages,
 						providerMetadata: await streamTextResult.providerMetadata,
 					});
-					context.logger.info(
+					logger.info(
 						`Generation completion processing finished in ${Date.now() - generationCompletionStartTime}ms`,
 					);
 				},

@@ -5,7 +5,7 @@ import { inngest } from "./client";
 export const generateContent = inngest.createFunction(
 	{ id: "giselle.generate-content" },
 	{ event: "giselle/generate-content" },
-	async ({ event }) => {
+	async ({ event, logger }) => {
 		const generation = await giselleEngine.getGeneration(
 			event.data.generationId,
 			true,
@@ -15,7 +15,7 @@ export const generateContent = inngest.createFunction(
 				message: `Generation ${event.data.generationId} is not running.`,
 			};
 		}
-		await giselleEngine.generateContent({ generation });
+		await giselleEngine.generateContent({ generation, logger });
 		return { message: `generation complete!: ${event.data.generationId}` };
 	},
 );
