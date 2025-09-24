@@ -1,0 +1,83 @@
+@layer utilities {
+	/*
+    aliases.css (Phase 1: v3 bridge, non-breaking)
+
+    - Provides minimal utility aliases that map to semantic CSS variables.
+    - Safe under Tailwind v3 and prepares for Tailwind v4 token usage.
+    - Does NOT override existing v2 variables. Uses graceful fallbacks to current theme vars.
+    - Temporary: remove after full migration to v4 tokens + semantic utilities.
+  */
+
+	/* Text */
+	.text-text {
+		color: var(--color-text) !important;
+	}
+	.text-inverse {
+		color: var(--color-text-inverse, var(--color-white, #fff)) !important;
+	}
+
+	/* Opacity variants for text-text */
+	.text-text\/20 {
+		color: color-mix(in srgb, var(--color-text) 20%, transparent) !important;
+	}
+	.text-text\/40 {
+		color: color-mix(in srgb, var(--color-text) 40%, transparent) !important;
+	}
+	.text-text\/60 {
+		color: color-mix(in srgb, var(--color-text) 60%, transparent) !important;
+	}
+	.text-text\/80 {
+		color: color-mix(in srgb, var(--color-text) 80%, transparent) !important;
+	}
+
+	/* Backgrounds */
+	.bg-surface {
+		/* prefer semantic --color-surface; fallback to current v2 vars */
+		background-color: var(
+			--color-surface,
+			var(--color-surface-background, var(--color-background))
+		) !important;
+	}
+	.bg-bg {
+		background-color: var(--color-bg, var(--color-background)) !important;
+	}
+
+	/* Borders */
+	.border-border {
+		border-color: var(
+			--color-border,
+			var(--color-border-variant, var(--color-dark-border))
+		) !important;
+	}
+	.border-border-muted {
+		border-color: var(
+			--color-border-muted,
+			var(--color-light-border, var(--color-border))
+		) !important;
+	}
+
+	/* Compatibility alias: keep existing class name working */
+	.color-border-focused {
+		border-color: var(--color-border-focused, var(--color-focused, #47679e)) !important;
+	}
+
+	/* Focus / Ring / Outline */
+	.ring-focused {
+		/* Tailwind v3 ring color hook */
+		--tw-ring-color: var(--color-focused, var(--color-border-focused, #47679e)) !important;
+	}
+	.outline-focused {
+		outline-color: var(--color-focused, var(--color-border-focused, #47679e)) !important;
+	}
+
+	/* SVG helpers */
+	.fill-text {
+		fill: var(--color-text) !important;
+	}
+	.stroke-border {
+		stroke: var(
+			--color-border,
+			var(--color-border-variant, var(--color-dark-border))
+		) !important;
+	}
+}

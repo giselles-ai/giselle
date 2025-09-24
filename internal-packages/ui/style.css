@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "./styles/tokens.css";
+@import "./styles/aliases.css";
 
 @theme {
 	/* v2 theme */

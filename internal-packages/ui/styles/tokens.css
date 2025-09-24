@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+/*
+  tokens.css (Phase 1: primitives only)
+
+  - Non‑breaking: defines primitive color tokens only
+  - Does NOT define or override existing v2 semantic variables (e.g. --color-text, --color-border)
+  - Tailwind v4-ready via @theme, safe to include under Tailwind v3 (acts as plain CSS variables)
+  - Temporary compatibility tokens are provided and can be removed in later phases
+*/
+
+@theme {
+	/* neutrals (OKLCH examples) */
+	--color-gray-0: oklch(1 0 0);
+	--color-gray-50: oklch(0.98 0.002 247);
+	--color-gray-100: oklch(0.96 0.003 247);
+	--color-gray-200: oklch(0.92 0.005 247);
+	--color-gray-300: oklch(0.86 0.008 247);
+	--color-gray-400: oklch(0.74 0.015 247);
+	--color-gray-500: oklch(0.62 0.02 247);
+	--color-gray-600: oklch(0.52 0.02 247);
+	--color-gray-700: oklch(0.42 0.015 247);
+	--color-gray-800: oklch(0.32 0.01 247);
+	--color-gray-900: oklch(0.24 0.008 247);
+	--color-gray-950: oklch(0.17 0.006 247);
+
+	/* brand palette (example hue) */
+	--color-brand-50: oklch(0.97 0.02 178);
+	--color-brand-100: oklch(0.93 0.04 178);
+	--color-brand-200: oklch(0.88 0.06 178);
+	--color-brand-300: oklch(0.82 0.08 178);
+	--color-brand-400: oklch(0.77 0.1 178);
+	--color-brand-500: oklch(0.72 0.11 178);
+	--color-brand-600: oklch(0.64 0.12 178);
+	--color-brand-700: oklch(0.56 0.12 178);
+
+	/* status palettes (mid tones as examples) */
+	--color-success-50: oklch(0.95 0.03 145);
+	--color-success-100: oklch(0.9 0.05 145);
+	--color-success-200: oklch(0.85 0.07 145);
+	--color-success-300: oklch(0.8 0.08 145);
+	--color-success-400: oklch(0.76 0.09 145);
+	--color-success-500: oklch(0.72 0.1 145);
+	--color-success-600: oklch(0.64 0.1 145);
+	--color-success-700: oklch(0.56 0.09 145);
+
+	--color-warning-50: oklch(0.97 0.03 80);
+	--color-warning-100: oklch(0.93 0.05 80);
+	--color-warning-200: oklch(0.88 0.06 80);
+	--color-warning-300: oklch(0.85 0.07 80);
+	--color-warning-400: oklch(0.83 0.08 80);
+	--color-warning-500: oklch(0.82 0.09 80);
+	--color-warning-600: oklch(0.74 0.1 80);
+	--color-warning-700: oklch(0.66 0.1 80);
+
+	--color-error-50: oklch(0.95 0.03 25);
+	--color-error-100: oklch(0.9 0.05 25);
+	--color-error-200: oklch(0.85 0.07 25);
+	--color-error-300: oklch(0.76 0.09 25);
+	--color-error-400: oklch(0.69 0.11 25);
+	--color-error-500: oklch(0.62 0.12 25);
+	--color-error-600: oklch(0.54 0.12 25);
+	--color-error-700: oklch(0.46 0.11 25);
+
+	--color-info-50: oklch(0.96 0.02 240);
+	--color-info-100: oklch(0.92 0.04 240);
+	--color-info-200: oklch(0.88 0.05 240);
+	--color-info-300: oklch(0.83 0.06 240);
+	--color-info-400: oklch(0.79 0.07 240);
+	--color-info-500: oklch(0.75 0.08 240);
+	--color-info-600: oklch(0.67 0.09 240);
+	--color-info-700: oklch(0.59 0.09 240);
+
+	/* supplemental primitives */
+	--color-white: oklch(1 0 0);
+	--color-black: oklch(0 0 0);
+
+	/* temporary compatibility tokens (to be removed in later phases) */
+	--color-white-900: oklch(1 0 0);
+	--color-black-600: oklch(0.24 0 0);
+}
