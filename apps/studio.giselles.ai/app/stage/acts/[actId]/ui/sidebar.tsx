@@ -102,7 +102,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 				<div className="pt-[16px] mb-[20px] px-[16px] md:px-[32px]">
 					<Link
 						href="/stage/acts"
-						className="flex items-center gap-[8px] text-white-900 hover:text-white-700 transition-colors group"
+						className="flex items-center gap-[8px] text-inverse hover:text-white-700 transition-colors group"
 					>
 						<ChevronLeftIcon className="size-[24px] group-hover:-translate-x-1 transition-transform" />
 						<span className="text-[16px] font-medium">Back to Acts</span>
@@ -129,7 +129,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 
 					{/* App Name */}
 					<div>
-						<h1 className="text-[24px] font-semibold text-white-900 mb-[4px]">
+						<h1 className="text-[24px] font-semibold text-inverse mb-[4px]">
 							{appName}
 						</h1>
 						<p className="text-[14px] text-white-400">{teamName}</p>

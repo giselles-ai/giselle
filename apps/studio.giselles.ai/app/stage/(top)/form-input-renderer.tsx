@@ -20,7 +20,7 @@ export function FormInputRenderer({
 				return (
 					<fieldset key={input.name} className={clsx("grid gap-2")}>
 						<label
-							className="text-[14px] font-medium text-white-900"
+							className="text-[14px] font-medium text-inverse"
 							htmlFor={input.name}
 						>
 							{input.label}

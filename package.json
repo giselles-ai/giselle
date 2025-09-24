@@ -19,7 +19,11 @@
 		"prevd": "pnpm i && pnpm build-sdk",
 		"vd": "vercel dev",
 		"report:colors": "node scripts/report-colors.mjs",
-		"report:colors:out": "node scripts/report-colors.mjs --out .reports/report-colors.json"
+		"report:colors:out": "node scripts/report-colors.mjs --out .reports/report-colors.json",
+		"codemod:text-black-600-20": "node scripts/codemods/replace-text-black-600-20.mjs",
+		"codemod:text-black-600-20:apply": "node scripts/codemods/replace-text-black-600-20.mjs --apply",
+		"codemod:text-white-900": "node scripts/codemods/replace-text-white-900-to-inverse.mjs",
+		"codemod:text-white-900:apply": "node scripts/codemods/replace-text-white-900-to-inverse.mjs --apply"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",

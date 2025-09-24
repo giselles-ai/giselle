@@ -19,7 +19,7 @@ export function TeamCard({ team }: TeamCardProps) {
 		>
 			<div className="space-y-1">
 				<div
-					className="text-[10px] text-white-900 leading-tight overflow-hidden text-left"
+					className="text-[10px] text-inverse leading-tight overflow-hidden text-left"
 					style={{
 						display: "-webkit-box",
 						WebkitLineClamp: 2,

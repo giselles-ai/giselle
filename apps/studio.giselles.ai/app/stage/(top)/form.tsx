@@ -317,9 +317,7 @@ function Form({
 												<p
 													className={clsx(
 														"text-[14px] font-sans truncate",
-														appId === app.id
-															? "text-blue-400"
-															: "text-white-900",
+														appId === app.id ? "text-blue-400" : "text-inverse",
 													)}
 												>
 													{app.workspaceName || "Untitled"}

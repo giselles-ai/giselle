@@ -353,7 +353,7 @@ export function FilterableActsList({
 					{/* Search */}
 					<div className="search-input relative flex-1">
 						<div
-							className="flex items-center gap-1 flex-wrap w-full pl-2 pr-10 py-1 rounded-[8px] h-10 text-white-900 placeholder-white-600 focus-within:outline-none transition-colors text-[14px]"
+							className="flex items-center gap-1 flex-wrap w-full pl-2 pr-10 py-1 rounded-[8px] h-10 text-inverse placeholder-white-600 focus-within:outline-none transition-colors text-[14px]"
 							style={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
 						>
 							{searchTags.map((tag) => {
@@ -387,7 +387,7 @@ export function FilterableActsList({
 								value={inputValue}
 								onChange={(e) => setInputValue(e.target.value)}
 								onKeyDown={handleInputKeyDown}
-								className="flex-1 min-w-0 bg-transparent border-none outline-none text-white-900 placeholder-white-600 text-[14px]"
+								className="flex-1 min-w-0 bg-transparent border-none outline-none text-inverse placeholder-white-600 text-[14px]"
 							/>
 						</div>
 						<Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white-600" />
@@ -500,7 +500,7 @@ export function FilterableActsList({
 										Object.keys(statusLabels) as StatusFilter[],
 									);
 								}}
-								className="px-4 py-2 bg-white/10 text-white-900 rounded-lg hover:bg-white/20 transition-colors"
+								className="px-4 py-2 bg-white/10 text-inverse rounded-lg hover:bg-white/20 transition-colors"
 							>
 								Clear filters
 							</button>
@@ -667,7 +667,7 @@ export function FilterableActsList({
 																	e.stopPropagation();
 																	handleReload();
 																}}
-																className="text-white-700 hover:text-white-900 transition-colors p-1"
+																className="text-white-700 hover:text-inverse transition-colors p-1"
 																title="Reload this task"
 															>
 																<RefreshCw className="w-3 h-3" />
@@ -675,7 +675,7 @@ export function FilterableActsList({
 														) : (
 															<button
 																type="button"
-																className="text-white-700 hover:text-white-900 transition-colors p-1"
+																className="text-white-700 hover:text-inverse transition-colors p-1"
 																title="Archive task"
 																onClick={(e) => {
 																	e.stopPropagation();
