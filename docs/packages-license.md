@@ -2,15 +2,16 @@
 
 
 ## Summary
-* 814 MIT
-* 182 Apache 2.0
+* 818 MIT
+* 186 Apache 2.0
 * 46 ISC
 * 27 New BSD
 * 13 Simplified BSD
 * 5 BlueOak-1.0.0
-* 2 MIT OR Apache-2.0
+* 3 MIT OR Apache-2.0
+* 3 Mozilla Public License 2.0
 * 2 MIT-0
-* 2 Mozilla Public License 2.0
+* 2 LGPL-3.0-or-later
 * 1 BSD
 * 1 (MIT OR CC0-1.0)
 * 1 BSD Zero Clause License
@@ -19,7 +20,6 @@
 * 1 (AFL-2.1 OR BSD-3-Clause)
 * 1 CC-BY-4.0
 * 1 Python-2.0
-* 1 LGPL-3.0-or-later
 
 
 
@@ -50,6 +50,17 @@
 
 <a name="@ai-sdk/anthropic"></a>
 ### @ai-sdk/anthropic v2.0.17
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
+<a name="@ai-sdk/cohere"></a>
+### @ai-sdk/cohere v2.0.11
 #### 
 
 ##### Paths
@@ -598,6 +609,17 @@
 
 
 
+<a name="@aws/lambda-invoke-store"></a>
+### @aws/lambda-invoke-store v0.0.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
 <a name="@babel/code-frame"></a>
 ### @babel/code-frame v7.26.2
 #### 
@@ -787,6 +809,17 @@ MIT OR Apache-2.0 permitted
 
 <a name="@biomejs/cli-linux-x64"></a>
 ### @biomejs/cli-linux-x64 v2.0.6
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+MIT OR Apache-2.0 permitted
+
+
+
+<a name="@biomejs/cli-linux-x64-musl"></a>
+### @biomejs/cli-linux-x64-musl v2.0.6
 #### 
 
 ##### Paths
@@ -1236,8 +1269,30 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@img/sharp-libvips-linuxmusl-x64"></a>
+### @img/sharp-libvips-linuxmusl-x64 v1.2.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+LGPL-3.0-or-later permitted
+
+
+
 <a name="@img/sharp-linux-x64"></a>
 ### @img/sharp-linux-x64 v0.34.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
+<a name="@img/sharp-linuxmusl-x64"></a>
+### @img/sharp-linuxmusl-x64 v0.34.3
 #### 
 
 ##### Paths
@@ -1414,6 +1469,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@next/swc-linux-x64-gnu"></a>
 ### @next/swc-linux-x64-gnu v15.5.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@next/swc-linux-x64-musl"></a>
+### @next/swc-linux-x64-musl v15.5.2
 #### 
 
 ##### Paths
@@ -2173,6 +2239,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@oxc-resolver/binding-linux-x64-gnu"></a>
 ### @oxc-resolver/binding-linux-x64-gnu v11.5.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@oxc-resolver/binding-linux-x64-musl"></a>
+### @oxc-resolver/binding-linux-x64-musl v11.5.2
 #### 
 
 ##### Paths
@@ -3029,6 +3106,17 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@rollup/rollup-linux-x64-musl"></a>
+### @rollup/rollup-linux-x64-musl v4.35.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="@sentry-internal/browser-utils"></a>
 ### @sentry-internal/browser-utils v9.30.0
 #### 
@@ -3755,6 +3843,17 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@smithy/uuid"></a>
+### @smithy/uuid v1.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
 <a name="@standard-schema/spec"></a>
 ### @standard-schema/spec v1.0.0
 #### 
@@ -3889,6 +3988,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@tailwindcss/oxide-linux-x64-gnu"></a>
 ### @tailwindcss/oxide-linux-x64-gnu v4.1.10
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@tailwindcss/oxide-linux-x64-musl"></a>
+### @tailwindcss/oxide-linux-x64-musl v4.1.10
 #### 
 
 ##### Paths
@@ -7919,6 +8029,17 @@ BlueOak-1.0.0 permitted
 
 <a name="lightningcss-linux-x64-gnu"></a>
 ### lightningcss-linux-x64-gnu v1.30.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt">Mozilla Public License 2.0</a> permitted
+
+
+
+<a name="lightningcss-linux-x64-musl"></a>
+### lightningcss-linux-x64-musl v1.30.1
 #### 
 
 ##### Paths
