@@ -227,7 +227,8 @@ export function getValidPricing(
  */
 type EmbeddingModelPrice = {
 	validFrom: string;
-	costPerMegaToken: number; // USD per 1,000,000 tokens
+	costPerMegaToken: number; // USD per 1,000,000 tokens (text)
+	imageCostPerMegaToken?: number; // USD per 1,000,000 tokens (image inputs)
 };
 
 export type EmbeddingModelPriceTable = Record<
@@ -286,6 +287,18 @@ export const googleEmbeddingPricing: EmbeddingModelPriceTable = {
 			{
 				validFrom: "2025-08-28T00:00:00Z",
 				costPerMegaToken: 0.15,
+			},
+		],
+	},
+};
+
+export const cohereEmbeddingPricing: EmbeddingModelPriceTable = {
+	"embed-4": {
+		prices: [
+			{
+				validFrom: "2025-09-25T00:00:00Z",
+				costPerMegaToken: 0.12,
+				imageCostPerMegaToken: 0.47,
 			},
 		],
 	},

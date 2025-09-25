@@ -31,4 +31,12 @@ describe("calculateEmbeddingDisplayCost", () => {
 		// $0.15 per 1M tokens => 1000 tokens = $0.00015
 		expect(cost.totalCostForDisplay).toBeCloseTo(0.00015, 10);
 	});
+
+	it("computes cost for Cohere embed-4", async () => {
+		const cost = await calculateEmbeddingDisplayCost("cohere", "embed-4", {
+			tokens: 1000,
+		});
+		// $0.12 per 1M tokens => 1000 tokens = $0.00012
+		expect(cost.totalCostForDisplay).toBeCloseTo(0.00012, 10);
+	});
 });

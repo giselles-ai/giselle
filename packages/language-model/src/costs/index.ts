@@ -19,6 +19,7 @@ import {
 } from "./calculator";
 import type { EmbeddingModelPriceTable } from "./model-prices";
 import {
+	cohereEmbeddingPricing,
 	getValidEmbeddingPricing,
 	googleEmbeddingPricing,
 	openAiEmbeddingPricing,
@@ -61,7 +62,7 @@ export async function calculateDisplayCost(
  * Embeddings are priced per token (input only). Output token cost is always 0.
  */
 export function calculateEmbeddingDisplayCost(
-	provider: "openai" | "google" | string,
+	provider: "openai" | "google" | "cohere" | string,
 	modelId: string,
 	usage: { tokens: number },
 ) {
@@ -73,6 +74,9 @@ export function calculateEmbeddingDisplayCost(
 				break;
 			case "google":
 				priceTable = googleEmbeddingPricing;
+				break;
+			case "cohere":
+				priceTable = cohereEmbeddingPricing;
 				break;
 			default:
 				priceTable = undefined;
