@@ -206,6 +206,7 @@ interface IngestResult {
 - `createOpenAIEmbedder(config)` - Creates OpenAI embedder with custom
   configuration
 - `createGoogleEmbedder(config)` - Creates Google Gemini embedder
+- `createCohereEmbedder(config)` - Creates Cohere embedder
 - `createDefaultChunker()` - Creates line-based chunker with default settings
 - `createColumnMapping(options)` - Creates database column mapping
 
@@ -237,6 +238,7 @@ const queryService = createPostgresQueryService({
 
 - `OPENAI_API_KEY`: Required for OpenAI embedders
 - `GOOGLE_GENERATIVE_AI_API_KEY`: Required for Google Gemini embedders
+- `COHERE_API_KEY`: Required for Cohere embedders
 - `DATABASE_URL`: PostgreSQL connection string with pgvector extension
 
 ## Development
