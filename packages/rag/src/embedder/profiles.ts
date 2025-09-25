@@ -4,8 +4,8 @@ import {
 } from "@giselle-sdk/data-type";
 import { ConfigurationError } from "../errors";
 import type { EmbedderConfig } from "./ai-sdk-embedder";
+import { createCohereEmbedder } from "./cohere";
 import { createGoogleEmbedder } from "./google";
-import { createNotImplementedEmbedder } from "./not-implemented";
 import { createOpenAIEmbedder } from "./openai";
 import type { EmbedderFunction } from "./types";
 
@@ -37,8 +37,11 @@ export function createEmbedderFromProfile(
 				...options,
 			});
 		case "cohere":
-			// Placeholder: actual Cohere embedder will be added in a follow-up PR
-			return createNotImplementedEmbedder("cohere");
+			return createCohereEmbedder({
+				apiKey,
+				profile,
+				...options,
+			});
 		default: {
 			const _exhaustiveCheck: never = profile;
 			throw new Error(`Unknown provider: ${_exhaustiveCheck}`);
