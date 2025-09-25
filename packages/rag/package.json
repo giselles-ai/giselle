@@ -12,6 +12,7 @@
 		"format": "biome check --write ."
 	},
 	"dependencies": {
+		"@ai-sdk/cohere": "catalog:",
 		"@ai-sdk/google": "catalog:",
 		"@ai-sdk/openai": "catalog:",
 		"@giselle-sdk/data-type": "workspace:*",
