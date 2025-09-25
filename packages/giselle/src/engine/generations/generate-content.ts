@@ -26,7 +26,7 @@ import type { GiselleEngineContext } from "../types";
 import { useGenerationExecutor } from "./internal/use-generation-executor";
 import { createPostgresTools } from "./tools/postgres";
 import type { PreparedToolSet } from "./types";
-import { buildMessageObject, getGeneration } from "./utils";
+import { addUrlContextTool, buildMessageObject, getGeneration } from "./utils";
 
 type StreamItem<T> = T extends AsyncIterableStream<infer Inner> ? Inner : never;
 
@@ -175,6 +175,16 @@ export function generateContent({
 						google_search: google.tools.googleSearch({}),
 					},
 				};
+			}
+			if (
+				operationNode.content.llm.provider === "google" &&
+				hasCapability(languageModel, Capability.UrlContext)
+			) {
+				preparedToolSet = addUrlContextTool({
+					preparedToolSet,
+					urls: operationNode.content.tools?.googleUrlContext?.urls,
+					tool: google.tools.urlContext({}),
+				});
 			}
 
 			if (

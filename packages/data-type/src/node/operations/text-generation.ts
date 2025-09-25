@@ -108,11 +108,27 @@ export const AnthropicWebSearchTool = z.object({
 });
 export type AnthropicWebSearchTool = z.infer<typeof AnthropicWebSearchTool>;
 
+const googleUrlSchema = z
+	.string()
+	.url()
+	.refine((value) => value.length <= 2048, {
+		message: "URL must be 2048 characters or fewer",
+	});
+
+export const GoogleUrlContextTool = z.object({
+	urls: z
+		.array(googleUrlSchema)
+		.min(1, "At least one URL is required")
+		.max(20, "A maximum of 20 URLs is supported"),
+});
+export type GoogleUrlContextTool = z.infer<typeof GoogleUrlContextTool>;
+
 export const ToolSet = z.object({
 	github: z.optional(GitHubTool),
 	postgres: z.optional(PostgresTool),
 	openaiWebSearch: z.optional(OpenAIWebSearchTool),
 	anthropicWebSearch: z.optional(AnthropicWebSearchTool),
+	googleUrlContext: z.optional(GoogleUrlContextTool),
 });
 export type ToolSet = z.infer<typeof ToolSet>;
 

@@ -10,6 +10,7 @@ export const Capability = {
 	SearchGrounding: 1 << 6,
 	OptionalSearchGrounding: 1 << 7,
 	ImageGenerationInput: 1 << 8,
+	UrlContext: 1 << 9,
 } as const;
 
 export const Tier = z.enum(["free", "pro"]);

@@ -1,6 +1,5 @@
 import { type AnthropicProviderOptions, anthropic } from "@ai-sdk/anthropic";
 import { createGateway } from "@ai-sdk/gateway";
-import { googleTools } from "@ai-sdk/google/internal";
 import { vertex } from "@ai-sdk/google-vertex/edge";
 import { type OpenAIResponsesProviderOptions, openai } from "@ai-sdk/openai";
 import { perplexity } from "@ai-sdk/perplexity";
@@ -27,7 +26,7 @@ import type { GiselleEngineContext } from "../types";
 import { useGenerationExecutor } from "./internal/use-generation-executor";
 import { createPostgresTools } from "./tools/postgres";
 import type { PreparedToolSet } from "./types";
-import { buildMessageObject } from "./utils";
+import { addUrlContextTool, buildMessageObject } from "./utils";
 
 // PerplexityProviderOptions is not exported from @ai-sdk/perplexity, so we define it here based on the model configuration
 type PerplexityProviderOptions = {
@@ -177,9 +176,19 @@ export function generateText(args: {
 					...preparedToolSet,
 					toolSet: {
 						...preparedToolSet.toolSet,
-						google_search: googleTools.googleSearch({}),
+						google_search: vertex.tools.googleSearch({}),
 					},
 				};
+			}
+			if (
+				operationNode.content.llm.provider === "google" &&
+				hasCapability(languageModel, Capability.UrlContext)
+			) {
+				preparedToolSet = addUrlContextTool({
+					preparedToolSet,
+					urls: operationNode.content.tools?.googleUrlContext?.urls,
+					tool: vertex.tools.urlContext({}),
+				});
 			}
 
 			if (

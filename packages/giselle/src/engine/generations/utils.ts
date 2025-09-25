@@ -17,7 +17,13 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
-import type { DataContent, FilePart, ImagePart, ModelMessage } from "ai";
+import type {
+	DataContent,
+	FilePart,
+	ImagePart,
+	ModelMessage,
+	ToolSet,
+} from "ai";
 import type { Storage } from "unstorage";
 import {
 	type CompletedGeneration,
@@ -30,6 +36,29 @@ import type { GenerationId } from "../../concepts/identifiers";
 import { parseAndMod } from "../../data-mod";
 import type { GiselleStorage } from "../experimental_storage";
 import type { GiselleEngineContext } from "../types";
+import type { PreparedToolSet } from "./types";
+
+export function addUrlContextTool({
+	preparedToolSet,
+	urls,
+	tool,
+}: {
+	preparedToolSet: PreparedToolSet;
+	urls: string[] | undefined;
+	tool: NonNullable<ToolSet["url_context"]>;
+}): PreparedToolSet {
+	if (urls === undefined || urls.length === 0) {
+		return preparedToolSet;
+	}
+
+	return {
+		...preparedToolSet,
+		toolSet: {
+			...preparedToolSet.toolSet,
+			url_context: tool,
+		},
+	};
+}
 
 interface GeneratedImageData {
 	uint8Array: Uint8Array;
@@ -261,6 +290,23 @@ async function buildGenerationMessageForTextGeneration(
 			}
 		}
 	}
+	let finalUserMessage = userMessage;
+	if (
+		node.content.llm.provider === "google" &&
+		node.content.tools?.googleUrlContext?.urls !== undefined
+	) {
+		const urls = node.content.tools.googleUrlContext.urls;
+		if (urls.length > 0) {
+			const formattedList = urls.map((url: string) => `- ${url}`).join("\n");
+			const instructionLines = [
+				"# URL Context",
+				"Use the url_context tool to retrieve information from the following URLs before answering:",
+				formattedList,
+				"Cite any information that comes from these URLs in your response.",
+			];
+			finalUserMessage = `${instructionLines.join("\n")}\n\n${userMessage}`;
+		}
+	}
 	return [
 		{
 			role: "user",
@@ -268,7 +314,7 @@ async function buildGenerationMessageForTextGeneration(
 				...attachedFiles,
 				{
 					type: "text",
-					text: userMessage,
+					text: finalUserMessage,
 				},
 			],
 		},

@@ -16,6 +16,7 @@ import { Dialog } from "radix-ui";
 import { type FormEventHandler, useCallback, useState } from "react";
 import useSWR from "swr";
 import { WebPageFileIcon } from "../../../icons";
+import { validateUrl } from "../../lib/validate-url";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
@@ -163,23 +164,20 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 				error("Please enter at least one valid URL.");
 				return;
 			}
-
-			try {
-				for (const url of urls) {
-					const parsed = new URL(url);
-					if (parsed.protocol !== "https:") {
-						throw new Error("Invalid protocol");
-					}
+			const normalizedUrls: string[] = [];
+			for (const url of urls) {
+				const parsed = validateUrl(url, { allowedProtocols: ["https:"] });
+				if (parsed === null) {
+					error("Invalid URL format. Use https://");
+					return;
 				}
-			} catch {
-				error("Invalid URL format. Use https://");
-				return;
+				normalizedUrls.push(parsed.href);
 			}
 
 			e.currentTarget.reset();
 			let webpages: WebPage[] = node.content.webpages;
 			await Promise.all(
-				urls.map(async (url) => {
+				normalizedUrls.map(async (url) => {
 					const newWebPage: WebPage = {
 						id: WebPageId.generate(),
 						status: "fetching",
