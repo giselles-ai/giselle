@@ -11,7 +11,7 @@ export async function updateWorkspaceName(
 ) {
 	const workspace = await giselleEngine.getWorkspace(
 		workspaceId,
-		useExperimentalStorage,
+		true,
 	);
 
 	const previousWorkspace = workspace;
