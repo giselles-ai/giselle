@@ -94,8 +94,12 @@ export default async function StagePage({
 											key={act.id}
 											className="hover:bg-white/5 transition-colors duration-200 cursor-pointer"
 										>
-											<Link href={act.link} className="contents">
-												<TableCell className="text-center w-6">
+											<TableCell className="text-center w-6">
+												<Link
+													href={act.link}
+													className="block w-full h-full"
+													aria-label={`View ${act.workspaceName} details`}
+												>
 													<div className="flex justify-center">
 														{act.status === "inProgress" && (
 															<StatusBadge
@@ -126,8 +130,10 @@ export default async function StagePage({
 															/>
 														)}
 													</div>
-												</TableCell>
-												<TableCell className="min-w-[240px]">
+												</Link>
+											</TableCell>
+											<TableCell className="min-w-[240px]">
+												<Link href={act.link} className="block">
 													<div className="flex flex-col">
 														<span className="truncate">
 															{act.workspaceName}
@@ -137,11 +143,19 @@ export default async function StagePage({
 															{act.teamName}
 														</span>
 													</div>
-												</TableCell>
-												<TableCell className="text-right w-4">
-													<div className="flex justify-end">{">"}</div>
-												</TableCell>
-											</Link>
+												</Link>
+											</TableCell>
+											<TableCell className="text-right w-4">
+												<Link
+													href={act.link}
+													className="block"
+													aria-label={`View ${act.workspaceName} details`}
+												>
+													<div className="flex justify-end" aria-hidden="true">
+														{">"}
+													</div>
+												</Link>
+											</TableCell>
 										</TableRow>
 									);
 								})}

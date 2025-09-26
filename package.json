@@ -17,7 +17,9 @@
 		"tidy": "knip --no-config-hints",
 		"strip-workspace": "pnpm -F strip-workspace strip-workspace",
 		"prevd": "pnpm i && pnpm build-sdk",
-		"vd": "vercel dev"
+		"vd": "vercel dev",
+		"report:colors": "node scripts/report-colors.mjs",
+		"report:colors:out": "node scripts/report-colors.mjs --out .reports/report-colors.json"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
