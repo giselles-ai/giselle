@@ -9,6 +9,10 @@ import { experimental_storageFlag } from "@/flags";
 export async function updateAppName(workspaceId: WorkspaceId, name: string) {
 	const useExperimentalStorage = await experimental_storageFlag();
 
+export async function updateWorkspaceName(
+	workspaceId: WorkspaceId,
+	name: string,
+) {
 	const workspace = await giselleEngine.getWorkspace(
 		workspaceId,
 		useExperimentalStorage,
