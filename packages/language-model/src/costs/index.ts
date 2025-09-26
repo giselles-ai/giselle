@@ -19,6 +19,7 @@ import {
 } from "./calculator";
 import type { EmbeddingModelPriceTable } from "./model-prices";
 import {
+	cohereEmbeddingPricing,
 	getValidEmbeddingPricing,
 	googleEmbeddingPricing,
 	openAiEmbeddingPricing,
@@ -61,9 +62,9 @@ export async function calculateDisplayCost(
  * Embeddings are priced per token (input only). Output token cost is always 0.
  */
 export function calculateEmbeddingDisplayCost(
-	provider: "openai" | "google" | string,
+	provider: "openai" | "google" | "cohere" | string,
 	modelId: string,
-	usage: { tokens: number },
+	usage: { tokens: number; imageTokens?: number },
 ) {
 	try {
 		let priceTable: EmbeddingModelPriceTable | undefined;
@@ -74,6 +75,9 @@ export function calculateEmbeddingDisplayCost(
 			case "google":
 				priceTable = googleEmbeddingPricing;
 				break;
+			case "cohere":
+				priceTable = cohereEmbeddingPricing;
+				break;
 			default:
 				priceTable = undefined;
 		}
@@ -83,14 +87,39 @@ export function calculateEmbeddingDisplayCost(
 		}
 
 		const pricing = getValidEmbeddingPricing(modelId, priceTable);
-		const result = calculateTokenCostForDisplay(
-			{ inputTokens: usage.tokens, outputTokens: 0, totalTokens: usage.tokens },
-			{
-				input: { costPerMegaToken: pricing.costPerMegaToken },
-				output: { costPerMegaToken: 0 },
-			},
-		);
-		return { totalCostForDisplay: result.total };
+		let totalCost = 0;
+		if (usage.tokens > 0) {
+			const textCost = calculateTokenCostForDisplay(
+				{
+					inputTokens: usage.tokens,
+					outputTokens: 0,
+					totalTokens: usage.tokens,
+				},
+				{
+					input: { costPerMegaToken: pricing.costPerMegaToken },
+					output: { costPerMegaToken: 0 },
+				},
+			);
+			totalCost += textCost.total;
+		}
+		const imageTokens = usage.imageTokens ?? 0;
+		if (imageTokens > 0) {
+			const imageCostPerMegaToken =
+				pricing.imageCostPerMegaToken ?? pricing.costPerMegaToken;
+			const imageCost = calculateTokenCostForDisplay(
+				{
+					inputTokens: imageTokens,
+					outputTokens: 0,
+					totalTokens: imageTokens,
+				},
+				{
+					input: { costPerMegaToken: imageCostPerMegaToken },
+					output: { costPerMegaToken: 0 },
+				},
+			);
+			totalCost += imageCost.total;
+		}
+		return { totalCostForDisplay: totalCost };
 	} catch (error) {
 		console.warn(
 			`Embedding pricing not found for provider=${provider}, model=${modelId}.`,

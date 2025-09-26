@@ -50,10 +50,13 @@ export async function traceEmbedding(args: {
 			],
 		});
 
-		const totalTokens = usage?.tokens ?? 0;
+		const textTokens = usage?.tokens ?? 0;
+		const imageTokens = usage?.imageTokens ?? 0;
 		const cost = await calculateEmbeddingDisplayCost(provider, model, {
-			tokens: totalTokens,
+			tokens: textTokens,
+			imageTokens,
 		});
+		const totalTokens = textTokens + imageTokens;
 
 		trace.generation({
 			name: operation,

@@ -65,6 +65,93 @@ describe("createAiSdkEmbedder", () => {
 		);
 	});
 
+	it("should include image token usage when provided", async () => {
+		const mockEmbedding = [0.1, 0.2, 0.3];
+		const mockUsage = { tokens: 10, imageTokens: 5 };
+		const embeddingCompleteCallback = vi.fn();
+
+		// biome-ignore lint/suspicious/noExplicitAny: mock
+		(embed as any).mockResolvedValue({
+			embedding: mockEmbedding,
+			usage: mockUsage,
+		});
+
+		const embedder = createAiSdkEmbedder(
+			{
+				apiKey: "test-api-key",
+				profile: mockProfile,
+				embeddingComplete: embeddingCompleteCallback,
+			},
+			mockGetModel,
+		);
+
+		await embedder.embed("test text");
+
+		expect(embeddingCompleteCallback).toHaveBeenCalledWith(
+			expect.objectContaining({
+				usage: { tokens: 10, imageTokens: 5 },
+			}),
+		);
+	});
+
+	it("should retain image-only usage", async () => {
+		const mockEmbedding = [0.1, 0.2, 0.3];
+		const mockUsage = { imageTokens: 7 };
+		const embeddingCompleteCallback = vi.fn();
+
+		// biome-ignore lint/suspicious/noExplicitAny: mock
+		(embed as any).mockResolvedValue({
+			embedding: mockEmbedding,
+			usage: mockUsage,
+		});
+
+		const embedder = createAiSdkEmbedder(
+			{
+				apiKey: "test-api-key",
+				profile: mockProfile,
+				embeddingComplete: embeddingCompleteCallback,
+			},
+			mockGetModel,
+		);
+
+		await embedder.embed("image input");
+
+		expect(embeddingCompleteCallback).toHaveBeenCalledWith(
+			expect.objectContaining({
+				usage: { tokens: 0, imageTokens: 7 },
+			}),
+		);
+	});
+
+	it("should preserve zero-token text usage", async () => {
+		const mockEmbedding = [0.1, 0.2, 0.3];
+		const mockUsage = { tokens: 0 };
+		const embeddingCompleteCallback = vi.fn();
+
+		// biome-ignore lint/suspicious/noExplicitAny: mock
+		(embed as any).mockResolvedValue({
+			embedding: mockEmbedding,
+			usage: mockUsage,
+		});
+
+		const embedder = createAiSdkEmbedder(
+			{
+				apiKey: "test-api-key",
+				profile: mockProfile,
+				embeddingComplete: embeddingCompleteCallback,
+			},
+			mockGetModel,
+		);
+
+		await embedder.embed("");
+
+		expect(embeddingCompleteCallback).toHaveBeenCalledWith(
+			expect.objectContaining({
+				usage: { tokens: 0 },
+			}),
+		);
+	});
+
 	it("should call embeddingComplete callback after embedMany", async () => {
 		const mockEmbeddings = [
 			[0.1, 0.2, 0.3],
