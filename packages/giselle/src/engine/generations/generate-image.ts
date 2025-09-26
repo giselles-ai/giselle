@@ -48,7 +48,7 @@ export function generateImage(args: {
 			fileResolver,
 			generationContentResolver,
 			imageGenerationResolver,
-			completeGeneration,
+			finishGeneration,
 			setGeneration,
 			signal,
 		}) => {
@@ -107,7 +107,7 @@ export function generateImage(args: {
 					}
 				}
 
-				await completeGeneration({
+				await finishGeneration({
 					inputMessages: messages,
 					outputs: generationOutputs,
 				});

@@ -47,7 +47,7 @@ export function generateText(args: {
 		useExperimentalStorage: args.useExperimentalStorage,
 		useResumableGeneration: args.useResumableGeneration,
 		execute: async ({
-			completeGeneration,
+			finishGeneration,
 			runningGeneration,
 			generationContext,
 			setGeneration,
@@ -329,7 +329,7 @@ export function generateText(args: {
 						});
 					}
 					const generationCompletionStartTime = Date.now();
-					await completeGeneration({
+					await finishGeneration({
 						inputMessages: messages,
 						outputs: generationOutputs,
 						usage: await streamTextResult.usage,

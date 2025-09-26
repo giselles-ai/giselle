@@ -25,7 +25,8 @@
 				"GOOGLE_CLIENT_EMAIL",
 				"GOOGLE_PRIVATE_*",
 				"WAITUNTIL_OFFSET_MILLIS",
-				"EDGE_CONFIG"
+				"EDGE_CONFIG",
+				"TRIGGER_SECRET_KEY"
 			],
 			"dependsOn": ["^build"],
 			"inputs": [

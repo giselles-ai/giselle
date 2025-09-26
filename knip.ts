@@ -94,7 +94,7 @@ const config: KnipConfig = {
 		},
 		"apps/studio.giselles.ai": {
 			entry: ["tests/e2e/global-setup.ts"],
-			ignore: ["scripts/**"],
+			ignore: ["scripts/**", "trigger.config.ts"],
 			ignoreDependencies: [
 				...serverExternalPackages,
 				...nextPredefinedExternalPackages,

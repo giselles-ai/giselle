@@ -99,3 +99,5 @@ catalog:
   nuqs: 2.6.0
   pino: 9.9.0
   zustand: 5.0.8
+  inngest: 3.40.3
+  "@trigger.dev/sdk": 4.0.4
