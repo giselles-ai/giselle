@@ -39,16 +39,17 @@ import {
 import { getActGenerationIndexes } from "./get-act-generation-indexes";
 import { internalSetGeneration } from "./set-generation";
 
-interface CompleteGenerationArgs {
+interface FinishGenerationArgs {
 	outputs: GenerationOutput[];
 	usage?: GenerationUsage;
 	generateMessages?: Message[];
 	inputMessages: ModelMessage[];
 	providerMetadata?: ProviderMetadata;
 }
-type CompleteGeneration = (
-	args: CompleteGenerationArgs,
-) => Promise<CompletedGeneration>;
+type FinishGeneration = (args: FinishGenerationArgs) => Promise<{
+	completedGeneration: CompletedGeneration;
+	outputFileBlobs: OutputFileBlob[];
+}>;
 
 export async function useGenerationExecutor<T>(args: {
 	context: GiselleEngineContext;
@@ -71,7 +72,7 @@ export async function useGenerationExecutor<T>(args: {
 		) => Promise<ImagePart[] | undefined>;
 		workspaceId: WorkspaceId;
 		signal?: AbortSignal;
-		completeGeneration: CompleteGeneration;
+		finishGeneration: FinishGeneration;
 	}) => Promise<T>;
 }): Promise<T> {
 	const generationContext = GenerationContext.parse(args.generation.context);
@@ -308,13 +309,13 @@ export async function useGenerationExecutor<T>(args: {
 		return imageParts.length > 0 ? imageParts : undefined;
 	}
 
-	async function completeGeneration({
+	async function finishGeneration({
 		outputs,
 		usage,
 		inputMessages,
 		generateMessages,
 		providerMetadata,
-	}: CompleteGenerationArgs) {
+	}: FinishGenerationArgs) {
 		const completionStartTime = Date.now();
 		const completedGeneration = {
 			...runningGeneration,
@@ -377,7 +378,7 @@ export async function useGenerationExecutor<T>(args: {
 		args.context.logger.info(
 			`Generation completion total time: ${Date.now() - completionStartTime}ms`,
 		);
-		return completedGeneration;
+		return { completedGeneration, outputFileBlobs };
 	}
 
 	return args.execute({
@@ -389,6 +390,6 @@ export async function useGenerationExecutor<T>(args: {
 		imageGenerationResolver,
 		workspaceId,
 		signal: args.signal,
-		completeGeneration,
+		finishGeneration,
 	});
 }

@@ -67,7 +67,7 @@ export function executeQuery(args: {
 		execute: async ({
 			runningGeneration,
 			generationContext,
-			completeGeneration,
+			finishGeneration,
 			setGeneration,
 			workspaceId,
 		}) => {
@@ -116,7 +116,7 @@ export function executeQuery(args: {
 					},
 				];
 
-				await completeGeneration({
+				await finishGeneration({
 					inputMessages: [],
 					outputs,
 				});

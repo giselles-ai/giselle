@@ -13,7 +13,13 @@ import {
 	hasCapability,
 	languageModels,
 } from "@giselle-sdk/language-model";
-import { AISDKError, type AsyncIterableStream, streamText } from "ai";
+import {
+	AISDKError,
+	type AsyncIterableStream,
+	readUIMessageStream,
+	streamText,
+	type UIMessage,
+} from "ai";
 import type {
 	FailedGeneration,
 	GenerationOutput,
@@ -49,7 +55,7 @@ export function generateContent({
 		useExperimentalStorage: true,
 		useResumableGeneration: true,
 		execute: async ({
-			completeGeneration,
+			finishGeneration,
 			runningGeneration,
 			generationContext,
 			setGeneration,
@@ -221,11 +227,8 @@ export function generateContent({
 						useExperimentalStorage: true,
 						generationId: generation.id,
 					});
-					logger.debug(
-						{ generationId: generation.id, status: currentGeneration?.status },
-						`streamText onChunk`,
-					);
 					if (currentGeneration?.status === "cancelled") {
+						logger.debug(`${generation.id} will abort`);
 						abortController.abort();
 					}
 				},
@@ -352,20 +355,172 @@ export function generateContent({
 			});
 
 			const writer = batchWriter<StreamItem<typeof uiMessageStream>>({
-				process: (batch) =>
-					context.experimental_storage.setBlob(
+				process: (batch) => {
+					logger.debug(`Processing batch with ${batch.length} items`);
+					return context.experimental_storage.setBlob(
 						generationUiMessageChunksPath(generation.id),
 						new TextEncoder().encode(
 							batch.map((chunk) => JSON.stringify(chunk)).join("\n"),
 						),
-					),
+					);
+				},
 				preserveItems: true,
+				logger,
 			});
 
+			let chunkCount = 0;
+			const uiMessageChunks: StreamItem<typeof uiMessageStream>[] = [];
 			for await (const chunk of uiMessageStream) {
+				chunkCount++;
+				logger.debug(`Adding chunk ${chunkCount}: ${chunk.type}`);
 				writer.add(chunk);
+				uiMessageChunks.push(chunk);
 			}
+			logger.debug(`Stream ended, total chunks: ${chunkCount}`);
 			await writer.close();
+			logger.debug(`Writer closed`);
+
+			// Convert uiMessageChunks array to ReadableStream
+			const readUiStream = new ReadableStream<
+				StreamItem<typeof uiMessageStream>
+			>({
+				start(controller) {
+					for (const chunk of uiMessageChunks) {
+						controller.enqueue(chunk);
+					}
+					controller.close();
+				},
+			});
+
+			let uiMessage: UIMessage | undefined;
+			for await (const tmpUiMessage of readUIMessageStream({
+				stream: readUiStream,
+			})) {
+				uiMessage = tmpUiMessage;
+			}
+
+			if (uiMessage === undefined) {
+				logger.error("No UI message received");
+				throw new Error("No UI message received");
+			}
+
+			logger.info(
+				`Text generation stream completed in ${Date.now() - textGenerationStartTime}ms`,
+			);
+			const toolCleanupStartTime = Date.now();
+			await Promise.all(
+				preparedToolSet.cleanupFunctions.map((cleanupFunction) =>
+					cleanupFunction(),
+				),
+			);
+			logger.info(
+				`Tool cleanup completed in ${Date.now() - toolCleanupStartTime}ms`,
+			);
+			if (generationError) {
+				if (AISDKError.isInstance(generationError)) {
+					logger.error(generationError, `${generation.id} is failed`);
+				}
+				const errInfo = AISDKError.isInstance(generationError)
+					? {
+							name: generationError.name,
+							message: generationError.message,
+						}
+					: {
+							name: "UnknownError",
+							message:
+								generationError instanceof Error
+									? generationError.message
+									: String(generationError),
+						};
+
+				const failedGeneration = {
+					...runningGeneration,
+					status: "failed",
+					failedAt: Date.now(),
+					error: errInfo,
+				} satisfies FailedGeneration;
+
+				await Promise.all([
+					setGeneration(failedGeneration),
+					context.callbacks?.generationFailed?.({
+						generation: failedGeneration,
+						inputMessages: messages,
+					}),
+				]);
+				return {
+					success: false,
+					failedGeneration,
+					inputMessages: messages,
+				} as const;
+			}
+			const generationOutputs: GenerationOutput[] = [];
+			const generatedTextOutput = generationContext.operationNode.outputs.find(
+				(output: Output) => output.accessor === "generated-text",
+			);
+			const textRetrievalStartTime = Date.now();
+			const text = await streamTextResult.text;
+			logger.info(
+				`Text retrieval completed in ${Date.now() - textRetrievalStartTime}ms`,
+			);
+			if (generatedTextOutput !== undefined) {
+				generationOutputs.push({
+					type: "generated-text",
+					content: text,
+					outputId: generatedTextOutput.id,
+				});
+			}
+
+			const reasoningRetrievalStartTime = Date.now();
+			const reasoningText = await streamTextResult.reasoningText;
+			logger.info(
+				`Reasoning retrieval completed in ${Date.now() - reasoningRetrievalStartTime}ms`,
+			);
+			const reasoningOutput = generationContext.operationNode.outputs.find(
+				(output: Output) => output.accessor === "reasoning",
+			);
+			if (reasoningOutput !== undefined && reasoningText !== undefined) {
+				generationOutputs.push({
+					type: "reasoning",
+					content: reasoningText,
+					outputId: reasoningOutput.id,
+				});
+			}
+
+			const sourceRetrievalStartTime = Date.now();
+			const sources = await streamTextResult.sources;
+			logger.info(
+				`Source retrieval completed in ${Date.now() - sourceRetrievalStartTime}ms`,
+			);
+			const sourceOutput = generationContext.operationNode.outputs.find(
+				(output: Output) => output.accessor === "source",
+			);
+			if (sourceOutput !== undefined && sources.length > 0) {
+				generationOutputs.push({
+					type: "source",
+					outputId: sourceOutput.id,
+					sources,
+				});
+			}
+			const generationCompletionStartTime = Date.now();
+			const result = await finishGeneration({
+				inputMessages: messages,
+				outputs: generationOutputs,
+				usage: await streamTextResult.usage,
+				generateMessages: [uiMessage],
+				providerMetadata: await streamTextResult.providerMetadata,
+			});
+			logger.info(
+				`Generation completion processing finished in ${Date.now() - generationCompletionStartTime}ms`,
+			);
+			return {
+				success: true,
+				completeGeneration: result.completedGeneration,
+				inputMessages: messages,
+				outputFileBlobs: result.outputFileBlobs,
+				usage: await streamTextResult.usage,
+				generateMessages: [uiMessage],
+				providerMetadata: await streamTextResult.providerMetadata,
+			} as const;
 		},
 	});
 }

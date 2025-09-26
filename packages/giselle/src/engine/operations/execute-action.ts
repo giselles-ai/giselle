@@ -36,7 +36,7 @@ export function executeAction(args: {
 		execute: async ({
 			generationContext,
 			generationContentResolver,
-			completeGeneration,
+			finishGeneration,
 		}) => {
 			const operationNode = generationContext.operationNode;
 			if (!isActionNode(operationNode)) {
@@ -67,7 +67,7 @@ export function executeAction(args: {
 					throw new Error(`Unhandled provider: ${unknownProvider}`);
 				}
 			}
-			await completeGeneration({
+			await finishGeneration({
 				inputMessages: [],
 				outputs: generationOutputs,
 			});
