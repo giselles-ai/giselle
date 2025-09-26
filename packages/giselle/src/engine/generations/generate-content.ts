@@ -341,7 +341,7 @@ export function generateContent({
 						});
 					}
 					const generationCompletionStartTime = Date.now();
-					await completeGeneration({
+					await finishGeneration({
 						inputMessages: messages,
 						outputs: generationOutputs,
 						usage: await streamTextResult.usage,

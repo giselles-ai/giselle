@@ -107,6 +107,7 @@
 		"@playwright/test": "1.53.0",
 		"@tailwindcss/postcss": "catalog:",
 		"@tailwindcss/typography": "0.5.15",
+		"@trigger.dev/sdk": "catalog:",
 		"@types/node": "catalog:",
 		"@types/nodemailer": "6.4.17",
 		"@types/react": "catalog:",
