@@ -2,6 +2,7 @@
 
 import { Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { validateUrl } from "../lib/validate-url";
 
 interface Message {
 	id: string;
@@ -12,16 +13,7 @@ interface Message {
 
 // Normalize and validate a URL for link usage (http/https only). Returns URL or null.
 function toSafeLinkUrl(raw: string): URL | null {
-	if (!raw || typeof raw !== "string") return null;
-	try {
-		const parsed = new URL(raw.trim());
-		if (parsed.protocol === "http:" || parsed.protocol === "https:") {
-			return parsed;
-		}
-		return null;
-	} catch {
-		return null;
-	}
+	return validateUrl(raw);
 }
 
 // Function to render message content with URL styling
