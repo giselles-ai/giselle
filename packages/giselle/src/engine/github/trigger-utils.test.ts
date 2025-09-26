@@ -57,6 +57,21 @@ function createIssueEvent(
 	} as WebhookEvent<typeof name>;
 }
 
+function createIssueLabeledEvent(
+	issue: { title: string; body: string | null; number: number },
+	labelName: string,
+): WebhookEvent {
+	return {
+		name: "issues.labeled",
+		data: {
+			payload: {
+				issue,
+				label: { name: labelName },
+			},
+		},
+	} as WebhookEvent<"issues.labeled">;
+}
+
 function createIssueCommentEvent(issue: {
 	title: string;
 	body: string | null;
@@ -86,6 +101,21 @@ function createPullRequestEvent(
 		name,
 		data: { payload: { pull_request: pr, repository: { node_id: "r_1234" } } },
 	} as WebhookEvent<typeof name>;
+}
+
+function createPullRequestLabeledEvent(
+	pr: { title: string; body: string | null; number: number },
+	labelName: string,
+): WebhookEvent {
+	return {
+		name: "pull_request.labeled",
+		data: {
+			payload: {
+				pull_request: pr,
+				label: { name: labelName },
+			},
+		},
+	} as WebhookEvent<"pull_request.labeled">;
 }
 
 function createPullRequestReviewCommentEvent(pr: {
@@ -158,6 +188,39 @@ describe("resolveTrigger", () => {
 			["issueNumber", "2"],
 		] as const)("resolve %s", async (accessor, expected) => {
 			const trigger = createTrigger("github.issue.closed");
+			const output = createOutput(accessor);
+			const result = await resolveTrigger({
+				output,
+				githubTrigger,
+				trigger,
+				webhookEvent,
+				...appAuth,
+			});
+			expect(result).toEqual({
+				type: "generated-text",
+				outputId: output.id,
+				content: expected,
+			});
+		});
+	});
+
+	describe("issue labeled", () => {
+		const webhookEvent = createIssueLabeledEvent(
+			{
+				title: "Labeled issue title",
+				body: "Labeled issue body",
+				number: 7,
+			},
+			"bug",
+		);
+		const githubTrigger = githubTriggers["github.issue.labeled"];
+		test.each([
+			["title", "Labeled issue title"],
+			["body", "Labeled issue body"],
+			["issueNumber", "7"],
+			["labelName", "bug"],
+		] as const)("resolve %s", async (accessor, expected) => {
+			const trigger = createTrigger("github.issue.labeled");
 			const output = createOutput(accessor);
 			const result = await resolveTrigger({
 				output,
@@ -300,7 +363,8 @@ describe("resolveTrigger", () => {
 				["body", `${title} body`],
 				["number", "5"],
 				["pullRequestUrl", "https://example.com/pr/5"],
-			] as const)("resolve %s", async (accessor, expected) => {
+				["diff", "diff"],
+			])("resolve %s", async (accessor, expected) => {
 				const trigger = createTrigger(id);
 				const output = createOutput(accessor);
 				const result = await resolveTrigger({
@@ -318,4 +382,37 @@ describe("resolveTrigger", () => {
 			});
 		});
 	}
+
+	describe("pull request labeled", () => {
+		const webhookEvent = createPullRequestLabeledEvent(
+			{
+				title: "Labeled PR title",
+				body: "Labeled PR body",
+				number: 8,
+			},
+			"enhancement",
+		);
+		const githubTrigger = githubTriggers["github.pull_request.labeled"];
+		test.each([
+			["pullRequestTitle", "Labeled PR title"],
+			["pullRequestBody", "Labeled PR body"],
+			["pullRequestNumber", "8"],
+			["labelName", "enhancement"],
+		] as const)("resolve %s", async (accessor, expected) => {
+			const trigger = createTrigger("github.pull_request.labeled");
+			const output = createOutput(accessor);
+			const result = await resolveTrigger({
+				output,
+				githubTrigger,
+				trigger,
+				webhookEvent,
+				...appAuth,
+			});
+			expect(result).toEqual({
+				type: "generated-text",
+				outputId: output.id,
+				content: expected,
+			});
+		});
+	});
 });

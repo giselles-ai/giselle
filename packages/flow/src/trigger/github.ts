@@ -143,6 +143,7 @@ const githubPullRequestClosedTrigger = {
 			title: z.string(),
 			body: z.string(),
 			number: z.number(),
+			diff: z.string(),
 			pullRequestUrl: z.string(),
 		}),
 	},

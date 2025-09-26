@@ -26,7 +26,7 @@ export async function resolveTrigger(args: ResolveTriggerArgs) {
 		resolveIssueCommentTrigger(args) ||
 		(await resolvePullRequestOpenedTrigger(args)) ||
 		(await resolvePullRequestReadyForReviewTrigger(args)) ||
-		resolvePullRequestClosedTrigger(args) ||
+		(await resolvePullRequestClosedTrigger(args)) ||
 		resolvePullRequestLabeledTrigger(args) ||
 		(await resolvePullRequestCommentTrigger(args)) ||
 		(await resolvePullRequestReviewCommentTrigger(args))
@@ -459,9 +459,9 @@ async function resolvePullRequestReadyForReviewTrigger(
 	return null;
 }
 
-function resolvePullRequestClosedTrigger(
+async function resolvePullRequestClosedTrigger(
 	args: ResolveTriggerArgs,
-): GenerationOutput | null {
+): Promise<GenerationOutput | null> {
 	if (
 		!ensureWebhookEvent(args.webhookEvent, "pull_request.closed") ||
 		args.githubTrigger.event.id !== "github.pull_request.closed"
@@ -508,6 +508,26 @@ function resolvePullRequestClosedTrigger(
 					outputId: args.output.id,
 					content: args.webhookEvent.data.payload.pull_request.html_url,
 				} satisfies GenerationOutput;
+			case "diff": {
+				if (args.output.accessor !== payload) {
+					continue;
+				}
+				const diff = await getPullRequestDiff({
+					repositoryNodeId: args.webhookEvent.data.payload.repository.node_id,
+					pullNumber: args.webhookEvent.data.payload.pull_request.number,
+					authConfig: {
+						strategy: "app-installation",
+						appId: args.appId,
+						privateKey: args.privateKey,
+						installationId: args.installationId,
+					},
+				});
+				return {
+					type: "generated-text",
+					outputId: args.output.id,
+					content: diff,
+				} satisfies GenerationOutput;
+			}
 			default: {
 				const _exhaustiveCheck: never = payload;
 				throw new Error(`Unhandled payload id: ${_exhaustiveCheck}`);

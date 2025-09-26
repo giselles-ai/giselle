@@ -87,6 +87,7 @@ const githubEventInputs: GithubEventInputMap = {
 		title: { label: "Title", type: "text", required: true },
 		body: { label: "Body", type: "multiline-text", required: false },
 		number: { label: "Number", type: "number", required: true },
+		diff: { label: "diff", type: "multiline-text", required: false },
 		pullRequestUrl: { label: "Pull request URL", type: "text", required: true },
 	},
 	"github.pull_request.opened": {
