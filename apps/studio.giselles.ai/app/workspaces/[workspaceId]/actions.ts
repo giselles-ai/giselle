@@ -4,10 +4,6 @@ import type { WorkspaceId } from "@giselle-sdk/data-type";
 import { eq } from "drizzle-orm/sql";
 import { giselleEngine } from "@/app/giselle-engine";
 import { agents, db } from "@/drizzle";
-import { experimental_storageFlag } from "@/flags";
-
-export async function updateAppName(workspaceId: WorkspaceId, name: string) {
-	const useExperimentalStorage = await experimental_storageFlag();
 
 export async function updateWorkspaceName(
 	workspaceId: WorkspaceId,
@@ -21,7 +17,7 @@ export async function updateWorkspaceName(
 	const previousWorkspace = workspace;
 	const updatedWorkspace = { ...workspace, name };
 
-	await giselleEngine.updateWorkspace(updatedWorkspace, useExperimentalStorage);
+	await giselleEngine.updateWorkspace(updatedWorkspace, true);
 
 	try {
 		await db
