@@ -70,6 +70,7 @@ export function V2Header({
 					{/* app name editable */}
 					<div className="max-w-[200px]">
 						<EditableText
+							key={data.id}
 							ref={editableTextRef}
 							fallbackValue="Untitled"
 							onChange={handleUpdateName}
