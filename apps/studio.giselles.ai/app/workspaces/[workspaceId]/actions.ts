@@ -23,10 +23,7 @@ export async function updateWorkspaceName(
 			.where(eq(agents.workspaceId, workspaceId));
 	} catch (error) {
 		try {
-			await giselleEngine.updateWorkspace(
-				previousWorkspace,
-				useExperimentalStorage,
-			);
+			await giselleEngine.updateWorkspace(previousWorkspace, true);
 		} catch (rollbackError) {
 			console.error(
 				"Failed to rollback workspace name after agents update failure",
