@@ -9,10 +9,7 @@ export async function updateWorkspaceName(
 	workspaceId: WorkspaceId,
 	name: string,
 ) {
-	const workspace = await giselleEngine.getWorkspace(
-		workspaceId,
-		true,
-	);
+	const workspace = await giselleEngine.getWorkspace(workspaceId, true);
 
 	const previousWorkspace = workspace;
 	const updatedWorkspace = { ...workspace, name };
