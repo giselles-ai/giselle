@@ -439,7 +439,7 @@ function Installed({
 	);
 
 	return (
-		<div className="flex flex-col gap-[16px] px-[4px]">
+		<div className="overflow-y-auto flex flex-1 flex-col gap-[16px] px-[4px]">
 			<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Organization</p>
 			{step.state === "select-repository" && (
 				<SelectRepository

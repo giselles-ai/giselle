@@ -170,7 +170,7 @@ export function RepositoryRegistrationDialog({
 									</DropdownMenuTrigger>
 									<DropdownMenuContent
 										align="start"
-										className="w-[var(--radix-dropdown-menu-trigger-width)] rounded-[8px] border-[0.25px] border-white/10 bg-black-850 p-1 shadow-none"
+										className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-[min(60svh,320px)] overflow-y-auto rounded-[8px] border-[0.25px] border-white/10 bg-black-850 p-1 shadow-none"
 									>
 										{installationsWithRepos.map(({ installation }) => (
 											<button
@@ -228,7 +228,7 @@ export function RepositoryRegistrationDialog({
 									</DropdownMenuTrigger>
 									<DropdownMenuContent
 										align="start"
-										className="w-[var(--radix-dropdown-menu-trigger-width)] rounded-[8px] border-[0.25px] border-white/10 bg-black-850 p-1 shadow-none"
+										className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-[min(60svh,320px)] overflow-y-auto rounded-[8px] border-[0.25px] border-white/10 bg-black-850 p-1 shadow-none"
 									>
 										{!ownerId ? (
 											<div className="px-3 py-2 text-white/60 text-sm">
