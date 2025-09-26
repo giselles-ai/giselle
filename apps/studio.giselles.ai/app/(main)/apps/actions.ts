@@ -110,23 +110,23 @@ export async function deleteAgent(agentId: string): Promise<DeleteAgentResult> {
 		return { result: "error", message: "Invalid agent id" };
 	}
 
-	const agent = await db.query.agents.findFirst({
-		where: (agents, { eq }) => eq(agents.id, agentId as AgentId),
-	});
-
-	if (agent === undefined) {
-		return { result: "error", message: `Agent ${agentId} not found` };
-	}
-
-	const team = await fetchCurrentTeam();
-	if (agent.teamDbId !== team.dbId) {
-		return {
-			result: "error",
-			message: "You are not allowed to delete this app",
-		};
-	}
-
 	try {
+		const agent = await db.query.agents.findFirst({
+			where: (agents, { eq }) => eq(agents.id, agentId as AgentId),
+		});
+
+		if (agent === undefined) {
+			return { result: "error", message: `Agent ${agentId} not found` };
+		}
+
+		const team = await fetchCurrentTeam();
+		if (agent.teamDbId !== team.dbId) {
+			return {
+				result: "error",
+				message: "You are not allowed to delete this app",
+			};
+		}
+
 		// Delete the agent from database
 		await db.transaction(async (tx) => {
 			// Delete related flowTriggers first
