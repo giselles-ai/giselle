@@ -14,7 +14,6 @@ export async function updateAppName(workspaceId: WorkspaceId, name: string) {
 		useExperimentalStorage,
 	);
 
-
 	const previousWorkspace = workspace;
 	const updatedWorkspace = { ...workspace, name };
 
