@@ -7,12 +7,14 @@ import {
 	isEmbeddingProfileId,
 } from "@giselle-sdk/data-type";
 import { createId } from "@paralleldrive/cuid2";
+import { createClient } from "@supabase/supabase-js";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import {
 	db,
 	documentEmbeddingProfiles,
+	documentVectorStoreSources,
 	documentVectorStores,
 	type GitHubRepositoryContentType,
 	githubRepositoryContentStatus,
@@ -38,6 +40,18 @@ import type {
 	DiagnosticResult,
 	DocumentVectorStoreUpdateInput,
 } from "./types";
+
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+	throw new Error(
+		"Missing Supabase configuration. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY.",
+	);
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+const DOCUMENT_VECTOR_STORE_STORAGE_PREFIX = "vector-stores";
 
 type IngestabilityCheck = {
 	canIngest: boolean;
@@ -718,7 +732,7 @@ export async function deleteDocumentVectorStore(
 
 	try {
 		const team = await fetchCurrentTeam();
-		const deleted = await db.transaction(async (tx) => {
+		const deletionResult = await db.transaction(async (tx) => {
 			const [store] = await tx
 				.select({ dbId: documentVectorStores.dbId })
 				.from(documentVectorStores)
@@ -731,7 +745,30 @@ export async function deleteDocumentVectorStore(
 				.for("update")
 				.limit(1);
 
-			if (!store) return false;
+			if (!store) {
+				return {
+					success: false as const,
+					storageSources: [],
+				};
+			}
+
+			const sourceRecords = await tx
+				.select({
+					storageBucket: documentVectorStoreSources.storageBucket,
+					storageKey: documentVectorStoreSources.storageKey,
+				})
+				.from(documentVectorStoreSources)
+				.where(
+					eq(documentVectorStoreSources.documentVectorStoreDbId, store.dbId),
+				);
+
+			if (sourceRecords.length > 0) {
+				await tx
+					.delete(documentVectorStoreSources)
+					.where(
+						eq(documentVectorStoreSources.documentVectorStoreDbId, store.dbId),
+					);
+			}
 
 			await tx
 				.delete(documentEmbeddingProfiles)
@@ -741,11 +778,57 @@ export async function deleteDocumentVectorStore(
 			await tx
 				.delete(documentVectorStores)
 				.where(eq(documentVectorStores.dbId, store.dbId));
-			return true;
+
+			return {
+				success: true as const,
+				storageSources: sourceRecords,
+			};
 		});
 
-		if (!deleted) {
+		if (!deletionResult.success) {
 			return { success: false, error: "Vector store not found" };
+		}
+
+		const storageSources = deletionResult.storageSources;
+		if (storageSources.length > 0) {
+			// Perform potentially slow storage cleanup after the database transaction commits.
+			after(async () => {
+				const storeFolder = `${DOCUMENT_VECTOR_STORE_STORAGE_PREFIX}/${documentVectorStoreId}`;
+				const cleanupTargetsByBucket = new Map<string, Set<string>>();
+				for (const record of storageSources) {
+					const targets = cleanupTargetsByBucket.get(record.storageBucket);
+					if (targets) {
+						targets.add(record.storageKey);
+					} else {
+						cleanupTargetsByBucket.set(
+							record.storageBucket,
+							new Set([storeFolder, `${storeFolder}/`, record.storageKey]),
+						);
+					}
+				}
+
+				for (const [bucket, targets] of cleanupTargetsByBucket) {
+					if (targets.size === 0) {
+						continue;
+					}
+					try {
+						const { error: storageError } = await supabase.storage
+							.from(bucket)
+							.remove(Array.from(targets));
+						if (storageError) {
+							console.error(
+								`Failed to delete PDF files from storage bucket ${bucket}:`,
+								storageError,
+							);
+						}
+					} catch (storageError) {
+						console.error(
+							`Failed to delete PDF files from storage bucket ${bucket}:`,
+							storageError,
+						);
+					}
+				}
+			});
 		}
 
 		revalidatePath("/settings/team/vector-stores/document");

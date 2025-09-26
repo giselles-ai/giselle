@@ -278,6 +278,9 @@ function DocumentVectorStoreConfigureDialog({
 	const [documentSources, setDocumentSources] = useState<DocumentSourceItem[]>(
 		() => buildDocumentSourceItems(store.sources),
 	);
+	const [deletingSourceIds, setDeletingSourceIds] = useState<Set<string>>(
+		() => new Set(),
+	);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const router = useRouter();
 
@@ -461,6 +464,58 @@ function DocumentVectorStoreConfigureDialog({
 		[handleFilesUpload],
 	);
 
+	const handleDeleteSource = useCallback(
+		async (sourceId: string, fileName: string) => {
+			setDeletingSourceIds((prev) => {
+				const next = new Set(prev);
+				next.add(sourceId);
+				return next;
+			});
+
+			try {
+				const response = await fetch(
+					`/api/vector-stores/document/${store.id}/documents`,
+					{
+						method: "DELETE",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({ sourceId }),
+					},
+				);
+				const result = (await response.json().catch(() => null)) as
+					| { success: true }
+					| { error: string }
+					| null;
+
+				if (!response.ok || !result || ("error" in result && result.error)) {
+					const errorMessage =
+						result && "error" in result && result.error
+							? result.error
+							: "Failed to delete file";
+					throw new Error(errorMessage);
+				}
+
+				setDocumentSources((prev) =>
+					prev.filter((item) => item.id !== sourceId),
+				);
+				setUploadMessage(`${fileName} deleted.`);
+				router.refresh();
+			} catch (deleteError) {
+				const message =
+					deleteError instanceof Error
+						? deleteError.message
+						: "Failed to delete file";
+				showErrorToast(message);
+			} finally {
+				setDeletingSourceIds((prev) => {
+					const next = new Set(prev);
+					next.delete(sourceId);
+					return next;
+				});
+			}
+		},
+		[router, showErrorToast, store.id],
+	);
+
 	const toggleProfile = (profileId: number) => {
 		setSelectedProfiles((prev) => {
 			const isSelected = prev.includes(profileId);
@@ -621,16 +676,39 @@ function DocumentVectorStoreConfigureDialog({
 										Uploaded Files
 									</div>
 									<ul className="max-h-48 space-y-2 overflow-y-auto pr-1">
-										{documentSources.map((source) => (
-											<li
-												key={source.id}
-												className="flex items-start justify-between gap-3 rounded-lg border border-white/10 bg-black-950/30 px-3 py-2"
-											>
-												<span className="text-white-400 text-sm font-medium break-all">
-													{source.fileName}
-												</span>
-											</li>
-										))}
+										{documentSources.map((source) => {
+											const isDeleting = deletingSourceIds.has(source.id);
+											return (
+												<li
+													key={source.id}
+													className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-black-950/30 px-3 py-2"
+												>
+													<span className="text-white-400 text-sm font-medium break-all">
+														{source.fileName}
+													</span>
+													<button
+														type="button"
+														onClick={() =>
+															void handleDeleteSource(
+																source.id,
+																source.fileName,
+															)
+														}
+														disabled={isDeleting}
+														className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/10 text-black-300 transition-colors hover:text-error-500 focus:outline-none focus:ring-2 focus:ring-white/30 disabled:cursor-not-allowed disabled:opacity-50"
+													>
+														<span className="sr-only">
+															Delete {source.fileName}
+														</span>
+														{isDeleting ? (
+															<Loader2 className="h-3.5 w-3.5 animate-spin" />
+														) : (
+															<Trash className="h-3.5 w-3.5" />
+														)}
+													</button>
+												</li>
+											);
+										})}
 									</ul>
 								</div>
 							) : (

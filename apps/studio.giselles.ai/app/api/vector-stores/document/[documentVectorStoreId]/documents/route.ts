@@ -333,3 +333,100 @@ export async function POST(
 		{ status },
 	);
 }
+
+export async function DELETE(
+	request: NextRequest,
+	{ params }: { params: Promise<{ documentVectorStoreId: string }> },
+) {
+	const featureGuard = await ensureFeatureEnabled();
+	if (featureGuard) {
+		return featureGuard;
+	}
+
+	const team = await fetchTeam();
+	if (!team) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
+
+	let payload: unknown;
+	try {
+		payload = await request.json();
+	} catch (_error) {
+		return NextResponse.json(
+			{ error: "Invalid request payload" },
+			{ status: 400 },
+		);
+	}
+
+	if (
+		!payload ||
+		typeof payload !== "object" ||
+		!("sourceId" in payload) ||
+		typeof (payload as { sourceId: unknown }).sourceId !== "string"
+	) {
+		return NextResponse.json(
+			{ error: "Source ID is required" },
+			{ status: 400 },
+		);
+	}
+
+	const { sourceId } = payload as { sourceId: DocumentVectorStoreSourceId };
+
+	const { documentVectorStoreId: documentVectorStoreIdParam } = await params;
+	const documentVectorStoreId =
+		documentVectorStoreIdParam as DocumentVectorStoreId;
+	const store = await findAccessibleStore(documentVectorStoreId, team.dbId);
+	if (!store) {
+		return NextResponse.json(
+			{ error: "Vector store not found" },
+			{ status: 404 },
+		);
+	}
+
+	try {
+		const [source] = await db
+			.select({
+				id: documentVectorStoreSources.id,
+				storageBucket: documentVectorStoreSources.storageBucket,
+				storageKey: documentVectorStoreSources.storageKey,
+			})
+			.from(documentVectorStoreSources)
+			.where(
+				and(
+					eq(documentVectorStoreSources.id, sourceId),
+					eq(documentVectorStoreSources.documentVectorStoreDbId, store.dbId),
+				),
+			)
+			.limit(1);
+
+		if (!source) {
+			return NextResponse.json({ error: "Source not found" }, { status: 404 });
+		}
+
+		const { error: storageError } = await supabase.storage
+			.from(source.storageBucket)
+			.remove([source.storageKey]);
+		if (storageError) {
+			console.error(
+				`Failed to delete PDF file ${source.storageKey} from storage:`,
+				storageError,
+			);
+			return NextResponse.json(
+				{ error: "Failed to delete file from storage" },
+				{ status: 500 },
+			);
+		}
+
+		await db
+			.delete(documentVectorStoreSources)
+			.where(eq(documentVectorStoreSources.id, sourceId));
+
+		return NextResponse.json({ success: true });
+	} catch (error) {
+		console.error("Failed to delete document source:", error);
+		return NextResponse.json(
+			{ error: "Failed to delete document source" },
+			{ status: 500 },
+		);
+	}
+}
