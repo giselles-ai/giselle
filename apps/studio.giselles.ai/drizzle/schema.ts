@@ -438,6 +438,57 @@ export const documentEmbeddingProfiles = pgTable(
 	],
 );
 
+export const documentEmbeddings = pgTable(
+	"document_embeddings",
+	{
+		dbId: serial("db_id").primaryKey(),
+		documentVectorStoreSourceDbId: integer("document_vector_store_source_db_id")
+			.notNull()
+			.references(() => documentVectorStoreSources.dbId, {
+				onDelete: "cascade",
+			}),
+		embeddingProfileId: integer("embedding_profile_id")
+			.$type<EmbeddingProfileId>()
+			.notNull(),
+		embeddingDimensions: integer("embedding_dimensions")
+			.$type<EmbeddingDimensions>()
+			.notNull(),
+		documentKey: text("document_key").notNull(),
+		chunkIndex: integer("chunk_index").notNull(),
+		chunkContent: text("chunk_content").notNull(),
+		embedding: vectorWithoutDimensions("embedding").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.notNull()
+			.$onUpdate(() => new Date()),
+	},
+	(table) => [
+		unique("doc_embs_src_prof_doc_chunk_unique").on(
+			table.documentVectorStoreSourceDbId,
+			table.embeddingProfileId,
+			table.documentKey,
+			table.chunkIndex,
+		),
+		index("doc_embs_embedding_1536_idx")
+			.using("hnsw", sql`${table.embedding}::vector(1536) vector_cosine_ops`)
+			.where(sql`${table.embeddingDimensions} = 1536`),
+		index("doc_embs_embedding_3072_idx")
+			.using("hnsw", sql`${table.embedding}::halfvec(3072) halfvec_cosine_ops`)
+			.where(sql`${table.embeddingDimensions} = 3072`),
+	],
+);
+
+export const documentEmbeddingsRelations = relations(
+	documentEmbeddings,
+	({ one }) => ({
+		documentVectorStoreSource: one(documentVectorStoreSources, {
+			fields: [documentEmbeddings.documentVectorStoreSourceDbId],
+			references: [documentVectorStoreSources.dbId],
+		}),
+	}),
+);
+
 export type GitHubRepositoryContentType = "blob" | "pull_request";
 export const githubRepositoryContentStatus = pgTable(
 	"github_repository_content_status",

@@ -351,6 +351,13 @@
 			"when": 1758718182512,
 			"tag": "0049_confused_thor_girl",
 			"breakpoints": true
+		},
+		{
+			"idx": 50,
+			"version": "7",
+			"when": 1759158150943,
+			"tag": "0050_funny_karnak",
+			"breakpoints": true
 		}
 	]
 }
