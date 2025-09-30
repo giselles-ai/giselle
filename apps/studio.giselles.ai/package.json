@@ -23,6 +23,7 @@
 		"@giselle-internal/ui": "workspace:*",
 		"@giselle-internal/workflow-designer-ui": "workspace:*",
 		"@giselle-sdk/data-type": "workspace:*",
+		"@giselle-sdk/document-preprocessor": "workspace:*",
 		"@giselle-sdk/giselle": "workspace:*",
 		"@giselle-sdk/github-tool": "workspace:*",
 		"@giselle-sdk/langfuse": "workspace:*",
