@@ -18,6 +18,7 @@ import {
 	DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_MB,
 	DOCUMENT_VECTOR_STORE_SUPPORTED_FILE_TYPE_LABEL,
 } from "@/lib/vector-stores/document/constants";
+import { ingestDocument } from "@/lib/vector-stores/document/ingest";
 import {
 	resolveSupportedDocumentFile,
 	sanitizeDocumentFileName,
@@ -277,6 +278,11 @@ export async function POST(
 				fileName: originalFileName,
 				sourceId,
 				storageKey,
+			});
+
+			// Trigger ingestion asynchronously (fire and forget)
+			ingestDocument(sourceId).catch((error) => {
+				console.error(`Failed to ingest document ${sourceId}:`, error);
 			});
 		} catch (dbError) {
 			console.error(
