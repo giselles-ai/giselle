@@ -23,7 +23,7 @@ export function extractText(
 	if (Buffer.isBuffer(input)) {
 		buffer = input;
 	} else if (input instanceof Uint8Array) {
-		buffer = Buffer.from(input);
+		buffer = Buffer.from(input.buffer, input.byteOffset, input.byteLength);
 	} else if (ArrayBuffer.isView(input)) {
 		buffer = Buffer.from(input.buffer, input.byteOffset, input.byteLength);
 	} else {
