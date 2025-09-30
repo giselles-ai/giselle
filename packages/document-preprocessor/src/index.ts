@@ -1,4 +1,5 @@
 export { extractPdfText, renderPdfPageImages } from "./pdf.js";
+export { extractText } from "./text.js";
 export type {
 	BinaryDataInput,
 	PdfImagePage,
@@ -7,4 +8,6 @@ export type {
 	PdfTextExtractionOptions,
 	PdfTextExtractionResult,
 	PdfTextPage,
+	TextExtractionOptions,
+	TextExtractionResult,
 } from "./types.js";

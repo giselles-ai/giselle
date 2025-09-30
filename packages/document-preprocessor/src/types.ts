@@ -41,3 +41,12 @@ export interface PdfImageRenderResult {
 	totalPages: number;
 	pages: PdfImagePage[];
 }
+
+export interface TextExtractionOptions {
+	encoding?: BufferEncoding;
+	signal?: AbortSignal;
+}
+
+export interface TextExtractionResult {
+	text: string;
+}

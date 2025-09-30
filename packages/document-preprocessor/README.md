@@ -1,12 +1,13 @@
 # @giselle-sdk/document-preprocessor
 
-Utilities for turning raw document binaries into clean text and image payloads ready for RAG ingestion. The initial focus is on PDF support, but the APIs are designed to extend to future formats (PowerPoint, Excel, Word, …).
+Utilities for turning raw document binaries into clean text and image payloads ready for RAG ingestion. Supports PDF, plain text, and Markdown formats with extensible APIs for future formats (PowerPoint, Excel, Word, …).
 
 ## Features
 
-- Password-aware PDF parsing via [`@embedpdf/pdfium`](https://www.npmjs.com/package/@embedpdf/pdfium)
+- **PDF processing**: Password-aware PDF parsing via [`@embedpdf/pdfium`](https://www.npmjs.com/package/@embedpdf/pdfium)
+- **Text extraction**: Plain text and Markdown file support with configurable encoding
 - Normalised text extraction with whitespace cleanup and hyphen repair
-- Page-by-page PNG rendering using [`pngjs`](https://www.npmjs.com/package/pngjs)
+- Page-by-page PNG rendering using [`pngjs`](https://www.npmjs.com/package/pngjs) for PDFs
 - Abort signal propagation so long-running conversions can be cancelled
 - Strongly-typed results that surface per-page metadata for downstream chunking
 
@@ -15,6 +16,20 @@ Utilities for turning raw document binaries into clean text and image payloads r
 This package is published inside the monorepo under the `@giselle-sdk/*` namespace. It relies on optional native bindings shipped with PDFium, so make sure your runtime matches the supported Node.js versions (>=18).
 
 ## Usage
+
+### Extract text from plain text or Markdown files
+
+```ts
+import { readFile } from "node:fs/promises";
+import { extractText } from "@giselle-sdk/document-preprocessor";
+
+const binary = await readFile("./document.md");
+const { text } = extractText(binary, {
+  encoding: "utf-8", // optional, defaults to utf-8
+});
+
+console.log(text);
+```
 
 ### Extract text from a PDF
 
@@ -67,10 +82,49 @@ await extractPdfText(data, { signal: abortController.signal });
 
 | Function | Description |
 | --- | --- |
-| `extractPdfText(input, options?)` | Returns normalised text content for each page. |
+| `extractText(input, options?)` | Extracts text from plain text or Markdown files with configurable encoding. |
+| `extractPdfText(input, options?)` | Returns normalised text content for each PDF page. |
 | `renderPdfPageImages(input, options?)` | Produces PNG buffers (RGB + alpha) per page at the requested DPI. |
 
-Relevant option objects are exported from `./types` for downstream reuse.
+### Type Exports
+
+```ts
+// Text extraction
+export interface TextExtractionOptions {
+  encoding?: BufferEncoding;
+  signal?: AbortSignal;
+}
+
+export interface TextExtractionResult {
+  text: string;
+}
+
+// PDF extraction
+export interface PdfTextExtractionOptions {
+  password?: string;
+  maxPages?: number;
+  signal?: AbortSignal;
+}
+
+export interface PdfTextExtractionResult {
+  totalPages: number;
+  pages: PdfTextPage[];
+}
+
+// PDF rendering
+export interface PdfImageRenderOptions {
+  password?: string;
+  targetDpi?: number;
+  maxPages?: number;
+  signal?: AbortSignal;
+  renderFormFields?: boolean;
+}
+
+export interface PdfImageRenderResult {
+  totalPages: number;
+  pages: PdfImagePage[];
+}
+```
 
 ## Roadmap
 
