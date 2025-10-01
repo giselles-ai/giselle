@@ -26,6 +26,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 			creatorDbId: user.dbId,
 			workspaceId: workspace.id,
 		});
+
 		redirect(`/workspaces/${workspace.id}`);
 	}
 

@@ -77,6 +77,7 @@ export function AgentCard({ agent }: { agent: typeof dbAgents.$inferSelect }) {
 				<Link
 					href={`/workspaces/${agent.workspaceId}`}
 					className="flex h-full flex-col pt-2"
+					prefetch={false}
 				>
 					<div className="aspect-video w-full rounded-lg bg-white/5 flex items-center justify-center">
 						<svg

@@ -75,7 +75,10 @@ export default async function Layout({
 	const stage = await stageFlag();
 	const aiGateway = await aiGatewayFlag();
 	const resumableGeneration = await resumableGenerationFlag();
-	const data = await giselleEngine.getWorkspace(workspaceId, true);
+	const data = await giselleEngine.getWorkspace(
+		workspaceId,
+		experimental_storage,
+	);
 
 	// return children
 	return (
