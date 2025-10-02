@@ -24,8 +24,8 @@ import { PromptIcon } from "../prompt";
 import { RecraftIcon } from "../recraft";
 import { StableDiffusionIcon } from "../stable-diffusion";
 import { TextFileIcon } from "../text-file";
-
 import { WebPageFileIcon } from "../web-page-file";
+import { DocumentVectorStoreIcon } from "./document-vector-store-icon";
 
 // Node-specific GitHub icon with dark fill for visibility on light backgrounds
 function NodeGitHubIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
@@ -206,6 +206,11 @@ export function NodeIcon({
 					if (!isVectorStoreNode(node)) {
 						throw new Error(
 							`Expected VectorStoreNode, got ${JSON.stringify(node)}`,
+						);
+					}
+					if (node.content.source.provider === "document") {
+						return (
+							<DocumentVectorStoreIcon {...props} data-content-type-icon />
 						);
 					}
 					return <NodeGitHubIcon {...props} data-content-type-icon />;
