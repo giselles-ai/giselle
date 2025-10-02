@@ -28,7 +28,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 }: GitHubVectorStoreNodePropertiesPanelProps) {
 	const { updateNodeData } = useWorkflowDesigner();
 	const vectorStore = useVectorStore();
-	const settingPath = vectorStore?.settingPath;
+	const settingPath = vectorStore?.githubSettingPath;
 
 	// Get repository indexes
 	const githubRepositoryIndexes = vectorStore?.githubRepositoryIndexes ?? [];
