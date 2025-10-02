@@ -113,6 +113,10 @@ async function loadBlob(
 	const textDecoder = new TextDecoder("utf-8", { fatal: true });
 	try {
 		const decodedContent = textDecoder.decode(contentInBytes);
+		if (decodedContent.includes("\u0000")) {
+			console.warn(`Blob contains NUL bytes, skipping: ${path}`);
+			return null;
+		}
 		return {
 			content: decodedContent,
 			metadata: {

@@ -150,6 +150,10 @@ export function createGitHubArchiveLoader(
 		const textDecoder = new TextDecoder("utf-8", { fatal: true });
 		try {
 			const decodedContent = textDecoder.decode(contentBytes);
+			if (decodedContent.includes("\u0000")) {
+				console.warn(`Blob contains NUL bytes, skipping: ${metadata.path}`);
+				return null;
+			}
 			return { content: decodedContent, metadata };
 		} catch {
 			return null;
