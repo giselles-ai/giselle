@@ -27,7 +27,7 @@ import { useShallow } from "zustand/shallow";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
 import { Tooltip } from "../../ui/tooltip";
-import { GitHubNodeInfo } from "./ui";
+import { DocumentNodeInfo, GitHubNodeInfo } from "./ui";
 import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
 import { useCurrentNodeGeneration } from "./use-current-node-generation";
 
@@ -39,16 +39,22 @@ function getCompletionLabel(node: NodeLike): string {
 	return "Completed";
 }
 
-// Helper function to check if a GitHub node requires setup
-function isGitHubNodeRequiresSetup(node: NodeLike): boolean {
+// Helper function to check if a node requires setup
+function nodeRequiresSetup(node: NodeLike): boolean {
 	if (isTriggerNode(node, "github")) {
 		return node.content.state.status !== "configured";
 	}
 	if (isActionNode(node, "github")) {
 		return node.content.command.state.status !== "configured";
 	}
-	if (isVectorStoreNode(node, "github")) {
-		return node.content.source.state.status !== "configured";
+	if (isVectorStoreNode(node)) {
+		switch (node.content.source.provider) {
+			case "github":
+			case "document":
+				return node.content.source.state.status !== "configured";
+			default:
+				return false;
+		}
 	}
 	return false;
 }
@@ -147,7 +153,7 @@ export function NodeComponent({
 		return tmp;
 	}, [node]);
 
-	const requiresSetup = isGitHubNodeRequiresSetup(node);
+	const requiresSetup = nodeRequiresSetup(node);
 
 	return (
 		<div
@@ -171,6 +177,7 @@ export function NodeComponent({
 				"data-[content-type=github]:from-github-node-1] data-[content-type=github]:to-github-node-2 data-[content-type=github]:shadow-github-node-1",
 				"data-[content-type=vectorStore]:data-[vector-store-source-provider=github]:from-github-node-1] data-[content-type=vectorStore]:data-[vector-store-source-provider=github]:to-github-node-2 data-[content-type=vectorStore]:data-[vector-store-source-provider=github]:shadow-github-node-1",
 				"data-[content-type=vectorStore]:data-[vector-store-source-provider=githubPullRequest]:from-github-node-1] data-[content-type=vectorStore]:data-[vector-store-source-provider=githubPullRequest]:to-github-node-2 data-[content-type=vectorStore]:data-[vector-store-source-provider=githubPullRequest]:shadow-github-node-1",
+				"data-[content-type=vectorStore]:data-[vector-store-source-provider=document]:from-github-node-1] data-[content-type=vectorStore]:data-[vector-store-source-provider=document]:to-github-node-2 data-[content-type=vectorStore]:data-[vector-store-source-provider=document]:shadow-github-node-1",
 				"data-[content-type=webSearch]:from-web-search-node-1] data-[content-type=webSearch]:to-web-search-node-2 data-[content-type=webSearch]:shadow-web-search-node-1",
 				"data-[content-type=audioGeneration]:from-audio-generation-node-1] data-[content-type=audioGeneration]:to-audio-generation-node-2 data-[content-type=audioGeneration]:shadow-audio-generation-node-1",
 				"data-[content-type=videoGeneration]:from-video-generation-node-1] data-[content-type=videoGeneration]:to-video-generation-node-2 data-[content-type=videoGeneration]:shadow-video-generation-node-1",
@@ -246,6 +253,7 @@ export function NodeComponent({
 					"group-data-[content-type=github]:from-github-node-1/40 group-data-[content-type=github]:to-github-node-1",
 					"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:from-github-node-1/40 group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:to-github-node-1",
 					"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:from-github-node-1/40 group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:to-github-node-1",
+					"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:from-github-node-1/40 group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:to-github-node-1",
 					"group-data-[content-type=webSearch]:from-web-search-node-1/40 group-data-[content-type=webSearch]:to-web-search-node-1",
 					"group-data-[content-type=audioGeneration]:from-audio-generation-node-1/40 group-data-[content-type=audioGeneration]:to-audio-generation-node-1",
 					"group-data-[content-type=videoGeneration]:from-video-generation-node-1/40 group-data-[content-type=videoGeneration]:to-video-generation-node-1",
@@ -255,7 +263,7 @@ export function NodeComponent({
 				)}
 			/>
 
-			<div className={clsx("px-[16px] relative")}>
+			<div className={clsx("px-[16px] relative flex flex-col gap-[8px]")}>
 				{isTriggerNode(node, "github") &&
 					node.content.state.status === "configured" && (
 						<div className="-mt-[6px]">
@@ -276,6 +284,7 @@ export function NodeComponent({
 							"group-data-[content-type=github]:bg-github-node-1",
 							"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:bg-github-node-1",
 							"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:bg-github-node-1",
+							"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:bg-github-node-1",
 							"group-data-[content-type=webSearch]:bg-web-search-node-1",
 							"group-data-[content-type=audioGeneration]:bg-audio-generation-node-1",
 							"group-data-[content-type=videoGeneration]:bg-video-generation-node-1",
@@ -294,7 +303,7 @@ export function NodeComponent({
 								"group-data-[content-type=textGeneration]:fill-current",
 								"group-data-[content-type=imageGeneration]:fill-current",
 								"group-data-[content-type=github]:fill-current",
-								"group-data-[content-type=vectorStore]:fill-current",
+								"group-data-[content-type=vectorStore]:stroke-current fill-none",
 								"group-data-[content-type=webSearch]:stroke-current fill-none",
 								"group-data-[content-type=audioGeneration]:stroke-current fill-none",
 								"group-data-[content-type=videoGeneration]:stroke-current fill-none",
@@ -309,6 +318,7 @@ export function NodeComponent({
 								"group-data-[content-type=github]:text-white-900",
 								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:text-white-900",
 								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:text-white-900",
+								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:text-black-900",
 								"group-data-[content-type=webSearch]:text-white-900",
 								"group-data-[content-type=audioGeneration]:text-white-900",
 								"group-data-[content-type=videoGeneration]:text-white-900",
@@ -356,6 +366,7 @@ export function NodeComponent({
 					</div>
 				</div>
 			</div>
+			<DocumentNodeInfo node={node} />
 			<GitHubNodeInfo node={node} />
 			{!preview && (
 				<div className="flex justify-between">
@@ -480,6 +491,7 @@ export function NodeComponent({
 										"group-data-[content-type=github]:!border-github-node-1",
 										"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:!border-github-node-1",
 										"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:!border-github-node-1",
+										"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:!border-github-node-1",
 										"group-data-[content-type=text]:!border-text-node-1",
 										"group-data-[content-type=file]:!border-file-node-1",
 										"group-data-[content-type=webPage]:!border-webPage-node-1",
@@ -495,6 +507,7 @@ export function NodeComponent({
 										"group-data-[state=connected]:group-data-[content-type=github]:!bg-github-node-1",
 										"group-data-[state=connected]:group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:!bg-github-node-1",
 										"group-data-[state=connected]:group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:!bg-github-node-1",
+										"group-data-[state=connected]:group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:!bg-github-node-1",
 										"group-data-[state=connected]:group-data-[content-type=text]:!bg-text-node-1 group-data-[state=connected]:group-data-[content-type=text]:!border-text-node-1",
 										"group-data-[state=connected]:group-data-[content-type=file]:!bg-file-node-1 group-data-[state=connected]:group-data-[content-type=file]:!border-file-node-1",
 										"group-data-[state=connected]:group-data-[content-type=webPage]:!bg-webPage-node-1 group-data-[state=connected]:group-data-[content-type=webPage]:!border-webPage-node-1",
