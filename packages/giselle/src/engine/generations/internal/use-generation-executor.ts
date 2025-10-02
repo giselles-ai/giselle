@@ -37,6 +37,7 @@ import {
 	queryResultToText,
 } from "../utils";
 import { getActGenerationIndexes } from "./get-act-generation-indexes";
+import { sanitizeGenerationUsage } from "./sanitize-usage";
 import { internalSetGeneration } from "./set-generation";
 
 interface FinishGenerationArgs {
@@ -316,13 +317,14 @@ export async function useGenerationExecutor<T>(args: {
 		generateMessages,
 		providerMetadata,
 	}: FinishGenerationArgs) {
+		const sanitizedUsage = sanitizeGenerationUsage(usage);
 		const completionStartTime = Date.now();
 		const completedGeneration = {
 			...runningGeneration,
 			status: "completed",
 			completedAt: Date.now(),
 			outputs,
-			usage,
+			usage: sanitizedUsage,
 			messages: generateMessages ?? [],
 		} satisfies CompletedGeneration;
 
