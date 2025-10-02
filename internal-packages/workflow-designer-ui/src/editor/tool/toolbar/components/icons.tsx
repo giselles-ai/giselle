@@ -1,7 +1,6 @@
 export {
 	AnthropicIcon,
 	AudioIcon,
-	DocumentIcon,
 	GenerateImageIcon,
 	GenerateTextIcon,
 	GitHubIcon,
