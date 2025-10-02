@@ -4,7 +4,6 @@ export * from "./circle-check";
 export * from "./circle-plus";
 export * from "./circle-x";
 export * from "./data";
-export * from "./document";
 export * from "./flux1";
 export * from "./folder";
 export { GenerateImageIcon } from "./generate-image";
