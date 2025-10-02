@@ -6,6 +6,7 @@ import {
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
 } from "../ui";
+import { DocumentVectorStoreNodePropertiesPanel } from "./document";
 import { GitHubVectorStoreNodePropertiesPanel } from "./github";
 
 export function VectorStoreNodePropertiesPanel({
@@ -32,5 +33,10 @@ export function VectorStoreNodePropertiesPanel({
 }
 
 function PropertiesPanel({ node }: { node: VectorStoreNode }) {
-	return <GitHubVectorStoreNodePropertiesPanel node={node} />;
+	switch (node.content.source.provider) {
+		case "document":
+			return <DocumentVectorStoreNodePropertiesPanel node={node} />;
+		default:
+			return <GitHubVectorStoreNodePropertiesPanel node={node} />;
+	}
 }
