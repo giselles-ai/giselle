@@ -11,7 +11,19 @@ export interface VectorStoreContextValue {
 			embeddingProfileIds: number[];
 		}[];
 	}[];
-	settingPath: string;
+	documentStores?: {
+		id: string;
+		name: string;
+		embeddingProfileIds: number[];
+		sources: Array<{
+			id: string;
+			fileName: string;
+			ingestStatus: "idle" | "running" | "completed" | "failed";
+			ingestErrorCode: string | null;
+		}>;
+	}[];
+	documentSettingPath?: string;
+	githubSettingPath?: string;
 }
 
 export const VectorStoreContext = createContext<
