@@ -163,7 +163,7 @@ export function DocumentVectorStoreNodePropertiesPanel({
 		}
 		return selectedStore.embeddingProfileIds
 			.slice()
-			.sort((a: number, b: number) => a - b)
+			.sort((a, b) => a - b)
 			.map((profileId) => {
 				const profile =
 					EMBEDDING_PROFILES[profileId as keyof typeof EMBEDDING_PROFILES];
