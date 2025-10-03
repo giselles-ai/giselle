@@ -38,7 +38,7 @@ import type { GiselleEngineContext } from "../types";
 import { useGenerationExecutor } from "./internal/use-generation-executor";
 import { createPostgresTools } from "./tools/postgres";
 import type { PreparedToolSet } from "./types";
-import { buildMessageObject, getGeneration } from "./utils";
+import { addUrlContextTool, buildMessageObject, getGeneration } from "./utils";
 
 type StreamItem<T> = T extends AsyncIterableStream<infer Inner> ? Inner : never;
 
@@ -96,7 +96,7 @@ export function generateContent({
 				throw new Error("Invalid language model");
 			}
 
-			const messages = await buildMessageObject(
+			const { messages, urlContextUrls } = await buildMessageObject(
 				operationNode,
 				generationContext.sourceNodes,
 				fileResolver,
@@ -198,7 +198,8 @@ export function generateContent({
 			if (
 				operationNode.content.llm.provider === "google" &&
 				operationNode.content.llm.configurations.searchGrounding &&
-				hasCapability(languageModel, Capability.OptionalSearchGrounding)
+				hasCapability(languageModel, Capability.OptionalSearchGrounding) &&
+				operationNode.content.contextSource === "google_search"
 			) {
 				preparedToolSet = {
 					...preparedToolSet,
@@ -207,6 +208,17 @@ export function generateContent({
 						google_search: google.tools.googleSearch({}),
 					},
 				};
+			}
+			if (
+				operationNode.content.llm.provider === "google" &&
+				hasCapability(languageModel, Capability.UrlContext) &&
+				operationNode.content.contextSource === "url_context"
+			) {
+				preparedToolSet = addUrlContextTool({
+					preparedToolSet,
+					urls: urlContextUrls,
+					tool: google.tools.urlContext({}),
+				});
 			}
 
 			if (

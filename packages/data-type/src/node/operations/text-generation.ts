@@ -116,11 +116,21 @@ export const ToolSet = z.object({
 });
 export type ToolSet = z.infer<typeof ToolSet>;
 
+export const TEXT_GENERATION_CONTEXT_SOURCE_VALUES = [
+	"none",
+	"google_search",
+	"url_context",
+] as const;
+
+export type TextGenerationContextSource =
+	(typeof TEXT_GENERATION_CONTEXT_SOURCE_VALUES)[number];
+
 export const TextGenerationContent = z.object({
 	type: z.literal("textGeneration"),
 	llm: TextGenerationLanguageModelData,
 	prompt: z.string().optional(),
 	tools: z.optional(ToolSet),
+	contextSource: z.enum(TEXT_GENERATION_CONTEXT_SOURCE_VALUES).optional(),
 });
 export type TextGenerationContent = z.infer<typeof TextGenerationContent>;
 

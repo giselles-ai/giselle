@@ -50,6 +50,7 @@ const gemini25Pro: GoogleLanguageModel = {
 		Capability.TextGeneration |
 		Capability.GenericFileInput |
 		Capability.OptionalSearchGrounding |
+		Capability.UrlContext |
 		Capability.Reasoning,
 	tier: Tier.enum.pro,
 	configurations: defaultConfigurations,
@@ -62,6 +63,7 @@ const gemini25Flash: GoogleLanguageModel = {
 		Capability.TextGeneration |
 		Capability.GenericFileInput |
 		Capability.OptionalSearchGrounding |
+		Capability.UrlContext |
 		Capability.Reasoning,
 	tier: Tier.enum.pro,
 	configurations: defaultConfigurations,
@@ -73,6 +75,7 @@ const gemini25FlashLite: GoogleLanguageModel = {
 	capabilities:
 		Capability.TextGeneration |
 		Capability.OptionalSearchGrounding |
+		Capability.UrlContext |
 		Capability.GenericFileInput,
 	tier: Tier.enum.free,
 	configurations: defaultConfigurations,

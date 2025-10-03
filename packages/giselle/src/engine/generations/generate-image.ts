@@ -58,7 +58,7 @@ export function generateImage(args: {
 					throw new Error("Invalid generation type");
 				}
 
-				const messages = await buildMessageObject(
+				const { messages } = await buildMessageObject(
 					operationNode,
 					generationContext.sourceNodes,
 					fileResolver,

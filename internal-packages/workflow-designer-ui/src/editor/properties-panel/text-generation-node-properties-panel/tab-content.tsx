@@ -5,6 +5,7 @@ import {
 	isTextGenerationNode,
 	type Output,
 	OutputId,
+	type TextGenerationContextSource,
 	type TextGenerationNode,
 	type ToolSet,
 } from "@giselle-sdk/data-type";
@@ -130,6 +131,122 @@ export function TextGenerationTabContent({
 		getAvailableModels,
 		getCurrentModelInfo,
 	]); // Re-run when dependencies change
+
+	const detachSourceOutputConnections = useCallback((): {
+		outputs: Output[];
+		removed: boolean;
+	} => {
+		const sourceOutput = node.outputs.find(
+			(output) => output.accessor === "source",
+		);
+		if (sourceOutput === undefined) {
+			return { outputs: node.outputs, removed: false };
+		}
+
+		for (const connection of data.connections) {
+			if (connection.outputId !== sourceOutput.id) {
+				continue;
+			}
+			deleteConnection(connection.id);
+
+			const connectedNode = data.nodes.find(
+				(candidateNode) => candidateNode.id === connection.inputNode.id,
+			);
+			if (connectedNode === undefined) {
+				continue;
+			}
+			if (connectedNode.type === "operation") {
+				switch (connectedNode.content.type) {
+					case "textGeneration": {
+						if (!isTextGenerationNode(connectedNode)) {
+							throw new Error(
+								`Expected text generation node, got ${JSON.stringify(connectedNode)}`,
+							);
+						}
+						updateNodeData(connectedNode, {
+							inputs: connectedNode.inputs.filter(
+								(input) => input.id !== connection.inputId,
+							),
+						});
+						break;
+					}
+					case "imageGeneration": {
+						if (!isImageGenerationNode(connectedNode)) {
+							throw new Error(
+								`Expected image generation node, got ${JSON.stringify(connectedNode)}`,
+							);
+						}
+						updateNodeData(connectedNode, {
+							inputs: connectedNode.inputs.filter(
+								(input) => input.id !== connection.inputId,
+							),
+						});
+						break;
+					}
+					default:
+						break;
+				}
+			}
+		}
+
+		return {
+			outputs: node.outputs.filter((output) => output.accessor !== "source"),
+			removed: true,
+		};
+	}, [data.connections, data.nodes, deleteConnection, node, updateNodeData]);
+
+	const ensureSourceOutput = useCallback(() => {
+		if (node.outputs.some((output) => output.accessor === "source")) {
+			return;
+		}
+		updateNodeData(node, {
+			outputs: [
+				...node.outputs,
+				{
+					id: OutputId.generate(),
+					label: "Source",
+					accessor: "source",
+				},
+			],
+		});
+	}, [node, updateNodeData]);
+
+	const handleGoogleContextSourceChange = useCallback(
+		(mode: TextGenerationContextSource) => {
+			if (node.content.llm.provider !== "google") {
+				return;
+			}
+
+			if (mode === "google_search" || mode === "url_context") {
+				ensureSourceOutput();
+			} else {
+				const { outputs: filteredOutputs, removed } =
+					detachSourceOutputConnections();
+				if (removed) {
+					updateNodeData(node, { outputs: filteredOutputs });
+				}
+			}
+
+			updateNodeDataContent(node, {
+				...node.content,
+				contextSource: mode,
+				llm: {
+					...node.content.llm,
+					configurations: {
+						...node.content.llm.configurations,
+						searchGrounding: mode === "google_search",
+					},
+				},
+			});
+		},
+		[
+			detachSourceOutputConnections,
+			ensureSourceOutput,
+			node,
+			updateNodeData,
+			updateNodeDataContent,
+		],
+	);
 
 	return (
 		<Tabs.Root
@@ -330,116 +447,8 @@ export function TextGenerationTabContent({
 				{node.content.llm.provider === "google" && (
 					<GoogleModelPanel
 						googleLanguageModel={node.content.llm}
-						onSearchGroundingConfigurationChange={(enable) => {
-							if (node.content.llm.provider !== "google") {
-								return;
-							}
-							if (enable) {
-								updateNodeData(node, {
-									...node,
-									content: {
-										...node.content,
-										llm: {
-											...node.content.llm,
-											configurations: {
-												...node.content.llm.configurations,
-												searchGrounding: enable,
-											},
-										},
-									},
-									outputs: ((): Output[] => {
-										const hasSourceOutput = node.outputs.some(
-											(o) => o.accessor === "source",
-										);
-										return hasSourceOutput
-											? node.outputs
-											: [
-													...node.outputs,
-													{
-														id: OutputId.generate(),
-														label: "Source",
-														accessor: "source",
-													},
-												];
-									})(),
-								});
-							} else {
-								const sourceOutput = node.outputs.find(
-									(output) => output.accessor === "source",
-								);
-								if (sourceOutput) {
-									for (const connection of data.connections) {
-										if (connection.outputId !== sourceOutput.id) {
-											continue;
-										}
-										deleteConnection(connection.id);
-
-										const connectedNode = data.nodes.find(
-											(node) => node.id === connection.inputNode.id,
-										);
-										if (connectedNode === undefined) {
-											continue;
-										}
-										if (connectedNode.type === "operation") {
-											switch (connectedNode.content.type) {
-												case "textGeneration":
-													if (!isTextGenerationNode(connectedNode)) {
-														throw new Error(
-															`Expected text generation node, got ${JSON.stringify(connectedNode)}`,
-														);
-													}
-													updateNodeData(connectedNode, {
-														inputs: connectedNode.inputs.filter(
-															(input) => input.id !== connection.inputId,
-														),
-													});
-													break;
-												case "imageGeneration": {
-													if (!isImageGenerationNode(connectedNode)) {
-														throw new Error(
-															`Expected image generation node, got ${JSON.stringify(connectedNode)}`,
-														);
-													}
-													updateNodeData(connectedNode, {
-														inputs: connectedNode.inputs.filter(
-															(input) => input.id !== connection.inputId,
-														),
-													});
-													break;
-												}
-												case "trigger":
-												case "action":
-												case "query":
-													break;
-												default: {
-													const _exhaustiveCheck: never =
-														connectedNode.content.type;
-													throw new Error(
-														`Unhandled node type: ${_exhaustiveCheck}`,
-													);
-												}
-											}
-										}
-									}
-								}
-								updateNodeData(node, {
-									...node,
-									content: {
-										...node.content,
-										llm: {
-											...node.content.llm,
-											configurations: {
-												...node.content.llm.configurations,
-												searchGrounding: false,
-											},
-										},
-									},
-									outputs: node.outputs.filter(
-										(output) => output.accessor !== "source",
-									),
-								});
-							}
-						}}
+						contextSource={node.content.contextSource ?? "none"}
+						onContextSourceChange={handleGoogleContextSourceChange}
 						onModelChange={(value) =>
 							updateNodeDataContent(node, {
 								...node.content,
