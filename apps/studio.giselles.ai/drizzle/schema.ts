@@ -442,6 +442,11 @@ export const documentEmbeddings = pgTable(
 	"document_embeddings",
 	{
 		dbId: serial("db_id").primaryKey(),
+		documentVectorStoreDbId: integer("document_vector_store_db_id")
+			.notNull()
+			.references(() => documentVectorStores.dbId, {
+				onDelete: "cascade",
+			}),
 		documentVectorStoreSourceDbId: integer("document_vector_store_source_db_id")
 			.notNull()
 			.references(() => documentVectorStoreSources.dbId, {
@@ -479,6 +484,7 @@ export const documentEmbeddings = pgTable(
 				sql`(${table.embedding}::halfvec(3072)) halfvec_cosine_ops`,
 			)
 			.where(sql`${table.embeddingDimensions} = 3072`),
+		index("doc_embs_store_idx").on(table.documentVectorStoreDbId),
 	],
 );
 
@@ -488,6 +494,10 @@ export const documentEmbeddingsRelations = relations(
 		documentVectorStoreSource: one(documentVectorStoreSources, {
 			fields: [documentEmbeddings.documentVectorStoreSourceDbId],
 			references: [documentVectorStoreSources.dbId],
+		}),
+		documentVectorStore: one(documentVectorStores, {
+			fields: [documentEmbeddings.documentVectorStoreDbId],
+			references: [documentVectorStores.dbId],
 		}),
 	}),
 );

@@ -1,0 +1,3 @@
+ALTER TABLE "document_embeddings" ADD COLUMN "document_vector_store_db_id" integer NOT NULL;--> statement-breakpoint
+ALTER TABLE "document_embeddings" ADD CONSTRAINT "document_embeddings_document_vector_store_db_id_document_vector_stores_db_id_fk" FOREIGN KEY ("document_vector_store_db_id") REFERENCES "public"."document_vector_stores"("db_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "doc_embs_store_idx" ON "document_embeddings" USING btree ("document_vector_store_db_id");

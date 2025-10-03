@@ -211,6 +211,7 @@ export async function ingestDocument(
 
 				// Insert embeddings into database
 				await insertDocumentEmbeddings({
+					storeDbId: source.documentVectorStoreDbId,
 					sourceDbId: source.dbId,
 					embeddingProfileId,
 					dimensions: embeddingResult.dimensions as EmbeddingDimensions,
