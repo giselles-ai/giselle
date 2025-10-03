@@ -6,32 +6,12 @@ import {
 } from "@giselle-sdk/giselle/react";
 import type { ReactElement } from "react";
 import { useMemo } from "react";
-import useSWR from "swr";
 
+import {
+	type DocumentVectorStore,
+	useDocumentVectorStores,
+} from "../../hooks/use-document-vector-stores";
 import { RequiresSetupBadge } from "./github-node-info";
-
-type DocumentVectorStoreSummary = {
-	id: string;
-	name: string;
-};
-
-type DocumentVectorStoresResponse = {
-	documentVectorStores: DocumentVectorStoreSummary[];
-};
-
-const documentStoresFetcher = async (
-	url: string,
-): Promise<DocumentVectorStoresResponse> => {
-	const response = await fetch(url, { cache: "no-store" });
-	if (response.status === 404) {
-		return { documentVectorStores: [] };
-	}
-	if (!response.ok) {
-		console.error("Failed to load document vector stores:", response.status);
-		return { documentVectorStores: [] };
-	}
-	return (await response.json()) as DocumentVectorStoresResponse;
-};
 
 export function DocumentNodeInfo({
 	node,
@@ -47,20 +27,19 @@ export function DocumentNodeInfo({
 
 	const vectorStore = useVectorStore();
 	const vectorStoreValue = vectorStore as VectorStoreContextValue | undefined;
-	const contextDocumentStores = vectorStoreValue?.documentStores ?? [];
-	const { data } = useSWR<DocumentVectorStoresResponse>(
-		documentVectorStoreId ? "/api/vector-stores/document" : null,
-		documentStoresFetcher,
-		{ fallbackData: { documentVectorStores: contextDocumentStores } },
-	);
+	const contextDocumentStores = (vectorStoreValue?.documentStores ??
+		[]) as DocumentVectorStore[];
+	const { stores } = useDocumentVectorStores({
+		shouldFetch: Boolean(documentVectorStoreId),
+		fallbackStores: contextDocumentStores,
+	});
 
 	const storeName = useMemo(() => {
 		if (!documentVectorStoreId) {
 			return undefined;
 		}
-		const list = data?.documentVectorStores ?? contextDocumentStores;
-		return list.find((store) => store.id === documentVectorStoreId)?.name;
-	}, [contextDocumentStores, data, documentVectorStoreId]);
+		return stores.find((store) => store.id === documentVectorStoreId)?.name;
+	}, [documentVectorStoreId, stores]);
 
 	if (!isDocumentVectorStore) {
 		return null;

@@ -15,52 +15,13 @@ import {
 } from "@giselle-sdk/giselle/react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import useSWR from "swr";
 
 import { TriangleAlert } from "../../../../icons";
-
-type DocumentVectorStoreIngestStatus =
-	| "idle"
-	| "running"
-	| "completed"
-	| "failed";
-
-interface DocumentVectorStore {
-	id: string;
-	name: string;
-	embeddingProfileIds: number[];
-	sources: Array<{
-		id: string;
-		fileName: string;
-		ingestStatus: DocumentVectorStoreIngestStatus;
-		ingestErrorCode: string | null;
-	}>;
-}
-
-interface DocumentVectorStoresResponse {
-	documentVectorStores: DocumentVectorStore[];
-}
-
-interface DocumentVectorStoresResult {
-	stores: DocumentVectorStore[];
-	isFeatureEnabled: boolean;
-}
-
-const documentVectorStoresFetcher = async (
-	url: string,
-): Promise<DocumentVectorStoresResult> => {
-	const response = await fetch(url, { cache: "no-store" });
-	if (response.status === 404) {
-		return { stores: [], isFeatureEnabled: false };
-	}
-	if (!response.ok) {
-		throw new Error(
-			`Failed to fetch document vector stores: ${response.status}`,
-		);
-	}
-	const payload = (await response.json()) as DocumentVectorStoresResponse;
-	return { stores: payload.documentVectorStores, isFeatureEnabled: true };
-};
+import {
+	type DocumentVectorStore,
+	type DocumentVectorStoreIngestStatus,
+	useDocumentVectorStores,
+} from "../../../hooks/use-document-vector-stores";
 
 const INGEST_STATUS_STYLE: Record<
 	DocumentVectorStoreIngestStatus,
@@ -121,15 +82,15 @@ export function DocumentVectorStoreNodePropertiesPanel({
 
 	const contextDocumentStores = (vectorStoreValue?.documentStores ??
 		[]) as DocumentVectorStore[];
-	const { data, error, isLoading } = useSWR<DocumentVectorStoresResult>(
-		source.provider === "document" ? "/api/vector-stores/document" : null,
-		documentVectorStoresFetcher,
-		{ fallbackData: { stores: contextDocumentStores, isFeatureEnabled: true } },
-	);
-
-	const documentStores = (data?.stores ??
-		contextDocumentStores) as DocumentVectorStore[];
-	const isFeatureEnabled = data?.isFeatureEnabled ?? true;
+	const {
+		stores: documentStores,
+		error,
+		isLoading,
+		isFeatureEnabled,
+	} = useDocumentVectorStores({
+		shouldFetch: source.provider === "document",
+		fallbackStores: contextDocumentStores,
+	});
 
 	const configuredState =
 		source.state.status === "configured" ? source.state : undefined;
