@@ -1,4 +1,4 @@
-name: Deploy to Trigger.dev (prod)
+name: Release Trigger
 
 on:
   push:
@@ -6,27 +6,19 @@ on:
       - main
 
 jobs:
-  deploy:
+  setup:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      - name: Use Node.js LTS
-        uses: actions/setup-node@v4
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
         with:
-          node-version: "lts/*"
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
+          version: '10.16.0'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
-      - name: 🚀 Deploy Trigger.dev
-        env:
-          TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_PRODUCTION_ACCESS_TOKEN }}
-        working-directory: apps/studio.giselles.ai
-        run: |
-          npx trigger.dev@latest deploy
+      - name: Build
+        run: pnpm build
