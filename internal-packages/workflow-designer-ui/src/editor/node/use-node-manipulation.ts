@@ -7,7 +7,8 @@ const OFFSET_X = 200;
 const OFFSET_Y = 100;
 
 export function useNodeManipulation() {
-	const { data, copyNode, copiedNode, setCopiedNode } = useWorkflowDesigner();
+	const { data, copyNode, copiedNode, setCopiedNode, setUiNodeState } =
+		useWorkflowDesigner();
 
 	const copy = useCallback(
 		(onError?: () => void) => {
@@ -44,13 +45,16 @@ export function useNodeManipulation() {
 			// Validate the copied node using Zod schema
 			try {
 				const validatedNode = Node.parse(copiedNode);
-				copyNode(validatedNode, { ui: { position } });
+				copyNode(validatedNode, {
+					ui: { position, selected: true },
+				});
+				setUiNodeState(copiedNode.id, { selected: false });
 			} catch (error) {
 				console.error("Failed to paste node - validation error:", error);
 				onError?.();
 			}
 		},
-		[copiedNode, data.ui.nodeState, copyNode],
+		[copiedNode, data.ui.nodeState, copyNode, setUiNodeState],
 	);
 
 	const duplicate = useCallback(
