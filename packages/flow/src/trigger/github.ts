@@ -73,9 +73,9 @@ const githubPullRequestCommentCreatedTrigger = {
 		label: "Pull Request Comment Created",
 		payloads: z.object({
 			body: z.string(),
-			issueNumber: z.number(),
-			issueTitle: z.string(),
-			issueBody: z.string(),
+			pullRequestNumber: z.number(),
+			pullRequestTitle: z.string(),
+			pullRequestBody: z.string(),
 			diff: z.string(),
 		}),
 		conditions: z.object({

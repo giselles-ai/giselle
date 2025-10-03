@@ -277,10 +277,33 @@ describe("resolveTrigger", () => {
 		const githubTrigger = githubTriggers["github.pull_request_comment.created"];
 		test.each([
 			["body", "hi"],
+			["pullRequestBody", "PR body"],
+			["pullRequestNumber", "4"],
+			["pullRequestTitle", "PR title"],
+			["diff", "diff"],
+		])("resolve %s", async (accessor, expected) => {
+			const trigger = createTrigger("github.pull_request_comment.created");
+			const output = createOutput(accessor);
+			const result = await resolveTrigger({
+				output,
+				githubTrigger,
+				trigger,
+				webhookEvent,
+				...appAuth,
+			});
+			expect(result).toEqual({
+				type: "generated-text",
+				outputId: output.id,
+				content: expected,
+			});
+		});
+
+		test.each([
 			["issueBody", "PR body"],
 			["issueNumber", "4"],
 			["issueTitle", "PR title"],
-		] as const)("resolve %s", async (accessor, expected) => {
+			["diff", "diff"],
+		] as const)("resolve legacy accessor %s", async (accessor, expected) => {
 			const trigger = createTrigger("github.pull_request_comment.created");
 			const output = createOutput(accessor);
 			const result = await resolveTrigger({
