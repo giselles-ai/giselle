@@ -29,17 +29,18 @@ export function DocumentNodeInfo({
 	const vectorStoreValue = vectorStore as VectorStoreContextValue | undefined;
 	const contextDocumentStores = (vectorStoreValue?.documentStores ??
 		[]) as DocumentVectorStore[];
-	const { stores } = useDocumentVectorStores({
+	const { stores, isLoading } = useDocumentVectorStores({
 		shouldFetch: Boolean(documentVectorStoreId),
 		fallbackStores: contextDocumentStores,
 	});
 
-	const storeName = useMemo(() => {
+	const store = useMemo(() => {
 		if (!documentVectorStoreId) {
 			return undefined;
 		}
-		return stores.find((store) => store.id === documentVectorStoreId)?.name;
+		return stores.find((candidate) => candidate.id === documentVectorStoreId);
 	}, [documentVectorStoreId, stores]);
+	const storeLabel = store?.name ?? documentVectorStoreId;
 
 	if (!isDocumentVectorStore) {
 		return null;
@@ -49,10 +50,23 @@ export function DocumentNodeInfo({
 		return <RequiresSetupBadge />;
 	}
 
+	if (!store) {
+		if (isLoading) {
+			return (
+				<div className="px-[16px]">
+					<div className="inline-flex items-center rounded-full bg-black-900 px-[16px] py-[8px] text-[12px] font-medium text-white-200">
+						{documentVectorStoreId}
+					</div>
+				</div>
+			);
+		}
+		return <RequiresSetupBadge />;
+	}
+
 	return (
 		<div className="px-[16px]">
 			<div className="inline-flex items-center rounded-full bg-black-900 px-[16px] py-[8px] text-[12px] font-medium text-white-200">
-				{storeName ?? documentVectorStoreId}
+				{storeLabel}
 			</div>
 		</div>
 	);
