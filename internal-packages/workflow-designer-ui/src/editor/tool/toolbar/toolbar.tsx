@@ -46,6 +46,7 @@ import { isToolAction } from "../types";
 import {
 	AudioIcon,
 	CapabilityIcon,
+	DocumentIcon,
 	GenerateImageIcon,
 	GenerateTextIcon,
 	GitHubIcon,
@@ -620,7 +621,7 @@ export function Toolbar() {
 																) && (
 																	<CapabilityIcon
 																		icon={
-																			<DocumentVectorStoreIcon className="w-[16px] h-[16px]" />
+																			<DocumentIcon className="w-[16px] h-[16px]" />
 																		}
 																	>
 																		Input PDF
@@ -715,7 +716,7 @@ export function Toolbar() {
 																	<>
 																		<CapabilityIcon
 																			icon={
-																				<DocumentVectorStoreIcon className="w-[16px] h-[16px]" />
+																				<DocumentIcon className="w-[16px] h-[16px]" />
 																			}
 																		>
 																			Input PDF
