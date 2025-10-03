@@ -1,4 +1,8 @@
 import type { Generation } from "@giselle-sdk/giselle";
+import {
+	useVectorStore,
+	type VectorStoreContextValue,
+} from "@giselle-sdk/giselle/react";
 import clsx from "clsx/lite";
 import {
 	ChevronDownIcon,
@@ -8,6 +12,7 @@ import {
 import { useMemo, useState } from "react";
 import { z } from "zod/v4";
 import { GitHubIcon, WilliIcon } from "../icons";
+import { DocumentVectorStoreIcon } from "../icons/node/document-vector-store-icon";
 
 const gitHubPRContextSchema = z.object({
 	prContext: z.string().optional(),
@@ -194,13 +199,49 @@ function PRContextDisplay({
 	);
 }
 
+type DocumentVectorStoreSummary = NonNullable<
+	VectorStoreContextValue["documentStores"]
+>[number];
+
 type DataSourceDisplayInfo = {
 	line1: string;
 	line2?: string;
 };
 
+function summarizeDocumentStoreStatus(
+	store: DocumentVectorStoreSummary | undefined,
+): string | undefined {
+	if (!store) {
+		return undefined;
+	}
+	const total = store.sources.length;
+	if (total === 0) {
+		return "No uploads yet";
+	}
+	const failed = store.sources.filter(
+		(source) => source.ingestStatus === "failed",
+	).length;
+	if (failed > 0) {
+		return `${failed}/${total} failed`;
+	}
+	const running = store.sources.filter(
+		(source) => source.ingestStatus === "running",
+	).length;
+	if (running > 0) {
+		return `${running}/${total} processing`;
+	}
+	const completed = store.sources.filter(
+		(source) => source.ingestStatus === "completed",
+	).length;
+	if (completed === total) {
+		return `${total} ready`;
+	}
+	return `${completed}/${total} ready`;
+}
+
 function getDataSourceDisplayInfo(
 	result: ReturnType<typeof getGenerationQueryResult>[number],
+	documentStoreMap: Map<string, DocumentVectorStoreSummary>,
 ): DataSourceDisplayInfo {
 	if (
 		result.source.provider === "github" &&
@@ -214,8 +255,25 @@ function getDataSourceDisplayInfo(
 					: "Code",
 		};
 	}
+	if (
+		result.source.provider === "document" &&
+		result.source.state.status === "configured"
+	) {
+		const storeId = result.source.state.documentVectorStoreId;
+		const store = documentStoreMap.get(storeId);
+		return {
+			line1: store?.name ?? storeId,
+			line2: summarizeDocumentStoreStatus(store),
+		};
+	}
+	if (result.source.provider === "document") {
+		return {
+			line1: "Document vector store",
+			line2: "Requires setup",
+		};
+	}
 	return {
-		line1: "GitHub vector store",
+		line1: "Vector store",
 	};
 }
 
@@ -223,14 +281,18 @@ function DataSourceTab({
 	result,
 	isActive,
 	onClick,
+	documentStoreMap,
 }: {
 	result: ReturnType<typeof getGenerationQueryResult>[number];
 	isActive: boolean;
 	onClick: () => void;
+	documentStoreMap: Map<string, DocumentVectorStoreSummary>;
 }) {
-	const displayInfo = getDataSourceDisplayInfo(result);
+	const displayInfo = getDataSourceDisplayInfo(result, documentStoreMap);
 	const recordCount = result.records?.length || 0;
-	const isGitHub = result.source?.provider === "github";
+	const provider = result.source?.provider;
+	const isGitHub = provider === "github";
+	const isDocument = provider === "document";
 
 	return (
 		<button
@@ -244,6 +306,12 @@ function DataSourceTab({
 			)}
 		>
 			{isGitHub && <GitHubIcon className="w-[14px] h-[14px] flex-shrink-0" />}
+			{isDocument && (
+				<DocumentVectorStoreIcon
+					className="w-[14px] h-[14px] flex-shrink-0"
+					aria-hidden="true"
+				/>
+			)}
 			<div className="flex flex-col items-start leading-tight whitespace-nowrap">
 				<span className="text-[13px] font-medium">{displayInfo.line1}</span>
 				{displayInfo.line2 && (
@@ -272,6 +340,7 @@ function QueryResultCard({
 	const [expandedRecords, setExpandedRecords] = useState<Set<number>>(
 		new Set(),
 	);
+	const isDocumentResult = result.source.provider === "document";
 
 	const toggleRecord = (recordIndex: number) => {
 		setExpandedRecords((prev) => {
@@ -316,6 +385,20 @@ function QueryResultCard({
 							<span className="text-[12px] font-semibold text-white-700">
 								Chunk #{record.chunkIndex}
 							</span>
+							{isDocumentResult && (
+								<div className="flex flex-col text-[11px] text-white-500">
+									{record.metadata.documentKey ? (
+										<span className="break-all">
+											File: {record.metadata.documentKey}
+										</span>
+									) : null}
+									{record.metadata.documentVectorStoreSourceDbId ? (
+										<span className="break-all">
+											Source ID: {record.metadata.documentVectorStoreSourceDbId}
+										</span>
+									) : null}
+								</div>
+							)}
 						</div>
 						<ScoreIndicator score={record.score} />
 					</div>
@@ -354,6 +437,15 @@ function QueryResultCard({
 
 export function QueryResultView({ generation }: { generation: Generation }) {
 	const [activeTabIndex, setActiveTabIndex] = useState(0);
+	const vectorStore = useVectorStore();
+	const documentStores = vectorStore?.documentStores ?? [];
+	const documentStoreMap = useMemo(() => {
+		const map = new Map<string, DocumentVectorStoreSummary>();
+		documentStores.forEach((store) => {
+			map.set(store.id, store);
+		});
+		return map;
+	}, [documentStores]);
 
 	if (generation.status === "failed") {
 		return (
@@ -404,19 +496,38 @@ export function QueryResultView({ generation }: { generation: Generation }) {
 			{/* Tab Navigation */}
 			<div className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 				<div className="flex gap-[0px] flex-nowrap">
-					{queryResults.map((result, index) => (
-						<DataSourceTab
-							key={`datasource-${index}-github-${result.source.state.status === "configured" ? `${result.source.state.owner}-${result.source.state.repo}` : "unconfigured"}`}
-							result={result}
-							isActive={activeTabIndex === index}
-							onClick={() => setActiveTabIndex(index)}
-						/>
-					))}
+					{queryResults.map((result, index) => {
+						const provider = result.source.provider;
+						let descriptor = result.source.state.status;
+						if (
+							provider === "github" &&
+							result.source.state.status === "configured"
+						) {
+							descriptor = `${result.source.state.owner}-${result.source.state.repo}-${result.source.state.contentType}`;
+						} else if (
+							provider === "document" &&
+							result.source.state.status === "configured"
+						) {
+							descriptor = result.source.state.documentVectorStoreId;
+						}
+
+						return (
+							<DataSourceTab
+								key={`datasource-${index}-${provider}-${descriptor}`}
+								result={result}
+								isActive={activeTabIndex === index}
+								onClick={() => setActiveTabIndex(index)}
+								documentStoreMap={documentStoreMap}
+							/>
+						);
+					})}
 				</div>
 			</div>
 
 			{/* Tab Content */}
-			<div>{activeResult && <QueryResultCard result={activeResult} />}</div>
+			<div>
+				{activeResult ? <QueryResultCard result={activeResult} /> : null}
+			</div>
 		</div>
 	);
 }

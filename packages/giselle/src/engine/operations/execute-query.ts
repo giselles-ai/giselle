@@ -35,6 +35,7 @@ import {
 	queryResultToText,
 } from "../generations/utils";
 import type {
+	DocumentVectorStoreQueryContext,
 	EmbeddingCompleteCallbackFunction,
 	GiselleEngineContext,
 	GitHubQueryContext,
@@ -440,9 +441,49 @@ async function queryVectorStore(
 					}
 
 					case "document": {
-						throw new Error(
-							"Document vector store query is not yet implemented",
+						if (!vectorStoreQueryServices?.document) {
+							throw new Error(
+								"No document vector store query service provided",
+							);
+						}
+
+						const embeddingProfileId =
+							state.embeddingProfileId ?? DEFAULT_EMBEDDING_PROFILE_ID;
+						const queryContext: DocumentVectorStoreQueryContext = {
+							provider: "document" as const,
+							workspaceId,
+							documentVectorStoreId: state.documentVectorStoreId,
+							embeddingProfileId,
+						};
+						const embeddingCallback = createEngineEmbeddingCallback(
+							runningGeneration,
+							queryContext,
+							context.callbacks?.embeddingComplete,
 						);
+
+						const res = await vectorStoreQueryServices.document.search(
+							query,
+							queryContext,
+							maxResults ?? DEFAULT_MAX_RESULTS,
+							similarityThreshold ?? DEFAULT_SIMILARITY_THRESHOLD,
+							embeddingCallback,
+						);
+						return {
+							type: "vector-store" as const,
+							source,
+							records: res.map((result) => ({
+								chunkContent: result.chunk.content,
+								chunkIndex: result.chunk.index,
+								score: result.similarity,
+								metadata: Object.fromEntries(
+									Object.entries(result.metadata ?? {}).map(([key, value]) => [
+										key,
+										String(value),
+									]),
+								),
+								additional: result.additional,
+							})),
+						};
 					}
 
 					default: {

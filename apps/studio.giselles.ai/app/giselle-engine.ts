@@ -35,6 +35,7 @@ import {
 	isProPlan,
 } from "@/services/teams";
 import supabaseStorageDriver from "@/supabase-storage-driver";
+import { getDocumentVectorStoreQueryService } from "../lib/vector-stores/document/query/service";
 import {
 	gitHubPullRequestQueryService,
 	gitHubQueryService,
@@ -300,6 +301,7 @@ export const giselleEngine = NextGiselleEngine({
 	vectorStoreQueryServices: {
 		github: gitHubQueryService,
 		githubPullRequest: gitHubPullRequestQueryService,
+		document: getDocumentVectorStoreQueryService(),
 	},
 	callbacks: {
 		...generationTracingCallbacks,
