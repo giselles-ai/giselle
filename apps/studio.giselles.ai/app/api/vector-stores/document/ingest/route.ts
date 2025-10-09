@@ -12,7 +12,10 @@
  */
 import { createHash, timingSafeEqual } from "node:crypto";
 import type { NextRequest } from "next/server";
-import { ingestDocument } from "@/lib/vector-stores/document/ingest";
+import {
+	createDocumentCronIngestTrigger,
+	ingestDocument,
+} from "@/lib/vector-stores/document/ingest";
 import { fetchIngestTargets } from "./fetch-ingest-targets";
 
 export const maxDuration = 800;
@@ -62,6 +65,7 @@ export async function GET(request: NextRequest) {
 		try {
 			const result = await ingestDocument(target.sourceId, {
 				embeddingProfileIds: target.embeddingProfileIds,
+				trigger: createDocumentCronIngestTrigger(),
 			});
 
 			if (result.skipped) {

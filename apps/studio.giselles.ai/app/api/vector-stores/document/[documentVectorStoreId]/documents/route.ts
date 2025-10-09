@@ -20,7 +20,10 @@ import {
 	DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_MB,
 	DOCUMENT_VECTOR_STORE_SUPPORTED_FILE_TYPE_LABEL,
 } from "@/lib/vector-stores/document/constants";
-import { ingestDocument } from "@/lib/vector-stores/document/ingest";
+import {
+	createDocumentManualIngestTrigger,
+	ingestDocument,
+} from "@/lib/vector-stores/document/ingest";
 import {
 	resolveSupportedDocumentFile,
 	sanitizeDocumentFileName,
@@ -29,6 +32,7 @@ import type {
 	DocumentVectorStoreId,
 	DocumentVectorStoreSourceId,
 } from "@/packages/types";
+import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 
 export const runtime = "nodejs";
@@ -172,6 +176,13 @@ export async function POST(
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
+	let currentUser: Awaited<ReturnType<typeof fetchCurrentUser>>;
+	try {
+		currentUser = await fetchCurrentUser();
+	} catch (_error) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
+
 	const formData = await request.formData();
 	const files = formData
 		.getAll("files")
@@ -309,6 +320,7 @@ export async function POST(
 			after(() =>
 				ingestDocument(sourceId, {
 					embeddingProfileIds: store.embeddingProfileIds,
+					trigger: createDocumentManualIngestTrigger(currentUser.id),
 				}).catch((error) => {
 					console.error(`Failed to ingest document ${sourceId}:`, error);
 				}),

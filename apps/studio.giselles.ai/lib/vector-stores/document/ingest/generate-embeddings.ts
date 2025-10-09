@@ -1,6 +1,9 @@
 import type { EmbeddingProfileId } from "@giselle-sdk/data-type";
 import { EMBEDDING_PROFILES } from "@giselle-sdk/data-type";
-import type { EmbedderFunction } from "@giselle-sdk/rag";
+import type {
+	EmbedderFunction,
+	EmbeddingCompleteCallback,
+} from "@giselle-sdk/rag";
 import { createEmbedderFromProfile } from "@giselle-sdk/rag";
 
 interface GenerateEmbeddingsOptions {
@@ -8,6 +11,7 @@ interface GenerateEmbeddingsOptions {
 	embeddingProfileId: EmbeddingProfileId;
 	maxBatchSize?: number;
 	signal?: AbortSignal;
+	embeddingComplete?: EmbeddingCompleteCallback;
 }
 
 interface EmbeddingResult {
@@ -48,6 +52,7 @@ export async function generateEmbeddings(
 		embeddingProfileId,
 		maxBatchSize = DEFAULT_MAX_BATCH_SIZE,
 		signal,
+		embeddingComplete,
 	} = options;
 
 	if (!Number.isInteger(maxBatchSize) || maxBatchSize <= 0) {
@@ -93,6 +98,7 @@ export async function generateEmbeddings(
 	const embedder: EmbedderFunction = createEmbedderFromProfile(
 		embeddingProfileId,
 		apiKey,
+		embeddingComplete ? { embeddingComplete } : undefined,
 	);
 
 	// Generate embeddings in batches

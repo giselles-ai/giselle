@@ -2,10 +2,19 @@ import type {
 	EmbeddingDimensions,
 	EmbeddingProfileId,
 } from "@giselle-sdk/data-type";
-import type { DocumentVectorStoreSourceId } from "@giselles-ai/types";
+import type {
+	DocumentVectorStoreId,
+	DocumentVectorStoreSourceId,
+} from "@giselles-ai/types";
 import { createClient } from "@supabase/supabase-js";
 import { and, eq, lt, or } from "drizzle-orm";
-import { db, documentVectorStoreSources } from "@/drizzle";
+import {
+	db,
+	documentVectorStoreSources,
+	documentVectorStores,
+} from "@/drizzle";
+import type { TeamWithSubscription } from "@/services/teams";
+import { fetchTeamByDbId } from "@/services/teams/fetch-team";
 import {
 	deleteDocumentEmbeddingsByProfiles,
 	getDocumentVectorStoreSource,
@@ -13,8 +22,13 @@ import {
 	updateDocumentVectorStoreSourceStatus,
 } from "../database";
 import { chunkText } from "./chunk-text";
+import { createDocumentIngestEmbeddingCallback } from "./embedding-tracking";
 import { extractTextFromDocument } from "./extract-text";
 import { generateEmbeddings } from "./generate-embeddings";
+import {
+	createDocumentCronIngestTrigger,
+	type DocumentIngestTrigger,
+} from "./triggers";
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
@@ -28,6 +42,10 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 interface IngestDocumentOptions {
 	embeddingProfileIds: EmbeddingProfileId[];
 	signal?: AbortSignal;
+	trigger?: DocumentIngestTrigger;
+	storeId?: DocumentVectorStoreId;
+	team?: TeamWithSubscription;
+	teamDbId?: number;
 }
 
 interface IngestDocumentResult {
@@ -72,7 +90,15 @@ export async function ingestDocument(
 	sourceId: DocumentVectorStoreSourceId,
 	options: IngestDocumentOptions,
 ): Promise<IngestDocumentResult> {
-	const { embeddingProfileIds, signal } = options;
+	const {
+		embeddingProfileIds,
+		signal,
+		trigger: providedTrigger,
+		storeId: providedStoreId,
+		team: providedTeam,
+		teamDbId: providedTeamDbId,
+	} = options;
+	const trigger = providedTrigger ?? createDocumentCronIngestTrigger();
 
 	try {
 		signal?.throwIfAborted();
@@ -127,6 +153,44 @@ export async function ingestDocument(
 				code: "source-not-found" as IngestErrorCode,
 			});
 		}
+
+		const store = await db.query.documentVectorStores.findFirst({
+			where: eq(documentVectorStores.dbId, source.documentVectorStoreDbId),
+		});
+
+		if (!store) {
+			throw Object.assign(
+				new Error("Document vector store not found for source"),
+				{ code: "invalid-state" as IngestErrorCode },
+			);
+		}
+
+		const storeId =
+			providedStoreId && providedStoreId.length > 0
+				? providedStoreId
+				: store.id;
+		let team: TeamWithSubscription | null = providedTeam ?? null;
+		const teamDbId = team?.dbId ?? providedTeamDbId ?? store.teamDbId;
+
+		if (team == null) {
+			if (teamDbId == null) {
+				throw Object.assign(
+					new Error("Team not found for document vector store"),
+					{ code: "invalid-state" as IngestErrorCode },
+				);
+			}
+
+			team = await fetchTeamByDbId(teamDbId);
+			if (!team) {
+				throw Object.assign(
+					new Error("Team not found for document vector store"),
+					{ code: "invalid-state" as IngestErrorCode },
+				);
+			}
+		}
+
+		const finalStoreId = storeId as DocumentVectorStoreId;
+		const finalTeam = team as TeamWithSubscription;
 
 		signal?.throwIfAborted();
 
@@ -201,10 +265,21 @@ export async function ingestDocument(
 			for (const embeddingProfileId of embeddingProfileIds) {
 				signal?.throwIfAborted();
 
+				const embeddingComplete = createDocumentIngestEmbeddingCallback({
+					team: finalTeam,
+					trigger,
+					resource: {
+						storeId: finalStoreId,
+						sourceId: source.id,
+						embeddingProfileId,
+					},
+				});
+
 				const embeddingResult = await generateEmbeddings({
 					chunks: chunkResult.chunks,
 					embeddingProfileId,
 					signal,
+					embeddingComplete,
 				});
 
 				signal?.throwIfAborted();
