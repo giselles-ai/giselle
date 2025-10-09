@@ -20,15 +20,24 @@ interface ClickableTextProps
 }
 
 const ClickableText = forwardRef<HTMLButtonElement, ClickableTextProps>(
-	({ className, variant, asChild = false, ...props }, ref) => {
+	({ className, variant, asChild = false, type, ...props }, ref) => {
 		const Comp = asChild ? Slot : "button";
-		return (
-			<Comp
-				className={cn(clickableTextVariant({ variant, className }))}
-				ref={ref}
-				{...props}
-			/>
-		);
+		const sharedProps = {
+			className: cn(clickableTextVariant({ variant, className })),
+			ref,
+		};
+
+		if (asChild) {
+			return (
+				<Comp
+					{...sharedProps}
+					{...props}
+					{...(type !== undefined && { type })}
+				/>
+			);
+		}
+
+		return <Comp {...sharedProps} {...props} type={type ?? "button"} />;
 	},
 );
 ClickableText.displayName = "ClickableText";
