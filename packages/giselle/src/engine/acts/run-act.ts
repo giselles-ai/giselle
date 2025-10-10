@@ -68,9 +68,11 @@ async function executeStep(args: {
 		switch (args.generation.context.operationNode.content.type) {
 			case "action":
 				await executeAction(args);
+				await args.callbacks?.onCompleted?.();
 				break;
 			case "imageGeneration":
 				await generateImage({ ...args, useExperimentalStorage: true });
+				await args.callbacks?.onCompleted?.();
 				break;
 			case "textGeneration": {
 				await startContentGeneration(args);
@@ -88,9 +90,11 @@ async function executeStep(args: {
 			}
 			case "trigger":
 				await resolveTrigger(args);
+				await args.callbacks?.onCompleted?.();
 				break;
 			case "query":
 				await executeQuery(args);
+				await args.callbacks?.onCompleted?.();
 				break;
 			default: {
 				const _exhaustiveCheck: never =
@@ -98,7 +102,6 @@ async function executeStep(args: {
 				throw new Error(`Unhandled step type: ${_exhaustiveCheck}`);
 			}
 		}
-		await args.callbacks?.onCompleted?.();
 	} catch (_e) {
 		console.log(_e);
 		await args.callbacks?.onFailed?.(args.generation);
