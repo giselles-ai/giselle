@@ -8,6 +8,7 @@ export interface FeatureFlagContextValue {
 	stage: boolean;
 	aiGateway: boolean;
 	resumableGeneration: boolean;
+	googleUrlContext: boolean;
 	documentVectorStore: boolean;
 }
 export const FeatureFlagContext = createContext<

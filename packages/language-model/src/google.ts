@@ -7,6 +7,7 @@ const GoogleLanguageModelConfigurations = z.object({
 	temperature: z.number(),
 	topP: z.number(),
 	searchGrounding: z.boolean(),
+	urlContext: z.boolean().optional().default(false),
 });
 type GoogleLanguageModelConfigurations = z.infer<
 	typeof GoogleLanguageModelConfigurations
@@ -16,6 +17,7 @@ const defaultConfigurations: GoogleLanguageModelConfigurations = {
 	temperature: 0.7,
 	topP: 1.0,
 	searchGrounding: false,
+	urlContext: false,
 };
 
 export const GoogleLanguageModelId = z
@@ -50,6 +52,7 @@ const gemini25Pro: GoogleLanguageModel = {
 		Capability.TextGeneration |
 		Capability.GenericFileInput |
 		Capability.OptionalSearchGrounding |
+		Capability.UrlContext |
 		Capability.Reasoning,
 	tier: Tier.enum.pro,
 	configurations: defaultConfigurations,
@@ -62,6 +65,7 @@ const gemini25Flash: GoogleLanguageModel = {
 		Capability.TextGeneration |
 		Capability.GenericFileInput |
 		Capability.OptionalSearchGrounding |
+		Capability.UrlContext |
 		Capability.Reasoning,
 	tier: Tier.enum.pro,
 	configurations: defaultConfigurations,
@@ -73,6 +77,7 @@ const gemini25FlashLite: GoogleLanguageModel = {
 	capabilities:
 		Capability.TextGeneration |
 		Capability.OptionalSearchGrounding |
+		Capability.UrlContext |
 		Capability.GenericFileInput,
 	tier: Tier.enum.free,
 	configurations: defaultConfigurations,

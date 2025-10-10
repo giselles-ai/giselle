@@ -154,6 +154,26 @@ export const resumableGenerationFlag = flag<boolean>({
 	],
 });
 
+export const googleUrlContextFlag = flag<boolean>({
+	key: "google-url-context",
+	async decide() {
+		if (process.env.NODE_ENV === "development") {
+			return takeLocalEnv("GOOGLE_URL_CONTEXT_FLAG");
+		}
+		const edgeConfig = await get(`flag__${this.key}`);
+		if (edgeConfig === undefined) {
+			return false;
+		}
+		return edgeConfig === true || edgeConfig === "true";
+	},
+	description: "Enable Google URL Context tool",
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+	defaultValue: false,
+});
+
 export const newEditorFlag = flag<boolean>({
 	key: "new-editor",
 	async decide() {

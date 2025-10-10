@@ -11,6 +11,7 @@ import {
 	aiGatewayFlag,
 	docVectorStoreFlag,
 	experimental_storageFlag,
+	googleUrlContextFlag,
 	layoutV3Flag,
 	resumableGenerationFlag,
 	runV3Flag,
@@ -77,6 +78,7 @@ export default async function Layout({
 	const stage = await stageFlag();
 	const aiGateway = await aiGatewayFlag();
 	const resumableGeneration = await resumableGenerationFlag();
+	const googleUrlContext = await googleUrlContextFlag();
 	const data = await giselleEngine.getWorkspace(
 		workspaceId,
 		experimental_storage,
@@ -133,6 +135,7 @@ export default async function Layout({
 				stage,
 				aiGateway,
 				resumableGeneration,
+				googleUrlContext,
 				documentVectorStore,
 			}}
 			flowTrigger={{

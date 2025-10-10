@@ -51,6 +51,7 @@ export function WorkspaceProvider({
 				stage: featureFlag?.stage ?? false,
 				aiGateway: featureFlag?.aiGateway ?? false,
 				resumableGeneration: featureFlag?.resumableGeneration ?? false,
+				googleUrlContext: featureFlag?.googleUrlContext ?? false,
 				documentVectorStore: featureFlag?.documentVectorStore ?? false,
 			}}
 		>

@@ -213,6 +213,19 @@ export function generateContent({
 					},
 				};
 			}
+			if (
+				operationNode.content.llm.provider === "google" &&
+				hasCapability(languageModel, Capability.UrlContext) &&
+				(operationNode.content.llm.configurations.urlContext ?? false)
+			) {
+				preparedToolSet = {
+					...preparedToolSet,
+					toolSet: {
+						...preparedToolSet.toolSet,
+						url_context: google.tools.urlContext({}),
+					},
+				};
+			}
 
 			if (
 				operationNode.content.llm.provider === "anthropic" &&

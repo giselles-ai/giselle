@@ -2,8 +2,8 @@
 
 
 ## Summary
-* 860 MIT
-* 188 Apache 2.0
+* 858 MIT
+* 189 Apache 2.0
 * 46 ISC
 * 27 New BSD
 * 13 Simplified BSD
@@ -1492,17 +1492,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@next/swc-linux-x64-gnu"></a>
 ### @next/swc-linux-x64-gnu v15.5.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@next/swc-linux-x64-musl"></a>
-### @next/swc-linux-x64-musl v15.5.2
 #### 
 
 ##### Paths
@@ -3131,17 +3120,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@rollup/rollup-linux-x64-gnu"></a>
 ### @rollup/rollup-linux-x64-gnu v4.35.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@rollup/rollup-linux-x64-musl"></a>
-### @rollup/rollup-linux-x64-musl v4.35.0
 #### 
 
 ##### Paths
@@ -5341,7 +5319,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="ai"></a>
-### ai v5.0.44
+### ai v5.0.51
 #### 
 
 ##### Paths
@@ -5572,6 +5550,17 @@ Python-2.0 manually approved
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="baseline-browser-mapping"></a>
+### baseline-browser-mapping v2.8.9
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
 
 
 
@@ -11575,7 +11564,7 @@ Unknown manually approved
 
 
 <a name="terser"></a>
-### terser v5.43.1
+### terser v5.44.0
 #### 
 
 ##### Paths

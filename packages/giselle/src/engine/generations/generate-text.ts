@@ -1,6 +1,5 @@
 import { type AnthropicProviderOptions, anthropic } from "@ai-sdk/anthropic";
 import { createGateway } from "@ai-sdk/gateway";
-import { googleTools } from "@ai-sdk/google/internal";
 import { vertex } from "@ai-sdk/google-vertex/edge";
 import { type OpenAIResponsesProviderOptions, openai } from "@ai-sdk/openai";
 import { perplexity } from "@ai-sdk/perplexity";
@@ -177,7 +176,20 @@ export function generateText(args: {
 					...preparedToolSet,
 					toolSet: {
 						...preparedToolSet.toolSet,
-						google_search: googleTools.googleSearch({}),
+						google_search: vertex.tools.googleSearch({}),
+					},
+				};
+			}
+			if (
+				operationNode.content.llm.provider === "google" &&
+				hasCapability(languageModel, Capability.UrlContext) &&
+				(operationNode.content.llm.configurations.urlContext ?? false)
+			) {
+				preparedToolSet = {
+					...preparedToolSet,
+					toolSet: {
+						...preparedToolSet.toolSet,
+						url_context: vertex.tools.urlContext({}),
 					},
 				};
 			}
