@@ -19,7 +19,6 @@ import {
 import { openaiVectorStore } from "@giselle-sdk/vector-store-adapters";
 import { tasks as jobs } from "@trigger.dev/sdk";
 import type { ModelMessage, ProviderMetadata } from "ai";
-import { after } from "next/server";
 import { createStorage } from "unstorage";
 import { waitForLangfuseFlush } from "@/instrumentation.node";
 import { GenerationMetadata } from "@/lib/generation-metadata";
@@ -400,7 +399,6 @@ export const giselleEngine = NextGiselleEngine({
 			process.env.VERCEL_ENV === "preview" ? "Giselle(preview)" : "Giselle",
 	},
 	logger,
-	waitUntil: after,
 });
 
 // Content generation processor: Trigger.dev implementation

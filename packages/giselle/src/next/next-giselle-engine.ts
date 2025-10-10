@@ -19,7 +19,8 @@ import {
 } from "../http";
 import { type RequestContext, requestContextStore } from "./context";
 
-interface NextGiselleEngineConfig extends GiselleEngineConfig {
+interface NextGiselleEngineConfig
+	extends Omit<GiselleEngineConfig, "waitUntil"> {
 	basePath: string;
 	useAfterFunction?: boolean;
 }
@@ -181,7 +182,7 @@ export function createHttpHandler({
 }
 
 export function NextGiselleEngine(config: NextGiselleEngineConfig) {
-	const giselleEngine = GiselleEngine(config);
+	const giselleEngine = GiselleEngine({ ...config, waitUntil: after });
 	const httpHandler = createHttpHandler({
 		giselleEngine,
 		config,
