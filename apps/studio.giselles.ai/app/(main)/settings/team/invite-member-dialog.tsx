@@ -309,7 +309,7 @@ export function InviteMemberDialog({
 			<Dialog.Trigger asChild>
 				<GlassButton type="button" onClick={handleOpenDialog}>
 					<span className="grid size-4 place-items-center rounded-full bg-primary-200 opacity-50">
-						<Plus className="size-3 text-black-900" />
+						<Plus className="size-3 text-bg" />
 					</span>
 					<span className="text-[14px] font-medium leading-[20px]">
 						Invite Member

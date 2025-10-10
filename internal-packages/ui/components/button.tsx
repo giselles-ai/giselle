@@ -1,7 +1,14 @@
 import clsx from "clsx/lite";
 import { Slot } from "radix-ui";
 
-type ButtonStyle = "subtle" | "filled" | "solid" | "glass" | "outline" | "link";
+type ButtonStyle =
+	| "subtle"
+	| "filled"
+	| "solid"
+	| "glass"
+	| "outline"
+	| "link"
+	| "primary";
 type ButtonSize = "compact" | "default" | "large";
 interface ButtonProps
 	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "style"> {
@@ -39,6 +46,10 @@ export function Button({
 				"data-[style=glass]:border data-[style=glass]:border-glass-border/20",
 				"data-[style=outline]:border data-[style=outline]:border-t-border/60 data-[style=outline]:border-x-border/40 data-[style=outline]:border-b-black/60",
 				"data-[style=link]:p-0 data-[style=link]:h-auto data-[style=link]:hover:underline",
+				"data-[style=primary]:text-white/80 data-[style=primary]:bg-gradient-to-b data-[style=primary]:from-[#202530] data-[style=primary]:to-[#12151f]",
+				"data-[style=primary]:border data-[style=primary]:border-black/70",
+				"data-[style=primary]:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)]",
+				"data-[style=primary]:transition-all data-[style=primary]:duration-200 data-[style=primary]:active:scale-[0.98]",
 				"cursor-pointer transition-colors",
 				className,
 			)}

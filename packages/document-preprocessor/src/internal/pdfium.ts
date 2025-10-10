@@ -96,7 +96,7 @@ async function getPdfiumModule(): Promise<WrappedPdfiumModule> {
 
 	if (pendingModule === null) {
 		pendingModule = initPdfium({
-			locateFile: (fileName, prefix) => {
+			locateFile: (fileName: string, prefix: string) => {
 				if (fileName === "pdfium.wasm") {
 					return PDFIUM_WASM_PATH;
 				}

@@ -1,3 +1,4 @@
+import { Button } from "@giselle-internal/ui/button";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import type { components } from "@octokit/openapi-types";
 import { TriangleAlertIcon } from "lucide-react";
@@ -6,7 +7,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { GitHubAppInstallButton } from "@/packages/components/github-app-install-button";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { gitHubAppInstallURL } from "@/services/external/github";
-import { Button } from "../../components/button";
 import { Card } from "../../components/card";
 
 export async function GitHubIntegration() {
@@ -115,15 +115,15 @@ function Header({ account, installed, installationUrl }: HeaderProps) {
 				<div className="flex items-center space-x-4">
 					<SiGithub className="w-8 h-8" />
 					<div>
-						<h2 className="text-white-400 text-[16px] leading-[22.4px] font-medium font-geist">
+						<h2 className="text-text text-[16px] leading-[22.4px] font-medium font-geist">
 							GitHub
 						</h2>
 						{account ? (
-							<div className="text-12px leading-[20.4px] text-black-400 font-medium font-geist">
+							<div className="text-12px leading-[20.4px] text-text-muted font-medium font-geist">
 								Logged in as (<span className="text-blue-80">@{account}</span>)
 							</div>
 						) : (
-							<div className="text-[12px] leading-[20.4px] text-black-400 font-medium font-geist">
+							<div className="text-[12px] leading-[20.4px] text-text-muted font-medium font-geist">
 								Not connected
 							</div>
 						)}
@@ -136,16 +136,7 @@ function Header({ account, installed, installationUrl }: HeaderProps) {
 							installed={installed}
 						/>
 					) : (
-						<Button
-							asChild
-							className="rounded-lg px-4 py-2 text-white/80 transition-all duration-200 active:scale-[0.98]"
-							style={{
-								background: "linear-gradient(180deg, #202530 0%, #12151f 100%)",
-								border: "1px solid rgba(0,0,0,0.7)",
-								boxShadow:
-									"inset 0 1px 1px rgba(255,255,255,0.05), 0 2px 8px rgba(5,10,20,0.4), 0 1px 2px rgba(0,0,0,0.3)",
-							}}
-						>
+						<Button asChild variant="primary" size="large">
 							<Link href="/settings/account/authentication">
 								Configure GitHub App
 							</Link>
@@ -171,14 +162,7 @@ function Installation({ installation }: InstallationProps) {
 	const avatarUrl = "avatar_url" in account ? account.avatar_url : undefined;
 
 	return (
-		<div
-			className="rounded-lg px-4 pt-4 pb-6 flex flex-col"
-			style={{
-				background: "linear-gradient(180deg, #202530 0%, #12151f 100%)",
-				border: "0.5px solid rgba(255, 255, 255, 0.15)",
-				boxShadow: "0 2px 8px rgba(5,10,20,0.4), 0 1px 2px rgba(0,0,0,0.3)",
-			}}
-		>
+		<div className="rounded-lg px-4 pt-4 pb-6 flex flex-col bg-gradient-to-b from-[#202530] to-[#12151f] border border-border-muted shadow-[0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)]">
 			<div className="flex items-center gap-x-2">
 				{avatarUrl && (
 					<img
@@ -187,11 +171,11 @@ function Installation({ installation }: InstallationProps) {
 						className="w-6 h-6 rounded-full"
 					/>
 				)}
-				<span className="text-white-400 font-medium text-[14px] leading-[14px] font-geist">
+				<span className="text-text font-medium text-[14px] leading-[14px] font-geist">
 					{displayName}
 				</span>
 			</div>
-			<div className="h-px w-full bg-white/10 my-4" />
+			<div className="h-px w-full bg-inverse/10 my-4" />
 			<div className="space-y-5">
 				{installation.repositories.map((repo) => (
 					<div key={repo.id} className="flex items-center gap-x-2">
@@ -199,11 +183,11 @@ function Installation({ installation }: InstallationProps) {
 							href={repo.html_url}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-white-400 font-medium text-[14px] leading-[19.6px] font-geist hover:underline"
+							className="text-text font-medium text-[14px] leading-[19.6px] font-geist hover:underline"
 						>
 							{repo.name}
 						</a>
-						<span className="rounded-full px-1.5 py-px text-black-300 font-medium text-[10px] leading-normal font-geist border-[0.5px] border-border">
+						<span className="rounded-full px-2 py-px text-inverse/70 font-medium text-[10px] leading-normal font-geist border border-white/20">
 							{repo.private ? "Private" : "Public"}
 						</span>
 					</div>

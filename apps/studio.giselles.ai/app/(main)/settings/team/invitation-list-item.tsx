@@ -122,7 +122,7 @@ export function InvitationListItem({
 							onOpenChange={setDropdownOpen}
 						>
 							<DropdownMenuTrigger className="cursor-pointer">
-								<Ellipsis className="text-white-350" />
+								<Ellipsis className="text-inverse/70" />
 							</DropdownMenuTrigger>
 							<DropdownMenuContent
 								align="end"

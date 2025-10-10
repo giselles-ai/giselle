@@ -1,5 +1,6 @@
 "use client";
 
+import { FormField } from "@giselle-internal/ui/form-field";
 import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-sdk/data-type";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Plus } from "lucide-react";
@@ -116,15 +117,12 @@ export function DocumentVectorStoreCreateDialog({
 
 				<GlassDialogBody>
 					<div className="flex flex-col gap-4">
-						<label className="flex flex-col gap-2">
-							<span className="text-sm text-black-300 font-geist">Name</span>
-							<input
-								className="w-full rounded-md bg-surface border border-border-muted px-3 py-2 text-white-400 focus:outline-none focus:ring-1 focus:ring-white/20"
-								placeholder="e.g. Product Docs"
-								value={name}
-								onChange={(e) => setName(e.target.value)}
-							/>
-						</label>
+						<FormField
+							label="Name"
+							placeholder="e.g. Product Docs"
+							value={name}
+							onChange={(e) => setName(e.target.value)}
+						/>
 						{/* Embedding Models, styled like Register Repository */}
 						<div className="mt-4">
 							<div className="text-white-400 text-[14px] leading-[16.8px] font-sans mb-2">

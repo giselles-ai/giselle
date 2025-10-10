@@ -23,6 +23,12 @@ interface SelectProps<T extends SelectOption> {
 	id?: string;
 	renderValue?: (options: T) => string | number;
 	itemClassNameForOption?: (option: T) => string | undefined;
+	disabled?: boolean;
+	renderTriggerContent?: React.ReactNode;
+	hideChevron?: boolean;
+	ariaLabel?: string;
+	contentMinWidthClassName?: string;
+	disableHoverBg?: boolean;
 }
 
 export function Select<T extends SelectOption>({
@@ -38,6 +44,12 @@ export function Select<T extends SelectOption>({
 	id,
 	renderValue,
 	itemClassNameForOption,
+	disabled,
+	renderTriggerContent,
+	hideChevron,
+	ariaLabel,
+	contentMinWidthClassName,
+	disableHoverBg,
 }: SelectProps<T>) {
 	return (
 		<SelectPrimitive.Root
@@ -54,22 +66,41 @@ export function Select<T extends SelectOption>({
 						widthClassName ?? "w-full",
 						"flex justify-between items-center rounded-[8px] h-10 px-[12px] text-left text-[14px] shrink-0",
 						"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
-						"bg-inverse/5 transition-colors hover:bg-inverse/10",
+						renderTriggerContent
+							? clsx(
+									"bg-transparent transition-colors",
+									disableHoverBg ? undefined : "hover:bg-white/5",
+								)
+							: "bg-inverse/5 transition-colors hover:bg-inverse/10",
+						"disabled:opacity-50 disabled:cursor-not-allowed",
 						"data-[placeholder]:text-text-muted",
 						triggerClassName,
 					)}
+					disabled={disabled}
+					aria-label={ariaLabel}
 				>
-					<div className="flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap">
-						<SelectPrimitive.Value placeholder={placeholder} />
-					</div>
-					<ChevronDownIcon className="size-[13px] shrink-0 text-text ml-2" />
+					{renderTriggerContent ? (
+						<div className="flex-1 flex items-center justify-center">
+							{renderTriggerContent}
+						</div>
+					) : (
+						<div className="flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap">
+							<SelectPrimitive.Value placeholder={placeholder} />
+						</div>
+					)}
+					{!hideChevron && (
+						<ChevronDownIcon className="size-[13px] shrink-0 text-text ml-2" />
+					)}
 				</button>
 			</SelectPrimitive.Trigger>
 			<SelectPrimitive.Portal>
 				<SelectPrimitive.Content
 					position="popper"
 					sideOffset={4}
-					className={clsx("min-w-(--radix-select-trigger-width) z-50")}
+					className={clsx(
+						contentMinWidthClassName ?? "min-w-(--radix-select-trigger-width)",
+						"z-50",
+					)}
 				>
 					<PopoverContent>
 						<SelectPrimitive.Viewport>
@@ -81,7 +112,7 @@ export function Select<T extends SelectOption>({
 									}
 									disabled={option.disabled}
 									className={clsx(
-										"text-text outline-none cursor-pointer hover:bg-ghost-element-hover",
+										"outline-none cursor-pointer hover:bg-white/5",
 										"rounded-[4px] px-[8px] py-[6px] text-[14px]",
 										"flex items-center justify-between gap-[4px]",
 										"data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:pointer-events-none",

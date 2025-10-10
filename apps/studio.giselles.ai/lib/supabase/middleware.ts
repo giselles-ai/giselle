@@ -9,19 +9,6 @@ export const supabaseMiddleware = (
 	) => Promise<NextResponse | undefined>,
 ) => {
 	return async (request: NextRequest) => {
-		// Dev safeguard: If Supabase env vars are not set locally, skip auth wiring
-		if (
-			!process.env.NEXT_PUBLIC_SUPABASE_URL ||
-			!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-		) {
-			// Throw error in production if Supabase environment variables are missing
-			if (process.env.NODE_ENV === "production") {
-				throw new Error(
-					"Supabase environment variables are required in production",
-				);
-			}
-			return NextResponse.next({ request });
-		}
 		let supabaseResponse = NextResponse.next({
 			request,
 		});

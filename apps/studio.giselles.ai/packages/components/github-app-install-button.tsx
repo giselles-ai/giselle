@@ -1,9 +1,9 @@
 "use client";
 
+import { Button } from "@giselle-internal/ui/button";
 import { ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { Button } from "@/app/(main)/settings/components/button";
 
 type Props = {
 	installationUrl: string;
@@ -68,12 +68,13 @@ export function GitHubAppInstallButton({ installationUrl, installed }: Props) {
 	return (
 		<Button
 			onClick={handleInstall}
-			className="items-center justify-center shrink"
+			variant="primary"
+			size="large"
+			rightIcon={<ExternalLink />}
 		>
 			{installed
 				? "Configure Giselle's GitHub App"
 				: "Add Giselle's GitHub App"}
-			<ExternalLink className="shrink-0 w-5 h-5" />
 		</Button>
 	);
 }

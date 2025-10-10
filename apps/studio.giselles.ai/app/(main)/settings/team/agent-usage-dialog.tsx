@@ -1,3 +1,4 @@
+import { Button } from "@giselle-internal/ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -5,7 +6,6 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "../components/button";
 import { type AgentActivity, AgentUsageTable } from "./agent-usage-table";
 
 type AgentUsageDialogProps = {
@@ -16,7 +16,9 @@ export function AgentUsageDialog({ activities }: AgentUsageDialogProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button variant="primary">View All Logs</Button>
+				<Button variant="primary" size="large">
+					View All Logs
+				</Button>
 			</DialogTrigger>
 			<DialogContent className="border-[0.5px] border-border px-[24px] pt-[16px] pb-[24px] bg-surface max-w-7xl">
 				<DialogHeader>

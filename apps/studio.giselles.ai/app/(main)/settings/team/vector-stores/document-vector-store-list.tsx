@@ -1,3 +1,5 @@
+import { EmptyState } from "@giselle-internal/ui/empty-state";
+import { SectionHeader } from "@giselle-internal/ui/section-header";
 import { Card } from "@/components/ui/card";
 import type { DocumentVectorStoreId } from "@/packages/types";
 import type { DocumentVectorStoreWithProfiles } from "./data";
@@ -23,16 +25,11 @@ export function DocumentVectorStoreList({
 	return (
 		<div className="flex flex-col gap-y-[16px]">
 			<Card className="rounded-[8px] bg-transparent p-6 border-0">
-				<div className="flex items-center mb-4">
-					<div>
-						<h4 className="text-white-400 font-medium text-[18px] leading-[21.6px] font-sans">
-							Document Vector Stores
-						</h4>
-						<p className="text-black-400 text-[14px] leading-[20.4px] font-geist mt-1">
-							Manage the vector stores configured for document ingestion.
-						</p>
-					</div>
-				</div>
+				<SectionHeader
+					title="Document Vector Stores"
+					description="Manage the vector stores configured for document ingestion."
+					className="mb-4"
+				/>
 
 				{stores.length > 0 ? (
 					<div className="space-y-4">
@@ -55,9 +52,11 @@ export function DocumentVectorStoreList({
 
 function EmptyDocumentVectorStoreCard() {
 	return (
-		<div className="text-black-300 text-center py-16 bg-surface rounded-lg">
-			<div>No document vector stores yet.</div>
-			<div>Use the "New Vector Store" button to create one.</div>
+		<div className="text-center py-16 bg-surface rounded-lg">
+			<EmptyState
+				title="No document vector stores yet."
+				description='Use the "New Vector Store" button to create one.'
+			/>
 		</div>
 	);
 }

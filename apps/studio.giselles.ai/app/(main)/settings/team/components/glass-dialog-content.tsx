@@ -31,7 +31,7 @@ export const GlassDialogContent = React.forwardRef<
 				<Dialog.Content
 					ref={ref}
 					className={cn(
-						"relative z-10 w-[90vw] max-w-[500px] max-h-[90vh] overflow-y-auto rounded-[12px] p-6",
+						"relative z-10 w-[90vw] max-w-[600px] max-h-[85vh] rounded-[12px] p-6 pb-20 flex flex-col",
 						"shadow-xl focus:outline-none",
 						className,
 					)}
@@ -103,9 +103,17 @@ export const GlassDialogHeader = ({
 
 export const GlassDialogBody = ({
 	children,
+	className,
 }: {
 	children: React.ReactNode;
-}) => <div className="mt-4">{children}</div>;
+	className?: string;
+}) => (
+	<div
+		className={cn("mt-4 mb-0 overflow-y-auto flex-1 min-h-0 pr-2", className)}
+	>
+		{children}
+	</div>
+);
 
 type GlassDialogFooterProps = {
 	onCancel: () => void;
@@ -125,7 +133,7 @@ export const GlassDialogFooter = ({
 	confirmButtonType = "button",
 }: GlassDialogFooterProps) => {
 	return (
-		<div className="mt-6 flex justify-end gap-x-3">
+		<div className="absolute bottom-6 left-6 right-6 flex justify-end gap-x-3">
 			<button
 				type="button"
 				onClick={onCancel}

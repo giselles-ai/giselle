@@ -1,4 +1,5 @@
-import { ExternalLink } from "lucide-react";
+import { DocsLink } from "@giselle-internal/ui/docs-link";
+import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { docVectorStoreFlag } from "@/flags";
 import { getGitHubIdentityState } from "@/services/accounts";
 import {
@@ -49,24 +50,11 @@ export default async function TeamVectorStorePage() {
 	return (
 		<div className="flex flex-col gap-[24px]">
 			<div className="flex justify-between items-center">
-				<h1
-					className="text-[30px] font-sans font-medium text-[hsl(192,73%,84%)]"
-					style={{
-						textShadow: "0 0 20px #0087f6, 0 0 40px #0087f6, 0 0 60px #0087f6",
-					}}
-				>
-					Vector Stores
-				</h1>
+				<PageHeading glow>Vector Stores</PageHeading>
 				<div className="flex items-center gap-4">
-					<a
-						href="https://docs.giselles.ai/guides/settings/team/vector-store"
-						target="_blank"
-						rel="noopener noreferrer"
-						className="text-black-300 text-[14px] font-medium rounded-[4px] px-1.5 py-0.5 hover:bg-surface-hover flex items-center gap-1.5 font-sans"
-					>
+					<DocsLink href="https://docs.giselles.ai/guides/settings/team/vector-store">
 						About Vector Stores
-						<ExternalLink size={14} />
-					</a>
+					</DocsLink>
 					<RepositoryRegistrationDialog
 						installationsWithRepos={installationsWithRepos}
 						registerRepositoryIndexAction={registerRepositoryIndex}

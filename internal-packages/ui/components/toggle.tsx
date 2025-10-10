@@ -5,11 +5,13 @@ export function Toggle({
 	name,
 	checked,
 	onCheckedChange,
+	disabled,
 	children,
 }: React.PropsWithChildren<{
 	name: string;
 	checked?: boolean;
 	onCheckedChange?: (checked: boolean) => void;
+	disabled?: boolean;
 }>) {
 	return (
 		<div className="flex items-center">
@@ -19,10 +21,12 @@ export function Toggle({
 					"h-[15px] w-[27px] rounded-full outline-none",
 					"border border-border-muted data-[state=checked]:border-primary-900",
 					"bg-transparent data-[state=checked]:bg-primary-900",
+					disabled && "opacity-50 cursor-not-allowed",
 				)}
 				id={name}
 				checked={checked}
 				onCheckedChange={onCheckedChange}
+				disabled={disabled}
 			>
 				<Switch.Thumb
 					className={clsx(

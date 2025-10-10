@@ -1,20 +1,16 @@
 "use client";
 
+import { AccentLink } from "@giselle-internal/ui/accent-link";
+import { GlassCard } from "@giselle-internal/ui/glass-card";
+import { RepoActionMenu } from "@giselle-internal/ui/repo-action-menu";
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
+import { StatusIndicator } from "@giselle-internal/ui/status-indicator";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
 import * as Dialog from "@radix-ui/react-dialog";
-import { MoreVertical, RefreshCw, Settings, Trash } from "lucide-react";
+import { RefreshCw, Settings, Trash } from "lucide-react";
 import { useMemo, useState, useTransition } from "react";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import type {
 	GitHubRepositoryContentType,
-	GitHubRepositoryIndexStatus,
 	githubRepositoryContentStatus,
 } from "@/drizzle";
 import { cn } from "@/lib/utils";
@@ -30,14 +26,6 @@ import { DiagnosticModal } from "./diagnostic-modal";
 import { getErrorMessage } from "./error-messages";
 import { GITHUB_EMBEDDING_PROFILES } from "./github-embedding-profiles";
 import type { DocumentLoaderErrorCode } from "./types";
-
-// Status configuration for sync badges
-const STATUS_CONFIG = {
-	idle: { dotColor: "bg-[#B8E8F4]", label: "Idle" },
-	running: { dotColor: "bg-[#39FF7F] animate-custom-pulse", label: "Running" },
-	completed: { dotColor: "bg-[#39FF7F]", label: "Ready" },
-	failed: { dotColor: "bg-[#FF3D71]", label: "Error" },
-} as const;
 
 type RepositoryItemProps = {
 	repositoryData: RepositoryWithStatuses;
@@ -79,6 +67,7 @@ export function RepositoryItem({
 	const [showDiagnosticModal, setShowDiagnosticModal] = useState(false);
 	const [isPending, startTransition] = useTransition();
 	const [isIngesting, startIngestTransition] = useTransition();
+	//
 
 	const handleDelete = () => {
 		startTransition(async () => {
@@ -117,92 +106,67 @@ export function RepositoryItem({
 		);
 	});
 
+	//
+
 	return (
-		<div
-			className={cn(
-				"group relative rounded-[12px] overflow-hidden w-full bg-white/[0.02] backdrop-blur-[8px] border-[0.5px] border-border shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(255,255,255,0.2)] before:content-[''] before:absolute before:inset-0 before:bg-white before:opacity-[0.02] before:rounded-[inherit] before:pointer-events-none hover:border-border transition-colors duration-200",
-			)}
-		>
-			<div className="px-[24px] py-[16px]">
-				{/* Repository Header */}
-				<div className="flex items-center justify-between gap-4 mb-3">
-					<a
-						href={`https://github.com/${repositoryIndex.owner}/${repositoryIndex.repo}`}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="text-[#1663F3] font-medium text-[16px] leading-[22.4px] font-geist hover:text-[#0f4cd1] transition-colors duration-200"
-					>
-						{repositoryIndex.owner}/{repositoryIndex.repo}
-					</a>
-					<div className="flex items-center gap-2">
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<button
-									type="button"
-									aria-label="Repository actions menu"
-									className="transition-opacity duration-200 p-2 text-white/60 hover:text-white/80 hover:bg-white/5 rounded-md disabled:opacity-50"
-									disabled={isPending || isIngesting}
-								>
-									<MoreVertical className="h-4 w-4" />
-								</button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent
-								align="end"
-								className="w-[180px] bg-surface border-[0.5px] border-border rounded-[8px]"
-							>
-								<DropdownMenuItem
-									onClick={handleManualIngest}
-									disabled={!canManuallyIngest || isIngesting}
-									className="flex items-center px-3 py-2 text-[14px] leading-[16px] text-white-400 hover:bg-white/5 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-								>
-									<RefreshCw className="h-4 w-4 mr-2" />
-									Ingest Now
-								</DropdownMenuItem>
-								<DropdownMenuItem
-									onClick={() => setShowConfigureDialog(true)}
-									className="flex items-center px-3 py-2 text-[14px] leading-[16px] text-white-400 hover:bg-white/5 rounded-md"
-								>
-									<Settings className="h-4 w-4 mr-2" />
-									Configure Sources
-								</DropdownMenuItem>
-								<DropdownMenuSeparator className="my-1 h-px bg-white/10" />
-								<DropdownMenuItem
-									onSelect={(e) => {
-										e.preventDefault();
-										setShowDeleteDialog(true);
-									}}
-									className="flex items-center px-3 py-2 text-[14px] leading-[16px] text-error-900 hover:bg-error-900/20 rounded-md"
-								>
-									<Trash className="h-4 w-4 mr-2" />
-									Delete
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
-					</div>
-				</div>
-
-				{/* Embedding Model Cards - Grid Layout */}
-				<div className="grid grid-cols-3 gap-3 w-full">
-					{embeddingProfileIds.map((profileId) => {
-						const profile =
-							GITHUB_EMBEDDING_PROFILES[
-								profileId as keyof typeof GITHUB_EMBEDDING_PROFILES
-							];
-						return (
-							<EmbeddingModelCard
-								key={profileId}
-								profile={profile}
-								profileId={profileId}
-								contentStatuses={contentStatuses}
-								isIngesting={isIngesting}
-								onShowDiagnostic={() => setShowDiagnosticModal(true)}
-							/>
-						);
-					})}
-				</div>
+		<GlassCard className={cn("group")} paddingClassName="px-[24px] py-[16px]">
+			{/* Repository Header + Cards in one row: [name] [cards...] [menu] */}
+			{/* Row 1: Link + Menu */}
+			<div className="flex items-center justify-between gap-4 mb-3">
+				<AccentLink
+					href={`https://github.com/${repositoryIndex.owner}/${repositoryIndex.repo}`}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="font-medium text-[16px] leading-[22.4px] font-geist"
+				>
+					{repositoryIndex.owner}/{repositoryIndex.repo}
+				</AccentLink>
+				<RepoActionMenu
+					id={`repo-actions-${repositoryIndex.id}`}
+					disabled={isPending || isIngesting}
+					actions={[
+						{
+							value: "ingest",
+							label: "Ingest Now",
+							icon: <RefreshCw className="h-4 w-4" />,
+							disabled: !canManuallyIngest || isIngesting,
+							onSelect: handleManualIngest,
+						},
+						{
+							value: "configure",
+							label: "Configure Sources",
+							icon: <Settings className="h-4 w-4" />,
+							onSelect: () => setShowConfigureDialog(true),
+						},
+						{
+							value: "delete",
+							label: "Delete",
+							icon: <Trash className="h-4 w-4 text-error-900" />,
+							destructive: true,
+							onSelect: () => setShowDeleteDialog(true),
+						},
+					]}
+				/>
 			</div>
-
-			{/* Dialogs */}
+			{/* Row 2: Cards grid */}
+			<div className="grid grid-cols-3 gap-3 w-full">
+				{embeddingProfileIds.map((profileId) => {
+					const profile =
+						GITHUB_EMBEDDING_PROFILES[
+							profileId as keyof typeof GITHUB_EMBEDDING_PROFILES
+						];
+					return (
+						<EmbeddingModelCard
+							key={profileId}
+							profile={profile}
+							profileId={profileId}
+							contentStatuses={contentStatuses}
+							isIngesting={isIngesting}
+							onShowDiagnostic={() => setShowDiagnosticModal(true)}
+						/>
+					);
+				})}
+			</div>
 			<Dialog.Root open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
 				<GlassDialogContent variant="destructive">
 					<GlassDialogHeader
@@ -238,7 +202,7 @@ export function RepositoryItem({
 				}}
 				onDelete={() => handleDelete()}
 			/>
-		</div>
+		</GlassCard>
 	);
 }
 
@@ -296,19 +260,44 @@ function EmbeddingModelCard({
 										Enabled
 									</StatusBadge>
 								) : (
-									<SyncStatusBadge
-										status={
-											isIngesting && blobStatus.enabled
-												? "running"
-												: blobStatus.status
-										}
-										onVerify={
-											blobStatus?.status === "failed" &&
-											blobStatus?.errorCode === "DOCUMENT_NOT_FOUND"
-												? onShowDiagnostic
-												: undefined
-										}
-									/>
+									<div className="flex items-center gap-2">
+										<div className="flex items-center px-2 py-1 rounded-full border border-border-muted">
+											<StatusIndicator
+												status={
+													isIngesting && blobStatus.enabled
+														? "running"
+														: blobStatus.status
+												}
+												size="sm"
+												showLabel={false}
+											/>
+											<span
+												className={`text-[12px] leading-[14px] font-medium font-geist flex-1 text-center ml-1.5 ${
+													blobStatus.status === "failed"
+														? "text-error-900"
+														: "text-black-400"
+												}`}
+											>
+												{isIngesting && blobStatus.enabled
+													? "Running"
+													: blobStatus.status === "idle"
+														? "Idle"
+														: blobStatus.status === "failed"
+															? "Error"
+															: "Unknown"}
+											</span>
+										</div>
+										{blobStatus?.status === "failed" &&
+											blobStatus?.errorCode === "DOCUMENT_NOT_FOUND" && (
+												<button
+													type="button"
+													onClick={onShowDiagnostic}
+													className="text-[#1663F3] text-[12px] leading-[14px] font-medium font-geist hover:underline"
+												>
+													Check ↗
+												</button>
+											)}
+									</div>
 								)
 							) : (
 								<StatusBadge status="ignored" variant="dot">
@@ -366,19 +355,44 @@ function EmbeddingModelCard({
 										Enabled
 									</StatusBadge>
 								) : (
-									<SyncStatusBadge
-										status={
-											isIngesting && pullRequestStatus.enabled
-												? "running"
-												: pullRequestStatus.status
-										}
-										onVerify={
-											pullRequestStatus?.status === "failed" &&
-											pullRequestStatus?.errorCode === "DOCUMENT_NOT_FOUND"
-												? onShowDiagnostic
-												: undefined
-										}
-									/>
+									<div className="flex items-center gap-2">
+										<div className="flex items-center px-2 py-1 rounded-full border border-border-muted">
+											<StatusIndicator
+												status={
+													isIngesting && pullRequestStatus.enabled
+														? "running"
+														: pullRequestStatus.status
+												}
+												size="sm"
+												showLabel={false}
+											/>
+											<span
+												className={`text-[12px] leading-[14px] font-medium font-geist flex-1 text-center ml-1.5 ${
+													pullRequestStatus.status === "failed"
+														? "text-error-900"
+														: "text-black-400"
+												}`}
+											>
+												{isIngesting && pullRequestStatus.enabled
+													? "Running"
+													: pullRequestStatus.status === "idle"
+														? "Idle"
+														: pullRequestStatus.status === "failed"
+															? "Error"
+															: "Unknown"}
+											</span>
+										</div>
+										{pullRequestStatus?.status === "failed" &&
+											pullRequestStatus?.errorCode === "DOCUMENT_NOT_FOUND" && (
+												<button
+													type="button"
+													onClick={onShowDiagnostic}
+													className="text-[#1663F3] text-[12px] leading-[14px] font-medium font-geist hover:underline"
+												>
+													Check ↗
+												</button>
+											)}
+									</div>
 								)
 							) : (
 								<StatusBadge status="ignored" variant="dot">
@@ -424,56 +438,6 @@ function EmbeddingModelCard({
 					)}
 				</div>
 			</div>
-		</div>
-	);
-}
-
-function SyncStatusBadge({
-	status,
-	onVerify,
-}: {
-	status: GitHubRepositoryIndexStatus;
-	onVerify?: () => void;
-}) {
-	const config = STATUS_CONFIG[status] ?? {
-		dotColor: "bg-gray-500",
-		label: "unknown",
-	};
-
-	const badgeContent = (
-		<>
-			<div className={`w-2 h-2 rounded-full ${config.dotColor} shrink-0`} />
-			<span className="text-black-400 text-[12px] leading-[14px] font-medium font-geist flex-1 text-center ml-1.5">
-				{config.label}
-			</span>
-			{status === "failed" && onVerify && (
-				<>
-					<span className="text-black-400 text-[12px] mx-1">•</span>
-					<span className="text-[#1663F3] text-[12px] leading-[14px] font-medium font-geist">
-						Check
-					</span>
-					<span className="text-[#1663F3] text-[10px] ml-0.5">↗</span>
-				</>
-			)}
-		</>
-	);
-
-	if (onVerify) {
-		return (
-			<button
-				type="button"
-				aria-label="Verify repository status"
-				onClick={onVerify}
-				className="flex items-center px-2 py-1 rounded-full border border-border w-auto hover:bg-white/5 transition-colors duration-200"
-			>
-				{badgeContent}
-			</button>
-		);
-	}
-
-	return (
-		<div className="flex items-center px-2 py-1 rounded-full border border-border-muted w-[80px]">
-			{badgeContent}
 		</div>
 	);
 }

@@ -111,6 +111,7 @@ export function SearchHeader({
 					placeholder="Sort"
 					value={sortOption}
 					onValueChange={(value) => onSortChange(value as SortOption)}
+					widthClassName="w-auto"
 					triggerClassName={selectTextClassName}
 				/>
 
