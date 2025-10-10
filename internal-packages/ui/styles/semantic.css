@@ -7,7 +7,7 @@
 		--color-text-inverse: var(--color-white);
 		--color-surface: var(--color-gray-950);
 		--color-border: var(--color-gray-900);
-		--color-border-muted: var(--color-gray-800);
+		--color-border-muted: var(--color-gray-700);
 		--color-focused: var(--color-info-500);
 		/* secondary / link-muted */
 		--color-text-secondary: #505d7b;

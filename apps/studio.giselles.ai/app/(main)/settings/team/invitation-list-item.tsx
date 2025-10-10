@@ -1,5 +1,11 @@
 "use client";
 
+import {
+	GlassDialogContent,
+	GlassDialogFooter,
+	GlassDialogHeader,
+} from "@giselle-internal/ui/glass-dialog";
+import { useToasts } from "@giselle-internal/ui/toast";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Copy, Ellipsis, RefreshCw, Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
@@ -10,13 +16,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { TeamRole } from "@/drizzle";
-import { useToast } from "@/packages/contexts/toast";
 import { resendInvitationAction, revokeInvitationAction } from "./actions";
-import {
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "./components/glass-dialog-content";
 import { LocalDateTime } from "./components/local-date-time";
 
 type InvitationListItemProps = {
@@ -34,7 +34,7 @@ export function InvitationListItem({
 	expiredAt,
 	currentUserRole,
 }: InvitationListItemProps) {
-	const { addToast } = useToast();
+	const { toast, info } = useToasts();
 	const [error, setError] = useState("");
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -49,19 +49,11 @@ export function InvitationListItem({
 				process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
 			const link = `${baseUrl}/join/${token}`;
 			await navigator.clipboard.writeText(link);
-			addToast({
-				title: "Copied",
-				message: "Invite link copied!",
-				type: "info",
-			});
+			info("Invite link copied!");
 			setDropdownOpen(false);
 		} catch (e) {
 			console.error("Failed to copy link:", e);
-			addToast({
-				title: "Error",
-				message: "Failed to copy link",
-				type: "error",
-			});
+			toast("Failed to copy link", { type: "error" });
 		}
 	};
 
@@ -71,14 +63,10 @@ export function InvitationListItem({
 			formData.append("token", token);
 			const res = await resendInvitationAction(undefined, formData);
 			if (res.success) {
-				addToast({
-					title: "Success",
-					message: "Invitation resent!",
-					type: "success",
-				});
+				toast("Invitation resent!", { type: "success" });
 				setDropdownOpen(false);
 			} else {
-				addToast({ title: "Error", message: res.error, type: "error" });
+				toast(res.error, { type: "error" });
 			}
 		});
 	};
@@ -89,16 +77,12 @@ export function InvitationListItem({
 			formData.append("token", token);
 			const res = await revokeInvitationAction(undefined, formData);
 			if (res.success) {
-				addToast({
-					title: "Success",
-					message: "Invitation revoked!",
-					type: "success",
-				});
+				toast("Invitation revoked!", { type: "success" });
 				setDialogOpen(false);
 				setDropdownOpen(false);
 			} else {
 				const err = res.error;
-				addToast({ title: "Error", message: err, type: "error" });
+				toast(err, { type: "error" });
 				setError(err);
 			}
 		});
@@ -142,7 +126,7 @@ export function InvitationListItem({
 							</DropdownMenuTrigger>
 							<DropdownMenuContent
 								align="end"
-								className="p-1 border-[0.25px] border-border-muted rounded-[8px] min-w-[165px] bg-surface shadow-none"
+								className="p-1 border-[0.5px] border-white/10 rounded-[8px] min-w-[165px] bg-white/[0.02] backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),inset_0_-1px_1px_rgba(255,255,255,0.05)] relative overflow-hidden before:content-[''] before:absolute before:inset-0 before:bg-white before:opacity-[0.02] before:rounded-[inherit] before:pointer-events-none"
 							>
 								<DropdownMenuItem
 									onSelect={(e) => {

@@ -1,3 +1,4 @@
+import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import { Card } from "../../components/card";
@@ -6,28 +7,19 @@ import { listInvitations } from "../invitation";
 import { InviteMemberDialog } from "../invite-member-dialog";
 import { TeamMembersList } from "../team-members-list";
 
-// Reusable page title component (h1)
+// Page title (glow effect preserved)
 function PageTitle({ children }: { children: React.ReactNode }) {
-	return (
-		<h1
-			className="text-[30px] font-sans font-medium text-[hsl(192,73%,84%)]"
-			style={{
-				textShadow: "0 0 20px #0087f6, 0 0 40px #0087f6, 0 0 60px #0087f6",
-			}}
-		>
-			{children}
-		</h1>
-	);
+	return <PageHeading glow>{children}</PageHeading>;
 }
 
-// Custom title component with border
-function TitleWithBorder({ title }: { title: string }) {
+// Section header using semantic color + separator
+function SectionHeader({ title }: { title: string }) {
 	return (
 		<div className="mb-2">
-			<h2 className="text-white-400 text-[16px] leading-[27.2px] tracking-normal font-sans mb-1">
+			<h2 className="text-text/60 text-[16px] leading-[27.2px] tracking-normal font-sans mb-1">
 				{title}
 			</h2>
-			<div className="pb-2" />
+			{/* separator removed to avoid double line with first row border */}
 		</div>
 	);
 }
@@ -46,8 +38,8 @@ export default async function TeamMembersPage() {
 			<div className="flex flex-col gap-[24px]">
 				<PageTitle>Members</PageTitle>
 				<Card title="" className="gap-0">
-					<TitleWithBorder title="Member List" />
-					<div className="text-error-900 text-[12px] leading-[20.4px] tracking-normal font-geist">
+					<SectionHeader title="Member List" />
+					<div className="text-[12px] leading-[20.4px] tracking-normal font-geist">
 						Failed to load team members
 					</div>
 				</Card>
@@ -60,8 +52,8 @@ export default async function TeamMembersPage() {
 			<div className="flex flex-col gap-[24px]">
 				<PageTitle>Members</PageTitle>
 				<Card title="" className="gap-0">
-					<TitleWithBorder title="Member List" />
-					<div className="text-error-900 text-[12px] leading-[20.4px] tracking-normal font-geist">
+					<SectionHeader title="Member List" />
+					<div className="text-[12px] leading-[20.4px] tracking-normal font-geist">
 						Failed to get current user role
 					</div>
 				</Card>
@@ -83,7 +75,7 @@ export default async function TeamMembersPage() {
 				)}
 			</div>
 			<Card title="" className="gap-0">
-				<TitleWithBorder title="Member List" />
+				<SectionHeader title="Member List" />
 				<TeamMembersList
 					teamId={team.id}
 					isProPlan={hasProPlan}

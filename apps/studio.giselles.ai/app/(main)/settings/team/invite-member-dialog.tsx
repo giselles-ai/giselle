@@ -1,23 +1,19 @@
 "use client";
 
-import * as Dialog from "@radix-ui/react-dialog";
-import { Check, ChevronDown, Plus, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { email as emailValidator, parse, pipe, string } from "valibot";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { GlassButton } from "@/components/ui/glass-button";
-import type { TeamRole } from "@/drizzle";
-import { type SendInvitationsResult, sendInvitationsAction } from "./actions";
 import {
 	GlassDialogBody,
 	GlassDialogContent,
 	GlassDialogFooter,
 	GlassDialogHeader,
-} from "./components/glass-dialog-content";
+} from "@giselle-internal/ui/glass-dialog";
+import { Select } from "@giselle-internal/ui/select";
+import * as Dialog from "@radix-ui/react-dialog";
+import { Plus, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { email as emailValidator, parse, pipe, string } from "valibot";
+import { GlassButton } from "@/components/ui/glass-button";
+import type { TeamRole } from "@/drizzle";
+import { type SendInvitationsResult, sendInvitationsAction } from "./actions";
 
 type InviteMemberDialogProps = {
 	memberEmails: string[];
@@ -375,43 +371,18 @@ export function InviteMemberDialog({
 									disabled={isLoading}
 								/>
 							</div>
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<button
-										type="button"
-										className="flex h-10 items-center gap-1 rounded-md px-3 font-sans text-[14px] font-medium leading-[16px] text-white-400 bg-surface hover:bg-white/5 hover:text-white-100"
-										disabled={isLoading}
-									>
-										<span className="capitalize">{role}</span>
-										<ChevronDown className="h-4 w-4 opacity-60" />
-									</button>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent
-									align="end"
-									className="min-w-[120px] rounded-[8px] border-[0.25px] border-border-muted bg-surface p-1 shadow-none"
-								>
-									<button
-										type="button"
-										onClick={() => setRole("admin")}
-										className="flex w-full items-center rounded-md px-3 py-2 text-left font-sans text-[14px] leading-[16px] text-white-400 hover:bg-white/5"
-									>
-										<span className="mr-2 inline-flex h-4 w-4 items-center justify-center">
-											{role === "admin" && <Check className="h-4 w-4" />}
-										</span>
-										Admin
-									</button>
-									<button
-										type="button"
-										onClick={() => setRole("member")}
-										className="flex w-full items-center rounded-md px-3 py-2 text-left font-sans text-[14px] leading-[16px] text-white-400 hover:bg-white/5"
-									>
-										<span className="mr-2 inline-flex h-4 w-4 items-center justify-center">
-											{role === "member" && <Check className="h-4 w-4" />}
-										</span>
-										Member
-									</button>
-								</DropdownMenuContent>
-							</DropdownMenu>
+							<Select
+								id="invite-role"
+								options={[
+									{ value: "admin", label: "Admin" },
+									{ value: "member", label: "Member" },
+								]}
+								placeholder="Role"
+								value={role}
+								onValueChange={(v) => setRole(v as TeamRole)}
+								widthClassName="w-auto min-w-[140px]"
+								triggerClassName="h-10"
+							/>
 						</div>
 						{errors.length > 0 && (
 							<div className="mt-1 space-y-1">

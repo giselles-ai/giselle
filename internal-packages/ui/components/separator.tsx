@@ -24,9 +24,7 @@ export function Separator({
 				"shrink-0",
 				// sizing
 				isVertical ? "w-px h-full" : "h-px w-full",
-				// border color (semantic)
-				"bg-current",
-				// use border color token via border utility for better compatibility
+				// single hairline using border only (avoid double line)
 				isVertical ? "border-l border-border" : "border-t border-border",
 				// allow inverse styling hook (color mapping can be updated later)
 				"data-[variant=inverse]:border-border",

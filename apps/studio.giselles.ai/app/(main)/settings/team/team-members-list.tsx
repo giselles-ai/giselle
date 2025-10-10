@@ -1,7 +1,5 @@
 "use client";
 import type { TeamRole } from "@/drizzle";
-import { Toast } from "@/packages/components/toast";
-import { useToast } from "@/packages/contexts/toast";
 import type { TeamId } from "@/services/teams/types";
 import type { Invitation } from "./invitation";
 import { InvitationListItem } from "./invitation-list-item";
@@ -30,7 +28,7 @@ export function TeamMembersList({
 	isProPlan,
 	currentUserId,
 }: TeamMembersListProps) {
-	const { toasts } = useToast();
+	// internal Toast is globally provided via layout; no per-list usage required
 
 	return (
 		<>
@@ -59,9 +57,7 @@ export function TeamMembersList({
 						currentUserRole={currentUserRole}
 					/>
 				))}
-			{toasts.map((toast) => (
-				<Toast key={toast.id} {...toast} />
-			))}
+			{/* Internal toast renders via provider viewport globally */}
 		</>
 	);
 }

@@ -13,6 +13,7 @@
 		"./dialog": "./components/dialog.tsx",
 		"./button": "./components/button.tsx",
 		"./select": "./components/select.tsx",
+		"./glass-dialog": "./components/glass-dialog.tsx",
 		"./note": "./components/note.tsx",
 		"./dropdown-menu": "./components/dropdown-menu.tsx",
 		"./popover": "./components/popover.tsx",
@@ -27,9 +28,13 @@
 		"./inverse-surface": "./components/inverse-surface.tsx",
 		"./page-heading": "./components/page-heading.tsx",
 		"./docs-link": "./components/docs-link.tsx",
-		"./app-icon": "./components/app-icon.tsx"
+		"./app-icon": "./components/app-icon.tsx",
+		"./role-menu": "./components/role-menu.tsx",
+		"./invite-member-dialog": "./components/invite-member-dialog.tsx",
+		"./revoke-invitation-dialog": "./components/revoke-invitation-dialog.tsx"
 	},
 	"dependencies": {
+		"@radix-ui/react-dialog": "1.1.4",
 		"clsx": "catalog:",
 		"lucide-react": "catalog:",
 		"radix-ui": "catalog:",

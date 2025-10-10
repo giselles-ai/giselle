@@ -1,5 +1,5 @@
+import { ToastProvider } from "@giselle-internal/ui/toast";
 import type { ReactNode } from "react";
-import { ToastProvider } from "@/packages/contexts/toast";
 
 export default function Layout({ children }: { children: ReactNode }) {
 	return (

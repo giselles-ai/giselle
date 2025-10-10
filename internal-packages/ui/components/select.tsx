@@ -22,6 +22,7 @@ interface SelectProps<T extends SelectOption> {
 	name?: string;
 	id?: string;
 	renderValue?: (options: T) => string | number;
+	itemClassNameForOption?: (option: T) => string | undefined;
 }
 
 export function Select<T extends SelectOption>({
@@ -36,6 +37,7 @@ export function Select<T extends SelectOption>({
 	name,
 	id,
 	renderValue,
+	itemClassNameForOption,
 }: SelectProps<T>) {
 	return (
 		<SelectPrimitive.Root
@@ -48,11 +50,12 @@ export function Select<T extends SelectOption>({
 				<button
 					type="button"
 					className={clsx(
-						"w-full flex justify-between items-center rounded-[8px] h-10 px-[12px] text-left text-[14px]",
+						// width: default full, but allow override via widthClassName
+						widthClassName ?? "w-full",
+						"flex justify-between items-center rounded-[8px] h-10 px-[12px] text-left text-[14px] shrink-0",
 						"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
 						"bg-inverse/5 transition-colors hover:bg-inverse/10",
 						"data-[placeholder]:text-text-muted",
-						widthClassName,
 						triggerClassName,
 					)}
 				>
@@ -82,6 +85,7 @@ export function Select<T extends SelectOption>({
 										"rounded-[4px] px-[8px] py-[6px] text-[14px]",
 										"flex items-center justify-between gap-[4px]",
 										"data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:pointer-events-none",
+										itemClassNameForOption?.(option),
 									)}
 								>
 									<SelectPrimitive.ItemText>
