@@ -84,7 +84,7 @@
 		"motion": "catalog:",
 		"next": "catalog:",
 		"next-themes": "0.3.0",
-		"nodemailer": "6.10.0",
+		"nodemailer": "7.0.7",
 		"nuqs": "catalog:",
 		"openai": "catalog:",
 		"pg": "catalog:",
