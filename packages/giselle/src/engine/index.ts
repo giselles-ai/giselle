@@ -3,6 +3,7 @@ import type {
 	FileId,
 	FlowTrigger,
 	FlowTriggerId,
+	GitHubFlowTriggerEvent,
 	NodeId,
 	SecretId,
 	Workspace,
@@ -320,6 +321,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			repositoryNodeId: string;
 			installationId: number;
 			useExperimentalStorage: boolean;
+			event?: GitHubFlowTriggerEvent;
 		}) => {
 			return await reconfigureGitHubTrigger({ ...args, context });
 		},

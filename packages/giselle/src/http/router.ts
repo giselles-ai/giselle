@@ -3,6 +3,7 @@ import {
 	FileId,
 	FlowTrigger,
 	FlowTriggerId,
+	GitHubFlowTriggerEvent,
 	NodeId,
 	SecretId,
 	Workspace,
@@ -301,6 +302,7 @@ export const createJsonRouters = {
 				repositoryNodeId: z.string(),
 				installationId: z.number(),
 				useExperimentalStorage: z.boolean(),
+				event: GitHubFlowTriggerEvent.optional(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({

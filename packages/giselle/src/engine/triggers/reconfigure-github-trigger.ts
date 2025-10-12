@@ -1,6 +1,7 @@
 import {
 	type FlowTrigger,
 	type FlowTriggerId,
+	type GitHubFlowTriggerEvent,
 	isTriggerNode,
 	type TriggerNode,
 } from "@giselle-sdk/data-type";
@@ -18,6 +19,7 @@ export async function reconfigureGitHubTrigger(args: {
 	repositoryNodeId: string;
 	installationId: number;
 	useExperimentalStorage: boolean;
+	event?: GitHubFlowTriggerEvent;
 }) {
 	const currentTrigger = await getFlowTrigger({
 		storage: args.context.storage,
@@ -59,7 +61,7 @@ export async function reconfigureGitHubTrigger(args: {
 			provider: "github",
 			repositoryNodeId: newRepositoryNodeId,
 			installationId: args.installationId,
-			event: currentTrigger.configuration.event,
+			event: args.event ?? currentTrigger.configuration.event,
 		},
 	} satisfies FlowTrigger;
 	await setFlowTrigger({
