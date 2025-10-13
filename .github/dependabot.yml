@@ -2,19 +2,6 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "daily"
-      time: "08:00"
-      timezone: "Asia/Tokyo"
-    # Ignore scheduled version bumps; Dependabot still opens PRs for security advisories.
-    ignore:
-      - dependency-name: "*"
-        update-types:
-          - "version-update:semver-major"
-          - "version-update:semver-minor"
-          - "version-update:semver-patch"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
