@@ -620,8 +620,20 @@ export async function sendInvitationsAction(
 	emails: string[],
 	role: TeamRole,
 ): Promise<SendInvitationsResult> {
-	const currentUser = await fetchCurrentUser();
+	const currentUserRoleResult = await getCurrentUserRole();
+	if (
+		!currentUserRoleResult.success ||
+		currentUserRoleResult.data !== "admin"
+	) {
+		throw new Error("Only admin users can send invitations");
+	}
+
 	const currentTeam = await fetchCurrentTeam();
+	if (!isProPlan(currentTeam)) {
+		throw new Error("Team invitations require a Pro plan");
+	}
+
+	const currentUser = await fetchCurrentUser();
 
 	const invitationPromises = emails.map(
 		async (email): Promise<InvitationResult> => {
