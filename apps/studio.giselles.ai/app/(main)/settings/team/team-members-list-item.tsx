@@ -4,7 +4,7 @@ import {
 	GlassDialogFooter,
 	GlassDialogHeader,
 } from "@giselle-internal/ui/glass-dialog";
-import { Select } from "@giselle-internal/ui/select";
+import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { useToasts } from "@giselle-internal/ui/toast";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
@@ -45,6 +45,11 @@ export function TeamMemberListItem({
 		isProPlan && currentUserRole === "admin" && user !== currentUser;
 	const canRemove = user === currentUser || canEditRole;
 	const hasMenu = canEditRole || canRemove;
+	const roleSelectOptions: SelectOption[] = [
+		{ value: "admin", label: "Admin", disabled: !canEditRole },
+		{ value: "member", label: "Member", disabled: !canEditRole },
+		...(canRemove ? [{ value: "__remove__", label: "Remove" }] : []),
+	];
 
 	const handleRoleChange = (value: string) => {
 		const nextRole = value as TeamRole;
@@ -136,13 +141,7 @@ export function TeamMemberListItem({
 						{hasMenu ? (
 							<Select
 								id={`${userId}-role`}
-								options={[
-									{ value: "admin", label: "Admin" },
-									{ value: "member", label: "Member" },
-									...(canRemove
-										? [{ value: "__remove__", label: "Remove" }]
-										: []),
-								]}
+								options={roleSelectOptions}
 								placeholder="Role"
 								value={role}
 								onValueChange={(v) => {
