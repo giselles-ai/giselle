@@ -1,7 +1,7 @@
 import {
 	createCipheriv,
 	createDecipheriv,
-	createHash,
+	pbkdf2Sync,
 	randomBytes,
 } from "node:crypto";
 
@@ -19,8 +19,12 @@ function getStateSecret(): Buffer {
 	if (!secret) {
 		throw new Error("Missing OAuth state secret.");
 	}
-	const hash = createHash("sha256").update(secret).digest();
-	return hash;
+	const salt = Buffer.from(
+		process.env.INVITE_OAUTH_STATE_SALT ?? "invite_oauth_state_salt",
+	);
+	// Derive an AES-256 key with PBKDF2 to slow down brute-force attempts.
+	const key = pbkdf2Sync(secret, salt, 100_000, 32, "sha256");
+	return key;
 }
 
 export function encodeInviteState(payload: {
