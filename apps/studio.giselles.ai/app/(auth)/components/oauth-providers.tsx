@@ -4,45 +4,73 @@ import { Button } from "@/components/ui/button";
 import { authorizeGitHub, authorizeGoogle } from "../actions";
 import type { AuthComponentProps } from "../types";
 
+type HiddenInput = {
+	name: string;
+	value: string;
+};
+
 type OauthProvidersProps = AuthComponentProps & {
 	labelPrefix: string;
+	githubAction?: (formData: FormData) => Promise<void>;
+	googleAction?: (formData: FormData) => Promise<void>;
+	additionalHiddenInputs?: ReadonlyArray<HiddenInput>;
 };
 
 export const OAuthProviders: FC<OauthProvidersProps> = ({
 	labelPrefix,
 	returnUrl,
-}) => (
-	<div className="space-y-2">
-		<Button asChild variant="link">
-			<form className="flex items-center w-full relative">
-				<SiGoogle className="h-[20px] w-[20px] absolute left-[20px]" />
-				{returnUrl && (
-					<input type="hidden" name="returnUrl" value={returnUrl} />
-				)}
-				<button
-					type="submit"
-					formAction={authorizeGoogle}
-					className="font-sans w-full text-center"
-				>
-					{labelPrefix} with Google
-				</button>
-			</form>
-		</Button>
+	githubAction,
+	googleAction,
+	additionalHiddenInputs,
+}) => {
+	const hiddenInputs: ReadonlyArray<HiddenInput> = [
+		...(returnUrl ? [{ name: "returnUrl", value: returnUrl }] : []),
+		...(additionalHiddenInputs ?? []),
+	];
 
-		<Button asChild variant="link">
-			<form className="flex items-center w-full relative">
-				<SiGithub className="h-[20px] w-[20px] absolute left-[20px]" />
-				{returnUrl && (
-					<input type="hidden" name="returnUrl" value={returnUrl} />
-				)}
-				<button
-					type="submit"
-					formAction={authorizeGitHub}
-					className="font-sans w-full text-center"
-				>
-					{labelPrefix} with GitHub
-				</button>
-			</form>
-		</Button>
-	</div>
-);
+	return (
+		<div className="space-y-2">
+			<Button asChild variant="link">
+				<form className="flex items-center w-full relative">
+					<SiGoogle className="h-[20px] w-[20px] absolute left-[20px]" />
+					{hiddenInputs.map((input) => (
+						<input
+							key={`${input.name}-${input.value}`}
+							type="hidden"
+							name={input.name}
+							value={input.value}
+						/>
+					))}
+					<button
+						type="submit"
+						formAction={googleAction ?? authorizeGoogle}
+						className="font-sans w-full text-center"
+					>
+						{labelPrefix} with Google
+					</button>
+				</form>
+			</Button>
+
+			<Button asChild variant="link">
+				<form className="flex items-center w-full relative">
+					<SiGithub className="h-[20px] w-[20px] absolute left-[20px]" />
+					{hiddenInputs.map((input) => (
+						<input
+							key={`${input.name}-${input.value}`}
+							type="hidden"
+							name={input.name}
+							value={input.value}
+						/>
+					))}
+					<button
+						type="submit"
+						formAction={githubAction ?? authorizeGitHub}
+						className="font-sans w-full text-center"
+					>
+						{labelPrefix} with GitHub
+					</button>
+				</form>
+			</Button>
+		</div>
+	);
+};

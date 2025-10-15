@@ -1,16 +1,23 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { Divider } from "../../../components/divider";
 import { LegalConsent } from "../../../components/legal-consent";
+import { OAuthProviders } from "../../../components/oauth-providers";
 import { declineInvitation } from "../actions";
 import { fetchInvitationToken } from "../invitation";
 import { LoginForm } from "./form";
+import { authorizeJoinGitHub, authorizeJoinGoogle } from "./oauth-actions";
 
 export default async function Page({
 	params,
+	searchParams,
 }: {
 	params: Promise<{ token: string }>;
+	searchParams: Promise<{ authError?: string }>;
 }) {
-	const { token } = await params;
+	const [{ token }, { authError }] = await Promise.all([params, searchParams]);
+	const initialError =
+		typeof authError === "string" && authError.trim() !== "" ? authError : null;
 
 	const tokenObj = await fetchInvitationToken(token);
 	if (!tokenObj) {
@@ -34,7 +41,30 @@ export default async function Page({
 						</h2>
 					</div>
 					<div className="grid gap-[16px]">
-						<LoginForm email={tokenObj.invitedEmail} token={token} />
+						<div className="grid gap-[12px]">
+							<p className="text-sm text-slate-300 text-center">
+								Please continue with the social account that uses{" "}
+								<span className="font-medium">{tokenObj.invitedEmail}</span>.
+							</p>
+							<OAuthProviders
+								labelPrefix="Join"
+								returnUrl={`/join/${token}/oauth/callback`}
+								additionalHiddenInputs={[
+									{ name: "token", value: token },
+									{ name: "invitedEmail", value: tokenObj.invitedEmail },
+								]}
+								googleAction={authorizeJoinGoogle}
+								githubAction={authorizeJoinGitHub}
+							/>
+						</div>
+
+						<Divider label="or" />
+
+						<LoginForm
+							email={tokenObj.invitedEmail}
+							token={token}
+							initialError={initialError}
+						/>
 
 						<div className="text-center text-sm text-slate-400">
 							Don't have a Giselle account?{" "}

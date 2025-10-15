@@ -43,11 +43,7 @@ export async function GET(
 	const errorMessage = checkError(searchParams);
 	if (errorMessage) {
 		// Instead of returning an error response, redirect with the error message
-		return handleRedirect(
-			request,
-			next,
-			`authError=${encodeURIComponent(errorMessage)}`,
-		);
+		return handleRedirect(request, next, { authError: errorMessage });
 	}
 
 	const code = searchParams.get("code");
@@ -61,11 +57,9 @@ export async function GET(
 	if (error) {
 		const { code, message, name, status } = error;
 		// Redirect with error instead of showing error page
-		return handleRedirect(
-			request,
-			next,
-			`authError=${encodeURIComponent(`${name} occurred: ${code} (${status}): ${message}`)}`,
-		);
+		return handleRedirect(request, next, {
+			authError: `${name} occurred: ${code} (${status}): ${message}`,
+		});
 	}
 
 	logger.debug(
@@ -84,11 +78,7 @@ export async function GET(
 		const errorMsg =
 			error instanceof Error ? error.message : "Unknown error occurred";
 		// Redirect with error instead of showing error page
-		return handleRedirect(
-			request,
-			next,
-			`authError=${encodeURIComponent(errorMsg)}`,
-		);
+		return handleRedirect(request, next, { authError: errorMsg });
 	}
 
 	// Success case - redirect to the next page without error
@@ -109,10 +99,24 @@ function checkError(searchParams: URLSearchParams) {
 function handleRedirect(
 	request: NextRequest,
 	path: string,
-	queryString?: string,
+	queryParams?: Record<string, string | undefined>,
 ) {
 	const { origin } = new URL(request.url);
-	const redirectPath = queryString ? `${path}?${queryString}` : path;
+	const definedParams = Object.entries(queryParams ?? {}).filter(
+		(entry): entry is [string, string] => {
+			return entry[1] !== undefined && entry[1] !== "";
+		},
+	);
+	const queryString = definedParams
+		.map(([key, value]) => {
+			return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+		})
+		.join("&");
+	const hasExistingQuery = path.includes("?");
+	const redirectPath =
+		queryString === ""
+			? path
+			: `${path}${hasExistingQuery ? "&" : "?"}${queryString}`;
 
 	// Check for forwarded host (load balancer case)
 	const forwardedHost = request.headers.get("x-forwarded-host");

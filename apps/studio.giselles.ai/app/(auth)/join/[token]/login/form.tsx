@@ -11,11 +11,12 @@ import { loginUser } from "./actions";
 interface LoginFormProps {
 	email: string;
 	token: string;
+	initialError?: string | null;
 }
 
 export const LoginForm = (props: LoginFormProps) => {
 	const [password, setPassword] = useState("");
-	const [error, setError] = useState<string | null>(null);
+	const [error, setError] = useState<string | null>(props.initialError ?? null);
 	const [isPending, startTransition] = useTransition();
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

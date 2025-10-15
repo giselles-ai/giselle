@@ -7,9 +7,19 @@ import { JoinError } from "../errors";
 import { acceptInvitation } from "../invitation";
 
 export async function loginUser(formData: FormData) {
-	const email = formData.get("email") as string;
-	const password = formData.get("password") as string;
-	const token = formData.get("token") as string;
+	const emailEntry = formData.get("email");
+	const passwordEntry = formData.get("password");
+	const tokenEntry = formData.get("token");
+	if (
+		typeof emailEntry !== "string" ||
+		typeof passwordEntry !== "string" ||
+		typeof tokenEntry !== "string"
+	) {
+		return { error: "Invalid login payload. Please try again." };
+	}
+	const email = emailEntry;
+	const password = passwordEntry;
+	const token = tokenEntry;
 	const supabase = await createClient();
 	const { error } = await supabase.auth.signInWithPassword({ email, password });
 	if (error) {
