@@ -8,7 +8,7 @@ import { StatusIndicator } from "@giselle-internal/ui/status-indicator";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
 import * as Dialog from "@radix-ui/react-dialog";
 import { RefreshCw, Settings, Trash } from "lucide-react";
-import { useMemo, useState, useTransition } from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 import type {
 	GitHubRepositoryContentType,
 	githubRepositoryContentStatus,
@@ -69,7 +69,7 @@ export function RepositoryItem({
 	const [isIngesting, startIngestTransition] = useTransition();
 	//
 
-	const handleDelete = () => {
+	const handleDelete = useCallback(() => {
 		startTransition(async () => {
 			try {
 				await deleteRepositoryIndexAction(repositoryIndex.id);
@@ -78,9 +78,9 @@ export function RepositoryItem({
 				console.error(error);
 			}
 		});
-	};
+	}, [deleteRepositoryIndexAction, repositoryIndex.id]);
 
-	const handleManualIngest = () => {
+	const handleManualIngest = useCallback(() => {
 		startIngestTransition(async () => {
 			try {
 				const result = await triggerManualIngestAction(repositoryIndex.id);
@@ -91,9 +91,9 @@ export function RepositoryItem({
 				console.error("Error triggering manual ingest:", error);
 			}
 		});
-	};
+	}, [triggerManualIngestAction, repositoryIndex.id]);
 
-	// Check if manual ingest is allowed for any enabled content type
+	// Check if manual ingest is allowed for any enabled content type (original behavior)
 	const now = new Date();
 	const canManuallyIngest = contentStatuses.some((cs) => {
 		if (!cs.enabled) return false;
@@ -123,7 +123,7 @@ export function RepositoryItem({
 				</AccentLink>
 				<RepoActionMenu
 					id={`repo-actions-${repositoryIndex.id}`}
-					disabled={isPending || isIngesting}
+					disabled={isPending}
 					actions={[
 						{
 							value: "ingest",

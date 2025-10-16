@@ -169,7 +169,7 @@ export function DocumentVectorStoreItem({
 					</div>
 				</div>
 				<RepoActionMenu
-					disabled={disableMenu}
+					disabled={isPending}
 					actions={[
 						{
 							value: "configure",
