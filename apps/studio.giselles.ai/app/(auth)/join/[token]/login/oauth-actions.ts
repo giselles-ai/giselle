@@ -44,7 +44,7 @@ async function authorizeJoinOAuth(provider: OAuthProvider, formData: FormData) {
 			queryParams,
 		},
 	});
-	logger.debug({ provider, invitationToken: token }, "Authorized invite OAuth");
+	logger.debug({ provider }, "Authorized invite OAuth");
 
 	if (error != null) {
 		const { code, message, name, status } = error;
