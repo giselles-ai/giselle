@@ -11,16 +11,16 @@ type HiddenInput = {
 
 type OauthProvidersProps = AuthComponentProps & {
 	labelPrefix: string;
-	githubAction?: (formData: FormData) => Promise<void>;
-	googleAction?: (formData: FormData) => Promise<void>;
+	authorizeJoinGitHubAction?: (formData: FormData) => Promise<void>;
+	authorizeJoinGoogleAction?: (formData: FormData) => Promise<void>;
 	additionalHiddenInputs?: ReadonlyArray<HiddenInput>;
 };
 
 export const OAuthProviders: FC<OauthProvidersProps> = ({
 	labelPrefix,
 	returnUrl,
-	githubAction,
-	googleAction,
+	authorizeJoinGitHubAction,
+	authorizeJoinGoogleAction,
 	additionalHiddenInputs,
 }) => {
 	const hiddenInputs: ReadonlyArray<HiddenInput> = [
@@ -43,7 +43,7 @@ export const OAuthProviders: FC<OauthProvidersProps> = ({
 					))}
 					<button
 						type="submit"
-						formAction={googleAction ?? authorizeGoogle}
+						formAction={authorizeJoinGoogleAction ?? authorizeGoogle}
 						className="font-sans w-full text-center"
 					>
 						{labelPrefix} with Google
@@ -64,7 +64,7 @@ export const OAuthProviders: FC<OauthProvidersProps> = ({
 					))}
 					<button
 						type="submit"
-						formAction={githubAction ?? authorizeGitHub}
+						formAction={authorizeJoinGitHubAction ?? authorizeGitHub}
 						className="font-sans w-full text-center"
 					>
 						{labelPrefix} with GitHub

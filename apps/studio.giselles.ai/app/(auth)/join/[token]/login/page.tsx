@@ -53,8 +53,8 @@ export default async function Page({
 									{ name: "token", value: token },
 									{ name: "invitedEmail", value: tokenObj.invitedEmail },
 								]}
-								googleAction={authorizeJoinGoogle}
-								githubAction={authorizeJoinGitHub}
+								authorizeJoinGoogleAction={authorizeJoinGoogle}
+								authorizeJoinGitHubAction={authorizeJoinGitHub}
 							/>
 						</div>
 
