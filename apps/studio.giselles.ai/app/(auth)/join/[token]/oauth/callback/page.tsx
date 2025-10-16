@@ -1,5 +1,3 @@
-"use server";
-
 import { captureException } from "@sentry/nextjs";
 import type { User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
