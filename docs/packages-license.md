@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 857 MIT
+* 858 MIT
 * 188 Apache 2.0
 * 46 ISC
 * 27 New BSD
@@ -2955,6 +2955,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@radix-ui/react-use-controllable-state"></a>
 ### @radix-ui/react-use-controllable-state v1.1.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@radix-ui/react-use-effect-event"></a>
+### @radix-ui/react-use-effect-event v0.0.2
 #### 
 
 ##### Paths
@@ -7435,7 +7446,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="happy-dom"></a>
-### happy-dom v20.0.2
+### happy-dom v20.0.0
 #### 
 
 ##### Paths
