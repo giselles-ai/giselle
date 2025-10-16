@@ -37,6 +37,7 @@
 		"@types/node": "catalog:",
 		"knip": "^5.61.3",
 		"turbo": "2.4.2",
+		"turbo-ignore": "2.5.8",
 		"typescript": "catalog:"
 	},
 	"packageManager": "pnpm@10.16.0",

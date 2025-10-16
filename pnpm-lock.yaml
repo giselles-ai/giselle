@@ -277,6 +277,9 @@ importers:
       turbo:
         specifier: 2.4.2
         version: 2.4.2
+      turbo-ignore:
+        specifier: 2.5.8
+        version: 2.5.8
       typescript:
         specifier: 'catalog:'
         version: 5.7.3
@@ -8034,6 +8037,10 @@ packages:
     resolution: {integrity: sha512-uwSx1dsBSSFeEC0nxyx2O219FEsS/haiESaWwE9JI8mHkQK61s6w6fN2G586krKxyNam4AIxRltleL+O2Em94g==}
     cpu: [arm64]
     os: [darwin]
+
+  turbo-ignore@2.5.8:
+    resolution: {integrity: sha512-XwREWFMzRlkhsekfy9+ppqtz+Bz7u/Lv3PXSfsuvQBdaagODPqQBRpVi3vbtlaHZ/MzHX3dRLxmMBubj4hsxnA==}
+    hasBin: true
 
   turbo-linux-64@2.4.2:
     resolution: {integrity: sha512-Fy/uL8z/LAYcPbm7a1LwFnTY9pIi5FAi12iuHsgB7zHjdh4eeIKS2NIg4nroAmTcUTUZ0/cVTo4bDOCUcS3aKw==}
@@ -16154,6 +16161,10 @@ snapshots:
 
   turbo-darwin-arm64@2.4.2:
     optional: true
+
+  turbo-ignore@2.5.8:
+    dependencies:
+      json5: 2.2.3
 
   turbo-linux-64@2.4.2:
     optional: true
