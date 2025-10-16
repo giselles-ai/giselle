@@ -22,24 +22,32 @@ export async function getWorkspaceInprogressAct({
 		{ workspaceActIndices: workspaceActIndexes },
 		"workspaceActIndices:",
 	);
-	const workspaceActs = await Promise.all(
-		workspaceActIndexes.map((workspaceActIndex) =>
-			context.storage.getItem(actPath(workspaceActIndex.id)),
-		),
-	).then((actLike) =>
-		actLike
-			.map((data) => {
-				const parse = Act.safeParse(data);
-				if (parse.success) {
-					return parse.data;
+	const workspaceActs = (
+		await Promise.all(
+			workspaceActIndexes.map(async (workspaceActIndex) => {
+				try {
+					return await context.experimental_storage.getJson({
+						path: actPath(workspaceActIndex.id),
+						schema: Act,
+					});
+				} catch (error) {
+					const errorMessage =
+						error instanceof Error ? error.message : "Unknown error";
+					context.logger.warn(
+						{
+							actId: workspaceActIndex.id,
+							error: errorMessage,
+						},
+						"Failed to load workspace act; skipping.",
+					);
+					return null;
 				}
-				return null;
-			})
-			.filter((data) => data !== null),
-	);
+			}),
+		)
+	).filter((act): act is Act => act !== null);
 	context.logger.debug({ workspaceActs }, "workspaceActs:");
 	const inprogressActs = workspaceActs
-		.sort((a, b) => a.createdAt - b.createdAt)
+		.sort((a, b) => b.createdAt - a.createdAt)
 		.filter((a) => a.status === "inProgress");
 	context.logger.debug({ inprogressActs }, "inprogressActs:");
 	if (inprogressActs.length === 0) {

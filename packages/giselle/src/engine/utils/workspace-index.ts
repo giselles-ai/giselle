@@ -18,10 +18,14 @@ export async function addWorkspaceIndexItem<I>({
 	context.logger.debug(`Item: ${JSON.stringify(item)}`);
 	context.logger.debug(`useExperimentalStorage: ${useExperimentalStorage}`);
 	if (useExperimentalStorage) {
-		const indexItem = await context.experimental_storage.getJson({
-			path: indexPath,
-			schema: z.array(itemSchema),
-		});
+		const exists = await context.experimental_storage.exists(indexPath);
+
+		const indexItem = exists
+			? await context.experimental_storage.getJson({
+					path: indexPath,
+					schema: z.array(itemSchema),
+				})
+			: [];
 		await context.experimental_storage.setJson({
 			path: indexPath,
 			data: [...indexItem, item],
