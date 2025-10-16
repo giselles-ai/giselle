@@ -12,20 +12,30 @@ export async function getWorkspaceActs(args: {
 		context: args.context,
 		indexPath: workspaceActPath(args.workspaceId),
 		itemSchema: ActIndexObject,
+		useExperimentalStorage: true,
 	});
-	return await Promise.all(
-		workspaceActIndices.map((workspaceActIndex) =>
-			args.context.storage.getItem(actPath(workspaceActIndex.id)),
-		),
-	).then((actLike) =>
-		actLike
-			.map((data) => {
-				const parse = Act.safeParse(data);
-				if (parse.success) {
-					return parse.data;
+	const workspaceActs = (
+		await Promise.all(
+			workspaceActIndices.map(async (workspaceActIndex) => {
+				try {
+					return await args.context.experimental_storage.getJson({
+						path: actPath(workspaceActIndex.id),
+						schema: Act,
+					});
+				} catch (error) {
+					const errorMessage =
+						error instanceof Error ? error.message : "Unknown error";
+					args.context.logger.warn(
+						{
+							actId: workspaceActIndex.id,
+							error: errorMessage,
+						},
+						"Failed to load workspace act; skipping.",
+					);
+					return null;
 				}
-				return null;
-			})
-			.filter((data) => data !== null),
-	);
+			}),
+		)
+	).filter((act): act is Act => act !== null);
+	return workspaceActs;
 }
