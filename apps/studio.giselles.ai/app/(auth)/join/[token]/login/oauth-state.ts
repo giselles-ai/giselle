@@ -85,7 +85,11 @@ export function decodeInviteState(state: string): InviteStatePayload {
 		invitedEmail,
 		issuedAt,
 	};
-	if (Date.now() - payload.issuedAt > STATE_TTL_MS) {
+	const now = Date.now();
+	if (payload.issuedAt > now) {
+		throw new Error("Invalid OAuth state: issuedAt is in the future.");
+	}
+	if (now - payload.issuedAt > STATE_TTL_MS) {
 		throw new Error("The OAuth invitation state has expired.");
 	}
 	return payload;
