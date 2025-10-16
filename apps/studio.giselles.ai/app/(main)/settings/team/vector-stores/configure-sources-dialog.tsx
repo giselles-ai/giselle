@@ -1,6 +1,7 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
+import { Toggle } from "@giselle-internal/ui/toggle";
 import { Code, GitPullRequest } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import type {
@@ -93,6 +94,7 @@ export function ConfigureSourcesDialog({
 	return (
 		<Dialog.Root open={open} onOpenChange={setOpen}>
 			<GlassDialogContent
+				borderStyle="solid"
 				onEscapeKeyDown={() => setOpen(false)}
 				onPointerDownOutside={() => setOpen(false)}
 			>
@@ -110,7 +112,7 @@ export function ConfigureSourcesDialog({
 								Select which content types to ingest for {repositoryIndex.owner}
 								/{repositoryIndex.repo}
 							</div>
-							<div className="space-y-2">
+						<div className="grid grid-cols-2 gap-3">
 								{/* Code Configuration */}
 								<ContentTypeToggle
 									icon={Code}
@@ -228,43 +230,30 @@ function ContentTypeToggle({
 	disabled,
 	status,
 }: ContentTypeToggleProps) {
-	return (
-		<div className="bg-surface rounded-lg p-2">
-			<div className="flex items-center justify-between mb-1">
-				<div className="flex items-center gap-2">
-					<Icon size={18} className="text-gray-400" />
-					<span className="text-white font-medium text-[14px]">{label}</span>
-				</div>
-				<label className="relative inline-flex items-center cursor-pointer">
-					<input
-						type="checkbox"
-						checked={enabled}
-						onChange={(e) => onToggle(e.target.checked)}
-						disabled={disabled}
-						className="sr-only"
-					/>
-					<div
-						className={`w-11 h-6 rounded-full transition-colors ${
-							enabled ? "bg-blue-600" : "bg-gray-600"
-						} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
-					>
-						<div
-							className={`absolute w-4 h-4 bg-white rounded-full top-1 transition-transform ${
-								enabled ? "translate-x-6" : "translate-x-1"
-							}`}
-						/>
-					</div>
-				</label>
-			</div>
-			<p className="text-[12px] text-gray-400">{description}</p>
-			{disabled && (
-				<p className="text-xs text-gray-500 mt-1">
-					(Required - cannot be disabled)
-				</p>
-			)}
-			{status && status.status === "running" && (
-				<p className="text-xs text-blue-400 mt-2">Currently syncing...</p>
-			)}
-		</div>
-	);
+    return (
+        <div className="bg-surface rounded-lg p-2">
+            <Toggle
+                name={`${label.toLowerCase().replace(/\s+/g, "-")}-toggle`}
+                checked={enabled}
+                onCheckedChange={(checked) => onToggle(checked)}
+                disabled={disabled}
+            >
+                <div className="flex-1 mr-3">
+                    <div className="flex items-center gap-2 mb-1">
+                        <Icon size={18} className="text-gray-400" />
+                        <span className="text-white font-medium text-[14px]">{label}</span>
+                    </div>
+                    <p className="text-[12px] text-gray-400">{description}</p>
+                    {disabled && (
+                        <p className="text-xs text-gray-500 mt-1">
+                            (Required - cannot be disabled)
+                        </p>
+                    )}
+                    {status && status.status === "running" && (
+                        <p className="text-xs text-blue-400 mt-2">Currently syncing...</p>
+                    )}
+                </div>
+            </Toggle>
+        </div>
+    );
 }
