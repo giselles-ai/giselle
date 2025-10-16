@@ -1,7 +1,7 @@
 "use client";
 
-import * as Dialog from "@radix-ui/react-dialog";
 import { Toggle } from "@giselle-internal/ui/toggle";
+import * as Dialog from "@radix-ui/react-dialog";
 import { Code, GitPullRequest } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import type {
@@ -105,14 +105,21 @@ export function ConfigureSourcesDialog({
 				/>
 				<GlassDialogBody>
 					<div className="space-y-6">
+						{/* Repository Section */}
+						<div>
+							<h3 className="text-text text-[14px] leading-[16.8px] font-sans">
+								Repository
+							</h3>
+							<div className="mt-2 text-link-accent text-[16px] font-geist">
+								{repositoryIndex.owner}/{repositoryIndex.repo}
+							</div>
+						</div>
 						{/* Sources Section */}
 						<div>
-							<h3 className="text-text text-[16px] font-medium">Sources</h3>
-							<div className="text-secondary text-[12px] mb-4">
-								Select which content types to ingest for {repositoryIndex.owner}
-								/{repositoryIndex.repo}
-							</div>
-						<div className="grid grid-cols-2 gap-3">
+							<h3 className="text-text text-[14px] leading-[16.8px] font-sans mb-2">
+								Sources to Ingest
+							</h3>
+							<div className="grid grid-cols-2 gap-3">
 								{/* Code Configuration */}
 								<ContentTypeToggle
 									icon={Code}
@@ -142,10 +149,10 @@ export function ConfigureSourcesDialog({
 
 						{/* Embedding Models Section */}
 						<div>
-							<h3 className="text-text text-[16px] font-medium">
+							<h3 className="text-text text-[14px] leading-[16.8px] font-sans mb-2">
 								Embedding Models
 							</h3>
-							<div className="text-secondary text-[12px] mb-3">
+							<div className="text-text-muted text-[12px] mb-3">
 								Select at least one embedding model for indexing
 							</div>
 							<div className="space-y-2">
@@ -159,7 +166,7 @@ export function ConfigureSourcesDialog({
 										return (
 											<label
 												key={profileId}
-												className="flex items-start gap-3 p-2 rounded-lg bg-surface hover:bg-white/5 transition-colors cursor-pointer"
+												className="flex items-start gap-3 p-3 rounded-lg border border-border-muted hover:bg-inverse/5 transition-colors cursor-pointer"
 											>
 												<input
 													type="checkbox"
@@ -185,7 +192,7 @@ export function ConfigureSourcesDialog({
 													<div className="text-text text-[14px] font-medium">
 														{profile.name}
 													</div>
-													<div className="text-secondary text-[12px] mt-1">
+													<div className="text-text-muted text-[12px] mt-1">
 														Provider: {profile.provider} • Dimensions{" "}
 														{profile.dimensions}
 													</div>
@@ -230,30 +237,27 @@ function ContentTypeToggle({
 	disabled,
 	status,
 }: ContentTypeToggleProps) {
-    return (
-        <div className="bg-surface rounded-lg p-2">
-            <Toggle
-                name={`${label.toLowerCase().replace(/\s+/g, "-")}-toggle`}
-                checked={enabled}
-                onCheckedChange={(checked) => onToggle(checked)}
-                disabled={disabled}
-            >
-                <div className="flex-1 mr-3">
-                    <div className="flex items-center gap-2 mb-1">
-                        <Icon size={18} className="text-gray-400" />
-                        <span className="text-white font-medium text-[14px]">{label}</span>
-                    </div>
-                    <p className="text-[12px] text-gray-400">{description}</p>
-                    {disabled && (
-                        <p className="text-xs text-gray-500 mt-1">
-                            (Required - cannot be disabled)
-                        </p>
-                    )}
-                    {status && status.status === "running" && (
-                        <p className="text-xs text-blue-400 mt-2">Currently syncing...</p>
-                    )}
-                </div>
-            </Toggle>
-        </div>
-    );
+	return (
+		<div className="bg-inverse/5 rounded-lg p-4">
+			<Toggle
+				name={`${label.toLowerCase().replace(/\s+/g, "-")}-toggle`}
+				checked={enabled}
+				onCheckedChange={(checked) => onToggle(checked)}
+				disabled={disabled}
+			>
+				<div className="flex-1 mr-3">
+					<div className="flex items-center gap-2 mb-1">
+						<Icon size={18} className="text-text-muted" />
+						<span className="text-text font-medium">{label}</span>
+					</div>
+					<p className="text-xs text-text-muted">{description}</p>
+					{disabled && (
+						<p className="text-xs text-text-muted/60 mt-1">
+							(Required - cannot be disabled)
+						</p>
+					)}
+				</div>
+			</Toggle>
+		</div>
+	);
 }
