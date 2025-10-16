@@ -9,7 +9,7 @@ import {
 } from "@giselle-sdk/data-type";
 import { z } from "zod/v4";
 import {
-	type Act,
+	Act,
 	ActId,
 	ActIndexObject,
 	type Sequence,
@@ -212,12 +212,17 @@ export async function createAct(
 	};
 	args.context.logger.debug(`created act:${act.id}`);
 	await Promise.all([
-		args.context.storage.setItem(actPath(act.id), act),
+		args.context.experimental_storage.setJson({
+			path: actPath(act.id),
+			data: act,
+			schema: Act,
+		}),
 		addWorkspaceIndexItem({
 			context: args.context,
 			indexPath: workspaceActPath(workspace.id),
 			item: act,
 			itemSchema: ActIndexObject,
+			useExperimentalStorage: true,
 		}),
 		...generations.map((generation) =>
 			setGeneration({
