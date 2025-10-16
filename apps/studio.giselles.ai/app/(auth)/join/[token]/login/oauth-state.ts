@@ -14,14 +14,15 @@ type InviteStatePayload = {
 };
 
 function getStateSecret(): Buffer {
-	const secret =
-		process.env.INVITE_OAUTH_STATE_SECRET ?? process.env.SUPABASE_JWT_SECRET;
+	const secret = process.env.INVITE_OAUTH_STATE_SECRET;
 	if (!secret) {
-		throw new Error("Missing OAuth state secret.");
+		throw new Error("Missing INVITE_OAUTH_STATE_SECRET environment variable.");
 	}
-	const salt = Buffer.from(
-		process.env.INVITE_OAUTH_STATE_SALT ?? "invite_oauth_state_salt",
-	);
+	const saltEnv = process.env.INVITE_OAUTH_STATE_SALT;
+	if (!saltEnv) {
+		throw new Error("Missing INVITE_OAUTH_STATE_SALT environment variable.");
+	}
+	const salt = Buffer.from(saltEnv);
 	// Derive an AES-256 key with PBKDF2 to slow down brute-force attempts.
 	const key = pbkdf2Sync(secret, salt, 100_000, 32, "sha256");
 	return key;
