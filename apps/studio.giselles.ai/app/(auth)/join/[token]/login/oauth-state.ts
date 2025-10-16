@@ -53,6 +53,9 @@ export function encodeInviteState(payload: {
 export function decodeInviteState(state: string): InviteStatePayload {
 	const key = getStateSecret();
 	const buffer = Buffer.from(state, "base64url");
+	if (buffer.length < 28) {
+		throw new Error("Invalid OAuth state: buffer too short.");
+	}
 	const iv = buffer.subarray(0, 12);
 	const authTag = buffer.subarray(12, 28);
 	const encrypted = buffer.subarray(28);
@@ -62,7 +65,26 @@ export function decodeInviteState(state: string): InviteStatePayload {
 		decipher.update(encrypted),
 		decipher.final(),
 	]).toString("utf8");
-	const payload = JSON.parse(decrypted) as InviteStatePayload;
+	const parsed = JSON.parse(decrypted);
+	if (parsed == null || typeof parsed !== "object") {
+		throw new Error("Invalid OAuth state: malformed payload.");
+	}
+	const candidate = parsed as Record<string, unknown>;
+	const invitationToken = candidate.invitationToken;
+	const invitedEmail = candidate.invitedEmail;
+	const issuedAt = candidate.issuedAt;
+	if (
+		typeof invitationToken !== "string" ||
+		typeof invitedEmail !== "string" ||
+		typeof issuedAt !== "number"
+	) {
+		throw new Error("Invalid OAuth state: malformed payload.");
+	}
+	const payload: InviteStatePayload = {
+		invitationToken,
+		invitedEmail,
+		issuedAt,
+	};
 	if (Date.now() - payload.issuedAt > STATE_TTL_MS) {
 		throw new Error("The OAuth invitation state has expired.");
 	}
