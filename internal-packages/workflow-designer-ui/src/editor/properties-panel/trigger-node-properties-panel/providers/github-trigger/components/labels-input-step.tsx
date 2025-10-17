@@ -10,26 +10,39 @@ interface LabelsInputStepProps {
 	eventId: GitHubTriggerEventId;
 	owner: string;
 	repo: string;
+	initialLabels?: string[];
 	onBack: () => void;
 	onSubmit: (
 		e: FormEvent<HTMLFormElement>,
 		rawLabels: { id: number; value: string }[],
 	) => void;
 	isPending: boolean;
-	labelsError: string | null;
+	showBackButton?: boolean;
 }
 
 export function LabelsInputStep({
 	eventId,
 	owner,
 	repo,
+	initialLabels,
 	onBack,
 	onSubmit,
 	isPending,
-	labelsError,
+	showBackButton = true,
 }: LabelsInputStepProps) {
-	const [labels, setLabels] = useState([{ id: 1, value: "" }]);
-	const [nextId, setNextId] = useState(2);
+	const [labels, setLabels] = useState(() =>
+		initialLabels !== undefined && initialLabels.length > 0
+			? initialLabels.map((value, index) => ({
+					id: index + 1,
+					value,
+				}))
+			: [{ id: 1, value: "" }],
+	);
+	const [nextId, setNextId] = useState(
+		initialLabels !== undefined && initialLabels.length > 0
+			? initialLabels.length + 1
+			: 2,
+	);
 
 	return (
 		<form
@@ -72,11 +85,10 @@ export function LabelsInputStep({
 								}
 								className={clsx(
 									"flex-1 rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
-									labelsError
-										? "border border-red-500 focus:border-red-400"
-										: "border border-white-400 focus:border-border",
+									"border border-white-400 focus:border-border",
 									"text-[14px] bg-transparent",
 								)}
+								required={true}
 								placeholder="bug"
 							/>
 							{labels.length > 1 && (
@@ -93,14 +105,10 @@ export function LabelsInputStep({
 							)}
 						</div>
 					))}
-					{labelsError ? (
-						<p className="text-[12px] text-red-400 pl-2">{labelsError}</p>
-					) : (
-						<p className="text-[12px] text-inverse pl-2">
-							Labels are required for issue labeled triggers. Examples: bug,
-							feature, urgent
-						</p>
-					)}
+					<p className="text-[12px] text-inverse pl-2">
+						Labels are required for issue labeled triggers. Examples: bug,
+						feature, urgent
+					</p>
 					<button
 						type="button"
 						onClick={() => {
@@ -116,17 +124,22 @@ export function LabelsInputStep({
 			</fieldset>
 
 			<div className="pt-[8px] flex gap-[8px] mt-[12px] px-[4px]">
-				<button
-					type="button"
-					className="flex-1 bg-bg-700 hover:bg-bg-600 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
-					onClick={onBack}
-					disabled={isPending}
-				>
-					<span className={isPending ? "opacity-0" : ""}>Back</span>
-				</button>
+				{showBackButton && (
+					<button
+						type="button"
+						className="flex-1 bg-bg-700 hover:bg-bg-600 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
+						onClick={onBack}
+						disabled={isPending}
+					>
+						<span className={isPending ? "opacity-0" : ""}>Back</span>
+					</button>
+				)}
 				<button
 					type="submit"
-					className="flex-1 bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
+					className={clsx(
+						"bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative",
+						showBackButton ? "flex-1" : "w-full",
+					)}
 					disabled={isPending}
 				>
 					<span className={isPending ? "opacity-0" : ""}>

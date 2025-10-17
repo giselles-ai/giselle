@@ -20,15 +20,17 @@ export function SelectRepository({
 	installations,
 	installationUrl,
 	onSelectRepository,
+	initialInstallationId,
 }: Pick<
 	GitHubIntegrationInstalledState,
 	"installations" | "installationUrl"
 > & {
 	onSelectRepository: (value: SelectRepository) => void;
+	initialInstallationId?: number;
 }) {
 	const [selectedInstallationId, setSelectedInstallationId] = useState<
 		number | null
-	>(null);
+	>(() => initialInstallationId ?? null);
 	const [isOrgDropdownOpen, setIsOrgDropdownOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
 

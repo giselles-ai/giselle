@@ -1,35 +1,16 @@
-import {
-	type FlowTriggerId,
-	type GitHubFlowTriggerEvent,
-	type Output,
-	OutputId,
-	type TriggerNode,
-} from "@giselle-sdk/data-type";
-import {
-	type GitHubTriggerEventId,
-	getGitHubDisplayLabel,
-	githubTriggers,
-} from "@giselle-sdk/flow";
+import type { FlowTriggerId, TriggerNode } from "@giselle-sdk/data-type";
+import type { GitHubTriggerEventId } from "@giselle-sdk/flow";
 import type { GitHubIntegrationInstallation } from "@giselle-sdk/giselle";
-import {
-	useFeatureFlag,
-	useGiselleEngine,
-	useIntegration,
-	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+import { useIntegration } from "@giselle-sdk/giselle/react";
 import clsx from "clsx/lite";
 import { InfoIcon } from "lucide-react";
-import {
-	type FormEvent,
-	type FormEventHandler,
-	useCallback,
-	useState,
-	useTransition,
-} from "react";
+import { type FormEvent, useCallback, useRef, useState } from "react";
 import { Tooltip } from "../../../../../ui/tooltip";
-import { isPromptEmpty as isEmpty } from "../../../../lib/validate-prompt";
 import { SelectRepository } from "../../../ui";
-import { GitHubTriggerConfiguredView } from "../../ui";
+import {
+	GitHubTriggerConfiguredView,
+	type GitHubTriggerReconfigureMode,
+} from "../../ui";
 import { GitHubTriggerReconfiguringView } from "../../ui/reconfiguring-views/github-trigger-reconfiguring-view";
 import { EventSelectionStep } from "./components/event-selection-step";
 import { EventTypeDisplay } from "./components/event-type-display";
@@ -37,11 +18,21 @@ import { InstallGitHubApplication } from "./components/install-application";
 import { LabelsInputStep } from "./components/labels-input-step";
 import { RepositoryDisplay } from "./components/repository-display";
 import { Unauthorized } from "./components/unauthorized";
-import { createTriggerEvent } from "./utils/trigger-configuration";
-import { useTriggerConfiguration } from "./utils/use-trigger-configuration";
+import {
+	type GitHubTriggerSetupStep,
+	resolveNextStep,
+} from "./utils/resolve-next-step";
+import {
+	isTriggerRequiringCallsign,
+	isTriggerRequiringLabels,
+} from "./utils/trigger-configuration";
+import { useConfigureTrigger } from "./utils/use-configure-trigger";
 
 export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	const { value } = useIntegration();
+	const reconfigureModeRef = useRef<GitHubTriggerReconfigureMode | undefined>(
+		undefined,
+	);
 	if (value?.github === undefined) {
 		return "unset";
 	}
@@ -51,6 +42,9 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 			<GitHubTriggerConfiguredView
 				flowTriggerId={node.content.state.flowTriggerId}
 				node={node}
+				onStartReconfigure={(mode) => {
+					reconfigureModeRef.current = mode;
+				}}
 			/>
 		);
 	} else if (
@@ -63,6 +57,7 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 				node={node}
 				installationUrl={value.github.installationUrl}
 				flowTriggerId={node.content.state.flowTriggerId}
+				reconfigureMode={reconfigureModeRef.current}
 			/>
 		);
 	}
@@ -97,69 +92,7 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	}
 }
 
-interface SelectEventStep {
-	state: "select-event";
-}
-
-interface SelectRepositoryStep {
-	state: "select-repository";
-	eventId: GitHubTriggerEventId;
-}
-
-export interface InputCallsignStep {
-	state: "input-callsign";
-	eventId: GitHubTriggerEventId;
-	owner: string;
-	repo: string;
-	repoNodeId: string;
-	installationId: number;
-}
-
-export interface InputLabelsStep {
-	state: "input-labels";
-	eventId: GitHubTriggerEventId;
-	owner: string;
-	repo: string;
-	repoNodeId: string;
-	installationId: number;
-}
-
-interface ConfirmRepositoryStep {
-	state: "confirm-repository";
-	eventId: GitHubTriggerEventId;
-	installationId: number;
-	owner: string;
-	repo: string;
-	repoNodeId: string;
-}
-
-type GitHubTriggerSetupStep =
-	| SelectEventStep
-	| SelectRepositoryStep
-	| InputCallsignStep
-	| InputLabelsStep
-	| ConfirmRepositoryStep;
-
-/**
- * Determines if a trigger type requires a callsign
- */
-function isTriggerRequiringCallsign(eventId: GitHubTriggerEventId): boolean {
-	return [
-		"github.issue_comment.created",
-		"github.pull_request_comment.created",
-		"github.pull_request_review_comment.created",
-	].includes(eventId);
-}
-
-/**
- * Determines if a trigger type requires labels
- */
-function isTriggerRequiringLabels(eventId: GitHubTriggerEventId) {
-	return (
-		eventId === "github.issue.labeled" ||
-		eventId === "github.pull_request.labeled"
-	);
-}
+const DEFAULT_EVENT_ID = "github.issue.created";
 
 export function Installed({
 	installations,
@@ -171,83 +104,56 @@ export function Installed({
 	installations: GitHubIntegrationInstallation[];
 	node: TriggerNode;
 	installationUrl: string;
-	reconfigStep?: SelectRepositoryStep;
+	reconfigStep?: GitHubTriggerSetupStep;
 	flowTriggerId?: FlowTriggerId;
 }) {
-	const { experimental_storage } = useFeatureFlag();
 	const [step, setStep] = useState<GitHubTriggerSetupStep>(
-		reconfigStep ?? { state: "select-event" },
+		reconfigStep ?? { state: "select-event", eventId: DEFAULT_EVENT_ID },
 	);
-	const { data: workspace, updateNodeData } = useWorkflowDesigner();
-	const { configureTrigger, isPending: isTriggerConfigPending } =
-		useTriggerConfiguration({
-			node,
-		});
-	const client = useGiselleEngine();
-	const [isPending, startTransition] = useTransition();
 	const [eventId, setEventId] = useState<GitHubTriggerEventId>(
-		reconfigStep?.eventId ?? "github.issue.created",
+		reconfigStep?.eventId ?? DEFAULT_EVENT_ID,
 	);
-	const [callsignError, setCallsignError] = useState<string | null>(null);
-	const [labelsError, setLabelsError] = useState<string | null>(null);
+	const isReconfiguring = node.content.state.status === "reconfiguring";
+	const { configureTrigger, isPending } = useConfigureTrigger({ node });
 
-	// Helper function to create callsign events
-	const createCallsignEvent = useCallback(
-		(
-			eventId: GitHubTriggerEventId,
-			formData: FormData,
-		): GitHubFlowTriggerEvent => {
-			const callsign = formData.get("callsign");
-			if (typeof callsign !== "string" || isEmpty(callsign)) {
-				throw new Error("Invalid callsign: expected a non-empty string.");
-			}
-			return {
-				id: eventId,
-				conditions: { callsign },
-			} as GitHubFlowTriggerEvent;
-		},
-		[],
-	);
-
-	// Events that require callsign
-	const CALLSIGN_EVENTS = [
-		"github.issue_comment.created",
-		"github.pull_request_comment.created",
-		"github.pull_request_review_comment.created",
-	] as const;
-
-	const handleCallsignSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
-		(e) => {
-			e.preventDefault();
-			setCallsignError(null);
-
-			if (step.state !== "input-callsign") {
-				throw new Error("Unexpected state");
-			}
-
-			let event: GitHubFlowTriggerEvent | undefined;
-			const formData = new FormData(e.currentTarget);
+	const handleSubmit = useCallback(
+		(data?: { callsign?: string; labels?: string[] }) => {
 			try {
-				// Create event based on whether it requires callsign
-				if (
-					(CALLSIGN_EVENTS as readonly GitHubTriggerEventId[]).includes(eventId)
-				) {
-					event = createCallsignEvent(eventId, formData);
-				} else {
-					event = createTriggerEvent({ eventId });
-				}
+				const action = resolveNextStep({
+					currentStep: step,
+					eventId,
+					submissionData: data ?? {},
+					nodeStatus: node.content.state.status,
+				});
 
-				if (event === undefined) {
-					return;
+				if (action.type === "continue") {
+					setStep(action.nextStep);
+				} else if (action.type === "submit") {
+					configureTrigger({
+						event: action.event,
+						repositoryInfo: action.repositoryInfo,
+						flowTriggerId,
+					});
 				}
-				configureTrigger(event, step);
 			} catch (error) {
-				setCallsignError(
-					error instanceof Error ? error.message : "Invalid callsign",
-				);
+				console.error(error);
 			}
 		},
-		[configureTrigger, step, eventId, CALLSIGN_EVENTS, createCallsignEvent],
+		[step, eventId, node.content.state.status, configureTrigger, flowTriggerId],
+	);
+
+	const handleCallsignSubmit = useCallback(
+		(e: FormEvent<HTMLFormElement>) => {
+			e.preventDefault();
+			const callsign = new FormData(e.currentTarget).get("callsign");
+			if (typeof callsign !== "string") return;
+			const normalizedCallsign = callsign.trim();
+			if (normalizedCallsign.length === 0) {
+				return;
+			}
+			handleSubmit({ callsign: normalizedCallsign });
+		},
+		[handleSubmit],
 	);
 
 	const handleLabelsSubmit = useCallback(
@@ -256,25 +162,12 @@ export function Installed({
 			rawLabels: { id: number; value: string }[],
 		) => {
 			e.preventDefault();
-			setLabelsError(null);
-
-			if (step.state !== "input-labels") {
-				throw new Error("Unexpected state");
-			}
-
-			const validLabels = rawLabels
+			const labels = rawLabels
 				.map((label) => label.value.trim())
 				.filter((value) => value.length > 0);
-
-			if (validLabels.length === 0) {
-				setLabelsError("At least one label is required");
-				return;
-			}
-
-			const event = createTriggerEvent({ eventId, labels: validLabels });
-			configureTrigger(event, step);
+			handleSubmit({ labels });
 		},
-		[configureTrigger, step, eventId],
+		[handleSubmit],
 	);
 
 	return (
@@ -314,8 +207,11 @@ export function Installed({
 									owner: value.owner,
 									repo: value.repo,
 									repoNodeId: value.repoNodeId,
+									callsign: step.callsign,
+									labels: step.labels,
 								});
 							}}
+							initialInstallationId={step.installationId}
 						/>
 					</div>
 				</div>
@@ -341,6 +237,9 @@ export function Installed({
 									setStep({
 										state: "select-repository",
 										eventId: step.eventId,
+										callsign: step.callsign,
+										labels: step.labels,
+										installationId: step.installationId,
 									});
 								}}
 								disabled={isPending}
@@ -351,99 +250,9 @@ export function Installed({
 								type="button"
 								className="flex-1 bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
 								onClick={() => {
-									if (
-										isTriggerRequiringCallsign(step.eventId) &&
-										node.content.state.status === "unconfigured"
-									) {
-										setStep({
-											state: "input-callsign",
-											eventId: step.eventId,
-											installationId: step.installationId,
-											owner: step.owner,
-											repo: step.repo,
-											repoNodeId: step.repoNodeId,
-										});
-									} else if (isTriggerRequiringLabels(step.eventId)) {
-										setStep({
-											state: "input-labels",
-											eventId: step.eventId,
-											installationId: step.installationId,
-											owner: step.owner,
-											repo: step.repo,
-											repoNodeId: step.repoNodeId,
-										});
-									} else {
-										startTransition(async () => {
-											try {
-												const trigger = githubTriggers[step.eventId];
-												const outputs: Output[] = [];
-
-												for (const key of trigger.event.payloads.keyof()
-													.options) {
-													outputs.push({
-														id: OutputId.generate(),
-														label: getGitHubDisplayLabel({
-															eventId: step.eventId,
-															accessor: key,
-														}),
-														accessor: key,
-													});
-												}
-
-												let triggerId: FlowTriggerId;
-												if (
-													node.content.state.status === "reconfiguring" &&
-													flowTriggerId !== undefined
-												) {
-													const result = await client.reconfigureGitHubTrigger({
-														flowTriggerId,
-														repositoryNodeId: step.repoNodeId,
-														installationId: step.installationId,
-														useExperimentalStorage: experimental_storage,
-													});
-													triggerId = result.triggerId;
-												} else {
-													const event = createTriggerEvent({
-														eventId: step.eventId,
-													});
-													const result = await client.configureTrigger({
-														trigger: {
-															nodeId: node.id,
-															workspaceId: workspace?.id,
-															enable: false,
-															configuration: {
-																provider: "github",
-																repositoryNodeId: step.repoNodeId,
-																installationId: step.installationId,
-																event,
-															},
-														},
-														useExperimentalStorage: experimental_storage,
-													});
-													triggerId = result.triggerId;
-												}
-
-												updateNodeData(node, {
-													content: {
-														...node.content,
-														state: {
-															status: "configured",
-															flowTriggerId: triggerId,
-														},
-													},
-													outputs:
-														node.outputs.length > 0 ? node.outputs : outputs,
-													name:
-														node.content.state.status === "reconfiguring"
-															? node.name
-															: `On ${trigger.event.label}`,
-												});
-											} catch (_error) {
-												// Error is handled by the UI state
-											}
-										});
-									}
+									handleSubmit();
 								}}
+								disabled={isPending}
 							>
 								<span className={isPending ? "opacity-0" : ""}>
 									{isTriggerRequiringCallsign(step.eventId) ||
@@ -486,7 +295,9 @@ export function Installed({
 			{step.state === "input-callsign" && (
 				<form
 					className="w-full flex flex-col gap-[8px] overflow-y-auto flex-1 pr-2 custom-scrollbar"
-					onSubmit={handleCallsignSubmit}
+					onSubmit={(e) => {
+						handleCallsignSubmit(e);
+					}}
 				>
 					<p className="text-[14px] text-[#F7F9FD] mb-2">Event type</p>
 					<EventTypeDisplay eventId={step.eventId} showDescription={false} />
@@ -523,50 +334,53 @@ export function Installed({
 								name="callsign"
 								className={clsx(
 									"group w-full flex justify-between items-center rounded-[8px] py-[8px] pl-[28px] pr-[4px] outline-none focus:outline-none",
-									callsignError
-										? "border border-red-500 focus:border-red-400"
-										: "border border-white-400 focus:border-border",
+									"border border-white-400 focus:border-border",
 									"text-[14px] bg-transparent",
 								)}
+								defaultValue={step.callsign ?? ""}
+								required={true}
 								placeholder="code-review"
 							/>
 						</div>
-						{callsignError ? (
-							<p className="text-[12px] text-red-400 pl-2">{callsignError}</p>
-						) : (
-							<p className="text-[12px] text-inverse pl-2">
-								A callsign is required for issue comment triggers. Examples:
-								/code-review, /check-policy
-							</p>
-						)}
+						<p className="text-[12px] text-inverse pl-2">
+							A callsign is required for issue comment triggers. Examples:
+							/code-review, /check-policy
+						</p>
 					</fieldset>
 
 					<div className="pt-[8px] flex gap-[8px] mt-[12px] px-[4px]">
-						<button
-							type="button"
-							className="flex-1 bg-bg-700 hover:bg-bg-600 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
-							onClick={() => {
-								setCallsignError(null);
-								setStep({
-									state: "select-repository",
-									eventId: step.eventId,
-								});
-							}}
-							disabled={isTriggerConfigPending}
-						>
-							<span className={isTriggerConfigPending ? "opacity-0" : ""}>
-								Back
-							</span>
-						</button>
+						{!isReconfiguring && (
+							<button
+								type="button"
+								className="flex-1 bg-bg-700 hover:bg-bg-600 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
+								onClick={() => {
+									setStep({
+										state: "confirm-repository",
+										eventId: step.eventId,
+										installationId: step.installationId,
+										owner: step.owner,
+										repo: step.repo,
+										repoNodeId: step.repoNodeId,
+										callsign: step.callsign,
+									});
+								}}
+								disabled={isPending}
+							>
+								<span className={isPending ? "opacity-0" : ""}>Back</span>
+							</button>
+						)}
 						<button
 							type="submit"
-							className="flex-1 bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
-							disabled={isTriggerConfigPending}
+							className={clsx(
+								"bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative",
+								isReconfiguring ? "w-full" : "flex-1",
+							)}
+							disabled={isPending}
 						>
-							<span className={isTriggerConfigPending ? "opacity-0" : ""}>
-								{isTriggerConfigPending ? "Setting up..." : "Set Up"}
+							<span className={isPending ? "opacity-0" : ""}>
+								{isPending ? "Setting up..." : "Set Up"}
 							</span>
-							{isTriggerConfigPending && (
+							{isPending && (
 								<span className="absolute inset-0 flex items-center justify-center">
 									<svg
 										className="animate-spin h-5 w-5 text-inverse"
@@ -602,16 +416,22 @@ export function Installed({
 					eventId={step.eventId}
 					owner={step.owner}
 					repo={step.repo}
+					initialLabels={step.labels}
 					onBack={() => {
-						setLabelsError(null);
 						setStep({
-							state: "select-repository",
+							state: "confirm-repository",
 							eventId: step.eventId,
+							installationId: step.installationId,
+							owner: step.owner,
+							repo: step.repo,
+							repoNodeId: step.repoNodeId,
+							labels: step.labels,
+							callsign: step.callsign,
 						});
 					}}
 					onSubmit={handleLabelsSubmit}
-					isPending={isTriggerConfigPending}
-					labelsError={labelsError}
+					isPending={isPending}
+					showBackButton={!isReconfiguring}
 				/>
 			)}
 
