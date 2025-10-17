@@ -52,10 +52,6 @@ export function PropertiesPanelRoot({ children }: { children: ReactNode }) {
 }
 
 function getNodeIconBackground(node: NodeLike): string {
-	console.log("getNodeIconBackground", {
-		type: node.type,
-		contentType: node.content.type,
-	});
 	if (node.type === "operation") {
 		switch (node.content.type) {
 			case "textGeneration":
