@@ -12,7 +12,7 @@ function VectorStoreHeader({ title }: { title: string }) {
 			</PageHeading>
 			<DocsLink
 				tone="muted"
-				href="https://docs.giselles.ai/en/guides/settings/team/vector-store"
+				href="https://docs.giselles.ai/en/guides/settings/team/vector-stores"
 			>
 				About Vector Stores
 			</DocsLink>
