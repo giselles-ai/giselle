@@ -35,7 +35,7 @@ export default async function AccountSettingPage() {
 						target="_blank"
 						rel="noopener noreferrer"
 					>
-						About teams
+						About Account Overview
 					</DocsLink>
 				</div>
 				<div className="flex flex-col gap-y-[12px]">
