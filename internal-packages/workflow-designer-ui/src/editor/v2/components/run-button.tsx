@@ -22,7 +22,7 @@ import {
 import clsx from "clsx/lite";
 import { PlayIcon, UngroupIcon } from "lucide-react";
 import { Dialog as RadixDialog } from "radix-ui";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { NodeIcon } from "../../../icons/node";
 import { isPromptEmpty } from "../../lib/validate-prompt";
 import { TriggerInputDialog } from "./trigger-input-dialog";
@@ -71,11 +71,15 @@ function CenteredDialogContent({ children }: React.PropsWithChildren) {
 				>
 					<GlassSurfaceLayers
 						radiusClass="rounded-[12px]"
-						baseFillClass="bg-inverse/10"
+						withBaseFill={false}
 						withTopHighlight
 						borderStyle="solid"
-						blurClass="backdrop-blur-sm"
+						borderTone="muted"
+						blurClass="backdrop-blur-md"
+						zIndexClass="z-0"
 					/>
+					{/* Subtle dark hairline to make muted slightly darker than default */}
+					{/* Removed aux hairline here; now provided by GlassSurfaceLayers default */}
 					{children}
 				</RadixDialog.Content>
 			</div>
@@ -252,13 +256,16 @@ function MultipleRunsDropdown({
 		return groups;
 	}, [triggerRuns, nodeGroupRuns]);
 
-	const highlightNodes = (runItem: RunItem, isHovered: boolean) => {
-		for (const node of data.nodes) {
-			if (runItem.nodeIds.includes(node.id)) {
-				setUiNodeState(node.id, { highlighted: isHovered });
+	const highlightNodes = useCallback(
+		(runItem: RunItem, isHovered: boolean) => {
+			for (const node of data.nodes) {
+				if (runItem.nodeIds.includes(node.id)) {
+					setUiNodeState(node.id, { highlighted: isHovered });
+				}
 			}
-		}
-	};
+		},
+		[data.nodes, setUiNodeState],
+	);
 
 	return (
 		<DropdownMenu

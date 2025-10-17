@@ -208,7 +208,7 @@ export function TriggerInputDialog({
 								isSubmitting ? (
 									<LoaderIcon className="size-[14px] animate-spin" />
 								) : (
-									<PlayIcon className="size-[14px] fill-black-900" />
+									<PlayIcon className="size-[14px] fill-current" />
 								)
 							}
 						>
