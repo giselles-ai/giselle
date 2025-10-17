@@ -256,7 +256,9 @@ export const giselleEngine = NextGiselleEngine({
 		githubPullRequest: {
 			search: (...args) => getGitHubPullRequestQueryService().search(...args),
 		},
-		document: getDocumentVectorStoreQueryService(),
+		document: {
+			search: (...args) => getDocumentVectorStoreQueryService().search(...args),
+		},
 	},
 	callbacks: {
 		generationComplete: async (args) => {
