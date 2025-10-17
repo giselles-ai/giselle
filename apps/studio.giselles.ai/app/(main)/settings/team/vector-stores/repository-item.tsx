@@ -93,10 +93,9 @@ export function RepositoryItem({
 		});
 	}, [triggerManualIngestAction, repositoryIndex.id]);
 
-	// Disable ingest when any content type is running
+	// Check if manual ingest is allowed for any enabled content type
 	const now = new Date();
-	const isAnyRunning = contentStatuses.some((cs) => cs.status === "running");
-	const hasEligible = contentStatuses.some((cs) => {
+	const canManuallyIngest = contentStatuses.some((cs) => {
 		if (!cs.enabled) return false;
 		return (
 			cs.status === "idle" ||
@@ -106,7 +105,6 @@ export function RepositoryItem({
 				new Date(cs.retryAfter) <= now)
 		);
 	});
-	const canManuallyIngest = hasEligible && !isAnyRunning;
 
 	//
 
