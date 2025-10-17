@@ -20,7 +20,6 @@ type NodeHandleDotProps = {
 		| "trigger"
 		| "action"
 		| "query";
-	isRequired?: boolean;
 	id: string;
 };
 
@@ -65,8 +64,16 @@ export function NodeHandleDot({
 	contentType,
 	id,
 }: NodeHandleDotProps) {
-	const safeContentType =
-		contentType in borderToneByType ? contentType : "text";
+	let safeContentType: NodeHandleDotProps["contentType"] = "text";
+	if (contentType in borderToneByType) {
+		safeContentType = contentType;
+	} else if (process.env.NODE_ENV !== "production") {
+		// Warn in development when an unexpected type is passed
+		// eslint-disable-next-line no-console
+		console.warn(
+			`Unknown contentType: ${String(contentType)}, falling back to "text"`,
+		);
+	}
 	const isLeft = position === Position.Left;
 
 	return (

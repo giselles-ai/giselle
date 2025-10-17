@@ -385,6 +385,7 @@ export function NodeComponent({
 									<NodeHandleDot
 										position={Position.Left}
 										isConnected={false}
+										isConnectable={false}
 										contentType={
 											(node.content.type === "textGeneration" &&
 												"textGeneration") ||
@@ -425,6 +426,11 @@ export function NodeComponent({
 											connectedInputIds?.some(
 												(connectedInputId) => connectedInputId === input.id,
 											) ?? false
+										}
+										isConnectable={
+											!connectedInputIds?.some(
+												(connectedInputId) => connectedInputId === input.id,
+											)
 										}
 										contentType="action"
 										id={input.id}
