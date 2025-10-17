@@ -94,6 +94,8 @@ export function ConfigureSourcesDialog({
 	return (
 		<Dialog.Root open={open} onOpenChange={setOpen}>
 			<GlassDialogContent
+				className="max-w-[600px]"
+				borderStyle="solid"
 				onEscapeKeyDown={() => setOpen(false)}
 				onPointerDownOutside={() => setOpen(false)}
 			>
