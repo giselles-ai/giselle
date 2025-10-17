@@ -123,10 +123,8 @@ export function RepositoryItem({
 				>
 					{repositoryIndex.owner}/{repositoryIndex.repo}
 				</AccentLink>
-				<RepoActionMenu
-					id={`repo-actions-${repositoryIndex.id}`}
-					disabled={isPending}
-					actions={[
+				{(() => {
+					const actions = [
 						{
 							value: "ingest",
 							label: "Ingest Now",
@@ -147,8 +145,15 @@ export function RepositoryItem({
 							destructive: true,
 							onSelect: () => setShowDeleteDialog(true),
 						},
-					]}
-				/>
+					] as const;
+					return (
+						<RepoActionMenu
+							id={`repo-actions-${repositoryIndex.id}`}
+							disabled={isPending}
+							actions={actions as unknown as any}
+						/>
+					);
+				})()}
 			</div>
 			{/* Row 2: Cards grid */}
 			<div className="grid grid-cols-3 gap-3 w-full">

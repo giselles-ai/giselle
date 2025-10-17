@@ -25,7 +25,7 @@ export const RepoActionMenu = memo(function RepoActionMenu({
 	const [open, setOpen] = useState(false);
 	const handleSelect = useCallback((action: RepoAction) => {
 		setOpen(false);
-		if (!action.disabled) action.onSelect?.();
+		action.onSelect?.();
 	}, []);
 
 	return (
