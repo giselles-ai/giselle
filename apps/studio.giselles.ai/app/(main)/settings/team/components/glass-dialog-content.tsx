@@ -32,10 +32,13 @@ export const GlassDialogContent = React.forwardRef<
 		},
 		ref,
 	) => {
-		const _backgroundStyle =
+		// Avoid muddy look on destructive: force solid border and disable top highlight
+		const effectiveBorderStyle =
 			variant === "destructive"
-				? "linear-gradient(135deg, rgba(241, 91, 108, 0.03) 0%, rgba(241, 91, 108, 0.12) 100%)"
-				: "linear-gradient(135deg, rgba(150, 150, 150, 0.03) 0%, rgba(60, 90, 160, 0.12) 100%)";
+				? "solid"
+				: borderStyle === "gradient"
+					? "gradient"
+					: "solid";
 
 		return (
 			<Dialog.Portal>
@@ -55,7 +58,8 @@ export const GlassDialogContent = React.forwardRef<
 					>
 						<GlassSurfaceLayers
 							variant={variant === "destructive" ? "destructive" : "default"}
-							borderStyle={borderStyle === "gradient" ? "gradient" : "solid"}
+							borderStyle={effectiveBorderStyle}
+							withTopHighlight={variant !== "destructive"}
 							withBaseFill={withBaseFill || variant === "destructive"}
 							baseFillClass={
 								variant === "destructive" ? "bg-error-900/10" : undefined
