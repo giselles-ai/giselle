@@ -243,7 +243,7 @@ export function Toolbar() {
 										)}
 										sideOffset={42}
 									>
-										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/60" />
+										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/50" />
 										<GlassSurfaceLayers
 											radiusClass="rounded-[8px]"
 											borderStyle="solid"
@@ -321,7 +321,7 @@ export function Toolbar() {
 										)}
 										sideOffset={42}
 									>
-										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/60" />
+										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/50" />
 										<GlassSurfaceLayers
 											radiusClass="rounded-[8px]"
 											borderStyle="solid"
@@ -427,7 +427,7 @@ export function Toolbar() {
 										align="end"
 										sideOffset={42}
 									>
-										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/60" />
+										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/50" />
 										<GlassSurfaceLayers
 											radiusClass="rounded-[8px]"
 											borderStyle="solid"
@@ -828,7 +828,7 @@ export function Toolbar() {
 										)}
 										sideOffset={42}
 									>
-										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/60" />
+										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/50" />
 										<GlassSurfaceLayers
 											radiusClass="rounded-[8px]"
 											borderStyle="solid"

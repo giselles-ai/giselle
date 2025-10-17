@@ -59,7 +59,7 @@ export function PropertiesPanel() {
 				<PropertiesPanelHeader
 					node={node}
 					description={description}
-					onChangeName={handleChangeName}
+					onChangeName={(name) => handleChangeName(name ?? "")}
 					action={
 						<Button
 							type="button"

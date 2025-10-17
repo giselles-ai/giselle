@@ -124,7 +124,7 @@ export function FloatingPropertiesPanel({
 							)}
 						>
 							{/* Base fill (front) */}
-							<div className="absolute inset-0 -z-10 rounded-[12px] pointer-events-none bg-bg/60" />
+							<div className="absolute inset-0 -z-10 rounded-[12px] pointer-events-none bg-bg/50" />
 							<GlassSurfaceLayers
 								tone="default"
 								borderStyle="solid"
