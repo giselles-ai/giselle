@@ -12,6 +12,111 @@ import {
 } from "@giselle-sdk/flow";
 
 /**
+ * GitHub trigger events that require a callsign condition
+ */
+const CALLSIGN_REQUIRED_EVENTS = [
+	"github.issue_comment.created",
+	"github.pull_request_comment.created",
+	"github.pull_request_review_comment.created",
+] as const;
+
+/**
+ * GitHub trigger events that require labels condition
+ */
+const LABELS_REQUIRED_EVENTS = [
+	"github.issue.labeled",
+	"github.pull_request.labeled",
+] as const;
+
+/**
+ * Union type of event IDs that require callsign
+ */
+type CallsignRequiredEventId = (typeof CALLSIGN_REQUIRED_EVENTS)[number];
+
+/**
+ * Union type of event IDs that require labels
+ */
+type LabelsRequiredEventId = (typeof LABELS_REQUIRED_EVENTS)[number];
+
+/**
+ * GitHubFlowTriggerEvent with callsign condition
+ */
+type CallsignRequiredEvent = Extract<
+	GitHubFlowTriggerEvent,
+	{ id: CallsignRequiredEventId }
+>;
+
+/**
+ * GitHubFlowTriggerEvent with labels condition
+ */
+type LabelsRequiredEvent = Extract<
+	GitHubFlowTriggerEvent,
+	{ id: LabelsRequiredEventId }
+>;
+
+/**
+ * Checks if an event ID exists in a given list
+ */
+function isEventInList(
+	eventId: GitHubTriggerEventId,
+	events: readonly GitHubTriggerEventId[],
+) {
+	return events.includes(eventId);
+}
+
+/**
+ * Type guard to check if an event has callsign condition
+ */
+export function hasCallsignCondition(
+	event: GitHubFlowTriggerEvent,
+): event is CallsignRequiredEvent {
+	return isEventInList(event.id, CALLSIGN_REQUIRED_EVENTS);
+}
+
+/**
+ * Type guard to check if an event has labels condition
+ */
+export function hasLabelsCondition(
+	event: GitHubFlowTriggerEvent,
+): event is LabelsRequiredEvent {
+	return isEventInList(event.id, LABELS_REQUIRED_EVENTS);
+}
+
+/**
+ * Checks if a trigger event ID requires callsign
+ */
+export function isTriggerRequiringCallsign(eventId: GitHubTriggerEventId) {
+	return isEventInList(eventId, CALLSIGN_REQUIRED_EVENTS);
+}
+
+/**
+ * Checks if a trigger event ID requires labels
+ */
+export function isTriggerRequiringLabels(eventId: GitHubTriggerEventId) {
+	return isEventInList(eventId, LABELS_REQUIRED_EVENTS);
+}
+
+/**
+ * Extracts callsign from an event if it has one
+ */
+export function extractCallsign(event: GitHubFlowTriggerEvent) {
+	if (!hasCallsignCondition(event)) {
+		return undefined;
+	}
+	return event.conditions.callsign;
+}
+
+/**
+ * Extracts labels from an event if it has them
+ */
+export function extractLabels(event: GitHubFlowTriggerEvent) {
+	if (!hasLabelsCondition(event)) {
+		return undefined;
+	}
+	return event.conditions.labels;
+}
+
+/**
  * Type definitions for trigger configuration options
  */
 interface TriggerConfigOptions {
@@ -79,20 +184,11 @@ export function createTriggerEvent(args: {
 }
 
 /**
- * Determines if a trigger type requires a callsign
- */
-function isTriggerRequiringCallsign(eventId: GitHubTriggerEventId): boolean {
-	return [
-		"github.issue_comment.created",
-		"github.pull_request_comment.created",
-		"github.pull_request_review_comment.created",
-	].includes(eventId);
-}
-
-/**
  * Generates the outputs for a given trigger
  */
-function generateTriggerOutputs(eventId: GitHubTriggerEventId): Output[] {
+export function generateTriggerOutputs(
+	eventId: GitHubTriggerEventId,
+): Output[] {
 	const trigger = githubTriggers[eventId];
 	const outputs: Output[] = [];
 
@@ -101,7 +197,7 @@ function generateTriggerOutputs(eventId: GitHubTriggerEventId): Output[] {
 			id: OutputId.generate(),
 			label: getGitHubDisplayLabel({ eventId, accessor: key }),
 			accessor: key,
-		});
+		} satisfies Output);
 	}
 
 	return outputs;
