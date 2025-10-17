@@ -2,6 +2,7 @@
 
 import type { NodeId } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
+import { useCallback, useMemo } from "react";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
@@ -24,6 +25,22 @@ export function PropertiesPanel() {
 		(a, b) => a.node === b.node && a.updateNode === b.updateNode,
 	);
 
+	const handleClose = useCallback(() => {
+		setInspectedNodeId(undefined);
+	}, [setInspectedNodeId]);
+
+	const handleChangeName = useCallback(
+		(name: string) => {
+			// node.id は選択変更時のみ変わるため依存関係は安定
+			if (node) {
+				updateNode(node.id as NodeId, { name });
+			}
+		},
+		[node, updateNode],
+	);
+
+	const description = useMemo(() => node?.content.type, [node?.content.type]);
+
 	// Hide when nothing is selected/inspected or node not found.
 	if (!inspectedNodeId || !node) return null;
 
@@ -37,14 +54,12 @@ export function PropertiesPanel() {
 			<PropertiesPanelRoot>
 				<PropertiesPanelHeader
 					node={node}
-					description={node.content.type}
-					onChangeName={(name) => {
-						updateNode(node.id as NodeId, { name });
-					}}
+					description={description}
+					onChangeName={handleChangeName}
 					action={
 						<Button
 							type="button"
-							onClick={() => setInspectedNodeId(undefined)}
+							onClick={handleClose}
 							className="!py-[6px] !px-[10px]"
 						>
 							Close
