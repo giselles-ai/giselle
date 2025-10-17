@@ -271,36 +271,53 @@ export const giselleEngine = NextGiselleEngine({
 					),
 			},
 		) as ReturnType<typeof getGitHubPullRequestQueryService>,
-		document: {
-			search: (
-				...args: Parameters<
-					ReturnType<typeof getDocumentVectorStoreQueryService>["search"]
-				>
-			) => {
-				const [query, context, ...rest] = args as [
-					string,
-					import("@giselle-sdk/giselle").DocumentVectorStoreQueryContext,
-					...unknown[],
-				];
-				const adaptedContext: LocalDocumentVectorStoreQueryContext = {
-					provider: "document",
-					workspaceId: context.workspaceId,
-					documentVectorStoreId:
-						context.documentVectorStoreId as unknown as LocalDocumentVectorStoreQueryContext["documentVectorStoreId"],
-					embeddingProfileId: context.embeddingProfileId,
-				};
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-				return (
-					getDocumentVectorStoreQueryService().search as (
-						query: string,
-						ctx: LocalDocumentVectorStoreQueryContext,
-						...rest: unknown[]
-					) => ReturnType<
-						ReturnType<typeof getDocumentVectorStoreQueryService>["search"]
-					>
-				)(query, adaptedContext, ...rest);
-			},
-		} as unknown as ReturnType<typeof getDocumentVectorStoreQueryService>,
+		document: (() => {
+			let cachedDocumentService:
+				| ReturnType<typeof getDocumentVectorStoreQueryService>
+				| undefined;
+			return new Proxy(
+				{} as ReturnType<typeof getDocumentVectorStoreQueryService>,
+				{
+					get: (_target, prop, receiver) => {
+						if (!cachedDocumentService) {
+							cachedDocumentService = getDocumentVectorStoreQueryService();
+						}
+						if (prop === "search") {
+							type DocumentService = ReturnType<
+								typeof getDocumentVectorStoreQueryService
+							>;
+							type SearchFn = DocumentService["search"];
+							type RestParams = SearchFn extends (
+								query: string,
+								ctx: unknown,
+								...r: infer R
+							) => unknown
+								? R
+								: never;
+							return (
+								query: string,
+								context: import("@giselle-sdk/giselle").DocumentVectorStoreQueryContext,
+								...rest: RestParams
+							) => {
+								const adaptedContext: LocalDocumentVectorStoreQueryContext = {
+									provider: "document",
+									workspaceId: context.workspaceId,
+									documentVectorStoreId:
+										context.documentVectorStoreId as LocalDocumentVectorStoreQueryContext["documentVectorStoreId"],
+									embeddingProfileId: context.embeddingProfileId,
+								};
+								return cachedDocumentService?.search(
+									query,
+									adaptedContext,
+									...rest,
+								);
+							};
+						}
+						return Reflect.get(cachedDocumentService, prop, receiver);
+					},
+				},
+			) as ReturnType<typeof getDocumentVectorStoreQueryService>;
+		})(),
 	},
 	callbacks: {
 		generationComplete: async (args) => {
