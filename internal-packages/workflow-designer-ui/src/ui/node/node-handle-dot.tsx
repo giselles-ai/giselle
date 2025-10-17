@@ -73,7 +73,7 @@ export function NodeHandleDot({
 					? {
 							background: "var(--color-background)",
 							borderColor: "var(--color-border)",
-					  }
+						}
 					: undefined
 			}
 			className={clsx(
@@ -87,5 +87,3 @@ export function NodeHandleDot({
 		/>
 	);
 }
-
-
