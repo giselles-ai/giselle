@@ -1,3 +1,4 @@
+import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
@@ -65,14 +66,25 @@ export default async function TeamMembersPage() {
 		<div className="flex flex-col gap-[24px]">
 			<div className="flex justify-between items-center w-full">
 				<PageTitle>Members</PageTitle>
-				{hasProPlan && currentUserRole === "admin" && (
-					<InviteMemberDialog
-						memberEmails={members
-							.map((member) => member.email)
-							.filter((email) => email != null)}
-						invitationEmails={invitations.map((invitation) => invitation.email)}
-					/>
-				)}
+				<div className="flex items-center gap-3">
+					<DocsLink
+						href="https://docs.giselles.ai/en/guides/settings/team/members"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						About Members
+					</DocsLink>
+					{hasProPlan && currentUserRole === "admin" && (
+						<InviteMemberDialog
+							memberEmails={members
+								.map((member) => member.email)
+								.filter((email) => email != null)}
+							invitationEmails={invitations.map(
+								(invitation) => invitation.email,
+							)}
+						/>
+					)}
+				</div>
 			</div>
 			<Card title="" className="gap-0">
 				<SectionHeader title="Member List" />
