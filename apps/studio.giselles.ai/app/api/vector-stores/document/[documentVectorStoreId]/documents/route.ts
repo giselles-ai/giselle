@@ -3,11 +3,9 @@ import { createHash } from "node:crypto";
 
 import type { EmbeddingProfileId } from "@giselle-sdk/data-type";
 import { createId } from "@paralleldrive/cuid2";
-import { createClient } from "@supabase/supabase-js";
 import { and, eq, inArray } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import { after, NextResponse } from "next/server";
-
 import {
 	db,
 	documentEmbeddingProfiles,
@@ -15,6 +13,7 @@ import {
 	documentVectorStores,
 } from "@/drizzle";
 import { docVectorStoreFlag } from "@/flags";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import {
 	DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_BYTES,
 	DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_MB,
@@ -38,16 +37,7 @@ const STORAGE_BUCKET =
 	process.env.DOCUMENT_VECTOR_STORE_STORAGE_BUCKET ?? "app";
 const STORAGE_PREFIX = "vector-stores";
 
-function getSupabaseClient() {
-	const url = process.env.SUPABASE_URL;
-	const key = process.env.SUPABASE_SERVICE_KEY;
-	if (!url || !key) {
-		throw new Error(
-			"Missing Supabase configuration. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY.",
-		);
-	}
-	return createClient(url, key);
-}
+// shared Supabase client imported from @/lib/supabase/client
 
 async function ensureFeatureEnabled() {
 	const enabled = await docVectorStoreFlag();

@@ -3,9 +3,9 @@ import type {
 	EmbeddingProfileId,
 } from "@giselle-sdk/data-type";
 import type { DocumentVectorStoreSourceId } from "@giselles-ai/types";
-import { createClient } from "@supabase/supabase-js";
 import { and, eq, lt, or } from "drizzle-orm";
 import { db, documentVectorStoreSources } from "@/drizzle";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import {
 	deleteDocumentEmbeddingsByProfiles,
 	getDocumentVectorStoreSource,
@@ -16,14 +16,7 @@ import { chunkText } from "./chunk-text";
 import { extractTextFromDocument } from "./extract-text";
 import { generateEmbeddings } from "./generate-embeddings";
 
-function getSupabaseClient() {
-	const supabaseUrl = process.env.SUPABASE_URL;
-	const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
-	if (!supabaseUrl || !supabaseServiceKey) {
-		throw new Error("Missing Supabase credentials");
-	}
-	return createClient(supabaseUrl, supabaseServiceKey);
-}
+// shared Supabase client imported from @/lib/supabase/client
 
 interface IngestDocumentOptions {
 	embeddingProfileIds: EmbeddingProfileId[];

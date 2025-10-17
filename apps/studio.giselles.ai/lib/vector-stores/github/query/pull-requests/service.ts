@@ -9,8 +9,12 @@ import { gitHubPullRequestMetadataSchema } from "./schema";
 /**
  * GitHub Pull Request query service with additional context
  */
+const dbConfig = createDatabaseConfig();
+if (!dbConfig) {
+	throw new Error("Missing POSTGRES_URL for GitHub Pull Request query service");
+}
 export const gitHubPullRequestQueryService = createPostgresQueryService({
-	database: createDatabaseConfig(),
+	database: dbConfig,
 	tableName: getTableName(githubRepositoryPullRequestEmbeddings),
 	metadataSchema: gitHubPullRequestMetadataSchema,
 	contextToFilter: resolveGitHubPullRequestEmbeddingFilter,

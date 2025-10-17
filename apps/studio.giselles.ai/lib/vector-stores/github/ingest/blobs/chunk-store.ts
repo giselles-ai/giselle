@@ -12,8 +12,14 @@ export function createGitHubBlobChunkStore(
 	repositoryIndexDbId: number,
 	embeddingProfileId: EmbeddingProfileId,
 ) {
+	const dbConfig = createDatabaseConfig();
+	if (!dbConfig) {
+		throw new Error(
+			"Missing POSTGRES_URL for GitHub Blob chunk store (ingestion pipeline)",
+		);
+	}
 	return createPostgresChunkStore({
-		database: createDatabaseConfig(),
+		database: dbConfig,
 		tableName: getTableName(githubRepositoryEmbeddings),
 		metadataSchema: z.object({
 			repositoryIndexDbId: z.number(),
