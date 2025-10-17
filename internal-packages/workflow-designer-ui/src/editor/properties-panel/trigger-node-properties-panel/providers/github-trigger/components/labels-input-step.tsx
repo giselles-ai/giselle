@@ -16,6 +16,7 @@ interface LabelsInputStepProps {
 		e: FormEvent<HTMLFormElement>,
 		rawLabels: { id: number; value: string }[],
 	) => void;
+	errorMessage?: string;
 	isPending: boolean;
 	showBackButton?: boolean;
 }
@@ -27,6 +28,7 @@ export function LabelsInputStep({
 	initialLabels,
 	onBack,
 	onSubmit,
+	errorMessage,
 	isPending,
 	showBackButton = true,
 }: LabelsInputStepProps) {
@@ -84,9 +86,10 @@ export function LabelsInputStep({
 									)
 								}
 								className={clsx(
-									"flex-1 rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
-									"border border-white-400 focus:border-border",
-									"text-[14px] bg-transparent",
+									"flex-1 rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none text-[14px] bg-transparent",
+									errorMessage !== undefined
+										? "border border-[#FF3D71] focus:border-[#FF3D71]"
+										: "border border-white-400 focus:border-border",
 								)}
 								required={true}
 								placeholder="bug"
@@ -105,6 +108,11 @@ export function LabelsInputStep({
 							)}
 						</div>
 					))}
+					{errorMessage !== undefined && (
+						<p className="text-[12px] text-[#FF3D71] pl-2" role="alert">
+							{errorMessage}
+						</p>
+					)}
 					<p className="text-[12px] text-inverse pl-2">
 						Labels are required for issue labeled triggers. Examples: bug,
 						feature, urgent

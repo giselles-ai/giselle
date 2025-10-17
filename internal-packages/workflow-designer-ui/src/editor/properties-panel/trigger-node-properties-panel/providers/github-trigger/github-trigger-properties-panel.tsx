@@ -113,6 +113,8 @@ export function Installed({
 	const [eventId, setEventId] = useState<GitHubTriggerEventId>(
 		reconfigStep?.eventId ?? DEFAULT_EVENT_ID,
 	);
+	const [callsignError, setCallsignError] = useState<string | undefined>();
+	const [labelsError, setLabelsError] = useState<string | undefined>();
 	const isReconfiguring = node.content.state.status === "reconfiguring";
 	const { configureTrigger, isPending } = useConfigureTrigger({ node });
 
@@ -149,6 +151,9 @@ export function Installed({
 			if (typeof callsign !== "string") return;
 			const normalizedCallsign = callsign.trim();
 			if (normalizedCallsign.length === 0) {
+				setCallsignError(
+					"Enter a callsign using at least one non-space character.",
+				);
 				return;
 			}
 			handleSubmit({ callsign: normalizedCallsign });
@@ -165,6 +170,10 @@ export function Installed({
 			const labels = rawLabels
 				.map((label) => label.value.trim())
 				.filter((value) => value.length > 0);
+			if (labels.length === 0) {
+				setLabelsError("Add at least one label using non-space characters.");
+				return;
+			}
 			handleSubmit({ labels });
 		},
 		[handleSubmit],
@@ -333,15 +342,21 @@ export function Installed({
 								type="text"
 								name="callsign"
 								className={clsx(
-									"group w-full flex justify-between items-center rounded-[8px] py-[8px] pl-[28px] pr-[4px] outline-none focus:outline-none",
-									"border border-white-400 focus:border-border",
-									"text-[14px] bg-transparent",
+									"group w-full flex justify-between items-center rounded-[8px] py-[8px] pl-[28px] pr-[4px] outline-none focus:outline-none text-[14px] bg-transparent",
+									callsignError !== undefined
+										? "border border-[#FF3D71] focus:border-[#FF3D71]"
+										: "border border-white-400 focus:border-border",
 								)}
 								defaultValue={step.callsign ?? ""}
 								required={true}
 								placeholder="code-review"
 							/>
 						</div>
+						{callsignError !== undefined && (
+							<p className="text-[12px] text-[#FF3D71] pl-2" role="alert">
+								{callsignError}
+							</p>
+						)}
 						<p className="text-[12px] text-inverse pl-2">
 							A callsign is required for issue comment triggers. Examples:
 							/code-review, /check-policy
@@ -354,6 +369,7 @@ export function Installed({
 								type="button"
 								className="flex-1 bg-bg-700 hover:bg-bg-600 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
 								onClick={() => {
+									setCallsignError(undefined);
 									setStep({
 										state: "confirm-repository",
 										eventId: step.eventId,
@@ -417,7 +433,9 @@ export function Installed({
 					owner={step.owner}
 					repo={step.repo}
 					initialLabels={step.labels}
+					errorMessage={labelsError}
 					onBack={() => {
+						setLabelsError(undefined);
 						setStep({
 							state: "confirm-repository",
 							eventId: step.eventId,
