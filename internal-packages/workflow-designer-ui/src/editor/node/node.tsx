@@ -377,28 +377,38 @@ export function NodeComponent({
 				<div className="flex justify-between">
 					<div className="grid">
 						{node.content.type !== "action" &&
-							node.inputs?.map((input) => (
-								<div
-									className="relative flex items-center h-[28px]"
-									key={input.id}
-								>
-									<NodeHandleDot
-										position={Position.Left}
-										isConnected={false}
-										isConnectable={false}
-										contentType={
-											(isTextGenerationNode(node) && "textGeneration") ||
-											(isImageGenerationNode(node) && "imageGeneration") ||
-											(node.content.type === "query" && "query") ||
-											"text"
-										}
-										id={input.id}
-									/>
-									<div className={clsx("px-[12px] text-inverse text-[12px]")}>
-										{input.label}
+							node.inputs?.map((input) => {
+								const isInConnected =
+									connectedInputIds?.some(
+										(connectedInputId) => connectedInputId === input.id,
+									) ?? false;
+								return (
+									<div
+										className="relative flex items-center h-[28px]"
+										key={input.id}
+									>
+										<NodeHandleDot
+											position={Position.Left}
+											isConnected={isInConnected}
+											isConnectable={false}
+											contentType={
+												(isTextGenerationNode(node) && "textGeneration") ||
+												(isImageGenerationNode(node) && "imageGeneration") ||
+												(node.content.type === "query" && "query") ||
+												"text"
+											}
+											id={input.id}
+										/>
+										<NodeInputLabel
+											label={input.label}
+											isConnected={isInConnected}
+											isRequired={Boolean(
+												(input as { isRequired?: boolean }).isRequired,
+											)}
+										/>
 									</div>
-								</div>
-							))}
+								);
+							})}
 						{node.content.type === "action" &&
 							node.inputs.map((input) => (
 								<div
