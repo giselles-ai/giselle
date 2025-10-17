@@ -387,15 +387,8 @@ export function NodeComponent({
 										isConnected={false}
 										isConnectable={false}
 										contentType={
-											(node.content.type === "textGeneration" &&
-												"textGeneration") ||
-											(node.content.type === "imageGeneration" &&
-												"imageGeneration") ||
-											(node.content.type === "webSearch" && "webSearch") ||
-											(node.content.type === "audioGeneration" &&
-												"audioGeneration") ||
-											(node.content.type === "videoGeneration" &&
-												"videoGeneration") ||
+											(isTextGenerationNode(node) && "textGeneration") ||
+											(isImageGenerationNode(node) && "imageGeneration") ||
 											(node.content.type === "query" && "query") ||
 											"text"
 										}
