@@ -448,51 +448,51 @@ describe("buildLevels", () => {
 			const connections: Connection[] = [
 				// 5 duplicate connections: Trigger → Middle
 				...Array.from({ length: 5 }, (_, i) => ({
-					id: `cnnc-trigger-middle-${i}`,
+					id: `cnnc-trigger-middle-${i}` as `cnnc-${string}`,
 					outputNode: {
-						id: "nd-trigger",
-						type: "operation",
-						content: { type: "trigger" },
+						id: "nd-trigger" as const,
+						type: "operation" as const,
+						content: { type: "trigger" as const },
 					},
-					outputId: "otp-trigger-out",
+					outputId: "otp-trigger-out" as const,
 					inputNode: {
-						id: "nd-middle",
-						type: "operation",
-						content: { type: "textGeneration" },
+						id: "nd-middle" as const,
+						type: "operation" as const,
+						content: { type: "textGeneration" as const },
 					},
-					inputId: "inp-middle-in",
+					inputId: "inp-middle-in" as const,
 				})),
 				// 2 duplicate connections: Trigger → Final
 				...Array.from({ length: 2 }, (_, i) => ({
-					id: `cnnc-trigger-final-${i}`,
+					id: `cnnc-trigger-final-${i}` as `cnnc-${string}`,
 					outputNode: {
-						id: "nd-trigger",
-						type: "operation",
-						content: { type: "trigger" },
+						id: "nd-trigger" as const,
+						type: "operation" as const,
+						content: { type: "trigger" as const },
 					},
-					outputId: "otp-trigger-out",
+					outputId: "otp-trigger-out" as const,
 					inputNode: {
-						id: "nd-final",
-						type: "operation",
-						content: { type: "action" },
+						id: "nd-final" as const,
+						type: "operation" as const,
+						content: { type: "action" as const },
 					},
-					inputId: "inp-final-in1",
+					inputId: "inp-final-in1" as const,
 				})),
 				// 1 connection: Middle → Final
 				{
-					id: "cnnc-middle-final",
+					id: "cnnc-middle-final" as const,
 					outputNode: {
-						id: "nd-middle",
-						type: "operation",
-						content: { type: "textGeneration" },
+						id: "nd-middle" as const,
+						type: "operation" as const,
+						content: { type: "textGeneration" as const },
 					},
-					outputId: "otp-middle-out",
+					outputId: "otp-middle-out" as const,
 					inputNode: {
-						id: "nd-final",
-						type: "operation",
-						content: { type: "action" },
+						id: "nd-final" as const,
+						type: "operation" as const,
+						content: { type: "action" as const },
 					},
-					inputId: "inp-final-in2",
+					inputId: "inp-final-in2" as const,
 				},
 			];
 
