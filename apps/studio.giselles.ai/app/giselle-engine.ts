@@ -33,6 +33,7 @@ import {
 } from "@/services/teams";
 import supabaseStorageDriver from "@/supabase-storage-driver";
 import type { runActJob } from "@/trigger/run-act-job";
+import type { DocumentVectorStoreQueryContext as LocalDocumentVectorStoreQueryContext } from "../lib/vector-stores/document/query/context";
 import { getDocumentVectorStoreQueryService } from "../lib/vector-stores/document/query/service";
 import {
 	getGitHubPullRequestQueryService,
@@ -270,17 +271,34 @@ export const giselleEngine = NextGiselleEngine({
 					),
 			},
 		) as ReturnType<typeof getGitHubPullRequestQueryService>,
-		document: new Proxy(
-			{} as ReturnType<typeof getDocumentVectorStoreQueryService>,
-			{
-				get: (_target, prop, receiver) =>
-					Reflect.get(
-						getDocumentVectorStoreQueryService() as unknown as object,
-						prop,
-						receiver,
-					),
+		document: {
+			search: (
+				...args: Parameters<
+					ReturnType<typeof getDocumentVectorStoreQueryService>["search"]
+				>
+			) => {
+				const [context, ...rest] = args as [
+					import("@giselle-sdk/giselle").DocumentVectorStoreQueryContext,
+					...unknown[],
+				];
+				const adaptedContext: LocalDocumentVectorStoreQueryContext = {
+					provider: "document",
+					workspaceId: context.workspaceId,
+					documentVectorStoreId:
+						context.documentVectorStoreId as unknown as LocalDocumentVectorStoreQueryContext["documentVectorStoreId"],
+					embeddingProfileId: context.embeddingProfileId,
+				};
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				return (
+					getDocumentVectorStoreQueryService().search as (
+						ctx: LocalDocumentVectorStoreQueryContext,
+						...rest: unknown[]
+					) => ReturnType<
+						ReturnType<typeof getDocumentVectorStoreQueryService>["search"]
+					>
+				)(adaptedContext, ...rest);
 			},
-		) as ReturnType<typeof getDocumentVectorStoreQueryService>,
+		} as unknown as ReturnType<typeof getDocumentVectorStoreQueryService>,
 	},
 	callbacks: {
 		generationComplete: async (args) => {
