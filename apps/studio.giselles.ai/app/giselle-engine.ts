@@ -249,16 +249,38 @@ export const giselleEngine = NextGiselleEngine({
 	},
 	vault,
 	vectorStoreQueryServices: {
-		// Lazy wrappers: defer POSTGRES_URL validation until actually used
-		github: {
-			search: (...args) => getGitHubQueryService().search(...args),
-		},
-		githubPullRequest: {
-			search: (...args) => getGitHubPullRequestQueryService().search(...args),
-		},
-		document: {
-			search: (...args) => getDocumentVectorStoreQueryService().search(...args),
-		},
+		// Lazy proxies: defer service creation until first method access,
+		// while preserving the full QueryService interface surface.
+		github: new Proxy({} as ReturnType<typeof getGitHubQueryService>, {
+			get: (_target, prop, receiver) =>
+				Reflect.get(
+					getGitHubQueryService() as unknown as object,
+					prop,
+					receiver,
+				),
+		}) as ReturnType<typeof getGitHubQueryService>,
+		githubPullRequest: new Proxy(
+			{} as ReturnType<typeof getGitHubPullRequestQueryService>,
+			{
+				get: (_target, prop, receiver) =>
+					Reflect.get(
+						getGitHubPullRequestQueryService() as unknown as object,
+						prop,
+						receiver,
+					),
+			},
+		) as ReturnType<typeof getGitHubPullRequestQueryService>,
+		document: new Proxy(
+			{} as ReturnType<typeof getDocumentVectorStoreQueryService>,
+			{
+				get: (_target, prop, receiver) =>
+					Reflect.get(
+						getDocumentVectorStoreQueryService() as unknown as object,
+						prop,
+						receiver,
+					),
+			},
+		) as ReturnType<typeof getDocumentVectorStoreQueryService>,
 	},
 	callbacks: {
 		generationComplete: async (args) => {
