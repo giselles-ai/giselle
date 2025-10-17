@@ -20,7 +20,7 @@ export default function TeamPage() {
 				<PageHeading as="h1" glow>
 					Team Settings
 				</PageHeading>
-				<DocsLink href="https://docs.giselles.ai/en/guides/settings/team/billing">
+				<DocsLink href="https://docs.giselles.ai/en/guides/settings/team/general">
 					About Team Settings
 				</DocsLink>
 			</div>
