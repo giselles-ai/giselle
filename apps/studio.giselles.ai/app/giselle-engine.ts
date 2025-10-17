@@ -35,8 +35,8 @@ import supabaseStorageDriver from "@/supabase-storage-driver";
 import type { runActJob } from "@/trigger/run-act-job";
 import { getDocumentVectorStoreQueryService } from "../lib/vector-stores/document/query/service";
 import {
-    getGitHubPullRequestQueryService,
-    getGitHubQueryService,
+	getGitHubPullRequestQueryService,
+	getGitHubQueryService,
 } from "../lib/vector-stores/github";
 import type { generateContentJob } from "../trigger/generate-content-job";
 
@@ -248,17 +248,16 @@ export const giselleEngine = NextGiselleEngine({
 		},
 	},
 	vault,
-    vectorStoreQueryServices: {
-        // Lazy wrappers: defer POSTGRES_URL validation until actually used
-        github: {
-            search: (...args) => getGitHubQueryService().search(...args),
-        },
-        githubPullRequest: {
-            search: (...args) =>
-                getGitHubPullRequestQueryService().search(...args),
-        },
-        document: getDocumentVectorStoreQueryService(),
-    },
+	vectorStoreQueryServices: {
+		// Lazy wrappers: defer POSTGRES_URL validation until actually used
+		github: {
+			search: (...args) => getGitHubQueryService().search(...args),
+		},
+		githubPullRequest: {
+			search: (...args) => getGitHubPullRequestQueryService().search(...args),
+		},
+		document: getDocumentVectorStoreQueryService(),
+	},
 	callbacks: {
 		generationComplete: async (args) => {
 			if (runtimeEnv === "trigger.dev") {
