@@ -13,6 +13,8 @@ function VectorStoreHeader({ title }: { title: string }) {
 			<DocsLink
 				tone="muted"
 				href="https://docs.giselles.ai/en/guides/settings/team/vector-stores"
+				target="_blank"
+				rel="noopener noreferrer"
 			>
 				About Vector Stores
 			</DocsLink>
