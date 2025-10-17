@@ -57,7 +57,10 @@ type NodeGroupMenuItem = {
 function CenteredDialogContent({ children }: React.PropsWithChildren) {
 	return (
 		<DialogPortal>
-			<RadixDialog.Overlay className="fixed inset-0 bg-black/70 z-50" />
+			<RadixDialog.Overlay
+				className="fixed inset-0 z-50"
+				style={{ background: "var(--color-dialog-overlay)" }}
+			/>
 			<div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
 				<RadixDialog.Content
 					className={clsx(
