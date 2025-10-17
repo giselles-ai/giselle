@@ -1,7 +1,7 @@
 import { Handle, Position } from "@xyflow/react";
 import clsx from "clsx/lite";
 
-export type NodeHandleDotProps = {
+type NodeHandleDotProps = {
 	position: Position;
 	isConnected: boolean;
 	contentType:

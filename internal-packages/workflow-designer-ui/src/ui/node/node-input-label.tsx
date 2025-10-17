@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-export type NodeInputLabelProps = {
+type NodeInputLabelProps = {
 	label: string;
 	isConnected: boolean;
 	isRequired?: boolean;
