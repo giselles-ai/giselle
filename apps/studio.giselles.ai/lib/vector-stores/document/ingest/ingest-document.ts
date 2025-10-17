@@ -16,14 +16,14 @@ import { chunkText } from "./chunk-text";
 import { extractTextFromDocument } from "./extract-text";
 import { generateEmbeddings } from "./generate-embeddings";
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
-
-if (!supabaseUrl || !supabaseServiceKey) {
-	throw new Error("Missing Supabase credentials");
+function getSupabaseClient() {
+	const supabaseUrl = process.env.SUPABASE_URL;
+	const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+	if (!supabaseUrl || !supabaseServiceKey) {
+		throw new Error("Missing Supabase credentials");
+	}
+	return createClient(supabaseUrl, supabaseServiceKey);
 }
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 interface IngestDocumentOptions {
 	embeddingProfileIds: EmbeddingProfileId[];
@@ -129,6 +129,7 @@ export async function ingestDocument(
 		signal?.throwIfAborted();
 
 		// Download file from storage
+		const supabase = getSupabaseClient();
 		const { data: fileData, error: downloadError } = await supabase.storage
 			.from(source.storageBucket)
 			.download(source.storageKey);
