@@ -7446,7 +7446,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="happy-dom"></a>
-### happy-dom v20.0.0
+### happy-dom v20.0.2
 #### 
 
 ##### Paths
