@@ -1,7 +1,7 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx/lite";
 import { Ellipsis } from "lucide-react";
-import { memo } from "react";
+import { memo, useCallback, useState } from "react";
 import { GlassSurfaceLayers } from "./glass-surface";
 
 export type RepoAction = {
@@ -22,8 +22,14 @@ export const RepoActionMenu = memo(function RepoActionMenu({
 	id?: string;
 	disabled?: boolean;
 }) {
+	const [open, setOpen] = useState(false);
+	const handleSelect = useCallback((action: RepoAction) => {
+		setOpen(false);
+		if (!action.disabled) action.onSelect?.();
+	}, []);
+
 	return (
-		<DropdownMenu.Root>
+		<DropdownMenu.Root open={open} onOpenChange={setOpen}>
 			<DropdownMenu.Trigger asChild>
 				<button
 					id={id}
@@ -51,9 +57,7 @@ export const RepoActionMenu = memo(function RepoActionMenu({
 						<DropdownMenu.Item
 							key={action.value}
 							disabled={action.disabled}
-							onSelect={(e) => {
-								if (!action.disabled) action.onSelect?.();
-							}}
+							onSelect={() => handleSelect(action)}
 							className={clsx(
 								"rounded-md px-3 py-2 text-[14px] font-medium outline-none",
 								"data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
