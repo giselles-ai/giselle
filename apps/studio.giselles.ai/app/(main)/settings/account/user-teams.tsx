@@ -1,7 +1,7 @@
 "use client";
 
 import { MoreHorizontal, Search } from "lucide-react";
-import { useActionState, useCallback, useState } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { FreeTag } from "@/components/free-tag";
 import { ProTag } from "@/components/pro-tag";
 import {
@@ -169,9 +169,10 @@ function UserTeamsItem({
 							teamId={teamId}
 							userId={currentUserId}
 							role={role}
-							renderButton={(isPending) => (
+							renderButton={({ isPending, handleClick }) => (
 								<button
-									type="submit"
+									type="button"
+									onClick={handleClick}
 									className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-white-400 rounded-md"
 									disabled={isPending}
 								>
@@ -186,9 +187,10 @@ function UserTeamsItem({
 							teamId={teamId}
 							userId={currentUserId}
 							role={role}
-							renderButton={(isPending) => (
+							renderButton={({ isPending, handleClick }) => (
 								<button
-									type="submit"
+									type="button"
+									onClick={handleClick}
 									className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-white-400 rounded-md"
 									disabled={isPending}
 								>
@@ -204,9 +206,10 @@ function UserTeamsItem({
 							teamId={teamId}
 							userId={currentUserId}
 							role={role}
-							renderButton={(isPending) => (
+							renderButton={({ isPending, handleClick }) => (
 								<button
-									type="submit"
+									type="button"
+									onClick={handleClick}
 									className="flex items-center w-full px-3 py-2 font-medium text-[14px] leading-[16px] text-error-900 hover:bg-error-900/20 rounded-md"
 									disabled={isPending}
 								>
@@ -226,18 +229,23 @@ interface ChangeTeamAndActionProps {
 	teamId: string;
 	userId: string;
 	role: string;
-	renderButton: (isPending: boolean) => React.ReactNode;
+	renderButton: (options: {
+		isPending: boolean;
+		handleClick: () => void;
+	}) => React.ReactNode;
 	action: () => Promise<void>;
 }
 function ChangeTeamAndAction({
 	renderButton,
 	action,
 }: ChangeTeamAndActionProps) {
-	const [_state, formAction, isPending] = useActionState(action, null);
+	const [isPending, startTransition] = useTransition();
 
-	return (
-		<form className="w-full" action={formAction}>
-			{renderButton(isPending)}
-		</form>
-	);
+	const handleClick = useCallback(() => {
+		startTransition(async () => {
+			await action();
+		});
+	}, [action]);
+
+	return renderButton({ isPending, handleClick });
 }
