@@ -21,7 +21,6 @@ import { Tabs } from "radix-ui";
 import { useCallback, useMemo } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
-import { NodeIcon } from "../../../icons/node";
 import { Button } from "../../../ui/button";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
@@ -163,7 +162,6 @@ export function ImageGenerationNodePropertiesPanel({
 		<PropertiesPanelRoot>
 			{usageLimitsReached && <UsageLimitWarning />}
 			<PropertiesPanelHeader
-				icon={<NodeIcon node={node} className="size-[20px] text-inverse" />}
 				node={node}
 				description={node.content.llm.provider}
 				onChangeName={(name) => {

@@ -1,5 +1,6 @@
 "use client";
 
+import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import clsx from "clsx/lite";
 import { Dialog } from "radix-ui";
 import { type ReactNode, useCallback, useRef, useState } from "react";
@@ -122,20 +123,15 @@ export function FloatingPropertiesPanel({
 								className,
 							)}
 						>
-							{/* Glass effect background with backdrop blur */}
-							<div
-								className="absolute inset-0 -z-10 rounded-[12px] backdrop-blur-md"
-								style={{
-									background:
-										"linear-gradient(135deg, rgba(150, 150, 150, 0.03) 0%, rgba(60, 90, 160, 0.12) 100%)",
-								}}
+							{/* Base fill (front) */}
+							<div className="absolute inset-0 -z-10 rounded-[12px] pointer-events-none bg-bg/60" />
+							<GlassSurfaceLayers
+								tone="default"
+								borderStyle="solid"
+								withBaseFill={false}
+								blurClass="backdrop-blur-md"
+								zIndexClass="z-0"
 							/>
-
-							{/* Top gradient line */}
-							<div className="absolute -z-10 top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-
-							{/* Border */}
-							<div className="absolute -z-10 inset-0 rounded-[12px] border border-white/10" />
 
 							{/* Resize handle */}
 							<ResizeHandle

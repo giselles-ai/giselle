@@ -15,7 +15,6 @@ import { TrashIcon } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { type FormEventHandler, useCallback, useState } from "react";
 import useSWR from "swr";
-import { WebPageFileIcon } from "../../../icons";
 import { validateUrl } from "../../lib/validate-url";
 import {
 	PropertiesPanelContent,
@@ -248,7 +247,6 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 	return (
 		<PropertiesPanelRoot>
 			<PropertiesPanelHeader
-				icon={<WebPageFileIcon className="size-[20px] text-inverse" />}
 				node={node}
 				onChangeName={(name) => {
 					updateNodeData(node, { name });

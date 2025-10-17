@@ -20,6 +20,8 @@
 	--color-elevated-surface-background: #2f343e;
 	--color-surface-background: #2f343e;
 	--color-background: #00020b;
+	/* semantic base background (can be overridden per app) */
+	--color-bg: var(--color-background);
 
 	/* element */
 	--color-element-background: #2e343e;

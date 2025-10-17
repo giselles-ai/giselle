@@ -139,6 +139,48 @@
 	.bg-stage {
 		background-color: var(--color-stage-background, var(--color-background)) !important;
 	}
+	.bg-bg\/92 {
+		background-color: color-mix(
+			in srgb,
+			var(--color-bg, var(--color-background)) 92%,
+			transparent
+		) !important;
+	}
+	.bg-bg\/95 {
+		background-color: color-mix(
+			in srgb,
+			var(--color-bg, var(--color-background)) 95%,
+			transparent
+		) !important;
+	}
+	.bg-bg\/08 {
+		background-color: color-mix(
+			in srgb,
+			var(--color-bg, var(--color-background)) 8%,
+			transparent
+		) !important;
+	}
+	.bg-bg\/40 {
+		background-color: color-mix(
+			in srgb,
+			var(--color-bg, var(--color-background)) 40%,
+			transparent
+		) !important;
+	}
+	.bg-bg\/60 {
+		background-color: color-mix(
+			in srgb,
+			var(--color-bg, var(--color-background)) 60%,
+			transparent
+		) !important;
+	}
+	.bg-bg\/70 {
+		background-color: color-mix(
+			in srgb,
+			var(--color-bg, var(--color-background)) 70%,
+			transparent
+		) !important;
+	}
 
 	/* Auth page backgrounds */
 	.bg-auth {

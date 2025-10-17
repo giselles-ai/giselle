@@ -181,12 +181,12 @@ export function Toolbar() {
 	);
 
 	return (
-		<div className="relative rounded-[8px] overflow-hidden bg-surface/10">
+		<div className="relative rounded-[12px] overflow-hidden">
+			{/* local base fill to mimic dialog overlay */}
 			<GlassSurfaceLayers
-				radiusClass="rounded-[8px]"
-				withTopHighlight={true}
+				tone="default"
 				borderStyle="solid"
-				blurClass="backdrop-blur-md"
+				withBaseFill={false}
 				zIndexClass="z-0"
 			/>
 			<div className="flex divide-x divide-[hsla(232,36%,72%,0.2)] items-center px-[4px] py-[8px]">
@@ -239,12 +239,18 @@ export function Toolbar() {
 									<Popover.Content
 										className={clsx(
 											"relative rounded-[8px] px-[8px] py-[8px] min-w-[200px]",
-											"bg-[hsla(255,_40%,_98%,_0.04)] text-inverse",
-											"backdrop-blur-[4px]",
+											"text-inverse overflow-hidden",
 										)}
 										sideOffset={42}
 									>
-										<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-border border-transparent" />
+										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/60" />
+										<GlassSurfaceLayers
+											radiusClass="rounded-[8px]"
+											borderStyle="solid"
+											withBaseFill={false}
+											blurClass="backdrop-blur-md"
+											zIndexClass="z-0"
+										/>
 										<div className="relative flex flex-col gap-[8px]">
 											<ToggleGroup.Root
 												type="single"
@@ -311,12 +317,19 @@ export function Toolbar() {
 									<Popover.Content
 										className={clsx(
 											"relative rounded-[8px] px-[8px] py-[8px]",
-											"bg-[hsla(255,_40%,_98%,_0.04)] text-inverse",
-											"backdrop-blur-[4px]",
+											"text-inverse overflow-hidden",
 										)}
 										sideOffset={42}
 									>
-										<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-border border-transparent" />
+										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/60" />
+										<GlassSurfaceLayers
+											radiusClass="rounded-[8px]"
+											borderStyle="solid"
+											withBaseFill={true}
+											baseFillClass="bg-bg/60"
+											blurClass="backdrop-blur-lg"
+											zIndexClass="z-0"
+										/>
 										<div className="relative flex flex-col gap-[8px]">
 											<ToggleGroup.Root
 												type="single"
@@ -410,13 +423,19 @@ export function Toolbar() {
 									<Popover.Content
 										className={clsx(
 											"relative rounded-[8px] px-[8px] py-[8px] w-[var(--language-model-toggle-group-popover-width)]",
-											"bg-surface/10 text-inverse",
-											"backdrop-blur-[4px]",
+											"text-inverse overflow-hidden",
 										)}
 										align="end"
 										sideOffset={42}
 									>
-										<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-border border-transparent" />
+										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/60" />
+										<GlassSurfaceLayers
+											radiusClass="rounded-[8px]"
+											borderStyle="solid"
+											withBaseFill={false}
+											blurClass="backdrop-blur-lg"
+											zIndexClass="z-0"
+										/>
 										<div className="relative flex flex-col gap-[8px] max-h-[280px] overflow-y-auto">
 											{/* Search box */}
 											<div className="flex h-[28px] p-[8px] items-center gap-[11px] self-stretch rounded-[8px] bg-[rgba(222,233,242,0.20)] mx-[4px] mb-[4px]">
@@ -542,7 +561,7 @@ export function Toolbar() {
 										<Popover.Anchor />
 										<Popover.Portal>
 											<Popover.Content
-												className="bg-surface/10 w-[var(--language-model-detail-panel-width)] backdrop-blur-[4px] rounded-[8px] px-[8px] py-[8px] "
+												className="relative overflow-hidden w-[var(--language-model-detail-panel-width)] rounded-[8px] px-[8px] py-[8px] text-inverse"
 												sideOffset={42}
 												onOpenAutoFocus={(e) => {
 													e.preventDefault();
@@ -550,7 +569,14 @@ export function Toolbar() {
 												onMouseEnter={handleCapabilityPanelEnter}
 												onMouseLeave={handleCapabilityPanelLeave}
 											>
-												<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-border border-transparent" />
+												<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/60" />
+												<GlassSurfaceLayers
+													radiusClass="rounded-[8px]"
+													borderStyle="solid"
+													withBaseFill={false}
+													blurClass="backdrop-blur-md"
+													zIndexClass="z-0"
+												/>
 												{/* Pro plan overlay for free users */}
 												{languageModelMouseHovered &&
 													isProModelForFreeUser(
@@ -799,12 +825,19 @@ export function Toolbar() {
 									<Popover.Content
 										className={clsx(
 											"relative rounded-[8px] px-[8px] py-[8px]",
-											"bg-[hsla(255,_40%,_98%,_0.04)] text-inverse",
-											"backdrop-blur-[4px]",
+											"text-inverse overflow-hidden",
 										)}
 										sideOffset={42}
 									>
-										<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-border border-transparent" />
+										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/60" />
+										<GlassSurfaceLayers
+											radiusClass="rounded-[8px]"
+											borderStyle="solid"
+											withBaseFill={false}
+											blurClass="backdrop-blur-md"
+											zIndexClass="z-0"
+										/>
+
 										<div className="relative flex flex-col gap-[8px]">
 											<ToggleGroup.Root
 												type="single"
@@ -852,12 +885,18 @@ export function Toolbar() {
 									<Popover.Content
 										className={clsx(
 											"relative rounded-[8px] px-[8px] py-[8px]",
-											"bg-[hsla(255,_40%,_98%,_0.04)] text-inverse",
-											"backdrop-blur-[4px]",
+											"text-inverse overflow-hidden",
 										)}
 										sideOffset={42}
 									>
-										<div className="absolute z-0 rounded-[8px] inset-0 border mask-fill bg-gradient-to-br from-[hsla(232,37%,72%,0.2)] to-[hsla(218,58%,21%,0.9)] bg-origin-border bg-clip-border border-transparent" />
+										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/60" />
+										<GlassSurfaceLayers
+											radiusClass="rounded-[8px]"
+											borderStyle="solid"
+											withBaseFill={false}
+											blurClass="backdrop-blur-lg"
+											zIndexClass="z-0"
+										/>
 										<div className="relative flex flex-col gap-[8px]">
 											<ToggleGroup.Root
 												type="single"

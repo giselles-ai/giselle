@@ -8,7 +8,7 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
-import { CommandIcon, CornerDownLeft, DatabaseZapIcon } from "lucide-react";
+import { CommandIcon, CornerDownLeft } from "lucide-react";
 import { Tabs } from "radix-ui";
 import { useCallback, useMemo } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -82,7 +82,6 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 	return (
 		<PropertiesPanelRoot>
 			<PropertiesPanelHeader
-				icon={<DatabaseZapIcon className="size-[20px] text-inverse" />}
 				node={node}
 				description="Query"
 				onChangeName={(name) => {

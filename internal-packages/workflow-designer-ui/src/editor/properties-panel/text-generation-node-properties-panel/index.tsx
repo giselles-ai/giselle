@@ -20,7 +20,6 @@ import {
 } from "../ui";
 import { GenerationPanel } from "./generation-panel";
 import { useConnectedOutputs } from "./outputs";
-import { ProviderIcon } from "./provider-icon";
 import { TextGenerationTabContent } from "./tab-content";
 
 export function TextGenerationNodePropertiesPanel({
@@ -91,7 +90,6 @@ export function TextGenerationNodePropertiesPanel({
 		<PropertiesPanelRoot>
 			{usageLimitsReached && <UsageLimitWarning />}
 			<PropertiesPanelHeader
-				icon={<ProviderIcon provider={node.content.llm.provider} />}
 				node={node}
 				description={node.content.llm.provider}
 				onChangeName={(name) => {
