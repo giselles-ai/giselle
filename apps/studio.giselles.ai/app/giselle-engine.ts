@@ -33,7 +33,6 @@ import {
 } from "@/services/teams";
 import supabaseStorageDriver from "@/supabase-storage-driver";
 import type { runActJob } from "@/trigger/run-act-job";
-import type { DocumentVectorStoreQueryContext as LocalDocumentVectorStoreQueryContext } from "../lib/vector-stores/document/query/context";
 import { getDocumentVectorStoreQueryService } from "../lib/vector-stores/document/query/service";
 import {
 	getGitHubPullRequestQueryService,
@@ -271,53 +270,7 @@ export const giselleEngine = NextGiselleEngine({
 					),
 			},
 		) as ReturnType<typeof getGitHubPullRequestQueryService>,
-		document: (() => {
-			let cachedDocumentService:
-				| ReturnType<typeof getDocumentVectorStoreQueryService>
-				| undefined;
-			return new Proxy(
-				{} as ReturnType<typeof getDocumentVectorStoreQueryService>,
-				{
-					get: (_target, prop, receiver) => {
-						if (!cachedDocumentService) {
-							cachedDocumentService = getDocumentVectorStoreQueryService();
-						}
-						if (prop === "search") {
-							type DocumentService = ReturnType<
-								typeof getDocumentVectorStoreQueryService
-							>;
-							type SearchFn = DocumentService["search"];
-							type RestParams = SearchFn extends (
-								query: string,
-								ctx: unknown,
-								...r: infer R
-							) => unknown
-								? R
-								: never;
-							return (
-								query: string,
-								context: import("@giselle-sdk/giselle").DocumentVectorStoreQueryContext,
-								...rest: RestParams
-							) => {
-								const adaptedContext: LocalDocumentVectorStoreQueryContext = {
-									provider: "document",
-									workspaceId: context.workspaceId,
-									documentVectorStoreId:
-										context.documentVectorStoreId as LocalDocumentVectorStoreQueryContext["documentVectorStoreId"],
-									embeddingProfileId: context.embeddingProfileId,
-								};
-								return cachedDocumentService?.search(
-									query,
-									adaptedContext,
-									...rest,
-								);
-							};
-						}
-						return Reflect.get(cachedDocumentService, prop, receiver);
-					},
-				},
-			) as ReturnType<typeof getDocumentVectorStoreQueryService>;
-		})(),
+		document: getDocumentVectorStoreQueryService(),
 	},
 	callbacks: {
 		generationComplete: async (args) => {
