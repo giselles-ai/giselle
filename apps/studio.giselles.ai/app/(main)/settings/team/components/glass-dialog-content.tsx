@@ -35,7 +35,7 @@ export const GlassDialogContent = React.forwardRef<
 		// Avoid muddy look on destructive: force solid border and disable top highlight
 		const effectiveBorderStyle =
 			variant === "destructive"
-				? "solid"
+				? "destructive"
 				: borderStyle === "gradient"
 					? "gradient"
 					: "solid";
