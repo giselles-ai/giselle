@@ -26,6 +26,8 @@ import { useEffect, useMemo, useRef, useTransition } from "react";
 import { useShallow } from "zustand/shallow";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
+import { NodeHandleDot } from "../../ui/node/node-handle-dot";
+import { NodeInputLabel } from "../../ui/node/node-input-label";
 import { Tooltip } from "../../ui/tooltip";
 import { DocumentNodeInfo, GitHubNodeInfo } from "./ui";
 import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
@@ -380,20 +382,19 @@ export function NodeComponent({
 									className="relative flex items-center h-[28px]"
 									key={input.id}
 								>
-									<Handle
-										type="target"
-										isConnectable={false}
+									<NodeHandleDot
 										position={Position.Left}
+										isConnected={false}
+										contentType={
+											(node.content.type === "textGeneration" && "textGeneration") ||
+											(node.content.type === "imageGeneration" && "imageGeneration") ||
+											(node.content.type === "webSearch" && "webSearch") ||
+											(node.content.type === "audioGeneration" && "audioGeneration") ||
+											(node.content.type === "videoGeneration" && "videoGeneration") ||
+											(node.content.type === "query" && "query") ||
+											"text"
+										}
 										id={input.id}
-										className={clsx(
-											"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px]",
-											"group-data-[content-type=textGeneration]:!bg-generation-node-1 group-data-[content-type=textGeneration]:!border-generation-node-1",
-											"group-data-[content-type=imageGeneration]:!bg-image-generation-node-1 group-data-[content-type=imageGeneration]:!border-image-generation-node-1",
-											"group-data-[content-type=webSearch]:!bg-web-search-node-1 group-data-[content-type=webSearch]:!border-web-search-node-1",
-											"group-data-[content-type=audioGeneration]:!bg-audio-generation-node-1 group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
-											"group-data-[content-type=videoGeneration]:!bg-video-generation-node-1 group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
-											"group-data-[content-type=query]:!bg-query-node-1 group-data-[content-type=query]:!border-query-node-1",
-										)}
 									/>
 									<div className={clsx("px-[12px] text-inverse text-[12px]")}>
 										{input.label}
@@ -414,34 +415,25 @@ export function NodeComponent({
 									}
 									data-required={input.isRequired ? "true" : "false"}
 								>
-									<Handle
-										type="target"
-										isConnectable={
-											!connectedInputIds?.some(
-												(connectedInputId) => connectedInputId === input.id,
-											)
-										}
+									<NodeHandleDot
 										position={Position.Left}
+										isConnected={
+											connectedInputIds?.some(
+												(connectedInputId) => connectedInputId === input.id,
+											) ?? false
+										}
+										contentType={node.content.type === "action" ? "action" : "action"}
 										id={input.id}
-										className={clsx(
-											"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px]",
-											// fill は接続時のみ色付け、枠線は常時ノード色
-											"group-data-[state=connected]:group-data-[content-type=action]:!bg-action-node-1",
-											"group-data-[content-type=action]:!border-action-node-1",
-											"group-data-[state=disconnected]:!bg-bg",
-										)}
 									/>
-									<div
-										className={clsx(
-											"px-[12px] text-[12px]",
-											"group-data-[state=connected]:px-[16px] group-data-[state=connected]:text-inverse",
-											"group-data-[state=disconnected]:absolute group-data-[state=disconnected]:left-[-12px] group-data-[state=disconnected]:whitespace-nowrap group-data-[state=disconnected]:-translate-x-[100%] group-data-[state=disconnected]:text-black-400",
-											// required の赤は接続時のみ
-											"group-data-[state=connected]:group-data-[required=true]:text-red-900",
-										)}
-									>
-										{input.label}
-									</div>
+									<NodeInputLabel
+										label={input.label}
+										isConnected={
+											connectedInputIds?.some(
+												(connectedInputId) => connectedInputId === input.id,
+											) ?? false
+										}
+										isRequired={input.isRequired}
+									/>
 								</div>
 							))}
 						{node.type === "operation" &&

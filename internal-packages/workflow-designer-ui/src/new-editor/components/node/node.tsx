@@ -14,6 +14,8 @@ import { EditableText } from "../../../ui/editable-text";
 import { Tooltip } from "../../../ui/tooltip";
 import { selectNodePanelDataById } from "../../lib/selectors";
 import { useEditorStoreWithEqualityFn } from "../../store/context";
+import { NodeHandleDot } from "../../../ui/node/node-handle-dot";
+import { NodeInputLabel } from "../../../ui/node/node-input-label";
 
 export function Node({ id, selected }: RFNodeProps) {
 	const { node, connectedOutputIds, highlighted, updateNode } =
@@ -312,36 +314,27 @@ function CanvasNode({
 								className="relative flex items-center h-[28px]"
 								key={input.id}
 							>
-								<Handle
-									type="target"
-									isConnectable={false}
+								<NodeHandleDot
 									position={Position.Left}
+									isConnected={false}
+									contentType={
+										v.isTextGeneration
+											? "textGeneration"
+											: v.isImageGeneration
+											? "imageGeneration"
+											: v.isWebSearch
+											? "webSearch"
+											: v.isAudioGeneration
+											? "audioGeneration"
+											: v.isVideoGeneration
+											? "videoGeneration"
+											: v.isQuery
+											? "query"
+											: "text"
+									}
 									id={input.id}
-									style={{
-										background: "var(--color-background)",
-										borderColor: "var(--color-border)",
-									}}
-									className={clsx(
-										"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px]",
-										// disconnected: neutral (inline style already sets bg/border)
-										// connected: colorize by type
-										v.isTextGeneration &&
-											"data-[state=connected]:!bg-generation-node-1 data-[state=connected]:!border-generation-node-1",
-										v.isImageGeneration &&
-											"data-[state=connected]:!bg-image-generation-node-1 data-[state=connected]:!border-image-generation-node-1",
-										v.isWebSearch &&
-											"data-[state=connected]:!bg-web-search-node-1 data-[state=connected]:!border-web-search-node-1",
-										v.isAudioGeneration &&
-											"data-[state=connected]:!bg-audio-generation-node-1 data-[state=connected]:!border-audio-generation-node-1",
-										v.isVideoGeneration &&
-											"data-[state=connected]:!bg-video-generation-node-1 data-[state=connected]:!border-video-generation-node-1",
-										v.isQuery &&
-											"data-[state=connected]:!bg-query-node-1 data-[state=connected]:!border-query-node-1",
-									)}
 								/>
-								<div className={clsx("px-[12px] text-[12px]")}>
-									{input.label}
-								</div>
+								<NodeInputLabel label={input.label} isConnected={false} />
 							</div>
 						))}
 					</div>
