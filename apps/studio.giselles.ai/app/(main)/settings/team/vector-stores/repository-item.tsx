@@ -2,7 +2,10 @@
 
 import { AccentLink } from "@giselle-internal/ui/accent-link";
 import { GlassCard } from "@giselle-internal/ui/glass-card";
-import { RepoActionMenu } from "@giselle-internal/ui/repo-action-menu";
+import {
+	type RepoAction,
+	RepoActionMenu,
+} from "@giselle-internal/ui/repo-action-menu";
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import { StatusIndicator } from "@giselle-internal/ui/status-indicator";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
@@ -122,7 +125,7 @@ export function RepositoryItem({
 					{repositoryIndex.owner}/{repositoryIndex.repo}
 				</AccentLink>
 				{(() => {
-					const actions = [
+					const actions: RepoAction[] = [
 						{
 							value: "ingest",
 							label: "Ingest Now",
@@ -143,12 +146,12 @@ export function RepositoryItem({
 							destructive: true,
 							onSelect: () => setShowDeleteDialog(true),
 						},
-					] as const;
+					];
 					return (
 						<RepoActionMenu
 							id={`repo-actions-${repositoryIndex.id}`}
 							disabled={isPending}
-							actions={actions as unknown as any}
+							actions={actions}
 						/>
 					);
 				})()}
