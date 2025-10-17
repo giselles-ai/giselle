@@ -277,7 +277,8 @@ export const giselleEngine = NextGiselleEngine({
 					ReturnType<typeof getDocumentVectorStoreQueryService>["search"]
 				>
 			) => {
-				const [context, ...rest] = args as [
+				const [query, context, ...rest] = args as [
+					string,
 					import("@giselle-sdk/giselle").DocumentVectorStoreQueryContext,
 					...unknown[],
 				];
@@ -291,12 +292,13 @@ export const giselleEngine = NextGiselleEngine({
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				return (
 					getDocumentVectorStoreQueryService().search as (
+						query: string,
 						ctx: LocalDocumentVectorStoreQueryContext,
 						...rest: unknown[]
 					) => ReturnType<
 						ReturnType<typeof getDocumentVectorStoreQueryService>["search"]
 					>
-				)(adaptedContext, ...rest);
+				)(query, adaptedContext, ...rest);
 			},
 		} as unknown as ReturnType<typeof getDocumentVectorStoreQueryService>,
 	},
