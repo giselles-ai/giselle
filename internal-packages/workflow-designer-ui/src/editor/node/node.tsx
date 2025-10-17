@@ -426,9 +426,7 @@ export function NodeComponent({
 												(connectedInputId) => connectedInputId === input.id,
 											) ?? false
 										}
-										contentType={
-											node.content.type === "action" ? "action" : "action"
-										}
+										contentType="action"
 										id={input.id}
 									/>
 									<NodeInputLabel
