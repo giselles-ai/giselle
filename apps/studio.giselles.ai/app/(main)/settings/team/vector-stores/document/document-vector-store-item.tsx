@@ -169,12 +169,13 @@ export function DocumentVectorStoreItem({
 					</div>
 				</div>
 				<RepoActionMenu
-					disabled={isPending}
+					disabled={disableMenu}
 					actions={[
 						{
 							value: "configure",
 							label: "Configure Sources",
 							icon: <Settings className="h-4 w-4" />,
+							disabled: disableMenu,
 							onSelect: () => setIsConfigureDialogOpen(true),
 						},
 						{
@@ -182,6 +183,7 @@ export function DocumentVectorStoreItem({
 							label: "Delete",
 							icon: <Trash className="h-4 w-4 text-error-900" />,
 							destructive: true,
+							disabled: disableMenu,
 							onSelect: () => setIsDeleteDialogOpen(true),
 						},
 					]}
