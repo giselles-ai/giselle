@@ -59,7 +59,7 @@ export const GlassDialogContent = React.forwardRef<
 						<GlassSurfaceLayers
 							variant={variant === "destructive" ? "destructive" : "default"}
 							borderStyle={effectiveBorderStyle}
-							withTopHighlight={variant !== "destructive"}
+							withTopHighlight={true}
 							withBaseFill={withBaseFill || variant === "destructive"}
 							baseFillClass={
 								variant === "destructive" ? "bg-error-900/10" : undefined

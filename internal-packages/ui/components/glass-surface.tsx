@@ -124,7 +124,7 @@ export function GlassSurfaceLayers({
 						"absolute inset-0",
 						zIndexClass,
 						radiusClass,
-						"border-[1px] border-error-900",
+						"border-[0.5px] border-error-900",
 					)}
 				/>
 			) : borderStyle === "solid" ? (
