@@ -1,5 +1,5 @@
-import { Handle, Position } from "reactflow";
-import clsx from "clsx";
+import { Handle, Position } from "@xyflow/react";
+import clsx from "clsx/lite";
 
 export type NodeHandleDotProps = {
 	position: Position;
