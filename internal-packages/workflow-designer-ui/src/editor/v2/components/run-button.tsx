@@ -1,11 +1,12 @@
 import { Button } from "@giselle-internal/ui/button";
 import {
 	Dialog,
-	DialogContent,
+	DialogPortal,
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
+import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { ConnectionId, NodeId, TriggerNode } from "@giselle-sdk/data-type";
 import {
@@ -20,6 +21,7 @@ import {
 } from "@giselle-sdk/giselle/react";
 import clsx from "clsx/lite";
 import { PlayIcon, UngroupIcon } from "lucide-react";
+import { Dialog as RadixDialog } from "radix-ui";
 import { useMemo, useState } from "react";
 import { NodeIcon } from "../../../icons/node";
 import { isPromptEmpty } from "../../lib/validate-prompt";
@@ -51,6 +53,32 @@ type NodeGroupMenuItem = {
 	type: "nodeGroup";
 	run: NodeGroupRunItem;
 };
+
+function CenteredDialogContent({ children }: React.PropsWithChildren) {
+	return (
+		<DialogPortal>
+			<RadixDialog.Overlay className="fixed inset-0 bg-black/60 z-50" />
+			<div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+				<RadixDialog.Content
+					className={clsx(
+						"relative pointer-events-auto overflow-y-auto overflow-x-hidden outline-none",
+						"w-[500px] max-h-[85%]",
+						"bg-transparent shadow-xl text-text p-6 rounded-[12px]",
+					)}
+				>
+					<GlassSurfaceLayers
+						radiusClass="rounded-[12px]"
+						baseFillClass="bg-bg/18"
+						withTopHighlight={false}
+						borderStyle="solid"
+						blurClass="backdrop-blur-sm"
+					/>
+					{children}
+				</RadixDialog.Content>
+			</div>
+		</DialogPortal>
+	);
+}
 
 function RunOptionItem({
 	icon,
@@ -147,7 +175,7 @@ function SingleTriggerRunButton({
 					Run
 				</Button>
 			</DialogTrigger>
-			<DialogContent>
+			<CenteredDialogContent>
 				<DialogTitle className="sr-only">
 					Override inputs to test workflow
 				</DialogTitle>
@@ -156,7 +184,7 @@ function SingleTriggerRunButton({
 					connectionIds={triggerRun.connectionIds}
 					onClose={() => setIsDialogOpen(false)}
 				/>
-			</DialogContent>
+			</CenteredDialogContent>
 		</Dialog>
 	);
 }
@@ -282,7 +310,7 @@ function MultipleRunsDropdown({
 								{...props}
 							/>
 						</DialogTrigger>
-						<DialogContent>
+						<CenteredDialogContent>
 							<DialogTitle className="sr-only">
 								Override inputs to test workflow
 							</DialogTitle>
@@ -294,7 +322,7 @@ function MultipleRunsDropdown({
 									setOpenDialogNodeId(null);
 								}}
 							/>
-						</DialogContent>
+						</CenteredDialogContent>
 					</Dialog>
 				);
 			}}
