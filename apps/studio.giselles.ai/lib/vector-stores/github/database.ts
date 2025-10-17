@@ -6,7 +6,9 @@ import type { DatabaseConfig } from "@giselle-sdk/rag";
 export function createDatabaseConfig(): DatabaseConfig {
 	const postgresUrl = process.env.POSTGRES_URL;
 	if (!postgresUrl) {
-		throw new Error("POSTGRES_URL environment variable is required");
+		// Return a dummy connection string to avoid build-time crashes.
+		// Call sites that actually attempt a DB connection should validate envs.
+		return { connectionString: "postgres://invalid:invalid@localhost/invalid" };
 	}
 	return { connectionString: postgresUrl };
 }
