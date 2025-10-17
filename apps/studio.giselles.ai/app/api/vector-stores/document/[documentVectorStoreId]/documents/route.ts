@@ -34,19 +34,20 @@ import { fetchCurrentTeam } from "@/services/teams";
 export const runtime = "nodejs";
 export const maxDuration = 800;
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const STORAGE_BUCKET =
 	process.env.DOCUMENT_VECTOR_STORE_STORAGE_BUCKET ?? "app";
 const STORAGE_PREFIX = "vector-stores";
 
-if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
-	throw new Error(
-		"Missing Supabase configuration. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY.",
-	);
+function getSupabaseClient() {
+	const url = process.env.SUPABASE_URL;
+	const key = process.env.SUPABASE_SERVICE_KEY;
+	if (!url || !key) {
+		throw new Error(
+			"Missing Supabase configuration. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY.",
+		);
+	}
+	return createClient(url, key);
 }
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 async function ensureFeatureEnabled() {
 	const enabled = await docVectorStoreFlag();
@@ -112,8 +113,8 @@ async function rollbackUploads(
 ) {
 	if (uploadedKeys.length > 0) {
 		try {
-			const { error: storageError } = await supabase.storage
-				.from(STORAGE_BUCKET)
+			const { error: storageError } = await getSupabaseClient()
+				.storage.from(STORAGE_BUCKET)
 				.remove(uploadedKeys);
 
 			if (storageError) {
@@ -268,8 +269,8 @@ export async function POST(
 		}
 
 		const checksum = createHash("sha256").update(buffer).digest("hex");
-		const { error: uploadError } = await supabase.storage
-			.from(STORAGE_BUCKET)
+		const { error: uploadError } = await getSupabaseClient()
+			.storage.from(STORAGE_BUCKET)
 			.upload(storageKey, buffer, {
 				contentType: resolvedFile.contentType,
 				upsert: true,
@@ -442,8 +443,8 @@ export async function DELETE(
 			return NextResponse.json({ error: "Source not found" }, { status: 404 });
 		}
 
-		const { error: storageError } = await supabase.storage
-			.from(source.storageBucket)
+		const { error: storageError } = await getSupabaseClient()
+			.storage.from(source.storageBucket)
 			.remove([source.storageKey]);
 		if (storageError) {
 			console.error(
