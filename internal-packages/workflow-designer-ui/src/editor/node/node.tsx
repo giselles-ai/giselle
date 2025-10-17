@@ -319,8 +319,8 @@ export function NodeComponent({
 								"group-data-[content-type=textGeneration]:text-inverse",
 								"group-data-[content-type=imageGeneration]:text-inverse",
 								"group-data-[content-type=github]:text-inverse",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:text-inverse",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:text-inverse",
+								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:text-black-900",
+								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:text-black-900",
 								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:text-black-900",
 								"group-data-[content-type=webSearch]:text-inverse",
 								"group-data-[content-type=audioGeneration]:text-inverse",
@@ -425,7 +425,9 @@ export function NodeComponent({
 										id={input.id}
 										className={clsx(
 											"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px]",
-											"group-data-[content-type=action]:!bg-action-node-1 group-data-[content-type=action]:!border-action-node-1",
+									// fill は接続時のみ色付け、枠線は常時ノード色
+									"group-data-[state=connected]:group-data-[content-type=action]:!bg-action-node-1",
+									"group-data-[content-type=action]:!border-action-node-1",
 											"group-data-[state=disconnected]:!bg-bg",
 										)}
 									/>

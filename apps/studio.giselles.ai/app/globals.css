@@ -70,10 +70,10 @@
 	--color-text-node-1: hsl(68, 100%, 76%);
 	--color-text-node-2: hsl(68, 100%, 65%);
 
-	--color-file-node-1: var(--color-chartreuse-900);
+	--color-file-node-1: hsl(69, 100%, 52%);
 	--color-file-node-2: hsl(69, 99%, 32%);
 
-	--color-webPage-node-1: var(--color-turquoise-900);
+	--color-webPage-node-1: hsl(178, 94%, 49%);
 	--color-webPage-node-2: hsl(178, 95%, 25%);
 
 	--color-node-data-900: var(--color-chartreuse-900);
@@ -86,25 +86,25 @@
 	--color-trigger-node-2: hsl(220, 15%, 50%);
 	--shadow-trigger-node-1: 0px 4px 12px hsla(220, 15%, 50%, 0.3);
 
-	--color-action-node-1: var(--color-deep-purple-900);
+	--color-action-node-1: hsl(275, 96%, 44%);
 	--color-action-node-2: hsl(275, 91%, 26%);
 
 	--color-github-node-1: hsl(76, 100%, 47%);
 	--color-github-node-2: hsl(76, 100%, 35%);
 
-	--color-web-search-node-1: #3a36ff;
-	--color-web-search-node-2: color-mix(in srgb, #3a36ff, #000000 20%);
+	--color-web-search-node-1: hsl(241, 100%, 61%);
+	--color-web-search-node-2: hsl(241, 100%, 49%);
 
-	--color-image-generation-node-1: #0085e0;
-	--color-image-generation-node-2: color-mix(in srgb, #0085e0, #000000 20%);
+	--color-image-generation-node-1: hsl(204, 100%, 44%);
+	--color-image-generation-node-2: hsl(204, 100%, 35%);
 
-	--color-audio-generation-node-1: #084b8a;
-	--color-audio-generation-node-2: color-mix(in srgb, #084b8a, #000000 20%);
+	--color-audio-generation-node-1: hsl(209, 89%, 29%);
+	--color-audio-generation-node-2: hsl(209, 89%, 23%);
 
-	--color-video-generation-node-1: #0098b2;
-	--color-video-generation-node-2: color-mix(in srgb, #0098b2, #000000 20%);
+	--color-video-generation-node-1: hsl(189, 100%, 35%);
+	--color-video-generation-node-2: hsl(189, 100%, 28%);
 
-	--color-query-node-1: var(--color-turquoise-900);
+	--color-query-node-1: hsl(178, 94%, 49%);
 	--color-query-node-2: hsl(178, 95%, 25%);
 
 	--color-vector-store-node-1: hsl(76, 100%, 47%);

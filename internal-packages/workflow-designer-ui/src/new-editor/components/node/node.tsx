@@ -224,7 +224,7 @@ function CanvasNode({
 					requiresSetup
 						? "border-black/60 border-dashed [border-width:2px]"
 						: "border-transparent",
-					v.isText && "from-text-node-1/40 to-text-node-1",
+					v.isText && "from-text-node-1/25 to-text-node-1",
 					v.isFile && "from-file-node-1/40 to-file-node-1",
 					v.isWebPage && "from-webPage-node-1/40 to-webPage-node-1",
 					v.isTextGeneration &&
@@ -323,17 +323,20 @@ function CanvasNode({
 									}}
 									className={clsx(
 										"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px]",
+										// disconnected: neutral (inline style already sets bg/border)
+										// connected: colorize by type
 										v.isTextGeneration &&
-											"!bg-generation-node-1 !border-generation-node-1",
+											"data-[state=connected]:!bg-generation-node-1 data-[state=connected]:!border-generation-node-1",
 										v.isImageGeneration &&
-											"!bg-image-generation-node-1 !border-image-generation-node-1",
+											"data-[state=connected]:!bg-image-generation-node-1 data-[state=connected]:!border-image-generation-node-1",
 										v.isWebSearch &&
-											"!bg-web-search-node-1 !border-web-search-node-1",
+											"data-[state=connected]:!bg-web-search-node-1 data-[state=connected]:!border-web-search-node-1",
 										v.isAudioGeneration &&
-											"!bg-audio-generation-node-1 !border-audio-generation-node-1",
+											"data-[state=connected]:!bg-audio-generation-node-1 data-[state=connected]:!border-audio-generation-node-1",
 										v.isVideoGeneration &&
-											"!bg-video-generation-node-1 !border-video-generation-node-1",
-										v.isQuery && "!bg-query-node-1 !border-query-node-1",
+											"data-[state=connected]:!bg-video-generation-node-1 data-[state=connected]:!border-video-generation-node-1",
+										v.isQuery &&
+											"data-[state=connected]:!bg-query-node-1 data-[state=connected]:!border-query-node-1",
 									)}
 								/>
 								<div className={clsx("px-[12px] text-inverse text-[12px]")}>
@@ -369,21 +372,26 @@ function CanvasNode({
 										className={clsx(
 											"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px]",
 											// When disconnected, background is set via inline style to match canvas background
-											v.isTextGeneration && "!border-generation-node-1",
-											v.isImageGeneration && "!border-image-generation-node-1",
-											v.isGithub && "!border-github-node-1",
-											v.isVectorStoreGithub && "!border-github-node-1",
-											v.isVectorStoreGithubPullRequest &&
-												"!border-github-node-1",
-											v.isText && "!border-text-node-1",
-											v.isFile && "!border-file-node-1",
-											v.isWebPage && "!border-webPage-node-1",
-											v.isWebSearch && "!border-web-search-node-1",
-											v.isAudioGeneration && "!border-audio-generation-node-1",
-											v.isVideoGeneration && "!border-video-generation-node-1",
-											v.isTrigger && "!border-trigger-node-1",
-											v.isAction && "!border-action-node-1",
-											v.isQuery && "!border-query-node-1",
+										v.isTextGeneration &&
+											"group-data-[connected=true]:!border-generation-node-1",
+										v.isImageGeneration &&
+											"group-data-[connected=true]:!border-image-generation-node-1",
+										v.isGithub && "group-data-[connected=true]:!border-github-node-1",
+										v.isVectorStoreGithub &&
+											"group-data-[connected=true]:!border-github-node-1",
+										v.isVectorStoreGithubPullRequest &&
+											"group-data-[connected=true]:!border-github-node-1",
+										v.isText && "group-data-[connected=true]:!border-text-node-1",
+										v.isFile && "group-data-[connected=true]:!border-file-node-1",
+										v.isWebPage && "group-data-[connected=true]:!border-webPage-node-1",
+										v.isWebSearch && "group-data-[connected=true]:!border-web-search-node-1",
+										v.isAudioGeneration &&
+											"group-data-[connected=true]:!border-audio-generation-node-1",
+										v.isVideoGeneration &&
+											"group-data-[connected=true]:!border-video-generation-node-1",
+										v.isTrigger && "group-data-[connected=true]:!border-trigger-node-1",
+										v.isAction && "group-data-[connected=true]:!border-action-node-1",
+										v.isQuery && "group-data-[connected=true]:!border-query-node-1",
 											isConnected &&
 												v.isTextGeneration &&
 												"!bg-generation-node-1",
