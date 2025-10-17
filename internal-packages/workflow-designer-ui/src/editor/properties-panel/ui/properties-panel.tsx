@@ -13,12 +13,15 @@ import {
 
 function getNodeIconColor(node: NodeLike): string {
 	if (node.type === "operation") {
+		// handle out-of-union runtime type safely without widening types
+		if (`${node.content.type}` === "vectorStore") {
+			return "text-black-900";
+		}
 		switch (node.content.type) {
 			case "textGeneration":
 			case "imageGeneration":
 			case "action":
 				return "text-inverse";
-			case "vectorStore":
 			case "trigger":
 			case "query":
 				return "text-black-900";
@@ -53,6 +56,9 @@ export function PropertiesPanelRoot({ children }: { children: ReactNode }) {
 
 function getNodeIconBackground(node: NodeLike): string {
 	if (node.type === "operation") {
+		if (`${node.content.type}` === "vectorStore") {
+			return "bg-github-node-1";
+		}
 		switch (node.content.type) {
 			case "textGeneration":
 				return "bg-generation-node-1";
@@ -64,8 +70,6 @@ function getNodeIconBackground(node: NodeLike): string {
 				return "bg-action-node-1";
 			case "query":
 				return "bg-query-node-1";
-			case "vectorStore":
-				return "bg-github-node-1";
 			default:
 				return "bg-bg-900";
 		}
