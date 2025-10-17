@@ -71,8 +71,8 @@ function CenteredDialogContent({ children }: React.PropsWithChildren) {
 				>
 					<GlassSurfaceLayers
 						radiusClass="rounded-[12px]"
-						baseFillClass="bg-bg/18"
-						withTopHighlight={false}
+						baseFillClass="bg-inverse/10"
+						withTopHighlight
 						borderStyle="solid"
 						blurClass="backdrop-blur-sm"
 					/>
