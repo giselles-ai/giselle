@@ -3,12 +3,9 @@ import clsx from "clsx/lite";
 import { Ellipsis } from "lucide-react";
 import { memo, useCallback, useState } from "react";
 import { GlassSurfaceLayers } from "./glass-surface";
+import type { SelectOption } from "./select";
 
-export type RepoAction = {
-	value: string | number;
-	label: string;
-	icon?: React.ReactNode;
-	disabled?: boolean;
+export type RepoAction = SelectOption & {
 	onSelect?: () => void;
 	destructive?: boolean;
 };
