@@ -1,7 +1,7 @@
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx/lite";
 import { Ellipsis } from "lucide-react";
-import { memo, useCallback, useState } from "react";
+import { DropdownMenu } from "radix-ui";
+import { useCallback, useState } from "react";
 import { GlassSurfaceLayers } from "./glass-surface";
 import type { SelectOption } from "./select";
 
@@ -10,7 +10,7 @@ export type RepoAction = SelectOption & {
 	destructive?: boolean;
 };
 
-export const RepoActionMenu = memo(function RepoActionMenu({
+export function RepoActionMenu({
 	actions,
 	id,
 	disabled,
@@ -76,4 +76,4 @@ export const RepoActionMenu = memo(function RepoActionMenu({
 			</DropdownMenu.Portal>
 		</DropdownMenu.Root>
 	);
-});
+}
