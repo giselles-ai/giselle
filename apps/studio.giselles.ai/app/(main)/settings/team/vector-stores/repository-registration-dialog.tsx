@@ -50,7 +50,10 @@ export function RepositoryRegistrationDialog({
 			installationsWithRepos.find((i) => String(i.installation.id) === ownerId),
 		[installationsWithRepos, ownerId],
 	);
-	const repositoryOptions = selectedInstallation?.repositories || [];
+	const repositoryOptions = useMemo(
+		() => selectedInstallation?.repositories || [],
+		[selectedInstallation],
+	);
 
 	// Convert installations to SelectOption format
 	const ownerOptions: SelectOption[] = useMemo(
