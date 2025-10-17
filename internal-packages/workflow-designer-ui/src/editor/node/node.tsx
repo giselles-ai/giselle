@@ -386,11 +386,15 @@ export function NodeComponent({
 										position={Position.Left}
 										isConnected={false}
 										contentType={
-											(node.content.type === "textGeneration" && "textGeneration") ||
-											(node.content.type === "imageGeneration" && "imageGeneration") ||
+											(node.content.type === "textGeneration" &&
+												"textGeneration") ||
+											(node.content.type === "imageGeneration" &&
+												"imageGeneration") ||
 											(node.content.type === "webSearch" && "webSearch") ||
-											(node.content.type === "audioGeneration" && "audioGeneration") ||
-											(node.content.type === "videoGeneration" && "videoGeneration") ||
+											(node.content.type === "audioGeneration" &&
+												"audioGeneration") ||
+											(node.content.type === "videoGeneration" &&
+												"videoGeneration") ||
 											(node.content.type === "query" && "query") ||
 											"text"
 										}
@@ -422,7 +426,9 @@ export function NodeComponent({
 												(connectedInputId) => connectedInputId === input.id,
 											) ?? false
 										}
-										contentType={node.content.type === "action" ? "action" : "action"}
+										contentType={
+											node.content.type === "action" ? "action" : "action"
+										}
 										id={input.id}
 									/>
 									<NodeInputLabel

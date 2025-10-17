@@ -6,7 +6,11 @@ export type NodeInputLabelProps = {
 	isRequired?: boolean;
 };
 
-export function NodeInputLabel({ label, isConnected, isRequired }: NodeInputLabelProps) {
+export function NodeInputLabel({
+	label,
+	isConnected,
+	isRequired,
+}: NodeInputLabelProps) {
 	return (
 		<div
 			className={clsx(
@@ -21,5 +25,3 @@ export function NodeInputLabel({ label, isConnected, isRequired }: NodeInputLabe
 		</div>
 	);
 }
-
-

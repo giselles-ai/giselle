@@ -11,11 +11,11 @@ import { useMemo } from "react";
 import { shallow } from "zustand/shallow";
 import { NodeIcon } from "../../../icons/node";
 import { EditableText } from "../../../ui/editable-text";
+import { NodeHandleDot } from "../../../ui/node/node-handle-dot";
+import { NodeInputLabel } from "../../../ui/node/node-input-label";
 import { Tooltip } from "../../../ui/tooltip";
 import { selectNodePanelDataById } from "../../lib/selectors";
 import { useEditorStoreWithEqualityFn } from "../../store/context";
-import { NodeHandleDot } from "../../../ui/node/node-handle-dot";
-import { NodeInputLabel } from "../../../ui/node/node-input-label";
 
 export function Node({ id, selected }: RFNodeProps) {
 	const { node, connectedOutputIds, highlighted, updateNode } =
@@ -321,16 +321,16 @@ function CanvasNode({
 										v.isTextGeneration
 											? "textGeneration"
 											: v.isImageGeneration
-											? "imageGeneration"
-											: v.isWebSearch
-											? "webSearch"
-											: v.isAudioGeneration
-											? "audioGeneration"
-											: v.isVideoGeneration
-											? "videoGeneration"
-											: v.isQuery
-											? "query"
-											: "text"
+												? "imageGeneration"
+												: v.isWebSearch
+													? "webSearch"
+													: v.isAudioGeneration
+														? "audioGeneration"
+														: v.isVideoGeneration
+															? "videoGeneration"
+															: v.isQuery
+																? "query"
+																: "text"
 									}
 									id={input.id}
 								/>
