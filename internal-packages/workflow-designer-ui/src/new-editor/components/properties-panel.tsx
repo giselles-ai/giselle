@@ -30,11 +30,15 @@ export function PropertiesPanel() {
 	}, [setInspectedNodeId]);
 
 	const handleChangeName = useCallback(
-		(name: string) => {
+		(name?: string) => {
 			// node.id は選択変更時のみ変わるため依存関係は安定
-			if (node) {
+			if (!node) return;
+			if (typeof name === "string" && name.trim().length > 0) {
 				updateNode(node.id as NodeId, { name });
+				return;
 			}
+			// undefined や空文字のときは名称をクリア
+			updateNode(node.id as NodeId, { name: undefined });
 		},
 		[node, updateNode],
 	);
