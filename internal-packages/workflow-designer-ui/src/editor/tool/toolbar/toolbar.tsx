@@ -182,7 +182,7 @@ export function Toolbar() {
 
 	return (
 		<div className="relative rounded-[12px] overflow-hidden">
-			{/* local base fill to mimic dialog overlay */}
+			{/* blur+border only; popovers manage their own base fill */}
 			<GlassSurfaceLayers
 				tone="default"
 				borderStyle="solid"
