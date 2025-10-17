@@ -18,19 +18,24 @@ import { selectNodePanelDataById } from "../../lib/selectors";
 import { useEditorStoreWithEqualityFn } from "../../store/context";
 
 export function Node({ id, selected }: RFNodeProps) {
-	const { node, connectedOutputIds, highlighted, updateNode } =
-		useEditorStoreWithEqualityFn(
-			selectNodePanelDataById(NodeId.parse(id)),
-			(a, b) => {
-				return (
-					a.node === b.node &&
-					shallow(a.connectedInputIds, b.connectedInputIds) &&
-					shallow(a.connectedOutputIds, b.connectedOutputIds) &&
-					a.highlighted === b.highlighted &&
-					a.updateNode === b.updateNode
-				);
-			},
-		);
+	const {
+		node,
+		connectedInputIds: _connectedInputIds,
+		connectedOutputIds,
+		highlighted,
+		updateNode,
+	} = useEditorStoreWithEqualityFn(
+		selectNodePanelDataById(NodeId.parse(id)),
+		(a, b) => {
+			return (
+				a.node === b.node &&
+				shallow(a.connectedInputIds, b.connectedInputIds) &&
+				shallow(a.connectedOutputIds, b.connectedOutputIds) &&
+				a.highlighted === b.highlighted &&
+				a.updateNode === b.updateNode
+			);
+		},
+	);
 
 	const metadataTexts = useMemo(() => {
 		if (!node) return [];
@@ -309,35 +314,47 @@ function CanvasNode({
 			{!preview && (
 				<div className="flex justify-between">
 					<div className="grid">
-						{node.inputs?.map((input) => (
-							<div
-								className="relative flex items-center h-[28px]"
-								key={input.id}
-							>
-								<NodeHandleDot
-									position={Position.Left}
-									isConnected={false}
-									isConnectable={false}
-									contentType={
-										v.isTextGeneration
-											? "textGeneration"
-											: v.isImageGeneration
-												? "imageGeneration"
-												: v.isWebSearch
-													? "webSearch"
-													: v.isAudioGeneration
-														? "audioGeneration"
-														: v.isVideoGeneration
-															? "videoGeneration"
-															: v.isQuery
-																? "query"
-																: "text"
-									}
-									id={input.id}
-								/>
-								<NodeInputLabel label={input.label} isConnected={false} />
-							</div>
-						))}
+						{node.inputs?.map((input) => {
+							const isInConnected =
+								_connectedInputIds?.some(
+									(connectedInputId) => connectedInputId === input.id,
+								) ?? false;
+							return (
+								<div
+									className="relative flex items-center h-[28px]"
+									key={input.id}
+								>
+									<NodeHandleDot
+										position={Position.Left}
+										isConnected={isInConnected}
+										isConnectable={false}
+										contentType={
+											v.isTextGeneration
+												? "textGeneration"
+												: v.isImageGeneration
+													? "imageGeneration"
+													: v.isWebSearch
+														? "webSearch"
+														: v.isAudioGeneration
+															? "audioGeneration"
+															: v.isVideoGeneration
+																? "videoGeneration"
+																: v.isQuery
+																	? "query"
+																	: "text"
+										}
+										id={input.id}
+									/>
+									<NodeInputLabel
+										label={input.label}
+										isConnected={isInConnected}
+										isRequired={Boolean(
+											(input as { isRequired?: boolean }).isRequired,
+										)}
+									/>
+								</div>
+							);
+						})}
 					</div>
 
 					<div className="grid">
