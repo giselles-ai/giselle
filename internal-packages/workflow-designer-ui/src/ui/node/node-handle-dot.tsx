@@ -4,6 +4,7 @@ import clsx from "clsx/lite";
 type NodeHandleDotProps = {
 	position: Position;
 	isConnected: boolean;
+	isConnectable?: boolean;
 	contentType:
 		| "textGeneration"
 		| "imageGeneration"
@@ -60,14 +61,20 @@ const fillToneByType: Record<NodeHandleDotProps["contentType"], string> = {
 export function NodeHandleDot({
 	position,
 	isConnected,
+	isConnectable = true,
 	contentType,
 	id,
 }: NodeHandleDotProps) {
+	const safeContentType =
+		contentType in borderToneByType ? contentType : "text";
+	const isLeft = position === Position.Left;
+
 	return (
 		<Handle
 			id={id}
-			type={position === Position.Left ? "target" : "source"}
+			type={isLeft ? "target" : "source"}
 			position={position}
+			isConnectable={isConnectable}
 			style={
 				!isConnected
 					? {
@@ -78,11 +85,11 @@ export function NodeHandleDot({
 			}
 			className={clsx(
 				"!absolute !rounded-full !border-[1.5px]",
-				position === Position.Left
+				isLeft
 					? "!-left-[4.5px] !translate-x-[50%] !w-[11px] !h-[11px]"
 					: "!right-[-0.5px] !w-[12px] !h-[12px]",
-				borderToneByType[contentType],
-				isConnected && fillToneByType[contentType],
+				borderToneByType[safeContentType],
+				isConnected ? fillToneByType[safeContentType] : "",
 			)}
 		/>
 	);
