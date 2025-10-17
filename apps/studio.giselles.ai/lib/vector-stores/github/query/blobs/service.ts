@@ -8,17 +8,19 @@ import { resolveGitHubEmbeddingFilter } from "./resolver";
 /**
  * Pre-configured GitHub query service instance
  */
-const dbConfig = createDatabaseConfig();
-if (!dbConfig) {
-	throw new Error("Missing POSTGRES_URL for GitHub Blob query service");
+export function getGitHubQueryService() {
+	const dbConfig = createDatabaseConfig();
+	if (!dbConfig) {
+		throw new Error("Missing POSTGRES_URL for GitHub Blob query service");
+	}
+	return createPostgresQueryService({
+		database: dbConfig,
+		tableName: getTableName(githubRepositoryEmbeddings),
+		metadataSchema: z.object({
+			fileSha: z.string(),
+			path: z.string(),
+		}),
+		contextToFilter: resolveGitHubEmbeddingFilter,
+		contextToEmbeddingProfileId: (context) => context.embeddingProfileId,
+	});
 }
-export const gitHubQueryService = createPostgresQueryService({
-	database: dbConfig,
-	tableName: getTableName(githubRepositoryEmbeddings),
-	metadataSchema: z.object({
-		fileSha: z.string(),
-		path: z.string(),
-	}),
-	contextToFilter: resolveGitHubEmbeddingFilter,
-	contextToEmbeddingProfileId: (context) => context.embeddingProfileId,
-});

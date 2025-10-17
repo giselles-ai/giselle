@@ -5,6 +5,6 @@ export {
 	type IngestTrigger,
 	processRepository,
 } from "./ingest/process-repository";
-export { gitHubQueryService } from "./query/blobs/service";
-export { gitHubPullRequestQueryService } from "./query/pull-requests/service";
+export { getGitHubQueryService } from "./query/blobs/service";
+export { getGitHubPullRequestQueryService } from "./query/pull-requests/service";
 export type { RepositoryWithStatuses } from "./types";

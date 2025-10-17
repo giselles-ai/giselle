@@ -35,8 +35,8 @@ import supabaseStorageDriver from "@/supabase-storage-driver";
 import type { runActJob } from "@/trigger/run-act-job";
 import { getDocumentVectorStoreQueryService } from "../lib/vector-stores/document/query/service";
 import {
-	gitHubPullRequestQueryService,
-	gitHubQueryService,
+	getGitHubPullRequestQueryService,
+	getGitHubQueryService,
 } from "../lib/vector-stores/github";
 import type { generateContentJob } from "../trigger/generate-content-job";
 
@@ -249,8 +249,8 @@ export const giselleEngine = NextGiselleEngine({
 	},
 	vault,
 	vectorStoreQueryServices: {
-		github: gitHubQueryService,
-		githubPullRequest: gitHubPullRequestQueryService,
+		github: getGitHubQueryService(),
+		githubPullRequest: getGitHubPullRequestQueryService(),
 		document: getDocumentVectorStoreQueryService(),
 	},
 	callbacks: {

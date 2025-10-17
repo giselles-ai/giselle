@@ -9,15 +9,19 @@ import { gitHubPullRequestMetadataSchema } from "./schema";
 /**
  * GitHub Pull Request query service with additional context
  */
-const dbConfig = createDatabaseConfig();
-if (!dbConfig) {
-	throw new Error("Missing POSTGRES_URL for GitHub Pull Request query service");
+export function getGitHubPullRequestQueryService() {
+	const dbConfig = createDatabaseConfig();
+	if (!dbConfig) {
+		throw new Error(
+			"Missing POSTGRES_URL for GitHub Pull Request query service",
+		);
+	}
+	return createPostgresQueryService({
+		database: dbConfig,
+		tableName: getTableName(githubRepositoryPullRequestEmbeddings),
+		metadataSchema: gitHubPullRequestMetadataSchema,
+		contextToFilter: resolveGitHubPullRequestEmbeddingFilter,
+		contextToEmbeddingProfileId: (context) => context.embeddingProfileId,
+		additionalResolver: addPRContextToResults,
+	});
 }
-export const gitHubPullRequestQueryService = createPostgresQueryService({
-	database: dbConfig,
-	tableName: getTableName(githubRepositoryPullRequestEmbeddings),
-	metadataSchema: gitHubPullRequestMetadataSchema,
-	contextToFilter: resolveGitHubPullRequestEmbeddingFilter,
-	contextToEmbeddingProfileId: (context) => context.embeddingProfileId,
-	additionalResolver: addPRContextToResults,
-});
