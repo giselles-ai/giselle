@@ -317,6 +317,7 @@ function CanvasNode({
 								<NodeHandleDot
 									position={Position.Left}
 									isConnected={false}
+									isConnectable={false}
 									contentType={
 										v.isTextGeneration
 											? "textGeneration"
