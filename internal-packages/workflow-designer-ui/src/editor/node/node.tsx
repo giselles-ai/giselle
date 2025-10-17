@@ -425,19 +425,19 @@ export function NodeComponent({
 										id={input.id}
 										className={clsx(
 											"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px]",
-									// fill は接続時のみ色付け、枠線は常時ノード色
-									"group-data-[state=connected]:group-data-[content-type=action]:!bg-action-node-1",
-									"group-data-[content-type=action]:!border-action-node-1",
+											// fill は接続時のみ色付け、枠線は常時ノード色
+											"group-data-[state=connected]:group-data-[content-type=action]:!bg-action-node-1",
+											"group-data-[content-type=action]:!border-action-node-1",
 											"group-data-[state=disconnected]:!bg-bg",
 										)}
 									/>
 									<div
 										className={clsx(
-											"px-[12px] text-inverse text-[12px]",
-											"group-data-[state=connected]:px-[16px]",
-											"group-data-[state=disconnected]:absolute group-data-[state=disconnected]:-left-[4.5px] group-data-[state=disconnected]:whitespace-nowrap group-data-[state=disconnected]:-translate-x-[100%]",
-											"group-data-[state=connected]:text-inverse group-data-[state=disconnected]:text-black-400",
-											"group-data-[state=disconnected]:group-data-[required=true]:text-red-900",
+											"px-[12px] text-[12px]",
+											"group-data-[state=connected]:px-[16px] group-data-[state=connected]:text-inverse",
+											"group-data-[state=disconnected]:absolute group-data-[state=disconnected]:left-[-12px] group-data-[state=disconnected]:whitespace-nowrap group-data-[state=disconnected]:-translate-x-[100%] group-data-[state=disconnected]:text-black-400",
+											// required の赤は接続時のみ
+											"group-data-[state=connected]:group-data-[required=true]:text-red-900",
 										)}
 									>
 										{input.label}

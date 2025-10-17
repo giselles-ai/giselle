@@ -339,7 +339,7 @@ function CanvasNode({
 											"data-[state=connected]:!bg-query-node-1 data-[state=connected]:!border-query-node-1",
 									)}
 								/>
-								<div className={clsx("px-[12px] text-inverse text-[12px]")}>
+								<div className={clsx("px-[12px] text-[12px]")}>
 									{input.label}
 								</div>
 							</div>
@@ -372,26 +372,34 @@ function CanvasNode({
 										className={clsx(
 											"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px]",
 											// When disconnected, background is set via inline style to match canvas background
-										v.isTextGeneration &&
-											"group-data-[connected=true]:!border-generation-node-1",
-										v.isImageGeneration &&
-											"group-data-[connected=true]:!border-image-generation-node-1",
-										v.isGithub && "group-data-[connected=true]:!border-github-node-1",
-										v.isVectorStoreGithub &&
-											"group-data-[connected=true]:!border-github-node-1",
-										v.isVectorStoreGithubPullRequest &&
-											"group-data-[connected=true]:!border-github-node-1",
-										v.isText && "group-data-[connected=true]:!border-text-node-1",
-										v.isFile && "group-data-[connected=true]:!border-file-node-1",
-										v.isWebPage && "group-data-[connected=true]:!border-webPage-node-1",
-										v.isWebSearch && "group-data-[connected=true]:!border-web-search-node-1",
-										v.isAudioGeneration &&
-											"group-data-[connected=true]:!border-audio-generation-node-1",
-										v.isVideoGeneration &&
-											"group-data-[connected=true]:!border-video-generation-node-1",
-										v.isTrigger && "group-data-[connected=true]:!border-trigger-node-1",
-										v.isAction && "group-data-[connected=true]:!border-action-node-1",
-										v.isQuery && "group-data-[connected=true]:!border-query-node-1",
+											v.isTextGeneration &&
+												"group-data-[connected=true]:!border-generation-node-1",
+											v.isImageGeneration &&
+												"group-data-[connected=true]:!border-image-generation-node-1",
+											v.isGithub &&
+												"group-data-[connected=true]:!border-github-node-1",
+											v.isVectorStoreGithub &&
+												"group-data-[connected=true]:!border-github-node-1",
+											v.isVectorStoreGithubPullRequest &&
+												"group-data-[connected=true]:!border-github-node-1",
+											v.isText &&
+												"group-data-[connected=true]:!border-text-node-1",
+											v.isFile &&
+												"group-data-[connected=true]:!border-file-node-1",
+											v.isWebPage &&
+												"group-data-[connected=true]:!border-webPage-node-1",
+											v.isWebSearch &&
+												"group-data-[connected=true]:!border-web-search-node-1",
+											v.isAudioGeneration &&
+												"group-data-[connected=true]:!border-audio-generation-node-1",
+											v.isVideoGeneration &&
+												"group-data-[connected=true]:!border-video-generation-node-1",
+											v.isTrigger &&
+												"group-data-[connected=true]:!border-trigger-node-1",
+											v.isAction &&
+												"group-data-[connected=true]:!border-action-node-1",
+											v.isQuery &&
+												"group-data-[connected=true]:!border-query-node-1",
 											isConnected &&
 												v.isTextGeneration &&
 												"!bg-generation-node-1",
