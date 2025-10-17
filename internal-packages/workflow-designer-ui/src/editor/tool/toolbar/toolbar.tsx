@@ -325,8 +325,7 @@ export function Toolbar() {
 										<GlassSurfaceLayers
 											radiusClass="rounded-[8px]"
 											borderStyle="solid"
-											withBaseFill={true}
-											baseFillClass="bg-bg/60"
+											withBaseFill={false}
 											blurClass="backdrop-blur-lg"
 											zIndexClass="z-0"
 										/>
