@@ -4,10 +4,7 @@ import { Toggle } from "@giselle-internal/ui/toggle";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Code, GitPullRequest } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import type {
-	GitHubRepositoryContentType,
-	githubRepositoryContentStatus,
-} from "@/drizzle";
+import type { GitHubRepositoryContentType } from "@/drizzle";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import {
@@ -131,7 +128,6 @@ export function ConfigureSourcesDialog({
 										setConfig({ ...config, code: { enabled } })
 									}
 									disabled={true} // Code is mandatory
-									status={blobStatus}
 								/>
 
 								{/* Pull Requests Configuration */}
@@ -143,7 +139,6 @@ export function ConfigureSourcesDialog({
 									onToggle={(enabled) =>
 										setConfig({ ...config, pullRequests: { enabled } })
 									}
-									status={pullRequestStatus}
 								/>
 							</div>
 						</div>
@@ -226,7 +221,6 @@ type ContentTypeToggleProps = {
 	enabled: boolean;
 	onToggle: (enabled: boolean) => void;
 	disabled?: boolean;
-	status?: typeof githubRepositoryContentStatus.$inferSelect;
 };
 
 function ContentTypeToggle({
@@ -236,7 +230,6 @@ function ContentTypeToggle({
 	enabled,
 	onToggle,
 	disabled,
-	status,
 }: ContentTypeToggleProps) {
 	return (
 		<div className="bg-inverse/5 rounded-lg p-4">
