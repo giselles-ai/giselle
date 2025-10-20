@@ -21,7 +21,7 @@ export function DialogContent({
 					"fixed left-[50%] top-[50%] translate-y-[-50%] translate-x-[-50%] z-50 overflow-y-auto overflow-x-hidden outline-none",
 					"data-[size=default]:w-[500px] data-[size=default]:max-h-[75%]",
 					"data-[size=wide]:w-[800px] data-[size=default]:max-h-[85%]",
-					"relative bg-transparent shadow-xl text-text",
+					"bg-transparent shadow-xl text-text",
 					"p-6 rounded-[12px]",
 				)}
 			>
