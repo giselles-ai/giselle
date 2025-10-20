@@ -65,7 +65,7 @@ export function DocsLink({
 			)}
 			{...props}
 		>
-			{children ?? "About Apps"}
+			{children ?? "About Workspace"}
 			{icon ? <ExternalIcon /> : null}
 		</a>
 	);
