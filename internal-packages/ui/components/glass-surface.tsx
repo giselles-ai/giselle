@@ -37,7 +37,7 @@ export function GlassSurfaceLayers({
 	withBaseFill = true,
 	withTopHighlight = true,
 	borderStyle = "solid",
-	borderTone = "muted",
+	borderTone = "default",
 	withAuxHairline = true,
 	zIndexClass = "-z-10",
 	className,
@@ -49,7 +49,7 @@ export function GlassSurfaceLayers({
 		destructive: "light",
 	};
 	const variantToBorderTone: Record<Variant, BorderTone> = {
-		default: "default",
+		default: "muted",
 		info: "muted",
 		destructive: "destructive",
 	};
