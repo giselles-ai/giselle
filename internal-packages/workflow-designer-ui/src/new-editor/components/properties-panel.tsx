@@ -31,13 +31,13 @@ export function PropertiesPanel() {
 
 	const handleChangeName = useCallback(
 		(name?: string) => {
-			// node.id は選択変更時のみ変わるため依存関係は安定
+			// node.id only changes when selection changes, so dependencies are stable
 			if (!node) return;
 			if (typeof name === "string" && name.trim().length > 0) {
 				updateNode(node.id as NodeId, { name });
 				return;
 			}
-			// undefined や空文字のときは名称をクリア
+			// Clear name when the value is undefined or an empty string
 			updateNode(node.id as NodeId, { name: undefined });
 		},
 		[node, updateNode],
