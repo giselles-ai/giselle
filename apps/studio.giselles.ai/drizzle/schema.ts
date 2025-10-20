@@ -112,6 +112,7 @@ export const teamMemberships = pgTable(
 	],
 );
 
+/** @deprecated The agents table does not align with the application domain, so we are migrating to the workspaces table. We are keeping it for gradual migration due to the large scope of impact. */
 export const agents = pgTable(
 	"agents",
 	{
@@ -140,6 +141,30 @@ export const agentsRelations = relations(agents, ({ one }) => ({
 	team: one(teams, {
 		fields: [agents.teamDbId],
 		references: [teams.dbId],
+	}),
+}));
+
+export const workspaces = pgTable("workspaces", {
+	id: text("id").$type<WorkspaceId>().notNull().unique(),
+	dbId: serial("db_id").primaryKey(),
+	name: text("name"),
+	teamDbId: integer("team_db_id")
+		.notNull()
+		.references(() => teams.dbId, { onDelete: "cascade" }),
+	createdAt: timestamp("created_at").defaultNow().notNull(),
+	updatedAt: timestamp("updated_at")
+		.defaultNow()
+		.notNull()
+		.$onUpdate(() => new Date()),
+	creatorDbId: integer("creator_db_id")
+		.notNull()
+		.references(() => users.dbId),
+});
+
+export const workspaceRelations = relations(workspaces, ({ one }) => ({
+	creator: one(users, {
+		fields: [workspaces.creatorDbId],
+		references: [users.dbId],
 	}),
 }));
 

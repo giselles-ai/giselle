@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { GlassButton } from "@/components/ui/glass-button";
-import { agents, db } from "@/drizzle";
+import { agents, db, workspaces } from "@/drizzle";
 import { experimental_storageFlag } from "@/flags";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
@@ -22,11 +22,17 @@ export default function Layout({ children }: { children: ReactNode }) {
 			useExperimentalStorage: experimental_storage,
 		});
 
+		// The agents table is deprecated, so we are inserting into the workspaces table.
 		await db.insert(agents).values({
 			id: agentId,
 			teamDbId: team.dbId,
 			creatorDbId: user.dbId,
 			workspaceId: workspace.id,
+		});
+		await db.insert(workspaces).values({
+			id: workspace.id,
+			creatorDbId: user.dbId,
+			teamDbId: team.dbId,
 		});
 
 		redirect(`/workspaces/${workspace.id}`);

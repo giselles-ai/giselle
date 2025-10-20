@@ -6,7 +6,13 @@ import type { AgentId } from "@giselles-ai/types";
 import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";
 import { giselleEngine } from "@/app/giselle-engine";
-import { agents, db, flowTriggers, githubIntegrationSettings } from "@/drizzle";
+import {
+	agents,
+	db,
+	flowTriggers,
+	githubIntegrationSettings,
+	workspaces,
+} from "@/drizzle";
 import { experimental_storageFlag } from "@/flags";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
@@ -67,12 +73,19 @@ export async function copyAgent(
 			newName,
 			useExperimentalStorage,
 		);
+		// The agents table is deprecated, so we are inserting into the workspaces table.
 		await db.insert(agents).values({
 			id: newAgentId,
 			name: newName,
 			teamDbId: team.dbId,
 			creatorDbId: user.dbId,
 			workspaceId: workspace.id,
+		});
+		await db.insert(workspaces).values({
+			id: workspace.id,
+			name: workspace.name,
+			teamDbId: team.dbId,
+			creatorDbId: user.dbId,
 		});
 
 		// Copy flowTrigger DB records for staged triggers
@@ -138,6 +151,7 @@ export async function deleteAgent(agentId: string): Promise<DeleteAgentResult> {
 				await tx
 					.delete(flowTriggers)
 					.where(eq(flowTriggers.sdkWorkspaceId, agent.workspaceId));
+				await tx.delete(workspaces).where(eq(workspaces.id, agent.workspaceId));
 			}
 			await tx
 				.delete(githubIntegrationSettings)

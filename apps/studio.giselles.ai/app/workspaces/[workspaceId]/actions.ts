@@ -3,7 +3,7 @@
 import type { WorkspaceId } from "@giselle-sdk/data-type";
 import { eq } from "drizzle-orm/sql";
 import { giselleEngine } from "@/app/giselle-engine";
-import { agents, db } from "@/drizzle";
+import { agents, db, workspaces } from "@/drizzle";
 import { experimental_storageFlag } from "@/flags";
 
 export async function updateWorkspaceName(
@@ -26,6 +26,10 @@ export async function updateWorkspaceName(
 			.update(agents)
 			.set({ name })
 			.where(eq(agents.workspaceId, workspaceId));
+		await db
+			.update(workspaces)
+			.set({ name })
+			.where(eq(workspaces.id, workspaceId));
 	} catch (error) {
 		try {
 			await giselleEngine.updateWorkspace(
