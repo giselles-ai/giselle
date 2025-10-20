@@ -1,4 +1,5 @@
 import type { GitHubTriggerEventId } from "@giselle-sdk/flow";
+import { Tag } from "lucide-react";
 
 export interface IconProps {
 	className?: string;
@@ -122,44 +123,7 @@ export function IssueLabeledIcon({
 	title = "Issue Labeled",
 }: IconProps) {
 	return (
-		<svg
-			width={size}
-			height={size}
-			viewBox="0 0 24.79 22.6"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
-			className={className}
-			aria-hidden="true"
-			role="img"
-			aria-label={title}
-		>
-			<title>{title}</title>
-			<g>
-				<path
-					d="M.78,6.93h2.02l2.52,5.39,.14,.3h.06v-5.69h1.48v8.74h-1.88l-2.61-5.44-.19-.42h-.07v5.86H.78V6.93Z"
-					fill="white"
-					stroke="white"
-					strokeMiterlimit="10"
-					strokeWidth=".5"
-				/>
-				<path
-					d="M8.1,6.93h5.48v1.71h-3.94v1.8h3.41v1.58h-3.41v1.93h3.92v1.71h-5.46V6.93Z"
-					fill="white"
-					stroke="white"
-					strokeMiterlimit="10"
-					strokeWidth=".5"
-				/>
-				<path
-					d="M14.66,6.93h1.57l.8,5.65,.22,1.19h.07l1.09-6.84h1.91l1.08,6.84h.07l.19-1.12,.8-5.72h1.56l-1.42,8.74h-2.22l-.87-5.41-.11-.66h-.07l-.09,.66-.89,5.41h-2.23l-1.46-8.74Z"
-					fill="currentColor"
-					stroke="currentColor"
-					strokeMiterlimit="10"
-					strokeWidth=".5"
-				/>
-			</g>
-			<rect width="24.79" height="2.24" fill="currentColor" />
-			<rect y="20.36" width="24.79" height="2.24" fill="currentColor" />
-		</svg>
+		<Tag className={className} size={size} aria-label={title} role="img" />
 	);
 }
 
@@ -322,44 +286,7 @@ export function PullRequestLabeledIcon({
 	title = "Pull Request Labeled",
 }: IconProps) {
 	return (
-		<svg
-			width={size}
-			height={size}
-			viewBox="0 0 24.79 22.6"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
-			className={className}
-			aria-hidden="true"
-			role="img"
-			aria-label={title}
-		>
-			<title>{title}</title>
-			<g>
-				<path
-					d="M.78,6.93h2.02l2.52,5.39,.14,.3h.06v-5.69h1.48v8.74h-1.88l-2.61-5.44-.19-.42h-.07v5.86H.78V6.93Z"
-					fill="white"
-					stroke="white"
-					strokeMiterlimit="10"
-					strokeWidth=".5"
-				/>
-				<path
-					d="M8.1,6.93h5.48v1.71h-3.94v1.8h3.41v1.58h-3.41v1.93h3.92v1.71h-5.46V6.93Z"
-					fill="white"
-					stroke="white"
-					strokeMiterlimit="10"
-					strokeWidth=".5"
-				/>
-				<path
-					d="M14.66,6.93h1.57l.8,5.65,.22,1.19h.07l1.09-6.84h1.91l1.08,6.84h.07l.19-1.12,.8-5.72h1.56l-1.42,8.74h-2.22l-.87-5.41-.11-.66h-.07l-.09,.66-.89,5.41h-2.23l-1.46-8.74Z"
-					fill="currentColor"
-					stroke="currentColor"
-					strokeMiterlimit="10"
-					strokeWidth=".5"
-				/>
-			</g>
-			<rect width="24.79" height="2.24" fill="currentColor" />
-			<rect y="20.36" width="24.79" height="2.24" fill="currentColor" />
-		</svg>
+		<Tag className={className} size={size} aria-label={title} role="img" />
 	);
 }
 
