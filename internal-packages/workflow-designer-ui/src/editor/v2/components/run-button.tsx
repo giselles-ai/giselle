@@ -1,11 +1,12 @@
 import { Button } from "@giselle-internal/ui/button";
 import {
 	Dialog,
-	DialogContent,
+	DialogPortal,
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
+import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { ConnectionId, NodeId, TriggerNode } from "@giselle-sdk/data-type";
 import {
@@ -20,7 +21,8 @@ import {
 } from "@giselle-sdk/giselle/react";
 import clsx from "clsx/lite";
 import { PlayIcon, UngroupIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Dialog as RadixDialog } from "radix-ui";
+import { useCallback, useMemo, useState } from "react";
 import { NodeIcon } from "../../../icons/node";
 import { isPromptEmpty } from "../../lib/validate-prompt";
 import { TriggerInputDialog } from "./trigger-input-dialog";
@@ -51,6 +53,39 @@ type NodeGroupMenuItem = {
 	type: "nodeGroup";
 	run: NodeGroupRunItem;
 };
+
+function CenteredDialogContent({ children }: React.PropsWithChildren) {
+	return (
+		<DialogPortal>
+			<RadixDialog.Overlay
+				className="fixed inset-0 z-50"
+				style={{ background: "var(--color-dialog-overlay)" }}
+			/>
+			<div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+				<RadixDialog.Content
+					className={clsx(
+						"relative pointer-events-auto overflow-y-auto overflow-x-hidden outline-none",
+						"w-[500px] max-h-[85%]",
+						"bg-transparent shadow-xl text-text p-6 rounded-[12px]",
+					)}
+				>
+					<GlassSurfaceLayers
+						radiusClass="rounded-[12px]"
+						withBaseFill={false}
+						withTopHighlight
+						borderStyle="solid"
+						borderTone="muted"
+						blurClass="backdrop-blur-md"
+						zIndexClass="z-0"
+					/>
+					{/* Subtle dark hairline to make muted slightly darker than default */}
+					{/* Removed aux hairline here; now provided by GlassSurfaceLayers default */}
+					{children}
+				</RadixDialog.Content>
+			</div>
+		</DialogPortal>
+	);
+}
 
 function RunOptionItem({
 	icon,
@@ -147,7 +182,7 @@ function SingleTriggerRunButton({
 					Run
 				</Button>
 			</DialogTrigger>
-			<DialogContent>
+			<CenteredDialogContent>
 				<DialogTitle className="sr-only">
 					Override inputs to test workflow
 				</DialogTitle>
@@ -156,7 +191,7 @@ function SingleTriggerRunButton({
 					connectionIds={triggerRun.connectionIds}
 					onClose={() => setIsDialogOpen(false)}
 				/>
-			</DialogContent>
+			</CenteredDialogContent>
 		</Dialog>
 	);
 }
@@ -221,13 +256,16 @@ function MultipleRunsDropdown({
 		return groups;
 	}, [triggerRuns, nodeGroupRuns]);
 
-	const highlightNodes = (runItem: RunItem, isHovered: boolean) => {
-		for (const node of data.nodes) {
-			if (runItem.nodeIds.includes(node.id)) {
-				setUiNodeState(node.id, { highlighted: isHovered });
+	const highlightNodes = useCallback(
+		(runItem: RunItem, isHovered: boolean) => {
+			for (const node of data.nodes) {
+				if (runItem.nodeIds.includes(node.id)) {
+					setUiNodeState(node.id, { highlighted: isHovered });
+				}
 			}
-		}
-	};
+		},
+		[data.nodes, setUiNodeState],
+	);
 
 	return (
 		<DropdownMenu
@@ -282,7 +320,7 @@ function MultipleRunsDropdown({
 								{...props}
 							/>
 						</DialogTrigger>
-						<DialogContent>
+						<CenteredDialogContent>
 							<DialogTitle className="sr-only">
 								Override inputs to test workflow
 							</DialogTitle>
@@ -294,7 +332,7 @@ function MultipleRunsDropdown({
 									setOpenDialogNodeId(null);
 								}}
 							/>
-						</DialogContent>
+						</CenteredDialogContent>
 					</Dialog>
 				);
 			}}

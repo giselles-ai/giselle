@@ -18,6 +18,7 @@ export type GlassSurfaceLayersProps = {
 	withTopHighlight?: boolean;
 	borderStyle?: BorderStyle;
 	borderTone?: BorderTone; // solid border tone; overrides default class when provided
+	withAuxHairline?: boolean; // add a subtle extra hairline for contrast
 	zIndexClass?: string; // e.g. "-z-10"
 	className?: string;
 	children?: ReactNode; // optional: allow nesting extra layers
@@ -37,6 +38,7 @@ export function GlassSurfaceLayers({
 	withTopHighlight = true,
 	borderStyle = "solid",
 	borderTone = "default",
+	withAuxHairline = true,
 	zIndexClass = "-z-10",
 	className,
 	children,
@@ -47,7 +49,7 @@ export function GlassSurfaceLayers({
 		destructive: "light",
 	};
 	const variantToBorderTone: Record<Variant, BorderTone> = {
-		default: "default",
+		default: "muted",
 		info: "muted",
 		destructive: "destructive",
 	};
@@ -146,6 +148,17 @@ export function GlassSurfaceLayers({
 					</div>
 				</div>
 			) : null}
+			{borderStyle === "solid" && withAuxHairline && (
+				<div
+					className={clsx(
+						"absolute inset-0",
+						zIndexClass,
+						radiusClass,
+						"border-[0.5px] border-border opacity-20",
+					)}
+					aria-hidden
+				/>
+			)}
 			{children}
 		</div>
 	);

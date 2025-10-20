@@ -1,12 +1,12 @@
+import { Button } from "@giselle-internal/ui/button";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { ConnectionId, TriggerNode } from "@giselle-sdk/data-type";
 import { useActController } from "@giselle-sdk/giselle/react";
 import { clsx } from "clsx/lite";
-import { PlayIcon, XIcon } from "lucide-react";
+import { LoaderIcon, PlayIcon, XIcon } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { type FormEventHandler, useCallback, useMemo, useState } from "react";
 import { useTrigger } from "../../../../hooks/use-trigger";
-import { Button } from "./button";
 import {
 	buttonLabel,
 	createInputsFromTrigger,
@@ -200,9 +200,17 @@ export function TriggerInputDialog({
 					</div>
 					<div className="flex justify-end">
 						<Button
+							variant="solid"
+							size="large"
 							type="submit"
-							loading={isSubmitting}
-							leftIcon={<PlayIcon className="size-[14px] fill-black-900" />}
+							disabled={isSubmitting}
+							leftIcon={
+								isSubmitting ? (
+									<LoaderIcon className="size-[14px] animate-spin" />
+								) : (
+									<PlayIcon className="size-[14px] fill-current" />
+								)
+							}
 						>
 							{isSubmitting ? "Running..." : "Run"}
 						</Button>
