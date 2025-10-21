@@ -173,7 +173,7 @@ export function TextEditor({
 				slotBefore={
 					<>
 						{showToolbar && <Toolbar tools={tools} />}
-						{header && <div className="mb-2">{header}</div>}
+						{header && <div className="mb-[4px]">{header}</div>}
 					</>
 				}
 				extensions={extensions}

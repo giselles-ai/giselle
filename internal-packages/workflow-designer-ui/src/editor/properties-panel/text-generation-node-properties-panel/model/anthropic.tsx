@@ -65,8 +65,7 @@ export function AnthropicModelPanel({
 						<div className="flex flex-col">
 							<div className="flex flex-row items-center justify-between">
 								<p className="text-[14px]">Reasoning</p>
-								<div className="flex-grow mx-[12px] h-[1px] border-t border-inverse" />
-								<p className="text-[12px]">Unsupported</p>
+								<p className="text-[12px] text-error">Unsupported</p>
 							</div>
 						</div>
 					)}

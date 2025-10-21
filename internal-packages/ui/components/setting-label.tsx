@@ -38,7 +38,6 @@ export function SettingLabel({
 				colorClassName,
 				sizeClass,
 				inline ? "inline-block" : "block",
-				"mb-[4px]",
 				widthClassName,
 				className,
 			)}

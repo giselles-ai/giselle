@@ -39,66 +39,70 @@ export function OpenAIModelPanel({
 	}
 
 	return (
-		<div className="flex flex-col gap-[16px]">
+		<div className="flex flex-col gap-[8px]">
 			{hasCapability(languageModel, Capability.Reasoning) ? (
-				<div className="grid grid-cols-2 gap-[16px] mb-[16px]">
-					<fieldset className="flex flex-col min-w-0">
+				<div className="grid grid-cols-1 gap-[8px]">
+					<div className="flex w-full items-center justify-between gap-[12px]">
 						<label
 							htmlFor="reasoningEffort"
-							className="text-text text-[14px] mb-[2px]"
+							className="text-text text-[14px] shrink-0 w-[120px]"
 						>
 							Reasoning effort
 						</label>
-						<Select
-							id="reasoningEffort"
-							placeholder="Select reasoning effort"
-							value={openaiLanguageModel.configurations.reasoningEffort}
-							onValueChange={(value) => {
-								onModelChange(
-									OpenAILanguageModelData.parse({
-										...openaiLanguageModel,
-										configurations: {
-											...openaiLanguageModel.configurations,
-											reasoningEffort: value,
-										},
-									}),
-								);
-							}}
-							options={["minimal", "low", "medium", "high"].map((v) => ({
-								value: v,
-								label: v,
-							}))}
-						/>
-					</fieldset>
+						<div className="grow min-w-0">
+							<Select
+								id="reasoningEffort"
+								placeholder="Select reasoning effort"
+								value={openaiLanguageModel.configurations.reasoningEffort}
+								onValueChange={(value) => {
+									onModelChange(
+										OpenAILanguageModelData.parse({
+											...openaiLanguageModel,
+											configurations: {
+												...openaiLanguageModel.configurations,
+												reasoningEffort: value,
+											},
+										}),
+									);
+								}}
+								options={["minimal", "low", "medium", "high"].map((v) => ({
+									value: v,
+									label: v,
+								}))}
+							/>
+						</div>
+					</div>
 
-					<fieldset className="flex flex-col min-w-0">
+					<div className="flex w-full items-center justify-between gap-[12px]">
 						<label
 							htmlFor="verbosity"
-							className="text-text text-[14px] mb-[2px]"
+							className="text-text text-[14px] shrink-0 w-[120px]"
 						>
 							Verbosity
 						</label>
-						<Select
-							id="verbosity"
-							placeholder="Select verbosity"
-							value={openaiLanguageModel.configurations.textVerbosity}
-							onValueChange={(value) => {
-								onModelChange(
-									OpenAILanguageModelData.parse({
-										...openaiLanguageModel,
-										configurations: {
-											...openaiLanguageModel.configurations,
-											textVerbosity: value,
-										},
-									}),
-								);
-							}}
-							options={["low", "medium", "high"].map((v) => ({
-								value: v,
-								label: v,
-							}))}
-						/>
-					</fieldset>
+						<div className="grow min-w-0">
+							<Select
+								id="verbosity"
+								placeholder="Select verbosity"
+								value={openaiLanguageModel.configurations.textVerbosity}
+								onValueChange={(value) => {
+									onModelChange(
+										OpenAILanguageModelData.parse({
+											...openaiLanguageModel,
+											configurations: {
+												...openaiLanguageModel.configurations,
+												textVerbosity: value,
+											},
+										}),
+									);
+								}}
+								options={["low", "medium", "high"].map((v) => ({
+									value: v,
+									label: v,
+								}))}
+							/>
+						</div>
+					</div>
 				</div>
 			) : (
 				<div>
@@ -123,16 +127,6 @@ export function OpenAIModelPanel({
 						/>
 						<PresencePenaltySlider
 							labelClassName="text-[14px]"
-							onModelChange={onModelChange}
-							modelData={openaiLanguageModel}
-							parseModelData={OpenAILanguageModelData.parse}
-						/>
-						<FrequencyPenaltySlider
-							onModelChange={onModelChange}
-							modelData={openaiLanguageModel}
-							parseModelData={OpenAILanguageModelData.parse}
-						/>
-						<PresencePenaltySlider
 							onModelChange={onModelChange}
 							modelData={openaiLanguageModel}
 							parseModelData={OpenAILanguageModelData.parse}

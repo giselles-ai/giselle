@@ -20,7 +20,7 @@ import {
 	openaiLanguageModels,
 } from "@giselle-sdk/language-model";
 import { ChevronRightIcon } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { AnthropicModelPanel } from "./model/anthropic";
 import { GoogleModelPanel } from "./model/google";
 import { OpenAIModelPanel } from "./model/openai";
@@ -185,33 +185,39 @@ export function PromptPanel({ node }: { node: TextGenerationNode }) {
 					<ModelPicker
 						currentProvider={node.content.llm.provider}
 						currentModelId={node.content.llm.id}
-						groups={[
-							{
-								provider: "openai",
-								label: "OpenAI",
-								models: openaiLanguageModels.map((m) => ({ id: m.id })),
-							},
-							{
-								provider: "anthropic",
-								label: "Anthropic",
-								models: anthropicLanguageModels.map((m) => ({ id: m.id })),
-							},
-							{
-								provider: "google",
-								label: "Google",
-								models: googleLanguageModels.map((m) => ({ id: m.id })),
-							},
-						]}
+						groups={useMemo(
+							() => [
+								{
+									provider: "openai",
+									label: "OpenAI",
+									models: openaiLanguageModels.map((m) => ({ id: m.id })),
+								},
+								{
+									provider: "anthropic",
+									label: "Anthropic",
+									models: anthropicLanguageModels.map((m) => ({ id: m.id })),
+								},
+								{
+									provider: "google",
+									label: "Google",
+									models: googleLanguageModels.map((m) => ({ id: m.id })),
+								},
+							],
+							[],
+						)}
 						triggerVariant="plain"
 						fullWidth={false}
 						triggerId="model-picker-trigger"
-						onSelect={(provider, modelId) => {
-							const next = createDefaultModelData(
-								provider as "openai" | "anthropic" | "google",
-							);
-							const updated = updateModelId(next, modelId);
-							updateNodeDataContent(node, { llm: updated, tools: {} });
-						}}
+						onSelect={useCallback(
+							(provider, modelId) => {
+								const next = createDefaultModelData(
+									provider as "openai" | "anthropic" | "google",
+								);
+								const updated = updateModelId(next, modelId);
+								updateNodeDataContent(node, { llm: updated, tools: {} });
+							},
+							[node, updateNodeDataContent],
+						)}
 					/>
 				</div>
 			</div>
@@ -253,45 +259,54 @@ export function PromptPanel({ node }: { node: TextGenerationNode }) {
 					/>
 				)}
 			</div>
-			<div className="col-span-2">
-				<button
-					type="button"
-					onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
-					className="flex items-center gap-[8px] w-full text-left text-[14px] text-inverse hover:text-primary-900 transition-colors"
-				>
-					<ChevronRightIcon
-						className={`size-[16px] transition-transform ${isAdvancedOpen ? "rotate-90" : ""}`}
-					/>
-					<span>Advanced options</span>
-				</button>
-				{isAdvancedOpen && (
-					<div className="mt-[12px]">
-						<ToolsPanel node={node} />
-					</div>
-				)}
-			</div>
-			<SettingLabel>Prompt</SettingLabel>
+			<SettingLabel inline>Prompt</SettingLabel>
+		</div>
+	);
+
+	const advancedOptions = (
+		<div className="col-span-2 rounded-[8px] bg-inverse/5 px-[8px] py-[8px] mt-[8px]">
+			<button
+				type="button"
+				onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
+				className="flex items-center gap-[8px] w-full text-left text-inverse hover:text-primary-900 transition-colors"
+			>
+				<ChevronRightIcon
+					className={`size-[14px] text-secondary transition-transform ${isAdvancedOpen ? "rotate-90" : ""}`}
+				/>
+				<SettingLabel inline className="mb-0">
+					Advanced options
+				</SettingLabel>
+			</button>
+			{isAdvancedOpen && (
+				<div className="mt-[12px]">
+					<SettingDetail className="mb-[6px]">Tools</SettingDetail>
+					<ToolsPanel node={node} />
+				</div>
+			)}
 		</div>
 	);
 
 	return (
-		<PromptEditor
-			key={JSON.stringify(connectedSources.map((c) => c.node.id))}
-			placeholder="Write your prompt here..."
-			value={node.content.prompt}
-			onValueChange={(value) => {
-				updateNodeDataContent(node, { prompt: value });
-			}}
-			nodes={connectedSources.map((source) => source.node)}
-			connectedSources={connectedSources.map(
-				({ node: n, id, label, accessor }) => ({
-					node: n,
-					output: { id, label, accessor },
-				}),
-			)}
-			showToolbar={false}
-			variant="plain"
-			header={header}
-		/>
+		<>
+			<PromptEditor
+				key={JSON.stringify(connectedSources.map((c) => c.node.id))}
+				placeholder="Write your prompt here..."
+				value={node.content.prompt}
+				onValueChange={(value) => {
+					updateNodeDataContent(node, { prompt: value });
+				}}
+				nodes={connectedSources.map((source) => source.node)}
+				connectedSources={connectedSources.map(
+					({ node: n, id, label, accessor }) => ({
+						node: n,
+						output: { id, label, accessor },
+					}),
+				)}
+				showToolbar={false}
+				variant="plain"
+				header={header}
+			/>
+			{advancedOptions}
+		</>
 	);
 }

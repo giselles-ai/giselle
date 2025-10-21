@@ -67,7 +67,7 @@ export function Select<T extends SelectOption>({
 					className={clsx(
 						// width: default full, but allow override via widthClassName
 						widthClassName ?? "w-full",
-						"flex justify-between items-center rounded-[8px] h-10 px-[12px] text-left text-[14px] shrink-0",
+						"flex justify-between items-center rounded-[8px] h-10 px-[8px] text-left text-[14px] shrink-0",
 						"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
 						renderTriggerContent
 							? clsx(

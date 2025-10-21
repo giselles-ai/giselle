@@ -43,7 +43,6 @@ export function GoogleModelPanel({
 						parseModelData={GoogleLanguageModelData.parse}
 					/>
 				</div>
-				<div className="mt-[8px]" />
 				{googleUrlContext && shouldShowMutualExclusionNotice ? (
 					<div className="rounded-[8px] border border-yellow-500/40 bg-yellow-500/10 px-[12px] py-[8px] flex items-start gap-[8px]">
 						<InfoIcon
