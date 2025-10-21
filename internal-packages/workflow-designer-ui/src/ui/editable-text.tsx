@@ -47,7 +47,7 @@ export function EditableText({
 			<input
 				type="text"
 				className={clsx(
-					"py-[2px] px-[4px] rounded-[4px] hidden data-[editing=true]:block",
+					"py-[2px] px-[4px] rounded-[4px] hidden data-[editing=true]:block w-full",
 					"outline-none ring-[1px] ring-primary-900",
 					"text-inverse text-[14px]",
 				)}

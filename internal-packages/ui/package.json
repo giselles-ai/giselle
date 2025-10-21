@@ -39,7 +39,8 @@
 		"./repo-action-menu": "./components/repo-action-menu.tsx",
 		"./form-field": "./components/form-field.tsx",
 		"./glass-surface": "./components/glass-surface.tsx",
-		"./prompt-editor": "./components/prompt-editor.tsx"
+		"./prompt-editor": "./components/prompt-editor.tsx",
+		"./icon-box": "./components/icon-box.tsx"
 	},
 	"dependencies": {
 		"@giselle-sdk/text-editor": "workspace:^",

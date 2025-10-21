@@ -208,6 +208,30 @@
 			transparent
 		) !important;
 	}
+
+	/* Hover/Focus/Active variants for inverse backgrounds */
+	.hover\:bg-inverse\/10:hover {
+		background-color: color-mix(
+			in srgb,
+			var(--color-text-inverse, var(--color-white, #fff)) 10%,
+			transparent
+		) !important;
+	}
+	.focus-visible\:bg-inverse\/10:focus-visible,
+	.focus\:bg-inverse\/10:focus {
+		background-color: color-mix(
+			in srgb,
+			var(--color-text-inverse, var(--color-white, #fff)) 10%,
+			transparent
+		) !important;
+	}
+	.active\:bg-inverse\/15:active {
+		background-color: color-mix(
+			in srgb,
+			var(--color-text-inverse, var(--color-white, #fff)) 15%,
+			transparent
+		) !important;
+	}
 	.bg-inverse\/15 {
 		background-color: color-mix(
 			in srgb,

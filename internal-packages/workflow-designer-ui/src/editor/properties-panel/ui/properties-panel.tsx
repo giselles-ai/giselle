@@ -93,7 +93,7 @@ function getNodeIconBackground(node: NodeLike): string {
 
 export function PropertiesPanelHeader({
 	node,
-	description,
+	// description removed from UI
 	icon,
 	onChangeName,
 	action,
@@ -106,7 +106,9 @@ export function PropertiesPanelHeader({
 }) {
 	return (
 		<div className={getHeaderClasses()}>
-			<div className={`flex ${PANEL_SPACING.HEADER.ICON_GAP} items-center`}>
+			<div
+				className={`flex flex-1 min-w-0 ${PANEL_SPACING.HEADER.ICON_GAP} items-center`}
+			>
 				<div
 					className={`${getNodeIconBackground(node)} rounded-[4px] flex items-center justify-center`}
 					style={{
@@ -121,25 +123,21 @@ export function PropertiesPanelHeader({
 						/>
 					)}
 				</div>
-				<div>
-					<div>
-						<EditableText
-							onValueChange={(value) => {
-								if (value === defaultName(node)) {
-									return;
-								}
-								if (value.trim().length === 0) {
-									onChangeName?.();
-									return;
-								}
-								onChangeName?.(value);
-							}}
-							text={defaultName(node)}
-						/>
-					</div>
-					{description && (
-						<p className="px-[5px] text-white-400 text-[10px]">{description}</p>
-					)}
+				<div className="flex-1 min-w-0">
+					<EditableText
+						className="block w-full"
+						onValueChange={(value) => {
+							if (value === defaultName(node)) {
+								return;
+							}
+							if (value.trim().length === 0) {
+								onChangeName?.();
+								return;
+							}
+							onChangeName?.(value);
+						}}
+						text={defaultName(node)}
+					/>
 				</div>
 			</div>
 			{action}
