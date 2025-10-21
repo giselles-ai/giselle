@@ -58,6 +58,6 @@ export function getContentClasses(): string {
 	return [
 		PANEL_SPACING.LAYOUT.FLEX_1,
 		PANEL_SPACING.LAYOUT.FLEX_COL,
-		"min-h-0",
+		"min-h-0 overflow-y-auto",
 	].join(" ");
 }

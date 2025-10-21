@@ -143,8 +143,8 @@ export function TextGenerationNodePropertiesPanel({
 			/>
 
 			<PropertiesPanelContent>
-				<div className="relative flex-1 min-h-0">
-					<div className="overflow-y-auto flex-1 min-h-0">
+				<div className="flex-1 min-h-0">
+					<div className="flex-1 min-h-0">
 						<TextGenerationTabContent node={node} />
 						<div className="mt-[8px]">
 							<SettingLabel className="mb-[4px]">Output</SettingLabel>
@@ -155,25 +155,27 @@ export function TextGenerationNodePropertiesPanel({
 						</div>
 					</div>
 					{currentGeneration === undefined && (
-						<button
-							type="button"
-							onClick={() => {
-								generateText();
-							}}
-							className="absolute bottom-[16px] left-1/2 -translate-x-1/2 z-20 flex items-center justify-center px-[24px] py-[12px] bg-[#141519] text-white rounded-[9999px] border border-border/15 transition-all hover:bg-[#1e1f26] hover:border-border/25 hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px] whitespace-nowrap"
-						>
-							<span className="mr-[8px] generate-star">✦</span>
-							Generate with the Current Prompt
-							<style jsx>{`
-								.generate-star { display: inline-block; }
-								button:hover .generate-star { animation: rotateStar 0.7s ease-in-out; }
-								@keyframes rotateStar {
-									0% { transform: rotate(0deg) scale(1); }
-									50% { transform: rotate(180deg) scale(1.5); }
-									100% { transform: rotate(360deg) scale(1); }
-								}
-							`}</style>
-						</button>
+						<div className="sticky bottom-[16px] z-20 px-[16px]">
+							<button
+								type="button"
+								onClick={() => {
+									generateText();
+								}}
+								className="w-full flex items-center justify-center px-[24px] py-[12px] bg-[#141519] text-white rounded-[9999px] border border-border/15 transition-all hover:bg-[#1e1f26] hover:border-border/25 hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px] whitespace-nowrap"
+							>
+								<span className="mr-[8px] generate-star">✦</span>
+								Generate with the Current Prompt
+								<style jsx>{`
+									.generate-star { display: inline-block; }
+									button:hover .generate-star { animation: rotateStar 0.7s ease-in-out; }
+									@keyframes rotateStar {
+										0% { transform: rotate(0deg) scale(1); }
+										50% { transform: rotate(180deg) scale(1.5); }
+										100% { transform: rotate(360deg) scale(1); }
+									}
+								`}</style>
+							</button>
+						</div>
 					)}
 				</div>
 			</PropertiesPanelContent>

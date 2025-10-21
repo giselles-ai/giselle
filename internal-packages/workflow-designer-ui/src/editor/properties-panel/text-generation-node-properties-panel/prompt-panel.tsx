@@ -20,7 +20,7 @@ import {
 	openaiLanguageModels,
 } from "@giselle-sdk/language-model";
 import { ChevronRightIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { AnthropicModelPanel } from "./model/anthropic";
 import { GoogleModelPanel } from "./model/google";
 import { OpenAIModelPanel } from "./model/openai";
@@ -28,7 +28,51 @@ import { createDefaultModelData, updateModelId } from "./model-defaults";
 import { useConnectedOutputs } from "./outputs";
 import { ToolsPanel } from "./tools/tools-panel";
 
-export function PromptPanel({ node }: { node: TextGenerationNode }) {
+export type PromptPanelSections = {
+	modelPicker?: boolean;
+	modelParameters?: boolean;
+	advancedOptions?: boolean;
+	promptLabel?: boolean;
+};
+
+export type PromptPanelSlots = {
+	headerActions?: React.ReactNode;
+	uploadArea?: React.ReactNode;
+	footer?: React.ReactNode;
+};
+
+export function useModelGroups() {
+	return useMemo(
+		() => [
+			{
+				provider: "openai",
+				label: "OpenAI",
+				models: openaiLanguageModels.map((m) => ({ id: m.id })),
+			},
+			{
+				provider: "anthropic",
+				label: "Anthropic",
+				models: anthropicLanguageModels.map((m) => ({ id: m.id })),
+			},
+			{
+				provider: "google",
+				label: "Google",
+				models: googleLanguageModels.map((m) => ({ id: m.id })),
+			},
+		],
+		[],
+	);
+}
+
+export function PromptPanel({
+	node,
+	sections,
+	slots,
+}: {
+	node: TextGenerationNode;
+	sections?: PromptPanelSections;
+	slots?: PromptPanelSlots;
+}) {
 	const updateNodeDataContent = useWorkflowDesignerStore(
 		(s) => s.updateNodeDataContent,
 	);
@@ -174,6 +218,15 @@ export function PromptPanel({ node }: { node: TextGenerationNode }) {
 		);
 	}
 
+	const resolvedSections: Required<PromptPanelSections> = {
+		modelPicker: sections?.modelPicker ?? true,
+		modelParameters: sections?.modelParameters ?? true,
+		advancedOptions: sections?.advancedOptions ?? true,
+		promptLabel: sections?.promptLabel ?? true,
+	};
+
+	const groups = useModelGroups();
+
 	const header = (
 		<div className="flex flex-col gap-[8px]">
 			<div className="col-span-2">
@@ -181,85 +234,78 @@ export function PromptPanel({ node }: { node: TextGenerationNode }) {
 					<label htmlFor="model-picker-trigger" className="sr-only">
 						Model
 					</label>
-					<SettingDetail size="md">Model</SettingDetail>
-					<ModelPicker
-						currentProvider={node.content.llm.provider}
-						currentModelId={node.content.llm.id}
-						groups={useMemo(
-							() => [
-								{
-									provider: "openai",
-									label: "OpenAI",
-									models: openaiLanguageModels.map((m) => ({ id: m.id })),
-								},
-								{
-									provider: "anthropic",
-									label: "Anthropic",
-									models: anthropicLanguageModels.map((m) => ({ id: m.id })),
-								},
-								{
-									provider: "google",
-									label: "Google",
-									models: googleLanguageModels.map((m) => ({ id: m.id })),
-								},
-							],
-							[],
-						)}
-						triggerVariant="plain"
-						fullWidth={false}
-						triggerId="model-picker-trigger"
-						onSelect={useCallback(
-							(provider, modelId) => {
-								const next = createDefaultModelData(
-									provider as "openai" | "anthropic" | "google",
-								);
-								const updated = updateModelId(next, modelId);
-								updateNodeDataContent(node, { llm: updated, tools: {} });
-							},
-							[node, updateNodeDataContent],
-						)}
-					/>
+					{resolvedSections.modelPicker && (
+						<>
+							<SettingDetail size="md">Model</SettingDetail>
+							<ModelPicker
+								currentProvider={node.content.llm.provider}
+								currentModelId={node.content.llm.id}
+								groups={groups}
+								triggerVariant="plain"
+								fullWidth={false}
+								triggerId="model-picker-trigger"
+								onSelect={(provider, modelId) => {
+									const next = createDefaultModelData(
+										provider as "openai" | "anthropic" | "google",
+									);
+									const updated = updateModelId(next, modelId);
+									updateNodeDataContent(node, { llm: updated, tools: {} });
+								}}
+							/>
+						</>
+					)}
+					{slots?.headerActions}
 				</div>
 			</div>
-			<SettingLabel>Model parameters</SettingLabel>
-			<div className="col-span-2 flex flex-col gap-[12px]">
-				{node.content.llm.provider === "openai" && (
-					<OpenAIModelPanel
-						openaiLanguageModel={node.content.llm as OpenAILanguageModelData}
-						tools={node.content.tools}
-						onModelChange={(value) =>
-							updateNodeDataContent(node, { llm: value })
-						}
-						onToolChange={(changedTool) =>
-							updateNodeDataContent(node, { tools: changedTool })
-						}
-						onWebSearchChange={handleOpenAIWebSearchChange}
-					/>
-				)}
-				{node.content.llm.provider === "google" && (
-					<GoogleModelPanel
-						googleLanguageModel={node.content.llm as GoogleLanguageModelData}
-						onSearchGroundingConfigurationChange={
-							handleGoogleSearchGroundingChange
-						}
-						onUrlContextConfigurationChange={handleGoogleUrlContextChange}
-						onModelChange={(value) =>
-							updateNodeDataContent(node, { llm: value })
-						}
-					/>
-				)}
-				{node.content.llm.provider === "anthropic" && (
-					<AnthropicModelPanel
-						anthropicLanguageModel={
-							node.content.llm as AnthropicLanguageModelData
-						}
-						onModelChange={(value) =>
-							updateNodeDataContent(node, { llm: value })
-						}
-					/>
-				)}
-			</div>
-			<SettingLabel inline>Prompt</SettingLabel>
+			{resolvedSections.modelParameters && (
+				<>
+					<SettingLabel>Model parameters</SettingLabel>
+					<div className="col-span-2 flex flex-col gap-[12px]">
+						{node.content.llm.provider === "openai" && (
+							<OpenAIModelPanel
+								openaiLanguageModel={
+									node.content.llm as OpenAILanguageModelData
+								}
+								tools={node.content.tools}
+								onModelChange={(value) =>
+									updateNodeDataContent(node, { llm: value })
+								}
+								onToolChange={(changedTool) =>
+									updateNodeDataContent(node, { tools: changedTool })
+								}
+								onWebSearchChange={handleOpenAIWebSearchChange}
+							/>
+						)}
+						{node.content.llm.provider === "google" && (
+							<GoogleModelPanel
+								googleLanguageModel={
+									node.content.llm as GoogleLanguageModelData
+								}
+								onSearchGroundingConfigurationChange={
+									handleGoogleSearchGroundingChange
+								}
+								onUrlContextConfigurationChange={handleGoogleUrlContextChange}
+								onModelChange={(value) =>
+									updateNodeDataContent(node, { llm: value })
+								}
+							/>
+						)}
+						{node.content.llm.provider === "anthropic" && (
+							<AnthropicModelPanel
+								anthropicLanguageModel={
+									node.content.llm as AnthropicLanguageModelData
+								}
+								onModelChange={(value) =>
+									updateNodeDataContent(node, { llm: value })
+								}
+							/>
+						)}
+					</div>
+				</>
+			)}
+			{resolvedSections.promptLabel && (
+				<SettingLabel inline>Prompt</SettingLabel>
+			)}
 		</div>
 	);
 
@@ -279,6 +325,8 @@ export function PromptPanel({ node }: { node: TextGenerationNode }) {
 			</button>
 			{isAdvancedOpen && (
 				<div className="mt-[12px]">
+					{/* Optional upload area slot */}
+					{slots?.uploadArea}
 					<SettingDetail className="mb-[6px]">Tools</SettingDetail>
 					<ToolsPanel node={node} />
 				</div>
@@ -306,7 +354,7 @@ export function PromptPanel({ node }: { node: TextGenerationNode }) {
 				variant="plain"
 				header={header}
 			/>
-			{advancedOptions}
+			{resolvedSections.advancedOptions && advancedOptions}
 		</>
 	);
 }
