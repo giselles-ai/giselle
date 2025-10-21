@@ -68,7 +68,7 @@ export function ModelPicker({
 					type="button"
 					className={clsx(
 						fullWidth ? "w-full" : "w-auto",
-						"flex justify-between items-center rounded-[8px] h-10 text-left text-[14px] shrink-0",
+						"flex justify-between items-center rounded-[8px] h-9 text-left text-[14px] shrink-0",
 						"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
 						"bg-inverse/5 transition-colors hover:bg-inverse/10",
 						"px-[8px]",

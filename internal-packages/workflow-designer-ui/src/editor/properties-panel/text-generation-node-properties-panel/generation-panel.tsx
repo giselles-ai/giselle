@@ -12,21 +12,28 @@ import {
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
 import clsx from "clsx/lite";
-import {
-	ArrowDownIcon,
-	ArrowUpIcon,
-	Maximize2,
-	TimerIcon,
-} from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, Maximize2, TimerIcon } from "lucide-react";
 import { useCallback } from "react";
 import { TextGenerationIcon } from "../../../icons";
 import ClipboardButton from "../../../ui/clipboard-button";
 import { EmptyState } from "../../../ui/empty-state";
 import { GenerationView } from "../../../ui/generation-view";
 
-function Empty(_: { onGenerate?: () => void }) {
+function Empty({
+	onExpand,
+}: { onGenerate?: () => void; onExpand?: () => void }) {
 	return (
 		<div className="relative bg-inverse/10 min-h-[250px] rounded-[8px] flex justify-center items-center text-black-400">
+			{onExpand && (
+				<button
+					type="button"
+					onClick={onExpand}
+					className="absolute top-[8px] right-[8px] size-[24px] rounded-[6px] bg-transparent hover:bg-inverse/10 flex items-center justify-center transition-colors z-10"
+					aria-label="Expand"
+				>
+					<Maximize2 className="size-[14px] text-inverse/100" />
+				</button>
+			)}
 			<EmptyState
 				icon={<TextGenerationIcon width={24} height={24} />}
 				title="Nothing generated yet."
@@ -142,7 +149,7 @@ export function GenerationPanel({
 	}, [onClickGenerateButton]);
 
 	if (currentGeneration === undefined) {
-		return <Empty onGenerate={handleGenerate} />;
+		return <Empty onGenerate={handleGenerate} onExpand={onExpand} />;
 	}
 	return (
 		<div className="relative flex flex-col bg-inverse/10 min-h-[250px] rounded-[8px] py-[8px]">
@@ -153,7 +160,7 @@ export function GenerationPanel({
 					className="absolute top-[8px] right-[8px] size-[24px] rounded-[6px] bg-transparent hover:bg-inverse/10 flex items-center justify-center transition-colors z-10"
 					aria-label="Expand"
 				>
-					<Maximize2 className="size-[14px] text-inverse/100" />
+					<Maximize2 className="size-[14px] text-black-400" />
 				</button>
 			)}
 			<div
