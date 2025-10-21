@@ -1,5 +1,9 @@
 import { ModelPicker } from "@giselle-internal/ui/model-picker";
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
+import {
+	SettingDetail,
+	SettingLabel,
+} from "@giselle-internal/ui/setting-label";
 // unified into ModelPicker
 import type { TextGenerationNode } from "@giselle-sdk/data-type";
 import { type Node, OutputId } from "@giselle-sdk/data-type";
@@ -171,38 +175,47 @@ export function PromptPanel({ node }: { node: TextGenerationNode }) {
 	}
 
 	const header = (
-		<div className="grid grid-cols-2 gap-[8px]">
+		<div className="flex flex-col gap-[8px]">
 			<div className="col-span-2">
-				<div className="text-text text-[12px] mb-[2px]">Model</div>
-				<ModelPicker
-					currentProvider={node.content.llm.provider}
-					currentModelId={node.content.llm.id}
-					groups={[
-						{
-							provider: "openai",
-							label: "OpenAI",
-							models: openaiLanguageModels.map((m) => ({ id: m.id })),
-						},
-						{
-							provider: "anthropic",
-							label: "Anthropic",
-							models: anthropicLanguageModels.map((m) => ({ id: m.id })),
-						},
-						{
-							provider: "google",
-							label: "Google",
-							models: googleLanguageModels.map((m) => ({ id: m.id })),
-						},
-					]}
-					onSelect={(provider, modelId) => {
-						const next = createDefaultModelData(
-							provider as "openai" | "anthropic" | "google",
-						);
-						const updated = updateModelId(next, modelId);
-						updateNodeDataContent(node, { llm: updated, tools: {} });
-					}}
-				/>
+				<div className="flex items-center justify-between gap-[12px]">
+					<label htmlFor="model-picker-trigger" className="sr-only">
+						Model
+					</label>
+					<SettingDetail size="md">Model</SettingDetail>
+					<ModelPicker
+						currentProvider={node.content.llm.provider}
+						currentModelId={node.content.llm.id}
+						groups={[
+							{
+								provider: "openai",
+								label: "OpenAI",
+								models: openaiLanguageModels.map((m) => ({ id: m.id })),
+							},
+							{
+								provider: "anthropic",
+								label: "Anthropic",
+								models: anthropicLanguageModels.map((m) => ({ id: m.id })),
+							},
+							{
+								provider: "google",
+								label: "Google",
+								models: googleLanguageModels.map((m) => ({ id: m.id })),
+							},
+						]}
+						triggerVariant="plain"
+						fullWidth={false}
+						triggerId="model-picker-trigger"
+						onSelect={(provider, modelId) => {
+							const next = createDefaultModelData(
+								provider as "openai" | "anthropic" | "google",
+							);
+							const updated = updateModelId(next, modelId);
+							updateNodeDataContent(node, { llm: updated, tools: {} });
+						}}
+					/>
+				</div>
 			</div>
+			<SettingLabel>Model parameters</SettingLabel>
 			<div className="col-span-2 flex flex-col gap-[12px]">
 				{node.content.llm.provider === "openai" && (
 					<OpenAIModelPanel
@@ -257,7 +270,7 @@ export function PromptPanel({ node }: { node: TextGenerationNode }) {
 					</div>
 				)}
 			</div>
-			<div className="col-span-2 text-text text-[12px]">Prompt</div>
+			<SettingLabel>Prompt</SettingLabel>
 		</div>
 	);
 

@@ -1,4 +1,5 @@
 import { IconBox } from "@giselle-internal/ui/icon-box";
+import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { TextGenerationNode } from "@giselle-sdk/data-type";
 import {
@@ -146,7 +147,7 @@ export function TextGenerationNodePropertiesPanel({
 					<div className="overflow-y-auto flex-1 min-h-0">
 						<TextGenerationTabContent node={node} />
 						<div className="mt-[8px]">
-							<div className="text-text text-[12px] mb-[4px]">Output</div>
+							<SettingLabel>Output</SettingLabel>
 							<GenerationPanel
 								node={node}
 								onClickGenerateButton={generateText}

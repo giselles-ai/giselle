@@ -45,7 +45,7 @@ export function OpenAIModelPanel({
 					<fieldset className="flex flex-col min-w-0">
 						<label
 							htmlFor="reasoningEffort"
-							className="text-text text-[13px] mb-[2px]"
+							className="text-text text-[14px] mb-[2px]"
 						>
 							Reasoning effort
 						</label>
@@ -74,7 +74,7 @@ export function OpenAIModelPanel({
 					<fieldset className="flex flex-col min-w-0">
 						<label
 							htmlFor="verbosity"
-							className="text-text text-[13px] mb-[2px]"
+							className="text-text text-[14px] mb-[2px]"
 						>
 							Verbosity
 						</label>
@@ -102,13 +102,27 @@ export function OpenAIModelPanel({
 				</div>
 			) : (
 				<div>
-					<div className="grid grid-cols-2 gap-[24px]">
+					<div className="grid grid-cols-1 gap-[16px]">
 						<TemperatureSlider
+							labelClassName="text-[14px]"
 							onModelChange={onModelChange}
 							modelData={openaiLanguageModel}
 							parseModelData={OpenAILanguageModelData.parse}
 						/>
 						<TopPSlider
+							labelClassName="text-[14px]"
+							onModelChange={onModelChange}
+							modelData={openaiLanguageModel}
+							parseModelData={OpenAILanguageModelData.parse}
+						/>
+						<FrequencyPenaltySlider
+							labelClassName="text-[14px]"
+							onModelChange={onModelChange}
+							modelData={openaiLanguageModel}
+							parseModelData={OpenAILanguageModelData.parse}
+						/>
+						<PresencePenaltySlider
+							labelClassName="text-[14px]"
 							onModelChange={onModelChange}
 							modelData={openaiLanguageModel}
 							parseModelData={OpenAILanguageModelData.parse}

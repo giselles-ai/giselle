@@ -30,13 +30,15 @@ export function AnthropicModelPanel({
 	return (
 		<div className="flex flex-col gap-[34px]">
 			<div>
-				<div className="grid grid-cols-2 gap-[24px]">
+				<div className="grid grid-cols-1 gap-[16px]">
 					<TemperatureSlider
+						labelClassName="text-[14px]"
 						onModelChange={onModelChange}
 						modelData={anthropicLanguageModel}
 						parseModelData={AnthropicLanguageModelData.parse}
 					/>
 					<TopPSlider
+						labelClassName="text-[14px]"
 						onModelChange={onModelChange}
 						modelData={anthropicLanguageModel}
 						parseModelData={AnthropicLanguageModelData.parse}

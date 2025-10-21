@@ -35,6 +35,12 @@
 			var(--color-text-muted, var(--color-text))
 		) !important;
 	}
+	.bg-secondary {
+		background-color: var(
+			--color-text-secondary,
+			var(--color-text-muted, var(--color-text))
+		) !important;
+	}
 
 	/* Container helper for explanatory copy */
 	.prose-secondary :is(p, li, small, span) {
