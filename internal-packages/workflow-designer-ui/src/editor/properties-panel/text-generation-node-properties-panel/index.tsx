@@ -5,7 +5,7 @@ import {
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
 import { CommandIcon, CornerDownLeft } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { Button } from "../../../ui/button";
@@ -27,13 +27,7 @@ export function TextGenerationNodePropertiesPanel({
 }: {
 	node: TextGenerationNode;
 }) {
-	const {
-		data,
-		updateNodeDataContent,
-		updateNodeData,
-		setUiNodeState,
-		deleteConnection,
-	} = useWorkflowDesigner();
+	const { data, updateNodeData } = useWorkflowDesigner();
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
 			nodeId: node.id,
@@ -42,8 +36,6 @@ export function TextGenerationNodePropertiesPanel({
 	const { all: connectedSources } = useConnectedOutputs(node);
 	const usageLimitsReached = useUsageLimitsReached();
 	const { error } = useToasts();
-
-	const uiState = useMemo(() => data.ui.nodeState[node.id], [data, node.id]);
 
 	useKeyboardShortcuts({
 		onGenerate: () => {
@@ -126,29 +118,14 @@ export function TextGenerationNodePropertiesPanel({
 
 			<PropertiesPanelContent>
 				<PanelGroup direction="vertical" className="flex-1 flex flex-col">
-					<Panel>
-						<PropertiesPanelContent>
-							<TextGenerationTabContent
-								node={node}
-								uiState={uiState}
-								setUiNodeState={setUiNodeState}
-								updateNodeDataContent={updateNodeDataContent}
-								updateNodeData={updateNodeData}
-								data={data}
-								deleteConnection={deleteConnection}
-							/>
-						</PropertiesPanelContent>
+					<Panel className="min-h-0 flex flex-col !overflow-y-auto p-[16px]">
+						<TextGenerationTabContent node={node} />
 					</Panel>
-					<PanelResizeHandle className="h-[12px] flex items-center justify-center cursor-row-resize">
+					<PanelResizeHandle className="h-[12px] flex items-center justify-center cursor-row-resize shrink-0">
 						<ResizeHandle direction="vertical" />
 					</PanelResizeHandle>
-					<Panel>
-						<PropertiesPanelContent>
-							<GenerationPanel
-								node={node}
-								onClickGenerateButton={generateText}
-							/>
-						</PropertiesPanelContent>
+					<Panel className="min-h-0 flex flex-col !overflow-y-auto">
+						<GenerationPanel node={node} onClickGenerateButton={generateText} />
 					</Panel>
 				</PanelGroup>
 			</PropertiesPanelContent>

@@ -44,6 +44,8 @@ export function getHeaderClasses(): string {
 		"flex justify-between items-center",
 		PANEL_SPACING.HEADER.PADDING,
 		PANEL_SPACING.LAYOUT.SHRINK_0,
+		// Keep header fixed while inner content scrolls
+		"sticky top-0 z-10 bg-bg",
 	];
 
 	return baseClasses.join(" ");
@@ -55,8 +57,7 @@ export function getHeaderClasses(): string {
 export function getContentClasses(): string {
 	return [
 		PANEL_SPACING.LAYOUT.FLEX_1,
-		PANEL_SPACING.LAYOUT.FULL_HEIGHT,
 		PANEL_SPACING.LAYOUT.FLEX_COL,
-		PANEL_SPACING.LAYOUT.OVERFLOW_HIDDEN,
+		"min-h-0",
 	].join(" ");
 }

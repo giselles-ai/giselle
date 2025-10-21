@@ -38,7 +38,8 @@
 		"./section-header": "./components/section-header.tsx",
 		"./repo-action-menu": "./components/repo-action-menu.tsx",
 		"./form-field": "./components/form-field.tsx",
-		"./glass-surface": "./components/glass-surface.tsx"
+		"./glass-surface": "./components/glass-surface.tsx",
+		"./prompt-editor": "./components/prompt-editor.tsx"
 	},
 	"dependencies": {
 		"@radix-ui/react-dialog": "1.1.4",

@@ -134,6 +134,8 @@ export function TextEditor({
 	connectedSources,
 	placeholder,
 	header,
+	showToolbar = true,
+	editorClassName,
 }: {
 	value?: string;
 	onValueChange?: (value: string) => void;
@@ -142,6 +144,8 @@ export function TextEditor({
 	connectedSources?: ConnectedSource[];
 	placeholder?: string;
 	header?: ReactNode;
+	showToolbar?: boolean;
+	editorClassName?: string;
 }) {
 	const extensions = useMemo(() => {
 		const mentionExtension = Mention.configure({
@@ -168,7 +172,7 @@ export function TextEditor({
 			<EditorProvider
 				slotBefore={
 					<>
-						<Toolbar tools={tools} />
+						{showToolbar && <Toolbar tools={tools} />}
 						{header && <div className="mb-2">{header}</div>}
 					</>
 				}
@@ -189,8 +193,10 @@ export function TextEditor({
 				immediatelyRender={false}
 				editorProps={{
 					attributes: {
-						class:
+						class: clsx(
 							"prompt-editor border border-inverse rounded-[8px] p-[16px] pb-0 flex-1 box-border overflow-y-auto",
+							editorClassName,
+						),
 					},
 				}}
 			/>
