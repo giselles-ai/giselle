@@ -28,6 +28,7 @@ export function ZustandBridgeProvider({
 	useEffect(() => {
 		let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 		let pendingSaveState: AppStore | null = null;
+		let inFlightSave: Promise<void> | null = null;
 
 		const performSave = async (
 			state: AppStore,
@@ -86,7 +87,21 @@ export function ZustandBridgeProvider({
 			pendingSaveState = null;
 			clearPendingSave();
 			if (!stateToSave) return;
-			void performSave(stateToSave, options);
+			const saveTask = (async () => {
+				if (inFlightSave) {
+					try {
+						await inFlightSave;
+					} catch (error) {
+						console.error("Previous workspace save failed:", error);
+					}
+				}
+				await performSave(stateToSave, options);
+			})();
+			inFlightSave = saveTask.finally(() => {
+				if (inFlightSave === saveTask) {
+					inFlightSave = null;
+				}
+			});
 		};
 
 		const scheduleAutoSave = (state: AppStore) => {
