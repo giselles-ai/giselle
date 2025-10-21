@@ -83,12 +83,14 @@ export function ZustandBridgeProvider({
 		};
 
 		const flushPendingSave = (options?: { keepalive?: boolean }) => {
-			const stateToSave = pendingSaveState;
+			const isKeepalive = options?.keepalive === true;
+			const stateToSave =
+				pendingSaveState ?? (isKeepalive ? useAppStore.getState() : null);
 			pendingSaveState = null;
 			clearPendingSave();
 			if (!stateToSave) return;
 			const saveTask = (async () => {
-				if (inFlightSave) {
+				if (!isKeepalive && inFlightSave) {
 					try {
 						await inFlightSave;
 					} catch (error) {
@@ -97,6 +99,12 @@ export function ZustandBridgeProvider({
 				}
 				await performSave(stateToSave, options);
 			})();
+			if (isKeepalive) {
+				void saveTask.catch((error) => {
+					console.error("Keepalive workspace save failed:", error);
+				});
+				return;
+			}
 			inFlightSave = saveTask;
 			void saveTask.finally(() => {
 				if (inFlightSave === saveTask) {
