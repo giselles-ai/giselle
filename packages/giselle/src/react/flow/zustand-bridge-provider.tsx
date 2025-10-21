@@ -68,7 +68,9 @@ export function ZustandBridgeProvider({
 				clearTimeout(saveTimeout);
 				saveTimeout = null;
 			}
-			if (hasPendingSave) {
+			const pending = hasPendingSave;
+			hasPendingSave = false;
+			if (pending) {
 				void performSave(useAppStore.getState());
 			}
 			unsubscribe();
