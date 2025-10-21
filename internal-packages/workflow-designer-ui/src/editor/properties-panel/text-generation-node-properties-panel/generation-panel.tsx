@@ -12,7 +12,12 @@ import {
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
 import clsx from "clsx/lite";
-import { ArrowDownIcon, ArrowUpIcon, TimerIcon } from "lucide-react";
+import {
+	ArrowDownIcon,
+	ArrowUpIcon,
+	Maximize2,
+	TimerIcon,
+} from "lucide-react";
 import { useCallback } from "react";
 import { TextGenerationIcon } from "../../../icons";
 import ClipboardButton from "../../../ui/clipboard-button";
@@ -118,9 +123,11 @@ function getGenerationModelInfo(generation: Generation): {
 export function GenerationPanel({
 	node,
 	onClickGenerateButton,
+	onExpand,
 }: {
 	node: TextGenerationNode;
 	onClickGenerateButton?: () => void;
+	onExpand?: () => void;
 }) {
 	const { data } = useWorkflowDesigner();
 	const { currentGeneration } = useNodeGenerations({
@@ -139,6 +146,16 @@ export function GenerationPanel({
 	}
 	return (
 		<div className="relative flex flex-col bg-inverse/10 min-h-[250px] rounded-[8px] py-[8px]">
+			{onExpand && (
+				<button
+					type="button"
+					onClick={onExpand}
+					className="absolute top-[8px] right-[8px] size-[24px] rounded-[6px] bg-transparent hover:bg-inverse/10 flex items-center justify-center transition-colors z-10"
+					aria-label="Expand"
+				>
+					<Maximize2 className="size-[14px] text-inverse/100" />
+				</button>
+			)}
 			<div
 				className={clsx(
 					"border-b border-white-400/20 py-[4px] px-[16px] flex items-center gap-[8px]",

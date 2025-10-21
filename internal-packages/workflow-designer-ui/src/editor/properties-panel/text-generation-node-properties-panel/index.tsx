@@ -143,19 +143,22 @@ export function TextGenerationNodePropertiesPanel({
 			/>
 
 			<PropertiesPanelContent>
-				<div className="flex-1 min-h-0">
-					<div className="flex-1 min-h-0">
+				<div className="flex-1 min-h-0 flex flex-col">
+					<div className="flex-1 min-h-0 overflow-y-auto">
 						<TextGenerationTabContent node={node} />
 						<div className="mt-[8px]">
 							<SettingLabel className="mb-[4px]">Output</SettingLabel>
 							<GenerationPanel
 								node={node}
 								onClickGenerateButton={generateText}
+								onExpand={() => {
+									console.log("Expand generation panel");
+								}}
 							/>
 						</div>
 					</div>
 					{currentGeneration === undefined && (
-						<div className="sticky bottom-[16px] z-20 px-[16px]">
+						<div className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-bg via-bg/80 to-transparent">
 							<button
 								type="button"
 								onClick={() => {

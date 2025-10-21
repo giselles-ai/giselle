@@ -353,6 +353,10 @@ export function PromptPanel({
 				showToolbar={false}
 				variant="plain"
 				header={header}
+				showExpandIcon={true}
+				onExpand={() => {
+					console.log("Expand prompt editor");
+				}}
 			/>
 			{resolvedSections.advancedOptions && advancedOptions}
 		</>
