@@ -28,10 +28,10 @@ function Empty({
 				<button
 					type="button"
 					onClick={onExpand}
-					className="absolute top-[8px] right-[8px] size-[24px] rounded-[6px] bg-transparent hover:bg-inverse/10 flex items-center justify-center transition-colors z-10"
+					className="absolute bottom-[8px] right-[8px] size-[24px] rounded-[6px] bg-transparent hover:bg-inverse/10 flex items-center justify-center transition-colors z-10"
 					aria-label="Expand"
 				>
-					<Maximize2 className="size-[14px] text-inverse/100" />
+					<Maximize2 className="size-[14px] text-inverse" />
 				</button>
 			)}
 			<EmptyState
@@ -157,10 +157,10 @@ export function GenerationPanel({
 				<button
 					type="button"
 					onClick={onExpand}
-					className="absolute top-[8px] right-[8px] size-[24px] rounded-[6px] bg-transparent hover:bg-inverse/10 flex items-center justify-center transition-colors z-10"
+					className="absolute bottom-[8px] right-[8px] size-[24px] rounded-[6px] bg-transparent hover:bg-inverse/10 flex items-center justify-center transition-colors z-10"
 					aria-label="Expand"
 				>
-					<Maximize2 className="size-[14px] text-black-400" />
+					<Maximize2 className="size-[14px] text-inverse" />
 				</button>
 			)}
 			<div
