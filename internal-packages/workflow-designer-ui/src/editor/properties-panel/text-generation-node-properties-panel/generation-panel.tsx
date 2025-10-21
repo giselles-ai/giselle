@@ -19,45 +19,15 @@ import ClipboardButton from "../../../ui/clipboard-button";
 import { EmptyState } from "../../../ui/empty-state";
 import { GenerationView } from "../../../ui/generation-view";
 
-function Empty({ onGenerate }: { onGenerate?: () => void }) {
+function Empty(_: { onGenerate?: () => void }) {
 	return (
-		<div className="bg-inverse/10 min-h-[250px] rounded-[8px] flex justify-center items-center text-black-400">
+		<div className="relative bg-inverse/10 min-h-[250px] rounded-[8px] flex justify-center items-center text-black-400">
 			<EmptyState
 				icon={<TextGenerationIcon width={24} height={24} />}
 				title="Nothing generated yet."
 				description="Generate with the current Prompt or adjust the Prompt and the results will be displayed."
 				className="text-black-400"
-			>
-				{onGenerate && (
-					<button
-						type="button"
-						onClick={onGenerate}
-						className="flex items-center justify-center px-[24px] py-[12px] mt-[16px] bg-[#141519] text-white rounded-[9999px] border border-border/15 transition-all hover:bg-[#1e1f26] hover:border-border/25 hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px]"
-					>
-						<span className="mr-[8px] generate-star">✦</span>
-						Generate with the Current Prompt
-					</button>
-				)}
-				<style jsx>{`
-          .generate-star {
-            display: inline-block;
-          }
-          button:hover .generate-star {
-            animation: rotateStar 0.7s ease-in-out;
-          }
-          @keyframes rotateStar {
-            0% {
-              transform: rotate(0deg) scale(1);
-            }
-            50% {
-              transform: rotate(180deg) scale(1.5);
-            }
-            100% {
-              transform: rotate(360deg) scale(1);
-            }
-          }
-        `}</style>
-			</EmptyState>
+			/>
 		</div>
 	);
 }
@@ -168,7 +138,7 @@ export function GenerationPanel({
 		return <Empty onGenerate={handleGenerate} />;
 	}
 	return (
-		<div className="flex flex-col bg-inverse/10 min-h-[250px] rounded-[8px] py-[8px]">
+		<div className="relative flex flex-col bg-inverse/10 min-h-[250px] rounded-[8px] py-[8px]">
 			<div
 				className={clsx(
 					"border-b border-white-400/20 py-[4px] px-[16px] flex items-center gap-[8px]",

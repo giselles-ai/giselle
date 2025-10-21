@@ -17,7 +17,7 @@ export const Switch = ({
 }) => (
 	<div className="flex flex-col">
 		<div className="flex flex-row items-center justify-between">
-			<label className="text-[14px]" htmlFor={name}>
+			<label className="text-[12px]" htmlFor={name}>
 				{label}
 			</label>
 

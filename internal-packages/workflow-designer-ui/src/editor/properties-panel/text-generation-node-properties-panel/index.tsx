@@ -4,10 +4,10 @@ import {
 	useNodeGenerations,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
-import { CommandIcon, CornerDownLeft } from "lucide-react";
+// Removed header Generate button; icons no longer needed
 import { useCallback } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
-import { Button } from "../../../ui/button";
+// import { Button } from "../../../ui/button";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { isPromptEmpty } from "../../lib/validate-prompt";
@@ -26,11 +26,15 @@ export function TextGenerationNodePropertiesPanel({
 	node: TextGenerationNode;
 }) {
 	const { data, updateNodeData } = useWorkflowDesigner();
-	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
-		useNodeGenerations({
-			nodeId: node.id,
-			origin: { type: "studio", workspaceId: data.id },
-		});
+	const {
+		createAndStartGenerationRunner,
+		isGenerating,
+		// stopGenerationRunner,
+		currentGeneration,
+	} = useNodeGenerations({
+		nodeId: node.id,
+		origin: { type: "studio", workspaceId: data.id },
+	});
 	const { all: connectedSources } = useConnectedOutputs(node);
 	const usageLimitsReached = useUsageLimitsReached();
 	const { error } = useToasts();
@@ -85,41 +89,41 @@ export function TextGenerationNodePropertiesPanel({
 				onChangeName={(name) => {
 					updateNodeData(node, { name });
 				}}
-				action={
-					<Button
-						loading={isGenerating}
-						type="button"
-						disabled={usageLimitsReached || isPromptEmpty(node.content.prompt)}
-						onClick={() => {
-							if (isGenerating) {
-								stopGenerationRunner();
-							} else {
-								generateText();
-							}
-						}}
-						className="w-[150px] disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						{isGenerating ? (
-							<span>Stop</span>
-						) : (
-							<>
-								<span>Generate</span>
-								<kbd className="flex items-center text-[12px]">
-									<CommandIcon className="size-[12px]" />
-									<CornerDownLeft className="size-[12px]" />
-								</kbd>
-							</>
-						)}
-					</Button>
-				}
 			/>
 
 			<PropertiesPanelContent>
-				<div className="overflow-y-auto flex-1 min-h-0">
-					<TextGenerationTabContent node={node} />
-					<div className="mt-[8px]">
-						<GenerationPanel node={node} onClickGenerateButton={generateText} />
+				<div className="relative flex-1 min-h-0">
+					<div className="overflow-y-auto flex-1 min-h-0">
+						<TextGenerationTabContent node={node} />
+						<div className="mt-[8px]">
+							<div className="text-text text-[12px] mb-[4px]">Output</div>
+							<GenerationPanel
+								node={node}
+								onClickGenerateButton={generateText}
+							/>
+						</div>
 					</div>
+					{currentGeneration === undefined && (
+						<button
+							type="button"
+							onClick={() => {
+								generateText();
+							}}
+							className="absolute bottom-[16px] left-1/2 -translate-x-1/2 z-20 flex items-center justify-center px-[24px] py-[12px] bg-[#141519] text-white rounded-[9999px] border border-border/15 transition-all hover:bg-[#1e1f26] hover:border-border/25 hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px]"
+						>
+							<span className="mr-[8px] generate-star">✦</span>
+							Generate with the Current Prompt
+							<style jsx>{`
+								.generate-star { display: inline-block; }
+								button:hover .generate-star { animation: rotateStar 0.7s ease-in-out; }
+								@keyframes rotateStar {
+									0% { transform: rotate(0deg) scale(1); }
+									50% { transform: rotate(180deg) scale(1.5); }
+									100% { transform: rotate(360deg) scale(1); }
+								}
+							`}</style>
+						</button>
+					)}
 				</div>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>

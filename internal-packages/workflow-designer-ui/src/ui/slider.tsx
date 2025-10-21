@@ -1,5 +1,6 @@
 import { Slider as SliderPrimitive } from "radix-ui";
 import type { ComponentProps } from "react";
+import { useId } from "react";
 
 interface SliderProps
 	extends Pick<
@@ -11,12 +12,16 @@ interface SliderProps
 	onChange?: (value: number) => void;
 }
 export function Slider(props: SliderProps) {
+	const controlId = useId();
 	return (
 		<div className="flex flex-col">
-			<div className="text-[14px] mb-[8px]">{props.label}</div>
+			<label htmlFor={controlId} className="text-[12px] mb-[2px]">
+				{props.label}
+			</label>
 			<div className="flex items-center gap-[12px]">
 				<SliderPrimitive.Root
 					className="relative flex w-full touch-none select-none items-center flex-1"
+					id={controlId}
 					max={props.max}
 					min={props.min}
 					step={props.step}

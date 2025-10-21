@@ -276,6 +276,7 @@ export function PromptPanel({ node }: { node: TextGenerationNode }) {
 					</div>
 				)}
 			</div>
+			<div className="col-span-2 text-text text-[12px]">Prompt</div>
 		</div>
 	);
 
