@@ -2,13 +2,16 @@
 
 import { AccentLink } from "@giselle-internal/ui/accent-link";
 import { GlassCard } from "@giselle-internal/ui/glass-card";
-import { RepoActionMenu } from "@giselle-internal/ui/repo-action-menu";
+import {
+	type RepoAction,
+	RepoActionMenu,
+} from "@giselle-internal/ui/repo-action-menu";
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import { StatusIndicator } from "@giselle-internal/ui/status-indicator";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
 import * as Dialog from "@radix-ui/react-dialog";
 import { RefreshCw, Settings, Trash } from "lucide-react";
-import { useMemo, useState, useTransition } from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 import type {
 	GitHubRepositoryContentType,
 	githubRepositoryContentStatus,
@@ -69,7 +72,7 @@ export function RepositoryItem({
 	const [isIngesting, startIngestTransition] = useTransition();
 	//
 
-	const handleDelete = () => {
+	const handleDelete = useCallback(() => {
 		startTransition(async () => {
 			try {
 				await deleteRepositoryIndexAction(repositoryIndex.id);
@@ -78,9 +81,9 @@ export function RepositoryItem({
 				console.error(error);
 			}
 		});
-	};
+	}, [deleteRepositoryIndexAction, repositoryIndex.id]);
 
-	const handleManualIngest = () => {
+	const handleManualIngest = useCallback(() => {
 		startIngestTransition(async () => {
 			try {
 				const result = await triggerManualIngestAction(repositoryIndex.id);
@@ -91,7 +94,7 @@ export function RepositoryItem({
 				console.error("Error triggering manual ingest:", error);
 			}
 		});
-	};
+	}, [triggerManualIngestAction, repositoryIndex.id]);
 
 	// Check if manual ingest is allowed for any enabled content type
 	const now = new Date();
@@ -121,10 +124,8 @@ export function RepositoryItem({
 				>
 					{repositoryIndex.owner}/{repositoryIndex.repo}
 				</AccentLink>
-				<RepoActionMenu
-					id={`repo-actions-${repositoryIndex.id}`}
-					disabled={isPending || isIngesting}
-					actions={[
+				{(() => {
+					const actions: RepoAction[] = [
 						{
 							value: "ingest",
 							label: "Ingest Now",
@@ -145,8 +146,15 @@ export function RepositoryItem({
 							destructive: true,
 							onSelect: () => setShowDeleteDialog(true),
 						},
-					]}
-				/>
+					];
+					return (
+						<RepoActionMenu
+							id={`repo-actions-${repositoryIndex.id}`}
+							disabled={isPending}
+							actions={actions}
+						/>
+					);
+				})()}
 			</div>
 			{/* Row 2: Cards grid */}
 			<div className="grid grid-cols-3 gap-3 w-full">

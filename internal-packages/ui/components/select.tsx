@@ -29,6 +29,8 @@ interface SelectProps<T extends SelectOption> {
 	ariaLabel?: string;
 	contentMinWidthClassName?: string;
 	disableHoverBg?: boolean;
+	/** Hide the check icon indicator for selected items (for action menus). */
+	hideItemIndicator?: boolean;
 }
 
 export function Select<T extends SelectOption>({
@@ -50,6 +52,7 @@ export function Select<T extends SelectOption>({
 	ariaLabel,
 	contentMinWidthClassName,
 	disableHoverBg,
+	hideItemIndicator,
 }: SelectProps<T>) {
 	return (
 		<SelectPrimitive.Root
@@ -131,9 +134,11 @@ export function Select<T extends SelectOption>({
 											option.label
 										)}
 									</SelectPrimitive.ItemText>
-									<SelectPrimitive.ItemIndicator>
-										<CheckIcon className="size-[13px]" />
-									</SelectPrimitive.ItemIndicator>
+									{!hideItemIndicator && (
+										<SelectPrimitive.ItemIndicator>
+											<CheckIcon className="size-[13px]" />
+										</SelectPrimitive.ItemIndicator>
+									)}
 								</SelectPrimitive.Item>
 							))}
 						</SelectPrimitive.Viewport>
