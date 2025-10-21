@@ -27,6 +27,8 @@ export function ZustandBridgeProvider({
 	// Subscribe to global store changes for auto-save
 	useEffect(() => {
 		let saveTimeout: ReturnType<typeof setTimeout> | null = null;
+		let pendingSaveState: AppStore | null = null;
+		let shouldSkipPendingSave = false;
 
 		const performSave = async (state: AppStore) => {
 			if (!state.workspace) return;
@@ -40,14 +42,33 @@ export function ZustandBridgeProvider({
 			}
 		};
 
+		const clearPendingSave = () => {
+			if (saveTimeout) {
+				clearTimeout(saveTimeout);
+				saveTimeout = null;
+			}
+		};
+
 		const scheduleAutoSave = (state: AppStore) => {
-			if (state._skipNextSave) return;
+			shouldSkipPendingSave = false;
+			pendingSaveState = state;
 			if (saveTimeout) clearTimeout(saveTimeout);
-			saveTimeout = setTimeout(() => performSave(state), saveWorkflowDelay);
+			saveTimeout = setTimeout(() => {
+				const stateToSave = pendingSaveState;
+				const shouldSkipSave = shouldSkipPendingSave;
+				pendingSaveState = null;
+				saveTimeout = null;
+				shouldSkipPendingSave = false;
+				if (shouldSkipSave || !stateToSave) return;
+				void performSave(stateToSave);
+			}, saveWorkflowDelay);
 		};
 
 		const unsubscribe = useAppStore.subscribe((state, prevState) => {
 			if (state._skipNextSave) {
+				shouldSkipPendingSave = true;
+				pendingSaveState = null;
+				clearPendingSave();
 				useAppStore.setState({ _skipNextSave: false } as Partial<AppStore>);
 				return;
 			}
@@ -55,9 +76,20 @@ export function ZustandBridgeProvider({
 				scheduleAutoSave(state);
 			}
 		});
-
 		return () => {
-			if (saveTimeout) clearTimeout(saveTimeout);
+			const pendingState =
+				pendingSaveState ?? (saveTimeout ? useAppStore.getState() : null);
+			const skipRequested =
+				shouldSkipPendingSave || pendingState?._skipNextSave === true;
+			if (pendingState?._skipNextSave) {
+				useAppStore.setState({ _skipNextSave: false } as Partial<AppStore>);
+			}
+			pendingSaveState = null;
+			shouldSkipPendingSave = false;
+			clearPendingSave();
+			if (!skipRequested && pendingState) {
+				void performSave(pendingState);
+			}
 			unsubscribe();
 		};
 	}, [client, experimental_storage, saveWorkflowDelay]);
