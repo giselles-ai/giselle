@@ -29,13 +29,46 @@ export function ZustandBridgeProvider({
 		let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 		let pendingSaveState: AppStore | null = null;
 
-		const performSave = async (state: AppStore) => {
+		const performSave = async (
+			state: AppStore,
+			options?: { keepalive?: boolean },
+		) => {
 			if (!state.workspace) return;
+			const payload = {
+				workspace: state.workspace,
+				useExperimentalStorage: experimental_storage,
+			};
+			if (options?.keepalive) {
+				try {
+					const serialized = JSON.stringify(payload);
+					const endpoint = `${client.basePath}/updateWorkspace`;
+					if (typeof navigator !== "undefined" && navigator.sendBeacon) {
+						const beaconSent = navigator.sendBeacon(
+							endpoint,
+							new Blob([serialized], { type: "application/json" }),
+						);
+						if (beaconSent) {
+							return;
+						}
+					}
+					if (typeof fetch !== "undefined") {
+						await fetch(endpoint, {
+							method: "POST",
+							headers: { "Content-Type": "application/json" },
+							body: serialized,
+							keepalive: true,
+						});
+						return;
+					}
+				} catch (error) {
+					console.error(
+						"Keepalive workspace save failed, falling back to async save:",
+						error,
+					);
+				}
+			}
 			try {
-				await client.updateWorkspace({
-					workspace: state.workspace,
-					useExperimentalStorage: experimental_storage,
-				});
+				await client.updateWorkspace(payload);
 			} catch (error) {
 				console.error("Failed to persist workspace:", error);
 			}
@@ -48,12 +81,12 @@ export function ZustandBridgeProvider({
 			}
 		};
 
-		const flushPendingSave = () => {
+		const flushPendingSave = (options?: { keepalive?: boolean }) => {
 			const stateToSave = pendingSaveState;
 			pendingSaveState = null;
 			clearPendingSave();
 			if (!stateToSave) return;
-			void performSave(stateToSave);
+			void performSave(stateToSave, options);
 		};
 
 		const scheduleAutoSave = (state: AppStore) => {
@@ -80,14 +113,14 @@ export function ZustandBridgeProvider({
 		});
 
 		const handleBeforeUnload = () => {
-			flushPendingSave();
+			flushPendingSave({ keepalive: true });
 		};
 		const handlePageHide = () => {
-			flushPendingSave();
+			flushPendingSave({ keepalive: true });
 		};
 		const handleVisibilityChange = () => {
 			if (document.visibilityState === "hidden") {
-				flushPendingSave();
+				flushPendingSave({ keepalive: true });
 			}
 		};
 
