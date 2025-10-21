@@ -31,47 +31,69 @@ export function ZustandBridgeProvider({
 		let isSaving = false;
 		let isEffectActive = true;
 
-		function scheduleAutoSave(state: AppStore) {
+		let pendingWorkspace: Workspace | null = null;
+
+		const snapshotWorkspace = (workspace: Workspace | null) => {
+			if (!workspace) return null;
+			if (typeof structuredClone === "function") {
+				return structuredClone(workspace) as Workspace;
+			}
+			return JSON.parse(JSON.stringify(workspace)) as Workspace;
+		};
+
+		const processPendingSave = () => {
+			if (!isEffectActive) return;
+			saveTimeout = null;
+			if (isSaving) {
+				if (!saveTimeout) {
+					saveTimeout = setTimeout(processPendingSave, saveWorkflowDelay);
+				}
+				return;
+			}
+			if (!pendingWorkspace) {
+				hasPendingSave = false;
+				return;
+			}
+			const workspaceToSave = pendingWorkspace;
+			pendingWorkspace = null;
+			hasPendingSave = false;
+			performSave(workspaceToSave);
+		};
+
+		const scheduleAutoSave = (state: AppStore) => {
 			if (!isEffectActive || state._skipNextSave) return;
+			pendingWorkspace = snapshotWorkspace(state.workspace ?? null);
+			if (!pendingWorkspace) return;
 			hasPendingSave = true;
 			if (saveTimeout) clearTimeout(saveTimeout);
-			saveTimeout = setTimeout(() => {
-				if (!isEffectActive) return;
-				saveTimeout = null;
-				if (isSaving) {
-					// Reschedule once the current save completes; delay preserves debounce.
-					const latestState = useAppStore.getState();
-					scheduleAutoSave(latestState);
-					return;
-				}
-				hasPendingSave = false;
-				performSave();
-			}, saveWorkflowDelay);
-		}
+			saveTimeout = setTimeout(processPendingSave, saveWorkflowDelay);
+		};
 
-		async function performSave() {
+		const performSave = async (workspace: Workspace) => {
 			if (isSaving) return;
-			const currentState = useAppStore.getState();
-			if (!currentState.workspace) return;
 			isSaving = true;
-			let shouldRetry = false;
+			let didFail = false;
 			try {
 				await client.updateWorkspace({
-					workspace: currentState.workspace,
+					workspace,
 					useExperimentalStorage: experimental_storage,
 				});
 			} catch (error) {
 				console.error("Failed to persist workspace:", error);
-				hasPendingSave = true;
-				shouldRetry = true;
+				didFail = true;
 			} finally {
 				isSaving = false;
-				if (isEffectActive && shouldRetry && !saveTimeout) {
-					// Retry once after the debounce window if the save failed.
-					scheduleAutoSave(useAppStore.getState());
+				if (isEffectActive) {
+					if (didFail) {
+						pendingWorkspace = snapshotWorkspace(workspace);
+						hasPendingSave = true;
+					}
+					if (hasPendingSave && !saveTimeout) {
+						saveTimeout = setTimeout(processPendingSave, saveWorkflowDelay);
+					}
 				}
 			}
-		}
+		};
 
 		const unsubscribe = useAppStore.subscribe((state, prevState) => {
 			if (state._skipNextSave) {
@@ -89,9 +111,11 @@ export function ZustandBridgeProvider({
 				clearTimeout(saveTimeout);
 				saveTimeout = null;
 			}
-			if (hasPendingSave && !isSaving) {
+			if (hasPendingSave && !isSaving && pendingWorkspace) {
+				const workspaceToSave = pendingWorkspace;
+				pendingWorkspace = null;
 				hasPendingSave = false;
-				performSave();
+				performSave(workspaceToSave);
 			}
 			unsubscribe();
 		};
