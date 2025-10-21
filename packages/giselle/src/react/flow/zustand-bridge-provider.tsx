@@ -30,6 +30,7 @@ export function ZustandBridgeProvider({
 		let hasPendingSave = false;
 
 		const performSave = async (state: AppStore) => {
+			hasPendingSave = false;
 			if (!state.workspace) return;
 			try {
 				await client.updateWorkspace({
@@ -38,8 +39,6 @@ export function ZustandBridgeProvider({
 				});
 			} catch (error) {
 				console.error("Failed to persist workspace:", error);
-			} finally {
-				hasPendingSave = false;
 			}
 		};
 
