@@ -1,4 +1,5 @@
 import { Select } from "@giselle-internal/ui/select";
+import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { OpenAILanguageModelData, type ToolSet } from "@giselle-sdk/data-type";
 import { useUsageLimits } from "@giselle-sdk/giselle/react";
 import {
@@ -42,67 +43,66 @@ export function OpenAIModelPanel({
 		<div className="flex flex-col gap-[8px]">
 			{hasCapability(languageModel, Capability.Reasoning) ? (
 				<div className="grid grid-cols-1 gap-[8px]">
-					<div className="flex w-full items-center justify-between gap-[12px]">
-						<label
-							htmlFor="reasoningEffort"
-							className="text-text text-[14px] shrink-0 w-[120px]"
-						>
-							Reasoning effort
-						</label>
-						<div className="grow min-w-0">
-							<Select
-								id="reasoningEffort"
-								placeholder="Select reasoning effort"
-								value={openaiLanguageModel.configurations.reasoningEffort}
-								onValueChange={(value) => {
-									onModelChange(
-										OpenAILanguageModelData.parse({
-											...openaiLanguageModel,
-											configurations: {
-												...openaiLanguageModel.configurations,
-												reasoningEffort: value,
-											},
-										}),
-									);
-								}}
-								options={["minimal", "low", "medium", "high"].map((v) => ({
-									value: v,
-									label: v,
-								}))}
-							/>
-						</div>
-					</div>
+					<SettingRow
+						label={
+							<label
+								htmlFor="reasoningEffort"
+								className="text-text text-[14px]"
+							>
+								Reasoning effort
+							</label>
+						}
+					>
+						<Select
+							id="reasoningEffort"
+							placeholder="Select reasoning effort"
+							value={openaiLanguageModel.configurations.reasoningEffort}
+							onValueChange={(value) => {
+								onModelChange(
+									OpenAILanguageModelData.parse({
+										...openaiLanguageModel,
+										configurations: {
+											...openaiLanguageModel.configurations,
+											reasoningEffort: value,
+										},
+									}),
+								);
+							}}
+							options={["minimal", "low", "medium", "high"].map((v) => ({
+								value: v,
+								label: v,
+							}))}
+						/>
+					</SettingRow>
 
-					<div className="flex w-full items-center justify-between gap-[12px]">
-						<label
-							htmlFor="verbosity"
-							className="text-text text-[14px] shrink-0 w-[120px]"
-						>
-							Verbosity
-						</label>
-						<div className="grow min-w-0">
-							<Select
-								id="verbosity"
-								placeholder="Select verbosity"
-								value={openaiLanguageModel.configurations.textVerbosity}
-								onValueChange={(value) => {
-									onModelChange(
-										OpenAILanguageModelData.parse({
-											...openaiLanguageModel,
-											configurations: {
-												...openaiLanguageModel.configurations,
-												textVerbosity: value,
-											},
-										}),
-									);
-								}}
-								options={["low", "medium", "high"].map((v) => ({
-									value: v,
-									label: v,
-								}))}
-							/>
-						</div>
-					</div>
+					<SettingRow
+						label={
+							<label htmlFor="verbosity" className="text-text text-[14px]">
+								Verbosity
+							</label>
+						}
+					>
+						<Select
+							id="verbosity"
+							placeholder="Select verbosity"
+							value={openaiLanguageModel.configurations.textVerbosity}
+							onValueChange={(value) => {
+								onModelChange(
+									OpenAILanguageModelData.parse({
+										...openaiLanguageModel,
+										configurations: {
+											...openaiLanguageModel.configurations,
+											textVerbosity: value,
+										},
+									}),
+								);
+							}}
+							options={["low", "medium", "high"].map((v) => ({
+								value: v,
+								label: v,
+							}))}
+						/>
+					</SettingRow>
 				</div>
 			) : (
 				<div>
