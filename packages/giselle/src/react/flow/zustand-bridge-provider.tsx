@@ -133,9 +133,9 @@ export function ZustandBridgeProvider({
 	}, [client]);
 
 	useEffect(() => {
-		const handleBeforeUnload = () => {
+		function handleBeforeUnload() {
 			saveImmediately({ keepalive: true });
-		};
+		}
 
 		window.addEventListener("beforeunload", handleBeforeUnload);
 
