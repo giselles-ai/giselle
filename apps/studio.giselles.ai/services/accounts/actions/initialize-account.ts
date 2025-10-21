@@ -10,6 +10,7 @@ import {
 	teamMemberships,
 	teams,
 	users,
+	workspaces,
 } from "@/drizzle";
 import { isEmailFromRoute06 } from "@/lib/utils";
 import { createTeamId } from "@/services/teams/utils";
@@ -55,8 +56,8 @@ export const initializeAccount = async (
 		});
 
 		// create sample apps
-		const workspaces = await giselleEngine.createSampleWorkspaces(true);
-		for (const workspace of workspaces) {
+		const sampleWorkspaces = await giselleEngine.createSampleWorkspaces(true);
+		for (const workspace of sampleWorkspaces) {
 			const agentId = `agnt_${createId()}` as const;
 			await tx.insert(agents).values({
 				id: agentId,
@@ -64,6 +65,12 @@ export const initializeAccount = async (
 				teamDbId: team.id,
 				creatorDbId: user.dbId,
 				workspaceId: workspace.id,
+			});
+			await tx.insert(workspaces).values({
+				id: workspace.id,
+				name: workspace.name,
+				teamDbId: team.id,
+				creatorDbId: user.dbId,
 			});
 		}
 

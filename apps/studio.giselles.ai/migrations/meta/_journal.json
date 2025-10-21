@@ -365,6 +365,34 @@
 			"when": 1759471300254,
 			"tag": "0051_glossy_nocturne",
 			"breakpoints": true
+		},
+		{
+			"idx": 52,
+			"version": "7",
+			"when": 1760921212407,
+			"tag": "0052_safe_bloodstrike",
+			"breakpoints": true
+		},
+		{
+			"idx": 53,
+			"version": "7",
+			"when": 1760921778568,
+			"tag": "0053_move-data-from-agents-to-workspaces",
+			"breakpoints": true
+		},
+		{
+			"idx": 54,
+			"version": "7",
+			"when": 1760930907155,
+			"tag": "0054_majestic_justin_hammer",
+			"breakpoints": true
+		},
+		{
+			"idx": 55,
+			"version": "7",
+			"when": 1760930966370,
+			"tag": "0055_move-data-from-agents-to-workspaces",
+			"breakpoints": true
 		}
 	]
 }
