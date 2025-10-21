@@ -28,29 +28,50 @@ export function ZustandBridgeProvider({
 	useEffect(() => {
 		let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 		let hasPendingSave = false;
+		let isSaving = false;
+		let isEffectActive = true;
 
-		const performSave = async (state: AppStore) => {
-			if (!state.workspace) return;
+		function scheduleAutoSave(state: AppStore) {
+			if (!isEffectActive || state._skipNextSave) return;
+			hasPendingSave = true;
+			if (saveTimeout) clearTimeout(saveTimeout);
+			saveTimeout = setTimeout(() => {
+				if (!isEffectActive) return;
+				saveTimeout = null;
+				if (isSaving) {
+					// Reschedule once the current save completes; delay preserves debounce.
+					const latestState = useAppStore.getState();
+					scheduleAutoSave(latestState);
+					return;
+				}
+				hasPendingSave = false;
+				performSave();
+			}, saveWorkflowDelay);
+		}
+
+		async function performSave() {
+			if (isSaving) return;
+			const currentState = useAppStore.getState();
+			if (!currentState.workspace) return;
+			isSaving = true;
+			let shouldRetry = false;
 			try {
 				await client.updateWorkspace({
-					workspace: state.workspace,
+					workspace: currentState.workspace,
 					useExperimentalStorage: experimental_storage,
 				});
 			} catch (error) {
 				console.error("Failed to persist workspace:", error);
+				hasPendingSave = true;
+				shouldRetry = true;
+			} finally {
+				isSaving = false;
+				if (isEffectActive && shouldRetry && !saveTimeout) {
+					// Retry once after the debounce window if the save failed.
+					scheduleAutoSave(useAppStore.getState());
+				}
 			}
-		};
-
-		const scheduleAutoSave = (state: AppStore) => {
-			if (state._skipNextSave) return;
-			if (saveTimeout) clearTimeout(saveTimeout);
-			hasPendingSave = true;
-			saveTimeout = setTimeout(() => {
-				saveTimeout = null;
-				hasPendingSave = false;
-				void performSave(state);
-			}, saveWorkflowDelay);
-		};
+		}
 
 		const unsubscribe = useAppStore.subscribe((state, prevState) => {
 			if (state._skipNextSave) {
@@ -63,14 +84,14 @@ export function ZustandBridgeProvider({
 		});
 
 		return () => {
+			isEffectActive = false;
 			if (saveTimeout) {
 				clearTimeout(saveTimeout);
 				saveTimeout = null;
 			}
-			const pending = hasPendingSave;
-			hasPendingSave = false;
-			if (pending) {
-				void performSave(useAppStore.getState());
+			if (hasPendingSave && !isSaving) {
+				hasPendingSave = false;
+				performSave();
 			}
 			unsubscribe();
 		};
