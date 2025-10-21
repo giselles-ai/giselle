@@ -82,11 +82,23 @@ export function ZustandBridgeProvider({
 		const handleBeforeUnload = () => {
 			flushPendingSave();
 		};
+		const handlePageHide = () => {
+			flushPendingSave();
+		};
+		const handleVisibilityChange = () => {
+			if (document.visibilityState === "hidden") {
+				flushPendingSave();
+			}
+		};
 
 		window.addEventListener("beforeunload", handleBeforeUnload);
+		window.addEventListener("pagehide", handlePageHide);
+		document.addEventListener("visibilitychange", handleVisibilityChange);
 
 		return () => {
 			window.removeEventListener("beforeunload", handleBeforeUnload);
+			window.removeEventListener("pagehide", handlePageHide);
+			document.removeEventListener("visibilitychange", handleVisibilityChange);
 			flushPendingSave();
 			unsubscribe();
 		};
