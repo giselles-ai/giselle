@@ -1,5 +1,6 @@
+import { ModelPicker } from "@giselle-internal/ui/model-picker";
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
-import { Select } from "@giselle-internal/ui/select";
+// unified into ModelPicker
 import type { TextGenerationNode } from "@giselle-sdk/data-type";
 import { type Node, OutputId } from "@giselle-sdk/data-type";
 import {
@@ -34,27 +35,9 @@ export function PromptPanel({ node }: { node: TextGenerationNode }) {
 	const { googleUrlContext } = useFeatureFlag();
 	const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
-	const providerOptions = [
-		{ value: "openai", label: "OpenAI" },
-		{ value: "anthropic", label: "Anthropic" },
-		{ value: "google", label: "Google" },
-	];
+	// provider/model selects replaced by ModelPicker
 
-	const modelOptions: Array<{ value: string; label: string }> = (() => {
-		switch (node.content.llm.provider) {
-			case "openai":
-				return openaiLanguageModels.map((m) => ({ value: m.id, label: m.id }));
-			case "anthropic":
-				return anthropicLanguageModels.map((m) => ({
-					value: m.id,
-					label: m.id,
-				}));
-			case "google":
-				return googleLanguageModels.map((m) => ({ value: m.id, label: m.id }));
-			default:
-				return [];
-		}
-	})();
+	// modelOptions removed
 
 	function handleOpenAIWebSearchChange(enable: boolean) {
 		const hasSource = node.outputs.some((o) => o.accessor === "source");
@@ -189,39 +172,37 @@ export function PromptPanel({ node }: { node: TextGenerationNode }) {
 
 	const header = (
 		<div className="grid grid-cols-2 gap-[8px]">
-			<fieldset className="flex flex-col min-w-0">
-				<label htmlFor="provider" className="text-text text-[12px] mb-[2px]">
-					Provider
-				</label>
-				<Select
-					id="provider"
-					placeholder="Select a provider"
-					value={node.content.llm.provider}
-					onValueChange={(provider) => {
-						const valid = provider as "openai" | "anthropic" | "google";
-						const next = createDefaultModelData(valid);
-						updateNodeDataContent(node, { llm: next, tools: {} });
+			<div className="col-span-2">
+				<div className="text-text text-[12px] mb-[2px]">Model</div>
+				<ModelPicker
+					currentProvider={node.content.llm.provider}
+					currentModelId={node.content.llm.id}
+					groups={[
+						{
+							provider: "openai",
+							label: "OpenAI",
+							models: openaiLanguageModels.map((m) => ({ id: m.id })),
+						},
+						{
+							provider: "anthropic",
+							label: "Anthropic",
+							models: anthropicLanguageModels.map((m) => ({ id: m.id })),
+						},
+						{
+							provider: "google",
+							label: "Google",
+							models: googleLanguageModels.map((m) => ({ id: m.id })),
+						},
+					]}
+					onSelect={(provider, modelId) => {
+						const next = createDefaultModelData(
+							provider as "openai" | "anthropic" | "google",
+						);
+						const updated = updateModelId(next, modelId);
+						updateNodeDataContent(node, { llm: updated, tools: {} });
 					}}
-					options={providerOptions}
-					widthClassName="w-full"
 				/>
-			</fieldset>
-			<fieldset className="flex flex-col min-w-0">
-				<label htmlFor="model" className="text-text text-[12px] mb-[2px]">
-					Model
-				</label>
-				<Select
-					id="model"
-					placeholder="Select a model"
-					value={node.content.llm.id}
-					widthClassName="w-full"
-					onValueChange={(modelId) => {
-						const updated = updateModelId(node.content.llm, modelId);
-						updateNodeDataContent(node, { llm: updated });
-					}}
-					options={modelOptions}
-				/>
-			</fieldset>
+			</div>
 			<div className="col-span-2 flex flex-col gap-[12px]">
 				{node.content.llm.provider === "openai" && (
 					<OpenAIModelPanel

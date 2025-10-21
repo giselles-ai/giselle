@@ -40,7 +40,8 @@
 		"./form-field": "./components/form-field.tsx",
 		"./glass-surface": "./components/glass-surface.tsx",
 		"./prompt-editor": "./components/prompt-editor.tsx",
-		"./icon-box": "./components/icon-box.tsx"
+		"./icon-box": "./components/icon-box.tsx",
+		"./model-picker": "./components/model-picker.tsx"
 	},
 	"dependencies": {
 		"@giselle-sdk/text-editor": "workspace:^",
