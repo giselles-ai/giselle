@@ -1,3 +1,4 @@
+import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { GitHubIntegration } from "./github-integration";
 
 export default function TeamIntegrationsPage() {
@@ -12,6 +13,13 @@ export default function TeamIntegrationsPage() {
 				>
 					Integrations
 				</h1>
+				<DocsLink
+					href="https://docs.giselles.ai/en/guides/settings/team/integrations"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					About Integrations
+				</DocsLink>
 			</div>
 			<div className="flex flex-col gap-y-4">
 				<GitHubIntegration />

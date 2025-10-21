@@ -24,7 +24,7 @@ export default async function AccountAuthenticationPage({
 					target="_blank"
 					rel="noopener noreferrer"
 				>
-					About authentication
+					About Authentication
 				</DocsLink>
 			</div>
 			<p className="text-secondary text-[12px] leading-[20.4px] tracking-normal font-geist">
