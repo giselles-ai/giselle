@@ -28,7 +28,6 @@ export function ZustandBridgeProvider({
 	useEffect(() => {
 		let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 		let pendingSaveState: AppStore | null = null;
-		let shouldSkipPendingSave = false;
 
 		const performSave = async (state: AppStore) => {
 			if (!state.workspace) return;
@@ -49,26 +48,29 @@ export function ZustandBridgeProvider({
 			}
 		};
 
+		const flushPendingSave = () => {
+			const stateToSave = pendingSaveState;
+			pendingSaveState = null;
+			clearPendingSave();
+			if (!stateToSave) return;
+			void performSave(stateToSave);
+		};
+
 		const scheduleAutoSave = (state: AppStore) => {
-			shouldSkipPendingSave = false;
 			pendingSaveState = state;
 			if (saveTimeout) clearTimeout(saveTimeout);
 			saveTimeout = setTimeout(() => {
-				const stateToSave = pendingSaveState;
-				const shouldSkipSave = shouldSkipPendingSave;
-				pendingSaveState = null;
-				saveTimeout = null;
-				shouldSkipPendingSave = false;
-				if (shouldSkipSave || !stateToSave) return;
-				void performSave(stateToSave);
+				flushPendingSave();
 			}, saveWorkflowDelay);
 		};
 
 		const unsubscribe = useAppStore.subscribe((state, prevState) => {
 			if (state._skipNextSave) {
-				shouldSkipPendingSave = true;
-				pendingSaveState = null;
-				clearPendingSave();
+				if (pendingSaveState) {
+					flushPendingSave();
+				} else {
+					clearPendingSave();
+				}
 				useAppStore.setState({ _skipNextSave: false } as Partial<AppStore>);
 				return;
 			}
@@ -76,20 +78,16 @@ export function ZustandBridgeProvider({
 				scheduleAutoSave(state);
 			}
 		});
+
+		const handleBeforeUnload = () => {
+			flushPendingSave();
+		};
+
+		window.addEventListener("beforeunload", handleBeforeUnload);
+
 		return () => {
-			const pendingState =
-				pendingSaveState ?? (saveTimeout ? useAppStore.getState() : null);
-			const skipRequested =
-				shouldSkipPendingSave || pendingState?._skipNextSave === true;
-			if (pendingState?._skipNextSave) {
-				useAppStore.setState({ _skipNextSave: false } as Partial<AppStore>);
-			}
-			pendingSaveState = null;
-			shouldSkipPendingSave = false;
-			clearPendingSave();
-			if (!skipRequested && pendingState) {
-				void performSave(pendingState);
-			}
+			window.removeEventListener("beforeunload", handleBeforeUnload);
+			flushPendingSave();
 			unsubscribe();
 		};
 	}, [client, experimental_storage, saveWorkflowDelay]);
