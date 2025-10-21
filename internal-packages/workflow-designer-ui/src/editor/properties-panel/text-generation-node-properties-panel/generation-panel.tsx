@@ -21,7 +21,7 @@ import { GenerationView } from "../../../ui/generation-view";
 
 function Empty({ onGenerate }: { onGenerate?: () => void }) {
 	return (
-		<div className="bg-inverse/10 h-full rounded-[8px] flex justify-center items-center text-black-400">
+		<div className="bg-inverse/10 min-h-[250px] rounded-[8px] flex justify-center items-center text-black-400">
 			<EmptyState
 				icon={<TextGenerationIcon width={24} height={24} />}
 				title="Nothing generated yet."
@@ -168,7 +168,7 @@ export function GenerationPanel({
 		return <Empty onGenerate={handleGenerate} />;
 	}
 	return (
-		<div className="flex flex-col bg-inverse/10 h-full rounded-[8px] py-[8px]">
+		<div className="flex flex-col bg-inverse/10 min-h-[250px] rounded-[8px] py-[8px]">
 			<div
 				className={clsx(
 					"border-b border-white-400/20 py-[4px] px-[16px] flex items-center gap-[8px]",

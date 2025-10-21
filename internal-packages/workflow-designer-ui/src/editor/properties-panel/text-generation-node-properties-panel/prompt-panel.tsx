@@ -297,7 +297,6 @@ export function PromptPanel({ node }: { node: TextGenerationNode }) {
 			showToolbar={false}
 			variant="plain"
 			header={header}
-			containerClassName="!h-auto"
 		/>
 	);
 }

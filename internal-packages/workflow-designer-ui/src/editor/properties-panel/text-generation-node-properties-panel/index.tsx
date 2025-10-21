@@ -6,7 +6,6 @@ import {
 } from "@giselle-sdk/giselle/react";
 import { CommandIcon, CornerDownLeft } from "lucide-react";
 import { useCallback } from "react";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { Button } from "../../../ui/button";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
@@ -16,7 +15,6 @@ import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
-	ResizeHandle,
 } from "../ui";
 import { GenerationPanel } from "./generation-panel";
 import { useConnectedOutputs } from "./outputs";
@@ -117,17 +115,12 @@ export function TextGenerationNodePropertiesPanel({
 			/>
 
 			<PropertiesPanelContent>
-				<PanelGroup direction="vertical" className="flex-1 flex flex-col">
-					<Panel className="min-h-0 flex flex-col !overflow-y-auto p-[16px]">
-						<TextGenerationTabContent node={node} />
-					</Panel>
-					<PanelResizeHandle className="h-[12px] flex items-center justify-center cursor-row-resize shrink-0">
-						<ResizeHandle direction="vertical" />
-					</PanelResizeHandle>
-					<Panel className="min-h-0 flex flex-col !overflow-y-auto">
+				<div className="overflow-y-auto flex-1 min-h-0">
+					<TextGenerationTabContent node={node} />
+					<div className="mt-[8px]">
 						<GenerationPanel node={node} onClickGenerateButton={generateText} />
-					</Panel>
-				</PanelGroup>
+					</div>
+				</div>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);

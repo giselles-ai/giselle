@@ -41,7 +41,7 @@ export function PromptEditor({
 	return (
 		<div
 			className={clsx(
-				"flex flex-col w-full h-full",
+				"flex flex-col w-full min-h-0",
 				variantClass,
 				containerClassName,
 			)}
@@ -54,7 +54,7 @@ export function PromptEditor({
 				placeholder={placeholder}
 				header={header}
 				showToolbar={showToolbar}
-				editorClassName="bg-inverse/10 border-none !pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px] rounded-[8px]"
+				editorClassName="bg-inverse/10 border-none !pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px] rounded-[8px] min-h-[120px]"
 			/>
 			{footer ? (
 				<div className={clsx("mt-2", editorClassName)}>{footer}</div>

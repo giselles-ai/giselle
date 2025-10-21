@@ -703,6 +703,9 @@ importers:
 
   internal-packages/ui:
     dependencies:
+      '@giselle-sdk/text-editor':
+        specifier: workspace:^
+        version: link:../../packages/text-editor
       '@radix-ui/react-dialog':
         specifier: 1.1.4
         version: 1.1.4(@types/react-dom@19.1.7(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)

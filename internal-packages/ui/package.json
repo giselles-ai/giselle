@@ -42,6 +42,7 @@
 		"./prompt-editor": "./components/prompt-editor.tsx"
 	},
 	"dependencies": {
+		"@giselle-sdk/text-editor": "workspace:^",
 		"@radix-ui/react-dialog": "1.1.4",
 		"clsx": "catalog:",
 		"lucide-react": "catalog:",
