@@ -43,6 +43,19 @@ const githubCreatePullRequestCommentAction = {
 	},
 } as const satisfies GitHubActionBase;
 
+const githubUpdatePullRequestAction = {
+	provider,
+	command: {
+		id: "github.update.pullRequest",
+		label: "Update Pull Request",
+		parameters: z.object({
+			pullNumber: z.coerce.number(),
+			title: z.string(),
+			body: z.string(),
+		}),
+	},
+} as const satisfies GitHubActionBase;
+
 const githubReplyPullRequestReviewCommentAction = {
 	provider,
 	command: {
@@ -85,6 +98,7 @@ export const actions = {
 	[githubCreateIssueCommentAction.command.id]: githubCreateIssueCommentAction,
 	[githubCreatePullRequestCommentAction.command.id]:
 		githubCreatePullRequestCommentAction,
+	[githubUpdatePullRequestAction.command.id]: githubUpdatePullRequestAction,
 	[githubReplyPullRequestReviewCommentAction.command.id]:
 		githubReplyPullRequestReviewCommentAction,
 	[githubGetDiscussionAction.command.id]: githubGetDiscussionAction,
@@ -96,6 +110,7 @@ export type GitHubAction =
 	| typeof githubCreateIssueAction
 	| typeof githubCreateIssueCommentAction
 	| typeof githubCreatePullRequestCommentAction
+	| typeof githubUpdatePullRequestAction
 	| typeof githubReplyPullRequestReviewCommentAction
 	| typeof githubGetDiscussionAction
 	| typeof githubCreateDiscussionCommentAction;
@@ -110,6 +125,8 @@ export function actionIdToLabel(triggerId: ActionCommandId) {
 			return githubCreateIssueCommentAction.command.label;
 		case "github.create.pullRequestComment":
 			return githubCreatePullRequestCommentAction.command.label;
+		case "github.update.pullRequest":
+			return githubUpdatePullRequestAction.command.label;
 		case "github.reply.pullRequestReviewComment":
 			return githubReplyPullRequestReviewCommentAction.command.label;
 		case "github.get.discussion":
