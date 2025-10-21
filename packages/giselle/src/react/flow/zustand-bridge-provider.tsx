@@ -1,7 +1,10 @@
 import type { FileData, Workspace } from "@giselle-sdk/data-type";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useFeatureFlag } from "../feature-flags";
-import { useGiselleEngine } from "../use-giselle-engine";
+import {
+	type GiselleRequestOptions,
+	useGiselleEngine,
+} from "../use-giselle-engine";
 import { WorkflowDesignerContext } from "./context";
 import { type AppStore, isSupportedConnection, useAppStore } from "./hooks";
 import type { WorkflowDesignerContextValue } from "./types";
@@ -28,13 +31,16 @@ function useWorkspaceAutoSave({
 	}, []);
 
 	const performSave = useCallback(
-		async (state: AppStore) => {
+		async (state: AppStore, requestOptions?: GiselleRequestOptions) => {
 			if (!state.workspace) return;
 			try {
-				await client.updateWorkspace({
-					workspace: state.workspace,
-					useExperimentalStorage: experimentalStorage,
-				});
+				await client.updateWorkspace(
+					{
+						workspace: state.workspace,
+						useExperimentalStorage: experimentalStorage,
+					},
+					requestOptions,
+				);
 			} catch (error) {
 				console.error("Failed to persist workspace:", error);
 			}
@@ -70,12 +76,15 @@ function useWorkspaceAutoSave({
 		};
 	}, [clearScheduledSave, scheduleAutoSave]);
 
-	const saveImmediately = useCallback(async () => {
-		const currentState = useAppStore.getState();
-		if (!currentState.workspace) return;
-		clearScheduledSave();
-		await performSave(currentState);
-	}, [clearScheduledSave, performSave]);
+	const saveImmediately = useCallback(
+		async (requestOptions?: GiselleRequestOptions) => {
+			const currentState = useAppStore.getState();
+			if (!currentState.workspace) return;
+			clearScheduledSave();
+			await performSave(currentState, requestOptions);
+		},
+		[clearScheduledSave, performSave],
+	);
 
 	return { saveImmediately };
 }
@@ -122,6 +131,18 @@ export function ZustandBridgeProvider({
 		};
 		loadProviders();
 	}, [client]);
+
+	useEffect(() => {
+		const handleBeforeUnload = () => {
+			saveImmediately({ keepalive: true });
+		};
+
+		window.addEventListener("beforeunload", handleBeforeUnload);
+
+		return () => {
+			window.removeEventListener("beforeunload", handleBeforeUnload);
+		};
+	}, [saveImmediately]);
 
 	// Get current state
 	const state = useAppStore();
