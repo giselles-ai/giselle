@@ -114,11 +114,7 @@ export function ZustandBridgeProvider({
 
 		const unsubscribe = useAppStore.subscribe((state, prevState) => {
 			if (state._skipNextSave) {
-				if (pendingSaveState) {
-					flushPendingSave();
-				} else {
-					clearPendingSave();
-				}
+				flushPendingSave();
 				useAppStore.setState({ _skipNextSave: false } as Partial<AppStore>);
 				return;
 			}
