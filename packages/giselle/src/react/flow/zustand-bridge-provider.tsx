@@ -30,7 +30,6 @@ export function ZustandBridgeProvider({
 		let hasPendingSave = false;
 
 		const performSave = async (state: AppStore) => {
-			hasPendingSave = false;
 			if (!state.workspace) return;
 			try {
 				await client.updateWorkspace({
@@ -48,6 +47,7 @@ export function ZustandBridgeProvider({
 			hasPendingSave = true;
 			saveTimeout = setTimeout(() => {
 				saveTimeout = null;
+				hasPendingSave = false;
 				void performSave(state);
 			}, saveWorkflowDelay);
 		};
