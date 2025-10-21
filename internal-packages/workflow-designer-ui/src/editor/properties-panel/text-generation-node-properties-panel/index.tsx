@@ -147,7 +147,7 @@ export function TextGenerationNodePropertiesPanel({
 					<div className="overflow-y-auto flex-1 min-h-0">
 						<TextGenerationTabContent node={node} />
 						<div className="mt-[8px]">
-							<SettingLabel>Output</SettingLabel>
+							<SettingLabel className="mb-[4px]">Output</SettingLabel>
 							<GenerationPanel
 								node={node}
 								onClickGenerateButton={generateText}
@@ -160,7 +160,7 @@ export function TextGenerationNodePropertiesPanel({
 							onClick={() => {
 								generateText();
 							}}
-							className="absolute bottom-[16px] left-1/2 -translate-x-1/2 z-20 flex items-center justify-center px-[24px] py-[12px] bg-[#141519] text-white rounded-[9999px] border border-border/15 transition-all hover:bg-[#1e1f26] hover:border-border/25 hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px]"
+							className="absolute bottom-[16px] left-1/2 -translate-x-1/2 z-20 flex items-center justify-center px-[24px] py-[12px] bg-[#141519] text-white rounded-[9999px] border border-border/15 transition-all hover:bg-[#1e1f26] hover:border-border/25 hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px] whitespace-nowrap"
 						>
 							<span className="mr-[8px] generate-star">✦</span>
 							Generate with the Current Prompt

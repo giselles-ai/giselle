@@ -25,7 +25,7 @@ function Empty(_: { onGenerate?: () => void }) {
 			<EmptyState
 				icon={<TextGenerationIcon width={24} height={24} />}
 				title="Nothing generated yet."
-				description="Generate with the current Prompt or adjust the Prompt and the results will be displayed."
+				description="Generate or adjust the Prompt to see results."
 				className="text-black-400"
 			/>
 		</div>
