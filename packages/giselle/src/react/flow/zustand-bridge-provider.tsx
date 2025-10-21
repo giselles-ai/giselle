@@ -53,13 +53,15 @@ export function ZustandBridgeProvider({
 						}
 					}
 					if (typeof fetch !== "undefined") {
-						await fetch(endpoint, {
+						const response = await fetch(endpoint, {
 							method: "POST",
 							headers: { "Content-Type": "application/json" },
 							body: serialized,
 							keepalive: true,
 						});
-						return;
+						if (response.ok) {
+							return;
+						}
 					}
 				} catch (error) {
 					console.error(
