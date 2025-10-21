@@ -97,7 +97,8 @@ export function ZustandBridgeProvider({
 				}
 				await performSave(stateToSave, options);
 			})();
-			inFlightSave = saveTask.finally(() => {
+			inFlightSave = saveTask;
+			void saveTask.finally(() => {
 				if (inFlightSave === saveTask) {
 					inFlightSave = null;
 				}
