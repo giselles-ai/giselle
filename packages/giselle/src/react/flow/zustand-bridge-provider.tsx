@@ -27,6 +27,7 @@ export function ZustandBridgeProvider({
 	// Subscribe to global store changes for auto-save
 	useEffect(() => {
 		let saveTimeout: ReturnType<typeof setTimeout> | null = null;
+		let hasPendingSave = false;
 
 		const performSave = async (state: AppStore) => {
 			if (!state.workspace) return;
@@ -37,13 +38,19 @@ export function ZustandBridgeProvider({
 				});
 			} catch (error) {
 				console.error("Failed to persist workspace:", error);
+			} finally {
+				hasPendingSave = false;
 			}
 		};
 
 		const scheduleAutoSave = (state: AppStore) => {
 			if (state._skipNextSave) return;
 			if (saveTimeout) clearTimeout(saveTimeout);
-			saveTimeout = setTimeout(() => performSave(state), saveWorkflowDelay);
+			hasPendingSave = true;
+			saveTimeout = setTimeout(() => {
+				saveTimeout = null;
+				void performSave(state);
+			}, saveWorkflowDelay);
 		};
 
 		const unsubscribe = useAppStore.subscribe((state, prevState) => {
@@ -57,7 +64,13 @@ export function ZustandBridgeProvider({
 		});
 
 		return () => {
-			if (saveTimeout) clearTimeout(saveTimeout);
+			if (saveTimeout) {
+				clearTimeout(saveTimeout);
+				saveTimeout = null;
+			}
+			if (hasPendingSave) {
+				void performSave(useAppStore.getState());
+			}
 			unsubscribe();
 		};
 	}, [client, experimental_storage, saveWorkflowDelay]);
