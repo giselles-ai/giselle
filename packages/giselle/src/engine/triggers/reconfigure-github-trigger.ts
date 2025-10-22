@@ -34,6 +34,14 @@ export async function reconfigureGitHubTrigger(args: {
 		throw new Error("Only GitHub triggers are supported for updates");
 	}
 
+	const currentEvent = currentTrigger.configuration.event;
+	const requestedEvent = args.event ?? currentEvent;
+	if (requestedEvent.id !== currentEvent.id) {
+		throw new Error(
+			`Changing GitHub trigger event type is not supported (${currentEvent.id} → ${requestedEvent.id})`,
+		);
+	}
+
 	const oldRepositoryNodeId = currentTrigger.configuration.repositoryNodeId;
 	const newRepositoryNodeId = args.repositoryNodeId;
 	if (oldRepositoryNodeId !== newRepositoryNodeId) {
@@ -61,7 +69,7 @@ export async function reconfigureGitHubTrigger(args: {
 			provider: "github",
 			repositoryNodeId: newRepositoryNodeId,
 			installationId: args.installationId,
-			event: args.event ?? currentTrigger.configuration.event,
+			event: requestedEvent,
 		},
 	} satisfies FlowTrigger;
 	await setFlowTrigger({
