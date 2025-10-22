@@ -33,6 +33,41 @@ import { DocumentNodeInfo, GitHubNodeInfo } from "./ui";
 import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
 import { useCurrentNodeGeneration } from "./use-current-node-generation";
 
+function getInputHandleContentType(
+	node: NodeLike,
+): Parameters<typeof NodeHandleDot>[0]["contentType"] {
+	switch (node.content.type) {
+		case "textGeneration":
+		case "imageGeneration":
+		case "github":
+		case "text":
+		case "file":
+		case "webPage":
+		case "webSearch":
+		case "audioGeneration":
+		case "videoGeneration":
+		case "trigger":
+		case "action":
+		case "query":
+			return node.content.type;
+		case "vectorStore": {
+			if (!isVectorStoreNode(node)) {
+				return "text";
+			}
+			const provider = node.content.source.provider;
+			if (provider === "github") {
+				return "vectorStoreGithub";
+			}
+			if (provider === "githubPullRequest") {
+				return "vectorStoreGithubPullRequest";
+			}
+			return "text";
+		}
+		default:
+			return "text";
+	}
+}
+
 // Helper function to get completion label from node LLM provider
 function getCompletionLabel(node: NodeLike): string {
 	if (isTextGenerationNode(node) || isImageGenerationNode(node)) {
@@ -156,6 +191,7 @@ export function NodeComponent({
 	}, [node]);
 
 	const requiresSetup = nodeRequiresSetup(node);
+	const inputHandleContentType = getInputHandleContentType(node);
 
 	return (
 		<div
@@ -391,12 +427,7 @@ export function NodeComponent({
 											position={Position.Left}
 											isConnected={isInConnected}
 											isConnectable={false}
-											contentType={
-												(isTextGenerationNode(node) && "textGeneration") ||
-												(isImageGenerationNode(node) && "imageGeneration") ||
-												(node.content.type === "query" && "query") ||
-												"text"
-											}
+											contentType={inputHandleContentType}
 											id={input.id}
 										/>
 										<NodeInputLabel
