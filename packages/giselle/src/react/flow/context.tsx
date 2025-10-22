@@ -47,7 +47,7 @@ export function WorkflowDesignerProvider({
 }) {
 	const client = useGiselleEngine();
 	const { experimental_storage } = useFeatureFlag();
-	const { workspace, dispatch } = useWorkspaceReducer(
+	const { workspace, dispatch, saveWorkspace } = useWorkspaceReducer(
 		data,
 		async (ws) => {
 			try {
@@ -180,6 +180,7 @@ export function WorkflowDesignerProvider({
 				removeFile,
 				llmProviders,
 				isLoading,
+				saveWorkspace,
 				setUiViewport,
 				updateName,
 				isSupportedConnection: isSupportedConnectionCb,

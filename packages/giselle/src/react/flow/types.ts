@@ -55,6 +55,7 @@ export interface WorkflowDesignerContextValue {
 	removeFile: (file: FileData) => Promise<void>;
 	llmProviders: LanguageModelProvider[];
 	isLoading: boolean;
+	saveWorkspace: () => Promise<void>;
 	isSupportedConnection: (
 		outputNode: NodeLike,
 		inputNode: NodeLike,

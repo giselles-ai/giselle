@@ -151,15 +151,25 @@ export function useWorkspaceReducer(
 	const [state, dispatch] = useReducer(workspaceReducer, initialState);
 	const persistTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const skipNextSaveRef = useRef(false);
+	const latestStateRef = useRef(state);
+
+	useEffect(() => {
+		latestStateRef.current = state;
+	}, [state]);
+
+	const clearScheduledSave = useCallback(() => {
+		if (!persistTimeoutRef.current) return;
+		clearTimeout(persistTimeoutRef.current);
+		persistTimeoutRef.current = null;
+	}, []);
 
 	const scheduleSave = useCallback(() => {
-		if (persistTimeoutRef.current) {
-			clearTimeout(persistTimeoutRef.current);
-		}
+		clearScheduledSave();
 		persistTimeoutRef.current = setTimeout(() => {
-			void save(state);
+			persistTimeoutRef.current = null;
+			void save(latestStateRef.current);
 		}, saveDelay);
-	}, [saveDelay, save, state]);
+	}, [clearScheduledSave, save, saveDelay]);
 
 	useEffect(() => {
 		if (skipNextSaveRef.current) {
@@ -168,6 +178,13 @@ export function useWorkspaceReducer(
 		}
 		scheduleSave();
 	}, [scheduleSave]);
+
+	useEffect(
+		() => () => {
+			clearScheduledSave();
+		},
+		[clearScheduledSave],
+	);
 
 	const enhancedDispatch = useCallback(
 		(action: WorkspaceAction & { skipSave?: boolean }) => {
@@ -179,5 +196,14 @@ export function useWorkspaceReducer(
 		[],
 	);
 
-	return { workspace: state, dispatch: enhancedDispatch } as const;
+	const saveImmediately = useCallback(async () => {
+		clearScheduledSave();
+		await save(latestStateRef.current);
+	}, [clearScheduledSave, save]);
+
+	return {
+		workspace: state,
+		dispatch: enhancedDispatch,
+		saveWorkspace: saveImmediately,
+	} as const;
 }

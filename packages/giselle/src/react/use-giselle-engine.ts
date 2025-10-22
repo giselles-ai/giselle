@@ -15,6 +15,11 @@ type FetchOptions = {
 	basePath?: string;
 };
 
+export type GiselleRequestOptions = {
+	signal?: AbortSignal;
+	keepalive?: boolean;
+};
+
 /**
  * Converts JSON object to FormData
  */
@@ -55,7 +60,7 @@ export type GiselleEngineClient = {
 		? JsonRouterInput[K] extends z.ZodType<unknown>
 			? (
 					input: z.infer<JsonRouterInput[K]>,
-					options?: { signal?: AbortSignal },
+					options?: GiselleRequestOptions,
 				) => Promise<
 					ExtractResponseData<Awaited<ReturnType<JsonRouterHandlers[K]>>>
 				>
@@ -92,7 +97,7 @@ export function useGiselleEngine(options?: FetchOptions): GiselleEngineClient {
 			path: string,
 			input?: unknown,
 			isFormData = false,
-			options?: { signal?: AbortSignal },
+			options?: GiselleRequestOptions,
 		) => {
 			const response = await fetch(`${basePath}/${path}`, {
 				method: "POST",
@@ -105,6 +110,7 @@ export function useGiselleEngine(options?: FetchOptions): GiselleEngineClient {
 						? JSON.stringify(input)
 						: undefined,
 				signal: options?.signal,
+				keepalive: options?.keepalive,
 			});
 
 			if (!response.ok) {
@@ -152,7 +158,7 @@ export function useGiselleEngine(options?: FetchOptions): GiselleEngineClient {
 						// of the API design (there's only "uploadFile" that uses FormData)
 						const isFormData = prop === "uploadFile";
 
-						return (input?: unknown, options?: { signal?: AbortSignal }) =>
+						return (input?: unknown, options?: GiselleRequestOptions) =>
 							makeRequest(prop, input, isFormData, options);
 					}
 
