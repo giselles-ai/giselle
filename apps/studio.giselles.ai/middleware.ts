@@ -1,5 +1,6 @@
 import { get } from "@vercel/edge-config";
 import { NextResponse } from "next/server";
+import { logger } from "./lib/logger";
 import { supabaseMiddleware } from "./lib/supabase";
 
 export default supabaseMiddleware(async (user, request) => {
@@ -10,7 +11,10 @@ export default supabaseMiddleware(async (user, request) => {
 		// Rewrite to the url
 		return NextResponse.rewrite(request.nextUrl);
 	}
+	const requestId = request.headers.get("x-vercel-id");
+	logger.debug({ requestId }, "next started");
 	if (user == null) {
+		logger.debug({ requestId }, "redirect");
 		// no user, potentially respond by redirecting the user to the login page
 		const url = request.nextUrl.clone();
 		const returnUrl = request.nextUrl.pathname + request.nextUrl.search;

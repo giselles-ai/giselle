@@ -1,5 +1,6 @@
 import type { User } from "@supabase/auth-js";
 import { type NextRequest, NextResponse } from "next/server";
+import { logger } from "../logger";
 import { createServerClient } from "./create-server-client";
 
 export const supabaseMiddleware = (
@@ -9,6 +10,8 @@ export const supabaseMiddleware = (
 	) => Promise<NextResponse | undefined>,
 ) => {
 	return async (request: NextRequest) => {
+		const requestId = request.headers.get("x-vercel-id");
+		logger.debug({ requestId }, "supabaseMiddleware");
 		// Dev safeguard: If Supabase env vars are not set locally, skip auth wiring
 		if (
 			!process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -26,6 +29,7 @@ export const supabaseMiddleware = (
 		let supabaseResponse = NextResponse.next({
 			request,
 		});
+		logger.debug({ requestId }, "next finished");
 		const supabase = createServerClient({
 			cookies: {
 				getAll() {
@@ -53,6 +57,7 @@ export const supabaseMiddleware = (
 			data: { user },
 		} = await supabase.auth.getUser();
 		const response = guardCallback?.(user, request);
+		logger.debug({ requestId, response }, "check");
 		if (response != null) {
 			return response;
 		}
