@@ -3,7 +3,7 @@
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState, useCallback } from "react";
-import { useFormState } from "react-dom";
+import { useFormStatus } from "react-dom";
 import { GlassButton } from "@/components/ui/glass-button";
 
 type CreateWorkspaceState = {
@@ -38,7 +38,7 @@ export function CreateWorkspaceButton() {
 		[router],
 	);
 
-	const [state, formAction] = useFormState(createWorkspace, initialState);
+	const [state, formAction] = useActionState(createWorkspace, initialState);
 
 	return (
 		<form action={formAction} className="flex flex-col items-start gap-2">
@@ -53,7 +53,7 @@ export function CreateWorkspaceButton() {
 }
 
 function CreateWorkspaceSubmitButton() {
-	const { pending } = useActionState();
+	const { pending } = useFormStatus();
 
 	return (
 		<GlassButton
