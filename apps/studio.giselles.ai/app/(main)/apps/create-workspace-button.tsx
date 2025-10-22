@@ -2,8 +2,8 @@
 
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useCallback } from "react";
+import { useFormState } from "react-dom";
 import { GlassButton } from "@/components/ui/glass-button";
 
 type CreateWorkspaceState = {
@@ -53,7 +53,7 @@ export function CreateWorkspaceButton() {
 }
 
 function CreateWorkspaceSubmitButton() {
-	const { pending } = useFormStatus();
+	const { pending } = useActionState();
 
 	return (
 		<GlassButton
