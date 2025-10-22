@@ -69,6 +69,7 @@ export function EditableText({
 					"hover:bg-bg-900/20",
 					"text-inverse text-[14px]",
 					"cursor-default",
+					"!border-0",
 				)}
 				data-button
 				data-editing={edit}

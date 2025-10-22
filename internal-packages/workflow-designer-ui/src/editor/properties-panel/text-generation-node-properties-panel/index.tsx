@@ -168,6 +168,10 @@ export function TextGenerationNodePropertiesPanel({
 							>
 								<span className="mr-[8px] generate-star">✦</span>
 								Generate with the Current Prompt
+								<span className="ml-[8px] flex items-center gap-[2px] text-[11px] text-white/40">
+									<kbd className="px-[4px] py-[1px] bg-white/10 rounded-[4px]">⌘</kbd>
+									<kbd className="px-[4px] py-[1px] bg-white/10 rounded-[4px]">↵</kbd>
+								</span>
 								<style jsx>{`
 									.generate-star { display: inline-block; }
 									button:hover .generate-star { animation: rotateStar 0.7s ease-in-out; }

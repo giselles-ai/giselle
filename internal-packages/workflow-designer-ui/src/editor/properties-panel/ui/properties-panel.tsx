@@ -125,7 +125,7 @@ export function PropertiesPanelHeader({
 				</div>
 				<div className="flex-1 min-w-0">
 					<EditableText
-						className="block w-full bg-inverse/10 border-none !pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px] rounded-[8px]"
+						className="block w-full bg-inverse/10 !border-none !pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px] rounded-[8px]"
 						onValueChange={(value) => {
 							if (value === defaultName(node)) {
 								return;

@@ -55,8 +55,8 @@ export function PromptEditor({
 				<TextEditor
 					value={value}
 					onValueChange={onValueChange}
-					nodes={nodes as any}
-					connectedSources={connectedSources as any}
+					nodes={nodes}
+					connectedSources={connectedSources}
 					placeholder={placeholder}
 					header={header}
 					showToolbar={showToolbar}

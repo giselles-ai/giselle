@@ -92,7 +92,7 @@ export const EditableText = forwardRef<
 				className={clsx(
 					"rounded-[8px] data-[editing=true]:hidden text-left",
 					"hover:bg-bg-900/20 group-hover:bg-bg-900/10",
-					"bg-inverse/5 border border-inverse/20 !pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px]",
+					"bg-inverse/5 !pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px]",
 					"data-[size=medium]:text-[14px] data-[size=large]:text-[16px]",
 					"cursor-default w-full overflow-hidden text-ellipsis whitespace-nowrap",
 					!className && "text-inverse",
