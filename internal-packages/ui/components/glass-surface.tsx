@@ -66,7 +66,7 @@ export function GlassSurfaceLayers({
 
 	const borderToneToClass: Record<BorderTone, string> = {
 		default: "border-border",
-		destructive: "border-error-900/15",
+		destructive: "border-error-900",
 		muted: "border-border-muted",
 	};
 
@@ -126,7 +126,7 @@ export function GlassSurfaceLayers({
 						"absolute inset-0",
 						zIndexClass,
 						radiusClass,
-						"border-[0.5px] border-error-900/15",
+						"border-[0.5px] border-error-900",
 					)}
 				/>
 			) : borderStyle === "solid" ? (
