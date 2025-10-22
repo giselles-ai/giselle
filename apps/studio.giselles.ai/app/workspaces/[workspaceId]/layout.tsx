@@ -3,6 +3,7 @@ import {
 	WorkspaceProvider,
 	ZustandBridgeProvider,
 } from "@giselle-sdk/giselle/react";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { giselleEngine } from "@/app/giselle-engine";
@@ -17,6 +18,7 @@ import {
 	stageFlag,
 	webSearchActionFlag,
 } from "@/flags";
+import { logger } from "@/lib/logger";
 import { getDocumentVectorStores } from "@/lib/vector-stores/document/queries";
 import { getGitHubRepositoryIndexes } from "@/lib/vector-stores/github";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
@@ -41,15 +43,20 @@ export default async function Layout({
 		(await params).workspaceId,
 	);
 	if (!success) {
+		logger.debug({ workspaceId }, "WorkspaceId validation failed");
 		return notFound();
 	}
+	const headerList = await headers();
+	const requestId = headerList.get("x-vercel-id");
 
+	logger.debug({ workspaceId, requestId }, "WorkspaceId validation passed");
 	const agent = await db.query.agents.findFirst({
 		where: (agents, { eq }) => eq(agents.workspaceId, workspaceId),
 	});
 	if (agent === undefined) {
 		return notFound();
 	}
+	logger.debug({ workspaceId, requestId, agent });
 	const currentUser = await fetchCurrentUser();
 
 	// Check if user is a member of the workspace's team before other operations
@@ -79,9 +86,25 @@ export default async function Layout({
 	const aiGateway = await aiGatewayFlag();
 	const resumableGeneration = await resumableGenerationFlag();
 	const googleUrlContext = await googleUrlContextFlag();
+	logger.debug(
+		{
+			requestId,
+			workspaceId,
+		},
+		"will get workspace",
+	);
 	const data = await giselleEngine.getWorkspace(
 		workspaceId,
 		experimental_storage,
+	);
+
+	logger.debug(
+		{
+			requestId,
+			workspaceId,
+			data,
+		},
+		" get workspace",
 	);
 	const documentVectorStore = await docVectorStoreFlag();
 	const documentVectorStores = documentVectorStore
