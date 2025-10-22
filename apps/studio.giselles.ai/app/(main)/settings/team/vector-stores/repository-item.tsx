@@ -238,6 +238,29 @@ function EmbeddingModelCard({
 	const pullRequestStatus = profileStatuses.find(
 		(cs) => cs.contentType === "pull_request",
 	);
+	type RepositoryContentStatusValue =
+		(typeof githubRepositoryContentStatus.$inferSelect)["status"];
+	const getStatusLabel = (
+		status: RepositoryContentStatusValue | undefined,
+		enabled: boolean | undefined,
+	) => {
+		const effectiveStatus =
+			isIngesting && enabled ? "running" : (status ?? "unknown");
+		switch (effectiveStatus) {
+			case "idle":
+				return "Idle";
+			case "running":
+				return "Running";
+			case "queued":
+				return "Queued";
+			case "failed":
+				return "Error";
+			case "completed":
+				return "Completed";
+			default:
+				return "Unknown";
+		}
+	};
 
 	return (
 		<div
@@ -286,11 +309,10 @@ function EmbeddingModelCard({
 														: "text-black-400"
 												}`}
 											>
-												{isIngesting && blobStatus.enabled
-													? "Running"
-													: blobStatus.status === "idle"
-														? "Idle"
-														: "Error"}
+												{getStatusLabel(
+													blobStatus?.status,
+													blobStatus?.enabled,
+												)}
 											</span>
 										</div>
 										{blobStatus?.status === "failed" &&
@@ -379,11 +401,10 @@ function EmbeddingModelCard({
 														: "text-black-400"
 												}`}
 											>
-												{isIngesting && pullRequestStatus.enabled
-													? "Running"
-													: pullRequestStatus.status === "idle"
-														? "Idle"
-														: "Error"}
+												{getStatusLabel(
+													pullRequestStatus?.status,
+													pullRequestStatus?.enabled,
+												)}
 											</span>
 										</div>
 										{pullRequestStatus?.status === "failed" &&
