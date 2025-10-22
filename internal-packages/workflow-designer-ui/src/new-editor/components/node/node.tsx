@@ -188,6 +188,36 @@ function CanvasNode({
 		};
 	}, [contentType, vectorStoreSourceProvider]);
 
+	const inputHandleContentType = useMemo<
+		Parameters<typeof NodeHandleDot>[0]["contentType"]
+	>(() => {
+		switch (contentType) {
+			case "textGeneration":
+			case "imageGeneration":
+			case "github":
+			case "text":
+			case "file":
+			case "webPage":
+			case "webSearch":
+			case "audioGeneration":
+			case "videoGeneration":
+			case "trigger":
+			case "action":
+			case "query":
+				return contentType;
+			case "vectorStore":
+				if (vectorStoreSourceProvider === "github") {
+					return "vectorStoreGithub";
+				}
+				if (vectorStoreSourceProvider === "githubPullRequest") {
+					return "vectorStoreGithubPullRequest";
+				}
+				return "text";
+			default:
+				return "text";
+		}
+	}, [contentType, vectorStoreSourceProvider]);
+
 	return (
 		<div
 			className={clsx(
@@ -331,21 +361,7 @@ function CanvasNode({
 										position={Position.Left}
 										isConnected={isInConnected}
 										isConnectable={false}
-										contentType={
-											v.isTextGeneration
-												? "textGeneration"
-												: v.isImageGeneration
-													? "imageGeneration"
-													: v.isWebSearch
-														? "webSearch"
-														: v.isAudioGeneration
-															? "audioGeneration"
-															: v.isVideoGeneration
-																? "videoGeneration"
-																: v.isQuery
-																	? "query"
-																	: "text"
-										}
+										contentType={inputHandleContentType}
 										id={input.id}
 									/>
 									<NodeInputLabel
