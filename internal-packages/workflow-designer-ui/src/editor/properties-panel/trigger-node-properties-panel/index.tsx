@@ -1,6 +1,5 @@
 import type { TriggerNode } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
-import { NodeIcon } from "../../../icons/node";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
@@ -14,7 +13,6 @@ export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
 	return (
 		<PropertiesPanelRoot>
 			<PropertiesPanelHeader
-				icon={<NodeIcon node={node} className="size-[20px] text-inverse" />}
 				node={node}
 				onChangeName={(name) => {
 					updateNodeData(node, { name });

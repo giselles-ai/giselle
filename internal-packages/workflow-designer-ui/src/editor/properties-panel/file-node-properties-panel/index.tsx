@@ -1,6 +1,5 @@
 import type { FileCategory, FileNode } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
-import { FileNodeIcon } from "../../../icons/node";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
@@ -30,7 +29,6 @@ export function FileNodePropertiesPanel({ node }: { node: FileNode }) {
 	return (
 		<PropertiesPanelRoot>
 			<PropertiesPanelHeader
-				icon={<FileNodeIcon node={node} className="size-[20px] text-inverse" />}
 				node={node}
 				onChangeName={(name) => {
 					updateNodeData(node, { name });

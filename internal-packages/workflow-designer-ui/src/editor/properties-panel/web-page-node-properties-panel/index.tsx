@@ -15,7 +15,6 @@ import { TrashIcon } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { type FormEventHandler, useCallback, useState } from "react";
 import useSWR from "swr";
-import { WebPageFileIcon } from "../../../icons";
 import { validateUrl } from "../../lib/validate-url";
 import {
 	PropertiesPanelContent,
@@ -78,7 +77,13 @@ function WebPageListItem({
 						</button>
 					</Dialog.Trigger>
 					<Dialog.Portal>
-						<Dialog.Overlay className="fixed inset-0 bg-bg/60 backdrop-blur-[2px] z-50" />
+						<Dialog.Overlay
+							className="fixed inset-0 backdrop-blur-[2px] z-50"
+							style={{
+								backgroundColor:
+									"color-mix(in srgb, var(--color-background, #00020b) 60%, transparent)",
+							}}
+						/>
 						<Dialog.Content
 							className="fixed left-[50%] top-[50%] max-h-[80vh] w-[600px] translate-x-[-50%] translate-y-[-50%] overflow-y-auto rounded-[12px] bg-bg-900 p-[24px] shadow-xl z-50 border border-black-400"
 							onOpenAutoFocus={(e) => {
@@ -248,7 +253,6 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 	return (
 		<PropertiesPanelRoot>
 			<PropertiesPanelHeader
-				icon={<WebPageFileIcon className="size-[20px] text-inverse" />}
 				node={node}
 				onChangeName={(name) => {
 					updateNodeData(node, { name });
