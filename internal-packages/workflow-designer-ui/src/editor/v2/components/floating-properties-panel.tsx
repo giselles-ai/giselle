@@ -124,7 +124,13 @@ export function FloatingPropertiesPanel({
 							)}
 						>
 							{/* Base fill (front) */}
-							<div className="absolute inset-0 -z-10 rounded-[12px] pointer-events-none bg-bg/50" />
+							<div
+								className="absolute inset-0 -z-10 rounded-[12px] pointer-events-none"
+								style={{
+									backgroundColor:
+										"color-mix(in srgb, var(--color-background, #00020b) 50%, transparent)",
+								}}
+							/>
 							<GlassSurfaceLayers
 								tone="default"
 								borderStyle="solid"

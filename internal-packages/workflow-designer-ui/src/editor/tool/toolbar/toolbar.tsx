@@ -243,7 +243,13 @@ export function Toolbar() {
 										)}
 										sideOffset={42}
 									>
-										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/50" />
+										<div
+											className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
+											style={{
+												backgroundColor:
+													"color-mix(in srgb, var(--color-background, #00020b) 50%, transparent)",
+											}}
+										/>
 										<GlassSurfaceLayers
 											radiusClass="rounded-[8px]"
 											borderStyle="solid"
@@ -321,7 +327,13 @@ export function Toolbar() {
 										)}
 										sideOffset={42}
 									>
-										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/50" />
+										<div
+											className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
+											style={{
+												backgroundColor:
+													"color-mix(in srgb, var(--color-background, #00020b) 50%, transparent)",
+											}}
+										/>
 										<GlassSurfaceLayers
 											radiusClass="rounded-[8px]"
 											borderStyle="solid"
@@ -427,7 +439,13 @@ export function Toolbar() {
 										align="end"
 										sideOffset={42}
 									>
-										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/50" />
+										<div
+											className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
+											style={{
+												backgroundColor:
+													"color-mix(in srgb, var(--color-background, #00020b) 50%, transparent)",
+											}}
+										/>
 										<GlassSurfaceLayers
 											radiusClass="rounded-[8px]"
 											borderStyle="solid"
@@ -568,7 +586,13 @@ export function Toolbar() {
 												onMouseEnter={handleCapabilityPanelEnter}
 												onMouseLeave={handleCapabilityPanelLeave}
 											>
-												<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/60" />
+												<div
+													className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
+													style={{
+														backgroundColor:
+															"color-mix(in srgb, var(--color-background, #00020b) 60%, transparent)",
+													}}
+												/>
 												<GlassSurfaceLayers
 													radiusClass="rounded-[8px]"
 													borderStyle="solid"
@@ -584,7 +608,11 @@ export function Toolbar() {
 													) && (
 														<div
 															role="tooltip"
-															className="absolute inset-[2px] z-10 bg-bg/80 backdrop-blur-sm rounded-[6px] flex items-center justify-center"
+															className="absolute inset-[2px] z-10 backdrop-blur-sm rounded-[6px] flex items-center justify-center"
+															style={{
+																backgroundColor:
+																	"color-mix(in srgb, var(--color-background, #00020b) 80%, transparent)",
+															}}
 														>
 															<div className="text-center">
 																<p className="text-blue-400 text-[14px] font-medium mb-3">
@@ -828,7 +856,13 @@ export function Toolbar() {
 										)}
 										sideOffset={42}
 									>
-										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/50" />
+										<div
+											className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
+											style={{
+												backgroundColor:
+													"color-mix(in srgb, var(--color-background, #00020b) 50%, transparent)",
+											}}
+										/>
 										<GlassSurfaceLayers
 											radiusClass="rounded-[8px]"
 											borderStyle="solid"
@@ -888,7 +922,13 @@ export function Toolbar() {
 										)}
 										sideOffset={42}
 									>
-										<div className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none bg-bg/60" />
+										<div
+											className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
+											style={{
+												backgroundColor:
+													"color-mix(in srgb, var(--color-background, #00020b) 60%, transparent)",
+											}}
+										/>
 										<GlassSurfaceLayers
 											radiusClass="rounded-[8px]"
 											borderStyle="solid"
