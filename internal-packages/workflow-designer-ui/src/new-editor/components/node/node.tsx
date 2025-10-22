@@ -20,7 +20,7 @@ import { useEditorStoreWithEqualityFn } from "../../store/context";
 export function Node({ id, selected }: RFNodeProps) {
 	const {
 		node,
-		connectedInputIds: _connectedInputIds,
+		connectedInputIds,
 		connectedOutputIds,
 		highlighted,
 		updateNode,
@@ -61,6 +61,7 @@ export function Node({ id, selected }: RFNodeProps) {
 			contentType={node.content.type}
 			selected={selected}
 			highlighted={highlighted}
+			connectedInputIds={connectedInputIds}
 			connectedOutputIds={connectedOutputIds}
 			metadataTexts={metadataTexts}
 			// @ts-expect-error
@@ -95,6 +96,7 @@ interface CanvasNodeProps {
 	preview?: boolean;
 	requiresSetup?: boolean;
 	vectorStoreSourceProvider?: string;
+	connectedInputIds?: string[];
 	connectedOutputIds?: string[];
 	metadataTexts?: { label: string; tooltip: string }[];
 	onNameChange: (value: string) => void;
@@ -110,6 +112,7 @@ function CanvasNode({
 	preview,
 	requiresSetup,
 	vectorStoreSourceProvider,
+	connectedInputIds,
 	connectedOutputIds,
 	metadataTexts,
 	onNameChange,
@@ -316,7 +319,7 @@ function CanvasNode({
 					<div className="grid">
 						{node.inputs?.map((input) => {
 							const isInConnected =
-								_connectedInputIds?.some(
+								connectedInputIds?.some(
 									(connectedInputId) => connectedInputId === input.id,
 								) ?? false;
 							return (
