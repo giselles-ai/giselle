@@ -1,12 +1,11 @@
 import { Button } from "@giselle-internal/ui/button";
 import {
 	Dialog,
-	DialogPortal,
+	DialogContent,
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
-import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { ConnectionId, NodeId, TriggerNode } from "@giselle-sdk/data-type";
 import {
@@ -21,7 +20,6 @@ import {
 } from "@giselle-sdk/giselle/react";
 import clsx from "clsx/lite";
 import { PlayIcon, UngroupIcon } from "lucide-react";
-import { Dialog as RadixDialog } from "radix-ui";
 import { useCallback, useMemo, useState } from "react";
 import { NodeIcon } from "../../../icons/node";
 import { isPromptEmpty } from "../../lib/validate-prompt";
@@ -55,36 +53,7 @@ type NodeGroupMenuItem = {
 };
 
 function CenteredDialogContent({ children }: React.PropsWithChildren) {
-	return (
-		<DialogPortal>
-			<RadixDialog.Overlay
-				className="fixed inset-0 z-50"
-				style={{ background: "var(--color-dialog-overlay)" }}
-			/>
-			<div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-				<RadixDialog.Content
-					className={clsx(
-						"relative pointer-events-auto overflow-y-auto overflow-x-hidden outline-none",
-						"w-[500px] max-h-[85%]",
-						"bg-transparent shadow-xl text-text p-6 rounded-[12px]",
-					)}
-				>
-					<GlassSurfaceLayers
-						radiusClass="rounded-[12px]"
-						withBaseFill={false}
-						withTopHighlight
-						borderStyle="solid"
-						borderTone="muted"
-						blurClass="backdrop-blur-md"
-						zIndexClass="z-0"
-					/>
-					{/* Subtle dark hairline to make muted slightly darker than default */}
-					{/* Removed aux hairline here; now provided by GlassSurfaceLayers default */}
-					{children}
-				</RadixDialog.Content>
-			</div>
-		</DialogPortal>
-	);
+	return <DialogContent>{children}</DialogContent>;
 }
 
 function RunOptionItem({
