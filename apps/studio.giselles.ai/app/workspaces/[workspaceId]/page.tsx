@@ -2,6 +2,8 @@ import { Editor } from "@giselle-internal/workflow-designer-ui";
 import { WorkspaceId } from "@giselle-sdk/data-type";
 import { updateWorkspaceName } from "./actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page({
 	params,
 }: {

@@ -6,8 +6,6 @@ import { db, type agents as dbAgents } from "@/drizzle";
 import { fetchCurrentTeam } from "@/services/teams";
 import { SearchableAgentList } from "./components/searchable-agent-list";
 
-export const dynamic = "force-dynamic";
-
 function AgentList({
 	agents: agentsPromise,
 }: {
