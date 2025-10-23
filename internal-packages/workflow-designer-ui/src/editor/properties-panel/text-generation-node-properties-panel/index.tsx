@@ -49,6 +49,8 @@ export function TextGenerationNodePropertiesPanel({
 	const generateCtaRef = useRef<HTMLDivElement | null>(null);
 	const [overlayBottomPx, setOverlayBottomPx] = useState(0);
 	const overlayRef = useRef<HTMLDivElement | null>(null);
+	const promptEditorRef = useRef<HTMLDivElement | null>(null);
+	const [promptTopPx, setPromptTopPx] = useState(0);
 	const usageLimitsReached = useUsageLimitsReached();
 	const { error } = useToasts();
 
@@ -128,6 +130,30 @@ export function TextGenerationNodePropertiesPanel({
 		};
 	}, []);
 
+	useEffect(() => {
+		const el = promptEditorRef.current;
+		if (!el) {
+			setPromptTopPx(0);
+			return;
+		}
+		const update = () => {
+			const rect = el.getBoundingClientRect();
+			const container = el.closest('.relative');
+			const containerRect = container?.getBoundingClientRect();
+			setPromptTopPx(containerRect ? rect.top - containerRect.top : 0);
+		};
+		update();
+		const ro = new ResizeObserver(update);
+		ro.observe(el);
+		window.addEventListener("resize", update);
+		window.addEventListener("scroll", update, true);
+		return () => {
+			ro.disconnect();
+			window.removeEventListener("resize", update);
+			window.removeEventListener("scroll", update, true);
+		};
+	}, []);
+
 	return (
 		<PropertiesPanelRoot>
 			{usageLimitsReached && <UsageLimitWarning />}
@@ -190,13 +216,15 @@ export function TextGenerationNodePropertiesPanel({
 			<PropertiesPanelContent>
 				<div className="relative flex-1 min-h-0 flex flex-col">
 					<div className="flex-1 min-h-0 overflow-y-auto">
-						<TextGenerationTabContent
-							node={node}
-							onPromptExpand={() => {
-								setIsPromptExpanded(true);
-							}}
-							editorVersion={editorVersion}
-						/>
+						<div ref={promptEditorRef}>
+							<TextGenerationTabContent
+								node={node}
+								onPromptExpand={() => {
+									setIsPromptExpanded(true);
+								}}
+								editorVersion={editorVersion}
+							/>
+						</div>
 						<div className="mt-[8px]">
 							<SettingLabel className="mb-[4px]">Output</SettingLabel>
 							<GenerationPanel
@@ -242,14 +270,21 @@ export function TextGenerationNodePropertiesPanel({
 							</button>
 						</div>
 					)}
-					{isPromptExpanded && (
-						<div
-							role="dialog"
-							aria-modal="true"
-							aria-label="Expanded prompt editor"
-							className="absolute top-0 left-0 right-0 z-20 flex flex-col bg-bg/95 backdrop-blur-sm rounded-[8px]"
-							style={{ bottom: overlayBottomPx }}
-						>
+					<div
+						role="dialog"
+						aria-modal="true"
+						aria-label="Expanded prompt editor"
+						className={`absolute left-0 right-0 z-20 flex flex-col bg-background rounded-[8px] overflow-hidden transition-all duration-300 ease-out ${
+							isPromptExpanded
+								? "opacity-100 scale-y-100 pointer-events-auto"
+								: "opacity-0 scale-y-0 pointer-events-none"
+						}`}
+						style={{
+							top: promptTopPx,
+							bottom: overlayBottomPx,
+							transformOrigin: `center ${promptTopPx}px`
+						}}
+					>
 							<PromptEditor
 								value={node.content.prompt}
 								onValueChange={(value) => {
@@ -273,13 +308,13 @@ export function TextGenerationNodePropertiesPanel({
 								<button
 									type="button"
 									aria-label="Minimize prompt editor"
-									className="size-[32px] rounded-full bg-inverse/10 hover:bg-inverse/15 transition-colors flex items-center justify-center"
+									className="size-[32px] rounded-full bg-inverse hover:bg-inverse/80 transition-colors flex items-center justify-center"
 									onClick={() => {
 										setIsPromptExpanded(false);
 										setEditorVersion((v) => v + 1);
 									}}
 								>
-									<Minimize2 className="size-[16px] text-inverse" />
+									<Minimize2 className="size-[16px] text-background" />
 								</button>
 							</div>
 							<button
@@ -292,7 +327,6 @@ export function TextGenerationNodePropertiesPanel({
 								}}
 							/>
 						</div>
-					)}
 				</div>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>

@@ -369,7 +369,7 @@ export function PromptPanel({
 				header={header}
 				showExpandIcon={true}
 				onExpand={onExpand}
-				expandIconPosition="left"
+				expandIconPosition="right"
 			/>
 			{resolvedSections.advancedOptions && advancedOptions}
 		</>
