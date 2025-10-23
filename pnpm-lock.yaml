@@ -703,6 +703,9 @@ importers:
 
   internal-packages/ui:
     dependencies:
+      '@giselle-sdk/data-type':
+        specifier: workspace:^
+        version: link:../../packages/data-type
       '@giselle-sdk/text-editor':
         specifier: workspace:^
         version: link:../../packages/text-editor
