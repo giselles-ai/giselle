@@ -1,6 +1,7 @@
 import { Slider as SliderPrimitive } from "radix-ui";
 import type { ComponentProps } from "react";
 import { useId } from "react";
+import clsx from "clsx/lite";
 
 interface SliderProps
 	extends Pick<
@@ -18,10 +19,10 @@ export function Slider(props: SliderProps) {
 		<div className="flex w-full items-center justify-between gap-[12px]">
 			<label
 				htmlFor={controlId}
-				className={[
+				className={clsx(
 					"shrink-0 text-text w-[120px]",
 					props.labelClassName ?? "text-[12px]",
-				].join(" ")}
+				)}
 			>
 				{props.label}
 			</label>

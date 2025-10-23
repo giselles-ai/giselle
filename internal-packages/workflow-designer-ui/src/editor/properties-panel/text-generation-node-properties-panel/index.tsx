@@ -207,7 +207,7 @@ export function TextGenerationNodePropertiesPanel({
 							title="Open documentation"
 							onClick={() =>
 								window.open(
-									"https://docs.giselles.ai",
+									"https://docs.giselles.ai/en/glossary/text-node",
 									"_blank",
 									"noopener,noreferrer",
 								)
