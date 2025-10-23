@@ -1,4 +1,5 @@
 import clsx from "clsx/lite";
+import type React from "react";
 
 export function SettingLabel({
 	children,
@@ -29,7 +30,7 @@ export function SettingLabel({
 				: size === "md"
 					? "text-[14px]"
 					: fallbackSize;
-	const Comp = (htmlFor ? "label" : "div") as keyof JSX.IntrinsicElements;
+	const Comp = (htmlFor ? "label" : "div") as keyof React.JSX.IntrinsicElements;
 	return (
 		<Comp
 			// @ts-expect-error htmlFor only valid on label; ignored for div
