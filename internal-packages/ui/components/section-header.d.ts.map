@@ -1,1 +1,0 @@
-{"version":3,"file":"section-header.d.ts","sourceRoot":"","sources":["section-header.tsx"],"names":[],"mappings":"AAEA,UAAU,kBAAkB;IAC3B,KAAK,EAAE,MAAM,CAAC;IACd,WAAW,CAAC,EAAE,MAAM,CAAC;IACrB,MAAM,CAAC,EAAE,KAAK,CAAC,SAAS,CAAC;IACzB,SAAS,CAAC,EAAE,MAAM,CAAC;CACnB;AAED,wBAAgB,aAAa,CAAC,EAC7B,KAAK,EACL,WAAW,EACX,MAAM,EACN,SAAS,GACT,EAAE,kBAAkB,2CAgBpB"}

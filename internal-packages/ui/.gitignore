@@ -1,0 +1,5 @@
+# Ignore build artifacts in components
+components/*.js
+components/*.js.map
+components/*.d.ts
+components/*.d.ts.map
