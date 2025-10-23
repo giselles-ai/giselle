@@ -44,7 +44,7 @@ export type PromptPanelSlots = {
 	footer?: React.ReactNode;
 };
 
-export function useModelGroups() {
+function useModelGroups() {
 	return useMemo(
 		() => [
 			{
