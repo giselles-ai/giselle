@@ -55,9 +55,6 @@ export function getContentStatusMetadata<T extends GitHubRepositoryContentType>(
 	}
 
 	const schema = METADATA_SCHEMAS[contentType];
-	if (!schema) {
-		return null;
-	}
 
 	const parsed = schema.safeParse(metadata);
 
