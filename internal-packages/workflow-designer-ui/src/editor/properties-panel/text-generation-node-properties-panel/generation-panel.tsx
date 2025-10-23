@@ -31,10 +31,10 @@ function Empty({
 				<button
 					type="button"
 					onClick={onExpand}
-					className="absolute bottom-[8px] right-[8px] size-[24px] rounded-[6px] bg-transparent hover:bg-inverse/10 flex items-center justify-center transition-colors z-10"
+					className="absolute bottom-[8px] right-[8px] size-[32px] rounded-full bg-inverse/10 hover:bg-inverse/20 flex items-center justify-center transition-colors group z-10"
 					aria-label="Expand"
 				>
-					<Maximize2 className="size-[14px] text-inverse" />
+					<Maximize2 className="size-[16px] text-inverse group-hover:text-inverse/80" />
 				</button>
 			)}
 			<EmptyState
@@ -134,10 +134,12 @@ export function GenerationPanel({
 	node,
 	onClickGenerateButton,
 	onExpand,
+	isExpanded,
 }: {
 	node: TextGenerationNode;
 	onClickGenerateButton?: () => void;
 	onExpand?: () => void;
+	isExpanded?: boolean;
 }) {
 	const { data } = useWorkflowDesigner();
 	const { currentGeneration } = useNodeGenerations({
@@ -155,15 +157,17 @@ export function GenerationPanel({
 		return <Empty onGenerate={handleGenerate} onExpand={onExpand} />;
 	}
 	return (
-		<div className="relative flex flex-col bg-inverse/10 min-h-[250px] rounded-[8px] py-[8px]">
+		<div
+			className={`relative flex flex-col bg-inverse/10 rounded-[8px] py-[8px] ${isExpanded ? "flex-1 min-h-0" : "min-h-[250px]"}`}
+		>
 			{onExpand && (
 				<button
 					type="button"
 					onClick={onExpand}
-					className="absolute bottom-[8px] right-[8px] size-[24px] rounded-[6px] bg-transparent hover:bg-inverse/10 flex items-center justify-center transition-colors z-10"
+					className="absolute bottom-[8px] right-[8px] size-[32px] rounded-full bg-inverse/10 hover:bg-inverse/20 flex items-center justify-center transition-colors group z-10"
 					aria-label="Expand"
 				>
-					<Maximize2 className="size-[14px] text-inverse" />
+					<Maximize2 className="size-[16px] text-inverse group-hover:text-inverse/80" />
 				</button>
 			)}
 			<div

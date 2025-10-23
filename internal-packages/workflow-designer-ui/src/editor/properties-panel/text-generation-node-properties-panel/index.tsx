@@ -9,10 +9,8 @@ import {
 	useWorkflowDesignerStore,
 } from "@giselle-sdk/giselle/react";
 import { Minimize2, Trash2 as TrashIcon } from "lucide-react";
-// Removed header Generate button; icons no longer needed
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
-// import { Button } from "../../../ui/button";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { isPromptEmpty } from "../../lib/validate-prompt";
@@ -31,7 +29,7 @@ export function TextGenerationNodePropertiesPanel({
 	node: TextGenerationNode;
 }) {
 	const { data, updateNodeData, deleteNode } = useWorkflowDesigner();
-    const captureOpts: AddEventListenerOptions = { capture: true };
+	const captureOpts: AddEventListenerOptions = { capture: true };
 	const updateNodeDataContent = useWorkflowDesignerStore(
 		(s) => s.updateNodeDataContent,
 	);
@@ -46,12 +44,14 @@ export function TextGenerationNodePropertiesPanel({
 	});
 	const { all: connectedSources } = useConnectedOutputs(node);
 	const [isPromptExpanded, setIsPromptExpanded] = useState(false);
+	const [isGenerationExpanded, setIsGenerationExpanded] = useState(false);
 	const [editorVersion, setEditorVersion] = useState(0);
 	const generateCtaRef = useRef<HTMLDivElement | null>(null);
-	const [overlayBottomPx, setOverlayBottomPx] = useState(0);
-	const overlayRef = useRef<HTMLDivElement | null>(null);
+	const [_overlayBottomPx, setOverlayBottomPx] = useState(0);
 	const promptEditorRef = useRef<HTMLDivElement | null>(null);
+	const generationPanelRef = useRef<HTMLDivElement | null>(null);
 	const [promptTopPx, setPromptTopPx] = useState(0);
+	const [generationTopPx, setGenerationTopPx] = useState(0);
 	const usageLimitsReached = useUsageLimitsReached();
 	const { error } = useToasts();
 
@@ -152,6 +152,30 @@ export function TextGenerationNodePropertiesPanel({
 		};
 	}, []);
 
+	useEffect(() => {
+		const el = generationPanelRef.current;
+		if (!el) {
+			setGenerationTopPx(0);
+			return;
+		}
+		const update = () => {
+			const rect = el.getBoundingClientRect();
+			const container = el.closest(".relative");
+			const containerRect = container?.getBoundingClientRect();
+			setGenerationTopPx(containerRect ? rect.top - containerRect.top : 0);
+		};
+		update();
+		const ro = new ResizeObserver(update);
+		ro.observe(el);
+		window.addEventListener("resize", update);
+		window.addEventListener("scroll", update, true);
+		return () => {
+			ro.disconnect();
+			window.removeEventListener("resize", update);
+			window.removeEventListener("scroll", update, true);
+		};
+	}, []);
+
 	return (
 		<PropertiesPanelRoot>
 			{usageLimitsReached && <UsageLimitWarning />}
@@ -225,13 +249,15 @@ export function TextGenerationNodePropertiesPanel({
 						</div>
 						<div className="mt-[8px]">
 							<SettingLabel className="mb-[4px]">Output</SettingLabel>
-							<GenerationPanel
-								node={node}
-								onClickGenerateButton={generateText}
-								onExpand={() => {
-									console.log("Expand generation panel");
-								}}
-							/>
+							<div ref={generationPanelRef}>
+								<GenerationPanel
+									node={node}
+									onClickGenerateButton={generateText}
+									onExpand={() => {
+										setIsGenerationExpanded(true);
+									}}
+								/>
+							</div>
 						</div>
 					</div>
 					<div
@@ -254,7 +280,11 @@ export function TextGenerationNodePropertiesPanel({
 									: "bg-[#141519] border-border/15 hover:bg-[#1e1f26] hover:border-border/25"
 							}`}
 						>
-							<span className={`mr-[8px] generate-star ${isGenerating ? 'generating' : ''}`}>✦</span>
+							<span
+								className={`mr-[8px] generate-star ${isGenerating ? "generating" : ""}`}
+							>
+								✦
+							</span>
 							{isGenerating ? "Stop" : "Generate with the Current Prompt"}
 							{!isGenerating && (
 								<span className="ml-[8px] flex items-center gap-[2px] text-[11px] text-white/60">
@@ -286,14 +316,14 @@ export function TextGenerationNodePropertiesPanel({
 						role="dialog"
 						aria-modal="true"
 						aria-label="Expanded prompt editor"
-				className={`absolute left-0 right-0 z-20 flex flex-col bg-background rounded-[8px] transition-all duration-300 ease-out ${
+						className={`absolute left-0 right-0 z-20 flex flex-col bg-background rounded-[8px] transition-all duration-300 ease-out ${
 							isPromptExpanded
 								? "opacity-100 scale-y-100 pointer-events-auto"
 								: "opacity-0 scale-y-0 pointer-events-none"
 						}`}
 						style={{
 							top: 0,
-						bottom: 0,
+							bottom: 0,
 							transformOrigin: `center ${promptTopPx}px`,
 						}}
 					>
@@ -311,10 +341,10 @@ export function TextGenerationNodePropertiesPanel({
 							)}
 							placeholder="Write your prompt here..."
 							showToolbar={false}
-						variant="plain"
+							variant="plain"
 							showExpandIcon={false}
 							containerClassName="flex-1 min-h-0"
-					editorClassName="min-h-0 h-full"
+							editorClassName="min-h-0 h-full"
 						/>
 						<div className="absolute bottom-[12px] right-[12px]">
 							<button
@@ -336,6 +366,49 @@ export function TextGenerationNodePropertiesPanel({
 							onClick={() => {
 								setIsPromptExpanded(false);
 								setEditorVersion((v) => v + 1);
+							}}
+						/>
+					</div>
+					<div
+						role="dialog"
+						aria-modal="true"
+						aria-label="Expanded generation panel"
+						className={`absolute left-0 right-0 z-20 flex flex-col bg-background rounded-[8px] transition-all duration-300 ease-out ${
+							isGenerationExpanded
+								? "opacity-100 scale-y-100 pointer-events-auto"
+								: "opacity-0 scale-y-0 pointer-events-none"
+						}`}
+						style={{
+							top: 0,
+							bottom: 0,
+							transformOrigin: `center ${generationTopPx}px`,
+						}}
+					>
+						{currentGeneration && (
+							<GenerationPanel
+								node={node}
+								onClickGenerateButton={generateText}
+								isExpanded={true}
+							/>
+						)}
+						<div className="absolute bottom-[12px] right-[12px]">
+							<button
+								type="button"
+								aria-label="Minimize generation panel"
+								className="size-[32px] rounded-full bg-inverse hover:bg-inverse/80 transition-colors flex items-center justify-center"
+								onClick={() => {
+									setIsGenerationExpanded(false);
+								}}
+							>
+								<Minimize2 className="size-[16px] text-background" />
+							</button>
+						</div>
+						<button
+							type="button"
+							aria-label="Backdrop"
+							className="absolute inset-0 -z-10"
+							onClick={() => {
+								setIsGenerationExpanded(false);
 							}}
 						/>
 					</div>
