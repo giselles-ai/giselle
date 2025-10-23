@@ -19,7 +19,7 @@ export function SettingLabel({
 	htmlFor?: string;
 	colorClassName?: string; // e.g. text-text, text-text/80, text-inverse
 }) {
-	// デフォルト: ラベルは12px（section/field問わずsmを既定）
+	// Default: label is 12px (sm is default for both section/field)
 	const fallbackSize = kind === "field" ? "text-[16px]" : "text-[12px]";
 	const sizeClass =
 		size === "sm"
@@ -58,7 +58,7 @@ export function SettingDetail({
 	size?: "sm" | "md"; // sm=13, md=14
 	colorClassName?: string;
 }) {
-	// デフォルト: 詳細は14px
+	// Default: detail is 14px
 	const sizeClass = size === "md" ? "text-[14px]" : "text-[13px]";
 	return (
 		<div className={clsx(colorClassName, sizeClass, className)}>{children}</div>

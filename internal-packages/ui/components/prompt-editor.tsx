@@ -1,9 +1,29 @@
+import type { Node } from "@giselle-sdk/data-type";
+import type { ConnectedSource } from "@giselle-sdk/text-editor/react";
 import { TextEditor } from "@giselle-sdk/text-editor/react";
 import clsx from "clsx/lite";
 import { Maximize2 } from "lucide-react";
 import type { ReactNode } from "react";
 
 type PromptEditorVariant = "plain" | "glass" | "solid" | "compact";
+
+interface PromptEditorProps {
+	value?: string;
+	onValueChange?: (value: string) => void;
+	nodes?: Node[];
+	connectedSources?: ConnectedSource[];
+	placeholder?: string;
+	header?: ReactNode;
+	footer?: ReactNode;
+	showToolbar?: boolean;
+	variant?: PromptEditorVariant;
+	containerClassName?: string;
+	editorClassName?: string;
+	showExpandIcon?: boolean;
+	onExpand?: () => void;
+	expandIconPosition?: "left" | "right";
+	minHeightClass?: string;
+}
 
 export function PromptEditor({
 	value,
@@ -21,23 +41,7 @@ export function PromptEditor({
 	onExpand,
 	expandIconPosition = "right",
 	minHeightClass = "min-h-[120px]",
-}: {
-	value?: string;
-	onValueChange?: (value: string) => void;
-	nodes?: unknown[];
-	connectedSources?: unknown[];
-	placeholder?: string;
-	header?: ReactNode;
-	footer?: ReactNode;
-	showToolbar?: boolean;
-	variant?: PromptEditorVariant;
-	containerClassName?: string;
-	editorClassName?: string;
-	showExpandIcon?: boolean;
-	onExpand?: () => void;
-	expandIconPosition?: "left" | "right";
-	minHeightClass?: string;
-}) {
+}: PromptEditorProps) {
 	const variantClass =
 		variant === "glass"
 			? "rounded-[8px] p-[8px] bg-transparent"
