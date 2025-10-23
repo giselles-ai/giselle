@@ -5,15 +5,11 @@ import type { PropsWithChildren, ReactNode } from "react";
 import { toolProviders } from "./tool-provider";
 
 function ensureTools(key: keyof ToolSet, node: TextGenerationNode): string[] {
-	const toolConfig = node.content.tools?.[key];
-	if (!toolConfig) return [];
-
-	// Check if the toolConfig has a tools property
-	if ("tools" in toolConfig) {
-		return toolConfig.tools;
-	}
-
-	return [];
+	return (
+		(node.content.tools?.[key] && "tools" in node.content.tools[key]
+			? (node.content.tools[key] as { tools?: string[] }).tools
+			: undefined) ?? []
+	);
 }
 
 export function ToolsPanel({ node }: { node: TextGenerationNode }) {

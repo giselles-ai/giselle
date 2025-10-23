@@ -9,7 +9,7 @@ import {
 	useWorkflowDesignerStore,
 } from "@giselle-sdk/giselle/react";
 import { Minimize2, Trash2 as TrashIcon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
@@ -43,6 +43,18 @@ export function TextGenerationNodePropertiesPanel({
 		origin: { type: "studio", workspaceId: data.id },
 	});
 	const { all: connectedSources } = useConnectedOutputs(node);
+	const sourceNodes = useMemo(
+		() => connectedSources.map((c) => c.node),
+		[connectedSources],
+	);
+	const connectedOutputs = useMemo(
+		() =>
+			connectedSources.map(({ node: n, id, label, accessor }) => ({
+				node: n,
+				output: { id, label, accessor },
+			})),
+		[connectedSources],
+	);
 	const [isPromptExpanded, setIsPromptExpanded] = useState(false);
 	const [isGenerationExpanded, setIsGenerationExpanded] = useState(false);
 	const [editorVersion, setEditorVersion] = useState(0);
@@ -79,15 +91,13 @@ export function TextGenerationNodePropertiesPanel({
 				workspaceId: data.id,
 			},
 			operationNode: node,
-			sourceNodes: connectedSources.map(
-				(connectedSource) => connectedSource.node,
-			),
+			sourceNodes,
 			connections: data.connections.filter(
 				(connection) => connection.inputNode.id === node.id,
 			),
 		});
 	}, [
-		connectedSources,
+		sourceNodes,
 		data.id,
 		data.connections,
 		node,
@@ -338,13 +348,8 @@ export function TextGenerationNodePropertiesPanel({
 								onValueChange={(value) => {
 									updateNodeDataContent(node, { prompt: value });
 								}}
-								nodes={connectedSources.map((s) => s.node)}
-								connectedSources={connectedSources.map(
-									({ node: n, id, label, accessor }) => ({
-										node: n,
-										output: { id, label, accessor },
-									}),
-								)}
+								nodes={sourceNodes}
+								connectedSources={connectedOutputs}
 								placeholder="Write your prompt here..."
 								showToolbar={false}
 								variant="plain"
