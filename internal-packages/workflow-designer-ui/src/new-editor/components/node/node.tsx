@@ -11,24 +11,31 @@ import { useMemo } from "react";
 import { shallow } from "zustand/shallow";
 import { NodeIcon } from "../../../icons/node";
 import { EditableText } from "../../../ui/editable-text";
+import { NodeHandleDot } from "../../../ui/node/node-handle-dot";
+import { NodeInputLabel } from "../../../ui/node/node-input-label";
 import { Tooltip } from "../../../ui/tooltip";
 import { selectNodePanelDataById } from "../../lib/selectors";
 import { useEditorStoreWithEqualityFn } from "../../store/context";
 
 export function Node({ id, selected }: RFNodeProps) {
-	const { node, connectedOutputIds, highlighted, updateNode } =
-		useEditorStoreWithEqualityFn(
-			selectNodePanelDataById(NodeId.parse(id)),
-			(a, b) => {
-				return (
-					a.node === b.node &&
-					shallow(a.connectedInputIds, b.connectedInputIds) &&
-					shallow(a.connectedOutputIds, b.connectedOutputIds) &&
-					a.highlighted === b.highlighted &&
-					a.updateNode === b.updateNode
-				);
-			},
-		);
+	const {
+		node,
+		connectedInputIds,
+		connectedOutputIds,
+		highlighted,
+		updateNode,
+	} = useEditorStoreWithEqualityFn(
+		selectNodePanelDataById(NodeId.parse(id)),
+		(a, b) => {
+			return (
+				a.node === b.node &&
+				shallow(a.connectedInputIds, b.connectedInputIds) &&
+				shallow(a.connectedOutputIds, b.connectedOutputIds) &&
+				a.highlighted === b.highlighted &&
+				a.updateNode === b.updateNode
+			);
+		},
+	);
 
 	const metadataTexts = useMemo(() => {
 		if (!node) return [];
@@ -54,6 +61,7 @@ export function Node({ id, selected }: RFNodeProps) {
 			contentType={node.content.type}
 			selected={selected}
 			highlighted={highlighted}
+			connectedInputIds={connectedInputIds}
 			connectedOutputIds={connectedOutputIds}
 			metadataTexts={metadataTexts}
 			// @ts-expect-error
@@ -88,6 +96,7 @@ interface CanvasNodeProps {
 	preview?: boolean;
 	requiresSetup?: boolean;
 	vectorStoreSourceProvider?: string;
+	connectedInputIds?: string[];
 	connectedOutputIds?: string[];
 	metadataTexts?: { label: string; tooltip: string }[];
 	onNameChange: (value: string) => void;
@@ -103,6 +112,7 @@ function CanvasNode({
 	preview,
 	requiresSetup,
 	vectorStoreSourceProvider,
+	connectedInputIds,
 	connectedOutputIds,
 	metadataTexts,
 	onNameChange,
@@ -178,6 +188,36 @@ function CanvasNode({
 		};
 	}, [contentType, vectorStoreSourceProvider]);
 
+	const inputHandleContentType = useMemo<
+		Parameters<typeof NodeHandleDot>[0]["contentType"]
+	>(() => {
+		switch (contentType) {
+			case "textGeneration":
+			case "imageGeneration":
+			case "github":
+			case "text":
+			case "file":
+			case "webPage":
+			case "webSearch":
+			case "audioGeneration":
+			case "videoGeneration":
+			case "trigger":
+			case "action":
+			case "query":
+				return contentType;
+			case "vectorStore":
+				if (vectorStoreSourceProvider === "github") {
+					return "vectorStoreGithub";
+				}
+				if (vectorStoreSourceProvider === "githubPullRequest") {
+					return "vectorStoreGithubPullRequest";
+				}
+				return "text";
+			default:
+				return "text";
+		}
+	}, [contentType, vectorStoreSourceProvider]);
+
 	return (
 		<div
 			className={clsx(
@@ -224,7 +264,7 @@ function CanvasNode({
 					requiresSetup
 						? "border-black/60 border-dashed [border-width:2px]"
 						: "border-transparent",
-					v.isText && "from-text-node-1/40 to-text-node-1",
+					v.isText && "from-text-node-1/25 to-text-node-1",
 					v.isFile && "from-file-node-1/40 to-file-node-1",
 					v.isWebPage && "from-webPage-node-1/40 to-webPage-node-1",
 					v.isTextGeneration &&
@@ -307,40 +347,33 @@ function CanvasNode({
 			{!preview && (
 				<div className="flex justify-between">
 					<div className="grid">
-						{node.inputs?.map((input) => (
-							<div
-								className="relative flex items-center h-[28px]"
-								key={input.id}
-							>
-								<Handle
-									type="target"
-									isConnectable={false}
-									position={Position.Left}
-									id={input.id}
-									style={{
-										background: "var(--color-background)",
-										borderColor: "var(--color-border)",
-									}}
-									className={clsx(
-										"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px]",
-										v.isTextGeneration &&
-											"!bg-generation-node-1 !border-generation-node-1",
-										v.isImageGeneration &&
-											"!bg-image-generation-node-1 !border-image-generation-node-1",
-										v.isWebSearch &&
-											"!bg-web-search-node-1 !border-web-search-node-1",
-										v.isAudioGeneration &&
-											"!bg-audio-generation-node-1 !border-audio-generation-node-1",
-										v.isVideoGeneration &&
-											"!bg-video-generation-node-1 !border-video-generation-node-1",
-										v.isQuery && "!bg-query-node-1 !border-query-node-1",
-									)}
-								/>
-								<div className={clsx("px-[12px] text-inverse text-[12px]")}>
-									{input.label}
+						{node.inputs?.map((input) => {
+							const isInConnected =
+								connectedInputIds?.some(
+									(connectedInputId) => connectedInputId === input.id,
+								) ?? false;
+							return (
+								<div
+									className="relative flex items-center h-[28px]"
+									key={input.id}
+								>
+									<NodeHandleDot
+										position={Position.Left}
+										isConnected={isInConnected}
+										isConnectable={false}
+										contentType={inputHandleContentType}
+										id={input.id}
+									/>
+									<NodeInputLabel
+										label={input.label}
+										isConnected={isInConnected}
+										isRequired={Boolean(
+											(input as { isRequired?: boolean }).isRequired,
+										)}
+									/>
 								</div>
-							</div>
-						))}
+							);
+						})}
 					</div>
 
 					<div className="grid">
@@ -369,21 +402,34 @@ function CanvasNode({
 										className={clsx(
 											"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px]",
 											// When disconnected, background is set via inline style to match canvas background
-											v.isTextGeneration && "!border-generation-node-1",
-											v.isImageGeneration && "!border-image-generation-node-1",
-											v.isGithub && "!border-github-node-1",
-											v.isVectorStoreGithub && "!border-github-node-1",
+											v.isTextGeneration &&
+												"group-data-[connected=true]:!border-generation-node-1",
+											v.isImageGeneration &&
+												"group-data-[connected=true]:!border-image-generation-node-1",
+											v.isGithub &&
+												"group-data-[connected=true]:!border-github-node-1",
+											v.isVectorStoreGithub &&
+												"group-data-[connected=true]:!border-github-node-1",
 											v.isVectorStoreGithubPullRequest &&
-												"!border-github-node-1",
-											v.isText && "!border-text-node-1",
-											v.isFile && "!border-file-node-1",
-											v.isWebPage && "!border-webPage-node-1",
-											v.isWebSearch && "!border-web-search-node-1",
-											v.isAudioGeneration && "!border-audio-generation-node-1",
-											v.isVideoGeneration && "!border-video-generation-node-1",
-											v.isTrigger && "!border-trigger-node-1",
-											v.isAction && "!border-action-node-1",
-											v.isQuery && "!border-query-node-1",
+												"group-data-[connected=true]:!border-github-node-1",
+											v.isText &&
+												"group-data-[connected=true]:!border-text-node-1",
+											v.isFile &&
+												"group-data-[connected=true]:!border-file-node-1",
+											v.isWebPage &&
+												"group-data-[connected=true]:!border-webPage-node-1",
+											v.isWebSearch &&
+												"group-data-[connected=true]:!border-web-search-node-1",
+											v.isAudioGeneration &&
+												"group-data-[connected=true]:!border-audio-generation-node-1",
+											v.isVideoGeneration &&
+												"group-data-[connected=true]:!border-video-generation-node-1",
+											v.isTrigger &&
+												"group-data-[connected=true]:!border-trigger-node-1",
+											v.isAction &&
+												"group-data-[connected=true]:!border-action-node-1",
+											v.isQuery &&
+												"group-data-[connected=true]:!border-query-node-1",
 											isConnected &&
 												v.isTextGeneration &&
 												"!bg-generation-node-1",
