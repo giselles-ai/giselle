@@ -136,6 +136,7 @@ export function TextEditor({
 	header,
 	showToolbar = true,
 	editorClassName,
+	fullHeight,
 }: {
 	value?: string;
 	onValueChange?: (value: string) => void;
@@ -146,6 +147,7 @@ export function TextEditor({
 	header?: ReactNode;
 	showToolbar?: boolean;
 	editorClassName?: string;
+	fullHeight?: boolean;
 }) {
 	const extensions = useMemo(() => {
 		const mentionExtension = Mention.configure({
@@ -168,7 +170,7 @@ export function TextEditor({
 				];
 	}, [nodes, connectedSources, placeholder]);
 	return (
-		<div className="flex flex-col w-full min-h-0">
+		<div className="flex flex-col w-full min-h-0 h-full">
 			<EditorProvider
 				slotBefore={
 					<>
@@ -185,7 +187,7 @@ export function TextEditor({
 							: JSON.parse(value)
 				}
 				editorContainerProps={{
-					className: "flex-1 flex flex-col min-h-0",
+					className: "flex-1 flex flex-col min-h-0 h-full",
 				}}
 				onUpdate={(p) => {
 					onValueChange?.(JSON.stringify(p.editor.getJSON()));
@@ -197,6 +199,7 @@ export function TextEditor({
 							"prompt-editor border border-inverse rounded-[8px] p-[16px] pb-0 box-border flex-1 overflow-y-auto",
 							editorClassName,
 						),
+						...(fullHeight ? { style: "height: 100%" } : {}),
 					},
 				}}
 			/>

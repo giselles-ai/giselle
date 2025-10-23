@@ -6,17 +6,20 @@ import {
 } from "@giselle-internal/ui/setting-label";
 // unified into ModelPicker
 import type { TextGenerationNode } from "@giselle-sdk/data-type";
-import { type Node, OutputId } from "@giselle-sdk/data-type";
+import {
+	type AnthropicLanguageModelData,
+	type GoogleLanguageModelData,
+	type Node,
+	type OpenAILanguageModelData,
+	OutputId,
+} from "@giselle-sdk/data-type";
 import {
 	useFeatureFlag,
 	useWorkflowDesignerStore,
 } from "@giselle-sdk/giselle/react";
 import {
-	type AnthropicLanguageModelData,
 	anthropicLanguageModels,
-	type GoogleLanguageModelData,
 	googleLanguageModels,
-	type OpenAILanguageModelData,
 	openaiLanguageModels,
 } from "@giselle-sdk/language-model";
 import { ChevronRightIcon } from "lucide-react";
@@ -68,10 +71,14 @@ export function PromptPanel({
 	node,
 	sections,
 	slots,
+	onExpand,
+	editorVersion,
 }: {
 	node: TextGenerationNode;
 	sections?: PromptPanelSections;
 	slots?: PromptPanelSlots;
+	onExpand?: () => void;
+	editorVersion?: number;
 }) {
 	const updateNodeDataContent = useWorkflowDesignerStore(
 		(s) => s.updateNodeDataContent,
@@ -137,7 +144,11 @@ export function PromptPanel({
 
 	function handleGoogleSearchGroundingChange(enable: boolean) {
 		const currentUrlContext =
-			node.content.llm.configurations.urlContext ?? false;
+			(
+				node.content.llm.configurations as {
+					urlContext?: boolean;
+				}
+			).urlContext ?? false;
 		const nextUrlContext = enable ? false : currentUrlContext;
 		let outputs = node.outputs;
 		const hasSource = node.outputs.some((o) => o.accessor === "source");
@@ -179,7 +190,11 @@ export function PromptPanel({
 	function handleGoogleUrlContextChange(enable: boolean) {
 		if (!googleUrlContext) return;
 		const currentSearchGrounding =
-			node.content.llm.configurations.searchGrounding ?? false;
+			(
+				node.content.llm.configurations as {
+					searchGrounding?: boolean;
+				}
+			).searchGrounding ?? false;
 		const nextSearchGrounding = enable ? false : currentSearchGrounding;
 		let outputs = node.outputs;
 		const hasSource = node.outputs.some((o) => o.accessor === "source");
@@ -241,7 +256,6 @@ export function PromptPanel({
 								currentProvider={node.content.llm.provider}
 								currentModelId={node.content.llm.id}
 								groups={groups}
-								triggerVariant="plain"
 								fullWidth={false}
 								triggerId="model-picker-trigger"
 								onSelect={(provider, modelId) => {
@@ -337,7 +351,7 @@ export function PromptPanel({
 	return (
 		<>
 			<PromptEditor
-				key={JSON.stringify(connectedSources.map((c) => c.node.id))}
+				key={`${editorVersion ?? 0}-${JSON.stringify(connectedSources.map((c) => c.node.id))}`}
 				placeholder="Write your prompt here..."
 				value={node.content.prompt}
 				onValueChange={(value) => {
@@ -354,9 +368,8 @@ export function PromptPanel({
 				variant="plain"
 				header={header}
 				showExpandIcon={true}
-				onExpand={() => {
-					console.log("Expand prompt editor");
-				}}
+				onExpand={onExpand}
+				expandIconPosition="left"
 			/>
 			{resolvedSections.advancedOptions && advancedOptions}
 		</>

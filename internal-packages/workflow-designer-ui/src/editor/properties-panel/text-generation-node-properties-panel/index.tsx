@@ -1,14 +1,16 @@
 import { IconBox } from "@giselle-internal/ui/icon-box";
+import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { TextGenerationNode } from "@giselle-sdk/data-type";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
+	useWorkflowDesignerStore,
 } from "@giselle-sdk/giselle/react";
-import { Trash2 as TrashIcon } from "lucide-react";
+import { Minimize2, Trash2 as TrashIcon } from "lucide-react";
 // Removed header Generate button; icons no longer needed
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 // import { Button } from "../../../ui/button";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
@@ -29,6 +31,9 @@ export function TextGenerationNodePropertiesPanel({
 	node: TextGenerationNode;
 }) {
 	const { data, updateNodeData, deleteNode } = useWorkflowDesigner();
+	const updateNodeDataContent = useWorkflowDesignerStore(
+		(s) => s.updateNodeDataContent,
+	);
 	const {
 		createAndStartGenerationRunner,
 		isGenerating,
@@ -39,6 +44,11 @@ export function TextGenerationNodePropertiesPanel({
 		origin: { type: "studio", workspaceId: data.id },
 	});
 	const { all: connectedSources } = useConnectedOutputs(node);
+	const [isPromptExpanded, setIsPromptExpanded] = useState(false);
+	const [editorVersion, setEditorVersion] = useState(0);
+	const generateCtaRef = useRef<HTMLDivElement | null>(null);
+	const [overlayBottomPx, setOverlayBottomPx] = useState(0);
+	const overlayRef = useRef<HTMLDivElement | null>(null);
 	const usageLimitsReached = useUsageLimitsReached();
 	const { error } = useToasts();
 
@@ -82,6 +92,41 @@ export function TextGenerationNodePropertiesPanel({
 		usageLimitsReached,
 		error,
 	]);
+
+	useEffect(() => {
+		const onKeydown = (e: KeyboardEvent) => {
+			if (isPromptExpanded && e.key === "Escape") {
+				e.stopPropagation();
+				setIsPromptExpanded(false);
+				setEditorVersion((v) => v + 1);
+			}
+			if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+				generateText();
+			}
+		};
+		window.addEventListener("keydown", onKeydown, { capture: true });
+		return () =>
+			window.removeEventListener("keydown", onKeydown, {
+				capture: true,
+			} as EventListenerOptions);
+	}, [isPromptExpanded, generateText]);
+
+	useEffect(() => {
+		const el = generateCtaRef.current;
+		if (!el) {
+			setOverlayBottomPx(0);
+			return;
+		}
+		const update = () => setOverlayBottomPx(el.offsetHeight || 0);
+		update();
+		const ro = new ResizeObserver(update);
+		ro.observe(el);
+		window.addEventListener("resize", update);
+		return () => {
+			ro.disconnect();
+			window.removeEventListener("resize", update);
+		};
+	}, []);
 
 	return (
 		<PropertiesPanelRoot>
@@ -143,9 +188,15 @@ export function TextGenerationNodePropertiesPanel({
 			/>
 
 			<PropertiesPanelContent>
-				<div className="flex-1 min-h-0 flex flex-col">
+				<div className="relative flex-1 min-h-0 flex flex-col">
 					<div className="flex-1 min-h-0 overflow-y-auto">
-						<TextGenerationTabContent node={node} />
+						<TextGenerationTabContent
+							node={node}
+							onPromptExpand={() => {
+								setIsPromptExpanded(true);
+							}}
+							editorVersion={editorVersion}
+						/>
 						<div className="mt-[8px]">
 							<SettingLabel className="mb-[4px]">Output</SettingLabel>
 							<GenerationPanel
@@ -158,7 +209,10 @@ export function TextGenerationNodePropertiesPanel({
 						</div>
 					</div>
 					{currentGeneration === undefined && (
-						<div className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-bg via-bg/80 to-transparent">
+						<div
+							ref={generateCtaRef}
+							className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-bg via-bg/80 to-transparent"
+						>
 							<button
 								type="button"
 								onClick={() => {
@@ -169,8 +223,12 @@ export function TextGenerationNodePropertiesPanel({
 								<span className="mr-[8px] generate-star">✦</span>
 								Generate with the Current Prompt
 								<span className="ml-[8px] flex items-center gap-[2px] text-[11px] text-white/40">
-									<kbd className="px-[4px] py-[1px] bg-white/10 rounded-[4px]">⌘</kbd>
-									<kbd className="px-[4px] py-[1px] bg-white/10 rounded-[4px]">↵</kbd>
+									<kbd className="px-[4px] py-[1px] bg-white/10 rounded-[4px]">
+										⌘
+									</kbd>
+									<kbd className="px-[4px] py-[1px] bg-white/10 rounded-[4px]">
+										↵
+									</kbd>
 								</span>
 								<style jsx>{`
 									.generate-star { display: inline-block; }
@@ -182,6 +240,57 @@ export function TextGenerationNodePropertiesPanel({
 									}
 								`}</style>
 							</button>
+						</div>
+					)}
+					{isPromptExpanded && (
+						<div
+							role="dialog"
+							aria-modal="true"
+							aria-label="Expanded prompt editor"
+							className="absolute top-0 left-0 right-0 z-20 flex flex-col bg-bg/95 backdrop-blur-sm rounded-[8px]"
+							style={{ bottom: overlayBottomPx }}
+						>
+							<PromptEditor
+								value={node.content.prompt}
+								onValueChange={(value) => {
+									updateNodeDataContent(node, { prompt: value });
+								}}
+								nodes={connectedSources.map((s) => s.node)}
+								connectedSources={connectedSources.map(
+									({ node: n, id, label, accessor }) => ({
+										node: n,
+										output: { id, label, accessor },
+									}),
+								)}
+								placeholder="Write your prompt here..."
+								showToolbar={false}
+								variant="plain"
+								showExpandIcon={false}
+								containerClassName="flex-1 min-h-0"
+								editorClassName="min-h-0 h-full"
+							/>
+							<div className="absolute bottom-[12px] right-[12px]">
+								<button
+									type="button"
+									aria-label="Minimize prompt editor"
+									className="size-[32px] rounded-full bg-inverse/10 hover:bg-inverse/15 transition-colors flex items-center justify-center"
+									onClick={() => {
+										setIsPromptExpanded(false);
+										setEditorVersion((v) => v + 1);
+									}}
+								>
+									<Minimize2 className="size-[16px] text-inverse" />
+								</button>
+							</div>
+							<button
+								type="button"
+								aria-label="Backdrop"
+								className="absolute inset-0 -z-10"
+								onClick={() => {
+									setIsPromptExpanded(false);
+									setEditorVersion((v) => v + 1);
+								}}
+							/>
 						</div>
 					)}
 				</div>

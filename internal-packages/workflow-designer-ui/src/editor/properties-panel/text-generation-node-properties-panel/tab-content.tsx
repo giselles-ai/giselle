@@ -1,12 +1,32 @@
 import type { TextGenerationNode } from "@giselle-sdk/data-type";
-import { PromptPanel } from "./prompt-panel";
+import {
+	PromptPanel,
+	type PromptPanelSections,
+	type PromptPanelSlots,
+} from "./prompt-panel";
 
 interface TextGenerationTabContentProps {
 	node: TextGenerationNode;
+	onPromptExpand?: () => void;
+	sections?: PromptPanelSections;
+	slots?: PromptPanelSlots;
+	editorVersion?: number;
 }
 
 export function TextGenerationTabContent({
 	node,
+	onPromptExpand,
+	sections,
+	slots,
+	editorVersion,
 }: TextGenerationTabContentProps) {
-	return <PromptPanel node={node} />;
+	return (
+		<PromptPanel
+			node={node}
+			onExpand={onPromptExpand}
+			sections={sections}
+			slots={slots}
+			editorVersion={editorVersion}
+		/>
+	);
 }

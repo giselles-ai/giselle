@@ -19,6 +19,8 @@ export function PromptEditor({
 	editorClassName,
 	showExpandIcon = false,
 	onExpand,
+	expandIconPosition = "right",
+	minHeightClass = "min-h-[120px]",
 }: {
 	value?: string;
 	onValueChange?: (value: string) => void;
@@ -33,6 +35,8 @@ export function PromptEditor({
 	editorClassName?: string;
 	showExpandIcon?: boolean;
 	onExpand?: () => void;
+	expandIconPosition?: "left" | "right";
+	minHeightClass?: string;
 }) {
 	const variantClass =
 		variant === "glass"
@@ -51,7 +55,7 @@ export function PromptEditor({
 				containerClassName,
 			)}
 		>
-			<div className="relative">
+			<div className="relative h-full flex-1 min-h-0">
 				<TextEditor
 					value={value}
 					onValueChange={onValueChange}
@@ -60,16 +64,24 @@ export function PromptEditor({
 					placeholder={placeholder}
 					header={header}
 					showToolbar={showToolbar}
-					editorClassName="bg-inverse/10 border-none !pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px] rounded-[8px] min-h-[120px]"
+					editorClassName={clsx(
+						"bg-inverse/10 border-none !pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px] rounded-[8px]",
+						minHeightClass,
+						editorClassName,
+					)}
+					fullHeight={false}
 				/>
 				{showExpandIcon && (
 					<button
 						type="button"
 						onClick={onExpand}
-						className="absolute bottom-[8px] right-[8px] size-[24px] rounded-[6px] bg-transparent hover:bg-inverse/10 flex items-center justify-center transition-colors"
+						className={clsx(
+							"absolute bottom-[10px] size-[32px] rounded-full bg-inverse/10 hover:bg-inverse/15 flex items-center justify-center transition-colors",
+							expandIconPosition === "left" ? "left-[10px]" : "right-[10px]",
+						)}
 						aria-label="Expand"
 					>
-						<Maximize2 className="size-[14px] text-inverse" />
+						<Maximize2 className="size-[16px] text-inverse" />
 					</button>
 				)}
 			</div>
