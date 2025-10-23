@@ -33,10 +33,14 @@ import { DocumentNodeInfo, GitHubNodeInfo } from "./ui";
 import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
 import { useCurrentNodeGeneration } from "./use-current-node-generation";
 
-function getInputHandleContentType(
-	node: NodeLike,
-): Parameters<typeof NodeHandleDot>[0]["contentType"] {
-	switch (node.content.type) {
+type NodeHandleContentType = Parameters<typeof NodeHandleDot>[0]["contentType"];
+
+function getInputHandleContentType(node: NodeLike): NodeHandleContentType {
+	// Allow upcoming content types without forcing every caller to loosen their typing.
+	const contentType = node.content.type as
+		| NodeHandleContentType
+		| "vectorStore";
+	switch (contentType) {
 		case "textGeneration":
 		case "imageGeneration":
 		case "github":
@@ -49,12 +53,14 @@ function getInputHandleContentType(
 		case "trigger":
 		case "action":
 		case "query":
-			return node.content.type;
+			return contentType;
 		case "vectorStore": {
 			if (!isVectorStoreNode(node)) {
 				return "text";
 			}
-			const provider = node.content.source.provider;
+			const provider = node.content.source.provider as
+				| typeof node.content.source.provider
+				| "githubPullRequest";
 			if (provider === "github") {
 				return "vectorStoreGithub";
 			}
