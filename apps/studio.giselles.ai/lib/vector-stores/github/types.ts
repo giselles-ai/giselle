@@ -25,6 +25,9 @@ export type ContentStatusMetadata = BlobMetadata | PullRequestMetadata | null;
 const METADATA_SCHEMAS = {
 	blob: blobMetadataSchema,
 	pull_request: pullRequestMetadataSchema,
+	// Placeholder: issue ingestion isn’t implemented yet, so we don’t persist metadata.
+	// Fields like `lastIngestedIssueUpdatedAt` will be added when the pipeline lands.
+	issue: z.object({}),
 } as const;
 
 type MetadataForContentType<T extends GitHubRepositoryContentType> =
@@ -42,7 +45,7 @@ export function getContentStatusMetadata<T extends GitHubRepositoryContentType>(
 		return null;
 	}
 
-	const schema = METADATA_SCHEMAS[contentType as keyof typeof METADATA_SCHEMAS];
+	const schema = METADATA_SCHEMAS[contentType];
 	if (!schema) {
 		return null;
 	}
