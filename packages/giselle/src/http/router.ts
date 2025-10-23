@@ -76,6 +76,13 @@ export const createJsonRouters = {
 				return JsonResponse.json(providers);
 			},
 		}),
+	getTriggerProviders: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			handler: () => {
+				const providers = giselleEngine.getTriggerProviders();
+				return JsonResponse.json(providers);
+			},
+		}),
 	generateText: (giselleEngine: GiselleEngine) =>
 		withUsageLimitErrorHandler(
 			createHandler({

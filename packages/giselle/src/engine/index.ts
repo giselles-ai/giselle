@@ -62,6 +62,7 @@ import {
 	configureTrigger,
 	deleteTrigger,
 	getTrigger,
+	getTriggerProviders,
 	reconfigureGitHubTrigger,
 	resolveTrigger,
 	setTrigger,
@@ -149,6 +150,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			});
 		},
 		getLanguageModelProviders: () => getLanguageModelProviders({ context }),
+		getTriggerProviders: () => getTriggerProviders({ context }),
 		generateText: async (
 			generation: QueuedGeneration,
 			useExperimentalStorage: boolean,
