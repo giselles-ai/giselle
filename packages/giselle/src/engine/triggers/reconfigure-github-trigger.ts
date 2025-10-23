@@ -1,6 +1,7 @@
 import {
 	type FlowTrigger,
 	type FlowTriggerId,
+	type GitHubFlowTriggerEvent,
 	isTriggerNode,
 	type TriggerNode,
 } from "@giselle-sdk/data-type";
@@ -18,6 +19,7 @@ export async function reconfigureGitHubTrigger(args: {
 	repositoryNodeId: string;
 	installationId: number;
 	useExperimentalStorage: boolean;
+	event?: GitHubFlowTriggerEvent;
 }) {
 	const currentTrigger = await getFlowTrigger({
 		storage: args.context.storage,
@@ -30,6 +32,14 @@ export async function reconfigureGitHubTrigger(args: {
 	}
 	if (currentTrigger.configuration.provider !== "github") {
 		throw new Error("Only GitHub triggers are supported for updates");
+	}
+
+	const currentEvent = currentTrigger.configuration.event;
+	const requestedEvent = args.event ?? currentEvent;
+	if (requestedEvent.id !== currentEvent.id) {
+		throw new Error(
+			`Changing GitHub trigger event type is not supported (${currentEvent.id} → ${requestedEvent.id})`,
+		);
 	}
 
 	const oldRepositoryNodeId = currentTrigger.configuration.repositoryNodeId;
@@ -59,7 +69,7 @@ export async function reconfigureGitHubTrigger(args: {
 			provider: "github",
 			repositoryNodeId: newRepositoryNodeId,
 			installationId: args.installationId,
-			event: currentTrigger.configuration.event,
+			event: requestedEvent,
 		},
 	} satisfies FlowTrigger;
 	await setFlowTrigger({

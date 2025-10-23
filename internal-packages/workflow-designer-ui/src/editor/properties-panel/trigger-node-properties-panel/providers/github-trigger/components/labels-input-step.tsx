@@ -17,6 +17,8 @@ interface LabelsInputStepProps {
 	) => void;
 	isPending: boolean;
 	labelsError: string | null;
+	initialLabels?: string[];
+	showBackButton?: boolean;
 }
 
 export function LabelsInputStep({
@@ -27,9 +29,24 @@ export function LabelsInputStep({
 	onSubmit,
 	isPending,
 	labelsError,
+	initialLabels,
+	showBackButton = true,
 }: LabelsInputStepProps) {
-	const [labels, setLabels] = useState([{ id: 1, value: "" }]);
-	const [nextId, setNextId] = useState(2);
+	const [labels, setLabels] = useState(() => {
+		if (initialLabels && initialLabels.length > 0) {
+			return initialLabels.map((label, index) => ({
+				id: index + 1,
+				value: label,
+			}));
+		}
+		return [{ id: 1, value: "" }];
+	});
+	const [nextId, setNextId] = useState(() => {
+		if (initialLabels && initialLabels.length > 0) {
+			return initialLabels.length + 1;
+		}
+		return 2;
+	});
 
 	return (
 		<form
@@ -116,14 +133,16 @@ export function LabelsInputStep({
 			</fieldset>
 
 			<div className="pt-[8px] flex gap-[8px] mt-[12px] px-[4px]">
-				<button
-					type="button"
-					className="flex-1 bg-bg-700 hover:bg-bg-600 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
-					onClick={onBack}
-					disabled={isPending}
-				>
-					<span className={isPending ? "opacity-0" : ""}>Back</span>
-				</button>
+				{showBackButton && (
+					<button
+						type="button"
+						className="flex-1 bg-bg-700 hover:bg-bg-600 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
+						onClick={onBack}
+						disabled={isPending}
+					>
+						<span className={isPending ? "opacity-0" : ""}>Back</span>
+					</button>
+				)}
 				<button
 					type="submit"
 					className="flex-1 bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"

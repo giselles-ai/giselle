@@ -1,6 +1,5 @@
 import {
 	type FlowTriggerId,
-	type GitHubFlowTriggerEvent,
 	type Output,
 	OutputId,
 	type TriggerNode,
@@ -23,6 +22,7 @@ import {
 	type FormEvent,
 	type FormEventHandler,
 	useCallback,
+	useRef,
 	useState,
 	useTransition,
 } from "react";
@@ -40,8 +40,14 @@ import { Unauthorized } from "./components/unauthorized";
 import { createTriggerEvent } from "./utils/trigger-configuration";
 import { useTriggerConfiguration } from "./utils/use-trigger-configuration";
 
+export type GitHubTriggerReconfigureMode = "repository" | "callsign" | "labels";
+
 export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	const { value } = useIntegration();
+	const reconfigureModeRef = useRef<GitHubTriggerReconfigureMode | undefined>(
+		undefined,
+	);
+
 	if (value?.github === undefined) {
 		return "unset";
 	}
@@ -51,6 +57,9 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 			<GitHubTriggerConfiguredView
 				flowTriggerId={node.content.state.flowTriggerId}
 				node={node}
+				onStartReconfigure={(mode) => {
+					reconfigureModeRef.current = mode;
+				}}
 			/>
 		);
 	} else if (
@@ -63,6 +72,7 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 				node={node}
 				installationUrl={value.github.installationUrl}
 				flowTriggerId={node.content.state.flowTriggerId}
+				reconfigureMode={reconfigureModeRef.current}
 			/>
 		);
 	}
@@ -113,6 +123,7 @@ export interface InputCallsignStep {
 	repo: string;
 	repoNodeId: string;
 	installationId: number;
+	callsign?: string;
 }
 
 export interface InputLabelsStep {
@@ -122,6 +133,7 @@ export interface InputLabelsStep {
 	repo: string;
 	repoNodeId: string;
 	installationId: number;
+	labels?: string[];
 }
 
 interface ConfirmRepositoryStep {
@@ -172,10 +184,11 @@ export function Installed({
 	installations: GitHubIntegrationInstallation[];
 	node: TriggerNode;
 	installationUrl: string;
-	reconfigStep?: SelectRepositoryStep;
+	reconfigStep?: SelectRepositoryStep | InputCallsignStep | InputLabelsStep;
 	flowTriggerId?: FlowTriggerId;
 }) {
 	const { experimental_storage } = useFeatureFlag();
+	const isReconfiguring = node.content.state.status === "reconfiguring";
 	const [step, setStep] = useState<GitHubTriggerSetupStep>(
 		reconfigStep ?? { state: "select-event" },
 	);
@@ -192,32 +205,6 @@ export function Installed({
 	const [callsignError, setCallsignError] = useState<string | null>(null);
 	const [labelsError, setLabelsError] = useState<string | null>(null);
 
-	// Helper function to create callsign events
-	const createCallsignEvent = useCallback(
-		(
-			eventId: GitHubTriggerEventId,
-			formData: FormData,
-		): GitHubFlowTriggerEvent => {
-			const callsign = formData.get("callsign");
-			if (typeof callsign !== "string" || isEmpty(callsign)) {
-				throw new Error("Invalid callsign: expected a non-empty string.");
-			}
-			return {
-				id: eventId,
-				conditions: { callsign },
-			} as GitHubFlowTriggerEvent;
-		},
-		[],
-	);
-
-	// Events that require callsign
-	const CALLSIGN_EVENTS = [
-		"github.issue_comment.created",
-		"github.pull_request_comment.created",
-		"github.pull_request_review_comment.created",
-		"github.discussion_comment.created",
-	] as const;
-
 	const handleCallsignSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		(e) => {
 			e.preventDefault();
@@ -227,29 +214,59 @@ export function Installed({
 				throw new Error("Unexpected state");
 			}
 
-			let event: GitHubFlowTriggerEvent | undefined;
 			const formData = new FormData(e.currentTarget);
 			try {
-				// Create event based on whether it requires callsign
-				if (
-					(CALLSIGN_EVENTS as readonly GitHubTriggerEventId[]).includes(eventId)
-				) {
-					event = createCallsignEvent(eventId, formData);
-				} else {
-					event = createTriggerEvent({ eventId });
+				const callsign = formData.get("callsign");
+				if (typeof callsign !== "string" || isEmpty(callsign)) {
+					throw new Error("Invalid callsign: expected a non-empty string.");
 				}
 
-				if (event === undefined) {
-					return;
-				}
-				configureTrigger(event, step);
+				const event = createTriggerEvent({ eventId, callsign });
+
+				startTransition(async () => {
+					if (isReconfiguring && flowTriggerId !== undefined) {
+						try {
+							const { triggerId } = await client.reconfigureGitHubTrigger({
+								flowTriggerId,
+								repositoryNodeId: step.repoNodeId,
+								installationId: step.installationId,
+								useExperimentalStorage: experimental_storage,
+								event,
+							});
+
+							updateNodeData(node, {
+								content: {
+									...node.content,
+									state: {
+										status: "configured",
+										flowTriggerId: triggerId,
+									},
+								},
+							});
+						} catch (_error) {
+							// Error is handled by the UI state
+						}
+					} else {
+						configureTrigger(event, step);
+					}
+				});
 			} catch (error) {
 				setCallsignError(
 					error instanceof Error ? error.message : "Invalid callsign",
 				);
 			}
 		},
-		[configureTrigger, step, eventId, CALLSIGN_EVENTS, createCallsignEvent],
+		[
+			step,
+			eventId,
+			isReconfiguring,
+			node,
+			flowTriggerId,
+			client,
+			experimental_storage,
+			updateNodeData,
+			configureTrigger,
+		],
 	);
 
 	const handleLabelsSubmit = useCallback(
@@ -264,9 +281,13 @@ export function Installed({
 				throw new Error("Unexpected state");
 			}
 
-			const validLabels = rawLabels
-				.map((label) => label.value.trim())
-				.filter((value) => value.length > 0);
+			const validLabels = [
+				...new Set(
+					rawLabels
+						.map((label) => label.value.trim())
+						.filter((value) => value.length > 0),
+				),
+			];
 
 			if (validLabels.length === 0) {
 				setLabelsError("At least one label is required");
@@ -274,9 +295,46 @@ export function Installed({
 			}
 
 			const event = createTriggerEvent({ eventId, labels: validLabels });
-			configureTrigger(event, step);
+
+			startTransition(async () => {
+				if (isReconfiguring && flowTriggerId !== undefined) {
+					try {
+						const { triggerId } = await client.reconfigureGitHubTrigger({
+							flowTriggerId,
+							repositoryNodeId: step.repoNodeId,
+							installationId: step.installationId,
+							useExperimentalStorage: experimental_storage,
+							event,
+						});
+
+						updateNodeData(node, {
+							content: {
+								...node.content,
+								state: {
+									status: "configured",
+									flowTriggerId: triggerId,
+								},
+							},
+						});
+					} catch (_error) {
+						// Error is handled by the UI state
+					}
+				} else {
+					configureTrigger(event, step);
+				}
+			});
 		},
-		[configureTrigger, step, eventId],
+		[
+			step,
+			eventId,
+			isReconfiguring,
+			node,
+			flowTriggerId,
+			client,
+			experimental_storage,
+			updateNodeData,
+			configureTrigger,
+		],
 	);
 
 	return (
@@ -365,7 +423,10 @@ export function Installed({
 											repo: step.repo,
 											repoNodeId: step.repoNodeId,
 										});
-									} else if (isTriggerRequiringLabels(step.eventId)) {
+									} else if (
+										isTriggerRequiringLabels(step.eventId) &&
+										node.content.state.status === "unconfigured"
+									) {
 										setStep({
 											state: "input-labels",
 											eventId: step.eventId,
@@ -393,10 +454,7 @@ export function Installed({
 												}
 
 												let triggerId: FlowTriggerId;
-												if (
-													node.content.state.status === "reconfiguring" &&
-													flowTriggerId !== undefined
-												) {
+												if (isReconfiguring && flowTriggerId !== undefined) {
 													const result = await client.reconfigureGitHubTrigger({
 														flowTriggerId,
 														repositoryNodeId: step.repoNodeId,
@@ -435,10 +493,9 @@ export function Installed({
 													},
 													outputs:
 														node.outputs.length > 0 ? node.outputs : outputs,
-													name:
-														node.content.state.status === "reconfiguring"
-															? node.name
-															: `On ${trigger.event.label}`,
+													name: isReconfiguring
+														? node.name
+														: `On ${trigger.event.label}`,
 												});
 											} catch (_error) {
 												// Error is handled by the UI state
@@ -523,6 +580,7 @@ export function Installed({
 							<input
 								type="text"
 								name="callsign"
+								defaultValue={step.callsign}
 								className={clsx(
 									"group w-full flex justify-between items-center rounded-[8px] py-[8px] pl-[28px] pr-[4px] outline-none focus:outline-none",
 									callsignError
@@ -544,31 +602,43 @@ export function Installed({
 					</fieldset>
 
 					<div className="pt-[8px] flex gap-[8px] mt-[12px] px-[4px]">
-						<button
-							type="button"
-							className="flex-1 bg-bg-700 hover:bg-bg-600 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
-							onClick={() => {
-								setCallsignError(null);
-								setStep({
-									state: "select-repository",
-									eventId: step.eventId,
-								});
-							}}
-							disabled={isTriggerConfigPending}
-						>
-							<span className={isTriggerConfigPending ? "opacity-0" : ""}>
-								Back
-							</span>
-						</button>
+						{!isReconfiguring && (
+							<button
+								type="button"
+								className="flex-1 bg-bg-700 hover:bg-bg-600 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
+								onClick={() => {
+									setCallsignError(null);
+									setStep({
+										state: "select-repository",
+										eventId: step.eventId,
+									});
+								}}
+								disabled={isPending || isTriggerConfigPending}
+							>
+								<span
+									className={
+										isPending || isTriggerConfigPending ? "opacity-0" : ""
+									}
+								>
+									Back
+								</span>
+							</button>
+						)}
 						<button
 							type="submit"
 							className="flex-1 bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors disabled:opacity-50 relative"
-							disabled={isTriggerConfigPending}
+							disabled={isPending || isTriggerConfigPending}
 						>
-							<span className={isTriggerConfigPending ? "opacity-0" : ""}>
-								{isTriggerConfigPending ? "Setting up..." : "Set Up"}
+							<span
+								className={
+									isPending || isTriggerConfigPending ? "opacity-0" : ""
+								}
+							>
+								{isPending || isTriggerConfigPending
+									? "Setting up..."
+									: "Set Up"}
 							</span>
-							{isTriggerConfigPending && (
+							{(isPending || isTriggerConfigPending) && (
 								<span className="absolute inset-0 flex items-center justify-center">
 									<svg
 										className="animate-spin h-5 w-5 text-inverse"
@@ -612,8 +682,10 @@ export function Installed({
 						});
 					}}
 					onSubmit={handleLabelsSubmit}
-					isPending={isTriggerConfigPending}
+					isPending={isPending || isTriggerConfigPending}
 					labelsError={labelsError}
+					initialLabels={step.labels}
+					showBackButton={!isReconfiguring}
 				/>
 			)}
 
