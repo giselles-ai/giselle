@@ -1,111 +1,137 @@
-import type { Connection, NodeId, NodeLike } from "@giselle-sdk/data-type";
+import {
+	type Connection,
+	ConnectionId,
+	InputId,
+	NodeId,
+	type NodeLike,
+	OutputId,
+} from "@giselle-sdk/data-type";
 import { describe, expect, it } from "vitest";
 import { twoTriggerFixture } from "./__fixtures__/two-trigger";
 import { buildLevels } from "./build-levels";
 
 describe("buildLevels", () => {
 	describe("parallel execution", () => {
+		const triggerNodeId = NodeId.generate();
+		const parallel1NodeId = NodeId.generate();
+		const parallel2NodeId = NodeId.generate();
+		const finalNodeId = NodeId.generate();
+
+		const triggerOutput1Id = OutputId.generate();
+		const triggerOutput2Id = OutputId.generate();
+		const parallel1InputId = InputId.generate();
+		const parallel2InputId = InputId.generate();
+		const parallel1OutputId = OutputId.generate();
+		const parallel2OutputId = OutputId.generate();
+		const finalInput1Id = InputId.generate();
+		const finalInput2Id = InputId.generate();
+		const finalOutputId = OutputId.generate();
+
 		const nodes: NodeLike[] = [
 			{
-				id: "nd-triggerNode",
+				id: triggerNodeId,
 				name: "Trigger",
 				type: "operation",
 				inputs: [],
 				outputs: [
-					{ id: "otp-out1Trigger", label: "Output 1", accessor: "output1" },
-					{ id: "otp-out2Trigger", label: "Output 2", accessor: "output2" },
+					{ id: triggerOutput1Id, label: "Output 1", accessor: "output1" },
+					{ id: triggerOutput2Id, label: "Output 2", accessor: "output2" },
 				],
 				content: { type: "trigger" },
 			},
 			{
-				id: "nd-parallel1Node",
+				id: parallel1NodeId,
 				name: "Parallel 1",
 				type: "operation",
-				inputs: [{ id: "inp-in1Parallel", label: "Input", accessor: "input" }],
-				outputs: [{ id: "otp-outP1", label: "Output", accessor: "output" }],
+				inputs: [{ id: parallel1InputId, label: "Input", accessor: "input" }],
+				outputs: [
+					{ id: parallel1OutputId, label: "Output", accessor: "output" },
+				],
 				content: { type: "textGeneration" },
 			},
 			{
-				id: "nd-parallel2Node",
+				id: parallel2NodeId,
 				name: "Parallel 2",
 				type: "operation",
-				inputs: [{ id: "inp-in2Parallel", label: "Input", accessor: "input" }],
-				outputs: [{ id: "otp-outP2", label: "Output", accessor: "output" }],
+				inputs: [{ id: parallel2InputId, label: "Input", accessor: "input" }],
+				outputs: [
+					{ id: parallel2OutputId, label: "Output", accessor: "output" },
+				],
 				content: { type: "textGeneration" },
 			},
 			{
-				id: "nd-finalNode",
+				id: finalNodeId,
 				name: "Final",
 				type: "operation",
 				inputs: [
-					{ id: "inp-inF1", label: "Input 1", accessor: "input1" },
-					{ id: "inp-inF2", label: "Input 2", accessor: "input2" },
+					{ id: finalInput1Id, label: "Input 1", accessor: "input1" },
+					{ id: finalInput2Id, label: "Input 2", accessor: "input2" },
 				],
-				outputs: [{ id: "otp-outFinal", label: "Output", accessor: "output" }],
+				outputs: [{ id: finalOutputId, label: "Output", accessor: "output" }],
 				content: { type: "textGeneration" },
 			},
 		];
 
 		const connections: Connection[] = [
 			{
-				id: "cnnc-triggerP1",
+				id: ConnectionId.generate(),
 				outputNode: {
-					id: "nd-triggerNode",
+					id: triggerNodeId,
 					type: "operation",
 					content: { type: "trigger" },
 				},
-				outputId: "otp-out1Trigger",
+				outputId: triggerOutput1Id,
 				inputNode: {
-					id: "nd-parallel1Node",
+					id: parallel1NodeId,
 					type: "operation",
 					content: { type: "textGeneration" },
 				},
-				inputId: "inp-in1Parallel",
+				inputId: parallel1InputId,
 			},
 			{
-				id: "cnnc-triggerP2",
+				id: ConnectionId.generate(),
 				outputNode: {
-					id: "nd-triggerNode",
+					id: triggerNodeId,
 					type: "operation",
 					content: { type: "trigger" },
 				},
-				outputId: "otp-out2Trigger",
+				outputId: triggerOutput2Id,
 				inputNode: {
-					id: "nd-parallel2Node",
+					id: parallel2NodeId,
 					type: "operation",
 					content: { type: "textGeneration" },
 				},
-				inputId: "inp-in2Parallel",
+				inputId: parallel2InputId,
 			},
 			{
-				id: "cnnc-p1Final",
+				id: ConnectionId.generate(),
 				outputNode: {
-					id: "nd-parallel1Node",
+					id: parallel1NodeId,
 					type: "operation",
 					content: { type: "textGeneration" },
 				},
-				outputId: "otp-outP1",
+				outputId: parallel1OutputId,
 				inputNode: {
-					id: "nd-finalNode",
+					id: finalNodeId,
 					type: "operation",
 					content: { type: "textGeneration" },
 				},
-				inputId: "inp-inF1",
+				inputId: finalInput1Id,
 			},
 			{
-				id: "cnnc-p2Final",
+				id: ConnectionId.generate(),
 				outputNode: {
-					id: "nd-parallel2Node",
+					id: parallel2NodeId,
 					type: "operation",
 					content: { type: "textGeneration" },
 				},
-				outputId: "otp-outP2",
+				outputId: parallel2OutputId,
 				inputNode: {
-					id: "nd-finalNode",
+					id: finalNodeId,
 					type: "operation",
 					content: { type: "textGeneration" },
 				},
-				inputId: "inp-inF2",
+				inputId: finalInput2Id,
 			},
 		];
 
@@ -113,78 +139,88 @@ describe("buildLevels", () => {
 			const levels = buildLevels(nodes, connections);
 
 			expect(levels).toHaveLength(3);
-			expect(levels[0]).toEqual(["nd-triggerNode"]);
+			expect(levels[0]).toEqual([triggerNodeId]);
 			expect(levels[1]).toEqual(
-				expect.arrayContaining(["nd-parallel1Node", "nd-parallel2Node"]),
+				expect.arrayContaining([parallel1NodeId, parallel2NodeId]),
 			);
 			expect(levels[1]).toHaveLength(2);
-			expect(levels[2]).toEqual(["nd-finalNode"]);
+			expect(levels[2]).toEqual([finalNodeId]);
 		});
 	});
 
 	describe("mixed node types", () => {
+		const triggerNodeId = NodeId.generate();
+		const variableNodeId = NodeId.generate();
+		const operationNodeId = NodeId.generate();
+
+		const triggerOutputId = OutputId.generate();
+		const variableOutputId = OutputId.generate();
+		const operationInput1Id = InputId.generate();
+		const operationInput2Id = InputId.generate();
+		const operationOutputId = OutputId.generate();
+
 		const nodes: NodeLike[] = [
 			{
-				id: "nd-triggerNode",
+				id: triggerNodeId,
 				name: "Trigger",
 				type: "operation",
 				inputs: [],
-				outputs: [
-					{ id: "otp-triggerOut", label: "Output", accessor: "output" },
-				],
+				outputs: [{ id: triggerOutputId, label: "Output", accessor: "output" }],
 				content: { type: "trigger" },
 			},
 			{
-				id: "nd-variableNode",
+				id: variableNodeId,
 				name: "Variable",
 				type: "variable",
 				inputs: [],
-				outputs: [{ id: "otp-varOut", label: "Text", accessor: "text" }],
+				outputs: [{ id: variableOutputId, label: "Text", accessor: "text" }],
 				content: { type: "text", text: "Hello World" },
 			},
 			{
-				id: "nd-operationNode",
+				id: operationNodeId,
 				name: "Operation",
 				type: "operation",
 				inputs: [
-					{ id: "inp-opIn1", label: "Input 1", accessor: "input1" },
-					{ id: "inp-opIn2", label: "Input 2", accessor: "input2" },
+					{ id: operationInput1Id, label: "Input 1", accessor: "input1" },
+					{ id: operationInput2Id, label: "Input 2", accessor: "input2" },
 				],
-				outputs: [{ id: "otp-opOut", label: "Output", accessor: "output" }],
+				outputs: [
+					{ id: operationOutputId, label: "Output", accessor: "output" },
+				],
 				content: { type: "textGeneration" },
 			},
 		];
 
 		const connections: Connection[] = [
 			{
-				id: "cnnc-triggerOp",
+				id: ConnectionId.generate(),
 				outputNode: {
-					id: "nd-triggerNode",
+					id: triggerNodeId,
 					type: "operation",
 					content: { type: "trigger" },
 				},
-				outputId: "otp-triggerOut",
+				outputId: triggerOutputId,
 				inputNode: {
-					id: "nd-operationNode",
+					id: operationNodeId,
 					type: "operation",
 					content: { type: "textGeneration" },
 				},
-				inputId: "inp-opIn1",
+				inputId: operationInput1Id,
 			},
 			{
-				id: "cnnc-variableOp",
+				id: ConnectionId.generate(),
 				outputNode: {
-					id: "nd-variableNode",
+					id: variableNodeId,
 					type: "variable",
 					content: { type: "text" },
 				},
-				outputId: "otp-varOut",
+				outputId: variableOutputId,
 				inputNode: {
-					id: "nd-operationNode",
+					id: operationNodeId,
 					type: "operation",
 					content: { type: "textGeneration" },
 				},
-				inputId: "inp-opIn2",
+				inputId: operationInput2Id,
 			},
 		];
 
@@ -192,12 +228,12 @@ describe("buildLevels", () => {
 			const levels = buildLevels(nodes, connections);
 
 			expect(levels).toHaveLength(2);
-			expect(levels[0]).toEqual(["nd-triggerNode"]);
-			expect(levels[1]).toEqual(["nd-operationNode"]);
+			expect(levels[0]).toEqual([triggerNodeId]);
+			expect(levels[1]).toEqual([operationNodeId]);
 
 			// Variable node should not appear in any level
 			const allNodeIds = levels.flat();
-			expect(allNodeIds).not.toContain("nd-variableNode");
+			expect(allNodeIds).not.toContain(variableNodeId);
 		});
 	});
 
@@ -336,9 +372,10 @@ describe("buildLevels", () => {
 		});
 
 		it("should handle nodes with no connections", () => {
+			const isolatedNodeId = NodeId.generate();
 			const nodes: NodeLike[] = [
 				{
-					id: "nd-isolatedNode",
+					id: isolatedNodeId,
 					name: "Isolated",
 					type: "operation",
 					inputs: [],
@@ -348,24 +385,29 @@ describe("buildLevels", () => {
 			];
 
 			const levels = buildLevels(nodes, []);
-			expect(levels).toEqual([["nd-isolatedNode"]]);
+			expect(levels).toEqual([[isolatedNodeId]]);
 		});
 
 		it("should handle duplicate connections gracefully", () => {
+			const node1Id = NodeId.generate();
+			const node2Id = NodeId.generate();
+			const node1OutputId = OutputId.generate();
+			const node2InputId = InputId.generate();
+
 			const nodes: NodeLike[] = [
 				{
-					id: "nd-node1Dup",
+					id: node1Id,
 					name: "Node 1",
 					type: "operation",
 					inputs: [],
-					outputs: [{ id: "otp-out1Dup", label: "Output", accessor: "output" }],
+					outputs: [{ id: node1OutputId, label: "Output", accessor: "output" }],
 					content: { type: "textGeneration" },
 				},
 				{
-					id: "nd-node2Dup",
+					id: node2Id,
 					name: "Node 2",
 					type: "operation",
-					inputs: [{ id: "inp-in2Dup", label: "Input", accessor: "input" }],
+					inputs: [{ id: node2InputId, label: "Input", accessor: "input" }],
 					outputs: [],
 					content: { type: "textGeneration" },
 				},
@@ -373,72 +415,82 @@ describe("buildLevels", () => {
 
 			const connections: Connection[] = [
 				{
-					id: "cnnc-conn1Dup",
+					id: ConnectionId.generate(),
 					outputNode: {
-						id: "nd-node1Dup",
+						id: node1Id,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					outputId: "otp-out1Dup",
+					outputId: node1OutputId,
 					inputNode: {
-						id: "nd-node2Dup",
+						id: node2Id,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					inputId: "inp-in2Dup",
+					inputId: node2InputId,
 				},
 				{
-					id: "cnnc-conn2Dup", // Duplicate connection
+					id: ConnectionId.generate(), // Duplicate connection
 					outputNode: {
-						id: "nd-node1Dup",
+						id: node1Id,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					outputId: "otp-out1Dup",
+					outputId: node1OutputId,
 					inputNode: {
-						id: "nd-node2Dup",
+						id: node2Id,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					inputId: "inp-in2Dup",
+					inputId: node2InputId,
 				},
 			];
 
 			const levels = buildLevels(nodes, connections);
-			expect(levels).toEqual([["nd-node1Dup"], ["nd-node2Dup"]]);
+			expect(levels).toEqual([[node1Id], [node2Id]]);
 		});
 
 		it("should handle many duplicate connections and maintain correct in-degrees", () => {
 			// Regression test for the bug where duplicate connections
 			// were causing negative in-degrees during decrement phase
+			const triggerNodeId = NodeId.generate();
+			const middleNodeId = NodeId.generate();
+			const finalNodeId = NodeId.generate();
+
+			const triggerOutputId = OutputId.generate();
+			const middleInputId = InputId.generate();
+			const middleOutputId = OutputId.generate();
+			const finalInput1Id = InputId.generate();
+			const finalInput2Id = InputId.generate();
+
 			const nodes: NodeLike[] = [
 				{
-					id: "nd-trigger",
+					id: triggerNodeId,
 					name: "Trigger",
 					type: "operation",
 					inputs: [],
 					outputs: [
-						{ id: "otp-trigger-out", label: "Output", accessor: "output" },
+						{ id: triggerOutputId, label: "Output", accessor: "output" },
 					],
 					content: { type: "trigger" },
 				},
 				{
-					id: "nd-middle",
+					id: middleNodeId,
 					name: "Middle",
 					type: "operation",
-					inputs: [{ id: "inp-middle-in", label: "Input", accessor: "input" }],
+					inputs: [{ id: middleInputId, label: "Input", accessor: "input" }],
 					outputs: [
-						{ id: "otp-middle-out", label: "Output", accessor: "output" },
+						{ id: middleOutputId, label: "Output", accessor: "output" },
 					],
 					content: { type: "textGeneration" },
 				},
 				{
-					id: "nd-final",
+					id: finalNodeId,
 					name: "Final",
 					type: "operation",
 					inputs: [
-						{ id: "inp-final-in1", label: "Input 1", accessor: "input1" },
-						{ id: "inp-final-in2", label: "Input 2", accessor: "input2" },
+						{ id: finalInput1Id, label: "Input 1", accessor: "input1" },
+						{ id: finalInput2Id, label: "Input 2", accessor: "input2" },
 					],
 					outputs: [],
 					content: { type: "action" },
@@ -447,52 +499,52 @@ describe("buildLevels", () => {
 
 			const connections: Connection[] = [
 				// 5 duplicate connections: Trigger → Middle
-				...Array.from({ length: 5 }, (_, i) => ({
-					id: `cnnc-trigger-middle-${i}` as `cnnc-${string}`,
+				...Array.from({ length: 5 }, () => ({
+					id: ConnectionId.generate(),
 					outputNode: {
-						id: "nd-trigger" as const,
-						type: "operation" as const,
-						content: { type: "trigger" as const },
+						id: triggerNodeId,
+						type: "operation",
+						content: { type: "trigger" },
 					},
-					outputId: "otp-trigger-out" as const,
+					outputId: triggerOutputId,
 					inputNode: {
-						id: "nd-middle" as const,
-						type: "operation" as const,
-						content: { type: "textGeneration" as const },
+						id: middleNodeId,
+						type: "operation",
+						content: { type: "textGeneration" },
 					},
-					inputId: "inp-middle-in" as const,
+					inputId: middleInputId,
 				})),
 				// 2 duplicate connections: Trigger → Final
-				...Array.from({ length: 2 }, (_, i) => ({
-					id: `cnnc-trigger-final-${i}` as `cnnc-${string}`,
+				...Array.from({ length: 2 }, () => ({
+					id: ConnectionId.generate(),
 					outputNode: {
-						id: "nd-trigger" as const,
-						type: "operation" as const,
-						content: { type: "trigger" as const },
+						id: triggerNodeId,
+						type: "operation",
+						content: { type: "trigger" },
 					},
-					outputId: "otp-trigger-out" as const,
+					outputId: triggerOutputId,
 					inputNode: {
-						id: "nd-final" as const,
-						type: "operation" as const,
-						content: { type: "action" as const },
+						id: finalNodeId,
+						type: "operation",
+						content: { type: "action" },
 					},
-					inputId: "inp-final-in1" as const,
+					inputId: finalInput1Id,
 				})),
 				// 1 connection: Middle → Final
 				{
-					id: "cnnc-middle-final" as const,
+					id: ConnectionId.generate(),
 					outputNode: {
-						id: "nd-middle" as const,
-						type: "operation" as const,
-						content: { type: "textGeneration" as const },
+						id: middleNodeId,
+						type: "operation",
+						content: { type: "textGeneration" },
 					},
-					outputId: "otp-middle-out" as const,
+					outputId: middleOutputId,
 					inputNode: {
-						id: "nd-final" as const,
-						type: "operation" as const,
-						content: { type: "action" as const },
+						id: finalNodeId,
+						type: "operation",
+						content: { type: "action" },
 					},
-					inputId: "inp-final-in2" as const,
+					inputId: finalInput2Id,
 				},
 			];
 
@@ -502,65 +554,68 @@ describe("buildLevels", () => {
 			// Without the fix, Middle gets in-degree of -4 after Level 0,
 			// causing Final to be placed before Middle
 			expect(levels).toHaveLength(3);
-			expect(levels[0]).toEqual(["nd-trigger"]);
-			expect(levels[1]).toEqual(["nd-middle"]); // Bug causes Final here instead
-			expect(levels[2]).toEqual(["nd-final"]); // Bug causes Middle here instead
+			expect(levels[0]).toEqual([triggerNodeId]);
+			expect(levels[1]).toEqual([middleNodeId]); // Bug causes Final here instead
+			expect(levels[2]).toEqual([finalNodeId]); // Bug causes Middle here instead
 		});
 
 		it("should break cycles gracefully", () => {
+			const node1Id = NodeId.generate();
+			const node2Id = NodeId.generate();
+			const node1InputId = InputId.generate();
+			const node1OutputId = OutputId.generate();
+			const node2InputId = InputId.generate();
+			const node2OutputId = OutputId.generate();
+
 			const nodes: NodeLike[] = [
 				{
-					id: "nd-node1Cycle",
+					id: node1Id,
 					name: "Node 1",
 					type: "operation",
-					inputs: [{ id: "inp-in1Cycle", label: "Input", accessor: "input" }],
-					outputs: [
-						{ id: "otp-out1Cycle", label: "Output", accessor: "output" },
-					],
+					inputs: [{ id: node1InputId, label: "Input", accessor: "input" }],
+					outputs: [{ id: node1OutputId, label: "Output", accessor: "output" }],
 					content: { type: "textGeneration" },
 				},
 				{
-					id: "nd-node2Cycle",
+					id: node2Id,
 					name: "Node 2",
 					type: "operation",
-					inputs: [{ id: "inp-in2Cycle", label: "Input", accessor: "input" }],
-					outputs: [
-						{ id: "otp-out2Cycle", label: "Output", accessor: "output" },
-					],
+					inputs: [{ id: node2InputId, label: "Input", accessor: "input" }],
+					outputs: [{ id: node2OutputId, label: "Output", accessor: "output" }],
 					content: { type: "textGeneration" },
 				},
 			];
 
 			const connections: Connection[] = [
 				{
-					id: "cnnc-conn1to2Cycle",
+					id: ConnectionId.generate(),
 					outputNode: {
-						id: "nd-node1Cycle",
+						id: node1Id,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					outputId: "otp-out1Cycle",
+					outputId: node1OutputId,
 					inputNode: {
-						id: "nd-node2Cycle",
+						id: node2Id,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					inputId: "inp-in2Cycle",
+					inputId: node2InputId,
 				},
 				{
-					id: "cnnc-conn2to1Cycle", // Creates a cycle
+					id: ConnectionId.generate(), // Creates a cycle
 					outputNode: {
-						id: "nd-node2Cycle",
+						id: node2Id,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					outputId: "otp-out2Cycle",
+					outputId: node2OutputId,
 					inputNode: {
-						id: "nd-node1Cycle",
+						id: node1Id,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					inputId: "inp-in1Cycle",
+					inputId: node1InputId,
 				},
 			];
 
@@ -572,55 +627,62 @@ describe("buildLevels", () => {
 
 		it("should not place cyclic nodes in the same level", () => {
 			// Create a simple cycle: A -> B -> A
+			const nodeAId = NodeId.generate();
+			const nodeBId = NodeId.generate();
+			const nodeAInputId = InputId.generate();
+			const nodeAOutputId = OutputId.generate();
+			const nodeBInputId = InputId.generate();
+			const nodeBOutputId = OutputId.generate();
+
 			const nodes: NodeLike[] = [
 				{
-					id: "nd-cycleA",
+					id: nodeAId,
 					name: "Cycle Node A",
 					type: "operation",
-					inputs: [{ id: "inp-a", label: "Input", accessor: "input" }],
-					outputs: [{ id: "otp-a", label: "Output", accessor: "output" }],
+					inputs: [{ id: nodeAInputId, label: "Input", accessor: "input" }],
+					outputs: [{ id: nodeAOutputId, label: "Output", accessor: "output" }],
 					content: { type: "textGeneration" },
 				},
 				{
-					id: "nd-cycleB",
+					id: nodeBId,
 					name: "Cycle Node B",
 					type: "operation",
-					inputs: [{ id: "inp-b", label: "Input", accessor: "input" }],
-					outputs: [{ id: "otp-b", label: "Output", accessor: "output" }],
+					inputs: [{ id: nodeBInputId, label: "Input", accessor: "input" }],
+					outputs: [{ id: nodeBOutputId, label: "Output", accessor: "output" }],
 					content: { type: "textGeneration" },
 				},
 			];
 
 			const connections: Connection[] = [
 				{
-					id: "cnnc-AtoB",
+					id: ConnectionId.generate(),
 					outputNode: {
-						id: "nd-cycleA",
+						id: nodeAId,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					outputId: "otp-a",
+					outputId: nodeAOutputId,
 					inputNode: {
-						id: "nd-cycleB",
+						id: nodeBId,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					inputId: "inp-b",
+					inputId: nodeBInputId,
 				},
 				{
-					id: "cnnc-BtoA",
+					id: ConnectionId.generate(),
 					outputNode: {
-						id: "nd-cycleB",
+						id: nodeBId,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					outputId: "otp-b",
+					outputId: nodeBOutputId,
 					inputNode: {
-						id: "nd-cycleA",
+						id: nodeAId,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					inputId: "inp-a",
+					inputId: nodeAInputId,
 				},
 			];
 
@@ -633,53 +695,67 @@ describe("buildLevels", () => {
 
 			// Verify both nodes are included but in different levels
 			const allNodes = levels.flat();
-			expect(allNodes).toContain("nd-cycleA");
-			expect(allNodes).toContain("nd-cycleB");
+			expect(allNodes).toContain(nodeAId);
+			expect(allNodes).toContain(nodeBId);
 		});
 
 		it("should handle complex cycles with multiple nodes", () => {
 			// Create a more complex cycle: A -> B -> C -> A, with D -> B
+			const complexAId = NodeId.generate();
+			const complexBId = NodeId.generate();
+			const complexCId = NodeId.generate();
+			const complexDId = NodeId.generate();
+
+			const complexAInputId = InputId.generate();
+			const complexAOutputId = OutputId.generate();
+			const complexBInputId = InputId.generate();
+			const complexBInput2Id = InputId.generate();
+			const complexBOutputId = OutputId.generate();
+			const complexCInputId = InputId.generate();
+			const complexCOutputId = OutputId.generate();
+			const complexDOutputId = OutputId.generate();
+
 			const nodes: NodeLike[] = [
 				{
-					id: "nd-complexA",
+					id: complexAId,
 					name: "Complex A",
 					type: "operation",
-					inputs: [{ id: "inp-complexA", label: "Input", accessor: "input" }],
+					inputs: [{ id: complexAInputId, label: "Input", accessor: "input" }],
 					outputs: [
-						{ id: "otp-complexA", label: "Output", accessor: "output" },
+						{ id: complexAOutputId, label: "Output", accessor: "output" },
 					],
 					content: { type: "textGeneration" },
 				},
 				{
-					id: "nd-complexB",
+					id: complexBId,
 					name: "Complex B",
 					type: "operation",
 					inputs: [
-						{ id: "inp-complexB", label: "Input", accessor: "input" },
-						{ id: "inp-complexB2", label: "Input 2", accessor: "input2" },
+						{ id: complexBInputId, label: "Input", accessor: "input" },
+						{ id: complexBInput2Id, label: "Input 2", accessor: "input2" },
 					],
 					outputs: [
-						{ id: "otp-complexB", label: "Output", accessor: "output" },
+						{ id: complexBOutputId, label: "Output", accessor: "output" },
 					],
 					content: { type: "textGeneration" },
 				},
 				{
-					id: "nd-complexC",
+					id: complexCId,
 					name: "Complex C",
 					type: "operation",
-					inputs: [{ id: "inp-complexC", label: "Input", accessor: "input" }],
+					inputs: [{ id: complexCInputId, label: "Input", accessor: "input" }],
 					outputs: [
-						{ id: "otp-complexC", label: "Output", accessor: "output" },
+						{ id: complexCOutputId, label: "Output", accessor: "output" },
 					],
 					content: { type: "textGeneration" },
 				},
 				{
-					id: "nd-complexD",
+					id: complexDId,
 					name: "Complex D",
 					type: "operation",
 					inputs: [],
 					outputs: [
-						{ id: "otp-complexD", label: "Output", accessor: "output" },
+						{ id: complexDOutputId, label: "Output", accessor: "output" },
 					],
 					content: { type: "textGeneration" },
 				},
@@ -687,71 +763,71 @@ describe("buildLevels", () => {
 
 			const connections: Connection[] = [
 				{
-					id: "cnnc-AtoB",
+					id: ConnectionId.generate(),
 					outputNode: {
-						id: "nd-complexA",
+						id: complexAId,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					outputId: "otp-complexA",
+					outputId: complexAOutputId,
 					inputNode: {
-						id: "nd-complexB",
+						id: complexBId,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					inputId: "inp-complexB",
+					inputId: complexBInputId,
 				},
 				{
-					id: "cnnc-BtoC",
+					id: ConnectionId.generate(),
 					outputNode: {
-						id: "nd-complexB",
+						id: complexBId,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					outputId: "otp-complexB",
+					outputId: complexBOutputId,
 					inputNode: {
-						id: "nd-complexC",
+						id: complexCId,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					inputId: "inp-complexC",
+					inputId: complexCInputId,
 				},
 				{
-					id: "cnnc-CtoA",
+					id: ConnectionId.generate(),
 					outputNode: {
-						id: "nd-complexC",
+						id: complexCId,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					outputId: "otp-complexC",
+					outputId: complexCOutputId,
 					inputNode: {
-						id: "nd-complexA",
+						id: complexAId,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					inputId: "inp-complexA",
+					inputId: complexAInputId,
 				},
 				{
-					id: "cnnc-DtoB",
+					id: ConnectionId.generate(),
 					outputNode: {
-						id: "nd-complexD",
+						id: complexDId,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					outputId: "otp-complexD",
+					outputId: complexDOutputId,
 					inputNode: {
-						id: "nd-complexB",
+						id: complexBId,
 						type: "operation",
 						content: { type: "textGeneration" },
 					},
-					inputId: "inp-complexB2",
+					inputId: complexBInput2Id,
 				},
 			];
 
 			const levels = buildLevels(nodes, connections);
 
 			// D should be in the first level (no dependencies)
-			expect(levels[0]).toContain("nd-complexD");
+			expect(levels[0]).toContain(complexDId);
 
 			// The cycle nodes (A, B, C) should be in different levels
 			const levelMap = new Map<string, number>();
@@ -766,9 +842,9 @@ describe("buildLevels", () => {
 
 			// Nodes in the cycle should not all be in the same level
 			const cycleNodeLevels = [
-				levelMap.get("nd-complexA"),
-				levelMap.get("nd-complexB"),
-				levelMap.get("nd-complexC"),
+				levelMap.get(complexAId),
+				levelMap.get(complexBId),
+				levelMap.get(complexCId),
 			].filter((l) => l !== undefined);
 
 			const uniqueLevels = new Set(cycleNodeLevels);
