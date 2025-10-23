@@ -60,7 +60,7 @@ function OutputToggleItem({
 }
 
 // Removed from export for now to avoid unused export; can be reintroduced when UI is wired
-function SelectOutputPopover({
+function _SelectOutputPopover({
 	node,
 	outputs,
 	onValueChange,
@@ -276,7 +276,7 @@ function SelectOutputPopover({
 }
 
 // Removed from export for now to avoid unused export; can be reintroduced when UI is wired
-function ConnectedOutputListRoot({
+function _ConnectedOutputListRoot({
 	title,
 	children,
 }: {
@@ -291,7 +291,7 @@ function ConnectedOutputListRoot({
 	);
 }
 // Removed from export for now to avoid unused export; can be reintroduced when UI is wired
-function ConnectedOutputListItem({
+function _ConnectedOutputListItem({
 	icon,
 	title,
 	subtitle,
