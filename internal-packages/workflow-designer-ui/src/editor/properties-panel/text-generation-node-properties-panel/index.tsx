@@ -55,7 +55,7 @@ export function TextGenerationNodePropertiesPanel({
 			})),
 		[connectedSources],
 	);
-    const [isPromptExpanded, setIsPromptExpanded] = useState(false);
+	const [isPromptExpanded, setIsPromptExpanded] = useState(false);
 	const [isGenerationExpanded, setIsGenerationExpanded] = useState(false);
 	const [editorVersion, setEditorVersion] = useState(0);
 	const generateCtaRef = useRef<HTMLDivElement | null>(null);
@@ -64,12 +64,12 @@ export function TextGenerationNodePropertiesPanel({
 	const generationPanelRef = useRef<HTMLDivElement | null>(null);
 	const [promptTopPx, setPromptTopPx] = useState(0);
 	const [generationTopPx, setGenerationTopPx] = useState(0);
-    const usageLimitsReached = useUsageLimitsReached();
-    // Subscribe live to the latest prompt value so expanded editor always reflects current content
-    const livePrompt = useWorkflowDesignerStore((s) => {
-        const n = s.workspace.nodes.find((x) => x.id === node.id);
-        return (n?.content as { prompt?: string } | undefined)?.prompt;
-    });
+	const usageLimitsReached = useUsageLimitsReached();
+	// Subscribe live to the latest prompt value so expanded editor always reflects current content
+	const livePrompt = useWorkflowDesignerStore((s) => {
+		const n = s.workspace.nodes.find((x) => x.id === node.id);
+		return (n?.content as { prompt?: string } | undefined)?.prompt;
+	});
 	const { error } = useToasts();
 
 	useKeyboardShortcuts({
@@ -256,11 +256,11 @@ export function TextGenerationNodePropertiesPanel({
 						<div ref={promptEditorRef}>
 							<TextGenerationTabContent
 								node={node}
-							onPromptExpand={() => {
-								// Remount editor to take latest content (TipTap is not controlled)
-								setEditorVersion((v) => v + 1);
-								requestAnimationFrame(() => setIsPromptExpanded(true));
-							}}
+								onPromptExpand={() => {
+									// Remount editor to take latest content (TipTap is not controlled)
+									setEditorVersion((v) => v + 1);
+									requestAnimationFrame(() => setIsPromptExpanded(true));
+								}}
 								editorVersion={editorVersion}
 							/>
 						</div>
@@ -352,7 +352,7 @@ export function TextGenerationNodePropertiesPanel({
 						<div className="flex-1 min-h-0 flex flex-col overflow-hidden rounded-[8px] bg-background">
 							<PromptEditor
 								key={`expanded-${editorVersion}-${node.id}`}
-                                value={livePrompt ?? node.content.prompt}
+								value={livePrompt ?? node.content.prompt}
 								onValueChange={(value) => {
 									updateNodeDataContent(node, { prompt: value });
 								}}
