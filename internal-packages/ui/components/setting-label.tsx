@@ -33,7 +33,6 @@ export function SettingLabel({
 	const Comp = (htmlFor ? "label" : "div") as keyof React.JSX.IntrinsicElements;
 	return (
 		<Comp
-			// @ts-expect-error htmlFor only valid on label; ignored for div
 			htmlFor={htmlFor}
 			className={clsx(
 				colorClassName,
