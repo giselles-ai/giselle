@@ -2,11 +2,8 @@
 
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import { FileCategory } from "@giselle-sdk/data-type";
-import {
-	type ActionProvider,
-	actionProviders,
-	type TriggerProvider,
-} from "@giselle-sdk/flow";
+import { type ActionProvider, actionProviders } from "@giselle-sdk/flow";
+import type { TriggerProvider } from "@giselle-sdk/giselle";
 import {
 	actionNodeDefaultName,
 	createActionNode,

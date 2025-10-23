@@ -89,6 +89,7 @@ export * from "./acts";
 export * from "./experimental_storage";
 export * from "./integrations";
 export * from "./telemetry";
+export type * from "./triggers";
 export * from "./types";
 export * from "./usage-limits";
 export * from "./vault";
