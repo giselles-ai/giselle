@@ -19,12 +19,7 @@ import ClipboardButton from "../../../ui/clipboard-button";
 import { EmptyState } from "../../../ui/empty-state";
 import { GenerationView } from "../../../ui/generation-view";
 
-function Empty({
-	onExpand,
-}: {
-	onGenerate?: () => void;
-	onExpand?: () => void;
-}) {
+function Empty(_: { onGenerate?: () => void; onExpand?: () => void }) {
 	return (
 		<div className="relative bg-inverse/10 min-h-[250px] rounded-[8px] flex justify-center items-center text-black-400">
 			<EmptyState
