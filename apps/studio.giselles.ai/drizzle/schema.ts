@@ -527,7 +527,7 @@ export const documentEmbeddingsRelations = relations(
 	}),
 );
 
-export type GitHubRepositoryContentType = "blob" | "pull_request";
+export type GitHubRepositoryContentType = "blob" | "pull_request" | "issue";
 export const githubRepositoryContentStatus = pgTable(
 	"github_repository_content_status",
 	{
@@ -668,6 +668,83 @@ export const githubRepositoryPullRequestEmbeddings = pgTable(
 			name: "gh_pr_embeddings_repo_idx_fk",
 		}).onDelete("cascade"),
 		index("gh_pr_emb_repo_doc_idx").on(
+			table.repositoryIndexDbId,
+			table.documentKey,
+		),
+	],
+);
+
+export const GitHubIssueStateValues = ["OPEN", "CLOSED"] as const;
+export type GitHubIssueState = (typeof GitHubIssueStateValues)[number];
+
+export const GitHubIssueStateReasonValues = [
+	"COMPLETED",
+	"DUPLICATE",
+	"NOT_PLANNED",
+	"REOPENED",
+] as const;
+export type GitHubIssueStateReason =
+	(typeof GitHubIssueStateReasonValues)[number];
+
+export const GitHubRepositoryIssueContentTypeValues = [
+	"title_body",
+	"comment",
+] as const;
+export type GitHubRepositoryIssueContentType =
+	(typeof GitHubRepositoryIssueContentTypeValues)[number];
+
+export type GitHubIssueDocumentKey =
+	`${number}:${GitHubRepositoryIssueContentType}:${string}`;
+
+export const githubRepositoryIssueEmbeddings = pgTable(
+	"github_repository_issue_embeddings",
+	{
+		dbId: serial("db_id").primaryKey(),
+		repositoryIndexDbId: integer("repository_index_db_id").notNull(),
+		embeddingProfileId: integer("embedding_profile_id")
+			.$type<EmbeddingProfileId>()
+			.notNull(),
+		embeddingDimensions: integer("embedding_dimensions")
+			.$type<EmbeddingDimensions>()
+			.notNull(),
+		issueNumber: integer("issue_number").notNull(),
+		state: text("state").$type<GitHubIssueState>().notNull(),
+		stateReason: text("state_reason").$type<GitHubIssueStateReason | null>(),
+		issueUpdatedAt: timestamp("issue_updated_at").notNull(),
+		issueClosedAt: timestamp("issue_closed_at"),
+		contentType: text("content_type")
+			.$type<GitHubRepositoryIssueContentType>()
+			.notNull(),
+		contentId: text("content_id").notNull(),
+		documentKey: text("document_key").$type<GitHubIssueDocumentKey>().notNull(),
+		contentCreatedAt: timestamp("content_created_at").notNull(),
+		contentEditedAt: timestamp("content_edited_at"),
+		embedding: vectorWithoutDimensions("embedding").notNull(),
+		chunkContent: text("chunk_content").notNull(),
+		chunkIndex: integer("chunk_index").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => [
+		unique("gh_issue_emb_unique").on(
+			table.repositoryIndexDbId,
+			table.embeddingProfileId,
+			table.issueNumber,
+			table.contentType,
+			table.contentId,
+			table.chunkIndex,
+		),
+		index("gh_issue_embeddings_embedding_1536_idx")
+			.using("hnsw", sql`${table.embedding}::vector(1536) vector_cosine_ops`)
+			.where(sql`${table.embeddingDimensions} = 1536`),
+		index("gh_issue_embeddings_embedding_3072_idx")
+			.using("hnsw", sql`${table.embedding}::halfvec(3072) halfvec_cosine_ops`)
+			.where(sql`${table.embeddingDimensions} = 3072`),
+		foreignKey({
+			columns: [table.repositoryIndexDbId],
+			foreignColumns: [githubRepositoryIndex.dbId],
+			name: "gh_issue_embeddings_repo_idx_fk",
+		}).onDelete("cascade"),
+		index("gh_issue_emb_repo_doc_idx").on(
 			table.repositoryIndexDbId,
 			table.documentKey,
 		),
