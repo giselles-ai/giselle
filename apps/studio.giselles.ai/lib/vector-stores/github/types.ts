@@ -18,16 +18,23 @@ const pullRequestMetadataSchema = z.object({
 	lastIngestedPrNumber: z.number().optional(),
 });
 
+const issueMetadataSchema = z.object({
+	lastIngestedIssueNumber: z.number().optional(),
+});
+
 type BlobMetadata = z.infer<typeof blobMetadataSchema>;
 type PullRequestMetadata = z.infer<typeof pullRequestMetadataSchema>;
-export type ContentStatusMetadata = BlobMetadata | PullRequestMetadata | null;
+type IssueMetadata = z.infer<typeof issueMetadataSchema>;
+export type ContentStatusMetadata =
+	| BlobMetadata
+	| PullRequestMetadata
+	| IssueMetadata
+	| null;
 
 const METADATA_SCHEMAS = {
 	blob: blobMetadataSchema,
 	pull_request: pullRequestMetadataSchema,
-	// Placeholder: issue ingestion isn’t implemented yet, so we don’t persist metadata.
-	// Fields like `lastIngestedIssueUpdatedAt` will be added when the pipeline lands.
-	issue: z.object({}),
+	issue: issueMetadataSchema,
 } as const;
 
 type MetadataForContentType<T extends GitHubRepositoryContentType> =
@@ -35,7 +42,9 @@ type MetadataForContentType<T extends GitHubRepositoryContentType> =
 		? BlobMetadata
 		: T extends "pull_request"
 			? PullRequestMetadata
-			: never;
+			: T extends "issue"
+				? IssueMetadata
+				: never;
 
 export function getContentStatusMetadata<T extends GitHubRepositoryContentType>(
 	metadata: unknown,
@@ -63,4 +72,8 @@ export function createPullRequestMetadata(
 	data: PullRequestMetadata,
 ): PullRequestMetadata {
 	return pullRequestMetadataSchema.parse(data);
+}
+
+export function createIssueMetadata(data: IssueMetadata): IssueMetadata {
+	return issueMetadataSchema.parse(data);
 }
