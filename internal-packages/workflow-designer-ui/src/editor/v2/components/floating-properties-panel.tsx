@@ -23,7 +23,7 @@ export function FloatingPropertiesPanel({
 	isOpen,
 	children,
 	className,
-	defaultWidth = 560,
+	defaultWidth = 480,
 	minWidth = 480,
 	maxWidth = 1200,
 	position = "right",

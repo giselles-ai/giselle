@@ -316,36 +316,38 @@ export function TextGenerationNodePropertiesPanel({
 						role="dialog"
 						aria-modal="true"
 						aria-label="Expanded prompt editor"
-						className={`absolute left-0 right-0 z-20 flex flex-col bg-background rounded-[8px] transition-all duration-300 ease-out ${
+						className={`absolute left-0 right-0 z-20 flex flex-col bg-background rounded-[8px] overflow-hidden transition-all duration-300 ease-out ${
 							isPromptExpanded
 								? "opacity-100 scale-y-100 pointer-events-auto"
 								: "opacity-0 scale-y-0 pointer-events-none"
 						}`}
 						style={{
 							top: 0,
-							bottom: 0,
+							bottom: `${_overlayBottomPx}px`,
 							transformOrigin: `center ${promptTopPx}px`,
 						}}
 					>
-						<PromptEditor
-							value={node.content.prompt}
-							onValueChange={(value) => {
-								updateNodeDataContent(node, { prompt: value });
-							}}
-							nodes={connectedSources.map((s) => s.node)}
-							connectedSources={connectedSources.map(
-								({ node: n, id, label, accessor }) => ({
-									node: n,
-									output: { id, label, accessor },
-								}),
-							)}
-							placeholder="Write your prompt here..."
-							showToolbar={false}
-							variant="plain"
-							showExpandIcon={false}
-							containerClassName="flex-1 min-h-0"
-							editorClassName="min-h-0 h-full"
-						/>
+						<div className="flex-1 min-h-0 flex flex-col">
+							<PromptEditor
+								value={node.content.prompt}
+								onValueChange={(value) => {
+									updateNodeDataContent(node, { prompt: value });
+								}}
+								nodes={connectedSources.map((s) => s.node)}
+								connectedSources={connectedSources.map(
+									({ node: n, id, label, accessor }) => ({
+										node: n,
+										output: { id, label, accessor },
+									}),
+								)}
+								placeholder="Write your prompt here..."
+								showToolbar={false}
+								variant="plain"
+								showExpandIcon={false}
+								containerClassName="flex-1 min-h-0"
+								editorClassName="min-h-0 h-full"
+							/>
+						</div>
 						<div className="absolute bottom-[12px] right-[12px]">
 							<button
 								type="button"
