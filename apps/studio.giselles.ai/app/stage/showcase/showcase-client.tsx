@@ -9,7 +9,6 @@ import { useEffect, useMemo, useState } from "react";
 import { GlassButton } from "@/components/ui/glass-button";
 import { Input } from "@/components/ui/input";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
-import { SearchHeader } from "../../(main)/apps/components/search-header";
 import { Card } from "../../(main)/settings/components/card";
 import {
 	GlassDialogBody,
@@ -17,6 +16,7 @@ import {
 	GlassDialogFooter,
 	GlassDialogHeader,
 } from "../../(main)/settings/team/components/glass-dialog-content";
+import { SearchHeader } from "../../(main)/workspaces/components/search-header";
 
 type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
 
