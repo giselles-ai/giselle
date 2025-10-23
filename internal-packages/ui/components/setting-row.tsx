@@ -16,13 +16,12 @@ export function SettingRow({
 }) {
 	return (
 		<div
-			className={clsx(
-				"flex w-full items-center justify-between",
-				`gap-[${gap}px]`,
-				className,
-			)}
+			className={clsx("flex w-full items-center justify-between", className)}
+			style={{ gap }}
 		>
-			<div className={clsx("shrink-0", `w-[${labelWidth}px]`)}>{label}</div>
+			<div className="shrink-0" style={{ width: labelWidth }}>
+				{label}
+			</div>
 			<div className="grow min-w-0">{children}</div>
 		</div>
 	);

@@ -1,7 +1,7 @@
+import clsx from "clsx/lite";
 import { Slider as SliderPrimitive } from "radix-ui";
 import type { ComponentProps } from "react";
 import { useId } from "react";
-import clsx from "clsx/lite";
 
 interface SliderProps
 	extends Pick<
