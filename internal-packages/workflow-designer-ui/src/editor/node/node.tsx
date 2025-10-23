@@ -26,10 +26,53 @@ import { useEffect, useMemo, useRef, useTransition } from "react";
 import { useShallow } from "zustand/shallow";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
+import { NodeHandleDot } from "../../ui/node/node-handle-dot";
+import { NodeInputLabel } from "../../ui/node/node-input-label";
 import { Tooltip } from "../../ui/tooltip";
 import { DocumentNodeInfo, GitHubNodeInfo } from "./ui";
 import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
 import { useCurrentNodeGeneration } from "./use-current-node-generation";
+
+type NodeHandleContentType = Parameters<typeof NodeHandleDot>[0]["contentType"];
+
+function getInputHandleContentType(node: NodeLike): NodeHandleContentType {
+	// Allow upcoming content types without forcing every caller to loosen their typing.
+	const contentType = node.content.type as
+		| NodeHandleContentType
+		| "vectorStore";
+	switch (contentType) {
+		case "textGeneration":
+		case "imageGeneration":
+		case "github":
+		case "text":
+		case "file":
+		case "webPage":
+		case "webSearch":
+		case "audioGeneration":
+		case "videoGeneration":
+		case "trigger":
+		case "action":
+		case "query":
+			return contentType;
+		case "vectorStore": {
+			if (!isVectorStoreNode(node)) {
+				return "text";
+			}
+			const provider = node.content.source.provider as
+				| typeof node.content.source.provider
+				| "githubPullRequest";
+			if (provider === "github") {
+				return "vectorStoreGithub";
+			}
+			if (provider === "githubPullRequest") {
+				return "vectorStoreGithubPullRequest";
+			}
+			return "text";
+		}
+		default:
+			return "text";
+	}
+}
 
 // Helper function to get completion label from node LLM provider
 function getCompletionLabel(node: NodeLike): string {
@@ -154,6 +197,7 @@ export function NodeComponent({
 	}, [node]);
 
 	const requiresSetup = nodeRequiresSetup(node);
+	const inputHandleContentType = getInputHandleContentType(node);
 
 	return (
 		<div
@@ -318,7 +362,7 @@ export function NodeComponent({
 								"group-data-[content-type=webPage]:text-black-900",
 								"group-data-[content-type=textGeneration]:text-inverse",
 								"group-data-[content-type=imageGeneration]:text-inverse",
-								"group-data-[content-type=github]:text-black-900",
+								"group-data-[content-type=github]:text-inverse",
 								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:text-black-900",
 								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:text-black-900",
 								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:text-black-900",
@@ -375,31 +419,33 @@ export function NodeComponent({
 				<div className="flex justify-between">
 					<div className="grid">
 						{node.content.type !== "action" &&
-							node.inputs?.map((input) => (
-								<div
-									className="relative flex items-center h-[28px]"
-									key={input.id}
-								>
-									<Handle
-										type="target"
-										isConnectable={false}
-										position={Position.Left}
-										id={input.id}
-										className={clsx(
-											"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px]",
-											"group-data-[content-type=textGeneration]:!bg-generation-node-1 group-data-[content-type=textGeneration]:!border-generation-node-1",
-											"group-data-[content-type=imageGeneration]:!bg-image-generation-node-1 group-data-[content-type=imageGeneration]:!border-image-generation-node-1",
-											"group-data-[content-type=webSearch]:!bg-web-search-node-1 group-data-[content-type=webSearch]:!border-web-search-node-1",
-											"group-data-[content-type=audioGeneration]:!bg-audio-generation-node-1 group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
-											"group-data-[content-type=videoGeneration]:!bg-video-generation-node-1 group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
-											"group-data-[content-type=query]:!bg-query-node-1 group-data-[content-type=query]:!border-query-node-1",
-										)}
-									/>
-									<div className={clsx("px-[12px] text-inverse text-[12px]")}>
-										{input.label}
+							node.inputs?.map((input) => {
+								const isInConnected =
+									connectedInputIds?.some(
+										(connectedInputId) => connectedInputId === input.id,
+									) ?? false;
+								return (
+									<div
+										className="relative flex items-center h-[28px]"
+										key={input.id}
+									>
+										<NodeHandleDot
+											position={Position.Left}
+											isConnected={isInConnected}
+											isConnectable={false}
+											contentType={inputHandleContentType}
+											id={input.id}
+										/>
+										<NodeInputLabel
+											label={input.label}
+											isConnected={isInConnected}
+											isRequired={Boolean(
+												(input as { isRequired?: boolean }).isRequired,
+											)}
+										/>
 									</div>
-								</div>
-							))}
+								);
+							})}
 						{node.content.type === "action" &&
 							node.inputs.map((input) => (
 								<div
@@ -414,32 +460,30 @@ export function NodeComponent({
 									}
 									data-required={input.isRequired ? "true" : "false"}
 								>
-									<Handle
-										type="target"
+									<NodeHandleDot
+										position={Position.Left}
+										isConnected={
+											connectedInputIds?.some(
+												(connectedInputId) => connectedInputId === input.id,
+											) ?? false
+										}
 										isConnectable={
 											!connectedInputIds?.some(
 												(connectedInputId) => connectedInputId === input.id,
 											)
 										}
-										position={Position.Left}
+										contentType="action"
 										id={input.id}
-										className={clsx(
-											"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px]",
-											"group-data-[content-type=action]:!bg-action-node-1 group-data-[content-type=action]:!border-action-node-1",
-											"group-data-[state=disconnected]:!bg-bg",
-										)}
 									/>
-									<div
-										className={clsx(
-											"px-[12px] text-inverse text-[12px]",
-											"group-data-[state=connected]:px-[16px]",
-											"group-data-[state=disconnected]:absolute group-data-[state=disconnected]:-left-[4.5px] group-data-[state=disconnected]:whitespace-nowrap group-data-[state=disconnected]:-translate-x-[100%]",
-											"group-data-[state=connected]:text-inverse group-data-[state=disconnected]:text-black-400",
-											"group-data-[state=disconnected]:group-data-[required=true]:text-red-900",
-										)}
-									>
-										{input.label}
-									</div>
+									<NodeInputLabel
+										label={input.label}
+										isConnected={
+											connectedInputIds?.some(
+												(connectedInputId) => connectedInputId === input.id,
+											) ?? false
+										}
+										isRequired={input.isRequired}
+									/>
 								</div>
 							))}
 						{node.type === "operation" &&

@@ -78,4 +78,32 @@
 	/* temporary compatibility tokens (to be removed in later phases) */
 	--color-white-900: oklch(1 0 0);
 	--color-black-600: oklch(0.24 0 0);
+
+	/* node color primitives (HSL format for color accuracy) */
+	--color-node-text-primary: hsl(68, 100%, 76%);
+	--color-node-text-secondary: hsl(68, 100%, 65%);
+	--color-node-file-primary: hsl(69, 100%, 52%);
+	--color-node-file-secondary: hsl(69, 99%, 32%);
+	--color-node-web-page-primary: hsl(178, 94%, 49%);
+	--color-node-web-page-secondary: hsl(178, 95%, 25%);
+	--color-node-generation-primary: hsl(219, 90%, 52%);
+	--color-node-generation-secondary: hsl(219, 98%, 23%);
+	--color-node-trigger-primary: hsl(220, 15%, 50%);
+	--color-node-trigger-secondary: hsl(220, 15%, 50%);
+	--color-node-action-primary: hsl(275, 96%, 44%);
+	--color-node-action-secondary: hsl(275, 91%, 26%);
+	--color-node-github-primary: hsl(76, 100%, 47%);
+	--color-node-github-secondary: hsl(76, 100%, 35%);
+	--color-node-web-search-primary: hsl(241, 100%, 61%);
+	--color-node-web-search-secondary: hsl(241, 100%, 49%);
+	--color-node-image-generation-primary: hsl(204, 100%, 44%);
+	--color-node-image-generation-secondary: hsl(204, 100%, 35%);
+	--color-node-audio-generation-primary: hsl(209, 89%, 29%);
+	--color-node-audio-generation-secondary: hsl(209, 89%, 23%);
+	--color-node-video-generation-primary: hsl(189, 100%, 35%);
+	--color-node-video-generation-secondary: hsl(189, 100%, 28%);
+	--color-node-query-primary: hsl(178, 94%, 49%);
+	--color-node-query-secondary: hsl(178, 95%, 25%);
+	--color-node-vector-store-primary: hsl(76, 100%, 47%);
+	--color-node-vector-store-secondary: hsl(76, 100%, 35%);
 }
