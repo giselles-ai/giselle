@@ -76,12 +76,12 @@ export function PromptEditor({
 						type="button"
 						onClick={onExpand}
 						className={clsx(
-							"absolute bottom-[10px] size-[32px] rounded-full bg-inverse/10 hover:bg-inverse/15 flex items-center justify-center transition-colors",
+							"absolute bottom-[10px] size-[32px] rounded-full bg-inverse/10 hover:bg-inverse/20 flex items-center justify-center transition-colors group",
 							expandIconPosition === "left" ? "left-[10px]" : "right-[10px]",
 						)}
 						aria-label="Expand"
 					>
-						<Maximize2 className="size-[16px] text-inverse" />
+						<Maximize2 className="size-[16px] text-inverse group-hover:text-inverse/80" />
 					</button>
 				)}
 			</div>
