@@ -54,13 +54,13 @@ function ToolListItem({
 	availableTools = [],
 }: PropsWithChildren<ToolListItemProps>) {
 	return (
-        <div
-            className={clsx(
-                "rounded-[8px] px-[12px] w-full py-[10px] bg-background",
-                "**:data-tool-icon:size-[20px] **:data-tool-icon:text-inverse",
-                "**:data-dialog-trigger-icon:size-[14px]",
-            )}
-        >
+		<div
+			className={clsx(
+				"rounded-[8px] px-[12px] w-full py-[10px] bg-background",
+				"**:data-tool-icon:size-[20px] **:data-tool-icon:text-inverse",
+				"**:data-dialog-trigger-icon:size-[14px]",
+			)}
+		>
 			<div className=" flex items-center justify-between">
 				<div className="flex gap-[10px] items-center">
 					{icon}

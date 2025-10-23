@@ -27,16 +27,6 @@ function Empty({
 }) {
 	return (
 		<div className="relative bg-inverse/10 min-h-[250px] rounded-[8px] flex justify-center items-center text-black-400">
-			{onExpand && (
-				<button
-					type="button"
-					onClick={onExpand}
-					className="absolute bottom-[8px] right-[8px] size-[32px] rounded-full bg-inverse/10 hover:bg-inverse/20 flex items-center justify-center transition-colors group z-10"
-					aria-label="Expand"
-				>
-					<Maximize2 className="size-[16px] text-inverse group-hover:text-inverse/80" />
-				</button>
-			)}
 			<EmptyState
 				icon={<TextGenerationIcon width={24} height={24} />}
 				title="Nothing generated yet."

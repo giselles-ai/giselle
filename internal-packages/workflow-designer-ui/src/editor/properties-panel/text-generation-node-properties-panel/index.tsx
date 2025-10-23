@@ -262,7 +262,7 @@ export function TextGenerationNodePropertiesPanel({
 					</div>
 					<div
 						ref={generateCtaRef}
-						className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-bg via-bg/80 to-transparent"
+						className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent"
 					>
 						<button
 							type="button"
@@ -285,8 +285,12 @@ export function TextGenerationNodePropertiesPanel({
 							>
 								✦
 							</span>
-							{isGenerating ? "Stop" : "Generate with the Current Prompt"}
-							{!isGenerating && (
+							{isGenerating
+								? "Stop"
+								: isPromptEmpty(node.content.prompt)
+									? "Start Writing Your Prompt"
+									: "Generate with the Current Prompt"}
+							{!isGenerating && !isPromptEmpty(node.content.prompt) && (
 								<span className="ml-[8px] flex items-center gap-[2px] text-[11px] text-white/60">
 									<kbd className="px-[4px] py-[1px] bg-white/20 rounded-[4px]">
 										⌘
@@ -323,8 +327,8 @@ export function TextGenerationNodePropertiesPanel({
 						}`}
 						style={{
 							top: 0,
-							bottom: 0,
-							paddingBottom: `${_overlayBottomPx}px`,
+							bottom: _overlayBottomPx,
+							paddingBottom: 12,
 							transformOrigin: `center ${promptTopPx}px`,
 						}}
 					>
@@ -349,7 +353,7 @@ export function TextGenerationNodePropertiesPanel({
 								editorClassName="min-h-0 h-full"
 							/>
 						</div>
-						<div className="absolute bottom-[12px] right-[12px]">
+						<div className="absolute bottom-[20px] right-[12px]">
 							<button
 								type="button"
 								aria-label="Minimize prompt editor"
@@ -383,7 +387,8 @@ export function TextGenerationNodePropertiesPanel({
 						}`}
 						style={{
 							top: 0,
-							bottom: 0,
+							bottom: _overlayBottomPx,
+							paddingBottom: 12,
 							transformOrigin: `center ${generationTopPx}px`,
 						}}
 					>
@@ -394,7 +399,7 @@ export function TextGenerationNodePropertiesPanel({
 								isExpanded={true}
 							/>
 						)}
-						<div className="absolute bottom-[12px] right-[12px]">
+						<div className="absolute bottom-[20px] right-[12px]">
 							<button
 								type="button"
 								aria-label="Minimize generation panel"
