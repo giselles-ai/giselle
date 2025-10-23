@@ -119,6 +119,9 @@ const CONTENT_PROCESSORS: Record<
 			}),
 		};
 	},
+
+	issue: () =>
+		Promise.reject(new Error("GitHub Issue ingestion is not implemented yet.")),
 };
 
 /**
