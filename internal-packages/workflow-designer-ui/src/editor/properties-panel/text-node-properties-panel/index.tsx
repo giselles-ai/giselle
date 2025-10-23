@@ -3,23 +3,23 @@ import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
 import { TextEditor } from "@giselle-sdk/text-editor/react";
 import {
 	PropertiesPanelContent,
-	PropertiesPanelHeader,
 	PropertiesPanelRoot,
 	ResizableSection,
 	ResizableSectionGroup,
 } from "../ui";
+import { NodePanelHeader } from "../ui/node-panel-header";
 
 export function TextNodePropertiesPanel({ node }: { node: TextNode }) {
-	const { updateNodeDataContent, updateNodeData } = useWorkflowDesigner();
+	const { updateNodeDataContent, updateNodeData, deleteNode } =
+		useWorkflowDesigner();
 
 	return (
 		<PropertiesPanelRoot>
-			<PropertiesPanelHeader
+			<NodePanelHeader
 				node={node}
-				description={"Plain Text"}
-				onChangeName={(name) => {
-					updateNodeData(node, { name });
-				}}
+				onChangeName={(name) => updateNodeData(node, { name })}
+				docsUrl="https://docs.giselles.ai/en/glossary/text-node"
+				onDelete={() => deleteNode(node.id)}
 			/>
 			<PropertiesPanelContent>
 				<ResizableSectionGroup>

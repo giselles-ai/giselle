@@ -19,6 +19,7 @@ import {
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
 } from "../ui";
+import { NodePanelHeader } from "../ui/node-panel-header";
 import { GenerationPanel } from "./generation-panel";
 import { useConnectedOutputs } from "./outputs";
 import { TextGenerationTabContent } from "./tab-content";
@@ -194,60 +195,11 @@ export function TextGenerationNodePropertiesPanel({
 	return (
 		<PropertiesPanelRoot>
 			{usageLimitsReached && <UsageLimitWarning />}
-			<PropertiesPanelHeader
+			<NodePanelHeader
 				node={node}
-				description={node.content.llm.provider}
-				onChangeName={(name) => {
-					updateNodeData(node, { name });
-				}}
-				action={
-					<div className="flex items-center gap-[6px]">
-						<IconBox
-							aria-label="Open documentation"
-							title="Open documentation"
-							onClick={() =>
-								window.open(
-									"https://docs.giselles.ai/en/glossary/text-node",
-									"_blank",
-									"noopener,noreferrer",
-								)
-							}
-						>
-							<svg
-								className="size-[14px]"
-								width="14"
-								height="14"
-								viewBox="0 0 24 24"
-								fill="none"
-								xmlns="http://www.w3.org/2000/svg"
-								role="img"
-								aria-label="External link"
-							>
-								<path
-									d="M14 3h7v7m0-7L10 14"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-								/>
-								<path
-									d="M21 14v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h6"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-								/>
-							</svg>
-						</IconBox>
-						<IconBox
-							aria-label="Delete node"
-							title="Delete node"
-							onClick={() => deleteNode(node.id)}
-						>
-							<TrashIcon className="size-[14px]" />
-						</IconBox>
-					</div>
-				}
+				onChangeName={(name) => updateNodeData(node, { name })}
+				docsUrl="https://docs.giselles.ai/en/glossary/text-node"
+				onDelete={() => deleteNode(node.id)}
 			/>
 
 			<PropertiesPanelContent>

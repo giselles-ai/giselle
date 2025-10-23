@@ -32,6 +32,7 @@ import {
 	PropertiesPanelRoot,
 	ResizeHandle,
 } from "../ui";
+import { NodePanelHeader } from "../ui/node-panel-header";
 import { GenerationPanel } from "./generation-panel";
 import { InputPanel } from "./input-panel";
 import { createDefaultModelData, updateModelId } from "./model-defaults";
@@ -161,39 +162,11 @@ export function ImageGenerationNodePropertiesPanel({
 	return (
 		<PropertiesPanelRoot>
 			{usageLimitsReached && <UsageLimitWarning />}
-			<PropertiesPanelHeader
+			<NodePanelHeader
 				node={node}
-				description={node.content.llm.provider}
-				onChangeName={(name) => {
-					updateNodeData(node, { name });
-				}}
-				action={
-					<Button
-						type="button"
-						disabled={usageLimitsReached || isPromptEmpty(node.content.prompt)}
-						loading={isGenerating}
-						onClick={() => {
-							if (isGenerating) {
-								stopGenerationRunner();
-							} else {
-								generateImage();
-							}
-						}}
-						className="w-[150px] disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						{isGenerating ? (
-							<span>Stop</span>
-						) : (
-							<>
-								<span>Generate</span>
-								<kbd className="flex items-center text-[12px]">
-									<CommandIcon className="size-[12px]" />
-									<CornerDownLeft className="size-[12px]" />
-								</kbd>
-							</>
-						)}
-					</Button>
-				}
+				onChangeName={(name) => updateNodeData(node, { name })}
+				docsUrl="https://docs.giselles.ai/en/glossary/image-node"
+				onDelete={() => updateNodeData(node, { archived: true })}
 			/>
 
 			<PanelGroup direction="vertical" className="flex-1 flex flex-col">

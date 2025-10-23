@@ -1,10 +1,7 @@
 import type { VectorStoreNode } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
-import {
-	PropertiesPanelContent,
-	PropertiesPanelHeader,
-	PropertiesPanelRoot,
-} from "../ui";
+import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
+import { NodePanelHeader } from "../ui/node-panel-header";
 import { DocumentVectorStoreNodePropertiesPanel } from "./document";
 import { GitHubVectorStoreNodePropertiesPanel } from "./github";
 
@@ -13,15 +10,15 @@ export function VectorStoreNodePropertiesPanel({
 }: {
 	node: VectorStoreNode;
 }) {
-	const { updateNodeData } = useWorkflowDesigner();
+	const { updateNodeData, deleteNode } = useWorkflowDesigner();
 
 	return (
 		<PropertiesPanelRoot>
-			<PropertiesPanelHeader
+			<NodePanelHeader
 				node={node}
-				onChangeName={(name) => {
-					updateNodeData(node, { name });
-				}}
+				onChangeName={(name) => updateNodeData(node, { name })}
+				docsUrl="https://docs.giselles.ai/en/glossary/vector-store-node"
+				onDelete={() => deleteNode(node.id)}
 			/>
 			<PropertiesPanelContent>
 				<PropertiesPanel node={node} />
