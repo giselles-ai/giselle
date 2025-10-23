@@ -120,3 +120,34 @@ export async function updatePullRequestReviewComment(args: {
 	);
 	return response.data;
 }
+
+export async function updatePullRequest(args: {
+	repositoryNodeId: string;
+	pullNumber: number;
+	title: string;
+	body: string;
+	authConfig: GitHubAuthConfig;
+}) {
+	const client = octokit(args.authConfig);
+	const repo = await getRepositoryFullname(
+		args.repositoryNodeId,
+		args.authConfig,
+	);
+	if (repo.error || repo.data === undefined) {
+		throw new Error(`Failed to get repository information: ${repo.error}`);
+	}
+	if (repo.data.node?.__typename !== "Repository") {
+		throw new Error(`Invalid repository type: ${repo.data.node?.__typename}`);
+	}
+	const response = await client.request(
+		"PATCH /repos/{owner}/{repo}/pulls/{pull_number}",
+		{
+			owner: repo.data.node.owner.login,
+			repo: repo.data.node.name,
+			pull_number: args.pullNumber,
+			title: args.title,
+			body: args.body,
+		},
+	);
+	return response.data;
+}

@@ -1,12 +1,93 @@
 import type { FileData, Workspace } from "@giselle-sdk/data-type";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useFeatureFlag } from "../feature-flags";
-import { useGiselleEngine } from "../use-giselle-engine";
+import {
+	type GiselleRequestOptions,
+	useGiselleEngine,
+} from "../use-giselle-engine";
 import { WorkflowDesignerContext } from "./context";
 import { type AppStore, isSupportedConnection, useAppStore } from "./hooks";
 import type { WorkflowDesignerContextValue } from "./types";
 
 const DEFAULT_SAVE_DELAY = 1000;
+
+interface WorkspaceAutoSaveOptions {
+	client: ReturnType<typeof useGiselleEngine>;
+	experimentalStorage: boolean;
+	saveWorkflowDelay: number;
+}
+
+function useWorkspaceAutoSave({
+	client,
+	experimentalStorage,
+	saveWorkflowDelay,
+}: WorkspaceAutoSaveOptions) {
+	const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	const clearScheduledSave = useCallback(() => {
+		if (!saveTimeoutRef.current) return;
+		clearTimeout(saveTimeoutRef.current);
+		saveTimeoutRef.current = null;
+	}, []);
+
+	const performSave = useCallback(
+		async (state: AppStore, requestOptions?: GiselleRequestOptions) => {
+			if (!state.workspace) return;
+			try {
+				await client.updateWorkspace(
+					{
+						workspace: state.workspace,
+						useExperimentalStorage: experimentalStorage,
+					},
+					requestOptions,
+				);
+			} catch (error) {
+				console.error("Failed to persist workspace:", error);
+			}
+		},
+		[client, experimentalStorage],
+	);
+
+	const scheduleAutoSave = useCallback(
+		(state: AppStore) => {
+			if (state._skipNextSave) return;
+			clearScheduledSave();
+			saveTimeoutRef.current = setTimeout(() => {
+				void performSave(state);
+			}, saveWorkflowDelay);
+		},
+		[clearScheduledSave, performSave, saveWorkflowDelay],
+	);
+
+	useEffect(() => {
+		const unsubscribe = useAppStore.subscribe((state, prevState) => {
+			if (state._skipNextSave) {
+				useAppStore.setState({ _skipNextSave: false } as Partial<AppStore>);
+				return;
+			}
+			if (state.workspace !== prevState.workspace) {
+				scheduleAutoSave(state);
+			}
+		});
+
+		return () => {
+			clearScheduledSave();
+			unsubscribe();
+		};
+	}, [clearScheduledSave, scheduleAutoSave]);
+
+	const saveImmediately = useCallback(
+		async (requestOptions?: GiselleRequestOptions) => {
+			const currentState = useAppStore.getState();
+			if (!currentState.workspace) return;
+			clearScheduledSave();
+			await performSave(currentState, requestOptions);
+		},
+		[clearScheduledSave, performSave],
+	);
+
+	return { saveImmediately };
+}
 
 export function ZustandBridgeProvider({
 	children,
@@ -24,43 +105,11 @@ export function ZustandBridgeProvider({
 	const client = useGiselleEngine();
 	const { experimental_storage } = useFeatureFlag();
 
-	// Subscribe to global store changes for auto-save
-	useEffect(() => {
-		let saveTimeout: ReturnType<typeof setTimeout> | null = null;
-
-		const performSave = async (state: AppStore) => {
-			if (!state.workspace) return;
-			try {
-				await client.updateWorkspace({
-					workspace: state.workspace,
-					useExperimentalStorage: experimental_storage,
-				});
-			} catch (error) {
-				console.error("Failed to persist workspace:", error);
-			}
-		};
-
-		const scheduleAutoSave = (state: AppStore) => {
-			if (state._skipNextSave) return;
-			if (saveTimeout) clearTimeout(saveTimeout);
-			saveTimeout = setTimeout(() => performSave(state), saveWorkflowDelay);
-		};
-
-		const unsubscribe = useAppStore.subscribe((state, prevState) => {
-			if (state._skipNextSave) {
-				useAppStore.setState({ _skipNextSave: false } as Partial<AppStore>);
-				return;
-			}
-			if (state.workspace !== prevState.workspace) {
-				scheduleAutoSave(state);
-			}
-		});
-
-		return () => {
-			if (saveTimeout) clearTimeout(saveTimeout);
-			unsubscribe();
-		};
-	}, [client, experimental_storage, saveWorkflowDelay]);
+	const { saveImmediately } = useWorkspaceAutoSave({
+		client,
+		experimentalStorage: experimental_storage,
+		saveWorkflowDelay,
+	});
 
 	// Initialize or update workspace in the global store when data changes
 	useEffect(() => {
@@ -82,6 +131,18 @@ export function ZustandBridgeProvider({
 		};
 		loadProviders();
 	}, [client]);
+
+	useEffect(() => {
+		function handleBeforeUnload() {
+			saveImmediately({ keepalive: true });
+		}
+
+		window.addEventListener("beforeunload", handleBeforeUnload);
+
+		return () => {
+			window.removeEventListener("beforeunload", handleBeforeUnload);
+		};
+	}, [saveImmediately]);
 
 	// Get current state
 	const state = useAppStore();
@@ -113,6 +174,7 @@ export function ZustandBridgeProvider({
 				state.removeFile(client, data.id, experimental_storage, file),
 			llmProviders: state.llmProviders,
 			isLoading: state.isLoading,
+			saveWorkspace: saveImmediately,
 			setUiViewport: state.setUiViewport,
 			updateName: state.updateWorkspaceName,
 			isSupportedConnection,
@@ -124,7 +186,14 @@ export function ZustandBridgeProvider({
 			openPropertiesPanel: state.openPropertiesPanel,
 			setOpenPropertiesPanel: state.setOpenPropertiesPanel,
 		}),
-		[state, textGenerationApi, client, data, experimental_storage],
+		[
+			state,
+			textGenerationApi,
+			client,
+			data,
+			experimental_storage,
+			saveImmediately,
+		],
 	);
 
 	// Wait for workspace to be initialized

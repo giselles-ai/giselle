@@ -16,6 +16,7 @@ import {
 	getDiscussionForCommentCreation,
 	getRepositoryFullname,
 	replyPullRequestReviewComment,
+	updatePullRequest,
 } from "@giselle-sdk/github-tool";
 import {
 	isJsonContent,
@@ -222,6 +223,16 @@ async function executeGitHubActionCommand(args: {
 				...githubActions[
 					"github.create.pullRequestComment"
 				].command.parameters.parse(inputs),
+				repositoryNodeId: args.state.repositoryNodeId,
+				authConfig: commonAuthConfig,
+			});
+			return createActionOutput(result, args.generationContext);
+		}
+		case "github.update.pullRequest": {
+			const result = await updatePullRequest({
+				...githubActions["github.update.pullRequest"].command.parameters.parse(
+					inputs,
+				),
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});

@@ -4,7 +4,7 @@ import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Code, GitPullRequest, Plus } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 import { GlassButton } from "@/components/ui/glass-button";
 import type { GitHubRepositoryContentType } from "@/drizzle";
 import {
@@ -45,85 +45,124 @@ export function RepositoryRegistrationDialog({
 	});
 	const [selectedProfiles, setSelectedProfiles] = useState<number[]>([1]); // Default to OpenAI Small
 
-	const selectedInstallation = installationsWithRepos.find(
-		(i) => String(i.installation.id) === ownerId,
+	const selectedInstallation = useMemo(
+		() =>
+			installationsWithRepos.find((i) => String(i.installation.id) === ownerId),
+		[installationsWithRepos, ownerId],
 	);
-	const repositoryOptions = selectedInstallation?.repositories || [];
+	const repositoryOptions = useMemo(
+		() => selectedInstallation?.repositories || [],
+		[selectedInstallation],
+	);
 
 	// Convert installations to SelectOption format
-	const ownerOptions: SelectOption[] = installationsWithRepos.map(
-		({ installation }) => ({
-			value: String(installation.id),
-			label: installation.name,
-		}),
+	const ownerOptions: SelectOption[] = useMemo(
+		() =>
+			installationsWithRepos.map(({ installation }) => ({
+				value: String(installation.id),
+				label: installation.name,
+			})),
+		[installationsWithRepos],
 	);
 
 	// Convert repositories to SelectOption format
-	const repoSelectOptions: SelectOption[] = repositoryOptions.map((repo) => ({
-		value: String(repo.id),
-		label: repo.name,
-	}));
+	const repoSelectOptions: SelectOption[] = useMemo(
+		() =>
+			repositoryOptions.map((repo) => ({
+				value: String(repo.id),
+				label: repo.name,
+			})),
+		[repositoryOptions],
+	);
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		setError("");
+	const handleOwnerChange = useCallback((value: string) => {
+		setOwnerId(value);
+		setRepositoryId("");
+	}, []);
 
-		if (!ownerId) {
-			setError("Owner is required");
-			return;
-		}
-		if (!repositoryId) {
-			setError("Repository is required");
-			return;
-		}
+	const handleRepositoryChange = useCallback((value: string) => {
+		setRepositoryId(value);
+	}, []);
 
-		startTransition(async () => {
-			const owner = installationsWithRepos.find(
-				(i) => String(i.installation.id) === ownerId,
-			)?.installation.name;
-			if (!owner) {
-				setError("Owner not found");
+	const handleToggleCode = useCallback((enabled: boolean) => {
+		setContentConfig((prev) => ({ ...prev, code: { enabled } }));
+	}, []);
+
+	const handleTogglePullRequests = useCallback((enabled: boolean) => {
+		setContentConfig((prev) => ({ ...prev, pullRequests: { enabled } }));
+	}, []);
+
+	const handleSubmit = useCallback(
+		(e: React.FormEvent) => {
+			e.preventDefault();
+			setError("");
+
+			if (!ownerId) {
+				setError("Owner is required");
 				return;
 			}
-			const repo = repositoryOptions.find(
-				(r) => String(r.id) === repositoryId,
-			)?.name;
-			if (!repo) {
-				setError("Repository not found");
+			if (!repositoryId) {
+				setError("Repository is required");
 				return;
 			}
-			const contentTypes: {
-				contentType: GitHubRepositoryContentType;
-				enabled: boolean;
-			}[] = [
-				{ contentType: "blob", enabled: contentConfig.code.enabled },
-				{
-					contentType: "pull_request",
-					enabled: contentConfig.pullRequests.enabled,
-				},
-			];
 
-			const result = await registerRepositoryIndexAction(
-				owner,
-				repo,
-				Number(ownerId),
-				contentTypes,
-				selectedProfiles,
-			);
-			if (result.success) {
-				setIsOpen(false);
-				setOwnerId("");
-				setRepositoryId("");
-				setContentConfig({
-					code: { enabled: true },
-					pullRequests: { enabled: false },
-				});
-				setSelectedProfiles([1]); // Reset to default
-			} else {
-				setError(result.error);
-			}
-		});
-	};
+			startTransition(async () => {
+				const owner = installationsWithRepos.find(
+					(i) => String(i.installation.id) === ownerId,
+				)?.installation.name;
+				if (!owner) {
+					setError("Owner not found");
+					return;
+				}
+				const repo = repositoryOptions.find(
+					(r) => String(r.id) === repositoryId,
+				)?.name;
+				if (!repo) {
+					setError("Repository not found");
+					return;
+				}
+				const contentTypes: {
+					contentType: GitHubRepositoryContentType;
+					enabled: boolean;
+				}[] = [
+					{ contentType: "blob", enabled: contentConfig.code.enabled },
+					{
+						contentType: "pull_request",
+						enabled: contentConfig.pullRequests.enabled,
+					},
+				];
+
+				const result = await registerRepositoryIndexAction(
+					owner,
+					repo,
+					Number(ownerId),
+					contentTypes,
+					selectedProfiles,
+				);
+				if (result.success) {
+					setIsOpen(false);
+					setOwnerId("");
+					setRepositoryId("");
+					setContentConfig({
+						code: { enabled: true },
+						pullRequests: { enabled: false },
+					});
+					setSelectedProfiles([1]); // Reset to default
+				} else {
+					setError(result.error);
+				}
+			});
+		},
+		[
+			installationsWithRepos,
+			ownerId,
+			repositoryId,
+			repositoryOptions,
+			contentConfig,
+			selectedProfiles,
+			registerRepositoryIndexAction,
+		],
+	);
 
 	return (
 		<Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
@@ -165,10 +204,7 @@ export function RepositoryRegistrationDialog({
 									options={ownerOptions}
 									placeholder="Select owner"
 									value={ownerId}
-									onValueChange={(value) => {
-										setOwnerId(value);
-										setRepositoryId("");
-									}}
+									onValueChange={handleOwnerChange}
 									disabled={isPending}
 									triggerClassName="bg-surface text-text text-[14px] font-geist"
 									id="owner"
@@ -194,7 +230,7 @@ export function RepositoryRegistrationDialog({
 												: "Select repository"
 									}
 									value={repositoryId}
-									onValueChange={setRepositoryId}
+									onValueChange={handleRepositoryChange}
 									disabled={isPending || !ownerId}
 									triggerClassName="bg-surface text-text text-[14px] font-geist"
 									id="repository"
@@ -214,9 +250,7 @@ export function RepositoryRegistrationDialog({
 									<Toggle
 										name="code-toggle"
 										checked={contentConfig.code.enabled}
-										onCheckedChange={(enabled) =>
-											setContentConfig({ ...contentConfig, code: { enabled } })
-										}
+										onCheckedChange={handleToggleCode}
 										disabled={true}
 									>
 										<div className="flex-1 mr-3">
@@ -239,12 +273,7 @@ export function RepositoryRegistrationDialog({
 									<Toggle
 										name="pull-requests-toggle"
 										checked={contentConfig.pullRequests.enabled}
-										onCheckedChange={(enabled) =>
-											setContentConfig({
-												...contentConfig,
-												pullRequests: { enabled },
-											})
-										}
+										onCheckedChange={handleTogglePullRequests}
 									>
 										<div className="flex-1 mr-3">
 											<div className="flex items-center gap-2 mb-1">

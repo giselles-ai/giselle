@@ -6,7 +6,7 @@
 		"useIgnoreFile": false
 	},
 	"files": {
-		"includes": ["**", "!**/dist", "!**/.*"],
+		"includes": ["**", "!**/dist", "!**/.*", "!**/node_modules", "!**/build"],
 		"ignoreUnknown": false
 	},
 	"formatter": {
@@ -27,6 +27,7 @@
 			}
 		},
 		"domains": {
+			"next": "recommended",
 			"react": "recommended"
 		}
 	},

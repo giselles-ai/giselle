@@ -4,7 +4,6 @@ import {
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
 import { useCallback } from "react";
-import { NodeIcon } from "../../../icons/node";
 import { Button } from "../../../ui/button";
 import {
 	PropertiesPanelContent,
@@ -57,7 +56,6 @@ export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 	return (
 		<PropertiesPanelRoot>
 			<PropertiesPanelHeader
-				icon={<NodeIcon node={node} className="size-[20px] text-inverse" />}
 				node={node}
 				onChangeName={(name) => {
 					updateNodeData(node, { name });

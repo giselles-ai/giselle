@@ -1,6 +1,5 @@
 import type { VectorStoreNode } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
-import { NodeIcon } from "../../../icons/node";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
@@ -19,7 +18,6 @@ export function VectorStoreNodePropertiesPanel({
 	return (
 		<PropertiesPanelRoot>
 			<PropertiesPanelHeader
-				icon={<NodeIcon node={node} className="size-[20px] text-inverse" />}
 				node={node}
 				onChangeName={(name) => {
 					updateNodeData(node, { name });

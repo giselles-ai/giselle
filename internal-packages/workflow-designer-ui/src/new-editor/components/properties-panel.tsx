@@ -2,12 +2,12 @@
 
 import type { NodeId } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
+import { useCallback, useMemo } from "react";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
 	PropertiesPanelRoot,
 } from "../../editor/properties-panel/ui";
-import { NodeIcon } from "../../icons/node";
 import { Button } from "../../ui/button";
 import { useEditorStore, useEditorStoreWithEqualityFn } from "../store/context";
 
@@ -25,6 +25,26 @@ export function PropertiesPanel() {
 		(a, b) => a.node === b.node && a.updateNode === b.updateNode,
 	);
 
+	const handleClose = useCallback(() => {
+		setInspectedNodeId(undefined);
+	}, [setInspectedNodeId]);
+
+	const handleChangeName = useCallback(
+		(name?: string) => {
+			// node.id only changes when selection changes, so dependencies are stable
+			if (!node) return;
+			if (typeof name === "string" && name.trim().length > 0) {
+				updateNode(node.id as NodeId, { name });
+				return;
+			}
+			// Clear name when the value is undefined or an empty string
+			updateNode(node.id as NodeId, { name: undefined });
+		},
+		[node, updateNode],
+	);
+
+	const description = useMemo(() => node?.content.type, [node?.content.type]);
+
 	// Hide when nothing is selected/inspected or node not found.
 	if (!inspectedNodeId || !node) return null;
 
@@ -38,15 +58,12 @@ export function PropertiesPanel() {
 			<PropertiesPanelRoot>
 				<PropertiesPanelHeader
 					node={node}
-					description={node.content.type}
-					icon={<NodeIcon node={node} className="size-[20px] text-inverse" />}
-					onChangeName={(name) => {
-						updateNode(node.id as NodeId, { name });
-					}}
+					description={description}
+					onChangeName={(name) => handleChangeName(name ?? "")}
 					action={
 						<Button
 							type="button"
-							onClick={() => setInspectedNodeId(undefined)}
+							onClick={handleClose}
 							className="!py-[6px] !px-[10px]"
 						>
 							Close
