@@ -297,6 +297,9 @@ export function Toolbar() {
 														{triggerProvider === "github" && (
 															<GitHubIcon className="size-[20px] shrink-0" />
 														)}
+														{triggerProvider === "app-entry" && (
+															<TriggerIcon className="size-[20px] shrink-0" />
+														)}
 
 														<p className="text-[14px]">
 															{triggerNodeDefaultName(triggerProvider)}
