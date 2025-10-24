@@ -734,10 +734,10 @@ export const githubRepositoryIssueEmbeddings = pgTable(
 			table.chunkIndex,
 		),
 		index("gh_issue_embeddings_embedding_1536_idx")
-			.using("hnsw", sql`${table.embedding}::vector(1536) vector_cosine_ops`)
+			.using("hnsw", sql`(${table.embedding}::vector(1536)) vector_cosine_ops`)
 			.where(sql`${table.embeddingDimensions} = 1536`),
 		index("gh_issue_embeddings_embedding_3072_idx")
-			.using("hnsw", sql`${table.embedding}::halfvec(3072) halfvec_cosine_ops`)
+			.using("hnsw", sql`(${table.embedding}::halfvec(3072)) halfvec_cosine_ops`)
 			.where(sql`${table.embeddingDimensions} = 3072`),
 		foreignKey({
 			columns: [table.repositoryIndexDbId],
