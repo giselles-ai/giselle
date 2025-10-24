@@ -1,4 +1,5 @@
 import { Select } from "@giselle-internal/ui/select";
+import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { OpenAIImageLanguageModelData } from "@giselle-sdk/data-type";
 import {
 	openaiImageBackground,
@@ -16,11 +17,14 @@ export function OpenAIImageModelPanel({
 }) {
 	return (
 		<div className="flex flex-col gap-[16px]">
-			<div className="grid grid-cols-2 gap-[24px]">
-				<fieldset className="flex flex-col">
-					<label htmlFor="size" className="text-text text-[13px] mb-[2px]">
-						Size
-					</label>
+			<div className="grid grid-cols-1 gap-[16px]">
+				<SettingRow
+					label={
+						<label htmlFor="size" className="text-text text-[14px]">
+							Size
+						</label>
+					}
+				>
 					<Select
 						id="size"
 						placeholder="Select a Size"
@@ -41,12 +45,15 @@ export function OpenAIImageModelPanel({
 							label: imageGenerationSize,
 						}))}
 					/>
-				</fieldset>
+				</SettingRow>
 
-				<fieldset className="flex flex-col">
-					<label htmlFor="quality" className="text-text text-[13px] mb-[2px]">
-						Quality
-					</label>
+				<SettingRow
+					label={
+						<label htmlFor="quality" className="text-text text-[14px]">
+							Quality
+						</label>
+					}
+				>
 					<Select
 						id="quality"
 						placeholder="Select a quality"
@@ -67,15 +74,15 @@ export function OpenAIImageModelPanel({
 							label: openaiImageQuality,
 						}))}
 					/>
-				</fieldset>
+				</SettingRow>
 
-				<fieldset className="flex flex-col">
-					<label
-						htmlFor="background"
-						className="text-text text-[13px] mb-[2px]"
-					>
-						Background
-					</label>
+				<SettingRow
+					label={
+						<label htmlFor="background" className="text-text text-[14px]">
+							Background
+						</label>
+					}
+				>
 					<Select
 						id="background"
 						placeholder="Select a background"
@@ -98,15 +105,15 @@ export function OpenAIImageModelPanel({
 							}),
 						)}
 					/>
-				</fieldset>
+				</SettingRow>
 
-				<fieldset className="flex flex-col">
-					<label
-						htmlFor="moderation"
-						className="text-text text-[13px] mb-[2px]"
-					>
-						Moderation
-					</label>
+				<SettingRow
+					label={
+						<label htmlFor="moderation" className="text-text text-[14px]">
+							Moderation
+						</label>
+					}
+				>
 					<Select
 						id="moderation"
 						placeholder="Select a moderation"
@@ -129,7 +136,7 @@ export function OpenAIImageModelPanel({
 							}),
 						)}
 					/>
-				</fieldset>
+				</SettingRow>
 			</div>
 		</div>
 	);

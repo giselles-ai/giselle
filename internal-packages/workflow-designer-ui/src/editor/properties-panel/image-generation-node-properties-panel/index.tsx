@@ -9,6 +9,7 @@ import {
 	isSupportedConnection,
 	useNodeGenerations,
 	useWorkflowDesigner,
+	useWorkflowDesignerStore,
 } from "@giselle-sdk/giselle/react";
 import {
 	falLanguageModels,
@@ -16,25 +17,16 @@ import {
 	openaiImageModels,
 } from "@giselle-sdk/language-model";
 import clsx from "clsx/lite";
-import { CommandIcon, CornerDownLeft } from "lucide-react";
-import { Tabs } from "radix-ui";
-import { useCallback, useMemo } from "react";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { Button } from "../../../ui/button";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { useModelEligibility } from "../../lib/use-model-eligibility";
 import { isPromptEmpty } from "../../lib/validate-prompt";
-import {
-	PropertiesPanelContent,
-	PropertiesPanelHeader,
-	PropertiesPanelRoot,
-	ResizeHandle,
-} from "../ui";
+import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GenerationPanel } from "./generation-panel";
-import { InputPanel } from "./input-panel";
 import { createDefaultModelData, updateModelId } from "./model-defaults";
 import { FalModelPanel, OpenAIImageModelPanel } from "./models";
 import { PromptPanel } from "./prompt-panel";
@@ -52,18 +44,33 @@ export function ImageGenerationNodePropertiesPanel({
 		setUiNodeState,
 		deleteConnection,
 	} = useWorkflowDesigner();
-	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
-		useNodeGenerations({
-			nodeId: node.id,
-			origin: { type: "studio", workspaceId: data.id },
-		});
+	const { createAndStartGenerationRunner, isGenerating } = useNodeGenerations({
+		nodeId: node.id,
+		origin: { type: "studio", workspaceId: data.id },
+	});
 	const { all: connectedSources } = useConnectedSources(node);
 	const usageLimitsReached = useUsageLimitsReached();
 	const { error } = useToasts();
 
 	const checkEligibility = useModelEligibility();
 
+	const [isPromptExpanded, setIsPromptExpanded] = useState(false);
+	const [isGenerationExpanded, setIsGenerationExpanded] = useState(false);
+	const [editorVersion, setEditorVersion] = useState(0);
+	const generateCtaRef = useRef<HTMLDivElement | null>(null);
+	const [_overlayBottomPx, setOverlayBottomPx] = useState(0);
+	const promptEditorRef = useRef<HTMLDivElement | null>(null);
+	const generationPanelRef = useRef<HTMLDivElement | null>(null);
+	const [promptTopPx, setPromptTopPx] = useState(0);
+	const [generationTopPx, setGenerationTopPx] = useState(0);
+
 	const uiState = useMemo(() => data.ui.nodeState[node.id], [data, node.id]);
+
+	// Subscribe live to the latest prompt (for expanded editor sync)
+	const livePrompt = useWorkflowDesignerStore((s) => {
+		const n = s.workspace.nodes.find((x) => x.id === node.id);
+		return (n?.content as { prompt?: string } | undefined)?.prompt;
+	});
 
 	// Get available models for current provider
 	const models = useMemo<SelectOption[]>(() => {
@@ -159,6 +166,71 @@ export function ImageGenerationNodePropertiesPanel({
 		error,
 	]);
 
+	useEffect(() => {
+		const el = generateCtaRef.current;
+		if (!el) {
+			setOverlayBottomPx(0);
+			return;
+		}
+		const update = () => setOverlayBottomPx(el.offsetHeight || 0);
+		update();
+		const ro = new ResizeObserver(update);
+		ro.observe(el);
+		window.addEventListener("resize", update);
+		return () => {
+			ro.disconnect();
+			window.removeEventListener("resize", update);
+		};
+	}, []);
+
+	useEffect(() => {
+		const el = promptEditorRef.current;
+		if (!el) {
+			setPromptTopPx(0);
+			return;
+		}
+		const update = () => {
+			const rect = el.getBoundingClientRect();
+			const container = el.closest(".relative");
+			const containerRect = container?.getBoundingClientRect();
+			setPromptTopPx(containerRect ? rect.top - containerRect.top : 0);
+		};
+		update();
+		const ro = new ResizeObserver(update);
+		ro.observe(el);
+		window.addEventListener("resize", update);
+		window.addEventListener("scroll", update, true);
+		return () => {
+			ro.disconnect();
+			window.removeEventListener("resize", update);
+			window.removeEventListener("scroll", update, true);
+		};
+	}, []);
+
+	useEffect(() => {
+		const el = generationPanelRef.current;
+		if (!el) {
+			setGenerationTopPx(0);
+			return;
+		}
+		const update = () => {
+			const rect = el.getBoundingClientRect();
+			const container = el.closest(".relative");
+			const containerRect = container?.getBoundingClientRect();
+			setGenerationTopPx(containerRect ? rect.top - containerRect.top : 0);
+		};
+		update();
+		const ro = new ResizeObserver(update);
+		ro.observe(el);
+		window.addEventListener("resize", update);
+		window.addEventListener("scroll", update, true);
+		return () => {
+			ro.disconnect();
+			window.removeEventListener("resize", update);
+			window.removeEventListener("scroll", update, true);
+		};
+	}, []);
+
 	return (
 		<PropertiesPanelRoot>
 			{usageLimitsReached && <UsageLimitWarning />}
@@ -169,145 +241,112 @@ export function ImageGenerationNodePropertiesPanel({
 				onDelete={() => updateNodeData(node, { archived: true })}
 			/>
 
-			<PanelGroup direction="vertical" className="flex-1 flex flex-col">
-				<Panel>
-					<PropertiesPanelContent>
-						<Tabs.Root
-							className="flex flex-col gap-[8px] h-full"
-							value={uiState?.tab ?? "prompt"}
-							onValueChange={(tab) => {
-								setUiNodeState(node.id, { tab }, { save: true });
-							}}
+			<PropertiesPanelContent>
+				<div className="relative flex-1 min-h-0 flex flex-col">
+					<div className="flex-1 min-h-0 overflow-y-auto">
+						<div ref={promptEditorRef} className="mt-[12px]">
+							<PromptPanel
+								node={node}
+								onExpand={() => {
+									setEditorVersion((v) => v + 1);
+									requestAnimationFrame(() => setIsPromptExpanded(true));
+								}}
+								editorVersion={editorVersion}
+							/>
+						</div>
+
+						<div className="mt-[8px]" ref={generationPanelRef}>
+							<GenerationPanel
+								node={node}
+								onClickGenerateButton={generateImage}
+								onExpand={() => setIsGenerationExpanded(true)}
+							/>
+						</div>
+					</div>
+
+					<div
+						ref={generateCtaRef}
+						className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent"
+					>
+						<Button
+							type="button"
+							disabled={
+								usageLimitsReached || isPromptEmpty(node.content.prompt)
+							}
+							onClick={generateImage}
+							className="w-full disabled:cursor-not-allowed disabled:opacity-50"
 						>
-							<Tabs.List
-								className={clsx(
-									"flex gap-[16px] text-[14px] font-accent",
-									"**:p-[4px] **:border-b **:cursor-pointer",
-									"**:data-[state=active]:text-inverse **:data-[state=active]:border-inverse",
-									"**:data-[state=inactive]:text-black-400 **:data-[state=inactive]:border-transparent",
-								)}
-							>
-								<Tabs.Trigger value="prompt">Prompt</Tabs.Trigger>
-								<Tabs.Trigger value="model">Model</Tabs.Trigger>
-							</Tabs.List>
-							<Tabs.Content
-								value="prompt"
-								className="flex-1 flex flex-col overflow-hidden"
-							>
-								<PromptPanel node={node} />
-							</Tabs.Content>
-							<Tabs.Content
-								value="model"
-								className="flex-1 flex flex-col overflow-y-auto px-[4px] outline-none"
-							>
-								<div className="grid grid-cols-2 gap-[16px] mb-[16px] max-w-full border-b border-inverse/20 pb-[16px]">
-									<fieldset className="flex flex-col min-w-0">
-										<label
-											htmlFor="provider"
-											className="text-text text-[13px] mb-[2px]"
-										>
-											Provider
-										</label>
-										<Select
-											id="provider"
-											placeholder="Select a provider"
-											value={node.content.llm.provider}
-											onValueChange={(provider) => {
-												const result =
-													ImageGenerationLanguageModelProvider.safeParse(
-														provider,
-													);
-												if (!result.success) return;
-												const defaultModel = createDefaultModelData(
-													result.data,
-												);
+							Generate with the Current Prompt
+						</Button>
+					</div>
 
-												disconnectInvalidConnections(defaultModel);
-												updateNodeDataContent(node, {
-													...node.content,
-													llm: defaultModel,
-												});
-											}}
-											options={[
-												{ value: "fal", label: "Fal" },
-												{ value: "openai", label: "OpenAI" },
-												{ value: "google", label: "Google" },
-											]}
-										/>
-									</fieldset>
+					{/* Expanded prompt overlay */}
+					<div
+						role="dialog"
+						aria-modal="true"
+						aria-label="Expanded prompt editor"
+						className={`absolute left-0 right-0 z-20 flex flex-col bg-background rounded-[8px] transition-all duration-300 ease-out ${
+							isPromptExpanded
+								? "opacity-100 scale-y-100 pointer-events-auto"
+								: "opacity-0 scale-y-0 pointer-events-none"
+						}`}
+						style={{
+							top: 0,
+							bottom: _overlayBottomPx,
+							paddingBottom: 12,
+							transformOrigin: `center ${promptTopPx}px`,
+						}}
+					>
+						<div className="flex-1 min-h-0 flex flex-col overflow-hidden rounded-[8px] bg-background">
+							<PromptPanel
+								key={`expanded-${editorVersion}-${node.id}`}
+								node={node}
+								onExpand={() => {}}
+								editorVersion={editorVersion}
+							/>
+						</div>
+						<button
+							type="button"
+							aria-label="Backdrop"
+							className="absolute inset-0 -z-10"
+							onClick={() => {
+								setIsPromptExpanded(false);
+								setEditorVersion((v) => v + 1);
+							}}
+						/>
+					</div>
 
-									<fieldset className="flex flex-col min-w-0">
-										<label
-											htmlFor="model"
-											className="text-text text-[13px] mb-[2px]"
-										>
-											Model
-										</label>
-										<Select
-											id="model"
-											placeholder="Select a model"
-											value={node.content.llm.id}
-											widthClassName="w-full"
-											onValueChange={(modelId) => {
-												const updatedModel = updateModelId(
-													node.content.llm,
-													modelId,
-												);
-
-												disconnectInvalidConnections(updatedModel);
-												updateNodeDataContent(node, {
-													...node.content,
-													llm: updatedModel,
-												});
-											}}
-											options={models}
-										/>
-									</fieldset>
-								</div>
-								{node.content.llm.provider === "fal" && (
-									<FalModelPanel
-										languageModel={node.content.llm}
-										onModelChange={(value) =>
-											updateNodeDataContent(node, {
-												...node.content,
-												llm: value,
-											})
-										}
-									/>
-								)}
-								{node.content.llm.provider === "openai" && (
-									<OpenAIImageModelPanel
-										languageModel={node.content.llm}
-										onModelChange={(value) =>
-											updateNodeDataContent(node, {
-												...node.content,
-												llm: value,
-											})
-										}
-									/>
-								)}
-							</Tabs.Content>
-							<Tabs.Content
-								value="input"
-								className="flex-1 flex flex-col overflow-y-auto"
-							>
-								<InputPanel node={node} />
-							</Tabs.Content>
-						</Tabs.Root>
-					</PropertiesPanelContent>
-				</Panel>
-				<PanelResizeHandle className="h-[12px] flex items-center justify-center cursor-row-resize">
-					<ResizeHandle direction="vertical" />
-				</PanelResizeHandle>
-				<Panel>
-					<PropertiesPanelContent>
+					{/* Expanded generation overlay */}
+					<div
+						role="dialog"
+						aria-modal="true"
+						aria-label="Expanded generation panel"
+						className={`absolute left-0 right-0 z-20 flex flex-col bg-background rounded-[8px] transition-all duration-300 ease-out ${
+							isGenerationExpanded
+								? "opacity-100 scale-y-100 pointer-events-auto"
+								: "opacity-0 scale-y-0 pointer-events-none"
+						}`}
+						style={{
+							top: 0,
+							bottom: _overlayBottomPx,
+							paddingBottom: 12,
+							transformOrigin: `center ${generationTopPx}px`,
+						}}
+					>
 						<GenerationPanel
 							node={node}
 							onClickGenerateButton={generateImage}
+							isExpanded={true}
 						/>
-					</PropertiesPanelContent>
-				</Panel>
-			</PanelGroup>
+						<button
+							type="button"
+							aria-label="Backdrop"
+							className="absolute inset-0 -z-10"
+							onClick={() => setIsGenerationExpanded(false)}
+						/>
+					</div>
+				</div>
+			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);
 }

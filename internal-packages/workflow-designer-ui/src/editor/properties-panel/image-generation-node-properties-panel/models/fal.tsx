@@ -1,4 +1,5 @@
 import { Select } from "@giselle-internal/ui/select";
+import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { FalLanguageModelData } from "@giselle-sdk/data-type";
 
 import { imageGenerationSizes } from "@giselle-sdk/language-model";
@@ -26,11 +27,14 @@ export function FalModelPanel({
 	};
 
 	return (
-		<div className="grid grid-cols-2 gap-[16px]">
-			<fieldset className="flex flex-col">
-				<label htmlFor="size" className="text-text text-[13px] mb-[2px]">
-					Size
-				</label>
+		<div className="grid grid-cols-1 gap-[16px]">
+			<SettingRow
+				label={
+					<label htmlFor="size" className="text-text text-[14px]">
+						Size
+					</label>
+				}
+			>
 				<Select
 					id="size"
 					placeholder="Select a Size"
@@ -45,7 +49,7 @@ export function FalModelPanel({
 						label: imageGenerationSize,
 					}))}
 				/>
-			</fieldset>
+			</SettingRow>
 			<Slider
 				label="Number of Images"
 				value={languageModel.configurations.n}
