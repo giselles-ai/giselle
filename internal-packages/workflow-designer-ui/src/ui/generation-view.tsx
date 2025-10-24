@@ -157,15 +157,15 @@ export function GenerationView({ generation }: { generation: Generation }) {
 							{output.contents.map((content) => (
 								<ImageCard
 									key={content.filename}
-									src={`${client.basePath}/${content.pathname}`}
+									src={`${client.basePath}${content.pathname}`}
 									onDownload={() => {
 										const link = document.createElement("a");
-										link.href = `${client.basePath}/${content.pathname}`;
+										link.href = `${client.basePath}${content.pathname}`;
 										link.download = content.filename;
 										link.click();
 									}}
 									onZoom={() =>
-										setLightboxImage(`${client.basePath}/${content.pathname}`)
+										setLightboxImage(`${client.basePath}${content.pathname}`)
 									}
 								/>
 							))}
