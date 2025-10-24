@@ -45,8 +45,8 @@ export function ImageGenerationNodePropertiesPanel({
 		data,
 		updateNodeDataContent,
 		updateNodeData,
-		setUiNodeState,
 		deleteConnection,
+		deleteNode,
 	} = useWorkflowDesigner();
 	const { createAndStartGenerationRunner, isGenerating } = useNodeGenerations({
 		nodeId: node.id,
@@ -242,7 +242,7 @@ export function ImageGenerationNodePropertiesPanel({
 				node={node}
 				onChangeName={(name) => updateNodeData(node, { name })}
 				docsUrl="https://docs.giselles.ai/en/glossary/image-node"
-				onDelete={() => updateNodeData(node, { archived: true })}
+				onDelete={() => deleteNode(node.id)}
 			/>
 
 			<PropertiesPanelContent>
