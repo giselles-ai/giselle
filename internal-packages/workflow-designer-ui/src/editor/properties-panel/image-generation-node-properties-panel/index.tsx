@@ -133,15 +133,19 @@ export function ImageGenerationNodePropertiesPanel({
 	});
 
 	const generateImage = useCallback(() => {
+		console.log("generateImage called!");
 		if (usageLimitsReached) {
+			console.log("Usage limits reached");
 			error("Please upgrade your plan to continue using this feature.");
 			return;
 		}
 		if (isPromptEmpty(node.content.prompt)) {
+			console.log("Prompt is empty");
 			error("Please fill in the prompt to run.");
 			return;
 		}
 
+		console.log("Calling createAndStartGenerationRunner");
 		createAndStartGenerationRunner({
 			origin: {
 				type: "studio",
