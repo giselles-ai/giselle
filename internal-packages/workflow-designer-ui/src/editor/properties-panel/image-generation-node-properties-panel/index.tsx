@@ -42,7 +42,7 @@ export function ImageGenerationNodePropertiesPanel({
 		deleteConnection,
 		deleteNode,
 	} = useWorkflowDesigner();
-	const { createAndStartGenerationRunner, isGenerating } = useNodeGenerations({
+    const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } = useNodeGenerations({
 		nodeId: node.id,
 		origin: { type: "studio", workspaceId: data.id },
 	});
@@ -71,7 +71,7 @@ export function ImageGenerationNodePropertiesPanel({
 	});
 
 	// Get available models for current provider
-	const _models = useMemo<SelectOption[]>(() => {
+    const _models = useMemo(() => {
 		switch (node.content.llm.provider) {
 			case "fal":
 				return falLanguageModels.map((model) => ({
