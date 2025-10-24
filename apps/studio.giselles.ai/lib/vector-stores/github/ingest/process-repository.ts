@@ -119,6 +119,14 @@ const CONTENT_PROCESSORS: Record<
 			}),
 		};
 	},
+
+	issue: () =>
+		Promise.reject(
+			new DocumentLoaderError(
+				"GitHub Issue ingestion is not implemented yet.",
+				"DOCUMENT_NOT_FOUND",
+			),
+		),
 };
 
 /**

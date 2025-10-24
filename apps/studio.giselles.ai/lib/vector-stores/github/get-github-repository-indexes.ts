@@ -58,6 +58,10 @@ export async function getGitHubRepositoryIndexes(
 	>();
 
 	for (const row of repositories) {
+		if (row.contentType !== "blob" && row.contentType !== "pull_request") {
+			continue;
+		}
+
 		const key = `${row.owner}/${row.repo}`;
 		let acc = repoMap.get(key);
 		if (!acc) {
