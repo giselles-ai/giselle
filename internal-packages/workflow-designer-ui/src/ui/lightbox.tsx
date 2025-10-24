@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
+import Image from "next/image";
 import { createPortal } from "react-dom";
 
 export function Lightbox({
@@ -34,11 +35,14 @@ export function Lightbox({
 			>
 				<X className="w-6 h-6" />
 			</button>
-			<img
-				src={src}
-				alt="Generated content"
-				className="max-w-[95vw] max-h-[95vh] object-contain"
-			/>
+			<div className="relative max-w-[95vw] max-h-[95vh] w-[95vw] h-[95vh]">
+				<Image
+					src={src}
+					alt="Generated content"
+					fill
+					style={{ objectFit: "contain" }}
+				/>
+			</div>
 		</div>,
 		document.body,
 	);

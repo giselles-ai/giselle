@@ -42,10 +42,11 @@ export function ImageGenerationNodePropertiesPanel({
 		deleteConnection,
 		deleteNode,
 	} = useWorkflowDesigner();
-    const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } = useNodeGenerations({
-		nodeId: node.id,
-		origin: { type: "studio", workspaceId: data.id },
-	});
+	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
+		useNodeGenerations({
+			nodeId: node.id,
+			origin: { type: "studio", workspaceId: data.id },
+		});
 	const { all: connectedSources } = useConnectedSources(node);
 	const usageLimitsReached = useUsageLimitsReached();
 	const { error } = useToasts();
@@ -71,7 +72,7 @@ export function ImageGenerationNodePropertiesPanel({
 	});
 
 	// Get available models for current provider
-    const _models = useMemo(() => {
+	const _models = useMemo(() => {
 		switch (node.content.llm.provider) {
 			case "fal":
 				return falLanguageModels.map((model) => ({
