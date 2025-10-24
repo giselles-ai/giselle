@@ -12,6 +12,7 @@ import { Minimize2, Trash2 as TrashIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
+import { useElementTopPx, useLivePrompt, useOverlayBottom } from "../../../ui/hooks";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { isPromptEmpty } from "../../lib/validate-prompt";
 import {
@@ -57,21 +58,18 @@ export function TextGenerationNodePropertiesPanel({
 			})),
 		[connectedSources],
 	);
-	const [isPromptExpanded, setIsPromptExpanded] = useState(false);
-	const [isGenerationExpanded, setIsGenerationExpanded] = useState(false);
-	const [editorVersion, setEditorVersion] = useState(0);
-	const generateCtaRef = useRef<HTMLDivElement | null>(null);
-	const [_overlayBottomPx, setOverlayBottomPx] = useState(0);
-	const promptEditorRef = useRef<HTMLDivElement | null>(null);
-	const generationPanelRef = useRef<HTMLDivElement | null>(null);
-	const [promptTopPx, setPromptTopPx] = useState(0);
-	const [generationTopPx, setGenerationTopPx] = useState(0);
+const [isPromptExpanded, setIsPromptExpanded] = useState(false);
+const [isGenerationExpanded, setIsGenerationExpanded] = useState(false);
+const [editorVersion, setEditorVersion] = useState(0);
+const generateCtaRef = useRef<HTMLDivElement | null>(null);
+const _overlayBottomPx = useOverlayBottom(generateCtaRef as React.RefObject<HTMLDivElement>);
+const promptEditorRef = useRef<HTMLDivElement | null>(null);
+const generationPanelRef = useRef<HTMLDivElement | null>(null);
+const promptTopPx = useElementTopPx(promptEditorRef as React.RefObject<HTMLDivElement>);
+const generationTopPx = useElementTopPx(generationPanelRef as React.RefObject<HTMLDivElement>);
 	const usageLimitsReached = useUsageLimitsReached();
-	// Subscribe live to the latest prompt value so expanded editor always reflects current content
-	const livePrompt = useWorkflowDesignerStore((s) => {
-		const n = s.workspace.nodes.find((x) => x.id === node.id);
-		return (n?.content as { prompt?: string } | undefined)?.prompt;
-	});
+// Subscribe live to the latest prompt value so expanded editor always reflects current content
+const livePrompt = useLivePrompt(node.id);
 	const { error } = useToasts();
 
 	useKeyboardShortcuts({
@@ -128,70 +126,6 @@ export function TextGenerationNodePropertiesPanel({
 		return () => window.removeEventListener("keydown", onKeydown, captureOpts);
 	}, [isPromptExpanded, generateText]);
 
-	useEffect(() => {
-		const el = generateCtaRef.current;
-		if (!el) {
-			setOverlayBottomPx(0);
-			return;
-		}
-		const update = () => setOverlayBottomPx(el.offsetHeight || 0);
-		update();
-		const ro = new ResizeObserver(update);
-		ro.observe(el);
-		window.addEventListener("resize", update);
-		return () => {
-			ro.disconnect();
-			window.removeEventListener("resize", update);
-		};
-	}, []);
-
-	useEffect(() => {
-		const el = promptEditorRef.current;
-		if (!el) {
-			setPromptTopPx(0);
-			return;
-		}
-		const update = () => {
-			const rect = el.getBoundingClientRect();
-			const container = el.closest(".relative");
-			const containerRect = container?.getBoundingClientRect();
-			setPromptTopPx(containerRect ? rect.top - containerRect.top : 0);
-		};
-		update();
-		const ro = new ResizeObserver(update);
-		ro.observe(el);
-		window.addEventListener("resize", update);
-		window.addEventListener("scroll", update, true);
-		return () => {
-			ro.disconnect();
-			window.removeEventListener("resize", update);
-			window.removeEventListener("scroll", update, true);
-		};
-	}, []);
-
-	useEffect(() => {
-		const el = generationPanelRef.current;
-		if (!el) {
-			setGenerationTopPx(0);
-			return;
-		}
-		const update = () => {
-			const rect = el.getBoundingClientRect();
-			const container = el.closest(".relative");
-			const containerRect = container?.getBoundingClientRect();
-			setGenerationTopPx(containerRect ? rect.top - containerRect.top : 0);
-		};
-		update();
-		const ro = new ResizeObserver(update);
-		ro.observe(el);
-		window.addEventListener("resize", update);
-		window.addEventListener("scroll", update, true);
-		return () => {
-			ro.disconnect();
-			window.removeEventListener("resize", update);
-			window.removeEventListener("scroll", update, true);
-		};
-	}, []);
 
 	return (
 		<PropertiesPanelRoot>

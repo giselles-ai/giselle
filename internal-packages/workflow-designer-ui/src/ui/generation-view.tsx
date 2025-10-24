@@ -3,10 +3,13 @@
 import type { Generation } from "@giselle-sdk/giselle";
 import { useGiselleEngine } from "@giselle-sdk/giselle/react";
 import type { UIMessage } from "ai";
-import { ChevronRightIcon, Download, X, ZoomIn } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import { Accordion } from "radix-ui";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { Lightbox } from "./lightbox";
+import { ImageCard } from "./image-card";
+import { THUMB_HEIGHT } from "./constants";
 import { WilliIcon } from "../icons";
 import { ImageGenerationLoading } from "./image-generation-loading";
 
@@ -147,50 +150,27 @@ export function GenerationView({ generation }: { generation: Generation }) {
 						return null;
 					}
 					return (
-						<div
-							key={output.outputId}
-							className="flex gap-[12px] pt-[8px] overflow-x-auto max-w-full h-[220px] md:h-[260px]"
-						>
+                        <div
+                            key={output.outputId}
+                            className="flex gap-[12px] pt-[8px] overflow-x-auto max-w-full"
+                            style={{ height: `${THUMB_HEIGHT.sm}px` }}
+                        >
 							{output.contents.map((content) => (
-								<div
-									key={content.filename}
-									className="relative group cursor-pointer flex-shrink-0 bg-inverse/10 rounded-[8px] overflow-hidden h-full"
-								>
-									<img
-										src={`${client.basePath}/${content.pathname}`}
-										alt="generated file"
-										className="h-full w-auto object-contain rounded-[8px]"
-									/>
-									<div className="absolute inset-0 bg-background/40 rounded-[8px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-start justify-end p-2">
-										<div className="flex gap-1">
-											<button
-												type="button"
-												onClick={() => {
-													const link = document.createElement("a");
-													link.href = `${client.basePath}/${content.pathname}`;
-													link.download = content.filename;
-													link.click();
-												}}
-												className="p-2"
-												title="Download"
-											>
-												<Download className="w-4 h-4 text-white hover:scale-110 hover:translate-y-[-2px] transition-transform" />
-											</button>
-											<button
-												type="button"
-												onClick={() => {
-													setLightboxImage(
-														`${client.basePath}/${content.pathname}`,
-													);
-												}}
-												className="p-2"
-												title="View full size"
-											>
-												<ZoomIn className="w-4 h-4 text-white hover:scale-110 hover:translate-y-[-2px] transition-transform" />
-											</button>
-										</div>
-									</div>
-								</div>
+                                <ImageCard
+                                    key={content.filename}
+                                    src={`${client.basePath}/${content.pathname}`}
+                                    onDownload={() => {
+                                        const link = document.createElement("a");
+                                        link.href = `${client.basePath}/${content.pathname}`;
+                                        link.download = content.filename;
+                                        link.click();
+                                    }}
+                                    onZoom={() =>
+                                        setLightboxImage(
+                                            `${client.basePath}/${content.pathname}`,
+                                        )
+                                    }
+                                />
 							))}
 						</div>
 					);
@@ -286,39 +266,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 				)}
 
 			{/* Image Viewer Overlay */}
-			{lightboxImage &&
-				typeof document !== "undefined" &&
-				createPortal(
-					<div
-						role="dialog"
-						aria-label="Image viewer"
-						className="fixed inset-0 bg-background/95 z-[9999] flex items-center justify-center cursor-pointer"
-						onClick={() => setLightboxImage(null)}
-						onKeyDown={(e) => {
-							if (e.key === "Enter" || e.key === " ") {
-								setLightboxImage(null);
-							}
-						}}
-					>
-						<button
-							type="button"
-							onClick={(e) => {
-								e.stopPropagation();
-								setLightboxImage(null);
-							}}
-							className="absolute top-4 right-4 z-10 p-3 text-white hover:bg-bg/20 rounded-full transition-colors"
-							title="Close (ESC)"
-						>
-							<X className="w-6 h-6" />
-						</button>
-						<img
-							src={lightboxImage}
-							alt="Generated content"
-							className="max-w-[95vw] max-h-[95vh] object-contain"
-						/>
-					</div>,
-					document.body,
-				)}
+			{lightboxImage && <Lightbox src={lightboxImage} onClose={() => setLightboxImage(null)} />}
 		</>
 	);
 }
