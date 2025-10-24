@@ -2,6 +2,7 @@ import { Button } from "@giselle-internal/ui/button";
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import type { components } from "@octokit/openapi-types";
 import { TriangleAlertIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { GitHubAppInstallButton } from "@/packages/components/github-app-install-button";
@@ -165,9 +166,11 @@ function Installation({ installation }: InstallationProps) {
 		<div className="rounded-lg px-4 pt-4 pb-6 flex flex-col bg-gradient-to-b from-[#202530] to-[#12151f] border border-border-muted shadow-[0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)]">
 			<div className="flex items-center gap-x-2">
 				{avatarUrl && (
-					<img
+					<Image
 						src={avatarUrl}
 						alt={displayName}
+						width={24}
+						height={24}
 						className="w-6 h-6 rounded-full"
 					/>
 				)}

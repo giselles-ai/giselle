@@ -27,7 +27,6 @@ import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { GenerateCtaButton } from "../ui/generate-cta-button";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GenerationPanel } from "./generation-panel";
-import { FalModelPanel, OpenAIImageModelPanel } from "./models";
 import { PromptPanel } from "./prompt-panel";
 import { useConnectedSources } from "./sources";
 
@@ -63,7 +62,7 @@ export function ImageGenerationNodePropertiesPanel({
 	const [promptTopPx, setPromptTopPx] = useState(0);
 	const [generationTopPx, setGenerationTopPx] = useState(0);
 
-	const uiState = useMemo(() => data.ui.nodeState[node.id], [data, node.id]);
+	const _uiState = useMemo(() => data.ui.nodeState[node.id], [data, node.id]);
 
 	// Subscribe live to the latest prompt (for expanded editor sync)
 	const livePrompt = useWorkflowDesignerStore((s) => {
@@ -72,7 +71,7 @@ export function ImageGenerationNodePropertiesPanel({
 	});
 
 	// Get available models for current provider
-	const models = useMemo<SelectOption[]>(() => {
+	const _models = useMemo<SelectOption[]>(() => {
 		switch (node.content.llm.provider) {
 			case "fal":
 				return falLanguageModels.map((model) => ({
@@ -99,7 +98,7 @@ export function ImageGenerationNodePropertiesPanel({
 		}
 	}, [node.content.llm, checkEligibility]);
 
-	const disconnectInvalidConnections = useCallback(
+	const _disconnectInvalidConnections = useCallback(
 		(model: ImageGenerationLanguageModelData) => {
 			const connections = data.connections.filter(
 				(c) => c.inputNode.id === node.id,
