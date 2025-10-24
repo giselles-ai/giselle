@@ -1,4 +1,3 @@
-import { IconBox } from "@giselle-internal/ui/icon-box";
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
@@ -8,7 +7,7 @@ import {
 	useWorkflowDesigner,
 	useWorkflowDesignerStore,
 } from "@giselle-sdk/giselle/react";
-import { Minimize2, Trash2 as TrashIcon } from "lucide-react";
+import { Minimize2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import {
@@ -19,11 +18,7 @@ import {
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { isPromptEmpty } from "../../lib/validate-prompt";
-import {
-	PropertiesPanelContent,
-	PropertiesPanelHeader,
-	PropertiesPanelRoot,
-} from "../ui";
+import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { GenerateCtaButton } from "../ui/generate-cta-button";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GenerationPanel } from "./generation-panel";

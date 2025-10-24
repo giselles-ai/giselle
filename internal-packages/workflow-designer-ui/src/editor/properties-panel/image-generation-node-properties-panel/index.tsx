@@ -1,11 +1,9 @@
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
-import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
-import {
-	type ImageGenerationLanguageModelData,
-	ImageGenerationLanguageModelProvider,
-	type ImageGenerationNode,
+import type {
+	ImageGenerationLanguageModelData,
+	ImageGenerationNode,
 } from "@giselle-sdk/data-type";
 import {
 	isSupportedConnection,
@@ -18,11 +16,9 @@ import {
 	googleImageLanguageModels,
 	openaiImageModels,
 } from "@giselle-sdk/language-model";
-import clsx from "clsx/lite";
 import { Minimize2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
-import { Button } from "../../../ui/button";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { useModelEligibility } from "../../lib/use-model-eligibility";
@@ -31,7 +27,6 @@ import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { GenerateCtaButton } from "../ui/generate-cta-button";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GenerationPanel } from "./generation-panel";
-import { createDefaultModelData, updateModelId } from "./model-defaults";
 import { FalModelPanel, OpenAIImageModelPanel } from "./models";
 import { PromptPanel } from "./prompt-panel";
 import { useConnectedSources } from "./sources";

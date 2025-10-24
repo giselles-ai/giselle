@@ -22,7 +22,6 @@ export function Lightbox({
 					onClose();
 				}
 			}}
-			tabIndex={0}
 		>
 			<button
 				type="button"

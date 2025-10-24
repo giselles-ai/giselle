@@ -6,12 +6,11 @@ import type { UIMessage } from "ai";
 import { ChevronRightIcon } from "lucide-react";
 import { Accordion } from "radix-ui";
 import { useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
-import { Lightbox } from "./lightbox";
-import { ImageCard } from "./image-card";
-import { THUMB_HEIGHT } from "./constants";
 import { WilliIcon } from "../icons";
+import { THUMB_HEIGHT } from "./constants";
+import { ImageCard } from "./image-card";
 import { ImageGenerationLoading } from "./image-generation-loading";
+import { Lightbox } from "./lightbox";
 
 import { MemoizedMarkdown } from "./memoized-markdown";
 
@@ -150,27 +149,25 @@ export function GenerationView({ generation }: { generation: Generation }) {
 						return null;
 					}
 					return (
-                        <div
-                            key={output.outputId}
-                            className="flex gap-[12px] pt-[8px] overflow-x-auto max-w-full"
-                            style={{ height: `${THUMB_HEIGHT.sm}px` }}
-                        >
+						<div
+							key={output.outputId}
+							className="flex gap-[12px] pt-[8px] overflow-x-auto max-w-full"
+							style={{ height: `${THUMB_HEIGHT.sm}px` }}
+						>
 							{output.contents.map((content) => (
-                                <ImageCard
-                                    key={content.filename}
-                                    src={`${client.basePath}/${content.pathname}`}
-                                    onDownload={() => {
-                                        const link = document.createElement("a");
-                                        link.href = `${client.basePath}/${content.pathname}`;
-                                        link.download = content.filename;
-                                        link.click();
-                                    }}
-                                    onZoom={() =>
-                                        setLightboxImage(
-                                            `${client.basePath}/${content.pathname}`,
-                                        )
-                                    }
-                                />
+								<ImageCard
+									key={content.filename}
+									src={`${client.basePath}/${content.pathname}`}
+									onDownload={() => {
+										const link = document.createElement("a");
+										link.href = `${client.basePath}/${content.pathname}`;
+										link.download = content.filename;
+										link.click();
+									}}
+									onZoom={() =>
+										setLightboxImage(`${client.basePath}/${content.pathname}`)
+									}
+								/>
 							))}
 						</div>
 					);
@@ -266,7 +263,9 @@ export function GenerationView({ generation }: { generation: Generation }) {
 				)}
 
 			{/* Image Viewer Overlay */}
-			{lightboxImage && <Lightbox src={lightboxImage} onClose={() => setLightboxImage(null)} />}
+			{lightboxImage && (
+				<Lightbox src={lightboxImage} onClose={() => setLightboxImage(null)} />
+			)}
 		</>
 	);
 }
