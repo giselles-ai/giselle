@@ -11,8 +11,12 @@ import {
 import { Minimize2, Trash2 as TrashIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
+import {
+	useElementTopPx,
+	useLivePrompt,
+	useOverlayBottom,
+} from "../../../ui/hooks";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
-import { useElementTopPx, useLivePrompt, useOverlayBottom } from "../../../ui/hooks";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { isPromptEmpty } from "../../lib/validate-prompt";
 import {
@@ -58,18 +62,24 @@ export function TextGenerationNodePropertiesPanel({
 			})),
 		[connectedSources],
 	);
-const [isPromptExpanded, setIsPromptExpanded] = useState(false);
-const [isGenerationExpanded, setIsGenerationExpanded] = useState(false);
-const [editorVersion, setEditorVersion] = useState(0);
-const generateCtaRef = useRef<HTMLDivElement | null>(null);
-const _overlayBottomPx = useOverlayBottom(generateCtaRef as React.RefObject<HTMLDivElement>);
-const promptEditorRef = useRef<HTMLDivElement | null>(null);
-const generationPanelRef = useRef<HTMLDivElement | null>(null);
-const promptTopPx = useElementTopPx(promptEditorRef as React.RefObject<HTMLDivElement>);
-const generationTopPx = useElementTopPx(generationPanelRef as React.RefObject<HTMLDivElement>);
+	const [isPromptExpanded, setIsPromptExpanded] = useState(false);
+	const [isGenerationExpanded, setIsGenerationExpanded] = useState(false);
+	const [editorVersion, setEditorVersion] = useState(0);
+	const generateCtaRef = useRef<HTMLDivElement | null>(null);
+	const _overlayBottomPx = useOverlayBottom(
+		generateCtaRef as React.RefObject<HTMLDivElement>,
+	);
+	const promptEditorRef = useRef<HTMLDivElement | null>(null);
+	const generationPanelRef = useRef<HTMLDivElement | null>(null);
+	const promptTopPx = useElementTopPx(
+		promptEditorRef as React.RefObject<HTMLDivElement>,
+	);
+	const generationTopPx = useElementTopPx(
+		generationPanelRef as React.RefObject<HTMLDivElement>,
+	);
 	const usageLimitsReached = useUsageLimitsReached();
-// Subscribe live to the latest prompt value so expanded editor always reflects current content
-const livePrompt = useLivePrompt(node.id);
+	// Subscribe live to the latest prompt value so expanded editor always reflects current content
+	const livePrompt = useLivePrompt(node.id);
 	const { error } = useToasts();
 
 	useKeyboardShortcuts({
@@ -125,7 +135,6 @@ const livePrompt = useLivePrompt(node.id);
 		window.addEventListener("keydown", onKeydown, captureOpts);
 		return () => window.removeEventListener("keydown", onKeydown, captureOpts);
 	}, [isPromptExpanded, generateText]);
-
 
 	return (
 		<PropertiesPanelRoot>

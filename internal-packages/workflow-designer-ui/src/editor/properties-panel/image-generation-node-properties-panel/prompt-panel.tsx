@@ -95,47 +95,39 @@ export function PromptPanel({
 					<label htmlFor="image-model-picker-trigger" className="sr-only">
 						Model
 					</label>
-					<>
-						<SettingDetail size="md">Model</SettingDetail>
-						<ModelPicker
-							currentProvider={node.content.llm.provider}
-							currentModelId={node.content.llm.id}
-							groups={groups}
-							fullWidth={false}
-							triggerId="image-model-picker-trigger"
-							onSelect={(provider, modelId) => {
-								const next = createDefaultModelData(
-									provider as "fal" | "openai" | "google",
-								);
-								const updated = updateModelId(next, modelId);
-								disconnectInvalidConnections(updated);
-								updateNodeData(node, {
-									content: { ...node.content, llm: updated },
-								});
-							}}
-						/>
-					</>
+					<SettingDetail size="md">Model</SettingDetail>
+					<ModelPicker
+						currentProvider={node.content.llm.provider}
+						currentModelId={node.content.llm.id}
+						groups={groups}
+						fullWidth={false}
+						triggerId="image-model-picker-trigger"
+						onSelect={(provider, modelId) => {
+							const next = createDefaultModelData(
+								provider as "fal" | "openai" | "google",
+							);
+							const updated = updateModelId(next, modelId);
+							disconnectInvalidConnections(updated);
+							updateNodeData(node, {
+								content: { ...node.content, llm: updated },
+							});
+						}}
+					/>
 				</div>
 			</div>
-			<>
-				<SettingLabel>Model parameters</SettingLabel>
-				{node.content.llm.provider === "fal" && (
-					<FalModelPanel
-						languageModel={node.content.llm}
-						onModelChange={(value) =>
-							updateNodeDataContent(node, { llm: value })
-						}
-					/>
-				)}
-				{node.content.llm.provider === "openai" && (
-					<OpenAIImageModelPanel
-						languageModel={node.content.llm}
-						onModelChange={(value) =>
-							updateNodeDataContent(node, { llm: value })
-						}
-					/>
-				)}
-			</>
+			<SettingLabel>Model parameters</SettingLabel>
+			{node.content.llm.provider === "fal" && (
+				<FalModelPanel
+					languageModel={node.content.llm}
+					onModelChange={(value) => updateNodeDataContent(node, { llm: value })}
+				/>
+			)}
+			{node.content.llm.provider === "openai" && (
+				<OpenAIImageModelPanel
+					languageModel={node.content.llm}
+					onModelChange={(value) => updateNodeDataContent(node, { llm: value })}
+				/>
+			)}
 			<SettingLabel inline>Prompt</SettingLabel>
 		</div>
 	);

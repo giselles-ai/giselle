@@ -40,7 +40,7 @@ export function GenerationPanel({
 		origin: { type: "studio", workspaceId: data.id },
 	});
 
-	const handleGenerate = useCallback(() => {
+	const _handleGenerate = useCallback(() => {
 		if (onClickGenerateButton) {
 			onClickGenerateButton();
 		}
