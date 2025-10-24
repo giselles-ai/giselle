@@ -3,12 +3,14 @@
 import type { Generation } from "@giselle-sdk/giselle";
 import { useGiselleEngine } from "@giselle-sdk/giselle/react";
 import type { UIMessage } from "ai";
-import { ChevronRightIcon, Download, X, ZoomIn } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import { Accordion } from "radix-ui";
 import { useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
 import { WilliIcon } from "../icons";
+import { THUMB_HEIGHT } from "./constants";
+import { ImageCard } from "./image-card";
 import { ImageGenerationLoading } from "./image-generation-loading";
+import { Lightbox } from "./lightbox";
 
 import { MemoizedMarkdown } from "./memoized-markdown";
 
@@ -50,7 +52,7 @@ function Spinner() {
 	);
 }
 
-function renderImageLoadingGrid(generation: Generation, keyPrefix: string) {
+function _renderImageLoadingGrid(generation: Generation, keyPrefix: string) {
 	const isImageGeneration =
 		generation.context.operationNode.content.type === "imageGeneration";
 
@@ -72,7 +74,7 @@ function renderImageLoadingGrid(generation: Generation, keyPrefix: string) {
 			{Array.from({ length: imageCount }).map((_, index) => (
 				<div
 					key={`${generation.id}-${keyPrefix}-${index}`}
-					className="flex-shrink-0 bg-bg-900/5 rounded-[8px] overflow-hidden flex items-center justify-center h-full"
+					className="flex-shrink-0 bg-inverse/10 rounded-[8px] overflow-hidden flex items-center justify-center h-full"
 				>
 					<ImageGenerationLoading configuration={config} />
 				</div>
@@ -124,22 +126,19 @@ export function GenerationView({ generation }: { generation: Generation }) {
 		generation.status !== "completed" &&
 		generation.status !== "cancelled"
 	) {
-		const imageLoadingGrid = renderImageLoadingGrid(generation, "loading");
-		if (imageLoadingGrid) {
-			return imageLoadingGrid;
-		}
-
 		return (
 			<div className="pt-[8px]">
 				<Spinner />
 			</div>
 		);
 	}
+	// While running, show spinner (main branch behavior) instead of per-image placeholders
 	if (generation.status === "running") {
-		const imageLoadingGrid = renderImageLoadingGrid(generation, "running");
-		if (imageLoadingGrid) {
-			return imageLoadingGrid;
-		}
+		return (
+			<div className="pt-[8px]">
+				<Spinner />
+			</div>
+		);
 	}
 
 	return (
@@ -152,48 +151,23 @@ export function GenerationView({ generation }: { generation: Generation }) {
 					return (
 						<div
 							key={output.outputId}
-							className="flex gap-[12px] pt-[8px] overflow-x-auto max-w-full h-full"
+							className="flex gap-[12px] pt-[8px] overflow-x-auto max-w-full"
+							style={{ height: `${THUMB_HEIGHT.sm}px` }}
 						>
 							{output.contents.map((content) => (
-								<div
+								<ImageCard
 									key={content.filename}
-									className="relative group cursor-pointer flex-shrink-0 bg-bg-900/5 rounded-[8px] overflow-hidden h-full"
-								>
-									<img
-										src={`${client.basePath}/${content.pathname}`}
-										alt="generated file"
-										className="h-full w-auto object-contain rounded-[8px]"
-									/>
-									<div className="absolute inset-0 bg-bg/40 rounded-[8px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-start justify-end p-2">
-										<div className="flex gap-1">
-											<button
-												type="button"
-												onClick={() => {
-													const link = document.createElement("a");
-													link.href = `${client.basePath}/${content.pathname}`;
-													link.download = content.filename;
-													link.click();
-												}}
-												className="p-2"
-												title="Download"
-											>
-												<Download className="w-4 h-4 text-white hover:scale-110 hover:translate-y-[-2px] transition-transform" />
-											</button>
-											<button
-												type="button"
-												onClick={() => {
-													setLightboxImage(
-														`${client.basePath}/${content.pathname}`,
-													);
-												}}
-												className="p-2"
-												title="View full size"
-											>
-												<ZoomIn className="w-4 h-4 text-white hover:scale-110 hover:translate-y-[-2px] transition-transform" />
-											</button>
-										</div>
-									</div>
-								</div>
+									src={`${client.basePath}${content.pathname}`}
+									onDownload={() => {
+										const link = document.createElement("a");
+										link.href = `${client.basePath}${content.pathname}`;
+										link.download = content.filename;
+										link.click();
+									}}
+									onZoom={() =>
+										setLightboxImage(`${client.basePath}${content.pathname}`)
+									}
+								/>
 							))}
 						</div>
 					);
@@ -278,10 +252,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 				generation.status !== "cancelled" &&
 				// Show the spinner only when there is no reasoning part
 				!generatedMessages.some((message) =>
-					message.parts.some(
-						(part) =>
-							part.type === "reasoning" && generation.status === "running",
-					),
+					message.parts.some((part) => part.type === "reasoning"),
 				) && (
 					<div className="pt-[8px]">
 						<Spinner />
@@ -289,39 +260,9 @@ export function GenerationView({ generation }: { generation: Generation }) {
 				)}
 
 			{/* Image Viewer Overlay */}
-			{lightboxImage &&
-				typeof document !== "undefined" &&
-				createPortal(
-					<div
-						role="dialog"
-						aria-label="Image viewer"
-						className="fixed inset-0 bg-bg/95 z-[9999] flex items-center justify-center cursor-pointer"
-						onClick={() => setLightboxImage(null)}
-						onKeyDown={(e) => {
-							if (e.key === "Enter" || e.key === " ") {
-								setLightboxImage(null);
-							}
-						}}
-					>
-						<button
-							type="button"
-							onClick={(e) => {
-								e.stopPropagation();
-								setLightboxImage(null);
-							}}
-							className="absolute top-4 right-4 z-10 p-3 text-white hover:bg-bg/20 rounded-full transition-colors"
-							title="Close (ESC)"
-						>
-							<X className="w-6 h-6" />
-						</button>
-						<img
-							src={lightboxImage}
-							alt="Generated content"
-							className="max-w-[95vw] max-h-[95vh] object-contain"
-						/>
-					</div>,
-					document.body,
-				)}
+			{lightboxImage && (
+				<Lightbox src={lightboxImage} onClose={() => setLightboxImage(null)} />
+			)}
 		</>
 	);
 }

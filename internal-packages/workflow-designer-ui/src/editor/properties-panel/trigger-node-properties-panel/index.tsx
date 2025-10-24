@@ -1,22 +1,19 @@
 import type { TriggerNode } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
-import {
-	PropertiesPanelContent,
-	PropertiesPanelHeader,
-	PropertiesPanelRoot,
-} from "../ui";
+import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
+import { NodePanelHeader } from "../ui/node-panel-header";
 import { GitHubTriggerPropertiesPanel } from "./providers/github-trigger/github-trigger-properties-panel";
 import { ManualTriggerPropertiesPanel } from "./providers/manual-trigger/manual-trigger-properties-panel";
 
 export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
-	const { updateNodeData } = useWorkflowDesigner();
+	const { updateNodeData, deleteNode } = useWorkflowDesigner();
 	return (
 		<PropertiesPanelRoot>
-			<PropertiesPanelHeader
+			<NodePanelHeader
 				node={node}
-				onChangeName={(name) => {
-					updateNodeData(node, { name });
-				}}
+				onChangeName={(name) => updateNodeData(node, { name })}
+				docsUrl="https://docs.giselles.ai/en/glossary/trigger-node"
+				onDelete={() => deleteNode(node.id)}
 			/>
 			<PropertiesPanelContent>
 				<PropertiesPanel node={node} />

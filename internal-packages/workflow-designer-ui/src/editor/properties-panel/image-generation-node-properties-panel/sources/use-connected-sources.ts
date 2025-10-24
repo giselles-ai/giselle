@@ -1,7 +1,10 @@
 import type {
 	ActionNode,
+	Connection,
 	FileNode,
 	ImageGenerationNode,
+	NodeBase,
+	Output,
 	QueryNode,
 	TextGenerationNode,
 	TextNode,
@@ -11,7 +14,12 @@ import type {
 } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
 import { useMemo } from "react";
-import type { ConnectedSource } from "./types";
+
+type ConnectedSource<T extends NodeBase> = {
+	output: Output;
+	node: T;
+	connection: Connection;
+};
 
 export function useConnectedSources(node: ImageGenerationNode) {
 	const { data } = useWorkflowDesigner();

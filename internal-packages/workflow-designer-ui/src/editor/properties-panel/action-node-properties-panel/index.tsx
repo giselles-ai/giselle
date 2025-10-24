@@ -5,16 +5,14 @@ import {
 } from "@giselle-sdk/giselle/react";
 import { useCallback } from "react";
 import { Button } from "../../../ui/button";
-import {
-	PropertiesPanelContent,
-	PropertiesPanelHeader,
-	PropertiesPanelRoot,
-} from "../ui";
+import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
+import { NodePanelHeader } from "../ui/node-panel-header";
 import { GitHubActionPropertiesPanel } from "./github-action-properties-panel";
 import { useConnectedInputs } from "./lib";
 
 export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
-	const { data, updateNodeData, setUiNodeState } = useWorkflowDesigner();
+	const { data, updateNodeData, deleteNode, setUiNodeState } =
+		useWorkflowDesigner();
 	const { isValid, connectedInputs } = useConnectedInputs(node.id, node.inputs);
 	const { createAndStartGenerationRunner } = useNodeGenerations({
 		nodeId: node.id,
@@ -55,19 +53,19 @@ export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 	]);
 	return (
 		<PropertiesPanelRoot>
-			<PropertiesPanelHeader
+			<NodePanelHeader
 				node={node}
-				onChangeName={(name) => {
-					updateNodeData(node, { name });
-				}}
-				action={
-					node.content.command.state.status === "unconfigured" ? null : (
-						<Button type="button" onClick={handleClick}>
-							Run Action
-						</Button>
-					)
-				}
+				onChangeName={(name) => updateNodeData(node, { name })}
+				docsUrl="https://docs.giselles.ai/en/glossary/action-node"
+				onDelete={() => deleteNode(node.id)}
 			/>
+			{node.content.command.state.status !== "unconfigured" && (
+				<div className="px-[16px] py-[8px] border-b border-inverse/10">
+					<Button type="button" onClick={handleClick} className="w-full">
+						Run Action
+					</Button>
+				</div>
+			)}
 			<PropertiesPanelContent>
 				<PropertiesPanel node={node} />
 			</PropertiesPanelContent>
