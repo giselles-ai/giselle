@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import { useWorkflowDesignerStore } from "@giselle-sdk/giselle/react";
+import { useEffect, useState } from "react";
 
 export function useLivePrompt(nodeId: string) {
 	return useWorkflowDesignerStore((s) => {
@@ -62,5 +62,3 @@ export function useElementTopPx(ref: React.RefObject<HTMLElement>) {
 
 	return topPx;
 }
-
-

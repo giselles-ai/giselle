@@ -52,7 +52,7 @@ function Spinner() {
 	);
 }
 
-function renderImageLoadingGrid(generation: Generation, keyPrefix: string) {
+function _renderImageLoadingGrid(generation: Generation, keyPrefix: string) {
 	const isImageGeneration =
 		generation.context.operationNode.content.type === "imageGeneration";
 
