@@ -1,4 +1,6 @@
+import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
+import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	type ImageGenerationLanguageModelData,
@@ -17,6 +19,7 @@ import {
 	openaiImageModels,
 } from "@giselle-sdk/language-model";
 import clsx from "clsx/lite";
+import { Minimize2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { Button } from "../../../ui/button";
@@ -25,6 +28,7 @@ import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { useModelEligibility } from "../../lib/use-model-eligibility";
 import { isPromptEmpty } from "../../lib/validate-prompt";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
+import { GenerateCtaButton } from "../ui/generate-cta-button";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GenerationPanel } from "./generation-panel";
 import { createDefaultModelData, updateModelId } from "./model-defaults";
@@ -256,6 +260,7 @@ export function ImageGenerationNodePropertiesPanel({
 						</div>
 
 						<div className="mt-[8px]" ref={generationPanelRef}>
+							<SettingLabel className="mb-[4px]">Output</SettingLabel>
 							<GenerationPanel
 								node={node}
 								onClickGenerateButton={generateImage}
@@ -268,16 +273,14 @@ export function ImageGenerationNodePropertiesPanel({
 						ref={generateCtaRef}
 						className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent"
 					>
-						<Button
-							type="button"
-							disabled={
-								usageLimitsReached || isPromptEmpty(node.content.prompt)
-							}
-							onClick={generateImage}
-							className="w-full disabled:cursor-not-allowed disabled:opacity-50"
-						>
-							Generate with the Current Prompt
-						</Button>
+						<GenerateCtaButton
+							isGenerating={isGenerating}
+							isEmpty={isPromptEmpty(node.content.prompt)}
+							onClick={() => {
+								if (isGenerating) stopGenerationRunner();
+								else generateImage();
+							}}
+						/>
 					</div>
 
 					{/* Expanded prompt overlay */}
@@ -298,12 +301,36 @@ export function ImageGenerationNodePropertiesPanel({
 						}}
 					>
 						<div className="flex-1 min-h-0 flex flex-col overflow-hidden rounded-[8px] bg-background">
-							<PromptPanel
+							<PromptEditor
 								key={`expanded-${editorVersion}-${node.id}`}
-								node={node}
-								onExpand={() => {}}
-								editorVersion={editorVersion}
+								value={livePrompt ?? node.content.prompt}
+								onValueChange={(value) => {
+									updateNodeDataContent(node, { prompt: value });
+								}}
+								connectedSources={connectedSources.map(({ node, output }) => ({
+									node,
+									output,
+								}))}
+								placeholder="Write your prompt here..."
+								showToolbar={false}
+								variant="plain"
+								showExpandIcon={false}
+								containerClassName="flex-1 min-h-0"
+								editorClassName="min-h-0 h-full"
 							/>
+						</div>
+						<div className="absolute bottom-[20px] right-[12px]">
+							<button
+								type="button"
+								aria-label="Minimize prompt editor"
+								className="size-[32px] rounded-full bg-inverse hover:bg-inverse/80 transition-colors flex items-center justify-center"
+								onClick={() => {
+									setIsPromptExpanded(false);
+									setEditorVersion((v) => v + 1);
+								}}
+							>
+								<Minimize2 className="size-[16px] text-background" />
+							</button>
 						</div>
 						<button
 							type="button"
@@ -338,6 +365,16 @@ export function ImageGenerationNodePropertiesPanel({
 							onClickGenerateButton={generateImage}
 							isExpanded={true}
 						/>
+						<div className="absolute bottom-[20px] right-[12px]">
+							<button
+								type="button"
+								aria-label="Minimize generation panel"
+								className="size-[32px] rounded-full bg-inverse hover:bg-inverse/80 transition-colors flex items-center justify-center"
+								onClick={() => setIsGenerationExpanded(false)}
+							>
+								<Minimize2 className="size-[16px] text-background" />
+							</button>
+						</div>
 						<button
 							type="button"
 							aria-label="Backdrop"

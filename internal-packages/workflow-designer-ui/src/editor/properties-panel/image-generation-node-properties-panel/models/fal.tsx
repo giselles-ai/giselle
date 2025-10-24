@@ -27,7 +27,7 @@ export function FalModelPanel({
 	};
 
 	return (
-		<div className="grid grid-cols-1 gap-[16px]">
+		<div className="grid grid-cols-1 gap-[8px]">
 			<SettingRow
 				label={
 					<label htmlFor="size" className="text-text text-[14px]">

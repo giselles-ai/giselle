@@ -16,8 +16,8 @@ export function OpenAIImageModelPanel({
 	onModelChange: (changedValue: OpenAIImageLanguageModelData) => void;
 }) {
 	return (
-		<div className="flex flex-col gap-[16px]">
-			<div className="grid grid-cols-1 gap-[16px]">
+		<div className="flex flex-col gap-[8px]">
+			<div className="grid grid-cols-1 gap-[8px]">
 				<SettingRow
 					label={
 						<label htmlFor="size" className="text-text text-[14px]">
