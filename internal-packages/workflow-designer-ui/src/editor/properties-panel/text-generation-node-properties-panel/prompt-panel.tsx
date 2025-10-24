@@ -115,6 +115,8 @@ export function PromptPanel({
 	const currentModelId = node.content.llm.id;
 
 	useEffect(() => {
+		if (!usageLimits) return;
+
 		const modelsByProvider: Partial<Record<string, LanguageModel[]>> = {
 			openai: openaiLanguageModels,
 			anthropic: anthropicLanguageModels,
@@ -141,7 +143,14 @@ export function PromptPanel({
 		);
 		const updated = updateModelId(next, fallbackModel.id);
 		updateNodeDataContent(node, { llm: updated, tools: {} });
-	}, [currentProvider, currentModelId, node, updateNodeDataContent, userTier]);
+	}, [
+		currentProvider,
+		currentModelId,
+		node,
+		updateNodeDataContent,
+		usageLimits,
+		userTier,
+	]);
 
 	// provider/model selects replaced by ModelPicker
 
