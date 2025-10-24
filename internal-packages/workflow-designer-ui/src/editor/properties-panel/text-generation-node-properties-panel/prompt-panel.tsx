@@ -27,7 +27,7 @@ import {
 	Tier,
 } from "@giselle-sdk/language-model";
 import { ChevronRightIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ProTag } from "../../tool/toolbar/components/pro-tag";
 import { AnthropicModelPanel } from "./model/anthropic";
 import { GoogleModelPanel } from "./model/google";
@@ -110,47 +110,6 @@ export function PromptPanel({
 	const usageLimits = useUsageLimits();
 	const userTier = usageLimits?.featureTier ?? Tier.enum.free;
 	const groups = useModelGroups(userTier);
-
-	const currentProvider = node.content.llm.provider;
-	const currentModelId = node.content.llm.id;
-
-	useEffect(() => {
-		if (!usageLimits) return;
-
-		const modelsByProvider: Partial<Record<string, LanguageModel[]>> = {
-			openai: openaiLanguageModels,
-			anthropic: anthropicLanguageModels,
-			google: googleLanguageModels,
-		};
-
-		const providerModels = modelsByProvider[currentProvider];
-		if (!providerModels) return;
-
-		const currentModel = providerModels.find(
-			(languageModel) => languageModel.id === currentModelId,
-		);
-
-		if (currentModel && hasTierAccess(currentModel, userTier)) return;
-
-		const fallbackModel = providerModels.find((languageModel) =>
-			hasTierAccess(languageModel, userTier),
-		);
-
-		if (!fallbackModel || fallbackModel.id === currentModelId) return;
-
-		const next = createDefaultModelData(
-			currentProvider as "openai" | "anthropic" | "google",
-		);
-		const updated = updateModelId(next, fallbackModel.id);
-		updateNodeDataContent(node, { llm: updated, tools: {} });
-	}, [
-		currentProvider,
-		currentModelId,
-		node,
-		updateNodeDataContent,
-		usageLimits,
-		userTier,
-	]);
 
 	// provider/model selects replaced by ModelPicker
 
