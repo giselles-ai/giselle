@@ -15,15 +15,20 @@ import {
 } from "@giselle-sdk/data-type";
 import {
 	useFeatureFlag,
+	useUsageLimits,
 	useWorkflowDesignerStore,
 } from "@giselle-sdk/giselle/react";
 import {
 	anthropicLanguageModels,
 	googleLanguageModels,
+	hasTierAccess,
+	type LanguageModel,
 	openaiLanguageModels,
+	Tier,
 } from "@giselle-sdk/language-model";
 import { ChevronRightIcon } from "lucide-react";
 import { useMemo, useState } from "react";
+import { ProTag } from "../../tool/toolbar/components/pro-tag";
 import { AnthropicModelPanel } from "./model/anthropic";
 import { GoogleModelPanel } from "./model/google";
 import { OpenAIModelPanel } from "./model/openai";
@@ -44,27 +49,40 @@ export type PromptPanelSlots = {
 	footer?: React.ReactNode;
 };
 
-function useModelGroups() {
-	return useMemo(
-		() => [
+function useModelGroups(userTier: Tier) {
+	return useMemo(() => {
+		const toModelPickerModels = (models: LanguageModel[]) =>
+			models.map((model) => {
+				const disabled = !hasTierAccess(model, userTier);
+				return {
+					id: model.id,
+					label: model.id,
+					badge: model.tier === Tier.enum.pro ? <ProTag /> : undefined,
+					disabled,
+					disabledReason: disabled
+						? "Upgrade to Pro to use this model."
+						: undefined,
+				};
+			});
+
+		return [
 			{
 				provider: "openai",
 				label: "OpenAI",
-				models: openaiLanguageModels.map((m) => ({ id: m.id })),
+				models: toModelPickerModels(openaiLanguageModels),
 			},
 			{
 				provider: "anthropic",
 				label: "Anthropic",
-				models: anthropicLanguageModels.map((m) => ({ id: m.id })),
+				models: toModelPickerModels(anthropicLanguageModels),
 			},
 			{
 				provider: "google",
 				label: "Google",
-				models: googleLanguageModels.map((m) => ({ id: m.id })),
+				models: toModelPickerModels(googleLanguageModels),
 			},
-		],
-		[],
-	);
+		];
+	}, [userTier]);
 }
 
 export function PromptPanel({
@@ -89,6 +107,9 @@ export function PromptPanel({
 	const { all: connectedSources } = useConnectedOutputs(node);
 	const { googleUrlContext } = useFeatureFlag();
 	const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+	const usageLimits = useUsageLimits();
+	const userTier = usageLimits?.featureTier ?? Tier.enum.free;
+	const groups = useModelGroups(userTier);
 
 	// provider/model selects replaced by ModelPicker
 
@@ -239,8 +260,6 @@ export function PromptPanel({
 		advancedOptions: sections?.advancedOptions ?? true,
 		promptLabel: sections?.promptLabel ?? true,
 	};
-
-	const groups = useModelGroups();
 
 	const header = (
 		<div className="flex flex-col gap-[8px]">
