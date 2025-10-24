@@ -708,8 +708,8 @@ export const githubRepositoryIssueEmbeddings = pgTable(
 			.$type<EmbeddingDimensions>()
 			.notNull(),
 		issueNumber: integer("issue_number").notNull(),
-		state: text("state").$type<GitHubIssueState>().notNull(),
-		stateReason: text("state_reason").$type<GitHubIssueStateReason | null>(),
+		issueState: text("issue_state").$type<GitHubIssueState>().notNull(),
+		issueStateReason: text("issue_state_reason").$type<GitHubIssueStateReason | null>(),
 		issueUpdatedAt: timestamp("issue_updated_at").notNull(),
 		issueClosedAt: timestamp("issue_closed_at"),
 		contentType: text("content_type")
