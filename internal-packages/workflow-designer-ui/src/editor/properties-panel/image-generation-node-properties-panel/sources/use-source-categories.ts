@@ -9,26 +9,26 @@ import { useMemo } from "react";
 import type { Source } from "./types";
 import { filterSources } from "./utils";
 
-export function useSourceCategories(sources: Source[]) {
+export function useSourceCategories(_sources: Source[]) {
 	const generatedSources = useMemo(
-		() => filterSources(sources, isTextGenerationNode),
-		[sources],
+		() => filterSources(_sources, isTextGenerationNode),
+		[_sources],
 	);
 	const textSources = useMemo(
-		() => filterSources(sources, isTextNode),
-		[sources],
+		() => filterSources(_sources, isTextNode),
+		[_sources],
 	);
 	const fileSources = useMemo(
-		() => filterSources(sources, isFileNode),
-		[sources],
+		() => filterSources(_sources, isFileNode),
+		[_sources],
 	);
 	const githubSources = useMemo(
-		() => filterSources(sources, isGitHubNode),
-		[sources],
+		() => filterSources(_sources, isGitHubNode),
+		[_sources],
 	);
 	const querySources = useMemo(
-		() => filterSources(sources, isQueryNode),
-		[sources],
+		() => filterSources(_sources, isQueryNode),
+		[_sources],
 	);
 
 	return {
