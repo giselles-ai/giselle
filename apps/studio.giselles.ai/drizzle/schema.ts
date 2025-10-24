@@ -709,7 +709,9 @@ export const githubRepositoryIssueEmbeddings = pgTable(
 			.notNull(),
 		issueNumber: integer("issue_number").notNull(),
 		issueState: text("issue_state").$type<GitHubIssueState>().notNull(),
-		issueStateReason: text("issue_state_reason").$type<GitHubIssueStateReason | null>(),
+		issueStateReason: text(
+			"issue_state_reason",
+		).$type<GitHubIssueStateReason | null>(),
 		issueUpdatedAt: timestamp("issue_updated_at").notNull(),
 		issueClosedAt: timestamp("issue_closed_at"),
 		contentType: text("content_type")
@@ -737,7 +739,10 @@ export const githubRepositoryIssueEmbeddings = pgTable(
 			.using("hnsw", sql`(${table.embedding}::vector(1536)) vector_cosine_ops`)
 			.where(sql`${table.embeddingDimensions} = 1536`),
 		index("gh_issue_embeddings_embedding_3072_idx")
-			.using("hnsw", sql`(${table.embedding}::halfvec(3072)) halfvec_cosine_ops`)
+			.using(
+				"hnsw",
+				sql`(${table.embedding}::halfvec(3072)) halfvec_cosine_ops`,
+			)
 			.where(sql`${table.embeddingDimensions} = 3072`),
 		foreignKey({
 			columns: [table.repositoryIndexDbId],
