@@ -47,7 +47,7 @@ export function EditableText({
 			<input
 				type="text"
 				className={clsx(
-					"py-[2px] px-[4px] rounded-[4px] hidden data-[editing=true]:block",
+					"py-[2px] px-[4px] rounded-[4px] hidden data-[editing=true]:block w-full",
 					"outline-none ring-[1px] ring-primary-900",
 					"text-inverse text-[14px]",
 				)}
@@ -69,6 +69,7 @@ export function EditableText({
 					"hover:bg-bg-900/20",
 					"text-inverse text-[14px]",
 					"cursor-default",
+					"!border-0",
 				)}
 				data-button
 				data-editing={edit}

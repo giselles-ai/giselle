@@ -38,9 +38,16 @@
 		"./section-header": "./components/section-header.tsx",
 		"./repo-action-menu": "./components/repo-action-menu.tsx",
 		"./form-field": "./components/form-field.tsx",
-		"./glass-surface": "./components/glass-surface.tsx"
+		"./glass-surface": "./components/glass-surface.tsx",
+		"./prompt-editor": "./components/prompt-editor.tsx",
+		"./icon-box": "./components/icon-box.tsx",
+		"./model-picker": "./components/model-picker.tsx",
+		"./setting-label": "./components/setting-label.tsx",
+		"./setting-row": "./components/setting-row.tsx"
 	},
 	"dependencies": {
+		"@giselle-sdk/data-type": "workspace:^",
+		"@giselle-sdk/text-editor": "workspace:^",
 		"@radix-ui/react-dialog": "1.1.4",
 		"clsx": "catalog:",
 		"lucide-react": "catalog:",

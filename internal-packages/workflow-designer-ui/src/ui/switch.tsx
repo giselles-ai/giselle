@@ -21,9 +21,6 @@ export const Switch = ({
 				{label}
 			</label>
 
-			{/* Divider */}
-			<div className="flex-grow mx-[12px] h-[1px] border-t border-inverse" />
-
 			<RadixSwitch.Root
 				className={clsx(
 					"h-[15px] w-[27px] rounded-full outline-none",

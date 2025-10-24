@@ -66,8 +66,10 @@ export const EditableText = forwardRef<
 				type="text"
 				aria-label={ariaLabel}
 				className={clsx(
-					"w-full min-w-[200px] py-[2px] px-[4px] rounded-[4px] hidden data-[editing=true]:block",
-					"outline-none",
+					"w-full min-w-[200px] hidden data-[editing=true]:block",
+					"outline-none border border-inverse/20 focus:border-inverse/30",
+					"rounded-[8px] bg-inverse/5",
+					"!pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px]",
 					"data-[size=medium]:text-[14px] data-[size=large]:text-[16px]",
 					!className && "text-inverse",
 					className,
@@ -88,8 +90,9 @@ export const EditableText = forwardRef<
 				type="button"
 				aria-label={ariaLabel}
 				className={clsx(
-					"py-[2px] px-[4px] rounded-[4px] data-[editing=true]:hidden text-left",
+					"rounded-[8px] data-[editing=true]:hidden text-left",
 					"hover:bg-bg-900/20 group-hover:bg-bg-900/10",
+					"bg-inverse/5 !pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px]",
 					"data-[size=medium]:text-[14px] data-[size=large]:text-[16px]",
 					"cursor-default w-full overflow-hidden text-ellipsis whitespace-nowrap",
 					!className && "text-inverse",

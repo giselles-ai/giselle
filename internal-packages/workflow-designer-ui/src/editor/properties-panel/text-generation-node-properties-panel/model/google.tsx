@@ -27,21 +27,22 @@ export function GoogleModelPanel({
 		isSearchGroundingEnabled || isUrlContextEnabled;
 
 	return (
-		<div className="flex flex-col gap-[34px]">
+		<div className="flex flex-col gap-[16px]">
 			<div>
-				<div className="grid grid-cols-2 gap-[24px]">
+				<div className="grid grid-cols-1 gap-[16px]">
 					<TemperatureSlider
+						labelClassName="text-[14px]"
 						onModelChange={onModelChange}
 						modelData={googleLanguageModel}
 						parseModelData={GoogleLanguageModelData.parse}
 					/>
 					<TopPSlider
+						labelClassName="text-[14px]"
 						onModelChange={onModelChange}
 						modelData={googleLanguageModel}
 						parseModelData={GoogleLanguageModelData.parse}
 					/>
 				</div>
-				<div className="mt-[24px]" />
 				{googleUrlContext && shouldShowMutualExclusionNotice ? (
 					<div className="rounded-[8px] border border-yellow-500/40 bg-yellow-500/10 px-[12px] py-[8px] flex items-start gap-[8px]">
 						<InfoIcon

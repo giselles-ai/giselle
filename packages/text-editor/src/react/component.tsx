@@ -134,6 +134,9 @@ export function TextEditor({
 	connectedSources,
 	placeholder,
 	header,
+	showToolbar = true,
+	editorClassName,
+	fullHeight,
 }: {
 	value?: string;
 	onValueChange?: (value: string) => void;
@@ -142,6 +145,9 @@ export function TextEditor({
 	connectedSources?: ConnectedSource[];
 	placeholder?: string;
 	header?: ReactNode;
+	showToolbar?: boolean;
+	editorClassName?: string;
+	fullHeight?: boolean;
 }) {
 	const extensions = useMemo(() => {
 		const mentionExtension = Mention.configure({
@@ -164,12 +170,12 @@ export function TextEditor({
 				];
 	}, [nodes, connectedSources, placeholder]);
 	return (
-		<div className="flex flex-col h-full w-full">
+		<div className="flex flex-col w-full min-h-0 h-full">
 			<EditorProvider
 				slotBefore={
 					<>
-						<Toolbar tools={tools} />
-						{header && <div className="mb-2">{header}</div>}
+						{showToolbar && <Toolbar tools={tools} />}
+						{header && <div className="mb-[4px]">{header}</div>}
 					</>
 				}
 				extensions={extensions}
@@ -181,7 +187,7 @@ export function TextEditor({
 							: JSON.parse(value)
 				}
 				editorContainerProps={{
-					className: "flex-1 overflow-hidden flex flex-col h-full",
+					className: "flex-1 flex flex-col min-h-0 h-full",
 				}}
 				onUpdate={(p) => {
 					onValueChange?.(JSON.stringify(p.editor.getJSON()));
@@ -189,8 +195,11 @@ export function TextEditor({
 				immediatelyRender={false}
 				editorProps={{
 					attributes: {
-						class:
-							"prompt-editor border border-inverse rounded-[8px] p-[16px] pb-0 flex-1 box-border overflow-y-auto",
+						class: clsx(
+							"prompt-editor border border-inverse rounded-[8px] p-[16px] pb-0 box-border flex-1 overflow-y-auto",
+							editorClassName,
+						),
+						...(fullHeight ? { style: "height: 100%" } : {}),
 					},
 				}}
 			/>

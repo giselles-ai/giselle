@@ -404,6 +404,9 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 	);
 
 	const isPropertiesPanelOpen = selectedNodes.length === 1;
+	const isTextGenerationPanel =
+		isPropertiesPanelOpen &&
+		`${selectedNodes[0]?.content.type}` === "textGeneration";
 
 	const mainRef = useRef<HTMLDivElement>(null);
 
@@ -450,6 +453,8 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 						isOpen={isPropertiesPanelOpen}
 						container={mainRef.current}
 						title="Properties Panel"
+						defaultWidth={isTextGenerationPanel ? 400 : undefined}
+						minWidth={isTextGenerationPanel ? 400 : undefined}
 					>
 						<PropertiesPanel />
 					</FloatingPropertiesPanel>

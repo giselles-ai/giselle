@@ -1,5 +1,7 @@
+import clsx from "clsx/lite";
 import { Slider as SliderPrimitive } from "radix-ui";
 import type { ComponentProps } from "react";
+import { useId } from "react";
 
 interface SliderProps
 	extends Pick<
@@ -9,14 +11,25 @@ interface SliderProps
 	label: string;
 	value: number;
 	onChange?: (value: number) => void;
+	labelClassName?: string;
 }
 export function Slider(props: SliderProps) {
+	const controlId = useId();
 	return (
-		<div className="flex flex-col">
-			<div className="text-[14px] mb-[8px]">{props.label}</div>
-			<div className="flex items-center gap-[12px]">
+		<div className="flex w-full items-center justify-between gap-[12px]">
+			<label
+				htmlFor={controlId}
+				className={clsx(
+					"shrink-0 text-text w-[120px]",
+					props.labelClassName ?? "text-[12px]",
+				)}
+			>
+				{props.label}
+			</label>
+			<div className="flex items-center gap-[8px] grow min-w-0">
 				<SliderPrimitive.Root
 					className="relative flex w-full touch-none select-none items-center flex-1"
+					id={controlId}
 					max={props.max}
 					min={props.min}
 					step={props.step}
@@ -35,7 +48,7 @@ export function Slider(props: SliderProps) {
 							transition-transform hover:scale-110 focus:outline-none focus:ring-0 active:outline-none active:ring-0"
 					/>
 				</SliderPrimitive.Root>
-				<div className="text-[12px] font-[700] text-inverse w-[3em] text-right">
+				<div className="text-[12px] font-[700] text-inverse w-[44px] text-right font-mono [font-variant-numeric:tabular-nums]">
 					{props.value.toFixed(2)}
 				</div>
 			</div>

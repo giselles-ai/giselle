@@ -7,7 +7,7 @@ export const PANEL_SPACING = {
 	HEADER: {
 		HEIGHT: "h-[48.5px]",
 		HEIGHT_VALUE: 48.5, // For calculations or style objects
-		PADDING: "pt-2 pr-0 pb-0 pl-1", // 8px 0 0 4px
+		PADDING: "pt-2 pr-0 pb-0 pl-0", // 8px 0 0 0
 		ICON_SIZE: "28px",
 		ICON_GAP: "gap-[8px]",
 	},
@@ -44,6 +44,8 @@ export function getHeaderClasses(): string {
 		"flex justify-between items-center",
 		PANEL_SPACING.HEADER.PADDING,
 		PANEL_SPACING.LAYOUT.SHRINK_0,
+		// Keep header fixed while inner content scrolls
+		"sticky top-0 z-10",
 	];
 
 	return baseClasses.join(" ");
@@ -55,8 +57,7 @@ export function getHeaderClasses(): string {
 export function getContentClasses(): string {
 	return [
 		PANEL_SPACING.LAYOUT.FLEX_1,
-		PANEL_SPACING.LAYOUT.FULL_HEIGHT,
 		PANEL_SPACING.LAYOUT.FLEX_COL,
-		PANEL_SPACING.LAYOUT.OVERFLOW_HIDDEN,
+		"min-h-0",
 	].join(" ");
 }

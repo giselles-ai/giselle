@@ -1,4 +1,5 @@
 import { Select } from "@giselle-internal/ui/select";
+import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { OpenAILanguageModelData, type ToolSet } from "@giselle-sdk/data-type";
 import { useUsageLimits } from "@giselle-sdk/giselle/react";
 import {
@@ -39,16 +40,19 @@ export function OpenAIModelPanel({
 	}
 
 	return (
-		<div className="flex flex-col gap-[16px]">
+		<div className="flex flex-col gap-[8px]">
 			{hasCapability(languageModel, Capability.Reasoning) ? (
-				<div className="grid grid-cols-2 gap-[16px] mb-[16px]">
-					<fieldset className="flex flex-col min-w-0">
-						<label
-							htmlFor="reasoningEffort"
-							className="text-text text-[13px] mb-[2px]"
-						>
-							Reasoning effort
-						</label>
+				<div className="grid grid-cols-1 gap-[8px]">
+					<SettingRow
+						label={
+							<label
+								htmlFor="reasoningEffort"
+								className="text-text text-[14px]"
+							>
+								Reasoning effort
+							</label>
+						}
+					>
 						<Select
 							id="reasoningEffort"
 							placeholder="Select reasoning effort"
@@ -69,15 +73,15 @@ export function OpenAIModelPanel({
 								label: v,
 							}))}
 						/>
-					</fieldset>
+					</SettingRow>
 
-					<fieldset className="flex flex-col min-w-0">
-						<label
-							htmlFor="verbosity"
-							className="text-text text-[13px] mb-[2px]"
-						>
-							Verbosity
-						</label>
+					<SettingRow
+						label={
+							<label htmlFor="verbosity" className="text-text text-[14px]">
+								Verbosity
+							</label>
+						}
+					>
 						<Select
 							id="verbosity"
 							placeholder="Select verbosity"
@@ -98,27 +102,31 @@ export function OpenAIModelPanel({
 								label: v,
 							}))}
 						/>
-					</fieldset>
+					</SettingRow>
 				</div>
 			) : (
 				<div>
-					<div className="grid grid-cols-2 gap-[24px]">
+					<div className="grid grid-cols-1 gap-[16px]">
 						<TemperatureSlider
+							labelClassName="text-[14px]"
 							onModelChange={onModelChange}
 							modelData={openaiLanguageModel}
 							parseModelData={OpenAILanguageModelData.parse}
 						/>
 						<TopPSlider
+							labelClassName="text-[14px]"
 							onModelChange={onModelChange}
 							modelData={openaiLanguageModel}
 							parseModelData={OpenAILanguageModelData.parse}
 						/>
 						<FrequencyPenaltySlider
+							labelClassName="text-[14px]"
 							onModelChange={onModelChange}
 							modelData={openaiLanguageModel}
 							parseModelData={OpenAILanguageModelData.parse}
 						/>
 						<PresencePenaltySlider
+							labelClassName="text-[14px]"
 							onModelChange={onModelChange}
 							modelData={openaiLanguageModel}
 							parseModelData={OpenAILanguageModelData.parse}
