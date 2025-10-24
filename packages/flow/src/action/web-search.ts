@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import type { ActionBase } from "../base";
 
 export const provider = "web-search" as const;
@@ -13,7 +13,7 @@ const webSearchFetchAction = {
 		id: "web-search.fetch",
 		label: "Fetch Web Page",
 		parameters: z.object({
-			url: z.string().url(),
+			url: z.url(),
 		}),
 	},
 } as const satisfies WebSearchActionBase;
