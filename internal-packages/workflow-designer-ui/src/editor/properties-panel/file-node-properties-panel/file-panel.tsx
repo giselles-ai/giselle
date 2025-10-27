@@ -403,7 +403,7 @@ function FileListItem({
 	onRemove: (file: FileData) => void;
 }) {
 	return (
-		<div className="flex items-center justify-between hover:bg-bg-50/50 transition-colors rounded-[8px] group">
+		<div className="flex items-center justify-between hover:bg-background/50 transition-colors rounded-[8px] group">
 			<div className="flex items-center gap-[12px] flex-1 min-w-0">
 				<svg
 					width="16"
@@ -445,7 +445,7 @@ function FileListItem({
 			<button
 				type="button"
 				onClick={() => onRemove(fileData)}
-				className="w-[32px] h-[32px] rounded-[6px] flex items-center justify-center hover:bg-bg-100 transition-colors opacity-0 group-hover:opacity-100 shrink-0"
+				className="w-[32px] h-[32px] rounded-[6px] flex items-center justify-center hover:bg-background transition-colors opacity-0 group-hover:opacity-100 shrink-0"
 			>
 				<TrashIcon size={16} className="text-black-400 hover:text-inverse" />
 			</button>
