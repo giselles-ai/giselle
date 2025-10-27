@@ -12,8 +12,8 @@ export async function getNodeGenerations(args: {
 	useExperimentalStorage: boolean;
 }) {
 	const nodeGenerationIndexes = await getNodeGenerationIndexes({
-		storage: args.context.deprecated_storage,
-		experimental_storage: args.context.storage,
+		deprecated_storage: args.context.deprecated_storage,
+		storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 		nodeId: args.nodeId,
 	});
@@ -28,8 +28,8 @@ export async function getNodeGenerations(args: {
 			.map((nodeGenerationIndex) =>
 				getGeneration({
 					generationId: nodeGenerationIndex.id,
-					storage: args.context.deprecated_storage,
-					experimental_storage: args.context.storage,
+					deprecated_storage: args.context.deprecated_storage,
+					storage: args.context.storage,
 					useExperimentalStorage: args.useExperimentalStorage,
 					options: {
 						bypassingCache: true,

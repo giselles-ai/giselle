@@ -43,12 +43,12 @@ const state: QueueState = {
  * Processes a batch of patches for a specific actId
  */
 async function processPatchBatch(
-	experimental_storage: GiselleStorage,
+	storage: GiselleStorage,
 	item: QueuedPatch,
 ): Promise<void> {
 	// Read current indexes
 	const currentIndexes = await getActGenerationIndexes({
-		experimental_storage,
+		storage: storage,
 		actId: item.actId,
 	});
 
@@ -56,7 +56,7 @@ async function processPatchBatch(
 	const updatedIndexes = applyPatches(currentIndexes, item.patches);
 
 	// Write back
-	await experimental_storage.setJson({
+	await storage.setJson({
 		path: actGenerationIndexesPath(item.actId),
 		data: updatedIndexes,
 		schema: NodeGenerationIndex.array(),
@@ -66,7 +66,7 @@ async function processPatchBatch(
 /**
  * Processes the queue for all pending actIds
  */
-async function processQueue(experimental_storage: GiselleStorage) {
+async function processQueue(storage: GiselleStorage) {
 	if (state.queue.size === 0) {
 		return;
 	}
@@ -94,7 +94,7 @@ async function processQueue(experimental_storage: GiselleStorage) {
 		state.processing.add(actId);
 
 		try {
-			await processPatchBatch(experimental_storage, item);
+			await processPatchBatch(storage, item);
 		} catch (error) {
 			// Handle failure with retry logic
 			if (item.retryCount < state.retryConfig.maxRetries) {
@@ -137,13 +137,13 @@ async function processQueue(experimental_storage: GiselleStorage) {
 /**
  * Starts the batch processing interval
  */
-function startProcessing(experimental_storage: GiselleStorage) {
+function startProcessing(storage: GiselleStorage) {
 	if (state.intervalId !== null) {
 		return;
 	}
 
 	state.intervalId = setInterval(() => {
-		processQueue(experimental_storage).catch((error) => {
+		processQueue(storage).catch((error) => {
 			console.error(
 				"Unhandled error in generation index queue processing:",
 				error,
@@ -166,7 +166,7 @@ function stopProcessing() {
  * Enqueues a patch for the given actId
  */
 function enqueuePatch(
-	experimental_storage: GiselleStorage,
+	storage: GiselleStorage,
 	actId: ActId,
 	patch: GenerationIndexPatch,
 ) {
@@ -186,7 +186,7 @@ function enqueuePatch(
 	}
 
 	// Start processing if not already started
-	startProcessing(experimental_storage);
+	startProcessing(storage);
 }
 
 /**
@@ -229,7 +229,7 @@ export async function flushGenerationIndexQueue({
  * Public API for updating act generation indexes
  */
 export function updateActGenerationIndexes(
-	experimental_storage: GiselleStorage,
+	storage: GiselleStorage,
 	actId: ActId,
 	newIndex: NodeGenerationIndex,
 ) {
@@ -237,7 +237,7 @@ export function updateActGenerationIndexes(
 	const patch = upsert(newIndex);
 
 	// Enqueue the patch
-	enqueuePatch(experimental_storage, actId, patch);
+	enqueuePatch(storage, actId, patch);
 }
 
 // Cleanup function for tests or shutdown

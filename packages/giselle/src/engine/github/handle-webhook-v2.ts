@@ -126,14 +126,14 @@ async function process<TEventName extends WebhookEventName>(args: {
 
 	const githubRepositoryIntegration =
 		(await args.deps.getGitHubRepositoryIntegrationIndex({
-			storage: args.context.deprecated_storage,
-			experimental_storage: args.context.storage,
+			deprecated_storage: args.context.deprecated_storage,
+			storage: args.context.storage,
 			repositoryNodeId: args.event.data.payload.repository.node_id,
 			useExperimentalStorage: true,
 		})) ??
 		(await args.deps.getGitHubRepositoryIntegrationIndex({
-			storage: args.context.deprecated_storage,
-			experimental_storage: args.context.storage,
+			deprecated_storage: args.context.deprecated_storage,
+			storage: args.context.storage,
 			repositoryNodeId: args.event.data.payload.repository.node_id,
 			useExperimentalStorage: false,
 		}));
@@ -146,14 +146,14 @@ async function process<TEventName extends WebhookEventName>(args: {
 		githubRepositoryIntegration.flowTriggerIds.map(async (flowTriggerId) => {
 			const trigger =
 				(await args.deps.getFlowTrigger({
-					storage: args.context.deprecated_storage,
-					experimental_storage: args.context.storage,
+					deprecated_storage: args.context.deprecated_storage,
+					storage: args.context.storage,
 					flowTriggerId,
 					useExperimentalStorage: true,
 				})) ??
 				(await args.deps.getFlowTrigger({
-					storage: args.context.deprecated_storage,
-					experimental_storage: args.context.storage,
+					deprecated_storage: args.context.deprecated_storage,
+					storage: args.context.storage,
 					flowTriggerId,
 					useExperimentalStorage: false,
 				}));

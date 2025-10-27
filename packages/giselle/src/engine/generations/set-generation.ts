@@ -8,8 +8,8 @@ export async function setGeneration(args: {
 	useExperimentalStorage: boolean;
 }) {
 	await internalSetGeneration({
-		storage: args.context.deprecated_storage,
-		experimental_storage: args.context.storage,
+		deprecated_storage: args.context.deprecated_storage,
+		storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 		generation: args.generation,
 		logger: args.context.logger,

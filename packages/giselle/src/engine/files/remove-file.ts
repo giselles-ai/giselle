@@ -4,8 +4,8 @@ import type { GiselleStorage } from "../experimental_storage";
 import { filePath } from "./utils";
 
 export async function removeFile(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	useExperimentalStorage: boolean;
 	workspaceId: WorkspaceId;
 	fileId: FileId;
@@ -16,8 +16,8 @@ export async function removeFile(args: {
 		fileId: args.fileId,
 	});
 	if (args.useExperimentalStorage) {
-		await args.experimental_storage.remove(path);
+		await args.storage.remove(path);
 	} else {
-		await args.storage.removeItem(path);
+		await args.deprecated_storage.removeItem(path);
 	}
 }

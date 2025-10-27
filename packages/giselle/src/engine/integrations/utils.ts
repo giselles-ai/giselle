@@ -10,23 +10,23 @@ function getGitHubRepositoryIntegrationPath(repositoryNodeId: string): string {
 }
 
 export async function getGitHubRepositoryIntegrationIndex(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	repositoryNodeId: string;
 	useExperimentalStorage?: boolean;
 }) {
 	const path = getGitHubRepositoryIntegrationPath(args.repositoryNodeId);
 	if (args.useExperimentalStorage) {
-		const exists = await args.experimental_storage.exists(path);
+		const exists = await args.storage.exists(path);
 		if (!exists) {
 			return undefined;
 		}
-		return await args.experimental_storage.getJson({
+		return await args.storage.getJson({
 			path,
 			schema: GitHubRepositoryIntegrationIndex,
 		});
 	}
-	const unsafe = await args.storage.get(path);
+	const unsafe = await args.deprecated_storage.get(path);
 	if (unsafe === null) {
 		return undefined;
 	}
@@ -34,45 +34,45 @@ export async function getGitHubRepositoryIntegrationIndex(args: {
 }
 
 async function setGitHubRepositoryIntegrationIndex(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	repositoryNodeId: string;
 	index: GitHubRepositoryIntegrationIndex;
 	useExperimentalStorage?: boolean;
 }) {
 	const path = getGitHubRepositoryIntegrationPath(args.repositoryNodeId);
 	if (args.useExperimentalStorage) {
-		await args.experimental_storage.setJson({
+		await args.storage.setJson({
 			path,
 			data: args.index,
 			schema: GitHubRepositoryIntegrationIndex,
 		});
 		return;
 	}
-	await args.storage.set(path, args.index);
+	await args.deprecated_storage.set(path, args.index);
 }
 
 export async function addGitHubRepositoryIntegrationIndex(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	flowTriggerId: FlowTriggerId;
 	repositoryNodeId: string;
 	useExperimentalStorage?: boolean;
 }) {
 	const githubRepositoryIntegrationIndex =
 		await getGitHubRepositoryIntegrationIndex({
-			storage: args.storage,
+			deprecated_storage: args.deprecated_storage,
 			repositoryNodeId: args.repositoryNodeId,
-			experimental_storage: args.experimental_storage,
+			storage: args.storage,
 			useExperimentalStorage: args.useExperimentalStorage,
 		});
 
 	const currentFlowTriggerIds =
 		githubRepositoryIntegrationIndex?.flowTriggerIds ?? [];
 	await setGitHubRepositoryIntegrationIndex({
-		storage: args.storage,
+		deprecated_storage: args.deprecated_storage,
 		repositoryNodeId: args.repositoryNodeId,
-		experimental_storage: args.experimental_storage,
+		storage: args.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 		index: {
 			repositoryNodeId: args.repositoryNodeId,
@@ -82,17 +82,17 @@ export async function addGitHubRepositoryIntegrationIndex(args: {
 }
 
 export async function removeGitHubRepositoryIntegrationIndex(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	flowTriggerId: FlowTriggerId;
 	repositoryNodeId: string;
 	useExperimentalStorage?: boolean;
 }) {
 	const githubRepositoryIntegrationIndex =
 		await getGitHubRepositoryIntegrationIndex({
-			storage: args.storage,
+			deprecated_storage: args.deprecated_storage,
 			repositoryNodeId: args.repositoryNodeId,
-			experimental_storage: args.experimental_storage,
+			storage: args.storage,
 			useExperimentalStorage: args.useExperimentalStorage,
 		});
 	if (githubRepositoryIntegrationIndex === undefined) {
@@ -105,16 +105,16 @@ export async function removeGitHubRepositoryIntegrationIndex(args: {
 	if (remainingFlowTriggerIds.length === 0) {
 		const path = getGitHubRepositoryIntegrationPath(args.repositoryNodeId);
 		if (args.useExperimentalStorage) {
-			await args.experimental_storage.remove(path);
+			await args.storage.remove(path);
 			return;
 		}
-		await args.storage.removeItem(path);
+		await args.deprecated_storage.removeItem(path);
 		return;
 	}
 	await setGitHubRepositoryIntegrationIndex({
-		storage: args.storage,
+		deprecated_storage: args.deprecated_storage,
 		repositoryNodeId: args.repositoryNodeId,
-		experimental_storage: args.experimental_storage,
+		storage: args.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 		index: {
 			repositoryNodeId: args.repositoryNodeId,

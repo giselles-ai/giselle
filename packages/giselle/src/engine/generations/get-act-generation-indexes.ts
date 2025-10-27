@@ -14,7 +14,7 @@ export async function getActGenerationIndexes({
 		getAct({ actId, context }),
 		internal_getActGenerationIndexes({
 			actId,
-			experimental_storage: context.storage,
+			storage: context.storage,
 		}),
 	]);
 	return { act, generationIndexes };

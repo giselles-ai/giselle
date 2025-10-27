@@ -264,8 +264,8 @@ export function generateContent({
 				stopWhen: stepCountIs(Object.keys(preparedToolSet.toolSet).length + 1),
 				onChunk: async () => {
 					const currentGeneration = await getGeneration({
-						storage: context.deprecated_storage,
-						experimental_storage: context.storage,
+						deprecated_storage: context.deprecated_storage,
+						storage: context.storage,
 						useExperimentalStorage: true,
 						generationId: generation.id,
 					});

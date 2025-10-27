@@ -8,10 +8,10 @@ export async function createWorkspace(args: {
 }) {
 	const workspace = generateInitialWorkspace();
 	await setWorkspace({
-		storage: args.context.deprecated_storage,
+		deprecated_storage: args.context.deprecated_storage,
 		workspaceId: workspace.id,
 		workspace: Workspace.parse(workspace),
-		experimental_storage: args.context.storage,
+		storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	return workspace;

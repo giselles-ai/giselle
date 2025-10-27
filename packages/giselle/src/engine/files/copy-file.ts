@@ -14,16 +14,16 @@ import { filePath } from "./utils";
  * @throws Error if reading the source file or writing the destination file fails.
  */
 export async function copyFile(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	useExperimentalStorage: boolean;
 	workspaceId: WorkspaceId;
 	sourceFileId: FileId;
 	destinationFileId: FileId;
 }) {
 	const {
+		deprecated_storage,
 		storage,
-		experimental_storage,
 		useExperimentalStorage,
 		workspaceId,
 		sourceFileId,
@@ -43,11 +43,11 @@ export async function copyFile(args: {
 
 	try {
 		if (useExperimentalStorage) {
-			await experimental_storage.copy(sourcePath, destinationPath);
+			await storage.copy(sourcePath, destinationPath);
 			return;
 		}
 
-		const fileContent = await storage.getItemRaw(sourcePath);
+		const fileContent = await deprecated_storage.getItemRaw(sourcePath);
 
 		if (fileContent === null || fileContent === undefined) {
 			throw new Error(
@@ -55,7 +55,7 @@ export async function copyFile(args: {
 			);
 		}
 
-		await storage.setItemRaw(destinationPath, fileContent);
+		await deprecated_storage.setItemRaw(destinationPath, fileContent);
 
 		// console.log(
 		// 	`File copied successfully from ${sourcePath} to ${destinationPath}`,

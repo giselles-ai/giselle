@@ -8,25 +8,25 @@ function workspacePath(workspaceId: WorkspaceId) {
 }
 
 export async function setWorkspace({
-	storage,
+	deprecated_storage,
 	workspaceId,
 	workspace,
-	experimental_storage,
+	storage,
 	useExperimentalStorage,
 }: {
-	storage: Storage;
+	deprecated_storage: Storage;
 	workspaceId: WorkspaceId;
 	workspace: Workspace;
-	experimental_storage: GiselleStorage;
+	storage: GiselleStorage;
 	useExperimentalStorage: boolean;
 }) {
 	if (useExperimentalStorage) {
-		await experimental_storage.setJson({
+		await storage.setJson({
 			path: workspacePath(workspaceId),
 			data: workspace,
 		});
 	} else {
-		await storage.setItem(workspacePath(workspaceId), workspace, {
+		await deprecated_storage.setItem(workspacePath(workspaceId), workspace, {
 			// Disable caching by setting cacheControl to 0 for Supabase storage
 			cacheControl: 0,
 		});
@@ -34,18 +34,18 @@ export async function setWorkspace({
 }
 
 export async function getWorkspace({
+	deprecated_storage,
 	storage,
-	experimental_storage,
 	useExperimentalStorage,
 	workspaceId,
 }: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	useExperimentalStorage: boolean;
 	workspaceId: WorkspaceId;
 }) {
 	if (useExperimentalStorage) {
-		const workspace = await experimental_storage.getJson({
+		const workspace = await storage.getJson({
 			path: workspacePath(workspaceId),
 			// bypassingCache: true,
 			schema: Workspace,
@@ -56,7 +56,7 @@ export async function getWorkspace({
 			nodes,
 		};
 	}
-	const result = await storage.getItem(workspacePath(workspaceId), {
+	const result = await deprecated_storage.getItem(workspacePath(workspaceId), {
 		bypassingCache: true,
 	});
 	const workspace = parseAndMod(
@@ -72,14 +72,14 @@ export async function getWorkspace({
 
 /** @todo update new fileId for each file */
 export async function copyFiles({
+	deprecated_storage,
 	storage,
-	experimental_storage,
 	templateWorkspaceId,
 	newWorkspaceId,
 	useExperimentalStorage,
 }: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	templateWorkspaceId: WorkspaceId;
 	newWorkspaceId: WorkspaceId;
 	useExperimentalStorage: boolean;
@@ -90,7 +90,7 @@ export async function copyFiles({
 		let cursor: string | undefined;
 
 		while (true) {
-			const result = await experimental_storage.listBlobs({
+			const result = await storage.listBlobs({
 				prefix,
 				cursor,
 			});
@@ -114,14 +114,14 @@ export async function copyFiles({
 					`workspaces/${templateWorkspaceId}/files/`,
 					`workspaces/${newWorkspaceId}/files/`,
 				);
-				await experimental_storage.copy(fileKey, target);
+				await storage.copy(fileKey, target);
 			}),
 		);
 
 		return;
 	}
 
-	const fileKeys = await storage.getKeys(
+	const fileKeys = await deprecated_storage.getKeys(
 		`workspaces/${templateWorkspaceId}/files`,
 	);
 
@@ -131,8 +131,8 @@ export async function copyFiles({
 				/workspaces:wrks-\w+:files:/,
 				`workspaces:${newWorkspaceId}:files:`,
 			);
-			const file = await storage.getItemRaw(fileKey);
-			await storage.setItemRaw(target, file);
+			const file = await deprecated_storage.getItemRaw(fileKey);
+			await deprecated_storage.setItemRaw(target, file);
 		}),
 	);
 }

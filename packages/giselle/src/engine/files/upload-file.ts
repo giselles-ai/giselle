@@ -4,8 +4,8 @@ import type { GiselleStorage } from "../experimental_storage";
 import { filePath } from "./utils";
 
 export async function uploadFile(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	useExperimentalStorage: boolean;
 	file: File;
 	workspaceId: WorkspaceId;
@@ -19,9 +19,9 @@ export async function uploadFile(args: {
 		fileId: args.fileId,
 	});
 	if (args.useExperimentalStorage) {
-		await args.experimental_storage.setBlob(path, fileBuffer);
+		await args.storage.setBlob(path, fileBuffer);
 	} else {
-		await args.storage.setItemRaw(path, fileBuffer);
+		await args.deprecated_storage.setItemRaw(path, fileBuffer);
 	}
 }
 

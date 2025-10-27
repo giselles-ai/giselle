@@ -14,8 +14,8 @@ vi.mock("../../data-mod", () => ({
 }));
 
 describe("getGeneration", () => {
-	const storage = createStorage({ driver: memoryDriver() });
-	const experimental_storage = memoryStorageDriver(); // Mock experimental storage
+	const deprecated_storage = createStorage({ driver: memoryDriver() });
+	const storage = memoryStorageDriver(); // Mock experimental storage
 	const generationId: GenerationId = "gnr-1234567890abcdef";
 
 	const mockGeneration = {
@@ -57,18 +57,18 @@ describe("getGeneration", () => {
 	};
 
 	beforeEach(async () => {
-		await storage.clear();
+		await deprecated_storage.clear();
 		vi.mocked(parseAndMod).mockClear();
 
 		// Set up generation data
 		const generationPath = `generations/${generationId}/generation.json`;
-		await storage.setItem(generationPath, mockGeneration);
+		await deprecated_storage.setItem(generationPath, mockGeneration);
 	});
 
 	test("should use parseAndMod when skipMod is false", async () => {
 		const result = await getGeneration({
+			deprecated_storage,
 			storage,
-			experimental_storage,
 			generationId,
 			options: { skipMod: false },
 		});
@@ -81,8 +81,8 @@ describe("getGeneration", () => {
 
 	test("should use parseAndMod when skipMod is undefined", async () => {
 		const result = await getGeneration({
+			deprecated_storage,
 			storage,
-			experimental_storage,
 			generationId,
 		});
 
@@ -94,8 +94,8 @@ describe("getGeneration", () => {
 
 	test("should use regular parse when skipMod is true", async () => {
 		const result = await getGeneration({
+			deprecated_storage,
 			storage,
-			experimental_storage,
 			generationId,
 			options: { skipMod: true },
 		});
@@ -111,8 +111,8 @@ describe("getGeneration", () => {
 
 		await expect(
 			getGeneration({
+				deprecated_storage,
 				storage,
-				experimental_storage,
 				generationId: nonExistentId,
 			}),
 		).rejects.toThrow("Generation(id: gnr-nonexistent1234) is not found");
@@ -120,8 +120,8 @@ describe("getGeneration", () => {
 
 	test("should respect bypassingCache option", async () => {
 		const result = await getGeneration({
+			deprecated_storage,
 			storage,
-			experimental_storage,
 			generationId,
 			options: { bypassingCache: true, skipMod: true },
 		});
