@@ -7,12 +7,9 @@ import { getGeneration } from "./utils";
 export async function cancelGeneration(args: {
 	context: GiselleEngineContext;
 	generationId: GenerationId;
-	useExperimentalStorage: boolean;
 }) {
 	const generation = await getGeneration({
-		deprecated_storage: args.context.deprecated_storage,
 		storage: args.context.storage,
-		useExperimentalStorage: args.useExperimentalStorage,
 		generationId: args.generationId,
 	});
 	if (generation === undefined) {
@@ -24,9 +21,7 @@ export async function cancelGeneration(args: {
 		cancelledAt: Date.now(),
 	};
 	await internalSetGeneration({
-		deprecated_storage: args.context.deprecated_storage,
 		storage: args.context.storage,
-		useExperimentalStorage: args.useExperimentalStorage,
 		generation: cancelledGeneration,
 	});
 	return cancelledGeneration;

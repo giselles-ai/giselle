@@ -189,14 +189,10 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 				useExperimentalStorage,
 			});
 		},
-		cancelGeneration: async (
-			generationId: GenerationId,
-			useExperimentalStorage: boolean,
-		) => {
+		cancelGeneration: async (generationId: GenerationId) => {
 			return await cancelGeneration({
 				context,
 				generationId,
-				useExperimentalStorage,
 			});
 		},
 		copyFile: async (

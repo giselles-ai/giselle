@@ -292,52 +292,20 @@ export function generationPath(generationId: GenerationId) {
 }
 
 export async function getGeneration(params: {
-	deprecated_storage: Storage;
 	storage: GiselleStorage;
-	useExperimentalStorage?: boolean;
 	generationId: GenerationId;
 	options?: {
 		bypassingCache?: boolean;
 		skipMod?: boolean;
 	};
 }): Promise<Generation | undefined> {
-	if (params.useExperimentalStorage) {
-		const generation = await params.storage.getJson({
-			path: generationPath(params.generationId),
-			schema: Generation,
-		});
-		const parsedGenerationContext = GenerationContext.parse(generation.context);
-		return {
-			...generation,
-			context: parsedGenerationContext,
-		};
-	}
-	const unsafeGeneration = await params.deprecated_storage.getItem(
-		`${generationPath(params.generationId)}`,
-		{
-			bypassingCache: params.options?.bypassingCache ?? false,
-		},
-	);
-	if (unsafeGeneration == null) {
-		throw new Error(`Generation(id: ${params.generationId}) is not found`);
-	}
-	if (params.options?.skipMod) {
-		const parsedGeneration = Generation.parse(unsafeGeneration);
-		const parsedGenerationContext = GenerationContext.parse(
-			parsedGeneration.context,
-		);
-		return {
-			...parsedGeneration,
-			context: parsedGenerationContext,
-		};
-	}
-	const parsedGeneration = parseAndMod(Generation, unsafeGeneration);
-	const parsedGenerationContext = parseAndMod(
-		GenerationContext,
-		parsedGeneration.context,
-	);
+	const generation = await params.storage.getJson({
+		path: generationPath(params.generationId),
+		schema: Generation,
+	});
+	const parsedGenerationContext = GenerationContext.parse(generation.context);
 	return {
-		...parsedGeneration,
+		...generation,
 		context: parsedGenerationContext,
 	};
 }
@@ -347,32 +315,16 @@ export function nodeGenerationIndexPath(nodeId: NodeId) {
 }
 
 export async function getNodeGenerationIndexes(params: {
-	deprecated_storage: Storage;
 	storage: GiselleStorage;
-	useExperimentalStorage?: boolean;
 	nodeId: NodeId;
 }) {
-	if (params.useExperimentalStorage) {
-		if (
-			!(await params.storage.exists(nodeGenerationIndexPath(params.nodeId)))
-		) {
-			return undefined;
-		}
-		return await params.storage.getJson({
-			path: nodeGenerationIndexPath(params.nodeId),
-			schema: NodeGenerationIndex.array(),
-		});
-	}
-	const unsafeNodeGenerationIndexData = await params.deprecated_storage.getItem(
-		nodeGenerationIndexPath(params.nodeId),
-		{
-			bypassingCache: true,
-		},
-	);
-	if (unsafeNodeGenerationIndexData === null) {
+	if (!(await params.storage.exists(nodeGenerationIndexPath(params.nodeId)))) {
 		return undefined;
 	}
-	return NodeGenerationIndex.array().parse(unsafeNodeGenerationIndexData);
+	return await params.storage.getJson({
+		path: nodeGenerationIndexPath(params.nodeId),
+		schema: NodeGenerationIndex.array(),
+	});
 }
 
 async function geWebPageContents(
