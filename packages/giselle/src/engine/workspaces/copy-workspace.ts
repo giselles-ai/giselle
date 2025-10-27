@@ -14,11 +14,8 @@ export async function copyWorkspace(args: {
 	context: GiselleEngineContext;
 	workspaceId: WorkspaceId;
 	name?: string;
-	useExperimentalStorage: boolean;
 }) {
 	const sourceWorkspace = await getWorkspace({
-		useExperimentalStorage: args.useExperimentalStorage,
-		deprecated_storage: args.context.deprecated_storage,
 		storage: args.context.storage,
 		workspaceId: args.workspaceId,
 	});
@@ -37,10 +34,8 @@ export async function copyWorkspace(args: {
 			}
 			const oldFlowTriggerId = node.content.state.flowTriggerId;
 			const oldFlowTrigger = await getFlowTrigger({
-				deprecated_storage: args.context.deprecated_storage,
 				storage: args.context.storage,
 				flowTriggerId: oldFlowTriggerId,
-				useExperimentalStorage: args.useExperimentalStorage,
 			});
 
 			if (oldFlowTrigger) {
@@ -53,10 +48,8 @@ export async function copyWorkspace(args: {
 				};
 
 				await setFlowTrigger({
-					deprecated_storage: args.context.deprecated_storage,
 					storage: args.context.storage,
 					flowTrigger: newFlowTrigger,
-					useExperimentalStorage: args.useExperimentalStorage,
 				});
 
 				return { oldNodeId: node.id, newFlowTriggerId };
@@ -96,18 +89,14 @@ export async function copyWorkspace(args: {
 
 	await Promise.all([
 		setWorkspace({
-			deprecated_storage: args.context.deprecated_storage,
 			workspaceId: workspaceCopy.id,
 			workspace: Workspace.parse(workspaceCopy),
 			storage: args.context.storage,
-			useExperimentalStorage: args.useExperimentalStorage,
 		}),
 		copyFiles({
-			deprecated_storage: args.context.deprecated_storage,
 			storage: args.context.storage,
 			templateWorkspaceId: args.workspaceId,
 			newWorkspaceId: workspaceCopy.id,
-			useExperimentalStorage: args.useExperimentalStorage,
 		}),
 	]);
 

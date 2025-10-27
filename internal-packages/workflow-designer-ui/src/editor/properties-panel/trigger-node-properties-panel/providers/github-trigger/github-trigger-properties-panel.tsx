@@ -11,7 +11,6 @@ import {
 } from "@giselle-sdk/flow";
 import type { GitHubIntegrationInstallation } from "@giselle-sdk/giselle";
 import {
-	useFeatureFlag,
 	useGiselleEngine,
 	useIntegration,
 	useWorkflowDesigner,
@@ -187,7 +186,6 @@ export function Installed({
 	reconfigStep?: SelectRepositoryStep | InputCallsignStep | InputLabelsStep;
 	flowTriggerId?: FlowTriggerId;
 }) {
-	const { experimental_storage } = useFeatureFlag();
 	const isReconfiguring = node.content.state.status === "reconfiguring";
 	const [step, setStep] = useState<GitHubTriggerSetupStep>(
 		reconfigStep ?? { state: "select-event" },
@@ -230,7 +228,6 @@ export function Installed({
 								flowTriggerId,
 								repositoryNodeId: step.repoNodeId,
 								installationId: step.installationId,
-								useExperimentalStorage: experimental_storage,
 								event,
 							});
 
@@ -263,7 +260,6 @@ export function Installed({
 			node,
 			flowTriggerId,
 			client,
-			experimental_storage,
 			updateNodeData,
 			configureTrigger,
 		],
@@ -303,7 +299,6 @@ export function Installed({
 							flowTriggerId,
 							repositoryNodeId: step.repoNodeId,
 							installationId: step.installationId,
-							useExperimentalStorage: experimental_storage,
 							event,
 						});
 
@@ -331,7 +326,6 @@ export function Installed({
 			node,
 			flowTriggerId,
 			client,
-			experimental_storage,
 			updateNodeData,
 			configureTrigger,
 		],
@@ -459,7 +453,6 @@ export function Installed({
 														flowTriggerId,
 														repositoryNodeId: step.repoNodeId,
 														installationId: step.installationId,
-														useExperimentalStorage: experimental_storage,
 													});
 													triggerId = result.triggerId;
 												} else {
@@ -478,7 +471,6 @@ export function Installed({
 																event,
 															},
 														},
-														useExperimentalStorage: experimental_storage,
 													});
 													triggerId = result.triggerId;
 												}

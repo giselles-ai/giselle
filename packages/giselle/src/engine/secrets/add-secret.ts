@@ -43,7 +43,6 @@ export async function addSecret({
 			indexPath: workspaceSecretIndexPath(workspaceId),
 			item: secret,
 			itemSchema: SecretIndex,
-			useExperimentalStorage: true,
 		}),
 	]);
 	return secret;

@@ -36,7 +36,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	const [isPending, startTransition] = useTransition();
 	const [parameters, setParameters] = useState<ManualTriggerParameter[]>([]);
 	const [staged, setStaged] = useState(false);
-	const { experimental_storage, stage } = useFeatureFlag();
+	const { stage } = useFeatureFlag();
 	const { callbacks } = useFlowTrigger();
 
 	const handleAddParameter = useCallback<FormEventHandler<HTMLFormElement>>(
@@ -96,7 +96,6 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 							staged,
 						},
 					},
-					useExperimentalStorage: experimental_storage,
 				});
 
 				await callbacks?.flowTriggerUpdate?.({
@@ -135,7 +134,6 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 			workspace?.id,
 			updateNodeData,
 			callbacks?.flowTriggerUpdate,
-			experimental_storage,
 		],
 	);
 

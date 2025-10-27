@@ -33,11 +33,8 @@ import { createHandler, withUsageLimitErrorHandler } from "./create-handler";
 export const createJsonRouters = {
 	createWorkspace: (giselleEngine: GiselleEngine) =>
 		createHandler({
-			input: z.object({
-				useExperimentalStorage: z.boolean(),
-			}),
-			handler: async ({ input }) => {
-				const workspace = await giselleEngine.createWorkspace(input);
+			handler: async () => {
+				const workspace = await giselleEngine.createWorkspace();
 				return JsonResponse.json(workspace);
 			},
 		}),
@@ -220,7 +217,6 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				trigger: ConfigureTriggerInput,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
@@ -232,7 +228,6 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				flowTriggerId: FlowTriggerId.schema,
-				useExperimentalStorage: z.boolean().optional(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
@@ -256,7 +251,6 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				trigger: FlowTrigger,
-				useExperimentalStorage: z.boolean().optional(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
@@ -270,7 +264,6 @@ export const createJsonRouters = {
 				flowTriggerId: FlowTriggerId.schema,
 				repositoryNodeId: z.string(),
 				installationId: z.number(),
-				useExperimentalStorage: z.boolean(),
 				event: GitHubFlowTriggerEvent.optional(),
 			}),
 			handler: async ({ input }) => {
@@ -283,7 +276,6 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				flowTriggerId: FlowTriggerId.schema,
-				useExperimentalStorage: z.boolean().optional(),
 			}),
 			handler: async ({ input }) => {
 				await giselleEngine.deleteTrigger(input);
@@ -331,7 +323,6 @@ export const createJsonRouters = {
 			input: z.object({
 				webpage: FetchingWebPage,
 				workspaceId: WorkspaceId.schema,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) =>
 				JsonResponse.json(await giselleEngine.addWebPage(input)),
@@ -357,7 +348,6 @@ export const createJsonRouters = {
 				label: z.string(),
 				value: z.string(),
 				tags: z.array(z.string()).optional(),
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) =>
 				JsonResponse.json({
@@ -369,7 +359,6 @@ export const createJsonRouters = {
 			input: z.object({
 				workspaceId: WorkspaceId.schema,
 				tags: z.array(z.string()).optional(),
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) =>
 				JsonResponse.json({
@@ -408,7 +397,6 @@ export const createJsonRouters = {
 			input: z.object({
 				workspaceId: WorkspaceId.schema,
 				secretId: SecretId.schema,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
 				await giselleEngine.deleteSecret(input);

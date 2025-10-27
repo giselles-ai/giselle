@@ -503,7 +503,6 @@ export async function processEvent<TEventName extends WebhookEventName>(
 		const workspace = await getWorkspace({
 			context: args.context,
 			workspaceId: args.trigger.workspaceId,
-			useExperimentalStorage: true,
 		});
 
 		await deps.createAndStartAct({
