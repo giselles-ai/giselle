@@ -292,10 +292,6 @@ export function generationPath(generationId: GenerationId) {
 export async function getGeneration(params: {
 	storage: GiselleStorage;
 	generationId: GenerationId;
-	options?: {
-		bypassingCache?: boolean;
-		skipMod?: boolean;
-	};
 }): Promise<Generation | undefined> {
 	const generation = await params.storage.getJson({
 		path: generationPath(params.generationId),

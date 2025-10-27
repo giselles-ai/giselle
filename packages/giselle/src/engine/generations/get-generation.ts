@@ -9,8 +9,5 @@ export async function getGeneration(args: {
 	return await getGenerationInternal({
 		storage: args.context.storage,
 		generationId: args.generationId,
-		options: {
-			bypassingCache: true,
-		},
 	});
 }

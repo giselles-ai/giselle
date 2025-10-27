@@ -120,7 +120,6 @@ describe("createHttpHandler", () => {
 		expect(mockGiselleEngine.getGeneratedImage).toHaveBeenCalledWith(
 			generationId,
 			filename,
-			false,
 		);
 		expect(response).toBeInstanceOf(Response);
 		expect(response.headers.get("Content-Type")).toBe("image/png");
