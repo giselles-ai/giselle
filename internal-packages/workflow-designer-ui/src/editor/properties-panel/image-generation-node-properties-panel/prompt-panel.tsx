@@ -4,6 +4,7 @@ import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
+import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	type ImageGenerationLanguageModelData,
 	type ImageGenerationNode,
@@ -11,14 +12,18 @@ import {
 } from "@giselle-sdk/data-type";
 import {
 	isSupportedConnection,
+	useUsageLimits,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
 import {
 	falLanguageModels,
 	googleImageLanguageModels,
+	hasTierAccess,
 	openaiImageModels,
+	Tier,
 } from "@giselle-sdk/language-model";
 import { useCallback, useMemo } from "react";
+import { ProTag } from "../../tool/toolbar/components/pro-tag";
 import { createDefaultModelData, updateModelId } from "./model-defaults";
 import { FalModelPanel, OpenAIImageModelPanel } from "./models";
 import { useConnectedSources } from "./sources";
@@ -34,6 +39,9 @@ export function PromptPanel({
 }) {
 	const { data, updateNodeDataContent, updateNodeData, deleteConnection } =
 		useWorkflowDesigner();
+	const usageLimits = useUsageLimits();
+	const userTier = usageLimits?.featureTier ?? Tier.enum.free;
+	const { error } = useToasts();
 	const { all: connectedSources } = useConnectedSources(node);
 	const nodes = useMemo(
 		() =>
@@ -49,20 +57,34 @@ export function PromptPanel({
 			{
 				provider: "fal",
 				label: "Fal",
-				models: falLanguageModels.map((m) => ({ id: m.id })),
+				models: falLanguageModels.map((m) => ({
+					id: m.id,
+					badge: m.tier === Tier.enum.pro ? <ProTag /> : undefined,
+					disabled: !hasTierAccess(m, userTier),
+				})),
 			},
 			{
 				provider: "openai",
 				label: "OpenAI",
-				models: openaiImageModels.map((m) => ({ id: m.id })),
+				models: openaiImageModels.map((m) => ({
+					id: m.id,
+					badge: m.tier === Tier.enum.pro ? <ProTag /> : undefined,
+					disabled: !hasTierAccess(m, userTier),
+					disabledReason: !hasTierAccess(m, userTier) ? "Pro only" : undefined,
+				})),
 			},
 			{
 				provider: "google",
 				label: "Google",
-				models: googleImageLanguageModels.map((m) => ({ id: m.id })),
+				models: googleImageLanguageModels.map((m) => ({
+					id: m.id,
+					badge: m.tier === Tier.enum.pro ? <ProTag /> : undefined,
+					disabled: !hasTierAccess(m, userTier),
+					disabledReason: !hasTierAccess(m, userTier) ? "Pro only" : undefined,
+				})),
 			},
 		],
-		[],
+		[userTier],
 	);
 
 	const disconnectInvalidConnections = useCallback(
@@ -103,6 +125,17 @@ export function PromptPanel({
 						fullWidth={false}
 						triggerId="image-model-picker-trigger"
 						onSelect={(provider, modelId) => {
+							const model =
+								provider === "fal"
+									? falLanguageModels.find((m) => m.id === modelId)
+									: provider === "openai"
+										? openaiImageModels.find((m) => m.id === modelId)
+										: googleImageLanguageModels.find((m) => m.id === modelId);
+							if (!model) return;
+							if (!hasTierAccess(model, userTier)) {
+								error("Please upgrade to Pro to use this model.");
+								return;
+							}
 							const next = createDefaultModelData(
 								provider as "fal" | "openai" | "google",
 							);
