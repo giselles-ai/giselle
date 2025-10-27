@@ -267,10 +267,8 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		}) => {
 			return await getGitHubRepositoryFullname({ ...args, context });
 		},
-		setTrigger: async (args: {
-			trigger: FlowTrigger;
-			useExperimentalStorage?: boolean;
-		}) => setTrigger({ ...args, context }),
+		setTrigger: async (args: { trigger: FlowTrigger }) =>
+			setTrigger({ ...args, context }),
 		reconfigureGitHubTrigger: async (args: {
 			flowTriggerId: FlowTriggerId;
 			repositoryNodeId: string;
