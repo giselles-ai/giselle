@@ -30,10 +30,7 @@ async function enrichActWithNavigationData(
 		if (team === undefined) {
 			throw new Error("Team not found");
 		}
-		const tmpWorkspace = await giselleEngine.getWorkspace(
-			act.sdkWorkspaceId,
-			true,
-		);
+		const tmpWorkspace = await giselleEngine.getWorkspace(act.sdkWorkspaceId);
 
 		const findStepByStatus = (status: string) => {
 			for (const sequence of tmpAct.sequences) {
@@ -189,7 +186,6 @@ export async function fetchFlowTriggers(
 			if (!workspaceMap.has(tmpFlowTrigger.sdkWorkspaceId)) {
 				const tmpWorkspace = await giselleEngine.getWorkspace(
 					tmpFlowTrigger.sdkWorkspaceId,
-					true,
 				);
 				workspaceMap.set(tmpFlowTrigger.sdkWorkspaceId, tmpWorkspace);
 			}
@@ -211,7 +207,6 @@ export async function fetchFlowTriggers(
 
 			const flowTrigger = await giselleEngine.getTrigger({
 				flowTriggerId: tmpFlowTrigger.sdkFlowTriggerId,
-				useExperimentalStorage: true,
 			});
 			if (flowTrigger === undefined) {
 				continue;

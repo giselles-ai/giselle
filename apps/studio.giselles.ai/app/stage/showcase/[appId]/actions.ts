@@ -16,7 +16,6 @@ export async function fetchWorkspaceFlowTrigger(workspaceId: string): Promise<{
 	try {
 		const workspace = await giselleEngine.getWorkspace(
 			workspaceId as WorkspaceId,
-			true,
 		);
 
 		// Find trigger node
@@ -35,7 +34,6 @@ export async function fetchWorkspaceFlowTrigger(workspaceId: string): Promise<{
 
 		const flowTrigger = await giselleEngine.getTrigger({
 			flowTriggerId: triggerNode.content.state.flowTriggerId,
-			useExperimentalStorage: true,
 		});
 
 		if (!flowTrigger) {

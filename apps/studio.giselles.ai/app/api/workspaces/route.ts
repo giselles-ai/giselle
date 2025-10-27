@@ -1,7 +1,6 @@
 import { createId } from "@paralleldrive/cuid2";
 import { NextResponse } from "next/server";
 import { agents, db, workspaces } from "@/drizzle";
-import { experimental_storageFlag } from "@/flags";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 import { giselleEngine } from "../../giselle-engine";
@@ -10,11 +9,8 @@ export async function POST(_request: Request) {
 	const agentId = `agnt_${createId()}` as const;
 	const user = await fetchCurrentUser();
 	const team = await fetchCurrentTeam();
-	const experimentalStorage = await experimental_storageFlag();
 
-	const workspace = await giselleEngine.createWorkspace({
-		useExperimentalStorage: experimentalStorage,
-	});
+	const workspace = await giselleEngine.createWorkspace();
 
 	// The agents table is deprecated, so we are inserting into the workspaces table.
 	await db.insert(agents).values({

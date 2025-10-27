@@ -16,7 +16,6 @@ export async function getSidebarDataObject(actId: ActId) {
 	}
 	const trigger = await giselleEngine.getTrigger({
 		flowTriggerId: dbAct?.sdkFlowTriggerId,
-		useExperimentalStorage: true,
 	});
 	if (trigger?.configuration.provider !== "manual") {
 		throw new Error(`Trigger with id ${dbAct?.sdkFlowTriggerId} is not manual`);

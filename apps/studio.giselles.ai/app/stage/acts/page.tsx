@@ -25,10 +25,7 @@ async function enrichActWithNavigationData(
 		if (team === undefined) {
 			throw new Error("Team not found");
 		}
-		const tmpWorkspace = await giselleEngine.getWorkspace(
-			act.sdkWorkspaceId,
-			true,
-		);
+		const tmpWorkspace = await giselleEngine.getWorkspace(act.sdkWorkspaceId);
 
 		const findStepByStatus = (status: string) => {
 			for (const sequence of tmpAct.sequences) {

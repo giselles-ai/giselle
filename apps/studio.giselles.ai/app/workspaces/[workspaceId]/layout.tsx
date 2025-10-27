@@ -77,10 +77,7 @@ export default async function Layout({
 	const aiGateway = await aiGatewayFlag();
 	const resumableGeneration = await resumableGenerationFlag();
 	const googleUrlContext = await googleUrlContextFlag();
-	const data = await giselleEngine.getWorkspace(
-		workspaceId,
-		experimental_storage,
-	);
+	const data = await giselleEngine.getWorkspace(workspaceId);
 	const documentVectorStore = await docVectorStoreFlag();
 	const documentVectorStores = documentVectorStore
 		? await getDocumentVectorStores(workspaceTeam.dbId)
@@ -128,7 +125,6 @@ export default async function Layout({
 			featureFlag={{
 				webSearchAction,
 				layoutV3,
-				experimental_storage,
 				stage,
 				aiGateway,
 				resumableGeneration,
