@@ -31,8 +31,7 @@
 		"next": "catalog:",
 		"pg": "catalog:",
 		"react": "catalog:",
-		"react-dom": "catalog:",
-		"unstorage": "catalog:"
+		"react-dom": "catalog:"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
