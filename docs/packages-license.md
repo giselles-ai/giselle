@@ -2964,17 +2964,6 @@ LGPL-3.0-or-later permitted
 
 
 
-<a name="@radix-ui/react-use-effect-event"></a>
-### @radix-ui/react-use-effect-event v0.0.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="@radix-ui/react-use-escape-keydown"></a>
 ### @radix-ui/react-use-escape-keydown v1.1.0
 #### 
@@ -3087,6 +3076,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@rollup/rollup-linux-x64-gnu"></a>
 ### @rollup/rollup-linux-x64-gnu v4.35.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@rollup/rollup-linux-x64-musl"></a>
+### @rollup/rollup-linux-x64-musl v4.35.0
 #### 
 
 ##### Paths
