@@ -203,15 +203,12 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			workspaceId: WorkspaceId,
 			sourceFileId: FileId,
 			destinationFileId: FileId,
-			useExperimentalStorage: boolean,
 		) => {
 			return await copyFile({
-				deprecated_storage: context.deprecated_storage,
 				storage: context.storage,
 				workspaceId,
 				sourceFileId,
 				destinationFileId,
-				useExperimentalStorage,
 			});
 		},
 		uploadFile: async (
