@@ -34,35 +34,17 @@ export async function setWorkspace({
 }
 
 export async function getWorkspace({
-	deprecated_storage,
 	storage,
-	useExperimentalStorage,
 	workspaceId,
 }: {
-	deprecated_storage: Storage;
 	storage: GiselleStorage;
-	useExperimentalStorage: boolean;
 	workspaceId: WorkspaceId;
 }) {
-	if (useExperimentalStorage) {
-		const workspace = await storage.getJson({
-			path: workspacePath(workspaceId),
-			// bypassingCache: true,
-			schema: Workspace,
-		});
-		const nodes = workspace.nodes.map((node) => parseAndMod(Node, node));
-		return {
-			...workspace,
-			nodes,
-		};
-	}
-	const result = await deprecated_storage.getItem(workspacePath(workspaceId), {
-		bypassingCache: true,
+	const workspace = await storage.getJson({
+		path: workspacePath(workspaceId),
+		// bypassingCache: true,
+		schema: Workspace,
 	});
-	const workspace = parseAndMod(
-		Workspace,
-		result,
-	); /** @todo remove the underline if workpsace.node used Node Schema and delete editingWorkflows field */
 	const nodes = workspace.nodes.map((node) => parseAndMod(Node, node));
 	return {
 		...workspace,

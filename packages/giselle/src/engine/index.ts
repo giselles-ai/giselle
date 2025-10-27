@@ -131,14 +131,10 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		}) => {
 			return await createWorkspace({ context, useExperimentalStorage });
 		},
-		getWorkspace: async (
-			workspaceId: WorkspaceId,
-			useExperimentalStorage: boolean,
-		) => {
+		getWorkspace: async (workspaceId: WorkspaceId) => {
 			return await getWorkspace({
 				context,
 				workspaceId,
-				useExperimentalStorage,
 			});
 		},
 		updateWorkspace: async (
@@ -234,14 +230,10 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 				filename,
 			});
 		},
-		setGeneration: async (
-			generation: Generation,
-			useExperimentalStorage: boolean,
-		) => {
+		setGeneration: async (generation: Generation) => {
 			return await setGeneration({
 				context,
 				generation,
-				useExperimentalStorage,
 			});
 		},
 		createSampleWorkspaces: async (useExperimentalStorage: boolean) => {
@@ -310,7 +302,6 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		addWebPage: async (args: {
 			workspaceId: WorkspaceId;
 			webpage: FetchingWebPage;
-			useExperimentalStorage: boolean;
 		}) => addWebPage({ ...args, context }),
 		async getFileText(args: { workspaceId: WorkspaceId; fileId: FileId }) {
 			return await getFileText({
