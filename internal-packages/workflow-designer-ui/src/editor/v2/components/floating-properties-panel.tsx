@@ -104,7 +104,7 @@ export function FloatingPropertiesPanel({
 				<Dialog.Content asChild onPointerDownOutside={onClose}>
 					<div
 						className={clsx(
-							"absolute top-4 bottom-4 z-10 pointer-events-none",
+							"absolute top-4 z-10 pointer-events-none max-h-[calc(100vh-32px)]",
 							position === "right" ? "right-4" : "left-4",
 						)}
 						style={{ width: `${width}px` }}
@@ -113,7 +113,7 @@ export function FloatingPropertiesPanel({
 						<div
 							ref={panelRef}
 							className={clsx(
-								"h-full pointer-events-auto relative rounded-[12px] shadow-xl",
+								"pointer-events-auto relative rounded-[12px] shadow-xl max-h-[calc(100vh-32px)]",
 								isOpen
 									? "translate-x-0 opacity-100"
 									: position === "right"
@@ -153,11 +153,12 @@ export function FloatingPropertiesPanel({
 							{/* Content */}
 							<div
 								className={clsx(
-									"h-full overflow-hidden relative z-10 px-2 pb-2",
+									"flex flex-col max-h-[inherit]",
 									position === "right" ? "pl-3" : "pr-3",
 								)}
 							>
-								{children}
+								{/* header outside; body scrolls in consumer */}
+								<div className="px-2 pb-2">{children}</div>
 							</div>
 						</div>
 					</div>

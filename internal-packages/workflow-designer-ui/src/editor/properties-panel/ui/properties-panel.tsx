@@ -47,7 +47,7 @@ function getNodeIconColor(node: NodeLike): string {
 export function PropertiesPanelRoot({ children }: { children: ReactNode }) {
 	return (
 		<div
-			className={`${PANEL_SPACING.LAYOUT.FULL_HEIGHT} ${PANEL_SPACING.LAYOUT.FULL_WIDTH} ${PANEL_SPACING.LAYOUT.FLEX_COL} ${PANEL_SPACING.CONTENT.GAP} ${PANEL_SPACING.LAYOUT.OVERFLOW_HIDDEN}`}
+			className={`${PANEL_SPACING.LAYOUT.FULL_WIDTH} ${PANEL_SPACING.LAYOUT.FLEX_COL} ${PANEL_SPACING.CONTENT.GAP}`}
 		>
 			{children}
 		</div>
@@ -148,5 +148,5 @@ export function PropertiesPanelHeader({
 }
 
 export function PropertiesPanelContent({ children }: { children: ReactNode }) {
-	return <div className={getContentClasses()}>{children}</div>;
+	return <div className="flex-1 min-h-0 overflow-y-auto">{children}</div>;
 }
