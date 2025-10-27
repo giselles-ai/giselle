@@ -245,10 +245,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			}
 			return await context.vault.encrypt(plaintext);
 		},
-		resolveTrigger: async (args: {
-			generation: QueuedGeneration;
-			useExperimentalStorage: boolean;
-		}) => {
+		resolveTrigger: async (args: { generation: QueuedGeneration }) => {
 			return await resolveTrigger({ ...args, context });
 		},
 		configureTrigger: async (args: { trigger: ConfigureTriggerInput }) => {

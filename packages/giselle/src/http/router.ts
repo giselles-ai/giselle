@@ -111,7 +111,6 @@ export const createJsonRouters = {
 			input: z.object({
 				origin: GenerationOrigin,
 				nodeId: NodeId.schema,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
 				const generations = await giselleEngine.getNodeGenerations(
@@ -210,7 +209,6 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				generation: QueuedGeneration,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
