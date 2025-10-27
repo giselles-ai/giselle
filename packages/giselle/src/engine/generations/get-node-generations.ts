@@ -9,12 +9,9 @@ export async function getNodeGenerations(args: {
 	context: GiselleEngineContext;
 	origin: GenerationOrigin;
 	nodeId: NodeId;
-	useExperimentalStorage: boolean;
 }) {
 	const nodeGenerationIndexes = await getNodeGenerationIndexes({
-		deprecated_storage: args.context.deprecated_storage,
 		storage: args.context.storage,
-		useExperimentalStorage: args.useExperimentalStorage,
 		nodeId: args.nodeId,
 	});
 	if (nodeGenerationIndexes === undefined) {
@@ -28,9 +25,7 @@ export async function getNodeGenerations(args: {
 			.map((nodeGenerationIndex) =>
 				getGeneration({
 					generationId: nodeGenerationIndex.id,
-					deprecated_storage: args.context.deprecated_storage,
 					storage: args.context.storage,
-					useExperimentalStorage: args.useExperimentalStorage,
 					options: {
 						bypassingCache: true,
 						skipMod: true,

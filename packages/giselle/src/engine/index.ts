@@ -165,26 +165,17 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 				useResumableGeneration,
 			});
 		},
-		getGeneration: async (
-			generationId: GenerationId,
-			useExperimentalStorage: boolean,
-		) => {
+		getGeneration: async (generationId: GenerationId) => {
 			return await getGeneration({
 				context,
 				generationId,
-				useExperimentalStorage,
 			});
 		},
-		getNodeGenerations: async (
-			origin: GenerationOrigin,
-			nodeId: NodeId,
-			useExperimentalStorage: boolean,
-		) => {
+		getNodeGenerations: async (origin: GenerationOrigin, nodeId: NodeId) => {
 			return await getNodeGenerations({
 				context,
 				origin,
 				nodeId,
-				useExperimentalStorage,
 			});
 		},
 		cancelGeneration: async (generationId: GenerationId) => {
