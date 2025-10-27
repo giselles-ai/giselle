@@ -1,5 +1,3 @@
-import { createStorage } from "unstorage";
-import memoryDriver from "unstorage/drivers/memory";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { type GiselleEngine, memoryStorageDriver } from "../engine";
 import { createHttpHandler } from "./next-giselle-engine";
@@ -18,10 +16,6 @@ vi.mock("../http", () => {
 	};
 });
 
-const memoryStorage = createStorage({
-	driver: memoryDriver(),
-});
-
 describe("createHttpHandler", () => {
 	const mockFile = new File(["test image content"], "test.png", {
 		type: "image/png",
@@ -38,7 +32,6 @@ describe("createHttpHandler", () => {
 			giselleEngine: mockGiselleEngine,
 			config: {
 				basePath,
-				deprecated_storage: memoryStorage,
 				storage: memoryStorageDriver(),
 				vault: {
 					// biome-ignore lint/suspicious/useAwait: decryption is synchronous

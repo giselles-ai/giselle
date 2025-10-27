@@ -1,5 +1,3 @@
-import { createStorage } from "unstorage";
-import memoryDriver from "unstorage/drivers/memory";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { GenerationId } from "../../concepts/identifiers";
 import { parseAndMod } from "../../data-mod";
@@ -14,7 +12,6 @@ vi.mock("../../data-mod", () => ({
 }));
 
 describe("getGeneration", () => {
-	const deprecated_storage = createStorage({ driver: memoryDriver() });
 	const storage = memoryStorageDriver(); // Mock experimental storage
 	const generationId: GenerationId = "gnr-1234567890abcdef";
 
@@ -56,18 +53,16 @@ describe("getGeneration", () => {
 		completedAt: Date.now(),
 	};
 
-	beforeEach(async () => {
-		await deprecated_storage.clear();
+	beforeEach(() => {
 		vi.mocked(parseAndMod).mockClear();
 
 		// Set up generation data
 		const generationPath = `generations/${generationId}/generation.json`;
-		await deprecated_storage.setItem(generationPath, mockGeneration);
+		storage.setJson({ path: generationPath, data: mockGeneration });
 	});
 
 	test("should use parseAndMod when skipMod is false", async () => {
 		const result = await getGeneration({
-			deprecated_storage,
 			storage,
 			generationId,
 			options: { skipMod: false },
@@ -81,7 +76,6 @@ describe("getGeneration", () => {
 
 	test("should use parseAndMod when skipMod is undefined", async () => {
 		const result = await getGeneration({
-			deprecated_storage,
 			storage,
 			generationId,
 		});
@@ -94,7 +88,6 @@ describe("getGeneration", () => {
 
 	test("should use regular parse when skipMod is true", async () => {
 		const result = await getGeneration({
-			deprecated_storage,
 			storage,
 			generationId,
 			options: { skipMod: true },
@@ -111,7 +104,6 @@ describe("getGeneration", () => {
 
 		await expect(
 			getGeneration({
-				deprecated_storage,
 				storage,
 				generationId: nonExistentId,
 			}),
@@ -120,7 +112,6 @@ describe("getGeneration", () => {
 
 	test("should respect bypassingCache option", async () => {
 		const result = await getGeneration({
-			deprecated_storage,
 			storage,
 			generationId,
 			options: { bypassingCache: true, skipMod: true },

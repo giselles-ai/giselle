@@ -17,7 +17,6 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
-import type { Storage } from "unstorage";
 import type { GiselleStorage } from "../experimental_storage";
 import {
 	type FailedGeneration,
@@ -65,7 +64,6 @@ export function executeQuery(args: {
 				const query = await resolveQuery(
 					operationNode.content.query,
 					runningGeneration,
-					args.context.deprecated_storage,
 					args.context.storage,
 				);
 
@@ -128,14 +126,12 @@ export function executeQuery(args: {
 async function resolveQuery(
 	query: string,
 	runningGeneration: RunningGeneration,
-	deprecated_storage: Storage,
 	storage: GiselleStorage,
 ) {
 	const generationContext = GenerationContext.parse(runningGeneration.context);
 
 	async function generationContentResolver(nodeId: NodeId, outputId: OutputId) {
 		const nodeGenerationIndexes = await getNodeGenerationIndexes({
-			deprecated_storage: deprecated_storage,
 			storage: storage,
 			nodeId,
 		});
@@ -146,7 +142,6 @@ async function resolveQuery(
 			return undefined;
 		}
 		const generation = await getGeneration({
-			deprecated_storage: deprecated_storage,
 			storage: storage,
 			generationId: nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
 			options: {
