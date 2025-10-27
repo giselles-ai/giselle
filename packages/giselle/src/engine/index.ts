@@ -225,17 +225,11 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 				fileName,
 			});
 		},
-		removeFile: async (
-			workspaceId: WorkspaceId,
-			fileId: FileId,
-			useExperimentalStorage: boolean,
-		) => {
+		removeFile: async (workspaceId: WorkspaceId, fileId: FileId) => {
 			return await removeFile({
-				deprecated_storage: context.deprecated_storage,
 				storage: context.storage,
 				workspaceId,
 				fileId,
-				useExperimentalStorage,
 			});
 		},
 		generateImage: async (
