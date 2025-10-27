@@ -17,7 +17,7 @@ export function VectorStoreNodePropertiesPanel({
 			<NodePanelHeader
 				node={node}
 				onChangeName={(name) => updateNodeData(node, { name })}
-				docsUrl="https://docs.giselles.ai/en/glossary/vector-store-node"
+				docsUrl="https://docs.giselles.ai/en/glossary/github-vector-store-node#github-vector-store-node"
 				onDelete={() => deleteNode(node.id)}
 			/>
 			<PropertiesPanelContent>
