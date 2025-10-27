@@ -8,53 +8,53 @@ function flowTriggerPath(params: { flowTriggerId: FlowTriggerId }) {
 }
 
 export async function setFlowTrigger({
+	deprecated_storage,
 	storage,
-	experimental_storage,
 	flowTrigger,
 	useExperimentalStorage = false,
 }: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	flowTrigger: FlowTrigger;
 	useExperimentalStorage?: boolean;
 }) {
 	const path = flowTriggerPath({ flowTriggerId: flowTrigger.id });
 	if (useExperimentalStorage) {
-		await experimental_storage.setJson({
+		await storage.setJson({
 			path,
 			data: flowTrigger,
 			schema: FlowTrigger,
 		});
 		return;
 	}
-	await storage.set(path, flowTrigger);
+	await deprecated_storage.set(path, flowTrigger);
 }
 
 export async function getFlowTrigger({
+	deprecated_storage,
 	storage,
-	experimental_storage,
 	flowTriggerId,
 	useExperimentalStorage = false,
 }: {
-	storage: Storage;
+	deprecated_storage: Storage;
 	flowTriggerId: FlowTriggerId;
-	experimental_storage: GiselleStorage;
+	storage: GiselleStorage;
 	useExperimentalStorage?: boolean;
 }) {
 	const path = flowTriggerPath({
 		flowTriggerId,
 	});
 	if (useExperimentalStorage) {
-		const exists = await experimental_storage.exists(path);
+		const exists = await storage.exists(path);
 		if (!exists) {
 			return undefined;
 		}
-		return await experimental_storage.getJson({
+		return await storage.getJson({
 			path,
 			schema: FlowTrigger,
 		});
 	}
-	const unsafe = await storage.get(path, {
+	const unsafe = await deprecated_storage.get(path, {
 		bypassingCache: true,
 	});
 	if (unsafe === null) {
@@ -65,19 +65,19 @@ export async function getFlowTrigger({
 }
 
 export async function deleteFlowTrigger({
+	deprecated_storage,
 	storage,
-	experimental_storage,
 	flowTriggerId,
 	useExperimentalStorage = false,
 }: {
-	storage: Storage;
+	deprecated_storage: Storage;
 	flowTriggerId: FlowTriggerId;
-	experimental_storage: GiselleStorage;
+	storage: GiselleStorage;
 	useExperimentalStorage?: boolean;
 }) {
 	const trigger = await getFlowTrigger({
-		storage,
-		experimental_storage,
+		deprecated_storage: deprecated_storage,
+		storage: storage,
 		flowTriggerId,
 		useExperimentalStorage,
 	});
@@ -86,14 +86,14 @@ export async function deleteFlowTrigger({
 	}
 	const path = flowTriggerPath({ flowTriggerId });
 	if (useExperimentalStorage) {
-		await experimental_storage.remove(path);
+		await storage.remove(path);
 	} else {
-		await storage.removeItem(path);
+		await deprecated_storage.removeItem(path);
 	}
 	if (trigger.configuration.provider === "github") {
 		await removeGitHubRepositoryIntegrationIndex({
-			storage,
-			experimental_storage,
+			deprecated_storage: deprecated_storage,
+			storage: storage,
 			flowTriggerId,
 			repositoryNodeId: trigger.configuration.repositoryNodeId,
 			useExperimentalStorage,

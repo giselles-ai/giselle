@@ -4,8 +4,8 @@ import type { GiselleStorage } from "../experimental_storage";
 import { filePath } from "./utils";
 
 export async function getFileText(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	useExperimentalStorage: boolean;
 	workspaceId: WorkspaceId;
 	fileId: FileId;
@@ -16,10 +16,10 @@ export async function getFileText(args: {
 		fileId: args.fileId,
 	});
 	if (args.useExperimentalStorage) {
-		const blob = await args.experimental_storage.getBlob(path);
+		const blob = await args.storage.getBlob(path);
 		return Buffer.from(blob).toString();
 	}
-	const textLike = await args.storage.getItem(path);
+	const textLike = await args.deprecated_storage.getItem(path);
 	if (typeof textLike !== "string") {
 		return "";
 	}

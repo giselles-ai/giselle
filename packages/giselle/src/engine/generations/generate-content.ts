@@ -264,8 +264,8 @@ export function generateContent({
 				stopWhen: stepCountIs(Object.keys(preparedToolSet.toolSet).length + 1),
 				onChunk: async () => {
 					const currentGeneration = await getGeneration({
-						storage: context.deprecated_storage,
-						experimental_storage: context.experimental_storage,
+						deprecated_storage: context.deprecated_storage,
+						storage: context.storage,
 						useExperimentalStorage: true,
 						generationId: generation.id,
 					});
@@ -418,7 +418,7 @@ export function generateContent({
 			const writer = batchWriter<StreamItem<typeof uiMessageStream>>({
 				process: (batch) => {
 					logger.debug(`Processing batch with ${batch.length} items`);
-					return context.experimental_storage.setBlob(
+					return context.storage.setBlob(
 						generationUiMessageChunksPath(generation.id),
 						new TextEncoder().encode(
 							batch.map((chunk) => JSON.stringify(chunk)).join("\n"),

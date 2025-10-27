@@ -9,10 +9,10 @@ export async function updateWorkspace(args: {
 	useExperimentalStorage: boolean;
 }) {
 	await setWorkspace({
-		storage: args.context.deprecated_storage,
+		deprecated_storage: args.context.deprecated_storage,
 		workspaceId: args.workspace.id,
 		workspace: args.workspace,
-		experimental_storage: args.context.experimental_storage,
+		storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	revalidatePath(`/workspaces/${args.workspace.id}`, "layout");

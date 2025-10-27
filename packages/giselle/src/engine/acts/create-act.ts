@@ -212,7 +212,7 @@ export async function createAct(
 	};
 	args.context.logger.debug(`created act:${act.id}`);
 	await Promise.all([
-		args.context.experimental_storage.setJson({
+		args.context.storage.setJson({
 			path: actPath(act.id),
 			data: act,
 			schema: Act,

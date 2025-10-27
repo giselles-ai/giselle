@@ -66,7 +66,7 @@ export function executeQuery(args: {
 					operationNode.content.query,
 					runningGeneration,
 					args.context.deprecated_storage,
-					args.context.experimental_storage,
+					args.context.storage,
 				);
 
 				const vectorStoreNodes = generationContext.sourceNodes.filter(
@@ -128,15 +128,15 @@ export function executeQuery(args: {
 async function resolveQuery(
 	query: string,
 	runningGeneration: RunningGeneration,
-	storage: Storage,
-	experimental_storage: GiselleStorage,
+	deprecated_storage: Storage,
+	storage: GiselleStorage,
 ) {
 	const generationContext = GenerationContext.parse(runningGeneration.context);
 
 	async function generationContentResolver(nodeId: NodeId, outputId: OutputId) {
 		const nodeGenerationIndexes = await getNodeGenerationIndexes({
-			storage,
-			experimental_storage,
+			deprecated_storage: deprecated_storage,
+			storage: storage,
 			nodeId,
 		});
 		if (
@@ -146,8 +146,8 @@ async function resolveQuery(
 			return undefined;
 		}
 		const generation = await getGeneration({
-			storage,
-			experimental_storage,
+			deprecated_storage: deprecated_storage,
+			storage: storage,
 			generationId: nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
 			options: {
 				bypassingCache: true,

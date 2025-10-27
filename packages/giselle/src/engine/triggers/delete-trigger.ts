@@ -8,9 +8,9 @@ export async function deleteTrigger(args: {
 	useExperimentalStorage?: boolean;
 }) {
 	await deleteFlowTrigger({
-		storage: args.context.deprecated_storage,
+		deprecated_storage: args.context.deprecated_storage,
 		flowTriggerId: args.flowTriggerId,
-		experimental_storage: args.context.experimental_storage,
+		storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage ?? false,
 	});
 }

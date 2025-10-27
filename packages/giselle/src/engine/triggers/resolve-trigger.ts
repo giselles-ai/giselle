@@ -25,9 +25,9 @@ export async function resolveTrigger(args: {
 		throw new Error("Trigger node is not configured");
 	}
 	const triggerData = await getFlowTrigger({
-		storage: args.context.deprecated_storage,
+		deprecated_storage: args.context.deprecated_storage,
 		flowTriggerId: operationNode.content.state.flowTriggerId,
-		experimental_storage: args.context.experimental_storage,
+		storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	if (triggerData === undefined) {
@@ -167,9 +167,9 @@ export async function resolveTrigger(args: {
 	} satisfies CompletedGeneration;
 
 	await internalSetGeneration({
-		storage: args.context.deprecated_storage,
+		deprecated_storage: args.context.deprecated_storage,
 		generation: completedGeneration,
-		experimental_storage: args.context.experimental_storage,
+		storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
 }

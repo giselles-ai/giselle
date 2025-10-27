@@ -8,7 +8,7 @@ export async function decryptSecret(args: {
 	useExperimentalStorage: boolean;
 }): Promise<string | undefined> {
 	if (args.useExperimentalStorage) {
-		const secret = await args.context.experimental_storage.getJson({
+		const secret = await args.context.storage.getJson({
 			path: secretPath(args.secretId),
 			schema: Secret,
 		});

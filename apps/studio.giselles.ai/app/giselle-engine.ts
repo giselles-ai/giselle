@@ -48,7 +48,7 @@ export const publicStorage = createStorage({
 	}),
 });
 
-const storage = createStorage({
+const deprecated_storage = createStorage({
 	driver: supabaseStorageDriver({
 		supabaseUrl: process.env.SUPABASE_URL ?? "",
 		supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY ?? "",
@@ -56,7 +56,7 @@ const storage = createStorage({
 	}),
 });
 
-const experimental_storage = experimental_supabaseStorageDriver({
+const storage = experimental_supabaseStorageDriver({
 	endpoint: process.env.SUPABASE_STORAGE_URL ?? "",
 	region: process.env.SUPABASE_STORAGE_REGION ?? "",
 	accessKeyId: process.env.SUPABASE_STORAGE_ACCESS_KEY_ID ?? "",
@@ -217,8 +217,8 @@ const generateContentProcessor =
 
 export const giselleEngine = NextGiselleEngine({
 	basePath: "/api/giselle",
-	deprecated_storage: storage,
-	experimental_storage,
+	deprecated_storage: deprecated_storage,
+	storage,
 	llmProviders: ["openai", "anthropic", "google", "fal"],
 	onConsumeAgentTime,
 	telemetry: {

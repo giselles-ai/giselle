@@ -14,7 +14,7 @@ import supabaseStorageDriver from "./supabase-storage-driver";
 
 const isVercelEnvironment = process.env.VERCEL === "1";
 
-const storage = createStorage({
+const deprecated_storage = createStorage({
 	driver: isVercelEnvironment
 		? supabaseStorageDriver({
 				supabaseUrl: process.env.SUPABASE_URL ?? "",
@@ -26,7 +26,7 @@ const storage = createStorage({
 			}),
 });
 
-const experimental_storage = isVercelEnvironment
+const storage = isVercelEnvironment
 	? experimental_supabaseStorageDriver({
 			endpoint: process.env.SUPABASE_STORAGE_URL ?? "",
 			region: process.env.SUPABASE_STORAGE_REGION ?? "",
@@ -140,8 +140,8 @@ if (process.env.SAMPLE_APP_WORKSPACE_IDS) {
 
 export const giselleEngine = NextGiselleEngine({
 	basePath: "/api/giselle",
+	deprecated_storage,
 	storage,
-	experimental_storage,
 	llmProviders,
 	integrationConfigs,
 	sampleAppWorkspaceIds,

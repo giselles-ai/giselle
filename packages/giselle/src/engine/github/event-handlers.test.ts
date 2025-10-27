@@ -1332,8 +1332,8 @@ describe("GitHub Event Handlers", () => {
 				event,
 				context: {
 					llmProviders: [],
-					storage: createStorage({ driver: memoryDriver() }),
-					experimental_storage: {
+					deprecated_storage: createStorage({ driver: memoryDriver() }),
+					storage: {
 						getJson: vi.fn().mockResolvedValue({
 							id: "wrks-test",
 							name: "Test Workspace",

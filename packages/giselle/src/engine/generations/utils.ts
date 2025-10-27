@@ -292,8 +292,8 @@ export function generationPath(generationId: GenerationId) {
 }
 
 export async function getGeneration(params: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	useExperimentalStorage?: boolean;
 	generationId: GenerationId;
 	options?: {
@@ -302,7 +302,7 @@ export async function getGeneration(params: {
 	};
 }): Promise<Generation | undefined> {
 	if (params.useExperimentalStorage) {
-		const generation = await params.experimental_storage.getJson({
+		const generation = await params.storage.getJson({
 			path: generationPath(params.generationId),
 			schema: Generation,
 		});
@@ -312,7 +312,7 @@ export async function getGeneration(params: {
 			context: parsedGenerationContext,
 		};
 	}
-	const unsafeGeneration = await params.storage.getItem(
+	const unsafeGeneration = await params.deprecated_storage.getItem(
 		`${generationPath(params.generationId)}`,
 		{
 			bypassingCache: params.options?.bypassingCache ?? false,
@@ -347,25 +347,23 @@ export function nodeGenerationIndexPath(nodeId: NodeId) {
 }
 
 export async function getNodeGenerationIndexes(params: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	useExperimentalStorage?: boolean;
 	nodeId: NodeId;
 }) {
 	if (params.useExperimentalStorage) {
 		if (
-			!(await params.experimental_storage.exists(
-				nodeGenerationIndexPath(params.nodeId),
-			))
+			!(await params.storage.exists(nodeGenerationIndexPath(params.nodeId)))
 		) {
 			return undefined;
 		}
-		return await params.experimental_storage.getJson({
+		return await params.storage.getJson({
 			path: nodeGenerationIndexPath(params.nodeId),
 			schema: NodeGenerationIndex.array(),
 		});
 	}
-	const unsafeNodeGenerationIndexData = await params.storage.getItem(
+	const unsafeNodeGenerationIndexData = await params.deprecated_storage.getItem(
 		nodeGenerationIndexPath(params.nodeId),
 		{
 			bypassingCache: true,
@@ -628,39 +626,39 @@ function generatedImagePath(generationId: GenerationId, filename: string) {
 }
 
 export async function setGeneratedImage(params: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	useExperimentalStorage?: boolean;
 	generation: Generation;
 	generatedImageFilename: string;
 	generatedImage: GeneratedImageData;
 }) {
 	if (params.useExperimentalStorage) {
-		await params.experimental_storage.setBlob(
+		await params.storage.setBlob(
 			generatedImagePath(params.generation.id, params.generatedImageFilename),
 			params.generatedImage.uint8Array,
 		);
 		return;
 	}
-	await params.storage.setItemRaw(
+	await params.deprecated_storage.setItemRaw(
 		generatedImagePath(params.generation.id, params.generatedImageFilename),
 		params.generatedImage.uint8Array,
 	);
 }
 
 export async function getGeneratedImage(params: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	deprecated_storage: Storage;
+	storage: GiselleStorage;
 	useExperimentalStorage?: boolean;
 	generation: Generation;
 	filename: string;
 }) {
 	if (params.useExperimentalStorage) {
-		return await params.experimental_storage.getBlob(
+		return await params.storage.getBlob(
 			generatedImagePath(params.generation.id, params.filename),
 		);
 	}
-	let image = await params.storage.getItemRaw(
+	let image = await params.deprecated_storage.getItemRaw(
 		generatedImagePath(params.generation.id, params.filename),
 	);
 	if (image instanceof ArrayBuffer) {
