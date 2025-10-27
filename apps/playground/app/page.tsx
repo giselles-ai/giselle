@@ -10,15 +10,11 @@ export default function Home() {
 	const giselleEngine = useGiselleEngine();
 
 	const createWorkspace = useCallback(async () => {
-		const workspace = await giselleEngine.createWorkspace({
-			useExperimentalStorage: true,
-		});
+		const workspace = await giselleEngine.createWorkspace();
 		router.push(`/workspaces/${workspace.id}`);
 	}, [router.push, giselleEngine]);
 	const createSampleWorkspace = useCallback(async () => {
-		const workspaces = await giselleEngine.createSampleWorkspaces({
-			useExperimentalStorage: true,
-		});
+		const workspaces = await giselleEngine.createSampleWorkspaces();
 		// Use the first workspace if multiple are created
 		if (Array.isArray(workspaces) && workspaces.length > 0 && workspaces[0]) {
 			const workspace = workspaces[0];
