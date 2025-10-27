@@ -18,14 +18,11 @@ export async function reconfigureGitHubTrigger(args: {
 	flowTriggerId: FlowTriggerId;
 	repositoryNodeId: string;
 	installationId: number;
-	useExperimentalStorage: boolean;
 	event?: GitHubFlowTriggerEvent;
 }) {
 	const currentTrigger = await getFlowTrigger({
-		deprecated_storage: args.context.deprecated_storage,
 		storage: args.context.storage,
 		flowTriggerId: args.flowTriggerId,
-		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	if (currentTrigger === undefined) {
 		throw new Error(`Trigger not found: ${args.flowTriggerId}`);
@@ -47,18 +44,14 @@ export async function reconfigureGitHubTrigger(args: {
 	if (oldRepositoryNodeId !== newRepositoryNodeId) {
 		await Promise.all([
 			removeGitHubRepositoryIntegrationIndex({
-				deprecated_storage: args.context.deprecated_storage,
 				storage: args.context.storage,
 				flowTriggerId: args.flowTriggerId,
 				repositoryNodeId: oldRepositoryNodeId,
-				useExperimentalStorage: args.useExperimentalStorage,
 			}),
 			addGitHubRepositoryIntegrationIndex({
-				deprecated_storage: args.context.deprecated_storage,
 				storage: args.context.storage,
 				flowTriggerId: args.flowTriggerId,
 				repositoryNodeId: newRepositoryNodeId,
-				useExperimentalStorage: args.useExperimentalStorage,
 			}),
 		]);
 	}
@@ -73,20 +66,15 @@ export async function reconfigureGitHubTrigger(args: {
 		},
 	} satisfies FlowTrigger;
 	await setFlowTrigger({
-		deprecated_storage: args.context.deprecated_storage,
 		storage: args.context.storage,
 		flowTrigger: updatedTrigger,
-		useExperimentalStorage: args.useExperimentalStorage,
 	});
 
 	const workspace = await getWorkspace({
-		deprecated_storage: args.context.deprecated_storage,
 		storage: args.context.storage,
 		workspaceId: currentTrigger.workspaceId,
-		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	await setWorkspace({
-		deprecated_storage: args.context.deprecated_storage,
 		workspaceId: workspace.id,
 		workspace: {
 			...workspace,
@@ -106,7 +94,6 @@ export async function reconfigureGitHubTrigger(args: {
 			),
 		},
 		storage: args.context.storage,
-		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	return args.flowTriggerId;
 }
