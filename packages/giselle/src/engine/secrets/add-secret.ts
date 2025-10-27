@@ -14,14 +14,12 @@ export async function addSecret({
 	value,
 	workspaceId,
 	tags,
-	useExperimentalStorage,
 }: {
 	context: GiselleEngineContext;
 	label: string;
 	value: string;
 	workspaceId: WorkspaceId;
 	tags?: string[];
-	useExperimentalStorage: boolean;
 }) {
 	const encryptedValue = await context.vault.encrypt(value);
 
@@ -34,31 +32,18 @@ export async function addSecret({
 		tags,
 	};
 
-	if (useExperimentalStorage) {
-		await Promise.all([
-			context.storage.setJson({
-				path: secretPath(secret.id),
-				data: secret,
-				schema: Secret,
-			}),
-			addWorkspaceIndexItem({
-				context,
-				indexPath: workspaceSecretIndexPath(workspaceId),
-				item: secret,
-				itemSchema: SecretIndex,
-				useExperimentalStorage: true,
-			}),
-		]);
-		return secret;
-	}
-
 	await Promise.all([
-		context.deprecated_storage.setItem(secretPath(secret.id), secret),
+		context.storage.setJson({
+			path: secretPath(secret.id),
+			data: secret,
+			schema: Secret,
+		}),
 		addWorkspaceIndexItem({
 			context,
 			indexPath: workspaceSecretIndexPath(workspaceId),
 			item: secret,
 			itemSchema: SecretIndex,
+			useExperimentalStorage: true,
 		}),
 	]);
 	return secret;

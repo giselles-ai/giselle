@@ -342,14 +342,12 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			label: string;
 			value: string;
 			tags?: string[];
-			useExperimentalStorage: boolean;
 		}) {
 			return await addSecret({ ...args, context });
 		},
 		async getWorkspaceSecrets(args: {
 			workspaceId: WorkspaceId;
 			tags?: string[];
-			useExperimentalStorage: boolean;
 		}) {
 			return await getWorkspaceSecrets({ ...args, context });
 		},
@@ -371,11 +369,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		streamAct(args: { actId: ActId }) {
 			return streamAct({ ...args, context });
 		},
-		deleteSecret(args: {
-			workspaceId: WorkspaceId;
-			secretId: SecretId;
-			useExperimentalStorage: boolean;
-		}) {
+		deleteSecret(args: { workspaceId: WorkspaceId; secretId: SecretId }) {
 			return deleteSecret({ ...args, context });
 		},
 		async flushGenerationIndexQueue() {
