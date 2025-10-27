@@ -236,8 +236,8 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 				generation,
 			});
 		},
-		createSampleWorkspaces: async (useExperimentalStorage: boolean) => {
-			return await createSampleWorkspaces({ context, useExperimentalStorage });
+		createSampleWorkspaces: async () => {
+			return await createSampleWorkspaces({ context });
 		},
 		getGitHubRepositories: async () => {
 			return await getGitHubRepositories({ context });

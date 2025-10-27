@@ -43,67 +43,46 @@ export async function getWorkspace({
 
 /** @todo update new fileId for each file */
 export async function copyFiles({
-	deprecated_storage,
 	storage,
 	templateWorkspaceId,
 	newWorkspaceId,
-	useExperimentalStorage,
 }: {
-	deprecated_storage: Storage;
 	storage: GiselleStorage;
 	templateWorkspaceId: WorkspaceId;
 	newWorkspaceId: WorkspaceId;
-	useExperimentalStorage: boolean;
 }) {
-	if (useExperimentalStorage) {
-		const prefix = `workspaces/${templateWorkspaceId}/files/`;
-		const fileKeys: string[] = [];
-		let cursor: string | undefined;
+	const prefix = `workspaces/${templateWorkspaceId}/files/`;
+	const fileKeys: string[] = [];
+	let cursor: string | undefined;
 
-		while (true) {
-			const result = await storage.listBlobs({
-				prefix,
-				cursor,
-			});
+	while (true) {
+		const result = await storage.listBlobs({
+			prefix,
+			cursor,
+		});
 
-			fileKeys.push(
-				...result.blobs
-					.map((blob) => blob.pathname)
-					.filter((pathname) => pathname.startsWith(prefix)),
-			);
-
-			if (!result.hasMore || !result.cursor) {
-				break;
-			}
-
-			cursor = result.cursor;
-		}
-
-		await Promise.all(
-			fileKeys.map(async (fileKey) => {
-				const target = fileKey.replace(
-					`workspaces/${templateWorkspaceId}/files/`,
-					`workspaces/${newWorkspaceId}/files/`,
-				);
-				await storage.copy(fileKey, target);
-			}),
+		fileKeys.push(
+			...result.blobs
+				.map((blob) => blob.pathname)
+				.filter((pathname) => pathname.startsWith(prefix)),
 		);
 
-		return;
-	}
+		if (!result.hasMore || !result.cursor) {
+			break;
+		}
 
-	const fileKeys = await deprecated_storage.getKeys(
-		`workspaces/${templateWorkspaceId}/files`,
-	);
+		cursor = result.cursor;
+	}
 
 	await Promise.all(
 		fileKeys.map(async (fileKey) => {
 			const target = fileKey.replace(
-				/workspaces:wrks-\w+:files:/,
-				`workspaces:${newWorkspaceId}:files:`,
+				`workspaces/${templateWorkspaceId}/files/`,
+				`workspaces/${newWorkspaceId}/files/`,
 			);
-			const file = await deprecated_storage.getItemRaw(fileKey);
-			await deprecated_storage.setItemRaw(target, file);
+			await storage.copy(fileKey, target);
 		}),
 	);
+
+	return;
 }
