@@ -275,7 +275,6 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			flowTriggerId: FlowTriggerId;
 			repositoryNodeId: string;
 			installationId: number;
-			useExperimentalStorage: boolean;
 			event?: GitHubFlowTriggerEvent;
 		}) => {
 			return await reconfigureGitHubTrigger({ ...args, context });
