@@ -334,17 +334,11 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			webpage: FetchingWebPage;
 			useExperimentalStorage: boolean;
 		}) => addWebPage({ ...args, context }),
-		async getFileText(args: {
-			workspaceId: WorkspaceId;
-			fileId: FileId;
-			useExperimentalStorage: boolean;
-		}) {
+		async getFileText(args: { workspaceId: WorkspaceId; fileId: FileId }) {
 			return await getFileText({
-				deprecated_storage: context.deprecated_storage,
 				storage: context.storage,
 				workspaceId: args.workspaceId,
 				fileId: args.fileId,
-				useExperimentalStorage: args.useExperimentalStorage,
 			});
 		},
 		async addSecret(args: {
