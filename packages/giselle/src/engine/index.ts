@@ -255,10 +255,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		}) => {
 			return await resolveTrigger({ ...args, context });
 		},
-		configureTrigger: async (args: {
-			trigger: ConfigureTriggerInput;
-			useExperimentalStorage: boolean;
-		}) => {
+		configureTrigger: async (args: { trigger: ConfigureTriggerInput }) => {
 			return await configureTrigger({ ...args, context });
 		},
 		getTrigger: async (args: {

@@ -8,29 +8,18 @@ function workspacePath(workspaceId: WorkspaceId) {
 }
 
 export async function setWorkspace({
-	deprecated_storage,
 	workspaceId,
 	workspace,
 	storage,
-	useExperimentalStorage,
 }: {
-	deprecated_storage: Storage;
 	workspaceId: WorkspaceId;
 	workspace: Workspace;
 	storage: GiselleStorage;
-	useExperimentalStorage: boolean;
 }) {
-	if (useExperimentalStorage) {
-		await storage.setJson({
-			path: workspacePath(workspaceId),
-			data: workspace,
-		});
-	} else {
-		await deprecated_storage.setItem(workspacePath(workspaceId), workspace, {
-			// Disable caching by setting cacheControl to 0 for Supabase storage
-			cacheControl: 0,
-		});
-	}
+	await storage.setJson({
+		path: workspacePath(workspaceId),
+		data: workspace,
+	});
 }
 
 export async function getWorkspace({

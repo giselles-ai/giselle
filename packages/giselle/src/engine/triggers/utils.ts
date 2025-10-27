@@ -8,60 +8,39 @@ function flowTriggerPath(params: { flowTriggerId: FlowTriggerId }) {
 }
 
 export async function setFlowTrigger({
-	deprecated_storage,
 	storage,
 	flowTrigger,
-	useExperimentalStorage = false,
 }: {
-	deprecated_storage: Storage;
 	storage: GiselleStorage;
 	flowTrigger: FlowTrigger;
-	useExperimentalStorage?: boolean;
 }) {
 	const path = flowTriggerPath({ flowTriggerId: flowTrigger.id });
-	if (useExperimentalStorage) {
-		await storage.setJson({
-			path,
-			data: flowTrigger,
-			schema: FlowTrigger,
-		});
-		return;
-	}
-	await deprecated_storage.set(path, flowTrigger);
+	await storage.setJson({
+		path,
+		data: flowTrigger,
+		schema: FlowTrigger,
+	});
+	return;
 }
 
 export async function getFlowTrigger({
-	deprecated_storage,
 	storage,
 	flowTriggerId,
-	useExperimentalStorage = false,
 }: {
-	deprecated_storage: Storage;
 	flowTriggerId: FlowTriggerId;
 	storage: GiselleStorage;
-	useExperimentalStorage?: boolean;
 }) {
 	const path = flowTriggerPath({
 		flowTriggerId,
 	});
-	if (useExperimentalStorage) {
-		const exists = await storage.exists(path);
-		if (!exists) {
-			return undefined;
-		}
-		return await storage.getJson({
-			path,
-			schema: FlowTrigger,
-		});
-	}
-	const unsafe = await deprecated_storage.get(path, {
-		bypassingCache: true,
-	});
-	if (unsafe === null) {
+	const exists = await storage.exists(path);
+	if (!exists) {
 		return undefined;
 	}
-
-	return FlowTrigger.parse(unsafe);
+	return await storage.getJson({
+		path,
+		schema: FlowTrigger,
+	});
 }
 
 export async function deleteFlowTrigger({
