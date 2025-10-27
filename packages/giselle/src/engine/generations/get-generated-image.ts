@@ -10,21 +10,16 @@ export async function getGeneratedImage(args: {
 	context: GiselleEngineContext;
 	generationId: GenerationId;
 	filename: string;
-	useExperimentalStorage: boolean;
 }) {
 	const generation = await getGeneration({
-		deprecated_storage: args.context.deprecated_storage,
 		storage: args.context.storage,
-		useExperimentalStorage: args.useExperimentalStorage,
 		generationId: args.generationId,
 	});
 	if (generation?.status !== "completed") {
 		throw new Error(`Generation ${args.generationId} is not completed`);
 	}
 	const generatedImage = await getGeneratedImageInternal({
-		deprecated_storage: args.context.deprecated_storage,
 		storage: args.context.storage,
-		useExperimentalStorage: args.useExperimentalStorage,
 		generation,
 		filename: args.filename,
 	});

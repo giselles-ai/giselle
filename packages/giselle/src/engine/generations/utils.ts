@@ -577,24 +577,16 @@ function generatedImagePath(generationId: GenerationId, filename: string) {
 }
 
 export async function setGeneratedImage(params: {
-	deprecated_storage: Storage;
 	storage: GiselleStorage;
-	useExperimentalStorage?: boolean;
 	generation: Generation;
 	generatedImageFilename: string;
 	generatedImage: GeneratedImageData;
 }) {
-	if (params.useExperimentalStorage) {
-		await params.storage.setBlob(
-			generatedImagePath(params.generation.id, params.generatedImageFilename),
-			params.generatedImage.uint8Array,
-		);
-		return;
-	}
-	await params.deprecated_storage.setItemRaw(
+	await params.storage.setBlob(
 		generatedImagePath(params.generation.id, params.generatedImageFilename),
 		params.generatedImage.uint8Array,
 	);
+	return;
 }
 
 export async function getGeneratedImage(params: {

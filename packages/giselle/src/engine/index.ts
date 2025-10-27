@@ -230,26 +230,19 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		},
 		generateImage: async (
 			generation: QueuedGeneration,
-			useExperimentalStorage: boolean,
 			signal?: AbortSignal,
 		) => {
 			return await generateImage({
 				context,
 				generation,
-				useExperimentalStorage,
 				signal,
 			});
 		},
-		getGeneratedImage: async (
-			generationId: GenerationId,
-			filename: string,
-			useExperimentalStorage: boolean,
-		) => {
+		getGeneratedImage: async (generationId: GenerationId, filename: string) => {
 			return await getGeneratedImage({
 				context,
 				generationId,
 				filename,
-				useExperimentalStorage,
 			});
 		},
 		setGeneration: async (
