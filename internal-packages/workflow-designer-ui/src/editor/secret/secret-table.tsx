@@ -19,7 +19,6 @@ import {
 
 import { isTextGenerationNode, type SecretId } from "@giselle-sdk/data-type";
 import {
-	useFeatureFlag,
 	useGiselleEngine,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";

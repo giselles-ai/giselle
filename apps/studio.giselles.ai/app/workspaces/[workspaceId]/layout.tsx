@@ -10,7 +10,6 @@ import { db, flowTriggers } from "@/drizzle";
 import {
 	aiGatewayFlag,
 	docVectorStoreFlag,
-	experimental_storageFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
 	resumableGenerationFlag,
@@ -72,7 +71,6 @@ export default async function Layout({
 	);
 	const webSearchAction = await webSearchActionFlag();
 	const layoutV3 = await layoutV3Flag();
-	const experimental_storage = await experimental_storageFlag();
 	const stage = await stageFlag();
 	const aiGateway = await aiGatewayFlag();
 	const resumableGeneration = await resumableGenerationFlag();
