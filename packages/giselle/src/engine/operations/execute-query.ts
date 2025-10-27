@@ -144,9 +144,6 @@ async function resolveQuery(
 		const generation = await getGeneration({
 			storage: storage,
 			generationId: nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
-			options: {
-				bypassingCache: true,
-			},
 		});
 		if (generation === undefined || !isCompletedGeneration(generation)) {
 			return undefined;
