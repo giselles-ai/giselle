@@ -16,7 +16,6 @@ export async function getWorkspaceInprogressAct({
 		context,
 		indexPath: workspaceActPath(workspaceId),
 		itemSchema: ActIndexObject,
-		useExperimentalStorage: true,
 	});
 	context.logger.debug(
 		{ workspaceActIndices: workspaceActIndexes },
