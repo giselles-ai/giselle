@@ -1,6 +1,6 @@
+import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import type { TextNode } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
-import { TextEditor } from "@giselle-sdk/text-editor/react";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelRoot,
@@ -24,10 +24,15 @@ export function TextNodePropertiesPanel({ node }: { node: TextNode }) {
 			<PropertiesPanelContent>
 				<ResizableSectionGroup>
 					<ResizableSection defaultSize={100}>
-						<TextEditor
+						<PromptEditor
 							placeholder="Write or paste text here..."
 							value={node.content.text}
 							onValueChange={(text) => updateNodeDataContent(node, { text })}
+							nodes={[]}
+							connectedSources={[]}
+							showToolbar={false}
+							variant="plain"
+							showExpandIcon={false}
 						/>
 					</ResizableSection>
 				</ResizableSectionGroup>
