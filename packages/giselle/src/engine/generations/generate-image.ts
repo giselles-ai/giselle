@@ -191,7 +191,7 @@ async function generateImageWithFal({
 
 				await setGeneratedImage({
 					storage: context.deprecated_storage,
-					experimental_storage: context.experimental_storage,
+					experimental_storage: context.storage,
 					useExperimentalStorage,
 					generation: runningGeneration,
 					generatedImage: {
@@ -278,7 +278,7 @@ async function generateImageWithOpenAI({
 
 				await setGeneratedImage({
 					storage: context.deprecated_storage,
-					experimental_storage: context.experimental_storage,
+					experimental_storage: context.storage,
 					useExperimentalStorage,
 					generation: runningGeneration,
 					generatedImage: {
@@ -350,7 +350,7 @@ async function generateImageWithGoogle({
 
 				await setGeneratedImage({
 					storage: context.deprecated_storage,
-					experimental_storage: context.experimental_storage,
+					experimental_storage: context.storage,
 					useExperimentalStorage,
 					generation: runningGeneration,
 					generatedImage: {

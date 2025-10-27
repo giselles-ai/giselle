@@ -36,7 +36,7 @@ export async function addSecret({
 
 	if (useExperimentalStorage) {
 		await Promise.all([
-			context.experimental_storage.setJson({
+			context.storage.setJson({
 				path: secretPath(secret.id),
 				data: secret,
 				schema: Secret,

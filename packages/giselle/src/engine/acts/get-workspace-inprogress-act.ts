@@ -26,7 +26,7 @@ export async function getWorkspaceInprogressAct({
 		await Promise.all(
 			workspaceActIndexes.map(async (workspaceActIndex) => {
 				try {
-					return await context.experimental_storage.getJson({
+					return await context.storage.getJson({
 						path: actPath(workspaceActIndex.id),
 						schema: Act,
 					});

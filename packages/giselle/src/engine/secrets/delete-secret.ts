@@ -15,31 +15,31 @@ export async function deleteSecret({
 	const path = secretPath(secretId);
 
 	if (useExperimentalStorage) {
-		const exists = await context.experimental_storage.exists(path);
+		const exists = await context.storage.exists(path);
 		if (!exists) {
 			return;
 		}
-		const secret = await context.experimental_storage.getJson({
+		const secret = await context.storage.getJson({
 			path,
 			schema: Secret,
 		});
-		await context.experimental_storage.remove(path);
+		await context.storage.remove(path);
 
 		const indexPath = workspaceSecretIndexPath(secret.workspaceId);
-		const hasIndex = await context.experimental_storage.exists(indexPath);
+		const hasIndex = await context.storage.exists(indexPath);
 		if (!hasIndex) {
 			return;
 		}
-		const index = await context.experimental_storage.getJson({
+		const index = await context.storage.getJson({
 			path: indexPath,
 			schema: z.array(SecretIndex),
 		});
 		const remaining = index.filter((item) => item.id !== secretId);
 		if (remaining.length === 0) {
-			await context.experimental_storage.remove(indexPath);
+			await context.storage.remove(indexPath);
 			return;
 		}
-		await context.experimental_storage.setJson({
+		await context.storage.setJson({
 			path: indexPath,
 			data: remaining,
 		});

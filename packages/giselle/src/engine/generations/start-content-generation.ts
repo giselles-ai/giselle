@@ -28,7 +28,7 @@ export async function startContentGeneration({
 	};
 	await internalSetGeneration({
 		storage: context.deprecated_storage,
-		experimental_storage: context.experimental_storage,
+		experimental_storage: context.storage,
 		useExperimentalStorage: true,
 		generation: runningGeneration,
 	});

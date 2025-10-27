@@ -27,7 +27,7 @@ export async function resolveTrigger(args: {
 	const triggerData = await getFlowTrigger({
 		storage: args.context.deprecated_storage,
 		flowTriggerId: operationNode.content.state.flowTriggerId,
-		experimental_storage: args.context.experimental_storage,
+		experimental_storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	if (triggerData === undefined) {
@@ -169,7 +169,7 @@ export async function resolveTrigger(args: {
 	await internalSetGeneration({
 		storage: args.context.deprecated_storage,
 		generation: completedGeneration,
-		experimental_storage: args.context.experimental_storage,
+		experimental_storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
 }

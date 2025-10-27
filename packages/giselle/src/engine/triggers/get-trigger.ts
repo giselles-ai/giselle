@@ -10,7 +10,7 @@ export async function getTrigger(args: {
 	const flowTrigger = await getFlowTrigger({
 		storage: args.context.deprecated_storage,
 		flowTriggerId: args.flowTriggerId,
-		experimental_storage: args.context.experimental_storage,
+		experimental_storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage ?? false,
 	});
 	return flowTrigger;

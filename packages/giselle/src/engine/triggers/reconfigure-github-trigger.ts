@@ -23,7 +23,7 @@ export async function reconfigureGitHubTrigger(args: {
 }) {
 	const currentTrigger = await getFlowTrigger({
 		storage: args.context.deprecated_storage,
-		experimental_storage: args.context.experimental_storage,
+		experimental_storage: args.context.storage,
 		flowTriggerId: args.flowTriggerId,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
@@ -48,14 +48,14 @@ export async function reconfigureGitHubTrigger(args: {
 		await Promise.all([
 			removeGitHubRepositoryIntegrationIndex({
 				storage: args.context.deprecated_storage,
-				experimental_storage: args.context.experimental_storage,
+				experimental_storage: args.context.storage,
 				flowTriggerId: args.flowTriggerId,
 				repositoryNodeId: oldRepositoryNodeId,
 				useExperimentalStorage: args.useExperimentalStorage,
 			}),
 			addGitHubRepositoryIntegrationIndex({
 				storage: args.context.deprecated_storage,
-				experimental_storage: args.context.experimental_storage,
+				experimental_storage: args.context.storage,
 				flowTriggerId: args.flowTriggerId,
 				repositoryNodeId: newRepositoryNodeId,
 				useExperimentalStorage: args.useExperimentalStorage,
@@ -74,14 +74,14 @@ export async function reconfigureGitHubTrigger(args: {
 	} satisfies FlowTrigger;
 	await setFlowTrigger({
 		storage: args.context.deprecated_storage,
-		experimental_storage: args.context.experimental_storage,
+		experimental_storage: args.context.storage,
 		flowTrigger: updatedTrigger,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
 
 	const workspace = await getWorkspace({
 		storage: args.context.deprecated_storage,
-		experimental_storage: args.context.experimental_storage,
+		experimental_storage: args.context.storage,
 		workspaceId: currentTrigger.workspaceId,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
@@ -105,7 +105,7 @@ export async function reconfigureGitHubTrigger(args: {
 					: node,
 			),
 		},
-		experimental_storage: args.context.experimental_storage,
+		experimental_storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	return args.flowTriggerId;

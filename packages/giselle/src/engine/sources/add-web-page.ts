@@ -38,13 +38,9 @@ export async function addWebPage(args: {
 		});
 
 		if (args.useExperimentalStorage) {
-			await args.context.experimental_storage.setBlob(
-				storagePath,
-				arrayBuffer,
-				{
-					contentType: "text/markdown",
-				},
-			);
+			await args.context.storage.setBlob(storagePath, arrayBuffer, {
+				contentType: "text/markdown",
+			});
 		} else {
 			await args.context.deprecated_storage.setItemRaw(
 				storagePath,

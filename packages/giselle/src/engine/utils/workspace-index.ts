@@ -18,15 +18,15 @@ export async function addWorkspaceIndexItem<I>({
 	context.logger.debug(`Item: ${JSON.stringify(item)}`);
 	context.logger.debug(`useExperimentalStorage: ${useExperimentalStorage}`);
 	if (useExperimentalStorage) {
-		const exists = await context.experimental_storage.exists(indexPath);
+		const exists = await context.storage.exists(indexPath);
 
 		const indexItem = exists
-			? await context.experimental_storage.getJson({
+			? await context.storage.getJson({
 					path: indexPath,
 					schema: z.array(itemSchema),
 				})
 			: [];
-		await context.experimental_storage.setJson({
+		await context.storage.setJson({
 			path: indexPath,
 			data: [...indexItem, item],
 		});
@@ -51,11 +51,11 @@ export async function getWorkspaceIndex<I extends z.ZodObject>({
 	useExperimentalStorage?: boolean;
 }): Promise<z.infer<I>[]> {
 	if (useExperimentalStorage) {
-		const hasIndex = await context.experimental_storage.exists(indexPath);
+		const hasIndex = await context.storage.exists(indexPath);
 		if (!hasIndex) {
 			return [];
 		}
-		return context.experimental_storage.getJson({
+		return context.storage.getJson({
 			path: indexPath,
 			schema: z.array(itemSchema),
 		});

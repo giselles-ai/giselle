@@ -66,7 +66,7 @@ export function executeQuery(args: {
 					operationNode.content.query,
 					runningGeneration,
 					args.context.deprecated_storage,
-					args.context.experimental_storage,
+					args.context.storage,
 				);
 
 				const vectorStoreNodes = generationContext.sourceNodes.filter(

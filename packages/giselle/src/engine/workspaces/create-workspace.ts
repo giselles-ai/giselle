@@ -11,7 +11,7 @@ export async function createWorkspace(args: {
 		storage: args.context.deprecated_storage,
 		workspaceId: workspace.id,
 		workspace: Workspace.parse(workspace),
-		experimental_storage: args.context.experimental_storage,
+		experimental_storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	return workspace;

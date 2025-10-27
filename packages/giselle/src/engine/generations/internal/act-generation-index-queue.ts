@@ -212,7 +212,7 @@ export async function flushGenerationIndexQueue({
 				await new Promise((resolve) => setTimeout(resolve, 10));
 				continue;
 			}
-			await processQueue(context.experimental_storage);
+			await processQueue(context.storage);
 		}
 	} finally {
 		// If skipRestart is true, cleanup instead of restarting
@@ -220,7 +220,7 @@ export async function flushGenerationIndexQueue({
 			cleanupGenerationIndexQueue();
 		} else {
 			// Restart the interval
-			startProcessing(context.experimental_storage);
+			startProcessing(context.storage);
 		}
 	}
 }

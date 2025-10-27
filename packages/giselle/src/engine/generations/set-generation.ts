@@ -9,7 +9,7 @@ export async function setGeneration(args: {
 }) {
 	await internalSetGeneration({
 		storage: args.context.deprecated_storage,
-		experimental_storage: args.context.experimental_storage,
+		experimental_storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 		generation: args.generation,
 		logger: args.context.logger,

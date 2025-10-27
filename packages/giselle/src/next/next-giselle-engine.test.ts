@@ -39,7 +39,7 @@ describe("createHttpHandler", () => {
 			config: {
 				basePath,
 				deprecated_storage: memoryStorage,
-				experimental_storage: memoryStorageDriver(),
+				storage: memoryStorageDriver(),
 				vault: {
 					// biome-ignore lint/suspicious/useAwait: decryption is synchronous
 					async encrypt() {

@@ -9,7 +9,7 @@ export async function setTrigger(args: {
 }) {
 	await setFlowTriggerInternal({
 		storage: args.context.deprecated_storage,
-		experimental_storage: args.context.experimental_storage,
+		experimental_storage: args.context.storage,
 		flowTrigger: args.trigger,
 		useExperimentalStorage: args.useExperimentalStorage ?? false,
 	});

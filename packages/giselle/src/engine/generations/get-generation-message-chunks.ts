@@ -11,7 +11,7 @@ export async function getGenerationMessageChunkss({
 	generationId: GenerationId;
 	startByte?: number;
 }) {
-	const hasExists = await context.experimental_storage.exists(
+	const hasExists = await context.storage.exists(
 		generationUiMessageChunksPath(generationId),
 	);
 	if (!hasExists) {
@@ -24,7 +24,7 @@ export async function getGenerationMessageChunkss({
 		};
 	}
 	try {
-		const contentLength = await context.experimental_storage.contentLength(
+		const contentLength = await context.storage.contentLength(
 			generationUiMessageChunksPath(generationId),
 		);
 		if (startByte === contentLength) {
@@ -36,7 +36,7 @@ export async function getGenerationMessageChunkss({
 				},
 			};
 		}
-		const messageChunks = await context.experimental_storage.getBlob(
+		const messageChunks = await context.storage.getBlob(
 			generationUiMessageChunksPath(generationId),
 			{
 				range: {

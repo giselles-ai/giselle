@@ -22,13 +22,13 @@ export async function configureTrigger(args: {
 	const [workspace] = await Promise.all([
 		getWorkspace({
 			storage: args.context.deprecated_storage,
-			experimental_storage: args.context.experimental_storage,
+			experimental_storage: args.context.storage,
 			workspaceId: args.trigger.workspaceId,
 			useExperimentalStorage: args.useExperimentalStorage,
 		}),
 		setFlowTrigger({
 			storage: args.context.deprecated_storage,
-			experimental_storage: args.context.experimental_storage,
+			experimental_storage: args.context.storage,
 			flowTrigger: {
 				id: flowTriggerId,
 				...args.trigger,
@@ -38,7 +38,7 @@ export async function configureTrigger(args: {
 		args.trigger.configuration.provider === "github"
 			? await addGitHubRepositoryIntegrationIndex({
 					storage: args.context.deprecated_storage,
-					experimental_storage: args.context.experimental_storage,
+					experimental_storage: args.context.storage,
 					flowTriggerId,
 					repositoryNodeId: args.trigger.configuration.repositoryNodeId,
 					useExperimentalStorage: args.useExperimentalStorage,
@@ -65,7 +65,7 @@ export async function configureTrigger(args: {
 					: node,
 			),
 		},
-		experimental_storage: args.context.experimental_storage,
+		experimental_storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	return flowTriggerId;

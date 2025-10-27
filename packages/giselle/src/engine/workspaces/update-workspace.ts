@@ -12,7 +12,7 @@ export async function updateWorkspace(args: {
 		storage: args.context.deprecated_storage,
 		workspaceId: args.workspace.id,
 		workspace: args.workspace,
-		experimental_storage: args.context.experimental_storage,
+		experimental_storage: args.context.storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	revalidatePath(`/workspaces/${args.workspace.id}`, "layout");

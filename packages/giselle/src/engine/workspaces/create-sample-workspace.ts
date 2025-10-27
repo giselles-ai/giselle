@@ -22,7 +22,7 @@ async function createSampleWorkspaceFromTemplate(args: {
 	const templateWorkspace = await getWorkspace({
 		useExperimentalStorage: args.useExperimentalStorage,
 		storage: args.context.deprecated_storage,
-		experimental_storage: args.context.experimental_storage,
+		experimental_storage: args.context.storage,
 		workspaceId: args.templateWorkspaceId,
 	});
 	const idMap = new Map<string, string>();
@@ -139,12 +139,12 @@ async function createSampleWorkspaceFromTemplate(args: {
 			storage: args.context.deprecated_storage,
 			workspaceId: newWorkspaceId,
 			workspace: newWorkspace,
-			experimental_storage: args.context.experimental_storage,
+			experimental_storage: args.context.storage,
 			useExperimentalStorage: args.useExperimentalStorage,
 		}),
 		copyFiles({
 			storage: args.context.deprecated_storage,
-			experimental_storage: args.context.experimental_storage,
+			experimental_storage: args.context.storage,
 			templateWorkspaceId: templateWorkspace.id,
 			newWorkspaceId,
 			useExperimentalStorage: args.useExperimentalStorage,
