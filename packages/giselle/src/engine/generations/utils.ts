@@ -18,7 +18,6 @@ import {
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
 import type { DataContent, FilePart, ImagePart, ModelMessage } from "ai";
-import type { Storage } from "unstorage";
 import {
 	type CompletedGeneration,
 	Generation,
