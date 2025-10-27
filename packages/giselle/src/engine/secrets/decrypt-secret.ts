@@ -19,7 +19,7 @@ export async function decryptSecret(args: {
 
 		return decryptValue;
 	}
-	const secretLike = await args.context.storage.getItem(
+	const secretLike = await args.context.deprecated_storage.getItem(
 		secretPath(args.secretId),
 	);
 	if (!secretLike) {

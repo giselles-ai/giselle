@@ -10,7 +10,7 @@ export async function cancelGeneration(args: {
 	useExperimentalStorage: boolean;
 }) {
 	const generation = await getGeneration({
-		storage: args.context.storage,
+		storage: args.context.deprecated_storage,
 		experimental_storage: args.context.experimental_storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 		generationId: args.generationId,
@@ -24,7 +24,7 @@ export async function cancelGeneration(args: {
 		cancelledAt: Date.now(),
 	};
 	await internalSetGeneration({
-		storage: args.context.storage,
+		storage: args.context.deprecated_storage,
 		experimental_storage: args.context.experimental_storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 		generation: cancelledGeneration,

@@ -38,7 +38,7 @@ describe("createHttpHandler", () => {
 			giselleEngine: mockGiselleEngine,
 			config: {
 				basePath,
-				storage: memoryStorage,
+				deprecated_storage: memoryStorage,
 				experimental_storage: memoryStorageDriver(),
 				vault: {
 					// biome-ignore lint/suspicious/useAwait: decryption is synchronous

@@ -217,7 +217,7 @@ const generateContentProcessor =
 
 export const giselleEngine = NextGiselleEngine({
 	basePath: "/api/giselle",
-	storage,
+	deprecated_storage: storage,
 	experimental_storage,
 	llmProviders: ["openai", "anthropic", "google", "fal"],
 	onConsumeAgentTime,

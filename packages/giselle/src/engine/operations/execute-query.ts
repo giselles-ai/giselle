@@ -65,7 +65,7 @@ export function executeQuery(args: {
 				const query = await resolveQuery(
 					operationNode.content.query,
 					runningGeneration,
-					args.context.storage,
+					args.context.deprecated_storage,
 					args.context.experimental_storage,
 				);
 

@@ -46,23 +46,23 @@ export async function deleteSecret({
 		return;
 	}
 
-	const secretLike = await context.storage.getItem(path);
+	const secretLike = await context.deprecated_storage.getItem(path);
 	if (secretLike === null) {
 		return;
 	}
 	const secret = Secret.parse(secretLike);
-	await context.storage.removeItem(path);
+	await context.deprecated_storage.removeItem(path);
 
 	const indexPath = workspaceSecretIndexPath(secret.workspaceId);
-	const indexLike = await context.storage.getItem(indexPath);
+	const indexLike = await context.deprecated_storage.getItem(indexPath);
 	const parse = z.array(SecretIndex).safeParse(indexLike);
 	if (!parse.success) {
 		return;
 	}
 	const remaining = parse.data.filter((item) => item.id !== secretId);
 	if (remaining.length === 0) {
-		await context.storage.removeItem(indexPath);
+		await context.deprecated_storage.removeItem(indexPath);
 		return;
 	}
-	await context.storage.setItem(indexPath, remaining);
+	await context.deprecated_storage.setItem(indexPath, remaining);
 }

@@ -9,7 +9,7 @@ export async function updateWorkspace(args: {
 	useExperimentalStorage: boolean;
 }) {
 	await setWorkspace({
-		storage: args.context.storage,
+		storage: args.context.deprecated_storage,
 		workspaceId: args.workspace.id,
 		workspace: args.workspace,
 		experimental_storage: args.context.experimental_storage,

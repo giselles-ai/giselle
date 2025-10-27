@@ -8,7 +8,7 @@ export async function getWorkspace(args: {
 	useExperimentalStorage: boolean;
 }) {
 	return await getWorkspaceInternal({
-		storage: args.context.storage,
+		storage: args.context.deprecated_storage,
 		experimental_storage: args.context.experimental_storage,
 		workspaceId: args.workspaceId,
 		useExperimentalStorage: args.useExperimentalStorage,

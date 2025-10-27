@@ -32,11 +32,11 @@ export async function addWorkspaceIndexItem<I>({
 		});
 		return;
 	}
-	const indexLike = await context.storage.getItem(indexPath);
+	const indexLike = await context.deprecated_storage.getItem(indexPath);
 	const parse = z.array(itemSchema).safeParse(indexLike);
 	const current = parse.success ? parse.data : [];
 	const parsedItem = itemSchema.parse(item);
-	await context.storage.setItem(indexPath, [...current, parsedItem]);
+	await context.deprecated_storage.setItem(indexPath, [...current, parsedItem]);
 }
 
 export async function getWorkspaceIndex<I extends z.ZodObject>({
@@ -60,7 +60,7 @@ export async function getWorkspaceIndex<I extends z.ZodObject>({
 			schema: z.array(itemSchema),
 		});
 	}
-	const indexLike = await context.storage.getItem(indexPath);
+	const indexLike = await context.deprecated_storage.getItem(indexPath);
 	const parse = z.array(itemSchema).safeParse(indexLike);
 	return parse.success ? parse.data : [];
 }

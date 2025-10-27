@@ -53,7 +53,7 @@ export async function addSecret({
 	}
 
 	await Promise.all([
-		context.storage.setItem(secretPath(secret.id), secret),
+		context.deprecated_storage.setItem(secretPath(secret.id), secret),
 		addWorkspaceIndexItem({
 			context,
 			indexPath: workspaceSecretIndexPath(workspaceId),

@@ -96,7 +96,7 @@ export async function useGenerationExecutor<T>(args: {
 
 	const setGeneration = async (generation: Generation) => {
 		await internalSetGeneration({
-			storage: args.context.storage,
+			storage: args.context.deprecated_storage,
 			experimental_storage: args.context.experimental_storage,
 			useExperimentalStorage: args.useExperimentalStorage,
 			generation,
@@ -156,7 +156,7 @@ export async function useGenerationExecutor<T>(args: {
 				? await args.context.experimental_storage.getBlob(path)
 				: undefined;
 		} else {
-			blob = await args.context.storage.getItemRaw(path);
+			blob = await args.context.deprecated_storage.getItemRaw(path);
 		}
 		args.context.logger.info(
 			`File retrieval completed in ${Date.now() - fileRetrievalStartTime}ms (fileId: ${fileId})`,
@@ -177,7 +177,7 @@ export async function useGenerationExecutor<T>(args: {
 	async function findGenerationByNode(nodeId: NodeId) {
 		const generationLookupStartTime = Date.now();
 		const nodeGenerationIndexes = await getNodeGenerationIndexes({
-			storage: args.context.storage,
+			storage: args.context.deprecated_storage,
 			experimental_storage: args.context.experimental_storage,
 			useExperimentalStorage: args.useExperimentalStorage,
 			nodeId,
@@ -192,7 +192,7 @@ export async function useGenerationExecutor<T>(args: {
 			return undefined;
 		}
 		const generation = await getGeneration({
-			storage: args.context.storage,
+			storage: args.context.deprecated_storage,
 			experimental_storage: args.context.experimental_storage,
 			useExperimentalStorage: args.useExperimentalStorage,
 			generationId: nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
@@ -218,7 +218,7 @@ export async function useGenerationExecutor<T>(args: {
 			return undefined;
 		}
 		const generation = await getGeneration({
-			storage: args.context.storage,
+			storage: args.context.deprecated_storage,
 			experimental_storage: args.context.experimental_storage,
 			useExperimentalStorage: args.useExperimentalStorage,
 			generationId: targetGenerationIndex.id,
@@ -298,7 +298,7 @@ export async function useGenerationExecutor<T>(args: {
 			imageGenerationOutput.contents.map(async (content) => {
 				try {
 					const image = await getGeneratedImage({
-						storage: args.context.storage,
+						storage: args.context.deprecated_storage,
 						experimental_storage: args.context.experimental_storage,
 						useExperimentalStorage: args.useExperimentalStorage,
 						generation,
@@ -350,7 +350,7 @@ export async function useGenerationExecutor<T>(args: {
 			}
 			for (const content of output.contents) {
 				const bytes = await getGeneratedImage({
-					storage: args.context.storage,
+					storage: args.context.deprecated_storage,
 					experimental_storage: args.context.experimental_storage,
 					generation: args.generation,
 					filename: content.filename,

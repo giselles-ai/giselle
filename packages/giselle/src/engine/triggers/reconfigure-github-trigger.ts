@@ -22,7 +22,7 @@ export async function reconfigureGitHubTrigger(args: {
 	event?: GitHubFlowTriggerEvent;
 }) {
 	const currentTrigger = await getFlowTrigger({
-		storage: args.context.storage,
+		storage: args.context.deprecated_storage,
 		experimental_storage: args.context.experimental_storage,
 		flowTriggerId: args.flowTriggerId,
 		useExperimentalStorage: args.useExperimentalStorage,
@@ -47,14 +47,14 @@ export async function reconfigureGitHubTrigger(args: {
 	if (oldRepositoryNodeId !== newRepositoryNodeId) {
 		await Promise.all([
 			removeGitHubRepositoryIntegrationIndex({
-				storage: args.context.storage,
+				storage: args.context.deprecated_storage,
 				experimental_storage: args.context.experimental_storage,
 				flowTriggerId: args.flowTriggerId,
 				repositoryNodeId: oldRepositoryNodeId,
 				useExperimentalStorage: args.useExperimentalStorage,
 			}),
 			addGitHubRepositoryIntegrationIndex({
-				storage: args.context.storage,
+				storage: args.context.deprecated_storage,
 				experimental_storage: args.context.experimental_storage,
 				flowTriggerId: args.flowTriggerId,
 				repositoryNodeId: newRepositoryNodeId,
@@ -73,20 +73,20 @@ export async function reconfigureGitHubTrigger(args: {
 		},
 	} satisfies FlowTrigger;
 	await setFlowTrigger({
-		storage: args.context.storage,
+		storage: args.context.deprecated_storage,
 		experimental_storage: args.context.experimental_storage,
 		flowTrigger: updatedTrigger,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
 
 	const workspace = await getWorkspace({
-		storage: args.context.storage,
+		storage: args.context.deprecated_storage,
 		experimental_storage: args.context.experimental_storage,
 		workspaceId: currentTrigger.workspaceId,
 		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	await setWorkspace({
-		storage: args.context.storage,
+		storage: args.context.deprecated_storage,
 		workspaceId: workspace.id,
 		workspace: {
 			...workspace,
