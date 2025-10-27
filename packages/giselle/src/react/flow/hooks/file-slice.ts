@@ -17,7 +17,6 @@ export interface FileSlice {
 	uploadFile: (
 		client: GiselleEngineClient,
 		workspaceId: WorkspaceId,
-		useExperimentalStorage: boolean,
 		files: File[],
 		node: FileNode,
 		options?: { onError?: (error: string) => void },
@@ -25,7 +24,6 @@ export interface FileSlice {
 	removeFile: (
 		client: GiselleEngineClient,
 		workspaceId: WorkspaceId,
-		useExperimentalStorage: boolean,
 		file: FileData,
 	) => Promise<void>;
 }
@@ -34,14 +32,7 @@ export const createFileSlice: StateCreator<AppStore, [], [], FileSlice> = (
 	_set,
 	get,
 ) => ({
-	uploadFile: async (
-		client,
-		workspaceId,
-		useExperimentalStorage,
-		files,
-		node,
-		options,
-	) => {
+	uploadFile: async (client, workspaceId, files, node, options) => {
 		const getCurrentFiles = (): FileData[] => {
 			const ws = get().workspace;
 			if (!ws) return [];
@@ -82,7 +73,6 @@ export const createFileSlice: StateCreator<AppStore, [], [], FileSlice> = (
 					file,
 					fileId: uploadingFileData.id,
 					fileName: name,
-					useExperimentalStorage,
 				});
 
 				const uploadedFileData = createUploadedFileData(
@@ -112,7 +102,7 @@ export const createFileSlice: StateCreator<AppStore, [], [], FileSlice> = (
 			get().updateFileStatus(node.id, fileContents);
 		}
 	},
-	removeFile: async (client, workspaceId, useExperimentalStorage, file) => {
+	removeFile: async (client, workspaceId, file) => {
 		const allNodes = get().workspace?.nodes ?? [];
 		const parentNode = allNodes.find(
 			(n) =>
@@ -127,7 +117,6 @@ export const createFileSlice: StateCreator<AppStore, [], [], FileSlice> = (
 			await client.removeFile({
 				workspaceId: workspaceId,
 				fileId: file.id,
-				useExperimentalStorage: useExperimentalStorage,
 			});
 		}
 

@@ -45,7 +45,6 @@ export function ZustandBridgeGenerationProvider({
 	timeout?: number;
 }) {
 	const client = useGiselleEngine();
-	const { experimental_storage } = useFeatureFlag();
 	const generations = useGenerationStore(useShallow((s) => s.generations));
 	const {
 		addGenerationRunnerStore,
@@ -213,7 +212,6 @@ export function ZustandBridgeGenerationProvider({
 				(id) =>
 					client.getGeneration({
 						generationId: id,
-						useExperimentalStorage: experimental_storage,
 					}),
 				generationId,
 			);
@@ -221,7 +219,7 @@ export function ZustandBridgeGenerationProvider({
 			generationListener.current[generationId] = generation;
 			return generation;
 		},
-		[client, experimental_storage, updateGeneration],
+		[client, updateGeneration],
 	);
 
 	const updateGenerationStatusToComplete = useCallback(
@@ -230,7 +228,6 @@ export function ZustandBridgeGenerationProvider({
 				(id) =>
 					client.getGeneration({
 						generationId: id,
-						useExperimentalStorage: experimental_storage,
 					}),
 				generationId,
 			);
@@ -238,7 +235,7 @@ export function ZustandBridgeGenerationProvider({
 			generationListener.current[generationId] = generation;
 			return generation;
 		},
-		[client, experimental_storage, updateGeneration],
+		[client, updateGeneration],
 	);
 
 	const updateGenerationStatusToFailure = useCallback(
@@ -247,7 +244,6 @@ export function ZustandBridgeGenerationProvider({
 				(id) =>
 					client.getGeneration({
 						generationId: id,
-						useExperimentalStorage: experimental_storage,
 					}),
 				generationId,
 			);
@@ -255,7 +251,7 @@ export function ZustandBridgeGenerationProvider({
 			generationListener.current[generationId] = generation;
 			return generation;
 		},
-		[client, experimental_storage, updateGeneration],
+		[client, updateGeneration],
 	);
 
 	const addStopHandler = useCallback(
@@ -283,11 +279,10 @@ export function ZustandBridgeGenerationProvider({
 			if (isRunningGeneration(generation)) {
 				await client.cancelGeneration({
 					generationId,
-					useExperimentalStorage: experimental_storage,
 				});
 			}
 		},
-		[client, experimental_storage, updateGeneration],
+		[client, updateGeneration],
 	);
 
 	const addGenerationRunner = useCallback(

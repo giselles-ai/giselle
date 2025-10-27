@@ -18,7 +18,6 @@ type FileUploadClient = {
 		file: File;
 		fileId: FileId;
 		fileName: string;
-		useExperimentalStorage: boolean;
 	}) => Promise<unknown>;
 };
 
@@ -36,9 +35,8 @@ export function useFileUploads(args: {
 	dispatch: React.Dispatch<WorkspaceAction>;
 	client: FileUploadClient;
 	workspaceId: WorkspaceId;
-	useExperimentalStorage: boolean;
 }) {
-	const { dispatch, client, workspaceId, useExperimentalStorage } = args;
+	const { dispatch, client, workspaceId } = args;
 
 	const uploadFile = useCallback(
 		async (files: File[], node: FileNode, options: UploadOptions) => {
@@ -78,7 +76,6 @@ export function useFileUploads(args: {
 						file,
 						fileId: uploadingFileData.id,
 						fileName: name,
-						useExperimentalStorage,
 					});
 					const uploadedFileData = createUploadedFileData(
 						uploadingFileData,
@@ -107,7 +104,7 @@ export function useFileUploads(args: {
 				});
 			}
 		},
-		[client, dispatch, useExperimentalStorage, workspaceId],
+		[client, dispatch, workspaceId],
 	);
 
 	return { uploadFile } as const;

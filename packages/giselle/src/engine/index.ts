@@ -137,14 +137,10 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 				workspaceId,
 			});
 		},
-		updateWorkspace: async (
-			workspace: Workspace,
-			useExperimentalStorage: boolean,
-		) => {
+		updateWorkspace: async (workspace: Workspace) => {
 			return await updateWorkspace({
 				context,
 				workspace,
-				useExperimentalStorage,
 			});
 		},
 		getLanguageModelProviders: () => getLanguageModelProviders({ context }),

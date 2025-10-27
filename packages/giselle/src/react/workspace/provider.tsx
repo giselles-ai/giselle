@@ -46,7 +46,6 @@ export function WorkspaceProvider({
 			value={{
 				webSearchAction: featureFlag?.webSearchAction ?? false,
 				layoutV3: featureFlag?.layoutV3 ?? false,
-				experimental_storage: featureFlag?.experimental_storage ?? false,
 				stage: featureFlag?.stage ?? false,
 				aiGateway: featureFlag?.aiGateway ?? false,
 				resumableGeneration: featureFlag?.resumableGeneration ?? false,
