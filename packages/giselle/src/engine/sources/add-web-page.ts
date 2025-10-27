@@ -46,9 +46,13 @@ export async function addWebPage(args: {
 				},
 			);
 		} else {
-			await args.context.storage.setItemRaw(storagePath, arrayBuffer, {
-				contentType: "text/markdown",
-			});
+			await args.context.deprecated_storage.setItemRaw(
+				storagePath,
+				arrayBuffer,
+				{
+					contentType: "text/markdown",
+				},
+			);
 		}
 
 		const webpage: FetchedWebPage = {

@@ -8,7 +8,7 @@ export async function getGeneration(args: {
 	useExperimentalStorage: boolean;
 }) {
 	return await getGenerationInternal({
-		storage: args.context.storage,
+		storage: args.context.deprecated_storage,
 		experimental_storage: args.context.experimental_storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 		generationId: args.generationId,

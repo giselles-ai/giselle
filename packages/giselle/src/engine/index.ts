@@ -206,7 +206,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			useExperimentalStorage: boolean,
 		) => {
 			return await copyFile({
-				storage: context.storage,
+				storage: context.deprecated_storage,
 				experimental_storage: context.experimental_storage,
 				workspaceId,
 				sourceFileId,
@@ -222,7 +222,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			useExperimentalStorage: boolean,
 		) => {
 			return await uploadFile({
-				storage: context.storage,
+				storage: context.deprecated_storage,
 				experimental_storage: context.experimental_storage,
 				useExperimentalStorage,
 				file,
@@ -237,7 +237,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			useExperimentalStorage: boolean,
 		) => {
 			return await removeFile({
-				storage: context.storage,
+				storage: context.deprecated_storage,
 				experimental_storage: context.experimental_storage,
 				workspaceId,
 				fileId,
@@ -352,7 +352,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			useExperimentalStorage: boolean;
 		}) {
 			return await getFileText({
-				storage: context.storage,
+				storage: context.deprecated_storage,
 				experimental_storage: context.experimental_storage,
 				workspaceId: args.workspaceId,
 				fileId: args.fileId,

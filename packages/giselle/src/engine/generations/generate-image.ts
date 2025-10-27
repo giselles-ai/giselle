@@ -190,7 +190,7 @@ async function generateImageWithFal({
 				const filename = `${id}.${imageType.ext}`;
 
 				await setGeneratedImage({
-					storage: context.storage,
+					storage: context.deprecated_storage,
 					experimental_storage: context.experimental_storage,
 					useExperimentalStorage,
 					generation: runningGeneration,
@@ -277,7 +277,7 @@ async function generateImageWithOpenAI({
 				const filename = `${id}.${imageType.ext}`;
 
 				await setGeneratedImage({
-					storage: context.storage,
+					storage: context.deprecated_storage,
 					experimental_storage: context.experimental_storage,
 					useExperimentalStorage,
 					generation: runningGeneration,
@@ -349,7 +349,7 @@ async function generateImageWithGoogle({
 				const filename = `${id}.${imageType.ext}`;
 
 				await setGeneratedImage({
-					storage: context.storage,
+					storage: context.deprecated_storage,
 					experimental_storage: context.experimental_storage,
 					useExperimentalStorage,
 					generation: runningGeneration,

@@ -18,7 +18,7 @@ export async function copyWorkspace(args: {
 }) {
 	const sourceWorkspace = await getWorkspace({
 		useExperimentalStorage: args.useExperimentalStorage,
-		storage: args.context.storage,
+		storage: args.context.deprecated_storage,
 		experimental_storage: args.context.experimental_storage,
 		workspaceId: args.workspaceId,
 	});
@@ -37,7 +37,7 @@ export async function copyWorkspace(args: {
 			}
 			const oldFlowTriggerId = node.content.state.flowTriggerId;
 			const oldFlowTrigger = await getFlowTrigger({
-				storage: args.context.storage,
+				storage: args.context.deprecated_storage,
 				experimental_storage: args.context.experimental_storage,
 				flowTriggerId: oldFlowTriggerId,
 				useExperimentalStorage: args.useExperimentalStorage,
@@ -53,7 +53,7 @@ export async function copyWorkspace(args: {
 				};
 
 				await setFlowTrigger({
-					storage: args.context.storage,
+					storage: args.context.deprecated_storage,
 					experimental_storage: args.context.experimental_storage,
 					flowTrigger: newFlowTrigger,
 					useExperimentalStorage: args.useExperimentalStorage,
@@ -96,14 +96,14 @@ export async function copyWorkspace(args: {
 
 	await Promise.all([
 		setWorkspace({
-			storage: args.context.storage,
+			storage: args.context.deprecated_storage,
 			workspaceId: workspaceCopy.id,
 			workspace: Workspace.parse(workspaceCopy),
 			experimental_storage: args.context.experimental_storage,
 			useExperimentalStorage: args.useExperimentalStorage,
 		}),
 		copyFiles({
-			storage: args.context.storage,
+			storage: args.context.deprecated_storage,
 			experimental_storage: args.context.experimental_storage,
 			templateWorkspaceId: args.workspaceId,
 			newWorkspaceId: workspaceCopy.id,

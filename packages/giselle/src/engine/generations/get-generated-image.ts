@@ -13,7 +13,7 @@ export async function getGeneratedImage(args: {
 	useExperimentalStorage: boolean;
 }) {
 	const generation = await getGeneration({
-		storage: args.context.storage,
+		storage: args.context.deprecated_storage,
 		experimental_storage: args.context.experimental_storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 		generationId: args.generationId,
@@ -22,7 +22,7 @@ export async function getGeneratedImage(args: {
 		throw new Error(`Generation ${args.generationId} is not completed`);
 	}
 	const generatedImage = await getGeneratedImageInternal({
-		storage: args.context.storage,
+		storage: args.context.deprecated_storage,
 		experimental_storage: args.context.experimental_storage,
 		useExperimentalStorage: args.useExperimentalStorage,
 		generation,

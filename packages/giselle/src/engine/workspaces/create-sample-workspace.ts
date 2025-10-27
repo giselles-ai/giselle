@@ -21,7 +21,7 @@ async function createSampleWorkspaceFromTemplate(args: {
 }) {
 	const templateWorkspace = await getWorkspace({
 		useExperimentalStorage: args.useExperimentalStorage,
-		storage: args.context.storage,
+		storage: args.context.deprecated_storage,
 		experimental_storage: args.context.experimental_storage,
 		workspaceId: args.templateWorkspaceId,
 	});
@@ -136,14 +136,14 @@ async function createSampleWorkspaceFromTemplate(args: {
 	} satisfies Workspace;
 	await Promise.all([
 		setWorkspace({
-			storage: args.context.storage,
+			storage: args.context.deprecated_storage,
 			workspaceId: newWorkspaceId,
 			workspace: newWorkspace,
 			experimental_storage: args.context.experimental_storage,
 			useExperimentalStorage: args.useExperimentalStorage,
 		}),
 		copyFiles({
-			storage: args.context.storage,
+			storage: args.context.deprecated_storage,
 			experimental_storage: args.context.experimental_storage,
 			templateWorkspaceId: templateWorkspace.id,
 			newWorkspaceId,
