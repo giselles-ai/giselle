@@ -85,8 +85,6 @@ export type EmbeddingCompleteCallbackFunction = (
 ) => void | Promise<void>;
 
 export interface GiselleEngineContext {
-	/** @deprecated */
-	deprecated_storage: Storage;
 	storage: GiselleStorage;
 	sampleAppWorkspaceIds?: WorkspaceId[];
 	llmProviders: LanguageModelProvider[];
@@ -188,8 +186,6 @@ export type DocumentVectorStoreQueryService<
 > = QueryService<DocumentVectorStoreQueryContext, M>;
 
 export interface GiselleEngineConfig {
-	/** @deprecated */
-	deprecated_storage: Storage;
 	storage: GiselleStorage;
 	sampleAppWorkspaceIds?: WorkspaceId[];
 	llmProviders?: LanguageModelProvider[];
