@@ -36,14 +36,12 @@ type PerplexityProviderOptions = {
 export function generateText(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
-	useExperimentalStorage: boolean;
 	useAiGateway: boolean;
 	useResumableGeneration: boolean;
 }) {
 	return useGenerationExecutor({
 		context: args.context,
 		generation: args.generation,
-		useExperimentalStorage: args.useExperimentalStorage,
 		useResumableGeneration: args.useResumableGeneration,
 		execute: async ({
 			finishGeneration,

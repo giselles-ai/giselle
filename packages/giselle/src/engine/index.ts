@@ -155,14 +155,12 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		getTriggerProviders: () => getTriggerProviders({ context }),
 		generateText: async (
 			generation: QueuedGeneration,
-			useExperimentalStorage: boolean,
 			useAiGateway: boolean,
 			useResumableGeneration: boolean,
 		) => {
 			return await generateText({
 				context,
 				generation,
-				useExperimentalStorage,
 				useAiGateway,
 				useResumableGeneration,
 			});
