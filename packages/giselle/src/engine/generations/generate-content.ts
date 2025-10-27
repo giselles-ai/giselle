@@ -77,7 +77,6 @@ export function generateContent({
 	return useGenerationExecutor({
 		context,
 		generation,
-		useExperimentalStorage: true,
 		useResumableGeneration: true,
 		metadata,
 		execute: async ({
@@ -125,7 +124,6 @@ export function generateContent({
 						decryptToken = await decryptSecret({
 							context,
 							secretId: githubTool.auth.secretId,
-							useExperimentalStorage: true,
 						});
 						break;
 					default: {
@@ -157,7 +155,6 @@ export function generateContent({
 				const connectionString = await decryptSecret({
 					context,
 					secretId: postgresToolData.secretId,
-					useExperimentalStorage: true,
 				});
 				if (connectionString === undefined) {
 					throw new Error("Failed to decrypt secret");
@@ -264,9 +261,7 @@ export function generateContent({
 				stopWhen: stepCountIs(Object.keys(preparedToolSet.toolSet).length + 1),
 				onChunk: async () => {
 					const currentGeneration = await getGeneration({
-						deprecated_storage: context.deprecated_storage,
 						storage: context.storage,
-						useExperimentalStorage: true,
 						generationId: generation.id,
 					});
 					if (currentGeneration?.status === "cancelled") {

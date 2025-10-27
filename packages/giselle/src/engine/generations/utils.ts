@@ -27,7 +27,6 @@ import {
 	NodeGenerationIndex,
 } from "../../concepts/generation";
 import type { GenerationId } from "../../concepts/identifiers";
-import { parseAndMod } from "../../data-mod";
 import type { GiselleStorage } from "../experimental_storage";
 import type { GiselleEngineContext } from "../types";
 
@@ -599,32 +598,13 @@ export async function setGeneratedImage(params: {
 }
 
 export async function getGeneratedImage(params: {
-	deprecated_storage: Storage;
 	storage: GiselleStorage;
-	useExperimentalStorage?: boolean;
 	generation: Generation;
 	filename: string;
 }) {
-	if (params.useExperimentalStorage) {
-		return await params.storage.getBlob(
-			generatedImagePath(params.generation.id, params.filename),
-		);
-	}
-	let image = await params.deprecated_storage.getItemRaw(
+	return await params.storage.getBlob(
 		generatedImagePath(params.generation.id, params.filename),
 	);
-	if (image instanceof ArrayBuffer) {
-		image = new Uint8Array(image);
-	}
-
-	assertUint8Array(image);
-	return image;
-}
-
-function assertUint8Array(value: unknown): asserts value is Uint8Array {
-	if (!(value instanceof Uint8Array)) {
-		throw new TypeError(`Expected Uint8Array but got ${typeof value}`);
-	}
 }
 
 /**
