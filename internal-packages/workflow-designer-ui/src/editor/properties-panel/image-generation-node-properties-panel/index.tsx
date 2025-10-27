@@ -240,7 +240,7 @@ export function ImageGenerationNodePropertiesPanel({
 			<NodePanelHeader
 				node={node}
 				onChangeName={(name) => updateNodeData(node, { name })}
-				docsUrl="https://docs.giselles.ai/en/glossary/image-node"
+				docsUrl="https://docs.giselles.ai/en/glossary/generator-node"
 				onDelete={() => deleteNode(node.id)}
 			/>
 
