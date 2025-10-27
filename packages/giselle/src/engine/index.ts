@@ -216,12 +216,9 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			workspaceId: WorkspaceId,
 			fileId: FileId,
 			fileName: string,
-			useExperimentalStorage: boolean,
 		) => {
 			return await uploadFile({
-				deprecated_storage: context.deprecated_storage,
 				storage: context.storage,
-				useExperimentalStorage,
 				file,
 				workspaceId,
 				fileId,
