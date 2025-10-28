@@ -3,7 +3,7 @@ import type {
 	GitHubRepositoryContentType,
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
-} from "@/drizzle/schema";
+} from "@/db/schema";
 
 export type RepositoryWithStatuses = {
 	repositoryIndex: typeof githubRepositoryIndex.$inferSelect;

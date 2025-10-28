@@ -10,7 +10,7 @@ import {
 	teamMemberships,
 	teams,
 	users,
-} from "@/drizzle";
+} from "@/db";
 import { updateGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
 import { isEmailFromRoute06 } from "@/lib/utils";

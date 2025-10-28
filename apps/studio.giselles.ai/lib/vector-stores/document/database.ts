@@ -4,15 +4,15 @@ import type {
 } from "@giselle-sdk/data-type";
 import type { DocumentVectorStoreSourceId } from "@giselles-ai/types";
 import { and, eq, inArray } from "drizzle-orm";
-import { db } from "@/drizzle/db";
+import { db } from "@/db/db";
 import type {
 	DocumentVectorStoreSourceIngestStatus,
 	DocumentVectorStoreSourceUploadStatus,
-} from "@/drizzle/schema";
+} from "@/db/schema";
 import {
 	documentEmbeddings,
 	documentVectorStoreSources,
-} from "@/drizzle/schema";
+} from "@/db/schema";
 
 export async function getDocumentVectorStoreSource(
 	sourceId: DocumentVectorStoreSourceId,

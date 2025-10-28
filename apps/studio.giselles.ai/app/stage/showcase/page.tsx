@@ -1,5 +1,5 @@
 import { and, desc, eq } from "drizzle-orm";
-import { acts, agents, db } from "@/drizzle";
+import { acts, agents, db } from "@/db";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";
 import { fetchFlowTriggers } from "../(top)/services";

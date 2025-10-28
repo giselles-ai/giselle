@@ -3,7 +3,7 @@ import {
 	db,
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
-} from "@/drizzle";
+} from "@/db";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github/types";
 
 const STALE_THRESHOLD_MINUTES = 15;

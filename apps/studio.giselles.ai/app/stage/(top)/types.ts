@@ -1,7 +1,7 @@
 import type { FlowTrigger, FlowTriggerId } from "@giselle-sdk/data-type";
 import type { ParameterItem } from "@giselle-sdk/giselle";
 import type { InferSelectModel } from "drizzle-orm";
-import type { teams } from "@/drizzle";
+import type { teams } from "@/db";
 
 // Team related types
 export type TeamId = InferSelectModel<typeof teams>["id"];

@@ -5,7 +5,7 @@ import {
 	subscriptions,
 	teamMemberships,
 	userSeatUsageReports,
-} from "@/drizzle";
+} from "@/db";
 import { stripe } from "../external/stripe";
 
 const USER_SEAT_METER_NAME = "user_seat_v2";

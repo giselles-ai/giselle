@@ -1,5 +1,5 @@
 import { and, eq, gte, lt, sql } from "drizzle-orm";
-import { agentActivities, agents, db, subscriptions, teams } from "@/drizzle";
+import { agentActivities, agents, db, subscriptions, teams } from "@/db";
 import { getMonthlyBillingCycle } from "./utils";
 
 /**

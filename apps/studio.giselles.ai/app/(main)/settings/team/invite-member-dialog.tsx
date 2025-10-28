@@ -6,7 +6,7 @@ import { Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { email as emailValidator, parse, pipe, string } from "valibot";
 import { GlassButton } from "@/components/ui/glass-button";
-import type { TeamRole } from "@/drizzle";
+import type { TeamRole } from "@/db";
 import { type SendInvitationsResult, sendInvitationsAction } from "./actions";
 import {
 	GlassDialogBody,

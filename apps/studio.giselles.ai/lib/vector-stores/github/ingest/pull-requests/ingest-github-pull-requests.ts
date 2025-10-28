@@ -13,7 +13,7 @@ import {
 	type GitHubPullRequestDocumentKey,
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
-} from "@/drizzle";
+} from "@/db";
 import { handleIngestErrors } from "../error-handling";
 import { createGitHubPullRequestChunkStore } from "./chunk-store";
 

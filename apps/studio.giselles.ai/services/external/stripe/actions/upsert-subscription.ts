@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import type Stripe from "stripe";
-import { db, subscriptions, teamMemberships, teams } from "@/drizzle";
+import { db, subscriptions, teamMemberships, teams } from "@/db";
 import {
 	DRAFT_TEAM_NAME_METADATA_KEY,
 	DRAFT_TEAM_USER_DB_ID_METADATA_KEY,
@@ -90,7 +90,7 @@ async function upgradeExistingTeam(
 	});
 }
 
-// https://github.com/drizzle-team/drizzle-orm/issues/2851#issuecomment-2481083003
+// https://github.com/drizzle-team/drizzle-orm/issues/2853#issuecomment-2481083003
 type TransactionType = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 async function createTeam(

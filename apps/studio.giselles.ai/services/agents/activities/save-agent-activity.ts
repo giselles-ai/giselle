@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { agentActivities, agents, db } from "@/drizzle";
+import { agentActivities, agents, db } from "@/db";
 import type { AgentId } from "@/services/agents";
 
 export async function saveAgentActivity(

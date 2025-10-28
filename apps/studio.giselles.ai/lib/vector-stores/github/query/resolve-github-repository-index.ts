@@ -1,6 +1,6 @@
 import type { GitHubQueryContext } from "@giselle-sdk/giselle";
 import { and, eq } from "drizzle-orm";
-import { agents, db, githubRepositoryIndex, teams } from "@/drizzle";
+import { agents, db, githubRepositoryIndex, teams } from "@/db";
 
 /**
  * Resolves GitHub repository index from workspace context

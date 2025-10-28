@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { eq, inArray } from "drizzle-orm";
-import { db, supabaseUserMappings, teamMemberships, teams } from "@/drizzle";
+import { db, supabaseUserMappings, teamMemberships, teams } from "@/db";
 
 console.log("Updating teams to set 'type = internal' property on nodes...");
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

@@ -8,7 +8,7 @@ import { Select } from "@giselle-internal/ui/select";
 import { useToasts } from "@giselle-internal/ui/toast";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
-import type { TeamRole } from "@/drizzle";
+import type { TeamRole } from "@/db";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { deleteTeamMember, updateTeamMemberRole } from "./actions";
 

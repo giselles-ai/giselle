@@ -9,7 +9,7 @@ import {
 	type TeamRole,
 	type UserId,
 	users,
-} from "@/drizzle";
+} from "@/db";
 import { updateGiselleSession } from "@/lib/giselle-session";
 import { logger } from "@/lib/logger";
 import { getUser } from "@/lib/supabase";

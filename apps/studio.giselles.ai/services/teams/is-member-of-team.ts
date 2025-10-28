@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { db, teamMemberships } from "@/drizzle";
+import { db, teamMemberships } from "@/db";
 
 /**
  * Checks if the specified user is a member of the specified team

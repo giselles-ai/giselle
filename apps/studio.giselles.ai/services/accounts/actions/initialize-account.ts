@@ -11,7 +11,7 @@ import {
 	teams,
 	users,
 	workspaces,
-} from "@/drizzle";
+} from "@/db";
 import { isEmailFromRoute06 } from "@/lib/utils";
 import { createTeamId } from "@/services/teams/utils";
 

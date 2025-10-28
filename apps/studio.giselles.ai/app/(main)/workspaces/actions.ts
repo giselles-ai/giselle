@@ -12,7 +12,7 @@ import {
 	flowTriggers,
 	githubIntegrationSettings,
 	workspaces,
-} from "@/drizzle";
+} from "@/db";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 

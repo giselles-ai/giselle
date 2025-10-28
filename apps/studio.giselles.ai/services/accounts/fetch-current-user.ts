@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { cache } from "react";
-import { db, supabaseUserMappings, users } from "@/drizzle";
+import { db, supabaseUserMappings, users } from "@/db";
 import { getUser } from "@/lib/supabase";
 
 async function fetchCurrentUser() {

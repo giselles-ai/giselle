@@ -2,7 +2,7 @@ import type { EmbeddingProfileId } from "@giselle-sdk/data-type";
 import { createPostgresChunkStore } from "@giselle-sdk/rag";
 import { getTableName } from "drizzle-orm";
 import z from "zod/v4";
-import { githubRepositoryEmbeddings } from "@/drizzle";
+import { githubRepositoryEmbeddings } from "@/db";
 import { createDatabaseConfig } from "../../database";
 
 /**

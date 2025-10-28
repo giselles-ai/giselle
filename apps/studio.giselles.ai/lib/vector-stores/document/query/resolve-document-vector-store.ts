@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 
-import { agents, db, documentVectorStores, teams } from "@/drizzle";
+import { agents, db, documentVectorStores, teams } from "@/db";
 
 import type { DocumentVectorStoreQueryContext } from "./context";
 

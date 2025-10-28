@@ -4,7 +4,7 @@ import { formatTimestamp } from "@giselles-ai/lib/utils";
 import clsx from "clsx/lite";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { agents as dbAgents } from "@/drizzle";
+import type { agents as dbAgents } from "@/db";
 import { AppThumbnail } from "./app-thumbnail";
 import { DeleteAgentButton } from "./delete-agent-button";
 import { DuplicateAgentButton } from "./duplicate-agent-button";

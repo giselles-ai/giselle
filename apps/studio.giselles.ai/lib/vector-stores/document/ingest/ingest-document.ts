@@ -5,7 +5,7 @@ import type {
 import type { DocumentVectorStoreSourceId } from "@giselles-ai/types";
 import { createClient } from "@supabase/supabase-js";
 import { and, eq, lt, or } from "drizzle-orm";
-import { db, documentVectorStoreSources } from "@/drizzle";
+import { db, documentVectorStoreSources } from "@/db";
 import {
 	deleteDocumentEmbeddingsByProfiles,
 	getDocumentVectorStoreSource,

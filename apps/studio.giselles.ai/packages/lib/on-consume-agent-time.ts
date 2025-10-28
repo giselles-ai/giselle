@@ -1,5 +1,5 @@
 import type { WorkspaceId } from "@giselle-sdk/data-type";
-import { db } from "@/drizzle";
+import { db } from "@/db";
 import { saveAgentActivity } from "@/services/agents/activities";
 
 export async function onConsumeAgentTime(

@@ -4,7 +4,7 @@ import {
 	db,
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
-} from "@/drizzle";
+} from "@/db";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 
 export type { DocumentVectorStoreWithProfiles } from "@/lib/vector-stores/document/queries";

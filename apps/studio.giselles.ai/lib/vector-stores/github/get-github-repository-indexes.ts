@@ -3,7 +3,7 @@ import {
 	db,
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
-} from "@/drizzle";
+} from "@/db";
 
 type ContentType = {
 	contentType: "blob" | "pull_request";

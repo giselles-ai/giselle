@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { db, oauthCredentials, supabaseUserMappings } from "@/drizzle";
+import { db, oauthCredentials, supabaseUserMappings } from "@/db";
 import { getUser } from "@/lib/supabase";
 
 export async function refreshOauthCredential(

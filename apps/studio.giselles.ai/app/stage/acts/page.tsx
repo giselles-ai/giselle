@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { giselleEngine } from "@/app/giselle-engine";
-import { type acts as actsSchema, db } from "@/drizzle";
+import { type acts as actsSchema, db } from "@/db";
 import { stageFlag } from "@/flags";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";

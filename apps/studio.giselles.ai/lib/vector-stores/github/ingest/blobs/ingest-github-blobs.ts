@@ -13,7 +13,7 @@ import {
 	db,
 	githubRepositoryContentStatus,
 	githubRepositoryIndex,
-} from "@/drizzle";
+} from "@/db";
 import { getContentStatusMetadata } from "../../types";
 import { handleIngestErrors } from "../error-handling";
 import { createGitHubBlobChunkStore } from "./chunk-store";

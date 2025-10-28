@@ -1,6 +1,6 @@
 import { createPostgresQueryService } from "@giselle-sdk/rag";
 import { getTableName } from "drizzle-orm";
-import { githubRepositoryPullRequestEmbeddings } from "@/drizzle";
+import { githubRepositoryPullRequestEmbeddings } from "@/db";
 import { createDatabaseConfig } from "../../database";
 import { addPRContextToResults } from "./pr-context-utils";
 import { resolveGitHubPullRequestEmbeddingFilter } from "./resolver";

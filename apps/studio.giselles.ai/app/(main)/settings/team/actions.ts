@@ -15,7 +15,7 @@ import {
 	teams,
 	type UserId,
 	users,
-} from "@/drizzle";
+} from "@/db";
 import { updateGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
 

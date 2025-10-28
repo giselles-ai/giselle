@@ -19,7 +19,7 @@ import {
 	githubRepositoryContentStatus,
 	githubRepositoryEmbeddingProfiles,
 	githubRepositoryIndex,
-} from "@/drizzle";
+} from "@/db";
 import { docVectorStoreFlag } from "@/flags";
 import {
 	createManualIngestTrigger,

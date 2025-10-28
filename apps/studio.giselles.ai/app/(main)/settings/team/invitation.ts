@@ -1,7 +1,7 @@
 import { and, eq, isNull, sql } from "drizzle-orm";
-import type { TeamRole, UserId } from "@/drizzle";
-import { db } from "@/drizzle";
-import { invitations, teamMemberships, teams, users } from "@/drizzle/schema";
+import type { TeamRole, UserId } from "@/db";
+import { db } from "@/db";
+import { invitations, teamMemberships, teams, users } from "@/db/schema";
 import { sendEmail } from "@/services/external/email";
 import { type CurrentTeam, fetchCurrentTeam } from "@/services/teams";
 
