@@ -1,6 +1,9 @@
 import { createHash } from "node:crypto";
-import { publicStorage } from "@/app/giselle-engine";
+import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase";
 import { IMAGE_CONSTRAINTS } from "../constants";
+
+const storageBucketName = "public-assets";
 
 async function calculateFileHash(file: File): Promise<string> {
 	const arrayBuffer = await file.arrayBuffer();
@@ -66,19 +69,19 @@ export async function uploadAvatar(
 	const arrayBuffer = await file.arrayBuffer();
 	const buffer = Buffer.from(arrayBuffer);
 
-	await publicStorage.setItemRaw(filePath, buffer, {
-		contentType: file.type,
-	});
+	const supabaseClient = await createClient();
+	const uploadResult = await supabaseClient.storage
+		.from(storageBucketName)
+		.upload(filePath, buffer, {
+			contentType: file.type,
+		});
 
-	const avatarUrl = await publicStorage.getItem(filePath, {
-		publicURL: true,
-	});
-
-	if (typeof avatarUrl !== "string") {
+	if (uploadResult.error) {
+		logger.error(uploadResult.error);
 		throw new Error("Failed to get avatar URL");
 	}
 
-	return avatarUrl;
+	return uploadResult.data.fullPath;
 }
 
 /**
@@ -95,5 +98,7 @@ export async function deleteAvatar(avatarUrl: string): Promise<void> {
 	}
 
 	const path = parts[1];
-	await publicStorage.removeItem(path);
+
+	const supabaseClient = await createClient();
+	await supabaseClient.storage.from(storageBucketName).remove([path]);
 }
