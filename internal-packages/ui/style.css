@@ -247,7 +247,7 @@
 	}
 
 	.gen-footer {
-		@apply sticky bottom-0 z-40 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent;
+		@apply sticky bottom-0 z-40 px-[16px] pt-[8px] pb-[4px];
 	}
 
 	.gen-editor {
