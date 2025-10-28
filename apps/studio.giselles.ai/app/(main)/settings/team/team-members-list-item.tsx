@@ -18,8 +18,7 @@ type TeamMemberListItemProps = {
 	email: string | null;
 	avatarUrl: string | null;
 	role: TeamRole;
-	currentUserRole: TeamRole;
-	isProPlan: boolean;
+	canManageMembers: boolean;
 	currentUserId: string;
 };
 
@@ -29,8 +28,7 @@ export function TeamMemberListItem({
 	email,
 	avatarUrl,
 	role: initialRole,
-	currentUserRole,
-	isProPlan,
+	canManageMembers,
 	currentUserId,
 }: TeamMemberListItemProps) {
 	const { toast } = useToasts();
@@ -42,8 +40,7 @@ export function TeamMemberListItem({
 	const currentUser = currentUserId;
 	const isCurrentUser = user === currentUser;
 
-	const canEditRole =
-		isProPlan && currentUserRole === "admin" && !isCurrentUser;
+	const canEditRole = canManageMembers && !isCurrentUser;
 	const canRemove = isCurrentUser || canEditRole;
 	const roleLabel = role.charAt(0).toUpperCase() + role.slice(1);
 
