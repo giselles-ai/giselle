@@ -1,18 +1,23 @@
 import type { FlowTriggerId, TriggerNode } from "@giselle-sdk/data-type";
 import type { GitHubIntegrationInstallation } from "@giselle-sdk/giselle";
 import { useGitHubTrigger } from "../../../../lib/use-github-trigger";
-import { Installed } from "../../providers/github-trigger/github-trigger-properties-panel";
+import {
+	type GitHubTriggerReconfigureMode,
+	Installed,
+} from "../../providers/github-trigger/github-trigger-properties-panel";
 
 export function GitHubTriggerReconfiguringView({
 	installations,
 	node,
 	installationUrl,
 	flowTriggerId,
+	reconfigureMode,
 }: {
 	installations: GitHubIntegrationInstallation[];
 	node: TriggerNode;
 	installationUrl: string;
 	flowTriggerId: FlowTriggerId;
+	reconfigureMode?: GitHubTriggerReconfigureMode;
 }) {
 	const { isLoading, data } = useGitHubTrigger(flowTriggerId);
 	if (isLoading) {
@@ -28,10 +33,50 @@ export function GitHubTriggerReconfiguringView({
 		return "Unexpected state";
 	}
 
-	const reconfigStep = {
-		state: "select-repository" as const,
-		eventId: data.trigger.configuration.event.id,
+	const event = data.trigger.configuration.event;
+	const repositoryInfo = {
+		installationId: data.trigger.configuration.installationId,
+		repoNodeId: data.trigger.configuration.repositoryNodeId,
+		owner: data.githubRepositoryFullname.owner,
+		repo: data.githubRepositoryFullname.repo,
 	};
+
+	// Extract persisted callsign and labels from event if they exist
+	const persistedCallsign =
+		"conditions" in event && "callsign" in event.conditions
+			? event.conditions.callsign
+			: undefined;
+	const persistedLabels =
+		"conditions" in event && "labels" in event.conditions
+			? event.conditions.labels
+			: undefined;
+
+	// Determine the appropriate reconfiguration step based on mode
+	const reconfigStep = (() => {
+		if (reconfigureMode === "callsign" && persistedCallsign !== undefined) {
+			return {
+				state: "input-callsign" as const,
+				eventId: event.id,
+				...repositoryInfo,
+				callsign: persistedCallsign,
+			};
+		}
+
+		if (reconfigureMode === "labels" && persistedLabels !== undefined) {
+			return {
+				state: "input-labels" as const,
+				eventId: event.id,
+				...repositoryInfo,
+				labels: persistedLabels,
+			};
+		}
+
+		// Default to repository selection
+		return {
+			state: "select-repository" as const,
+			eventId: event.id,
+		};
+	})();
 
 	return (
 		<Installed

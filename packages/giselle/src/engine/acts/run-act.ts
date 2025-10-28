@@ -27,7 +27,6 @@ async function waitUntilGenerationFinishes(args: {
 	while (true) {
 		const generation = await getGeneration({
 			context: args.context,
-			useExperimentalStorage: true,
 			generationId: args.generationId,
 		});
 
@@ -70,7 +69,7 @@ async function executeStep(args: {
 				await executeAction(args);
 				break;
 			case "imageGeneration":
-				await generateImage({ ...args, useExperimentalStorage: true });
+				await generateImage({ ...args });
 				break;
 			case "textGeneration": {
 				await startContentGeneration(args);
@@ -90,7 +89,6 @@ async function executeStep(args: {
 				await resolveTrigger({
 					context: args.context,
 					generation: args.generation,
-					useExperimentalStorage: true,
 				});
 				break;
 			case "query":
@@ -136,7 +134,6 @@ export async function runAct(
 			startGeneration: async (generationId, callbacks) => {
 				const generation = await getGeneration({
 					context: args.context,
-					useExperimentalStorage: true,
 					generationId,
 				});
 				if (!generation || generation.status !== "created") {

@@ -13,7 +13,6 @@ export async function addWebPage(args: {
 	workspaceId: WorkspaceId;
 	provider?: "self-made";
 	context: GiselleEngineContext;
-	useExperimentalStorage: boolean;
 }) {
 	try {
 		const search = webSearch({ provider: args.provider ?? "self-made" });
@@ -37,20 +36,9 @@ export async function addWebPage(args: {
 			fileId,
 		});
 
-		if (args.useExperimentalStorage) {
-			await args.context.experimental_storage.setBlob(
-				storagePath,
-				arrayBuffer,
-				{
-					contentType: "text/markdown",
-				},
-			);
-		} else {
-			await args.context.storage.setItemRaw(storagePath, arrayBuffer, {
-				contentType: "text/markdown",
-			});
-		}
-
+		await args.context.storage.setBlob(storagePath, arrayBuffer, {
+			contentType: "text/markdown",
+		});
 		const webpage: FetchedWebPage = {
 			...args.webpage,
 			status: "fetched",

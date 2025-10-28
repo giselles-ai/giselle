@@ -13,7 +13,6 @@ import {
 	githubIntegrationSettings,
 	workspaces,
 } from "@/drizzle";
-import { experimental_storageFlag } from "@/flags";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 
@@ -34,7 +33,6 @@ type DeleteAgentResult =
 export async function copyAgent(
 	agentId: AgentId,
 ): Promise<AgentDuplicationResult> {
-	const useExperimentalStorage = await experimental_storageFlag();
 	if (typeof agentId !== "string" || agentId.length === 0) {
 		return { result: "error", message: "Please fill in the agent id" };
 	}
@@ -71,7 +69,6 @@ export async function copyAgent(
 		const workspace = await giselleEngine.copyWorkspace(
 			agent.workspaceId,
 			newName,
-			useExperimentalStorage,
 		);
 		// The agents table is deprecated, so we are inserting into the workspaces table.
 		await db.insert(agents).values({
@@ -96,7 +93,6 @@ export async function copyAgent(
 
 			const flowTrigger = await giselleEngine.getTrigger({
 				flowTriggerId: node.content.state.flowTriggerId,
-				useExperimentalStorage,
 			});
 			if (
 				flowTrigger &&

@@ -65,12 +65,16 @@ const DefaultEventIcon = ({
 	</svg>
 );
 
+import type { GitHubTriggerReconfigureMode } from "../../providers/github-trigger/github-trigger-properties-panel";
+
 export function GitHubTriggerConfiguredView({
 	flowTriggerId,
 	node,
+	onStartReconfigure,
 }: {
 	flowTriggerId: FlowTriggerId;
 	node: TriggerNode;
+	onStartReconfigure: (mode: GitHubTriggerReconfigureMode) => void;
 }) {
 	const { updateNodeData } = useWorkflowDesigner();
 	const { isLoading, data, enableFlowTrigger, disableFlowTrigger } =
@@ -84,6 +88,19 @@ export function GitHubTriggerConfiguredView({
 	if (data === undefined) {
 		return "No Data";
 	}
+
+	const beginReconfigure = (mode: GitHubTriggerReconfigureMode) => {
+		onStartReconfigure(mode);
+		updateNodeData(node, {
+			content: {
+				...node.content,
+				state: {
+					status: "reconfiguring",
+					flowTriggerId,
+				},
+			},
+		});
+	};
 
 	const handleEnableFlowTrigger = async () => {
 		try {
@@ -216,15 +233,7 @@ export function GitHubTriggerConfiguredView({
 						type="button"
 						className="bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors"
 						onClick={() => {
-							updateNodeData(node, {
-								content: {
-									...node.content,
-									state: {
-										status: "reconfiguring",
-										flowTriggerId,
-									},
-								},
-							});
+							beginReconfigure("repository");
 						}}
 					>
 						Change Repository
@@ -239,53 +248,75 @@ export function GitHubTriggerConfiguredView({
 					"github.pull_request_review_comment.created" ||
 				data.trigger.configuration.event.id ===
 					"github.discussion_comment.created") && (
-				<div>
-					<div className="space-y-[4px]">
-						<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Call sign</p>
-						<div className="px-[4px] py-[9px] w-full bg-transparent text-[14px] flex items-center gap-[8px]">
-							<span>
-								/{data.trigger.configuration.event.conditions.callsign}
-							</span>
-							<ClipboardButton
-								text={`/${data.trigger.configuration.event.conditions.callsign}`}
-								className="text-black-400 hover:text-black-300"
-								sizeClassName="h-[16px] w-[16px]"
-							/>
+				<div className="space-y-[4px]">
+					<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Call sign</p>
+					<div className="flex justify-between items-start">
+						<div className="flex-1 space-y-[4px]">
+							<div className="px-[4px] py-[9px] w-full bg-transparent text-[14px] flex items-center gap-[8px]">
+								<span>
+									/{data.trigger.configuration.event.conditions.callsign}
+								</span>
+								<ClipboardButton
+									text={`/${data.trigger.configuration.event.conditions.callsign}`}
+									className="text-black-400 hover:text-black-300"
+									sizeClassName="h-[16px] w-[16px]"
+								/>
+							</div>
+							<p className="text-[12px] text-inverse px-[4px]">
+								Use{" "}
+								<span className="text-blue-400 font-medium">
+									/{data.trigger.configuration.event.conditions.callsign}
+								</span>{" "}
+								in GitHub comments to trigger this workflow.
+							</p>
 						</div>
-						<p className="text-[12px] text-inverse px-[4px]">
-							Use{" "}
-							<span className="text-blue-400 font-medium">
-								/{data.trigger.configuration.event.conditions.callsign}
-							</span>{" "}
-							in GitHub comments to trigger this workflow.
-						</p>
+						<button
+							type="button"
+							className="bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors"
+							onClick={() => {
+								beginReconfigure("callsign");
+							}}
+						>
+							Change Callsign
+						</button>
 					</div>
 				</div>
 			)}
 			{(data.trigger.configuration.event.id === "github.issue.labeled" ||
 				data.trigger.configuration.event.id ===
 					"github.pull_request.labeled") && (
-				<div>
-					<div className="space-y-[4px]">
-						<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Labels</p>
-						<div className="px-[4px] py-[9px] w-full bg-transparent text-[14px]">
-							<div className="flex flex-wrap gap-[4px]">
-								{data.trigger.configuration.event.conditions.labels.map(
-									(label) => (
-										<span
-											key={label}
-											className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-md text-[12px]"
-										>
-											{label}
-										</span>
-									),
-								)}
+				<div className="space-y-[4px]">
+					<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Labels</p>
+					<div className="flex justify-between items-start">
+						<div className="flex-1 space-y-[4px]">
+							<div className="px-[4px] py-[9px] w-full bg-transparent text-[14px]">
+								<div className="flex flex-wrap gap-[4px]">
+									{data.trigger.configuration.event.conditions.labels.map(
+										(label) => (
+											<span
+												key={label}
+												className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-md text-[12px]"
+											>
+												{label}
+											</span>
+										),
+									)}
+								</div>
 							</div>
+							<p className="text-[12px] text-inverse px-[4px]">
+								This workflow triggers when any of these labels are added to an
+								issue.
+							</p>
 						</div>
-						<p className="text-[12px] text-inverse px-[4px]">
-							This workflow triggers when any of these labels are added to an
-							issue.
-						</p>
+						<button
+							type="button"
+							className="bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors"
+							onClick={() => {
+								beginReconfigure("labels");
+							}}
+						>
+							Change Labels
+						</button>
 					</div>
 				</div>
 			)}

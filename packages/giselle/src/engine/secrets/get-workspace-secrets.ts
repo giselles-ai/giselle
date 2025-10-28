@@ -7,14 +7,12 @@ export async function getWorkspaceSecrets(args: {
 	context: GiselleEngineContext;
 	workspaceId: WorkspaceId;
 	tags?: string[];
-	useExperimentalStorage: boolean;
 }) {
-	const { context, workspaceId, tags, useExperimentalStorage } = args;
+	const { context, workspaceId, tags } = args;
 	const secrets = await getWorkspaceIndex({
 		context,
 		indexPath: workspaceSecretIndexPath(workspaceId),
 		itemSchema: SecretIndex,
-		useExperimentalStorage,
 	});
 
 	if (tags === undefined || tags.length === 0) {

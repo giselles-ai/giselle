@@ -1,8 +1,7 @@
 import type { NodeId } from "@giselle-sdk/data-type";
-import type { Storage } from "unstorage";
 import { Generation, NodeGenerationIndex } from "../../../concepts/generation";
 import type { GiselleLogger } from "../../../logger/types";
-import type { GiselleStorage } from "../../experimental_storage";
+import type { GiselleStorage } from "../../storage";
 import {
 	generationPath,
 	getNodeGenerationIndexes,
@@ -21,24 +20,15 @@ function upsertIndex(
 }
 
 export async function internalSetGeneration(params: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
-	useExperimentalStorage?: boolean;
+	storage: GiselleStorage;
 	generation: Generation;
 	logger?: GiselleLogger;
 }) {
-	if (params.useExperimentalStorage) {
-		await params.experimental_storage.setJson({
-			path: generationPath(params.generation.id),
-			data: params.generation,
-			schema: Generation,
-		});
-	} else {
-		await params.storage.setItem(
-			generationPath(params.generation.id),
-			Generation.parse(params.generation),
-		);
-	}
+	await params.storage.setJson({
+		path: generationPath(params.generation.id),
+		data: params.generation,
+		schema: Generation,
+	});
 
 	params.logger?.debug(
 		`Setting generation in storage: id=${params.generation.id}`,
@@ -49,15 +39,11 @@ export async function internalSetGeneration(params: {
 	// Update nodeId-based index
 	const currentNodeIndexes = await getNodeGenerationIndexes({
 		storage: params.storage,
-		experimental_storage: params.experimental_storage,
-		useExperimentalStorage: params.useExperimentalStorage,
 		nodeId,
 	});
 	const nextNodeIndexes = upsertIndex(currentNodeIndexes, newIndex);
 	await writeNodeIndexes({
 		storage: params.storage,
-		experimental_storage: params.experimental_storage,
-		useExperimentalStorage: params.useExperimentalStorage,
 		nodeId,
 		indexes: nextNodeIndexes,
 	});
@@ -67,7 +53,7 @@ export async function internalSetGeneration(params: {
 	params.logger?.debug(`internalSetGeneration ---- ${actId}`);
 	params.logger?.debug(JSON.stringify(newIndex, null, 2));
 	if (actId !== undefined) {
-		updateActGenerationIndexes(params.experimental_storage, actId, newIndex);
+		updateActGenerationIndexes(params.storage, actId, newIndex);
 	}
 }
 
@@ -88,22 +74,14 @@ function toNodeGenerationIndex(generation: Generation): NodeGenerationIndex {
 }
 
 async function writeNodeIndexes(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
-	useExperimentalStorage?: boolean;
+	storage: GiselleStorage;
 	nodeId: NodeId;
 	indexes: NodeGenerationIndex[];
 }) {
-	if (args.useExperimentalStorage) {
-		await args.experimental_storage.setJson({
-			path: nodeGenerationIndexPath(args.nodeId),
-			data: args.indexes,
-			schema: NodeGenerationIndex.array(),
-		});
-		return;
-	}
-	await args.storage.setItem(
-		nodeGenerationIndexPath(args.nodeId),
-		args.indexes,
-	);
+	await args.storage.setJson({
+		path: nodeGenerationIndexPath(args.nodeId),
+		data: args.indexes,
+		schema: NodeGenerationIndex.array(),
+	});
+	return;
 }

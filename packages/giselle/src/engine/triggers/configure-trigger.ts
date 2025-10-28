@@ -16,37 +16,29 @@ export type ConfigureTriggerInput = z.infer<typeof ConfigureTriggerInput>;
 export async function configureTrigger(args: {
 	context: GiselleEngineContext;
 	trigger: ConfigureTriggerInput;
-	useExperimentalStorage: boolean;
 }) {
 	const flowTriggerId = FlowTriggerId.generate();
 	const [workspace] = await Promise.all([
 		getWorkspace({
 			storage: args.context.storage,
-			experimental_storage: args.context.experimental_storage,
 			workspaceId: args.trigger.workspaceId,
-			useExperimentalStorage: args.useExperimentalStorage,
 		}),
 		setFlowTrigger({
 			storage: args.context.storage,
-			experimental_storage: args.context.experimental_storage,
 			flowTrigger: {
 				id: flowTriggerId,
 				...args.trigger,
 			},
-			useExperimentalStorage: args.useExperimentalStorage,
 		}),
 		args.trigger.configuration.provider === "github"
 			? await addGitHubRepositoryIntegrationIndex({
 					storage: args.context.storage,
-					experimental_storage: args.context.experimental_storage,
 					flowTriggerId,
 					repositoryNodeId: args.trigger.configuration.repositoryNodeId,
-					useExperimentalStorage: args.useExperimentalStorage,
 				})
 			: Promise.resolve(),
 	]);
 	await setWorkspace({
-		storage: args.context.storage,
 		workspaceId: workspace.id,
 		workspace: {
 			...workspace,
@@ -65,8 +57,7 @@ export async function configureTrigger(args: {
 					: node,
 			),
 		},
-		experimental_storage: args.context.experimental_storage,
-		useExperimentalStorage: args.useExperimentalStorage,
+		storage: args.context.storage,
 	});
 	return flowTriggerId;
 }

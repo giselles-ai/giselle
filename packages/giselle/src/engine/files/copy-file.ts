@@ -1,6 +1,5 @@
 import type { FileId, WorkspaceId } from "@giselle-sdk/data-type";
-import type { Storage } from "unstorage";
-import type { GiselleStorage } from "../experimental_storage";
+import type { GiselleStorage } from "../storage";
 import { filePath } from "./utils";
 
 /**
@@ -9,26 +8,16 @@ import { filePath } from "./utils";
  * @param args.workspaceId - The ID of the workspace where the file resides.
  * @param args.sourceFileId - The ID of the source file.
  * @param args.destinationFileId - The ID of the destination file.
- * @param args.useExperimentalStorage - Whether to use the experimental storage.
  * @returns A promise that resolves when the file is copied.
  * @throws Error if reading the source file or writing the destination file fails.
  */
 export async function copyFile(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
-	useExperimentalStorage: boolean;
+	storage: GiselleStorage;
 	workspaceId: WorkspaceId;
 	sourceFileId: FileId;
 	destinationFileId: FileId;
 }) {
-	const {
-		storage,
-		experimental_storage,
-		useExperimentalStorage,
-		workspaceId,
-		sourceFileId,
-		destinationFileId,
-	} = args;
+	const { storage, workspaceId, sourceFileId, destinationFileId } = args;
 
 	const sourcePath = filePath({
 		type: "studio",
@@ -42,24 +31,8 @@ export async function copyFile(args: {
 	});
 
 	try {
-		if (useExperimentalStorage) {
-			await experimental_storage.copy(sourcePath, destinationPath);
-			return;
-		}
-
-		const fileContent = await storage.getItemRaw(sourcePath);
-
-		if (fileContent === null || fileContent === undefined) {
-			throw new Error(
-				`Source file not found or could not be read: ${sourcePath}`,
-			);
-		}
-
-		await storage.setItemRaw(destinationPath, fileContent);
-
-		// console.log(
-		// 	`File copied successfully from ${sourcePath} to ${destinationPath}`,
-		// );
+		await storage.copy(sourcePath, destinationPath);
+		return;
 	} catch (error) {
 		console.error(
 			`Failed to copy file from ${sourcePath} to ${destinationPath}:`,

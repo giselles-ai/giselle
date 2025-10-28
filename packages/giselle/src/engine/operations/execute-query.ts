@@ -17,8 +17,6 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
-import type { Storage } from "unstorage";
-import type { GiselleStorage } from "../experimental_storage";
 import {
 	type FailedGeneration,
 	GenerationContext,
@@ -34,6 +32,7 @@ import {
 	getNodeGenerationIndexes,
 	queryResultToText,
 } from "../generations/utils";
+import type { GiselleStorage } from "../storage";
 import type {
 	DocumentVectorStoreQueryContext,
 	GiselleEngineContext,
@@ -66,7 +65,6 @@ export function executeQuery(args: {
 					operationNode.content.query,
 					runningGeneration,
 					args.context.storage,
-					args.context.experimental_storage,
 				);
 
 				const vectorStoreNodes = generationContext.sourceNodes.filter(
@@ -128,15 +126,13 @@ export function executeQuery(args: {
 async function resolveQuery(
 	query: string,
 	runningGeneration: RunningGeneration,
-	storage: Storage,
-	experimental_storage: GiselleStorage,
+	storage: GiselleStorage,
 ) {
 	const generationContext = GenerationContext.parse(runningGeneration.context);
 
 	async function generationContentResolver(nodeId: NodeId, outputId: OutputId) {
 		const nodeGenerationIndexes = await getNodeGenerationIndexes({
-			storage,
-			experimental_storage,
+			storage: storage,
 			nodeId,
 		});
 		if (
@@ -146,12 +142,8 @@ async function resolveQuery(
 			return undefined;
 		}
 		const generation = await getGeneration({
-			storage,
-			experimental_storage,
+			storage: storage,
 			generationId: nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
-			options: {
-				bypassingCache: true,
-			},
 		});
 		if (generation === undefined || !isCompletedGeneration(generation)) {
 			return undefined;

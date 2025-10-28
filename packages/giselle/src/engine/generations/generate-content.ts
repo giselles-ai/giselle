@@ -77,7 +77,6 @@ export function generateContent({
 	return useGenerationExecutor({
 		context,
 		generation,
-		useExperimentalStorage: true,
 		useResumableGeneration: true,
 		metadata,
 		execute: async ({
@@ -125,7 +124,6 @@ export function generateContent({
 						decryptToken = await decryptSecret({
 							context,
 							secretId: githubTool.auth.secretId,
-							useExperimentalStorage: true,
 						});
 						break;
 					default: {
@@ -157,7 +155,6 @@ export function generateContent({
 				const connectionString = await decryptSecret({
 					context,
 					secretId: postgresToolData.secretId,
-					useExperimentalStorage: true,
 				});
 				if (connectionString === undefined) {
 					throw new Error("Failed to decrypt secret");
@@ -265,8 +262,6 @@ export function generateContent({
 				onChunk: async () => {
 					const currentGeneration = await getGeneration({
 						storage: context.storage,
-						experimental_storage: context.experimental_storage,
-						useExperimentalStorage: true,
 						generationId: generation.id,
 					});
 					if (currentGeneration?.status === "cancelled") {
@@ -418,7 +413,7 @@ export function generateContent({
 			const writer = batchWriter<StreamItem<typeof uiMessageStream>>({
 				process: (batch) => {
 					logger.debug(`Processing batch with ${batch.length} items`);
-					return context.experimental_storage.setBlob(
+					return context.storage.setBlob(
 						generationUiMessageChunksPath(generation.id),
 						new TextEncoder().encode(
 							batch.map((chunk) => JSON.stringify(chunk)).join("\n"),

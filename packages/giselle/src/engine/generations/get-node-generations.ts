@@ -9,12 +9,9 @@ export async function getNodeGenerations(args: {
 	context: GiselleEngineContext;
 	origin: GenerationOrigin;
 	nodeId: NodeId;
-	useExperimentalStorage: boolean;
 }) {
 	const nodeGenerationIndexes = await getNodeGenerationIndexes({
 		storage: args.context.storage,
-		experimental_storage: args.context.experimental_storage,
-		useExperimentalStorage: args.useExperimentalStorage,
 		nodeId: args.nodeId,
 	});
 	if (nodeGenerationIndexes === undefined) {
@@ -29,12 +26,6 @@ export async function getNodeGenerations(args: {
 				getGeneration({
 					generationId: nodeGenerationIndex.id,
 					storage: args.context.storage,
-					experimental_storage: args.context.experimental_storage,
-					useExperimentalStorage: args.useExperimentalStorage,
-					options: {
-						bypassingCache: true,
-						skipMod: true,
-					},
 				}).catch(() => null),
 			),
 	).then((result) => result.filter((generation) => !!generation));

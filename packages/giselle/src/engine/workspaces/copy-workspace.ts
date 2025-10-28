@@ -14,12 +14,9 @@ export async function copyWorkspace(args: {
 	context: GiselleEngineContext;
 	workspaceId: WorkspaceId;
 	name?: string;
-	useExperimentalStorage: boolean;
 }) {
 	const sourceWorkspace = await getWorkspace({
-		useExperimentalStorage: args.useExperimentalStorage,
 		storage: args.context.storage,
-		experimental_storage: args.context.experimental_storage,
 		workspaceId: args.workspaceId,
 	});
 
@@ -38,9 +35,7 @@ export async function copyWorkspace(args: {
 			const oldFlowTriggerId = node.content.state.flowTriggerId;
 			const oldFlowTrigger = await getFlowTrigger({
 				storage: args.context.storage,
-				experimental_storage: args.context.experimental_storage,
 				flowTriggerId: oldFlowTriggerId,
-				useExperimentalStorage: args.useExperimentalStorage,
 			});
 
 			if (oldFlowTrigger) {
@@ -54,9 +49,7 @@ export async function copyWorkspace(args: {
 
 				await setFlowTrigger({
 					storage: args.context.storage,
-					experimental_storage: args.context.experimental_storage,
 					flowTrigger: newFlowTrigger,
-					useExperimentalStorage: args.useExperimentalStorage,
 				});
 
 				return { oldNodeId: node.id, newFlowTriggerId };
@@ -96,18 +89,14 @@ export async function copyWorkspace(args: {
 
 	await Promise.all([
 		setWorkspace({
-			storage: args.context.storage,
 			workspaceId: workspaceCopy.id,
 			workspace: Workspace.parse(workspaceCopy),
-			experimental_storage: args.context.experimental_storage,
-			useExperimentalStorage: args.useExperimentalStorage,
+			storage: args.context.storage,
 		}),
 		copyFiles({
 			storage: args.context.storage,
-			experimental_storage: args.context.experimental_storage,
 			templateWorkspaceId: args.workspaceId,
 			newWorkspaceId: workspaceCopy.id,
-			useExperimentalStorage: args.useExperimentalStorage,
 		}),
 	]);
 

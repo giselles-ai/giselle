@@ -1,6 +1,7 @@
 import {
 	type FlowTrigger,
 	type FlowTriggerId,
+	type GitHubFlowTriggerEvent,
 	isTriggerNode,
 	type TriggerNode,
 } from "@giselle-sdk/data-type";
@@ -17,13 +18,11 @@ export async function reconfigureGitHubTrigger(args: {
 	flowTriggerId: FlowTriggerId;
 	repositoryNodeId: string;
 	installationId: number;
-	useExperimentalStorage: boolean;
+	event?: GitHubFlowTriggerEvent;
 }) {
 	const currentTrigger = await getFlowTrigger({
 		storage: args.context.storage,
-		experimental_storage: args.context.experimental_storage,
 		flowTriggerId: args.flowTriggerId,
-		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	if (currentTrigger === undefined) {
 		throw new Error(`Trigger not found: ${args.flowTriggerId}`);
@@ -32,23 +31,27 @@ export async function reconfigureGitHubTrigger(args: {
 		throw new Error("Only GitHub triggers are supported for updates");
 	}
 
+	const currentEvent = currentTrigger.configuration.event;
+	const requestedEvent = args.event ?? currentEvent;
+	if (requestedEvent.id !== currentEvent.id) {
+		throw new Error(
+			`Changing GitHub trigger event type is not supported (${currentEvent.id} → ${requestedEvent.id})`,
+		);
+	}
+
 	const oldRepositoryNodeId = currentTrigger.configuration.repositoryNodeId;
 	const newRepositoryNodeId = args.repositoryNodeId;
 	if (oldRepositoryNodeId !== newRepositoryNodeId) {
 		await Promise.all([
 			removeGitHubRepositoryIntegrationIndex({
 				storage: args.context.storage,
-				experimental_storage: args.context.experimental_storage,
 				flowTriggerId: args.flowTriggerId,
 				repositoryNodeId: oldRepositoryNodeId,
-				useExperimentalStorage: args.useExperimentalStorage,
 			}),
 			addGitHubRepositoryIntegrationIndex({
 				storage: args.context.storage,
-				experimental_storage: args.context.experimental_storage,
 				flowTriggerId: args.flowTriggerId,
 				repositoryNodeId: newRepositoryNodeId,
-				useExperimentalStorage: args.useExperimentalStorage,
 			}),
 		]);
 	}
@@ -59,24 +62,19 @@ export async function reconfigureGitHubTrigger(args: {
 			provider: "github",
 			repositoryNodeId: newRepositoryNodeId,
 			installationId: args.installationId,
-			event: currentTrigger.configuration.event,
+			event: requestedEvent,
 		},
 	} satisfies FlowTrigger;
 	await setFlowTrigger({
 		storage: args.context.storage,
-		experimental_storage: args.context.experimental_storage,
 		flowTrigger: updatedTrigger,
-		useExperimentalStorage: args.useExperimentalStorage,
 	});
 
 	const workspace = await getWorkspace({
 		storage: args.context.storage,
-		experimental_storage: args.context.experimental_storage,
 		workspaceId: currentTrigger.workspaceId,
-		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	await setWorkspace({
-		storage: args.context.storage,
 		workspaceId: workspace.id,
 		workspace: {
 			...workspace,
@@ -95,8 +93,7 @@ export async function reconfigureGitHubTrigger(args: {
 					: node,
 			),
 		},
-		experimental_storage: args.context.experimental_storage,
-		useExperimentalStorage: args.useExperimentalStorage,
+		storage: args.context.storage,
 	});
 	return args.flowTriggerId;
 }

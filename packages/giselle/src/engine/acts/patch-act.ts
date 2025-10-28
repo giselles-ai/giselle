@@ -12,7 +12,7 @@ export async function patchAct(args: {
 	patches: Patch[];
 }) {
 	// Get the current act
-	const currentAct = await args.context.experimental_storage.getJson({
+	const currentAct = await args.context.storage.getJson({
 		path: actPath(args.actId),
 		schema: Act,
 	});
@@ -26,7 +26,7 @@ export async function patchAct(args: {
 	// Apply the patches
 	const updatedAct = patchActObject(currentAct, ...allPatches);
 
-	await args.context.experimental_storage.setJson({
+	await args.context.storage.setJson({
 		path: actPath(args.actId),
 		data: updatedAct,
 	});

@@ -5,12 +5,9 @@ import { getWorkspace as getWorkspaceInternal } from "./utils";
 export async function getWorkspace(args: {
 	context: GiselleEngineContext;
 	workspaceId: WorkspaceId;
-	useExperimentalStorage: boolean;
 }) {
 	return await getWorkspaceInternal({
 		storage: args.context.storage,
-		experimental_storage: args.context.experimental_storage,
 		workspaceId: args.workspaceId,
-		useExperimentalStorage: args.useExperimentalStorage,
 	});
 }

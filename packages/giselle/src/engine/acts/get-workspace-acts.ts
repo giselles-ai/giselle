@@ -12,13 +12,12 @@ export async function getWorkspaceActs(args: {
 		context: args.context,
 		indexPath: workspaceActPath(args.workspaceId),
 		itemSchema: ActIndexObject,
-		useExperimentalStorage: true,
 	});
 	const workspaceActs = (
 		await Promise.all(
 			workspaceActIndices.map(async (workspaceActIndex) => {
 				try {
-					return await args.context.experimental_storage.getJson({
+					return await args.context.storage.getJson({
 						path: actPath(workspaceActIndex.id),
 						schema: Act,
 					});

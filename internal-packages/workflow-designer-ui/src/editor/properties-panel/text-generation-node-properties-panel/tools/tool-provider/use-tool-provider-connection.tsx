@@ -4,7 +4,6 @@ import {
 	type ToolSet,
 } from "@giselle-sdk/data-type";
 import {
-	useFeatureFlag,
 	useGiselleEngine,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
@@ -45,7 +44,6 @@ export function useToolProviderConnection<T extends keyof ToolSet>(config: {
 	const { updateNodeDataContent, data: workspace } = useWorkflowDesigner();
 	const { isLoading, data, mutate } = useWorkspaceSecrets(secretTags);
 	const client = useGiselleEngine();
-	const { experimental_storage } = useFeatureFlag();
 	const [isPending, startTransition] = useTransition();
 
 	const isConfigured = useMemo(
@@ -120,7 +118,6 @@ export function useToolProviderConnection<T extends keyof ToolSet>(config: {
 							label: payload.label,
 							value: payload.value,
 							tags: secretTags,
-							useExperimentalStorage: experimental_storage,
 						});
 						// Update cache immediately with new secret (optimistic)
 						mutate([...(data ?? []), result.secret], false);
@@ -137,15 +134,7 @@ export function useToolProviderConnection<T extends keyof ToolSet>(config: {
 				}
 			}
 		},
-		[
-			client,
-			workspace.id,
-			data,
-			mutate,
-			secretTags,
-			updateNodeWithToolConfig,
-			experimental_storage,
-		],
+		[client, workspace.id, data, mutate, secretTags, updateNodeWithToolConfig],
 	);
 
 	const currentSecretId = useMemo(() => {

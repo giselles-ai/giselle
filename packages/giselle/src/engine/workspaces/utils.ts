@@ -1,68 +1,38 @@
 import { Node, Workspace, type WorkspaceId } from "@giselle-sdk/data-type";
-import type { Storage } from "unstorage";
 import { parseAndMod } from "../../data-mod";
-import type { GiselleStorage } from "../experimental_storage";
+import type { GiselleStorage } from "../storage";
 
 function workspacePath(workspaceId: WorkspaceId) {
 	return `workspaces/${workspaceId}/workspace.json`;
 }
 
 export async function setWorkspace({
-	storage,
 	workspaceId,
 	workspace,
-	experimental_storage,
-	useExperimentalStorage,
+	storage,
 }: {
-	storage: Storage;
 	workspaceId: WorkspaceId;
 	workspace: Workspace;
-	experimental_storage: GiselleStorage;
-	useExperimentalStorage: boolean;
+	storage: GiselleStorage;
 }) {
-	if (useExperimentalStorage) {
-		await experimental_storage.setJson({
-			path: workspacePath(workspaceId),
-			data: workspace,
-		});
-	} else {
-		await storage.setItem(workspacePath(workspaceId), workspace, {
-			// Disable caching by setting cacheControl to 0 for Supabase storage
-			cacheControl: 0,
-		});
-	}
+	await storage.setJson({
+		path: workspacePath(workspaceId),
+		data: workspace,
+	});
 }
 
 export async function getWorkspace({
 	storage,
-	experimental_storage,
-	useExperimentalStorage,
 	workspaceId,
 }: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
-	useExperimentalStorage: boolean;
+	storage: GiselleStorage;
 	workspaceId: WorkspaceId;
 }) {
-	if (useExperimentalStorage) {
-		const workspace = await experimental_storage.getJson({
-			path: workspacePath(workspaceId),
-			// bypassingCache: true,
-			schema: Workspace,
-		});
-		const nodes = workspace.nodes.map((node) => parseAndMod(Node, node));
-		return {
-			...workspace,
-			nodes,
-		};
-	}
-	const result = await storage.getItem(workspacePath(workspaceId), {
-		bypassingCache: true,
+	const workspace = await storage.getJson({
+		path: workspacePath(workspaceId),
+		// bypassingCache: true,
+		schema: Workspace,
 	});
-	const workspace = parseAndMod(
-		Workspace,
-		result,
-	); /** @todo remove the underline if workpsace.node used Node Schema and delete editingWorkflows field */
 	const nodes = workspace.nodes.map((node) => parseAndMod(Node, node));
 	return {
 		...workspace,
@@ -73,66 +43,45 @@ export async function getWorkspace({
 /** @todo update new fileId for each file */
 export async function copyFiles({
 	storage,
-	experimental_storage,
 	templateWorkspaceId,
 	newWorkspaceId,
-	useExperimentalStorage,
 }: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	storage: GiselleStorage;
 	templateWorkspaceId: WorkspaceId;
 	newWorkspaceId: WorkspaceId;
-	useExperimentalStorage: boolean;
 }) {
-	if (useExperimentalStorage) {
-		const prefix = `workspaces/${templateWorkspaceId}/files/`;
-		const fileKeys: string[] = [];
-		let cursor: string | undefined;
+	const prefix = `workspaces/${templateWorkspaceId}/files/`;
+	const fileKeys: string[] = [];
+	let cursor: string | undefined;
 
-		while (true) {
-			const result = await experimental_storage.listBlobs({
-				prefix,
-				cursor,
-			});
+	while (true) {
+		const result = await storage.listBlobs({
+			prefix,
+			cursor,
+		});
 
-			fileKeys.push(
-				...result.blobs
-					.map((blob) => blob.pathname)
-					.filter((pathname) => pathname.startsWith(prefix)),
-			);
-
-			if (!result.hasMore || !result.cursor) {
-				break;
-			}
-
-			cursor = result.cursor;
-		}
-
-		await Promise.all(
-			fileKeys.map(async (fileKey) => {
-				const target = fileKey.replace(
-					`workspaces/${templateWorkspaceId}/files/`,
-					`workspaces/${newWorkspaceId}/files/`,
-				);
-				await experimental_storage.copy(fileKey, target);
-			}),
+		fileKeys.push(
+			...result.blobs
+				.map((blob) => blob.pathname)
+				.filter((pathname) => pathname.startsWith(prefix)),
 		);
 
-		return;
-	}
+		if (!result.hasMore || !result.cursor) {
+			break;
+		}
 
-	const fileKeys = await storage.getKeys(
-		`workspaces/${templateWorkspaceId}/files`,
-	);
+		cursor = result.cursor;
+	}
 
 	await Promise.all(
 		fileKeys.map(async (fileKey) => {
 			const target = fileKey.replace(
-				/workspaces:wrks-\w+:files:/,
-				`workspaces:${newWorkspaceId}:files:`,
+				`workspaces/${templateWorkspaceId}/files/`,
+				`workspaces/${newWorkspaceId}/files/`,
 			);
-			const file = await storage.getItemRaw(fileKey);
-			await storage.setItemRaw(target, file);
+			await storage.copy(fileKey, target);
 		}),
 	);
+
+	return;
 }

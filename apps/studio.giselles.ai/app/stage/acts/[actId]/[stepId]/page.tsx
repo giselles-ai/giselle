@@ -84,7 +84,7 @@ export default async function ({
 	if (step === undefined) {
 		return notFound();
 	}
-	const generation = await giselleEngine.getGeneration(step.generationId, true);
+	const generation = await giselleEngine.getGeneration(step.generationId);
 	if (generation === undefined) {
 		return notFound();
 	}

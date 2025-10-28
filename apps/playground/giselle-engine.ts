@@ -7,26 +7,11 @@ import { fsStorageDriver } from "@giselle-sdk/giselle";
 import { NextGiselleEngine } from "@giselle-sdk/giselle/next-internal";
 import { traceGeneration } from "@giselle-sdk/langfuse";
 import { supabaseStorageDriver as experimental_supabaseStorageDriver } from "@giselle-sdk/supabase-driver";
-import { createStorage } from "unstorage";
-import fsDriver from "unstorage/drivers/fs";
 import { nodeVaultDriver } from "./lib/vault-driver";
-import supabaseStorageDriver from "./supabase-storage-driver";
 
 const isVercelEnvironment = process.env.VERCEL === "1";
 
-const storage = createStorage({
-	driver: isVercelEnvironment
-		? supabaseStorageDriver({
-				supabaseUrl: process.env.SUPABASE_URL ?? "",
-				supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY ?? "",
-				bucket: "app",
-			})
-		: fsDriver({
-				base: "./.storage",
-			}),
-});
-
-const experimental_storage = isVercelEnvironment
+const storage = isVercelEnvironment
 	? experimental_supabaseStorageDriver({
 			endpoint: process.env.SUPABASE_STORAGE_URL ?? "",
 			region: process.env.SUPABASE_STORAGE_REGION ?? "",
@@ -141,7 +126,6 @@ if (process.env.SAMPLE_APP_WORKSPACE_IDS) {
 export const giselleEngine = NextGiselleEngine({
 	basePath: "/api/giselle",
 	storage,
-	experimental_storage,
 	llmProviders,
 	integrationConfigs,
 	sampleAppWorkspaceIds,

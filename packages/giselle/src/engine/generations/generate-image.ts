@@ -34,13 +34,11 @@ import {
 export function generateImage(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
-	useExperimentalStorage: boolean;
 	signal?: AbortSignal;
 }) {
 	return useGenerationExecutor({
 		context: args.context,
 		generation: args.generation,
-		useExperimentalStorage: args.useExperimentalStorage,
 		signal: args.signal,
 		execute: async ({
 			runningGeneration,
@@ -141,7 +139,6 @@ async function generateImageWithFal({
 	messages,
 	context,
 	languageModelData,
-	useExperimentalStorage,
 	signal,
 }: {
 	operationNode: ImageGenerationNode;
@@ -150,7 +147,6 @@ async function generateImageWithFal({
 	messages: ModelMessage[];
 	context: GiselleEngineContext;
 	languageModelData: FalLanguageModelData;
-	useExperimentalStorage?: boolean;
 	signal?: AbortSignal;
 }) {
 	let prompt = "";
@@ -191,8 +187,6 @@ async function generateImageWithFal({
 
 				await setGeneratedImage({
 					storage: context.storage,
-					experimental_storage: context.experimental_storage,
-					useExperimentalStorage,
 					generation: runningGeneration,
 					generatedImage: {
 						uint8Array: image.uint8Array,
@@ -226,7 +220,6 @@ async function generateImageWithOpenAI({
 	runningGeneration,
 	languageModelData,
 	context,
-	useExperimentalStorage,
 	signal,
 }: {
 	messages: ModelMessage[];
@@ -234,7 +227,6 @@ async function generateImageWithOpenAI({
 	runningGeneration: RunningGeneration;
 	languageModelData: OpenAIImageLanguageModelData;
 	context: GiselleEngineContext;
-	useExperimentalStorage?: boolean;
 	signal?: AbortSignal;
 }) {
 	let prompt = "";
@@ -278,8 +270,6 @@ async function generateImageWithOpenAI({
 
 				await setGeneratedImage({
 					storage: context.storage,
-					experimental_storage: context.experimental_storage,
-					useExperimentalStorage,
 					generation: runningGeneration,
 					generatedImage: {
 						uint8Array: image.uint8Array,
@@ -313,7 +303,6 @@ async function generateImageWithGoogle({
 	runningGeneration,
 	languageModelData,
 	context,
-	useExperimentalStorage,
 	signal,
 }: {
 	messages: ModelMessage[];
@@ -321,7 +310,6 @@ async function generateImageWithGoogle({
 	runningGeneration: RunningGeneration;
 	languageModelData: GoogleImageLanguageModelData;
 	context: GiselleEngineContext;
-	useExperimentalStorage?: boolean;
 	signal?: AbortSignal;
 }) {
 	const { files } = await generateText({
@@ -350,8 +338,6 @@ async function generateImageWithGoogle({
 
 				await setGeneratedImage({
 					storage: context.storage,
-					experimental_storage: context.experimental_storage,
-					useExperimentalStorage,
 					generation: runningGeneration,
 					generatedImage: {
 						uint8Array: image.uint8Array,

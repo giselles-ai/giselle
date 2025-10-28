@@ -499,37 +499,45 @@ describe("buildLevels", () => {
 
 			const connections: Connection[] = [
 				// 5 duplicate connections: Trigger → Middle
-				...Array.from({ length: 5 }, () => ({
-					id: ConnectionId.generate(),
-					outputNode: {
-						id: triggerNodeId,
-						type: "operation",
-						content: { type: "trigger" },
-					},
-					outputId: triggerOutputId,
-					inputNode: {
-						id: middleNodeId,
-						type: "operation",
-						content: { type: "textGeneration" },
-					},
-					inputId: middleInputId,
-				})),
+				...Array.from(
+					{ length: 5 },
+					() =>
+						({
+							id: ConnectionId.generate(),
+							outputNode: {
+								id: triggerNodeId,
+								type: "operation",
+								content: { type: "trigger" },
+							},
+							outputId: triggerOutputId,
+							inputNode: {
+								id: middleNodeId,
+								type: "operation",
+								content: { type: "textGeneration" },
+							},
+							inputId: middleInputId,
+						}) satisfies Connection,
+				),
 				// 2 duplicate connections: Trigger → Final
-				...Array.from({ length: 2 }, () => ({
-					id: ConnectionId.generate(),
-					outputNode: {
-						id: triggerNodeId,
-						type: "operation",
-						content: { type: "trigger" },
-					},
-					outputId: triggerOutputId,
-					inputNode: {
-						id: finalNodeId,
-						type: "operation",
-						content: { type: "action" },
-					},
-					inputId: finalInput1Id,
-				})),
+				...Array.from(
+					{ length: 2 },
+					() =>
+						({
+							id: ConnectionId.generate(),
+							outputNode: {
+								id: triggerNodeId,
+								type: "operation",
+								content: { type: "trigger" },
+							},
+							outputId: triggerOutputId,
+							inputNode: {
+								id: finalNodeId,
+								type: "operation",
+								content: { type: "action" },
+							},
+							inputId: finalInput1Id,
+						}) satisfies Connection,
+				),
 				// 1 connection: Middle → Final
 				{
 					id: ConnectionId.generate(),

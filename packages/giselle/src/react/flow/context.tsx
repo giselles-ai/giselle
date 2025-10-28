@@ -12,7 +12,6 @@ import {
 } from "@giselle-sdk/data-type";
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
 import { createContext, useCallback, useEffect, useState } from "react";
-import { useFeatureFlag } from "../feature-flags";
 import { useGiselleEngine } from "../use-giselle-engine";
 import {
 	useAddConnection,
@@ -46,14 +45,12 @@ export function WorkflowDesignerProvider({
 	saveWorkflowDelay?: number;
 }) {
 	const client = useGiselleEngine();
-	const { experimental_storage } = useFeatureFlag();
 	const { workspace, dispatch, saveWorkspace } = useWorkspaceReducer(
 		data,
 		async (ws) => {
 			try {
 				await client.updateWorkspace({
 					workspace: ws,
-					useExperimentalStorage: experimental_storage,
 				});
 			} catch (error) {
 				console.error("Failed to persist graph:", error);
@@ -144,7 +141,6 @@ export function WorkflowDesignerProvider({
 		dispatch,
 		client,
 		workspaceId: data.id,
-		useExperimentalStorage: experimental_storage,
 	});
 
 	const removeFile = useCallback(
@@ -153,12 +149,11 @@ export function WorkflowDesignerProvider({
 				await client.removeFile({
 					workspaceId: data.id,
 					fileId: file.id,
-					useExperimentalStorage: experimental_storage,
 				});
 			}
 			dispatch({ type: "NO_OP" });
 		},
-		[client, data.id, dispatch, experimental_storage],
+		[client, data.id, dispatch],
 	);
 
 	const propertiesPanelHelper = usePropertiesPanel();

@@ -7,7 +7,7 @@ export async function getAct(args: {
 	actId: ActId;
 	context: GiselleEngineContext;
 }) {
-	const act = await args.context.experimental_storage.getJson({
+	const act = await args.context.storage.getJson({
 		path: actPath(args.actId),
 		schema: Act,
 	});

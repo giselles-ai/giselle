@@ -15,7 +15,6 @@ import { getFlowTrigger } from "./utils";
 export async function resolveTrigger(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration;
-	useExperimentalStorage: boolean;
 }) {
 	const operationNode = args.generation.context.operationNode;
 	if (!isTriggerNode(operationNode)) {
@@ -25,10 +24,8 @@ export async function resolveTrigger(args: {
 		throw new Error("Trigger node is not configured");
 	}
 	const triggerData = await getFlowTrigger({
-		storage: args.context.storage,
 		flowTriggerId: operationNode.content.state.flowTriggerId,
-		experimental_storage: args.context.experimental_storage,
-		useExperimentalStorage: args.useExperimentalStorage,
+		storage: args.context.storage,
 	});
 	if (triggerData === undefined) {
 		throw new Error("Trigger data not found");
@@ -167,9 +164,7 @@ export async function resolveTrigger(args: {
 	} satisfies CompletedGeneration;
 
 	await internalSetGeneration({
-		storage: args.context.storage,
 		generation: completedGeneration,
-		experimental_storage: args.context.experimental_storage,
-		useExperimentalStorage: args.useExperimentalStorage,
+		storage: args.context.storage,
 	});
 }

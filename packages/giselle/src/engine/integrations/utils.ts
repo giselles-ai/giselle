@@ -2,78 +2,57 @@ import {
 	type FlowTriggerId,
 	GitHubRepositoryIntegrationIndex,
 } from "@giselle-sdk/data-type";
-import type { Storage } from "unstorage";
-import type { GiselleStorage } from "../experimental_storage";
+import type { GiselleStorage } from "../storage";
 
 function getGitHubRepositoryIntegrationPath(repositoryNodeId: string): string {
 	return `integrations/github/repositories/${repositoryNodeId}.json`;
 }
 
 export async function getGitHubRepositoryIntegrationIndex(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	storage: GiselleStorage;
 	repositoryNodeId: string;
-	useExperimentalStorage?: boolean;
 }) {
 	const path = getGitHubRepositoryIntegrationPath(args.repositoryNodeId);
-	if (args.useExperimentalStorage) {
-		const exists = await args.experimental_storage.exists(path);
-		if (!exists) {
-			return undefined;
-		}
-		return await args.experimental_storage.getJson({
-			path,
-			schema: GitHubRepositoryIntegrationIndex,
-		});
-	}
-	const unsafe = await args.storage.get(path);
-	if (unsafe === null) {
+	const exists = await args.storage.exists(path);
+	if (!exists) {
 		return undefined;
 	}
-	return GitHubRepositoryIntegrationIndex.parse(unsafe);
+	return await args.storage.getJson({
+		path,
+		schema: GitHubRepositoryIntegrationIndex,
+	});
 }
 
 async function setGitHubRepositoryIntegrationIndex(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	storage: GiselleStorage;
 	repositoryNodeId: string;
 	index: GitHubRepositoryIntegrationIndex;
-	useExperimentalStorage?: boolean;
 }) {
 	const path = getGitHubRepositoryIntegrationPath(args.repositoryNodeId);
-	if (args.useExperimentalStorage) {
-		await args.experimental_storage.setJson({
-			path,
-			data: args.index,
-			schema: GitHubRepositoryIntegrationIndex,
-		});
-		return;
-	}
-	await args.storage.set(path, args.index);
+	await args.storage.setJson({
+		path,
+		data: args.index,
+		schema: GitHubRepositoryIntegrationIndex,
+	});
+	return;
 }
 
 export async function addGitHubRepositoryIntegrationIndex(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	storage: GiselleStorage;
 	flowTriggerId: FlowTriggerId;
 	repositoryNodeId: string;
-	useExperimentalStorage?: boolean;
 }) {
 	const githubRepositoryIntegrationIndex =
 		await getGitHubRepositoryIntegrationIndex({
-			storage: args.storage,
 			repositoryNodeId: args.repositoryNodeId,
-			experimental_storage: args.experimental_storage,
-			useExperimentalStorage: args.useExperimentalStorage,
+			storage: args.storage,
 		});
 
 	const currentFlowTriggerIds =
 		githubRepositoryIntegrationIndex?.flowTriggerIds ?? [];
 	await setGitHubRepositoryIntegrationIndex({
-		storage: args.storage,
 		repositoryNodeId: args.repositoryNodeId,
-		experimental_storage: args.experimental_storage,
-		useExperimentalStorage: args.useExperimentalStorage,
+		storage: args.storage,
 		index: {
 			repositoryNodeId: args.repositoryNodeId,
 			flowTriggerIds: [...currentFlowTriggerIds, args.flowTriggerId],
@@ -82,18 +61,14 @@ export async function addGitHubRepositoryIntegrationIndex(args: {
 }
 
 export async function removeGitHubRepositoryIntegrationIndex(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
+	storage: GiselleStorage;
 	flowTriggerId: FlowTriggerId;
 	repositoryNodeId: string;
-	useExperimentalStorage?: boolean;
 }) {
 	const githubRepositoryIntegrationIndex =
 		await getGitHubRepositoryIntegrationIndex({
-			storage: args.storage,
 			repositoryNodeId: args.repositoryNodeId,
-			experimental_storage: args.experimental_storage,
-			useExperimentalStorage: args.useExperimentalStorage,
+			storage: args.storage,
 		});
 	if (githubRepositoryIntegrationIndex === undefined) {
 		return;
@@ -104,18 +79,12 @@ export async function removeGitHubRepositoryIntegrationIndex(args: {
 		);
 	if (remainingFlowTriggerIds.length === 0) {
 		const path = getGitHubRepositoryIntegrationPath(args.repositoryNodeId);
-		if (args.useExperimentalStorage) {
-			await args.experimental_storage.remove(path);
-			return;
-		}
-		await args.storage.removeItem(path);
+		await args.storage.remove(path);
 		return;
 	}
 	await setGitHubRepositoryIntegrationIndex({
-		storage: args.storage,
 		repositoryNodeId: args.repositoryNodeId,
-		experimental_storage: args.experimental_storage,
-		useExperimentalStorage: args.useExperimentalStorage,
+		storage: args.storage,
 		index: {
 			repositoryNodeId: args.repositoryNodeId,
 			flowTriggerIds: remainingFlowTriggerIds,

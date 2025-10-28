@@ -42,7 +42,6 @@ async function extractLLMLabels(workspaceId?: string | null): Promise<string> {
 	try {
 		const tmpWorkspace = await giselleEngine.getWorkspace(
 			workspaceId as WorkspaceId,
-			true,
 		);
 
 		// Extract LLM models from workspace nodes

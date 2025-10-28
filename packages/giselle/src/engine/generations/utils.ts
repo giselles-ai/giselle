@@ -18,7 +18,6 @@ import {
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
 import type { DataContent, FilePart, ImagePart, ModelMessage } from "ai";
-import type { Storage } from "unstorage";
 import {
 	type CompletedGeneration,
 	Generation,
@@ -27,8 +26,7 @@ import {
 	NodeGenerationIndex,
 } from "../../concepts/generation";
 import type { GenerationId } from "../../concepts/identifiers";
-import { parseAndMod } from "../../data-mod";
-import type { GiselleStorage } from "../experimental_storage";
+import type { GiselleStorage } from "../storage";
 import type { GiselleEngineContext } from "../types";
 
 interface GeneratedImageData {
@@ -292,52 +290,16 @@ export function generationPath(generationId: GenerationId) {
 }
 
 export async function getGeneration(params: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
-	useExperimentalStorage?: boolean;
+	storage: GiselleStorage;
 	generationId: GenerationId;
-	options?: {
-		bypassingCache?: boolean;
-		skipMod?: boolean;
-	};
 }): Promise<Generation | undefined> {
-	if (params.useExperimentalStorage) {
-		const generation = await params.experimental_storage.getJson({
-			path: generationPath(params.generationId),
-			schema: Generation,
-		});
-		const parsedGenerationContext = GenerationContext.parse(generation.context);
-		return {
-			...generation,
-			context: parsedGenerationContext,
-		};
-	}
-	const unsafeGeneration = await params.storage.getItem(
-		`${generationPath(params.generationId)}`,
-		{
-			bypassingCache: params.options?.bypassingCache ?? false,
-		},
-	);
-	if (unsafeGeneration == null) {
-		throw new Error(`Generation(id: ${params.generationId}) is not found`);
-	}
-	if (params.options?.skipMod) {
-		const parsedGeneration = Generation.parse(unsafeGeneration);
-		const parsedGenerationContext = GenerationContext.parse(
-			parsedGeneration.context,
-		);
-		return {
-			...parsedGeneration,
-			context: parsedGenerationContext,
-		};
-	}
-	const parsedGeneration = parseAndMod(Generation, unsafeGeneration);
-	const parsedGenerationContext = parseAndMod(
-		GenerationContext,
-		parsedGeneration.context,
-	);
+	const generation = await params.storage.getJson({
+		path: generationPath(params.generationId),
+		schema: Generation,
+	});
+	const parsedGenerationContext = GenerationContext.parse(generation.context);
 	return {
-		...parsedGeneration,
+		...generation,
 		context: parsedGenerationContext,
 	};
 }
@@ -347,34 +309,16 @@ export function nodeGenerationIndexPath(nodeId: NodeId) {
 }
 
 export async function getNodeGenerationIndexes(params: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
-	useExperimentalStorage?: boolean;
+	storage: GiselleStorage;
 	nodeId: NodeId;
 }) {
-	if (params.useExperimentalStorage) {
-		if (
-			!(await params.experimental_storage.exists(
-				nodeGenerationIndexPath(params.nodeId),
-			))
-		) {
-			return undefined;
-		}
-		return await params.experimental_storage.getJson({
-			path: nodeGenerationIndexPath(params.nodeId),
-			schema: NodeGenerationIndex.array(),
-		});
-	}
-	const unsafeNodeGenerationIndexData = await params.storage.getItem(
-		nodeGenerationIndexPath(params.nodeId),
-		{
-			bypassingCache: true,
-		},
-	);
-	if (unsafeNodeGenerationIndexData === null) {
+	if (!(await params.storage.exists(nodeGenerationIndexPath(params.nodeId)))) {
 		return undefined;
 	}
-	return NodeGenerationIndex.array().parse(unsafeNodeGenerationIndexData);
+	return await params.storage.getJson({
+		path: nodeGenerationIndexPath(params.nodeId),
+		schema: NodeGenerationIndex.array(),
+	});
 }
 
 async function geWebPageContents(
@@ -628,53 +572,26 @@ function generatedImagePath(generationId: GenerationId, filename: string) {
 }
 
 export async function setGeneratedImage(params: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
-	useExperimentalStorage?: boolean;
+	storage: GiselleStorage;
 	generation: Generation;
 	generatedImageFilename: string;
 	generatedImage: GeneratedImageData;
 }) {
-	if (params.useExperimentalStorage) {
-		await params.experimental_storage.setBlob(
-			generatedImagePath(params.generation.id, params.generatedImageFilename),
-			params.generatedImage.uint8Array,
-		);
-		return;
-	}
-	await params.storage.setItemRaw(
+	await params.storage.setBlob(
 		generatedImagePath(params.generation.id, params.generatedImageFilename),
 		params.generatedImage.uint8Array,
 	);
+	return;
 }
 
 export async function getGeneratedImage(params: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
-	useExperimentalStorage?: boolean;
+	storage: GiselleStorage;
 	generation: Generation;
 	filename: string;
 }) {
-	if (params.useExperimentalStorage) {
-		return await params.experimental_storage.getBlob(
-			generatedImagePath(params.generation.id, params.filename),
-		);
-	}
-	let image = await params.storage.getItemRaw(
+	return await params.storage.getBlob(
 		generatedImagePath(params.generation.id, params.filename),
 	);
-	if (image instanceof ArrayBuffer) {
-		image = new Uint8Array(image);
-	}
-
-	assertUint8Array(image);
-	return image;
-}
-
-function assertUint8Array(value: unknown): asserts value is Uint8Array {
-	if (!(value instanceof Uint8Array)) {
-		throw new TypeError(`Expected Uint8Array but got ${typeof value}`);
-	}
 }
 
 /**

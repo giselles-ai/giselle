@@ -52,7 +52,6 @@ export async function createAct(
 		workspace = await getWorkspace({
 			...args,
 			workspaceId: args.workspaceId,
-			useExperimentalStorage: true,
 		});
 	}
 	if (workspace === undefined) {
@@ -212,7 +211,7 @@ export async function createAct(
 	};
 	args.context.logger.debug(`created act:${act.id}`);
 	await Promise.all([
-		args.context.experimental_storage.setJson({
+		args.context.storage.setJson({
 			path: actPath(act.id),
 			data: act,
 			schema: Act,
@@ -222,13 +221,11 @@ export async function createAct(
 			indexPath: workspaceActPath(workspace.id),
 			item: act,
 			itemSchema: ActIndexObject,
-			useExperimentalStorage: true,
 		}),
 		...generations.map((generation) =>
 			setGeneration({
 				context: args.context,
 				generation,
-				useExperimentalStorage: true,
 			}),
 		),
 	]);

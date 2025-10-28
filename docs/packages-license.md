@@ -3085,6 +3085,17 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@rollup/rollup-linux-x64-musl"></a>
+### @rollup/rollup-linux-x64-musl v4.35.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="@sentry-internal/browser-utils"></a>
 ### @sentry-internal/browser-utils v9.30.0
 #### 

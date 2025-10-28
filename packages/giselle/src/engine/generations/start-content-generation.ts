@@ -28,8 +28,6 @@ export async function startContentGeneration({
 	};
 	await internalSetGeneration({
 		storage: context.storage,
-		experimental_storage: context.experimental_storage,
-		useExperimentalStorage: true,
 		generation: runningGeneration,
 	});
 	switch (context.generateContentProcess.type) {

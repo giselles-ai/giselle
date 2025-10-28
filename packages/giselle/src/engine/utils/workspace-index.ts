@@ -6,61 +6,44 @@ export async function addWorkspaceIndexItem<I>({
 	indexPath,
 	item,
 	itemSchema,
-	useExperimentalStorage = false,
 }: {
 	context: GiselleEngineContext;
 	indexPath: string;
 	item: I;
 	itemSchema: z.ZodType<I>;
-	useExperimentalStorage?: boolean;
 }) {
 	context.logger.debug(`Adding workspace index item to ${indexPath}`);
 	context.logger.debug(`Item: ${JSON.stringify(item)}`);
-	context.logger.debug(`useExperimentalStorage: ${useExperimentalStorage}`);
-	if (useExperimentalStorage) {
-		const exists = await context.experimental_storage.exists(indexPath);
+	const exists = await context.storage.exists(indexPath);
 
-		const indexItem = exists
-			? await context.experimental_storage.getJson({
-					path: indexPath,
-					schema: z.array(itemSchema),
-				})
-			: [];
-		await context.experimental_storage.setJson({
-			path: indexPath,
-			data: [...indexItem, item],
-		});
-		return;
-	}
-	const indexLike = await context.storage.getItem(indexPath);
-	const parse = z.array(itemSchema).safeParse(indexLike);
-	const current = parse.success ? parse.data : [];
-	const parsedItem = itemSchema.parse(item);
-	await context.storage.setItem(indexPath, [...current, parsedItem]);
+	const indexItem = exists
+		? await context.storage.getJson({
+				path: indexPath,
+				schema: z.array(itemSchema),
+			})
+		: [];
+	await context.storage.setJson({
+		path: indexPath,
+		data: [...indexItem, item],
+	});
+	return;
 }
 
 export async function getWorkspaceIndex<I extends z.ZodObject>({
 	context,
 	indexPath,
 	itemSchema,
-	useExperimentalStorage = false,
 }: {
 	context: GiselleEngineContext;
 	indexPath: string;
 	itemSchema: I;
-	useExperimentalStorage?: boolean;
 }): Promise<z.infer<I>[]> {
-	if (useExperimentalStorage) {
-		const hasIndex = await context.experimental_storage.exists(indexPath);
-		if (!hasIndex) {
-			return [];
-		}
-		return context.experimental_storage.getJson({
-			path: indexPath,
-			schema: z.array(itemSchema),
-		});
+	const hasIndex = await context.storage.exists(indexPath);
+	if (!hasIndex) {
+		return [];
 	}
-	const indexLike = await context.storage.getItem(indexPath);
-	const parse = z.array(itemSchema).safeParse(indexLike);
-	return parse.success ? parse.data : [];
+	return context.storage.getJson({
+		path: indexPath,
+		schema: z.array(itemSchema),
+	});
 }

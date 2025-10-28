@@ -59,7 +59,6 @@ type FinishGeneration = (args: FinishGenerationArgs) => Promise<{
 export async function useGenerationExecutor<T>(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration | RunningGeneration;
-	useExperimentalStorage?: boolean;
 	useResumableGeneration?: boolean;
 	signal?: AbortSignal;
 	metadata?: GenerationMetadata;
@@ -97,8 +96,6 @@ export async function useGenerationExecutor<T>(args: {
 	const setGeneration = async (generation: Generation) => {
 		await internalSetGeneration({
 			storage: args.context.storage,
-			experimental_storage: args.context.experimental_storage,
-			useExperimentalStorage: args.useExperimentalStorage,
 			generation,
 		});
 	};
@@ -149,15 +146,8 @@ export async function useGenerationExecutor<T>(args: {
 			...runningGeneration.context.origin,
 			fileId,
 		});
-		let blob: unknown;
-		if (args.useExperimentalStorage) {
-			const exists = await args.context.experimental_storage.exists(path);
-			blob = exists
-				? await args.context.experimental_storage.getBlob(path)
-				: undefined;
-		} else {
-			blob = await args.context.storage.getItemRaw(path);
-		}
+		const exists = await args.context.storage.exists(path);
+		const blob = exists ? await args.context.storage.getBlob(path) : undefined;
 		args.context.logger.info(
 			`File retrieval completed in ${Date.now() - fileRetrievalStartTime}ms (fileId: ${fileId})`,
 		);
@@ -178,8 +168,6 @@ export async function useGenerationExecutor<T>(args: {
 		const generationLookupStartTime = Date.now();
 		const nodeGenerationIndexes = await getNodeGenerationIndexes({
 			storage: args.context.storage,
-			experimental_storage: args.context.experimental_storage,
-			useExperimentalStorage: args.useExperimentalStorage,
 			nodeId,
 		});
 		if (
@@ -193,8 +181,6 @@ export async function useGenerationExecutor<T>(args: {
 		}
 		const generation = await getGeneration({
 			storage: args.context.storage,
-			experimental_storage: args.context.experimental_storage,
-			useExperimentalStorage: args.useExperimentalStorage,
 			generationId: nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
 		});
 		args.context.logger.info(
@@ -205,7 +191,7 @@ export async function useGenerationExecutor<T>(args: {
 	async function findGenerationByAct(nodeId: NodeId, actId: ActId) {
 		const actGenerationLookupStartTime = Date.now();
 		const actGenerationIndexes = await getActGenerationIndexes({
-			experimental_storage: args.context.experimental_storage,
+			storage: args.context.storage,
 			actId,
 		});
 		const targetGenerationIndex = actGenerationIndexes?.find(
@@ -219,8 +205,6 @@ export async function useGenerationExecutor<T>(args: {
 		}
 		const generation = await getGeneration({
 			storage: args.context.storage,
-			experimental_storage: args.context.experimental_storage,
-			useExperimentalStorage: args.useExperimentalStorage,
 			generationId: targetGenerationIndex.id,
 		});
 		args.context.logger.info(
@@ -299,8 +283,6 @@ export async function useGenerationExecutor<T>(args: {
 				try {
 					const image = await getGeneratedImage({
 						storage: args.context.storage,
-						experimental_storage: args.context.experimental_storage,
-						useExperimentalStorage: args.useExperimentalStorage,
 						generation,
 						filename: content.filename,
 					});
@@ -351,10 +333,8 @@ export async function useGenerationExecutor<T>(args: {
 			for (const content of output.contents) {
 				const bytes = await getGeneratedImage({
 					storage: args.context.storage,
-					experimental_storage: args.context.experimental_storage,
 					generation: args.generation,
 					filename: content.filename,
-					useExperimentalStorage: true,
 				});
 
 				outputFileBlobs.push({

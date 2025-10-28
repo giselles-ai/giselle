@@ -15,7 +15,6 @@ export const serverExternalPackages = [
 	"@opentelemetry/sdk-node",
 	"pino",
 	"pino-pretty",
-	"unstorage",
 	"happy-dom",
 	"@supabase/supabase-js",
 	"@supabase/realtime-js",

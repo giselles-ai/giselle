@@ -7,7 +7,6 @@ export default function Layout({ children }: { children: ReactNode }) {
 			featureFlag={{
 				webSearchAction: false,
 				layoutV3: true,
-				experimental_storage: true,
 				stage: true,
 				aiGateway: false,
 				resumableGeneration: false,

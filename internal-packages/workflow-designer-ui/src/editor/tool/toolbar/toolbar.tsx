@@ -2,12 +2,8 @@
 
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import { FileCategory } from "@giselle-sdk/data-type";
-import {
-	type ActionProvider,
-	actionProviders,
-	type TriggerProvider,
-	triggerProviders,
-} from "@giselle-sdk/flow";
+import { type ActionProvider, actionProviders } from "@giselle-sdk/flow";
+import type { TriggerProvider } from "@giselle-sdk/giselle";
 import {
 	actionNodeDefaultName,
 	createActionNode,
@@ -20,6 +16,7 @@ import {
 	createWebPageNode,
 	triggerNodeDefaultName,
 	useFeatureFlag,
+	useGiselleEngine,
 	useUsageLimits,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
@@ -41,6 +38,7 @@ import {
 } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
 import { useEffect, useState } from "react";
+import useSWR from "swr";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
 import { Tooltip } from "../../../ui/tooltip";
 import { isToolAction } from "../types";
@@ -82,6 +80,10 @@ import {
 } from "./state";
 
 export function Toolbar() {
+	const client = useGiselleEngine();
+	const { isLoading, data } = useSWR("get-trigger-providers", () =>
+		client.getTriggerProviders(),
+	);
 	const { setSelectedTool, selectedTool } = useToolbar();
 	const {
 		hoveredModel: languageModelMouseHovered,
@@ -180,6 +182,15 @@ export function Toolbar() {
 		/>
 	);
 
+	if (isLoading) {
+		return null;
+	}
+
+	if (data === undefined) {
+		console.warn("There are no trigger providers available");
+		return null;
+	}
+
 	return (
 		<div className="relative rounded-[12px] overflow-hidden">
 			{/* blur+border only; popovers manage their own base fill */}
@@ -274,7 +285,7 @@ export function Toolbar() {
 													);
 												}}
 											>
-												{triggerProviders.map((triggerProvider) => (
+												{data.map((triggerProvider) => (
 													<ToggleGroup.Item
 														key={triggerProvider}
 														value={triggerProvider}

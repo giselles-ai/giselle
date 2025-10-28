@@ -1,12 +1,9 @@
 import type { FileId, WorkspaceId } from "@giselle-sdk/data-type";
-import type { Storage } from "unstorage";
-import type { GiselleStorage } from "../experimental_storage";
+import type { GiselleStorage } from "../storage";
 import { filePath } from "./utils";
 
 export async function uploadFile(args: {
-	storage: Storage;
-	experimental_storage: GiselleStorage;
-	useExperimentalStorage: boolean;
+	storage: GiselleStorage;
 	file: File;
 	workspaceId: WorkspaceId;
 	fileId: FileId;
@@ -18,11 +15,7 @@ export async function uploadFile(args: {
 		workspaceId: args.workspaceId,
 		fileId: args.fileId,
 	});
-	if (args.useExperimentalStorage) {
-		await args.experimental_storage.setBlob(path, fileBuffer);
-	} else {
-		await args.storage.setItemRaw(path, fileBuffer);
-	}
+	await args.storage.setBlob(path, fileBuffer);
 }
 
 async function fileToBuffer(file: File) {

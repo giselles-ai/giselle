@@ -10,12 +10,9 @@ export async function getGeneratedImage(args: {
 	context: GiselleEngineContext;
 	generationId: GenerationId;
 	filename: string;
-	useExperimentalStorage: boolean;
 }) {
 	const generation = await getGeneration({
 		storage: args.context.storage,
-		experimental_storage: args.context.experimental_storage,
-		useExperimentalStorage: args.useExperimentalStorage,
 		generationId: args.generationId,
 	});
 	if (generation?.status !== "completed") {
@@ -23,8 +20,6 @@ export async function getGeneratedImage(args: {
 	}
 	const generatedImage = await getGeneratedImageInternal({
 		storage: args.context.storage,
-		experimental_storage: args.context.experimental_storage,
-		useExperimentalStorage: args.useExperimentalStorage,
 		generation,
 		filename: args.filename,
 	});

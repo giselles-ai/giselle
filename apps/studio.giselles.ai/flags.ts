@@ -67,7 +67,7 @@ export const experimental_storageFlag = flag<boolean>({
 		}
 		const edgeConfig = await get(`flag__${this.key}`);
 		if (edgeConfig === undefined) {
-			return false;
+			return true;
 		}
 		return edgeConfig === true || edgeConfig === "true";
 	},

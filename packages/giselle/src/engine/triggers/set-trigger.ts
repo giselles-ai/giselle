@@ -5,12 +5,9 @@ import { setFlowTrigger as setFlowTriggerInternal } from "./utils";
 export async function setTrigger(args: {
 	context: GiselleEngineContext;
 	trigger: FlowTrigger;
-	useExperimentalStorage?: boolean;
 }) {
 	await setFlowTriggerInternal({
 		storage: args.context.storage,
-		experimental_storage: args.context.experimental_storage,
 		flowTrigger: args.trigger,
-		useExperimentalStorage: args.useExperimentalStorage ?? false,
 	});
 }

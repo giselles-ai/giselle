@@ -19,7 +19,6 @@ import {
 
 import { isTextGenerationNode, type SecretId } from "@giselle-sdk/data-type";
 import {
-	useFeatureFlag,
 	useGiselleEngine,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
@@ -50,7 +49,6 @@ export function SecretTable() {
 	const { isLoading, data, mutate } = useWorkspaceSecrets();
 	const [isPending, startTransition] = useTransition();
 	const client = useGiselleEngine();
-	const { experimental_storage } = useFeatureFlag();
 
 	const handleSubmit = useCallback<React.FormEventHandler<HTMLFormElement>>(
 		(e) => {
@@ -73,13 +71,12 @@ export function SecretTable() {
 					workspaceId: workspace.id,
 					label: payload.label,
 					value: payload.value,
-					useExperimentalStorage: experimental_storage,
 				});
 				await mutate([...(data ?? []), result.secret]);
 			});
 			setPresentDialog(false);
 		},
-		[client, workspace.id, data, mutate, experimental_storage],
+		[client, workspace.id, data, mutate],
 	);
 
 	const handleDelete = useCallback(
@@ -117,7 +114,6 @@ export function SecretTable() {
 				await client.deleteSecret({
 					workspaceId: workspace.id,
 					secretId,
-					useExperimentalStorage: experimental_storage,
 				});
 				await mutate((data ?? []).filter((secret) => secret.id !== secretId));
 			});
@@ -129,7 +125,6 @@ export function SecretTable() {
 			mutate,
 			workspace.nodes,
 			updateNodeDataContent,
-			experimental_storage,
 		],
 	);
 
