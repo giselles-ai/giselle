@@ -37,7 +37,6 @@ import {
 	type GenerationOrigin,
 	generateContent,
 	generateImage,
-	generateText,
 	getGeneratedImage,
 	getGeneration,
 	getGenerationMessageChunkss,
@@ -136,18 +135,6 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		},
 		getLanguageModelProviders: () => getLanguageModelProviders({ context }),
 		getTriggerProviders: () => getTriggerProviders({ context }),
-		generateText: async (
-			generation: QueuedGeneration,
-			useAiGateway: boolean,
-			useResumableGeneration: boolean,
-		) => {
-			return await generateText({
-				context,
-				generation,
-				useAiGateway,
-				useResumableGeneration,
-			});
-		},
 		getGeneration: async (generationId: GenerationId) => {
 			return await getGeneration({
 				context,
