@@ -14,7 +14,6 @@ catalog:
   next: 15.5.2
   "@next/env": 15.5.2
   "@next/third-parties": 15.5.2
-  unstorage: 1.14.4
   ai: 5.0.51
   "@types/node": 22.14.0
   "@types/react": 19.1.10

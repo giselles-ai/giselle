@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
-import { publicStorage } from "@/app/giselle-engine";
+import { appStorage } from "@/lib/app-storage";
+import { logger } from "@/lib/logger";
 import { IMAGE_CONSTRAINTS } from "../constants";
 
 async function calculateFileHash(file: File): Promise<string> {
@@ -66,19 +67,18 @@ export async function uploadAvatar(
 	const arrayBuffer = await file.arrayBuffer();
 	const buffer = Buffer.from(arrayBuffer);
 
-	await publicStorage.setItemRaw(filePath, buffer, {
+	logger.debug(`Uploading avatar to ${filePath}`);
+	const uploadResult = await appStorage().upload(filePath, buffer, {
 		contentType: file.type,
+		upsert: true,
 	});
 
-	const avatarUrl = await publicStorage.getItem(filePath, {
-		publicURL: true,
-	});
-
-	if (typeof avatarUrl !== "string") {
+	if (uploadResult.error) {
+		logger.error(uploadResult.error);
 		throw new Error("Failed to get avatar URL");
 	}
 
-	return avatarUrl;
+	return appStorage().getPublicUrl(uploadResult.data.path).data.publicUrl;
 }
 
 /**
@@ -95,5 +95,6 @@ export async function deleteAvatar(avatarUrl: string): Promise<void> {
 	}
 
 	const path = parts[1];
-	await publicStorage.removeItem(path);
+
+	await appStorage().remove([path]);
 }

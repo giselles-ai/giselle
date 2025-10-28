@@ -18,7 +18,6 @@ import {
 } from "@giselle-sdk/supabase-driver";
 import { tasks as jobs } from "@trigger.dev/sdk";
 import type { ModelMessage, ProviderMetadata } from "ai";
-import { createStorage } from "unstorage";
 import { waitForLangfuseFlush } from "@/instrumentation.node";
 import { GenerationMetadata } from "@/lib/generation-metadata";
 import { logger } from "@/lib/logger";
@@ -31,7 +30,6 @@ import {
 	fetchCurrentTeam,
 	isProPlan,
 } from "@/services/teams";
-import supabaseStorageDriver from "@/supabase-storage-driver";
 import type { runActJob } from "@/trigger/run-act-job";
 import { getDocumentVectorStoreQueryService } from "../lib/vector-stores/document/query/service";
 import {
@@ -39,14 +37,6 @@ import {
 	gitHubQueryService,
 } from "../lib/vector-stores/github";
 import type { generateContentJob } from "../trigger/generate-content-job";
-
-export const publicStorage = createStorage({
-	driver: supabaseStorageDriver({
-		supabaseUrl: process.env.SUPABASE_URL ?? "",
-		supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY ?? "",
-		bucket: "public-assets",
-	}),
-});
 
 const storage = experimental_supabaseStorageDriver({
 	endpoint: process.env.SUPABASE_STORAGE_URL ?? "",
