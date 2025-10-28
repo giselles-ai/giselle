@@ -23,7 +23,7 @@ export const ManualTriggerConfiguredView = ({
 			{parameters.length > 0 && (
 				<div className="space-y-[4px]">
 					<SettingLabel className="py-[1.5px]">Output Parameter</SettingLabel>
-					<div className="px-[4px] py-0 w-full bg-transparent text-[14px]">
+					<div className="px-[4px] py-0 w-full bg-transparent text-[14px] mt-[8px]">
 						<ul className="w-full flex flex-col gap-[12px]">
 							{parameters.map((param) => (
 								<li key={param.id}>
