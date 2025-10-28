@@ -27,7 +27,6 @@ export function TextNodePropertiesPanel({ node }: { node: TextNode }) {
 						onValueChange={(text) => updateNodeDataContent(node, { text })}
 						showToolbar={false}
 						editorClassName="bg-inverse/10 border-none !pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px] rounded-[8px] min-h-[120px]"
-						minHeightClass="min-h-[120px]"
 					/>
 				</div>
 			</PropertiesPanelContent>
