@@ -255,7 +255,7 @@
 	}
 
 	.gen-expanded[data-expanded="true"] .gen-editor {
-		@apply h-auto min-h-0;
+		@apply h-full min-h-0 overflow-y-auto;
 	}
 
 	.gen-expanded[data-expanded="true"] .gen-scroll {
