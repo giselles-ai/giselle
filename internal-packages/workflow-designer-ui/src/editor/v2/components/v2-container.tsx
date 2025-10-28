@@ -409,7 +409,11 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 		`${selectedNodes[0]?.content.type}` === "textGeneration";
 	const selectedNode = selectedNodes[0] as unknown as
 		| {
-				content?: { type?: string; provider?: string };
+				content?: {
+					type?: string;
+					provider?: string;
+					command?: { provider?: string };
+				};
 		  }
 		| undefined;
 	const isManualTriggerPanel =
@@ -420,6 +424,12 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 		isPropertiesPanelOpen &&
 		`${selectedNode?.content?.type}` === "trigger" &&
 		`${selectedNode?.content?.provider}` === "github";
+	const isGithubActionPanel =
+		isPropertiesPanelOpen &&
+		`${selectedNode?.content?.type}` === "action" &&
+		`${selectedNode?.content?.command?.provider}` === "github";
+	const isWebPagePanel =
+		isPropertiesPanelOpen && `${selectedNode?.content?.type}` === "webPage";
 
 	const mainRef = useRef<HTMLDivElement>(null);
 
@@ -468,7 +478,12 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 						title="Properties Panel"
 						defaultWidth={isTextGenerationPanel ? 400 : undefined}
 						minWidth={isTextGenerationPanel ? 400 : undefined}
-						autoHeight={isManualTriggerPanel || isGithubTriggerPanel}
+						autoHeight={
+							isManualTriggerPanel ||
+							isGithubTriggerPanel ||
+							isGithubActionPanel ||
+							isWebPagePanel
+						}
 					>
 						<PropertiesPanel />
 					</FloatingPropertiesPanel>
