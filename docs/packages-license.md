@@ -2,8 +2,8 @@
 
 
 ## Summary
-* 857 MIT
-* 188 Apache 2.0
+* 858 MIT
+* 186 Apache 2.0
 * 46 ISC
 * 27 New BSD
 * 13 Simplified BSD
@@ -93,30 +93,8 @@
 
 
 
-<a name="@ai-sdk/google-vertex"></a>
-### @ai-sdk/google-vertex v3.0.27
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
-
-
-
 <a name="@ai-sdk/openai"></a>
 ### @ai-sdk/openai v2.0.30
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
-
-
-
-<a name="@ai-sdk/perplexity"></a>
-### @ai-sdk/perplexity v2.0.9
 #### 
 
 ##### Paths

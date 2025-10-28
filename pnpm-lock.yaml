@@ -18,15 +18,9 @@ catalogs:
     '@ai-sdk/google':
       specifier: 2.0.14
       version: 2.0.14
-    '@ai-sdk/google-vertex':
-      specifier: 3.0.27
-      version: 3.0.27
     '@ai-sdk/openai':
       specifier: 2.0.30
       version: 2.0.30
-    '@ai-sdk/perplexity':
-      specifier: 2.0.9
-      version: 2.0.9
     '@ai-sdk/provider':
       specifier: 2.0.0
       version: 2.0.0
@@ -933,15 +927,9 @@ importers:
       '@ai-sdk/google':
         specifier: 'catalog:'
         version: 2.0.14(zod@3.25.76)
-      '@ai-sdk/google-vertex':
-        specifier: 'catalog:'
-        version: 3.0.27(zod@3.25.76)
       '@ai-sdk/openai':
         specifier: 'catalog:'
         version: 2.0.30(zod@3.25.76)
-      '@ai-sdk/perplexity':
-        specifier: 'catalog:'
-        version: 2.0.9(zod@3.25.76)
       '@ai-sdk/provider':
         specifier: 'catalog:'
         version: 2.0.0
@@ -1367,12 +1355,6 @@ packages:
     peerDependencies:
       zod: ^3.25.76 || ^4
 
-  '@ai-sdk/google-vertex@3.0.27':
-    resolution: {integrity: sha512-qR4+gLBNJPbnqaSBhvWktK0h3MfQryTLpKj9OWTYVhesNPqpkcchmbHmWBBXhI9kGN5niIknzHmCYdrtMqzF5w==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      zod: ^3.25.76 || ^4
-
   '@ai-sdk/google@2.0.14':
     resolution: {integrity: sha512-OCBBkEUq1RNLkbJuD+ejqGsWDD0M5nRyuFWDchwylxy0J4HSsAiGNhutNYVTdnqmNw+r9LyZlkyZ1P4YfAfLdg==}
     engines: {node: '>=18'}
@@ -1381,12 +1363,6 @@ packages:
 
   '@ai-sdk/openai@2.0.30':
     resolution: {integrity: sha512-a9Vf64OT2dWEFyEGv+OxtCs69B18BsuzInvuyUxVPczbIiBLqUCt3zcD/8EwqbTPJwsFNsL8/9nbVZFmwA1+2A==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      zod: ^3.25.76 || ^4
-
-  '@ai-sdk/perplexity@2.0.9':
-    resolution: {integrity: sha512-OuwPKWQkZKeynUNOOstMY2nktZNatpbTvDSq4INgpx0jsSzE9UfdPdm8BNU6d1lGRf0v03FlQ/cX09R2jMI3mA==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4
@@ -8697,18 +8673,6 @@ snapshots:
       '@ai-sdk/provider-utils': 3.0.9(zod@3.25.76)
       zod: 3.25.76
 
-  '@ai-sdk/google-vertex@3.0.27(zod@3.25.76)':
-    dependencies:
-      '@ai-sdk/anthropic': 2.0.17(zod@3.25.76)
-      '@ai-sdk/google': 2.0.14(zod@3.25.76)
-      '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.9(zod@3.25.76)
-      google-auth-library: 9.15.0
-      zod: 3.25.76
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
-
   '@ai-sdk/google@2.0.14(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
@@ -8716,12 +8680,6 @@ snapshots:
       zod: 3.25.76
 
   '@ai-sdk/openai@2.0.30(zod@3.25.76)':
-    dependencies:
-      '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.9(zod@3.25.76)
-      zod: 3.25.76
-
-  '@ai-sdk/perplexity@2.0.9(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@ai-sdk/provider-utils': 3.0.9(zod@3.25.76)
