@@ -1,8 +1,14 @@
+import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { FileData } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
-import { ArrowUpFromLineIcon, FileText, FileXIcon, Image as ImageIcon, TrashIcon } from "lucide-react";
-import { SettingLabel } from "@giselle-internal/ui/setting-label";
+import {
+	ArrowUpFromLineIcon,
+	FileText,
+	FileXIcon,
+	Image as ImageIcon,
+	TrashIcon,
+} from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TriangleAlert } from "../../../icons";
 import { FileNodeIcon } from "../../../icons/node";
@@ -296,11 +302,11 @@ export function FilePanel({ node, config }: FilePanelProps) {
 				<div>
 					<button
 						type="button"
-					className={clsx(
-						"group h-[300px] w-full",
-						"border rounded-[8px] border-transparent",
-						"data-[dragging=true]:data-[valid=false]:border-error-900",
-					)}
+						className={clsx(
+							"group h-[300px] w-full",
+							"border rounded-[8px] border-transparent",
+							"data-[dragging=true]:data-[valid=false]:border-error-900",
+						)}
 						onDragOver={onDragOver}
 						onDragLeave={onDragLeave}
 						onDrop={onDrop}
@@ -308,13 +314,13 @@ export function FilePanel({ node, config }: FilePanelProps) {
 						data-valid={isValidFile}
 					>
 						<div
-						className={clsx(
-							"h-full flex flex-col justify-center items-center gap-[16px] px-[24px] py-[16px]",
-							"bg-inverse/5",
-							"border border-dotted rounded-[8px] border-transparent group-hover:border-black-400",
-							"group-data-[dragging=true]:border-black-400",
-							"group-data-[dragging=true]:group-data-[valid=false]:border-error-900",
-						)}
+							className={clsx(
+								"h-full flex flex-col justify-center items-center gap-[16px] px-[24px] py-[16px]",
+								"bg-inverse/5",
+								"border border-dotted rounded-[8px] border-transparent group-hover:border-black-400",
+								"group-data-[dragging=true]:border-black-400",
+								"group-data-[dragging=true]:group-data-[valid=false]:border-error-900",
+							)}
 						>
 							{isDragging ? (
 								isValidFile ? (
@@ -343,12 +349,12 @@ export function FilePanel({ node, config }: FilePanelProps) {
 									</p>
 								</>
 							) : (
-									<div className="flex flex-col gap-[16px] justify-center items-center">
-										{node.content.category === "image" ? (
-											<ImageIcon size={38} className="text-black-400" />
-										) : (
-											<ArrowUpFromLineIcon size={38} className="text-black-400" />
-										)}
+								<div className="flex flex-col gap-[16px] justify-center items-center">
+									{node.content.category === "image" ? (
+										<ImageIcon size={38} className="text-black-400" />
+									) : (
+										<ArrowUpFromLineIcon size={38} className="text-black-400" />
+									)}
 									<label
 										htmlFor="file"
 										className="text-center flex flex-col gap-[16px] text-inverse"
@@ -382,7 +388,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 				</div>
 				{node.content.files.length > 0 && (
 					<div className="mt-[24px]">
-								<SettingLabel className="mb-[4px]">Added Files</SettingLabel>
+						<SettingLabel className="mb-[4px]">Added Files</SettingLabel>
 						<div className="flex flex-col gap-[8px]">
 							{node.content.files.map((file) => (
 								<FileListItem
@@ -409,7 +415,11 @@ function FileListItem({
 	return (
 		<div className="flex items-center justify-between hover:bg-bg-50/50 transition-colors rounded-[8px] group">
 			<div className="flex items-center gap-[12px] flex-1 min-w-0">
-				<FileText size={16} className="text-inverse shrink-0" aria-label="File icon" />
+				<FileText
+					size={16}
+					className="text-inverse shrink-0"
+					aria-label="File icon"
+				/>
 				<div className="min-w-0 flex-1">
 					<p className="text-[14px] text-inverse truncate font-medium">
 						{fileData.name}
