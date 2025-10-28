@@ -17,19 +17,19 @@ export function TextNodePropertiesPanel({ node }: { node: TextNode }) {
 				onDelete={() => deleteNode(node.id)}
 			/>
 			<PropertiesPanelContent>
-				<div className="flex flex-col min-h-0 max-h-[calc(100vh-220px)]">
-					<PromptEditor
-						placeholder="Write or paste text here..."
-						value={node.content.text}
-						onValueChange={(text) => updateNodeDataContent(node, { text })}
-						nodes={[]}
-						connectedSources={[]}
-						showToolbar={false}
-						variant="plain"
-						showExpandIcon={false}
-						containerClassName="min-h-0"
-						editorClassName="max-h-full overflow-y-auto"
-					/>
+				<div className="flex flex-col">
+					<div className="overflow-y-auto">
+						<PromptEditor
+							placeholder="Write or paste text here..."
+							value={node.content.text}
+							onValueChange={(text) => updateNodeDataContent(node, { text })}
+							nodes={[]}
+							connectedSources={[]}
+							showToolbar={false}
+							variant="plain"
+							showExpandIcon={false}
+						/>
+					</div>
 				</div>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>

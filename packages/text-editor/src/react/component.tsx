@@ -169,8 +169,8 @@ export function TextEditor({
 					Placeholder.configure({ placeholder }),
 				];
 	}, [nodes, connectedSources, placeholder]);
-	return (
-		<div className="flex flex-col w-full min-h-0 h-full">
+return (
+    <div className="flex flex-col w-full min-h-0">
 			<EditorProvider
 				slotBefore={
 					<>
@@ -186,22 +186,23 @@ export function TextEditor({
 							? undefined
 							: JSON.parse(value)
 				}
-				editorContainerProps={{
-					className: "flex-1 flex flex-col min-h-0 h-full",
-				}}
+    editorContainerProps={{
+        className: clsx(fullHeight ? "flex-1 flex flex-col min-h-0 h-full" : undefined),
+    }}
 				onUpdate={(p) => {
 					onValueChange?.(JSON.stringify(p.editor.getJSON()));
 				}}
 				immediatelyRender={false}
-				editorProps={{
-					attributes: {
-						class: clsx(
-							"prompt-editor border border-inverse rounded-[8px] p-[16px] pb-0 box-border flex-1 overflow-y-auto",
-							editorClassName,
-						),
-						...(fullHeight ? { style: "height: 100%" } : {}),
-					},
-				}}
+    editorProps={{
+        attributes: {
+            class: clsx(
+                "prompt-editor border border-inverse rounded-[8px] p-[16px] pb-0 box-border",
+                fullHeight ? "h-full overflow-y-auto" : undefined,
+                editorClassName,
+            ),
+            ...(fullHeight ? { style: "height: 100%" } : {}),
+        },
+    }}
 			/>
 		</div>
 	);

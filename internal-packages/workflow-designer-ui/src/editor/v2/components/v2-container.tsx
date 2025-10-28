@@ -407,6 +407,10 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 	const isTextGenerationPanel =
 		isPropertiesPanelOpen &&
 		`${selectedNodes[0]?.content.type}` === "textGeneration";
+	const isFilePanel =
+		isPropertiesPanelOpen && `${selectedNodes[0]?.content.type}` === "file";
+	const isTextPanel =
+		isPropertiesPanelOpen && `${selectedNodes[0]?.content.type}` === "text";
 
 	const mainRef = useRef<HTMLDivElement>(null);
 
@@ -455,6 +459,7 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 						title="Properties Panel"
 						defaultWidth={isTextGenerationPanel ? 400 : undefined}
 						minWidth={isTextGenerationPanel ? 400 : undefined}
+						autoHeight={isFilePanel || isTextPanel}
 					>
 						<PropertiesPanel />
 					</FloatingPropertiesPanel>

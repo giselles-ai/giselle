@@ -17,6 +17,11 @@ interface FloatingPropertiesPanelProps {
 	container?: React.ComponentProps<typeof Dialog.Portal>["container"];
 	title: string;
 	onClose?: () => void;
+	/**
+	 * When true, the panel height follows content up to viewport max.
+	 * Otherwise it fills available height.
+	 */
+	autoHeight?: boolean;
 }
 
 export function FloatingPropertiesPanel({
@@ -30,6 +35,7 @@ export function FloatingPropertiesPanel({
 	container,
 	title,
 	onClose,
+	autoHeight = false,
 }: FloatingPropertiesPanelProps) {
 	const [width, setWidth] = useState(defaultWidth);
 	const [isResizing, setIsResizing] = useState(false);
@@ -104,7 +110,7 @@ export function FloatingPropertiesPanel({
 				<Dialog.Content asChild onPointerDownOutside={onClose}>
 					<div
 						className={clsx(
-							"absolute top-4 z-10 pointer-events-none max-h-[calc(100vh-32px)]",
+							"absolute top-4 bottom-4 z-10 pointer-events-none",
 							position === "right" ? "right-4" : "left-4",
 						)}
 						style={{ width: `${width}px` }}
@@ -113,7 +119,8 @@ export function FloatingPropertiesPanel({
 						<div
 							ref={panelRef}
 							className={clsx(
-								"pointer-events-auto relative rounded-[12px] shadow-xl max-h-[calc(100vh-32px)]",
+								autoHeight ? "h-auto max-h-[calc(100vh-32px)]" : "h-full",
+								"pointer-events-auto relative rounded-[12px] shadow-xl",
 								isOpen
 									? "translate-x-0 opacity-100"
 									: position === "right"
@@ -153,12 +160,12 @@ export function FloatingPropertiesPanel({
 							{/* Content */}
 							<div
 								className={clsx(
-									"flex flex-col max-h-[inherit]",
+									"relative z-10 flex flex-col px-2 pb-2",
+									autoHeight ? "h-auto" : "h-[calc(100vh-32px)]",
 									position === "right" ? "pl-3" : "pr-3",
 								)}
 							>
-								{/* header outside; body scrolls in consumer */}
-								<div className="px-2 pb-2">{children}</div>
+								{children}
 							</div>
 						</div>
 					</div>

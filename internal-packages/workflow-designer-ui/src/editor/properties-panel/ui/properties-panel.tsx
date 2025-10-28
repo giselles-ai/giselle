@@ -148,5 +148,5 @@ export function PropertiesPanelHeader({
 }
 
 export function PropertiesPanelContent({ children }: { children: ReactNode }) {
-	return <div className="flex-1 min-h-0 overflow-y-auto">{children}</div>;
+	return <div className={getContentClasses()}>{children}</div>;
 }

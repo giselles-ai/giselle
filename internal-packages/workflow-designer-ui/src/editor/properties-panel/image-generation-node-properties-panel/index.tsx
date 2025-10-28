@@ -133,19 +133,15 @@ export function ImageGenerationNodePropertiesPanel({
 	});
 
 	const generateImage = useCallback(() => {
-		console.log("generateImage called!");
 		if (usageLimitsReached) {
-			console.log("Usage limits reached");
 			error("Please upgrade your plan to continue using this feature.");
 			return;
 		}
 		if (isPromptEmpty(node.content.prompt)) {
-			console.log("Prompt is empty");
 			error("Please fill in the prompt to run.");
 			return;
 		}
 
-		console.log("Calling createAndStartGenerationRunner");
 		createAndStartGenerationRunner({
 			origin: {
 				type: "studio",
@@ -246,7 +242,7 @@ export function ImageGenerationNodePropertiesPanel({
 
 			<PropertiesPanelContent>
 				<div className="relative flex-1 min-h-0 flex flex-col">
-					<div className="flex-1 min-h-0 overflow-y-auto">
+					<div className="flex-1 min-h-0 overflow-y-auto pt-2 pb-[88px]">
 						<div ref={promptEditorRef} className="mt-[12px]">
 							<PromptPanel
 								node={node}
@@ -266,20 +262,20 @@ export function ImageGenerationNodePropertiesPanel({
 								onExpand={() => setIsGenerationExpanded(true)}
 							/>
 						</div>
-					</div>
 
-					<div
-						ref={generateCtaRef}
-						className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent"
-					>
-						<GenerateCtaButton
-							isGenerating={isGenerating}
-							isEmpty={isPromptEmpty(node.content.prompt)}
-							onClick={() => {
-								if (isGenerating) stopGenerationRunner();
-								else generateImage();
-							}}
-						/>
+						<div
+							ref={generateCtaRef}
+							className="sticky bottom-0 z-30 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent"
+						>
+							<GenerateCtaButton
+								isGenerating={isGenerating}
+								isEmpty={isPromptEmpty(node.content.prompt)}
+								onClick={() => {
+									if (isGenerating) stopGenerationRunner();
+									else generateImage();
+								}}
+							/>
+						</div>
 					</div>
 
 					{/* Expanded prompt overlay */}
@@ -314,8 +310,9 @@ export function ImageGenerationNodePropertiesPanel({
 								showToolbar={false}
 								variant="plain"
 								showExpandIcon={false}
-								containerClassName="flex-1 min-h-0"
-								editorClassName="min-h-0 h-full"
+								containerClassName="flex-1 min-h-0 h-full"
+								editorClassName="h-full"
+								minHeightClass=""
 							/>
 						</div>
 						<div className="absolute bottom-[20px] right-[12px]">
