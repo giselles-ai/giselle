@@ -1,4 +1,5 @@
 import type { TriggerNode } from "@giselle-sdk/data-type";
+import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useTrigger } from "../../../../../hooks/use-trigger";
 
 export const ManualTriggerConfiguredView = ({
@@ -21,7 +22,7 @@ export const ManualTriggerConfiguredView = ({
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
 			{parameters.length > 0 && (
 				<div className="space-y-[4px]">
-					<p className="text-[14px] py-[1.5px] text-text">Output Parameter</p>
+					<SettingLabel className="py-[1.5px]">Output Parameter</SettingLabel>
 					<div className="px-[4px] py-0 w-full bg-transparent text-[14px]">
 						<ul className="w-full flex flex-col gap-[12px]">
 							{parameters.map((param) => (

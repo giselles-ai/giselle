@@ -162,9 +162,9 @@ export function FloatingPropertiesPanel({
 							{/* Content */}
 							<div
 								className={clsx(
-									autoHeight
-										? "overflow-hidden relative z-10 pt-2 pb-3 px-3 h-auto"
-										: "h-full overflow-hidden relative z-10 pt-2 pb-3 px-3",
+								autoHeight
+									? "overflow-y-auto relative z-10 pt-2 pb-3 px-3 h-auto"
+									: "h-full overflow-hidden relative z-10 pt-2 pb-3 px-3",
 								)}
 								style={
 									autoHeight ? { maxHeight: "calc(100vh - 32px)" } : undefined
