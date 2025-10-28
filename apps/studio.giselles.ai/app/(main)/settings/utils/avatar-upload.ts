@@ -1,9 +1,7 @@
 import { createHash } from "node:crypto";
+import { appStorage } from "@/lib/app-storage";
 import { logger } from "@/lib/logger";
-import { createClient } from "@/lib/supabase";
 import { IMAGE_CONSTRAINTS } from "../constants";
-
-const storageBucketName = "public-assets";
 
 async function calculateFileHash(file: File): Promise<string> {
 	const arrayBuffer = await file.arrayBuffer();
@@ -69,19 +67,18 @@ export async function uploadAvatar(
 	const arrayBuffer = await file.arrayBuffer();
 	const buffer = Buffer.from(arrayBuffer);
 
-	const supabaseClient = await createClient();
-	const uploadResult = await supabaseClient.storage
-		.from(storageBucketName)
-		.upload(filePath, buffer, {
-			contentType: file.type,
-		});
+	logger.debug(`Uploading avatar to ${filePath}`);
+	const uploadResult = await appStorage().upload(filePath, buffer, {
+		contentType: file.type,
+		upsert: true,
+	});
 
 	if (uploadResult.error) {
 		logger.error(uploadResult.error);
 		throw new Error("Failed to get avatar URL");
 	}
 
-	return uploadResult.data.fullPath;
+	return appStorage().getPublicUrl(uploadResult.data.path).data.publicUrl;
 }
 
 /**
@@ -99,6 +96,5 @@ export async function deleteAvatar(avatarUrl: string): Promise<void> {
 
 	const path = parts[1];
 
-	const supabaseClient = await createClient();
-	await supabaseClient.storage.from(storageBucketName).remove([path]);
+	await appStorage().remove([path]);
 }
