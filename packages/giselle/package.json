@@ -72,7 +72,6 @@
 		"pg": "catalog:",
 		"react": "catalog:",
 		"swr": "catalog:",
-		"unstorage": "catalog:",
 		"zod": "catalog:"
 	},
 	"peerDependencies": {

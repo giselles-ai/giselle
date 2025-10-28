@@ -9,10 +9,9 @@ import type {
 	WebhookEvent,
 	WebhookEventName,
 } from "@giselle-sdk/github-tool";
-import { createStorage } from "unstorage";
-import memoryDriver from "unstorage/drivers/memory";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createTriggerNode } from "../../utils/node-factories";
+import { memoryStorageDriver } from "../storage";
 import type { GiselleEngineContext } from "../types";
 import {
 	type EventHandlerArgs,
@@ -81,7 +80,7 @@ describe("GitHub Event Handlers", () => {
 		// Setup base arguments
 		baseEventArgs = {
 			context: {
-				storage: createStorage({ driver: memoryDriver() }),
+				storage: memoryStorageDriver(),
 				llmProviders: [],
 				integrationConfigs: {
 					github: {
@@ -1426,7 +1425,7 @@ describe("GitHub Event Handlers", () => {
 				event,
 				context: {
 					llmProviders: [],
-					storage: createStorage({ driver: memoryDriver() }),
+					storage: memoryStorageDriver(),
 					integrationConfigs: {
 						github: {
 							auth: {
