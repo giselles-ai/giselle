@@ -6,7 +6,6 @@ import {
 	isQueuedGeneration,
 	type RunningGeneration,
 } from "../../concepts/generation";
-import { useFeatureFlag } from "../feature-flags";
 import { useGiselleEngine } from "../use-giselle-engine";
 import { useGenerationRunnerSystem } from "./contexts/generation-runner-system";
 import { GenerateContentRunner } from "./generate-content-runner";
@@ -72,7 +71,6 @@ function ImageGenerationRunner({ generation }: { generation: Generation }) {
 		updateGenerationStatusToFailure,
 		addStopHandler,
 	} = useGenerationRunnerSystem();
-	const { experimental_storage } = useFeatureFlag();
 	const client = useGiselleEngine();
 	const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -95,7 +93,6 @@ function ImageGenerationRunner({ generation }: { generation: Generation }) {
 		client
 			.setGeneration({
 				generation,
-				useExperimentalStorage: experimental_storage,
 			})
 			.then(async () => {
 				updateGenerationStatusToRunning(generation.id);
@@ -104,7 +101,6 @@ function ImageGenerationRunner({ generation }: { generation: Generation }) {
 					await client.generateImage(
 						{
 							generation,
-							useExperimentalStorage: experimental_storage,
 						},
 						{ signal: abortController.signal },
 					);
@@ -139,7 +135,6 @@ function TriggerRunner({ generation }: { generation: Generation }) {
 		updateGenerationStatusToRunning,
 		addStopHandler,
 	} = useGenerationRunnerSystem();
-	const { experimental_storage } = useFeatureFlag();
 	const client = useGiselleEngine();
 	const stop = () => {};
 	useOnce(() => {
@@ -150,14 +145,12 @@ function TriggerRunner({ generation }: { generation: Generation }) {
 		client
 			.setGeneration({
 				generation,
-				useExperimentalStorage: experimental_storage,
 			})
 			.then(() => {
 				updateGenerationStatusToRunning(generation.id);
 				client
 					.resolveTrigger({
 						generation,
-						useExperimentalStorage: experimental_storage,
 					})
 					.then(() => {
 						updateGenerationStatusToComplete(generation.id);
@@ -173,7 +166,6 @@ function ActionRunner({ generation }: { generation: Generation }) {
 		updateGenerationStatusToRunning,
 		addStopHandler,
 	} = useGenerationRunnerSystem();
-	const { experimental_storage } = useFeatureFlag();
 	const client = useGiselleEngine();
 	const stop = () => {};
 	useOnce(() => {
@@ -184,7 +176,6 @@ function ActionRunner({ generation }: { generation: Generation }) {
 		client
 			.setGeneration({
 				generation,
-				useExperimentalStorage: experimental_storage,
 			})
 			.then(() => {
 				updateGenerationStatusToRunning(generation.id);
@@ -207,7 +198,6 @@ function QueryRunner({ generation }: { generation: Generation }) {
 		updateGenerationStatusToFailure,
 		addStopHandler,
 	} = useGenerationRunnerSystem();
-	const { experimental_storage } = useFeatureFlag();
 	const client = useGiselleEngine();
 	const stop = () => {};
 	useOnce(() => {
@@ -218,7 +208,6 @@ function QueryRunner({ generation }: { generation: Generation }) {
 		client
 			.setGeneration({
 				generation,
-				useExperimentalStorage: experimental_storage,
 			})
 			.then(() => {
 				updateGenerationStatusToRunning(generation.id);

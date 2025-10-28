@@ -6,7 +6,6 @@ import {
 	type WorkspaceId,
 } from "@giselle-sdk/data-type";
 import {
-	useFeatureFlag,
 	useGiselleEngine,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
@@ -33,7 +32,6 @@ function WebPageListItem({
 }) {
 	const [open, setOpen] = useState(false);
 	const client = useGiselleEngine();
-	const { experimental_storage } = useFeatureFlag();
 	const { isLoading, data } = useSWR(
 		webpage.status !== "fetched"
 			? null
@@ -46,7 +44,6 @@ function WebPageListItem({
 			client.getFileText({
 				workspaceId,
 				fileId,
-				useExperimentalStorage: experimental_storage,
 			}),
 	);
 
@@ -150,7 +147,6 @@ function WebPageListItem({
 
 export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 	const client = useGiselleEngine();
-	const { experimental_storage } = useFeatureFlag();
 	const { data, updateNodeData, updateNodeDataContent } = useWorkflowDesigner();
 	const { error } = useToasts();
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
@@ -196,7 +192,6 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 						const addedWebPage = await client.addWebPage({
 							webpage: newWebPage,
 							workspaceId: data.id,
-							useExperimentalStorage: experimental_storage,
 						});
 						webpages = [
 							...webpages.filter((webpage) => webpage.id !== addedWebPage.id),
@@ -223,7 +218,7 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 				}),
 			);
 		},
-		[client, data.id, node, updateNodeDataContent, error, experimental_storage],
+		[client, data.id, node, updateNodeDataContent, error],
 	);
 
 	const removeWebPage = useCallback(
@@ -243,11 +238,10 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 				await client.removeFile({
 					workspaceId: data.id,
 					fileId: webpage.fileId,
-					useExperimentalStorage: experimental_storage,
 				});
 			}
 		},
-		[updateNodeDataContent, node, client, data.id, experimental_storage],
+		[updateNodeDataContent, node, client, data.id],
 	);
 
 	return (

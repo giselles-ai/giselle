@@ -2,17 +2,12 @@ import { generateInitialWorkspace, Workspace } from "@giselle-sdk/data-type";
 import type { GiselleEngineContext } from "../types";
 import { setWorkspace } from "./utils";
 
-export async function createWorkspace(args: {
-	context: GiselleEngineContext;
-	useExperimentalStorage: boolean;
-}) {
+export async function createWorkspace(args: { context: GiselleEngineContext }) {
 	const workspace = generateInitialWorkspace();
 	await setWorkspace({
-		deprecated_storage: args.context.deprecated_storage,
 		workspaceId: workspace.id,
 		workspace: Workspace.parse(workspace),
 		storage: args.context.storage,
-		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	return workspace;
 }

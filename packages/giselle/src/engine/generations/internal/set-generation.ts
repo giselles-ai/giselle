@@ -1,5 +1,4 @@
 import type { NodeId } from "@giselle-sdk/data-type";
-import type { Storage } from "unstorage";
 import { Generation, NodeGenerationIndex } from "../../../concepts/generation";
 import type { GiselleLogger } from "../../../logger/types";
 import type { GiselleStorage } from "../../experimental_storage";
@@ -21,24 +20,15 @@ function upsertIndex(
 }
 
 export async function internalSetGeneration(params: {
-	deprecated_storage: Storage;
 	storage: GiselleStorage;
-	useExperimentalStorage?: boolean;
 	generation: Generation;
 	logger?: GiselleLogger;
 }) {
-	if (params.useExperimentalStorage) {
-		await params.storage.setJson({
-			path: generationPath(params.generation.id),
-			data: params.generation,
-			schema: Generation,
-		});
-	} else {
-		await params.deprecated_storage.setItem(
-			generationPath(params.generation.id),
-			Generation.parse(params.generation),
-		);
-	}
+	await params.storage.setJson({
+		path: generationPath(params.generation.id),
+		data: params.generation,
+		schema: Generation,
+	});
 
 	params.logger?.debug(
 		`Setting generation in storage: id=${params.generation.id}`,
@@ -48,16 +38,12 @@ export async function internalSetGeneration(params: {
 
 	// Update nodeId-based index
 	const currentNodeIndexes = await getNodeGenerationIndexes({
-		deprecated_storage: params.deprecated_storage,
 		storage: params.storage,
-		useExperimentalStorage: params.useExperimentalStorage,
 		nodeId,
 	});
 	const nextNodeIndexes = upsertIndex(currentNodeIndexes, newIndex);
 	await writeNodeIndexes({
-		deprecated_storage: params.deprecated_storage,
 		storage: params.storage,
-		useExperimentalStorage: params.useExperimentalStorage,
 		nodeId,
 		indexes: nextNodeIndexes,
 	});
@@ -88,22 +74,14 @@ function toNodeGenerationIndex(generation: Generation): NodeGenerationIndex {
 }
 
 async function writeNodeIndexes(args: {
-	deprecated_storage: Storage;
 	storage: GiselleStorage;
-	useExperimentalStorage?: boolean;
 	nodeId: NodeId;
 	indexes: NodeGenerationIndex[];
 }) {
-	if (args.useExperimentalStorage) {
-		await args.storage.setJson({
-			path: nodeGenerationIndexPath(args.nodeId),
-			data: args.indexes,
-			schema: NodeGenerationIndex.array(),
-		});
-		return;
-	}
-	await args.deprecated_storage.setItem(
-		nodeGenerationIndexPath(args.nodeId),
-		args.indexes,
-	);
+	await args.storage.setJson({
+		path: nodeGenerationIndexPath(args.nodeId),
+		data: args.indexes,
+		schema: NodeGenerationIndex.array(),
+	});
+	return;
 }

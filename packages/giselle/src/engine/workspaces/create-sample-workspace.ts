@@ -17,11 +17,8 @@ import { copyFiles, getWorkspace, setWorkspace } from "./utils";
 async function createSampleWorkspaceFromTemplate(args: {
 	context: GiselleEngineContext;
 	templateWorkspaceId: WorkspaceId;
-	useExperimentalStorage: boolean;
 }) {
 	const templateWorkspace = await getWorkspace({
-		useExperimentalStorage: args.useExperimentalStorage,
-		deprecated_storage: args.context.deprecated_storage,
 		storage: args.context.storage,
 		workspaceId: args.templateWorkspaceId,
 	});
@@ -136,18 +133,14 @@ async function createSampleWorkspaceFromTemplate(args: {
 	} satisfies Workspace;
 	await Promise.all([
 		setWorkspace({
-			deprecated_storage: args.context.deprecated_storage,
 			workspaceId: newWorkspaceId,
 			workspace: newWorkspace,
 			storage: args.context.storage,
-			useExperimentalStorage: args.useExperimentalStorage,
 		}),
 		copyFiles({
-			deprecated_storage: args.context.deprecated_storage,
 			storage: args.context.storage,
 			templateWorkspaceId: templateWorkspace.id,
 			newWorkspaceId,
-			useExperimentalStorage: args.useExperimentalStorage,
 		}),
 	]);
 	return newWorkspace;
@@ -155,7 +148,6 @@ async function createSampleWorkspaceFromTemplate(args: {
 
 export async function createSampleWorkspaces(args: {
 	context: GiselleEngineContext;
-	useExperimentalStorage: boolean;
 }) {
 	if (
 		!args.context.sampleAppWorkspaceIds ||
@@ -171,7 +163,6 @@ export async function createSampleWorkspaces(args: {
 			createSampleWorkspaceFromTemplate({
 				context: args.context,
 				templateWorkspaceId,
-				useExperimentalStorage: args.useExperimentalStorage,
 			}),
 		),
 	);

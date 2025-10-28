@@ -6,14 +6,11 @@ import { setWorkspace } from "./utils";
 export async function updateWorkspace(args: {
 	context: GiselleEngineContext;
 	workspace: Workspace;
-	useExperimentalStorage: boolean;
 }) {
 	await setWorkspace({
-		deprecated_storage: args.context.deprecated_storage,
 		workspaceId: args.workspace.id,
 		workspace: args.workspace,
 		storage: args.context.storage,
-		useExperimentalStorage: args.useExperimentalStorage,
 	});
 	revalidatePath(`/workspaces/${args.workspace.id}`, "layout");
 	return args.workspace;

@@ -71,7 +71,6 @@ export function useActSystem(workspaceId: WorkspaceId) {
 					changedGenerationIndexes.map((changedGeneration) =>
 						client.getGeneration({
 							generationId: changedGeneration.id,
-							useExperimentalStorage: true,
 						}),
 					),
 				).then((nullableData) =>

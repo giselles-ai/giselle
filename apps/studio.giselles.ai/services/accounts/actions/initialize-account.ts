@@ -56,7 +56,7 @@ export const initializeAccount = async (
 		});
 
 		// create sample apps
-		const sampleWorkspaces = await giselleEngine.createSampleWorkspaces(true);
+		const sampleWorkspaces = await giselleEngine.createSampleWorkspaces();
 		for (const workspace of sampleWorkspaces) {
 			const agentId = `agnt_${createId()}` as const;
 			await tx.insert(agents).values({

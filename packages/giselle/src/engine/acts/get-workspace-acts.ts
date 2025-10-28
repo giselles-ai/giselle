@@ -12,7 +12,6 @@ export async function getWorkspaceActs(args: {
 		context: args.context,
 		indexPath: workspaceActPath(args.workspaceId),
 		itemSchema: ActIndexObject,
-		useExperimentalStorage: true,
 	});
 	const workspaceActs = (
 		await Promise.all(

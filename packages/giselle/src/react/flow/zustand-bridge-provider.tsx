@@ -1,6 +1,5 @@
 import type { FileData, Workspace } from "@giselle-sdk/data-type";
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { useFeatureFlag } from "../feature-flags";
 import {
 	type GiselleRequestOptions,
 	useGiselleEngine,
@@ -13,13 +12,11 @@ const DEFAULT_SAVE_DELAY = 1000;
 
 interface WorkspaceAutoSaveOptions {
 	client: ReturnType<typeof useGiselleEngine>;
-	experimentalStorage: boolean;
 	saveWorkflowDelay: number;
 }
 
 function useWorkspaceAutoSave({
 	client,
-	experimentalStorage,
 	saveWorkflowDelay,
 }: WorkspaceAutoSaveOptions) {
 	const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -37,7 +34,6 @@ function useWorkspaceAutoSave({
 				await client.updateWorkspace(
 					{
 						workspace: state.workspace,
-						useExperimentalStorage: experimentalStorage,
 					},
 					requestOptions,
 				);
@@ -45,7 +41,7 @@ function useWorkspaceAutoSave({
 				console.error("Failed to persist workspace:", error);
 			}
 		},
-		[client, experimentalStorage],
+		[client],
 	);
 
 	const scheduleAutoSave = useCallback(
@@ -103,11 +99,9 @@ export function ZustandBridgeProvider({
 	saveWorkflowDelay?: number;
 }) {
 	const client = useGiselleEngine();
-	const { experimental_storage } = useFeatureFlag();
 
 	const { saveImmediately } = useWorkspaceAutoSave({
 		client,
-		experimentalStorage: experimental_storage,
 		saveWorkflowDelay,
 	});
 
@@ -162,16 +156,8 @@ export function ZustandBridgeProvider({
 			deleteNode: state.deleteNode,
 			deleteConnection: state.deleteConnection,
 			uploadFile: (files, node, options) =>
-				state.uploadFile(
-					client,
-					data.id,
-					experimental_storage,
-					files,
-					node,
-					options,
-				),
-			removeFile: (file: FileData) =>
-				state.removeFile(client, data.id, experimental_storage, file),
+				state.uploadFile(client, data.id, files, node, options),
+			removeFile: (file: FileData) => state.removeFile(client, data.id, file),
 			llmProviders: state.llmProviders,
 			isLoading: state.isLoading,
 			saveWorkspace: saveImmediately,
@@ -186,14 +172,7 @@ export function ZustandBridgeProvider({
 			openPropertiesPanel: state.openPropertiesPanel,
 			setOpenPropertiesPanel: state.setOpenPropertiesPanel,
 		}),
-		[
-			state,
-			textGenerationApi,
-			client,
-			data,
-			experimental_storage,
-			saveImmediately,
-		],
+		[state, textGenerationApi, client, data, saveImmediately],
 	);
 
 	// Wait for workspace to be initialized

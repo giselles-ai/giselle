@@ -33,11 +33,8 @@ import { createHandler, withUsageLimitErrorHandler } from "./create-handler";
 export const createJsonRouters = {
 	createWorkspace: (giselleEngine: GiselleEngine) =>
 		createHandler({
-			input: z.object({
-				useExperimentalStorage: z.boolean(),
-			}),
-			handler: async ({ input }) => {
-				const workspace = await giselleEngine.createWorkspace(input);
+			handler: async () => {
+				const workspace = await giselleEngine.createWorkspace();
 				return JsonResponse.json(workspace);
 			},
 		}),
@@ -45,13 +42,9 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				workspaceId: WorkspaceId.schema,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
-				const workspace = await giselleEngine.getWorkspace(
-					input.workspaceId,
-					input.useExperimentalStorage,
-				);
+				const workspace = await giselleEngine.getWorkspace(input.workspaceId);
 				return JsonResponse.json(workspace);
 			},
 		}),
@@ -60,13 +53,9 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				workspace: Workspace,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
-				const workspace = await giselleEngine.updateWorkspace(
-					input.workspace,
-					input.useExperimentalStorage,
-				);
+				const workspace = await giselleEngine.updateWorkspace(input.workspace);
 				return JsonResponse.json(workspace);
 			},
 		}),
@@ -89,14 +78,12 @@ export const createJsonRouters = {
 			createHandler({
 				input: z.object({
 					generation: QueuedGeneration,
-					useExperimentalStorage: z.boolean(),
 					useAiGateway: z.boolean(),
 					useResumableGeneration: z.boolean(),
 				}),
 				handler: async ({ input }) => {
 					const stream = await giselleEngine.generateText(
 						input.generation,
-						input.useExperimentalStorage,
 						input.useAiGateway,
 						input.useResumableGeneration,
 					);
@@ -108,12 +95,10 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				generationId: GenerationId.schema,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
 				const generation = await giselleEngine.getGeneration(
 					input.generationId,
-					input.useExperimentalStorage,
 				);
 				return JsonResponse.json(generation);
 			},
@@ -123,13 +108,11 @@ export const createJsonRouters = {
 			input: z.object({
 				origin: GenerationOrigin,
 				nodeId: NodeId.schema,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
 				const generations = await giselleEngine.getNodeGenerations(
 					input.origin,
 					input.nodeId,
-					input.useExperimentalStorage,
 				);
 				return JsonResponse.json(generations);
 			},
@@ -138,12 +121,10 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				generationId: GenerationId.schema,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
 				const generation = await giselleEngine.cancelGeneration(
 					input.generationId,
-					input.useExperimentalStorage,
 				);
 				return JsonResponse.json(generation);
 			},
@@ -153,14 +134,9 @@ export const createJsonRouters = {
 			input: z.object({
 				workspaceId: WorkspaceId.schema,
 				fileId: FileId.schema,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
-				await giselleEngine.removeFile(
-					input.workspaceId,
-					input.fileId,
-					input.useExperimentalStorage,
-				);
+				await giselleEngine.removeFile(input.workspaceId, input.fileId);
 				return new Response(null, { status: 204 });
 			},
 		}),
@@ -170,14 +146,12 @@ export const createJsonRouters = {
 				workspaceId: WorkspaceId.schema,
 				sourceFileId: FileId.schema,
 				destinationFileId: FileId.schema,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
 				await giselleEngine.copyFile(
 					input.workspaceId,
 					input.sourceFileId,
 					input.destinationFileId,
-					input.useExperimentalStorage,
 				);
 
 				return new Response(null, { status: 204 });
@@ -188,14 +162,9 @@ export const createJsonRouters = {
 			createHandler({
 				input: z.object({
 					generation: QueuedGeneration,
-					useExperimentalStorage: z.boolean(),
 				}),
 				handler: async ({ input, signal }) => {
-					await giselleEngine.generateImage(
-						input.generation,
-						input.useExperimentalStorage,
-						signal,
-					);
+					await giselleEngine.generateImage(input.generation, signal);
 					return new Response(null, { status: 204 });
 				},
 			}),
@@ -204,25 +173,16 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				generation: Generation,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
-				await giselleEngine.setGeneration(
-					input.generation,
-					input.useExperimentalStorage,
-				);
+				await giselleEngine.setGeneration(input.generation);
 				return new Response(null, { status: 204 });
 			},
 		}),
 	createSampleWorkspaces: (giselleEngine: GiselleEngine) =>
 		createHandler({
-			input: z.object({
-				useExperimentalStorage: z.boolean(),
-			}),
-			handler: async ({ input }) => {
-				const workspaces = await giselleEngine.createSampleWorkspaces(
-					input.useExperimentalStorage,
-				);
+			handler: async () => {
+				const workspaces = await giselleEngine.createSampleWorkspaces();
 				return JsonResponse.json(workspaces);
 			},
 		}),
@@ -246,7 +206,6 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				generation: QueuedGeneration,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
@@ -258,7 +217,6 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				trigger: ConfigureTriggerInput,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
@@ -270,7 +228,6 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				flowTriggerId: FlowTriggerId.schema,
-				useExperimentalStorage: z.boolean().optional(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
@@ -294,7 +251,6 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				trigger: FlowTrigger,
-				useExperimentalStorage: z.boolean().optional(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
@@ -308,7 +264,6 @@ export const createJsonRouters = {
 				flowTriggerId: FlowTriggerId.schema,
 				repositoryNodeId: z.string(),
 				installationId: z.number(),
-				useExperimentalStorage: z.boolean(),
 				event: GitHubFlowTriggerEvent.optional(),
 			}),
 			handler: async ({ input }) => {
@@ -321,7 +276,6 @@ export const createJsonRouters = {
 		createHandler({
 			input: z.object({
 				flowTriggerId: FlowTriggerId.schema,
-				useExperimentalStorage: z.boolean().optional(),
 			}),
 			handler: async ({ input }) => {
 				await giselleEngine.deleteTrigger(input);
@@ -369,7 +323,6 @@ export const createJsonRouters = {
 			input: z.object({
 				webpage: FetchingWebPage,
 				workspaceId: WorkspaceId.schema,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) =>
 				JsonResponse.json(await giselleEngine.addWebPage(input)),
@@ -379,14 +332,12 @@ export const createJsonRouters = {
 			input: z.object({
 				workspaceId: WorkspaceId.schema,
 				fileId: FileId.schema,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) =>
 				JsonResponse.json({
 					text: await giselleEngine.getFileText({
 						workspaceId: input.workspaceId,
 						fileId: input.fileId,
-						useExperimentalStorage: input.useExperimentalStorage,
 					}),
 				}),
 		}),
@@ -397,7 +348,6 @@ export const createJsonRouters = {
 				label: z.string(),
 				value: z.string(),
 				tags: z.array(z.string()).optional(),
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) =>
 				JsonResponse.json({
@@ -409,7 +359,6 @@ export const createJsonRouters = {
 			input: z.object({
 				workspaceId: WorkspaceId.schema,
 				tags: z.array(z.string()).optional(),
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) =>
 				JsonResponse.json({
@@ -448,7 +397,6 @@ export const createJsonRouters = {
 			input: z.object({
 				workspaceId: WorkspaceId.schema,
 				secretId: SecretId.schema,
-				useExperimentalStorage: z.boolean(),
 			}),
 			handler: async ({ input }) => {
 				await giselleEngine.deleteSecret(input);
@@ -555,7 +503,6 @@ export const createFormDataRouters = {
 				fileId: FileId.schema,
 				fileName: z.string(),
 				file: z.instanceof(File),
-				useExperimentalStorage: z.coerce.boolean(),
 			}),
 			handler: async ({ input }) => {
 				await giselleEngine.uploadFile(
@@ -563,7 +510,6 @@ export const createFormDataRouters = {
 					input.workspaceId,
 					input.fileId,
 					input.fileName,
-					input.useExperimentalStorage,
 				);
 				return new Response(null, { status: 202 });
 			},

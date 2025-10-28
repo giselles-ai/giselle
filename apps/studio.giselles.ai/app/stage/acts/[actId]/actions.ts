@@ -7,10 +7,7 @@ export async function fetchGenerationData(
 	generationId: string,
 ): Promise<Generation | undefined> {
 	try {
-		return await giselleEngine.getGeneration(
-			generationId as `gnr-${string}`,
-			true,
-		);
+		return await giselleEngine.getGeneration(generationId as `gnr-${string}`);
 	} catch (error) {
 		console.warn("Failed to fetch generation:", generationId, error);
 		return undefined;

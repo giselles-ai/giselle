@@ -16,10 +16,7 @@ export const generateContentJob = schemaJob({
 		}),
 	}),
 	run: async (payload) => {
-		const generation = await giselleEngine.getGeneration(
-			payload.generationId,
-			true,
-		);
+		const generation = await giselleEngine.getGeneration(payload.generationId);
 		if (!isRunningGeneration(generation)) {
 			return {
 				message: `Generation ${payload.generationId} is not running.`,

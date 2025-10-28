@@ -6,7 +6,6 @@ import {
 } from "@giselle-sdk/data-type";
 import { getGitHubDisplayLabel, githubTriggers } from "@giselle-sdk/flow";
 import {
-	useFeatureFlag,
 	useGiselleEngine,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
@@ -29,7 +28,6 @@ export const useTriggerConfiguration = ({
 }: {
 	node: TriggerNode;
 }): UseTriggerConfigurationReturn => {
-	const { experimental_storage } = useFeatureFlag();
 	const { data: workspace, updateNodeData } = useWorkflowDesigner();
 	const client = useGiselleEngine();
 	const [isPending, startTransition] = useTransition();
@@ -67,7 +65,6 @@ export const useTriggerConfiguration = ({
 								event,
 							},
 						},
-						useExperimentalStorage: experimental_storage,
 					});
 
 					updateNodeData(node, {
@@ -86,7 +83,7 @@ export const useTriggerConfiguration = ({
 				}
 			});
 		},
-		[workspace.id, client, node, updateNodeData, experimental_storage],
+		[workspace.id, client, node, updateNodeData],
 	);
 
 	return { configureTrigger, isPending };

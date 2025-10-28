@@ -10,7 +10,6 @@ import type {
 import type { LanguageModelProvider } from "@giselle-sdk/language-model";
 import type { EmbeddingMetrics, QueryService } from "@giselle-sdk/rag";
 import type { ModelMessage, ProviderMetadata } from "ai";
-import type { Storage } from "unstorage";
 import type { Act } from "../concepts/act";
 import type { GiselleLogger } from "../logger/types";
 import type { GiselleStorage } from "./experimental_storage";
@@ -85,8 +84,6 @@ export type EmbeddingCompleteCallbackFunction = (
 ) => void | Promise<void>;
 
 export interface GiselleEngineContext {
-	/** @deprecated */
-	deprecated_storage: Storage;
 	storage: GiselleStorage;
 	sampleAppWorkspaceIds?: WorkspaceId[];
 	llmProviders: LanguageModelProvider[];
@@ -188,8 +185,6 @@ export type DocumentVectorStoreQueryService<
 > = QueryService<DocumentVectorStoreQueryContext, M>;
 
 export interface GiselleEngineConfig {
-	/** @deprecated */
-	deprecated_storage: Storage;
 	storage: GiselleStorage;
 	sampleAppWorkspaceIds?: WorkspaceId[];
 	llmProviders?: LanguageModelProvider[];

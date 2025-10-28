@@ -18,7 +18,6 @@ export default async function Page({
 	const { workspaceId } = await params;
 	const workspacePromise = giselleEngine.getWorkspace(
 		WorkspaceId.parse(workspaceId),
-		true,
 	);
 	return (
 		<Suspense
