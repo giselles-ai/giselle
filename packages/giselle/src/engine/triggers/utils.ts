@@ -1,6 +1,6 @@
 import { FlowTrigger, type FlowTriggerId } from "@giselle-sdk/data-type";
-import type { GiselleStorage } from "../experimental_storage";
 import { removeGitHubRepositoryIntegrationIndex } from "../integrations/utils";
+import type { GiselleStorage } from "../storage";
 
 function flowTriggerPath(params: { flowTriggerId: FlowTriggerId }) {
 	return `flow-triggers/${params.flowTriggerId}.json`;

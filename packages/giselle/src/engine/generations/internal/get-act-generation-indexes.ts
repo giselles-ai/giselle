@@ -1,7 +1,7 @@
 import { NodeGenerationIndex } from "../../../concepts/generation";
 import type { ActId } from "../../../concepts/identifiers";
 import { actGenerationIndexesPath } from "../../../concepts/path";
-import type { GiselleStorage } from "../../experimental_storage";
+import type { GiselleStorage } from "../../storage";
 
 export async function getActGenerationIndexes(args: {
 	actId: ActId;

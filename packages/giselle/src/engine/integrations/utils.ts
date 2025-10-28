@@ -2,7 +2,7 @@ import {
 	type FlowTriggerId,
 	GitHubRepositoryIntegrationIndex,
 } from "@giselle-sdk/data-type";
-import type { GiselleStorage } from "../experimental_storage";
+import type { GiselleStorage } from "../storage";
 
 function getGitHubRepositoryIntegrationPath(repositoryNodeId: string): string {
 	return `integrations/github/repositories/${repositoryNodeId}.json`;
