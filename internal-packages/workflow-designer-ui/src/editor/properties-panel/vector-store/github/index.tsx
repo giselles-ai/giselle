@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { TriangleAlert } from "../../../../icons";
 import { useGitHubVectorStoreStatus } from "../../../lib/use-github-vector-store-status";
+import { SettingLabel } from "@giselle-internal/ui/setting-label";
 
 type GitHubVectorStoreNodePropertiesPanelProps = {
 	node: VectorStoreNode;
@@ -233,7 +234,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 	return (
 		<div className="flex flex-col gap-[17px] p-0">
 			<div className="space-y-[4px]">
-				<p className="text-[14px] py-[1.5px] text-inverse">GitHub Repository</p>
+				<SettingLabel className="mb-[4px]">GitHub Repository</SettingLabel>
 				{isOrphaned && source.state.status === "configured" && (
 					<div className="flex items-center gap-[6px] text-error-900 text-[13px] mb-[8px]">
 						<TriangleAlert className="size-[16px]" />
@@ -257,9 +258,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 				{/* Content Type Selection */}
 				{selectedRepoKey && (
 					<div className="mt-[16px]">
-						<p className="text-[14px] py-[1.5px] text-inverse mb-[8px]">
-							Content Type
-						</p>
+						<SettingLabel className="mb-[8px]">Content Type</SettingLabel>
 						<div className="space-y-[8px]">
 							{(() => {
 								const { hasBlobContent, hasPullRequestContent } =
@@ -339,9 +338,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 					selectedContentType &&
 					availableEmbeddingProfiles.length > 0 && (
 						<div className="mt-[16px]">
-							<p className="text-[14px] py-[1.5px] text-inverse mb-[8px]">
-								Embedding Model
-							</p>
+							<SettingLabel className="mb-[8px]">Embedding Model</SettingLabel>
 							{isEmbeddingProfileOrphaned &&
 								source.state.status === "configured" && (
 									<div className="flex items-center gap-[6px] text-error-900 text-[13px] mb-[8px]">
