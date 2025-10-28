@@ -23,6 +23,7 @@ import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import { handleMemberChange } from "@/services/teams/member-change";
 import type { TeamId } from "@/services/teams/types";
+import { hasTeamPlanFeatures } from "@/services/teams/utils";
 import {
 	deleteAvatar,
 	uploadAvatar,
@@ -606,7 +607,12 @@ export async function getSubscription(subscriptionId: string) {
 // Define result types for sendInvitations
 type InvitationResult = {
 	email: string;
-	status: "success" | "db_error" | "email_error" | "unknown_error";
+	status:
+		| "success"
+		| "db_error"
+		| "email_error"
+		| "plan_not_supported"
+		| "unknown_error";
 	error?: string;
 };
 
@@ -622,6 +628,16 @@ export async function sendInvitationsAction(
 ): Promise<SendInvitationsResult> {
 	const currentUser = await fetchCurrentUser();
 	const currentTeam = await fetchCurrentTeam();
+	if (!hasTeamPlanFeatures(currentTeam)) {
+		return {
+			overallStatus: "failure",
+			results: emails.map((email) => ({
+				email,
+				status: "plan_not_supported",
+				error: INVITE_MEMBERS_NOT_AVAILABLE_ERROR,
+			})),
+		};
+	}
 
 	const invitationPromises = emails.map(
 		async (email): Promise<InvitationResult> => {
