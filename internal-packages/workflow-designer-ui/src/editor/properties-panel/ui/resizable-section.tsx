@@ -27,7 +27,7 @@ interface ResizeHandleProps {
 	style?: React.CSSProperties;
 }
 
-export function ResizableSectionGroup({
+function ResizableSectionGroup({
 	children,
 	direction = "vertical",
 	className,
@@ -42,7 +42,7 @@ export function ResizableSectionGroup({
 	);
 }
 
-export function ResizableSection({
+function ResizableSection({
 	children,
 	title,
 	defaultSize = 50,
