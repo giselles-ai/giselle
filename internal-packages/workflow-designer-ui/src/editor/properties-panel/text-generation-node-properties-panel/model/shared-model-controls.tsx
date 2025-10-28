@@ -10,6 +10,7 @@ interface CommonSliderProps<T> {
 	modelData: T;
 	parseModelData: (data: T) => T;
 	configurationKey: string;
+	labelClassName?: string;
 }
 
 function CommonSlider<T extends { configurations: Record<string, unknown> }>({
@@ -22,10 +23,12 @@ function CommonSlider<T extends { configurations: Record<string, unknown> }>({
 	modelData,
 	parseModelData,
 	configurationKey,
+	labelClassName,
 }: CommonSliderProps<T>) {
 	return (
 		<Slider
 			label={label}
+			labelClassName={labelClassName}
 			value={value}
 			max={max}
 			min={min}
@@ -52,14 +55,17 @@ export function TemperatureSlider<
 	onModelChange,
 	modelData,
 	parseModelData,
+	labelClassName,
 }: {
 	onModelChange: (changedValue: T) => void;
 	modelData: T;
 	parseModelData: (data: T) => T;
+	labelClassName?: string;
 }) {
 	return (
 		<CommonSlider
 			label="Temperature"
+			labelClassName={labelClassName}
 			value={modelData.configurations.temperature}
 			min={0.0}
 			max={2.0}
@@ -77,14 +83,17 @@ export function TopPSlider<T extends { configurations: { topP: number } }>({
 	onModelChange,
 	modelData,
 	parseModelData,
+	labelClassName,
 }: {
 	onModelChange: (changedValue: T) => void;
 	modelData: T;
 	parseModelData: (data: T) => T;
+	labelClassName?: string;
 }) {
 	return (
 		<CommonSlider
 			label="Top P"
+			labelClassName={labelClassName}
 			value={modelData.configurations.topP}
 			min={0.0}
 			max={1.0}
@@ -104,14 +113,17 @@ export function FrequencyPenaltySlider<
 	onModelChange,
 	modelData,
 	parseModelData,
+	labelClassName,
 }: {
 	onModelChange: (changedValue: T) => void;
 	modelData: T;
 	parseModelData: (data: T) => T;
+	labelClassName?: string;
 }) {
 	return (
 		<CommonSlider
 			label="Frequency Penalty"
+			labelClassName={labelClassName}
 			value={modelData.configurations.frequencyPenalty}
 			min={0.0}
 			max={2.0}
@@ -132,15 +144,18 @@ export function PresencePenaltySlider<
 	modelData,
 	parseModelData,
 	min = 0.0,
+	labelClassName,
 }: {
 	onModelChange: (changedValue: T) => void;
 	modelData: T;
 	parseModelData: (data: T) => T;
 	min?: number;
+	labelClassName?: string;
 }) {
 	return (
 		<CommonSlider
 			label="Presence Penalty"
+			labelClassName={labelClassName}
 			value={modelData.configurations.presencePenalty}
 			min={min}
 			max={2.0}

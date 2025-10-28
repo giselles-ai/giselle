@@ -467,7 +467,7 @@ export function Toolbar() {
 										<div className="relative flex flex-col gap-[8px] max-h-[280px] overflow-y-auto">
 											{/* Search box */}
 											<div className="flex h-[28px] p-[8px] items-center gap-[11px] self-stretch rounded-[8px] bg-[rgba(222,233,242,0.20)] mx-[4px] mb-[4px]">
-												<div className="text-black-400">
+												<div className="text-text-muted">
 													<svg
 														width="18"
 														height="18"
@@ -490,7 +490,7 @@ export function Toolbar() {
 												<input
 													type="text"
 													placeholder="Search LLM Model..."
-													className="w-full bg-transparent border-none text-inverse text-[12px] placeholder:text-black-400 focus:outline-none"
+													className="w-full bg-transparent border-none text-inverse text-[12px] placeholder:text-text-muted focus:outline-none"
 													value={searchQuery}
 													onChange={(e) => setSearchQuery(e.target.value)}
 												/>
@@ -503,9 +503,9 @@ export function Toolbar() {
 														type="button"
 														className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
 															selectedCategory === "All"
-																? "bg-[#505D7B]"
-																: "hover:bg-[#3A425A]"
-														} text-[#DEE9F2] rounded text-[12px] font-medium leading-[170%]`}
+																? "bg-secondary"
+																: "hover:bg-ghost-element-hover"
+														} text-inverse rounded text-[12px] font-medium leading-[170%]`}
 														onClick={() => setSelectedCategory("All")}
 													>
 														All
@@ -514,9 +514,9 @@ export function Toolbar() {
 														type="button"
 														className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
 															selectedCategory === "Text"
-																? "bg-[#505D7B]"
-																: "hover:bg-[#3A425A]"
-														} text-[#DEE9F2] rounded text-[12px] font-medium leading-[170%]`}
+																? "bg-secondary"
+																: "hover:bg-ghost-element-hover"
+														} text-inverse rounded text-[12px] font-medium leading-[170%]`}
 														onClick={() => setSelectedCategory("Text")}
 													>
 														Text
@@ -525,22 +525,22 @@ export function Toolbar() {
 														type="button"
 														className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
 															selectedCategory === "Image"
-																? "bg-[#505D7B]"
-																: "hover:bg-[#3A425A]"
-														} text-[#DEE9F2] rounded text-[12px] font-medium leading-[170%]`}
+																? "bg-secondary"
+																: "hover:bg-ghost-element-hover"
+														} text-inverse rounded text-[12px] font-medium leading-[170%]`}
 														onClick={() => setSelectedCategory("Image")}
 													>
 														Image
 													</button>
 													<button
 														type="button"
-														className="flex px-[8px] py-0 justify-center items-center gap-[10px] text-black-400 rounded text-[12px] font-medium leading-[170%] opacity-50 cursor-not-allowed"
+														className="flex px-[8px] py-0 justify-center items-center gap-[10px] text-text-muted rounded text-[12px] font-medium leading-[170%] opacity-50 cursor-not-allowed"
 													>
 														Video
 													</button>
 													<button
 														type="button"
-														className="flex px-[8px] py-0 justify-center items-center gap-[10px] text-black-400 rounded text-[12px] font-medium leading-[170%] opacity-50 cursor-not-allowed"
+														className="flex px-[8px] py-0 justify-center items-center gap-[10px] text-text-muted rounded text-[12px] font-medium leading-[170%] opacity-50 cursor-not-allowed"
 													>
 														Audio
 													</button>
@@ -834,7 +834,7 @@ export function Toolbar() {
 														</div>
 													) : (
 														<div className="flex h-full items-center justify-center">
-															<p className="text-[14px] text-black-400 text-center">
+															<p className="text-[14px] text-text-muted text-center">
 																Hover over a model to view details
 															</p>
 														</div>

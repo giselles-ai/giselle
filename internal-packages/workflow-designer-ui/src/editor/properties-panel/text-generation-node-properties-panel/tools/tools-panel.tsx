@@ -5,20 +5,16 @@ import type { PropsWithChildren, ReactNode } from "react";
 import { toolProviders } from "./tool-provider";
 
 function ensureTools(key: keyof ToolSet, node: TextGenerationNode): string[] {
-	const toolConfig = node.content.tools?.[key];
-	if (!toolConfig) return [];
-
-	// Check if the toolConfig has a tools property
-	if ("tools" in toolConfig) {
-		return toolConfig.tools;
-	}
-
-	return [];
+	return (
+		(node.content.tools?.[key] && "tools" in node.content.tools[key]
+			? (node.content.tools[key] as { tools?: string[] }).tools
+			: undefined) ?? []
+	);
 }
 
 export function ToolsPanel({ node }: { node: TextGenerationNode }) {
 	return (
-		<div className="text-inverse space-y-[16px]">
+		<div className="text-inverse space-y-[8px]">
 			{toolProviders.map(
 				(provider) =>
 					(provider.requirement === undefined ||
@@ -56,8 +52,8 @@ function ToolListItem({
 	return (
 		<div
 			className={clsx(
-				"border border-border rounded-[8px] px-[12px] w-full py-[10px]",
-				"**:data-tool-icon:size-[20px] **:data-tool-icon:text-text-muted",
+				"rounded-[8px] px-[12px] w-full py-[10px] bg-background",
+				"**:data-tool-icon:size-[20px] **:data-tool-icon:text-inverse",
 				"**:data-dialog-trigger-icon:size-[14px]",
 			)}
 		>
@@ -73,7 +69,7 @@ function ToolListItem({
 					<div className="flex flex-wrap text-[12px] text-text-muted gap-x-[6px] gap-y-[6px]">
 						{availableTools.map((availableTool) => (
 							<p
-								className="border border-border rounded-full px-[6px] py-[1px]"
+								className="rounded-full px-[6px] py-[1px] bg-inverse/10"
 								key={availableTool}
 							>
 								{availableTool}
