@@ -714,6 +714,14 @@ export async function revokeInvitationAction(
 ): Promise<ActionResult> {
 	const token = formData.get("token") as string;
 	try {
+		const currentTeam = await fetchCurrentTeam();
+		if (!hasTeamPlanFeatures(currentTeam)) {
+			return {
+				success: false,
+				error: INVITE_MEMBERS_NOT_AVAILABLE_ERROR,
+			};
+		}
+
 		// Check if current user is admin
 		const currentUserRoleResult = await getCurrentUserRole();
 		if (
@@ -740,6 +748,14 @@ export async function resendInvitationAction(
 ): Promise<ActionResult> {
 	const token = formData.get("token") as string;
 	try {
+		const currentTeam = await fetchCurrentTeam();
+		if (!hasTeamPlanFeatures(currentTeam)) {
+			return {
+				success: false,
+				error: INVITE_MEMBERS_NOT_AVAILABLE_ERROR,
+			};
+		}
+
 		// Check if current user is admin
 		const currentUserRoleResult = await getCurrentUserRole();
 		if (
@@ -757,7 +773,6 @@ export async function resendInvitationAction(
 		// 1. revoke existing invitation
 		await revokeInvitation(token);
 		// 2. create new invitation
-		const currentTeam = await fetchCurrentTeam();
 		const currentUser = await fetchCurrentUser();
 		const newInvitation = await createInvitation(
 			invitation.email,
