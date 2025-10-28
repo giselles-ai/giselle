@@ -14,6 +14,8 @@ export type ModelPickerGroup = {
 		label?: string;
 		icon?: ReactNode;
 		badge?: ReactNode;
+		disabled?: boolean;
+		disabledReason?: string;
 	}>;
 };
 
@@ -188,11 +190,23 @@ export function ModelPicker({
 											<button
 												key={`${group.provider}-${m.id}`}
 												type="button"
+												disabled={m.disabled}
 												onClick={() => {
+													if (m.disabled) return;
 													onSelect(group.provider, m.id);
 													setOpen(false);
 												}}
-												className="flex gap-[12px] items-center p-[4px] rounded-[4px] hover:bg-white/5 focus:bg-white/5 cursor-pointer text-left"
+												className={clsx(
+													"flex gap-[12px] items-center p-[4px] rounded-[4px] text-left",
+													"hover:bg-white/5 focus:bg-white/5 cursor-pointer",
+													"disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:focus:bg-transparent",
+												)}
+												title={
+													m.disabled
+														? (m.disabledReason ??
+															"Upgrade to Pro to use this model.")
+														: undefined
+												}
 											>
 												<div className="flex items-center gap-[8px]">
 													<p className="text-[14px] text-left text-nowrap">
