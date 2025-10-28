@@ -1,7 +1,12 @@
-import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import type { TextNode } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
-import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
+import { TextEditor } from "@giselle-sdk/text-editor/react";
+import {
+	PropertiesPanelContent,
+	PropertiesPanelRoot,
+	ResizableSection,
+	ResizableSectionGroup,
+} from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 
 export function TextNodePropertiesPanel({ node }: { node: TextNode }) {
@@ -17,20 +22,15 @@ export function TextNodePropertiesPanel({ node }: { node: TextNode }) {
 				onDelete={() => deleteNode(node.id)}
 			/>
 			<PropertiesPanelContent>
-				<div className="flex flex-col">
-					<div className="overflow-y-auto">
-						<PromptEditor
+				<ResizableSectionGroup>
+					<ResizableSection defaultSize={100}>
+						<TextEditor
 							placeholder="Write or paste text here..."
 							value={node.content.text}
 							onValueChange={(text) => updateNodeDataContent(node, { text })}
-							nodes={[]}
-							connectedSources={[]}
-							showToolbar={false}
-							variant="plain"
-							showExpandIcon={false}
 						/>
-					</div>
-				</div>
+					</ResizableSection>
+				</ResizableSectionGroup>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);

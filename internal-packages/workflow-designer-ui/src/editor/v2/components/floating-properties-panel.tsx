@@ -17,11 +17,6 @@ interface FloatingPropertiesPanelProps {
 	container?: React.ComponentProps<typeof Dialog.Portal>["container"];
 	title: string;
 	onClose?: () => void;
-	/**
-	 * When true, the panel height follows content up to viewport max.
-	 * Otherwise it fills available height.
-	 */
-	autoHeight?: boolean;
 }
 
 export function FloatingPropertiesPanel({
@@ -35,7 +30,6 @@ export function FloatingPropertiesPanel({
 	container,
 	title,
 	onClose,
-	autoHeight = false,
 }: FloatingPropertiesPanelProps) {
 	const [width, setWidth] = useState(defaultWidth);
 	const [isResizing, setIsResizing] = useState(false);
@@ -119,8 +113,7 @@ export function FloatingPropertiesPanel({
 						<div
 							ref={panelRef}
 							className={clsx(
-								autoHeight ? "h-auto max-h-[calc(100vh-32px)]" : "h-full",
-								"pointer-events-auto relative rounded-[12px] shadow-xl",
+								"h-full pointer-events-auto relative rounded-[12px] shadow-xl",
 								isOpen
 									? "translate-x-0 opacity-100"
 									: position === "right"
@@ -160,8 +153,7 @@ export function FloatingPropertiesPanel({
 							{/* Content */}
 							<div
 								className={clsx(
-									"relative z-10 flex flex-col px-2 pb-2",
-									autoHeight ? "h-auto" : "h-[calc(100vh-32px)]",
+									"h-full overflow-hidden relative z-10 px-2 pb-2",
 									position === "right" ? "pl-3" : "pr-3",
 								)}
 							>

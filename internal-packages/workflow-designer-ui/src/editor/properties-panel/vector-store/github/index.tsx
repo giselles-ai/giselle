@@ -288,7 +288,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 														Not configured
 													</span>
 													<Info className="w-3 h-3 text-inverse/50 cursor-help" />
-													<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-background/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
+													<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-bg-800/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
 														Enable Code for {selectedRepoKey} in Vector Store
 														settings
 													</div>
@@ -320,7 +320,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 														Not configured
 													</span>
 													<Info className="w-3 h-3 text-inverse/50 cursor-help" />
-													<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-background/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
+													<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-bg-800/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
 														Enable Pull Requests for that repository in Vector
 														Store settings
 													</div>

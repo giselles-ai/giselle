@@ -133,15 +133,19 @@ export function ImageGenerationNodePropertiesPanel({
 	});
 
 	const generateImage = useCallback(() => {
+		console.log("generateImage called!");
 		if (usageLimitsReached) {
+			console.log("Usage limits reached");
 			error("Please upgrade your plan to continue using this feature.");
 			return;
 		}
 		if (isPromptEmpty(node.content.prompt)) {
+			console.log("Prompt is empty");
 			error("Please fill in the prompt to run.");
 			return;
 		}
 
+		console.log("Calling createAndStartGenerationRunner");
 		createAndStartGenerationRunner({
 			origin: {
 				type: "studio",
@@ -236,18 +240,14 @@ export function ImageGenerationNodePropertiesPanel({
 			<NodePanelHeader
 				node={node}
 				onChangeName={(name) => updateNodeData(node, { name })}
-				docsUrl="https://docs.giselles.ai/en/glossary/generator-node"
+				docsUrl="https://docs.giselles.ai/en/glossary/image-node"
 				onDelete={() => deleteNode(node.id)}
 			/>
 
 			<PropertiesPanelContent>
-				<div
-					className="gen-panel"
-					data-node-type="generation"
-					data-kind="image"
-				>
-					<div className="gen-scroll">
-						<div ref={promptEditorRef}>
+				<div className="relative flex-1 min-h-0 flex flex-col">
+					<div className="flex-1 min-h-0 overflow-y-auto">
+						<div ref={promptEditorRef} className="mt-[12px]">
 							<PromptPanel
 								node={node}
 								onExpand={() => {
@@ -266,17 +266,20 @@ export function ImageGenerationNodePropertiesPanel({
 								onExpand={() => setIsGenerationExpanded(true)}
 							/>
 						</div>
+					</div>
 
-						<div ref={generateCtaRef} className="gen-footer">
-							<GenerateCtaButton
-								isGenerating={isGenerating}
-								isEmpty={isPromptEmpty(node.content.prompt)}
-								onClick={() => {
-									if (isGenerating) stopGenerationRunner();
-									else generateImage();
-								}}
-							/>
-						</div>
+					<div
+						ref={generateCtaRef}
+						className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent"
+					>
+						<GenerateCtaButton
+							isGenerating={isGenerating}
+							isEmpty={isPromptEmpty(node.content.prompt)}
+							onClick={() => {
+								if (isGenerating) stopGenerationRunner();
+								else generateImage();
+							}}
+						/>
 					</div>
 
 					{/* Expanded prompt overlay */}
@@ -312,9 +315,7 @@ export function ImageGenerationNodePropertiesPanel({
 								variant="plain"
 								showExpandIcon={false}
 								containerClassName="flex-1 min-h-0"
-								editorClassName="gen-editor"
-								minHeightClass=""
-								fullHeight
+								editorClassName="min-h-0 h-full"
 							/>
 						</div>
 						<div className="absolute bottom-[20px] right-[12px]">

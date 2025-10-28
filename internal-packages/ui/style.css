@@ -236,33 +236,4 @@
 		-webkit-mask-composite: xor;
 		padding: 1px;
 	}
-
-	/* Generation nodes scoped utilities */
-	.gen-panel {
-		@apply relative z-10 flex flex-col h-[calc(100vh-32px)] overflow-hidden px-0 pl-0 pt-0;
-	}
-
-	.gen-scroll {
-		@apply flex-1 min-h-0 overflow-y-auto pt-2 pb-[88px];
-	}
-
-	.gen-footer {
-		@apply sticky bottom-0 z-40 px-[16px] pt-[8px] pb-[4px] bg-background/80;
-	}
-
-	.gen-editor {
-		@apply min-h-[120px] h-[120px] overflow-y-auto;
-	}
-
-	.gen-expanded[data-expanded="true"] .gen-editor {
-		@apply h-full min-h-0 overflow-y-auto;
-	}
-
-	.gen-expanded[data-expanded="true"] .gen-scroll {
-		@apply pt-2 pb-[88px];
-	}
-
-	.gen-header {
-		@apply h-[48.5px] sticky top-0 z-30 bg-background/95 backdrop-blur;
-	}
 }

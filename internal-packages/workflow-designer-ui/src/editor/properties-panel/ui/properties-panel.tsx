@@ -47,7 +47,7 @@ function getNodeIconColor(node: NodeLike): string {
 export function PropertiesPanelRoot({ children }: { children: ReactNode }) {
 	return (
 		<div
-			className={`${PANEL_SPACING.LAYOUT.FULL_WIDTH} ${PANEL_SPACING.LAYOUT.FLEX_COL} ${PANEL_SPACING.CONTENT.GAP}`}
+			className={`${PANEL_SPACING.LAYOUT.FULL_HEIGHT} ${PANEL_SPACING.LAYOUT.FULL_WIDTH} ${PANEL_SPACING.LAYOUT.FLEX_COL} ${PANEL_SPACING.CONTENT.GAP} ${PANEL_SPACING.LAYOUT.OVERFLOW_HIDDEN}`}
 		>
 			{children}
 		</div>
