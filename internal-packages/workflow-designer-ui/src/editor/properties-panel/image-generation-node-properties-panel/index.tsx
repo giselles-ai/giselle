@@ -1,27 +1,21 @@
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
-import type {
-	ImageGenerationLanguageModelData,
-	ImageGenerationNode,
-} from "@giselle-sdk/data-type";
+import type { ImageGenerationNode } from "@giselle-sdk/data-type";
 import {
-	isSupportedConnection,
 	useNodeGenerations,
 	useWorkflowDesigner,
-	useWorkflowDesignerStore,
 } from "@giselle-sdk/giselle/react";
-import {
-	falLanguageModels,
-	googleImageLanguageModels,
-	openaiImageModels,
-} from "@giselle-sdk/language-model";
 import { Minimize2 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
+import {
+	useElementTopPx,
+	useLivePrompt,
+	useOverlayBottom,
+} from "../../../ui/hooks";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
-import { useModelEligibility } from "../../lib/use-model-eligibility";
 import { isPromptEmpty } from "../../lib/validate-prompt";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { GenerateCtaButton } from "../ui/generate-cta-button";
@@ -35,13 +29,8 @@ export function ImageGenerationNodePropertiesPanel({
 }: {
 	node: ImageGenerationNode;
 }) {
-	const {
-		data,
-		updateNodeDataContent,
-		updateNodeData,
-		deleteConnection,
-		deleteNode,
-	} = useWorkflowDesigner();
+	const { data, updateNodeDataContent, updateNodeData, deleteNode } =
+		useWorkflowDesigner();
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
 			nodeId: node.id,
@@ -51,78 +40,17 @@ export function ImageGenerationNodePropertiesPanel({
 	const usageLimitsReached = useUsageLimitsReached();
 	const { error } = useToasts();
 
-	const checkEligibility = useModelEligibility();
-
 	const [isPromptExpanded, setIsPromptExpanded] = useState(false);
 	const [isGenerationExpanded, setIsGenerationExpanded] = useState(false);
 	const [editorVersion, setEditorVersion] = useState(0);
 	const generateCtaRef = useRef<HTMLDivElement | null>(null);
-	const [_overlayBottomPx, setOverlayBottomPx] = useState(0);
 	const promptEditorRef = useRef<HTMLDivElement | null>(null);
 	const generationPanelRef = useRef<HTMLDivElement | null>(null);
-	const [promptTopPx, setPromptTopPx] = useState(0);
-	const [generationTopPx, setGenerationTopPx] = useState(0);
 
-	const _uiState = useMemo(() => data.ui.nodeState[node.id], [data, node.id]);
-
-	// Subscribe live to the latest prompt (for expanded editor sync)
-	const livePrompt = useWorkflowDesignerStore((s) => {
-		const n = s.workspace.nodes.find((x) => x.id === node.id);
-		return (n?.content as { prompt?: string } | undefined)?.prompt;
-	});
-
-	// Get available models for current provider
-	const _models = useMemo(() => {
-		switch (node.content.llm.provider) {
-			case "fal":
-				return falLanguageModels.map((model) => ({
-					value: model.id,
-					label: model.id,
-					disabled: !checkEligibility(model),
-				}));
-			case "openai":
-				return openaiImageModels.map((model) => ({
-					value: model.id,
-					label: model.id,
-					disabled: !checkEligibility(model),
-				}));
-			case "google":
-				return googleImageLanguageModels.map((model) => ({
-					value: model.id,
-					label: model.id,
-					disabled: !checkEligibility(model),
-				}));
-			default: {
-				const _exhaustiveCheck: never = node.content.llm;
-				throw new Error(`Unhandled provider: ${_exhaustiveCheck}`);
-			}
-		}
-	}, [node.content.llm, checkEligibility]);
-
-	const _disconnectInvalidConnections = useCallback(
-		(model: ImageGenerationLanguageModelData) => {
-			const connections = data.connections.filter(
-				(c) => c.inputNode.id === node.id,
-			);
-			if (connections.length === 0) return;
-
-			const newInputNode = {
-				...node,
-				content: { ...node.content, llm: model },
-			};
-			for (const connection of connections) {
-				const outputNode = data.nodes.find(
-					(n) => n.id === connection.outputNode.id,
-				);
-				if (!outputNode) continue;
-
-				if (!isSupportedConnection(outputNode, newInputNode).canConnect) {
-					deleteConnection(connection.id);
-				}
-			}
-		},
-		[node, data.connections, data.nodes, deleteConnection],
-	);
+	const _overlayBottomPx = useOverlayBottom(generateCtaRef);
+	const promptTopPx = useElementTopPx(promptEditorRef);
+	const generationTopPx = useElementTopPx(generationPanelRef);
+	const livePrompt = useLivePrompt(node.id);
 
 	useKeyboardShortcuts({
 		onGenerate: () => {
@@ -133,19 +61,15 @@ export function ImageGenerationNodePropertiesPanel({
 	});
 
 	const generateImage = useCallback(() => {
-		console.log("generateImage called!");
 		if (usageLimitsReached) {
-			console.log("Usage limits reached");
 			error("Please upgrade your plan to continue using this feature.");
 			return;
 		}
 		if (isPromptEmpty(node.content.prompt)) {
-			console.log("Prompt is empty");
 			error("Please fill in the prompt to run.");
 			return;
 		}
 
-		console.log("Calling createAndStartGenerationRunner");
 		createAndStartGenerationRunner({
 			origin: {
 				type: "studio",
@@ -168,71 +92,6 @@ export function ImageGenerationNodePropertiesPanel({
 		usageLimitsReached,
 		error,
 	]);
-
-	useEffect(() => {
-		const el = generateCtaRef.current;
-		if (!el) {
-			setOverlayBottomPx(0);
-			return;
-		}
-		const update = () => setOverlayBottomPx(el.offsetHeight || 0);
-		update();
-		const ro = new ResizeObserver(update);
-		ro.observe(el);
-		window.addEventListener("resize", update);
-		return () => {
-			ro.disconnect();
-			window.removeEventListener("resize", update);
-		};
-	}, []);
-
-	useEffect(() => {
-		const el = promptEditorRef.current;
-		if (!el) {
-			setPromptTopPx(0);
-			return;
-		}
-		const update = () => {
-			const rect = el.getBoundingClientRect();
-			const container = el.closest(".relative");
-			const containerRect = container?.getBoundingClientRect();
-			setPromptTopPx(containerRect ? rect.top - containerRect.top : 0);
-		};
-		update();
-		const ro = new ResizeObserver(update);
-		ro.observe(el);
-		window.addEventListener("resize", update);
-		window.addEventListener("scroll", update, true);
-		return () => {
-			ro.disconnect();
-			window.removeEventListener("resize", update);
-			window.removeEventListener("scroll", update, true);
-		};
-	}, []);
-
-	useEffect(() => {
-		const el = generationPanelRef.current;
-		if (!el) {
-			setGenerationTopPx(0);
-			return;
-		}
-		const update = () => {
-			const rect = el.getBoundingClientRect();
-			const container = el.closest(".relative");
-			const containerRect = container?.getBoundingClientRect();
-			setGenerationTopPx(containerRect ? rect.top - containerRect.top : 0);
-		};
-		update();
-		const ro = new ResizeObserver(update);
-		ro.observe(el);
-		window.addEventListener("resize", update);
-		window.addEventListener("scroll", update, true);
-		return () => {
-			ro.disconnect();
-			window.removeEventListener("resize", update);
-			window.removeEventListener("scroll", update, true);
-		};
-	}, []);
 
 	return (
 		<PropertiesPanelRoot>

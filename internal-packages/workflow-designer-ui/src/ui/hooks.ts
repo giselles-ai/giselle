@@ -10,7 +10,7 @@ export function useLivePrompt(nodeId: string) {
 	});
 }
 
-export function useOverlayBottom(ref: React.RefObject<HTMLElement>) {
+export function useOverlayBottom(ref: React.RefObject<HTMLElement | null>) {
 	const [overlayBottomPx, setOverlayBottomPx] = useState(0);
 
 	useEffect(() => {
@@ -33,7 +33,7 @@ export function useOverlayBottom(ref: React.RefObject<HTMLElement>) {
 	return overlayBottomPx;
 }
 
-export function useElementTopPx(ref: React.RefObject<HTMLElement>) {
+export function useElementTopPx(ref: React.RefObject<HTMLElement | null>) {
 	const [topPx, setTopPx] = useState(0);
 
 	useEffect(() => {

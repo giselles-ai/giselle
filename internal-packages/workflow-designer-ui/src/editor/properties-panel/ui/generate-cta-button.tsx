@@ -22,10 +22,7 @@ export function GenerateCtaButton({
 	return (
 		<button
 			type="button"
-			onClick={() => {
-				console.log("GenerateCtaButton clicked!");
-				onClick();
-			}}
+			onClick={onClick}
 			disabled={!isGenerating && isEmpty}
 			className={clsx(
 				"w-full flex items-center justify-center px-[24px] py-[12px] text-white rounded-[9999px] border transition-all hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0",
