@@ -23,6 +23,7 @@ interface PromptEditorProps {
 	onExpand?: () => void;
 	expandIconPosition?: "left" | "right";
 	minHeightClass?: string;
+	fullHeight?: boolean;
 }
 
 export function PromptEditor({
@@ -41,6 +42,7 @@ export function PromptEditor({
 	onExpand,
 	expandIconPosition = "right",
 	minHeightClass = "min-h-[120px]",
+	fullHeight = false,
 }: PromptEditorProps) {
 	const variantClass =
 		variant === "glass"
@@ -73,7 +75,7 @@ export function PromptEditor({
 						minHeightClass,
 						editorClassName,
 					)}
-					fullHeight={false}
+					fullHeight={fullHeight}
 				/>
 				{showExpandIcon && (
 					<button
