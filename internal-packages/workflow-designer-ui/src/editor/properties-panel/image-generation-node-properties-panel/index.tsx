@@ -247,7 +247,7 @@ export function ImageGenerationNodePropertiesPanel({
 					data-kind="image"
 				>
 					<div className="gen-scroll">
-						<div ref={promptEditorRef} className="mt-[12px]">
+						<div ref={promptEditorRef}>
 							<PromptPanel
 								node={node}
 								onExpand={() => {
@@ -311,9 +311,10 @@ export function ImageGenerationNodePropertiesPanel({
 								showToolbar={false}
 								variant="plain"
 								showExpandIcon={false}
-								containerClassName="flex-1 min-h-0 h-full"
-								editorClassName="h-full"
+								containerClassName="flex-1 min-h-0"
+								editorClassName="gen-editor"
 								minHeightClass=""
+								fullHeight
 							/>
 						</div>
 						<div className="absolute bottom-[20px] right-[12px]">
