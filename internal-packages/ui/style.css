@@ -236,4 +236,33 @@
 		-webkit-mask-composite: xor;
 		padding: 1px;
 	}
+
+	/* Generation nodes scoped utilities */
+	.gen-panel {
+		@apply relative z-10 flex flex-col h-[calc(100vh-32px)] px-2 pb-2 pl-3 overflow-hidden;
+	}
+
+	.gen-scroll {
+		@apply flex-1 min-h-0 overflow-y-auto pt-2 pb-[88px];
+	}
+
+	.gen-footer {
+		@apply sticky bottom-0 z-40 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent;
+	}
+
+	.gen-editor {
+		@apply min-h-[120px] h-[180px];
+	}
+
+	.gen-expanded[data-expanded="true"] .gen-editor {
+		@apply h-auto min-h-0;
+	}
+
+	.gen-expanded[data-expanded="true"] .gen-scroll {
+		@apply pt-2 pb-[88px];
+	}
+
+	.gen-header {
+		@apply h-[48.5px] sticky top-0 z-30 bg-background/95 backdrop-blur;
+	}
 }

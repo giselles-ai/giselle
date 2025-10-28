@@ -370,6 +370,7 @@ export function PromptPanel({
 				showExpandIcon={true}
 				onExpand={onExpand}
 				expandIconPosition="right"
+				editorClassName="gen-editor"
 			/>
 			{resolvedSections.advancedOptions && advancedOptions}
 		</>

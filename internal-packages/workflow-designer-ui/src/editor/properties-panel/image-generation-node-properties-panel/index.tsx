@@ -241,8 +241,12 @@ export function ImageGenerationNodePropertiesPanel({
 			/>
 
 			<PropertiesPanelContent>
-				<div className="relative flex-1 min-h-0 flex flex-col">
-					<div className="flex-1 min-h-0 overflow-y-auto pt-2 pb-[88px]">
+				<div
+					className="gen-panel"
+					data-node-type="generation"
+					data-kind="image"
+				>
+					<div className="gen-scroll">
 						<div ref={promptEditorRef} className="mt-[12px]">
 							<PromptPanel
 								node={node}
@@ -263,10 +267,7 @@ export function ImageGenerationNodePropertiesPanel({
 							/>
 						</div>
 
-						<div
-							ref={generateCtaRef}
-							className="sticky bottom-0 z-30 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent"
-						>
+						<div ref={generateCtaRef} className="gen-footer">
 							<GenerateCtaButton
 								isGenerating={isGenerating}
 								isEmpty={isPromptEmpty(node.content.prompt)}

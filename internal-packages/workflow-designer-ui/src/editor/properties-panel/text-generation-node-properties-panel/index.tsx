@@ -142,8 +142,8 @@ export function TextGenerationNodePropertiesPanel({
 			/>
 
 			<PropertiesPanelContent>
-				<div className="relative flex-1 min-h-0 flex flex-col">
-					<div className="flex-1 min-h-0 overflow-y-auto">
+				<div className="gen-panel" data-node-type="generation" data-kind="text">
+					<div className="gen-scroll">
 						<div ref={promptEditorRef}>
 							<TextGenerationTabContent
 								node={node}
@@ -167,29 +167,27 @@ export function TextGenerationNodePropertiesPanel({
 								/>
 							</div>
 						</div>
-					</div>
-					<div
-						ref={generateCtaRef}
-						className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent"
-					>
-						<GenerateCtaButton
-							isGenerating={isGenerating}
-							isEmpty={isPromptEmpty(node.content.prompt)}
-							onClick={() => {
-								if (isGenerating) stopGenerationRunner();
-								else generateText();
-							}}
-						/>
+						<div ref={generateCtaRef} className="gen-footer">
+							<GenerateCtaButton
+								isGenerating={isGenerating}
+								isEmpty={isPromptEmpty(node.content.prompt)}
+								onClick={() => {
+									if (isGenerating) stopGenerationRunner();
+									else generateText();
+								}}
+							/>
+						</div>
 					</div>
 					<div
 						role="dialog"
 						aria-modal="true"
 						aria-label="Expanded prompt editor"
-						className={`absolute left-0 right-0 z-20 flex flex-col bg-background rounded-[8px] transition-all duration-300 ease-out ${
+						className={`gen-expanded absolute left-0 right-0 z-20 flex flex-col bg-background rounded-[8px] transition-all duration-300 ease-out ${
 							isPromptExpanded
 								? "opacity-100 scale-y-100 pointer-events-auto"
 								: "opacity-0 scale-y-0 pointer-events-none"
 						}`}
+						data-expanded={isPromptExpanded ? "true" : "false"}
 						style={{
 							top: 0,
 							bottom: _overlayBottomPx,
@@ -211,7 +209,8 @@ export function TextGenerationNodePropertiesPanel({
 								variant="plain"
 								showExpandIcon={false}
 								containerClassName="flex-1 min-h-0"
-								editorClassName="min-h-0 h-full"
+								editorClassName="gen-editor"
+								minHeightClass=""
 							/>
 						</div>
 						<div className="absolute bottom-[20px] right-[12px]">
