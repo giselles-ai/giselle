@@ -327,7 +327,7 @@ export function InviteMemberDialog({
 			>
 				<GlassDialogHeader
 					title="Invite Team Member"
-					description="Each member added to your team will be charged as an additional seat ($20 per seat) on your Pro Plan subscription."
+					description="Invited members will be able to collaborate with your team once they accept."
 					onClose={handleCloseDialog}
 				/>
 				<GlassDialogBody>
