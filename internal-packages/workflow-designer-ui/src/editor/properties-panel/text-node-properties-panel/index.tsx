@@ -1,7 +1,7 @@
 import type { TextNode } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
 import { TextEditor } from "@giselle-sdk/text-editor/react";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 
@@ -10,26 +10,6 @@ export function TextNodePropertiesPanel({ node }: { node: TextNode }) {
 		useWorkflowDesigner();
 
 	const containerRef = useRef<HTMLDivElement>(null);
-	const [_maxHeightPx, setMaxHeightPx] = useState<number | undefined>(
-		undefined,
-	);
-
-	useLayoutEffect(() => {
-		const el = containerRef.current;
-		if (!el) return;
-		const update = () => {
-			const rect = el.getBoundingClientRect();
-			setMaxHeightPx(rect.height);
-		};
-		update();
-		const ro = new ResizeObserver(update);
-		ro.observe(el);
-		window.addEventListener("resize", update);
-		return () => {
-			ro.disconnect();
-			window.removeEventListener("resize", update);
-		};
-	}, []);
 
 	return (
 		<PropertiesPanelRoot>

@@ -70,8 +70,8 @@ export function PromptEditor({
 					placeholder={placeholder}
 					header={header}
 					showToolbar={showToolbar}
-					editorClassName={clsx(
-						"bg-inverse/10 border-none !pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px] rounded-[8px]",
+						editorClassName={clsx(
+							"bg-inverse/10 border-none !pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px] rounded-[8px]",
 						minHeightClass,
 						editorClassName,
 					)}
