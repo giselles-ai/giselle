@@ -251,7 +251,7 @@
 	}
 
 	.gen-editor {
-		@apply min-h-[120px] h-[180px];
+		@apply min-h-[120px] h-[120px] overflow-y-auto;
 	}
 
 	.gen-expanded[data-expanded="true"] .gen-editor {
