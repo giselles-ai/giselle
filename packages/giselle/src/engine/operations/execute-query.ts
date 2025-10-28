@@ -17,7 +17,6 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
-import type { GiselleStorage } from "../storage";
 import {
 	type FailedGeneration,
 	GenerationContext,
@@ -33,6 +32,7 @@ import {
 	getNodeGenerationIndexes,
 	queryResultToText,
 } from "../generations/utils";
+import type { GiselleStorage } from "../storage";
 import type {
 	DocumentVectorStoreQueryContext,
 	GiselleEngineContext,
