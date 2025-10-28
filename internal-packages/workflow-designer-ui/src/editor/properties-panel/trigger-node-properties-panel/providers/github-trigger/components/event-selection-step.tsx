@@ -1,4 +1,5 @@
 import { type GitHubTriggerEventId, githubTriggers } from "@giselle-sdk/flow";
+import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { ArrowRightIcon, getTriggerIcon } from "./icons";
 
 interface EventSelectionStepProps {
@@ -19,7 +20,7 @@ interface EventSelectionStepProps {
 export function EventSelectionStep({ onSelectEvent }: EventSelectionStepProps) {
 	return (
 		<div className="flex flex-col gap-[4px] flex-1 overflow-hidden">
-			<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Event Type</p>
+            <SettingLabel className="mb-[4px]">Event Type</SettingLabel>
 			<div className="flex flex-col gap-[16px] overflow-y-auto pr-2 pl-0 pt-[8px] custom-scrollbar flex-1">
 				{Object.entries(githubTriggers).map(([id, githubTrigger]) => (
 					<button
