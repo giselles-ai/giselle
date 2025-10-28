@@ -17,7 +17,7 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
-import type { GiselleStorage } from "../experimental_storage";
+import type { GiselleStorage } from "../storage";
 import {
 	type FailedGeneration,
 	GenerationContext,

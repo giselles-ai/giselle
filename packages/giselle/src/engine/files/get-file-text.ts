@@ -1,5 +1,5 @@
 import type { FileId, WorkspaceId } from "@giselle-sdk/data-type";
-import type { GiselleStorage } from "../experimental_storage";
+import type { GiselleStorage } from "../storage";
 import { filePath } from "./utils";
 
 export async function getFileText(args: {

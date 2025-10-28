@@ -1,7 +1,7 @@
 import type { NodeId } from "@giselle-sdk/data-type";
 import { Generation, NodeGenerationIndex } from "../../../concepts/generation";
 import type { GiselleLogger } from "../../../logger/types";
-import type { GiselleStorage } from "../../experimental_storage";
+import type { GiselleStorage } from "../../storage";
 import {
 	generationPath,
 	getNodeGenerationIndexes,

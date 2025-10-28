@@ -26,7 +26,7 @@ import {
 	NodeGenerationIndex,
 } from "../../concepts/generation";
 import type { GenerationId } from "../../concepts/identifiers";
-import type { GiselleStorage } from "../experimental_storage";
+import type { GiselleStorage } from "../storage";
 import type { GiselleEngineContext } from "../types";
 
 interface GeneratedImageData {

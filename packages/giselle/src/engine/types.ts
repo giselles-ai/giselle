@@ -12,7 +12,6 @@ import type { EmbeddingMetrics, QueryService } from "@giselle-sdk/rag";
 import type { ModelMessage, ProviderMetadata } from "ai";
 import type { Act } from "../concepts/act";
 import type { GiselleLogger } from "../logger/types";
-import type { GiselleStorage } from "./experimental_storage";
 import type {
 	CompletedGeneration,
 	FailedGeneration,
@@ -21,6 +20,7 @@ import type {
 	OutputFileBlob,
 	RunningGeneration,
 } from "./generations";
+import type { GiselleStorage } from "./storage";
 import type { TelemetrySettings } from "./telemetry";
 import type { UsageLimits } from "./usage-limits";
 import type { Vault } from "./vault";

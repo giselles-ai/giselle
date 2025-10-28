@@ -1,6 +1,6 @@
 import { Node, Workspace, type WorkspaceId } from "@giselle-sdk/data-type";
 import { parseAndMod } from "../../data-mod";
-import type { GiselleStorage } from "../experimental_storage";
+import type { GiselleStorage } from "../storage";
 
 function workspacePath(workspaceId: WorkspaceId) {
 	return `workspaces/${workspaceId}/workspace.json`;
