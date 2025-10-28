@@ -239,7 +239,7 @@
 
 	/* Generation nodes scoped utilities */
 	.gen-panel {
-		@apply relative z-10 flex flex-col h-[calc(100vh-32px)] px-2 pb-2 pl-3 overflow-hidden;
+		@apply relative z-10 flex flex-col h-[calc(100vh-32px)] overflow-hidden px-0 pl-0 pt-0;
 	}
 
 	.gen-scroll {
