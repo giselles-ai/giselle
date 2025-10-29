@@ -45,7 +45,7 @@ export function getHeaderClasses(): string {
 		PANEL_SPACING.HEADER.PADDING,
 		PANEL_SPACING.LAYOUT.SHRINK_0,
 		// Keep header fixed while inner content scrolls
-		"sticky top-0 z-10",
+		"sticky top-0 z-10 bg-background/95 backdrop-blur",
 	];
 
 	return baseClasses.join(" ");
