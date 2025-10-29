@@ -1,3 +1,4 @@
+import { Button } from "@giselle-internal/ui/button";
 import { IconBox } from "@giselle-internal/ui/icon-box";
 import type { ActionNode, Node } from "@giselle-sdk/data-type";
 import {
@@ -6,7 +7,6 @@ import {
 } from "@giselle-sdk/giselle/react";
 import { Trash2 as TrashIcon } from "lucide-react";
 import { useCallback } from "react";
-import { Button } from "../../../ui/button";
 import {
 	PropertiesPanelContent,
 	PropertiesPanelHeader,
@@ -65,11 +65,6 @@ export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 				}}
 				action={
 					<div className="flex items-center gap-[6px] ml-[8px]">
-						{node.content.command.state.status === "unconfigured" ? null : (
-							<Button type="button" onClick={handleClick}>
-								Run Action
-							</Button>
-						)}
 						<IconBox
 							aria-label="Open documentation"
 							title="Open documentation"
@@ -118,9 +113,19 @@ export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 				}
 			/>
 			<PropertiesPanelContent>
-				<div className="overflow-y-auto flex-1 pr-2 custom-scrollbar h-full relative">
-					<PropertiesPanel node={node} />
-				</div>
+				<PropertiesPanel node={node} />
+				{node.content.command.state.status === "unconfigured" ? null : (
+					<div className="flex justify-end mt-[8px]">
+						<Button
+							variant="glass"
+							size="large"
+							type="button"
+							onClick={handleClick}
+						>
+							Run Action
+						</Button>
+					</div>
+				)}
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);

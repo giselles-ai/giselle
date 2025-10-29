@@ -113,9 +113,7 @@ export function GitHubActionPropertiesPanel({ node }: { node: ActionNode }) {
 					node={node}
 					inputs={node.inputs}
 				/>
-				<div className="p-4">
-					<GenerationPanel node={node} />
-				</div>
+				<GenerationPanel node={node} />
 			</div>
 		);
 	} else if (
