@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import Stripe from "stripe";
-import { db, subscriptions } from "@/drizzle";
+import { db, subscriptions } from "@/db";
 
 if (!process.env.STRIPE_SECRET_KEY) {
 	throw new Error("STRIPE_SECRET_KEY is not set in environment variables");

@@ -1,6 +1,6 @@
 import type { ActId } from "@giselle-sdk/giselle";
 import { giselleEngine } from "@/app/giselle-engine";
-import { db } from "@/drizzle";
+import { db } from "@/db";
 import type { SidebarDataObject } from "../ui/sidebar";
 
 export async function getSidebarDataObject(actId: ActId) {

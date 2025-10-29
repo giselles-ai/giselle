@@ -13,7 +13,7 @@ import {
 	documentEmbeddingProfiles,
 	documentVectorStoreSources,
 	documentVectorStores,
-} from "@/drizzle";
+} from "@/db";
 import { docVectorStoreFlag } from "@/flags";
 import {
 	DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_BYTES,

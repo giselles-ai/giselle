@@ -5,7 +5,7 @@ import {
 	documentEmbeddingProfiles,
 	documentVectorStoreSources,
 	documentVectorStores,
-} from "@/drizzle";
+} from "@/db";
 import { fetchCurrentTeam } from "@/services/teams";
 
 export type DocumentVectorStoreWithProfiles =

@@ -1,6 +1,6 @@
 import Avatar from "boring-avatars";
 import Image from "next/image";
-import type { users } from "@/drizzle";
+import type { users } from "@/db";
 import { cn } from "@/lib/utils";
 
 export function AvatarImage({

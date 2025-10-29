@@ -1,7 +1,7 @@
 import type { GitHubQueryContext } from "@giselle-sdk/giselle";
 import type { QueryResult } from "@giselle-sdk/rag";
 import { and, eq, inArray } from "drizzle-orm";
-import { db, githubRepositoryPullRequestEmbeddings } from "@/drizzle";
+import { db, githubRepositoryPullRequestEmbeddings } from "@/db";
 import { resolveGitHubRepositoryIndex } from "../resolve-github-repository-index";
 import type { GitHubPullRequestMetadata } from "./schema";
 

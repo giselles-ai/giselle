@@ -1,5 +1,5 @@
 import type { InferSelectModel } from "drizzle-orm";
-import type { teams } from "@/drizzle";
+import type { teams } from "@/db";
 
 interface TeamCardProps {
 	team?: Pick<InferSelectModel<typeof teams>, "id" | "name">;

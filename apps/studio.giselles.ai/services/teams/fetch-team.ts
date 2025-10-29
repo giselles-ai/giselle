@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
-import { db } from "@/drizzle";
-import { subscriptions, teams } from "@/drizzle/schema";
+import { db } from "@/db";
+import { subscriptions, teams } from "@/db/schema";
 import type { TeamWithSubscription } from "./types";
 
 export async function fetchTeamByDbId(

@@ -5,7 +5,7 @@ import {
 	supabaseUserMappings,
 	teamMemberships,
 	teams,
-} from "@/drizzle";
+} from "@/db";
 import { getUser } from "@/lib/supabase";
 
 /**

@@ -1,7 +1,7 @@
 import { EmptyState } from "@giselle-internal/ui/empty-state";
 import { SectionHeader } from "@giselle-internal/ui/section-header";
 import { Card } from "@/components/ui/card";
-import type { GitHubRepositoryContentType } from "@/drizzle";
+import type { GitHubRepositoryContentType } from "@/db";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import { RepositoryItem } from "./repository-item";

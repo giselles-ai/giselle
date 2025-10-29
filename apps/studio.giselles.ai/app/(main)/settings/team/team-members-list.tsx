@@ -1,5 +1,5 @@
 "use client";
-import type { TeamRole } from "@/drizzle";
+import type { TeamRole } from "@/db";
 import type { TeamId } from "@/services/teams/types";
 import type { Invitation } from "./invitation";
 import { InvitationListItem } from "./invitation-list-item";

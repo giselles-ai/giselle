@@ -5,8 +5,8 @@ const projectDir = process.cwd();
 loadEnvConfig(projectDir);
 
 export default defineConfig({
-	schema: "./drizzle/schema.ts",
-	out: "./migrations",
+	schema: "./db/schema.ts",
+	out: "./db/migrate",
 	dialect: "postgresql",
 	dbCredentials: {
 		// biome-ignore lint/style/noNonNullAssertion: environment variable is defined

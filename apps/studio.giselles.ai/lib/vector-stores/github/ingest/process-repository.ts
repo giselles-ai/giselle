@@ -11,7 +11,7 @@ import {
 	type githubRepositoryIndex,
 	githubRepositoryPullRequestEmbeddings,
 	type UserId,
-} from "@/drizzle";
+} from "@/db";
 import type { TeamWithSubscription } from "@/services/teams";
 import { fetchTeamByDbId } from "@/services/teams/fetch-team";
 import type { RepositoryWithStatuses } from "../types";

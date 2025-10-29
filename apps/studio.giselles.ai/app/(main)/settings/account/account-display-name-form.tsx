@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { users } from "@/drizzle";
+import type { users } from "@/db";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { Button } from "../components/button";
 import { Card } from "../components/card";

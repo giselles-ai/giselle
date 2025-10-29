@@ -1,7 +1,7 @@
 import { captureException } from "@sentry/nextjs";
 import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { db, subscriptions, teams } from "@/drizzle";
+import { db, subscriptions, teams } from "@/db";
 import { getGiselleSession, updateGiselleSession } from "@/lib/giselle-session";
 import { stripe } from "@/services/external/stripe";
 

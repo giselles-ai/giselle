@@ -6,7 +6,7 @@ import {
 	supabaseUserMappings,
 	teamMemberships,
 	teams,
-} from "@/drizzle";
+} from "@/db";
 import { getGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
 import type { CurrentTeam, TeamId } from "./types";

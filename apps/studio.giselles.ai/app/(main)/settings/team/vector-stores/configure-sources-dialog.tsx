@@ -7,7 +7,7 @@ import { useEffect, useState, useTransition } from "react";
 import type {
 	GitHubRepositoryContentType,
 	githubRepositoryContentStatus,
-} from "@/drizzle";
+} from "@/db";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import {

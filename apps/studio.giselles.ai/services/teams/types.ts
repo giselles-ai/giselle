@@ -1,4 +1,4 @@
-import type { subscriptions, teams } from "@/drizzle";
+import type { subscriptions, teams } from "@/db";
 
 export type TeamId = `tm_${string}`;
 export function isTeamId(id: string): id is TeamId {

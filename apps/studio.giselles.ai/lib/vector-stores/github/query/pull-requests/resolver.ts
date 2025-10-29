@@ -1,5 +1,5 @@
 import type { GitHubQueryContext } from "@giselle-sdk/giselle";
-import { githubRepositoryPullRequestEmbeddings } from "@/drizzle";
+import { githubRepositoryPullRequestEmbeddings } from "@/db";
 import { resolveGitHubRepositoryIndex } from "../resolve-github-repository-index";
 
 /**

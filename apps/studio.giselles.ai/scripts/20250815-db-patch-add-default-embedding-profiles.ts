@@ -11,7 +11,7 @@
  */
 
 import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-sdk/data-type";
-import { db } from "@/drizzle";
+import { db } from "@/db";
 
 async function main() {
 	console.log(
@@ -22,7 +22,7 @@ async function main() {
 	// ON CONFLICT DO NOTHING ensures idempotency
 	const result = await db.execute(`
 		INSERT INTO "github_repository_embedding_profiles" ("repository_index_db_id", "embedding_profile_id")
-		SELECT "db_id", ${DEFAULT_EMBEDDING_PROFILE_ID} 
+		SELECT "db_id", ${DEFAULT_EMBEDDING_PROFILE_ID}
 		FROM "github_repository_index"
 		ON CONFLICT DO NOTHING;
 	`);
