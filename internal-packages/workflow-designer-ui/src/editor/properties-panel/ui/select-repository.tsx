@@ -181,11 +181,11 @@ export function SelectRepository({
 					)}
 				</div>
 				{showMissingAccountLink && (
-					<p className="text-inverse text-[14px] text-right">
+					<p className="text-inverse text-[12px] text-right">
 						Missing GitHub account?
 						<button
 							type="button"
-							className="text-inverse hover:text-inverse ml-1 underline text-[14px]"
+							className="text-inverse hover:text-inverse ml-1 underline text-[12px]"
 							onClick={handleClick}
 						>
 							Adjust GitHub App Permissions
