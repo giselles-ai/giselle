@@ -115,7 +115,7 @@ export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 			<PropertiesPanelContent>
 				<PropertiesPanel node={node} />
 				{node.content.command.state.status === "unconfigured" ? null : (
-					<div className="flex justify-end mt-[8px]">
+					<div className="pt-[8px] flex gap-[8px] mt-[12px] px-[4px] justify-end">
 						<Button
 							variant="glass"
 							size="large"
