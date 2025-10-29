@@ -1,4 +1,5 @@
 import { IconBox } from "@giselle-internal/ui/icon-box";
+import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	type WebPage,
@@ -331,9 +332,7 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 
 					{node.content.webpages.length > 0 && (
 						<div className="mt-[16px]">
-							<h3 className="text-[14px] font-semibold text-white-800 mb-[8px]">
-								Added URLs
-							</h3>
+							<SettingLabel className="mb-[4px]">Added URLs</SettingLabel>
 							<ul className="flex flex-col gap-[8px]">
 								{node.content.webpages.map((webpage) => (
 									<WebPageListItem
