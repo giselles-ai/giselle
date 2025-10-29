@@ -1,3 +1,4 @@
+import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import {
 	type ActionNode,
 	type Input,
@@ -443,13 +444,19 @@ function Installed({
 
 	return (
 		<div className="overflow-y-auto flex flex-1 flex-col gap-[16px] px-[4px]">
-			<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Organization</p>
 			{step.state === "select-repository" && (
-				<SelectRepository
-					installations={installations}
-					installationUrl={installationUrl}
-					onSelectRepository={handleSelectRepository}
-				/>
+				<div className="flex w-full items-center gap-[12px]">
+					<div className="shrink-0 w-[120px]">
+						<SettingDetail className="mb-0">Organization</SettingDetail>
+					</div>
+					<div className="grow min-w-0">
+						<SelectRepository
+							installations={installations}
+							installationUrl={installationUrl}
+							onSelectRepository={handleSelectRepository}
+						/>
+					</div>
+				</div>
 			)}
 			{step.state === "select-action" && (
 				<div className="w-full flex flex-col gap-[16px]">
