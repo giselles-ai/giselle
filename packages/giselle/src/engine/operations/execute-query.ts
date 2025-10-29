@@ -423,6 +423,54 @@ async function queryVectorStore(
 								};
 							}
 
+							case "issue": {
+								if (!vectorStoreQueryServices?.githubIssue) {
+									throw new Error(
+										"No github issue vector store query service provided",
+									);
+								}
+
+								const queryContext: GitHubQueryContext = {
+									provider: "github" as const,
+									workspaceId,
+									owner,
+									repo,
+									contentType: "issue",
+									embeddingProfileId,
+								};
+
+								const res = await vectorStoreQueryServices.githubIssue.search(
+									query,
+									queryContext,
+									maxResults ?? DEFAULT_MAX_RESULTS,
+									similarityThreshold ?? DEFAULT_SIMILARITY_THRESHOLD,
+									async (embeddingMetrics: EmbeddingMetrics) => {
+										await context.callbacks?.embeddingComplete?.({
+											embeddingMetrics,
+											generation: runningGeneration,
+											queryContext,
+											generationMetadata: metadata,
+										});
+									},
+								);
+								return {
+									type: "vector-store" as const,
+									source,
+									records: res.map((result) => ({
+										chunkContent: result.chunk.content,
+										chunkIndex: result.chunk.index,
+										score: result.similarity,
+										metadata: Object.fromEntries(
+											Object.entries(result.metadata ?? {}).map(([k, v]) => [
+												k,
+												String(v),
+											]),
+										),
+										additional: result.additional,
+									})),
+								};
+							}
+
 							default: {
 								const _exhaustiveCheck: never = contentType;
 								throw new Error(

@@ -47,7 +47,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 	const { isOrphaned, repositoryId, isEmbeddingProfileOrphaned } =
 		useGitHubVectorStoreStatus(node);
 	const [selectedContentType, setSelectedContentType] = useState<
-		"blob" | "pull_request" | undefined
+		"blob" | "pull_request" | "issue" | undefined
 	>(currentContentType);
 	const [selectedEmbeddingProfileId, setSelectedEmbeddingProfileId] = useState<
 		EmbeddingProfileId | undefined
@@ -175,7 +175,9 @@ export function GitHubVectorStoreNodePropertiesPanel({
 		);
 	}, [selectedEmbeddingProfileId, availableEmbeddingProfiles]);
 
-	const handleContentTypeChange = (contentType: "blob" | "pull_request") => {
+	const handleContentTypeChange = (
+		contentType: "blob" | "pull_request" | "issue",
+	) => {
 		const selectedRepo = allRepositories.find(
 			(repo) => `${repo.owner}/${repo.repo}` === selectedRepoKey,
 		);

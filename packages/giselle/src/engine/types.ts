@@ -164,7 +164,7 @@ export type GitHubQueryContext = {
 	workspaceId: WorkspaceId;
 	owner: string;
 	repo: string;
-	contentType: "blob" | "pullRequest";
+	contentType: "blob" | "pullRequest" | "issue";
 	embeddingProfileId: EmbeddingProfileId;
 };
 
