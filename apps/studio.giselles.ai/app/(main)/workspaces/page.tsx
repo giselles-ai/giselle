@@ -2,7 +2,7 @@ import { Toasts } from "@giselles-ai/components/toasts";
 import { ToastProvider } from "@giselles-ai/contexts/toast";
 import { isNotNull } from "drizzle-orm";
 import { Suspense, use } from "react";
-import { db, type agents as dbAgents } from "@/drizzle";
+import { db, type agents as dbAgents } from "@/db";
 import { fetchCurrentTeam } from "@/services/teams";
 import { SearchableAgentList } from "./components/searchable-agent-list";
 

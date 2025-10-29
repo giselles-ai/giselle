@@ -4,13 +4,7 @@ import type { User } from "@supabase/supabase-js";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import invariant from "tiny-invariant";
-import {
-	db,
-	supabaseUserMappings,
-	teamMemberships,
-	teams,
-	users,
-} from "@/drizzle";
+import { db, supabaseUserMappings, teamMemberships, teams, users } from "@/db";
 import { updateGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
 import { isEmailFromRoute06 } from "@/lib/utils";

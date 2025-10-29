@@ -5,7 +5,7 @@ import z from "zod/v4";
 import {
 	GitHubRepositoryPullRequestContentTypeValues,
 	githubRepositoryPullRequestEmbeddings,
-} from "@/drizzle";
+} from "@/db";
 import { createDatabaseConfig } from "../../database";
 
 /**

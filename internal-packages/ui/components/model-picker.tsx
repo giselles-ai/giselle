@@ -186,36 +186,35 @@ export function ModelPicker({
 												{group.label}
 											</div>
 										) : null}
-										{group.models.map((m) => (
-											<button
-												key={`${group.provider}-${m.id}`}
-												type="button"
-												disabled={m.disabled}
-												onClick={() => {
-													if (m.disabled) return;
-													onSelect(group.provider, m.id);
-													setOpen(false);
-												}}
-												className={clsx(
-													"flex gap-[12px] items-center p-[4px] rounded-[4px] text-left",
-													"hover:bg-white/5 focus:bg-white/5 cursor-pointer",
-													"disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:focus:bg-transparent",
-												)}
-												title={
-													m.disabled
-														? (m.disabledReason ??
-															"Upgrade to Pro to use this model.")
-														: undefined
-												}
-											>
-												<div className="flex items-center gap-[8px]">
-													<p className="text-[14px] text-left text-nowrap">
-														{m.label || m.id}
-													</p>
-													{m.badge}
-												</div>
-											</button>
-										))}
+										{group.models.map((m) => {
+											const isDisabled = Boolean(m.disabled);
+											return (
+												<button
+													key={`${group.provider}-${m.id}`}
+													type="button"
+													onClick={() => {
+														if (isDisabled) return;
+														onSelect(group.provider, m.id);
+														setOpen(false);
+													}}
+													aria-disabled={isDisabled}
+													className={clsx(
+														"flex gap-[12px] items-center p-[4px] rounded-[4px] text-left",
+														isDisabled
+															? "opacity-50 cursor-not-allowed"
+															: "hover:bg-white/5 focus:bg-white/5 cursor-pointer",
+													)}
+												>
+													<div className="flex items-center gap-[8px]">
+														<p className="text-[14px] text-left text-nowrap">
+															{m.label || m.id}
+														</p>
+														{m.badge}
+													</div>
+													{/* disabled reason text intentionally not shown (design: gray-out only) */}
+												</button>
+											);
+										})}
 									</div>
 								))}
 							</div>

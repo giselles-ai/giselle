@@ -10,7 +10,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { teams as teamsTable } from "@/drizzle";
+import type { teams as teamsTable } from "@/db";
 import { cn } from "@/lib/utils";
 import { Toast } from "@/packages/components/toast";
 import { useToast } from "@/packages/contexts/toast";

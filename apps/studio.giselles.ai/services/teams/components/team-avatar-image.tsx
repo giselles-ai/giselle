@@ -1,6 +1,6 @@
 import Avatar from "boring-avatars";
 import Image from "next/image";
-import type { teams } from "@/drizzle";
+import type { teams } from "@/db";
 import { cn } from "@/lib/utils";
 
 export function TeamAvatarImage({

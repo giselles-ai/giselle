@@ -6,7 +6,7 @@ import {
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { giselleEngine } from "@/app/giselle-engine";
-import { db, flowTriggers } from "@/drizzle";
+import { db, flowTriggers } from "@/db";
 import {
 	aiGatewayFlag,
 	docVectorStoreFlag,

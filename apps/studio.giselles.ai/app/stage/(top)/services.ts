@@ -5,7 +5,7 @@ import {
 } from "@giselle-sdk/data-type";
 import { defaultName } from "@giselle-sdk/giselle";
 import { giselleEngine } from "@/app/giselle-engine";
-import { type acts as actsSchema, db } from "@/drizzle";
+import { type acts as actsSchema, db } from "@/db";
 import { fetchCurrentUser } from "@/services/accounts";
 import type { FilterType, FlowTriggerUIItem, TeamId } from "./types";
 

@@ -12,11 +12,11 @@ import {
 	teamMemberships,
 	teams,
 	users,
-} from "@/drizzle";
+} from "@/db";
 import { getUser } from "@/lib/supabase/get-user";
 import type { CurrentTeam, TeamId } from "@/services/teams";
 import { handleMemberChange } from "@/services/teams/member-change";
-import type * as schema from "../../../../drizzle/schema";
+import type * as schema from "../../../../db/schema";
 import { JoinError } from "./errors";
 
 type InvitationToken = {

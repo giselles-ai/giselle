@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import { db } from "@/drizzle";
-import { subscriptions } from "@/drizzle/schema";
+import { db } from "@/db";
+import { subscriptions } from "@/db/schema";
 import { reportUserSeatUsage } from "@/services/usage-based-billing";
 import type { CurrentTeam } from "./types";
 

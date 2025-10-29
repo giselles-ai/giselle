@@ -15,7 +15,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { TeamRole } from "@/drizzle";
+import type { TeamRole } from "@/db";
 import { resendInvitationAction, revokeInvitationAction } from "./actions";
 import { LocalDateTime } from "./components/local-date-time";
 
@@ -24,7 +24,7 @@ type InvitationListItemProps = {
 	email: string;
 	role: TeamRole;
 	expiredAt: Date;
-	currentUserRole: TeamRole;
+	canManageMembers: boolean;
 };
 
 export function InvitationListItem({
@@ -32,7 +32,7 @@ export function InvitationListItem({
 	email,
 	role,
 	expiredAt,
-	currentUserRole,
+	canManageMembers,
 }: InvitationListItemProps) {
 	const { toast, info } = useToasts();
 	const [error, setError] = useState("");
@@ -115,7 +115,7 @@ export function InvitationListItem({
 					<span className="capitalize text-white-400 font-medium text-[14px] leading-[16px] text-end font-sans">
 						{role}
 					</span>
-					{currentUserRole === "admin" && (
+					{canManageMembers && (
 						<DropdownMenu
 							modal={false}
 							open={dropdownOpen}

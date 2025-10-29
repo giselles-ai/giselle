@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-import type { agents as dbAgents } from "@/drizzle";
+import type { agents as dbAgents } from "@/db";
 import { Card } from "../../settings/components/card";
 import { AgentCard } from "./agent-card";
 import { AppListItem } from "./app-list-item";

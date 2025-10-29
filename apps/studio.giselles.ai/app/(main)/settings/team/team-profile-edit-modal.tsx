@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { maxLength, minLength, parse, pipe, string } from "valibot";
 import { Input } from "@/components/ui/input";
-import type { teams } from "@/drizzle";
+import type { teams } from "@/db";
 import { TeamAvatarImage } from "@/services/teams/components/team-avatar-image";
 import { IMAGE_CONSTRAINTS } from "../constants";
 import { updateTeamAvatar, updateTeamName } from "./actions";

@@ -6,7 +6,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Code, GitPullRequest, Plus } from "lucide-react";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { GlassButton } from "@/components/ui/glass-button";
-import type { GitHubRepositoryContentType } from "@/drizzle";
+import type { GitHubRepositoryContentType } from "@/db";
 import {
 	GlassDialogBody,
 	GlassDialogContent,

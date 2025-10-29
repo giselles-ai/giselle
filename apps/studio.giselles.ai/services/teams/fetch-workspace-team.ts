@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { db, subscriptions, teams } from "@/drizzle";
+import { db, subscriptions, teams } from "@/db";
 import type { CurrentTeam } from "@/services/teams";
 
 /**

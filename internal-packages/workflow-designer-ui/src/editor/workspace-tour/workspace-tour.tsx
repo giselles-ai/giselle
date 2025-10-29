@@ -1,4 +1,4 @@
-import type { StaticImageData } from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import {
 	type ReactNode,
 	useCallback,
@@ -195,9 +195,11 @@ const TourCard = ({
 						}}
 					>
 						{imageSrc && (
-							<img
-								src={imageSrc.src}
+							<Image
+								src={imageSrc}
 								alt={"Tour step tutorial"}
+								width={800}
+								height={300}
 								className="w-full h-full object-cover object-top"
 							/>
 						)}
@@ -556,9 +558,11 @@ const TourStep2 = (props: TourStepComponentProps) => {
 					}
 				/>
 
-				<img
-					src={step2Arrow.src}
+				<Image
+					src={step2Arrow}
 					alt="Arrow pointing to toolbar"
+					width={150}
+					height={100}
 					className="absolute bottom-[-100px] left-[calc(50%-200px)] translate-x-[-50%] z-[60] w-[150px] h-auto pointer-events-none arrow-animation"
 				/>
 			</div>
@@ -688,9 +692,11 @@ const TourStep5 = (props: TourStepComponentProps) => {
 					}
 				/>
 
-				<img
-					src={step5Arrow.src}
+				<Image
+					src={step5Arrow}
 					alt="Arrow pointing to tabs"
+					width={150}
+					height={100}
 					className="absolute top-[-110px] left-[calc(50%-190px)] z-[60] w-[150px] h-auto pointer-events-none arrow-animation"
 				/>
 			</div>
@@ -735,9 +741,11 @@ const TourStep6 = (props: TourStepComponentProps) => {
 						overflow: "hidden",
 					}}
 				>
-					<img
-						src={docsImage.src}
+					<Image
+						src={docsImage}
 						alt="Tour step tutorial"
+						width={800}
+						height={300}
 						className="w-full h-full object-cover object-top"
 					/>
 				</div>

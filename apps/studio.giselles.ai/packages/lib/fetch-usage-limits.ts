@@ -1,6 +1,6 @@
 import type { WorkspaceId } from "@giselle-sdk/data-type";
 import { and, eq } from "drizzle-orm";
-import { agents, db, subscriptions, teams } from "@/drizzle";
+import { agents, db, subscriptions, teams } from "@/db";
 import { getUsageLimitsForTeam } from "./usage-limits";
 
 export async function fetchUsageLimits(workspaceId: WorkspaceId) {

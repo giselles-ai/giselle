@@ -5,7 +5,7 @@ import { isTriggerNode } from "@giselle-sdk/data-type";
 import type { ParameterItem } from "@giselle-sdk/giselle";
 import { revalidatePath } from "next/cache";
 import { giselleEngine } from "@/app/giselle-engine";
-import { acts as actsSchema, db } from "@/drizzle";
+import { acts as actsSchema, db } from "@/db";
 import { fetchCurrentUser } from "@/services/accounts";
 import type { TeamId } from "@/services/teams";
 

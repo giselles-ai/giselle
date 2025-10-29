@@ -6,7 +6,7 @@ import { Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { email as emailValidator, parse, pipe, string } from "valibot";
 import { GlassButton } from "@/components/ui/glass-button";
-import type { TeamRole } from "@/drizzle";
+import type { TeamRole } from "@/db";
 import { type SendInvitationsResult, sendInvitationsAction } from "./actions";
 import {
 	GlassDialogBody,
@@ -327,7 +327,7 @@ export function InviteMemberDialog({
 			>
 				<GlassDialogHeader
 					title="Invite Team Member"
-					description="Each member added to your team will be charged as an additional seat ($20 per seat) on your Pro Plan subscription."
+					description="Invited members will be able to collaborate with your team once they accept."
 					onClose={handleCloseDialog}
 				/>
 				<GlassDialogBody>

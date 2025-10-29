@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { db, teams } from "@/drizzle";
+import { db, teams } from "@/db";
 import { createTeamId } from "@/services/teams/utils";
 
 const teamsWillNulId = await db.query.teams.findMany({

@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { db, oauthCredentials, supabaseUserMappings, users } from "@/drizzle";
+import { db, oauthCredentials, supabaseUserMappings, users } from "@/db";
 import { getUser } from "@/lib/supabase";
 
 export type OAuthProvider = "github" | "google";

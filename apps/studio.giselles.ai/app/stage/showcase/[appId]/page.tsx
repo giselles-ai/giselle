@@ -10,7 +10,7 @@ import {
 	supabaseUserMappings,
 	teams,
 	users,
-} from "@/drizzle";
+} from "@/db";
 import { getUser } from "@/lib/supabase";
 
 import { AppDetailClient } from "./app-detail-client";

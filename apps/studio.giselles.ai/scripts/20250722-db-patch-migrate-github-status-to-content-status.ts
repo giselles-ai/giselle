@@ -1,4 +1,4 @@
-import { db } from "@/drizzle";
+import { db } from "@/db";
 
 async function main() {
 	console.log(

@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { maxLength, minLength, parse, pipe, string } from "valibot";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { users } from "@/drizzle";
+import type { users } from "@/db";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { updateAvatar, updateDisplayName } from "../account/actions";
 import { IMAGE_CONSTRAINTS } from "../constants";

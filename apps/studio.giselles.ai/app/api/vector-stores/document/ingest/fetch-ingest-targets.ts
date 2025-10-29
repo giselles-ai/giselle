@@ -5,7 +5,7 @@ import {
 	documentEmbeddingProfiles,
 	documentVectorStoreSources,
 	documentVectorStores,
-} from "@/drizzle";
+} from "@/db";
 import type { DocumentVectorStoreSourceId } from "@/packages/types";
 
 const STALE_THRESHOLD_MINUTES = 15;

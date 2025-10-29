@@ -1,6 +1,6 @@
 import { createId } from "@paralleldrive/cuid2";
 import { NextResponse } from "next/server";
-import { agents, db, workspaces } from "@/drizzle";
+import { agents, db, workspaces } from "@/db";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 import { giselleEngine } from "../../giselle-engine";

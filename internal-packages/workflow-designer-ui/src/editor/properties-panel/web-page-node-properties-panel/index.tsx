@@ -1,5 +1,4 @@
 import { Button } from "@giselle-internal/ui/button";
-import { IconBox } from "@giselle-internal/ui/icon-box";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
@@ -18,11 +17,7 @@ import { Dialog } from "radix-ui";
 import { type FormEventHandler, useCallback, useState } from "react";
 import useSWR from "swr";
 import { validateUrl } from "../../lib/validate-url";
-import {
-	PropertiesPanelContent,
-	PropertiesPanelHeader,
-	PropertiesPanelRoot,
-} from "../ui";
+import { NodePanelHeader } from "../ui/node-panel-header";
 
 function WebPageListItem({
 	webpage,
@@ -249,104 +244,50 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 	);
 
 	return (
-		<PropertiesPanelRoot>
-			<PropertiesPanelHeader
+		<div className="w-full flex flex-col gap-[8px]">
+			<NodePanelHeader
 				node={node}
-				onChangeName={(name?: string) => {
-					updateNodeData(node, { name });
-				}}
-				action={
-					<div className="flex items-center gap-[6px] ml-[8px]">
-						<IconBox
-							aria-label="Open documentation"
-							title="Open documentation"
-							onClick={() =>
-								window.open(
-									"https://docs.giselles.ai/en/glossary/webpage-node",
-									"_blank",
-									"noopener,noreferrer",
-								)
-							}
-						>
-							<svg
-								className="size-[14px]"
-								width="14"
-								height="14"
-								viewBox="0 0 24 24"
-								fill="none"
-								xmlns="http://www.w3.org/2000/svg"
-								role="img"
-								aria-label="External link"
-							>
-								<path
-									d="M14 3h7v7m0-7L10 14"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-								/>
-								<path
-									d="M21 14v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h6"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-								/>
-							</svg>
-						</IconBox>
-						<IconBox
-							aria-label="Delete node"
-							title="Delete node"
-							onClick={() => deleteNode(node.id)}
-						>
-							<TrashIcon className="size-[14px]" />
-						</IconBox>
-					</div>
-				}
+				onChangeName={(name) => updateNodeData(node, { name })}
+				docsUrl="https://docs.giselles.ai/en/glossary/webpage-node"
+				onDelete={() => deleteNode(node.id)}
 			/>
-			<PropertiesPanelContent>
-				<div>
-					<form className="flex flex-col gap-[8px]" onSubmit={handleSubmit}>
-						<div className="flex flex-col gap-[8px]">
-							<textarea
-								id="webpage-urls"
-								name="urls"
-								className={clsx(
-									"w-full min-h-[120px] !pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px] rounded-[8px] bg-inverse/10 text-inverse text-[14px] outline-none resize-none border-none",
-								)}
-								// value={urls}
-								// onChange={(e) => setUrls(e.target.value)}
-								placeholder={"URLs (one per line)\nhttps://example.com"}
-								required
-							/>
-							{/* {urlError && (
-							<p className="text-error-900 text-[12px]">{urlError}</p>
-						)} */}
-						</div>
-						<div className="flex justify-end">
-							<Button variant="filled" size="large" type="submit">
-								Add
-							</Button>
-						</div>
-					</form>
+			<div>
+				<form className="flex flex-col gap-[8px]" onSubmit={handleSubmit}>
+					<div className="flex flex-col gap-[8px]">
+						<textarea
+							id="webpage-urls"
+							name="urls"
+							className={clsx(
+								"w-full min-h-[120px] rounded-[8px] bg-inverse/10 text-inverse text-[14px] outline-none resize-none border-none",
+								"!pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px]",
+							)}
+							placeholder={"URLs (one per line)\nhttps://example.com"}
+							required
+						/>
+					</div>
+					<div className="flex justify-end">
+						<Button variant="filled" size="large" type="submit">
+							Add
+						</Button>
+					</div>
+				</form>
 
-					{node.content.webpages.length > 0 && (
-						<div className="mt-[16px]">
-							<SettingLabel className="mb-[4px]">Added URLs</SettingLabel>
-							<ul className="flex flex-col gap-0">
-								{node.content.webpages.map((webpage) => (
-									<WebPageListItem
-										key={webpage.id}
-										webpage={webpage}
-										workspaceId={data.id}
-										onRemove={removeWebPage(webpage.id)}
-									/>
-								))}
-							</ul>
-						</div>
-					)}
-				</div>
-			</PropertiesPanelContent>
-		</PropertiesPanelRoot>
+				{node.content.webpages.length > 0 && (
+					<div className="mt-[16px]">
+						<SettingLabel className="mb-[8px]">Added URLs</SettingLabel>
+						<ul className="flex flex-col">
+							{node.content.webpages.map((webpage) => (
+								<WebPageListItem
+									key={webpage.id}
+									webpage={webpage}
+									workspaceId={data.id}
+									onRemove={removeWebPage(webpage.id)}
+								/>
+							))}
+						</ul>
+					</div>
+				)}
+			</div>
+		</div>
 	);
 }

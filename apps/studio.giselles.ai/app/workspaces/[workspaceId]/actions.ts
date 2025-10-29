@@ -3,7 +3,7 @@
 import type { WorkspaceId } from "@giselle-sdk/data-type";
 import { eq } from "drizzle-orm/sql";
 import { giselleEngine } from "@/app/giselle-engine";
-import { agents, db, workspaces } from "@/drizzle";
+import { agents, db, workspaces } from "@/db";
 
 export async function updateWorkspaceName(
 	workspaceId: WorkspaceId,

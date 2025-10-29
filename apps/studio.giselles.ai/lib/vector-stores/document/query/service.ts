@@ -2,7 +2,7 @@ import type { QueryService } from "@giselle-sdk/rag";
 import { createPostgresQueryService } from "@giselle-sdk/rag";
 import { getTableName } from "drizzle-orm";
 
-import { documentEmbeddings } from "@/drizzle";
+import { documentEmbeddings } from "@/db";
 
 import { createDatabaseConfig } from "../../github/database";
 import type { DocumentVectorStoreQueryContext } from "./context";

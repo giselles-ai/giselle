@@ -24,8 +24,8 @@ export function FloatingPropertiesPanel({
 	isOpen,
 	children,
 	className,
-	defaultWidth = 480,
-	minWidth = 480,
+	defaultWidth = 400,
+	minWidth = 400,
 	maxWidth = 1200,
 	position = "right",
 	container,
@@ -162,13 +162,10 @@ export function FloatingPropertiesPanel({
 							{/* Content */}
 							<div
 								className={clsx(
-								autoHeight
-									? "overflow-y-auto relative z-10 pt-2 pb-3 px-3 h-auto"
-									: "h-full overflow-hidden relative z-10 pt-2 pb-3 px-3",
+									autoHeight
+										? "relative z-10 pt-2 pb-3 px-3 h-auto"
+										: "h-full overflow-hidden relative z-10 pt-2 pb-3 px-3",
 								)}
-								style={
-									autoHeight ? { maxHeight: "calc(100vh - 32px)" } : undefined
-								}
 							>
 								{children}
 							</div>

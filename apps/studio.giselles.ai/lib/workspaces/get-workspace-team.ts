@@ -1,5 +1,5 @@
 import type { WorkspaceId } from "@giselle-sdk/data-type";
-import { db } from "@/drizzle";
+import { db } from "@/db";
 
 export async function getWorkspaceTeam(workspaceId: WorkspaceId) {
 	// First, get the workspace and its team

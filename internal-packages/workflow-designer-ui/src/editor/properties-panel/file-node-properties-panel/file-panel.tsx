@@ -1,7 +1,14 @@
+import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { FileData } from "@giselle-sdk/data-type";
 import clsx from "clsx/lite";
-import { ArrowUpFromLineIcon, FileXIcon, TrashIcon } from "lucide-react";
+import {
+	ArrowUpFromLineIcon,
+	FileText,
+	FileXIcon,
+	Image as ImageIcon,
+	TrashIcon,
+} from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TriangleAlert } from "../../../icons";
 import { FileNodeIcon } from "../../../icons/node";
@@ -296,8 +303,8 @@ export function FilePanel({ node, config }: FilePanelProps) {
 					<button
 						type="button"
 						className={clsx(
-							"group h-[300px] p-[8px] w-full",
-							"border border-black-400 rounded-[8px]",
+							"group h-[300px] w-full",
+							"border rounded-[8px] border-transparent",
 							"data-[dragging=true]:data-[valid=false]:border-error-900",
 						)}
 						onDragOver={onDragOver}
@@ -309,7 +316,8 @@ export function FilePanel({ node, config }: FilePanelProps) {
 						<div
 							className={clsx(
 								"h-full flex flex-col justify-center items-center gap-[16px] px-[24px] py-[16px]",
-								"border border-dotted rounded-[8px] border-transparent",
+								"bg-inverse/5",
+								"border border-dotted rounded-[8px] border-transparent group-hover:border-black-400",
 								"group-data-[dragging=true]:border-black-400",
 								"group-data-[dragging=true]:group-data-[valid=false]:border-error-900",
 							)}
@@ -342,7 +350,11 @@ export function FilePanel({ node, config }: FilePanelProps) {
 								</>
 							) : (
 								<div className="flex flex-col gap-[16px] justify-center items-center">
-									<ArrowUpFromLineIcon size={38} className="text-black-400" />
+									{node.content.category === "image" ? (
+										<ImageIcon size={38} className="text-black-400" />
+									) : (
+										<ArrowUpFromLineIcon size={38} className="text-black-400" />
+									)}
 									<label
 										htmlFor="file"
 										className="text-center flex flex-col gap-[16px] text-inverse"
@@ -376,9 +388,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 				</div>
 				{node.content.files.length > 0 && (
 					<div className="mt-[24px]">
-						<h3 className="text-[14px] font-semibold text-inverse mb-[8px]">
-							Added Files
-						</h3>
+						<SettingLabel className="mb-[4px]">Added Files</SettingLabel>
 						<div className="flex flex-col gap-[8px]">
 							{node.content.files.map((file) => (
 								<FileListItem
@@ -405,30 +415,11 @@ function FileListItem({
 	return (
 		<div className="flex items-center justify-between hover:bg-bg-50/50 transition-colors rounded-[8px] group">
 			<div className="flex items-center gap-[12px] flex-1 min-w-0">
-				<svg
-					width="16"
-					height="16"
-					viewBox="0 0 24 24"
-					fill="none"
+				<FileText
+					size={16}
 					className="text-inverse shrink-0"
-					role="img"
 					aria-label="File icon"
-				>
-					<path
-						d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-						stroke="currentColor"
-						strokeWidth="2"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-					/>
-					<polyline
-						points="14,2 14,8 20,8"
-						stroke="currentColor"
-						strokeWidth="2"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-					/>
-				</svg>
+				/>
 				<div className="min-w-0 flex-1">
 					<p className="text-[14px] text-inverse truncate font-medium">
 						{fileData.name}

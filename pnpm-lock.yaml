@@ -102,9 +102,6 @@ catalogs:
     '@types/pg':
       specifier: 8.11.13
       version: 8.11.13
-    '@types/pluralize':
-      specifier: 0.0.33
-      version: 0.0.33
     '@types/pngjs':
       specifier: 6.0.5
       version: 6.0.5
@@ -189,9 +186,6 @@ catalogs:
     pino:
       specifier: 9.9.0
       version: 9.9.0
-    pluralize:
-      specifier: 8.0.0
-      version: 8.0.0
     pngjs:
       specifier: 7.0.0
       version: 7.0.0
@@ -770,9 +764,6 @@ importers:
       next:
         specifier: 'catalog:'
         version: 15.5.2(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.53.0)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      pluralize:
-        specifier: 'catalog:'
-        version: 8.0.0
       radix-ui:
         specifier: 'catalog:'
         version: 1.1.2(@types/react-dom@19.1.7(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -813,9 +804,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.14.0
-      '@types/pluralize':
-        specifier: 'catalog:'
-        version: 0.0.33
       '@types/react':
         specifier: 'catalog:'
         version: 19.1.10
@@ -5013,9 +5001,6 @@ packages:
   '@types/phoenix@1.6.6':
     resolution: {integrity: sha512-PIzZZlEppgrpoT2QgbnDU+MMzuR6BbCjllj0bM70lWoejMeNJAxCchxnv7J3XFkI8MpygtRpzXrIlmWUBclP5A==}
 
-  '@types/pluralize@0.0.33':
-    resolution: {integrity: sha512-JOqsl+ZoCpP4e8TDke9W79FDcSgPAR0l6pixx2JHkhnRjvShyYiAYw2LVsnA7K08Y6DeOnaU6ujmENO4os/cYg==}
-
   '@types/pngjs@6.0.5':
     resolution: {integrity: sha512-0k5eKfrA83JOZPppLtS2C7OUtyNAl2wKNxfyYl9Q5g9lPkgBl/9hNyAu6HuEH2J4XmIv2znEpkDd0SaZVxW6iQ==}
 
@@ -7225,10 +7210,6 @@ packages:
     resolution: {integrity: sha512-cJW4Xd/G3v5ovXtJJ52MAOclqeac9S/aGGgRzLabuF8TnIb6xHvMzKIa6JmrRzUkeXJgfL1MhukP0NK6l39h3A==}
     engines: {node: '>=18'}
     hasBin: true
-
-  pluralize@8.0.0:
-    resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
-    engines: {node: '>=4'}
 
   pngjs@7.0.0:
     resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
@@ -12733,8 +12714,6 @@ snapshots:
 
   '@types/phoenix@1.6.6': {}
 
-  '@types/pluralize@0.0.33': {}
-
   '@types/pngjs@6.0.5':
     dependencies:
       '@types/node': 24.7.0
@@ -15091,8 +15070,6 @@ snapshots:
       playwright-core: 1.55.1
     optionalDependencies:
       fsevents: 2.3.2
-
-  pluralize@8.0.0: {}
 
   pngjs@7.0.0: {}
 

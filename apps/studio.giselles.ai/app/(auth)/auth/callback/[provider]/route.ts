@@ -4,7 +4,7 @@ import type { Session, User } from "@supabase/supabase-js";
 import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { isValidReturnUrl } from "@/app/(auth)/lib";
-import { db, oauthCredentials, supabaseUserMappings, users } from "@/drizzle";
+import { db, oauthCredentials, supabaseUserMappings, users } from "@/db";
 import { logger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase";
 import { initializeAccount, type OAuthProvider } from "@/services/accounts";
