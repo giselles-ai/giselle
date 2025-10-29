@@ -73,7 +73,7 @@ export function GitHubActionConfiguredView({
 
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
-			<div className="space-y-[4px]">
+			<div className="space-y-0">
 				<SettingLabel className="mb-0">Repository</SettingLabel>
 				<div className="flex justify-between">
 					<div className="px-[4px] pt-[6px]">
@@ -110,14 +110,14 @@ export function GitHubActionConfiguredView({
 				</div>
 			</div>
 
-			<div className="space-y-[4px]">
+			<div className="space-y-0">
 				<SettingLabel className="mb-0">Event Type</SettingLabel>
 				<div className="px-[4px] py-0 w-full bg-transparent text-[14px] flex items-center">
 					{githubActionIdToLabel(state.commandId)}
 				</div>
 			</div>
 
-			<div className="space-y-[4px]">
+			<div className="space-y-0">
 				<SettingLabel className="mb-0">Input Parameter</SettingLabel>
 				<div className="px-[4px] py-0 w-full bg-transparent text-[14px]">
 					<ul className="w-full flex flex-col gap-[12px]">
