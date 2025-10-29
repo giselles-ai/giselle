@@ -199,7 +199,7 @@ async function generateImageWithFal({
 					id,
 					contentType: imageType.contentType,
 					filename,
-					pathname: `generations/${runningGeneration.id}/generated-images/${filename}`,
+					pathname: `/generations/${runningGeneration.id}/generated-images/${filename}`,
 				} satisfies Image;
 			}),
 		).then((results) => results.filter((result) => result !== null));
@@ -282,7 +282,7 @@ async function generateImageWithOpenAI({
 					id,
 					contentType: imageType.contentType,
 					filename,
-					pathname: `generations/${runningGeneration.id}/generated-images/${filename}`,
+					pathname: `/generations/${runningGeneration.id}/generated-images/${filename}`,
 				} satisfies Image;
 			}),
 		).then((results) => results.filter((result) => result !== null));
@@ -350,7 +350,7 @@ async function generateImageWithGoogle({
 					id,
 					contentType: imageType.contentType,
 					filename,
-					pathname: `generations/${runningGeneration.id}/generated-images/${filename}`,
+					pathname: `/generations/${runningGeneration.id}/generated-images/${filename}`,
 				} satisfies Image;
 			}),
 		).then((results) => results.filter((result) => result !== null));
