@@ -122,7 +122,7 @@ export function GitHubActionConfiguredView({
 
 			<div className="space-y-0">
 				<SettingLabel className="mb-0">Input Parameter</SettingLabel>
-				<div className="px-[4px] py-0 w-full bg-transparent text-[14px]">
+				<div className="px-[4px] py-0 w-full bg-transparent text-[14px] mt-[4px]">
 					<ul className="w-full flex flex-col gap-[12px]">
 						{connectedInputs.map((input) => (
 							<li key={input.id}>
