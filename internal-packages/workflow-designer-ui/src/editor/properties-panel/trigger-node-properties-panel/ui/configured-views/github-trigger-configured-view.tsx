@@ -249,7 +249,7 @@ export function GitHubTriggerConfiguredView({
 				<div className="space-y-[4px]">
 					<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Call sign</p>
 					<div className="flex justify-between items-start">
-						<div className="flex-1 space-y-[4px]">
+						<div className="flex-1">
 							<div className="px-[4px] py-[9px] w-full bg-transparent text-[14px] flex items-center gap-[8px]">
 								<span>
 									/{data.trigger.configuration.event.conditions.callsign}
@@ -260,13 +260,6 @@ export function GitHubTriggerConfiguredView({
 									sizeClassName="h-[16px] w-[16px]"
 								/>
 							</div>
-							<p className="text-[12px] text-inverse px-[4px] w-full">
-								Use{" "}
-								<span className="text-blue-400 font-medium">
-									/{data.trigger.configuration.event.conditions.callsign}
-								</span>{" "}
-								in GitHub comments to trigger this workflow.
-							</p>
 						</div>
 						<Button
 							variant="solid"
@@ -279,6 +272,13 @@ export function GitHubTriggerConfiguredView({
 							Change Callsign
 						</Button>
 					</div>
+					<p className="text-[12px] text-inverse px-[4px] w-full">
+						Use{" "}
+						<span className="text-blue-400 font-medium">
+							/{data.trigger.configuration.event.conditions.callsign}
+						</span>{" "}
+						in GitHub comments to trigger this workflow.
+					</p>
 				</div>
 			)}
 			{(data.trigger.configuration.event.id === "github.issue.labeled" ||
