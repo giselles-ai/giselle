@@ -560,7 +560,14 @@ function Installed({
 						</svg>
 						Back
 					</button>
-					<GitHubRepositoryBlock owner={step.owner} repo={step.repo} />
+					<div className="flex w-full items-start gap-[12px]">
+						<div className="shrink-0 w-[120px]">
+							<SettingDetail className="mb-0">Repository</SettingDetail>
+						</div>
+						<div className="grow min-w-0">
+							<GitHubRepositoryBlock owner={step.owner} repo={step.repo} />
+						</div>
+					</div>
 					<div className="flex flex-col gap-[4px] flex-1 overflow-hidden">
 						<SettingLabel className="mb-[4px]">Action Type</SettingLabel>
 						<div className="flex flex-col gap-[8px] overflow-y-auto pr-2 pl-0 pt-[8px] custom-scrollbar flex-1">
