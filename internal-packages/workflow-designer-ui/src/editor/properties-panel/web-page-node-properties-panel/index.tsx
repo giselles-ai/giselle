@@ -333,7 +333,7 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 					{node.content.webpages.length > 0 && (
 						<div className="mt-[16px]">
 							<SettingLabel className="mb-[4px]">Added URLs</SettingLabel>
-							<ul className="flex flex-col gap-[8px]">
+							<ul className="flex flex-col gap-0">
 								{node.content.webpages.map((webpage) => (
 									<WebPageListItem
 										key={webpage.id}
