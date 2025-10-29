@@ -1,3 +1,4 @@
+import { Button } from "@giselle-internal/ui/button";
 import type { FlowTriggerId, TriggerNode } from "@giselle-sdk/data-type";
 import {
 	type GitHubTriggerEventId,
@@ -229,15 +230,16 @@ export function GitHubTriggerConfiguredView({
 							repo={data.githubRepositoryFullname.repo}
 						/>
 					</div>
-					<button
+					<Button
+						variant="solid"
+						size="large"
 						type="button"
-						className="bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors"
 						onClick={() => {
 							beginReconfigure("repository");
 						}}
 					>
 						Change Repository
-					</button>
+					</Button>
 				</div>
 			</div>
 			{(data.trigger.configuration.event.id ===
@@ -270,15 +272,16 @@ export function GitHubTriggerConfiguredView({
 								in GitHub comments to trigger this workflow.
 							</p>
 						</div>
-						<button
+						<Button
+							variant="solid"
+							size="large"
 							type="button"
-							className="bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors"
 							onClick={() => {
 								beginReconfigure("callsign");
 							}}
 						>
 							Change Callsign
-						</button>
+						</Button>
 					</div>
 				</div>
 			)}
@@ -308,15 +311,16 @@ export function GitHubTriggerConfiguredView({
 								issue.
 							</p>
 						</div>
-						<button
+						<Button
+							variant="solid"
+							size="large"
 							type="button"
-							className="bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors"
 							onClick={() => {
 								beginReconfigure("labels");
 							}}
 						>
 							Change Labels
-						</button>
+						</Button>
 					</div>
 				</div>
 			)}
