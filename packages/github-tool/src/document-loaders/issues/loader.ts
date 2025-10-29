@@ -260,7 +260,7 @@ export function createGitHubIssuesLoader(
 					issue_number: issueNumber,
 					content_type: contentType,
 					content_id: contentId,
-					issue_tate: issueState,
+					issue_state: issueState,
 					issue_state_reason: issueStateReason,
 				},
 			);
