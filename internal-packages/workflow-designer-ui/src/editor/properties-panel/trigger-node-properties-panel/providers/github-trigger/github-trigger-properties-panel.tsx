@@ -360,7 +360,7 @@ export function Installed({
 			)}
 
 			{step.state === "select-repository" && (
-				<div className="overflow-y-auto flex-1 pr-2 custom-scrollbar h-full relative">
+				<div className="relative">
 					<button
 						type="button"
 						onClick={() => setStep({ state: "select-event" })}
@@ -482,7 +482,7 @@ export function Installed({
 			)}
 
 			{step.state === "confirm-repository" && (
-				<div className="overflow-y-auto flex-1 pr-2 custom-scrollbar h-full relative">
+				<div className="relative">
 					<button
 						type="button"
 						onClick={() =>

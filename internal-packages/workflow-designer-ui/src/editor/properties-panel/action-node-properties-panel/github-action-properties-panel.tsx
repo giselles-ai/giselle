@@ -482,7 +482,7 @@ function Installed({
 								<SettingDetail className="mb-0">Repository</SettingDetail>
 							</div>
 							<div className="grow min-w-0">
-								<div className="flex flex-col gap-y-[8px] relative max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+								<div className="flex flex-col gap-y-[8px] relative">
 									{(
 										installations.find((i) => i.id === selectedInstallationId)
 											?.repositories ?? []
