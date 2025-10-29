@@ -137,28 +137,26 @@ export function GitHubTriggerConfiguredView({
 					<div className="flex-grow mx-[12px] h-[1px] bg-bg-200/30" />
 
 					<div className="relative">
-						{/* Background container */}
-						<div className="w-[150px] h-[28px] bg-[#2A2A36] rounded-full flex items-center overflow-hidden">
-							{/* Sliding highlight */}
+						{/* Segmented control with active fill and outlined container */}
+						<div className="relative w-[150px] h-[28px] rounded-full border border-white/20 bg-transparent overflow-hidden">
+							{/* Active highlight (kept as fill). Gray when Disabled active, Blue when Enable active */}
 							<div
 								className={clsx(
-									"absolute w-[75px] h-[28px] rounded-full transition-transform duration-300 ease-in-out",
+									"absolute inset-y-0 left-0 w-1/2 rounded-full transition-transform duration-300 ease-in-out",
 									data.trigger.enable
-										? "translate-x-[75px] bg-primary-900"
+										? "translate-x-full bg-primary-900"
 										: "translate-x-0 bg-[#3F3F4A]",
 								)}
 							/>
-
-							{/* Button labels - always visible, change opacity based on state */}
-							<div className="absolute inset-0 flex">
+							<div className="absolute inset-0 grid grid-cols-2 z-10">
 								<button
 									type="button"
 									onClick={handleDisableFlowTrigger}
 									disabled={actionInProgress || !data.trigger.enable}
-									className="flex-1 flex items-center justify-center px-0.5 relative"
+									className="flex items-center justify-center"
 								>
 									{actionInProgress && !data.trigger.enable && (
-										<Loader2 className="h-3 w-3 animate-spin absolute left-2" />
+										<Loader2 className="h-3 w-3 animate-spin mr-1" />
 									)}
 									<span
 										className={clsx(
@@ -173,17 +171,15 @@ export function GitHubTriggerConfiguredView({
 									type="button"
 									onClick={handleEnableFlowTrigger}
 									disabled={actionInProgress || data.trigger.enable}
-									className="flex-1 flex items-center justify-center px-0.5 relative"
+									className="flex items-center justify-center"
 								>
 									{actionInProgress && data.trigger.enable && (
-										<Loader2 className="h-3 w-3 animate-spin absolute left-2" />
+										<Loader2 className="h-3 w-3 animate-spin mr-1" />
 									)}
 									<span
 										className={clsx(
 											"text-[12px] font-medium transition-colors duration-200",
-											data.trigger.enable
-												? "text-inverse font-semibold"
-												: "text-inverse/40",
+											data.trigger.enable ? "text-inverse" : "text-inverse/40",
 										)}
 									>
 										Enable

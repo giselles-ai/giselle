@@ -20,11 +20,17 @@ export function SelectRepository({
 	installations,
 	installationUrl,
 	onSelectRepository,
+	showMissingAccountLink = true,
+	renderRepositories = true,
+	onChangeInstallation,
 }: Pick<
 	GitHubIntegrationInstalledState,
 	"installations" | "installationUrl"
 > & {
 	onSelectRepository: (value: SelectRepository) => void;
+	showMissingAccountLink?: boolean;
+	renderRepositories?: boolean;
+	onChangeInstallation?: (installationId: number | null) => void;
 }) {
 	const [selectedInstallationId, setSelectedInstallationId] = useState<
 		number | null
@@ -68,6 +74,8 @@ export function SelectRepository({
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
 	}, [isOrgDropdownOpen]);
+
+	// no fixed overlay; rely on relative absolute positioning
 
 	// Handler for installation message from popup window
 	const handleInstallationMessage = useCallback(
@@ -152,6 +160,7 @@ export function SelectRepository({
 									onClick={() => {
 										setSelectedInstallationId(installation.id);
 										setIsOrgDropdownOpen(false);
+										onChangeInstallation?.(installation.id);
 									}}
 									className="flex w-full items-center rounded-md px-[8px] py-[6px] text-left font-sans text-[14px] leading-[16px] text-text hover:bg-ghost-element-hover"
 								>
@@ -171,18 +180,20 @@ export function SelectRepository({
 						</div>
 					)}
 				</div>
-				<p className="text-inverse text-[14px] text-right">
-					Missing GitHub account?
-					<button
-						type="button"
-						className="text-inverse hover:text-inverse ml-1 underline text-[14px]"
-						onClick={handleClick}
-					>
-						Adjust GitHub App Permissions
-					</button>
-				</p>
+				{showMissingAccountLink && (
+					<p className="text-inverse text-[14px] text-right">
+						Missing GitHub account?
+						<button
+							type="button"
+							className="text-inverse hover:text-inverse ml-1 underline text-[14px]"
+							onClick={handleClick}
+						>
+							Adjust GitHub App Permissions
+						</button>
+					</p>
+				)}
 			</fieldset>
-			{selectedInstallationId && repositories && (
+			{renderRepositories && selectedInstallationId && repositories && (
 				<div className="flex flex-col gap-[8px]">
 					<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Repository</p>
 					<div className="flex flex-col gap-y-[8px] relative">
@@ -224,11 +235,11 @@ export function SelectRepository({
 							))
 						)}
 					</div>
-					<p className="text-inverse text-[14px] text-right">
+					<p className="text-inverse text-[12px] text-right">
 						Missing Git repository?
 						<button
 							type="button"
-							className="text-inverse hover:text-inverse ml-1 underline text-[14px]"
+							className="text-inverse hover:text-inverse ml-1 underline text-[12px]"
 							onClick={handleClick}
 						>
 							Adjust GitHub App Permissions

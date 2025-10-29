@@ -420,7 +420,11 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 		isPropertiesPanelOpen &&
 		`${selectedNode?.content?.type}` === "trigger" &&
 		`${selectedNode?.content?.provider}` === "manual";
-	// GitHub trigger follows text generation: fixed panel height with inner scroll
+	// GitHub trigger panel
+	const isGithubTriggerPanel =
+		isPropertiesPanelOpen &&
+		`${selectedNode?.content?.type}` === "trigger" &&
+		`${selectedNode?.content?.provider}` === "github";
 	const isGithubActionPanel =
 		isPropertiesPanelOpen &&
 		`${selectedNode?.content?.type}` === "action" &&
@@ -477,6 +481,7 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 						minWidth={isTextGenerationPanel ? 400 : undefined}
 						autoHeight={
 							isManualTriggerPanel ||
+							isGithubTriggerPanel ||
 							isGithubActionPanel ||
 							isWebPagePanel
 						}

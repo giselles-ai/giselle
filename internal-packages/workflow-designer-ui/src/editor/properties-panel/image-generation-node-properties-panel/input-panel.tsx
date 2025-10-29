@@ -16,7 +16,6 @@ import {
 } from "@giselle-sdk/text-editor-utils";
 import clsx from "clsx/lite";
 import { CheckIcon, DatabaseZapIcon, TrashIcon } from "lucide-react";
-import pluralize from "pluralize";
 import { Popover, ToggleGroup } from "radix-ui";
 import {
 	type ComponentProps,
@@ -538,7 +537,7 @@ export function InputPanel({
 											}
 											key={source.connection.id}
 											title={`${source.node.name ?? "PDF Files"} / ${source.output.label}`}
-											subtitle={`${source.node.content.files.length} ${pluralize("file", source.node.content.files.length)}`}
+                                            subtitle={`${source.node.content.files.length} ${source.node.content.files.length === 1 ? "file" : "files"}`}
 											onRemove={() => handleRemove(source.connection)}
 										/>
 									);
