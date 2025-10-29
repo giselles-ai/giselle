@@ -9,7 +9,6 @@ import {
 	Workspace,
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
-import { createUIMessageStreamResponse } from "ai";
 import { z } from "zod/v4";
 import { ActId } from "../concepts/identifiers";
 import type { GiselleEngine } from "../engine";
@@ -73,24 +72,6 @@ export const createJsonRouters = {
 				return JsonResponse.json(providers);
 			},
 		}),
-	generateText: (giselleEngine: GiselleEngine) =>
-		withUsageLimitErrorHandler(
-			createHandler({
-				input: z.object({
-					generation: QueuedGeneration,
-					useAiGateway: z.boolean(),
-					useResumableGeneration: z.boolean(),
-				}),
-				handler: async ({ input }) => {
-					const stream = await giselleEngine.generateText(
-						input.generation,
-						input.useAiGateway,
-						input.useResumableGeneration,
-					);
-					return createUIMessageStreamResponse({ stream });
-				},
-			}),
-		),
 	getGeneration: (giselleEngine: GiselleEngine) =>
 		createHandler({
 			input: z.object({

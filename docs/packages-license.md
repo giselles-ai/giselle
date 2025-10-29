@@ -2,8 +2,8 @@
 
 
 ## Summary
-* 856 MIT
-* 188 Apache 2.0
+* 844 MIT
+* 186 Apache 2.0
 * 46 ISC
 * 27 New BSD
 * 13 Simplified BSD
@@ -93,30 +93,8 @@
 
 
 
-<a name="@ai-sdk/google-vertex"></a>
-### @ai-sdk/google-vertex v3.0.27
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
-
-
-
 <a name="@ai-sdk/openai"></a>
 ### @ai-sdk/openai v2.0.30
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
-
-
-
-<a name="@ai-sdk/perplexity"></a>
-### @ai-sdk/perplexity v2.0.9
 #### 
 
 ##### Paths
@@ -4680,6 +4658,17 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@types/pluralize"></a>
+### @types/pluralize v0.0.33
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="@types/pngjs"></a>
 ### @types/pngjs v6.0.5
 #### 
@@ -5454,17 +5443,6 @@ Python-2.0 manually approved
 
 
 
-<a name="aws4fetch"></a>
-### aws4fetch v1.0.20
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="bail"></a>
 ### bail v2.0.2
 #### 
@@ -6048,17 +6026,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="cookie-es"></a>
-### cookie-es v1.2.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="copy-anything"></a>
 ### copy-anything v3.0.5
 #### 
@@ -6116,17 +6083,6 @@ BlueOak-1.0.0 permitted
 
 <a name="cross-spawn"></a>
 ### cross-spawn v7.0.6
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="crossws"></a>
-### crossws v0.3.4
 #### 
 
 ##### Paths
@@ -6356,17 +6312,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="defu"></a>
-### defu v6.1.4
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="defuddle"></a>
 ### defuddle v0.6.4
 #### 
@@ -6380,17 +6325,6 @@ BlueOak-1.0.0 permitted
 
 <a name="dequal"></a>
 ### dequal v2.0.3
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="destr"></a>
-### destr v2.0.3
 #### 
 
 ##### Paths
@@ -7423,17 +7357,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="h3"></a>
-### h3 v1.15.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="happy-dom"></a>
 ### happy-dom v20.0.2
 #### 
@@ -7733,17 +7656,6 @@ BlueOak-1.0.0 permitted
 
 <a name="input-otp"></a>
 ### input-otp v1.4.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="iron-webcrypto"></a>
-### iron-webcrypto v1.2.1
 #### 
 
 ##### Paths
@@ -9315,30 +9227,8 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="node-fetch-native"></a>
-### node-fetch-native v1.6.6
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="node-gyp-build"></a>
 ### node-gyp-build v4.8.4
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="node-mock-http"></a>
-### node-mock-http v1.0.0
 #### 
 
 ##### Paths
@@ -9438,28 +9328,6 @@ MIT-0 permitted
 
 <a name="obuf"></a>
 ### obuf v1.1.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="ofetch"></a>
-### ofetch v1.4.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="ohash"></a>
-### ohash v1.1.4
 #### 
 
 ##### Paths
@@ -9964,6 +9832,17 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="pluralize"></a>
+### pluralize v8.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="pngjs"></a>
 ### pngjs v7.0.0
 #### 
@@ -10428,17 +10307,6 @@ BlueOak-1.0.0 permitted
 
 <a name="radix-ui"></a>
 ### radix-ui v1.1.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="radix3"></a>
-### radix3 v1.1.2
 #### 
 
 ##### Paths
@@ -11904,17 +11772,6 @@ Unknown manually approved
 
 
 
-<a name="ufo"></a>
-### ufo v1.5.4
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="ulid"></a>
 ### ulid v2.4.0
 #### 
@@ -12060,17 +11917,6 @@ Unknown manually approved
 
 <a name="unplugin"></a>
 ### unplugin v1.0.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="unstorage"></a>
-### unstorage v1.14.4
 #### 
 
 ##### Paths

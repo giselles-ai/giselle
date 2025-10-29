@@ -14,7 +14,6 @@ catalog:
   next: 15.5.2
   "@next/env": 15.5.2
   "@next/third-parties": 15.5.2
-  unstorage: 1.14.4
   ai: 5.0.51
   "@types/node": 22.14.0
   "@types/react": 19.1.10
@@ -35,9 +34,7 @@ catalog:
   "@ai-sdk/fal": 1.0.13
   "@ai-sdk/gateway": 1.0.23
   "@ai-sdk/google": 2.0.14
-  "@ai-sdk/google-vertex": 3.0.27
   "@ai-sdk/openai": 2.0.30
-  "@ai-sdk/perplexity": 2.0.9
   "@ai-sdk/react": 2.0.44
   "@tailwindcss/typography": 0.5.16
   tailwindcss-animate: 1.0.7
