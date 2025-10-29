@@ -59,7 +59,7 @@ export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 				docsUrl="https://docs.giselles.ai/en/glossary/action-node"
 				onDelete={() => deleteNode(node.id)}
 			/>
-			{node.content.command.state.status !== "unconfigured" && (
+			{node.content.command.state.status === "configured" && (
 				<div className="px-[16px] py-[8px] border-b border-inverse/10">
 					<Button type="button" onClick={handleClick} className="w-full">
 						Run Action
