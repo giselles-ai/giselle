@@ -1,3 +1,4 @@
+import { Button } from "@giselle-internal/ui/button";
 import { IconBox } from "@giselle-internal/ui/icon-box";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
@@ -322,12 +323,11 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 							<p className="text-error-900 text-[12px]">{urlError}</p>
 						)} */}
 						</div>
-						<button
-							type="submit"
-							className="w-full flex items-center justify-center gap-[4px] px-[16px] py-[8px] rounded-[8px] bg-blue-700 text-white-800 font-semibold hover:bg-blue-800 cursor-pointer"
-						>
-							Add
-						</button>
+						<div className="flex justify-end">
+							<Button variant="filled" size="large" type="submit">
+								Add
+							</Button>
+						</div>
 					</form>
 
 					{node.content.webpages.length > 0 && (
