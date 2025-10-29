@@ -24,13 +24,24 @@ import { isSupportedConnection } from "../utils";
 const DEFAULT_CONNECTION_CLONE_STRATEGY: ConnectionCloneStrategy =
 	"inputs-only";
 
+export interface WorkspaceSliceOptions {
+	onAddNode?: (node: NodeLike) => void;
+	onUpdateNode?: (node: NodeLike) => void;
+	onDeleteNode?: (node: NodeLike) => void;
+}
 export interface WorkspaceSlice {
 	workspace: Workspace | null;
 	_skipNextSave?: boolean;
-	initWorkspace: (workspace: Workspace) => void;
+	initWorkspace: (
+		workspace: Workspace,
+		options?: WorkspaceSliceOptions,
+	) => void;
 	addNode: (node: NodeLike, ui?: NodeUIState) => void;
+	addNodeCallback?: (node: NodeLike) => void;
 	updateNode: (nodeId: NodeId, data: Partial<NodeBase>) => void;
+	updateNodeCallback?: (node: NodeLike) => void;
 	deleteNode: (nodeId: NodeId | string) => void;
+	deleteNodeCallback?: (node: NodeLike) => void;
 	addConnection: (args: {
 		outputNode: NodeLike;
 		outputId: OutputId;
@@ -66,16 +77,20 @@ export interface WorkspaceSlice {
 	updateFileStatus: (nodeId: NodeId, files: FileData[]) => void;
 }
 
-export const createWorkspaceSlice: StateCreator<
-	WorkspaceSlice,
-	[],
-	[],
-	WorkspaceSlice
-> = (set, get) => ({
+export const createWorkspaceSlice: StateCreator<WorkspaceSlice> = (
+	set,
+	get,
+) => ({
 	workspace: null,
 	_skipNextSave: false,
-	initWorkspace: (workspace) => set({ workspace }),
-	addNode: (node, ui) =>
+	initWorkspace: (workspace, options = {}) =>
+		set({
+			workspace,
+			addNodeCallback: options.onAddNode,
+			updateNodeCallback: options.onUpdateNode,
+			deleteNodeCallback: options.onDeleteNode,
+		}),
+	addNode: (node, ui) => {
 		set((state) => {
 			if (!state.workspace) return {};
 			const newUi = { ...state.workspace.ui };
@@ -89,8 +104,10 @@ export const createWorkspaceSlice: StateCreator<
 					ui: newUi,
 				},
 			};
-		}),
-	updateNode: (nodeId, data) =>
+		});
+		get().addNodeCallback?.(node);
+	},
+	updateNode: (nodeId, data) => {
 		set((state) => {
 			if (!state.workspace) return {};
 			return {
@@ -101,8 +118,13 @@ export const createWorkspaceSlice: StateCreator<
 					),
 				},
 			};
-		}),
-	deleteNode: (nodeIdToDelete) =>
+		});
+		const prevNode = get().workspace?.nodes.find((node) => node.id === nodeId);
+		if (prevNode) {
+			get().updateNodeCallback?.({ ...prevNode, ...data } as NodeLike);
+		}
+	},
+	deleteNode: (nodeIdToDelete) => {
 		set((state) => {
 			if (!state.workspace) return {};
 			const nodeId = NodeId.parse(nodeIdToDelete);
@@ -118,7 +140,14 @@ export const createWorkspaceSlice: StateCreator<
 					ui,
 				},
 			};
-		}),
+		});
+		const deleteNode = get().workspace?.nodes.find(
+			(node) => node.id === nodeIdToDelete,
+		);
+		if (deleteNode) {
+			get().deleteNodeCallback?.(deleteNode);
+		}
+	},
 	addConnection: ({ outputNode, outputId, inputNode, inputId }) =>
 		set((state) => {
 			if (!state.workspace) return {};

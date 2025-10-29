@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { WorkflowDesignerContext } from "../context";
-import { type AppStore, useAppStore } from "./store";
+import { type AppStore, appStore } from "./store";
 
 export function useWorkflowDesigner() {
 	const context = useContext(WorkflowDesignerContext);
@@ -19,7 +19,7 @@ type WorkflowDesignerStore = Omit<AppStore, "workspace"> & {
 export function useWorkflowDesignerStore<T>(
 	selector: (workflowDesignerStore: WorkflowDesignerStore) => T,
 ) {
-	return useAppStore((appStore) => {
+	return appStore((appStore) => {
 		if (!appStore.workspace) {
 			throw new Error("Workspace is not initialized");
 		}

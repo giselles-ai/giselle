@@ -13,7 +13,7 @@ export type AppStore = WorkspaceSlice &
 	FileSlice &
 	PropertiesPanelSlice;
 
-export const useAppStore = create<AppStore>()((...a) => ({
+export const appStore = create<AppStore>()((...a) => ({
 	...createWorkspaceSlice(...a),
 	...createViewSlice(...a),
 	...createFileSlice(...a),
