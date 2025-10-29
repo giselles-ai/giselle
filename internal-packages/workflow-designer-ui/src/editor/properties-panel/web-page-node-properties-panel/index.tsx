@@ -119,14 +119,27 @@ function WebPageListItem({
 				</div>
 			)}
 			{webpage.status === "failed" && (
-				<Note type="error">
+				<Note
+					type="error"
+					showIcon={false}
+					action={
+						<button
+							type="button"
+							onClick={onRemove}
+							className="p-[4px] rounded-[6px] text-error-100 hover:text-error-200 hover:bg-error-900/10 transition-colors"
+							aria-label="Remove failed URL"
+						>
+							<TrashIcon className="size-[14px]" />
+						</button>
+					}
+				>
 					<div className="flex flex-col">
-						<span className="font-sans">Failed to fetch</span>
+						<span className="font-sans text-[14px]">Failed to fetch</span>
 						<a
 							href={webpage.url}
 							target="_blank"
 							rel="noreferrer"
-							className="underline"
+							className="underline text-[12px]"
 						>
 							{webpage.url}
 						</a>
