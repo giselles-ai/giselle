@@ -17,19 +17,21 @@ interface FloatingPropertiesPanelProps {
 	container?: React.ComponentProps<typeof Dialog.Portal>["container"];
 	title: string;
 	onClose?: () => void;
+	autoHeight?: boolean;
 }
 
 export function FloatingPropertiesPanel({
 	isOpen,
 	children,
 	className,
-	defaultWidth = 480,
-	minWidth = 480,
+	defaultWidth = 400,
+	minWidth = 400,
 	maxWidth = 1200,
 	position = "right",
 	container,
 	title,
 	onClose,
+	autoHeight = false,
 }: FloatingPropertiesPanelProps) {
 	const [width, setWidth] = useState(defaultWidth);
 	const [isResizing, setIsResizing] = useState(false);
@@ -104,16 +106,23 @@ export function FloatingPropertiesPanel({
 				<Dialog.Content asChild onPointerDownOutside={onClose}>
 					<div
 						className={clsx(
-							"absolute top-4 bottom-4 z-10 pointer-events-none",
+							autoHeight
+								? "absolute top-4 z-10 pointer-events-none"
+								: "absolute top-4 bottom-4 z-10 pointer-events-none",
 							position === "right" ? "right-4" : "left-4",
 						)}
-						style={{ width: `${width}px` }}
+						style={{
+							width: `${width}px`,
+							...(autoHeight ? { maxHeight: "calc(100vh - 32px)" } : {}),
+						}}
 					>
 						<Dialog.Title className="sr-only">{title}</Dialog.Title>
 						<div
 							ref={panelRef}
 							className={clsx(
-								"h-full pointer-events-auto relative rounded-[12px] shadow-xl",
+								autoHeight
+									? "pointer-events-auto relative rounded-[12px] shadow-xl h-auto"
+									: "h-full pointer-events-auto relative rounded-[12px] shadow-xl",
 								isOpen
 									? "translate-x-0 opacity-100"
 									: position === "right"
@@ -153,9 +162,13 @@ export function FloatingPropertiesPanel({
 							{/* Content */}
 							<div
 								className={clsx(
-									"h-full overflow-hidden relative z-10 px-2 pb-2",
-									position === "right" ? "pl-3" : "pr-3",
+									autoHeight
+										? "overflow-hidden relative z-10 pt-2 pb-3 px-3 h-auto"
+										: "h-full overflow-hidden relative z-10 pt-2 pb-3 px-3",
 								)}
+								style={
+									autoHeight ? { maxHeight: "calc(100vh - 32px)" } : undefined
+								}
 							>
 								{children}
 							</div>

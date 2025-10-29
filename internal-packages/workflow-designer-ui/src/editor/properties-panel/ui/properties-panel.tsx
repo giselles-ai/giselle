@@ -31,6 +31,8 @@ function getNodeIconColor(node: NodeLike): string {
 	}
 	if (node.type === "variable") {
 		switch (node.content.type) {
+			case "vectorStore":
+				return "text-black-900";
 			case "github":
 				return "text-black-900";
 			case "text":
@@ -81,6 +83,8 @@ function getNodeIconBackground(node: NodeLike): string {
 			case "file":
 				return "bg-file-node-1";
 			case "github":
+				return "bg-github-node-1";
+			case "vectorStore":
 				return "bg-github-node-1";
 			case "webPage":
 				return "bg-webPage-node-1";
