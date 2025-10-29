@@ -55,7 +55,7 @@ const DefaultActionIcon = ({
 );
 
 // Arrow right icon for action buttons
-const ArrowRightIcon = () => (
+const _ArrowRightIcon = () => (
 	<svg
 		width="16"
 		height="16"
@@ -490,7 +490,7 @@ function Installed({
 										<button
 											key={repo.node_id}
 											type="button"
-											className="group relative rounded-[12px] overflow-hidden px-[16px] py-0 h-[48px] flex items-center w-full border-[0.5px] border-white/8 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_-1px_0_rgba(255,255,255,0.15)] hover:border-white/12 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(255,255,255,0.2)] transition-all duration-200 cursor-pointer text-left"
+											className="group relative rounded-[12px] overflow-hidden px-[16px] py-[12px] w-full border-[0.5px] border-white/8 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_-1px_0_rgba(255,255,255,0.15)] hover:border-white/12 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(255,255,255,0.2)] transition-all duration-200 cursor-pointer text-left"
 											onClick={() => {
 												setStep({
 													state: "select-action",
@@ -537,6 +537,29 @@ function Installed({
 			)}
 			{step.state === "select-action" && (
 				<div className="w-full flex flex-col gap-[16px]">
+					<button
+						type="button"
+						onClick={() => setStep({ state: "select-repository" })}
+						className="inline-flex items-center gap-[6px] text-text-muted hover:text-text underline text-[12px] mb-[8px]"
+						aria-label="Back"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							className="w-[14px] h-[14px]"
+						>
+							<title>Back</title>
+							<path d="m15 18-6-6 6-6"></path>
+						</svg>
+						Back
+					</button>
 					<GitHubRepositoryBlock owner={step.owner} repo={step.repo} />
 					<div className="flex flex-col gap-[4px] flex-1 overflow-hidden">
 						<SettingLabel className="mb-[4px]">Action Type</SettingLabel>
