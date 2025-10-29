@@ -9,11 +9,7 @@ import {
 } from "@giselle-sdk/rag";
 import type { Octokit } from "@octokit/core";
 import { and, eq } from "drizzle-orm";
-import {
-	db,
-	githubRepositoryContentStatus,
-	githubRepositoryIndex,
-} from "@/db";
+import { db, githubRepositoryContentStatus, githubRepositoryIndex } from "@/db";
 import { getContentStatusMetadata } from "../../types";
 import { handleIngestErrors } from "../error-handling";
 import { createGitHubBlobChunkStore } from "./chunk-store";

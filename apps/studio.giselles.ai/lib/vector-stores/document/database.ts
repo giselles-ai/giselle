@@ -9,10 +9,7 @@ import type {
 	DocumentVectorStoreSourceIngestStatus,
 	DocumentVectorStoreSourceUploadStatus,
 } from "@/db/schema";
-import {
-	documentEmbeddings,
-	documentVectorStoreSources,
-} from "@/db/schema";
+import { documentEmbeddings, documentVectorStoreSources } from "@/db/schema";
 
 export async function getDocumentVectorStoreSource(
 	sourceId: DocumentVectorStoreSourceId,

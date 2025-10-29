@@ -1,9 +1,5 @@
 import { and, eq, isNotNull, lt, or } from "drizzle-orm";
-import {
-	db,
-	githubRepositoryContentStatus,
-	githubRepositoryIndex,
-} from "@/db";
+import { db, githubRepositoryContentStatus, githubRepositoryIndex } from "@/db";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github/types";
 
 const STALE_THRESHOLD_MINUTES = 15;

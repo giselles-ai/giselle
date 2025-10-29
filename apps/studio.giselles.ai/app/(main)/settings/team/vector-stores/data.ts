@@ -1,10 +1,6 @@
 import type { components } from "@octokit/openapi-types";
 import { desc, eq } from "drizzle-orm";
-import {
-	db,
-	githubRepositoryContentStatus,
-	githubRepositoryIndex,
-} from "@/db";
+import { db, githubRepositoryContentStatus, githubRepositoryIndex } from "@/db";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 
 export type { DocumentVectorStoreWithProfiles } from "@/lib/vector-stores/document/queries";

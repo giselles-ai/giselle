@@ -1,9 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import {
-	db,
-	githubRepositoryContentStatus,
-	githubRepositoryIndex,
-} from "@/db";
+import { db, githubRepositoryContentStatus, githubRepositoryIndex } from "@/db";
 
 type ContentType = {
 	contentType: "blob" | "pull_request";
