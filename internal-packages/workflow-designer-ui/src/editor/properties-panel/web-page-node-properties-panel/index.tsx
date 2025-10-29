@@ -310,8 +310,7 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 								id="webpage-urls"
 								name="urls"
 								className={clsx(
-									"w-full min-h-[80px] p-[16px] pb-0 border-[1px] border-inverse rounded-[8px] bg-transparent text-inverse/80 outline-none resize-none",
-									// urlError && "border-error-900",
+									"w-full min-h-[120px] !pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px] rounded-[8px] bg-inverse/10 text-inverse outline-none resize-none border-none",
 								)}
 								// value={urls}
 								// onChange={(e) => setUrls(e.target.value)}
