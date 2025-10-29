@@ -1,6 +1,9 @@
 import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
-import { SettingLabel } from "@giselle-internal/ui/setting-label";
+import {
+	SettingDetail,
+	SettingLabel,
+} from "@giselle-internal/ui/setting-label";
 import type {
 	ActionNode,
 	ConnectionId,
@@ -74,7 +77,7 @@ export function GitHubActionConfiguredView({
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
 			<div className="space-y-0">
-				<SettingLabel className="mb-0">Repository</SettingLabel>
+				<SettingDetail className="mb-0">Repository</SettingDetail>
 				<div className="flex justify-between">
 					<div className="px-[4px] pt-[6px]">
 						{isLoading || data === undefined ? (
@@ -111,7 +114,7 @@ export function GitHubActionConfiguredView({
 			</div>
 
 			<div className="space-y-0">
-				<SettingLabel className="mb-0">Event Type</SettingLabel>
+				<SettingDetail className="mb-0">Event Type</SettingDetail>
 				<div className="px-[4px] py-0 w-full bg-transparent text-[14px] flex items-center">
 					{githubActionIdToLabel(state.commandId)}
 				</div>
