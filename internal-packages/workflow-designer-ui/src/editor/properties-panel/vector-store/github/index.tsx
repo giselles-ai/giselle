@@ -17,7 +17,7 @@ import {
 	useVectorStore,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
-import { Info } from "lucide-react";
+// import { Info } from "lucide-react"; // removed unused
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { TriangleAlert } from "../../../../icons";
@@ -272,147 +272,122 @@ export function GitHubVectorStoreNodePropertiesPanel({
 				{/* Setting label below repository */}
 				<SettingLabel className="mt-[8px]">Setting</SettingLabel>
 
-				{/* Content Type Selection */}
-				{selectedRepoKey && (
-					<div className="mt-[16px]">
-						<div className="flex w-full items-center justify-between gap-[12px]">
-							<div className="shrink-0 w-[120px]">
-								<SettingDetail className="mb-0">Content Type</SettingDetail>
-							</div>
-							<div className="grow min-w-0">
-								<div className="flex items-center gap-[12px] flex-wrap">
-									{(() => {
-										const { hasBlobContent, hasPullRequestContent } =
-											contentTypeAvailability;
+				{/* Content Type Selection (always visible; disabled when repo not selected) */}
+				<div className="mt-[16px]">
+					<div className="flex w-full items-center justify-between gap-[12px]">
+						<div className="shrink-0 w-[120px]">
+							<SettingDetail className="mb-0">Content Type</SettingDetail>
+						</div>
+						<div className="grow min-w-0">
+							<div className="flex items-center gap-[12px]">
+								{(() => {
+									const { hasBlobContent, hasPullRequestContent } =
+										contentTypeAvailability;
+									const noRepoSelected = !selectedRepoKey;
 
-										return (
-											<>
-												<label
-													className={`flex items-center space-x-3 cursor-pointer ${
-														!hasBlobContent
-															? "opacity-50 cursor-not-allowed"
-															: ""
-													}`}
-												>
-													<input
-														type="radio"
-														name="contentType"
-														value="blob"
-														checked={selectedContentType === "blob"}
-														onChange={() => handleContentTypeChange("blob")}
-														disabled={!hasBlobContent}
-														className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500"
-													/>
-													<span className="text-[14px] text-inverse">Code</span>
-													{!hasBlobContent && (
-														<div className="flex items-center gap-1 group relative">
-															<span className="text-[12px] text-inverse/50">
-																Not configured
-															</span>
-															<Info className="w-3 h-3 text-inverse/50 cursor-help" />
-															<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-bg-800/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
-																Enable Code for {selectedRepoKey} in Vector
-																Store settings
-															</div>
-														</div>
-													)}
-												</label>
-												<label
-													className={`flex items-center space-x-3 cursor-pointer ${
-														!hasPullRequestContent
-															? "opacity-50 cursor-not-allowed"
-															: ""
-													}`}
-												>
-													<input
-														type="radio"
-														name="contentType"
-														value="pull_request"
-														checked={selectedContentType === "pull_request"}
-														onChange={() =>
-															handleContentTypeChange("pull_request")
-														}
-														disabled={!hasPullRequestContent}
-														className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500"
-													/>
-													<span className="text-[14px] text-inverse">
-														Pull Requests
-													</span>
-													{!hasPullRequestContent && (
-														<div className="flex items-center gap-1 group relative">
-															<span className="text-[12px] text-inverse/50">
-																Not configured
-															</span>
-															<Info className="w-3 h-3 text-inverse/50 cursor-help" />
-															<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-bg-800/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
-																Enable Pull Requests for that repository in
-																Vector Store settings
-															</div>
-														</div>
-													)}
-												</label>
-											</>
-										);
-									})()}
-								</div>
+									return (
+										<>
+											<label
+												className={`flex items-center space-x-3 cursor-pointer ${
+													noRepoSelected || !hasBlobContent
+														? "opacity-50 cursor-not-allowed"
+														: ""
+												}`}
+											>
+												<input
+													type="radio"
+													name="contentType"
+													value="blob"
+													checked={selectedContentType === "blob"}
+													onChange={() => handleContentTypeChange("blob")}
+													disabled={noRepoSelected || !hasBlobContent}
+													className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500"
+												/>
+												<span className="text-[14px] text-inverse">Code</span>
+												{/* disabled helper removed by request */}
+											</label>
+											<label
+												className={`flex items-center space-x-3 cursor-pointer ${
+													noRepoSelected || !hasPullRequestContent
+														? "opacity-50 cursor-not-allowed"
+														: ""
+												}`}
+											>
+												<input
+													type="radio"
+													name="contentType"
+													value="pull_request"
+													checked={selectedContentType === "pull_request"}
+													onChange={() =>
+														handleContentTypeChange("pull_request")
+													}
+													disabled={noRepoSelected || !hasPullRequestContent}
+													className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500"
+												/>
+												<span className="text-[14px] text-inverse">
+													Pull Requests
+												</span>
+												{/* disabled helper removed by request */}
+											</label>
+										</>
+									);
+								})()}
 							</div>
 						</div>
 					</div>
-				)}
+				</div>
 
-				{/* Embedding Profile Selection */}
-				{selectedRepoKey &&
-					selectedContentType &&
-					availableEmbeddingProfiles.length > 0 && (
-						<div className="mt-[16px]">
-							<div className="flex w-full items-center justify-between gap-[12px]">
-								<div className="shrink-0 w-[120px]">
-									<SettingDetail className="mb-0">
-										Embedding Model
-									</SettingDetail>
-								</div>
-								<div className="grow min-w-0">
-									{isEmbeddingProfileOrphaned &&
-										source.state.status === "configured" && (
-											<div className="flex items-center gap-[6px] text-error-900 text-[13px] mb-[8px]">
-												<TriangleAlert className="size-[16px]" />
-												<span>
-													The selected embedding model is no longer available
-													for this content type. Please select a different
-													model.
-												</span>
-											</div>
-										)}
-									<Select
-										options={embeddingProfileOptions}
-										placeholder="Select embedding model..."
-										value={defaultEmbeddingProfileValue}
-										onValueChange={(value) => {
-											const maybeId = Number(value);
-											if (!isEmbeddingProfileId(maybeId)) return;
-											setSelectedEmbeddingProfileId(maybeId);
-
-											// Update node data with selected profile
-											if (source.state.status === "configured") {
-												updateNodeData(node, {
-													content: {
-														...node.content,
-														source: {
-															provider: "github",
-															state: {
-																...source.state,
-																embeddingProfileId: maybeId,
-															},
-														},
-													},
-												});
-											}
-										}}
-									/>
-								</div>
-							</div>
+				{/* Embedding Profile Selection (always visible; disabled when unavailable) */}
+				<div className="mt-[16px]">
+					<div className="flex w-full items-center justify-between gap-[12px]">
+						<div className="shrink-0 w-[120px]">
+							<SettingDetail className="mb-0">Embedding Model</SettingDetail>
 						</div>
-					)}
+						<div className="grow min-w-0">
+							{isEmbeddingProfileOrphaned &&
+								source.state.status === "configured" && (
+									<div className="flex items-center gap-[6px] text-error-900 text-[13px] mb-[8px]">
+										<TriangleAlert className="size-[16px]" />
+										<span>
+											The selected embedding model is no longer available for
+											this content type. Please select a different model.
+										</span>
+									</div>
+								)}
+							<Select
+								options={embeddingProfileOptions}
+								placeholder={"Select embedding model..."}
+								value={defaultEmbeddingProfileValue}
+								onValueChange={(value) => {
+									const maybeId = Number(value);
+									if (!isEmbeddingProfileId(maybeId)) return;
+									setSelectedEmbeddingProfileId(maybeId);
+
+									// Update node data with selected profile
+									if (source.state.status === "configured") {
+										updateNodeData(node, {
+											content: {
+												...node.content,
+												source: {
+													provider: "github",
+													state: {
+														...source.state,
+														embeddingProfileId: maybeId,
+													},
+												},
+											},
+										});
+									}
+								}}
+								disabled={
+									!selectedRepoKey ||
+									!selectedContentType ||
+									availableEmbeddingProfiles.length === 0
+								}
+							/>
+						</div>
+					</div>
+				</div>
 
 				{/* Setup link moved under repository select */}
 			</div>
