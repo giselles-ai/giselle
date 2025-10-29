@@ -445,18 +445,32 @@ function Installed({
 	return (
 		<div className="overflow-y-auto flex flex-1 flex-col gap-[16px] px-[4px]">
 			{step.state === "select-repository" && (
-				<div className="flex w-full items-center gap-[12px]">
-					<div className="shrink-0 w-[120px]">
-						<SettingDetail className="mb-0">Organization</SettingDetail>
+				<>
+					<div className="flex w-full items-center gap-[12px]">
+						<div className="shrink-0 w-[120px]">
+							<SettingDetail className="mb-0">Organization</SettingDetail>
+						</div>
+						<div className="grow min-w-0">
+							<SelectRepository
+								installations={installations}
+								installationUrl={installationUrl}
+								onSelectRepository={handleSelectRepository}
+								showMissingAccountLink={false}
+							/>
+						</div>
 					</div>
-					<div className="grow min-w-0">
-						<SelectRepository
-							installations={installations}
-							installationUrl={installationUrl}
-							onSelectRepository={handleSelectRepository}
-						/>
-					</div>
-				</div>
+					<p className="text-inverse text-[12px] text-right mb-3">
+						Missing GitHub account?
+						<a
+							href={installationUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-inverse hover:text-inverse ml-1 underline text-[12px]"
+						>
+							Adjust GitHub App Permissions
+						</a>
+					</p>
+				</>
 			)}
 			{step.state === "select-action" && (
 				<div className="w-full flex flex-col gap-[16px]">
