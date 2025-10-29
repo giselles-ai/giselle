@@ -447,7 +447,7 @@ function Installed({
 	);
 
 	return (
-		<div className="overflow-y-auto flex flex-1 flex-col gap-[16px] px-[4px]">
+		<div className="flex flex-col gap-[16px] px-[4px]">
 			{step.state === "select-repository" && (
 				<>
 					<div className="flex w-full items-center gap-[12px]">
