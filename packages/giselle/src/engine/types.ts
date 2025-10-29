@@ -100,6 +100,7 @@ export interface GiselleEngineContext {
 	vault: Vault;
 	vectorStoreQueryServices?: {
 		github?: GitHubVectorStoreQueryService<Record<string, unknown>>;
+		githubIssue?: GitHubVectorStoreQueryService<Record<string, unknown>>;
 		githubPullRequest?: GitHubVectorStoreQueryService<Record<string, unknown>>;
 		document?: DocumentVectorStoreQueryService<Record<string, unknown>>;
 	};
@@ -199,6 +200,7 @@ export interface GiselleEngineConfig {
 	vault: Vault;
 	vectorStoreQueryServices?: {
 		github?: GitHubVectorStoreQueryService<Record<string, unknown>>;
+		githubIssue?: GitHubVectorStoreQueryService<Record<string, unknown>>;
 		githubPullRequest?: GitHubVectorStoreQueryService<Record<string, unknown>>;
 		document?: DocumentVectorStoreQueryService<Record<string, unknown>>;
 	};
