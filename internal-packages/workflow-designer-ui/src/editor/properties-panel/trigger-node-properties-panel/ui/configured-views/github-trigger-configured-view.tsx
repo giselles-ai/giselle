@@ -260,7 +260,7 @@ export function GitHubTriggerConfiguredView({
 									sizeClassName="h-[16px] w-[16px]"
 								/>
 							</div>
-							<p className="text-[12px] text-inverse px-[4px]">
+							<p className="text-[12px] text-inverse px-[4px] w-full">
 								Use{" "}
 								<span className="text-blue-400 font-medium">
 									/{data.trigger.configuration.event.conditions.callsign}
