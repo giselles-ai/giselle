@@ -32,6 +32,7 @@ import { GitHubTriggerConfiguredView } from "../../ui";
 import { GitHubTriggerReconfiguringView } from "../../ui/reconfiguring-views/github-trigger-reconfiguring-view";
 import { EventSelectionStep } from "./components/event-selection-step";
 import { EventTypeDisplay } from "./components/event-type-display";
+import { SettingDetail, SettingLabel } from "@giselle-internal/ui/setting-label";
 import { InstallGitHubApplication } from "./components/install-application";
 import { LabelsInputStep } from "./components/labels-input-step";
 import { RepositoryDisplay } from "./components/repository-display";
@@ -348,39 +349,48 @@ export function Installed({
 
 			{step.state === "select-repository" && (
 				<div className="overflow-y-auto flex-1 pr-2 custom-scrollbar h-full relative">
-					<p className="text-[14px] text-[#F7F9FD] mb-2">Event type</p>
-					<EventTypeDisplay
-						eventId={step.eventId}
-						className="mb-4"
-						showDescription={false}
-					/>
+                    <SettingLabel className="mb-[4px]">GitHub Setting</SettingLabel>
+                    <div className="flex w-full items-center justify-between gap-[12px] mb-2">
+                        <div className="shrink-0 w-[120px]"><SettingDetail className="mb-0">Event Type</SettingDetail></div>
+                        <div className="grow min-w-0 flex justify-end">
+                            <EventTypeDisplay eventId={step.eventId} className="mb-0" showDescription={false} />
+                        </div>
+                    </div>
 
-					<p className="text-[14px] text-[#F7F9FD] mb-3">Organization</p>
-					<div className="px-[4px] py-[4px]">
-						<SelectRepository
-							installations={installations}
-							installationUrl={installationUrl}
-							onSelectRepository={(value) => {
-								setStep({
-									state: "confirm-repository",
-									eventId: step.eventId,
-									installationId: value.installationId,
-									owner: value.owner,
-									repo: value.repo,
-									repoNodeId: value.repoNodeId,
-								});
-							}}
-						/>
-					</div>
+                    
+                    <div className="flex w-full items-center justify-between gap-[12px] mb-3">
+                        <div className="shrink-0 w-[120px]"><SettingDetail className="mb-0">Organization</SettingDetail></div>
+                        <div className="grow min-w-0 flex justify-end px-[4px] py-[4px]">
+                            <SelectRepository
+                                installations={installations}
+                                installationUrl={installationUrl}
+                                onSelectRepository={(value) => {
+                                    setStep({
+                                        state: "confirm-repository",
+                                        eventId: step.eventId,
+                                        installationId: value.installationId,
+                                        owner: value.owner,
+                                        repo: value.repo,
+                                        repoNodeId: value.repoNodeId,
+                                    });
+                                }}
+                            />
+                        </div>
+                    </div>
 				</div>
 			)}
 
 			{step.state === "confirm-repository" && (
 				<div className="overflow-y-auto flex-1 pr-2 custom-scrollbar h-full relative">
 					<div className="flex flex-col gap-[8px]">
-						<p className="text-[14px] text-[#F7F9FD] mb-2">Event type</p>
-						<EventTypeDisplay eventId={step.eventId} showDescription={false} />
-						<p className="text-[14px] text-[#F7F9FD] mb-2 mt-4">Repository</p>
+                        <SettingDetail className="mb-1">Event setting</SettingDetail>
+                        <div className="flex w-full items-center justify-between gap-[12px]">
+                            <div className="shrink-0 w-[120px]"><SettingDetail className="mb-0">Event Type</SettingDetail></div>
+                            <div className="grow min-w-0 flex justify-end">
+                                <EventTypeDisplay eventId={step.eventId} showDescription={false} />
+                            </div>
+                        </div>
+                        <SettingDetail className="mb-2 mt-4">Repository</SettingDetail>
 						<RepositoryDisplay
 							owner={step.owner}
 							repo={step.repo}
