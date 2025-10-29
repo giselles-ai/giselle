@@ -1,4 +1,7 @@
-import { SettingDetail } from "@giselle-internal/ui/setting-label";
+import {
+	SettingDetail,
+	SettingLabel,
+} from "@giselle-internal/ui/setting-label";
 import {
 	type ActionNode,
 	type Input,
@@ -476,13 +479,13 @@ function Installed({
 				<div className="w-full flex flex-col gap-[16px]">
 					<GitHubRepositoryBlock owner={step.owner} repo={step.repo} />
 					<div className="flex flex-col gap-[4px] flex-1 overflow-hidden">
-						<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Action Type</p>
-						<div className="flex flex-col gap-[16px] overflow-y-auto pr-2 pl-0 pt-[8px] custom-scrollbar flex-1">
+						<SettingLabel className="mb-[4px]">Action Type</SettingLabel>
+						<div className="flex flex-col gap-[8px] overflow-y-auto pr-2 pl-0 pt-[8px] custom-scrollbar flex-1">
 							{Object.entries(githubActions).map(([id, githubAction]) => (
 								<button
 									key={id}
 									type="button"
-									className="flex items-center py-[12px] px-[8px] rounded-lg group w-full h-[48px]"
+									className="flex items-center py-[8px] px-[8px] rounded-lg group w-full min-h-[48px] border border-inverse/20 hover:border-inverse/30 hover:bg-inverse/10 transition-colors"
 									onClick={() => handleActionSelect(id)}
 								>
 									<div className="flex items-center min-w-0 flex-1">
@@ -493,12 +496,12 @@ function Installed({
 											<span className="text-inverse font-medium text-[14px] truncate">
 												{githubAction.command.label}
 											</span>
-											<span className="text-inverse text-[12px] truncate group-hover:text-inverse transition-colors pr-6">
+											<span className="text-text-muted text-[10px] truncate group-hover:text-inverse transition-colors pr-6">
 												{`Perform ${githubAction.command.label.toLowerCase()} action`}
 											</span>
 										</div>
 									</div>
-									<ArrowRightIcon />
+									{/* Removed right arrow icon for consistency with trigger list */}
 								</button>
 							))}
 						</div>
