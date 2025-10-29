@@ -447,7 +447,7 @@ function Installed({
 	);
 
 	return (
-		<div className="flex flex-col gap-[16px] px-[4px]">
+		<div className="flex flex-col gap-[8px] px-[4px]">
 			{step.state === "select-repository" && (
 				<>
 					<div className="flex w-full items-center gap-[12px]">
@@ -481,8 +481,8 @@ function Installed({
 							<div className="shrink-0 w-[120px]">
 								<SettingDetail className="mb-0">Repository</SettingDetail>
 							</div>
-							<div className="grow min-w-0">
-								<div className="flex flex-col gap-y-[8px] relative">
+						<div className="grow min-w-0">
+							<div className="flex flex-col gap-y-[4px] relative">
 									{(
 										installations.find((i) => i.id === selectedInstallationId)
 											?.repositories ?? []
