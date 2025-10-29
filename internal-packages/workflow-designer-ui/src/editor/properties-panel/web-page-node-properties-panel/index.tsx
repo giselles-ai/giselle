@@ -246,7 +246,7 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 			<NodePanelHeader
 				node={node}
 				onChangeName={(name) => updateNodeData(node, { name })}
-				docsUrl="https://docs.giselles.ai/en/glossary/web-page-node"
+				docsUrl="https://docs.giselles.ai/en/glossary/webpage-node"
 				onDelete={undefined}
 			/>
 			<PropertiesPanelContent>
