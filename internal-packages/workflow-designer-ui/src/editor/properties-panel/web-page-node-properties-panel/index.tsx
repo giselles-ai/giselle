@@ -15,11 +15,8 @@ import { Dialog } from "radix-ui";
 import { type FormEventHandler, useCallback, useState } from "react";
 import useSWR from "swr";
 import { validateUrl } from "../../lib/validate-url";
-import {
-	PropertiesPanelContent,
-	PropertiesPanelHeader,
-	PropertiesPanelRoot,
-} from "../ui";
+import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
+import { NodePanelHeader } from "../ui/node-panel-header";
 
 function WebPageListItem({
 	webpage,
@@ -246,11 +243,11 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 
 	return (
 		<PropertiesPanelRoot>
-			<PropertiesPanelHeader
+			<NodePanelHeader
 				node={node}
-				onChangeName={(name) => {
-					updateNodeData(node, { name });
-				}}
+				onChangeName={(name) => updateNodeData(node, { name })}
+				docsUrl="https://docs.giselles.ai/en/glossary/webpage-node"
+				onDelete={undefined}
 			/>
 			<PropertiesPanelContent>
 				<div>

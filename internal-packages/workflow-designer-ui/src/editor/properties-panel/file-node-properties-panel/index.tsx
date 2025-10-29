@@ -1,10 +1,7 @@
 import type { FileCategory, FileNode } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
-import {
-	PropertiesPanelContent,
-	PropertiesPanelHeader,
-	PropertiesPanelRoot,
-} from "../ui";
+import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
+import { NodePanelHeader } from "../ui/node-panel-header";
 import { FilePanel } from "./file-panel";
 import type { FileTypeConfig } from "./file-panel-type";
 
@@ -24,15 +21,15 @@ const fileType: Record<FileCategory, FileTypeConfig> = {
 };
 
 export function FileNodePropertiesPanel({ node }: { node: FileNode }) {
-	const { updateNodeData } = useWorkflowDesigner();
+	const { updateNodeData, deleteNode } = useWorkflowDesigner();
 
 	return (
 		<PropertiesPanelRoot>
-			<PropertiesPanelHeader
+			<NodePanelHeader
 				node={node}
-				onChangeName={(name) => {
-					updateNodeData(node, { name });
-				}}
+				onChangeName={(name) => updateNodeData(node, { name })}
+				docsUrl="https://docs.giselles.ai/en/glossary/file-node"
+				onDelete={() => deleteNode(node.id)}
 			/>
 			<PropertiesPanelContent>
 				<FilePanel node={node} config={fileType[node.content.category]} />

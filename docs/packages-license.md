@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 844 MIT
+* 842 MIT
 * 186 Apache 2.0
 * 46 ISC
 * 27 New BSD
@@ -4649,17 +4649,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@types/phoenix"></a>
 ### @types/phoenix v1.6.6
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@types/pluralize"></a>
-### @types/pluralize v0.0.33
 #### 
 
 ##### Paths
@@ -9829,17 +9818,6 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
-
-
-
-<a name="pluralize"></a>
-### pluralize v8.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
 
 
 
