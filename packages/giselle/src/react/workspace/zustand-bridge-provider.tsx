@@ -5,8 +5,9 @@ import {
 	useGiselleEngine,
 } from "../use-giselle-engine";
 import { WorkflowDesignerContext } from "./context";
-import { type AppStore, isSupportedConnection, useAppStore } from "./hooks";
+import { type AppStore, useAppStore } from "./store";
 import type { WorkflowDesignerContextValue } from "./types";
+import { isSupportedConnection } from "./utils";
 
 const DEFAULT_SAVE_DELAY = 1000;
 

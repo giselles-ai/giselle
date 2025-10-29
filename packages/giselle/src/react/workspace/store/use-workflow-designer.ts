@@ -12,16 +12,6 @@ export function useWorkflowDesigner() {
 	return context;
 }
 
-// Safe workspace selector - throws error if workspace is null
-export function useWorkspace() {
-	return useAppStore((state) => {
-		if (!state.workspace) {
-			throw new Error("Workspace is not initialized");
-		}
-		return state.workspace;
-	});
-}
-
 // Safe workspace selector with optional fallback
 type WorkflowDesignerStore = Omit<AppStore, "workspace"> & {
 	workspace: NonNullable<AppStore["workspace"]>;
