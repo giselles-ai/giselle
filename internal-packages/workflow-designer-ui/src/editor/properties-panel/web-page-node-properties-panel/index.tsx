@@ -1,4 +1,5 @@
 import { Button } from "@giselle-internal/ui/button";
+import { Note } from "@giselle-internal/ui/note";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
@@ -118,19 +119,19 @@ function WebPageListItem({
 				</div>
 			)}
 			{webpage.status === "failed" && (
-				<div>
-					<p className="text-error-900 font-sans">
-						Failed to fetch: {webpage.errorMessage}
-					</p>
-					<a
-						href={webpage.url}
-						target="_blank"
-						rel="noreferrer"
-						className="text-[14px] underline"
-					>
-						{webpage.url}
-					</a>
-				</div>
+				<Note type="error">
+					<div className="flex flex-col">
+						<span className="font-sans">Failed to fetch</span>
+						<a
+							href={webpage.url}
+							target="_blank"
+							rel="noreferrer"
+							className="underline"
+						>
+							{webpage.url}
+						</a>
+					</div>
+				</Note>
 			)}
 			<button
 				type="button"
