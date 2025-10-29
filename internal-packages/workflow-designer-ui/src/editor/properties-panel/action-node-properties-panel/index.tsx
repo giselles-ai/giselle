@@ -67,7 +67,9 @@ export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 				</div>
 			)}
 			<PropertiesPanelContent>
-				<PropertiesPanel node={node} />
+				<div className="overflow-y-auto flex-1 pr-2 custom-scrollbar h-full relative">
+					<PropertiesPanel node={node} />
+				</div>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);
