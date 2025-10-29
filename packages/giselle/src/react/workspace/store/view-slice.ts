@@ -5,7 +5,7 @@ import type { WorkspaceSlice } from "./workspace-slice";
 
 // A creator function for a slice must now include the full store type
 // to enable cross-slice actions, e.g., get().deleteNode()
-export type ViewSliceCreator = StateCreator<
+type ViewSliceCreator = StateCreator<
 	WorkspaceSlice & ViewSlice,
 	[],
 	[],
