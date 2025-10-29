@@ -1,5 +1,6 @@
 import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
+import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import type {
 	ActionNode,
 	ConnectionId,
@@ -73,7 +74,7 @@ export function GitHubActionConfiguredView({
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
 			<div className="space-y-[4px]">
-				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Repository</p>
+				<SettingLabel className="mb-0">Repository</SettingLabel>
 				<div className="flex justify-between">
 					<div className="px-[4px] pt-[6px]">
 						{isLoading || data === undefined ? (
@@ -85,9 +86,10 @@ export function GitHubActionConfiguredView({
 							/>
 						)}
 					</div>
-					<button
+					<Button
+						variant="solid"
+						size="large"
 						type="button"
-						className="bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors"
 						onClick={() => {
 							updateNodeData(node, {
 								content: {
@@ -104,19 +106,19 @@ export function GitHubActionConfiguredView({
 						}}
 					>
 						Change Repository
-					</button>
+					</Button>
 				</div>
 			</div>
 
 			<div className="space-y-[4px]">
-				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Event Type</p>
+				<SettingLabel className="mb-0">Event Type</SettingLabel>
 				<div className="px-[4px] py-0 w-full bg-transparent text-[14px] flex items-center">
 					{githubActionIdToLabel(state.commandId)}
 				</div>
 			</div>
 
 			<div className="space-y-[4px]">
-				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Input Parameter</p>
+				<SettingLabel className="mb-0">Input Parameter</SettingLabel>
 				<div className="px-[4px] py-0 w-full bg-transparent text-[14px]">
 					<ul className="w-full flex flex-col gap-[12px]">
 						{connectedInputs.map((input) => (
