@@ -414,6 +414,8 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 	const isVectorStorePanel =
 		isPropertiesPanelOpen &&
 		`${selectedNodes[0]?.content.type}` === "vectorStore";
+	const isWebPagePanel =
+		isPropertiesPanelOpen && `${selectedNodes[0]?.content.type}` === "webPage";
 
 	const mainRef = useRef<HTMLDivElement>(null);
 
@@ -462,7 +464,9 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 						title="Properties Panel"
 						defaultWidth={isTextGenerationPanel ? 400 : undefined}
 						minWidth={isTextGenerationPanel ? 400 : undefined}
-						autoHeight={isFilePanel || isTextPanel || isVectorStorePanel}
+						autoHeight={
+							isFilePanel || isTextPanel || isVectorStorePanel || isWebPagePanel
+						}
 					>
 						<PropertiesPanel />
 					</FloatingPropertiesPanel>
