@@ -408,7 +408,7 @@ export function Installed({
 							/>
 						</div>
 					</div>
-					<p className="text-inverse text-[12px] text-right mb-3">
+					<p className="text-inverse text-[12px] text-right mb-3 w-full">
 						Missing GitHub account?
 						<a
 							href={installationUrl}
@@ -467,7 +467,7 @@ export function Installed({
 									</div>
 								</div>
 							</div>
-							<p className="text-inverse text-[12px] text-right mb-3">
+							<p className="text-inverse text-[12px] text-right mb-3 w-full">
 								Missing Git repository?
 								<a
 									href={installationUrl}
