@@ -15,8 +15,7 @@ type TeamMembersListProps = {
 		role: TeamRole;
 	}[];
 	invitations: Invitation[];
-	currentUserRole: TeamRole;
-	isProPlan: boolean;
+	canManageMembers: boolean;
 	currentUserId: string;
 };
 
@@ -24,8 +23,7 @@ export function TeamMembersList({
 	teamId,
 	members,
 	invitations,
-	currentUserRole,
-	isProPlan,
+	canManageMembers,
 	currentUserId,
 }: TeamMembersListProps) {
 	// internal Toast is globally provided via layout; no per-list usage required
@@ -40,8 +38,7 @@ export function TeamMembersList({
 					email={member.email}
 					avatarUrl={member.avatarUrl}
 					role={member.role}
-					currentUserRole={currentUserRole}
-					isProPlan={isProPlan}
+					canManageMembers={canManageMembers}
 					currentUserId={currentUserId}
 				/>
 			))}
@@ -54,7 +51,7 @@ export function TeamMembersList({
 						email={invitation.email}
 						role={invitation.role}
 						expiredAt={invitation.expiredAt}
-						currentUserRole={currentUserRole}
+						canManageMembers={canManageMembers}
 					/>
 				))}
 			{/* Internal toast renders via provider viewport globally */}

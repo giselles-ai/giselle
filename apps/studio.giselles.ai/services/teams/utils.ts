@@ -10,3 +10,12 @@ export function isProPlan(
 export function createTeamId(): TeamId {
 	return `tm_${createId()}`;
 }
+
+export function hasTeamPlanFeatures(team: CurrentTeam) {
+	if (team.type === "internal") {
+		return true;
+	}
+
+	// TODO: extend to support customer teams when Team plan is introduced
+	return false;
+}

@@ -4,8 +4,12 @@ import { db } from "@/drizzle";
 import { invitations, teamMemberships, teams, users } from "@/drizzle/schema";
 import { sendEmail } from "@/services/external/email";
 import { type CurrentTeam, fetchCurrentTeam } from "@/services/teams";
+import { hasTeamPlanFeatures } from "@/services/teams/utils";
 
 export type Invitation = typeof invitations.$inferSelect;
+
+export const INVITE_MEMBERS_NOT_AVAILABLE_ERROR =
+	"Inviting members is not available for this team plan.";
 
 export function createInvitation(
 	email: string,
@@ -16,6 +20,10 @@ export function createInvitation(
 		id: UserId;
 	},
 ): Promise<Invitation> {
+	if (!hasTeamPlanFeatures(currentTeam)) {
+		throw new Error(INVITE_MEMBERS_NOT_AVAILABLE_ERROR);
+	}
+
 	const normalizedEmail = email.trim().toLowerCase();
 	const token = crypto.randomUUID();
 	const expiredAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hours

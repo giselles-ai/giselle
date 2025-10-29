@@ -1,7 +1,8 @@
 import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { fetchCurrentUser } from "@/services/accounts";
-import { fetchCurrentTeam, isProPlan } from "@/services/teams";
+import { fetchCurrentTeam } from "@/services/teams";
+import { hasTeamPlanFeatures } from "@/services/teams/utils";
 import { Card } from "../../components/card";
 import { getCurrentUserRole, getTeamMembers } from "../actions";
 import { listInvitations } from "../invitation";
@@ -31,7 +32,8 @@ export default async function TeamMembersPage() {
 	const { success: hasCurrentUserRole, data: currentUserRole } =
 		await getCurrentUserRole();
 	const { success: hasMembers, data: members } = await getTeamMembers();
-	const hasProPlan = isProPlan(team);
+	const canManageMembers =
+		currentUserRole === "admin" && hasTeamPlanFeatures(team);
 	const invitations = await listInvitations();
 
 	if (!hasMembers || !members) {
@@ -74,7 +76,7 @@ export default async function TeamMembersPage() {
 					>
 						About Members
 					</DocsLink>
-					{hasProPlan && currentUserRole === "admin" && (
+					{canManageMembers && (
 						<InviteMemberDialog
 							memberEmails={members
 								.map((member) => member.email)
@@ -90,10 +92,9 @@ export default async function TeamMembersPage() {
 				<SectionHeader title="Member List" />
 				<TeamMembersList
 					teamId={team.id}
-					isProPlan={hasProPlan}
+					canManageMembers={canManageMembers}
 					members={members}
 					invitations={invitations}
-					currentUserRole={currentUserRole}
 					currentUserId={currentUser.id}
 				/>
 			</Card>
