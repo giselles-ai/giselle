@@ -146,13 +146,15 @@ function WebPageListItem({
 					</div>
 				</Note>
 			)}
-			<button
-				type="button"
-				onClick={onRemove}
-				className="cursor-pointer hidden group-hover:block p-[4px] hover:bg-bg-850/10 rounded-[4px] transition-colors"
-			>
-				<TrashIcon className="size-[16px] text-white-600" />
-			</button>
+			{webpage.status !== "failed" && (
+				<button
+					type="button"
+					onClick={onRemove}
+					className="cursor-pointer hidden group-hover:block p-[4px] hover:bg-bg-850/10 rounded-[4px] transition-colors"
+				>
+					<TrashIcon className="size-[16px] text-white-600" />
+				</button>
+			)}
 		</li>
 	);
 }
