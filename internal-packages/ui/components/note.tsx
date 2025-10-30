@@ -15,14 +15,18 @@ export function Note({
 	action,
 	showIcon = true,
 }: NoteProps) {
-	const containerClass =
-		type === "error"
-			? "rounded-[8px] border border-error-900/40 bg-error-900/10 px-[12px] py-[8px] flex items-start gap-[8px]"
-			: type === "warning"
-				? "rounded-[8px] border border-yellow-500/40 bg-yellow-500/10 px-[12px] py-[8px] flex items-start gap-[8px]"
-				: type === "info"
-					? "rounded-[8px] border border-blue-500/40 bg-blue-500/10 px-[12px] py-[8px] flex items-start gap-[8px]"
-					: "rounded-[8px] border border-green-500/40 bg-green-500/10 px-[12px] py-[8px] flex items-start gap-[8px]";
+	const sharedContainerClasses =
+		"rounded-[8px] px-[12px] py-[8px] flex items-start gap-[8px] border";
+	const typeSpecificBorderAndBg: Record<NoteProps["type"], string> = {
+		error: "border-error-900/40 bg-error-900/10",
+		warning: "border-yellow-500/40 bg-yellow-500/10",
+		info: "border-blue-500/40 bg-blue-500/10",
+		success: "border-green-500/40 bg-green-500/10",
+	};
+	const containerClass = clsx(
+		sharedContainerClasses,
+		typeSpecificBorderAndBg[type],
+	);
 
 	const iconClass =
 		type === "error"
