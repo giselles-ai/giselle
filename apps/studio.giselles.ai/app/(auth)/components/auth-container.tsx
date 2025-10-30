@@ -10,43 +10,51 @@ export const AuthContainer: FC<AuthContainerProps> = ({
 	title,
 	subtitle,
 	children,
-}) => (
-	<div className="min-h-screen flex flex-col items-center justify-center p-4 gap-6">
-		<h1 className="text-center font-sans text-[34px] font-[500] text-accent auth-title-glow">
-			{title}
-		</h1>
+}) => {
+	const isPreview =
+		process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" ||
+		process.env.VERCEL_ENV === "preview";
 
-		{/* Frosted-glass container */}
-		<div className="relative w-full max-w-[360px] rounded-2xl pt-15 pb-7.5 px-10 flex flex-col shadow-(--shadow-stage-form) backdrop-blur-[6px] bg-(image:--auth-glass-bg)">
-			{/* Base fill to stabilize tone across environments (very thin) */}
-			<div
-				className="absolute inset-0 rounded-[inherit] pointer-events-none"
-				style={{
-					background: "color-mix(in srgb, var(--color-bg) 25%, transparent)",
-				}}
-			/>
-			{/* Gradient border */}
-			<div className="auth-gradient-border" />
+	return (
+		<div className="min-h-screen flex flex-col items-center justify-center p-4 gap-6">
+			<h1 className="text-center font-sans text-[34px] font-[500] text-accent auth-title-glow">
+				{title}
+			</h1>
 
-			{/* Top highlight */}
-			<div className="absolute left-4 right-4 top-0 h-px bg-(image:--glass-highlight-bg) pointer-events-none" />
+			{/* Frosted-glass container */}
+			<div className="relative w-full max-w-[420px] rounded-2xl pt-15 pb-7.5 px-10 flex flex-col shadow-(--shadow-stage-form) backdrop-blur-[6px] bg-(image:--auth-glass-bg)">
+				{/* Base fill to stabilize tone across environments (very thin) */}
+				<div
+					className="absolute inset-0 rounded-[inherit] pointer-events-none"
+					style={{
+						background: isPreview
+							? "color-mix(in srgb, var(--color-bg, var(--color-background)) 25%, transparent)"
+							: "color-mix(in srgb, var(--color-bg) 25%, transparent)",
+					}}
+				/>
+				{/* Gradient border */}
+				<div className="auth-gradient-border" />
 
-			{/* Corner dots */}
-			<div className="auth-corner-dot auth-corner-dot--top-left" />
-			<div className="auth-corner-dot auth-corner-dot--top-right" />
-			<div className="auth-corner-dot auth-corner-dot--bottom-left" />
-			<div className="auth-corner-dot auth-corner-dot--bottom-right" />
+				{/* Top highlight */}
+				<div className="absolute left-4 right-4 top-0 h-px bg-(image:--glass-highlight-bg) pointer-events-none" />
 
-			{subtitle && (
-				<div className="auth-container-header">
-					<h2 className="auth-container-title">{subtitle}</h2>
-				</div>
-			)}
+				{/* Corner dots */}
+				<div className="auth-corner-dot auth-corner-dot--top-left" />
+				<div className="auth-corner-dot auth-corner-dot--top-right" />
+				<div className="auth-corner-dot auth-corner-dot--bottom-left" />
+				<div className="auth-corner-dot auth-corner-dot--bottom-right" />
 
-			{children}
+				{subtitle && (
+					<div className="auth-container-header">
+						<h2 className="auth-container-title">{subtitle}</h2>
+					</div>
+				)}
+
+				{children}
+			</div>
 		</div>
-	</div>
-);
+	);
+};
 
 interface AuthContainerHeaderProps {
 	title: string;
