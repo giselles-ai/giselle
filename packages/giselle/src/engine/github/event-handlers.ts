@@ -705,19 +705,32 @@ export async function processEvent<TEventName extends WebhookEventName>(
 					}
 				},
 				sequenceStart: async ({ sequence }) => {
+					const now = new Date();
 					progressTableData = progressTableData.map((row) =>
 						row.id === sequence.id
 							? {
 									...row,
 									status: "in-progress" as const,
-									updatedAt: new Date(),
-									miniStepProgressTableRows: sequence.steps.map((step) => ({
-										id: step.id,
-										name: step.name,
-										status: mapStepStatusToMiniStepStatus(step.status),
-										updatedAt:
-											step.status === "running" ? new Date() : undefined,
-									})),
+									updatedAt: now,
+									miniStepProgressTableRows: sequence.steps.map((step) => {
+										const existingMiniStep = row.miniStepProgressTableRows.find(
+											(ms) => ms.id === step.id,
+										);
+										const newStatus = mapStepStatusToMiniStepStatus(step.status);
+										const shouldUpdateTime =
+											step.status === "running" ||
+											(newStatus === "in-progress" &&
+												existingMiniStep?.status !== "in-progress");
+										return {
+											id: step.id,
+											name: step.name,
+											status: newStatus,
+											updatedAt:
+												shouldUpdateTime
+													? now
+													: existingMiniStep?.updatedAt ?? undefined,
+										};
+									}),
 								}
 							: row,
 					);
