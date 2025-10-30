@@ -8,7 +8,6 @@ import {
 	githubIssuesVectorStoreFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
-	resumableGenerationFlag,
 	stageFlag,
 	webSearchActionFlag,
 } from "@/flags";
@@ -54,7 +53,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const layoutV3 = await layoutV3Flag();
 	const stage = await stageFlag();
 	const aiGateway = await aiGatewayFlag();
-	const resumableGeneration = await resumableGenerationFlag();
 	const googleUrlContext = await googleUrlContextFlag();
 	const data = await giselleEngine.getWorkspace(workspaceId);
 	const documentVectorStore = await docVectorStoreFlag();
@@ -74,7 +72,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 		layoutV3,
 		stage,
 		aiGateway,
-		resumableGeneration,
 		googleUrlContext,
 		data,
 		documentVectorStore,
@@ -84,7 +81,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			layoutV3,
 			stage,
 			aiGateway,
-			resumableGeneration,
 			googleUrlContext,
 			documentVectorStore,
 			githubIssuesVectorStore,

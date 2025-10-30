@@ -152,15 +152,31 @@ export async function runAct(
 				});
 			},
 			onSequenceStart: async (sequence) => {
+				args.context.logger.debug(
+					{ sequence },
+					`Starting sequence ${sequence.id}`,
+				);
 				await args.callbacks?.sequenceStart?.({ sequence });
 			},
 			onSequenceError: async (sequence) => {
+				args.context.logger.error(
+					{ sequence },
+					`Sequence ${sequence.id} failed`,
+				);
 				await args.callbacks?.sequenceFail?.({ sequence });
 			},
 			onSequenceComplete: async (sequence) => {
+				args.context.logger.debug(
+					{ sequence },
+					`Sequence ${sequence.id} completed`,
+				);
 				await args.callbacks?.sequenceComplete?.({ sequence });
 			},
 			onSequenceSkip: async (sequence) => {
+				args.context.logger.debug(
+					{ sequence },
+					`Skipping sequence ${sequence.id}`,
+				);
 				await args.callbacks?.sequenceSkip?.({ sequence });
 			},
 			onActComplete: async () => {

@@ -20,12 +20,20 @@ import type { GiselleEngineContext } from "../types";
 import { getWorkspace } from "../workspaces";
 import type { parseCommand } from "./utils";
 
+interface MiniStepProgressTableRow {
+	id: string;
+	name: string;
+	status: "pending" | "in-progress" | "success" | "failed";
+	updatedAt: Date | undefined;
+}
+
 // Since we can't access node information from the new Act structure,
 // we'll simplify the progress tracking
 type ProgressTableRow = {
 	id: string;
 	status: "pending" | "in-progress" | "success" | "failed";
 	updatedAt: Date | undefined;
+	miniStepProgressTableRows: MiniStepProgressTableRow[];
 };
 type ProgressTableData = ProgressTableRow[];
 function formatDateTime(date: Date): string {
@@ -56,33 +64,73 @@ function formatDateTime(date: Date): string {
 	return `${month} ${day}, ${year} ${displayHours}:${displayMinutes}${period}`;
 }
 
-function buildProgressTable(data: ProgressTableData) {
-	const header = "| Step | Status | Updated(UTC) |";
-	const separator = "| --- | --- | --- |";
-	const rows = data.map((row, i) => {
-		let status = "";
-		switch (row.status) {
-			case "pending":
-				status = "--";
-				break;
-			case "in-progress":
-				status = "⏳";
-				break;
-			case "success":
-				status = "✅";
-				break;
-			case "failed":
-				status = "❌";
-				break;
-			default: {
-				const _exhaustiveCheck: never = row.status;
-				throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
-			}
+function mapStepStatusToMiniStepStatus(
+	status:
+		| "created"
+		| "queued"
+		| "running"
+		| "completed"
+		| "failed"
+		| "cancelled",
+): "pending" | "in-progress" | "success" | "failed" {
+	switch (status) {
+		case "created":
+		case "queued":
+			return "pending";
+		case "running":
+			return "in-progress";
+		case "completed":
+			return "success";
+		case "failed":
+		case "cancelled":
+			return "failed";
+		default: {
+			const _exhaustiveCheck: never = status;
+			throw new Error(`Unhandled step status: ${_exhaustiveCheck}`);
 		}
+	}
+}
 
-		return `| ${i + 1} | ${status} | ${row.updatedAt ? formatDateTime(row.updatedAt) : "--"} |`;
+function buildProgressTable(data: ProgressTableData) {
+	const rows = data.map((row, i) => {
+		const miniStepRows = row.miniStepProgressTableRows.map((miniStep) => {
+			let miniStepStatusIcon = "";
+			let miniStepStatusText = "";
+			switch (miniStep.status) {
+				case "pending":
+					miniStepStatusIcon = "⚪";
+					miniStepStatusText = "Pending";
+					break;
+				case "in-progress":
+					miniStepStatusIcon = "⏳";
+					miniStepStatusText = "In progress";
+					break;
+				case "success":
+					miniStepStatusIcon = "🟢";
+					miniStepStatusText = "Success";
+					break;
+				case "failed":
+					miniStepStatusIcon = "❌";
+					miniStepStatusText = "Failed";
+					break;
+				default: {
+					const _exhaustiveCheck: never = miniStep.status;
+					throw new Error(`Unhandled miniStep status: ${_exhaustiveCheck}`);
+				}
+			}
+
+			const miniStepUpdatedAtText = miniStep.updatedAt
+				? formatDateTime(miniStep.updatedAt)
+				: "Not started";
+			const miniStepDetailsContent = `Status: ${miniStepStatusText}\nUpdated: ${miniStepUpdatedAtText}`;
+
+			return `<tr><td>${miniStepStatusIcon}</td><td><details><summary><strong>${miniStep.name}</strong></summary>${miniStepDetailsContent}</details></td></tr>`;
+		});
+
+		return `<tr><td colspan='2'><strong>Step ${i + 1}</strong></td></tr>
+${miniStepRows.length > 0 ? miniStepRows.join("\n") : ""}`;
 	});
-	return [header, separator, ...rows].join("\n");
+	return `<table><tbody>${rows.join("\n")}</tbody></table>`;
 }
 
 export interface EventHandlerDependencies {
@@ -522,6 +570,12 @@ export async function processEvent<TEventName extends WebhookEventName>(
 						id: sequence.id,
 						status: "pending" as const,
 						updatedAt: undefined,
+						miniStepProgressTableRows: sequence.steps.map((step) => ({
+							id: step.id,
+							name: step.name,
+							status: mapStepStatusToMiniStepStatus(step.status),
+							updatedAt: undefined,
+						})),
 					}));
 
 					const body = `Running flow...\n\n${buildProgressTable(progressTableData)}`;
@@ -621,12 +675,33 @@ export async function processEvent<TEventName extends WebhookEventName>(
 					}
 				},
 				sequenceStart: async ({ sequence }) => {
+					const now = new Date();
 					progressTableData = progressTableData.map((row) =>
 						row.id === sequence.id
 							? {
 									...row,
 									status: "in-progress" as const,
-									updatedAt: new Date(),
+									updatedAt: now,
+									miniStepProgressTableRows: sequence.steps.map((step) => {
+										const existingMiniStep = row.miniStepProgressTableRows.find(
+											(ms) => ms.id === step.id,
+										);
+										const newStatus = mapStepStatusToMiniStepStatus(
+											step.status,
+										);
+										const shouldUpdateTime =
+											step.status === "running" ||
+											(newStatus === "in-progress" &&
+												existingMiniStep?.status !== "in-progress");
+										return {
+											id: step.id,
+											name: step.name,
+											status: newStatus,
+											updatedAt: shouldUpdateTime
+												? now
+												: (existingMiniStep?.updatedAt ?? undefined),
+										};
+									}),
 								}
 							: row,
 					);
@@ -635,9 +710,25 @@ export async function processEvent<TEventName extends WebhookEventName>(
 					);
 				},
 				sequenceComplete: async ({ sequence }) => {
+					const now = new Date();
 					progressTableData = progressTableData.map((row) =>
 						row.id === sequence.id
-							? { ...row, status: "success" as const, updatedAt: new Date() }
+							? {
+									...row,
+									status: "success" as const,
+									updatedAt: now,
+									miniStepProgressTableRows: sequence.steps.map((step) => ({
+										id: step.id,
+										name: step.name,
+										status: mapStepStatusToMiniStepStatus(step.status),
+										updatedAt:
+											step.status === "completed" ||
+											step.status === "failed" ||
+											step.status === "cancelled"
+												? now
+												: undefined,
+									})),
+								}
 							: row,
 					);
 					await updateComment(
@@ -646,9 +737,25 @@ export async function processEvent<TEventName extends WebhookEventName>(
 				},
 				sequenceFail: async ({ sequence }) => {
 					hasFlowError = true;
+					const now = new Date();
 					progressTableData = progressTableData.map((row) =>
 						row.id === sequence.id
-							? { ...row, status: "failed", updatedAt: new Date() }
+							? {
+									...row,
+									status: "failed",
+									updatedAt: now,
+									miniStepProgressTableRows: sequence.steps.map((step) => ({
+										id: step.id,
+										name: step.name,
+										status: mapStepStatusToMiniStepStatus(step.status),
+										updatedAt:
+											step.status === "completed" ||
+											step.status === "failed" ||
+											step.status === "cancelled"
+												? now
+												: undefined,
+									})),
+								}
 							: row,
 					);
 					await updateComment(
@@ -656,9 +763,25 @@ export async function processEvent<TEventName extends WebhookEventName>(
 					);
 				},
 				sequenceSkip: async ({ sequence }) => {
+					const now = new Date();
 					progressTableData = progressTableData.map((row) =>
 						row.id === sequence.id
-							? { ...row, status: "failed" as const, updatedAt: new Date() }
+							? {
+									...row,
+									status: "failed" as const,
+									updatedAt: now,
+									miniStepProgressTableRows: sequence.steps.map((step) => ({
+										id: step.id,
+										name: step.name,
+										status: mapStepStatusToMiniStepStatus(step.status),
+										updatedAt:
+											step.status === "completed" ||
+											step.status === "failed" ||
+											step.status === "cancelled"
+												? now
+												: undefined,
+									})),
+								}
 							: row,
 					);
 					await updateComment(
