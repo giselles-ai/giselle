@@ -93,36 +93,6 @@ function mapStepStatusToMiniStepStatus(
 
 function buildProgressTable(data: ProgressTableData) {
 	const rows = data.map((row, i) => {
-		let statusIcon = "";
-		let statusText = "";
-		switch (row.status) {
-			case "pending":
-				statusIcon = "⚪";
-				statusText = "Pending";
-				break;
-			case "in-progress":
-				statusIcon = "⏳";
-				statusText = "In progress";
-				break;
-			case "success":
-				statusIcon = "🟢";
-				statusText = "Success";
-				break;
-			case "failed":
-				statusIcon = "❌";
-				statusText = "Failed";
-				break;
-			default: {
-				const _exhaustiveCheck: never = row.status;
-				throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
-			}
-		}
-
-		const updatedAtText = row.updatedAt
-			? formatDateTime(row.updatedAt)
-			: "Not started";
-		const detailsContent = `Status: ${statusText}\nUpdated: ${updatedAtText}`;
-
 		const miniStepRows = row.miniStepProgressTableRows.map((miniStep) => {
 			let miniStepStatusIcon = "";
 			let miniStepStatusText = "";
@@ -716,7 +686,9 @@ export async function processEvent<TEventName extends WebhookEventName>(
 										const existingMiniStep = row.miniStepProgressTableRows.find(
 											(ms) => ms.id === step.id,
 										);
-										const newStatus = mapStepStatusToMiniStepStatus(step.status);
+										const newStatus = mapStepStatusToMiniStepStatus(
+											step.status,
+										);
 										const shouldUpdateTime =
 											step.status === "running" ||
 											(newStatus === "in-progress" &&
@@ -725,10 +697,9 @@ export async function processEvent<TEventName extends WebhookEventName>(
 											id: step.id,
 											name: step.name,
 											status: newStatus,
-											updatedAt:
-												shouldUpdateTime
-													? now
-													: existingMiniStep?.updatedAt ?? undefined,
+											updatedAt: shouldUpdateTime
+												? now
+												: (existingMiniStep?.updatedAt ?? undefined),
 										};
 									}),
 								}
