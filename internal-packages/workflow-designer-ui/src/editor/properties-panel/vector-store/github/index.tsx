@@ -14,6 +14,7 @@ import {
 	isEmbeddingProfileId,
 } from "@giselle-sdk/data-type";
 import {
+	useFeatureFlag,
 	useVectorStore,
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
@@ -33,6 +34,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 	const { updateNodeData } = useWorkflowDesigner();
 	const vectorStore = useVectorStore();
 	const settingPath = vectorStore?.githubSettingPath;
+	const { githubIssuesVectorStore } = useFeatureFlag();
 
 	// Get repository indexes
 	const githubRepositoryIndexes = vectorStore?.githubRepositoryIndexes ?? [];
@@ -121,7 +123,11 @@ export function GitHubVectorStoreNodePropertiesPanel({
 			(repo) => `${repo.owner}/${repo.repo}` === selectedRepoKey,
 		);
 		if (!selectedRepo)
-			return { hasBlobContent: false, hasPullRequestContent: false };
+			return {
+				hasBlobContent: false,
+				hasPullRequestContent: false,
+				hasIssueContent: false,
+			};
 
 		return {
 			hasBlobContent:
@@ -131,6 +137,10 @@ export function GitHubVectorStoreNodePropertiesPanel({
 			hasPullRequestContent:
 				selectedRepo.contentTypes?.some(
 					(ct: { contentType: string }) => ct.contentType === "pull_request",
+				) ?? false,
+			hasIssuesContent:
+				selectedRepo.contentTypes?.some(
+					(ct: { contentType: string }) => ct.contentType === "issue",
 				) ?? false,
 		};
 	}, [allRepositories, selectedRepoKey]);
@@ -213,7 +223,12 @@ export function GitHubVectorStoreNodePropertiesPanel({
 			if (updatedOutputs[0]) {
 				updatedOutputs[0] = {
 					...updatedOutputs[0],
-					label: contentType === "pull_request" ? "Pull Requests" : "Code",
+					label:
+						contentType === "pull_request"
+							? "Pull Requests"
+							: contentType === "issue"
+								? "Issues"
+								: "Code",
 				};
 			}
 
@@ -284,8 +299,11 @@ export function GitHubVectorStoreNodePropertiesPanel({
 							<div className="grow min-w-0">
 								<div className="flex items-center gap-[12px] flex-wrap">
 									{(() => {
-										const { hasBlobContent, hasPullRequestContent } =
-											contentTypeAvailability;
+										const {
+											hasBlobContent,
+											hasPullRequestContent,
+											hasIssuesContent,
+										} = contentTypeAvailability;
 
 										return (
 											<>
@@ -353,6 +371,40 @@ export function GitHubVectorStoreNodePropertiesPanel({
 														</div>
 													)}
 												</label>
+												{githubIssuesVectorStore && (
+													<label
+														className={`flex items-center space-x-3 cursor-pointer ${
+															!hasIssuesContent
+																? "opacity-50 cursor-not-allowed"
+																: ""
+														}`}
+													>
+														<input
+															type="radio"
+															name="contentType"
+															value="issue"
+															checked={selectedContentType === "issue"}
+															onChange={() => handleContentTypeChange("issue")}
+															disabled={!hasIssuesContent}
+															className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500"
+														/>
+														<span className="text-[14px] text-inverse">
+															Issues
+														</span>
+														{!hasIssuesContent && (
+															<div className="flex items-center gap-1 group relative">
+																<span className="text-[12px] text-inverse/50">
+																	Not configured
+																</span>
+																<Info className="w-3 h-3 text-inverse/50 cursor-help" />
+																<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-bg-800/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
+																	Enable Issues for {selectedRepoKey} in Vector
+																	Store settings
+																</div>
+															</div>
+														)}
+													</label>
+												)}
 											</>
 										);
 									})()}

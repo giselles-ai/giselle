@@ -8,6 +8,7 @@ export interface FeatureFlagContextValue {
 	resumableGeneration: boolean;
 	googleUrlContext: boolean;
 	documentVectorStore: boolean;
+	githubIssuesVectorStore: boolean;
 }
 export const FeatureFlagContext = createContext<
 	FeatureFlagContextValue | undefined
