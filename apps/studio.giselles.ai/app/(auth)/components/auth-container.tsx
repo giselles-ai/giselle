@@ -13,10 +13,6 @@ export const AuthContainer: FC<AuthContainerProps> = ({
 	subtitle,
 	children,
 }) => {
-	const isPreview =
-		process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" ||
-		process.env.VERCEL_ENV === "preview";
-
 	return (
 		<div className="min-h-screen flex flex-col items-center justify-center p-4 gap-6">
 			<div className="flex flex-col items-center gap-2">
@@ -36,9 +32,8 @@ export const AuthContainer: FC<AuthContainerProps> = ({
 				<div
 					className="absolute inset-0 rounded-[inherit] pointer-events-none"
 					style={{
-						background: isPreview
-							? "color-mix(in srgb, var(--color-bg, var(--color-background)) 25%, transparent)"
-							: "color-mix(in srgb, var(--color-bg) 25%, transparent)",
+						background:
+							"color-mix(in srgb, var(--color-bg, var(--color-background)) 25%, transparent)",
 					}}
 				/>
 				{/* Gradient border */}

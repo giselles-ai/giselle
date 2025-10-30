@@ -17,6 +17,7 @@
 	--color-border-disabled: #414754;
 
 	/* surface */
+	--color-bg: var(--color-background);
 	--color-elevated-surface-background: #2f343e;
 	--color-surface-background: #2f343e;
 	--color-background: #00020b;
