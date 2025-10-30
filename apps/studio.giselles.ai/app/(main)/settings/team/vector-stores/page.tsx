@@ -1,6 +1,6 @@
 import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
-import { docVectorStoreFlag } from "@/flags";
+import { docVectorStoreFlag, githubIssuesVectorStoreFlag } from "@/flags";
 import { getGitHubIdentityState } from "@/services/accounts";
 import {
 	deleteRepositoryIndex,
@@ -40,12 +40,17 @@ export default async function TeamVectorStorePage() {
 		return <GitHubAppInstallRequiredCard />;
 	}
 
-	const [installationsWithRepos, repositoryIndexes, isDocVectorStoreEnabled] =
-		await Promise.all([
-			getInstallationsWithRepos(),
-			getGitHubRepositoryIndexes(),
-			docVectorStoreFlag(),
-		]);
+	const [
+		installationsWithRepos,
+		repositoryIndexes,
+		isDocVectorStoreEnabled,
+		isGithubIssuesVectorStoreEnabled,
+	] = await Promise.all([
+		getInstallationsWithRepos(),
+		getGitHubRepositoryIndexes(),
+		docVectorStoreFlag(),
+		githubIssuesVectorStoreFlag(),
+	]);
 
 	return (
 		<div className="flex flex-col gap-[24px]">
@@ -62,6 +67,7 @@ export default async function TeamVectorStorePage() {
 					<RepositoryRegistrationDialog
 						installationsWithRepos={installationsWithRepos}
 						registerRepositoryIndexAction={registerRepositoryIndex}
+						githubIssuesVectorStore={isGithubIssuesVectorStoreEnabled}
 					/>
 				</div>
 			</div>
@@ -71,6 +77,7 @@ export default async function TeamVectorStorePage() {
 					deleteRepositoryIndexAction={deleteRepositoryIndex}
 					triggerManualIngestAction={triggerManualIngest}
 					updateRepositoryIndexAction={updateRepositoryIndex}
+					githubIssuesVectorStore={isGithubIssuesVectorStoreEnabled}
 				/>
 			</VectorStoresNavigationLayout>
 		</div>
