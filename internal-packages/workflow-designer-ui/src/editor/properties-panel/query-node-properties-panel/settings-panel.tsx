@@ -18,10 +18,11 @@ export function SettingsPanel({ node }: { node: QueryNode }) {
 				max={100}
 				min={1}
 				step={1}
+				formatValue={(value) => Math.round(value).toString()}
 				onChange={(value) => {
 					updateNodeDataContent(node, {
 						...node.content,
-						maxResults: value,
+						maxResults: Math.round(value),
 					});
 				}}
 			/>
