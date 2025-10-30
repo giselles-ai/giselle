@@ -2,12 +2,14 @@ import type { FC, ReactNode } from "react";
 
 interface AuthContainerProps {
 	title: string;
+	description?: string;
 	subtitle?: string;
 	children: ReactNode;
 }
 
 export const AuthContainer: FC<AuthContainerProps> = ({
 	title,
+	description,
 	subtitle,
 	children,
 }) => {
@@ -17,9 +19,16 @@ export const AuthContainer: FC<AuthContainerProps> = ({
 
 	return (
 		<div className="min-h-screen flex flex-col items-center justify-center p-4 gap-6">
-			<h1 className="text-center font-sans text-[34px] font-[500] text-accent auth-title-glow">
-				{title}
-			</h1>
+			<div className="flex flex-col items-center gap-2">
+				<h1 className="text-center font-sans text-[34px] font-[500] text-accent auth-title-glow">
+					{title}
+				</h1>
+				{description && (
+					<p className="text-center font-sans text-[14px] text-text/80 max-w-[720px]">
+						{description}
+					</p>
+				)}
+			</div>
 
 			{/* Frosted-glass container */}
 			<div className="relative w-full max-w-[420px] rounded-2xl pt-15 pb-7.5 px-10 flex flex-col shadow-(--shadow-stage-form) backdrop-blur-[6px] bg-(image:--auth-glass-bg)">
