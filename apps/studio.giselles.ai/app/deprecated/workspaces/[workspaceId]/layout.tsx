@@ -15,6 +15,7 @@ import {
 	resumableGenerationFlag,
 	stageFlag,
 	webSearchActionFlag,
+	githubIssuesVectorStoreFlag,
 } from "@/flags";
 import { getDocumentVectorStores } from "@/lib/vector-stores/document/queries";
 import { getGitHubRepositoryIndexes } from "@/lib/vector-stores/github";
@@ -80,6 +81,7 @@ export default async function Layout({
 	const documentVectorStores = documentVectorStore
 		? await getDocumentVectorStores(workspaceTeam.dbId)
 		: [];
+	const githubIssuesVectorStore = await githubIssuesVectorStoreFlag();
 
 	// return children
 	return (
@@ -128,6 +130,7 @@ export default async function Layout({
 				resumableGeneration,
 				googleUrlContext,
 				documentVectorStore,
+				githubIssuesVectorStore,
 			}}
 			flowTrigger={{
 				callbacks: {
