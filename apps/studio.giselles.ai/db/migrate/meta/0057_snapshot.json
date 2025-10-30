@@ -532,7 +532,7 @@
 				},
 				"workspace_db_id": {
 					"name": "workspace_db_id",
-					"type": "text",
+					"type": "integer",
 					"primaryKey": false,
 					"notNull": true
 				},
