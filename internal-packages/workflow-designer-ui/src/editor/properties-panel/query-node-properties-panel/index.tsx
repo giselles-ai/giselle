@@ -87,24 +87,24 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 			<PropertiesPanelContent>
 				<div className="relative flex-1 min-h-0 flex flex-col">
 					<div className="flex-1 min-h-0 overflow-y-auto">
-						<div className="flex flex-col gap-[16px] px-[16px] pb-[12px]">
+						<div className="flex flex-col gap-[16px] pb-[12px]">
 							<div className="flex flex-col gap-[8px]">
-								<SettingLabel className="mb-[4px]">Settings</SettingLabel>
+								<SettingLabel>Settings</SettingLabel>
 								<div className="px-[4px]">
 									<SettingsPanel node={node} />
 								</div>
 							</div>
 							<div className="flex flex-col gap-[8px]">
-								<SettingLabel className="mb-[4px]">Query</SettingLabel>
+								<SettingLabel>Query</SettingLabel>
 								<QueryPanel node={node} />
 							</div>
 							<div className="flex flex-col gap-[8px]">
-								<SettingLabel className="mb-[4px]">Output</SettingLabel>
+								<SettingLabel>Output</SettingLabel>
 								<GenerationPanel node={node} />
 							</div>
 						</div>
 					</div>
-					<div className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent">
+					<div className="shrink-0 pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent">
 						<GenerateCtaButton
 							isGenerating={isGenerating}
 							isEmpty={query.length === 0}
