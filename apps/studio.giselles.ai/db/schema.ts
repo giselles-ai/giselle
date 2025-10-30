@@ -2,6 +2,7 @@ import type {
 	EmbeddingDimensions,
 	EmbeddingProfileId,
 	FlowTriggerId,
+	NodeId,
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
 import type { ActId } from "@giselle-sdk/giselle";
@@ -798,3 +799,26 @@ export const actRelations = relations(acts, ({ one }) => ({
 		references: [teams.dbId],
 	}),
 }));
+
+export const apps = pgTable(
+	"apps",
+	{
+		dbId: serial("db_id").primaryKey(),
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		workspaceDbId: integer("workspace_db_id")
+			.notNull()
+			.references(() => workspaces.dbId, { onDelete: "cascade" }),
+		appEntryNodeId: text("app_entry_node_id").$type<NodeId>().notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.notNull()
+			.$onUpdate(() => new Date()),
+	},
+	(table) => [
+		uniqueIndex().on(table.appEntryNodeId),
+		index().on(table.teamDbId),
+	],
+);
