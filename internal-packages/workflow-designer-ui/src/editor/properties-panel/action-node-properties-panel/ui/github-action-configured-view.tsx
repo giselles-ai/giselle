@@ -136,22 +136,16 @@ export function GitHubActionConfiguredView({
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
 			<div className="space-y-0">
-				<div className="flex w-full items-center gap-[12px]">
-					<div className="shrink-0 w-[120px]">
-						<SettingDetail className="mb-0">Repository</SettingDetail>
-					</div>
-					<div className="grow min-w-0">
-						<div className="px-[4px] pt-[6px]">
-							{isLoading || data === undefined ? (
-								<p>Loading...</p>
-							) : (
-								<GitHubRepositoryBlock
-									owner={data.fullname.owner}
-									repo={data.fullname.repo}
-								/>
-							)}
-						</div>
-					</div>
+				<SettingDetail className="mb-0">Repository</SettingDetail>
+				<div className="px-[4px] pt-[6px]">
+					{isLoading || data === undefined ? (
+						<p>Loading...</p>
+					) : (
+						<GitHubRepositoryBlock
+							owner={data.fullname.owner}
+							repo={data.fullname.repo}
+						/>
+					)}
 				</div>
 				<div className="flex w-full items-center justify-end">
 					<Button

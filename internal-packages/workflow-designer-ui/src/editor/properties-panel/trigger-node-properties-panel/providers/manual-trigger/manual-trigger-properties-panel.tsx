@@ -247,11 +247,11 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 								<SettingDetail>
 									Enable this trigger to run in Stage
 								</SettingDetail>
-								<Toggle
-									name="staged"
-									checked={staged}
-									onCheckedChange={setStaged}
-								/>
+							<Toggle
+								name="staged"
+								checked={staged}
+								onCheckedChange={setStaged}
+							/>
 							</div>
 							<p className="text-[12px] text-text-muted mt-[4px]">
 								(This can be changed later)
