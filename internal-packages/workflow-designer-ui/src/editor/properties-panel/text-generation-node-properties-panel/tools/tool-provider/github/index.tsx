@@ -468,8 +468,8 @@ function GitHubToolConfigurationDialogInternal({
 			description="Select the GitHub tools you want to enable."
 			onSubmit={updateAvailableTools}
 			submitting={false}
-				headerExtra={
-					<div className="flex items-center justify-between mt-[8px]">
+			headerExtra={
+				<div className="flex items-center justify-between mt-[8px]">
 					<div className="flex items-center gap-[8px]">
 						<span className="text-[11px] text-text-muted">Current PAT:</span>
 						<span className="text-[11px] text-text px-[6px] py-[1px] bg-background-variant border border-border rounded-[4px] font-medium">
@@ -527,11 +527,11 @@ function GitHubToolConfigurationDialogInternal({
 							</div>
 							<div className="flex flex-col gap-1 border border-border-variant rounded-[4px] overflow-hidden">
 								{category.tools.map((tool) => (
-                                    <label
-                                        key={tool}
-                                        className="flex items-center justify-between p-3 cursor-pointer"
-                                        htmlFor={tool}
-                                    >
+									<label
+										key={tool}
+										className="flex items-center justify-between p-3 cursor-pointer"
+										htmlFor={tool}
+									>
 										<div className="flex items-center flex-1">
 											<Checkbox.Root
 												className="group appearance-none size-[18px] rounded border flex items-center justify-center transition-colors outline-none data-[state=checked]:border-success data-[state=checked]:bg-success"
