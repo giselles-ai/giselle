@@ -33,6 +33,7 @@ import {
 import type { runActJob } from "@/trigger/run-act-job";
 import { getDocumentVectorStoreQueryService } from "../lib/vector-stores/document/query/service";
 import {
+	gitHubIssueQueryService,
 	gitHubPullRequestQueryService,
 	gitHubQueryService,
 } from "../lib/vector-stores/github";
@@ -231,6 +232,7 @@ export const giselleEngine = NextGiselleEngine({
 	vault,
 	vectorStoreQueryServices: {
 		github: gitHubQueryService,
+		githubIssue: gitHubIssueQueryService,
 		githubPullRequest: gitHubPullRequestQueryService,
 		document: getDocumentVectorStoreQueryService(),
 	},

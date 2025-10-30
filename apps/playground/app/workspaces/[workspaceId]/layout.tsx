@@ -12,6 +12,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 				resumableGeneration: false,
 				googleUrlContext: false,
 				documentVectorStore: false,
+				githubIssuesVectorStore: false,
 			}}
 		>
 			{children}

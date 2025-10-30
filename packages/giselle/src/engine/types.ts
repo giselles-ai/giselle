@@ -100,6 +100,7 @@ export interface GiselleEngineContext {
 	vault: Vault;
 	vectorStoreQueryServices?: {
 		github?: GitHubVectorStoreQueryService<Record<string, unknown>>;
+		githubIssue?: GitHubVectorStoreQueryService<Record<string, unknown>>;
 		githubPullRequest?: GitHubVectorStoreQueryService<Record<string, unknown>>;
 		document?: DocumentVectorStoreQueryService<Record<string, unknown>>;
 	};
@@ -163,7 +164,7 @@ export type GitHubQueryContext = {
 	workspaceId: WorkspaceId;
 	owner: string;
 	repo: string;
-	contentType: "blob" | "pullRequest";
+	contentType: "blob" | "pullRequest" | "issue";
 	embeddingProfileId: EmbeddingProfileId;
 };
 
@@ -199,6 +200,7 @@ export interface GiselleEngineConfig {
 	vault: Vault;
 	vectorStoreQueryServices?: {
 		github?: GitHubVectorStoreQueryService<Record<string, unknown>>;
+		githubIssue?: GitHubVectorStoreQueryService<Record<string, unknown>>;
 		githubPullRequest?: GitHubVectorStoreQueryService<Record<string, unknown>>;
 		document?: DocumentVectorStoreQueryService<Record<string, unknown>>;
 	};
