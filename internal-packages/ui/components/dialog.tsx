@@ -18,7 +18,7 @@ export function DialogContent({
 			<DialogPrimitive.Content
 				data-size={size}
 				className={clsx(
-					"fixed left-[50%] top-[50%] translate-y-[-50%] translate-x-[-50%] z-50 overflow-y-auto overflow-x-hidden outline-none",
+					"fixed left-[50%] top-[50%] translate-y-[-50%] translate-x-[-50%] z-50 overflow-hidden outline-none",
 					"data-[size=default]:w-[500px] data-[size=default]:max-h-[75%]",
 					"data-[size=wide]:w-[800px] data-[size=default]:max-h-[85%]",
 					"bg-transparent shadow-xl text-text",
@@ -28,7 +28,7 @@ export function DialogContent({
 				<GlassSurfaceLayers
 					radiusClass="rounded-[12px]"
 					baseFillClass="bg-bg/18"
-					withTopHighlight={false}
+					withTopHighlight={true}
 					borderStyle="solid"
 					blurClass="backdrop-blur-sm"
 				/>
@@ -65,7 +65,7 @@ export function DialogFooter({ children }: PropsWithChildren) {
 	return (
 		<div
 			className={clsx(
-				"px-3 py-[8px] -mx-6 mt-[12px] ml-auto sticky bottom-0 w-fit",
+				"px-3 py-[8px] -mx-6 mt-[12px] ml-auto sticky bottom-[-4px] w-fit",
 			)}
 		>
 			{children}
