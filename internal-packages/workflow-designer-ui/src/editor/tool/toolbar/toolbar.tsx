@@ -182,6 +182,8 @@ export function Toolbar() {
 		/>
 	);
 
+	const { stage } = useFeatureFlag();
+
 	if (isLoading) {
 		return null;
 	}
@@ -285,27 +287,34 @@ export function Toolbar() {
 													);
 												}}
 											>
-												{data.map((triggerProvider) => (
-													<ToggleGroup.Item
-														key={triggerProvider}
-														value={triggerProvider}
-														data-tool
-													>
-														{triggerProvider === "manual" && (
-															<TriggerIcon className="size-[20px] shrink-0" />
-														)}
-														{triggerProvider === "github" && (
-															<GitHubIcon className="size-[20px] shrink-0" />
-														)}
-														{triggerProvider === "app-entry" && (
-															<TriggerIcon className="size-[20px] shrink-0" />
-														)}
+												{data
+													.filter((triggerProvider) => {
+														if (triggerProvider !== "app-entry") {
+															return true;
+														}
+														return stage;
+													})
+													.map((triggerProvider) => (
+														<ToggleGroup.Item
+															key={triggerProvider}
+															value={triggerProvider}
+															data-tool
+														>
+															{triggerProvider === "manual" && (
+																<TriggerIcon className="size-[20px] shrink-0" />
+															)}
+															{triggerProvider === "github" && (
+																<GitHubIcon className="size-[20px] shrink-0" />
+															)}
+															{triggerProvider === "app-entry" && (
+																<TriggerIcon className="size-[20px] shrink-0" />
+															)}
 
-														<p className="text-[14px]">
-															{triggerNodeDefaultName(triggerProvider)}
-														</p>
-													</ToggleGroup.Item>
-												))}
+															<p className="text-[14px]">
+																{triggerNodeDefaultName(triggerProvider)}
+															</p>
+														</ToggleGroup.Item>
+													))}
 												<div data-tool className="opacity-50">
 													<TriggerIcon className="size-[20px] shrink-0" />
 													<p className="text-[14px]">Stage (Coming soon)</p>
