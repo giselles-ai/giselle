@@ -100,9 +100,11 @@ const getActionIcon = (actionId: string) => {
 export function GitHubActionPropertiesPanel({
 	node,
 	handleClick,
+	isGenerating,
 }: {
 	node: ActionNode;
 	handleClick: () => void;
+	isGenerating: boolean;
 }) {
 	const { value } = useIntegration();
 
@@ -119,6 +121,7 @@ export function GitHubActionPropertiesPanel({
 					node={node}
 					inputs={node.inputs}
 					handleClick={handleClick}
+					isGenerating={isGenerating}
 				/>
 			</div>
 		);

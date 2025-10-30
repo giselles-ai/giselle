@@ -98,11 +98,13 @@ export function GitHubActionConfiguredView({
 	inputs,
 	state,
 	handleClick,
+	isGenerating,
 }: {
 	node: ActionNode;
 	inputs: Input[];
 	state: GitHubActionCommandConfiguredState;
 	handleClick: () => void;
+	isGenerating: boolean;
 }) {
 	const client = useGiselleEngine();
 	const {
@@ -263,7 +265,7 @@ export function GitHubActionConfiguredView({
 					size="large"
 					className="w-full"
 				>
-					Run Action
+					{isGenerating ? "Stop" : "Run Action"}
 				</Button>
 			</div>
 		</div>

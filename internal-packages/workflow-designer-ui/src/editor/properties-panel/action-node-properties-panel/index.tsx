@@ -14,14 +14,11 @@ export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 	const { data, updateNodeData, deleteNode, setUiNodeState } =
 		useWorkflowDesigner();
 	const { isValid, connectedInputs } = useConnectedInputs(node.id, node.inputs);
-	const {
-		createAndStartGenerationRunner,
-		isGenerating,
-		stopGenerationRunner,
-	} = useNodeGenerations({
-		nodeId: node.id,
-		origin: { type: "studio", workspaceId: data.id },
-	});
+	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
+		useNodeGenerations({
+			nodeId: node.id,
+			origin: { type: "studio", workspaceId: data.id },
+		});
 	const handleClick = useCallback(() => {
 		if (isGenerating) {
 			stopGenerationRunner();
@@ -86,14 +83,20 @@ export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 function PropertiesPanel({
 	node,
 	handleClick,
+	isGenerating,
 }: {
 	node: ActionNode;
 	handleClick: () => void;
+	isGenerating: boolean;
 }) {
 	switch (node.content.command.provider) {
 		case "github":
 			return (
-				<GitHubActionPropertiesPanel node={node} handleClick={handleClick} />
+				<GitHubActionPropertiesPanel
+					node={node}
+					handleClick={handleClick}
+					isGenerating={isGenerating}
+				/>
 			);
 		case "web-search":
 			// TODO: Implement WebSearchActionPropertiesPanel
