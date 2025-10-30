@@ -1,7 +1,11 @@
 "use client";
 
 import { Editor } from "@giselle-internal/workflow-designer-ui";
-import type { FlowTrigger } from "@giselle-sdk/data-type";
+import {
+	type FlowTrigger,
+	isTriggerNode,
+	type TriggerNode,
+} from "@giselle-sdk/data-type";
 import type { Integration } from "@giselle-sdk/giselle";
 import {
 	WorkspaceProvider,
@@ -16,12 +20,16 @@ interface Props {
 	integrationRefreshAction: () => Promise<Partial<Integration>>;
 	flowTriggerUpdateAction: (flowTrigger: FlowTrigger) => Promise<void>;
 	workspaceNameUpdateAction: (name: string) => Promise<void>;
+	createAppEntryNodeAction: (node: TriggerNode) => Promise<void>;
+	deleteAppEntryNodeAction: (node: TriggerNode) => Promise<void>;
 }
 export function Page({
 	dataLoader,
 	integrationRefreshAction,
 	flowTriggerUpdateAction,
 	workspaceNameUpdateAction,
+	createAppEntryNodeAction,
+	deleteAppEntryNodeAction,
 }: Props) {
 	const data = use(dataLoader);
 
@@ -67,7 +75,21 @@ export function Page({
 				},
 			}}
 		>
-			<ZustandBridgeProvider data={data.data}>
+			<ZustandBridgeProvider
+				data={data.data}
+				onAddNode={async (node) => {
+					if (!isTriggerNode(node) || node.content.provider !== "app-entry") {
+						return;
+					}
+					await createAppEntryNodeAction(node);
+				}}
+				onDeleteNode={async (node) => {
+					if (!isTriggerNode(node)) {
+						return;
+					}
+					await deleteAppEntryNodeAction(node);
+				}}
+			>
 				<div className="flex flex-col h-screen bg-black-900">
 					<Editor onFlowNameChange={workspaceNameUpdateAction} />
 				</div>

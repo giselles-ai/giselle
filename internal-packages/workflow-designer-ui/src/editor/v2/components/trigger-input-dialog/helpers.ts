@@ -4,13 +4,15 @@ import {
 	getGitHubDisplayLabel,
 	type githubTriggers,
 } from "@giselle-sdk/flow";
-import type { z } from "zod";
+import type { z } from "zod/v4";
 
 export function buttonLabel(node: TriggerNode) {
 	switch (node.content.provider) {
 		case "manual":
 			return "Start Manual Flow";
 		case "github":
+			return "Test with Dummy Data";
+		case "app-entry":
 			return "Test with Dummy Data";
 		default: {
 			const _exhaustiveCheck: never = node.content.provider;

@@ -230,23 +230,26 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 
 				<div className="space-y-[4px]">
 					<p className="text-[14px] py-[1.5px]">Staged</p>
-					{stage && (
-						<div className="mt-[8px]">
-							<Toggle
-								name="staged"
-								checked={staged}
-								onCheckedChange={setStaged}
-							>
-								<label className="text-[12px]" htmlFor="staged">
-									Enable this trigger to run in Stage
-									<span className="text-text-muted ml-[8px]">
-										(This can be changed later)
-									</span>
-								</label>
-								<div className="flex-grow mx-[12px] h-[1px] border-t border-inverse" />
-							</Toggle>
-						</div>
-					)}
+					{
+						// This component is ManualTriggerPropertiesPanel, so it's obvious that the provider is manual, but this component is also used by app-entry provider, and in that case this UI is unnecessary, so we include this conditional check.
+						stage && node.content.provider === "manual" && (
+							<div className="mt-[8px]">
+								<Toggle
+									name="staged"
+									checked={staged}
+									onCheckedChange={setStaged}
+								>
+									<label className="text-[12px]" htmlFor="staged">
+										Enable this trigger to run in Stage
+										<span className="text-text-muted ml-[8px]">
+											(This can be changed later)
+										</span>
+									</label>
+									<div className="flex-grow mx-[12px] h-[1px] border-t border-inverse" />
+								</Toggle>
+							</div>
+						)
+					}
 				</div>
 
 				<div className="pt-[8px] flex gap-[8px] mt-[12px] px-[4px]">
