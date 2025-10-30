@@ -77,7 +77,6 @@ export function generateContent({
 	return useGenerationExecutor({
 		context,
 		generation,
-		useResumableGeneration: true,
 		metadata,
 		execute: async ({
 			finishGeneration,

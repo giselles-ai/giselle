@@ -59,7 +59,6 @@ type FinishGeneration = (args: FinishGenerationArgs) => Promise<{
 export async function useGenerationExecutor<T>(args: {
 	context: GiselleEngineContext;
 	generation: QueuedGeneration | RunningGeneration;
-	useResumableGeneration?: boolean;
 	signal?: AbortSignal;
 	metadata?: GenerationMetadata;
 	execute: (utils: {
