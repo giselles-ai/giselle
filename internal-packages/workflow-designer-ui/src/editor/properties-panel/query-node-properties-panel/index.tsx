@@ -89,14 +89,14 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 					<div className="flex-1 min-h-0 overflow-y-auto">
 						<div className="flex flex-col gap-[16px] px-[16px] pb-[12px]">
 							<div className="flex flex-col gap-[8px]">
-								<SettingLabel className="mb-[4px]">Query</SettingLabel>
-								<QueryPanel node={node} />
-							</div>
-							<div className="flex flex-col gap-[8px]">
 								<SettingLabel className="mb-[4px]">Settings</SettingLabel>
 								<div className="px-[4px]">
 									<SettingsPanel node={node} />
 								</div>
+							</div>
+							<div className="flex flex-col gap-[8px]">
+								<SettingLabel className="mb-[4px]">Query</SettingLabel>
+								<QueryPanel node={node} />
 							</div>
 							<div className="flex flex-col gap-[8px]">
 								<SettingLabel className="mb-[4px]">Output</SettingLabel>
