@@ -11,7 +11,7 @@ type IngestMetadata = {
 	trigger: IngestTrigger;
 	resource: {
 		provider: "github";
-		contentType: "blob" | "pullRequest";
+		contentType: "blob" | "pullRequest" | "issue";
 		owner: string;
 		repo: string;
 	};
