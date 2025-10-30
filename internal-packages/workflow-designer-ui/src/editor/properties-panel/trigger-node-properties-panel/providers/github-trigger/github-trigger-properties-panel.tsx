@@ -21,12 +21,14 @@ import {
 } from "@giselle-sdk/giselle/react";
 import clsx from "clsx/lite";
 import { ChevronLeft, InfoIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import {
 	type FormEvent,
 	type FormEventHandler,
 	useCallback,
 	useEffect,
 	useMemo,
+	useRef,
 	useState,
 	useTransition,
 } from "react";
@@ -51,11 +53,17 @@ export type GitHubTriggerReconfigureMode = "repository" | "callsign" | "labels";
 const BACK_LINK_CLASS =
 	"inline-flex items-center gap-[6px] text-text-muted hover:text-text underline text-[12px] mb-[8px]";
 const HELP_TEXT_P_CLASS = "text-inverse text-[12px] text-right mb-3 w-full";
-const HELP_LINK_CLASS = "text-inverse hover:text-inverse ml-1 underline text-[12px]";
+const HELP_LINK_CLASS =
+	"text-inverse hover:text-inverse ml-1 underline text-[12px]";
 
 function BackLink({ onClick }: { onClick: () => void }) {
 	return (
-		<button type="button" onClick={onClick} className={BACK_LINK_CLASS} aria-label="Back">
+		<button
+			type="button"
+			onClick={onClick}
+			className={BACK_LINK_CLASS}
+			aria-label="Back"
+		>
 			<ChevronLeft className="w-[14px] h-[14px]" />
 			Back
 		</button>
@@ -66,10 +74,91 @@ function MissingAccountLink({ href }: { href: string }) {
 	return (
 		<p className={HELP_TEXT_P_CLASS}>
 			Missing GitHub account?
-			<a href={href} target="_blank" rel="noopener noreferrer" className={HELP_LINK_CLASS}>
+			<a
+				href={href}
+				target="_blank"
+				rel="noopener noreferrer"
+				className={HELP_LINK_CLASS}
+			>
 				Adjust GitHub App Permissions
 			</a>
 		</p>
+	);
+}
+
+function SectionTitle({
+	children,
+	className,
+}: {
+	children: ReactNode;
+	className?: string;
+}) {
+	return (
+		<p className={clsx("text-[14px] text-inverse", className)}>{children}</p>
+	);
+}
+
+function LabeledRow({
+	label,
+	right,
+	className,
+}: {
+	label: ReactNode;
+	right?: ReactNode;
+	className?: string;
+}) {
+	return (
+		<div
+			className={clsx(
+				"flex w-full items-center justify-between gap-[12px]",
+				className,
+			)}
+		>
+			<div className="shrink-0 w-[120px]">
+				<SettingDetail className="mb-0">{label}</SettingDetail>
+			</div>
+			<div className="grow min-w-0 flex justify-end">{right}</div>
+		</div>
+	);
+}
+
+type RepositoryItem = {
+	node_id: string;
+	name: string;
+	private: boolean;
+	owner: { login: string };
+};
+
+function RepositoryItemButton({
+	repo,
+	onClick,
+}: {
+	repo: RepositoryItem;
+	onClick: () => void;
+}) {
+	return (
+		<button
+			key={repo.node_id}
+			type="button"
+			className="group relative rounded-[12px] overflow-hidden px-[16px] py-[12px] w-full border-[0.5px] border-white/8 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_-1px_0_rgba(255,255,255,0.15)] hover:border-white/12 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(255,255,255,0.2)] transition-all duration-200 cursor-pointer text-left"
+			onClick={onClick}
+		>
+			<div className="invisible group-hover:visible absolute right-4 top-1/2 transform -translate-y-1/2 bg-bg-800 text-inverse text-xs px-2 py-1 rounded whitespace-nowrap">
+				Select
+			</div>
+			<div className="flex items-center justify-between">
+				<div className="flex flex-col">
+					<div className="flex items-center gap-2">
+						<span className="text-inverse font-medium text-[14px]">
+							{repo.name}
+						</span>
+						<span className="rounded-full px-1.5 py-px text-black-300 font-medium text-[10px] leading-normal font-geist border-[0.5px] border-black-400">
+							{repo.private ? "Private" : "Public"}
+						</span>
+					</div>
+				</div>
+			</div>
+		</button>
 	);
 }
 
@@ -230,14 +319,15 @@ export function Installed({
 			setSelectedInstallationId(null);
 		}
 	}, [step.state]);
-    const { data: workspace, updateNodeData } = useWorkflowDesigner();
-    const selectedInstallationRepositories = useMemo(
-        () =>
-            (selectedInstallationId === null
-                ? []
-                : installations.find((i) => i.id === selectedInstallationId)?.repositories) ?? [],
-        [installations, selectedInstallationId],
-    );
+	const { data: workspace, updateNodeData } = useWorkflowDesigner();
+	const selectedInstallationRepositories = useMemo(
+		() =>
+			(selectedInstallationId === null
+				? []
+				: installations.find((i) => i.id === selectedInstallationId)
+						?.repositories) ?? [],
+		[installations, selectedInstallationId],
+	);
 	const { configureTrigger, isPending: isTriggerConfigPending } =
 		useTriggerConfiguration({
 			node,
@@ -406,18 +496,17 @@ export function Installed({
 			{step.state === "select-repository" && (
 				<div className="relative">
 					<BackLink onClick={() => setStep({ state: "select-event" })} />
-					<div className="flex w-full items-center justify-between gap-[12px] mb-2">
-						<div className="shrink-0 w-[120px]">
-							<SettingDetail className="mb-0">Event Type</SettingDetail>
-						</div>
-						<div className="grow min-w-0 flex justify-end">
+					<LabeledRow
+						label={"Event Type"}
+						right={
 							<EventTypeDisplay
 								eventId={step.eventId}
 								className="mb-0"
 								showDescription={false}
 							/>
-						</div>
-					</div>
+						}
+						className="mb-2"
+					/>
 
 					<SettingLabel className="mb-[4px] mt-3">GitHub Setting</SettingLabel>
 					<div className="flex w-full items-center gap-[12px] mb-1">
@@ -446,16 +535,15 @@ export function Installed({
 					</div>
 					<MissingAccountLink href={installationUrl} />
 
-                    {selectedInstallationId !== null && (
+					{selectedInstallationId !== null && (
 						<>
 							<div className="flex flex-col w-full gap-[8px]">
 								<SettingDetail className="mb-0">Repository</SettingDetail>
 								<div className="flex flex-col gap-y-[8px] relative">
-                                    {selectedInstallationRepositories.map((repo) => (
-										<button
+									{selectedInstallationRepositories.map((repo) => (
+										<RepositoryItemButton
 											key={repo.node_id}
-											type="button"
-											className="group relative rounded-[12px] overflow-hidden px-[16px] py-[12px] w-full border-[0.5px] border-white/8 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_-1px_0_rgba(255,255,255,0.15)] hover:border-white/12 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(255,255,255,0.2)] transition-all duration-200 cursor-pointer text-left"
+											repo={repo}
 											onClick={() => {
 												setStep({
 													state: "confirm-repository",
@@ -466,26 +554,10 @@ export function Installed({
 													repoNodeId: repo.node_id,
 												});
 											}}
-										>
-											<div className="invisible group-hover:visible absolute right-4 top-1/2 transform -translate-y-1/2 bg-bg-800 text-inverse text-xs px-2 py-1 rounded whitespace-nowrap">
-												Select
-											</div>
-											<div className="flex items-center justify-between">
-												<div className="flex flex-col">
-													<div className="flex items-center gap-2">
-														<span className="text-inverse font-medium text-[14px]">
-															{repo.name}
-														</span>
-														<span className="rounded-full px-1.5 py-px text-black-300 font-medium text-[10px] leading-normal font-geist border-[0.5px] border-black-400">
-															{repo.private ? "Private" : "Public"}
-														</span>
-													</div>
-												</div>
-											</div>
-										</button>
+										/>
 									))}
 								</div>
-						<MissingAccountLink href={installationUrl} />
+								<MissingAccountLink href={installationUrl} />
 							</div>
 						</>
 					)}
@@ -501,25 +573,20 @@ export function Installed({
 					/>
 					<div className="flex flex-col gap-[8px]">
 						<SettingLabel className="mb-[4px]">Event setting</SettingLabel>
-						<div className="flex w-full items-center justify-between gap-[12px]">
-							<div className="shrink-0 w-[120px]">
-								<SettingDetail className="mb-0">Event Type</SettingDetail>
-							</div>
-							<div className="grow min-w-0 flex justify-end">
+						<LabeledRow
+							label={"Event Type"}
+							right={
 								<EventTypeDisplay
 									eventId={step.eventId}
 									showDescription={false}
 								/>
-							</div>
-						</div>
-						<div className="flex w-full items-center justify-between gap-[12px] mt-4 mb-2">
-							<div className="shrink-0 w-[120px]">
-								<SettingDetail className="mb-0">Repository</SettingDetail>
-							</div>
-							<div className="grow min-w-0 flex justify-end">
-								<RepositoryDisplay owner={step.owner} repo={step.repo} />
-							</div>
-						</div>
+							}
+						/>
+						<LabeledRow
+							label={"Repository"}
+							right={<RepositoryDisplay owner={step.owner} repo={step.repo} />}
+							className="mt-4 mb-2"
+						/>
 
 						<div className="mt-[12px] flex justify-end gap-x-3 px-[4px]">
 							<button
@@ -675,9 +742,9 @@ export function Installed({
 					className="w-full flex flex-col gap-[8px] overflow-y-auto flex-1 pr-2 custom-scrollbar"
 					onSubmit={handleCallsignSubmit}
 				>
-					<p className="text-[14px] text-[#F7F9FD] mb-2">Event type</p>
+					<SectionTitle className="mb-2">Event type</SectionTitle>
 					<EventTypeDisplay eventId={step.eventId} showDescription={false} />
-					<p className="text-[14px] text-[#F7F9FD] mb-2 mt-4">Repository</p>
+					<SectionTitle className="mb-2 mt-4">Repository</SectionTitle>
 					<RepositoryDisplay
 						owner={step.owner}
 						repo={step.repo}

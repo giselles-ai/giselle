@@ -22,7 +22,7 @@ function Empty({ onGenerate }: { onGenerate?: () => void }) {
 					<button
 						type="button"
 						onClick={onGenerate}
-						className="flex items-center justify-center px-[24px] py-[12px] mt-[16px] bg-[#141519] text-white rounded-[9999px] border border-border/15 transition-all hover:bg-[#1e1f26] hover:border-border/25 hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px]"
+						className="flex items-center justify-center px-[24px] py-[12px] mt-[16px] bg-background text-white rounded-[9999px] border border-border/15 transition-all hover:bg-inverse/5 hover:border-border/25 hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px]"
 					>
 						<span className="mr-[8px] generate-star">✦</span>
 						Run Query

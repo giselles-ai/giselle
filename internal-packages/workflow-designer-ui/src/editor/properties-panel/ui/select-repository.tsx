@@ -132,7 +132,7 @@ export function SelectRepository({
 					>
 						<span
 							className={
-								selectedInstallationId ? "text-[#F7F9FD]" : "text-inverse/30"
+								selectedInstallationId ? "text-inverse" : "text-inverse/30"
 							}
 						>
 							{!selectedInstallationId
@@ -195,7 +195,7 @@ export function SelectRepository({
 			</fieldset>
 			{renderRepositories && selectedInstallationId && repositories && (
 				<div className="flex flex-col gap-[8px]">
-					<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Repository</p>
+					<p className="text-[14px] py-[1.5px] text-inverse">Repository</p>
 					<div className="flex flex-col gap-y-[8px] relative">
 						{isPending ? (
 							<div className="flex items-center justify-center h-[64px] bg-bg-300/20 text-inverse text-[14px] rounded-[8px]">

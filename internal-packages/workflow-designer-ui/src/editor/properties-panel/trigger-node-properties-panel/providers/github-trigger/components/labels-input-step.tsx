@@ -53,14 +53,14 @@ export function LabelsInputStep({
 			className="w-full flex flex-col gap-[8px] overflow-y-auto flex-1 pr-2 custom-scrollbar"
 			onSubmit={(e) => onSubmit(e, labels)}
 		>
-			<p className="text-[14px] text-[#F7F9FD] mb-2">Event type</p>
+			<p className="text-[14px] text-inverse mb-2">Event type</p>
 			<EventTypeDisplay eventId={eventId} showDescription={false} />
-			<p className="text-[14px] text-[#F7F9FD] mb-2 mt-4">Repository</p>
+			<p className="text-[14px] text-inverse mb-2 mt-4">Repository</p>
 			<RepositoryDisplay owner={owner} repo={repo} className="mb-2" />
 
 			<fieldset className="flex flex-col gap-[8px]">
 				<div className="flex items-center gap-[4px] px-[4px]">
-					<p className="text-[14px] text-[#F7F9FD]">Labels</p>
+					<p className="text-[14px] text-inverse">Labels</p>
 					<Tooltip
 						text={
 							<p className="w-[260px]">

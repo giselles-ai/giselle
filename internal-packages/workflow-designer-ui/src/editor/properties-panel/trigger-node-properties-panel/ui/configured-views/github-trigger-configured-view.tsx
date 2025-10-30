@@ -130,14 +130,14 @@ export function GitHubTriggerConfiguredView({
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
 			<div className="flex items-center justify-between gap-[12px]">
-				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">State</p>
+				<p className="text-[14px] py-[1.5px] text-inverse">State</p>
 				<div className="relative w-[150px] h-[28px] rounded-full border border-white/20 bg-transparent overflow-hidden">
 					<div
 						className={clsx(
 							"absolute inset-y-0 left-0 w-1/2 rounded-full transition-transform duration-300 ease-in-out",
 							data.trigger.enable
 								? "translate-x-full bg-primary-900"
-								: "translate-x-0 bg-[#3F3F4A]",
+								: "translate-x-0 bg-inverse/10",
 						)}
 					/>
 					<div className="absolute inset-0 grid grid-cols-2 z-10">
@@ -189,7 +189,7 @@ export function GitHubTriggerConfiguredView({
 				</div>
 			)}
 			<div className="flex items-center justify-between gap-[12px]">
-				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Event Type</p>
+				<p className="text-[14px] py-[1.5px] text-inverse">Event Type</p>
 				<div className="px-[4px] py-0 bg-transparent text-[14px] flex items-center">
 					<div className="pr-0 p-2 rounded-lg flex-shrink-0 flex items-center justify-center">
 						{(() => {
@@ -208,7 +208,7 @@ export function GitHubTriggerConfiguredView({
 			</div>
 
 			<div className="space-y-[4px]">
-				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Repository</p>
+				<p className="text-[14px] py-[1.5px] text-inverse">Repository</p>
 				<div className="px-[4px] pt-[6px]">
 					<GitHubRepositoryBlock
 						owner={data.githubRepositoryFullname.owner}
@@ -237,7 +237,7 @@ export function GitHubTriggerConfiguredView({
 				data.trigger.configuration.event.id ===
 					"github.discussion_comment.created") && (
 				<div className="space-y-[4px]">
-					<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Call sign</p>
+					<p className="text-[14px] py-[1.5px] text-inverse">Call sign</p>
 					<div className="px-[4px] py-[9px] w-full bg-transparent text-[14px] flex items-center gap-[8px]">
 						<span>/{data.trigger.configuration.event.conditions.callsign}</span>
 						<ClipboardButton
@@ -271,7 +271,7 @@ export function GitHubTriggerConfiguredView({
 				data.trigger.configuration.event.id ===
 					"github.pull_request.labeled") && (
 				<div className="space-y-[4px]">
-					<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Labels</p>
+					<p className="text-[14px] py-[1.5px] text-inverse">Labels</p>
 					<div className="space-y-[4px]">
 						<div className="px-[4px] py-[9px] w-full bg-transparent text-[14px]">
 							<div className="flex flex-wrap gap-[4px]">
