@@ -22,6 +22,7 @@ import type { parseCommand } from "./utils";
 
 interface MiniStepProgressTableRow {
 	id: string;
+	name: string;
 	status: "pending" | "in-progress" | "success" | "failed";
 	updatedAt: Date | undefined;
 }
@@ -153,7 +154,7 @@ function buildProgressTable(data: ProgressTableData) {
 				: "Not started";
 			const miniStepDetailsContent = `Status: ${miniStepStatusText}\nUpdated: ${miniStepUpdatedAtText}`;
 
-			return `<tr><td>${miniStepStatusIcon}</td><td><details><summary><strong>${miniStepStatusText}</strong></summary>
+			return `<tr><td>${miniStepStatusIcon}</td><td><details><summary><strong>${miniStep.name}</strong></summary>
 
 ${miniStepDetailsContent}
 
@@ -609,6 +610,7 @@ export async function processEvent<TEventName extends WebhookEventName>(
 						updatedAt: undefined,
 						miniStepProgressTableRows: sequence.steps.map((step) => ({
 							id: step.id,
+							name: step.name,
 							status: mapStepStatusToMiniStepStatus(step.status),
 							updatedAt: undefined,
 						})),
@@ -719,6 +721,7 @@ export async function processEvent<TEventName extends WebhookEventName>(
 									updatedAt: new Date(),
 									miniStepProgressTableRows: sequence.steps.map((step) => ({
 										id: step.id,
+										name: step.name,
 										status: mapStepStatusToMiniStepStatus(step.status),
 										updatedAt:
 											step.status === "running" ? new Date() : undefined,
@@ -740,6 +743,7 @@ export async function processEvent<TEventName extends WebhookEventName>(
 									updatedAt: now,
 									miniStepProgressTableRows: sequence.steps.map((step) => ({
 										id: step.id,
+										name: step.name,
 										status: mapStepStatusToMiniStepStatus(step.status),
 										updatedAt:
 											step.status === "completed" ||
@@ -766,6 +770,7 @@ export async function processEvent<TEventName extends WebhookEventName>(
 									updatedAt: now,
 									miniStepProgressTableRows: sequence.steps.map((step) => ({
 										id: step.id,
+										name: step.name,
 										status: mapStepStatusToMiniStepStatus(step.status),
 										updatedAt:
 											step.status === "completed" ||
@@ -791,6 +796,7 @@ export async function processEvent<TEventName extends WebhookEventName>(
 									updatedAt: now,
 									miniStepProgressTableRows: sequence.steps.map((step) => ({
 										id: step.id,
+										name: step.name,
 										status: mapStepStatusToMiniStepStatus(step.status),
 										updatedAt:
 											step.status === "completed" ||
