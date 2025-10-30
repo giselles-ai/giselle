@@ -67,7 +67,10 @@ interface SequenceExecutionOptions {
 	onStepComplete?: (step: Step, stepIndex: number) => Promise<void>;
 }
 
-async function executeSequence(options: SequenceExecutionOptions): Promise<{
+async function executeSequence({
+	sequence,
+	...options
+}: SequenceExecutionOptions): Promise<{
 	hasError: boolean;
 	totalTaskDuration: number;
 	wallClockDuration: number;
@@ -77,11 +80,12 @@ async function executeSequence(options: SequenceExecutionOptions): Promise<{
 	let hasError = false;
 
 	// Start sequence
-	await options.onSequenceStart?.(options.sequence);
+	sequence.status = "running";
+	await options.onSequenceStart?.(sequence);
 
 	// Execute all steps in parallel
-	const steps = await Promise.all(
-		options.sequence.steps.map(async (step, stepIndex) => {
+	const executedSteps = await Promise.all(
+		sequence.steps.map(async (step, stepIndex) => {
 			const stepStartTime = Date.now();
 
 			try {
@@ -92,10 +96,9 @@ async function executeSequence(options: SequenceExecutionOptions): Promise<{
 					onCompleted: async () => {
 						const duration = Date.now() - stepStartTime;
 						totalTaskDuration += duration;
-						await options.onStepComplete?.(
-							{ ...step, duration, status: "completed" },
-							stepIndex,
-						);
+						step.status = "completed";
+						step.duration = duration;
+						await options.onStepComplete?.(step, stepIndex);
 					},
 					onFailed: async (failedGeneration) => {
 						hasError = true;
@@ -119,23 +122,22 @@ async function executeSequence(options: SequenceExecutionOptions): Promise<{
 	);
 
 	const wallClockDuration = Date.now() - startTime;
-	const sequenceWithDuration = {
-		...options.sequence,
-		steps,
-		duration: { totalTask: totalTaskDuration, wallClock: wallClockDuration },
+	sequence.steps = executedSteps;
+	sequence.duration = {
+		totalTask: totalTaskDuration,
+		wallClock: wallClockDuration,
 	};
 
 	// Handle sequence completion
 	if (hasError) {
-		await options.onSequenceError?.(new Error("Sequence execution failed"), {
-			...sequenceWithDuration,
-			status: "failed",
-		});
+		sequence.status = "failed";
+		await options.onSequenceError?.(
+			new Error("Sequence execution failed"),
+			sequence,
+		);
 	} else {
-		await options.onSequenceComplete?.({
-			...sequenceWithDuration,
-			status: "completed",
-		});
+		sequence.status = "completed";
+		await options.onSequenceComplete?.(sequence);
 	}
 
 	return { hasError, totalTaskDuration, wallClockDuration };
@@ -234,23 +236,21 @@ export async function executeAct(
 			break;
 		}
 
-		// Start sequence
-		sequence.status = "running";
-		await opts.applyPatches(opts.act.id, [
-			patches.sequences(i).status.set("running"),
-		]);
-		await opts.onSequenceStart?.(sequence, i);
-
-		// Move steps to in progress
-		await opts.applyPatches(
-			opts.act.id,
-			createStepCountPatches("queued", "inProgress", stepCount),
-		);
-
 		// Execute the sequence
 		const result = await executeSequence({
 			sequence,
 			startGeneration: opts.startGeneration,
+			onSequenceStart: async (sequence) => {
+				await opts.applyPatches(opts.act.id, [
+					patches.sequences(i).status.set("running"),
+				]);
+				// Move steps to in progress
+				await opts.applyPatches(
+					opts.act.id,
+					createStepCountPatches("queued", "inProgress", stepCount),
+				);
+				await opts.onSequenceStart?.(sequence, i);
+			},
 			onStepStart: async (step, stepIndex) => {
 				await opts.applyPatches(opts.act.id, [
 					patches.sequences(i).steps(stepIndex).status.set("running"),
