@@ -94,7 +94,7 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 								generate();
 							}
 						}}
-						disabled={!isGenerating && query.length === 0}
+						disabled={query.length === 0}
 						className="w-[150px] disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						{isGenerating ? (
