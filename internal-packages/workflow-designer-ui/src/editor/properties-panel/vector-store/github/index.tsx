@@ -138,7 +138,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 				selectedRepo.contentTypes?.some(
 					(ct: { contentType: string }) => ct.contentType === "pull_request",
 				) ?? false,
-			hasIssuesContent:
+			hasIssueContent:
 				selectedRepo.contentTypes?.some(
 					(ct: { contentType: string }) => ct.contentType === "issue",
 				) ?? false,
@@ -302,7 +302,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 										const {
 											hasBlobContent,
 											hasPullRequestContent,
-											hasIssuesContent,
+											hasIssueContent,
 										} = contentTypeAvailability;
 
 										return (
@@ -374,7 +374,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 												{githubIssuesVectorStore && (
 													<label
 														className={`flex items-center space-x-3 cursor-pointer ${
-															!hasIssuesContent
+															!hasIssueContent
 																? "opacity-50 cursor-not-allowed"
 																: ""
 														}`}
@@ -385,13 +385,13 @@ export function GitHubVectorStoreNodePropertiesPanel({
 															value="issue"
 															checked={selectedContentType === "issue"}
 															onChange={() => handleContentTypeChange("issue")}
-															disabled={!hasIssuesContent}
+															disabled={!hasIssueContent}
 															className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500"
 														/>
 														<span className="text-[14px] text-inverse">
 															Issues
 														</span>
-														{!hasIssuesContent && (
+														{!hasIssueContent && (
 															<div className="flex items-center gap-1 group relative">
 																<span className="text-[12px] text-inverse/50">
 																	Not configured
