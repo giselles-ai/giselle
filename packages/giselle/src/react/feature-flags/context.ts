@@ -5,7 +5,6 @@ export interface FeatureFlagContextValue {
 	layoutV3: boolean;
 	stage: boolean;
 	aiGateway: boolean;
-	resumableGeneration: boolean;
 	googleUrlContext: boolean;
 	documentVectorStore: boolean;
 }
