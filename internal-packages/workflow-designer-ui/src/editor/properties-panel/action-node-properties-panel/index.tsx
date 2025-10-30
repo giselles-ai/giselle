@@ -4,7 +4,6 @@ import {
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
 import { useCallback } from "react";
-import { Button } from "../../../ui/button";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GitHubActionPropertiesPanel } from "./github-action-properties-panel";

@@ -419,7 +419,8 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 	const isManualTriggerPanel =
 		isPropertiesPanelOpen &&
 		`${selectedNodes[0]?.content.type}` === "trigger" &&
-		`${(selectedNodes[0] as any)?.content?.provider}` === "manual";
+		`${(selectedNodes[0] as unknown as { content?: { provider?: string } })?.content?.provider}` ===
+			"manual";
 
 	const mainRef = useRef<HTMLDivElement>(null);
 

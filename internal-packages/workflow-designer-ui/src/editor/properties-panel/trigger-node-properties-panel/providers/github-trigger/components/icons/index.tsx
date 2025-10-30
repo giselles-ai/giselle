@@ -2,7 +2,6 @@ import type { GitHubTriggerEventId } from "@giselle-sdk/flow";
 import {
 	Check,
 	MessageSquareCode,
-	MessageSquareDiff,
 	MessageSquareText,
 	MessagesSquare,
 	Tag,
