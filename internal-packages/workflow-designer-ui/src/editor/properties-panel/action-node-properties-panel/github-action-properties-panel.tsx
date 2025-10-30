@@ -97,7 +97,13 @@ const getActionIcon = (actionId: string) => {
 	}
 };
 
-export function GitHubActionPropertiesPanel({ node }: { node: ActionNode }) {
+export function GitHubActionPropertiesPanel({
+	node,
+	handleClick,
+}: {
+	node: ActionNode;
+	handleClick: () => void;
+}) {
 	const { value } = useIntegration();
 
 	// Only handle GitHub actions
@@ -112,8 +118,8 @@ export function GitHubActionPropertiesPanel({ node }: { node: ActionNode }) {
 					state={node.content.command.state}
 					node={node}
 					inputs={node.inputs}
+					handleClick={handleClick}
 				/>
-				<GenerationPanel node={node} />
 			</div>
 		);
 	} else if (

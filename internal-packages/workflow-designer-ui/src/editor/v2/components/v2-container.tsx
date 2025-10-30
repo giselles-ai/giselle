@@ -416,6 +416,10 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 		`${selectedNodes[0]?.content.type}` === "vectorStore";
 	const isWebPagePanel =
 		isPropertiesPanelOpen && `${selectedNodes[0]?.content.type}` === "webPage";
+	const isManualTriggerPanel =
+		isPropertiesPanelOpen &&
+		`${selectedNodes[0]?.content.type}` === "trigger" &&
+		`${(selectedNodes[0] as any)?.content?.provider}` === "manual";
 
 	const mainRef = useRef<HTMLDivElement>(null);
 
@@ -465,7 +469,11 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 						defaultWidth={isTextGenerationPanel ? 400 : undefined}
 						minWidth={isTextGenerationPanel ? 400 : undefined}
 						autoHeight={
-							isFilePanel || isTextPanel || isVectorStorePanel || isWebPagePanel
+							isFilePanel ||
+							isTextPanel ||
+							isVectorStorePanel ||
+							isWebPagePanel ||
+							isManualTriggerPanel
 						}
 					>
 						<PropertiesPanel />

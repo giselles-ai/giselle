@@ -33,6 +33,7 @@ import {
 import { Tooltip } from "../../../../../ui/tooltip";
 import { isPromptEmpty as isEmpty } from "../../../../lib/validate-prompt";
 import { SelectRepository } from "../../../ui";
+import { usePanelScrollMode } from "../../index";
 import { GitHubTriggerConfiguredView } from "../../ui";
 import { GitHubTriggerReconfiguringView } from "../../ui/reconfiguring-views/github-trigger-reconfiguring-view";
 import { EventSelectionStep } from "./components/event-selection-step";
@@ -344,8 +345,18 @@ export function Installed({
 		],
 	);
 
+	const setScrollMode = usePanelScrollMode();
+	useEffect(() => {
+		const isLimited =
+			step.state === "select-event" || step.state === "confirm-repository";
+		setScrollMode(isLimited ? "limited" : "full");
+		return () => {
+			setScrollMode("full");
+		};
+	}, [step.state, setScrollMode]);
+
 	return (
-		<div className="flex flex-col gap-[8px] h-full px-1">
+		<div className="flex flex-col gap-[8px] px-1">
 			{step.state === "select-event" && (
 				<EventSelectionStep
 					selectedEventId={eventId}
@@ -772,23 +783,6 @@ export function Installed({
 					showBackButton={!isReconfiguring}
 				/>
 			)}
-
-			<style jsx>{`
-        .custom-scrollbar {
-          scrollbar-width: thin;
-          scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 5px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: rgba(255, 255, 255, 0.15);
-          border-radius: 2px;
-        }
-      `}</style>
 		</div>
 	);
 }

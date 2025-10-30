@@ -1,5 +1,7 @@
 import type { TriggerNode } from "@giselle-sdk/data-type";
 import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
+import clsx from "clsx/lite";
+import { createContext, useContext, useState } from "react";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GitHubTriggerPropertiesPanel } from "./providers/github-trigger/github-trigger-properties-panel";
@@ -7,6 +9,7 @@ import { ManualTriggerPropertiesPanel } from "./providers/manual-trigger/manual-
 
 export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
 	const { updateNodeData, deleteNode } = useWorkflowDesigner();
+	const [scrollMode, setScrollMode] = useState<"limited" | "full">("full");
 	return (
 		<PropertiesPanelRoot>
 			<NodePanelHeader
@@ -16,9 +19,16 @@ export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
 				onDelete={() => deleteNode(node.id)}
 			/>
 			<PropertiesPanelContent>
-				<div className="overflow-y-auto flex-1 pr-2 custom-scrollbar h-full relative">
-					<PropertiesPanel node={node} />
-				</div>
+				<PanelScrollModeContext.Provider value={setScrollMode}>
+					<div
+						className={clsx(
+							"relative pr-2 custom-scrollbar overflow-y-auto",
+							scrollMode === "limited" ? "max-h-[560px]" : "h-full flex-1",
+						)}
+					>
+						<PropertiesPanel node={node} />
+					</div>
+				</PanelScrollModeContext.Provider>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);
@@ -34,4 +44,12 @@ function PropertiesPanel({ node }: { node: TriggerNode }) {
 			throw new Error(`Unhandled action: ${_exhaustiveCheck}`);
 		}
 	}
+}
+
+const PanelScrollModeContext = createContext<
+	(mode: "limited" | "full") => void
+>(() => {});
+
+export function usePanelScrollMode() {
+	return useContext(PanelScrollModeContext);
 }

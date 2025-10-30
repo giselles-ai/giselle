@@ -97,10 +97,12 @@ export function GitHubActionConfiguredView({
 	node,
 	inputs,
 	state,
+	handleClick,
 }: {
 	node: ActionNode;
 	inputs: Input[];
 	state: GitHubActionCommandConfiguredState;
+	handleClick: () => void;
 }) {
 	const client = useGiselleEngine();
 	const {
@@ -252,6 +254,17 @@ export function GitHubActionConfiguredView({
 						))}
 					</ul>
 				</div>
+			</div>
+			<div className="px-[4px] py-[16px]">
+				<Button
+					type="button"
+					onClick={handleClick}
+					variant="glass"
+					size="large"
+					className="w-full"
+				>
+					Run Action
+				</Button>
 			</div>
 		</div>
 	);

@@ -16,17 +16,17 @@ import { Button } from "../../../ui/button";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import {
 	PropertiesPanelContent,
+	PropertiesPanelHeader,
 	PropertiesPanelRoot,
 	ResizeHandle,
 } from "../ui";
-import { NodePanelHeader } from "../ui/node-panel-header";
 import { GenerationPanel } from "./generation-panel";
 import { QueryPanel } from "./query-panel";
 import { SettingsPanel } from "./settings-panel";
 import { useConnectedSources } from "./sources";
 
 export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
-	const { data, updateNodeData, deleteNode } = useWorkflowDesigner();
+	const { data, updateNodeData } = useWorkflowDesigner();
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
 			nodeId: node.id,
@@ -81,38 +81,39 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 
 	return (
 		<PropertiesPanelRoot>
-			<NodePanelHeader
+			<PropertiesPanelHeader
 				node={node}
-				onChangeName={(name) => updateNodeData(node, { name })}
-				docsUrl="https://docs.giselles.ai/en/glossary/query-node"
-				onDelete={() => deleteNode(node.id)}
+				description="Query"
+				onChangeName={(name) => {
+					updateNodeData(node, { name });
+				}}
+				action={
+					<Button
+						type="button"
+						onClick={() => {
+							if (isGenerating) {
+								stopGenerationRunner();
+							} else {
+								generate();
+							}
+						}}
+						disabled={query.length === 0}
+						className="w-[150px] disabled:cursor-not-allowed disabled:opacity-50"
+					>
+						{isGenerating ? (
+							<span>Stop</span>
+						) : (
+							<>
+								<span>Query</span>
+								<kbd className="flex items-center text-[12px]">
+									<CommandIcon className="size-[12px]" />
+									<CornerDownLeft className="size-[12px]" />
+								</kbd>
+							</>
+						)}
+					</Button>
+				}
 			/>
-			<div className="px-[16px] py-[8px] border-b border-inverse/10">
-				<Button
-					type="button"
-					onClick={() => {
-						if (isGenerating) {
-							stopGenerationRunner();
-						} else {
-							generate();
-						}
-					}}
-					disabled={query.length === 0}
-					className="w-full disabled:cursor-not-allowed disabled:opacity-50"
-				>
-					{isGenerating ? (
-						<span>Stop</span>
-					) : (
-						<>
-							<span>Query</span>
-							<kbd className="flex items-center text-[12px]">
-								<CommandIcon className="size-[12px]" />
-								<CornerDownLeft className="size-[12px]" />
-							</kbd>
-						</>
-					)}
-				</Button>
-			</div>
 
 			<PropertiesPanelContent>
 				<PanelGroup direction="vertical" className="flex-1 flex flex-col">
