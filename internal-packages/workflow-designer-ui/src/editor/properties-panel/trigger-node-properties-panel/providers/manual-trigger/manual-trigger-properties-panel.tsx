@@ -181,7 +181,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 								))}
 							</div>
 						) : (
-							<div className="text-[14px] text-text-muted/80 mb-[16px] bg-transparent p-0 rounded-none">
+							<div className="text-[12px] text-text-muted/80 mb-[16px] bg-transparent p-0 rounded-none">
 								No parameters configured yet. Add at least one parameter.
 							</div>
 						)}
@@ -242,20 +242,20 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 				<div className="space-y-[4px]">
 					<SettingLabel className="py-[1.5px]">Staged</SettingLabel>
 					{stage && (
-						<div className="mt-[8px] flex flex-row items-center justify-between">
-							<div className="flex items-center gap-[8px]">
+						<div className="mt-[8px]">
+							<div className="flex flex-row items-center justify-between">
 								<SettingDetail>
 									Enable this trigger to run in Stage
 								</SettingDetail>
-								<span className="text-[12px] text-text-muted">
-									(This can be changed later)
-								</span>
+								<Toggle
+									name="staged"
+									checked={staged}
+									onCheckedChange={setStaged}
+								/>
 							</div>
-							<Toggle
-								name="staged"
-								checked={staged}
-								onCheckedChange={setStaged}
-							/>
+							<p className="text-[12px] text-text-muted mt-[4px]">
+								(This can be changed later)
+							</p>
 						</div>
 					)}
 				</div>

@@ -477,60 +477,56 @@ function Installed({
 						</a>
 					</p>
 					{selectedInstallationId !== null && (
-						<div className="flex w-full items-start gap-[12px]">
-							<div className="shrink-0 w-[120px]">
-								<SettingDetail className="mb-0">Repository</SettingDetail>
-							</div>
-						<div className="grow min-w-0">
+						<div className="flex flex-col w-full gap-[8px]">
+							<SettingDetail className="mb-0">Repository</SettingDetail>
 							<div className="flex flex-col gap-y-[4px] relative">
-									{(
-										installations.find((i) => i.id === selectedInstallationId)
-											?.repositories ?? []
-									).map((repo) => (
-										<button
-											key={repo.node_id}
-											type="button"
-											className="group relative rounded-[12px] overflow-hidden px-[16px] py-[12px] w-full border-[0.5px] border-white/8 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_-1px_0_rgba(255,255,255,0.15)] hover:border-white/12 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(255,255,255,0.2)] transition-all duration-200 cursor-pointer text-left"
-											onClick={() => {
-												setStep({
-													state: "select-action",
-													installationId: selectedInstallationId,
-													owner: repo.owner.login,
-													repo: repo.name,
-													repoNodeId: repo.node_id,
-												});
-											}}
-										>
-											<div className="invisible group-hover:visible absolute right-4 top-1/2 transform -translate-y-1/2 bg-bg-800 text-inverse text-xs px-2 py-1 rounded whitespace-nowrap">
-												Select
-											</div>
-											<div className="flex items-center justify-between">
-												<div className="flex flex-col">
-													<div className="flex items-center gap-2">
-														<span className="text-inverse font-medium text-[14px]">
-															{repo.name}
-														</span>
-														<span className="rounded-full px-1.5 py-px text-black-300 font-medium text-[10px] leading-normal font-geist border-[0.5px] border-black-400">
-															{repo.private ? "Private" : "Public"}
-														</span>
-													</div>
+								{(
+									installations.find((i) => i.id === selectedInstallationId)
+										?.repositories ?? []
+								).map((repo) => (
+									<button
+										key={repo.node_id}
+										type="button"
+										className="group relative rounded-[12px] overflow-hidden px-[16px] py-[12px] w-full border-[0.5px] border-white/8 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_-1px_0_rgba(255,255,255,0.15)] hover:border-white/12 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(255,255,255,0.2)] transition-all duration-200 cursor-pointer text-left"
+										onClick={() => {
+											setStep({
+												state: "select-action",
+												installationId: selectedInstallationId,
+												owner: repo.owner.login,
+												repo: repo.name,
+												repoNodeId: repo.node_id,
+											});
+										}}
+									>
+										<div className="invisible group-hover:visible absolute right-4 top-1/2 transform -translate-y-1/2 bg-bg-800 text-inverse text-xs px-2 py-1 rounded whitespace-nowrap">
+											Select
+										</div>
+										<div className="flex items-center justify-between">
+											<div className="flex flex-col">
+												<div className="flex items-center gap-2">
+													<span className="text-inverse font-medium text-[14px]">
+														{repo.name}
+													</span>
+													<span className="rounded-full px-1.5 py-px text-black-300 font-medium text-[10px] leading-normal font-geist border-[0.5px] border-black-400">
+														{repo.private ? "Private" : "Public"}
+													</span>
 												</div>
 											</div>
-										</button>
-									))}
-								</div>
-								<p className="text-inverse text-[12px] text-right">
-									Missing Git repository?
-									<a
-										href={installationUrl}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="text-inverse hover:text-inverse ml-1 underline text-[12px]"
-									>
-										Adjust GitHub App Permissions
-									</a>
-								</p>
+										</div>
+									</button>
+								))}
 							</div>
+							<p className="text-inverse text-[12px] text-right">
+								Missing Git repository?
+								<a
+									href={installationUrl}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="text-inverse hover:text-inverse ml-1 underline text-[12px]"
+								>
+									Adjust GitHub App Permissions
+								</a>
+							</p>
 						</div>
 					)}
 				</>
