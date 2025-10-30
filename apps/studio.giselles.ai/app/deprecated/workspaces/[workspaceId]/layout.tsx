@@ -10,12 +10,12 @@ import { db, flowTriggers } from "@/db";
 import {
 	aiGatewayFlag,
 	docVectorStoreFlag,
+	githubIssuesVectorStoreFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
 	resumableGenerationFlag,
 	stageFlag,
 	webSearchActionFlag,
-	githubIssuesVectorStoreFlag,
 } from "@/flags";
 import { getDocumentVectorStores } from "@/lib/vector-stores/document/queries";
 import { getGitHubRepositoryIndexes } from "@/lib/vector-stores/github";
