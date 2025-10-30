@@ -154,19 +154,11 @@ function buildProgressTable(data: ProgressTableData) {
 				: "Not started";
 			const miniStepDetailsContent = `Status: ${miniStepStatusText}\nUpdated: ${miniStepUpdatedAtText}`;
 
-			return `<tr><td>${miniStepStatusIcon}</td><td><details><summary><strong>${miniStep.name}</strong></summary>
-
-${miniStepDetailsContent}
-
-</details></td></tr>`;
+			return `<tr><td>${miniStepStatusIcon}</td><td><details><summary><strong>${miniStep.name}</strong></summary>${miniStepDetailsContent}</details></td></tr>`;
 		});
 
 		return `<tr><td colspan='2'><strong>Step ${i + 1}</strong></td></tr>
-<tr><td>${statusIcon}</td><td><details><summary><strong>${statusText}</strong></summary>
-
-${detailsContent}
-
-</details></td></tr>${miniStepRows.length > 0 ? `\n${miniStepRows.join("\n")}` : ""}`;
+${miniStepRows.length > 0 ? miniStepRows.join("\n") : ""}`;
 	});
 	return `<table><tbody>${rows.join("\n")}</tbody></table>`;
 }
