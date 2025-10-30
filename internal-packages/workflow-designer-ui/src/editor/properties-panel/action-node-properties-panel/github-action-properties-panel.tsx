@@ -26,7 +26,6 @@ import {
 } from "../trigger-node-properties-panel/providers/github-trigger/components/icons";
 import { GitHubRepositoryBlock } from "../trigger-node-properties-panel/ui";
 import { SelectRepository } from "../ui";
-import { GenerationPanel } from "./generation-panel";
 import { GitHubActionConfiguredView } from "./ui/github-action-configured-view";
 
 // Default icon for actions without specific icons

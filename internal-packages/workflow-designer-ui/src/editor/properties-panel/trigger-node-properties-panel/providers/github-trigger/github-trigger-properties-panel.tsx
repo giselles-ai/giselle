@@ -536,30 +536,28 @@ export function Installed({
 					<MissingAccountLink href={installationUrl} />
 
 					{selectedInstallationId !== null && (
-						<>
-							<div className="flex flex-col w-full gap-[8px]">
-								<SettingDetail className="mb-0">Repository</SettingDetail>
-								<div className="flex flex-col gap-y-[8px] relative">
-									{selectedInstallationRepositories.map((repo) => (
-										<RepositoryItemButton
-											key={repo.node_id}
-											repo={repo}
-											onClick={() => {
-												setStep({
-													state: "confirm-repository",
-													eventId: step.eventId,
-													installationId: selectedInstallationId,
-													owner: repo.owner.login,
-													repo: repo.name,
-													repoNodeId: repo.node_id,
-												});
-											}}
-										/>
-									))}
-								</div>
-								<MissingAccountLink href={installationUrl} />
+						<div className="flex flex-col w-full gap-[8px]">
+							<SettingDetail className="mb-0">Repository</SettingDetail>
+							<div className="flex flex-col gap-y-[8px] relative">
+								{selectedInstallationRepositories.map((repo) => (
+									<RepositoryItemButton
+										key={repo.node_id}
+										repo={repo}
+										onClick={() => {
+											setStep({
+												state: "confirm-repository",
+												eventId: step.eventId,
+												installationId: selectedInstallationId,
+												owner: repo.owner.login,
+												repo: repo.name,
+												repoNodeId: repo.node_id,
+											});
+										}}
+									/>
+								))}
 							</div>
-						</>
+							<MissingAccountLink href={installationUrl} />
+						</div>
 					)}
 				</div>
 			)}

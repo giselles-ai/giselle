@@ -334,45 +334,12 @@ export function GitHubVectorStoreNodePropertiesPanel({
 																Enable Code for {selectedRepoKey} in Vector
 																Store settings
 															</div>
-													</div>
-												)}
-											</label>
-											<label
-												className={`flex items-center space-x-3 cursor-pointer ${
-													!hasPullRequestContent
-														? "opacity-50 cursor-not-allowed"
-														: ""
-												}`}
-											>
-												<input
-														type="radio"
-														name="contentType"
-														value="pull_request"
-														checked={selectedContentType === "pull_request"}
-														onChange={() => handleContentTypeChange("pull_request")}
-														disabled={!hasPullRequestContent}
-														className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500"
-													/>
-												<span className="text-[14px] text-inverse">
-													Pull Requests
-												</span>
-												{!hasPullRequestContent && (
-													<div className="flex items-center gap-1 group relative">
-														<span className="text-[12px] text-inverse/50">
-															Not configured
-														</span>
-														<Info className="w-3 h-3 text-inverse/50 cursor-help" />
-														<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-bg-800/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
-															Enable Pull Requests for that repository in
-															Vector Store settings
 														</div>
-													</div>
-												)}
-											</label>
-											{githubIssuesVectorStore && (
+													)}
+												</label>
 												<label
 													className={`flex items-center space-x-3 cursor-pointer ${
-														!hasIssueContent
+														!hasPullRequestContent
 															? "opacity-50 cursor-not-allowed"
 															: ""
 													}`}
@@ -380,85 +347,126 @@ export function GitHubVectorStoreNodePropertiesPanel({
 													<input
 														type="radio"
 														name="contentType"
-														value="issue"
-														checked={selectedContentType === "issue"}
-														onChange={() => handleContentTypeChange("issue")}
-														disabled={!hasIssueContent}
+														value="pull_request"
+														checked={selectedContentType === "pull_request"}
+														onChange={() =>
+															handleContentTypeChange("pull_request")
+														}
+														disabled={!hasPullRequestContent}
 														className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500"
 													/>
 													<span className="text-[14px] text-inverse">
-														Issues
+														Pull Requests
 													</span>
-													{!hasIssueContent && (
+													{!hasPullRequestContent && (
 														<div className="flex items-center gap-1 group relative">
 															<span className="text-[12px] text-inverse/50">
 																Not configured
 															</span>
 															<Info className="w-3 h-3 text-inverse/50 cursor-help" />
 															<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-bg-800/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
-																Enable Issues for {selectedRepoKey} in Vector
-																Store settings
+																Enable Pull Requests for that repository in
+																Vector Store settings
 															</div>
-													</div>
+														</div>
+													)}
+												</label>
+												{githubIssuesVectorStore && (
+													<label
+														className={`flex items-center space-x-3 cursor-pointer ${
+															!hasIssueContent
+																? "opacity-50 cursor-not-allowed"
+																: ""
+														}`}
+													>
+														<input
+															type="radio"
+															name="contentType"
+															value="issue"
+															checked={selectedContentType === "issue"}
+															onChange={() => handleContentTypeChange("issue")}
+															disabled={!hasIssueContent}
+															className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500"
+														/>
+														<span className="text-[14px] text-inverse">
+															Issues
+														</span>
+														{!hasIssueContent && (
+															<div className="flex items-center gap-1 group relative">
+																<span className="text-[12px] text-inverse/50">
+																	Not configured
+																</span>
+																<Info className="w-3 h-3 text-inverse/50 cursor-help" />
+																<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-bg-800/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
+																	Enable Issues for {selectedRepoKey} in Vector
+																	Store settings
+																</div>
+															</div>
+														)}
+													</label>
 												)}
-											</label>
-										)}
-									</div>
+											</>
+										);
+									})()}
+								</div>
 							</div>
 						</div>
 					</div>
 				)}
 
-				{/* Embedding Profile Selection (always visible; disabled when unavailable) */}
-				<div className="mt-[16px]">
-					<div className="flex w-full items-center justify-between gap-[12px]">
-						<div className="shrink-0 w-[120px]">
-							<SettingDetail className="mb-0">Embedding Model</SettingDetail>
-						</div>
-						<div className="grow min-w-0">
-							{isEmbeddingProfileOrphaned &&
-								source.state.status === "configured" && (
-									<div className="flex items-center gap-[6px] text-error-900 text-[13px] mb-[8px]">
-										<TriangleAlert className="size-[16px]" />
-										<span>
-											The selected embedding model is no longer available for
-											this content type. Please select a different model.
-										</span>
-									</div>
-								)}
-							<Select
-								options={embeddingProfileOptions}
-								placeholder={"Select embedding model..."}
-								value={defaultEmbeddingProfileValue}
-								onValueChange={(value) => {
-									const maybeId = Number(value);
-									if (!isEmbeddingProfileId(maybeId)) return;
-									setSelectedEmbeddingProfileId(maybeId);
+				{/* Embedding Profile Selection */}
+				{selectedRepoKey &&
+					selectedContentType &&
+					availableEmbeddingProfiles.length > 0 && (
+						<div className="mt-[16px]">
+							<div className="flex w-full items-center justify-between gap-[12px]">
+								<div className="shrink-0 w-[120px]">
+									<SettingDetail className="mb-0">
+										Embedding Model
+									</SettingDetail>
+								</div>
+								<div className="grow min-w-0">
+									{isEmbeddingProfileOrphaned &&
+										source.state.status === "configured" && (
+											<div className="flex items-center gap-[6px] text-error-900 text-[13px] mb-[8px]">
+												<TriangleAlert className="size-[16px]" />
+												<span>
+													The selected embedding model is no longer available
+													for this content type. Please select a different
+													model.
+												</span>
+											</div>
+										)}
+									<Select
+										options={embeddingProfileOptions}
+										placeholder="Select embedding model..."
+										value={defaultEmbeddingProfileValue}
+										onValueChange={(value) => {
+											const maybeId = Number(value);
+											if (!isEmbeddingProfileId(maybeId)) return;
+											setSelectedEmbeddingProfileId(maybeId);
 
-									// Update node data with selected profile
-									if (source.state.status === "configured") {
-										updateNodeData(node, {
-											content: {
-												...node.content,
-												source: {
-													provider: "github",
-													state: {
-														...source.state,
-														embeddingProfileId: maybeId,
+											// Update node data with selected profile
+											if (source.state.status === "configured") {
+												updateNodeData(node, {
+													content: {
+														...node.content,
+														source: {
+															provider: "github",
+															state: {
+																...source.state,
+																embeddingProfileId: maybeId,
+															},
+														},
 													},
-												},
-											},
-										});
-									}
-								}}
-								disabled={
-									!selectedRepoKey ||
-									!selectedContentType ||
-									availableEmbeddingProfiles.length === 0
-								}
-							/>
+												});
+											}
+										}}
+									/>
+								</div>
+							</div>
 						</div>
-					</div>
+					)}
 
 				{/* Setup link moved under repository select */}
 			</div>
