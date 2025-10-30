@@ -9,49 +9,50 @@ interface NoteProps {
 	showIcon?: boolean;
 }
 
+const typeStyles = {
+	error: {
+		container:
+			"rounded-[8px] border border-error-900/40 bg-error-900/10 px-[12px] py-[8px] flex items-start gap-[8px]",
+		icon: "text-error-200",
+		text: "text-error-100",
+	},
+	warning: {
+		container:
+			"rounded-[8px] border border-yellow-500/40 bg-yellow-500/10 px-[12px] py-[8px] flex items-start gap-[8px]",
+		icon: "text-yellow-200",
+		text: "text-yellow-100",
+	},
+	info: {
+		container:
+			"rounded-[8px] border border-blue-500/40 bg-blue-500/10 px-[12px] py-[8px] flex items-start gap-[8px]",
+		icon: "text-blue-200",
+		text: "text-blue-100",
+	},
+	success: {
+		container:
+			"rounded-[8px] border border-green-500/40 bg-green-500/10 px-[12px] py-[8px] flex items-start gap-[8px]",
+		icon: "text-green-200",
+		text: "text-green-100",
+	},
+} as const satisfies Record<
+	NoteProps["type"] & string,
+	{ container: string; icon: string; text: string }
+>;
+
 export function Note({
 	children,
 	type = "error",
 	action,
 	showIcon = true,
 }: NoteProps) {
-	const sharedContainerClasses =
-		"rounded-[8px] px-[12px] py-[8px] flex items-start gap-[8px] border";
-	const typeSpecificBorderAndBg: Record<NoteProps["type"], string> = {
-		error: "border-error-900/40 bg-error-900/10",
-		warning: "border-yellow-500/40 bg-yellow-500/10",
-		info: "border-blue-500/40 bg-blue-500/10",
-		success: "border-green-500/40 bg-green-500/10",
-	};
-	const containerClass = clsx(
-		sharedContainerClasses,
-		typeSpecificBorderAndBg[type],
-	);
-
-	const iconClass =
-		type === "error"
-			? "text-error-200"
-			: type === "warning"
-				? "text-yellow-200"
-				: type === "info"
-					? "text-blue-200"
-					: "text-green-200";
-
-	const textClass =
-		type === "error"
-			? "text-error-100"
-			: type === "warning"
-				? "text-yellow-100"
-				: type === "info"
-					? "text-blue-100"
-					: "text-green-100";
+	const styles = typeStyles[type];
 
 	return (
-		<div className={clsx(containerClass)} data-type={type}>
+		<div className={clsx(styles.container)} data-type={type}>
 			{showIcon && (
-				<AlertCircle className={clsx("size-[16px] mt-[2px]", iconClass)} />
+				<AlertCircle className={clsx("size-[16px] mt-[2px]", styles.icon)} />
 			)}
-			<div className={clsx("flex-1 text-[12px]", textClass)}>{children}</div>
+			<div className={clsx("flex-1 text-[12px]", styles.text)}>{children}</div>
 			{action && <div className="flex-shrink-0">{action}</div>}
 		</div>
 	);
