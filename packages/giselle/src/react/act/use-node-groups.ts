@@ -3,7 +3,7 @@ import {
 	type GroupedNodes,
 	groupNodes,
 } from "../../engine/utils/workspace/group-nodes";
-import { useWorkflowDesigner } from "../flow";
+import { useWorkflowDesigner } from "../workspace";
 
 /**
  * Custom hook that groups connected nodes in the current workspace.

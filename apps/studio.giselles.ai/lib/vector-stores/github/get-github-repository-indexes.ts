@@ -1,8 +1,9 @@
 import { and, eq } from "drizzle-orm";
 import { db, githubRepositoryContentStatus, githubRepositoryIndex } from "@/db";
+import { githubIssuesVectorStoreFlag } from "@/flags";
 
 type ContentType = {
-	contentType: "blob" | "pull_request";
+	contentType: "blob" | "pull_request" | "issue";
 	embeddingProfileIds: number[];
 };
 
@@ -17,6 +18,7 @@ type GitHubRepositoryIndex = {
 export async function getGitHubRepositoryIndexes(
 	teamDbId: number,
 ): Promise<GitHubRepositoryIndex[]> {
+	const includeIssues = await githubIssuesVectorStoreFlag();
 	const repositories = await db
 		.select({
 			id: githubRepositoryIndex.id,
@@ -49,12 +51,16 @@ export async function getGitHubRepositoryIndexes(
 			name: string;
 			owner: string;
 			repo: string;
-			contentTypeToProfiles: Map<"blob" | "pull_request", Set<number>>;
+			contentTypeToProfiles: Map<
+				"blob" | "pull_request" | "issue",
+				Set<number>
+			>;
 		}
 	>();
 
 	for (const row of repositories) {
-		if (row.contentType !== "blob" && row.contentType !== "pull_request") {
+		// Filter out issues if feature flag is disabled
+		if (row.contentType === "issue" && !includeIssues) {
 			continue;
 		}
 

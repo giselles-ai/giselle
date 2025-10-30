@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 import type { ActExecutorOptions, CreateActInputs } from "../../engine/acts";
 import { executeAct } from "../../engine/acts/shared/act-execution-utils";
-import { useWorkflowDesigner } from "../flow";
 import { useGenerationRunnerSystem } from "../generations";
 import { useGiselleEngine } from "../use-giselle-engine";
+import { useWorkflowDesigner } from "../workspace";
 
 type CreateAndStartActParams = Omit<
 	CreateActInputs,

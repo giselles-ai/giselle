@@ -12,6 +12,7 @@ interface SliderProps
 	value: number;
 	onChange?: (value: number) => void;
 	labelClassName?: string;
+	formatValue?: (value: number) => string;
 }
 export function Slider(props: SliderProps) {
 	const controlId = useId();
@@ -49,7 +50,9 @@ export function Slider(props: SliderProps) {
 					/>
 				</SliderPrimitive.Root>
 				<div className="text-[12px] font-[700] text-inverse w-[44px] text-right font-mono [font-variant-numeric:tabular-nums]">
-					{props.value.toFixed(2)}
+					{props.formatValue
+						? props.formatValue(props.value)
+						: props.value.toFixed(2)}
 				</div>
 			</div>
 		</div>

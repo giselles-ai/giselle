@@ -6,6 +6,12 @@ import type {
 } from "@giselle-sdk/data-type";
 import type { ActId } from "@giselle-sdk/giselle";
 import type {
+	GitHubIssueDocumentKey,
+	GitHubIssueState,
+	GitHubIssueStateReason,
+	GitHubRepositoryIssueContentType,
+} from "@giselle-sdk/github-tool";
+import type {
 	DocumentVectorStoreId,
 	DocumentVectorStoreSourceId,
 	GitHubRepositoryIndexId,
@@ -673,28 +679,6 @@ export const githubRepositoryPullRequestEmbeddings = pgTable(
 		),
 	],
 );
-
-export const GitHubIssueStateValues = ["OPEN", "CLOSED"] as const;
-export type GitHubIssueState = (typeof GitHubIssueStateValues)[number];
-
-export const GitHubIssueStateReasonValues = [
-	"COMPLETED",
-	"DUPLICATE",
-	"NOT_PLANNED",
-	"REOPENED",
-] as const;
-export type GitHubIssueStateReason =
-	(typeof GitHubIssueStateReasonValues)[number];
-
-export const GitHubRepositoryIssueContentTypeValues = [
-	"title_body",
-	"comment",
-] as const;
-export type GitHubRepositoryIssueContentType =
-	(typeof GitHubRepositoryIssueContentTypeValues)[number];
-
-export type GitHubIssueDocumentKey =
-	`${number}:${GitHubRepositoryIssueContentType}:${string}`;
 
 export const githubRepositoryIssueEmbeddings = pgTable(
 	"github_repository_issue_embeddings",

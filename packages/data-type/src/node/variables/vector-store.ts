@@ -12,7 +12,7 @@ export const GitHubVectorStoreSource = z.object({
 			status: z.literal("configured"),
 			owner: z.string(),
 			repo: z.string(),
-			contentType: z.enum(["blob", "pull_request"]),
+			contentType: z.enum(["blob", "pull_request", "issue"]),
 			embeddingProfileId: EmbeddingProfileIdSchema.optional(),
 		}),
 		z.object({

@@ -51,6 +51,7 @@ export function WorkspaceProvider({
 				resumableGeneration: featureFlag?.resumableGeneration ?? false,
 				googleUrlContext: featureFlag?.googleUrlContext ?? false,
 				documentVectorStore: featureFlag?.documentVectorStore ?? false,
+				githubIssuesVectorStore: featureFlag?.githubIssuesVectorStore ?? false,
 			}}
 		>
 			<TelemetryProvider settings={telemetry}>
