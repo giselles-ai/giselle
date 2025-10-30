@@ -26,7 +26,7 @@ import {
 	type FormEventHandler,
 	useCallback,
 	useEffect,
-	useRef,
+	useMemo,
 	useState,
 	useTransition,
 } from "react";
@@ -46,6 +46,32 @@ import { createTriggerEvent } from "./utils/trigger-configuration";
 import { useTriggerConfiguration } from "./utils/use-trigger-configuration";
 
 export type GitHubTriggerReconfigureMode = "repository" | "callsign" | "labels";
+
+// Reused class names (keep UI the same while reducing duplication)
+const BACK_LINK_CLASS =
+	"inline-flex items-center gap-[6px] text-text-muted hover:text-text underline text-[12px] mb-[8px]";
+const HELP_TEXT_P_CLASS = "text-inverse text-[12px] text-right mb-3 w-full";
+const HELP_LINK_CLASS = "text-inverse hover:text-inverse ml-1 underline text-[12px]";
+
+function BackLink({ onClick }: { onClick: () => void }) {
+	return (
+		<button type="button" onClick={onClick} className={BACK_LINK_CLASS} aria-label="Back">
+			<ChevronLeft className="w-[14px] h-[14px]" />
+			Back
+		</button>
+	);
+}
+
+function MissingAccountLink({ href }: { href: string }) {
+	return (
+		<p className={HELP_TEXT_P_CLASS}>
+			Missing GitHub account?
+			<a href={href} target="_blank" rel="noopener noreferrer" className={HELP_LINK_CLASS}>
+				Adjust GitHub App Permissions
+			</a>
+		</p>
+	);
+}
 
 export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	const { value } = useIntegration();
@@ -204,7 +230,14 @@ export function Installed({
 			setSelectedInstallationId(null);
 		}
 	}, [step.state]);
-	const { data: workspace, updateNodeData } = useWorkflowDesigner();
+    const { data: workspace, updateNodeData } = useWorkflowDesigner();
+    const selectedInstallationRepositories = useMemo(
+        () =>
+            (selectedInstallationId === null
+                ? []
+                : installations.find((i) => i.id === selectedInstallationId)?.repositories) ?? [],
+        [installations, selectedInstallationId],
+    );
 	const { configureTrigger, isPending: isTriggerConfigPending } =
 		useTriggerConfiguration({
 			node,
@@ -372,15 +405,7 @@ export function Installed({
 
 			{step.state === "select-repository" && (
 				<div className="relative">
-					<button
-						type="button"
-						onClick={() => setStep({ state: "select-event" })}
-						className="inline-flex items-center gap-[6px] text-text-muted hover:text-text underline text-[12px] mb-[8px]"
-						aria-label="Back"
-					>
-						<ChevronLeft className="w-[14px] h-[14px]" />
-						Back
-					</button>
+					<BackLink onClick={() => setStep({ state: "select-event" })} />
 					<div className="flex w-full items-center justify-between gap-[12px] mb-2">
 						<div className="shrink-0 w-[120px]">
 							<SettingDetail className="mb-0">Event Type</SettingDetail>
@@ -419,27 +444,14 @@ export function Installed({
 							/>
 						</div>
 					</div>
-					<p className="text-inverse text-[12px] text-right mb-3 w-full">
-						Missing GitHub account?
-						<a
-							href={installationUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="text-inverse hover:text-inverse ml-1 underline text-[12px]"
-						>
-							Adjust GitHub App Permissions
-						</a>
-					</p>
+					<MissingAccountLink href={installationUrl} />
 
-					{selectedInstallationId !== null && (
+                    {selectedInstallationId !== null && (
 						<>
 							<div className="flex flex-col w-full gap-[8px]">
 								<SettingDetail className="mb-0">Repository</SettingDetail>
 								<div className="flex flex-col gap-y-[8px] relative">
-									{(
-										installations.find((i) => i.id === selectedInstallationId)
-											?.repositories ?? []
-									).map((repo) => (
+                                    {selectedInstallationRepositories.map((repo) => (
 										<button
 											key={repo.node_id}
 											type="button"
@@ -473,17 +485,7 @@ export function Installed({
 										</button>
 									))}
 								</div>
-								<p className="text-inverse text-[12px] text-right mb-3 w-full">
-									Missing Git repository?
-									<a
-										href={installationUrl}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="text-inverse hover:text-inverse ml-1 underline text-[12px]"
-									>
-										Adjust GitHub App Permissions
-									</a>
-								</p>
+						<MissingAccountLink href={installationUrl} />
 							</div>
 						</>
 					)}
@@ -492,17 +494,11 @@ export function Installed({
 
 			{step.state === "confirm-repository" && (
 				<div className="relative">
-					<button
-						type="button"
+					<BackLink
 						onClick={() =>
 							setStep({ state: "select-repository", eventId: step.eventId })
 						}
-						className="inline-flex items-center gap-[6px] text-text-muted hover:text-text underline text-[12px] mb-[8px]"
-						aria-label="Back"
-					>
-						<ChevronLeft className="w-[14px] h-[14px]" />
-						Back
-					</button>
+					/>
 					<div className="flex flex-col gap-[8px]">
 						<SettingLabel className="mb-[4px]">Event setting</SettingLabel>
 						<div className="flex w-full items-center justify-between gap-[12px]">
