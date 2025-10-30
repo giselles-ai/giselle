@@ -2,15 +2,16 @@
 
 
 ## Summary
-* 842 MIT
-* 186 Apache 2.0
+* 845 MIT
+* 187 Apache 2.0
 * 46 ISC
 * 27 New BSD
 * 13 Simplified BSD
 * 5 BlueOak-1.0.0
+* 3 Mozilla Public License 2.0
 * 2 MIT OR Apache-2.0
 * 2 MIT-0
-* 2 Mozilla Public License 2.0
+* 2 LGPL-3.0-or-later
 * 1 BSD
 * 1 (MIT OR CC0-1.0)
 * 1 BSD Zero Clause License
@@ -20,7 +21,6 @@
 * 1 The Unlicense
 * 1 CC-BY-4.0
 * 1 Python-2.0
-* 1 LGPL-3.0-or-later
 
 
 
@@ -1248,8 +1248,30 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@img/sharp-libvips-linuxmusl-x64"></a>
+### @img/sharp-libvips-linuxmusl-x64 v1.2.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+LGPL-3.0-or-later permitted
+
+
+
 <a name="@img/sharp-linux-x64"></a>
 ### @img/sharp-linux-x64 v0.34.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
+<a name="@img/sharp-linuxmusl-x64"></a>
+### @img/sharp-linuxmusl-x64 v0.34.3
 #### 
 
 ##### Paths
@@ -1437,6 +1459,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@next/swc-linux-x64-gnu"></a>
 ### @next/swc-linux-x64-gnu v15.5.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@next/swc-linux-x64-musl"></a>
+### @next/swc-linux-x64-musl v15.5.2
 #### 
 
 ##### Paths
@@ -2207,6 +2240,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@oxc-resolver/binding-linux-x64-gnu"></a>
 ### @oxc-resolver/binding-linux-x64-gnu v11.5.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@oxc-resolver/binding-linux-x64-musl"></a>
+### @oxc-resolver/binding-linux-x64-musl v11.5.2
 #### 
 
 ##### Paths
@@ -3954,6 +3998,17 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@tailwindcss/oxide-linux-x64-musl"></a>
+### @tailwindcss/oxide-linux-x64-musl v4.1.10
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="@tailwindcss/postcss"></a>
 ### @tailwindcss/postcss v4.1.10
 #### 
@@ -4307,7 +4362,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@trigger.dev/core"></a>
-### @trigger.dev/core v4.0.4
+### @trigger.dev/core v4.0.5
 #### 
 
 ##### Paths
@@ -4318,7 +4373,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@trigger.dev/sdk"></a>
-### @trigger.dev/sdk v4.0.4
+### @trigger.dev/sdk v4.0.5
 #### 
 
 ##### Paths
@@ -8151,6 +8206,17 @@ BlueOak-1.0.0 permitted
 
 <a name="lightningcss-linux-x64-gnu"></a>
 ### lightningcss-linux-x64-gnu v1.30.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt">Mozilla Public License 2.0</a> permitted
+
+
+
+<a name="lightningcss-linux-x64-musl"></a>
+### lightningcss-linux-x64-musl v1.30.1
 #### 
 
 ##### Paths
