@@ -1,11 +1,11 @@
-import type { FileData, Workspace } from "@giselle-sdk/data-type";
+import type { FileData, NodeLike, Workspace } from "@giselle-sdk/data-type";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
 	type GiselleRequestOptions,
 	useGiselleEngine,
 } from "../use-giselle-engine";
 import { WorkflowDesignerContext } from "./context";
-import { type AppStore, useAppStore } from "./store";
+import { type AppStore, appStore } from "./store";
 import type { WorkflowDesignerContextValue } from "./types";
 import { isSupportedConnection } from "./utils";
 
@@ -14,6 +14,12 @@ const DEFAULT_SAVE_DELAY = 1000;
 interface WorkspaceAutoSaveOptions {
 	client: ReturnType<typeof useGiselleEngine>;
 	saveWorkflowDelay: number;
+}
+
+export interface WorkspaceCallbackOptions {
+	onAddNode?: (node: NodeLike) => void;
+	onUpdateNode?: (node: NodeLike) => void;
+	onDeleteNode?: (node: NodeLike) => void;
 }
 
 function useWorkspaceAutoSave({
@@ -57,9 +63,9 @@ function useWorkspaceAutoSave({
 	);
 
 	useEffect(() => {
-		const unsubscribe = useAppStore.subscribe((state, prevState) => {
+		const unsubscribe = appStore.subscribe((state, prevState) => {
 			if (state._skipNextSave) {
-				useAppStore.setState({ _skipNextSave: false } as Partial<AppStore>);
+				appStore.setState({ _skipNextSave: false } as Partial<AppStore>);
 				return;
 			}
 			if (state.workspace !== prevState.workspace) {
@@ -75,7 +81,7 @@ function useWorkspaceAutoSave({
 
 	const saveImmediately = useCallback(
 		async (requestOptions?: GiselleRequestOptions) => {
-			const currentState = useAppStore.getState();
+			const currentState = appStore.getState();
 			if (!currentState.workspace) return;
 			clearScheduledSave();
 			await performSave(currentState, requestOptions);
@@ -91,6 +97,9 @@ export function ZustandBridgeProvider({
 	data,
 	textGenerationApi = "/api/giselle/text-generation",
 	saveWorkflowDelay = DEFAULT_SAVE_DELAY,
+	onAddNode,
+	onUpdateNode,
+	onDeleteNode,
 }: {
 	children: React.ReactNode;
 	data: Workspace;
@@ -98,7 +107,7 @@ export function ZustandBridgeProvider({
 	textGenerationApi?: string;
 	runAssistantApi?: string;
 	saveWorkflowDelay?: number;
-}) {
+} & WorkspaceCallbackOptions) {
 	const client = useGiselleEngine();
 
 	const { saveImmediately } = useWorkspaceAutoSave({
@@ -108,20 +117,22 @@ export function ZustandBridgeProvider({
 
 	// Initialize or update workspace in the global store when data changes
 	useEffect(() => {
-		useAppStore.getState().initWorkspace(data);
-	}, [data]);
+		appStore
+			.getState()
+			.initWorkspace(data, { onAddNode, onUpdateNode, onDeleteNode });
+	}, [data, onAddNode, onUpdateNode, onDeleteNode]);
 
 	// Load LLM providers
 	useEffect(() => {
 		const loadProviders = async () => {
-			useAppStore.getState().setIsLoading(true);
+			appStore.getState().setIsLoading(true);
 			try {
 				const providers = await client.getLanguageModelProviders();
-				useAppStore.getState().setLLMProviders(providers);
+				appStore.getState().setLLMProviders(providers);
 			} catch (error) {
 				console.error("Failed to load language model providers:", error);
 			} finally {
-				useAppStore.getState().setIsLoading(false);
+				appStore.getState().setIsLoading(false);
 			}
 		};
 		loadProviders();
@@ -140,7 +151,7 @@ export function ZustandBridgeProvider({
 	}, [saveImmediately]);
 
 	// Get current state
-	const state = useAppStore();
+	const state = appStore();
 
 	// Create context value that matches the existing API
 	const contextValue = useMemo<WorkflowDesignerContextValue>(
