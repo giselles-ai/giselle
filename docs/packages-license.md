@@ -4307,7 +4307,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@trigger.dev/core"></a>
-### @trigger.dev/core v4.0.4
+### @trigger.dev/core v4.0.5
 #### 
 
 ##### Paths
@@ -4318,7 +4318,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@trigger.dev/sdk"></a>
-### @trigger.dev/sdk v4.0.4
+### @trigger.dev/sdk v4.0.5
 #### 
 
 ##### Paths
@@ -12521,5 +12521,3 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
