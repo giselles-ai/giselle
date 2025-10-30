@@ -1,3 +1,4 @@
+import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { QueryNode } from "@giselle-sdk/data-type";
 import {
@@ -8,16 +9,12 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
-import { CommandIcon, CornerDownLeft } from "lucide-react";
-import { Tabs } from "radix-ui";
 import { useCallback, useMemo } from "react";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { Button } from "../../../ui/button";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import {
+	GenerateCtaButton,
 	PropertiesPanelContent,
 	PropertiesPanelRoot,
-	ResizeHandle,
 } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GenerationPanel } from "./generation-panel";
@@ -87,69 +84,42 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 				docsUrl="https://docs.giselles.ai/en/glossary/query-node"
 				onDelete={() => deleteNode(node.id)}
 			/>
-			<div className="px-[16px] py-[8px] border-b border-inverse/10">
-				<Button
-					type="button"
-					onClick={() => {
-						if (isGenerating) {
-							stopGenerationRunner();
-						} else {
-							generate();
-						}
-					}}
-					disabled={query.length === 0}
-					className="w-full disabled:cursor-not-allowed disabled:opacity-50"
-				>
-					{isGenerating ? (
-						<span>Stop</span>
-					) : (
-						<>
-							<span>Query</span>
-							<kbd className="flex items-center text-[12px]">
-								<CommandIcon className="size-[12px]" />
-								<CornerDownLeft className="size-[12px]" />
-							</kbd>
-						</>
-					)}
-				</Button>
-			</div>
-
 			<PropertiesPanelContent>
-				<PanelGroup direction="vertical" className="flex-1 flex flex-col">
-					<Panel>
-						<PropertiesPanelContent>
-							<Tabs.Root
-								className="flex flex-col gap-[8px] h-full"
-								defaultValue="query"
-							>
-								<Tabs.List className="flex gap-[16px] text-[14px] font-accent **:p-[4px] **:border-b **:cursor-pointer **:data-[state=active]:text-inverse **:data-[state=active]:border-inverse/20 **:data-[state=inactive]:text-black-400 **:data-[state=inactive]:border-transparent">
-									<Tabs.Trigger value="query">Query</Tabs.Trigger>
-									<Tabs.Trigger value="settings">Settings</Tabs.Trigger>
-								</Tabs.List>
-								<Tabs.Content
-									value="query"
-									className="flex-1 flex flex-col overflow-hidden"
-								>
-									<QueryPanel node={node} />
-								</Tabs.Content>
-								<Tabs.Content
-									value="settings"
-									className="flex-1 flex flex-col overflow-y-auto px-[4px] outline-none"
-								>
+				<div className="relative flex-1 min-h-0 flex flex-col">
+					<div className="flex-1 min-h-0 overflow-y-auto">
+						<div className="flex flex-col gap-[16px] px-[16px] pb-[12px]">
+							<div className="flex flex-col gap-[8px]">
+								<SettingLabel className="mb-[4px]">Settings</SettingLabel>
+								<div className="px-[4px]">
 									<SettingsPanel node={node} />
-								</Tabs.Content>
-							</Tabs.Root>
-						</PropertiesPanelContent>
-					</Panel>
-					<PanelResizeHandle className="h-[12px] flex items-center justify-center cursor-row-resize">
-						<ResizeHandle direction="vertical" />
-					</PanelResizeHandle>
-					<Panel>
-						<PropertiesPanelContent>
-							<GenerationPanel node={node} onClickGenerateButton={generate} />
-						</PropertiesPanelContent>
-					</Panel>
-				</PanelGroup>
+								</div>
+							</div>
+							<div className="flex flex-col gap-[8px]">
+								<SettingLabel className="mb-[4px]">Query</SettingLabel>
+								<QueryPanel node={node} />
+							</div>
+							<div className="flex flex-col gap-[8px]">
+								<SettingLabel className="mb-[4px]">Output</SettingLabel>
+								<GenerationPanel node={node} />
+							</div>
+						</div>
+					</div>
+					<div className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent">
+						<GenerateCtaButton
+							isGenerating={isGenerating}
+							isEmpty={query.length === 0}
+							onClick={() => {
+								if (isGenerating) {
+									stopGenerationRunner();
+								} else {
+									generate();
+								}
+							}}
+							idleLabel="Run Query"
+							emptyLabel="Start Writing Your Query"
+						/>
+					</div>
+				</div>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);
