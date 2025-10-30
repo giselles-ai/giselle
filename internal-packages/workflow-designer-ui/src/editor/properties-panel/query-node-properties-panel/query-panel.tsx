@@ -1,8 +1,5 @@
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
-import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
+import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import { isVectorStoreNode, type QueryNode } from "@giselle-sdk/data-type";
 import {
 	defaultName,
@@ -202,7 +199,6 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 				editorClassName="bg-inverse/10 border border-white-400/10 !pt-[12px] !pr-[12px] !pb-[12px] !pl-[12px] rounded-[8px] min-h-[180px] focus:outline-none focus:ring-2 focus:ring-primary-900/40"
 				header={
 					<div className="flex flex-col gap-[8px]">
-						<SettingLabel inline>Query</SettingLabel>
 						{hasDatasourceConnections ? (
 							<>
 								<SettingDetail size="sm" colorClassName="text-black-200">

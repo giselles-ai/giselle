@@ -9,7 +9,6 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
-import { Tabs } from "radix-ui";
 import { useCallback, useMemo } from "react";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import {
@@ -89,43 +88,17 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 				<div className="relative flex-1 min-h-0 flex flex-col">
 					<div className="flex-1 min-h-0 overflow-y-auto">
 						<div className="flex flex-col gap-[16px] px-[16px] pb-[12px]">
-							<Tabs.Root
-								className="flex flex-col gap-[12px]"
-								defaultValue="query"
-							>
-								<Tabs.List className="inline-flex items-center gap-[4px] rounded-[8px] bg-inverse/10 p-[4px] text-[13px]">
-									<Tabs.Trigger
-										value="query"
-										className="flex-1 rounded-[6px] px-[12px] py-[8px] text-left font-medium transition-colors data-[state=active]:bg-background data-[state=active]:text-inverse data-[state=inactive]:text-black-300 hover:text-inverse focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-900/40"
-									>
-										Query
-									</Tabs.Trigger>
-									<Tabs.Trigger
-										value="settings"
-										className="flex-1 rounded-[6px] px-[12px] py-[8px] text-left font-medium transition-colors data-[state=active]:bg-background data-[state=active]:text-inverse data-[state=inactive]:text-black-300 hover:text-inverse focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-900/40"
-									>
-										Settings
-									</Tabs.Trigger>
-								</Tabs.List>
-								<div className="min-h-0">
-									<Tabs.Content
-										value="query"
-										className="outline-none focus-visible:ring-2 focus-visible:ring-primary-900/40 rounded-[8px]"
-									>
-										<QueryPanel node={node} />
-									</Tabs.Content>
-									<Tabs.Content
-										value="settings"
-										className="outline-none focus-visible:ring-2 focus-visible:ring-primary-900/40 rounded-[8px]"
-									>
-										<div className="px-[4px]">
-											<SettingsPanel node={node} />
-										</div>
-									</Tabs.Content>
+							<div className="flex flex-col gap-[8px]">
+								<SettingLabel className="mb-[4px]">Query</SettingLabel>
+								<QueryPanel node={node} />
+							</div>
+							<div className="flex flex-col gap-[8px]">
+								<SettingLabel className="mb-[4px]">Settings</SettingLabel>
+								<div className="px-[4px]">
+									<SettingsPanel node={node} />
 								</div>
-							</Tabs.Root>
-
-							<div>
+							</div>
+							<div className="flex flex-col gap-[8px]">
 								<SettingLabel className="mb-[4px]">Output</SettingLabel>
 								<GenerationPanel node={node} />
 							</div>
