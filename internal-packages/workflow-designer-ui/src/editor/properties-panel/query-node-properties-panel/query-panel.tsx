@@ -1,4 +1,8 @@
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
+import {
+	SettingDetail,
+	SettingLabel,
+} from "@giselle-internal/ui/setting-label";
 import { isVectorStoreNode, type QueryNode } from "@giselle-sdk/data-type";
 import {
 	defaultName,
@@ -172,35 +176,40 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 		[connectedInputs, connectedDatasourceInputs],
 	);
 
+	const hasDatasourceConnections = connectedDatasourceInputs.length > 0;
+
 	return (
-		<div className="flex flex-col h-full gap-4">
-			<div className="flex-1 min-h-0">
-				<TextEditor
-					key={JSON.stringify(
-						connectedInputsWithoutDatasource.map(
-							(connectedInput) => connectedInput.node.id,
-						),
-					)}
-					placeholder="Write your query here..."
-					value={node.content.query}
-					onValueChange={(value) => {
-						updateNodeDataContent(node, { query: value });
-					}}
-					nodes={connectedInputsWithoutDatasource.map((input) => input.node)}
-					connectedSources={connectedInputsWithoutDatasource.map(
-						({ node, output }) => ({
-							node,
-							output,
-						}),
-					)}
-					header={
-						connectedDatasourceInputs.length > 0 ? (
-							<div className="flex items-center gap-[6px] flex-wrap">
-								<span className="text-[11px] mr-2" style={{ color: "#839DC3" }}>
+		<div className="flex flex-col gap-[12px]">
+			<TextEditor
+				key={JSON.stringify(
+					connectedInputsWithoutDatasource.map(
+						(connectedInput) => connectedInput.node.id,
+					),
+				)}
+				placeholder="Write your query here..."
+				value={node.content.query}
+				onValueChange={(value) => {
+					updateNodeDataContent(node, { query: value });
+				}}
+				nodes={connectedInputsWithoutDatasource.map((input) => input.node)}
+				connectedSources={connectedInputsWithoutDatasource.map(
+					({ node, output }) => ({
+						node,
+						output,
+					}),
+				)}
+				showToolbar
+				editorClassName="bg-inverse/10 border border-white-400/10 !pt-[12px] !pr-[12px] !pb-[12px] !pl-[12px] rounded-[8px] min-h-[180px] focus:outline-none focus:ring-2 focus:ring-primary-900/40"
+				header={
+					<div className="flex flex-col gap-[8px]">
+						<SettingLabel inline>Query</SettingLabel>
+						{hasDatasourceConnections ? (
+							<>
+								<SettingDetail size="sm" colorClassName="text-black-200">
 									Querying {connectedDatasourceInputs.length} data source
 									{connectedDatasourceInputs.length !== 1 ? "s" : ""}:
-								</span>
-								<ul className="flex items-center gap-[6px] flex-wrap m-0 p-0 list-none">
+								</SettingDetail>
+								<ul className="flex flex-wrap gap-[8px] m-0 p-0 list-none">
 									{connectedDatasourceInputs.map((dataSource) => {
 										const { name, description, icon } =
 											getDataSourceDisplayInfo(dataSource, documentStoreMap);
@@ -217,31 +226,22 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 										return (
 											<li
 												key={dataSource.connection.id}
-												className="flex items-center gap-[6px] px-[8px] py-[4px] rounded-[6px]"
-												style={{
-													backgroundColor: "rgba(131, 157, 195, 0.15)",
-													borderColor: "rgba(131, 157, 195, 0.25)",
-													border: "1px solid",
-													color: "#839DC3",
-												}}
+												className="relative flex items-start gap-[8px] rounded-[8px] border border-white-400/10 bg-inverse/10 px-[12px] py-[10px] pr-[34px]"
 												aria-label={labelPieces.join(", ")}
 											>
-												<div className="shrink-0" style={{ color: "#839DC3" }}>
-													{icon}
-												</div>
-												<div className="flex flex-col leading-tight">
+												<div className="mt-[2px] text-secondary">{icon}</div>
+												<div className="flex flex-col gap-[2px] text-left">
 													<span
-														className="text-[10px] font-medium"
-														style={{ color: "#839DC3" }}
+														className="text-[12px] font-medium text-inverse"
 														title={`${name} • ${description.line1}${description.line2 ? ` • ${description.line2}` : ""}`}
 													>
+														{name}
+													</span>
+													<span className="text-[11px] text-black-300">
 														{description.line1}
 													</span>
 													{description.line2 && (
-														<span
-															className="text-[9px] opacity-70"
-															style={{ color: "#839DC3" }}
-														>
+														<span className="text-[11px] text-black-300">
 															{description.line2}
 														</span>
 													)}
@@ -250,9 +250,7 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 													type="button"
 													aria-label={`Disconnect ${name}`}
 													onClick={() => {
-														// Remove the connection between Vector Store and this Query node
 														deleteConnection(dataSource.connection.id);
-														// Also remove the dynamically created input associated with this connection
 														updateNodeData(node, {
 															inputs: node.inputs.filter(
 																(input) =>
@@ -260,82 +258,63 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 															),
 														});
 													}}
-													className="ml-1 p-0.5 rounded transition-colors"
-													style={{
-														color: "rgba(131, 157, 195, 0.7)",
-													}}
-													onMouseEnter={(e) => {
-														e.currentTarget.style.color = "#839DC3";
-														e.currentTarget.style.backgroundColor =
-															"rgba(131, 157, 195, 0.2)";
-													}}
-													onMouseLeave={(e) => {
-														e.currentTarget.style.color =
-															"rgba(131, 157, 195, 0.7)";
-														e.currentTarget.style.backgroundColor =
-															"transparent";
-													}}
+													className="absolute top-[6px] right-[6px] size-[22px] rounded-full flex items-center justify-center text-black-300 hover:text-inverse hover:bg-inverse/20 transition-colors"
 													title="Remove data source"
 												>
-													<X className="w-3 h-3" />
+													<X className="size-[12px]" />
 												</button>
 											</li>
 										);
 									})}
 								</ul>
-							</div>
+							</>
 						) : (
-							<div className="flex items-center gap-[6px]">
-								<span
-									className="text-[11px]"
-									style={{ color: "rgba(131, 157, 195, 0.6)" }}
-								>
-									No data sources connected • Connect from Input tab to query
-								</span>
-							</div>
-						)
-					}
-					tools={(editor) => (
-						<DropdownMenu
-							trigger={
-								<Toolbar.Button
-									value="bulletList"
-									aria-label="Insert sources"
-									data-toolbar-item
-								>
-									<AtSignIcon className="w-[18px]" />
-								</Toolbar.Button>
-							}
-							items={connectedInputsWithoutDatasource.map((source) => ({
-								value: source.connection.id,
-								label: `${defaultName(source.node)} / ${source.output.label}`,
-								source,
-							}))}
-							renderItem={(item) =>
-								`${defaultName(item.source.node)} / ${item.source.output.label}`
-							}
-							onSelect={(_, item) => {
-								const embedNode = {
-									outputId: item.source.connection.outputId,
-									node: item.source.connection.outputNode,
-								};
-								editor
-									.chain()
-									.focus()
-									.insertContentAt(
-										editor.state.selection.$anchor.pos,
-										createSourceExtensionJSONContent({
-											node: item.source.connection.outputNode,
-											outputId: embedNode.outputId,
-										}),
-									)
-									.insertContent(" ")
-									.run();
-							}}
-						/>
-					)}
-				/>
-			</div>
+							<SettingDetail size="sm" colorClassName="text-black-200">
+								No data sources connected • Connect from Input tab to query
+							</SettingDetail>
+						)}
+					</div>
+				}
+				tools={(editor) => (
+					<DropdownMenu
+						trigger={
+							<Toolbar.Button
+								value="bulletList"
+								aria-label="Insert sources"
+								data-toolbar-item
+							>
+								<AtSignIcon className="w-[18px]" />
+							</Toolbar.Button>
+						}
+						items={connectedInputsWithoutDatasource.map((source) => ({
+							value: source.connection.id,
+							label: `${defaultName(source.node)} / ${source.output.label}`,
+							source,
+						}))}
+						renderItem={(item) =>
+							`${defaultName(item.source.node)} / ${item.source.output.label}`
+						}
+						onSelect={(_, item) => {
+							const embedNode = {
+								outputId: item.source.connection.outputId,
+								node: item.source.connection.outputNode,
+							};
+							editor
+								.chain()
+								.focus()
+								.insertContentAt(
+									editor.state.selection.$anchor.pos,
+									createSourceExtensionJSONContent({
+										node: item.source.connection.outputNode,
+										outputId: embedNode.outputId,
+									}),
+								)
+								.insertContent(" ")
+								.run();
+						}}
+					/>
+				)}
+			/>
 		</div>
 	);
 }
