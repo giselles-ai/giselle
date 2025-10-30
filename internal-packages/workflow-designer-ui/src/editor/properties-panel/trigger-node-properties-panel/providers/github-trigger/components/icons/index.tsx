@@ -263,35 +263,6 @@ function DefaultGitHubIcon({
 	);
 }
 
-export function ArrowRightIcon({
-	className = "text-inverse group-hover:text-inverse transition-colors flex-shrink-0 absolute right-4",
-	size = 16,
-	title = "Arrow Right",
-}: IconProps) {
-	return (
-		<svg
-			width={size}
-			height={size}
-			viewBox="0 0 24 24"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
-			className={className}
-			aria-hidden="true"
-			role="img"
-			aria-label={title}
-		>
-			<title>{title}</title>
-			<path
-				d="M9 18L15 12L9 6"
-				stroke="currentColor"
-				strokeWidth="2"
-				strokeLinecap="round"
-				strokeLinejoin="round"
-			/>
-		</svg>
-	);
-}
-
 export function getTriggerIcon(
 	triggerType: GitHubTriggerEventId,
 	props: IconProps = {},
