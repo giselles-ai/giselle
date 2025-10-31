@@ -8,7 +8,10 @@ import { SignupForm } from "./signup-form";
 
 export default function Page() {
 	return (
-		<AuthContainer title="Join Giselle">
+		<AuthContainer
+			title="Unleash Your Potential"
+			description="New here? Launch your first agent and start building with Giselle."
+		>
 			<AuthContainerHeader title="Sign up with Email" />
 
 			<div className="auth-form-section">

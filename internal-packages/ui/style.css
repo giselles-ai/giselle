@@ -45,7 +45,7 @@
 	/* global accent (water blue) */
 	--color-accent: var(--color-primary-100, #0087f6);
 	--color-accent-muted: color-mix(in srgb, var(--color-accent) 60%, transparent);
-	--color-accent-foreground: var(--color-bg, #00020b);
+	--color-accent-foreground: var(--color-background, #00020b);
 	/* blue palette */
 	--color-blue-light: #b8e8f4;
 	--color-blue-pale: #c3dcf8;

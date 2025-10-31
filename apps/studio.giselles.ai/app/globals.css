@@ -340,7 +340,7 @@
 	}
 
 	.auth-container-header {
-		@apply text-center mb-[50px];
+		@apply text-center mb-[32px];
 	}
 
 	.auth-container-title {
@@ -352,7 +352,7 @@
 	}
 
 	.auth-form-section {
-		@apply mb-6;
+		@apply mb-4;
 	}
 
 	.auth-legal-section {

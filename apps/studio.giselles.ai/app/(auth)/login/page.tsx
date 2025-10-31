@@ -11,7 +11,10 @@ import { LoginForm } from "./login-form";
 export default async function Page({ searchParams }: AuthPageProps) {
 	const { returnUrl } = await searchParams;
 	return (
-		<AuthContainer title="Welcome Back">
+		<AuthContainer
+			title="From idea to orchestration."
+			description="Continue orchestrating your AI agents with Giselle."
+		>
 			<AuthContainerHeader title="Log in to Giselle" />
 
 			<div className="auth-form-section">

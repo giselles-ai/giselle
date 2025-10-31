@@ -10,7 +10,10 @@ import { OAuthProviders } from "../components/oauth-providers";
 
 export default function SignupPage() {
 	return (
-		<AuthContainer title="Unleash Your Potential">
+		<AuthContainer
+			title="Unleash Your Potential"
+			description="New here? Launch your first agent and start building with Giselle."
+		>
 			<AuthContainerHeader title="Get Started" />
 
 			<div className="auth-form-section">
