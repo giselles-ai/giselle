@@ -1,4 +1,3 @@
-import { Button } from "@giselle-internal/ui/button";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { QueryNode } from "@giselle-sdk/data-type";
@@ -10,22 +9,21 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselle-sdk/text-editor-utils";
-import { Command as CommandIcon, CornerDownLeft } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import {
 	GenerateCtaButton,
 	PropertiesPanelContent,
-	PropertiesPanelHeader,
 	PropertiesPanelRoot,
 } from "../ui";
+import { NodePanelHeader } from "../ui/node-panel-header";
 import { GenerationPanel } from "./generation-panel";
 import { QueryPanel } from "./query-panel";
 import { SettingsPanel } from "./settings-panel";
 import { useConnectedSources } from "./sources";
 
 export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
-	const { data, updateNodeData } = useWorkflowDesigner();
+	const { data, updateNodeData, deleteNode } = useWorkflowDesigner();
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
 			nodeId: node.id,
@@ -80,38 +78,13 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 
 	return (
 		<PropertiesPanelRoot>
-			<PropertiesPanelHeader
+			<NodePanelHeader
 				node={node}
-				description="Query"
 				onChangeName={(name) => {
 					updateNodeData(node, { name });
 				}}
-				action={
-					<Button
-						type="button"
-						onClick={() => {
-							if (isGenerating) {
-								stopGenerationRunner();
-							} else {
-								generate();
-							}
-						}}
-						disabled={query.length === 0}
-						className="w-[150px] disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						{isGenerating ? (
-							<span>Stop</span>
-						) : (
-							<>
-								<span>Query</span>
-								<kbd className="flex items-center text-[12px]">
-									<CommandIcon className="size-[12px]" />
-									<CornerDownLeft className="size-[12px]" />
-								</kbd>
-							</>
-						)}
-					</Button>
-				}
+				docsUrl="https://docs.giselles.ai/en/glossary/query-node"
+				onDelete={() => deleteNode(node.id)}
 			/>
 			<PropertiesPanelContent>
 				<div className="relative flex-1 min-h-0 flex flex-col">
