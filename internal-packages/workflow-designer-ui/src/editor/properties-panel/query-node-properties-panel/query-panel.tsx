@@ -1,16 +1,12 @@
-import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import { isVectorStoreNode, type QueryNode } from "@giselle-sdk/data-type";
 import {
-	defaultName,
 	useVectorStore,
 	useWorkflowDesigner,
 	type VectorStoreContextValue,
 } from "@giselle-sdk/giselle/react";
 import { TextEditor } from "@giselle-sdk/text-editor/react-internal";
-import { createSourceExtensionJSONContent } from "@giselle-sdk/text-editor-utils";
-import { AtSignIcon, DatabaseZapIcon, X } from "lucide-react";
-import { Toolbar } from "radix-ui";
+import { DatabaseZapIcon, X } from "lucide-react";
 import { useMemo } from "react";
 import { GitHubIcon } from "../../../icons";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
@@ -195,121 +191,84 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 						output,
 					}),
 				)}
-				showToolbar
-				editorClassName="bg-inverse/10 border border-white-400/10 !pt-[12px] !pr-[12px] !pb-[12px] !pl-[12px] rounded-[8px] min-h-[180px] focus:outline-none focus:ring-2 focus:ring-primary-900/40"
+				showToolbar={false}
+				editorClassName="bg-inverse/10 border-0 !pt-[12px] !pr-[12px] !pb-[12px] !pl-[12px] rounded-[8px] min-h-[180px]"
 				header={
 					<div className="flex flex-col gap-[8px]">
 						{hasDatasourceConnections ? (
-							<>
-								<SettingDetail size="sm" colorClassName="text-black-200">
-									Querying {connectedDatasourceInputs.length} data source
-									{connectedDatasourceInputs.length !== 1 ? "s" : ""}:
-								</SettingDetail>
-								<ul className="flex flex-wrap gap-[8px] m-0 p-0 list-none">
-									{connectedDatasourceInputs.map((dataSource) => {
-										const { name, description, icon } =
-											getDataSourceDisplayInfo(dataSource, documentStoreMap);
-										const labelPieces = [
-											name,
-											description.line1,
-											description.line2,
-										]
-											.filter((piece): piece is string =>
-												Boolean(piece?.trim()),
-											)
-											.map((piece) => piece.trim());
+							<ul className="flex flex-wrap gap-[8px] m-0 p-0 list-none">
+								{connectedDatasourceInputs.map((dataSource) => {
+									const { name, description, icon } = getDataSourceDisplayInfo(
+										dataSource,
+										documentStoreMap,
+									);
+									const labelPieces = [
+										name,
+										description.line1,
+										description.line2,
+									]
+										.filter((piece): piece is string => Boolean(piece?.trim()))
+										.map((piece) => piece.trim());
 
-										return (
-											<li
-												key={dataSource.connection.id}
-												className="relative flex items-start gap-[8px] rounded-[8px] border border-white-400/10 bg-inverse/10 px-[12px] py-[10px] pr-[34px]"
-												aria-label={labelPieces.join(", ")}
-											>
-												<div className="mt-[2px] text-secondary">{icon}</div>
-												<div className="flex flex-col gap-[2px] text-left">
+									return (
+										<li
+											key={dataSource.connection.id}
+											className="relative flex items-start gap-[8px] rounded-[8px] border border-inverse/20 px-[12px] py-[10px] pr-[34px]"
+											aria-label={labelPieces.join(", ")}
+										>
+											<div className="flex flex-col gap-[2px] text-left">
+												<div className="flex items-center gap-[6px]">
+													<span className="text-secondary mt-[2px]">
+														{icon}
+													</span>
 													<span
 														className="text-[12px] font-medium text-inverse"
 														title={`${name} • ${description.line1}${description.line2 ? ` • ${description.line2}` : ""}`}
 													>
 														{name}
 													</span>
-													<span className="text-[11px] text-black-300">
-														{description.line1}
-													</span>
-													{description.line2 && (
-														<span className="text-[11px] text-black-300">
-															{description.line2}
-														</span>
-													)}
 												</div>
-												<button
-													type="button"
-													aria-label={`Disconnect ${name}`}
-													onClick={() => {
-														deleteConnection(dataSource.connection.id);
-														updateNodeData(node, {
-															inputs: node.inputs.filter(
-																(input) =>
-																	input.id !== dataSource.connection.inputId,
-															),
-														});
-													}}
-													className="absolute top-[6px] right-[6px] size-[22px] rounded-full flex items-center justify-center text-black-300 hover:text-inverse hover:bg-inverse/20 transition-colors"
-													title="Remove data source"
-												>
-													<X className="size-[12px]" />
-												</button>
-											</li>
-										);
-									})}
-								</ul>
-							</>
+												<span className="text-[11px] text-secondary">
+													{description.line1}
+												</span>
+												{description.line2 && (
+													<span className="text-[11px] text-secondary">
+														{description.line2}
+													</span>
+												)}
+											</div>
+											<button
+												type="button"
+												aria-label={`Disconnect ${name}`}
+												onClick={() => {
+													deleteConnection(dataSource.connection.id);
+													updateNodeData(node, {
+														inputs: node.inputs.filter(
+															(input) =>
+																input.id !== dataSource.connection.inputId,
+														),
+													});
+												}}
+												className="absolute top-[6px] right-[6px] size-[22px] rounded-full flex items-center justify-center text-secondary hover:text-inverse hover:bg-inverse/20 transition-colors"
+												title="Remove data source"
+											>
+												<X className="size-[12px]" />
+											</button>
+										</li>
+									);
+								})}
+							</ul>
 						) : (
-							<SettingDetail size="sm" colorClassName="text-black-200">
+							<SettingDetail
+								size="sm"
+								colorClassName="text-secondary"
+								className="text-[12px]"
+							>
 								No data sources connected • Connect from Input tab to query
 							</SettingDetail>
 						)}
 					</div>
 				}
-				tools={(editor) => (
-					<DropdownMenu
-						trigger={
-							<Toolbar.Button
-								value="bulletList"
-								aria-label="Insert sources"
-								data-toolbar-item
-							>
-								<AtSignIcon className="w-[18px]" />
-							</Toolbar.Button>
-						}
-						items={connectedInputsWithoutDatasource.map((source) => ({
-							value: source.connection.id,
-							label: `${defaultName(source.node)} / ${source.output.label}`,
-							source,
-						}))}
-						renderItem={(item) =>
-							`${defaultName(item.source.node)} / ${item.source.output.label}`
-						}
-						onSelect={(_, item) => {
-							const embedNode = {
-								outputId: item.source.connection.outputId,
-								node: item.source.connection.outputNode,
-							};
-							editor
-								.chain()
-								.focus()
-								.insertContentAt(
-									editor.state.selection.$anchor.pos,
-									createSourceExtensionJSONContent({
-										node: item.source.connection.outputNode,
-										outputId: embedNode.outputId,
-									}),
-								)
-								.insertContent(" ")
-								.run();
-						}}
-					/>
-				)}
 			/>
 		</div>
 	);

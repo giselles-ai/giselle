@@ -10,7 +10,7 @@ export function SettingsPanel({ node }: { node: QueryNode }) {
 	const { updateNodeDataContent } = useWorkflowDesigner();
 
 	return (
-		<div className="grid grid-cols-1 gap-[16px]">
+		<div className="grid grid-cols-1 gap-[8px]">
 			<Slider
 				label="Max Results"
 				labelClassName="text-[14px]"
