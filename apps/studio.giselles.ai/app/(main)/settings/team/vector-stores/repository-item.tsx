@@ -444,7 +444,7 @@ function EmbeddingModelCard({
 									` • Retry ${formatTimestamp.toRelativeTime(new Date(pullRequestStatus.retryAfter).getTime())}`}
 							</div>
 						)}
-					{!pullRequestStatus?.enabled && pullRequestStatus === undefined && (
+					{pullRequestStatus === undefined && (
 						<div className="text-[10px] text-gray-500">Not configured</div>
 					)}
 				</div>
@@ -539,7 +539,7 @@ function EmbeddingModelCard({
 										` • Retry ${formatTimestamp.toRelativeTime(new Date(issueStatus.retryAfter).getTime())}`}
 								</div>
 							)}
-						{!issueStatus?.enabled && issueStatus === undefined && (
+						{issueStatus === undefined && (
 							<div className="text-[10px] text-gray-500">Not configured</div>
 						)}
 					</div>
