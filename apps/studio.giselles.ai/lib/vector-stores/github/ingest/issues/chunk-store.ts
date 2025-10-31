@@ -26,7 +26,7 @@ export function createGitHubIssueChunkStore(
 			contentType: z.enum(GitHubRepositoryIssueContentTypeValues),
 			contentId: z.string(),
 			contentCreatedAt: z.date(),
-			contentEditedAt: z.date().nullable(),
+			contentEditedAt: z.date(),
 		}),
 		scope: {
 			repository_index_db_id: repositoryIndexDbId,
