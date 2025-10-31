@@ -88,8 +88,11 @@ export function createGitHubIssuesLoader(
 		return graphqlClient;
 	}
 
-	function getIssueDetails(issueNumber: number): Promise<IssueDetails> {
-		const cacheKey = createCacheKey(owner, repo, issueNumber);
+	function getIssueDetails(
+		issueNumber: number,
+		issueUpdatedAt: string,
+	): Promise<IssueDetails> {
+		const cacheKey = createCacheKey(owner, repo, issueNumber, issueUpdatedAt);
 		const cached = issueDetailsCache.get(cacheKey);
 		if (cached) {
 			return cached;
@@ -184,12 +187,13 @@ export function createGitHubIssuesLoader(
 			contentId,
 			issueState,
 			issueStateReason,
+			issueUpdatedAt,
 		} = metadata;
 
 		try {
 			switch (contentType) {
 				case "title_body": {
-					const details = await getIssueDetails(issueNumber);
+					const details = await getIssueDetails(issueNumber, issueUpdatedAt);
 					const content = `${details.title}\n\n${details.body}`;
 
 					if (content.length === 0) {
@@ -207,7 +211,7 @@ export function createGitHubIssuesLoader(
 				}
 
 				case "comment": {
-					const details = await getIssueDetails(issueNumber);
+					const details = await getIssueDetails(issueNumber, issueUpdatedAt);
 					const comment = details.comments.find((c) => c.id === contentId);
 
 					if (!comment) {

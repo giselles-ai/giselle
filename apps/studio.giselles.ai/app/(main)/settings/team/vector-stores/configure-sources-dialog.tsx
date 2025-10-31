@@ -2,7 +2,7 @@
 
 import { Toggle } from "@giselle-internal/ui/toggle";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Code, GitPullRequest } from "lucide-react";
+import { CircleDot, Code, GitPullRequest } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import type {
 	GitHubRepositoryContentType,
@@ -31,6 +31,7 @@ type ConfigureSourcesDialogProps = {
 		embeddingProfileIds?: number[],
 	) => Promise<{ success: boolean; error?: string }>;
 	enabledProfiles?: number[];
+	githubIssuesVectorStore?: boolean;
 };
 
 export function ConfigureSourcesDialog({
@@ -39,6 +40,7 @@ export function ConfigureSourcesDialog({
 	repositoryData,
 	updateRepositoryIndexAction,
 	enabledProfiles = [1],
+	githubIssuesVectorStore = false,
 }: ConfigureSourcesDialogProps) {
 	const { repositoryIndex, contentStatuses } = repositoryData;
 	const [isPending, startTransition] = useTransition();
@@ -49,10 +51,12 @@ export function ConfigureSourcesDialog({
 	const pullRequestStatus = contentStatuses.find(
 		(cs) => cs.contentType === "pull_request",
 	);
+	const issueStatus = contentStatuses.find((cs) => cs.contentType === "issue");
 
 	const [config, setConfig] = useState({
 		code: { enabled: blobStatus?.enabled ?? true },
 		pullRequests: { enabled: pullRequestStatus?.enabled ?? false },
+		issues: { enabled: issueStatus?.enabled ?? false },
 	});
 
 	const [selectedProfiles, setSelectedProfiles] =
@@ -74,6 +78,7 @@ export function ConfigureSourcesDialog({
 			}[] = [
 				{ contentType: "blob", enabled: config.code.enabled },
 				{ contentType: "pull_request", enabled: config.pullRequests.enabled },
+				{ contentType: "issue", enabled: config.issues.enabled },
 			];
 
 			const result = await updateRepositoryIndexAction(
@@ -145,6 +150,20 @@ export function ConfigureSourcesDialog({
 									}
 									status={pullRequestStatus}
 								/>
+
+								{/* Issues Configuration */}
+								{githubIssuesVectorStore && (
+									<ContentTypeToggle
+										icon={CircleDot}
+										label="Issues"
+										description="Index issue titles, descriptions, and comments"
+										enabled={config.issues.enabled}
+										onToggle={(enabled) =>
+											setConfig({ ...config, issues: { enabled } })
+										}
+										status={issueStatus}
+									/>
+								)}
 							</div>
 						</div>
 

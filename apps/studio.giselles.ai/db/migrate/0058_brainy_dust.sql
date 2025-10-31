@@ -1,0 +1,1 @@
+ALTER TABLE "github_repository_issue_embeddings" ALTER COLUMN "content_edited_at" SET NOT NULL;
