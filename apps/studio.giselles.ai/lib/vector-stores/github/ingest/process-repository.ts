@@ -3,7 +3,7 @@ import { fetchDefaultBranchHead } from "@giselle-sdk/github-tool";
 import { DocumentLoaderError, RagError } from "@giselle-sdk/rag";
 import { createId } from "@paralleldrive/cuid2";
 import { captureException } from "@sentry/nextjs";
-import { and, desc, eq, max } from "drizzle-orm";
+import { and, eq, max } from "drizzle-orm";
 import {
 	db,
 	type GitHubRepositoryContentType,
@@ -303,7 +303,7 @@ async function getLastIngestedIssueNumber(
 ) {
 	const results = await db
 		.select({
-			lastIngestedIssueNumber: githubRepositoryIssueEmbeddings.issueNumber,
+			lastIngestedIssueNumber: max(githubRepositoryIssueEmbeddings.issueNumber),
 		})
 		.from(githubRepositoryIssueEmbeddings)
 		.where(
@@ -317,9 +317,7 @@ async function getLastIngestedIssueNumber(
 					embeddingProfileId,
 				),
 			),
-		)
-		.orderBy(desc(githubRepositoryIssueEmbeddings.createdAt))
-		.limit(1);
+		);
 	if (results.length === 0) {
 		return null;
 	}
