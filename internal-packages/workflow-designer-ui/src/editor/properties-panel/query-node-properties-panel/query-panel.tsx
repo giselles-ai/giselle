@@ -231,6 +231,11 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 												<span className="text-[11px] text-secondary">
 													{description.line1}
 												</span>
+												{description.line2 && (
+													<span className="text-[11px] text-secondary">
+														{description.line2}
+													</span>
+												)}
 											</div>
 											<button
 												type="button"
