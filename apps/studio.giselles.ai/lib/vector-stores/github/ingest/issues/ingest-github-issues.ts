@@ -41,8 +41,8 @@ export async function ingestGitHubIssues(params: {
 		chunkStore,
 		documentKey: ({ issueNumber, contentType, contentId }) =>
 			`${issueNumber}:${contentType}:${contentId}`,
-		documentVersion: ({ contentEditedAt, contentCreatedAt }) =>
-			new Date(contentEditedAt ?? contentCreatedAt).toISOString(),
+		documentVersion: ({ contentEditedAt }) =>
+			new Date(contentEditedAt).toISOString(),
 		metadataTransform: ({
 			issueNumber,
 			issueState,
