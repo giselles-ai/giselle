@@ -72,7 +72,6 @@ export function RepositoryItem({
 	const [showDiagnosticModal, setShowDiagnosticModal] = useState(false);
 	const [isPending, startTransition] = useTransition();
 	const [isIngesting, startIngestTransition] = useTransition();
-	//
 
 	const handleDelete = useCallback(() => {
 		startTransition(async () => {
@@ -110,8 +109,6 @@ export function RepositoryItem({
 				new Date(cs.retryAfter) <= now)
 		);
 	});
-
-	//
 
 	return (
 		<GlassCard className={cn("group")} paddingClassName="px-[24px] py-[16px]">
