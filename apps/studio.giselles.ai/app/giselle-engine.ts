@@ -115,6 +115,7 @@ async function traceGenerationForTeam(args: {
 			subscriptionId: args.team.activeSubscriptionId ?? "",
 			providerMetadata: args.providerMetadata,
 			requestId: args.requestId,
+			workspaceId: args.generation.context.origin.workspaceId,
 		},
 		sessionId: args.sessionId,
 	});
