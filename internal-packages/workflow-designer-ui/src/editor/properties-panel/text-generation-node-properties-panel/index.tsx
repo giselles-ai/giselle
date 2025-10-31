@@ -170,7 +170,7 @@ export function TextGenerationNodePropertiesPanel({
 					</div>
 					<div
 						ref={generateCtaRef}
-						className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent"
+						className="shrink-0 px-[16px] pt-[8px] pb-[4px]"
 					>
 						<GenerateCtaButton
 							isGenerating={isGenerating}

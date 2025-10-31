@@ -1,4 +1,8 @@
 import {
+	SettingDetail,
+	SettingLabel,
+} from "@giselle-internal/ui/setting-label";
+import {
 	type ActionNode,
 	type Input,
 	InputId,
@@ -22,7 +26,6 @@ import {
 } from "../trigger-node-properties-panel/providers/github-trigger/components/icons";
 import { GitHubRepositoryBlock } from "../trigger-node-properties-panel/ui";
 import { SelectRepository } from "../ui";
-import { GenerationPanel } from "./generation-panel";
 import { GitHubActionConfiguredView } from "./ui/github-action-configured-view";
 
 // Default icon for actions without specific icons
@@ -51,7 +54,7 @@ const DefaultActionIcon = ({
 );
 
 // Arrow right icon for action buttons
-const ArrowRightIcon = () => (
+const _ArrowRightIcon = () => (
 	<svg
 		width="16"
 		height="16"
@@ -93,7 +96,15 @@ const getActionIcon = (actionId: string) => {
 	}
 };
 
-export function GitHubActionPropertiesPanel({ node }: { node: ActionNode }) {
+export function GitHubActionPropertiesPanel({
+	node,
+	handleClick,
+	isGenerating,
+}: {
+	node: ActionNode;
+	handleClick: () => void;
+	isGenerating: boolean;
+}) {
 	const { value } = useIntegration();
 
 	// Only handle GitHub actions
@@ -108,10 +119,9 @@ export function GitHubActionPropertiesPanel({ node }: { node: ActionNode }) {
 					state={node.content.command.state}
 					node={node}
 					inputs={node.inputs}
+					handleClick={handleClick}
+					isGenerating={isGenerating}
 				/>
-				<div className="p-4">
-					<GenerationPanel node={node} />
-				</div>
 			</div>
 		);
 	} else if (
@@ -346,6 +356,9 @@ function Installed({
 		},
 	);
 	const { updateNodeData } = useWorkflowDesigner();
+	const [selectedInstallationId, setSelectedInstallationId] = useState<
+		number | null
+	>(null);
 
 	const handleActionSelect = useCallback(
 		(commandId: string) => {
@@ -442,26 +455,131 @@ function Installed({
 	);
 
 	return (
-		<div className="overflow-y-auto flex flex-1 flex-col gap-[16px] px-[4px]">
-			<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Organization</p>
+		<div className="flex flex-col gap-[8px] px-[4px]">
 			{step.state === "select-repository" && (
-				<SelectRepository
-					installations={installations}
-					installationUrl={installationUrl}
-					onSelectRepository={handleSelectRepository}
-				/>
+				<>
+					<div className="flex w-full items-center gap-[12px]">
+						<div className="shrink-0 w-[120px]">
+							<SettingDetail className="mb-0">Organization</SettingDetail>
+						</div>
+						<div className="grow min-w-0">
+							<SelectRepository
+								installations={installations}
+								installationUrl={installationUrl}
+								onSelectRepository={handleSelectRepository}
+								showMissingAccountLink={false}
+								renderRepositories={false}
+								onChangeInstallation={setSelectedInstallationId}
+							/>
+						</div>
+					</div>
+					<p className="text-inverse text-[12px] text-right mb-3">
+						Missing GitHub account?
+						<a
+							href={installationUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-inverse hover:text-inverse ml-1 underline text-[12px]"
+						>
+							Adjust GitHub App Permissions
+						</a>
+					</p>
+					{selectedInstallationId !== null && (
+						<div className="flex flex-col w-full gap-[8px]">
+							<SettingDetail className="mb-0">Repository</SettingDetail>
+							<div className="flex flex-col gap-y-[4px] relative">
+								{(
+									installations.find((i) => i.id === selectedInstallationId)
+										?.repositories ?? []
+								).map((repo) => (
+									<button
+										key={repo.node_id}
+										type="button"
+										className="group relative rounded-[12px] overflow-hidden px-[16px] py-[12px] w-full border-[0.5px] border-white/8 shadow-[inset_0_1px_0_rgba(255,255,255,0.25),inset_0_-1px_0_rgba(255,255,255,0.15)] hover:border-white/12 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(255,255,255,0.2)] transition-all duration-200 cursor-pointer text-left"
+										onClick={() => {
+											setStep({
+												state: "select-action",
+												installationId: selectedInstallationId,
+												owner: repo.owner.login,
+												repo: repo.name,
+												repoNodeId: repo.node_id,
+											});
+										}}
+									>
+										<div className="invisible group-hover:visible absolute right-4 top-1/2 transform -translate-y-1/2 bg-bg-800 text-inverse text-xs px-2 py-1 rounded whitespace-nowrap">
+											Select
+										</div>
+										<div className="flex items-center justify-between">
+											<div className="flex flex-col">
+												<div className="flex items-center gap-2">
+													<span className="text-inverse font-medium text-[14px]">
+														{repo.name}
+													</span>
+													<span className="rounded-full px-1.5 py-px text-black-300 font-medium text-[10px] leading-normal font-geist border-[0.5px] border-black-400">
+														{repo.private ? "Private" : "Public"}
+													</span>
+												</div>
+											</div>
+										</div>
+									</button>
+								))}
+							</div>
+							<p className="text-inverse text-[12px] text-right">
+								Missing Git repository?
+								<a
+									href={installationUrl}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="text-inverse hover:text-inverse ml-1 underline text-[12px]"
+								>
+									Adjust GitHub App Permissions
+								</a>
+							</p>
+						</div>
+					)}
+				</>
 			)}
 			{step.state === "select-action" && (
 				<div className="w-full flex flex-col gap-[16px]">
-					<GitHubRepositoryBlock owner={step.owner} repo={step.repo} />
+					<button
+						type="button"
+						onClick={() => setStep({ state: "select-repository" })}
+						className="inline-flex items-center gap-[6px] text-text-muted hover:text-text underline text-[12px] mb-[8px]"
+						aria-label="Back"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							className="w-[14px] h-[14px]"
+						>
+							<title>Back</title>
+							<path d="m15 18-6-6 6-6"></path>
+						</svg>
+						Back
+					</button>
+					<div className="flex w-full items-start gap-[12px]">
+						<div className="shrink-0 w-[120px]">
+							<SettingDetail className="mb-0">Repository</SettingDetail>
+						</div>
+						<div className="grow min-w-0">
+							<GitHubRepositoryBlock owner={step.owner} repo={step.repo} />
+						</div>
+					</div>
 					<div className="flex flex-col gap-[4px] flex-1 overflow-hidden">
-						<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Action Type</p>
-						<div className="flex flex-col gap-[16px] overflow-y-auto pr-2 pl-0 pt-[8px] custom-scrollbar flex-1">
+						<SettingLabel className="mb-[4px]">Action Type</SettingLabel>
+						<div className="flex flex-col gap-[8px] overflow-y-auto pr-2 pl-0 pt-[8px] custom-scrollbar flex-1">
 							{Object.entries(githubActions).map(([id, githubAction]) => (
 								<button
 									key={id}
 									type="button"
-									className="flex items-center py-[12px] px-[8px] rounded-lg group w-full h-[48px]"
+									className="flex items-center py-[8px] px-[8px] rounded-lg group w-full min-h-[48px] border border-inverse/20 hover:border-inverse/30 hover:bg-inverse/10 transition-colors"
 									onClick={() => handleActionSelect(id)}
 								>
 									<div className="flex items-center min-w-0 flex-1">
@@ -472,12 +590,12 @@ function Installed({
 											<span className="text-inverse font-medium text-[14px] truncate">
 												{githubAction.command.label}
 											</span>
-											<span className="text-inverse text-[12px] truncate group-hover:text-inverse transition-colors pr-6">
+											<span className="text-text-muted text-[10px] truncate group-hover:text-inverse transition-colors pr-6">
 												{`Perform ${githubAction.command.label.toLowerCase()} action`}
 											</span>
 										</div>
 									</div>
-									<ArrowRightIcon />
+									{/* Removed right arrow icon for consistency with trigger list */}
 								</button>
 							))}
 						</div>

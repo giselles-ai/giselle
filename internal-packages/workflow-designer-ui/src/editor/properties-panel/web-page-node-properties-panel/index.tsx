@@ -1,3 +1,6 @@
+import { Button } from "@giselle-internal/ui/button";
+import { Note } from "@giselle-internal/ui/note";
+import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	type WebPage,
@@ -15,7 +18,6 @@ import { Dialog } from "radix-ui";
 import { type FormEventHandler, useCallback, useState } from "react";
 import useSWR from "swr";
 import { validateUrl } from "../../lib/validate-url";
-import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 
 function WebPageListItem({
@@ -117,34 +119,50 @@ function WebPageListItem({
 				</div>
 			)}
 			{webpage.status === "failed" && (
-				<div>
-					<p className="text-error-900 font-sans">
-						Failed to fetch: {webpage.errorMessage}
-					</p>
-					<a
-						href={webpage.url}
-						target="_blank"
-						rel="noreferrer"
-						className="text-[14px] underline"
-					>
-						{webpage.url}
-					</a>
-				</div>
+				<Note
+					type="error"
+					showIcon={false}
+					action={
+						<button
+							type="button"
+							onClick={onRemove}
+							className="p-[4px] rounded-[6px] text-error-100 hover:text-error-200 hover:bg-error-900/10 transition-colors"
+							aria-label="Remove failed URL"
+						>
+							<TrashIcon className="size-[14px]" />
+						</button>
+					}
+				>
+					<div className="flex flex-col">
+						<span className="font-sans text-[14px]">Failed to fetch</span>
+						<a
+							href={webpage.url}
+							target="_blank"
+							rel="noreferrer"
+							className="underline text-[12px]"
+						>
+							{webpage.url}
+						</a>
+					</div>
+				</Note>
 			)}
-			<button
-				type="button"
-				onClick={onRemove}
-				className="cursor-pointer hidden group-hover:block p-[4px] hover:bg-bg-850/10 rounded-[4px] transition-colors"
-			>
-				<TrashIcon className="size-[16px] text-white-600" />
-			</button>
+			{webpage.status !== "failed" && (
+				<button
+					type="button"
+					onClick={onRemove}
+					className="cursor-pointer hidden group-hover:block p-[4px] hover:bg-bg-850/10 rounded-[4px] transition-colors"
+				>
+					<TrashIcon className="size-[16px] text-white-600" />
+				</button>
+			)}
 		</li>
 	);
 }
 
 export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 	const client = useGiselleEngine();
-	const { data, updateNodeData, updateNodeDataContent } = useWorkflowDesigner();
+	const { data, updateNodeData, updateNodeDataContent, deleteNode } =
+		useWorkflowDesigner();
 	const { error } = useToasts();
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		async (e) => {
@@ -242,60 +260,50 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 	);
 
 	return (
-		<PropertiesPanelRoot>
+		<div className="w-full flex flex-col gap-[8px]">
 			<NodePanelHeader
 				node={node}
 				onChangeName={(name) => updateNodeData(node, { name })}
 				docsUrl="https://docs.giselles.ai/en/glossary/webpage-node"
-				onDelete={undefined}
+				onDelete={() => deleteNode(node.id)}
 			/>
-			<PropertiesPanelContent>
-				<div>
-					<form className="flex flex-col gap-[8px]" onSubmit={handleSubmit}>
-						<div className="flex flex-col gap-[8px]">
-							<textarea
-								id="webpage-urls"
-								name="urls"
-								className={clsx(
-									"w-full min-h-[80px] p-[16px] pb-0 border-[1px] border-inverse rounded-[8px] bg-transparent text-inverse/80 outline-none resize-none",
-									// urlError && "border-error-900",
-								)}
-								// value={urls}
-								// onChange={(e) => setUrls(e.target.value)}
-								placeholder={"URLs (one per line)\nhttps://example.com"}
-								required
-							/>
-							{/* {urlError && (
-							<p className="text-error-900 text-[12px]">{urlError}</p>
-						)} */}
-						</div>
-						<button
-							type="submit"
-							className="w-full flex items-center justify-center gap-[4px] px-[16px] py-[8px] rounded-[8px] bg-blue-700 text-white-800 font-semibold hover:bg-blue-800 cursor-pointer"
-						>
+			<div>
+				<form className="flex flex-col gap-[8px]" onSubmit={handleSubmit}>
+					<div className="flex flex-col gap-[8px]">
+						<textarea
+							id="webpage-urls"
+							name="urls"
+							className={clsx(
+								"w-full min-h-[120px] rounded-[8px] bg-inverse/10 text-inverse text-[14px] outline-none resize-none border-none",
+								"!pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px]",
+							)}
+							placeholder={"URLs (one per line)\nhttps://example.com"}
+							required
+						/>
+					</div>
+					<div className="flex justify-end">
+						<Button variant="filled" size="large" type="submit">
 							Add
-						</button>
-					</form>
+						</Button>
+					</div>
+				</form>
 
-					{node.content.webpages.length > 0 && (
-						<div className="mt-[16px]">
-							<h3 className="text-[14px] font-semibold text-white-800 mb-[8px]">
-								Added URLs
-							</h3>
-							<ul className="flex flex-col gap-[8px]">
-								{node.content.webpages.map((webpage) => (
-									<WebPageListItem
-										key={webpage.id}
-										webpage={webpage}
-										workspaceId={data.id}
-										onRemove={removeWebPage(webpage.id)}
-									/>
-								))}
-							</ul>
-						</div>
-					)}
-				</div>
-			</PropertiesPanelContent>
-		</PropertiesPanelRoot>
+				{node.content.webpages.length > 0 && (
+					<div className="mt-[16px]">
+						<SettingLabel className="mb-[8px]">Added URLs</SettingLabel>
+						<ul className="flex flex-col">
+							{node.content.webpages.map((webpage) => (
+								<WebPageListItem
+									key={webpage.id}
+									webpage={webpage}
+									workspaceId={data.id}
+									onRemove={removeWebPage(webpage.id)}
+								/>
+							))}
+						</ul>
+					</div>
+				)}
+			</div>
+		</div>
 	);
 }

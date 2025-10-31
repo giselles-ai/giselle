@@ -1,5 +1,10 @@
 import { Button } from "@giselle-internal/ui/button";
 import { Select } from "@giselle-internal/ui/select";
+import {
+	SettingDetail,
+	SettingLabel,
+} from "@giselle-internal/ui/setting-label";
+import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import {
 	ManualTriggerParameter,
@@ -145,10 +150,10 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 		<div className="flex flex-col gap-[8px] h-full px-1">
 			<div className="overflow-y-auto flex-1 pr-2 custom-scrollbar h-full relative space-y-[16px]">
 				<div className="space-y-[4px]">
-					<p className="text-[14px] py-[1.5px]">Parameter</p>
+					<SettingLabel className="py-[1.5px]">Parameter</SettingLabel>
 					<div className="px-[4px] py-0 w-full bg-transparent text-[14px]">
 						{parameters.length > 0 ? (
-							<div className="flex flex-col gap-[8px] mb-[16px]">
+							<div className="flex flex-col mb-[16px]">
 								{parameters.map((param) => (
 									<div
 										key={param.id}
@@ -156,15 +161,19 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 									>
 										<div className="flex items-center gap-[8px]">
 											<span className="font-medium">{param.name}</span>
-											<span className="text-[12px] text-black-500">
+											<span className="text-[12px] text-text-muted">
 												{param.type}
-												{param.required ? " (required)" : ""}
 											</span>
+											{param.required ? (
+												<span className="text-[12px] text-error-900 ml-[4px]">
+													(required)
+												</span>
+											) : null}
 										</div>
 										<button
 											type="button"
 											onClick={() => handleRemoveParameter(param.id)}
-											className="text-black-500 hover:text-black-900"
+											className="text-text-muted hover:text-text transition-colors"
 										>
 											<TrashIcon className="size-[16px]" />
 										</button>
@@ -172,7 +181,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 								))}
 							</div>
 						) : (
-							<div className="text-[14px] text-text-muted mb-[16px]">
+							<div className="text-[12px] text-text-muted/80 mb-[16px] bg-transparent p-0 rounded-none">
 								No parameters configured yet. Add at least one parameter.
 							</div>
 						)}
@@ -181,79 +190,81 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 					<div className="space-y-[4px] mt-[16px]">
 						<div className="flex flex-col gap-[8px] rounded-[8px]">
 							<form
-								className="grid grid-cols-[1fr_120px_auto_auto] gap-x-4 gap-y-1 items-end"
+								className="flex flex-col gap-[12px]"
 								onSubmit={handleAddParameter}
 							>
-								<label
-									htmlFor="param-name"
-									className="text-[12px] text-black-500"
+								<SettingLabel className="py-[1.5px]">Setting</SettingLabel>
+								<SettingRow
+									label={<SettingDetail>Parameter name</SettingDetail>}
 								>
-									Parameter Name
-								</label>
-								<label
-									htmlFor="param-type"
-									className="text-[12px] text-black-500"
-								>
-									Type
-								</label>
-								<label
-									htmlFor="param-required"
-									className="text-[12px] text-black-500"
-								>
-									Required
-								</label>
-								<div />
-								<input
-									id="param-name"
-									name="name"
-									type="text"
-									placeholder="Write the parameter name"
-									className="w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-[1px] border-inverse bg-transparent text-inverse/80 text-[14px]"
-									data-1p-ignore
-								/>
-								<Select
-									name="type"
-									options={TYPE_OPTIONS}
-									placeholder="Select type..."
-									defaultValue="text"
-								/>
-								<div className="flex items-center justify-center h-[37px]">
-									<input id="param-required" type="checkbox" name="required" />
+									<input
+										id="param-name"
+										name="name"
+										type="text"
+										placeholder="Write the parameter name"
+										className="w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-none bg-inverse/10 text-inverse text-[14px]"
+										data-1p-ignore
+									/>
+								</SettingRow>
+
+								<SettingRow label={<SettingDetail>Type</SettingDetail>}>
+									<Select
+										name="type"
+										options={TYPE_OPTIONS}
+										placeholder="Select type..."
+										defaultValue="text"
+									/>
+								</SettingRow>
+
+								<SettingRow label={<SettingDetail>Required</SettingDetail>}>
+									<div className="flex items-center gap-[8px] h-[37px]">
+										<input
+											id="param-required"
+											type="checkbox"
+											name="required"
+										/>
+										<span className="text-[12px] text-black-500">
+											This parameter is required
+										</span>
+									</div>
+								</SettingRow>
+
+								<div className="flex justify-end">
+									<Button type="submit" variant="filled" size="large">
+										Add
+									</Button>
 								</div>
-								<Button type="submit" variant="filled" size="large">
-									Add
-								</Button>
 							</form>
 						</div>
 					</div>
 				</div>
 
 				<div className="space-y-[4px]">
-					<p className="text-[14px] py-[1.5px]">Staged</p>
+					<SettingLabel className="py-[1.5px]">Staged</SettingLabel>
 					{
 						// This component is ManualTriggerPropertiesPanel, so it's obvious that the provider is manual, but this component is also used by app-entry provider, and in that case this UI is unnecessary, so we include this conditional check.
 						stage && node.content.provider === "manual" && (
 							<div className="mt-[8px]">
-								<Toggle
-									name="staged"
-									checked={staged}
-									onCheckedChange={setStaged}
-								>
-									<label className="text-[12px]" htmlFor="staged">
+								<div className="flex flex-row items-center justify-between">
+									<SettingDetail>
 										Enable this trigger to run in Stage
-										<span className="text-text-muted ml-[8px]">
-											(This can be changed later)
-										</span>
-									</label>
-									<div className="flex-grow mx-[12px] h-[1px] border-t border-inverse" />
-								</Toggle>
+									</SettingDetail>
+									<Toggle
+										name="staged"
+										checked={staged}
+										onCheckedChange={setStaged}
+									/>
+								</div>
+								<p className="text-[12px] text-text-muted mt-[4px]">
+									(This can be changed later)
+								</p>
 							</div>
 						)
 					}
 				</div>
 
-				<div className="pt-[8px] flex gap-[8px] mt-[12px] px-[4px]">
-					<form onSubmit={handleSubmit} className="w-full">
+				<div className="pt-[8px] flex gap-[8px] mt-[12px] px-[4px] justify-end">
+					<form onSubmit={handleSubmit} className="w-full flex justify-end">
 						<Button
 							type="submit"
 							variant="solid"

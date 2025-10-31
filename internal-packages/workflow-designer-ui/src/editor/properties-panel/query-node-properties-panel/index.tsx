@@ -80,7 +80,9 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 		<PropertiesPanelRoot>
 			<NodePanelHeader
 				node={node}
-				onChangeName={(name) => updateNodeData(node, { name })}
+				onChangeName={(name) => {
+					updateNodeData(node, { name });
+				}}
 				docsUrl="https://docs.giselles.ai/en/glossary/query-node"
 				onDelete={() => deleteNode(node.id)}
 			/>

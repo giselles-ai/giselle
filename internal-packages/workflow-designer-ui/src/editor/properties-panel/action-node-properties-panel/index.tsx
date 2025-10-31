@@ -4,7 +4,6 @@ import {
 	useWorkflowDesigner,
 } from "@giselle-sdk/giselle/react";
 import { useCallback } from "react";
-import { Button } from "../../../ui/button";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GitHubActionPropertiesPanel } from "./github-action-properties-panel";
@@ -14,11 +13,17 @@ export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 	const { data, updateNodeData, deleteNode, setUiNodeState } =
 		useWorkflowDesigner();
 	const { isValid, connectedInputs } = useConnectedInputs(node.id, node.inputs);
-	const { createAndStartGenerationRunner } = useNodeGenerations({
-		nodeId: node.id,
-		origin: { type: "studio", workspaceId: data.id },
-	});
+	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
+		useNodeGenerations({
+			nodeId: node.id,
+			origin: { type: "studio", workspaceId: data.id },
+		});
 	const handleClick = useCallback(() => {
+		if (isGenerating) {
+			stopGenerationRunner();
+			return;
+		}
+
 		if (!isValid) {
 			setUiNodeState(node.id, {
 				showError: true,
@@ -43,6 +48,8 @@ export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 			),
 		});
 	}, [
+		isGenerating,
+		stopGenerationRunner,
 		isValid,
 		setUiNodeState,
 		node,
@@ -59,24 +66,37 @@ export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 				docsUrl="https://docs.giselles.ai/en/glossary/action-node"
 				onDelete={() => deleteNode(node.id)}
 			/>
-			{node.content.command.state.status !== "unconfigured" && (
-				<div className="px-[16px] py-[8px] border-b border-inverse/10">
-					<Button type="button" onClick={handleClick} className="w-full">
-						Run Action
-					</Button>
-				</div>
-			)}
 			<PropertiesPanelContent>
-				<PropertiesPanel node={node} />
+				<div className="overflow-y-auto flex-1 pr-2 custom-scrollbar h-full relative">
+					<PropertiesPanel
+						node={node}
+						handleClick={handleClick}
+						isGenerating={isGenerating}
+					/>
+				</div>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);
 }
 
-function PropertiesPanel({ node }: { node: ActionNode }) {
+function PropertiesPanel({
+	node,
+	handleClick,
+	isGenerating,
+}: {
+	node: ActionNode;
+	handleClick: () => void;
+	isGenerating: boolean;
+}) {
 	switch (node.content.command.provider) {
 		case "github":
-			return <GitHubActionPropertiesPanel node={node} />;
+			return (
+				<GitHubActionPropertiesPanel
+					node={node}
+					handleClick={handleClick}
+					isGenerating={isGenerating}
+				/>
+			);
 		case "web-search":
 			// TODO: Implement WebSearchActionPropertiesPanel
 			return <div>Web Search Action (Coming Soon)</div>;

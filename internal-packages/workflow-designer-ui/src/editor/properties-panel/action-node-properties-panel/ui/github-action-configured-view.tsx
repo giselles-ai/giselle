@@ -1,5 +1,9 @@
 import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
+import {
+	SettingDetail,
+	SettingLabel,
+} from "@giselle-internal/ui/setting-label";
 import type {
 	ActionNode,
 	ConnectionId,
@@ -20,8 +24,63 @@ import clsx from "clsx/lite";
 import { PlusIcon, TriangleAlert, XIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
+// Import icons to display next to Event Type
+import {
+	DiscussionCommentCreatedIcon,
+	IssueCommentCreatedIcon,
+	IssueCreatedIcon,
+	PullRequestCommentCreatedIcon,
+	PullRequestReviewCommentCreatedIcon,
+} from "../../trigger-node-properties-panel/providers/github-trigger/components/icons";
 import { GitHubRepositoryBlock } from "../../trigger-node-properties-panel/ui";
 import { type InputWithConnectedOutput, useConnectedInputs } from "../lib";
+
+// Default icon for actions without specific icons
+function _DefaultActionIcon({
+	size = 18,
+	className = "text-inverse",
+}: {
+	size?: number;
+	className?: string;
+}) {
+	return (
+		<svg
+			width={size}
+			height={size}
+			viewBox="0 0 24 24"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+			className={className}
+			aria-label="GitHub Action"
+		>
+			<title>GitHub Action</title>
+			<path
+				d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"
+				fill="currentColor"
+			/>
+		</svg>
+	);
+}
+
+function getActionIcon(actionId: string) {
+	const iconProps = { size: 18, className: "text-inverse" } as const;
+	switch (actionId) {
+		case "github.create.issue":
+			return <IssueCreatedIcon {...iconProps} />;
+		case "github.create.issueComment":
+			return <IssueCommentCreatedIcon {...iconProps} />;
+		case "github.create.pullRequestComment":
+			return <PullRequestCommentCreatedIcon {...iconProps} />;
+		case "github.reply.pullRequestReviewComment":
+			return <PullRequestReviewCommentCreatedIcon {...iconProps} />;
+		case "github.get.discussion":
+			return <_DefaultActionIcon {...iconProps} />;
+		case "github.create.discussionComment":
+			return <DiscussionCommentCreatedIcon {...iconProps} />;
+		default:
+			return <_DefaultActionIcon {...iconProps} />;
+	}
+}
 
 function getNodeContentType(node: Node | NodeLike): string {
 	switch (node.type) {
@@ -38,10 +97,14 @@ export function GitHubActionConfiguredView({
 	node,
 	inputs,
 	state,
+	handleClick,
+	isGenerating,
 }: {
 	node: ActionNode;
 	inputs: Input[];
 	state: GitHubActionCommandConfiguredState;
+	handleClick: () => void;
+	isGenerating: boolean;
 }) {
 	const client = useGiselleEngine();
 	const {
@@ -72,22 +135,23 @@ export function GitHubActionConfiguredView({
 
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
-			<div className="space-y-[4px]">
-				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Repository</p>
-				<div className="flex justify-between">
-					<div className="px-[4px] pt-[6px]">
-						{isLoading || data === undefined ? (
-							<p>Loading...</p>
-						) : (
-							<GitHubRepositoryBlock
-								owner={data.fullname.owner}
-								repo={data.fullname.repo}
-							/>
-						)}
-					</div>
-					<button
+			<div className="space-y-0">
+				<SettingDetail className="mb-0">Repository</SettingDetail>
+				<div className="px-[4px] pt-[6px]">
+					{isLoading || data === undefined ? (
+						<p>Loading...</p>
+					) : (
+						<GitHubRepositoryBlock
+							owner={data.fullname.owner}
+							repo={data.fullname.repo}
+						/>
+					)}
+				</div>
+				<div className="flex w-full items-center justify-end">
+					<Button
+						variant="solid"
+						size="large"
 						type="button"
-						className="bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors"
 						onClick={() => {
 							updateNodeData(node, {
 								content: {
@@ -104,20 +168,25 @@ export function GitHubActionConfiguredView({
 						}}
 					>
 						Change Repository
-					</button>
+					</Button>
 				</div>
 			</div>
 
-			<div className="space-y-[4px]">
-				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Event Type</p>
-				<div className="px-[4px] py-0 w-full bg-transparent text-[14px] flex items-center">
-					{githubActionIdToLabel(state.commandId)}
+			<div className="space-y-0">
+				<div className="flex w-full items-center gap-[12px]">
+					<div className="shrink-0 w-[120px]">
+						<SettingDetail className="mb-0">Event Type</SettingDetail>
+					</div>
+					<div className="grow min-w-0 px-[4px] py-0 w-full bg-transparent text-[14px] flex items-center gap-[8px]">
+						{getActionIcon(state.commandId)}
+						<span>{githubActionIdToLabel(state.commandId)}</span>
+					</div>
 				</div>
 			</div>
 
-			<div className="space-y-[4px]">
-				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Input Parameter</p>
-				<div className="px-[4px] py-0 w-full bg-transparent text-[14px]">
+			<div className="space-y-0">
+				<SettingLabel className="mb-0">Input Parameter</SettingLabel>
+				<div className="px-[4px] py-0 w-full bg-transparent text-[14px] mt-[4px]">
 					<ul className="w-full flex flex-col gap-[12px]">
 						{connectedInputs.map((input) => (
 							<li key={input.id}>
@@ -181,6 +250,17 @@ export function GitHubActionConfiguredView({
 						))}
 					</ul>
 				</div>
+			</div>
+			<div className="px-[4px] py-[16px]">
+				<Button
+					type="button"
+					onClick={handleClick}
+					variant="glass"
+					size="large"
+					className="w-full"
+				>
+					{isGenerating ? "Stop" : "Run Action"}
+				</Button>
 			</div>
 		</div>
 	);
