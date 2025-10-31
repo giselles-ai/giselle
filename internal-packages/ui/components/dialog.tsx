@@ -14,7 +14,7 @@ export function DialogContent({
 }: PropsWithChildren<{ size?: DialogSize }>) {
 	return (
 		<DialogPortal>
-			<DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-[color:var(--color-dialog-overlay)]" />
+			<DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-dialog-overlay" />
 			<DialogPrimitive.Content
 				data-size={size}
 				className={clsx(
