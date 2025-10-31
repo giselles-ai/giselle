@@ -39,6 +39,8 @@ function PropertiesPanel({ node }: { node: TriggerNode }) {
 			return <GitHubTriggerPropertiesPanel node={node} />;
 		case "manual":
 			return <ManualTriggerPropertiesPanel node={node} />;
+		case "app-entry":
+			return <ManualTriggerPropertiesPanel node={node} />;
 		default: {
 			const _exhaustiveCheck: never = node.content.provider;
 			throw new Error(`Unhandled action: ${_exhaustiveCheck}`);

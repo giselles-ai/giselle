@@ -7,9 +7,9 @@ import { NavigationRailExpanded } from "./navigation-rail-expanded";
 import type { NavigationRailState, UserDataForNavigationRail } from "./types";
 
 export function NavigationRail({
-	user: userPromise,
+	dataLoader,
 }: {
-	user: Promise<UserDataForNavigationRail>;
+	dataLoader: Promise<UserDataForNavigationRail>;
 }) {
 	const [state, setState] = useState<NavigationRailState>("expanded");
 	const spacingAnimationControls = useMemo(() => {
@@ -48,7 +48,7 @@ export function NavigationRail({
 						}}
 					>
 						<NavigationRailExpanded
-							user={userPromise}
+							user={dataLoader}
 							onCollapseButtonClick={() => setState("collapsed")}
 						/>
 					</motion.div>
@@ -72,7 +72,7 @@ export function NavigationRail({
 						}}
 					>
 						<NavigationRailCollapsed
-							user={userPromise}
+							user={dataLoader}
 							onExpandButtonClick={() => setState("expanded")}
 						/>
 					</motion.div>

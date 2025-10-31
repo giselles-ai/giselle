@@ -1,11 +1,11 @@
-import type { z } from "zod";
+import type { z } from "zod/v4";
 
 interface TriggerEvent {
 	id: string;
 	label: string;
 	description?: string;
-	payloads?: z.AnyZodObject;
-	conditions?: z.AnyZodObject;
+	payloads?: z.ZodObject;
+	conditions?: z.ZodObject;
 }
 export interface TriggerBase {
 	provider: string;
@@ -16,7 +16,7 @@ interface ActionCommand {
 	id: string;
 	label: string;
 	description?: string;
-	parameters?: z.AnyZodObject;
+	parameters?: z.ZodObject;
 }
 
 export interface ActionBase {
