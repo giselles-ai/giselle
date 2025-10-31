@@ -33,7 +33,7 @@ export const AuthContainer: FC<AuthContainerProps> = ({
 					className="absolute inset-0 rounded-[inherit] pointer-events-none"
 					style={{
 						background:
-							"color-mix(in srgb, var(--color-bg, var(--color-background)) 25%, transparent)",
+							"color-mix(in srgb, var(--color-background) 25%, transparent)",
 					}}
 				/>
 				{/* Gradient border */}

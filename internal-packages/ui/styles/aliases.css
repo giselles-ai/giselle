@@ -139,7 +139,7 @@
 		) !important;
 	}
 	.bg-bg {
-		background-color: var(--color-bg, var(--color-background)) !important;
+		background-color: var(--color-background) !important;
 	}
 	/* Stage canvas background */
 	.bg-stage {
@@ -192,10 +192,10 @@
 
 	/* Text from semantic background tokens */
 	.text-bg {
-		color: var(--color-bg, var(--color-background)) !important;
+		color: var(--color-background) !important;
 	}
 	.hover\:text-bg:hover {
-		color: var(--color-bg, var(--color-background)) !important;
+		color: var(--color-background) !important;
 	}
 	.bg-inverse {
 		background-color: var(--color-text-inverse, var(--color-white, #fff)) !important;
@@ -383,7 +383,7 @@
 	.bg-chat-input {
 		background-color: var(
 			--color-chat-input-bg,
-			color-mix(in srgb, var(--color-bg, #00020b) 80%, transparent)
+			color-mix(in srgb, var(--color-background, #00020b) 80%, transparent)
 		) !important;
 	}
 	.border-chat-input {
