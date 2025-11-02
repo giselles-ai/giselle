@@ -719,7 +719,7 @@ function DocumentVectorStoreConfigureDialog({
 									Maximum {DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_LABEL} per file.
 								</p>
 								<span className="text-sm font-semibold text-white-400 underline">
-									Select files
+									Select Files
 								</span>
 								{isUploadingDocuments ? (
 									<div className="flex items-center gap-2 text-xs text-black-300">
