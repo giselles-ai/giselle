@@ -1,19 +1,24 @@
 "use client";
 
+import { Button } from "@giselle-internal/ui/button";
+import {
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@giselle-internal/ui/dialog";
 import { Select } from "@giselle-internal/ui/select";
-import * as Dialog from "@radix-ui/react-dialog";
 import { Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { email as emailValidator, parse, pipe, string } from "valibot";
 import { GlassButton } from "@/components/ui/glass-button";
 import type { TeamRole } from "@/db";
 import { type SendInvitationsResult, sendInvitationsAction } from "./actions";
-import {
-	GlassDialogBody,
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "./components/glass-dialog-content";
 
 type InviteMemberDialogProps = {
 	memberEmails: string[];
@@ -305,8 +310,8 @@ export function InviteMemberDialog({
 	};
 
 	return (
-		<Dialog.Root open={open} onOpenChange={setOpen} key={dialogKey}>
-			<Dialog.Trigger asChild>
+		<Dialog open={open} onOpenChange={setOpen} key={dialogKey}>
+			<DialogTrigger asChild>
 				<GlassButton type="button" onClick={handleOpenDialog}>
 					<span className="grid size-4 place-items-center rounded-full bg-primary-200 opacity-50">
 						<Plus className="size-3 text-bg" />
@@ -315,22 +320,33 @@ export function InviteMemberDialog({
 						Invite Member
 					</span>
 				</GlassButton>
-			</Dialog.Trigger>
+			</DialogTrigger>
 
-			<GlassDialogContent
+			<DialogContent
+				variant="glass"
 				className="max-w-[600px]"
-				borderStyle="solid"
-				withBaseFill={false}
-				overlayClassName="bg-black/50"
 				onEscapeKeyDown={handleCloseDialog}
 				onPointerDownOutside={handleCloseDialog}
 			>
-				<GlassDialogHeader
-					title="Invite Team Member"
-					description="Invited members will be able to collaborate with your team once they accept."
-					onClose={handleCloseDialog}
-				/>
-				<GlassDialogBody>
+				<DialogHeader>
+					<div className="flex items-center justify-between">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-white-400">
+							Invite Team Member
+						</DialogTitle>
+						<DialogClose
+							onClick={handleCloseDialog}
+							className="rounded-sm text-white-400 opacity-70 hover:opacity-100 focus:outline-none"
+						>
+							<X className="h-5 w-5" />
+							<span className="sr-only">Close</span>
+						</DialogClose>
+					</div>
+					<DialogDescription className="font-geist mt-2 text-[14px] text-black-400">
+						Invited members will be able to collaborate with your team once they
+						accept.
+					</DialogDescription>
+				</DialogHeader>
+				<DialogBody className="mt-4">
 					<form
 						id="invite-member-form"
 						onSubmit={handleSubmit}
@@ -408,24 +424,42 @@ export function InviteMemberDialog({
 							</div>
 						)}
 					</form>
-				</GlassDialogBody>
-				<GlassDialogFooter
-					onCancel={handleCloseDialog}
-					onConfirm={() => {
-						const form = document.getElementById(
-							"invite-member-form",
-						) as HTMLFormElement | null;
-						if (!form) return;
-						if (typeof form.requestSubmit === "function") {
-							form.requestSubmit();
-						} else {
-							form.submit();
-						}
-					}}
-					confirmLabel="Invite"
-					isPending={isLoading}
-				/>
-			</GlassDialogContent>
-		</Dialog.Root>
+				</DialogBody>
+				<DialogFooter>
+					<div className="mt-6 flex justify-end gap-x-3">
+						<Button
+							type="button"
+							variant="link"
+							size="large"
+							onClick={handleCloseDialog}
+							disabled={isLoading}
+							aria-label="Cancel"
+						>
+							Cancel
+						</Button>
+						<Button
+							type="button"
+							variant="primary"
+							size="large"
+							onClick={() => {
+								const form = document.getElementById(
+									"invite-member-form",
+								) as HTMLFormElement | null;
+								if (!form) return;
+								if (typeof form.requestSubmit === "function") {
+									form.requestSubmit();
+								} else {
+									form.submit();
+								}
+							}}
+							disabled={isLoading}
+							aria-label="Invite"
+						>
+							{isLoading ? "Processing..." : "Invite"}
+						</Button>
+					</div>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }

@@ -1,7 +1,17 @@
 "use client";
 
-import * as Dialog from "@radix-ui/react-dialog";
-import { ImageIcon } from "lucide-react";
+import { Button } from "@giselle-internal/ui/button";
+import {
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@giselle-internal/ui/dialog";
+import { ImageIcon, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { maxLength, minLength, parse, pipe, string } from "valibot";
@@ -11,12 +21,6 @@ import type { users } from "@/db";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { updateAvatar, updateDisplayName } from "../account/actions";
 import { IMAGE_CONSTRAINTS } from "../constants";
-import {
-	GlassDialogBody,
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "../team/components/glass-dialog-content";
 
 const ACCEPTED_FILE_TYPES = IMAGE_CONSTRAINTS.formats.join(",");
 
@@ -211,15 +215,15 @@ export function ProfileEditModal({
 	};
 
 	return (
-		<Dialog.Root
+		<Dialog
 			open={isOpen}
 			onOpenChange={(open) => {
 				if (!open && !isLoading) onClose();
 			}}
 		>
-			<GlassDialogContent
+			<DialogContent
+				variant="glass"
 				className="max-w-[420px]"
-				borderStyle="solid"
 				onEscapeKeyDown={(e) => {
 					if (isLoading) {
 						e.preventDefault();
@@ -233,14 +237,26 @@ export function ProfileEditModal({
 					}
 				}}
 			>
-				<GlassDialogHeader
-					title="Edit Profile"
-					description="Update your display name and avatar."
-					onClose={() => {
-						if (!isLoading) onClose();
-					}}
-				/>
-				<GlassDialogBody>
+				<DialogHeader>
+					<div className="flex items-center justify-between">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-white-400">
+							Edit Profile
+						</DialogTitle>
+						<DialogClose
+							onClick={() => {
+								if (!isLoading) onClose();
+							}}
+							className="rounded-sm text-white-400 opacity-70 hover:opacity-100 focus:outline-none"
+						>
+							<X className="h-5 w-5" />
+							<span className="sr-only">Close</span>
+						</DialogClose>
+					</div>
+					<DialogDescription className="font-geist mt-2 text-[14px] text-black-400">
+						Update your display name and avatar.
+					</DialogDescription>
+				</DialogHeader>
+				<DialogBody className="mt-4">
 					<div className="mt-2 flex flex-col items-center gap-6 w-full">
 						{/* Hidden file input */}
 						<Input
@@ -344,15 +360,32 @@ export function ProfileEditModal({
 
 						{/* Action buttons moved to GlassDialogFooter */}
 					</div>
-				</GlassDialogBody>
-				<GlassDialogFooter
-					onCancel={onClose}
-					onConfirm={handleSave}
-					confirmLabel={isLoading ? "Saving..." : "Save"}
-					isPending={isLoading}
-					isConfirmDisabled={!isFormSubmittable}
-				/>
-			</GlassDialogContent>
-		</Dialog.Root>
+				</DialogBody>
+				<DialogFooter>
+					<div className="mt-6 flex justify-end gap-x-3">
+						<Button
+							type="button"
+							variant="link"
+							size="large"
+							onClick={onClose}
+							disabled={isLoading}
+							aria-label="Cancel"
+						>
+							Cancel
+						</Button>
+						<Button
+							type="button"
+							variant="primary"
+							size="large"
+							onClick={handleSave}
+							disabled={isLoading || !isFormSubmittable}
+							aria-label={isLoading ? "Saving..." : "Save"}
+						>
+							{isLoading ? "Saving..." : "Save"}
+						</Button>
+					</div>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }
