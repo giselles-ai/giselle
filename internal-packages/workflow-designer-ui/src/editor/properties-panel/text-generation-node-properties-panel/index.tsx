@@ -220,7 +220,7 @@ export function TextGenerationNodePropertiesPanel({
 							<button
 								type="button"
 								aria-label="Minimize prompt editor"
-								className="size-[32px] rounded-full bg-inverse hover:bg-inverse/80 transition-colors flex items-center justify-center"
+								className="size-[32px] rounded-full bg-[var(--color-text-inverse,var(--color-white,#fff))] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_80%,transparent)] transition-colors flex items-center justify-center"
 								onClick={() => {
 									setIsPromptExpanded(false);
 									setEditorVersion((v) => v + 1);
@@ -266,7 +266,7 @@ export function TextGenerationNodePropertiesPanel({
 							<button
 								type="button"
 								aria-label="Minimize generation panel"
-								className="size-[32px] rounded-full bg-inverse hover:bg-inverse/80 transition-colors flex items-center justify-center"
+								className="size-[32px] rounded-full bg-[var(--color-text-inverse,var(--color-white,#fff))] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_80%,transparent)] transition-colors flex items-center justify-center"
 								onClick={() => {
 									setIsGenerationExpanded(false);
 								}}

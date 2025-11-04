@@ -178,7 +178,7 @@ function Installation({ installation }: InstallationProps) {
 					{displayName}
 				</span>
 			</div>
-			<div className="h-px w-full bg-inverse/10 my-4" />
+			<div className="h-px w-full bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_10%,transparent)] my-4" />
 			<div className="space-y-5">
 				{installation.repositories.map((repo) => (
 					<div key={repo.id} className="flex items-center gap-x-2">

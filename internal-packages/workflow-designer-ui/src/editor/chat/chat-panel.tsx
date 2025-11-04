@@ -188,9 +188,9 @@ export function ChatPanel() {
 							<div className="bg-chat-bubble-accent text-inverse rounded-[8px] rounded-bl-[4px] px-4 py-3 border border-chat-bubble-accent shadow-chat-bubble-accent backdrop-blur-sm font-mono font-light">
 								<div className="flex items-center space-x-1">
 									<div className="flex space-x-1">
-										<div className="w-1.5 h-1.5 bg-inverse rounded-full animate-bounce"></div>
-										<div className="w-1.5 h-1.5 bg-inverse rounded-full animate-bounce animate-delay-100"></div>
-										<div className="w-1.5 h-1.5 bg-inverse rounded-full animate-bounce animate-delay-200"></div>
+										<div className="w-1.5 h-1.5 bg-[var(--color-text-inverse,var(--color-white,#fff))] rounded-full animate-bounce"></div>
+										<div className="w-1.5 h-1.5 bg-[var(--color-text-inverse,var(--color-white,#fff))] rounded-full animate-bounce animate-delay-100"></div>
+										<div className="w-1.5 h-1.5 bg-[var(--color-text-inverse,var(--color-white,#fff))] rounded-full animate-bounce animate-delay-200"></div>
 									</div>
 								</div>
 							</div>

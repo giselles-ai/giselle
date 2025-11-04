@@ -42,11 +42,10 @@ export function Slider(props: SliderProps) {
 						before:content-[''] before:absolute before:inset-0
 						before:bg-[repeating-linear-gradient(90deg,#F7F9FD_0px,#F7F9FD_2px,transparent_2px,transparent_4px)]"
 					>
-						<SliderPrimitive.Range className="absolute h-full bg-inverse rounded-[9999px]" />
+						<SliderPrimitive.Range className="absolute h-full bg-[var(--color-text-inverse,var(--color-white,#fff))] rounded-[9999px]" />
 					</SliderPrimitive.Track>
 					<SliderPrimitive.Thumb
-						className="block h-[10px] w-[10px] rounded-full bg-inverse
-							transition-transform hover:scale-110 focus:outline-none focus:ring-0 active:outline-none active:ring-0"
+						className="block h-[10px] w-[10px] rounded-full bg-[var(--color-text-inverse,var(--color-white,#fff))] transition-transform hover:scale-110 focus:outline-none focus:ring-0 active:outline-none active:ring-0"
 					/>
 				</SliderPrimitive.Root>
 				<div className="text-[12px] font-[700] text-inverse w-[44px] text-right font-mono [font-variant-numeric:tabular-nums]">

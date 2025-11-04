@@ -26,7 +26,7 @@ export function EventSelectionStep({ onSelectEvent }: EventSelectionStepProps) {
 					<button
 						key={id}
 						type="button"
-						className="flex items-center py-[8px] px-[8px] rounded-lg group w-full min-h-[48px] border border-inverse/20 hover:border-inverse/30 hover:bg-inverse/10 transition-colors"
+						className="flex items-center py-[8px] px-[8px] rounded-lg group w-full min-h-[48px] border border-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_20%,transparent)] hover:border-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_30%,transparent)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_10%,transparent)] transition-colors"
 						onClick={() => onSelectEvent(id as GitHubTriggerEventId)}
 					>
 						<div className="flex items-center min-w-0 flex-1">

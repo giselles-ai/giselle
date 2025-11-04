@@ -274,7 +274,7 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 							id="webpage-urls"
 							name="urls"
 							className={clsx(
-								"w-full min-h-[120px] rounded-[8px] bg-inverse/10 text-inverse text-[14px] outline-none resize-none border-none",
+								"w-full min-h-[120px] rounded-[8px] bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_10%,transparent)] text-inverse text-[14px] outline-none resize-none border-none",
 								"!pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px]",
 							)}
 							placeholder={"URLs (one per line)\nhttps://example.com"}
