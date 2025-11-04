@@ -129,7 +129,7 @@ export function ImageGenerationNodePropertiesPanel({
 
 					<div
 						ref={generateCtaRef}
-						className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent"
+						className="shrink-0 px-[16px] pt-[8px] pb-[4px]"
 					>
 						<GenerateCtaButton
 							isGenerating={isGenerating}
@@ -182,13 +182,13 @@ export function ImageGenerationNodePropertiesPanel({
 							<button
 								type="button"
 								aria-label="Minimize prompt editor"
-								className="size-[32px] rounded-full bg-[var(--color-text-inverse, #fff)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_80%,transparent)] transition-colors flex items-center justify-center"
+								className="size-[32px] rounded-full bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)] hover:bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 20%,transparent)] transition-colors flex items-center justify-center"
 								onClick={() => {
 									setIsPromptExpanded(false);
 									setEditorVersion((v) => v + 1);
 								}}
 							>
-								<Minimize2 className="size-[16px] text-background" />
+								<Minimize2 className="size-[16px] text-inverse" />
 							</button>
 						</div>
 						<button
@@ -228,10 +228,10 @@ export function ImageGenerationNodePropertiesPanel({
 							<button
 								type="button"
 								aria-label="Minimize generation panel"
-								className="size-[32px] rounded-full bg-[var(--color-text-inverse, #fff)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_80%,transparent)] transition-colors flex items-center justify-center"
+								className="size-[32px] rounded-full bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)] hover:bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 20%,transparent)] transition-colors flex items-center justify-center"
 								onClick={() => setIsGenerationExpanded(false)}
 							>
-								<Minimize2 className="size-[16px] text-background" />
+								<Minimize2 className="size-[16px] text-inverse" />
 							</button>
 						</div>
 						<button

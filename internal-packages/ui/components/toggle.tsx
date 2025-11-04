@@ -31,7 +31,7 @@ export function Toggle({
 				<Switch.Thumb
 					className={clsx(
 						"block size-[11px] translate-x-[2px] rounded-full",
-						"bg-[var(--color-text-inverse, #fff)] data-[state=checked]:bg-[var(--color-text-inverse, #fff)]",
+						"bg-[var(--color-text-inverse,#fff)]",
 						"transition-transform duration-100 will-change-transform data-[state=checked]:translate-x-[13px]",
 					)}
 				/>
