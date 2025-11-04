@@ -119,7 +119,7 @@ function AgentTimeUsage(props: AgentTimeUsageProps) {
 						)}
 					</div>
 
-					<div className="flex justify-between text-white-400 font-medium text-[12px] leading-[20.4px] tracking-normal font-geist">
+					<div className="flex justify-between text-inverse font-medium text-[12px] leading-[20.4px] tracking-normal font-geist">
 						<span>0 min</span>
 						<span>
 							{isOverLimit ? `${usedMinutes} min` : `${includedMinutes} min`}

@@ -102,7 +102,7 @@ export function DocumentVectorStoreCreateDialog({
 			<Dialog.Trigger asChild>
 				<GlassButton className="whitespace-nowrap">
 					<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
-						<Plus className="size-3 text-black-900" />
+						<Plus className="size-3 text-bg" />
 					</span>
 					New Vector Store
 				</GlassButton>
@@ -125,10 +125,10 @@ export function DocumentVectorStoreCreateDialog({
 						/>
 						{/* Embedding Models, styled like Register Repository */}
 						<div className="mt-4">
-							<div className="text-white-400 text-[14px] leading-[16.8px] font-sans mb-2">
+							<div className="text-inverse text-[14px] leading-[16.8px] font-sans mb-2">
 								Embedding Models
 							</div>
-							<div className="text-white-400/60 text-[12px] mb-3">
+							<div className="text-inverse/60 text-[12px] mb-3">
 								Select at least one embedding model for indexing
 							</div>
 							<div className="space-y-2">
@@ -150,10 +150,10 @@ export function DocumentVectorStoreCreateDialog({
 												className="mt-1 w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
 											/>
 											<div className="flex-1">
-												<div className="text-white-400 text-[14px] font-medium">
+												<div className="text-inverse text-[14px] font-medium">
 													{p.name}
 												</div>
-												<div className="text-white-400/60 text-[12px] mt-1">
+												<div className="text-inverse/60 text-[12px] mt-1">
 													Provider: {p.provider} • Dimensions {p.dimensions}
 												</div>
 											</div>

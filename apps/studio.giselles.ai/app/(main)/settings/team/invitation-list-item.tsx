@@ -100,7 +100,7 @@ export function InvitationListItem({
 					<div className="flex flex-col gap-y-1 font-medium">
 						<div className="text-inverse/50 text-[14px] leading-[20.4px] flex items-center">
 							{email}
-							<span className="ml-2 text-black-400 text-[12px] leading-[16px]">
+							<span className="ml-2 text-text-muted text-[12px] leading-[16px]">
 								(Invitation pending)
 							</span>
 						</div>
@@ -112,7 +112,7 @@ export function InvitationListItem({
 					</div>
 				</div>
 				<div className="flex items-center gap-2">
-					<span className="capitalize text-white-400 font-medium text-[14px] leading-[16px] text-end font-sans">
+					<span className="capitalize text-inverse font-medium text-[14px] leading-[16px] text-end font-sans">
 						{role}
 					</span>
 					{canManageMembers && (
@@ -133,7 +133,7 @@ export function InvitationListItem({
 										e.preventDefault();
 										handleCopy();
 									}}
-									className="flex items-center px-4 py-3 font-medium text-[14px] leading-[16px] text-white-400 hover:bg-white/5 rounded-md focus:outline-none"
+									className="flex items-center px-4 py-3 font-medium text-[14px] leading-[16px] text-inverse hover:bg-white/5 rounded-md focus:outline-none"
 									title="Copy invite link"
 								>
 									<Copy className="h-4 w-4 mr-2" /> Copy invite link
@@ -144,7 +144,7 @@ export function InvitationListItem({
 										handleResend();
 									}}
 									disabled={isResendPending}
-									className="flex items-center px-4 py-3 font-medium text-[14px] leading-[16px] text-white-400 hover:bg-white/5 rounded-md"
+									className="flex items-center px-4 py-3 font-medium text-[14px] leading-[16px] text-inverse hover:bg-white/5 rounded-md"
 									title="Resend invitation"
 								>
 									{isResendPending ? (

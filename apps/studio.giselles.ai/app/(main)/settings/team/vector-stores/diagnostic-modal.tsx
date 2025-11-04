@@ -87,11 +87,11 @@ export function DiagnosticModal({
 				<div className="mt-6 p-4 rounded-lg bg-[#39FF7F]/10 border border-[#39FF7F]/20">
 					<div className="flex items-center gap-2 mb-2">
 						<Check className="h-5 w-5 text-[#39FF7F]" />
-						<h4 className="text-white-400 font-medium text-[16px] font-sans">
+						<h4 className="text-inverse font-medium text-[16px] font-sans">
 							Connection can be restored
 						</h4>
 					</div>
-					<p className="text-black-300 text-[14px] font-geist">
+					<p className="text-text/60 text-[14px] font-geist">
 						Click Restore Connection to reconnect and continue ingesting data
 						from this repository.
 					</p>
@@ -102,11 +102,11 @@ export function DiagnosticModal({
 		return (
 			<div className="mt-6 p-4 rounded-lg bg-[#FF3D71]/10 border border-[#FF3D71]/20">
 				<div className="flex items-center gap-2 mb-2">
-					<h4 className="text-white-400 font-medium text-[16px] font-sans">
+					<h4 className="text-inverse font-medium text-[16px] font-sans">
 						Repository no longer accessible
 					</h4>
 				</div>
-				<p className="text-black-300 text-[14px] font-geist">
+				<p className="text-text/60 text-[14px] font-geist">
 					{diagnosisResult.errorMessage ||
 						"This repository has been deleted or is no longer accessible with current permissions."}
 				</p>
@@ -127,7 +127,7 @@ export function DiagnosticModal({
 					{isDiagnosing ? (
 						<div className="flex items-center justify-center py-8">
 							<Loader2 className="h-8 w-8 text-[#1663F3] animate-spin" />
-							<span className="ml-3 text-[14px] font-geist text-black-300">
+							<span className="ml-3 text-[14px] font-geist text-text/60">
 								Checking repository access...
 							</span>
 						</div>

@@ -94,7 +94,7 @@ export const GlassDialogHeader = ({
 		<div className="flex items-center justify-between">
 			<Dialog.Title
 				className={cn(
-					"font-sans text-[20px] font-medium tracking-tight text-white-400",
+					"font-sans text-[20px] font-medium tracking-tight text-inverse",
 					{
 						"text-error-900": variant === "destructive",
 					},
@@ -104,14 +104,14 @@ export const GlassDialogHeader = ({
 			</Dialog.Title>
 			<Dialog.Close
 				onClick={onClose}
-				className="rounded-sm text-white-400 opacity-70 hover:opacity-100 focus:outline-none"
+				className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none"
 			>
 				<X className="h-5 w-5" />
 				<span className="sr-only">Close</span>
 			</Dialog.Close>
 		</div>
 		<Dialog.Description
-			className={cn("font-geist mt-2 text-[14px] text-black-400", {
+			className={cn("font-geist mt-2 text-[14px] text-text-muted", {
 				"text-error-900/50": variant === "destructive",
 			})}
 		>
