@@ -405,7 +405,7 @@ export function FilterableActsList({
 										type="button"
 										className={clsx(
 											"flex items-center gap-2 rounded-[8px] h-10 px-[12px] text-left text-[14px] w-full",
-											"outline-none focus:outline-none",
+											"outline-none",
 											"transition-colors",
 										)}
 									>

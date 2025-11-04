@@ -387,7 +387,7 @@ export function InviteMemberDialog({
 									}}
 									onKeyDown={handleKeyDown}
 									onBlur={() => addEmailTags()}
-									className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse outline-none placeholder:text-link-muted focus-visible:outline-none focus-visible:ring-0"
+									className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse outline-none placeholder:text-link-muted focus-visible:ring-0"
 									disabled={isLoading}
 								/>
 							</div>

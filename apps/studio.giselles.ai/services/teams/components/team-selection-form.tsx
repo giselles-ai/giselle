@@ -54,7 +54,7 @@ export function TeamSelectionForm({
 					formRef.current?.requestSubmit();
 				}}
 			>
-				<SelectTrigger className="w-auto min-w-[100px] max-w-[360px] border-0 flex justify-between items-center data-[state=open]:border-0 data-[state=open]:ring-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 outline-none focus-visible:outline-none px-0.5 py-0.5 bg-transparent">
+				<SelectTrigger className="w-auto min-w-[100px] max-w-[360px] border-0 flex justify-between items-center data-[state=open]:border-0 data-[state=open]:ring-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 outline-none px-0.5 py-0.5 bg-transparent">
 					<div className="flex items-center gap-1.5">
 						{isAccontSettingPage ? (
 							currentUser
