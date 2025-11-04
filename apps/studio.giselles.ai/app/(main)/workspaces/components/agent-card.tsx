@@ -40,14 +40,13 @@ export function AgentCard({ agent }: { agent: typeof dbAgents.$inferSelect }) {
 			aria-label={agent.name || "Untitled workspace"}
 			className={clsx(
 				"group relative flex h-[300px] w-[267px] flex-none flex-col rounded-[12px] border-[0.5px]",
+				"bg-[linear-gradient(135deg,rgba(100,130,200,0.20)_0%,rgba(60,80,120,0.35)_40%,rgba(20,30,60,0.85)_100%)]",
 				"filter grayscale hover:grayscale-0 transition duration-500",
 			)}
 			style={
 				{
-					"--spotlight-color": "var(--color-agent-card-spotlight)",
-					borderColor: "var(--color-agent-card-border)",
-					background:
-						"linear-gradient(135deg, var(--color-agent-card-gradient-from) 0%, var(--color-agent-card-gradient-middle) 40%, var(--color-agent-card-gradient-to) 100%)",
+					"--spotlight-color": "rgba(255,255,255,0.15)",
+					borderColor: "rgba(160,180,255,0.15)",
 				} as React.CSSProperties
 			}
 		>
