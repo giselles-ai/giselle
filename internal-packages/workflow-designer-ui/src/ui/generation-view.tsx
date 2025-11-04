@@ -44,7 +44,7 @@ function mergeAdjacentTextParts<T extends UIMessage>({ parts, ...message }: T) {
 
 function Spinner() {
 	return (
-		<div className="flex gap-[12px] text-black-400">
+		<div className="flex gap-[12px] text-text-muted">
 			<WilliIcon className="w-[20px] h-[20px] animate-pop-pop-1" />
 			<WilliIcon className="w-[20px] h-[20px] animate-pop-pop-2" />
 			<WilliIcon className="w-[20px] h-[20px] animate-pop-pop-3" />
@@ -190,7 +190,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 											<Accordion.Item
 												value={`messages.${message.id}.parts.[${index}].reasoning`}
 											>
-												<Accordion.Trigger className="group text-white-400 text-[12px] flex items-center gap-[4px] cursor-pointer hover:text-white-800 transition-colors data-[state=open]:text-white-800 outline-none font-sans">
+												<Accordion.Trigger className="group text-inverse text-[12px] flex items-center gap-[4px] cursor-pointer hover:text-inverse transition-colors data-[state=open]:text-inverse outline-none font-sans">
 													<ChevronRightIcon
 														className="size-[16px] transition-transform duration-300 ease-[cubic-bezier(0.87,_0,_0.13,_1)] group-data-[state=open]:rotate-90"
 														aria-hidden
@@ -199,7 +199,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 														Thinking...
 													</span>
 												</Accordion.Trigger>
-												<Accordion.Content className="markdown-renderer overflow-hidden italic text-[14px] text-white-400 ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-white-400/20">
+												<Accordion.Content className="markdown-renderer overflow-hidden italic text-[14px] text-inverse ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-inverse/20">
 													<MemoizedMarkdown content={part.text} />
 												</Accordion.Content>
 											</Accordion.Item>
