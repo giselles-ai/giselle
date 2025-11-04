@@ -4,14 +4,14 @@ import type {
 	FlowTriggerId,
 	NodeId,
 	WorkspaceId,
-} from "@giselle-sdk/data-type";
-import type { ActId, AppId } from "@giselle-sdk/giselle";
+} from "@giselle-ai/data-type";
+import type { ActId, AppId } from "@giselle-ai/giselle";
 import type {
 	GitHubIssueDocumentKey,
 	GitHubIssueState,
 	GitHubIssueStateReason,
 	GitHubRepositoryIssueContentType,
-} from "@giselle-sdk/github-tool";
+} from "@giselle-ai/github-tool";
 import type {
 	DocumentVectorStoreId,
 	DocumentVectorStoreSourceId,

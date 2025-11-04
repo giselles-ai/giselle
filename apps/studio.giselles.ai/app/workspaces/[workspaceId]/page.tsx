@@ -1,6 +1,6 @@
+import { WorkspaceId } from "@giselle-ai/data-type";
+import { AppId } from "@giselle-ai/giselle";
 import { Background } from "@giselle-internal/workflow-designer-ui";
-import { WorkspaceId } from "@giselle-sdk/data-type";
-import { AppId } from "@giselle-sdk/giselle";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
