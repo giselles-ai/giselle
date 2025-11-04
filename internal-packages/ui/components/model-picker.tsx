@@ -72,7 +72,7 @@ export function ModelPicker({
 						fullWidth ? "w-full" : "w-auto",
 						"flex justify-between items-center rounded-[8px] h-9 text-left text-[14px] shrink-0",
 						"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
-						"bg-transparent border border-inverse/20 transition-colors hover:bg-white/5",
+						"bg-transparent border border-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] transition-colors hover:bg-white/5",
 						"px-[8px]",
 						"data-[placeholder]:text-text-muted",
 					)}

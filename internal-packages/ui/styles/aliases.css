@@ -207,17 +207,6 @@
 		) !important;
 	}
 
-	/* Inverse border helpers (align to text-inverse) */
-	.border-inverse {
-		border-color: var(--color-text-inverse, var(--color-white, #fff)) !important;
-	}
-	.border-inverse\/20 {
-		border-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 20%,
-			transparent
-		) !important;
-	}
 
 	/* Compatibility alias: keep existing class name working */
 	.color-border-focused {

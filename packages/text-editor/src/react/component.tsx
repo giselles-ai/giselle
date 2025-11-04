@@ -196,7 +196,7 @@ export function TextEditor({
 				editorProps={{
 					attributes: {
 						class: clsx(
-							"prompt-editor border border-inverse rounded-[8px] p-[16px] pb-0 box-border flex-1 overflow-y-auto",
+							"prompt-editor border border-[var(--color-text-inverse, #fff)] rounded-[8px] p-[16px] pb-0 box-border flex-1 overflow-y-auto",
 							editorClassName,
 						),
 						...(fullHeight ? { style: "height: 100%" } : {}),

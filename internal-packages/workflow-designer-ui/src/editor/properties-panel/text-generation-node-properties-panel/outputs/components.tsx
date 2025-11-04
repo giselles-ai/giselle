@@ -108,7 +108,7 @@ function _SelectOutputPopover({
 			<Popover.Trigger
 				className={clsx(
 					"flex items-center cursor-pointer p-[10px] rounded-[8px]",
-					"border border-transparent hover:border-inverse",
+					"border border-transparent hover:border-[var(--color-text-inverse, #fff)]",
 					"text-[12px] font-[700] text-inverse",
 					"transition-colors",
 				)}

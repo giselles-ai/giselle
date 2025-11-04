@@ -71,10 +71,10 @@ export function Select<T extends SelectOption>({
 						"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
 						renderTriggerContent
 							? clsx(
-									"bg-transparent border border-inverse/20 transition-colors",
+									"bg-transparent border border-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] transition-colors",
 									disableHoverBg ? undefined : "hover:bg-white/5",
 								)
-							: "bg-transparent border border-inverse/20 transition-colors hover:bg-white/5",
+							: "bg-transparent border border-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] transition-colors hover:bg-white/5",
 						"disabled:opacity-50 disabled:cursor-not-allowed",
 						"data-[placeholder]:text-text-muted",
 						triggerClassName,
