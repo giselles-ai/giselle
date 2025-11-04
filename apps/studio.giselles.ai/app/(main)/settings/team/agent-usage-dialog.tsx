@@ -21,7 +21,7 @@ export function AgentUsageDialog({ activities }: AgentUsageDialogProps) {
 			</DialogTrigger>
 			<DialogContent size="wide" variant="glass">
 				<div className="py-[12px]">
-					<DialogTitle className="text-white-400 text-[16px] leading-[27.2px] tracking-normal font-sans">
+					<DialogTitle className="text-inverse text-[16px] leading-[27.2px] tracking-normal font-sans">
 						App Usage Logs
 					</DialogTitle>
 				</div>
