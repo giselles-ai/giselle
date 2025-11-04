@@ -1,8 +1,8 @@
-import type { QueryNode } from "@giselle-sdk/data-type";
+import type { QueryNode } from "@giselle-ai/data-type";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/giselle/react";
 import clsx from "clsx/lite";
 import { StackBlicksIcon } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";

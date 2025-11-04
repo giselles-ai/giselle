@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-sdk/text-editor-utils",
+	"name": "@giselle-ai/text-editor-utils",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -20,12 +20,12 @@
 		}
 	},
 	"devDependencies": {
-		"@giselle/giselle-sdk-tsconfig": "workspace:*",
+		"@giselle/giselle-ai-tsconfig": "workspace:*",
 		"@types/turndown": "catalog:",
 		"tsup": "catalog:"
 	},
 	"dependencies": {
-		"@giselle-sdk/data-type": "workspace:*",
+		"@giselle-ai/data-type": "workspace:*",
 		"@tiptap/core": "catalog:",
 		"@tiptap/react": "catalog:",
 		"@tiptap/html": "catalog:",

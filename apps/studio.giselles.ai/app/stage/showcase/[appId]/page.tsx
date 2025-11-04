@@ -1,4 +1,4 @@
-import { FlowTriggerId, type WorkspaceId } from "@giselle-sdk/data-type";
+import { FlowTriggerId, type WorkspaceId } from "@giselle-ai/data-type";
 import { and, avg, count, desc, eq, sum } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { giselleEngine } from "@/app/giselle-engine";

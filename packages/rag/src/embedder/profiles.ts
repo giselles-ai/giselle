@@ -1,7 +1,7 @@
 import {
 	EMBEDDING_PROFILES,
 	type EmbeddingProfileId,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 import { ConfigurationError } from "../errors";
 import type { EmbedderConfig } from "./ai-sdk-embedder";
 import { createGoogleEmbedder } from "./google";

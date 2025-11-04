@@ -1,4 +1,4 @@
-import { Workspace } from "@giselle-sdk/data-type";
+import { Workspace } from "@giselle-ai/data-type";
 import { expect, test } from "vitest";
 import workspaceJson from "./fixtures/workspace1.json";
 

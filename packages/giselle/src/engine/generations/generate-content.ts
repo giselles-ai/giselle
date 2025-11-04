@@ -7,13 +7,13 @@ import {
 	isTextGenerationNode,
 	type Output,
 	type TextGenerationLanguageModelData,
-} from "@giselle-sdk/data-type";
-import { githubTools, octokit } from "@giselle-sdk/github-tool";
+} from "@giselle-ai/data-type";
+import { githubTools, octokit } from "@giselle-ai/github-tool";
 import {
 	Capability,
 	hasCapability,
 	languageModels,
-} from "@giselle-sdk/language-model";
+} from "@giselle-ai/language-model";
 import {
 	AISDKError,
 	type AsyncIterableStream,

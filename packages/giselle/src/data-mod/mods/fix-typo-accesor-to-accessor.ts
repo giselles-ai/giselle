@@ -1,4 +1,4 @@
-import type { Output } from "@giselle-sdk/data-type";
+import type { Output } from "@giselle-ai/data-type";
 import type { $ZodIssue } from "@zod/core";
 import { getValueAtPath, isObject, setValueAtPath } from "../utils";
 

@@ -14,12 +14,12 @@
 	},
 	"dependencies": {
 		"@giselle-internal/ui": "workspace:^",
-		"@giselle-sdk/data-type": "workspace:*",
-		"@giselle-sdk/flow": "workspace:^",
-		"@giselle-sdk/giselle": "workspace:*",
-		"@giselle-sdk/language-model": "workspace:^",
-		"@giselle-sdk/text-editor": "workspace:^",
-		"@giselle-sdk/text-editor-utils": "workspace:^",
+		"@giselle-ai/data-type": "workspace:*",
+		"@giselle-ai/flow": "workspace:^",
+		"@giselle-ai/giselle": "workspace:*",
+		"@giselle-ai/language-model": "workspace:^",
+		"@giselle-ai/text-editor": "workspace:^",
+		"@giselle-ai/text-editor-utils": "workspace:^",
 		"@xyflow/react": "catalog:",
 		"clsx": "catalog:",
 		"fast-levenshtein": "catalog:",
@@ -39,7 +39,7 @@
 		"zustand": "catalog:"
 	},
 	"devDependencies": {
-		"@giselle/giselle-sdk-tsconfig": "workspace:*",
+		"@giselle/giselle-ai-tsconfig": "workspace:*",
 		"@types/fast-levenshtein": "catalog:",
 		"@types/node": "catalog:",
 		"@types/react": "catalog:",

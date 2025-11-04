@@ -7,8 +7,8 @@ import {
 	type ImageGenerationNode,
 	isImageGenerationNode,
 	type OpenAIImageLanguageModelData,
-} from "@giselle-sdk/data-type";
-import type { GeneratedImageData } from "@giselle-sdk/language-model";
+} from "@giselle-ai/data-type";
+import type { GeneratedImageData } from "@giselle-ai/language-model";
 import {
 	experimental_generateImage as generateImageAiSdk,
 	generateText,

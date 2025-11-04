@@ -1,7 +1,7 @@
+import type { ConnectionId, TriggerNode } from "@giselle-ai/data-type";
+import { useActController } from "@giselle-ai/giselle/react";
 import { Button } from "@giselle-internal/ui/button";
 import { useToasts } from "@giselle-internal/ui/toast";
-import type { ConnectionId, TriggerNode } from "@giselle-sdk/data-type";
-import { useActController } from "@giselle-sdk/giselle/react";
 import { clsx } from "clsx/lite";
 import { LoaderIcon, PlayIcon, XIcon } from "lucide-react";
 import { Dialog } from "radix-ui";

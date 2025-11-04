@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-sdk/langfuse",
+	"name": "@giselle-ai/langfuse",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -19,15 +19,15 @@
 		}
 	},
 	"devDependencies": {
-		"@giselle/giselle-sdk-tsconfig": "workspace:*",
+		"@giselle/giselle-ai-tsconfig": "workspace:*",
 		"ai": "catalog:",
 		"tsup": "catalog:"
 	},
 	"dependencies": {
-		"@giselle-sdk/data-type": "workspace:^",
-		"@giselle-sdk/giselle": "workspace:^",
-		"@giselle-sdk/language-model": "workspace:^",
-		"@giselle-sdk/rag": "workspace:^",
+		"@giselle-ai/data-type": "workspace:^",
+		"@giselle-ai/giselle": "workspace:^",
+		"@giselle-ai/language-model": "workspace:^",
+		"@giselle-ai/rag": "workspace:^",
 		"langfuse": "catalog:"
 	}
 }

@@ -4,8 +4,8 @@ import {
 	isTextNode,
 	type NodeId,
 	type OutputId,
-} from "@giselle-sdk/data-type";
-import { githubActions } from "@giselle-sdk/flow";
+} from "@giselle-ai/data-type";
+import { githubActions } from "@giselle-ai/flow";
 import {
 	createDiscussionComment,
 	createIssue,
@@ -17,11 +17,11 @@ import {
 	getRepositoryFullname,
 	replyPullRequestReviewComment,
 	updatePullRequest,
-} from "@giselle-sdk/github-tool";
+} from "@giselle-ai/github-tool";
 import {
 	isJsonContent,
 	jsonContentToText,
-} from "@giselle-sdk/text-editor-utils";
+} from "@giselle-ai/text-editor-utils";
 import type {
 	GenerationContext,
 	GenerationOutput,

@@ -1,4 +1,4 @@
-import { Workspace } from "@giselle-sdk/data-type";
+import { Workspace } from "@giselle-ai/data-type";
 import { describe, expect, test } from "vitest";
 import { backwardTraversalFixture } from "../__fixtures__/backward-traversal";
 import { multipleConnectionsSameNodesFixture } from "../__fixtures__/multiple-connections-same-nodes";

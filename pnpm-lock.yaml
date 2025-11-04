@@ -277,16 +277,16 @@ importers:
       '@giselle-internal/workflow-designer-ui':
         specifier: workspace:*
         version: link:../../internal-packages/workflow-designer-ui
-      '@giselle-sdk/data-type':
+      '@giselle-ai/data-type':
         specifier: workspace:*
         version: link:../../packages/data-type
-      '@giselle-sdk/giselle':
+      '@giselle-ai/giselle':
         specifier: workspace:*
         version: link:../../packages/giselle
-      '@giselle-sdk/langfuse':
+      '@giselle-ai/langfuse':
         specifier: workspace:^
         version: link:../../packages/langfuse
-      '@giselle-sdk/supabase-driver':
+      '@giselle-ai/supabase-driver':
         specifier: workspace:^
         version: link:../../packages/supabase-driver
       '@supabase/supabase-js':
@@ -356,28 +356,28 @@ importers:
       '@giselle-internal/workflow-designer-ui':
         specifier: workspace:*
         version: link:../../internal-packages/workflow-designer-ui
-      '@giselle-sdk/data-type':
+      '@giselle-ai/data-type':
         specifier: workspace:*
         version: link:../../packages/data-type
-      '@giselle-sdk/document-preprocessor':
+      '@giselle-ai/document-preprocessor':
         specifier: workspace:*
         version: link:../../packages/document-preprocessor
-      '@giselle-sdk/giselle':
+      '@giselle-ai/giselle':
         specifier: workspace:*
         version: link:../../packages/giselle
-      '@giselle-sdk/github-tool':
+      '@giselle-ai/github-tool':
         specifier: workspace:*
         version: link:../../packages/github-tool
-      '@giselle-sdk/langfuse':
+      '@giselle-ai/langfuse':
         specifier: workspace:*
         version: link:../../packages/langfuse
-      '@giselle-sdk/language-model':
+      '@giselle-ai/language-model':
         specifier: workspace:*
         version: link:../../packages/language-model
-      '@giselle-sdk/rag':
+      '@giselle-ai/rag':
         specifier: workspace:*
         version: link:../../packages/rag
-      '@giselle-sdk/supabase-driver':
+      '@giselle-ai/supabase-driver':
         specifier: workspace:*
         version: link:../../packages/supabase-driver
       '@icons-pack/react-simple-icons':
@@ -679,10 +679,10 @@ importers:
 
   internal-packages/ui:
     dependencies:
-      '@giselle-sdk/data-type':
+      '@giselle-ai/data-type':
         specifier: workspace:^
         version: link:../../packages/data-type
-      '@giselle-sdk/text-editor':
+      '@giselle-ai/text-editor':
         specifier: workspace:^
         version: link:../../packages/text-editor
       '@radix-ui/react-dialog':
@@ -704,7 +704,7 @@ importers:
         specifier: 'catalog:'
         version: 19.1.1(react@19.1.1)
     devDependencies:
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:^
         version: link:../../tools/tsconfig
       '@types/react':
@@ -725,22 +725,22 @@ importers:
       '@giselle-internal/ui':
         specifier: workspace:^
         version: link:../ui
-      '@giselle-sdk/data-type':
+      '@giselle-ai/data-type':
         specifier: workspace:*
         version: link:../../packages/data-type
-      '@giselle-sdk/flow':
+      '@giselle-ai/flow':
         specifier: workspace:^
         version: link:../../packages/flow
-      '@giselle-sdk/giselle':
+      '@giselle-ai/giselle':
         specifier: workspace:*
         version: link:../../packages/giselle
-      '@giselle-sdk/language-model':
+      '@giselle-ai/language-model':
         specifier: workspace:^
         version: link:../../packages/language-model
-      '@giselle-sdk/text-editor':
+      '@giselle-ai/text-editor':
         specifier: workspace:^
         version: link:../../packages/text-editor
-      '@giselle-sdk/text-editor-utils':
+      '@giselle-ai/text-editor-utils':
         specifier: workspace:^
         version: link:../../packages/text-editor-utils
       '@xyflow/react':
@@ -795,7 +795,7 @@ importers:
         specifier: 'catalog:'
         version: 5.0.8(@types/react@19.1.10)(react@19.1.1)(use-sync-external-store@1.4.0(react@19.1.1))
     devDependencies:
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       '@types/fast-levenshtein':
@@ -828,20 +828,20 @@ importers:
 
   packages/data-type:
     dependencies:
-      '@giselle-sdk/flow':
+      '@giselle-ai/flow':
         specifier: workspace:^
         version: link:../flow
-      '@giselle-sdk/language-model':
+      '@giselle-ai/language-model':
         specifier: workspace:^
         version: link:../language-model
       zod:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle-sdk/utils':
+      '@giselle-ai/utils':
         specifier: workspace:*
         version: link:../utils
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       tsup:
@@ -860,7 +860,7 @@ importers:
         specifier: 'catalog:'
         version: 7.0.0
     devDependencies:
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:^
         version: link:../../tools/tsconfig
       '@types/node':
@@ -885,7 +885,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       tsup:
@@ -912,19 +912,19 @@ importers:
       '@ai-sdk/provider':
         specifier: 'catalog:'
         version: 2.0.0
-      '@giselle-sdk/flow':
+      '@giselle-ai/flow':
         specifier: workspace:^
         version: link:../flow
-      '@giselle-sdk/github-tool':
+      '@giselle-ai/github-tool':
         specifier: workspace:^
         version: link:../github-tool
-      '@giselle-sdk/language-model':
+      '@giselle-ai/language-model':
         specifier: workspace:^
         version: link:../language-model
-      '@giselle-sdk/text-editor-utils':
+      '@giselle-ai/text-editor-utils':
         specifier: workspace:^
         version: link:../text-editor-utils
-      '@giselle-sdk/web-search':
+      '@giselle-ai/web-search':
         specifier: workspace:^
         version: link:../web-search
       ai:
@@ -949,16 +949,16 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle-sdk/data-type':
+      '@giselle-ai/data-type':
         specifier: workspace:*
         version: link:../data-type
-      '@giselle-sdk/rag':
+      '@giselle-ai/rag':
         specifier: workspace:^
         version: link:../rag
-      '@giselle-sdk/utils':
+      '@giselle-ai/utils':
         specifier: workspace:*
         version: link:../utils
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       '@types/pg':
@@ -985,7 +985,7 @@ importers:
 
   packages/github-tool:
     dependencies:
-      '@giselle-sdk/rag':
+      '@giselle-ai/rag':
         specifier: workspace:*
         version: link:../rag
       '@octokit/auth-app':
@@ -1019,7 +1019,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       '@octokit/openapi-types':
@@ -1037,23 +1037,23 @@ importers:
 
   packages/langfuse:
     dependencies:
-      '@giselle-sdk/data-type':
+      '@giselle-ai/data-type':
         specifier: workspace:^
         version: link:../data-type
-      '@giselle-sdk/giselle':
+      '@giselle-ai/giselle':
         specifier: workspace:^
         version: link:../giselle
-      '@giselle-sdk/language-model':
+      '@giselle-ai/language-model':
         specifier: workspace:^
         version: link:../language-model
-      '@giselle-sdk/rag':
+      '@giselle-ai/rag':
         specifier: workspace:^
         version: link:../rag
       langfuse:
         specifier: 'catalog:'
         version: 3.38.4
     devDependencies:
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       ai:
@@ -1069,7 +1069,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       tsup:
@@ -1087,7 +1087,7 @@ importers:
       '@ai-sdk/openai':
         specifier: 'catalog:'
         version: 2.0.30(zod@3.25.76)
-      '@giselle-sdk/data-type':
+      '@giselle-ai/data-type':
         specifier: workspace:*
         version: link:../data-type
       ai:
@@ -1106,7 +1106,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:^
         version: link:../../tools/tsconfig
       '@types/node':
@@ -1137,10 +1137,10 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle-sdk/giselle':
+      '@giselle-ai/giselle':
         specifier: workspace:^
         version: link:../giselle
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:^
         version: link:../../tools/tsconfig
       tsup:
@@ -1149,13 +1149,13 @@ importers:
 
   packages/text-editor:
     dependencies:
-      '@giselle-sdk/data-type':
+      '@giselle-ai/data-type':
         specifier: workspace:^
         version: link:../data-type
-      '@giselle-sdk/giselle':
+      '@giselle-ai/giselle':
         specifier: workspace:^
         version: link:../giselle
-      '@giselle-sdk/text-editor-utils':
+      '@giselle-ai/text-editor-utils':
         specifier: workspace:^
         version: link:../text-editor-utils
       '@tiptap/extension-mention':
@@ -1183,7 +1183,7 @@ importers:
         specifier: 'catalog:'
         version: 19.1.1
     devDependencies:
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       '@types/react':
@@ -1195,7 +1195,7 @@ importers:
 
   packages/text-editor-utils:
     dependencies:
-      '@giselle-sdk/data-type':
+      '@giselle-ai/data-type':
         specifier: workspace:*
         version: link:../data-type
       '@tiptap/core':
@@ -1223,7 +1223,7 @@ importers:
         specifier: 'catalog:'
         version: 7.2.0
     devDependencies:
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       '@types/turndown':
@@ -1242,7 +1242,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       tsup:
@@ -1261,7 +1261,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle/giselle-sdk-tsconfig':
+      '@giselle/giselle-ai-tsconfig':
         specifier: workspace:^
         version: link:../../tools/tsconfig
       '@types/node':

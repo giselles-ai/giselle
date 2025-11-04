@@ -2,13 +2,13 @@ import type {
 	EmbeddingProfileId,
 	FlowTrigger,
 	WorkspaceId,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 import type {
 	GitHubInstallationAppAuth,
 	GitHubPersonalAccessTokenAuth,
-} from "@giselle-sdk/github-tool";
-import type { LanguageModelProvider } from "@giselle-sdk/language-model";
-import type { EmbeddingMetrics, QueryService } from "@giselle-sdk/rag";
+} from "@giselle-ai/github-tool";
+import type { LanguageModelProvider } from "@giselle-ai/language-model";
+import type { EmbeddingMetrics, QueryService } from "@giselle-ai/rag";
 import type { ModelMessage, ProviderMetadata } from "ai";
 import type { Act } from "../concepts/act";
 import type { GiselleLogger } from "../logger/types";

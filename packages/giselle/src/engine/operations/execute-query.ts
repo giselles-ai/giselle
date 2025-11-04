@@ -11,12 +11,12 @@ import {
 	OutputId,
 	type VectorStoreNode,
 	type WorkspaceId,
-} from "@giselle-sdk/data-type";
-import type { EmbeddingMetrics } from "@giselle-sdk/rag";
+} from "@giselle-ai/data-type";
+import type { EmbeddingMetrics } from "@giselle-ai/rag";
 import {
 	isJsonContent,
 	jsonContentToText,
-} from "@giselle-sdk/text-editor-utils";
+} from "@giselle-ai/text-editor-utils";
 import {
 	type FailedGeneration,
 	GenerationContext,

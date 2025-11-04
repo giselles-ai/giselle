@@ -2,8 +2,8 @@ import type {
 	FlowTrigger,
 	FlowTriggerId,
 	GitHubFlowTrigger,
-} from "@giselle-sdk/data-type";
-import { useGiselleEngine } from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/data-type";
+import { useGiselleEngine } from "@giselle-ai/giselle/react";
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
 

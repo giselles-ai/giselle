@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-sdk/flow",
+	"name": "@giselle-ai/flow",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -19,7 +19,7 @@
 		}
 	},
 	"devDependencies": {
-		"@giselle/giselle-sdk-tsconfig": "workspace:*",
+		"@giselle/giselle-ai-tsconfig": "workspace:*",
 		"tsup": "catalog:"
 	},
 	"dependencies": {

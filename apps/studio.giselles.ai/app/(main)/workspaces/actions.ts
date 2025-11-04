@@ -1,7 +1,7 @@
 "use server";
 
-import type { WorkspaceId } from "@giselle-sdk/data-type";
-import { isTriggerNode } from "@giselle-sdk/data-type";
+import type { WorkspaceId } from "@giselle-ai/data-type";
+import { isTriggerNode } from "@giselle-ai/data-type";
 import type { AgentId } from "@giselles-ai/types";
 import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";

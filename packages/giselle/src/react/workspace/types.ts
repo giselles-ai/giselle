@@ -11,8 +11,8 @@ import type {
 	ShortcutScope,
 	Viewport,
 	Workspace,
-} from "@giselle-sdk/data-type";
-import type { LanguageModelProvider } from "@giselle-sdk/language-model";
+} from "@giselle-ai/data-type";
+import type { LanguageModelProvider } from "@giselle-ai/language-model";
 
 export type ConnectionCloneStrategy = "inputs-only" | "all" | "none";
 

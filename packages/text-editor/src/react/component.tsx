@@ -1,5 +1,5 @@
-import type { Node, Output } from "@giselle-sdk/data-type";
-import { extensions as baseExtensions } from "@giselle-sdk/text-editor-utils";
+import type { Node, Output } from "@giselle-ai/data-type";
+import { extensions as baseExtensions } from "@giselle-ai/text-editor-utils";
 import Mention from "@tiptap/extension-mention";
 import Placeholder from "@tiptap/extension-placeholder";
 import { type Editor, EditorProvider, useCurrentEditor } from "@tiptap/react";

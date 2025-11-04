@@ -1,4 +1,4 @@
-import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-sdk/data-type";
+import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-ai/data-type";
 import { describe, expect, it } from "vitest";
 import { mapMetadataToColumns, prepareChunkRecords } from "./utils";
 

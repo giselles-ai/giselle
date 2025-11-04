@@ -1,5 +1,5 @@
-import type { UsageLimits } from "@giselle-sdk/giselle";
-import { Tier } from "@giselle-sdk/language-model";
+import type { UsageLimits } from "@giselle-ai/giselle";
+import { Tier } from "@giselle-ai/language-model";
 import { eq } from "drizzle-orm";
 import { agentTimeRestrictions, db, teams } from "@/db";
 import {

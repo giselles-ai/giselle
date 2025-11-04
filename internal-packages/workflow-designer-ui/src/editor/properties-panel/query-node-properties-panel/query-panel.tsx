@@ -1,11 +1,11 @@
-import { SettingDetail } from "@giselle-internal/ui/setting-label";
-import { isVectorStoreNode, type QueryNode } from "@giselle-sdk/data-type";
+import { isVectorStoreNode, type QueryNode } from "@giselle-ai/data-type";
 import {
 	useVectorStore,
 	useWorkflowDesigner,
 	type VectorStoreContextValue,
-} from "@giselle-sdk/giselle/react";
-import { TextEditor } from "@giselle-sdk/text-editor/react-internal";
+} from "@giselle-ai/giselle/react";
+import { TextEditor } from "@giselle-ai/text-editor/react-internal";
+import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import { DatabaseZapIcon, X } from "lucide-react";
 import { useMemo } from "react";
 import { GitHubIcon } from "../../../icons";

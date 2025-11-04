@@ -2,7 +2,7 @@ import {
 	type Document,
 	type DocumentLoader,
 	DocumentLoaderError,
-} from "@giselle-sdk/rag";
+} from "@giselle-ai/rag";
 import { type Client, CombinedError } from "urql";
 import { graphql } from "../../client";
 import { octokit } from "../../octokit";

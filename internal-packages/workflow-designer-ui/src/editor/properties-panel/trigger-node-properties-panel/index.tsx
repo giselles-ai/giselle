@@ -1,5 +1,5 @@
-import type { TriggerNode } from "@giselle-sdk/data-type";
-import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
+import type { TriggerNode } from "@giselle-ai/data-type";
+import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
 import clsx from "clsx/lite";
 import { createContext, useContext, useState } from "react";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";

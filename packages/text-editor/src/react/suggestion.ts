@@ -1,5 +1,5 @@
-import { defaultName } from "@giselle-sdk/giselle/react";
-import { createSourceExtensionJSONContent } from "@giselle-sdk/text-editor-utils";
+import { defaultName } from "@giselle-ai/giselle/react";
+import { createSourceExtensionJSONContent } from "@giselle-ai/text-editor-utils";
 import { ReactRenderer } from "@tiptap/react";
 import type { SuggestionOptions } from "@tiptap/suggestion";
 import type { ConnectedSource } from "./component";

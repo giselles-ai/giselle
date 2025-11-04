@@ -1,4 +1,4 @@
-import { WorkspaceProvider } from "@giselle-sdk/giselle/react";
+import { WorkspaceProvider } from "@giselle-ai/giselle/react";
 import type { ReactNode } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {

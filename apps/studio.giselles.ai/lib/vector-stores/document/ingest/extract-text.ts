@@ -1,7 +1,4 @@
-import {
-	extractPdfText,
-	extractText,
-} from "@giselle-sdk/document-preprocessor";
+import { extractPdfText, extractText } from "@giselle-ai/document-preprocessor";
 import { resolveSupportedDocumentFile } from "../utils";
 
 interface ExtractTextOptions {

@@ -1,4 +1,4 @@
-import type { NodeId } from "@giselle-sdk/data-type";
+import type { NodeId } from "@giselle-ai/data-type";
 import { Generation, NodeGenerationIndex } from "../../../concepts/generation";
 import type { GiselleLogger } from "../../../logger/types";
 import type { GiselleStorage } from "../../storage";

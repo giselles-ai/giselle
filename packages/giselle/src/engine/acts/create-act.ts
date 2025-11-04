@@ -6,7 +6,7 @@ import {
 	NodeId,
 	Workspace,
 	WorkspaceId,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 import { z } from "zod/v4";
 import {
 	Act,

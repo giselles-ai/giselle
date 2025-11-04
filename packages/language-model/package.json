@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-sdk/language-model",
+	"name": "@giselle-ai/language-model",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -21,7 +21,7 @@
 		}
 	},
 	"devDependencies": {
-		"@giselle/giselle-sdk-tsconfig": "workspace:*",
+		"@giselle/giselle-ai-tsconfig": "workspace:*",
 		"tsup": "catalog:",
 		"vitest": "catalog:"
 	},

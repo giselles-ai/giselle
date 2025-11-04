@@ -33,7 +33,7 @@
  * connections between the same two nodes are collected.
  */
 
-import type { Workspace } from "@giselle-sdk/data-type";
+import type { Workspace } from "@giselle-ai/data-type";
 
 export const multipleConnectionsSameNodesFixture: Workspace = {
 	id: "wrks-JJqRLOtbigJ6Tc58",

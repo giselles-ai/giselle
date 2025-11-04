@@ -3,7 +3,7 @@ import {
 	FlowTriggerId,
 	isTriggerNode,
 	type TriggerNode,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 import type { z } from "zod/v4";
 import { addGitHubRepositoryIntegrationIndex } from "../integrations/utils";
 import type { GiselleEngineContext } from "../types";

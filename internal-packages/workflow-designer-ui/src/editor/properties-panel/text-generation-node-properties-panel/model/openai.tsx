@@ -1,12 +1,12 @@
-import { Select } from "@giselle-internal/ui/select";
-import { SettingRow } from "@giselle-internal/ui/setting-row";
-import { OpenAILanguageModelData, type ToolSet } from "@giselle-sdk/data-type";
-import { useUsageLimits } from "@giselle-sdk/giselle/react";
+import { OpenAILanguageModelData, type ToolSet } from "@giselle-ai/data-type";
+import { useUsageLimits } from "@giselle-ai/giselle/react";
 import {
 	Capability,
 	hasCapability,
 	openaiLanguageModels,
-} from "@giselle-sdk/language-model";
+} from "@giselle-ai/language-model";
+import { Select } from "@giselle-internal/ui/select";
+import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { useMemo } from "react";
 import { Switch } from "../../../../ui/switch";
 import {

@@ -5,13 +5,13 @@ import {
 	isQueryNode,
 	isTextGenerationNode,
 	type TextGenerationNode,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 import type {
 	CompletedGeneration,
 	FailedGeneration,
 	OutputFileBlob,
-} from "@giselle-sdk/giselle";
-import { calculateDisplayCost } from "@giselle-sdk/language-model";
+} from "@giselle-ai/giselle";
+import { calculateDisplayCost } from "@giselle-ai/language-model";
 import type { DataContent, ModelMessage } from "ai";
 import { type ApiMediaContentType, Langfuse, LangfuseMedia } from "langfuse";
 

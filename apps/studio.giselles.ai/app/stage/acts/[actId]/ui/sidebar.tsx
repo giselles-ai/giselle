@@ -1,14 +1,14 @@
 "use client";
 
-import { StatusBadge } from "@giselle-internal/ui/status-badge";
-import { NodeIcon } from "@giselle-internal/workflow-designer-ui";
-import type { ManualTriggerParameter } from "@giselle-sdk/data-type";
-import type { Generation } from "@giselle-sdk/giselle";
+import type { ManualTriggerParameter } from "@giselle-ai/data-type";
+import type { Generation } from "@giselle-ai/giselle";
 import {
 	type Act,
 	ActStreamReader,
 	type StreamDataEventHandler,
-} from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/giselle/react";
+import { StatusBadge } from "@giselle-internal/ui/status-badge";
+import { NodeIcon } from "@giselle-internal/workflow-designer-ui";
 import {
 	BrainCircuit,
 	ChevronDownIcon,

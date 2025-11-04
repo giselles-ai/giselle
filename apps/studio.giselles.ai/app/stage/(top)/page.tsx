@@ -1,3 +1,4 @@
+import { FlowTriggerId } from "@giselle-ai/data-type";
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import {
 	Table,
@@ -5,7 +6,6 @@ import {
 	TableCell,
 	TableRow,
 } from "@giselle-internal/ui/table";
-import { FlowTriggerId } from "@giselle-sdk/data-type";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { stageFlag } from "@/flags";

@@ -1,9 +1,3 @@
-import { Button } from "@giselle-internal/ui/button";
-import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
-import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
 import type {
 	ActionNode,
 	ConnectionId,
@@ -13,13 +7,19 @@ import type {
 	NodeId,
 	NodeLike,
 	OutputId,
-} from "@giselle-sdk/data-type";
-import { githubActionIdToLabel } from "@giselle-sdk/flow";
+} from "@giselle-ai/data-type";
+import { githubActionIdToLabel } from "@giselle-ai/flow";
 import {
 	defaultName,
 	useGiselleEngine,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/giselle/react";
+import { Button } from "@giselle-internal/ui/button";
+import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
+import {
+	SettingDetail,
+	SettingLabel,
+} from "@giselle-internal/ui/setting-label";
 import clsx from "clsx/lite";
 import { PlusIcon, TriangleAlert, XIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";

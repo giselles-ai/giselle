@@ -1,4 +1,4 @@
-import type { FlowTriggerId } from "@giselle-sdk/data-type";
+import type { FlowTriggerId } from "@giselle-ai/data-type";
 import clsx from "clsx";
 import { Circle } from "lucide-react";
 import { useGitHubTrigger } from "../../../lib/use-github-trigger";

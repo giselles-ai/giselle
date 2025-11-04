@@ -1,21 +1,21 @@
-import { WorkspaceId } from "@giselle-sdk/data-type";
+import { WorkspaceId } from "@giselle-ai/data-type";
 import type {
 	CompletedGeneration,
 	FailedGeneration,
 	OutputFileBlob,
 	QueryContext,
 	RunningGeneration,
-} from "@giselle-sdk/giselle";
+} from "@giselle-ai/giselle";
 import {
 	getRequestId,
 	NextGiselleEngine,
-} from "@giselle-sdk/giselle/next-internal";
-import { traceEmbedding, traceGeneration } from "@giselle-sdk/langfuse";
-import type { EmbeddingMetrics } from "@giselle-sdk/rag";
+} from "@giselle-ai/giselle/next-internal";
+import { traceEmbedding, traceGeneration } from "@giselle-ai/langfuse";
+import type { EmbeddingMetrics } from "@giselle-ai/rag";
 import {
 	supabaseStorageDriver as experimental_supabaseStorageDriver,
 	supabaseVaultDriver,
-} from "@giselle-sdk/supabase-driver";
+} from "@giselle-ai/supabase-driver";
 import { tasks as jobs } from "@trigger.dev/sdk";
 import type { ModelMessage, ProviderMetadata } from "ai";
 import { waitForLangfuseFlush } from "@/instrumentation.node";

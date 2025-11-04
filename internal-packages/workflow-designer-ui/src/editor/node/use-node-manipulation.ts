@@ -1,5 +1,5 @@
-import { Node } from "@giselle-sdk/data-type";
-import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
+import { Node } from "@giselle-ai/data-type";
+import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
 import { useCallback } from "react";
 
 // Position offset constants for better maintainability

@@ -5,12 +5,12 @@ import {
 	isTextGenerationNode,
 	isVectorStoreNode,
 	type NodeLike,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 import {
 	Capability,
 	hasCapability,
 	languageModels,
-} from "@giselle-sdk/language-model";
+} from "@giselle-ai/language-model";
 
 export type ConnectionValidationResult =
 	| { canConnect: true }

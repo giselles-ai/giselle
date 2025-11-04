@@ -1,4 +1,4 @@
-# @giselle-sdk/document-preprocessor
+# @giselle-ai/document-preprocessor
 
 Utilities for turning raw document binaries into clean text and image payloads ready for RAG ingestion. Supports PDF, plain text, and Markdown formats with extensible APIs for future formats (PowerPoint, Excel, Word, …).
 
@@ -13,7 +13,7 @@ Utilities for turning raw document binaries into clean text and image payloads r
 
 ## Installation
 
-This package is published inside the monorepo under the `@giselle-sdk/*` namespace. It relies on optional native bindings shipped with PDFium, so make sure your runtime matches the supported Node.js versions (>=18).
+This package is published inside the monorepo under the `@giselle-ai/*` namespace. It relies on optional native bindings shipped with PDFium, so make sure your runtime matches the supported Node.js versions (>=18).
 
 ## Usage
 
@@ -21,7 +21,7 @@ This package is published inside the monorepo under the `@giselle-sdk/*` namespa
 
 ```ts
 import { readFile } from "node:fs/promises";
-import { extractText } from "@giselle-sdk/document-preprocessor";
+import { extractText } from "@giselle-ai/document-preprocessor";
 
 const binary = await readFile("./document.md");
 const { text } = extractText(binary, {
@@ -35,7 +35,7 @@ console.log(text);
 
 ```ts
 import { readFile } from "node:fs/promises";
-import { extractPdfText } from "@giselle-sdk/document-preprocessor";
+import { extractPdfText } from "@giselle-ai/document-preprocessor";
 
 const binary = await readFile("./contract.pdf");
 const { totalPages, pages } = await extractPdfText(binary, {
@@ -53,7 +53,7 @@ for (const page of pages) {
 
 ```ts
 import { readFile } from "node:fs/promises";
-import { renderPdfPageImages } from "@giselle-sdk/document-preprocessor";
+import { renderPdfPageImages } from "@giselle-ai/document-preprocessor";
 
 const binary = await readFile("./whitepaper.pdf");
 const { pages } = await renderPdfPageImages(binary, {
@@ -135,9 +135,9 @@ export interface PdfImageRenderResult {
 ## Development
 
 ```bash
-pnpm -F @giselle-sdk/document-preprocessor test
-pnpm -F @giselle-sdk/document-preprocessor check-types
-pnpm -F @giselle-sdk/document-preprocessor build
+pnpm -F @giselle-ai/document-preprocessor test
+pnpm -F @giselle-ai/document-preprocessor check-types
+pnpm -F @giselle-ai/document-preprocessor build
 ```
 
 Run Biome formatting after changes:

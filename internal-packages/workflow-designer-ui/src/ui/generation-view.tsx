@@ -1,7 +1,7 @@
 "use client";
 
-import type { Generation } from "@giselle-sdk/giselle";
-import { useGiselleEngine } from "@giselle-sdk/giselle/react";
+import type { Generation } from "@giselle-ai/giselle";
+import { useGiselleEngine } from "@giselle-ai/giselle/react";
 import type { UIMessage } from "ai";
 import { ChevronRightIcon } from "lucide-react";
 import { Accordion } from "radix-ui";
@@ -64,7 +64,7 @@ function _renderImageLoadingGrid(generation: Generation, keyPrefix: string) {
 	}
 
 	const config = generation.context.operationNode.content
-		.llm as import("@giselle-sdk/data-type").ImageGenerationLanguageModelData;
+		.llm as import("@giselle-ai/data-type").ImageGenerationLanguageModelData;
 	let imageCount = 1;
 	if (config.provider !== "google") {
 		imageCount = config.configurations.n;

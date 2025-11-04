@@ -4,8 +4,8 @@ import {
 	type TextGenerationNode,
 	type TriggerNode,
 	VariableNode,
-} from "@giselle-sdk/data-type";
-import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/data-type";
+import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
 import { useMemo } from "react";
 import type { ConnectedOutputWithDetails } from "./types";
 

@@ -1,4 +1,4 @@
-# @giselle-sdk/web-search
+# @giselle-ai/web-search
 
 A TypeScript library for scraping and extracting web page content as HTML and Markdown. It uses a self-made (fetch + Turndown) implementation.
 
@@ -22,7 +22,7 @@ pnpm install
 Create a web search tool using the self-made provider.
 
 ```ts
-import { webSearch } from "@giselle-sdk/web-search";
+import { webSearch } from "@giselle-ai/web-search";
 
 const tool = webSearch({ provider: "self-made" });
 

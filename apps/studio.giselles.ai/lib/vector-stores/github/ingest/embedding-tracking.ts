@@ -1,8 +1,8 @@
-import { traceEmbedding } from "@giselle-sdk/langfuse";
+import { traceEmbedding } from "@giselle-ai/langfuse";
 import type {
 	EmbeddingCompleteCallback,
 	EmbeddingMetrics,
-} from "@giselle-sdk/rag";
+} from "@giselle-ai/rag";
 import { isProPlan, type TeamWithSubscription } from "@/services/teams";
 import type { IngestTrigger } from "./process-repository";
 

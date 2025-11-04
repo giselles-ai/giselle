@@ -1,6 +1,6 @@
+import type { FileData, FileNode } from "@giselle-ai/data-type";
+import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
 import { useToasts } from "@giselle-internal/ui/toast";
-import type { FileData, FileNode } from "@giselle-sdk/data-type";
-import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
 import { useCallback } from "react";
 
 export function useFileNode(node: FileNode) {

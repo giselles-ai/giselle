@@ -1,4 +1,4 @@
-import type { FlowTrigger } from "@giselle-sdk/data-type";
+import type { FlowTrigger } from "@giselle-ai/data-type";
 import { createContext, useContext } from "react";
 
 type FlowTriggerUpdateCallback = (flowTrigger: FlowTrigger) => Promise<void>;

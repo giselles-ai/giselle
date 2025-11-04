@@ -1,5 +1,5 @@
-import type { ChunkerFunction } from "@giselle-sdk/rag";
-import { createDefaultChunker } from "@giselle-sdk/rag";
+import type { ChunkerFunction } from "@giselle-ai/rag";
+import { createDefaultChunker } from "@giselle-ai/rag";
 
 interface ChunkTextOptions {
 	/**

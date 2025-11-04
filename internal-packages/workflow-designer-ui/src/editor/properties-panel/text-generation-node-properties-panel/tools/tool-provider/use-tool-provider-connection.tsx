@@ -2,11 +2,11 @@ import {
 	SecretId,
 	type TextGenerationNode,
 	type ToolSet,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 import {
 	useGiselleEngine,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/giselle/react";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import z from "zod/v4";
 import { useWorkspaceSecrets } from "../../../../lib/use-workspace-secrets";

@@ -1,7 +1,7 @@
 import {
 	GitHubWebhookUnauthorizedError,
 	verifyRequest as verifyRequestAsGitHubWebook,
-} from "@giselle-sdk/github-tool";
+} from "@giselle-ai/github-tool";
 import { after } from "next/server";
 import { ZodError } from "zod";
 import {

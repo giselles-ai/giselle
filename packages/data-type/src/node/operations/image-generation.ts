@@ -2,7 +2,7 @@ import {
 	FalLanguageModel,
 	GoogleImageLanguageModel,
 	OpenAIImageLanguageModel,
-} from "@giselle-sdk/language-model";
+} from "@giselle-ai/language-model";
 import { z } from "zod/v4";
 
 export const FalLanguageModelData = FalLanguageModel.pick({

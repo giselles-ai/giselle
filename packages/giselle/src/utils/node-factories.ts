@@ -37,17 +37,14 @@ import {
 	type VectorStoreContent,
 	type VectorStoreNode,
 	type WebPageNode,
-} from "@giselle-sdk/data-type";
-import type { ActionProvider } from "@giselle-sdk/flow";
+} from "@giselle-ai/data-type";
+import type { ActionProvider } from "@giselle-ai/flow";
 import {
 	Capability,
 	hasCapability,
 	languageModels,
-} from "@giselle-sdk/language-model";
-import {
-	isJsonContent,
-	type JSONContent,
-} from "@giselle-sdk/text-editor-utils";
+} from "@giselle-ai/language-model";
+import { isJsonContent, type JSONContent } from "@giselle-ai/text-editor-utils";
 import {
 	actionNodeDefaultName,
 	defaultName,

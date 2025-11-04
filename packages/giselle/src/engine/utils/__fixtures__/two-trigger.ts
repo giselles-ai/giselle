@@ -1,4 +1,4 @@
-import type { Workspace } from "@giselle-sdk/data-type";
+import type { Workspace } from "@giselle-ai/data-type";
 
 /**
  * Two Trigger Test Fixture - GitHub Pull Request QA Workflow

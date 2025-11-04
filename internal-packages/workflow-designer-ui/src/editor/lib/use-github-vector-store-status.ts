@@ -1,6 +1,6 @@
-import type { NodeLike } from "@giselle-sdk/data-type";
-import { isVectorStoreNode } from "@giselle-sdk/data-type";
-import { useVectorStore } from "@giselle-sdk/giselle/react";
+import type { NodeLike } from "@giselle-ai/data-type";
+import { isVectorStoreNode } from "@giselle-ai/data-type";
+import { useVectorStore } from "@giselle-ai/giselle/react";
 import { useMemo } from "react";
 
 export function useGitHubVectorStoreStatus(node: NodeLike) {

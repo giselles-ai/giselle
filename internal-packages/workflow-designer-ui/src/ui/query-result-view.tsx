@@ -1,8 +1,8 @@
-import type { Generation } from "@giselle-sdk/giselle";
+import type { Generation } from "@giselle-ai/giselle";
 import {
 	useVectorStore,
 	type VectorStoreContextValue,
-} from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/giselle/react";
 import clsx from "clsx/lite";
 import {
 	ChevronDownIcon,

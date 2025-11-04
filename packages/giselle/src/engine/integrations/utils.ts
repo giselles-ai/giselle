@@ -1,7 +1,7 @@
 import {
 	type FlowTriggerId,
 	GitHubRepositoryIntegrationIndex,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 import type { GiselleStorage } from "../storage";
 
 function getGitHubRepositoryIntegrationPath(repositoryNodeId: string): string {

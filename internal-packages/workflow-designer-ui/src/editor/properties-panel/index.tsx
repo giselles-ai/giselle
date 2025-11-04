@@ -8,8 +8,8 @@ import {
 	isTriggerNode,
 	isVectorStoreNode,
 	isWebPageNode,
-} from "@giselle-sdk/data-type";
-import { useWorkflowDesignerStore } from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/data-type";
+import { useWorkflowDesignerStore } from "@giselle-ai/giselle/react";
 import clsx from "clsx/lite";
 import { useShallow } from "zustand/shallow";
 import { ActionNodePropertiesPanel } from "./action-node-properties-panel";

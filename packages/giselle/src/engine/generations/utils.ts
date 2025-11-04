@@ -11,12 +11,12 @@ import {
 	type TextGenerationNode,
 	type WebPageContent,
 	type WorkspaceId,
-} from "@giselle-sdk/data-type";
-import { hasTierAccess, languageModels } from "@giselle-sdk/language-model";
+} from "@giselle-ai/data-type";
+import { hasTierAccess, languageModels } from "@giselle-ai/language-model";
 import {
 	isJsonContent,
 	jsonContentToText,
-} from "@giselle-sdk/text-editor-utils";
+} from "@giselle-ai/text-editor-utils";
 import type { DataContent, FilePart, ImagePart, ModelMessage } from "ai";
 import {
 	type CompletedGeneration,

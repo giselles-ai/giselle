@@ -1,4 +1,4 @@
-import type { LanguageModel } from "@giselle-sdk/language-model";
+import type { LanguageModel } from "@giselle-ai/language-model";
 import clsx from "clsx/lite";
 import type { ToggleGroup } from "radix-ui";
 import {

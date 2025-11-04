@@ -3,7 +3,7 @@ import {
 	GoogleLanguageModel,
 	OpenAILanguageModel,
 	PerplexityLanguageModel,
-} from "@giselle-sdk/language-model";
+} from "@giselle-ai/language-model";
 import { z } from "zod/v4";
 import { SecretId } from "../../secret";
 

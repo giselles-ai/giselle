@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-sdk/rag",
+	"name": "@giselle-ai/rag",
 	"version": "0.1.0",
 	"description": "Simplified RAG system with type safety",
 	"main": "dist/index.js",
@@ -14,14 +14,14 @@
 	"dependencies": {
 		"@ai-sdk/google": "catalog:",
 		"@ai-sdk/openai": "catalog:",
-		"@giselle-sdk/data-type": "workspace:*",
+		"@giselle-ai/data-type": "workspace:*",
 		"ai": "catalog:",
 		"pg": "catalog:",
 		"pgvector": "catalog:",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
-		"@giselle/giselle-sdk-tsconfig": "workspace:^",
+		"@giselle/giselle-ai-tsconfig": "workspace:^",
 		"@types/node": "catalog:",
 		"@types/pg": "catalog:",
 		"tsup": "catalog:",

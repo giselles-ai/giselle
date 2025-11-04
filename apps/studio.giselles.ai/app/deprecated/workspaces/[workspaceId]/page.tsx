@@ -1,5 +1,5 @@
+import { WorkspaceId } from "@giselle-ai/data-type";
 import { Editor } from "@giselle-internal/workflow-designer-ui";
-import { WorkspaceId } from "@giselle-sdk/data-type";
 import { updateWorkspaceName } from "./actions";
 
 export default async function Page({

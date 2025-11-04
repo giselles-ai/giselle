@@ -1,4 +1,4 @@
-import { ActId } from "@giselle-sdk/giselle";
+import { ActId } from "@giselle-ai/giselle";
 import { logger, schemaTask as schemaJob } from "@trigger.dev/sdk";
 import z from "zod/v4";
 import { giselleEngine } from "@/app/giselle-engine";

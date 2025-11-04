@@ -1,5 +1,5 @@
-import type { FlowTrigger, TriggerNode } from "@giselle-sdk/data-type";
-import { useGiselleEngine } from "@giselle-sdk/giselle/react";
+import type { FlowTrigger, TriggerNode } from "@giselle-ai/data-type";
+import { useGiselleEngine } from "@giselle-ai/giselle/react";
 import { useCallback } from "react";
 import useSWR from "swr";
 

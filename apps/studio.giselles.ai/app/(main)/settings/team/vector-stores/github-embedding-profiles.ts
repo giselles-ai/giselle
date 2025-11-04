@@ -1,4 +1,4 @@
-import { EMBEDDING_PROFILES } from "@giselle-sdk/data-type";
+import { EMBEDDING_PROFILES } from "@giselle-ai/data-type";
 
 // GitHub Vector Store UI embedding profiles
 // - Cohere is intentionally excluded (hidden in the UI)

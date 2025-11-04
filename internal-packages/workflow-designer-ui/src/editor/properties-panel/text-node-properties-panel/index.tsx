@@ -1,6 +1,6 @@
-import type { TextNode } from "@giselle-sdk/data-type";
-import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
-import { TextEditor } from "@giselle-sdk/text-editor/react";
+import type { TextNode } from "@giselle-ai/data-type";
+import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
+import { TextEditor } from "@giselle-ai/text-editor/react";
 import { useRef } from "react";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";

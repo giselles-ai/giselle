@@ -8,11 +8,11 @@ import {
 	type NodeId,
 	type NodeLike,
 	type OutputId,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 import {
 	defaultName,
 	useWorkflowDesignerStore,
-} from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/giselle/react";
 import {
 	Handle,
 	type NodeProps,

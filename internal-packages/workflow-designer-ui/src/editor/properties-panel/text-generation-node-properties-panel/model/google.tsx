@@ -1,5 +1,5 @@
-import { GoogleLanguageModelData } from "@giselle-sdk/data-type";
-import { useFeatureFlag, useUsageLimits } from "@giselle-sdk/giselle/react";
+import { GoogleLanguageModelData } from "@giselle-ai/data-type";
+import { useFeatureFlag, useUsageLimits } from "@giselle-ai/giselle/react";
 import { InfoIcon } from "lucide-react";
 import { Switch } from "../../../../ui/switch";
 import { TemperatureSlider, TopPSlider } from "./shared-model-controls";

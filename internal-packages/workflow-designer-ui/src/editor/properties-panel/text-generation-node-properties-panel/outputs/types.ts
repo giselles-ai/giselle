@@ -3,7 +3,7 @@ import type {
 	NodeBase,
 	NodeLike,
 	Output,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 
 type UnconnectedOutputWithDetails<T extends NodeBase = NodeLike> = Output & {
 	node: T;

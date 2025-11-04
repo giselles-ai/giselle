@@ -1,14 +1,14 @@
 import type {
 	FlowTrigger,
 	GitHubFlowTriggerEvent,
-} from "@giselle-sdk/data-type";
-import { FlowTriggerId, NodeId } from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
+import { FlowTriggerId, NodeId } from "@giselle-ai/data-type";
 import type {
 	ensureWebhookEvent,
 	GitHubAuthConfig,
 	WebhookEvent,
 	WebhookEventName,
-} from "@giselle-sdk/github-tool";
+} from "@giselle-ai/github-tool";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createTriggerNode } from "../../utils/node-factories";
 import { memoryStorageDriver } from "../storage";

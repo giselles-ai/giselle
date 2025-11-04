@@ -1,6 +1,6 @@
 "use client";
 
-import type { NodeId } from "@giselle-sdk/data-type";
+import type { NodeId } from "@giselle-ai/data-type";
 import clsx from "clsx/lite";
 import { useCallback, useMemo } from "react";
 import {

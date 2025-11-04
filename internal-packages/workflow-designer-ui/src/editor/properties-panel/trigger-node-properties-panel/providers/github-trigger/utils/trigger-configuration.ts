@@ -3,13 +3,13 @@ import type {
 	GitHubFlowTriggerEvent,
 	Output,
 	TriggerNode,
-} from "@giselle-sdk/data-type";
-import { FlowTriggerId, OutputId } from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
+import { FlowTriggerId, OutputId } from "@giselle-ai/data-type";
 import {
 	type GitHubTriggerEventId,
 	getGitHubDisplayLabel,
 	githubTriggers,
-} from "@giselle-sdk/flow";
+} from "@giselle-ai/flow";
 
 /**
  * Type definitions for trigger configuration options

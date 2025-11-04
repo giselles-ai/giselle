@@ -1,7 +1,7 @@
 export type {
 	LanguageModelProvider,
 	LanguageModelProviders,
-} from "@giselle-sdk/language-model";
+} from "@giselle-ai/language-model";
 export * from "./concepts/act";
 export * from "./concepts/generation";
 export * from "./concepts/identifiers";

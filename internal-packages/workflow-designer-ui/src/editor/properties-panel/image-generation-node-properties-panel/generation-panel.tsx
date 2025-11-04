@@ -1,8 +1,8 @@
-import type { ImageGenerationNode } from "@giselle-sdk/data-type";
+import type { ImageGenerationNode } from "@giselle-ai/data-type";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/giselle/react";
 import clsx from "clsx/lite";
 import { Maximize2 } from "lucide-react";
 import { useCallback } from "react";

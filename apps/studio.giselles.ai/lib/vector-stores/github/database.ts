@@ -1,4 +1,4 @@
-import type { DatabaseConfig } from "@giselle-sdk/rag";
+import type { DatabaseConfig } from "@giselle-ai/rag";
 
 /**
  * Create database configuration for PostgreSQL connection

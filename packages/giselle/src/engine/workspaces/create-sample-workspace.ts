@@ -10,7 +10,7 @@ import {
 	OutputId,
 	type Workspace,
 	WorkspaceId,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 import type { GiselleEngineContext } from "../types";
 import { copyFiles, getWorkspace, setWorkspace } from "./utils";
 

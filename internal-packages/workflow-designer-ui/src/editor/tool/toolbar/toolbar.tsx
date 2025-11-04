@@ -1,9 +1,8 @@
 "use client";
 
-import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
-import { FileCategory } from "@giselle-sdk/data-type";
-import { type ActionProvider, actionProviders } from "@giselle-sdk/flow";
-import type { TriggerProvider } from "@giselle-sdk/giselle";
+import { FileCategory } from "@giselle-ai/data-type";
+import { type ActionProvider, actionProviders } from "@giselle-ai/flow";
+import type { TriggerProvider } from "@giselle-ai/giselle";
 import {
 	actionNodeDefaultName,
 	createActionNode,
@@ -19,14 +18,15 @@ import {
 	useGiselleEngine,
 	useUsageLimits,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/giselle/react";
 import {
 	Capability,
 	hasCapability,
 	type LanguageModel,
 	languageModels,
 	Tier,
-} from "@giselle-sdk/language-model";
+} from "@giselle-ai/language-model";
+import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import clsx from "clsx/lite";
 import {
 	DatabaseZapIcon,

@@ -1,19 +1,16 @@
 import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
-import {
 	type ActionNode,
 	type Input,
 	InputId,
 	OutputId,
-} from "@giselle-sdk/data-type";
-import { type GitHubActionCommandId, githubActions } from "@giselle-sdk/flow";
-import type { GitHubIntegrationInstallation } from "@giselle-sdk/giselle";
+} from "@giselle-ai/data-type";
+import { type GitHubActionCommandId, githubActions } from "@giselle-ai/flow";
+import type { GitHubIntegrationInstallation } from "@giselle-ai/giselle";
+import { useIntegration, useWorkflowDesigner } from "@giselle-ai/giselle/react";
 import {
-	useIntegration,
-	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+	SettingDetail,
+	SettingLabel,
+} from "@giselle-internal/ui/setting-label";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { GitHubIcon, SpinnerIcon } from "../../../icons";
 // Import icons from GitHub trigger components

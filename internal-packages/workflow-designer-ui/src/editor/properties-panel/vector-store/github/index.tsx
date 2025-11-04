@@ -1,23 +1,23 @@
+import type {
+	EmbeddingProfileId,
+	GitHubVectorStoreSource,
+	VectorStoreNode,
+} from "@giselle-ai/data-type";
+import {
+	DEFAULT_EMBEDDING_PROFILE_ID,
+	EMBEDDING_PROFILES,
+	isEmbeddingProfileId,
+} from "@giselle-ai/data-type";
+import {
+	useFeatureFlag,
+	useVectorStore,
+	useWorkflowDesigner,
+} from "@giselle-ai/giselle/react";
 import { Select } from "@giselle-internal/ui/select";
 import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
-import type {
-	EmbeddingProfileId,
-	GitHubVectorStoreSource,
-	VectorStoreNode,
-} from "@giselle-sdk/data-type";
-import {
-	DEFAULT_EMBEDDING_PROFILE_ID,
-	EMBEDDING_PROFILES,
-	isEmbeddingProfileId,
-} from "@giselle-sdk/data-type";
-import {
-	useFeatureFlag,
-	useVectorStore,
-	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
 import { Info } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";

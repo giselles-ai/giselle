@@ -1,7 +1,7 @@
 import {
 	EMBEDDING_PROFILES,
 	type EmbeddingProfileId,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 import { escapeIdentifier } from "pg";
 import * as pgvector from "pgvector/pg";
 import type { z } from "zod/v4";

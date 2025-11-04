@@ -13,7 +13,7 @@ import type {
 	GetJsonParams,
 	GiselleStorage,
 	SetJsonParams,
-} from "@giselle-sdk/giselle";
+} from "@giselle-ai/giselle";
 import type { z } from "zod/v4";
 
 export interface SupabaseStorageDriverConfig {

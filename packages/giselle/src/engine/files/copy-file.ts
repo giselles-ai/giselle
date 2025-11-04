@@ -1,4 +1,4 @@
-import type { FileId, WorkspaceId } from "@giselle-sdk/data-type";
+import type { FileId, WorkspaceId } from "@giselle-ai/data-type";
 import type { GiselleStorage } from "../storage";
 import { filePath } from "./utils";
 

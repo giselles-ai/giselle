@@ -1,7 +1,7 @@
 import { Buffer } from "node:buffer";
 import { createHash } from "node:crypto";
 
-import type { EmbeddingProfileId } from "@giselle-sdk/data-type";
+import type { EmbeddingProfileId } from "@giselle-ai/data-type";
 import { createId } from "@paralleldrive/cuid2";
 import { createClient } from "@supabase/supabase-js";
 import { and, eq, inArray } from "drizzle-orm";

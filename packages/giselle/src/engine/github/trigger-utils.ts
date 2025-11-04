@@ -1,12 +1,12 @@
-import type { FlowTrigger, Output } from "@giselle-sdk/data-type";
-import type { githubTriggers } from "@giselle-sdk/flow";
+import type { FlowTrigger, Output } from "@giselle-ai/data-type";
+import type { githubTriggers } from "@giselle-ai/flow";
 import {
 	ensureWebhookEvent,
 	getDiscussionComment,
 	getPullRequestDiff,
 	getPullRequestReviewComment,
 	type WebhookEvent,
-} from "@giselle-sdk/github-tool";
+} from "@giselle-ai/github-tool";
 import type { GenerationOutput } from "../generations";
 import { parseCommand } from "./utils";
 

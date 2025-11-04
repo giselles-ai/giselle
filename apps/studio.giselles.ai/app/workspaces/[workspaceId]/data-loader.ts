@@ -1,4 +1,4 @@
-import type { WorkspaceId } from "@giselle-sdk/data-type";
+import type { WorkspaceId } from "@giselle-ai/data-type";
 import { notFound } from "next/navigation";
 import { giselleEngine } from "@/app/giselle-engine";
 import { db } from "@/db";

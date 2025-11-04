@@ -1,18 +1,18 @@
-import { Select } from "@giselle-internal/ui/select";
 import type {
 	DocumentVectorStoreSource,
 	EmbeddingProfileId,
 	VectorStoreNode,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 import {
 	EMBEDDING_PROFILES,
 	isEmbeddingProfileId,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 import {
 	useVectorStore,
 	useWorkflowDesigner,
 	type VectorStoreContextValue,
-} from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/giselle/react";
+import { Select } from "@giselle-internal/ui/select";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 

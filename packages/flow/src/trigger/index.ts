@@ -11,12 +11,12 @@ export {
 } from "./github";
 export { triggers as manualTriggers } from "./manual";
 
-/** @deprecated We want to unify s"\@giselle-sdk/flow" into @giselle-sdk/giselle, so update packages/giselle/src/engine/triggers/trigger-providers/index.ts and write the same values here as well */
+/** @deprecated We want to unify s"\@giselle-ai/flow" into @giselle-ai/giselle, so update packages/giselle/src/engine/triggers/trigger-providers/index.ts and write the same values here as well */
 export type TriggerProvider =
 	| typeof manualProvider
 	| typeof githubProvider
 	| typeof appEntryProvider;
-/** @deprecated We want to unify "@giselle-sdk/flow" into "@giselle-sdk/giselle", so update packages/giselle/src/engine/triggers/trigger-providers/index.ts and write the same values here as well */
+/** @deprecated We want to unify "@giselle-ai/flow" into "@giselle-ai/giselle", so update packages/giselle/src/engine/triggers/trigger-providers/index.ts and write the same values here as well */
 export const triggerProviders = [
 	manualProvider,
 	githubProvider,

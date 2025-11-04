@@ -10,15 +10,15 @@ import type {
 	TriggerNode,
 	VariableNode,
 	VectorStoreNode,
-} from "@giselle-sdk/data-type";
-import { NodeId } from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
+import { NodeId } from "@giselle-ai/data-type";
 import {
 	anthropicLanguageModels,
 	falLanguageModels,
 	googleImageLanguageModels,
 	openaiLanguageModels,
 	perplexityLanguageModels,
-} from "@giselle-sdk/language-model";
+} from "@giselle-ai/language-model";
 import { describe, expect, test } from "vitest";
 
 import { isSupportedConnection } from "./is-supported-connection";

@@ -3,8 +3,8 @@ import {
 	isTextGenerationNode,
 	NodeId,
 	type NodeLike,
-} from "@giselle-sdk/data-type";
-import { defaultName } from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/data-type";
+import { defaultName } from "@giselle-ai/giselle/react";
 import { Handle, Position, type NodeProps as RFNodeProps } from "@xyflow/react";
 import clsx from "clsx/lite";
 import { useMemo } from "react";
@@ -142,7 +142,13 @@ function CanvasNode({
 			isVectorStore && vectorStoreSourceProvider === "githubPullRequest";
 
 		const isFillIcon =
-			isText || isFile || isWebPage || isGithub || isVectorStore || isAction;
+			isText ||
+			isMemo ||
+			isFile ||
+			isWebPage ||
+			isGithub ||
+			isVectorStore ||
+			isAction;
 		const isStrokeIcon =
 			isTextGeneration ||
 			isImageGeneration ||

@@ -1,7 +1,7 @@
-import type { EmbeddingProfileId } from "@giselle-sdk/data-type";
-import { EMBEDDING_PROFILES } from "@giselle-sdk/data-type";
-import type { EmbedderFunction } from "@giselle-sdk/rag";
-import { createEmbedderFromProfile } from "@giselle-sdk/rag";
+import type { EmbeddingProfileId } from "@giselle-ai/data-type";
+import { EMBEDDING_PROFILES } from "@giselle-ai/data-type";
+import type { EmbedderFunction } from "@giselle-ai/rag";
+import { createEmbedderFromProfile } from "@giselle-ai/rag";
 
 interface GenerateEmbeddingsOptions {
 	chunks: string[];

@@ -3,7 +3,7 @@ import {
 	isOperationNode,
 	type NodeId,
 	type NodeLike,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 
 /**
  * Groups nodes into execution levels using topological sorting.

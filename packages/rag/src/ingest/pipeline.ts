@@ -1,7 +1,7 @@
 import {
 	EMBEDDING_PROFILES,
 	type EmbeddingProfileId,
-} from "@giselle-sdk/data-type";
+} from "@giselle-ai/data-type";
 import type { ChunkStore } from "../chunk-store/types";
 import { createDefaultChunker } from "../chunker";
 import type { ChunkerFunction } from "../chunker/types";

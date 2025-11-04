@@ -1,5 +1,5 @@
-import { calculateEmbeddingDisplayCost } from "@giselle-sdk/language-model";
-import type { EmbeddingMetrics } from "@giselle-sdk/rag";
+import { calculateEmbeddingDisplayCost } from "@giselle-ai/language-model";
+import type { EmbeddingMetrics } from "@giselle-ai/rag";
 import { Langfuse } from "langfuse";
 
 function buildTags(args: {

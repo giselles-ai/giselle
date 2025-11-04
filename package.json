@@ -4,8 +4,8 @@
 	"private": true,
 	"scripts": {
 		"build": "turbo build",
-		"build-sdk": "turbo build --filter '@giselle-sdk/*'",
-		"build-data-type": "turbo build --filter '@giselle-sdk/data-type'",
+		"build-sdk": "turbo build --filter '@giselle-ai/*'",
+		"build-data-type": "turbo build --filter '@giselle-ai/data-type'",
 		"check-types": "turbo check-types",
 		"format": "biome check --write .",
 		"clean": "turbo clean",

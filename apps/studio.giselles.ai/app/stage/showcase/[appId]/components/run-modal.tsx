@@ -1,7 +1,7 @@
 "use client";
 
+import type { FlowTrigger } from "@giselle-ai/data-type";
 import { AppIcon } from "@giselle-internal/ui/app-icon";
-import type { FlowTrigger } from "@giselle-sdk/data-type";
 import { X } from "lucide-react";
 import {
 	useActionState,

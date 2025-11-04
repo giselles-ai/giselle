@@ -1,4 +1,4 @@
-# @giselle-sdk/supabase-driver
+# @giselle-ai/supabase-driver
 
 ## How to Use Supabase Vault Driver
 

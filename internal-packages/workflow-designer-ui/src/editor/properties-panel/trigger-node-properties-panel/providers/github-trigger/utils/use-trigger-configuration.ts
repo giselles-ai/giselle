@@ -3,12 +3,12 @@ import {
 	type Output,
 	OutputId,
 	type TriggerNode,
-} from "@giselle-sdk/data-type";
-import { getGitHubDisplayLabel, githubTriggers } from "@giselle-sdk/flow";
+} from "@giselle-ai/data-type";
+import { getGitHubDisplayLabel, githubTriggers } from "@giselle-ai/flow";
 import {
 	useGiselleEngine,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/giselle/react";
 import { useCallback, useTransition } from "react";
 import type {
 	InputCallsignStep,

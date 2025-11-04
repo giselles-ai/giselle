@@ -6,8 +6,8 @@ import {
 	isTriggerNode,
 	isVectorStoreNode,
 	type NodeLike,
-} from "@giselle-sdk/data-type";
-import type { ActionProvider } from "@giselle-sdk/flow";
+} from "@giselle-ai/data-type";
+import type { ActionProvider } from "@giselle-ai/flow";
 import type { TriggerProvider } from "../engine";
 import type { VectorStoreSourceProvider } from "../engine/vector-store";
 

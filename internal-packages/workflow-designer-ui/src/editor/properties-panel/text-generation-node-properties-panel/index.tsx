@@ -1,12 +1,12 @@
-import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
-import { SettingLabel } from "@giselle-internal/ui/setting-label";
-import { useToasts } from "@giselle-internal/ui/toast";
-import type { TextGenerationNode } from "@giselle-sdk/data-type";
+import type { TextGenerationNode } from "@giselle-ai/data-type";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
 	useWorkflowDesignerStore,
-} from "@giselle-sdk/giselle/react";
+} from "@giselle-ai/giselle/react";
+import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
+import { SettingLabel } from "@giselle-internal/ui/setting-label";
+import { useToasts } from "@giselle-internal/ui/toast";
 import { Minimize2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";

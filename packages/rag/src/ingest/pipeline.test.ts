@@ -1,4 +1,4 @@
-import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-sdk/data-type";
+import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-ai/data-type";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChunkStore } from "../chunk-store/types";
 import type { ChunkerFunction } from "../chunker/types";
@@ -6,7 +6,7 @@ import type { DocumentLoader } from "../document-loader/types";
 import { createPipeline } from "./pipeline";
 
 // Mock the data-type module for EMBEDDING_PROFILES
-vi.mock("@giselle-sdk/data-type", () => ({
+vi.mock("@giselle-ai/data-type", () => ({
 	DEFAULT_EMBEDDING_PROFILE_ID: 1,
 	EMBEDDING_PROFILES: {
 		1: {

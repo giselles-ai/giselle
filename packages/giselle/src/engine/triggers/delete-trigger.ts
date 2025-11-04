@@ -1,4 +1,4 @@
-import type { FlowTriggerId } from "@giselle-sdk/data-type";
+import type { FlowTriggerId } from "@giselle-ai/data-type";
 import type { GiselleEngineContext } from "../types";
 import { deleteFlowTrigger } from "./utils";
 

@@ -1,5 +1,5 @@
-import { isTriggerNode } from "@giselle-sdk/data-type";
-import { githubTriggers } from "@giselle-sdk/flow";
+import { isTriggerNode } from "@giselle-ai/data-type";
+import { githubTriggers } from "@giselle-ai/flow";
 import {
 	type CompletedGeneration,
 	GenerationContext,
