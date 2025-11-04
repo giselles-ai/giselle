@@ -459,7 +459,7 @@ export function CircularCarousel({
 				style={emptyStateContainerStyle}
 			>
 				<div className="text-center">
-					<p className="text-white-400 text-[14px] font-medium font-['DM_Sans']">
+					<p className="text-inverse text-[14px] font-medium font-['DM_Sans']">
 						No executable apps available. Please select a different team or
 						create a new app.
 					</p>

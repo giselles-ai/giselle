@@ -314,10 +314,10 @@ export function ShowcaseClient({
 								searchQuery ? (
 									<div className="flex justify-center items-center h-full mt-12">
 										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
+											<h3 className="text-[18px] font-geist font-bold text-text-muted">
 												No apps found.
 											</h3>
-											<p className="text-[12px] font-geist text-black-400">
+											<p className="text-[12px] font-geist text-text-muted">
 												Try searching with a different keyword.
 											</p>
 										</div>
@@ -325,10 +325,10 @@ export function ShowcaseClient({
 								) : (
 									<div className="flex justify-center items-center h-full mt-12">
 										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
+											<h3 className="text-[18px] font-geist font-bold text-text-muted">
 												No apps yet.
 											</h3>
-											<p className="text-[12px] font-geist text-black-400">
+											<p className="text-[12px] font-geist text-text-muted">
 												Please create a new app with the 'New App +' button.
 											</p>
 										</div>
@@ -471,7 +471,7 @@ export function ShowcaseClient({
 															})
 														}
 														placeholder="Playlist title"
-														className="bg-black-700/50 border-black-600 text-white placeholder:text-black-400"
+														className="bg-black-700/50 border-black-600 text-white placeholder:text-text-muted"
 													/>
 												</div>
 												<div className="grid gap-2">
@@ -491,7 +491,7 @@ export function ShowcaseClient({
 															})
 														}
 														placeholder="Playlist description"
-														className="bg-black-700/50 border-black-600 text-white placeholder:text-black-400"
+														className="bg-black-700/50 border-black-600 text-white placeholder:text-text-muted"
 													/>
 												</div>
 											</div>
@@ -572,10 +572,10 @@ export function ShowcaseClient({
 							{mockPlaylists.length === 0 && (
 								<div className="flex justify-center items-center h-full">
 									<div className="grid gap-[8px] justify-center text-center">
-										<h3 className="text-[18px] font-geist font-bold text-black-400">
+										<h3 className="text-[18px] font-geist font-bold text-text-muted">
 											No playlists yet.
 										</h3>
-										<p className="text-[12px] font-geist text-black-400">
+										<p className="text-[12px] font-geist text-text-muted">
 											Please create a new playlist with the 'New Playlist +'
 											button.
 										</p>
@@ -599,10 +599,10 @@ export function ShowcaseClient({
 								searchQuery ? (
 									<div className="flex justify-center items-center h-full mt-12">
 										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
+											<h3 className="text-[18px] font-geist font-bold text-text-muted">
 												No history found.
 											</h3>
-											<p className="text-[12px] font-geist text-black-400">
+											<p className="text-[12px] font-geist text-text-muted">
 												Try searching with a different keyword.
 											</p>
 										</div>
@@ -610,10 +610,10 @@ export function ShowcaseClient({
 								) : (
 									<div className="flex justify-center items-center h-full mt-12">
 										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
+											<h3 className="text-[18px] font-geist font-bold text-text-muted">
 												No history yet.
 											</h3>
-											<p className="text-[12px] font-geist text-black-400">
+											<p className="text-[12px] font-geist text-text-muted">
 												Execute an app to see your history.
 											</p>
 										</div>

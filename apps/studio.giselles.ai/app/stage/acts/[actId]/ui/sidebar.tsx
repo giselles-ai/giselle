@@ -132,7 +132,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 						<h1 className="text-[24px] font-semibold text-inverse mb-[4px]">
 							{appName}
 						</h1>
-						<p className="text-[14px] text-white-400">{teamName}</p>
+						<p className="text-[14px] text-inverse">{teamName}</p>
 					</div>
 
 					{/* Execution Time */}

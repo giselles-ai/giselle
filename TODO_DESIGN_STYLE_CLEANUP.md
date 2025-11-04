@@ -1,0 +1,157 @@
+# デザインスタイル整理 - 現在の状態とTODO
+
+## ✅ 完了していること
+
+### Phase 0-1（基盤投入）
+- ✅ tokens.css/semantic.css/aliases.css 導入済み
+- ✅ Stageの text 安全置換完了
+- ✅ hover/focus/active 追加済み
+
+### Phase 3（安全置換の継続）
+- ✅ v3.x-1 settings 暗背景の text-inverse 置換完了
+- ✅ v3.x-2 apps/(main) 暗背景の text-inverse 置換完了
+- ✅ v3.x-3 内部UIスポット（buttons）完了
+- ✅ v3.x-4 SVG currentColor 化完了
+
+### bg/border 置換
+- ✅ apps-1 完了・マージ
+- ✅ apps-3 を apps-2 ベースで作成・PR中
+
+### Phase 1.5（semantic の土台）
+- ✅ semantic.css 雛形＋CIログ系追加済み
+- ✅ guard:colors の警告導入済み
+- ✅ data-scope ガイド雛形追加済み（docs/data-scope.md）
+
+### PR-1: 基盤投入（完了）
+- ✅ tokens.css/semantic.css/aliases.css を style.css に import
+- ✅ 互換ユーティリティは aliases.css で維持
+
+### PR-2: 基盤コンポーネント追加（完了）
+- ✅ SearchInput（placeholder:text-link-muted）
+- ✅ Separator（variant="inverse"対応）
+- ✅ Tabs（underlineVariant="inverse"対応）
+- ✅ InverseSurface（bg-surface + border-border）
+- ✅ LinkMuted（text-link-muted）
+- ✅ PageHeading（glow対応）
+- ✅ DocsLink（tone="muted"対応）
+- ✅ すべて @giselle-internal/ui からエクスポート済み
+
+### PR-3: 代表ページへの適用（部分的に完了）
+- ✅ /settings/* への PageHeading/DocsLink 適用済み
+  - /settings/account, /settings/team, /settings/team/members
+  - /settings/team/vector-stores, /settings/team/integrations
+- ✅ /workspaces への PageHeading/DocsLink/AppListItem 適用済み
+- ❌ /apps/myapps ページは存在しない（/workspacesが対応）
+
+### scopes 雛形
+- ✅ styles/scopes/settings-apps.css 作成済み（空の雛形）
+- ✅ styles/scopes/workspaces.css 作成済み（空の雛形）
+- ✅ styles/scopes/stage.css 作成済み（空の雛形）
+
+## 🔄 継続中・未完了
+
+### 1. 水平展開（settings/apps への適用）
+**現状:**
+- PageHeading/DocsLink は /settings/* に適用済み
+- SearchInput/placeholder:text-link-muted の適用状況が不明
+- Select inverse hover の適用状況が不明
+- AppListItem の統一化状況が不明
+
+**TODO:**
+- [ ] /settings/* への SearchInput 適用確認と統一
+- [ ] /settings/* への placeholder:text-link-muted 統一
+- [ ] /settings/* への Select inverse hover 適用
+- [ ] /workspaces への SearchInput/placeholder 統一
+- [ ] /workspaces への Select inverse hover 適用
+- [ ] AppListItem の統一化確認と適用
+
+### 2. 安全置換（生色の置換）
+**現状:**
+- text-white-*/text-black-* が約200箇所残存（49ファイル）
+- bg-inverse/text-link-muted が25箇所使用中（16ファイル）
+
+**TODO:**
+- [ ] codemod safe-pass の実行（dry-run）
+  - text-black-600/20 → text-text/20
+  - text-white-900 → text-inverse
+  - focus:ring-white/20 → focus:ring-inverse/20
+- [ ] 安全置換の第1弾を実行（視覚差なし基準）
+- [ ] 生色使用の継続削減（rgba/rgb/hex のトークン化）
+
+### 3. aliases.css の収束
+**現状:**
+- aliases.css に多数のユーティリティが定義されている
+- .text-link-muted, .bg-inverse/*, .text-bg 等が使用中
+
+**TODO:**
+- [ ] aliases.css の使用状況を全件調査
+- [ ] 各 alias の使用箇所をトークン直参照または v4生成ユーティリティへ置換
+- [ ] 段階的に alias を削除
+- [ ] aliases.css をゼロ化（最終目標）
+
+### 4. scopes の実際の適用
+**現状:**
+- scopes の CSS ファイルは雛形のみ（空の状態）
+- data-scope 属性の使用が未実装
+
+**TODO:**
+- [ ] settings-apps スコープの実装と適用
+- [ ] workspaces スコープの実装と適用
+- [ ] stage スコープの実装と適用
+- [ ] data-scope 属性の追加と動作確認
+
+### 5. コンポーネントの逆色対応
+**現状:**
+- Separator, Tabs は variant="inverse" 対応済み
+- InverseSurface は実装済みだが適用状況不明
+
+**TODO:**
+- [ ] Switch/Slider の逆色既定対応（未実装）
+- [ ] InverseSurface の適用状況確認と拡大
+- [ ] 逆色対応コンポーネントの統一確認
+
+### 6. その他の残タスク
+- [ ] AgentCard 内の白/rgba/hex のトークン化
+- [ ] v3ブリッジ段階削除計画の起票
+- [ ] 互換トークン段階削除（white-900 等）
+- [ ] lintのwarn→errorへの格上げ（stylelint/ESLint）
+- [ ] CI で生色/alias の残件を検出 → 増加fail化
+- [ ] .env.example 追加でローカル本番依存のビルド詰まりを回避
+
+## 📊 現在の使用状況
+
+### text-white-*/text-black-* 使用状況
+- **総数:** 約200箇所（49ファイル）
+- **主な使用箇所:**
+  - settings配下のダイアログ（text-white-400, text-black-400等）
+  - components/ui/* の各種コンポーネント
+  - stage/* の各種画面
+
+### bg-inverse/text-link-muted 使用状況
+- **総数:** 25箇所（16ファイル）
+- **主な使用箇所:**
+  - settings配下のダイアログ
+  - workspaces/components/search-header.tsx
+  - auth配下のフォーム
+
+## 🎯 次のアクション（優先順位順）
+
+1. **安全置換の第1弾実行**
+   - codemod safe-pass の dry-run 実行
+   - 視覚差なし基準で安全置換を実行
+
+2. **水平展開の完成**
+   - /settings/* への SearchInput/placeholder 統一
+   - /workspaces への統一化
+
+3. **aliases.css の収束開始**
+   - 使用状況の全件調査
+   - 段階的な置換と削除
+
+4. **scopes の実装**
+   - 各スコープの実装と data-scope 属性の追加
+
+5. **残タスクの整理**
+   - AgentCard のトークン化
+   - v3ブリッジ削除計画の起票
+

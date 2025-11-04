@@ -358,7 +358,7 @@ export function ProfileEditModal({
 							</p>
 						)}
 
-						{/* Action buttons moved to GlassDialogFooter */}
+						{/* Action buttons moved to DialogFooter */}
 					</div>
 				</DialogBody>
 				<DialogFooter>

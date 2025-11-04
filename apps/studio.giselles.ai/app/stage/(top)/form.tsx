@@ -220,7 +220,7 @@ function Form({
 					isMobile ? "top-2" : "-top-16",
 				)}
 			>
-				<Settings className="w-4 h-4 text-white-400" />
+				<Settings className="w-4 h-4 text-inverse" />
 			</button>
 */}
 			{/* Team Selection Container */}
@@ -280,7 +280,7 @@ function Form({
 					<div className="w-full px-4 max-w-4xl mx-auto">
 						{apps.length === 0 ? (
 							<div className="text-center py-8">
-								<p className="text-white-400 text-sm">
+								<p className="text-inverse text-sm">
 									No apps available for the selected team
 								</p>
 							</div>
@@ -324,7 +324,7 @@ function Form({
 													{app.workspaceName || "Untitled"}
 												</p>
 												{app.label && app.label !== "Manual Trigger" && (
-													<p className="text-[12px] font-geist text-white-400 truncate">
+													<p className="text-[12px] font-geist text-inverse truncate">
 														{app.label}
 													</p>
 												)}
@@ -366,7 +366,7 @@ function Form({
 										{app.workspaceName || "Untitled"}
 									</h3>
 									{app.label && app.label !== "Manual Trigger" && (
-										<p className="text-[12px] text-white-400 font-geist">
+										<p className="text-[12px] text-inverse font-geist">
 											{app.label}
 										</p>
 									)}
@@ -374,7 +374,7 @@ function Form({
 							</div>
 							<button
 								type="button"
-								className="rounded-full p-2 text-white-400 opacity-70 hover:opacity-100 hover:bg-white/10 focus:outline-none transition-all"
+								className="rounded-full p-2 text-inverse opacity-70 hover:opacity-100 hover:bg-white/10 focus:outline-none transition-all"
 							>
 								<X className="h-5 w-5" />
 								<span className="sr-only">Close</span>
