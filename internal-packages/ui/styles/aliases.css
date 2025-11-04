@@ -190,76 +190,6 @@
 		border-color: var(--color-auth-bg-dark, #000) !important;
 	}
 
-	/* Text from semantic background tokens */
-	.text-bg {
-		color: var(--color-background) !important;
-	}
-	.hover\:text-bg:hover {
-		color: var(--color-background) !important;
-	}
-	.bg-inverse {
-		background-color: var(--color-text-inverse, var(--color-white, #fff)) !important;
-	}
-	.bg-inverse\/5 {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 5%,
-			transparent
-		) !important;
-	}
-	.bg-inverse\/10 {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 10%,
-			transparent
-		) !important;
-	}
-
-	/* Hover/Focus/Active variants for inverse backgrounds */
-	.hover\:bg-inverse\/10:hover {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 10%,
-			transparent
-		) !important;
-	}
-	.focus-visible\:bg-inverse\/10:focus-visible,
-	.focus\:bg-inverse\/10:focus {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 10%,
-			transparent
-		) !important;
-	}
-	.active\:bg-inverse\/15:active {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 15%,
-			transparent
-		) !important;
-	}
-	.bg-inverse\/15 {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 15%,
-			transparent
-		) !important;
-	}
-	.bg-inverse\/20 {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 20%,
-			transparent
-		) !important;
-	}
-	.bg-inverse\/30 {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 30%,
-			transparent
-		) !important;
-	}
-
 	/* Borders */
 	.border-border {
 		border-color: var(
@@ -311,26 +241,6 @@
 		) !important;
 	}
 
-	/* Inverse background (migration helpers) */
-	.bg-inverse\/5 {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 5%,
-			transparent
-		) !important;
-	}
-	.bg-inverse\/10 {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 10%,
-			transparent
-		) !important;
-	}
-
-	/* Link muted explicit color */
-	.text-link-muted {
-		color: var(--color-link-muted) !important;
-	}
 	/* Link accent explicit color */
 	.text-link-accent {
 		color: var(--color-link-accent, #1663f3) !important;
