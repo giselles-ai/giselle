@@ -211,7 +211,7 @@ export function ChatPanel() {
 						onKeyDown={handleKeyDown}
 						placeholder="Ask about your workflow..."
 						rows={1}
-						className="w-full bg-chat-input border border-chat-input rounded-[8px] px-3 py-2 pr-12 text-inverse placeholder:text-inverse/40 text-sm font-mono font-light focus:outline-none focus:ring-1 focus:ring-chat-input focus:border-transparent resize-none min-h-[40px] max-h-[120px] overflow-y-auto"
+						className="w-full bg-chat-input border border-chat-input rounded-[8px] px-3 py-2 pr-12 text-inverse placeholder:text-[color-mix(in_srgb,var(--color-text-inverse,#fff)_40%,transparent)] text-sm font-mono font-light focus:outline-none focus:ring-1 focus:ring-chat-input focus:border-transparent resize-none min-h-[40px] max-h-[120px] overflow-y-auto"
 					/>
 					<button
 						type="button"

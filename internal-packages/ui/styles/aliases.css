@@ -294,13 +294,6 @@
 	.ring-chat-input {
 		--tw-ring-color: var(--color-chat-input-ring, var(--color-accent, #6b8ff0)) !important;
 	}
-	.placeholder\:text-inverse\/40::placeholder {
-		color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 40%,
-			transparent
-		) !important;
-	}
 
 	/* Blue palette utilities */
 	.text-blue-light {
