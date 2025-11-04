@@ -22,9 +22,7 @@ export const AnthropicLanguageModelId = z
 	.enum([
 		"claude-opus-4-1-20250805",
 		"claude-sonnet-4-5-20250929",
-		"claude-4-sonnet-20250514",
 		"claude-haiku-4-5-20251001",
-		"claude-3-7-sonnet-20250219",
 		"claude-3-5-haiku-20241022",
 	])
 	.catch((ctx) => {
@@ -41,26 +39,26 @@ export const AnthropicLanguageModelId = z
 		if (/^claude-sonnet-4-5-/.test(v)) {
 			return "claude-sonnet-4-5-20250929";
 		}
-		if (/^claude-haiku-4-5-/.test(v)) {
-			return "claude-haiku-4-5-20251001";
-		}
-		if (/^claude-4-sonnet-4-/.test(v)) {
-			return "claude-4-sonnet-20250514";
+		if (/^claude-4-sonnet-/.test(v)) {
+			return "claude-sonnet-4-5-20250929";
 		}
 		if (/^claude-3-7-sonnet-/.test(v)) {
-			return "claude-3-7-sonnet-20250219";
+			return "claude-sonnet-4-5-20250929";
+		}
+		if (/^claude-haiku-4-5-/.test(v)) {
+			return "claude-haiku-4-5-20251001";
 		}
 		if (/^claude-3-5-haiku-/.test(v)) {
 			return "claude-3-5-haiku-20241022";
 		}
 		if (/^claude-3-5-sonnet-/.test(v)) {
-			return "claude-3-7-sonnet-20250219";
+			return "claude-sonnet-4-5-20250929";
+		}
+		if (/^claude-3-sonnet-/.test(v)) {
+			return "claude-sonnet-4-5-20250929";
 		}
 		if (/^claude-3-opus-/.test(v)) {
 			return "claude-opus-4-1-20250805";
-		}
-		if (/^claude-3-sonnet-/.test(v)) {
-			return "claude-3-7-sonnet-20250219";
 		}
 		if (/^claude-3-haiku-/.test(v)) {
 			return "claude-3-5-haiku-20241022";
@@ -99,30 +97,6 @@ const claude45Sonnet: AnthropicLanguageModel = {
 	configurations: defaultConfigurations,
 };
 
-const claude40Sonnet: AnthropicLanguageModel = {
-	provider: "anthropic",
-	id: "claude-4-sonnet-20250514",
-	capabilities:
-		Capability.TextGeneration |
-		Capability.PdfFileInput |
-		Capability.Reasoning |
-		Capability.ImageFileInput,
-	tier: Tier.enum.pro,
-	configurations: defaultConfigurations,
-};
-
-const claude37Sonnet: AnthropicLanguageModel = {
-	provider: "anthropic",
-	id: "claude-3-7-sonnet-20250219",
-	capabilities:
-		Capability.TextGeneration |
-		Capability.PdfFileInput |
-		Capability.Reasoning |
-		Capability.ImageFileInput,
-	tier: Tier.enum.pro,
-	configurations: defaultConfigurations,
-};
-
 const claude35Haiku: AnthropicLanguageModel = {
 	provider: "anthropic",
 	id: "claude-3-5-haiku-20241022",
@@ -150,8 +124,6 @@ export const models = [
 	claude41Opus,
 	claude45Sonnet,
 	claude45Haiku,
-	claude40Sonnet,
-	claude37Sonnet,
 	claude35Haiku,
 ];
 

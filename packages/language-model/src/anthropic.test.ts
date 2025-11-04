@@ -13,12 +13,6 @@ describe("anthropic llm", () => {
 			expect(AnthropicLanguageModelId.parse("claude-haiku-4-5-20251001")).toBe(
 				"claude-haiku-4-5-20251001",
 			);
-			expect(AnthropicLanguageModelId.parse("claude-4-sonnet-20250514")).toBe(
-				"claude-4-sonnet-20250514",
-			);
-			expect(AnthropicLanguageModelId.parse("claude-3-7-sonnet-20250219")).toBe(
-				"claude-3-7-sonnet-20250219",
-			);
 			expect(AnthropicLanguageModelId.parse("claude-3-5-haiku-20241022")).toBe(
 				"claude-3-5-haiku-20241022",
 			);
@@ -48,15 +42,15 @@ describe("anthropic llm", () => {
 			);
 		});
 
-		it("should fallback claude-sonnet-4-* to claude-4-sonnet-20250514", () => {
+		it("should fallback claude-4-sonnet-* to claude-sonnet-4-5-20250929", () => {
 			expect(AnthropicLanguageModelId.parse("claude-4-sonnet-4-bar")).toBe(
-				"claude-4-sonnet-20250514",
+				"claude-sonnet-4-5-20250929",
 			);
 		});
 
-		it("should fallback claude-3-7-sonnet-* to claude-3-7-sonnet-20250219", () => {
+		it("should fallback claude-3-7-sonnet-* to claude-sonnet-4-5-20250929", () => {
 			expect(AnthropicLanguageModelId.parse("claude-3-7-sonnet-xyz")).toBe(
-				"claude-3-7-sonnet-20250219",
+				"claude-sonnet-4-5-20250929",
 			);
 		});
 
@@ -66,21 +60,21 @@ describe("anthropic llm", () => {
 			);
 		});
 
-		it("should fallback claude-3-5-sonnet-* to claude-3-7-sonnet-20250219", () => {
+		it("should fallback claude-3-5-sonnet-* to claude-sonnet-4-5-20250929", () => {
 			expect(AnthropicLanguageModelId.parse("claude-3-5-sonnet-foo")).toBe(
-				"claude-3-7-sonnet-20250219",
+				"claude-sonnet-4-5-20250929",
+			);
+		});
+
+		it("should fallback claude-3-sonnet-* to claude-sonnet-4-5-20250929", () => {
+			expect(AnthropicLanguageModelId.parse("claude-3-sonnet-foo")).toBe(
+				"claude-sonnet-4-5-20250929",
 			);
 		});
 
 		it("should fallback claude-3-opus-* to claude-opus-4-1-20250805", () => {
 			expect(AnthropicLanguageModelId.parse("claude-3-opus-foo")).toBe(
 				"claude-opus-4-1-20250805",
-			);
-		});
-
-		it("should fallback claude-3-sonnet-* to claude-3-7-sonnet-20250219", () => {
-			expect(AnthropicLanguageModelId.parse("claude-3-sonnet-foo")).toBe(
-				"claude-3-7-sonnet-20250219",
 			);
 		});
 
