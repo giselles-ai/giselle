@@ -87,7 +87,7 @@ export function NavigationRailFooterMenu({
 							className={`${MENU_ITEM_CLASS} flex items-center justify-between`}
 							asChild
 						>
-							<Link href="/settings/account" className="w-full">
+							<Link href="/settings/account/general" className="w-full">
 								Account settings
 							</Link>
 						</DropdownMenuPrimitive.Item>
