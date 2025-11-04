@@ -18,7 +18,7 @@ export default function () {
 					<DialogTrigger asChild>
 						<Button variant="filled">Add Data Source</Button>
 					</DialogTrigger>
-					<DialogContent>
+					<DialogContent variant="glass">
 						<div className="py-[12px]">
 							<DialogTitle>Add Data Source </DialogTitle>
 							<DialogDescription>

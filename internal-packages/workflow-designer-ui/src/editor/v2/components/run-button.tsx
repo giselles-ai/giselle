@@ -53,7 +53,7 @@ type NodeGroupMenuItem = {
 };
 
 function CenteredDialogContent({ children }: React.PropsWithChildren) {
-	return <DialogContent>{children}</DialogContent>;
+	return <DialogContent variant="glass">{children}</DialogContent>;
 }
 
 function RunOptionItem({

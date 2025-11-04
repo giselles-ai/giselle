@@ -1,6 +1,7 @@
 import { Button } from "@giselle-internal/ui/button";
 import {
 	Dialog,
+	DialogBody,
 	DialogContent,
 	DialogDescription,
 	DialogFooter,
@@ -41,8 +42,8 @@ export function ToolConfigurationDialog({
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange} defaultOpen={defaultOpen}>
 			{trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-			<DialogContent size={size}>
-				<div className="mb-4">
+			<DialogContent size={size} variant="glass">
+				<div className="mb-4 shrink-0">
 					<DialogTitle className="text-[20px] font-medium text-text tracking-tight font-sans">
 						{title}
 					</DialogTitle>
@@ -51,13 +52,15 @@ export function ToolConfigurationDialog({
 					</DialogDescription>
 					{headerExtra}
 				</div>
-				<form
-					id="tool-config-form"
-					onSubmit={onSubmit}
-					className="max-h-[60vh] overflow-y-auto overflow-x-hidden pr-[2px]"
-				>
-					{children}
-				</form>
+				<DialogBody className="max-h-[60vh]">
+					<form
+						id="tool-config-form"
+						onSubmit={onSubmit}
+						className="overflow-x-hidden pr-[2px]"
+					>
+						{children}
+					</form>
+				</DialogBody>
 				<DialogFooter>
 					{submitText && (
 						<Button

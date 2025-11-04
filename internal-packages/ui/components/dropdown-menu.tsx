@@ -131,7 +131,8 @@ export function DropdownMenu<
 				<DropdownMenuPrimitive.Content
 					sideOffset={sideOffset}
 					align={align}
-					className={clsx("z-10", widthClassName)}
+					className={clsx("z-10 overflow-hidden flex flex-col", widthClassName)}
+					style={{ maxHeight: "85vh" }}
 				>
 					<PopoverContent>
 						{items.map((option) => {
