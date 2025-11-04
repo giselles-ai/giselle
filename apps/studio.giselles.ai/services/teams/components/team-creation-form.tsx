@@ -47,7 +47,7 @@ function Submit({
 		<Button
 			type="submit"
 			disabled={isDisabled}
-			className="w-full rounded-lg px-4 py-2 text-white/80 transition-all duration-200 active:scale-[0.98]"
+			className="w-full rounded-lg px-4 py-2 text-inverse/80 transition-all duration-200 active:scale-[0.98]"
 			style={buttonStyle}
 		>
 			{selectedPlan === "pro" ? "Proceed to Payment" : "Create Team"}
@@ -99,12 +99,12 @@ export function TeamCreationForm({
 
 						<div className="relative z-10">
 							<div className="flex justify-between items-center">
-								<Dialog.Title className="text-[20px] font-medium text-white-400 tracking-tight font-sans">
+								<Dialog.Title className="text-[20px] font-medium text-inverse tracking-tight font-sans">
 									Create New Team
 								</Dialog.Title>
 								<Dialog.Close
 									onClick={() => setIsOpen(false)}
-									className="rounded-sm opacity-70 text-white-400 hover:opacity-100 focus:outline-none"
+									className="rounded-sm opacity-70 text-inverse hover:opacity-100 focus:outline-none"
 								>
 									<X className="h-5 w-5" />
 									<span className="sr-only">Close</span>
@@ -115,7 +115,7 @@ export function TeamCreationForm({
 								<div className="flex flex-col gap-y-2">
 									<Label
 										htmlFor="teamName"
-										className="text-white-800 font-medium text-[12px] leading-[20.4px] font-geist"
+										className="text-inverse font-medium text-[12px] leading-[20.4px] font-geist"
 									>
 										Team Name
 									</Label>
@@ -132,14 +132,14 @@ export function TeamCreationForm({
 											name="teamName"
 											value={teamName}
 											onChange={(e) => setTeamName(e.target.value)}
-											className="w-full bg-transparent text-white-800 font-medium text-[14px] leading-[23.8px] font-geist shadow-none focus:text-white border-0 p-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-black-400"
+											className="w-full bg-transparent text-inverse font-medium text-[14px] leading-[23.8px] font-geist shadow-none focus:text-white border-0 p-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-text-muted"
 											placeholder="Enter team name"
 										/>
 									</div>
 								</div>
 								<div className="space-y-4">
 									<div className="flex flex-col gap-y-2">
-										<Label className="text-white-800 font-medium text-[12px] leading-[20.4px] font-geist">
+										<Label className="text-inverse font-medium text-[12px] leading-[20.4px] font-geist">
 											{canCreateFreeTeam ? "Select Plan" : "Pro Plan"}
 										</Label>
 										{canCreateFreeTeam ? (
@@ -157,7 +157,7 @@ export function TeamCreationForm({
 													<label htmlFor="free">
 														<CardHeader>
 															<div className="flex flex-col gap-2">
-																<CardTitle className="text-white-400 text-[16px] leading-[27.2px] tracking-normal font-sans">
+																<CardTitle className="text-inverse text-[16px] leading-[27.2px] tracking-normal font-sans">
 																	Free
 																</CardTitle>
 																<div className="flex items-center mb-2">
@@ -168,15 +168,15 @@ export function TeamCreationForm({
 																	/>
 																	<Label
 																		htmlFor="free"
-																		className="ml-2 text-white-800 font-geist text-[16px]"
+																		className="ml-2 text-inverse font-geist text-[16px]"
 																	>
 																		$0/month
 																	</Label>
 																</div>
-																<CardDescription className="text-white-400 font-semibold text-[12px] leading-[20.4px] font-geist">
+																<CardDescription className="text-inverse font-semibold text-[12px] leading-[20.4px] font-geist">
 																	Basic features for personal use
 																</CardDescription>
-																<CardDescription className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
+																<CardDescription className="text-text-muted font-medium text-[12px] leading-[20.4px] font-geist">
 																	Includes 30 minutes of model usage time and
 																	access to basic models for your individual
 																	projects.
@@ -200,15 +200,15 @@ export function TeamCreationForm({
 																	/>
 																	<Label
 																		htmlFor="pro"
-																		className="ml-2 text-white-800 font-geist text-[16px]"
+																		className="ml-2 text-inverse font-geist text-[16px]"
 																	>
 																		{proPlanPrice}/month
 																	</Label>
 																</div>
-																<CardDescription className="text-white-400 font-semibold text-[12px] leading-[20.4px] font-geist">
+																<CardDescription className="text-inverse font-semibold text-[12px] leading-[20.4px] font-geist">
 																	Advanced features & support
 																</CardDescription>
-																<CardDescription className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
+																<CardDescription className="text-text-muted font-medium text-[12px] leading-[20.4px] font-geist">
 																	When you create a team, all member seat
 																	charges will be billed to you. Share apps with
 																	multiple team members and gain access to

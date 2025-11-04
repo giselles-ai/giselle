@@ -42,11 +42,11 @@ export const UserButton: FC = async () => {
 				align="end"
 				className="p-2 rounded-xl shadow-[0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)]"
 			>
-				<DropdownMenuLabel className="flex flex-col px-2 pt-2 pb-1 text-white-400">
+				<DropdownMenuLabel className="flex flex-col px-2 pt-2 pb-1 text-inverse">
 					<span className="font-bold text-[16px] leading-[16px] font-geist">
 						{displayName || "No display name"}
 					</span>
-					<span className="font-medium leading-[20.4px] font-geist text-black-600">
+					<span className="font-medium leading-[20.4px] font-geist text-text/60">
 						{email}
 					</span>
 				</DropdownMenuLabel>
@@ -58,7 +58,7 @@ export const UserButton: FC = async () => {
 					>
 						<Link
 							href="/settings/account"
-							className="block px-2 py-1.5 w-full text-white-400 font-medium text-[14px] leading-[14px] font-geist"
+							className="block px-2 py-1.5 w-full text-inverse font-medium text-[14px] leading-[14px] font-geist"
 							aria-label="Account settings"
 						>
 							Account Settings
@@ -70,7 +70,7 @@ export const UserButton: FC = async () => {
 							className="flex items-center gap-x-2 px-2 py-1.5 rounded-lg w-full hover:bg-white/5"
 						>
 							<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
-								<Plus className="size-3 text-black-900" />
+								<Plus className="size-3 text-bg" />
 							</span>
 							<span className="text-white-400 font-medium text-[14px] leading-[14px] font-geist">
 								Create team
@@ -84,7 +84,7 @@ export const UserButton: FC = async () => {
 						<a
 							href="https://giselles.ai/"
 							target="_blank"
-							className="block px-2 py-1.5 w-full text-white-400 font-medium text-[14px] leading-[14px] font-geist"
+							className="block px-2 py-1.5 w-full text-inverse font-medium text-[14px] leading-[14px] font-geist"
 							rel="noreferrer"
 						>
 							Home Page
