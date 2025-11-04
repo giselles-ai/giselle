@@ -36,7 +36,7 @@ function OutputToggleItem({
 			key={input.id}
 			className={clsx(
 				"group flex p-[8px] justify-between rounded-[8px] hover:bg-primary-900/50 transition-colors cursor-pointer",
-				"text-white-400",
+				"text-inverse",
 				"data-[disabled]:text-white-850/30 data-[disabled]:pointer-events-none",
 			)}
 			value={input.id}
@@ -108,8 +108,8 @@ function _SelectOutputPopover({
 			<Popover.Trigger
 				className={clsx(
 					"flex items-center cursor-pointer p-[10px] rounded-[8px]",
-					"border border-transparent hover:border-white-800",
-					"text-[12px] font-[700] text-white-800",
+					"border border-transparent hover:border-inverse",
+					"text-[12px] font-[700] text-inverse",
 					"transition-colors",
 				)}
 			>
@@ -157,7 +157,7 @@ function _SelectOutputPopover({
 						<div className="grow flex flex-col pb-[8px] gap-[8px] overflow-y-auto min-h-0">
 							{triggerInputs.length > 0 && (
 								<div className="flex flex-col px-[8px]">
-									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
+									<p className="py-[4px] px-[8px] text-text-muted text-[10px] font-[700]">
 										Action
 									</p>
 									{triggerInputs.map((triggerInput) => (
@@ -171,7 +171,7 @@ function _SelectOutputPopover({
 							)}
 							{generatedInputs.length > 0 && (
 								<div className="flex flex-col px-[8px]">
-									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
+									<p className="py-[4px] px-[8px] text-text-muted text-[10px] font-[700]">
 										Generated Content
 									</p>
 									{generatedInputs.map((generatedInput) => (
@@ -185,7 +185,7 @@ function _SelectOutputPopover({
 							)}
 							{textInputs.length > 0 && (
 								<div className="flex flex-col px-[8px]">
-									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
+									<p className="py-[4px] px-[8px] text-text-muted text-[10px] font-[700]">
 										Text
 									</p>
 									{textInputs.map((textInput) => (
@@ -200,7 +200,7 @@ function _SelectOutputPopover({
 
 							{fileInputs.length > 0 && (
 								<div className="flex flex-col px-[8px]">
-									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
+									<p className="py-[4px] px-[8px] text-text-muted text-[10px] font-[700]">
 										File
 									</p>
 									{fileInputs.map((fileInput) => (
@@ -214,7 +214,7 @@ function _SelectOutputPopover({
 							)}
 							{githubInputs.length > 0 && (
 								<div className="flex flex-col px-[8px]">
-									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
+									<p className="py-[4px] px-[8px] text-text-muted text-[10px] font-[700]">
 										GitHub
 									</p>
 									{githubInputs.map((githubInput) => (
@@ -228,7 +228,7 @@ function _SelectOutputPopover({
 							)}
 							{actionInputs.length > 0 && (
 								<div className="flex flex-col px-[8px]">
-									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
+									<p className="py-[4px] px-[8px] text-text-muted text-[10px] font-[700]">
 										Action
 									</p>
 									{actionInputs.map((actionInput) => (
@@ -242,7 +242,7 @@ function _SelectOutputPopover({
 							)}
 							{queryInputs.length > 0 && (
 								<div className="flex flex-col px-[8px]">
-									<p className="py-[4px] px-[8px] text-black-400 text-[10px] font-[700]">
+									<p className="py-[4px] px-[8px] text-text-muted text-[10px] font-[700]">
 										Query
 									</p>
 									{queryInputs.map((queryInput) => (
@@ -263,7 +263,7 @@ function _SelectOutputPopover({
 								onClick={() => {
 									onValueChange?.(selectedOutputIds);
 								}}
-								className="h-[32px] w-full flex justify-center items-center bg-bg text-black-900 rounded-[8px] cursor-pointer text-[12px]"
+								className="h-[32px] w-full flex justify-center items-center bg-bg text-bg rounded-[8px] cursor-pointer text-[12px]"
 							>
 								Update
 							</Popover.Close>
@@ -314,7 +314,7 @@ function _ConnectedOutputListItem({
 			<div className="px-[16px] flex-1 flex items-center justify-between">
 				<div className="flex flex-col gap-[4px]">
 					<p className="text-[16px]">{title}</p>
-					<div className="text-[10px] text-black-400">
+					<div className="text-[10px] text-text-muted">
 						<p className="line-clamp-1">{subtitle}</p>
 					</div>
 				</div>
