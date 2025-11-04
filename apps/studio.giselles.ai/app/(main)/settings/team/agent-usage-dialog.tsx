@@ -19,7 +19,7 @@ export function AgentUsageDialog({ activities }: AgentUsageDialogProps) {
 					View All Logs
 				</Button>
 			</DialogTrigger>
-			<DialogContent size="wide">
+			<DialogContent size="wide" variant="glass">
 				<div className="py-[12px]">
 					<DialogTitle className="text-white-400 text-[16px] leading-[27.2px] tracking-normal font-sans">
 						App Usage Logs
