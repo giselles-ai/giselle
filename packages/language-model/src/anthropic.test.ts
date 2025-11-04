@@ -13,6 +13,9 @@ describe("anthropic llm", () => {
 			expect(AnthropicLanguageModelId.parse("claude-sonnet-4-5-20250929")).toBe(
 				"claude-sonnet-4-5-20250929",
 			);
+			expect(AnthropicLanguageModelId.parse("claude-haiku-4-5-20251001")).toBe(
+				"claude-haiku-4-5-20251001",
+			);
 			expect(AnthropicLanguageModelId.parse("claude-4-sonnet-20250514")).toBe(
 				"claude-4-sonnet-20250514",
 			);
@@ -39,6 +42,12 @@ describe("anthropic llm", () => {
 		it("should fallback claude-sonnet-4-5-* to claude-sonnet-4-5-20250929", () => {
 			expect(AnthropicLanguageModelId.parse("claude-sonnet-4-5-foo")).toBe(
 				"claude-sonnet-4-5-20250929",
+			);
+		});
+
+		it("should fallback claude-haiku-4-5-* to claude-haiku-4-5-20251001", () => {
+			expect(AnthropicLanguageModelId.parse("claude-haiku-4-5-bar")).toBe(
+				"claude-haiku-4-5-20251001",
 			);
 		});
 
