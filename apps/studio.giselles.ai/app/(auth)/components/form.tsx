@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { AuthError } from "@/lib/supabase";
+import { cn } from "@/lib/utils";
 import { AuthButton } from "./auth-button";
 
 type FormProps<T extends Record<string, string | undefined>> = {
@@ -45,11 +46,16 @@ export const Form = <T extends Record<string, string | undefined>>({
 						type="email"
 						name="email"
 						required
-						className={
+						style={{
+							backgroundColor:
+								"color-mix(in srgb, var(--color-text-inverse, #fff) 10%, transparent)",
+						}}
+						className={cn(
+							"placeholder:text-inverse/30",
 							validationError && "email" in validationError
-								? "bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)] border-error"
-								: "bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)]"
-						}
+								? "border-error"
+								: "",
+						)}
 					/>
 					{validationError && "email" in validationError && (
 						<p className="text-error text-sm mt-1">{validationError.email}</p>
@@ -68,11 +74,16 @@ export const Form = <T extends Record<string, string | undefined>>({
 							type="password"
 							name="password"
 							required
-							className={
+							style={{
+								backgroundColor:
+									"color-mix(in srgb, var(--color-text-inverse, #fff) 10%, transparent)",
+							}}
+							className={cn(
+								"placeholder:text-inverse/30",
 								validationError && "password" in validationError
-									? "bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)] border-error"
-									: "bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)]"
-							}
+									? "border-error"
+									: "",
+							)}
 						/>
 						{linkToResetPassword && (
 							<Link

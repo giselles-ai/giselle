@@ -26,7 +26,11 @@ export const Form: FC = () => {
 					type="password"
 					label="New password"
 					name="new_password"
-					className="bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)]"
+					className="border-error placeholder:text-inverse/30"
+					style={{
+						backgroundColor:
+							"color-mix(in srgb, var(--color-text-inverse, #fff) 10%, transparent)",
+					}}
 				/>
 				<Button type="submit" disabled={isPending} className="font-medium">
 					Confirm

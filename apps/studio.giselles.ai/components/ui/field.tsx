@@ -11,6 +11,7 @@ type FieldProps = {
 	value?: string;
 	disabled?: boolean;
 	className?: string;
+	style?: React.CSSProperties;
 };
 export const Field: FC<FieldProps> = ({
 	name,
@@ -21,6 +22,7 @@ export const Field: FC<FieldProps> = ({
 	ignore1password = false,
 	disabled = false,
 	className,
+	style,
 }) => (
 	<div className="grid gap-[8px]">
 		<Label htmlFor={name} className="text-[14px] font-sans text-black-200">
@@ -35,6 +37,7 @@ export const Field: FC<FieldProps> = ({
 			value={value}
 			disabled={disabled}
 			className={className}
+			style={style}
 		/>
 	</div>
 );
