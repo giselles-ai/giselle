@@ -1,9 +1,19 @@
 "use client";
 
 import { FormField } from "@giselle-internal/ui/form-field";
+import {
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@giselle-internal/ui/dialog";
 import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-sdk/data-type";
-import * as Dialog from "@radix-ui/react-dialog";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import {
 	useCallback,
 	useEffect,
@@ -12,12 +22,7 @@ import {
 	useTransition,
 } from "react";
 import { GlassButton } from "@/components/ui/glass-button";
-import {
-	GlassDialogBody,
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "../components/glass-dialog-content";
+import { Button } from "../../components/button";
 import { DOCUMENT_EMBEDDING_PROFILES } from "./document-embedding-profiles";
 import type { ActionResult } from "./types";
 
@@ -98,24 +103,33 @@ export function DocumentVectorStoreCreateDialog({
 	}, [createAction, name, selectedProfiles, defaultProfileIds]);
 
 	return (
-		<Dialog.Root open={open} onOpenChange={setOpen}>
-			<Dialog.Trigger asChild>
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogTrigger asChild>
 				<GlassButton className="whitespace-nowrap">
 					<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
 						<Plus className="size-3 text-bg" />
 					</span>
 					New Vector Store
 				</GlassButton>
-			</Dialog.Trigger>
+			</DialogTrigger>
 
-			<GlassDialogContent>
-				<GlassDialogHeader
-					title="Create Vector Store"
-					description="Create a new Vector Store for your documents."
-					onClose={() => setOpen(false)}
-				/>
+			<DialogContent variant="glass">
+				<DialogHeader>
+					<div className="flex items-center justify-between">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+							Create Vector Store
+						</DialogTitle>
+						<DialogClose className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none">
+							<X className="h-5 w-5" />
+							<span className="sr-only">Close</span>
+						</DialogClose>
+					</div>
+					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
+						Create a new Vector Store for your documents.
+					</DialogDescription>
+				</DialogHeader>
 
-				<GlassDialogBody>
+				<DialogBody>
 					<div className="flex flex-col gap-4">
 						<FormField
 							label="Name"
@@ -164,16 +178,27 @@ export function DocumentVectorStoreCreateDialog({
 						</div>
 						{error ? <p className="text-error-900 text-sm">{error}</p> : null}
 					</div>
-				</GlassDialogBody>
+				</DialogBody>
 
-				<GlassDialogFooter
-					onCancel={() => setOpen(false)}
-					onConfirm={onSubmit}
-					confirmLabel="Create"
-					isPending={isPending}
-					confirmButtonType="button"
-				/>
-			</GlassDialogContent>
-		</Dialog.Root>
+				<DialogFooter>
+					<div className="mt-6 flex justify-end gap-x-3">
+						<Button
+							variant="link"
+							onClick={() => setOpen(false)}
+							disabled={isPending}
+						>
+							Cancel
+						</Button>
+						<Button
+							variant="primary"
+							onClick={onSubmit}
+							disabled={isPending}
+						>
+							{isPending ? "Processing..." : "Create"}
+						</Button>
+					</div>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }

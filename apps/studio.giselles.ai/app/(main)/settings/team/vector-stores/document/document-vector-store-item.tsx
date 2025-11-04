@@ -4,7 +4,16 @@ import { GlassCard } from "@giselle-internal/ui/glass-card";
 import { RepoActionMenu } from "@giselle-internal/ui/repo-action-menu";
 import { useToasts } from "@giselle-internal/ui/toast";
 import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-sdk/data-type";
-import * as Dialog from "@radix-ui/react-dialog";
+import {
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@giselle-internal/ui/dialog";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import {
 	AlertCircle,
@@ -14,6 +23,7 @@ import {
 	Loader2,
 	Settings,
 	Trash,
+	X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
@@ -34,12 +44,7 @@ import {
 } from "@/lib/vector-stores/document/constants";
 import { isSupportedDocumentFile } from "@/lib/vector-stores/document/utils";
 import type { DocumentVectorStoreId } from "@/packages/types";
-import {
-	GlassDialogBody,
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "../../components/glass-dialog-content";
+import { Button } from "../../../components/button";
 import type { DocumentVectorStoreWithProfiles } from "../data";
 import { DOCUMENT_EMBEDDING_PROFILES } from "../document-embedding-profiles";
 import type { ActionResult, DocumentVectorStoreUpdateInput } from "../types";
@@ -190,26 +195,43 @@ export function DocumentVectorStoreItem({
 				/>
 			</div>
 
-			<Dialog.Root
-				open={isDeleteDialogOpen}
-				onOpenChange={setIsDeleteDialogOpen}
-			>
-				<GlassDialogContent variant="destructive">
-					<GlassDialogHeader
-						title="Delete Document Vector Store"
-						description={`This action cannot be undone. This will permanently delete the document vector store "${store.name}" and its embedding profiles.`}
-						onClose={() => setIsDeleteDialogOpen(false)}
-						variant="destructive"
-					/>
-					<GlassDialogFooter
-						onCancel={() => setIsDeleteDialogOpen(false)}
-						onConfirm={handleConfirmDelete}
-						confirmLabel="Delete"
-						isPending={isPending}
-						variant="destructive"
-					/>
-				</GlassDialogContent>
-			</Dialog.Root>
+			<Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+				<DialogContent variant="destructive">
+					<DialogHeader>
+						<div className="flex items-center justify-between">
+							<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-error-900">
+								Delete Document Vector Store
+							</DialogTitle>
+							<DialogClose className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none">
+								<X className="h-5 w-5" />
+								<span className="sr-only">Close</span>
+							</DialogClose>
+						</div>
+						<DialogDescription className="font-geist mt-2 text-[14px] text-error-900/50">
+							{`This action cannot be undone. This will permanently delete the document vector store "${store.name}" and its embedding profiles.`}
+						</DialogDescription>
+					</DialogHeader>
+					<DialogBody />
+					<DialogFooter>
+						<div className="mt-6 flex justify-end gap-x-3">
+							<Button
+								variant="link"
+								onClick={() => setIsDeleteDialogOpen(false)}
+								disabled={isPending}
+							>
+								Cancel
+							</Button>
+							<Button
+								variant="destructive"
+								onClick={handleConfirmDelete}
+								disabled={isPending}
+							>
+								{isPending ? "Processing..." : "Delete"}
+							</Button>
+						</div>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 
 			<DocumentVectorStoreConfigureDialog
 				open={isConfigureDialogOpen}
@@ -626,14 +648,23 @@ function DocumentVectorStoreConfigureDialog({
 	};
 
 	return (
-		<Dialog.Root open={open} onOpenChange={onOpenChange}>
-			<GlassDialogContent>
-				<GlassDialogHeader
-					title="Configure Sources"
-					description="Update the name, embedding models, and source files for this vector store."
-					onClose={() => onOpenChange(false)}
-				/>
-				<GlassDialogBody>
+		<Dialog open={open} onOpenChange={onOpenChange}>
+			<DialogContent variant="glass">
+				<DialogHeader>
+					<div className="flex items-center justify-between">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+							Configure Sources
+						</DialogTitle>
+						<DialogClose className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none">
+							<X className="h-5 w-5" />
+							<span className="sr-only">Close</span>
+						</DialogClose>
+					</div>
+					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
+						Update the name, embedding models, and source files for this vector store.
+					</DialogDescription>
+				</DialogHeader>
+				<DialogBody>
 					<div className="space-y-6">
 						<div className="flex flex-col gap-2">
 							<label
@@ -793,15 +824,26 @@ function DocumentVectorStoreConfigureDialog({
 
 						{error ? <p className="text-error-900 text-sm">{error}</p> : null}
 					</div>
-				</GlassDialogBody>
-				<GlassDialogFooter
-					onCancel={() => onOpenChange(false)}
-					onConfirm={handleSave}
-					confirmLabel="Save"
-					isPending={isPending}
-					confirmButtonType="button"
-				/>
-			</GlassDialogContent>
-		</Dialog.Root>
+				</DialogBody>
+				<DialogFooter>
+					<div className="mt-6 flex justify-end gap-x-3">
+						<Button
+							variant="link"
+							onClick={() => onOpenChange(false)}
+							disabled={isPending}
+						>
+							Cancel
+						</Button>
+						<Button
+							variant="primary"
+							onClick={handleSave}
+							disabled={isPending}
+						>
+							{isPending ? "Processing..." : "Save"}
+						</Button>
+					</div>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }
