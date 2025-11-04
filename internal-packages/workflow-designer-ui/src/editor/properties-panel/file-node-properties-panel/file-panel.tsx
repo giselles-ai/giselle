@@ -316,7 +316,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 						<div
 							className={clsx(
 								"h-full flex flex-col justify-center items-center gap-[16px] px-[24px] py-[16px]",
-								"bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_5%,transparent)]",
+								"bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 5%,transparent)]",
 								"border border-dotted rounded-[8px] border-transparent group-hover:border-black-400",
 								"group-data-[dragging=true]:border-black-400",
 								"group-data-[dragging=true]:group-data-[valid=false]:border-error-900",

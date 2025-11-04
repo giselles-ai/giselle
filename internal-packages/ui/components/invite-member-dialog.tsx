@@ -236,12 +236,12 @@ export function InviteMemberDialog({
 						className="mt-4"
 						id="invite-member-form"
 					>
-						<div className="flex items-start gap-3 rounded-lg bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_5%,transparent)] p-1">
+						<div className="flex items-start gap-3 rounded-lg bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 5%,transparent)] p-1">
 							<div className="flex min-h-[40px] flex-grow flex-wrap items-center gap-1 px-2">
 								{emailTags.map((email) => (
 									<div
 										key={email}
-										className="mb-1 mr-2 flex items-center rounded-md bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_10%,transparent)] px-2.5 py-1.5"
+										className="mb-1 mr-2 flex items-center rounded-md bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)] px-2.5 py-1.5"
 									>
 										<span className="max-w-[180px] truncate text-[14px] text-text">
 											{email}

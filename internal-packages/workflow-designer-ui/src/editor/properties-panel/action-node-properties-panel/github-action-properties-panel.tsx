@@ -579,7 +579,7 @@ function Installed({
 								<button
 									key={id}
 									type="button"
-									className="flex items-center py-[8px] px-[8px] rounded-lg group w-full min-h-[48px] border border-[color-mix(in_srgb,var(--color-text-inverse, #fff)_20%,transparent)] hover:border-[color-mix(in_srgb,var(--color-text-inverse, #fff)_30%,transparent)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_10%,transparent)] transition-colors"
+									className="flex items-center py-[8px] px-[8px] rounded-lg group w-full min-h-[48px] border border-[color-mix(in srgb,var(--color-text-inverse, #fff) 20%,transparent)] hover:border-[color-mix(in srgb,var(--color-text-inverse, #fff) 30%,transparent)] hover:bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)] transition-colors"
 									onClick={() => handleActionSelect(id)}
 								>
 									<div className="flex items-center min-w-0 flex-1">

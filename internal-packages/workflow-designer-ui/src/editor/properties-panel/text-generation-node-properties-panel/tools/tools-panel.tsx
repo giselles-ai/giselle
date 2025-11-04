@@ -69,7 +69,7 @@ function ToolListItem({
 					<div className="flex flex-wrap text-[12px] text-text-muted gap-x-[6px] gap-y-[6px]">
 						{availableTools.map((availableTool) => (
 							<p
-								className="rounded-full px-[6px] py-[1px] bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_10%,transparent)]"
+								className="rounded-full px-[6px] py-[1px] bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)]"
 								key={availableTool}
 							>
 								{availableTool}

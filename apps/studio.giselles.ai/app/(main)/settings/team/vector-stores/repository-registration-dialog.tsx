@@ -264,7 +264,7 @@ export function RepositoryRegistrationDialog({
 
 							<div className="grid grid-cols-2 gap-3">
 								{/* Code Configuration */}
-								<div className="bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_5%,transparent)] rounded-lg p-4">
+								<div className="bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 5%,transparent)] rounded-lg p-4">
 									<Toggle
 										name="code-toggle"
 										checked={contentConfig.code.enabled}
@@ -287,7 +287,7 @@ export function RepositoryRegistrationDialog({
 								</div>
 
 								{/* Pull Requests Configuration */}
-								<div className="bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_5%,transparent)] rounded-lg p-4">
+								<div className="bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 5%,transparent)] rounded-lg p-4">
 									<Toggle
 										name="pull-requests-toggle"
 										checked={contentConfig.pullRequests.enabled}
@@ -327,7 +327,7 @@ export function RepositoryRegistrationDialog({
 											return (
 												<label
 													key={profileId}
-													className="flex items-start gap-3 p-3 rounded-lg border border-border-muted hover:bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_5%,transparent)] transition-colors cursor-pointer"
+													className="flex items-start gap-3 p-3 rounded-lg border border-border-muted hover:bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 5%,transparent)] transition-colors cursor-pointer"
 												>
 													<input
 														type="checkbox"
