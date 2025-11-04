@@ -12,12 +12,12 @@ import { GenerationView } from "../../../ui/generation-view";
 
 function Empty() {
 	return (
-		<div className="relative bg-inverse/10 min-h-[250px] rounded-[8px] flex justify-center items-center text-black-400">
+		<div className="relative bg-inverse/10 min-h-[250px] rounded-[8px] flex justify-center items-center text-text-muted">
 			<EmptyState
 				icon={<GenerateImageIcon width={24} height={24} />}
 				title="Nothing generated yet."
 				description="Generate or adjust the Prompt to see results."
-				className="text-black-400"
+				className="text-text-muted"
 			/>
 		</div>
 	);

@@ -127,7 +127,7 @@ export function TriggerInputDialog({
 					className="flex-1 flex flex-col gap-[14px] relative text-inverse overflow-y-hidden"
 					onSubmit={handleSubmit}
 				>
-					<p className="text-[12px] mb-[8px] text-black-400 font-sans font-semibold">
+					<p className="text-[12px] mb-[8px] text-text-muted font-sans font-semibold">
 						Execute this flow with custom input values
 					</p>
 

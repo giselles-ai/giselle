@@ -351,9 +351,9 @@ export function FilePanel({ node, config }: FilePanelProps) {
 							) : (
 								<div className="flex flex-col gap-[16px] justify-center items-center">
 									{node.content.category === "image" ? (
-										<ImageIcon size={38} className="text-black-400" />
+										<ImageIcon size={38} className="text-text-muted" />
 									) : (
-										<ArrowUpFromLineIcon size={38} className="text-black-400" />
+										<ArrowUpFromLineIcon size={38} className="text-text-muted" />
 									)}
 									<label
 										htmlFor="file"
@@ -361,7 +361,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 									>
 										<p>Drop {config.label} files here to upload.</p>
 										{node.content.category === "image" && (
-											<p className="text-[12px] text-black-400">
+											<p className="text-[12px] text-text-muted">
 												Click here and paste images from clipboard (Ctrl/Cmd +
 												V)
 											</p>

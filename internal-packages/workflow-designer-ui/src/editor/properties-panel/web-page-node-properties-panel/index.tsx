@@ -89,11 +89,11 @@ function WebPageListItem({
 								e.preventDefault();
 							}}
 						>
-							<Dialog.Title className="text-[18px] font-semibold text-white-800 mb-4">
+							<Dialog.Title className="text-[18px] font-semibold text-inverse mb-4">
 								{webpage.title}
 							</Dialog.Title>
 							{isLoading ? (
-								<p className="text-white-400">Loading...</p>
+								<p className="text-inverse">Loading...</p>
 							) : (
 								<div className="whitespace-pre-wrap text-white">
 									{data?.text}
@@ -152,7 +152,7 @@ function WebPageListItem({
 					onClick={onRemove}
 					className="cursor-pointer hidden group-hover:block p-[4px] hover:bg-bg-850/10 rounded-[4px] transition-colors"
 				>
-					<TrashIcon className="size-[16px] text-white-600" />
+					<TrashIcon className="size-[16px] text-text/60" />
 				</button>
 			)}
 		</li>

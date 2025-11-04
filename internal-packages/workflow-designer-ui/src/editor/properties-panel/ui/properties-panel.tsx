@@ -15,7 +15,7 @@ function getNodeIconColor(node: NodeLike): string {
 	if (node.type === "operation") {
 		// handle out-of-union runtime type safely without widening types
 		if (`${node.content.type}` === "vectorStore") {
-			return "text-black-900";
+			return "text-bg";
 		}
 		switch (node.content.type) {
 			case "textGeneration":
@@ -24,7 +24,7 @@ function getNodeIconColor(node: NodeLike): string {
 				return "text-inverse";
 			case "trigger":
 			case "query":
-				return "text-black-900";
+				return "text-bg";
 			default:
 				return "text-inverse";
 		}
@@ -32,13 +32,13 @@ function getNodeIconColor(node: NodeLike): string {
 	if (node.type === "variable") {
 		switch (node.content.type) {
 			case "vectorStore":
-				return "text-black-900";
+				return "text-bg";
 			case "github":
-				return "text-black-900";
+				return "text-bg";
 			case "text":
 			case "file":
 			case "webPage":
-				return "text-black-900";
+				return "text-bg";
 			default:
 				return "text-inverse";
 		}
