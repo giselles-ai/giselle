@@ -1,6 +1,6 @@
 import type { $ZodIssue } from "@zod/core";
 import { expect, test } from "vitest";
-import { Generation } from "../../engine";
+import { Generation } from "../../concepts/generation";
 import generationJson from "./fixtures/rename-action-to-operation/generation1.json";
 import { renameActionToOperation } from "./rename-action-to-operation";
 

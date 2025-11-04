@@ -1,5 +1,6 @@
 import { Background } from "@giselle-internal/workflow-designer-ui";
 import { WorkspaceId } from "@giselle-sdk/data-type";
+import { AppId } from "@giselle-sdk/giselle";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -100,6 +101,7 @@ export default async function ({
 						return;
 					}
 					await db.insert(apps).values({
+						id: AppId.generate(),
 						teamDbId: workspace.teamDbId,
 						workspaceDbId: workspace.dbId,
 						appEntryNodeId: node.id,
@@ -108,6 +110,7 @@ export default async function ({
 				deleteAppEntryNodeAction={async (node) => {
 					"use server";
 
+					logger.debug(`Deleting app entry node with id ${node.id}`);
 					await db.delete(apps).where(eq(apps.appEntryNodeId, node.id));
 				}}
 			/>

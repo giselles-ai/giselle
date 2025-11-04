@@ -5,7 +5,7 @@ import type {
 	NodeId,
 	WorkspaceId,
 } from "@giselle-sdk/data-type";
-import type { ActId } from "@giselle-sdk/giselle";
+import type { ActId, AppId } from "@giselle-sdk/giselle";
 import type {
 	GitHubIssueDocumentKey,
 	GitHubIssueState,
@@ -823,6 +823,11 @@ export const actRelations = relations(acts, ({ one }) => ({
 export const apps = pgTable(
 	"apps",
 	{
+		id: text("id").$type<AppId>().notNull().unique(),
+		appEntryNodeId: text("app_entry_node_id")
+			.$type<NodeId>()
+			.notNull()
+			.unique(),
 		dbId: serial("db_id").primaryKey(),
 		teamDbId: integer("team_db_id")
 			.notNull()
@@ -830,17 +835,13 @@ export const apps = pgTable(
 		workspaceDbId: integer("workspace_db_id")
 			.notNull()
 			.references(() => workspaces.dbId, { onDelete: "cascade" }),
-		appEntryNodeId: text("app_entry_node_id").$type<NodeId>().notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at")
 			.defaultNow()
 			.notNull()
 			.$onUpdate(() => new Date()),
 	},
-	(table) => [
-		uniqueIndex().on(table.appEntryNodeId),
-		index().on(table.teamDbId),
-	],
+	(table) => [index().on(table.teamDbId)],
 );
 
 export const appRelations = relations(apps, ({ one }) => ({
