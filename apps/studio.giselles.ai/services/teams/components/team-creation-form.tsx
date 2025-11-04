@@ -120,7 +120,7 @@ export function TeamCreationForm({
 										Team Name
 									</Label>
 									<div
-										className="flex flex-col items-start p-2 rounded-[8px] w-full"
+										className="flex flex-col items-start p-2 rounded-[8px] w-full focus-within:ring-1 focus-within:ring-primary-100/50 focus-within:ring-inset transition-all"
 										style={{
 											background: "#00020A",
 											boxShadow: "inset 0 1px 4px rgba(0,0,0,0.5)",
@@ -132,7 +132,7 @@ export function TeamCreationForm({
 											name="teamName"
 											value={teamName}
 											onChange={(e) => setTeamName(e.target.value)}
-											className="w-full bg-transparent text-inverse font-medium text-[14px] leading-[23.8px] font-geist shadow-none focus:text-white border-0 p-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-text-muted"
+											className="w-full bg-transparent text-inverse font-medium text-[14px] leading-[23.8px] font-geist shadow-none focus:text-white border-0 p-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none placeholder:text-text-muted"
 											placeholder="Enter team name"
 										/>
 									</div>

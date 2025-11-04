@@ -336,7 +336,7 @@ export function ProfileEditModal({
 									Your Display Name
 								</Label>
 								<div
-									className={`flex items-center gap-2 rounded-[12px] px-2 py-1 bg-inverse/5 ${error ? "ring-1 ring-error-900" : ""}`}
+									className={`flex items-center gap-2 rounded-[12px] px-2 py-1 bg-inverse/5 focus-within:ring-1 focus-within:ring-primary-100/50 focus-within:ring-inset transition-all ${error ? "ring-1 ring-error-900" : ""}`}
 								>
 									<Input
 										id="displayName"
@@ -345,7 +345,7 @@ export function ProfileEditModal({
 										value={displayName}
 										onChange={handleDisplayNameChange}
 										disabled={isLoading}
-										className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse placeholder:text-inverse/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-100/50 focus-visible:ring-offset-0"
+										className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse placeholder:text-inverse/30 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
 									/>
 								</div>
 							</div>

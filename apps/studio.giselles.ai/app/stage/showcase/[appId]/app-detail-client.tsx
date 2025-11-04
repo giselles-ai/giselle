@@ -98,14 +98,14 @@ export function AppDetailClient({ appDetails }: AppDetailClientProps) {
 							{/* Subtle inner border */}
 							<div className="pointer-events-none absolute inset-0 z-10 rounded-[inherit] border-[0.5px] border-white/5" />
 
-							<div className="relative z-10 flex h-full w-full flex-col items-center justify-center text-white/80">
+							<div className="relative z-10 flex h-full w-full flex-col items-center justify-center text-inverse/80">
 								<div className="w-full h-full bg-white/5 rounded-lg flex items-center justify-center">
 									<svg
 										role="img"
 										aria-label="App icon"
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 486 640"
-										className="h-12 w-12 text-white/30"
+										className="h-12 w-12 text-inverse/30"
 										fill="currentColor"
 									>
 										<title>App Icon</title>

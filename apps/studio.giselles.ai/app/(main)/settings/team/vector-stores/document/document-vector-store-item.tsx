@@ -1,9 +1,5 @@
 "use client";
 
-import { GlassCard } from "@giselle-internal/ui/glass-card";
-import { RepoActionMenu } from "@giselle-internal/ui/repo-action-menu";
-import { useToasts } from "@giselle-internal/ui/toast";
-import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-sdk/data-type";
 import {
 	Dialog,
 	DialogBody,
@@ -14,6 +10,10 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
+import { GlassCard } from "@giselle-internal/ui/glass-card";
+import { RepoActionMenu } from "@giselle-internal/ui/repo-action-menu";
+import { useToasts } from "@giselle-internal/ui/toast";
+import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-sdk/data-type";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import {
 	AlertCircle,
@@ -661,7 +661,8 @@ function DocumentVectorStoreConfigureDialog({
 						</DialogClose>
 					</div>
 					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
-						Update the name, embedding models, and source files for this vector store.
+						Update the name, embedding models, and source files for this vector
+						store.
 					</DialogDescription>
 				</DialogHeader>
 				<DialogBody>
@@ -675,7 +676,7 @@ function DocumentVectorStoreConfigureDialog({
 							</label>
 							<input
 								id={nameInputId}
-								className="w-full rounded-md bg-surface border border-border-muted px-3 py-2 text-inverse focus:outline-none focus:ring-1 focus:ring-white/20"
+								className="w-full rounded-md bg-surface border border-border-muted px-3 py-2 text-inverse focus:outline-none focus:ring-1 focus:ring-inverse/20"
 								placeholder="Vector store name"
 								value={name}
 								onChange={(event) => setName(event.target.value)}
@@ -740,7 +741,7 @@ function DocumentVectorStoreConfigureDialog({
 								onDragLeave={handleDragLeave}
 								onDrop={handleDrop}
 								disabled={isUploadingDocuments}
-								className={`flex flex-col items-center gap-3 rounded-xl border border-dashed border-border-muted bg-surface px-6 py-8 text-center transition-colors focus:outline-none focus:ring-2 focus:ring-white/30 ${isDragActive ? "border-white/30 bg-white/5" : ""} ${isUploadingDocuments ? "opacity-60" : ""}`}
+								className={`flex flex-col items-center gap-3 rounded-xl border border-dashed border-border-muted bg-surface px-6 py-8 text-center transition-colors focus:outline-none focus:ring-2 focus:ring-inverse/30 ${isDragActive ? "border-white/30 bg-white/5" : ""} ${isUploadingDocuments ? "opacity-60" : ""}`}
 							>
 								<ArrowUpFromLine className="h-8 w-8 text-text/60" />
 								<p className="text-inverse text-sm">
@@ -801,7 +802,7 @@ function DocumentVectorStoreConfigureDialog({
 															)
 														}
 														disabled={isDeleting}
-														className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border-muted text-text/60 transition-colors hover:text-error-500 focus:outline-none focus:ring-2 focus:ring-white/30 disabled:cursor-not-allowed disabled:opacity-50 flex-shrink-0"
+														className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border-muted text-text/60 transition-colors hover:text-error-500 focus:outline-none focus:ring-2 focus:ring-inverse/30 disabled:cursor-not-allowed disabled:opacity-50 flex-shrink-0"
 													>
 														<span className="sr-only">
 															Delete {source.fileName}
@@ -834,11 +835,7 @@ function DocumentVectorStoreConfigureDialog({
 						>
 							Cancel
 						</Button>
-						<Button
-							variant="primary"
-							onClick={handleSave}
-							disabled={isPending}
-						>
+						<Button variant="primary" onClick={handleSave} disabled={isPending}>
 							{isPending ? "Processing..." : "Save"}
 						</Button>
 					</div>

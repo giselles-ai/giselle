@@ -11,7 +11,7 @@ export default function NotFound() {
 						<h2 className="text-[28px] font-[500] text-white font-sans text-center">
 							Invitation not found...
 						</h2>
-						<p className="text-white-400 text-center">
+						<p className="text-inverse text-center">
 							The invitation link you are trying to access does not exist or has
 							been removed.
 						</p>

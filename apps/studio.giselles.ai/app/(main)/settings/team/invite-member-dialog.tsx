@@ -353,7 +353,7 @@ export function InviteMemberDialog({
 						className="space-y-4"
 						noValidate
 					>
-						<div className="flex items-center gap-2 rounded-[12px] px-2 py-1 bg-inverse/5">
+						<div className="flex items-center gap-2 rounded-[12px] px-2 py-1 bg-inverse/5 focus-within:ring-1 focus-within:ring-primary-100/50 focus-within:ring-inset transition-all">
 							<div className="flex min-h-[40px] flex-grow flex-wrap items-center gap-1">
 								{emailTags.map((email) => (
 									<div
@@ -387,7 +387,7 @@ export function InviteMemberDialog({
 									}}
 									onKeyDown={handleKeyDown}
 									onBlur={() => addEmailTags()}
-									className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse outline-none placeholder:text-inverse/30"
+									className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse outline-none placeholder:text-inverse/30 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
 									disabled={isLoading}
 								/>
 							</div>

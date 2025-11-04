@@ -13,6 +13,32 @@
 - ✅ v3.x-3 内部UIスポット（buttons）完了
 - ✅ v3.x-4 SVG currentColor 化完了
 
+### Dialog統一と色統一（このブランチ）
+- ✅ Dialogコンポーネントの統一（glass-dialog-content → ui/dialog）
+  - `variant="glass"` と `variant="destructive"` の追加
+  - `DialogHeader`, `DialogBody`, `DialogFooter` の追加
+- ✅ settings/*配下の色統一完了
+  - `text-white-400` → `text-inverse`
+  - `text-black-400` → `text-text-muted`
+  - `text-white-800` → `text-inverse`
+  - `text-black-300` → `text-text/60`
+  - `text-white-600` → `text-text/60`
+  - `text-black-900` → `text-bg`
+  - `text-white/80` → `text-inverse/80`
+  - `text-white/30` → `text-inverse/30`
+- ✅ stage/*配下の色統一完了
+- ✅ components/* と services/* の色統一完了
+- ✅ workflow-designer-ui/* の色統一完了（大部分）
+- ✅ 残存する約13箇所の色統一完了
+  - user-button.tsx
+  - sidebar.tsx
+  - error-components.tsx
+  - not-found.tsx
+  - app-detail-client.tsx
+  - installed/page.tsx
+  - connected/page.tsx
+  - github-trigger-properties-panel.tsx
+
 ### bg/border 置換
 - ✅ apps-1 完了・マージ
 - ✅ apps-3 を apps-2 ベースで作成・PR中
@@ -52,29 +78,31 @@
 
 ### 1. 水平展開（settings/apps への適用）
 **現状:**
-- PageHeading/DocsLink は /settings/* に適用済み
-- SearchInput/placeholder:text-link-muted の適用状況が不明
-- Select inverse hover の適用状況が不明
-- AppListItem の統一化状況が不明
+- ✅ PageHeading/DocsLink は /settings/* に適用済み
+- ✅ SearchInput は /settings/account/user-teams.tsx に適用済み
+- ✅ SearchInput は /workspaces/components/search-header.tsx に適用済み
+- ✅ Select コンポーネントは既に @giselle-internal/ui/select を使用（inverse hover 適用済み）
+- ✅ AppListItem は /workspaces/components/app-list-item.tsx で統一済み
 
 **TODO:**
-- [ ] /settings/* への SearchInput 適用確認と統一
-- [ ] /settings/* への placeholder:text-link-muted 統一
-- [ ] /settings/* への Select inverse hover 適用
-- [ ] /workspaces への SearchInput/placeholder 統一
-- [ ] /workspaces への Select inverse hover 適用
-- [ ] AppListItem の統一化確認と適用
+- [x] /settings/* への SearchInput 適用確認と統一
+- [ ] /settings/* への placeholder:text-link-muted 統一（Fieldコンポーネント内のplaceholder:text-inverse/30は別用途のため要確認）
+- [x] /settings/* への Select inverse hover 適用
+- [x] /workspaces への SearchInput/placeholder 統一
+- [x] /workspaces への Select inverse hover 適用
+- [x] AppListItem の統一化確認と適用
 
 ### 2. 安全置換（生色の置換）
 **現状:**
-- text-white-*/text-black-* が約200箇所残存（49ファイル）
+- ✅ text-white-*/text-black-* の置換完了（0箇所残存）← 約200箇所 → 0箇所（100%完了）
+- ✅ focus:ring-white/20 と focus:ring-white/30 の置換完了（3箇所）
+- ✅ ring-white/10 の置換完了（toast.tsx、1箇所）
 - bg-inverse/text-link-muted が25箇所使用中（16ファイル）
 
 **TODO:**
-- [ ] codemod safe-pass の実行（dry-run）
-  - text-black-600/20 → text-text/20
-  - text-white-900 → text-inverse
-  - focus:ring-white/20 → focus:ring-inverse/20
+- [ ] codemod safe-pass の実行（dry-run完了、0件）
+  - text-black-600/20 → text-text/20（既に0件）
+  - color-border-focused → ring-focused（aliases.css定義のみ）
 - [ ] 安全置換の第1弾を実行（視覚差なし基準）
 - [ ] 生色使用の継続削減（rgba/rgb/hex のトークン化）
 
@@ -110,7 +138,17 @@
 - [ ] InverseSurface の適用状況確認と拡大
 - [ ] 逆色対応コンポーネントの統一確認
 
-### 6. その他の残タスク
+### 6. Dialog統一の完了
+**現状:**
+- ✅ ui/dialog への統一完了
+- ✅ glass-dialog-content.tsx 削除済み
+- ✅ glass-dialog.tsx 削除済み
+
+**TODO:**
+- [ ] 残存するDialogコンポーネントがないか確認
+- [ ] Dialog関連のコンポーネントが全て ui/dialog を使用しているか確認
+
+### 7. その他の残タスク
 - [ ] AgentCard 内の白/rgba/hex のトークン化
 - [ ] v3ブリッジ段階削除計画の起票
 - [ ] 互換トークン段階削除（white-900 等）
@@ -121,11 +159,7 @@
 ## 📊 現在の使用状況
 
 ### text-white-*/text-black-* 使用状況
-- **総数:** 約200箇所（49ファイル）
-- **主な使用箇所:**
-  - settings配下のダイアログ（text-white-400, text-black-400等）
-  - components/ui/* の各種コンポーネント
-  - stage/* の各種画面
+- **総数:** 0箇所（0ファイル）← **100%完了！**（約200箇所 → 0箇所）
 
 ### bg-inverse/text-link-muted 使用状況
 - **総数:** 25箇所（16ファイル）

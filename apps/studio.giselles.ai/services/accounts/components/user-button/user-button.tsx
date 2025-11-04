@@ -72,7 +72,7 @@ export const UserButton: FC = async () => {
 							<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
 								<Plus className="size-3 text-bg" />
 							</span>
-							<span className="text-white-400 font-medium text-[14px] leading-[14px] font-geist">
+							<span className="text-inverse font-medium text-[14px] leading-[14px] font-geist">
 								Create team
 							</span>
 						</button>
@@ -91,7 +91,7 @@ export const UserButton: FC = async () => {
 						</a>
 					</DropdownMenuItem>
 					<DropdownMenuItem className="p-0 rounded-lg hover:bg-white/5 focus:bg-white/5">
-						<SignOutButton className="block px-2 py-1.5 w-full text-left text-white-400 font-geist text-[14px] leading-[14px]">
+						<SignOutButton className="block px-2 py-1.5 w-full text-left text-inverse font-geist text-[14px] leading-[14px]">
 							Log Out
 						</SignOutButton>
 					</DropdownMenuItem>
