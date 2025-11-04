@@ -23,11 +23,10 @@ export const AnthropicLanguageModelId = z
 		"claude-opus-4-1-20250805",
 		"claude-sonnet-4-5-20250929",
 		"claude-haiku-4-5-20251001",
-		"claude-3-5-haiku-20241022",
 	])
 	.catch((ctx) => {
 		if (typeof ctx.value !== "string") {
-			return "claude-3-5-haiku-20241022";
+			return "claude-haiku-4-5-20251001";
 		}
 		const v = ctx.value;
 		if (/^claude-opus-4-1-/.test(v)) {
@@ -49,7 +48,7 @@ export const AnthropicLanguageModelId = z
 			return "claude-haiku-4-5-20251001";
 		}
 		if (/^claude-3-5-haiku-/.test(v)) {
-			return "claude-3-5-haiku-20241022";
+			return "claude-haiku-4-5-20251001";
 		}
 		if (/^claude-3-5-sonnet-/.test(v)) {
 			return "claude-sonnet-4-5-20250929";
@@ -61,9 +60,9 @@ export const AnthropicLanguageModelId = z
 			return "claude-opus-4-1-20250805";
 		}
 		if (/^claude-3-haiku-/.test(v)) {
-			return "claude-3-5-haiku-20241022";
+			return "claude-haiku-4-5-20251001";
 		}
-		return "claude-3-5-haiku-20241022";
+		return "claude-haiku-4-5-20251001";
 	});
 
 const AnthropicLanguageModel = LanguageModelBase.extend({
@@ -97,17 +96,6 @@ const claude45Sonnet: AnthropicLanguageModel = {
 	configurations: defaultConfigurations,
 };
 
-const claude35Haiku: AnthropicLanguageModel = {
-	provider: "anthropic",
-	id: "claude-3-5-haiku-20241022",
-	capabilities:
-		Capability.TextGeneration |
-		Capability.PdfFileInput |
-		Capability.ImageFileInput,
-	tier: Tier.enum.free,
-	configurations: defaultConfigurations,
-};
-
 const claude41Opus: AnthropicLanguageModel = {
 	provider: "anthropic",
 	id: "claude-opus-4-1-20250805",
@@ -120,12 +108,7 @@ const claude41Opus: AnthropicLanguageModel = {
 	configurations: defaultConfigurations,
 };
 
-export const models = [
-	claude41Opus,
-	claude45Sonnet,
-	claude45Haiku,
-	claude35Haiku,
-];
+export const models = [claude41Opus, claude45Sonnet, claude45Haiku];
 
 export const LanguageModel = AnthropicLanguageModel;
 export type LanguageModel = AnthropicLanguageModel;

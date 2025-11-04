@@ -119,21 +119,6 @@ export const anthropicTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"claude-3-5-haiku-20241022": {
-		prices: [
-			{
-				validFrom: "2025-05-19T00:00:00Z",
-				price: {
-					input: {
-						costPerMegaToken: 0.8,
-					},
-					output: {
-						costPerMegaToken: 4.0,
-					},
-				},
-			},
-		],
-	},
 };
 
 export const googleTokenPricing: ModelPriceTable = {

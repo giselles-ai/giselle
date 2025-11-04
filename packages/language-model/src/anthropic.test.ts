@@ -13,9 +13,6 @@ describe("anthropic llm", () => {
 			expect(AnthropicLanguageModelId.parse("claude-haiku-4-5-20251001")).toBe(
 				"claude-haiku-4-5-20251001",
 			);
-			expect(AnthropicLanguageModelId.parse("claude-3-5-haiku-20241022")).toBe(
-				"claude-3-5-haiku-20241022",
-			);
 		});
 
 		it("should fallback claude-opus-4-1-* to claude-opus-4-1-20250805", () => {
@@ -54,9 +51,9 @@ describe("anthropic llm", () => {
 			);
 		});
 
-		it("should fallback claude-3-5-haiku-* to claude-3-5-haiku-20241022", () => {
+		it("should fallback claude-3-5-haiku-* to claude-haiku-4-5-20251001", () => {
 			expect(AnthropicLanguageModelId.parse("claude-3-5-haiku-abc")).toBe(
-				"claude-3-5-haiku-20241022",
+				"claude-haiku-4-5-20251001",
 			);
 		});
 
@@ -78,21 +75,21 @@ describe("anthropic llm", () => {
 			);
 		});
 
-		it("should fallback claude-3-haiku-* to claude-3-5-haiku-20241022", () => {
+		it("should fallback claude-3-haiku-* to claude-haiku-4-5-20251001", () => {
 			expect(AnthropicLanguageModelId.parse("claude-3-haiku-bar")).toBe(
-				"claude-3-5-haiku-20241022",
+				"claude-haiku-4-5-20251001",
 			);
 		});
 
-		it("should fallback unknown or non-matching variants to claude-3-5-haiku-20241022", () => {
+		it("should fallback unknown or non-matching variants to claude-haiku-4-5-20251001", () => {
 			expect(AnthropicLanguageModelId.parse("anthropic-unknown-model")).toBe(
-				"claude-3-5-haiku-20241022",
+				"claude-haiku-4-5-20251001",
 			);
 			expect(AnthropicLanguageModelId.parse("anthropic-foo-bar")).toBe(
-				"claude-3-5-haiku-20241022",
+				"claude-haiku-4-5-20251001",
 			);
 			expect(AnthropicLanguageModelId.parse("random-model")).toBe(
-				"claude-3-5-haiku-20241022",
+				"claude-haiku-4-5-20251001",
 			);
 		});
 	});
