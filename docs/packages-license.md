@@ -2283,7 +2283,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@playwright/test"></a>
-### @playwright/test v1.53.0
+### @playwright/test v1.56.1
 #### 
 
 ##### Paths
@@ -5532,7 +5532,7 @@ Python-2.0 manually approved
 
 
 <a name="baseline-browser-mapping"></a>
-### baseline-browser-mapping v2.8.18
+### baseline-browser-mapping v2.8.23
 #### 
 
 ##### Paths
@@ -9866,7 +9866,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="playwright"></a>
-### playwright v1.53.0
+### playwright v1.56.1
 #### 
 
 ##### Paths
@@ -9877,7 +9877,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="playwright-core"></a>
-### playwright-core v1.53.0
+### playwright-core v1.56.1
 #### 
 
 ##### Paths
