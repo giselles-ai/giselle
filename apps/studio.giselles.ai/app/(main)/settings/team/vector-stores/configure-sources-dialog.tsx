@@ -183,7 +183,7 @@ export function ConfigureSourcesDialog({
 										return (
 											<label
 												key={profileId}
-												className="flex items-start gap-3 p-3 rounded-lg border border-border-muted hover:bg-inverse/5 transition-colors cursor-pointer"
+												className="flex items-start gap-3 p-3 rounded-lg border border-border-muted hover:bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_5%,transparent)] transition-colors cursor-pointer"
 											>
 												<input
 													type="checkbox"
@@ -273,7 +273,7 @@ function ContentTypeToggle({
 	status,
 }: ContentTypeToggleProps) {
 	return (
-		<div className="bg-inverse/5 rounded-lg p-4">
+		<div className="bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_5%,transparent)] rounded-lg p-4">
 			<Toggle
 				name={`${label.toLowerCase().replace(/\s+/g, "-")}-toggle`}
 				checked={enabled}

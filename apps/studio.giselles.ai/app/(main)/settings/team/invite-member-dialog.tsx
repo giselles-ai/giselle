@@ -353,7 +353,7 @@ export function InviteMemberDialog({
 						className="space-y-4"
 						noValidate
 					>
-						<div className="flex items-center gap-2 rounded-[12px] px-2 py-1 bg-inverse/5 focus-within:ring-1 focus-within:ring-primary-100/50 focus-within:ring-inset transition-all">
+						<div className="flex items-center gap-2 rounded-[12px] px-2 py-1 bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_5%,transparent)] focus-within:ring-1 focus-within:ring-primary-100/50 focus-within:ring-inset transition-all">
 							<div className="flex min-h-[40px] flex-grow flex-wrap items-center gap-1">
 								{emailTags.map((email) => (
 									<div
