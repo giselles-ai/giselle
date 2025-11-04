@@ -5,7 +5,7 @@ import { CreateWorkspaceButton } from "./create-workspace-button";
 
 export default function Layout({ children }: { children: ReactNode }) {
 	return (
-		<div className="h-full bg-bg">
+		<div className="h-full bg-bg" data-scope="workspaces">
 			<div className="px-[40px] py-[24px] flex-1 max-w-[1200px] mx-auto w-full">
 				<div className="flex justify-between items-center mb-8">
 					<PageHeading glow>Workspaces</PageHeading>

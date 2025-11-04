@@ -44,11 +44,10 @@ export function AgentCard({ agent }: { agent: typeof dbAgents.$inferSelect }) {
 			)}
 			style={
 				{
-					"--spotlight-color":
-						"var(--color-agent-card-spotlight, rgba(255,255,255,0.15))",
-					borderColor: "var(--color-agent-card-border, rgba(160,180,255,0.15))",
+					"--spotlight-color": "var(--color-agent-card-spotlight)",
+					borderColor: "var(--color-agent-card-border)",
 					background:
-						"linear-gradient(135deg, var(--color-agent-card-gradient-from, rgba(100,130,200,0.20)) 0%, var(--color-agent-card-gradient-middle, rgba(60,80,120,0.35)) 40%, var(--color-agent-card-gradient-to, rgba(20,30,60,0.85)) 100%)",
+						"linear-gradient(135deg, var(--color-agent-card-gradient-from) 0%, var(--color-agent-card-gradient-middle) 40%, var(--color-agent-card-gradient-to) 100%)",
 				} as React.CSSProperties
 			}
 		>
