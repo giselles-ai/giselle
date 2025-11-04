@@ -24,6 +24,7 @@ export const AnthropicLanguageModelId = z
 		"claude-4-opus-20250514",
 		"claude-sonnet-4-5-20250929",
 		"claude-4-sonnet-20250514",
+		"claude-haiku-4-5-20251001",
 		"claude-3-7-sonnet-20250219",
 		"claude-3-5-haiku-20241022",
 	])
@@ -40,6 +41,9 @@ export const AnthropicLanguageModelId = z
 		}
 		if (/^claude-sonnet-4-5-/.test(v)) {
 			return "claude-sonnet-4-5-20250929";
+		}
+		if (/^claude-haiku-4-5-/.test(v)) {
+			return "claude-haiku-4-5-20251001";
 		}
 		if (/^claude-4-sonnet-4-/.test(v)) {
 			return "claude-4-sonnet-20250514";
@@ -81,6 +85,18 @@ const claude40Opus: AnthropicLanguageModel = {
 		Capability.Reasoning |
 		Capability.ImageFileInput,
 	tier: Tier.enum.pro,
+	configurations: defaultConfigurations,
+};
+
+const claude45Haiku: AnthropicLanguageModel = {
+	provider: "anthropic",
+	id: "claude-haiku-4-5-20251001",
+	capabilities:
+		Capability.TextGeneration |
+		Capability.Reasoning |
+		Capability.PdfFileInput |
+		Capability.ImageFileInput,
+	tier: Tier.enum.free,
 	configurations: defaultConfigurations,
 };
 
@@ -147,6 +163,7 @@ export const models = [
 	claude41Opus,
 	claude40Opus,
 	claude45Sonnet,
+	claude45Haiku,
 	claude40Sonnet,
 	claude37Sonnet,
 	claude35Haiku,
