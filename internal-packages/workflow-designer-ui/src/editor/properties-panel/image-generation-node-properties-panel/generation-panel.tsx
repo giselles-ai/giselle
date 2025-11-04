@@ -12,7 +12,7 @@ import { GenerationView } from "../../../ui/generation-view";
 
 function Empty() {
 	return (
-		<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_10%,transparent)] min-h-[250px] rounded-[8px] flex justify-center items-center text-text-muted">
+		<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_10%,transparent)] min-h-[250px] rounded-[8px] flex justify-center items-center text-text-muted">
 			<EmptyState
 				icon={<GenerateImageIcon width={24} height={24} />}
 				title="Nothing generated yet."
@@ -52,7 +52,7 @@ export function GenerationPanel({
 	return (
 		<div
 			className={clsx(
-				"relative flex flex-col bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_10%,transparent)] rounded-[8px] py-[8px]",
+				"relative flex flex-col bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_10%,transparent)] rounded-[8px] py-[8px]",
 				isExpanded ? "flex-1 min-h-0" : "min-h-[250px]",
 			)}
 		>
@@ -60,7 +60,7 @@ export function GenerationPanel({
 				<button
 					type="button"
 					onClick={onExpand}
-					className="absolute bottom-[8px] right-[8px] size-[32px] rounded-full bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_10%,transparent)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_20%,transparent)] flex items-center justify-center transition-colors group z-10"
+					className="absolute bottom-[8px] right-[8px] size-[32px] rounded-full bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_10%,transparent)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_20%,transparent)] flex items-center justify-center transition-colors group z-10"
 					aria-label="Expand"
 				>
 					<Maximize2 className="size-[16px] text-inverse group-hover:text-inverse/80" />

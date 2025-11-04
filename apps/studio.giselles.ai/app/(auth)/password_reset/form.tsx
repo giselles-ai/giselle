@@ -30,7 +30,7 @@ export const Form: FC = () => {
 					label="Email"
 					name="email"
 					ignore1password
-					className="bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_10%,transparent)]"
+					className="bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_10%,transparent)]"
 				/>
 				<AuthButton type="submit" disabled={isPending}>
 					Reset password

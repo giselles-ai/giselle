@@ -16,7 +16,7 @@ export function IconBox({
 				"rounded-[6px] size-[24px]",
 				"text-text/80",
 				"transition-colors duration-150",
-				"bg-transparent hover:bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_10%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_10%,transparent)]",
+				"bg-transparent hover:bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_10%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_10%,transparent)]",
 				"outline-none focus-visible:outline-none",
 				className,
 			)}

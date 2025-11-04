@@ -10,7 +10,7 @@ import { QueryResultView } from "../../../ui/query-result-view";
 
 function Empty() {
 	return (
-		<div className="bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_10%,transparent)] min-h-[220px] rounded-[8px] flex justify-center items-center text-secondary">
+		<div className="bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_10%,transparent)] min-h-[220px] rounded-[8px] flex justify-center items-center text-secondary">
 			<EmptyState
 				icon={<StackBlicksIcon />}
 				title="Nothing generated yet."
@@ -32,10 +32,10 @@ export function GenerationPanel({ node }: { node: QueryNode }) {
 		return <Empty />;
 	}
 	return (
-		<div className="flex flex-col bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_10%,transparent)] rounded-[8px] py-[8px] min-h-[220px]">
+		<div className="flex flex-col bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_10%,transparent)] rounded-[8px] py-[8px] min-h-[220px]">
 			<div
 				className={clsx(
-					"border-b border-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_20%,transparent)] py-[4px] px-[16px] flex items-center gap-[8px]",
+					"border-b border-[color-mix(in_srgb,var(--color-text-inverse, #fff)_20%,transparent)] py-[4px] px-[16px] flex items-center gap-[8px]",
 					"**:data-header-text:font-[700]",
 				)}
 			>

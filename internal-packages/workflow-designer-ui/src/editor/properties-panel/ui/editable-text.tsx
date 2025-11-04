@@ -67,8 +67,8 @@ export const EditableText = forwardRef<
 				aria-label={ariaLabel}
 				className={clsx(
 					"w-full min-w-[200px] hidden data-[editing=true]:block",
-					"outline-none border border-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_20%,transparent)] focus:border-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_30%,transparent)]",
-					"rounded-[8px] bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_5%,transparent)]",
+					"outline-none border border-[color-mix(in_srgb,var(--color-text-inverse, #fff)_20%,transparent)] focus:border-[color-mix(in_srgb,var(--color-text-inverse, #fff)_30%,transparent)]",
+					"rounded-[8px] bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_5%,transparent)]",
 					"!pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px]",
 					"data-[size=medium]:text-[14px] data-[size=large]:text-[16px]",
 					!className && "text-inverse",
@@ -92,7 +92,7 @@ export const EditableText = forwardRef<
 				className={clsx(
 					"rounded-[8px] data-[editing=true]:hidden text-left",
 					"hover:bg-bg-900/20 group-hover:bg-bg-900/10",
-					"bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_5%,transparent)] !pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px]",
+					"bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_5%,transparent)] !pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px]",
 					"data-[size=medium]:text-[14px] data-[size=large]:text-[16px]",
 					"cursor-default w-full overflow-hidden text-ellipsis whitespace-nowrap",
 					!className && "text-inverse",

@@ -336,7 +336,7 @@ export function ProfileEditModal({
 									Your Display Name
 								</Label>
 								<div
-									className={`flex items-center gap-2 rounded-[12px] px-2 py-1 bg-[color-mix(in_srgb,var(--color-text-inverse,var(--color-white,#fff))_5%,transparent)] focus-within:ring-1 focus-within:ring-primary-100/50 focus-within:ring-inset transition-all ${error ? "ring-1 ring-error-900" : ""}`}
+									className={`flex items-center gap-2 rounded-[12px] px-2 py-1 bg-[color-mix(in_srgb,var(--color-text-inverse, #fff)_5%,transparent)] focus-within:ring-1 focus-within:ring-primary-100/50 focus-within:ring-inset transition-all ${error ? "ring-1 ring-error-900" : ""}`}
 								>
 									<Input
 										id="displayName"
