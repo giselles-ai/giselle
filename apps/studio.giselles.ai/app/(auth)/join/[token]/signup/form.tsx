@@ -91,11 +91,7 @@ export const SignupForm = (props: SignupFormProps) => {
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								required
-								style={{
-									backgroundColor:
-										"color-mix(in srgb, var(--color-text-inverse, #fff) 10%, transparent)",
-								}}
-								className="placeholder:text-inverse/30"
+								className="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]"
 							/>
 						</div>
 					</div>
@@ -113,11 +109,7 @@ export const SignupForm = (props: SignupFormProps) => {
 								value={confirmPassword}
 								onChange={(e) => setConfirmPassword(e.target.value)}
 								required
-								style={{
-									backgroundColor:
-										"color-mix(in srgb, var(--color-text-inverse, #fff) 10%, transparent)",
-								}}
-								className="placeholder:text-inverse/30"
+								className="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]"
 							/>
 						</div>
 					</div>

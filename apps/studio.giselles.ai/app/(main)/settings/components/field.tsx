@@ -15,7 +15,6 @@ type FieldProps = {
 	onChange?: React.ChangeEventHandler<HTMLInputElement>;
 	disabled?: boolean;
 	inputClassName?: string;
-	style?: React.CSSProperties;
 };
 export const Field: FC<FieldProps> = ({
 	name,
@@ -28,7 +27,6 @@ export const Field: FC<FieldProps> = ({
 	ignore1password = false,
 	disabled = false,
 	inputClassName,
-	style,
 }) => (
 	<div className="grid gap-[4px]">
 		<Label htmlFor={name} className="text-text font-geist">
@@ -51,9 +49,8 @@ export const Field: FC<FieldProps> = ({
 			placeholder={placeholder}
 			onChange={onChange}
 			disabled={disabled}
-			style={style}
 			className={cn(
-				"py-2 rounded-[8px] text-text font-medium text-[14px] leading-[23.8px] font-geist disabled:opacity-50",
+				"py-2 rounded-[8px] bg-transparent text-text font-medium text-[14px] leading-[23.8px] font-geist disabled:opacity-50",
 				"placeholder:text-inverse/30",
 				inputClassName,
 			)}

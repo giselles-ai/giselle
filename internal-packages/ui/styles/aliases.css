@@ -144,52 +144,6 @@
 	.bg-transparent {
 		background-color: transparent !important;
 	}
-	/* Inverse background helpers */
-	.bg-inverse {
-		background-color: var(--color-text-inverse, var(--color-white, #fff)) !important;
-	}
-	.bg-inverse\/5 {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 5%,
-			transparent
-		) !important;
-	}
-	.bg-inverse\/10 {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 10%,
-			transparent
-		) !important;
-	}
-	.hover\:bg-inverse\/5:hover {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 5%,
-			transparent
-		) !important;
-	}
-	.hover\:bg-inverse\/10:hover {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 10%,
-			transparent
-		) !important;
-	}
-	.bg-inverse\/80 {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 80%,
-			transparent
-		) !important;
-	}
-	.hover\:bg-inverse\/80:hover {
-		background-color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 80%,
-			transparent
-		) !important;
-	}
 	/* Stage canvas background */
 	.bg-stage {
 		background-color: var(--color-stage-background, var(--color-background)) !important;
@@ -355,13 +309,6 @@
 		color: color-mix(
 			in srgb,
 			var(--color-text-inverse, var(--color-white, #fff)) 40%,
-			transparent
-		) !important;
-	}
-	.placeholder\:text-inverse\/30::placeholder {
-		color: color-mix(
-			in srgb,
-			var(--color-text-inverse, var(--color-white, #fff)) 30%,
 			transparent
 		) !important;
 	}

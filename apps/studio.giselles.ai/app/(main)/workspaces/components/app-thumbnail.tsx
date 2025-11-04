@@ -8,13 +8,9 @@ export function AppThumbnail({
 	return (
 		<div
 			className={clsx(
-				"aspect-video w-full rounded-lg flex items-center justify-center",
+				"aspect-video w-full rounded-lg bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] flex items-center justify-center",
 				className,
 			)}
-			style={{
-				backgroundColor:
-					"color-mix(in srgb, var(--color-text-inverse, #fff) 5%, transparent)",
-			}}
 		>
 			{children ?? <AppIcon />}
 		</div>

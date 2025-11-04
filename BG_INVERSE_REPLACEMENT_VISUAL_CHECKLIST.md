@@ -1,18 +1,25 @@
 # bg-inverse置換後の視覚確認チェックリスト
 
-## ✅ 置換完了・構文修正完了・クラス追加完了
+## ⚠️ 現在の状態
 
 すべての`bg-inverse`系のaliasを`bg-[color-mix(in srgb, var(--color-text-inverse, #fff) X%, transparent)]`に置換しました。
-構文エラー（`in_srgb` → `in srgb`、`var(...)_5%` → `var(...) 5%`）も修正済みです。
 
-**重要**: `aliases.css`に`bg-inverse/5`と`bg-inverse/10`クラスを追加しました。これらは`color-mix()`を使用して`--color-text-inverse`トークンを参照します。入力フィールドなどでは`bg-inverse/5`クラスを使用するように変更しました。
+**重要**: `bg-[color-mix(...)]`が効かない問題があります。原因を調査中です。
+- Tailwindの任意値構文が`color-mix()`を正しく処理していない可能性
+- CSS変数の解決タイミングの問題
+- ブラウザのサポートの問題
+
+現在、一部のファイルで構文エラー（`in_srgb` → `in srgb`、`var(...)_5%` → `var(...) 5%`）が残っています。これらを修正する必要があります。
+
+**注意**: `aliases.css`から一時的な`bg-inverse/5`クラスを削除しました。`bg-[color-mix(...)]`が動作するようになるまで、代替手段を検討中です。
 
 ## Settingsページ
 
 ### 1. `/settings/account`
 - **ファイル**: `apps/studio.giselles.ai/app/(main)/settings/account/account-display-name-form.tsx`
 - **確認項目**: 
-  - 表示名編集ボタンのホバー背景（`bg-[color-mix(in srgb, var(--color-text-inverse, #fff) 5%, transparent)]`）
+  - 表示名編集ボタンのホバー背景（`bg-[color-mix(...)]`使用、**構文エラーあり: `in_srgb` → `in srgb`、`_5%` → ` 5%`を修正が必要**）
+  - **⚠️ 現在動作していない可能性あり**
 
 ### 2. `/settings/team`
 - **ファイル**: `apps/studio.giselles.ai/app/(main)/settings/team/team-profile-card.tsx`
@@ -22,18 +29,21 @@
 ### 3. `/settings/team/invite`
 - **ファイル**: `apps/studio.giselles.ai/app/(main)/settings/team/invite-member-dialog.tsx`
 - **確認項目**: 
-  - メールアドレス入力フィールドの背景（`bg-inverse/5`クラス使用）
-  - メールタグの背景（`bg-[color-mix(in srgb, var(--color-text-inverse, #fff) 10%, transparent)]`）
+  - メールアドレス入力フィールドの背景（`bg-[color-mix(...)]`使用）
+  - メールタグの背景（`bg-[color-mix(...)]`使用）
+  - **⚠️ 現在動作していない可能性あり**
 
 ### 4. `/settings/components/profile-edit-modal`
 - **ファイル**: `apps/studio.giselles.ai/app/(main)/settings/components/profile-edit-modal.tsx`
 - **確認項目**: 
-  - 表示名入力フィールドの背景（`bg-inverse/5`クラス使用）
+  - 表示名入力フィールドの背景（`bg-[color-mix(...)]`使用、**構文エラーあり: `in_srgb` → `in srgb`、`_5%` → ` 5%`を修正が必要**）
+  - **⚠️ 現在動作していない可能性あり**
 
 ### 5. `/settings/team/team-profile-edit-modal`
 - **ファイル**: `apps/studio.giselles.ai/app/(main)/settings/team/team-profile-edit-modal.tsx`
 - **確認項目**: 
-  - チーム名入力フィールドの背景（`bg-inverse/5`クラス使用）
+  - チーム名入力フィールドの背景（`bg-[color-mix(...)]`使用、**構文エラーあり: `in_srgb` → `in srgb`、`_5%` → ` 5%`を修正が必要**）
+  - **⚠️ 現在動作していない可能性あり**
 
 ### 6. `/settings/team/vector-stores`
 - **ファイル**: 
@@ -231,8 +241,9 @@
 ## 確認のポイント
 
 1. **背景色の透明度が正しく表示されているか**
-   - `/5` = 5%透明度 → `bg-inverse/5`クラス（`aliases.css`で定義）または `bg-[color-mix(in srgb, var(--color-text-inverse, #fff) 5%, transparent)]`
-   - `/10` = 10%透明度 → `bg-inverse/10`クラス（`aliases.css`で定義）または `bg-[color-mix(in srgb, var(--color-text-inverse, #fff) 10%, transparent)]`
+   - `/5` = 5%透明度 → `bg-[color-mix(in srgb, var(--color-text-inverse, #fff) 5%, transparent)]`
+   - `/10` = 10%透明度 → `bg-[color-mix(in srgb, var(--color-text-inverse, #fff) 10%, transparent)]`
+   - **⚠️ 現在、`bg-[color-mix(...)]`が効かない問題があります。視覚確認では背景が黒または透明になっている可能性があります。**
    - `/20` = 20%透明度 → `bg-[color-mix(in srgb, var(--color-text-inverse, #fff) 20%, transparent)]`
    - `/30` = 30%透明度 → `bg-[color-mix(in srgb, var(--color-text-inverse, #fff) 30%, transparent)]`
    - `/80` = 80%透明度 → `bg-[color-mix(in srgb, var(--color-text-inverse, #fff) 80%, transparent)]`
@@ -247,19 +258,27 @@
 
 ## 置換パターン
 
-### aliases.cssで定義されたクラス（推奨）
-- `bg-inverse/5` → `bg-inverse/5`クラス（`aliases.css`で定義）
-- `bg-inverse/10` → `bg-inverse/10`クラス（`aliases.css`で定義）
-- `hover:bg-inverse/5` → `hover:bg-inverse/5`クラス（`aliases.css`で定義）
-- `hover:bg-inverse/10` → `hover:bg-inverse/10`クラス（`aliases.css`で定義）
+### 現在の状態
+- すべての`bg-inverse`系を`bg-[color-mix(...)]`に置換済み
+- **⚠️ しかし、`bg-[color-mix(...)]`が効かない問題が発生中**
 
-### インライン値（必要な場合のみ）
+### 正しい構文（修正が必要）
 - `bg-inverse/5` → `bg-[color-mix(in srgb, var(--color-text-inverse, #fff) 5%, transparent)]`
+  - ❌ `in_srgb` (間違い)
+  - ✅ `in srgb` (正しい)
+  - ❌ `var(...)_5%` (間違い)
+  - ✅ `var(...) 5%` (正しい)
+
 - `bg-inverse/10` → `bg-[color-mix(in srgb, var(--color-text-inverse, #fff) 10%, transparent)]`
 - `bg-inverse` (透明度なし) → `bg-[var(--color-text-inverse, #fff)]`
 - `border-inverse/20` → `border-[color-mix(in srgb, var(--color-text-inverse, #fff) 20%, transparent)]`
 
-**注意**: 入力フィールドなど、よく使われる箇所では`aliases.css`で定義されたクラス（`bg-inverse/5`など）を使用することを推奨します。これにより、`--color-text-inverse`トークンが確実に使用され、保守性が向上します。
+### 問題の原因調査中
+1. Tailwindの任意値構文が`color-mix()`を正しく処理していない可能性
+2. CSS変数の解決タイミングの問題
+3. ブラウザのサポートの問題
+
+**注意**: 構文エラーを修正しても動作しない場合は、別のアプローチ（例: `aliases.css`での定義、インラインスタイル）を検討する必要があります。
 
 **注意**: `color-mix()`の構文ではスペースが必要です：
 - ✅ `in srgb` (正しい)

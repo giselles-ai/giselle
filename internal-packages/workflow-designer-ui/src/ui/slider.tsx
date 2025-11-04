@@ -44,7 +44,9 @@ export function Slider(props: SliderProps) {
 					>
 						<SliderPrimitive.Range className="absolute h-full bg-[var(--color-text-inverse, #fff)] rounded-[9999px]" />
 					</SliderPrimitive.Track>
-					<SliderPrimitive.Thumb className="block h-[10px] w-[10px] rounded-full bg-[var(--color-text-inverse, #fff)] transition-transform hover:scale-110 focus:outline-none focus:ring-0 active:outline-none active:ring-0" />
+					<SliderPrimitive.Thumb
+						className="block h-[10px] w-[10px] rounded-full bg-[var(--color-text-inverse, #fff)] transition-transform hover:scale-110 focus:outline-none focus:ring-0 active:outline-none active:ring-0"
+					/>
 				</SliderPrimitive.Root>
 				<div className="text-[12px] font-[700] text-inverse w-[44px] text-right font-mono [font-variant-numeric:tabular-nums]">
 					{props.formatValue

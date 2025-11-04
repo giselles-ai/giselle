@@ -780,7 +780,7 @@ export function Installed({
 										defaultValue={step.callsign}
 										className={clsx(
 											"w-full rounded-[8px] py-[8px] pl-[28px] pr-[12px] outline-none focus:outline-none border-none text-[14px] text-inverse",
-											callsignError ? "bg-error/10" : "bg-inverse/10",
+											callsignError ? "bg-error/10" : "bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]",
 										)}
 										placeholder="code-review"
 									/>

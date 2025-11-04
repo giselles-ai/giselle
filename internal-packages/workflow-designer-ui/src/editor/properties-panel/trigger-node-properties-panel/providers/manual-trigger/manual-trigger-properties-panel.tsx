@@ -202,7 +202,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 										name="name"
 										type="text"
 										placeholder="Write the parameter name"
-										className="w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-none bg-inverse/10 text-inverse text-[14px]"
+										className="w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]"
 										data-1p-ignore
 									/>
 								</SettingRow>
