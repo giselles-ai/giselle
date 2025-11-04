@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { subscriptions, teams } from "@/db/schema";
+import { activeSubscriptions, teams } from "@/db/schema";
 import type { TeamWithSubscription } from "./types";
 
 export async function fetchTeamByDbId(
@@ -13,15 +13,15 @@ export async function fetchTeamByDbId(
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
 			type: teams.type,
-			activeSubscriptionId: subscriptions.id,
+			activeSubscriptionId: activeSubscriptions.id,
 		})
 		.from(teams)
 		.where(eq(teams.dbId, dbId))
 		.leftJoin(
-			subscriptions,
+			activeSubscriptions,
 			and(
-				eq(subscriptions.teamDbId, teams.dbId),
-				eq(subscriptions.status, "active"),
+				eq(activeSubscriptions.teamDbId, teams.dbId),
+				eq(activeSubscriptions.status, "active"),
 			),
 		);
 

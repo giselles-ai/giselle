@@ -39,6 +39,7 @@ import type { AgentId } from "@/services/agents/types";
 import type { TeamId } from "@/services/teams/types";
 import { vectorWithoutDimensions } from "./custom-types";
 
+/** @deprecated Use activeSubscriptions and subscriptionHistory tables instead. This table is kept for gradual migration. */
 export const subscriptions = pgTable("subscriptions", {
 	// Subscription ID from Stripe, e.g. sub_1234.
 	id: text("id").notNull().unique(),
@@ -69,6 +70,75 @@ export const subscriptions = pgTable("subscriptions", {
 	trialStart: timestamp("trial_start"),
 	trialEnd: timestamp("trial_end"),
 });
+
+export const activeSubscriptions = pgTable("active_subscriptions", {
+	// Subscription ID from Stripe, e.g. sub_1234.
+	id: text("id").notNull().unique(),
+	dbId: serial("db_id").primaryKey(),
+	teamDbId: integer("team_db_id")
+		.notNull()
+		.references(() => teams.dbId, { onDelete: "cascade" }),
+	// Customer ID from Stripe, e.g. cus_xxx.
+	customerId: text("customer_id").notNull(),
+	status: text("status").$type<Stripe.Subscription.Status>().notNull(),
+	cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull(),
+	cancelAt: timestamp("cancel_at"),
+	canceledAt: timestamp("canceled_at"),
+
+	/**
+	 * These fields are removed from the Stripe Subscription object.
+	 * - current_period_start
+	 * - current_period_end
+	 *
+	 * But we keep them for compatibility with existing data.
+	 * New values are populated from subscriptionItem objects.
+	 */
+	currentPeriodStart: timestamp("current_period_start").notNull(),
+	currentPeriodEnd: timestamp("current_period_end").notNull(),
+
+	created: timestamp("created").defaultNow().notNull(),
+	endedAt: timestamp("ended_at"),
+	trialStart: timestamp("trial_start"),
+	trialEnd: timestamp("trial_end"),
+}, (table) => [
+	index().on(table.teamDbId),
+	index().on(table.status),
+]);
+
+export const subscriptionHistory = pgTable("subscription_history", {
+	// Subscription ID from Stripe, e.g. sub_1234.
+	id: text("id").notNull().unique(),
+	dbId: serial("db_id").primaryKey(),
+	teamDbId: integer("team_db_id")
+		.notNull()
+		.references(() => teams.dbId, { onDelete: "cascade" }),
+	// Customer ID from Stripe, e.g. cus_xxx.
+	customerId: text("customer_id").notNull(),
+	status: text("status").$type<Stripe.Subscription.Status>().notNull(),
+	cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull(),
+	cancelAt: timestamp("cancel_at"),
+	canceledAt: timestamp("canceled_at"),
+
+	/**
+	 * These fields are removed from the Stripe Subscription object.
+	 * - current_period_start
+	 * - current_period_end
+	 *
+	 * But we keep them for compatibility with existing data.
+	 * New values are populated from subscriptionItem objects.
+	 */
+	currentPeriodStart: timestamp("current_period_start").notNull(),
+	currentPeriodEnd: timestamp("current_period_end").notNull(),
+
+	created: timestamp("created").defaultNow().notNull(),
+	endedAt: timestamp("ended_at").notNull(),
+	trialStart: timestamp("trial_start"),
+	trialEnd: timestamp("trial_end"),
+}, (table) => [
+	index().on(table.teamDbId),
+	index().on(table.status),
+	index().on(table.endedAt),
+]);
 
 export type TeamType = "customer" | "internal";
 export const teams = pgTable("teams", {

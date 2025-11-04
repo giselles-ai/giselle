@@ -1,4 +1,4 @@
-import type { subscriptions, teams } from "@/db";
+import type { activeSubscriptions, teams } from "@/db";
 
 export type TeamId = `tm_${string}`;
 export function isTeamId(id: string): id is TeamId {
@@ -11,7 +11,7 @@ export type CurrentTeam = {
 	name: typeof teams.$inferSelect.name;
 	avatarUrl?: typeof teams.$inferSelect.avatarUrl;
 	type: typeof teams.$inferSelect.type;
-	activeSubscriptionId: typeof subscriptions.$inferInsert.id | null;
+	activeSubscriptionId: typeof activeSubscriptions.$inferInsert.id | null;
 };
 
 export type TeamWithSubscription = CurrentTeam;

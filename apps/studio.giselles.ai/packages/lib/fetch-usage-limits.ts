@@ -1,6 +1,6 @@
 import type { WorkspaceId } from "@giselle-sdk/data-type";
 import { and, eq } from "drizzle-orm";
-import { agents, db, subscriptions, teams } from "@/db";
+import { agents, db, activeSubscriptions, teams } from "@/db";
 import { getUsageLimitsForTeam } from "./usage-limits";
 
 export async function fetchUsageLimits(workspaceId: WorkspaceId) {
@@ -10,15 +10,15 @@ export async function fetchUsageLimits(workspaceId: WorkspaceId) {
 			dbId: teams.dbId,
 			name: teams.name,
 			type: teams.type,
-			activeSubscriptionId: subscriptions.id,
+			activeSubscriptionId: activeSubscriptions.id,
 		})
 		.from(teams)
 		.innerJoin(agents, eq(agents.workspaceId, workspaceId))
 		.leftJoin(
-			subscriptions,
+			activeSubscriptions,
 			and(
-				eq(subscriptions.teamDbId, teams.dbId),
-				eq(subscriptions.status, "active"),
+				eq(activeSubscriptions.teamDbId, teams.dbId),
+				eq(activeSubscriptions.status, "active"),
 			),
 		)
 		.where(eq(teams.dbId, agents.teamDbId))

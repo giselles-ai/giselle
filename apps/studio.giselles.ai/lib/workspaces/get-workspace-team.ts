@@ -15,11 +15,11 @@ export async function getWorkspaceTeam(workspaceId: WorkspaceId) {
 	}
 
 	// Then, check for active subscription
-	const activeSubscription = await db.query.subscriptions.findFirst({
-		where: (subscriptions, { eq, and }) =>
+	const activeSubscription = await db.query.activeSubscriptions.findFirst({
+		where: (activeSubscriptions, { eq, and }) =>
 			and(
-				eq(subscriptions.teamDbId, agent.team.dbId),
-				eq(subscriptions.status, "active"),
+				eq(activeSubscriptions.teamDbId, agent.team.dbId),
+				eq(activeSubscriptions.status, "active"),
 			),
 	});
 

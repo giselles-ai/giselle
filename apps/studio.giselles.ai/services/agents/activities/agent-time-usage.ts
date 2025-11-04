@@ -1,5 +1,5 @@
 import { and, eq, gte, lt, sql } from "drizzle-orm";
-import { agentActivities, agents, db, subscriptions, teams } from "@/db";
+import { agentActivities, agents, db, activeSubscriptions, teams } from "@/db";
 import { getMonthlyBillingCycle } from "./utils";
 
 /**
@@ -23,16 +23,16 @@ async function getCurrentBillingPeriod(teamDbId: number) {
 			name: teams.name,
 			type: teams.type,
 			createdAt: teams.createdAt,
-			activeSubscriptionId: subscriptions.id,
-			activeSubscriptionCurrentPeriodStart: subscriptions.currentPeriodStart,
-			activeSubscriptionCurrentPeriodEnd: subscriptions.currentPeriodEnd,
+			activeSubscriptionId: activeSubscriptions.id,
+			activeSubscriptionCurrentPeriodStart: activeSubscriptions.currentPeriodStart,
+			activeSubscriptionCurrentPeriodEnd: activeSubscriptions.currentPeriodEnd,
 		})
 		.from(teams)
 		.leftJoin(
-			subscriptions,
+			activeSubscriptions,
 			and(
-				eq(subscriptions.teamDbId, teams.dbId),
-				eq(subscriptions.status, "active"),
+				eq(activeSubscriptions.teamDbId, teams.dbId),
+				eq(activeSubscriptions.status, "active"),
 			),
 		)
 		.where(and(eq(teams.dbId, teamDbId)));

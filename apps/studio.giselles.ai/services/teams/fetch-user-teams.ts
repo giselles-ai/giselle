@@ -1,7 +1,7 @@
 import { and, asc, eq } from "drizzle-orm";
 import {
 	db,
-	subscriptions,
+	activeSubscriptions,
 	supabaseUserMappings,
 	teamMemberships,
 	teams,
@@ -21,7 +21,7 @@ export async function fetchUserTeams() {
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
 			type: teams.type,
-			activeSubscriptionId: subscriptions.id,
+			activeSubscriptionId: activeSubscriptions.id,
 			role: teamMemberships.role,
 		})
 		.from(teams)
@@ -31,10 +31,10 @@ export async function fetchUserTeams() {
 			eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
 		)
 		.leftJoin(
-			subscriptions,
+			activeSubscriptions,
 			and(
-				eq(subscriptions.teamDbId, teams.dbId),
-				eq(subscriptions.status, "active"),
+				eq(activeSubscriptions.teamDbId, teams.dbId),
+				eq(activeSubscriptions.status, "active"),
 			),
 		)
 		.where(eq(supabaseUserMappings.supabaseUserId, user.id))

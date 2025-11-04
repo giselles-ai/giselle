@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm";
-import { db, subscriptions, teams } from "@/db";
+import { db, activeSubscriptions, teams } from "@/db";
 import type { CurrentTeam } from "@/services/teams";
 
 /**
@@ -15,14 +15,14 @@ export async function fetchWorkspaceTeam(
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
 			type: teams.type,
-			activeSubscriptionId: subscriptions.id,
+			activeSubscriptionId: activeSubscriptions.id,
 		})
 		.from(teams)
 		.leftJoin(
-			subscriptions,
+			activeSubscriptions,
 			and(
-				eq(subscriptions.teamDbId, teams.dbId),
-				eq(subscriptions.status, "active"),
+				eq(activeSubscriptions.teamDbId, teams.dbId),
+				eq(activeSubscriptions.status, "active"),
 			),
 		)
 		.where(eq(teams.dbId, workspaceTeamDbId))

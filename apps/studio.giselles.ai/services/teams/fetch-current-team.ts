@@ -2,7 +2,7 @@ import { and, asc, eq } from "drizzle-orm";
 import { cache } from "react";
 import {
 	db,
-	subscriptions,
+	activeSubscriptions,
 	supabaseUserMappings,
 	teamMemberships,
 	teams,
@@ -44,7 +44,7 @@ async function fetchTeam(teamId: TeamId, supabaseUserId: string) {
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
 			type: teams.type,
-			activeSubscriptionId: subscriptions.id,
+			activeSubscriptionId: activeSubscriptions.id,
 		})
 		.from(teams)
 		// join teamMemberships and supabaseUserMappings to check user's membership
@@ -54,10 +54,10 @@ async function fetchTeam(teamId: TeamId, supabaseUserId: string) {
 			eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
 		)
 		.leftJoin(
-			subscriptions,
+			activeSubscriptions,
 			and(
-				eq(subscriptions.teamDbId, teams.dbId),
-				eq(subscriptions.status, "active"),
+				eq(activeSubscriptions.teamDbId, teams.dbId),
+				eq(activeSubscriptions.status, "active"),
 			),
 		)
 		.where(
@@ -80,7 +80,7 @@ async function fetchFirstTeam(supabaseUserId: string) {
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
 			type: teams.type,
-			activeSubscriptionId: subscriptions.id,
+			activeSubscriptionId: activeSubscriptions.id,
 		})
 		.from(teams)
 		.innerJoin(teamMemberships, eq(teams.dbId, teamMemberships.teamDbId))
@@ -89,10 +89,10 @@ async function fetchFirstTeam(supabaseUserId: string) {
 			eq(teamMemberships.userDbId, supabaseUserMappings.userDbId),
 		)
 		.leftJoin(
-			subscriptions,
+			activeSubscriptions,
 			and(
-				eq(subscriptions.teamDbId, teams.dbId),
-				eq(subscriptions.status, "active"),
+				eq(activeSubscriptions.teamDbId, teams.dbId),
+				eq(activeSubscriptions.status, "active"),
 			),
 		)
 		.where(eq(supabaseUserMappings.supabaseUserId, supabaseUserId))
