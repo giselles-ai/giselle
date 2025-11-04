@@ -2,10 +2,9 @@ import { Button } from "@giselle-internal/ui/button";
 import {
 	Dialog,
 	DialogContent,
-	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@giselle-internal/ui/dialog";
 import { type AgentActivity, AgentUsageTable } from "./agent-usage-table";
 
 type AgentUsageDialogProps = {
@@ -20,12 +19,12 @@ export function AgentUsageDialog({ activities }: AgentUsageDialogProps) {
 					View All Logs
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="border-[0.5px] border-border px-[24px] pt-[16px] pb-[24px] bg-surface max-w-7xl">
-				<DialogHeader>
+			<DialogContent size="wide">
+				<div className="py-[12px]">
 					<DialogTitle className="text-white-400 text-[16px] leading-[27.2px] tracking-normal font-sans">
 						App Usage Logs
 					</DialogTitle>
-				</DialogHeader>
+				</div>
 				<AgentUsageTable
 					activities={activities}
 					containerClassName="max-h-[60vh] overflow-y-auto"
