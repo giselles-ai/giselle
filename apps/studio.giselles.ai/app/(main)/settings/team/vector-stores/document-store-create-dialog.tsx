@@ -1,6 +1,5 @@
 "use client";
 
-import { FormField } from "@giselle-internal/ui/form-field";
 import {
 	Dialog,
 	DialogBody,
@@ -12,6 +11,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
+import { FormField } from "@giselle-internal/ui/form-field";
 import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-sdk/data-type";
 import { Plus, X } from "lucide-react";
 import {
@@ -189,11 +189,7 @@ export function DocumentVectorStoreCreateDialog({
 						>
 							Cancel
 						</Button>
-						<Button
-							variant="primary"
-							onClick={onSubmit}
-							disabled={isPending}
-						>
+						<Button variant="primary" onClick={onSubmit} disabled={isPending}>
 							{isPending ? "Processing..." : "Create"}
 						</Button>
 					</div>

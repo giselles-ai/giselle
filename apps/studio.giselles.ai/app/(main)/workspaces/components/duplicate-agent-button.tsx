@@ -86,7 +86,8 @@ export function DuplicateAgentButton({
 						</DialogClose>
 					</div>
 					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
-						This will create a new workspace with the same settings as the original.
+						This will create a new workspace with the same settings as the
+						original.
 					</DialogDescription>
 				</DialogHeader>
 				<DialogBody />

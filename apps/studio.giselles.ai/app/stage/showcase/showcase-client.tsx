@@ -1,6 +1,6 @@
 "use client";
 
-import { Select } from "@giselle-internal/ui/select";
+import { Button } from "@giselle-internal/ui/button";
 import {
 	Dialog,
 	DialogBody,
@@ -12,7 +12,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
-import { Button } from "@giselle-internal/ui/button";
+import { Select } from "@giselle-internal/ui/select";
 import { Play, RotateCcw, Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -503,10 +503,7 @@ export function ShowcaseClient({
 											>
 												Cancel
 											</Button>
-											<Button
-												variant="primary"
-												onClick={handleSavePlaylist}
-											>
+											<Button variant="primary" onClick={handleSavePlaylist}>
 												Save
 											</Button>
 										</DialogFooter>

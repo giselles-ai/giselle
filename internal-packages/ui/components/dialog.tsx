@@ -43,22 +43,20 @@ export function DialogContent({
 							className,
 						)}
 					>
-					<GlassSurfaceLayers
-						variant={variant === "destructive" ? "destructive" : "default"}
-						borderStyle={
-							variant === "destructive" ? "destructive" : "solid"
-						}
-						borderTone={variant === "destructive" ? "destructive" : "muted"}
-						withTopHighlight={true}
-						withBaseFill={true}
-						baseFillClass={
-							variant === "destructive" ? "bg-error-900/10" : undefined
-						}
-						blurClass="backdrop-blur-md"
-						withAuxHairline={true}
-						radiusClass="rounded-[12px]"
-						zIndexClass="z-0"
-					/>
+						<GlassSurfaceLayers
+							variant={variant === "destructive" ? "destructive" : "default"}
+							borderStyle={variant === "destructive" ? "destructive" : "solid"}
+							borderTone={variant === "destructive" ? "destructive" : "muted"}
+							withTopHighlight={true}
+							withBaseFill={true}
+							baseFillClass={
+								variant === "destructive" ? "bg-error-900/10" : undefined
+							}
+							blurClass="backdrop-blur-md"
+							withAuxHairline={true}
+							radiusClass="rounded-[12px]"
+							zIndexClass="z-0"
+						/>
 						<div className="relative z-10 flex flex-col min-h-0">
 							{children}
 						</div>

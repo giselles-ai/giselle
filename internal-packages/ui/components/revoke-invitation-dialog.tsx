@@ -1,5 +1,6 @@
 import { AlertTriangle } from "lucide-react";
 import { useState } from "react";
+import { Button } from "./button";
 import {
 	Dialog,
 	DialogBody,
@@ -10,7 +11,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "./dialog";
-import { Button } from "./button";
 
 export interface RevokeInvitationDialogProps {
 	open?: boolean;
@@ -75,7 +75,9 @@ export function RevokeInvitationDialog({
 					</DialogTitle>
 					<DialogDescription
 						className={
-							variant === "destructive" ? "text-error-900/50" : "text-text-muted"
+							variant === "destructive"
+								? "text-error-900/50"
+								: "text-text-muted"
 						}
 					>
 						{email ? `${email}\n\n${description}` : description}

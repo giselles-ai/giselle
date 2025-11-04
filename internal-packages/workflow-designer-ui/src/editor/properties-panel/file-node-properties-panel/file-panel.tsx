@@ -353,7 +353,10 @@ export function FilePanel({ node, config }: FilePanelProps) {
 									{node.content.category === "image" ? (
 										<ImageIcon size={38} className="text-text-muted" />
 									) : (
-										<ArrowUpFromLineIcon size={38} className="text-text-muted" />
+										<ArrowUpFromLineIcon
+											size={38}
+											className="text-text-muted"
+										/>
 									)}
 									<label
 										htmlFor="file"

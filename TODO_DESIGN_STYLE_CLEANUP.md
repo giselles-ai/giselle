@@ -152,7 +152,9 @@
 - [x] Dialog関連のコンポーネントが全て ui/dialog を使用しているか確認
 
 ### 7. その他の残タスク
-- [ ] AgentCard 内の白/rgba/hex のトークン化
+- [x] AgentCard 内の白/rgba/hex のトークン化
+  - AgentCardの生色をworkspacesスコープのCSS変数に移行完了
+  - `--color-agent-card-gradient-from/middle/to`, `--color-agent-card-spotlight`, `--color-agent-card-border`を定義
 - [ ] v3ブリッジ段階削除計画の起票
 - [ ] 互換トークン段階削除（white-900 等）
 - [ ] lintのwarn→errorへの格上げ（stylelint/ESLint）

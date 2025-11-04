@@ -11,8 +11,8 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
-import { useActionState, useState } from "react";
 import { X } from "lucide-react";
+import { useActionState, useState } from "react";
 import { Alert, AlertDescription } from "../components/alert";
 import { Button } from "../components/button";
 import { deleteTeam } from "./actions";
@@ -88,11 +88,7 @@ export function DeleteTeam() {
 							>
 								Cancel
 							</Button>
-							<Button
-								variant="destructive"
-								type="submit"
-								disabled={pending}
-							>
+							<Button variant="destructive" type="submit" disabled={pending}>
 								{pending ? "Deleting..." : "Delete Team"}
 							</Button>
 						</div>

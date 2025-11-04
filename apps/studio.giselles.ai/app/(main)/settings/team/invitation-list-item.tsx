@@ -11,7 +11,6 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
-import { Button } from "../components/button";
 import { useToasts } from "@giselle-internal/ui/toast";
 import { Copy, Ellipsis, RefreshCw, Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
@@ -22,6 +21,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { TeamRole } from "@/db";
+import { Button } from "../components/button";
 import { resendInvitationAction, revokeInvitationAction } from "./actions";
 import { LocalDateTime } from "./components/local-date-time";
 
@@ -195,9 +195,7 @@ export function InvitationListItem({
 											</DialogDescription>
 											<DialogClose className="text-inverse" />
 										</DialogHeader>
-										<DialogBody>
-											{/* Content goes here if needed */}
-										</DialogBody>
+										<DialogBody>{/* Content goes here if needed */}</DialogBody>
 										<DialogFooter>
 											<Button
 												variant="link"

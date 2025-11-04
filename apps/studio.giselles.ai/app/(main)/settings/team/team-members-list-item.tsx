@@ -9,12 +9,12 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
-import { Button } from "../components/button";
 import { Select } from "@giselle-internal/ui/select";
 import { useToasts } from "@giselle-internal/ui/toast";
 import { useState } from "react";
 import type { TeamRole } from "@/db";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
+import { Button } from "../components/button";
 import { deleteTeamMember, updateTeamMemberRole } from "./actions";
 
 type TeamMemberListItemProps = {
@@ -196,9 +196,7 @@ export function TeamMemberListItem({
 									</DialogDescription>
 									<DialogClose className="text-inverse" />
 								</DialogHeader>
-								<DialogBody>
-									{/* Content goes here if needed */}
-								</DialogBody>
+								<DialogBody>{/* Content goes here if needed */}</DialogBody>
 								<DialogFooter>
 									<Button
 										variant="link"

@@ -163,9 +163,7 @@ export function DiagnosticModal({
 								Cancel
 							</Button>
 							<Button
-								variant={
-									diagnosisResult.canBeFixed ? "primary" : "destructive"
-								}
+								variant={diagnosisResult.canBeFixed ? "primary" : "destructive"}
 								onClick={
 									diagnosisResult.canBeFixed
 										? handleFix

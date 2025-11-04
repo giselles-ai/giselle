@@ -231,7 +231,11 @@ export function InviteMemberDialog({
 				</DialogHeader>
 
 				<DialogBody>
-					<form onSubmit={handleSubmit} className="mt-4" id="invite-member-form">
+					<form
+						onSubmit={handleSubmit}
+						className="mt-4"
+						id="invite-member-form"
+					>
 						<div className="flex items-start gap-3 rounded-lg bg-inverse/5 p-1">
 							<div className="flex min-h-[40px] flex-grow flex-wrap items-center gap-1 px-2">
 								{emailTags.map((email) => (
