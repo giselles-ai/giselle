@@ -146,7 +146,7 @@ export function Toolbar() {
 	const anthropicModels = getAvailableModels(
 		isFreeUser
 			? ["claude-haiku-4-5-20251001"]
-			: ["claude-3-opus-20240229", "claude-3-sonnet-20240229"],
+			: ["claude-sonnet-4-5-20250929", "claude-opus-4-1-20250805"],
 		"anthropic",
 		llmProviders,
 		languageModels,
