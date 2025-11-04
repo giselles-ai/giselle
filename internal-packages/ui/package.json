@@ -48,7 +48,6 @@
 	"dependencies": {
 		"@giselle-sdk/data-type": "workspace:^",
 		"@giselle-sdk/text-editor": "workspace:^",
-		"@radix-ui/react-dialog": "1.1.4",
 		"clsx": "catalog:",
 		"lucide-react": "catalog:",
 		"radix-ui": "catalog:",
