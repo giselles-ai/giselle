@@ -81,9 +81,6 @@ import {
 	updateWorkspace,
 } from "./workspaces";
 
-export * from "../concepts/act";
-export * from "../concepts/generation";
-export * from "../concepts/identifiers";
 export type * from "./acts";
 export * from "./acts";
 export * from "./integrations";
