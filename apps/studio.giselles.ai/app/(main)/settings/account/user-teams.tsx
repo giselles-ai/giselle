@@ -178,7 +178,7 @@ function UserTeamsItem({
 									Apps
 								</button>
 							)}
-							action={() => navigateWithChangeTeam(teamId, "/apps")}
+							action={() => navigateWithChangeTeam(teamId, "/workspaces")}
 						/>
 					</DropdownMenuItem>
 					<DropdownMenuItem className="p-0">

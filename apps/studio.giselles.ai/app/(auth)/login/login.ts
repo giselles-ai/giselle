@@ -34,7 +34,7 @@ export async function login(
 	// Validate returnUrl to prevent open redirect attacks
 	const validReturnUrl = isValidReturnUrl(returnUrlEntry)
 		? returnUrlEntry
-		: "/apps";
+		: "/workspaces";
 	redirect(validReturnUrl);
 	return null;
 }

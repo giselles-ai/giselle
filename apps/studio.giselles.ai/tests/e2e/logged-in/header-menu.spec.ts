@@ -31,8 +31,8 @@ test.describe("Header menu navigation", () => {
 
 	for (const { label, url } of menuTests) {
 		test(`Clicking ${label} navigates to ${url}`, async ({ page }) => {
-			// Go to the Apps page (assume logged in)
-			await page.goto(`${baseUrl}/apps`);
+			// Go to the Workspaces page (assume logged in)
+			await page.goto(`${baseUrl}/workspaces`);
 			// Click the header menu item by aria-label
 			await page.getByRole("link", { name: label }).click();
 			// Assert navigation to the correct page

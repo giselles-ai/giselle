@@ -36,7 +36,7 @@ interface SearchHeaderProps {
 
 /**
  * SearchHeader
- * Shared header identical to /apps top controls:
+ * Shared header identical to /workspaces top controls:
  * - Left: search input with leading icon
  * - Right: sort dropdown (+ optional grid/list toggle)
  */
@@ -98,7 +98,7 @@ export function SearchHeader({
 					placeholder={searchPlaceholder}
 					value={searchQuery}
 					onChange={(e) => onSearchChange(e.target.value)}
-					// Classes match /apps usage exactly (force radius/ring like /apps local Input)
+					// Classes match /workspaces usage exactly (force radius/ring like /workspaces local Input)
 					className="pl-12 pr-4 h-10 w-full bg-bg text-inverse placeholder:text-link-muted border-border rounded-[8px] shadow-none focus:border-transparent focus:ring-1 focus:ring-inverse/20 focus:ring-inset focus:ring-offset-0 focus-visible:border-transparent focus-visible:ring-1 focus-visible:ring-inverse/20 focus-visible:ring-inset focus-visible:ring-offset-0"
 				/>
 			</div>

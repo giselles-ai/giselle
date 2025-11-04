@@ -139,7 +139,7 @@ export function NavigationRailFooterMenu({
 
 						{/* Lobby */}
 						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS} asChild>
-							<Link href="/apps" className="w-full block">
+							<Link href="/workspaces" className="w-full block">
 								Lobby
 							</Link>
 						</DropdownMenuPrimitive.Item>
