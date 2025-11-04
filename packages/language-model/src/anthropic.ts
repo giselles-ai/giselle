@@ -93,6 +93,7 @@ const claude45Haiku: AnthropicLanguageModel = {
 	id: "claude-haiku-4-5-20251001",
 	capabilities:
 		Capability.TextGeneration |
+		Capability.Reasoning |
 		Capability.PdfFileInput |
 		Capability.ImageFileInput,
 	tier: Tier.enum.free,
