@@ -1,7 +1,18 @@
 "use client";
 
 import { Select } from "@giselle-internal/ui/select";
-import * as Dialog from "@radix-ui/react-dialog";
+import {
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@giselle-internal/ui/dialog";
+import { Button } from "@giselle-internal/ui/button";
 import { Play, RotateCcw, Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,12 +21,6 @@ import { GlassButton } from "@/components/ui/glass-button";
 import { Input } from "@/components/ui/input";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { Card } from "../../(main)/settings/components/card";
-import {
-	GlassDialogBody,
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "../../(main)/settings/team/components/glass-dialog-content";
 import { SearchHeader } from "../../(main)/workspaces/components/search-header";
 
 type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
@@ -425,28 +430,34 @@ export function ShowcaseClient({
 					{activeTab === "Playlist" && (
 						<>
 							<div className="mb-8 flex justify-start">
-								<Dialog.Root
+								<Dialog
 									open={isPlaylistDialogOpen}
 									onOpenChange={setIsPlaylistDialogOpen}
 								>
-									<Dialog.Trigger asChild>
+									<DialogTrigger asChild>
 										<GlassButton>New Playlist +</GlassButton>
-									</Dialog.Trigger>
-									<GlassDialogContent
+									</DialogTrigger>
+									<DialogContent
+										variant="glass"
 										onEscapeKeyDown={() => setIsPlaylistDialogOpen(false)}
 										onPointerDownOutside={() => setIsPlaylistDialogOpen(false)}
 									>
-										<GlassDialogHeader
-											title="New Playlist Details"
-											description="Create a new playlist with title, description and thumbnail."
-											onClose={() => setIsPlaylistDialogOpen(false)}
-										/>
-										<GlassDialogBody>
+										<DialogHeader>
+											<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+												New Playlist Details
+											</DialogTitle>
+											<DialogDescription className="text-text-muted">
+												Create a new playlist with title, description and
+												thumbnail.
+											</DialogDescription>
+											<DialogClose className="text-inverse" />
+										</DialogHeader>
+										<DialogBody>
 											<div className="grid gap-4">
 												<div className="grid gap-2">
 													<label
 														htmlFor="title"
-														className="text-sm font-medium text-white"
+														className="text-sm font-medium text-inverse"
 													>
 														Title
 													</label>
@@ -466,7 +477,7 @@ export function ShowcaseClient({
 												<div className="grid gap-2">
 													<label
 														htmlFor="description"
-														className="text-sm font-medium text-white"
+														className="text-sm font-medium text-inverse"
 													>
 														Description
 													</label>
@@ -484,14 +495,23 @@ export function ShowcaseClient({
 													/>
 												</div>
 											</div>
-										</GlassDialogBody>
-										<GlassDialogFooter
-											onCancel={() => setIsPlaylistDialogOpen(false)}
-											onConfirm={handleSavePlaylist}
-											confirmLabel="Save"
-										/>
-									</GlassDialogContent>
-								</Dialog.Root>
+										</DialogBody>
+										<DialogFooter>
+											<Button
+												variant="link"
+												onClick={() => setIsPlaylistDialogOpen(false)}
+											>
+												Cancel
+											</Button>
+											<Button
+												variant="primary"
+												onClick={handleSavePlaylist}
+											>
+												Save
+											</Button>
+										</DialogFooter>
+									</DialogContent>
+								</Dialog>
 							</div>
 
 							{mockPlaylists.length > 0 && (

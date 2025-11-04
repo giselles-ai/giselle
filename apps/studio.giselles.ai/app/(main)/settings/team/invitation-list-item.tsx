@@ -1,12 +1,18 @@
 "use client";
 
 import {
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "@giselle-internal/ui/glass-dialog";
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@giselle-internal/ui/dialog";
+import { Button } from "../components/button";
 import { useToasts } from "@giselle-internal/ui/toast";
-import * as Dialog from "@radix-ui/react-dialog";
 import { Copy, Ellipsis, RefreshCw, Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import {
@@ -158,8 +164,8 @@ export function InvitationListItem({
 										</>
 									)}
 								</DropdownMenuItem>
-								<Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
-									<Dialog.Trigger asChild>
+								<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+									<DialogTrigger asChild>
 										<DropdownMenuItem
 											onSelect={(e) => e.preventDefault()}
 											disabled={isRevokePending}
@@ -177,23 +183,39 @@ export function InvitationListItem({
 												</>
 											)}
 										</DropdownMenuItem>
-									</Dialog.Trigger>
-									<GlassDialogContent variant="destructive">
-										<GlassDialogHeader
-											title="Revoke Invitation"
-											description="This will permanently revoke this invitation and prevent the user from joining your team."
-											variant="destructive"
-											onClose={() => setDialogOpen(false)}
-										/>
-										<GlassDialogFooter
-											variant="destructive"
-											onCancel={() => setDialogOpen(false)}
-											onConfirm={handleConfirmRevoke}
-											confirmLabel="Revoke"
-											isPending={isRevokePending}
-										/>
-									</GlassDialogContent>
-								</Dialog.Root>
+									</DialogTrigger>
+									<DialogContent variant="destructive">
+										<DialogHeader>
+											<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-error-900">
+												Revoke Invitation
+											</DialogTitle>
+											<DialogDescription className="text-error-900/50">
+												This will permanently revoke this invitation and prevent
+												the user from joining your team.
+											</DialogDescription>
+											<DialogClose className="text-inverse" />
+										</DialogHeader>
+										<DialogBody>
+											{/* Content goes here if needed */}
+										</DialogBody>
+										<DialogFooter>
+											<Button
+												variant="link"
+												onClick={() => setDialogOpen(false)}
+												disabled={isRevokePending}
+											>
+												Cancel
+											</Button>
+											<Button
+												variant="destructive"
+												onClick={handleConfirmRevoke}
+												disabled={isRevokePending}
+											>
+												{isRevokePending ? "Processing..." : "Revoke"}
+											</Button>
+										</DialogFooter>
+									</DialogContent>
+								</Dialog>
 							</DropdownMenuContent>
 						</DropdownMenu>
 					)}
