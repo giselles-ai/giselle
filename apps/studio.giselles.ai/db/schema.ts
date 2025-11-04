@@ -69,6 +69,12 @@ export const subscriptions = pgTable("subscriptions", {
 	trialStart: timestamp("trial_start"),
 	trialEnd: timestamp("trial_end"),
 });
+export const subscriptionRelations = relations(subscriptions, ({ one }) => ({
+	team: one(teams, {
+		fields: [subscriptions.teamDbId],
+		references: [teams.dbId],
+	}),
+}));
 
 export type TeamType = "customer" | "internal";
 export const teams = pgTable("teams", {
@@ -83,6 +89,10 @@ export const teams = pgTable("teams", {
 		.$onUpdate(() => new Date()),
 	type: text("type").$type<TeamType>().notNull().default("customer"),
 });
+
+export const teamRelations = relations(teams, ({ many }) => ({
+	subscriptions: many(subscriptions),
+}));
 
 export type UserId = `usr_${string}`;
 export const users = pgTable("users", {
@@ -117,6 +127,15 @@ export const teamMemberships = pgTable(
 	(teamMembership) => [
 		unique().on(teamMembership.userDbId, teamMembership.teamDbId),
 	],
+);
+export const teamMembershipRelations = relations(
+	teamMemberships,
+	({ one }) => ({
+		team: one(teams, {
+			fields: [teamMemberships.teamDbId],
+			references: [teams.dbId],
+		}),
+	}),
 );
 
 /** @deprecated The agents table does not align with the application domain, so we are migrating to the workspaces table. We are keeping it for gradual migration due to the large scope of impact. */
