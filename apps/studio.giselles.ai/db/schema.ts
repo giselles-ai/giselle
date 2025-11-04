@@ -92,6 +92,7 @@ export const teams = pgTable("teams", {
 
 export const teamRelations = relations(teams, ({ many }) => ({
 	subscriptions: many(subscriptions),
+	apps: many(apps),
 }));
 
 export type UserId = `usr_${string}`;
@@ -841,3 +842,14 @@ export const apps = pgTable(
 		index().on(table.teamDbId),
 	],
 );
+
+export const appRelations = relations(apps, ({ one }) => ({
+	team: one(teams, {
+		fields: [apps.teamDbId],
+		references: [teams.dbId],
+	}),
+	workspaces: one(workspaces, {
+		fields: [apps.workspaceDbId],
+		references: [workspaces.dbId],
+	}),
+}));

@@ -1,6 +1,8 @@
+import { giselleEngine } from "@/app/giselle-engine";
 import { db } from "@/db";
 import { logger } from "@/lib/logger";
 import { getUser } from "@/lib/supabase";
+import type { TeamId } from "./types";
 
 async function userTeams() {
 	const supabaseUser = await getUser();
@@ -40,11 +42,63 @@ async function userTeams() {
 		);
 }
 
+async function userApps(teamIds: TeamId[]) {
+	return await db.query.teams
+		.findMany({
+			where: (teams, { inArray }) => inArray(teams.id, teamIds),
+			with: {
+				apps: {
+					columns: {
+						appEntryNodeId: true,
+					},
+					with: {
+						workspaces: {
+							columns: {
+								id: true,
+								name: true,
+							},
+						},
+					},
+				},
+			},
+		})
+		.then(
+			async (teams) =>
+				await Promise.all(
+					teams.flatMap((team) =>
+						team.apps.map(async (app) => {
+							const workspace = await giselleEngine.getWorkspace(
+								app.workspaces.id,
+							);
+							const appEntryNode = workspace.nodes.find(
+								(node) => node.id === app.appEntryNodeId,
+							);
+							if (appEntryNode === undefined) {
+								logger.warn(
+									`App entry node not found for app ${app.appEntryNodeId}`,
+								);
+								return null;
+							}
+							return {
+								name: appEntryNode.name ?? "New App" /** @todo default name */,
+								appEntryNodeId: appEntryNode.id,
+								workspaceId: workspace.id,
+								workspaceName: workspace.name,
+								teamName: team.name,
+								teamId: team.id,
+							};
+						}),
+					),
+				),
+		);
+}
+
 export async function dataLoader() {
 	const teams = await userTeams();
+	const apps = await userApps(teams.map((team) => team.id));
 
-	logger.debug({ teams });
-	return { teams };
+	logger.debug({ teams, apps });
+	return { teams, apps };
 }
 
 export type LoaderData = Awaited<ReturnType<typeof dataLoader>>;
