@@ -89,21 +89,6 @@ export const anthropicTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"claude-4-opus-20250514": {
-		prices: [
-			{
-				validFrom: "2025-05-23T00:00:00Z",
-				price: {
-					input: {
-						costPerMegaToken: 15.0,
-					},
-					output: {
-						costPerMegaToken: 75.0,
-					},
-				},
-			},
-		],
-	},
 	"claude-sonnet-4-5-20250929": {
 		prices: [
 			{
@@ -129,51 +114,6 @@ export const anthropicTokenPricing: ModelPriceTable = {
 					},
 					output: {
 						costPerMegaToken: 5.0,
-					},
-				},
-			},
-		],
-	},
-	"claude-4-sonnet-20250514": {
-		prices: [
-			{
-				validFrom: "2025-05-23T00:00:00Z",
-				price: {
-					input: {
-						costPerMegaToken: 3.0,
-					},
-					output: {
-						costPerMegaToken: 15.0,
-					},
-				},
-			},
-		],
-	},
-	"claude-3-7-sonnet-20250219": {
-		prices: [
-			{
-				validFrom: "2025-05-19T00:00:00Z",
-				price: {
-					input: {
-						costPerMegaToken: 3.0,
-					},
-					output: {
-						costPerMegaToken: 15.0,
-					},
-				},
-			},
-		],
-	},
-	"claude-3-5-haiku-20241022": {
-		prices: [
-			{
-				validFrom: "2025-05-19T00:00:00Z",
-				price: {
-					input: {
-						costPerMegaToken: 0.8,
-					},
-					output: {
-						costPerMegaToken: 4.0,
 					},
 				},
 			},
