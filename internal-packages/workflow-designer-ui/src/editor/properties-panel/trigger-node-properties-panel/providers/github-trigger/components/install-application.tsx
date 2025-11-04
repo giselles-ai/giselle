@@ -45,7 +45,7 @@ export function InstallGitHubApplication({
 				</div>
 				<button
 					type="button"
-					className="flex items-center justify-center px-[24px] py-[12px] mt-[16px] bg-background text-white rounded-[9999px] border border-border/15 transition-all hover:bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 5%,transparent)] hover:border-border/25 hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px] disabled:opacity-50 disabled:cursor-wait group"
+					className="flex items-center justify-center px-[24px] py-[12px] mt-[16px] bg-background text-white rounded-[9999px] border border-border/15 transition-all hover:bg-inverse/5 hover:border-border/25 hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px] disabled:opacity-50 disabled:cursor-wait group"
 					onClick={open}
 					disabled={isPending}
 				>

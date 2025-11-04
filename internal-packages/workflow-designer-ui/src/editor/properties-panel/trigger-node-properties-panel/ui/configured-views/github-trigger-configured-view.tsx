@@ -137,7 +137,7 @@ export function GitHubTriggerConfiguredView({
 							"absolute inset-y-0 left-0 w-1/2 rounded-full transition-transform duration-300 ease-in-out",
 							data.trigger.enable
 								? "translate-x-full bg-primary-900"
-								: "translate-x-0 bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)]",
+								: "translate-x-0 bg-inverse/10",
 						)}
 					/>
 					<div className="absolute inset-0 grid grid-cols-2 z-10">

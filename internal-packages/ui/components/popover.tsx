@@ -17,7 +17,7 @@ export function PopoverContent(props: React.PropsWithChildren) {
 				withBaseFill={true}
 			/>
 			<div className="relative z-10 overflow-y-auto flex-1 min-h-0">
-				{props.children}
+			{props.children}
 			</div>
 		</div>
 	);

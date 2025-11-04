@@ -71,7 +71,7 @@ export function PromptEditor({
 					header={header}
 					showToolbar={showToolbar}
 					editorClassName={clsx(
-						"bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)] border-none !pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px] rounded-[8px]",
+						"bg-inverse/10 border-none !pt-[4px] !pr-[8px] !pb-[4px] !pl-[12px] rounded-[8px]",
 						minHeightClass,
 						editorClassName,
 					)}
@@ -82,7 +82,7 @@ export function PromptEditor({
 						type="button"
 						onClick={onExpand}
 						className={clsx(
-							"absolute bottom-[10px] size-[32px] rounded-full bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)] hover:bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 20%,transparent)] flex items-center justify-center transition-colors group",
+							"absolute bottom-[10px] size-[32px] rounded-full bg-inverse/10 hover:bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 20%,transparent)] flex items-center justify-center transition-colors group",
 							expandIconPosition === "left" ? "left-[10px]" : "right-[10px]",
 						)}
 						aria-label="Expand"

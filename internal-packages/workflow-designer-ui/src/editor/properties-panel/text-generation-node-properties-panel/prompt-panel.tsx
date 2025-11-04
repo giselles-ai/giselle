@@ -344,7 +344,7 @@ export function PromptPanel({
 	);
 
 	const advancedOptions = (
-		<div className="col-span-2 rounded-[8px] bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 5%,transparent)] px-[8px] py-[8px] mt-[8px]">
+		<div className="col-span-2 rounded-[8px] bg-inverse/5 px-[8px] py-[8px] mt-[8px]">
 			<button
 				type="button"
 				onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}

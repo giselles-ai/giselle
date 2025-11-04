@@ -128,7 +128,7 @@ export function SelectRepository({
 					<button
 						type="button"
 						onClick={() => setIsOrgDropdownOpen(!isOrgDropdownOpen)}
-						className="w-full px-3 py-2 bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 5%,transparent)] hover:bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)] rounded-[8px] text-inverse text-[14px] font-geist cursor-pointer text-left flex items-center justify-between"
+						className="w-full px-3 py-2 bg-inverse/5 hover:bg-inverse/10 rounded-[8px] text-inverse text-[14px] font-geist cursor-pointer text-left flex items-center justify-between"
 					>
 						<span
 							className={

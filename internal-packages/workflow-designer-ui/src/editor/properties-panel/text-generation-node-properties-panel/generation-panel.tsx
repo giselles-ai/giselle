@@ -21,7 +21,7 @@ import { GenerationView } from "../../../ui/generation-view";
 
 function Empty(_: { onGenerate?: () => void; onExpand?: () => void }) {
 	return (
-		<div className="relative bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)] min-h-[250px] rounded-[8px] flex justify-center items-center text-text-muted">
+		<div className="relative bg-inverse/10 min-h-[250px] rounded-[8px] flex justify-center items-center text-text-muted">
 			<EmptyState
 				icon={<TextGenerationIcon width={24} height={24} />}
 				title="Nothing generated yet."
@@ -143,13 +143,13 @@ export function GenerationPanel({
 	}
 	return (
 		<div
-			className={`relative flex flex-col bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)] rounded-[8px] py-[8px] ${isExpanded ? "flex-1 min-h-0" : "min-h-[250px]"}`}
+			className={`relative flex flex-col bg-inverse/10 rounded-[8px] py-[8px] ${isExpanded ? "flex-1 min-h-0" : "min-h-[250px]"}`}
 		>
 			{onExpand && (
 				<button
 					type="button"
 					onClick={onExpand}
-					className="absolute bottom-[8px] right-[8px] size-[32px] rounded-full bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)] hover:bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 20%,transparent)] flex items-center justify-center transition-colors group z-10"
+					className="absolute bottom-[8px] right-[8px] size-[32px] rounded-full bg-inverse/10 hover:bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 20%,transparent)] flex items-center justify-center transition-colors group z-10"
 					aria-label="Expand"
 				>
 					<Maximize2 className="size-[16px] text-inverse group-hover:text-inverse/80" />

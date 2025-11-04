@@ -23,9 +23,20 @@ export const EditableText = forwardRef<
 		size?: "medium" | "large";
 		ariaLabel?: string;
 		className?: string;
+		inputClassName?: string;
+		buttonClassName?: string;
 	}
 >(function EditableText(
-	{ value, fallbackValue, onChange, size = "medium", ariaLabel, className },
+	{
+		value,
+		fallbackValue,
+		onChange,
+		size = "medium",
+		ariaLabel,
+		className,
+		inputClassName,
+		buttonClassName,
+	},
 	ref,
 ) {
 	const [edit, setEdit] = useState(false);
@@ -67,12 +78,16 @@ export const EditableText = forwardRef<
 				aria-label={ariaLabel}
 				className={clsx(
 					"w-full min-w-[200px] hidden data-[editing=true]:block",
-					"outline-none border border-[color-mix(in srgb,var(--color-text-inverse, #fff) 20%,transparent)] focus:border-[color-mix(in srgb,var(--color-text-inverse, #fff) 30%,transparent)]",
-					"rounded-[8px] bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 5%,transparent)]",
+					"outline-none border border-inverse/20 focus:border-inverse/30",
+					"rounded-[8px]",
+					!className?.includes("bg-") &&
+						!inputClassName?.includes("bg-") &&
+						"bg-inverse/5",
 					"!pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px]",
 					"data-[size=medium]:text-[14px] data-[size=large]:text-[16px]",
 					!className && "text-inverse",
 					className,
+					inputClassName,
 				)}
 				ref={inputRef}
 				data-editing={edit}
@@ -92,11 +107,15 @@ export const EditableText = forwardRef<
 				className={clsx(
 					"rounded-[8px] data-[editing=true]:hidden text-left",
 					"hover:bg-bg-900/20 group-hover:bg-bg-900/10",
-					"bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 5%,transparent)] !pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px]",
+					!className?.includes("bg-") &&
+						!buttonClassName?.includes("bg-") &&
+						"bg-inverse/5",
+					"!pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px]",
 					"data-[size=medium]:text-[14px] data-[size=large]:text-[16px]",
 					"cursor-default w-full overflow-hidden text-ellipsis whitespace-nowrap",
 					!className && "text-inverse",
 					className,
+					buttonClassName,
 				)}
 				data-editing={edit}
 				onClick={() => setEdit(true)}

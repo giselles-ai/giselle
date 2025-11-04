@@ -129,7 +129,7 @@ export function PropertiesPanelHeader({
 				</div>
 				<div className="flex-1 min-w-0">
 					<EditableText
-						className="block w-full bg-[color-mix(in srgb,var(--color-text-inverse, #fff) 10%,transparent)] rounded-[8px]"
+						className="w-full bg-inverse/10 rounded-[8px]"
 						inputClassName="px-[8px] py-[2px]"
 						buttonClassName="px-[8px] py-[2px]"
 						onValueChange={(value) => {

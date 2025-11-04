@@ -176,6 +176,20 @@
 			transparent
 		) !important;
 	}
+	.bg-inverse\/80 {
+		background-color: color-mix(
+			in srgb,
+			var(--color-text-inverse, var(--color-white, #fff)) 80%,
+			transparent
+		) !important;
+	}
+	.hover\:bg-inverse\/80:hover {
+		background-color: color-mix(
+			in srgb,
+			var(--color-text-inverse, var(--color-white, #fff)) 80%,
+			transparent
+		) !important;
+	}
 	/* Stage canvas background */
 	.bg-stage {
 		background-color: var(--color-stage-background, var(--color-background)) !important;
