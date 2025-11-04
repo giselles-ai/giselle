@@ -39,7 +39,7 @@
 		"zustand": "catalog:"
 	},
 	"devDependencies": {
-		"@giselle/giselle-ai-tsconfig": "workspace:*",
+		"@giselle-ai/tsconfig": "workspace:*",
 		"@types/fast-levenshtein": "catalog:",
 		"@types/node": "catalog:",
 		"@types/react": "catalog:",

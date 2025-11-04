@@ -142,13 +142,7 @@ function CanvasNode({
 			isVectorStore && vectorStoreSourceProvider === "githubPullRequest";
 
 		const isFillIcon =
-			isText ||
-			isMemo ||
-			isFile ||
-			isWebPage ||
-			isGithub ||
-			isVectorStore ||
-			isAction;
+			isText || isFile || isWebPage || isGithub || isVectorStore || isAction;
 		const isStrokeIcon =
 			isTextGeneration ||
 			isImageGeneration ||

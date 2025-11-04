@@ -44,7 +44,7 @@
 		"@giselle-ai/data-type": "workspace:*",
 		"@giselle-ai/rag": "workspace:^",
 		"@giselle-ai/utils": "workspace:*",
-		"@giselle/giselle-ai-tsconfig": "workspace:*",
+		"@giselle-ai/tsconfig": "workspace:*",
 		"@types/pg": "catalog:",
 		"@types/react": "catalog:",
 		"@zod/core": "0.11.6",

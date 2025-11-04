@@ -16,7 +16,7 @@
 		"pngjs": "catalog:"
 	},
 	"devDependencies": {
-		"@giselle/giselle-ai-tsconfig": "workspace:^",
+		"@giselle-ai/tsconfig": "workspace:^",
 		"@types/node": "catalog:",
 		"@types/pngjs": "catalog:",
 		"tsup": "catalog:",

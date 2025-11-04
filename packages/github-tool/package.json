@@ -23,7 +23,7 @@
 		}
 	},
 	"devDependencies": {
-		"@giselle/giselle-ai-tsconfig": "workspace:*",
+		"@giselle-ai/tsconfig": "workspace:*",
 		"@octokit/openapi-types": "catalog:",
 		"@types/node": "catalog:",
 		"tsup": "catalog:",

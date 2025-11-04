@@ -1,5 +1,5 @@
 {
-	"extends": "@giselle/giselle-ai-tsconfig/node-library.json",
+	"extends": "@giselle-ai/tsconfig/node-library.json",
 	"compilerOptions": {
 		"lib": ["esnext", "dom"],
 		"plugins": [

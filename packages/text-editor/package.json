@@ -26,7 +26,7 @@
 		"./react-internal": "./src/react/index.ts"
 	},
 	"devDependencies": {
-		"@giselle/giselle-ai-tsconfig": "workspace:*",
+		"@giselle-ai/tsconfig": "workspace:*",
 		"@types/react": "catalog:",
 		"tsup": "catalog:"
 	},

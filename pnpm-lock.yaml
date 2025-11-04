@@ -704,7 +704,7 @@ importers:
         specifier: 'catalog:'
         version: 19.1.1(react@19.1.1)
     devDependencies:
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:^
         version: link:../../tools/tsconfig
       '@types/react':
@@ -795,7 +795,7 @@ importers:
         specifier: 'catalog:'
         version: 5.0.8(@types/react@19.1.10)(react@19.1.1)(use-sync-external-store@1.4.0(react@19.1.1))
     devDependencies:
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       '@types/fast-levenshtein':
@@ -841,7 +841,7 @@ importers:
       '@giselle-ai/utils':
         specifier: workspace:*
         version: link:../utils
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       tsup:
@@ -860,7 +860,7 @@ importers:
         specifier: 'catalog:'
         version: 7.0.0
     devDependencies:
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:^
         version: link:../../tools/tsconfig
       '@types/node':
@@ -885,7 +885,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       tsup:
@@ -958,7 +958,7 @@ importers:
       '@giselle-ai/utils':
         specifier: workspace:*
         version: link:../utils
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       '@types/pg':
@@ -1019,7 +1019,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       '@octokit/openapi-types':
@@ -1053,7 +1053,7 @@ importers:
         specifier: 'catalog:'
         version: 3.38.4
     devDependencies:
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       ai:
@@ -1069,7 +1069,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       tsup:
@@ -1106,7 +1106,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:^
         version: link:../../tools/tsconfig
       '@types/node':
@@ -1140,7 +1140,7 @@ importers:
       '@giselle-ai/giselle':
         specifier: workspace:^
         version: link:../giselle
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:^
         version: link:../../tools/tsconfig
       tsup:
@@ -1183,7 +1183,7 @@ importers:
         specifier: 'catalog:'
         version: 19.1.1
     devDependencies:
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       '@types/react':
@@ -1223,7 +1223,7 @@ importers:
         specifier: 'catalog:'
         version: 7.2.0
     devDependencies:
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       '@types/turndown':
@@ -1242,7 +1242,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
       tsup:
@@ -1261,7 +1261,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselle/giselle-ai-tsconfig':
+      '@giselle-ai/tsconfig':
         specifier: workspace:^
         version: link:../../tools/tsconfig
       '@types/node':

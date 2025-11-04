@@ -23,7 +23,7 @@
 	},
 	"devDependencies": {
 		"@giselle-ai/giselle": "workspace:^",
-		"@giselle/giselle-ai-tsconfig": "workspace:^",
+		"@giselle-ai/tsconfig": "workspace:^",
 		"tsup": "catalog:"
 	},
 	"dependencies": {

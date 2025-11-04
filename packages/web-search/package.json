@@ -22,7 +22,7 @@
 		}
 	},
 	"devDependencies": {
-		"@giselle/giselle-ai-tsconfig": "workspace:^",
+		"@giselle-ai/tsconfig": "workspace:^",
 		"@types/node": "catalog:",
 		"tsup": "catalog:",
 		"vitest": "catalog:"

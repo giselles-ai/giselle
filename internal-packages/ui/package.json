@@ -56,7 +56,7 @@
 		"react-dom": "catalog:"
 	},
 	"devDependencies": {
-		"@giselle/giselle-ai-tsconfig": "workspace:^",
+		"@giselle-ai/tsconfig": "workspace:^",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
 		"tailwindcss": "catalog:",
