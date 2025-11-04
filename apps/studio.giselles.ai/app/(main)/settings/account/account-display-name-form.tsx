@@ -60,7 +60,7 @@ export function AccountDisplayNameForm({
 
 					<Button
 						onClick={() => setIsEditModalOpen(true)}
-						className="rounded-lg px-4 py-2 text-white/80 transition-all duration-200 active:scale-[0.98]"
+						className="rounded-lg px-4 py-2 text-inverse/80 transition-all duration-200 active:scale-[0.98]"
 						style={{
 							background: "linear-gradient(180deg, #202530 0%, #12151f 100%)",
 							border: "1px solid rgba(0,0,0,0.7)",

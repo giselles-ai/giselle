@@ -51,7 +51,7 @@ export const Field: FC<FieldProps> = ({
 			disabled={disabled}
 			className={cn(
 				"py-2 rounded-[8px] bg-transparent text-text font-medium text-[14px] leading-[23.8px] font-geist disabled:opacity-50",
-				"placeholder:text-white/30",
+				"placeholder:text-inverse/30",
 				inputClassName,
 			)}
 		/>

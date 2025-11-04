@@ -275,7 +275,7 @@ function EmbeddingModelCard({
 		>
 			{/* Model Header */}
 			<div className="mb-3">
-				<div className="text-xs text-white/80 font-medium mb-2">
+				<div className="text-xs text-inverse/80 font-medium mb-2">
 					{profile?.name || `Profile ${profileId}`}
 				</div>
 			</div>
