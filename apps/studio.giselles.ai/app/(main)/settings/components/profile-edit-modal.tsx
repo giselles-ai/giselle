@@ -345,7 +345,7 @@ export function ProfileEditModal({
 										value={displayName}
 										onChange={handleDisplayNameChange}
 										disabled={isLoading}
-										className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse placeholder:text-inverse/30 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
+										className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse placeholder:text-link-muted focus:outline-none focus-visible:outline-none focus-visible:ring-0"
 									/>
 								</div>
 							</div>

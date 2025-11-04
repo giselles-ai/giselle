@@ -1,8 +1,15 @@
 "use client";
 
-import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
-import * as Dialog from "@radix-ui/react-dialog";
-import { AlertCircle, UserPlus, X } from "lucide-react";
+import {
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@giselle-internal/ui/dialog";
+import { AlertCircle, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import {
@@ -19,7 +26,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { cn } from "@/lib/utils";
 import { createTeam } from "../actions/create-team";
 
 function Submit({
@@ -74,8 +80,8 @@ export function TeamCreationForm({
 	const [isOpen, setIsOpen] = useState(false);
 
 	return (
-		<Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-			<Dialog.Trigger
+		<Dialog open={isOpen} onOpenChange={setIsOpen}>
+			<DialogTrigger
 				asChild
 				className="cursor-pointer"
 				onClick={() => setIsOpen(true)}
@@ -83,165 +89,149 @@ export function TeamCreationForm({
 				{children ?? (
 					<UserPlus className="h-6 w-6 text-white hover:opacity-80" />
 				)}
-			</Dialog.Trigger>
-			<Dialog.Portal>
-				<Dialog.Overlay className="fixed inset-0 bg-black/60 z-50" />
-				<div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-					<Dialog.Content
-						className={cn(
-							"w-[90vw] max-w-[640px] max-h-[90vh] overflow-y-auto rounded-[12px] p-6 relative",
-							"shadow-xl focus:outline-none",
-						)}
-						onEscapeKeyDown={() => setIsOpen(false)}
-						onPointerDownOutside={() => setIsOpen(false)}
-					>
-						<GlassSurfaceLayers tone="default" borderStyle="solid" />
+			</DialogTrigger>
+			<DialogContent
+				variant="glass"
+				className="max-w-[640px] max-h-[90vh]"
+				onEscapeKeyDown={() => setIsOpen(false)}
+				onPointerDownOutside={() => setIsOpen(false)}
+			>
+				<DialogHeader>
+					<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+						Create New Team
+					</DialogTitle>
+					<DialogClose className="text-inverse" />
+				</DialogHeader>
 
-						<div className="relative z-10">
-							<div className="flex justify-between items-center">
-								<Dialog.Title className="text-[20px] font-medium text-inverse tracking-tight font-sans">
-									Create New Team
-								</Dialog.Title>
-								<Dialog.Close
-									onClick={() => setIsOpen(false)}
-									className="rounded-sm opacity-70 text-inverse hover:opacity-100 focus:outline-none"
-								>
-									<X className="h-5 w-5" />
-									<span className="sr-only">Close</span>
-								</Dialog.Close>
+				<DialogBody>
+					<form action={createTeam} className="space-y-4">
+						<div className="flex flex-col gap-y-2">
+							<Label
+								htmlFor="teamName"
+								className="text-inverse font-medium text-[12px] leading-[20.4px] font-geist"
+							>
+								Team Name
+							</Label>
+							<div
+								className="flex flex-col items-start p-2 rounded-[8px] w-full focus-within:ring-1 focus-within:ring-primary-100/50 focus-within:ring-inset transition-all"
+								style={{
+									background: "#00020A",
+									boxShadow: "inset 0 1px 4px rgba(0,0,0,0.5)",
+									border: "0.5px solid rgba(255,255,255,0.05)",
+								}}
+							>
+								<Input
+									id="teamName"
+									name="teamName"
+									value={teamName}
+									onChange={(e) => setTeamName(e.target.value)}
+									className="w-full bg-transparent text-inverse font-medium text-[14px] leading-[23.8px] font-geist shadow-none focus:text-white border-0 p-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none placeholder:text-text-muted"
+									placeholder="Enter team name"
+								/>
 							</div>
-
-							<form action={createTeam} className="space-y-4 mt-4">
-								<div className="flex flex-col gap-y-2">
-									<Label
-										htmlFor="teamName"
-										className="text-inverse font-medium text-[12px] leading-[20.4px] font-geist"
-									>
-										Team Name
-									</Label>
-									<div
-										className="flex flex-col items-start p-2 rounded-[8px] w-full focus-within:ring-1 focus-within:ring-primary-100/50 focus-within:ring-inset transition-all"
-										style={{
-											background: "#00020A",
-											boxShadow: "inset 0 1px 4px rgba(0,0,0,0.5)",
-											border: "0.5px solid rgba(255,255,255,0.05)",
-										}}
-									>
-										<Input
-											id="teamName"
-											name="teamName"
-											value={teamName}
-											onChange={(e) => setTeamName(e.target.value)}
-											className="w-full bg-transparent text-inverse font-medium text-[14px] leading-[23.8px] font-geist shadow-none focus:text-white border-0 p-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none placeholder:text-text-muted"
-											placeholder="Enter team name"
-										/>
-									</div>
-								</div>
-								<div className="space-y-4">
-									<div className="flex flex-col gap-y-2">
-										<Label className="text-inverse font-medium text-[12px] leading-[20.4px] font-geist">
-											{canCreateFreeTeam ? "Select Plan" : "Pro Plan"}
-										</Label>
-										{canCreateFreeTeam ? (
-											<RadioGroup
-												name="selectedPlan"
-												value={selectedPlan}
-												onValueChange={setSelectedPlan}
-												className="grid grid-cols-2 gap-4"
-											>
-												<Card
-													className={
-														"bg-black-850 border-[0.5px] border-black-400 cursor-pointer"
-													}
-												>
-													<label htmlFor="free">
-														<CardHeader>
-															<div className="flex flex-col gap-2">
-																<CardTitle className="text-inverse text-[16px] leading-[27.2px] tracking-normal font-sans">
-																	Free
-																</CardTitle>
-																<div className="flex items-center mb-2">
-																	<RadioGroupItem
-																		value="free"
-																		id="free"
-																		className="text-blue-500 data-[state=checked]:border-[1.5px] data-[state=checked]:border-blue-500"
-																	/>
-																	<Label
-																		htmlFor="free"
-																		className="ml-2 text-inverse font-geist text-[16px]"
-																	>
-																		$0/month
-																	</Label>
-																</div>
-																<CardDescription className="text-inverse font-semibold text-[12px] leading-[20.4px] font-geist">
-																	Basic features for personal use
-																</CardDescription>
-																<CardDescription className="text-text-muted font-medium text-[12px] leading-[20.4px] font-geist">
-																	Includes 30 minutes of model usage time and
-																	access to basic models for your individual
-																	projects.
-																</CardDescription>
-															</div>
-														</CardHeader>
-													</label>
-												</Card>
-												<Card className="bg-black-850 border-[0.5px] border-black-400 cursor-pointer">
-													<label htmlFor="pro">
-														<CardHeader>
-															<div className="flex flex-col gap-2">
-																<CardTitle className="text-primary-400 text-[16px] leading-[27.2px] tracking-normal font-sans">
-																	Pro
-																</CardTitle>
-																<div className="flex items-center mb-2">
-																	<RadioGroupItem
-																		value="pro"
-																		id="pro"
-																		className="text-primary-900 data-[state=checked]:border-[1.5px] data-[state=checked]:border-primary-900"
-																	/>
-																	<Label
-																		htmlFor="pro"
-																		className="ml-2 text-inverse font-geist text-[16px]"
-																	>
-																		{proPlanPrice}/month
-																	</Label>
-																</div>
-																<CardDescription className="text-inverse font-semibold text-[12px] leading-[20.4px] font-geist">
-																	Advanced features & support
-																</CardDescription>
-																<CardDescription className="text-text-muted font-medium text-[12px] leading-[20.4px] font-geist">
-																	When you create a team, all member seat
-																	charges will be billed to you. Share apps with
-																	multiple team members and gain access to
-																	premium models, all with enhanced support.
-																</CardDescription>
-															</div>
-														</CardHeader>
-													</label>
-												</Card>
-											</RadioGroup>
-										) : (
-											<div className="w-full">
-												<Alert className="border-primary-900/40 bg-primary-900/10">
-													<AlertCircle className="h-4 w-4 text-primary-400" />
-													<AlertDescription className="text-primary-400">
-														You can only have one free team. Create a Pro team
-														to collaborate with others.
-													</AlertDescription>
-												</Alert>
-											</div>
-										)}
-									</div>
-								</div>
-								<div className="flex justify-end items-center mt-6">
-									<div className="w-full">
-										<Submit selectedPlan={selectedPlan} teamName={teamName} />
-									</div>
-								</div>
-							</form>
 						</div>
-					</Dialog.Content>
-				</div>
-			</Dialog.Portal>
-		</Dialog.Root>
+						<div className="space-y-4">
+							<div className="flex flex-col gap-y-2">
+								<Label className="text-inverse font-medium text-[12px] leading-[20.4px] font-geist">
+									{canCreateFreeTeam ? "Select Plan" : "Pro Plan"}
+								</Label>
+								{canCreateFreeTeam ? (
+									<RadioGroup
+										name="selectedPlan"
+										value={selectedPlan}
+										onValueChange={setSelectedPlan}
+										className="grid grid-cols-2 gap-4"
+									>
+										<Card
+											className={
+												"bg-black-850 border-[0.5px] border-black-400 cursor-pointer"
+											}
+										>
+											<label htmlFor="free">
+												<CardHeader>
+													<div className="flex flex-col gap-2">
+														<CardTitle className="text-inverse text-[16px] leading-[27.2px] tracking-normal font-sans">
+															Free
+														</CardTitle>
+														<div className="flex items-center mb-2">
+															<RadioGroupItem
+																value="free"
+																id="free"
+																className="text-blue-500 data-[state=checked]:border-[1.5px] data-[state=checked]:border-blue-500"
+															/>
+															<Label
+																htmlFor="free"
+																className="ml-2 text-inverse font-geist text-[16px]"
+															>
+																$0/month
+															</Label>
+														</div>
+														<CardDescription className="text-inverse font-semibold text-[12px] leading-[20.4px] font-geist">
+															Basic features for personal use
+														</CardDescription>
+														<CardDescription className="text-text-muted font-medium text-[12px] leading-[20.4px] font-geist">
+															Includes 30 minutes of model usage time and access
+															to basic models for your individual projects.
+														</CardDescription>
+													</div>
+												</CardHeader>
+											</label>
+										</Card>
+										<Card className="bg-black-850 border-[0.5px] border-black-400 cursor-pointer">
+											<label htmlFor="pro">
+												<CardHeader>
+													<div className="flex flex-col gap-2">
+														<CardTitle className="text-primary-400 text-[16px] leading-[27.2px] tracking-normal font-sans">
+															Pro
+														</CardTitle>
+														<div className="flex items-center mb-2">
+															<RadioGroupItem
+																value="pro"
+																id="pro"
+																className="text-primary-900 data-[state=checked]:border-[1.5px] data-[state=checked]:border-primary-900"
+															/>
+															<Label
+																htmlFor="pro"
+																className="ml-2 text-inverse font-geist text-[16px]"
+															>
+																{proPlanPrice}/month
+															</Label>
+														</div>
+														<CardDescription className="text-inverse font-semibold text-[12px] leading-[20.4px] font-geist">
+															Advanced features & support
+														</CardDescription>
+														<CardDescription className="text-text-muted font-medium text-[12px] leading-[20.4px] font-geist">
+															When you create a team, all member seat charges
+															will be billed to you. Share apps with multiple
+															team members and gain access to premium models,
+															all with enhanced support.
+														</CardDescription>
+													</div>
+												</CardHeader>
+											</label>
+										</Card>
+									</RadioGroup>
+								) : (
+									<div className="w-full">
+										<Alert className="border-primary-900/40 bg-primary-900/10">
+											<AlertCircle className="h-4 w-4 text-primary-400" />
+											<AlertDescription className="text-primary-400">
+												You can only have one free team. Create a Pro team to
+												collaborate with others.
+											</AlertDescription>
+										</Alert>
+									</div>
+								)}
+							</div>
+						</div>
+						<div className="flex justify-end items-center mt-6">
+							<div className="w-full">
+								<Submit selectedPlan={selectedPlan} teamName={teamName} />
+							</div>
+						</div>
+					</form>
+				</DialogBody>
+			</DialogContent>
+		</Dialog>
 	);
 }

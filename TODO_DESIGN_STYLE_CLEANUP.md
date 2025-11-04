@@ -86,10 +86,10 @@
 
 **TODO:**
 - [x] /settings/* への SearchInput 適用確認と統一
-- [ ] /settings/* への placeholder:text-link-muted 統一（Fieldコンポーネント内のplaceholder:text-inverse/30は別用途のため要確認）
+- [x] /settings/* への placeholder:text-link-muted 統一（Fieldコンポーネント内のplaceholder:text-inverse/30は別用途のため除外）
 - [x] /settings/* への Select inverse hover 適用
 - [x] /workspaces への SearchInput/placeholder 統一
-- [x] /workspaces への Select inverse hover 適用
+- [x] /workspaces への Select inverse hover 適用（既に適用済み）
 - [x] AppListItem の統一化確認と適用
 
 ### 2. 安全置換（生色の置換）
@@ -143,10 +143,13 @@
 - ✅ ui/dialog への統一完了
 - ✅ glass-dialog-content.tsx 削除済み
 - ✅ glass-dialog.tsx 削除済み
+- ✅ 残存するDialogコンポーネントも全て ui/dialog に統一完了
+  - `team-creation-form.tsx` → `ui/dialog` に統一
+  - `playlist-detail-client.tsx` → `ui/dialog` に統一
 
 **TODO:**
-- [ ] 残存するDialogコンポーネントがないか確認
-- [ ] Dialog関連のコンポーネントが全て ui/dialog を使用しているか確認
+- [x] 残存するDialogコンポーネントがないか確認
+- [x] Dialog関連のコンポーネントが全て ui/dialog を使用しているか確認
 
 ### 7. その他の残タスク
 - [ ] AgentCard 内の白/rgba/hex のトークン化
@@ -174,9 +177,9 @@
    - codemod safe-pass の dry-run 実行
    - 視覚差なし基準で安全置換を実行
 
-2. **水平展開の完成**
-   - /settings/* への SearchInput/placeholder 統一
-   - /workspaces への統一化
+2. **水平展開の完成** ✅
+   - /settings/* への SearchInput/placeholder 統一 ✅
+   - /workspaces への統一化 ✅
 
 3. **aliases.css の収束開始**
    - 使用状況の全件調査
