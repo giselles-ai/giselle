@@ -69,6 +69,12 @@ export const subscriptions = pgTable("subscriptions", {
 	trialStart: timestamp("trial_start"),
 	trialEnd: timestamp("trial_end"),
 });
+export const subscriptionRelations = relations(subscriptions, ({ one }) => ({
+	team: one(teams, {
+		fields: [subscriptions.teamDbId],
+		references: [teams.dbId],
+	}),
+}));
 
 export type TeamType = "customer" | "internal";
 export const teams = pgTable("teams", {
