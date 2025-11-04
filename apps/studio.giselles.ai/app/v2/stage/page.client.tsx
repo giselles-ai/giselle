@@ -1,13 +1,7 @@
-import { DynamicIcon, type IconName } from "lucide-react/dynamic";
+import { DynamicIcon } from "lucide-react/dynamic";
 import { use } from "react";
 import type { LoaderData } from "./data-loader";
-
-interface App {
-	id: string;
-	name: string;
-	description: string;
-	iconName: IconName;
-}
+import type { App } from "./types";
 
 const yourApps: App[] = [
 	{
