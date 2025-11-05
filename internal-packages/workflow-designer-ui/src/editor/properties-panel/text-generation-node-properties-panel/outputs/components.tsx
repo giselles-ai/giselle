@@ -36,7 +36,7 @@ function OutputToggleItem({
 			key={input.id}
 			className={clsx(
 				"group flex p-[8px] justify-between rounded-[8px] hover:bg-primary-900/50 transition-colors cursor-pointer",
-				"text-inverse",
+				"text-[var(--color-text-inverse)]",
 				"data-[disabled]:text-white-850/30 data-[disabled]:pointer-events-none",
 			)}
 			value={input.id}
@@ -109,7 +109,7 @@ function _SelectOutputPopover({
 				className={clsx(
 					"flex items-center cursor-pointer p-[10px] rounded-[8px]",
 					"border border-transparent hover:border-[var(--color-text-inverse, #fff)]",
-					"text-[12px] font-[700] text-inverse",
+					"text-[12px] font-[700] text-[var(--color-text-inverse)]",
 					"transition-colors",
 				)}
 			>
@@ -148,7 +148,7 @@ function _SelectOutputPopover({
 							setSelectedOutputIds(safeValue);
 						}}
 					>
-						<div className="flex px-[16px] text-inverse">
+					<div className="flex px-[16px] text-[var(--color-text-inverse)]">
 							Select Sources From
 						</div>
 						<div className="flex flex-col py-[4px]">
@@ -327,7 +327,7 @@ function _ConnectedOutputListItem({
 					)}
 					onClick={onRemove}
 				>
-					<TrashIcon className="w-[18px] h-[18px] text-inverse" />
+					<TrashIcon className="w-[18px] h-[18px] text-[var(--color-text-inverse)]" />
 				</button>
 			</div>
 		</div>

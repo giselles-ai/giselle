@@ -170,8 +170,8 @@ export function ChatPanel() {
 								<div
 									className={`max-w-[80%] min-w-0 px-4 py-3 text-sm font-mono ${
 										message.sender === "user"
-											? "font-light bg-chat-bubble-user text-inverse rounded-[8px] rounded-br-[4px] shadow-chat-bubble-user"
-											: "font-light bg-chat-bubble-accent text-inverse rounded-[8px] rounded-bl-[4px] border border-chat-bubble-accent shadow-chat-bubble-accent backdrop-blur-sm animate-slide-up-left"
+						? "font-light bg-chat-bubble-user text-[var(--color-text-inverse)] rounded-[8px] rounded-br-[4px] shadow-chat-bubble-user"
+					: "font-light bg-chat-bubble-accent text-[var(--color-text-inverse)] rounded-[8px] rounded-bl-[4px] border border-chat-bubble-accent shadow-chat-bubble-accent backdrop-blur-sm animate-slide-up-left"
 									}`}
 								>
 									<div className="whitespace-pre-wrap leading-relaxed break-words overflow-wrap-anywhere">
@@ -185,7 +185,7 @@ export function ChatPanel() {
 					{/* Typing indicator */}
 					{(showTyping || isThinking) && (
 						<div className="flex justify-start">
-							<div className="bg-chat-bubble-accent text-inverse rounded-[8px] rounded-bl-[4px] px-4 py-3 border border-chat-bubble-accent shadow-chat-bubble-accent backdrop-blur-sm font-mono font-light">
+				<div className="bg-chat-bubble-accent text-[var(--color-text-inverse)] rounded-[8px] rounded-bl-[4px] px-4 py-3 border border-chat-bubble-accent shadow-chat-bubble-accent backdrop-blur-sm font-mono font-light">
 								<div className="flex items-center space-x-1">
 									<div className="flex space-x-1">
 										<div className="w-1.5 h-1.5 bg-[var(--color-text-inverse, #fff)] rounded-full animate-bounce"></div>
@@ -211,7 +211,7 @@ export function ChatPanel() {
 						onKeyDown={handleKeyDown}
 						placeholder="Ask about your workflow..."
 						rows={1}
-						className="w-full bg-chat-input border border-chat-input rounded-[8px] px-3 py-2 pr-12 text-inverse placeholder:text-[color-mix(in_srgb,var(--color-text-inverse,#fff)_40%,transparent)] text-sm font-mono font-light focus:outline-none focus:ring-1 focus:ring-chat-input focus:border-transparent resize-none min-h-[40px] max-h-[120px] overflow-y-auto"
+						className="w-full bg-chat-input border border-chat-input rounded-[8px] px-3 py-2 pr-12 text-[var(--color-text-inverse)] placeholder:text-[color-mix(in_srgb,var(--color-text-inverse,#fff)_40%,transparent)] text-sm font-mono font-light focus:outline-none focus:ring-1 focus:ring-chat-input focus:border-transparent resize-none min-h-[40px] max-h-[120px] overflow-y-auto"
 					/>
 					<button
 						type="button"
@@ -220,7 +220,7 @@ export function ChatPanel() {
 						className={`absolute right-2 bottom-2 p-2 rounded-full transition-colors ${
 							inputValue.trim()
 								? "bg-transparent text-accent hover:text-link-accent"
-								: "bg-transparent text-inverse/50 cursor-not-allowed"
+							: "bg-transparent text-[var(--color-text-inverse)]/50 cursor-not-allowed"
 						}`}
 					>
 						<Send className="w-4 h-4" />

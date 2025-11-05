@@ -21,12 +21,12 @@ function getNodeIconColor(node: NodeLike): string {
 			case "textGeneration":
 			case "imageGeneration":
 			case "action":
-				return "text-inverse";
+				return "text-[var(--color-text-inverse)]";
 			case "trigger":
 			case "query":
 				return "text-[var(--color-background)]";
 			default:
-				return "text-inverse";
+				return "text-[var(--color-text-inverse)]";
 		}
 	}
 	if (node.type === "variable") {
@@ -40,10 +40,10 @@ function getNodeIconColor(node: NodeLike): string {
 			case "webPage":
 				return "text-[var(--color-background)]";
 			default:
-				return "text-inverse";
+				return "text-[var(--color-text-inverse)]";
 		}
 	}
-	return "text-inverse";
+	return "text-[var(--color-text-inverse)]";
 }
 
 export function PropertiesPanelRoot({ children }: { children: ReactNode }) {

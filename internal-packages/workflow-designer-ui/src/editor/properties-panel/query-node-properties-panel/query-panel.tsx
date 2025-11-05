@@ -222,7 +222,7 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 														{icon}
 													</span>
 													<span
-														className="text-[12px] font-medium text-inverse"
+												className="text-[12px] font-medium text-[var(--color-text-inverse)]"
 														title={`${name} • ${description.line1}${description.line2 ? ` • ${description.line2}` : ""}`}
 													>
 														{name}
@@ -249,7 +249,7 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 														),
 													});
 												}}
-								className="absolute top-[6px] right-[6px] size-[22px] rounded-full flex items-center justify-center text-[var(--color-link-muted)] hover:text-inverse hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] transition-colors"
+								className="absolute top-[6px] right-[6px] size-[22px] rounded-full flex items-center justify-center text-[var(--color-link-muted)] hover:text-[var(--color-text-inverse)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] transition-colors"
 												title="Remove data source"
 											>
 												<X className="size-[12px]" />
