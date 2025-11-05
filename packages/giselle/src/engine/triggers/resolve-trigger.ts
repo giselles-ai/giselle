@@ -1,4 +1,3 @@
-import { githubTriggers } from "@giselles-ai/flow";
 import { isTriggerNode } from "@giselles-ai/protocol";
 import {
 	type CompletedGeneration,
@@ -9,6 +8,7 @@ import {
 } from "../generations";
 import { internalSetGeneration } from "../generations/internal/set-generation";
 import { resolveTrigger as resolveGitHubTrigger } from "../github/trigger-utils";
+import { githubTriggers } from "../triggers";
 import type { GiselleEngineContext } from "../types";
 import { getFlowTrigger } from "./utils";
 

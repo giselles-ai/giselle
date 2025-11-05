@@ -1,8 +1,8 @@
+import { z } from "zod/v4";
 import type {
 	GitHubActionCommandId,
 	WebSearchActionCommandId,
-} from "@giselles-ai/flow";
-import { z } from "zod/v4";
+} from "../../action";
 
 const GitHubActionCommandUnconfiguredState = z.object({
 	status: z.literal("unconfigured"),

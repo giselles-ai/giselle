@@ -2,7 +2,6 @@ import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
-import { type GitHubActionCommandId, githubActions } from "@giselles-ai/flow";
 import type { GitHubIntegrationInstallation } from "@giselles-ai/giselle";
 import {
 	useIntegration,
@@ -10,10 +9,12 @@ import {
 } from "@giselles-ai/giselle/react";
 import {
 	type ActionNode,
+	type GitHubActionCommandId,
 	type Input,
 	InputId,
 	OutputId,
 } from "@giselles-ai/protocol";
+import { findGitHubTriggerRegistry } from "@giselles-ai/trigger-registry";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { GitHubIcon, SpinnerIcon } from "../../../icons";
 // Import icons from GitHub trigger components

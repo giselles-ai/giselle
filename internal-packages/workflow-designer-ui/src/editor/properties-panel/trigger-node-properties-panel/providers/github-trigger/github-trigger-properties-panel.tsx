@@ -2,11 +2,6 @@ import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
-import {
-	type GitHubTriggerEventId,
-	getGitHubDisplayLabel,
-	githubTriggers,
-} from "@giselles-ai/flow";
 import type { GitHubIntegrationInstallation } from "@giselles-ai/giselle";
 import {
 	useGiselleEngine,
@@ -15,10 +10,12 @@ import {
 } from "@giselles-ai/giselle/react";
 import {
 	type FlowTriggerId,
+	type GitHubTriggerEventId,
 	type Output,
 	OutputId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
+import { findGitHubTriggerOption } from "@giselles-ai/trigger-registry";
 import clsx from "clsx/lite";
 import { ChevronLeft, InfoIcon } from "lucide-react";
 import type { ReactNode } from "react";
@@ -633,18 +630,19 @@ export function Installed({
 									} else {
 										startTransition(async () => {
 											try {
-												const trigger = githubTriggers[step.eventId];
+												const githubTriggerRegistry = findGitHubTriggerOption(
+													step.eventId,
+												);
+												if (githubTriggerRegistry === undefined) {
+													return;
+												}
 												const outputs: Output[] = [];
 
-												for (const key of trigger.event.payloads.keyof()
-													.options) {
+												for (const item of githubTriggerRegistry.payload) {
 													outputs.push({
 														id: OutputId.generate(),
-														label: getGitHubDisplayLabel({
-															eventId: step.eventId,
-															accessor: key,
-														}),
-														accessor: key,
+														label: item.label,
+														accessor: item.key,
 													});
 												}
 
@@ -688,7 +686,7 @@ export function Installed({
 														node.outputs.length > 0 ? node.outputs : outputs,
 													name: isReconfiguring
 														? node.name
-														: `On ${trigger.event.label}`,
+														: `On ${githubTriggerRegistry.label}`,
 												});
 											} catch (_error) {
 												// Error is handled by the UI state

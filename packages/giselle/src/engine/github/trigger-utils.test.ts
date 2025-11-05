@@ -1,8 +1,8 @@
-import { type GitHubTriggerEventId, githubTriggers } from "@giselles-ai/flow";
 import type { WebhookEvent } from "@giselles-ai/github-tool";
 import type { FlowTrigger, Output } from "@giselles-ai/protocol";
 import { FlowTriggerId, OutputId } from "@giselles-ai/protocol";
 import { describe, expect, test, vi } from "vitest";
+import { type GitHubTriggerEventId, githubTriggers } from "../triggers";
 import { resolveTrigger } from "./trigger-utils";
 
 vi.mock("@giselles-ai/github-tool", async () => {

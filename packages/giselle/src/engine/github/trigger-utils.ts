@@ -1,4 +1,3 @@
-import type { githubTriggers } from "@giselles-ai/flow";
 import {
 	ensureWebhookEvent,
 	getDiscussionComment,
@@ -8,6 +7,7 @@ import {
 } from "@giselles-ai/github-tool";
 import type { FlowTrigger, Output } from "@giselles-ai/protocol";
 import type { GenerationOutput } from "../generations";
+import type { githubTriggers } from "../triggers";
 import { parseCommand } from "./utils";
 
 interface ResolveTriggerArgs {

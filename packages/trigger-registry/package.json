@@ -1,5 +1,5 @@
 {
-	"name": "@giselles-ai/protocol",
+	"name": "@giselles-ai/trigger-registry",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -8,30 +8,24 @@
 	"scripts": {
 		"build": "tsup",
 		"check-types": "tsc --noEmit",
-		"clean": "rm -rf .turbo dist node_modules",
-		"format": "biome check --write .",
-		"test": "vitest run"
+		"format": "biome format --write ."
 	},
 	"exports": {
 		"./package.json": "./package.json",
 		".": {
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.mjs",
-			"require": "./dist/index.js",
-			"default": "./dist/index.js"
+			"require": "./dist/index.js"
 		}
 	},
 	"devDependencies": {
 		"@giselles-ai/tsconfig": "workspace:*",
-		"@giselles-ai/utils": "workspace:*",
-		"tsup": "catalog:",
-		"vitest": "catalog:"
+		"tsup": "catalog:"
 	},
 	"dependencies": {
-		"@ai-sdk/provider": "catalog:",
-		"@giselles-ai/language-model": "workspace:^",
-		"@octokit/webhooks": "catalog:",
-		"ai": "catalog:",
+		"@giselles-ai/protocol": "workspace:*"
+	},
+	"peerDependencies": {
 		"zod": "catalog:"
 	}
 }

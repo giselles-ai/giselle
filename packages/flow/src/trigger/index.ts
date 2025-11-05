@@ -1,3 +1,4 @@
+import type { TriggerProvider } from "@giselles-ai/protocol";
 import { provider as appEntryProvider } from "./app-entry";
 import { provider as githubProvider } from "./github";
 import { provider as manualProvider } from "./manual";
@@ -12,13 +13,10 @@ export {
 export { triggers as manualTriggers } from "./manual";
 
 /** @deprecated We want to unify s"\@giselles-ai/flow" into @giselles-ai/giselle, so update packages/giselle/src/engine/triggers/trigger-providers/index.ts and write the same values here as well */
-export type TriggerProvider =
-	| typeof manualProvider
-	| typeof githubProvider
-	| typeof appEntryProvider;
+export type { TriggerProvider };
 /** @deprecated We want to unify "@giselles-ai/flow" into "@giselles-ai/giselle", so update packages/giselle/src/engine/triggers/trigger-providers/index.ts and write the same values here as well */
 export const triggerProviders = [
 	manualProvider,
 	githubProvider,
 	appEntryProvider,
-] as const;
+] as const satisfies readonly TriggerProvider[];

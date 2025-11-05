@@ -23,6 +23,7 @@
 		"tsup": "catalog:"
 	},
 	"dependencies": {
+		"@giselles-ai/protocol": "workspace:^",
 		"zod": "catalog:"
 	}
 }
