@@ -271,24 +271,24 @@ importers:
       '@aws-sdk/client-s3':
         specifier: 'catalog:'
         version: 3.842.0
-      '@giselle-internal/ui':
-        specifier: workspace:^
-        version: link:../../internal-packages/ui
-      '@giselle-internal/workflow-designer-ui':
-        specifier: workspace:*
-        version: link:../../internal-packages/workflow-designer-ui
-      '@giselle-ai/protocol':
-        specifier: workspace:*
-        version: link:../../packages/data-type
       '@giselle-ai/giselle':
         specifier: workspace:*
         version: link:../../packages/giselle
       '@giselle-ai/langfuse':
         specifier: workspace:^
         version: link:../../packages/langfuse
+      '@giselle-ai/protocol':
+        specifier: workspace:*
+        version: link:../../packages/protocol
       '@giselle-ai/supabase-driver':
         specifier: workspace:^
         version: link:../../packages/supabase-driver
+      '@giselle-internal/ui':
+        specifier: workspace:^
+        version: link:../../internal-packages/ui
+      '@giselle-internal/workflow-designer-ui':
+        specifier: workspace:*
+        version: link:../../internal-packages/workflow-designer-ui
       '@supabase/supabase-js':
         specifier: 'catalog:'
         version: 2.50.5(bufferutil@4.0.9)(utf-8-validate@6.0.5)
@@ -350,15 +350,6 @@ importers:
       '@embedpdf/pdfium':
         specifier: 'catalog:'
         version: 1.2.1
-      '@giselle-internal/ui':
-        specifier: workspace:*
-        version: link:../../internal-packages/ui
-      '@giselle-internal/workflow-designer-ui':
-        specifier: workspace:*
-        version: link:../../internal-packages/workflow-designer-ui
-      '@giselle-ai/protocol':
-        specifier: workspace:*
-        version: link:../../packages/data-type
       '@giselle-ai/document-preprocessor':
         specifier: workspace:*
         version: link:../../packages/document-preprocessor
@@ -374,12 +365,21 @@ importers:
       '@giselle-ai/language-model':
         specifier: workspace:*
         version: link:../../packages/language-model
+      '@giselle-ai/protocol':
+        specifier: workspace:*
+        version: link:../../packages/protocol
       '@giselle-ai/rag':
         specifier: workspace:*
         version: link:../../packages/rag
       '@giselle-ai/supabase-driver':
         specifier: workspace:*
         version: link:../../packages/supabase-driver
+      '@giselle-internal/ui':
+        specifier: workspace:*
+        version: link:../../internal-packages/ui
+      '@giselle-internal/workflow-designer-ui':
+        specifier: workspace:*
+        version: link:../../internal-packages/workflow-designer-ui
       '@icons-pack/react-simple-icons':
         specifier: 10.0.0
         version: 10.0.0(react@19.1.1)
@@ -681,7 +681,7 @@ importers:
     dependencies:
       '@giselle-ai/protocol':
         specifier: workspace:^
-        version: link:../../packages/data-type
+        version: link:../../packages/protocol
       '@giselle-ai/text-editor':
         specifier: workspace:^
         version: link:../../packages/text-editor
@@ -722,12 +722,6 @@ importers:
 
   internal-packages/workflow-designer-ui:
     dependencies:
-      '@giselle-internal/ui':
-        specifier: workspace:^
-        version: link:../ui
-      '@giselle-ai/protocol':
-        specifier: workspace:*
-        version: link:../../packages/data-type
       '@giselle-ai/flow':
         specifier: workspace:^
         version: link:../../packages/flow
@@ -737,12 +731,18 @@ importers:
       '@giselle-ai/language-model':
         specifier: workspace:^
         version: link:../../packages/language-model
+      '@giselle-ai/protocol':
+        specifier: workspace:*
+        version: link:../../packages/protocol
       '@giselle-ai/text-editor':
         specifier: workspace:^
         version: link:../../packages/text-editor
       '@giselle-ai/text-editor-utils':
         specifier: workspace:^
         version: link:../../packages/text-editor-utils
+      '@giselle-internal/ui':
+        specifier: workspace:^
+        version: link:../ui
       '@xyflow/react':
         specifier: 'catalog:'
         version: 12.8.3(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -825,31 +825,6 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.14.0)(happy-dom@20.0.2)(jiti@2.4.2)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.7.0)
-
-  packages/data-type:
-    dependencies:
-      '@giselle-ai/flow':
-        specifier: workspace:^
-        version: link:../flow
-      '@giselle-ai/language-model':
-        specifier: workspace:^
-        version: link:../language-model
-      zod:
-        specifier: 'catalog:'
-        version: 3.25.76
-    devDependencies:
-      '@giselle-ai/utils':
-        specifier: workspace:*
-        version: link:../utils
-      '@giselle-ai/tsconfig':
-        specifier: workspace:*
-        version: link:../../tools/tsconfig
-      tsup:
-        specifier: 'catalog:'
-        version: 8.3.5(jiti@2.4.2)(postcss@8.5.6)(typescript@5.7.3)(yaml@2.7.0)
-      vitest:
-        specifier: 'catalog:'
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@24.9.2)(happy-dom@20.0.2)(jiti@2.4.2)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.7.0)
 
   packages/document-preprocessor:
     dependencies:
@@ -951,16 +926,16 @@ importers:
     devDependencies:
       '@giselle-ai/protocol':
         specifier: workspace:*
-        version: link:../data-type
+        version: link:../protocol
       '@giselle-ai/rag':
         specifier: workspace:^
         version: link:../rag
-      '@giselle-ai/utils':
-        specifier: workspace:*
-        version: link:../utils
       '@giselle-ai/tsconfig':
         specifier: workspace:*
         version: link:../../tools/tsconfig
+      '@giselle-ai/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@types/pg':
         specifier: 'catalog:'
         version: 8.11.13
@@ -1037,15 +1012,15 @@ importers:
 
   packages/langfuse:
     dependencies:
-      '@giselle-ai/protocol':
-        specifier: workspace:^
-        version: link:../data-type
       '@giselle-ai/giselle':
         specifier: workspace:^
         version: link:../giselle
       '@giselle-ai/language-model':
         specifier: workspace:^
         version: link:../language-model
+      '@giselle-ai/protocol':
+        specifier: workspace:^
+        version: link:../protocol
       '@giselle-ai/rag':
         specifier: workspace:^
         version: link:../rag
@@ -1079,6 +1054,31 @@ importers:
         specifier: 'catalog:'
         version: 3.2.4(@types/debug@4.1.12)(@types/node@24.9.2)(happy-dom@20.0.2)(jiti@2.4.2)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.7.0)
 
+  packages/protocol:
+    dependencies:
+      '@giselle-ai/flow':
+        specifier: workspace:^
+        version: link:../flow
+      '@giselle-ai/language-model':
+        specifier: workspace:^
+        version: link:../language-model
+      zod:
+        specifier: 'catalog:'
+        version: 3.25.76
+    devDependencies:
+      '@giselle-ai/tsconfig':
+        specifier: workspace:*
+        version: link:../../tools/tsconfig
+      '@giselle-ai/utils':
+        specifier: workspace:*
+        version: link:../utils
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.4.2)(postcss@8.5.6)(typescript@5.7.3)(yaml@2.7.0)
+      vitest:
+        specifier: 'catalog:'
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@24.9.2)(happy-dom@20.0.2)(jiti@2.4.2)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.7.0)
+
   packages/rag:
     dependencies:
       '@ai-sdk/google':
@@ -1089,7 +1089,7 @@ importers:
         version: 2.0.30(zod@3.25.76)
       '@giselle-ai/protocol':
         specifier: workspace:*
-        version: link:../data-type
+        version: link:../protocol
       ai:
         specifier: 'catalog:'
         version: 5.0.51(zod@3.25.76)
@@ -1149,12 +1149,12 @@ importers:
 
   packages/text-editor:
     dependencies:
-      '@giselle-ai/protocol':
-        specifier: workspace:^
-        version: link:../data-type
       '@giselle-ai/giselle':
         specifier: workspace:^
         version: link:../giselle
+      '@giselle-ai/protocol':
+        specifier: workspace:^
+        version: link:../protocol
       '@giselle-ai/text-editor-utils':
         specifier: workspace:^
         version: link:../text-editor-utils
@@ -1197,7 +1197,7 @@ importers:
     dependencies:
       '@giselle-ai/protocol':
         specifier: workspace:*
-        version: link:../data-type
+        version: link:../protocol
       '@tiptap/core':
         specifier: 'catalog:'
         version: 2.11.5(@tiptap/pm@2.11.5)
@@ -1604,28 +1604,24 @@ packages:
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
 
   '@biomejs/cli-linux-arm64@2.0.6':
     resolution: {integrity: sha512-ZSVf6TYo5rNMUHIW1tww+rs/krol7U5A1Is/yzWyHVZguuB0lBnIodqyFuwCNqG9aJGyk7xIMS8HG0qGUPz0SA==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
   '@biomejs/cli-linux-x64-musl@2.0.6':
     resolution: {integrity: sha512-mKHE/e954hR/hSnAcJSjkf4xGqZc/53Kh39HVW1EgO5iFi0JutTN07TSjEMg616julRtfSNJi0KNyxvc30Y4rQ==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
 
   '@biomejs/cli-linux-x64@2.0.6':
     resolution: {integrity: sha512-geM1MkHTV1Kh2Cs/Xzot9BOF3WBacihw6bkEmxkz4nSga8B9/hWy5BDiOG3gHDGIBa8WxT0nzsJs2f/hPqQIQw==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   '@biomejs/cli-win32-arm64@2.0.6':
     resolution: {integrity: sha512-290V4oSFoKaprKE1zkYVsDfAdn0An5DowZ+GIABgjoq1ndhvNxkJcpxPsiYtT7slbVe3xmlT0ncdfOsN7KruzA==}
@@ -2280,78 +2276,92 @@ packages:
     resolution: {integrity: sha512-RXwd0CgG+uPRX5YYrkzKyalt2OJYRiJQ8ED/fi1tq9WQW2jsQIn0tqrlR5l5dr/rjqq6AHAxURhj2DVjyQWSOA==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-libvips-linux-arm@1.2.0':
     resolution: {integrity: sha512-mWd2uWvDtL/nvIzThLq3fr2nnGfyr/XMXlq8ZJ9WMR6PXijHlC3ksp0IpuhK6bougvQrchUAfzRLnbsen0Cqvw==}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-libvips-linux-ppc64@1.2.0':
     resolution: {integrity: sha512-Xod/7KaDDHkYu2phxxfeEPXfVXFKx70EAFZ0qyUdOjCcxbjqyJOEUpDe6RIyaunGxT34Anf9ue/wuWOqBW2WcQ==}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-libvips-linux-s390x@1.2.0':
     resolution: {integrity: sha512-eMKfzDxLGT8mnmPJTNMcjfO33fLiTDsrMlUVcp6b96ETbnJmd4uvZxVJSKPQfS+odwfVaGifhsB07J1LynFehw==}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-libvips-linux-x64@1.2.0':
     resolution: {integrity: sha512-ZW3FPWIc7K1sH9E3nxIGB3y3dZkpJlMnkk7z5tu1nSkBoCgw2nSRTFHI5pB/3CQaJM0pdzMF3paf9ckKMSE9Tg==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-libvips-linuxmusl-arm64@1.2.0':
     resolution: {integrity: sha512-UG+LqQJbf5VJ8NWJ5Z3tdIe/HXjuIdo4JeVNADXBFuG7z9zjoegpzzGIyV5zQKi4zaJjnAd2+g2nna8TZvuW9Q==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@img/sharp-libvips-linuxmusl-x64@1.2.0':
     resolution: {integrity: sha512-SRYOLR7CXPgNze8akZwjoGBoN1ThNZoqpOgfnOxmWsklTGVfJiGJoC/Lod7aNMGA1jSsKWM1+HRX43OP6p9+6Q==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@img/sharp-linux-arm64@0.34.3':
     resolution: {integrity: sha512-QdrKe3EvQrqwkDrtuTIjI0bu6YEJHTgEeqdzI3uWJOH6G1O8Nl1iEeVYRGdj1h5I21CqxSvQp1Yv7xeU3ZewbA==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-linux-arm@0.34.3':
     resolution: {integrity: sha512-oBK9l+h6KBN0i3dC8rYntLiVfW8D8wH+NPNT3O/WBHeW0OQWCjfWksLUaPidsrDKpJgXp3G3/hkmhptAW0I3+A==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-linux-ppc64@0.34.3':
     resolution: {integrity: sha512-GLtbLQMCNC5nxuImPR2+RgrviwKwVql28FWZIW1zWruy6zLgA5/x2ZXk3mxj58X/tszVF69KK0Is83V8YgWhLA==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-linux-s390x@0.34.3':
     resolution: {integrity: sha512-3gahT+A6c4cdc2edhsLHmIOXMb17ltffJlxR0aC2VPZfwKoTGZec6u5GrFgdR7ciJSsHT27BD3TIuGcuRT0KmQ==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-linux-x64@0.34.3':
     resolution: {integrity: sha512-8kYso8d806ypnSq3/Ly0QEw90V5ZoHh10yH0HnrzOCr6DKAPI6QVHvwleqMkVQ0m+fc7EH8ah0BB0QPuWY6zJQ==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@img/sharp-linuxmusl-arm64@0.34.3':
     resolution: {integrity: sha512-vAjbHDlr4izEiXM1OTggpCcPg9tn4YriK5vAjowJsHwdBIdx0fYRsURkxLG2RLm9gyBq66gwtWI8Gx0/ov+JKQ==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@img/sharp-linuxmusl-x64@0.34.3':
     resolution: {integrity: sha512-gCWUn9547K5bwvOn9l5XGAEjVTTRji4aPTqLzGXHvIr6bIDZKNTA34seMPgM0WmSf+RYBH411VavCejp3PkOeQ==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@img/sharp-wasm32@0.34.3':
     resolution: {integrity: sha512-+CyRcpagHMGteySaWos8IbnXcHgfDn7pO2fiC2slJxvNq9gDipYBN42/RagzctVRKgxATmfqOSulgZv5e1RdMg==}
@@ -2447,24 +2457,28 @@ packages:
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@next/swc-linux-arm64-musl@15.5.2':
     resolution: {integrity: sha512-s6N8k8dF9YGc5T01UPQ08yxsK6fUow5gG1/axWc1HVVBYQBgOjca4oUZF7s4p+kwhkB1bDSGR8QznWrFZ/Rt5g==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@next/swc-linux-x64-gnu@15.5.2':
     resolution: {integrity: sha512-o1RV/KOODQh6dM6ZRJGZbc+MOAHww33Vbs5JC9Mp1gDk8cpEO+cYC/l7rweiEalkSm5/1WGa4zY7xrNwObN4+Q==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@next/swc-linux-x64-musl@15.5.2':
     resolution: {integrity: sha512-/VUnh7w8RElYZ0IV83nUcP/J4KJ6LLYliiBIri3p3aW2giF+PAVgZb6mk8jbQSB3WlTai8gEmCAr7kptFa1H6g==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@next/swc-win32-arm64-msvc@15.5.2':
     resolution: {integrity: sha512-sMPyTvRcNKXseNQ/7qRfVRLa0VhR0esmQ29DD6pqvG71+JdVnESJaHPA8t7bc67KD5spP3+DOCNLhqlEI2ZgQg==}
@@ -3018,41 +3032,49 @@ packages:
     resolution: {integrity: sha512-EXkMvem90Pdw0bw0TlOhAHFAGLopb1LaVwsxF+iSc/zQtuR62kl2jGMQRvsW4NHaF+nUN29H8IYQDzox4gxsRw==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@oxc-resolver/binding-linux-arm64-musl@11.5.2':
     resolution: {integrity: sha512-UvA2QZB73XPXmFweDRyXyUchN1YnEx+cca7a/ojdhT+stDe0WKMK32y27oabWokJJsZZOd+W40dD7sxjzx7K/g==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@oxc-resolver/binding-linux-ppc64-gnu@11.5.2':
     resolution: {integrity: sha512-0rllGQIAmeb+vAtmco0PnTzqlMs0DQs+QvHu/8AQAmgrlKBZDJJmRvLqMv6EXgTrLlWxoM0o9oNf7mZ0tEenUQ==}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@oxc-resolver/binding-linux-riscv64-gnu@11.5.2':
     resolution: {integrity: sha512-kfE5ALnGsxEyz/e6lZbNUyPjZwTIuExTVJLVzjT/RjvaltSZ6J0u/6/CKsVFD3t686yqse1fnXuydUsgAFmuXg==}
     cpu: [riscv64]
     os: [linux]
+    libc: [glibc]
 
   '@oxc-resolver/binding-linux-riscv64-musl@11.5.2':
     resolution: {integrity: sha512-O6lbEl+heEd3QS2GOwm+iDGMqEWA18X/b9JNodzEHe2TJeOJAV/5xJ7jQTGA2seoy6/REhW744O35DyPFxZ2aQ==}
     cpu: [riscv64]
     os: [linux]
+    libc: [musl]
 
   '@oxc-resolver/binding-linux-s390x-gnu@11.5.2':
     resolution: {integrity: sha512-6ZASmeqVq+xEQZz/EH+U4j1hPeqVQ8Eo58oYrt9FGJhseowAh6TAOHXe80HAJH6HQTcws1fhS/A7I4hm6NOgZA==}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@oxc-resolver/binding-linux-x64-gnu@11.5.2':
     resolution: {integrity: sha512-MYTtU3sKGZfvOYVpUfFHFcxLGOI8WN5BIQeWgNnNDEBHasthEDnyeNYpj6QbLd3XMz84gGA1G+mKMm/lVUF6hA==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@oxc-resolver/binding-linux-x64-musl@11.5.2':
     resolution: {integrity: sha512-7u1ANU1jkDUbC5ZxGXWDs0OLuUvV3DzqHUI+g41wHdz0iLoVSJ7rR+hl/crHIm4PpFkYbpU+joRslM5OLxeKlw==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@oxc-resolver/binding-wasm32-wasi@11.5.2':
     resolution: {integrity: sha512-2tOsCVH+THg9b9h6MiTymTrveSUWAOaQGj2CPQ4XJncxECsZY6MfxKLul+XsW4KLpstE89KBemRIQi6Il0Twew==}
@@ -4128,16 +4150,19 @@ packages:
     resolution: {integrity: sha512-5pMT5PzfgwcXEwOaSrqVsz/LvjDZt+vQ8RT/70yhPU06PTuq8WaHhfT1LW+cdD7mW6i/J5/XIkX/1tCAkh1W6g==}
     cpu: [loong64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-loongarch64-gnu@4.49.0':
     resolution: {integrity: sha512-2QyUyQQ1ZtwZGiq0nvODL+vLJBtciItC3/5cYN8ncDQcv5avrt2MbKt1XU/vFAJlLta5KujqyHdYtdag4YEjYQ==}
     cpu: [loong64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-powerpc64le-gnu@4.35.0':
     resolution: {integrity: sha512-c+zkcvbhbXF98f4CtEIP1EBA/lCic5xB0lToneZYvMeKu5Kamq3O8gqrxiYYLzlZH6E3Aq+TSW86E4ay8iD8EA==}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-ppc64-gnu@4.49.0':
     resolution: {integrity: sha512-k9aEmOWt+mrMuD3skjVJSSxHckJp+SiFzFG+v8JLXbc/xi9hv2icSkR3U7uQzqy+/QbbYY7iNB9eDTwrELo14g==}
@@ -4620,24 +4645,28 @@ packages:
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@tailwindcss/oxide-linux-arm64-musl@4.1.10':
     resolution: {integrity: sha512-saScU0cmWvg/Ez4gUmQWr9pvY9Kssxt+Xenfx1LG7LmqjcrvBnw4r9VjkFcqmbBb7GCBwYNcZi9X3/oMda9sqQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@tailwindcss/oxide-linux-x64-gnu@4.1.10':
     resolution: {integrity: sha512-/G3ao/ybV9YEEgAXeEg28dyH6gs1QG8tvdN9c2MNZdUXYBaIY/Gx0N6RlJzfLy/7Nkdok4kaxKPHKJUlAaoTdA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@tailwindcss/oxide-linux-x64-musl@4.1.10':
     resolution: {integrity: sha512-LNr7X8fTiKGRtQGOerSayc2pWJp/9ptRYAa4G+U+cjw9kJZvkopav1AQc5HHD+U364f71tZv6XamaHKgrIoVzA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@tailwindcss/oxide-wasm32-wasi@4.1.10':
     resolution: {integrity: sha512-d6ekQpopFQJAcIK2i7ZzWOYGZ+A6NzzvQ3ozBvWFdeyqfOZdYHU66g5yr+/HC4ipP1ZgWsqa80+ISNILk+ae/Q==}
@@ -6489,24 +6518,28 @@ packages:
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   lightningcss-linux-arm64-musl@1.30.1:
     resolution: {integrity: sha512-jmUQVx4331m6LIX+0wUhBbmMX7TCfjF5FoOH6SD1CttzuYlGNVpA7QnrmLxrsub43ClTINfGSYyHe2HWeLl5CQ==}
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   lightningcss-linux-x64-gnu@1.30.1:
     resolution: {integrity: sha512-piWx3z4wN8J8z3+O5kO74+yr6ze/dKmPnI7vLqfSqI8bccaTGY5xiSGVIJBDd5K5BHlvVLpUB3S2YCfelyJ1bw==}
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   lightningcss-linux-x64-musl@1.30.1:
     resolution: {integrity: sha512-rRomAK7eIkL+tHY0YPxbc5Dra2gXlI63HL+v1Pdi1a3sC+tJTcFrHX+E86sulgAXeI7rSzDYhPSeHHjqFhqfeQ==}
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   lightningcss-win32-arm64-msvc@1.30.1:
     resolution: {integrity: sha512-mSL4rqPi4iXq5YVqzSsJgMVFENoa4nGTT/GjO2c0Yl9OuQfPsIfncvLrEW6RbbB24WtZ3xP/2CCmI3tNkNV4oA==}
