@@ -1,9 +1,9 @@
-import { isVectorStoreNode, type QueryNode } from "@giselle-ai/data-type";
 import {
 	useVectorStore,
 	useWorkflowDesigner,
 	type VectorStoreContextValue,
 } from "@giselle-ai/giselle/react";
+import { isVectorStoreNode, type QueryNode } from "@giselle-ai/protocol";
 import { TextEditor } from "@giselle-ai/text-editor/react-internal";
 import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import { DatabaseZapIcon, X } from "lucide-react";

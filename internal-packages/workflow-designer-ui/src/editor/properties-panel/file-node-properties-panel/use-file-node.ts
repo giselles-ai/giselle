@@ -1,5 +1,5 @@
-import type { FileData, FileNode } from "@giselle-ai/data-type";
 import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
+import type { FileData, FileNode } from "@giselle-ai/protocol";
 import { useToasts } from "@giselle-internal/ui/toast";
 import { useCallback } from "react";
 

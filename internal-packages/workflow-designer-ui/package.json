@@ -14,7 +14,7 @@
 	},
 	"dependencies": {
 		"@giselle-internal/ui": "workspace:^",
-		"@giselle-ai/data-type": "workspace:*",
+		"@giselle-ai/protocol": "workspace:*",
 		"@giselle-ai/flow": "workspace:^",
 		"@giselle-ai/giselle": "workspace:*",
 		"@giselle-ai/language-model": "workspace:^",

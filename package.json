@@ -5,7 +5,7 @@
 	"scripts": {
 		"build": "turbo build",
 		"build-sdk": "turbo build --filter '@giselle-ai/*'",
-		"build-data-type": "turbo build --filter '@giselle-ai/data-type'",
+		"build-data-type": "turbo build --filter '@giselle-ai/protocol'",
 		"check-types": "turbo check-types",
 		"format": "biome check --write .",
 		"clean": "turbo clean",

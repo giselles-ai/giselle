@@ -1,6 +1,6 @@
 "use client";
 
-import type { NodeId } from "@giselle-ai/data-type";
+import type { NodeId } from "@giselle-ai/protocol";
 import {
 	type NodeMouseHandler,
 	type OnNodesChange,

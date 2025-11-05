@@ -1,10 +1,3 @@
-import type {
-	EmbeddingDimensions,
-	EmbeddingProfileId,
-	FlowTriggerId,
-	NodeId,
-	WorkspaceId,
-} from "@giselle-ai/data-type";
 import type { ActId, AppId } from "@giselle-ai/giselle";
 import type {
 	GitHubIssueDocumentKey,
@@ -12,6 +5,13 @@ import type {
 	GitHubIssueStateReason,
 	GitHubRepositoryIssueContentType,
 } from "@giselle-ai/github-tool";
+import type {
+	EmbeddingDimensions,
+	EmbeddingProfileId,
+	FlowTriggerId,
+	NodeId,
+	WorkspaceId,
+} from "@giselle-ai/protocol";
 import type {
 	DocumentVectorStoreId,
 	DocumentVectorStoreSourceId,

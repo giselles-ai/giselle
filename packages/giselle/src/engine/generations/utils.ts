@@ -1,3 +1,4 @@
+import { hasTierAccess, languageModels } from "@giselle-ai/language-model";
 import {
 	type FileContent,
 	type FileId,
@@ -11,8 +12,7 @@ import {
 	type TextGenerationNode,
 	type WebPageContent,
 	type WorkspaceId,
-} from "@giselle-ai/data-type";
-import { hasTierAccess, languageModels } from "@giselle-ai/language-model";
+} from "@giselle-ai/protocol";
 import {
 	isJsonContent,
 	jsonContentToText,

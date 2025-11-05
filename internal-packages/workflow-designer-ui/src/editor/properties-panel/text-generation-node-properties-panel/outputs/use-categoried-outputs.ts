@@ -6,7 +6,7 @@ import {
 	isTextGenerationNode,
 	isTextNode,
 	isTriggerNode,
-} from "@giselle-ai/data-type";
+} from "@giselle-ai/protocol";
 import { useMemo } from "react";
 import type { OutputWithDetails } from "./types";
 import { filterInputs } from "./utils";

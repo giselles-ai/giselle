@@ -1,8 +1,8 @@
-import type { QueryNode } from "@giselle-ai/data-type";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
 } from "@giselle-ai/giselle/react";
+import type { QueryNode } from "@giselle-ai/protocol";
 import {
 	isJsonContent,
 	jsonContentToText,

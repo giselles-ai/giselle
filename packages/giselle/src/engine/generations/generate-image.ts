@@ -1,14 +1,14 @@
 import { fal } from "@ai-sdk/fal";
 import { google } from "@ai-sdk/google";
 import { openai } from "@ai-sdk/openai";
+import type { GeneratedImageData } from "@giselle-ai/language-model";
 import {
 	type FalLanguageModelData,
 	type GoogleImageLanguageModelData,
 	type ImageGenerationNode,
 	isImageGenerationNode,
 	type OpenAIImageLanguageModelData,
-} from "@giselle-ai/data-type";
-import type { GeneratedImageData } from "@giselle-ai/language-model";
+} from "@giselle-ai/protocol";
 import {
 	experimental_generateImage as generateImageAiSdk,
 	generateText,

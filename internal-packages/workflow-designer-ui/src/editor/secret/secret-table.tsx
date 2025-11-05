@@ -1,8 +1,8 @@
-import { isTextGenerationNode, type SecretId } from "@giselle-ai/data-type";
 import {
 	useGiselleEngine,
 	useWorkflowDesigner,
 } from "@giselle-ai/giselle/react";
+import { isTextGenerationNode, type SecretId } from "@giselle-ai/protocol";
 import { Button } from "@giselle-internal/ui/button";
 import {
 	Dialog,

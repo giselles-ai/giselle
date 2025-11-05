@@ -1,8 +1,8 @@
+import type { Generation } from "@giselle-ai/giselle";
 import {
 	isImageGenerationNode,
 	isTextGenerationNode,
-} from "@giselle-ai/data-type";
-import type { Generation } from "@giselle-ai/giselle";
+} from "@giselle-ai/protocol";
 
 /**
  * Extract model information from generation data

@@ -1,15 +1,15 @@
-import type {
-	FlowTrigger,
-	GitHubFlowTriggerEvent,
-	Output,
-	TriggerNode,
-} from "@giselle-ai/data-type";
-import { FlowTriggerId, OutputId } from "@giselle-ai/data-type";
 import {
 	type GitHubTriggerEventId,
 	getGitHubDisplayLabel,
 	githubTriggers,
 } from "@giselle-ai/flow";
+import type {
+	FlowTrigger,
+	GitHubFlowTriggerEvent,
+	Output,
+	TriggerNode,
+} from "@giselle-ai/protocol";
+import { FlowTriggerId, OutputId } from "@giselle-ai/protocol";
 
 /**
  * Type definitions for trigger configuration options

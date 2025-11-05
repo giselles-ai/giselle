@@ -1,4 +1,4 @@
-import type { TextGenerationNode } from "@giselle-ai/data-type";
+import type { TextGenerationNode } from "@giselle-ai/protocol";
 import {
 	PromptPanel,
 	type PromptPanelSections,

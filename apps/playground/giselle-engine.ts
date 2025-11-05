@@ -1,4 +1,3 @@
-import { WorkspaceId } from "@giselle-ai/data-type";
 import type {
 	GiselleIntegrationConfig,
 	LanguageModelProvider,
@@ -6,6 +5,7 @@ import type {
 import { fsStorageDriver } from "@giselle-ai/giselle";
 import { NextGiselleEngine } from "@giselle-ai/giselle/next-internal";
 import { traceGeneration } from "@giselle-ai/langfuse";
+import { WorkspaceId } from "@giselle-ai/protocol";
 import { supabaseStorageDriver as experimental_supabaseStorageDriver } from "@giselle-ai/supabase-driver";
 import { nodeVaultDriver } from "./lib/vault-driver";
 

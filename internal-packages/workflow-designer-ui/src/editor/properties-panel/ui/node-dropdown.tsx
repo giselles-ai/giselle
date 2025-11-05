@@ -1,4 +1,4 @@
-import { isTextGenerationNode, type Node } from "@giselle-ai/data-type";
+import { isTextGenerationNode, type Node } from "@giselle-ai/protocol";
 import clsx from "clsx/lite";
 import { PlusIcon } from "lucide-react";
 import type { ReactNode } from "react";

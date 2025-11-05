@@ -1,4 +1,4 @@
-import type { Workspace } from "@giselle-ai/data-type";
+import type { Workspace } from "@giselle-ai/protocol";
 import { revalidatePath } from "next/cache";
 import type { GiselleEngineContext } from "../types";
 import { setWorkspace } from "./utils";

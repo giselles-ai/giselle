@@ -1,7 +1,7 @@
-import type { FlowTrigger, Output } from "@giselle-ai/data-type";
-import { FlowTriggerId, OutputId } from "@giselle-ai/data-type";
 import { type GitHubTriggerEventId, githubTriggers } from "@giselle-ai/flow";
 import type { WebhookEvent } from "@giselle-ai/github-tool";
+import type { FlowTrigger, Output } from "@giselle-ai/protocol";
+import { FlowTriggerId, OutputId } from "@giselle-ai/protocol";
 import { describe, expect, test, vi } from "vitest";
 import { resolveTrigger } from "./trigger-utils";
 

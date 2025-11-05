@@ -1,4 +1,4 @@
-import { WorkspaceId } from "@giselle-ai/data-type";
+import { WorkspaceId } from "@giselle-ai/protocol";
 import { Editor } from "@giselle-internal/workflow-designer-ui";
 import { updateWorkspaceName } from "./actions";
 

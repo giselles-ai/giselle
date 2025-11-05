@@ -1,4 +1,4 @@
-import type { Node } from "@giselle-ai/data-type";
+import type { Node } from "@giselle-ai/protocol";
 import type { ConnectedSource } from "@giselle-ai/text-editor/react";
 import { TextEditor } from "@giselle-ai/text-editor/react";
 import clsx from "clsx/lite";

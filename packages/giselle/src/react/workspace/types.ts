@@ -1,3 +1,4 @@
+import type { LanguageModelProvider } from "@giselle-ai/language-model";
 import type {
 	FileData,
 	FileNode,
@@ -11,8 +12,7 @@ import type {
 	ShortcutScope,
 	Viewport,
 	Workspace,
-} from "@giselle-ai/data-type";
-import type { LanguageModelProvider } from "@giselle-ai/language-model";
+} from "@giselle-ai/protocol";
 
 export type ConnectionCloneStrategy = "inputs-only" | "all" | "none";
 

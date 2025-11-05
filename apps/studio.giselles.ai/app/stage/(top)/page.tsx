@@ -1,4 +1,4 @@
-import { FlowTriggerId } from "@giselle-ai/data-type";
+import { FlowTriggerId } from "@giselle-ai/protocol";
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import {
 	Table,

@@ -1,5 +1,5 @@
-import type { EmbeddingProfileId } from "@giselle-ai/data-type";
 import { fetchDefaultBranchHead } from "@giselle-ai/github-tool";
+import type { EmbeddingProfileId } from "@giselle-ai/protocol";
 import { DocumentLoaderError, RagError } from "@giselle-ai/rag";
 import { createId } from "@paralleldrive/cuid2";
 import { captureException } from "@sentry/nextjs";

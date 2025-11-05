@@ -8,7 +8,7 @@ import {
 	SecretId,
 	Workspace,
 	WorkspaceId,
-} from "@giselle-ai/data-type";
+} from "@giselle-ai/protocol";
 import { z } from "zod/v4";
 import { ActId } from "../concepts/identifiers";
 import type { GiselleEngine } from "../engine";

@@ -5,7 +5,7 @@ import {
 	NodeId,
 	type NodeLike,
 	OutputId,
-} from "@giselle-ai/data-type";
+} from "@giselle-ai/protocol";
 import { describe, expect, it } from "vitest";
 import { twoTriggerFixture } from "./__fixtures__/two-trigger";
 import { buildLevels } from "./build-levels";

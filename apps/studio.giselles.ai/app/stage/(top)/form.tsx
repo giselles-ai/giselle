@@ -1,6 +1,6 @@
 "use client";
 
-import type { FlowTriggerId } from "@giselle-ai/data-type";
+import type { FlowTriggerId } from "@giselle-ai/protocol";
 import { AppIcon } from "@giselle-internal/ui/app-icon";
 import { Select } from "@giselle-internal/ui/select";
 import clsx from "clsx/lite";

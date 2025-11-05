@@ -1,6 +1,6 @@
 "use client";
 
-import { isTextGenerationNode, type NodeId } from "@giselle-ai/data-type";
+import { isTextGenerationNode, type NodeId } from "@giselle-ai/protocol";
 import { Input } from "@giselle-internal/ui/input";
 import {
 	Table,

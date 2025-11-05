@@ -1,4 +1,4 @@
-import type { Node, Output } from "@giselle-ai/data-type";
+import type { Node, Output } from "@giselle-ai/protocol";
 import { extensions as baseExtensions } from "@giselle-ai/text-editor-utils";
 import Mention from "@tiptap/extension-mention";
 import Placeholder from "@tiptap/extension-placeholder";

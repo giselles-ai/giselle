@@ -3,7 +3,7 @@ import {
 	type FetchingWebPage,
 	FileId,
 	type WorkspaceId,
-} from "@giselle-ai/data-type";
+} from "@giselle-ai/protocol";
 import { webSearch } from "@giselle-ai/web-search";
 import { filePath } from "../files/utils";
 import type { GiselleEngineContext } from "../types";

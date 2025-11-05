@@ -1,4 +1,4 @@
-import type { FileData } from "@giselle-ai/data-type";
+import type { FileData } from "@giselle-ai/protocol";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import clsx from "clsx/lite";

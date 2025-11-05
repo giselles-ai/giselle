@@ -1,4 +1,4 @@
-import type { TextGenerationNode, ToolSet } from "@giselle-ai/data-type";
+import type { TextGenerationNode, ToolSet } from "@giselle-ai/protocol";
 import { DatabaseIcon, GlobeIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { GitHubIcon } from "../../../../../icons";

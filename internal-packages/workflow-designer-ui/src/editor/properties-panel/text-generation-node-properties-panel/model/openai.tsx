@@ -1,10 +1,10 @@
-import { OpenAILanguageModelData, type ToolSet } from "@giselle-ai/data-type";
 import { useUsageLimits } from "@giselle-ai/giselle/react";
 import {
 	Capability,
 	hasCapability,
 	openaiLanguageModels,
 } from "@giselle-ai/language-model";
+import { OpenAILanguageModelData, type ToolSet } from "@giselle-ai/protocol";
 import { Select } from "@giselle-internal/ui/select";
 import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { useMemo } from "react";

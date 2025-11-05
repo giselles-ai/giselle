@@ -1,14 +1,14 @@
-import {
-	type GitHubFlowTriggerEvent,
-	type Output,
-	OutputId,
-	type TriggerNode,
-} from "@giselle-ai/data-type";
 import { getGitHubDisplayLabel, githubTriggers } from "@giselle-ai/flow";
 import {
 	useGiselleEngine,
 	useWorkflowDesigner,
 } from "@giselle-ai/giselle/react";
+import {
+	type GitHubFlowTriggerEvent,
+	type Output,
+	OutputId,
+	type TriggerNode,
+} from "@giselle-ai/protocol";
 import { useCallback, useTransition } from "react";
 import type {
 	InputCallsignStep,

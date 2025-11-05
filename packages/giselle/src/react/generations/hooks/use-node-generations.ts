@@ -1,4 +1,4 @@
-import type { NodeId } from "@giselle-ai/data-type";
+import type { NodeId } from "@giselle-ai/protocol";
 import { useCallback, useEffect, useMemo } from "react";
 import useSWR from "swr";
 import { useShallow } from "zustand/shallow";

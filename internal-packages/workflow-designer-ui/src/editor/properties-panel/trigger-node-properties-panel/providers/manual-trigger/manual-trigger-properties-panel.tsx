@@ -1,16 +1,16 @@
 import {
-	ManualTriggerParameter,
-	ManualTriggerParameterId,
-	type Output,
-	OutputId,
-	type TriggerNode,
-} from "@giselle-ai/data-type";
-import {
 	useFeatureFlag,
 	useFlowTrigger,
 	useGiselleEngine,
 	useWorkflowDesigner,
 } from "@giselle-ai/giselle/react";
+import {
+	ManualTriggerParameter,
+	ManualTriggerParameterId,
+	type Output,
+	OutputId,
+	type TriggerNode,
+} from "@giselle-ai/protocol";
 import { Button } from "@giselle-internal/ui/button";
 import { Select } from "@giselle-internal/ui/select";
 import {

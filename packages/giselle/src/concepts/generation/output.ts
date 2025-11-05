@@ -3,7 +3,7 @@ import {
 	DocumentVectorStoreSource,
 	GitHubVectorStoreSource,
 	OutputId,
-} from "@giselle-ai/data-type";
+} from "@giselle-ai/protocol";
 import { createIdGenerator } from "@giselle-ai/utils";
 import type { ProviderMetadata } from "ai";
 import { z } from "zod/v4";

@@ -1,4 +1,4 @@
-import type { Workspace } from "@giselle-ai/data-type";
+import type { Workspace } from "@giselle-ai/protocol";
 
 /**
  * Backward Traversal Test Fixture

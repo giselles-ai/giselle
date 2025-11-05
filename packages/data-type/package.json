@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-ai/data-type",
+	"name": "@giselle-ai/protocol",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",

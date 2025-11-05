@@ -1,4 +1,3 @@
-import { WorkspaceId } from "@giselle-ai/data-type";
 import type {
 	CompletedGeneration,
 	FailedGeneration,
@@ -11,6 +10,7 @@ import {
 	NextGiselleEngine,
 } from "@giselle-ai/giselle/next-internal";
 import { traceEmbedding, traceGeneration } from "@giselle-ai/langfuse";
+import { WorkspaceId } from "@giselle-ai/protocol";
 import type { EmbeddingMetrics } from "@giselle-ai/rag";
 import {
 	supabaseStorageDriver as experimental_supabaseStorageDriver,

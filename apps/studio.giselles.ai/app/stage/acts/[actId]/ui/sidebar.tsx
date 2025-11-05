@@ -1,12 +1,12 @@
 "use client";
 
-import type { ManualTriggerParameter } from "@giselle-ai/data-type";
 import type { Generation } from "@giselle-ai/giselle";
 import {
 	type Act,
 	ActStreamReader,
 	type StreamDataEventHandler,
 } from "@giselle-ai/giselle/react";
+import type { ManualTriggerParameter } from "@giselle-ai/protocol";
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import { NodeIcon } from "@giselle-internal/workflow-designer-ui";
 import {

@@ -1,12 +1,5 @@
 // unified into ModelPicker
-import type { TextGenerationNode } from "@giselle-ai/data-type";
-import {
-	type AnthropicLanguageModelData,
-	type GoogleLanguageModelData,
-	type Node,
-	type OpenAILanguageModelData,
-	OutputId,
-} from "@giselle-ai/data-type";
+
 import {
 	useFeatureFlag,
 	useUsageLimits,
@@ -20,6 +13,14 @@ import {
 	openaiLanguageModels,
 	Tier,
 } from "@giselle-ai/language-model";
+import type { TextGenerationNode } from "@giselle-ai/protocol";
+import {
+	type AnthropicLanguageModelData,
+	type GoogleLanguageModelData,
+	type Node,
+	type OpenAILanguageModelData,
+	OutputId,
+} from "@giselle-ai/protocol";
 import { ModelPicker } from "@giselle-internal/ui/model-picker";
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import {

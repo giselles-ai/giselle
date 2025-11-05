@@ -3,7 +3,7 @@ import type {
 	Input,
 	NodeLike,
 	Output,
-} from "@giselle-ai/data-type";
+} from "@giselle-ai/protocol";
 
 export type InputWithConnectedOutput = Input & {
 	connectedOutput?: Output & { node: NodeLike } & {

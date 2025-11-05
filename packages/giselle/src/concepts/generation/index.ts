@@ -1,5 +1,5 @@
 import type { LanguageModelV2Usage } from "@ai-sdk/provider";
-import { NodeId } from "@giselle-ai/data-type";
+import { NodeId } from "@giselle-ai/protocol";
 import type { UIMessage } from "ai";
 import { z } from "zod/v4";
 import { GenerationId } from "../identifiers";

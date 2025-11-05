@@ -14,7 +14,7 @@
 	"dependencies": {
 		"@ai-sdk/google": "catalog:",
 		"@ai-sdk/openai": "catalog:",
-		"@giselle-ai/data-type": "workspace:*",
+		"@giselle-ai/protocol": "workspace:*",
 		"ai": "catalog:",
 		"pg": "catalog:",
 		"pgvector": "catalog:",

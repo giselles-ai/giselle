@@ -1,9 +1,4 @@
 import {
-	type ImageGenerationLanguageModelData,
-	type ImageGenerationNode,
-	Node,
-} from "@giselle-ai/data-type";
-import {
 	isSupportedConnection,
 	useUsageLimits,
 	useWorkflowDesigner,
@@ -15,6 +10,11 @@ import {
 	openaiImageModels,
 	Tier,
 } from "@giselle-ai/language-model";
+import {
+	type ImageGenerationLanguageModelData,
+	type ImageGenerationNode,
+	Node,
+} from "@giselle-ai/protocol";
 import { ModelPicker } from "@giselle-internal/ui/model-picker";
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import {

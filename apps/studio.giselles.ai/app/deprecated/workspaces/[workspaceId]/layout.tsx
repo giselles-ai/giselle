@@ -1,8 +1,8 @@
-import { WorkspaceId } from "@giselle-ai/data-type";
 import {
 	WorkspaceProvider,
 	ZustandBridgeProvider,
 } from "@giselle-ai/giselle/react";
+import { WorkspaceId } from "@giselle-ai/protocol";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { giselleEngine } from "@/app/giselle-engine";

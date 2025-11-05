@@ -1,5 +1,5 @@
-import type { EmbeddingProfileId } from "@giselle-ai/data-type";
-import { EMBEDDING_PROFILES } from "@giselle-ai/data-type";
+import type { EmbeddingProfileId } from "@giselle-ai/protocol";
+import { EMBEDDING_PROFILES } from "@giselle-ai/protocol";
 import type { EmbedderFunction } from "@giselle-ai/rag";
 import { createEmbedderFromProfile } from "@giselle-ai/rag";
 

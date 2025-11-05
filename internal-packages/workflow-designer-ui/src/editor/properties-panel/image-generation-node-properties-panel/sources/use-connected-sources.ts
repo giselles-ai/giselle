@@ -1,3 +1,4 @@
+import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
 import type {
 	ActionNode,
 	Connection,
@@ -11,8 +12,7 @@ import type {
 	TriggerNode,
 	VariableNode,
 	WebPageNode,
-} from "@giselle-ai/data-type";
-import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
+} from "@giselle-ai/protocol";
 import { useMemo } from "react";
 
 type ConnectedSource<T extends NodeBase> = {

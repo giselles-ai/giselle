@@ -1,10 +1,10 @@
-import { OpenAIImageLanguageModelData } from "@giselle-ai/data-type";
 import {
 	openaiImageBackground,
 	openaiImageModeration,
 	openaiImageQuality,
 	openaiImageSize,
 } from "@giselle-ai/language-model";
+import { OpenAIImageLanguageModelData } from "@giselle-ai/protocol";
 import { Select } from "@giselle-internal/ui/select";
 import { SettingRow } from "@giselle-internal/ui/setting-row";
 

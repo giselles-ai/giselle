@@ -1,3 +1,4 @@
+import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
 import type {
 	ActionNode,
 	QueryNode,
@@ -5,8 +6,7 @@ import type {
 	TriggerNode,
 	VariableNode,
 	VectorStoreNode,
-} from "@giselle-ai/data-type";
-import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
+} from "@giselle-ai/protocol";
 import { useMemo } from "react";
 import type { ConnectedSource, DatastoreNode } from "./types";
 

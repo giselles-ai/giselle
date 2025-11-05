@@ -1,6 +1,5 @@
 "use client";
 
-import { FileCategory } from "@giselle-ai/data-type";
 import { type ActionProvider, actionProviders } from "@giselle-ai/flow";
 import type { TriggerProvider } from "@giselle-ai/giselle";
 import {
@@ -26,6 +25,7 @@ import {
 	languageModels,
 	Tier,
 } from "@giselle-ai/language-model";
+import { FileCategory } from "@giselle-ai/protocol";
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import clsx from "clsx/lite";
 import {

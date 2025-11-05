@@ -1,4 +1,4 @@
-import type { EmbeddingProfileId, WorkspaceId } from "@giselle-ai/data-type";
+import type { EmbeddingProfileId, WorkspaceId } from "@giselle-ai/protocol";
 
 import type { DocumentVectorStoreId } from "@/packages/types";
 

@@ -1,7 +1,7 @@
 import type {
 	EmbeddingDimensions,
 	EmbeddingProfileId,
-} from "@giselle-ai/data-type";
+} from "@giselle-ai/protocol";
 import type { DocumentVectorStoreSourceId } from "@giselles-ai/types";
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/db/db";

@@ -1,4 +1,3 @@
-import type { FlowTrigger, Output } from "@giselle-ai/data-type";
 import type { githubTriggers } from "@giselle-ai/flow";
 import {
 	ensureWebhookEvent,
@@ -7,6 +6,7 @@ import {
 	getPullRequestReviewComment,
 	type WebhookEvent,
 } from "@giselle-ai/github-tool";
+import type { FlowTrigger, Output } from "@giselle-ai/protocol";
 import type { GenerationOutput } from "../generations";
 import { parseCommand } from "./utils";
 

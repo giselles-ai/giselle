@@ -1,5 +1,5 @@
-import type { FlowTriggerId, TriggerNode } from "@giselle-ai/data-type";
 import type { GitHubIntegrationInstallation } from "@giselle-ai/giselle";
+import type { FlowTriggerId, TriggerNode } from "@giselle-ai/protocol";
 import { useGitHubTrigger } from "../../../../lib/use-github-trigger";
 import {
 	type GitHubTriggerReconfigureMode,

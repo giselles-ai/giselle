@@ -1,5 +1,5 @@
-import { FalLanguageModelData } from "@giselle-ai/data-type";
 import { imageGenerationSizes } from "@giselle-ai/language-model";
+import { FalLanguageModelData } from "@giselle-ai/protocol";
 import { Select } from "@giselle-internal/ui/select";
 import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { Slider } from "../../../../ui/slider";

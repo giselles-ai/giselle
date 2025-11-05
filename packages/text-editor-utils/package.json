@@ -25,7 +25,7 @@
 		"tsup": "catalog:"
 	},
 	"dependencies": {
-		"@giselle-ai/data-type": "workspace:*",
+		"@giselle-ai/protocol": "workspace:*",
 		"@tiptap/core": "catalog:",
 		"@tiptap/react": "catalog:",
 		"@tiptap/html": "catalog:",

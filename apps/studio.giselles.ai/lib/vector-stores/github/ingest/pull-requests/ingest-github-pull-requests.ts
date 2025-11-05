@@ -1,8 +1,8 @@
-import type { EmbeddingProfileId } from "@giselle-ai/data-type";
 import {
 	createGitHubPullRequestsLoader,
 	type GitHubAuthConfig,
 } from "@giselle-ai/github-tool";
+import type { EmbeddingProfileId } from "@giselle-ai/protocol";
 import {
 	createPipeline,
 	type EmbeddingCompleteCallback,

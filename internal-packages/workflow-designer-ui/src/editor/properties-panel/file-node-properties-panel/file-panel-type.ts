@@ -1,4 +1,4 @@
-import type { FileNode } from "@giselle-ai/data-type";
+import type { FileNode } from "@giselle-ai/protocol";
 
 export type FileTypeConfig = {
 	accept: string[];

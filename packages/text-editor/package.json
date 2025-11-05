@@ -31,7 +31,7 @@
 		"tsup": "catalog:"
 	},
 	"dependencies": {
-		"@giselle-ai/data-type": "workspace:^",
+		"@giselle-ai/protocol": "workspace:^",
 		"@giselle-ai/giselle": "workspace:^",
 		"@giselle-ai/text-editor-utils": "workspace:^",
 		"@tiptap/extension-mention": "catalog:",

@@ -1,8 +1,8 @@
-import type { ImageGenerationNode } from "@giselle-ai/data-type";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
 } from "@giselle-ai/giselle/react";
+import type { ImageGenerationNode } from "@giselle-ai/protocol";
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";

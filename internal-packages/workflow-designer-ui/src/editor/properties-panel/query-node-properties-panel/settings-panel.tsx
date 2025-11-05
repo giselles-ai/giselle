@@ -1,9 +1,9 @@
+import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
 import {
 	DEFAULT_MAX_RESULTS,
 	DEFAULT_SIMILARITY_THRESHOLD,
 	type QueryNode,
-} from "@giselle-ai/data-type";
-import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
+} from "@giselle-ai/protocol";
 import { Slider } from "../../../ui/slider";
 
 export function SettingsPanel({ node }: { node: QueryNode }) {

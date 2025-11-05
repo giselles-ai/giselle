@@ -5,7 +5,7 @@ import {
 	isActionNode,
 	type NodeId,
 	OutputId,
-} from "@giselle-ai/data-type";
+} from "@giselle-ai/protocol";
 import {
 	type Connection,
 	type Edge,

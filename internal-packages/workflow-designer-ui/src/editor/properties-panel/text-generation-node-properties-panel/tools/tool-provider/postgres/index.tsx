@@ -1,5 +1,5 @@
-import type { TextGenerationNode } from "@giselle-ai/data-type";
 import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
+import type { TextGenerationNode } from "@giselle-ai/protocol";
 import { Button } from "@giselle-internal/ui/button";
 import { EmptyState } from "@giselle-internal/ui/empty-state";
 import { Input } from "@giselle-internal/ui/input";

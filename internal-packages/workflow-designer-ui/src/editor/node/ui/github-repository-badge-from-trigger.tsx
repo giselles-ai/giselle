@@ -1,4 +1,4 @@
-import type { FlowTriggerId } from "@giselle-ai/data-type";
+import type { FlowTriggerId } from "@giselle-ai/protocol";
 import { useGitHubTrigger } from "../../lib/use-github-trigger";
 import { GitHubRepositoryBadge } from "./github-repository-badge";
 

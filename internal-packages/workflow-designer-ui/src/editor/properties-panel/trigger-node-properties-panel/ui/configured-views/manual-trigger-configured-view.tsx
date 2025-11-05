@@ -1,4 +1,4 @@
-import type { TriggerNode } from "@giselle-ai/data-type";
+import type { TriggerNode } from "@giselle-ai/protocol";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useTrigger } from "../../../../../hooks/use-trigger";
 

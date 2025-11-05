@@ -1,4 +1,4 @@
-import { EMBEDDING_PROFILES } from "@giselle-ai/data-type";
+import { EMBEDDING_PROFILES } from "@giselle-ai/protocol";
 
 // Document Vector Store UI embedding profiles
 // - Surface all currently supported providers (OpenAI, Google, Cohere)

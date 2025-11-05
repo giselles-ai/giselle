@@ -1,4 +1,4 @@
-import type { WorkspaceId } from "@giselle-ai/data-type";
+import type { WorkspaceId } from "@giselle-ai/protocol";
 import { notFound } from "next/navigation";
 import { giselleEngine } from "@/app/giselle-engine";
 import { db } from "@/db";

@@ -1,6 +1,6 @@
 "use client";
 
-import type { FlowTrigger } from "@giselle-ai/data-type";
+import type { FlowTrigger } from "@giselle-ai/protocol";
 import { AppIcon } from "@giselle-internal/ui/app-icon";
 import { X } from "lucide-react";
 import {

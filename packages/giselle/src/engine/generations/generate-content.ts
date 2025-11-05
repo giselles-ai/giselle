@@ -3,17 +3,17 @@ import { createGateway } from "@ai-sdk/gateway";
 import { google } from "@ai-sdk/google";
 import { type OpenAIResponsesProviderOptions, openai } from "@ai-sdk/openai";
 import type { SharedV2ProviderMetadata } from "@ai-sdk/provider";
-import {
-	isTextGenerationNode,
-	type Output,
-	type TextGenerationLanguageModelData,
-} from "@giselle-ai/data-type";
 import { githubTools, octokit } from "@giselle-ai/github-tool";
 import {
 	Capability,
 	hasCapability,
 	languageModels,
 } from "@giselle-ai/language-model";
+import {
+	isTextGenerationNode,
+	type Output,
+	type TextGenerationLanguageModelData,
+} from "@giselle-ai/protocol";
 import {
 	AISDKError,
 	type AsyncIterableStream,

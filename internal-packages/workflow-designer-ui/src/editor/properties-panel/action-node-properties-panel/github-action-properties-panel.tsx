@@ -1,12 +1,12 @@
+import { type GitHubActionCommandId, githubActions } from "@giselle-ai/flow";
+import type { GitHubIntegrationInstallation } from "@giselle-ai/giselle";
+import { useIntegration, useWorkflowDesigner } from "@giselle-ai/giselle/react";
 import {
 	type ActionNode,
 	type Input,
 	InputId,
 	OutputId,
-} from "@giselle-ai/data-type";
-import { type GitHubActionCommandId, githubActions } from "@giselle-ai/flow";
-import type { GitHubIntegrationInstallation } from "@giselle-ai/giselle";
-import { useIntegration, useWorkflowDesigner } from "@giselle-ai/giselle/react";
+} from "@giselle-ai/protocol";
 import {
 	SettingDetail,
 	SettingLabel,

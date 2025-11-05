@@ -1,10 +1,3 @@
-import {
-	type GitHubActionCommandConfiguredState,
-	isActionNode,
-	isTextNode,
-	type NodeId,
-	type OutputId,
-} from "@giselle-ai/data-type";
 import { githubActions } from "@giselle-ai/flow";
 import {
 	createDiscussionComment,
@@ -18,6 +11,13 @@ import {
 	replyPullRequestReviewComment,
 	updatePullRequest,
 } from "@giselle-ai/github-tool";
+import {
+	type GitHubActionCommandConfiguredState,
+	isActionNode,
+	isTextNode,
+	type NodeId,
+	type OutputId,
+} from "@giselle-ai/protocol";
 import {
 	isJsonContent,
 	jsonContentToText,

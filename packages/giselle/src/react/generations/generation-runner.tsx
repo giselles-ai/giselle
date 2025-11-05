@@ -1,4 +1,4 @@
-import { isTextGenerationNode } from "@giselle-ai/data-type";
+import { isTextGenerationNode } from "@giselle-ai/protocol";
 import { useCallback, useEffect, useRef } from "react";
 import {
 	type Generation,

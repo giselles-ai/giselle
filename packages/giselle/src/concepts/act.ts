@@ -1,4 +1,4 @@
-import { WorkspaceId } from "@giselle-ai/data-type";
+import { WorkspaceId } from "@giselle-ai/protocol";
 import { createIdGenerator } from "@giselle-ai/utils";
 import { z } from "zod/v4";
 import { GenerationStatus } from "./generation";

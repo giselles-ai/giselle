@@ -1,3 +1,9 @@
+import type { ActionProvider } from "@giselle-ai/flow";
+import {
+	Capability,
+	hasCapability,
+	languageModels,
+} from "@giselle-ai/language-model";
 import {
 	type ActionNode,
 	DEFAULT_MAX_RESULTS,
@@ -37,13 +43,7 @@ import {
 	type VectorStoreContent,
 	type VectorStoreNode,
 	type WebPageNode,
-} from "@giselle-ai/data-type";
-import type { ActionProvider } from "@giselle-ai/flow";
-import {
-	Capability,
-	hasCapability,
-	languageModels,
-} from "@giselle-ai/language-model";
+} from "@giselle-ai/protocol";
 import { isJsonContent, type JSONContent } from "@giselle-ai/text-editor-utils";
 import {
 	actionNodeDefaultName,

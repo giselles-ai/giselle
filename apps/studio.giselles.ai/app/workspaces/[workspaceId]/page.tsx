@@ -1,5 +1,5 @@
-import { WorkspaceId } from "@giselle-ai/data-type";
 import { AppId } from "@giselle-ai/giselle";
+import { WorkspaceId } from "@giselle-ai/protocol";
 import { Background } from "@giselle-internal/workflow-designer-ui";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";

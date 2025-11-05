@@ -1,4 +1,4 @@
-import type { Node } from "@giselle-ai/data-type";
+import type { Node } from "@giselle-ai/protocol";
 
 interface ToolBase {
 	category: string;

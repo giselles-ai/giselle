@@ -1,14 +1,14 @@
-import type { ConnectionId, NodeId, TriggerNode } from "@giselle-ai/data-type";
-import {
-	isImageGenerationNode,
-	isTextGenerationNode,
-} from "@giselle-ai/data-type";
 import {
 	defaultName,
 	useActSystem,
 	useNodeGroups,
 	useWorkflowDesigner,
 } from "@giselle-ai/giselle/react";
+import type { ConnectionId, NodeId, TriggerNode } from "@giselle-ai/protocol";
+import {
+	isImageGenerationNode,
+	isTextGenerationNode,
+} from "@giselle-ai/protocol";
 import { Button } from "@giselle-internal/ui/button";
 import {
 	Dialog,

@@ -1,5 +1,5 @@
-import type { ConnectionId, TriggerNode } from "@giselle-ai/data-type";
 import { useActController } from "@giselle-ai/giselle/react";
+import type { ConnectionId, TriggerNode } from "@giselle-ai/protocol";
 import { Button } from "@giselle-internal/ui/button";
 import { useToasts } from "@giselle-internal/ui/toast";
 import { clsx } from "clsx/lite";

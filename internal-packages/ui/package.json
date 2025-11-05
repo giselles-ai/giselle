@@ -46,7 +46,7 @@
 		"./setting-row": "./components/setting-row.tsx"
 	},
 	"dependencies": {
-		"@giselle-ai/data-type": "workspace:^",
+		"@giselle-ai/protocol": "workspace:^",
 		"@giselle-ai/text-editor": "workspace:^",
 		"@radix-ui/react-dialog": "1.1.4",
 		"clsx": "catalog:",

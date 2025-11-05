@@ -10,7 +10,7 @@
  *   pnpm dlx tsx --env-file=.env.local scripts/20250815-db-patch-add-default-embedding-profiles.ts
  */
 
-import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-ai/data-type";
+import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-ai/protocol";
 import { db } from "@/db";
 
 async function main() {

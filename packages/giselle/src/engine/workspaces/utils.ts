@@ -1,4 +1,4 @@
-import { Node, Workspace, type WorkspaceId } from "@giselle-ai/data-type";
+import { Node, Workspace, type WorkspaceId } from "@giselle-ai/protocol";
 import { parseAndMod } from "../../data-mod";
 import type { GiselleStorage } from "../storage";
 

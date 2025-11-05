@@ -64,7 +64,7 @@ function _renderImageLoadingGrid(generation: Generation, keyPrefix: string) {
 	}
 
 	const config = generation.context.operationNode.content
-		.llm as import("@giselle-ai/data-type").ImageGenerationLanguageModelData;
+		.llm as import("@giselle-ai/protocol").ImageGenerationLanguageModelData;
 	let imageCount = 1;
 	if (config.provider !== "google") {
 		imageCount = config.configurations.n;

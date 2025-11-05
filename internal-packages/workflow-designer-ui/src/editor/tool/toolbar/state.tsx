@@ -1,7 +1,7 @@
 "use client";
 
-import type { Node, VectorStoreContent } from "@giselle-ai/data-type";
 import { nodeFactories } from "@giselle-ai/giselle/react";
+import type { Node, VectorStoreContent } from "@giselle-ai/protocol";
 import { createContext, type ReactNode, useContext, useState } from "react";
 import type {
 	AddNodeTool,

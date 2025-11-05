@@ -41,7 +41,7 @@
 		}
 	},
 	"devDependencies": {
-		"@giselle-ai/data-type": "workspace:*",
+		"@giselle-ai/protocol": "workspace:*",
 		"@giselle-ai/rag": "workspace:^",
 		"@giselle-ai/utils": "workspace:*",
 		"@giselle-ai/tsconfig": "workspace:*",

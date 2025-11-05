@@ -1,18 +1,18 @@
-import type {
-	EmbeddingProfileId,
-	GitHubVectorStoreSource,
-	VectorStoreNode,
-} from "@giselle-ai/data-type";
-import {
-	DEFAULT_EMBEDDING_PROFILE_ID,
-	EMBEDDING_PROFILES,
-	isEmbeddingProfileId,
-} from "@giselle-ai/data-type";
 import {
 	useFeatureFlag,
 	useVectorStore,
 	useWorkflowDesigner,
 } from "@giselle-ai/giselle/react";
+import type {
+	EmbeddingProfileId,
+	GitHubVectorStoreSource,
+	VectorStoreNode,
+} from "@giselle-ai/protocol";
+import {
+	DEFAULT_EMBEDDING_PROFILE_ID,
+	EMBEDDING_PROFILES,
+	isEmbeddingProfileId,
+} from "@giselle-ai/protocol";
 import { Select } from "@giselle-internal/ui/select";
 import {
 	SettingDetail,

@@ -4,7 +4,7 @@ import {
 	type GitHubFlowTriggerEvent,
 	isTriggerNode,
 	type TriggerNode,
-} from "@giselle-ai/data-type";
+} from "@giselle-ai/protocol";
 import {
 	addGitHubRepositoryIntegrationIndex,
 	removeGitHubRepositoryIntegrationIndex,

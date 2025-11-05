@@ -1,10 +1,4 @@
 import {
-	type FlowTriggerId,
-	type Output,
-	OutputId,
-	type TriggerNode,
-} from "@giselle-ai/data-type";
-import {
 	type GitHubTriggerEventId,
 	getGitHubDisplayLabel,
 	githubTriggers,
@@ -15,6 +9,12 @@ import {
 	useIntegration,
 	useWorkflowDesigner,
 } from "@giselle-ai/giselle/react";
+import {
+	type FlowTriggerId,
+	type Output,
+	OutputId,
+	type TriggerNode,
+} from "@giselle-ai/protocol";
 import {
 	SettingDetail,
 	SettingLabel,

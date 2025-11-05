@@ -1,4 +1,4 @@
-import type { Node } from "@giselle-ai/data-type";
+import type { Node } from "@giselle-ai/protocol";
 import { NodeComponent } from "../../node";
 import { useMousePosition } from "./state";
 

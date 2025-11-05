@@ -11,7 +11,7 @@ import {
 	OutputId,
 	type VectorStoreNode,
 	type WorkspaceId,
-} from "@giselle-ai/data-type";
+} from "@giselle-ai/protocol";
 import type { EmbeddingMetrics } from "@giselle-ai/rag";
 import {
 	isJsonContent,

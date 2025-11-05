@@ -1,3 +1,9 @@
+import { githubActionIdToLabel } from "@giselle-ai/flow";
+import {
+	defaultName,
+	useGiselleEngine,
+	useWorkflowDesigner,
+} from "@giselle-ai/giselle/react";
 import type {
 	ActionNode,
 	ConnectionId,
@@ -7,13 +13,7 @@ import type {
 	NodeId,
 	NodeLike,
 	OutputId,
-} from "@giselle-ai/data-type";
-import { githubActionIdToLabel } from "@giselle-ai/flow";
-import {
-	defaultName,
-	useGiselleEngine,
-	useWorkflowDesigner,
-} from "@giselle-ai/giselle/react";
+} from "@giselle-ai/protocol";
 import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import {

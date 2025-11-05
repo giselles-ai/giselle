@@ -1,13 +1,13 @@
 import {
+	useGiselleEngine,
+	useWorkflowDesigner,
+} from "@giselle-ai/giselle/react";
+import {
 	type WebPage,
 	WebPageId,
 	type WebPageNode,
 	type WorkspaceId,
-} from "@giselle-ai/data-type";
-import {
-	useGiselleEngine,
-	useWorkflowDesigner,
-} from "@giselle-ai/giselle/react";
+} from "@giselle-ai/protocol";
 import { Button } from "@giselle-internal/ui/button";
 import { Note } from "@giselle-internal/ui/note";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
