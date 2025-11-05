@@ -8,7 +8,7 @@ import {
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { z } from "zod/v4";
-import { ActId } from "../act";
+import { ActId } from "../act/act-id";
 
 export const GenerationOriginStudio = z.object({
 	actId: z.optional(ActId.schema),
