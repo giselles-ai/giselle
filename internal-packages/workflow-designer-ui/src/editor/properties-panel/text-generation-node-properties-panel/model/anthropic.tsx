@@ -6,7 +6,7 @@ import {
 } from "@giselles-ai/language-model";
 import { AnthropicLanguageModelData } from "@giselles-ai/protocol";
 import { useMemo } from "react";
-import { Switch } from "../../../../ui/switch";
+import { Toggle } from "@giselle-internal/ui/toggle";
 import { TemperatureSlider, TopPSlider } from "./shared-model-controls";
 
 export function AnthropicModelPanel({
@@ -44,12 +44,11 @@ export function AnthropicModelPanel({
 						parseModelData={AnthropicLanguageModelData.parse}
 					/>
 
-					{hasReasoningCapability ? (
-						<Switch
-							label="Reasoning"
-							name="reasoning"
-							checked={anthropicLanguageModel.configurations.reasoningText}
-							onCheckedChange={(checked) => {
+						{hasReasoningCapability ? (
+							<Toggle
+								name="reasoning"
+								checked={anthropicLanguageModel.configurations.reasoningText}
+								onCheckedChange={(checked) => {
 								onModelChange(
 									AnthropicLanguageModelData.parse({
 										...anthropicLanguageModel,
@@ -60,7 +59,11 @@ export function AnthropicModelPanel({
 									}),
 								);
 							}}
-						/>
+							>
+								<label htmlFor="reasoning" className="text-[14px]">
+									Reasoning
+								</label>
+							</Toggle>
 					) : (
 						<div className="flex flex-col">
 							<div className="flex flex-row items-center justify-between">

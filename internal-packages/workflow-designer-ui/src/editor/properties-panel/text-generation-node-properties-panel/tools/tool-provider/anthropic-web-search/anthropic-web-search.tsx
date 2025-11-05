@@ -4,7 +4,7 @@ import type { TextGenerationNode } from "@giselles-ai/protocol";
 import { Settings2Icon, XIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Slider } from "../../../../../../ui/slider";
-import { Switch } from "../../../../../../ui/switch";
+import { Toggle } from "@giselle-internal/ui/toggle";
 
 import { ToolConfigurationDialog } from "../../ui/tool-configuration-dialog";
 
@@ -235,8 +235,7 @@ export function AnthropicWebSearchToolConfigurationDialog({
 						</div>
 					</div>
 					<div className="flex-1 h-px bg-border ml-4"></div>
-					<Switch
-						label=""
+					<Toggle
 						name="web-search-enabled"
 						checked={webSearchEnabled}
 						onCheckedChange={handleWebSearchToggle}

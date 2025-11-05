@@ -23,9 +23,9 @@ export const Switch = ({
 
 			<RadixSwitch.Root
 				className={clsx(
-					"h-[15px] w-[27px] rounded-full outline-none",
-					"border border-white-400 data-[state=checked]:border-primary-900",
-					"bg-transparent data-[state=checked]:bg-primary-900",
+					"h-[15px] w-[27px] rounded-full outline-none transition-colors",
+					"border border-white-400 data-[state=checked]:!border-primary-900",
+					"bg-transparent data-[state=checked]:!bg-primary-900",
 				)}
 				id={name}
 				checked={checked}
@@ -34,7 +34,7 @@ export const Switch = ({
 				<RadixSwitch.Thumb
 					className={clsx(
 						"block size-[11px] translate-x-[2px] rounded-full",
-						"bg-[var(--color-text-inverse,#fff)] data-[state=checked]:bg-primary-900",
+						"bg-[var(--color-text-inverse,#fff)]",
 						"transition-transform duration-100 will-change-transform data-[state=checked]:translate-x-[13px]",
 					)}
 				/>

@@ -8,7 +8,7 @@ import {
 } from "@giselles-ai/language-model";
 import { OpenAILanguageModelData, type ToolSet } from "@giselles-ai/protocol";
 import { useMemo } from "react";
-import { Switch } from "../../../../ui/switch";
+import { Toggle } from "@giselle-internal/ui/toggle";
 import {
 	FrequencyPenaltySlider,
 	PresencePenaltySlider,
@@ -134,11 +134,10 @@ export function OpenAIModelPanel({
 					</div>
 				</div>
 			)}
-			<Switch
-				label="Web Search"
-				name="webSearch"
-				checked={!!tools?.openaiWebSearch}
-				onCheckedChange={(checked) => {
+            <Toggle
+                name="webSearch"
+                checked={!!tools?.openaiWebSearch}
+                onCheckedChange={(checked) => {
 					let changedTools: ToolSet = {};
 					for (const toolName of Object.keys(tools ?? {})) {
 						const tool = tools?.[toolName as keyof ToolSet];
@@ -164,14 +163,19 @@ export function OpenAIModelPanel({
 					}
 					onToolChange(changedTools);
 					onWebSearchChange(checked);
-				}}
-				note={
-					languageModel &&
-					tools?.openaiWebSearch &&
-					!hasCapability(languageModel, Capability.OptionalSearchGrounding) &&
-					"Web search is not supported by the selected model"
-				}
-			/>
+                }}
+            >
+                <label htmlFor="webSearch" className="text-text text-[14px]">
+                    Web Search
+                </label>
+            </Toggle>
+            {languageModel &&
+                tools?.openaiWebSearch &&
+                !hasCapability(languageModel, Capability.OptionalSearchGrounding) && (
+                    <p className="text-[12px] text-red-900 mt-[4px]">
+                        Web search is not supported by the selected model
+                    </p>
+                )}
 		</div>
 	);
 }
