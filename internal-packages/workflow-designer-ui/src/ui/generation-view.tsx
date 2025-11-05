@@ -190,7 +190,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 											<Accordion.Item
 												value={`messages.${message.id}.parts.[${index}].reasoning`}
 											>
-												<Accordion.Trigger className="group text-inverse text-[12px] flex items-center gap-[4px] cursor-pointer hover:text-inverse transition-colors data-[state=open]:text-inverse outline-none font-sans">
+									<Accordion.Trigger className="group text-[var(--color-text-inverse)] text-[12px] flex items-center gap-[4px] cursor-pointer hover:text-[var(--color-text-inverse)] transition-colors data-[state=open]:text-[var(--color-text-inverse)] outline-none font-sans">
 													<ChevronRightIcon
 														className="size-[16px] transition-transform duration-300 ease-[cubic-bezier(0.87,_0,_0.13,_1)] group-data-[state=open]:rotate-90"
 														aria-hidden

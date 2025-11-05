@@ -226,7 +226,7 @@ export function TextGenerationNodePropertiesPanel({
 									setEditorVersion((v) => v + 1);
 								}}
 							>
-								<Minimize2 className="size-[16px] text-inverse" />
+								<Minimize2 className="size-[16px] text-[var(--color-text-inverse)]" />
 							</button>
 						</div>
 						<button
@@ -271,7 +271,7 @@ export function TextGenerationNodePropertiesPanel({
 									setIsGenerationExpanded(false);
 								}}
 							>
-								<Minimize2 className="size-[16px] text-inverse" />
+								<Minimize2 className="size-[16px] text-[var(--color-text-inverse)]" />
 							</button>
 						</div>
 						<button
