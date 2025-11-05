@@ -314,7 +314,7 @@ export function InviteMemberDialog({
 			<DialogTrigger asChild>
 				<GlassButton type="button" onClick={handleOpenDialog}>
 					<span className="grid size-4 place-items-center rounded-full bg-primary-200 opacity-50">
-						<Plus className="size-3 text-bg" />
+						<Plus className="size-3 text-[var(--color-background)]" />
 					</span>
 					<span className="text-[14px] font-medium leading-[20px]">
 						Invite Member

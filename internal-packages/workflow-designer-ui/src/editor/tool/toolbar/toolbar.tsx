@@ -502,7 +502,7 @@ export function Toolbar() {
 												<input
 													type="text"
 													placeholder="Search LLM Model..."
-													className="w-full bg-transparent border-none text-inverse text-[12px] placeholder:text-text-muted focus:outline-none"
+													className="w-full bg-transparent border-none text-inverse text-[12px] placeholder:text-[var(--color-link-muted)] focus:outline-none"
 													value={searchQuery}
 													onChange={(e) => setSearchQuery(e.target.value)}
 												/>

@@ -53,7 +53,7 @@ export default async function AccountSettingPage() {
 								<TeamCreation>
 									<GlassButton type="button">
 										<span className="grid size-4 place-items-center rounded-full bg-primary-200 opacity-50">
-											<Plus className="size-3 text-bg" />
+											<Plus className="size-3 text-[var(--color-background)]" />
 										</span>
 										<span className="text-[14px] font-medium leading-[20px]">
 											Create New Team

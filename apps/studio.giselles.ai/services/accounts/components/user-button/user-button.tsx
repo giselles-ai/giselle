@@ -70,7 +70,7 @@ export const UserButton: FC = async () => {
 							className="flex items-center gap-x-2 px-2 py-1.5 rounded-lg w-full hover:bg-white/5"
 						>
 							<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
-								<Plus className="size-3 text-bg" />
+								<Plus className="size-3 text-[var(--color-background)]" />
 							</span>
 							<span className="text-inverse font-medium text-[14px] leading-[14px] font-geist">
 								Create team

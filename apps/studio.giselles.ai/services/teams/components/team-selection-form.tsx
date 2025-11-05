@@ -117,7 +117,7 @@ export function TeamSelectionForm({
 
 					<div className="p-2.5 flex items-center gap-x-2 rounded-lg w-full hover:bg-white/5">
 						<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
-							<Plus className="size-3 text-bg" />
+							<Plus className="size-3 text-[var(--color-background)]" />
 						</span>
 						<span className="text-inverse font-medium text-[14px] leading-[14px] font-geist">
 							{teamCreation}

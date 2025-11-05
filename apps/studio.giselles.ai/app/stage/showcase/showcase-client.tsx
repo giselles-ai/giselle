@@ -471,7 +471,7 @@ export function ShowcaseClient({
 															})
 														}
 														placeholder="Playlist title"
-														className="bg-black-700/50 border-black-600 text-white placeholder:text-text-muted"
+														className="bg-black-700/50 border-black-600 text-white placeholder:text-[var(--color-link-muted)]"
 													/>
 												</div>
 												<div className="grid gap-2">
@@ -491,7 +491,7 @@ export function ShowcaseClient({
 															})
 														}
 														placeholder="Playlist description"
-														className="bg-black-700/50 border-black-600 text-white placeholder:text-text-muted"
+														className="bg-black-700/50 border-black-600 text-white placeholder:text-[var(--color-link-muted)]"
 													/>
 												</div>
 											</div>

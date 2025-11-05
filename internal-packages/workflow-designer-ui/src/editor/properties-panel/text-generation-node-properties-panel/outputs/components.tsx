@@ -263,7 +263,7 @@ function _SelectOutputPopover({
 								onClick={() => {
 									onValueChange?.(selectedOutputIds);
 								}}
-								className="h-[32px] w-full flex justify-center items-center bg-bg text-bg rounded-[8px] cursor-pointer text-[12px]"
+								className="h-[32px] w-full flex justify-center items-center bg-bg text-[var(--color-background)] rounded-[8px] cursor-pointer text-[12px]"
 							>
 								Update
 							</Popover.Close>

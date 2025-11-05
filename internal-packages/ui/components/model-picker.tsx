@@ -137,7 +137,7 @@ export function ModelPicker({
 							</div>
 							<input
 								placeholder={searchPlaceholder}
-								className="w-full bg-transparent border-none text-inverse text-[12px] placeholder:text-text-muted focus:outline-none"
+								className="w-full bg-transparent border-none text-inverse text-[12px] placeholder:text-[var(--color-link-muted)] focus:outline-none"
 								value={query}
 								onChange={(e) => setQuery(e.target.value)}
 							/>
