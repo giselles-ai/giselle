@@ -27,7 +27,7 @@ export function GenerateCtaButton({
 			className={clsx(
 				"w-full flex items-center justify-center px-[24px] py-[12px] text-white rounded-[9999px] border transition-all hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0",
 				isEmpty
-					? "bg-[#141519] border-border/15 hover:bg-[#1e1f26] hover:border-border/25"
+					? "bg-background border-border/15 hover:bg-inverse/5 hover:border-border/25"
 					: "bg-primary-900 border-primary-900/30 hover:bg-primary-800",
 				className,
 			)}

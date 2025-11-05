@@ -1,12 +1,12 @@
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
-import type { TextGenerationNode } from "@giselle-sdk/data-type";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
 	useWorkflowDesignerStore,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/giselle/react";
+import type { TextGenerationNode } from "@giselles-ai/protocol";
 import { Minimize2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
@@ -170,7 +170,7 @@ export function TextGenerationNodePropertiesPanel({
 					</div>
 					<div
 						ref={generateCtaRef}
-						className="shrink-0 px-[16px] pt-[8px] pb-[4px] bg-gradient-to-t from-background via-background/80 to-transparent"
+						className="shrink-0 px-[16px] pt-[8px] pb-[4px]"
 					>
 						<GenerateCtaButton
 							isGenerating={isGenerating}

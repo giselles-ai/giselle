@@ -6,21 +6,53 @@ interface NoteProps {
 	children: React.ReactNode;
 	type?: "error" | "warning" | "success" | "info";
 	action?: React.ReactNode;
+	showIcon?: boolean;
 }
 
-export function Note({ children, type = "error", action }: NoteProps) {
+const typeStyles = {
+	error: {
+		container:
+			"rounded-[8px] border border-error-900/40 bg-error-900/10 px-[12px] py-[8px] flex items-start gap-[8px]",
+		icon: "text-error-200",
+		text: "text-error-100",
+	},
+	warning: {
+		container:
+			"rounded-[8px] border border-yellow-500/40 bg-yellow-500/10 px-[12px] py-[8px] flex items-start gap-[8px]",
+		icon: "text-yellow-200",
+		text: "text-yellow-100",
+	},
+	info: {
+		container:
+			"rounded-[8px] border border-blue-500/40 bg-blue-500/10 px-[12px] py-[8px] flex items-start gap-[8px]",
+		icon: "text-blue-200",
+		text: "text-blue-100",
+	},
+	success: {
+		container:
+			"rounded-[8px] border border-green-500/40 bg-green-500/10 px-[12px] py-[8px] flex items-start gap-[8px]",
+		icon: "text-green-200",
+		text: "text-green-100",
+	},
+} as const satisfies Record<
+	NoteProps["type"] & string,
+	{ container: string; icon: string; text: string }
+>;
+
+export function Note({
+	children,
+	type = "error",
+	action,
+	showIcon = true,
+}: NoteProps) {
+	const styles = typeStyles[type];
+
 	return (
-		<div
-			className={clsx(
-				"group flex items-center border px-[8px] py-[2px] rounded-[2px] border-border",
-				// "data-[type=error]:text-error data-[type=error]:bg-error-background data-[type=error]:border-error-border",
+		<div className={clsx(styles.container)} data-type={type}>
+			{showIcon && (
+				<AlertCircle className={clsx("size-[16px] mt-[2px]", styles.icon)} />
 			)}
-			data-type={type}
-		>
-			<div className="flex items-center gap-[4px]">
-				<AlertCircle className="size-[13px] flex-shrink-0 group-data-[type=error]:text-error" />
-				<div className="flex-1 text-[13px]">{children}</div>
-			</div>
+			<div className={clsx("flex-1 text-[12px]", styles.text)}>{children}</div>
 			{action && <div className="flex-shrink-0">{action}</div>}
 		</div>
 	);

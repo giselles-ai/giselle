@@ -1,4 +1,4 @@
-import type { WorkspaceId } from "@giselle-sdk/data-type";
+import type { WorkspaceId } from "@giselles-ai/protocol";
 import { and, eq } from "drizzle-orm";
 import { agents, db, subscriptions, teams } from "@/db";
 import { getUsageLimitsForTeam } from "./usage-limits";

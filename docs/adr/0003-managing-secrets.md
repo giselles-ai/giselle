@@ -9,7 +9,7 @@ We need to implement a secure mechanism to manage sensitive information that use
 ## Decision
 We have implemented a Vault system with the following design:
 
-1. The Vault functionality is implemented in `@giselle-sdk/giselle-engine` via the `vault` module.
+1. The Vault functionality is implemented in `@giselles-ai/giselle-engine` via the `vault` module.
 2. It is specified as a configuration option for the GiselleEngine, with no default implementation.
 3. The Vault provides encrypt and decrypt capabilities and supports multiple drivers through a common interface.
 

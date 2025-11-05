@@ -1,3 +1,4 @@
+import { useWorkflowDesignerStore } from "@giselles-ai/giselle/react";
 import {
 	isActionNode,
 	isFileNode,
@@ -8,8 +9,7 @@ import {
 	isTriggerNode,
 	isVectorStoreNode,
 	isWebPageNode,
-} from "@giselle-sdk/data-type";
-import { useWorkflowDesignerStore } from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { useShallow } from "zustand/shallow";
 import { ActionNodePropertiesPanel } from "./action-node-properties-panel";

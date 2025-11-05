@@ -29,12 +29,12 @@ export default function NotFound() {
 
 					<Button
 						onClick={() => {
-							window.location.assign("/apps");
+							window.location.assign("/workspaces");
 						}}
 						variant="subtle"
 						className="w-full"
 					>
-						Go to Apps
+						Go to Workspaces
 					</Button>
 				</div>
 			</div>

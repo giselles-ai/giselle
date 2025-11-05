@@ -71,11 +71,6 @@ const nextConfig: NextConfig = {
 				destination: "/workspaces",
 				permanent: false,
 			},
-			{
-				source: "/apps",
-				destination: "/workspaces",
-				permanent: false,
-			},
 		];
 	},
 	// biome-ignore lint/suspicious/useAwait: Next.js specification

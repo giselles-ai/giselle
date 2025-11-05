@@ -1,9 +1,10 @@
-import type { FlowTriggerId, TriggerNode } from "@giselle-sdk/data-type";
+import { Button } from "@giselle-internal/ui/button";
 import {
 	type GitHubTriggerEventId,
 	githubTriggerIdToLabel,
-} from "@giselle-sdk/flow";
-import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/flow";
+import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
+import type { FlowTriggerId, TriggerNode } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -128,68 +129,54 @@ export function GitHubTriggerConfiguredView({
 
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
-			<div className="flex flex-col">
-				<div className="flex flex-row items-center justify-between">
-					<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">State</p>
-
-					{/* Divider */}
-					<div className="flex-grow mx-[12px] h-[1px] bg-bg-200/30" />
-
-					<div className="relative">
-						{/* Background container */}
-						<div className="w-[150px] h-[28px] bg-[#2A2A36] rounded-full flex items-center overflow-hidden">
-							{/* Sliding highlight */}
-							<div
+			<div className="flex items-center justify-between gap-[12px]">
+				<p className="text-[14px] py-[1.5px] text-inverse">State</p>
+				<div className="relative w-[150px] h-[28px] rounded-full border border-white/20 bg-transparent overflow-hidden">
+					<div
+						className={clsx(
+							"absolute inset-y-0 left-0 w-1/2 rounded-full transition-transform duration-300 ease-in-out",
+							data.trigger.enable
+								? "translate-x-full bg-primary-900"
+								: "translate-x-0 bg-inverse/10",
+						)}
+					/>
+					<div className="absolute inset-0 grid grid-cols-2 z-10">
+						<button
+							type="button"
+							onClick={handleDisableFlowTrigger}
+							disabled={actionInProgress || !data.trigger.enable}
+							className="flex items-center justify-center"
+						>
+							{actionInProgress && !data.trigger.enable && (
+								<Loader2 className="h-3 w-3 animate-spin mr-1" />
+							)}
+							<span
 								className={clsx(
-									"absolute w-[75px] h-[28px] rounded-full transition-transform duration-300 ease-in-out",
-									data.trigger.enable
-										? "translate-x-[75px] bg-primary-900"
-										: "translate-x-0 bg-[#3F3F4A]",
+									"text-[12px] font-medium transition-colors duration-200",
+									!data.trigger.enable ? "text-inverse" : "text-inverse/40",
 								)}
-							/>
-
-							{/* Button labels - always visible, change opacity based on state */}
-							<div className="absolute inset-0 flex">
-								<button
-									type="button"
-									onClick={handleDisableFlowTrigger}
-									disabled={actionInProgress || !data.trigger.enable}
-									className="flex-1 flex items-center justify-center px-0.5 relative"
-								>
-									{actionInProgress && !data.trigger.enable && (
-										<Loader2 className="h-3 w-3 animate-spin absolute left-2" />
-									)}
-									<span
-										className={clsx(
-											"text-[12px] font-medium transition-colors duration-200",
-											!data.trigger.enable ? "text-inverse" : "text-inverse/40",
-										)}
-									>
-										Disabled
-									</span>
-								</button>
-								<button
-									type="button"
-									onClick={handleEnableFlowTrigger}
-									disabled={actionInProgress || data.trigger.enable}
-									className="flex-1 flex items-center justify-center px-0.5 relative"
-								>
-									{actionInProgress && data.trigger.enable && (
-										<Loader2 className="h-3 w-3 animate-spin absolute left-2" />
-									)}
-									<span
-										className={clsx(
-											"text-[12px] font-medium transition-colors duration-200",
-											data.trigger.enable
-												? "text-inverse font-semibold"
-												: "text-inverse/40",
-										)}
-									>
-										Enable
-									</span>
-								</button>
-							</div>
-						</div>
+							>
+								Disabled
+							</span>
+						</button>
+						<button
+							type="button"
+							onClick={handleEnableFlowTrigger}
+							disabled={actionInProgress || data.trigger.enable}
+							className="flex items-center justify-center"
+						>
+							{actionInProgress && data.trigger.enable && (
+								<Loader2 className="h-3 w-3 animate-spin mr-1" />
+							)}
+							<span
+								className={clsx(
+									"text-[12px] font-medium transition-colors duration-200",
+									data.trigger.enable ? "text-inverse" : "text-inverse/40",
+								)}
+							>
+								Enable
+							</span>
+						</button>
 					</div>
 				</div>
 			</div>
@@ -201,9 +188,9 @@ export function GitHubTriggerConfiguredView({
 					</span>
 				</div>
 			)}
-			<div className="space-y-[4px]">
-				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Event Type</p>
-				<div className="px-[4px] py-0 w-full bg-transparent text-[14px] flex items-center">
+			<div className="flex items-center justify-between gap-[12px]">
+				<p className="text-[14px] py-[1.5px] text-inverse">Event Type</p>
+				<div className="px-[4px] py-0 bg-transparent text-[14px] flex items-center">
 					<div className="pr-0 p-2 rounded-lg flex-shrink-0 flex items-center justify-center">
 						{(() => {
 							const IconComponent =
@@ -221,23 +208,24 @@ export function GitHubTriggerConfiguredView({
 			</div>
 
 			<div className="space-y-[4px]">
-				<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Repository</p>
-				<div className="flex justify-between">
-					<div className="px-[4px] pt-[6px]">
-						<GitHubRepositoryBlock
-							owner={data.githubRepositoryFullname.owner}
-							repo={data.githubRepositoryFullname.repo}
-						/>
-					</div>
-					<button
+				<p className="text-[14px] py-[1.5px] text-inverse">Repository</p>
+				<div className="px-[4px] pt-[6px]">
+					<GitHubRepositoryBlock
+						owner={data.githubRepositoryFullname.owner}
+						repo={data.githubRepositoryFullname.repo}
+					/>
+				</div>
+				<div className="flex justify-end">
+					<Button
+						variant="solid"
+						size="large"
 						type="button"
-						className="bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors"
 						onClick={() => {
 							beginReconfigure("repository");
 						}}
 					>
 						Change Repository
-					</button>
+					</Button>
 				</div>
 			</div>
 			{(data.trigger.configuration.event.id ===
@@ -249,36 +237,33 @@ export function GitHubTriggerConfiguredView({
 				data.trigger.configuration.event.id ===
 					"github.discussion_comment.created") && (
 				<div className="space-y-[4px]">
-					<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Call sign</p>
-					<div className="flex justify-between items-start">
-						<div className="flex-1 space-y-[4px]">
-							<div className="px-[4px] py-[9px] w-full bg-transparent text-[14px] flex items-center gap-[8px]">
-								<span>
-									/{data.trigger.configuration.event.conditions.callsign}
-								</span>
-								<ClipboardButton
-									text={`/${data.trigger.configuration.event.conditions.callsign}`}
-									className="text-black-400 hover:text-black-300"
-									sizeClassName="h-[16px] w-[16px]"
-								/>
-							</div>
-							<p className="text-[12px] text-inverse px-[4px]">
-								Use{" "}
-								<span className="text-blue-400 font-medium">
-									/{data.trigger.configuration.event.conditions.callsign}
-								</span>{" "}
-								in GitHub comments to trigger this workflow.
-							</p>
-						</div>
-						<button
+					<p className="text-[14px] py-[1.5px] text-inverse">Call sign</p>
+					<div className="px-[4px] py-[9px] w-full bg-transparent text-[14px] flex items-center gap-[8px]">
+						<span>/{data.trigger.configuration.event.conditions.callsign}</span>
+						<ClipboardButton
+							text={`/${data.trigger.configuration.event.conditions.callsign}`}
+							className="text-black-400 hover:text-black-300"
+							sizeClassName="h-[16px] w-[16px]"
+						/>
+					</div>
+					<p className="text-[12px] text-inverse px-[4px] w-full">
+						Use{" "}
+						<span className="text-blue-400 font-medium">
+							/{data.trigger.configuration.event.conditions.callsign}
+						</span>{" "}
+						in GitHub comments to trigger this workflow.
+					</p>
+					<div className="flex justify-end">
+						<Button
+							variant="solid"
+							size="large"
 							type="button"
-							className="bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors"
 							onClick={() => {
 								beginReconfigure("callsign");
 							}}
 						>
 							Change Callsign
-						</button>
+						</Button>
 					</div>
 				</div>
 			)}
@@ -286,37 +271,38 @@ export function GitHubTriggerConfiguredView({
 				data.trigger.configuration.event.id ===
 					"github.pull_request.labeled") && (
 				<div className="space-y-[4px]">
-					<p className="text-[14px] py-[1.5px] text-[#F7F9FD]">Labels</p>
-					<div className="flex justify-between items-start">
-						<div className="flex-1 space-y-[4px]">
-							<div className="px-[4px] py-[9px] w-full bg-transparent text-[14px]">
-								<div className="flex flex-wrap gap-[4px]">
-									{data.trigger.configuration.event.conditions.labels.map(
-										(label) => (
-											<span
-												key={label}
-												className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-md text-[12px]"
-											>
-												{label}
-											</span>
-										),
-									)}
-								</div>
+					<p className="text-[14px] py-[1.5px] text-inverse">Labels</p>
+					<div className="space-y-[4px]">
+						<div className="px-[4px] py-[9px] w-full bg-transparent text-[14px]">
+							<div className="flex flex-wrap gap-[4px]">
+								{data.trigger.configuration.event.conditions.labels.map(
+									(label) => (
+										<span
+											key={label}
+											className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-md text-[12px]"
+										>
+											{label}
+										</span>
+									),
+								)}
 							</div>
-							<p className="text-[12px] text-inverse px-[4px]">
-								This workflow triggers when any of these labels are added to an
-								issue.
-							</p>
 						</div>
-						<button
+						<p className="text-[12px] text-inverse px-[4px]">
+							This workflow triggers when any of these labels are added to an
+							issue.
+						</p>
+					</div>
+					<div className="flex justify-end">
+						<Button
+							variant="solid"
+							size="large"
 							type="button"
-							className="bg-primary-900 hover:bg-primary-800 text-inverse font-medium px-4 py-2 rounded-md text-[14px] transition-colors"
 							onClick={() => {
 								beginReconfigure("labels");
 							}}
 						>
 							Change Labels
-						</button>
+						</Button>
 					</div>
 				</div>
 			)}

@@ -1,21 +1,21 @@
-import { WorkspaceId } from "@giselle-sdk/data-type";
 import type {
 	CompletedGeneration,
 	FailedGeneration,
 	OutputFileBlob,
 	QueryContext,
 	RunningGeneration,
-} from "@giselle-sdk/giselle";
+} from "@giselles-ai/giselle";
 import {
 	getRequestId,
 	NextGiselleEngine,
-} from "@giselle-sdk/giselle/next-internal";
-import { traceEmbedding, traceGeneration } from "@giselle-sdk/langfuse";
-import type { EmbeddingMetrics } from "@giselle-sdk/rag";
+} from "@giselles-ai/giselle/next-internal";
+import { traceEmbedding, traceGeneration } from "@giselles-ai/langfuse";
+import { WorkspaceId } from "@giselles-ai/protocol";
+import type { EmbeddingMetrics } from "@giselles-ai/rag";
 import {
 	supabaseStorageDriver as experimental_supabaseStorageDriver,
 	supabaseVaultDriver,
-} from "@giselle-sdk/supabase-driver";
+} from "@giselles-ai/supabase-driver";
 import { tasks as jobs } from "@trigger.dev/sdk";
 import type { ModelMessage, ProviderMetadata } from "ai";
 import { waitForLangfuseFlush } from "@/instrumentation.node";
@@ -115,6 +115,7 @@ async function traceGenerationForTeam(args: {
 			subscriptionId: args.team.activeSubscriptionId ?? "",
 			providerMetadata: args.providerMetadata,
 			requestId: args.requestId,
+			workspaceId: args.generation.context.origin.workspaceId,
 		},
 		sessionId: args.sessionId,
 	});

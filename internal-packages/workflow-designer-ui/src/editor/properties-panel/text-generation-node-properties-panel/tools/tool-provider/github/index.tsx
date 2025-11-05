@@ -1,9 +1,10 @@
 import { Button } from "@giselle-internal/ui/button";
+import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { EmptyState } from "@giselle-internal/ui/empty-state";
 import { Input } from "@giselle-internal/ui/input";
 import { Select } from "@giselle-internal/ui/select";
-import type { TextGenerationNode } from "@giselle-sdk/data-type";
-import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
+import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
+import type { TextGenerationNode } from "@giselles-ai/protocol";
 import {
 	CheckIcon,
 	MoveUpRightIcon,
@@ -467,20 +468,8 @@ function GitHubToolConfigurationDialogInternal({
 			description="Select the GitHub tools you want to enable."
 			onSubmit={updateAvailableTools}
 			submitting={false}
-			trigger={
-				<Button
-					type="button"
-					leftIcon={<Settings2Icon data-dialog-trigger-icon />}
-				>
-					Configure
-				</Button>
-			}
-			open={open}
-			onOpenChange={onOpenChange}
-		>
-			<div className="flex flex-col">
-				{/* Inline credentials info */}
-				<div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
+			headerExtra={
+				<div className="flex items-center justify-between mt-[8px]">
 					<div className="flex items-center gap-[8px]">
 						<span className="text-[11px] text-text-muted">Current PAT:</span>
 						<span className="text-[11px] text-text px-[6px] py-[1px] bg-background-variant border border-border rounded-[4px] font-medium">
@@ -489,13 +478,12 @@ function GitHubToolConfigurationDialogInternal({
 								: "Not configured"}
 						</span>
 					</div>
-					<div className="flex gap-[8px]">
+					<div className="flex gap-[12px]">
 						<Button
 							type="button"
 							onClick={onShowUpdateDialog}
 							disabled={!currentSecretId}
-							size="compact"
-							variant="outline"
+							variant="link"
 							leftIcon={<RefreshCwIcon className="size-[12px]" />}
 						>
 							Update
@@ -511,14 +499,26 @@ function GitHubToolConfigurationDialogInternal({
 								});
 								onOpenChange?.(false);
 							}}
+							variant="link"
 							leftIcon={<TrashIcon className="size-[12px]" />}
-							size="compact"
-							variant="outline"
 						>
 							Reset
 						</Button>
 					</div>
 				</div>
+			}
+			trigger={
+				<Button
+					type="button"
+					leftIcon={<Settings2Icon data-dialog-trigger-icon />}
+				>
+					Configure
+				</Button>
+			}
+			open={open}
+			onOpenChange={onOpenChange}
+		>
+			<div className="flex flex-col">
 				<div className="flex flex-col gap-6">
 					{githubToolCatalog.map((category) => (
 						<div key={category.label} className="flex flex-col gap-2">
@@ -529,7 +529,7 @@ function GitHubToolConfigurationDialogInternal({
 								{category.tools.map((tool) => (
 									<label
 										key={tool}
-										className="flex items-center justify-between p-3 hover:bg-bg-800/30 cursor-pointer transition-colors"
+										className="flex items-center justify-between p-3 cursor-pointer"
 										htmlFor={tool}
 									>
 										<div className="flex items-center flex-1">
@@ -550,20 +550,19 @@ function GitHubToolConfigurationDialogInternal({
 												{tool}
 											</p>
 										</div>
-										<a
+										<DocsLink
 											href={`https://docs.giselles.ai/en/glossary/github-tools#${encodeURIComponent(
 												tool.toLowerCase(),
 											)}`}
 											target="_blank"
-											rel="noopener"
+											rel="noopener noreferrer"
 											aria-label={`Open docs for ${tool}`}
-											className="flex items-center gap-[4px] text-[13px] text-text-muted hover:bg-ghost-element-hover transition-colors px-[4px] rounded-[2px] ml-2"
+											className="ml-2"
 											onMouseDown={(e) => e.stopPropagation()}
 											onClick={(e) => e.stopPropagation()}
 										>
-											<span>Docs</span>
-											<MoveUpRightIcon className="size-[13px]" />
-										</a>
+											Docs
+										</DocsLink>
 									</label>
 								))}
 							</div>

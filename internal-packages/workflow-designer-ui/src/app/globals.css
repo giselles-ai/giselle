@@ -39,7 +39,7 @@
 	cursor: default;
 }
 
-/* for @giselle-sdk/text-editor */
+/* for @giselles-ai/text-editor */
 .tiptap p.is-editor-empty:first-child::before {
 	color: var(--color-text-muted);
 	content: attr(data-placeholder);

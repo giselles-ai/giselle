@@ -5,7 +5,9 @@ import { GlassSurfaceLayers } from "./glass-surface";
 export function PopoverContent(props: React.PropsWithChildren) {
 	return (
 		<div
-			className={clsx("relative rounded-[8px] p-[4px] shadow-xl")}
+			className={clsx(
+				"relative rounded-[8px] p-[4px] shadow-xl flex flex-col min-h-0 h-full",
+			)}
 			{...props}
 		>
 			<GlassSurfaceLayers
@@ -14,7 +16,9 @@ export function PopoverContent(props: React.PropsWithChildren) {
 				withTopHighlight={true}
 				withBaseFill={true}
 			/>
-			{props.children}
+			<div className="relative z-10 overflow-y-auto flex-1 min-h-0">
+				{props.children}
+			</div>
 		</div>
 	);
 }

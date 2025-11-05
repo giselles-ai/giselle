@@ -3,7 +3,7 @@
 import { GlassCard } from "@giselle-internal/ui/glass-card";
 import { RepoActionMenu } from "@giselle-internal/ui/repo-action-menu";
 import { useToasts } from "@giselle-internal/ui/toast";
-import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-sdk/data-type";
+import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselles-ai/protocol";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import {
@@ -719,7 +719,7 @@ function DocumentVectorStoreConfigureDialog({
 									Maximum {DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_LABEL} per file.
 								</p>
 								<span className="text-sm font-semibold text-white-400 underline">
-									Select files
+									Select Files
 								</span>
 								{isUploadingDocuments ? (
 									<div className="flex items-center gap-2 text-xs text-black-300">

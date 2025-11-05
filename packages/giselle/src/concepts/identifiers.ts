@@ -1,4 +1,4 @@
-import { createIdGenerator } from "@giselle-sdk/utils";
+import { createIdGenerator } from "@giselles-ai/utils";
 import type { z } from "zod/v4";
 
 // ID generators that are shared between multiple modules
@@ -12,3 +12,6 @@ export type StepId = z.infer<typeof StepId.schema>;
 
 export const GenerationId = createIdGenerator("gnr");
 export type GenerationId = z.infer<typeof GenerationId.schema>;
+
+export const AppId = createIdGenerator("app");
+export type AppId = z.infer<typeof AppId.schema>;

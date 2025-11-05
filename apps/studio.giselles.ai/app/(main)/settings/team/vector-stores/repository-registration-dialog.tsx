@@ -1,18 +1,23 @@
 "use client";
 
+import { Button } from "@giselle-internal/ui/button";
+import {
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@giselle-internal/ui/dialog";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { Toggle } from "@giselle-internal/ui/toggle";
-import * as Dialog from "@radix-ui/react-dialog";
-import { CircleDot, Code, GitPullRequest, Plus } from "lucide-react";
+import { Code, GitPullRequest, Plus, CircleDot, X } from "lucide-react";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { GlassButton } from "@/components/ui/glass-button";
 import type { GitHubRepositoryContentType } from "@/db";
-import {
-	GlassDialogBody,
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "../components/glass-dialog-content";
 import { GITHUB_EMBEDDING_PROFILES } from "./github-embedding-profiles";
 import type { ActionResult, InstallationWithRepos } from "./types";
 
@@ -174,27 +179,40 @@ export function RepositoryRegistrationDialog({
 	);
 
 	return (
-		<Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-			<Dialog.Trigger asChild>
+		<Dialog open={isOpen} onOpenChange={setIsOpen}>
+			<DialogTrigger asChild>
 				<GlassButton className="whitespace-nowrap">
 					<span className="grid size-4 place-items-center rounded-full bg-primary-200 opacity-50">
 						<Plus className="size-3 text-bg" />
 					</span>
 					Register Repository
 				</GlassButton>
-			</Dialog.Trigger>
-			<GlassDialogContent
+			</DialogTrigger>
+			<DialogContent
+				variant="glass"
 				className="max-w-[600px]"
-				borderStyle="solid"
 				onEscapeKeyDown={() => setIsOpen(false)}
 				onPointerDownOutside={() => setIsOpen(false)}
 			>
-				<GlassDialogHeader
-					title="Register GitHub Repository"
-					description="Add a GitHub repository to your Vector Store to use it in GitHub Vector Store Nodes."
-					onClose={() => setIsOpen(false)}
-				/>
-				<GlassDialogBody>
+				<DialogHeader>
+					<div className="flex items-center justify-between">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-white-400">
+							Register GitHub Repository
+						</DialogTitle>
+						<DialogClose
+							onClick={() => setIsOpen(false)}
+							className="rounded-sm text-white-400 opacity-70 hover:opacity-100 focus:outline-none"
+						>
+							<X className="h-5 w-5" />
+							<span className="sr-only">Close</span>
+						</DialogClose>
+					</div>
+					<DialogDescription className="font-geist mt-2 text-[14px] text-black-400">
+						Add a GitHub repository to your Vector Store to use it in GitHub
+						Vector Store Nodes.
+					</DialogDescription>
+				</DialogHeader>
+				<DialogBody className="mt-4">
 					<form
 						id="register-repository-form"
 						onSubmit={handleSubmit}
@@ -382,24 +400,42 @@ export function RepositoryRegistrationDialog({
 							<div className="mt-1 text-sm text-error-900">{error}</div>
 						)}
 					</form>
-				</GlassDialogBody>
-				<GlassDialogFooter
-					onCancel={() => setIsOpen(false)}
-					onConfirm={() => {
-						const form = document.getElementById(
-							"register-repository-form",
-						) as HTMLFormElement | null;
-						if (!form) return;
-						if (typeof form.requestSubmit === "function") {
-							form.requestSubmit();
-						} else {
-							form.submit();
-						}
-					}}
-					confirmLabel="Register"
-					isPending={isPending}
-				/>
-			</GlassDialogContent>
-		</Dialog.Root>
+				</DialogBody>
+				<DialogFooter>
+					<div className="mt-6 flex justify-end gap-x-3">
+						<Button
+							type="button"
+							variant="link"
+							size="large"
+							onClick={() => setIsOpen(false)}
+							disabled={isPending}
+							aria-label="Cancel"
+						>
+							Cancel
+						</Button>
+						<Button
+							type="button"
+							variant="primary"
+							size="large"
+							onClick={() => {
+								const form = document.getElementById(
+									"register-repository-form",
+								) as HTMLFormElement | null;
+								if (!form) return;
+								if (typeof form.requestSubmit === "function") {
+									form.requestSubmit();
+								} else {
+									form.submit();
+								}
+							}}
+							disabled={isPending}
+							aria-label="Register"
+						>
+							{isPending ? "Processing..." : "Register"}
+						</Button>
+					</div>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }

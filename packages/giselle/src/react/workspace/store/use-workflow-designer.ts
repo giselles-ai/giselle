@@ -13,7 +13,7 @@ export function useWorkflowDesigner() {
 }
 
 // Safe workspace selector with optional fallback
-type WorkflowDesignerStore = Omit<AppStore, "workspace"> & {
+export type WorkflowDesignerStore = Omit<AppStore, "workspace"> & {
 	workspace: NonNullable<AppStore["workspace"]>;
 };
 export function useWorkflowDesignerStore<T>(

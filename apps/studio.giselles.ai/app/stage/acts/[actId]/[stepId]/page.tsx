@@ -1,15 +1,15 @@
 import {
-	isImageGenerationNode,
-	isTextGenerationNode,
-} from "@giselle-sdk/data-type";
-import {
 	type ActId,
 	defaultName,
 	type Generation,
 	type Step,
 	type StepId,
-} from "@giselle-sdk/giselle";
+} from "@giselles-ai/giselle";
 import { NodeIcon } from "@giselles-ai/icons/node";
+import {
+	isImageGenerationNode,
+	isTextGenerationNode,
+} from "@giselles-ai/protocol";
 
 import { notFound } from "next/navigation";
 import { giselleEngine } from "@/app/giselle-engine";

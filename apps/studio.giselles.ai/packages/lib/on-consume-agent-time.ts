@@ -1,4 +1,4 @@
-import type { WorkspaceId } from "@giselle-sdk/data-type";
+import type { WorkspaceId } from "@giselles-ai/protocol";
 import { db } from "@/db";
 import { saveAgentActivity } from "@/services/agents/activities";
 

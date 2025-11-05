@@ -98,7 +98,7 @@ export function GlassSurfaceLayers({
 							? undefined
 							: {
 									background:
-										"color-mix(in srgb, var(--color-bg) 50%, transparent)",
+										"color-mix(in srgb, var(--color-background) 50%, transparent)",
 								}
 					}
 				/>

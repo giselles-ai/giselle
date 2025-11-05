@@ -6,13 +6,11 @@ test.describe("Protected paths authentication", () => {
 
 	// List of protected paths that require authentication
 	const protectedPaths = [
-		{ path: "/apps", description: "Applications page" },
-		{ path: "/apps/123", description: "Specific app page" },
+		{ path: "/workspaces", description: "Workspaces page" },
+		{ path: "/workspaces/123", description: "Specific workspace page" },
 		{ path: "/settings", description: "Settings page" },
 		{ path: "/settings/account", description: "Account settings page" },
 		{ path: "/settings/team", description: "Team settings page" },
-		{ path: "/workspaces", description: "Workspaces page" },
-		{ path: "/workspaces/123", description: "Specific workspace page" },
 		{ path: "/stage", description: "Stage page" },
 		{ path: "/stage/123", description: "Specific stage page" },
 		{ path: "/connected", description: "Connected page" },

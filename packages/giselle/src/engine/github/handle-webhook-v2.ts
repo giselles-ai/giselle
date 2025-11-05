@@ -13,7 +13,7 @@ import {
 	updatePullRequestReviewComment,
 	type WebhookEvent,
 	type WebhookEventName,
-} from "@giselle-sdk/github-tool";
+} from "@giselles-ai/github-tool";
 import { createAndStartAct } from "../acts";
 import { getGitHubRepositoryIntegrationIndex } from "../integrations/utils";
 import { getFlowTrigger } from "../triggers/utils";

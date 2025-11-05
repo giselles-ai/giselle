@@ -1,4 +1,4 @@
-import type { Tier } from "@giselle-sdk/language-model";
+import type { Tier } from "@giselles-ai/language-model";
 
 export interface UsageLimits {
 	featureTier: Tier;

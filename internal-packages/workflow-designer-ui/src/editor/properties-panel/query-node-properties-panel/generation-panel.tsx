@@ -1,8 +1,8 @@
-import type { QueryNode } from "@giselle-sdk/data-type";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/giselle/react";
+import type { QueryNode } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { StackBlicksIcon } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";
@@ -10,12 +10,12 @@ import { QueryResultView } from "../../../ui/query-result-view";
 
 function Empty() {
 	return (
-		<div className="bg-inverse/10 min-h-[220px] rounded-[8px] flex justify-center items-center text-black-400">
+		<div className="bg-inverse/10 min-h-[220px] rounded-[8px] flex justify-center items-center text-secondary">
 			<EmptyState
 				icon={<StackBlicksIcon />}
 				title="Nothing generated yet."
 				description="Run a query to see the results."
-				className="text-black-400"
+				className="text-secondary"
 			/>
 		</div>
 	);
@@ -35,7 +35,7 @@ export function GenerationPanel({ node }: { node: QueryNode }) {
 		<div className="flex flex-col bg-inverse/10 rounded-[8px] py-[8px] min-h-[220px]">
 			<div
 				className={clsx(
-					"border-b border-white-400/20 py-[4px] px-[16px] flex items-center gap-[8px]",
+					"border-b border-inverse/20 py-[4px] px-[16px] flex items-center gap-[8px]",
 					"**:data-header-text:font-[700]",
 				)}
 			>

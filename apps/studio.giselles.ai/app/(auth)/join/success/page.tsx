@@ -17,7 +17,7 @@ export default function Page() {
 						</p>
 						<div className="mt-2">
 							<AuthButton asChild className="px-8 py-2 text-lg">
-								<Link href="/apps">Go to team</Link>
+								<Link href="/workspaces">Go to team</Link>
 							</AuthButton>
 						</div>
 					</div>

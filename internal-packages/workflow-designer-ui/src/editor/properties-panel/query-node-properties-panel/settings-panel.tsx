@@ -1,16 +1,16 @@
+import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
 import {
 	DEFAULT_MAX_RESULTS,
 	DEFAULT_SIMILARITY_THRESHOLD,
 	type QueryNode,
-} from "@giselle-sdk/data-type";
-import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/protocol";
 import { Slider } from "../../../ui/slider";
 
 export function SettingsPanel({ node }: { node: QueryNode }) {
 	const { updateNodeDataContent } = useWorkflowDesigner();
 
 	return (
-		<div className="grid grid-cols-1 gap-[16px]">
+		<div className="grid grid-cols-1 gap-[8px]">
 			<Slider
 				label="Max Results"
 				labelClassName="text-[14px]"

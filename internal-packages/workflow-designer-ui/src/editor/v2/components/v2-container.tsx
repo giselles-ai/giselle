@@ -5,7 +5,7 @@ import {
 	isActionNode,
 	type NodeId,
 	OutputId,
-} from "@giselle-sdk/data-type";
+} from "@giselles-ai/protocol";
 import {
 	type Connection,
 	type Edge,
@@ -25,7 +25,7 @@ import {
 	isSupportedConnection,
 	useWorkflowDesignerStore,
 	workspaceActions,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/giselle/react";
 import clsx from "clsx/lite";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -414,6 +414,13 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 	const isVectorStorePanel =
 		isPropertiesPanelOpen &&
 		`${selectedNodes[0]?.content.type}` === "vectorStore";
+	const isWebPagePanel =
+		isPropertiesPanelOpen && `${selectedNodes[0]?.content.type}` === "webPage";
+	const isManualTriggerPanel =
+		isPropertiesPanelOpen &&
+		`${selectedNodes[0]?.content.type}` === "trigger" &&
+		`${(selectedNodes[0] as unknown as { content?: { provider?: string } })?.content?.provider}` ===
+			"manual";
 
 	const mainRef = useRef<HTMLDivElement>(null);
 
@@ -462,7 +469,13 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 						title="Properties Panel"
 						defaultWidth={isTextGenerationPanel ? 400 : undefined}
 						minWidth={isTextGenerationPanel ? 400 : undefined}
-						autoHeight={isFilePanel || isTextPanel || isVectorStorePanel}
+						autoHeight={
+							isFilePanel ||
+							isTextPanel ||
+							isVectorStorePanel ||
+							isWebPagePanel ||
+							isManualTriggerPanel
+						}
 					>
 						<PropertiesPanel />
 					</FloatingPropertiesPanel>

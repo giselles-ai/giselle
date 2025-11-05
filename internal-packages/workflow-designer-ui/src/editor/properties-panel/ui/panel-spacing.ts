@@ -7,7 +7,7 @@ export const PANEL_SPACING = {
 	HEADER: {
 		HEIGHT: "h-[48.5px]",
 		HEIGHT_VALUE: 48.5, // For calculations or style objects
-		PADDING: "pt-2 pr-0 pb-0 pl-0", // 8px 0 0 0
+		PADDING: "p-0", // remove default 8px top padding
 		ICON_SIZE: "28px",
 		ICON_GAP: "gap-[8px]",
 	},

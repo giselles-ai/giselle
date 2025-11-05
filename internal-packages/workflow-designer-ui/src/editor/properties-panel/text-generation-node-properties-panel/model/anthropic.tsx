@@ -1,10 +1,10 @@
-import { AnthropicLanguageModelData } from "@giselle-sdk/data-type";
-import { useUsageLimits } from "@giselle-sdk/giselle/react";
+import { useUsageLimits } from "@giselles-ai/giselle/react";
 import {
 	anthropicLanguageModels,
 	Capability,
 	hasCapability,
-} from "@giselle-sdk/language-model";
+} from "@giselles-ai/language-model";
+import { AnthropicLanguageModelData } from "@giselles-ai/protocol";
 import { useMemo } from "react";
 import { Switch } from "../../../../ui/switch";
 import { TemperatureSlider, TopPSlider } from "./shared-model-controls";

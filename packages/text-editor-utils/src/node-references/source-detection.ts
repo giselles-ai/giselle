@@ -1,4 +1,4 @@
-import type { NodeId, OutputId } from "@giselle-sdk/data-type";
+import type { NodeId, OutputId } from "@giselles-ai/protocol";
 import type { JSONContent } from "@tiptap/core";
 
 export interface SourceReference {

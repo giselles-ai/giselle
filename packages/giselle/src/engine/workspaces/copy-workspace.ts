@@ -5,7 +5,7 @@ import {
 	type TriggerNode,
 	Workspace,
 	type WorkspaceId,
-} from "@giselle-sdk/data-type";
+} from "@giselles-ai/protocol";
 import { getFlowTrigger, setFlowTrigger } from "../triggers/utils";
 import type { GiselleEngineContext } from "../types";
 import { copyFiles, getWorkspace, setWorkspace } from "./utils";

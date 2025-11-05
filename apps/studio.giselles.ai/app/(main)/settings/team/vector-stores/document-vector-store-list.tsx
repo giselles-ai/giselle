@@ -27,7 +27,7 @@ export function DocumentVectorStoreList({
 			<Card className="rounded-[8px] bg-transparent p-6 border-0">
 				<SectionHeader
 					title="Document Vector Stores"
-					description="Manage the vector stores configured for document ingestion."
+					description="Manage data that can be ingested by Document Vector Store Nodes."
 					className="mb-4"
 				/>
 
@@ -55,7 +55,7 @@ function EmptyDocumentVectorStoreCard() {
 		<div className="text-center py-16 bg-surface rounded-lg">
 			<EmptyState
 				title="No document vector stores yet."
-				description='Use the "New Vector Store" button to create one.'
+				description='Please create a vector store using the "New Vector Store" button.'
 			/>
 		</div>
 	);

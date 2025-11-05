@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-sdk/supabase-driver",
+	"name": "@giselles-ai/supabase-driver",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -22,8 +22,8 @@
 		}
 	},
 	"devDependencies": {
-		"@giselle-sdk/giselle": "workspace:^",
-		"@giselle/giselle-sdk-tsconfig": "workspace:^",
+		"@giselles-ai/giselle": "workspace:^",
+		"@giselles-ai/tsconfig": "workspace:^",
 		"tsup": "catalog:"
 	},
 	"dependencies": {

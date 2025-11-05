@@ -1,8 +1,18 @@
 "use client";
 
+import { Button } from "@giselle-internal/ui/button";
+import {
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@giselle-internal/ui/dialog";
 import { Toggle } from "@giselle-internal/ui/toggle";
-import * as Dialog from "@radix-ui/react-dialog";
-import { CircleDot, Code, GitPullRequest } from "lucide-react";
+import { Code, GitPullRequest, CircleDot, X } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import type {
 	GitHubRepositoryContentType,
@@ -10,12 +20,6 @@ import type {
 } from "@/db";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
-import {
-	GlassDialogBody,
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "../components/glass-dialog-content";
 import { GITHUB_EMBEDDING_PROFILES } from "./github-embedding-profiles";
 
 type ConfigureSourcesDialogProps = {
@@ -97,19 +101,31 @@ export function ConfigureSourcesDialog({
 	};
 
 	return (
-		<Dialog.Root open={open} onOpenChange={setOpen}>
-			<GlassDialogContent
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogContent
+				variant="glass"
 				className="max-w-[600px]"
-				borderStyle="solid"
 				onEscapeKeyDown={() => setOpen(false)}
 				onPointerDownOutside={() => setOpen(false)}
 			>
-				<GlassDialogHeader
-					title="Configure Vector Stores"
-					description="Configure sources and embedding models for this repository"
-					onClose={() => setOpen(false)}
-				/>
-				<GlassDialogBody>
+				<DialogHeader>
+					<div className="flex items-center justify-between">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-white-400">
+							Configure Vector Stores
+						</DialogTitle>
+						<DialogClose
+							onClick={() => setOpen(false)}
+							className="rounded-sm text-white-400 opacity-70 hover:opacity-100 focus:outline-none"
+						>
+							<X className="h-5 w-5" />
+							<span className="sr-only">Close</span>
+						</DialogClose>
+					</div>
+					<DialogDescription className="font-geist mt-2 text-[14px] text-black-400">
+						Configure sources and embedding models for this repository
+					</DialogDescription>
+				</DialogHeader>
+				<DialogBody className="mt-4">
 					<div className="space-y-6">
 						{/* Repository Section */}
 						<div>
@@ -226,15 +242,33 @@ export function ConfigureSourcesDialog({
 					</div>
 
 					{error && <div className="mt-4 text-sm text-error-500">{error}</div>}
-				</GlassDialogBody>
-				<GlassDialogFooter
-					onCancel={() => setOpen(false)}
-					onConfirm={handleSave}
-					confirmLabel="Save Changes"
-					isPending={isPending}
-				/>
-			</GlassDialogContent>
-		</Dialog.Root>
+				</DialogBody>
+				<DialogFooter>
+					<div className="mt-6 flex justify-end gap-x-3">
+						<Button
+							type="button"
+							variant="link"
+							size="large"
+							onClick={() => setOpen(false)}
+							disabled={isPending}
+							aria-label="Cancel"
+						>
+							Cancel
+						</Button>
+						<Button
+							type="button"
+							variant="primary"
+							size="large"
+							onClick={handleSave}
+							disabled={isPending}
+							aria-label="Save Changes"
+						>
+							{isPending ? "Processing..." : "Save Changes"}
+						</Button>
+					</div>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }
 

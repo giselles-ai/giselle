@@ -1,4 +1,4 @@
-# @giselle-sdk/rag
+# @giselles-ai/rag
 
 A RAG (Retrieval-Augmented Generation) system built with TypeScript, PostgreSQL,
 and pgvector.
@@ -35,7 +35,7 @@ This package is intended for internal use within the Giselle monorepo.
 Search through vector embeddings with type-safe metadata filtering.
 
 ```typescript
-import { createPostgresQueryService } from "@giselle-sdk/rag";
+import { createPostgresQueryService } from "@giselles-ai/rag";
 import { z } from "zod/v4";
 
 // Define your metadata schema
@@ -86,7 +86,7 @@ import {
   createChunkStore,
   createPipeline,
   type Document,
-} from "@giselle-sdk/rag";
+} from "@giselles-ai/rag";
 import { z } from "zod/v4";
 
 // Define schemas
@@ -216,7 +216,7 @@ The library now supports multiple embedding providers:
 #### Google Gemini Embeddings
 
 ```typescript
-import { createGoogleEmbedder } from "@giselle-sdk/rag";
+import { createGoogleEmbedder } from "@giselles-ai/rag";
 
 const embedder = createGoogleEmbedder({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,

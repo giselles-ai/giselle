@@ -8672,13 +8672,13 @@ index c30cd0971..f7387a494 100644
 -	type GitHubBlobMetadata,
 -	type GithubRepositoryParams,
 -	octokit,
--} from "@giselle-sdk/github-tool";
+-} from "@giselles-ai/github-tool";
 -import {
 -	type BaseEmbedding,
 -	type EmbeddingStore,
 -	ingest,
--} from "@giselle-sdk/rag";
-+import { fetchDefaultBranchHead } from "@giselle-sdk/github-tool";
+-} from "@giselles-ai/rag";
++import { fetchDefaultBranchHead } from "@giselles-ai/github-tool";
  import { captureException } from "@sentry/nextjs";
 ...
 diff --git a/packages/rag2/src/chunker/line-chunker.ts b/packages/rag2/src/chunker/line-chunker.ts

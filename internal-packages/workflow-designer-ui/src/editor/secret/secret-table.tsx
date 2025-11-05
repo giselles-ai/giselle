@@ -16,12 +16,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@giselle-internal/ui/table";
-
-import { isTextGenerationNode, type SecretId } from "@giselle-sdk/data-type";
 import {
 	useGiselleEngine,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/giselle/react";
+import { isTextGenerationNode, type SecretId } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import { useCallback, useState, useTransition } from "react";

@@ -1,5 +1,0 @@
-{
-	"extends": "@giselle/giselle-sdk-tsconfig/react-library.json",
-	"include": ["."],
-	"exclude": ["node_modules"]
-}

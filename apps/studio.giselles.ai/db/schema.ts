@@ -1,17 +1,17 @@
+import type { ActId, AppId } from "@giselles-ai/giselle";
+import type {
+	GitHubIssueDocumentKey,
+	GitHubIssueState,
+	GitHubIssueStateReason,
+	GitHubRepositoryIssueContentType,
+} from "@giselles-ai/github-tool";
 import type {
 	EmbeddingDimensions,
 	EmbeddingProfileId,
 	FlowTriggerId,
 	NodeId,
 	WorkspaceId,
-} from "@giselle-sdk/data-type";
-import type { ActId } from "@giselle-sdk/giselle";
-import type {
-	GitHubIssueDocumentKey,
-	GitHubIssueState,
-	GitHubIssueStateReason,
-	GitHubRepositoryIssueContentType,
-} from "@giselle-sdk/github-tool";
+} from "@giselles-ai/protocol";
 import type {
 	DocumentVectorStoreId,
 	DocumentVectorStoreSourceId,
@@ -69,6 +69,12 @@ export const subscriptions = pgTable("subscriptions", {
 	trialStart: timestamp("trial_start"),
 	trialEnd: timestamp("trial_end"),
 });
+export const subscriptionRelations = relations(subscriptions, ({ one }) => ({
+	team: one(teams, {
+		fields: [subscriptions.teamDbId],
+		references: [teams.dbId],
+	}),
+}));
 
 export type TeamType = "customer" | "internal";
 export const teams = pgTable("teams", {
@@ -83,6 +89,11 @@ export const teams = pgTable("teams", {
 		.$onUpdate(() => new Date()),
 	type: text("type").$type<TeamType>().notNull().default("customer"),
 });
+
+export const teamRelations = relations(teams, ({ many }) => ({
+	subscriptions: many(subscriptions),
+	apps: many(apps),
+}));
 
 export type UserId = `usr_${string}`;
 export const users = pgTable("users", {
@@ -117,6 +128,15 @@ export const teamMemberships = pgTable(
 	(teamMembership) => [
 		unique().on(teamMembership.userDbId, teamMembership.teamDbId),
 	],
+);
+export const teamMembershipRelations = relations(
+	teamMemberships,
+	({ one }) => ({
+		team: one(teams, {
+			fields: [teamMemberships.teamDbId],
+			references: [teams.dbId],
+		}),
+	}),
 );
 
 /** @deprecated The agents table does not align with the application domain, so we are migrating to the workspaces table. We are keeping it for gradual migration due to the large scope of impact. */
@@ -705,7 +725,7 @@ export const githubRepositoryIssueEmbeddings = pgTable(
 		contentId: text("content_id").notNull(),
 		documentKey: text("document_key").$type<GitHubIssueDocumentKey>().notNull(),
 		contentCreatedAt: timestamp("content_created_at").notNull(),
-		contentEditedAt: timestamp("content_edited_at"),
+		contentEditedAt: timestamp("content_edited_at").notNull(),
 		embedding: vectorWithoutDimensions("embedding").notNull(),
 		chunkContent: text("chunk_content").notNull(),
 		chunkIndex: integer("chunk_index").notNull(),
@@ -803,6 +823,11 @@ export const actRelations = relations(acts, ({ one }) => ({
 export const apps = pgTable(
 	"apps",
 	{
+		id: text("id").$type<AppId>().notNull().unique(),
+		appEntryNodeId: text("app_entry_node_id")
+			.$type<NodeId>()
+			.notNull()
+			.unique(),
 		dbId: serial("db_id").primaryKey(),
 		teamDbId: integer("team_db_id")
 			.notNull()
@@ -810,15 +835,22 @@ export const apps = pgTable(
 		workspaceDbId: integer("workspace_db_id")
 			.notNull()
 			.references(() => workspaces.dbId, { onDelete: "cascade" }),
-		appEntryNodeId: text("app_entry_node_id").$type<NodeId>().notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at")
 			.defaultNow()
 			.notNull()
 			.$onUpdate(() => new Date()),
 	},
-	(table) => [
-		uniqueIndex().on(table.appEntryNodeId),
-		index().on(table.teamDbId),
-	],
+	(table) => [index().on(table.teamDbId)],
 );
+
+export const appRelations = relations(apps, ({ one }) => ({
+	team: one(teams, {
+		fields: [apps.teamDbId],
+		references: [teams.dbId],
+	}),
+	workspace: one(workspaces, {
+		fields: [apps.workspaceDbId],
+		references: [workspaces.dbId],
+	}),
+}));
