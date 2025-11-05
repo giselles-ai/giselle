@@ -388,7 +388,7 @@ export function ShowcaseClient({
 															? `/workspaces/${app.workspaceId}`
 															: "/playground"
 													}
-													className="rounded-lg px-3 py-1.5 text-text transition-all duration-200 active:scale-[0.98] text-sm"
+												className="rounded-lg px-3 py-1.5 text-[var(--color-text)] transition-all duration-200 active:scale-[0.98] text-sm"
 													style={{
 														background:
 															"linear-gradient(180deg, #202530 0%, #12151f 100%)",
@@ -443,14 +443,14 @@ export function ShowcaseClient({
 										onPointerDownOutside={() => setIsPlaylistDialogOpen(false)}
 									>
 										<DialogHeader>
-											<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+										<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-[var(--color-text-inverse)]">
 												New Playlist Details
 											</DialogTitle>
 											<DialogDescription className="text-text-muted">
 												Create a new playlist with title, description and
 												thumbnail.
 											</DialogDescription>
-											<DialogClose className="text-inverse" />
+										<DialogClose className="text-[var(--color-text-inverse)]" />
 										</DialogHeader>
 										<DialogBody>
 											<div className="grid gap-4">

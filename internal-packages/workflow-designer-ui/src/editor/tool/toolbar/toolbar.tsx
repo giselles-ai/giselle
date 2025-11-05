@@ -206,10 +206,10 @@ export function Toolbar() {
 				<ToggleGroup.Root
 					type="single"
 					className={clsx(
-						"flex items-center px-[4px] z-10 h-full gap-[12px] text-inverse",
+						"flex items-center px-[4px] z-10 h-full gap-[12px] text-[var(--color-text-inverse)]",
 						"**:data-tool:hover:bg-bg-850/10 **:data-tool:p-[4px] **:data-tool:rounded-[4px]",
 						"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
-						"**:data-icon:w-[24px] **:data-icon:h-[24px] **:data-icon:text-inverse ",
+						"**:data-icon:w-[24px] **:data-icon:h-[24px] **:data-icon:text-[var(--color-text-inverse)] ",
 					)}
 					value={selectedTool?.action}
 					onValueChange={(value) => {
@@ -251,8 +251,8 @@ export function Toolbar() {
 								<Popover.Portal>
 									<Popover.Content
 										className={clsx(
-											"relative rounded-[8px] px-[8px] py-[8px] min-w-[200px]",
-											"text-inverse overflow-hidden",
+												"relative rounded-[8px] px-[8px] py-[8px] min-w-[200px]",
+												"text-[var(--color-text-inverse)] overflow-hidden",
 										)}
 										sideOffset={42}
 									>
@@ -345,8 +345,8 @@ export function Toolbar() {
 								<Popover.Portal>
 									<Popover.Content
 										className={clsx(
-											"relative rounded-[8px] px-[8px] py-[8px]",
-											"text-inverse overflow-hidden",
+												"relative rounded-[8px] px-[8px] py-[8px]",
+												"text-[var(--color-text-inverse)] overflow-hidden",
 										)}
 										sideOffset={42}
 									>
@@ -456,8 +456,8 @@ export function Toolbar() {
 								<Popover.Portal>
 									<Popover.Content
 										className={clsx(
-											"relative rounded-[8px] px-[8px] py-[8px] w-[var(--language-model-toggle-group-popover-width)]",
-											"text-inverse overflow-hidden",
+												"relative rounded-[8px] px-[8px] py-[8px] w-[var(--language-model-toggle-group-popover-width)]",
+												"text-[var(--color-text-inverse)] overflow-hidden",
 										)}
 										align="end"
 										sideOffset={42}
@@ -502,7 +502,7 @@ export function Toolbar() {
 												<input
 													type="text"
 													placeholder="Search LLM Model..."
-													className="w-full bg-transparent border-none text-inverse text-[12px] placeholder:text-[var(--color-link-muted)] focus:outline-none"
+												className="w-full bg-transparent border-none text-[var(--color-text-inverse)] text-[12px] placeholder:text-[var(--color-link-muted)] focus:outline-none"
 													value={searchQuery}
 													onChange={(e) => setSearchQuery(e.target.value)}
 												/>
@@ -513,33 +513,33 @@ export function Toolbar() {
 												<div className="flex items-center rounded-md gap-2">
 													<button
 														type="button"
-														className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
+											className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
 															selectedCategory === "All"
 														? "bg-[var(--color-text-secondary)]"
 																: "hover:bg-ghost-element-hover"
-														} text-inverse rounded text-[12px] font-medium leading-[170%]`}
+											} text-[var(--color-text-inverse)] rounded text-[12px] font-medium leading-[170%]`}
 														onClick={() => setSelectedCategory("All")}
 													>
 														All
 													</button>
 													<button
 														type="button"
-														className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
+											className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
 															selectedCategory === "Text"
 														? "bg-[var(--color-text-secondary)]"
 																: "hover:bg-ghost-element-hover"
-														} text-inverse rounded text-[12px] font-medium leading-[170%]`}
+											} text-[var(--color-text-inverse)] rounded text-[12px] font-medium leading-[170%]`}
 														onClick={() => setSelectedCategory("Text")}
 													>
 														Text
 													</button>
 													<button
 														type="button"
-														className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
+											className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
 															selectedCategory === "Image"
 														? "bg-[var(--color-text-secondary)]"
 																: "hover:bg-ghost-element-hover"
-														} text-inverse rounded text-[12px] font-medium leading-[170%]`}
+											} text-[var(--color-text-inverse)] rounded text-[12px] font-medium leading-[170%]`}
 														onClick={() => setSelectedCategory("Image")}
 													>
 														Image
@@ -601,7 +601,7 @@ export function Toolbar() {
 										<Popover.Anchor />
 										<Popover.Portal>
 											<Popover.Content
-												className="relative overflow-hidden w-[var(--language-model-detail-panel-width)] rounded-[8px] px-[8px] py-[8px] text-inverse"
+										className="relative overflow-hidden w-[var(--language-model-detail-panel-width)] rounded-[8px] px-[8px] py-[8px] text-[var(--color-text-inverse)]"
 												sideOffset={42}
 												onOpenAutoFocus={(e) => {
 													e.preventDefault();

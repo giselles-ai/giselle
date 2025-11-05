@@ -187,18 +187,18 @@ export function RepositoryRegistrationDialog({
 			>
 				<DialogHeader>
 					<div className="flex items-center justify-between">
-						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-[var(--color-text-inverse)]">
 							Register GitHub Repository
 						</DialogTitle>
 						<DialogClose
 							onClick={() => setIsOpen(false)}
-							className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none"
+								className="rounded-sm text-[var(--color-text-inverse)] opacity-70 hover:opacity-100 focus:outline-none"
 						>
 							<X className="h-5 w-5" />
 							<span className="sr-only">Close</span>
 						</DialogClose>
 					</div>
-					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
+						<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
 						Add a GitHub repository to your Vector Store to use it in GitHub
 						Vector Store Nodes.
 					</DialogDescription>
@@ -213,7 +213,7 @@ export function RepositoryRegistrationDialog({
 						<div className="flex flex-col gap-y-2">
 							<label
 								htmlFor="owner"
-								className="text-text text-[14px] leading-[16.8px] font-sans"
+								className="text-[var(--color-text)] text-[14px] leading-[16.8px] font-sans"
 							>
 								Owner / Organization
 							</label>
@@ -233,7 +233,7 @@ export function RepositoryRegistrationDialog({
 						<div className="flex flex-col gap-y-2">
 							<label
 								htmlFor="repository"
-								className="text-text text-[14px] leading-[16.8px] font-sans"
+								className="text-[var(--color-text)] text-[14px] leading-[16.8px] font-sans"
 							>
 								Repository Name
 							</label>
@@ -258,7 +258,7 @@ export function RepositoryRegistrationDialog({
 
 						{/* Sources to Ingest Section */}
 						<div className="flex flex-col gap-y-2">
-							<div className="text-text text-[14px] leading-[16.8px] font-sans">
+							<div className="text-[var(--color-text)] text-[14px] leading-[16.8px] font-sans">
 								Sources to Ingest
 							</div>
 
@@ -350,10 +350,10 @@ export function RepositoryRegistrationDialog({
 									className="mt-1 w-4 h-4 text-[#1663F3] bg-surface border-[var(--color-border)] rounded focus:ring-[#1663F3]/20"
 													/>
 													<div className="flex-1">
-														<div className="text-text text-[14px] font-medium">
+													<div className="text-[var(--color-text)] text-[14px] font-medium">
 															{profile.name}
 														</div>
-														<div className="text-text-muted text-[12px] mt-1">
+													<div className="text-text-muted text-[12px] mt-1">
 															Provider: {profile.provider} • Dimensions{" "}
 															{profile.dimensions}
 														</div>
