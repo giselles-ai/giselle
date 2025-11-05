@@ -40,7 +40,7 @@ export function FormInputRenderer({
 										: undefined
 								}
 								className={clsx(
-									"w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border",
+									"w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none border",
 									validationErrors[input.name]
 										? "border-error"
 										: "border-border",
@@ -63,7 +63,7 @@ export function FormInputRenderer({
 										: undefined
 								}
 								className={clsx(
-									"w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
+									"w-full rounded-[8px] py-[8px] px-[12px] outline-none",
 									"border-[1px]",
 									validationErrors[input.name]
 										? "border-error"

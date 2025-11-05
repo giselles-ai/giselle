@@ -34,11 +34,11 @@ export function InstallGitHubApplication({
 		<div className="bg-bg-900/10 h-full rounded-[8px] flex items-center justify-center">
 			<div className="flex flex-col items-center text-center gap-[16px]">
 				<div className="flex flex-col items-center gap-[8px]">
-					<SourceLinkIcon className="fill-black-300 size-[24px]" />
-					<p className="font-[800] text-black-300 text-[16px]">
+					<SourceLinkIcon className="fill-text/60 size-[24px]" />
+					<p className="font-[800] text-text/60 text-[16px]">
 						Install GitHub Application
 					</p>
-					<p className="text-black-400 text-[12px] text-center leading-5">
+					<p className="text-text-muted text-[12px] text-center leading-5">
 						Install the GitHub application for the accounts you wish to import
 						from to continue
 					</p>

@@ -59,13 +59,13 @@ export default function UserTeams({
 						border: "0.5px solid rgba(255,255,255,0.05)",
 					}}
 				>
-					<Search className="size-6 text-black-400" />
+					<Search className="size-6 text-text-muted" />
 					<input
 						onChange={handleChangeTeamName}
 						type="text"
 						value={teamName}
 						placeholder="Search for a team..."
-						className="w-full text-inverse font-medium text-[14px] leading-[23.8px] font-geist placeholder:text-black-400 bg-transparent outline-none"
+						className="w-full text-inverse font-medium text-[14px] leading-[23.8px] font-geist placeholder:text-link-muted bg-transparent outline-none"
 					/>
 				</div>
 				<div>
@@ -140,12 +140,12 @@ function UserTeamsItem({
 				/>
 				<div className="flex flex-col">
 					<div className="flex items-center gap-2">
-						<div className="text-white-400 font-medium text-[16px] leading-[22.4px] font-geist">
+						<div className="text-inverse font-medium text-[16px] leading-[22.4px] font-geist">
 							{teamName}
 						</div>
 						{isPro ? <ProTag /> : <FreeTag />}
 					</div>
-					<div className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
+					<div className="text-text-muted font-medium text-[12px] leading-[20.4px] font-geist">
 						{role}
 					</div>
 				</div>
@@ -157,7 +157,7 @@ function UserTeamsItem({
 						className="flex items-center justify-center p-2 rounded-[4px] hover:bg-white/5 focus:outline-none"
 						aria-label="Team menu"
 					>
-						<MoreHorizontal className="size-5 text-black-600" />
+						<MoreHorizontal className="size-5 text-text/60" />
 					</button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent
@@ -172,7 +172,7 @@ function UserTeamsItem({
 							renderButton={(isPending) => (
 								<button
 									type="submit"
-									className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-white-400 rounded-md"
+									className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-inverse rounded-md"
 									disabled={isPending}
 								>
 									Apps
@@ -189,7 +189,7 @@ function UserTeamsItem({
 							renderButton={(isPending) => (
 								<button
 									type="submit"
-									className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-white-400 rounded-md"
+									className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-inverse rounded-md"
 									disabled={isPending}
 								>
 									Settings

@@ -48,7 +48,6 @@
 	"dependencies": {
 		"@giselles-ai/protocol": "workspace:^",
 		"@giselles-ai/text-editor": "workspace:^",
-		"@radix-ui/react-dialog": "1.1.4",
 		"clsx": "catalog:",
 		"lucide-react": "catalog:",
 		"radix-ui": "catalog:",

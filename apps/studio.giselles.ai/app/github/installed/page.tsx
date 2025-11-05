@@ -22,7 +22,7 @@ export default function () {
 		};
 	}, []);
 	return (
-		<div className="h-screen flex items-center justify-center text-white-900 flex-col">
+		<div className="h-screen flex items-center justify-center text-inverse flex-col">
 			<p className="text-[24px] mb-[24px]">GitHub Installation Completed</p>
 			<p className="text-[14px]">This window will close automatically.</p>
 		</div>

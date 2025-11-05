@@ -17,9 +17,9 @@ export function EmptyState({
 	return (
 		<div className={clsx("flex flex-col items-center gap-[8px]", className)}>
 			{icon}
-			<p className="font-[800] text-black-300">{title}</p>
+			<p className="font-[800] text-text/60">{title}</p>
 			{description && (
-				<p className="text-black-400 text-[12px] text-center leading-5">
+				<p className="text-text-muted text-[12px] text-center leading-5">
 					{description}
 				</p>
 			)}

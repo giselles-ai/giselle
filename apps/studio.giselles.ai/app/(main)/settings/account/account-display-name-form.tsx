@@ -22,10 +22,10 @@ export function AccountDisplayNameForm({
 		<Card title="" className="gap-y-2">
 			<div className="flex flex-col gap-2">
 				<div className="flex flex-col gap-2">
-					<span className="text-white-400 font-medium text-[16px] leading-[19.2px] font-sans">
+					<span className="text-inverse font-medium text-[16px] leading-[19.2px] font-sans">
 						Display Name
 					</span>
-					<p className="text-black-400 text-[14px] leading-[20.4px] font-geist">
+					<p className="text-text-muted text-[14px] leading-[20.4px] font-geist">
 						Please provide your preferred name or display name that you're
 						comfortable using.
 					</p>
@@ -60,7 +60,7 @@ export function AccountDisplayNameForm({
 
 					<Button
 						onClick={() => setIsEditModalOpen(true)}
-						className="rounded-lg px-4 py-2 text-white/80 transition-all duration-200 active:scale-[0.98]"
+						className="rounded-lg px-4 py-2 text-inverse/80 transition-all duration-200 active:scale-[0.98]"
 						style={{
 							background: "linear-gradient(180deg, #202530 0%, #12151f 100%)",
 							border: "1px solid rgba(0,0,0,0.7)",

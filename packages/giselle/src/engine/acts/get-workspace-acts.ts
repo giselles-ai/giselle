@@ -1,5 +1,5 @@
 import type { WorkspaceId } from "@giselles-ai/protocol";
-import { Act, ActIndexObject } from "../../concepts/act";
+import { Act, ActIndexObject } from "@giselles-ai/protocol";
 import type { GiselleEngineContext } from "../types";
 import { getWorkspaceIndex } from "../utils/workspace-index";
 import { actPath, workspaceActPath } from "./object/paths";

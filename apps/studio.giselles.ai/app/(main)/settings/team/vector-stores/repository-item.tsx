@@ -1,6 +1,16 @@
 "use client";
 
 import { AccentLink } from "@giselle-internal/ui/accent-link";
+import {
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@giselle-internal/ui/dialog";
 import { GlassCard } from "@giselle-internal/ui/glass-card";
 import {
 	type RepoAction,
@@ -9,8 +19,7 @@ import {
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import { StatusIndicator } from "@giselle-internal/ui/status-indicator";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
-import * as Dialog from "@radix-ui/react-dialog";
-import { RefreshCw, Settings, Trash } from "lucide-react";
+import { RefreshCw, Settings, Trash, X } from "lucide-react";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import type {
 	GitHubRepositoryContentType,
@@ -19,11 +28,7 @@ import type {
 import { cn } from "@/lib/utils";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
-import {
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "../components/glass-dialog-content";
+import { Button } from "../../components/button";
 import { ConfigureSourcesDialog } from "./configure-sources-dialog";
 import { DiagnosticModal } from "./diagnostic-modal";
 import { getErrorMessage } from "./error-messages";
@@ -175,23 +180,43 @@ export function RepositoryItem({
 					);
 				})}
 			</div>
-			<Dialog.Root open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-				<GlassDialogContent variant="destructive">
-					<GlassDialogHeader
-						title="Delete Repository"
-						description={`This action cannot be undone. This will permanently delete the repository "${repositoryIndex.owner}/${repositoryIndex.repo}" from your Vector Stores.`}
-						onClose={() => setShowDeleteDialog(false)}
-						variant="destructive"
-					/>
-					<GlassDialogFooter
-						onCancel={() => setShowDeleteDialog(false)}
-						onConfirm={handleDelete}
-						confirmLabel="Delete"
-						isPending={isPending}
-						variant="destructive"
-					/>
-				</GlassDialogContent>
-			</Dialog.Root>
+			<Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+				<DialogContent variant="destructive">
+					<DialogHeader>
+						<div className="flex items-center justify-between">
+							<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-error-900">
+								Delete Repository
+							</DialogTitle>
+							<DialogClose className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none">
+								<X className="h-5 w-5" />
+								<span className="sr-only">Close</span>
+							</DialogClose>
+						</div>
+						<DialogDescription className="font-geist mt-2 text-[14px] text-error-900/50">
+							{`This action cannot be undone. This will permanently delete the repository "${repositoryIndex.owner}/${repositoryIndex.repo}" from your Vector Stores.`}
+						</DialogDescription>
+					</DialogHeader>
+					<DialogBody />
+					<DialogFooter>
+						<div className="mt-6 flex justify-end gap-x-3">
+							<Button
+								variant="link"
+								onClick={() => setShowDeleteDialog(false)}
+								disabled={isPending}
+							>
+								Cancel
+							</Button>
+							<Button
+								variant="destructive"
+								onClick={handleDelete}
+								disabled={isPending}
+							>
+								{isPending ? "Processing..." : "Delete"}
+							</Button>
+						</div>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 
 			<ConfigureSourcesDialog
 				open={showConfigureDialog}
@@ -254,7 +279,7 @@ function EmbeddingModelCard({
 		>
 			{/* Model Header */}
 			<div className="mb-3">
-				<div className="text-xs text-white/80 font-medium mb-2">
+				<div className="text-xs text-inverse/80 font-medium mb-2">
 					{profile?.name || `Profile ${profileId}`}
 				</div>
 			</div>
@@ -287,7 +312,7 @@ function EmbeddingModelCard({
 												className={`text-[12px] leading-[14px] font-medium font-geist flex-1 text-center ml-1.5 ${
 													blobStatus.status === "failed"
 														? "text-error-900"
-														: "text-black-400"
+														: "text-text-muted"
 												}`}
 											>
 												{isIngesting && blobStatus.enabled
@@ -380,7 +405,7 @@ function EmbeddingModelCard({
 												className={`text-[12px] leading-[14px] font-medium font-geist flex-1 text-center ml-1.5 ${
 													pullRequestStatus.status === "failed"
 														? "text-error-900"
-														: "text-black-400"
+														: "text-text-muted"
 												}`}
 											>
 												{isIngesting && pullRequestStatus.enabled

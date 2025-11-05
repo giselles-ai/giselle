@@ -1,9 +1,19 @@
 "use client";
 
+import {
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@giselle-internal/ui/dialog";
 import { FormField } from "@giselle-internal/ui/form-field";
 import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselles-ai/protocol";
-import * as Dialog from "@radix-ui/react-dialog";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import {
 	useCallback,
 	useEffect,
@@ -12,12 +22,7 @@ import {
 	useTransition,
 } from "react";
 import { GlassButton } from "@/components/ui/glass-button";
-import {
-	GlassDialogBody,
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "../components/glass-dialog-content";
+import { Button } from "../../components/button";
 import { DOCUMENT_EMBEDDING_PROFILES } from "./document-embedding-profiles";
 import type { ActionResult } from "./types";
 
@@ -98,24 +103,33 @@ export function DocumentVectorStoreCreateDialog({
 	}, [createAction, name, selectedProfiles, defaultProfileIds]);
 
 	return (
-		<Dialog.Root open={open} onOpenChange={setOpen}>
-			<Dialog.Trigger asChild>
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogTrigger asChild>
 				<GlassButton className="whitespace-nowrap">
 					<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
-						<Plus className="size-3 text-black-900" />
+						<Plus className="size-3 text-bg" />
 					</span>
 					New Vector Store
 				</GlassButton>
-			</Dialog.Trigger>
+			</DialogTrigger>
 
-			<GlassDialogContent>
-				<GlassDialogHeader
-					title="Create Vector Store"
-					description="Create a new Vector Store for your documents."
-					onClose={() => setOpen(false)}
-				/>
+			<DialogContent variant="glass">
+				<DialogHeader>
+					<div className="flex items-center justify-between">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+							Create Vector Store
+						</DialogTitle>
+						<DialogClose className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none">
+							<X className="h-5 w-5" />
+							<span className="sr-only">Close</span>
+						</DialogClose>
+					</div>
+					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
+						Create a new Vector Store for your documents.
+					</DialogDescription>
+				</DialogHeader>
 
-				<GlassDialogBody>
+				<DialogBody>
 					<div className="flex flex-col gap-4">
 						<FormField
 							label="Name"
@@ -125,10 +139,10 @@ export function DocumentVectorStoreCreateDialog({
 						/>
 						{/* Embedding Models, styled like Register Repository */}
 						<div className="mt-4">
-							<div className="text-white-400 text-[14px] leading-[16.8px] font-sans mb-2">
+							<div className="text-inverse text-[14px] leading-[16.8px] font-sans mb-2">
 								Embedding Models
 							</div>
-							<div className="text-white-400/60 text-[12px] mb-3">
+							<div className="text-inverse/60 text-[12px] mb-3">
 								Select at least one embedding model for indexing
 							</div>
 							<div className="space-y-2">
@@ -150,10 +164,10 @@ export function DocumentVectorStoreCreateDialog({
 												className="mt-1 w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
 											/>
 											<div className="flex-1">
-												<div className="text-white-400 text-[14px] font-medium">
+												<div className="text-inverse text-[14px] font-medium">
 													{p.name}
 												</div>
-												<div className="text-white-400/60 text-[12px] mt-1">
+												<div className="text-inverse/60 text-[12px] mt-1">
 													Provider: {p.provider} • Dimensions {p.dimensions}
 												</div>
 											</div>
@@ -164,16 +178,23 @@ export function DocumentVectorStoreCreateDialog({
 						</div>
 						{error ? <p className="text-error-900 text-sm">{error}</p> : null}
 					</div>
-				</GlassDialogBody>
+				</DialogBody>
 
-				<GlassDialogFooter
-					onCancel={() => setOpen(false)}
-					onConfirm={onSubmit}
-					confirmLabel="Create"
-					isPending={isPending}
-					confirmButtonType="button"
-				/>
-			</GlassDialogContent>
-		</Dialog.Root>
+				<DialogFooter>
+					<div className="mt-6 flex justify-end gap-x-3">
+						<Button
+							variant="link"
+							onClick={() => setOpen(false)}
+							disabled={isPending}
+						>
+							Cancel
+						</Button>
+						<Button variant="primary" onClick={onSubmit} disabled={isPending}>
+							{isPending ? "Processing..." : "Create"}
+						</Button>
+					</div>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }

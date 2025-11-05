@@ -38,14 +38,14 @@ export async function TeamSelection() {
 						alt={displayName || email || ""}
 						className="w-6 h-6"
 					/>
-					<span className="text-white-400 font-medium text-[14px] leading-[20.4px] font-sans">
+					<span className="text-inverse font-medium text-[14px] leading-[20.4px] font-sans">
 						{displayName || "No display name"}
 					</span>
 				</>
 			}
 			teamCreation={
 				<TeamCreation>
-					<span className="text-white-400 font-medium text-[14px] leading-[20.4px] font-sans">
+					<span className="text-inverse font-medium text-[14px] leading-[20.4px] font-sans">
 						Create team
 					</span>
 				</TeamCreation>

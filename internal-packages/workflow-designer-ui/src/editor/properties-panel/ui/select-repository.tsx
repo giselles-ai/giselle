@@ -225,7 +225,7 @@ export function SelectRepository({
 												<span className="text-inverse font-medium text-[14px]">
 													{repo.name}
 												</span>
-												<span className="rounded-full px-1.5 py-px text-black-300 font-medium text-[10px] leading-normal font-geist border-[0.5px] border-black-400">
+												<span className="rounded-full px-1.5 py-px text-text/60 font-medium text-[10px] leading-normal font-geist border-[0.5px] border-border/40">
 													{repo.private ? "Private" : "Public"}
 												</span>
 											</div>

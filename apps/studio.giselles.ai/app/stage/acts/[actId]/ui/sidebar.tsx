@@ -2,13 +2,12 @@
 
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import { NodeIcon } from "@giselle-internal/workflow-designer-ui";
-import type { Generation } from "@giselles-ai/giselle";
 import {
 	type Act,
 	ActStreamReader,
 	type StreamDataEventHandler,
 } from "@giselles-ai/giselle/react";
-import type { ManualTriggerParameter } from "@giselles-ai/protocol";
+import type { Generation, ManualTriggerParameter } from "@giselles-ai/protocol";
 import {
 	BrainCircuit,
 	ChevronDownIcon,
@@ -132,7 +131,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 						<h1 className="text-[24px] font-semibold text-inverse mb-[4px]">
 							{appName}
 						</h1>
-						<p className="text-[14px] text-white-400">{teamName}</p>
+						<p className="text-[14px] text-inverse">{teamName}</p>
 					</div>
 
 					{/* Execution Time */}
@@ -165,7 +164,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 								<div className="mt-[24px]">
 									<button
 										type="button"
-										className="flex items-center justify-between text-[12px] font-medium text-white/60 mb-3 w-full cursor-pointer hover:text-white/80 transition-colors"
+										className="flex items-center justify-between text-[12px] font-medium text-inverse/60 mb-3 w-full cursor-pointer hover:text-inverse/80 transition-colors"
 										onClick={() => setIsInputsExpanded(!isInputsExpanded)}
 									>
 										<span>{inputs.length === 1 ? "Input" : "Inputs"}</span>
@@ -188,7 +187,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 														key={`${input.name}-${input.value}`}
 														className="bg-white/5 rounded-[8px] p-3"
 													>
-														<div className="text-[11px] text-white/80">
+														<div className="text-[11px] text-inverse/80">
 															{parameter?.name && (
 																<div className="text-white/50 mb-1">
 																	{parameter.name}

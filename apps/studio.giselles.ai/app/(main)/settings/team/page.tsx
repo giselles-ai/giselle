@@ -81,7 +81,7 @@ function BillingInfoForFreePlan({ team }: BillingInfoProps) {
 	return (
 		<div className="flex justify-between items-center">
 			<div className="flex flex-col gap-y-0.5">
-				<div className="flex flex-wrap items-center gap-x-1 text-white-800 font-medium">
+				<div className="flex flex-wrap items-center gap-x-1 text-inverse font-medium">
 					<p className="text-[22px] leading-[26.4px] tracking-[-0.04em] font-sans">
 						Free Plan
 					</p>

@@ -17,7 +17,7 @@ export function NodeInputLabel({
 				"px-[12px] text-[12px]",
 				isConnected
 					? "px-[16px] text-inverse"
-					: "absolute left-[-12px] whitespace-nowrap -translate-x-[100%] text-black-400",
+					: "absolute left-[-12px] whitespace-nowrap -translate-x-[100%] text-text-muted",
 				!isConnected && isRequired && "!text-red-900",
 			)}
 		>

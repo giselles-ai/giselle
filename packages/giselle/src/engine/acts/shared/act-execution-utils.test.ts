@@ -1,5 +1,5 @@
+import type { Act, Sequence, Step } from "@giselles-ai/protocol";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Act, Sequence, Step } from "../../../concepts/act";
 import { patchAct } from "../object/patch-object";
 import {
 	createStepCountPatches,

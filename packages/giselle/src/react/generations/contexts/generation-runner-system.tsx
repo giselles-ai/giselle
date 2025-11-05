@@ -1,6 +1,3 @@
-import type { NodeId } from "@giselles-ai/protocol";
-import type { UIMessage } from "ai";
-import { createContext, useContext } from "react";
 import type {
 	CancelledGeneration,
 	CompletedGeneration,
@@ -8,11 +5,14 @@ import type {
 	FailedGeneration,
 	Generation,
 	GenerationContext,
+	GenerationId,
 	GenerationOrigin,
+	NodeId,
 	QueuedGeneration,
 	RunningGeneration,
-} from "../../../concepts/generation";
-import type { GenerationId } from "../../../concepts/identifiers";
+} from "@giselles-ai/protocol";
+import type { UIMessage } from "ai";
+import { createContext, useContext } from "react";
 
 export type CreateGenerationRunner = (
 	generationContext: GenerationContext,

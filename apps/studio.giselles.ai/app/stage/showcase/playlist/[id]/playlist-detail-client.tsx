@@ -1,7 +1,15 @@
 "use client";
 
 import { Button } from "@giselle-internal/ui/button";
-import * as Dialog from "@radix-ui/react-dialog";
+import {
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@giselle-internal/ui/dialog";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Edit3, Play, Plus, Star, Trash2 } from "lucide-react";
 
@@ -325,16 +333,16 @@ export function PlaylistDetailClient({ playlist }: PlaylistDetailClientProps) {
 			</div>
 
 			{/* Edit Dialog */}
-			<Dialog.Root open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-				<Dialog.Portal>
-					<Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
-					<Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-full max-w-md mx-4 rounded-[12px] p-6 shadow-xl focus:outline-none z-50 backdrop-blur-md border border-border bg-gradient-to-br from-white/10 to-white/5">
-						<div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-
-						<Dialog.Title className="text-text text-lg font-semibold mb-4">
+			<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+				<DialogContent variant="glass" className="max-w-md">
+					<DialogHeader>
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
 							Edit Playlist
-						</Dialog.Title>
+						</DialogTitle>
+						<DialogClose className="text-inverse" />
+					</DialogHeader>
 
+					<DialogBody>
 						<div className="space-y-4">
 							<div>
 								<label
@@ -378,51 +386,28 @@ export function PlaylistDetailClient({ playlist }: PlaylistDetailClientProps) {
 								<div className="text-red-400 text-sm">{editError}</div>
 							)}
 						</div>
+					</DialogBody>
 
-						<div className="flex justify-end gap-3 mt-6">
-							<Button
-								onClick={() => setIsEditDialogOpen(false)}
-								variant="subtle"
-								size="compact"
-								disabled={isEditLoading}
-							>
-								Cancel
-							</Button>
-							<Button
-								onClick={handleSaveEdit}
-								variant="solid"
-								size="compact"
-								disabled={isEditLoading || !editForm.title.trim()}
-							>
-								{isEditLoading ? "Saving..." : "Save"}
-							</Button>
-						</div>
-
-						<Dialog.Close asChild>
-							<button
-								type="button"
-								className="absolute top-4 right-4 text-[hsl(192,25%,65%)] hover:text-text transition-colors"
-								aria-label="Close dialog"
-							>
-								<svg
-									width={16}
-									height={16}
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth={2}
-									strokeLinecap="round"
-									strokeLinejoin="round"
-								>
-									<title>Close dialog</title>
-									<path d="M18 6L6 18" />
-									<path d="M6 6l12 12" />
-								</svg>
-							</button>
-						</Dialog.Close>
-					</Dialog.Content>
-				</Dialog.Portal>
-			</Dialog.Root>
+					<DialogFooter>
+						<Button
+							onClick={() => setIsEditDialogOpen(false)}
+							variant="subtle"
+							size="compact"
+							disabled={isEditLoading}
+						>
+							Cancel
+						</Button>
+						<Button
+							onClick={handleSaveEdit}
+							variant="solid"
+							size="compact"
+							disabled={isEditLoading || !editForm.title.trim()}
+						>
+							{isEditLoading ? "Saving..." : "Save"}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 }

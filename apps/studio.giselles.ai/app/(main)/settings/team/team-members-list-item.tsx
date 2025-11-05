@@ -1,15 +1,20 @@
 "use client";
 import {
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "@giselle-internal/ui/glass-dialog";
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@giselle-internal/ui/dialog";
 import { Select } from "@giselle-internal/ui/select";
 import { useToasts } from "@giselle-internal/ui/toast";
-import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import type { TeamRole } from "@/db";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
+import { Button } from "../components/button";
 import { deleteTeamMember, updateTeamMemberRole } from "./actions";
 
 type TeamMemberListItemProps = {
@@ -179,23 +184,37 @@ export function TeamMemberListItem({
 								{role}
 							</span>
 						)}
-						<Dialog.Root open={open} onOpenChange={setOpen}>
-							<GlassDialogContent variant="destructive">
-								<GlassDialogHeader
-									title="Remove Member"
-									description="This will permanently delete this member and remove their access to your team."
-									variant="destructive"
-									onClose={() => setOpen(false)}
-								/>
-								<GlassDialogFooter
-									variant="destructive"
-									onCancel={() => setOpen(false)}
-									onConfirm={handleDeleteMember}
-									confirmLabel="Remove"
-									isPending={isLoading}
-								/>
-							</GlassDialogContent>
-						</Dialog.Root>
+						<Dialog open={open} onOpenChange={setOpen}>
+							<DialogContent variant="destructive">
+								<DialogHeader>
+									<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-error-900">
+										Remove Member
+									</DialogTitle>
+									<DialogDescription className="text-error-900/50">
+										This will permanently delete this member and remove their
+										access to your team.
+									</DialogDescription>
+									<DialogClose className="text-inverse" />
+								</DialogHeader>
+								<DialogBody>{/* Content goes here if needed */}</DialogBody>
+								<DialogFooter>
+									<Button
+										variant="link"
+										onClick={() => setOpen(false)}
+										disabled={isLoading}
+									>
+										Cancel
+									</Button>
+									<Button
+										variant="destructive"
+										onClick={handleDeleteMember}
+										disabled={isLoading}
+									>
+										{isLoading ? "Processing..." : "Remove"}
+									</Button>
+								</DialogFooter>
+							</DialogContent>
+						</Dialog>
 					</div>
 				</div>
 			</div>

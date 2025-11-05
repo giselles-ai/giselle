@@ -1,6 +1,6 @@
 "use server";
 
-import type { Generation } from "@giselles-ai/giselle";
+import type { Generation } from "@giselles-ai/protocol";
 import { giselleEngine } from "@/app/giselle-engine";
 
 export async function fetchGenerationData(
