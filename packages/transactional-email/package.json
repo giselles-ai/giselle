@@ -1,0 +1,24 @@
+{
+	"name": "@giselles-ai/transactional-email",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"dev": "email dev --dir emails --port 3333",
+		"export": "email export --dir emails --outDir out",
+		"build": "echo 'No build step required for email templates'",
+		"check-types": "tsc --noEmit",
+		"clean": "rm -rf .turbo .react-email node_modules out",
+		"format": "biome check --write ."
+	},
+	"dependencies": {
+		"@react-email/components": "0.5.7",
+		"react": "catalog:",
+		"react-email": "4.3.2"
+	},
+	"devDependencies": {
+		"@giselles-ai/tsconfig": "workspace:*",
+		"@react-email/preview-server": "4.3.2",
+		"@types/react": "catalog:",
+		"typescript": "catalog:"
+	}
+}

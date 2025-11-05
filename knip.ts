@@ -84,6 +84,9 @@ const nextPredefinedExternalPackages = [
 
 const config: KnipConfig = {
 	biome: false,
+	ignoreIssues: {
+		"packages/transactional-email/emails/**/*.tsx": ["duplicates"],
+	},
 	workspaces: {
 		"apps/playground": {
 			ignoreDependencies: [
@@ -111,6 +114,10 @@ const config: KnipConfig = {
 		},
 		"packages/rag": {
 			ignore: ["src/chunker/__fixtures__/code-sample.ts"],
+		},
+		"packages/transactional-email": {
+			entry: ["emails/**/*.tsx"],
+			ignoreDependencies: ["@react-email/preview-server"],
 		},
 	},
 	ignore: ["turbo/generators/config.ts", ".github/**"],
