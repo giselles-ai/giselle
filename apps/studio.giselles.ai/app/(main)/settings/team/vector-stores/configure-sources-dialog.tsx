@@ -12,7 +12,7 @@ import {
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
 import { Toggle } from "@giselle-internal/ui/toggle";
-import { Code, GitPullRequest, CircleDot, X } from "lucide-react";
+import { CircleDot, Code, GitPullRequest, X } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import type {
 	GitHubRepositoryContentType,

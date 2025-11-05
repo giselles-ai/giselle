@@ -14,7 +14,7 @@ import {
 } from "@giselle-internal/ui/dialog";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { Toggle } from "@giselle-internal/ui/toggle";
-import { Code, GitPullRequest, Plus, CircleDot, X } from "lucide-react";
+import { CircleDot, Code, GitPullRequest, Plus, X } from "lucide-react";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { GlassButton } from "@/components/ui/glass-button";
 import type { GitHubRepositoryContentType } from "@/db";
