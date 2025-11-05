@@ -1,5 +1,8 @@
 # 次のタスク - aliases.css 収束継続
 
+## 🎯 最終ゴール
+- aliases.css の完全削除（コード全体から alias utility を排除し、`@import "./styles/aliases.css"` を削除、ファイル削除）
+
 ## 📊 現在の状況
 
 ### ✅ 完了済みの置換
@@ -46,6 +49,27 @@
 1. 各定義の使用状況を全件調査
 2. 使用箇所が少ない定義から優先的に置換
 3. 広範囲に使用されている定義は後回し
+
+—
+
+### 3.1 🔵 削除に向けた残タスク（チェックリスト）
+- [ ] alias 使用の最終インベントリ（grep/codemod）
+  - `text-inverse`, `text-text`, `text-accent`/`bg-accent`/`border-accent`
+  - `text-secondary`/`bg-secondary`, `hover:text-*`/`text-text/*`
+  - `bg-surface`/`bg-bg`/`bg-transparent`/`bg-stage`/`bg-auth`
+  - `border-border`/`border-border-muted`, `ring-focused`/`outline-focused`
+- [ ] 置換ガイドの適用
+  - text 系: `text-[var(--color-...)]`（semantic.css の変数を利用）
+  - bg/border/ring 系: `bg-[var(--color-...)]` / `border-[var(--color-...)]` / `focus-visible:ring-[var(--color-...)]`
+  - 必要に応じて semantic.css に最小限の semantic utility を追加
+- [ ] 高トラフィック UI の先行更新（Header/Nav/Buttons/Inputs/Dialog/Designer）
+- [ ] CI ガードの有効化（alias 検出時 fail）
+  - 既存スクリプト/grep を CI から実行、増加検知で失敗
+- [ ] import 削除とビルド
+  - `internal-packages/ui/style.css` から `@import "./styles/aliases.css"` を削除
+  - `turbo check-types` / `turbo build` / `turbo test`
+- [ ] `internal-packages/ui/styles/aliases.css` の削除
+- [ ] 視覚回帰の最終QA（主要画面 + Designer）
 
 ---
 
