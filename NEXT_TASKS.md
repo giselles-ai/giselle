@@ -64,10 +64,10 @@
 - [ ] 高トラフィック UI の先行更新（Header/Nav/Buttons/Inputs/Dialog/Designer）
 - [ ] CI ガードの有効化（alias 検出時 fail）
   - 既存スクリプト/grep を CI から実行、増加検知で失敗
-- [ ] import 削除とビルド
-  - `internal-packages/ui/style.css` から `@import "./styles/aliases.css"` を削除
-  - `turbo check-types` / `turbo build` / `turbo test`
-- [ ] `internal-packages/ui/styles/aliases.css` の削除
+- [x] import 削除とビルド
+  - `internal-packages/ui/style.css` から `@import "./styles/aliases.css"` を削除（DONE）
+  - `turbo check-types` / `turbo build` / `turbo test`（SDK/internalのみ実行済み）
+- [x] `internal-packages/ui/styles/aliases.css` の削除
 - [ ] 視覚回帰の最終QA（主要画面 + Designer）
 
 ---
