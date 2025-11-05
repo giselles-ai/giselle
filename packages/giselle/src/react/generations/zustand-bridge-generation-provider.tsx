@@ -1,6 +1,3 @@
-import type { UIMessage } from "ai";
-import { useCallback, useMemo, useRef } from "react";
-import { useShallow } from "zustand/shallow";
 import {
 	type CancelledGeneration,
 	type CompletedGeneration,
@@ -16,7 +13,10 @@ import {
 	isRunningGeneration,
 	type QueuedGeneration,
 	type RunningGeneration,
-} from "../../concepts";
+} from "@giselles-ai/protocol";
+import type { UIMessage } from "ai";
+import { useCallback, useMemo, useRef } from "react";
+import { useShallow } from "zustand/shallow";
 import { useGiselleEngine } from "../use-giselle-engine";
 import {
 	type CreateAndStartGenerationRunner,

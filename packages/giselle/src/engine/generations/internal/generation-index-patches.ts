@@ -1,4 +1,4 @@
-import type { GenerationId, NodeGenerationIndex } from "../../../concepts";
+import type { GenerationId, NodeGenerationIndex } from "@giselles-ai/protocol";
 
 export type GenerationIndexPatch =
 	| { type: "upsert"; index: NodeGenerationIndex }

@@ -1,16 +1,10 @@
 import type {
+	ActId,
 	FileId,
 	NodeId,
 	OutputId,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
-import type {
-	DataContent,
-	ImagePart,
-	ModelMessage,
-	ProviderMetadata,
-} from "ai";
-import type { ActId } from "../../../concepts";
 import {
 	type CompletedGeneration,
 	type Generation,
@@ -23,7 +17,13 @@ import {
 	type OutputFileBlob,
 	type QueuedGeneration,
 	type RunningGeneration,
-} from "../../../concepts";
+} from "@giselles-ai/protocol";
+import type {
+	DataContent,
+	ImagePart,
+	ModelMessage,
+	ProviderMetadata,
+} from "ai";
 import { UsageLimitError } from "../../error";
 import { filePath } from "../../files/utils";
 import type {

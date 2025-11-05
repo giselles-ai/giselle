@@ -1,8 +1,8 @@
-import { WorkspaceId } from "@giselles-ai/protocol";
 import { createIdGenerator } from "@giselles-ai/utils";
 import { z } from "zod/v4";
 import { GenerationStatus } from "../generation";
 import { GenerationId } from "../generation/generation-id";
+import { WorkspaceId } from "../workspace";
 import { ActId } from "./act-id";
 
 export const SequenceId = createIdGenerator("sqn");

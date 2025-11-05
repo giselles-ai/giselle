@@ -1,5 +1,5 @@
-import type { ActId } from "../../../concepts";
-import { NodeGenerationIndex } from "../../../concepts";
+import type { ActId } from "@giselles-ai/protocol";
+import { NodeGenerationIndex } from "@giselles-ai/protocol";
 import { actGenerationIndexesPath } from "../../../concepts/path";
 import type { GiselleStorage } from "../../storage";
 import type { GiselleEngineContext } from "../../types";

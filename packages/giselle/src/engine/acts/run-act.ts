@@ -1,5 +1,5 @@
+import { ActId, type GenerationId, type Sequence } from "@giselles-ai/protocol";
 import { z } from "zod/v4";
-import { ActId, type GenerationId, type Sequence } from "../../concepts";
 import type { GiselleLogger } from "../../logger/types";
 import {
 	type Generation,

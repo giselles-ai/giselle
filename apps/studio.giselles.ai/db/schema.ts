@@ -1,4 +1,3 @@
-import type { ActId, AppId } from "@giselles-ai/giselle";
 import type {
 	GitHubIssueDocumentKey,
 	GitHubIssueState,
@@ -6,6 +5,8 @@ import type {
 	GitHubRepositoryIssueContentType,
 } from "@giselles-ai/github-tool";
 import type {
+	ActId,
+	AppId,
 	EmbeddingDimensions,
 	EmbeddingProfileId,
 	FlowTriggerId,

@@ -1,6 +1,6 @@
+import type { Generation, RunningGeneration } from "@giselles-ai/protocol";
 import { createUIMessageStream, readUIMessageStream, type UIMessage } from "ai";
 import { useCallback, useEffect, useRef } from "react";
-import type { Generation, RunningGeneration } from "../../concepts";
 import { useGiselleEngine } from "../use-giselle-engine";
 import { useGenerationRunnerSystem } from "./contexts";
 import { useGenerationStore } from "./store";

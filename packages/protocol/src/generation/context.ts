@@ -1,14 +1,9 @@
-import type { WebhookEvent } from "@giselles-ai/github-tool";
-import {
-	Connection,
-	Node,
-	NodeLike,
-	OperationNode,
-	OperationNodeLike,
-	WorkspaceId,
-} from "@giselles-ai/protocol";
 import { z } from "zod/v4";
 import { ActId } from "../act/act-id";
+import { Connection } from "../connection";
+import type { WebhookEvent } from "../integrations/github-webhooks";
+import { Node, NodeLike, OperationNode, OperationNodeLike } from "../node";
+import { WorkspaceId } from "../workspace";
 
 export const GenerationOriginStudio = z.object({
 	actId: z.optional(ActId.schema),

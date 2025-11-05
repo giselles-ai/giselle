@@ -1,23 +1,21 @@
 import {
+	ActId,
 	FetchingWebPage,
 	FileId,
 	FlowTrigger,
 	FlowTriggerId,
+	Generation,
+	GenerationId,
+	GenerationOrigin,
 	GitHubFlowTriggerEvent,
 	NodeId,
+	QueuedGeneration,
+	RunningGeneration,
 	SecretId,
 	Workspace,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { z } from "zod/v4";
-import {
-	ActId,
-	Generation,
-	GenerationId,
-	GenerationOrigin,
-	QueuedGeneration,
-	RunningGeneration,
-} from "../concepts";
 import type { GiselleEngine } from "../engine";
 import {
 	CreateActInputs,

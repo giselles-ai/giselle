@@ -4,13 +4,13 @@ import type {
 } from "@giselles-ai/github-tool";
 import type { LanguageModelProvider } from "@giselles-ai/language-model";
 import type {
+	Act,
 	EmbeddingProfileId,
 	FlowTrigger,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import type { EmbeddingMetrics, QueryService } from "@giselles-ai/rag";
 import type { ModelMessage, ProviderMetadata } from "ai";
-import type { Act } from "../concepts";
 import type { GiselleLogger } from "../logger/types";
 import type {
 	CompletedGeneration,

@@ -6,7 +6,7 @@ import type {
 	GenerationStatus,
 	Sequence,
 	Step,
-} from "../../../concepts";
+} from "@giselles-ai/protocol";
 import { patches } from "../object/patch-creators";
 import type { Patch } from "../object/patch-object";
 
