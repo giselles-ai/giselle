@@ -2,19 +2,21 @@ import clsx from "clsx/lite";
 import { Switch } from "radix-ui";
 
 export function Toggle({
-	name,
-	checked,
-	onCheckedChange,
-	disabled,
-	children,
+    name,
+    checked,
+    onCheckedChange,
+    disabled,
+    children,
+    className,
 }: React.PropsWithChildren<{
-	name: string;
-	checked?: boolean;
-	onCheckedChange?: (checked: boolean) => void;
-	disabled?: boolean;
+    name: string;
+    checked?: boolean;
+    onCheckedChange?: (checked: boolean) => void;
+    disabled?: boolean;
+    className?: string;
 }>) {
 	return (
-		<div className="flex items-center">
+        <div className={clsx("flex w-full items-center justify-between gap-3", className)}>
 			{children}
 			<Switch.Root
 				className={clsx(
