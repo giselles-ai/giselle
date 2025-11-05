@@ -128,6 +128,7 @@ export function GlassSurfaceLayers({
 						zIndexClass,
 						radiusClass,
 						solidBorderClass,
+						"opacity-60",
 					)}
 				/>
 			) : borderStyle === "gradient" ? (
@@ -146,7 +147,7 @@ export function GlassSurfaceLayers({
 						"absolute inset-0",
 						zIndexClass,
 						radiusClass,
-						"border-[0.5px] border-border opacity-20",
+						"border-[0.5px] border-border opacity-10",
 					)}
 					aria-hidden
 				/>
