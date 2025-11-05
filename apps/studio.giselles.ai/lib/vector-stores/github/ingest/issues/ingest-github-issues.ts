@@ -64,7 +64,7 @@ export async function ingestGitHubIssues(params: {
 				contentType,
 				contentId,
 				contentCreatedAt: new Date(contentCreatedAt),
-				contentEditedAt: new Date(contentEditedAt),
+				contentEditedAt: contentEditedAt ? new Date(contentEditedAt) : null,
 			};
 		},
 		embeddingProfileId: params.embeddingProfileId,
