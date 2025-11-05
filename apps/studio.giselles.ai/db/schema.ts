@@ -849,7 +849,7 @@ export const appRelations = relations(apps, ({ one }) => ({
 		fields: [apps.teamDbId],
 		references: [teams.dbId],
 	}),
-	workspaces: one(workspaces, {
+	workspace: one(workspaces, {
 		fields: [apps.workspaceDbId],
 		references: [workspaces.dbId],
 	}),
