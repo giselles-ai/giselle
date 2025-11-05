@@ -27,7 +27,7 @@ export default async function AccountAuthenticationPage({
 					About Authentication
 				</DocsLink>
 			</div>
-	<p className="text-[var(--color-link-muted)] text-[12px] leading-[20.4px] tracking-normal font-geist">
+			<p className="text-[var(--color-link-muted)] text-[12px] leading-[20.4px] tracking-normal font-geist">
 				Connect your Giselle Account with a third-party service to use it for
 				login.
 			</p>

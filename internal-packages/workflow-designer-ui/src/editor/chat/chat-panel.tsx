@@ -170,8 +170,8 @@ export function ChatPanel() {
 								<div
 									className={`max-w-[80%] min-w-0 px-4 py-3 text-sm font-mono ${
 										message.sender === "user"
-						? "font-light bg-[var(--color-chat-bubble-user-bg)] border border-[var(--color-chat-bubble-user-bg)] text-[var(--color-text-inverse)] rounded-[8px] rounded-br-[4px]"
-						: "font-light bg-[var(--color-chat-bubble-accent-bg)] border border-[var(--color-chat-bubble-accent-border)] text-[var(--color-text-inverse)] rounded-[8px] rounded-bl-[4px] backdrop-blur-sm animate-slide-up-left"
+											? "font-light bg-[var(--color-chat-bubble-user-bg)] border border-[var(--color-chat-bubble-user-bg)] text-[var(--color-text-inverse)] rounded-[8px] rounded-br-[4px]"
+											: "font-light bg-[var(--color-chat-bubble-accent-bg)] border border-[var(--color-chat-bubble-accent-border)] text-[var(--color-text-inverse)] rounded-[8px] rounded-bl-[4px] backdrop-blur-sm animate-slide-up-left"
 									}`}
 								>
 									<div className="whitespace-pre-wrap leading-relaxed break-words overflow-wrap-anywhere">
@@ -185,12 +185,12 @@ export function ChatPanel() {
 					{/* Typing indicator */}
 					{(showTyping || isThinking) && (
 						<div className="flex justify-start">
-				<div className="bg-[var(--color-chat-bubble-accent-bg)] text-[var(--color-text-inverse)] rounded-[8px] rounded-bl-[4px] px-4 py-3 border border-[var(--color-chat-bubble-accent-border)] backdrop-blur-sm font-mono font-light">
+							<div className="bg-[var(--color-chat-bubble-accent-bg)] text-[var(--color-text-inverse)] rounded-[8px] rounded-bl-[4px] px-4 py-3 border border-[var(--color-chat-bubble-accent-border)] backdrop-blur-sm font-mono font-light">
 								<div className="flex items-center space-x-1">
 									<div className="flex space-x-1">
-								<div className="w-1.5 h-1.5 bg-[var(--color-text-inverse)] rounded-full animate-bounce"></div>
-								<div className="w-1.5 h-1.5 bg-[var(--color-text-inverse)] rounded-full animate-bounce animate-delay-100"></div>
-								<div className="w-1.5 h-1.5 bg-[var(--color-text-inverse)] rounded-full animate-bounce animate-delay-200"></div>
+										<div className="w-1.5 h-1.5 bg-[var(--color-text-inverse)] rounded-full animate-bounce"></div>
+										<div className="w-1.5 h-1.5 bg-[var(--color-text-inverse)] rounded-full animate-bounce animate-delay-100"></div>
+										<div className="w-1.5 h-1.5 bg-[var(--color-text-inverse)] rounded-full animate-bounce animate-delay-200"></div>
 									</div>
 								</div>
 							</div>
@@ -220,7 +220,7 @@ export function ChatPanel() {
 						className={`absolute right-2 bottom-2 p-2 rounded-full transition-colors ${
 							inputValue.trim()
 								? "bg-transparent text-accent hover:text-link-accent"
-							: "bg-transparent text-[var(--color-text-inverse)]/50 cursor-not-allowed"
+								: "bg-transparent text-[var(--color-text-inverse)]/50 cursor-not-allowed"
 						}`}
 					>
 						<Send className="w-4 h-4" />

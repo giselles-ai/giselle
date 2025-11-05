@@ -1,10 +1,10 @@
 import { Button } from "@giselle-internal/ui/button";
+import { Toggle } from "@giselle-internal/ui/toggle";
 import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
 import type { TextGenerationNode } from "@giselles-ai/protocol";
 import { Settings2Icon, XIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Slider } from "../../../../../../ui/slider";
-import { Toggle } from "@giselle-internal/ui/toggle";
 
 import { ToolConfigurationDialog } from "../../ui/tool-configuration-dialog";
 
@@ -435,7 +435,7 @@ export function AnthropicWebSearchToolConfigurationDialog({
 												}}
 												onKeyDown={handleDomainKeyDown}
 												onBlur={() => addDomainTags()}
-						className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-[var(--color-text-inverse)] outline-none placeholder:text-[color-mix(in_srgb,var(--color-text-inverse,#fff)_30%,transparent)]"
+												className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-[var(--color-text-inverse)] outline-none placeholder:text-[color-mix(in_srgb,var(--color-text-inverse,#fff)_30%,transparent)]"
 											/>
 										</div>
 									</div>

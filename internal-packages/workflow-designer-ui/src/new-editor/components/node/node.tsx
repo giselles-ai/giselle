@@ -321,7 +321,10 @@ function CanvasNode({
 					<div>
 						<div className="flex items-center gap-[2px] pl-[4px] text-[10px] font-mono [&>*:not(:last-child)]:after:content-['/'] [&>*:not(:last-child)]:after:ml-[2px] [&>*:not(:last-child)]:after:text-[var(--color-text-inverse)]">
 							{metadataTexts?.map((item) => (
-								<div key={item.label} className="text-[10px] text-[var(--color-text-inverse)]">
+								<div
+									key={item.label}
+									className="text-[10px] text-[var(--color-text-inverse)]"
+								>
 									{selected ? (
 										<Tooltip text={item.tooltip} variant="dark">
 											<button type="button">{item.label}</button>

@@ -12,7 +12,7 @@ export default function SentPasswordResetMailPage() {
 						<h2 className="mt-6 text-[28px] font-[500] text-accent font-sans text-center auth-title-glow">
 							Check your email
 						</h2>
-			<p className="mt-4 text-[14px] font-geist text-[var(--color-link-muted)]">
+						<p className="mt-4 text-[14px] font-geist text-[var(--color-link-muted)]">
 							We have sent you an email with a link to reset your password. If
 							you don't see the email, check other places it might be, like your
 							junk, spam, social, or other folders.

@@ -192,13 +192,13 @@ export function RepositoryRegistrationDialog({
 						</DialogTitle>
 						<DialogClose
 							onClick={() => setIsOpen(false)}
-								className="rounded-sm text-[var(--color-text-inverse)] opacity-70 hover:opacity-100 focus:outline-none"
+							className="rounded-sm text-[var(--color-text-inverse)] opacity-70 hover:opacity-100 focus:outline-none"
 						>
 							<X className="h-5 w-5" />
 							<span className="sr-only">Close</span>
 						</DialogClose>
 					</div>
-						<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
+					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
 						Add a GitHub repository to your Vector Store to use it in GitHub
 						Vector Store Nodes.
 					</DialogDescription>
@@ -224,7 +224,7 @@ export function RepositoryRegistrationDialog({
 									value={ownerId}
 									onValueChange={handleOwnerChange}
 									disabled={isPending}
-						triggerClassName="bg-[var(--color-surface)] text-[var(--color-text)] text-[14px] font-geist"
+									triggerClassName="bg-[var(--color-surface)] text-[var(--color-text)] text-[14px] font-geist"
 									id="owner"
 								/>
 							</div>
@@ -250,7 +250,7 @@ export function RepositoryRegistrationDialog({
 									value={repositoryId}
 									onValueChange={handleRepositoryChange}
 									disabled={isPending || !ownerId}
-						triggerClassName="bg-[var(--color-surface)] text-[var(--color-text)] text-[14px] font-geist"
+									triggerClassName="bg-[var(--color-surface)] text-[var(--color-text)] text-[14px] font-geist"
 									id="repository"
 								/>
 							</div>
@@ -327,7 +327,7 @@ export function RepositoryRegistrationDialog({
 											return (
 												<label
 													key={profileId}
-								className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-border-muted)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] transition-colors cursor-pointer"
+													className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-border-muted)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] transition-colors cursor-pointer"
 												>
 													<input
 														type="checkbox"
@@ -347,13 +347,13 @@ export function RepositoryRegistrationDialog({
 																);
 															}
 														}}
-									className="mt-1 w-4 h-4 text-[#1663F3] bg-surface border-[var(--color-border)] rounded focus:ring-[#1663F3]/20"
+														className="mt-1 w-4 h-4 text-[#1663F3] bg-surface border-[var(--color-border)] rounded focus:ring-[#1663F3]/20"
 													/>
 													<div className="flex-1">
-													<div className="text-[var(--color-text)] text-[14px] font-medium">
+														<div className="text-[var(--color-text)] text-[14px] font-medium">
 															{profile.name}
 														</div>
-													<div className="text-text-muted text-[12px] mt-1">
+														<div className="text-text-muted text-[12px] mt-1">
 															Provider: {profile.provider} • Dimensions{" "}
 															{profile.dimensions}
 														</div>

@@ -1,7 +1,7 @@
+import { Toggle } from "@giselle-internal/ui/toggle";
 import { useFeatureFlag, useUsageLimits } from "@giselles-ai/giselle/react";
 import { GoogleLanguageModelData } from "@giselles-ai/protocol";
 import { InfoIcon } from "lucide-react";
-import { Toggle } from "@giselle-internal/ui/toggle";
 import { TemperatureSlider, TopPSlider } from "./shared-model-controls";
 
 export function GoogleModelPanel({

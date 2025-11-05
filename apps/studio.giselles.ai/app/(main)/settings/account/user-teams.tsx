@@ -140,7 +140,7 @@ function UserTeamsItem({
 				/>
 				<div className="flex flex-col">
 					<div className="flex items-center gap-2">
-							<div className="text-[var(--color-text-inverse)] font-medium text-[16px] leading-[22.4px] font-geist">
+						<div className="text-[var(--color-text-inverse)] font-medium text-[16px] leading-[22.4px] font-geist">
 							{teamName}
 						</div>
 						{isPro ? <ProTag /> : <FreeTag />}

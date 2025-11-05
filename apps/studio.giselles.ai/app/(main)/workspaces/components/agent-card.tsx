@@ -43,7 +43,9 @@ export function AgentCard({ agent }: { agent: typeof dbAgents.$inferSelect }) {
 				"bg-[linear-gradient(135deg,rgba(100,130,200,0.20)_0%,rgba(60,80,120,0.35)_40%,rgba(20,30,60,0.85)_100%)]",
 				"filter grayscale hover:grayscale-0 transition duration-500",
 			)}
-			style={{ "--spotlight-color": "rgba(255,255,255,0.15)" } as React.CSSProperties}
+			style={
+				{ "--spotlight-color": "rgba(255,255,255,0.15)" } as React.CSSProperties
+			}
 		>
 			<div
 				className="pointer-events-none absolute inset-0 z-20 opacity-0 transition-opacity duration-500 group-hover:opacity-100 rounded-[inherit]"

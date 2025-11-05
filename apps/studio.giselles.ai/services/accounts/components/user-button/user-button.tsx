@@ -58,7 +58,7 @@ export const UserButton: FC = async () => {
 					>
 						<Link
 							href="/settings/account/general"
-						className="block px-2 py-1.5 w-full text-[var(--color-text-inverse)] font-medium text-[14px] leading-[14px] font-geist"
+							className="block px-2 py-1.5 w-full text-[var(--color-text-inverse)] font-medium text-[14px] leading-[14px] font-geist"
 							aria-label="Account settings"
 						>
 							Account Settings
@@ -91,7 +91,7 @@ export const UserButton: FC = async () => {
 						</a>
 					</DropdownMenuItem>
 					<DropdownMenuItem className="p-0 rounded-lg hover:bg-white/5 focus:bg-white/5">
-					<SignOutButton className="block px-2 py-1.5 w-full text-left text-[var(--color-text-inverse)] font-geist text-[14px] leading-[14px]">
+						<SignOutButton className="block px-2 py-1.5 w-full text-left text-[var(--color-text-inverse)] font-geist text-[14px] leading-[14px]">
 							Log Out
 						</SignOutButton>
 					</DropdownMenuItem>

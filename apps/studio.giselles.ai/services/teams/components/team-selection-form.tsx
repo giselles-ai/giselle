@@ -69,7 +69,7 @@ export function TeamSelectionForm({
 									alt={currentTeam.name}
 								/>
 								<span
-								className="text-[14px] font-geist text-[var(--color-text-inverse)] truncate max-w-[180px]"
+									className="text-[14px] font-geist text-[var(--color-text-inverse)] truncate max-w-[180px]"
 									title={currentTeam.name}
 								>
 									{currentTeam.name}
@@ -101,7 +101,7 @@ export function TeamSelectionForm({
 										alt={team.name}
 									/>
 									<span
-									className="truncate max-w-[140px] text-[14px] font-geist text-[var(--color-text-inverse)] flex-1"
+										className="truncate max-w-[140px] text-[14px] font-geist text-[var(--color-text-inverse)] flex-1"
 										title={team.name}
 									>
 										{team.name}

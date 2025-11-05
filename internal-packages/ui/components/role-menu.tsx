@@ -58,8 +58,8 @@ export function RoleMenu({
 							type="button"
 							disabled={!canEdit}
 							onClick={() => canEdit && onChange?.(opt.value)}
-								className={clsx(
-									"text-[var(--color-text)] outline-none cursor-pointer hover:bg-ghost-element-hover",
+							className={clsx(
+								"text-[var(--color-text)] outline-none cursor-pointer hover:bg-ghost-element-hover",
 								"rounded-[4px] px-[8px] py-[6px] text-[14px] w-full text-left capitalize",
 								!canEdit && "opacity-50 cursor-not-allowed pointer-events-none",
 								"flex items-center gap-2",

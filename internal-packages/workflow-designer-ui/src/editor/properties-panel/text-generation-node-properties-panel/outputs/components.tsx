@@ -148,7 +148,7 @@ function _SelectOutputPopover({
 							setSelectedOutputIds(safeValue);
 						}}
 					>
-					<div className="flex px-[16px] text-[var(--color-text-inverse)]">
+						<div className="flex px-[16px] text-[var(--color-text-inverse)]">
 							Select Sources From
 						</div>
 						<div className="flex flex-col py-[4px]">

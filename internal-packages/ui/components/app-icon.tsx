@@ -17,7 +17,10 @@ export function AppIcon({
 			aria-label={title}
 			xmlns="http://www.w3.org/2000/svg"
 			viewBox="0 0 486 640"
-		className={clsx(defaultSize && "h-12 w-12 text-[var(--color-link-muted)]", className)}
+			className={clsx(
+				defaultSize && "h-12 w-12 text-[var(--color-link-muted)]",
+				className,
+			)}
 			fill="currentColor"
 		>
 			<title>{title}</title>

@@ -153,8 +153,12 @@ function PRContextDisplay({
 						<span className="text-[11px] font-medium text-blue-400">
 							PR #{prNumber}
 						</span>
-						<span className="text-[11px] text-[var(--color-text-inverse)]">•</span>
-						<span className="text-[11px] text-[var(--color-text-inverse)]">{contentTypeLabel}</span>
+						<span className="text-[11px] text-[var(--color-text-inverse)]">
+							•
+						</span>
+						<span className="text-[11px] text-[var(--color-text-inverse)]">
+							{contentTypeLabel}
+						</span>
 					</div>
 
 					{parsedContext.title && (
@@ -367,7 +371,9 @@ function QueryResultCard({
 	if (!records) {
 		return (
 			<div className="bg-surface/5 rounded-[8px] p-[16px] border border-border/10">
-				<p className="text-[var(--color-text-inverse)] text-[14px]">No records found</p>
+				<p className="text-[var(--color-text-inverse)] text-[14px]">
+					No records found
+				</p>
 			</div>
 		);
 	}

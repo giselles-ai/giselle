@@ -104,7 +104,7 @@ export function ModelPicker({
 					sideOffset={6}
 					align="end"
 					className={clsx(
-					"relative rounded-[8px] px-[8px] py-[8px] text-[var(--color-text-inverse)] overflow-hidden z-50",
+						"relative rounded-[8px] px-[8px] py-[8px] text-[var(--color-text-inverse)] overflow-hidden z-50",
 					)}
 					style={{ width }}
 				>
@@ -167,7 +167,7 @@ export function ModelPicker({
 													"flex px-[8px] py-0 justify-center items-center rounded text-[12px] font-medium",
 													providerFilter === p
 														? "bg-[var(--color-text-secondary)] text-inverse"
-											: "hover:bg-ghost-element-hover text-[var(--color-text-inverse)]",
+														: "hover:bg-ghost-element-hover text-[var(--color-text-inverse)]",
 												)}
 											>
 												{label}

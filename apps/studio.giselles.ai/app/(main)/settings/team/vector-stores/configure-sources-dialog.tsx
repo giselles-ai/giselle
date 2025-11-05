@@ -105,12 +105,12 @@ export function ConfigureSourcesDialog({
 			>
 				<DialogHeader>
 					<div className="flex items-center justify-between">
-					<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-[var(--color-text-inverse)]">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-[var(--color-text-inverse)]">
 							Configure Vector Stores
 						</DialogTitle>
 						<DialogClose
 							onClick={() => setOpen(false)}
-						className="rounded-sm text-[var(--color-text-inverse)] opacity-70 hover:opacity-100 focus:outline-none"
+							className="rounded-sm text-[var(--color-text-inverse)] opacity-70 hover:opacity-100 focus:outline-none"
 						>
 							<X className="h-5 w-5" />
 							<span className="sr-only">Close</span>
@@ -183,7 +183,7 @@ export function ConfigureSourcesDialog({
 										return (
 											<label
 												key={profileId}
-							className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-border-muted)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] transition-colors cursor-pointer"
+												className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-border-muted)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] transition-colors cursor-pointer"
 											>
 												<input
 													type="checkbox"
@@ -203,7 +203,7 @@ export function ConfigureSourcesDialog({
 															);
 														}
 													}}
-								className="mt-1 w-4 h-4 text-primary-900 bg-[var(--color-surface)] border-[var(--color-border)] rounded focus:ring-primary-900"
+													className="mt-1 w-4 h-4 text-primary-900 bg-[var(--color-surface)] border-[var(--color-border)] rounded focus:ring-primary-900"
 												/>
 												<div className="flex-1">
 													<div className="text-[var(--color-text)] text-[14px] font-medium">
