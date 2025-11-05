@@ -114,10 +114,7 @@ export function GlassSurfaceLayers({
 			{withTopHighlight && (
 				<div
 					className={clsx("absolute top-0 left-4 right-4 h-px", zIndexClass)}
-					style={{
-						backgroundImage:
-							"linear-gradient(to right, transparent, color-mix(in srgb, var(--color-text) 40%, transparent), transparent)",
-					}}
+					style={{ backgroundImage: "var(--glass-highlight-bg)" }}
 				/>
 			)}
 			{borderStyle === "destructive" ? (
