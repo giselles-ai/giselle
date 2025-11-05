@@ -8,6 +8,7 @@ import {
 	type FailedGeneration,
 	type Generation,
 	type GenerationContext,
+	GenerationId,
 	isCancelledGeneration,
 	isCompletedGeneration,
 	isCreatedGeneration,
@@ -15,8 +16,7 @@ import {
 	isRunningGeneration,
 	type QueuedGeneration,
 	type RunningGeneration,
-} from "../../concepts/generation";
-import { GenerationId } from "../../concepts/identifiers";
+} from "../../concepts";
 import { useGiselleEngine } from "../use-giselle-engine";
 import {
 	type CreateAndStartGenerationRunner,

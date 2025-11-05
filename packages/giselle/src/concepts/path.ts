@@ -1,4 +1,5 @@
-import type { ActId, GenerationId } from "./identifiers";
+import type { ActId } from "./act";
+import type { GenerationId } from "./generation";
 
 export function actGenerationIndexesPath(actId: ActId) {
 	return `generations/byAct/${actId}.json` as const;

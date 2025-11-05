@@ -2,12 +2,12 @@ import type { LanguageModelV2Usage } from "@ai-sdk/provider";
 import { NodeId } from "@giselles-ai/protocol";
 import type { UIMessage } from "ai";
 import { z } from "zod/v4";
-import { GenerationId } from "../identifiers";
 import { GenerationContextLike, GenerationOrigin } from "./context";
+import { GenerationId } from "./generation-id";
 import { GenerationOutput } from "./output";
 
-export { GenerationId } from "../identifiers";
 export * from "./context";
+export * from "./generation-id";
 export * from "./output";
 
 export const Message = z.custom<UIMessage>();

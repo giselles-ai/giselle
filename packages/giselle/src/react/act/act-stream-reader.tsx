@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import type { ActId } from "../../concepts/act";
+import type { ActId } from "../../concepts";
 import { type StreamData, StreamEvent } from "../../engine/acts/stream-act";
 
 export type StreamDataEventHandler = (data: StreamData) => void;

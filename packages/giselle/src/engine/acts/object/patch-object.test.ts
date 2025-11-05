@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Act } from "../../../concepts/act";
+import type { Act } from "../../../concepts";
 import { patchAct } from "./patch-object";
 
 describe("patchAct", () => {

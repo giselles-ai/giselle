@@ -1,4 +1,4 @@
-import type { ActId } from "../../concepts/identifiers";
+import type { ActId } from "../../concepts";
 import type { GiselleEngineContext } from "../types";
 import { type Patch, patchAct } from "./patch-act";
 

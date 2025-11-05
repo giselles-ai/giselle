@@ -1,4 +1,4 @@
-import type { GenerationId } from "../../concepts/identifiers";
+import type { GenerationId } from "../../concepts";
 import { generationUiMessageChunksPath } from "../../concepts/path";
 import type { GiselleEngineContext } from "../types";
 

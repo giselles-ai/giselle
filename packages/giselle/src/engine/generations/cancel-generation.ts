@@ -1,5 +1,4 @@
-import type { CancelledGeneration } from "../../concepts/generation";
-import type { GenerationId } from "../../concepts/identifiers";
+import type { CancelledGeneration, GenerationId } from "../../concepts";
 import type { GiselleEngineContext } from "../types";
 import { internalSetGeneration } from "./internal/set-generation";
 import { getGeneration } from "./utils";

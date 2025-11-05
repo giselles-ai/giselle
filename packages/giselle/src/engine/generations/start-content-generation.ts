@@ -2,7 +2,7 @@ import {
 	type Generation,
 	isQueuedGeneration,
 	type RunningGeneration,
-} from "../../concepts/generation";
+} from "../../concepts";
 import type { GiselleEngineContext } from "../types";
 import { generateContent } from "./generate-content";
 import { internalSetGeneration } from "./internal/set-generation";

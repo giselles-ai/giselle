@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Act } from "../../concepts/act";
+import type { Act } from "../../concepts";
 
 interface ActStore {
 	activeAct: Act | undefined;
