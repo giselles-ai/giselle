@@ -1,14 +1,19 @@
 "use client";
 
-import * as Dialog from "@radix-ui/react-dialog";
-import { Check, Loader2 } from "lucide-react";
+import {
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@giselle-internal/ui/dialog";
+import { Check, Loader2, X } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
-import {
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "../components/glass-dialog-content";
+import { Button } from "../../components/button";
 import {
 	diagnoseRepositoryConnection,
 	updateRepositoryInstallation,
@@ -87,11 +92,11 @@ export function DiagnosticModal({
 				<div className="mt-6 p-4 rounded-lg bg-[#39FF7F]/10 border border-[#39FF7F]/20">
 					<div className="flex items-center gap-2 mb-2">
 						<Check className="h-5 w-5 text-[#39FF7F]" />
-						<h4 className="text-white-400 font-medium text-[16px] font-sans">
+						<h4 className="text-inverse font-medium text-[16px] font-sans">
 							Connection can be restored
 						</h4>
 					</div>
-					<p className="text-black-300 text-[14px] font-geist">
+					<p className="text-text/60 text-[14px] font-geist">
 						Click Restore Connection to reconnect and continue ingesting data
 						from this repository.
 					</p>
@@ -102,11 +107,11 @@ export function DiagnosticModal({
 		return (
 			<div className="mt-6 p-4 rounded-lg bg-[#FF3D71]/10 border border-[#FF3D71]/20">
 				<div className="flex items-center gap-2 mb-2">
-					<h4 className="text-white-400 font-medium text-[16px] font-sans">
+					<h4 className="text-inverse font-medium text-[16px] font-sans">
 						Repository no longer accessible
 					</h4>
 				</div>
-				<p className="text-black-300 text-[14px] font-geist">
+				<p className="text-text/60 text-[14px] font-geist">
 					{diagnosisResult.errorMessage ||
 						"This repository has been deleted or is no longer accessible with current permissions."}
 				</p>
@@ -115,56 +120,87 @@ export function DiagnosticModal({
 	};
 
 	return (
-		<Dialog.Root open={open} onOpenChange={setOpen}>
-			<GlassDialogContent>
-				<GlassDialogHeader
-					title="Checking Repository Access"
-					description={`${repositoryIndex.owner}/${repositoryIndex.repo}`}
-					onClose={() => setOpen(false)}
-				/>
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogContent variant="glass">
+				<DialogHeader>
+					<div className="flex items-center justify-between">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+							Checking Repository Access
+						</DialogTitle>
+						<DialogClose className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none">
+							<X className="h-5 w-5" />
+							<span className="sr-only">Close</span>
+						</DialogClose>
+					</div>
+					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
+						{`${repositoryIndex.owner}/${repositoryIndex.repo}`}
+					</DialogDescription>
+				</DialogHeader>
 
-				<div className="py-6">
-					{isDiagnosing ? (
-						<div className="flex items-center justify-center py-8">
-							<Loader2 className="h-8 w-8 text-[#1663F3] animate-spin" />
-							<span className="ml-3 text-[14px] font-geist text-black-300">
-								Checking repository access...
-							</span>
-						</div>
-					) : (
-						diagnosisResult && renderDiagnosisResult()
-					)}
-				</div>
+				<DialogBody>
+					<div className="py-6">
+						{isDiagnosing ? (
+							<div className="flex items-center justify-center py-8">
+								<Loader2 className="h-8 w-8 text-[#1663F3] animate-spin" />
+								<span className="ml-3 text-[14px] font-geist text-text/60">
+									Checking repository access...
+								</span>
+							</div>
+						) : (
+							diagnosisResult && renderDiagnosisResult()
+						)}
+					</div>
+				</DialogBody>
 
 				{diagnosisResult && (
-					<GlassDialogFooter
-						onCancel={() => setOpen(false)}
-						onConfirm={
-							diagnosisResult.canBeFixed
-								? handleFix
-								: () => {
-										onDelete?.();
-										setOpen(false);
-									}
-						}
-						confirmLabel={
-							diagnosisResult.canBeFixed
-								? "Restore Connection"
-								: "Delete Repository"
-						}
-						isPending={isFixing}
-						variant={diagnosisResult.canBeFixed ? "default" : "destructive"}
-					/>
+					<DialogFooter>
+						<div className="mt-6 flex justify-end gap-x-3">
+							<Button
+								variant="link"
+								onClick={() => setOpen(false)}
+								disabled={isFixing}
+							>
+								Cancel
+							</Button>
+							<Button
+								variant={diagnosisResult.canBeFixed ? "primary" : "destructive"}
+								onClick={
+									diagnosisResult.canBeFixed
+										? handleFix
+										: () => {
+												onDelete?.();
+												setOpen(false);
+											}
+								}
+								disabled={isFixing}
+							>
+								{isFixing
+									? "Processing..."
+									: diagnosisResult.canBeFixed
+										? "Restore Connection"
+										: "Delete Repository"}
+							</Button>
+						</div>
+					</DialogFooter>
 				)}
 
 				{!diagnosisResult && (
-					<GlassDialogFooter
-						onCancel={() => setOpen(false)}
-						isPending={isDiagnosing}
-						confirmLabel="Processing..."
-					/>
+					<DialogFooter>
+						<div className="mt-6 flex justify-end gap-x-3">
+							<Button
+								variant="link"
+								onClick={() => setOpen(false)}
+								disabled={isDiagnosing}
+							>
+								Cancel
+							</Button>
+							<Button variant="primary" disabled>
+								Processing...
+							</Button>
+						</div>
+					</DialogFooter>
 				)}
-			</GlassDialogContent>
-		</Dialog.Root>
+			</DialogContent>
+		</Dialog>
 	);
 }

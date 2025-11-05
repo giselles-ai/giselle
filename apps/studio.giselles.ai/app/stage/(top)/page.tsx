@@ -138,7 +138,7 @@ export default async function StagePage({
 														<span className="truncate">
 															{act.workspaceName}
 														</span>
-														<span className="text-[12px] text-black-600 truncate">
+														<span className="text-[12px] text-text/60 truncate">
 															{new Date(act.createdAt).toLocaleString()} ·{" "}
 															{act.teamName}
 														</span>

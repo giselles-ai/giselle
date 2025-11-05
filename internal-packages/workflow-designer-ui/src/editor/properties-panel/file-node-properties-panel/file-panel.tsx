@@ -295,7 +295,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 	return (
 		<div
 			ref={panelRef}
-			className="relative z-10 flex flex-col gap-[2px] h-full text-[14px] text-black-300 outline-none"
+			className="relative z-10 flex flex-col gap-[2px] h-full text-[14px] text-text/60 outline-none"
 			tabIndex={-1}
 		>
 			<div>
@@ -327,7 +327,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 									<>
 										<FileNodeIcon
 											node={node}
-											className="size-[30px] text-black-400"
+											className="size-[30px] text-text-muted"
 										/>
 										<p className="text-center text-inverse">
 											Drop to upload your {config.label} files
@@ -351,9 +351,12 @@ export function FilePanel({ node, config }: FilePanelProps) {
 							) : (
 								<div className="flex flex-col gap-[16px] justify-center items-center">
 									{node.content.category === "image" ? (
-										<ImageIcon size={38} className="text-black-400" />
+										<ImageIcon size={38} className="text-text-muted" />
 									) : (
-										<ArrowUpFromLineIcon size={38} className="text-black-400" />
+										<ArrowUpFromLineIcon
+											size={38}
+											className="text-text-muted"
+										/>
 									)}
 									<label
 										htmlFor="file"
@@ -361,7 +364,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 									>
 										<p>Drop {config.label} files here to upload.</p>
 										{node.content.category === "image" && (
-											<p className="text-[12px] text-black-400">
+											<p className="text-[12px] text-text-muted">
 												Click here and paste images from clipboard (Ctrl/Cmd +
 												V)
 											</p>
@@ -425,7 +428,7 @@ function FileListItem({
 						{fileData.name}
 					</p>
 					{fileData.status === "uploading" && (
-						<p className="text-[12px] text-black-400">Uploading...</p>
+						<p className="text-[12px] text-text-muted">Uploading...</p>
 					)}
 					{fileData.status === "failed" && (
 						<p className="text-[12px] text-error-900">Upload failed</p>
@@ -438,7 +441,7 @@ function FileListItem({
 				onClick={() => onRemove(fileData)}
 				className="w-[32px] h-[32px] rounded-[6px] flex items-center justify-center hover:bg-bg-100 transition-colors opacity-0 group-hover:opacity-100 shrink-0"
 			>
-				<TrashIcon size={16} className="text-black-400 hover:text-inverse" />
+				<TrashIcon size={16} className="text-text-muted hover:text-inverse" />
 			</button>
 		</div>
 	);

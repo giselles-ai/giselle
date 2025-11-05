@@ -31,14 +31,14 @@ export function GoogleAuthenticationPresentation({
 			)}
 			<div className="flex items-center justify-between gap-4">
 				<div className="flex items-center gap-4">
-					<SiGoogle className="text-white-400 h-[20px] w-[20px]" />
+					<SiGoogle className="text-inverse h-[20px] w-[20px]" />
 					<div className="flex flex-col">
-						<div className="text-white-400 font-medium text-[16px] leading-[22.4px] font-geist">
+						<div className="text-inverse font-medium text-[16px] leading-[22.4px] font-geist">
 							Google
 						</div>
 
 						{googleUser && (
-							<div className="text-black-400 font-medium text-[12px] leading-[20.4px] font-geist">
+							<div className="text-text-muted font-medium text-[12px] leading-[20.4px] font-geist">
 								{googleUser.name} ({googleUser.email})
 							</div>
 						)}

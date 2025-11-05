@@ -152,7 +152,7 @@ function RepositoryItemButton({
 						<span className="text-inverse font-medium text-[14px]">
 							{repo.name}
 						</span>
-						<span className="rounded-full px-1.5 py-px text-black-300 font-medium text-[10px] leading-normal font-geist border-[0.5px] border-black-400">
+						<span className="rounded-full px-1.5 py-px text-text/60 font-medium text-[10px] leading-normal font-geist border-[0.5px] border-border/40">
 							{repo.private ? "Private" : "Public"}
 						</span>
 					</div>
@@ -604,7 +604,7 @@ export function Installed({
 							<button
 								type="button"
 								aria-label="Set Up"
-								className="relative inline-flex items-center justify-center gap-2 rounded-lg px-6 py-2 text-sm font-medium hover:shadow-[0_1px_0_rgba(255,255,255,0.1)_inset,0_-1px_0_rgba(0,0,0,0.2)_inset,0_0_0_1px_rgba(255,255,255,0.1)] focus-visible:outline-none focus-visible:shadow-[0_0_0_1px_var(--color-focused)] text-white/80 bg-gradient-to-b from-[#202530] to-[#12151f] border border-[rgba(0,0,0,0.7)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)] transition-all duration-200 active:scale-[0.98] whitespace-nowrap disabled:opacity-50"
+								className="relative inline-flex items-center justify-center gap-2 rounded-lg px-6 py-2 text-sm font-medium hover:shadow-[0_1px_0_rgba(255,255,255,0.1)_inset,0_-1px_0_rgba(0,0,0,0.2)_inset,0_0_0_1px_rgba(255,255,255,0.1)] focus-visible:outline-none focus-visible:shadow-[0_0_0_1px_var(--color-focused)] text-inverse/80 bg-gradient-to-b from-[#202530] to-[#12151f] border border-[rgba(0,0,0,0.7)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)] transition-all duration-200 active:scale-[0.98] whitespace-nowrap disabled:opacity-50"
 								onClick={() => {
 									if (
 										isTriggerRequiringCallsign(step.eventId) &&
@@ -816,7 +816,7 @@ export function Installed({
 						)}
 						<button
 							type="submit"
-							className="relative inline-flex items-center justify-center gap-2 rounded-lg px-6 py-2 text-sm font-medium hover:shadow-[0_1px_0_rgba(255,255,255,0.1)_inset,0_-1px_0_rgba(0,0,0,0.2)_inset,0_0_0_1px_rgba(255,255,255,0.1)] focus-visible:outline-none focus-visible:shadow-[0_0_0_1px_var(--color-focused)] text-white/80 bg-gradient-to-b from-[#202530] to-[#12151f] border border-[rgba(0,0,0,0.7)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)] transition-all duration-200 active:scale-[0.98] whitespace-nowrap disabled:opacity-50"
+							className="relative inline-flex items-center justify-center gap-2 rounded-lg px-6 py-2 text-sm font-medium hover:shadow-[0_1px_0_rgba(255,255,255,0.1)_inset,0_-1px_0_rgba(0,0,0,0.2)_inset,0_0_0_1px_rgba(255,255,255,0.1)] focus-visible:outline-none focus-visible:shadow-[0_0_0_1px_var(--color-focused)] text-inverse/80 bg-gradient-to-b from-[#202530] to-[#12151f] border border-[rgba(0,0,0,0.7)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)] transition-all duration-200 active:scale-[0.98] whitespace-nowrap disabled:opacity-50"
 							disabled={isPending || isTriggerConfigPending}
 						>
 							Set Up

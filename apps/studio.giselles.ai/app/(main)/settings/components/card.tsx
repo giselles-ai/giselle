@@ -44,12 +44,12 @@ export const Card: FC<PropsWithChildren<CardProps>> = ({
 			<div className="flex justify-between gap-x-2.5">
 				<div className="grid gap-[3px] font-medium">
 					{title && (
-						<h2 className="text-white-400 text-[16px] leading-[27.2px] tracking-normal font-sans">
+						<h2 className="text-inverse text-[16px] leading-[27.2px] tracking-normal font-sans">
 							{title}
 						</h2>
 					)}
 					{description && (
-						<p className="text-black-400 text-[12px] leading-[20.4px] tracking-normal font-geist">
+						<p className="text-text-muted text-[12px] leading-[20.4px] tracking-normal font-geist">
 							{description}
 						</p>
 					)}

@@ -54,7 +54,7 @@ export function TeamSelectionForm({
 					formRef.current?.requestSubmit();
 				}}
 			>
-				<SelectTrigger className="w-auto min-w-[100px] max-w-[360px] border-0 flex justify-between items-center data-[state=open]:border-0 data-[state=open]:ring-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 outline-none focus-visible:outline-none px-0.5 py-0.5 bg-transparent">
+				<SelectTrigger className="w-auto min-w-[100px] max-w-[360px] border-0 flex justify-between items-center data-[state=open]:border-0 data-[state=open]:ring-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 outline-none px-0.5 py-0.5 bg-transparent">
 					<div className="flex items-center gap-1.5">
 						{isAccontSettingPage ? (
 							currentUser
@@ -69,7 +69,7 @@ export function TeamSelectionForm({
 									alt={currentTeam.name}
 								/>
 								<span
-									className="text-[14px] font-geist text-white-400 truncate max-w-[180px]"
+									className="text-[14px] font-geist text-inverse truncate max-w-[180px]"
 									title={currentTeam.name}
 								>
 									{currentTeam.name}
@@ -101,7 +101,7 @@ export function TeamSelectionForm({
 										alt={team.name}
 									/>
 									<span
-										className="truncate max-w-[140px] text-[14px] font-geist text-white-400 flex-1"
+										className="truncate max-w-[140px] text-[14px] font-geist text-inverse flex-1"
 										title={team.name}
 									>
 										{team.name}
@@ -117,9 +117,9 @@ export function TeamSelectionForm({
 
 					<div className="p-2.5 flex items-center gap-x-2 rounded-lg w-full hover:bg-white/5">
 						<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
-							<Plus className="size-3 text-black-900" />
+							<Plus className="size-3 text-bg" />
 						</span>
-						<span className="text-white-400 font-medium text-[14px] leading-[14px] font-geist">
+						<span className="text-inverse font-medium text-[14px] leading-[14px] font-geist">
 							{teamCreation}
 						</span>
 					</div>

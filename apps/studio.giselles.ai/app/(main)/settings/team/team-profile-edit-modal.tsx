@@ -280,20 +280,20 @@ export function TeamProfileEditModal({
 			>
 				<DialogHeader>
 					<div className="flex items-center justify-between">
-						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-white-400">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
 							Edit Team Profile
 						</DialogTitle>
 						<DialogClose
 							onClick={() => {
 								if (!isLoading) onClose();
 							}}
-							className="rounded-sm text-white-400 opacity-70 hover:opacity-100 focus:outline-none"
+							className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none"
 						>
 							<X className="h-5 w-5" />
 							<span className="sr-only">Close</span>
 						</DialogClose>
 					</div>
-					<DialogDescription className="font-geist mt-2 text-[14px] text-black-400">
+					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
 						Update your team's name and profile image.
 					</DialogDescription>
 				</DialogHeader>
@@ -328,7 +328,7 @@ export function TeamProfileEditModal({
 										/>
 										<div className="absolute inset-0 flex items-center justify-center bg-black-900/50 opacity-0 group-hover:opacity-100 transition-opacity">
 											<div className="w-[40px] h-[40px] rounded-full flex items-center justify-center">
-												<ImageIcon className="w-7 h-7 text-white-800 transform group-hover:scale-110 transition-transform" />
+												<ImageIcon className="w-7 h-7 text-inverse transform group-hover:scale-110 transition-transform" />
 											</div>
 										</div>
 									</button>
@@ -352,7 +352,7 @@ export function TeamProfileEditModal({
 										/>
 										<div className="absolute inset-0 flex items-center justify-center bg-black-900/50 opacity-0 group-hover:opacity-100 transition-opacity">
 											<div className="w-[40px] h-[40px] rounded-full flex items-center justify-center">
-												<ImageIcon className="w-7 h-7 text-white-800 transform group-hover:scale-110 transition-transform" />
+												<ImageIcon className="w-7 h-7 text-inverse transform group-hover:scale-110 transition-transform" />
 											</div>
 										</div>
 									</button>
@@ -368,12 +368,12 @@ export function TeamProfileEditModal({
 							>
 								Team Name
 							</label>
-							<div className="flex items-center gap-2 rounded-[12px] px-2 py-1 bg-inverse/5">
+							<div className="flex items-center gap-2 rounded-[12px] px-2 py-1 bg-inverse/5 focus-within:ring-1 focus-within:ring-primary-100/50 focus-within:ring-inset transition-all">
 								<input
 									id="teamName"
 									value={teamName}
 									onChange={handleTeamNameChange}
-									className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse outline-none placeholder:text-inverse/30"
+									className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse outline-none placeholder:text-link-muted focus-visible:ring-0 focus-visible:shadow-none"
 									disabled={isLoading}
 								/>
 							</div>

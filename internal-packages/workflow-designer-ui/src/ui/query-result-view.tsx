@@ -20,7 +20,7 @@ const gitHubPRContextSchema = z.object({
 
 function Spinner() {
 	return (
-		<div className="flex gap-[12px] text-black-400">
+		<div className="flex gap-[12px] text-text-muted">
 			<WilliIcon className="w-[20px] h-[20px] animate-pop-pop-1" />
 			<WilliIcon className="w-[20px] h-[20px] animate-pop-pop-2" />
 			<WilliIcon className="w-[20px] h-[20px] animate-pop-pop-3" />
@@ -301,7 +301,7 @@ function DataSourceTab({
 				"flex items-center gap-[8px] px-[16px] py-[6px] border-b cursor-pointer min-w-fit flex-shrink-0",
 				isActive
 					? "text-inverse border-border"
-					: "text-black-400 border-transparent",
+					: "text-text-muted border-transparent",
 			)}
 		>
 			{isGitHub && <GitHubIcon className="w-[14px] h-[14px] flex-shrink-0" />}

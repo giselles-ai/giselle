@@ -313,7 +313,7 @@ function CanvasNode({
 								"w-[16px] h-[16px]",
 								v.isFillIcon && "fill-current",
 								v.isStrokeIcon && "stroke-current fill-none",
-								v.isDarkIconText && "text-black-900",
+								v.isDarkIconText && "text-bg",
 								v.isLightIconText && "text-inverse",
 							)}
 						/>
@@ -475,7 +475,7 @@ function CanvasNode({
 											"text-[12px]",
 											isConnected
 												? "px-[16px] text-inverse"
-												: "absolute -right-[12px] whitespace-nowrap translate-x-[100%] text-black-400",
+												: "absolute -right-[12px] whitespace-nowrap translate-x-[100%] text-text-muted",
 										)}
 									>
 										{output.label}

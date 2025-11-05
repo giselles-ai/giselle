@@ -9,7 +9,7 @@ export const DialogTrigger = DialogPrimitive.Trigger;
 export const DialogClose = DialogPrimitive.Close;
 
 export type DialogSize = "default" | "wide";
-export type DialogVariant = "default" | "glass";
+export type DialogVariant = "default" | "glass" | "destructive";
 
 export type DialogContentProps = ComponentPropsWithoutRef<
 	typeof DialogPrimitive.Content
@@ -25,7 +25,7 @@ export function DialogContent({
 	className,
 	...props
 }: DialogContentProps) {
-	const isGlass = variant === "glass";
+	const isGlass = variant === "glass" || variant === "destructive";
 
 	return (
 		<DialogPortal>
@@ -44,11 +44,14 @@ export function DialogContent({
 						)}
 					>
 						<GlassSurfaceLayers
-							variant="default"
-							borderStyle="solid"
-							borderTone="muted"
+							variant={variant === "destructive" ? "destructive" : "default"}
+							borderStyle={variant === "destructive" ? "destructive" : "solid"}
+							borderTone={variant === "destructive" ? "destructive" : "muted"}
 							withTopHighlight={true}
-							withBaseFill={false}
+							withBaseFill={true}
+							baseFillClass={
+								variant === "destructive" ? "bg-error-900/10" : undefined
+							}
 							blurClass="backdrop-blur-md"
 							withAuxHairline={true}
 							radiusClass="rounded-[12px]"
@@ -113,7 +116,7 @@ export function DialogFooter({ children }: PropsWithChildren) {
 	return (
 		<div
 			className={clsx(
-				"px-3 py-[8px] -mx-6 mt-[12px] ml-auto sticky bottom-[-4px] w-fit",
+				"px-3 py-[8px] -mx-6 mt-[12px] ml-auto sticky bottom-[-4px] w-fit flex gap-x-3",
 			)}
 		>
 			{children}

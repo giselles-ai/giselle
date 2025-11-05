@@ -344,7 +344,7 @@ export function FilterableActsList({
 						>
 							Tasks
 						</h1>
-						<p className="text-sm text-black-400">
+						<p className="text-sm text-text-muted">
 							View and manage all your running and completed tasks
 						</p>
 					</div>
@@ -392,7 +392,7 @@ export function FilterableActsList({
 								className="flex-1 min-w-0 bg-transparent border-none outline-none text-inverse placeholder-white-600 text-[14px]"
 							/>
 						</div>
-						<Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white-600" />
+						<Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-text/60" />
 					</div>
 
 					{/* Status Filter and New Task Button Row */}
@@ -405,7 +405,7 @@ export function FilterableActsList({
 										type="button"
 										className={clsx(
 											"flex items-center gap-2 rounded-[8px] h-10 px-[12px] text-left text-[14px] w-full",
-											"outline-none focus:outline-none",
+											"outline-none",
 											"transition-colors",
 										)}
 									>
@@ -596,7 +596,7 @@ export function FilterableActsList({
 															<span className="truncate font-medium text-white-100">
 																{act.workspaceName}
 															</span>
-															<span className="text-sm text-black-600 truncate">
+															<span className="text-sm text-text/60 truncate">
 																{new Date(act.createdAt)
 																	.toISOString()
 																	.slice(0, 19)

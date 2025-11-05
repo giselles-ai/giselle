@@ -1,7 +1,18 @@
 "use client";
 
+import { Button } from "@giselle-internal/ui/button";
+import {
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@giselle-internal/ui/dialog";
 import { Select } from "@giselle-internal/ui/select";
-import * as Dialog from "@radix-ui/react-dialog";
 import { Play, RotateCcw, Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,12 +21,6 @@ import { GlassButton } from "@/components/ui/glass-button";
 import { Input } from "@/components/ui/input";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { Card } from "../../(main)/settings/components/card";
-import {
-	GlassDialogBody,
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "../../(main)/settings/team/components/glass-dialog-content";
 import { SearchHeader } from "../../(main)/workspaces/components/search-header";
 
 type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
@@ -309,10 +314,10 @@ export function ShowcaseClient({
 								searchQuery ? (
 									<div className="flex justify-center items-center h-full mt-12">
 										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
+											<h3 className="text-[18px] font-geist font-bold text-text-muted">
 												No apps found.
 											</h3>
-											<p className="text-[12px] font-geist text-black-400">
+											<p className="text-[12px] font-geist text-text-muted">
 												Try searching with a different keyword.
 											</p>
 										</div>
@@ -320,10 +325,10 @@ export function ShowcaseClient({
 								) : (
 									<div className="flex justify-center items-center h-full mt-12">
 										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
+											<h3 className="text-[18px] font-geist font-bold text-text-muted">
 												No apps yet.
 											</h3>
-											<p className="text-[12px] font-geist text-black-400">
+											<p className="text-[12px] font-geist text-text-muted">
 												Please create a new app with the 'New App +' button.
 											</p>
 										</div>
@@ -425,28 +430,34 @@ export function ShowcaseClient({
 					{activeTab === "Playlist" && (
 						<>
 							<div className="mb-8 flex justify-start">
-								<Dialog.Root
+								<Dialog
 									open={isPlaylistDialogOpen}
 									onOpenChange={setIsPlaylistDialogOpen}
 								>
-									<Dialog.Trigger asChild>
+									<DialogTrigger asChild>
 										<GlassButton>New Playlist +</GlassButton>
-									</Dialog.Trigger>
-									<GlassDialogContent
+									</DialogTrigger>
+									<DialogContent
+										variant="glass"
 										onEscapeKeyDown={() => setIsPlaylistDialogOpen(false)}
 										onPointerDownOutside={() => setIsPlaylistDialogOpen(false)}
 									>
-										<GlassDialogHeader
-											title="New Playlist Details"
-											description="Create a new playlist with title, description and thumbnail."
-											onClose={() => setIsPlaylistDialogOpen(false)}
-										/>
-										<GlassDialogBody>
+										<DialogHeader>
+											<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+												New Playlist Details
+											</DialogTitle>
+											<DialogDescription className="text-text-muted">
+												Create a new playlist with title, description and
+												thumbnail.
+											</DialogDescription>
+											<DialogClose className="text-inverse" />
+										</DialogHeader>
+										<DialogBody>
 											<div className="grid gap-4">
 												<div className="grid gap-2">
 													<label
 														htmlFor="title"
-														className="text-sm font-medium text-white"
+														className="text-sm font-medium text-inverse"
 													>
 														Title
 													</label>
@@ -460,13 +471,13 @@ export function ShowcaseClient({
 															})
 														}
 														placeholder="Playlist title"
-														className="bg-black-700/50 border-black-600 text-white placeholder:text-black-400"
+														className="bg-black-700/50 border-black-600 text-white placeholder:text-text-muted"
 													/>
 												</div>
 												<div className="grid gap-2">
 													<label
 														htmlFor="description"
-														className="text-sm font-medium text-white"
+														className="text-sm font-medium text-inverse"
 													>
 														Description
 													</label>
@@ -480,18 +491,24 @@ export function ShowcaseClient({
 															})
 														}
 														placeholder="Playlist description"
-														className="bg-black-700/50 border-black-600 text-white placeholder:text-black-400"
+														className="bg-black-700/50 border-black-600 text-white placeholder:text-text-muted"
 													/>
 												</div>
 											</div>
-										</GlassDialogBody>
-										<GlassDialogFooter
-											onCancel={() => setIsPlaylistDialogOpen(false)}
-											onConfirm={handleSavePlaylist}
-											confirmLabel="Save"
-										/>
-									</GlassDialogContent>
-								</Dialog.Root>
+										</DialogBody>
+										<DialogFooter>
+											<Button
+												variant="link"
+												onClick={() => setIsPlaylistDialogOpen(false)}
+											>
+												Cancel
+											</Button>
+											<Button variant="primary" onClick={handleSavePlaylist}>
+												Save
+											</Button>
+										</DialogFooter>
+									</DialogContent>
+								</Dialog>
 							</div>
 
 							{mockPlaylists.length > 0 && (
@@ -552,10 +569,10 @@ export function ShowcaseClient({
 							{mockPlaylists.length === 0 && (
 								<div className="flex justify-center items-center h-full">
 									<div className="grid gap-[8px] justify-center text-center">
-										<h3 className="text-[18px] font-geist font-bold text-black-400">
+										<h3 className="text-[18px] font-geist font-bold text-text-muted">
 											No playlists yet.
 										</h3>
-										<p className="text-[12px] font-geist text-black-400">
+										<p className="text-[12px] font-geist text-text-muted">
 											Please create a new playlist with the 'New Playlist +'
 											button.
 										</p>
@@ -579,10 +596,10 @@ export function ShowcaseClient({
 								searchQuery ? (
 									<div className="flex justify-center items-center h-full mt-12">
 										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
+											<h3 className="text-[18px] font-geist font-bold text-text-muted">
 												No history found.
 											</h3>
-											<p className="text-[12px] font-geist text-black-400">
+											<p className="text-[12px] font-geist text-text-muted">
 												Try searching with a different keyword.
 											</p>
 										</div>
@@ -590,10 +607,10 @@ export function ShowcaseClient({
 								) : (
 									<div className="flex justify-center items-center h-full mt-12">
 										<div className="grid gap-[8px] justify-center text-center">
-											<h3 className="text-[18px] font-geist font-bold text-black-400">
+											<h3 className="text-[18px] font-geist font-bold text-text-muted">
 												No history yet.
 											</h3>
-											<p className="text-[12px] font-geist text-black-400">
+											<p className="text-[12px] font-geist text-text-muted">
 												Execute an app to see your history.
 											</p>
 										</div>

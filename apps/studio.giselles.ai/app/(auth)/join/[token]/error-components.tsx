@@ -28,7 +28,7 @@ export function ExpiredError() {
 				<h2 className="text-[28px] font-[500] text-white font-sans text-center">
 					{errorMessages.expired}
 				</h2>
-				<p className="text-white-400 text-center">
+				<p className="text-inverse text-center">
 					Please ask the team administrator to send you a new invitation.
 				</p>
 				<div className="flex flex-col items-center justify-center gap-2 mt-4">
@@ -68,7 +68,7 @@ export function WrongEmailError({
 	return (
 		<ErrorPageLayout>
 			<div className="text-center">
-				<p className="text-white-400 mb-2">You have been invited to join</p>
+				<p className="text-inverse mb-2">You have been invited to join</p>
 				<h2
 					className="text-[28px] font-[500] text-accent font-sans"
 					style={{ textShadow: "0px 0px 20px #0087F6" }}
