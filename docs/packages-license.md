@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 843 MIT
+* 842 MIT
 * 187 Apache 2.0
 * 46 ISC
 * 27 New BSD
@@ -12554,4 +12554,5 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
 
