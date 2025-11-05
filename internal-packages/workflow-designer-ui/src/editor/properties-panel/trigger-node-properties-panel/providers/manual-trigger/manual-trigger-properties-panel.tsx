@@ -7,18 +7,18 @@ import {
 import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import {
+	useFeatureFlag,
+	useFlowTrigger,
+	useGiselleEngine,
+	useWorkflowDesigner,
+} from "@giselles-ai/giselle/react";
+import {
 	ManualTriggerParameter,
 	ManualTriggerParameterId,
 	type Output,
 	OutputId,
 	type TriggerNode,
-} from "@giselle-sdk/data-type";
-import {
-	useFeatureFlag,
-	useFlowTrigger,
-	useGiselleEngine,
-	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/protocol";
 import { TrashIcon } from "lucide-react";
 import {
 	type FormEventHandler,

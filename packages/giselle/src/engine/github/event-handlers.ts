@@ -1,4 +1,3 @@
-import type { FlowTrigger } from "@giselle-sdk/data-type";
 import type {
 	addReaction,
 	createDiscussionComment,
@@ -13,8 +12,9 @@ import type {
 	updatePullRequestReviewComment,
 	WebhookEvent,
 	WebhookEventName,
-} from "@giselle-sdk/github-tool";
-import { findDiscussionReplyTargetId } from "@giselle-sdk/github-tool";
+} from "@giselles-ai/github-tool";
+import { findDiscussionReplyTargetId } from "@giselles-ai/github-tool";
+import type { FlowTrigger } from "@giselles-ai/protocol";
 import type { createAndStartAct } from "../acts";
 import type { GiselleEngineContext } from "../types";
 import { getWorkspace } from "../workspaces";

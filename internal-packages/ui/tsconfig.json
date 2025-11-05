@@ -1,5 +1,5 @@
 {
-	"extends": "@giselle/giselle-sdk-tsconfig/react-library.json",
+	"extends": "@giselles-ai/tsconfig/react-library.json",
 	"include": ["next-env.d.ts", "."],
 	"exclude": ["node_modules"],
 	"compilerOptions": {

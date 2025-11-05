@@ -1,5 +1,5 @@
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
-import type { TriggerNode } from "@giselle-sdk/data-type";
+import type { TriggerNode } from "@giselles-ai/protocol";
 import { useTrigger } from "../../../../../hooks/use-trigger";
 
 export const ManualTriggerConfiguredView = ({

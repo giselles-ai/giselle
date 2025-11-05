@@ -3,7 +3,7 @@ import type {
 	NodeId,
 	OutputId,
 	WorkspaceId,
-} from "@giselle-sdk/data-type";
+} from "@giselles-ai/protocol";
 import type {
 	DataContent,
 	ImagePart,

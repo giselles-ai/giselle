@@ -7,5 +7,5 @@
 	"access": "restricted",
 	"baseBranch": "main",
 	"updateInternalDependencies": "patch",
-	"ignore": ["giselle-sdk", "@giselle-sdk/**", "@giselle-internal/**"]
+	"ignore": ["giselles-ai", "@giselles-ai/**", "@giselle-internal/**"]
 }

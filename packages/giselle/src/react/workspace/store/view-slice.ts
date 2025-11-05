@@ -1,5 +1,5 @@
-import type { NodeLike } from "@giselle-sdk/data-type";
-import type { LanguageModelProvider } from "@giselle-sdk/language-model";
+import type { LanguageModelProvider } from "@giselles-ai/language-model";
+import type { NodeLike } from "@giselles-ai/protocol";
 import type { StateCreator } from "zustand";
 import type { WorkspaceSlice } from "./workspace-slice";
 

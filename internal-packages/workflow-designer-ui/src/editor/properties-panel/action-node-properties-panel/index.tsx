@@ -1,8 +1,8 @@
-import type { ActionNode, Node } from "@giselle-sdk/data-type";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/giselle/react";
+import type { ActionNode, Node } from "@giselles-ai/protocol";
 import { useCallback } from "react";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";

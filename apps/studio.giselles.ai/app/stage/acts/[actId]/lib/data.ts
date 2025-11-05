@@ -1,4 +1,4 @@
-import type { ActId } from "@giselle-sdk/giselle";
+import type { ActId } from "@giselles-ai/giselle";
 import { giselleEngine } from "@/app/giselle-engine";
 import { db } from "@/db";
 import type { SidebarDataObject } from "../ui/sidebar";

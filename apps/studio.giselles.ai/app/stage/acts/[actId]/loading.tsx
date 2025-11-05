@@ -1,4 +1,4 @@
-import type { Generation } from "@giselle-sdk/giselle";
+import type { Generation } from "@giselles-ai/giselle";
 import { StepLayout } from "./[stepId]/ui/step-layout";
 
 // Define a dummy generation object for the loading state to satisfy StepLayout's props

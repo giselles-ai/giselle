@@ -1,4 +1,8 @@
 import {
+	defaultName,
+	useWorkflowDesignerStore,
+} from "@giselles-ai/giselle/react";
+import {
 	type InputId,
 	isActionNode,
 	isImageGenerationNode,
@@ -8,11 +12,7 @@ import {
 	type NodeId,
 	type NodeLike,
 	type OutputId,
-} from "@giselle-sdk/data-type";
-import {
-	defaultName,
-	useWorkflowDesignerStore,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/protocol";
 import {
 	Handle,
 	type NodeProps,

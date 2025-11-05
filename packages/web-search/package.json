@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-sdk/web-search",
+	"name": "@giselles-ai/web-search",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -22,7 +22,7 @@
 		}
 	},
 	"devDependencies": {
-		"@giselle/giselle-sdk-tsconfig": "workspace:^",
+		"@giselles-ai/tsconfig": "workspace:^",
 		"@types/node": "catalog:",
 		"tsup": "catalog:",
 		"vitest": "catalog:"

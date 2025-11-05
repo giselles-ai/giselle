@@ -11,7 +11,7 @@ import {
 import {
 	useGiselleEngine,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/giselle/react";
 import { LoaderIcon, RefreshCcwIcon } from "lucide-react";
 import useSWR from "swr";
 

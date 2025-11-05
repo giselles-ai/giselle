@@ -1,4 +1,4 @@
-import { octokit } from "@giselle-sdk/github-tool";
+import { octokit } from "@giselles-ai/github-tool";
 import type { GiselleEngineContext } from "../types";
 
 interface Repository {

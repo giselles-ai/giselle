@@ -1,4 +1,4 @@
-import type { NodeId, OutputId } from "@giselle-sdk/data-type";
+import type { NodeId, OutputId } from "@giselles-ai/protocol";
 
 const NODE_REFERENCE_PREFIX_BRACKETS = "{{";
 const NODE_REFERENCE_SUFFIX_BRACKETS = "}}";

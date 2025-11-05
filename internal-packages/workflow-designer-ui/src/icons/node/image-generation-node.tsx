@@ -1,4 +1,4 @@
-import { getImageGenerationModelProvider } from "@giselle-sdk/language-model";
+import { getImageGenerationModelProvider } from "@giselles-ai/language-model";
 import type { SVGProps } from "react";
 import { Flux1Icon } from "../flux1";
 import { IdegramIcon } from "../ideogram";

@@ -1,3 +1,4 @@
+import type { ActionProvider } from "@giselles-ai/flow";
 import {
 	isActionNode,
 	isImageGenerationNode,
@@ -6,8 +7,7 @@ import {
 	isTriggerNode,
 	isVectorStoreNode,
 	type NodeLike,
-} from "@giselle-sdk/data-type";
-import type { ActionProvider } from "@giselle-sdk/flow";
+} from "@giselles-ai/protocol";
 import type { TriggerProvider } from "../engine";
 import type { VectorStoreSourceProvider } from "../engine/vector-store";
 

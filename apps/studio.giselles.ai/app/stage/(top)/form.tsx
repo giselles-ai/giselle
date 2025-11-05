@@ -2,7 +2,7 @@
 
 import { AppIcon } from "@giselle-internal/ui/app-icon";
 import { Select } from "@giselle-internal/ui/select";
-import type { FlowTriggerId } from "@giselle-sdk/data-type";
+import type { FlowTriggerId } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { X } from "lucide-react";
 import { useActionState, useCallback, useMemo, useState } from "react";

@@ -1,12 +1,12 @@
-import type { EmbeddingProfileId } from "@giselle-sdk/data-type";
 import {
 	createGitHubArchiveLoader,
 	createGitHubTreeLoader,
-} from "@giselle-sdk/github-tool";
+} from "@giselles-ai/github-tool";
+import type { EmbeddingProfileId } from "@giselles-ai/protocol";
 import {
 	createPipeline,
 	type EmbeddingCompleteCallback,
-} from "@giselle-sdk/rag";
+} from "@giselles-ai/rag";
 import type { Octokit } from "@octokit/core";
 import { and, eq } from "drizzle-orm";
 import { db, githubRepositoryContentStatus, githubRepositoryIndex } from "@/db";

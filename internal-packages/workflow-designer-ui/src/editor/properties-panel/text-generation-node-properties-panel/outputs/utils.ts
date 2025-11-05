@@ -1,4 +1,4 @@
-import type { NodeBase } from "@giselle-sdk/data-type";
+import type { NodeBase } from "@giselles-ai/protocol";
 import type { OutputWithDetails } from "./types";
 
 export function filterInputs<T extends NodeBase>(

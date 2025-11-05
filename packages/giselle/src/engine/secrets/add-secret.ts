@@ -3,7 +3,7 @@ import {
 	SecretId,
 	SecretIndex,
 	type WorkspaceId,
-} from "@giselle-sdk/data-type";
+} from "@giselles-ai/protocol";
 import type { GiselleEngineContext } from "../types";
 import { addWorkspaceIndexItem } from "../utils/workspace-index";
 import { secretPath, workspaceSecretIndexPath } from "./paths";

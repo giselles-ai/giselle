@@ -1,9 +1,9 @@
+import { defaultName } from "@giselles-ai/giselle";
 import {
 	isTriggerNode,
 	type Workspace,
 	type WorkspaceId,
-} from "@giselle-sdk/data-type";
-import { defaultName } from "@giselle-sdk/giselle";
+} from "@giselles-ai/protocol";
 import { giselleEngine } from "@/app/giselle-engine";
 import { type acts as actsSchema, db } from "@/db";
 import { fetchCurrentUser } from "@/services/accounts";

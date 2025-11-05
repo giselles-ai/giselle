@@ -1,10 +1,10 @@
 import { Button } from "@giselle-internal/ui/button";
-import type { FlowTriggerId, TriggerNode } from "@giselle-sdk/data-type";
 import {
 	type GitHubTriggerEventId,
 	githubTriggerIdToLabel,
-} from "@giselle-sdk/flow";
-import { useWorkflowDesigner } from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/flow";
+import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
+import type { FlowTriggerId, TriggerNode } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useState } from "react";

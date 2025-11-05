@@ -1,7 +1,7 @@
 import {
 	extractPdfText,
 	extractText,
-} from "@giselle-sdk/document-preprocessor";
+} from "@giselles-ai/document-preprocessor";
 import { resolveSupportedDocumentFile } from "../utils";
 
 interface ExtractTextOptions {

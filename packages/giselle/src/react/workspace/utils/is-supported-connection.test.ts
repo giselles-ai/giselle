@@ -1,3 +1,10 @@
+import {
+	anthropicLanguageModels,
+	falLanguageModels,
+	googleImageLanguageModels,
+	openaiLanguageModels,
+	perplexityLanguageModels,
+} from "@giselles-ai/language-model";
 import type {
 	ActionNode,
 	FileNode,
@@ -10,15 +17,8 @@ import type {
 	TriggerNode,
 	VariableNode,
 	VectorStoreNode,
-} from "@giselle-sdk/data-type";
-import { NodeId } from "@giselle-sdk/data-type";
-import {
-	anthropicLanguageModels,
-	falLanguageModels,
-	googleImageLanguageModels,
-	openaiLanguageModels,
-	perplexityLanguageModels,
-} from "@giselle-sdk/language-model";
+} from "@giselles-ai/protocol";
+import { NodeId } from "@giselles-ai/protocol";
 import { describe, expect, test } from "vitest";
 
 import { isSupportedConnection } from "./is-supported-connection";

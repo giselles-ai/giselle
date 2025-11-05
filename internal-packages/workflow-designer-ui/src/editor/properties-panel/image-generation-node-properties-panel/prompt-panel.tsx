@@ -6,22 +6,22 @@ import {
 } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
-	type ImageGenerationLanguageModelData,
-	type ImageGenerationNode,
-	Node,
-} from "@giselle-sdk/data-type";
-import {
 	isSupportedConnection,
 	useUsageLimits,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/giselle/react";
 import {
 	falLanguageModels,
 	googleImageLanguageModels,
 	hasTierAccess,
 	openaiImageModels,
 	Tier,
-} from "@giselle-sdk/language-model";
+} from "@giselles-ai/language-model";
+import {
+	type ImageGenerationLanguageModelData,
+	type ImageGenerationNode,
+	Node,
+} from "@giselles-ai/protocol";
 import { useCallback, useMemo } from "react";
 import { ProTag } from "../../tool/toolbar/components/pro-tag";
 import { createDefaultModelData, updateModelId } from "./model-defaults";

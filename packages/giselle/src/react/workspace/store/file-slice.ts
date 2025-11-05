@@ -7,7 +7,7 @@ import {
 	type FileNode,
 	isFileNode,
 	type WorkspaceId,
-} from "@giselle-sdk/data-type";
+} from "@giselles-ai/protocol";
 import type { StateCreator } from "zustand";
 import { APICallError } from "../../errors";
 import type { GiselleEngineClient } from "../../use-giselle-engine";
