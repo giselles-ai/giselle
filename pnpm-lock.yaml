@@ -1050,12 +1050,21 @@ importers:
 
   packages/protocol:
     dependencies:
+      '@ai-sdk/provider':
+        specifier: 'catalog:'
+        version: 2.0.0
       '@giselles-ai/flow':
         specifier: workspace:^
         version: link:../flow
       '@giselles-ai/language-model':
         specifier: workspace:^
         version: link:../language-model
+      '@octokit/webhooks':
+        specifier: 'catalog:'
+        version: 14.0.2
+      ai:
+        specifier: 'catalog:'
+        version: 5.0.51(zod@3.25.76)
       zod:
         specifier: 'catalog:'
         version: 3.25.76
