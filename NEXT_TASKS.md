@@ -3,86 +3,30 @@
 ## 📊 現在の状況
 
 ### ✅ 完了済みの置換
-- ✅ `text-link-muted` の置換（**ただしコンポーネント内での使用は残存**）
-- ✅ `text-bg` の置換（**ただし使用箇所が残存**）
+- ✅ `text-link-muted` の置換（apps + 内部UI 反映済み）
+- ✅ `text-bg` の置換（apps + workflow-designer 反映済み）
 - ✅ `bg-inverse` の置換完了・削除済み
 - ✅ `border-inverse` の置換完了・削除済み
 - ✅ `placeholder:text-inverse/30`, `placeholder:text-inverse/40` の削除済み
 
 ### 🔍 現在の使用状況
 
-#### `text-link-muted`（9ファイル）
-**定義場所:** `aliases.css` に定義あり（`.placeholder\:text-link-muted::placeholder`）
-
-**使用ファイル:**
-1. `internal-packages/ui/components/search-input.tsx` - コンポーネント内で使用
-2. `internal-packages/ui/components/link-muted.tsx` - コンポーネント内で使用
-3. `internal-packages/ui/components/docs-link.tsx` - コンポーネント内で使用（`tone="secondary"`時）
-4. `apps/studio.giselles.ai/app/(main)/settings/account/user-teams.tsx` - `placeholder:text-link-muted`
-5. `apps/studio.giselles.ai/app/(main)/settings/components/profile-edit-modal.tsx` - `placeholder:text-link-muted`
-6. `apps/studio.giselles.ai/app/(main)/settings/team/team-profile-edit-modal.tsx` - `placeholder:text-link-muted`
-7. `apps/studio.giselles.ai/app/(main)/settings/team/invite-member-dialog.tsx` - 使用箇所を確認要
-8. その他2ファイル
-
-**注意:** UIコンポーネント（`search-input.tsx`, `link-muted.tsx`, `docs-link.tsx`）で使用されているため、置換には注意が必要。
-
-#### `text-bg`（13ファイル）
-**定義場所:** `aliases.css` に定義あり
-
-**使用ファイル:**
-- `internal-packages/workflow-designer-ui/src/editor/node/node.tsx`（7箇所）
-- `internal-packages/workflow-designer-ui/src/editor/properties-panel/text-generation-node-properties-panel/outputs/components.tsx`
-- `internal-packages/workflow-designer-ui/src/editor/properties-panel/ui/properties-panel.tsx`（5箇所）
-- `internal-packages/workflow-designer-ui/src/new-editor/components/node/node.tsx`
-- その他の workflow-designer-ui 内のファイル
-
-**注意:** 主に workflow-designer-ui 内で使用されているため、置換範囲が限定的。
+- `text-link-muted`: 残存なし（コンポーネント含め `var(--color-link-muted)` へ統一済み）
+- `text-bg`: 残存なし（`text-[var(--color-background)]` へ統一済み）
 
 ---
 
 ## 🎯 次のタスク（優先順位順）
 
-### 1. 🔴 最優先: `text-link-muted` の置換
+### 1. 🔴 最優先: `text-link-muted` の置換（DONE）
 
-**現状:**
-- 9ファイルで使用中
-- UIコンポーネント内での使用が3ファイルあるため、影響範囲が広い
-
-**アプローチ:**
-1. **ページ内での使用を先に置換**（6ファイル）
-   - `user-teams.tsx`, `profile-edit-modal.tsx`, `team-profile-edit-modal.tsx`, `invite-member-dialog.tsx` など
-   - `placeholder:text-link-muted` → `placeholder:text-[var(--color-link-muted)]`
-2. **UIコンポーネント内の使用を置換**（3ファイル）
-   - `search-input.tsx`: `placeholder:text-link-muted` → `placeholder:text-[var(--color-link-muted)]`
-   - `link-muted.tsx`: `text-link-muted` → `text-[var(--color-link-muted)]`
-   - `docs-link.tsx`: `text-link-muted` → `text-[var(--color-link-muted)]`（`tone="secondary"`時）
-3. **aliases.css から定義を削除**
-
-**確認が必要なページ:**
-- `/settings/account` - user-teams.tsx
-- `/settings/account` - profile-edit-modal.tsx（ダイアログ）
-- `/settings/team` - team-profile-edit-modal.tsx（ダイアログ）
-- `/settings/team` - invite-member-dialog.tsx（ダイアログ）
-- `/workspaces` - SearchInputコンポーネント
-- その他SearchInputを使用しているすべてのページ
+- コード置換完了（`var(--color-link-muted)` へ統一）。残タスクは視覚確認のみ。
 
 ---
 
-### 2. 🟡 高優先度: `text-bg` の置換
+### 2. 🟡 高優先度: `text-bg` の置換（DONE）
 
-**現状:**
-- 13ファイルで使用中（主に workflow-designer-ui 内）
-
-**アプローチ:**
-1. **使用箇所を確認**
-   - workflow-designer-ui 内のノードアイコンやラベルなど
-2. **置換**
-   - `text-bg` → `text-[var(--color-background)]`
-3. **aliases.css から定義を削除**
-
-**確認が必要なページ:**
-- Workflow Designer UI のすべてのノード表示
-- Properties Panel のラベル表示
+- コード置換完了（`text-[var(--color-background)]` へ統一）。残タスクは視覚確認のみ。
 
 ---
 
@@ -161,48 +105,34 @@
 
 ## 📋 具体的な作業手順（次のアクション）
 
-### Step 1: `text-link-muted` の置換（優先度: 🔴 最優先）
+### Step 1: 視覚確認とスモークテスト（最優先）
 
-1. **ページ内での使用を置換**（6ファイル）
-   ```bash
-   # 置換対象ファイルを確認
-   - user-teams.tsx
-   - profile-edit-modal.tsx
-   - team-profile-edit-modal.tsx
-   - invite-member-dialog.tsx
-   - その他2ファイル
-   ```
+- DocsLink: 色が `var(--color-link-muted)`、ホバー時の下線/背景が期待どおり
+- Placeholder: `::placeholder` の color が `var(--color-link-muted)`
+- ＋アイコン（GlassButton 等）: デフォ白でなく、ホバーで黒系（`var(--color-background)`）
+- Designer: ノードアイコンの前景色が背景と十分なコントラスト
 
-2. **UIコンポーネント内の使用を置換**（3ファイル）
-   - `search-input.tsx`: `placeholder:text-link-muted` → `placeholder:text-[var(--color-link-muted)]`
-   - `link-muted.tsx`: `text-link-muted` → `text-[var(--color-link-muted)]`
-   - `docs-link.tsx`: `text-link-muted` → `text-[var(--color-link-muted)]`（`tone="secondary"`時のみ）
+対象ページ
+- `/settings/account`, `/settings/account/general`, `/settings/account/authentication`
+- `/settings/team`, `/settings/team/members`, `/settings/team/integrations`, `/settings/team/vector-stores`, `/settings/team/vector-stores/document`, `/settings/team/usage`
+- `/workspaces`
+- `/stage/showcase`, `/stage/showcase/playlist/[id]`
+- `/stage`（ツールバー/プロパティパネル）
 
-3. **aliases.css から定義を削除**
-   ```css
-   /* 削除対象 */
-   .placeholder\:text-link-muted::placeholder {
-     color: var(--color-link-muted) !important;
-   }
-   ```
+### Step 2: 型・ビルド・テスト
 
-4. **視覚確認**
-   - `/settings/account` ページ
-   - `/settings/team` ページ
-   - `/workspaces` ページ
-   - SearchInput を使用しているすべてのページ
+- `turbo check-types`
+- `turbo build`
+- `turbo test`
 
----
+### Step 3: レポ全体の残存チェック（最終確認）
 
-### Step 2: `text-bg` の置換（優先度: 🟡 高優先度）
+- `placeholder:text-text-muted` がないこと
+- `text-bg` がないこと
 
-1. **使用箇所の確認**（13ファイル）
-2. **置換**
-   - `text-bg` → `text-[var(--color-background)]`
-3. **aliases.css から定義を削除**
-4. **視覚確認**
-   - Workflow Designer UI のすべてのノード表示
-   - Properties Panel のラベル表示
+参考コミット
+- `refactor(ui): use stable tokens and adjust link/icon tones`
+- `chore(ui): audit DocsLink usages and replace placeholder/text-bg tokens`
 
 ---
 
