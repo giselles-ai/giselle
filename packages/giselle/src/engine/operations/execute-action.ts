@@ -1,4 +1,7 @@
-import { githubActions } from "@giselles-ai/flow";
+import {
+	findGitHubActionOption,
+	githubActions,
+} from "@giselles-ai/action-registry";
 import {
 	createDiscussionComment,
 	createIssue,
@@ -87,13 +90,18 @@ async function resolveActionInputs(args: {
 		outputId: OutputId,
 	) => Promise<string | undefined>;
 }): Promise<Record<string, string>> {
-	const githubAction = githubActions[args.state.commandId];
+	const githubActionOption = findGitHubActionOption(args.state.commandId);
+	if (githubActionOption === undefined) {
+		throw new Error(
+			`GitHub action option not found for command ID: ${args.state.commandId}`,
+		);
+	}
 	const inputs: Record<string, string> = {};
 	const generationContext = args.generationContext;
 
-	for (const parameter of githubAction.command.parameters.keyof().options) {
+	for (const item of githubActionOption.payload) {
 		const input = generationContext.operationNode.inputs.find(
-			(input) => input.accessor === parameter,
+			(input) => input.accessor === item.key,
 		);
 		const connection = generationContext.connections.find(
 			(connection) => connection.inputId === input?.id,
@@ -114,7 +122,7 @@ async function resolveActionInputs(args: {
 				if (content === undefined) {
 					continue;
 				}
-				inputs[parameter] = content;
+				inputs[item.key] = content;
 				break;
 			}
 			case "variable":
@@ -124,7 +132,7 @@ async function resolveActionInputs(args: {
 							throw new Error(`Unexpected node data: ${sourceNode.id}`);
 						}
 						const jsonOrText = sourceNode.content.text;
-						inputs[parameter] = isJsonContent(jsonOrText)
+						inputs[item.key] = isJsonContent(jsonOrText)
 							? jsonContentToText(JSON.parse(jsonOrText))
 							: jsonOrText;
 						break;

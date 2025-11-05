@@ -58,8 +58,8 @@
 		"@ai-sdk/gateway": "catalog:",
 		"@ai-sdk/google": "catalog:",
 		"@ai-sdk/openai": "catalog:",
-
 		"@ai-sdk/provider": "catalog:",
+		"@giselles-ai/action-registry": "workspace:*",
 		"@giselles-ai/flow": "workspace:^",
 		"@giselles-ai/github-tool": "workspace:^",
 		"@giselles-ai/language-model": "workspace:^",

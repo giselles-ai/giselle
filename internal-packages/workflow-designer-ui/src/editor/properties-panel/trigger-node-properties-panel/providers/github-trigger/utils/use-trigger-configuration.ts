@@ -1,4 +1,3 @@
-import { getGitHubDisplayLabel, githubTriggers } from "@giselles-ai/flow";
 import {
 	useGiselleEngine,
 	useWorkflowDesigner,
@@ -9,6 +8,7 @@ import {
 	OutputId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
+import { findGitHubTriggerOption } from "@giselles-ai/trigger-registry";
 import { useCallback, useTransition } from "react";
 import type {
 	InputCallsignStep,
@@ -37,17 +37,17 @@ export const useTriggerConfiguration = ({
 			event: GitHubFlowTriggerEvent,
 			step: InputCallsignStep | InputLabelsStep,
 		) => {
-			const trigger = githubTriggers[event.id];
+			const triggerOption = findGitHubTriggerOption(event.id);
+			if (triggerOption === undefined) {
+				throw new Error(`Unknown trigger option for event ${event.id}`);
+			}
 
 			const outputs: Output[] = [];
-			for (const key of trigger.event.payloads.keyof().options) {
+			for (const item of triggerOption.payload) {
 				outputs.push({
 					id: OutputId.generate(),
-					label: getGitHubDisplayLabel({
-						eventId: event.id,
-						accessor: key,
-					}),
-					accessor: key,
+					label: item.label,
+					accessor: item.key,
 				});
 			}
 
@@ -76,7 +76,7 @@ export const useTriggerConfiguration = ({
 							},
 						},
 						outputs: [...node.outputs, ...outputs],
-						name: `On ${trigger.event.label}`,
+						name: `On ${triggerOption.label}`,
 					});
 				} catch (_error) {
 					// Error is handled by the UI state

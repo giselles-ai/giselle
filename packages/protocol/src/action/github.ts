@@ -2,7 +2,7 @@ import z from "zod/v4";
 import { ActionBase, ActionCommandBase } from "./base";
 import { actionMetadataRegistory } from "./meta";
 
-const GithubCreateIssueActionCommand = ActionCommandBase.extend({
+export const GithubCreateIssueActionCommand = ActionCommandBase.extend({
 	id: z.literal("github.create.issue"),
 	parameters: z.object({
 		title: z.string(),
@@ -82,20 +82,22 @@ actionMetadataRegistory.add(GithubCreateDiscussionCommentActionCommand, {
 	label: "Create Discussion Comment",
 });
 
+export const GitHubActionCommand = z.union([
+	GithubCreateIssueActionCommand,
+	GithubCreateIssueCommentActionCommand,
+	GithubCreatePullRequestCommentActionCommand,
+	GithubUpdatePullRequestActionCommand,
+	GithubReplyPullRequestReviewCommentActionCommand,
+	GithubGetDiscussionActionCommand,
+	GithubCreateDiscussionCommentActionCommand,
+]);
+
 export const GitHubAction = ActionBase.extend({
 	id: z.literal("github"),
-	command: z.union([
-		GithubCreateIssueActionCommand,
-		GithubCreateIssueCommentActionCommand,
-		GithubCreatePullRequestCommentActionCommand,
-		GithubUpdatePullRequestActionCommand,
-		GithubReplyPullRequestReviewCommentActionCommand,
-		GithubGetDiscussionActionCommand,
-		GithubCreateDiscussionCommentActionCommand,
-	]),
+	command: GitHubActionCommand,
 });
 
 export const GitHubActionCommandId = z.union(
-	GitHubAction.shape.command.options.map((option) => option.shape.id),
+	GitHubActionCommand.options.map((option) => option.shape.id),
 );
 export type GitHubActionCommandId = z.infer<typeof GitHubActionCommandId>;

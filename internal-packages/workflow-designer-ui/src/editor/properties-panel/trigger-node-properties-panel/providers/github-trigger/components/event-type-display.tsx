@@ -1,4 +1,4 @@
-import type { GitHubTriggerEventId } from "@giselles-ai/flow";
+import type { GitHubTriggerEventId } from "@giselles-ai/protocol";
 import { findGitHubTriggerOption } from "@giselles-ai/trigger-registry";
 import clsx from "clsx/lite";
 import { getTriggerIcon } from "./icons";

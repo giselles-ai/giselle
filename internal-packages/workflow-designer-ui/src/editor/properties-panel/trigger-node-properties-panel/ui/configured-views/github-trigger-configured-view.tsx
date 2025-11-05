@@ -1,13 +1,13 @@
 import { Button } from "@giselle-internal/ui/button";
-import {
-	type GitHubTriggerEventId,
-	githubTriggerIdToLabel,
-} from "@giselles-ai/flow";
 import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
-import type { FlowTriggerId, TriggerNode } from "@giselles-ai/protocol";
+import type {
+	FlowTriggerId,
+	GitHubTriggerEventId,
+	TriggerNode,
+} from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ClipboardButton from "../../../../../ui/clipboard-button";
 import { useGitHubTrigger } from "../../../../lib/use-github-trigger";
 import {
@@ -66,6 +66,7 @@ const DefaultEventIcon = ({
 	</svg>
 );
 
+import { findGitHubTriggerOption } from "@giselles-ai/trigger-registry";
 import type { GitHubTriggerReconfigureMode } from "../../providers/github-trigger/github-trigger-properties-panel";
 
 export function GitHubTriggerConfiguredView({
@@ -82,6 +83,19 @@ export function GitHubTriggerConfiguredView({
 		useGitHubTrigger(flowTriggerId);
 	const [actionInProgress, setActionInProgress] = useState(false);
 	const [actionError, setActionError] = useState<Error | null>(null);
+
+	const label = useMemo(() => {
+		if (data === undefined) {
+			return "";
+		}
+		const triggerOption = findGitHubTriggerOption(
+			data.trigger.configuration.event.id,
+		);
+		if (triggerOption === undefined) {
+			return "Unknown trigger";
+		}
+		return triggerOption.label;
+	}, [data]);
 
 	if (isLoading && data === undefined) {
 		return "Loading...";
@@ -201,9 +215,7 @@ export function GitHubTriggerConfiguredView({
 							return <IconComponent size={18} className="text-inverse" />;
 						})()}
 					</div>
-					<span className="pl-2">
-						{githubTriggerIdToLabel(data.trigger.configuration.event.id)}
-					</span>
+					<span className="pl-2">{label}</span>
 				</div>
 			</div>
 

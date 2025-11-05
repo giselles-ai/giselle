@@ -1,4 +1,4 @@
-import type { GitHubTriggerEventId } from "@giselles-ai/flow";
+import type { GitHubTriggerEventId } from "@giselles-ai/protocol";
 import {
 	Check,
 	MessageSquareCode,

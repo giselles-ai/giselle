@@ -1,15 +1,12 @@
-import {
-	type GitHubTriggerEventId,
-	getGitHubDisplayLabel,
-	githubTriggers,
-} from "@giselles-ai/flow";
 import type {
 	FlowTrigger,
 	GitHubFlowTriggerEvent,
+	GitHubTriggerEventId,
 	Output,
 	TriggerNode,
 } from "@giselles-ai/protocol";
 import { FlowTriggerId, OutputId } from "@giselles-ai/protocol";
+import { findGitHubTriggerOption } from "@giselles-ai/trigger-registry";
 
 /**
  * Type definitions for trigger configuration options
@@ -96,14 +93,17 @@ function isTriggerRequiringCallsign(eventId: GitHubTriggerEventId): boolean {
  * Generates the outputs for a given trigger
  */
 function generateTriggerOutputs(eventId: GitHubTriggerEventId): Output[] {
-	const trigger = githubTriggers[eventId];
+	const triggerOption = findGitHubTriggerOption(eventId);
+	if (triggerOption === undefined) {
+		throw new Error(`Trigger not found for eventId: ${eventId}`);
+	}
 	const outputs: Output[] = [];
 
-	for (const key of trigger.event.payloads.keyof().options) {
+	for (const item of triggerOption.payload) {
 		outputs.push({
 			id: OutputId.generate(),
-			label: getGitHubDisplayLabel({ eventId, accessor: key }),
-			accessor: key,
+			label: item.label,
+			accessor: item.key,
 		});
 	}
 
@@ -137,9 +137,13 @@ function createTriggerConfiguration(options: TriggerConfigOptions) {
 		throw new Error(`Callsign is required for trigger type: ${eventId}`);
 	}
 
+	const triggerOption = findGitHubTriggerOption(eventId);
+	if (!triggerOption)
+		throw new Error(`Trigger option not found for event ID: ${eventId}`);
+
 	const event = createTriggerEvent({ eventId, callsign });
 	const outputs = generateTriggerOutputs(eventId);
-	const name = `On ${githubTriggers[eventId].event.label}`;
+	const name = `On ${triggerOption.label}`;
 
 	return {
 		trigger: {
