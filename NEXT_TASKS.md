@@ -113,26 +113,34 @@
 - Designer: ノードアイコンの前景色が背景と十分なコントラスト
 
 対象ページ
-- `/settings/account`, `/settings/account/general`, `/settings/account/authentication`
-- `/settings/team`, `/settings/team/members`, `/settings/team/integrations`, `/settings/team/vector-stores`, `/settings/team/vector-stores/document`, `/settings/team/usage`
-- `/workspaces`
-- `/stage/showcase`, `/stage/showcase/playlist/[id]`
-- `/stage`（ツールバー/プロパティパネル）
+- [x] `/settings/account`（OverviewのDocsLink／Create New Teamの＋）
+- [x] `/settings/account/general`
+- [x] `/settings/account/authentication`
+- [x] `/settings/team/members`（Invite Memberダイアログ：プレースホルダー・＋）
+- [x] `/workspaces`（New Workspaceの＋）
+- [x] `/stage/showcase`（新規Playlistダイアログ：Title/Descriptionのプレースホルダー）
+- [ ] `/settings/team`（各DocsLinkの色）
+- [ ] `/settings/team/integrations`
+- [ ] `/settings/team/vector-stores`
+- [ ] `/settings/team/vector-stores/document`
+- [ ] `/settings/team/usage`
+- [ ] `/stage`（ツールバー/プロパティパネル/ノードアイコンのコントラスト）
 
 ### Step 2: 型・ビルド・テスト
 
-- `turbo check-types`
-- `turbo build`
-- `turbo test`
+- [x] `turbo check-types`
+- [ ] `turbo build`（ローカルで実行推奨）
+- [ ] `turbo test`
 
 ### Step 3: レポ全体の残存チェック（最終確認）
 
-- `placeholder:text-text-muted` がないこと
-- `text-bg` がないこと
+- [x] `placeholder:text-text-muted` がないこと
+- [x] `text-bg` がないこと
 
 参考コミット
 - `refactor(ui): use stable tokens and adjust link/icon tones`
 - `chore(ui): audit DocsLink usages and replace placeholder/text-bg tokens`
+- `fix(ui): align RevokeInvitationDialog Button variant with ButtonStyle (use primary)`
 
 ---
 
