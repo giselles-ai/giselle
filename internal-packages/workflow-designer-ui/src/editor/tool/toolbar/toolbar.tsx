@@ -653,7 +653,7 @@ export function Toolbar() {
 															</div>
 														</div>
 													)}
-												<div className="relative text-inverse h-[200px]">
+									<div className="relative text-[var(--color-text-inverse)] h-[200px]">
 													{languageModelMouseHovered ? (
 														<div className="px-[16px] py-[16px] flex flex-col gap-[24px]">
 															<div className="flex items-start gap-[16px]">
@@ -875,7 +875,7 @@ export function Toolbar() {
 									<Popover.Content
 										className={clsx(
 											"relative rounded-[8px] px-[8px] py-[8px]",
-											"text-inverse overflow-hidden",
+												"text-[var(--color-text-inverse)] overflow-hidden",
 										)}
 										sideOffset={42}
 									>
@@ -941,7 +941,7 @@ export function Toolbar() {
 									<Popover.Content
 										className={clsx(
 											"relative rounded-[8px] px-[8px] py-[8px]",
-											"text-inverse overflow-hidden",
+												"text-[var(--color-text-inverse)] overflow-hidden",
 										)}
 										sideOffset={42}
 									>
