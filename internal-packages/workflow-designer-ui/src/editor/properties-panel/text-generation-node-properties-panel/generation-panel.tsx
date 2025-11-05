@@ -152,7 +152,7 @@ export function GenerationPanel({
 					className="absolute bottom-[8px] right-[8px] size-[32px] rounded-full bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] flex items-center justify-center transition-colors group z-10"
 					aria-label="Expand"
 				>
-					<Maximize2 className="size-[16px] text-inverse group-hover:text-inverse/80" />
+					<Maximize2 className="size-[16px] text-[var(--color-text-inverse)] group-hover:text-[color-mix(in_srgb,var(--color-text-inverse,#fff)_80%,transparent)]" />
 				</button>
 			)}
 			<div

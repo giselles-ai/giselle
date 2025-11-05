@@ -189,7 +189,7 @@ function UserTeamsItem({
 							renderButton={(isPending) => (
 								<button
 									type="submit"
-									className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-inverse rounded-md"
+									className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-[var(--color-text-inverse)] rounded-md"
 									disabled={isPending}
 								>
 									Settings
