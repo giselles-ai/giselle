@@ -11,7 +11,7 @@ test.describe("Account settings navigation", () => {
 			.getByRole("menuitem", { name: "Account settings" })
 			.waitFor({ state: "visible" });
 		await page.getByRole("menuitem", { name: "Account settings" }).click();
-		await expect(page).toHaveURL(`${baseUrl}/settings/account`, {
+		await expect(page).toHaveURL(`${baseUrl}/settings/account/general`, {
 			timeout: 15000,
 		});
 
