@@ -203,7 +203,7 @@ export function ConfigureSourcesDialog({
 															);
 														}
 													}}
-								className="mt-1 w-4 h-4 text-primary-900 bg-surface border-[var(--color-border)] rounded focus:ring-primary-900"
+								className="mt-1 w-4 h-4 text-primary-900 bg-[var(--color-surface)] border-[var(--color-border)] rounded focus:ring-primary-900"
 												/>
 												<div className="flex-1">
 													<div className="text-text text-[14px] font-medium">

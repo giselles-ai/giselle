@@ -224,7 +224,7 @@ export function RepositoryRegistrationDialog({
 									value={ownerId}
 									onValueChange={handleOwnerChange}
 									disabled={isPending}
-									triggerClassName="bg-surface text-text text-[14px] font-geist"
+						triggerClassName="bg-[var(--color-surface)] text-[var(--color-text)] text-[14px] font-geist"
 									id="owner"
 								/>
 							</div>
@@ -250,7 +250,7 @@ export function RepositoryRegistrationDialog({
 									value={repositoryId}
 									onValueChange={handleRepositoryChange}
 									disabled={isPending || !ownerId}
-									triggerClassName="bg-surface text-text text-[14px] font-geist"
+						triggerClassName="bg-[var(--color-surface)] text-[var(--color-text)] text-[14px] font-geist"
 									id="repository"
 								/>
 							</div>
