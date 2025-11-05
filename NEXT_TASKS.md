@@ -53,15 +53,14 @@
 —
 
 ### 3.1 🔵 削除に向けた残タスク（チェックリスト）
-- [ ] alias 使用の最終インベントリ（grep/codemod）
-  - `text-inverse`, `text-text`, `text-accent`/`bg-accent`/`border-accent`
-  - `text-secondary`/`bg-secondary`, `hover:text-*`/`text-text/*`
-  - `bg-surface`/`bg-bg`/`bg-transparent`/`bg-stage`/`bg-auth`
-  - `border-border`/`border-border-muted`, `ring-focused`/`outline-focused`
-- [ ] 置換ガイドの適用
-  - text 系: `text-[var(--color-...)]`（semantic.css の変数を利用）
-  - bg/border/ring 系: `bg-[var(--color-...)]` / `border-[var(--color-...)]` / `focus-visible:ring-[var(--color-...)]`
-  - 必要に応じて semantic.css に最小限の semantic utility を追加
+- [x] alias 使用の最終インベントリ（grep/codemod）
+  - `border-border` / `border-border-muted` / `color-border-focused` / `ring-focused` / `outline-focused`
+- [x] 置換ガイドの適用（第1弾完了）
+  - `border-border` → `border-[var(--color-border)]`
+  - `border-border-muted` → `border-[var(--color-border-muted)]`
+  - `outline-focused` → `outline-[var(--color-focused)]`
+  - `focus:border-border-focused` → `focus:border-[var(--color-border-focused)]`
+- [ ] 残りの alias（text-inverse/text-text/accent/secondary/bg-surface など）の段階的置換
 - [ ] 高トラフィック UI の先行更新（Header/Nav/Buttons/Inputs/Dialog/Designer）
 - [ ] CI ガードの有効化（alias 検出時 fail）
   - 既存スクリプト/grep を CI から実行、増加検知で失敗
@@ -167,6 +166,7 @@
 - `refactor(ui): use stable tokens and adjust link/icon tones`
 - `chore(ui): audit DocsLink usages and replace placeholder/text-bg tokens`
 - `fix(ui): align RevokeInvitationDialog Button variant with ButtonStyle (use primary)`
+- `refactor(ui): replace border and focus aliases with semantic tokens`
 
 ---
 
