@@ -45,7 +45,7 @@ export default async function AccountSettingPage() {
 								<h4 className="text-text text-[18px] font-medium font-sans">
 									Teams
 								</h4>
-								<p className="text-secondary text-[12px] font-geist">
+								<p className="text-[var(--color-link-muted)] text-[12px] font-geist">
 									The teams that are associated with your Giselle account.
 								</p>
 							</div>

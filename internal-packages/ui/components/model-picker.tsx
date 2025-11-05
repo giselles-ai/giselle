@@ -166,7 +166,7 @@ export function ModelPicker({
 												className={clsx(
 													"flex px-[8px] py-0 justify-center items-center rounded text-[12px] font-medium",
 													providerFilter === p
-														? "bg-secondary text-inverse"
+														? "bg-[var(--color-text-secondary)] text-inverse"
 														: "hover:bg-ghost-element-hover text-inverse",
 												)}
 											>

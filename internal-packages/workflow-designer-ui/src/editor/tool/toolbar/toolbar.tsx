@@ -515,7 +515,7 @@ export function Toolbar() {
 														type="button"
 														className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
 															selectedCategory === "All"
-																? "bg-secondary"
+														? "bg-[var(--color-text-secondary)]"
 																: "hover:bg-ghost-element-hover"
 														} text-inverse rounded text-[12px] font-medium leading-[170%]`}
 														onClick={() => setSelectedCategory("All")}
@@ -526,7 +526,7 @@ export function Toolbar() {
 														type="button"
 														className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
 															selectedCategory === "Text"
-																? "bg-secondary"
+														? "bg-[var(--color-text-secondary)]"
 																: "hover:bg-ghost-element-hover"
 														} text-inverse rounded text-[12px] font-medium leading-[170%]`}
 														onClick={() => setSelectedCategory("Text")}
@@ -537,7 +537,7 @@ export function Toolbar() {
 														type="button"
 														className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
 															selectedCategory === "Image"
-																? "bg-secondary"
+														? "bg-[var(--color-text-secondary)]"
 																: "hover:bg-ghost-element-hover"
 														} text-inverse rounded text-[12px] font-medium leading-[170%]`}
 														onClick={() => setSelectedCategory("Image")}

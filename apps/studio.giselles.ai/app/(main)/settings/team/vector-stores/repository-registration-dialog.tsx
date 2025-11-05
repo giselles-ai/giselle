@@ -174,7 +174,7 @@ export function RepositoryRegistrationDialog({
 			<DialogTrigger asChild>
 				<GlassButton className="whitespace-nowrap">
 					<span className="grid size-4 place-items-center rounded-full bg-primary-200 opacity-50">
-						<Plus className="size-3 text-secondary" />
+						<Plus className="size-3 text-[var(--color-link-muted)]" />
 					</span>
 					Register Repository
 				</GlassButton>
