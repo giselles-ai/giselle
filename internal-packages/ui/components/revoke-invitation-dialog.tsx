@@ -68,7 +68,7 @@ export function RevokeInvitationDialog({
 						className={
 							variant === "destructive"
 								? "font-sans text-[20px] font-medium tracking-tight text-error-900"
-								: "font-sans text-[20px] font-medium tracking-tight text-inverse"
+					: "font-sans text-[20px] font-medium tracking-tight text-[var(--color-text-inverse)]"
 						}
 					>
 						{title}
@@ -77,12 +77,12 @@ export function RevokeInvitationDialog({
 						className={
 							variant === "destructive"
 								? "text-error-900/50"
-								: "text-text-muted"
+					: "text-text-muted"
 						}
 					>
 						{email ? `${email}\n\n${description}` : description}
 					</DialogDescription>
-					<DialogClose className="text-inverse" />
+			<DialogClose className="text-[var(--color-text-inverse)]" />
 				</DialogHeader>
 				<DialogBody>
 					{error && (

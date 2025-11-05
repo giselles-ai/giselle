@@ -87,7 +87,7 @@ export function PromptEditor({
 						)}
 						aria-label="Expand"
 					>
-						<Maximize2 className="size-[16px] text-inverse group-hover:text-inverse/80" />
+					<Maximize2 className="size-[16px] text-[var(--color-text-inverse)] group-hover:text-inverse/80" />
 					</button>
 				)}
 			</div>

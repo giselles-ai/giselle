@@ -96,7 +96,7 @@ export function DropdownMenu<
 				renderItemAsChild
 					? ""
 					: clsx(
-							"text-text outline-none cursor-pointer",
+							"text-[var(--color-text)] outline-none cursor-pointer",
 							item.destructive
 								? "hover:bg-[var(--color-destructive-hover-bg)]"
 								: "hover:bg-ghost-element-hover",
@@ -139,7 +139,7 @@ export function DropdownMenu<
 							if (isGroupItem(option)) {
 								return (
 									<DropdownMenuPrimitive.Group key={option.groupId}>
-										<DropdownMenuPrimitive.Label className="text-text px-[8px] py-[6px] text-[12px] font-medium">
+							<DropdownMenuPrimitive.Label className="text-[var(--color-text)] px-[8px] py-[6px] text-[12px] font-medium">
 											{option.groupLabel}
 										</DropdownMenuPrimitive.Label>
 										{option.items.map(renderMenuItem)}

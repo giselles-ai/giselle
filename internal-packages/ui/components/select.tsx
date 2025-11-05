@@ -92,7 +92,7 @@ export function Select<T extends SelectOption>({
 						</div>
 					)}
 					{!hideChevron && (
-						<ChevronDownIcon className="size-[13px] shrink-0 text-text ml-2" />
+						<ChevronDownIcon className="size-[13px] shrink-0 text-[var(--color-text)] ml-2" />
 					)}
 				</button>
 			</SelectPrimitive.Trigger>
