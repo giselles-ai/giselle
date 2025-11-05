@@ -1,6 +1,6 @@
-import type { EmbeddingProfileId } from "@giselle-sdk/data-type";
-import { GitHubRepositoryIssueContentTypeValues } from "@giselle-sdk/github-tool";
-import { createPostgresChunkStore } from "@giselle-sdk/rag";
+import { GitHubRepositoryIssueContentTypeValues } from "@giselles-ai/github-tool";
+import type { EmbeddingProfileId } from "@giselles-ai/protocol";
+import { createPostgresChunkStore } from "@giselles-ai/rag";
 import { getTableName } from "drizzle-orm";
 import z from "zod/v4";
 import { githubRepositoryIssueEmbeddings } from "@/db";
