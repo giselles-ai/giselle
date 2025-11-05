@@ -13,6 +13,7 @@
 
 - `text-link-muted`: 残存なし（コンポーネント含め `var(--color-link-muted)` へ統一済み）
 - `text-bg`: 残存なし（`text-[var(--color-background)]` へ統一済み）
+- ✅ SDKパッケージのビルド/テスト完了（apps は別途環境変数が必要）
 
 ---
 
@@ -119,18 +120,19 @@
 - [x] `/settings/team/members`（Invite Memberダイアログ：プレースホルダー・＋）
 - [x] `/workspaces`（New Workspaceの＋）
 - [x] `/stage/showcase`（新規Playlistダイアログ：Title/Descriptionのプレースホルダー）
-- [ ] `/settings/team`（各DocsLinkの色）
-- [ ] `/settings/team/integrations`
-- [ ] `/settings/team/vector-stores`
-- [ ] `/settings/team/vector-stores/document`
-- [ ] `/settings/team/usage`
-- [ ] `/stage`（ツールバー/プロパティパネル/ノードアイコンのコントラスト）
+- [x] `/settings/team`（各DocsLinkの色）
+- [x] `/settings/team/integrations`
+- [x] `/settings/team/vector-stores`
+- [x] `/settings/team/vector-stores/document`
+- [x] `/settings/team/usage`
+- [x] `/stage`（ツールバー/プロパティパネル/ノードアイコンのコントラスト）
 
 ### Step 2: 型・ビルド・テスト
 
 - [x] `turbo check-types`
-- [ ] `turbo build`（ローカルで実行推奨）
-- [ ] `turbo test`
+- [x] `turbo build`（SDKパッケージのみ。アプリは環境変数が必要）
+- [x] `turbo test`（SDKパッケージのみ）
+- [ ] アプリの本番ビルド（`studio.giselles.ai` / `ui.giselles.ai` / `playground`）をローカル/CIで実施
 
 ### Step 3: レポ全体の残存チェック（最終確認）
 
