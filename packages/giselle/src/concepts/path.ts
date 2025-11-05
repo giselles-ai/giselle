@@ -1,5 +1,4 @@
-import type { ActId } from "./act";
-import type { GenerationId } from "./generation";
+import type { ActId, GenerationId } from "@giselles-ai/protocol";
 
 export function actGenerationIndexesPath(actId: ActId) {
 	return `generations/byAct/${actId}.json` as const;

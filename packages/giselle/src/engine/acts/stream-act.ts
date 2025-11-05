@@ -1,5 +1,5 @@
+import { Act, type ActId } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
-import { Act, type ActId } from "../../concepts";
 import type { GiselleEngineContext } from "../types";
 import { getAct } from "./get-act";
 export const StreamData = z.object({

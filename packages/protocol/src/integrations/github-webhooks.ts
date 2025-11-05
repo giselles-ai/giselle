@@ -8,3 +8,8 @@ export type WebhookEvent<T extends EmitterWebhookEventName = any> = {
 	name: T;
 	data: EmitterWebhookEvent<T>;
 };
+
+export type {
+	EmitterWebhookEvent,
+	EmitterWebhookEventName as WebhookEventName,
+} from "@octokit/webhooks";

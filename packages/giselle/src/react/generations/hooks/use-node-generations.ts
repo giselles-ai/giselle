@@ -1,8 +1,11 @@
-import type { NodeId } from "@giselles-ai/protocol";
+import type {
+	Generation,
+	GenerationOrigin,
+	NodeId,
+} from "@giselles-ai/protocol";
 import { useCallback, useEffect, useMemo } from "react";
 import useSWR from "swr";
 import { useShallow } from "zustand/shallow";
-import type { Generation, GenerationOrigin } from "../../../concepts";
 import { useGiselleEngine } from "../../use-giselle-engine";
 import { useGenerationRunnerSystem } from "../contexts";
 import { useGenerationStore } from "../store";

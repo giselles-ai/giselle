@@ -1,5 +1,5 @@
+import type { Act } from "@giselles-ai/protocol";
 import { describe, expect, it } from "vitest";
-import type { Act } from "../../../concepts";
 import { patchAct } from "./patch-object";
 
 describe("patchAct", () => {
