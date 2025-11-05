@@ -207,7 +207,6 @@
 		) !important;
 	}
 
-
 	/* Compatibility alias: keep existing class name working */
 	.color-border-focused {
 		border-color: var(--color-border-focused, var(--color-focused, #47679e)) !important;
@@ -322,11 +321,6 @@
 	}
 	.border-blue-muted {
 		border-color: var(--color-blue-muted, #839dc3) !important;
-	}
-
-	/* Placeholder variant for link-muted */
-	.placeholder\:text-link-muted::placeholder {
-		color: var(--color-link-muted) !important;
 	}
 
 	/* Layout tokens */

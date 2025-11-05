@@ -44,14 +44,14 @@ interface DocsLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
 export function DocsLink({
 	className,
 	icon = true,
-	tone = "muted",
+	tone = "secondary",
 	children,
 	...props
 }: DocsLinkProps) {
 	const toneClass =
 		tone === "muted"
 			? "text-text/80 hover:text-text"
-			: "text-link-muted hover:text-link-muted";
+			: "text-[var(--color-link-muted)] hover:text-[var(--color-link-muted)]";
 	return (
 		<a
 			className={clsx(

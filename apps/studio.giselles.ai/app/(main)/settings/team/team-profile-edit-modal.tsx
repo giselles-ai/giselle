@@ -373,7 +373,7 @@ export function TeamProfileEditModal({
 									id="teamName"
 									value={teamName}
 									onChange={handleTeamNameChange}
-									className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse outline-none placeholder:text-link-muted focus-visible:ring-0 focus-visible:shadow-none"
+									className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse outline-none placeholder:text-[var(--color-link-muted)] focus-visible:ring-0 focus-visible:shadow-none"
 									disabled={isLoading}
 								/>
 							</div>
