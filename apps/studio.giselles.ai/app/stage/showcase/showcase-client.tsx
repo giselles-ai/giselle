@@ -272,7 +272,7 @@ export function ShowcaseClient({
 
 				{/* Tabs */}
 				<div className="mb-8">
-					<div className="flex items-center px-0 py-0 border-b border-border">
+					<div className="flex items-center px-0 py-0 border-b border-[var(--color-border)]">
 						<div className="flex items-center space-x-[12px]">
 							{["Apps", "Playlist", "History"].map((tab) => {
 								const isActive = activeTab === tab;
@@ -373,7 +373,7 @@ export function ShowcaseClient({
 											<div className="flex items-center gap-2">
 												<button
 													type="button"
-													className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-border hover:border-border"
+									className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-[var(--color-border)] hover:border-[var(--color-border)]"
 													title="Run app"
 													onClick={(e) => {
 														e.stopPropagation();
@@ -653,7 +653,7 @@ export function ShowcaseClient({
 											<div className="flex items-center gap-2">
 												<button
 													type="button"
-													className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-border hover:border-border"
+									className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-[var(--color-border)] hover:border-[var(--color-border)]"
 													title="Re-run app"
 													onClick={() => {
 														if (item.workspaceId) {

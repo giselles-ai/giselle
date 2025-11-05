@@ -7,7 +7,7 @@ export function Input({ className, ...props }: InputProps) {
 		<input
 			className={clsx(
 				"border border-border rounded-[4px] bg-editor-background outline-none px-[8px] py-[2px] text-[14px] text-text",
-				"focus:border-border-focused",
+				"focus:border-[var(--color-border-focused)]",
 				className,
 			)}
 			{...props}

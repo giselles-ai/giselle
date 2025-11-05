@@ -50,7 +50,7 @@ export default function UserTeams({
 
 	return (
 		<>
-			<div className="relative overflow-hidden rounded-[12px] backdrop-blur-md bg-white/[0.02] border-[0.5px] border-border shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(255,255,255,0.2)] before:content-[''] before:absolute before:inset-0 before:bg-white before:opacity-[0.02] before:rounded-[inherit] before:pointer-events-none py-2">
+			<div className="relative overflow-hidden rounded-[12px] backdrop-blur-md bg-white/[0.02] border-[0.5px] border-[var(--color-border)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(255,255,255,0.2)] before:content-[''] before:absolute before:inset-0 before:bg-white before:opacity-[0.02] before:rounded-[inherit] before:pointer-events-none py-2">
 				<div
 					className="flex items-center gap-x-[11px] mt-4 mb-2 mx-4 py-2 px-3 rounded-[8px]"
 					style={{
@@ -72,7 +72,7 @@ export default function UserTeams({
 					{filteredTeams.map((team, idx) => (
 						<UserTeamsItem
 							className={cn(
-								"border-t border-border mx-4",
+								"border-t border-[var(--color-border)] mx-4",
 								idx === 0 && "border-t-0",
 							)}
 							key={team.id}

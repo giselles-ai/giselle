@@ -183,7 +183,7 @@ export function ConfigureSourcesDialog({
 										return (
 											<label
 												key={profileId}
-												className="flex items-start gap-3 p-3 rounded-lg border border-border-muted hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] transition-colors cursor-pointer"
+							className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-border-muted)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] transition-colors cursor-pointer"
 											>
 												<input
 													type="checkbox"
@@ -203,7 +203,7 @@ export function ConfigureSourcesDialog({
 															);
 														}
 													}}
-													className="mt-1 w-4 h-4 text-primary-900 bg-surface border-border rounded focus:ring-primary-900"
+								className="mt-1 w-4 h-4 text-primary-900 bg-surface border-[var(--color-border)] rounded focus:ring-primary-900"
 												/>
 												<div className="flex-1">
 													<div className="text-text text-[14px] font-medium">
