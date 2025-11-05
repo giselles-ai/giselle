@@ -53,7 +53,7 @@ function Submit({
 		<Button
 			type="submit"
 			disabled={isDisabled}
-			className="w-full rounded-lg px-4 py-2 text-inverse/80 transition-all duration-200 active:scale-[0.98]"
+			className="w-full rounded-lg px-4 py-2 text-[var(--color-text-inverse)]/80 transition-all duration-200 active:scale-[0.98]"
 			style={buttonStyle}
 		>
 			{selectedPlan === "pro" ? "Proceed to Payment" : "Create Team"}
@@ -97,10 +97,10 @@ export function TeamCreationForm({
 				onPointerDownOutside={() => setIsOpen(false)}
 			>
 				<DialogHeader>
-					<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+					<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-[var(--color-text-inverse)]">
 						Create New Team
 					</DialogTitle>
-					<DialogClose className="text-inverse" />
+					<DialogClose className="text-[var(--color-text-inverse)]" />
 				</DialogHeader>
 
 				<DialogBody>
@@ -108,7 +108,7 @@ export function TeamCreationForm({
 						<div className="flex flex-col gap-y-2">
 							<Label
 								htmlFor="teamName"
-								className="text-inverse font-medium text-[12px] leading-[20.4px] font-geist"
+							className="text-[var(--color-text-inverse)] font-medium text-[12px] leading-[20.4px] font-geist"
 							>
 								Team Name
 							</Label>
@@ -125,7 +125,7 @@ export function TeamCreationForm({
 									name="teamName"
 									value={teamName}
 									onChange={(e) => setTeamName(e.target.value)}
-									className="w-full bg-transparent text-inverse font-medium text-[14px] leading-[23.8px] font-geist shadow-none focus:text-white border-0 p-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none placeholder:text-[var(--color-link-muted)]"
+								className="w-full bg-transparent text-[var(--color-text-inverse)] font-medium text-[14px] leading-[23.8px] font-geist shadow-none focus:text-white border-0 p-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none placeholder:text-[var(--color-link-muted)]"
 									placeholder="Enter team name"
 								/>
 							</div>
@@ -150,7 +150,7 @@ export function TeamCreationForm({
 											<label htmlFor="free">
 												<CardHeader>
 													<div className="flex flex-col gap-2">
-														<CardTitle className="text-inverse text-[16px] leading-[27.2px] tracking-normal font-sans">
+									<CardTitle className="text-[var(--color-text-inverse)] text-[16px] leading-[27.2px] tracking-normal font-sans">
 															Free
 														</CardTitle>
 														<div className="flex items-center mb-2">
@@ -161,12 +161,12 @@ export function TeamCreationForm({
 															/>
 															<Label
 																htmlFor="free"
-																className="ml-2 text-inverse font-geist text-[16px]"
+										className="ml-2 text-[var(--color-text-inverse)] font-geist text-[16px]"
 															>
 																$0/month
 															</Label>
 														</div>
-														<CardDescription className="text-inverse font-semibold text-[12px] leading-[20.4px] font-geist">
+									<CardDescription className="text-[var(--color-text-inverse)] font-semibold text-[12px] leading-[20.4px] font-geist">
 															Basic features for personal use
 														</CardDescription>
 														<CardDescription className="text-text-muted font-medium text-[12px] leading-[20.4px] font-geist">
@@ -192,12 +192,12 @@ export function TeamCreationForm({
 															/>
 															<Label
 																htmlFor="pro"
-																className="ml-2 text-inverse font-geist text-[16px]"
+										className="ml-2 text-[var(--color-text-inverse)] font-geist text-[16px]"
 															>
 																{proPlanPrice}/month
 															</Label>
 														</div>
-														<CardDescription className="text-inverse font-semibold text-[12px] leading-[20.4px] font-geist">
+									<CardDescription className="text-[var(--color-text-inverse)] font-semibold text-[12px] leading-[20.4px] font-geist">
 															Advanced features & support
 														</CardDescription>
 														<CardDescription className="text-text-muted font-medium text-[12px] leading-[20.4px] font-geist">

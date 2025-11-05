@@ -65,7 +65,7 @@ export default function UserTeams({
 						type="text"
 						value={teamName}
 						placeholder="Search for a team..."
-						className="w-full text-inverse font-medium text-[14px] leading-[23.8px] font-geist placeholder:text-[var(--color-link-muted)] bg-transparent outline-none"
+						className="w-full text-[var(--color-text-inverse)] font-medium text-[14px] leading-[23.8px] font-geist placeholder:text-[var(--color-link-muted)] bg-transparent outline-none"
 					/>
 				</div>
 				<div>
@@ -140,7 +140,7 @@ function UserTeamsItem({
 				/>
 				<div className="flex flex-col">
 					<div className="flex items-center gap-2">
-						<div className="text-inverse font-medium text-[16px] leading-[22.4px] font-geist">
+							<div className="text-[var(--color-text-inverse)] font-medium text-[16px] leading-[22.4px] font-geist">
 							{teamName}
 						</div>
 						{isPro ? <ProTag /> : <FreeTag />}
@@ -172,7 +172,7 @@ function UserTeamsItem({
 							renderButton={(isPending) => (
 								<button
 									type="submit"
-									className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-inverse rounded-md"
+									className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-[var(--color-text-inverse)] rounded-md"
 									disabled={isPending}
 								>
 									Apps
