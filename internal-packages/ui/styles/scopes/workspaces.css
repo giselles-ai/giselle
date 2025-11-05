@@ -1,8 +1,0 @@
-/* scopes/workspaces.css - semantic overrides for workspaces scope (placeholder) */
-@layer utilities {
-	:root[data-scope="workspaces"] {
-		/* Example overrides */
-		/* --color-surface: var(--color-gray-50); */
-		/* --color-text: var(--color-gray-900); */
-	}
-}

@@ -1,5 +1,0 @@
-/*
- * When globals.css is imported in the app, tailwind-language-server stops working in workflow-designer-ui, so as a workaround we're importing it in this file.
- * Related issue: https://github.com/tailwindlabs/tailwindcss-intellisense/issues/1377
- */
-@import "globals.css";
