@@ -1,12 +1,17 @@
 import { Plus, X } from "lucide-react";
-import { Dialog as DialogPrimitive } from "radix-ui";
 import { useEffect, useState } from "react";
 import { Button } from "./button";
 import {
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "./glass-dialog";
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "./dialog";
 import { Select } from "./select";
 
 export type InviteMemberRole = {
@@ -200,110 +205,132 @@ export function InviteMemberDialog({
 	};
 
 	return (
-		<DialogPrimitive.Root open={open} onOpenChange={setOpen}>
+		<Dialog open={open} onOpenChange={setOpen}>
 			{trigger ? (
-				<DialogPrimitive.Trigger asChild>{trigger}</DialogPrimitive.Trigger>
+				<DialogTrigger asChild>{trigger}</DialogTrigger>
 			) : (
-				<DialogPrimitive.Trigger asChild>
+				<DialogTrigger asChild>
 					<Button variant="solid" size="compact">
 						<Plus className="size-3" />
 						Invite Member
 					</Button>
-				</DialogPrimitive.Trigger>
+				</DialogTrigger>
 			)}
 
-			<GlassDialogContent className={className}>
-				<GlassDialogHeader
-					title={title}
-					description={description || ""}
-					onClose={() => setOpen(false)}
-				/>
+			<DialogContent variant="glass" className={className}>
+				<DialogHeader>
+					<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+						{title}
+					</DialogTitle>
+					{description && (
+						<DialogDescription className="text-text-muted">
+							{description}
+						</DialogDescription>
+					)}
+					<DialogClose className="text-inverse" />
+				</DialogHeader>
 
-				<form onSubmit={handleSubmit} className="mt-4" id="invite-member-form">
-					<div className="flex items-start gap-3 rounded-lg bg-inverse/5 p-1">
-						<div className="flex min-h-[40px] flex-grow flex-wrap items-center gap-1 px-2">
-							{emailTags.map((email) => (
-								<div
-									key={email}
-									className="mb-1 mr-2 flex items-center rounded-md bg-inverse/10 px-2.5 py-1.5"
-								>
-									<span className="max-w-[180px] truncate text-[14px] text-text">
-										{email}
-									</span>
-									<button
-										type="button"
-										onClick={() => removeEmailTag(email)}
-										className="ml-1.5 text-text/40 hover:text-text/60"
-										disabled={isLoading}
+				<DialogBody>
+					<form
+						onSubmit={handleSubmit}
+						className="mt-4"
+						id="invite-member-form"
+					>
+						<div className="flex items-start gap-3 rounded-lg bg-inverse/5 p-1">
+							<div className="flex min-h-[40px] flex-grow flex-wrap items-center gap-1 px-2">
+								{emailTags.map((email) => (
+									<div
+										key={email}
+										className="mb-1 mr-2 flex items-center rounded-md bg-inverse/10 px-2.5 py-1.5"
 									>
-										<X className="h-4 w-4" />
-									</button>
-								</div>
-							))}
-							<input
-								type="text"
-								placeholder={
-									emailTags.length > 0 ? "Add more emails..." : placeholder
-								}
-								value={emailInput}
-								onChange={(e) => {
-									setErrors([]);
-									setEmailInput(e.target.value);
-								}}
-								onKeyDown={handleKeyDown}
-								onBlur={() => addEmailTags()}
-								className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-text outline-none placeholder:text-text/30"
-								disabled={isLoading}
+										<span className="max-w-[180px] truncate text-[14px] text-text">
+											{email}
+										</span>
+										<button
+											type="button"
+											onClick={() => removeEmailTag(email)}
+											className="ml-1.5 text-text/40 hover:text-text/60"
+											disabled={isLoading}
+										>
+											<X className="h-4 w-4" />
+										</button>
+									</div>
+								))}
+								<input
+									type="text"
+									placeholder={
+										emailTags.length > 0 ? "Add more emails..." : placeholder
+									}
+									value={emailInput}
+									onChange={(e) => {
+										setErrors([]);
+										setEmailInput(e.target.value);
+									}}
+									onKeyDown={handleKeyDown}
+									onBlur={() => addEmailTags()}
+									className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-text outline-none placeholder:text-text/30"
+									disabled={isLoading}
+								/>
+							</div>
+							<Select
+								options={roles}
+								placeholder="Select role"
+								value={role}
+								onValueChange={setRole}
+								widthClassName="w-[120px]"
+								triggerClassName="h-10"
 							/>
 						</div>
-						<Select
-							options={roles}
-							placeholder="Select role"
-							value={role}
-							onValueChange={setRole}
-							widthClassName="w-[120px]"
-							triggerClassName="h-10"
-						/>
-					</div>
 
-					{errors.length > 0 && (
-						<div className="mt-3 space-y-1">
-							{errors.map((error) => (
-								<div
-									key={`${error.message}-${error.emails?.join(",") || ""}`}
-									className="text-sm text-error-900"
-								>
-									{error.emails && error.emails.length > 0 ? (
-										<>
-											<span className="font-medium">{error.message}:</span>{" "}
-											<span>{error.emails.join(", ")}</span>
-										</>
-									) : (
-										<span>{error.message}</span>
-									)}
-								</div>
-							))}
-						</div>
-					)}
-				</form>
-				<GlassDialogFooter
-					onCancel={() => setOpen(false)}
-					onConfirm={() => {
-						const form = document.getElementById(
-							"invite-member-form",
-						) as HTMLFormElement;
-						if (form) {
-							if (typeof form.requestSubmit === "function") {
-								form.requestSubmit();
-							} else {
-								form.submit();
+						{errors.length > 0 && (
+							<div className="mt-3 space-y-1">
+								{errors.map((error) => (
+									<div
+										key={`${error.message}-${error.emails?.join(",") || ""}`}
+										className="text-sm text-error-900"
+									>
+										{error.emails && error.emails.length > 0 ? (
+											<>
+												<span className="font-medium">{error.message}:</span>{" "}
+												<span>{error.emails.join(", ")}</span>
+											</>
+										) : (
+											<span>{error.message}</span>
+										)}
+									</div>
+								))}
+							</div>
+						)}
+					</form>
+				</DialogBody>
+				<DialogFooter>
+					<Button
+						variant="link"
+						onClick={() => setOpen(false)}
+						disabled={isLoading}
+					>
+						Cancel
+					</Button>
+					<Button
+						variant="primary"
+						onClick={() => {
+							const form = document.getElementById(
+								"invite-member-form",
+							) as HTMLFormElement;
+							if (form) {
+								if (typeof form.requestSubmit === "function") {
+									form.requestSubmit();
+								} else {
+									form.submit();
+								}
 							}
-						}
-					}}
-					confirmLabel={confirmLabel}
-					isPending={isLoading}
-				/>
-			</GlassDialogContent>
-		</DialogPrimitive.Root>
+						}}
+						disabled={isLoading}
+					>
+						{isLoading ? "Processing..." : confirmLabel}
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }

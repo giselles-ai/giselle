@@ -1,8 +1,18 @@
 "use client";
 
+import {
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@giselle-internal/ui/dialog";
 import { useToast } from "@giselles-ai/contexts/toast";
-import * as Dialog from "@radix-ui/react-dialog";
-import { CopyIcon, LoaderCircleIcon } from "lucide-react";
+import { CopyIcon, LoaderCircleIcon, X } from "lucide-react";
 import { redirect } from "next/navigation";
 import { useState, useTransition } from "react";
 import {
@@ -12,11 +22,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { AgentId } from "@/services/agents";
-import {
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "../../settings/team/components/glass-dialog-content";
+import { Button } from "../../settings/components/button";
 import { copyAgent } from "../actions";
 
 export function DuplicateAgentButton({
@@ -46,11 +52,11 @@ export function DuplicateAgentButton({
 	};
 
 	return (
-		<Dialog.Root open={open} onOpenChange={setOpen}>
+		<Dialog open={open} onOpenChange={setOpen}>
 			<TooltipProvider>
 				<Tooltip>
 					<TooltipTrigger asChild>
-						<Dialog.Trigger asChild>
+						<DialogTrigger asChild>
 							<button
 								type="button"
 								aria-label="Duplicate a workspace"
@@ -63,24 +69,43 @@ export function DuplicateAgentButton({
 									<CopyIcon className="size-4" />
 								)}
 							</button>
-						</Dialog.Trigger>
+						</DialogTrigger>
 					</TooltipTrigger>
 					<TooltipContent>Duplicate Workspace</TooltipContent>
 				</Tooltip>
 			</TooltipProvider>
-			<GlassDialogContent>
-				<GlassDialogHeader
-					title={`Duplicate "${agentName || "Untitled"}"?`}
-					description="This will create a new workspace with the same settings as the original."
-					onClose={() => setOpen(false)}
-				/>
-				<GlassDialogFooter
-					onCancel={() => setOpen(false)}
-					onConfirm={handleConfirm}
-					confirmLabel="Duplicate"
-					isPending={isPending}
-				/>
-			</GlassDialogContent>
-		</Dialog.Root>
+			<DialogContent variant="glass">
+				<DialogHeader>
+					<div className="flex items-center justify-between">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+							{`Duplicate "${agentName || "Untitled"}"?`}
+						</DialogTitle>
+						<DialogClose className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none">
+							<X className="h-5 w-5" />
+							<span className="sr-only">Close</span>
+						</DialogClose>
+					</div>
+					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
+						This will create a new workspace with the same settings as the
+						original.
+					</DialogDescription>
+				</DialogHeader>
+				<DialogBody />
+				<DialogFooter>
+					<div className="mt-6 flex justify-end gap-x-3">
+						<Button variant="link" onClick={() => setOpen(false)}>
+							Cancel
+						</Button>
+						<Button
+							variant="primary"
+							onClick={handleConfirm}
+							disabled={isPending}
+						>
+							{isPending ? "Processing..." : "Duplicate"}
+						</Button>
+					</div>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }

@@ -1,12 +1,17 @@
 "use client";
 
 import {
-	GlassDialogContent,
-	GlassDialogFooter,
-	GlassDialogHeader,
-} from "@giselle-internal/ui/glass-dialog";
+	Dialog,
+	DialogBody,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@giselle-internal/ui/dialog";
 import { useToasts } from "@giselle-internal/ui/toast";
-import * as Dialog from "@radix-ui/react-dialog";
 import { Copy, Ellipsis, RefreshCw, Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import {
@@ -16,6 +21,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { TeamRole } from "@/db";
+import { Button } from "../components/button";
 import { resendInvitationAction, revokeInvitationAction } from "./actions";
 import { LocalDateTime } from "./components/local-date-time";
 
@@ -100,7 +106,7 @@ export function InvitationListItem({
 					<div className="flex flex-col gap-y-1 font-medium">
 						<div className="text-inverse/50 text-[14px] leading-[20.4px] flex items-center">
 							{email}
-							<span className="ml-2 text-black-400 text-[12px] leading-[16px]">
+							<span className="ml-2 text-text-muted text-[12px] leading-[16px]">
 								(Invitation pending)
 							</span>
 						</div>
@@ -112,7 +118,7 @@ export function InvitationListItem({
 					</div>
 				</div>
 				<div className="flex items-center gap-2">
-					<span className="capitalize text-white-400 font-medium text-[14px] leading-[16px] text-end font-sans">
+					<span className="capitalize text-inverse font-medium text-[14px] leading-[16px] text-end font-sans">
 						{role}
 					</span>
 					{canManageMembers && (
@@ -133,7 +139,7 @@ export function InvitationListItem({
 										e.preventDefault();
 										handleCopy();
 									}}
-									className="flex items-center px-4 py-3 font-medium text-[14px] leading-[16px] text-white-400 hover:bg-white/5 rounded-md focus:outline-none"
+									className="flex items-center px-4 py-3 font-medium text-[14px] leading-[16px] text-inverse hover:bg-white/5 rounded-md focus:outline-none"
 									title="Copy invite link"
 								>
 									<Copy className="h-4 w-4 mr-2" /> Copy invite link
@@ -144,7 +150,7 @@ export function InvitationListItem({
 										handleResend();
 									}}
 									disabled={isResendPending}
-									className="flex items-center px-4 py-3 font-medium text-[14px] leading-[16px] text-white-400 hover:bg-white/5 rounded-md"
+									className="flex items-center px-4 py-3 font-medium text-[14px] leading-[16px] text-inverse hover:bg-white/5 rounded-md"
 									title="Resend invitation"
 								>
 									{isResendPending ? (
@@ -158,8 +164,8 @@ export function InvitationListItem({
 										</>
 									)}
 								</DropdownMenuItem>
-								<Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
-									<Dialog.Trigger asChild>
+								<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+									<DialogTrigger asChild>
 										<DropdownMenuItem
 											onSelect={(e) => e.preventDefault()}
 											disabled={isRevokePending}
@@ -177,23 +183,37 @@ export function InvitationListItem({
 												</>
 											)}
 										</DropdownMenuItem>
-									</Dialog.Trigger>
-									<GlassDialogContent variant="destructive">
-										<GlassDialogHeader
-											title="Revoke Invitation"
-											description="This will permanently revoke this invitation and prevent the user from joining your team."
-											variant="destructive"
-											onClose={() => setDialogOpen(false)}
-										/>
-										<GlassDialogFooter
-											variant="destructive"
-											onCancel={() => setDialogOpen(false)}
-											onConfirm={handleConfirmRevoke}
-											confirmLabel="Revoke"
-											isPending={isRevokePending}
-										/>
-									</GlassDialogContent>
-								</Dialog.Root>
+									</DialogTrigger>
+									<DialogContent variant="destructive">
+										<DialogHeader>
+											<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-error-900">
+												Revoke Invitation
+											</DialogTitle>
+											<DialogDescription className="text-error-900/50">
+												This will permanently revoke this invitation and prevent
+												the user from joining your team.
+											</DialogDescription>
+											<DialogClose className="text-inverse" />
+										</DialogHeader>
+										<DialogBody>{/* Content goes here if needed */}</DialogBody>
+										<DialogFooter>
+											<Button
+												variant="link"
+												onClick={() => setDialogOpen(false)}
+												disabled={isRevokePending}
+											>
+												Cancel
+											</Button>
+											<Button
+												variant="destructive"
+												onClick={handleConfirmRevoke}
+												disabled={isRevokePending}
+											>
+												{isRevokePending ? "Processing..." : "Revoke"}
+											</Button>
+										</DialogFooter>
+									</DialogContent>
+								</Dialog>
 							</DropdownMenuContent>
 						</DropdownMenu>
 					)}

@@ -21,12 +21,12 @@ import { GenerationView } from "../../../ui/generation-view";
 
 function Empty(_: { onGenerate?: () => void; onExpand?: () => void }) {
 	return (
-		<div className="relative bg-inverse/10 min-h-[250px] rounded-[8px] flex justify-center items-center text-black-400">
+		<div className="relative bg-inverse/10 min-h-[250px] rounded-[8px] flex justify-center items-center text-text-muted">
 			<EmptyState
 				icon={<TextGenerationIcon width={24} height={24} />}
 				title="Nothing generated yet."
 				description="Generate or adjust the Prompt to see results."
-				className="text-black-400"
+				className="text-text-muted"
 			/>
 		</div>
 	);
@@ -194,11 +194,11 @@ export function GenerationPanel({
 					)}
 					{currentGeneration.status === "completed" &&
 						currentGeneration.usage && (
-							<div className="flex items-center gap-[10px] text-[11px] text-black-400 font-sans ml-[6px]">
+							<div className="flex items-center gap-[10px] text-[11px] text-text-muted font-sans ml-[6px]">
 								{currentGeneration.startedAt &&
 									currentGeneration.completedAt && (
 										<span className="flex items-center gap-[2px]">
-											<TimerIcon className="text-black-400 size-[12px]" />
+											<TimerIcon className="text-text-muted size-[12px]" />
 											{formatExecutionTime(
 												currentGeneration.startedAt,
 												currentGeneration.completedAt,
@@ -208,13 +208,13 @@ export function GenerationPanel({
 
 								{currentGeneration.usage.inputTokens && (
 									<span className="flex items-center gap-[2px]">
-										<ArrowUpIcon className="text-black-400 size-[12px]" />
+										<ArrowUpIcon className="text-text-muted size-[12px]" />
 										{currentGeneration.usage.inputTokens.toLocaleString()}t
 									</span>
 								)}
 								{currentGeneration.usage.outputTokens && (
 									<span className="flex items-center gap-[2px]">
-										<ArrowDownIcon className="text-black-400 size-[12px]" />
+										<ArrowDownIcon className="text-text-muted size-[12px]" />
 										{currentGeneration.usage.outputTokens.toLocaleString()}t
 									</span>
 								)}
@@ -226,14 +226,14 @@ export function GenerationPanel({
 					<ClipboardButton
 						text={getGenerationTextContent(currentGeneration)}
 						tooltip="Copy to clipboard"
-						className="text-black-400 hover:text-black-300"
+						className="text-text-muted hover:text-text/60"
 					/>
 				)}
 				{currentGeneration.status === "failed" && (
 					<ClipboardButton
 						text={getGenerationErrorContent(currentGeneration)}
 						tooltip="Copy error to clipboard"
-						className="text-black-400 hover:text-black-300"
+						className="text-text-muted hover:text-text/60"
 					/>
 				)}
 			</div>

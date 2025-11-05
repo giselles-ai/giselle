@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 842 MIT
+* 841 MIT
 * 186 Apache 2.0
 * 46 ISC
 * 27 New BSD
@@ -2558,7 +2558,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-dialog"></a>
-### @radix-ui/react-dialog v1.1.4
+### @radix-ui/react-dialog v1.1.5
 #### 
 
 ##### Paths
@@ -3065,17 +3065,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@rollup/rollup-linux-x64-gnu"></a>
 ### @rollup/rollup-linux-x64-gnu v4.35.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@rollup/rollup-linux-x64-musl"></a>
-### @rollup/rollup-linux-x64-musl v4.35.0
 #### 
 
 ##### Paths

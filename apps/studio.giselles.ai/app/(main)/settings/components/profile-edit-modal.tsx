@@ -239,20 +239,20 @@ export function ProfileEditModal({
 			>
 				<DialogHeader>
 					<div className="flex items-center justify-between">
-						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-white-400">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
 							Edit Profile
 						</DialogTitle>
 						<DialogClose
 							onClick={() => {
 								if (!isLoading) onClose();
 							}}
-							className="rounded-sm text-white-400 opacity-70 hover:opacity-100 focus:outline-none"
+							className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none"
 						>
 							<X className="h-5 w-5" />
 							<span className="sr-only">Close</span>
 						</DialogClose>
 					</div>
-					<DialogDescription className="font-geist mt-2 text-[14px] text-black-400">
+					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
 						Update your display name and avatar.
 					</DialogDescription>
 				</DialogHeader>
@@ -286,7 +286,7 @@ export function ProfileEditModal({
 										/>
 										<div className="absolute inset-0 flex items-center justify-center bg-black-900/50 opacity-0 group-hover:opacity-100 transition-opacity">
 											<div className="w-[40px] h-[40px] rounded-full flex items-center justify-center">
-												<ImageIcon className="w-7 h-7 text-white-800 transform group-hover:scale-110 transition-transform" />
+												<ImageIcon className="w-7 h-7 text-inverse transform group-hover:scale-110 transition-transform" />
 											</div>
 										</div>
 									</button>
@@ -310,7 +310,7 @@ export function ProfileEditModal({
 										/>
 										<div className="absolute inset-0 flex items-center justify-center bg-black-900/50 opacity-0 group-hover:opacity-100 transition-opacity">
 											<div className="w-[40px] h-[40px] rounded-full flex items-center justify-center">
-												<ImageIcon className="w-7 h-7 text-white-800 transform group-hover:scale-110 transition-transform" />
+												<ImageIcon className="w-7 h-7 text-inverse transform group-hover:scale-110 transition-transform" />
 											</div>
 										</div>
 									</button>
@@ -323,7 +323,7 @@ export function ProfileEditModal({
 										onClick={handleSelectImageClick}
 										className="group relative w-[80px] h-[80px] rounded-full overflow-hidden cursor-pointer focus:outline-none focus:ring-0 bg-transparent border border-primary-100/20 flex items-center justify-center hover:before:content-[''] hover:before:absolute hover:before:inset-0 hover:before:bg-black-900/50 hover:before:z-10"
 									>
-										<ImageIcon className="w-7 h-7 text-white-800 transform group-hover:scale-110 transition-transform" />
+										<ImageIcon className="w-7 h-7 text-inverse transform group-hover:scale-110 transition-transform" />
 									</button>
 								)}
 							</div>
@@ -336,7 +336,7 @@ export function ProfileEditModal({
 									Your Display Name
 								</Label>
 								<div
-									className={`flex items-center gap-2 rounded-[12px] px-2 py-1 bg-inverse/5 ${error ? "ring-1 ring-error-900" : ""}`}
+									className={`flex items-center gap-2 rounded-[12px] px-2 py-1 bg-inverse/5 focus-within:ring-1 focus-within:ring-primary-100/50 focus-within:ring-inset transition-all ${error ? "ring-1 ring-error-900" : ""}`}
 								>
 									<Input
 										id="displayName"
@@ -345,7 +345,7 @@ export function ProfileEditModal({
 										value={displayName}
 										onChange={handleDisplayNameChange}
 										disabled={isLoading}
-										className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse placeholder:text-inverse/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-100/50 focus-visible:ring-offset-0"
+										className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse placeholder:text-link-muted focus-visible:outline-none focus-visible:ring-0"
 									/>
 								</div>
 							</div>
@@ -358,7 +358,7 @@ export function ProfileEditModal({
 							</p>
 						)}
 
-						{/* Action buttons moved to GlassDialogFooter */}
+						{/* Action buttons moved to DialogFooter */}
 					</div>
 				</DialogBody>
 				<DialogFooter>

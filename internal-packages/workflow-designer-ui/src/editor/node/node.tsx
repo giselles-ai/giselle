@@ -275,7 +275,7 @@ export function NodeComponent({
 						exit={{ opacity: 0 }}
 					>
 						<div className="flex items-center gap-[4px]">
-							<p className="text-[10px] font-medium font-geist text-black-400 leading-[140%]">
+							<p className="text-[10px] font-medium font-geist text-text-muted leading-[140%]">
 								{getCompletionLabel(node)}
 							</p>
 							<CheckIcon className="w-4 h-4" />
@@ -357,28 +357,28 @@ export function NodeComponent({
 								"group-data-[content-type=trigger]:stroke-current fill-none",
 								"group-data-[content-type=action]:fill-current",
 								"group-data-[content-type=query]:stroke-current fill-none",
-								"group-data-[content-type=text]:text-black-900",
-								"group-data-[content-type=file]:text-black-900",
-								"group-data-[content-type=webPage]:text-black-900",
+								"group-data-[content-type=text]:text-bg",
+								"group-data-[content-type=file]:text-bg",
+								"group-data-[content-type=webPage]:text-bg",
 								"group-data-[content-type=textGeneration]:text-inverse",
 								"group-data-[content-type=imageGeneration]:text-inverse",
 								"group-data-[content-type=github]:text-inverse",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:text-black-900",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:text-black-900",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:text-black-900",
+								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:text-bg",
+								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:text-bg",
+								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:text-bg",
 								"group-data-[content-type=webSearch]:text-inverse",
 								"group-data-[content-type=audioGeneration]:text-inverse",
 								"group-data-[content-type=videoGeneration]:text-inverse",
 								"group-data-[content-type=trigger]:text-inverse",
 								"group-data-[content-type=action]:text-inverse",
-								"group-data-[content-type=query]:text-black-900",
+								"group-data-[content-type=query]:text-bg",
 							)}
 						/>
 					</div>
 					<div>
-						<div className="flex items-center gap-[2px] pl-[4px] text-[10px] font-mono [&>*:not(:last-child)]:after:content-['/'] [&>*:not(:last-child)]:after:ml-[2px] [&>*:not(:last-child)]:after:text-white-300">
+						<div className="flex items-center gap-[2px] pl-[4px] text-[10px] font-mono [&>*:not(:last-child)]:after:content-['/'] [&>*:not(:last-child)]:after:ml-[2px] [&>*:not(:last-child)]:after:text-text/60">
 							{metadataTexts.map((item, _index) => (
-								<div key={item.label} className="text-[10px] text-white-400">
+								<div key={item.label} className="text-[10px] text-inverse">
 									{selected ? (
 										<Tooltip text={item.tooltip} variant="dark">
 											<button type="button">{item.label}</button>
@@ -507,7 +507,7 @@ export function NodeComponent({
 											"group-data-[content-type=query]:!border-query-node-1",
 										)}
 									/>
-									<div className="absolute left-[-12px] text-[12px] text-black-400 whitespace-nowrap -translate-x-[100%]">
+									<div className="absolute left-[-12px] text-[12px] text-text-muted whitespace-nowrap -translate-x-[100%]">
 										Input
 									</div>
 								</div>
@@ -572,7 +572,7 @@ export function NodeComponent({
 										"text-[12px]",
 										"group-data-[state=connected]:px-[16px]",
 										"group-data-[state=disconnected]:absolute group-data-[state=disconnected]:-right-[12px] group-data-[state=disconnected]:whitespace-nowrap group-data-[state=disconnected]:translate-x-[100%]",
-										"group-data-[state=connected]:text-inverse group-data-[state=disconnected]:text-black-400",
+										"group-data-[state=connected]:text-inverse group-data-[state=disconnected]:text-text-muted",
 									)}
 								>
 									{output.label}

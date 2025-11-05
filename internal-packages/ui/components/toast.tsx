@@ -154,7 +154,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 							"data-[type=warning]:bg-linear-to-b data-[type=warning]:from-[color:var(--color-warning)]/18 data-[type=warning]:to-[#0f1422]/90",
 							"data-[type=error]:bg-linear-to-b data-[type=error]:from-[color:var(--color-error)]/18 data-[type=error]:to-[#1b0a0d]/90",
 							// border/ring
-							"border border-white/15 ring-1 ring-inset ring-white/10",
+							"border border-white/15 ring-1 ring-inset ring-inverse/10",
 							"group-data-[type=warning]:ring-[color:var(--color-warning)]/25 group-data-[type=error]:ring-[color:var(--color-error)]/30",
 							"shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)]",
 						)}

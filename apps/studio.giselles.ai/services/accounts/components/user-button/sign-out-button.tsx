@@ -24,7 +24,7 @@ export const SignOutButton = React.forwardRef<
 			className={cn(
 				// Only apply default styles when not used as a Slot
 				!asChild &&
-					"text-white-900 font-medium text-[12px] leading-[20.4px] font-geist cursor-pointer",
+					"text-inverse font-medium text-[12px] leading-[20.4px] font-geist cursor-pointer",
 				className,
 			)}
 		>

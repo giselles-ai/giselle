@@ -1,6 +1,6 @@
 "use client";
 
-import { Input } from "@giselle-internal/ui/input";
+import { SearchInput } from "@giselle-internal/ui/search-input";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import {
 	ArrowDownAZ,
@@ -8,7 +8,6 @@ import {
 	Clock,
 	LayoutGrid,
 	LayoutList,
-	Search,
 } from "lucide-react";
 import { useMemo } from "react";
 
@@ -91,15 +90,12 @@ export function SearchHeader({
 				.join(" ")}
 		>
 			{/* Search */}
-			<div className="relative flex-1 w-full">
-				<Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text/60 h-4 w-4" />
-				<Input
-					type="text"
+			<div className="flex-1 w-full">
+				<SearchInput
 					placeholder={searchPlaceholder}
 					value={searchQuery}
 					onChange={(e) => onSearchChange(e.target.value)}
-					// Classes match /workspaces usage exactly (force radius/ring like /workspaces local Input)
-					className="pl-12 pr-4 h-10 w-full bg-bg text-inverse placeholder:text-link-muted border-border rounded-[8px] shadow-none focus:border-transparent focus:ring-1 focus:ring-inverse/20 focus:ring-inset focus:ring-offset-0 focus-visible:border-transparent focus-visible:ring-1 focus-visible:ring-inverse/20 focus-visible:ring-inset focus-visible:ring-offset-0"
+					className="text-inverse"
 				/>
 			</div>
 

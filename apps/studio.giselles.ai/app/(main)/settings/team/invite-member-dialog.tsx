@@ -330,18 +330,18 @@ export function InviteMemberDialog({
 			>
 				<DialogHeader>
 					<div className="flex items-center justify-between">
-						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-white-400">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
 							Invite Team Member
 						</DialogTitle>
 						<DialogClose
 							onClick={handleCloseDialog}
-							className="rounded-sm text-white-400 opacity-70 hover:opacity-100 focus:outline-none"
+							className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none"
 						>
 							<X className="h-5 w-5" />
 							<span className="sr-only">Close</span>
 						</DialogClose>
 					</div>
-					<DialogDescription className="font-geist mt-2 text-[14px] text-black-400">
+					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
 						Invited members will be able to collaborate with your team once they
 						accept.
 					</DialogDescription>
@@ -353,20 +353,20 @@ export function InviteMemberDialog({
 						className="space-y-4"
 						noValidate
 					>
-						<div className="flex items-center gap-2 rounded-[12px] px-2 py-1 bg-inverse/5">
+						<div className="flex items-center gap-2 rounded-[12px] px-2 py-1 bg-inverse/5 focus-within:ring-1 focus-within:ring-primary-100/50 focus-within:ring-inset transition-all">
 							<div className="flex min-h-[40px] flex-grow flex-wrap items-center gap-1">
 								{emailTags.map((email) => (
 									<div
 										key={email}
 										className="mb-1 mr-2 flex items-center rounded-md bg-white/10 px-2.5 py-1.5 shadow-sm"
 									>
-										<span className="max-w-[180px] truncate text-[14px] text-white-400">
+										<span className="max-w-[180px] truncate text-[14px] text-inverse">
 											{email}
 										</span>
 										<button
 											type="button"
 											onClick={() => removeEmailTag(email)}
-											className="ml-1.5 text-black-300 hover:text-white-600"
+											className="ml-1.5 text-text/60 hover:text-inverse"
 											disabled={isLoading}
 										>
 											<X className="h-4 w-4" />
@@ -387,7 +387,7 @@ export function InviteMemberDialog({
 									}}
 									onKeyDown={handleKeyDown}
 									onBlur={() => addEmailTags()}
-									className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-white-400 outline-none placeholder:text-white/30"
+									className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-inverse outline-none placeholder:text-link-muted focus-visible:ring-0"
 									disabled={isLoading}
 								/>
 							</div>
