@@ -1,8 +1,0 @@
-/* scopes/stage.css - semantic overrides for stage scope (placeholder) */
-@layer utilities {
-	:root[data-scope="stage"] {
-		/* Example: override brand/text if needed */
-		/* --color-brand-500: oklch(0.72 0.11 178); */
-		/* --color-text: var(--color-gray-900); */
-	}
-}
