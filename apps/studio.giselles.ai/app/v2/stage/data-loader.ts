@@ -52,7 +52,7 @@ async function userApps(teamIds: TeamId[]) {
 						appEntryNodeId: true,
 					},
 					with: {
-						workspaces: {
+						workspace: {
 							columns: {
 								id: true,
 								name: true,
@@ -68,7 +68,7 @@ async function userApps(teamIds: TeamId[]) {
 					teams.flatMap((team) =>
 						team.apps.map(async (app) => {
 							const workspace = await giselleEngine.getWorkspace(
-								app.workspaces.id,
+								app.workspace.id,
 							);
 							const appEntryNode = workspace.nodes.find(
 								(node) => node.id === app.appEntryNodeId,
