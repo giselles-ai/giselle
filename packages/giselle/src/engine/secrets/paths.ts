@@ -1,4 +1,4 @@
-import type { SecretId, WorkspaceId } from "@giselle-ai/protocol";
+import type { SecretId, WorkspaceId } from "@giselles-ai/protocol";
 
 export function secretPath(secretId: SecretId) {
 	return `secrets/${secretId}/secret.json`;

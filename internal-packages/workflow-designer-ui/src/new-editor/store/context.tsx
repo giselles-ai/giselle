@@ -1,6 +1,6 @@
 "use client";
 
-import type { Workspace } from "@giselle-ai/protocol";
+import type { Workspace } from "@giselles-ai/protocol";
 import { createContext, useContext } from "react";
 import { useStore } from "zustand/react";
 import { useStoreWithEqualityFn } from "zustand/traditional";

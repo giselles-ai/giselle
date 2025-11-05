@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-ai/utils",
+	"name": "@giselles-ai/utils",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -20,7 +20,7 @@
 		}
 	},
 	"devDependencies": {
-		"@giselle-ai/tsconfig": "workspace:*",
+		"@giselles-ai/tsconfig": "workspace:*",
 		"tsup": "catalog:"
 	},
 	"dependencies": {

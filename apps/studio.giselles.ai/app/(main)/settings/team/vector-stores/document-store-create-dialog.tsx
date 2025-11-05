@@ -1,7 +1,7 @@
 "use client";
 
-import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-ai/protocol";
 import { FormField } from "@giselle-internal/ui/form-field";
+import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselles-ai/protocol";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Plus } from "lucide-react";
 import {

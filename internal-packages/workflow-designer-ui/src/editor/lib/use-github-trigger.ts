@@ -1,9 +1,9 @@
-import { useGiselleEngine } from "@giselle-ai/giselle/react";
+import { useGiselleEngine } from "@giselles-ai/giselle/react";
 import type {
 	FlowTrigger,
 	FlowTriggerId,
 	GitHubFlowTrigger,
-} from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
 

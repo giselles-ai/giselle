@@ -1,16 +1,3 @@
-import {
-	useFeatureFlag,
-	useFlowTrigger,
-	useGiselleEngine,
-	useWorkflowDesigner,
-} from "@giselle-ai/giselle/react";
-import {
-	ManualTriggerParameter,
-	ManualTriggerParameterId,
-	type Output,
-	OutputId,
-	type TriggerNode,
-} from "@giselle-ai/protocol";
 import { Button } from "@giselle-internal/ui/button";
 import { Select } from "@giselle-internal/ui/select";
 import {
@@ -19,6 +6,19 @@ import {
 } from "@giselle-internal/ui/setting-label";
 import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { Toggle } from "@giselle-internal/ui/toggle";
+import {
+	useFeatureFlag,
+	useFlowTrigger,
+	useGiselleEngine,
+	useWorkflowDesigner,
+} from "@giselles-ai/giselle/react";
+import {
+	ManualTriggerParameter,
+	ManualTriggerParameterId,
+	type Output,
+	OutputId,
+	type TriggerNode,
+} from "@giselles-ai/protocol";
 import { TrashIcon } from "lucide-react";
 import {
 	type FormEventHandler,

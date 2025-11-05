@@ -12,9 +12,9 @@ import type {
 	updatePullRequestReviewComment,
 	WebhookEvent,
 	WebhookEventName,
-} from "@giselle-ai/github-tool";
-import { findDiscussionReplyTargetId } from "@giselle-ai/github-tool";
-import type { FlowTrigger } from "@giselle-ai/protocol";
+} from "@giselles-ai/github-tool";
+import { findDiscussionReplyTargetId } from "@giselles-ai/github-tool";
+import type { FlowTrigger } from "@giselles-ai/protocol";
 import type { createAndStartAct } from "../acts";
 import type { GiselleEngineContext } from "../types";
 import { getWorkspace } from "../workspaces";

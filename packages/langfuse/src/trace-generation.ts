@@ -2,8 +2,8 @@ import type {
 	CompletedGeneration,
 	FailedGeneration,
 	OutputFileBlob,
-} from "@giselle-ai/giselle";
-import { calculateDisplayCost } from "@giselle-ai/language-model";
+} from "@giselles-ai/giselle";
+import { calculateDisplayCost } from "@giselles-ai/language-model";
 import {
 	type ImageGenerationNode,
 	isActionNode,
@@ -11,7 +11,7 @@ import {
 	isQueryNode,
 	isTextGenerationNode,
 	type TextGenerationNode,
-} from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
 import type { DataContent, ModelMessage } from "ai";
 import { type ApiMediaContentType, Langfuse, LangfuseMedia } from "langfuse";
 

@@ -1,5 +1,5 @@
-import { defaultName } from "@giselle-ai/giselle/react";
-import type { Node as GiselleNode, Output } from "@giselle-ai/protocol";
+import { defaultName } from "@giselles-ai/giselle/react";
+import type { Node as GiselleNode, Output } from "@giselles-ai/protocol";
 import type { SuggestionProps } from "@tiptap/suggestion";
 import clsx from "clsx/lite";
 import {

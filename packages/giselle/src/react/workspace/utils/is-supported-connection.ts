@@ -2,7 +2,7 @@ import {
 	Capability,
 	hasCapability,
 	languageModels,
-} from "@giselle-ai/language-model";
+} from "@giselles-ai/language-model";
 import {
 	isFileNode,
 	isImageGenerationNode,
@@ -10,7 +10,7 @@ import {
 	isTextGenerationNode,
 	isVectorStoreNode,
 	type NodeLike,
-} from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
 
 export type ConnectionValidationResult =
 	| { canConnect: true }

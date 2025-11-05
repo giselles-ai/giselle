@@ -3,7 +3,7 @@ import {
 	GoogleLanguageModelData,
 	OpenAILanguageModelData,
 	type TextGenerationLanguageModelData,
-} from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
 
 type Provider = "openai" | "anthropic" | "google";
 

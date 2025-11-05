@@ -3,7 +3,7 @@ import {
 	type DocumentLoader,
 	DocumentLoaderError,
 	replaceNullCharacters,
-} from "@giselle-ai/rag";
+} from "@giselles-ai/rag";
 import type { Octokit } from "@octokit/core";
 import { executeRestRequest } from "../utils";
 

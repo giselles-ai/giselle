@@ -1,10 +1,10 @@
-import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
-import type { TextGenerationNode } from "@giselle-ai/protocol";
 import { Button } from "@giselle-internal/ui/button";
 import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { EmptyState } from "@giselle-internal/ui/empty-state";
 import { Input } from "@giselle-internal/ui/input";
 import { Select } from "@giselle-internal/ui/select";
+import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
+import type { TextGenerationNode } from "@giselles-ai/protocol";
 import {
 	CheckIcon,
 	MoveUpRightIcon,

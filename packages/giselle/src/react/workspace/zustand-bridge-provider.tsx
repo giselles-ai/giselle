@@ -1,4 +1,4 @@
-import type { FileData, NodeLike, Workspace } from "@giselle-ai/protocol";
+import type { FileData, NodeLike, Workspace } from "@giselles-ai/protocol";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
 	type GiselleRequestOptions,

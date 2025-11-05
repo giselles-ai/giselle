@@ -6,7 +6,7 @@ import {
 	type Document,
 	type DocumentLoader,
 	replaceNullCharacters,
-} from "@giselle-ai/rag";
+} from "@giselles-ai/rag";
 import type { Octokit } from "@octokit/core";
 import { extract } from "tar";
 import { executeRestRequest } from "../utils";

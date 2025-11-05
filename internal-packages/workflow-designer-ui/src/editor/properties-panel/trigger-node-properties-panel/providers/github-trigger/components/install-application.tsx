@@ -1,4 +1,4 @@
-import { useIntegration } from "@giselle-ai/giselle/react";
+import { useIntegration } from "@giselles-ai/giselle/react";
 import { useCallback, useEffect, useTransition } from "react";
 import { SourceLinkIcon, SpinnerIcon } from "../../../../../../icons";
 import { usePopupWindow } from "../../../hooks/use-popup-window";

@@ -1,4 +1,4 @@
-import { Secret, type SecretId, SecretIndex } from "@giselle-ai/protocol";
+import { Secret, type SecretId, SecretIndex } from "@giselles-ai/protocol";
 import { z } from "zod/v4";
 import type { GiselleEngineContext } from "../types";
 import { secretPath, workspaceSecretIndexPath } from "./paths";

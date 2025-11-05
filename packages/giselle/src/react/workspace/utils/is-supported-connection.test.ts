@@ -4,7 +4,7 @@ import {
 	googleImageLanguageModels,
 	openaiLanguageModels,
 	perplexityLanguageModels,
-} from "@giselle-ai/language-model";
+} from "@giselles-ai/language-model";
 import type {
 	ActionNode,
 	FileNode,
@@ -17,8 +17,8 @@ import type {
 	TriggerNode,
 	VariableNode,
 	VectorStoreNode,
-} from "@giselle-ai/protocol";
-import { NodeId } from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
+import { NodeId } from "@giselles-ai/protocol";
 import { describe, expect, test } from "vitest";
 
 import { isSupportedConnection } from "./is-supported-connection";

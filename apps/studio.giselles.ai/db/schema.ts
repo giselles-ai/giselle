@@ -1,17 +1,17 @@
-import type { ActId, AppId } from "@giselle-ai/giselle";
+import type { ActId, AppId } from "@giselles-ai/giselle";
 import type {
 	GitHubIssueDocumentKey,
 	GitHubIssueState,
 	GitHubIssueStateReason,
 	GitHubRepositoryIssueContentType,
-} from "@giselle-ai/github-tool";
+} from "@giselles-ai/github-tool";
 import type {
 	EmbeddingDimensions,
 	EmbeddingProfileId,
 	FlowTriggerId,
 	NodeId,
 	WorkspaceId,
-} from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
 import type {
 	DocumentVectorStoreId,
 	DocumentVectorStoreSourceId,

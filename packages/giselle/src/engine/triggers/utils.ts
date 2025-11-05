@@ -1,4 +1,4 @@
-import { FlowTrigger, type FlowTriggerId } from "@giselle-ai/protocol";
+import { FlowTrigger, type FlowTriggerId } from "@giselles-ai/protocol";
 import { removeGitHubRepositoryIntegrationIndex } from "../integrations/utils";
 import type { GiselleStorage } from "../storage";
 

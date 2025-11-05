@@ -1,4 +1,4 @@
-import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
+import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
 import { useKeyPress } from "@xyflow/react";
 import { useCallback, useEffect, useRef } from "react";
 import { useNodeManipulation } from "../node";

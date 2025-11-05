@@ -1,7 +1,7 @@
 import {
 	defaultName,
 	useWorkflowDesignerStore,
-} from "@giselle-ai/giselle/react";
+} from "@giselles-ai/giselle/react";
 import {
 	type InputId,
 	isActionNode,
@@ -12,7 +12,7 @@ import {
 	type NodeId,
 	type NodeLike,
 	type OutputId,
-} from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
 import {
 	Handle,
 	type NodeProps,

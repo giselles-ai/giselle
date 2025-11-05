@@ -1,4 +1,4 @@
-import type { ActionProvider, TriggerProvider } from "@giselle-ai/flow";
+import type { ActionProvider, TriggerProvider } from "@giselles-ai/flow";
 import { z } from "zod/v4";
 import { NodeBase, NodeReferenceBase } from "../base";
 import { ActionContent, ActionContentReference } from "./action";

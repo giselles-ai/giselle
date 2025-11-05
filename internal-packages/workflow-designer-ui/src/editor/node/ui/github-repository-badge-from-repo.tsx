@@ -1,4 +1,4 @@
-import { useGiselleEngine } from "@giselle-ai/giselle/react";
+import { useGiselleEngine } from "@giselles-ai/giselle/react";
 import useSWR from "swr";
 import { GitHubRepositoryBadge } from "./github-repository-badge";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import type { NodeId, NodeLike } from "@giselle-ai/protocol";
+import type { NodeId, NodeLike } from "@giselles-ai/protocol";
 import type { Edge as RFEdge, Node as RFNode } from "@xyflow/react";
 import type { EditorAction, EditorState } from "../store/store";
 

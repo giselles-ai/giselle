@@ -1,14 +1,3 @@
-import {
-	defaultName,
-	useActSystem,
-	useNodeGroups,
-	useWorkflowDesigner,
-} from "@giselle-ai/giselle/react";
-import type { ConnectionId, NodeId, TriggerNode } from "@giselle-ai/protocol";
-import {
-	isImageGenerationNode,
-	isTextGenerationNode,
-} from "@giselle-ai/protocol";
 import { Button } from "@giselle-internal/ui/button";
 import {
 	Dialog,
@@ -18,6 +7,17 @@ import {
 } from "@giselle-internal/ui/dialog";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { useToasts } from "@giselle-internal/ui/toast";
+import {
+	defaultName,
+	useActSystem,
+	useNodeGroups,
+	useWorkflowDesigner,
+} from "@giselles-ai/giselle/react";
+import type { ConnectionId, NodeId, TriggerNode } from "@giselles-ai/protocol";
+import {
+	isImageGenerationNode,
+	isTextGenerationNode,
+} from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { PlayIcon, UngroupIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";

@@ -1,14 +1,14 @@
 import type {
 	GitHubInstallationAppAuth,
 	GitHubPersonalAccessTokenAuth,
-} from "@giselle-ai/github-tool";
-import type { LanguageModelProvider } from "@giselle-ai/language-model";
+} from "@giselles-ai/github-tool";
+import type { LanguageModelProvider } from "@giselles-ai/language-model";
 import type {
 	EmbeddingProfileId,
 	FlowTrigger,
 	WorkspaceId,
-} from "@giselle-ai/protocol";
-import type { EmbeddingMetrics, QueryService } from "@giselle-ai/rag";
+} from "@giselles-ai/protocol";
+import type { EmbeddingMetrics, QueryService } from "@giselles-ai/rag";
 import type { ModelMessage, ProviderMetadata } from "ai";
 import type { Act } from "../concepts/act";
 import type { GiselleLogger } from "../logger/types";

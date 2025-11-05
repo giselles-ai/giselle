@@ -1,5 +1,5 @@
-import type { EmbeddingProfileId } from "@giselle-ai/protocol";
-import { createPostgresChunkStore } from "@giselle-ai/rag";
+import type { EmbeddingProfileId } from "@giselles-ai/protocol";
+import { createPostgresChunkStore } from "@giselles-ai/rag";
 import { getTableName } from "drizzle-orm";
 import z from "zod/v4";
 import {

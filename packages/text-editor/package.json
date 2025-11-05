@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-ai/text-editor",
+	"name": "@giselles-ai/text-editor",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -26,14 +26,14 @@
 		"./react-internal": "./src/react/index.ts"
 	},
 	"devDependencies": {
-		"@giselle-ai/tsconfig": "workspace:*",
+		"@giselles-ai/tsconfig": "workspace:*",
 		"@types/react": "catalog:",
 		"tsup": "catalog:"
 	},
 	"dependencies": {
-		"@giselle-ai/protocol": "workspace:^",
-		"@giselle-ai/giselle": "workspace:^",
-		"@giselle-ai/text-editor-utils": "workspace:^",
+		"@giselles-ai/protocol": "workspace:^",
+		"@giselles-ai/giselle": "workspace:^",
+		"@giselles-ai/text-editor-utils": "workspace:^",
 		"@tiptap/extension-mention": "catalog:",
 		"@tiptap/extension-placeholder": "catalog:",
 		"@tiptap/react": "catalog:",

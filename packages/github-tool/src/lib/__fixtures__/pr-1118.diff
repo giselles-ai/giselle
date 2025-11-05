@@ -13,8 +13,8 @@ index 000000000..b5ad8bde7
 +	GitHubBlobLoader,
 +	type GitHubBlobLoaderParams,
 +	type GitHubBlobMetadata,
-+} from "@giselle-ai/github-tool";
-+import { createIngestPipeline } from "@giselle-ai/rag2";
++} from "@giselles-ai/github-tool";
++import { createIngestPipeline } from "@giselles-ai/rag2";
 +import type { Octokit } from "@octokit/core";
 +import { and, eq } from "drizzle-orm";
 +
@@ -109,13 +109,13 @@ index c30cd0971..f7387a494 100644
 -	type GitHubBlobMetadata,
 -	type GithubRepositoryParams,
 -	octokit,
--} from "@giselle-ai/github-tool";
+-} from "@giselles-ai/github-tool";
 -import {
 -	type BaseEmbedding,
 -	type EmbeddingStore,
 -	ingest,
--} from "@giselle-ai/rag";
-+import { fetchDefaultBranchHead } from "@giselle-ai/github-tool";
+-} from "@giselles-ai/rag";
++import { fetchDefaultBranchHead } from "@giselles-ai/github-tool";
  import { captureException } from "@sentry/nextjs";
 -import { and, eq } from "drizzle-orm";
  import type { NextRequest } from "next/server";
@@ -497,7 +497,7 @@ index 000000000..972c880fd
 +++ b/apps/studio.giselles.ai/app/api/vector-stores/github/ingest/utils.ts
 @@ -0,0 +1,64 @@
 +import { db, githubRepositoryIndex } from "@/drizzle";
-+import { octokit } from "@giselle-ai/github-tool";
++import { octokit } from "@giselles-ai/github-tool";
 +import { eq } from "drizzle-orm";
 +import type { TargetGitHubRepository } from "./types";
 +
@@ -567,13 +567,13 @@ index 59f2c2fb2..21602c8fb 100644
 @@ -9,10 +9,27 @@ import type {
  	GitHubQueryContext,
  	GitHubVectorStoreQueryService,
- } from "@giselle-ai/giselle-engine";
--import { type DatabaseConfig, createQueryService } from "@giselle-ai/rag2";
+ } from "@giselles-ai/giselle-engine";
+-import { type DatabaseConfig, createQueryService } from "@giselles-ai/rag2";
 +import {
 +	type DatabaseConfig,
 +	createChunkStore,
 +	createQueryService,
-+} from "@giselle-ai/rag2";
++} from "@giselles-ai/rag2";
  import { and, eq, getTableName } from "drizzle-orm";
  import { z } from "zod/v4";
  
@@ -632,8 +632,8 @@ index dc5ff847b..056bb95fb 100644
 @@ -30,6 +30,7 @@
  	},
  	"dependencies": {
- 		"@giselle-ai/rag": "workspace:*",
-+		"@giselle-ai/rag2": "workspace:*",
+ 		"@giselles-ai/rag": "workspace:*",
++		"@giselles-ai/rag2": "workspace:*",
  		"@octokit/auth-app": "catalog:",
  		"@octokit/core": "catalog:",
  		"@octokit/graphql": "catalog:",
@@ -642,12 +642,12 @@ index 546518682..2c395976a 100644
 --- a/packages/github-tool/src/blob-loader.ts
 +++ b/packages/github-tool/src/blob-loader.ts
 @@ -1,17 +1,30 @@
--import type { ContentLoader, LoaderResult } from "@giselle-ai/rag";
+-import type { ContentLoader, LoaderResult } from "@giselles-ai/rag";
 +import type {
 +	Document,
 +	DocumentLoader,
 +	DocumentLoaderParams,
-+} from "@giselle-ai/rag2";
++} from "@giselles-ai/rag2";
  import type { Octokit } from "@octokit/core";
  
  /**
@@ -789,7 +789,7 @@ index 32d183246..022caa0aa 100644
 +  createChunkStore,
 +  createIngestPipeline,
 +  type Document,
-+} from "@giselle-ai/rag2";
++} from "@giselles-ai/rag2";
 +import { z } from "zod/v4";
 +
 +// Define schemas
@@ -2859,10 +2859,10 @@ index 82b06065e..54646f804 100644
 --- a/pnpm-lock.yaml
 +++ b/pnpm-lock.yaml
 @@ -1009,6 +1009,9 @@ importers:
-       '@giselle-ai/rag':
+       '@giselles-ai/rag':
          specifier: workspace:*
          version: link:../rag
-+      '@giselle-ai/rag2':
++      '@giselles-ai/rag2':
 +        specifier: workspace:*
 +        version: link:../rag2
        '@octokit/auth-app':

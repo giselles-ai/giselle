@@ -1,16 +1,16 @@
 "use client";
 
-import type { Integration } from "@giselle-ai/giselle";
+import { Editor } from "@giselle-internal/workflow-designer-ui";
+import type { Integration } from "@giselles-ai/giselle";
 import {
 	WorkspaceProvider,
 	ZustandBridgeProvider,
-} from "@giselle-ai/giselle/react";
+} from "@giselles-ai/giselle/react";
 import {
 	type FlowTrigger,
 	isTriggerNode,
 	type TriggerNode,
-} from "@giselle-ai/protocol";
-import { Editor } from "@giselle-internal/workflow-designer-ui";
+} from "@giselles-ai/protocol";
 import { use } from "react";
 import { isProPlan } from "@/services/teams/utils";
 import type { LoaderData } from "./data-loader";

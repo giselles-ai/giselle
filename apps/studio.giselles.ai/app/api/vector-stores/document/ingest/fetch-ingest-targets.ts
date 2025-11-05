@@ -1,4 +1,4 @@
-import type { EmbeddingProfileId } from "@giselle-ai/protocol";
+import type { EmbeddingProfileId } from "@giselles-ai/protocol";
 import { and, eq, inArray, lt, or } from "drizzle-orm";
 import {
 	db,

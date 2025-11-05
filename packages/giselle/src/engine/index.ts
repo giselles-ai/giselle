@@ -8,7 +8,7 @@ import type {
 	SecretId,
 	Workspace,
 	WorkspaceId,
-} from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
 import { ActId, GenerationId } from "../concepts/identifiers";
 import { noopLogger } from "../logger/noop-logger";
 import type { GiselleLogger } from "../logger/types";

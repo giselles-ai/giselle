@@ -1,14 +1,14 @@
-import { type GitHubTriggerEventId, githubTriggers } from "@giselle-ai/flow";
-import type { WebhookEvent } from "@giselle-ai/github-tool";
-import type { FlowTrigger, Output } from "@giselle-ai/protocol";
-import { FlowTriggerId, OutputId } from "@giselle-ai/protocol";
+import { type GitHubTriggerEventId, githubTriggers } from "@giselles-ai/flow";
+import type { WebhookEvent } from "@giselles-ai/github-tool";
+import type { FlowTrigger, Output } from "@giselles-ai/protocol";
+import { FlowTriggerId, OutputId } from "@giselles-ai/protocol";
 import { describe, expect, test, vi } from "vitest";
 import { resolveTrigger } from "./trigger-utils";
 
-vi.mock("@giselle-ai/github-tool", async () => {
+vi.mock("@giselles-ai/github-tool", async () => {
 	const actual = await vi.importActual<
-		typeof import("@giselle-ai/github-tool")
-	>("@giselle-ai/github-tool");
+		typeof import("@giselles-ai/github-tool")
+	>("@giselles-ai/github-tool");
 	return {
 		...actual,
 		getPullRequestDiff: vi.fn().mockResolvedValue("diff"),

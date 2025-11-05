@@ -1,6 +1,6 @@
-import { fetchDefaultBranchHead } from "@giselle-ai/github-tool";
-import type { EmbeddingProfileId } from "@giselle-ai/protocol";
-import { DocumentLoaderError, RagError } from "@giselle-ai/rag";
+import { fetchDefaultBranchHead } from "@giselles-ai/github-tool";
+import type { EmbeddingProfileId } from "@giselles-ai/protocol";
+import { DocumentLoaderError, RagError } from "@giselles-ai/rag";
 import { createId } from "@paralleldrive/cuid2";
 import { captureException } from "@sentry/nextjs";
 import { and, eq, max } from "drizzle-orm";

@@ -1,4 +1,4 @@
-import type { WorkspaceId } from "@giselle-ai/protocol";
+import type { WorkspaceId } from "@giselles-ai/protocol";
 import { useCallback, useEffect } from "react";
 import useSWR from "swr";
 import { useShallow } from "zustand/shallow";

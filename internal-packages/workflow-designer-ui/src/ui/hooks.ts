@@ -1,6 +1,6 @@
 "use client";
 
-import { useWorkflowDesignerStore } from "@giselle-ai/giselle/react";
+import { useWorkflowDesignerStore } from "@giselles-ai/giselle/react";
 import { useEffect, useState } from "react";
 
 export function useLivePrompt(nodeId: string) {

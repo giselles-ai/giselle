@@ -1,4 +1,4 @@
-import type { TextGenerationNode, ToolSet } from "@giselle-ai/protocol";
+import type { TextGenerationNode, ToolSet } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { CheckIcon } from "lucide-react";
 import type { PropsWithChildren, ReactNode } from "react";

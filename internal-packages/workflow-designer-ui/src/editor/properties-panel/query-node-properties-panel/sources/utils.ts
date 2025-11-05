@@ -1,4 +1,4 @@
-import type { NodeBase } from "@giselle-ai/protocol";
+import type { NodeBase } from "@giselles-ai/protocol";
 import type { Source } from "./types";
 
 export function filterSources<T extends NodeBase>(

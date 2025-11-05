@@ -1,4 +1,4 @@
-import type { GitHubTriggerEventId } from "@giselle-ai/flow";
+import type { GitHubTriggerEventId } from "@giselles-ai/flow";
 import clsx from "clsx/lite";
 import { InfoIcon, PlusIcon, XIcon } from "lucide-react";
 import { type FormEvent, useState } from "react";

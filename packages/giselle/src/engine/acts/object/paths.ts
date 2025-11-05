@@ -1,4 +1,4 @@
-import type { WorkspaceId } from "@giselle-ai/protocol";
+import type { WorkspaceId } from "@giselles-ai/protocol";
 import type { ActId } from "../../../concepts/identifiers";
 
 export function actPath(actId: ActId) {

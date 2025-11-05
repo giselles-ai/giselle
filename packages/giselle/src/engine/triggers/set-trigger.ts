@@ -1,4 +1,4 @@
-import type { FlowTrigger } from "@giselle-ai/protocol";
+import type { FlowTrigger } from "@giselles-ai/protocol";
 import type { GiselleEngineContext } from "../types";
 import { setFlowTrigger as setFlowTriggerInternal } from "./utils";
 

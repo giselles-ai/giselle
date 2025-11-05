@@ -1,6 +1,6 @@
-import type { Node } from "@giselle-ai/protocol";
-import type { ConnectedSource } from "@giselle-ai/text-editor/react";
-import { TextEditor } from "@giselle-ai/text-editor/react";
+import type { Node } from "@giselles-ai/protocol";
+import type { ConnectedSource } from "@giselles-ai/text-editor/react";
+import { TextEditor } from "@giselles-ai/text-editor/react";
 import clsx from "clsx/lite";
 import { Maximize2 } from "lucide-react";
 import type { ReactNode } from "react";

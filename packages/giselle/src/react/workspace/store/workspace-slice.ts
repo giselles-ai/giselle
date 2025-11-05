@@ -15,7 +15,7 @@ import {
 	type ShortcutScope,
 	type Viewport,
 	type Workspace,
-} from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
 import type { StateCreator } from "zustand";
 import { nodeFactories } from "../../../utils";
 import type { ConnectionCloneStrategy } from "../types";

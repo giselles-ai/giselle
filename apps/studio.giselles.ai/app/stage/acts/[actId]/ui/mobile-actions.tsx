@@ -1,6 +1,6 @@
 "use client";
 
-import type { Generation } from "@giselle-ai/giselle";
+import type { Generation } from "@giselles-ai/giselle";
 import { CheckCircle, Copy, Download } from "lucide-react";
 import { useState } from "react";
 

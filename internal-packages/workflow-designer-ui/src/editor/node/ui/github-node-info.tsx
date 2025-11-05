@@ -1,9 +1,9 @@
-import type { NodeLike } from "@giselle-ai/protocol";
+import type { NodeLike } from "@giselles-ai/protocol";
 import {
 	isActionNode,
 	isTriggerNode,
 	isVectorStoreNode,
-} from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
 import type { ReactElement } from "react";
 import { useGitHubVectorStoreStatus } from "../../lib/use-github-vector-store-status";
 import {

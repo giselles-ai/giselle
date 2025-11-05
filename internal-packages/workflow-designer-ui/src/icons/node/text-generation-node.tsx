@@ -1,4 +1,4 @@
-import type { TextGenerationLanguageModelProvider } from "@giselle-ai/protocol";
+import type { TextGenerationLanguageModelProvider } from "@giselles-ai/protocol";
 import type { SVGProps } from "react";
 import { AnthropicIcon } from "../anthropic";
 import { GoogleWhiteIcon } from "../google";

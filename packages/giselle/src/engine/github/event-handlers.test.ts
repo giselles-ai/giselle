@@ -3,9 +3,12 @@ import type {
 	GitHubAuthConfig,
 	WebhookEvent,
 	WebhookEventName,
-} from "@giselle-ai/github-tool";
-import type { FlowTrigger, GitHubFlowTriggerEvent } from "@giselle-ai/protocol";
-import { FlowTriggerId, NodeId } from "@giselle-ai/protocol";
+} from "@giselles-ai/github-tool";
+import type {
+	FlowTrigger,
+	GitHubFlowTriggerEvent,
+} from "@giselles-ai/protocol";
+import { FlowTriggerId, NodeId } from "@giselles-ai/protocol";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createTriggerNode } from "../../utils/node-factories";
 import { memoryStorageDriver } from "../storage";

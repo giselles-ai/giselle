@@ -1,8 +1,8 @@
 import {
 	useNodeGenerations,
 	useWorkflowDesignerStore,
-} from "@giselle-ai/giselle/react";
-import type { NodeId } from "@giselle-ai/protocol";
+} from "@giselles-ai/giselle/react";
+import type { NodeId } from "@giselles-ai/protocol";
 import { BaseEdge, type EdgeProps, getBezierPath } from "@xyflow/react";
 import clsx from "clsx/lite";
 import type { PropsWithChildren } from "react";

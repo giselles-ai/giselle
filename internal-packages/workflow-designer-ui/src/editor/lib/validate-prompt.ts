@@ -1,7 +1,7 @@
 import {
 	isJsonContent,
 	jsonContentToText,
-} from "@giselle-ai/text-editor-utils";
+} from "@giselles-ai/text-editor-utils";
 
 export function isPromptEmpty(prompt: string | undefined) {
 	const text = isJsonContent(prompt)

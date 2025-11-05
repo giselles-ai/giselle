@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-ai/document-preprocessor",
+	"name": "@giselles-ai/document-preprocessor",
 	"version": "0.1.0",
 	"description": "Document preprocessing utilities for text and image extraction",
 	"main": "dist/index.js",
@@ -16,7 +16,7 @@
 		"pngjs": "catalog:"
 	},
 	"devDependencies": {
-		"@giselle-ai/tsconfig": "workspace:^",
+		"@giselles-ai/tsconfig": "workspace:^",
 		"@types/node": "catalog:",
 		"@types/pngjs": "catalog:",
 		"tsup": "catalog:",

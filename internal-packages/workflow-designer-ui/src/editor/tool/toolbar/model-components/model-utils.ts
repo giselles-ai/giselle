@@ -1,19 +1,19 @@
 import {
 	createImageGenerationNode,
 	createTextGenerationNode,
-} from "@giselle-ai/giselle/react";
+} from "@giselles-ai/giselle/react";
 import {
 	Capability,
 	hasCapability,
 	hasTierAccess,
 	type LanguageModel,
 	type Tier,
-} from "@giselle-ai/language-model";
+} from "@giselles-ai/language-model";
 import {
 	isImageGenerationLanguageModelData,
 	isTextGenerationLanguageModelData,
 	type Node,
-} from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
 import type { AddNodeTool } from "../../types";
 
 export function filterModelsByCategory(

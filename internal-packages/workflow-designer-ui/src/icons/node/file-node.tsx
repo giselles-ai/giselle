@@ -1,4 +1,4 @@
-import type { FileNode } from "@giselle-ai/protocol";
+import type { FileNode } from "@giselles-ai/protocol";
 import type { SVGProps } from "react";
 import { PdfFileIcon } from "../pdf-file";
 import { PictureIcon } from "../picture";

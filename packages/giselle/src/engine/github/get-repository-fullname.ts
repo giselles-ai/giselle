@@ -1,4 +1,4 @@
-import { getRepositoryFullname } from "@giselle-ai/github-tool";
+import { getRepositoryFullname } from "@giselles-ai/github-tool";
 import type { GiselleEngineContext } from "../types";
 
 export async function getGitHubRepositoryFullname(args: {

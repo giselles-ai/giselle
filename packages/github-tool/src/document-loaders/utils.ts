@@ -1,4 +1,4 @@
-import { DocumentLoaderError } from "@giselle-ai/rag";
+import { DocumentLoaderError } from "@giselles-ai/rag";
 import { RequestError } from "@octokit/request-error";
 
 /**

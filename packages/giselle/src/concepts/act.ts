@@ -1,5 +1,5 @@
-import { WorkspaceId } from "@giselle-ai/protocol";
-import { createIdGenerator } from "@giselle-ai/utils";
+import { WorkspaceId } from "@giselles-ai/protocol";
+import { createIdGenerator } from "@giselles-ai/utils";
 import { z } from "zod/v4";
 import { GenerationStatus } from "./generation";
 import { ActId, GenerationId, StepId } from "./identifiers";

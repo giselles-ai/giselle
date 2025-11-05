@@ -1,6 +1,6 @@
 "use server";
 
-import type { WorkspaceId } from "@giselle-ai/protocol";
+import type { WorkspaceId } from "@giselles-ai/protocol";
 import { eq } from "drizzle-orm/sql";
 import { giselleEngine } from "@/app/giselle-engine";
 import { agents, db, workspaces } from "@/db";

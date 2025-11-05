@@ -4,7 +4,7 @@ import type {
 	NodeLike,
 	Output,
 	VectorStoreNode,
-} from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
 
 interface UnconnectedSource<T extends NodeBase = NodeLike> {
 	output: Output;

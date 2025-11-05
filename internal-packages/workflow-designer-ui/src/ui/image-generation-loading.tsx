@@ -1,6 +1,6 @@
 "use client";
 
-import type { ImageGenerationLanguageModelData } from "@giselle-ai/protocol";
+import type { ImageGenerationLanguageModelData } from "@giselles-ai/protocol";
 import { WilliIcon } from "../icons";
 
 interface ImageGenerationLoadingProps {

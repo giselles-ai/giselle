@@ -46,8 +46,8 @@
 		"./setting-row": "./components/setting-row.tsx"
 	},
 	"dependencies": {
-		"@giselle-ai/protocol": "workspace:^",
-		"@giselle-ai/text-editor": "workspace:^",
+		"@giselles-ai/protocol": "workspace:^",
+		"@giselles-ai/text-editor": "workspace:^",
 		"@radix-ui/react-dialog": "1.1.4",
 		"clsx": "catalog:",
 		"lucide-react": "catalog:",
@@ -56,7 +56,7 @@
 		"react-dom": "catalog:"
 	},
 	"devDependencies": {
-		"@giselle-ai/tsconfig": "workspace:^",
+		"@giselles-ai/tsconfig": "workspace:^",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
 		"tailwindcss": "catalog:",

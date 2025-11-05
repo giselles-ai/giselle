@@ -1,7 +1,3 @@
-import {
-	useGiselleEngine,
-	useWorkflowDesigner,
-} from "@giselle-ai/giselle/react";
 import { Button } from "@giselle-internal/ui/button";
 import { EmptyState } from "@giselle-internal/ui/empty-state";
 import {
@@ -12,6 +8,10 @@ import {
 	TableHeader,
 	TableRow,
 } from "@giselle-internal/ui/table";
+import {
+	useGiselleEngine,
+	useWorkflowDesigner,
+} from "@giselles-ai/giselle/react";
 import { LoaderIcon, RefreshCcwIcon } from "lucide-react";
 import useSWR from "swr";
 

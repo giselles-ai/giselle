@@ -1,10 +1,16 @@
 // unified into ModelPicker
 
+import { ModelPicker } from "@giselle-internal/ui/model-picker";
+import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
+import {
+	SettingDetail,
+	SettingLabel,
+} from "@giselle-internal/ui/setting-label";
 import {
 	useFeatureFlag,
 	useUsageLimits,
 	useWorkflowDesignerStore,
-} from "@giselle-ai/giselle/react";
+} from "@giselles-ai/giselle/react";
 import {
 	anthropicLanguageModels,
 	googleLanguageModels,
@@ -12,21 +18,15 @@ import {
 	type LanguageModel,
 	openaiLanguageModels,
 	Tier,
-} from "@giselle-ai/language-model";
-import type { TextGenerationNode } from "@giselle-ai/protocol";
+} from "@giselles-ai/language-model";
+import type { TextGenerationNode } from "@giselles-ai/protocol";
 import {
 	type AnthropicLanguageModelData,
 	type GoogleLanguageModelData,
 	type Node,
 	type OpenAILanguageModelData,
 	OutputId,
-} from "@giselle-ai/protocol";
-import { ModelPicker } from "@giselle-internal/ui/model-picker";
-import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
-import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
+} from "@giselles-ai/protocol";
 import { ChevronRightIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ProTag } from "../../tool/toolbar/components/pro-tag";

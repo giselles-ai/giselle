@@ -1,5 +1,5 @@
-import { useWorkflowDesigner } from "@giselle-ai/giselle/react";
-import type { Input, NodeId } from "@giselle-ai/protocol";
+import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
+import type { Input, NodeId } from "@giselles-ai/protocol";
 import { useMemo } from "react";
 import type { InputWithConnectedOutput } from "./connected-outputs";
 

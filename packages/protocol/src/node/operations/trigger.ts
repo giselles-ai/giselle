@@ -1,4 +1,4 @@
-import { triggerProviders } from "@giselle-ai/flow";
+import { triggerProviders } from "@giselles-ai/flow";
 import { z } from "zod/v4";
 import { FlowTriggerId } from "../../flow/trigger";
 

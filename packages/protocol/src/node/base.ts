@@ -1,4 +1,4 @@
-import { createIdGenerator } from "@giselle-ai/utils";
+import { createIdGenerator } from "@giselles-ai/utils";
 import { z } from "zod/v4";
 
 export const InputId = createIdGenerator("inp");

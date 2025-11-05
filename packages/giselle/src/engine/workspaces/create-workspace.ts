@@ -1,4 +1,4 @@
-import { generateInitialWorkspace, Workspace } from "@giselle-ai/protocol";
+import { generateInitialWorkspace, Workspace } from "@giselles-ai/protocol";
 import type { GiselleEngineContext } from "../types";
 import { setWorkspace } from "./utils";
 

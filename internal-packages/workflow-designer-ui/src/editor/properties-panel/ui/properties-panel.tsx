@@ -1,7 +1,7 @@
 "use client";
 
-import { defaultName } from "@giselle-ai/giselle/react";
-import type { NodeLike } from "@giselle-ai/protocol";
+import { defaultName } from "@giselles-ai/giselle/react";
+import type { NodeLike } from "@giselles-ai/protocol";
 import type { ReactNode } from "react";
 import { NodeIcon } from "../../../icons/node";
 import { EditableText } from "../../../ui/editable-text";

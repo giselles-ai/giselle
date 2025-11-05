@@ -1,4 +1,4 @@
-import type { ActId } from "@giselle-ai/giselle";
+import type { ActId } from "@giselles-ai/giselle";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getSidebarDataObject } from "./lib/data";

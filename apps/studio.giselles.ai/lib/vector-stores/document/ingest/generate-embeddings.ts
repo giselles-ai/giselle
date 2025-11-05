@@ -1,7 +1,7 @@
-import type { EmbeddingProfileId } from "@giselle-ai/protocol";
-import { EMBEDDING_PROFILES } from "@giselle-ai/protocol";
-import type { EmbedderFunction } from "@giselle-ai/rag";
-import { createEmbedderFromProfile } from "@giselle-ai/rag";
+import type { EmbeddingProfileId } from "@giselles-ai/protocol";
+import { EMBEDDING_PROFILES } from "@giselles-ai/protocol";
+import type { EmbedderFunction } from "@giselles-ai/rag";
+import { createEmbedderFromProfile } from "@giselles-ai/rag";
 
 interface GenerateEmbeddingsOptions {
 	chunks: string[];

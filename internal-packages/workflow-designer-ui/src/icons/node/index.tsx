@@ -1,4 +1,4 @@
-import { getImageGenerationModelProvider } from "@giselle-ai/language-model";
+import { getImageGenerationModelProvider } from "@giselles-ai/language-model";
 import {
 	isActionNode,
 	isFileNode,
@@ -7,7 +7,7 @@ import {
 	isTriggerNode,
 	isVectorStoreNode,
 	type NodeLike,
-} from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
 import { DatabaseZapIcon, ZapIcon } from "lucide-react";
 import type { SVGProps } from "react";
 import { SearchIcon } from "..";

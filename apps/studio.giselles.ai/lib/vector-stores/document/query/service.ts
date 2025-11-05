@@ -1,5 +1,5 @@
-import type { QueryService } from "@giselle-ai/rag";
-import { createPostgresQueryService } from "@giselle-ai/rag";
+import type { QueryService } from "@giselles-ai/rag";
+import { createPostgresQueryService } from "@giselles-ai/rag";
 import { getTableName } from "drizzle-orm";
 
 import { documentEmbeddings } from "@/db";

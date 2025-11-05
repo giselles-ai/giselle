@@ -1,6 +1,6 @@
-import { defaultName } from "@giselle-ai/giselle/react";
-import { Node as GiselleNode } from "@giselle-ai/protocol";
-import { SourceExtension } from "@giselle-ai/text-editor-utils";
+import { defaultName } from "@giselles-ai/giselle/react";
+import { Node as GiselleNode } from "@giselles-ai/protocol";
+import { SourceExtension } from "@giselles-ai/text-editor-utils";
 import {
 	type NodeViewProps,
 	NodeViewWrapper,

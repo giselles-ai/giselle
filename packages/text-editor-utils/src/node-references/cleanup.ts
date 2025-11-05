@@ -1,4 +1,4 @@
-import type { NodeId, OutputId } from "@giselle-ai/protocol";
+import type { NodeId, OutputId } from "@giselles-ai/protocol";
 import type { JSONContent } from "@tiptap/core";
 import type { SourceJSONContent } from "../extensions/source-extension";
 import { isJsonContent } from "../is-json-content";

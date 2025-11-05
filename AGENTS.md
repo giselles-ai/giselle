@@ -3,7 +3,7 @@
 Follow these guidelines when editing this repository.
 
 ## Commands
-- **Build SDK**: `turbo build --filter '@giselle-ai/*' --filter giselle-ai --cache=local:rw`
+- **Build SDK**: `turbo build --filter '@giselles-ai/*' --filter giselles-ai --cache=local:rw`
   - Add `--filter <package>` to build specific packages.
 - **Check Types**: `turbo check-types --cache=local:rw`
   - Use `--filter <package>` for package-level checks.

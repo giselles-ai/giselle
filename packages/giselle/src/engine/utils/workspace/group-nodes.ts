@@ -3,8 +3,8 @@ import type {
 	NodeId,
 	TriggerNode,
 	Workspace,
-} from "@giselle-ai/protocol";
-import { isOperationNode, isTriggerNode } from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
+import { isOperationNode, isTriggerNode } from "@giselles-ai/protocol";
 import { sliceGraphFromNode } from "./slice-graph-from-node";
 
 interface NodeGroup {

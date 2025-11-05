@@ -1,4 +1,4 @@
-import { SecretIndex, type WorkspaceId } from "@giselle-ai/protocol";
+import { SecretIndex, type WorkspaceId } from "@giselles-ai/protocol";
 import type { GiselleEngineContext } from "../types";
 import { getWorkspaceIndex } from "../utils/workspace-index";
 import { workspaceSecretIndexPath } from "./paths";

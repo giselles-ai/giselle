@@ -4,12 +4,12 @@ import {
 	type Generation,
 	type Step,
 	type StepId,
-} from "@giselle-ai/giselle";
+} from "@giselles-ai/giselle";
+import { NodeIcon } from "@giselles-ai/icons/node";
 import {
 	isImageGenerationNode,
 	isTextGenerationNode,
-} from "@giselle-ai/protocol";
-import { NodeIcon } from "@giselles-ai/icons/node";
+} from "@giselles-ai/protocol";
 
 import { notFound } from "next/navigation";
 import { giselleEngine } from "@/app/giselle-engine";

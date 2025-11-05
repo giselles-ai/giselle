@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-ai/github-tool",
+	"name": "@giselles-ai/github-tool",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -23,14 +23,14 @@
 		}
 	},
 	"devDependencies": {
-		"@giselle-ai/tsconfig": "workspace:*",
+		"@giselles-ai/tsconfig": "workspace:*",
 		"@octokit/openapi-types": "catalog:",
 		"@types/node": "catalog:",
 		"tsup": "catalog:",
 		"vitest": "catalog:"
 	},
 	"dependencies": {
-		"@giselle-ai/rag": "workspace:*",
+		"@giselles-ai/rag": "workspace:*",
 		"@octokit/auth-app": "catalog:",
 		"@octokit/core": "catalog:",
 		"@octokit/request-error": "catalog:",

@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-ai/giselle",
+	"name": "@giselles-ai/giselle",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -41,10 +41,10 @@
 		}
 	},
 	"devDependencies": {
-		"@giselle-ai/protocol": "workspace:*",
-		"@giselle-ai/rag": "workspace:^",
-		"@giselle-ai/utils": "workspace:*",
-		"@giselle-ai/tsconfig": "workspace:*",
+		"@giselles-ai/protocol": "workspace:*",
+		"@giselles-ai/rag": "workspace:^",
+		"@giselles-ai/utils": "workspace:*",
+		"@giselles-ai/tsconfig": "workspace:*",
 		"@types/pg": "catalog:",
 		"@types/react": "catalog:",
 		"@zod/core": "0.11.6",
@@ -61,11 +61,11 @@
 		"@ai-sdk/openai": "catalog:",
 
 		"@ai-sdk/provider": "catalog:",
-		"@giselle-ai/flow": "workspace:^",
-		"@giselle-ai/github-tool": "workspace:^",
-		"@giselle-ai/language-model": "workspace:^",
-		"@giselle-ai/text-editor-utils": "workspace:^",
-		"@giselle-ai/web-search": "workspace:^",
+		"@giselles-ai/flow": "workspace:^",
+		"@giselles-ai/github-tool": "workspace:^",
+		"@giselles-ai/language-model": "workspace:^",
+		"@giselles-ai/text-editor-utils": "workspace:^",
+		"@giselles-ai/web-search": "workspace:^",
 		"ai": "catalog:",
 		"next": "catalog:",
 		"openai": "catalog:",

@@ -4,7 +4,7 @@ import type {
 	NodeId,
 	NodeLike,
 	Workspace,
-} from "@giselle-ai/protocol";
+} from "@giselles-ai/protocol";
 
 export function sliceGraphFromNode(
 	node: NodeLike,

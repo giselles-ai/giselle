@@ -1,14 +1,14 @@
+import { SettingLabel } from "@giselle-internal/ui/setting-label";
+import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
-} from "@giselle-ai/giselle/react";
-import type { QueryNode } from "@giselle-ai/protocol";
+} from "@giselles-ai/giselle/react";
+import type { QueryNode } from "@giselles-ai/protocol";
 import {
 	isJsonContent,
 	jsonContentToText,
-} from "@giselle-ai/text-editor-utils";
-import { SettingLabel } from "@giselle-internal/ui/setting-label";
-import { useToasts } from "@giselle-internal/ui/toast";
+} from "@giselles-ai/text-editor-utils";
 import { useCallback, useMemo } from "react";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import {

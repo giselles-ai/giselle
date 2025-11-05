@@ -1,7 +1,7 @@
 "use client";
 
-import type { NodeLike } from "@giselle-ai/protocol";
 import { IconBox } from "@giselle-internal/ui/icon-box";
+import type { NodeLike } from "@giselles-ai/protocol";
 import { Trash2 as TrashIcon } from "lucide-react";
 import { PropertiesPanelHeader } from "./properties-panel";
 

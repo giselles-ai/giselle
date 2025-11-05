@@ -4,18 +4,18 @@ import type {
 	OutputFileBlob,
 	QueryContext,
 	RunningGeneration,
-} from "@giselle-ai/giselle";
+} from "@giselles-ai/giselle";
 import {
 	getRequestId,
 	NextGiselleEngine,
-} from "@giselle-ai/giselle/next-internal";
-import { traceEmbedding, traceGeneration } from "@giselle-ai/langfuse";
-import { WorkspaceId } from "@giselle-ai/protocol";
-import type { EmbeddingMetrics } from "@giselle-ai/rag";
+} from "@giselles-ai/giselle/next-internal";
+import { traceEmbedding, traceGeneration } from "@giselles-ai/langfuse";
+import { WorkspaceId } from "@giselles-ai/protocol";
+import type { EmbeddingMetrics } from "@giselles-ai/rag";
 import {
 	supabaseStorageDriver as experimental_supabaseStorageDriver,
 	supabaseVaultDriver,
-} from "@giselle-ai/supabase-driver";
+} from "@giselles-ai/supabase-driver";
 import { tasks as jobs } from "@trigger.dev/sdk";
 import type { ModelMessage, ProviderMetadata } from "ai";
 import { waitForLangfuseFlush } from "@/instrumentation.node";

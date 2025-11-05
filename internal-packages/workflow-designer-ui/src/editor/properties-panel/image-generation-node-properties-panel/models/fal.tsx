@@ -1,7 +1,7 @@
-import { imageGenerationSizes } from "@giselle-ai/language-model";
-import { FalLanguageModelData } from "@giselle-ai/protocol";
 import { Select } from "@giselle-internal/ui/select";
 import { SettingRow } from "@giselle-internal/ui/setting-row";
+import { imageGenerationSizes } from "@giselles-ai/language-model";
+import { FalLanguageModelData } from "@giselles-ai/protocol";
 import { Slider } from "../../../../ui/slider";
 
 export function FalModelPanel({
