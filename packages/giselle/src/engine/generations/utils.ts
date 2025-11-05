@@ -18,14 +18,14 @@ import {
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
 import type { DataContent, FilePart, ImagePart, ModelMessage } from "ai";
+import type { GenerationId } from "../../concepts";
 import {
 	type CompletedGeneration,
 	Generation,
 	GenerationContext,
 	type GenerationOutput,
 	NodeGenerationIndex,
-} from "../../concepts/generation";
-import type { GenerationId } from "../../concepts/identifiers";
+} from "../../concepts";
 import type { GiselleStorage } from "../storage";
 import type { GiselleEngineContext } from "../types";
 

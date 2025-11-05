@@ -1,4 +1,4 @@
-import type { Act } from "../../../concepts/act";
+import type { Act } from "../../../concepts";
 
 // Patch types - one for each operation
 export type Patch =

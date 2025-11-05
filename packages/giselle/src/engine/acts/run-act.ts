@@ -1,6 +1,5 @@
 import { z } from "zod/v4";
-import type { Sequence } from "../../concepts/act";
-import { ActId, type GenerationId } from "../../concepts/identifiers";
+import { ActId, type GenerationId, type Sequence } from "../../concepts";
 import type { GiselleLogger } from "../../logger/types";
 import {
 	type Generation,

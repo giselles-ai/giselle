@@ -2,9 +2,9 @@ import type { UIMessage } from "ai";
 import { create } from "zustand";
 import {
 	type Generation,
+	type GenerationId,
 	isRunningGeneration,
-} from "../../concepts/generation";
-import type { GenerationId } from "../../concepts/identifiers";
+} from "../../concepts";
 
 interface GenerationStore {
 	generations: Generation[];

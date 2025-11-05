@@ -1,5 +1,4 @@
-import { Act } from "../../concepts/act";
-import type { ActId } from "../../concepts/identifiers";
+import { Act, type ActId } from "../../concepts";
 import type { GiselleEngineContext } from "../types";
 import { type Patch, patchAct as patchActObject } from "./object/patch-object";
 import { actPath } from "./object/paths";

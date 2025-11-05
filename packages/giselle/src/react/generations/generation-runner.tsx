@@ -5,7 +5,7 @@ import {
 	GenerationContext,
 	isQueuedGeneration,
 	type RunningGeneration,
-} from "../../concepts/generation";
+} from "../../concepts";
 import { useGiselleEngine } from "../use-giselle-engine";
 import { useGenerationRunnerSystem } from "./contexts/generation-runner-system";
 import { GenerateContentRunner } from "./generate-content-runner";

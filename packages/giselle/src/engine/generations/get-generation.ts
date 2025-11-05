@@ -1,4 +1,4 @@
-import type { GenerationId } from "../../concepts/identifiers";
+import type { GenerationId } from "../../concepts";
 import type { GiselleEngineContext } from "../types";
 import { getGeneration as getGenerationInternal } from "./utils";
 

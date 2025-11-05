@@ -12,16 +12,15 @@ import {
 	Act,
 	ActId,
 	ActIndexObject,
+	type CreatedGeneration,
+	GenerationContextInput,
+	GenerationId,
+	GenerationOrigin,
 	type Sequence,
 	SequenceId,
 	type Step,
-} from "../../concepts/act";
-import {
-	type CreatedGeneration,
-	GenerationContextInput,
-	GenerationOrigin,
-} from "../../concepts/generation";
-import { GenerationId, StepId } from "../../concepts/identifiers";
+	StepId,
+} from "../../concepts";
 import { defaultName } from "../../utils";
 import { setGeneration } from "../generations";
 import type { GiselleEngineContext } from "../types";

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { GenerationUsage } from "../../../concepts/generation";
+import type { GenerationUsage } from "../../../concepts";
 import { sanitizeGenerationUsage } from "./sanitize-usage";
 
 describe("sanitizeGenerationUsage", () => {

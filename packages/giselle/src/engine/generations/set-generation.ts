@@ -1,4 +1,4 @@
-import type { Generation } from "../../concepts/generation";
+import type { Generation } from "../../concepts";
 import type { GiselleEngineContext } from "../types";
 import { internalSetGeneration } from "./internal/set-generation";
 

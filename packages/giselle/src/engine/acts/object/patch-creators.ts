@@ -1,4 +1,4 @@
-import type { Act } from "../../../concepts/act";
+import type { Act } from "../../../concepts";
 import type { Patch } from "./patch-object";
 
 // Type-safe patch creators for Act fields

@@ -8,11 +8,11 @@ import type {
 	FailedGeneration,
 	Generation,
 	GenerationContext,
+	GenerationId,
 	GenerationOrigin,
 	QueuedGeneration,
 	RunningGeneration,
-} from "../../../concepts/generation";
-import type { GenerationId } from "../../../concepts/identifiers";
+} from "../../../concepts";
 
 export type CreateGenerationRunner = (
 	generationContext: GenerationContext,

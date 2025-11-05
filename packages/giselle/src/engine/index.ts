@@ -9,7 +9,7 @@ import type {
 	Workspace,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
-import { ActId, GenerationId } from "../concepts/identifiers";
+import { ActId, GenerationId } from "../concepts";
 import { noopLogger } from "../logger/noop-logger";
 import type { GiselleLogger } from "../logger/types";
 import {

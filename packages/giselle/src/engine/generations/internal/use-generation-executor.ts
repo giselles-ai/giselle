@@ -10,6 +10,7 @@ import type {
 	ModelMessage,
 	ProviderMetadata,
 } from "ai";
+import type { ActId } from "../../../concepts";
 import {
 	type CompletedGeneration,
 	type Generation,
@@ -22,8 +23,7 @@ import {
 	type OutputFileBlob,
 	type QueuedGeneration,
 	type RunningGeneration,
-} from "../../../concepts/generation";
-import type { ActId } from "../../../concepts/identifiers";
+} from "../../../concepts";
 import { UsageLimitError } from "../../error";
 import { filePath } from "../../files/utils";
 import type {

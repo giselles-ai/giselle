@@ -22,7 +22,7 @@ import {
 	ImageId,
 	type QueuedGeneration,
 	type RunningGeneration,
-} from "../../concepts/generation";
+} from "../../concepts";
 import type { GiselleEngineContext } from "../types";
 import { useGenerationExecutor } from "./internal/use-generation-executor";
 import {

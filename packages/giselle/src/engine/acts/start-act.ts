@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { ActId } from "../../concepts/identifiers";
+import { ActId } from "../../concepts";
 import { GenerationOrigin } from "../generations";
 import type { GiselleEngineContext } from "../types";
 import { getAct } from "./get-act";

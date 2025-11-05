@@ -1,5 +1,5 @@
 import type { FileId } from "@giselles-ai/protocol";
-import type { GenerationOrigin } from "../../concepts/generation";
+import type { GenerationOrigin } from "../../concepts";
 
 export function filePath(params: { fileId: FileId } & GenerationOrigin) {
 	switch (params.type) {

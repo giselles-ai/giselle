@@ -30,7 +30,7 @@ import type {
 	GenerationUsage,
 	OutputFileBlob,
 	RunningGeneration,
-} from "../../concepts/generation";
+} from "../../concepts";
 import { generationUiMessageChunksPath } from "../../concepts/path";
 import type { GiselleLogger } from "../../logger/types";
 import { batchWriter } from "../../utils";

@@ -10,7 +10,14 @@ import {
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { z } from "zod/v4";
-import { ActId } from "../concepts/identifiers";
+import {
+	ActId,
+	Generation,
+	GenerationId,
+	GenerationOrigin,
+	QueuedGeneration,
+	RunningGeneration,
+} from "../concepts";
 import type { GiselleEngine } from "../engine";
 import {
 	CreateActInputs,
@@ -18,13 +25,6 @@ import {
 	type Patch,
 	StartActInputs,
 } from "../engine/acts";
-import {
-	Generation,
-	GenerationId,
-	GenerationOrigin,
-	QueuedGeneration,
-	RunningGeneration,
-} from "../engine/generations";
 import { ConfigureTriggerInput } from "../engine/triggers";
 import { JsonResponse } from "../utils";
 import { createHandler, withUsageLimitErrorHandler } from "./create-handler";
