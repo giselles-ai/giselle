@@ -3,21 +3,21 @@ import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
-import type {
-	EmbeddingProfileId,
-	GitHubVectorStoreSource,
-	VectorStoreNode,
-} from "@giselle-sdk/data-type";
-import {
-	DEFAULT_EMBEDDING_PROFILE_ID,
-	EMBEDDING_PROFILES,
-	isEmbeddingProfileId,
-} from "@giselle-sdk/data-type";
 import {
 	useFeatureFlag,
 	useVectorStore,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/giselle/react";
+import type {
+	EmbeddingProfileId,
+	GitHubVectorStoreSource,
+	VectorStoreNode,
+} from "@giselles-ai/protocol";
+import {
+	DEFAULT_EMBEDDING_PROFILE_ID,
+	EMBEDDING_PROFILES,
+	isEmbeddingProfileId,
+} from "@giselles-ai/protocol";
 import { Info } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";

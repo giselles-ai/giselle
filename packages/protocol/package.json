@@ -1,5 +1,5 @@
 {
-	"name": "@giselle-sdk/data-type",
+	"name": "@giselles-ai/protocol",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -22,14 +22,14 @@
 		}
 	},
 	"devDependencies": {
-		"@giselle-sdk/utils": "workspace:*",
-		"@giselle/giselle-sdk-tsconfig": "workspace:*",
+		"@giselles-ai/utils": "workspace:*",
+		"@giselles-ai/tsconfig": "workspace:*",
 		"tsup": "catalog:",
 		"vitest": "catalog:"
 	},
 	"dependencies": {
-		"@giselle-sdk/flow": "workspace:^",
-		"@giselle-sdk/language-model": "workspace:^",
+		"@giselles-ai/flow": "workspace:^",
+		"@giselles-ai/language-model": "workspace:^",
 		"zod": "catalog:"
 	}
 }

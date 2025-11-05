@@ -57,7 +57,7 @@ export const UserButton: FC = async () => {
 						asChild
 					>
 						<Link
-							href="/settings/account"
+							href="/settings/account/general"
 							className="block px-2 py-1.5 w-full text-inverse font-medium text-[14px] leading-[14px] font-geist"
 							aria-label="Account settings"
 						>

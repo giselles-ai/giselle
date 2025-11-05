@@ -1,4 +1,4 @@
-import type { Workspace } from "@giselle-sdk/data-type";
+import type { Workspace } from "@giselles-ai/protocol";
 
 /**
  * Group Nodes Test Fixture

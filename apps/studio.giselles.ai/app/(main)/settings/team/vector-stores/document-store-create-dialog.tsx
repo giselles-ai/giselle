@@ -12,7 +12,7 @@ import {
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
 import { FormField } from "@giselle-internal/ui/form-field";
-import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-sdk/data-type";
+import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselles-ai/protocol";
 import { Plus, X } from "lucide-react";
 import {
 	useCallback,

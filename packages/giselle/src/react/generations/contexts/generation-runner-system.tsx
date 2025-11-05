@@ -1,4 +1,4 @@
-import type { NodeId } from "@giselle-sdk/data-type";
+import type { NodeId } from "@giselles-ai/protocol";
 import type { UIMessage } from "ai";
 import { createContext, useContext } from "react";
 import type {

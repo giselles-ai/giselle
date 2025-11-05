@@ -1,4 +1,4 @@
-import { createPostgresQueryService } from "@giselle-sdk/rag";
+import { createPostgresQueryService } from "@giselles-ai/rag";
 import { getTableName } from "drizzle-orm";
 import z from "zod/v4";
 import { githubRepositoryEmbeddings } from "@/db";

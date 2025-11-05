@@ -1,16 +1,16 @@
-import {
-	isTextGenerationNode,
-	type TextGenerationNode,
-} from "@giselle-sdk/data-type";
 import type {
 	CompletedGeneration,
 	FailedGeneration,
 	Generation,
-} from "@giselle-sdk/giselle";
+} from "@giselles-ai/giselle";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/giselle/react";
+import {
+	isTextGenerationNode,
+	type TextGenerationNode,
+} from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { ArrowDownIcon, ArrowUpIcon, Maximize2, TimerIcon } from "lucide-react";
 import { useCallback } from "react";

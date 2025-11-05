@@ -1,9 +1,9 @@
-import type { FlowTrigger, TriggerNode } from "@giselle-sdk/data-type";
 import {
 	type GitHubTriggerEventId,
 	getGitHubDisplayLabel,
 	type githubTriggers,
-} from "@giselle-sdk/flow";
+} from "@giselles-ai/flow";
+import type { FlowTrigger, TriggerNode } from "@giselles-ai/protocol";
 import type { z } from "zod/v4";
 
 export function buttonLabel(node: TriggerNode) {

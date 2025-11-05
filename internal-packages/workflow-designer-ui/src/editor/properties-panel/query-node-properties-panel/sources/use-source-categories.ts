@@ -4,7 +4,7 @@ import {
 	isTextNode,
 	isTriggerNode,
 	isVectorStoreNode,
-} from "@giselle-sdk/data-type";
+} from "@giselles-ai/protocol";
 import { useMemo } from "react";
 import type { Source } from "./types";
 import { filterSources } from "./utils";

@@ -4,7 +4,7 @@ import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import {
 	useFeatureFlag,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/giselle/react";
 import clsx from "clsx/lite";
 import { ChevronDownIcon } from "lucide-react";
 import Link from "next/link";

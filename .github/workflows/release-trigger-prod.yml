@@ -21,4 +21,4 @@ jobs:
       - env:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_PRODUCTION_ACCESS_TOKEN }}
         working-directory: apps/studio.giselles.ai
-        run: pnpm dlx trigger.dev@latest deploy
+        run: pnpm dlx trigger.dev@4.0.5 deploy

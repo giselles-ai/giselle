@@ -1,11 +1,4 @@
-import {
-	type GitHubActionCommandConfiguredState,
-	isActionNode,
-	isTextNode,
-	type NodeId,
-	type OutputId,
-} from "@giselle-sdk/data-type";
-import { githubActions } from "@giselle-sdk/flow";
+import { githubActions } from "@giselles-ai/flow";
 import {
 	createDiscussionComment,
 	createIssue,
@@ -17,11 +10,18 @@ import {
 	getRepositoryFullname,
 	replyPullRequestReviewComment,
 	updatePullRequest,
-} from "@giselle-sdk/github-tool";
+} from "@giselles-ai/github-tool";
+import {
+	type GitHubActionCommandConfiguredState,
+	isActionNode,
+	isTextNode,
+	type NodeId,
+	type OutputId,
+} from "@giselles-ai/protocol";
 import {
 	isJsonContent,
 	jsonContentToText,
-} from "@giselle-sdk/text-editor-utils";
+} from "@giselles-ai/text-editor-utils";
 import type {
 	GenerationContext,
 	GenerationOutput,

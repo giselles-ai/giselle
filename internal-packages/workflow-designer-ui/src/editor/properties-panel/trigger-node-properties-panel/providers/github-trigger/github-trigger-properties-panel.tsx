@@ -3,22 +3,22 @@ import {
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
 import {
-	type FlowTriggerId,
-	type Output,
-	OutputId,
-	type TriggerNode,
-} from "@giselle-sdk/data-type";
-import {
 	type GitHubTriggerEventId,
 	getGitHubDisplayLabel,
 	githubTriggers,
-} from "@giselle-sdk/flow";
-import type { GitHubIntegrationInstallation } from "@giselle-sdk/giselle";
+} from "@giselles-ai/flow";
+import type { GitHubIntegrationInstallation } from "@giselles-ai/giselle";
 import {
 	useGiselleEngine,
 	useIntegration,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/giselle/react";
+import {
+	type FlowTriggerId,
+	type Output,
+	OutputId,
+	type TriggerNode,
+} from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { ChevronLeft, InfoIcon } from "lucide-react";
 import type { ReactNode } from "react";

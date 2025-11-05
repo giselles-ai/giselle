@@ -3,15 +3,15 @@ import { Note } from "@giselle-internal/ui/note";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
+	useGiselleEngine,
+	useWorkflowDesigner,
+} from "@giselles-ai/giselle/react";
+import {
 	type WebPage,
 	WebPageId,
 	type WebPageNode,
 	type WorkspaceId,
-} from "@giselle-sdk/data-type";
-import {
-	useGiselleEngine,
-	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { TrashIcon } from "lucide-react";
 import { Dialog } from "radix-ui";

@@ -5,7 +5,7 @@ import {
 	isActionNode,
 	type NodeId,
 	OutputId,
-} from "@giselle-sdk/data-type";
+} from "@giselles-ai/protocol";
 import {
 	type Connection,
 	type Edge,
@@ -25,7 +25,7 @@ import {
 	isSupportedConnection,
 	useWorkflowDesignerStore,
 	workspaceActions,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/giselle/react";
 import clsx from "clsx/lite";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";

@@ -5,7 +5,7 @@ import {
 	TableCell,
 	TableRow,
 } from "@giselle-internal/ui/table";
-import { FlowTriggerId } from "@giselle-sdk/data-type";
+import { FlowTriggerId } from "@giselles-ai/protocol";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { stageFlag } from "@/flags";

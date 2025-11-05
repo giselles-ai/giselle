@@ -1,4 +1,4 @@
-import type { Generation } from "@giselle-sdk/giselle";
+import type { Generation } from "@giselles-ai/giselle";
 import { StepLayout } from "./[stepId]/ui/step-layout";
 
 // Define a dummy generation object for the loading state to satisfy StepLayout's props
@@ -7,7 +7,7 @@ const dummyGeneration: Generation = {
 	context: {
 		operationNode: {
 			id: "nd-TgsASBm3TvVxxxxx",
-			name: "Claude 4 Sonnet with Reasoning",
+			name: "Claude Sonnet 4.5 with Reasoning",
 			type: "operation",
 			inputs: [],
 			outputs: [
@@ -21,7 +21,7 @@ const dummyGeneration: Generation = {
 				type: "textGeneration",
 				llm: {
 					provider: "anthropic",
-					id: "claude-4-sonnet-20250514",
+					id: "claude-sonnet-4-5-20250929",
 					configurations: {
 						temperature: 0.7,
 						topP: 1,

@@ -1,5 +1,5 @@
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
-import { type GitHubTriggerEventId, githubTriggers } from "@giselle-sdk/flow";
+import { type GitHubTriggerEventId, githubTriggers } from "@giselles-ai/flow";
 import { getTriggerIcon } from "./icons";
 
 interface EventSelectionStepProps {

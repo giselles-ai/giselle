@@ -1,15 +1,15 @@
+import {
+	type GitHubTriggerEventId,
+	getGitHubDisplayLabel,
+	githubTriggers,
+} from "@giselles-ai/flow";
 import type {
 	FlowTrigger,
 	GitHubFlowTriggerEvent,
 	Output,
 	TriggerNode,
-} from "@giselle-sdk/data-type";
-import { FlowTriggerId, OutputId } from "@giselle-sdk/data-type";
-import {
-	type GitHubTriggerEventId,
-	getGitHubDisplayLabel,
-	githubTriggers,
-} from "@giselle-sdk/flow";
+} from "@giselles-ai/protocol";
+import { FlowTriggerId, OutputId } from "@giselles-ai/protocol";
 
 /**
  * Type definitions for trigger configuration options

@@ -1,5 +1,5 @@
-import type { FlowTrigger } from "@giselle-sdk/data-type";
-import type { ParameterItem } from "@giselle-sdk/giselle";
+import type { ParameterItem } from "@giselles-ai/giselle";
+import type { FlowTrigger } from "@giselles-ai/protocol";
 import type { FormInput, FormValues, ValidationErrors } from "./types";
 
 /**

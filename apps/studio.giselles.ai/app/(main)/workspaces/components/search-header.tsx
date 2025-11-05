@@ -35,7 +35,7 @@ interface SearchHeaderProps {
 
 /**
  * SearchHeader
- * Shared header identical to /apps top controls:
+ * Shared header identical to /workspaces top controls:
  * - Left: search input with leading icon
  * - Right: sort dropdown (+ optional grid/list toggle)
  */

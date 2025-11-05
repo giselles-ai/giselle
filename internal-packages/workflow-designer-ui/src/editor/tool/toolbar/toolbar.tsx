@@ -1,9 +1,8 @@
 "use client";
 
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
-import { FileCategory } from "@giselle-sdk/data-type";
-import { type ActionProvider, actionProviders } from "@giselle-sdk/flow";
-import type { TriggerProvider } from "@giselle-sdk/giselle";
+import { type ActionProvider, actionProviders } from "@giselles-ai/flow";
+import type { TriggerProvider } from "@giselles-ai/giselle";
 import {
 	actionNodeDefaultName,
 	createActionNode,
@@ -19,14 +18,15 @@ import {
 	useGiselleEngine,
 	useUsageLimits,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/giselle/react";
 import {
 	Capability,
 	hasCapability,
 	type LanguageModel,
 	languageModels,
 	Tier,
-} from "@giselle-sdk/language-model";
+} from "@giselles-ai/language-model";
+import { FileCategory } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import {
 	DatabaseZapIcon,
@@ -145,8 +145,8 @@ export function Toolbar() {
 	);
 	const anthropicModels = getAvailableModels(
 		isFreeUser
-			? ["claude-3-5-haiku-20241022"]
-			: ["claude-3-opus-20240229", "claude-3-sonnet-20240229"],
+			? ["claude-haiku-4-5-20251001"]
+			: ["claude-sonnet-4-5-20250929", "claude-opus-4-1-20250805"],
 		"anthropic",
 		llmProviders,
 		languageModels,

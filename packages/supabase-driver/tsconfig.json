@@ -1,5 +1,5 @@
 {
-	"extends": "@giselle/giselle-sdk-tsconfig/node-library.json",
+	"extends": "@giselles-ai/tsconfig/node-library.json",
 	"compilerOptions": {
 		"outDir": "./dist",
 		"rootDir": "./src"

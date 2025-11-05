@@ -1,7 +1,7 @@
 import type {
 	GitHubActionCommandId,
 	WebSearchActionCommandId,
-} from "@giselle-sdk/flow";
+} from "@giselles-ai/flow";
 import { z } from "zod/v4";
 
 const GitHubActionCommandUnconfiguredState = z.object({

@@ -6,7 +6,14 @@
 		"useIgnoreFile": false
 	},
 	"files": {
-		"includes": ["**", "!**/dist", "!**/.*", "!**/node_modules", "!**/build"],
+		"includes": [
+			"**",
+			"!**/.*",
+			"!**/dist",
+			"!**/node_modules",
+			"!**/build",
+			"!**/db/migrate"
+		],
 		"ignoreUnknown": false
 	},
 	"formatter": {

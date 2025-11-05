@@ -8,11 +8,11 @@ test.describe("App management", () => {
 		// Generate a random app name
 		const _appName = `test-app-${Math.random().toString(36).substring(7)}`;
 
-		// Go to the Apps page
-		await page.goto(`${baseUrl}/apps`);
+		// Go to the Workspaces page
+		await page.goto(`${baseUrl}/workspaces`);
 
-		// 1. Create a new app
-		await page.getByRole("button", { name: "Create an app" }).click();
+		// 1. Create a new workspace
+		await page.getByRole("button", { name: "Create a workspace" }).click();
 
 		// Wait for navigation to the new app's page (workspace)
 		await expect(page).toHaveURL(
@@ -46,9 +46,9 @@ test.describe("App management", () => {
 			appName,
 		);
 
-		// 3. Go back to apps page by clicking the Giselle logo in the header
+		// 3. Go back to workspaces page by clicking the Giselle logo in the header
 		await page.getByRole("link", { name: "Giselle logo" }).click();
-		await expect(page).toHaveURL(`${baseUrl}/apps`, { timeout: 15000 });
+		await expect(page).toHaveURL(`${baseUrl}/workspaces`, { timeout: 15000 });
 
 		// 4. Delete the app
 		const appCard = page.getByLabel(appName);

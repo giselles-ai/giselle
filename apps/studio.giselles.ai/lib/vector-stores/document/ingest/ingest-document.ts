@@ -1,7 +1,7 @@
 import type {
 	EmbeddingDimensions,
 	EmbeddingProfileId,
-} from "@giselle-sdk/data-type";
+} from "@giselles-ai/protocol";
 import type { DocumentVectorStoreSourceId } from "@giselles-ai/types";
 import { createClient } from "@supabase/supabase-js";
 import { and, eq, lt, or } from "drizzle-orm";

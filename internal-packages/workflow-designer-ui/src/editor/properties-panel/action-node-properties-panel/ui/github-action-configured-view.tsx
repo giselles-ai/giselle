@@ -4,6 +4,12 @@ import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
+import { githubActionIdToLabel } from "@giselles-ai/flow";
+import {
+	defaultName,
+	useGiselleEngine,
+	useWorkflowDesigner,
+} from "@giselles-ai/giselle/react";
 import type {
 	ActionNode,
 	ConnectionId,
@@ -13,13 +19,7 @@ import type {
 	NodeId,
 	NodeLike,
 	OutputId,
-} from "@giselle-sdk/data-type";
-import { githubActionIdToLabel } from "@giselle-sdk/flow";
-import {
-	defaultName,
-	useGiselleEngine,
-	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { PlusIcon, TriangleAlert, XIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";

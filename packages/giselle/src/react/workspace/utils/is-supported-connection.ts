@@ -1,16 +1,16 @@
 import {
+	Capability,
+	hasCapability,
+	languageModels,
+} from "@giselles-ai/language-model";
+import {
 	isFileNode,
 	isImageGenerationNode,
 	isQueryNode,
 	isTextGenerationNode,
 	isVectorStoreNode,
 	type NodeLike,
-} from "@giselle-sdk/data-type";
-import {
-	Capability,
-	hasCapability,
-	languageModels,
-} from "@giselle-sdk/language-model";
+} from "@giselles-ai/protocol";
 
 export type ConnectionValidationResult =
 	| { canConnect: true }

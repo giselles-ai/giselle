@@ -1,10 +1,10 @@
+import { defaultName } from "@giselles-ai/giselle/react";
 import {
 	isImageGenerationNode,
 	isTextGenerationNode,
 	NodeId,
 	type NodeLike,
-} from "@giselle-sdk/data-type";
-import { defaultName } from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/protocol";
 import { Handle, Position, type NodeProps as RFNodeProps } from "@xyflow/react";
 import clsx from "clsx/lite";
 import { useMemo } from "react";

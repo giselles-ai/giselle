@@ -3,7 +3,7 @@ import {
 	GoogleLanguageModelData,
 	OpenAILanguageModelData,
 	type TextGenerationLanguageModelData,
-} from "@giselle-sdk/data-type";
+} from "@giselles-ai/protocol";
 
 type Provider = "openai" | "anthropic" | "google";
 
@@ -25,7 +25,7 @@ export function createDefaultModelData(
 		case "anthropic":
 			return AnthropicLanguageModelData.parse({
 				provider: "anthropic",
-				id: "claude-3-5-haiku-20241022",
+				id: "claude-haiku-4-5-20251001",
 				configurations: {
 					temperature: 0.7,
 					topP: 1.0,

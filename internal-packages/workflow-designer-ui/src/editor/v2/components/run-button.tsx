@@ -7,17 +7,17 @@ import {
 } from "@giselle-internal/ui/dialog";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { useToasts } from "@giselle-internal/ui/toast";
-import type { ConnectionId, NodeId, TriggerNode } from "@giselle-sdk/data-type";
-import {
-	isImageGenerationNode,
-	isTextGenerationNode,
-} from "@giselle-sdk/data-type";
 import {
 	defaultName,
 	useActSystem,
 	useNodeGroups,
 	useWorkflowDesigner,
-} from "@giselle-sdk/giselle/react";
+} from "@giselles-ai/giselle/react";
+import type { ConnectionId, NodeId, TriggerNode } from "@giselles-ai/protocol";
+import {
+	isImageGenerationNode,
+	isTextGenerationNode,
+} from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { PlayIcon, UngroupIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";

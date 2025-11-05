@@ -1,4 +1,4 @@
-import type { FileId } from "@giselle-sdk/data-type";
+import type { FileId } from "@giselles-ai/protocol";
 import type { GenerationOrigin } from "../../concepts/generation";
 
 export function filePath(params: { fileId: FileId } & GenerationOrigin) {

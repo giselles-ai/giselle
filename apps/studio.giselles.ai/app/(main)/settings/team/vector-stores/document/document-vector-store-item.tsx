@@ -13,7 +13,7 @@ import {
 import { GlassCard } from "@giselle-internal/ui/glass-card";
 import { RepoActionMenu } from "@giselle-internal/ui/repo-action-menu";
 import { useToasts } from "@giselle-internal/ui/toast";
-import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselle-sdk/data-type";
+import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselles-ai/protocol";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import {
 	AlertCircle,

@@ -2,13 +2,13 @@
 
 
 ## Summary
-* 841 MIT
+* 842 MIT
 * 186 Apache 2.0
 * 46 ISC
 * 27 New BSD
 * 13 Simplified BSD
 * 5 BlueOak-1.0.0
-* 2 MIT OR Apache-2.0
+* 3 MIT OR Apache-2.0
 * 2 MIT-0
 * 2 Mozilla Public License 2.0
 * 1 BSD
@@ -766,6 +766,17 @@ MIT OR Apache-2.0 permitted
 
 <a name="@biomejs/cli-linux-x64"></a>
 ### @biomejs/cli-linux-x64 v2.0.6
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+MIT OR Apache-2.0 permitted
+
+
+
+<a name="@biomejs/cli-linux-x64-musl"></a>
+### @biomejs/cli-linux-x64-musl v2.0.6
 #### 
 
 ##### Paths
