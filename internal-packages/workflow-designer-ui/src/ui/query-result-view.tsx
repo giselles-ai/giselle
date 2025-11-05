@@ -74,7 +74,7 @@ function ContentPreview({
 
 	return (
 		<div className="space-y-[8px]">
-			<pre className="text-[12px] text-inverse whitespace-pre-wrap font-mono leading-relaxed">
+			<pre className="text-[12px] text-[var(--color-text-inverse)] whitespace-pre-wrap font-mono leading-relaxed">
 				{displayContent}
 			</pre>
 			{shouldShowToggle && (
@@ -153,12 +153,12 @@ function PRContextDisplay({
 						<span className="text-[11px] font-medium text-blue-400">
 							PR #{prNumber}
 						</span>
-						<span className="text-[11px] text-inverse">•</span>
-						<span className="text-[11px] text-inverse">{contentTypeLabel}</span>
+						<span className="text-[11px] text-[var(--color-text-inverse)]">•</span>
+						<span className="text-[11px] text-[var(--color-text-inverse)]">{contentTypeLabel}</span>
 					</div>
 
 					{parsedContext.title && (
-						<p className="text-[12px] font-medium text-inverse leading-snug">
+						<p className="text-[12px] font-medium text-[var(--color-text-inverse)] leading-snug">
 							{parsedContext.title}
 						</p>
 					)}
@@ -184,7 +184,7 @@ function PRContextDisplay({
 							</button>
 							{isExpanded && (
 								<div className="mt-[6px] p-[8px] bg-surface/30 rounded-[4px]">
-									<pre className="text-[11px] text-inverse whitespace-pre-wrap font-mono leading-relaxed">
+									<pre className="text-[11px] text-[var(--color-text-inverse)] whitespace-pre-wrap font-mono leading-relaxed">
 										{parsedContext.body}
 									</pre>
 								</div>
@@ -408,7 +408,7 @@ function QueryResultCard({
 
 					{Object.keys(record.metadata).length > 0 && (
 						<details className="text-[11px] text-[var(--color-text-inverse)]">
-							<summary className="cursor-pointer hover:text-inverse">
+							<summary className="cursor-pointer hover:text-[var(--color-text-inverse)]">
 								Metadata
 							</summary>
 							<div className="mt-[4px] pl-[12px] space-y-[2px]">
