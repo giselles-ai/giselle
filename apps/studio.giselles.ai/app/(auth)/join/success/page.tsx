@@ -11,7 +11,7 @@ export default function Page() {
 					</h1>
 					<div className="flex flex-col gap-4">
 						<p className="text-[20px] text-text font-medium">Setup complete!</p>
-						<p className="text-secondary text-center">
+				<p className="text-[var(--color-link-muted)] text-center">
 							Head over to your team account and start creating your own unique
 							app. We can't wait to see what you'll build!
 						</p>

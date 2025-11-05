@@ -182,7 +182,7 @@ export function ModelPicker({
 								{filteredGroups.map((group) => (
 									<div key={group.provider} className="flex flex-col gap-[4px]">
 										{group.label ? (
-											<div className="text-[11px] text-secondary px-[4px]">
+											<div className="text-[11px] text-[var(--color-link-muted)] px-[4px]">
 												{group.label}
 											</div>
 										) : null}

@@ -10,7 +10,7 @@ export default function CompleteResetPasswordPage() {
 						<h2 className="mt-6 text-[28px] font-[500] text-accent font-sans text-center auth-title-glow">
 							Set new password
 						</h2>
-						<p className="mt-4 text-[14px] font-geist text-secondary">
+					<p className="mt-4 text-[14px] font-geist text-[var(--color-link-muted)]">
 							Your password has been successfully reset.
 						</p>
 					</div>
