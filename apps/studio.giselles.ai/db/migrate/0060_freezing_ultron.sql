@@ -1,0 +1,1 @@
+ALTER TABLE "github_repository_issue_embeddings" ADD COLUMN "metadata_version" text;

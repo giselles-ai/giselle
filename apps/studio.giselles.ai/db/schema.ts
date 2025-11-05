@@ -727,6 +727,7 @@ export const githubRepositoryIssueEmbeddings = pgTable(
 		documentKey: text("document_key").$type<GitHubIssueDocumentKey>().notNull(),
 		contentCreatedAt: timestamp("content_created_at").notNull(),
 		contentEditedAt: timestamp("content_edited_at").notNull(),
+		metadataVersion: text("metadata_version"),
 		embedding: vectorWithoutDimensions("embedding").notNull(),
 		chunkContent: text("chunk_content").notNull(),
 		chunkIndex: integer("chunk_index").notNull(),
