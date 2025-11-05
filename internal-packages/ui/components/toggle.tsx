@@ -18,9 +18,8 @@ export function Toggle({
 			{children}
 			<Switch.Root
 				className={clsx(
-					"h-[15px] w-[27px] rounded-full outline-none",
-					"border border-[var(--color-white,#fff)] data-[state=checked]:border-primary-900",
-					"bg-transparent data-[state=checked]:bg-primary-900",
+					"h-[15px] w-[27px] rounded-full outline-none transition-colors",
+					"bg-[var(--color-text-inverse,#fff)] data-[state=checked]:bg-primary-900",
 					disabled && "opacity-50 cursor-not-allowed",
 				)}
 				id={name}
