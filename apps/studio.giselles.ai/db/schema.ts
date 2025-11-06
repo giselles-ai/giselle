@@ -78,6 +78,7 @@ export const subscriptionRelations = relations(subscriptions, ({ one }) => ({
 }));
 
 export type TeamType = "customer" | "internal";
+export type TeamPlan = "free" | "pro" | "team" | "internal";
 export const teams = pgTable("teams", {
 	id: text("id").$type<TeamId>().notNull().unique(),
 	dbId: serial("db_id").primaryKey(),
@@ -89,6 +90,7 @@ export const teams = pgTable("teams", {
 		.notNull()
 		.$onUpdate(() => new Date()),
 	type: text("type").$type<TeamType>().notNull().default("customer"),
+	plan: text("plan").$type<TeamPlan>().notNull().default("free"),
 });
 
 export const teamRelations = relations(teams, ({ many }) => ({
