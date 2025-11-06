@@ -7,5 +7,7 @@ export interface UserDataForNavigationRail {
 	planName: string | undefined;
 	currentTeam?: {
 		isPro: boolean;
+		name: string;
+		avatarUrl: string | undefined;
 	};
 }
