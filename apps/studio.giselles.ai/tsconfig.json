@@ -32,6 +32,7 @@
 		"**/*.ts",
 		"**/*.tsx",
 		".next/types/**/*.ts",
+		"../../internal-packages/workflow-designer-ui/global.d.ts",
 		"trigger.config.ts"
 	],
 	"exclude": ["node_modules"]
