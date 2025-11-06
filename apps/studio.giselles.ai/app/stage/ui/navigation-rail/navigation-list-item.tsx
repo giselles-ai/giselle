@@ -2,6 +2,7 @@ import { PopoverContent } from "@giselle-internal/ui/popover";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Button } from "@/app/(main)/settings/components/button";
 import { upgradeCurrentTeam } from "@/services/teams/actions/upgrade-current-team";
 import type { NavigationItem } from "./navigation-items";
@@ -13,6 +14,8 @@ export function NavigationListItem(
 		currentPath?: string;
 	},
 ) {
+	const [mounted, setMounted] = useState(false);
+	useEffect(() => setMounted(true), []);
 	switch (props.type) {
 		case "link": {
 			const isActive =
@@ -85,7 +88,19 @@ export function NavigationListItem(
 			return <div className="h-px bg-border/20 my-1 mx-2" />;
 		case "submenu":
 			return props.variant === "expanded" ? (
-				<DropdownMenuPrimitive.Root>
+				!mounted ? (
+					<button
+						type="button"
+						className="text-link-muted text-sm flex items-center py-0.5 hover:text-accent rounded-lg px-1 w-full cursor-pointer outline-none"
+					>
+						<div className="size-8 flex items-center justify-center">
+							<props.icon className="size-4" />
+						</div>
+						<span className="flex-1 text-left">{props.label}</span>
+						<ChevronRight className="size-3 ml-auto" />
+					</button>
+				) : (
+					<DropdownMenuPrimitive.Root>
 					<DropdownMenuPrimitive.Trigger asChild>
 						<button
 							type="button"

@@ -1,8 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { type ReactNode, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
+import { type ReactNode, useMemo, useState } from "react";
 import { NavigationRailCollapsed } from "./navigation-rail-collapsed";
 import { NavigationRailExpanded } from "./navigation-rail-expanded";
 import type { NavigationRailState, UserDataForNavigationRail } from "./types";
@@ -54,8 +54,8 @@ export function NavigationRail({
 						<NavigationRailExpanded
 							user={dataLoader}
 							teamSelectionSlot={teamSelectionSlot}
-						onCollapseButtonClick={() => setState("collapsed")}
-						currentPath={pathname}
+							onCollapseButtonClick={() => setState("collapsed")}
+							currentPath={pathname}
 						/>
 					</motion.div>
 				)}
@@ -79,8 +79,8 @@ export function NavigationRail({
 					>
 						<NavigationRailCollapsed
 							user={dataLoader}
-						onExpandButtonClick={() => setState("expanded")}
-						currentPath={pathname}
+							onExpandButtonClick={() => setState("expanded")}
+							currentPath={pathname}
 						/>
 					</motion.div>
 				)}

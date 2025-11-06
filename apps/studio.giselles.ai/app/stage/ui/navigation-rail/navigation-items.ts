@@ -3,7 +3,6 @@ import {
 	Activity,
 	Blocks,
 	Bolt,
-	BookMarked,
 	Crown,
 	Globe,
 	LibraryIcon,

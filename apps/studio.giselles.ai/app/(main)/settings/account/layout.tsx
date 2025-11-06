@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
+import type { ReactNode } from "react";
 import { AccountSettingsNav } from "./account-nav";
 
 export default function SettingsAccountLayout({
