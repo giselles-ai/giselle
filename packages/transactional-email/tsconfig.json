@@ -1,8 +1,0 @@
-{
-	"extends": "@giselles-ai/tsconfig/react-library.json",
-	"compilerOptions": {
-		"moduleResolution": "bundler"
-	},
-	"include": ["emails"],
-	"exclude": ["node_modules", ".react-email", "out"]
-}

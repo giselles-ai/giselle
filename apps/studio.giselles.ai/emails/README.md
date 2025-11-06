@@ -1,28 +1,20 @@
-# @giselles-ai/transactional-email
+# Email Templates
 
 Email templates for Giselle using [React Email](https://react.email/).
-
-## Getting Started
-
-Install dependencies from the root:
-
-```bash
-pnpm install
-```
 
 ## Development
 
 Start the email preview server:
 
 ```bash
-pnpm -F @giselles-ai/transactional-email dev
+pnpm -F studio.giselles.ai email:dev
 ```
 
 This opens a local preview server at `http://localhost:3333` where you can view and test email templates.
 
 ## Creating Templates
 
-Add new email templates in the `emails/` directory. Example:
+Add new email templates in this directory. Example:
 
 ```tsx
 import { Html, Head, Body, Container, Text } from '@react-email/components';
@@ -48,7 +40,7 @@ export default MyEmail;
 Export templates as static HTML:
 
 ```bash
-pnpm -F @giselles-ai/transactional-email export
+pnpm -F studio.giselles.ai email:export
 ```
 
 Output will be in the `out/` directory.

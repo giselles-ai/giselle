@@ -85,7 +85,7 @@ const nextPredefinedExternalPackages = [
 const config: KnipConfig = {
 	biome: false,
 	ignoreIssues: {
-		"packages/transactional-email/emails/**/*.tsx": ["duplicates"],
+		"apps/studio.giselles.ai/emails/**/*.tsx": ["duplicates"],
 	},
 	workspaces: {
 		"apps/playground": {
@@ -96,11 +96,13 @@ const config: KnipConfig = {
 			],
 		},
 		"apps/studio.giselles.ai": {
-			entry: ["tests/e2e/global-setup.ts"],
+			entry: ["tests/e2e/global-setup.ts", "emails/**/*.tsx"],
 			ignore: ["scripts/**", "trigger.config.ts"],
 			ignoreDependencies: [
 				...serverExternalPackages,
 				...nextPredefinedExternalPackages,
+				"@react-email/preview-server",
+				"react-dom",
 			],
 		},
 		"apps/ui.giselles.ai": {
@@ -114,10 +116,6 @@ const config: KnipConfig = {
 		},
 		"packages/rag": {
 			ignore: ["src/chunker/__fixtures__/code-sample.ts"],
-		},
-		"packages/transactional-email": {
-			entry: ["emails/**/*.tsx"],
-			ignoreDependencies: ["@react-email/preview-server", "react-dom"],
 		},
 	},
 	ignore: ["turbo/generators/config.ts", ".github/**"],
