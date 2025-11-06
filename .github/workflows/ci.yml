@@ -27,6 +27,8 @@ jobs:
       - run: pnpm knip
       - name: Build SDK
         run: pnpm build-sdk
+      - name: Type check
+        run: pnpm check-types
       - name: Install ripgrep (rg)
         run: sudo apt-get update && sudo apt-get install -y ripgrep
       - name: Report Colors (non-blocking)
