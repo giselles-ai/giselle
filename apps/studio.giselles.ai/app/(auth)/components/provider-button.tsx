@@ -14,7 +14,7 @@ export function ProviderButton({
 	returnUrl,
 }: ProviderButtonProps) {
 	const baseButtonClass =
-		"w-full relative flex items-center justify-center rounded-[8px] border border-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] bg-transparent text-text py-[8px] px-[20px] transition-colors duration-200 hover:bg-blue-pale focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700/60 group";
+		"w-full relative flex items-center justify-center rounded-[8px] border border-inverse/20 bg-transparent text-text py-[8px] px-[20px] transition-colors duration-200 hover:bg-blue-pale focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700/60 group";
 	const iconWrapperClass =
 		"absolute left-[20px] flex items-center [&>svg]:text-text group-hover:[&>svg]:text-auth-dark group-hover:[&>svg]:fill-auth-dark";
 

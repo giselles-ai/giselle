@@ -47,8 +47,8 @@ export const Form = <T extends Record<string, string | undefined>>({
 						required
 						className={
 							validationError && "email" in validationError
-								? "bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] border-error"
-								: "bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]"
+								? "bg-inverse/10 border-error"
+								: "bg-inverse/10"
 						}
 					/>
 					{validationError && "email" in validationError && (
@@ -70,8 +70,8 @@ export const Form = <T extends Record<string, string | undefined>>({
 							required
 							className={
 								validationError && "password" in validationError
-									? "bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] border-error"
-									: "bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]"
+									? "bg-inverse/10 border-error"
+									: "bg-inverse/10"
 							}
 						/>
 						{linkToResetPassword && (
