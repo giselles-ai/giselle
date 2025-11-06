@@ -268,9 +268,12 @@ importers:
 
   apps/playground:
     dependencies:
-      '@aws-sdk/client-s3':
-        specifier: 'catalog:'
-        version: 3.842.0
+      '@giselle-internal/ui':
+        specifier: workspace:^
+        version: link:../../internal-packages/ui
+      '@giselle-internal/workflow-designer-ui':
+        specifier: workspace:*
+        version: link:../../internal-packages/workflow-designer-ui
       '@giselles-ai/giselle':
         specifier: workspace:*
         version: link:../../packages/giselle
@@ -283,33 +286,15 @@ importers:
       '@giselles-ai/supabase-driver':
         specifier: workspace:^
         version: link:../../packages/supabase-driver
-      '@giselle-internal/ui':
-        specifier: workspace:^
-        version: link:../../internal-packages/ui
-      '@giselle-internal/workflow-designer-ui':
-        specifier: workspace:*
-        version: link:../../internal-packages/workflow-designer-ui
-      '@supabase/supabase-js':
-        specifier: 'catalog:'
-        version: 2.50.5(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       clsx:
         specifier: 'catalog:'
         version: 2.1.1
-      happy-dom:
-        specifier: 'catalog:'
-        version: 20.0.2
-      jsdom:
-        specifier: 'catalog:'
-        version: 26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       lucide-react:
         specifier: 'catalog:'
         version: 0.473.0(react@19.1.1)
       next:
         specifier: 'catalog:'
         version: 15.5.2(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.56.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      pg:
-        specifier: 'catalog:'
-        version: 8.14.1
       react:
         specifier: 'catalog:'
         version: 19.1.1
@@ -350,6 +335,12 @@ importers:
       '@embedpdf/pdfium':
         specifier: 'catalog:'
         version: 1.2.1
+      '@giselle-internal/ui':
+        specifier: workspace:*
+        version: link:../../internal-packages/ui
+      '@giselle-internal/workflow-designer-ui':
+        specifier: workspace:*
+        version: link:../../internal-packages/workflow-designer-ui
       '@giselles-ai/document-preprocessor':
         specifier: workspace:*
         version: link:../../packages/document-preprocessor
@@ -374,12 +365,6 @@ importers:
       '@giselles-ai/supabase-driver':
         specifier: workspace:*
         version: link:../../packages/supabase-driver
-      '@giselle-internal/ui':
-        specifier: workspace:*
-        version: link:../../internal-packages/ui
-      '@giselle-internal/workflow-designer-ui':
-        specifier: workspace:*
-        version: link:../../internal-packages/workflow-designer-ui
       '@icons-pack/react-simple-icons':
         specifier: 10.0.0
         version: 10.0.0(react@19.1.1)
@@ -716,6 +701,9 @@ importers:
 
   internal-packages/workflow-designer-ui:
     dependencies:
+      '@giselle-internal/ui':
+        specifier: workspace:^
+        version: link:../ui
       '@giselles-ai/flow':
         specifier: workspace:^
         version: link:../../packages/flow
@@ -734,9 +722,6 @@ importers:
       '@giselles-ai/text-editor-utils':
         specifier: workspace:^
         version: link:../../packages/text-editor-utils
-      '@giselle-internal/ui':
-        specifier: workspace:^
-        version: link:../ui
       '@xyflow/react':
         specifier: 'catalog:'
         version: 12.8.3(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -1598,24 +1583,28 @@ packages:
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@biomejs/cli-linux-arm64@2.0.6':
     resolution: {integrity: sha512-ZSVf6TYo5rNMUHIW1tww+rs/krol7U5A1Is/yzWyHVZguuB0lBnIodqyFuwCNqG9aJGyk7xIMS8HG0qGUPz0SA==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@biomejs/cli-linux-x64-musl@2.0.6':
     resolution: {integrity: sha512-mKHE/e954hR/hSnAcJSjkf4xGqZc/53Kh39HVW1EgO5iFi0JutTN07TSjEMg616julRtfSNJi0KNyxvc30Y4rQ==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@biomejs/cli-linux-x64@2.0.6':
     resolution: {integrity: sha512-geM1MkHTV1Kh2Cs/Xzot9BOF3WBacihw6bkEmxkz4nSga8B9/hWy5BDiOG3gHDGIBa8WxT0nzsJs2f/hPqQIQw==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@biomejs/cli-win32-arm64@2.0.6':
     resolution: {integrity: sha512-290V4oSFoKaprKE1zkYVsDfAdn0An5DowZ+GIABgjoq1ndhvNxkJcpxPsiYtT7slbVe3xmlT0ncdfOsN7KruzA==}
