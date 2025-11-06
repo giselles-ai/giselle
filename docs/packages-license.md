@@ -578,7 +578,7 @@
 
 
 <a name="@babel/code-frame"></a>
-### @babel/code-frame v7.26.2
+### @babel/code-frame v7.27.1
 #### 
 
 ##### Paths
@@ -600,7 +600,7 @@
 
 
 <a name="@babel/core"></a>
-### @babel/core v7.26.7
+### @babel/core v7.26.10
 #### 
 
 ##### Paths
@@ -611,7 +611,7 @@
 
 
 <a name="@babel/generator"></a>
-### @babel/generator v7.26.5
+### @babel/generator v7.28.5
 #### 
 
 ##### Paths
@@ -666,7 +666,7 @@
 
 
 <a name="@babel/helper-string-parser"></a>
-### @babel/helper-string-parser v7.25.9
+### @babel/helper-string-parser v7.27.1
 #### 
 
 ##### Paths
@@ -677,7 +677,7 @@
 
 
 <a name="@babel/helper-validator-identifier"></a>
-### @babel/helper-validator-identifier v7.25.9
+### @babel/helper-validator-identifier v7.28.5
 #### 
 
 ##### Paths
@@ -699,7 +699,7 @@
 
 
 <a name="@babel/helpers"></a>
-### @babel/helpers v7.26.7
+### @babel/helpers v7.28.4
 #### 
 
 ##### Paths
@@ -710,7 +710,7 @@
 
 
 <a name="@babel/parser"></a>
-### @babel/parser v7.26.7
+### @babel/parser v7.27.0
 #### 
 
 ##### Paths
@@ -732,7 +732,7 @@
 
 
 <a name="@babel/template"></a>
-### @babel/template v7.25.9
+### @babel/template v7.27.2
 #### 
 
 ##### Paths
@@ -743,7 +743,7 @@
 
 
 <a name="@babel/traverse"></a>
-### @babel/traverse v7.26.7
+### @babel/traverse v7.27.0
 #### 
 
 ##### Paths
@@ -754,7 +754,7 @@
 
 
 <a name="@babel/types"></a>
-### @babel/types v7.26.7
+### @babel/types v7.28.5
 #### 
 
 ##### Paths
