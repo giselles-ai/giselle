@@ -1,7 +1,6 @@
 import { GiselleIcon } from "@giselle-internal/workflow-designer-ui";
 import { ChevronsRightIcon } from "lucide-react";
-import type { ReactNode } from "react";
-import { Suspense } from "react";
+import { Suspense, use } from "react";
 import { MenuButton } from "./menu-button";
 import { navigationItems } from "./navigation-items";
 import { NavigationList } from "./navigation-list";
@@ -11,6 +10,7 @@ import { NavigationRailContentsContainer } from "./navigation-rail-contents-cont
 import { NavigationRailFooter } from "./navigation-rail-footer";
 import { NavigationRailFooterMenu } from "./navigation-rail-footer-menu";
 import { NavigationRailHeader } from "./navigation-rail-header";
+import { TeamAvatarCompact } from "./team-avatar-compact";
 import type { UserDataForNavigationRail } from "./types";
 
 export function NavigationRailCollapsed({
@@ -20,26 +20,36 @@ export function NavigationRailCollapsed({
 	onExpandButtonClick: () => void;
 	user: Promise<UserDataForNavigationRail>;
 }) {
+	const user = use(userPromise);
+	const isPro = user.currentTeam?.isPro ?? false;
 	return (
 		<NavigationRailContainer variant="collapsed">
 			<NavigationRailHeader>
-				<MenuButton
-					onClick={() => onExpandButtonClick()}
-					className="cursor-e-resize"
-				>
-					<GiselleIcon className="size-6 text-stage-sidebar-text-hover stroke-1 group-hover:hidden" />
-					<ChevronsRightIcon className="size-5 text-stage-sidebar-text-hover stroke-1 hidden group-hover:block" />
-				</MenuButton>
+				<div className="w-full pt-6 pb-4 flex justify-center">
+					<MenuButton
+						onClick={() => onExpandButtonClick()}
+						className="group h-10 w-10 mx-auto text-stage-sidebar-text hover:text-stage-sidebar-text-hover transition-colors rounded flex items-center justify-center cursor-e-resize"
+					>
+						<GiselleIcon className="h-[37.11px] w-auto text-stage-sidebar-text-hover stroke-1 group-hover:hidden" />
+						<ChevronsRightIcon className="size-5 text-stage-sidebar-text-hover stroke-1 hidden group-hover:block" />
+					</MenuButton>
+				</div>
 			</NavigationRailHeader>
 			<NavigationRailContentsContainer>
+				<TeamAvatarCompact userPromise={userPromise} />
 				<NavigationList>
-					{navigationItems.map((navigationItem) => (
-						<NavigationListItem
-							key={navigationItem.id}
-							{...navigationItem}
-							variant="collapsed"
-						/>
-					))}
+					{navigationItems.map((navigationItem) => {
+						if (navigationItem.type === "action" && isPro) {
+							return null;
+						}
+						return (
+							<NavigationListItem
+								key={navigationItem.id}
+								{...navigationItem}
+								variant="collapsed"
+							/>
+						);
+					})}
 				</NavigationList>
 			</NavigationRailContentsContainer>
 

@@ -3,6 +3,7 @@ import {
 	Blocks,
 	Bolt,
 	BookMarked,
+	Crown,
 	Globe,
 	LibraryIcon,
 	Megaphone,
@@ -40,11 +41,19 @@ interface DividerNavigationItem {
 	type: "divider";
 }
 
+interface ActionNavigationItem {
+	id: string;
+	type: "action";
+	icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+	label: string;
+}
+
 export type NavigationItem =
 	| LinkNavigationItem
 	| ExternalNavigationItem
 	| SectionNavigationItem
-	| DividerNavigationItem;
+	| DividerNavigationItem
+	| ActionNavigationItem;
 
 export const navigationItems = [
 	// Agent
@@ -129,6 +138,10 @@ export const navigationItems = [
 			!p.includes("/usage"),
 	},
 	{ id: "divider-2", type: "divider" },
+	// Upgrade button
+	{ id: "nav-upgrade", type: "action", icon: Crown, label: "Upgrade" },
+	// Spacer section above Docs
+	{ id: "section-others", type: "section", label: "" },
 	// Others
 	{
 		id: "nav-docs",

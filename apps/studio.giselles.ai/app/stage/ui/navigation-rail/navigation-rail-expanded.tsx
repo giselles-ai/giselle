@@ -1,8 +1,7 @@
 import { ChevronsLeftIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { Suspense } from "react";
+import { Suspense, use } from "react";
 import { GiselleLogo } from "@/components/giselle-logo";
-import { TeamSelection } from "@/services/teams/components/team-selection";
 import { MenuButton } from "./menu-button";
 import { navigationItems } from "./navigation-items";
 import { NavigationList } from "./navigation-list";
@@ -24,10 +23,13 @@ export function NavigationRailExpanded({
 	user: Promise<UserDataForNavigationRail>;
 	teamSelectionSlot?: ReactNode;
 }) {
+	const user = use(userPromise);
+	const isPro = user.currentTeam?.isPro ?? false;
+
 	return (
 		<NavigationRailContainer variant="expanded">
 			<NavigationRailHeader>
-				<div className="flex items-center justify-between w-full pt-8 pb-4">
+				<div className="flex items-center justify-between w-full pt-6 pb-4">
 					<GiselleLogo className="w-[96px] h-auto fill-stage-sidebar-text-hover" />
 					<MenuButton
 						onClick={() => onCollapseButtonClick()}
@@ -44,13 +46,18 @@ export function NavigationRailExpanded({
 					)}
 				</div>
 				<NavigationList>
-					{navigationItems.map((navigationItem) => (
-						<NavigationListItem
-							key={navigationItem.id}
-							{...navigationItem}
-							variant="expanded"
-						/>
-					))}
+					{navigationItems.map((navigationItem) => {
+						if (navigationItem.type === "action" && isPro) {
+							return null;
+						}
+						return (
+							<NavigationListItem
+								key={navigationItem.id}
+								{...navigationItem}
+								variant="expanded"
+							/>
+						);
+					})}
 				</NavigationList>
 			</NavigationRailContentsContainer>
 			<NavigationRailFooter>

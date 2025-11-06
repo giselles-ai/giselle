@@ -46,11 +46,13 @@ export function NavigationRailFooterMenu({
 
 	return (
 		<DropdownMenuPrimitive.Root>
-			<DropdownMenuPrimitive.Trigger asChild>
-				<button
-					className="w-full hover:bg-ghost-element-hover h-full rounded-[8px] cursor-pointer outline-none px-1 py-1.5 flex items-center gap-2"
-					type="button"
-				>
+            <DropdownMenuPrimitive.Trigger asChild>
+                <button
+                    className={`w-full hover:bg-ghost-element-hover h-full rounded-[8px] cursor-pointer outline-none px-1 py-1.5 flex ${
+                        variant === "collapsed" ? "justify-center" : "items-center gap-2"
+                    }`}
+                    type="button"
+                >
 					<div className="size-8 flex items-center justify-center shrink-0">
 						<AvatarImage
 							className="rounded-full"

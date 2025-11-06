@@ -5,4 +5,7 @@ export interface UserDataForNavigationRail {
 	email: string | undefined;
 	avatarUrl: string | undefined;
 	planName: string | undefined;
+	currentTeam?: {
+		isPro: boolean;
+	};
 }
