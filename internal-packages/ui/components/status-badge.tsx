@@ -21,11 +21,11 @@ const statusStyles = {
 };
 
 const dotStyles = {
-	error: "bg-[var(--color-error)]",
-	success: "bg-[var(--color-success)]",
-	warning: "bg-[var(--color-warning)]",
-	info: "bg-[var(--color-info)] animate-pulse",
-	ignored: "bg-[var(--color-ignored)]",
+	error: "bg-error",
+	success: "bg-success",
+	warning: "bg-warning",
+	info: "bg-info animate-pulse",
+	ignored: "bg-ignored",
 };
 
 const dotTextStyles = {
