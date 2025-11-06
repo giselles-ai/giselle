@@ -124,7 +124,7 @@ export function TeamSelectionForm({
 
 					<SelectSeparator className="bg-white/10" />
 
-					<div className="p-2.5 flex items-center gap-x-2 rounded-lg w-full hover:bg-white/5">
+					<div className="px-2 py-1.5 flex items-center gap-x-2 rounded-lg w-full hover:bg-white/5">
 						<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
 							<Plus className="size-3 text-background" />
 						</span>

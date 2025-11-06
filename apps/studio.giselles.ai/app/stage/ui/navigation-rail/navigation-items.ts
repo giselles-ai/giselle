@@ -48,12 +48,26 @@ interface ActionNavigationItem {
 	label: string;
 }
 
+interface SubMenuNavigationItem {
+	id: string;
+	type: "submenu";
+	icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+	label: string;
+	items: Array<{
+		label: string;
+		href: string;
+		external: boolean;
+		disabled: boolean;
+	}>;
+}
+
 export type NavigationItem =
 	| LinkNavigationItem
 	| ExternalNavigationItem
 	| SectionNavigationItem
 	| DividerNavigationItem
-	| ActionNavigationItem;
+	| ActionNavigationItem
+	| SubMenuNavigationItem;
 
 export const navigationItems = [
 	// Agent
@@ -144,13 +158,6 @@ export const navigationItems = [
 	{ id: "section-others", type: "section", label: "" },
 	// Others
 	{
-		id: "nav-docs",
-		type: "external",
-		icon: BookMarked,
-		label: "Docs",
-		href: "https://docs.giselles.ai/en/guides/introduction",
-	},
-	{
 		id: "nav-whats-new",
 		type: "external",
 		icon: Megaphone,
@@ -159,9 +166,28 @@ export const navigationItems = [
 	},
 	{
 		id: "nav-more",
-		type: "external",
+		type: "submenu",
 		icon: Globe,
 		label: "More from Giselle",
-		href: "https://giselles.ai",
+		items: [
+			{
+				label: "Blog",
+				href: "https://giselles.ai/blog",
+				external: true,
+				disabled: false,
+			},
+			{
+				label: "Career",
+				href: "",
+				external: false,
+				disabled: true,
+			},
+			{
+				label: "Feedback",
+				href: "",
+				external: false,
+				disabled: true,
+			},
+		],
 	},
 ] satisfies NavigationItem[];

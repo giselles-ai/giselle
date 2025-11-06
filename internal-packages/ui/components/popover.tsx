@@ -6,13 +6,20 @@ export function PopoverContent(props: React.PropsWithChildren) {
 	return (
 		<div
 			className={clsx(
-				"relative rounded-[8px] p-[4px] shadow-xl flex flex-col min-h-0 h-full",
+				// Match profile dropdown styling (rounded-xl, p-2, custom shadow)
+				"relative rounded-xl p-2 shadow-[0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)] flex flex-col min-h-0 h-full",
 			)}
 			{...props}
 		>
 			<GlassSurfaceLayers
-				radiusClass="rounded-[8px]"
+				// Use larger radius to align with profile dropdown
+				radiusClass="rounded-[12px]"
 				borderStyle="solid"
+				// Match profile dropdown: main border without extra opacity, aux hairline at 20%
+				borderOpacityClass=""
+				auxHairlineOpacityClass="opacity-20"
+				// Use semantic color-mix instead of raw color utility
+				baseFillMixPercent={40}
 				withTopHighlight={true}
 				withBaseFill={true}
 			/>
