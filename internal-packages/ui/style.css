@@ -95,6 +95,13 @@
 	--color-auth-logo-watermark: hsl(207, 19%, 77%);
 	--color-auth-text-dark: hsl(0, 0%, 0%);
 	--color-auth-bg-dark: hsl(0, 0%, 0%);
+	/* v4 utility aliases for auth (used only on auth pages) */
+	--color-auth: hsl(234, 91%, 5%);
+	--color-auth-ambient: hsl(218, 58%, 21%);
+	--color-auth-watermark: hsl(207, 19%, 77%);
+	--color-auth-dark: hsl(0, 0%, 0%);
+	/* inverse for inputs like bg-inverse/10 */
+	--color-inverse: #ffffff;
 	--shadow-stage-form:
 		0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1),
 		0 0 20px rgba(59, 130, 246, 0.15), 0 0 40px rgba(59, 130, 246, 0.1),
