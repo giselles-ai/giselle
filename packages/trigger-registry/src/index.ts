@@ -13,7 +13,8 @@ import z from "zod/v4";
 interface PayloadItem {
 	key: string;
 	label: string;
-	type: "string" | "number";
+	type: "text" | "multiline-text" | "number";
+	optional?: boolean;
 }
 
 const githubTriggerRegistry = z.registry<{
@@ -34,12 +35,13 @@ githubTriggerRegistry.add(GitHubTriggerEventIssueCreated, {
 		{
 			key: "title",
 			label: "Title",
-			type: "string",
+			type: "text",
 		},
 		{
 			key: "body",
 			label: "Body",
-			type: "string",
+			type: "multiline-text",
+			optional: true,
 		},
 	],
 });
@@ -56,12 +58,13 @@ githubTriggerRegistry.add(GitHubTriggerEventIssueClosed, {
 		{
 			key: "title",
 			label: "Title",
-			type: "string",
+			type: "text",
 		},
 		{
 			key: "body",
 			label: "Body",
-			type: "string",
+			type: "multiline-text",
+			optional: true,
 		},
 	],
 });
@@ -70,33 +73,6 @@ githubTriggerRegistry.add(GitHubTriggerEventIssueCommentCreated, {
 	id: GitHubTriggerEventIssueCommentCreated.shape.id.value,
 	label: "Issue Comment Created",
 	payload: [
-		{
-			key: "issueNumber",
-			label: "Issue Number",
-			type: "number",
-		},
-		{
-			key: "title",
-			label: "Title",
-			type: "string",
-		},
-		{
-			key: "body",
-			label: "Body",
-			type: "string",
-		},
-	],
-});
-
-githubTriggerRegistry.add(GitHubTriggerEventIssueCommentCreated, {
-	id: GitHubTriggerEventIssueCommentCreated.shape.id.value,
-	label: "Issue Comment Created",
-	payload: [
-		{
-			key: "body",
-			label: "Body",
-			type: "string",
-		},
 		{
 			key: "issueNumber",
 			label: "Issue Number",
@@ -105,12 +81,19 @@ githubTriggerRegistry.add(GitHubTriggerEventIssueCommentCreated, {
 		{
 			key: "issueTitle",
 			label: "Issue Title",
-			type: "string",
+			type: "text",
 		},
 		{
 			key: "issueBody",
 			label: "Issue Body",
-			type: "string",
+			type: "multiline-text",
+			optional: true,
+		},
+		{
+			key: "body",
+			label: "Body",
+			type: "multiline-text",
+			optional: true,
 		},
 	],
 });
@@ -127,17 +110,18 @@ githubTriggerRegistry.add(GitHubTriggerEventIssueLabeled, {
 		{
 			key: "issueTitle",
 			label: "Issue Title",
-			type: "string",
+			type: "text",
 		},
 		{
 			key: "issueBody",
 			label: "Issue Body",
-			type: "string",
+			type: "multiline-text",
+			optional: true,
 		},
 		{
 			key: "labelName",
 			label: "Label Name",
-			type: "string",
+			type: "text",
 		},
 	],
 });
@@ -154,22 +138,24 @@ githubTriggerRegistry.add(GitHubTriggerEventPullRequestCommentCreated, {
 		{
 			key: "issueTitle",
 			label: "Pull Request Title",
-			type: "string",
+			type: "text",
 		},
 		{
 			key: "issueBody",
 			label: "Pull Request Body",
-			type: "string",
+			type: "multiline-text",
+			optional: true,
 		},
 		{
 			key: "body",
 			label: "Body",
-			type: "string",
+			type: "multiline-text",
+			optional: true,
 		},
 		{
 			key: "diff",
 			label: "Diff",
-			type: "string",
+			type: "multiline-text",
 		},
 	],
 });
@@ -186,17 +172,17 @@ githubTriggerRegistry.add(GitHubTriggerEventPullRequestReviewCommentCreated, {
 		{
 			key: "body",
 			label: "Body",
-			type: "string",
+			type: "multiline-text",
 		},
 		{
 			key: "diff",
 			label: "Diff",
-			type: "string",
+			type: "text",
 		},
 		{
 			key: "previousCommentBody",
 			label: "Previous Comment Body",
-			type: "string",
+			type: "multiline-text",
 		},
 		{
 			key: "pullRequestNumber",
@@ -206,12 +192,13 @@ githubTriggerRegistry.add(GitHubTriggerEventPullRequestReviewCommentCreated, {
 		{
 			key: "pullRequestTitle",
 			label: "Pull Request Title",
-			type: "string",
+			type: "text",
 		},
 		{
 			key: "pullRequestBody",
 			label: "Pull Request Body",
-			type: "string",
+			type: "multiline-text",
+			optional: true,
 		},
 	],
 });
