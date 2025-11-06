@@ -195,7 +195,7 @@ export function NavigationRailFooterMenu({
 							onSelect={(e) => e.preventDefault()}
 							className="p-0 rounded-lg"
 						>
-							<TeamCreationForm canCreateFreeTeam={true} proPlanPrice="$20">
+							<TeamCreationForm canCreateFreeTeam={false} proPlanPrice="$20">
 								<span className="cursor-pointer flex items-center gap-x-2 px-2 py-1.5 rounded-lg w-full hover:bg-white/5">
 									<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
 										<Plus className="size-3 text-background" />
