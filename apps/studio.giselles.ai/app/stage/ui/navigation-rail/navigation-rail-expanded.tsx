@@ -18,12 +18,12 @@ export function NavigationRailExpanded({
 	onCollapseButtonClick,
 	user: userPromise,
 	teamSelectionSlot,
-    currentPath,
+	currentPath,
 }: {
 	onCollapseButtonClick: () => void;
 	user: Promise<UserDataForNavigationRail>;
 	teamSelectionSlot?: ReactNode;
-    currentPath?: string;
+	currentPath?: string;
 }) {
 	const user = use(userPromise);
 	const isPro = user.currentTeam?.isPro ?? false;
@@ -32,12 +32,12 @@ export function NavigationRailExpanded({
 		<NavigationRailContainer variant="expanded">
 			<NavigationRailHeader>
 				<div className="flex items-center justify-between w-full pt-6 pb-4">
-					<GiselleLogo className="w-[96px] h-auto fill-stage-sidebar-text-hover" />
+					<GiselleLogo className="w-[96px] h-auto fill-inverse" />
 					<MenuButton
 						onClick={() => onCollapseButtonClick()}
 						className="cursor-w-resize"
 					>
-						<ChevronsLeftIcon className="size-5 text-stage-sidebar-text stroke-1" />
+						<ChevronsLeftIcon className="size-5 text-link-muted stroke-1" />
 					</MenuButton>
 				</div>
 			</NavigationRailHeader>
@@ -52,12 +52,12 @@ export function NavigationRailExpanded({
 						if (navigationItem.type === "action" && isPro) {
 							return null;
 						}
-                        return (
+						return (
 							<NavigationListItem
 								key={navigationItem.id}
 								{...navigationItem}
 								variant="expanded"
-                                currentPath={currentPath}
+								currentPath={currentPath}
 							/>
 						);
 					})}

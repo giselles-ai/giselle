@@ -176,13 +176,6 @@ export function NavigationRailFooterMenu({
 							</DropdownMenuPrimitive.Portal>
 						</DropdownMenuPrimitive.Sub>
 
-						{/* Lobby */}
-						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS} asChild>
-							<Link href="/workspaces" className="w-full block">
-								Lobby
-							</Link>
-						</DropdownMenuPrimitive.Item>
-
 						{/* Homepage */}
 						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS} asChild>
 							<a

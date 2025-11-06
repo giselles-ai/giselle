@@ -1,5 +1,6 @@
 import { WilliIcon } from "@giselle-internal/workflow-designer-ui";
 import {
+	Activity,
 	Blocks,
 	Bolt,
 	BookMarked,
@@ -133,7 +134,7 @@ export const navigationItems = [
 	{
 		id: "nav-usage",
 		type: "link",
-		icon: SparklesIcon,
+		icon: Activity,
 		label: "Usage",
 		href: "/settings/team/usage",
 		isActive: (p: string) => p.startsWith("/settings/team/usage"),

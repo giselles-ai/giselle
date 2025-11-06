@@ -16,11 +16,11 @@ import type { UserDataForNavigationRail } from "./types";
 export function NavigationRailCollapsed({
 	onExpandButtonClick,
 	user: userPromise,
-    currentPath,
+	currentPath,
 }: {
 	onExpandButtonClick: () => void;
 	user: Promise<UserDataForNavigationRail>;
-    currentPath?: string;
+	currentPath?: string;
 }) {
 	const user = use(userPromise);
 	const isPro = user.currentTeam?.isPro ?? false;
@@ -30,10 +30,10 @@ export function NavigationRailCollapsed({
 				<div className="w-full pt-6 pb-4 flex justify-center">
 					<MenuButton
 						onClick={() => onExpandButtonClick()}
-						className="group h-10 w-10 mx-auto text-stage-sidebar-text hover:text-stage-sidebar-text-hover transition-colors rounded flex items-center justify-center cursor-e-resize"
+						className="group h-10 w-10 mx-auto text-link-muted hover:text-accent transition-colors rounded flex items-center justify-center cursor-e-resize"
 					>
-						<GiselleIcon className="h-[37.11px] w-auto text-stage-sidebar-text-hover stroke-1 group-hover:hidden" />
-						<ChevronsRightIcon className="size-5 text-stage-sidebar-text-hover stroke-1 hidden group-hover:block" />
+						<GiselleIcon className="h-[37.11px] w-auto text-text stroke-1 group-hover:hidden" />
+						<ChevronsRightIcon className="size-5 text-link-muted stroke-1 hidden group-hover:block" />
 					</MenuButton>
 				</div>
 			</NavigationRailHeader>
@@ -44,12 +44,12 @@ export function NavigationRailCollapsed({
 						if (navigationItem.type === "action" && isPro) {
 							return null;
 						}
-                        return (
+						return (
 							<NavigationListItem
 								key={navigationItem.id}
 								{...navigationItem}
 								variant="collapsed"
-                                currentPath={currentPath}
+								currentPath={currentPath}
 							/>
 						);
 					})}
