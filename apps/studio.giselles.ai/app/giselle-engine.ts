@@ -85,7 +85,10 @@ if (
 	throw new Error("missing github credentials");
 }
 
-type TeamForPlan = Pick<CurrentTeam, "id" | "activeSubscriptionId" | "type">;
+type TeamForPlan = Pick<
+	CurrentTeam,
+	"id" | "activeSubscriptionId" | "type" | "plan"
+>;
 
 async function traceGenerationForTeam(args: {
 	generation: CompletedGeneration | FailedGeneration;

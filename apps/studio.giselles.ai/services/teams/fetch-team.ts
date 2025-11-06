@@ -13,6 +13,7 @@ export async function fetchTeamByDbId(
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
 			type: teams.type,
+			plan: teams.plan,
 			activeSubscriptionId: subscriptions.id,
 		})
 		.from(teams)
