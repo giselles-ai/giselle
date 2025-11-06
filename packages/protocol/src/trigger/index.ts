@@ -1,7 +1,7 @@
 import { createIdGenerator } from "@giselles-ai/utils";
 import { z } from "zod/v4";
-import { NodeId } from "../node";
-import { WorkspaceId } from "../workspace";
+import { NodeId } from "../node/base";
+import { WorkspaceId } from "../workspace/id";
 import { GitHubFlowTrigger } from "./github";
 import { ManualFlowTrigger } from "./manual";
 
