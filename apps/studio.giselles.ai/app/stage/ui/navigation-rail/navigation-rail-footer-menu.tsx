@@ -3,11 +3,11 @@
 import { PopoverContent } from "@giselle-internal/ui/popover";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { ChevronRight, ExternalLink, Plus } from "lucide-react";
-import { TeamCreationForm } from "@/services/teams/components/team-creation-form";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { SignOutButton } from "@/services/accounts/components/user-button/sign-out-button";
+import { TeamCreationForm } from "@/services/teams/components/team-creation-form";
 import type { NavigationRailState, UserDataForNavigationRail } from "./types";
 
 const MENU_ITEM_CLASS =
@@ -190,22 +190,22 @@ export function NavigationRailFooterMenu({
 							</a>
 						</DropdownMenuPrimitive.Item>
 
-					{/* Create team dialog (client) */}
-					<DropdownMenuPrimitive.Item
-						onSelect={(e) => e.preventDefault()}
-						className="p-0 rounded-lg"
-					>
-						<TeamCreationForm canCreateFreeTeam={true} proPlanPrice="$20">
-							<span className="cursor-pointer flex items-center gap-x-2 px-2 py-1.5 rounded-lg w-full hover:bg-white/5">
-								<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
-									<Plus className="size-3 text-background" />
+						{/* Create team dialog (client) */}
+						<DropdownMenuPrimitive.Item
+							onSelect={(e) => e.preventDefault()}
+							className="p-0 rounded-lg"
+						>
+							<TeamCreationForm canCreateFreeTeam={true} proPlanPrice="$20">
+								<span className="cursor-pointer flex items-center gap-x-2 px-2 py-1.5 rounded-lg w-full hover:bg-white/5">
+									<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
+										<Plus className="size-3 text-background" />
+									</span>
+									<span className="text-inverse font-medium text-[14px] leading-[14px] font-geist">
+										Create team
+									</span>
 								</span>
-								<span className="text-inverse font-medium text-[14px] leading-[14px] font-geist">
-									Create team
-								</span>
-							</span>
-						</TeamCreationForm>
-					</DropdownMenuPrimitive.Item>
+							</TeamCreationForm>
+						</DropdownMenuPrimitive.Item>
 
 						{/* Separator */}
 						<DropdownMenuPrimitive.Separator className="h-px bg-white/10 my-1" />

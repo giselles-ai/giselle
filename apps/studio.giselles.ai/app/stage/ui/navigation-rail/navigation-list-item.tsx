@@ -101,54 +101,57 @@ export function NavigationListItem(
 					</button>
 				) : (
 					<DropdownMenuPrimitive.Root>
-					<DropdownMenuPrimitive.Trigger asChild>
-						<button
-							type="button"
-							className="text-link-muted text-sm flex items-center py-0.5 hover:text-accent rounded-lg px-1 w-full cursor-pointer outline-none"
-						>
-							<div className="size-8 flex items-center justify-center">
-								<props.icon className="size-4" />
-							</div>
-							<span className="flex-1 text-left">{props.label}</span>
-							<ChevronRight className="size-3 ml-auto" />
-						</button>
-					</DropdownMenuPrimitive.Trigger>
-					<DropdownMenuPrimitive.Portal>
-						<DropdownMenuPrimitive.Content
-							className="z-50 w-[180px]"
-							sideOffset={4}
-							side="right"
-							align="start"
-						>
-							<PopoverContent>
-								{props.items.map((item) => (
-									<DropdownMenuPrimitive.Item
-										key={item.label}
-										className="text-text outline-none cursor-pointer hover:bg-ghost-element-hover rounded-[4px] px-[8px] py-[6px] text-[14px] data-disabled:opacity-50 data-disabled:pointer-events-none"
-										asChild={!item.disabled}
-										disabled={item.disabled}
-									>
-										{item.disabled ? (
-											<span className="w-full flex items-center justify-between">
-												{item.label}
-											</span>
-										) : (
-											<a
-												href={item.href}
-												target="_blank"
-												rel="noopener"
-												className="w-full flex items-center justify-between"
-											>
-												{item.label}
-												{item.external && <ExternalLink className="w-3 h-3" />}
-											</a>
-										)}
-									</DropdownMenuPrimitive.Item>
-								))}
-							</PopoverContent>
-						</DropdownMenuPrimitive.Content>
-					</DropdownMenuPrimitive.Portal>
-				</DropdownMenuPrimitive.Root>
+						<DropdownMenuPrimitive.Trigger asChild>
+							<button
+								type="button"
+								className="text-link-muted text-sm flex items-center py-0.5 hover:text-accent rounded-lg px-1 w-full cursor-pointer outline-none"
+							>
+								<div className="size-8 flex items-center justify-center">
+									<props.icon className="size-4" />
+								</div>
+								<span className="flex-1 text-left">{props.label}</span>
+								<ChevronRight className="size-3 ml-auto" />
+							</button>
+						</DropdownMenuPrimitive.Trigger>
+						<DropdownMenuPrimitive.Portal>
+							<DropdownMenuPrimitive.Content
+								className="z-50 w-[180px]"
+								sideOffset={4}
+								side="right"
+								align="start"
+							>
+								<PopoverContent>
+									{props.items.map((item) => (
+										<DropdownMenuPrimitive.Item
+											key={item.label}
+											className="text-text outline-none cursor-pointer hover:bg-ghost-element-hover rounded-[4px] px-[8px] py-[6px] text-[14px] data-disabled:opacity-50 data-disabled:pointer-events-none"
+											asChild={!item.disabled}
+											disabled={item.disabled}
+										>
+											{item.disabled ? (
+												<span className="w-full flex items-center justify-between">
+													{item.label}
+												</span>
+											) : (
+												<a
+													href={item.href}
+													target="_blank"
+													rel="noopener"
+													className="w-full flex items-center justify-between"
+												>
+													{item.label}
+													{item.external && (
+														<ExternalLink className="w-3 h-3" />
+													)}
+												</a>
+											)}
+										</DropdownMenuPrimitive.Item>
+									))}
+								</PopoverContent>
+							</DropdownMenuPrimitive.Content>
+						</DropdownMenuPrimitive.Portal>
+					</DropdownMenuPrimitive.Root>
+				)
 			) : (
 				<a
 					href={props.items[0]?.href || "#"}
