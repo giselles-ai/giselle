@@ -43,6 +43,12 @@ export async function ingestGitHubIssues(params: {
 			`${issueNumber}:${contentType}:${contentId}`,
 		documentVersion: ({ contentEditedAt }) =>
 			new Date(contentEditedAt).toISOString(),
+		metadataVersion: ({ issueState, issueStateReason, issueClosedAt }) =>
+			createMetadataVersionSignature({
+				issueState,
+				issueStateReason,
+				issueClosedAt,
+			}),
 		metadataTransform: ({
 			issueNumber,
 			issueState,
@@ -65,6 +71,11 @@ export async function ingestGitHubIssues(params: {
 				contentId,
 				contentCreatedAt: new Date(contentCreatedAt),
 				contentEditedAt: new Date(contentEditedAt),
+				metadataVersion: createMetadataVersionSignature({
+					issueState,
+					issueStateReason,
+					issueClosedAt,
+				}),
 			};
 		},
 		embeddingProfileId: params.embeddingProfileId,
@@ -73,7 +84,7 @@ export async function ingestGitHubIssues(params: {
 
 	const result = await ingest();
 	console.log(
-		`Ingested from ${result.totalDocuments} documents with success: ${result.successfulDocuments}, failure: ${result.failedDocuments}`,
+		`Ingested from ${result.totalDocuments} documents with success: ${result.successfulDocuments}, failure: ${result.failedDocuments}, metadata-only updates: ${result.metadataOnlyUpdates}`,
 	);
 
 	// Capture errors to Sentry if any documents failed
@@ -132,4 +143,16 @@ async function getRepositoryIndexInfo(
 	}
 
 	return { repositoryIndexDbId };
+}
+
+function createMetadataVersionSignature(params: {
+	issueState: string;
+	issueStateReason: string | null;
+	issueClosedAt: string | null;
+}): string {
+	return [
+		params.issueState,
+		params.issueStateReason,
+		params.issueClosedAt,
+	].join(":");
 }
