@@ -126,16 +126,8 @@ const config: KnipConfig = {
 		"apps/studio.giselles.ai": {
 			entry: ["tests/e2e/global-setup.ts"],
 			ignore: ["scripts/**", "trigger.config.ts"],
-			ignoreDependencies: [
-				...filterExisting(
-					serverExternalPackages,
-					getDepsFor("apps/studio.giselles.ai"),
-				),
-				...filterExisting(
-					nextPredefinedExternalPackages,
-					getDepsFor("apps/studio.giselles.ai"),
-				),
-			],
+			// Keep ignoreDependencies minimal; rely on package presence instead of broad ignores
+			ignoreDependencies: [],
 		},
 		"apps/ui.giselles.ai": {
 			ignoreDependencies: ["tailwindcss"],
