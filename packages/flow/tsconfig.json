@@ -1,5 +1,0 @@
-{
-	"extends": "@giselles-ai/tsconfig/node-library.json",
-	"include": ["."],
-	"exclude": ["node_modules"]
-}

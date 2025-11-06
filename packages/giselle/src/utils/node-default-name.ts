@@ -1,4 +1,4 @@
-import type { ActionProvider } from "@giselles-ai/flow";
+import { type ActionProvider, getEntry } from "@giselles-ai/action-registry";
 import {
 	isActionNode,
 	isImageGenerationNode,
@@ -21,13 +21,9 @@ export function triggerNodeDefaultName(triggerProvider: TriggerProvider) {
 	return triggerProviderLabel[triggerProvider];
 }
 
-export const actionProviderLabel: Record<ActionProvider, string> = {
-	github: "GitHub",
-	"web-search": "Web Search",
-};
-
 export function actionNodeDefaultName(actionProvider: ActionProvider) {
-	return `${actionProviderLabel[actionProvider]} Action`;
+	const entry = getEntry(actionProvider);
+	return entry?.label;
 }
 
 export const vectorStoreProviderLabel: Record<

@@ -1,8 +1,5 @@
 import { z } from "zod/v4";
-import type {
-	GitHubActionCommandId,
-	WebSearchActionCommandId,
-} from "../../action";
+import type { GitHubActionCommandId } from "../../action";
 
 const GitHubActionCommandUnconfiguredState = z.object({
 	status: z.literal("unconfigured"),
@@ -39,35 +36,8 @@ const GitHubActionCommandData = z.object({
 });
 export type GitHubActionCommandData = z.infer<typeof GitHubActionCommandData>;
 
-const WebSearchActionCommandUnconfiguredState = z.object({
-	status: z.literal("unconfigured"),
-});
-export type WebSearchActionCommandUnconfiguredState = z.infer<
-	typeof WebSearchActionCommandUnconfiguredState
->;
-
-const WebSearchActionCommandConfiguredState = z.object({
-	status: z.literal("configured"),
-	commandId: z.custom<WebSearchActionCommandId>(),
-});
-export type WebSearchActionCommandConfiguredState = z.infer<
-	typeof WebSearchActionCommandConfiguredState
->;
-
-const WebSearchActionCommandData = z.object({
-	provider: z.literal("web-search"),
-	state: z.discriminatedUnion("status", [
-		WebSearchActionCommandUnconfiguredState,
-		WebSearchActionCommandConfiguredState,
-	]),
-});
-export type WebSearchActionCommandData = z.infer<
-	typeof WebSearchActionCommandData
->;
-
 const ActionCommandData = z.discriminatedUnion("provider", [
 	GitHubActionCommandData,
-	WebSearchActionCommandData,
 ]);
 export type ActionCommandData = z.infer<typeof ActionCommandData>;
 

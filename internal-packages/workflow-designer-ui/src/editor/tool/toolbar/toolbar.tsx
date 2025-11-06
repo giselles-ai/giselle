@@ -1,10 +1,9 @@
 "use client";
 
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
-import { type ActionProvider, actionProviders } from "@giselles-ai/flow";
+import { actionRegistry } from "@giselles-ai/action-registry";
 import type { TriggerProvider } from "@giselles-ai/giselle";
 import {
-	actionNodeDefaultName,
 	createActionNode,
 	createDocumentVectorStoreNode,
 	createFileNode,
@@ -95,7 +94,7 @@ export function Toolbar() {
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("All");
 	const { llmProviders } = useWorkflowDesigner();
-	const { webSearchAction, stage } = useFeatureFlag();
+	const { stage } = useFeatureFlag();
 
 	const modelsFilteredBySearchOnly = languageModels
 		.filter((model) => llmProviders.includes(model.provider))
@@ -962,38 +961,23 @@ export function Toolbar() {
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={(value) => {
-													setSelectedTool(
-														addNodeTool(
-															createActionNode(value as ActionProvider),
-														),
-													);
+													setSelectedTool(addNodeTool(createActionNode(value)));
 												}}
 											>
-												{actionProviders
-													.filter((actionProvider) => {
-														// Filter based on feature flags
-														if (actionProvider === "web-search") {
-															return webSearchAction;
-														}
-														return true; // Show other providers by default
-													})
-													.map((actionProvider) => (
-														<ToggleGroup.Item
-															key={actionProvider}
-															value={actionProvider}
-															data-tool
-														>
-															{actionProvider === "github" && (
-																<GitHubIcon className="size-[20px] shrink-0" />
-															)}
-															{actionProvider === "web-search" && (
-																<SearchIcon className="size-[20px] shrink-0" />
-															)}
-															<p className="text-[14px]">
-																{actionNodeDefaultName(actionProvider)}
-															</p>
-														</ToggleGroup.Item>
-													))}
+												{actionRegistry.map((actionRegistry) => (
+													<ToggleGroup.Item
+														key={actionRegistry.provider}
+														value={actionRegistry.provider}
+														data-tool
+													>
+														{actionRegistry.provider === "github" && (
+															<GitHubIcon className="size-[20px] shrink-0" />
+														)}
+														<p className="text-[14px]">
+															{actionRegistry.label}
+														</p>
+													</ToggleGroup.Item>
+												))}
 												<div data-tool className="opacity-50">
 													<RocketIcon className="size-[20px] shrink-0" />
 													<p className="text-[14px]">Stage (Coming soon)</p>

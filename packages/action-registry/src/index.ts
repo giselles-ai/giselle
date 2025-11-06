@@ -1,54 +1,17 @@
-import {
-	GitHubActionCommand,
-	type GitHubActionCommandId,
-	GithubCreateIssueActionCommand,
-} from "@giselles-ai/protocol";
-import z from "zod/v4";
+import { githubActionOptions } from "./github";
 
-interface PayloadItem {
-	key: string;
-	label: string;
-	type: "string" | "number";
-	optional?: boolean;
-}
+export * from "./github";
 
-const githubActionRegistry = z.registry<{
-	id: GitHubActionCommandId;
-	label: string;
-	payload: PayloadItem[];
-}>();
+export const actionRegistry = [
+	{
+		provider: "github",
+		label: "GitHub Action",
+		actionOptions: githubActionOptions,
+	},
+] as const;
 
-githubActionRegistry.add(GithubCreateIssueActionCommand, {
-	id: GithubCreateIssueActionCommand.shape.id.value,
-	label: "Create Issue",
-	payload: [
-		{
-			key: "title",
-			label: "Title",
-			type: "string",
-		},
-		{
-			key: "body",
-			label: "Body",
-			type: "string",
-		},
-	],
-});
+export type ActionProvider = (typeof actionRegistry)[number]["provider"];
 
-export const githubActionOptions = GitHubActionCommand.options
-	.map((githubActionSchema) => {
-		const registryData = githubActionRegistry.get(githubActionSchema);
-		if (registryData === undefined) {
-			return null;
-		}
-		return registryData;
-	})
-	.filter((registry) => registry !== null);
-
-export function findGitHubActionOption(
-	githubActionCommandId: GitHubActionCommandId,
-) {
-	return githubActionOptions.find(
-		(option) => option.id === githubActionCommandId,
-	);
+export function getEntry(actionProvider: ActionProvider) {
+	return actionRegistry.find((entry) => entry.provider === actionProvider);
 }
