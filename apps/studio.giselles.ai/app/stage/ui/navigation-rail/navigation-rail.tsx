@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 import { NavigationRailCollapsed } from "./navigation-rail-collapsed";
 import { NavigationRailExpanded } from "./navigation-rail-expanded";
 import type { NavigationRailState, UserDataForNavigationRail } from "./types";
@@ -14,6 +15,7 @@ export function NavigationRail({
 	teamSelectionSlot?: ReactNode;
 }) {
 	const [state, setState] = useState<NavigationRailState>("expanded");
+	const pathname = usePathname();
 	const spacingAnimationControls = useMemo(() => {
 		switch (state) {
 			case "collapsed":
@@ -52,7 +54,8 @@ export function NavigationRail({
 						<NavigationRailExpanded
 							user={dataLoader}
 							teamSelectionSlot={teamSelectionSlot}
-							onCollapseButtonClick={() => setState("collapsed")}
+						onCollapseButtonClick={() => setState("collapsed")}
+						currentPath={pathname}
 						/>
 					</motion.div>
 				)}
@@ -76,7 +79,8 @@ export function NavigationRail({
 					>
 						<NavigationRailCollapsed
 							user={dataLoader}
-							onExpandButtonClick={() => setState("expanded")}
+						onExpandButtonClick={() => setState("expanded")}
+						currentPath={pathname}
 						/>
 					</motion.div>
 				)}

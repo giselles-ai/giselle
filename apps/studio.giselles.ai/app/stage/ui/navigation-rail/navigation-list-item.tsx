@@ -1,21 +1,31 @@
-import Link from "next/link";
+import { PopoverContent } from "@giselle-internal/ui/popover";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { ChevronRight, ExternalLink } from "lucide-react";
-import { PopoverContent } from "@giselle-internal/ui/popover";
+import Link from "next/link";
 import { Button } from "@/app/(main)/settings/components/button";
 import { upgradeCurrentTeam } from "@/services/teams/actions/upgrade-current-team";
 import type { NavigationItem } from "./navigation-items";
 import type { NavigationRailState } from "./types";
 
 export function NavigationListItem(
-	props: NavigationItem & { variant: NavigationRailState },
+	props: NavigationItem & {
+		variant: NavigationRailState;
+		currentPath?: string;
+	},
 ) {
 	switch (props.type) {
-		case "link":
+		case "link": {
+			const isActive =
+				"isActive" in props && props.isActive
+					? props.isActive(props.currentPath ?? "")
+					: props.href === props.currentPath;
+			const linkClass = isActive
+				? "text-accent"
+				: "text-link-muted hover:text-accent";
 			return (
 				<Link
 					href={props.href}
-					className="text-stage-sidebar-text text-sm flex items-center py-0.5 hover:text-stage-sidebar-text-hover rounded-lg px-1"
+					className={`${linkClass} text-sm flex items-center py-0.5 rounded-lg px-1`}
 				>
 					<div className="size-8 flex items-center justify-center">
 						<props.icon className="size-4" />
@@ -23,13 +33,14 @@ export function NavigationListItem(
 					{props.variant === "expanded" && props.label}
 				</Link>
 			);
+		}
 		case "external":
 			return (
 				<a
 					href={props.href}
 					target="_blank"
 					rel="noopener"
-					className="text-stage-sidebar-text text-sm flex items-center py-0.5 hover:text-stage-sidebar-text-hover rounded-lg px-1"
+					className="text-link-muted text-sm flex items-center py-0.5 hover:text-accent rounded-lg px-1"
 				>
 					<div className="size-8 flex items-center justify-center">
 						{"icon" in props && props.icon ? (
@@ -54,7 +65,7 @@ export function NavigationListItem(
 			) : (
 				<Link
 					href="/settings/team"
-					className="text-stage-sidebar-text text-sm flex items-center py-0.5 hover:text-stage-sidebar-text-hover rounded-lg px-1"
+					className="text-stage-sidebar-text/60 text-sm flex items-center py-0.5 hover:text-stage-sidebar-text-hover rounded-lg px-1"
 				>
 					<div className="size-8 flex items-center justify-center">
 						<props.icon className="size-4" />
@@ -78,7 +89,7 @@ export function NavigationListItem(
 					<DropdownMenuPrimitive.Trigger asChild>
 						<button
 							type="button"
-							className="text-stage-sidebar-text text-sm flex items-center py-0.5 hover:text-stage-sidebar-text-hover rounded-lg px-1 w-full cursor-pointer outline-none"
+							className="text-link-muted text-sm flex items-center py-0.5 hover:text-accent rounded-lg px-1 w-full cursor-pointer outline-none"
 						>
 							<div className="size-8 flex items-center justify-center">
 								<props.icon className="size-4" />
@@ -128,7 +139,7 @@ export function NavigationListItem(
 					href={props.items[0]?.href || "#"}
 					target="_blank"
 					rel="noopener"
-					className="text-stage-sidebar-text text-sm flex items-center py-0.5 hover:text-stage-sidebar-text-hover rounded-lg px-1"
+					className="text-link-muted text-sm flex items-center py-0.5 hover:text-accent rounded-lg px-1"
 				>
 					<div className="size-8 flex items-center justify-center">
 						<props.icon className="size-4" />

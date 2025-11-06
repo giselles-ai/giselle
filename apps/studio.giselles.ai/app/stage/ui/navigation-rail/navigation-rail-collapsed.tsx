@@ -16,9 +16,11 @@ import type { UserDataForNavigationRail } from "./types";
 export function NavigationRailCollapsed({
 	onExpandButtonClick,
 	user: userPromise,
+    currentPath,
 }: {
 	onExpandButtonClick: () => void;
 	user: Promise<UserDataForNavigationRail>;
+    currentPath?: string;
 }) {
 	const user = use(userPromise);
 	const isPro = user.currentTeam?.isPro ?? false;
@@ -42,11 +44,12 @@ export function NavigationRailCollapsed({
 						if (navigationItem.type === "action" && isPro) {
 							return null;
 						}
-						return (
+                        return (
 							<NavigationListItem
 								key={navigationItem.id}
 								{...navigationItem}
 								variant="collapsed"
+                                currentPath={currentPath}
 							/>
 						);
 					})}
