@@ -36,6 +36,7 @@
 
 	/* text */
 	--color-text: #f7f9fd;
+	--color-text-inverse: #ffffff;
 	--color-text-muted: #a9afbc;
 	--color-text-placeholder: #878a98;
 	--color-text-disabled: #878a98;
