@@ -21,6 +21,16 @@ export const GetIssuesMetadataQuery = graphql(`
 					createdAt
 					updatedAt
 					closedAt
+				  timelineItems(
+						itemTypes: RENAMED_TITLE_EVENT
+            last: 1
+					) {
+            nodes {
+              ... on RenamedTitleEvent {
+                createdAt
+              }
+            }
+          }
 					comments(last: 100) {
 						nodes {
 							id
