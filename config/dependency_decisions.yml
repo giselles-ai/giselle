@@ -108,3 +108,10 @@
     :versions: 
     - 3.0.1
     :when: 2025-03-10 08:02:40.655579000 Z
+- - :approve
+  - spamc
+  - :who: shige
+    :why: spamc is brought in by @react-email/preview-server, and the upstream react-email project is MIT licensed. https://github.com/resend/react-email/blob/main/LICENSE
+    :versions:
+    - 0.0.5
+    :when: 2025-11-05 05:42:57.900000000 Z
