@@ -138,7 +138,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 			node,
 			workspace?.id,
 			updateNodeData,
-			callbacks?.flowTriggerUpdate,
+			callbacks?.triggerUpdate,
 		],
 	);
 
