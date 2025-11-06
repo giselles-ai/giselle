@@ -7,7 +7,7 @@ export default function EmailConfirmationPage() {
 					<h2 className="mt-6 text-[28px] font-[500] text-accent font-sans text-center auth-title-glow">
 						Verify your email
 					</h2>
-					<p className="mt-4 text-[14px] font-geist text-[var(--color-link-muted)]">
+					<p className="mt-4 text-[14px] font-geist text-link-muted">
 						We've sent a confirmation code to your email. Please enter it below
 						to complete your registration.
 					</p>

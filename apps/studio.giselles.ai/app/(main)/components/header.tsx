@@ -13,7 +13,7 @@ export function Header() {
 					<Link href="/" aria-label="Giselle logo">
 						<GiselleLogo className="w-logo h-auto fill-white mt-[4px]" />
 					</Link>
-					<span className="text-[var(--color-link-muted)]">/</span>
+					<span className="text-link-muted">/</span>
 					<TeamSelection />
 				</div>
 				<div className="flex items-center gap-4">

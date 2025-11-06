@@ -16,7 +16,7 @@ export function SectionHeader({
 	return (
 		<div className={clsx("flex justify-between items-start", className)}>
 			<div className="flex-1">
-				<h4 className="text-[var(--color-text)] font-medium text-[18px] leading-[21.6px] font-sans">
+				<h4 className="text-text font-medium text-[18px] leading-[21.6px] font-sans">
 					{title}
 				</h4>
 				{description && (

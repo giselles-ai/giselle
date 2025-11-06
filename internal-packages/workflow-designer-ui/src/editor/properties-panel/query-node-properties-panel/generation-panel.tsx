@@ -10,12 +10,12 @@ import { QueryResultView } from "../../../ui/query-result-view";
 
 function Empty() {
 	return (
-		<div className="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] min-h-[220px] rounded-[8px] flex justify-center items-center text-[var(--color-link-muted)]">
+		<div className="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] min-h-[220px] rounded-[8px] flex justify-center items-center text-link-muted">
 			<EmptyState
 				icon={<StackBlicksIcon />}
 				title="Nothing generated yet."
 				description="Run a query to see the results."
-				className="text-[var(--color-link-muted)]"
+				className="text-link-muted"
 			/>
 		</div>
 	);

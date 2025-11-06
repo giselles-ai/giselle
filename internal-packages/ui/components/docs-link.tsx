@@ -51,7 +51,7 @@ export function DocsLink({
 	const toneClass =
 		tone === "muted"
 			? "text-text/80 hover:text-text"
-			: "text-[var(--color-link-muted)] hover:text-[var(--color-link-muted)]";
+			: "text-link-muted hover:text-link-muted";
 	return (
 		<a
 			className={clsx(

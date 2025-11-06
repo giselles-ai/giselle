@@ -127,7 +127,7 @@ export function TeamMemberListItem({
 	};
 
 	return (
-		<div className="group px-2 py-3 border-t-[0.5px] border-[var(--color-border)] first:border-t-0 font-sans">
+		<div className="group px-2 py-3 border-t-[0.5px] border-border first:border-t-0 font-sans">
 			<div className="flex items-center justify-between gap-2">
 				<div className="flex gap-x-2 items-center">
 					<div className="flex-shrink-0">
@@ -139,7 +139,7 @@ export function TeamMemberListItem({
 						/>
 					</div>
 					<div className="flex flex-col gap-y-1 font-medium">
-						<div className="text-[var(--color-text-inverse)] text-[14px] leading-[20.4px]">
+						<div className="text-inverse text-[14px] leading-[20.4px]">
 							{displayName || "No display name"}
 						</div>
 						<div className="text-text/60 text-[12px] leading-[16px]">

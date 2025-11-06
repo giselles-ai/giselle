@@ -95,11 +95,11 @@ export function InvitationListItem({
 	};
 
 	return (
-		<div className="px-2 py-4 border-t-[0.5px] border-[var(--color-border)] first:border-t-0 font-sans">
+		<div className="px-2 py-4 border-t-[0.5px] border-border first:border-t-0 font-sans">
 			<div className="flex items-center justify-between gap-2">
 				<div className="flex gap-x-2 items-center">
 					<div className="flex-shrink-0 opacity-50">
-						<div className="w-9 h-9 rounded-full border border-dashed border-[var(--color-border)] flex items-center justify-center">
+						<div className="w-9 h-9 rounded-full border border-dashed border-border flex items-center justify-center">
 							{/* Empty circle with dashed border */}
 						</div>
 					</div>

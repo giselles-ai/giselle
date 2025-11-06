@@ -59,7 +59,7 @@ export function AgentCard({ agent }: { agent: typeof dbAgents.$inferSelect }) {
 			<div className="pointer-events-none absolute top-0 left-4 right-4 z-10 h-px bg-gradient-to-r from-transparent via-text/20 to-transparent" />
 
 			{/* Subtle inner border */}
-			<div className="pointer-events-none absolute inset-0 z-10 rounded-[inherit] border-[0.5px] border-[var(--color-border-muted)]" />
+			<div className="pointer-events-none absolute inset-0 z-10 rounded-[inherit] border-[0.5px] border-border-muted" />
 
 			<div className="relative z-10 flex h-full w-full cursor-pointer flex-col pt-2 px-2 pb-4">
 				<div className="flex w-full justify-end gap-x-2">

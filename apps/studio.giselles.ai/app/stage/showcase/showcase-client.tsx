@@ -229,7 +229,7 @@ export function ShowcaseClient({
 	);
 
 	return (
-		<div className="flex-1 px-[24px] bg-[var(--color-background)] pt-16 md:pt-0 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 h-full flex flex-col">
+		<div className="flex-1 px-[24px] bg-background pt-16 md:pt-0 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 h-full flex flex-col">
 			<div className="py-6 h-full flex flex-col">
 				<div className="flex items-center justify-between px-1 mb-6">
 					<div>
@@ -272,7 +272,7 @@ export function ShowcaseClient({
 
 				{/* Tabs */}
 				<div className="mb-8">
-					<div className="flex items-center px-0 py-0 border-b border-[var(--color-border)]">
+					<div className="flex items-center px-0 py-0 border-b border-border">
 						<div className="flex items-center space-x-[12px]">
 							{["Apps", "Playlist", "History"].map((tab) => {
 								const isActive = activeTab === tab;
@@ -339,7 +339,7 @@ export function ShowcaseClient({
 									{sortedApps.map((app) => (
 										<div
 											key={app.id}
-											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-[var(--color-border)] cursor-pointer"
+											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-border cursor-pointer"
 										>
 											<Link
 												href={`/stage/showcase/${app.id}`}
@@ -373,7 +373,7 @@ export function ShowcaseClient({
 											<div className="flex items-center gap-2">
 												<button
 													type="button"
-													className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-[var(--color-border)] hover:border-[var(--color-border)]"
+													className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-border hover:border-border"
 													title="Run app"
 													onClick={(e) => {
 														e.stopPropagation();
@@ -388,7 +388,7 @@ export function ShowcaseClient({
 															? `/workspaces/${app.workspaceId}`
 															: "/playground"
 													}
-													className="rounded-lg px-3 py-1.5 text-[var(--color-text)] transition-all duration-200 active:scale-[0.98] text-sm"
+													className="rounded-lg px-3 py-1.5 text-text transition-all duration-200 active:scale-[0.98] text-sm"
 													style={{
 														background:
 															"linear-gradient(180deg, #202530 0%, #12151f 100%)",
@@ -443,14 +443,14 @@ export function ShowcaseClient({
 										onPointerDownOutside={() => setIsPlaylistDialogOpen(false)}
 									>
 										<DialogHeader>
-											<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-[var(--color-text-inverse)]">
+											<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
 												New Playlist Details
 											</DialogTitle>
 											<DialogDescription className="text-text-muted">
 												Create a new playlist with title, description and
 												thumbnail.
 											</DialogDescription>
-											<DialogClose className="text-[var(--color-text-inverse)]" />
+											<DialogClose className="text-inverse" />
 										</DialogHeader>
 										<DialogBody>
 											<div className="grid gap-4">
@@ -471,7 +471,7 @@ export function ShowcaseClient({
 															})
 														}
 														placeholder="Playlist title"
-														className="bg-black-700/50 border-black-600 text-white placeholder:text-[var(--color-link-muted)]"
+														className="bg-black-700/50 border-black-600 text-white placeholder:text-link-muted"
 													/>
 												</div>
 												<div className="grid gap-2">
@@ -491,7 +491,7 @@ export function ShowcaseClient({
 															})
 														}
 														placeholder="Playlist description"
-														className="bg-black-700/50 border-black-600 text-white placeholder:text-[var(--color-link-muted)]"
+														className="bg-black-700/50 border-black-600 text-white placeholder:text-link-muted"
 													/>
 												</div>
 											</div>
@@ -621,7 +621,7 @@ export function ShowcaseClient({
 									{sortedHistory.map((item) => (
 										<div
 											key={item.id}
-											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-[var(--color-border)] cursor-pointer"
+											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-border cursor-pointer"
 										>
 											<div className="flex items-center gap-3">
 												<div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 transition-all group-hover:bg-primary-100/20">
@@ -653,7 +653,7 @@ export function ShowcaseClient({
 											<div className="flex items-center gap-2">
 												<button
 													type="button"
-													className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-[var(--color-border)] hover:border-[var(--color-border)]"
+													className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-border hover:border-border"
 													title="Re-run app"
 													onClick={() => {
 														if (item.workspaceId) {

@@ -357,21 +357,21 @@ export function NodeComponent({
 								"group-data-[content-type=trigger]:stroke-current fill-none",
 								"group-data-[content-type=action]:fill-current",
 								"group-data-[content-type=query]:stroke-current fill-none",
-								"group-data-[content-type=text]:text-[var(--color-background)]",
-								"group-data-[content-type=file]:text-[var(--color-background)]",
-								"group-data-[content-type=webPage]:text-[var(--color-background)]",
-								"group-data-[content-type=textGeneration]:text-[var(--color-text-inverse)]",
-								"group-data-[content-type=imageGeneration]:text-[var(--color-text-inverse)]",
-								"group-data-[content-type=github]:text-[var(--color-text-inverse)]",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:text-[var(--color-background)]",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:text-[var(--color-background)]",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:text-[var(--color-background)]",
-								"group-data-[content-type=webSearch]:text-[var(--color-text-inverse)]",
-								"group-data-[content-type=audioGeneration]:text-[var(--color-text-inverse)]",
-								"group-data-[content-type=videoGeneration]:text-[var(--color-text-inverse)]",
-								"group-data-[content-type=trigger]:text-[var(--color-text-inverse)]",
-								"group-data-[content-type=action]:text-[var(--color-text-inverse)]",
-								"group-data-[content-type=query]:text-[var(--color-background)]",
+								"group-data-[content-type=text]:text-background",
+								"group-data-[content-type=file]:text-background",
+								"group-data-[content-type=webPage]:text-background",
+								"group-data-[content-type=textGeneration]:text-inverse",
+								"group-data-[content-type=imageGeneration]:text-inverse",
+								"group-data-[content-type=github]:text-inverse",
+								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:text-background",
+								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:text-background",
+								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:text-background",
+								"group-data-[content-type=webSearch]:text-inverse",
+								"group-data-[content-type=audioGeneration]:text-inverse",
+								"group-data-[content-type=videoGeneration]:text-inverse",
+								"group-data-[content-type=trigger]:text-inverse",
+								"group-data-[content-type=action]:text-inverse",
+								"group-data-[content-type=query]:text-background",
 							)}
 						/>
 					</div>
@@ -380,7 +380,7 @@ export function NodeComponent({
 							{metadataTexts.map((item, _index) => (
 								<div
 									key={item.label}
-									className="text-[10px] text-[var(--color-text-inverse)]"
+									className="text-[10px] text-inverse"
 								>
 									{selected ? (
 										<Tooltip text={item.tooltip} variant="dark">

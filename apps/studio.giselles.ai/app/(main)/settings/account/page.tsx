@@ -45,7 +45,7 @@ export default async function AccountSettingPage() {
 								<h4 className="text-text text-[18px] font-medium font-sans">
 									Teams
 								</h4>
-								<p className="text-[var(--color-link-muted)] text-[12px] font-geist">
+								<p className="text-link-muted text-[12px] font-geist">
 									The teams that are associated with your Giselle account.
 								</p>
 							</div>
@@ -53,7 +53,7 @@ export default async function AccountSettingPage() {
 								<TeamCreation>
 									<GlassButton type="button">
 										<span className="grid size-4 place-items-center rounded-full bg-primary-200 opacity-50">
-											<Plus className="size-3 text-[var(--color-background)]" />
+											<Plus className="size-3 text-background" />
 										</span>
 										<span className="text-[14px] font-medium leading-[20px]">
 											Create New Team

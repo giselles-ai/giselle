@@ -60,7 +60,7 @@ export function RepoActionMenu({
 								"data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
 								action.destructive
 									? "text-error-900 hover:bg-error-900/20"
-									: "text-[var(--color-text)] hover:bg-white/5",
+									: "text-text hover:bg-white/5",
 								"cursor-pointer",
 							)}
 						>

@@ -206,10 +206,10 @@ export function Toolbar() {
 				<ToggleGroup.Root
 					type="single"
 					className={clsx(
-						"flex items-center px-[4px] z-10 h-full gap-[12px] text-[var(--color-text-inverse)]",
+						"flex items-center px-[4px] z-10 h-full gap-[12px] text-inverse",
 						"**:data-tool:hover:bg-bg-850/10 **:data-tool:p-[4px] **:data-tool:rounded-[4px]",
 						"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
-						"**:data-icon:w-[24px] **:data-icon:h-[24px] **:data-icon:text-[var(--color-text-inverse)] ",
+						"**:data-icon:w-[24px] **:data-icon:h-[24px] **:data-icon:text-inverse ",
 					)}
 					value={selectedTool?.action}
 					onValueChange={(value) => {
@@ -252,7 +252,7 @@ export function Toolbar() {
 									<Popover.Content
 										className={clsx(
 											"relative rounded-[8px] px-[8px] py-[8px] min-w-[200px]",
-											"text-[var(--color-text-inverse)] overflow-hidden",
+											"text-inverse overflow-hidden",
 										)}
 										sideOffset={42}
 									>
@@ -346,7 +346,7 @@ export function Toolbar() {
 									<Popover.Content
 										className={clsx(
 											"relative rounded-[8px] px-[8px] py-[8px]",
-											"text-[var(--color-text-inverse)] overflow-hidden",
+											"text-inverse overflow-hidden",
 										)}
 										sideOffset={42}
 									>
@@ -457,7 +457,7 @@ export function Toolbar() {
 									<Popover.Content
 										className={clsx(
 											"relative rounded-[8px] px-[8px] py-[8px] w-[var(--language-model-toggle-group-popover-width)]",
-											"text-[var(--color-text-inverse)] overflow-hidden",
+											"text-inverse overflow-hidden",
 										)}
 										align="end"
 										sideOffset={42}
@@ -502,7 +502,7 @@ export function Toolbar() {
 												<input
 													type="text"
 													placeholder="Search LLM Model..."
-													className="w-full bg-transparent border-none text-[var(--color-text-inverse)] text-[12px] placeholder:text-[var(--color-link-muted)] focus:outline-none"
+													className="w-full bg-transparent border-none text-inverse text-[12px] placeholder:text-link-muted focus:outline-none"
 													value={searchQuery}
 													onChange={(e) => setSearchQuery(e.target.value)}
 												/>
@@ -517,7 +517,7 @@ export function Toolbar() {
 															selectedCategory === "All"
 																? "bg-[var(--color-text-secondary)]"
 																: "hover:bg-ghost-element-hover"
-														} text-[var(--color-text-inverse)] rounded text-[12px] font-medium leading-[170%]`}
+														} text-inverse rounded text-[12px] font-medium leading-[170%]`}
 														onClick={() => setSelectedCategory("All")}
 													>
 														All
@@ -528,7 +528,7 @@ export function Toolbar() {
 															selectedCategory === "Text"
 																? "bg-[var(--color-text-secondary)]"
 																: "hover:bg-ghost-element-hover"
-														} text-[var(--color-text-inverse)] rounded text-[12px] font-medium leading-[170%]`}
+														} text-inverse rounded text-[12px] font-medium leading-[170%]`}
 														onClick={() => setSelectedCategory("Text")}
 													>
 														Text
@@ -539,7 +539,7 @@ export function Toolbar() {
 															selectedCategory === "Image"
 																? "bg-[var(--color-text-secondary)]"
 																: "hover:bg-ghost-element-hover"
-														} text-[var(--color-text-inverse)] rounded text-[12px] font-medium leading-[170%]`}
+														} text-inverse rounded text-[12px] font-medium leading-[170%]`}
 														onClick={() => setSelectedCategory("Image")}
 													>
 														Image
@@ -601,7 +601,7 @@ export function Toolbar() {
 										<Popover.Anchor />
 										<Popover.Portal>
 											<Popover.Content
-												className="relative overflow-hidden w-[var(--language-model-detail-panel-width)] rounded-[8px] px-[8px] py-[8px] text-[var(--color-text-inverse)]"
+												className="relative overflow-hidden w-[var(--language-model-detail-panel-width)] rounded-[8px] px-[8px] py-[8px] text-inverse"
 												sideOffset={42}
 												onOpenAutoFocus={(e) => {
 													e.preventDefault();
@@ -653,7 +653,7 @@ export function Toolbar() {
 															</div>
 														</div>
 													)}
-												<div className="relative text-[var(--color-text-inverse)] h-[200px]">
+												<div className="relative text-inverse h-[200px]">
 													{languageModelMouseHovered ? (
 														<div className="px-[16px] py-[16px] flex flex-col gap-[24px]">
 															<div className="flex items-start gap-[16px]">
@@ -875,7 +875,7 @@ export function Toolbar() {
 									<Popover.Content
 										className={clsx(
 											"relative rounded-[8px] px-[8px] py-[8px]",
-											"text-[var(--color-text-inverse)] overflow-hidden",
+											"text-inverse overflow-hidden",
 										)}
 										sideOffset={42}
 									>
@@ -941,7 +941,7 @@ export function Toolbar() {
 									<Popover.Content
 										className={clsx(
 											"relative rounded-[8px] px-[8px] py-[8px]",
-											"text-[var(--color-text-inverse)] overflow-hidden",
+											"text-inverse overflow-hidden",
 										)}
 										sideOffset={42}
 									>
