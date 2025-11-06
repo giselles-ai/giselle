@@ -18,6 +18,8 @@
 	/* surface */
 	--color-elevated-surface-background: #2f343e;
 	--color-surface-background: #2f343e;
+	/* v4 utility alias */
+	--color-surface: var(--color-surface-background);
 	--color-background: #00020b;
 
 	/* element */
@@ -38,6 +40,8 @@
 	--color-text-placeholder: #878a98;
 	--color-text-disabled: #878a98;
 	--color-text-accent: #74ade8;
+	/* secondary / link-muted */
+	--color-link-muted: #505d7b;
 	/* Link accent (Vector Store link blue) */
 	--color-link-accent: #1663f3;
 	--color-link-accent-hover: #0f4cd1;
@@ -65,6 +69,8 @@
 	/* interactive */
 	--color-icon-hover: #6b8ff0;
 	--color-destructive-hover-bg: rgba(255, 61, 113, 0.1);
+	/* focused outline color */
+	--color-focused: var(--color-info-500);
 
 	/* panel */
 	--color-panel-background: #2f343e;
@@ -131,6 +137,15 @@
 	--color-success: #39ff7f;
 	--color-unreachable: #a9afbc;
 	--color-warning: #ffe551;
+
+	/* borders */
+	/* unify muted to main border unless overridden */
+	--color-border-muted: var(--color-border);
+
+	/* chat bubbles */
+	--color-chat-bubble-accent-bg: rgba(107, 143, 240, 0.2);
+	--color-chat-bubble-accent-border: rgba(107, 143, 240, 0.8);
+	--color-chat-bubble-user-bg: #4a6fd8;
 
 	/* RGB values for transparency */
 	--color-error-rgb: 255, 61, 113;
