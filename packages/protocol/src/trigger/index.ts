@@ -2,14 +2,17 @@ import { createIdGenerator } from "@giselles-ai/utils";
 import { z } from "zod/v4";
 import { NodeId } from "../node/base";
 import { WorkspaceId } from "../workspace/id";
-import { GitHubFlowTrigger } from "./github";
-import { ManualFlowTrigger } from "./manual";
+import { GitHubTrigger } from "./github";
+import { ManualTrigger } from "./manual";
 
-export { GitHubFlowTrigger, GitHubFlowTriggerEvent } from "./github";
 export {
-	ManualFlowTrigger,
-	ManualFlowTriggerEvent,
+	GitHubTrigger,
+	GitHubTriggerEvent,
+} from "./github";
+export {
 	ManualParameterType as ParameterType,
+	ManualTrigger,
+	ManualTriggerEvent,
 	ManualTriggerParameter,
 	ManualTriggerParameterId,
 } from "./manual";
@@ -25,16 +28,10 @@ export const Trigger = z.object({
 	nodeId: NodeId.schema,
 	enable: z.boolean().default(true),
 	configuration: z.discriminatedUnion("provider", [
-		GitHubFlowTrigger,
-		ManualFlowTrigger,
+		GitHubTrigger,
+		ManualTrigger,
 	]),
 });
 export type Trigger = z.infer<typeof Trigger>;
-
-// Legacy aliases for backward compatibility
-export const FlowTrigger = Trigger;
-export type FlowTrigger = Trigger;
-export const FlowTriggerId = TriggerId;
-export type FlowTriggerId = TriggerId;
 
 export * from "./github";

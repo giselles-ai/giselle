@@ -1,4 +1,4 @@
-import type { FlowTrigger, TriggerNode } from "@giselles-ai/protocol";
+import type { Trigger, TriggerNode } from "@giselles-ai/protocol";
 import { findGitHubTriggerOption } from "@giselles-ai/trigger-registry";
 
 export function buttonLabel(node: TriggerNode) {
@@ -24,7 +24,7 @@ export interface FormInput {
 }
 
 export function createInputsFromTrigger(
-	trigger: FlowTrigger | undefined,
+	trigger: Trigger | undefined,
 ): FormInput[] {
 	if (trigger === undefined) {
 		return [];

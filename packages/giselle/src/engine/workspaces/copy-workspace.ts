@@ -1,12 +1,12 @@
 import {
-	FlowTriggerId,
 	generateInitialWorkspace,
 	isTriggerNode,
+	TriggerId,
 	type TriggerNode,
 	Workspace,
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
-import { getFlowTrigger, setFlowTrigger } from "../triggers/utils";
+import { getTrigger, setTrigger } from "../triggers/utils";
 import type { GiselleEngineContext } from "../types";
 import { copyFiles, getWorkspace, setWorkspace } from "./utils";
 
@@ -27,39 +27,39 @@ export async function copyWorkspace(args: {
 			isTriggerNode(node) && node.content.state.status === "configured",
 	);
 
-	const flowTriggerCopies = await Promise.all(
+	const triggerCopies = await Promise.all(
 		configuredTriggerNodes.map(async (node) => {
 			if (node.content.state.status !== "configured") {
 				return null;
 			}
-			const oldFlowTriggerId = node.content.state.flowTriggerId;
-			const oldFlowTrigger = await getFlowTrigger({
+			const oldTriggerId = node.content.state.flowTriggerId;
+			const oldTrigger = await getTrigger({
 				storage: args.context.storage,
-				flowTriggerId: oldFlowTriggerId,
+				triggerId: oldTriggerId,
 			});
 
-			if (oldFlowTrigger) {
-				const newFlowTriggerId = FlowTriggerId.generate();
-				const newFlowTrigger = {
-					...oldFlowTrigger,
-					id: newFlowTriggerId,
+			if (oldTrigger) {
+				const newTriggerId = TriggerId.generate();
+				const newTrigger = {
+					...oldTrigger,
+					id: newTriggerId,
 					workspaceId: newWorkspace.id,
 					nodeId: node.id,
 				};
 
-				await setFlowTrigger({
+				await setTrigger({
 					storage: args.context.storage,
-					flowTrigger: newFlowTrigger,
+					trigger: newTrigger,
 				});
 
-				return { oldNodeId: node.id, newFlowTriggerId };
+				return { oldNodeId: node.id, newTriggerId };
 			}
 			return null;
 		}),
 	);
 
 	const updatedNodes = sourceWorkspace.nodes.map((node) => {
-		const copy = flowTriggerCopies.find((c) => c?.oldNodeId === node.id);
+		const copy = triggerCopies.find((c) => c?.oldNodeId === node.id);
 		if (
 			copy &&
 			isTriggerNode(node) &&
@@ -71,7 +71,7 @@ export async function copyWorkspace(args: {
 					...node.content,
 					state: {
 						...node.content.state,
-						flowTriggerId: copy.newFlowTriggerId,
+						flowTriggerId: copy.newTriggerId,
 					},
 				},
 			} satisfies TriggerNode;

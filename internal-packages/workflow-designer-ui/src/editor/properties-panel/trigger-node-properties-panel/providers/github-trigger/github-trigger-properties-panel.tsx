@@ -9,10 +9,10 @@ import {
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
 import {
-	type FlowTriggerId,
 	type GitHubTriggerEventId,
 	type Output,
 	OutputId,
+	type TriggerId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
 import { findGitHubTriggerOption } from "@giselles-ai/trigger-registry";
@@ -172,7 +172,7 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	if (node.content.state.status === "configured") {
 		return (
 			<GitHubTriggerConfiguredView
-				flowTriggerId={node.content.state.flowTriggerId}
+				triggerId={node.content.state.flowTriggerId}
 				node={node}
 				onStartReconfigure={(mode) => {
 					reconfigureModeRef.current = mode;
@@ -188,7 +188,7 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 				installations={value.github.installations}
 				node={node}
 				installationUrl={value.github.installationUrl}
-				flowTriggerId={node.content.state.flowTriggerId}
+				triggerId={node.content.state.flowTriggerId}
 				reconfigureMode={reconfigureModeRef.current}
 			/>
 		);
@@ -296,13 +296,13 @@ export function Installed({
 	node,
 	installationUrl,
 	reconfigStep,
-	flowTriggerId,
+	triggerId,
 }: {
 	installations: GitHubIntegrationInstallation[];
 	node: TriggerNode;
 	installationUrl: string;
 	reconfigStep?: SelectRepositoryStep | InputCallsignStep | InputLabelsStep;
-	flowTriggerId?: FlowTriggerId;
+	triggerId?: TriggerId;
 }) {
 	const isReconfiguring = node.content.state.status === "reconfiguring";
 	const [step, setStep] = useState<GitHubTriggerSetupStep>(
@@ -356,10 +356,10 @@ export function Installed({
 				const event = createTriggerEvent({ eventId, callsign });
 
 				startTransition(async () => {
-					if (isReconfiguring && flowTriggerId !== undefined) {
+					if (isReconfiguring && triggerId !== undefined) {
 						try {
-							const { triggerId } = await client.reconfigureGitHubTrigger({
-								flowTriggerId,
+							await client.reconfigureGitHubTrigger({
+								flowTriggerId: triggerId,
 								repositoryNodeId: step.repoNodeId,
 								installationId: step.installationId,
 								event,
@@ -392,7 +392,7 @@ export function Installed({
 			eventId,
 			isReconfiguring,
 			node,
-			flowTriggerId,
+			triggerId,
 			client,
 			updateNodeData,
 			configureTrigger,
@@ -427,10 +427,10 @@ export function Installed({
 			const event = createTriggerEvent({ eventId, labels: validLabels });
 
 			startTransition(async () => {
-				if (isReconfiguring && flowTriggerId !== undefined) {
+				if (isReconfiguring && triggerId !== undefined) {
 					try {
-						const { triggerId } = await client.reconfigureGitHubTrigger({
-							flowTriggerId,
+						await client.reconfigureGitHubTrigger({
+							flowTriggerId: triggerId,
 							repositoryNodeId: step.repoNodeId,
 							installationId: step.installationId,
 							event,
@@ -458,7 +458,7 @@ export function Installed({
 			eventId,
 			isReconfiguring,
 			node,
-			flowTriggerId,
+			triggerId,
 			client,
 			updateNodeData,
 			configureTrigger,
@@ -646,10 +646,10 @@ export function Installed({
 													});
 												}
 
-												let triggerId: FlowTriggerId;
-												if (isReconfiguring && flowTriggerId !== undefined) {
+												let triggerId: TriggerId;
+												if (isReconfiguring && triggerId !== undefined) {
 													const result = await client.reconfigureGitHubTrigger({
-														flowTriggerId,
+														flowTriggerId: triggerId,
 														repositoryNodeId: step.repoNodeId,
 														installationId: step.installationId,
 													});

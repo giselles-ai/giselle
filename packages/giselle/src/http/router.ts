@@ -2,16 +2,16 @@ import {
 	ActId,
 	FetchingWebPage,
 	FileId,
-	FlowTrigger,
-	FlowTriggerId,
 	Generation,
 	GenerationId,
 	GenerationOrigin,
-	GitHubFlowTriggerEvent,
+	GitHubTriggerEvent,
 	NodeId,
 	QueuedGeneration,
 	RunningGeneration,
 	SecretId,
+	Trigger,
+	TriggerId,
 	Workspace,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
@@ -206,7 +206,7 @@ export const createJsonRouters = {
 	getTrigger: (giselleEngine: GiselleEngine) =>
 		createHandler({
 			input: z.object({
-				flowTriggerId: FlowTriggerId.schema,
+				triggerId: TriggerId.schema,
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
@@ -229,7 +229,7 @@ export const createJsonRouters = {
 	setTrigger: (giselleEngine: GiselleEngine) =>
 		createHandler({
 			input: z.object({
-				trigger: FlowTrigger,
+				trigger: Trigger,
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
@@ -240,10 +240,10 @@ export const createJsonRouters = {
 	reconfigureGitHubTrigger: (giselleEngine: GiselleEngine) =>
 		createHandler({
 			input: z.object({
-				flowTriggerId: FlowTriggerId.schema,
+				triggerId: TriggerId.schema,
 				repositoryNodeId: z.string(),
 				installationId: z.number(),
-				event: GitHubFlowTriggerEvent.optional(),
+				event: GitHubTriggerEvent.optional(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
@@ -254,7 +254,7 @@ export const createJsonRouters = {
 	deleteTrigger: (giselleEngine: GiselleEngine) =>
 		createHandler({
 			input: z.object({
-				flowTriggerId: FlowTriggerId.schema,
+				triggerId: TriggerId.schema,
 			}),
 			handler: async ({ input }) => {
 				await giselleEngine.deleteTrigger(input);

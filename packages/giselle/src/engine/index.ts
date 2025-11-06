@@ -1,11 +1,11 @@
 import type {
 	FetchingWebPage,
 	FileId,
-	FlowTrigger,
-	FlowTriggerId,
-	GitHubFlowTriggerEvent,
+	GitHubTriggerEvent,
 	NodeId,
 	SecretId,
+	Trigger,
+	TriggerId,
 	Workspace,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
@@ -226,7 +226,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		configureTrigger: async (args: { trigger: ConfigureTriggerInput }) => {
 			return await configureTrigger({ ...args, context });
 		},
-		getTrigger: async (args: { flowTriggerId: FlowTriggerId }) => {
+		getTrigger: async (args: { triggerId: TriggerId }) => {
 			return await getTrigger({ ...args, context });
 		},
 		getGitHubRepositoryFullname: async (args: {
@@ -235,17 +235,17 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		}) => {
 			return await getGitHubRepositoryFullname({ ...args, context });
 		},
-		setTrigger: async (args: { trigger: FlowTrigger }) =>
+		setTrigger: async (args: { trigger: Trigger }) =>
 			setTrigger({ ...args, context }),
 		reconfigureGitHubTrigger: async (args: {
-			flowTriggerId: FlowTriggerId;
+			triggerId: TriggerId;
 			repositoryNodeId: string;
 			installationId: number;
-			event?: GitHubFlowTriggerEvent;
+			event?: GitHubTriggerEvent;
 		}) => {
 			return await reconfigureGitHubTrigger({ ...args, context });
 		},
-		deleteTrigger: async (args: { flowTriggerId: FlowTriggerId }) =>
+		deleteTrigger: async (args: { triggerId: TriggerId }) =>
 			deleteTrigger({ ...args, context }),
 		executeAction: async (args: { generation: QueuedGeneration }) =>
 			executeAction({ ...args, context }),

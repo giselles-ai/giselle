@@ -1,8 +1,8 @@
 import { Button } from "@giselle-internal/ui/button";
 import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
 import type {
-	FlowTriggerId,
 	GitHubTriggerEventId,
+	TriggerId,
 	TriggerNode,
 } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
@@ -70,17 +70,21 @@ import { findGitHubTriggerOption } from "@giselles-ai/trigger-registry";
 import type { GitHubTriggerReconfigureMode } from "../../providers/github-trigger/github-trigger-properties-panel";
 
 export function GitHubTriggerConfiguredView({
-	flowTriggerId,
+	triggerId,
 	node,
 	onStartReconfigure,
 }: {
-	flowTriggerId: FlowTriggerId;
+	triggerId: TriggerId;
 	node: TriggerNode;
 	onStartReconfigure: (mode: GitHubTriggerReconfigureMode) => void;
 }) {
 	const { updateNodeData } = useWorkflowDesigner();
-	const { isLoading, data, enableFlowTrigger, disableFlowTrigger } =
-		useGitHubTrigger(flowTriggerId);
+	const {
+		isLoading,
+		data,
+		enableTrigger: enableFlowTrigger,
+		disableTrigger: disableFlowTrigger,
+	} = useGitHubTrigger(triggerId);
 	const [actionInProgress, setActionInProgress] = useState(false);
 	const [actionError, setActionError] = useState<Error | null>(null);
 
@@ -111,7 +115,7 @@ export function GitHubTriggerConfiguredView({
 				...node.content,
 				state: {
 					status: "reconfiguring",
-					flowTriggerId,
+					flowTriggerId: triggerId,
 				},
 			},
 		});

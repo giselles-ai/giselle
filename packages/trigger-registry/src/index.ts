@@ -1,5 +1,5 @@
 import {
-	GitHubFlowTriggerEvent,
+	GitHubTriggerEvent,
 	type GitHubTriggerEventId,
 	GitHubTriggerEventIssueClosed,
 	GitHubTriggerEventIssueCommentCreated,
@@ -203,7 +203,7 @@ githubTriggerRegistry.add(GitHubTriggerEventPullRequestReviewCommentCreated, {
 	],
 });
 
-export const githubTriggerOptions = GitHubFlowTriggerEvent.options
+export const githubTriggerOptions = GitHubTriggerEvent.options
 	.map((githubTriggerSchema) => {
 		const registryData = githubTriggerRegistry.get(githubTriggerSchema);
 		if (registryData === undefined) {

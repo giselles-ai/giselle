@@ -5,7 +5,7 @@ import {
 	getPullRequestReviewComment,
 	type WebhookEvent,
 } from "@giselles-ai/github-tool";
-import type { FlowTrigger, Output } from "@giselles-ai/protocol";
+import type { Output, Trigger } from "@giselles-ai/protocol";
 import type { GenerationOutput } from "../generations";
 import type { githubTriggers } from "../triggers";
 import { parseCommand } from "./utils";
@@ -13,7 +13,7 @@ import { parseCommand } from "./utils";
 interface ResolveTriggerArgs {
 	output: Output;
 	githubTrigger: (typeof githubTriggers)[keyof typeof githubTriggers];
-	trigger: FlowTrigger;
+	trigger: Trigger;
 	webhookEvent: WebhookEvent;
 	appId: string;
 	privateKey: string;

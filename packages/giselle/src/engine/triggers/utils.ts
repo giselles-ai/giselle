@@ -1,36 +1,36 @@
-import { FlowTrigger, type FlowTriggerId } from "@giselles-ai/protocol";
+import { Trigger, type TriggerId } from "@giselles-ai/protocol";
 import { removeGitHubRepositoryIntegrationIndex } from "../integrations/utils";
 import type { GiselleStorage } from "../storage";
 
-function flowTriggerPath(params: { flowTriggerId: FlowTriggerId }) {
-	return `flow-triggers/${params.flowTriggerId}.json`;
+function triggerPath(params: { triggerId: TriggerId }) {
+	return `flow-triggers/${params.triggerId}.json`;
 }
 
-export async function setFlowTrigger({
+export async function setTrigger({
 	storage,
-	flowTrigger,
+	trigger,
 }: {
 	storage: GiselleStorage;
-	flowTrigger: FlowTrigger;
+	trigger: Trigger;
 }) {
-	const path = flowTriggerPath({ flowTriggerId: flowTrigger.id });
+	const path = triggerPath({ triggerId: trigger.id });
 	await storage.setJson({
 		path,
-		data: flowTrigger,
-		schema: FlowTrigger,
+		data: trigger,
+		schema: Trigger,
 	});
 	return;
 }
 
-export async function getFlowTrigger({
+export async function getTrigger({
 	storage,
-	flowTriggerId,
+	triggerId,
 }: {
-	flowTriggerId: FlowTriggerId;
+	triggerId: TriggerId;
 	storage: GiselleStorage;
 }) {
-	const path = flowTriggerPath({
-		flowTriggerId,
+	const path = triggerPath({
+		triggerId: triggerId,
 	});
 	const exists = await storage.exists(path);
 	if (!exists) {
@@ -38,30 +38,30 @@ export async function getFlowTrigger({
 	}
 	return await storage.getJson({
 		path,
-		schema: FlowTrigger,
+		schema: Trigger,
 	});
 }
 
-export async function deleteFlowTrigger({
+export async function deleteTrigger({
 	storage,
-	flowTriggerId,
+	triggerId: flowTriggerId,
 }: {
-	flowTriggerId: FlowTriggerId;
+	triggerId: TriggerId;
 	storage: GiselleStorage;
 }) {
-	const trigger = await getFlowTrigger({
+	const trigger = await getTrigger({
 		storage: storage,
-		flowTriggerId,
+		triggerId: flowTriggerId,
 	});
 	if (trigger === undefined) {
 		throw new Error(`Flow trigger with ID ${flowTriggerId} not found`);
 	}
-	const path = flowTriggerPath({ flowTriggerId });
+	const path = triggerPath({ triggerId: flowTriggerId });
 	await storage.remove(path);
 	if (trigger.configuration.provider === "github") {
 		await removeGitHubRepositoryIntegrationIndex({
 			storage: storage,
-			flowTriggerId,
+			triggerId: flowTriggerId,
 			repositoryNodeId: trigger.configuration.repositoryNodeId,
 		});
 	}

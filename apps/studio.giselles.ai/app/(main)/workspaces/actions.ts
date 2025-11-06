@@ -91,13 +91,13 @@ export async function copyAgent(
 				continue;
 			}
 
-			const flowTrigger = await giselleEngine.getTrigger({
-				flowTriggerId: node.content.state.flowTriggerId,
+			const trigger = await giselleEngine.getTrigger({
+				triggerId: node.content.state.flowTriggerId,
 			});
 			if (
-				flowTrigger &&
-				flowTrigger.configuration.provider === "manual" &&
-				flowTrigger.configuration.staged
+				trigger &&
+				trigger.configuration.provider === "manual" &&
+				trigger.configuration.staged
 			) {
 				await db.insert(flowTriggers).values({
 					teamDbId: team.dbId,

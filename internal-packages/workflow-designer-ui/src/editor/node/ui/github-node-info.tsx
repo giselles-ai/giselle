@@ -25,7 +25,7 @@ export function GitHubNodeInfo({
 		return node.content.state.status === "configured" ? (
 			<div className="px-[16px] relative">
 				<GitHubRepositoryBadgeFromTrigger
-					flowTriggerId={node.content.state.flowTriggerId}
+					triggerId={node.content.state.flowTriggerId}
 				/>
 			</div>
 		) : (

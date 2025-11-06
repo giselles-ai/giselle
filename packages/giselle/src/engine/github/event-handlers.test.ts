@@ -4,11 +4,8 @@ import type {
 	WebhookEvent,
 	WebhookEventName,
 } from "@giselles-ai/github-tool";
-import type {
-	FlowTrigger,
-	GitHubFlowTriggerEvent,
-} from "@giselles-ai/protocol";
-import { FlowTriggerId, NodeId } from "@giselles-ai/protocol";
+import type { GitHubTriggerEvent, Trigger } from "@giselles-ai/protocol";
+import { NodeId, TriggerId } from "@giselles-ai/protocol";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createTriggerNode } from "../../utils/node-factories";
 import { memoryStorageDriver } from "../storage";
@@ -47,7 +44,7 @@ function createEnsureWebhookEventMock(shouldMatch = true) {
 type TestWebhookEvent = WebhookEvent<WebhookEventName>;
 
 // Generate a valid test trigger ID
-const mockFlowTriggerId = FlowTriggerId.generate();
+const mockTriggerId = TriggerId.generate();
 
 describe("GitHub Event Handlers", () => {
 	// Common test data
@@ -99,7 +96,7 @@ describe("GitHub Event Handlers", () => {
 				},
 			} as unknown as GiselleEngineContext,
 			trigger: {
-				id: mockFlowTriggerId,
+				id: mockTriggerId,
 				workspaceId: "wrks-test",
 				nodeId: "nd-test",
 				configuration: {
@@ -114,7 +111,7 @@ describe("GitHub Event Handlers", () => {
 					repositoryNodeId: "repo-node-id",
 				},
 				enable: true,
-			} as FlowTrigger,
+			} as Trigger,
 			authConfig: {
 				strategy: "app-installation",
 				appId: "app-id",
@@ -876,7 +873,7 @@ describe("GitHub Event Handlers", () => {
 			};
 			args.trigger.configuration.event = {
 				id: "github.issue.labeled",
-			} as GitHubFlowTriggerEvent;
+			} as GitHubTriggerEvent;
 
 			// Act
 			const result = handleIssueLabeled(args);
@@ -1114,7 +1111,7 @@ describe("GitHub Event Handlers", () => {
 			};
 			args.trigger.configuration.event = {
 				id: "github.pull_request.labeled",
-			} as GitHubFlowTriggerEvent;
+			} as GitHubTriggerEvent;
 
 			// Act
 			const result = handlePullRequestLabeled(args);
@@ -1305,7 +1302,7 @@ describe("GitHub Event Handlers", () => {
 			} as TestWebhookEvent;
 
 			const trigger = {
-				id: mockFlowTriggerId,
+				id: mockTriggerId,
 				workspaceId: "wrks-test",
 				nodeId: testNodeId,
 				enable: true,
@@ -1317,7 +1314,7 @@ describe("GitHub Event Handlers", () => {
 					installationId: 12345,
 					repositoryNodeId: "repo-node-id",
 				},
-			} as FlowTrigger;
+			} as Trigger;
 
 			const createAuthConfig = vi.fn().mockReturnValue({
 				strategy: "app-installation",
@@ -1406,7 +1403,7 @@ describe("GitHub Event Handlers", () => {
 			} as TestWebhookEvent;
 
 			const trigger = {
-				id: mockFlowTriggerId,
+				id: mockTriggerId,
 				workspaceId: "wrks-test",
 				nodeId: "nd-test",
 				enable: false,
@@ -1418,7 +1415,7 @@ describe("GitHub Event Handlers", () => {
 					installationId: 12345,
 					repositoryNodeId: "repo-node-id",
 				},
-			} as FlowTrigger;
+			} as Trigger;
 
 			// Act
 			const result = await processEvent({

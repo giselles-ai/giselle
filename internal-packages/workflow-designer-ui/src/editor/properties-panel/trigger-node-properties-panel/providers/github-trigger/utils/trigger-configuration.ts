@@ -1,11 +1,12 @@
-import type {
-	FlowTrigger,
-	GitHubFlowTriggerEvent,
-	GitHubTriggerEventId,
-	Output,
-	TriggerNode,
+import {
+	type GitHubFlowTriggerEvent,
+	type GitHubTriggerEventId,
+	type Output,
+	OutputId,
+	type Trigger,
+	TriggerId,
+	type TriggerNode,
 } from "@giselles-ai/protocol";
-import { FlowTriggerId, OutputId } from "@giselles-ai/protocol";
 import { findGitHubTriggerOption } from "@giselles-ai/trigger-registry";
 
 /**
@@ -147,7 +148,7 @@ function createTriggerConfiguration(options: TriggerConfigOptions) {
 
 	return {
 		trigger: {
-			id: FlowTriggerId.generate(),
+			id: TriggerId.generate(),
 			nodeId: nodeId as `nd-${string}`,
 			workspaceId: workspaceId as `wrks-${string}`,
 			enable: false,
@@ -180,7 +181,7 @@ function updateNodeWithTrigger(
 			...node.content,
 			state: {
 				status: "configured" as const,
-				flowTriggerId: triggerId as FlowTriggerId,
+				flowTriggerId: triggerId as TriggerId,
 			},
 		},
 		outputs: [...node.outputs, ...outputs],
@@ -195,7 +196,7 @@ function updateNodeWithTrigger(
 async function _configureTriggerAndUpdateNode(
 	client: {
 		configureTrigger: (options: {
-			trigger: FlowTrigger;
+			trigger: Trigger;
 			useExperimentalStorage?: boolean;
 		}) => Promise<{ triggerId: string }>;
 	},

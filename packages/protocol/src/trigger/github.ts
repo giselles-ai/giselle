@@ -67,7 +67,7 @@ export const GitHubTriggerEventDiscussionCommentCreated = z.object({
 	}),
 });
 
-export const GitHubFlowTriggerEvent = z.discriminatedUnion("id", [
+export const GitHubTriggerEvent = z.discriminatedUnion("id", [
 	GitHubTriggerEventIssueCreated,
 	GitHubTriggerEventIssueClosed,
 	GitHubTriggerEventIssueCommentCreated,
@@ -81,17 +81,17 @@ export const GitHubFlowTriggerEvent = z.discriminatedUnion("id", [
 	GitHubTriggerEventDiscussionCreated,
 	GitHubTriggerEventDiscussionCommentCreated,
 ]);
-export type GitHubFlowTriggerEvent = z.infer<typeof GitHubFlowTriggerEvent>;
+export type GitHubTriggerEvent = z.infer<typeof GitHubTriggerEvent>;
 
 export const GitHubTriggerEventId = z.union(
-	GitHubFlowTriggerEvent.options.map((option) => option.shape.id),
+	GitHubTriggerEvent.options.map((option) => option.shape.id),
 );
 export type GitHubTriggerEventId = z.infer<typeof GitHubTriggerEventId>;
 
-export const GitHubFlowTrigger = z.object({
+export const GitHubTrigger = z.object({
 	provider: Provider,
-	event: GitHubFlowTriggerEvent,
+	event: GitHubTriggerEvent,
 	installationId: z.number(),
 	repositoryNodeId: z.string(),
 });
-export type GitHubFlowTrigger = z.infer<typeof GitHubFlowTrigger>;
+export type GitHubTrigger = z.infer<typeof GitHubTrigger>;

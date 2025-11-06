@@ -1,6 +1,10 @@
 import type { WebhookEvent } from "@giselles-ai/github-tool";
-import type { FlowTrigger, Output } from "@giselles-ai/protocol";
-import { FlowTriggerId, OutputId } from "@giselles-ai/protocol";
+import {
+	type Output,
+	OutputId,
+	type Trigger,
+	TriggerId,
+} from "@giselles-ai/protocol";
 import { describe, expect, test, vi } from "vitest";
 import { type GitHubTriggerEventId, githubTriggers } from "../triggers";
 import { resolveTrigger } from "./trigger-utils";
@@ -27,7 +31,7 @@ function createOutput(accessor: string): Output {
 	};
 }
 
-function createTrigger(eventId: GitHubTriggerEventId): FlowTrigger {
+function createTrigger(eventId: GitHubTriggerEventId): Trigger {
 	const event =
 		eventId === "github.issue_comment.created" ||
 		eventId === "github.pull_request_comment.created" ||
@@ -36,7 +40,7 @@ function createTrigger(eventId: GitHubTriggerEventId): FlowTrigger {
 			? { id: eventId, conditions: { callsign: "giselle" } }
 			: { id: eventId };
 	return {
-		id: FlowTriggerId.generate(),
+		id: TriggerId.generate(),
 		workspaceId: "wrks-test",
 		nodeId: "nd-test",
 		enable: true,
@@ -46,7 +50,7 @@ function createTrigger(eventId: GitHubTriggerEventId): FlowTrigger {
 			installationId: 1,
 			repositoryNodeId: "repo-node",
 		},
-	} as FlowTrigger;
+	} as Trigger;
 }
 
 function createIssueEvent(

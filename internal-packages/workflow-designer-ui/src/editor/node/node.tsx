@@ -312,7 +312,7 @@ export function NodeComponent({
 					node.content.state.status === "configured" && (
 						<div className="-mt-[6px]">
 							<GitHubTriggerStatusBadge
-								flowTriggerId={node.content.state.flowTriggerId}
+								triggerId={node.content.state.flowTriggerId}
 							/>
 						</div>
 					)}
