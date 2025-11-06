@@ -48,6 +48,14 @@ export function NavigationRailFooterMenu({
 	useEffect(() => setMounted(true), []);
 	if (!mounted) return null; // defer Radix menu until client mount to avoid id mismatch
 
+	// Plan-aware Create team: allow free only when user doesn't already have a free team
+	// and is not an internal user (simple domain check).
+	const email = (user as any).email as string | undefined;
+	const isInternal = !!email && /@route06\.co\.jp$/.test(email);
+	const allTeams = ((user as any).allTeams ?? []) as Array<{ isPro?: boolean }>;
+	const hasFreeTeam = allTeams.some((t) => t.isPro === false);
+	const canCreateFreeTeam = !isInternal && !hasFreeTeam;
+
 	return (
 		<DropdownMenuPrimitive.Root>
 			<DropdownMenuPrimitive.Trigger asChild>
@@ -195,7 +203,10 @@ export function NavigationRailFooterMenu({
 							onSelect={(e) => e.preventDefault()}
 							className="p-0 rounded-lg"
 						>
-							<TeamCreationForm canCreateFreeTeam={false} proPlanPrice="$20">
+							<TeamCreationForm
+								canCreateFreeTeam={canCreateFreeTeam}
+								proPlanPrice="$20"
+							>
 								<span className="cursor-pointer flex items-center gap-x-2 px-2 py-1.5 rounded-lg w-full hover:bg-white/5">
 									<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
 										<Plus className="size-3 text-background" />
