@@ -52,8 +52,5 @@ export interface ChunkStore<
 	 * @param metadata The document metadata to update
 	 * @param metadataVersion The metadata version
 	 */
-	updateMetadata(
-		documentKey: string,
-		metadata: TMetadata,
-	): Promise<void>;
+	updateMetadata(documentKey: string, metadata: TMetadata): Promise<void>;
 }
