@@ -14,7 +14,7 @@ import {
 import { useToast } from "@giselles-ai/contexts/toast";
 import { LoaderCircleIcon, TrashIcon, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
 	Tooltip,
 	TooltipContent,
@@ -33,6 +33,8 @@ export function DeleteAgentButton({
 	agentName: string | null;
 }) {
 	const [open, setOpen] = useState(false);
+	const [mounted, setMounted] = useState(false);
+	useEffect(() => setMounted(true), []);
 	const [isPending, startTransition] = useTransition();
 	const { addToast } = useToast();
 	const router = useRouter();
@@ -55,6 +57,8 @@ export function DeleteAgentButton({
 			}
 		});
 	};
+
+	if (!mounted) return null;
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>

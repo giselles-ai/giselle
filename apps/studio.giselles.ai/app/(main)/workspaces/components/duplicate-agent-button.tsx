@@ -14,7 +14,7 @@ import {
 import { useToast } from "@giselles-ai/contexts/toast";
 import { CopyIcon, LoaderCircleIcon, X } from "lucide-react";
 import { redirect } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
 	Tooltip,
 	TooltipContent,
@@ -34,6 +34,8 @@ export function DuplicateAgentButton({
 }) {
 	const [isPending, startTransition] = useTransition();
 	const [open, setOpen] = useState(false);
+	const [mounted, setMounted] = useState(false);
+	useEffect(() => setMounted(true), []);
 	const { addToast } = useToast();
 
 	const handleConfirm = () => {
@@ -50,6 +52,8 @@ export function DuplicateAgentButton({
 			}
 		});
 	};
+
+	if (!mounted) return null;
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
