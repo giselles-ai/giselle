@@ -1,3 +1,5 @@
+"use client";
+
 import clsx from "clsx/lite";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import { Select as SelectPrimitive } from "radix-ui";
