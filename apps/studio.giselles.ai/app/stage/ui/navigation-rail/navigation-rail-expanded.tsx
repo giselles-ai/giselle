@@ -28,7 +28,7 @@ export function NavigationRailExpanded({
 		<NavigationRailContainer variant="expanded">
 			<NavigationRailHeader>
 				<div className="flex items-center justify-between w-full pt-8 pb-4">
-					<GiselleLogo className="w-[112px] h-auto fill-stage-sidebar-text-hover" />
+					<GiselleLogo className="w-[96px] h-auto fill-stage-sidebar-text-hover" />
 					<MenuButton
 						onClick={() => onCollapseButtonClick()}
 						className="cursor-w-resize"
