@@ -10,14 +10,14 @@ interface StatusBadgeProps {
 
 const statusStyles = {
 	error:
-		"bg-[rgba(var(--color-error-rgb),0.05)] text-[var(--color-error)] border-[rgba(var(--color-error-rgb),0.1)]",
+		"bg-[rgba(var(--color-error-rgb),0.05)] text-error border-[rgba(var(--color-error-rgb),0.1)]",
 	success:
-		"bg-[rgba(var(--color-success-rgb),0.05)] text-[var(--color-success)] border-[rgba(var(--color-success-rgb),0.1)]",
+		"bg-[rgba(var(--color-success-rgb),0.05)] text-success border-[rgba(var(--color-success-rgb),0.1)]",
 	warning:
-		"bg-[rgba(var(--color-warning-rgb),0.05)] text-[var(--color-warning)] border-[rgba(var(--color-warning-rgb),0.1)]",
-	info: "bg-[rgba(var(--color-info-rgb),0.05)] text-[var(--color-info)] border-[rgba(var(--color-info-rgb),0.1)]",
+		"bg-[rgba(var(--color-warning-rgb),0.05)] text-warning border-[rgba(var(--color-warning-rgb),0.1)]",
+	info: "bg-[rgba(var(--color-info-rgb),0.05)] text-info border-[rgba(var(--color-info-rgb),0.1)]",
 	ignored:
-		"bg-[rgba(var(--color-ignored-rgb),0.05)] text-[var(--color-ignored)] border-[rgba(var(--color-ignored-rgb),0.1)]",
+		"bg-[rgba(var(--color-ignored-rgb),0.05)] text-ignored border-[rgba(var(--color-ignored-rgb),0.1)]",
 };
 
 const dotStyles = {
@@ -29,11 +29,11 @@ const dotStyles = {
 };
 
 const dotTextStyles = {
-	error: "text-[var(--color-error)]",
-	success: "text-[var(--color-success)]",
-	warning: "text-[var(--color-warning)]",
-	info: "text-[var(--color-info)]",
-	ignored: "text-[var(--color-ignored)]",
+	error: "text-error",
+	success: "text-success",
+	warning: "text-warning",
+	info: "text-info",
+	ignored: "text-ignored",
 };
 
 export function StatusBadge({

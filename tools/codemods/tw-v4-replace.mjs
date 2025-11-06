@@ -47,6 +47,27 @@ const patterns = [
 		/focus:border-\[var\(--color-border-focused\)\]/g,
 		"focus:border-border-focused",
 	],
+	// New patterns
+	[/bg-\[var\(--color-text-secondary\)\]/g, "bg-text-secondary"],
+	[/text-\[var\(--color-tabs-inactive-text\)\]/g, "text-tabs-inactive-text"],
+	[
+		/border-\[var\(--color-text-inverse(?:,\s*#fff)?\)\]/g,
+		"border-text-inverse",
+	],
+	[
+		/text-\[var\(--color-(error|success|warning|info|ignored)\)\]/g,
+		(m, p1) => `text-${p1}`,
+	],
+	[/bg-\[var\(--color-stage-form-background\)\]/g, "bg-stage-form-background"],
+	[/text-\[var\(--color-text-60\)\]/g, "text-text-60"],
+	[
+		/hover:bg-\[var\(--color-destructive-hover-bg\)\]/g,
+		"hover:bg-destructive-hover-bg",
+	],
+	[
+		/border-\[var\(--color-chat-bubble-(accent-border|user-bg)\)\]/g,
+		(m, p1) => `border-chat-bubble-${p1}`,
+	],
 ];
 
 let changed = 0;

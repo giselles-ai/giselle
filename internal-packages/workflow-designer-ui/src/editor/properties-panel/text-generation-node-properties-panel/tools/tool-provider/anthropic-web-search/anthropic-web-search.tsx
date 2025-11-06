@@ -401,8 +401,8 @@ export function AnthropicWebSearchToolConfigurationDialog({
 													<div
 														className={`px-[8px] py-[2px] rounded-[3px] text-[12px] flex items-center gap-[4px] border ${
 															filteringMode === "allow"
-																? "bg-[rgba(var(--color-success-rgb),0.05)] text-[var(--color-success)] border-[rgba(var(--color-success-rgb),0.1)]"
-																: "bg-[rgba(var(--color-error-rgb),0.05)] text-[var(--color-error)] border-[rgba(var(--color-error-rgb),0.1)]"
+																? "bg-[rgba(var(--color-success-rgb),0.05)] text-success border-[rgba(var(--color-success-rgb),0.1)]"
+																: "bg-[rgba(var(--color-error-rgb),0.05)] text-error border-[rgba(var(--color-error-rgb),0.1)]"
 														}`}
 													>
 														<span className="max-w-[180px] truncate">

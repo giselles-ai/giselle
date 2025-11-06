@@ -98,7 +98,7 @@ export function DropdownMenu<
 					: clsx(
 							"text-text outline-none cursor-pointer",
 							item.destructive
-								? "hover:bg-[var(--color-destructive-hover-bg)]"
+								? "hover:bg-destructive-hover-bg"
 								: "hover:bg-ghost-element-hover",
 							"rounded-[4px] px-[8px] py-[6px] text-[14px]",
 							"flex items-center justify-between gap-[4px]",

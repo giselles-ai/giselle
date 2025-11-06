@@ -170,8 +170,8 @@ export function ChatPanel() {
 								<div
 									className={`max-w-[80%] min-w-0 px-4 py-3 text-sm font-mono ${
 										message.sender === "user"
-											? "font-light bg-chat-bubble-user-bg border border-[var(--color-chat-bubble-user-bg)] text-inverse rounded-[8px] rounded-br-[4px]"
-											: "font-light bg-chat-bubble-accent-bg border border-[var(--color-chat-bubble-accent-border)] text-inverse rounded-[8px] rounded-bl-[4px] backdrop-blur-sm animate-slide-up-left"
+											? "font-light bg-chat-bubble-user-bg border border-chat-bubble-user-bg text-inverse rounded-[8px] rounded-br-[4px]"
+											: "font-light bg-chat-bubble-accent-bg border border-chat-bubble-accent-border text-inverse rounded-[8px] rounded-bl-[4px] backdrop-blur-sm animate-slide-up-left"
 									}`}
 								>
 									<div className="whitespace-pre-wrap leading-relaxed break-words overflow-wrap-anywhere">
@@ -185,7 +185,7 @@ export function ChatPanel() {
 					{/* Typing indicator */}
 					{(showTyping || isThinking) && (
 						<div className="flex justify-start">
-							<div className="bg-chat-bubble-accent-bg text-inverse rounded-[8px] rounded-bl-[4px] px-4 py-3 border border-[var(--color-chat-bubble-accent-border)] backdrop-blur-sm font-mono font-light">
+							<div className="bg-chat-bubble-accent-bg text-inverse rounded-[8px] rounded-bl-[4px] px-4 py-3 border border-chat-bubble-accent-border backdrop-blur-sm font-mono font-light">
 								<div className="flex items-center space-x-1">
 									<div className="flex space-x-1">
 										<div className="w-1.5 h-1.5 bg-text-inverse rounded-full animate-bounce"></div>

@@ -63,11 +63,7 @@ export function Button({
 					<div className="absolute inset-0 bg-(image:--glass-button-bg-hover) opacity-0 hover:opacity-100 transition-opacity" />
 				</>
 			)}
-			{leftIcon && (
-				<div className="*:size-[13px] *:text-text">
-					{leftIcon}
-				</div>
-			)}
+			{leftIcon && <div className="*:size-[13px] *:text-text">{leftIcon}</div>}
 			<Slot.Slottable>
 				<div className="text-[13px] text-text">{children}</div>
 			</Slot.Slottable>

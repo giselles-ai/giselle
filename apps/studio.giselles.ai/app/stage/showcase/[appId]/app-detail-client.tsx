@@ -233,7 +233,7 @@ export function AppDetailClient({ appDetails }: AppDetailClientProps) {
 														: "Failed"}
 												</StatusBadge>
 												<div>
-													<div className="text-xs text-[var(--color-text-60)]">
+													<div className="text-xs text-text-60">
 														{new Intl.RelativeTimeFormat("en", {
 															numeric: "auto",
 														}).format(
