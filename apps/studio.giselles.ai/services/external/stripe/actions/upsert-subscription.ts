@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import type Stripe from "stripe";
 import { db, subscriptions, teamMemberships, teams } from "@/db";
 import {
@@ -103,6 +103,7 @@ async function createTeam(
 		.values({
 			id: createTeamId(),
 			name: teamName,
+			plan: "pro",
 		})
 		.returning({ dbid: teams.dbId });
 
@@ -152,12 +153,19 @@ async function insertSubscription(
 				? timestampToDateTime(subscription.trial_end)
 				: null,
 	});
+
+	await tx
+		.update(teams)
+		.set({
+			plan: subscription.status === "active" ? "pro" : "free",
+		})
+		.where(and(eq(teams.dbId, teamDbId), ne(teams.plan, "internal")));
 }
 
 async function updateSubscription(subscription: Stripe.Subscription) {
 	const period = getSubscriptionPeriod(subscription);
 
-	await db
+	const [updated] = await db
 		.update(subscriptions)
 		.set({
 			customerId: getCustomerId(subscription),
@@ -187,7 +195,17 @@ async function updateSubscription(subscription: Stripe.Subscription) {
 					? timestampToDateTime(subscription.trial_end)
 					: null,
 		})
-		.where(eq(subscriptions.id, subscription.id));
+		.where(eq(subscriptions.id, subscription.id))
+		.returning({ teamDbId: subscriptions.teamDbId });
+
+	if (updated) {
+		await db
+			.update(teams)
+			.set({
+				plan: subscription.status === "active" ? "pro" : "free",
+			})
+			.where(and(eq(teams.dbId, updated.teamDbId), ne(teams.plan, "internal")));
+	}
 }
 
 /**
