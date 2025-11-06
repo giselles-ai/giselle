@@ -1,5 +1,16 @@
 import { WilliIcon } from "@giselle-internal/workflow-designer-ui";
-import { LibraryIcon, SparklesIcon } from "lucide-react";
+import {
+	Blocks,
+	Bolt,
+	BookMarked,
+	Globe,
+	LibraryIcon,
+	Megaphone,
+	Puzzle,
+	SparklesIcon,
+	SquareLibrary,
+} from "lucide-react";
+import { MemberIcon } from "./icons/member";
 
 interface LinkNavigationItem {
 	id: string;
@@ -10,30 +21,134 @@ interface LinkNavigationItem {
 	isActive?: (pathname: string) => boolean;
 }
 
-export type NavigationItem = LinkNavigationItem;
+interface ExternalNavigationItem {
+	id: string;
+	type: "external";
+	icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+	label: string;
+	href: string;
+}
+
+interface SectionNavigationItem {
+	id: string;
+	type: "section";
+	label: string;
+}
+
+interface DividerNavigationItem {
+	id: string;
+	type: "divider";
+}
+
+export type NavigationItem =
+	| LinkNavigationItem
+	| ExternalNavigationItem
+	| SectionNavigationItem
+	| DividerNavigationItem;
 
 export const navigationItems = [
+	// Agent
+	{ id: "section-agent", type: "section", label: "Agent" },
 	{
-		id: "new-task-link",
+		id: "nav-stage",
 		type: "link",
 		icon: SparklesIcon,
-		label: "New task",
+		label: "Stage",
 		href: "/stage",
 	},
 	{
-		id: "showcase-link",
+		id: "nav-studio",
+		type: "link",
+		icon: Blocks,
+		label: "Studio",
+		href: "/workspaces",
+		isActive: (p: string) => p.startsWith("/workspaces"),
+	},
+	{
+		id: "nav-showcase",
 		type: "link",
 		icon: LibraryIcon,
 		label: "Showcase",
 		href: "/stage/showcase",
-		isActive: (pathname: string) => pathname === "/stage/showcase",
+		isActive: (p: string) => p === "/stage/showcase",
 	},
 	{
-		id: "tasks-link",
+		id: "nav-task",
 		type: "link",
 		icon: WilliIcon,
-		label: "Tasks",
+		label: "Task",
 		href: "/stage/acts",
-		isActive: (pathname: string) => pathname.startsWith("/stage/acts"),
+		isActive: (p: string) => p.startsWith("/stage/acts"),
+	},
+	{ id: "divider-1", type: "divider" },
+	// Manage
+	{ id: "section-manage", type: "section", label: "Manage" },
+	{
+		id: "nav-member",
+		type: "link",
+		icon: MemberIcon,
+		label: "Member",
+		href: "/settings/team/members",
+		isActive: (p: string) => p.startsWith("/settings/team/members"),
+	},
+	{
+		id: "nav-integration",
+		type: "link",
+		icon: Puzzle,
+		label: "Integration",
+		href: "/settings/team/integrations",
+		isActive: (p: string) => p.startsWith("/settings/team/integrations"),
+	},
+	{
+		id: "nav-vector-stores",
+		type: "link",
+		icon: SquareLibrary,
+		label: "Vector stores",
+		href: "/settings/team/vector-stores",
+		isActive: (p: string) => p.startsWith("/settings/team/vector-stores"),
+	},
+	{
+		id: "nav-usage",
+		type: "link",
+		icon: SparklesIcon,
+		label: "Usage",
+		href: "/settings/team/usage",
+		isActive: (p: string) => p.startsWith("/settings/team/usage"),
+	},
+	{
+		id: "nav-team-settings",
+		type: "link",
+		icon: Bolt,
+		label: "Team Settings",
+		href: "/settings/team",
+		isActive: (p: string) =>
+			p.startsWith("/settings/team") &&
+			!p.includes("/members") &&
+			!p.includes("/integrations") &&
+			!p.includes("/vector-stores") &&
+			!p.includes("/usage"),
+	},
+	{ id: "divider-2", type: "divider" },
+	// Others
+	{
+		id: "nav-docs",
+		type: "external",
+		icon: BookMarked,
+		label: "Docs",
+		href: "https://docs.giselles.ai/en/guides/introduction",
+	},
+	{
+		id: "nav-whats-new",
+		type: "external",
+		icon: Megaphone,
+		label: "Whats new",
+		href: "https://giselles.ai/changelog",
+	},
+	{
+		id: "nav-more",
+		type: "external",
+		icon: Globe,
+		label: "More from Giselle",
+		href: "https://giselles.ai",
 	},
 ] satisfies NavigationItem[];

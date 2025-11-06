@@ -1,15 +1,17 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { NavigationRailCollapsed } from "./navigation-rail-collapsed";
 import { NavigationRailExpanded } from "./navigation-rail-expanded";
 import type { NavigationRailState, UserDataForNavigationRail } from "./types";
 
 export function NavigationRail({
 	dataLoader,
+	teamSelectionSlot,
 }: {
 	dataLoader: Promise<UserDataForNavigationRail>;
+	teamSelectionSlot?: ReactNode;
 }) {
 	const [state, setState] = useState<NavigationRailState>("expanded");
 	const spacingAnimationControls = useMemo(() => {
@@ -49,6 +51,7 @@ export function NavigationRail({
 					>
 						<NavigationRailExpanded
 							user={dataLoader}
+							teamSelectionSlot={teamSelectionSlot}
 							onCollapseButtonClick={() => setState("collapsed")}
 						/>
 					</motion.div>

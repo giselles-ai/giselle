@@ -1,5 +1,6 @@
 import { GiselleIcon } from "@giselle-internal/workflow-designer-ui";
 import { ChevronsRightIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import { Suspense } from "react";
 import { MenuButton } from "./menu-button";
 import { navigationItems } from "./navigation-items";

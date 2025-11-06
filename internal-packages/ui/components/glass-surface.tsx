@@ -128,7 +128,7 @@ export function GlassSurfaceLayers({
 						zIndexClass,
 						radiusClass,
 						solidBorderClass,
-						"opacity-30",
+						"opacity-50",
 					)}
 				/>
 			) : borderStyle === "gradient" ? (

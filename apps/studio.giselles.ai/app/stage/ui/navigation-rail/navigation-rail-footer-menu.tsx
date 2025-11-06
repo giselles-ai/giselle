@@ -48,7 +48,7 @@ export function NavigationRailFooterMenu({
 		<DropdownMenuPrimitive.Root>
 			<DropdownMenuPrimitive.Trigger asChild>
 				<button
-					className="w-full hover:bg-ghost-element-hover h-full rounded-md cursor-pointer outline-none p-1.5 flex items-center gap-2"
+					className="w-full hover:bg-ghost-element-hover h-full rounded-[8px] cursor-pointer outline-none px-1 py-1.5 flex items-center gap-2"
 					type="button"
 				>
 					<div className="size-8 flex items-center justify-center shrink-0">
@@ -74,12 +74,10 @@ export function NavigationRailFooterMenu({
 			</DropdownMenuPrimitive.Trigger>
 			<DropdownMenuPrimitive.Portal>
 				<DropdownMenuPrimitive.Content
-					align={variant === "expanded" ? "center" : "start"}
-					className={`z-50 ${
-						variant === "expanded"
-							? "w-[var(--radix-dropdown-menu-trigger-width)]"
-							: ""
-					}`}
+					align="start"
+					alignOffset={0}
+					sideOffset={4}
+					className={"z-50 w-[var(--radix-dropdown-menu-trigger-width)]"}
 				>
 					<PopoverContent>
 						{/* Account Settings */}
