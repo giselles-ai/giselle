@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
 const exts = new Set([".ts", ".tsx", ".js", ".jsx", ".css", ".pcss"]);
 const ignoreDirs = new Set(["node_modules", ".git", ".next", "dist", "build"]);
@@ -26,7 +26,10 @@ const patterns = [
 	[/text-\[var\(--color-text\)\]/g, "text-text"],
 	[/text-\[var\(--color-background\)\]/g, "text-background"],
 	[/text-\[var\(--color-link-muted\)\]/g, "text-link-muted"],
-	[/placeholder:text-\[var\(--color-link-muted\)\]/g, "placeholder:text-link-muted"],
+	[
+		/placeholder:text-\[var\(--color-link-muted\)\]/g,
+		"placeholder:text-link-muted",
+	],
 	[/bg-\[var\(--color-background\)\]/g, "bg-background"],
 	[/bg-\[var\(--color-surface\)\]/g, "bg-surface"],
 	[/bg-\[var\(--color-text-inverse(?:,\s*#fff)?\)\]/g, "bg-text-inverse"],
@@ -34,10 +37,16 @@ const patterns = [
 	[/bg-\[var\(--color-chat-bubble-accent-bg\)\]/g, "bg-chat-bubble-accent-bg"],
 	[/border-\[var\(--color-border\)\]/g, "border-border"],
 	[/border-\[var\(--color-border-muted\)\]/g, "border-border-muted"],
-	[/hover:border-\[var\(--color-text-inverse(?:,\s*#fff)?\)\]/g, "hover:border-text-inverse"],
+	[
+		/hover:border-\[var\(--color-text-inverse(?:,\s*#fff)?\)\]/g,
+		"hover:border-text-inverse",
+	],
 	[/outline-\[var\(--color-focused\)\]/g, "outline-focused"],
 	[/border-\[var\(--color-border-focused\)\]/g, "border-border-focused"],
-	[/focus:border-\[var\(--color-border-focused\)\]/g, "focus:border-border-focused"],
+	[
+		/focus:border-\[var\(--color-border-focused\)\]/g,
+		"focus:border-border-focused",
+	],
 ];
 
 let changed = 0;
@@ -54,5 +63,3 @@ for (const f of files) {
 }
 
 console.log("files changed:", changed);
-
-
