@@ -5088,7 +5088,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@types/react"></a>
-### @types/react v19.0.10
+### @types/react v19.1.10
 #### 
 
 ##### Paths
@@ -5099,7 +5099,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@types/react-dom"></a>
-### @types/react-dom v19.0.4
+### @types/react-dom v19.1.7
 #### 
 
 ##### Paths
