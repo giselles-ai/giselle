@@ -255,6 +255,7 @@ export const giselleEngine = NextGiselleEngine({
 						id: parsedMetadata.team.id,
 						type: parsedMetadata.team.type,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						plan: parsedMetadata.team.plan,
 					},
 				});
 				return;
@@ -297,6 +298,7 @@ export const giselleEngine = NextGiselleEngine({
 						id: parsedMetadata.team.id,
 						type: parsedMetadata.team.type,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						plan: parsedMetadata.team.plan,
 					},
 				});
 				return;
@@ -330,6 +332,7 @@ export const giselleEngine = NextGiselleEngine({
 							id: parsedMetadata.team.id,
 							type: parsedMetadata.team.type,
 							activeSubscriptionId: parsedMetadata.team.subscriptionId,
+							plan: parsedMetadata.team.plan,
 						},
 					});
 					return;
@@ -430,6 +433,7 @@ if (generateContentProcessor === "trigger.dev") {
 						id: team.id,
 						type: team.type,
 						subscriptionId: team.activeSubscriptionId,
+						plan: team.plan,
 					},
 				});
 				break;
@@ -452,6 +456,7 @@ if (generateContentProcessor === "trigger.dev") {
 								id: currentTeam.id,
 								type: currentTeam.type,
 								subscriptionId: currentTeam.activeSubscriptionId,
+								plan: currentTeam.plan,
 							},
 						});
 						break;
@@ -493,6 +498,7 @@ if (generateContentProcessor === "trigger.dev") {
 						id: team.id,
 						type: team.type,
 						subscriptionId: team.activeSubscriptionId,
+						plan: team.plan,
 					},
 				});
 				break;
@@ -512,6 +518,7 @@ if (generateContentProcessor === "trigger.dev") {
 						id: currentTeam.id,
 						type: currentTeam.type,
 						subscriptionId: currentTeam.activeSubscriptionId,
+						plan: currentTeam.plan,
 					},
 				});
 				break;

@@ -13,6 +13,7 @@ export const generateContentJob = schemaJob({
 			id: z.string<`tm_${string}`>(),
 			type: z.enum(["customer", "internal"]),
 			subscriptionId: z.string().nullable(),
+			plan: z.enum(["free", "pro", "team", "internal"]),
 		}),
 	}),
 	run: async (payload) => {
