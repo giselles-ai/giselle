@@ -4,13 +4,13 @@ import { PopoverContent } from "@giselle-internal/ui/popover";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { ChevronRight, ExternalLink, Plus } from "lucide-react";
 import Link from "next/link";
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { SignOutButton } from "@/services/accounts/components/user-button/sign-out-button";
 import type { NavigationRailState, UserDataForNavigationRail } from "./types";
 
 const MENU_ITEM_CLASS =
-    "text-text outline-none cursor-pointer hover:bg-ghost-element-hover rounded-[4px] px-[8px] py-[6px] text-[14px]";
+	"text-text outline-none cursor-pointer hover:bg-ghost-element-hover rounded-[4px] px-[8px] py-[6px] text-[14px]";
 
 const HELP_ITEMS = [
 	{
@@ -43,16 +43,19 @@ export function NavigationRailFooterMenu({
 	variant: NavigationRailState;
 }) {
 	const user = use(userPromise);
+	const [mounted, setMounted] = useState(false);
+	useEffect(() => setMounted(true), []);
+	if (!mounted) return null; // defer Radix menu until client mount to avoid id mismatch
 
 	return (
 		<DropdownMenuPrimitive.Root>
-            <DropdownMenuPrimitive.Trigger asChild>
-                <button
-                    className={`w-full hover:bg-ghost-element-hover h-full rounded-[8px] cursor-pointer outline-none px-1 py-1.5 flex ${
-                        variant === "collapsed" ? "justify-center" : "items-center gap-2"
-                    }`}
-                    type="button"
-                >
+			<DropdownMenuPrimitive.Trigger asChild>
+				<button
+					className={`w-full hover:bg-ghost-element-hover h-full rounded-[8px] cursor-pointer outline-none px-1 py-1.5 flex ${
+						variant === "collapsed" ? "justify-center" : "items-center gap-2"
+					}`}
+					type="button"
+				>
 					<div className="size-8 flex items-center justify-center shrink-0">
 						<AvatarImage
 							className="rounded-full"
@@ -81,8 +84,8 @@ export function NavigationRailFooterMenu({
 					sideOffset={4}
 					className={"z-50 w-[var(--radix-dropdown-menu-trigger-width)]"}
 				>
-                    <PopoverContent>
-                        {/* Account Settings with Submenu */}
+					<PopoverContent>
+						{/* Account Settings with Submenu */}
 						<DropdownMenuPrimitive.Sub>
 							<DropdownMenuPrimitive.SubTrigger
 								className={`${MENU_ITEM_CLASS} flex items-center justify-between w-full`}
@@ -108,7 +111,10 @@ export function NavigationRailFooterMenu({
 											className={MENU_ITEM_CLASS}
 											asChild
 										>
-											<Link href="/settings/account/general" className="w-full block">
+											<Link
+												href="/settings/account/general"
+												className="w-full block"
+											>
 												General
 											</Link>
 										</DropdownMenuPrimitive.Item>
@@ -170,14 +176,14 @@ export function NavigationRailFooterMenu({
 							</DropdownMenuPrimitive.Portal>
 						</DropdownMenuPrimitive.Sub>
 
-                        {/* Lobby */}
-                        <DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS} asChild>
-                            <Link href="/workspaces" className="w-full block">
-                                Lobby
-                            </Link>
-                        </DropdownMenuPrimitive.Item>
+						{/* Lobby */}
+						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS} asChild>
+							<Link href="/workspaces" className="w-full block">
+								Lobby
+							</Link>
+						</DropdownMenuPrimitive.Item>
 
-                        {/* Homepage */}
+						{/* Homepage */}
 						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS} asChild>
 							<a
 								href="https://giselles.ai"
@@ -190,25 +196,28 @@ export function NavigationRailFooterMenu({
 							</a>
 						</DropdownMenuPrimitive.Item>
 
-                        {/* Create team (link to account where creation UI exists) */}
-                        <DropdownMenuPrimitive.Item asChild>
-                            <Link href="/settings/account" className="cursor-pointer flex items-center gap-x-2 px-2 py-1.5 rounded-lg w-full hover:bg-white/5">
-                                <span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
-                                    <Plus className="size-3 text-background" />
-                                </span>
-                                <span className="text-inverse font-medium text-[14px] leading-[14px] font-geist">
-                                    Create team
-                                </span>
-                            </Link>
-                        </DropdownMenuPrimitive.Item>
+						{/* Create team (link to account where creation UI exists) */}
+						<DropdownMenuPrimitive.Item asChild>
+							<Link
+								href="/settings/account"
+								className="cursor-pointer flex items-center gap-x-2 px-2 py-1.5 rounded-lg w-full hover:bg-white/5"
+							>
+								<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
+									<Plus className="size-3 text-background" />
+								</span>
+								<span className="text-inverse font-medium text-[14px] leading-[14px] font-geist">
+									Create team
+								</span>
+							</Link>
+						</DropdownMenuPrimitive.Item>
 
-                        {/* Separator */}
-                        <DropdownMenuPrimitive.Separator className="h-px bg-white/10 my-1" />
+						{/* Separator */}
+						<DropdownMenuPrimitive.Separator className="h-px bg-white/10 my-1" />
 
-                        {/* Logout */}
-                        <DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS}>
-                            <SignOutButton className="text-[14px]">Signout</SignOutButton>
-                        </DropdownMenuPrimitive.Item>
+						{/* Logout */}
+						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS}>
+							<SignOutButton className="text-[14px]">Signout</SignOutButton>
+						</DropdownMenuPrimitive.Item>
 					</PopoverContent>
 				</DropdownMenuPrimitive.Content>
 			</DropdownMenuPrimitive.Portal>

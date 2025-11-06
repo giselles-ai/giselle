@@ -3,7 +3,7 @@
 import clsx from "clsx/lite";
 import { ChevronsUpDown, Plus } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FreeTag } from "@/components/free-tag";
 import { ProTag } from "@/components/pro-tag";
 import {
@@ -32,6 +32,8 @@ export function TeamSelectionForm({
 	currentUser,
 	triggerClassName,
 }: TeamSelectionFormProps) {
+	const [mounted, setMounted] = useState(false);
+	useEffect(() => setMounted(true), []);
 	const pathname = usePathname();
 	const isAccontSettingPage = useMemo(
 		() => pathname.startsWith("/settings/account"),
@@ -43,6 +45,8 @@ export function TeamSelectionForm({
 	};
 
 	const formRef = useRef<HTMLFormElement>(null);
+
+	if (!mounted) return null; // avoid hydration mismatches from Radix ids
 
 	return (
 		<form

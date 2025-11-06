@@ -162,7 +162,7 @@ export const navigationItems = [
 		type: "external",
 		icon: Megaphone,
 		label: "Whats new",
-		href: "https://giselles.ai/changelog",
+		href: "https://docs.giselles.ai/en/releases/release-notes",
 	},
 	{
 		id: "nav-more",
