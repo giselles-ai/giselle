@@ -2,7 +2,6 @@ import z from "zod/v4";
 
 export const ActionCommandBase = z.object({
 	id: z.string(),
-	parameters: z.object({}).optional(),
 });
 
 export const ActionBase = z.object({
