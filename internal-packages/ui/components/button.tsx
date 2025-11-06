@@ -8,7 +8,8 @@ type ButtonStyle =
 	| "glass"
 	| "outline"
 	| "link"
-	| "primary";
+	| "primary"
+	| "destructive";
 type ButtonSize = "compact" | "default" | "large";
 interface ButtonProps
 	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "style"> {
