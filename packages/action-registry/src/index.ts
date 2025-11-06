@@ -15,3 +15,7 @@ export type ActionProvider = (typeof actionRegistry)[number]["provider"];
 export function getEntry(actionProvider: ActionProvider) {
 	return actionRegistry.find((entry) => entry.provider === actionProvider);
 }
+
+export function isActionProvider(provider: string): provider is ActionProvider {
+	return actionRegistry.some((entry) => entry.provider === provider);
+}

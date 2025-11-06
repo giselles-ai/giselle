@@ -359,7 +359,7 @@ export function Installed({
 					if (isReconfiguring && triggerId !== undefined) {
 						try {
 							await client.reconfigureGitHubTrigger({
-								flowTriggerId: triggerId,
+								triggerId,
 								repositoryNodeId: step.repoNodeId,
 								installationId: step.installationId,
 								event,
@@ -430,7 +430,7 @@ export function Installed({
 				if (isReconfiguring && triggerId !== undefined) {
 					try {
 						await client.reconfigureGitHubTrigger({
-							flowTriggerId: triggerId,
+							triggerId,
 							repositoryNodeId: step.repoNodeId,
 							installationId: step.installationId,
 							event,
@@ -646,10 +646,10 @@ export function Installed({
 													});
 												}
 
-												let triggerId: TriggerId;
+												let triggerId: TriggerId | undefined;
 												if (isReconfiguring && triggerId !== undefined) {
 													const result = await client.reconfigureGitHubTrigger({
-														flowTriggerId: triggerId,
+														triggerId,
 														repositoryNodeId: step.repoNodeId,
 														installationId: step.installationId,
 													});

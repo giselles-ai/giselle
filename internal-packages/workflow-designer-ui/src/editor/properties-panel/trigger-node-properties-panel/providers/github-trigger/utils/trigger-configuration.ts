@@ -1,5 +1,5 @@
 import {
-	type GitHubFlowTriggerEvent,
+	type GitHubTriggerEvent,
 	type GitHubTriggerEventId,
 	type Output,
 	OutputId,
@@ -38,7 +38,7 @@ export function createTriggerEvent(args: {
 	eventId: GitHubTriggerEventId;
 	callsign?: string;
 	labels?: string[];
-}): GitHubFlowTriggerEvent {
+}): GitHubTriggerEvent {
 	switch (args.eventId) {
 		case "github.issue.created":
 		case "github.issue.closed":

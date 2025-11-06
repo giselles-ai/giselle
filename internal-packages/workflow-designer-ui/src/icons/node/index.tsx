@@ -162,10 +162,8 @@ export function NodeIcon({
 					switch (node.content.command.provider) {
 						case "github":
 							return <GitHubIcon {...props} data-content-type-icon />;
-						case "web-search":
-							return <SearchIcon {...props} data-content-type-icon />;
 						default: {
-							const _exhaustiveCheck: never = node.content.command;
+							const _exhaustiveCheck: never = node.content.command.provider;
 							throw new Error(
 								`Unhandled TriggerProviderType: ${_exhaustiveCheck}`,
 							);

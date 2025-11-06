@@ -1,7 +1,7 @@
 "use client";
 
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
-import { actionRegistry } from "@giselles-ai/action-registry";
+import { actionRegistry, isActionProvider } from "@giselles-ai/action-registry";
 import type { TriggerProvider } from "@giselles-ai/giselle";
 import {
 	createActionNode,
@@ -961,7 +961,11 @@ export function Toolbar() {
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={(value) => {
-													setSelectedTool(addNodeTool(createActionNode(value)));
+													if (isActionProvider(value)) {
+														setSelectedTool(
+															addNodeTool(createActionNode(value)),
+														);
+													}
 												}}
 											>
 												{actionRegistry.map((actionRegistry) => (

@@ -3,7 +3,7 @@ import {
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
 import {
-	type GitHubFlowTriggerEvent,
+	type GitHubTriggerEvent,
 	type Output,
 	OutputId,
 	type TriggerNode,
@@ -17,7 +17,7 @@ import type {
 
 interface UseTriggerConfigurationReturn {
 	configureTrigger: (
-		event: GitHubFlowTriggerEvent,
+		event: GitHubTriggerEvent,
 		step: InputCallsignStep | InputLabelsStep,
 	) => void;
 	isPending: boolean;
@@ -33,10 +33,7 @@ export const useTriggerConfiguration = ({
 	const [isPending, startTransition] = useTransition();
 
 	const configureTrigger = useCallback(
-		(
-			event: GitHubFlowTriggerEvent,
-			step: InputCallsignStep | InputLabelsStep,
-		) => {
+		(event: GitHubTriggerEvent, step: InputCallsignStep | InputLabelsStep) => {
 			const triggerOption = findGitHubTriggerOption(event.id);
 			if (triggerOption === undefined) {
 				throw new Error(`Unknown trigger option for event ${event.id}`);
