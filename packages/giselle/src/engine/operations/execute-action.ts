@@ -1,7 +1,4 @@
-import {
-	findGitHubActionOption,
-	githubActions,
-} from "@giselles-ai/action-registry";
+import { findGitHubActionOption } from "@giselles-ai/action-registry";
 import {
 	createDiscussionComment,
 	createIssue,
@@ -63,9 +60,6 @@ export function executeAction(args: {
 						generationContentResolver,
 					});
 					break;
-				case "web-search":
-					// TODO: Implement web-search action execution
-					throw new Error("Web-search actions are not yet implemented");
 				default: {
 					// TODO: Uncomment after implementing all action providers
 					// const _exhaustiveCheck: never = command.provider;
@@ -208,9 +202,8 @@ async function executeGitHubActionCommand(args: {
 	switch (args.state.commandId) {
 		case "github.create.issue": {
 			const result = await createIssue({
-				...githubActions["github.create.issue"].command.parameters.parse(
-					inputs,
-				),
+				title: inputs.title,
+				body: inputs.body,
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
@@ -218,9 +211,8 @@ async function executeGitHubActionCommand(args: {
 		}
 		case "github.create.issueComment": {
 			const result = await createIssueComment({
-				...githubActions["github.create.issueComment"].command.parameters.parse(
-					inputs,
-				),
+				issueNumber: Number.parseInt(inputs.issueNumber),
+				body: inputs.body,
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
@@ -228,9 +220,8 @@ async function executeGitHubActionCommand(args: {
 		}
 		case "github.create.pullRequestComment": {
 			const result = await createPullRequestComment({
-				...githubActions[
-					"github.create.pullRequestComment"
-				].command.parameters.parse(inputs),
+				pullNumber: Number.parseInt(inputs.pullNumber),
+				body: inputs.body,
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
@@ -238,9 +229,9 @@ async function executeGitHubActionCommand(args: {
 		}
 		case "github.update.pullRequest": {
 			const result = await updatePullRequest({
-				...githubActions["github.update.pullRequest"].command.parameters.parse(
-					inputs,
-				),
+				pullNumber: Number.parseInt(inputs.pullNumber),
+				title: inputs.title,
+				body: inputs.body,
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
@@ -248,19 +239,17 @@ async function executeGitHubActionCommand(args: {
 		}
 		case "github.reply.pullRequestReviewComment": {
 			const result = await replyPullRequestReviewComment({
-				...githubActions[
-					"github.reply.pullRequestReviewComment"
-				].command.parameters.parse(inputs),
+				pullNumber: Number.parseInt(inputs.pullNumber),
+				body: inputs.body,
+				commentId: Number.parseInt(inputs.commentId),
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
 			return createActionOutput(result, args.generationContext);
 		}
 		case "github.create.discussionComment": {
-			const { discussionNumber, body, commentId } =
-				githubActions[
-					"github.create.discussionComment"
-				].command.parameters.parse(inputs);
+			const discussionNumber = Number.parseInt(inputs.discussionNumber);
+			const commentId = Number.parseInt(inputs.commentId);
 			const repo = await getRepositoryFullname(
 				args.state.repositoryNodeId,
 				commonAuthConfig,
@@ -294,15 +283,14 @@ async function executeGitHubActionCommand(args: {
 			}
 			const result = await createDiscussionComment({
 				discussionId,
-				body,
+				body: inputs.body,
 				replyToId,
 				authConfig: commonAuthConfig,
 			});
 			return createActionOutput(result, args.generationContext);
 		}
 		case "github.get.discussion": {
-			const { discussionNumber } =
-				githubActions["github.get.discussion"].command.parameters.parse(inputs);
+			const discussionNumber = Number.parseInt(inputs.discussionNumber);
 			const repo = await getRepositoryFullname(
 				args.state.repositoryNodeId,
 				commonAuthConfig,

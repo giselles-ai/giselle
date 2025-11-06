@@ -23,6 +23,9 @@ export function triggerNodeDefaultName(triggerProvider: TriggerProvider) {
 
 export function actionNodeDefaultName(actionProvider: ActionProvider) {
 	const entry = getEntry(actionProvider);
+	if (entry === undefined) {
+		return "Unknown action node";
+	}
 	return entry?.label;
 }
 
