@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { subscriptions } from "@/db/schema";
+import { activeSubscriptions } from "@/db/schema";
 import { reportUserSeatUsage } from "@/services/usage-based-billing";
 import type { CurrentTeam } from "./types";
 
@@ -20,9 +20,9 @@ export async function handleMemberChange(currentTeam: CurrentTeam) {
 
 async function fetchCustomerId(subscriptionId: string) {
 	const [subscription] = await db
-		.select({ customerId: subscriptions.customerId })
-		.from(subscriptions)
-		.where(eq(subscriptions.id, subscriptionId));
+		.select({ customerId: activeSubscriptions.customerId })
+		.from(activeSubscriptions)
+		.where(eq(activeSubscriptions.id, subscriptionId));
 	if (!subscription) {
 		throw new Error(`Subscription ${subscriptionId} not found`);
 	}

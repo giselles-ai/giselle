@@ -8,7 +8,8 @@ import {
 	agentActivities,
 	agents,
 	db,
-	subscriptions,
+	activeSubscriptions,
+	subscriptionHistory,
 	supabaseUserMappings,
 	type TeamRole,
 	teamMemberships,
@@ -580,21 +581,40 @@ export async function deleteTeam(
 
 export async function getSubscription(subscriptionId: string) {
 	try {
-		const [dbSubscription] = await db
+		// Try active subscriptions first
+		const [activeSubscription] = await db
 			.select({
-				cancelAtPeriodEnd: subscriptions.cancelAtPeriodEnd,
-				cancelAt: subscriptions.cancelAt,
+				cancelAtPeriodEnd: activeSubscriptions.cancelAtPeriodEnd,
+				cancelAt: activeSubscriptions.cancelAt,
 			})
-			.from(subscriptions)
-			.where(eq(subscriptions.id, subscriptionId));
+			.from(activeSubscriptions)
+			.where(eq(activeSubscriptions.id, subscriptionId))
+			.limit(1);
 
-		if (!dbSubscription) {
+		if (activeSubscription) {
+			return {
+				success: true,
+				data: activeSubscription,
+			};
+		}
+
+		// Fallback to history table
+		const [historySubscription] = await db
+			.select({
+				cancelAtPeriodEnd: subscriptionHistory.cancelAtPeriodEnd,
+				cancelAt: subscriptionHistory.cancelAt,
+			})
+			.from(subscriptionHistory)
+			.where(eq(subscriptionHistory.id, subscriptionId))
+			.limit(1);
+
+		if (!historySubscription) {
 			throw new Error(`Subscription not found: ${subscriptionId}`);
 		}
 
 		return {
 			success: true,
-			data: dbSubscription,
+			data: historySubscription,
 		};
 	} catch (error) {
 		return {

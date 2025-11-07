@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import type Stripe from "stripe";
-import { db, subscriptions, teamMemberships, teams } from "@/db";
+import { db, activeSubscriptions, subscriptionHistory, teamMemberships, teams } from "@/db";
 import {
 	DRAFT_TEAM_NAME_METADATA_KEY,
 	DRAFT_TEAM_USER_DB_ID_METADATA_KEY,
@@ -17,18 +17,37 @@ const getCustomerId = (subscription: Stripe.Subscription) =>
 
 export const upsertSubscription = async (subscriptionId: string) => {
 	const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-	const existingSubscriptionRecord = await db
-		.select()
-		.from(subscriptions)
-		.where(eq(subscriptions.id, subscription.id));
+	const isActive = isActiveSubscription(subscription);
 
-	if (existingSubscriptionRecord.length > 0) {
-		await updateSubscription(subscription);
+	// Check if subscription exists in either table
+	const [existingActive] = await db
+		.select()
+		.from(activeSubscriptions)
+		.where(eq(activeSubscriptions.id, subscription.id))
+		.limit(1);
+
+	const [existingHistory] = await db
+		.select()
+		.from(subscriptionHistory)
+		.where(eq(subscriptionHistory.id, subscription.id))
+		.limit(1);
+
+	if (existingActive || existingHistory) {
+		await updateSubscription(subscription, isActive);
 		return;
 	}
 
 	await activateProTeamSubscription(subscription);
 };
+
+function isActiveSubscription(subscription: Stripe.Subscription): boolean {
+	return (
+		subscription.status === "active" ||
+		subscription.status === "trialing" ||
+		subscription.status === "past_due" ||
+		subscription.ended_at === null
+	);
+}
 
 async function activateProTeamSubscription(subscription: Stripe.Subscription) {
 	const upgradingTeamDbIdKey = UPGRADING_TEAM_DB_ID_KEY;
@@ -121,8 +140,8 @@ async function insertSubscription(
 	teamDbId: number,
 ) {
 	const period = getSubscriptionPeriod(subscription);
-
-	await tx.insert(subscriptions).values({
+	const isActive = isActiveSubscription(subscription);
+	const subscriptionData = {
 		id: subscription.id,
 		teamDbId: teamDbId,
 		customerId: getCustomerId(subscription),
@@ -151,43 +170,107 @@ async function insertSubscription(
 			subscription.trial_end !== null
 				? timestampToDateTime(subscription.trial_end)
 				: null,
-	});
+	};
+
+	if (isActive) {
+		await tx.insert(activeSubscriptions).values(subscriptionData);
+	} else {
+		await tx.insert(subscriptionHistory).values({
+			...subscriptionData,
+			endedAt: subscriptionData.endedAt ?? timestampToDateTime(subscription.created),
+		});
+	}
 }
 
-async function updateSubscription(subscription: Stripe.Subscription) {
+async function updateSubscription(
+	subscription: Stripe.Subscription,
+	isActive: boolean,
+) {
 	const period = getSubscriptionPeriod(subscription);
+	const subscriptionData = {
+		customerId: getCustomerId(subscription),
+		status: subscription.status,
+		cancelAtPeriodEnd: subscription.cancel_at_period_end,
+		cancelAt:
+			subscription.cancel_at !== null
+				? timestampToDateTime(subscription.cancel_at)
+				: null,
+		canceledAt:
+			subscription.canceled_at !== null
+				? timestampToDateTime(subscription.canceled_at)
+				: null,
+		currentPeriodStart: timestampToDateTime(period.currentPeriodStart),
+		currentPeriodEnd: timestampToDateTime(period.currentPeriodEnd),
+		created: timestampToDateTime(subscription.created),
+		endedAt:
+			subscription.ended_at !== null
+				? timestampToDateTime(subscription.ended_at)
+				: null,
+		trialStart:
+			subscription.trial_start !== null
+				? timestampToDateTime(subscription.trial_start)
+				: null,
+		trialEnd:
+			subscription.trial_end !== null
+				? timestampToDateTime(subscription.trial_end)
+				: null,
+	};
 
-	await db
-		.update(subscriptions)
-		.set({
-			customerId: getCustomerId(subscription),
-			status: subscription.status,
-			cancelAtPeriodEnd: subscription.cancel_at_period_end,
-			cancelAt:
-				subscription.cancel_at !== null
-					? timestampToDateTime(subscription.cancel_at)
-					: null,
-			canceledAt:
-				subscription.canceled_at !== null
-					? timestampToDateTime(subscription.canceled_at)
-					: null,
-			currentPeriodStart: timestampToDateTime(period.currentPeriodStart),
-			currentPeriodEnd: timestampToDateTime(period.currentPeriodEnd),
-			created: timestampToDateTime(subscription.created),
-			endedAt:
-				subscription.ended_at !== null
-					? timestampToDateTime(subscription.ended_at)
-					: null,
-			trialStart:
-				subscription.trial_start !== null
-					? timestampToDateTime(subscription.trial_start)
-					: null,
-			trialEnd:
-				subscription.trial_end !== null
-					? timestampToDateTime(subscription.trial_end)
-					: null,
-		})
-		.where(eq(subscriptions.id, subscription.id));
+	await db.transaction(async (tx) => {
+		// Check if subscription exists in active table
+		const [existingActive] = await tx
+			.select()
+			.from(activeSubscriptions)
+			.where(eq(activeSubscriptions.id, subscription.id))
+			.limit(1);
+
+		// Check if subscription exists in history table
+		const [existingHistory] = await tx
+			.select()
+			.from(subscriptionHistory)
+			.where(eq(subscriptionHistory.id, subscription.id))
+			.limit(1);
+
+		if (isActive) {
+			if (existingActive) {
+				// Update existing active subscription
+				await tx
+					.update(activeSubscriptions)
+					.set(subscriptionData)
+					.where(eq(activeSubscriptions.id, subscription.id));
+			} else if (existingHistory) {
+				// Move from history to active (re-activation)
+				await tx.delete(subscriptionHistory).where(
+					eq(subscriptionHistory.id, subscription.id),
+				);
+				await tx.insert(activeSubscriptions).values(subscriptionData);
+			}
+		} else {
+			if (existingActive) {
+				// Move from active to history (cancellation/expiration)
+				await tx.delete(activeSubscriptions).where(
+					eq(activeSubscriptions.id, subscription.id),
+				);
+				await tx.insert(subscriptionHistory).values({
+					...subscriptionData,
+					endedAt:
+						subscriptionData.endedAt ??
+						timestampToDateTime(subscription.created),
+				});
+			} else if (existingHistory) {
+				// Update existing history record
+				await tx
+					.update(subscriptionHistory)
+					.set({
+						...subscriptionData,
+						endedAt:
+							subscriptionData.endedAt ??
+							timestampToDateTime(subscription.created),
+					})
+					.where(eq(subscriptionHistory.id, subscription.id));
+			}
+		}
+	});
 }
 
 /**

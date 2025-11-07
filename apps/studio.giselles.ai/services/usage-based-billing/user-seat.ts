@@ -1,6 +1,6 @@
 import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";
-import { db, subscriptions, teamMemberships, userSeatUsageReports } from "@/db";
+import { db, activeSubscriptions, subscriptionHistory, teamMemberships, userSeatUsageReports } from "@/db";
 import { stripe } from "../external/stripe";
 
 const USER_SEAT_METER_NAME = "user_seat_v2";
@@ -61,14 +61,29 @@ async function saveUserSeatUsage(params: {
 }
 
 async function findTeamDbId(subscriptionId: string): Promise<number> {
-	const record = await db
-		.select({ teamDbId: subscriptions.teamDbId })
-		.from(subscriptions)
-		.where(eq(subscriptions.id, subscriptionId));
-	if (record.length === 0) {
+	// Try active subscriptions first
+	const activeRecord = await db
+		.select({ teamDbId: activeSubscriptions.teamDbId })
+		.from(activeSubscriptions)
+		.where(eq(activeSubscriptions.id, subscriptionId))
+		.limit(1);
+
+	if (activeRecord.length > 0) {
+		return activeRecord[0].teamDbId;
+	}
+
+	// Fallback to history table
+	const historyRecord = await db
+		.select({ teamDbId: subscriptionHistory.teamDbId })
+		.from(subscriptionHistory)
+		.where(eq(subscriptionHistory.id, subscriptionId))
+		.limit(1);
+
+	if (historyRecord.length === 0) {
 		throw new Error(`Subscription not found: ${subscriptionId}`);
 	}
-	return record[0].teamDbId;
+
+	return historyRecord[0].teamDbId;
 }
 
 async function listTeamMembers(teamDbId: number) {
