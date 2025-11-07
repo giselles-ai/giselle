@@ -3,26 +3,24 @@ import { google } from "@ai-sdk/google";
 import { openai } from "@ai-sdk/openai";
 import type { GeneratedImageData } from "@giselles-ai/language-model";
 import {
+	type FailedGeneration,
 	type FalLanguageModelData,
+	type GenerationContext,
+	type GenerationOutput,
 	type GoogleImageLanguageModelData,
+	type Image,
 	type ImageGenerationNode,
+	ImageId,
 	isImageGenerationNode,
 	type OpenAIImageLanguageModelData,
+	type QueuedGeneration,
+	type RunningGeneration,
 } from "@giselles-ai/protocol";
 import {
 	experimental_generateImage as generateImageAiSdk,
 	generateText,
 	type ModelMessage,
 } from "ai";
-import {
-	type FailedGeneration,
-	type GenerationContext,
-	type GenerationOutput,
-	type Image,
-	ImageId,
-	type QueuedGeneration,
-	type RunningGeneration,
-} from "../../concepts/generation";
 import type { GiselleEngineContext } from "../types";
 import { useGenerationExecutor } from "./internal/use-generation-executor";
 import {

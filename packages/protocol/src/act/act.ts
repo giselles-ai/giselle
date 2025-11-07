@@ -1,12 +1,14 @@
-import { WorkspaceId } from "@giselles-ai/protocol";
 import { createIdGenerator } from "@giselles-ai/utils";
 import { z } from "zod/v4";
-import { GenerationStatus } from "./generation";
-import { ActId, GenerationId, StepId } from "./identifiers";
+import { GenerationStatus } from "../generation";
+import { GenerationId } from "../generation/generation-id";
+import { WorkspaceId } from "../workspace";
+import { ActId } from "./act-id";
 
-// Re-export ActId from identifiers
-export { ActId } from "./identifiers";
 export const SequenceId = createIdGenerator("sqn");
+
+export const StepId = createIdGenerator("stp");
+export type StepId = z.infer<typeof StepId.schema>;
 
 const ActAnnotationObject = z.object({
 	level: z.enum(["info", "warning", "error"]),

@@ -1,4 +1,4 @@
-import type { Act } from "../../../concepts/act";
+import type { Act } from "@giselles-ai/protocol";
 
 // Patch types - one for each operation
 export type Patch =

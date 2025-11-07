@@ -1,14 +1,11 @@
-import {
-	type ActId,
-	defaultName,
-	type Generation,
-	type Step,
-	type StepId,
-} from "@giselles-ai/giselle";
+import { type ActId, defaultName } from "@giselles-ai/giselle";
 import { NodeIcon } from "@giselles-ai/icons/node";
 import {
+	type Generation,
 	isImageGenerationNode,
 	isTextGenerationNode,
+	type Step,
+	type StepId,
 } from "@giselles-ai/protocol";
 
 import { notFound } from "next/navigation";

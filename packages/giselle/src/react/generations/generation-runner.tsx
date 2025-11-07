@@ -1,11 +1,11 @@
-import { isTextGenerationNode } from "@giselles-ai/protocol";
-import { useCallback, useEffect, useRef } from "react";
 import {
 	type Generation,
 	GenerationContext,
 	isQueuedGeneration,
+	isTextGenerationNode,
 	type RunningGeneration,
-} from "../../concepts/generation";
+} from "@giselles-ai/protocol";
+import { useCallback, useEffect, useRef } from "react";
 import { useGiselleEngine } from "../use-giselle-engine";
 import { useGenerationRunnerSystem } from "./contexts/generation-runner-system";
 import { GenerateContentRunner } from "./generate-content-runner";

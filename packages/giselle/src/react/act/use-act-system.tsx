@@ -1,9 +1,11 @@
-import type { WorkspaceId } from "@giselles-ai/protocol";
+import type {
+	ActId,
+	NodeGenerationIndex,
+	WorkspaceId,
+} from "@giselles-ai/protocol";
 import { useCallback, useEffect } from "react";
 import useSWR from "swr";
 import { useShallow } from "zustand/shallow";
-import type { ActId } from "../../concepts/act";
-import type { NodeGenerationIndex } from "../../concepts/generation";
 import type { ActExecutorOptions, CreateActInputs } from "../../engine";
 import { useGenerationRunnerSystem } from "../generations";
 import { useGiselleEngine } from "../use-giselle-engine";

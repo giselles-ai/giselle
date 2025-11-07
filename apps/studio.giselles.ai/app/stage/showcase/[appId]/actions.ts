@@ -1,7 +1,10 @@
 "use server";
 
-import type { ParameterItem } from "@giselles-ai/giselle";
-import type { FlowTrigger, WorkspaceId } from "@giselles-ai/protocol";
+import type {
+	FlowTrigger,
+	ParameterItem,
+	WorkspaceId,
+} from "@giselles-ai/protocol";
 import { isTriggerNode } from "@giselles-ai/protocol";
 import { revalidatePath } from "next/cache";
 import { giselleEngine } from "@/app/giselle-engine";

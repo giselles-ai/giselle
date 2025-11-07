@@ -1,12 +1,12 @@
 import type { LanguageModelV2Source } from "@ai-sdk/provider";
+import { createIdGenerator } from "@giselles-ai/utils";
+import type { ProviderMetadata } from "ai";
+import { z } from "zod/v4";
 import {
 	DocumentVectorStoreSource,
 	GitHubVectorStoreSource,
 	OutputId,
-} from "@giselles-ai/protocol";
-import { createIdGenerator } from "@giselles-ai/utils";
-import type { ProviderMetadata } from "ai";
-import { z } from "zod/v4";
+} from "../node";
 
 export const GenerationOutputBase = z.object({
 	type: z.string(),
