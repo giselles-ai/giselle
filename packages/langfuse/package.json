@@ -25,7 +25,6 @@
 	},
 	"dependencies": {
 		"@giselles-ai/protocol": "workspace:^",
-		"@giselles-ai/giselle": "workspace:^",
 		"@giselles-ai/language-model": "workspace:^",
 		"@giselles-ai/rag": "workspace:^",
 		"langfuse": "catalog:"

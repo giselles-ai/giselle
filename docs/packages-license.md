@@ -2,15 +2,15 @@
 
 
 ## Summary
-* 842 MIT
+* 847 MIT
 * 186 Apache 2.0
 * 46 ISC
 * 27 New BSD
 * 13 Simplified BSD
 * 5 BlueOak-1.0.0
-* 3 MIT OR Apache-2.0
+* 3 Mozilla Public License 2.0
+* 2 MIT OR Apache-2.0
 * 2 MIT-0
-* 2 Mozilla Public License 2.0
 * 1 BSD
 * 1 (MIT OR CC0-1.0)
 * 1 BSD Zero Clause License
@@ -775,17 +775,6 @@ MIT OR Apache-2.0 permitted
 
 
 
-<a name="@biomejs/cli-linux-x64-musl"></a>
-### @biomejs/cli-linux-x64-musl v2.0.6
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-MIT OR Apache-2.0 permitted
-
-
-
 <a name="@bugsnag/cuid"></a>
 ### @bugsnag/cuid v3.2.1
 #### 
@@ -1139,7 +1128,7 @@ MIT-0 permitted
 
 
 <a name="@floating-ui/core"></a>
-### @floating-ui/core v1.6.9
+### @floating-ui/core v1.7.3
 #### 
 
 ##### Paths
@@ -1150,7 +1139,7 @@ MIT-0 permitted
 
 
 <a name="@floating-ui/dom"></a>
-### @floating-ui/dom v1.6.13
+### @floating-ui/dom v1.7.4
 #### 
 
 ##### Paths
@@ -1161,7 +1150,7 @@ MIT-0 permitted
 
 
 <a name="@floating-ui/react-dom"></a>
-### @floating-ui/react-dom v2.1.2
+### @floating-ui/react-dom v2.1.6
 #### 
 
 ##### Paths
@@ -1172,7 +1161,7 @@ MIT-0 permitted
 
 
 <a name="@floating-ui/utils"></a>
-### @floating-ui/utils v0.2.9
+### @floating-ui/utils v0.2.10
 #### 
 
 ##### Paths
@@ -1448,6 +1437,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@next/swc-linux-x64-gnu"></a>
 ### @next/swc-linux-x64-gnu v15.5.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@next/swc-linux-x64-musl"></a>
+### @next/swc-linux-x64-musl v15.5.2
 #### 
 
 ##### Paths
@@ -2217,7 +2217,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@oxc-resolver/binding-linux-x64-gnu"></a>
-### @oxc-resolver/binding-linux-x64-gnu v11.5.2
+### @oxc-resolver/binding-linux-x64-gnu v11.13.0
 #### 
 
 ##### Paths
@@ -2404,7 +2404,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/number"></a>
-### @radix-ui/number v1.1.0
+### @radix-ui/number v1.1.1
 #### 
 
 ##### Paths
@@ -2415,7 +2415,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/primitive"></a>
-### @radix-ui/primitive v1.1.0
+### @radix-ui/primitive v1.1.3
 #### 
 
 ##### Paths
@@ -2426,7 +2426,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-accessible-icon"></a>
-### @radix-ui/react-accessible-icon v1.1.1
+### @radix-ui/react-accessible-icon v1.1.7
 #### 
 
 ##### Paths
@@ -2437,7 +2437,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-accordion"></a>
-### @radix-ui/react-accordion v1.2.2
+### @radix-ui/react-accordion v1.2.12
 #### 
 
 ##### Paths
@@ -2448,7 +2448,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-alert-dialog"></a>
-### @radix-ui/react-alert-dialog v1.1.5
+### @radix-ui/react-alert-dialog v1.1.15
 #### 
 
 ##### Paths
@@ -2459,7 +2459,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-arrow"></a>
-### @radix-ui/react-arrow v1.1.0
+### @radix-ui/react-arrow v1.1.7
 #### 
 
 ##### Paths
@@ -2470,7 +2470,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-aspect-ratio"></a>
-### @radix-ui/react-aspect-ratio v1.1.1
+### @radix-ui/react-aspect-ratio v1.1.7
 #### 
 
 ##### Paths
@@ -2481,7 +2481,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-avatar"></a>
-### @radix-ui/react-avatar v1.1.2
+### @radix-ui/react-avatar v1.1.10
 #### 
 
 ##### Paths
@@ -2492,7 +2492,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-checkbox"></a>
-### @radix-ui/react-checkbox v1.1.3
+### @radix-ui/react-checkbox v1.3.3
 #### 
 
 ##### Paths
@@ -2503,7 +2503,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-collapsible"></a>
-### @radix-ui/react-collapsible v1.1.2
+### @radix-ui/react-collapsible v1.1.12
 #### 
 
 ##### Paths
@@ -2514,7 +2514,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-collection"></a>
-### @radix-ui/react-collection v1.1.0
+### @radix-ui/react-collection v1.1.7
 #### 
 
 ##### Paths
@@ -2525,7 +2525,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-compose-refs"></a>
-### @radix-ui/react-compose-refs v1.1.0
+### @radix-ui/react-compose-refs v1.1.2
 #### 
 
 ##### Paths
@@ -2536,7 +2536,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-context"></a>
-### @radix-ui/react-context v1.1.0
+### @radix-ui/react-context v1.1.2
 #### 
 
 ##### Paths
@@ -2547,7 +2547,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-context-menu"></a>
-### @radix-ui/react-context-menu v2.2.5
+### @radix-ui/react-context-menu v2.2.16
 #### 
 
 ##### Paths
@@ -2558,7 +2558,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-dialog"></a>
-### @radix-ui/react-dialog v1.1.5
+### @radix-ui/react-dialog v1.1.15
 #### 
 
 ##### Paths
@@ -2569,7 +2569,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-direction"></a>
-### @radix-ui/react-direction v1.1.0
+### @radix-ui/react-direction v1.1.1
 #### 
 
 ##### Paths
@@ -2580,7 +2580,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-dismissable-layer"></a>
-### @radix-ui/react-dismissable-layer v1.1.1
+### @radix-ui/react-dismissable-layer v1.1.11
 #### 
 
 ##### Paths
@@ -2591,7 +2591,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-dropdown-menu"></a>
-### @radix-ui/react-dropdown-menu v2.1.4
+### @radix-ui/react-dropdown-menu v2.1.16
 #### 
 
 ##### Paths
@@ -2602,7 +2602,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-focus-guards"></a>
-### @radix-ui/react-focus-guards v1.1.1
+### @radix-ui/react-focus-guards v1.1.3
 #### 
 
 ##### Paths
@@ -2613,7 +2613,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-focus-scope"></a>
-### @radix-ui/react-focus-scope v1.1.1
+### @radix-ui/react-focus-scope v1.1.7
 #### 
 
 ##### Paths
@@ -2624,7 +2624,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-form"></a>
-### @radix-ui/react-form v0.1.1
+### @radix-ui/react-form v0.1.8
 #### 
 
 ##### Paths
@@ -2635,7 +2635,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-hover-card"></a>
-### @radix-ui/react-hover-card v1.1.5
+### @radix-ui/react-hover-card v1.1.15
 #### 
 
 ##### Paths
@@ -2657,7 +2657,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-id"></a>
-### @radix-ui/react-id v1.1.0
+### @radix-ui/react-id v1.1.1
 #### 
 
 ##### Paths
@@ -2668,7 +2668,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-label"></a>
-### @radix-ui/react-label v2.1.1
+### @radix-ui/react-label v2.1.7
 #### 
 
 ##### Paths
@@ -2679,7 +2679,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-menu"></a>
-### @radix-ui/react-menu v2.1.4
+### @radix-ui/react-menu v2.1.16
 #### 
 
 ##### Paths
@@ -2690,7 +2690,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-menubar"></a>
-### @radix-ui/react-menubar v1.1.5
+### @radix-ui/react-menubar v1.1.16
 #### 
 
 ##### Paths
@@ -2701,7 +2701,29 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-navigation-menu"></a>
-### @radix-ui/react-navigation-menu v1.2.4
+### @radix-ui/react-navigation-menu v1.2.14
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@radix-ui/react-one-time-password-field"></a>
+### @radix-ui/react-one-time-password-field v0.1.8
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@radix-ui/react-password-toggle-field"></a>
+### @radix-ui/react-password-toggle-field v0.1.3
 #### 
 
 ##### Paths
@@ -2712,7 +2734,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-popover"></a>
-### @radix-ui/react-popover v1.1.5
+### @radix-ui/react-popover v1.1.15
 #### 
 
 ##### Paths
@@ -2723,7 +2745,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-popper"></a>
-### @radix-ui/react-popper v1.2.0
+### @radix-ui/react-popper v1.2.8
 #### 
 
 ##### Paths
@@ -2734,7 +2756,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-portal"></a>
-### @radix-ui/react-portal v1.1.2
+### @radix-ui/react-portal v1.1.9
 #### 
 
 ##### Paths
@@ -2745,7 +2767,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-presence"></a>
-### @radix-ui/react-presence v1.1.1
+### @radix-ui/react-presence v1.1.5
 #### 
 
 ##### Paths
@@ -2756,7 +2778,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-primitive"></a>
-### @radix-ui/react-primitive v2.0.0
+### @radix-ui/react-primitive v2.1.3
 #### 
 
 ##### Paths
@@ -2767,7 +2789,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-progress"></a>
-### @radix-ui/react-progress v1.1.1
+### @radix-ui/react-progress v1.1.7
 #### 
 
 ##### Paths
@@ -2778,7 +2800,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-radio-group"></a>
-### @radix-ui/react-radio-group v1.2.2
+### @radix-ui/react-radio-group v1.3.8
 #### 
 
 ##### Paths
@@ -2789,7 +2811,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-roving-focus"></a>
-### @radix-ui/react-roving-focus v1.1.1
+### @radix-ui/react-roving-focus v1.1.11
 #### 
 
 ##### Paths
@@ -2800,7 +2822,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-scroll-area"></a>
-### @radix-ui/react-scroll-area v1.2.2
+### @radix-ui/react-scroll-area v1.2.10
 #### 
 
 ##### Paths
@@ -2811,7 +2833,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-select"></a>
-### @radix-ui/react-select v2.1.4
+### @radix-ui/react-select v2.2.6
 #### 
 
 ##### Paths
@@ -2822,7 +2844,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-separator"></a>
-### @radix-ui/react-separator v1.1.1
+### @radix-ui/react-separator v1.1.7
 #### 
 
 ##### Paths
@@ -2833,7 +2855,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-slider"></a>
-### @radix-ui/react-slider v1.2.2
+### @radix-ui/react-slider v1.3.6
 #### 
 
 ##### Paths
@@ -2844,7 +2866,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-slot"></a>
-### @radix-ui/react-slot v1.1.0
+### @radix-ui/react-slot v1.2.3
 #### 
 
 ##### Paths
@@ -2855,7 +2877,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-switch"></a>
-### @radix-ui/react-switch v1.1.2
+### @radix-ui/react-switch v1.2.6
 #### 
 
 ##### Paths
@@ -2866,7 +2888,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-tabs"></a>
-### @radix-ui/react-tabs v1.1.2
+### @radix-ui/react-tabs v1.1.13
 #### 
 
 ##### Paths
@@ -2877,7 +2899,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-toast"></a>
-### @radix-ui/react-toast v1.2.2
+### @radix-ui/react-toast v1.2.15
 #### 
 
 ##### Paths
@@ -2888,7 +2910,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-toggle"></a>
-### @radix-ui/react-toggle v1.1.1
+### @radix-ui/react-toggle v1.1.10
 #### 
 
 ##### Paths
@@ -2899,7 +2921,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-toggle-group"></a>
-### @radix-ui/react-toggle-group v1.1.1
+### @radix-ui/react-toggle-group v1.1.11
 #### 
 
 ##### Paths
@@ -2910,7 +2932,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-toolbar"></a>
-### @radix-ui/react-toolbar v1.1.1
+### @radix-ui/react-toolbar v1.1.11
 #### 
 
 ##### Paths
@@ -2921,7 +2943,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-tooltip"></a>
-### @radix-ui/react-tooltip v1.1.4
+### @radix-ui/react-tooltip v1.2.8
 #### 
 
 ##### Paths
@@ -2932,7 +2954,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-use-callback-ref"></a>
-### @radix-ui/react-use-callback-ref v1.1.0
+### @radix-ui/react-use-callback-ref v1.1.1
 #### 
 
 ##### Paths
@@ -2943,7 +2965,18 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-use-controllable-state"></a>
-### @radix-ui/react-use-controllable-state v1.1.0
+### @radix-ui/react-use-controllable-state v1.2.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@radix-ui/react-use-effect-event"></a>
+### @radix-ui/react-use-effect-event v0.0.2
 #### 
 
 ##### Paths
@@ -2954,7 +2987,18 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-use-escape-keydown"></a>
-### @radix-ui/react-use-escape-keydown v1.1.0
+### @radix-ui/react-use-escape-keydown v1.1.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@radix-ui/react-use-is-hydrated"></a>
+### @radix-ui/react-use-is-hydrated v0.1.0
 #### 
 
 ##### Paths
@@ -2965,7 +3009,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-use-layout-effect"></a>
-### @radix-ui/react-use-layout-effect v1.1.0
+### @radix-ui/react-use-layout-effect v1.1.1
 #### 
 
 ##### Paths
@@ -2976,7 +3020,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-use-previous"></a>
-### @radix-ui/react-use-previous v1.1.0
+### @radix-ui/react-use-previous v1.1.1
 #### 
 
 ##### Paths
@@ -2987,7 +3031,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-use-rect"></a>
-### @radix-ui/react-use-rect v1.1.0
+### @radix-ui/react-use-rect v1.1.1
 #### 
 
 ##### Paths
@@ -2998,7 +3042,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-use-size"></a>
-### @radix-ui/react-use-size v1.1.0
+### @radix-ui/react-use-size v1.1.1
 #### 
 
 ##### Paths
@@ -3009,7 +3053,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-visually-hidden"></a>
-### @radix-ui/react-visually-hidden v1.1.0
+### @radix-ui/react-visually-hidden v1.2.3
 #### 
 
 ##### Paths
@@ -3020,7 +3064,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/rect"></a>
-### @radix-ui/rect v1.1.0
+### @radix-ui/rect v1.1.1
 #### 
 
 ##### Paths
@@ -3065,6 +3109,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@rollup/rollup-linux-x64-gnu"></a>
 ### @rollup/rollup-linux-x64-gnu v4.35.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@rollup/rollup-linux-x64-musl"></a>
+### @rollup/rollup-linux-x64-musl v4.35.0
 #### 
 
 ##### Paths
@@ -3945,6 +4000,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@tailwindcss/oxide-linux-x64-gnu"></a>
 ### @tailwindcss/oxide-linux-x64-gnu v4.1.10
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@tailwindcss/oxide-linux-x64-musl"></a>
+### @tailwindcss/oxide-linux-x64-musl v4.1.10
 #### 
 
 ##### Paths
@@ -7017,7 +7083,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="formatly"></a>
-### formatly v0.2.4
+### formatly v0.3.0
 #### 
 
 ##### Paths
@@ -7039,7 +7105,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="framer-motion"></a>
-### framer-motion v12.4.3
+### framer-motion v12.23.24
 #### 
 
 ##### Paths
@@ -8095,7 +8161,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="knip"></a>
-### knip v5.61.3
+### knip v5.67.1
 #### 
 
 ##### Paths
@@ -8151,6 +8217,17 @@ BlueOak-1.0.0 permitted
 
 <a name="lightningcss-linux-x64-gnu"></a>
 ### lightningcss-linux-x64-gnu v1.30.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt">Mozilla Public License 2.0</a> permitted
+
+
+
+<a name="lightningcss-linux-x64-musl"></a>
+### lightningcss-linux-x64-musl v1.30.1
 #### 
 
 ##### Paths
@@ -9052,7 +9129,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="motion"></a>
-### motion v12.3.1
+### motion v12.23.24
 #### 
 
 ##### Paths
@@ -9063,7 +9140,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="motion-dom"></a>
-### motion-dom v12.0.0
+### motion-dom v12.23.23
 #### 
 
 ##### Paths
@@ -9074,7 +9151,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="motion-utils"></a>
-### motion-utils v12.0.0
+### motion-utils v12.23.6
 #### 
 
 ##### Paths
@@ -9141,17 +9218,6 @@ BlueOak-1.0.0 permitted
 
 <a name="nanoid"></a>
 ### nanoid v3.3.8
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="napi-postinstall"></a>
-### napi-postinstall v0.3.0
 #### 
 
 ##### Paths
@@ -9415,7 +9481,7 @@ MIT-0 permitted
 
 
 <a name="oxc-resolver"></a>
-### oxc-resolver v11.5.2
+### oxc-resolver v11.13.0
 #### 
 
 ##### Paths
@@ -10284,7 +10350,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="radix-ui"></a>
-### radix-ui v1.1.2
+### radix-ui v1.4.3
 #### 
 
 ##### Paths
@@ -10350,7 +10416,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="react-remove-scroll"></a>
-### react-remove-scroll v2.6.2
+### react-remove-scroll v2.7.1
 #### 
 
 ##### Paths
@@ -12470,7 +12536,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="zod"></a>
-### zod v3.25.28
+### zod v3.25.76
 #### 
 
 ##### Paths

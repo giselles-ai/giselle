@@ -1,4 +1,4 @@
-import type { GenerationUsage } from "../../../concepts/generation";
+import type { GenerationUsage } from "@giselles-ai/protocol";
 
 function isFiniteNumber(value: unknown): value is number {
 	return typeof value === "number" && Number.isFinite(value);

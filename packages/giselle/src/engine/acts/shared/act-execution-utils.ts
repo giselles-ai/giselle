@@ -1,9 +1,12 @@
-import type { Act, ActId, Sequence, Step } from "../../../concepts/act";
 import type {
+	Act,
+	ActId,
 	Generation,
 	GenerationId,
 	GenerationStatus,
-} from "../../../concepts/generation";
+	Sequence,
+	Step,
+} from "@giselles-ai/protocol";
 import { patches } from "../object/patch-creators";
 import type { Patch } from "../object/patch-object";
 

@@ -22,14 +22,17 @@
 		}
 	},
 	"devDependencies": {
-		"@giselles-ai/utils": "workspace:*",
 		"@giselles-ai/tsconfig": "workspace:*",
+		"@giselles-ai/utils": "workspace:*",
 		"tsup": "catalog:",
 		"vitest": "catalog:"
 	},
 	"dependencies": {
+		"@ai-sdk/provider": "catalog:",
 		"@giselles-ai/flow": "workspace:^",
 		"@giselles-ai/language-model": "workspace:^",
+		"@octokit/webhooks": "catalog:",
+		"ai": "catalog:",
 		"zod": "catalog:"
 	}
 }

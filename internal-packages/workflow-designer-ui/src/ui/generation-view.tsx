@@ -1,7 +1,7 @@
 "use client";
 
-import type { Generation } from "@giselles-ai/giselle";
 import { useGiselleEngine } from "@giselles-ai/giselle/react";
+import type { Generation } from "@giselles-ai/protocol";
 import type { UIMessage } from "ai";
 import { ChevronRightIcon } from "lucide-react";
 import { Accordion } from "radix-ui";

@@ -8,7 +8,8 @@ type ButtonStyle =
 	| "glass"
 	| "outline"
 	| "link"
-	| "primary";
+	| "primary"
+	| "destructive";
 type ButtonSize = "compact" | "default" | "large";
 interface ButtonProps
 	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "style"> {
@@ -50,6 +51,7 @@ export function Button({
 				"data-[style=primary]:border data-[style=primary]:border-black/70",
 				"data-[style=primary]:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)]",
 				"data-[style=primary]:transition-all data-[style=primary]:duration-200 data-[style=primary]:active:scale-[0.98]",
+				"data-[style=destructive]:bg-error-900/10 data-[style=destructive]:text-error-900 data-[style=destructive]:border data-[style=destructive]:border-error-900/20 data-[style=destructive]:hover:bg-error-900/20",
 				"cursor-pointer transition-colors",
 				className,
 			)}
@@ -64,14 +66,35 @@ export function Button({
 				</>
 			)}
 			{leftIcon && (
-				<div className="*:size-[13px] *:text-[var(--color-text)]">
+				<div
+					className={clsx(
+						"*:size-[13px]",
+						style === "destructive" ? "*:text-error-900" : "*:text-text",
+					)}
+				>
 					{leftIcon}
 				</div>
 			)}
 			<Slot.Slottable>
-				<div className="text-[13px] text-[var(--color-text)]">{children}</div>
+				<div
+					className={clsx(
+						"text-[13px]",
+						style === "destructive" ? "text-error-900" : "text-text",
+					)}
+				>
+					{children}
+				</div>
 			</Slot.Slottable>
-			{rightIcon && <div className="*:size-[13px]">{rightIcon}</div>}
+			{rightIcon && (
+				<div
+					className={clsx(
+						"*:size-[13px]",
+						style === "destructive" ? "*:text-error-900" : "*:text-text",
+					)}
+				>
+					{rightIcon}
+				</div>
+			)}
 		</Comp>
 	);
 }

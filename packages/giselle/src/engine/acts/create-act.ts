@@ -1,27 +1,24 @@
 import {
+	Act,
+	ActId,
+	ActIndexObject,
 	ConnectionId,
+	type CreatedGeneration,
+	GenerationContextInput,
+	GenerationId,
+	GenerationOrigin,
 	isOperationNode,
 	isTriggerNode,
 	Node,
 	NodeId,
+	type Sequence,
+	SequenceId,
+	type Step,
+	StepId,
 	Workspace,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { z } from "zod/v4";
-import {
-	Act,
-	ActId,
-	ActIndexObject,
-	type Sequence,
-	SequenceId,
-	type Step,
-} from "../../concepts/act";
-import {
-	type CreatedGeneration,
-	GenerationContextInput,
-	GenerationOrigin,
-} from "../../concepts/generation";
-import { GenerationId, StepId } from "../../concepts/identifiers";
 import { defaultName } from "../../utils";
 import { setGeneration } from "../generations";
 import type { GiselleEngineContext } from "../types";

@@ -1,4 +1,4 @@
-import type { Generation } from "@giselles-ai/giselle";
+import type { Generation } from "@giselles-ai/protocol";
 import {
 	isImageGenerationNode,
 	isTextGenerationNode,
