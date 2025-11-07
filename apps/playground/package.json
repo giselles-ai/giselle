@@ -12,6 +12,7 @@
 		"build": "next build --turbopack",
 		"start": "next start",
 		"lint": "next lint",
+		"typegen": "next typegen",
 		"check-types": "tsc --noEmit",
 		"format": "biome check --write ."
 	},
