@@ -268,12 +268,12 @@ export async function ingestDocument(
 			for (const embeddingProfileId of embeddingProfileIds) {
 				signal?.throwIfAborted();
 
-				const embeddingComplete =
-					telemetryContext &&
-					createDocumentIngestEmbeddingCallback({
-						...telemetryContext,
-						embeddingProfileId,
-					});
+				const embeddingComplete = telemetryContext
+					? createDocumentIngestEmbeddingCallback({
+							...telemetryContext,
+							embeddingProfileId,
+						})
+					: undefined;
 
 				const embeddingResult = await generateEmbeddings({
 					chunks: chunkResult.chunks,
