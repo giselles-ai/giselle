@@ -367,7 +367,7 @@ describe("createPipeline with differential ingestion", () => {
 				{
 					documentKey: "1:title_body:issue-1",
 					version: "2024-01-10T10:00:00.000Z", // Same version as contentEditedAt
-					metadataVersion: "OPEN:REOPEND:2024-01-20T10:00:00Z", // Old metadata (different from current CLOSED:COMPLETED:2024-01-20T10:00:00Z)
+					metadataVersion: "OPEN:REOPENED:2024-01-20T10:00:00Z", // Old metadata (different from current CLOSED:COMPLETED:2024-01-20T10:00:00Z)
 				},
 			]),
 			updateMetadata: vi.fn(async () => {}),
