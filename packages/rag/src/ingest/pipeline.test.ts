@@ -68,6 +68,7 @@ describe("createPipeline", () => {
 			delete: vi.fn(async () => {}),
 			deleteBatch: vi.fn(async () => {}),
 			getDocumentVersions: vi.fn(async () => []),
+			updateMetadata: vi.fn(async () => {}),
 		};
 	});
 
@@ -194,6 +195,7 @@ describe("createPipeline with differential ingestion", () => {
 				{ documentKey: "file2.txt", version: "sha2-same" },
 				{ documentKey: "file4.txt", version: "sha4-deleted" },
 			]),
+			updateMetadata: vi.fn(async () => {}),
 		};
 	});
 
