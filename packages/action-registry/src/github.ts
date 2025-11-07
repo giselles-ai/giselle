@@ -1,173 +1,93 @@
-import {
-	GitHubActionCommand,
-	type GitHubActionCommandId,
-	GithubCreateDiscussionCommentActionCommand,
-	GithubCreateIssueActionCommand,
-	GithubCreateIssueCommentActionCommand,
-	GithubCreatePullRequestCommentActionCommand,
-	GithubGetDiscussionActionCommand,
-	GithubReplyPullRequestReviewCommentActionCommand,
-	GithubUpdatePullRequestActionCommand,
-} from "@giselles-ai/protocol";
 import z from "zod/v4";
 
-interface PayloadItem {
-	key: string;
+interface GitHubAction {
+	id: string;
 	label: string;
-	type: "string" | "number";
-	optional?: boolean;
+	payload: z.ZodObject;
 }
 
-const githubActionRegistry = z.registry<{
-	id: GitHubActionCommandId;
-	label: string;
-	payload: PayloadItem[];
-}>();
-
-githubActionRegistry.add(GithubCreateIssueActionCommand, {
-	id: GithubCreateIssueActionCommand.shape.id.value,
+export const githubCreateIssueAction = {
+	id: "github.create.issue",
 	label: "Create Issue",
-	payload: [
-		{
-			key: "title",
-			label: "Title",
-			type: "string",
-		},
-		{
-			key: "body",
-			label: "Body",
-			type: "string",
-		},
-	],
-});
+	payload: z.object({
+		title: z.string().meta({ label: "Title" }),
+		body: z.string().meta({ label: "Body" }),
+	}),
+} as const satisfies GitHubAction;
 
-githubActionRegistry.add(GithubCreateDiscussionCommentActionCommand, {
-	id: GithubCreateDiscussionCommentActionCommand.shape.id.value,
-	label: "Create Discussion Comment",
-	payload: [
-		{
-			key: "discussionNumber",
-			label: "Discussion number",
-			type: "number",
-		},
-		{
-			key: "body",
-			label: "Body",
-			type: "string",
-		},
-		{
-			key: "commentId",
-			label: "Comment ID",
-			type: "number",
-			optional: true,
-		},
-	],
-});
-
-githubActionRegistry.add(GithubCreateIssueCommentActionCommand, {
-	id: GithubCreateIssueCommentActionCommand.shape.id.value,
+export const githubCreateIssueCommentAction = {
+	id: "github.create.issueComment",
 	label: "Create Issue Comment",
-	payload: [
-		{
-			key: "issueNumber",
-			label: "Issue number",
-			type: "number",
-		},
-		{
-			key: "body",
-			label: "Body",
-			type: "string",
-		},
-	],
-});
+	payload: z.object({
+		issueNumber: z.coerce.number().meta({ label: "Issue number" }),
+		body: z.string().meta({ label: "Body" }),
+	}),
+} as const satisfies GitHubAction;
 
-githubActionRegistry.add(GithubCreatePullRequestCommentActionCommand, {
-	id: GithubCreatePullRequestCommentActionCommand.shape.id.value,
+export const githubCreatePullRequestCommentAction = {
+	id: "github.create.pullRequestComment",
 	label: "Create Pull Request Comment",
-	payload: [
-		{
-			key: "pullRequestNumber",
-			label: "Pull Request number",
-			type: "number",
-		},
-		{
-			key: "body",
-			label: "Body",
-			type: "string",
-		},
-	],
-});
+	payload: z.object({
+		pullNumber: z.coerce.number().meta({ label: "Pull Request number" }),
+		body: z.string().meta({ label: "Body" }),
+	}),
+} as const satisfies GitHubAction;
 
-githubActionRegistry.add(GithubGetDiscussionActionCommand, {
-	id: GithubGetDiscussionActionCommand.shape.id.value,
-	label: "Get Discussion",
-	payload: [
-		{
-			key: "discussionNumber",
-			label: "Discussion number",
-			type: "number",
-		},
-	],
-});
-
-githubActionRegistry.add(GithubReplyPullRequestReviewCommentActionCommand, {
-	id: GithubReplyPullRequestReviewCommentActionCommand.shape.id.value,
-	label: "Reply Pull Request Review Comment",
-	payload: [
-		{
-			key: "pullRequestNumber",
-			label: "Pull Request number",
-			type: "number",
-		},
-		{
-			key: "commentId",
-			label: "Comment ID",
-			type: "number",
-		},
-		{
-			key: "body",
-			label: "Body",
-			type: "string",
-		},
-	],
-});
-
-githubActionRegistry.add(GithubUpdatePullRequestActionCommand, {
-	id: GithubUpdatePullRequestActionCommand.shape.id.value,
+export const githubUpdatePullRequestAction = {
+	id: "github.update.pullRequest",
 	label: "Update Pull Request",
-	payload: [
-		{
-			key: "pullRequestNumber",
-			label: "Pull Request number",
-			type: "number",
-		},
-		{
-			key: "title",
-			label: "Title",
-			type: "string",
-		},
-		{
-			key: "body",
-			label: "Body",
-			type: "string",
-		},
-	],
-});
+	payload: z.object({
+		pullNumber: z.coerce.number().meta({ label: "Pull Request number" }),
+		title: z.string().meta({ label: "Title" }),
+		body: z.string().meta({ label: "Body" }),
+	}),
+} as const satisfies GitHubAction;
 
-export const githubActionOptions = GitHubActionCommand.options
-	.map((githubActionSchema) => {
-		const registryData = githubActionRegistry.get(githubActionSchema);
-		if (registryData === undefined) {
-			return null;
-		}
-		return registryData;
-	})
-	.filter((registry) => registry !== null);
+export const githubReplyPullRequestReviewCommentAction = {
+	id: "github.reply.pullRequestReviewComment",
+	label: "Reply Pull Request Review Comment",
+	payload: z.object({
+		pullNumber: z.coerce.number().meta({ label: "Pull Request number" }),
+		commentId: z.coerce.number().meta({ label: "Comment ID" }),
+		body: z.string().meta({ label: "Body" }),
+	}),
+} as const satisfies GitHubAction;
 
-export function findGitHubActionOption(
-	githubActionCommandId: GitHubActionCommandId,
-) {
-	return githubActionOptions.find(
-		(option) => option.id === githubActionCommandId,
-	);
-}
+export const githubGetDiscussionAction = {
+	id: "github.get.discussion",
+	label: "Get Discussion",
+	payload: z.object({
+		discussionNumber: z.coerce.number().meta({ label: "Discussion number" }),
+	}),
+} as const satisfies GitHubAction;
+
+export const githubCreateDiscussionCommentAction = {
+	id: "github.create.discussionComment",
+	label: "Create Discussion Comment",
+	payload: z.object({
+		discussionNumber: z.coerce.number().meta({ label: "Discussion number" }),
+		body: z.string().meta({ label: "Body" }),
+		commentId: z.coerce.number().optional().meta({ label: "Comment ID" }),
+	}),
+} as const satisfies GitHubAction;
+
+export const githubActions = {
+	// issues
+	[githubCreateIssueAction.id]: githubCreateIssueAction,
+	[githubCreateIssueCommentAction.id]: githubCreateIssueCommentAction,
+
+	// pull requests
+	[githubCreatePullRequestCommentAction.id]:
+		githubCreatePullRequestCommentAction,
+	[githubUpdatePullRequestAction.id]: githubUpdatePullRequestAction,
+	[githubReplyPullRequestReviewCommentAction.id]:
+		githubReplyPullRequestReviewCommentAction,
+
+	// discussions
+	[githubGetDiscussionAction.id]: githubGetDiscussionAction,
+	[githubCreateDiscussionCommentAction.id]: githubCreateDiscussionCommentAction,
+} as const;
+
+export type GitHubActionId = keyof typeof githubActions;
+
+export const githubActionEntries = Object.values(githubActions);

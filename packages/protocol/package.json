@@ -29,6 +29,7 @@
 	},
 	"dependencies": {
 		"@ai-sdk/provider": "catalog:",
+		"@giselles-ai/action-registry": "workspace:*",
 		"@giselles-ai/language-model": "workspace:^",
 		"@octokit/webhooks": "catalog:",
 		"ai": "catalog:",

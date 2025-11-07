@@ -1,49 +1,50 @@
+import type { GitHubActionId } from "@giselles-ai/action-registry";
 import { z } from "zod/v4";
-import type { GitHubActionCommandId } from "../../action";
 
-const GitHubActionCommandUnconfiguredState = z.object({
+const GitHubActionUnconfiguredState = z.object({
 	status: z.literal("unconfigured"),
 });
-export type GitHubActionCommandUnconfiguredState = z.infer<
-	typeof GitHubActionCommandUnconfiguredState
+export type GitHubActionUnconfiguredState = z.infer<
+	typeof GitHubActionUnconfiguredState
 >;
 
-const GitHubActionCommandConfiguredState = z.object({
+const GitHubActionConfiguredState = z.object({
 	status: z.literal("configured"),
-	commandId: z.custom<GitHubActionCommandId>(),
+	/** @deprecated commandId is an old name, so we want to change it to ActionId */
+	commandId: z.custom<GitHubActionId>(),
 	installationId: z.number(),
 	repositoryNodeId: z.string(),
 });
-export type GitHubActionCommandConfiguredState = z.infer<
-	typeof GitHubActionCommandConfiguredState
+export type GitHubActionConfiguredState = z.infer<
+	typeof GitHubActionConfiguredState
 >;
 
-const GitHubActionCommandReconfiguringState = z.object({
+const GitHubActionReconfiguringState = z.object({
 	status: z.literal("reconfiguring"),
-	commandId: z.custom<GitHubActionCommandId>(),
+	/** @deprecated commandId is an old name, so we want to change it to ActionId */
+	commandId: z.custom<GitHubActionId>(),
 });
-export type GitHubActionCommandReconfiguringState = z.infer<
-	typeof GitHubActionCommandReconfiguringState
+export type GitHubActionReconfiguringState = z.infer<
+	typeof GitHubActionReconfiguringState
 >;
 
-const GitHubActionCommandData = z.object({
+const GitHubActionData = z.object({
 	provider: z.literal("github"),
 	state: z.discriminatedUnion("status", [
-		GitHubActionCommandUnconfiguredState,
-		GitHubActionCommandConfiguredState,
-		GitHubActionCommandReconfiguringState,
+		GitHubActionUnconfiguredState,
+		GitHubActionConfiguredState,
+		GitHubActionReconfiguringState,
 	]),
 });
-export type GitHubActionCommandData = z.infer<typeof GitHubActionCommandData>;
+export type GitHubActionData = z.infer<typeof GitHubActionData>;
 
-const ActionCommandData = z.discriminatedUnion("provider", [
-	GitHubActionCommandData,
-]);
-export type ActionCommandData = z.infer<typeof ActionCommandData>;
+const ActionData = z.discriminatedUnion("provider", [GitHubActionData]);
+export type ActionData = z.infer<typeof ActionData>;
 
 export const ActionContent = z.object({
 	type: z.literal("action"),
-	command: ActionCommandData,
+	/** @deprecated command is an old name, so we want to change it to data */
+	command: ActionData,
 });
 export type ActionContent = z.infer<typeof ActionContent>;
 

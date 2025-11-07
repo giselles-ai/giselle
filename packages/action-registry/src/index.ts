@@ -1,4 +1,4 @@
-import { githubActionOptions } from "./github";
+import { githubActions } from "./github";
 
 export * from "./github";
 
@@ -6,7 +6,7 @@ export const actionRegistry = [
 	{
 		provider: "github",
 		label: "GitHub Action",
-		actionOptions: githubActionOptions,
+		actions: githubActions,
 	},
 ] as const;
 
