@@ -28,6 +28,7 @@ import type {
 	DocumentVectorStoreId,
 	DocumentVectorStoreSourceId,
 } from "@/packages/types";
+import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 
 export const runtime = "nodejs";
@@ -50,6 +51,14 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 async function fetchTeam() {
 	try {
 		return await fetchCurrentTeam();
+	} catch (_error) {
+		return null;
+	}
+}
+
+async function fetchUser() {
+	try {
+		return await fetchCurrentUser();
 	} catch (_error) {
 		return null;
 	}
@@ -155,6 +164,10 @@ export async function POST(
 ) {
 	const team = await fetchTeam();
 	if (!team) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
+	const user = await fetchUser();
+	if (!user) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
@@ -295,6 +308,7 @@ export async function POST(
 			after(() =>
 				ingestDocument(sourceId, {
 					embeddingProfileIds: store.embeddingProfileIds,
+					trigger: { type: "manual", userId: user.id },
 				}).catch((error) => {
 					console.error(`Failed to ingest document ${sourceId}:`, error);
 				}),
