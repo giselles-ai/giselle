@@ -28,7 +28,7 @@
 		"test": {},
 		"typegen": {},
 		"check-types": {
-			"dependsOn": ["typegen"]
+			"dependsOn": ["^check-types", "typegen"]
 		}
 	}
 }
