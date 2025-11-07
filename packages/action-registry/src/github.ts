@@ -142,6 +142,11 @@ githubActionRegistry.add(GithubUpdatePullRequestActionCommand, {
 			type: "number",
 		},
 		{
+			key: "title",
+			label: "Title",
+			type: "string",
+		},
+		{
 			key: "body",
 			label: "Body",
 			type: "string",
