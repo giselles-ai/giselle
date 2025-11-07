@@ -15,7 +15,7 @@ export const TriggerContext = createContext<TriggerContextValue | undefined>(
 export function useTrigger() {
 	const context = useContext(TriggerContext);
 	if (context === undefined) {
-		throw new Error("useFlowTrigger must be used within a FlowTriggerProvider");
+		throw new Error("useTrigger must be used within a TriggerProvider");
 	}
 	return context;
 }

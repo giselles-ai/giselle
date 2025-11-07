@@ -134,7 +134,7 @@ githubActionRegistry.add(GithubReplyPullRequestReviewCommentActionCommand, {
 
 githubActionRegistry.add(GithubUpdatePullRequestActionCommand, {
 	id: GithubUpdatePullRequestActionCommand.shape.id.value,
-	label: "Create Pull Request Review Comment",
+	label: "Update Pull Request",
 	payload: [
 		{
 			key: "pullRequestNumber",
