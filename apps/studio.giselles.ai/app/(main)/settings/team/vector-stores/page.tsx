@@ -8,7 +8,6 @@ import {
 	updateRepositoryIndex,
 } from "./actions";
 import { getGitHubRepositoryIndexes, getInstallationsWithRepos } from "./data";
-import { VectorStoresNavigationLayout } from "./navigation-layout";
 import { RepositoryList } from "./repository-list";
 import { RepositoryRegistrationDialog } from "./repository-registration-dialog";
 import {
@@ -62,14 +61,12 @@ export default async function TeamVectorStorePage() {
 					/>
 				</div>
 			</div>
-			<VectorStoresNavigationLayout>
-				<RepositoryList
-					repositories={repositoryIndexes}
-					deleteRepositoryIndexAction={deleteRepositoryIndex}
-					triggerManualIngestAction={triggerManualIngest}
-					updateRepositoryIndexAction={updateRepositoryIndex}
-				/>
-			</VectorStoresNavigationLayout>
+			<RepositoryList
+				repositories={repositoryIndexes}
+				deleteRepositoryIndexAction={deleteRepositoryIndex}
+				triggerManualIngestAction={triggerManualIngest}
+				updateRepositoryIndexAction={updateRepositoryIndex}
+			/>
 		</div>
 	);
 }
