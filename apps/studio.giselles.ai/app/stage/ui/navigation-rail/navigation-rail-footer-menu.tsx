@@ -50,9 +50,9 @@ export function NavigationRailFooterMenu({
 
 	// Plan-aware Create team: allow free only when user doesn't already have a free team
 	// and is not an internal user (simple domain check).
-	const email = (user as any).email as string | undefined;
+	const email = user.email;
 	const isInternal = !!email && /@route06\.co\.jp$/.test(email);
-	const allTeams = ((user as any).allTeams ?? []) as Array<{ isPro?: boolean }>;
+	const allTeams = user.allTeams ?? [];
 	const hasFreeTeam = allTeams.some((t) => t.isPro === false);
 	const canCreateFreeTeam = !isInternal && !hasFreeTeam;
 
