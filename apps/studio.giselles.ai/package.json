@@ -15,6 +15,7 @@
 		"lint": "next lint",
 		"test": "vitest run",
 		"test:e2e": "playwright test",
+		"typegen": "next typegen",
 		"check-types": "tsc --noEmit"
 	},
 	"packageManager": "pnpm@10.16.0",
