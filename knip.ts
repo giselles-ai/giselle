@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import type { KnipConfig } from "knip";
 
 import playgroundAppConfig from "./apps/playground/next.config";
@@ -82,22 +84,57 @@ const nextPredefinedExternalPackages = [
 	"zeromq",
 ];
 
+function getDepsFor(workspaceRelPath: string): Set<string> {
+	const pkgPath = path.join(__dirname, workspaceRelPath, "package.json");
+	try {
+		const json = JSON.parse(fs.readFileSync(pkgPath, "utf8")) as {
+			dependencies?: Record<string, string>;
+			devDependencies?: Record<string, string>;
+		};
+		return new Set([
+			...Object.keys(json.dependencies ?? {}),
+			...Object.keys(json.devDependencies ?? {}),
+		]);
+	} catch {
+		return new Set();
+	}
+}
+
+function filterExisting(
+	pkgs: string[] | undefined,
+	deps: Set<string>,
+): string[] {
+	if (!pkgs?.length) return [];
+	return pkgs.filter((name) => deps.has(name));
+}
+
 const config: KnipConfig = {
 	biome: false,
 	workspaces: {
 		"apps/playground": {
 			ignoreDependencies: [
-				...(playgroundAppConfig.serverExternalPackages ?? []),
-				...nextPredefinedExternalPackages,
-				"tailwindcss",
+				...filterExisting(
+					playgroundAppConfig.serverExternalPackages,
+					getDepsFor("apps/playground"),
+				),
+				...filterExisting(
+					nextPredefinedExternalPackages,
+					getDepsFor("apps/playground"),
+				),
 			],
 		},
 		"apps/studio.giselles.ai": {
 			entry: ["tests/e2e/global-setup.ts"],
 			ignore: ["scripts/**", "trigger.config.ts"],
 			ignoreDependencies: [
-				...serverExternalPackages,
-				...nextPredefinedExternalPackages,
+				...filterExisting(
+					serverExternalPackages,
+					getDepsFor("apps/studio.giselles.ai"),
+				),
+				...filterExisting(
+					nextPredefinedExternalPackages,
+					getDepsFor("apps/studio.giselles.ai"),
+				),
 			],
 		},
 		"apps/ui.giselles.ai": {

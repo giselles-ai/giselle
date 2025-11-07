@@ -15,35 +15,35 @@ function getNodeIconColor(node: NodeLike): string {
 	if (node.type === "operation") {
 		// handle out-of-union runtime type safely without widening types
 		if (`${node.content.type}` === "vectorStore") {
-			return "text-[var(--color-background)]";
+			return "text-background";
 		}
 		switch (node.content.type) {
 			case "textGeneration":
 			case "imageGeneration":
 			case "action":
-				return "text-[var(--color-text-inverse)]";
+				return "text-inverse";
 			case "trigger":
 			case "query":
-				return "text-[var(--color-background)]";
+				return "text-background";
 			default:
-				return "text-[var(--color-text-inverse)]";
+				return "text-inverse";
 		}
 	}
 	if (node.type === "variable") {
 		switch (node.content.type) {
 			case "vectorStore":
-				return "text-[var(--color-background)]";
+				return "text-background";
 			case "github":
-				return "text-[var(--color-background)]";
+				return "text-background";
 			case "text":
 			case "file":
 			case "webPage":
-				return "text-[var(--color-background)]";
+				return "text-background";
 			default:
-				return "text-[var(--color-text-inverse)]";
+				return "text-inverse";
 		}
 	}
-	return "text-[var(--color-text-inverse)]";
+	return "text-inverse";
 }
 
 export function PropertiesPanelRoot({ children }: { children: ReactNode }) {

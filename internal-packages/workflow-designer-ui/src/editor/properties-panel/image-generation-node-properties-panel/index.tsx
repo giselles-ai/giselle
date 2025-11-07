@@ -188,7 +188,7 @@ export function ImageGenerationNodePropertiesPanel({
 									setEditorVersion((v) => v + 1);
 								}}
 							>
-								<Minimize2 className="size-[16px] text-[var(--color-text-inverse)]" />
+								<Minimize2 className="size-[16px] text-inverse" />
 							</button>
 						</div>
 						<button
@@ -231,7 +231,7 @@ export function ImageGenerationNodePropertiesPanel({
 								className="size-[32px] rounded-full bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] transition-colors flex items-center justify-center"
 								onClick={() => setIsGenerationExpanded(false)}
 							>
-								<Minimize2 className="size-[16px] text-[var(--color-text-inverse)]" />
+								<Minimize2 className="size-[16px] text-inverse" />
 							</button>
 						</div>
 						<button

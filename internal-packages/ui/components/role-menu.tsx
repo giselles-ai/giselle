@@ -46,7 +46,7 @@ export function RoleMenu({
 					<div className="flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap capitalize">
 						{options.find((o) => o.value === value)?.label ?? value}
 					</div>
-					<ChevronDownIcon className="size-[13px] shrink-0 text-[var(--color-text)] ml-2" />
+					<ChevronDownIcon className="size-[13px] shrink-0 text-text ml-2" />
 				</button>
 			}
 		>
@@ -59,7 +59,7 @@ export function RoleMenu({
 							disabled={!canEdit}
 							onClick={() => canEdit && onChange?.(opt.value)}
 							className={clsx(
-								"text-[var(--color-text)] outline-none cursor-pointer hover:bg-ghost-element-hover",
+								"text-text outline-none cursor-pointer hover:bg-ghost-element-hover",
 								"rounded-[4px] px-[8px] py-[6px] text-[14px] w-full text-left capitalize",
 								!canEdit && "opacity-50 cursor-not-allowed pointer-events-none",
 								"flex items-center gap-2",

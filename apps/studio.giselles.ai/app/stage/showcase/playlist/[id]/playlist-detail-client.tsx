@@ -257,7 +257,7 @@ export function PlaylistDetailClient({ playlist }: PlaylistDetailClientProps) {
 							{playlist.apps.map((app) => (
 								<div
 									key={app.id}
-									className="group flex items-center justify-between px-3 md:px-2 py-4 md:py-3 first:border-t-0 border-t-[0.5px] border-[var(--color-border)] cursor-pointer"
+									className="group flex items-center justify-between px-3 md:px-2 py-4 md:py-3 first:border-t-0 border-t-[0.5px] border-border cursor-pointer"
 								>
 									<div className="flex items-center gap-3 min-w-0 flex-1">
 										<div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 transition-all group-hover:bg-primary-100/20">

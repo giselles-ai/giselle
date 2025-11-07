@@ -31,7 +31,7 @@ export function GitHubAuthRequiredCard() {
 					<h4 className="text-text font-medium text-[18px] leading-[21.6px] font-sans mb-2">
 						Please authenticate your GitHub account.
 					</h4>
-					<p className="text-[var(--color-link-muted)] text-[14px] leading-[20.4px] font-geist text-center mb-4">
+					<p className="text-link-muted text-[14px] leading-[20.4px] font-geist text-center mb-4">
 						To use Vector Stores, you need to authenticate your GitHub account.
 						Please authenticate from your account settings page.
 					</p>
@@ -80,7 +80,7 @@ export function GitHubAppInstallRequiredCard() {
 					<h4 className="text-text font-medium text-[18px] leading-[21.6px] font-sans mb-2">
 						Please install Giselle's GitHub App.
 					</h4>
-					<p className="text-[var(--color-link-muted)] text-[14px] leading-[20.4px] font-geist text-center mb-4">
+					<p className="text-link-muted text-[14px] leading-[20.4px] font-geist text-center mb-4">
 						To use Vector Stores, you need to install Giselle's GitHub App.
 						Please install from your integrations settings page.
 					</p>

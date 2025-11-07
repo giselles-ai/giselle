@@ -25,7 +25,7 @@ export function SearchInput({
 					// colors (inverse-ready via semantic tokens)
 					"bg-bg text-text border border-border",
 					// placeholder color stays as-is to preserve current opacity balance
-					"placeholder:text-[var(--color-link-muted)]",
+					"placeholder:text-link-muted",
 					// interaction states
 					"shadow-none transition-colors",
 					"hover:bg-surface/10",

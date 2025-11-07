@@ -348,10 +348,10 @@ export function PromptPanel({
 			<button
 				type="button"
 				onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
-				className="flex items-center gap-[8px] w-full text-left text-[var(--color-text-inverse)] hover:text-primary-900 transition-colors"
+				className="flex items-center gap-[8px] w-full text-left text-inverse hover:text-primary-900 transition-colors"
 			>
 				<ChevronRightIcon
-					className={`size-[14px] text-[var(--color-link-muted)] transition-transform ${isAdvancedOpen ? "rotate-90" : ""}`}
+					className={`size-[14px] text-link-muted transition-transform ${isAdvancedOpen ? "rotate-90" : ""}`}
 				/>
 				<SettingLabel inline className="mb-0">
 					Advanced options

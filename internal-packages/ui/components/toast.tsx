@@ -165,8 +165,8 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 									className={clsx(
 										"text-[14px] font-medium",
 										// color tokens for types
-										"group-data-[type=error]:text-[var(--color-error)]",
-										"group-data-[type=warning]:text-[var(--color-warning)]",
+										"group-data-[type=error]:text-error",
+										"group-data-[type=warning]:text-warning",
 									)}
 								>
 									{toast.message}

@@ -41,7 +41,7 @@ export function Button({
 				"data-[size=compact]:px-[4px] data-[size=compact]:py-[0px] data-[size=compact]:rounded-[2px] data-[size=compact]:gap-[2px]",
 				"data-[style=subtle]:hover:bg-ghost-element-hover",
 				"data-[style=filled]:bg-background data-[style=filled]:border data-[style=filled]:border-border data-[style=filled]:hover:bg-ghost-element-hover",
-				"data-[style=solid]:bg-(image:--solid-button-bg) data-[style=solid]:text-[var(--color-text-inverse)] data-[style=solid]:border data-[style=solid]:border-button-solid-border data-[style=solid]:shadow-(--solid-button-shadow) data-[style=solid]:hover:bg-primary-800",
+				"data-[style=solid]:bg-(image:--solid-button-bg) data-[style=solid]:text-inverse data-[style=solid]:border data-[style=solid]:border-button-solid-border data-[style=solid]:shadow-(--solid-button-shadow) data-[style=solid]:hover:bg-primary-800",
 				"data-[style=glass]:shadow-glass data-[style=glass]:backdrop-blur-md data-[style=glass]:rounded-lg data-[style=glass]:px-4 data-[style=glass]:py-2",
 				"data-[style=glass]:after:absolute data-[style=glass]:after:bg-linear-to-r data-[style=glass]:after:from-transparent data-[style=glass]:after:via-glass-highlight/60 data-[style=glass]:after:left-4 data-[style=glass]:after:right-4 data-[style=glass]:after:h-px data-[style=glass]:after:top-0",
 				"data-[style=glass]:border data-[style=glass]:border-glass-border/20",

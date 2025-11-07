@@ -15,7 +15,7 @@ export function LinkMuted({
 		<Comp
 			className={clsx(
 				// muted link color with hover recovery to normal link color
-				"text-[var(--color-link-muted)] hover:underline hover:text-[var(--color-text)]",
+				"text-link-muted hover:underline hover:text-text",
 				"transition-colors",
 				className,
 			)}
