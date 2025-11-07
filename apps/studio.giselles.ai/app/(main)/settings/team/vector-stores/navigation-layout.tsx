@@ -4,17 +4,11 @@ import { VectorStoresSidebarMenu } from "./sidebar-menu";
 
 type VectorStoresNavigationLayoutProps = {
 	children: ReactNode;
-	isEnabled: boolean;
 };
 
 export function VectorStoresNavigationLayout({
 	children,
-	isEnabled,
 }: VectorStoresNavigationLayoutProps) {
-	if (!isEnabled) {
-		return <>{children}</>;
-	}
-
 	return (
 		<div className="flex min-h-full">
 			<div className="border-r border-border-muted pr-6">

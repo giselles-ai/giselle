@@ -30,7 +30,7 @@ export default async function DocumentVectorStorePage() {
 					/>
 				</div>
 			</div>
-			<VectorStoresNavigationLayout isEnabled>
+			<VectorStoresNavigationLayout>
 				<DocumentVectorStoreList
 					stores={vectorStores}
 					deleteAction={deleteDocumentVectorStore}

@@ -43,7 +43,6 @@ export default async function TeamVectorStorePage() {
 		getInstallationsWithRepos(),
 		getGitHubRepositoryIndexes(),
 	]);
-	const isDocVectorStoreEnabled = true;
 
 	return (
 		<div className="flex flex-col gap-[24px]">
@@ -63,7 +62,7 @@ export default async function TeamVectorStorePage() {
 					/>
 				</div>
 			</div>
-			<VectorStoresNavigationLayout isEnabled={isDocVectorStoreEnabled}>
+			<VectorStoresNavigationLayout>
 				<RepositoryList
 					repositories={repositoryIndexes}
 					deleteRepositoryIndexAction={deleteRepositoryIndex}
