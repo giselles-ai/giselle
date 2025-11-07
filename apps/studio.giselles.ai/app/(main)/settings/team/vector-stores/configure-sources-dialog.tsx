@@ -105,12 +105,12 @@ export function ConfigureSourcesDialog({
 			>
 				<DialogHeader>
 					<div className="flex items-center justify-between">
-						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-[var(--color-text-inverse)]">
 							Configure Vector Stores
 						</DialogTitle>
 						<DialogClose
 							onClick={() => setOpen(false)}
-							className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none"
+							className="rounded-sm text-[var(--color-text-inverse)] opacity-70 hover:opacity-100 focus:outline-none"
 						>
 							<X className="h-5 w-5" />
 							<span className="sr-only">Close</span>
@@ -124,7 +124,7 @@ export function ConfigureSourcesDialog({
 					<div className="space-y-6">
 						{/* Repository Section */}
 						<div>
-							<h3 className="text-text text-[14px] leading-[16.8px] font-sans">
+							<h3 className="text-[var(--color-text)] text-[14px] leading-[16.8px] font-sans">
 								Repository
 							</h3>
 							<div className="mt-2 text-link-accent text-[16px] font-geist">
@@ -133,7 +133,7 @@ export function ConfigureSourcesDialog({
 						</div>
 						{/* Sources Section */}
 						<div>
-							<h3 className="text-text text-[14px] leading-[16.8px] font-sans mb-2">
+							<h3 className="text-[var(--color-text)] text-[14px] leading-[16.8px] font-sans mb-2">
 								Sources to Ingest
 							</h3>
 							<div className="grid grid-cols-2 gap-3">
@@ -166,7 +166,7 @@ export function ConfigureSourcesDialog({
 
 						{/* Embedding Models Section */}
 						<div>
-							<h3 className="text-text text-[14px] leading-[16.8px] font-sans mb-2">
+							<h3 className="text-[var(--color-text)] text-[14px] leading-[16.8px] font-sans mb-2">
 								Embedding Models
 							</h3>
 							<div className="text-text-muted text-[12px] mb-3">
@@ -183,7 +183,7 @@ export function ConfigureSourcesDialog({
 										return (
 											<label
 												key={profileId}
-												className="flex items-start gap-3 p-3 rounded-lg border border-border-muted hover:bg-inverse/5 transition-colors cursor-pointer"
+												className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-border-muted)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] transition-colors cursor-pointer"
 											>
 												<input
 													type="checkbox"
@@ -203,10 +203,10 @@ export function ConfigureSourcesDialog({
 															);
 														}
 													}}
-													className="mt-1 w-4 h-4 text-primary-900 bg-surface border-border rounded focus:ring-primary-900"
+													className="mt-1 w-4 h-4 text-primary-900 bg-[var(--color-surface)] border-[var(--color-border)] rounded focus:ring-primary-900"
 												/>
 												<div className="flex-1">
-													<div className="text-text text-[14px] font-medium">
+													<div className="text-[var(--color-text)] text-[14px] font-medium">
 														{profile.name}
 													</div>
 													<div className="text-text-muted text-[12px] mt-1">
@@ -273,7 +273,7 @@ function ContentTypeToggle({
 	status,
 }: ContentTypeToggleProps) {
 	return (
-		<div className="bg-inverse/5 rounded-lg p-4">
+		<div className="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] rounded-lg p-4">
 			<Toggle
 				name={`${label.toLowerCase().replace(/\s+/g, "-")}-toggle`}
 				checked={enabled}

@@ -12,5 +12,9 @@
 		/* secondary / link-muted */
 		--color-text-secondary: #505d7b;
 		--color-link-muted: var(--color-text-secondary);
+		/* Chat bubbles (mirror current alias fallbacks) */
+		--color-chat-bubble-accent-bg: rgba(107, 143, 240, 0.2);
+		--color-chat-bubble-accent-border: rgba(107, 143, 240, 0.8);
+		--color-chat-bubble-user-bg: #4a6fd8;
 	}
 }

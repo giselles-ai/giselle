@@ -174,7 +174,7 @@ export function RepositoryRegistrationDialog({
 			<DialogTrigger asChild>
 				<GlassButton className="whitespace-nowrap">
 					<span className="grid size-4 place-items-center rounded-full bg-primary-200 opacity-50">
-						<Plus className="size-3 text-bg" />
+						<Plus className="size-3 text-[var(--color-link-muted)]" />
 					</span>
 					Register Repository
 				</GlassButton>
@@ -187,12 +187,12 @@ export function RepositoryRegistrationDialog({
 			>
 				<DialogHeader>
 					<div className="flex items-center justify-between">
-						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-[var(--color-text-inverse)]">
 							Register GitHub Repository
 						</DialogTitle>
 						<DialogClose
 							onClick={() => setIsOpen(false)}
-							className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none"
+							className="rounded-sm text-[var(--color-text-inverse)] opacity-70 hover:opacity-100 focus:outline-none"
 						>
 							<X className="h-5 w-5" />
 							<span className="sr-only">Close</span>
@@ -213,7 +213,7 @@ export function RepositoryRegistrationDialog({
 						<div className="flex flex-col gap-y-2">
 							<label
 								htmlFor="owner"
-								className="text-text text-[14px] leading-[16.8px] font-sans"
+								className="text-[var(--color-text)] text-[14px] leading-[16.8px] font-sans"
 							>
 								Owner / Organization
 							</label>
@@ -224,7 +224,7 @@ export function RepositoryRegistrationDialog({
 									value={ownerId}
 									onValueChange={handleOwnerChange}
 									disabled={isPending}
-									triggerClassName="bg-surface text-text text-[14px] font-geist"
+									triggerClassName="bg-[var(--color-surface)] text-[var(--color-text)] text-[14px] font-geist"
 									id="owner"
 								/>
 							</div>
@@ -233,7 +233,7 @@ export function RepositoryRegistrationDialog({
 						<div className="flex flex-col gap-y-2">
 							<label
 								htmlFor="repository"
-								className="text-text text-[14px] leading-[16.8px] font-sans"
+								className="text-[var(--color-text)] text-[14px] leading-[16.8px] font-sans"
 							>
 								Repository Name
 							</label>
@@ -250,7 +250,7 @@ export function RepositoryRegistrationDialog({
 									value={repositoryId}
 									onValueChange={handleRepositoryChange}
 									disabled={isPending || !ownerId}
-									triggerClassName="bg-surface text-text text-[14px] font-geist"
+									triggerClassName="bg-[var(--color-surface)] text-[var(--color-text)] text-[14px] font-geist"
 									id="repository"
 								/>
 							</div>
@@ -258,13 +258,13 @@ export function RepositoryRegistrationDialog({
 
 						{/* Sources to Ingest Section */}
 						<div className="flex flex-col gap-y-2">
-							<div className="text-text text-[14px] leading-[16.8px] font-sans">
+							<div className="text-[var(--color-text)] text-[14px] leading-[16.8px] font-sans">
 								Sources to Ingest
 							</div>
 
 							<div className="grid grid-cols-2 gap-3">
 								{/* Code Configuration */}
-								<div className="bg-inverse/5 rounded-lg p-4">
+								<div className="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] rounded-lg p-4">
 									<Toggle
 										name="code-toggle"
 										checked={contentConfig.code.enabled}
@@ -287,7 +287,7 @@ export function RepositoryRegistrationDialog({
 								</div>
 
 								{/* Pull Requests Configuration */}
-								<div className="bg-inverse/5 rounded-lg p-4">
+								<div className="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] rounded-lg p-4">
 									<Toggle
 										name="pull-requests-toggle"
 										checked={contentConfig.pullRequests.enabled}
@@ -327,7 +327,7 @@ export function RepositoryRegistrationDialog({
 											return (
 												<label
 													key={profileId}
-													className="flex items-start gap-3 p-3 rounded-lg border border-border-muted hover:bg-inverse/5 transition-colors cursor-pointer"
+													className="flex items-start gap-3 p-3 rounded-lg border border-[var(--color-border-muted)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] transition-colors cursor-pointer"
 												>
 													<input
 														type="checkbox"
@@ -347,10 +347,10 @@ export function RepositoryRegistrationDialog({
 																);
 															}
 														}}
-														className="mt-1 w-4 h-4 text-[#1663F3] bg-surface border-border rounded focus:ring-[#1663F3]/20"
+														className="mt-1 w-4 h-4 text-[#1663F3] bg-surface border-[var(--color-border)] rounded focus:ring-[#1663F3]/20"
 													/>
 													<div className="flex-1">
-														<div className="text-text text-[14px] font-medium">
+														<div className="text-[var(--color-text)] text-[14px] font-medium">
 															{profile.name}
 														</div>
 														<div className="text-text-muted text-[12px] mt-1">

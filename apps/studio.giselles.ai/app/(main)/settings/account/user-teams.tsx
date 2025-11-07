@@ -50,7 +50,7 @@ export default function UserTeams({
 
 	return (
 		<>
-			<div className="relative overflow-hidden rounded-[12px] backdrop-blur-md bg-white/[0.02] border-[0.5px] border-border shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(255,255,255,0.2)] before:content-[''] before:absolute before:inset-0 before:bg-white before:opacity-[0.02] before:rounded-[inherit] before:pointer-events-none py-2">
+			<div className="relative overflow-hidden rounded-[12px] backdrop-blur-md bg-white/[0.02] border-[0.5px] border-[var(--color-border)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(255,255,255,0.2)] before:content-[''] before:absolute before:inset-0 before:bg-white before:opacity-[0.02] before:rounded-[inherit] before:pointer-events-none py-2">
 				<div
 					className="flex items-center gap-x-[11px] mt-4 mb-2 mx-4 py-2 px-3 rounded-[8px]"
 					style={{
@@ -65,14 +65,14 @@ export default function UserTeams({
 						type="text"
 						value={teamName}
 						placeholder="Search for a team..."
-						className="w-full text-inverse font-medium text-[14px] leading-[23.8px] font-geist placeholder:text-link-muted bg-transparent outline-none"
+						className="w-full text-[var(--color-text-inverse)] font-medium text-[14px] leading-[23.8px] font-geist placeholder:text-[var(--color-link-muted)] bg-transparent outline-none"
 					/>
 				</div>
 				<div>
 					{filteredTeams.map((team, idx) => (
 						<UserTeamsItem
 							className={cn(
-								"border-t border-border mx-4",
+								"border-t border-[var(--color-border)] mx-4",
 								idx === 0 && "border-t-0",
 							)}
 							key={team.id}
@@ -140,7 +140,7 @@ function UserTeamsItem({
 				/>
 				<div className="flex flex-col">
 					<div className="flex items-center gap-2">
-						<div className="text-inverse font-medium text-[16px] leading-[22.4px] font-geist">
+						<div className="text-[var(--color-text-inverse)] font-medium text-[16px] leading-[22.4px] font-geist">
 							{teamName}
 						</div>
 						{isPro ? <ProTag /> : <FreeTag />}
@@ -162,7 +162,7 @@ function UserTeamsItem({
 				</DropdownMenuTrigger>
 				<DropdownMenuContent
 					align="end"
-					className="p-1 border-[0.25px] border-border rounded-[8px] min-w-[165px] bg-surface shadow-none"
+					className="p-1 border-[0.25px] border-[var(--color-border)] rounded-[8px] min-w-[165px] bg-[var(--color-surface)] shadow-none"
 				>
 					<DropdownMenuItem className="p-0">
 						<ChangeTeamAndAction
@@ -172,7 +172,7 @@ function UserTeamsItem({
 							renderButton={(isPending) => (
 								<button
 									type="submit"
-									className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-inverse rounded-md"
+									className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-[var(--color-text-inverse)] rounded-md"
 									disabled={isPending}
 								>
 									Apps
@@ -189,7 +189,7 @@ function UserTeamsItem({
 							renderButton={(isPending) => (
 								<button
 									type="submit"
-									className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-inverse rounded-md"
+									className="flex items-center w-full px-3 py-2 text-left text-[14px] leading-[16px] hover:bg-white/5 text-[var(--color-text-inverse)] rounded-md"
 									disabled={isPending}
 								>
 									Settings

@@ -39,15 +39,12 @@ export function AgentCard({ agent }: { agent: typeof dbAgents.$inferSelect }) {
 			onMouseMove={handleMouseMove}
 			aria-label={agent.name || "Untitled workspace"}
 			className={clsx(
-				"group relative flex h-[300px] w-[267px] flex-none flex-col rounded-[12px] border-[0.5px]",
+				"group relative flex h-[300px] w-[267px] flex-none flex-col rounded-[12px]",
 				"bg-[linear-gradient(135deg,rgba(100,130,200,0.20)_0%,rgba(60,80,120,0.35)_40%,rgba(20,30,60,0.85)_100%)]",
 				"filter grayscale hover:grayscale-0 transition duration-500",
 			)}
 			style={
-				{
-					"--spotlight-color": "rgba(255,255,255,0.15)",
-					borderColor: "rgba(160,180,255,0.15)",
-				} as React.CSSProperties
+				{ "--spotlight-color": "rgba(255,255,255,0.15)" } as React.CSSProperties
 			}
 		>
 			<div
@@ -58,11 +55,11 @@ export function AgentCard({ agent }: { agent: typeof dbAgents.$inferSelect }) {
 				}}
 			/>
 
-			{/* Top reflection line */}
-			<div className="pointer-events-none absolute top-0 left-4 right-4 z-10 h-px bg-gradient-to-r from-transparent via-text/40 to-transparent" />
+			{/* Top reflection line (muted) */}
+			<div className="pointer-events-none absolute top-0 left-4 right-4 z-10 h-px bg-gradient-to-r from-transparent via-text/20 to-transparent" />
 
 			{/* Subtle inner border */}
-			<div className="pointer-events-none absolute inset-0 z-10 rounded-[inherit] border-[0.5px] border-border-muted" />
+			<div className="pointer-events-none absolute inset-0 z-10 rounded-[inherit] border-[0.5px] border-[var(--color-border-muted)]" />
 
 			<div className="relative z-10 flex h-full w-full cursor-pointer flex-col pt-2 px-2 pb-4">
 				<div className="flex w-full justify-end gap-x-2">

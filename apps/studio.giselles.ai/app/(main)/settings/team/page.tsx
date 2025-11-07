@@ -86,7 +86,7 @@ function BillingInfoForFreePlan({ team }: BillingInfoProps) {
 						Free Plan
 					</p>
 				</div>
-				<p className="text-secondary font-medium text-[12px] leading-[20.4px] font-geist">
+				<p className="text-[var(--color-link-muted)] font-medium text-[12px] leading-[20.4px] font-geist">
 					Have questions about your plan?{" "}
 					<a
 						href="https://giselles.ai/pricing"
@@ -118,7 +118,7 @@ function BillingInfoForProPlan({ team }: BillingInfoProps) {
 						<span className="text-primary-400">Pro Plan</span>
 					</p>
 				</div>
-				<p className="text-secondary font-medium text-[12px] leading-[20.4px] font-geist">
+				<p className="text-[var(--color-link-muted)] font-medium text-[12px] leading-[20.4px] font-geist">
 					Have questions about your plan?{" "}
 					<a
 						href="https://giselles.ai/pricing"

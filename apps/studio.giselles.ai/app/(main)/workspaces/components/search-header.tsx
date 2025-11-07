@@ -49,7 +49,7 @@ export function SearchHeader({
 	viewMode,
 	onViewModeChange,
 	className,
-	selectTextClassName = "text-text",
+	selectTextClassName = "text-[var(--color-text)]",
 }: SearchHeaderProps) {
 	const canToggleView =
 		showViewToggle && viewMode != null && !!onViewModeChange;
@@ -95,7 +95,7 @@ export function SearchHeader({
 					placeholder={searchPlaceholder}
 					value={searchQuery}
 					onChange={(e) => onSearchChange(e.target.value)}
-					className="text-inverse"
+					className="text-[var(--color-text-inverse)]"
 				/>
 			</div>
 
@@ -113,14 +113,14 @@ export function SearchHeader({
 
 				{/* Optional view toggle */}
 				{canToggleView ? (
-					<div className="flex rounded-lg border border-border overflow-hidden shrink-0">
+					<div className="flex rounded-lg border border-[var(--color-border)] overflow-hidden shrink-0">
 						<button
 							type="button"
 							onClick={() => onViewModeChange?.("grid")}
 							className={`p-3 flex items-center justify-center transition-colors ${
 								viewMode === "grid"
-									? "bg-inverse/10 text-inverse"
-									: "bg-transparent text-text/60 hover:bg-surface/5 hover:text-inverse"
+									? "bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-[var(--color-text-inverse)]"
+									: "bg-transparent text-text/60 hover:bg-surface/5 hover:text-[var(--color-text-inverse)]"
 							}`}
 							aria-label="Grid view"
 						>
@@ -131,8 +131,8 @@ export function SearchHeader({
 							onClick={() => onViewModeChange?.("list")}
 							className={`p-3 flex items-center justify-center transition-colors ${
 								viewMode === "list"
-									? "bg-inverse/10 text-inverse"
-									: "bg-transparent text-text/60 hover:bg-surface/5 hover:text-inverse"
+									? "bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-[var(--color-text-inverse)]"
+									: "bg-transparent text-text/60 hover:bg-surface/5 hover:text-[var(--color-text-inverse)]"
 							}`}
 							aria-label="List view"
 						>

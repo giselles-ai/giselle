@@ -78,7 +78,7 @@ export const LoginForm = (props: LoginFormProps) => {
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								required
-								className="bg-inverse/10"
+								className="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]"
 							/>
 						</div>
 					</div>

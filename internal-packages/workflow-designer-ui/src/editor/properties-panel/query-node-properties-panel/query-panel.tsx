@@ -192,7 +192,7 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 					}),
 				)}
 				showToolbar={false}
-				editorClassName="bg-inverse/10 border-0 !pt-[12px] !pr-[12px] !pb-[12px] !pl-[12px] rounded-[8px] min-h-[180px]"
+				editorClassName="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] border-0 !pt-[12px] !pr-[12px] !pb-[12px] !pl-[12px] rounded-[8px] min-h-[180px]"
 				header={
 					<div className="flex flex-col gap-[8px]">
 						{hasDatasourceConnections ? (
@@ -213,26 +213,26 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 									return (
 										<li
 											key={dataSource.connection.id}
-											className="relative flex items-start gap-[8px] rounded-[8px] border border-inverse/20 px-[12px] py-[10px] pr-[34px]"
+											className="relative flex items-start gap-[8px] rounded-[8px] border border-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] px-[12px] py-[10px] pr-[34px]"
 											aria-label={labelPieces.join(", ")}
 										>
 											<div className="flex flex-col gap-[2px] text-left">
 												<div className="flex items-center gap-[6px]">
-													<span className="text-secondary mt-[2px]">
+													<span className="text-[var(--color-link-muted)] mt-[2px]">
 														{icon}
 													</span>
 													<span
-														className="text-[12px] font-medium text-inverse"
+														className="text-[12px] font-medium text-[var(--color-text-inverse)]"
 														title={`${name} • ${description.line1}${description.line2 ? ` • ${description.line2}` : ""}`}
 													>
 														{name}
 													</span>
 												</div>
-												<span className="text-[11px] text-secondary">
+												<span className="text-[11px] text-[var(--color-link-muted)]">
 													{description.line1}
 												</span>
 												{description.line2 && (
-													<span className="text-[11px] text-secondary">
+													<span className="text-[11px] text-[var(--color-link-muted)]">
 														{description.line2}
 													</span>
 												)}
@@ -249,7 +249,7 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 														),
 													});
 												}}
-												className="absolute top-[6px] right-[6px] size-[22px] rounded-full flex items-center justify-center text-secondary hover:text-inverse hover:bg-inverse/20 transition-colors"
+												className="absolute top-[6px] right-[6px] size-[22px] rounded-full flex items-center justify-center text-[var(--color-link-muted)] hover:text-[var(--color-text-inverse)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] transition-colors"
 												title="Remove data source"
 											>
 												<X className="size-[12px]" />
@@ -261,7 +261,7 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 						) : (
 							<SettingDetail
 								size="sm"
-								colorClassName="text-secondary"
+								colorClassName="text-[var(--color-link-muted)]"
 								className="text-[12px]"
 							>
 								No data sources connected • Connect from Input tab to query

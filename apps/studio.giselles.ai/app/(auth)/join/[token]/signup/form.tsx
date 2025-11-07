@@ -91,7 +91,7 @@ export const SignupForm = (props: SignupFormProps) => {
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								required
-								className="bg-inverse/10"
+								className="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]"
 							/>
 						</div>
 					</div>
@@ -109,7 +109,7 @@ export const SignupForm = (props: SignupFormProps) => {
 								value={confirmPassword}
 								onChange={(e) => setConfirmPassword(e.target.value)}
 								required
-								className="bg-inverse/10"
+								className="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]"
 							/>
 						</div>
 					</div>

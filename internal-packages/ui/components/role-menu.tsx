@@ -38,7 +38,7 @@ export function RoleMenu({
 					className={clsx(
 						"w-full flex justify-between items-center rounded-[8px] h-8 px-[12px] text-left text-[14px]",
 						"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
-						"bg-inverse/5 transition-colors hover:bg-inverse/10",
+						"bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] transition-colors hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]",
 						widthClassName,
 						triggerClassName,
 					)}
@@ -46,7 +46,7 @@ export function RoleMenu({
 					<div className="flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap capitalize">
 						{options.find((o) => o.value === value)?.label ?? value}
 					</div>
-					<ChevronDownIcon className="size-[13px] shrink-0 text-text ml-2" />
+					<ChevronDownIcon className="size-[13px] shrink-0 text-[var(--color-text)] ml-2" />
 				</button>
 			}
 		>
@@ -59,7 +59,7 @@ export function RoleMenu({
 							disabled={!canEdit}
 							onClick={() => canEdit && onChange?.(opt.value)}
 							className={clsx(
-								"text-text outline-none cursor-pointer hover:bg-ghost-element-hover",
+								"text-[var(--color-text)] outline-none cursor-pointer hover:bg-ghost-element-hover",
 								"rounded-[4px] px-[8px] py-[6px] text-[14px] w-full text-left capitalize",
 								!canEdit && "opacity-50 cursor-not-allowed pointer-events-none",
 								"flex items-center gap-2",
@@ -74,7 +74,7 @@ export function RoleMenu({
 
 					{canRemove && (
 						<>
-							<div className="my-2 h-px bg-inverse/10" />
+							<div className="my-2 h-px bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]" />
 							<button
 								type="button"
 								onClick={onRemove}

@@ -15,35 +15,35 @@ function getNodeIconColor(node: NodeLike): string {
 	if (node.type === "operation") {
 		// handle out-of-union runtime type safely without widening types
 		if (`${node.content.type}` === "vectorStore") {
-			return "text-bg";
+			return "text-[var(--color-background)]";
 		}
 		switch (node.content.type) {
 			case "textGeneration":
 			case "imageGeneration":
 			case "action":
-				return "text-inverse";
+				return "text-[var(--color-text-inverse)]";
 			case "trigger":
 			case "query":
-				return "text-bg";
+				return "text-[var(--color-background)]";
 			default:
-				return "text-inverse";
+				return "text-[var(--color-text-inverse)]";
 		}
 	}
 	if (node.type === "variable") {
 		switch (node.content.type) {
 			case "vectorStore":
-				return "text-bg";
+				return "text-[var(--color-background)]";
 			case "github":
-				return "text-bg";
+				return "text-[var(--color-background)]";
 			case "text":
 			case "file":
 			case "webPage":
-				return "text-bg";
+				return "text-[var(--color-background)]";
 			default:
-				return "text-inverse";
+				return "text-[var(--color-text-inverse)]";
 		}
 	}
-	return "text-inverse";
+	return "text-[var(--color-text-inverse)]";
 }
 
 export function PropertiesPanelRoot({ children }: { children: ReactNode }) {
@@ -129,7 +129,7 @@ export function PropertiesPanelHeader({
 				</div>
 				<div className="flex-1 min-w-0">
 					<EditableText
-						className="block w-full bg-inverse/10 rounded-[8px]"
+						className="block w-full bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] rounded-[8px]"
 						inputClassName="px-[8px] py-[2px]"
 						buttonClassName="px-[8px] py-[2px]"
 						onValueChange={(value) => {

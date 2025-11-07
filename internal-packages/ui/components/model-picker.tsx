@@ -72,7 +72,7 @@ export function ModelPicker({
 						fullWidth ? "w-full" : "w-auto",
 						"flex justify-between items-center rounded-[8px] h-9 text-left text-[14px] shrink-0",
 						"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
-						"bg-transparent border border-inverse/20 transition-colors hover:bg-white/5",
+						"bg-transparent border border-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] transition-colors hover:bg-white/5",
 						"px-[8px]",
 						"data-[placeholder]:text-text-muted",
 					)}
@@ -91,7 +91,7 @@ export function ModelPicker({
 						strokeWidth="2"
 						strokeLinecap="round"
 						strokeLinejoin="round"
-						className="size-[13px] shrink-0 text-text ml-2"
+						className="size-[13px] shrink-0 text-[var(--color-text)] ml-2"
 						role="img"
 						aria-label="Open"
 					>
@@ -104,7 +104,7 @@ export function ModelPicker({
 					sideOffset={6}
 					align="end"
 					className={clsx(
-						"relative rounded-[8px] px-[8px] py-[8px] text-inverse overflow-hidden z-50",
+						"relative rounded-[8px] px-[8px] py-[8px] text-[var(--color-text-inverse)] overflow-hidden z-50",
 					)}
 					style={{ width }}
 				>
@@ -137,7 +137,7 @@ export function ModelPicker({
 							</div>
 							<input
 								placeholder={searchPlaceholder}
-								className="w-full bg-transparent border-none text-inverse text-[12px] placeholder:text-text-muted focus:outline-none"
+								className="w-full bg-transparent border-none text-[var(--color-text-inverse)] text-[12px] placeholder:text-[var(--color-link-muted)] focus:outline-none"
 								value={query}
 								onChange={(e) => setQuery(e.target.value)}
 							/>
@@ -166,8 +166,8 @@ export function ModelPicker({
 												className={clsx(
 													"flex px-[8px] py-0 justify-center items-center rounded text-[12px] font-medium",
 													providerFilter === p
-														? "bg-secondary text-inverse"
-														: "hover:bg-ghost-element-hover text-inverse",
+														? "bg-[var(--color-text-secondary)] text-inverse"
+														: "hover:bg-ghost-element-hover text-[var(--color-text-inverse)]",
 												)}
 											>
 												{label}
@@ -182,7 +182,7 @@ export function ModelPicker({
 								{filteredGroups.map((group) => (
 									<div key={group.provider} className="flex flex-col gap-[4px]">
 										{group.label ? (
-											<div className="text-[11px] text-secondary px-[4px]">
+											<div className="text-[11px] text-[var(--color-link-muted)] px-[4px]">
 												{group.label}
 											</div>
 										) : null}

@@ -229,7 +229,7 @@ export function ShowcaseClient({
 	);
 
 	return (
-		<div className="flex-1 px-[24px] bg-bg pt-16 md:pt-0 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 h-full flex flex-col">
+		<div className="flex-1 px-[24px] bg-[var(--color-background)] pt-16 md:pt-0 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 h-full flex flex-col">
 			<div className="py-6 h-full flex flex-col">
 				<div className="flex items-center justify-between px-1 mb-6">
 					<div>
@@ -272,7 +272,7 @@ export function ShowcaseClient({
 
 				{/* Tabs */}
 				<div className="mb-8">
-					<div className="flex items-center px-0 py-0 border-b border-border">
+					<div className="flex items-center px-0 py-0 border-b border-[var(--color-border)]">
 						<div className="flex items-center space-x-[12px]">
 							{["Apps", "Playlist", "History"].map((tab) => {
 								const isActive = activeTab === tab;
@@ -373,7 +373,7 @@ export function ShowcaseClient({
 											<div className="flex items-center gap-2">
 												<button
 													type="button"
-													className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-border hover:border-border"
+													className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-[var(--color-border)] hover:border-[var(--color-border)]"
 													title="Run app"
 													onClick={(e) => {
 														e.stopPropagation();
@@ -388,7 +388,7 @@ export function ShowcaseClient({
 															? `/workspaces/${app.workspaceId}`
 															: "/playground"
 													}
-													className="rounded-lg px-3 py-1.5 text-text transition-all duration-200 active:scale-[0.98] text-sm"
+													className="rounded-lg px-3 py-1.5 text-[var(--color-text)] transition-all duration-200 active:scale-[0.98] text-sm"
 													style={{
 														background:
 															"linear-gradient(180deg, #202530 0%, #12151f 100%)",
@@ -443,14 +443,14 @@ export function ShowcaseClient({
 										onPointerDownOutside={() => setIsPlaylistDialogOpen(false)}
 									>
 										<DialogHeader>
-											<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-inverse">
+											<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-[var(--color-text-inverse)]">
 												New Playlist Details
 											</DialogTitle>
 											<DialogDescription className="text-text-muted">
 												Create a new playlist with title, description and
 												thumbnail.
 											</DialogDescription>
-											<DialogClose className="text-inverse" />
+											<DialogClose className="text-[var(--color-text-inverse)]" />
 										</DialogHeader>
 										<DialogBody>
 											<div className="grid gap-4">
@@ -471,7 +471,7 @@ export function ShowcaseClient({
 															})
 														}
 														placeholder="Playlist title"
-														className="bg-black-700/50 border-black-600 text-white placeholder:text-text-muted"
+														className="bg-black-700/50 border-black-600 text-white placeholder:text-[var(--color-link-muted)]"
 													/>
 												</div>
 												<div className="grid gap-2">
@@ -491,7 +491,7 @@ export function ShowcaseClient({
 															})
 														}
 														placeholder="Playlist description"
-														className="bg-black-700/50 border-black-600 text-white placeholder:text-text-muted"
+														className="bg-black-700/50 border-black-600 text-white placeholder:text-[var(--color-link-muted)]"
 													/>
 												</div>
 											</div>
@@ -653,7 +653,7 @@ export function ShowcaseClient({
 											<div className="flex items-center gap-2">
 												<button
 													type="button"
-													className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-border hover:border-border"
+													className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors border border-[var(--color-border)] hover:border-[var(--color-border)]"
 													title="Re-run app"
 													onClick={() => {
 														if (item.workspaceId) {

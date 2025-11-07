@@ -111,15 +111,7 @@ export function GlassSurfaceLayers({
 					blurClass,
 				)}
 			/>
-			{withTopHighlight && (
-				<div
-					className={clsx("absolute top-0 left-4 right-4 h-px", zIndexClass)}
-					style={{
-						backgroundImage:
-							"linear-gradient(to right, transparent, color-mix(in srgb, var(--color-text) 40%, transparent), transparent)",
-					}}
-				/>
-			)}
+			{/* move highlight after borders to avoid being occluded */}
 			{borderStyle === "destructive" ? (
 				<div
 					className={clsx(
@@ -136,6 +128,7 @@ export function GlassSurfaceLayers({
 						zIndexClass,
 						radiusClass,
 						solidBorderClass,
+						"opacity-30",
 					)}
 				/>
 			) : borderStyle === "gradient" ? (
@@ -154,9 +147,18 @@ export function GlassSurfaceLayers({
 						"absolute inset-0",
 						zIndexClass,
 						radiusClass,
-						"border-[0.5px] border-border opacity-20",
+						"border-[0.5px] border-border opacity-5",
 					)}
 					aria-hidden
+				/>
+			)}
+			{withTopHighlight && (
+				<div
+					className={clsx(
+						"absolute top-0 left-4 right-4 h-px z-10",
+						radiusClass,
+					)}
+					style={{ backgroundImage: "var(--glass-highlight-bg)" }}
 				/>
 			)}
 			{children}

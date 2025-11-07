@@ -48,7 +48,7 @@ export const Nav: FC = () => {
 							${
 								isActive
 									? "text-accent nav-glow after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[2px] after:bg-accent"
-									: "text-secondary hover:text-accent hover:after:content-[''] hover:after:absolute hover:after:left-0 hover:after:right-0 hover:after:bottom-0 hover:after:h-[2px] hover:after:bg-accent"
+									: "text-[var(--color-link-muted)] hover:text-accent hover:after:content-[''] hover:after:absolute hover:after:left-0 hover:after:right-0 hover:after:bottom-0 hover:after:h-[2px] hover:after:bg-accent"
 							}`}
 						>
 							{item.name}
