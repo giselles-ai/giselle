@@ -16,6 +16,9 @@ export async function getDocumentVectorStoreSource(
 ) {
 	const source = await db.query.documentVectorStoreSources.findFirst({
 		where: eq(documentVectorStoreSources.id, sourceId),
+		with: {
+			documentVectorStore: true,
+		},
 	});
 
 	return source ?? null;
