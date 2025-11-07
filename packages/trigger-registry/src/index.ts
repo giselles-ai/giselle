@@ -1,11 +1,17 @@
 import {
 	GitHubTriggerEvent,
+	GitHubTriggerEventDiscussionCommentCreated,
+	GitHubTriggerEventDiscussionCreated,
 	type GitHubTriggerEventId,
 	GitHubTriggerEventIssueClosed,
 	GitHubTriggerEventIssueCommentCreated,
 	GitHubTriggerEventIssueCreated,
 	GitHubTriggerEventIssueLabeled,
+	GitHubTriggerEventPullRequestClosed,
 	GitHubTriggerEventPullRequestCommentCreated,
+	GitHubTriggerEventPullRequestLabeled,
+	GitHubTriggerEventPullRequestOpened,
+	GitHubTriggerEventPullRequestReadyForReview,
 	GitHubTriggerEventPullRequestReviewCommentCreated,
 } from "@giselles-ai/protocol";
 import z from "zod/v4";
@@ -199,6 +205,203 @@ githubTriggerRegistry.add(GitHubTriggerEventPullRequestReviewCommentCreated, {
 			label: "Pull Request Body",
 			type: "multiline-text",
 			optional: true,
+		},
+	],
+});
+
+githubTriggerRegistry.add(GitHubTriggerEventDiscussionCommentCreated, {
+	id: GitHubTriggerEventDiscussionCommentCreated.shape.id.value,
+	label: "Discussion Comment Created",
+	payload: [
+		{
+			key: "body",
+			label: "Body",
+			type: "multiline-text",
+		},
+		{
+			key: "discussionNumber",
+			label: "Discussion Number",
+			type: "number",
+		},
+		{
+			key: "discussionTitle",
+			label: "Discussion Title",
+			type: "text",
+		},
+		{
+			key: "discussionBody",
+			label: "Discussion Body",
+			type: "multiline-text",
+		},
+		{
+			key: "discussionUrl",
+			label: "Discussion URL",
+			type: "text",
+		},
+		{
+			key: "commentId",
+			label: "Comment ID",
+			type: "number",
+		},
+		{
+			key: "parentCommentBody",
+			label: "Parent Comment Body",
+			type: "multiline-text",
+		},
+	],
+});
+
+githubTriggerRegistry.add(GitHubTriggerEventDiscussionCreated, {
+	id: GitHubTriggerEventDiscussionCreated.shape.id.value,
+	label: "Discussion Created",
+	payload: [
+		{
+			key: "discussionNumber",
+			label: "Discussion Number",
+			type: "number",
+		},
+		{
+			key: "discussionTitle",
+			label: "Discussion Title",
+			type: "text",
+		},
+		{
+			key: "discussionBody",
+			label: "Discussion Body",
+			type: "multiline-text",
+		},
+		{
+			key: "discussionUrl",
+			label: "Discussion URL",
+			type: "text",
+		},
+		{
+			key: "categoryName",
+			label: "Category Name",
+			type: "text",
+		},
+	],
+});
+
+githubTriggerRegistry.add(GitHubTriggerEventPullRequestClosed, {
+	id: GitHubTriggerEventPullRequestClosed.shape.id.value,
+	label: "Discussion Created",
+	payload: [
+		{
+			key: "title",
+			label: "Pull Request Title",
+			type: "text",
+		},
+		{
+			key: "body",
+			label: "Pull Request Body",
+			type: "multiline-text",
+		},
+		{
+			key: "number",
+			label: "Pull Request Number",
+			type: "number",
+		},
+		{
+			key: "diff",
+			label: "Pull Request Diff",
+			type: "text",
+		},
+		{
+			key: "pullRequestUrl",
+			label: "Pull Request URL",
+			type: "text",
+		},
+	],
+});
+
+githubTriggerRegistry.add(GitHubTriggerEventPullRequestLabeled, {
+	id: GitHubTriggerEventPullRequestLabeled.shape.id.value,
+	label: "Pull Request Labeled",
+	payload: [
+		{
+			key: "pullRequestTitle",
+			label: "Pull Request Title",
+			type: "text",
+		},
+		{
+			key: "pullRequestBody",
+			label: "Pull Request Body",
+			type: "multiline-text",
+		},
+		{
+			key: "pullRequestNumber",
+			label: "Pull Request Number",
+			type: "number",
+		},
+		{
+			key: "labelName",
+			label: "Pull Request URL",
+			type: "text",
+		},
+	],
+});
+
+githubTriggerRegistry.add(GitHubTriggerEventPullRequestOpened, {
+	id: GitHubTriggerEventPullRequestOpened.shape.id.value,
+	label: "Pull Request Opened",
+	payload: [
+		{
+			key: "title",
+			label: "Pull Request Title",
+			type: "text",
+		},
+		{
+			key: "body",
+			label: "Pull Request Body",
+			type: "multiline-text",
+		},
+		{
+			key: "number",
+			label: "Pull Request Number",
+			type: "number",
+		},
+		{
+			key: "diff",
+			label: "Pull Request Diff",
+			type: "text",
+		},
+		{
+			key: "pullRequestUrl",
+			label: "Pull Request URL",
+			type: "text",
+		},
+	],
+});
+
+githubTriggerRegistry.add(GitHubTriggerEventPullRequestReadyForReview, {
+	id: GitHubTriggerEventPullRequestReadyForReview.shape.id.value,
+	label: "Pull Request Ready for Review",
+	payload: [
+		{
+			key: "title",
+			label: "Pull Request Title",
+			type: "text",
+		},
+		{
+			key: "body",
+			label: "Pull Request Body",
+			type: "multiline-text",
+		},
+		{
+			key: "number",
+			label: "Pull Request Number",
+			type: "number",
+		},
+		{
+			key: "diff",
+			label: "Pull Request Diff",
+			type: "text",
+		},
+		{
+			key: "pullRequestUrl",
+			label: "Pull Request URL",
+			type: "text",
 		},
 	],
 });
