@@ -1,4 +1,3 @@
-import type { ActId, AppId } from "@giselles-ai/giselle";
 import type {
 	GitHubIssueDocumentKey,
 	GitHubIssueState,
@@ -6,6 +5,8 @@ import type {
 	GitHubRepositoryIssueContentType,
 } from "@giselles-ai/github-tool";
 import type {
+	ActId,
+	AppId,
 	EmbeddingDimensions,
 	EmbeddingProfileId,
 	FlowTriggerId,
@@ -77,6 +78,7 @@ export const subscriptionRelations = relations(subscriptions, ({ one }) => ({
 }));
 
 export type TeamType = "customer" | "internal";
+export type TeamPlan = "free" | "pro" | "team" | "internal";
 export const teams = pgTable("teams", {
 	id: text("id").$type<TeamId>().notNull().unique(),
 	dbId: serial("db_id").primaryKey(),
@@ -88,6 +90,7 @@ export const teams = pgTable("teams", {
 		.notNull()
 		.$onUpdate(() => new Date()),
 	type: text("type").$type<TeamType>().notNull().default("customer"),
+	plan: text("plan").$type<TeamPlan>().notNull().default("free"),
 });
 
 export const teamRelations = relations(teams, ({ many }) => ({
@@ -726,6 +729,7 @@ export const githubRepositoryIssueEmbeddings = pgTable(
 		documentKey: text("document_key").$type<GitHubIssueDocumentKey>().notNull(),
 		contentCreatedAt: timestamp("content_created_at").notNull(),
 		contentEditedAt: timestamp("content_edited_at").notNull(),
+		metadataVersion: text("metadata_version"),
 		embedding: vectorWithoutDimensions("embedding").notNull(),
 		chunkContent: text("chunk_content").notNull(),
 		chunkIndex: integer("chunk_index").notNull(),

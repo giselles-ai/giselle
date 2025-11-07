@@ -1,4 +1,4 @@
-import type { ActId } from "../../concepts/identifiers";
+import type { ActId } from "@giselles-ai/protocol";
 import { getAct } from "../acts";
 import type { GiselleEngineContext } from "../types";
 import { getActGenerationIndexes as internal_getActGenerationIndexes } from "./internal/get-act-generation-indexes";

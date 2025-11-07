@@ -1,5 +1,5 @@
+import type { Act } from "@giselles-ai/protocol";
 import { create } from "zustand";
-import type { Act } from "../../concepts/act";
 
 interface ActStore {
 	activeAct: Act | undefined;

@@ -2,13 +2,12 @@
 
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import { NodeIcon } from "@giselle-internal/workflow-designer-ui";
-import type { Generation } from "@giselles-ai/giselle";
 import {
 	type Act,
 	ActStreamReader,
 	type StreamDataEventHandler,
 } from "@giselles-ai/giselle/react";
-import type { ManualTriggerParameter } from "@giselles-ai/protocol";
+import type { Generation, ManualTriggerParameter } from "@giselles-ai/protocol";
 import {
 	BrainCircuit,
 	ChevronDownIcon,

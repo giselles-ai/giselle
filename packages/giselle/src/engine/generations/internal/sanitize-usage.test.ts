@@ -1,6 +1,5 @@
+import type { GenerationUsage } from "@giselles-ai/protocol";
 import { describe, expect, it } from "vitest";
-
-import type { GenerationUsage } from "../../../concepts/generation";
 import { sanitizeGenerationUsage } from "./sanitize-usage";
 
 describe("sanitizeGenerationUsage", () => {

@@ -421,6 +421,20 @@
       "when": 1762310898966,
       "tag": "0059_skinny_saracen",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1762323932695,
+      "tag": "0060_freezing_ultron",
+      "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1762411864922,
+      "tag": "0061_violet_mastermind",
+      "breakpoints": true
     }
   ]
 }

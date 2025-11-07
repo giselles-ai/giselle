@@ -1,11 +1,17 @@
 import { hasTierAccess, languageModels } from "@giselles-ai/language-model";
+import type { GenerationId } from "@giselles-ai/protocol";
 import {
+	type CompletedGeneration,
 	type FileContent,
 	type FileId,
+	Generation,
+	GenerationContext,
+	type GenerationOutput,
 	type ImageGenerationNode,
 	isImageGenerationNode,
 	isTextGenerationNode,
 	type Node,
+	NodeGenerationIndex,
 	NodeId,
 	type OperationNode,
 	OutputId,
@@ -18,14 +24,6 @@ import {
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
 import type { DataContent, FilePart, ImagePart, ModelMessage } from "ai";
-import {
-	type CompletedGeneration,
-	Generation,
-	GenerationContext,
-	type GenerationOutput,
-	NodeGenerationIndex,
-} from "../../concepts/generation";
-import type { GenerationId } from "../../concepts/identifiers";
 import type { GiselleStorage } from "../storage";
 import type { GiselleEngineContext } from "../types";
 

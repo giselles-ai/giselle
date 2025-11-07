@@ -43,7 +43,6 @@
 	"devDependencies": {
 		"@giselles-ai/protocol": "workspace:*",
 		"@giselles-ai/rag": "workspace:^",
-		"@giselles-ai/utils": "workspace:*",
 		"@giselles-ai/tsconfig": "workspace:*",
 		"@types/pg": "catalog:",
 		"@types/react": "catalog:",

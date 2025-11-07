@@ -1,12 +1,12 @@
-import type {
-	CompletedGeneration,
-	FailedGeneration,
-	Generation,
-} from "@giselles-ai/giselle";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
+import type {
+	CompletedGeneration,
+	FailedGeneration,
+	Generation,
+} from "@giselles-ai/protocol";
 import {
 	isTextGenerationNode,
 	type TextGenerationNode,

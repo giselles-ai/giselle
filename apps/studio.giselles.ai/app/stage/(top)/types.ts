@@ -1,5 +1,8 @@
-import type { ParameterItem } from "@giselles-ai/giselle";
-import type { FlowTrigger, FlowTriggerId } from "@giselles-ai/protocol";
+import type {
+	FlowTrigger,
+	FlowTriggerId,
+	ParameterItem,
+} from "@giselles-ai/protocol";
 import type { InferSelectModel } from "drizzle-orm";
 import type { teams } from "@/db";
 
