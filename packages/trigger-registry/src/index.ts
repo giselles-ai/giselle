@@ -285,7 +285,7 @@ githubTriggerRegistry.add(GitHubTriggerEventDiscussionCreated, {
 
 githubTriggerRegistry.add(GitHubTriggerEventPullRequestClosed, {
 	id: GitHubTriggerEventPullRequestClosed.shape.id.value,
-	label: "Discussion Created",
+	label: "Pull Request Closed",
 	payload: [
 		{
 			key: "title",
@@ -336,7 +336,7 @@ githubTriggerRegistry.add(GitHubTriggerEventPullRequestLabeled, {
 		},
 		{
 			key: "labelName",
-			label: "Pull Request URL",
+			label: "Pull Request Label Name",
 			type: "text",
 		},
 	],
