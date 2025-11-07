@@ -498,7 +498,7 @@ function EmbeddingModelCard({
 													className={`text-[12px] leading-[14px] font-medium font-geist flex-1 text-center ml-1.5 ${
 														issueStatus.status === "failed"
 															? "text-error-900"
-															: "text-black-400"
+															: "text-text-muted"
 													}`}
 												>
 													{isIngesting && issueStatus.enabled
