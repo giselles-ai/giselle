@@ -5,6 +5,23 @@ import type { ChunkerFunction } from "../chunker/types";
 import type { DocumentLoader } from "../document-loader/types";
 import { createPipeline } from "./pipeline";
 
+// GitHub Issue metadata type for testing
+type GitHubIssueMetadata = {
+	owner: string;
+	repo: string;
+
+	issueNumber: number;
+	issueState: string;
+	issueStateReason: string | null;
+	issueUpdatedAt: string;
+	issueClosedAt: string | null;
+
+	contentType: string;
+	contentId: string;
+	contentCreatedAt: string;
+	contentEditedAt: string;
+};
+
 // Mock the data-type module for EMBEDDING_PROFILES
 vi.mock("@giselles-ai/protocol", () => ({
 	DEFAULT_EMBEDDING_PROFILE_ID: 1,
@@ -314,5 +331,94 @@ describe("createPipeline with differential ingestion", () => {
 		expect(result.successfulDocuments).toBe(0);
 		expect(mockChunkStore.insert).not.toHaveBeenCalled();
 		expect(unchangedChunkStore.deleteBatch).not.toHaveBeenCalled();
+	});
+
+	it("should update only metadata when metadataVersion changes without re-embedding", async () => {
+		const issueLoader: DocumentLoader<GitHubIssueMetadata> = {
+			async *loadMetadata() {
+				// Issue that only has metadata changes (state: open -> closed)
+				yield await Promise.resolve({
+					owner: "test-owner",
+					repo: "test-repo",
+					issueNumber: 1,
+					issueState: "CLOSED",
+					issueStateReason: "COMPLETED",
+					issueUpdatedAt: "2024-01-20T10:00:00Z",
+					issueClosedAt: "2024-01-20T10:00:00Z",
+					contentType: "title_body",
+					contentId: "issue-1",
+					contentCreatedAt: "2024-01-10T10:00:00Z",
+					contentEditedAt: "2024-01-10T10:00:00Z", // Same as before - content unchanged
+				});
+			},
+			async loadDocument(metadata) {
+				return await Promise.resolve({
+					content: `Issue #${metadata.issueNumber} content`,
+					metadata,
+				});
+			},
+		};
+
+		const issueChunkStore: ChunkStore<GitHubIssueMetadata> = {
+			insert: vi.fn(async () => {}),
+			delete: vi.fn(async () => {}),
+			deleteBatch: vi.fn(async () => {}),
+			getDocumentVersions: vi.fn(async () => [
+				{
+					documentKey: "1:title_body:issue-1",
+					version: "2024-01-10T10:00:00.000Z", // Same version as contentEditedAt
+					metadataVersion: "OPEN:REOPEND:2024-01-20T10:00:00Z", // Old metadata (different from current CLOSED:COMPLETED:2024-01-20T10:00:00Z)
+				},
+			]),
+			updateMetadata: vi.fn(async () => {}),
+		};
+
+		const ingest = createPipeline({
+			documentLoader: issueLoader,
+			chunker: mockChunker,
+			embeddingProfileId: DEFAULT_EMBEDDING_PROFILE_ID,
+			chunkStore: issueChunkStore,
+			documentKey: ({ issueNumber, contentType, contentId }) =>
+				`${issueNumber}:${contentType}:${contentId}`,
+			documentVersion: ({ contentEditedAt }) =>
+				new Date(contentEditedAt).toISOString(),
+			metadataVersion: ({ issueState, issueStateReason, issueClosedAt }) =>
+				[issueState, issueStateReason, issueClosedAt].join(":"),
+			metadataTransform: (metadata) => ({
+				...metadata,
+				metadataVersion: [
+					metadata.issueState,
+					metadata.issueStateReason,
+					metadata.issueClosedAt,
+				].join(":"),
+			}),
+		});
+
+		const result = await ingest();
+
+		// Should perform metadata-only update
+		expect(result.totalDocuments).toBe(0); // No full processing
+		expect(result.successfulDocuments).toBe(0); // No embedding
+		expect(result.metadataOnlyUpdates).toBe(1); // Metadata updated
+		expect(result.failedDocuments).toBe(0);
+
+		// Verify updateMetadata was called
+		expect(issueChunkStore.updateMetadata).toHaveBeenCalledTimes(1);
+		expect(issueChunkStore.updateMetadata).toHaveBeenCalledWith(
+			"1:title_body:issue-1",
+			expect.objectContaining({
+				owner: "test-owner",
+				repo: "test-repo",
+				issueNumber: 1,
+				issueState: "CLOSED",
+				issueStateReason: "COMPLETED",
+				issueClosedAt: "2024-01-20T10:00:00Z",
+				metadataVersion: "CLOSED:COMPLETED:2024-01-20T10:00:00Z",
+			}),
+		);
+
+		// Verify chunker and insert were NOT called (no embedding)
+		expect(mockChunker).not.toHaveBeenCalled();
+		expect(issueChunkStore.insert).not.toHaveBeenCalled();
 	});
 });
