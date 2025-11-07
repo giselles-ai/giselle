@@ -6,7 +6,7 @@ import {
 import { type Client, CombinedError } from "urql";
 import { graphql } from "../../client";
 import type { GitHubAuthConfig } from "../../types";
-import { createCacheKey, issueDetailsCache } from "./cache";
+import { getCache, issueDetailsCache, setCache } from "./cache";
 import {
 	type FetchContext,
 	fetchIssueDetails,
@@ -92,8 +92,7 @@ export function createGitHubIssuesLoader(
 		issueNumber: number,
 		issueUpdatedAt: string,
 	): Promise<IssueDetails> {
-		const cacheKey = createCacheKey(owner, repo, issueNumber, issueUpdatedAt);
-		const cached = issueDetailsCache.get(cacheKey);
+		const cached = getCache(owner, repo, issueNumber, issueUpdatedAt);
 		if (cached) {
 			return cached;
 		}
@@ -104,8 +103,11 @@ export function createGitHubIssuesLoader(
 			return fetchIssueDetails(ctx, issueNumber);
 		})();
 
-		issueDetailsCache.set(cacheKey, promise);
-		promise.catch(() => issueDetailsCache.delete(cacheKey));
+		setCache(owner, repo, issueNumber, issueUpdatedAt, promise);
+		promise.catch(() => {
+			const key = `${owner}/${repo}/${issueNumber}` as const;
+			issueDetailsCache.delete(key);
+		});
 		return promise;
 	}
 
