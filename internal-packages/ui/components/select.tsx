@@ -1,6 +1,9 @@
+"use client";
+
 import clsx from "clsx/lite";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import { Select as SelectPrimitive } from "radix-ui";
+import { useEffect, useMemo, useState } from "react";
 import { PopoverContent } from "./popover";
 
 export type SelectOption = {
@@ -54,6 +57,63 @@ export function Select<T extends SelectOption>({
 	disableHoverBg,
 	hideItemIndicator,
 }: SelectProps<T>) {
+	const [mounted, setMounted] = useState(false);
+	useEffect(() => setMounted(true), []);
+
+	const displayLabel = useMemo(() => {
+		if (renderTriggerContent) return null;
+		const v = value ?? defaultValue;
+		if (v == null) return placeholder;
+		const match = options.find(
+			(o) => `${renderValue ? renderValue(o) : o.value}` === `${v}`,
+		);
+		return match ? match.label : placeholder;
+	}, [
+		renderTriggerContent,
+		value,
+		defaultValue,
+		options,
+		renderValue,
+		placeholder,
+	]);
+
+	if (!mounted) {
+		return (
+			<button
+				type="button"
+				className={clsx(
+					widthClassName ?? "w-full",
+					"flex justify-between items-center rounded-[8px] h-9 px-[8px] text-left text-[14px] shrink-0",
+					"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
+					renderTriggerContent
+						? clsx(
+								"bg-transparent border border-border transition-colors",
+								disableHoverBg ? undefined : "hover:bg-white/5",
+							)
+						: "bg-transparent border border-border transition-colors hover:bg-white/5",
+					"disabled:opacity-50 disabled:cursor-not-allowed",
+					"data-[placeholder]:text-text-muted",
+					triggerClassName,
+				)}
+				disabled={disabled}
+				aria-label={ariaLabel}
+			>
+				{renderTriggerContent ? (
+					<div className="flex-1 flex items-center justify-center">
+						{renderTriggerContent}
+					</div>
+				) : (
+					<div className="flex-1 min-w-0 text-ellipsis overflow-hidden whitespace-nowrap">
+						{displayLabel}
+					</div>
+				)}
+				{!hideChevron && (
+					<ChevronDownIcon className="size-[13px] shrink-0 text-text ml-2" />
+				)}
+			</button>
+		);
+	}
+
 	return (
 		<SelectPrimitive.Root
 			value={value}

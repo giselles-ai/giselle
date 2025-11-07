@@ -121,7 +121,7 @@
 	--font-sans: var(--font-dm-sans);
 	--font-mono: var(--font-dm-mono);
 
-	--spacing-navigation-rail-expanded: 260px;
+	--spacing-navigation-rail-expanded: 240px;
 	--spacing-navigation-rail-collapsed: 52px;
 	--spacing-navigation-rail-header: 52px;
 	--spacing-navigation-rail-footer: 60px;

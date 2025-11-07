@@ -13,12 +13,15 @@ export type GlassSurfaceLayersProps = {
 	tone?: Tone; // semantic background tone; overrides baseFillClass when provided
 	radiusClass?: string;
 	baseFillClass?: string; // e.g. "bg-black-900/50"
+	baseFillMixPercent?: number; // percent for color-mix with --color-background (e.g. 40)
 	blurClass?: string; // e.g. "backdrop-blur-md"
 	withBaseFill?: boolean;
 	withTopHighlight?: boolean;
 	borderStyle?: BorderStyle;
 	borderTone?: BorderTone; // solid border tone; overrides default class when provided
+	borderOpacityClass?: string; // override main border opacity (e.g. "opacity-50"); pass "" to remove
 	withAuxHairline?: boolean; // add a subtle extra hairline for contrast
+	auxHairlineOpacityClass?: string; // override aux hairline opacity (default "opacity-5")
 	zIndexClass?: string; // e.g. "-z-10"
 	className?: string;
 	children?: ReactNode; // optional: allow nesting extra layers
@@ -33,12 +36,15 @@ export function GlassSurfaceLayers({
 	tone,
 	radiusClass = "rounded-[12px]",
 	baseFillClass = "", // prefer token-driven mix; allow override via class
+	baseFillMixPercent = 50,
 	blurClass = "backdrop-blur-md",
 	withBaseFill = true,
 	withTopHighlight = true,
 	borderStyle = "solid",
 	borderTone = "default",
+	borderOpacityClass,
 	withAuxHairline = true,
+	auxHairlineOpacityClass,
 	zIndexClass = "-z-10",
 	className,
 	children,
@@ -97,8 +103,7 @@ export function GlassSurfaceLayers({
 						resolvedBaseFillClass
 							? undefined
 							: {
-									background:
-										"color-mix(in srgb, var(--color-background) 50%, transparent)",
+									background: `color-mix(in srgb, var(--color-background) ${baseFillMixPercent}%, transparent)`,
 								}
 					}
 				/>
@@ -128,7 +133,9 @@ export function GlassSurfaceLayers({
 						zIndexClass,
 						radiusClass,
 						solidBorderClass,
-						"opacity-30",
+						borderOpacityClass !== undefined
+							? borderOpacityClass
+							: "opacity-50",
 					)}
 				/>
 			) : borderStyle === "gradient" ? (
@@ -147,7 +154,8 @@ export function GlassSurfaceLayers({
 						"absolute inset-0",
 						zIndexClass,
 						radiusClass,
-						"border-[0.5px] border-border opacity-5",
+						"border-[0.5px] border-border",
+						auxHairlineOpacityClass ?? "opacity-5",
 					)}
 					aria-hidden
 				/>
@@ -158,7 +166,10 @@ export function GlassSurfaceLayers({
 						"absolute top-0 left-4 right-4 h-px z-10",
 						radiusClass,
 					)}
-					style={{ backgroundImage: "var(--glass-highlight-bg)" }}
+					style={{
+						backgroundImage:
+							"linear-gradient(to right, transparent, color-mix(in srgb, var(--color-text) 40%, transparent), transparent)",
+					}}
 				/>
 			)}
 			{children}

@@ -268,9 +268,6 @@ importers:
 
   apps/playground:
     dependencies:
-      '@aws-sdk/client-s3':
-        specifier: 'catalog:'
-        version: 3.842.0
       '@giselle-internal/ui':
         specifier: workspace:^
         version: link:../../internal-packages/ui
@@ -289,27 +286,15 @@ importers:
       '@giselles-ai/supabase-driver':
         specifier: workspace:^
         version: link:../../packages/supabase-driver
-      '@supabase/supabase-js':
-        specifier: 'catalog:'
-        version: 2.50.5(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       clsx:
         specifier: 'catalog:'
         version: 2.1.1
-      happy-dom:
-        specifier: 'catalog:'
-        version: 20.0.2
-      jsdom:
-        specifier: 'catalog:'
-        version: 26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       lucide-react:
         specifier: 'catalog:'
         version: 0.473.0(react@19.1.1)
       next:
         specifier: 'catalog:'
         version: 15.5.2(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.56.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      pg:
-        specifier: 'catalog:'
-        version: 8.14.1
       react:
         specifier: 'catalog:'
         version: 19.1.1

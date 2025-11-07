@@ -112,30 +112,23 @@ const config: KnipConfig = {
 	biome: false,
 	workspaces: {
 		"apps/playground": {
-			ignoreDependencies: [
-				...filterExisting(
-					playgroundAppConfig.serverExternalPackages,
-					getDepsFor("apps/playground"),
-				),
-				...filterExisting(
-					nextPredefinedExternalPackages,
-					getDepsFor("apps/playground"),
-				),
-			],
+			ignoreDependencies: [],
 		},
 		"apps/studio.giselles.ai": {
 			entry: ["tests/e2e/global-setup.ts"],
 			ignore: ["scripts/**", "trigger.config.ts"],
-			ignoreDependencies: [
-				...filterExisting(
-					serverExternalPackages,
-					getDepsFor("apps/studio.giselles.ai"),
-				),
-				...filterExisting(
-					nextPredefinedExternalPackages,
-					getDepsFor("apps/studio.giselles.ai"),
-				),
-			],
+			// Ignore deps that are resolved dynamically in next.config or used only at build/runtime
+			ignoreDependencies: filterExisting(
+				[
+					"@embedpdf/pdfium",
+					"@opentelemetry/sdk-node",
+					"import-in-the-middle",
+					"require-in-the-middle",
+					"@aws-sdk/client-s3",
+					"pino-pretty",
+				],
+				getDepsFor("apps/studio.giselles.ai"),
+			),
 		},
 		"apps/ui.giselles.ai": {
 			ignoreDependencies: ["tailwindcss"],

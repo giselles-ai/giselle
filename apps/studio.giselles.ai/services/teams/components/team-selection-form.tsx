@@ -1,8 +1,9 @@
 "use client";
 
+import clsx from "clsx/lite";
 import { ChevronsUpDown, Plus } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FreeTag } from "@/components/free-tag";
 import { ProTag } from "@/components/pro-tag";
 import {
@@ -21,6 +22,7 @@ type TeamSelectionFormProps = {
 	currentTeam: Team;
 	teamCreation: React.ReactNode;
 	currentUser: React.ReactNode;
+	triggerClassName?: string;
 };
 
 export function TeamSelectionForm({
@@ -28,7 +30,10 @@ export function TeamSelectionForm({
 	currentTeam,
 	teamCreation,
 	currentUser,
+	triggerClassName,
 }: TeamSelectionFormProps) {
+	const [mounted, setMounted] = useState(false);
+	useEffect(() => setMounted(true), []);
 	const pathname = usePathname();
 	const isAccontSettingPage = useMemo(
 		() => pathname.startsWith("/settings/account"),
@@ -41,11 +46,14 @@ export function TeamSelectionForm({
 
 	const formRef = useRef<HTMLFormElement>(null);
 
+	if (!mounted) return null; // avoid hydration mismatches from Radix ids
+
 	return (
 		<form
 			action={action}
 			ref={formRef}
 			key={`${currentTeam.id}-${isAccontSettingPage}`}
+			className="w-full"
 		>
 			<Select
 				name="teamId"
@@ -54,8 +62,13 @@ export function TeamSelectionForm({
 					formRef.current?.requestSubmit();
 				}}
 			>
-				<SelectTrigger className="w-auto min-w-[100px] max-w-[360px] border-0 flex justify-between items-center data-[state=open]:border-0 data-[state=open]:ring-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 outline-none px-0.5 py-0.5 bg-transparent">
-					<div className="flex items-center gap-1.5">
+				<SelectTrigger
+					className={clsx(
+						"w-full border-0 flex justify-between items-center data-[state=open]:border-0 data-[state=open]:ring-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 outline-none px-0.5 py-1.5 bg-transparent",
+						triggerClassName,
+					)}
+				>
+					<div className="flex items-center gap-1.5 flex-1 min-w-0">
 						{isAccontSettingPage ? (
 							currentUser
 						) : (
@@ -63,13 +76,13 @@ export function TeamSelectionForm({
 								<TeamAvatarImage
 									avatarUrl={currentTeam.avatarUrl}
 									teamName={currentTeam.name}
-									width={24}
-									height={24}
-									className="w-6 h-6 shrink-0"
+									width={32}
+									height={32}
+									className="w-8 h-8 shrink-0"
 									alt={currentTeam.name}
 								/>
 								<span
-									className="text-[14px] font-geist text-inverse truncate max-w-[180px]"
+									className="text-[14px] font-geist text-inverse truncate"
 									title={currentTeam.name}
 								>
 									{currentTeam.name}
@@ -79,7 +92,7 @@ export function TeamSelectionForm({
 							</>
 						)}
 					</div>
-					<div className="pl-3">
+					<div className="pl-3 ml-auto flex-none">
 						<ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50 hover:bg-white/10 hover:opacity-100 hover:rounded-md hover:p-0.5" />
 					</div>
 				</SelectTrigger>
@@ -95,9 +108,9 @@ export function TeamSelectionForm({
 									<TeamAvatarImage
 										avatarUrl={team.avatarUrl}
 										teamName={team.name}
-										width={24}
-										height={24}
-										className="w-6 h-6 shrink-0"
+										width={32}
+										height={32}
+										className="w-8 h-8 shrink-0"
 										alt={team.name}
 									/>
 									<span
@@ -115,7 +128,7 @@ export function TeamSelectionForm({
 
 					<SelectSeparator className="bg-white/10" />
 
-					<div className="p-2.5 flex items-center gap-x-2 rounded-lg w-full hover:bg-white/5">
+					<div className="px-2 py-1.5 flex items-center gap-x-2 rounded-lg w-full hover:bg-white/5">
 						<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
 							<Plus className="size-3 text-background" />
 						</span>
