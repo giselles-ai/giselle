@@ -14,7 +14,6 @@ import {
 	documentVectorStoreSources,
 	documentVectorStores,
 } from "@/db";
-import { docVectorStoreFlag } from "@/flags";
 import {
 	DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_BYTES,
 	DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_MB,
@@ -47,14 +46,6 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
-async function ensureFeatureEnabled() {
-	const enabled = await docVectorStoreFlag();
-	if (!enabled) {
-		return NextResponse.json({ error: "Not Found" }, { status: 404 });
-	}
-	return null;
-}
 
 async function fetchTeam() {
 	try {
@@ -162,11 +153,6 @@ export async function POST(
 	request: NextRequest,
 	{ params }: { params: Promise<{ documentVectorStoreId: string }> },
 ) {
-	const featureGuard = await ensureFeatureEnabled();
-	if (featureGuard) {
-		return featureGuard;
-	}
-
 	const team = await fetchTeam();
 	if (!team) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -377,11 +363,6 @@ export async function DELETE(
 	request: NextRequest,
 	{ params }: { params: Promise<{ documentVectorStoreId: string }> },
 ) {
-	const featureGuard = await ensureFeatureEnabled();
-	if (featureGuard) {
-		return featureGuard;
-	}
-
 	const team = await fetchTeam();
 	if (!team) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

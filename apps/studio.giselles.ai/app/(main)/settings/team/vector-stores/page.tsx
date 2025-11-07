@@ -1,6 +1,5 @@
 import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
-import { docVectorStoreFlag } from "@/flags";
 import { getGitHubIdentityState } from "@/services/accounts";
 import {
 	deleteRepositoryIndex,
@@ -40,12 +39,11 @@ export default async function TeamVectorStorePage() {
 		return <GitHubAppInstallRequiredCard />;
 	}
 
-	const [installationsWithRepos, repositoryIndexes, isDocVectorStoreEnabled] =
-		await Promise.all([
-			getInstallationsWithRepos(),
-			getGitHubRepositoryIndexes(),
-			docVectorStoreFlag(),
-		]);
+	const [installationsWithRepos, repositoryIndexes] = await Promise.all([
+		getInstallationsWithRepos(),
+		getGitHubRepositoryIndexes(),
+	]);
+	const isDocVectorStoreEnabled = true;
 
 	return (
 		<div className="flex flex-col gap-[24px]">
