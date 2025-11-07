@@ -8,7 +8,6 @@ import {
 import { getDocumentVectorStores } from "../data";
 import { DocumentVectorStoreCreateDialog } from "../document-store-create-dialog";
 import { DocumentVectorStoreList } from "../document-vector-store-list";
-import { VectorStoresNavigationLayout } from "../navigation-layout";
 
 export default async function DocumentVectorStorePage() {
 	const vectorStores = await getDocumentVectorStores();
@@ -30,13 +29,11 @@ export default async function DocumentVectorStorePage() {
 					/>
 				</div>
 			</div>
-			<VectorStoresNavigationLayout>
-				<DocumentVectorStoreList
-					stores={vectorStores}
-					deleteAction={deleteDocumentVectorStore}
-					updateAction={updateDocumentVectorStore}
-				/>
-			</VectorStoresNavigationLayout>
+			<DocumentVectorStoreList
+				stores={vectorStores}
+				deleteAction={deleteDocumentVectorStore}
+				updateAction={updateDocumentVectorStore}
+			/>
 		</div>
 	);
 }
