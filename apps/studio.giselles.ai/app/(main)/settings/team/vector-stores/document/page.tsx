@@ -1,7 +1,5 @@
 import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
-import { notFound } from "next/navigation";
-import { docVectorStoreFlag } from "@/flags";
 import {
 	createDocumentVectorStore,
 	deleteDocumentVectorStore,
@@ -13,11 +11,6 @@ import { DocumentVectorStoreList } from "../document-vector-store-list";
 import { VectorStoresNavigationLayout } from "../navigation-layout";
 
 export default async function DocumentVectorStorePage() {
-	const enabled = await docVectorStoreFlag();
-	if (!enabled) {
-		return notFound();
-	}
-
 	const vectorStores = await getDocumentVectorStores();
 
 	return (
@@ -37,7 +30,7 @@ export default async function DocumentVectorStorePage() {
 					/>
 				</div>
 			</div>
-			<VectorStoresNavigationLayout isEnabled={enabled}>
+			<VectorStoresNavigationLayout>
 				<DocumentVectorStoreList
 					stores={vectorStores}
 					deleteAction={deleteDocumentVectorStore}

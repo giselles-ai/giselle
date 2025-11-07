@@ -1,14 +1,8 @@
 import { NextResponse } from "next/server";
 
-import { docVectorStoreFlag } from "@/flags";
 import { getDocumentVectorStores } from "@/lib/vector-stores/document/queries";
 
 export async function GET() {
-	const enabled = await docVectorStoreFlag();
-	if (!enabled) {
-		return NextResponse.json({ error: "Not Found" }, { status: 404 });
-	}
-
 	try {
 		const stores = await getDocumentVectorStores();
 		return NextResponse.json(

@@ -9,7 +9,6 @@ import { giselleEngine } from "@/app/giselle-engine";
 import { db, flowTriggers } from "@/db";
 import {
 	aiGatewayFlag,
-	docVectorStoreFlag,
 	githubIssuesVectorStoreFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
@@ -75,10 +74,9 @@ export default async function Layout({
 	const aiGateway = await aiGatewayFlag();
 	const googleUrlContext = await googleUrlContextFlag();
 	const data = await giselleEngine.getWorkspace(workspaceId);
-	const documentVectorStore = await docVectorStoreFlag();
-	const documentVectorStores = documentVectorStore
-		? await getDocumentVectorStores(workspaceTeam.dbId)
-		: [];
+	const documentVectorStores = await getDocumentVectorStores(
+		workspaceTeam.dbId,
+	);
 	const githubIssuesVectorStore = await githubIssuesVectorStoreFlag();
 
 	// return children
@@ -126,7 +124,6 @@ export default async function Layout({
 				stage,
 				aiGateway,
 				googleUrlContext,
-				documentVectorStore,
 				githubIssuesVectorStore,
 			}}
 			flowTrigger={{

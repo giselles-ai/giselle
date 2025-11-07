@@ -10,7 +10,6 @@ export default function Layout({ children }: { children: ReactNode }) {
 				stage: true,
 				aiGateway: false,
 				googleUrlContext: false,
-				documentVectorStore: false,
 				githubIssuesVectorStore: false,
 			}}
 		>
