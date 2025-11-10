@@ -1,5 +1,5 @@
 import { titleCase } from "@giselles-ai/utils";
-import z from "zod/v4";
+import z, { type ZodTypeAny } from "zod/v4";
 
 interface GitHubEvent {
 	id: string;
@@ -233,25 +233,48 @@ interface InputData {
 	optional?: boolean;
 	type: "text" | "multiline-text" | "number";
 }
+const unwrapSchema = (schema: ZodTypeAny): ZodTypeAny => {
+	let current: ZodTypeAny = schema;
+	while (true) {
+		const def = current._def as unknown as {
+			typeName: string;
+			innerType?: ZodTypeAny;
+			schema?: ZodTypeAny;
+		};
+		const typeName = def.typeName;
+		if (
+			typeName === "ZodOptional" ||
+			typeName === "ZodNullable" ||
+			typeName === "ZodDefault"
+		) {
+			current = def.innerType as ZodTypeAny;
+			continue;
+		}
+		if (typeName === "ZodEffects") {
+			current = def.schema as ZodTypeAny;
+			continue;
+		}
+		return current;
+	}
+};
+
 export function githubEventToInputFields(githubAction: GitHubEvent) {
 	return githubAction.payload.keyof().options.map((key) => {
-		const fieldSchema = githubAction.payload.shape[key] as
-			| z.ZodString
-			| z.ZodNumber;
+		const fieldSchema = githubAction.payload.shape[key] as ZodTypeAny;
 		const fieldMeta = PayloadFieldMeta.parse(fieldSchema.meta());
 		const label = fieldMeta.label ?? titleCase(key);
 		const optional = fieldSchema.safeParse(undefined).success;
-		const zodType = fieldSchema.def.type;
+		const baseSchema = unwrapSchema(fieldSchema);
+		const baseTypeName = (baseSchema._def as unknown as { typeName: string })
+			.typeName;
+		const isString = baseTypeName === "ZodString";
+		const isNumber = baseTypeName === "ZodNumber";
+		const inputType = fieldMeta.input?.multiline ? "multiline-text" : "text";
 		return {
 			key,
 			label,
 			optional,
-			type:
-				zodType === "string"
-					? fieldMeta.input?.multiline
-						? "multiline-text"
-						: "text"
-					: "number",
+			type: isString ? inputType : isNumber ? "number" : "text",
 		} satisfies InputData;
 	});
 }
