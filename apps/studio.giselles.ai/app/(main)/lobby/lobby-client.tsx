@@ -1,6 +1,7 @@
 "use client";
 
 import { Blocks, Copy, SparklesIcon, Trash2, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -80,16 +81,62 @@ export function LobbyClient({ username }: LobbyClientProps) {
 
 			{/* Tutorial Video Section */}
 			{showTutorial && (
-				<section className="relative">
-					<div className="h-32 md:h-40 w-full rounded-[12px] bg-gray-100 border border-gray-200 grid place-items-center">
-						<span className="text-gray-600 text-sm">
-							チュートリアル動画スペース (消せる)
+				<section className="relative rounded-[12px] overflow-hidden">
+					{/* Background with gradient and image */}
+					<div className="relative h-48 md:h-56 w-full bg-gradient-to-br from-blue-900/50 via-purple-900/50 to-pink-900/50">
+						<Image
+							src="/stage.jpg"
+							alt="Tutorial background"
+							fill
+							className="object-cover"
+							priority
+						/>
+						<div className="absolute inset-0 bg-black/20" />
+					</div>
+
+					{/* Label - top */}
+					<div className="absolute top-6 left-8 z-10">
+						<span className="inline-block px-3 py-1 rounded-full bg-blue-700 text-white text-xs font-semibold uppercase w-fit">
+							New Feature
 						</span>
 					</div>
+
+					{/* Content */}
+					<div className="absolute inset-0 flex items-end justify-between py-6 px-8">
+						{/* Left section with title and description */}
+						<div className="flex flex-col gap-3 flex-1">
+							{/* Title */}
+							<h2 className="text-2xl md:text-3xl font-sans text-white font-bold">
+								Stage is here
+							</h2>
+							{/* Description */}
+							<p className="text-sm text-white/80 max-w-md">
+								Try powerful agents instantly. Ask anything, get answers.
+							</p>
+						</div>
+
+						{/* Right section with CTA buttons */}
+						<div className="flex items-center gap-3 shrink-0">
+							<button
+								type="button"
+								className="px-4 py-2 rounded-lg bg-white text-black text-sm font-semibold hover:bg-white/90 transition-colors"
+							>
+								Watch Now
+							</button>
+							<button
+								type="button"
+								className="px-4 py-2 rounded-lg bg-white/10 text-white text-sm border border-white/20 hover:bg-white/20 transition-colors"
+							>
+								Learn More
+							</button>
+						</div>
+					</div>
+
+					{/* Close button - top right */}
 					<button
 						type="button"
 						onClick={() => setShowTutorial(false)}
-						className="absolute top-2 right-2 p-1.5 rounded-full bg-surface/50 hover:bg-surface/70 border border-border/10 text-text/60 hover:text-text transition-colors"
+						className="absolute top-6 right-8 text-white transition-colors z-10 hover:opacity-80"
 						aria-label="Close tutorial"
 					>
 						<X className="h-4 w-4" />
