@@ -275,13 +275,12 @@ export function Toolbar() {
 													}
 												}}
 											>
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-												<ToggleGroup.Item data-tool value="app-entry">
-													<TriggerIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">Stage (Coming soon)</p>
-												</ToggleGroup.Item>
+												{stage && (
+													<ToggleGroup.Item data-tool value="app-entry">
+														<TriggerIcon className="size-[20px] shrink-0" />
+														<p className="text-[14px]">App Entry</p>
+													</ToggleGroup.Item>
+												)}
 												{triggerRegistry.map((triggerEntry) => (
 													<ToggleGroup.Item
 														key={triggerEntry.provider}
@@ -299,7 +298,6 @@ export function Toolbar() {
 														</p>
 													</ToggleGroup.Item>
 												))}
-||||||| ancestor
 												{triggerRegistry.map((triggerEntry) => (
 													<ToggleGroup.Item
 														key={triggerEntry.provider}
@@ -317,142 +315,6 @@ export function Toolbar() {
 														</p>
 													</ToggleGroup.Item>
 												))}
-												<div data-tool className="opacity-50">
-													<TriggerIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">Stage (Coming soon)</p>
-												</div>
-												<div data-tool className="opacity-50">
-													<TriggerIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">Widget (Coming soon)</p>
-												</div>
-=======
-												{triggerRegistry
-													.filter(
-														(triggerEntry) =>
-															triggerEntry.provider !== "app-entry" || stage,
-													)
-													.map((triggerEntry) => (
-														<ToggleGroup.Item
-															key={triggerEntry.provider}
-															value={triggerEntry.provider}
-															data-tool
-														>
-															{triggerEntry.provider === "manual" && (
-																<TriggerIcon className="size-[20px] shrink-0" />
-															)}
-															{triggerEntry.provider === "github" && (
-																<GitHubIcon className="size-[20px] shrink-0" />
-															)}
-															{triggerEntry.provider === "app-entry" && (
-																<TriggerIcon className="size-[20px] shrink-0" />
-															)}
-
-															<p className="text-[14px]">
-																{triggerNodeDefaultName(triggerEntry.provider)}
-															</p>
-														</ToggleGroup.Item>
-													))}
-||||||| ancestor
-												{triggerRegistry
-													.filter(
-														(triggerEntry) =>
-															triggerEntry.provider !== "app-entry" || stage,
-													)
-													.map((triggerEntry) => (
-														<ToggleGroup.Item
-															key={triggerEntry.provider}
-															value={triggerEntry.provider}
-															data-tool
-														>
-															{triggerEntry.provider === "manual" && (
-																<TriggerIcon className="size-[20px] shrink-0" />
-															)}
-															{triggerEntry.provider === "github" && (
-																<GitHubIcon className="size-[20px] shrink-0" />
-															)}
-															{triggerEntry.provider === "app-entry" && (
-																<TriggerIcon className="size-[20px] shrink-0" />
-															)}
-
-															<p className="text-[14px]">
-																{triggerNodeDefaultName(triggerEntry.provider)}
-															</p>
-														</ToggleGroup.Item>
-													))}
-=======
-												{triggerRegistry.map((triggerEntry) => (
-													<ToggleGroup.Item
-														key={triggerEntry.provider}
-														value={triggerEntry.provider}
-														data-tool
-													>
-														{triggerEntry.provider === "manual" && (
-															<TriggerIcon className="size-[20px] shrink-0" />
-														)}
-														{triggerEntry.provider === "github" && (
-															<GitHubIcon className="size-[20px] shrink-0" />
-														)}
-														<p className="text-[14px]">
-															{triggerNodeDefaultName(triggerEntry.provider)}
-														</p>
-													</ToggleGroup.Item>
-												))}
->>>>>>> theirs
-||||||| ancestor
-												{triggerRegistry.map((triggerEntry) => (
-													<ToggleGroup.Item
-														key={triggerEntry.provider}
-														value={triggerEntry.provider}
-														data-tool
-													>
-														{triggerEntry.provider === "manual" && (
-															<TriggerIcon className="size-[20px] shrink-0" />
-														)}
-														{triggerEntry.provider === "github" && (
-															<GitHubIcon className="size-[20px] shrink-0" />
-														)}
-														<p className="text-[14px]">
-															{triggerNodeDefaultName(triggerEntry.provider)}
-														</p>
-													</ToggleGroup.Item>
-												))}
-=======
-												{triggerRegistry
-													.filter(
-														(triggerEntry) =>
-															triggerEntry.provider !== "app-entry" || stage,
-													)
-													.map((triggerEntry) => (
-														<ToggleGroup.Item
-															key={triggerEntry.provider}
-															value={triggerEntry.provider}
-															data-tool
-														>
-															{triggerEntry.provider === "manual" && (
-																<TriggerIcon className="size-[20px] shrink-0" />
-															)}
-															{triggerEntry.provider === "github" && (
-																<GitHubIcon className="size-[20px] shrink-0" />
-															)}
-															{triggerEntry.provider === "app-entry" && (
-																<TriggerIcon className="size-[20px] shrink-0" />
-															)}
-
-															<p className="text-[14px]">
-																{triggerNodeDefaultName(triggerEntry.provider)}
-															</p>
-														</ToggleGroup.Item>
-													))}
->>>>>>> theirs
-												<div data-tool className="opacity-50">
-													<TriggerIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">Stage (Coming soon)</p>
-												</div>
-												<div data-tool className="opacity-50">
-													<TriggerIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">Widget (Coming soon)</p>
-												</div>
->>>>>>> theirs
 											</ToggleGroup.Root>
 										</div>
 									</Popover.Content>
