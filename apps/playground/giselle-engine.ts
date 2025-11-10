@@ -102,10 +102,6 @@ if (
 // 	};
 // }
 
-if (process.env.FAL_API_KEY) {
-	llmProviders.push("fal");
-}
-
 let sampleAppWorkspaceIds: WorkspaceId[] | undefined;
 if (process.env.SAMPLE_APP_WORKSPACE_IDS) {
 	const workspaceIdStrings = process.env.SAMPLE_APP_WORKSPACE_IDS.split(",")
