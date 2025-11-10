@@ -29,6 +29,8 @@ export function addProviderToCommand(data: unknown, issue: $ZodIssue) {
 
 	const commandPath = issue.path.slice(0, providerIndex);
 	const command = getValueAtPath(data, commandPath);
+	
+	// If command doesn't exist or is not an object, we can't fix it
 	if (!isObject(command)) {
 		return data;
 	}
@@ -36,10 +38,17 @@ export function addProviderToCommand(data: unknown, issue: $ZodIssue) {
 	// If provider is missing or has an invalid value, set it to "github"
 	// Since ActionData is a discriminated union with only GitHubActionData,
 	// we default to "github" if provider is missing or invalid
-	if (!("provider" in command) || command.provider !== "github") {
-		const newData = structuredClone(data as Record<string, unknown>);
+	const currentProvider = "provider" in command ? command.provider : undefined;
+	if (currentProvider !== "github") {
+		// biome-ignore lint/suspicious/noExplicitAny: Using any for deep cloning
+		const newData = structuredClone(data as Record<string, any>);
 		setValueAtPath(newData, [...commandPath, "provider"], "github");
-		return newData;
+		
+		// Verify the fix was applied
+		const fixedCommand = getValueAtPath(newData, commandPath);
+		if (isObject(fixedCommand) && fixedCommand.provider === "github") {
+			return newData;
+		}
 	}
 
 	return data;
