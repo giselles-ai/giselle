@@ -5,8 +5,11 @@ import {
 	type Trigger,
 	TriggerId,
 } from "@giselles-ai/protocol";
+import {
+	type GitHubEventId,
+	githubEvents,
+} from "@giselles-ai/trigger-registry";
 import { describe, expect, test, vi } from "vitest";
-import { type GitHubTriggerEventId, githubTriggers } from "../triggers";
 import { resolveTrigger } from "./trigger-utils";
 
 vi.mock("@giselles-ai/github-tool", async () => {
@@ -31,7 +34,7 @@ function createOutput(accessor: string): Output {
 	};
 }
 
-function createTrigger(eventId: GitHubTriggerEventId): Trigger {
+function createTrigger(eventId: GitHubEventId): Trigger {
 	const event =
 		eventId === "github.issue_comment.created" ||
 		eventId === "github.pull_request_comment.created" ||
@@ -209,7 +212,7 @@ describe("resolveTrigger", () => {
 			body: "Issue body",
 			number: 1,
 		});
-		const githubTrigger = githubTriggers["github.issue.created"];
+		const githubTrigger = githubEvents["github.issue.created"];
 		test.each([
 			["title", "Issue title"],
 			["body", "Issue body"],
@@ -219,7 +222,7 @@ describe("resolveTrigger", () => {
 			const output = createOutput(accessor);
 			const result = await resolveTrigger({
 				output,
-				githubTrigger,
+				githubEvent: githubTrigger,
 				trigger,
 				webhookEvent,
 				...appAuth,
@@ -238,7 +241,7 @@ describe("resolveTrigger", () => {
 			body: "Closed body",
 			number: 2,
 		});
-		const githubTrigger = githubTriggers["github.issue.closed"];
+		const githubTrigger = githubEvents["github.issue.closed"];
 		test.each([
 			["title", "Closed title"],
 			["body", "Closed body"],
@@ -248,7 +251,7 @@ describe("resolveTrigger", () => {
 			const output = createOutput(accessor);
 			const result = await resolveTrigger({
 				output,
-				githubTrigger,
+				githubEvent: githubTrigger,
 				trigger,
 				webhookEvent,
 				...appAuth,
@@ -270,7 +273,7 @@ describe("resolveTrigger", () => {
 			},
 			"bug",
 		);
-		const githubTrigger = githubTriggers["github.issue.labeled"];
+		const githubTrigger = githubEvents["github.issue.labeled"];
 		test.each([
 			["title", "Labeled issue title"],
 			["body", "Labeled issue body"],
@@ -281,7 +284,7 @@ describe("resolveTrigger", () => {
 			const output = createOutput(accessor);
 			const result = await resolveTrigger({
 				output,
-				githubTrigger,
+				githubEvent: githubTrigger,
 				trigger,
 				webhookEvent,
 				...appAuth,
@@ -300,7 +303,7 @@ describe("resolveTrigger", () => {
 			body: "Issue body",
 			number: 3,
 		});
-		const githubTrigger = githubTriggers["github.issue_comment.created"];
+		const githubTrigger = githubEvents["github.issue_comment.created"];
 		test.each([
 			["body", "hi"],
 			["issueBody", "Issue body"],
@@ -311,7 +314,7 @@ describe("resolveTrigger", () => {
 			const output = createOutput(accessor);
 			const result = await resolveTrigger({
 				output,
-				githubTrigger,
+				githubEvent: githubTrigger,
 				trigger,
 				webhookEvent,
 				...appAuth,
@@ -331,7 +334,7 @@ describe("resolveTrigger", () => {
 			number: 4,
 			pull_request: {},
 		});
-		const githubTrigger = githubTriggers["github.pull_request_comment.created"];
+		const githubTrigger = githubEvents["github.pull_request_comment.created"];
 		test.each([
 			["body", "hi"],
 			["issueBody", "PR body"],
@@ -342,7 +345,7 @@ describe("resolveTrigger", () => {
 			const output = createOutput(accessor);
 			const result = await resolveTrigger({
 				output,
-				githubTrigger,
+				githubEvent: githubTrigger,
 				trigger,
 				webhookEvent,
 				...appAuth,
@@ -361,7 +364,7 @@ describe("resolveTrigger", () => {
 				number: 6,
 			});
 			const githubTrigger =
-				githubTriggers["github.pull_request_review_comment.created"];
+				githubEvents["github.pull_request_review_comment.created"];
 			test.each([
 				["body", "hi"],
 				["pullRequestBody", "PR body"],
@@ -374,7 +377,7 @@ describe("resolveTrigger", () => {
 				const output = createOutput(accessor);
 				const result = await resolveTrigger({
 					output,
-					githubTrigger,
+					githubEvent: githubTrigger,
 					trigger,
 					webhookEvent,
 					...appAuth,
@@ -390,17 +393,17 @@ describe("resolveTrigger", () => {
 
 	const prCases = [
 		{
-			id: "github.pull_request.opened" as GitHubTriggerEventId,
+			id: "github.pull_request.opened" as GitHubEventId,
 			name: "pull_request.opened" as const,
 			title: "PR opened",
 		},
 		{
-			id: "github.pull_request.ready_for_review" as GitHubTriggerEventId,
+			id: "github.pull_request.ready_for_review" as GitHubEventId,
 			name: "pull_request.ready_for_review" as const,
 			title: "PR ready",
 		},
 		{
-			id: "github.pull_request.closed" as GitHubTriggerEventId,
+			id: "github.pull_request.closed" as GitHubEventId,
 			name: "pull_request.closed" as const,
 			title: "PR closed",
 		},
@@ -414,7 +417,7 @@ describe("resolveTrigger", () => {
 				number: 5,
 				html_url: "https://example.com/pr/5",
 			});
-			const githubTrigger = githubTriggers[id];
+			const githubTrigger = githubEvents[id];
 			test.each([
 				["title", title],
 				["body", `${title} body`],
@@ -426,7 +429,7 @@ describe("resolveTrigger", () => {
 				const output = createOutput(accessor);
 				const result = await resolveTrigger({
 					output,
-					githubTrigger,
+					githubEvent: githubTrigger,
 					trigger,
 					webhookEvent,
 					...appAuth,
@@ -449,7 +452,7 @@ describe("resolveTrigger", () => {
 			},
 			"enhancement",
 		);
-		const githubTrigger = githubTriggers["github.pull_request.labeled"];
+		const githubTrigger = githubEvents["github.pull_request.labeled"];
 		test.each([
 			["pullRequestTitle", "Labeled PR title"],
 			["pullRequestBody", "Labeled PR body"],
@@ -460,7 +463,7 @@ describe("resolveTrigger", () => {
 			const output = createOutput(accessor);
 			const result = await resolveTrigger({
 				output,
-				githubTrigger,
+				githubEvent: githubTrigger,
 				trigger,
 				webhookEvent,
 				...appAuth,
@@ -482,7 +485,7 @@ describe("discussion created", () => {
 		html_url: "https://example.com/owner/repo/discussions/9",
 		category: { name: "General" },
 	});
-	const githubTrigger = githubTriggers["github.discussion.created"];
+	const githubTrigger = githubEvents["github.discussion.created"];
 
 	test.each([
 		["discussionNumber", "9"],
@@ -495,7 +498,7 @@ describe("discussion created", () => {
 		const output = createOutput(accessor);
 		const result = await resolveTrigger({
 			output,
-			githubTrigger,
+			githubEvent: githubTrigger,
 			trigger,
 			webhookEvent,
 			...appAuth,
@@ -509,7 +512,7 @@ describe("discussion created", () => {
 });
 
 describe("discussion comment created", () => {
-	const githubTrigger = githubTriggers["github.discussion_comment.created"];
+	const githubTrigger = githubEvents["github.discussion_comment.created"];
 
 	test.each([
 		["body", "run tests"],
@@ -524,7 +527,7 @@ describe("discussion comment created", () => {
 		const output = createOutput(accessor);
 		const result = await resolveTrigger({
 			output,
-			githubTrigger,
+			githubEvent: githubTrigger,
 			trigger,
 			webhookEvent,
 			...appAuth,
@@ -544,7 +547,7 @@ describe("discussion comment created", () => {
 		const output = createOutput("parentCommentBody");
 		const result = await resolveTrigger({
 			output,
-			githubTrigger,
+			githubEvent: githubTrigger,
 			trigger,
 			webhookEvent,
 			...appAuth,
@@ -562,7 +565,7 @@ describe("discussion comment created", () => {
 		const output = createOutput("parentCommentBody");
 		const result = await resolveTrigger({
 			output,
-			githubTrigger,
+			githubEvent: githubTrigger,
 			trigger,
 			webhookEvent,
 			...appAuth,

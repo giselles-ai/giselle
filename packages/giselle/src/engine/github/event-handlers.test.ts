@@ -4,7 +4,7 @@ import type {
 	WebhookEvent,
 	WebhookEventName,
 } from "@giselles-ai/github-tool";
-import type { GitHubTriggerEvent, Trigger } from "@giselles-ai/protocol";
+import type { GitHubEvent, Trigger } from "@giselles-ai/protocol";
 import { NodeId, TriggerId } from "@giselles-ai/protocol";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createTriggerNode } from "../../utils/node-factories";
@@ -873,7 +873,7 @@ describe("GitHub Event Handlers", () => {
 			};
 			args.trigger.configuration.event = {
 				id: "github.issue.labeled",
-			} as GitHubTriggerEvent;
+			} as GitHubEvent;
 
 			// Act
 			const result = handleIssueLabeled(args);
@@ -1111,7 +1111,7 @@ describe("GitHub Event Handlers", () => {
 			};
 			args.trigger.configuration.event = {
 				id: "github.pull_request.labeled",
-			} as GitHubTriggerEvent;
+			} as GitHubEvent;
 
 			// Act
 			const result = handlePullRequestLabeled(args);

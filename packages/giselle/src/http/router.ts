@@ -5,7 +5,7 @@ import {
 	Generation,
 	GenerationId,
 	GenerationOrigin,
-	GitHubTriggerEvent,
+	GitHubEvent,
 	NodeId,
 	QueuedGeneration,
 	RunningGeneration,
@@ -60,13 +60,6 @@ export const createJsonRouters = {
 		createHandler({
 			handler: () => {
 				const providers = giselleEngine.getLanguageModelProviders();
-				return JsonResponse.json(providers);
-			},
-		}),
-	getTriggerProviders: (giselleEngine: GiselleEngine) =>
-		createHandler({
-			handler: () => {
-				const providers = giselleEngine.getTriggerProviders();
 				return JsonResponse.json(providers);
 			},
 		}),
@@ -243,7 +236,7 @@ export const createJsonRouters = {
 				triggerId: TriggerId.schema,
 				repositoryNodeId: z.string(),
 				installationId: z.number(),
-				event: GitHubTriggerEvent.optional(),
+				event: GitHubEvent.optional(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({

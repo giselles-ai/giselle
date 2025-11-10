@@ -1,5 +1,8 @@
 import type { Trigger, TriggerNode } from "@giselles-ai/protocol";
-import { findGitHubTriggerOption } from "@giselles-ai/trigger-registry";
+import {
+	githubEvents,
+	githubEventToInputFields,
+} from "@giselles-ai/trigger-registry";
 
 export function buttonLabel(node: TriggerNode) {
 	switch (node.content.provider) {
@@ -32,15 +35,8 @@ export function createInputsFromTrigger(
 
 	switch (trigger.configuration.provider) {
 		case "github": {
-			const triggerOption = findGitHubTriggerOption(
-				trigger.configuration.event.id,
-			);
-			if (triggerOption === undefined) {
-				throw new Error(
-					`Unknown GitHub event: ${trigger.configuration.event.id}`,
-				);
-			}
-			return triggerOption.payload.map((item) => ({
+			const githubEvent = githubEvents[trigger.configuration.event.id];
+			return githubEventToInputFields(githubEvent).map((item) => ({
 				name: item.key,
 				label: item.label,
 				type: item.type,

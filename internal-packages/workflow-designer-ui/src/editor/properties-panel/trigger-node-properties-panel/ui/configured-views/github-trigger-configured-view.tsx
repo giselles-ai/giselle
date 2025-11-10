@@ -1,10 +1,10 @@
 import { Button } from "@giselle-internal/ui/button";
 import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
-import type {
-	GitHubTriggerEventId,
-	TriggerId,
-	TriggerNode,
-} from "@giselles-ai/protocol";
+import type { TriggerId, TriggerNode } from "@giselles-ai/protocol";
+import {
+	type GitHubEventId,
+	githubEvents,
+} from "@giselles-ai/trigger-registry";
 import clsx from "clsx/lite";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -25,6 +25,7 @@ import {
 	PullRequestReadyForReviewIcon,
 	PullRequestReviewCommentCreatedIcon,
 } from "../../providers/github-trigger/components/icons";
+import type { GitHubTriggerReconfigureMode } from "../../providers/github-trigger/github-trigger-properties-panel";
 import { GitHubRepositoryBlock } from "../";
 
 // Icon mapping for GitHub trigger events
@@ -42,7 +43,7 @@ const EVENT_ICON_MAP = {
 	"github.pull_request.labeled": PullRequestLabeledIcon,
 	"github.discussion.created": DiscussionCreatedIcon,
 	"github.discussion_comment.created": DiscussionCommentCreatedIcon,
-} satisfies Record<GitHubTriggerEventId, React.ComponentType<IconProps>>;
+} satisfies Record<GitHubEventId, React.ComponentType<IconProps>>;
 
 // Default icon for unknown events
 const DefaultEventIcon = ({
@@ -65,9 +66,6 @@ const DefaultEventIcon = ({
 		<path d="M0 24H24V0H0V24Z" fill="currentColor" />
 	</svg>
 );
-
-import { findGitHubTriggerOption } from "@giselles-ai/trigger-registry";
-import type { GitHubTriggerReconfigureMode } from "../../providers/github-trigger/github-trigger-properties-panel";
 
 export function GitHubTriggerConfiguredView({
 	triggerId,
@@ -92,13 +90,8 @@ export function GitHubTriggerConfiguredView({
 		if (data === undefined) {
 			return "";
 		}
-		const triggerOption = findGitHubTriggerOption(
-			data.trigger.configuration.event.id,
-		);
-		if (triggerOption === undefined) {
-			return "Unknown trigger";
-		}
-		return triggerOption.label;
+		const githubEvent = githubEvents[data.trigger.configuration.event.id];
+		return githubEvent.label;
 	}, [data]);
 
 	if (isLoading && data === undefined) {
@@ -121,11 +114,11 @@ export function GitHubTriggerConfiguredView({
 		});
 	};
 
-	const handleEnableFlowTrigger = async () => {
+	const handleEnableFlowTrigger = () => {
 		try {
 			setActionInProgress(true);
 			setActionError(null);
-			await enableFlowTrigger();
+			enableFlowTrigger();
 		} catch (error) {
 			setActionError(error instanceof Error ? error : new Error(String(error)));
 		} finally {
@@ -133,11 +126,11 @@ export function GitHubTriggerConfiguredView({
 		}
 	};
 
-	const handleDisableFlowTrigger = async () => {
+	const handleDisableFlowTrigger = () => {
 		try {
 			setActionInProgress(true);
 			setActionError(null);
-			await disableFlowTrigger();
+			disableFlowTrigger();
 		} catch (error) {
 			setActionError(error instanceof Error ? error : new Error(String(error)));
 		} finally {

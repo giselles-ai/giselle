@@ -1,4 +1,5 @@
-import z from "zod/v4";
+import { titleCase } from "@giselles-ai/utils";
+import * as z from "zod/v4";
 
 interface GitHubAction {
 	id: string;
@@ -88,6 +89,32 @@ export const githubActions = {
 	[githubCreateDiscussionCommentAction.id]: githubCreateDiscussionCommentAction,
 } as const;
 
-export type GitHubActionId = keyof typeof githubActions;
+type GitHubActions = typeof githubActions;
+export type GitHubActionId = keyof GitHubActions;
 
 export const githubActionEntries = Object.values(githubActions);
+
+export function isGitHubActionId(id: string): id is GitHubActionId {
+	return id in githubActions;
+}
+
+interface InputData {
+	key: string;
+	label: string;
+	optional?: boolean;
+}
+export function githubActionToInputFields(githubAction: GitHubAction) {
+	return githubAction.payload.keyof().options.map((key) => {
+		const fieldSchema = githubAction.payload.shape[key] as
+			| z.ZodString
+			| z.ZodNumber;
+		const labelMeta = fieldSchema.meta()?.label;
+		const label = typeof labelMeta === "string" ? labelMeta : titleCase(key);
+		const optional = fieldSchema.safeParse(undefined).success;
+		return {
+			key,
+			label,
+			optional,
+		} satisfies InputData;
+	});
+}

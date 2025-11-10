@@ -1,7 +1,7 @@
 import type {
 	FetchingWebPage,
 	FileId,
-	GitHubTriggerEvent,
+	GitHubEvent,
 	NodeId,
 	SecretId,
 	Trigger,
@@ -62,7 +62,6 @@ import {
 	configureTrigger,
 	deleteTrigger,
 	getTrigger,
-	getTriggerProviders,
 	reconfigureGitHubTrigger,
 	resolveTrigger,
 	setTrigger,
@@ -131,7 +130,6 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			});
 		},
 		getLanguageModelProviders: () => getLanguageModelProviders({ context }),
-		getTriggerProviders: () => getTriggerProviders({ context }),
 		getGeneration: async (generationId: GenerationId) => {
 			return await getGeneration({
 				context,
@@ -241,7 +239,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			triggerId: TriggerId;
 			repositoryNodeId: string;
 			installationId: number;
-			event?: GitHubTriggerEvent;
+			event?: GitHubEvent;
 		}) => {
 			return await reconfigureGitHubTrigger({ ...args, context });
 		},

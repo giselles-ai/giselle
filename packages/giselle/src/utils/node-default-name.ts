@@ -8,17 +8,14 @@ import {
 	isVectorStoreNode,
 	type NodeLike,
 } from "@giselles-ai/protocol";
-import type { TriggerProvider } from "../engine";
+import {
+	getEntry as getTriggerEntry,
+	type TriggerProvider,
+} from "@giselles-ai/trigger-registry";
 import type { VectorStoreSourceProvider } from "../engine/vector-store";
 
-export const triggerProviderLabel: Record<TriggerProvider, string> = {
-	github: "GitHub Trigger",
-	manual: "Manual Trigger",
-	"app-entry": "App Entry",
-};
-
 export function triggerNodeDefaultName(triggerProvider: TriggerProvider) {
-	return triggerProviderLabel[triggerProvider];
+	return getTriggerEntry(triggerProvider).label;
 }
 
 export function actionNodeDefaultName(actionProvider: ActionProvider) {

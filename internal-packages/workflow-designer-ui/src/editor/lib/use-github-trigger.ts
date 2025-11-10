@@ -1,5 +1,5 @@
 import { useGiselleEngine } from "@giselles-ai/giselle/react";
-import type { GitHubTrigger, Trigger, TriggerId } from "@giselles-ai/protocol";
+import type { Trigger, TriggerId } from "@giselles-ai/protocol";
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
 
@@ -55,7 +55,7 @@ export function useGitHubTrigger(triggerId: TriggerId) {
 							...trigger,
 							configuration: {
 								...trigger.configuration,
-							} satisfies GitHubTrigger,
+							},
 						},
 						githubRepositoryFullname: githubRepositoryFullnameData.fullname,
 					},

@@ -22,10 +22,10 @@
 		"@giselles-ai/tsconfig": "workspace:*",
 		"tsup": "catalog:"
 	},
-	"dependencies": {
-		"@giselles-ai/protocol": "workspace:*"
-	},
 	"peerDependencies": {
 		"zod": "catalog:"
+	},
+	"dependencies": {
+		"@giselles-ai/utils": "workspace:*"
 	}
 }

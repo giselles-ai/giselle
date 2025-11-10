@@ -4,7 +4,7 @@ import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
-import { findGitHubActionOption } from "@giselles-ai/action-registry";
+import { githubActions } from "@giselles-ai/action-registry";
 import {
 	defaultName,
 	useGiselleEngine,
@@ -13,7 +13,7 @@ import {
 import type {
 	ActionNode,
 	ConnectionId,
-	GitHubActionCommandConfiguredState,
+	GitHubActionConfiguredState,
 	Input,
 	Node,
 	NodeId,
@@ -102,7 +102,7 @@ export function GitHubActionConfiguredView({
 }: {
 	node: ActionNode;
 	inputs: Input[];
-	state: GitHubActionCommandConfiguredState;
+	state: GitHubActionConfiguredState;
 	handleClick: () => void;
 	isGenerating: boolean;
 }) {
@@ -134,7 +134,7 @@ export function GitHubActionConfiguredView({
 	);
 
 	const githubActionOption = useMemo(
-		() => findGitHubActionOption(state.commandId),
+		() => githubActions[state.commandId],
 		[state.commandId],
 	);
 

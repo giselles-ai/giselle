@@ -814,6 +814,10 @@ importers:
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.14.0)(happy-dom@20.0.2)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.7.0)
 
   packages/action-registry:
+    dependencies:
+      '@giselles-ai/utils':
+        specifier: workspace:*
+        version: link:../utils
     devDependencies:
       '@giselles-ai/tsconfig':
         specifier: workspace:*
@@ -885,6 +889,9 @@ importers:
       '@giselles-ai/text-editor-utils':
         specifier: workspace:^
         version: link:../text-editor-utils
+      '@giselles-ai/trigger-registry':
+        specifier: workspace:*
+        version: link:../trigger-registry
       '@giselles-ai/web-search':
         specifier: workspace:^
         version: link:../web-search
@@ -1045,6 +1052,9 @@ importers:
       '@giselles-ai/language-model':
         specifier: workspace:^
         version: link:../language-model
+      '@giselles-ai/trigger-registry':
+        specifier: workspace:*
+        version: link:../trigger-registry
       '@octokit/webhooks':
         specifier: 'catalog:'
         version: 14.0.2
@@ -1224,9 +1234,9 @@ importers:
 
   packages/trigger-registry:
     dependencies:
-      '@giselles-ai/protocol':
+      '@giselles-ai/utils':
         specifier: workspace:*
-        version: link:../protocol
+        version: link:../utils
       zod:
         specifier: 'catalog:'
         version: 3.25.76
@@ -1243,6 +1253,9 @@ importers:
       nanoid:
         specifier: 'catalog:'
         version: 5.0.9
+      title-case:
+        specifier: 4.3.2
+        version: 4.3.2
       zod:
         specifier: 'catalog:'
         version: 3.25.76
@@ -8658,6 +8671,9 @@ packages:
 
   tippy.js@6.3.7:
     resolution: {integrity: sha512-E1d3oP2emgJ9dRQZdf3Kkn0qJgI6ZLpyS5z6ZkY1DF3kaQaBsGZsndEpHwx+eC+tYM41HaSNvNtLx8tU57FzTQ==}
+
+  title-case@4.3.2:
+    resolution: {integrity: sha512-I/nkcBo73mO42Idfv08jhInV61IMb61OdIFxk+B4Gu1oBjWBPOLmhZdsli+oJCVaD+86pYQA93cJfFt224ZFAA==}
 
   tldts-core@6.1.86:
     resolution: {integrity: sha512-Je6p7pkk+KMzMv2XXKmAE3McmolOQFdxkKw0R8EYNr7sELW46JqnNeTX8ybPiQgvg1ymCoF8LXs5fzFaZvJPTA==}
@@ -17981,6 +17997,8 @@ snapshots:
   tippy.js@6.3.7:
     dependencies:
       '@popperjs/core': 2.11.8
+
+  title-case@4.3.2: {}
 
   tldts-core@6.1.86: {}
 

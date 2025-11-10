@@ -1,5 +1,5 @@
 import {
-	type GitHubTriggerEvent,
+	type GitHubEvent,
 	isTriggerNode,
 	type Trigger,
 	type TriggerId,
@@ -18,7 +18,7 @@ export async function reconfigureGitHubTrigger(args: {
 	triggerId: TriggerId;
 	repositoryNodeId: string;
 	installationId: number;
-	event?: GitHubTriggerEvent;
+	event?: GitHubEvent;
 }) {
 	const currentTrigger = await getTrigger({
 		storage: args.context.storage,

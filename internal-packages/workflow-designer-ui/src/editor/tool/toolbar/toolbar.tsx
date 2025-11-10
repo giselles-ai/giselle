@@ -2,7 +2,6 @@
 
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import { actionRegistry, isActionProvider } from "@giselles-ai/action-registry";
-import type { TriggerProvider } from "@giselles-ai/giselle";
 import {
 	createActionNode,
 	createDocumentVectorStoreNode,
@@ -14,7 +13,6 @@ import {
 	createWebPageNode,
 	triggerNodeDefaultName,
 	useFeatureFlag,
-	useGiselleEngine,
 	useUsageLimits,
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
@@ -26,6 +24,10 @@ import {
 	Tier,
 } from "@giselles-ai/language-model";
 import { FileCategory } from "@giselles-ai/protocol";
+import {
+	isTriggerProvider,
+	triggerRegistry,
+} from "@giselles-ai/trigger-registry";
 import clsx from "clsx/lite";
 import {
 	DatabaseZapIcon,
@@ -37,7 +39,6 @@ import {
 } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
 import { useEffect, useState } from "react";
-import useSWR from "swr";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
 import { Tooltip } from "../../../ui/tooltip";
 import { isToolAction } from "../types";
@@ -79,10 +80,6 @@ import {
 } from "./state";
 
 export function Toolbar() {
-	const client = useGiselleEngine();
-	const { isLoading, data } = useSWR("get-trigger-providers", () =>
-		client.getTriggerProviders(),
-	);
 	const { setSelectedTool, selectedTool } = useToolbar();
 	const {
 		hoveredModel: languageModelMouseHovered,
@@ -181,15 +178,6 @@ export function Toolbar() {
 		/>
 	);
 
-	if (isLoading) {
-		return null;
-	}
-
-	if (data === undefined) {
-		console.warn("There are no trigger providers available");
-		return null;
-	}
-
 	return (
 		<div className="relative rounded-[12px] overflow-hidden">
 			{/* blur+border only; popovers manage their own base fill */}
@@ -277,41 +265,36 @@ export function Toolbar() {
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={(value) => {
+													if (!isTriggerProvider(value)) {
+														/** @todo warning in log */
+														return;
+													}
 													setSelectedTool(
-														addNodeTool(
-															createTriggerNode(value as TriggerProvider),
-														),
+														addNodeTool(createTriggerNode(value)),
 													);
 												}}
 											>
-												{data
-													.filter((triggerProvider) => {
-														if (triggerProvider !== "app-entry") {
-															return true;
-														}
-														return stage;
-													})
-													.map((triggerProvider) => (
-														<ToggleGroup.Item
-															key={triggerProvider}
-															value={triggerProvider}
-															data-tool
-														>
-															{triggerProvider === "manual" && (
-																<TriggerIcon className="size-[20px] shrink-0" />
-															)}
-															{triggerProvider === "github" && (
-																<GitHubIcon className="size-[20px] shrink-0" />
-															)}
-															{triggerProvider === "app-entry" && (
-																<TriggerIcon className="size-[20px] shrink-0" />
-															)}
+												{triggerRegistry.map((triggerEntry) => (
+													<ToggleGroup.Item
+														key={triggerEntry.provider}
+														value={triggerEntry.provider}
+														data-tool
+													>
+														{triggerEntry.provider === "manual" && (
+															<TriggerIcon className="size-[20px] shrink-0" />
+														)}
+														{triggerEntry.provider === "github" && (
+															<GitHubIcon className="size-[20px] shrink-0" />
+														)}
+														{triggerEntry.provider === "app-entry" && (
+															<TriggerIcon className="size-[20px] shrink-0" />
+														)}
 
-															<p className="text-[14px]">
-																{triggerNodeDefaultName(triggerProvider)}
-															</p>
-														</ToggleGroup.Item>
-													))}
+														<p className="text-[14px]">
+															{triggerNodeDefaultName(triggerEntry.provider)}
+														</p>
+													</ToggleGroup.Item>
+												))}
 												<div data-tool className="opacity-50">
 													<TriggerIcon className="size-[20px] shrink-0" />
 													<p className="text-[14px]">Stage (Coming soon)</p>

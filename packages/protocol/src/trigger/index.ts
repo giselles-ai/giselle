@@ -2,13 +2,9 @@ import { createIdGenerator } from "@giselles-ai/utils";
 import { z } from "zod/v4";
 import { NodeId } from "../node/base";
 import { WorkspaceId } from "../workspace/id";
-import { GitHubTrigger } from "./github";
+import { GitHubEventConfiguration } from "./github";
 import { ManualTrigger } from "./manual";
 
-export {
-	GitHubTrigger,
-	GitHubTriggerEvent,
-} from "./github";
 export {
 	ManualParameterType as ParameterType,
 	ManualTrigger,
@@ -28,7 +24,7 @@ export const Trigger = z.object({
 	nodeId: NodeId.schema,
 	enable: z.boolean().default(true),
 	configuration: z.discriminatedUnion("provider", [
-		GitHubTrigger,
+		GitHubEventConfiguration,
 		ManualTrigger,
 	]),
 });

@@ -1,18 +1,20 @@
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
-import type { GitHubTriggerEventId } from "@giselles-ai/protocol";
-import { githubTriggerOptions } from "@giselles-ai/trigger-registry";
+import {
+	type GitHubEventId,
+	githubEventEntries,
+} from "@giselles-ai/trigger-registry";
 import { getTriggerIcon } from "./icons";
 
 interface EventSelectionStepProps {
 	/**
 	 * The currently selected event ID (if any)
 	 */
-	selectedEventId?: GitHubTriggerEventId;
+	selectedEventId?: GitHubEventId;
 
 	/**
 	 * Callback when an event is selected
 	 */
-	onSelectEvent: (eventId: GitHubTriggerEventId) => void;
+	onSelectEvent: (eventId: GitHubEventId) => void;
 }
 
 /**
@@ -23,7 +25,7 @@ export function EventSelectionStep({ onSelectEvent }: EventSelectionStepProps) {
 		<div className="flex flex-col gap-[4px] flex-1 overflow-hidden">
 			<SettingLabel className="mb-[4px]">Event Type</SettingLabel>
 			<div className="flex flex-col gap-[8px] overflow-y-auto pr-2 pl-0 pt-[8px] custom-scrollbar flex-1">
-				{githubTriggerOptions.map((option) => (
+				{githubEventEntries.map((option) => (
 					<button
 						key={option.id}
 						type="button"

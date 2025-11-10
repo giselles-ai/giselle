@@ -1,4 +1,4 @@
-import type { GitHubTriggerEventId } from "@giselles-ai/protocol";
+import type { GitHubEventId } from "@giselles-ai/trigger-registry";
 import clsx from "clsx/lite";
 import { InfoIcon, PlusIcon, XIcon } from "lucide-react";
 import { type FormEvent, useState } from "react";
@@ -7,7 +7,7 @@ import { EventTypeDisplay } from "./event-type-display";
 import { RepositoryDisplay } from "./repository-display";
 
 interface LabelsInputStepProps {
-	eventId: GitHubTriggerEventId;
+	eventId: GitHubEventId;
 	owner: string;
 	repo: string;
 	onBack: () => void;

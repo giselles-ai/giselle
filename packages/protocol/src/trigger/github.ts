@@ -1,97 +1,106 @@
+import {
+	githubDiscussionCommentCreatedEvent,
+	githubDiscussionCreatedEvent,
+	githubIssueClosedEvent,
+	githubIssueCommentCreatedEvent,
+	githubIssueCreatedEvent,
+	githubIssueLabeledEvent,
+	githubPullRequestClosedEvent,
+	githubPullRequestCommentCreatedEvent,
+	githubPullRequestLabeledEvent,
+	githubPullRequestOpenedEvent,
+	githubPullRequestReadyForReviewEvent,
+	githubPullRequestReviewCommentCreatedEvent,
+} from "@giselles-ai/trigger-registry";
 import { z } from "zod/v4";
 
 const Provider = z.literal("github");
 
-export const GitHubTriggerEventIssueCreated = z.object({
-	id: z.literal("github.issue.created"),
+export const GitHubIssueCreatedEvent = z.object({
+	id: z.literal(githubIssueCreatedEvent.id),
 });
 
-export const GitHubTriggerEventIssueClosed = z.object({
-	id: z.literal("github.issue.closed"),
+export const GitHubEventIssueClosed = z.object({
+	id: z.literal(githubIssueClosedEvent.id),
 });
 
-export const GitHubTriggerEventIssueCommentCreated = z.object({
-	id: z.literal("github.issue_comment.created"),
+export const GitHubEventIssueCommentCreated = z.object({
+	id: z.literal(githubIssueCommentCreatedEvent.id),
 	conditions: z.object({
 		callsign: z.string(),
 	}),
 });
 
-export const GitHubTriggerEventIssueLabeled = z.object({
-	id: z.literal("github.issue.labeled"),
+export const GitHubEventIssueLabeled = z.object({
+	id: z.literal(githubIssueLabeledEvent.id),
 	conditions: z.object({
 		labels: z.array(z.string()).min(1),
 	}),
 });
 
-export const GitHubTriggerEventPullRequestCommentCreated = z.object({
-	id: z.literal("github.pull_request_comment.created"),
+export const GitHubEventPullRequestCommentCreated = z.object({
+	id: z.literal(githubPullRequestCommentCreatedEvent.id),
 	conditions: z.object({
 		callsign: z.string(),
 	}),
 });
 
-export const GitHubTriggerEventPullRequestReviewCommentCreated = z.object({
-	id: z.literal("github.pull_request_review_comment.created"),
+export const GitHubEventPullRequestReviewCommentCreated = z.object({
+	id: z.literal(githubPullRequestReviewCommentCreatedEvent.id),
 	conditions: z.object({
 		callsign: z.string(),
 	}),
 });
-export const GitHubTriggerEventPullRequestOpened = z.object({
-	id: z.literal("github.pull_request.opened"),
+export const GitHubEventPullRequestOpened = z.object({
+	id: z.literal(githubPullRequestOpenedEvent.id),
 });
 
-export const GitHubTriggerEventPullRequestReadyForReview = z.object({
-	id: z.literal("github.pull_request.ready_for_review"),
+export const GitHubEventPullRequestReadyForReview = z.object({
+	id: z.literal(githubPullRequestReadyForReviewEvent.id),
 });
 
-export const GitHubTriggerEventPullRequestClosed = z.object({
-	id: z.literal("github.pull_request.closed"),
+export const GitHubEventPullRequestClosed = z.object({
+	id: z.literal(githubPullRequestClosedEvent.id),
 });
 
-export const GitHubTriggerEventPullRequestLabeled = z.object({
-	id: z.literal("github.pull_request.labeled"),
+export const GitHubEventPullRequestLabeled = z.object({
+	id: z.literal(githubPullRequestLabeledEvent.id),
 	conditions: z.object({
 		labels: z.array(z.string()).min(1),
 	}),
 });
 
-export const GitHubTriggerEventDiscussionCreated = z.object({
-	id: z.literal("github.discussion.created"),
+export const GitHubEventDiscussionCreated = z.object({
+	id: z.literal(githubDiscussionCreatedEvent.id),
 });
 
-export const GitHubTriggerEventDiscussionCommentCreated = z.object({
-	id: z.literal("github.discussion_comment.created"),
+export const GitHubEventDiscussionCommentCreated = z.object({
+	id: z.literal(githubDiscussionCommentCreatedEvent.id),
 	conditions: z.object({
 		callsign: z.string(),
 	}),
 });
 
-export const GitHubTriggerEvent = z.discriminatedUnion("id", [
-	GitHubTriggerEventIssueCreated,
-	GitHubTriggerEventIssueClosed,
-	GitHubTriggerEventIssueCommentCreated,
-	GitHubTriggerEventIssueLabeled,
-	GitHubTriggerEventPullRequestCommentCreated,
-	GitHubTriggerEventPullRequestReviewCommentCreated,
-	GitHubTriggerEventPullRequestOpened,
-	GitHubTriggerEventPullRequestReadyForReview,
-	GitHubTriggerEventPullRequestClosed,
-	GitHubTriggerEventPullRequestLabeled,
-	GitHubTriggerEventDiscussionCreated,
-	GitHubTriggerEventDiscussionCommentCreated,
+export const GitHubEvent = z.discriminatedUnion("id", [
+	GitHubIssueCreatedEvent,
+	GitHubEventIssueClosed,
+	GitHubEventIssueCommentCreated,
+	GitHubEventIssueLabeled,
+	GitHubEventPullRequestCommentCreated,
+	GitHubEventPullRequestReviewCommentCreated,
+	GitHubEventPullRequestOpened,
+	GitHubEventPullRequestReadyForReview,
+	GitHubEventPullRequestClosed,
+	GitHubEventPullRequestLabeled,
+	GitHubEventDiscussionCreated,
+	GitHubEventDiscussionCommentCreated,
 ]);
-export type GitHubTriggerEvent = z.infer<typeof GitHubTriggerEvent>;
+export type GitHubEvent = z.infer<typeof GitHubEvent>;
 
-export const GitHubTriggerEventId = z.union(
-	GitHubTriggerEvent.options.map((option) => option.shape.id),
-);
-export type GitHubTriggerEventId = z.infer<typeof GitHubTriggerEventId>;
-
-export const GitHubTrigger = z.object({
+export const GitHubEventConfiguration = z.object({
 	provider: Provider,
-	event: GitHubTriggerEvent,
+	event: GitHubEvent,
 	installationId: z.number(),
 	repositoryNodeId: z.string(),
 });
-export type GitHubTrigger = z.infer<typeof GitHubTrigger>;
+export type GitHubEventConfiguration = z.infer<typeof GitHubEvent>;

@@ -31,9 +31,9 @@ import {
 	streamText,
 	type UIMessage,
 } from "ai";
-import { generationUiMessageChunksPath } from "../../concepts/path";
 import type { GiselleLogger } from "../../logger/types";
 import { batchWriter } from "../../utils";
+import { generationUiMessageChunksPath } from "../path";
 import { decryptSecret } from "../secrets";
 import type { GiselleEngineContext } from "../types";
 import { useGenerationExecutor } from "./internal/use-generation-executor";

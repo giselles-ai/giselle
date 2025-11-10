@@ -6,13 +6,13 @@ import {
 	type WebhookEvent,
 } from "@giselles-ai/github-tool";
 import type { Output, Trigger } from "@giselles-ai/protocol";
+import type { githubEvents } from "@giselles-ai/trigger-registry";
 import type { GenerationOutput } from "../generations";
-import type { githubTriggers } from "../triggers";
 import { parseCommand } from "./utils";
 
 interface ResolveTriggerArgs {
 	output: Output;
-	githubTrigger: (typeof githubTriggers)[keyof typeof githubTriggers];
+	githubEvent: (typeof githubEvents)[keyof typeof githubEvents];
 	trigger: Trigger;
 	webhookEvent: WebhookEvent;
 	appId: string;
@@ -39,11 +39,11 @@ export async function resolveTrigger(args: ResolveTriggerArgs) {
 function resolveIssueCreatedTrigger(args: ResolveTriggerArgs) {
 	if (
 		!ensureWebhookEvent(args.webhookEvent, "issues.opened") ||
-		args.githubTrigger.event.id !== "github.issue.created"
+		args.githubEvent.id !== "github.issue.created"
 	) {
 		return null;
 	}
-	for (const payload of args.githubTrigger.event.payloads.keyof().options) {
+	for (const payload of args.githubEvent.payload.keyof().options) {
 		switch (payload) {
 			case "title":
 				if (args.output.accessor !== payload) {
@@ -86,12 +86,12 @@ function resolveIssueClosedTrigger(
 ): GenerationOutput | null {
 	if (
 		!ensureWebhookEvent(args.webhookEvent, "issues.closed") ||
-		args.githubTrigger.event.id !== "github.issue.closed"
+		args.githubEvent.id !== "github.issue.closed"
 	) {
 		return null;
 	}
 
-	for (const payload of args.githubTrigger.event.payloads.keyof().options) {
+	for (const payload of args.githubEvent.payload.keyof().options) {
 		switch (payload) {
 			case "title":
 				if (args.output.accessor !== payload) {
@@ -132,11 +132,11 @@ function resolveIssueClosedTrigger(
 function resolveIssueLabeledTrigger(args: ResolveTriggerArgs) {
 	if (
 		!ensureWebhookEvent(args.webhookEvent, "issues.labeled") ||
-		args.githubTrigger.event.id !== "github.issue.labeled"
+		args.githubEvent.id !== "github.issue.labeled"
 	) {
 		return null;
 	}
-	for (const payload of args.githubTrigger.event.payloads.keyof().options) {
+	for (const payload of args.githubEvent.payload.keyof().options) {
 		switch (payload) {
 			case "title":
 				if (args.output.accessor !== payload) {
@@ -186,11 +186,11 @@ function resolveIssueLabeledTrigger(args: ResolveTriggerArgs) {
 function resolvePullRequestLabeledTrigger(args: ResolveTriggerArgs) {
 	if (
 		!ensureWebhookEvent(args.webhookEvent, "pull_request.labeled") ||
-		args.githubTrigger.event.id !== "github.pull_request.labeled"
+		args.githubEvent.id !== "github.pull_request.labeled"
 	) {
 		return null;
 	}
-	for (const payload of args.githubTrigger.event.payloads.keyof().options) {
+	for (const payload of args.githubEvent.payload.keyof().options) {
 		switch (payload) {
 			case "pullRequestTitle":
 				if (args.output.accessor !== payload) {
@@ -244,7 +244,7 @@ function resolveIssueCommentTrigger(
 	if (
 		!ensureWebhookEvent(args.webhookEvent, "issue_comment.created") ||
 		args.trigger.configuration.event.id !== "github.issue_comment.created" ||
-		args.githubTrigger.event.id !== "github.issue_comment.created"
+		args.githubEvent.id !== "github.issue_comment.created"
 	) {
 		return null;
 	}
@@ -257,7 +257,7 @@ function resolveIssueCommentTrigger(
 		return null;
 	}
 
-	for (const payload of args.githubTrigger.event.payloads.keyof().options) {
+	for (const payload of args.githubEvent.payload.keyof().options) {
 		switch (payload) {
 			case "body":
 				if (args.output.accessor !== payload) {
@@ -309,13 +309,13 @@ async function resolvePullRequestOpenedTrigger(
 ): Promise<GenerationOutput | null> {
 	if (
 		!ensureWebhookEvent(args.webhookEvent, "pull_request.opened") ||
-		args.githubTrigger.event.id !== "github.pull_request.opened" ||
+		args.githubEvent.id !== "github.pull_request.opened" ||
 		args.trigger.configuration.provider !== "github"
 	) {
 		return null;
 	}
 
-	for (const payload of args.githubTrigger.event.payloads.keyof().options) {
+	for (const payload of args.githubEvent.payload.keyof().options) {
 		switch (payload) {
 			case "title":
 				if (args.output.accessor !== payload) {
@@ -388,13 +388,13 @@ async function resolvePullRequestReadyForReviewTrigger(
 ): Promise<GenerationOutput | null> {
 	if (
 		!ensureWebhookEvent(args.webhookEvent, "pull_request.ready_for_review") ||
-		args.githubTrigger.event.id !== "github.pull_request.ready_for_review" ||
+		args.githubEvent.id !== "github.pull_request.ready_for_review" ||
 		args.trigger.configuration.provider !== "github"
 	) {
 		return null;
 	}
 
-	for (const payload of args.githubTrigger.event.payloads.keyof().options) {
+	for (const payload of args.githubEvent.payload.keyof().options) {
 		switch (payload) {
 			case "title":
 				if (args.output.accessor !== payload) {
@@ -467,12 +467,12 @@ async function resolvePullRequestClosedTrigger(
 ): Promise<GenerationOutput | null> {
 	if (
 		!ensureWebhookEvent(args.webhookEvent, "pull_request.closed") ||
-		args.githubTrigger.event.id !== "github.pull_request.closed"
+		args.githubEvent.id !== "github.pull_request.closed"
 	) {
 		return null;
 	}
 
-	for (const payload of args.githubTrigger.event.payloads.keyof().options) {
+	for (const payload of args.githubEvent.payload.keyof().options) {
 		switch (payload) {
 			case "title":
 				if (args.output.accessor !== payload) {
@@ -547,7 +547,7 @@ async function resolvePullRequestCommentTrigger(
 		!ensureWebhookEvent(args.webhookEvent, "issue_comment.created") ||
 		args.trigger.configuration.event.id !==
 			"github.pull_request_comment.created" ||
-		args.githubTrigger.event.id !== "github.pull_request_comment.created"
+		args.githubEvent.id !== "github.pull_request_comment.created"
 	) {
 		return null;
 	}
@@ -564,7 +564,7 @@ async function resolvePullRequestCommentTrigger(
 		return null;
 	}
 
-	for (const payload of args.githubTrigger.event.payloads.keyof().options) {
+	for (const payload of args.githubEvent.payload.keyof().options) {
 		switch (payload) {
 			case "body":
 				if (args.output.accessor !== payload) {
@@ -641,7 +641,7 @@ async function resolvePullRequestReviewCommentTrigger(
 		) ||
 		args.trigger.configuration.event.id !==
 			"github.pull_request_review_comment.created" ||
-		args.githubTrigger.event.id !== "github.pull_request_review_comment.created"
+		args.githubEvent.id !== "github.pull_request_review_comment.created"
 	) {
 		return null;
 	}
@@ -654,7 +654,7 @@ async function resolvePullRequestReviewCommentTrigger(
 		return null;
 	}
 
-	for (const payload of args.githubTrigger.event.payloads.keyof().options) {
+	for (const payload of args.githubEvent.payload.keyof().options) {
 		switch (payload) {
 			case "body":
 				if (args.output.accessor !== payload) {
@@ -752,12 +752,12 @@ async function resolvePullRequestReviewCommentTrigger(
 function resolveDiscussionCreatedTrigger(args: ResolveTriggerArgs) {
 	if (
 		!ensureWebhookEvent(args.webhookEvent, "discussion.created") ||
-		args.githubTrigger.event.id !== "github.discussion.created"
+		args.githubEvent.id !== "github.discussion.created"
 	) {
 		return null;
 	}
 
-	for (const payload of args.githubTrigger.event.payloads.keyof().options) {
+	for (const payload of args.githubEvent.payload.keyof().options) {
 		switch (payload) {
 			case "discussionNumber":
 				if (args.output.accessor !== payload) {
@@ -820,7 +820,7 @@ async function resolveDiscussionCommentCreatedTrigger(
 		!ensureWebhookEvent(args.webhookEvent, "discussion_comment.created") ||
 		args.trigger.configuration.event.id !==
 			"github.discussion_comment.created" ||
-		args.githubTrigger.event.id !== "github.discussion_comment.created"
+		args.githubEvent.id !== "github.discussion_comment.created"
 	) {
 		return null;
 	}
@@ -833,7 +833,7 @@ async function resolveDiscussionCommentCreatedTrigger(
 		return null;
 	}
 
-	for (const payload of args.githubTrigger.event.payloads.keyof().options) {
+	for (const payload of args.githubEvent.payload.keyof().options) {
 		switch (payload) {
 			case "body":
 				if (args.output.accessor !== payload) {

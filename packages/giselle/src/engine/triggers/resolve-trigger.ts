@@ -1,4 +1,5 @@
 import { isTriggerNode } from "@giselles-ai/protocol";
+import { githubEvents } from "@giselles-ai/trigger-registry";
 import {
 	type CompletedGeneration,
 	GenerationContext,
@@ -8,7 +9,6 @@ import {
 } from "../generations";
 import { internalSetGeneration } from "../generations/internal/set-generation";
 import { resolveTrigger as resolveGitHubTrigger } from "../github/trigger-utils";
-import { githubTriggers } from "../triggers";
 import type { GiselleEngineContext } from "../types";
 import { getTrigger } from "./utils";
 
@@ -59,8 +59,7 @@ export async function resolveTrigger(args: {
 						for (const output of operationNode.outputs) {
 							const resolveOutput = await resolveGitHubTrigger({
 								output,
-								githubTrigger:
-									githubTriggers[triggerData.configuration.event.id],
+								githubEvent: githubEvents[triggerData.configuration.event.id],
 								trigger: triggerData,
 								webhookEvent: githubWebhookEventInput.webhookEvent,
 								appId: args.context.integrationConfigs.github.authV2.appId,

@@ -1,10 +1,12 @@
-import type { GitHubTriggerEventId } from "@giselles-ai/protocol";
-import { findGitHubTriggerOption } from "@giselles-ai/trigger-registry";
+import {
+	type GitHubEventId,
+	githubEvents,
+} from "@giselles-ai/trigger-registry";
 import clsx from "clsx/lite";
 import { getTriggerIcon } from "./icons";
 
 interface EventTypeDisplayProps {
-	eventId: GitHubTriggerEventId;
+	eventId: GitHubEventId;
 	className?: string;
 	showDescription?: boolean;
 }
@@ -14,11 +16,7 @@ export function EventTypeDisplay({
 	className,
 	showDescription = true,
 }: EventTypeDisplayProps) {
-	const triggerRegistry = findGitHubTriggerOption(eventId);
-
-	if (!triggerRegistry) {
-		return null;
-	}
+	const triggerRegistry = githubEvents[eventId];
 
 	return (
 		<div className={clsx("flex flex-col gap-1", className)}>

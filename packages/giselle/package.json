@@ -63,6 +63,7 @@
 		"@giselles-ai/github-tool": "workspace:^",
 		"@giselles-ai/language-model": "workspace:^",
 		"@giselles-ai/text-editor-utils": "workspace:^",
+		"@giselles-ai/trigger-registry": "workspace:*",
 		"@giselles-ai/web-search": "workspace:^",
 		"ai": "catalog:",
 		"next": "catalog:",
