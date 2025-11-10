@@ -1,4 +1,7 @@
-import { githubActions } from "@giselles-ai/flow";
+import {
+	type GitHubActionId,
+	githubActions,
+} from "@giselles-ai/action-registry";
 import {
 	createDiscussionComment,
 	createIssue,
@@ -12,7 +15,7 @@ import {
 	updatePullRequest,
 } from "@giselles-ai/github-tool";
 import {
-	type GitHubActionCommandConfiguredState,
+	type GitHubActionConfiguredState,
 	isActionNode,
 	isTextNode,
 	type NodeId,
@@ -53,16 +56,13 @@ export function executeAction(args: {
 			let generationOutputs: GenerationOutput[] = [];
 			switch (command.provider) {
 				case "github":
-					generationOutputs = await executeGitHubActionCommand({
+					generationOutputs = await executeGitHubAction({
 						state: command.state,
 						context: args.context,
 						generationContext,
 						generationContentResolver,
 					});
 					break;
-				case "web-search":
-					// TODO: Implement web-search action execution
-					throw new Error("Web-search actions are not yet implemented");
 				default: {
 					// TODO: Uncomment after implementing all action providers
 					// const _exhaustiveCheck: never = command.provider;
@@ -80,20 +80,25 @@ export function executeAction(args: {
 }
 
 async function resolveActionInputs(args: {
-	state: GitHubActionCommandConfiguredState;
+	state: GitHubActionConfiguredState;
 	generationContext: GenerationContext;
 	generationContentResolver: (
 		nodeId: NodeId,
 		outputId: OutputId,
 	) => Promise<string | undefined>;
 }): Promise<Record<string, string>> {
-	const githubAction = githubActions[args.state.commandId];
+	const githubActionEntry = githubActions[args.state.commandId];
+	if (githubActionEntry === undefined) {
+		throw new Error(
+			`GitHub action option not found for command ID: ${args.state.commandId}`,
+		);
+	}
 	const inputs: Record<string, string> = {};
 	const generationContext = args.generationContext;
 
-	for (const parameter of githubAction.command.parameters.keyof().options) {
+	for (const payloadKey of githubActionEntry.payload.keyof().options) {
 		const input = generationContext.operationNode.inputs.find(
-			(input) => input.accessor === parameter,
+			(input) => input.accessor === payloadKey,
 		);
 		const connection = generationContext.connections.find(
 			(connection) => connection.inputId === input?.id,
@@ -114,7 +119,7 @@ async function resolveActionInputs(args: {
 				if (content === undefined) {
 					continue;
 				}
-				inputs[parameter] = content;
+				inputs[payloadKey] = content;
 				break;
 			}
 			case "variable":
@@ -124,7 +129,7 @@ async function resolveActionInputs(args: {
 							throw new Error(`Unexpected node data: ${sourceNode.id}`);
 						}
 						const jsonOrText = sourceNode.content.text;
-						inputs[parameter] = isJsonContent(jsonOrText)
+						inputs[payloadKey] = isJsonContent(jsonOrText)
 							? jsonContentToText(JSON.parse(jsonOrText))
 							: jsonOrText;
 						break;
@@ -170,8 +175,8 @@ function createActionOutput(
 	];
 }
 
-async function executeGitHubActionCommand(args: {
-	state: GitHubActionCommandConfiguredState;
+async function executeGitHubAction(args: {
+	state: GitHubActionConfiguredState;
 	context: GiselleEngineContext;
 	generationContext: GenerationContext;
 	generationContentResolver: (
@@ -197,12 +202,16 @@ async function executeGitHubActionCommand(args: {
 		installationId: args.state.installationId,
 	};
 
+	function payloadSchema<TActionId extends GitHubActionId>(
+		actionId: TActionId,
+	): (typeof githubActions)[TActionId]["payload"] {
+		return githubActions[actionId].payload;
+	}
+
 	switch (args.state.commandId) {
 		case "github.create.issue": {
 			const result = await createIssue({
-				...githubActions["github.create.issue"].command.parameters.parse(
-					inputs,
-				),
+				...payloadSchema(args.state.commandId).parse(inputs),
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
@@ -210,9 +219,7 @@ async function executeGitHubActionCommand(args: {
 		}
 		case "github.create.issueComment": {
 			const result = await createIssueComment({
-				...githubActions["github.create.issueComment"].command.parameters.parse(
-					inputs,
-				),
+				...payloadSchema(args.state.commandId).parse(inputs),
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
@@ -220,9 +227,7 @@ async function executeGitHubActionCommand(args: {
 		}
 		case "github.create.pullRequestComment": {
 			const result = await createPullRequestComment({
-				...githubActions[
-					"github.create.pullRequestComment"
-				].command.parameters.parse(inputs),
+				...payloadSchema(args.state.commandId).parse(inputs),
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
@@ -230,9 +235,7 @@ async function executeGitHubActionCommand(args: {
 		}
 		case "github.update.pullRequest": {
 			const result = await updatePullRequest({
-				...githubActions["github.update.pullRequest"].command.parameters.parse(
-					inputs,
-				),
+				...payloadSchema(args.state.commandId).parse(inputs),
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
@@ -240,19 +243,17 @@ async function executeGitHubActionCommand(args: {
 		}
 		case "github.reply.pullRequestReviewComment": {
 			const result = await replyPullRequestReviewComment({
-				...githubActions[
-					"github.reply.pullRequestReviewComment"
-				].command.parameters.parse(inputs),
+				...payloadSchema(args.state.commandId).parse(inputs),
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
 			return createActionOutput(result, args.generationContext);
 		}
 		case "github.create.discussionComment": {
-			const { discussionNumber, body, commentId } =
-				githubActions[
-					"github.create.discussionComment"
-				].command.parameters.parse(inputs);
+			const { discussionNumber, body, commentId } = payloadSchema(
+				args.state.commandId,
+			).parse(inputs);
+
 			const repo = await getRepositoryFullname(
 				args.state.repositoryNodeId,
 				commonAuthConfig,
@@ -293,8 +294,10 @@ async function executeGitHubActionCommand(args: {
 			return createActionOutput(result, args.generationContext);
 		}
 		case "github.get.discussion": {
-			const { discussionNumber } =
-				githubActions["github.get.discussion"].command.parameters.parse(inputs);
+			const { discussionNumber } = payloadSchema(args.state.commandId).parse(
+				inputs,
+			);
+
 			const repo = await getRepositoryFullname(
 				args.state.repositoryNodeId,
 				commonAuthConfig,

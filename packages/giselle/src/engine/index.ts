@@ -1,11 +1,11 @@
 import type {
 	FetchingWebPage,
 	FileId,
-	FlowTrigger,
-	FlowTriggerId,
-	GitHubFlowTriggerEvent,
+	GitHubEventData,
 	NodeId,
 	SecretId,
+	Trigger,
+	TriggerId,
 	Workspace,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
@@ -62,7 +62,6 @@ import {
 	configureTrigger,
 	deleteTrigger,
 	getTrigger,
-	getTriggerProviders,
 	reconfigureGitHubTrigger,
 	resolveTrigger,
 	setTrigger,
@@ -131,7 +130,6 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			});
 		},
 		getLanguageModelProviders: () => getLanguageModelProviders({ context }),
-		getTriggerProviders: () => getTriggerProviders({ context }),
 		getGeneration: async (generationId: GenerationId) => {
 			return await getGeneration({
 				context,
@@ -226,7 +224,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		configureTrigger: async (args: { trigger: ConfigureTriggerInput }) => {
 			return await configureTrigger({ ...args, context });
 		},
-		getTrigger: async (args: { flowTriggerId: FlowTriggerId }) => {
+		getTrigger: async (args: { triggerId: TriggerId }) => {
 			return await getTrigger({ ...args, context });
 		},
 		getGitHubRepositoryFullname: async (args: {
@@ -235,17 +233,17 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		}) => {
 			return await getGitHubRepositoryFullname({ ...args, context });
 		},
-		setTrigger: async (args: { trigger: FlowTrigger }) =>
+		setTrigger: async (args: { trigger: Trigger }) =>
 			setTrigger({ ...args, context }),
 		reconfigureGitHubTrigger: async (args: {
-			flowTriggerId: FlowTriggerId;
+			triggerId: TriggerId;
 			repositoryNodeId: string;
 			installationId: number;
-			event?: GitHubFlowTriggerEvent;
+			event?: GitHubEventData;
 		}) => {
 			return await reconfigureGitHubTrigger({ ...args, context });
 		},
-		deleteTrigger: async (args: { flowTriggerId: FlowTriggerId }) =>
+		deleteTrigger: async (args: { triggerId: TriggerId }) =>
 			deleteTrigger({ ...args, context }),
 		executeAction: async (args: { generation: QueuedGeneration }) =>
 			executeAction({ ...args, context }),

@@ -1,5 +1,5 @@
 import type { GitHubIntegrationInstallation } from "@giselles-ai/giselle";
-import type { FlowTriggerId, TriggerNode } from "@giselles-ai/protocol";
+import type { TriggerId, TriggerNode } from "@giselles-ai/protocol";
 import { useGitHubTrigger } from "../../../../lib/use-github-trigger";
 import {
 	type GitHubTriggerReconfigureMode,
@@ -10,16 +10,16 @@ export function GitHubTriggerReconfiguringView({
 	installations,
 	node,
 	installationUrl,
-	flowTriggerId,
+	triggerId,
 	reconfigureMode,
 }: {
 	installations: GitHubIntegrationInstallation[];
 	node: TriggerNode;
 	installationUrl: string;
-	flowTriggerId: FlowTriggerId;
+	triggerId: TriggerId;
 	reconfigureMode?: GitHubTriggerReconfigureMode;
 }) {
-	const { isLoading, data } = useGitHubTrigger(flowTriggerId);
+	const { isLoading, data } = useGitHubTrigger(triggerId);
 	if (isLoading) {
 		return "Loading...";
 	}
@@ -84,7 +84,7 @@ export function GitHubTriggerReconfiguringView({
 			node={node}
 			installationUrl={installationUrl}
 			reconfigStep={reconfigStep}
-			flowTriggerId={flowTriggerId}
+			triggerId={triggerId}
 		/>
 	);
 }

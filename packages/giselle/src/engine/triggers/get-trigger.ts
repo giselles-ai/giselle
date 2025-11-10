@@ -1,14 +1,13 @@
-import type { FlowTriggerId } from "@giselles-ai/protocol";
+import type { TriggerId } from "@giselles-ai/protocol";
 import type { GiselleEngineContext } from "../types";
-import { getFlowTrigger } from "./utils";
+import { getTrigger as systemGetTrigger } from "./utils";
 
 export async function getTrigger(args: {
 	context: GiselleEngineContext;
-	flowTriggerId: FlowTriggerId;
+	triggerId: TriggerId;
 }) {
-	const flowTrigger = await getFlowTrigger({
-		flowTriggerId: args.flowTriggerId,
+	return await systemGetTrigger({
+		triggerId: args.triggerId,
 		storage: args.context.storage,
 	});
-	return flowTrigger;
 }

@@ -1,13 +1,13 @@
-import type { FlowTriggerId } from "@giselles-ai/protocol";
+import type { TriggerId } from "@giselles-ai/protocol";
 import type { GiselleEngineContext } from "../types";
-import { deleteFlowTrigger } from "./utils";
+import { deleteTrigger as systemDeleteTrigger } from "./utils";
 
 export async function deleteTrigger(args: {
 	context: GiselleEngineContext;
-	flowTriggerId: FlowTriggerId;
+	triggerId: TriggerId;
 }) {
-	await deleteFlowTrigger({
-		flowTriggerId: args.flowTriggerId,
+	await systemDeleteTrigger({
+		triggerId: args.triggerId,
 		storage: args.context.storage,
 	});
 }

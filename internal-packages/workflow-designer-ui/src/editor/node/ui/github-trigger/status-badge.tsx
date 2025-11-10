@@ -1,14 +1,14 @@
-import type { FlowTriggerId } from "@giselles-ai/protocol";
+import type { TriggerId } from "@giselles-ai/protocol";
 import clsx from "clsx";
 import { Circle } from "lucide-react";
 import { useGitHubTrigger } from "../../../lib/use-github-trigger";
 
 export function GitHubTriggerStatusBadge({
-	flowTriggerId,
+	triggerId,
 }: {
-	flowTriggerId: FlowTriggerId;
+	triggerId: TriggerId;
 }) {
-	const { isLoading, data } = useGitHubTrigger(flowTriggerId);
+	const { isLoading, data } = useGitHubTrigger(triggerId);
 
 	if (isLoading && data === undefined) {
 		return null;

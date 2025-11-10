@@ -5,7 +5,7 @@ import {
 	TableCell,
 	TableRow,
 } from "@giselle-internal/ui/table";
-import { FlowTriggerId } from "@giselles-ai/protocol";
+import { TriggerId } from "@giselles-ai/protocol";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { stageFlag } from "@/flags";
@@ -42,10 +42,10 @@ export default async function StagePage({
 
 	const { appId: unsafeAppId } = await loadSearchParams(searchParams);
 
-	let defaultAppId: FlowTriggerId | undefined;
+	let defaultAppId: TriggerId | undefined;
 	let defaultTeamId: TeamId | undefined;
 	if (unsafeAppId !== undefined) {
-		const result = FlowTriggerId.safeParse(unsafeAppId);
+		const result = TriggerId.safeParse(unsafeAppId);
 		if (result.success) {
 			defaultAppId = result.data;
 			defaultTeamId = flowTriggers.find(

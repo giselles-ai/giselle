@@ -25,6 +25,7 @@
 	},
 	"dependencies": {
 		"nanoid": "catalog:",
+		"title-case": "4.3.2",
 		"zod": "catalog:"
 	}
 }

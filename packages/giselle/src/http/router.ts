@@ -2,16 +2,16 @@ import {
 	ActId,
 	FetchingWebPage,
 	FileId,
-	FlowTrigger,
-	FlowTriggerId,
 	Generation,
 	GenerationId,
 	GenerationOrigin,
-	GitHubFlowTriggerEvent,
+	GitHubEventData,
 	NodeId,
 	QueuedGeneration,
 	RunningGeneration,
 	SecretId,
+	Trigger,
+	TriggerId,
 	Workspace,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
@@ -60,13 +60,6 @@ export const createJsonRouters = {
 		createHandler({
 			handler: () => {
 				const providers = giselleEngine.getLanguageModelProviders();
-				return JsonResponse.json(providers);
-			},
-		}),
-	getTriggerProviders: (giselleEngine: GiselleEngine) =>
-		createHandler({
-			handler: () => {
-				const providers = giselleEngine.getTriggerProviders();
 				return JsonResponse.json(providers);
 			},
 		}),
@@ -206,7 +199,7 @@ export const createJsonRouters = {
 	getTrigger: (giselleEngine: GiselleEngine) =>
 		createHandler({
 			input: z.object({
-				flowTriggerId: FlowTriggerId.schema,
+				triggerId: TriggerId.schema,
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
@@ -229,7 +222,7 @@ export const createJsonRouters = {
 	setTrigger: (giselleEngine: GiselleEngine) =>
 		createHandler({
 			input: z.object({
-				trigger: FlowTrigger,
+				trigger: Trigger,
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
@@ -240,10 +233,10 @@ export const createJsonRouters = {
 	reconfigureGitHubTrigger: (giselleEngine: GiselleEngine) =>
 		createHandler({
 			input: z.object({
-				flowTriggerId: FlowTriggerId.schema,
+				triggerId: TriggerId.schema,
 				repositoryNodeId: z.string(),
 				installationId: z.number(),
-				event: GitHubFlowTriggerEvent.optional(),
+				event: GitHubEventData.optional(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
@@ -254,7 +247,7 @@ export const createJsonRouters = {
 	deleteTrigger: (giselleEngine: GiselleEngine) =>
 		createHandler({
 			input: z.object({
-				flowTriggerId: FlowTriggerId.schema,
+				triggerId: TriggerId.schema,
 			}),
 			handler: async ({ input }) => {
 				await giselleEngine.deleteTrigger(input);

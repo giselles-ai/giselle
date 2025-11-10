@@ -15,7 +15,7 @@ export async function getSidebarDataObject(actId: ActId) {
 		throw new Error(`Act with id ${actId} not found`);
 	}
 	const trigger = await giselleEngine.getTrigger({
-		flowTriggerId: dbAct?.sdkFlowTriggerId,
+		triggerId: dbAct?.sdkFlowTriggerId,
 	});
 	if (trigger?.configuration.provider !== "manual") {
 		throw new Error(`Trigger with id ${dbAct?.sdkFlowTriggerId} is not manual`);

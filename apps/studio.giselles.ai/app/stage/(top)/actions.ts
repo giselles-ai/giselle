@@ -12,8 +12,8 @@ export async function performStageAction(
 	try {
 		const user = await fetchCurrentUser();
 		const { act } = await giselleEngine.createAct({
-			workspaceId: payloads.flowTrigger.workspaceId,
-			nodeId: payloads.flowTrigger.nodeId,
+			workspaceId: payloads.trigger.workspaceId,
+			nodeId: payloads.trigger.nodeId,
 			inputs: [
 				{
 					type: "parameters",
@@ -34,8 +34,8 @@ export async function performStageAction(
 			teamDbId: team.dbId,
 			directorDbId: user.dbId,
 			sdkActId: act.id,
-			sdkFlowTriggerId: payloads.flowTrigger.id,
-			sdkWorkspaceId: payloads.flowTrigger.workspaceId,
+			sdkFlowTriggerId: payloads.trigger.id,
+			sdkWorkspaceId: payloads.trigger.workspaceId,
 		});
 
 		await giselleEngine.startAct({

@@ -1,0 +1,31 @@
+{
+	"name": "@giselles-ai/trigger-registry",
+	"version": "0.0.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "tsup",
+		"check-types": "tsc --noEmit",
+		"format": "biome format --write ."
+	},
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js"
+		}
+	},
+	"devDependencies": {
+		"@giselles-ai/tsconfig": "workspace:*",
+		"tsup": "catalog:"
+	},
+	"peerDependencies": {
+		"zod": "catalog:"
+	},
+	"dependencies": {
+		"@giselles-ai/utils": "workspace:*"
+	}
+}

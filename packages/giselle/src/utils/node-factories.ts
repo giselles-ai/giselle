@@ -1,4 +1,4 @@
-import type { ActionProvider } from "@giselles-ai/flow";
+import type { ActionProvider } from "@giselles-ai/action-registry";
 import {
 	Capability,
 	hasCapability,

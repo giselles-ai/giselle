@@ -1,7 +1,7 @@
 "use client";
 
 import { AppIcon } from "@giselle-internal/ui/app-icon";
-import type { FlowTrigger } from "@giselles-ai/protocol";
+import type { Trigger } from "@giselles-ai/protocol";
 import { X } from "lucide-react";
 import {
 	useActionState,
@@ -36,7 +36,7 @@ export function RunModal({
 	teamId,
 }: RunModalProps) {
 	const [flowTriggerData, setFlowTriggerData] = useState<{
-		flowTrigger: FlowTrigger;
+		flowTrigger: Trigger;
 		workspaceName: string;
 	} | null>(null);
 	const [isLoading, setIsLoading] = useState(false);

@@ -97,9 +97,6 @@ function PropertiesPanel({
 					isGenerating={isGenerating}
 				/>
 			);
-		case "web-search":
-			// TODO: Implement WebSearchActionPropertiesPanel
-			return <div>Web Search Action (Coming Soon)</div>;
 		default: {
 			// TODO: Uncomment after implementing WebSearchActionPropertiesPanel
 			// const _exhaustiveCheck: never = node.content.command.provider;

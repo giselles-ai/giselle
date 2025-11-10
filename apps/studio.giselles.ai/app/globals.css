@@ -378,6 +378,28 @@
 	}
 }
 
+@keyframes slideIn {
+	from {
+		transform: translateX(var(--slide-from));
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+@keyframes slideOut {
+	from {
+		transform: translateX(0);
+		opacity: 1;
+	}
+	to {
+		transform: translateX(var(--slide-to));
+		opacity: 0;
+	}
+}
+
 @layer utilities {
 	.animate-custom-pulse {
 		animation: custom-pulse 1s ease-in-out infinite;

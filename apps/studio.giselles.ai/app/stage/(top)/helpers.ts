@@ -1,4 +1,4 @@
-import type { FlowTrigger, ParameterItem } from "@giselles-ai/protocol";
+import type { ParameterItem, Trigger } from "@giselles-ai/protocol";
 import type { FormInput, FormValues, ValidationErrors } from "./types";
 
 /**
@@ -6,7 +6,7 @@ import type { FormInput, FormValues, ValidationErrors } from "./types";
  */
 
 export function createInputsFromTrigger(
-	trigger: FlowTrigger | undefined,
+	trigger: Trigger | undefined,
 ): FormInput[] {
 	if (trigger === undefined) {
 		return [];

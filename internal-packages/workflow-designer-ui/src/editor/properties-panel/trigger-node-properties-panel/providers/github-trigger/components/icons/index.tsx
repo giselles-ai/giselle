@@ -1,4 +1,4 @@
-import type { GitHubTriggerEventId } from "@giselles-ai/flow";
+import type { GitHubEventId } from "@giselles-ai/trigger-registry";
 import {
 	Check,
 	MessageSquareCode,
@@ -264,7 +264,7 @@ function DefaultGitHubIcon({
 }
 
 export function getTriggerIcon(
-	triggerType: GitHubTriggerEventId,
+	triggerType: GitHubEventId,
 	props: IconProps = {},
 ) {
 	switch (triggerType) {

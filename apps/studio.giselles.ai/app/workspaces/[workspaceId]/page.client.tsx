@@ -7,8 +7,8 @@ import {
 	ZustandBridgeProvider,
 } from "@giselles-ai/giselle/react";
 import {
-	type FlowTrigger,
 	isTriggerNode,
+	type Trigger,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
 import { use } from "react";
@@ -18,7 +18,7 @@ import type { LoaderData } from "./data-loader";
 interface Props {
 	dataLoader: Promise<LoaderData>;
 	integrationRefreshAction: () => Promise<Partial<Integration>>;
-	flowTriggerUpdateAction: (flowTrigger: FlowTrigger) => Promise<void>;
+	triggerUpdateAction: (trigger: Trigger) => Promise<void>;
 	workspaceNameUpdateAction: (name: string) => Promise<void>;
 	createAppEntryNodeAction: (node: TriggerNode) => Promise<void>;
 	deleteAppEntryNodeAction: (node: TriggerNode) => Promise<void>;
@@ -26,7 +26,7 @@ interface Props {
 export function Page({
 	dataLoader,
 	integrationRefreshAction,
-	flowTriggerUpdateAction,
+	triggerUpdateAction: flowTriggerUpdateAction,
 	workspaceNameUpdateAction,
 	createAppEntryNodeAction,
 	deleteAppEntryNodeAction,
@@ -69,9 +69,9 @@ export function Page({
 				},
 			}}
 			featureFlag={data.featureFlags}
-			flowTrigger={{
+			trigger={{
 				callbacks: {
-					flowTriggerUpdate: flowTriggerUpdateAction,
+					triggerUpdate: flowTriggerUpdateAction,
 				},
 			}}
 		>

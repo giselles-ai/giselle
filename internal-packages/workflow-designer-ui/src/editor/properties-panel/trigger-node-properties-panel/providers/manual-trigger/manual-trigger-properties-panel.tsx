@@ -8,8 +8,8 @@ import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import {
 	useFeatureFlag,
-	useFlowTrigger,
 	useGiselleEngine,
+	useTrigger,
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
 import {
@@ -42,7 +42,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	const [parameters, setParameters] = useState<ManualTriggerParameter[]>([]);
 	const [staged, setStaged] = useState(false);
 	const { stage } = useFeatureFlag();
-	const { callbacks } = useFlowTrigger();
+	const { callbacks } = useTrigger();
 
 	const handleAddParameter = useCallback<FormEventHandler<HTMLFormElement>>(
 		(e) => {
@@ -103,7 +103,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 					},
 				});
 
-				await callbacks?.flowTriggerUpdate?.({
+				await callbacks?.triggerUpdate?.({
 					id: triggerId,
 					nodeId: node.id,
 					workspaceId: workspace?.id,
@@ -138,7 +138,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 			node,
 			workspace?.id,
 			updateNodeData,
-			callbacks?.flowTriggerUpdate,
+			callbacks?.triggerUpdate,
 		],
 	);
 

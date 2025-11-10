@@ -1,9 +1,9 @@
-import type { FlowTriggerId } from "@giselles-ai/protocol";
+import type { TriggerId } from "@giselles-ai/protocol";
 import { useGitHubTrigger } from "../../lib/use-github-trigger";
 import { GitHubRepositoryBadge } from "./github-repository-badge";
 
 interface GitHubRepositoryBadgeFromTriggerProps {
-	flowTriggerId: FlowTriggerId;
+	triggerId: TriggerId;
 }
 
 /**
@@ -11,9 +11,9 @@ interface GitHubRepositoryBadgeFromTriggerProps {
  * and displays it as a badge
  */
 export function GitHubRepositoryBadgeFromTrigger({
-	flowTriggerId,
+	triggerId,
 }: GitHubRepositoryBadgeFromTriggerProps) {
-	const { isLoading, data } = useGitHubTrigger(flowTriggerId);
+	const { isLoading, data } = useGitHubTrigger(triggerId);
 
 	if (isLoading && data === undefined) {
 		return null;
