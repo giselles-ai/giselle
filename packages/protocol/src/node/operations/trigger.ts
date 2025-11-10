@@ -1,10 +1,5 @@
 import { z } from "zod/v4";
-import { TriggerId, type TriggerProvider } from "../../trigger";
-
-export const TriggerProviderLike = z.looseObject({
-	provider: z.string(),
-});
-export type TriggerProviderLike = z.infer<typeof TriggerProviderLike>;
+import { TriggerId } from "../../trigger";
 
 const TriggerUnconfiguredState = z.object({
 	status: z.literal("unconfigured"),
@@ -25,10 +20,7 @@ const TriggerConfigurationState = z.discriminatedUnion("status", [
 
 export const TriggerContent = z.object({
 	type: z.literal("trigger"),
-	provider: z.enum(["manual", "github", "app-entry"] satisfies [
-		TriggerProvider,
-		...TriggerProvider[],
-	]),
+	provider: z.enum(["manual", "github", "app-entry"]),
 	state: TriggerConfigurationState,
 });
 export type TriggerContent = z.infer<typeof TriggerContent>;

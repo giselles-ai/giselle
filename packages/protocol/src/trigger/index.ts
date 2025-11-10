@@ -16,8 +16,6 @@ export {
 export const TriggerId = createIdGenerator("fltg");
 export type TriggerId = z.infer<typeof TriggerId.schema>;
 
-export * from "./providers";
-
 export const Trigger = z.object({
 	id: TriggerId.schema,
 	workspaceId: WorkspaceId.schema,
