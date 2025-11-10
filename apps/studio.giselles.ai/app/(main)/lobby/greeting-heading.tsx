@@ -61,7 +61,7 @@ function getGreeting(username: string, loginCount: number) {
 	if (loginCount === 5) {
 		return `Welcome back, ${username}. You're off to a great start.`;
 	}
-	// 6回目以降は時間帯ベースのメッセージ
+	// For 6th login and onwards, use time-based messages
 	return getTimeBasedGreeting(username);
 }
 
@@ -71,7 +71,7 @@ interface GreetingHeadingProps {
 
 export function GreetingHeading({ username }: GreetingHeadingProps) {
 	const [greeting, setGreeting] = useState<string>("");
-	const [loginCount, setLoginCount] = useState<number>(0);
+	const [_loginCount, setLoginCount] = useState<number>(0);
 
 	useEffect(() => {
 		// Get or initialize login count from localStorage
