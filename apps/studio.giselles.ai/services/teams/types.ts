@@ -11,6 +11,7 @@ export type CurrentTeam = {
 	name: typeof teams.$inferSelect.name;
 	avatarUrl?: typeof teams.$inferSelect.avatarUrl;
 	type: typeof teams.$inferSelect.type;
+	plan: typeof teams.$inferSelect.plan;
 	activeSubscriptionId: typeof subscriptions.$inferInsert.id | null;
 };
 
@@ -20,5 +21,6 @@ export type Team = {
 	id: typeof teams.$inferSelect.id;
 	name: typeof teams.$inferSelect.name;
 	avatarUrl?: typeof teams.$inferSelect.avatarUrl;
+	plan?: typeof teams.$inferSelect.plan;
 	isPro?: boolean;
 };

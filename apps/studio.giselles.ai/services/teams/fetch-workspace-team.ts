@@ -15,6 +15,7 @@ export async function fetchWorkspaceTeam(
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
 			type: teams.type,
+			plan: teams.plan,
 			activeSubscriptionId: subscriptions.id,
 		})
 		.from(teams)

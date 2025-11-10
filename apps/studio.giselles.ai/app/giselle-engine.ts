@@ -85,7 +85,10 @@ if (
 	throw new Error("missing github credentials");
 }
 
-type TeamForPlan = Pick<CurrentTeam, "id" | "activeSubscriptionId" | "type">;
+type TeamForPlan = Pick<
+	CurrentTeam,
+	"id" | "activeSubscriptionId" | "type" | "plan"
+>;
 
 async function traceGenerationForTeam(args: {
 	generation: CompletedGeneration | FailedGeneration;
@@ -252,6 +255,7 @@ export const giselleEngine = NextGiselleEngine({
 						id: parsedMetadata.team.id,
 						type: parsedMetadata.team.type,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						plan: parsedMetadata.team.plan,
 					},
 				});
 				return;
@@ -294,6 +298,7 @@ export const giselleEngine = NextGiselleEngine({
 						id: parsedMetadata.team.id,
 						type: parsedMetadata.team.type,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						plan: parsedMetadata.team.plan,
 					},
 				});
 				return;
@@ -327,6 +332,7 @@ export const giselleEngine = NextGiselleEngine({
 							id: parsedMetadata.team.id,
 							type: parsedMetadata.team.type,
 							activeSubscriptionId: parsedMetadata.team.subscriptionId,
+							plan: parsedMetadata.team.plan,
 						},
 					});
 					return;
@@ -427,6 +433,7 @@ if (generateContentProcessor === "trigger.dev") {
 						id: team.id,
 						type: team.type,
 						subscriptionId: team.activeSubscriptionId,
+						plan: team.plan,
 					},
 				});
 				break;
@@ -449,6 +456,7 @@ if (generateContentProcessor === "trigger.dev") {
 								id: currentTeam.id,
 								type: currentTeam.type,
 								subscriptionId: currentTeam.activeSubscriptionId,
+								plan: currentTeam.plan,
 							},
 						});
 						break;
@@ -490,6 +498,7 @@ if (generateContentProcessor === "trigger.dev") {
 						id: team.id,
 						type: team.type,
 						subscriptionId: team.activeSubscriptionId,
+						plan: team.plan,
 					},
 				});
 				break;
@@ -509,6 +518,7 @@ if (generateContentProcessor === "trigger.dev") {
 						id: currentTeam.id,
 						type: currentTeam.type,
 						subscriptionId: currentTeam.activeSubscriptionId,
+						plan: currentTeam.plan,
 					},
 				});
 				break;

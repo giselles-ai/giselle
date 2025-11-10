@@ -94,6 +94,7 @@ async function createTeamInDatabase(
 			id: createTeamId(),
 			name: teamName,
 			type: isInternal ? "internal" : "customer",
+			plan: isInternal ? "internal" : "free",
 		})
 		.returning({ id: teams.id, dbId: teams.dbId });
 

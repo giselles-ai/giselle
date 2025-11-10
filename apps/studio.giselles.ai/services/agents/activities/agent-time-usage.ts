@@ -23,6 +23,7 @@ async function getCurrentBillingPeriod(teamDbId: number) {
 			name: teams.name,
 			type: teams.type,
 			createdAt: teams.createdAt,
+			plan: teams.plan,
 			activeSubscriptionId: subscriptions.id,
 			activeSubscriptionCurrentPeriodStart: subscriptions.currentPeriodStart,
 			activeSubscriptionCurrentPeriodEnd: subscriptions.currentPeriodEnd,
