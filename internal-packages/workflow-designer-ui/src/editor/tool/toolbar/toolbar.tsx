@@ -277,7 +277,7 @@ export function Toolbar() {
 												{triggerRegistry
 													.filter(
 														(triggerEntry) =>
-															triggerEntry.provider !== "app-entry" && stage,
+															triggerEntry.provider !== "app-entry" || stage,
 													)
 													.map((triggerEntry) => (
 														<ToggleGroup.Item
