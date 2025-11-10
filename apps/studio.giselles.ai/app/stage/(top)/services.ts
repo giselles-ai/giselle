@@ -1,4 +1,4 @@
-import { defaultName } from "@giselles-ai/giselle";
+import { defaultName } from "@giselles-ai/node-registry";
 import {
 	isTriggerNode,
 	type Workspace,

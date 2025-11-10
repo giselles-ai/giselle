@@ -1,5 +1,6 @@
-import { type ActId, defaultName } from "@giselles-ai/giselle";
+import type { ActId } from "@giselles-ai/giselle";
 import { NodeIcon } from "@giselles-ai/icons/node";
+import { defaultName } from "@giselles-ai/node-registry";
 import {
 	type Generation,
 	isImageGenerationNode,
@@ -7,7 +8,6 @@ import {
 	type Step,
 	type StepId,
 } from "@giselles-ai/protocol";
-
 import { notFound } from "next/navigation";
 import { giselleEngine } from "@/app/giselle-engine";
 import { GenerationView } from "../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";

@@ -40,9 +40,19 @@ export type DocumentVectorStoreSource = z.infer<
 >;
 
 export const VectorStoreContent = VectorStoreContentBase.extend({
-	source: z.union([GitHubVectorStoreSource, DocumentVectorStoreSource]),
+	source: z.discriminatedUnion("provider", [
+		GitHubVectorStoreSource,
+		DocumentVectorStoreSource,
+	]),
 });
 export type VectorStoreContent = z.infer<typeof VectorStoreContent>;
+
+export const VectorStoreProvider = z.enum(
+	VectorStoreContent.shape.source.options.map(
+		(option) => option.shape.provider.value,
+	),
+);
+export type VectorStoreProvider = z.infer<typeof VectorStoreProvider>;
 
 export const VectorStoreContentReference = z.object({
 	type: VectorStoreContent.shape.type,

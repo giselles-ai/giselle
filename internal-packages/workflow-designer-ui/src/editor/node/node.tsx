@@ -1,7 +1,5 @@
-import {
-	defaultName,
-	useWorkflowDesignerStore,
-} from "@giselles-ai/giselle/react";
+import { useWorkflowDesignerStore } from "@giselles-ai/giselle/react";
+import { defaultName } from "@giselles-ai/node-registry";
 import {
 	type InputId,
 	isActionNode,

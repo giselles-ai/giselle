@@ -3,15 +3,6 @@
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import { actionRegistry, isActionProvider } from "@giselles-ai/action-registry";
 import {
-	createActionNode,
-	createDocumentVectorStoreNode,
-	createFileNode,
-	createGitHubVectorStoreNode,
-	createQueryNode,
-	createTextNode,
-	createTriggerNode,
-	createWebPageNode,
-	triggerNodeDefaultName,
 	useFeatureFlag,
 	useUsageLimits,
 	useWorkflowDesigner,
@@ -23,6 +14,17 @@ import {
 	languageModels,
 	Tier,
 } from "@giselles-ai/language-model";
+import {
+	createActionNode,
+	createDocumentVectorStoreNode,
+	createFileNode,
+	createGitHubVectorStoreNode,
+	createQueryNode,
+	createTextNode,
+	createTriggerNode,
+	createWebPageNode,
+	triggerNodeDefaultName,
+} from "@giselles-ai/node-registry";
 import { FileCategory } from "@giselles-ai/protocol";
 import {
 	isTriggerProvider,
@@ -265,15 +267,65 @@ export function Toolbar() {
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={(value) => {
-													if (!isTriggerProvider(value)) {
-														/** @todo warning in log */
+													if (isTriggerProvider(value)) {
+														setSelectedTool(
+															addNodeTool(createTriggerNode(value)),
+														);
 														return;
 													}
-													setSelectedTool(
-														addNodeTool(createTriggerNode(value)),
-													);
 												}}
 											>
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+												<ToggleGroup.Item data-tool value="app-entry">
+													<TriggerIcon className="size-[20px] shrink-0" />
+													<p className="text-[14px]">Stage (Coming soon)</p>
+												</ToggleGroup.Item>
+												{triggerRegistry.map((triggerEntry) => (
+													<ToggleGroup.Item
+														key={triggerEntry.provider}
+														value={triggerEntry.provider}
+														data-tool
+													>
+														{triggerEntry.provider === "manual" && (
+															<TriggerIcon className="size-[20px] shrink-0" />
+														)}
+														{triggerEntry.provider === "github" && (
+															<GitHubIcon className="size-[20px] shrink-0" />
+														)}
+														<p className="text-[14px]">
+															{triggerNodeDefaultName(triggerEntry.provider)}
+														</p>
+													</ToggleGroup.Item>
+												))}
+||||||| ancestor
+												{triggerRegistry.map((triggerEntry) => (
+													<ToggleGroup.Item
+														key={triggerEntry.provider}
+														value={triggerEntry.provider}
+														data-tool
+													>
+														{triggerEntry.provider === "manual" && (
+															<TriggerIcon className="size-[20px] shrink-0" />
+														)}
+														{triggerEntry.provider === "github" && (
+															<GitHubIcon className="size-[20px] shrink-0" />
+														)}
+														<p className="text-[14px]">
+															{triggerNodeDefaultName(triggerEntry.provider)}
+														</p>
+													</ToggleGroup.Item>
+												))}
+												<div data-tool className="opacity-50">
+													<TriggerIcon className="size-[20px] shrink-0" />
+													<p className="text-[14px]">Stage (Coming soon)</p>
+												</div>
+												<div data-tool className="opacity-50">
+													<TriggerIcon className="size-[20px] shrink-0" />
+													<p className="text-[14px]">Widget (Coming soon)</p>
+												</div>
+=======
 												{triggerRegistry
 													.filter(
 														(triggerEntry) =>
@@ -300,6 +352,98 @@ export function Toolbar() {
 															</p>
 														</ToggleGroup.Item>
 													))}
+||||||| ancestor
+												{triggerRegistry
+													.filter(
+														(triggerEntry) =>
+															triggerEntry.provider !== "app-entry" || stage,
+													)
+													.map((triggerEntry) => (
+														<ToggleGroup.Item
+															key={triggerEntry.provider}
+															value={triggerEntry.provider}
+															data-tool
+														>
+															{triggerEntry.provider === "manual" && (
+																<TriggerIcon className="size-[20px] shrink-0" />
+															)}
+															{triggerEntry.provider === "github" && (
+																<GitHubIcon className="size-[20px] shrink-0" />
+															)}
+															{triggerEntry.provider === "app-entry" && (
+																<TriggerIcon className="size-[20px] shrink-0" />
+															)}
+
+															<p className="text-[14px]">
+																{triggerNodeDefaultName(triggerEntry.provider)}
+															</p>
+														</ToggleGroup.Item>
+													))}
+=======
+												{triggerRegistry.map((triggerEntry) => (
+													<ToggleGroup.Item
+														key={triggerEntry.provider}
+														value={triggerEntry.provider}
+														data-tool
+													>
+														{triggerEntry.provider === "manual" && (
+															<TriggerIcon className="size-[20px] shrink-0" />
+														)}
+														{triggerEntry.provider === "github" && (
+															<GitHubIcon className="size-[20px] shrink-0" />
+														)}
+														<p className="text-[14px]">
+															{triggerNodeDefaultName(triggerEntry.provider)}
+														</p>
+													</ToggleGroup.Item>
+												))}
+>>>>>>> theirs
+||||||| ancestor
+												{triggerRegistry.map((triggerEntry) => (
+													<ToggleGroup.Item
+														key={triggerEntry.provider}
+														value={triggerEntry.provider}
+														data-tool
+													>
+														{triggerEntry.provider === "manual" && (
+															<TriggerIcon className="size-[20px] shrink-0" />
+														)}
+														{triggerEntry.provider === "github" && (
+															<GitHubIcon className="size-[20px] shrink-0" />
+														)}
+														<p className="text-[14px]">
+															{triggerNodeDefaultName(triggerEntry.provider)}
+														</p>
+													</ToggleGroup.Item>
+												))}
+=======
+												{triggerRegistry
+													.filter(
+														(triggerEntry) =>
+															triggerEntry.provider !== "app-entry" || stage,
+													)
+													.map((triggerEntry) => (
+														<ToggleGroup.Item
+															key={triggerEntry.provider}
+															value={triggerEntry.provider}
+															data-tool
+														>
+															{triggerEntry.provider === "manual" && (
+																<TriggerIcon className="size-[20px] shrink-0" />
+															)}
+															{triggerEntry.provider === "github" && (
+																<GitHubIcon className="size-[20px] shrink-0" />
+															)}
+															{triggerEntry.provider === "app-entry" && (
+																<TriggerIcon className="size-[20px] shrink-0" />
+															)}
+
+															<p className="text-[14px]">
+																{triggerNodeDefaultName(triggerEntry.provider)}
+															</p>
+														</ToggleGroup.Item>
+													))}
+>>>>>>> theirs
 												<div data-tool className="opacity-50">
 													<TriggerIcon className="size-[20px] shrink-0" />
 													<p className="text-[14px]">Stage (Coming soon)</p>
@@ -308,6 +452,7 @@ export function Toolbar() {
 													<TriggerIcon className="size-[20px] shrink-0" />
 													<p className="text-[14px]">Widget (Coming soon)</p>
 												</div>
+>>>>>>> theirs
 											</ToggleGroup.Root>
 										</div>
 									</Popover.Content>
