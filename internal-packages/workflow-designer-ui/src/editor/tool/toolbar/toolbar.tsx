@@ -275,29 +275,28 @@ export function Toolbar() {
 													}
 												}}
 											>
-												{stage && (
-													<ToggleGroup.Item data-tool value="app-entry">
-														<TriggerIcon className="size-[20px] shrink-0" />
-														<p className="text-[14px]">App Entry</p>
-													</ToggleGroup.Item>
-												)}
-												{triggerRegistry.map((triggerEntry) => (
-													<ToggleGroup.Item
-														key={triggerEntry.provider}
-														value={triggerEntry.provider}
-														data-tool
-													>
-														{triggerEntry.provider === "manual" && (
-															<TriggerIcon className="size-[20px] shrink-0" />
-														)}
-														{triggerEntry.provider === "github" && (
-															<GitHubIcon className="size-[20px] shrink-0" />
-														)}
-														<p className="text-[14px]">
-															{triggerNodeDefaultName(triggerEntry.provider)}
-														</p>
-													</ToggleGroup.Item>
-												))}
+												{triggerRegistry
+													.filter(
+														(triggerEntry) =>
+															triggerEntry.provider !== "app-entry" || stage,
+													)
+													.map((triggerEntry) => (
+														<ToggleGroup.Item
+															key={triggerEntry.provider}
+															value={triggerEntry.provider}
+															data-tool
+														>
+															{triggerEntry.provider === "manual" && (
+																<TriggerIcon className="size-[20px] shrink-0" />
+															)}
+															{triggerEntry.provider === "github" && (
+																<GitHubIcon className="size-[20px] shrink-0" />
+															)}
+															<p className="text-[14px]">
+																{triggerNodeDefaultName(triggerEntry.provider)}
+															</p>
+														</ToggleGroup.Item>
+													))}
 												{triggerRegistry.map((triggerEntry) => (
 													<ToggleGroup.Item
 														key={triggerEntry.provider}
