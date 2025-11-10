@@ -25,13 +25,8 @@ export function AccountDocsLink() {
 		DOCS_LINKS["/settings/account"];
 
 	return (
-		<DocsLink
-			href={docsLink.href}
-			target="_blank"
-			rel="noopener noreferrer"
-		>
+		<DocsLink href={docsLink.href} target="_blank" rel="noopener noreferrer">
 			{docsLink.label}
 		</DocsLink>
 	);
 }
-

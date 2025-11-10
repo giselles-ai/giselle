@@ -1,7 +1,7 @@
 import { PageHeading } from "@giselle-internal/ui/page-heading";
 import type { ReactNode } from "react";
-import { AccountDocsLink } from "./components/account-docs-link";
 import { AccountSettingsNav } from "./account-nav";
+import { AccountDocsLink } from "./components/account-docs-link";
 
 export default function SettingsAccountLayout({
 	children,
