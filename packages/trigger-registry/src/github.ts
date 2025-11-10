@@ -20,12 +20,12 @@ export const githubIssueCreatedEvent = {
 	id: "github.issue.created",
 	label: "Issue Created",
 	payload: z.object({
-		issueNumber: z.coerce.string().meta({ label: "Issue Number" }),
+		issueNumber: z.coerce.number().meta({ label: "Issue Number" }),
 		title: z.string().meta({ label: "Issue Title" }),
 		body: z
 			.string()
 			.optional()
-			.meta({ label: "Issue Body", input: { multline: true } }),
+			.meta({ label: "Issue Body", input: { multiline: true } }),
 	}),
 } as const satisfies GitHubEvent;
 
@@ -33,12 +33,12 @@ export const githubIssueClosedEvent = {
 	id: "github.issue.closed",
 	label: "Issue Closed",
 	payload: z.object({
-		issueNumber: z.coerce.string().meta({ label: "Issue Number" }),
+		issueNumber: z.coerce.number().meta({ label: "Issue Number" }),
 		title: z.string().meta({ label: "Issue Title" }),
 		body: z
 			.string()
 			.optional()
-			.meta({ label: "Issue Body", input: { multline: true } }),
+			.meta({ label: "Issue Body", input: { multiline: true } }),
 	}),
 } as const satisfies GitHubEvent;
 
@@ -46,16 +46,16 @@ export const githubIssueCommentCreatedEvent = {
 	id: "github.issue_comment.created",
 	label: "Issue Comment Created",
 	payload: z.object({
-		issueNumber: z.coerce.string().meta({ label: "Issue Number" }),
+		issueNumber: z.coerce.number().meta({ label: "Issue Number" }),
 		issueTitle: z.string().meta({ label: "Issue Title" }),
 		issueBody: z
 			.string()
 			.optional()
-			.meta({ label: "Issue Body", input: { multline: true } }),
+			.meta({ label: "Issue Body", input: { multiline: true } }),
 		body: z
 			.string()
 			.optional()
-			.meta({ label: "Issue Comment", input: { multline: true } }),
+			.meta({ label: "Issue Comment", input: { multiline: true } }),
 	}),
 } as const satisfies GitHubEvent;
 
@@ -63,12 +63,12 @@ export const githubIssueLabeledEvent = {
 	id: "github.issue.labeled",
 	label: "Issue Labeled",
 	payload: z.object({
-		issueNumber: z.coerce.string().meta({ label: "Issue Number" }),
+		issueNumber: z.coerce.number().meta({ label: "Issue Number" }),
 		title: z.string().meta({ label: "Issue Title" }),
 		body: z
 			.string()
 			.optional()
-			.meta({ label: "Issue Body", input: { multline: true } }),
+			.meta({ label: "Issue Body", input: { multiline: true } }),
 		labelName: z.string().meta({ label: "Issue Label Name" }),
 	}),
 } as const satisfies GitHubEvent;
@@ -77,19 +77,19 @@ export const githubPullRequestCommentCreatedEvent = {
 	id: "github.pull_request_comment.created",
 	label: "Pull Request Comment Created",
 	payload: z.object({
-		issueNumber: z.coerce.string().meta({ label: "Pull Request Number" }),
+		issueNumber: z.coerce.number().meta({ label: "Pull Request Number" }),
 		issueTitle: z.string().meta({ label: "Pull Request Title" }),
 		issueBody: z
 			.string()
 			.optional()
-			.meta({ label: "Pull Request Body", input: { multline: true } }),
+			.meta({ label: "Pull Request Body", input: { multiline: true } }),
 		body: z
 			.string()
 			.optional()
-			.meta({ label: "Pull Request Comment", input: { multline: true } }),
+			.meta({ label: "Pull Request Comment", input: { multiline: true } }),
 		diff: z
 			.string()
-			.meta({ label: "Pull Request Diff", input: { multline: true } }),
+			.meta({ label: "Pull Request Diff", input: { multiline: true } }),
 	}),
 } as const satisfies GitHubEvent;
 
@@ -97,20 +97,20 @@ export const githubPullRequestReviewCommentCreatedEvent = {
 	id: "github.pull_request_review_comment.created",
 	label: "Pull Request Review Comment Created",
 	payload: z.object({
-		id: z.coerce.string().meta({ label: "Review Comment ID" }),
+		id: z.coerce.number().meta({ label: "Review Comment ID" }),
 		body: z
 			.string()
-			.meta({ label: "Review Comment Body", input: { multline: true } }),
+			.meta({ label: "Review Comment Body", input: { multiline: true } }),
 		diff: z.string().meta({ label: "Review Comment Diff" }),
 		previousCommentBody: z
 			.string()
-			.meta({ label: "Previous Comment Body", input: { multline: true } }),
-		pullRequestNumber: z.coerce.string().meta({ label: "Pull Request Number" }),
+			.meta({ label: "Previous Comment Body", input: { multiline: true } }),
+		pullRequestNumber: z.coerce.number().meta({ label: "Pull Request Number" }),
 		pullRequestTitle: z.string().meta({ label: "Pull Request Title" }),
 		pullRequestBody: z
 			.string()
 			.optional()
-			.meta({ label: "Pull Request Body", input: { multline: true } }),
+			.meta({ label: "Pull Request Body", input: { multiline: true } }),
 	}),
 } as const satisfies GitHubEvent;
 
@@ -118,17 +118,19 @@ export const githubDiscussionCommentCreatedEvent = {
 	id: "github.discussion_comment.created",
 	label: "Discussion Comment Created",
 	payload: z.object({
-		body: z.string().meta({ label: "Comment Body", input: { multline: true } }),
-		discussionNumber: z.coerce.string().meta({ label: "Discussion Number" }),
+		body: z
+			.string()
+			.meta({ label: "Comment Body", input: { multiline: true } }),
+		discussionNumber: z.coerce.number().meta({ label: "Discussion Number" }),
 		discussionTitle: z.string().meta({ label: "Discussion Title" }),
 		discussionBody: z
 			.string()
-			.meta({ label: "Discussion Body", input: { multline: true } }),
+			.meta({ label: "Discussion Body", input: { multiline: true } }),
 		discussionUrl: z.string().meta({ label: "Discussion URL" }),
-		commentId: z.coerce.string().meta({ label: "Comment ID" }),
+		commentId: z.coerce.number().meta({ label: "Comment ID" }),
 		parentCommentBody: z
 			.string()
-			.meta({ label: "Parent Comment Body", input: { multline: true } }),
+			.meta({ label: "Parent Comment Body", input: { multiline: true } }),
 	}),
 } as const satisfies GitHubEvent;
 
@@ -136,11 +138,11 @@ export const githubDiscussionCreatedEvent = {
 	id: "github.discussion.created",
 	label: "Discussion Created",
 	payload: z.object({
-		discussionNumber: z.coerce.string().meta({ label: "Discussion Number" }),
+		discussionNumber: z.coerce.number().meta({ label: "Discussion Number" }),
 		discussionTitle: z.string().meta({ label: "Discussion Title" }),
 		discussionBody: z
 			.string()
-			.meta({ label: "Discussion Body", input: { multline: true } }),
+			.meta({ label: "Discussion Body", input: { multiline: true } }),
 		discussionUrl: z.string().meta({ label: "Discussion URL" }),
 		categoryName: z.string().meta({ label: "Category Name" }),
 	}),
@@ -153,8 +155,8 @@ export const githubPullRequestClosedEvent = {
 		title: z.string().meta({ label: "Pull Request Title" }),
 		body: z
 			.string()
-			.meta({ label: "Pull Request Body", input: { multline: true } }),
-		number: z.coerce.string().meta({ label: "Pull Request Number" }),
+			.meta({ label: "Pull Request Body", input: { multiline: true } }),
+		number: z.coerce.number().meta({ label: "Pull Request Number" }),
 		diff: z.string().meta({ label: "Pull Request Diff" }),
 		pullRequestUrl: z.string().meta({ label: "Pull Request URL" }),
 	}),
@@ -167,8 +169,8 @@ export const githubPullRequestLabeledEvent = {
 		pullRequestTitle: z.string().meta({ label: "Pull Request Title" }),
 		pullRequestBody: z
 			.string()
-			.meta({ label: "Pull Request Body", input: { multline: true } }),
-		pullRequestNumber: z.coerce.string().meta({ label: "Pull Request Number" }),
+			.meta({ label: "Pull Request Body", input: { multiline: true } }),
+		pullRequestNumber: z.coerce.number().meta({ label: "Pull Request Number" }),
 		labelName: z.string().meta({ label: "Pull Request Label Name" }),
 	}),
 } as const satisfies GitHubEvent;
@@ -180,8 +182,8 @@ export const githubPullRequestOpenedEvent = {
 		title: z.string().meta({ label: "Pull Request Title" }),
 		body: z
 			.string()
-			.meta({ label: "Pull Request Body", input: { multline: true } }),
-		number: z.coerce.string().meta({ label: "Pull Request Number" }),
+			.meta({ label: "Pull Request Body", input: { multiline: true } }),
+		number: z.coerce.number().meta({ label: "Pull Request Number" }),
 		diff: z.string().meta({ label: "Pull Request Diff" }),
 		pullRequestUrl: z.string().meta({ label: "Pull Request URL" }),
 	}),
@@ -194,8 +196,8 @@ export const githubPullRequestReadyForReviewEvent = {
 		title: z.string().meta({ label: "Pull Request Title" }),
 		body: z
 			.string()
-			.meta({ label: "Pull Request Body", input: { multline: true } }),
-		number: z.coerce.string().meta({ label: "Pull Request Number" }),
+			.meta({ label: "Pull Request Body", input: { multiline: true } }),
+		number: z.coerce.number().meta({ label: "Pull Request Number" }),
 		diff: z.string().meta({ label: "Pull Request Diff" }),
 		pullRequestUrl: z.string().meta({ label: "Pull Request URL" }),
 	}),
@@ -237,11 +239,15 @@ export function githubEventToInputFields(githubAction: GitHubEvent) {
 	return githubAction.payload.keyof().options.map((key) => {
 		const fieldSchema = githubAction.payload.shape[key] as
 			| z.ZodString
-			| z.ZodNumber;
+			| z.ZodNumber
+			| z.ZodOptional;
 		const fieldMeta = PayloadFieldMeta.parse(fieldSchema.meta());
 		const label = fieldMeta.label ?? titleCase(key);
 		const optional = fieldSchema.safeParse(undefined).success;
-		const zodType = fieldSchema.def.type;
+		const zodType =
+			fieldSchema instanceof z.ZodOptional
+				? fieldSchema.unwrap()._zod.def.type
+				: fieldSchema._zod.def.type;
 		return {
 			key,
 			label,
