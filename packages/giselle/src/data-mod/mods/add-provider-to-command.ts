@@ -33,12 +33,10 @@ export function addProviderToCommand(data: unknown, issue: $ZodIssue) {
 		return data;
 	}
 
-	// If provider is missing, add it based on the command structure
-	// For GitHub actions, default to "github"
-	if (!("provider" in command)) {
-		// Since ActionData is a discriminated union with only GitHubActionData,
-		// we default to "github" if provider is missing
-		// If command object exists but doesn't have provider, add it
+	// If provider is missing or has an invalid value, set it to "github"
+	// Since ActionData is a discriminated union with only GitHubActionData,
+	// we default to "github" if provider is missing or invalid
+	if (!("provider" in command) || command.provider !== "github") {
 		const newData = structuredClone(data as Record<string, unknown>);
 		setValueAtPath(newData, [...commandPath, "provider"], "github");
 		return newData;
