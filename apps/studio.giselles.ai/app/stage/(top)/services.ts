@@ -206,7 +206,7 @@ export async function fetchFlowTriggers(
 			}
 
 			const flowTrigger = await giselleEngine.getTrigger({
-				flowTriggerId: tmpFlowTrigger.sdkFlowTriggerId,
+				triggerId: tmpFlowTrigger.sdkFlowTriggerId,
 			});
 			if (flowTrigger === undefined) {
 				continue;

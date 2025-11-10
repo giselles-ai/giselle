@@ -1,14 +1,17 @@
-import { getGitHubDisplayLabel, githubTriggers } from "@giselles-ai/flow";
 import {
 	useGiselleEngine,
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
 import {
-	type GitHubFlowTriggerEvent,
+	type GitHubEventData,
 	type Output,
 	OutputId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
+import {
+	githubEvents,
+	githubEventToInputFields,
+} from "@giselles-ai/trigger-registry";
 import { useCallback, useTransition } from "react";
 import type {
 	InputCallsignStep,
@@ -17,7 +20,7 @@ import type {
 
 interface UseTriggerConfigurationReturn {
 	configureTrigger: (
-		event: GitHubFlowTriggerEvent,
+		event: GitHubEventData,
 		step: InputCallsignStep | InputLabelsStep,
 	) => void;
 	isPending: boolean;
@@ -33,23 +36,8 @@ export const useTriggerConfiguration = ({
 	const [isPending, startTransition] = useTransition();
 
 	const configureTrigger = useCallback(
-		(
-			event: GitHubFlowTriggerEvent,
-			step: InputCallsignStep | InputLabelsStep,
-		) => {
-			const trigger = githubTriggers[event.id];
-
-			const outputs: Output[] = [];
-			for (const key of trigger.event.payloads.keyof().options) {
-				outputs.push({
-					id: OutputId.generate(),
-					label: getGitHubDisplayLabel({
-						eventId: event.id,
-						accessor: key,
-					}),
-					accessor: key,
-				});
-			}
+		(event: GitHubEventData, step: InputCallsignStep | InputLabelsStep) => {
+			const githubEvent = githubEvents[event.id];
 
 			startTransition(async () => {
 				try {
@@ -67,6 +55,14 @@ export const useTriggerConfiguration = ({
 						},
 					});
 
+					const outputs: Output[] = githubEventToInputFields(githubEvent).map(
+						(inputField) => ({
+							id: OutputId.generate(),
+							label: inputField.label,
+							accessor: inputField.key,
+						}),
+					);
+
 					updateNodeData(node, {
 						content: {
 							...node.content,
@@ -76,7 +72,7 @@ export const useTriggerConfiguration = ({
 							},
 						},
 						outputs: [...node.outputs, ...outputs],
-						name: `On ${trigger.event.label}`,
+						name: `On ${githubEvent.label}`,
 					});
 				} catch (_error) {
 					// Error is handled by the UI state

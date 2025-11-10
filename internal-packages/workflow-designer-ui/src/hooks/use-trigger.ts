@@ -1,5 +1,5 @@
 import { useGiselleEngine } from "@giselles-ai/giselle/react";
-import type { FlowTrigger, TriggerNode } from "@giselles-ai/protocol";
+import type { Trigger, TriggerNode } from "@giselles-ai/protocol";
 import { useCallback } from "react";
 import useSWR from "swr";
 
@@ -10,14 +10,14 @@ export function useTrigger(node: TriggerNode) {
 			? null
 			: {
 					namespace: "getTrigger",
-					flowTriggerId: node.content.state.flowTriggerId,
+					triggerId: node.content.state.flowTriggerId,
 				},
-		({ flowTriggerId }) =>
-			client.getTrigger({ flowTriggerId }).then((res) => res.trigger),
+		({ triggerId }) =>
+			client.getTrigger({ triggerId }).then((res) => res.trigger),
 	);
 
-	const setFlowTrigger = useCallback(
-		(newValue: Partial<FlowTrigger>) => {
+	const setTrigger = useCallback(
+		(newValue: Partial<Trigger>) => {
 			if (data === undefined) {
 				return;
 			}
@@ -26,7 +26,7 @@ export function useTrigger(node: TriggerNode) {
 					const newData = {
 						...data,
 						...newValue,
-					} satisfies FlowTrigger;
+					} satisfies Trigger;
 					await client.setTrigger({
 						trigger: newData,
 					});
@@ -42,16 +42,16 @@ export function useTrigger(node: TriggerNode) {
 		},
 		[client, mutate, data],
 	);
-	const enableFlowTrigger = useCallback(() => {
-		setFlowTrigger({ enable: true });
-	}, [setFlowTrigger]);
-	const disableFlowTrigger = useCallback(() => {
-		setFlowTrigger({ enable: false });
-	}, [setFlowTrigger]);
+	const enableTrigger = useCallback(() => {
+		setTrigger({ enable: true });
+	}, [setTrigger]);
+	const disableTrigger = useCallback(() => {
+		setTrigger({ enable: false });
+	}, [setTrigger]);
 	return {
 		isLoading,
 		data,
-		enableFlowTrigger,
-		disableFlowTrigger,
+		enableTrigger,
+		disableTrigger,
 	};
 }

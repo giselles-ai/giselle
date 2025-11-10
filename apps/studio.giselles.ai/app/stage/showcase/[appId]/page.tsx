@@ -1,4 +1,4 @@
-import { FlowTriggerId, type WorkspaceId } from "@giselles-ai/protocol";
+import { TriggerId, type WorkspaceId } from "@giselles-ai/protocol";
 import { and, avg, count, desc, eq, sum } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { giselleEngine } from "@/app/giselle-engine";
@@ -72,7 +72,7 @@ async function extractLLMLabels(workspaceId?: string | null): Promise<string> {
 
 async function getAppDetails(unsafeAppId: string) {
 	try {
-		const result = FlowTriggerId.safeParse(unsafeAppId);
+		const result = TriggerId.safeParse(unsafeAppId);
 		if (!result.success) {
 			return null;
 		}

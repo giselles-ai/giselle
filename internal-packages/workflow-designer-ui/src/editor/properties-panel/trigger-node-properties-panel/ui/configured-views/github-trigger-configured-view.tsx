@@ -1,13 +1,13 @@
 import { Button } from "@giselle-internal/ui/button";
-import {
-	type GitHubTriggerEventId,
-	githubTriggerIdToLabel,
-} from "@giselles-ai/flow";
 import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
-import type { FlowTriggerId, TriggerNode } from "@giselles-ai/protocol";
+import type { TriggerId, TriggerNode } from "@giselles-ai/protocol";
+import {
+	type GitHubEventId,
+	githubEvents,
+} from "@giselles-ai/trigger-registry";
 import clsx from "clsx/lite";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ClipboardButton from "../../../../../ui/clipboard-button";
 import { useGitHubTrigger } from "../../../../lib/use-github-trigger";
 import {
@@ -25,6 +25,7 @@ import {
 	PullRequestReadyForReviewIcon,
 	PullRequestReviewCommentCreatedIcon,
 } from "../../providers/github-trigger/components/icons";
+import type { GitHubTriggerReconfigureMode } from "../../providers/github-trigger/github-trigger-properties-panel";
 import { GitHubRepositoryBlock } from "../";
 
 // Icon mapping for GitHub trigger events
@@ -42,7 +43,7 @@ const EVENT_ICON_MAP = {
 	"github.pull_request.labeled": PullRequestLabeledIcon,
 	"github.discussion.created": DiscussionCreatedIcon,
 	"github.discussion_comment.created": DiscussionCommentCreatedIcon,
-} satisfies Record<GitHubTriggerEventId, React.ComponentType<IconProps>>;
+} satisfies Record<GitHubEventId, React.ComponentType<IconProps>>;
 
 // Default icon for unknown events
 const DefaultEventIcon = ({
@@ -66,22 +67,32 @@ const DefaultEventIcon = ({
 	</svg>
 );
 
-import type { GitHubTriggerReconfigureMode } from "../../providers/github-trigger/github-trigger-properties-panel";
-
 export function GitHubTriggerConfiguredView({
-	flowTriggerId,
+	triggerId,
 	node,
 	onStartReconfigure,
 }: {
-	flowTriggerId: FlowTriggerId;
+	triggerId: TriggerId;
 	node: TriggerNode;
 	onStartReconfigure: (mode: GitHubTriggerReconfigureMode) => void;
 }) {
 	const { updateNodeData } = useWorkflowDesigner();
-	const { isLoading, data, enableFlowTrigger, disableFlowTrigger } =
-		useGitHubTrigger(flowTriggerId);
+	const {
+		isLoading,
+		data,
+		enableTrigger: enableFlowTrigger,
+		disableTrigger: disableFlowTrigger,
+	} = useGitHubTrigger(triggerId);
 	const [actionInProgress, setActionInProgress] = useState(false);
 	const [actionError, setActionError] = useState<Error | null>(null);
+
+	const label = useMemo(() => {
+		if (data === undefined) {
+			return "";
+		}
+		const githubEvent = githubEvents[data.trigger.configuration.event.id];
+		return githubEvent.label;
+	}, [data]);
 
 	if (isLoading && data === undefined) {
 		return "Loading...";
@@ -97,17 +108,17 @@ export function GitHubTriggerConfiguredView({
 				...node.content,
 				state: {
 					status: "reconfiguring",
-					flowTriggerId,
+					flowTriggerId: triggerId,
 				},
 			},
 		});
 	};
 
-	const handleEnableFlowTrigger = async () => {
+	const handleEnableFlowTrigger = () => {
 		try {
 			setActionInProgress(true);
 			setActionError(null);
-			await enableFlowTrigger();
+			enableFlowTrigger();
 		} catch (error) {
 			setActionError(error instanceof Error ? error : new Error(String(error)));
 		} finally {
@@ -115,11 +126,11 @@ export function GitHubTriggerConfiguredView({
 		}
 	};
 
-	const handleDisableFlowTrigger = async () => {
+	const handleDisableFlowTrigger = () => {
 		try {
 			setActionInProgress(true);
 			setActionError(null);
-			await disableFlowTrigger();
+			disableFlowTrigger();
 		} catch (error) {
 			setActionError(error instanceof Error ? error : new Error(String(error)));
 		} finally {
@@ -201,9 +212,7 @@ export function GitHubTriggerConfiguredView({
 							return <IconComponent size={18} className="text-inverse" />;
 						})()}
 					</div>
-					<span className="pl-2">
-						{githubTriggerIdToLabel(data.trigger.configuration.event.id)}
-					</span>
+					<span className="pl-2">{label}</span>
 				</div>
 			</div>
 

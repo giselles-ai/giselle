@@ -1,16 +1,16 @@
 import { describe, expect, test } from "vitest";
-import { ManualFlowTrigger } from "./manual";
+import { ManualTrigger } from "./manual";
 
-describe("ManualFlowTrigger", () => {
+describe("ManualTrigger", () => {
 	test("can parse object does not have staged", () => {
-		const manualFlowTriggerLike = {
+		const manualTriggerLike = {
 			provider: "manual",
 			event: {
 				id: "manual",
 				parameters: [],
 			},
 		};
-		const parse = ManualFlowTrigger.safeParse(manualFlowTriggerLike);
+		const parse = ManualTrigger.safeParse(manualTriggerLike);
 		expect(parse.success).toBe(true);
 		expect(parse.data?.staged).toBe(false);
 	});

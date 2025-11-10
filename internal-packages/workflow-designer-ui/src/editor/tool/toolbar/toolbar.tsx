@@ -1,10 +1,8 @@
 "use client";
 
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
-import { type ActionProvider, actionProviders } from "@giselles-ai/flow";
-import type { TriggerProvider } from "@giselles-ai/giselle";
+import { actionRegistry, isActionProvider } from "@giselles-ai/action-registry";
 import {
-	actionNodeDefaultName,
 	createActionNode,
 	createDocumentVectorStoreNode,
 	createFileNode,
@@ -15,7 +13,6 @@ import {
 	createWebPageNode,
 	triggerNodeDefaultName,
 	useFeatureFlag,
-	useGiselleEngine,
 	useUsageLimits,
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
@@ -27,6 +24,10 @@ import {
 	Tier,
 } from "@giselles-ai/language-model";
 import { FileCategory } from "@giselles-ai/protocol";
+import {
+	isTriggerProvider,
+	triggerRegistry,
+} from "@giselles-ai/trigger-registry";
 import clsx from "clsx/lite";
 import {
 	DatabaseZapIcon,
@@ -38,7 +39,6 @@ import {
 } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
 import { useEffect, useState } from "react";
-import useSWR from "swr";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
 import { Tooltip } from "../../../ui/tooltip";
 import { isToolAction } from "../types";
@@ -80,10 +80,6 @@ import {
 } from "./state";
 
 export function Toolbar() {
-	const client = useGiselleEngine();
-	const { isLoading, data } = useSWR("get-trigger-providers", () =>
-		client.getTriggerProviders(),
-	);
 	const { setSelectedTool, selectedTool } = useToolbar();
 	const {
 		hoveredModel: languageModelMouseHovered,
@@ -95,7 +91,7 @@ export function Toolbar() {
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("All");
 	const { llmProviders } = useWorkflowDesigner();
-	const { webSearchAction, stage } = useFeatureFlag();
+	const { stage } = useFeatureFlag();
 
 	const modelsFilteredBySearchOnly = languageModels
 		.filter((model) => llmProviders.includes(model.provider))
@@ -181,15 +177,6 @@ export function Toolbar() {
 			onMouseLeave={handleModelLeave}
 		/>
 	);
-
-	if (isLoading) {
-		return null;
-	}
-
-	if (data === undefined) {
-		console.warn("There are no trigger providers available");
-		return null;
-	}
 
 	return (
 		<div className="relative rounded-[12px] overflow-hidden">
@@ -278,38 +265,38 @@ export function Toolbar() {
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={(value) => {
+													if (!isTriggerProvider(value)) {
+														/** @todo warning in log */
+														return;
+													}
 													setSelectedTool(
-														addNodeTool(
-															createTriggerNode(value as TriggerProvider),
-														),
+														addNodeTool(createTriggerNode(value)),
 													);
 												}}
 											>
-												{data
-													.filter((triggerProvider) => {
-														if (triggerProvider !== "app-entry") {
-															return true;
-														}
-														return stage;
-													})
-													.map((triggerProvider) => (
+												{triggerRegistry
+													.filter(
+														(triggerEntry) =>
+															triggerEntry.provider !== "app-entry" || stage,
+													)
+													.map((triggerEntry) => (
 														<ToggleGroup.Item
-															key={triggerProvider}
-															value={triggerProvider}
+															key={triggerEntry.provider}
+															value={triggerEntry.provider}
 															data-tool
 														>
-															{triggerProvider === "manual" && (
+															{triggerEntry.provider === "manual" && (
 																<TriggerIcon className="size-[20px] shrink-0" />
 															)}
-															{triggerProvider === "github" && (
+															{triggerEntry.provider === "github" && (
 																<GitHubIcon className="size-[20px] shrink-0" />
 															)}
-															{triggerProvider === "app-entry" && (
+															{triggerEntry.provider === "app-entry" && (
 																<TriggerIcon className="size-[20px] shrink-0" />
 															)}
 
 															<p className="text-[14px]">
-																{triggerNodeDefaultName(triggerProvider)}
+																{triggerNodeDefaultName(triggerEntry.provider)}
 															</p>
 														</ToggleGroup.Item>
 													))}
@@ -962,38 +949,27 @@ export function Toolbar() {
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={(value) => {
-													setSelectedTool(
-														addNodeTool(
-															createActionNode(value as ActionProvider),
-														),
-													);
+													if (isActionProvider(value)) {
+														setSelectedTool(
+															addNodeTool(createActionNode(value)),
+														);
+													}
 												}}
 											>
-												{actionProviders
-													.filter((actionProvider) => {
-														// Filter based on feature flags
-														if (actionProvider === "web-search") {
-															return webSearchAction;
-														}
-														return true; // Show other providers by default
-													})
-													.map((actionProvider) => (
-														<ToggleGroup.Item
-															key={actionProvider}
-															value={actionProvider}
-															data-tool
-														>
-															{actionProvider === "github" && (
-																<GitHubIcon className="size-[20px] shrink-0" />
-															)}
-															{actionProvider === "web-search" && (
-																<SearchIcon className="size-[20px] shrink-0" />
-															)}
-															<p className="text-[14px]">
-																{actionNodeDefaultName(actionProvider)}
-															</p>
-														</ToggleGroup.Item>
-													))}
+												{actionRegistry.map((actionRegistry) => (
+													<ToggleGroup.Item
+														key={actionRegistry.provider}
+														value={actionRegistry.provider}
+														data-tool
+													>
+														{actionRegistry.provider === "github" && (
+															<GitHubIcon className="size-[20px] shrink-0" />
+														)}
+														<p className="text-[14px]">
+															{actionRegistry.label}
+														</p>
+													</ToggleGroup.Item>
+												))}
 												<div data-tool className="opacity-50">
 													<RocketIcon className="size-[20px] shrink-0" />
 													<p className="text-[14px]">Stage (Coming soon)</p>

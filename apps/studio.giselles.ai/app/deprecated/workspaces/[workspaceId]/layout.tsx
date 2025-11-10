@@ -126,26 +126,26 @@ export default async function Layout({
 				googleUrlContext,
 				githubIssuesVectorStore,
 			}}
-			flowTrigger={{
+			trigger={{
 				callbacks: {
-					flowTriggerUpdate: async (flowTrigger) => {
+					triggerUpdate: async (trigger) => {
 						"use server";
 						await db
 							.insert(flowTriggers)
 							.values({
 								teamDbId: workspaceTeam.dbId,
-								sdkFlowTriggerId: flowTrigger.id,
-								sdkWorkspaceId: flowTrigger.workspaceId,
+								sdkFlowTriggerId: trigger.id,
+								sdkWorkspaceId: trigger.workspaceId,
 								staged:
-									flowTrigger.configuration.provider === "manual" &&
-									flowTrigger.configuration.staged,
+									trigger.configuration.provider === "manual" &&
+									trigger.configuration.staged,
 							})
 							.onConflictDoUpdate({
 								target: flowTriggers.dbId,
 								set: {
 									staged:
-										flowTrigger.configuration.provider === "manual" &&
-										flowTrigger.configuration.staged,
+										trigger.configuration.provider === "manual" &&
+										trigger.configuration.staged,
 								},
 							});
 					},

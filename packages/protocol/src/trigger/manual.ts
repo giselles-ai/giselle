@@ -15,15 +15,15 @@ export const ManualTriggerParameter = z.object({
 });
 export type ManualTriggerParameter = z.infer<typeof ManualTriggerParameter>;
 
-export const ManualFlowTriggerEvent = z.object({
+export const ManualTriggerEvent = z.object({
 	id: z.literal("manual"),
 	parameters: z.array(ManualTriggerParameter),
 });
-export type ManualFlowTriggerEvent = z.infer<typeof ManualFlowTriggerEvent>;
+export type ManualTriggerEvent = z.infer<typeof ManualTriggerEvent>;
 
-export const ManualFlowTrigger = z.object({
+export const ManualTrigger = z.object({
 	provider: Provider,
-	event: ManualFlowTriggerEvent,
+	event: ManualTriggerEvent,
 	staged: z.boolean().default(false),
 });
-export type ManualFlowTrigger = z.infer<typeof ManualFlowTrigger>;
+export type ManualTrigger = z.infer<typeof ManualTrigger>;

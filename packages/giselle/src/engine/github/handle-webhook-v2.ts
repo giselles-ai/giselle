@@ -16,7 +16,7 @@ import {
 } from "@giselles-ai/github-tool";
 import { createAndStartAct } from "../acts";
 import { getGitHubRepositoryIntegrationIndex } from "../integrations/utils";
-import { getFlowTrigger } from "../triggers/utils";
+import { getTrigger } from "../triggers/utils";
 import type { GiselleEngineContext } from "../types";
 import { type EventHandlerDependencies, processEvent } from "./event-handlers";
 import { parseCommand } from "./utils";
@@ -50,7 +50,7 @@ export async function handleGitHubWebhookV2(args: {
 			event,
 			context: args.context,
 			deps: {
-				getFlowTrigger,
+				getTrigger,
 				getGitHubRepositoryIntegrationIndex,
 				addReaction,
 				ensureWebhookEvent,
@@ -111,7 +111,7 @@ function hasRequiredPayloadProps(event: unknown): event is {
 	);
 }
 interface ProcessDeps {
-	getFlowTrigger: typeof getFlowTrigger;
+	getTrigger: typeof getTrigger;
 	getGitHubRepositoryIntegrationIndex: typeof getGitHubRepositoryIntegrationIndex;
 }
 
@@ -140,9 +140,9 @@ async function process<TEventName extends WebhookEventName>(args: {
 
 	await Promise.all(
 		githubRepositoryIntegration.flowTriggerIds.map(async (flowTriggerId) => {
-			const trigger = await args.deps.getFlowTrigger({
+			const trigger = await args.deps.getTrigger({
 				storage: args.context.storage,
-				flowTriggerId,
+				triggerId: flowTriggerId,
 			});
 			if (trigger === undefined) {
 				return;

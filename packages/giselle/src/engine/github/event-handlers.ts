@@ -14,7 +14,7 @@ import type {
 	WebhookEventName,
 } from "@giselles-ai/github-tool";
 import { findDiscussionReplyTargetId } from "@giselles-ai/github-tool";
-import type { FlowTrigger } from "@giselles-ai/protocol";
+import type { Trigger } from "@giselles-ai/protocol";
 import type { createAndStartAct } from "../acts";
 import type { GiselleEngineContext } from "../types";
 import { getWorkspace } from "../workspaces";
@@ -151,7 +151,7 @@ export interface EventHandlerDependencies {
 export type EventHandlerArgs<TEventName extends WebhookEventName> = {
 	event: WebhookEvent<TEventName>;
 	context: GiselleEngineContext;
-	trigger: FlowTrigger;
+	trigger: Trigger;
 	authConfig: GitHubAuthConfig;
 	deps: EventHandlerDependencies;
 };
