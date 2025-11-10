@@ -18,7 +18,7 @@ export async function reconfigureGitHubTrigger(args: {
 	triggerId: TriggerId;
 	repositoryNodeId: string;
 	installationId: number;
-	event: GitHubEventData;
+	event?: GitHubEventData;
 }) {
 	const currentTrigger = await getTrigger({
 		storage: args.context.storage,
@@ -32,9 +32,10 @@ export async function reconfigureGitHubTrigger(args: {
 	}
 
 	const currentEvent = currentTrigger.configuration.event;
-	if (args.event.id !== currentEvent.id) {
+	const requestedEvent = args.event ?? currentEvent;
+	if (requestedEvent.id !== currentEvent.id) {
 		throw new Error(
-			`Changing GitHub trigger event type is not supported (${currentEvent.id} → ${args.event.id})`,
+			`Changing GitHub trigger event type is not supported (${currentEvent.id} → ${requestedEvent.id})`,
 		);
 	}
 
@@ -61,7 +62,7 @@ export async function reconfigureGitHubTrigger(args: {
 			provider: "github",
 			repositoryNodeId: newRepositoryNodeId,
 			installationId: args.installationId,
-			event: args.event,
+			event: requestedEvent,
 		},
 	} satisfies Trigger;
 	await setTrigger({

@@ -634,20 +634,10 @@ export function Installed({
 										startTransition(async () => {
 											try {
 												if (isReconfiguring && triggerId !== undefined) {
-													const { trigger } = await client.getTrigger({
-														triggerId,
-													});
-													if (trigger?.configuration.provider !== "github") {
-														throw new Error(
-															`Invalid provider: ${trigger?.configuration.provider}`,
-														);
-													}
-
 													await client.reconfigureGitHubTrigger({
 														triggerId,
 														repositoryNodeId: step.repoNodeId,
 														installationId: step.installationId,
-														event: trigger.configuration.event,
 													});
 
 													updateNodeData(node, {

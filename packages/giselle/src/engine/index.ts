@@ -239,7 +239,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			triggerId: TriggerId;
 			repositoryNodeId: string;
 			installationId: number;
-			event: GitHubEventData;
+			event?: GitHubEventData;
 		}) => {
 			return await reconfigureGitHubTrigger({ ...args, context });
 		},

@@ -236,7 +236,7 @@ export const createJsonRouters = {
 				triggerId: TriggerId.schema,
 				repositoryNodeId: z.string(),
 				installationId: z.number(),
-				event: GitHubEventData,
+				event: GitHubEventData.optional(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({
