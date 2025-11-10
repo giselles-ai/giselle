@@ -32,7 +32,6 @@ export function createDocumentIngestEmbeddingCallback(
 	return async (metrics) => {
 		const isPro = isProPlan(args.team);
 		const planTag = isPro ? "plan:pro" : "plan:free";
-		const teamTypeTag = `teamType:${args.team.type}`;
 		const userId =
 			args.trigger.type === "manual"
 				? args.trigger.userId
@@ -43,12 +42,11 @@ export function createDocumentIngestEmbeddingCallback(
 				metrics,
 				userId,
 				sessionId: args.source.id,
-				tags: [planTag, teamTypeTag, "embedding-purpose:ingestion"],
+				tags: [planTag, "embedding-purpose:ingestion"],
 				metadata: {
 					teamId: args.team.id,
 					teamDbId: args.team.dbId,
 					isProPlan: isPro,
-					teamType: args.team.type,
 					teamPlan: args.team.plan,
 					subscriptionId: args.team.activeSubscriptionId ?? "",
 					userId,

@@ -113,7 +113,7 @@ export default async function Layout({
 			telemetry={{
 				metadata: {
 					isProPlan: isProPlan(workspaceTeam),
-					teamType: workspaceTeam.type,
+					teamPlan: workspaceTeam.plan,
 					userId: currentUser.id,
 					subscriptionId: workspaceTeam.activeSubscriptionId ?? "",
 				},
