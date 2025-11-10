@@ -203,7 +203,7 @@ export function LobbyClient({ username }: LobbyClientProps) {
 								? recentApps
 								: featuredApps
 							).map((item, index) => (
-								<AppCard key={index} title={item.title} index={index} />
+								<AppCard key={item.title} title={item.title} index={index} />
 							))}
 						</div>
 					</>

@@ -26,7 +26,7 @@ export function WorkflowCard({
 	};
 
 	return (
-		<div
+		<article
 			onMouseMove={handleMouseMove}
 			className={clsx(
 				"group relative flex h-[300px] w-[267px] flex-none flex-col rounded-[12px]",
@@ -92,6 +92,6 @@ export function WorkflowCard({
 					</div>
 				</Link>
 			</div>
-		</div>
+		</article>
 	);
 }

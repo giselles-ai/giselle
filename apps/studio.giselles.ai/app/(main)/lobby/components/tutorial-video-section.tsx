@@ -112,6 +112,7 @@ export function TutorialVideoSection({ banners }: TutorialVideoSectionProps) {
 
 	return (
 		<section
+			aria-label="Banner slideshow"
 			className="relative rounded-[12px] overflow-visible cursor-grab active:cursor-grabbing"
 			onTouchStart={onTouchStart}
 			onTouchMove={onTouchMove}
@@ -126,10 +127,12 @@ export function TutorialVideoSection({ banners }: TutorialVideoSectionProps) {
 				<div
 					key={currentIndex}
 					className="relative w-full h-full"
-					style={{
-						"--slide-from": direction === "left" ? "30%" : "-30%",
-						animation: "slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards",
-					} as React.CSSProperties}
+					style={
+						{
+							"--slide-from": direction === "left" ? "30%" : "-30%",
+							animation: "slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+						} as React.CSSProperties
+					}
 				>
 					{/* Background with gradient and image */}
 					<div className="absolute inset-0 bg-gradient-to-br from-blue-900/50 via-purple-900/50 to-pink-900/50">
@@ -209,9 +212,9 @@ export function TutorialVideoSection({ banners }: TutorialVideoSectionProps) {
 			{/* Dots indicator - only show if multiple banners */}
 			{banners.length > 1 && (
 				<div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-					{banners.map((_, index) => (
+					{banners.map((banner, index) => (
 						<button
-							key={`dot-${index}`}
+							key={`${banner.label}-${banner.title}`}
 							type="button"
 							onClick={() => setCurrentIndex(index)}
 							className={`h-0.5 rounded-full transition-all ${
