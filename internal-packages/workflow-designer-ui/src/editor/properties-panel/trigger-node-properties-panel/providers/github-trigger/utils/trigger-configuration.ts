@@ -1,4 +1,4 @@
-import type { GitHubEvent } from "@giselles-ai/protocol";
+import type { GitHubEventData } from "@giselles-ai/protocol";
 import type { GitHubEventId } from "@giselles-ai/trigger-registry";
 
 /**
@@ -8,7 +8,7 @@ export function createTriggerEvent(args: {
 	eventId: GitHubEventId;
 	callsign?: string;
 	labels?: string[];
-}): GitHubEvent {
+}): GitHubEventData {
 	switch (args.eventId) {
 		case "github.issue.created":
 		case "github.issue.closed":

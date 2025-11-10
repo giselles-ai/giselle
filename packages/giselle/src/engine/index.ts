@@ -1,7 +1,7 @@
 import type {
 	FetchingWebPage,
 	FileId,
-	GitHubEvent,
+	GitHubEventData,
 	NodeId,
 	SecretId,
 	Trigger,
@@ -239,7 +239,6 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 			triggerId: TriggerId;
 			repositoryNodeId: string;
 			installationId: number;
-			event?: GitHubEvent;
 		}) => {
 			return await reconfigureGitHubTrigger({ ...args, context });
 		},

@@ -365,7 +365,6 @@ export function Installed({
 								triggerId,
 								repositoryNodeId: step.repoNodeId,
 								installationId: step.installationId,
-								event,
 							});
 
 							updateNodeData(node, {
@@ -436,7 +435,6 @@ export function Installed({
 							triggerId,
 							repositoryNodeId: step.repoNodeId,
 							installationId: step.installationId,
-							event,
 						});
 
 						updateNodeData(node, {

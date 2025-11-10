@@ -5,7 +5,7 @@ import {
 	Generation,
 	GenerationId,
 	GenerationOrigin,
-	GitHubEvent,
+	GitHubEventData,
 	NodeId,
 	QueuedGeneration,
 	RunningGeneration,
@@ -236,7 +236,6 @@ export const createJsonRouters = {
 				triggerId: TriggerId.schema,
 				repositoryNodeId: z.string(),
 				installationId: z.number(),
-				event: GitHubEvent.optional(),
 			}),
 			handler: async ({ input }) => {
 				return JsonResponse.json({

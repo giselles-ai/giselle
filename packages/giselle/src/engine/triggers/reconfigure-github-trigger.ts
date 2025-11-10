@@ -1,5 +1,4 @@
 import {
-	type GitHubEvent,
 	isTriggerNode,
 	type Trigger,
 	type TriggerId,
@@ -18,7 +17,6 @@ export async function reconfigureGitHubTrigger(args: {
 	triggerId: TriggerId;
 	repositoryNodeId: string;
 	installationId: number;
-	event?: GitHubEvent;
 }) {
 	const currentTrigger = await getTrigger({
 		storage: args.context.storage,
@@ -29,14 +27,6 @@ export async function reconfigureGitHubTrigger(args: {
 	}
 	if (currentTrigger.configuration.provider !== "github") {
 		throw new Error("Only GitHub triggers are supported for updates");
-	}
-
-	const currentEvent = currentTrigger.configuration.event;
-	const requestedEvent = args.event ?? currentEvent;
-	if (requestedEvent.id !== currentEvent.id) {
-		throw new Error(
-			`Changing GitHub trigger event type is not supported (${currentEvent.id} → ${requestedEvent.id})`,
-		);
 	}
 
 	const oldRepositoryNodeId = currentTrigger.configuration.repositoryNodeId;
@@ -62,7 +52,7 @@ export async function reconfigureGitHubTrigger(args: {
 			provider: "github",
 			repositoryNodeId: newRepositoryNodeId,
 			installationId: args.installationId,
-			event: requestedEvent,
+			event: currentTrigger.configuration.event,
 		},
 	} satisfies Trigger;
 	await setTrigger({

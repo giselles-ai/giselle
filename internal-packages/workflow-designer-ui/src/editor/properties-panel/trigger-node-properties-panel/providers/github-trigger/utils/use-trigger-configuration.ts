@@ -3,7 +3,7 @@ import {
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
 import {
-	type GitHubEvent,
+	type GitHubEventData,
 	type Output,
 	OutputId,
 	type TriggerNode,
@@ -20,7 +20,7 @@ import type {
 
 interface UseTriggerConfigurationReturn {
 	configureTrigger: (
-		event: GitHubEvent,
+		event: GitHubEventData,
 		step: InputCallsignStep | InputLabelsStep,
 	) => void;
 	isPending: boolean;
@@ -36,7 +36,7 @@ export const useTriggerConfiguration = ({
 	const [isPending, startTransition] = useTransition();
 
 	const configureTrigger = useCallback(
-		(event: GitHubEvent, step: InputCallsignStep | InputLabelsStep) => {
+		(event: GitHubEventData, step: InputCallsignStep | InputLabelsStep) => {
 			const githubEvent = githubEvents[event.id];
 
 			startTransition(async () => {
