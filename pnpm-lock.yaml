@@ -1182,9 +1182,6 @@ importers:
 
   packages/text-editor:
     dependencies:
-      '@giselles-ai/giselle':
-        specifier: workspace:^
-        version: link:../giselle
       '@giselles-ai/node-registry':
         specifier: workspace:*
         version: link:../node-registry

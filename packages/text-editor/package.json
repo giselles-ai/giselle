@@ -31,7 +31,6 @@
 		"tsup": "catalog:"
 	},
 	"dependencies": {
-		"@giselles-ai/giselle": "workspace:^",
 		"@giselles-ai/node-registry": "workspace:*",
 		"@giselles-ai/protocol": "workspace:^",
 		"@giselles-ai/text-editor-utils": "workspace:^",
