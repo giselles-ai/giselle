@@ -238,7 +238,7 @@ export function githubEventToInputFields(githubAction: GitHubEvent) {
 		const fieldSchema = githubAction.payload.shape[key] as
 			| z.ZodString
 			| z.ZodNumber;
-		const fieldMeta = PayloadFieldMeta.parse(fieldSchema.meta);
+		const fieldMeta = PayloadFieldMeta.parse(fieldSchema.meta());
 		const label = fieldMeta.label ?? titleCase(key);
 		const optional = fieldSchema.safeParse(undefined).success;
 		const zodType = fieldSchema.def.type;
