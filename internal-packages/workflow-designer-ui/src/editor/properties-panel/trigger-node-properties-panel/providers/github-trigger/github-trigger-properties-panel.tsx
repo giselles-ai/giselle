@@ -365,6 +365,7 @@ export function Installed({
 								triggerId,
 								repositoryNodeId: step.repoNodeId,
 								installationId: step.installationId,
+								event,
 							});
 
 							updateNodeData(node, {
@@ -435,6 +436,7 @@ export function Installed({
 							triggerId,
 							repositoryNodeId: step.repoNodeId,
 							installationId: step.installationId,
+							event,
 						});
 
 						updateNodeData(node, {
@@ -630,13 +632,22 @@ export function Installed({
 										});
 									} else {
 										startTransition(async () => {
-											const githubEvent = githubEvents[step.eventId];
 											try {
 												if (isReconfiguring && triggerId !== undefined) {
+													const { trigger } = await client.getTrigger({
+														triggerId,
+													});
+													if (trigger?.configuration.provider !== "github") {
+														throw new Error(
+															`Invalid provider: ${trigger?.configuration.provider}`,
+														);
+													}
+
 													await client.reconfigureGitHubTrigger({
 														triggerId,
 														repositoryNodeId: step.repoNodeId,
 														installationId: step.installationId,
+														event: trigger.configuration.event,
 													});
 
 													updateNodeData(node, {
@@ -650,10 +661,10 @@ export function Installed({
 														},
 													});
 												} else {
+													const githubEvent = githubEvents[step.eventId];
 													const event = createTriggerEvent({
 														eventId: step.eventId,
 													});
-
 													const outputs: Output[] = githubEventToInputFields(
 														githubEvent,
 													).map((inputField) => ({
