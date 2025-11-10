@@ -28,12 +28,15 @@ function filterExisting(
 
 const config: KnipConfig = {
 	biome: false,
+	ignoreIssues: {
+		"apps/studio.giselles.ai/emails/**/*.tsx": ["duplicates"],
+	},
 	workspaces: {
 		"apps/playground": {
 			ignoreDependencies: [],
 		},
 		"apps/studio.giselles.ai": {
-			entry: ["tests/e2e/global-setup.ts"],
+			entry: ["tests/e2e/global-setup.ts", "emails/**/*.tsx"],
 			ignore: ["scripts/**", "trigger.config.ts"],
 			// Ignore deps that are resolved dynamically in next.config or used only at build/runtime
 			ignoreDependencies: filterExisting(
@@ -44,6 +47,8 @@ const config: KnipConfig = {
 					"require-in-the-middle",
 					"@aws-sdk/client-s3",
 					"pino-pretty",
+					"@react-email/preview-server",
+					"react-dom",
 				],
 				getDepsFor("apps/studio.giselles.ai"),
 			),
