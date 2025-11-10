@@ -49,6 +49,7 @@ export function createDocumentIngestEmbeddingCallback(
 					teamDbId: args.team.dbId,
 					isProPlan: isPro,
 					teamType: args.team.type,
+					teamPlan: args.team.plan,
 					subscriptionId: args.team.activeSubscriptionId ?? "",
 					userId,
 					triggerType: args.trigger.type,
