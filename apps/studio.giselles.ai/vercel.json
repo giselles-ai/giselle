@@ -1,4 +1,5 @@
 {
+	"buildCommand": "cd ../.. && pnpm build-sdk && cd apps/studio.giselles.ai && pnpm build",
 	"crons": [
 		{
 			"path": "/api/vector-stores/github/ingest",
