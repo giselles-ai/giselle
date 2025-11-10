@@ -1,8 +1,11 @@
 "use client";
 
-import { Blocks, SparklesIcon, X } from "lucide-react";
+import { Blocks, Copy, SparklesIcon, Trash2, X } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { AppIcon } from "@giselle-internal/ui/app-icon";
+import clsx from "clsx/lite";
 import { GreetingHeading } from "./greeting-heading";
 
 interface LobbyClientProps {
@@ -13,11 +16,13 @@ export function LobbyClient({ username }: LobbyClientProps) {
 	const [showTutorial, setShowTutorial] = useState(true);
 	const [activeTab, setActiveTab] = useState<"apps" | "workflow">("apps");
 	const [activeAppTab, setActiveAppTab] = useState<string>("Recent");
+	const [activeWorkflowTab, setActiveWorkflowTab] = useState<string>("Recent");
 	const router = useRouter();
 	const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
 
 	// TODO: 実際のデータから取得する
 	const hasRecentApps = false; // 使ったことがあるappがあるかどうか
+	const hasRecentWorkflows = false; // 使ったことがあるworkflowがあるかどうか
 
 	const featuredApps = [
 		{ title: "AI Writing Assistant", appsCount: 3 },
@@ -28,6 +33,17 @@ export function LobbyClient({ username }: LobbyClientProps) {
 	const recentApps = [
 		{ title: "Recent App 1", appsCount: 1 },
 		{ title: "Recent App 2", appsCount: 2 },
+	];
+
+	const featuredWorkflows = [
+		{ id: "wf1", name: "Content Generation Workflow", updatedAt: new Date() },
+		{ id: "wf2", name: "Data Processing Pipeline", updatedAt: new Date() },
+		{ id: "wf3", name: "Customer Support Automation", updatedAt: new Date() },
+	];
+
+	const recentWorkflows = [
+		{ id: "rwf1", name: "Recent Workflow 1", updatedAt: new Date() },
+		{ id: "rwf2", name: "Recent Workflow 2", updatedAt: new Date() },
 	];
 
 	const handleCreateNewAgent = async () => {
@@ -246,13 +262,127 @@ export function LobbyClient({ username }: LobbyClientProps) {
 
 				{activeTab === "workflow" && (
 					<>
-						<p className="text-sm text-text/60 mb-3">
-							Build a any agent workflow with custom logic and tools
-						</p>
-						<div className="rounded-[8px] h-20 bg-surface/30 border border-border/10 grid place-items-center">
-							<button type="button" className="text-link-muted hover:underline">
-								+ create
-							</button>
+						{/* Sub-tabs - 使ったことがあるworkflowがある場合のみ表示 */}
+						{hasRecentWorkflows && (
+							<div className="mb-4">
+								<div className="flex items-center gap-4">
+									{["Recent", "Featured"].map((subTab) => {
+										const isActive = activeWorkflowTab === subTab;
+										return (
+											<button
+												key={subTab}
+												type="button"
+												onClick={() => setActiveWorkflowTab(subTab)}
+												className={`text-base font-semibold transition-colors ${
+													isActive ? "text-white" : "text-text/60"
+												}`}
+											>
+												{subTab}
+											</button>
+										);
+									})}
+								</div>
+							</div>
+						)}
+
+						{/* Sub-tab Content */}
+						<div className="flex flex-wrap gap-4">
+							{(hasRecentWorkflows && activeWorkflowTab === "Recent"
+								? recentWorkflows
+								: featuredWorkflows
+							).map((workflow) => {
+								const isFeatured =
+									!hasRecentWorkflows ||
+									activeWorkflowTab === "Featured";
+								const handleMouseMove = (
+									e: React.MouseEvent<HTMLDivElement>,
+								) => {
+									const card = e.currentTarget;
+									const rect = card.getBoundingClientRect();
+									card.style.setProperty(
+										"--mouse-x",
+										`${e.clientX - rect.left}px`,
+									);
+									card.style.setProperty(
+										"--mouse-y",
+										`${e.clientY - rect.top}px`,
+									);
+								};
+
+								return (
+									<div
+										key={workflow.id}
+										onMouseMove={handleMouseMove}
+										className={clsx(
+											"group relative flex h-[300px] w-[267px] flex-none flex-col rounded-[12px]",
+											"bg-[linear-gradient(135deg,rgba(100,130,200,0.20)_0%,rgba(60,80,120,0.35)_40%,rgba(20,30,60,0.85)_100%)]",
+											"filter grayscale hover:grayscale-0 transition duration-500",
+										)}
+										style={
+											{
+												"--spotlight-color": "rgba(255,255,255,0.15)",
+											} as React.CSSProperties
+										}
+									>
+										<div
+											className="pointer-events-none absolute inset-0 z-20 opacity-0 transition-opacity duration-500 group-hover:opacity-100 rounded-[inherit]"
+											style={{
+												background:
+													"radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--spotlight-color), transparent 50%)",
+											}}
+										/>
+
+										{/* Top reflection line (muted) */}
+										<div className="pointer-events-none absolute top-0 left-4 right-4 z-10 h-px bg-gradient-to-r from-transparent via-text/20 to-transparent" />
+
+										{/* Subtle inner border */}
+										<div className="pointer-events-none absolute inset-0 z-10 rounded-[inherit] border-[0.5px] border-border-muted" />
+
+										<div className="relative z-10 flex h-full w-full cursor-pointer flex-col pt-2 px-2 pb-4">
+											{!isFeatured && (
+												<div className="flex w-full justify-end gap-x-2">
+													<button
+														type="button"
+														aria-label="Duplicate workflow"
+														className="grid size-6 place-items-center rounded-full text-text/60 transition-colors hover:text-inverse"
+													>
+														<Copy className="size-4" />
+													</button>
+													<button
+														type="button"
+														aria-label="Delete workflow"
+														className="grid size-6 place-items-center rounded-full text-text/60 transition-colors hover:text-red-500"
+													>
+														<Trash2 className="size-4" />
+													</button>
+												</div>
+											)}
+											<Link
+												href={`/workflow/${workflow.id}`}
+												className="flex h-full flex-col pt-2"
+												prefetch={false}
+											>
+												<div className="aspect-video w-full rounded-lg flex items-center justify-center bg-[color-mix(in_srgb,var(--color-surface-background,_#2f343e)_20%,transparent)]">
+													<AppIcon />
+												</div>
+												<div className="mt-3 px-2">
+													<h3 className="font-sans text-[16px] font-semibold text-inverse line-clamp-2">
+														{workflow.name}
+													</h3>
+													<div className="flex items-center justify-between mt-1">
+														<span className="max-w-[200px] truncate font-geist text-xs text-text/80">
+															Edited{" "}
+															<span>
+																{workflow.updatedAt.toLocaleDateString()}
+															</span>
+														</span>
+													</div>
+												</div>
+											</Link>
+										</div>
+									</div>
+								);
+							})}
 						</div>
 					</>
 				)}
