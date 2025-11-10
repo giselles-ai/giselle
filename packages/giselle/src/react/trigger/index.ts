@@ -1,7 +1,7 @@
 import type { Trigger } from "@giselles-ai/protocol";
 import { createContext, useContext } from "react";
 
-type TriggerUpdateCallback = (flowTrigger: Trigger) => Promise<void>;
+type TriggerUpdateCallback = (trigger: Trigger) => Promise<void>;
 export interface TriggerContextValue {
 	callbacks?: {
 		triggerUpdate?: TriggerUpdateCallback;
