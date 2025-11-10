@@ -51,6 +51,7 @@
 		"@giselles-ai/text-editor": "workspace:^",
 		"clsx": "catalog:",
 		"lucide-react": "catalog:",
+		"next": "catalog:",
 		"radix-ui": "catalog:",
 		"react": "catalog:",
 		"react-dom": "catalog:"
