@@ -10,7 +10,6 @@ import {
 } from "@giselles-ai/protocol";
 import { DatabaseZapIcon, ZapIcon } from "lucide-react";
 import type { SVGProps } from "react";
-import { SearchIcon } from "..";
 import { AnthropicIcon } from "../anthropic";
 import { Flux1Icon } from "../flux1";
 import { GitHubIcon } from "../github";
