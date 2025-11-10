@@ -21,22 +21,13 @@ export function addProviderToCommand(data: unknown, issue: $ZodIssue) {
 		return data;
 	}
 
-	// Find the path to the command object
-	const commandPath: (string | number)[] = [];
-	let foundCommand = false;
-
-	for (let i = 0; i < issue.path.length; i++) {
-		commandPath.push(issue.path[i]);
-		if (issue.path[i] === "command") {
-			foundCommand = true;
-			break;
-		}
-	}
-
-	if (!foundCommand) {
+	// Find the path to the command object (before "provider")
+	const providerIndex = issue.path.indexOf("provider");
+	if (providerIndex === -1) {
 		return data;
 	}
 
+	const commandPath = issue.path.slice(0, providerIndex);
 	const command = getValueAtPath(data, commandPath);
 	if (!isObject(command)) {
 		return data;

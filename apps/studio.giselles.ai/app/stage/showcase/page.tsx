@@ -1,11 +1,18 @@
 import { and, desc, eq } from "drizzle-orm";
 import { acts, agents, db } from "@/db";
+import { stageFlag } from "@/flags";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";
+import { notFound } from "next/navigation";
 import { fetchFlowTriggers } from "../(top)/services";
 import { ShowcaseClient } from "./showcase-client";
 
 export default async function StageShowcasePage() {
+	const enableStage = await stageFlag();
+	if (!enableStage) {
+		return notFound();
+	}
+
 	const teams = await fetchUserTeams();
 	const teamOptions = teams.map((team) => ({
 		value: team.id,
