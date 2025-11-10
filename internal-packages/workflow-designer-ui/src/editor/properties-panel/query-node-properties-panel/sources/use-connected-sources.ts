@@ -1,6 +1,7 @@
 import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
 import type {
 	ActionNode,
+	AppEntryNode,
 	QueryNode,
 	TextGenerationNode,
 	TriggerNode,
@@ -20,6 +21,7 @@ export function useConnectedSources(node: QueryNode) {
 		const connectedDatastoreSources: ConnectedSource<DatastoreNode>[] = [];
 		const connectedActionSources: ConnectedSource<ActionNode>[] = [];
 		const connectedTriggerSources: ConnectedSource<TriggerNode>[] = [];
+		const connectedAppEntrySources: ConnectedSource<AppEntryNode>[] = [];
 		// does not support image generation
 		const connectedGeneratedSources: ConnectedSource<TextGenerationNode>[] = [];
 		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
@@ -59,6 +61,13 @@ export function useConnectedSources(node: QueryNode) {
 							connectedTriggerSources.push({
 								output,
 								node: node as TriggerNode,
+								connection,
+							});
+							break;
+						case "app-entry":
+							connectedAppEntrySources.push({
+								output,
+								node: node as AppEntryNode,
 								connection,
 							});
 							break;

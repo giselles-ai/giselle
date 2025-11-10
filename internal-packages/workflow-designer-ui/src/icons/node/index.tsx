@@ -144,8 +144,6 @@ export function NodeIcon({
 							return <GitHubIcon {...props} data-content-type-icon />;
 						case "manual":
 							return <ZapIcon {...props} data-content-type-icon />;
-						case "app-entry":
-							return <ZapIcon {...props} data-content-type-icon />;
 						default: {
 							const _exhaustiveCheck: never = node.content;
 							throw new Error(
@@ -171,6 +169,8 @@ export function NodeIcon({
 				}
 				case "query":
 					return <DatabaseZapIcon {...props} data-content-type-icon />;
+				case "app-entry":
+					return <ZapIcon {...props} data-content-type-icon />;
 				default: {
 					const _exhaustiveCheck: never = node.content.type;
 					throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
