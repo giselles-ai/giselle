@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 931 MIT
+* 930 MIT
 * 187 Apache 2.0
 * 48 ISC
 * 28 New BSD
@@ -1514,17 +1514,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@next/swc-linux-x64-gnu"></a>
 ### @next/swc-linux-x64-gnu v15.5.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@next/swc-linux-x64-musl"></a>
-### @next/swc-linux-x64-musl v15.5.2
 #### 
 
 ##### Paths
@@ -4341,17 +4330,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@tailwindcss/oxide-linux-x64-gnu"></a>
 ### @tailwindcss/oxide-linux-x64-gnu v4.1.10
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@tailwindcss/oxide-linux-x64-musl"></a>
-### @tailwindcss/oxide-linux-x64-musl v4.1.10
 #### 
 
 ##### Paths
@@ -12570,6 +12548,17 @@ Unknown manually approved
 
 <a name="tippy.js"></a>
 ### tippy.js v6.3.7
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="title-case"></a>
+### title-case v4.3.2
 #### 
 
 ##### Paths
