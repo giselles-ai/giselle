@@ -41,9 +41,6 @@ function getModelInfo(generation: Generation): {
 				case "google":
 					iconName = "search";
 					break;
-				case "fal":
-					iconName = "image";
-					break;
 			}
 
 			return { provider, modelName, iconName };
