@@ -17,6 +17,7 @@
 		"@giselles-ai/action-registry": "workspace:*",
 		"@giselles-ai/giselle": "workspace:*",
 		"@giselles-ai/language-model": "workspace:^",
+		"@giselles-ai/node-registry": "workspace:*",
 		"@giselles-ai/protocol": "workspace:*",
 		"@giselles-ai/text-editor": "workspace:^",
 		"@giselles-ai/text-editor-utils": "workspace:^",

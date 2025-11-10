@@ -1,3 +1,4 @@
+import { defaultName } from "@giselles-ai/node-registry";
 import {
 	Act,
 	ActId,
@@ -19,7 +20,6 @@ import {
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { z } from "zod/v4";
-import { defaultName } from "../../utils";
 import { setGeneration } from "../generations";
 import type { GiselleEngineContext } from "../types";
 import { buildLevels } from "../utils/build-levels";

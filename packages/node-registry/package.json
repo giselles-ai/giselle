@@ -1,0 +1,32 @@
+{
+	"name": "@giselles-ai/node-registry",
+	"version": "0.0.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "tsup",
+		"check-types": "tsc --noEmit",
+		"format": "biome format --format ."
+	},
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js"
+		}
+	},
+	"devDependencies": {
+		"@giselles-ai/tsconfig": "workspace:*",
+		"tsup": "catalog:"
+	},
+	"dependencies": {
+		"@giselles-ai/action-registry": "workspace:*",
+		"@giselles-ai/language-model": "workspace:*",
+		"@giselles-ai/protocol": "workspace:*",
+		"@giselles-ai/text-editor-utils": "workspace:*",
+		"@giselles-ai/trigger-registry": "workspace:*"
+	}
+}

@@ -6,10 +6,10 @@ import {
 } from "@giselle-internal/ui/setting-label";
 import { githubActions } from "@giselles-ai/action-registry";
 import {
-	defaultName,
 	useGiselleEngine,
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
+import { defaultName } from "@giselles-ai/node-registry";
 import type {
 	ActionNode,
 	ConnectionId,

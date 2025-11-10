@@ -1,14 +1,14 @@
 import {
-	createImageGenerationNode,
-	createTextGenerationNode,
-} from "@giselles-ai/giselle/react";
-import {
 	Capability,
 	hasCapability,
 	hasTierAccess,
 	type LanguageModel,
 	type Tier,
 } from "@giselles-ai/language-model";
+import {
+	createImageGenerationNode,
+	createTextGenerationNode,
+} from "@giselles-ai/node-registry";
 import {
 	isImageGenerationLanguageModelData,
 	isTextGenerationLanguageModelData,

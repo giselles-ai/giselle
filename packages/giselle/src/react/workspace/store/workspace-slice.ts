@@ -1,3 +1,4 @@
+import { nodeFactories } from "@giselles-ai/node-registry";
 import {
 	type Connection,
 	ConnectionId,
@@ -17,7 +18,6 @@ import {
 	type Workspace,
 } from "@giselles-ai/protocol";
 import type { StateCreator } from "zustand";
-import { nodeFactories } from "../../../utils";
 import type { ConnectionCloneStrategy } from "../types";
 import { isSupportedConnection } from "../utils";
 

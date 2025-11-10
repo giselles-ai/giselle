@@ -1,4 +1,4 @@
-import { defaultName } from "@giselles-ai/giselle/react";
+import { defaultName } from "@giselles-ai/node-registry";
 import {
 	isImageGenerationNode,
 	isTextGenerationNode,

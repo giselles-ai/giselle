@@ -89,7 +89,6 @@ export type * from "./triggers";
 export * from "./types";
 export * from "./usage-limits";
 export * from "./vault";
-export * from "./vector-store";
 
 const defaultWaitUntil: WaitUntil = (promise) => {
 	return promise;
