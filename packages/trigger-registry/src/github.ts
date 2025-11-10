@@ -155,6 +155,7 @@ export const githubPullRequestClosedEvent = {
 		title: z.string().meta({ label: "Pull Request Title" }),
 		body: z
 			.string()
+			.optional()
 			.meta({ label: "Pull Request Body", input: { multiline: true } }),
 		number: z.coerce.number().meta({ label: "Pull Request Number" }),
 		diff: z.string().meta({ label: "Pull Request Diff" }),
@@ -169,6 +170,7 @@ export const githubPullRequestLabeledEvent = {
 		pullRequestTitle: z.string().meta({ label: "Pull Request Title" }),
 		pullRequestBody: z
 			.string()
+			.optional()
 			.meta({ label: "Pull Request Body", input: { multiline: true } }),
 		pullRequestNumber: z.coerce.number().meta({ label: "Pull Request Number" }),
 		labelName: z.string().meta({ label: "Pull Request Label Name" }),
@@ -182,6 +184,7 @@ export const githubPullRequestOpenedEvent = {
 		title: z.string().meta({ label: "Pull Request Title" }),
 		body: z
 			.string()
+			.optional()
 			.meta({ label: "Pull Request Body", input: { multiline: true } }),
 		number: z.coerce.number().meta({ label: "Pull Request Number" }),
 		diff: z.string().meta({ label: "Pull Request Diff" }),
@@ -196,6 +199,7 @@ export const githubPullRequestReadyForReviewEvent = {
 		title: z.string().meta({ label: "Pull Request Title" }),
 		body: z
 			.string()
+			.optional()
 			.meta({ label: "Pull Request Body", input: { multiline: true } }),
 		number: z.coerce.number().meta({ label: "Pull Request Number" }),
 		diff: z.string().meta({ label: "Pull Request Diff" }),
