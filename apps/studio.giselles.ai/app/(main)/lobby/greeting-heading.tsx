@@ -132,4 +132,3 @@ export function GreetingHeading({ username }: GreetingHeadingProps) {
 		</PageHeading>
 	);
 }
-
