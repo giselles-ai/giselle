@@ -6,8 +6,6 @@ on:
       PLAYWRIGHT_BASE_URL:
         description: 'Base URL for Playwright'
         required: false
-  schedule:
-    - cron: "0 0,9 * * 1-5" # Weekdays 9:00 and 18:00 JST
 
 jobs:
   e2e:
