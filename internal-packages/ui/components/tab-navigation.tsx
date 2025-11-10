@@ -10,7 +10,7 @@ export interface TabLink {
 }
 
 interface TabNavigationProps {
-	links: TabLink[];
+	links: readonly TabLink[];
 	ariaLabelPrefix?: string;
 }
 
