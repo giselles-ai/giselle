@@ -29,7 +29,7 @@ export function addProviderToCommand(data: unknown, issue: $ZodIssue) {
 
 	const commandPath = issue.path.slice(0, providerIndex);
 	const command = getValueAtPath(data, commandPath);
-	
+
 	// If command doesn't exist or is not an object, we can't fix it
 	if (!isObject(command)) {
 		return data;
@@ -43,7 +43,7 @@ export function addProviderToCommand(data: unknown, issue: $ZodIssue) {
 		// biome-ignore lint/suspicious/noExplicitAny: Using any for deep cloning
 		const newData = structuredClone(data as Record<string, any>);
 		setValueAtPath(newData, [...commandPath, "provider"], "github");
-		
+
 		// Verify the fix was applied
 		const fixedCommand = getValueAtPath(newData, commandPath);
 		if (isObject(fixedCommand) && fixedCommand.provider === "github") {
@@ -53,4 +53,3 @@ export function addProviderToCommand(data: unknown, issue: $ZodIssue) {
 
 	return data;
 }
-
