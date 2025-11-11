@@ -40,7 +40,7 @@ import {
 	ZapIcon,
 } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
 import { Tooltip } from "../../../ui/tooltip";
 import { isToolAction } from "../types";
@@ -93,11 +93,25 @@ export function Toolbar() {
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("All");
 	const { llmProviders } = useWorkflowDesigner();
-	const { stage } = useFeatureFlag();
+	const { stage, aiGatewayUnsupportedModels } = useFeatureFlag();
 
-	const modelsFilteredBySearchOnly = languageModels
-		.filter((model) => llmProviders.includes(model.provider))
-		.filter((model) => filterModelsBySearch(model, searchQuery));
+	const availableLanguageModels = useMemo(
+		() =>
+			languageModels.filter((model) => {
+				if (!llmProviders.includes(model.provider)) {
+					return false;
+				}
+				if (!aiGatewayUnsupportedModels && model.id === "gpt-image-1") {
+					return false;
+				}
+				return true;
+			}),
+		[llmProviders, aiGatewayUnsupportedModels],
+	);
+
+	const modelsFilteredBySearchOnly = availableLanguageModels.filter((model) =>
+		filterModelsBySearch(model, searchQuery),
+	);
 
 	// Automatically update the category based on search results
 	useEffect(() => {
@@ -139,7 +153,7 @@ export function Toolbar() {
 		isFreeUser ? ["gpt-5-nano"] : ["gpt-5"],
 		"openai",
 		llmProviders,
-		languageModels,
+		availableLanguageModels,
 	);
 	const anthropicModels = getAvailableModels(
 		isFreeUser
@@ -147,7 +161,7 @@ export function Toolbar() {
 			: ["claude-sonnet-4-5-20250929", "claude-opus-4-1-20250805"],
 		"anthropic",
 		llmProviders,
-		languageModels,
+		availableLanguageModels,
 	);
 	const googleModels = getAvailableModels(
 		isFreeUser
@@ -155,7 +169,7 @@ export function Toolbar() {
 			: ["gemini-2.5-pro-exp-03-25", "gemini-1.5-pro-latest", "gemini-1.0-pro"],
 		"google",
 		llmProviders,
-		languageModels,
+		availableLanguageModels,
 	);
 
 	// Combine all recommended models
