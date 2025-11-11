@@ -1,11 +1,17 @@
 import * as z from "zod/v4";
-import { AppId } from "../../app/app";
+import { App, AppId } from "../../app";
 
 export const AppEntryType = z.literal("appEntry");
+
+export const DraftApp = App.omit({
+	id: true,
+});
+export type DraftApp = z.infer<typeof DraftApp>;
 
 const AppEntryUnconfiguredState = z.object({
 	type: AppEntryType,
 	status: z.literal("unconfigured"),
+	draftApp: DraftApp,
 });
 
 const AppEntryConfiguredState = z.object({

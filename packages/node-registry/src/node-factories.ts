@@ -7,6 +7,7 @@ import {
 import {
 	type ActionNode,
 	type AppEntryNode,
+	AppParameterId,
 	DEFAULT_MAX_RESULTS,
 	DEFAULT_SIMILARITY_THRESHOLD,
 	type FileContent,
@@ -602,6 +603,19 @@ const appEntryFactoryImpl = {
 			content: {
 				type: "appEntry",
 				status: "unconfigured",
+				draftApp: {
+					name: "",
+					description: "",
+					iconName: "",
+					parameters: [
+						{
+							id: AppParameterId.generate(),
+							name: "",
+							type: "text",
+							required: true,
+						},
+					],
+				},
 			},
 			inputs: [],
 			outputs: [],
