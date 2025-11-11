@@ -7,6 +7,7 @@ import {
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	isSupportedConnection,
+	useFeatureFlag,
 	useUsageLimits,
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
@@ -41,6 +42,7 @@ export function PromptPanel({
 		useWorkflowDesigner();
 	const usageLimits = useUsageLimits();
 	const userTier = usageLimits?.featureTier ?? Tier.enum.free;
+	const { openaiImageModel } = useFeatureFlag();
 	const { error } = useToasts();
 	const { all: connectedSources } = useConnectedSources(node);
 	const nodes = useMemo(
@@ -52,8 +54,8 @@ export function PromptPanel({
 		[connectedSources],
 	);
 
-	const groups = useMemo(
-		() => [
+	const groups = useMemo(() => {
+		const nextGroups = [
 			{
 				provider: "fal",
 				label: "Fal",
@@ -63,7 +65,10 @@ export function PromptPanel({
 					disabled: !hasTierAccess(m, userTier),
 				})),
 			},
-			{
+		];
+
+		if (openaiImageModel) {
+			nextGroups.push({
 				provider: "openai",
 				label: "OpenAI",
 				models: openaiImageModels.map((m) => ({
@@ -72,20 +77,22 @@ export function PromptPanel({
 					disabled: !hasTierAccess(m, userTier),
 					disabledReason: !hasTierAccess(m, userTier) ? "Pro only" : undefined,
 				})),
-			},
-			{
-				provider: "google",
-				label: "Google",
-				models: googleImageLanguageModels.map((m) => ({
-					id: m.id,
-					badge: m.tier === Tier.enum.pro ? <ProTag /> : undefined,
-					disabled: !hasTierAccess(m, userTier),
-					disabledReason: !hasTierAccess(m, userTier) ? "Pro only" : undefined,
-				})),
-			},
-		],
-		[userTier],
-	);
+			});
+		}
+
+		nextGroups.push({
+			provider: "google",
+			label: "Google",
+			models: googleImageLanguageModels.map((m) => ({
+				id: m.id,
+				badge: m.tier === Tier.enum.pro ? <ProTag /> : undefined,
+				disabled: !hasTierAccess(m, userTier),
+				disabledReason: !hasTierAccess(m, userTier) ? "Pro only" : undefined,
+			})),
+		});
+
+		return nextGroups;
+	}, [openaiImageModel, userTier]);
 
 	const disconnectInvalidConnections = useCallback(
 		(model: ImageGenerationLanguageModelData) => {
@@ -125,6 +132,10 @@ export function PromptPanel({
 						fullWidth={false}
 						triggerId="image-model-picker-trigger"
 						onSelect={(provider, modelId) => {
+							if (provider === "openai" && !openaiImageModel) {
+								error("OpenAI image models are not available.");
+								return;
+							}
 							const model =
 								provider === "fal"
 									? falLanguageModels.find((m) => m.id === modelId)
