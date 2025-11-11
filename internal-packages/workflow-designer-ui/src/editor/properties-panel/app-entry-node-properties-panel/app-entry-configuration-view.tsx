@@ -7,9 +7,9 @@ import {
 import { SettingRow } from "@giselle-internal/ui/setting-row";
 import {
 	AppId,
-	type AppParameter,
-	AppParameterId,
 	type DraftApp,
+	type DraftAppParameter,
+	DraftAppParameterId,
 } from "@giselles-ai/protocol";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import {
@@ -35,7 +35,7 @@ export function AppEntryConfigurationView({
 	const [appName, setAppName] = useState(draftApp.name);
 	const [appDescription, setAppDescription] = useState(draftApp.description);
 	const [appIconName, setAppIconName] = useState<string>(draftApp.iconName);
-	const [appParameters, setAppParameters] = useState<AppParameter[]>(
+	const [appParameters, setAppParameters] = useState<DraftAppParameter[]>(
 		draftApp.parameters,
 	);
 
@@ -43,7 +43,7 @@ export function AppEntryConfigurationView({
 		setAppParameters((prev) => [
 			...prev,
 			{
-				id: AppParameterId.generate(),
+				id: DraftAppParameterId.generate(),
 				name: "",
 				type: "text",
 				required: false,
@@ -51,11 +51,14 @@ export function AppEntryConfigurationView({
 		]);
 	}, []);
 
-	const handleRemoveParameter = useCallback((parameterId: AppParameterId) => {
-		setAppParameters((prev) =>
-			prev.filter((appParameter) => appParameter.id !== parameterId),
-		);
-	}, []);
+	const handleRemoveParameter = useCallback(
+		(parameterId: DraftAppParameterId) => {
+			setAppParameters((prev) =>
+				prev.filter((appParameter) => appParameter.id !== parameterId),
+			);
+		},
+		[],
+	);
 
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		(e) => {
@@ -267,6 +270,7 @@ export function AppEntryConfigurationView({
 						<Button
 							type="submit"
 							variant="solid"
+							className="w-full"
 							size="large"
 							disabled={isPending || !appName.trim()}
 							leftIcon={
