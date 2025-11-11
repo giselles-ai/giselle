@@ -155,6 +155,27 @@ export const newEditorFlag = flag<boolean>({
 	],
 });
 
+// Enable document vector store ingest (PDF text and image)
+// Dev: set DOC_VECTOR_STORE_FLAG=true
+export const docVectorStoreFlag = flag<boolean>({
+	key: "doc-vector-store",
+	async decide() {
+		if (process.env.NODE_ENV === "development") {
+			return takeLocalEnv("DOC_VECTOR_STORE_FLAG");
+		}
+		const edgeConfig = await get(`flag__${this.key}`);
+		if (edgeConfig === undefined) {
+			return false;
+		}
+		return edgeConfig === true || edgeConfig === "true";
+	},
+	description: "Enable document vector store ingest",
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+});
+
 export const githubIssuesVectorStoreFlag = flag<boolean>({
 	key: "github-issues-vector-store",
 	async decide() {

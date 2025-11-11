@@ -1,13 +1,19 @@
 import type { ReactNode } from "react";
 
+import { docVectorStoreFlag } from "@/flags";
+
 import { VectorStoresNavigationLayout } from "./navigation-layout";
 
-export default function VectorStoresLayout({
+export default async function VectorStoresLayout({
 	children,
 }: {
 	children: ReactNode;
 }) {
+	const isDocVectorStoreEnabled = await docVectorStoreFlag();
+
 	return (
-		<VectorStoresNavigationLayout>{children}</VectorStoresNavigationLayout>
+		<VectorStoresNavigationLayout isEnabled={isDocVectorStoreEnabled}>
+			{children}
+		</VectorStoresNavigationLayout>
 	);
 }

@@ -9,16 +9,22 @@ import {
 	type GitHubRepositoryContentType,
 	githubRepositoryContentStatus,
 	type githubRepositoryIndex,
+	githubRepositoryIssueEmbeddings,
 	githubRepositoryPullRequestEmbeddings,
 	type UserId,
 } from "@/db";
 import type { TeamWithSubscription } from "@/services/teams";
 import { fetchTeamByDbId } from "@/services/teams/fetch-team";
 import type { RepositoryWithStatuses } from "../types";
-import { createBlobMetadata, createPullRequestMetadata } from "../types";
+import {
+	createBlobMetadata,
+	createIssueMetadata,
+	createPullRequestMetadata,
+} from "../types";
 import { ingestGitHubBlobs } from "./blobs/ingest-github-blobs";
 import { buildGitHubAuthConfig, buildOctokit } from "./build-octokit";
 import { createIngestEmbeddingCallback } from "./embedding-tracking";
+import { ingestGitHubIssues } from "./issues/ingest-github-issues";
 import { ingestGitHubPullRequests } from "./pull-requests/ingest-github-pull-requests";
 
 type IngestTriggerId = `ingtrg_${string}`;
@@ -46,7 +52,8 @@ type ProcessorConfig = {
 type ContentProcessor = (config: ProcessorConfig) => Promise<{
 	metadata:
 		| ReturnType<typeof createBlobMetadata>
-		| ReturnType<typeof createPullRequestMetadata>;
+		| ReturnType<typeof createPullRequestMetadata>
+		| ReturnType<typeof createIssueMetadata>;
 }>;
 
 const CONTENT_PROCESSORS: Record<
@@ -120,13 +127,41 @@ const CONTENT_PROCESSORS: Record<
 		};
 	},
 
-	issue: () =>
-		Promise.reject(
-			new DocumentLoaderError(
-				"GitHub Issue ingestion is not implemented yet.",
-				"DOCUMENT_NOT_FOUND",
-			),
-		),
+	issue: async ({
+		repositoryIndex: { owner, repo, installationId, teamDbId, dbId },
+		embeddingProfileId,
+		trigger,
+		team,
+	}) => {
+		const embeddingComplete = createIngestEmbeddingCallback({
+			team,
+			trigger,
+			resource: {
+				provider: "github",
+				contentType: "issue",
+				owner,
+				repo,
+			},
+		});
+
+		await ingestGitHubIssues({
+			githubAuthConfig: buildGitHubAuthConfig(installationId),
+			source: { owner, repo },
+			teamDbId,
+			embeddingProfileId,
+			embeddingComplete,
+		});
+
+		const lastIssueNumber = await getLastIngestedIssueNumber(
+			dbId,
+			embeddingProfileId,
+		);
+		return {
+			metadata: createIssueMetadata({
+				lastIngestedIssueNumber: lastIssueNumber ?? undefined,
+			}),
+		};
+	},
 };
 
 /**
@@ -211,7 +246,8 @@ export async function processRepository(
 function completedStatus(
 	metadata:
 		| ReturnType<typeof createBlobMetadata>
-		| ReturnType<typeof createPullRequestMetadata>,
+		| ReturnType<typeof createPullRequestMetadata>
+		| ReturnType<typeof createIssueMetadata>,
 ) {
 	return {
 		status: "completed" as const,
@@ -261,6 +297,34 @@ async function getLastIngestedPrNumber(
 	return results[0].lastIngestedPrNumber;
 }
 
+async function getLastIngestedIssueNumber(
+	repositoryIndexDbId: number,
+	embeddingProfileId: EmbeddingProfileId,
+) {
+	const results = await db
+		.select({
+			lastIngestedIssueNumber: max(githubRepositoryIssueEmbeddings.issueNumber),
+		})
+		.from(githubRepositoryIssueEmbeddings)
+		.where(
+			and(
+				eq(
+					githubRepositoryIssueEmbeddings.repositoryIndexDbId,
+					repositoryIndexDbId,
+				),
+				eq(
+					githubRepositoryIssueEmbeddings.embeddingProfileId,
+					embeddingProfileId,
+				),
+			),
+		);
+	if (results.length === 0) {
+		return null;
+	}
+
+	return results[0].lastIngestedIssueNumber;
+}
+
 const ERROR_RETRY_CONFIG = {
 	DOCUMENT_NOT_FOUND: null,
 	DOCUMENT_TOO_LARGE: null,
@@ -296,7 +360,8 @@ async function updateContentStatus(
 		status: "running" | "completed" | "failed";
 		metadata?:
 			| ReturnType<typeof createBlobMetadata>
-			| ReturnType<typeof createPullRequestMetadata>;
+			| ReturnType<typeof createPullRequestMetadata>
+			| ReturnType<typeof createIssueMetadata>;
 		lastSyncedAt?: Date;
 		errorCode?: string | null;
 		retryAfter?: Date | null;

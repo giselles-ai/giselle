@@ -51,6 +51,7 @@ type RepositoryItemProps = {
 		}[],
 		embeddingProfileIds?: number[],
 	) => Promise<{ success: boolean; error?: string }>;
+	githubIssuesVectorStore?: boolean;
 };
 
 export function RepositoryItem({
@@ -58,6 +59,7 @@ export function RepositoryItem({
 	deleteRepositoryIndexAction,
 	triggerManualIngestAction,
 	updateRepositoryIndexAction,
+	githubIssuesVectorStore = false,
 }: RepositoryItemProps) {
 	const { repositoryIndex, contentStatuses } = repositoryData;
 
@@ -75,7 +77,6 @@ export function RepositoryItem({
 	const [showDiagnosticModal, setShowDiagnosticModal] = useState(false);
 	const [isPending, startTransition] = useTransition();
 	const [isIngesting, startIngestTransition] = useTransition();
-	//
 
 	const handleDelete = useCallback(() => {
 		startTransition(async () => {
@@ -113,8 +114,6 @@ export function RepositoryItem({
 				new Date(cs.retryAfter) <= now)
 		);
 	});
-
-	//
 
 	return (
 		<GlassCard className={cn("group")} paddingClassName="px-[24px] py-[16px]">
@@ -176,6 +175,7 @@ export function RepositoryItem({
 							contentStatuses={contentStatuses}
 							isIngesting={isIngesting}
 							onShowDiagnostic={() => setShowDiagnosticModal(true)}
+							githubIssuesVectorStore={githubIssuesVectorStore}
 						/>
 					);
 				})}
@@ -224,6 +224,7 @@ export function RepositoryItem({
 				repositoryData={repositoryData}
 				updateRepositoryIndexAction={updateRepositoryIndexAction}
 				enabledProfiles={embeddingProfileIds}
+				githubIssuesVectorStore={githubIssuesVectorStore}
 			/>
 
 			<DiagnosticModal
@@ -246,12 +247,14 @@ function EmbeddingModelCard({
 	contentStatuses,
 	isIngesting,
 	onShowDiagnostic,
+	githubIssuesVectorStore = false,
 }: {
 	profile?: (typeof GITHUB_EMBEDDING_PROFILES)[keyof typeof GITHUB_EMBEDDING_PROFILES];
 	profileId: number;
 	contentStatuses: (typeof githubRepositoryContentStatus.$inferSelect)[];
 	isIngesting: boolean;
 	onShowDiagnostic: () => void;
+	githubIssuesVectorStore?: boolean;
 }) {
 	// Filter statuses for this embedding profile
 	const profileStatuses = contentStatuses.filter(
@@ -263,6 +266,7 @@ function EmbeddingModelCard({
 	const pullRequestStatus = profileStatuses.find(
 		(cs) => cs.contentType === "pull_request",
 	);
+	const issueStatus = profileStatuses.find((cs) => cs.contentType === "issue");
 
 	return (
 		<div
@@ -462,10 +466,106 @@ function EmbeddingModelCard({
 									` • Retry ${formatTimestamp.toRelativeTime(new Date(pullRequestStatus.retryAfter).getTime())}`}
 							</div>
 						)}
-					{!pullRequestStatus?.enabled && pullRequestStatus === undefined && (
+					{pullRequestStatus === undefined && (
 						<div className="text-[10px] text-gray-500">Not configured</div>
 					)}
 				</div>
+
+				{/* Issues Section */}
+				{githubIssuesVectorStore && (
+					<div>
+						<div className="flex items-center justify-between">
+							<span className="text-gray-300">Issues</span>
+							<div className="flex items-center gap-2">
+								{issueStatus?.enabled ? (
+									issueStatus.status === "completed" ? (
+										<StatusBadge status="success" variant="dot">
+											Enabled
+										</StatusBadge>
+									) : (
+										<div className="flex items-center gap-2">
+											<div className="flex items-center px-2 py-1 rounded-full border border-border-muted">
+												<StatusIndicator
+													status={
+														isIngesting && issueStatus.enabled
+															? "running"
+															: issueStatus.status
+													}
+													size="sm"
+													showLabel={false}
+												/>
+												<span
+													className={`text-[12px] leading-[14px] font-medium font-geist flex-1 text-center ml-1.5 ${
+														issueStatus.status === "failed"
+															? "text-error-900"
+															: "text-text-muted"
+													}`}
+												>
+													{isIngesting && issueStatus.enabled
+														? "Running"
+														: issueStatus.status === "idle"
+															? "Idle"
+															: "Error"}
+												</span>
+											</div>
+											{issueStatus?.status === "failed" &&
+												issueStatus?.errorCode === "DOCUMENT_NOT_FOUND" && (
+													<button
+														type="button"
+														onClick={onShowDiagnostic}
+														className="text-[#1663F3] text-[12px] leading-[14px] font-medium font-geist hover:underline"
+													>
+														Check ↗
+													</button>
+												)}
+										</div>
+									)
+								) : (
+									<StatusBadge status="ignored" variant="dot">
+										Disabled
+									</StatusBadge>
+								)}
+							</div>
+						</div>
+						{issueStatus?.enabled && (
+							<div className="text-[10px] text-gray-500 flex justify-between">
+								<span>
+									{issueStatus.lastSyncedAt
+										? `Last sync: ${formatTimestamp.toRelativeTime(new Date(issueStatus.lastSyncedAt).getTime())}`
+										: "Never synced"}
+								</span>
+								{issueStatus.metadata &&
+									(() => {
+										const metadata = issueStatus.metadata;
+										if (
+											metadata &&
+											"lastIngestedIssueNumber" in metadata &&
+											metadata.lastIngestedIssueNumber
+										) {
+											return (
+												<span>Issue: #{metadata.lastIngestedIssueNumber}</span>
+											);
+										}
+										return null;
+									})()}
+							</div>
+						)}
+						{issueStatus?.enabled &&
+							issueStatus.status === "failed" &&
+							issueStatus.errorCode && (
+								<div className="text-xs text-red-400 mt-1">
+									{getErrorMessage(
+										issueStatus.errorCode as DocumentLoaderErrorCode,
+									)}
+									{issueStatus.retryAfter &&
+										` • Retry ${formatTimestamp.toRelativeTime(new Date(issueStatus.retryAfter).getTime())}`}
+								</div>
+							)}
+						{issueStatus === undefined && (
+							<div className="text-[10px] text-gray-500">Not configured</div>
+						)}
+					</div>
+				)}
 			</div>
 		</div>
 	);

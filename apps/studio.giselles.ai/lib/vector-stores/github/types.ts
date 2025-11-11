@@ -69,3 +69,7 @@ export function createPullRequestMetadata(
 ): PullRequestMetadata {
 	return pullRequestMetadataSchema.parse(data);
 }
+
+export function createIssueMetadata(data: IssueMetadata): IssueMetadata {
+	return issueMetadataSchema.parse(data);
+}
