@@ -1,13 +1,12 @@
 "use client";
 
 import { AppIcon } from "@giselle-internal/ui/app-icon";
-import { Select } from "@giselle-internal/ui/select";
+import { TabNavigation } from "@giselle-internal/ui/tab-navigation";
 import type { TriggerId } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { X } from "lucide-react";
 import { useActionState, useCallback, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { buttonVariants } from "../../(main)/settings/components/button";
 import { CircularCarousel } from "./circular-carousel";
 import { FormInputRenderer } from "./form-input-renderer";
@@ -19,6 +18,7 @@ import {
 import { useUIState } from "./hooks/use-ui-state";
 import { SettingsDialog } from "./settings-dialog";
 import type {
+	FilterType,
 	FlowTriggerUIItem,
 	PerformStageAction,
 	TeamId,
@@ -66,7 +66,7 @@ export function FormContainer({
 		assertNonEmpty(teamOptions, "No team options available");
 		return teamOptions[0].value;
 	}, [props.defaultTeamId, teamOptions]);
-	const [teamId, setTeamId] = useState<TeamId>(defaultTeamId);
+	const [teamId] = useState<TeamId>(defaultTeamId);
 	const defaultAppId = useMemo(() => {
 		if (propDefaultAppId !== undefined) {
 			return propDefaultAppId;
@@ -77,28 +77,9 @@ export function FormContainer({
 
 	const [appId, setAppId] = useState<AppId | undefined>(defaultAppId);
 
-	const handleTeamIdChange = useCallback(
-		(newTeamId: TeamId) => {
-			setTeamId(newTeamId);
-			const app = propApps.find((app) => app.teamId === newTeamId);
-			setAppId(app?.id);
-		},
-		[propApps],
-	);
-
 	const handleAppIdChange = useCallback((newAppId: AppId) => {
 		setAppId(newAppId);
 	}, []);
-
-	// TODO: Add filtering logic in the future, currently UI only
-	const [displayCategory, setDisplayCategory] =
-		useState<DisplayCategory>("all");
-	const handleDisplayCategoryChange = useCallback(
-		(newCategory: DisplayCategory) => {
-			setDisplayCategory(newCategory);
-		},
-		[],
-	);
 
 	const apps = useMemo(
 		() => propApps.filter((app) => app.teamId === teamId),
@@ -107,15 +88,11 @@ export function FormContainer({
 
 	return (
 		<Form
-			teamOptions={teamOptions}
-			teamId={teamId}
-			onTeamIdChange={handleTeamIdChange}
 			apps={apps}
 			appId={appId}
 			onAppIdChange={handleAppIdChange}
-			displayCategory={displayCategory}
-			onDisplayCategoryChange={handleDisplayCategoryChange}
 			performStageAction={performStageAction}
+			teamId={teamId}
 		/>
 	);
 }
@@ -124,22 +101,14 @@ function Form({
 	apps,
 	appId,
 	onAppIdChange,
-	teamOptions,
-	teamId,
-	onTeamIdChange,
-	displayCategory,
-	onDisplayCategoryChange,
 	performStageAction,
+	teamId,
 }: {
-	teamId: TeamId;
-	teamOptions: TeamOption[];
-	onTeamIdChange: (teamId: TeamId) => void;
 	appId: AppId | undefined;
 	apps: App[];
 	onAppIdChange: (appId: AppId) => void;
-	displayCategory: DisplayCategory;
-	onDisplayCategoryChange: (category: DisplayCategory) => void;
 	performStageAction: PerformStageAction;
+	teamId: TeamId;
 }) {
 	const {
 		isMobile,
@@ -153,20 +122,13 @@ function Form({
 		{},
 	);
 
-	const teamOptionsWithIcons = useMemo(
+	const filterLinks = useMemo(
 		() =>
-			teamOptions.map((team) => ({
-				...team,
-				icon: team.avatarUrl ? (
-					<AvatarImage
-						avatarUrl={team.avatarUrl}
-						width={24}
-						height={24}
-						alt={team.label}
-					/>
-				) : undefined,
+			Object.values(displayCategories).map((category) => ({
+				href: `/stage?filter=${category.value}`,
+				label: category.label,
 			})),
-		[teamOptions],
+		[],
 	);
 
 	const app = useMemo(() => {
@@ -223,44 +185,13 @@ function Form({
 				<Settings className="w-4 h-4 text-inverse" />
 			</button>
 */}
-			{/* Team Selection Container */}
-			<div className="flex justify-center gap-2">
-				<div
-					style={
-						{
-							width: "fit-content",
-							minWidth: "auto",
-						} as React.CSSProperties
-					}
-				>
-					<div className="team-select">
-						<Select
-							id="team"
-							placeholder="Select team"
-							options={teamOptionsWithIcons}
-							renderOption={(o) => o.label}
-							value={teamId}
-							onValueChange={(value) => {
-								onTeamIdChange(value as TeamId);
-							}}
-						/>
-					</div>
-				</div>
-				<div className="filter-select">
-					<Select
-						id="filter"
-						placeholder="Filter"
-						options={Object.values(displayCategories)}
-						value={displayCategory}
-						onValueChange={(value) => {
-							onDisplayCategoryChange(value as DisplayCategory);
-						}}
-					/>
-				</div>
+			{/* Filter Tabs */}
+			<div className="flex justify-center">
+				<TabNavigation
+					links={filterLinks}
+					ariaLabelPrefix="filter"
+				/>
 			</div>
-
-			{/* Separator Line */}
-			<div className="w-full h-px bg-border mt-4 mb-4" />
 
 			{/* App Selection Container */}
 			<div className="mt-4 flex flex-col justify-start">
