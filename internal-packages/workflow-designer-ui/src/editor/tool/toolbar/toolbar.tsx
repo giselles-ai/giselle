@@ -275,10 +275,12 @@ export function Toolbar() {
 													}
 												}}
 											>
-												<ToggleGroup.Item value="app-entry" data-tool>
-													<TriggerIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">App Entry Node</p>
-												</ToggleGroup.Item>
+												{stage && (
+													<ToggleGroup.Item value="app-entry" data-tool>
+														<TriggerIcon className="size-[20px] shrink-0" />
+														<p className="text-[14px]">App Entry Node</p>
+													</ToggleGroup.Item>
+												)}
 												{triggerRegistry.map((triggerEntry) => (
 													<ToggleGroup.Item
 														key={triggerEntry.provider}
