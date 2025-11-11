@@ -15,7 +15,6 @@ export function TeamSelectionCompact({
 		<TeamSelectionForm
 			allTeams={user.allTeams}
 			currentTeam={user.currentTeam}
-			currentUser={<span />}
 			teamCreation={<span>Create team</span>}
 			triggerClassName="w-full max-w-none"
 		/>

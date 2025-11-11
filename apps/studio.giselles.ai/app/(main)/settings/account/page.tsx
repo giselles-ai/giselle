@@ -1,4 +1,3 @@
-import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { Plus } from "lucide-react";
 import { GlassButton } from "@/components/ui/glass-button";
 import { ToastProvider } from "@/packages/contexts/toast";
@@ -25,15 +24,6 @@ export default async function AccountSettingPage() {
 	return (
 		<ToastProvider>
 			<div className="flex flex-col gap-[12px]">
-				<div className="flex items-center justify-end">
-					<DocsLink
-						href="https://docs.giselles.ai/en/guides/settings/account/overview"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						About Account Overview
-					</DocsLink>
-				</div>
 				<div className="flex flex-col gap-y-[12px]">
 					<div className="space-y-2 gap-y-[12px]">
 						<div className="flex justify-between items-center">

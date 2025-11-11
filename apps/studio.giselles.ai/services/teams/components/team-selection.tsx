@@ -1,5 +1,3 @@
-import { getAccountInfo } from "@/app/(main)/settings/account/actions";
-import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { fetchCurrentTeam, fetchUserTeams } from "../";
 import { isProPlan } from "../utils";
 import TeamCreation from "./team-creation";
@@ -8,7 +6,6 @@ import { TeamSelectionForm } from "./team-selection-form";
 export async function TeamSelection() {
 	const allTeams = await fetchUserTeams();
 	const currentTeam = await fetchCurrentTeam();
-	const { displayName, email, avatarUrl } = await getAccountInfo();
 
 	const formattedAllTeams = allTeams.map((team) => ({
 		id: team.id,
@@ -29,20 +26,6 @@ export async function TeamSelection() {
 			allTeams={formattedAllTeams}
 			currentTeam={formattedCurrentTeam}
 			key={currentTeam.id}
-			currentUser={
-				<>
-					<AvatarImage
-						width={24}
-						height={24}
-						avatarUrl={avatarUrl}
-						alt={displayName || email || ""}
-						className="w-6 h-6"
-					/>
-					<span className="text-inverse font-medium text-[14px] leading-[20.4px] font-sans">
-						{displayName || "No display name"}
-					</span>
-				</>
-			}
 			teamCreation={
 				<TeamCreation>
 					<span className="text-inverse font-medium text-[14px] leading-[20.4px] font-sans">

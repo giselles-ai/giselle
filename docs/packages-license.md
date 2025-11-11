@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 934 MIT
+* 930 MIT
 * 187 Apache 2.0
 * 48 ISC
 * 28 New BSD
@@ -1271,7 +1271,7 @@ MIT-0 permitted
 
 
 <a name="@img/sharp-libvips-linux-x64"></a>
-### @img/sharp-libvips-linux-x64 v1.2.0
+### @img/sharp-libvips-linux-x64 v1.2.3
 #### 
 
 ##### Paths
@@ -1282,7 +1282,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@img/sharp-linux-x64"></a>
-### @img/sharp-linux-x64 v0.34.3
+### @img/sharp-linux-x64 v0.34.4
 #### 
 
 ##### Paths
@@ -2284,6 +2284,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@oxc-resolver/binding-linux-x64-gnu"></a>
 ### @oxc-resolver/binding-linux-x64-gnu v11.13.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@oxc-resolver/binding-linux-x64-musl"></a>
+### @oxc-resolver/binding-linux-x64-musl v11.13.0
 #### 
 
 ##### Paths
@@ -3428,17 +3439,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@rollup/rollup-linux-x64-gnu"></a>
 ### @rollup/rollup-linux-x64-gnu v4.35.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@rollup/rollup-linux-x64-musl"></a>
-### @rollup/rollup-linux-x64-musl v4.35.0
 #### 
 
 ##### Paths
@@ -6159,7 +6159,7 @@ Python-2.0 manually approved
 
 
 <a name="caniuse-lite"></a>
-### caniuse-lite v1.0.30001749
+### caniuse-lite v1.0.30001753
 #### 
 
 ##### Paths
@@ -6422,17 +6422,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="color"></a>
-### color v4.2.3
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="color-convert"></a>
 ### color-convert v2.0.1
 #### 
@@ -6446,17 +6435,6 @@ BlueOak-1.0.0 permitted
 
 <a name="color-name"></a>
 ### color-name v1.1.4
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="color-string"></a>
-### color-string v1.9.1
 #### 
 
 ##### Paths
@@ -8382,17 +8360,6 @@ BlueOak-1.0.0 permitted
 
 <a name="is-alphanumerical"></a>
 ### is-alphanumerical v2.0.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="is-arrayish"></a>
-### is-arrayish v0.3.2
 #### 
 
 ##### Paths
@@ -11769,7 +11736,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="sharp"></a>
-### sharp v0.34.3
+### sharp v0.34.4
 #### 
 
 ##### Paths
@@ -11875,17 +11842,6 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
-
-
-
-<a name="simple-swizzle"></a>
-### simple-swizzle v0.2.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
 
 
 

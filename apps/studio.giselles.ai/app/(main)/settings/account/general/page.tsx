@@ -1,4 +1,3 @@
-import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { SignOutButton } from "@/services/accounts/components/user-button/sign-out-button";
 import { Button } from "../../components/button";
 import { Card } from "../../components/card";
@@ -12,11 +11,6 @@ export default async function AccountGeneralPage() {
 
 	return (
 		<div className="flex flex-col gap-[24px]">
-			<div className="flex justify-end items-center">
-				<DocsLink href="https://docs.giselles.ai/en/guides/settings/account/general">
-					About Account Settings
-				</DocsLink>
-			</div>
 			<div className="flex flex-col gap-y-4">
 				<AccountDisplayNameForm
 					displayName={displayName}

@@ -2,8 +2,7 @@
 
 import clsx from "clsx/lite";
 import { ChevronsUpDown, Plus } from "lucide-react";
-import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FreeTag } from "@/components/free-tag";
 import { ProTag } from "@/components/pro-tag";
 import {
@@ -21,7 +20,6 @@ type TeamSelectionFormProps = {
 	allTeams: Team[];
 	currentTeam: Team;
 	teamCreation: React.ReactNode;
-	currentUser: React.ReactNode;
 	triggerClassName?: string;
 };
 
@@ -29,19 +27,12 @@ export function TeamSelectionForm({
 	allTeams,
 	currentTeam,
 	teamCreation,
-	currentUser,
 	triggerClassName,
 }: TeamSelectionFormProps) {
 	const [mounted, setMounted] = useState(false);
 	useEffect(() => setMounted(true), []);
-	const pathname = usePathname();
-	const isAccontSettingPage = useMemo(
-		() => pathname.startsWith("/settings/account"),
-		[pathname],
-	);
 	const action = (formData: FormData) => {
-		const withRedirect = isAccontSettingPage;
-		return selectTeam(formData, withRedirect);
+		return selectTeam(formData, false);
 	};
 
 	const formRef = useRef<HTMLFormElement>(null);
@@ -49,15 +40,10 @@ export function TeamSelectionForm({
 	if (!mounted) return null; // avoid hydration mismatches from Radix ids
 
 	return (
-		<form
-			action={action}
-			ref={formRef}
-			key={`${currentTeam.id}-${isAccontSettingPage}`}
-			className="w-full"
-		>
+		<form action={action} ref={formRef} key={currentTeam.id} className="w-full">
 			<Select
 				name="teamId"
-				defaultValue={isAccontSettingPage ? undefined : currentTeam.id}
+				defaultValue={currentTeam.id}
 				onValueChange={() => {
 					formRef.current?.requestSubmit();
 				}}
@@ -69,28 +55,22 @@ export function TeamSelectionForm({
 					)}
 				>
 					<div className="flex items-center gap-1.5 flex-1 min-w-0">
-						{isAccontSettingPage ? (
-							currentUser
-						) : (
-							<>
-								<TeamAvatarImage
-									avatarUrl={currentTeam.avatarUrl}
-									teamName={currentTeam.name}
-									width={32}
-									height={32}
-									className="w-8 h-8 shrink-0"
-									alt={currentTeam.name}
-								/>
-								<span
-									className="text-[14px] font-geist text-inverse truncate"
-									title={currentTeam.name}
-								>
-									{currentTeam.name}
-								</span>
-								{currentTeam.isPro !== undefined &&
-									(currentTeam.isPro ? <ProTag /> : <FreeTag />)}
-							</>
-						)}
+						<TeamAvatarImage
+							avatarUrl={currentTeam.avatarUrl}
+							teamName={currentTeam.name}
+							width={32}
+							height={32}
+							className="w-8 h-8 shrink-0"
+							alt={currentTeam.name}
+						/>
+						<span
+							className="text-[14px] font-geist text-inverse truncate"
+							title={currentTeam.name}
+						>
+							{currentTeam.name}
+						</span>
+						{currentTeam.isPro !== undefined &&
+							(currentTeam.isPro ? <ProTag /> : <FreeTag />)}
 					</div>
 					<div className="pl-3 ml-auto flex-none">
 						<ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50 hover:bg-white/10 hover:opacity-100 hover:rounded-md hover:p-0.5" />
