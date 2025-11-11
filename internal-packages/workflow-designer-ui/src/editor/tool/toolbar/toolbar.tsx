@@ -16,6 +16,7 @@ import {
 } from "@giselles-ai/language-model";
 import {
 	createActionNode,
+	createAppEntryNode,
 	createDocumentVectorStoreNode,
 	createFileNode,
 	createGitHubVectorStoreNode,
@@ -273,10 +274,13 @@ export function Toolbar() {
 														);
 														return;
 													}
+													if (value === "appEntry") {
+														setSelectedTool(addNodeTool(createAppEntryNode()));
+													}
 												}}
 											>
 												{stage && (
-													<ToggleGroup.Item value="app-entry" data-tool>
+													<ToggleGroup.Item value="appEntry" data-tool>
 														<TriggerIcon className="size-[20px] shrink-0" />
 														<p className="text-[14px]">App Entry Node</p>
 													</ToggleGroup.Item>

@@ -720,6 +720,10 @@ export function createWebPageNode(): WebPageNode {
 	return webPageFactoryImpl.create();
 }
 
+export function createAppEntryNode() {
+	return appEntryFactoryImpl.create();
+}
+
 export function cloneNode<N extends Node>(
 	sourceNode: N,
 ): NodeFactoryCloneResult<N> {
