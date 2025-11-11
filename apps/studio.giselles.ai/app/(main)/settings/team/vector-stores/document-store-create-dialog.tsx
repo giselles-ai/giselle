@@ -13,6 +13,7 @@ import {
 } from "@giselle-internal/ui/dialog";
 import { FormField } from "@giselle-internal/ui/form-field";
 import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselles-ai/protocol";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import { Plus, X } from "lucide-react";
 import {
 	useCallback,
@@ -31,10 +32,14 @@ type DocumentVectorStoreCreateDialogProps = {
 		name: string,
 		embeddingProfileIds: number[],
 	) => Promise<ActionResult>;
+	disabled?: boolean;
+	disabledReason?: string;
 };
 
 export function DocumentVectorStoreCreateDialog({
 	createAction,
+	disabled = false,
+	disabledReason,
 }: DocumentVectorStoreCreateDialogProps) {
 	const [open, setOpen] = useState(false);
 	const [name, setName] = useState("");
@@ -101,6 +106,42 @@ export function DocumentVectorStoreCreateDialog({
 			}
 		});
 	}, [createAction, name, selectedProfiles, defaultProfileIds]);
+
+	if (disabled) {
+		const disabledButton = (
+			<GlassButton
+				className="cursor-not-allowed opacity-60"
+				disabled
+				type="button"
+			>
+				<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
+					<Plus className="size-3 text-link-muted" />
+				</span>
+				New Vector Store
+			</GlassButton>
+		);
+
+		if (!disabledReason) {
+			return disabledButton;
+		}
+
+		return (
+			<Tooltip.Provider delayDuration={200}>
+				<Tooltip.Root>
+					<Tooltip.Trigger asChild>{disabledButton}</Tooltip.Trigger>
+					<Tooltip.Portal>
+						<Tooltip.Content
+							side="bottom"
+							className="z-50 max-w-xs rounded-md border border-border-muted bg-surface px-3 py-2 text-xs text-inverse shadow-lg"
+						>
+							{disabledReason}
+							<Tooltip.Arrow style={{ fill: "var(--color-surface)" }} />
+						</Tooltip.Content>
+					</Tooltip.Portal>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+		);
+	}
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
