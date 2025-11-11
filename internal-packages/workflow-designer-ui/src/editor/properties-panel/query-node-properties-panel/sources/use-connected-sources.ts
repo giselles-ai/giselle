@@ -64,7 +64,7 @@ export function useConnectedSources(node: QueryNode) {
 								connection,
 							});
 							break;
-						case "app-entry":
+						case "appEntry":
 							connectedAppEntrySources.push({
 								output,
 								node: node as AppEntryNode,
