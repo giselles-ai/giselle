@@ -4,7 +4,6 @@ import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
-import { SettingRow } from "@giselle-internal/ui/setting-row";
 import {
 	AppId,
 	type DraftApp,
@@ -114,7 +113,8 @@ export function AppEntryConfigurationView({
 					<SettingLabel className="py-[1.5px]">App Information</SettingLabel>
 					<div className="px-[4px] py-0 w-full bg-transparent text-[14px]">
 						<div className="space-y-[12px]">
-							<SettingRow label={<SettingDetail>App Name</SettingDetail>}>
+							<div className="flex flex-col gap-[4px]">
+								<SettingDetail>App Name</SettingDetail>
 								<input
 									id="app-name"
 									type="text"
@@ -124,9 +124,10 @@ export function AppEntryConfigurationView({
 									className="w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]"
 									data-1p-ignore
 								/>
-							</SettingRow>
+							</div>
 
-							<SettingRow label={<SettingDetail>Description</SettingDetail>}>
+							<div className="flex flex-col gap-[4px]">
+								<SettingDetail>Description</SettingDetail>
 								<textarea
 									id="app-description"
 									placeholder="Enter app description"
@@ -136,9 +137,10 @@ export function AppEntryConfigurationView({
 									rows={3}
 									data-1p-ignore
 								/>
-							</SettingRow>
+							</div>
 
-							<SettingRow label={<SettingDetail>Icon Name</SettingDetail>}>
+							<div className="flex flex-col gap-[4px]">
+								<SettingDetail>Icon Name</SettingDetail>
 								<input
 									id="app-icon-name"
 									type="text"
@@ -148,7 +150,7 @@ export function AppEntryConfigurationView({
 									className="w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]"
 									data-1p-ignore
 								/>
-							</SettingRow>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -179,7 +181,8 @@ export function AppEntryConfigurationView({
 											)}
 										</div>
 										<div className="space-y-[12px]">
-											<SettingRow label={<SettingDetail>Name *</SettingDetail>}>
+											<div className="flex flex-col gap-[4px]">
+												<SettingDetail>Name *</SettingDetail>
 												<input
 													type="text"
 													placeholder="Parameter name"
@@ -196,8 +199,9 @@ export function AppEntryConfigurationView({
 													className="w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]"
 													data-1p-ignore
 												/>
-											</SettingRow>
-											<SettingRow label={<SettingDetail>Type *</SettingDetail>}>
+											</div>
+											<div className="flex flex-col gap-[4px]">
+												<SettingDetail>Type *</SettingDetail>
 												<Select
 													options={TYPE_OPTIONS}
 													placeholder="Select type..."
@@ -218,11 +222,10 @@ export function AppEntryConfigurationView({
 														)
 													}
 												/>
-											</SettingRow>
+											</div>
 											{index > 0 && (
-												<SettingRow
-													label={<SettingDetail>Optional</SettingDetail>}
-												>
+												<div className="flex flex-col gap-[4px]">
+													<SettingDetail>Optional</SettingDetail>
 													<div className="flex items-center gap-[8px] h-[37px]">
 														<input
 															type="checkbox"
@@ -244,7 +247,7 @@ export function AppEntryConfigurationView({
 															Optional field
 														</span>
 													</div>
-												</SettingRow>
+												</div>
 											)}
 										</div>
 									</div>
@@ -252,15 +255,15 @@ export function AppEntryConfigurationView({
 							</div>
 						)}
 
-						<div className="flex justify-end mb-[16px]">
-							<Button
+						<div className="flex mb-[16px]">
+							<button
 								type="button"
-								variant="filled"
 								onClick={handleAddParameter}
-								leftIcon={<PlusIcon className="size-[14px]" />}
+								className="relative w-full p-[12px] bg-bg-900 rounded-[8px] border border-dotted border-border h-[48px] flex items-center gap-2 justify-center cursor-pointer hover:bg-white/5 transition-colors"
 							>
-								Add Parameter
-							</Button>
+								<PlusIcon className="size-[14px]" />
+								<span>Add Parameter</span>
+							</button>
 						</div>
 					</div>
 				</div>
