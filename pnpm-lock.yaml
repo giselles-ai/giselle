@@ -352,6 +352,9 @@ importers:
       '@giselles-ai/language-model':
         specifier: workspace:*
         version: link:../../packages/language-model
+      '@giselles-ai/node-registry':
+        specifier: workspace:*
+        version: link:../../packages/node-registry
       '@giselles-ai/protocol':
         specifier: workspace:*
         version: link:../../packages/protocol
@@ -718,6 +721,9 @@ importers:
       '@giselles-ai/language-model':
         specifier: workspace:^
         version: link:../../packages/language-model
+      '@giselles-ai/node-registry':
+        specifier: workspace:*
+        version: link:../../packages/node-registry
       '@giselles-ai/protocol':
         specifier: workspace:*
         version: link:../../packages/protocol
@@ -886,6 +892,9 @@ importers:
       '@giselles-ai/language-model':
         specifier: workspace:^
         version: link:../language-model
+      '@giselles-ai/node-registry':
+        specifier: workspace:*
+        version: link:../node-registry
       '@giselles-ai/text-editor-utils':
         specifier: workspace:^
         version: link:../text-editor-utils
@@ -1041,6 +1050,31 @@ importers:
         specifier: 'catalog:'
         version: 3.2.4(@types/debug@4.1.12)(@types/node@24.10.0)(happy-dom@20.0.2)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.7.0)
 
+  packages/node-registry:
+    dependencies:
+      '@giselles-ai/action-registry':
+        specifier: workspace:*
+        version: link:../action-registry
+      '@giselles-ai/language-model':
+        specifier: workspace:*
+        version: link:../language-model
+      '@giselles-ai/protocol':
+        specifier: workspace:*
+        version: link:../protocol
+      '@giselles-ai/text-editor-utils':
+        specifier: workspace:*
+        version: link:../text-editor-utils
+      '@giselles-ai/trigger-registry':
+        specifier: workspace:*
+        version: link:../trigger-registry
+    devDependencies:
+      '@giselles-ai/tsconfig':
+        specifier: workspace:*
+        version: link:../../tools/tsconfig
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.6.1)(postcss@8.5.6)(typescript@5.7.3)(yaml@2.7.0)
+
   packages/protocol:
     dependencies:
       '@ai-sdk/provider':
@@ -1148,9 +1182,9 @@ importers:
 
   packages/text-editor:
     dependencies:
-      '@giselles-ai/giselle':
-        specifier: workspace:^
-        version: link:../giselle
+      '@giselles-ai/node-registry':
+        specifier: workspace:*
+        version: link:../node-registry
       '@giselles-ai/protocol':
         specifier: workspace:^
         version: link:../protocol
@@ -6493,10 +6527,6 @@ packages:
         optional: true
       react-dom:
         optional: true
-
-  foreground-child@3.3.0:
-    resolution: {integrity: sha512-Ld2g8rrAyMYFXBhEqMz8ZAHBi4J4uS1i/CxGMDnjyFWddMXLVcDp051DZfu+t7+ab7Wv6SMqpWmyFIj5UbfFvg==}
-    engines: {node: '>=14'}
 
   foreground-child@3.3.1:
     resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
@@ -15272,11 +15302,6 @@ snapshots:
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
 
-  foreground-child@3.3.0:
-    dependencies:
-      cross-spawn: 7.0.6
-      signal-exit: 4.1.0
-
   foreground-child@3.3.1:
     dependencies:
       cross-spawn: 7.0.6
@@ -15393,7 +15418,7 @@ snapshots:
 
   glob@10.4.5:
     dependencies:
-      foreground-child: 3.3.0
+      foreground-child: 3.3.1
       jackspeak: 3.4.3
       minimatch: 9.0.5
       minipass: 7.1.2

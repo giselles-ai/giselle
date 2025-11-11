@@ -1,4 +1,4 @@
-import { defaultName } from "@giselles-ai/giselle/react";
+import { defaultName } from "@giselles-ai/node-registry";
 import { Node as GiselleNode } from "@giselles-ai/protocol";
 import { SourceExtension } from "@giselles-ai/text-editor-utils";
 import {

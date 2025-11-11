@@ -1,4 +1,4 @@
-import { defaultName } from "@giselles-ai/giselle/react";
+import { defaultName } from "@giselles-ai/node-registry";
 import { createSourceExtensionJSONContent } from "@giselles-ai/text-editor-utils";
 import { ReactRenderer } from "@tiptap/react";
 import type { SuggestionOptions } from "@tiptap/suggestion";

@@ -7644,7 +7644,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="foreground-child"></a>
-### foreground-child v3.3.0
+### foreground-child v3.3.1
 #### 
 
 ##### Paths

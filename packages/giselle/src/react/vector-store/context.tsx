@@ -1,4 +1,4 @@
-import { createContext, type PropsWithChildren, useContext } from "react";
+import { createContext, useContext } from "react";
 
 export interface VectorStoreContextValue {
 	githubRepositoryIndexes?: {
@@ -33,17 +33,6 @@ export const VectorStoreContext = createContext<
 export interface VectorStoreProviderProps {
 	value?: Partial<VectorStoreContextValue>;
 }
-export function VectorStoreProvider({
-	children,
-	...props
-}: PropsWithChildren<VectorStoreProviderProps>) {
-	return (
-		<VectorStoreContext.Provider value={props.value}>
-			{children}
-		</VectorStoreContext.Provider>
-	);
-}
-
 export const useVectorStore = () => {
 	const vectorStore = useContext(VectorStoreContext);
 	return vectorStore;
