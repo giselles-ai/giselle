@@ -87,7 +87,10 @@ export function defaultName(node: NodeLike) {
 							`Expected vector store node, got ${JSON.stringify(node)}`,
 						);
 					}
-					return vectorStoreNodeDefaultName(node.content.source.provider);
+					return (
+						node.name ??
+						vectorStoreNodeDefaultName(node.content.source.provider)
+					);
 				default:
 					return node.name ?? node.content.type;
 			}
