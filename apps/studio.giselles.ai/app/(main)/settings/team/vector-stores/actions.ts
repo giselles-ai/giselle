@@ -598,12 +598,14 @@ export async function createDocumentVectorStore(
 		}
 
 		const creationResult = await db.transaction(async (tx) => {
-			const [{ count }] = await tx
-				.select({ count: sql<number>`count(*)` })
+			const existingStores = await tx
+				.select({ dbId: documentVectorStores.dbId })
 				.from(documentVectorStores)
-				.where(eq(documentVectorStores.teamDbId, team.dbId));
+				.where(eq(documentVectorStores.teamDbId, team.dbId))
+				.limit(quota.maxStores)
+				.for("update");
 
-			if (Number(count) >= quota.maxStores) {
+			if (existingStores.length >= quota.maxStores) {
 				return {
 					success: false,
 					error:
