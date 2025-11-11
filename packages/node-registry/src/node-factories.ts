@@ -10,6 +10,7 @@ import {
 	AppParameterId,
 	DEFAULT_MAX_RESULTS,
 	DEFAULT_SIMILARITY_THRESHOLD,
+	DraftAppParameterId,
 	type FileContent,
 	type FileData,
 	FileId,
@@ -609,7 +610,7 @@ const appEntryFactoryImpl = {
 					iconName: "",
 					parameters: [
 						{
-							id: AppParameterId.generate(),
+							id: DraftAppParameterId.generate(),
 							name: "",
 							type: "text",
 							required: true,
