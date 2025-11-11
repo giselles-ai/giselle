@@ -1,22 +1,16 @@
-import { triggerProviders } from "@giselles-ai/flow";
 import { z } from "zod/v4";
-import { FlowTriggerId } from "../../flow/trigger";
-
-export const TriggerProviderLike = z.looseObject({
-	provider: z.string(),
-});
-export type TriggerProviderLike = z.infer<typeof TriggerProviderLike>;
+import { TriggerId } from "../../trigger";
 
 const TriggerUnconfiguredState = z.object({
 	status: z.literal("unconfigured"),
 });
 const TriggerConfiguredState = z.object({
 	status: z.literal("configured"),
-	flowTriggerId: FlowTriggerId.schema,
+	flowTriggerId: TriggerId.schema,
 });
 const TriggerReconfiguringState = z.object({
 	status: z.literal("reconfiguring"),
-	flowTriggerId: FlowTriggerId.schema,
+	flowTriggerId: TriggerId.schema,
 });
 const TriggerConfigurationState = z.discriminatedUnion("status", [
 	TriggerUnconfiguredState,
@@ -26,7 +20,7 @@ const TriggerConfigurationState = z.discriminatedUnion("status", [
 
 export const TriggerContent = z.object({
 	type: z.literal("trigger"),
-	provider: z.enum(triggerProviders),
+	provider: z.enum(["manual", "github", "app-entry"]),
 	state: TriggerConfigurationState,
 });
 export type TriggerContent = z.infer<typeof TriggerContent>;

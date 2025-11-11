@@ -1,8 +1,4 @@
-import type {
-	FlowTrigger,
-	FlowTriggerId,
-	ParameterItem,
-} from "@giselles-ai/protocol";
+import type { ParameterItem, Trigger, TriggerId } from "@giselles-ai/protocol";
 import type { InferSelectModel } from "drizzle-orm";
 import type { teams } from "@/db";
 
@@ -20,11 +16,11 @@ export type FilterType = "all" | "history" | "latest" | "favorites";
 
 // Flow trigger related types
 export interface FlowTriggerUIItem {
-	id: FlowTriggerId;
+	id: TriggerId;
 	teamId: TeamId;
 	workspaceName: string;
 	label: string;
-	sdkData: FlowTrigger;
+	sdkData: Trigger;
 }
 
 // Form input types
@@ -38,7 +34,7 @@ export interface FormInput {
 // Action types
 export interface PerformStagePayloads {
 	teamId: TeamId;
-	flowTrigger: FlowTrigger;
+	trigger: Trigger;
 	parameterItems: ParameterItem[];
 }
 

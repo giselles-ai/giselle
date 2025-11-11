@@ -2,7 +2,12 @@ import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
-import { type GitHubActionCommandId, githubActions } from "@giselles-ai/flow";
+import {
+	githubActionEntries,
+	githubActions,
+	githubActionToInputFields,
+	isGitHubActionId,
+} from "@giselles-ai/action-registry";
 import type { GitHubIntegrationInstallation } from "@giselles-ai/giselle";
 import {
 	useIntegration,
@@ -361,28 +366,25 @@ function Installed({
 	>(null);
 
 	const handleActionSelect = useCallback(
-		(commandId: string) => {
+		(actionId: string) => {
 			if (step.state !== "select-action") {
 				throw new Error("Unexpected state");
 			}
 
-			/** @todo remove type assertion */
-			const action = githubActions[commandId as GitHubActionCommandId];
+			if (!isGitHubActionId(actionId)) {
+				throw new Error(`Invalid action ID: ${actionId}`);
+			}
+			const action = githubActions[actionId];
 
 			// Setup inputs and outputs for the action
-			const inputs: Input[] = [];
-
-			// Add inputs based on the action type
-			for (const key of action.command.parameters.keyof().options) {
-				// @ts-expect-error shape[parameter] is unreasonable but intentional
-				const schema = action.command.parameters.shape[key] as AnyZodObject;
-				inputs.push({
+			const inputs: Input[] = githubActionToInputFields(action).map(
+				(inputField) => ({
 					id: InputId.generate(),
-					accessor: key,
-					label: key,
-					isRequired: !schema.isOptional(),
-				});
-			}
+					accessor: inputField.key,
+					label: inputField.label,
+					isRequired: !inputField.optional,
+				}),
+			);
 
 			updateNodeData(node, {
 				content: {
@@ -392,13 +394,13 @@ function Installed({
 						provider: "github",
 						state: {
 							status: "configured",
-							commandId: action.command.id,
+							commandId: action.id,
 							repositoryNodeId: step.repoNodeId,
 							installationId: step.installationId,
 						},
 					},
 				},
-				name: action.command.label,
+				name: action.label,
 				inputs,
 				outputs: [
 					{
@@ -575,23 +577,23 @@ function Installed({
 					<div className="flex flex-col gap-[4px] flex-1 overflow-hidden">
 						<SettingLabel className="mb-[4px]">Action Type</SettingLabel>
 						<div className="flex flex-col gap-[8px] overflow-y-auto pr-2 pl-0 pt-[8px] custom-scrollbar flex-1">
-							{Object.entries(githubActions).map(([id, githubAction]) => (
+							{githubActionEntries.map((githubAction) => (
 								<button
-									key={id}
+									key={githubAction.id}
 									type="button"
-									className="flex items-center py-[8px] px-[8px] rounded-lg group w-full min-h-[48px] border border-inverse/20 hover:border-inverse/30 hover:bg-inverse/10 transition-colors"
-									onClick={() => handleActionSelect(id)}
+									className="flex items-center py-[8px] px-[8px] rounded-lg group w-full min-h-[48px] border border-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] hover:border-[color-mix(in_srgb,var(--color-text-inverse,#fff)_30%,transparent)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] transition-colors"
+									onClick={() => handleActionSelect(githubAction.id)}
 								>
 									<div className="flex items-center min-w-0 flex-1">
 										<div className="p-2 rounded-lg mr-3 bg-bg/10 group-hover:bg-bg/20 transition-colors flex-shrink-0 flex items-center justify-center">
-											{getActionIcon(id)}
+											{getActionIcon(githubAction.id)}
 										</div>
 										<div className="flex flex-col text-left overflow-hidden min-w-0">
 											<span className="text-inverse font-medium text-[14px] truncate">
-												{githubAction.command.label}
+												{githubAction.label}
 											</span>
 											<span className="text-text-muted text-[10px] truncate group-hover:text-inverse transition-colors pr-6">
-												{`Perform ${githubAction.command.label.toLowerCase()} action`}
+												{`Perform ${githubAction.label.toLowerCase()} action`}
 											</span>
 										</div>
 									</div>

@@ -74,7 +74,7 @@ function _renderImageLoadingGrid(generation: Generation, keyPrefix: string) {
 			{Array.from({ length: imageCount }).map((_, index) => (
 				<div
 					key={`${generation.id}-${keyPrefix}-${index}`}
-					className="flex-shrink-0 bg-inverse/10 rounded-[8px] overflow-hidden flex items-center justify-center h-full"
+					className="flex-shrink-0 bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] rounded-[8px] overflow-hidden flex items-center justify-center h-full"
 				>
 					<ImageGenerationLoading configuration={config} />
 				</div>
@@ -199,7 +199,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 														Thinking...
 													</span>
 												</Accordion.Trigger>
-												<Accordion.Content className="markdown-renderer overflow-hidden italic text-[14px] text-inverse ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-inverse/20">
+												<Accordion.Content className="markdown-renderer overflow-hidden italic text-[14px] text-inverse ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)]">
 													<MemoizedMarkdown content={part.text} />
 												</Accordion.Content>
 											</Accordion.Item>
@@ -224,7 +224,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 												/>
 												<span>Thinking Process</span>
 											</Accordion.Trigger>
-											<Accordion.Content className="markdown-renderer overflow-hidden italic text-[14px] text-inverse ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-inverse/20">
+											<Accordion.Content className="markdown-renderer overflow-hidden italic text-[14px] text-inverse ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)]">
 												<MemoizedMarkdown content={part.text} />
 											</Accordion.Content>
 										</Accordion.Item>

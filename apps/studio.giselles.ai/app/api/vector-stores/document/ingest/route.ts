@@ -62,6 +62,7 @@ export async function GET(request: NextRequest) {
 		try {
 			const result = await ingestDocument(target.sourceId, {
 				embeddingProfileIds: target.embeddingProfileIds,
+				trigger: { type: "cron" },
 			});
 
 			if (result.skipped) {

@@ -314,7 +314,7 @@ export function InviteMemberDialog({
 			<DialogTrigger asChild>
 				<GlassButton type="button" onClick={handleOpenDialog}>
 					<span className="grid size-4 place-items-center rounded-full bg-primary-200 opacity-50">
-						<Plus className="size-3 text-bg" />
+						<Plus className="size-3 text-background" />
 					</span>
 					<span className="text-[14px] font-medium leading-[20px]">
 						Invite Member
@@ -353,7 +353,7 @@ export function InviteMemberDialog({
 						className="space-y-4"
 						noValidate
 					>
-						<div className="flex items-center gap-2 rounded-[12px] px-2 py-1 bg-inverse/5 focus-within:ring-1 focus-within:ring-primary-100/50 focus-within:ring-inset transition-all">
+						<div className="flex items-center gap-2 rounded-[12px] px-2 py-1 bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] focus-within:ring-1 focus-within:ring-primary-100/50 focus-within:ring-inset transition-all">
 							<div className="flex min-h-[40px] flex-grow flex-wrap items-center gap-1">
 								{emailTags.map((email) => (
 									<div

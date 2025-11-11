@@ -44,6 +44,7 @@ async function fetchTeam(teamId: TeamId, supabaseUserId: string) {
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
 			type: teams.type,
+			plan: teams.plan,
 			activeSubscriptionId: subscriptions.id,
 		})
 		.from(teams)
@@ -80,6 +81,7 @@ async function fetchFirstTeam(supabaseUserId: string) {
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
 			type: teams.type,
+			plan: teams.plan,
 			activeSubscriptionId: subscriptions.id,
 		})
 		.from(teams)

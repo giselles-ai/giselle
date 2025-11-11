@@ -1,6 +1,6 @@
 import {
-	type FlowTriggerId,
 	GitHubRepositoryIntegrationIndex,
+	type TriggerId,
 } from "@giselles-ai/protocol";
 import type { GiselleStorage } from "../storage";
 
@@ -39,7 +39,7 @@ async function setGitHubRepositoryIntegrationIndex(args: {
 
 export async function addGitHubRepositoryIntegrationIndex(args: {
 	storage: GiselleStorage;
-	flowTriggerId: FlowTriggerId;
+	triggerId: TriggerId;
 	repositoryNodeId: string;
 }) {
 	const githubRepositoryIntegrationIndex =
@@ -48,21 +48,21 @@ export async function addGitHubRepositoryIntegrationIndex(args: {
 			storage: args.storage,
 		});
 
-	const currentFlowTriggerIds =
+	const currentTriggerIds =
 		githubRepositoryIntegrationIndex?.flowTriggerIds ?? [];
 	await setGitHubRepositoryIntegrationIndex({
 		repositoryNodeId: args.repositoryNodeId,
 		storage: args.storage,
 		index: {
 			repositoryNodeId: args.repositoryNodeId,
-			flowTriggerIds: [...currentFlowTriggerIds, args.flowTriggerId],
+			flowTriggerIds: [...currentTriggerIds, args.triggerId],
 		},
 	});
 }
 
 export async function removeGitHubRepositoryIntegrationIndex(args: {
 	storage: GiselleStorage;
-	flowTriggerId: FlowTriggerId;
+	triggerId: TriggerId;
 	repositoryNodeId: string;
 }) {
 	const githubRepositoryIntegrationIndex =
@@ -73,11 +73,11 @@ export async function removeGitHubRepositoryIntegrationIndex(args: {
 	if (githubRepositoryIntegrationIndex === undefined) {
 		return;
 	}
-	const remainingFlowTriggerIds =
+	const remainingTriggerIds =
 		githubRepositoryIntegrationIndex.flowTriggerIds.filter(
-			(id) => id !== args.flowTriggerId,
+			(id) => id !== args.triggerId,
 		);
-	if (remainingFlowTriggerIds.length === 0) {
+	if (remainingTriggerIds.length === 0) {
 		const path = getGitHubRepositoryIntegrationPath(args.repositoryNodeId);
 		await args.storage.remove(path);
 		return;
@@ -87,7 +87,7 @@ export async function removeGitHubRepositoryIntegrationIndex(args: {
 		storage: args.storage,
 		index: {
 			repositoryNodeId: args.repositoryNodeId,
-			flowTriggerIds: remainingFlowTriggerIds,
+			flowTriggerIds: remainingTriggerIds,
 		},
 	});
 }

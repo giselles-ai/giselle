@@ -6,7 +6,7 @@ import type { LanguageModelProvider } from "@giselles-ai/language-model";
 import type {
 	Act,
 	EmbeddingProfileId,
-	FlowTrigger,
+	Trigger,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import type { EmbeddingMetrics, QueryService } from "@giselles-ai/rag";
@@ -107,7 +107,7 @@ export interface GiselleEngineContext {
 	callbacks?: {
 		generationComplete?: GenerationCompleteCallbackFunction;
 		generationFailed?: GenerationFailedCallbackFunction;
-		flowTriggerUpdate?: (flowTrigger: FlowTrigger) => Promise<void>;
+		flowTriggerUpdate?: (flowTrigger: Trigger) => Promise<void>;
 		embeddingComplete?: EmbeddingCompleteCallbackFunction;
 	};
 	aiGateway?: {
@@ -207,7 +207,7 @@ export interface GiselleEngineConfig {
 	callbacks?: {
 		generationComplete?: GenerationCompleteCallbackFunction;
 		generationFailed?: GenerationFailedCallbackFunction;
-		flowTriggerUpdate?: (flowTrigger: FlowTrigger) => Promise<void>;
+		flowTriggerUpdate?: (flowTrigger: Trigger) => Promise<void>;
 		embeddingComplete?: EmbeddingCompleteCallbackFunction;
 	};
 	aiGateway?: {

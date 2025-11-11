@@ -9,8 +9,8 @@ import type {
 	AppId,
 	EmbeddingDimensions,
 	EmbeddingProfileId,
-	FlowTriggerId,
 	NodeId,
+	TriggerId,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import type {
@@ -78,6 +78,7 @@ export const subscriptionRelations = relations(subscriptions, ({ one }) => ({
 }));
 
 export type TeamType = "customer" | "internal";
+export type TeamPlan = "free" | "pro" | "team" | "internal";
 export const teams = pgTable("teams", {
 	id: text("id").$type<TeamId>().notNull().unique(),
 	dbId: serial("db_id").primaryKey(),
@@ -89,6 +90,7 @@ export const teams = pgTable("teams", {
 		.notNull()
 		.$onUpdate(() => new Date()),
 	type: text("type").$type<TeamType>().notNull().default("customer"),
+	plan: text("plan").$type<TeamPlan>().notNull().default("free"),
 });
 
 export const teamRelations = relations(teams, ({ many }) => ({
@@ -772,7 +774,7 @@ export const flowTriggers = pgTable(
 			.references(() => teams.dbId, { onDelete: "cascade" }),
 		staged: boolean("staged").notNull().default(false),
 		sdkWorkspaceId: text("workspace_id").$type<WorkspaceId>().notNull(),
-		sdkFlowTriggerId: text("flow_trigger_id").$type<FlowTriggerId>().notNull(),
+		sdkFlowTriggerId: text("flow_trigger_id").$type<TriggerId>().notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at")
 			.defaultNow()
@@ -797,9 +799,7 @@ export const acts = pgTable(
 			.notNull()
 			.references(() => users.dbId, { onDelete: "cascade" }),
 		sdkWorkspaceId: text("sdk_workspace_id").$type<WorkspaceId>().notNull(),
-		sdkFlowTriggerId: text("sdk_flow_trigger_id")
-			.$type<FlowTriggerId>()
-			.notNull(),
+		sdkFlowTriggerId: text("sdk_flow_trigger_id").$type<TriggerId>().notNull(),
 		sdkActId: text("sdk_act_id").$type<ActId>().notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at")

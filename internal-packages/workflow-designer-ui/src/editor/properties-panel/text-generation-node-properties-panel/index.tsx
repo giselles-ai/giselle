@@ -220,13 +220,13 @@ export function TextGenerationNodePropertiesPanel({
 							<button
 								type="button"
 								aria-label="Minimize prompt editor"
-								className="size-[32px] rounded-full bg-inverse hover:bg-inverse/80 transition-colors flex items-center justify-center"
+								className="size-[32px] rounded-full bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] transition-colors flex items-center justify-center"
 								onClick={() => {
 									setIsPromptExpanded(false);
 									setEditorVersion((v) => v + 1);
 								}}
 							>
-								<Minimize2 className="size-[16px] text-background" />
+								<Minimize2 className="size-[16px] text-inverse" />
 							</button>
 						</div>
 						<button
@@ -266,12 +266,12 @@ export function TextGenerationNodePropertiesPanel({
 							<button
 								type="button"
 								aria-label="Minimize generation panel"
-								className="size-[32px] rounded-full bg-inverse hover:bg-inverse/80 transition-colors flex items-center justify-center"
+								className="size-[32px] rounded-full bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] transition-colors flex items-center justify-center"
 								onClick={() => {
 									setIsGenerationExpanded(false);
 								}}
 							>
-								<Minimize2 className="size-[16px] text-background" />
+								<Minimize2 className="size-[16px] text-inverse" />
 							</button>
 						</div>
 						<button

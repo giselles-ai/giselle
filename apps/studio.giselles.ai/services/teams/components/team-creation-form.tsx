@@ -125,7 +125,7 @@ export function TeamCreationForm({
 									name="teamName"
 									value={teamName}
 									onChange={(e) => setTeamName(e.target.value)}
-									className="w-full bg-transparent text-inverse font-medium text-[14px] leading-[23.8px] font-geist shadow-none focus:text-white border-0 p-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none placeholder:text-text-muted"
+									className="w-full bg-transparent text-inverse font-medium text-[14px] leading-[23.8px] font-geist shadow-none focus:text-white border-0 p-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none placeholder:text-link-muted"
 									placeholder="Enter team name"
 								/>
 							</div>

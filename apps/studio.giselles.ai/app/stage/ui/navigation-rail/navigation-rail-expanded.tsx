@@ -1,6 +1,7 @@
-import { GiselleIcon } from "@giselle-internal/workflow-designer-ui";
 import { ChevronsLeftIcon } from "lucide-react";
-import { Suspense } from "react";
+import type { ReactNode } from "react";
+import { Suspense, use } from "react";
+import { GiselleLogo } from "@/components/giselle-logo";
 import { MenuButton } from "./menu-button";
 import { navigationItems } from "./navigation-items";
 import { NavigationList } from "./navigation-list";
@@ -10,44 +11,56 @@ import { NavigationRailContentsContainer } from "./navigation-rail-contents-cont
 import { NavigationRailFooter } from "./navigation-rail-footer";
 import { NavigationRailFooterMenu } from "./navigation-rail-footer-menu";
 import { NavigationRailHeader } from "./navigation-rail-header";
+import { TeamSelectionCompact } from "./team-selection-compact";
 import type { UserDataForNavigationRail } from "./types";
 
 export function NavigationRailExpanded({
 	onCollapseButtonClick,
 	user: userPromise,
+	teamSelectionSlot,
+	currentPath,
 }: {
 	onCollapseButtonClick: () => void;
 	user: Promise<UserDataForNavigationRail>;
+	teamSelectionSlot?: ReactNode;
+	currentPath?: string;
 }) {
+	const user = use(userPromise);
+	const isPro = user.currentTeam?.isPro ?? false;
+
 	return (
 		<NavigationRailContainer variant="expanded">
 			<NavigationRailHeader>
-				<div className="flex items-center justify-start w-full">
-					<div className="size-8 flex justify-center items-center">
-						<GiselleIcon className="size-6 text-stage-sidebar-text-hover stroke-1 group-hover:hidden shrink-0" />
-					</div>
-					<p className="text-stage-sidebar-text-hover text-[13px] font-semibold">
-						Stage
-					</p>
-				</div>
-				<div className="absolute right-3 top-1.5">
+				<div className="flex items-center justify-between w-full pt-6 pb-4">
+					<GiselleLogo className="w-[96px] h-auto fill-inverse" />
 					<MenuButton
 						onClick={() => onCollapseButtonClick()}
 						className="cursor-w-resize"
 					>
-						<ChevronsLeftIcon className="size-5 text-stage-sidebar-text stroke-1" />
+						<ChevronsLeftIcon className="size-5 text-link-muted stroke-1" />
 					</MenuButton>
 				</div>
 			</NavigationRailHeader>
 			<NavigationRailContentsContainer>
+				<div className="my-2 px-0 w-full">
+					{teamSelectionSlot ?? (
+						<TeamSelectionCompact userPromise={userPromise} />
+					)}
+				</div>
 				<NavigationList>
-					{navigationItems.map((navigationItem) => (
-						<NavigationListItem
-							key={navigationItem.id}
-							{...navigationItem}
-							variant="expanded"
-						/>
-					))}
+					{navigationItems.map((navigationItem) => {
+						if (navigationItem.type === "action" && isPro) {
+							return null;
+						}
+						return (
+							<NavigationListItem
+								key={navigationItem.id}
+								{...navigationItem}
+								variant="expanded"
+								currentPath={currentPath}
+							/>
+						);
+					})}
 				</NavigationList>
 			</NavigationRailContentsContainer>
 			<NavigationRailFooter>

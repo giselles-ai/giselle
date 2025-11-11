@@ -312,7 +312,7 @@ export function NodeComponent({
 					node.content.state.status === "configured" && (
 						<div className="-mt-[6px]">
 							<GitHubTriggerStatusBadge
-								flowTriggerId={node.content.state.flowTriggerId}
+								triggerId={node.content.state.flowTriggerId}
 							/>
 						</div>
 					)}
@@ -357,21 +357,21 @@ export function NodeComponent({
 								"group-data-[content-type=trigger]:stroke-current fill-none",
 								"group-data-[content-type=action]:fill-current",
 								"group-data-[content-type=query]:stroke-current fill-none",
-								"group-data-[content-type=text]:text-bg",
-								"group-data-[content-type=file]:text-bg",
-								"group-data-[content-type=webPage]:text-bg",
+								"group-data-[content-type=text]:text-background",
+								"group-data-[content-type=file]:text-background",
+								"group-data-[content-type=webPage]:text-background",
 								"group-data-[content-type=textGeneration]:text-inverse",
 								"group-data-[content-type=imageGeneration]:text-inverse",
 								"group-data-[content-type=github]:text-inverse",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:text-bg",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:text-bg",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:text-bg",
+								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:text-background",
+								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:text-background",
+								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:text-background",
 								"group-data-[content-type=webSearch]:text-inverse",
 								"group-data-[content-type=audioGeneration]:text-inverse",
 								"group-data-[content-type=videoGeneration]:text-inverse",
 								"group-data-[content-type=trigger]:text-inverse",
 								"group-data-[content-type=action]:text-inverse",
-								"group-data-[content-type=query]:text-bg",
+								"group-data-[content-type=query]:text-background",
 							)}
 						/>
 					</div>

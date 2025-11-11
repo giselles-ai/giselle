@@ -48,7 +48,7 @@ export default async function ({
 					}
 					return { github: await getGitHubIntegrationState(agent.dbId) };
 				}}
-				flowTriggerUpdateAction={async (flowTrigger) => {
+				triggerUpdateAction={async (flowTrigger) => {
 					"use server";
 
 					const workspace = await db.query.workspaces.findFirst({

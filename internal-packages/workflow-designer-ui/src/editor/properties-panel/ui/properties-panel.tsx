@@ -15,7 +15,7 @@ function getNodeIconColor(node: NodeLike): string {
 	if (node.type === "operation") {
 		// handle out-of-union runtime type safely without widening types
 		if (`${node.content.type}` === "vectorStore") {
-			return "text-bg";
+			return "text-background";
 		}
 		switch (node.content.type) {
 			case "textGeneration":
@@ -24,7 +24,7 @@ function getNodeIconColor(node: NodeLike): string {
 				return "text-inverse";
 			case "trigger":
 			case "query":
-				return "text-bg";
+				return "text-background";
 			default:
 				return "text-inverse";
 		}
@@ -32,13 +32,13 @@ function getNodeIconColor(node: NodeLike): string {
 	if (node.type === "variable") {
 		switch (node.content.type) {
 			case "vectorStore":
-				return "text-bg";
+				return "text-background";
 			case "github":
-				return "text-bg";
+				return "text-background";
 			case "text":
 			case "file":
 			case "webPage":
-				return "text-bg";
+				return "text-background";
 			default:
 				return "text-inverse";
 		}
@@ -129,7 +129,7 @@ export function PropertiesPanelHeader({
 				</div>
 				<div className="flex-1 min-w-0">
 					<EditableText
-						className="block w-full bg-inverse/10 rounded-[8px]"
+						className="block w-full bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] rounded-[8px]"
 						inputClassName="px-[8px] py-[2px]"
 						buttonClassName="px-[8px] py-[2px]"
 						onValueChange={(value) => {

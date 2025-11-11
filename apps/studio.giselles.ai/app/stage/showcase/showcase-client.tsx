@@ -229,7 +229,7 @@ export function ShowcaseClient({
 	);
 
 	return (
-		<div className="flex-1 px-[24px] bg-bg pt-16 md:pt-0 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 h-full flex flex-col">
+		<div className="flex-1 px-[24px] bg-background pt-16 md:pt-0 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 h-full flex flex-col">
 			<div className="py-6 h-full flex flex-col">
 				<div className="flex items-center justify-between px-1 mb-6">
 					<div>
@@ -287,7 +287,7 @@ export function ShowcaseClient({
                     ${
 											isActive
 												? "text-primary-100 [text-shadow:0px_0px_20px_#0087f6] after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[2px] after:bg-primary-100"
-												: "text-[var(--color-tabs-inactive-text)] hover:text-white-100 hover:after:content-[''] hover:after:absolute hover:after:left-0 hover:after:right-0 hover:after:bottom-0 hover:after:h-[2px] hover:after:bg-primary-100"
+												: "text-tabs-inactive-text hover:text-white-100 hover:after:content-[''] hover:after:absolute hover:after:left-0 hover:after:right-0 hover:after:bottom-0 hover:after:h-[2px] hover:after:bg-primary-100"
 										}`}
 									>
 										{tab}
@@ -339,7 +339,7 @@ export function ShowcaseClient({
 									{sortedApps.map((app) => (
 										<div
 											key={app.id}
-											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-[var(--color-border)] cursor-pointer"
+											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-border cursor-pointer"
 										>
 											<Link
 												href={`/stage/showcase/${app.id}`}
@@ -471,7 +471,7 @@ export function ShowcaseClient({
 															})
 														}
 														placeholder="Playlist title"
-														className="bg-black-700/50 border-black-600 text-white placeholder:text-text-muted"
+														className="bg-black-700/50 border-black-600 text-white placeholder:text-link-muted"
 													/>
 												</div>
 												<div className="grid gap-2">
@@ -491,7 +491,7 @@ export function ShowcaseClient({
 															})
 														}
 														placeholder="Playlist description"
-														className="bg-black-700/50 border-black-600 text-white placeholder:text-text-muted"
+														className="bg-black-700/50 border-black-600 text-white placeholder:text-link-muted"
 													/>
 												</div>
 											</div>
@@ -621,7 +621,7 @@ export function ShowcaseClient({
 									{sortedHistory.map((item) => (
 										<div
 											key={item.id}
-											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-[var(--color-border)] cursor-pointer"
+											className="group flex items-center justify-between px-2 py-3 first:border-t-0 border-t-[0.5px] border-border cursor-pointer"
 										>
 											<div className="flex items-center gap-3">
 												<div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 transition-all group-hover:bg-primary-100/20">

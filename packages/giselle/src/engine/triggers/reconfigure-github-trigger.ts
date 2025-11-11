@@ -1,8 +1,8 @@
 import {
-	type FlowTrigger,
-	type FlowTriggerId,
-	type GitHubFlowTriggerEvent,
+	type GitHubEventData,
 	isTriggerNode,
+	type Trigger,
+	type TriggerId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
 import {
@@ -11,21 +11,21 @@ import {
 } from "../integrations/utils";
 import type { GiselleEngineContext } from "../types";
 import { getWorkspace, setWorkspace } from "../workspaces/utils";
-import { getFlowTrigger, setFlowTrigger } from "./utils";
+import { getTrigger, setTrigger } from "./utils";
 
 export async function reconfigureGitHubTrigger(args: {
 	context: GiselleEngineContext;
-	flowTriggerId: FlowTriggerId;
+	triggerId: TriggerId;
 	repositoryNodeId: string;
 	installationId: number;
-	event?: GitHubFlowTriggerEvent;
+	event?: GitHubEventData;
 }) {
-	const currentTrigger = await getFlowTrigger({
+	const currentTrigger = await getTrigger({
 		storage: args.context.storage,
-		flowTriggerId: args.flowTriggerId,
+		triggerId: args.triggerId,
 	});
 	if (currentTrigger === undefined) {
-		throw new Error(`Trigger not found: ${args.flowTriggerId}`);
+		throw new Error(`Trigger not found: ${args.triggerId}`);
 	}
 	if (currentTrigger.configuration.provider !== "github") {
 		throw new Error("Only GitHub triggers are supported for updates");
@@ -45,12 +45,12 @@ export async function reconfigureGitHubTrigger(args: {
 		await Promise.all([
 			removeGitHubRepositoryIntegrationIndex({
 				storage: args.context.storage,
-				flowTriggerId: args.flowTriggerId,
+				triggerId: args.triggerId,
 				repositoryNodeId: oldRepositoryNodeId,
 			}),
 			addGitHubRepositoryIntegrationIndex({
 				storage: args.context.storage,
-				flowTriggerId: args.flowTriggerId,
+				triggerId: args.triggerId,
 				repositoryNodeId: newRepositoryNodeId,
 			}),
 		]);
@@ -64,10 +64,10 @@ export async function reconfigureGitHubTrigger(args: {
 			installationId: args.installationId,
 			event: requestedEvent,
 		},
-	} satisfies FlowTrigger;
-	await setFlowTrigger({
+	} satisfies Trigger;
+	await setTrigger({
 		storage: args.context.storage,
-		flowTrigger: updatedTrigger,
+		trigger: updatedTrigger,
 	});
 
 	const workspace = await getWorkspace({
@@ -86,7 +86,7 @@ export async function reconfigureGitHubTrigger(args: {
 								...node.content,
 								state: {
 									status: "configured",
-									flowTriggerId: args.flowTriggerId,
+									flowTriggerId: args.triggerId,
 								},
 							},
 						} satisfies TriggerNode)
@@ -95,5 +95,5 @@ export async function reconfigureGitHubTrigger(args: {
 		},
 		storage: args.context.storage,
 	});
-	return args.flowTriggerId;
+	return args.triggerId;
 }

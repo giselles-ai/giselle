@@ -9,7 +9,6 @@ import { giselleEngine } from "@/app/giselle-engine";
 import { db, flowTriggers } from "@/db";
 import {
 	aiGatewayFlag,
-	docVectorStoreFlag,
 	githubIssuesVectorStoreFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
@@ -75,10 +74,9 @@ export default async function Layout({
 	const aiGateway = await aiGatewayFlag();
 	const googleUrlContext = await googleUrlContextFlag();
 	const data = await giselleEngine.getWorkspace(workspaceId);
-	const documentVectorStore = await docVectorStoreFlag();
-	const documentVectorStores = documentVectorStore
-		? await getDocumentVectorStores(workspaceTeam.dbId)
-		: [];
+	const documentVectorStores = await getDocumentVectorStores(
+		workspaceTeam.dbId,
+	);
 	const githubIssuesVectorStore = await githubIssuesVectorStoreFlag();
 
 	// return children
@@ -126,29 +124,28 @@ export default async function Layout({
 				stage,
 				aiGateway,
 				googleUrlContext,
-				documentVectorStore,
 				githubIssuesVectorStore,
 			}}
-			flowTrigger={{
+			trigger={{
 				callbacks: {
-					flowTriggerUpdate: async (flowTrigger) => {
+					triggerUpdate: async (trigger) => {
 						"use server";
 						await db
 							.insert(flowTriggers)
 							.values({
 								teamDbId: workspaceTeam.dbId,
-								sdkFlowTriggerId: flowTrigger.id,
-								sdkWorkspaceId: flowTrigger.workspaceId,
+								sdkFlowTriggerId: trigger.id,
+								sdkWorkspaceId: trigger.workspaceId,
 								staged:
-									flowTrigger.configuration.provider === "manual" &&
-									flowTrigger.configuration.staged,
+									trigger.configuration.provider === "manual" &&
+									trigger.configuration.staged,
 							})
 							.onConflictDoUpdate({
 								target: flowTriggers.dbId,
 								set: {
 									staged:
-										flowTrigger.configuration.provider === "manual" &&
-										flowTrigger.configuration.staged,
+										trigger.configuration.provider === "manual" &&
+										trigger.configuration.staged,
 								},
 							});
 					},

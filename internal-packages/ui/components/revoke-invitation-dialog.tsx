@@ -100,7 +100,7 @@ export function RevokeInvitationDialog({
 						Cancel
 					</Button>
 					<Button
-						variant={variant === "destructive" ? "destructive" : "primary"}
+						variant="primary"
 						onClick={handleConfirm}
 						disabled={isLoading}
 					>

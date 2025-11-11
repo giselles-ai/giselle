@@ -1,4 +1,4 @@
-import type { ActionProvider } from "@giselles-ai/flow";
+import { type ActionProvider, getEntry } from "@giselles-ai/action-registry";
 import {
 	isActionNode,
 	isImageGenerationNode,
@@ -8,26 +8,22 @@ import {
 	isVectorStoreNode,
 	type NodeLike,
 } from "@giselles-ai/protocol";
-import type { TriggerProvider } from "../engine";
+import {
+	getEntry as getTriggerEntry,
+	type TriggerProvider,
+} from "@giselles-ai/trigger-registry";
 import type { VectorStoreSourceProvider } from "../engine/vector-store";
 
-export const triggerProviderLabel: Record<TriggerProvider, string> = {
-	github: "GitHub Trigger",
-	manual: "Manual Trigger",
-	"app-entry": "App Entry",
-};
-
 export function triggerNodeDefaultName(triggerProvider: TriggerProvider) {
-	return triggerProviderLabel[triggerProvider];
+	return getTriggerEntry(triggerProvider).label;
 }
 
-export const actionProviderLabel: Record<ActionProvider, string> = {
-	github: "GitHub",
-	"web-search": "Web Search",
-};
-
 export function actionNodeDefaultName(actionProvider: ActionProvider) {
-	return `${actionProviderLabel[actionProvider]} Action`;
+	const entry = getEntry(actionProvider);
+	if (entry === undefined) {
+		return "Unknown action node";
+	}
+	return entry?.label;
 }
 
 export const vectorStoreProviderLabel: Record<

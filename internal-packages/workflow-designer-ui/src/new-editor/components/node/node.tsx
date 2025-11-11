@@ -313,7 +313,7 @@ function CanvasNode({
 								"w-[16px] h-[16px]",
 								v.isFillIcon && "fill-current",
 								v.isStrokeIcon && "stroke-current fill-none",
-								v.isDarkIconText && "text-bg",
+								v.isDarkIconText && "text-background",
 								v.isLightIconText && "text-inverse",
 							)}
 						/>

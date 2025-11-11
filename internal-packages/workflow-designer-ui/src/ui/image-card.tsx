@@ -13,7 +13,7 @@ export function ImageCard({
 	onZoom: () => void;
 }) {
 	return (
-		<div className="relative group cursor-pointer flex-shrink-0 bg-inverse/10 rounded-[8px] overflow-hidden h-full">
+		<div className="relative group cursor-pointer flex-shrink-0 bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] rounded-[8px] overflow-hidden h-full">
 			<Image
 				src={src}
 				alt="generated file"

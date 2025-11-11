@@ -1,5 +1,5 @@
-import { githubTriggers } from "@giselles-ai/flow";
 import { isTriggerNode } from "@giselles-ai/protocol";
+import { githubEvents } from "@giselles-ai/trigger-registry";
 import {
 	type CompletedGeneration,
 	GenerationContext,
@@ -10,7 +10,7 @@ import {
 import { internalSetGeneration } from "../generations/internal/set-generation";
 import { resolveTrigger as resolveGitHubTrigger } from "../github/trigger-utils";
 import type { GiselleEngineContext } from "../types";
-import { getFlowTrigger } from "./utils";
+import { getTrigger } from "./utils";
 
 export async function resolveTrigger(args: {
 	context: GiselleEngineContext;
@@ -23,8 +23,8 @@ export async function resolveTrigger(args: {
 	if (operationNode.content.state.status !== "configured") {
 		throw new Error("Trigger node is not configured");
 	}
-	const triggerData = await getFlowTrigger({
-		flowTriggerId: operationNode.content.state.flowTriggerId,
+	const triggerData = await getTrigger({
+		triggerId: operationNode.content.state.flowTriggerId,
 		storage: args.context.storage,
 	});
 	if (triggerData === undefined) {
@@ -59,8 +59,7 @@ export async function resolveTrigger(args: {
 						for (const output of operationNode.outputs) {
 							const resolveOutput = await resolveGitHubTrigger({
 								output,
-								githubTrigger:
-									githubTriggers[triggerData.configuration.event.id],
+								githubEvent: githubEvents[triggerData.configuration.event.id],
 								trigger: triggerData,
 								webhookEvent: githubWebhookEventInput.webhookEvent,
 								appId: args.context.integrationConfigs.github.authV2.appId,

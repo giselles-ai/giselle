@@ -107,7 +107,7 @@ export function DocumentVectorStoreCreateDialog({
 			<DialogTrigger asChild>
 				<GlassButton className="whitespace-nowrap">
 					<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
-						<Plus className="size-3 text-bg" />
+						<Plus className="size-3 text-link-muted" />
 					</span>
 					New Vector Store
 				</GlassButton>

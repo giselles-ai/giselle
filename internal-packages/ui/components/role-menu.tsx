@@ -38,7 +38,7 @@ export function RoleMenu({
 					className={clsx(
 						"w-full flex justify-between items-center rounded-[8px] h-8 px-[12px] text-left text-[14px]",
 						"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
-						"bg-inverse/5 transition-colors hover:bg-inverse/10",
+						"bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] transition-colors hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]",
 						widthClassName,
 						triggerClassName,
 					)}
@@ -74,7 +74,7 @@ export function RoleMenu({
 
 					{canRemove && (
 						<>
-							<div className="my-2 h-px bg-inverse/10" />
+							<div className="my-2 h-px bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]" />
 							<button
 								type="button"
 								onClick={onRemove}

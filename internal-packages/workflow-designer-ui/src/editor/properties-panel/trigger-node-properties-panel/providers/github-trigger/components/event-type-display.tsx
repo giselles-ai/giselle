@@ -1,10 +1,12 @@
-import type { GitHubTriggerEventId } from "@giselles-ai/flow";
-import { githubTriggers } from "@giselles-ai/flow";
+import {
+	type GitHubEventId,
+	githubEvents,
+} from "@giselles-ai/trigger-registry";
 import clsx from "clsx/lite";
 import { getTriggerIcon } from "./icons";
 
 interface EventTypeDisplayProps {
-	eventId: GitHubTriggerEventId;
+	eventId: GitHubEventId;
 	className?: string;
 	showDescription?: boolean;
 }
@@ -14,23 +16,19 @@ export function EventTypeDisplay({
 	className,
 	showDescription = true,
 }: EventTypeDisplayProps) {
-	const trigger = githubTriggers[eventId];
-
-	if (!trigger) {
-		return null;
-	}
+	const triggerRegistry = githubEvents[eventId];
 
 	return (
 		<div className={clsx("flex flex-col gap-1", className)}>
 			<div className="flex items-center gap-2">
 				{getTriggerIcon(eventId)}
 				<span className="text-sm font-medium text-inverse">
-					{trigger.event.label}
+					{triggerRegistry.label}
 				</span>
 			</div>
 			{showDescription && (
 				<p className="text-xs text-gray-400 ml-4">
-					Triggers when a {trigger.event.label.toLowerCase()} occurs in the
+					Triggers when a {triggerRegistry.label.toLowerCase()} occurs in the
 					repository
 				</p>
 			)}

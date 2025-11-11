@@ -36,14 +36,14 @@ export const initializeAccount = async (
 			userDbId: user.dbId,
 			supabaseUserId,
 		});
+		const internalAccount = isEmailFromRoute06(supabaseUserEmail ?? "");
 		const [team] = await tx
 			.insert(teams)
 			.values({
 				id: createTeamId(),
 				name: "My Project",
-				type: isEmailFromRoute06(supabaseUserEmail ?? "")
-					? "internal"
-					: "customer",
+				type: internalAccount ? "internal" : "customer",
+				plan: internalAccount ? "internal" : "free",
 			})
 			.returning({
 				id: teams.dbId,

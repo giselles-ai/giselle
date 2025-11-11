@@ -10,7 +10,6 @@ import {
 } from "@giselles-ai/protocol";
 import { DatabaseZapIcon, ZapIcon } from "lucide-react";
 import type { SVGProps } from "react";
-import { SearchIcon } from "..";
 import { AnthropicIcon } from "../anthropic";
 import { Flux1Icon } from "../flux1";
 import { GitHubIcon } from "../github";
@@ -162,10 +161,8 @@ export function NodeIcon({
 					switch (node.content.command.provider) {
 						case "github":
 							return <GitHubIcon {...props} data-content-type-icon />;
-						case "web-search":
-							return <SearchIcon {...props} data-content-type-icon />;
 						default: {
-							const _exhaustiveCheck: never = node.content.command;
+							const _exhaustiveCheck: never = node.content.command.provider;
 							throw new Error(
 								`Unhandled TriggerProviderType: ${_exhaustiveCheck}`,
 							);

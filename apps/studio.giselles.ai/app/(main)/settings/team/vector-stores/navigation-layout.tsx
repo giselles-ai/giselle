@@ -4,12 +4,12 @@ import { VectorStoresSidebarMenu } from "./sidebar-menu";
 
 type VectorStoresNavigationLayoutProps = {
 	children: ReactNode;
-	isEnabled: boolean;
+	isEnabled?: boolean;
 };
 
 export function VectorStoresNavigationLayout({
 	children,
-	isEnabled,
+	isEnabled = true,
 }: VectorStoresNavigationLayoutProps) {
 	if (!isEnabled) {
 		return <>{children}</>;

@@ -344,14 +344,14 @@ export function PromptPanel({
 	);
 
 	const advancedOptions = (
-		<div className="col-span-2 rounded-[8px] bg-inverse/5 px-[8px] py-[8px] mt-[8px]">
+		<div className="col-span-2 rounded-[8px] bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] px-[8px] py-[8px] mt-[8px]">
 			<button
 				type="button"
 				onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
 				className="flex items-center gap-[8px] w-full text-left text-inverse hover:text-primary-900 transition-colors"
 			>
 				<ChevronRightIcon
-					className={`size-[14px] text-secondary transition-transform ${isAdvancedOpen ? "rotate-90" : ""}`}
+					className={`size-[14px] text-link-muted transition-transform ${isAdvancedOpen ? "rotate-90" : ""}`}
 				/>
 				<SettingLabel inline className="mb-0">
 					Advanced options

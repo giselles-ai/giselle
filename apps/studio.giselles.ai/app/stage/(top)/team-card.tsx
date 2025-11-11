@@ -8,7 +8,7 @@ interface TeamCardProps {
 export function TeamCard({ team }: TeamCardProps) {
 	return (
 		<div
-			className="bg-[var(--color-stage-form-background)] border border-border p-3"
+			className="bg-stage-form-background border border-border p-3"
 			style={{
 				width: "90px",
 				height: "120px",

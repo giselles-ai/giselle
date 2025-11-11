@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "./styles/tokens.css";
 @import "./styles/semantic.css";
-@import "./styles/aliases.css";
 
 @theme {
 	/* v2 theme */
@@ -19,6 +18,8 @@
 	/* surface */
 	--color-elevated-surface-background: #2f343e;
 	--color-surface-background: #2f343e;
+	/* v4 utility alias */
+	--color-surface: var(--color-surface-background);
 	--color-background: #00020b;
 
 	/* element */
@@ -35,10 +36,13 @@
 
 	/* text */
 	--color-text: #f7f9fd;
+	--color-text-inverse: #ffffff;
 	--color-text-muted: #a9afbc;
 	--color-text-placeholder: #878a98;
 	--color-text-disabled: #878a98;
 	--color-text-accent: #74ade8;
+	/* secondary / link-muted */
+	--color-link-muted: #505d7b;
 	/* Link accent (Vector Store link blue) */
 	--color-link-accent: #1663f3;
 	--color-link-accent-hover: #0f4cd1;
@@ -66,6 +70,8 @@
 	/* interactive */
 	--color-icon-hover: #6b8ff0;
 	--color-destructive-hover-bg: rgba(255, 61, 113, 0.1);
+	/* focused outline color */
+	--color-focused: var(--color-info-500);
 
 	/* panel */
 	--color-panel-background: #2f343e;
@@ -89,6 +95,13 @@
 	--color-auth-logo-watermark: hsl(207, 19%, 77%);
 	--color-auth-text-dark: hsl(0, 0%, 0%);
 	--color-auth-bg-dark: hsl(0, 0%, 0%);
+	/* v4 utility aliases for auth (used only on auth pages) */
+	--color-auth: hsl(234, 91%, 5%);
+	--color-auth-ambient: hsl(218, 58%, 21%);
+	--color-auth-watermark: hsl(207, 19%, 77%);
+	--color-auth-dark: hsl(0, 0%, 0%);
+	/* inverse for inputs like bg-inverse/10 */
+	--color-inverse: #ffffff;
 	--shadow-stage-form:
 		0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1),
 		0 0 20px rgba(59, 130, 246, 0.15), 0 0 40px rgba(59, 130, 246, 0.1),
@@ -132,6 +145,15 @@
 	--color-success: #39ff7f;
 	--color-unreachable: #a9afbc;
 	--color-warning: #ffe551;
+
+	/* borders */
+	/* unify muted to main border unless overridden */
+	--color-border-muted: var(--color-border);
+
+	/* chat bubbles */
+	--color-chat-bubble-accent-bg: rgba(107, 143, 240, 0.2);
+	--color-chat-bubble-accent-border: rgba(107, 143, 240, 0.8);
+	--color-chat-bubble-user-bg: #4a6fd8;
 
 	/* RGB values for transparency */
 	--color-error-rgb: 255, 61, 113;
@@ -204,6 +226,10 @@
 
 @layer base {
 	/* Normalize autofill colors across environments (dark theme) */
+	body {
+		background-color: var(--color-background);
+		color: var(--color-text);
+	}
 	input:-webkit-autofill,
 	input:-webkit-autofill:hover,
 	input:-webkit-autofill:focus {

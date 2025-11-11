@@ -9,7 +9,7 @@ export function SettingLabel({
 	widthClassName,
 	className,
 	htmlFor,
-	colorClassName = "text-secondary",
+	colorClassName = "text-link-muted",
 }: {
 	children: React.ReactNode;
 	kind?: "section" | "field";

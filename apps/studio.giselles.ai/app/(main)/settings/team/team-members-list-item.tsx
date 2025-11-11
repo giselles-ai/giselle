@@ -127,7 +127,7 @@ export function TeamMemberListItem({
 	};
 
 	return (
-		<div className="group px-2 py-3 border-t-[0.5px] border-border-muted first:border-t-0 font-sans">
+		<div className="group px-2 py-3 border-t-[0.5px] border-border first:border-t-0 font-sans">
 			<div className="flex items-center justify-between gap-2">
 				<div className="flex gap-x-2 items-center">
 					<div className="flex-shrink-0">

@@ -6,16 +6,13 @@ import {
 	FeatureFlagContext,
 	type FeatureFlagContextValue,
 } from "../feature-flags";
-import {
-	FlowTriggerContext,
-	type FlowTriggerContextValue,
-} from "../flow-trigger";
 import { ZustandBridgeGenerationProvider } from "../generations";
 import {
 	IntegrationProvider,
 	type IntegrationProviderProps,
 } from "../integrations";
 import { TelemetryProvider } from "../telemetry";
+import { TriggerContext, type TriggerContextValue } from "../trigger";
 import { UsageLimitsProvider } from "../usage-limits";
 import {
 	type VectorStoreContextValue,
@@ -29,7 +26,7 @@ export function WorkspaceProvider({
 	telemetry,
 	featureFlag,
 	vectorStore,
-	flowTrigger,
+	trigger,
 	generationTimeout,
 }: {
 	children: ReactNode;
@@ -38,7 +35,7 @@ export function WorkspaceProvider({
 	telemetry?: TelemetrySettings;
 	featureFlag?: FeatureFlagContextValue;
 	vectorStore?: VectorStoreContextValue;
-	flowTrigger?: FlowTriggerContextValue;
+	trigger?: TriggerContextValue;
 	generationTimeout?: number;
 }) {
 	return (
@@ -49,12 +46,11 @@ export function WorkspaceProvider({
 				stage: featureFlag?.stage ?? false,
 				aiGateway: featureFlag?.aiGateway ?? false,
 				googleUrlContext: featureFlag?.googleUrlContext ?? false,
-				documentVectorStore: featureFlag?.documentVectorStore ?? false,
 				githubIssuesVectorStore: featureFlag?.githubIssuesVectorStore ?? false,
 			}}
 		>
 			<TelemetryProvider settings={telemetry}>
-				<FlowTriggerContext value={flowTrigger ?? {}}>
+				<TriggerContext value={trigger ?? {}}>
 					<UsageLimitsProvider limits={usageLimits}>
 						<IntegrationProvider {...integration}>
 							<VectorStoreProvider value={vectorStore}>
@@ -64,7 +60,7 @@ export function WorkspaceProvider({
 							</VectorStoreProvider>
 						</IntegrationProvider>
 					</UsageLimitsProvider>
-				</FlowTriggerContext>
+				</TriggerContext>
 			</TelemetryProvider>
 		</FeatureFlagContext>
 	);

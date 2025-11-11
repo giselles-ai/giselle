@@ -6,7 +6,6 @@ export interface FeatureFlagContextValue {
 	stage: boolean;
 	aiGateway: boolean;
 	googleUrlContext: boolean;
-	documentVectorStore: boolean;
 	githubIssuesVectorStore: boolean;
 }
 export const FeatureFlagContext = createContext<

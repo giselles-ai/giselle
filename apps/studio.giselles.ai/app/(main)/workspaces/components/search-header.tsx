@@ -119,7 +119,7 @@ export function SearchHeader({
 							onClick={() => onViewModeChange?.("grid")}
 							className={`p-3 flex items-center justify-center transition-colors ${
 								viewMode === "grid"
-									? "bg-inverse/10 text-inverse"
+									? "bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse"
 									: "bg-transparent text-text/60 hover:bg-surface/5 hover:text-inverse"
 							}`}
 							aria-label="Grid view"
@@ -131,7 +131,7 @@ export function SearchHeader({
 							onClick={() => onViewModeChange?.("list")}
 							className={`p-3 flex items-center justify-center transition-colors ${
 								viewMode === "list"
-									? "bg-inverse/10 text-inverse"
+									? "bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse"
 									: "bg-transparent text-text/60 hover:bg-surface/5 hover:text-inverse"
 							}`}
 							aria-label="List view"

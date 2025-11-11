@@ -85,7 +85,10 @@ if (
 	throw new Error("missing github credentials");
 }
 
-type TeamForPlan = Pick<CurrentTeam, "id" | "activeSubscriptionId" | "type">;
+type TeamForPlan = Pick<
+	CurrentTeam,
+	"id" | "activeSubscriptionId" | "type" | "plan"
+>;
 
 async function traceGenerationForTeam(args: {
 	generation: CompletedGeneration | FailedGeneration;
@@ -111,6 +114,7 @@ async function traceGenerationForTeam(args: {
 			generationId: args.generation.id,
 			isProPlan: isPro,
 			teamType: args.team.type,
+			teamPlan: args.team.plan,
 			userId: args.userId,
 			subscriptionId: args.team.activeSubscriptionId ?? "",
 			providerMetadata: args.providerMetadata,
@@ -139,6 +143,7 @@ async function traceEmbeddingForTeam(args: {
 		teamId: args.team.id,
 		isProPlan: isPro,
 		teamType: args.team.type,
+		teamPlan: args.team.plan,
 		userId: args.userId,
 		subscriptionId: args.team.activeSubscriptionId ?? "",
 		resourceProvider: queryContext.provider,
@@ -202,7 +207,7 @@ const generateContentProcessor =
 export const giselleEngine = NextGiselleEngine({
 	basePath: "/api/giselle",
 	storage,
-	llmProviders: ["openai", "anthropic", "google", "fal"],
+	llmProviders: ["openai", "anthropic", "google"],
 	onConsumeAgentTime,
 	telemetry: {
 		isEnabled: true,
@@ -252,6 +257,7 @@ export const giselleEngine = NextGiselleEngine({
 						id: parsedMetadata.team.id,
 						type: parsedMetadata.team.type,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						plan: parsedMetadata.team.plan,
 					},
 				});
 				return;
@@ -294,6 +300,7 @@ export const giselleEngine = NextGiselleEngine({
 						id: parsedMetadata.team.id,
 						type: parsedMetadata.team.type,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						plan: parsedMetadata.team.plan,
 					},
 				});
 				return;
@@ -327,6 +334,7 @@ export const giselleEngine = NextGiselleEngine({
 							id: parsedMetadata.team.id,
 							type: parsedMetadata.team.type,
 							activeSubscriptionId: parsedMetadata.team.subscriptionId,
+							plan: parsedMetadata.team.plan,
 						},
 					});
 					return;
@@ -427,6 +435,7 @@ if (generateContentProcessor === "trigger.dev") {
 						id: team.id,
 						type: team.type,
 						subscriptionId: team.activeSubscriptionId,
+						plan: team.plan,
 					},
 				});
 				break;
@@ -449,6 +458,7 @@ if (generateContentProcessor === "trigger.dev") {
 								id: currentTeam.id,
 								type: currentTeam.type,
 								subscriptionId: currentTeam.activeSubscriptionId,
+								plan: currentTeam.plan,
 							},
 						});
 						break;
@@ -490,6 +500,7 @@ if (generateContentProcessor === "trigger.dev") {
 						id: team.id,
 						type: team.type,
 						subscriptionId: team.activeSubscriptionId,
+						plan: team.plan,
 					},
 				});
 				break;
@@ -509,6 +520,7 @@ if (generateContentProcessor === "trigger.dev") {
 						id: currentTeam.id,
 						type: currentTeam.type,
 						subscriptionId: currentTeam.activeSubscriptionId,
+						plan: currentTeam.plan,
 					},
 				});
 				break;

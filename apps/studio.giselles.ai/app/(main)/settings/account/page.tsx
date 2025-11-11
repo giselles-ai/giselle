@@ -1,5 +1,4 @@
 import { DocsLink } from "@giselle-internal/ui/docs-link";
-import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { Plus } from "lucide-react";
 import { GlassButton } from "@/components/ui/glass-button";
 import { ToastProvider } from "@/packages/contexts/toast";
@@ -26,10 +25,7 @@ export default async function AccountSettingPage() {
 	return (
 		<ToastProvider>
 			<div className="flex flex-col gap-[12px]">
-				<div className="flex items-center justify-between">
-					<PageHeading as="h1" glow>
-						Overview
-					</PageHeading>
+				<div className="flex items-center justify-end">
 					<DocsLink
 						href="https://docs.giselles.ai/en/guides/settings/account/overview"
 						target="_blank"
@@ -45,7 +41,7 @@ export default async function AccountSettingPage() {
 								<h4 className="text-text text-[18px] font-medium font-sans">
 									Teams
 								</h4>
-								<p className="text-secondary text-[12px] font-geist">
+								<p className="text-link-muted text-[12px] font-geist">
 									The teams that are associated with your Giselle account.
 								</p>
 							</div>
@@ -53,7 +49,7 @@ export default async function AccountSettingPage() {
 								<TeamCreation>
 									<GlassButton type="button">
 										<span className="grid size-4 place-items-center rounded-full bg-primary-200 opacity-50">
-											<Plus className="size-3 text-bg" />
+											<Plus className="size-3 text-background" />
 										</span>
 										<span className="text-[14px] font-medium leading-[20px]">
 											Create New Team

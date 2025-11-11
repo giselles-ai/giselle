@@ -2,7 +2,7 @@
 
 import { AppIcon } from "@giselle-internal/ui/app-icon";
 import { Select } from "@giselle-internal/ui/select";
-import type { FlowTriggerId } from "@giselles-ai/protocol";
+import type { TriggerId } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { X } from "lucide-react";
 import { useActionState, useCallback, useMemo, useState } from "react";
@@ -34,7 +34,7 @@ function assertNonEmpty<T>(
 }
 
 /** FlowTrigger is essentially an app (we'll change other parts going forward) */
-type AppId = FlowTriggerId;
+type AppId = TriggerId;
 type App = FlowTriggerUIItem;
 
 const displayCategories = {
@@ -191,7 +191,7 @@ function Form({
 
 			await performStageAction({
 				teamId,
-				flowTrigger: app.sdkData,
+				trigger: app.sdkData,
 				parameterItems: toParameterItems(inputs, values),
 			});
 			return null;

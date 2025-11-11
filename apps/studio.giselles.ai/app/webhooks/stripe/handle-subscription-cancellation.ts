@@ -1,7 +1,7 @@
 import { and, eq, ne } from "drizzle-orm";
 import type Stripe from "stripe";
 import { db } from "@/db/db";
-import { subscriptions, teamMemberships } from "@/db/schema";
+import { subscriptions, teamMemberships, teams } from "@/db/schema";
 
 export async function handleSubscriptionCancellation(
 	subscription: Stripe.Subscription,
@@ -49,4 +49,9 @@ export async function handleSubscriptionCancellation(
 				ne(teamMemberships.id, earliestAdmin.id),
 			),
 		);
+
+	await db
+		.update(teams)
+		.set({ plan: "free" })
+		.where(and(eq(teams.dbId, sub.teamDbId), ne(teams.plan, "internal")));
 }

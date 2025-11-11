@@ -2,11 +2,6 @@ import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
-import {
-	type GitHubTriggerEventId,
-	getGitHubDisplayLabel,
-	githubTriggers,
-} from "@giselles-ai/flow";
 import type { GitHubIntegrationInstallation } from "@giselles-ai/giselle";
 import {
 	useGiselleEngine,
@@ -14,11 +9,16 @@ import {
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
 import {
-	type FlowTriggerId,
 	type Output,
 	OutputId,
+	type TriggerId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
+import {
+	type GitHubEventId,
+	githubEvents,
+	githubEventToInputFields,
+} from "@giselles-ai/trigger-registry";
 import clsx from "clsx/lite";
 import { ChevronLeft, InfoIcon } from "lucide-react";
 import type { ReactNode } from "react";
@@ -175,7 +175,7 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	if (node.content.state.status === "configured") {
 		return (
 			<GitHubTriggerConfiguredView
-				flowTriggerId={node.content.state.flowTriggerId}
+				triggerId={node.content.state.flowTriggerId}
 				node={node}
 				onStartReconfigure={(mode) => {
 					reconfigureModeRef.current = mode;
@@ -191,7 +191,7 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 				installations={value.github.installations}
 				node={node}
 				installationUrl={value.github.installationUrl}
-				flowTriggerId={node.content.state.flowTriggerId}
+				triggerId={node.content.state.flowTriggerId}
 				reconfigureMode={reconfigureModeRef.current}
 			/>
 		);
@@ -233,12 +233,12 @@ interface SelectEventStep {
 
 interface SelectRepositoryStep {
 	state: "select-repository";
-	eventId: GitHubTriggerEventId;
+	eventId: GitHubEventId;
 }
 
 export interface InputCallsignStep {
 	state: "input-callsign";
-	eventId: GitHubTriggerEventId;
+	eventId: GitHubEventId;
 	owner: string;
 	repo: string;
 	repoNodeId: string;
@@ -248,7 +248,7 @@ export interface InputCallsignStep {
 
 export interface InputLabelsStep {
 	state: "input-labels";
-	eventId: GitHubTriggerEventId;
+	eventId: GitHubEventId;
 	owner: string;
 	repo: string;
 	repoNodeId: string;
@@ -258,7 +258,7 @@ export interface InputLabelsStep {
 
 interface ConfirmRepositoryStep {
 	state: "confirm-repository";
-	eventId: GitHubTriggerEventId;
+	eventId: GitHubEventId;
 	installationId: number;
 	owner: string;
 	repo: string;
@@ -275,7 +275,7 @@ type GitHubTriggerSetupStep =
 /**
  * Determines if a trigger type requires a callsign
  */
-function isTriggerRequiringCallsign(eventId: GitHubTriggerEventId): boolean {
+function isTriggerRequiringCallsign(eventId: GitHubEventId): boolean {
 	return [
 		"github.issue_comment.created",
 		"github.pull_request_comment.created",
@@ -287,7 +287,7 @@ function isTriggerRequiringCallsign(eventId: GitHubTriggerEventId): boolean {
 /**
  * Determines if a trigger type requires labels
  */
-function isTriggerRequiringLabels(eventId: GitHubTriggerEventId) {
+function isTriggerRequiringLabels(eventId: GitHubEventId) {
 	return (
 		eventId === "github.issue.labeled" ||
 		eventId === "github.pull_request.labeled"
@@ -299,13 +299,13 @@ export function Installed({
 	node,
 	installationUrl,
 	reconfigStep,
-	flowTriggerId,
+	triggerId,
 }: {
 	installations: GitHubIntegrationInstallation[];
 	node: TriggerNode;
 	installationUrl: string;
 	reconfigStep?: SelectRepositoryStep | InputCallsignStep | InputLabelsStep;
-	flowTriggerId?: FlowTriggerId;
+	triggerId?: TriggerId;
 }) {
 	const isReconfiguring = node.content.state.status === "reconfiguring";
 	const [step, setStep] = useState<GitHubTriggerSetupStep>(
@@ -334,7 +334,7 @@ export function Installed({
 		});
 	const client = useGiselleEngine();
 	const [isPending, startTransition] = useTransition();
-	const [eventId, setEventId] = useState<GitHubTriggerEventId>(
+	const [eventId, setEventId] = useState<GitHubEventId>(
 		reconfigStep?.eventId ?? "github.issue.created",
 	);
 	const [callsignError, setCallsignError] = useState<string | null>(null);
@@ -359,10 +359,10 @@ export function Installed({
 				const event = createTriggerEvent({ eventId, callsign });
 
 				startTransition(async () => {
-					if (isReconfiguring && flowTriggerId !== undefined) {
+					if (isReconfiguring && triggerId !== undefined) {
 						try {
-							const { triggerId } = await client.reconfigureGitHubTrigger({
-								flowTriggerId,
+							await client.reconfigureGitHubTrigger({
+								triggerId,
 								repositoryNodeId: step.repoNodeId,
 								installationId: step.installationId,
 								event,
@@ -395,7 +395,7 @@ export function Installed({
 			eventId,
 			isReconfiguring,
 			node,
-			flowTriggerId,
+			triggerId,
 			client,
 			updateNodeData,
 			configureTrigger,
@@ -430,10 +430,10 @@ export function Installed({
 			const event = createTriggerEvent({ eventId, labels: validLabels });
 
 			startTransition(async () => {
-				if (isReconfiguring && flowTriggerId !== undefined) {
+				if (isReconfiguring && triggerId !== undefined) {
 					try {
-						const { triggerId } = await client.reconfigureGitHubTrigger({
-							flowTriggerId,
+						await client.reconfigureGitHubTrigger({
+							triggerId,
 							repositoryNodeId: step.repoNodeId,
 							installationId: step.installationId,
 							event,
@@ -461,7 +461,7 @@ export function Installed({
 			eventId,
 			isReconfiguring,
 			node,
-			flowTriggerId,
+			triggerId,
 			client,
 			updateNodeData,
 			configureTrigger,
@@ -633,33 +633,35 @@ export function Installed({
 									} else {
 										startTransition(async () => {
 											try {
-												const trigger = githubTriggers[step.eventId];
-												const outputs: Output[] = [];
-
-												for (const key of trigger.event.payloads.keyof()
-													.options) {
-													outputs.push({
-														id: OutputId.generate(),
-														label: getGitHubDisplayLabel({
-															eventId: step.eventId,
-															accessor: key,
-														}),
-														accessor: key,
-													});
-												}
-
-												let triggerId: FlowTriggerId;
-												if (isReconfiguring && flowTriggerId !== undefined) {
-													const result = await client.reconfigureGitHubTrigger({
-														flowTriggerId,
+												if (isReconfiguring && triggerId !== undefined) {
+													await client.reconfigureGitHubTrigger({
+														triggerId,
 														repositoryNodeId: step.repoNodeId,
 														installationId: step.installationId,
 													});
-													triggerId = result.triggerId;
+
+													updateNodeData(node, {
+														...node,
+														content: {
+															...node.content,
+															state: {
+																status: "configured",
+																flowTriggerId: triggerId,
+															},
+														},
+													});
 												} else {
+													const githubEvent = githubEvents[step.eventId];
 													const event = createTriggerEvent({
 														eventId: step.eventId,
 													});
+													const outputs: Output[] = githubEventToInputFields(
+														githubEvent,
+													).map((inputField) => ({
+														id: OutputId.generate(),
+														label: inputField.label,
+														accessor: inputField.key,
+													}));
 													const result = await client.configureTrigger({
 														trigger: {
 															nodeId: node.id,
@@ -673,23 +675,18 @@ export function Installed({
 															},
 														},
 													});
-													triggerId = result.triggerId;
-												}
-
-												updateNodeData(node, {
-													content: {
-														...node.content,
-														state: {
-															status: "configured",
-															flowTriggerId: triggerId,
+													updateNodeData(node, {
+														content: {
+															...node.content,
+															state: {
+																status: "configured",
+																flowTriggerId: result.triggerId,
+															},
 														},
-													},
-													outputs:
-														node.outputs.length > 0 ? node.outputs : outputs,
-													name: isReconfiguring
-														? node.name
-														: `On ${trigger.event.label}`,
-												});
+														outputs,
+														name: `On ${githubEvent.label}`,
+													});
+												}
 											} catch (_error) {
 												// Error is handled by the UI state
 											}
@@ -780,7 +777,9 @@ export function Installed({
 										defaultValue={step.callsign}
 										className={clsx(
 											"w-full rounded-[8px] py-[8px] pl-[28px] pr-[12px] outline-none focus:outline-none border-none text-[14px] text-inverse",
-											callsignError ? "bg-error/10" : "bg-inverse/10",
+											callsignError
+												? "bg-error/10"
+												: "bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]",
 										)}
 										placeholder="code-review"
 									/>

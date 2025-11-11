@@ -1,6 +1,9 @@
 import type { EmbeddingProfileId } from "@giselles-ai/protocol";
 import { EMBEDDING_PROFILES } from "@giselles-ai/protocol";
-import type { EmbedderFunction } from "@giselles-ai/rag";
+import type {
+	EmbedderFunction,
+	EmbeddingCompleteCallback,
+} from "@giselles-ai/rag";
 import { createEmbedderFromProfile } from "@giselles-ai/rag";
 
 interface GenerateEmbeddingsOptions {
@@ -8,6 +11,7 @@ interface GenerateEmbeddingsOptions {
 	embeddingProfileId: EmbeddingProfileId;
 	maxBatchSize?: number;
 	signal?: AbortSignal;
+	embeddingComplete?: EmbeddingCompleteCallback;
 }
 
 interface EmbeddingResult {
@@ -48,6 +52,7 @@ export async function generateEmbeddings(
 		embeddingProfileId,
 		maxBatchSize = DEFAULT_MAX_BATCH_SIZE,
 		signal,
+		embeddingComplete,
 	} = options;
 
 	if (!Number.isInteger(maxBatchSize) || maxBatchSize <= 0) {
@@ -93,6 +98,7 @@ export async function generateEmbeddings(
 	const embedder: EmbedderFunction = createEmbedderFromProfile(
 		embeddingProfileId,
 		apiKey,
+		{ embeddingComplete },
 	);
 
 	// Generate embeddings in batches

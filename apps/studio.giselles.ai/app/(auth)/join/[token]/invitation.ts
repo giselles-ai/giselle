@@ -85,6 +85,7 @@ async function fetchTeamWithSubscription(
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
 			type: teams.type,
+			plan: teams.plan,
 			activeSubscriptionId: subscriptions.id,
 		})
 		.from(teams)
@@ -107,6 +108,7 @@ async function fetchTeamWithSubscription(
 		name: team.name,
 		avatarUrl: team.avatarUrl,
 		type: team.type,
+		plan: team.plan,
 		activeSubscriptionId: team.activeSubscriptionId,
 	};
 }

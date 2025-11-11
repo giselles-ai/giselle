@@ -1,8 +1,8 @@
 "use server";
 
 import type {
-	FlowTrigger,
 	ParameterItem,
+	Trigger,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { isTriggerNode } from "@giselles-ai/protocol";
@@ -13,7 +13,7 @@ import { fetchCurrentUser } from "@/services/accounts";
 import type { TeamId } from "@/services/teams";
 
 export async function fetchWorkspaceFlowTrigger(workspaceId: string): Promise<{
-	flowTrigger: FlowTrigger;
+	flowTrigger: Trigger;
 	workspaceName: string;
 } | null> {
 	try {
@@ -36,7 +36,7 @@ export async function fetchWorkspaceFlowTrigger(workspaceId: string): Promise<{
 		}
 
 		const flowTrigger = await giselleEngine.getTrigger({
-			flowTriggerId: triggerNode.content.state.flowTriggerId,
+			triggerId: triggerNode.content.state.flowTriggerId,
 		});
 
 		if (!flowTrigger) {
@@ -55,7 +55,7 @@ export async function fetchWorkspaceFlowTrigger(workspaceId: string): Promise<{
 
 export async function runWorkspaceApp(
 	teamId: string,
-	flowTrigger: FlowTrigger,
+	flowTrigger: Trigger,
 	parameterItems: ParameterItem[],
 ): Promise<void> {
 	try {

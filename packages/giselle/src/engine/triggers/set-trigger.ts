@@ -1,13 +1,13 @@
-import type { FlowTrigger } from "@giselles-ai/protocol";
+import type { Trigger } from "@giselles-ai/protocol";
 import type { GiselleEngineContext } from "../types";
-import { setFlowTrigger as setFlowTriggerInternal } from "./utils";
+import { setTrigger as setTriggerInternal } from "./utils";
 
 export async function setTrigger(args: {
 	context: GiselleEngineContext;
-	trigger: FlowTrigger;
+	trigger: Trigger;
 }) {
-	await setFlowTriggerInternal({
+	await setTriggerInternal({
 		storage: args.context.storage,
-		flowTrigger: args.trigger,
+		trigger: args.trigger,
 	});
 }

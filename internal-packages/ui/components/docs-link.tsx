@@ -44,7 +44,7 @@ interface DocsLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
 export function DocsLink({
 	className,
 	icon = true,
-	tone = "muted",
+	tone = "secondary",
 	children,
 	...props
 }: DocsLinkProps) {

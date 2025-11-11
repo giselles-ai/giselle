@@ -37,6 +37,7 @@ export function createIngestEmbeddingCallback(
 				teamId: team.id,
 				isProPlan: isPro,
 				teamType: team.type,
+				teamPlan: team.plan,
 				subscriptionId: team.activeSubscriptionId ?? "",
 				userId,
 				resourceProvider: resource.provider,

@@ -1,7 +1,7 @@
+import { Toggle } from "@giselle-internal/ui/toggle";
 import { useFeatureFlag, useUsageLimits } from "@giselles-ai/giselle/react";
 import { GoogleLanguageModelData } from "@giselles-ai/protocol";
 import { InfoIcon } from "lucide-react";
-import { Switch } from "../../../../ui/switch";
 import { TemperatureSlider, TopPSlider } from "./shared-model-controls";
 
 export function GoogleModelPanel({
@@ -64,8 +64,7 @@ export function GoogleModelPanel({
 					</div>
 				) : null}
 				<div className="mt-[16px] flex flex-col gap-[16px]">
-					<Switch
-						label="Search Grounding"
+					<Toggle
 						name="searchGrounding"
 						checked={isSearchGroundingEnabled}
 						onCheckedChange={(checked) => {
@@ -74,10 +73,13 @@ export function GoogleModelPanel({
 							}
 							onSearchGroundingConfigurationChange(checked);
 						}}
-					/>
+					>
+						<label htmlFor="searchGrounding" className="text-text text-[14px]">
+							Search Grounding
+						</label>
+					</Toggle>
 					{googleUrlContext ? (
-						<Switch
-							label="URL Context"
+						<Toggle
 							name="urlContext"
 							checked={isUrlContextEnabled}
 							onCheckedChange={(checked) => {
@@ -86,7 +88,11 @@ export function GoogleModelPanel({
 								}
 								onUrlContextConfigurationChange(checked);
 							}}
-						/>
+						>
+							<label htmlFor="urlContext" className="text-text text-[14px]">
+								URL Context
+							</label>
+						</Toggle>
 					) : null}
 				</div>
 			</div>

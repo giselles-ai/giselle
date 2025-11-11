@@ -2,10 +2,15 @@ import type {
 	EmbeddingDimensions,
 	EmbeddingProfileId,
 } from "@giselles-ai/protocol";
-import type { DocumentVectorStoreSourceId } from "@giselles-ai/types";
+import type {
+	DocumentVectorStoreId,
+	DocumentVectorStoreSourceId,
+} from "@giselles-ai/types";
 import { createClient } from "@supabase/supabase-js";
 import { and, eq, lt, or } from "drizzle-orm";
 import { db, documentVectorStoreSources } from "@/db";
+import type { TeamWithSubscription } from "@/services/teams";
+import { fetchTeamByDbId } from "@/services/teams/fetch-team";
 import {
 	deleteDocumentEmbeddingsByProfiles,
 	getDocumentVectorStoreSource,
@@ -13,6 +18,10 @@ import {
 	updateDocumentVectorStoreSourceStatus,
 } from "../database";
 import { chunkText } from "./chunk-text";
+import {
+	createDocumentIngestEmbeddingCallback,
+	type DocumentIngestTrigger,
+} from "./embedding-tracking";
 import { extractTextFromDocument } from "./extract-text";
 import { generateEmbeddings } from "./generate-embeddings";
 
@@ -28,6 +37,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 interface IngestDocumentOptions {
 	embeddingProfileIds: EmbeddingProfileId[];
 	signal?: AbortSignal;
+	trigger?: DocumentIngestTrigger;
 }
 
 interface IngestDocumentResult {
@@ -52,6 +62,61 @@ type IngestErrorCode =
 	| "unsupported-type"
 	| "invalid-state";
 
+type DocumentVectorStoreSourceRecord = NonNullable<
+	Awaited<ReturnType<typeof getDocumentVectorStoreSource>>
+>;
+
+interface DocumentEmbeddingTelemetryContext {
+	team: TeamWithSubscription;
+	documentVectorStore: {
+		id: DocumentVectorStoreId;
+		dbId: number;
+	};
+	source: {
+		id: DocumentVectorStoreSourceId;
+		dbId: number;
+		fileName: string;
+	};
+	trigger: DocumentIngestTrigger;
+}
+
+async function resolveEmbeddingTelemetryContext(
+	source: DocumentVectorStoreSourceRecord,
+	trigger: DocumentIngestTrigger,
+): Promise<DocumentEmbeddingTelemetryContext | null> {
+	const store = source.documentVectorStore;
+	if (!store) {
+		return null;
+	}
+
+	try {
+		const team = await fetchTeamByDbId(store.teamDbId);
+		if (!team) {
+			return null;
+		}
+
+		return {
+			team,
+			documentVectorStore: {
+				id: store.id as DocumentVectorStoreId,
+				dbId: store.dbId,
+			},
+			source: {
+				id: source.id,
+				dbId: source.dbId,
+				fileName: source.fileName,
+			},
+			trigger,
+		};
+	} catch (error) {
+		console.error(
+			"Failed to resolve document ingest telemetry context:",
+			error,
+		);
+		return null;
+	}
+}
+
 /**
  * Ingest a document source by extracting, chunking, and embedding text content
  * This function:
@@ -72,7 +137,7 @@ export async function ingestDocument(
 	sourceId: DocumentVectorStoreSourceId,
 	options: IngestDocumentOptions,
 ): Promise<IngestDocumentResult> {
-	const { embeddingProfileIds, signal } = options;
+	const { embeddingProfileIds, signal, trigger = { type: "cron" } } = options;
 
 	try {
 		signal?.throwIfAborted();
@@ -126,6 +191,10 @@ export async function ingestDocument(
 				code: "source-not-found" as IngestErrorCode,
 			});
 		}
+		const telemetryContext = await resolveEmbeddingTelemetryContext(
+			source,
+			trigger,
+		);
 		signal?.throwIfAborted();
 
 		// Download file from storage
@@ -199,10 +268,18 @@ export async function ingestDocument(
 			for (const embeddingProfileId of embeddingProfileIds) {
 				signal?.throwIfAborted();
 
+				const embeddingComplete = telemetryContext
+					? createDocumentIngestEmbeddingCallback({
+							...telemetryContext,
+							embeddingProfileId,
+						})
+					: undefined;
+
 				const embeddingResult = await generateEmbeddings({
 					chunks: chunkResult.chunks,
 					embeddingProfileId,
 					signal,
+					embeddingComplete,
 				});
 
 				signal?.throwIfAborted();

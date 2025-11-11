@@ -1,5 +1,4 @@
 import { DocsLink } from "@giselle-internal/ui/docs-link";
-import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GitHubAuthentication } from "../github-authentication";
@@ -15,10 +14,7 @@ export default async function AccountAuthenticationPage({
 		typeof params?.oauthError === "string" ? params.oauthError : undefined;
 	return (
 		<div className="flex flex-col gap-[12px]">
-			<div className="flex items-center justify-between">
-				<PageHeading as="h1" glow>
-					Authentication
-				</PageHeading>
+			<div className="flex items-center justify-end">
 				<DocsLink
 					href="https://docs.giselles.ai/en/guides/settings/account/authentication"
 					target="_blank"
@@ -27,7 +23,7 @@ export default async function AccountAuthenticationPage({
 					About Authentication
 				</DocsLink>
 			</div>
-			<p className="text-secondary text-[12px] leading-[20.4px] tracking-normal font-geist">
+			<p className="text-link-muted text-[12px] leading-[20.4px] tracking-normal font-geist">
 				Connect your Giselle Account with a third-party service to use it for
 				login.
 			</p>

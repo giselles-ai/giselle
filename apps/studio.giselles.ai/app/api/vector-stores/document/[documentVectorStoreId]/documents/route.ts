@@ -14,7 +14,6 @@ import {
 	documentVectorStoreSources,
 	documentVectorStores,
 } from "@/db";
-import { docVectorStoreFlag } from "@/flags";
 import {
 	DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_BYTES,
 	DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_MB,
@@ -29,6 +28,7 @@ import type {
 	DocumentVectorStoreId,
 	DocumentVectorStoreSourceId,
 } from "@/packages/types";
+import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 
 export const runtime = "nodejs";
@@ -48,17 +48,17 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-async function ensureFeatureEnabled() {
-	const enabled = await docVectorStoreFlag();
-	if (!enabled) {
-		return NextResponse.json({ error: "Not Found" }, { status: 404 });
-	}
-	return null;
-}
-
 async function fetchTeam() {
 	try {
 		return await fetchCurrentTeam();
+	} catch (_error) {
+		return null;
+	}
+}
+
+async function fetchUser() {
+	try {
+		return await fetchCurrentUser();
 	} catch (_error) {
 		return null;
 	}
@@ -162,13 +162,12 @@ export async function POST(
 	request: NextRequest,
 	{ params }: { params: Promise<{ documentVectorStoreId: string }> },
 ) {
-	const featureGuard = await ensureFeatureEnabled();
-	if (featureGuard) {
-		return featureGuard;
-	}
-
 	const team = await fetchTeam();
 	if (!team) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
+	const user = await fetchUser();
+	if (!user) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
@@ -309,6 +308,7 @@ export async function POST(
 			after(() =>
 				ingestDocument(sourceId, {
 					embeddingProfileIds: store.embeddingProfileIds,
+					trigger: { type: "manual", userId: user.id },
 				}).catch((error) => {
 					console.error(`Failed to ingest document ${sourceId}:`, error);
 				}),
@@ -377,11 +377,6 @@ export async function DELETE(
 	request: NextRequest,
 	{ params }: { params: Promise<{ documentVectorStoreId: string }> },
 ) {
-	const featureGuard = await ensureFeatureEnabled();
-	if (featureGuard) {
-		return featureGuard;
-	}
-
 	const team = await fetchTeam();
 	if (!team) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

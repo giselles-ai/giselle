@@ -25,6 +25,10 @@
 				".env"
 			]
 		},
-		"test": {}
+		"test": {},
+		"typegen": {},
+		"check-types": {
+			"dependsOn": ["^check-types", "typegen"]
+		}
 	}
 }

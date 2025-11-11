@@ -121,7 +121,7 @@
 	--font-sans: var(--font-dm-sans);
 	--font-mono: var(--font-dm-mono);
 
-	--spacing-navigation-rail-expanded: 260px;
+	--spacing-navigation-rail-expanded: 240px;
 	--spacing-navigation-rail-collapsed: 52px;
 	--spacing-navigation-rail-header: 52px;
 	--spacing-navigation-rail-footer: 60px;
@@ -375,6 +375,28 @@
 	}
 	50% {
 		opacity: 0.2;
+	}
+}
+
+@keyframes slideIn {
+	from {
+		transform: translateX(var(--slide-from));
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+@keyframes slideOut {
+	from {
+		transform: translateX(0);
+		opacity: 1;
+	}
+	to {
+		transform: translateX(var(--slide-to));
+		opacity: 0;
 	}
 }
 

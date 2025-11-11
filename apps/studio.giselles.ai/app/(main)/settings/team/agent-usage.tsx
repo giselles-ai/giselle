@@ -9,7 +9,7 @@ export async function AgentUsage() {
 	if (!result.success || !result.data) {
 		return (
 			<Card title="Recent App Usage">
-				<div className="text-secondary text-[12px] leading-[20.4px] tracking-normal font-geist">
+				<div className="text-link-muted text-[12px] leading-[20.4px] tracking-normal font-geist">
 					Failed to load agent activities
 				</div>
 			</Card>

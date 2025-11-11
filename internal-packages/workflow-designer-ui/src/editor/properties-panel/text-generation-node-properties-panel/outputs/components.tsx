@@ -108,7 +108,7 @@ function _SelectOutputPopover({
 			<Popover.Trigger
 				className={clsx(
 					"flex items-center cursor-pointer p-[10px] rounded-[8px]",
-					"border border-transparent hover:border-inverse",
+					"border border-transparent hover:border-text-inverse",
 					"text-[12px] font-[700] text-inverse",
 					"transition-colors",
 				)}
@@ -263,7 +263,7 @@ function _SelectOutputPopover({
 								onClick={() => {
 									onValueChange?.(selectedOutputIds);
 								}}
-								className="h-[32px] w-full flex justify-center items-center bg-bg text-bg rounded-[8px] cursor-pointer text-[12px]"
+								className="h-[32px] w-full flex justify-center items-center bg-bg text-background rounded-[8px] cursor-pointer text-[12px]"
 							>
 								Update
 							</Popover.Close>

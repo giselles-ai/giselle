@@ -63,7 +63,7 @@ function CreateWorkspaceSubmitButton() {
 			disabled={pending}
 		>
 			<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
-				<Plus className="size-3 text-bg" />
+				<Plus className="size-3 text-background group-hover:text-background transition-colors" />
 			</span>
 			New Workspace
 		</GlassButton>

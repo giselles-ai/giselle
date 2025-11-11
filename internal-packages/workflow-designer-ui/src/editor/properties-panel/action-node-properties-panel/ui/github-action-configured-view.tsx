@@ -4,7 +4,7 @@ import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
-import { githubActionIdToLabel } from "@giselles-ai/flow";
+import { githubActions } from "@giselles-ai/action-registry";
 import {
 	defaultName,
 	useGiselleEngine,
@@ -13,7 +13,7 @@ import {
 import type {
 	ActionNode,
 	ConnectionId,
-	GitHubActionCommandConfiguredState,
+	GitHubActionConfiguredState,
 	Input,
 	Node,
 	NodeId,
@@ -102,7 +102,7 @@ export function GitHubActionConfiguredView({
 }: {
 	node: ActionNode;
 	inputs: Input[];
-	state: GitHubActionCommandConfiguredState;
+	state: GitHubActionConfiguredState;
 	handleClick: () => void;
 	isGenerating: boolean;
 }) {
@@ -132,6 +132,15 @@ export function GitHubActionConfiguredView({
 		},
 		[deleteConnection],
 	);
+
+	const githubActionOption = useMemo(
+		() => githubActions[state.commandId],
+		[state.commandId],
+	);
+
+	if (githubActionOption === undefined) {
+		return null;
+	}
 
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
@@ -179,7 +188,7 @@ export function GitHubActionConfiguredView({
 					</div>
 					<div className="grow min-w-0 px-[4px] py-0 w-full bg-transparent text-[14px] flex items-center gap-[8px]">
 						{getActionIcon(state.commandId)}
-						<span>{githubActionIdToLabel(state.commandId)}</span>
+						<span>{githubActionOption.label}</span>
 					</div>
 				</div>
 			</div>

@@ -20,7 +20,6 @@ import {
 	githubRepositoryEmbeddingProfiles,
 	githubRepositoryIndex,
 } from "@/db";
-import { docVectorStoreFlag } from "@/flags";
 import {
 	createManualIngestTrigger,
 	type IngestTrigger,
@@ -576,10 +575,6 @@ export async function createDocumentVectorStore(
 	name: string,
 	embeddingProfileIds: number[],
 ): Promise<ActionResult> {
-	const enabled = await docVectorStoreFlag();
-	if (!enabled) {
-		return { success: false, error: "Feature disabled" };
-	}
 	const trimmedName = name.trim();
 	if (trimmedName.length === 0) {
 		return { success: false, error: "Name is required" };
@@ -637,11 +632,6 @@ export async function updateDocumentVectorStore(
 	documentVectorStoreId: DocumentVectorStoreId,
 	input: DocumentVectorStoreUpdateInput,
 ): Promise<ActionResult> {
-	const enabled = await docVectorStoreFlag();
-	if (!enabled) {
-		return { success: false, error: "Feature disabled" };
-	}
-
 	const trimmedName = input.name.trim();
 	if (trimmedName.length === 0) {
 		return { success: false, error: "Name is required" };
@@ -717,11 +707,6 @@ export async function updateDocumentVectorStore(
 export async function deleteDocumentVectorStore(
 	documentVectorStoreId: DocumentVectorStoreId,
 ): Promise<ActionResult> {
-	const enabled = await docVectorStoreFlag();
-	if (!enabled) {
-		return { success: false, error: "Feature disabled" };
-	}
-
 	try {
 		const team = await fetchCurrentTeam();
 		const deletionResult = await db.transaction(async (tx) => {

@@ -428,6 +428,20 @@
       "when": 1762323932695,
       "tag": "0060_freezing_ultron",
       "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1762411864922,
+      "tag": "0061_violet_mastermind",
+      "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1762516937963,
+      "tag": "0062_migrate-team-plan",
+      "breakpoints": true
     }
   ]
 }
