@@ -85,10 +85,7 @@ if (
 	throw new Error("missing github credentials");
 }
 
-type TeamForPlan = Pick<
-	CurrentTeam,
-	"id" | "activeSubscriptionId" | "type" | "plan"
->;
+type TeamForPlan = Pick<CurrentTeam, "id" | "activeSubscriptionId" | "plan">;
 
 async function traceGenerationForTeam(args: {
 	generation: CompletedGeneration | FailedGeneration;
@@ -102,18 +99,16 @@ async function traceGenerationForTeam(args: {
 }) {
 	const isPro = isProPlan(args.team);
 	const planTag = isPro ? "plan:pro" : "plan:free";
-	const teamTypeTag = `teamType:${args.team.type}`;
 
 	await traceGeneration({
 		generation: args.generation,
 		outputFileBlobs: args.outputFileBlobs,
 		inputMessages: args.inputMessages,
 		userId: args.userId,
-		tags: [planTag, teamTypeTag],
+		tags: [planTag],
 		metadata: {
 			generationId: args.generation.id,
 			isProPlan: isPro,
-			teamType: args.team.type,
 			teamPlan: args.team.plan,
 			userId: args.userId,
 			subscriptionId: args.team.activeSubscriptionId ?? "",
@@ -135,14 +130,12 @@ async function traceEmbeddingForTeam(args: {
 }) {
 	const isPro = isProPlan(args.team);
 	const planTag = isPro ? "plan:pro" : "plan:free";
-	const teamTypeTag = `teamType:${args.team.type}`;
 
 	const { queryContext } = args;
 	const baseMetadata = {
 		generationId: args.generation.id,
 		teamId: args.team.id,
 		isProPlan: isPro,
-		teamType: args.team.type,
 		teamPlan: args.team.plan,
 		userId: args.userId,
 		subscriptionId: args.team.activeSubscriptionId ?? "",
@@ -155,7 +148,7 @@ async function traceEmbeddingForTeam(args: {
 		metrics: args.metrics,
 		userId: args.userId,
 		sessionId: args.sessionId,
-		tags: [planTag, teamTypeTag, "embedding-purpose:query"],
+		tags: [planTag, "embedding-purpose:query"],
 	};
 
 	switch (queryContext.provider) {
@@ -255,7 +248,6 @@ export const giselleEngine = NextGiselleEngine({
 					sessionId: args.generation.context.origin.actId,
 					team: {
 						id: parsedMetadata.team.id,
-						type: parsedMetadata.team.type,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
 						plan: parsedMetadata.team.plan,
 					},
@@ -298,7 +290,6 @@ export const giselleEngine = NextGiselleEngine({
 					sessionId: args.generation.context.origin.actId,
 					team: {
 						id: parsedMetadata.team.id,
-						type: parsedMetadata.team.type,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
 						plan: parsedMetadata.team.plan,
 					},
@@ -332,7 +323,6 @@ export const giselleEngine = NextGiselleEngine({
 						userId: parsedMetadata.userId,
 						team: {
 							id: parsedMetadata.team.id,
-							type: parsedMetadata.team.type,
 							activeSubscriptionId: parsedMetadata.team.subscriptionId,
 							plan: parsedMetadata.team.plan,
 						},
@@ -433,7 +423,6 @@ if (generateContentProcessor === "trigger.dev") {
 					userId: "github-app",
 					team: {
 						id: team.id,
-						type: team.type,
 						subscriptionId: team.activeSubscriptionId,
 						plan: team.plan,
 					},
@@ -456,7 +445,6 @@ if (generateContentProcessor === "trigger.dev") {
 							userId: currentUser.id,
 							team: {
 								id: currentTeam.id,
-								type: currentTeam.type,
 								subscriptionId: currentTeam.activeSubscriptionId,
 								plan: currentTeam.plan,
 							},
@@ -498,7 +486,6 @@ if (generateContentProcessor === "trigger.dev") {
 					userId: "github-app",
 					team: {
 						id: team.id,
-						type: team.type,
 						subscriptionId: team.activeSubscriptionId,
 						plan: team.plan,
 					},
@@ -518,7 +505,6 @@ if (generateContentProcessor === "trigger.dev") {
 					userId: currentUser.id,
 					team: {
 						id: currentTeam.id,
-						type: currentTeam.type,
 						subscriptionId: currentTeam.activeSubscriptionId,
 						plan: currentTeam.plan,
 					},

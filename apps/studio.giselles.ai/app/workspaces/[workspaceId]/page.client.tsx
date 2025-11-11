@@ -63,7 +63,7 @@ export function Page({
 			telemetry={{
 				metadata: {
 					isProPlan: isProPlan(data.workspaceTeam),
-					teamType: data.workspaceTeam.type,
+					teamPlan: data.workspaceTeam.plan,
 					userId: data.currentUser.id,
 					subscriptionId: data.workspaceTeam.activeSubscriptionId ?? "",
 				},

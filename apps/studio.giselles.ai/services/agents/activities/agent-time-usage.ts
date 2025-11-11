@@ -21,7 +21,6 @@ async function getCurrentBillingPeriod(teamDbId: number) {
 		.select({
 			dbId: teams.dbId,
 			name: teams.name,
-			type: teams.type,
 			createdAt: teams.createdAt,
 			plan: teams.plan,
 			activeSubscriptionId: subscriptions.id,

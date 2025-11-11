@@ -5,7 +5,6 @@ export const GenerationMetadata = z.object({
 	userId: z.string(),
 	team: z.object({
 		id: z.string<`tm_${string}`>(),
-		type: z.enum(["customer", "internal"]),
 		subscriptionId: z.string().nullable(),
 		plan: z.enum(["free", "pro", "team", "internal"]),
 	}),

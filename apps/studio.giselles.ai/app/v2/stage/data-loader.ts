@@ -33,7 +33,6 @@ async function userTeams() {
 				id: teamMembership.team.id,
 				name: teamMembership.team.name,
 				avatarUrl: teamMembership.team.avatarUrl,
-				type: teamMembership.team.type,
 				role: teamMembership.role,
 				hasActiveSubscription: teamMembership.team.subscriptions.some(
 					(subscription) => subscription.status === "active",

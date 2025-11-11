@@ -16,9 +16,7 @@ export default async function TeamCreation({
 	}
 	const isInternalUser = user.email != null && isEmailFromRoute06(user.email);
 	const teams = await fetchUserTeams();
-	const hasExistingFreeTeam = teams.some(
-		(team) => team.type === "customer" && !team.activeSubscriptionId,
-	);
+	const hasExistingFreeTeam = teams.some((team) => team.plan === "free");
 	const proPlanPriceId = process.env.STRIPE_PRO_PLAN_PRICE_ID;
 	invariant(proPlanPriceId, "STRIPE_PRO_PLAN_PRICE_ID is not set");
 	const proPlan = await getCachedPrice(proPlanPriceId);

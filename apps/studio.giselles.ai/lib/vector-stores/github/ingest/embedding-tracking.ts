@@ -25,18 +25,16 @@ export function createIngestEmbeddingCallback(
 
 		const isPro = isProPlan(team);
 		const planTag = isPro ? "plan:pro" : "plan:free";
-		const teamTypeTag = `teamType:${team.type}`;
 		const userId = trigger.type === "manual" ? trigger.userId : "cron";
 
 		await traceEmbedding({
 			metrics,
 			userId,
 			sessionId: trigger.id,
-			tags: [planTag, teamTypeTag, "embedding-purpose:ingestion"],
+			tags: [planTag, "embedding-purpose:ingestion"],
 			metadata: {
 				teamId: team.id,
 				isProPlan: isPro,
-				teamType: team.type,
 				teamPlan: team.plan,
 				subscriptionId: team.activeSubscriptionId ?? "",
 				userId,
