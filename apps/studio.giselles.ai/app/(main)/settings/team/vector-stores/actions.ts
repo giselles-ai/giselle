@@ -597,7 +597,9 @@ export async function createDocumentVectorStore(
 			};
 		}
 
-		const creationResult = await db.transaction(async (tx) => {
+		type CreationResult = { success: true } | { success: false; error: string };
+
+		const creationResult = await db.transaction<CreationResult>(async (tx) => {
 			const existingStores = await tx
 				.select({ dbId: documentVectorStores.dbId })
 				.from(documentVectorStores)
