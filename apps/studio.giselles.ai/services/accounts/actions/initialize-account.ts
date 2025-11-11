@@ -42,7 +42,6 @@ export const initializeAccount = async (
 			.values({
 				id: createTeamId(),
 				name: "My Project",
-				type: internalAccount ? "internal" : "customer",
 				plan: internalAccount ? "internal" : "free",
 			})
 			.returning({
