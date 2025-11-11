@@ -33,6 +33,7 @@ import type {
 import { fetchCurrentUser, getGitHubIdentityState } from "@/services/accounts";
 import { buildAppInstallationClient } from "@/services/external/github";
 import { fetchCurrentTeam } from "@/services/teams";
+import { getDocumentVectorStoreQuota } from "@/services/teams/plan-features/document-vector-store";
 import type {
 	ActionResult,
 	DiagnosticResult,
@@ -588,8 +589,28 @@ export async function createDocumentVectorStore(
 	try {
 		const team = await fetchCurrentTeam();
 		const documentVectorStoreId = `dvs_${createId()}` as DocumentVectorStoreId;
+		const quota = getDocumentVectorStoreQuota(team.plan);
+		if (!quota.isAvailable) {
+			return {
+				success: false,
+				error: "Document Vector Stores are not included in your plan.",
+			};
+		}
 
-		await db.transaction(async (tx) => {
+		const creationResult = await db.transaction(async (tx) => {
+			const [{ count }] = await tx
+				.select({ count: sql<number>`count(*)` })
+				.from(documentVectorStores)
+				.where(eq(documentVectorStores.teamDbId, team.dbId));
+
+			if (Number(count) >= quota.maxStores) {
+				return {
+					success: false,
+					error:
+						"You have reached the number of Document Vector Stores included in your plan.",
+				};
+			}
+
 			const [insertedStore] = await tx
 				.insert(documentVectorStores)
 				.values({
@@ -615,7 +636,12 @@ export async function createDocumentVectorStore(
 						],
 					});
 			}
+			return { success: true };
 		});
+
+		if (!creationResult.success) {
+			return creationResult;
+		}
 
 		revalidatePath("/settings/team/vector-stores/document");
 		return { success: true };
