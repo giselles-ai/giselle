@@ -18,7 +18,6 @@ import {
 import { useUIState } from "./hooks/use-ui-state";
 import { SettingsDialog } from "./settings-dialog";
 import type {
-	FilterType,
 	FlowTriggerUIItem,
 	PerformStageAction,
 	TeamId,
@@ -43,8 +42,6 @@ const displayCategories = {
 	latest: { value: "latest", label: "Latest" },
 	favorites: { value: "favorites", label: "Favorites" },
 } as const;
-
-type DisplayCategory = keyof typeof displayCategories;
 
 export function FormContainer({
 	flowTriggers: propApps,
@@ -187,10 +184,7 @@ function Form({
 */}
 			{/* Filter Tabs */}
 			<div className="flex justify-center">
-				<TabNavigation
-					links={filterLinks}
-					ariaLabelPrefix="filter"
-				/>
+				<TabNavigation links={filterLinks} ariaLabelPrefix="filter" />
 			</div>
 
 			{/* App Selection Container */}

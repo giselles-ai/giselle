@@ -1,8 +1,6 @@
 "use client";
 
 import { Button } from "@giselle-internal/ui/button";
-import { Input } from "@giselle-internal/ui/input";
-import { TabNavigation } from "@giselle-internal/ui/tab-navigation";
 import {
 	Dialog,
 	DialogBody,
@@ -14,6 +12,8 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
+import { Input } from "@giselle-internal/ui/input";
+import { TabNavigation } from "@giselle-internal/ui/tab-navigation";
 import { Play, RotateCcw, Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -83,7 +83,8 @@ export function ShowcaseClient({
 }: ShowcaseClientProps) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const currentTab = (searchParams.get("tab") as "Apps" | "Playlist" | "History") || "Apps";
+	const currentTab =
+		(searchParams.get("tab") as "Apps" | "Playlist" | "History") || "Apps";
 
 	const tabLinks = [
 		{ href: "/stage/showcase?tab=Apps", label: "Apps" },

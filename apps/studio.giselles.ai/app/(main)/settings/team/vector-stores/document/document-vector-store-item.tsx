@@ -807,7 +807,8 @@ function DocumentVectorStoreConfigureDialog({
 												className="text-center flex flex-col gap-[16px] text-inverse cursor-pointer"
 											>
 												<p>
-													Drop {SUPPORTED_FILE_TYPES_LABEL} files here to upload.
+													Drop {SUPPORTED_FILE_TYPES_LABEL} files here to
+													upload.
 												</p>
 												<div className="flex gap-[8px] justify-center items-center">
 													<span>or</span>

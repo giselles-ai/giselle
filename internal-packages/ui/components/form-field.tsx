@@ -3,7 +3,8 @@
 import clsx from "clsx/lite";
 import { useId } from "react";
 
-interface FormFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "ref"> {
+interface FormFieldProps
+	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "ref"> {
 	label?: string;
 	error?: string;
 	hint?: string;
@@ -24,7 +25,10 @@ export function FormField({
 	return (
 		<div className={clsx("space-y-1", containerClassName)}>
 			{label && (
-				<label htmlFor={inputId} className="text-text text-[14px] leading-[16.8px] font-sans">
+				<label
+					htmlFor={inputId}
+					className="text-text text-[14px] leading-[16.8px] font-sans"
+				>
 					{label}
 				</label>
 			)}
