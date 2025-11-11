@@ -46,6 +46,7 @@ export function WorkspaceProvider({
 				stage: featureFlag?.stage ?? false,
 				aiGateway: featureFlag?.aiGateway ?? false,
 				googleUrlContext: featureFlag?.googleUrlContext ?? false,
+				openaiImageModel: featureFlag?.openaiImageModel ?? false,
 				githubIssuesVectorStore: featureFlag?.githubIssuesVectorStore ?? false,
 			}}
 		>

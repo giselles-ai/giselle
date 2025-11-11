@@ -7,6 +7,7 @@ import {
 	githubIssuesVectorStoreFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
+	openaiImageModelFlag,
 	stageFlag,
 	webSearchActionFlag,
 } from "@/flags";
@@ -53,6 +54,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const stage = await stageFlag();
 	const aiGateway = await aiGatewayFlag();
 	const googleUrlContext = await googleUrlContextFlag();
+	const openaiImageModel = await openaiImageModelFlag();
 	const data = await giselleEngine.getWorkspace(workspaceId);
 	const documentVectorStores = await getDocumentVectorStores(
 		workspaceTeam.dbId,
@@ -71,6 +73,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 		stage,
 		aiGateway,
 		googleUrlContext,
+		openaiImageModel,
 		data,
 		documentVectorStores,
 		featureFlags: {
@@ -79,6 +82,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			stage,
 			aiGateway,
 			googleUrlContext,
+			openaiImageModel,
 			githubIssuesVectorStore,
 		},
 	};

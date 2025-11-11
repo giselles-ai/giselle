@@ -12,6 +12,7 @@ import {
 	githubIssuesVectorStoreFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
+	openaiImageModelFlag,
 	stageFlag,
 	webSearchActionFlag,
 } from "@/flags";
@@ -73,6 +74,7 @@ export default async function Layout({
 	const stage = await stageFlag();
 	const aiGateway = await aiGatewayFlag();
 	const googleUrlContext = await googleUrlContextFlag();
+	const openaiImageModel = await openaiImageModelFlag();
 	const data = await giselleEngine.getWorkspace(workspaceId);
 	const documentVectorStores = await getDocumentVectorStores(
 		workspaceTeam.dbId,
@@ -124,6 +126,7 @@ export default async function Layout({
 				stage,
 				aiGateway,
 				googleUrlContext,
+				openaiImageModel,
 				githubIssuesVectorStore,
 			}}
 			trigger={{

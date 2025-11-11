@@ -136,6 +136,26 @@ export const googleUrlContextFlag = flag<boolean>({
 	defaultValue: false,
 });
 
+export const openaiImageModelFlag = flag<boolean>({
+	key: "openai-image-model",
+	async decide() {
+		if (process.env.NODE_ENV === "development") {
+			return takeLocalEnv("OPENAI_IMAGE_MODEL_FLAG");
+		}
+		const edgeConfig = await get(`flag__${this.key}`);
+		if (edgeConfig === undefined) {
+			return false;
+		}
+		return edgeConfig === true || edgeConfig === "true";
+	},
+	description: "Enable OpenAI image models",
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+	defaultValue: false,
+});
+
 export const newEditorFlag = flag<boolean>({
 	key: "new-editor",
 	async decide() {
