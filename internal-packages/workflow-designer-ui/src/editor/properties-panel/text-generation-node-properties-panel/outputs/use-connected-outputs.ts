@@ -1,6 +1,7 @@
 import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
 import {
 	type ActionNode,
+	type AppEntryNode,
 	type QueryNode,
 	type TextGenerationNode,
 	type TriggerNode,
@@ -23,6 +24,9 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 		const connectedVariableInputs: ConnectedOutputWithDetails<VariableNode>[] =
 			[];
 		const connectedQueryInputs: ConnectedOutputWithDetails<QueryNode>[] = [];
+		const connectedAppEntryInputs: ConnectedOutputWithDetails<AppEntryNode>[] =
+			[];
+
 		for (const connection of connectionsToThisNode) {
 			const node = data.nodes.find(
 				(node) => node.id === connection.outputNode.id,
@@ -67,6 +71,13 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 							connectedQueryInputs.push({
 								...output,
 								node: node as QueryNode,
+								connection,
+							});
+							break;
+						case "appEntry":
+							connectedAppEntryInputs.push({
+								...output,
+								node: node as AppEntryNode,
 								connection,
 							});
 							break;

@@ -4,6 +4,11 @@ import { z } from "zod/v4";
 import { NodeBase, NodeReferenceBase } from "../base";
 import { ActionContent, ActionContentReference } from "./action";
 import {
+	AppEntryContent,
+	AppEntryContentReference,
+	AppEntryType,
+} from "./app-entry";
+import {
 	ImageGenerationContent,
 	ImageGenerationContentReference,
 } from "./image-generation";
@@ -26,6 +31,7 @@ const OperationNodeContent = z.discriminatedUnion("type", [
 	TriggerContent,
 	ActionContent,
 	QueryContent,
+	AppEntryContent,
 ]);
 
 export const OperationNode = NodeBase.extend({
@@ -42,6 +48,7 @@ export const OperationNodeLike = NodeBase.extend({
 	type: z.literal("operation"),
 	content: z.looseObject({
 		type: z.union([
+			AppEntryType,
 			TextGenerationContent.shape.type,
 			ImageGenerationContent.shape.type,
 			TriggerContent.shape.type,
@@ -127,7 +134,17 @@ export function isQueryNode(args?: unknown): args is QueryNode {
 	return result.success;
 }
 
+export const AppEntryNode = OperationNode.extend({
+	content: AppEntryContent,
+});
+export type AppEntryNode = z.infer<typeof AppEntryNode>;
+export function isAppEntryNode(args?: unknown): args is AppEntryNode {
+	const result = AppEntryNode.safeParse(args);
+	return result.success;
+}
+
 const OperationNodeContentReference = z.discriminatedUnion("type", [
+	AppEntryContentReference,
 	TextGenerationContentReference,
 	ImageGenerationContentReference,
 	TriggerContentReference,

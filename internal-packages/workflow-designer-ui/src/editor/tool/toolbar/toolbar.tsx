@@ -16,6 +16,7 @@ import {
 } from "@giselles-ai/language-model";
 import {
 	createActionNode,
+	createAppEntryNode,
 	createDocumentVectorStoreNode,
 	createFileNode,
 	createGitHubVectorStoreNode,
@@ -273,30 +274,34 @@ export function Toolbar() {
 														);
 														return;
 													}
+													if (value === "appEntry") {
+														setSelectedTool(addNodeTool(createAppEntryNode()));
+													}
 												}}
 											>
-												{triggerRegistry
-													.filter(
-														(triggerEntry) =>
-															triggerEntry.provider !== "app-entry" || stage,
-													)
-													.map((triggerEntry) => (
-														<ToggleGroup.Item
-															key={triggerEntry.provider}
-															value={triggerEntry.provider}
-															data-tool
-														>
-															{triggerEntry.provider === "manual" && (
-																<TriggerIcon className="size-[20px] shrink-0" />
-															)}
-															{triggerEntry.provider === "github" && (
-																<GitHubIcon className="size-[20px] shrink-0" />
-															)}
-															<p className="text-[14px]">
-																{triggerNodeDefaultName(triggerEntry.provider)}
-															</p>
-														</ToggleGroup.Item>
-													))}
+												{stage && (
+													<ToggleGroup.Item value="appEntry" data-tool>
+														<TriggerIcon className="size-[20px] shrink-0" />
+														<p className="text-[14px]">App Entry Node</p>
+													</ToggleGroup.Item>
+												)}
+												{triggerRegistry.map((triggerEntry) => (
+													<ToggleGroup.Item
+														key={triggerEntry.provider}
+														value={triggerEntry.provider}
+														data-tool
+													>
+														{triggerEntry.provider === "manual" && (
+															<TriggerIcon className="size-[20px] shrink-0" />
+														)}
+														{triggerEntry.provider === "github" && (
+															<GitHubIcon className="size-[20px] shrink-0" />
+														)}
+														<p className="text-[14px]">
+															{triggerNodeDefaultName(triggerEntry.provider)}
+														</p>
+													</ToggleGroup.Item>
+												))}
 											</ToggleGroup.Root>
 										</div>
 									</Popover.Content>

@@ -36,6 +36,8 @@ export function GenerationRunner({ generation }: { generation: Generation }) {
 			return <ActionRunner generation={generation} />;
 		case "query":
 			return <QueryRunner generation={generation} />;
+		case "appEntry":
+			throw new Error("Not implemented");
 		default: {
 			const _exhaustiveCheck: never = generationContext.operationNode.content;
 			return _exhaustiveCheck;

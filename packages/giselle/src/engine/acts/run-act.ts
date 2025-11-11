@@ -93,6 +93,8 @@ async function executeStep(args: {
 			case "query":
 				await executeQuery(args);
 				break;
+			case "appEntry":
+				throw new Error("Not implemented");
 			default: {
 				const _exhaustiveCheck: never =
 					args.generation.context.operationNode.content.type;

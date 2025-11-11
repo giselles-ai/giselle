@@ -1,3 +1,7 @@
+import {
+	isTriggerProvider,
+	type TriggerProvider,
+} from "@giselles-ai/trigger-registry";
 import { z } from "zod/v4";
 import { TriggerId } from "../../trigger";
 
@@ -20,7 +24,7 @@ const TriggerConfigurationState = z.discriminatedUnion("status", [
 
 export const TriggerContent = z.object({
 	type: z.literal("trigger"),
-	provider: z.enum(["manual", "github", "app-entry"]),
+	provider: z.custom<TriggerProvider>((val) => isTriggerProvider(val)),
 	state: TriggerConfigurationState,
 });
 export type TriggerContent = z.infer<typeof TriggerContent>;

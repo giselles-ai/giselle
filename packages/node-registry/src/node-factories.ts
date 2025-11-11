@@ -6,6 +6,7 @@ import {
 } from "@giselles-ai/language-model";
 import {
 	type ActionNode,
+	type AppEntryNode,
 	DEFAULT_MAX_RESULTS,
 	DEFAULT_SIMILARITY_THRESHOLD,
 	type FileContent,
@@ -19,6 +20,7 @@ import {
 	type Input,
 	InputId,
 	isActionNode,
+	isAppEntryNode,
 	isFileNode,
 	isGitHubNode,
 	isImageGenerationNode,
@@ -592,6 +594,37 @@ const webPageFactoryImpl = {
 	},
 } satisfies NodeFactory<WebPageNode>;
 
+const appEntryFactoryImpl = {
+	create: (): AppEntryNode => {
+		return {
+			id: NodeId.generate(),
+			type: "operation",
+			content: {
+				type: "appEntry",
+				status: "unconfigured",
+			},
+			inputs: [],
+			outputs: [],
+		} satisfies AppEntryNode;
+	},
+	clone: (orig: AppEntryNode): NodeFactoryCloneResult<AppEntryNode> => {
+		const { newIo: newInputs, idMap: inputIdMap } =
+			cloneAndRenewInputIdsWithMap(orig.inputs);
+		const { newIo: newOutputs, idMap: outputIdMap } =
+			cloneAndRenewOutputIdsWithMap(orig.outputs);
+
+		const newNode = {
+			id: NodeId.generate(),
+			type: "operation",
+			name: `Copy of ${orig.name ?? defaultName(orig)}`,
+			content: structuredClone(orig.content),
+			inputs: newInputs,
+			outputs: newOutputs,
+		} satisfies AppEntryNode;
+		return { newNode, inputIdMap, outputIdMap };
+	},
+} satisfies NodeFactory<AppEntryNode>;
+
 // --- Factories Manager ---
 const factoryImplementations = {
 	textGeneration: textGenerationFactoryImpl,
@@ -604,6 +637,7 @@ const factoryImplementations = {
 	github: githubVariableFactoryImpl,
 	vectorStore: vectorStoreFactoryImpl,
 	webPage: webPageFactoryImpl,
+	appEntry: appEntryFactoryImpl,
 } as const;
 
 type CreateArgMap = {
@@ -617,6 +651,7 @@ type CreateArgMap = {
 	github: Parameters<typeof githubVariableFactoryImpl.create>[0];
 	vectorStore: Parameters<typeof vectorStoreFactoryImpl.create>[0];
 	webPage: undefined;
+	appEntry: undefined;
 };
 
 const nodeTypesRequiringArg = (
@@ -683,6 +718,10 @@ export function createDocumentVectorStoreNode(): VectorStoreNode {
 
 export function createWebPageNode(): WebPageNode {
 	return webPageFactoryImpl.create();
+}
+
+export function createAppEntryNode() {
+	return appEntryFactoryImpl.create();
 }
 
 export function cloneNode<N extends Node>(
@@ -756,6 +795,13 @@ export function cloneNode<N extends Node>(
 				) as NodeFactoryCloneResult<N>;
 			}
 			break;
+		case "appEntry":
+			if (isAppEntryNode(sourceNode)) {
+				return appEntryFactoryImpl.clone(
+					sourceNode,
+				) as NodeFactoryCloneResult<N>;
+			}
+			break;
 		default: {
 			const _exhaustive: never = contentType;
 			throw new Error(`No clone factory for content type: ${_exhaustive}`);
@@ -804,6 +850,8 @@ export const nodeFactories = {
 				);
 			case "webPage":
 				return factoryImplementations.webPage.create();
+			case "appEntry":
+				return factoryImplementations.appEntry.create();
 			default: {
 				const _exhaustive: never = type;
 				throw new Error(`No create factory for content type: ${_exhaustive}`);
@@ -861,6 +909,11 @@ export const nodeFactories = {
 			case "webPage":
 				if (isWebPageNode(sourceNode)) {
 					return factoryImplementations.webPage.clone(sourceNode);
+				}
+				break;
+			case "appEntry":
+				if (isAppEntryNode(sourceNode)) {
+					return factoryImplementations.appEntry.clone(sourceNode);
 				}
 				break;
 			default: {

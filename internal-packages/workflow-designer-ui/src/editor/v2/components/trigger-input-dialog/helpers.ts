@@ -10,8 +10,6 @@ export function buttonLabel(node: TriggerNode) {
 			return "Start Manual Flow";
 		case "github":
 			return "Test with Dummy Data";
-		case "app-entry":
-			return "Test with Dummy Data";
 		default: {
 			const _exhaustiveCheck: never = node.content.provider;
 			throw new Error(`Unhandled trigger provider type: ${_exhaustiveCheck}`);

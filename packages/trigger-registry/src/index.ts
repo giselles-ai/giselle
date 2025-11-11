@@ -13,11 +13,6 @@ export const triggerRegistry = [
 		label: "Manual Trigger",
 		events: [],
 	},
-	{
-		provider: "app-entry",
-		label: "App Entry Trigger",
-		events: [],
-	},
 ] as const;
 
 export type TriggerProvider = (typeof triggerRegistry)[number]["provider"];
@@ -33,7 +28,7 @@ export function getEntry(triggerProvider: TriggerProvider) {
 }
 
 export function isTriggerProvider(
-	provider: string,
+	provider: unknown,
 ): provider is TriggerProvider {
 	return triggerRegistry.some((entry) => entry.provider === provider);
 }
