@@ -1,6 +1,6 @@
 import * as z from "zod/v4";
 
-export const AppEntryType = z.literal("app-entry");
+export const AppEntryType = z.literal("appEntry");
 
 const AppEntryUnconfiguredState = z.object({
 	type: AppEntryType,

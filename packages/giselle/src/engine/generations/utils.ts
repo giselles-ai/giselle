@@ -65,7 +65,8 @@ export async function buildMessageObject(
 		}
 		case "action":
 		case "trigger":
-		case "query": {
+		case "query":
+		case "appEntry": {
 			return [];
 		}
 		default: {
@@ -241,7 +242,8 @@ async function buildGenerationMessageForTextGeneration(
 
 			case "query":
 			case "trigger":
-			case "action": {
+			case "action":
+			case "appEntry": {
 				const result = await textGenerationResolver(
 					contextNode.id,
 					sourceKeyword.outputId,
@@ -513,7 +515,8 @@ async function buildGenerationMessageForImageGeneration(
 
 			case "action":
 			case "trigger":
-			case "query": {
+			case "query":
+			case "appEntry": {
 				const result = await textGenerationResolver(
 					contextNode.id,
 					sourceKeyword.outputId,

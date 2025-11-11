@@ -74,7 +74,7 @@ export function defaultName(node: NodeLike) {
 						throw new Error(`Expected query node, got ${node.type}`);
 					}
 					return node.name ?? "Query";
-				case "app-entry":
+				case "appEntry":
 					return node.name ?? "App Entry";
 				default: {
 					const _exhaustiveCheck: never = node.content.type;

@@ -74,7 +74,7 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 								connection,
 							});
 							break;
-						case "app-entry":
+						case "appEntry":
 							connectedAppEntryInputs.push({
 								...output,
 								node: node as AppEntryNode,

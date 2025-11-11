@@ -31,6 +31,7 @@ const OperationNodeContent = z.discriminatedUnion("type", [
 	TriggerContent,
 	ActionContent,
 	QueryContent,
+	AppEntryContent,
 ]);
 
 export const OperationNode = NodeBase.extend({

@@ -169,7 +169,7 @@ export function NodeIcon({
 				}
 				case "query":
 					return <DatabaseZapIcon {...props} data-content-type-icon />;
-				case "app-entry":
+				case "appEntry":
 					return <ZapIcon {...props} data-content-type-icon />;
 				default: {
 					const _exhaustiveCheck: never = node.content.type;
