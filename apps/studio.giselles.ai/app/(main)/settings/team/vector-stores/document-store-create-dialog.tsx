@@ -129,7 +129,7 @@ export function DocumentVectorStoreCreateDialog({
 					</DialogDescription>
 				</DialogHeader>
 
-				<DialogBody>
+				<DialogBody className="mt-4">
 					<div className="flex flex-col gap-4">
 						<FormField
 							label="Name"
@@ -139,10 +139,10 @@ export function DocumentVectorStoreCreateDialog({
 						/>
 						{/* Embedding Models, styled like Register Repository */}
 						<div className="mt-4">
-							<div className="text-inverse text-[14px] leading-[16.8px] font-sans mb-2">
+							<div className="text-text text-[14px] leading-[16.8px] font-sans mb-2">
 								Embedding Models
 							</div>
-							<div className="text-inverse/60 text-[12px] mb-3">
+							<div className="text-text-muted text-[12px] mb-3">
 								Select at least one embedding model for indexing
 							</div>
 							<div className="space-y-2">
@@ -154,20 +154,20 @@ export function DocumentVectorStoreCreateDialog({
 									return (
 										<label
 											key={profileId}
-											className="flex items-start gap-3 p-3 rounded-lg bg-surface hover:bg-white/5 transition-colors"
+											className="flex items-start gap-3 p-3 rounded-lg border border-border-muted hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] transition-colors cursor-pointer"
 										>
 											<input
 												type="checkbox"
 												checked={isSelected}
 												disabled={isPending || isLastSelected}
 												onChange={() => toggleProfile(profileId)}
-												className="mt-1 w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500"
+												className="mt-1 w-4 h-4 text-[#1663F3] bg-surface border-border rounded focus:ring-[#1663F3]/20"
 											/>
 											<div className="flex-1">
-												<div className="text-inverse text-[14px] font-medium">
+												<div className="text-text text-[14px] font-medium">
 													{p.name}
 												</div>
-												<div className="text-inverse/60 text-[12px] mt-1">
+												<div className="text-text-muted text-[12px] mt-1">
 													Provider: {p.provider} • Dimensions {p.dimensions}
 												</div>
 											</div>
