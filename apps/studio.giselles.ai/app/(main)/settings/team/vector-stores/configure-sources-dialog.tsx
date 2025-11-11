@@ -132,8 +132,12 @@ export function ConfigureSourcesDialog({
 							<h3 className="text-text text-[14px] leading-[16.8px] font-sans">
 								Repository
 							</h3>
-							<div className="mt-2 text-link-accent text-[16px] font-geist">
-								{repositoryIndex.owner}/{repositoryIndex.repo}
+							<div className="mt-2 flex items-center rounded-full bg-surface pl-[16px] pr-[16px] py-2 text-white-200 transition-colors text-[12px]">
+								<div className="space-x-[2px]">
+									<span>{repositoryIndex.owner}</span>
+									<span>/</span>
+									<span>{repositoryIndex.repo}</span>
+								</div>
 							</div>
 						</div>
 						{/* Sources Section */}

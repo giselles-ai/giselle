@@ -859,14 +859,25 @@ function checkIngestability(
 	contentStatuses: (typeof githubRepositoryContentStatus.$inferSelect)[],
 	now: Date = new Date(),
 ): IngestabilityCheck {
+	const STALE_THRESHOLD_MINUTES = 15;
+	const staleThreshold = new Date(
+		Date.now() - STALE_THRESHOLD_MINUTES * 60 * 1000,
+	);
+
 	for (const contentStatus of contentStatuses) {
 		if (!contentStatus.enabled) {
 			continue;
 		}
 
+		const isStaleRunning =
+			contentStatus.status === "running" &&
+			contentStatus.updatedAt &&
+			contentStatus.updatedAt < staleThreshold;
+
 		const canIngestThis =
 			contentStatus.status === "idle" ||
 			contentStatus.status === "completed" ||
+			isStaleRunning ||
 			(contentStatus.status === "failed" &&
 				contentStatus.retryAfter &&
 				contentStatus.retryAfter <= now);
