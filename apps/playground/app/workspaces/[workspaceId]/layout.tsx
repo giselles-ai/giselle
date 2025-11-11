@@ -9,6 +9,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 				layoutV3: true,
 				stage: true,
 				aiGateway: false,
+				aiGatewayUnsupportedModels: false,
 				googleUrlContext: false,
 				githubIssuesVectorStore: false,
 			}}

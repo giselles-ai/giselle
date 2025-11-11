@@ -9,6 +9,7 @@ import { giselleEngine } from "@/app/giselle-engine";
 import { db, flowTriggers } from "@/db";
 import {
 	aiGatewayFlag,
+	aiGatewayUnsupportedModelsFlag,
 	githubIssuesVectorStoreFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
@@ -72,6 +73,7 @@ export default async function Layout({
 	const layoutV3 = await layoutV3Flag();
 	const stage = await stageFlag();
 	const aiGateway = await aiGatewayFlag();
+	const aiGatewayUnsupportedModels = await aiGatewayUnsupportedModelsFlag();
 	const googleUrlContext = await googleUrlContextFlag();
 	const data = await giselleEngine.getWorkspace(workspaceId);
 	const documentVectorStores = await getDocumentVectorStores(
@@ -123,6 +125,7 @@ export default async function Layout({
 				layoutV3,
 				stage,
 				aiGateway,
+				aiGatewayUnsupportedModels,
 				googleUrlContext,
 				githubIssuesVectorStore,
 			}}

@@ -5,6 +5,7 @@ export interface FeatureFlagContextValue {
 	layoutV3: boolean;
 	stage: boolean;
 	aiGateway: boolean;
+	aiGatewayUnsupportedModels: boolean;
 	googleUrlContext: boolean;
 	githubIssuesVectorStore: boolean;
 }

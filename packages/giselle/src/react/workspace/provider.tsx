@@ -45,6 +45,8 @@ export function WorkspaceProvider({
 				layoutV3: featureFlag?.layoutV3 ?? false,
 				stage: featureFlag?.stage ?? false,
 				aiGateway: featureFlag?.aiGateway ?? false,
+				aiGatewayUnsupportedModels:
+					featureFlag?.aiGatewayUnsupportedModels ?? false,
 				googleUrlContext: featureFlag?.googleUrlContext ?? false,
 				githubIssuesVectorStore: featureFlag?.githubIssuesVectorStore ?? false,
 			}}
