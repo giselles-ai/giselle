@@ -46,7 +46,11 @@ export function addProviderToCommand(data: unknown, issue: $ZodIssue) {
 
 		// Verify the fix was applied
 		const fixedCommand = getValueAtPath(newData, commandPath);
-		if (isObject(fixedCommand) && fixedCommand.provider === "github") {
+		if (
+			isObject(fixedCommand) &&
+			"provider" in fixedCommand &&
+			fixedCommand.provider === "github"
+		) {
 			return newData;
 		}
 	}
