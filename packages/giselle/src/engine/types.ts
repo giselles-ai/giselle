@@ -58,6 +58,7 @@ export interface GenerationCompleteCallbackFunctionArgs {
 	providerMetadata?: ProviderMetadata;
 	generationMetadata?: GenerationMetadata;
 }
+type AppCreateCallbackFunction = (args: { app: App }) => void | Promise<void>;
 type GenerationCompleteCallbackFunction = (
 	args: GenerationCompleteCallbackFunctionArgs,
 ) => void | Promise<void>;
@@ -103,6 +104,7 @@ export interface GiselleEngineContext {
 		document?: DocumentVectorStoreQueryService<Record<string, unknown>>;
 	};
 	callbacks?: {
+		appCreate?: AppCreateCallbackFunction;
 		generationComplete?: GenerationCompleteCallbackFunction;
 		generationFailed?: GenerationFailedCallbackFunction;
 		flowTriggerUpdate?: (flowTrigger: Trigger) => Promise<void>;
@@ -203,6 +205,7 @@ export interface GiselleEngineConfig {
 		document?: DocumentVectorStoreQueryService<Record<string, unknown>>;
 	};
 	callbacks?: {
+		appCreate?: AppCreateCallbackFunction;
 		generationComplete?: GenerationCompleteCallbackFunction;
 		generationFailed?: GenerationFailedCallbackFunction;
 		flowTriggerUpdate?: (flowTrigger: Trigger) => Promise<void>;
