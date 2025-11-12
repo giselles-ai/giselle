@@ -20,6 +20,7 @@ import {
 import { TriggerContent, TriggerContentReference } from "./trigger";
 
 export * from "./action";
+export * from "./app-entry";
 export * from "./image-generation";
 export * from "./query";
 export * from "./text-generation";
