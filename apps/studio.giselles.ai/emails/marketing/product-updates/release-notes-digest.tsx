@@ -1,17 +1,17 @@
 import {
 	Body,
-	Button,
 	Container,
 	Head,
 	Hr,
 	Html,
+	Img,
+	Link,
 	Preview,
 	Section,
 	Text,
 } from "@react-email/components";
 import {
 	EmailFonts,
-	EmailHeader,
 	EmailFooter,
 	main,
 	container,
@@ -19,17 +19,18 @@ import {
 	topBorder,
 	section,
 	text,
-	button,
+	signatureText,
+	link,
 	getBaseUrl,
 } from "../../components";
 
 interface ReleaseNotesDigestEmailProps {
-	version?: string;
+	userName?: string;
 	viewReleaseNotesUrl?: string;
 }
 
 export const ReleaseNotesDigestEmail = ({
-	version = "v2.1.0",
+	userName = "there",
 	viewReleaseNotesUrl = "https://giselles.ai/changelog",
 }: ReleaseNotesDigestEmailProps) => {
 	const baseUrl = getBaseUrl();
@@ -38,29 +39,61 @@ export const ReleaseNotesDigestEmail = ({
 			<Head>
 				<EmailFonts />
 			</Head>
-			<Preview>What&apos;s new in Giselle {version}</Preview>
+			<Preview>Release Notes Digest</Preview>
 			<Body style={main}>
 				<Container style={container}>
-					<EmailHeader
-						heading="New in Giselle."
-						subheading="Smarter, faster, and more connected than ever."
-						baseUrl={baseUrl}
-					/>
-					<Section style={topBorderSection}>
-						<Hr style={topBorder} />
+					<Section style={imageSection}>
+						<Img
+							src={`${baseUrl}/static/digest-202512.jpg`}
+							width="600"
+							alt="Release Notes Digest"
+							style={image}
+						/>
 					</Section>
 					<Section style={section}>
 						<Text style={text}>
-							We&apos;ve shipped {version} with new features, improvements, and
-							bug fixes.
+							Hi {userName},
 						</Text>
 						<Text style={text}>
-							Check out the full release notes to see what&apos;s changed and how
-							it can help you build better agents.
+							We&apos;ve wrapped up the year with a few exciting updates:
 						</Text>
-						<Button href={viewReleaseNotesUrl} style={button}>
-							View Release Notes
-						</Button>
+						<Text style={text}>
+							✨ New Features
+							<br />
+							• Model Switching in Node Builder
+							<br />
+							• Stage Performance Boosts (2× faster rendering)
+						</Text>
+						<Text style={text}>
+							⚙️ Improvements
+							<br />
+							• Simplified team access controls
+							<br />
+							• Cleaner workspace navigation
+						</Text>
+						<Text style={text}>
+							📘 Highlights
+							<br />
+							• Watch: &quot;Designing Flows That Think&quot; (Webinar Replay)
+							<br />
+							• Read: Top 5 Agent Templates of 2025
+						</Text>
+						<Text style={text}>
+							<Link href={viewReleaseNotesUrl} style={link}>
+								View Full Release Notes
+							</Link>
+						</Text>
+						<Text style={text}>
+							Stay inspired and keep building — your agents are ready for 2026.
+						</Text>
+						<Text style={signatureText}>
+							—<br />
+							The Giselle Team
+							<br />
+							<Link href="https://giselles.ai" style={link}>
+								https://giselles.ai
+							</Link>
+						</Text>
 					</Section>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -73,8 +106,20 @@ export const ReleaseNotesDigestEmail = ({
 };
 
 ReleaseNotesDigestEmail.PreviewProps = {
-	version: "v2.1.0",
+	userName: "John",
 	viewReleaseNotesUrl: "https://giselles.ai/changelog",
 } as ReleaseNotesDigestEmailProps;
+
+const imageSection = {
+	padding: "0",
+	margin: "0",
+};
+
+const image = {
+	width: "100%",
+	maxWidth: "600px",
+	display: "block",
+	margin: "0 auto",
+};
 
 export default ReleaseNotesDigestEmail;
