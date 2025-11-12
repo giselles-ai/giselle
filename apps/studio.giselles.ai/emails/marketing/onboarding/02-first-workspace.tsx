@@ -30,12 +30,14 @@ interface FirstWorkspaceEmailProps {
 	firstName?: string;
 	createWorkspaceUrl?: string;
 	stageUrl?: string;
+	docsUrl?: string;
 }
 
 export const FirstWorkspaceEmail = ({
 	firstName = "there",
 	createWorkspaceUrl = "https://studio.giselles.ai",
 	stageUrl = "https://studio.giselles.ai/stage",
+	docsUrl = "https://docs.giselles.ai/en/guides/introduction",
 }: FirstWorkspaceEmailProps) => {
 	const baseUrl = getBaseUrl();
 	return (
@@ -62,17 +64,27 @@ export const FirstWorkspaceEmail = ({
 							take the next step.
 							<br />
 							<br />
-							Create a dedicated workspace for your team to collaborate, share
-							agents, and manage integrations together.
+							Create a dedicated workspace for your team to collaborate, build
+							agents visually with the Node Builder, and manage integrations
+							together — all in one place.
 							<br />
 							<br />
-							Workspaces include shared versioning, role-based access, and
-							auto-generated documentation — everything built for teams.
+							Workspaces are shared within your team, allowing everyone to
+							collaborate on building and managing AI agents together. Connect
+							GitHub, use multiple AI models, and access your knowledge store —
+							everything you need to build powerful agents.
 						</Text>
 						<Button href={createWorkspaceUrl} style={button}>
 							Create your workspace
 						</Button>
 						<Text style={text}>
+							Need help getting started? Check out our{" "}
+							<Link href={docsUrl} style={link}>
+								documentation
+							</Link>
+							.
+							<br />
+							<br />
 							Or keep experimenting in your personal Stage.
 						</Text>
 						<Text style={signatureText}>
@@ -98,6 +110,7 @@ FirstWorkspaceEmail.PreviewProps = {
 	firstName: "John",
 	createWorkspaceUrl: "https://studio.giselles.ai",
 	stageUrl: "https://studio.giselles.ai/stage",
+	docsUrl: "https://docs.giselles.ai/en/guides/introduction",
 } as FirstWorkspaceEmailProps;
 
 export default FirstWorkspaceEmail;

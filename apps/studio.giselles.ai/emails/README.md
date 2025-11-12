@@ -83,8 +83,7 @@ marketing/
  ├─ onboarding/
  │   ├─ 01-welcome
  │   ├─ 02-first-workspace
- │   ├─ 03-feature-highlights
- │   └─ 04-reminder
+ │   └─ 03-reminder
  │
  ├─ product-updates/
  │   ├─ new-feature-release
