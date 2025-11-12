@@ -92,7 +92,6 @@ marketing/
  │
  ├─ campaigns/
  │   ├─ webinar-invitation
- │   ├─ community-newsletter
  │   ├─ ambassador-invite
  │   └─ feedback-survey
  │
