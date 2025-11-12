@@ -98,8 +98,7 @@ marketing/
  │
  ├─ reactivation/
  │   ├─ long-time-no-see
- │   ├─ incomplete-signup
- │   └─ workspace-inactive
+ │   └─ incomplete-signup
  │
  └─ special/
      ├─ year-in-review

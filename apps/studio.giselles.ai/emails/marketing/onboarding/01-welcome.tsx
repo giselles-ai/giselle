@@ -27,14 +27,14 @@ import {
 } from "../../components";
 
 interface WelcomeEmailProps {
-	firstName?: string;
+	userName?: string;
 	stageUrl?: string;
 	createWorkspaceUrl?: string;
 	examplesGalleryUrl?: string;
 }
 
 export const WelcomeEmail = ({
-	firstName = "there",
+	userName = "there",
 	stageUrl = "https://studio.giselles.ai/stage",
 	createWorkspaceUrl = "https://studio.giselles.ai",
 	examplesGalleryUrl = "https://giselles.ai",
@@ -58,7 +58,7 @@ export const WelcomeEmail = ({
 					</Section>
 					<Section style={section}>
 						<Text style={text}>
-							Hi {firstName},<br />
+							Hi {userName},<br />
 							<br />
 							Your account is ready, and you can now explore Giselle&apos;s
 							Stage — your personal environment to test and run your AI agents
@@ -112,7 +112,7 @@ export const WelcomeEmail = ({
 };
 
 WelcomeEmail.PreviewProps = {
-	firstName: "John",
+	userName: "John",
 	stageUrl: "https://studio.giselles.ai/stage",
 	createWorkspaceUrl: "https://studio.giselles.ai",
 	examplesGalleryUrl: "https://giselles.ai",

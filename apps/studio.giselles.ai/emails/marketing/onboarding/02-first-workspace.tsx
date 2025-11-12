@@ -27,14 +27,14 @@ import {
 } from "../../components";
 
 interface FirstWorkspaceEmailProps {
-	firstName?: string;
+	userName?: string;
 	createWorkspaceUrl?: string;
 	stageUrl?: string;
 	docsUrl?: string;
 }
 
 export const FirstWorkspaceEmail = ({
-	firstName = "there",
+	userName = "there",
 	createWorkspaceUrl = "https://studio.giselles.ai",
 	stageUrl = "https://studio.giselles.ai/stage",
 	docsUrl = "https://docs.giselles.ai/en/guides/introduction",
@@ -58,7 +58,7 @@ export const FirstWorkspaceEmail = ({
 					</Section>
 					<Section style={section}>
 						<Text style={text}>
-							Hi {firstName},<br />
+							Hi {userName},<br />
 							<br />
 							You&apos;ve explored Giselle&apos;s Stage — now it&apos;s time to
 							take the next step.
@@ -107,7 +107,7 @@ export const FirstWorkspaceEmail = ({
 };
 
 FirstWorkspaceEmail.PreviewProps = {
-	firstName: "John",
+	userName: "John",
 	createWorkspaceUrl: "https://studio.giselles.ai",
 	stageUrl: "https://studio.giselles.ai/stage",
 	docsUrl: "https://docs.giselles.ai/en/guides/introduction",

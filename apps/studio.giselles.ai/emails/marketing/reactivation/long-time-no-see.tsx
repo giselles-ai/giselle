@@ -5,6 +5,7 @@ import {
 	Head,
 	Hr,
 	Html,
+	Link,
 	Preview,
 	Section,
 	Text,
@@ -20,17 +21,23 @@ import {
 	section,
 	text,
 	button,
+	signatureText,
+	link,
 	getBaseUrl,
 } from "../../components";
 
 interface LongTimeNoSeeEmailProps {
 	userName?: string;
 	returnUrl?: string;
+	examplesGalleryUrl?: string;
+	releaseNotesUrl?: string;
 }
 
 export const LongTimeNoSeeEmail = ({
 	userName = "there",
 	returnUrl = "https://studio.giselles.ai",
+	examplesGalleryUrl = "https://giselles.ai",
+	releaseNotesUrl = "https://docs.giselles.ai/en/releases/release-notes",
 }: LongTimeNoSeeEmailProps) => {
 	const baseUrl = getBaseUrl();
 	return (
@@ -51,15 +58,47 @@ export const LongTimeNoSeeEmail = ({
 					</Section>
 					<Section style={section}>
 						<Text style={text}>
-							A lot has changed since your last visit, {userName} — new models,
-							new features, and faster deployments.
-						</Text>
-						<Text style={text}>
-							Come see what&apos;s new and continue building.
+							Hi {userName},<br />
+							<br />
+							It&apos;s been a while since you last visited Giselle.
+							<br />
+							<br />
+							Your Stage and workspace are still here — ready whenever you are.
+							<br />
+							<br />
+							We&apos;ve been busy. New templates, model updates, and
+							orchestration features have been added to make building even
+							smoother. Check out our{" "}
+							<Link href={releaseNotesUrl} style={link}>
+								release notes
+							</Link>{" "}
+							to see what&apos;s new.
+							<br />
+							<br />
+							Jump back in, explore what&apos;s new, and keep creating.
 						</Text>
 						<Button href={returnUrl} style={button}>
 							Return to Giselle
 						</Button>
+						<Text style={text}>
+							Need help or inspiration? Visit our{" "}
+							<Link href={examplesGalleryUrl} style={link}>
+								examples gallery
+							</Link>{" "}
+							or reach out anytime at{" "}
+							<Link href="mailto:support@giselles.ai" style={link}>
+								support@giselles.ai
+							</Link>
+							.
+						</Text>
+						<Text style={signatureText}>
+							—<br />
+							The Giselle Team
+							<br />
+							<Link href="https://giselles.ai" style={link}>
+								https://giselles.ai
+							</Link>
+						</Text>
 					</Section>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -74,6 +113,8 @@ export const LongTimeNoSeeEmail = ({
 LongTimeNoSeeEmail.PreviewProps = {
 	userName: "John",
 	returnUrl: "https://studio.giselles.ai",
+	examplesGalleryUrl: "https://giselles.ai",
+	releaseNotesUrl: "https://docs.giselles.ai/en/releases/release-notes",
 } as LongTimeNoSeeEmailProps;
 
 export default LongTimeNoSeeEmail;

@@ -27,14 +27,14 @@ import {
 } from "../../components";
 
 interface ReminderEmailProps {
-	firstName?: string;
+	userName?: string;
 	returnToGiselleUrl?: string;
 	examplesGalleryUrl?: string;
 	releaseNotesUrl?: string;
 }
 
 export const ReminderEmail = ({
-	firstName = "there",
+	userName = "there",
 	returnToGiselleUrl = "https://studio.giselles.ai",
 	examplesGalleryUrl = "https://giselles.ai",
 	releaseNotesUrl = "https://docs.giselles.ai/en/releases/release-notes",
@@ -45,12 +45,12 @@ export const ReminderEmail = ({
 			<Head>
 				<EmailFonts />
 			</Head>
-			<Preview>Your agents are waiting.</Preview>
+			<Preview>Your workspace is waiting 🌙</Preview>
 			<Body style={main}>
 				<Container style={container}>
 					<EmailHeader
-						heading="Your agents are waiting."
-						subheading="Come back to Giselle."
+						heading="Your workspace is waiting."
+						subheading="Create your first agent and start building."
 						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
@@ -58,30 +58,24 @@ export const ReminderEmail = ({
 					</Section>
 					<Section style={section}>
 						<Text style={text}>
-							Hi {firstName},<br />
+							Hi {userName},<br />
 							<br />
-							It&apos;s been a while since you last visited Giselle.
-							<br />
-							<br />
-							Your Stage and workspace are still here — ready whenever you are.
+							You started setting up Giselle but haven&apos;t created your
+							first agent yet.
 							<br />
 							<br />
-							We&apos;ve been busy. New templates, model updates, and
-							orchestration features have been added to make building even
-							smoother. Check out our{" "}
-							<Link href={releaseNotesUrl} style={link}>
-								release notes
-							</Link>{" "}
-							to see what&apos;s new.
+							Your workspace is ready — it only takes a few minutes to build
+							your first agent. Try Stage to test agents instantly, or create
+							your first workspace to start building visually.
 							<br />
 							<br />
-							Jump back in, explore what&apos;s new, and keep creating.
+							Pick up right where you left off and start creating.
 						</Text>
 						<Button href={returnToGiselleUrl} style={button}>
-							Return to Giselle
+							Create your first agent
 						</Button>
 						<Text style={text}>
-							Need help or inspiration? Visit our{" "}
+							Need help getting started? Check out our{" "}
 							<Link href={examplesGalleryUrl} style={link}>
 								examples gallery
 							</Link>{" "}
@@ -111,7 +105,7 @@ export const ReminderEmail = ({
 };
 
 ReminderEmail.PreviewProps = {
-	firstName: "John",
+	userName: "John",
 	returnToGiselleUrl: "https://studio.giselles.ai",
 	examplesGalleryUrl: "https://giselles.ai",
 	releaseNotesUrl: "https://docs.giselles.ai/en/releases/release-notes",
