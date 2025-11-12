@@ -19,7 +19,7 @@ export const AppParameter = z.object({
 export type AppParameter = z.infer<typeof AppParameter>;
 
 export const App = z.object({
-	id: AppId,
+	id: AppId.schema,
 	name: z.string().min(1),
 	description: z.string(),
 	iconName: z.string().min(1),

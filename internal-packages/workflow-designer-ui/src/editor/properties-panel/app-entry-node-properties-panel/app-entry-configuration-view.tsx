@@ -5,7 +5,9 @@ import {
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
 import {
+	App,
 	AppId,
+	AppParameterId,
 	type DraftApp,
 	type DraftAppParameter,
 	DraftAppParameterId,
@@ -34,12 +36,12 @@ export function AppEntryConfigurationView({
 	const [appName, setAppName] = useState(draftApp.name);
 	const [appDescription, setAppDescription] = useState(draftApp.description);
 	const [appIconName, setAppIconName] = useState<string>(draftApp.iconName);
-	const [appParameters, setAppParameters] = useState<DraftAppParameter[]>(
-		draftApp.parameters,
-	);
+	const [draftAppParameters, setDraftAppParameters] = useState<
+		DraftAppParameter[]
+	>(draftApp.parameters);
 
 	const handleAddParameter = useCallback(() => {
-		setAppParameters((prev) => [
+		setDraftAppParameters((prev) => [
 			...prev,
 			{
 				id: DraftAppParameterId.generate(),
@@ -52,8 +54,10 @@ export function AppEntryConfigurationView({
 
 	const handleRemoveParameter = useCallback(
 		(parameterId: DraftAppParameterId) => {
-			setAppParameters((prev) =>
-				prev.filter((appParameter) => appParameter.id !== parameterId),
+			setDraftAppParameters((prev) =>
+				prev.filter(
+					(draftAppParameter) => draftAppParameter.id !== parameterId,
+				),
 			);
 		},
 		[],
@@ -62,6 +66,34 @@ export function AppEntryConfigurationView({
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		(e) => {
 			e.preventDefault();
+			console.log("submit");
+			console.log({
+				id: AppId.generate(),
+				name: appName,
+				description: appDescription,
+				iconName: appIconName,
+				parameters: draftAppParameters.map((draftAppParameter) => ({
+					id: AppParameterId.generate(),
+					type: draftAppParameter.type,
+					name: draftAppParameter.name,
+					required: draftAppParameter.required,
+				})),
+			});
+			const parseResult = App.safeParse({
+				id: AppId.generate(),
+				name: appName,
+				description: appDescription,
+				iconName: appIconName,
+				parameters: draftAppParameters.map((draftAppParameter) => ({
+					id: AppParameterId.generate(),
+					type: draftAppParameter.type,
+					name: draftAppParameter.name,
+					required: draftAppParameter.required,
+				})),
+			});
+			if (!parseResult.success) {
+				console.log(parseResult.error.issues);
+			}
 			if (!appName.trim()) {
 				/** @todo error handling */
 				return;
@@ -102,7 +134,7 @@ export function AppEntryConfigurationView({
 				// });
 			});
 		},
-		[appName],
+		[appName, appDescription, appIconName, draftAppParameters],
 	);
 
 	return (
@@ -159,9 +191,9 @@ export function AppEntryConfigurationView({
 				<div className="space-y-[4px]">
 					<SettingLabel className="py-[1.5px]">Parameters</SettingLabel>
 					<div className="px-[4px] py-0 w-full bg-transparent text-[14px]">
-						{appParameters.length > 0 && (
+						{draftAppParameters.length > 0 && (
 							<div className="flex flex-col gap-[12px] mb-[16px]">
-								{appParameters.map((param, index) => (
+								{draftAppParameters.map((param, index) => (
 									<div
 										key={param.id}
 										className="relative p-[12px] bg-bg-900/10 rounded-[8px] border border-border"
@@ -188,7 +220,7 @@ export function AppEntryConfigurationView({
 													placeholder="Parameter name"
 													value={param.name}
 													onChange={(e) =>
-														setAppParameters((prev) =>
+														setDraftAppParameters((prev) =>
 															prev.map((p) =>
 																p.id === param.id
 																	? { ...p, name: e.target.value }
@@ -207,7 +239,7 @@ export function AppEntryConfigurationView({
 													placeholder="Select type..."
 													value={param.type}
 													onValueChange={(value) =>
-														setAppParameters((prev) =>
+														setDraftAppParameters((prev) =>
 															prev.map((p) =>
 																p.id === param.id
 																	? {
@@ -231,7 +263,7 @@ export function AppEntryConfigurationView({
 															type="checkbox"
 															checked={!param.required}
 															onChange={(e) =>
-																setAppParameters((prev) =>
+																setDraftAppParameters((prev) =>
 																	prev.map((p) =>
 																		p.id === param.id
 																			? {
@@ -275,7 +307,7 @@ export function AppEntryConfigurationView({
 							variant="solid"
 							className="w-full"
 							size="large"
-							disabled={isPending || !appName.trim()}
+							disabled={isPending}
 							leftIcon={
 								isPending && (
 									<SpinnerIcon className="animate-follow-through-overlap-spin size-[18px]" />
