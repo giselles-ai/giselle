@@ -5,21 +5,19 @@ import type {
 import type { LanguageModelProvider } from "@giselles-ai/language-model";
 import type {
 	Act,
+	CompletedGeneration,
 	EmbeddingProfileId,
+	FailedGeneration,
+	GenerationOrigin,
+	OutputFileBlob,
+	RunningGeneration,
 	Trigger,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import type { EmbeddingMetrics, QueryService } from "@giselles-ai/rag";
 import type { ModelMessage, ProviderMetadata } from "ai";
 import type { GiselleLogger } from "../logger/types";
-import type {
-	CompletedGeneration,
-	FailedGeneration,
-	GenerationMetadata,
-	GenerationOrigin,
-	OutputFileBlob,
-	RunningGeneration,
-} from "./generations";
+import type { GenerationMetadata } from "./generations";
 import type { GiselleStorage } from "./storage";
 import type { TelemetrySettings } from "./telemetry";
 import type { UsageLimits } from "./usage-limits";
