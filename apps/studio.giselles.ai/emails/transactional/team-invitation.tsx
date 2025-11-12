@@ -98,8 +98,8 @@ export const TeamInvitationEmail = ({
 						<Heading style={h1}>Team Invitation</Heading>
 						<Text style={text}>
 							You&apos;ve been invited to join the team{" "}
-							<strong>{displayTeamName}</strong> by{" "}
-							<strong>{_displayInviterEmail}</strong>.
+							<strong style={highlightText}>{displayTeamName}</strong> by{" "}
+							<strong style={highlightText}>{_displayInviterEmail}</strong>.
 						</Text>
 						<Text style={text}>
 							Click the button below to accept and access your shared workspace.
@@ -360,6 +360,18 @@ const signatureText = {
 const link = {
 	color: "#007ee6",
 	textDecoration: "none",
+};
+
+const highlightText = {
+	backgroundColor: "#C3DCF8",
+	padding: "0px 4px",
+	paddingBottom: "3px",
+	color: "#333",
+	fontWeight: "bold",
+	lineHeight: "0.5",
+	display: "inline-block",
+	verticalAlign: "baseline",
+	marginTop: "2px",
 };
 
 const footerContainer = {
