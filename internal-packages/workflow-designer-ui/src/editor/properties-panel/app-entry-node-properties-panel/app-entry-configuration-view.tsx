@@ -5,12 +5,18 @@ import {
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
 import {
+	useGiselleEngine,
+	useWorkflowDesigner,
+} from "@giselles-ai/giselle/react";
+import {
 	App,
+	type AppEntryNode,
 	AppId,
 	AppParameterId,
 	type DraftApp,
 	type DraftAppParameter,
 	DraftAppParameterId,
+	OutputId,
 } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { PlusIcon, TrashIcon } from "lucide-react";
@@ -80,8 +86,10 @@ function parseZodErrors(treeifiedError: TreeifiedError): ValidationErrors {
 }
 
 export function AppEntryConfigurationView({
+	node,
 	draftApp,
 }: {
+	node: AppEntryNode;
 	draftApp: DraftApp;
 }) {
 	const [isPending, startTransition] = useTransition();
@@ -94,6 +102,8 @@ export function AppEntryConfigurationView({
 	const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
 		{},
 	);
+	const client = useGiselleEngine();
+	const { updateNodeData } = useWorkflowDesigner();
 
 	const handleAddParameter = useCallback(() => {
 		setDraftAppParameters((prev) => [
@@ -121,8 +131,9 @@ export function AppEntryConfigurationView({
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		(e) => {
 			e.preventDefault();
+			const appId = AppId.generate();
 			const parseResult = App.safeParse({
-				id: AppId.generate(),
+				id: appId,
 				name: appName,
 				description: appDescription,
 				iconName: appIconName,
@@ -140,42 +151,32 @@ export function AppEntryConfigurationView({
 			}
 			setValidationErrors({});
 
-			startTransition(() => {
-				const _appId = AppId.generate();
-
-				// TODO: Create App via API
-				// For now, we'll create the app structure locally
-				// This should be replaced with: await client.createApp({ app: { id: appId, name: appName, parameters } });
-				// const app: App = {
-				// 	id: appId,
-				// 	name: appName,
-				// 	description: "",
-				// 	iconName: "",
-				// 	parameters: parameterFormValues.map((parameterFormValue) => ({
-				// 		id: AppParameterId.generate(),
-				// 		name: parameterFormValue.name,
-				// 		type: parameterFormValue.type,
-				// 		required: parameterFormValue.required,
-				// 	})),
-				// };
-
-				// const outputs: Output[] = app.parameters.map((param) => ({
-				// 	id: OutputId.generate(),
-				// 	label: param.name,
-				// 	accessor: param.id,
-				// }));
-
-				// updateNodeDataContent(node, {
-				// 	status: "configured",
-				// 	appId,
-				// } as Partial<typeof node.content>);
-				// updateNodeData(node, {
-				// 	outputs,
-				// 	name: app.name,
-				// });
+			startTransition(async () => {
+				await client.saveApp({ app: parseResult.data });
+				updateNodeData(node, {
+					name: parseResult.data.name,
+					outputs: parseResult.data.parameters.map((parameter) => ({
+						id: OutputId.generate(),
+						label: parameter.name,
+						accessor: parameter.id,
+					})),
+					content: {
+						...node.content,
+						status: "configured",
+						appId,
+					},
+				});
 			});
 		},
-		[appName, appDescription, appIconName, draftAppParameters],
+		[
+			appName,
+			appDescription,
+			appIconName,
+			draftAppParameters,
+			client,
+			node,
+			updateNodeData,
+		],
 	);
 
 	return (
