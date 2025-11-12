@@ -100,9 +100,10 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 								support@giselles.ai
 							</Link>
 						</Text>
-						<Text style={signatureText}>—</Text>
-						<Text style={signatureText}>The Giselle Team</Text>
 						<Text style={signatureText}>
+							—<br />
+							The Giselle Team
+							<br />
 							<Link href="https://giselles.ai" style={link}>
 								https://giselles.ai
 							</Link>
@@ -353,7 +354,7 @@ const signatureText = {
 	color: "#525f7f",
 	fontSize: "14px",
 	lineHeight: "20px",
-	marginBottom: "8px",
+	marginBottom: "2px",
 	fontFamily:
 		'"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
 };
