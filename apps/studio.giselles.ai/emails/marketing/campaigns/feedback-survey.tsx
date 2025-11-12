@@ -20,6 +20,7 @@ import {
 	section,
 	text,
 	button,
+	signatureText,
 	getBaseUrl,
 } from "../../components";
 
@@ -38,12 +39,12 @@ export const FeedbackSurveyEmail = ({
 			<Head>
 				<EmailFonts />
 			</Head>
-			<Preview>Help us improve Giselle</Preview>
+			<Preview>We'd love your feedback</Preview>
 			<Body style={main}>
 				<Container style={container}>
 					<EmailHeader
-						heading="Let's grow together."
-						subheading="Become a Giselle Ambassador."
+						heading="We'd love your feedback."
+						subheading="Your thoughts help us make Giselle better."
 						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
@@ -51,15 +52,22 @@ export const FeedbackSurveyEmail = ({
 					</Section>
 					<Section style={section}>
 						<Text style={text}>
-							Hi {userName}, your feedback helps us build a better Giselle.
-						</Text>
-						<Text style={text}>
-							Take a quick survey and share your thoughts. It only takes a few
-							minutes, and your input shapes our roadmap.
+							Hi {userName},<br />
+							<br />
+							We&apos;re collecting quick feedback from builders like you.
+							<br />
+							<br />
+							It only takes 30 seconds — and helps shape our next release.
 						</Text>
 						<Button href={surveyUrl} style={button}>
-							Take Survey
+							Share Feedback
 						</Button>
+						<Text style={signatureText}>
+							Thanks for being part of the journey.
+							<br />
+							—<br />
+							The Giselle Team
+						</Text>
 					</Section>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
