@@ -157,15 +157,27 @@ marketing/
 
 #### 🔐 Footer Guideline
 
-Common footer (insert in all marketing emails):
+Common footer (insert in all marketing emails - same structure as transactional emails):
 
-```
-Need help? Contact support@giselles.ai
+**Structure:**
+1. Footer logo (`letter_footer-logo.png`) with reduced opacity (0.3)
+2. Links: Product / Blog / Documentation (horizontal, separated by " / ")
+3. Social media icons (GitHub, LinkedIn, Facebook, X, Instagram, YouTube)
+4. Copyright: `© {current year} Giselle`
+5. Explanation text: "You received this email because you signed up for Giselle—a platform for building AI agents."
 
-You're receiving this email because you opted in to updates from Giselle.
+**Links:**
+- Product: `https://studio.giselles.ai`
+- Blog: `https://giselles.ai/blog`
+- Documentation: `https://docs.giselles.ai/en/guides/introduction`
 
-© 2025 Giselle, Inc. All rights reserved.
-```
+**Social Media Links:**
+- GitHub: `https://github.com/giselles-ai/giselle`
+- LinkedIn: `https://www.linkedin.com/showcase/giselles-ai/`
+- Facebook: `https://www.facebook.com/GiselleAI/`
+- X: `https://x.com/Giselles_AI`
+- Instagram: `https://www.instagram.com/giselle_de_ai`
+- YouTube: `https://www.youtube.com/@Giselle_AI`
 
 #### 📏 Content Tips
 
