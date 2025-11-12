@@ -33,6 +33,7 @@ import {
 	startAct,
 	streamAct,
 } from "./acts";
+import { saveApp } from "./apps";
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";
 import { copyFile, getFileText, removeFile, uploadFile } from "./files";
 import {
@@ -340,6 +341,9 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		},
 		runAct(args: RunActInputs) {
 			return runAct({ ...args, context });
+		},
+		saveApp(args) {
+			return saveApp({ ...args, context });
 		},
 	};
 }
