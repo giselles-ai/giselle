@@ -65,7 +65,7 @@ export const ChangeEmailAddressEmail = ({
 							Confirm Change of Email
 						</Text>
 						<Text style={text}>
-							Follow this link to confirm the update of your email from{" "}
+					Follow this link to confirm the update of your email from{" "}
 							<strong>{displayEmail}</strong> to{" "}
 							<strong>{displayNewEmail}</strong>:
 						</Text>
