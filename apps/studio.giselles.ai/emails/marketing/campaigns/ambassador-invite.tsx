@@ -5,6 +5,8 @@ import {
 	Head,
 	Hr,
 	Html,
+	Img,
+	Link,
 	Preview,
 	Section,
 	Text,
@@ -20,6 +22,8 @@ import {
 	section,
 	text,
 	button,
+	signatureText,
+	link,
 	getBaseUrl,
 } from "../../components";
 
@@ -41,26 +45,38 @@ export const AmbassadorInviteEmail = ({
 			<Preview>Join the Giselle Ambassador Program 🪶</Preview>
 			<Body style={main}>
 				<Container style={container}>
-					<EmailHeader
-						heading="Let's grow together."
-						subheading="Become a Giselle Ambassador."
-						baseUrl={baseUrl}
-					/>
-					<Section style={topBorderSection}>
-						<Hr style={topBorder} />
+					<EmailHeader baseUrl={baseUrl} />
+					<Section style={imageSection}>
+						<Img
+							src={`${baseUrl}/static/ambassador-invite.jpg`}
+							width="600"
+							alt="Giselle Ambassador Program"
+							style={image}
+						/>
 					</Section>
 					<Section style={section}>
 						<Text style={text}>
-							We&apos;re inviting creators and developers like you, {userName},
-							to join our early ambassador program.
+							Hi {userName},
 						</Text>
 						<Text style={text}>
-							Share your workflows, build templates, and shape the next
-							generation of AI builders.
+							We&apos;re inviting a select group of creators and developers to
+							join the early Giselle Ambassador Program.
+						</Text>
+						<Text style={text}>
+							As an ambassador, you&apos;ll gain early access to new features,
+							shape upcoming releases, and help define how teams build with AI.
 						</Text>
 						<Button href={applyUrl} style={button}>
 							Apply Now
 						</Button>
+						<Text style={signatureText}>
+							—<br />
+							The Giselle Team
+							<br />
+							<Link href="https://giselles.ai" style={link}>
+								https://giselles.ai
+							</Link>
+						</Text>
 					</Section>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -76,5 +92,17 @@ AmbassadorInviteEmail.PreviewProps = {
 	userName: "John",
 	applyUrl: "https://giselles.ai/ambassador",
 } as AmbassadorInviteEmailProps;
+
+const imageSection = {
+	padding: "0",
+	margin: "0",
+};
+
+const image = {
+	width: "100%",
+	maxWidth: "600px",
+	display: "block",
+	margin: "0 auto",
+};
 
 export default AmbassadorInviteEmail;
