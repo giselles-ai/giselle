@@ -1,12 +1,12 @@
+import { render } from "@react-email/components";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import type { TeamRole, UserId } from "@/db";
 import { db } from "@/db";
 import { invitations, teamMemberships, teams, users } from "@/db/schema";
+import TeamInvitationEmail from "@/emails/transactional/team-invitation";
 import { sendEmail } from "@/services/external/email";
 import { type CurrentTeam, fetchCurrentTeam } from "@/services/teams";
 import { hasTeamPlanFeatures } from "@/services/teams/utils";
-import { render } from "@react-email/components";
-import TeamInvitationEmail from "@/emails/transactional/team-invitation";
 
 export type Invitation = typeof invitations.$inferSelect;
 
