@@ -5,6 +5,7 @@ import {
 	Head,
 	Hr,
 	Html,
+	Link,
 	Preview,
 	Section,
 	Text,
@@ -20,20 +21,22 @@ import {
 	section,
 	text,
 	button,
+	signatureText,
+	link,
 	getBaseUrl,
 } from "../../components";
 
 interface WebinarInvitationEmailProps {
 	userName?: string;
-	webinarTitle?: string;
 	webinarDate?: string;
+	webinarTime?: string;
 	joinUrl?: string;
 }
 
 export const WebinarInvitationEmail = ({
 	userName = "there",
-	webinarTitle = "Building AI Agents with Giselle",
-	webinarDate = "January 15, 2025 at 2:00 PM EST",
+	webinarDate = "January 15, 2025",
+	webinarTime = "2:00 PM EST",
 	joinUrl = "https://giselles.ai/webinar",
 }: WebinarInvitationEmailProps) => {
 	const baseUrl = getBaseUrl();
@@ -42,7 +45,7 @@ export const WebinarInvitationEmail = ({
 			<Head>
 				<EmailFonts />
 			</Head>
-			<Preview>Join us for {webinarTitle}</Preview>
+			<Preview>Join us for Building AI Agents with Giselle</Preview>
 			<Body style={main}>
 				<Container style={container}>
 					<EmailHeader
@@ -55,17 +58,32 @@ export const WebinarInvitationEmail = ({
 					</Section>
 					<Section style={section}>
 						<Text style={text}>
-							Hi {userName}, we&apos;re hosting a webinar: &quot;
-							{webinarTitle}&quot;
+							Hi {userName},
 						</Text>
-						<Text style={text}>Date: {webinarDate}</Text>
 						<Text style={text}>
-							Learn how to build powerful AI agents and get your questions
-							answered by our team.
+							We&apos;re hosting a live webinar: &quot;Building AI Agents with
+							Giselle.&quot;
+						</Text>
+						<Text style={text}>
+							🗓️ Date: {webinarDate}
+							<br />
+							⏰ Time: {webinarTime}
+						</Text>
+						<Text style={text}>
+							Learn how to design, deploy, and scale AI agents — and get your
+							questions answered directly by our team.
 						</Text>
 						<Button href={joinUrl} style={button}>
 							Join Event
 						</Button>
+						<Text style={signatureText}>
+							—<br />
+							The Giselle Team
+							<br />
+							<Link href="https://giselles.ai" style={link}>
+								https://giselles.ai
+							</Link>
+						</Text>
 					</Section>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -79,8 +97,8 @@ export const WebinarInvitationEmail = ({
 
 WebinarInvitationEmail.PreviewProps = {
 	userName: "John",
-	webinarTitle: "Building AI Agents with Giselle",
-	webinarDate: "January 15, 2025 at 2:00 PM EST",
+	webinarDate: "January 15, 2025",
+	webinarTime: "2:00 PM EST",
 	joinUrl: "https://giselles.ai/webinar",
 } as WebinarInvitationEmailProps;
 
