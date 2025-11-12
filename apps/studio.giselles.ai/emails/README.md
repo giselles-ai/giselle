@@ -81,10 +81,10 @@ All emails belong to one of these three categories:
 ```
 marketing/
  ├─ onboarding/
- │   ├─ welcome-series-1-intro
- │   ├─ welcome-series-2-features
- │   ├─ welcome-series-3-first-agent
- │   └─ trial-ending-reminder
+ │   ├─ 01-welcome
+ │   ├─ 02-first-workspace
+ │   ├─ 03-feature-highlights
+ │   └─ 04-reminder
  │
  ├─ product-updates/
  │   ├─ new-feature-release
@@ -120,12 +120,12 @@ marketing/
 
 #### 🪄 Example Templates
 
-**🩵 Onboarding → welcome-series-1-intro**
+**🩵 Onboarding → 01-welcome**
 
-- **Subject**: Welcome to Giselle — where ideas become agents.
+- **Subject**: Welcome to Giselle — your AI workspace starts here 🪶
 - **Header**: Welcome to Giselle. / Your journey to build AI agents begins here.
-- **Body**: We're thrilled to have you on board. Start by creating your first workspace — it only takes a few minutes.
-- **CTA**: [Get Started]
+- **Body**: Hi {{firstName}}, We're thrilled to have you on board. Start by creating your first workspace — it only takes a few minutes.
+- **CTA**: [Create your workspace]
 
 **💎 Product Updates → new-feature-release**
 

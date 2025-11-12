@@ -46,8 +46,8 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 			<Body style={main}>
 				<Container style={container}>
 					<EmailHeader
-						heading="Welcome to Giselle."
-						subheading="Your journey to build AI agents begins here."
+						heading="Verify your email."
+						subheading="Your workspace is almost ready."
 						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
