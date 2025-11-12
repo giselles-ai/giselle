@@ -27,11 +27,15 @@ import {
 } from "../../components";
 
 interface FirstWorkspaceEmailProps {
-	tutorialUrl?: string;
+	firstName?: string;
+	createWorkspaceUrl?: string;
+	stageUrl?: string;
 }
 
 export const FirstWorkspaceEmail = ({
-	tutorialUrl = "https://docs.giselles.ai/en/guides/introduction",
+	firstName = "there",
+	createWorkspaceUrl = "https://studio.giselles.ai",
+	stageUrl = "https://studio.giselles.ai/stage",
 }: FirstWorkspaceEmailProps) => {
 	const baseUrl = getBaseUrl();
 	return (
@@ -39,12 +43,12 @@ export const FirstWorkspaceEmail = ({
 			<Head>
 				<EmailFonts />
 			</Head>
-			<Preview>Build your first agent in 3 minutes ⚡</Preview>
+			<Preview>Ready to collaborate? Create your workspace 🛠️</Preview>
 			<Body style={main}>
 				<Container style={container}>
 					<EmailHeader
-						heading="Your first workspace."
-						subheading="Ready when you are."
+						heading="Ready to collaborate?"
+						subheading="Create your workspace."
 						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
@@ -52,15 +56,25 @@ export const FirstWorkspaceEmail = ({
 					</Section>
 					<Section style={section}>
 						<Text style={text}>
-							In Giselle, you can design multi-model AI workflows visually.
+							Hi {firstName},<br />
+							<br />
+							You&apos;ve explored Giselle&apos;s Stage — now it&apos;s time to
+							take the next step.
+							<br />
+							<br />
+							Create a dedicated workspace for your team to collaborate, share
+							agents, and manage integrations together.
+							<br />
+							<br />
+							Workspaces include shared versioning, role-based access, and
+							auto-generated documentation — everything built for teams.
 						</Text>
-						<Text style={text}>
-							Follow this short tutorial to create your first agent and connect
-							it to GitHub or Vercel.
-						</Text>
-						<Button href={tutorialUrl} style={button}>
-							Open the tutorial
+						<Button href={createWorkspaceUrl} style={button}>
+							Create your workspace
 						</Button>
+						<Text style={text}>
+							Or keep experimenting in your personal Stage.
+						</Text>
 						<Text style={signatureText}>
 							—<br />
 							The Giselle Team
@@ -81,7 +95,9 @@ export const FirstWorkspaceEmail = ({
 };
 
 FirstWorkspaceEmail.PreviewProps = {
-	tutorialUrl: "https://docs.giselles.ai/en/guides/introduction",
+	firstName: "John",
+	createWorkspaceUrl: "https://studio.giselles.ai",
+	stageUrl: "https://studio.giselles.ai/stage",
 } as FirstWorkspaceEmailProps;
 
 export default FirstWorkspaceEmail;
