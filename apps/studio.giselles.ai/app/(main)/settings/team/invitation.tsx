@@ -1,4 +1,4 @@
-import { render } from "@react-email/components";
+import { render, toPlainText } from "@react-email/components";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import type { TeamRole, UserId } from "@/db";
 import { db } from "@/db";
@@ -127,23 +127,25 @@ export async function sendInvitationEmail(invitation: Invitation) {
 	}
 	const teamName = team[0].name;
 
-	const teamInvitationEmail = await render(
+	const emailHtml = await render(
 		<TeamInvitationEmail
 			teamName={teamName}
 			inviterEmail={inviter.email}
 			joinUrl={buildJoinLink(invitation.token)}
 		/>,
 	);
+	const emailText = toPlainText(emailHtml);
 
 	await sendEmail(
 		`Invitation to join ${teamName} on Giselle`,
-		teamInvitationEmail,
+		emailText,
 		[
 			{
 				userDisplayName: "",
 				userEmail: invitation.email,
 			},
 		],
+		{ html: emailHtml },
 	);
 }
 
