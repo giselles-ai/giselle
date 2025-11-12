@@ -1,3 +1,4 @@
+import { isClonedFileDataPayload } from "@giselles-ai/node-registry";
 import {
 	createFailedFileData,
 	createUploadedFileData,
@@ -112,21 +113,52 @@ export const createFileSlice: StateCreator<AppStore, [], [], FileSlice> = (
 				),
 		) as FileNode | undefined;
 
-		// Remove from storage only for uploaded files; otherwise just update state
-		if (file.status === "uploaded") {
+		if (parentNode === undefined) {
+			return;
+		}
+
+		// Get the actual file ID in storage (for cloned files, use the original ID)
+		const actualFileId = isClonedFileDataPayload(file)
+			? file.originalFileIdForCopy
+			: file.id;
+
+		// Count how many nodes reference this file (excluding the current deletion)
+		let referenceCount = 0;
+		for (const node of allNodes) {
+			if (!isFileNode(node)) {
+				continue;
+			}
+
+			for (const f of node.content.files) {
+				// Skip the file being deleted from the current node
+				if (node.id === parentNode.id && f.id === file.id) {
+					continue;
+				}
+
+				// Get the file ID this file references
+				const refFileId = isClonedFileDataPayload(f)
+					? f.originalFileIdForCopy
+					: f.id;
+
+				if (refFileId === actualFileId) {
+					referenceCount++;
+				}
+			}
+		}
+
+		// Only remove from storage if no other nodes reference this file
+		if (referenceCount === 0 && file.status === "uploaded") {
 			await client.removeFile({
 				workspaceId: workspaceId,
-				fileId: file.id,
+				fileId: actualFileId,
 			});
 		}
 
-		// If the parent node is still present in state, reflect the deletion
-		if (parentNode) {
-			const currentFiles = parentNode.content.files;
-			get().updateFileStatus(
-				parentNode.id,
-				currentFiles.filter((f) => f.id !== file.id),
-			);
-		}
+		// Always remove from UI state
+		const currentFiles = parentNode.content.files;
+		get().updateFileStatus(
+			parentNode.id,
+			currentFiles.filter((f) => f.id !== file.id),
+		);
 	},
 });
