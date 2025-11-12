@@ -12,6 +12,7 @@ import {
 	type DraftAppParameter,
 	DraftAppParameterId,
 } from "@giselles-ai/protocol";
+import clsx from "clsx/lite";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import {
 	type FormEventHandler,
@@ -19,6 +20,7 @@ import {
 	useState,
 	useTransition,
 } from "react";
+import * as z from "zod/v4";
 import { SpinnerIcon } from "../../../icons";
 
 const TYPE_OPTIONS = [
@@ -26,6 +28,56 @@ const TYPE_OPTIONS = [
 	{ value: "multiline-text", label: "Text (multi-line)" },
 	{ value: "number", label: "Number" },
 ];
+
+type ValidationErrors = {
+	name?: string;
+	iconName?: string;
+	parameters?: Record<number, { name?: string }>;
+};
+
+type TreeifiedError = {
+	errors: string[];
+	properties?: {
+		[key: string]:
+			| TreeifiedError
+			| { errors: string[]; items?: TreeifiedError[] };
+	};
+	items?: TreeifiedError[];
+};
+
+function parseZodErrors(treeifiedError: TreeifiedError): ValidationErrors {
+	const errors: ValidationErrors = {};
+
+	if (treeifiedError.properties) {
+		// Handle top-level properties (name, iconName)
+		if (treeifiedError.properties.name?.errors?.[0]) {
+			errors.name = treeifiedError.properties.name.errors[0];
+		}
+		if (treeifiedError.properties.iconName?.errors?.[0]) {
+			errors.iconName = treeifiedError.properties.iconName.errors[0];
+		}
+
+		// Handle parameters array
+		const parametersProperty = treeifiedError.properties.parameters;
+		if (
+			parametersProperty &&
+			"items" in parametersProperty &&
+			parametersProperty.items
+		) {
+			errors.parameters = {};
+			for (let i = 0; i < parametersProperty.items.length; i++) {
+				const item = parametersProperty.items[i];
+				if (item.properties?.name?.errors?.[0]) {
+					errors.parameters[i] = {
+						name: item.properties.name.errors[0],
+					};
+				}
+			}
+		}
+	}
+
+	return errors;
+}
 
 export function AppEntryConfigurationView({
 	draftApp,
@@ -39,6 +91,9 @@ export function AppEntryConfigurationView({
 	const [draftAppParameters, setDraftAppParameters] = useState<
 		DraftAppParameter[]
 	>(draftApp.parameters);
+	const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
+		{},
+	);
 
 	const handleAddParameter = useCallback(() => {
 		setDraftAppParameters((prev) => [
@@ -66,19 +121,6 @@ export function AppEntryConfigurationView({
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		(e) => {
 			e.preventDefault();
-			console.log("submit");
-			console.log({
-				id: AppId.generate(),
-				name: appName,
-				description: appDescription,
-				iconName: appIconName,
-				parameters: draftAppParameters.map((draftAppParameter) => ({
-					id: AppParameterId.generate(),
-					type: draftAppParameter.type,
-					name: draftAppParameter.name,
-					required: draftAppParameter.required,
-				})),
-			});
 			const parseResult = App.safeParse({
 				id: AppId.generate(),
 				name: appName,
@@ -92,15 +134,14 @@ export function AppEntryConfigurationView({
 				})),
 			});
 			if (!parseResult.success) {
-				console.log(parseResult.error.issues);
-			}
-			if (!appName.trim()) {
-				/** @todo error handling */
+				const treeifiedError = z.treeifyError(parseResult.error);
+				setValidationErrors(parseZodErrors(treeifiedError));
 				return;
 			}
+			setValidationErrors({});
 
 			startTransition(() => {
-				const appId = AppId.generate();
+				const _appId = AppId.generate();
 
 				// TODO: Create App via API
 				// For now, we'll create the app structure locally
@@ -152,10 +193,28 @@ export function AppEntryConfigurationView({
 									type="text"
 									placeholder="Enter app name"
 									value={appName}
-									onChange={(e) => setAppName(e.target.value)}
-									className="w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]"
+									onChange={(e) => {
+										setAppName(e.target.value);
+										if (validationErrors.name) {
+											setValidationErrors((prev) => ({
+												...prev,
+												name: undefined,
+											}));
+										}
+									}}
+									className={clsx(
+										"w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]",
+										validationErrors.name
+											? "border border-red-500"
+											: "border-none",
+									)}
 									data-1p-ignore
 								/>
+								{validationErrors.name && (
+									<span className="text-[12px] text-red-500">
+										{validationErrors.name}
+									</span>
+								)}
 							</div>
 
 							<div className="flex flex-col gap-[4px]">
@@ -178,10 +237,28 @@ export function AppEntryConfigurationView({
 									type="text"
 									placeholder="Enter icon name"
 									value={appIconName}
-									onChange={(e) => setAppIconName(e.target.value)}
-									className="w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]"
+									onChange={(e) => {
+										setAppIconName(e.target.value);
+										if (validationErrors.iconName) {
+											setValidationErrors((prev) => ({
+												...prev,
+												iconName: undefined,
+											}));
+										}
+									}}
+									className={clsx(
+										"w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]",
+										validationErrors.iconName
+											? "border border-red-500"
+											: "border-none",
+									)}
 									data-1p-ignore
 								/>
+								{validationErrors.iconName && (
+									<span className="text-[12px] text-red-500">
+										{validationErrors.iconName}
+									</span>
+								)}
 							</div>
 						</div>
 					</div>
@@ -219,18 +296,49 @@ export function AppEntryConfigurationView({
 													type="text"
 													placeholder="Parameter name"
 													value={param.name}
-													onChange={(e) =>
+													onChange={(e) => {
 														setDraftAppParameters((prev) =>
 															prev.map((p) =>
 																p.id === param.id
 																	? { ...p, name: e.target.value }
 																	: p,
 															),
-														)
-													}
-													className="w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]"
+														);
+														if (validationErrors.parameters?.[index]?.name) {
+															setValidationErrors((prev) => {
+																const newErrors = { ...prev };
+																if (newErrors.parameters?.[index]) {
+																	const newParams = {
+																		...newErrors.parameters,
+																	};
+																	delete newParams[index].name;
+																	if (
+																		Object.keys(newParams[index]).length === 0
+																	) {
+																		delete newParams[index];
+																	}
+																	newErrors.parameters =
+																		Object.keys(newParams).length > 0
+																			? newParams
+																			: undefined;
+																}
+																return newErrors;
+															});
+														}
+													}}
+													className={clsx(
+														"w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]",
+														validationErrors.parameters?.[index]?.name
+															? "border border-red-500"
+															: "border-none",
+													)}
 													data-1p-ignore
 												/>
+												{validationErrors.parameters?.[index]?.name && (
+													<span className="text-[12px] text-red-500">
+														{validationErrors.parameters[index].name}
+													</span>
+												)}
 											</div>
 											<div className="flex flex-col gap-[4px]">
 												<SettingDetail>Type *</SettingDetail>
