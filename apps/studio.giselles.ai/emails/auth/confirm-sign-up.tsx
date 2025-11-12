@@ -4,6 +4,7 @@ import {
 	Font,
 	Head,
 	Heading,
+	Hr,
 	Html,
 	Img,
 	Link,
@@ -67,7 +68,7 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 						<Img
 							src={`${baseUrl}/static/logo.png`}
 							width="140"
-							height="auto"
+							height="70"
 							alt="Giselle"
 							style={logo}
 						/>
@@ -75,6 +76,9 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 						<Text style={welcomeText}>
 							Your journey to build AI agents begins here.
 						</Text>
+					</Section>
+					<Section style={topBorderSection}>
+						<Hr style={topBorder} />
 					</Section>
 					<Section style={section}>
 						<Heading style={h1}>You&apos;re almost in!</Heading>
@@ -87,11 +91,25 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 						</Text>
 						<Text style={footerText}>This code will expire in 1 hour.</Text>
 						<Text style={footerText}>
+							If you didn&apos;t request this code, you can safely ignore this
+							email.
+						</Text>
+						<Text style={footerText}>
 							Need a hand?{" "}
 							<Link href="mailto:support@giselles.ai" style={link}>
 								support@giselles.ai
 							</Link>
 						</Text>
+						<Text style={signatureText}>—</Text>
+						<Text style={signatureText}>The Giselle Team</Text>
+						<Text style={signatureText}>
+							<Link href="https://giselles.ai" style={link}>
+								https://giselles.ai
+							</Link>
+						</Text>
+					</Section>
+					<Section style={topBorderSection}>
+						<Hr style={topBorder} />
 					</Section>
 				</Container>
 				<Container style={footerContainer}>
@@ -99,7 +117,7 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 						<Img
 							src={`${baseUrl}/static/letter_footer-logo.png`}
 							width="100"
-							height="auto"
+							height="39"
 							alt="Giselle"
 							style={footerLogo}
 						/>
@@ -191,7 +209,7 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 							</Link>
 						</Section>
 						<Text style={footerCopyright}>
-							© {new Date().getFullYear()} Giselle, Inc. All rights reserved.
+							© {new Date().getFullYear()} Giselle
 						</Text>
 						<Text style={footerExplanation}>
 							You received this email because you signed up for{" "}
@@ -226,6 +244,19 @@ const container = {
 	marginBottom: "32px",
 };
 
+const topBorderSection = {
+	padding: "0",
+	margin: "0",
+};
+
+const topBorder = {
+	borderColor: "#64759B",
+	borderWidth: "4px 0 0 0",
+	borderStyle: "solid",
+	margin: "0",
+	width: "100%",
+};
+
 const logoSection = {
 	backgroundColor: "#010318",
 	padding: "24px 48px",
@@ -236,7 +267,6 @@ const logo = {
 	margin: "0 auto",
 	display: "block",
 	maxWidth: "140px",
-	height: "auto",
 };
 
 const welcomeHeading = {
@@ -319,6 +349,15 @@ const footerText = {
 		'"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
 };
 
+const signatureText = {
+	color: "#525f7f",
+	fontSize: "14px",
+	lineHeight: "20px",
+	marginBottom: "8px",
+	fontFamily:
+		'"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
+};
+
 const link = {
 	color: "#007ee6",
 	textDecoration: "none",
@@ -340,7 +379,6 @@ const footerLogo = {
 	margin: "0 auto 16px",
 	display: "block",
 	maxWidth: "100px",
-	height: "auto",
 	opacity: 0.3,
 };
 
