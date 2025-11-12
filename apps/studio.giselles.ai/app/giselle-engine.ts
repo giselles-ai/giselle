@@ -18,6 +18,7 @@ import {
 } from "@giselles-ai/supabase-driver";
 import { tasks as jobs } from "@trigger.dev/sdk";
 import type { ModelMessage, ProviderMetadata } from "ai";
+import { eq } from "drizzle-orm";
 import { apps, db } from "@/db";
 import { waitForLangfuseFlush } from "@/instrumentation.node";
 import { GenerationMetadata } from "@/lib/generation-metadata";
@@ -251,6 +252,9 @@ export const giselleEngine = NextGiselleEngine({
 				teamDbId: currentTeam.dbId,
 				workspaceDbId: workspace.dbId,
 			});
+		},
+		appDelete: async ({ appId }) => {
+			await db.delete(apps).where(eq(apps.id, appId));
 		},
 		generationComplete: async (args) => {
 			if (runtimeEnv === "trigger.dev") {
