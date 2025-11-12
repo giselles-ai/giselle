@@ -5,6 +5,7 @@ import type {
 import type { LanguageModelProvider } from "@giselles-ai/language-model";
 import type {
 	Act,
+	App,
 	CompletedGeneration,
 	EmbeddingProfileId,
 	FailedGeneration,
