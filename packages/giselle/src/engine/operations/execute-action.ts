@@ -15,21 +15,19 @@ import {
 	updatePullRequest,
 } from "@giselles-ai/github-tool";
 import {
+	type GenerationContext,
+	type GenerationOutput,
 	type GitHubActionConfiguredState,
 	isActionNode,
 	isTextNode,
 	type NodeId,
 	type OutputId,
+	type QueuedGeneration,
 } from "@giselles-ai/protocol";
 import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
-import type {
-	GenerationContext,
-	GenerationOutput,
-	QueuedGeneration,
-} from "../generations";
 import { useGenerationExecutor } from "../generations/internal/use-generation-executor";
 import type { GiselleEngineContext } from "../types";
 

@@ -5,9 +5,8 @@ import {
 	getPullRequestReviewComment,
 	type WebhookEvent,
 } from "@giselles-ai/github-tool";
-import type { Output, Trigger } from "@giselles-ai/protocol";
+import type { GenerationOutput, Output, Trigger } from "@giselles-ai/protocol";
 import type { githubEvents } from "@giselles-ai/trigger-registry";
-import type { GenerationOutput } from "../generations";
 import { parseCommand } from "./utils";
 
 interface ResolveTriggerArgs {
