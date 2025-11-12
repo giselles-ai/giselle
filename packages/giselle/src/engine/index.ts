@@ -33,6 +33,7 @@ import {
 	startAct,
 	streamAct,
 } from "./acts";
+import { saveApp } from "./apps";
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";
 import { copyFile, getFileText, removeFile, uploadFile } from "./files";
 import {
@@ -73,6 +74,7 @@ import type {
 	SetRunActProcessArgs,
 	WaitUntil,
 } from "./types";
+import { bindGiselleFunction } from "./utils/create-giselle-function";
 import {
 	copyWorkspace,
 	createSampleWorkspaces,
@@ -341,6 +343,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		runAct(args: RunActInputs) {
 			return runAct({ ...args, context });
 		},
+		saveApp: bindGiselleFunction(saveApp, context),
 	};
 }
 

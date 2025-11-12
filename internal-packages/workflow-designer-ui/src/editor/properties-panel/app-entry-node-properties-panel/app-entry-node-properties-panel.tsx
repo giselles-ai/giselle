@@ -30,7 +30,10 @@ export function AppEntryNodePropertiesPanel({ node }: { node: AppEntryNode }) {
 					)}
 				>
 					{node.content.status === "unconfigured" && (
-						<AppEntryConfigurationView draftApp={node.content.draftApp} />
+						<AppEntryConfigurationView
+							draftApp={node.content.draftApp}
+							node={node}
+						/>
 					)}
 					{node.content.status === "configured" && (
 						<AppEntryConfiguredView node={node} />
