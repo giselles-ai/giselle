@@ -103,7 +103,10 @@ export function AppEntryConfigurationView({
 		{},
 	);
 	const client = useGiselleEngine();
-	const { updateNodeData } = useWorkflowDesigner();
+	const {
+		updateNodeData,
+		data: { id: workspaceId },
+	} = useWorkflowDesigner();
 
 	const handleAddParameter = useCallback(() => {
 		setDraftAppParameters((prev) => [
@@ -132,7 +135,7 @@ export function AppEntryConfigurationView({
 		(e) => {
 			e.preventDefault();
 			const appId = AppId.generate();
-			const parseResult = App.safeParse({
+			const appLike: App = {
 				id: appId,
 				name: appName,
 				description: appDescription,
@@ -143,7 +146,10 @@ export function AppEntryConfigurationView({
 					name: draftAppParameter.name,
 					required: draftAppParameter.required,
 				})),
-			});
+				entryNodeId: node.id,
+				workspaceId,
+			};
+			const parseResult = App.safeParse(appLike);
 			if (!parseResult.success) {
 				const treeifiedError = z.treeifyError(parseResult.error);
 				setValidationErrors(parseZodErrors(treeifiedError));
@@ -176,6 +182,7 @@ export function AppEntryConfigurationView({
 			client,
 			node,
 			updateNodeData,
+			workspaceId,
 		],
 	);
 

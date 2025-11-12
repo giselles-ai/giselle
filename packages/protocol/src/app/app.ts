@@ -1,8 +1,8 @@
 import { createIdGenerator } from "@giselles-ai/utils";
 import * as z from "zod/v4";
-
-export const AppId = createIdGenerator("app");
-export type AppId = z.infer<typeof AppId.schema>;
+import { NodeId } from "../node/base";
+import { WorkspaceId } from "../workspace/id";
+import { AppId } from "./app-id";
 
 export const AppParameterType = z.enum(["text", "multiline-text", "number"]);
 
@@ -24,5 +24,7 @@ export const App = z.object({
 	description: z.string(),
 	iconName: z.string().min(1),
 	parameters: z.array(AppParameter),
+	entryNodeId: NodeId.schema,
+	workspaceId: WorkspaceId.schema,
 });
 export type App = z.infer<typeof App>;

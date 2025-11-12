@@ -11,5 +11,6 @@ export const saveApp = createGiselleFunction({
 			schema: App,
 			data: input.app,
 		});
+		await context.callbacks?.appCreate?.({ app: input.app });
 	},
 });

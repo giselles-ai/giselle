@@ -18,6 +18,7 @@ import {
 } from "@giselles-ai/supabase-driver";
 import { tasks as jobs } from "@trigger.dev/sdk";
 import type { ModelMessage, ProviderMetadata } from "ai";
+import { apps, db } from "@/db";
 import { waitForLangfuseFlush } from "@/instrumentation.node";
 import { GenerationMetadata } from "@/lib/generation-metadata";
 import { logger } from "@/lib/logger";
@@ -236,6 +237,21 @@ export const giselleEngine = NextGiselleEngine({
 		document: getDocumentVectorStoreQueryService(),
 	},
 	callbacks: {
+		appCreate: async ({ app }) => {
+			const currentTeam = await fetchCurrentTeam();
+			const workspace = await db.query.workspaces.findFirst({
+				where: (workspaces, { eq }) => eq(workspaces.id, app.workspaceId),
+			});
+			if (workspace === undefined) {
+				throw new Error(`Workspace not found for app ${app.id}`);
+			}
+			await db.insert(apps).values({
+				id: app.id,
+				appEntryNodeId: app.entryNodeId,
+				teamDbId: currentTeam.dbId,
+				workspaceDbId: workspace.dbId,
+			});
+		},
 		generationComplete: async (args) => {
 			if (runtimeEnv === "trigger.dev") {
 				const parsedMetadata = GenerationMetadata.parse(
