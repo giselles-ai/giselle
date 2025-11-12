@@ -81,16 +81,15 @@ export const ResetPasswordEmail = ({
 							alt="Giselle"
 							style={logo}
 						/>
-						<Heading style={welcomeHeading}>Welcome to Giselle.</Heading>
-						<Text style={welcomeText}>
-							Your journey to build AI agents begins here.
-						</Text>
+						<Heading style={welcomeHeading}>
+							Reset your Giselle password.
+						</Heading>
+						<Text style={welcomeText}>Your journey continues securely.</Text>
 					</Section>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
 					</Section>
 					<Section style={section}>
-						<Heading style={h1}>Reset your password</Heading>
 						<Text style={text}>
 							We received a request to reset your Giselle account password.
 						</Text>
@@ -297,18 +296,6 @@ const section = {
 	padding: "32px 48px",
 };
 
-const h1 = {
-	color: "#333",
-	fontSize: "24px",
-	fontWeight: "500",
-	margin: "0",
-	padding: "0",
-	lineHeight: "32px",
-	textAlign: "center" as const,
-	fontFamily:
-		'"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
-};
-
 const text = {
 	color: "#525f7f",
 	fontSize: "16px",
@@ -320,7 +307,7 @@ const text = {
 };
 
 const button = {
-	backgroundColor: "#007ee6",
+	backgroundColor: "#1D2551",
 	borderRadius: "4px",
 	color: "#fff",
 	fontSize: "16px",

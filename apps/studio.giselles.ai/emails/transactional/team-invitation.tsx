@@ -36,7 +36,7 @@ export const TeamInvitationEmail = ({
 	joinUrl,
 }: TeamInvitationEmailProps) => {
 	const displayTeamName = teamName ?? TEAM_NAME_PLACEHOLDER;
-	const displayInviterEmail = inviterEmail ?? INVITER_EMAIL_PLACEHOLDER;
+	const _displayInviterEmail = inviterEmail ?? INVITER_EMAIL_PLACEHOLDER;
 	const displayJoinUrl = joinUrl ?? JOIN_URL_PLACEHOLDER;
 
 	return (
@@ -84,9 +84,11 @@ export const TeamInvitationEmail = ({
 							alt="Giselle"
 							style={logo}
 						/>
-						<Heading style={welcomeHeading}>Welcome to Giselle.</Heading>
+						<Heading style={welcomeHeading}>
+							You&apos;ve been invited to collaborate in Giselle.
+						</Heading>
 						<Text style={welcomeText}>
-							Your journey to build AI agents begins here.
+							Join your team and start building together.
 						</Text>
 					</Section>
 					<Section style={topBorderSection}>
@@ -95,8 +97,12 @@ export const TeamInvitationEmail = ({
 					<Section style={section}>
 						<Heading style={h1}>Team Invitation</Heading>
 						<Text style={text}>
-							You have been invited to join the team{" "}
-							<strong>{displayTeamName}</strong> by {displayInviterEmail}.
+							You&apos;ve been invited to join the team{" "}
+							<strong>{displayTeamName}</strong> by{" "}
+							<strong>{_displayInviterEmail}</strong>.
+						</Text>
+						<Text style={text}>
+							Click the button below to accept and access your shared workspace.
 						</Text>
 						<Button href={displayJoinUrl} style={button}>
 							Join the team
@@ -104,6 +110,13 @@ export const TeamInvitationEmail = ({
 						<Text style={text}>
 							If you didn&apos;t expect this invitation, you can safely ignore
 							this email.
+						</Text>
+						<Text style={signatureText}>—</Text>
+						<Text style={signatureText}>The Giselle Team</Text>
+						<Text style={signatureText}>
+							<Link href="https://giselles.ai" style={link}>
+								https://giselles.ai
+							</Link>
 						</Text>
 					</Section>
 					<Section style={topBorderSection}>
@@ -321,7 +334,7 @@ const text = {
 };
 
 const button = {
-	backgroundColor: "#007ee6",
+	backgroundColor: "#1D2551",
 	borderRadius: "4px",
 	color: "#fff",
 	fontSize: "16px",
@@ -333,6 +346,20 @@ const button = {
 	marginBottom: "16px",
 	fontFamily:
 		'"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
+};
+
+const signatureText = {
+	color: "#525f7f",
+	fontSize: "14px",
+	lineHeight: "20px",
+	marginBottom: "8px",
+	fontFamily:
+		'"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
+};
+
+const link = {
+	color: "#007ee6",
+	textDecoration: "none",
 };
 
 const footerContainer = {

@@ -75,10 +75,8 @@ export const MagicLinkEmail = ({ confirmationUrl }: MagicLinkEmailProps) => {
 							alt="Giselle"
 							style={logo}
 						/>
-						<Heading style={welcomeHeading}>Welcome to Giselle.</Heading>
-						<Text style={welcomeText}>
-							Your journey to build AI agents begins here.
-						</Text>
+						<Heading style={welcomeHeading}>Sign in to Giselle.</Heading>
+						<Text style={welcomeText}>Access your workspace instantly.</Text>
 					</Section>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -307,7 +305,7 @@ const text = {
 };
 
 const button = {
-	backgroundColor: "#007ee6",
+	backgroundColor: "#1D2551",
 	borderRadius: "4px",
 	color: "#fff",
 	fontSize: "16px",

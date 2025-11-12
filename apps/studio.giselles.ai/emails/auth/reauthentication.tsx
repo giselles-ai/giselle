@@ -75,10 +75,8 @@ export const ReauthenticationEmail = ({
 							alt="Giselle"
 							style={logo}
 						/>
-						<Heading style={welcomeHeading}>Welcome to Giselle.</Heading>
-						<Text style={welcomeText}>
-							Your journey to build AI agents begins here.
-						</Text>
+						<Heading style={welcomeHeading}>Verify your identity.</Heading>
+						<Text style={welcomeText}>Secure access with Giselle.</Text>
 					</Section>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />

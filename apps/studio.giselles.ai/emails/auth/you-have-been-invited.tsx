@@ -318,7 +318,7 @@ const text = {
 };
 
 const button = {
-	backgroundColor: "#007ee6",
+	backgroundColor: "#1D2551",
 	borderRadius: "4px",
 	color: "#fff",
 	fontSize: "16px",

@@ -85,10 +85,6 @@ export const ChangeEmailAddressEmail = ({
 							alt="Giselle"
 							style={logo}
 						/>
-						<Heading style={welcomeHeading}>Welcome to Giselle.</Heading>
-						<Text style={welcomeText}>
-							Your journey to build AI agents begins here.
-						</Text>
 					</Section>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -271,31 +267,6 @@ const logo = {
 	maxWidth: "140px",
 };
 
-const welcomeHeading = {
-	color: "#b8e8f4",
-	fontSize: "24px",
-	fontWeight: "500",
-	margin: "0 0 8px",
-	padding: "0",
-	lineHeight: "32px",
-	fontFamily:
-		'"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
-	textAlign: "center" as const,
-};
-
-const welcomeText = {
-	color: "rgba(247, 249, 253, 0.8)",
-	fontSize: "14px",
-	lineHeight: "20px",
-	margin: "0",
-	fontFamily:
-		'"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
-	textAlign: "center" as const,
-	maxWidth: "720px",
-	marginLeft: "auto",
-	marginRight: "auto",
-};
-
 const section = {
 	padding: "32px 48px",
 };
@@ -323,7 +294,7 @@ const text = {
 };
 
 const button = {
-	backgroundColor: "#007ee6",
+	backgroundColor: "#1D2551",
 	borderRadius: "4px",
 	color: "#fff",
 	fontSize: "16px",
