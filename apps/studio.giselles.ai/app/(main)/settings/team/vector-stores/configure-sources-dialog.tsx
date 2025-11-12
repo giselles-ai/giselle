@@ -132,8 +132,12 @@ export function ConfigureSourcesDialog({
 							<h3 className="text-text text-[14px] leading-[16.8px] font-sans">
 								Repository
 							</h3>
-							<div className="mt-2 text-link-accent text-[16px] font-geist">
-								{repositoryIndex.owner}/{repositoryIndex.repo}
+							<div className="mt-2 flex items-center rounded-full bg-surface pl-[16px] pr-[16px] py-2 text-white-200 transition-colors text-[12px]">
+								<div className="space-x-[2px]">
+									<span>{repositoryIndex.owner}</span>
+									<span>/</span>
+									<span>{repositoryIndex.repo}</span>
+								</div>
 							</div>
 						</div>
 						{/* Sources Section */}
@@ -141,7 +145,7 @@ export function ConfigureSourcesDialog({
 							<h3 className="text-text text-[14px] leading-[16.8px] font-sans mb-2">
 								Sources to Ingest
 							</h3>
-							<div className="grid grid-cols-2 gap-3">
+							<div className="flex flex-col gap-3">
 								{/* Code Configuration */}
 								<ContentTypeToggle
 									icon={Code}
@@ -304,14 +308,16 @@ function ContentTypeToggle({
 						<Icon size={18} className="text-text-muted" />
 						<span className="text-text font-medium">{label}</span>
 					</div>
-					<p className="text-xs text-text-muted">{description}</p>
+					<p className="text-xs text-text-muted">
+						{description}
+						{disabled && (
+							<span className="text-text-muted/60 ml-1">
+								(Required - cannot be disabled)
+							</span>
+						)}
+					</p>
 					{status?.status === "running" && (
 						<p className="text-xs text-text-muted mt-1">Currently syncing...</p>
-					)}
-					{disabled && (
-						<p className="text-xs text-text-muted/60 mt-1">
-							(Required - cannot be disabled)
-						</p>
 					)}
 				</div>
 			</Toggle>
