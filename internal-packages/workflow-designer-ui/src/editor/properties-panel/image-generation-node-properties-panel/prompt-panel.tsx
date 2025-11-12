@@ -7,6 +7,7 @@ import {
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	isSupportedConnection,
+	useFeatureFlag,
 	useUsageLimits,
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
@@ -42,7 +43,15 @@ export function PromptPanel({
 	const usageLimits = useUsageLimits();
 	const userTier = usageLimits?.featureTier ?? Tier.enum.free;
 	const { error } = useToasts();
+	const { aiGatewayUnsupportedModels } = useFeatureFlag();
 	const { all: connectedSources } = useConnectedSources(node);
+	const selectableOpenAIImageModels = useMemo(
+		() =>
+			openaiImageModels.filter(
+				(model) => aiGatewayUnsupportedModels || model.id !== "gpt-image-1",
+			),
+		[aiGatewayUnsupportedModels],
+	);
 	const nodes = useMemo(
 		() =>
 			connectedSources
@@ -66,12 +75,15 @@ export function PromptPanel({
 			{
 				provider: "openai",
 				label: "OpenAI",
-				models: openaiImageModels.map((m) => ({
-					id: m.id,
-					badge: m.tier === Tier.enum.pro ? <ProTag /> : undefined,
-					disabled: !hasTierAccess(m, userTier),
-					disabledReason: !hasTierAccess(m, userTier) ? "Pro only" : undefined,
-				})),
+				models: selectableOpenAIImageModels.map((m) => {
+					const disabledByTier = !hasTierAccess(m, userTier);
+					return {
+						id: m.id,
+						badge: m.tier === Tier.enum.pro ? <ProTag /> : undefined,
+						disabled: disabledByTier,
+						disabledReason: disabledByTier ? "Pro only" : undefined,
+					};
+				}),
 			},
 			{
 				provider: "google",
@@ -84,7 +96,7 @@ export function PromptPanel({
 				})),
 			},
 		],
-		[userTier],
+		[userTier, selectableOpenAIImageModels],
 	);
 
 	const disconnectInvalidConnections = useCallback(
@@ -125,11 +137,15 @@ export function PromptPanel({
 						fullWidth={false}
 						triggerId="image-model-picker-trigger"
 						onSelect={(provider, modelId) => {
+							if (!aiGatewayUnsupportedModels && provider === "openai") {
+								error("GPT-Image 1 is unavailable via AI Gateway.");
+								return;
+							}
 							const model =
 								provider === "fal"
 									? falLanguageModels.find((m) => m.id === modelId)
 									: provider === "openai"
-										? openaiImageModels.find((m) => m.id === modelId)
+										? selectableOpenAIImageModels.find((m) => m.id === modelId)
 										: googleImageLanguageModels.find((m) => m.id === modelId);
 							if (!model) return;
 							if (!hasTierAccess(model, userTier)) {

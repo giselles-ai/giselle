@@ -4,6 +4,7 @@ import { giselleEngine } from "@/app/giselle-engine";
 import { db } from "@/db";
 import {
 	aiGatewayFlag,
+	aiGatewayUnsupportedModelsFlag,
 	githubIssuesVectorStoreFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
@@ -52,6 +53,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const layoutV3 = await layoutV3Flag();
 	const stage = await stageFlag();
 	const aiGateway = await aiGatewayFlag();
+	const aiGatewayUnsupportedModels = await aiGatewayUnsupportedModelsFlag();
 	const googleUrlContext = await googleUrlContextFlag();
 	const data = await giselleEngine.getWorkspace(workspaceId);
 	const documentVectorStores = await getDocumentVectorStores(
@@ -70,6 +72,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 		layoutV3,
 		stage,
 		aiGateway,
+		aiGatewayUnsupportedModels,
 		googleUrlContext,
 		data,
 		documentVectorStores,
@@ -78,6 +81,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			layoutV3,
 			stage,
 			aiGateway,
+			aiGatewayUnsupportedModels,
 			googleUrlContext,
 			githubIssuesVectorStore,
 		},
