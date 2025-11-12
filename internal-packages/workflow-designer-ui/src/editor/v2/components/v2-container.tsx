@@ -23,6 +23,7 @@ import "@xyflow/react/dist/style.css";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	isSupportedConnection,
+	useWorkflowDesigner,
 	useWorkflowDesignerStore,
 	workspaceActions,
 } from "@giselles-ai/giselle/react";
@@ -66,7 +67,6 @@ function V2NodeCanvas() {
 		setUiNodeState,
 		setUiViewport,
 		setCurrentShortcutScope,
-		deleteNode,
 		deleteConnection,
 		updateNodeData,
 		addNode,
@@ -74,6 +74,7 @@ function V2NodeCanvas() {
 		selectConnection,
 		deselectConnection,
 	} = useWorkflowDesignerStore(useShallow(workspaceActions));
+	const { deleteNode } = useWorkflowDesigner();
 	const { selectedTool, reset } = useToolbar();
 	const toast = useToasts();
 	const [menu, setMenu] = useState<Omit<ContextMenuProps, "onClose"> | null>(
@@ -230,56 +231,58 @@ function V2NodeCanvas() {
 	);
 
 	const handleNodesChange: OnNodesChange = useCallback(
-		(nodesChange) => {
-			nodesChange.map((nodeChange) => {
-				switch (nodeChange.type) {
-					case "position": {
-						if (nodeChange.position === undefined) {
+		async (nodesChange) => {
+			await Promise.all(
+				nodesChange.map(async (nodeChange) => {
+					switch (nodeChange.type) {
+						case "position": {
+							if (nodeChange.position === undefined) {
+								break;
+							}
+							setUiNodeState(nodeChange.id, { position: nodeChange.position });
 							break;
 						}
-						setUiNodeState(nodeChange.id, { position: nodeChange.position });
-						break;
-					}
-					case "dimensions": {
-						setUiNodeState(nodeChange.id, {
-							measured: {
-								width: nodeChange.dimensions?.width,
-								height: nodeChange.dimensions?.height,
-							},
-						});
-						break;
-					}
-					case "select": {
-						setUiNodeState(nodeChange.id, { selected: nodeChange.selected });
-						break;
-					}
-					case "remove": {
-						for (const connection of data.connections) {
-							if (connection.outputNode.id !== nodeChange.id) {
-								continue;
-							}
-							deleteConnection(connection.id);
-							const connectedNode = data.nodes.find(
-								(node) => node.id === connection.inputNode.id,
-							);
-							if (connectedNode === undefined) {
-								continue;
-							}
-							switch (connectedNode.content.type) {
-								case "textGeneration": {
-									updateNodeData(connectedNode, {
-										inputs: connectedNode.inputs.filter(
-											(input) => input.id !== connection.inputId,
-										),
-									});
+						case "dimensions": {
+							setUiNodeState(nodeChange.id, {
+								measured: {
+									width: nodeChange.dimensions?.width,
+									height: nodeChange.dimensions?.height,
+								},
+							});
+							break;
+						}
+						case "select": {
+							setUiNodeState(nodeChange.id, { selected: nodeChange.selected });
+							break;
+						}
+						case "remove": {
+							for (const connection of data.connections) {
+								if (connection.outputNode.id !== nodeChange.id) {
+									continue;
+								}
+								deleteConnection(connection.id);
+								const connectedNode = data.nodes.find(
+									(node) => node.id === connection.inputNode.id,
+								);
+								if (connectedNode === undefined) {
+									continue;
+								}
+								switch (connectedNode.content.type) {
+									case "textGeneration": {
+										updateNodeData(connectedNode, {
+											inputs: connectedNode.inputs.filter(
+												(input) => input.id !== connection.inputId,
+											),
+										});
+									}
 								}
 							}
+							await deleteNode(nodeChange.id);
+							break;
 						}
-						deleteNode(nodeChange.id);
-						break;
 					}
-				}
-			});
+				}),
+			);
 		},
 		[
 			setUiNodeState,
