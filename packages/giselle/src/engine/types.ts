@@ -6,6 +6,7 @@ import type { LanguageModelProvider } from "@giselles-ai/language-model";
 import type {
 	Act,
 	App,
+	AppId,
 	CompletedGeneration,
 	EmbeddingProfileId,
 	FailedGeneration,
@@ -60,6 +61,9 @@ export interface GenerationCompleteCallbackFunctionArgs {
 	generationMetadata?: GenerationMetadata;
 }
 type AppCreateCallbackFunction = (args: { app: App }) => void | Promise<void>;
+type AppDeleteCallbackFunction = (args: {
+	appId: AppId;
+}) => void | Promise<void>;
 type GenerationCompleteCallbackFunction = (
 	args: GenerationCompleteCallbackFunctionArgs,
 ) => void | Promise<void>;
@@ -106,6 +110,7 @@ export interface GiselleEngineContext {
 	};
 	callbacks?: {
 		appCreate?: AppCreateCallbackFunction;
+		appDelete?: AppDeleteCallbackFunction;
 		generationComplete?: GenerationCompleteCallbackFunction;
 		generationFailed?: GenerationFailedCallbackFunction;
 		flowTriggerUpdate?: (flowTrigger: Trigger) => Promise<void>;
@@ -207,6 +212,7 @@ export interface GiselleEngineConfig {
 	};
 	callbacks?: {
 		appCreate?: AppCreateCallbackFunction;
+		appDelete?: AppDeleteCallbackFunction;
 		generationComplete?: GenerationCompleteCallbackFunction;
 		generationFailed?: GenerationFailedCallbackFunction;
 		flowTriggerUpdate?: (flowTrigger: Trigger) => Promise<void>;
