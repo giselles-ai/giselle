@@ -11,7 +11,7 @@ type FunctionInputArgs<TSchema extends z.ZodObject> = {
 	context: GiselleEngineContext;
 };
 
-export type GiselleFunctionInput<
+type GiselleFunctionInput<
 	// biome-ignore lint/suspicious/noExplicitAny: For use in utility functions
 	T extends (args: { input: any; context: GiselleEngineContext }) => unknown,
 > = Parameters<T>[0]["input"];
