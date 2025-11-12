@@ -5,6 +5,8 @@ import { invitations, teamMemberships, teams, users } from "@/db/schema";
 import { sendEmail } from "@/services/external/email";
 import { type CurrentTeam, fetchCurrentTeam } from "@/services/teams";
 import { hasTeamPlanFeatures } from "@/services/teams/utils";
+import { render } from "@react-email/components";
+import TeamInvitationEmail from "@/emails/transactional/team-invitation";
 
 export type Invitation = typeof invitations.$inferSelect;
 
@@ -125,11 +127,17 @@ export async function sendInvitationEmail(invitation: Invitation) {
 	}
 	const teamName = team[0].name;
 
+	const teamInvitationEmail = await render(
+		<TeamInvitationEmail
+			teamName={teamName}
+			inviterEmail={inviter.email}
+			joinUrl={buildJoinLink(invitation.token)}
+		/>,
+	);
+
 	await sendEmail(
 		`Invitation to join ${teamName} on Giselle`,
-		`You have been invited to join the team ${teamName} by ${inviter.email}.\n\n${buildJoinLink(
-			invitation.token,
-		)}`,
+		teamInvitationEmail,
 		[
 			{
 				userDisplayName: "",
