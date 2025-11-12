@@ -74,6 +74,7 @@ import type {
 	SetRunActProcessArgs,
 	WaitUntil,
 } from "./types";
+import type { GiselleFunctionInput } from "./utils/create-giselle-function";
 import {
 	copyWorkspace,
 	createSampleWorkspaces,
@@ -342,8 +343,8 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		runAct(args: RunActInputs) {
 			return runAct({ ...args, context });
 		},
-		saveApp(args) {
-			return saveApp({ ...args, context });
+		saveApp(input: GiselleFunctionInput<typeof saveApp>) {
+			return saveApp({ input, context });
 		},
 	};
 }
