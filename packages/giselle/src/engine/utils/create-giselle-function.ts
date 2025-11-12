@@ -26,7 +26,7 @@ export function createGiselleFunction<
 	input: TInputSchema;
 	handler: (args: HandlerArgs<TInputSchema>) => TOutput;
 }) {
-	return async (
+	const fn = async (
 		args: FunctionInputArgs<TInputSchema>,
 	): Promise<Awaited<TOutput>> => {
 		// Validate input against schema
@@ -37,5 +37,35 @@ export function createGiselleFunction<
 			input: validatedInput,
 			context: args.context,
 		});
+	};
+
+	return Object.assign(fn, { inputSchema: input });
+}
+
+/**
+ * Binds a Giselle function to a context to be used as a GiselleEngine method.
+ * Transfers the inputSchema property so it can be accessed from the engine instance.
+ */
+export function bindGiselleFunction<
+	T extends {
+		inputSchema: z.ZodObject;
+	} & ((args: {
+		// biome-ignore lint/suspicious/noExplicitAny: For use in utility functions
+		input: any;
+		context: GiselleEngineContext;
+	}) => unknown),
+>(
+	fn: T,
+	context: GiselleEngineContext,
+): ((input: GiselleFunctionInput<T>) => Promise<Awaited<ReturnType<T>>>) & {
+	inputSchema: T["inputSchema"];
+} {
+	return Object.assign(
+		(input: GiselleFunctionInput<T>) => {
+			return fn({ input, context });
+		},
+		{ inputSchema: fn.inputSchema },
+	) as ((input: GiselleFunctionInput<T>) => Promise<Awaited<ReturnType<T>>>) & {
+		inputSchema: T["inputSchema"];
 	};
 }

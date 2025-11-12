@@ -453,6 +453,14 @@ export const createJsonRouters = {
 				return JsonResponse.json(result);
 			},
 		}),
+	saveApp: (giselleEngine: GiselleEngine) =>
+		createHandler({
+			input: giselleEngine.saveApp.inputSchema,
+			handler: async ({ input }) => {
+				const result = await giselleEngine.saveApp(input);
+				return JsonResponse.json(result);
+			},
+		}),
 } as const;
 
 // Export the types at module level
