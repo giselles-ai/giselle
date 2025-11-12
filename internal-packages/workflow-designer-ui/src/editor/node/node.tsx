@@ -226,7 +226,7 @@ export function NodeComponent({
 				"data-[content-type=trigger]:from-trigger-node-1/60] data-[content-type=trigger]:to-trigger-node-2 data-[content-type=trigger]:shadow-trigger-node-1",
 				"data-[content-type=appEntry]:from-trigger-node-1/60] data-[content-type=appEntry]:to-trigger-node-2 data-[content-type=appEntry]:shadow-trigger-node-1",
 				"data-[content-type=action]:from-action-node-1] data-[content-type=action]:to-action-node-2 data-[content-type=action]:shadow-action-node-1",
-				"data-[content-type=query]:from-query-node-1] data-[content-typeG=query]:to-query-node-2 data-[content-type=query]:shadow-query-node-1",
+				"data-[content-type=query]:from-query-node-1] data-[content-type=query]:to-query-node-2 data-[content-type=query]:shadow-query-node-1",
 				"data-[selected=true]:shadow-[0px_0px_16px_0px]",
 				"data-[selected=true]:data-[content-type=trigger]:shadow-[0px_0px_16px_0px_hsl(220,15%,50%)]",
 				"data-[highlighted=true]:shadow-[0px_0px_16px_0px]",
