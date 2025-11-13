@@ -1,3 +1,4 @@
+import { isClonedFileDataPayload } from "@giselles-ai/node-registry";
 import type {
 	ActId,
 	FileId,
@@ -139,11 +140,31 @@ export async function useGenerationExecutor<T>(args: {
 		await setGeneration(failedGeneration);
 		throw new UsageLimitError(usageLimitStatus.error);
 	}
+
+	// Build file ID mapping for duplicated nodes
+	// This allows fileResolver to find the actual storage file ID for cloned files
+	const fileIdMap = new Map<FileId, FileId>();
+	for (const sourceNode of generationContext.sourceNodes) {
+		if (sourceNode.content.type !== "file") {
+			continue;
+		}
+		for (const file of sourceNode.content.files) {
+			const actualFileId = isClonedFileDataPayload(file)
+				? file.originalFileIdForCopy
+				: file.id;
+			fileIdMap.set(file.id, actualFileId);
+		}
+	}
+
 	async function fileResolver(fileId: FileId): Promise<DataContent> {
 		const fileRetrievalStartTime = Date.now();
+
+		// Get the actual file ID from the map (handles cloned files)
+		const actualFileId = fileIdMap.get(fileId) ?? fileId;
+
 		const path = filePath({
 			...runningGeneration.context.origin,
-			fileId,
+			fileId: actualFileId,
 		});
 		const exists = await args.context.storage.exists(path);
 		const blob = exists ? await args.context.storage.getBlob(path) : undefined;
