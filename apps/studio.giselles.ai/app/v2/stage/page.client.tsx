@@ -3,27 +3,6 @@ import { use } from "react";
 import type { LoaderData } from "./data-loader";
 import type { App } from "./types";
 
-const yourApps: App[] = [
-	{
-		id: "blog-writer",
-		name: "Blog Writer",
-		description: "Generate engaging blog posts with AI assistance",
-		iconName: "file",
-	},
-	{
-		id: "image-generator",
-		name: "Image Generator",
-		description: "Create stunning visuals from text descriptions",
-		iconName: "image",
-	},
-	{
-		id: "social-post",
-		name: "Social Post Creator",
-		description: "Craft perfect social media posts",
-		iconName: "message-circle",
-	},
-];
-
 const suggestedApps: App[] = [
 	{
 		id: "data-analyzer",
@@ -86,8 +65,7 @@ function AppCard({
 	);
 }
 export function Page({ dataLoader }: { dataLoader: Promise<LoaderData> }) {
-	const _data = use(dataLoader);
-	console.log(_data);
+	const data = use(dataLoader);
 	return (
 		<div className="max-w-7xl mx-auto px-8 py-12">
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -96,11 +74,15 @@ export function Page({ dataLoader }: { dataLoader: Promise<LoaderData> }) {
 					<h2 className="text-2xl font-semibold text-foreground mb-6">
 						Your apps
 					</h2>
-					<div className="space-y-3">
-						{yourApps.map((app) => (
-							<AppCard {...app} key={app.id} />
-						))}
-					</div>
+					{data.apps.length === 0 ? (
+						<div>empty</div>
+					) : (
+						<div className="space-y-3">
+							{data.apps.map((app) => (
+								<AppCard {...app} key={app.id} />
+							))}
+						</div>
+					)}
 				</div>
 				{/* Your apps */}
 

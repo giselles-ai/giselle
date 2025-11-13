@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { logger } from "@/lib/logger";
 import { getUser } from "@/lib/supabase";
 import type { TeamId } from "./types";
+import { isIconName } from "./utils";
 
 async function userTeams() {
 	const supabaseUser = await getUser();
@@ -80,10 +81,16 @@ async function userApps(teamIds: TeamId[]) {
 									);
 									return null;
 								}
+								const giselleApp = await giselleEngine.getApp({
+									appId: app.id,
+								});
 								return {
 									id: app.id,
-									name:
-										appEntryNode.name ?? "New App" /** @todo default name */,
+									name: giselleApp.name,
+									description: giselleApp.description,
+									iconName: isIconName(giselleApp.iconName)
+										? giselleApp.iconName
+										: "workflow",
 									appEntryNodeId: appEntryNode.id,
 									workspaceId: workspace.id,
 									workspaceName: workspace.name,
