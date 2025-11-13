@@ -67,40 +67,38 @@ async function userApps(teamIds: TeamId[]) {
 			async (teams) =>
 				await Promise.all(
 					teams.flatMap((team) =>
-						team.apps
-							.map(async (app) => {
-								const workspace = await giselleEngine.getWorkspace(
-									app.workspace.id,
+						team.apps.map(async (app) => {
+							const workspace = await giselleEngine.getWorkspace(
+								app.workspace.id,
+							);
+							const appEntryNode = workspace.nodes.find(
+								(node) => node.id === app.appEntryNodeId,
+							);
+							if (appEntryNode === undefined) {
+								logger.warn(
+									`App entry node<${app.appEntryNodeId}> not found for app<${app.id}>.`,
 								);
-								const appEntryNode = workspace.nodes.find(
-									(node) => node.id === app.appEntryNodeId,
-								);
-								if (appEntryNode === undefined) {
-									logger.warn(
-										`App entry node<${app.appEntryNodeId}> not found for app<${app.id}>.`,
-									);
-									return null;
-								}
-								const giselleApp = await giselleEngine.getApp({
-									appId: app.id,
-								});
-								return {
-									id: app.id,
-									name: giselleApp.name,
-									description: giselleApp.description,
-									iconName: isIconName(giselleApp.iconName)
-										? giselleApp.iconName
-										: "workflow",
-									appEntryNodeId: appEntryNode.id,
-									workspaceId: workspace.id,
-									workspaceName: workspace.name,
-									teamName: team.name,
-									teamId: team.id,
-								};
-							})
-							.filter((appOrNull) => appOrNull !== null),
+								return null;
+							}
+							const giselleApp = await giselleEngine.getApp({
+								appId: app.id,
+							});
+							return {
+								id: app.id,
+								name: giselleApp.name,
+								description: giselleApp.description,
+								iconName: isIconName(giselleApp.iconName)
+									? giselleApp.iconName
+									: "workflow",
+								appEntryNodeId: appEntryNode.id,
+								workspaceId: workspace.id,
+								workspaceName: workspace.name,
+								teamName: team.name,
+								teamId: team.id,
+							};
+						}),
 					),
-				).then((apps) => apps.filter((teamOrApps) => teamOrApps !== null)),
+				).then((apps) => apps.filter((app) => app !== null)),
 		);
 }
 
