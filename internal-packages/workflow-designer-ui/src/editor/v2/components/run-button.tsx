@@ -215,11 +215,11 @@ function MultipleRunsDropdown({
 
 	const runGroups = useMemo(() => {
 		const groups = [];
-		if (triggerRuns.length > 0) {
+		if (starterRuns.length > 0) {
 			groups.push({
 				groupId: "triggerNodes",
 				groupLabel: "Trigger Nodes",
-				items: triggerRuns.map((run) => ({
+				items: starterRuns.map((run) => ({
 					value: run.node.id,
 					label: run.node.name ?? defaultName(run.node),
 					type: "trigger" as const,
@@ -240,7 +240,7 @@ function MultipleRunsDropdown({
 			});
 		}
 		return groups;
-	}, [triggerRuns, nodeGroupRuns]);
+	}, [starterRuns, nodeGroupRuns]);
 
 	const highlightNodes = useCallback(
 		(runItem: RunItem, isHovered: boolean) => {
@@ -282,12 +282,12 @@ function MultipleRunsDropdown({
 					);
 				}
 
-				const triggerNode = menuItem.run.node;
+				const starterNode = menuItem.run.node;
 				return (
 					<Dialog
-						open={openDialogNodeId === triggerNode.id}
+						open={openDialogNodeId === starterNode.id}
 						onOpenChange={(isOpen) => {
-							setOpenDialogNodeId(isOpen ? triggerNode.id : null);
+							setOpenDialogNodeId(isOpen ? starterNode.id : null);
 							if (!isOpen) {
 								setIsDropdownOpen(false);
 							}
@@ -297,12 +297,12 @@ function MultipleRunsDropdown({
 							<RunOptionItem
 								icon={
 									<NodeIcon
-										node={triggerNode}
+										node={starterNode}
 										className="size-[16px] text-inverse"
 									/>
 								}
-								title={triggerNode.name ?? defaultName(triggerNode)}
-								subtitle={triggerNode.id}
+								title={starterNode.name ?? defaultName(starterNode)}
+								subtitle={starterNode.id}
 								{...props}
 							/>
 						</DialogTrigger>
@@ -310,14 +310,16 @@ function MultipleRunsDropdown({
 							<DialogTitle className="sr-only">
 								Override inputs to test workflow
 							</DialogTitle>
-							<TriggerInputDialog
-								node={triggerNode}
-								connectionIds={menuItem.run.connectionIds}
-								onClose={() => {
-									setIsDropdownOpen(false);
-									setOpenDialogNodeId(null);
-								}}
-							/>
+							{isTriggerNode(starterNode) && (
+								<TriggerInputDialog
+									node={starterNode}
+									connectionIds={menuItem.run.connectionIds}
+									onClose={() => {
+										setIsDropdownOpen(false);
+										setOpenDialogNodeId(null);
+									}}
+								/>
+							)}
 						</CenteredDialogContent>
 					</Dialog>
 				);
