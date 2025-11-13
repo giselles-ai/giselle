@@ -55,6 +55,7 @@ export function createUploadedFileData(
 export const FailedFileData = FileDataBase.extend({
 	status: z.literal("failed"),
 	errorMessage: z.string(),
+	originalFileIdForCopy: z.optional(FileId.schema),
 });
 export type FailedFileData = z.infer<typeof FailedFileData>;
 
