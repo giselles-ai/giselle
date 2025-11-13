@@ -1,5 +1,9 @@
+import { Button } from "@giselle-internal/ui/button";
+import { Plus } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
+import Link from "next/link";
 import { use } from "react";
+import { CreateWorkspaceButton } from "@/app/(main)/workspaces/create-workspace-button";
 import type { LoaderData } from "./data-loader";
 import type { App } from "./types";
 
@@ -75,7 +79,12 @@ export function Page({ dataLoader }: { dataLoader: Promise<LoaderData> }) {
 						Your apps
 					</h2>
 					{data.apps.length === 0 ? (
-						<div>empty</div>
+						<div className="flex flex-col items-center justify-center py-12 px-4 border border-border rounded-lg bg-card/30">
+							<p className="text-muted-foreground mb-4 text-center">
+								You don't have any apps yet
+							</p>
+							<CreateWorkspaceButton label="Create your first app" />
+						</div>
 					) : (
 						<div className="space-y-3">
 							{data.apps.map((app) => (
