@@ -1,10 +1,15 @@
 import type {
+	AppEntryNode,
 	ConnectionId,
 	NodeId,
 	TriggerNode,
 	Workspace,
 } from "@giselles-ai/protocol";
-import { isOperationNode, isTriggerNode } from "@giselles-ai/protocol";
+import {
+	isAppEntryNode,
+	isOperationNode,
+	isTriggerNode,
+} from "@giselles-ai/protocol";
 import { sliceGraphFromNode } from "./slice-graph-from-node";
 
 interface NodeGroup {
@@ -14,8 +19,8 @@ interface NodeGroup {
 
 export interface GroupedNodes {
 	operationNodeGroups: NodeGroup[];
-	triggerNodeGroups: {
-		node: TriggerNode;
+	starterNodeGroups: {
+		node: TriggerNode | AppEntryNode;
 		nodeGroup: NodeGroup;
 	}[];
 }
@@ -88,8 +93,8 @@ export function groupNodes(
 
 	// Split groups by trigger nodes
 	const operationNodeGroups: NodeGroup[] = [];
-	const triggerNodeGroups: {
-		node: TriggerNode;
+	const starterNodeGroups: {
+		node: TriggerNode | AppEntryNode;
 		nodeGroup: NodeGroup;
 	}[] = [];
 
@@ -108,18 +113,20 @@ export function groupNodes(
 		if (!existOperationNode) {
 			continue;
 		}
-		const triggerNodes = nodes.filter((node) => isTriggerNode(node));
-		if (triggerNodes.length === 0) {
+		const starterNodes = nodes.filter(
+			(node) => isTriggerNode(node) || isAppEntryNode(node),
+		);
+		if (starterNodes.length === 0) {
 			operationNodeGroups.push(group);
 			continue;
 		}
-		for (const triggerNode of triggerNodes) {
-			const sliceGraph = sliceGraphFromNode(triggerNode, {
+		for (const starterNode of starterNodes) {
+			const sliceGraph = sliceGraphFromNode(starterNode, {
 				nodes,
 				connections,
 			});
-			triggerNodeGroups.push({
-				node: triggerNode,
+			starterNodeGroups.push({
+				node: starterNode,
 				nodeGroup: {
 					nodeIds: sliceGraph.nodes.map((node) => node.id),
 					connectionIds: sliceGraph.connections.map(
@@ -132,7 +139,7 @@ export function groupNodes(
 
 	return {
 		operationNodeGroups,
-		triggerNodeGroups,
+		starterNodeGroups,
 	};
 }
 
@@ -146,7 +153,7 @@ export function findNodeGroupByNodeId(
 	const groupedNodes = groupNodes(workspace);
 	return (
 		groupedNodes.operationNodeGroups.find((g) => g.nodeIds.includes(nodeId)) ??
-		groupedNodes.triggerNodeGroups.find((g) =>
+		groupedNodes.starterNodeGroups.find((g) =>
 			g.nodeGroup.nodeIds.includes(nodeId),
 		)?.nodeGroup
 	);

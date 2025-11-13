@@ -8,6 +8,7 @@ import {
 	GenerationContextInput,
 	GenerationId,
 	GenerationOrigin,
+	isAppEntryNode,
 	isOperationNode,
 	isTriggerNode,
 	Node,
@@ -92,6 +93,21 @@ export async function createAct(
 		}
 	}
 
+	const starterNode = nodes.find(
+		(node) => isTriggerNode(node) || isAppEntryNode(node),
+	);
+
+	if (starterNode === undefined) {
+		throw new Error("No trigger or app entry node found");
+	}
+
+	if (
+		starterNode.content.type === "appEntry" &&
+		starterNode.content.status === "unconfigured"
+	) {
+		throw new Error("App entry node is unconfigured");
+	}
+
 	const actId = ActId.generate();
 	const levels = buildLevels(nodes, connections);
 
@@ -174,15 +190,11 @@ export async function createAct(
 		});
 	}
 
-	const triggerNode = nodes.find((node) => isTriggerNode(node));
-
 	const act: Act = {
 		id: actId,
 		workspaceId: workspace.id,
 		status: "created",
-		name: triggerNode
-			? (triggerNode.name ?? defaultName(triggerNode))
-			: "Untitled Act",
+		name: defaultName(starterNode),
 		steps: {
 			queued: generations.length,
 			inProgress: 0,

@@ -13,16 +13,24 @@ import {
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
 import { defaultName } from "@giselles-ai/node-registry";
-import type { ConnectionId, NodeId, TriggerNode } from "@giselles-ai/protocol";
+import type {
+	AppEntryNode,
+	ConnectionId,
+	NodeId,
+	TriggerNode,
+} from "@giselles-ai/protocol";
 import {
+	isAppEntryNode,
 	isImageGenerationNode,
 	isTextGenerationNode,
+	isTriggerNode,
 } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { PlayIcon, UngroupIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { NodeIcon } from "../../../icons/node";
 import { isPromptEmpty } from "../../lib/validate-prompt";
+import { AppEntryInputDialog } from "./app-entry-input-dialog";
 import { TriggerInputDialog } from "./trigger-input-dialog";
 
 type RunItem = {
@@ -30,19 +38,19 @@ type RunItem = {
 	connectionIds: ConnectionId[];
 };
 
-type TriggerRunItem = RunItem & {
-	node: TriggerNode;
+type StarterRunItem = RunItem & {
+	node: TriggerNode | AppEntryNode;
 };
 
 type NodeGroupRunItem = RunItem & {
 	label: string;
 };
 
-type TriggerMenuItem = {
+type StarterMenuItem = {
 	value: string;
 	label: string;
-	type: "trigger";
-	run: TriggerRunItem;
+	type: "trigger" | "appEntry";
+	run: StarterRunItem;
 };
 
 type NodeGroupMenuItem = {
@@ -133,10 +141,10 @@ function useRunAct() {
 	};
 }
 
-function SingleTriggerRunButton({
-	triggerRun,
+function SingleStarterRunButton({
+	starterRun,
 }: {
-	triggerRun: TriggerRunItem;
+	starterRun: StarterRunItem;
 }) {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -155,11 +163,20 @@ function SingleTriggerRunButton({
 				<DialogTitle className="sr-only">
 					Override inputs to test workflow
 				</DialogTitle>
-				<TriggerInputDialog
-					node={triggerRun.node}
-					connectionIds={triggerRun.connectionIds}
-					onClose={() => setIsDialogOpen(false)}
-				/>
+				{isTriggerNode(starterRun.node) && (
+					<TriggerInputDialog
+						node={starterRun.node}
+						connectionIds={starterRun.connectionIds}
+						onClose={() => setIsDialogOpen(false)}
+					/>
+				)}
+				{isAppEntryNode(starterRun.node) && (
+					<AppEntryInputDialog
+						node={starterRun.node}
+						connectionIds={starterRun.connectionIds}
+						onClose={() => setIsDialogOpen(false)}
+					/>
+				)}
 			</CenteredDialogContent>
 		</Dialog>
 	);
@@ -185,10 +202,10 @@ function SingleNodeGroupRunButton({
 }
 
 function MultipleRunsDropdown({
-	triggerRuns,
+	starterRuns,
 	nodeGroupRuns,
 }: {
-	triggerRuns: TriggerRunItem[];
+	starterRuns: StarterRunItem[];
 	nodeGroupRuns: NodeGroupRunItem[];
 }) {
 	const { data, setUiNodeState } = useWorkflowDesigner();
@@ -241,19 +258,19 @@ function MultipleRunsDropdown({
 			open={isDropdownOpen}
 			onOpenChange={setIsDropdownOpen}
 			onSelect={async (_event, item) => {
-				const menuItem = item as TriggerMenuItem | NodeGroupMenuItem;
+				const menuItem = item as StarterMenuItem | NodeGroupMenuItem;
 				if (menuItem.type === "nodeGroup") {
 					await runAct(menuItem.run);
 				}
 			}}
 			onItemHover={(item, isHovered) => {
-				const menuItem = item as TriggerMenuItem | NodeGroupMenuItem;
+				const menuItem = item as StarterMenuItem | NodeGroupMenuItem;
 				highlightNodes(menuItem.run, isHovered);
 			}}
 			items={runGroups}
 			renderItemAsChild
 			renderItem={(item, props) => {
-				const menuItem = item as TriggerMenuItem | NodeGroupMenuItem;
+				const menuItem = item as StarterMenuItem | NodeGroupMenuItem;
 				if (menuItem.type === "nodeGroup") {
 					return (
 						<RunOptionItem
@@ -323,8 +340,8 @@ function MultipleRunsDropdown({
 export function RunButton() {
 	const nodeGroups = useNodeGroups();
 
-	const { triggerRuns, nodeGroupRuns } = useMemo(() => {
-		const triggerRuns: TriggerRunItem[] = nodeGroups.triggerNodeGroups.map(
+	const { starterRuns, nodeGroupRuns } = useMemo(() => {
+		const starterRuns: StarterRunItem[] = nodeGroups.starterNodeGroups.map(
 			(group) => ({
 				node: group.node,
 				nodeIds: group.nodeGroup.nodeIds,
@@ -339,10 +356,10 @@ export function RunButton() {
 				connectionIds: group.connectionIds,
 			}));
 
-		return { triggerRuns, nodeGroupRuns };
+		return { starterRuns, nodeGroupRuns };
 	}, [nodeGroups]);
 
-	const totalRuns = triggerRuns.length + nodeGroupRuns.length;
+	const totalRuns = starterRuns.length + nodeGroupRuns.length;
 
 	// No runnable items
 	if (totalRuns === 0) {
@@ -350,8 +367,8 @@ export function RunButton() {
 	}
 
 	// Single trigger node
-	if (totalRuns === 1 && triggerRuns.length === 1) {
-		return <SingleTriggerRunButton triggerRun={triggerRuns[0]} />;
+	if (totalRuns === 1 && starterRuns.length === 1) {
+		return <SingleStarterRunButton starterRun={starterRuns[0]} />;
 	}
 
 	// Single node group
@@ -362,7 +379,7 @@ export function RunButton() {
 	// Multiple options
 	return (
 		<MultipleRunsDropdown
-			triggerRuns={triggerRuns}
+			starterRuns={starterRuns}
 			nodeGroupRuns={nodeGroupRuns}
 		/>
 	);
