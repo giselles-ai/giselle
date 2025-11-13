@@ -12,19 +12,19 @@ import {
 	Text,
 } from "@react-email/components";
 import {
-	EmailFonts,
-	EmailHeader,
-	EmailFooter,
-	main,
-	container,
-	topBorderSection,
-	topBorder,
-	section,
-	text,
 	button,
-	signatureText,
-	link,
+	container,
+	EmailFonts,
+	EmailFooter,
+	EmailHeader,
 	getBaseUrl,
+	link,
+	main,
+	section,
+	signatureText,
+	text,
+	topBorder,
+	topBorderSection,
 } from "../../components";
 
 interface AmbassadorInviteEmailProps {
@@ -55,9 +55,7 @@ export const AmbassadorInviteEmail = ({
 						/>
 					</Section>
 					<Section style={section}>
-						<Text style={text}>
-							Hi {userName},
-						</Text>
+						<Text style={text}>Hi {userName},</Text>
 						<Text style={text}>
 							We&apos;re inviting a select group of creators and developers to
 							join the early Giselle Ambassador Program.

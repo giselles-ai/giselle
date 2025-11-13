@@ -193,4 +193,3 @@ const footerLink = {
 	fontFamily:
 		'"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
 };
-

@@ -12,20 +12,20 @@ import {
 	Text,
 } from "@react-email/components";
 import {
-	EmailFonts,
-	EmailHeader,
-	EmailFooter,
-	main,
-	container,
-	topBorderSection,
-	topBorder,
-	section,
-	text,
 	button,
-	h1,
-	signatureText,
-	link,
+	container,
+	EmailFonts,
+	EmailFooter,
+	EmailHeader,
 	getBaseUrl,
+	h1,
+	link,
+	main,
+	section,
+	signatureText,
+	text,
+	topBorder,
+	topBorderSection,
 } from "../../components";
 
 interface IncompleteSignupEmailProps {

@@ -14,18 +14,18 @@ import {
 	Text,
 } from "@react-email/components";
 import {
-	EmailFonts,
-	EmailHeader,
-	EmailFooter,
-	main,
 	container,
-	topBorderSection,
-	topBorder,
-	section,
-	text,
-	signatureText,
-	link,
+	EmailFonts,
+	EmailFooter,
+	EmailHeader,
 	getBaseUrl,
+	link,
+	main,
+	section,
+	signatureText,
+	text,
+	topBorder,
+	topBorderSection,
 } from "../../components";
 
 interface NewFeatureReleaseEmailProps {
@@ -36,8 +36,8 @@ interface NewFeatureReleaseEmailProps {
 }
 
 export const NewFeatureReleaseEmail = ({
-	userName = "there",
-	featureName = "Node Builder",
+	_userName = "there",
+	_featureName = "Node Builder",
 	date = new Date().toLocaleDateString("en-US", {
 		month: "long",
 		day: "numeric",
@@ -108,21 +108,18 @@ export const NewFeatureReleaseEmail = ({
 							style={image}
 						/>
 						<Text style={text}>
-							We&apos;re excited to announce the launch of Node Builder, a visual
-							interface that lets you design and orchestrate AI agents — no code
-							required.
+							We&apos;re excited to announce the launch of Node Builder, a
+							visual interface that lets you design and orchestrate AI agents —
+							no code required.
 						</Text>
 						<Text style={text}>
 							Build your first workflow, connect models, and deploy instantly.
 						</Text>
 						<Text style={text}>
 							Here&apos;s what&apos;s new:
-							<br />
-							• Drag-and-drop flow creation
-							<br />
-							• Live model testing
-							<br />
-							• Versioning and export to GitHub
+							<br />• Drag-and-drop flow creation
+							<br />• Live model testing
+							<br />• Versioning and export to GitHub
 						</Text>
 						<Text style={text}>
 							Try it today →{" "}

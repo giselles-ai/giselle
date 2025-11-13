@@ -1,21 +1,20 @@
 export { EmailFonts } from "./email-fonts";
-export { EmailHeader } from "./email-header";
 export { EmailFooter } from "./email-footer";
+export { EmailHeader } from "./email-header";
 export {
-	main,
-	container,
-	topBorderSection,
-	topBorder,
-	section,
-	text,
 	button,
-	h1,
-	codeContainer,
 	code,
+	codeContainer,
+	container,
 	footerText,
-	signatureText,
-	link,
-	highlightText,
 	getBaseUrl,
+	h1,
+	highlightText,
+	link,
+	main,
+	section,
+	signatureText,
+	text,
+	topBorder,
+	topBorderSection,
 } from "./email-styles";
-

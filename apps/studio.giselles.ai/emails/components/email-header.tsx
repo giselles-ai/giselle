@@ -15,19 +15,17 @@ export const EmailHeader = ({
 			: "https://studio.giselles.ai"),
 }: EmailHeaderProps) => {
 	return (
-		<>
-			<Section style={logoSection}>
-				<Img
-					src={`${baseUrl}/static/logo.png`}
-					width="140"
-					height="70"
-					alt="Giselle"
-					style={logo}
-				/>
-				{heading && <Heading style={welcomeHeading}>{heading}</Heading>}
-				{subheading && <Text style={welcomeText}>{subheading}</Text>}
-			</Section>
-		</>
+		<Section style={logoSection}>
+			<Img
+				src={`${baseUrl}/static/logo.png`}
+				width="140"
+				height="70"
+				alt="Giselle"
+				style={logo}
+			/>
+			{heading && <Heading style={welcomeHeading}>{heading}</Heading>}
+			{subheading && <Text style={welcomeText}>{subheading}</Text>}
+		</Section>
 	);
 };
 
@@ -67,4 +65,3 @@ const welcomeText = {
 	marginLeft: "auto",
 	marginRight: "auto",
 };
-

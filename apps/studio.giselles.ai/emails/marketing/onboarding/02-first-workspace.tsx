@@ -11,19 +11,19 @@ import {
 	Text,
 } from "@react-email/components";
 import {
-	EmailFonts,
-	EmailHeader,
-	EmailFooter,
-	main,
-	container,
-	topBorderSection,
-	topBorder,
-	section,
-	text,
 	button,
-	signatureText,
-	link,
+	container,
+	EmailFonts,
+	EmailFooter,
+	EmailHeader,
 	getBaseUrl,
+	link,
+	main,
+	section,
+	signatureText,
+	text,
+	topBorder,
+	topBorderSection,
 } from "../../components";
 
 interface FirstWorkspaceEmailProps {
@@ -36,7 +36,7 @@ interface FirstWorkspaceEmailProps {
 export const FirstWorkspaceEmail = ({
 	userName = "there",
 	createWorkspaceUrl = "https://studio.giselles.ai",
-	stageUrl = "https://studio.giselles.ai/stage",
+	_stageUrl = "https://studio.giselles.ai/stage",
 	docsUrl = "https://docs.giselles.ai/en/guides/introduction",
 }: FirstWorkspaceEmailProps) => {
 	const baseUrl = getBaseUrl();
@@ -114,4 +114,3 @@ FirstWorkspaceEmail.PreviewProps = {
 } as FirstWorkspaceEmailProps;
 
 export default FirstWorkspaceEmail;
-

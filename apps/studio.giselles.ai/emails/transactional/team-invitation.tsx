@@ -12,21 +12,21 @@ import {
 	Text,
 } from "@react-email/components";
 import {
-	EmailFonts,
-	EmailHeader,
-	EmailFooter,
-	main,
-	container,
-	topBorderSection,
-	topBorder,
-	section,
-	text,
 	button,
+	container,
+	EmailFonts,
+	EmailFooter,
+	EmailHeader,
+	getBaseUrl,
 	h1,
 	highlightText,
-	signatureText,
 	link,
-	getBaseUrl,
+	main,
+	section,
+	signatureText,
+	text,
+	topBorder,
+	topBorderSection,
 } from "../components";
 
 interface TeamInvitationEmailProps {

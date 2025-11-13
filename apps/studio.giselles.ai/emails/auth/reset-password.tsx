@@ -11,19 +11,19 @@ import {
 	Text,
 } from "@react-email/components";
 import {
-	EmailFonts,
-	EmailHeader,
-	EmailFooter,
-	main,
-	container,
-	topBorderSection,
-	topBorder,
-	section,
-	text,
 	button,
-	signatureText,
-	link,
+	container,
+	EmailFonts,
+	EmailFooter,
+	EmailHeader,
 	getBaseUrl,
+	link,
+	main,
+	section,
+	signatureText,
+	text,
+	topBorder,
+	topBorderSection,
 } from "../components";
 
 interface ResetPasswordEmailProps {

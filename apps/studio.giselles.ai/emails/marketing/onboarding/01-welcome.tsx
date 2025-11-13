@@ -11,19 +11,19 @@ import {
 	Text,
 } from "@react-email/components";
 import {
-	EmailFonts,
-	EmailHeader,
-	EmailFooter,
-	main,
-	container,
-	topBorderSection,
-	topBorder,
-	section,
-	text,
 	button,
-	signatureText,
-	link,
+	container,
+	EmailFonts,
+	EmailFooter,
+	EmailHeader,
 	getBaseUrl,
+	link,
+	main,
+	section,
+	signatureText,
+	text,
+	topBorder,
+	topBorderSection,
 } from "../../components";
 
 interface WelcomeEmailProps {
@@ -89,8 +89,8 @@ export const WelcomeEmail = ({
 							.
 						</Text>
 						<Text style={signatureText}>
-							If you didn&apos;t sign up for Giselle, you can safely ignore
-							this email.
+							If you didn&apos;t sign up for Giselle, you can safely ignore this
+							email.
 						</Text>
 						<Text style={signatureText}>
 							—<br />
@@ -119,4 +119,3 @@ WelcomeEmail.PreviewProps = {
 } as WelcomeEmailProps;
 
 export default WelcomeEmail;
-

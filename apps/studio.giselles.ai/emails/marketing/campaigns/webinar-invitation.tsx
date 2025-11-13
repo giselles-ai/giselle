@@ -11,19 +11,19 @@ import {
 	Text,
 } from "@react-email/components";
 import {
-	EmailFonts,
-	EmailHeader,
-	EmailFooter,
-	main,
-	container,
-	topBorderSection,
-	topBorder,
-	section,
-	text,
 	button,
-	signatureText,
-	link,
+	container,
+	EmailFonts,
+	EmailFooter,
+	EmailHeader,
 	getBaseUrl,
+	link,
+	main,
+	section,
+	signatureText,
+	text,
+	topBorder,
+	topBorderSection,
 } from "../../components";
 
 interface WebinarInvitationEmailProps {
@@ -57,17 +57,14 @@ export const WebinarInvitationEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 					<Section style={section}>
-						<Text style={text}>
-							Hi {userName},
-						</Text>
+						<Text style={text}>Hi {userName},</Text>
 						<Text style={text}>
 							We&apos;re hosting a live webinar: &quot;Building AI Agents with
 							Giselle.&quot;
 						</Text>
 						<Text style={text}>
 							🗓️ Date: {webinarDate}
-							<br />
-							⏰ Time: {webinarTime}
+							<br />⏰ Time: {webinarTime}
 						</Text>
 						<Text style={text}>
 							Learn how to design, deploy, and scale AI agents — and get your

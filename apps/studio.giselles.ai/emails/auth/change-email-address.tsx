@@ -11,20 +11,20 @@ import {
 	Text,
 } from "@react-email/components";
 import {
-	EmailFonts,
-	EmailHeader,
-	EmailFooter,
-	main,
-	container,
-	topBorderSection,
-	topBorder,
-	section,
-	text,
 	button,
-	h1,
-	signatureText,
-	link,
+	container,
+	EmailFonts,
+	EmailFooter,
+	EmailHeader,
 	getBaseUrl,
+	h1,
+	link,
+	main,
+	section,
+	signatureText,
+	text,
+	topBorder,
+	topBorderSection,
 } from "../components";
 
 interface ChangeEmailAddressEmailProps {
@@ -65,7 +65,7 @@ export const ChangeEmailAddressEmail = ({
 							Confirm Change of Email
 						</Text>
 						<Text style={text}>
-					Follow this link to confirm the update of your email from{" "}
+							Follow this link to confirm the update of your email from{" "}
 							<strong>{displayEmail}</strong> to{" "}
 							<strong>{displayNewEmail}</strong>:
 						</Text>

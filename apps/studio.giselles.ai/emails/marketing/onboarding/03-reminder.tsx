@@ -11,19 +11,19 @@ import {
 	Text,
 } from "@react-email/components";
 import {
-	EmailFonts,
-	EmailHeader,
-	EmailFooter,
-	main,
-	container,
-	topBorderSection,
-	topBorder,
-	section,
-	text,
 	button,
-	signatureText,
-	link,
+	container,
+	EmailFonts,
+	EmailFooter,
+	EmailHeader,
 	getBaseUrl,
+	link,
+	main,
+	section,
+	signatureText,
+	text,
+	topBorder,
+	topBorderSection,
 } from "../../components";
 
 interface ReminderEmailProps {
@@ -37,7 +37,7 @@ export const ReminderEmail = ({
 	userName = "there",
 	returnToGiselleUrl = "https://studio.giselles.ai",
 	examplesGalleryUrl = "https://giselles.ai",
-	releaseNotesUrl = "https://docs.giselles.ai/en/releases/release-notes",
+	_releaseNotesUrl = "https://docs.giselles.ai/en/releases/release-notes",
 }: ReminderEmailProps) => {
 	const baseUrl = getBaseUrl();
 	return (
@@ -60,8 +60,8 @@ export const ReminderEmail = ({
 						<Text style={text}>
 							Hi {userName},<br />
 							<br />
-							You started setting up Giselle but haven&apos;t created your
-							first agent yet.
+							You started setting up Giselle but haven&apos;t created your first
+							agent yet.
 							<br />
 							<br />
 							Your workspace is ready — it only takes a few minutes to build
@@ -112,4 +112,3 @@ ReminderEmail.PreviewProps = {
 } as ReminderEmailProps;
 
 export default ReminderEmail;
-

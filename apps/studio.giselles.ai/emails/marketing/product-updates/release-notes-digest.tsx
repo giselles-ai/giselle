@@ -11,17 +11,17 @@ import {
 	Text,
 } from "@react-email/components";
 import {
+	container,
 	EmailFonts,
 	EmailFooter,
-	main,
-	container,
-	topBorderSection,
-	topBorder,
-	section,
-	text,
-	signatureText,
-	link,
 	getBaseUrl,
+	link,
+	main,
+	section,
+	signatureText,
+	text,
+	topBorder,
+	topBorderSection,
 } from "../../components";
 
 interface ReleaseNotesDigestEmailProps {
@@ -51,32 +51,25 @@ export const ReleaseNotesDigestEmail = ({
 						/>
 					</Section>
 					<Section style={section}>
-						<Text style={text}>
-							Hi {userName},
-						</Text>
+						<Text style={text}>Hi {userName},</Text>
 						<Text style={text}>
 							We&apos;ve wrapped up the year with a few exciting updates:
 						</Text>
 						<Text style={text}>
 							✨ New Features
-							<br />
-							• Model Switching in Node Builder
-							<br />
-							• Stage Performance Boosts (2× faster rendering)
+							<br />• Model Switching in Node Builder
+							<br />• Stage Performance Boosts (2× faster rendering)
 						</Text>
 						<Text style={text}>
 							⚙️ Improvements
-							<br />
-							• Simplified team access controls
-							<br />
-							• Cleaner workspace navigation
+							<br />• Simplified team access controls
+							<br />• Cleaner workspace navigation
 						</Text>
 						<Text style={text}>
 							📘 Highlights
-							<br />
-							• Watch: &quot;Designing Flows That Think&quot; (Webinar Replay)
-							<br />
-							• Read: Top 5 Agent Templates of 2025
+							<br />• Watch: &quot;Designing Flows That Think&quot; (Webinar
+							Replay)
+							<br />• Read: Top 5 Agent Templates of 2025
 						</Text>
 						<Text style={text}>
 							<Link href={viewReleaseNotesUrl} style={link}>

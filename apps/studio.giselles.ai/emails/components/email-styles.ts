@@ -128,4 +128,3 @@ export const getBaseUrl = () => {
 			: "https://studio.giselles.ai")
 	);
 };
-

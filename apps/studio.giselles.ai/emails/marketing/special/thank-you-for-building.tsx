@@ -12,18 +12,18 @@ import {
 	Text,
 } from "@react-email/components";
 import {
-	EmailFonts,
-	EmailHeader,
-	EmailFooter,
-	main,
+	button,
 	container,
-	topBorderSection,
-	topBorder,
+	EmailFonts,
+	EmailFooter,
+	EmailHeader,
+	getBaseUrl,
+	h1,
+	main,
 	section,
 	text,
-	button,
-	h1,
-	getBaseUrl,
+	topBorder,
+	topBorderSection,
 } from "../../components";
 
 interface ThankYouForBuildingEmailProps {
@@ -52,9 +52,7 @@ export const ThankYouForBuildingEmail = ({
 						/>
 					</Section>
 					<Section style={section}>
-						<Heading style={h1}>
-							Thank You for Building with Giselle.
-						</Heading>
+						<Heading style={h1}>Thank You for Building with Giselle.</Heading>
 						<Text style={text}>
 							Every workflow, every experiment, every deployment — they all move
 							us forward.

@@ -1,6 +1,5 @@
 import {
 	Body,
-	Button,
 	Column,
 	Container,
 	Head,
@@ -15,19 +14,18 @@ import {
 	Text,
 } from "@react-email/components";
 import {
-	EmailFonts,
-	EmailHeader,
-	EmailFooter,
-	main,
 	container,
-	topBorderSection,
-	topBorder,
-	section,
-	text,
-	button,
-	signatureText,
-	link,
+	EmailFonts,
+	EmailFooter,
+	EmailHeader,
 	getBaseUrl,
+	link,
+	main,
+	section,
+	signatureText,
+	text,
+	topBorder,
+	topBorderSection,
 } from "../../components";
 
 interface ChangelogAnnouncementEmailProps {
@@ -38,7 +36,7 @@ interface ChangelogAnnouncementEmailProps {
 }
 
 export const ChangelogAnnouncementEmail = ({
-	userName = "there",
+	_userName = "there",
 	date = new Date().toLocaleDateString("en-US", {
 		month: "long",
 		day: "numeric",
@@ -100,10 +98,8 @@ export const ChangelogAnnouncementEmail = ({
 						</Text>
 						<Text style={text}>
 							• Faster agent deployment and improved queue management
-							<br />
-							• Enhanced model connection stability
-							<br />
-							• UI polish in Node Builder (dark mode + better tooltips)
+							<br />• Enhanced model connection stability
+							<br />• UI polish in Node Builder (dark mode + better tooltips)
 						</Text>
 						{screenshotUrl && (
 							<Section style={imageSection}>
@@ -155,18 +151,18 @@ const headerBannerSection = {
 	padding: "32px 48px 0 48px",
 };
 
-const leftColumn = {
+const _leftColumn = {
 	width: "150px",
 	verticalAlign: "middle" as const,
 };
 
-const centerColumn = {
+const _centerColumn = {
 	width: "300px",
 	verticalAlign: "middle" as const,
 	textAlign: "center" as const,
 };
 
-const rightColumn = {
+const _rightColumn = {
 	width: "150px",
 	verticalAlign: "middle" as const,
 	textAlign: "right" as const,

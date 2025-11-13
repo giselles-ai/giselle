@@ -9,19 +9,19 @@ import {
 	Text,
 } from "@react-email/components";
 import {
-	EmailFonts,
-	EmailHeader,
-	EmailFooter,
-	main,
+	code,
+	codeContainer,
 	container,
-	topBorderSection,
-	topBorder,
+	EmailFonts,
+	EmailFooter,
+	EmailHeader,
+	getBaseUrl,
+	h1,
+	main,
 	section,
 	text,
-	h1,
-	codeContainer,
-	code,
-	getBaseUrl,
+	topBorder,
+	topBorderSection,
 } from "../components";
 
 interface ReauthenticationEmailProps {
