@@ -37,7 +37,8 @@ export const ReminderEmail = ({
 	userName = "there",
 	returnToGiselleUrl = "https://studio.giselles.ai",
 	examplesGalleryUrl = "https://giselles.ai",
-	releaseNotesUrl: _releaseNotesUrl = "https://docs.giselles.ai/en/releases/release-notes",
+	releaseNotesUrl:
+		_releaseNotesUrl = "https://docs.giselles.ai/en/releases/release-notes",
 }: ReminderEmailProps) => {
 	const baseUrl = getBaseUrl();
 	return (

@@ -40,7 +40,9 @@ export const YearInReviewEmail = ({
 			<Head>
 				<EmailFonts />
 			</Head>
-			<Preview>{String(currentYear)} in Review — A Year of Building Together</Preview>
+			<Preview>
+				{String(currentYear)} in Review — A Year of Building Together
+			</Preview>
 			<Body style={main}>
 				<Container style={container}>
 					<EmailHeader baseUrl={baseUrl} />
