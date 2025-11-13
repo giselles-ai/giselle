@@ -40,6 +40,7 @@ import {
 	listInvitations,
 	revokeInvitation,
 	sendInvitationEmail,
+	TEAM_MEMBER_LIMIT_REACHED_ERROR,
 } from "./invitation";
 
 function isUserId(value: string): value is UserId {
@@ -627,9 +628,6 @@ export type SendInvitationsResult = {
 	results: InvitationResult[];
 };
 
-const TEAM_MEMBER_LIMIT_REACHED_ERROR =
-	"You've used all seats included in your plan. Remove a member or upgrade to invite more teammates.";
-
 // Update sendInvitations function
 export async function sendInvitationsAction(
 	emails: string[],
@@ -682,11 +680,18 @@ export async function sendInvitationsAction(
 				await sendInvitationEmail(invitation);
 				return { email, status: "success" };
 			} catch (error: unknown) {
-				const status = invitation ? "email_error" : "db_error";
 				const errorMessage =
 					error instanceof Error
 						? error.message
 						: "Unknown error during invitation process";
+				if (errorMessage === TEAM_MEMBER_LIMIT_REACHED_ERROR) {
+					return {
+						email,
+						status: "plan_limit_reached",
+						error: TEAM_MEMBER_LIMIT_REACHED_ERROR,
+					};
+				}
+				const status = invitation ? "email_error" : "db_error";
 				return { email, status, error: errorMessage };
 			}
 		},

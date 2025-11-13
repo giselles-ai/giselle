@@ -1,17 +1,19 @@
 import { render, toPlainText } from "@react-email/components";
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, count, eq, gt, isNull, sql } from "drizzle-orm";
 import type { TeamRole, UserId } from "@/db";
 import { db } from "@/db";
 import { invitations, teamMemberships, teams, users } from "@/db/schema";
 import TeamInvitationEmail from "@/emails/transactional/team-invitation";
 import { sendEmail } from "@/services/external/email";
 import { type CurrentTeam, fetchCurrentTeam } from "@/services/teams";
-import { canManageTeamMembers } from "@/services/teams/plan-features/team-members";
+import { getTeamMemberQuota } from "@/services/teams/plan-features/team-members";
 
 export type Invitation = typeof invitations.$inferSelect;
 
 export const INVITE_MEMBERS_NOT_AVAILABLE_ERROR =
 	"Inviting members is not available for this team plan.";
+export const TEAM_MEMBER_LIMIT_REACHED_ERROR =
+	"You've used all seats included in your plan. Remove a member or upgrade to invite more teammates.";
 
 export function createInvitation(
 	email: string,
@@ -22,7 +24,8 @@ export function createInvitation(
 		id: UserId;
 	},
 ): Promise<Invitation> {
-	if (!canManageTeamMembers(currentTeam.plan)) {
+	const quota = getTeamMemberQuota(currentTeam.plan);
+	if (!quota.isAvailable) {
 		throw new Error(INVITE_MEMBERS_NOT_AVAILABLE_ERROR);
 	}
 
@@ -31,6 +34,8 @@ export function createInvitation(
 	const expiredAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hours
 
 	return db.transaction(async (tx) => {
+		// serialize team seat accounting then acquire per-email lock
+		await tx.execute(sql`SELECT pg_advisory_xact_lock(${currentTeam.dbId}, 0)`);
 		// acquire advisory lock
 		await tx.execute(sql`
         SELECT pg_advisory_xact_lock(
@@ -73,6 +78,29 @@ export function createInvitation(
 
 		if (existingActiveInvitation.length > 0) {
 			throw new Error("An active invitation already exists");
+		}
+
+		// enforce seat quota after locking to avoid race conditions
+		const [memberCountResult] = await tx
+			.select({ value: count() })
+			.from(teamMemberships)
+			.where(eq(teamMemberships.teamDbId, currentTeam.dbId));
+
+		const [pendingInvitationResult] = await tx
+			.select({ value: count() })
+			.from(invitations)
+			.where(
+				and(
+					eq(invitations.teamDbId, currentTeam.dbId),
+					isNull(invitations.revokedAt),
+					gt(invitations.expiredAt, new Date()),
+				),
+			);
+
+		const memberCount = Number(memberCountResult?.value ?? 0);
+		const pendingInvitations = Number(pendingInvitationResult?.value ?? 0);
+		if (memberCount + pendingInvitations >= quota.maxMembers) {
+			throw new Error(TEAM_MEMBER_LIMIT_REACHED_ERROR);
 		}
 
 		// insert the invitation
