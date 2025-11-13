@@ -81,6 +81,7 @@ async function userApps(teamIds: TeamId[]) {
 									return null;
 								}
 								return {
+									id: app.id,
 									name:
 										appEntryNode.name ?? "New App" /** @todo default name */,
 									appEntryNodeId: appEntryNode.id,
