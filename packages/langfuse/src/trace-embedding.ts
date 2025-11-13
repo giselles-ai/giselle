@@ -34,20 +34,36 @@ export async function traceEmbedding(args: {
 
 	try {
 		const langfuse = new Langfuse();
+		const embeddingTransport = args.metrics.transport;
+		const metadata = {
+			...(args.metadata ?? {}),
+			...(embeddingTransport
+				? {
+						embeddingTransport,
+					}
+				: {}),
+			...(args.metrics.providerMetadata
+				? { providerMetadata: args.metrics.providerMetadata }
+				: {}),
+		};
+		const tags = [
+			...(args.tags ?? []),
+			...buildTags({
+				provider,
+				dimensions,
+				operation,
+			}),
+			...(embeddingTransport
+				? [`embedding-transport:${embeddingTransport}`]
+				: []),
+		];
 		const trace = langfuse.trace({
 			name: "embedding",
 			input: texts,
 			userId: args.userId,
 			sessionId: args.sessionId,
-			metadata: args.metadata,
-			tags: [
-				...(args.tags ?? []),
-				...buildTags({
-					provider,
-					dimensions,
-					operation,
-				}),
-			],
+			metadata,
+			tags,
 		});
 
 		const textTokens = usage?.tokens ?? 0;
@@ -57,6 +73,11 @@ export async function traceEmbedding(args: {
 			imageTokens,
 		});
 		const totalTokens = textTokens + imageTokens;
+
+		trace.update({
+			metadata,
+			tags,
+		});
 
 		trace.generation({
 			name: operation,
@@ -70,7 +91,7 @@ export async function traceEmbedding(args: {
 			},
 			startTime: startTime,
 			endTime: endTime,
-			metadata: args.metadata,
+			metadata,
 		});
 
 		await langfuse.flushAsync();
