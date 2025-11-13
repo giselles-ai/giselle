@@ -3,8 +3,10 @@ import {
 	Button,
 	Container,
 	Head,
+	Heading,
 	Hr,
 	Html,
+	Img,
 	Preview,
 	Section,
 	Text,
@@ -20,19 +22,16 @@ import {
 	section,
 	text,
 	button,
+	h1,
 	getBaseUrl,
 } from "../../components";
 
 interface YearInReviewEmailProps {
-	userName?: string;
-	agentsCreated?: number;
-	viewHighlightsUrl?: string;
+	viewYearInGiselleUrl?: string;
 }
 
 export const YearInReviewEmail = ({
-	userName = "there",
-	agentsCreated = 0,
-	viewHighlightsUrl = "https://studio.giselles.ai/year-in-review",
+	viewYearInGiselleUrl = "https://studio.giselles.ai/year-in-review",
 }: YearInReviewEmailProps) => {
 	const baseUrl = getBaseUrl();
 	const currentYear = new Date().getFullYear();
@@ -41,34 +40,32 @@ export const YearInReviewEmail = ({
 			<Head>
 				<EmailFonts />
 			</Head>
-			<Preview>Your {currentYear} journey with Giselle ✨</Preview>
+			<Preview>{currentYear} in Review — A Year of Building Together</Preview>
 			<Body style={main}>
 				<Container style={container}>
-					<EmailHeader
-						heading="A year of creation."
-						subheading="Thank you for building with us."
-						baseUrl={baseUrl}
-					/>
-					<Section style={topBorderSection}>
-						<Hr style={topBorder} />
+					<EmailHeader baseUrl={baseUrl} />
+					<Section style={imageSection}>
+						<Img
+							src={`${baseUrl}/static/year-in-review-1.jpg`}
+							width="600"
+							alt="Year in review"
+							style={image}
+						/>
 					</Section>
 					<Section style={section}>
+						<Heading style={h1}>
+							{currentYear} in Review — A Year of Building Together.
+						</Heading>
 						<Text style={text}>
-							This year, thousands of agents were created in Giselle — and you,
-							{userName}, were part of it.
+							From launching Node Builder to growing our builder community, this
+							year has been full of creation and connection.
 						</Text>
-						{agentsCreated > 0 && (
-							<Text style={text}>
-								You created <strong>{agentsCreated}</strong> agent
-								{agentsCreated !== 1 ? "s" : ""} this year.
-							</Text>
-						)}
 						<Text style={text}>
-							Here&apos;s a look back at your milestones and what&apos;s coming
-							next.
+							Here&apos;s a look back at the moments that defined {currentYear}{" "}
+							— and a glimpse of what&apos;s next.
 						</Text>
-						<Button href={viewHighlightsUrl} style={button}>
-							View Your {currentYear} Highlights
+						<Button href={viewYearInGiselleUrl} style={button}>
+							View Your Year in Giselle →
 						</Button>
 					</Section>
 					<Section style={topBorderSection}>
@@ -82,9 +79,19 @@ export const YearInReviewEmail = ({
 };
 
 YearInReviewEmail.PreviewProps = {
-	userName: "John",
-	agentsCreated: 5,
-	viewHighlightsUrl: "https://studio.giselles.ai/year-in-review",
+	viewYearInGiselleUrl: "https://studio.giselles.ai/year-in-review",
 } as YearInReviewEmailProps;
+
+const imageSection = {
+	padding: "0",
+	margin: "0",
+};
+
+const image = {
+	width: "100%",
+	maxWidth: "600px",
+	display: "block",
+	margin: "0 auto",
+};
 
 export default YearInReviewEmail;

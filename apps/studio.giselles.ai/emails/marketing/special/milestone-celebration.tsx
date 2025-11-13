@@ -3,8 +3,10 @@ import {
 	Button,
 	Container,
 	Head,
+	Heading,
 	Hr,
 	Html,
+	Img,
 	Preview,
 	Section,
 	Text,
@@ -20,19 +22,16 @@ import {
 	section,
 	text,
 	button,
+	h1,
 	getBaseUrl,
 } from "../../components";
 
 interface MilestoneCelebrationEmailProps {
-	userName?: string;
-	milestone?: string;
-	celebrateUrl?: string;
+	seeWhatsNextUrl?: string;
 }
 
 export const MilestoneCelebrationEmail = ({
-	userName = "there",
-	milestone = "100 agents created",
-	celebrateUrl = "https://studio.giselles.ai",
+	seeWhatsNextUrl = "https://studio.giselles.ai",
 }: MilestoneCelebrationEmailProps) => {
 	const baseUrl = getBaseUrl();
 	return (
@@ -40,28 +39,34 @@ export const MilestoneCelebrationEmail = ({
 			<Head>
 				<EmailFonts />
 			</Head>
-			<Preview>Congratulations on reaching {milestone}!</Preview>
+			<Preview>We&apos;ve reached a new milestone — thanks to you</Preview>
 			<Body style={main}>
 				<Container style={container}>
-					<EmailHeader
-						heading="A year of creation."
-						subheading="Thank you for building with us."
-						baseUrl={baseUrl}
-					/>
-					<Section style={topBorderSection}>
-						<Hr style={topBorder} />
+					<EmailHeader baseUrl={baseUrl} />
+					<Section style={imageSection}>
+						<Img
+							src={`${baseUrl}/static/milestone-celebration-1.jpg`}
+							width="600"
+							alt="Milestone celebration"
+							style={image}
+						/>
 					</Section>
 					<Section style={section}>
+						<Heading style={h1}>
+							We&apos;ve Reached a New Milestone — Thanks to You.
+						</Heading>
 						<Text style={text}>
-							Congratulations, {userName}! You&apos;ve reached an incredible
-							milestone: {milestone}.
+							10,000 agents created. 1,200 teams building.
 						</Text>
 						<Text style={text}>
-							Your dedication to building AI agents inspires us. Keep creating
-							and pushing the boundaries of what&apos;s possible.
+							What started as an idea became a growing movement — and
+							you&apos;re part of it.
 						</Text>
-						<Button href={celebrateUrl} style={button}>
-							Celebrate
+						<Text style={text}>
+							Let&apos;s keep building the future of AI orchestration together.
+						</Text>
+						<Button href={seeWhatsNextUrl} style={button}>
+							See What&apos;s Next →
 						</Button>
 					</Section>
 					<Section style={topBorderSection}>
@@ -75,9 +80,19 @@ export const MilestoneCelebrationEmail = ({
 };
 
 MilestoneCelebrationEmail.PreviewProps = {
-	userName: "John",
-	milestone: "100 agents created",
-	celebrateUrl: "https://studio.giselles.ai",
+	seeWhatsNextUrl: "https://studio.giselles.ai",
 } as MilestoneCelebrationEmailProps;
+
+const imageSection = {
+	padding: "0",
+	margin: "0",
+};
+
+const image = {
+	width: "100%",
+	maxWidth: "600px",
+	display: "block",
+	margin: "0 auto",
+};
 
 export default MilestoneCelebrationEmail;
