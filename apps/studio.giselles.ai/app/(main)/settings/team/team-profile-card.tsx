@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { TeamAvatarImage } from "@/services/teams/components/team-avatar-image";
-import type { Team } from "@/services/teams/types";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { TeamProfileEditModal } from "./team-profile-edit-modal";
 
-interface TeamProfileCardProps extends Team {
+interface TeamProfileCardProps {
+	id: string;
+	name: string;
 	avatarUrl?: string | null;
 }
 
