@@ -48,6 +48,7 @@ async function userApps(teamIds: TeamId[]) {
 			with: {
 				apps: {
 					columns: {
+						id: true,
 						appEntryNodeId: true,
 					},
 					with: {
@@ -65,30 +66,33 @@ async function userApps(teamIds: TeamId[]) {
 			async (teams) =>
 				await Promise.all(
 					teams.flatMap((team) =>
-						team.apps.map(async (app) => {
-							const workspace = await giselleEngine.getWorkspace(
-								app.workspace.id,
-							);
-							const appEntryNode = workspace.nodes.find(
-								(node) => node.id === app.appEntryNodeId,
-							);
-							if (appEntryNode === undefined) {
-								logger.warn(
-									`App entry node not found for app ${app.appEntryNodeId}`,
+						team.apps
+							.map(async (app) => {
+								const workspace = await giselleEngine.getWorkspace(
+									app.workspace.id,
 								);
-								return null;
-							}
-							return {
-								name: appEntryNode.name ?? "New App" /** @todo default name */,
-								appEntryNodeId: appEntryNode.id,
-								workspaceId: workspace.id,
-								workspaceName: workspace.name,
-								teamName: team.name,
-								teamId: team.id,
-							};
-						}),
+								const appEntryNode = workspace.nodes.find(
+									(node) => node.id === app.appEntryNodeId,
+								);
+								if (appEntryNode === undefined) {
+									logger.warn(
+										`App entry node<${app.appEntryNodeId}> not found for app<${app.id}>.`,
+									);
+									return null;
+								}
+								return {
+									name:
+										appEntryNode.name ?? "New App" /** @todo default name */,
+									appEntryNodeId: appEntryNode.id,
+									workspaceId: workspace.id,
+									workspaceName: workspace.name,
+									teamName: team.name,
+									teamId: team.id,
+								};
+							})
+							.filter((appOrNull) => appOrNull !== null),
 					),
-				),
+				).then((apps) => apps.filter((teamOrApps) => teamOrApps !== null)),
 		);
 }
 

@@ -87,6 +87,7 @@ function AppCard({
 }
 export function Page({ dataLoader }: { dataLoader: Promise<LoaderData> }) {
 	const _data = use(dataLoader);
+	console.log(_data);
 	return (
 		<div className="max-w-7xl mx-auto px-8 py-12">
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
