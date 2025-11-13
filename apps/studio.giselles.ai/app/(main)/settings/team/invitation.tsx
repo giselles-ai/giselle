@@ -6,7 +6,7 @@ import { invitations, teamMemberships, teams, users } from "@/db/schema";
 import TeamInvitationEmail from "@/emails/transactional/team-invitation";
 import { sendEmail } from "@/services/external/email";
 import { type CurrentTeam, fetchCurrentTeam } from "@/services/teams";
-import { hasTeamPlanFeatures } from "@/services/teams/utils";
+import { canManageTeamMembers } from "@/services/teams/plan-features/team-members";
 
 export type Invitation = typeof invitations.$inferSelect;
 
@@ -22,7 +22,7 @@ export function createInvitation(
 		id: UserId;
 	},
 ): Promise<Invitation> {
-	if (!hasTeamPlanFeatures(currentTeam)) {
+	if (!canManageTeamMembers(currentTeam.plan)) {
 		throw new Error(INVITE_MEMBERS_NOT_AVAILABLE_ERROR);
 	}
 

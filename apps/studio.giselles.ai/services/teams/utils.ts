@@ -8,7 +8,3 @@ export function isProPlan(team: Pick<CurrentTeam, "plan">) {
 export function createTeamId(): TeamId {
 	return `tm_${createId()}`;
 }
-
-export function hasTeamPlanFeatures(team: CurrentTeam) {
-	return team.plan === "internal";
-}
