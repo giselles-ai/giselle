@@ -320,6 +320,16 @@ function MultipleRunsDropdown({
 									}}
 								/>
 							)}
+							{isAppEntryNode(starterNode) && (
+								<AppEntryInputDialog
+									node={starterNode}
+									connectionIds={menuItem.run.connectionIds}
+									onClose={() => {
+										setIsDropdownOpen(false);
+										setOpenDialogNodeId(null);
+									}}
+								/>
+							)}
 						</CenteredDialogContent>
 					</Dialog>
 				);
