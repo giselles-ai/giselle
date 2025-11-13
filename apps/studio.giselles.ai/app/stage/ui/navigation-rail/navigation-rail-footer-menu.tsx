@@ -8,6 +8,7 @@ import { use, useEffect, useState } from "react";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { SignOutButton } from "@/services/accounts/components/user-button/sign-out-button";
 import { TeamCreationForm } from "@/services/teams/components/team-creation-form";
+import { formatPlanName } from "@/services/teams/utils";
 import type { NavigationRailState, UserDataForNavigationRail } from "./types";
 
 const MENU_ITEM_CLASS =
@@ -80,7 +81,7 @@ export function NavigationRailFooterMenu({
 								{user.displayName ?? user.email}
 							</p>
 							<p className="truncate text-stage-accent text-[10px]">
-								{user.planName}
+								{formatPlanName(user.currentTeam.plan)}
 							</p>
 						</div>
 					)}

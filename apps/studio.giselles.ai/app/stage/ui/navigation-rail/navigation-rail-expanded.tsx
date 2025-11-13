@@ -26,7 +26,7 @@ export function NavigationRailExpanded({
 	currentPath?: string;
 }) {
 	const user = use(userPromise);
-	const isPro = user.currentTeam?.isPro ?? false;
+	const isPro = user.currentTeam.isPro;
 
 	return (
 		<NavigationRailContainer variant="expanded">
