@@ -66,7 +66,9 @@ type ClonedFileDataPayload = FileData & {
 export function isClonedFileDataPayload(
 	data: FileData,
 ): data is ClonedFileDataPayload {
-	return "originalFileIdForCopy" in data;
+	return (
+		"originalFileIdForCopy" in data && data.originalFileIdForCopy !== undefined
+	);
 }
 
 type OperationNodeContentType = OperationNode["content"]["type"];
