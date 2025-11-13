@@ -192,7 +192,7 @@ export function AppEntryInputDialog({
 											className={clsx(
 												"w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
 												"border-[1px]",
-												validationErrors[parameter.name]
+												validationErrors[parameter.id]
 													? "border-red-500"
 													: "border-border",
 												"text-[14px]",
@@ -206,7 +206,7 @@ export function AppEntryInputDialog({
 											className={clsx(
 												"w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
 												"border-[1px]",
-												validationErrors[parameter.name]
+												validationErrors[parameter.id]
 													? "border-red-500"
 													: "border-border",
 												"text-[14px]",
@@ -222,16 +222,16 @@ export function AppEntryInputDialog({
 											className={clsx(
 												"w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
 												"border-[1px]",
-												validationErrors[parameter.name]
+												validationErrors[parameter.id]
 													? "border-red-500"
 													: "border-border",
 												"text-[14px]",
 											)}
 										/>
 									)}
-									{validationErrors[parameter.name] && (
+									{validationErrors[parameter.id] && (
 										<span className="text-red-500 text-[12px] font-medium">
-											{validationErrors[parameter.name]}
+											{validationErrors[parameter.id]}
 										</span>
 									)}
 								</fieldset>
