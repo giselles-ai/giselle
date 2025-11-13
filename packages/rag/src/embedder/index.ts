@@ -1,7 +1,14 @@
 export type { EmbedderConfig } from "./ai-sdk-embedder";
+export {
+	createGatewayEmbedder,
+	isGatewaySupportedEmbeddingProfile,
+} from "./gateway";
 export { createGoogleEmbedder } from "./google";
 export { createOpenAIEmbedder } from "./openai";
-export { createEmbedderFromProfile } from "./profiles";
+export {
+	type CreateEmbedderFromProfileOptions,
+	createEmbedderFromProfile,
+} from "./profiles";
 export type {
 	EmbedderFunction,
 	EmbeddingCompleteCallback,

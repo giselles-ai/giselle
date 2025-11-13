@@ -4,15 +4,26 @@ import {
 } from "@giselles-ai/protocol";
 import { ConfigurationError } from "../errors";
 import type { EmbedderConfig } from "./ai-sdk-embedder";
+import {
+	createGatewayEmbedder,
+	isGatewaySupportedEmbeddingProfile,
+} from "./gateway";
 import { createGoogleEmbedder } from "./google";
 import { createNotImplementedEmbedder } from "./not-implemented";
 import { createOpenAIEmbedder } from "./openai";
 import type { EmbedderFunction } from "./types";
 
+export type CreateEmbedderFromProfileOptions = Pick<
+	EmbedderConfig,
+	"maxRetries" | "embeddingComplete"
+> & {
+	transport?: "gateway" | "provider";
+};
+
 export function createEmbedderFromProfile(
 	profileId: EmbeddingProfileId,
 	apiKey: string,
-	options?: Pick<EmbedderConfig, "maxRetries" | "embeddingComplete">,
+	options?: CreateEmbedderFromProfileOptions,
 ): EmbedderFunction {
 	const profile = EMBEDDING_PROFILES[profileId];
 	if (!profile) {
@@ -23,18 +34,34 @@ export function createEmbedderFromProfile(
 		);
 	}
 
+	const { transport = "provider", ...embedderOptions } = options ?? {};
+
+	if (transport === "gateway") {
+		if (!isGatewaySupportedEmbeddingProfile(profile)) {
+			throw new ConfigurationError(
+				`Embedding profile '${profileId}' (${profile.provider}/${profile.model}) is not supported by AI Gateway`,
+			);
+		}
+
+		return createGatewayEmbedder({
+			apiKey,
+			profile,
+			...embedderOptions,
+		});
+	}
+
 	switch (profile.provider) {
 		case "openai":
 			return createOpenAIEmbedder({
 				apiKey,
 				profile,
-				...options,
+				...embedderOptions,
 			});
 		case "google":
 			return createGoogleEmbedder({
 				apiKey,
 				profile,
-				...options,
+				...embedderOptions,
 			});
 		case "cohere":
 			// Placeholder: actual Cohere embedder will be added in a follow-up PR
