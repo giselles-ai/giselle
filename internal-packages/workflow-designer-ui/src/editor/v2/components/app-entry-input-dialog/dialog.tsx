@@ -55,27 +55,26 @@ export function AppEntryInputDialog({
 					: "";
 
 				if (parameter.required && value === "") {
-					errors[parameter.name] = `${parameter.name} is required`;
+					errors[parameter.id] = `${parameter.name} is required`;
 					continue;
 				}
 
 				if (value === "") {
-					values[parameter.name] = "";
+					values[parameter.id] = "";
 					continue;
 				}
 
 				switch (parameter.type) {
 					case "text":
 					case "multiline-text":
-						values[parameter.name] = value;
+						values[parameter.id] = value;
 						break;
 					case "number": {
 						const numValue = Number(value);
 						if (Number.isNaN(numValue)) {
-							errors[parameter.name] =
-								`${parameter.name} must be a valid number`;
+							errors[parameter.id] = `${parameter.name} must be a valid number`;
 						} else {
-							values[parameter.name] = numValue;
+							values[parameter.id] = numValue;
 						}
 						break;
 					}
@@ -95,16 +94,16 @@ export function AppEntryInputDialog({
 			setIsSubmitting(true);
 
 			try {
-				const parameterItems = Object.entries(values).map(([name, value]) => {
+				const parameterItems = Object.entries(values).map(([id, value]) => {
 					if (typeof value === "number") {
 						return {
-							name,
+							name: id,
 							type: "number" as const,
 							value,
 						};
 					}
 					return {
-						name,
+						name: id,
 						type: "string" as const,
 						value: value as string,
 					};

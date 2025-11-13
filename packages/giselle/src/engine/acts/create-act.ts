@@ -117,7 +117,11 @@ export async function createAct(
 		const steps: Step[] = [];
 		for (const nodeId of level) {
 			const node = nodes.find((node) => node.id === nodeId);
-			if (node === undefined || !isOperationNode(node)) {
+			if (
+				node === undefined ||
+				!isOperationNode(node) ||
+				isAppEntryNode(node)
+			) {
 				continue;
 			}
 			const connectedConnections = connections.filter(
@@ -173,6 +177,9 @@ export async function createAct(
 					totalTokens: 0,
 				},
 			});
+		}
+		if (steps.length === 0) {
+			continue;
 		}
 		sequences.push({
 			id: SequenceId.generate(),

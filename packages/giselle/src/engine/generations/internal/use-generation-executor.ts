@@ -407,7 +407,10 @@ export async function useGenerationExecutor<T>(args: {
 		);
 
 		if (parameter === undefined) {
-			args.context.logger.warn(`Parameter ${parseResult.data} not found`);
+			args.context.logger.warn(
+				{ parameterInput },
+				`Parameter ${parseResult.data} not found`,
+			);
 			return undefined;
 		}
 		return parameter.value;
