@@ -20,6 +20,6 @@ export type Team = {
 	id: typeof teams.$inferSelect.id;
 	name: typeof teams.$inferSelect.name;
 	avatarUrl?: typeof teams.$inferSelect.avatarUrl;
-	plan?: typeof teams.$inferSelect.plan;
+	plan: typeof teams.$inferSelect.plan;
 	isPro?: boolean;
 };
