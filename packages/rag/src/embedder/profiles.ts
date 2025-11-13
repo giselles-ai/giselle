@@ -35,6 +35,7 @@ export function createEmbedderFromProfile(
 	}
 
 	const { transport = "provider", ...embedderOptions } = options ?? {};
+	const normalizedTransport = transport === "gateway" ? "gateway" : "provider";
 
 	if (transport === "gateway") {
 		if (!isGatewaySupportedEmbeddingProfile(profile)) {
@@ -46,6 +47,7 @@ export function createEmbedderFromProfile(
 		return createGatewayEmbedder({
 			apiKey,
 			profile,
+			transport: "gateway",
 			...embedderOptions,
 		});
 	}
@@ -55,12 +57,14 @@ export function createEmbedderFromProfile(
 			return createOpenAIEmbedder({
 				apiKey,
 				profile,
+				transport: normalizedTransport,
 				...embedderOptions,
 			});
 		case "google":
 			return createGoogleEmbedder({
 				apiKey,
 				profile,
+				transport: normalizedTransport,
 				...embedderOptions,
 			});
 		case "cohere":

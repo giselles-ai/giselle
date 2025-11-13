@@ -110,7 +110,10 @@ export function createPipeline<
 	const resolvedEmbedder = createEmbedderFromProfile(
 		options.embeddingProfileId,
 		apiKey,
-		{ embeddingComplete, transport: useGateway ? "gateway" : undefined },
+		{
+			embeddingComplete,
+			transport: useGateway ? "gateway" : "provider",
+		},
 	);
 
 	/**

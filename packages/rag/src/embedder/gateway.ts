@@ -27,5 +27,11 @@ export function createGatewayEmbedder(
 		typeof gateway.textEmbeddingModel
 	>[0];
 
-	return createAiSdkEmbedder(config, () => gateway.textEmbeddingModel(modelId));
+	return createAiSdkEmbedder(
+		{
+			...config,
+			transport: config.transport ?? "gateway",
+		},
+		() => gateway.textEmbeddingModel(modelId),
+	);
 }

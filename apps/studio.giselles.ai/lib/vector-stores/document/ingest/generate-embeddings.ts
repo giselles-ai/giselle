@@ -103,7 +103,10 @@ export async function generateEmbeddings(
 	const embedder: EmbedderFunction = createEmbedderFromProfile(
 		embeddingProfileId,
 		apiKey,
-		{ embeddingComplete, transport: useGateway ? "gateway" : undefined },
+		{
+			embeddingComplete,
+			transport: useGateway ? "gateway" : "provider",
+		},
 	);
 
 	// Generate embeddings in batches

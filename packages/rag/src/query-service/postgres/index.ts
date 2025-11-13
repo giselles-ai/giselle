@@ -148,7 +148,7 @@ export function createPostgresQueryService<
 
 			const embedder = createEmbedderFromProfile(profileId, apiKey, {
 				embeddingComplete,
-				transport: useGateway ? "gateway" : undefined,
+				transport: useGateway ? "gateway" : "provider",
 			});
 			const queryEmbedding = await embedder.embed(query);
 

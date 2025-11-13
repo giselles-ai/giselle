@@ -37,7 +37,10 @@ describe("createEmbedderFromProfile", () => {
 		const result = createEmbedderFromProfile(1, "openai-key");
 
 		expect(createOpenAIEmbedder).toHaveBeenCalledWith(
-			expect.objectContaining({ apiKey: "openai-key" }),
+			expect.objectContaining({
+				apiKey: "openai-key",
+				transport: "provider",
+			}),
 		);
 		expect(result).toBe("openai-embedder");
 	});
@@ -46,7 +49,10 @@ describe("createEmbedderFromProfile", () => {
 		const result = createEmbedderFromProfile(3, "google-key");
 
 		expect(createGoogleEmbedder).toHaveBeenCalledWith(
-			expect.objectContaining({ apiKey: "google-key" }),
+			expect.objectContaining({
+				apiKey: "google-key",
+				transport: "provider",
+			}),
 		);
 		expect(result).toBe("google-embedder");
 	});
@@ -57,7 +63,10 @@ describe("createEmbedderFromProfile", () => {
 		});
 
 		expect(createGatewayEmbedder).toHaveBeenCalledWith(
-			expect.objectContaining({ apiKey: "gateway-key" }),
+			expect.objectContaining({
+				apiKey: "gateway-key",
+				transport: "gateway",
+			}),
 		);
 		expect(result).toBe("gateway-embedder");
 	});
