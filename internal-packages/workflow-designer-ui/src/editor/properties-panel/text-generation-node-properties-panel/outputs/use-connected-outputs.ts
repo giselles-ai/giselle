@@ -108,12 +108,14 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 				...connectedActionInputs,
 				...connectedVariableInputs,
 				...connectedQueryInputs,
+				...connectedAppEntryInputs,
 			],
 			generation: connectedGeneratedInputs,
 			variable: connectedVariableInputs,
 			action: connectedActionInputs,
 			trigger: connectedTriggerInputs,
 			query: connectedQueryInputs,
+			appEntry: connectedAppEntryInputs,
 		};
 	}, [node.id, data.connections, data.nodes]);
 }
