@@ -1,4 +1,3 @@
-export * from "@giselles-ai/protocol";
 export * from "./cancel-generation";
 export * from "./generate-content";
 export * from "./generate-image";

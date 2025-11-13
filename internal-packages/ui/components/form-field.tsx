@@ -1,12 +1,14 @@
+"use client";
+
 import clsx from "clsx/lite";
 import { useId } from "react";
 
-interface FormFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface FormFieldProps
+	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "ref"> {
 	label?: string;
 	error?: string;
 	hint?: string;
 	containerClassName?: string;
-	ref?: React.Ref<HTMLInputElement>;
 }
 
 export function FormField({
@@ -15,7 +17,6 @@ export function FormField({
 	hint,
 	containerClassName,
 	className,
-	ref,
 	...props
 }: FormFieldProps) {
 	const id = useId();
@@ -24,12 +25,14 @@ export function FormField({
 	return (
 		<div className={clsx("space-y-1", containerClassName)}>
 			{label && (
-				<label htmlFor={inputId} className="text-sm text-text-muted font-geist">
+				<label
+					htmlFor={inputId}
+					className="text-text text-[14px] leading-[16.8px] font-sans"
+				>
 					{label}
 				</label>
 			)}
 			<input
-				ref={ref}
 				id={inputId}
 				className={clsx(
 					"w-full rounded-md bg-bg border border-border-muted px-3 py-2",

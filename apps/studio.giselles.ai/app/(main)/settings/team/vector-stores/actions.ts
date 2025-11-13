@@ -19,6 +19,7 @@ import {
 	githubRepositoryContentStatus,
 	githubRepositoryEmbeddingProfiles,
 	githubRepositoryIndex,
+	teams,
 } from "@/db";
 import {
 	createManualIngestTrigger,
@@ -34,6 +35,7 @@ import { fetchCurrentUser, getGitHubIdentityState } from "@/services/accounts";
 import { buildAppInstallationClient } from "@/services/external/github";
 import { fetchCurrentTeam } from "@/services/teams";
 import { getDocumentVectorStoreQuota } from "@/services/teams/plan-features/document-vector-store";
+import { getGitHubVectorStoreQuota } from "@/services/teams/plan-features/github-vector-store";
 import type {
 	ActionResult,
 	DiagnosticResult,
@@ -145,26 +147,59 @@ export async function registerRepositoryIndex(
 
 	try {
 		const team = await fetchCurrentTeam();
-		const existingIndex = await db
-			.select()
-			.from(githubRepositoryIndex)
-			.where(
-				and(
-					eq(githubRepositoryIndex.owner, owner),
-					eq(githubRepositoryIndex.repo, repo),
-					eq(githubRepositoryIndex.teamDbId, team.dbId),
-				),
-			)
-			.limit(1);
-		if (existingIndex.length > 0) {
+		const quota = getGitHubVectorStoreQuota(team.plan);
+		if (!quota.isAvailable) {
 			return {
 				success: false,
-				error: `Repository ${owner}/${repo} is already registered for this team`,
+				error: "GitHub Vector Stores are not included in your plan.",
 			};
 		}
 
 		const newIndexId = `gthbi_${createId()}` as GitHubRepositoryIndexId;
-		await db.transaction(async (tx) => {
+		const insertionResult = await db.transaction<ActionResult>(async (tx) => {
+			// Serialize quota enforcement by locking the owning team row.
+			await tx
+				.select({ dbId: teams.dbId })
+				.from(teams)
+				.where(eq(teams.dbId, team.dbId))
+				.limit(1)
+				.for("update");
+
+			const [existingRepository] = await tx
+				.select({ dbId: githubRepositoryIndex.dbId })
+				.from(githubRepositoryIndex)
+				.where(
+					and(
+						eq(githubRepositoryIndex.owner, owner),
+						eq(githubRepositoryIndex.repo, repo),
+						eq(githubRepositoryIndex.teamDbId, team.dbId),
+					),
+				)
+				.limit(1)
+				.for("update");
+
+			if (existingRepository) {
+				return {
+					success: false,
+					error: `Repository ${owner}/${repo} is already registered for this team`,
+				};
+			}
+
+			const existingRepositories = await tx
+				.select({ dbId: githubRepositoryIndex.dbId })
+				.from(githubRepositoryIndex)
+				.where(eq(githubRepositoryIndex.teamDbId, team.dbId))
+				.limit(quota.maxStores)
+				.for("update");
+
+			if (existingRepositories.length >= quota.maxStores) {
+				return {
+					success: false,
+					error:
+						"You have reached the number of GitHub Vector Stores included in your plan.",
+				};
+			}
+
 			const [newRepository] = await tx
 				.insert(githubRepositoryIndex)
 				.values({
@@ -195,7 +230,13 @@ export async function registerRepositoryIndex(
 				})),
 			);
 			await tx.insert(githubRepositoryContentStatus).values(contentStatusData);
+
+			return { success: true };
 		});
+
+		if (!insertionResult.success) {
+			return insertionResult;
+		}
 
 		revalidatePath("/settings/team/vector-stores");
 		return { success: true };
