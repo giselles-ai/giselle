@@ -38,6 +38,7 @@ export const UploadedFileData = FileDataBase.extend({
 	status: z.literal("uploaded"),
 	uploadedAt: z.number(),
 	providerOptions: z.optional(UploadedFileProviderOptions),
+	originalFileIdForCopy: z.optional(FileId.schema),
 });
 export type UploadedFileData = z.infer<typeof UploadedFileData>;
 export function createUploadedFileData(
