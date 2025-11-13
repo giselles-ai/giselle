@@ -591,40 +591,31 @@ export function NodeComponent({
 									position={Position.Right}
 									className={clsx(
 										"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px]",
-										"group-data-[content-type=textGeneration]:!border-generation-node-1",
-										"group-data-[content-type=imageGeneration]:!border-image-generation-node-1",
-										"group-data-[content-type=github]:!border-github-node-1",
-										"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:!border-github-node-1",
-										"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:!border-github-node-1",
-										"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:!border-github-node-1",
-										"group-data-[content-type=text]:!border-text-node-1",
-										"group-data-[content-type=file]:!border-file-node-1",
-										"group-data-[content-type=webPage]:!border-webPage-node-1",
-										"group-data-[content-type=webPage]:!border-webPage-node-1",
-										"group-data-[content-type=webSearch]:!border-web-search-node-1",
-										"group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
-										"group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
-										"group-data-[content-type=trigger]:!border-trigger-node-1",
-										"group-data-[content-type=appEntry]:!border-trigger-node-1",
-										"group-data-[content-type=action]:!border-action-node-1",
-										"group-data-[content-type=query]:!border-query-node-1",
-										"group-data-[state=connected]:group-data-[content-type=textGeneration]:!bg-generation-node-1",
-										"group-data-[state=connected]:group-data-[content-type=imageGeneration]:!bg-image-generation-node-1",
-										"group-data-[state=connected]:group-data-[content-type=github]:!bg-github-node-1",
-										"group-data-[state=connected]:group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:!bg-github-node-1",
-										"group-data-[state=connected]:group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:!bg-github-node-1",
-										"group-data-[state=connected]:group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:!bg-github-node-1",
-										"group-data-[state=connected]:group-data-[content-type=text]:!bg-text-node-1 group-data-[state=connected]:group-data-[content-type=text]:!border-text-node-1",
-										"group-data-[state=connected]:group-data-[content-type=file]:!bg-file-node-1 group-data-[state=connected]:group-data-[content-type=file]:!border-file-node-1",
-										"group-data-[state=connected]:group-data-[content-type=webPage]:!bg-webPage-node-1 group-data-[state=connected]:group-data-[content-type=webPage]:!border-webPage-node-1",
-										"group-data-[state=connected]:group-data-[content-type=webSearch]:!bg-web-search-node-1 group-data-[state=connected]:group-data-[content-type=webSearch]:!border-web-search-node-1",
-										"group-data-[state=connected]:group-data-[content-type=audioGeneration]:!bg-audio-generation-node-1 group-data-[state=connected]:group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
-										"group-data-[state=connected]:group-data-[content-type=videoGeneration]:!bg-video-generation-node-1 group-data-[state=connected]:group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
-										"group-data-[state=connected]:group-data-[content-type=trigger]:!bg-trigger-node-1 group-data-[state=connected]:group-data-[content-type=trigger]:!border-trigger-node-1",
-										"group-data-[state=connected]:group-data-[content-type=appEntry]:!bg-trigger-node-1 group-data-[state=connected]:group-data-[content-type=appEntry]:!border-trigger-node-1",
-										"group-data-[state=connected]:group-data-[content-type=action]:!bg-action-node-1 group-data-[state=connected]:group-data-[content-type=action]:!border-action-node-1",
-										"group-data-[state=connected]:group-data-[content-type=query]:!bg-query-node-1 group-data-[state=connected]:group-data-[content-type=query]:!border-query-node-1",
 										"group-data-[state=disconnected]:!bg-bg",
+										v.isTextGeneration &&
+											"!border-generation-node-1 group-data-[state=connected]:!bg-generation-node-1",
+										v.isImageGeneration &&
+											"!border-image-generation-node-1 group-data-[state=connected]:!bg-image-generation-node-1",
+										v.isGithub &&
+											"!border-github-node-1 group-data-[state=connected]:!bg-github-node-1",
+										v.isVectorStoreGithub &&
+											"!border-github-node-1 group-data-[state=connected]:!bg-github-node-1",
+										v.isVectorStoreDocument &&
+											"!border-github-node-1 group-data-[state=connected]:!bg-github-node-1",
+										v.isText &&
+											"!border-text-node-1 group-data-[state=connected]:!bg-text-node-1 group-data-[state=connected]:!border-text-node-1",
+										v.isFile &&
+											"!border-file-node-1 group-data-[state=connected]:!bg-file-node-1 group-data-[state=connected]:!border-file-node-1",
+										v.isWebPage &&
+											"!border-webPage-node-1 group-data-[state=connected]:!bg-webPage-node-1 group-data-[state=connected]:!border-webPage-node-1",
+										v.isTrigger &&
+											"!border-trigger-node-1 group-data-[state=connected]:!bg-trigger-node-1 group-data-[state=connected]:!border-trigger-node-1",
+										v.isAppEntry &&
+											"!border-trigger-node-1 group-data-[state=connected]:!bg-trigger-node-1 group-data-[state=connected]:!border-trigger-node-1",
+										v.isAction &&
+											"!border-action-node-1 group-data-[state=connected]:!bg-action-node-1 group-data-[state=connected]:!border-action-node-1",
+										v.isQuery &&
+											"!border-query-node-1 group-data-[state=connected]:!bg-query-node-1 group-data-[state=connected]:!border-query-node-1",
 									)}
 								/>
 								<div
