@@ -169,7 +169,7 @@ export default async function TeamMembersPage() {
 	const inviteButtonDisabled =
 		memberQuota.isAvailable && seatsRemaining === 0 && canManageMembers;
 	const inviteDisabledReason = inviteButtonDisabled
-		? `You've used all seats included in your ${planLabel} plan. Remove a member or upgrade to invite more teammates.`
+		? `You have used all seats included in your ${planLabel} plan. Remove a member or upgrade to invite more teammates.`
 		: undefined;
 
 	return (
