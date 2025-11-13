@@ -31,8 +31,8 @@
 		"tsup": "catalog:"
 	},
 	"dependencies": {
+		"@giselles-ai/node-registry": "workspace:*",
 		"@giselles-ai/protocol": "workspace:^",
-		"@giselles-ai/giselle": "workspace:^",
 		"@giselles-ai/text-editor-utils": "workspace:^",
 		"@tiptap/extension-mention": "catalog:",
 		"@tiptap/extension-placeholder": "catalog:",

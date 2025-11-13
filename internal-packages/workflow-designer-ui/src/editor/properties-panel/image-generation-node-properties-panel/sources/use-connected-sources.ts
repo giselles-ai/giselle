@@ -1,6 +1,7 @@
 import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
 import type {
 	ActionNode,
+	AppEntryNode,
 	Connection,
 	FileNode,
 	ImageGenerationNode,
@@ -35,6 +36,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 		const connectedQuerySources: ConnectedSource<QueryNode>[] = [];
 		const connectedTriggerSources: ConnectedSource<TriggerNode>[] = [];
 		const connectedActionSources: ConnectedSource<ActionNode>[] = [];
+		const connectedAppEntrySources: ConnectedSource<AppEntryNode>[] = [];
 		for (const connection of connectionsToThisNode) {
 			const node = data.nodes.find(
 				(node) => node.id === connection.outputNode.id,
@@ -84,6 +86,13 @@ export function useConnectedSources(node: ImageGenerationNode) {
 							connectedActionSources.push({
 								output,
 								node: node as ActionNode,
+								connection,
+							});
+							break;
+						case "appEntry":
+							connectedAppEntrySources.push({
+								output,
+								node: node as AppEntryNode,
 								connection,
 							});
 							break;

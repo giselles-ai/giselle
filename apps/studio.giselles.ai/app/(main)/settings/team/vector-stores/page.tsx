@@ -1,3 +1,4 @@
+import { githubIssuesVectorStoreFlag } from "@/flags";
 import { getGitHubIdentityState } from "@/services/accounts";
 import {
 	deleteRepositoryIndex,
@@ -36,9 +37,14 @@ export default async function TeamVectorStorePage() {
 		return <GitHubAppInstallRequiredCard />;
 	}
 
-	const [installationsWithRepos, repositoryIndexes] = await Promise.all([
+	const [
+		installationsWithRepos,
+		repositoryIndexes,
+		isGithubIssuesVectorStoreEnabled,
+	] = await Promise.all([
 		getInstallationsWithRepos(),
 		getGitHubRepositoryIndexes(),
+		githubIssuesVectorStoreFlag(),
 	]);
 
 	return (
@@ -47,6 +53,7 @@ export default async function TeamVectorStorePage() {
 				<RepositoryRegistrationDialog
 					installationsWithRepos={installationsWithRepos}
 					registerRepositoryIndexAction={registerRepositoryIndex}
+					githubIssuesVectorStore={isGithubIssuesVectorStoreEnabled}
 				/>
 			</div>
 			<RepositoryList
@@ -54,6 +61,7 @@ export default async function TeamVectorStorePage() {
 				deleteRepositoryIndexAction={deleteRepositoryIndex}
 				triggerManualIngestAction={triggerManualIngest}
 				updateRepositoryIndexAction={updateRepositoryIndex}
+				githubIssuesVectorStore={isGithubIssuesVectorStoreEnabled}
 			/>
 		</div>
 	);

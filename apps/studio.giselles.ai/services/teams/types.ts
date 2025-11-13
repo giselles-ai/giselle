@@ -10,7 +10,6 @@ export type CurrentTeam = {
 	dbId: typeof teams.$inferSelect.dbId;
 	name: typeof teams.$inferSelect.name;
 	avatarUrl?: typeof teams.$inferSelect.avatarUrl;
-	type: typeof teams.$inferSelect.type;
 	plan: typeof teams.$inferSelect.plan;
 	activeSubscriptionId: typeof subscriptions.$inferInsert.id | null;
 };

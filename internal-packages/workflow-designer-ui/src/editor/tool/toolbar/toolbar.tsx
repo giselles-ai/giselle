@@ -3,15 +3,6 @@
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import { actionRegistry, isActionProvider } from "@giselles-ai/action-registry";
 import {
-	createActionNode,
-	createDocumentVectorStoreNode,
-	createFileNode,
-	createGitHubVectorStoreNode,
-	createQueryNode,
-	createTextNode,
-	createTriggerNode,
-	createWebPageNode,
-	triggerNodeDefaultName,
 	useFeatureFlag,
 	useUsageLimits,
 	useWorkflowDesigner,
@@ -23,6 +14,18 @@ import {
 	languageModels,
 	Tier,
 } from "@giselles-ai/language-model";
+import {
+	createActionNode,
+	createAppEntryNode,
+	createDocumentVectorStoreNode,
+	createFileNode,
+	createGitHubVectorStoreNode,
+	createQueryNode,
+	createTextNode,
+	createTriggerNode,
+	createWebPageNode,
+	triggerNodeDefaultName,
+} from "@giselles-ai/node-registry";
 import { FileCategory } from "@giselles-ai/protocol";
 import {
 	isTriggerProvider,
@@ -38,7 +41,7 @@ import {
 	ZapIcon,
 } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
 import { Tooltip } from "../../../ui/tooltip";
 import { isToolAction } from "../types";
@@ -91,11 +94,25 @@ export function Toolbar() {
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("All");
 	const { llmProviders } = useWorkflowDesigner();
-	const { stage } = useFeatureFlag();
+	const { stage, aiGatewayUnsupportedModels } = useFeatureFlag();
 
-	const modelsFilteredBySearchOnly = languageModels
-		.filter((model) => llmProviders.includes(model.provider))
-		.filter((model) => filterModelsBySearch(model, searchQuery));
+	const availableLanguageModels = useMemo(
+		() =>
+			languageModels.filter((model) => {
+				if (!llmProviders.includes(model.provider)) {
+					return false;
+				}
+				if (!aiGatewayUnsupportedModels && model.id === "gpt-image-1") {
+					return false;
+				}
+				return true;
+			}),
+		[llmProviders, aiGatewayUnsupportedModels],
+	);
+
+	const modelsFilteredBySearchOnly = availableLanguageModels.filter((model) =>
+		filterModelsBySearch(model, searchQuery),
+	);
 
 	// Automatically update the category based on search results
 	useEffect(() => {
@@ -137,7 +154,7 @@ export function Toolbar() {
 		isFreeUser ? ["gpt-5-nano"] : ["gpt-5"],
 		"openai",
 		llmProviders,
-		languageModels,
+		availableLanguageModels,
 	);
 	const anthropicModels = getAvailableModels(
 		isFreeUser
@@ -145,7 +162,7 @@ export function Toolbar() {
 			: ["claude-sonnet-4-5-20250929", "claude-opus-4-1-20250805"],
 		"anthropic",
 		llmProviders,
-		languageModels,
+		availableLanguageModels,
 	);
 	const googleModels = getAvailableModels(
 		isFreeUser
@@ -153,7 +170,7 @@ export function Toolbar() {
 			: ["gemini-2.5-pro-exp-03-25", "gemini-1.5-pro-latest", "gemini-1.0-pro"],
 		"google",
 		llmProviders,
-		languageModels,
+		availableLanguageModels,
 	);
 
 	// Combine all recommended models
@@ -265,49 +282,40 @@ export function Toolbar() {
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={(value) => {
-													if (!isTriggerProvider(value)) {
-														/** @todo warning in log */
+													if (isTriggerProvider(value)) {
+														setSelectedTool(
+															addNodeTool(createTriggerNode(value)),
+														);
 														return;
 													}
-													setSelectedTool(
-														addNodeTool(createTriggerNode(value)),
-													);
+													if (value === "appEntry") {
+														setSelectedTool(addNodeTool(createAppEntryNode()));
+													}
 												}}
 											>
-												{triggerRegistry
-													.filter(
-														(triggerEntry) =>
-															triggerEntry.provider !== "app-entry" || stage,
-													)
-													.map((triggerEntry) => (
-														<ToggleGroup.Item
-															key={triggerEntry.provider}
-															value={triggerEntry.provider}
-															data-tool
-														>
-															{triggerEntry.provider === "manual" && (
-																<TriggerIcon className="size-[20px] shrink-0" />
-															)}
-															{triggerEntry.provider === "github" && (
-																<GitHubIcon className="size-[20px] shrink-0" />
-															)}
-															{triggerEntry.provider === "app-entry" && (
-																<TriggerIcon className="size-[20px] shrink-0" />
-															)}
-
-															<p className="text-[14px]">
-																{triggerNodeDefaultName(triggerEntry.provider)}
-															</p>
-														</ToggleGroup.Item>
-													))}
-												<div data-tool className="opacity-50">
-													<TriggerIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">Stage (Coming soon)</p>
-												</div>
-												<div data-tool className="opacity-50">
-													<TriggerIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">Widget (Coming soon)</p>
-												</div>
+												{stage && (
+													<ToggleGroup.Item value="appEntry" data-tool>
+														<TriggerIcon className="size-[20px] shrink-0" />
+														<p className="text-[14px]">App Entry Node</p>
+													</ToggleGroup.Item>
+												)}
+												{triggerRegistry.map((triggerEntry) => (
+													<ToggleGroup.Item
+														key={triggerEntry.provider}
+														value={triggerEntry.provider}
+														data-tool
+													>
+														{triggerEntry.provider === "manual" && (
+															<TriggerIcon className="size-[20px] shrink-0" />
+														)}
+														{triggerEntry.provider === "github" && (
+															<GitHubIcon className="size-[20px] shrink-0" />
+														)}
+														<p className="text-[14px]">
+															{triggerNodeDefaultName(triggerEntry.provider)}
+														</p>
+													</ToggleGroup.Item>
+												))}
 											</ToggleGroup.Root>
 										</div>
 									</Popover.Content>

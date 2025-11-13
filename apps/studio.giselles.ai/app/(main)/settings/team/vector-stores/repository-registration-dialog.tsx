@@ -14,7 +14,7 @@ import {
 } from "@giselle-internal/ui/dialog";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { Toggle } from "@giselle-internal/ui/toggle";
-import { Code, GitPullRequest, Plus, X } from "lucide-react";
+import { CircleDot, Code, GitPullRequest, Plus, X } from "lucide-react";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { GlassButton } from "@/components/ui/glass-button";
 import type { GitHubRepositoryContentType } from "@/db";
@@ -33,11 +33,13 @@ type RepositoryRegistrationDialogProps = {
 		}[],
 		embeddingProfileIds?: number[],
 	) => Promise<ActionResult>;
+	githubIssuesVectorStore?: boolean;
 };
 
 export function RepositoryRegistrationDialog({
 	installationsWithRepos,
 	registerRepositoryIndexAction,
+	githubIssuesVectorStore = false,
 }: RepositoryRegistrationDialogProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [ownerId, setOwnerId] = useState<string>("");
@@ -47,6 +49,7 @@ export function RepositoryRegistrationDialog({
 	const [contentConfig, setContentConfig] = useState({
 		code: { enabled: true },
 		pullRequests: { enabled: false },
+		issues: { enabled: false },
 	});
 	const [selectedProfiles, setSelectedProfiles] = useState<number[]>([1]); // Default to OpenAI Small
 
@@ -97,6 +100,10 @@ export function RepositoryRegistrationDialog({
 		setContentConfig((prev) => ({ ...prev, pullRequests: { enabled } }));
 	}, []);
 
+	const handleToggleIssues = useCallback((enabled: boolean) => {
+		setContentConfig((prev) => ({ ...prev, issues: { enabled } }));
+	}, []);
+
 	const handleSubmit = useCallback(
 		(e: React.FormEvent) => {
 			e.preventDefault();
@@ -135,6 +142,7 @@ export function RepositoryRegistrationDialog({
 						contentType: "pull_request",
 						enabled: contentConfig.pullRequests.enabled,
 					},
+					{ contentType: "issue", enabled: contentConfig.issues.enabled },
 				];
 
 				const result = await registerRepositoryIndexAction(
@@ -151,6 +159,7 @@ export function RepositoryRegistrationDialog({
 					setContentConfig({
 						code: { enabled: true },
 						pullRequests: { enabled: false },
+						issues: { enabled: false },
 					});
 					setSelectedProfiles([1]); // Reset to default
 				} else {
@@ -306,6 +315,27 @@ export function RepositoryRegistrationDialog({
 										</div>
 									</Toggle>
 								</div>
+
+								{/* Issues Configuration */}
+								{githubIssuesVectorStore && (
+									<div className="bg-inverse/5 rounded-lg p-4">
+										<Toggle
+											name="issues-toggle"
+											checked={contentConfig.issues.enabled}
+											onCheckedChange={handleToggleIssues}
+										>
+											<div className="flex-1 mr-3">
+												<div className="flex items-center gap-2 mb-1">
+													<CircleDot size={18} className="text-text-muted" />
+													<span className="text-text font-medium">Issues</span>
+												</div>
+												<p className="text-xs text-text-muted">
+													Index issue titles, descriptions, and comments
+												</p>
+											</div>
+										</Toggle>
+									</div>
+								)}
 							</div>
 
 							{/* Embedding Profiles Section */}

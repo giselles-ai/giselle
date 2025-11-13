@@ -1,9 +1,9 @@
 import { Background } from "@giselle-internal/workflow-designer-ui";
-import { AppId, WorkspaceId } from "@giselles-ai/protocol";
+import { WorkspaceId } from "@giselles-ai/protocol";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { agents, apps, db, flowTriggers, workspaces } from "@/db";
+import { agents, db, flowTriggers, workspaces } from "@/db";
 import { logger } from "@/lib/logger";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { dataLoader } from "./data-loader";
@@ -88,29 +88,6 @@ export default async function ({
 						.update(workspaces)
 						.set({ name })
 						.where(eq(workspaces.id, workspaceId));
-				}}
-				createAppEntryNodeAction={async (node) => {
-					"use server";
-
-					const workspace = await db.query.workspaces.findFirst({
-						where: (workspaces, { eq }) => eq(workspaces.id, workspaceId),
-					});
-					if (workspace === undefined) {
-						logger.warn(`Workspace not found for workspaceId ${workspaceId}`);
-						return;
-					}
-					await db.insert(apps).values({
-						id: AppId.generate(),
-						teamDbId: workspace.teamDbId,
-						workspaceDbId: workspace.dbId,
-						appEntryNodeId: node.id,
-					});
-				}}
-				deleteAppEntryNodeAction={async (node) => {
-					"use server";
-
-					logger.debug(`Deleting app entry node with id ${node.id}`);
-					await db.delete(apps).where(eq(apps.appEntryNodeId, node.id));
 				}}
 			/>
 		</Suspense>

@@ -18,6 +18,8 @@ import {
 } from "@giselles-ai/supabase-driver";
 import { tasks as jobs } from "@trigger.dev/sdk";
 import type { ModelMessage, ProviderMetadata } from "ai";
+import { eq } from "drizzle-orm";
+import { apps, db } from "@/db";
 import { waitForLangfuseFlush } from "@/instrumentation.node";
 import { GenerationMetadata } from "@/lib/generation-metadata";
 import { logger } from "@/lib/logger";
@@ -85,10 +87,7 @@ if (
 	throw new Error("missing github credentials");
 }
 
-type TeamForPlan = Pick<
-	CurrentTeam,
-	"id" | "activeSubscriptionId" | "type" | "plan"
->;
+type TeamForPlan = Pick<CurrentTeam, "id" | "activeSubscriptionId" | "plan">;
 
 async function traceGenerationForTeam(args: {
 	generation: CompletedGeneration | FailedGeneration;
@@ -102,18 +101,16 @@ async function traceGenerationForTeam(args: {
 }) {
 	const isPro = isProPlan(args.team);
 	const planTag = isPro ? "plan:pro" : "plan:free";
-	const teamTypeTag = `teamType:${args.team.type}`;
 
 	await traceGeneration({
 		generation: args.generation,
 		outputFileBlobs: args.outputFileBlobs,
 		inputMessages: args.inputMessages,
 		userId: args.userId,
-		tags: [planTag, teamTypeTag],
+		tags: [planTag],
 		metadata: {
 			generationId: args.generation.id,
 			isProPlan: isPro,
-			teamType: args.team.type,
 			teamPlan: args.team.plan,
 			userId: args.userId,
 			subscriptionId: args.team.activeSubscriptionId ?? "",
@@ -135,14 +132,12 @@ async function traceEmbeddingForTeam(args: {
 }) {
 	const isPro = isProPlan(args.team);
 	const planTag = isPro ? "plan:pro" : "plan:free";
-	const teamTypeTag = `teamType:${args.team.type}`;
 
 	const { queryContext } = args;
 	const baseMetadata = {
 		generationId: args.generation.id,
 		teamId: args.team.id,
 		isProPlan: isPro,
-		teamType: args.team.type,
 		teamPlan: args.team.plan,
 		userId: args.userId,
 		subscriptionId: args.team.activeSubscriptionId ?? "",
@@ -155,7 +150,7 @@ async function traceEmbeddingForTeam(args: {
 		metrics: args.metrics,
 		userId: args.userId,
 		sessionId: args.sessionId,
-		tags: [planTag, teamTypeTag, "embedding-purpose:query"],
+		tags: [planTag, "embedding-purpose:query"],
 	};
 
 	switch (queryContext.provider) {
@@ -243,6 +238,24 @@ export const giselleEngine = NextGiselleEngine({
 		document: getDocumentVectorStoreQueryService(),
 	},
 	callbacks: {
+		appCreate: async ({ app }) => {
+			const currentTeam = await fetchCurrentTeam();
+			const workspace = await db.query.workspaces.findFirst({
+				where: (workspaces, { eq }) => eq(workspaces.id, app.workspaceId),
+			});
+			if (workspace === undefined) {
+				throw new Error(`Workspace not found for app ${app.id}`);
+			}
+			await db.insert(apps).values({
+				id: app.id,
+				appEntryNodeId: app.entryNodeId,
+				teamDbId: currentTeam.dbId,
+				workspaceDbId: workspace.dbId,
+			});
+		},
+		appDelete: async ({ appId }) => {
+			await db.delete(apps).where(eq(apps.id, appId));
+		},
 		generationComplete: async (args) => {
 			if (runtimeEnv === "trigger.dev") {
 				const parsedMetadata = GenerationMetadata.parse(
@@ -255,7 +268,6 @@ export const giselleEngine = NextGiselleEngine({
 					sessionId: args.generation.context.origin.actId,
 					team: {
 						id: parsedMetadata.team.id,
-						type: parsedMetadata.team.type,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
 						plan: parsedMetadata.team.plan,
 					},
@@ -298,7 +310,6 @@ export const giselleEngine = NextGiselleEngine({
 					sessionId: args.generation.context.origin.actId,
 					team: {
 						id: parsedMetadata.team.id,
-						type: parsedMetadata.team.type,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
 						plan: parsedMetadata.team.plan,
 					},
@@ -332,7 +343,6 @@ export const giselleEngine = NextGiselleEngine({
 						userId: parsedMetadata.userId,
 						team: {
 							id: parsedMetadata.team.id,
-							type: parsedMetadata.team.type,
 							activeSubscriptionId: parsedMetadata.team.subscriptionId,
 							plan: parsedMetadata.team.plan,
 						},
@@ -433,7 +443,6 @@ if (generateContentProcessor === "trigger.dev") {
 					userId: "github-app",
 					team: {
 						id: team.id,
-						type: team.type,
 						subscriptionId: team.activeSubscriptionId,
 						plan: team.plan,
 					},
@@ -456,7 +465,6 @@ if (generateContentProcessor === "trigger.dev") {
 							userId: currentUser.id,
 							team: {
 								id: currentTeam.id,
-								type: currentTeam.type,
 								subscriptionId: currentTeam.activeSubscriptionId,
 								plan: currentTeam.plan,
 							},
@@ -498,7 +506,6 @@ if (generateContentProcessor === "trigger.dev") {
 					userId: "github-app",
 					team: {
 						id: team.id,
-						type: team.type,
 						subscriptionId: team.activeSubscriptionId,
 						plan: team.plan,
 					},
@@ -518,7 +525,6 @@ if (generateContentProcessor === "trigger.dev") {
 					userId: currentUser.id,
 					team: {
 						id: currentTeam.id,
-						type: currentTeam.type,
 						subscriptionId: currentTeam.activeSubscriptionId,
 						plan: currentTeam.plan,
 					},

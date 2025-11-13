@@ -17,6 +17,7 @@ import {
 	insertChunkRecords,
 	prepareChunkRecords,
 	queryDocumentVersions,
+	updateMetadataFields,
 } from "./utils";
 
 /**
@@ -209,6 +210,7 @@ export function createPostgresChunkStore<
 		Array<{
 			documentKey: string;
 			version: string;
+			metadataVersion?: string;
 		}>
 	> {
 		// Check version column before connecting to DB
@@ -229,6 +231,7 @@ export function createPostgresChunkStore<
 				tableName,
 				columnMapping.documentKey,
 				columnMapping.version,
+				columnMapping.metadataVersion,
 				scope,
 				embeddingProfileId,
 				profile.dimensions,
@@ -247,10 +250,58 @@ export function createPostgresChunkStore<
 		}
 	}
 
+	/**
+	 * Update metadata only without re-embedding
+	 */
+	async function updateMetadata(
+		documentKey: string,
+		metadata: z.infer<TSchema>,
+	): Promise<void> {
+		const result = metadataSchema.safeParse(metadata);
+		if (!result.success) {
+			throw ValidationError.fromZodError(result.error, {
+				operation: "updateMetadata",
+				documentKey,
+				tableName,
+			});
+		}
+
+		const pool = PoolManager.getPool(database);
+		const client = await pool.connect();
+
+		try {
+			await ensurePgVectorTypes(client, database.connectionString);
+			await updateMetadataFields(
+				client,
+				tableName,
+				documentKey,
+				columnMapping.documentKey,
+				metadata,
+				columnMapping,
+				scope,
+				embeddingProfileId,
+				profile.dimensions,
+			);
+		} catch (error) {
+			throw DatabaseError.queryFailed(
+				`UPDATE ${tableName} metadata`,
+				error instanceof Error ? error : undefined,
+				{
+					operation: "updateMetadata",
+					documentKey,
+					tableName,
+				},
+			);
+		} finally {
+			client.release();
+		}
+	}
+
 	return {
 		insert,
 		delete: deleteDocument,
 		deleteBatch,
 		getDocumentVersions,
+		updateMetadata,
 	};
 }

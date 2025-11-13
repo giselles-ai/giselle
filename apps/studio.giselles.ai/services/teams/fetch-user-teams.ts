@@ -20,7 +20,6 @@ export async function fetchUserTeams() {
 			dbId: teams.dbId,
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
-			type: teams.type,
 			plan: teams.plan,
 			activeSubscriptionId: subscriptions.id,
 			role: teamMemberships.role,

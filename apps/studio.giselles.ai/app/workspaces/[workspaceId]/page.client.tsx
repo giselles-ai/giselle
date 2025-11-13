@@ -6,11 +6,7 @@ import {
 	WorkspaceProvider,
 	ZustandBridgeProvider,
 } from "@giselles-ai/giselle/react";
-import {
-	isTriggerNode,
-	type Trigger,
-	type TriggerNode,
-} from "@giselles-ai/protocol";
+import type { Trigger } from "@giselles-ai/protocol";
 import { use } from "react";
 import { isProPlan } from "@/services/teams/utils";
 import type { LoaderData } from "./data-loader";
@@ -20,16 +16,12 @@ interface Props {
 	integrationRefreshAction: () => Promise<Partial<Integration>>;
 	triggerUpdateAction: (trigger: Trigger) => Promise<void>;
 	workspaceNameUpdateAction: (name: string) => Promise<void>;
-	createAppEntryNodeAction: (node: TriggerNode) => Promise<void>;
-	deleteAppEntryNodeAction: (node: TriggerNode) => Promise<void>;
 }
 export function Page({
 	dataLoader,
 	integrationRefreshAction,
 	triggerUpdateAction: flowTriggerUpdateAction,
 	workspaceNameUpdateAction,
-	createAppEntryNodeAction,
-	deleteAppEntryNodeAction,
 }: Props) {
 	const data = use(dataLoader);
 
@@ -63,7 +55,7 @@ export function Page({
 			telemetry={{
 				metadata: {
 					isProPlan: isProPlan(data.workspaceTeam),
-					teamType: data.workspaceTeam.type,
+					teamPlan: data.workspaceTeam.plan,
 					userId: data.currentUser.id,
 					subscriptionId: data.workspaceTeam.activeSubscriptionId ?? "",
 				},
@@ -75,21 +67,7 @@ export function Page({
 				},
 			}}
 		>
-			<ZustandBridgeProvider
-				data={data.data}
-				onAddNode={async (node) => {
-					if (!isTriggerNode(node) || node.content.provider !== "app-entry") {
-						return;
-					}
-					await createAppEntryNodeAction(node);
-				}}
-				onDeleteNode={async (node) => {
-					if (!isTriggerNode(node)) {
-						return;
-					}
-					await deleteAppEntryNodeAction(node);
-				}}
-			>
+			<ZustandBridgeProvider data={data.data}>
 				<div className="flex flex-col h-screen bg-black-900">
 					<Editor onFlowNameChange={workspaceNameUpdateAction} />
 				</div>

@@ -43,7 +43,6 @@ async function fetchTeam(teamId: TeamId, supabaseUserId: string) {
 			dbId: teams.dbId,
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
-			type: teams.type,
 			plan: teams.plan,
 			activeSubscriptionId: subscriptions.id,
 		})
@@ -80,7 +79,6 @@ async function fetchFirstTeam(supabaseUserId: string) {
 			dbId: teams.dbId,
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
-			type: teams.type,
 			plan: teams.plan,
 			activeSubscriptionId: subscriptions.id,
 		})

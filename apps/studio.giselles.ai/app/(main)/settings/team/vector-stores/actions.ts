@@ -33,6 +33,7 @@ import type {
 import { fetchCurrentUser, getGitHubIdentityState } from "@/services/accounts";
 import { buildAppInstallationClient } from "@/services/external/github";
 import { fetchCurrentTeam } from "@/services/teams";
+import { getDocumentVectorStoreQuota } from "@/services/teams/plan-features/document-vector-store";
 import type {
 	ActionResult,
 	DiagnosticResult,
@@ -588,8 +589,32 @@ export async function createDocumentVectorStore(
 	try {
 		const team = await fetchCurrentTeam();
 		const documentVectorStoreId = `dvs_${createId()}` as DocumentVectorStoreId;
+		const quota = getDocumentVectorStoreQuota(team.plan);
+		if (!quota.isAvailable) {
+			return {
+				success: false,
+				error: "Document Vector Stores are not included in your plan.",
+			};
+		}
 
-		await db.transaction(async (tx) => {
+		type CreationResult = { success: true } | { success: false; error: string };
+
+		const creationResult = await db.transaction<CreationResult>(async (tx) => {
+			const existingStores = await tx
+				.select({ dbId: documentVectorStores.dbId })
+				.from(documentVectorStores)
+				.where(eq(documentVectorStores.teamDbId, team.dbId))
+				.limit(quota.maxStores)
+				.for("update");
+
+			if (existingStores.length >= quota.maxStores) {
+				return {
+					success: false,
+					error:
+						"You have reached the number of Document Vector Stores included in your plan.",
+				};
+			}
+
 			const [insertedStore] = await tx
 				.insert(documentVectorStores)
 				.values({
@@ -615,7 +640,12 @@ export async function createDocumentVectorStore(
 						],
 					});
 			}
+			return { success: true };
 		});
+
+		if (!creationResult.success) {
+			return creationResult;
+		}
 
 		revalidatePath("/settings/team/vector-stores/document");
 		return { success: true };
@@ -859,14 +889,25 @@ function checkIngestability(
 	contentStatuses: (typeof githubRepositoryContentStatus.$inferSelect)[],
 	now: Date = new Date(),
 ): IngestabilityCheck {
+	const STALE_THRESHOLD_MINUTES = 15;
+	const staleThreshold = new Date(
+		Date.now() - STALE_THRESHOLD_MINUTES * 60 * 1000,
+	);
+
 	for (const contentStatus of contentStatuses) {
 		if (!contentStatus.enabled) {
 			continue;
 		}
 
+		const isStaleRunning =
+			contentStatus.status === "running" &&
+			contentStatus.updatedAt &&
+			contentStatus.updatedAt < staleThreshold;
+
 		const canIngestThis =
 			contentStatus.status === "idle" ||
 			contentStatus.status === "completed" ||
+			isStaleRunning ||
 			(contentStatus.status === "failed" &&
 				contentStatus.retryAfter &&
 				contentStatus.retryAfter <= now);

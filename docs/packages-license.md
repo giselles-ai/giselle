@@ -2293,17 +2293,6 @@ LGPL-3.0-or-later permitted
 
 
 
-<a name="@oxc-resolver/binding-linux-x64-musl"></a>
-### @oxc-resolver/binding-linux-x64-musl v11.13.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="@paralleldrive/cuid2"></a>
 ### @paralleldrive/cuid2 v2.2.2
 #### 
@@ -3439,6 +3428,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@rollup/rollup-linux-x64-gnu"></a>
 ### @rollup/rollup-linux-x64-gnu v4.35.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@rollup/rollup-linux-x64-musl"></a>
+### @rollup/rollup-linux-x64-musl v4.35.0
 #### 
 
 ##### Paths
@@ -5583,7 +5583,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@xyflow/react"></a>
-### @xyflow/react v12.8.3
+### @xyflow/react v12.9.0
 #### 
 
 ##### Paths
@@ -5594,7 +5594,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@xyflow/system"></a>
-### @xyflow/system v0.0.67
+### @xyflow/system v0.0.71
 #### 
 
 ##### Paths
@@ -7622,7 +7622,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="foreground-child"></a>
-### foreground-child v3.3.0
+### foreground-child v3.3.1
 #### 
 
 ##### Paths

@@ -42,6 +42,15 @@ export interface ChunkStore<
 		Array<{
 			documentKey: string;
 			version: string;
+			metadataVersion?: string;
 		}>
 	>;
+
+	/**
+	 * Update metadata only without re-embedding
+	 * @param documentKey The unique key of the document
+	 * @param metadata The document metadata to update
+	 * @param metadataVersion The metadata version
+	 */
+	updateMetadata(documentKey: string, metadata: TMetadata): Promise<void>;
 }

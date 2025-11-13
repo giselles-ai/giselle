@@ -15,8 +15,8 @@ import { TelemetryProvider } from "../telemetry";
 import { TriggerContext, type TriggerContextValue } from "../trigger";
 import { UsageLimitsProvider } from "../usage-limits";
 import {
+	VectorStoreContext,
 	type VectorStoreContextValue,
-	VectorStoreProvider,
 } from "../vector-store";
 
 export function WorkspaceProvider({
@@ -45,6 +45,8 @@ export function WorkspaceProvider({
 				layoutV3: featureFlag?.layoutV3 ?? false,
 				stage: featureFlag?.stage ?? false,
 				aiGateway: featureFlag?.aiGateway ?? false,
+				aiGatewayUnsupportedModels:
+					featureFlag?.aiGatewayUnsupportedModels ?? false,
 				googleUrlContext: featureFlag?.googleUrlContext ?? false,
 				githubIssuesVectorStore: featureFlag?.githubIssuesVectorStore ?? false,
 			}}
@@ -53,11 +55,11 @@ export function WorkspaceProvider({
 				<TriggerContext value={trigger ?? {}}>
 					<UsageLimitsProvider limits={usageLimits}>
 						<IntegrationProvider {...integration}>
-							<VectorStoreProvider value={vectorStore}>
+							<VectorStoreContext value={vectorStore}>
 								<ZustandBridgeGenerationProvider timeout={generationTimeout}>
 									{children}
 								</ZustandBridgeGenerationProvider>
-							</VectorStoreProvider>
+							</VectorStoreContext>
 						</IntegrationProvider>
 					</UsageLimitsProvider>
 				</TriggerContext>

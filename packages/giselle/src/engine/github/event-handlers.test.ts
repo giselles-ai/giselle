@@ -4,10 +4,14 @@ import type {
 	WebhookEvent,
 	WebhookEventName,
 } from "@giselles-ai/github-tool";
-import type { GitHubEventData, Trigger } from "@giselles-ai/protocol";
-import { NodeId, TriggerId } from "@giselles-ai/protocol";
+import { createTriggerNode } from "@giselles-ai/node-registry";
+import {
+	type GitHubEventData,
+	NodeId,
+	type Trigger,
+	TriggerId,
+} from "@giselles-ai/protocol";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createTriggerNode } from "../../utils/node-factories";
 import { memoryStorageDriver } from "../storage";
 import type { GiselleEngineContext } from "../types";
 import {

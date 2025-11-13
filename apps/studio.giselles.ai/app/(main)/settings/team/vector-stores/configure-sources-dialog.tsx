@@ -12,7 +12,7 @@ import {
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
 import { Toggle } from "@giselle-internal/ui/toggle";
-import { Code, GitPullRequest, X } from "lucide-react";
+import { CircleDot, Code, GitPullRequest, X } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import type {
 	GitHubRepositoryContentType,
@@ -35,6 +35,7 @@ type ConfigureSourcesDialogProps = {
 		embeddingProfileIds?: number[],
 	) => Promise<{ success: boolean; error?: string }>;
 	enabledProfiles?: number[];
+	githubIssuesVectorStore?: boolean;
 };
 
 export function ConfigureSourcesDialog({
@@ -43,6 +44,7 @@ export function ConfigureSourcesDialog({
 	repositoryData,
 	updateRepositoryIndexAction,
 	enabledProfiles = [1],
+	githubIssuesVectorStore = false,
 }: ConfigureSourcesDialogProps) {
 	const { repositoryIndex, contentStatuses } = repositoryData;
 	const [isPending, startTransition] = useTransition();
@@ -53,10 +55,12 @@ export function ConfigureSourcesDialog({
 	const pullRequestStatus = contentStatuses.find(
 		(cs) => cs.contentType === "pull_request",
 	);
+	const issueStatus = contentStatuses.find((cs) => cs.contentType === "issue");
 
 	const [config, setConfig] = useState({
 		code: { enabled: blobStatus?.enabled ?? true },
 		pullRequests: { enabled: pullRequestStatus?.enabled ?? false },
+		issues: { enabled: issueStatus?.enabled ?? false },
 	});
 
 	const [selectedProfiles, setSelectedProfiles] =
@@ -78,6 +82,7 @@ export function ConfigureSourcesDialog({
 			}[] = [
 				{ contentType: "blob", enabled: config.code.enabled },
 				{ contentType: "pull_request", enabled: config.pullRequests.enabled },
+				{ contentType: "issue", enabled: config.issues.enabled },
 			];
 
 			const result = await updateRepositoryIndexAction(
@@ -127,8 +132,12 @@ export function ConfigureSourcesDialog({
 							<h3 className="text-text text-[14px] leading-[16.8px] font-sans">
 								Repository
 							</h3>
-							<div className="mt-2 text-link-accent text-[16px] font-geist">
-								{repositoryIndex.owner}/{repositoryIndex.repo}
+							<div className="mt-2 flex items-center rounded-full bg-surface pl-[16px] pr-[16px] py-2 text-white-200 transition-colors text-[12px]">
+								<div className="space-x-[2px]">
+									<span>{repositoryIndex.owner}</span>
+									<span>/</span>
+									<span>{repositoryIndex.repo}</span>
+								</div>
 							</div>
 						</div>
 						{/* Sources Section */}
@@ -136,7 +145,7 @@ export function ConfigureSourcesDialog({
 							<h3 className="text-text text-[14px] leading-[16.8px] font-sans mb-2">
 								Sources to Ingest
 							</h3>
-							<div className="grid grid-cols-2 gap-3">
+							<div className="flex flex-col gap-3">
 								{/* Code Configuration */}
 								<ContentTypeToggle
 									icon={Code}
@@ -161,6 +170,20 @@ export function ConfigureSourcesDialog({
 									}
 									status={pullRequestStatus}
 								/>
+
+								{/* Issues Configuration */}
+								{githubIssuesVectorStore && (
+									<ContentTypeToggle
+										icon={CircleDot}
+										label="Issues"
+										description="Index issue titles, descriptions, and comments"
+										enabled={config.issues.enabled}
+										onToggle={(enabled) =>
+											setConfig({ ...config, issues: { enabled } })
+										}
+										status={issueStatus}
+									/>
+								)}
 							</div>
 						</div>
 
@@ -285,14 +308,16 @@ function ContentTypeToggle({
 						<Icon size={18} className="text-text-muted" />
 						<span className="text-text font-medium">{label}</span>
 					</div>
-					<p className="text-xs text-text-muted">{description}</p>
+					<p className="text-xs text-text-muted">
+						{description}
+						{disabled && (
+							<span className="text-text-muted/60 ml-1">
+								(Required - cannot be disabled)
+							</span>
+						)}
+					</p>
 					{status?.status === "running" && (
 						<p className="text-xs text-text-muted mt-1">Currently syncing...</p>
-					)}
-					{disabled && (
-						<p className="text-xs text-text-muted/60 mt-1">
-							(Required - cannot be disabled)
-						</p>
 					)}
 				</div>
 			</Toggle>

@@ -267,6 +267,7 @@ export async function queryDocumentVersions(
 	tableName: string,
 	documentKeyColumn: string,
 	versionColumn: string,
+	metadataVersionColumn: string | undefined,
 	scope: Record<string, unknown>,
 	embeddingProfileId: number,
 	embeddingDimensions: number,
@@ -274,6 +275,7 @@ export async function queryDocumentVersions(
 	Array<{
 		documentKey: string;
 		version: string;
+		metadataVersion?: string;
 	}>
 > {
 	const param = createParamHelper();
@@ -296,10 +298,21 @@ export async function queryDocumentVersions(
 	// Add version not null condition
 	conditions.push(`${escapeIdentifier(versionColumn)} IS NOT NULL`);
 
+	// Build SELECT columns dynamically
+	const selectColumns = [
+		`${escapeIdentifier(documentKeyColumn)} as document_key`,
+		`${escapeIdentifier(versionColumn)} as version`,
+	];
+
+	if (metadataVersionColumn) {
+		selectColumns.push(
+			`${escapeIdentifier(metadataVersionColumn)} as metadata_version`,
+		);
+	}
+
 	const query = `
         SELECT DISTINCT
-            ${escapeIdentifier(documentKeyColumn)} as document_key,
-            ${escapeIdentifier(versionColumn)} as version
+            ${selectColumns.join(",\n            ")}
         FROM ${escapeIdentifier(tableName)}
         WHERE ${conditions.join(" AND ")}
     `;
@@ -307,13 +320,72 @@ export async function queryDocumentVersions(
 	const result = await client.query<{
 		document_key: unknown;
 		version: unknown;
+		metadata_version?: unknown;
 	}>(query, param.values());
 	return result.rows.map((row) => {
 		return {
 			documentKey: toColumnString(row.document_key, "documentKey"),
 			version: toColumnString(row.version, "version"),
+			metadataVersion: row.metadata_version
+				? toColumnString(row.metadata_version, "metadataVersion")
+				: undefined,
 		};
 	});
+}
+
+/**
+ * Update metadata fields without re-embedding
+ */
+export async function updateMetadataFields(
+	client: PoolClient,
+	tableName: string,
+	documentKey: string,
+	documentKeyColumn: string,
+	metadata: Record<string, unknown>,
+	columnMapping: Record<string, string>,
+	scope: Record<string, unknown>,
+	embeddingProfileId: number,
+	embeddingDimensions: number,
+): Promise<void> {
+	const param = createParamHelper();
+
+	// Build SET expressions
+	const setExpressions: string[] = [];
+
+	for (const [metadataKey, value] of Object.entries(metadata)) {
+		const columnName = columnMapping[metadataKey];
+		if (!columnName) {
+			continue; // Skip fields without mapping
+		}
+		setExpressions.push(
+			`${escapeIdentifier(columnName)} = ${param.add(value)}`,
+		);
+	}
+
+	// Build WHERE conditions
+	const conditions: string[] = [];
+	conditions.push(
+		`${escapeIdentifier(documentKeyColumn)} = ${param.add(documentKey)}`,
+	);
+	conditions.push(
+		`${EMBEDDING_COLUMNS.PROFILE_ID} = ${param.add(embeddingProfileId)}`,
+	);
+	conditions.push(
+		`${EMBEDDING_COLUMNS.DIMENSIONS} = ${param.add(embeddingDimensions)}`,
+	);
+
+	const scopeKeys = Object.keys(scope).sort();
+	for (const key of scopeKeys) {
+		conditions.push(`${escapeIdentifier(key)} = ${param.add(scope[key])}`);
+	}
+
+	const query = `
+        UPDATE ${escapeIdentifier(tableName)}
+        SET ${setExpressions.join(", ")}
+        WHERE ${conditions.join(" AND ")}
+    `;
+
+	await client.query(query, param.values());
 }
 
 /**

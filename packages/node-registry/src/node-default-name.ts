@@ -7,12 +7,12 @@ import {
 	isTriggerNode,
 	isVectorStoreNode,
 	type NodeLike,
+	type VectorStoreProvider,
 } from "@giselles-ai/protocol";
 import {
 	getEntry as getTriggerEntry,
 	type TriggerProvider,
 } from "@giselles-ai/trigger-registry";
-import type { VectorStoreSourceProvider } from "../engine/vector-store";
 
 export function triggerNodeDefaultName(triggerProvider: TriggerProvider) {
 	return getTriggerEntry(triggerProvider).label;
@@ -26,17 +26,19 @@ export function actionNodeDefaultName(actionProvider: ActionProvider) {
 	return entry?.label;
 }
 
-export const vectorStoreProviderLabel: Record<
-	VectorStoreSourceProvider,
-	string
-> = {
-	github: "GitHub Vector Store",
-	document: "Document Vector Store",
-};
 export function vectorStoreNodeDefaultName(
-	vectorStoreProvider: VectorStoreSourceProvider,
+	vectorStoreProvider: VectorStoreProvider,
 ) {
-	return vectorStoreProviderLabel[vectorStoreProvider];
+	switch (vectorStoreProvider) {
+		case "document":
+			return "Document Vector Store";
+		case "github":
+			return "GitHub Vector Store";
+		default:
+			throw new Error(
+				`Unhandled vector store provider: ${vectorStoreProvider}`,
+			);
+	}
 }
 
 export function defaultName(node: NodeLike) {
@@ -72,6 +74,8 @@ export function defaultName(node: NodeLike) {
 						throw new Error(`Expected query node, got ${node.type}`);
 					}
 					return node.name ?? "Query";
+				case "appEntry":
+					return node.name ?? "App Entry";
 				default: {
 					const _exhaustiveCheck: never = node.content.type;
 					throw new Error(`Unhandled action content type: ${_exhaustiveCheck}`);

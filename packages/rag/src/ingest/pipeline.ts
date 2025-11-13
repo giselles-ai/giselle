@@ -32,6 +32,7 @@ export interface IngestPipelineOptions<
 	metadataTransform: (metadata: TDocMetadata) => InferChunkMetadata<TStore>;
 
 	// Optional processors
+	metadataVersion?: (metadata: TDocMetadata) => string;
 	chunker?: ChunkerFunction;
 	embeddingProfileId: EmbeddingProfileId;
 	embeddingComplete?: EmbeddingCompleteCallback;
@@ -68,6 +69,7 @@ export function createPipeline<
 		chunkStore,
 		documentKey,
 		documentVersion,
+		metadataVersion,
 		metadataTransform,
 		chunker = createDefaultChunker(),
 		embeddingComplete,
@@ -157,9 +159,11 @@ export function createPipeline<
 		for await (const metadata of documentLoader.loadMetadata()) {
 			let docKey: string;
 			let newVersion: string;
+			let newMetadataVersion: string | undefined;
 			try {
 				docKey = documentKey(metadata);
 				newVersion = documentVersion(metadata);
+				newMetadataVersion = metadataVersion?.(metadata);
 			} catch (error) {
 				result.failedDocuments++;
 				result.errors.push({
@@ -170,11 +174,29 @@ export function createPipeline<
 			}
 			versionTracker.trackSeen(docKey);
 
-			if (!versionTracker.isUpdateNeeded(docKey, newVersion)) {
-				continue;
-			}
+			const { needsEmbedding, needsMetadataUpdate } =
+				versionTracker.checkUpdateRequirement(
+					docKey,
+					newVersion,
+					newMetadataVersion,
+				);
 
-			yield { metadata, docKey };
+			if (needsEmbedding) {
+				yield { metadata, docKey };
+			} else if (needsMetadataUpdate) {
+				// Metadata only changed → update metadata without re-embedding
+				try {
+					const targetMetadata = metadataTransform(metadata);
+					await chunkStore.updateMetadata(docKey, targetMetadata);
+					result.metadataOnlyUpdates++;
+				} catch (error) {
+					result.failedDocuments++;
+					result.errors.push({
+						document: docKey,
+						error: error instanceof Error ? error : new Error(String(error)),
+					});
+				}
+			}
 		}
 	}
 
@@ -221,6 +243,7 @@ export function createPipeline<
 			totalDocuments: 0,
 			successfulDocuments: 0,
 			failedDocuments: 0,
+			metadataOnlyUpdates: 0,
 			errors: [],
 		};
 
@@ -233,7 +256,13 @@ export function createPipeline<
 			// Initialize version tracking
 			const existingDocs = await chunkStore.getDocumentVersions();
 			const existingVersions = new Map(
-				existingDocs.map((doc) => [doc.documentKey, doc.version]),
+				existingDocs.map((doc) => [
+					doc.documentKey,
+					{
+						version: doc.version,
+						metadataVersion: doc.metadataVersion,
+					},
+				]),
 			);
 			const versionTracker = createVersionTracker(existingVersions);
 

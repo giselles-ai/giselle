@@ -31,6 +31,7 @@ export async function sendEmail(
 	subject: string,
 	body: string,
 	recipients: EmailRecipient[],
+	options?: { html?: string },
 ): Promise<void> {
 	if (recipients.length === 0) {
 		throw new EmailSendError("No recipients found");
@@ -44,6 +45,9 @@ export async function sendEmail(
 		console.log("To:", to);
 		console.log("Subject:", subject);
 		console.log("Body:", body);
+		if (options?.html) {
+			console.log("HTML:", options.html);
+		}
 		console.log("==================================");
 		return;
 	}
@@ -57,6 +61,7 @@ export async function sendEmail(
 			to,
 			subject,
 			text: body,
+			...(options?.html && { html: options.html }),
 		});
 	} catch (error) {
 		throw new EmailSendError(

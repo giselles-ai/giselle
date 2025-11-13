@@ -8,11 +8,11 @@ import {
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
-	defaultName,
 	useActSystem,
 	useNodeGroups,
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
+import { defaultName } from "@giselles-ai/node-registry";
 import type { ConnectionId, NodeId, TriggerNode } from "@giselles-ai/protocol";
 import {
 	isImageGenerationNode,

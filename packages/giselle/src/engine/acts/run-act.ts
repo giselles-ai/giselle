@@ -1,14 +1,18 @@
-import { ActId, type GenerationId, type Sequence } from "@giselles-ai/protocol";
-import { z } from "zod/v4";
-import type { GiselleLogger } from "../../logger/types";
 import {
+	ActId,
 	type Generation,
-	type GenerationMetadata,
-	generateImage,
-	getGeneration,
+	type GenerationId,
 	isCompletedGeneration,
 	isFailedGeneration,
 	type QueuedGeneration,
+	type Sequence,
+} from "@giselles-ai/protocol";
+import { z } from "zod/v4";
+import type { GiselleLogger } from "../../logger/types";
+import {
+	type GenerationMetadata,
+	generateImage,
+	getGeneration,
 } from "../generations";
 import { startContentGeneration } from "../generations/start-content-generation";
 import { executeAction } from "../operations";
@@ -93,6 +97,8 @@ async function executeStep(args: {
 			case "query":
 				await executeQuery(args);
 				break;
+			case "appEntry":
+				throw new Error("Not implemented");
 			default: {
 				const _exhaustiveCheck: never =
 					args.generation.context.operationNode.content.type;

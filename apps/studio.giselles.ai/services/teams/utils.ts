@@ -1,14 +1,8 @@
 import { createId } from "@paralleldrive/cuid2";
 import type { CurrentTeam, TeamId } from "./types";
 
-export function isProPlan(
-	team: Pick<CurrentTeam, "activeSubscriptionId" | "type" | "plan">,
-) {
-	if (team.plan === "pro" || team.plan === "internal") {
-		return true;
-	}
-	// Defensive fallback while plan is being rolled out
-	return team.activeSubscriptionId != null || team.type === "internal";
+export function isProPlan(team: Pick<CurrentTeam, "plan">) {
+	return team.plan === "pro" || team.plan === "internal";
 }
 
 export function createTeamId(): TeamId {
@@ -16,10 +10,5 @@ export function createTeamId(): TeamId {
 }
 
 export function hasTeamPlanFeatures(team: CurrentTeam) {
-	if (team.type === "internal") {
-		return true;
-	}
-
-	// TODO: extend to support customer teams when Team plan is introduced
-	return false;
+	return team.plan === "internal";
 }

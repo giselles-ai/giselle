@@ -14,5 +14,6 @@ export interface IngestResult {
 	totalDocuments: number;
 	successfulDocuments: number;
 	failedDocuments: number;
+	metadataOnlyUpdates: number;
 	errors: Array<{ document: string; error: Error }>;
 }

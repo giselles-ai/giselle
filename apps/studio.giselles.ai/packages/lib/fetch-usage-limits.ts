@@ -9,7 +9,6 @@ export async function fetchUsageLimits(workspaceId: WorkspaceId) {
 			id: teams.id,
 			dbId: teams.dbId,
 			name: teams.name,
-			type: teams.type,
 			plan: teams.plan,
 			activeSubscriptionId: subscriptions.id,
 		})

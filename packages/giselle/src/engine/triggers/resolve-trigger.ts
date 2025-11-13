@@ -1,12 +1,12 @@
-import { isTriggerNode } from "@giselles-ai/protocol";
-import { githubEvents } from "@giselles-ai/trigger-registry";
 import {
 	type CompletedGeneration,
 	GenerationContext,
 	type GenerationContextInput,
 	type GenerationOutput,
+	isTriggerNode,
 	type QueuedGeneration,
-} from "../generations";
+} from "@giselles-ai/protocol";
+import { githubEvents } from "@giselles-ai/trigger-registry";
 import { internalSetGeneration } from "../generations/internal/set-generation";
 import { resolveTrigger as resolveGitHubTrigger } from "../github/trigger-utils";
 import type { GiselleEngineContext } from "../types";

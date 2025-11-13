@@ -1,6 +1,7 @@
 import type {
 	ActId,
 	FileId,
+	GeneratedImageContentOutput,
 	NodeId,
 	OutputId,
 	WorkspaceId,
@@ -26,10 +27,7 @@ import type {
 } from "ai";
 import { UsageLimitError } from "../../error";
 import { filePath } from "../../files/utils";
-import type {
-	GeneratedImageContentOutput,
-	GenerationMetadata,
-} from "../../generations";
+import type { GenerationMetadata } from "../../generations";
 import type { GiselleEngineContext } from "../../types";
 import {
 	checkUsageLimits,

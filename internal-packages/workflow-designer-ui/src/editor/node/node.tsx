@@ -1,7 +1,5 @@
-import {
-	defaultName,
-	useWorkflowDesignerStore,
-} from "@giselles-ai/giselle/react";
+import { useWorkflowDesignerStore } from "@giselles-ai/giselle/react";
+import { defaultName } from "@giselles-ai/node-registry";
 import {
 	type InputId,
 	isActionNode,
@@ -226,6 +224,7 @@ export function NodeComponent({
 				"data-[content-type=audioGeneration]:from-audio-generation-node-1] data-[content-type=audioGeneration]:to-audio-generation-node-2 data-[content-type=audioGeneration]:shadow-audio-generation-node-1",
 				"data-[content-type=videoGeneration]:from-video-generation-node-1] data-[content-type=videoGeneration]:to-video-generation-node-2 data-[content-type=videoGeneration]:shadow-video-generation-node-1",
 				"data-[content-type=trigger]:from-trigger-node-1/60] data-[content-type=trigger]:to-trigger-node-2 data-[content-type=trigger]:shadow-trigger-node-1",
+				"data-[content-type=appEntry]:from-trigger-node-1/60] data-[content-type=appEntry]:to-trigger-node-2 data-[content-type=appEntry]:shadow-trigger-node-1",
 				"data-[content-type=action]:from-action-node-1] data-[content-type=action]:to-action-node-2 data-[content-type=action]:shadow-action-node-1",
 				"data-[content-type=query]:from-query-node-1] data-[content-type=query]:to-query-node-2 data-[content-type=query]:shadow-query-node-1",
 				"data-[selected=true]:shadow-[0px_0px_16px_0px]",
@@ -302,6 +301,7 @@ export function NodeComponent({
 					"group-data-[content-type=audioGeneration]:from-audio-generation-node-1/40 group-data-[content-type=audioGeneration]:to-audio-generation-node-1",
 					"group-data-[content-type=videoGeneration]:from-video-generation-node-1/40 group-data-[content-type=videoGeneration]:to-video-generation-node-1",
 					"group-data-[content-type=trigger]:from-trigger-node-1/60 group-data-[content-type=trigger]:to-trigger-node-1",
+					"group-data-[content-type=appEntry]:from-trigger-node-1/60 group-data-[content-type=trigger]:to-trigger-node-1",
 					"group-data-[content-type=action]:from-action-node-1/40 group-data-[content-type=action]:to-action-node-1",
 					"group-data-[content-type=query]:from-query-node-1/40 group-data-[content-type=query]:to-query-node-1",
 				)}
@@ -333,6 +333,7 @@ export function NodeComponent({
 							"group-data-[content-type=audioGeneration]:bg-audio-generation-node-1",
 							"group-data-[content-type=videoGeneration]:bg-video-generation-node-1",
 							"group-data-[content-type=trigger]:bg-trigger-node-1",
+							"group-data-[content-type=appEntry]:bg-trigger-node-1",
 							"group-data-[content-type=action]:bg-action-node-1",
 							"group-data-[content-type=query]:bg-query-node-1",
 						)}
@@ -355,6 +356,7 @@ export function NodeComponent({
 								"group-data-[content-type=audioGeneration]:stroke-current fill-none",
 								"group-data-[content-type=videoGeneration]:stroke-current fill-none",
 								"group-data-[content-type=trigger]:stroke-current fill-none",
+								"group-data-[content-type=appEntry]:stroke-current fill-none",
 								"group-data-[content-type=action]:fill-current",
 								"group-data-[content-type=query]:stroke-current fill-none",
 								"group-data-[content-type=text]:text-background",
@@ -370,6 +372,7 @@ export function NodeComponent({
 								"group-data-[content-type=audioGeneration]:text-inverse",
 								"group-data-[content-type=videoGeneration]:text-inverse",
 								"group-data-[content-type=trigger]:text-inverse",
+								"group-data-[content-type=appEntry]:text-inverse",
 								"group-data-[content-type=action]:text-inverse",
 								"group-data-[content-type=query]:text-background",
 							)}
@@ -488,6 +491,7 @@ export function NodeComponent({
 							))}
 						{node.type === "operation" &&
 							node.content.type !== "trigger" &&
+							node.content.type !== "appEntry" &&
 							node.content.type !== "action" && (
 								<div
 									className="relative flex items-center h-[28px]"
@@ -547,6 +551,7 @@ export function NodeComponent({
 										"group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
 										"group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
 										"group-data-[content-type=trigger]:!border-trigger-node-1",
+										"group-data-[content-type=appEntry]:!border-trigger-node-1",
 										"group-data-[content-type=action]:!border-action-node-1",
 										"group-data-[content-type=query]:!border-query-node-1",
 										"group-data-[state=connected]:group-data-[content-type=textGeneration]:!bg-generation-node-1",
@@ -562,6 +567,7 @@ export function NodeComponent({
 										"group-data-[state=connected]:group-data-[content-type=audioGeneration]:!bg-audio-generation-node-1 group-data-[state=connected]:group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
 										"group-data-[state=connected]:group-data-[content-type=videoGeneration]:!bg-video-generation-node-1 group-data-[state=connected]:group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
 										"group-data-[state=connected]:group-data-[content-type=trigger]:!bg-trigger-node-1 group-data-[state=connected]:group-data-[content-type=trigger]:!border-trigger-node-1",
+										"group-data-[state=connected]:group-data-[content-type=appEntry]:!bg-trigger-node-1 group-data-[state=connected]:group-data-[content-type=appEntry]:!border-trigger-node-1",
 										"group-data-[state=connected]:group-data-[content-type=action]:!bg-action-node-1 group-data-[state=connected]:group-data-[content-type=action]:!border-action-node-1",
 										"group-data-[state=connected]:group-data-[content-type=query]:!bg-query-node-1 group-data-[state=connected]:group-data-[content-type=query]:!border-query-node-1",
 										"group-data-[state=disconnected]:!bg-bg",

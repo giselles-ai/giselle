@@ -1,7 +1,9 @@
+import { render, toPlainText } from "@react-email/components";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import type { TeamRole, UserId } from "@/db";
 import { db } from "@/db";
 import { invitations, teamMemberships, teams, users } from "@/db/schema";
+import TeamInvitationEmail from "@/emails/transactional/team-invitation";
 import { sendEmail } from "@/services/external/email";
 import { type CurrentTeam, fetchCurrentTeam } from "@/services/teams";
 import { hasTeamPlanFeatures } from "@/services/teams/utils";
@@ -125,17 +127,25 @@ export async function sendInvitationEmail(invitation: Invitation) {
 	}
 	const teamName = team[0].name;
 
+	const emailHtml = await render(
+		<TeamInvitationEmail
+			teamName={teamName}
+			inviterEmail={inviter.email}
+			joinUrl={buildJoinLink(invitation.token)}
+		/>,
+	);
+	const emailText = toPlainText(emailHtml);
+
 	await sendEmail(
 		`Invitation to join ${teamName} on Giselle`,
-		`You have been invited to join the team ${teamName} by ${inviter.email}.\n\n${buildJoinLink(
-			invitation.token,
-		)}`,
+		emailText,
 		[
 			{
 				userDisplayName: "",
 				userEmail: invitation.email,
 			},
 		],
+		{ html: emailHtml },
 	);
 }
 

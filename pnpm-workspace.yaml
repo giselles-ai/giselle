@@ -55,7 +55,7 @@ catalog:
   '@urql/core': 5.1.1
   '@vercel/edge-config': 1.4.0
   '@vercel/functions': 2.2.11
-  '@xyflow/react': 12.8.3
+  '@xyflow/react': 12.9.0
   ai: 5.0.51
   clsx: 2.1.1
   defuddle: 0.6.4

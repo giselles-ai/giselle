@@ -14,7 +14,6 @@ export async function fetchWorkspaceTeam(
 			dbId: teams.dbId,
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
-			type: teams.type,
 			plan: teams.plan,
 			activeSubscriptionId: subscriptions.id,
 		})

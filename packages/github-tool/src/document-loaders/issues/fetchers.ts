@@ -13,6 +13,50 @@ export type FetchContext = {
 	repo: string;
 };
 
+type RenamedTitleEvent = {
+	__typename?: "RenamedTitleEvent";
+	createdAt: string;
+};
+
+/**
+ * Type guard to check if timeline item is a RenamedTitleEvent
+ */
+function isRenamedTitleEvent(item: unknown): item is RenamedTitleEvent {
+	return (
+		typeof item === "object" &&
+		item !== null &&
+		"createdAt" in item &&
+		typeof item.createdAt === "string"
+	);
+}
+
+/**
+ * Extract title last updated time from timeline items
+ */
+function getTitleUpdatedAt(firstTimelineItem: unknown): string | null {
+	if (!isRenamedTitleEvent(firstTimelineItem)) {
+		return null;
+	}
+	return firstTimelineItem.createdAt;
+}
+
+/**
+ * Calculate the most recent edit time for an issue, considering both title and body edits
+ */
+function calculateContentEditedAt(
+	bodyEditedAt: string,
+	titleUpdatedAt: string | null,
+): string {
+	if (!titleUpdatedAt) {
+		return bodyEditedAt;
+	}
+
+	const titleTime = new Date(titleUpdatedAt).getTime();
+	const bodyTime = new Date(bodyEditedAt).getTime();
+
+	return titleTime > bodyTime ? titleUpdatedAt : bodyEditedAt;
+}
+
 export async function fetchIssuesMetadata(
 	ctx: FetchContext,
 	options: {
@@ -60,6 +104,14 @@ export async function fetchIssuesMetadata(
 			?.map((issue) => {
 				if (!issue) return null;
 
+				const titleUpdatedAt = getTitleUpdatedAt(
+					issue.timelineItems?.nodes?.[0],
+				);
+				const contentEditedAt = calculateContentEditedAt(
+					issue.lastEditedAt ?? issue.createdAt,
+					titleUpdatedAt,
+				);
+
 				const comments =
 					issue.comments?.nodes
 						?.map((comment) => {
@@ -75,7 +127,7 @@ export async function fetchIssuesMetadata(
 
 				return {
 					number: issue.number,
-					editedAt: issue.lastEditedAt ?? issue.createdAt,
+					editedAt: contentEditedAt,
 					state: issue.state,
 					stateReason: issue.stateReason,
 					createdAt: issue.createdAt,
