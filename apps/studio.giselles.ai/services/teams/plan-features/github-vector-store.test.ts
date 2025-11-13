@@ -11,6 +11,7 @@ describe("github vector store quotas", () => {
 		{ plan: "free", isAvailable: false, maxStores: 0 },
 		{ plan: "pro", isAvailable: true, maxStores: 3 },
 		{ plan: "team", isAvailable: true, maxStores: 10 },
+		{ plan: "enterprise", isAvailable: true, maxStores: 100 },
 		{ plan: "internal", isAvailable: true, maxStores: 100 },
 	] satisfies Array<{
 		plan: TeamPlan;

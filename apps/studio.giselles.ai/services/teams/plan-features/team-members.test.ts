@@ -11,6 +11,7 @@ describe("team member quotas", () => {
 		{ plan: "free", isAvailable: false, maxMembers: 1 },
 		{ plan: "pro", isAvailable: false, maxMembers: 1 },
 		{ plan: "team", isAvailable: true, maxMembers: 10 },
+		{ plan: "enterprise", isAvailable: true, maxMembers: 100 },
 		{ plan: "internal", isAvailable: true, maxMembers: 100 },
 	] satisfies Array<{
 		plan: TeamPlan;
