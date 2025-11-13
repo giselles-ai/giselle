@@ -44,6 +44,7 @@ export function generateImage(args: {
 			fileResolver,
 			generationContentResolver,
 			imageGenerationResolver,
+			appEntryResolver,
 			finishGeneration,
 			setGeneration,
 			signal,
@@ -60,6 +61,7 @@ export function generateImage(args: {
 					fileResolver,
 					generationContentResolver,
 					imageGenerationResolver,
+					appEntryResolver,
 				});
 
 				let generationOutputs: GenerationOutput[] = [];

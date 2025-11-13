@@ -1,7 +1,4 @@
-import { Button } from "@giselle-internal/ui/button";
-import { Plus } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
-import Link from "next/link";
 import { use } from "react";
 import { CreateWorkspaceButton } from "@/app/(main)/workspaces/create-workspace-button";
 import type { LoaderData } from "./data-loader";

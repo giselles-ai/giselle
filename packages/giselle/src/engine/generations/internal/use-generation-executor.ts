@@ -7,6 +7,7 @@ import type {
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import {
+	AppParameterId,
 	type CompletedGeneration,
 	type Generation,
 	GenerationContext,
@@ -27,8 +28,8 @@ import type {
 } from "ai";
 import { UsageLimitError } from "../../error";
 import { filePath } from "../../files/utils";
-import type { GenerationMetadata } from "../../generations";
 import type { GiselleEngineContext } from "../../types";
+import type { AppEntryResolver, GenerationMetadata } from "../types";
 import {
 	checkUsageLimits,
 	getGeneratedImage,
@@ -72,6 +73,7 @@ export async function useGenerationExecutor<T>(args: {
 			nodeId: NodeId,
 			outputId: OutputId,
 		) => Promise<ImagePart[] | undefined>;
+		appEntryResolver: AppEntryResolver;
 		workspaceId: WorkspaceId;
 		signal?: AbortSignal;
 		finishGeneration: FinishGeneration;
@@ -374,6 +376,43 @@ export async function useGenerationExecutor<T>(args: {
 		return { completedGeneration, outputFileBlobs };
 	}
 
+	const appEntryResolver: AppEntryResolver = (nodeId, outputId) => {
+		const appEntryNode = args.generation.context.sourceNodes.find(
+			(sourceNode) => sourceNode.id === nodeId,
+		);
+		if (appEntryNode === undefined) {
+			throw new Error(`Node<${nodeId}> not found`);
+		}
+		const output = appEntryNode.outputs.find(
+			(output) => output.id === outputId,
+		);
+
+		if (output === undefined) {
+			throw new Error(`Output<${outputId}> not found`);
+		}
+
+		const parseResult = AppParameterId.safeParse(output.accessor);
+
+		if (!parseResult.success) {
+			throw new Error(`Invalid app parameter id: ${output.accessor}`);
+		}
+		const parameterInput = generationContext.inputs?.find(
+			(input) => input.type === "parameters",
+		);
+		if (parameterInput === undefined) {
+			throw new Error(`No parameters input found`);
+		}
+		const parameter = parameterInput.items.find(
+			(item) => item.name === parseResult.data,
+		);
+
+		if (parameter === undefined) {
+			args.context.logger.warn(`Parameter ${parseResult.data} not found`);
+			return undefined;
+		}
+		return parameter.value;
+	};
+
 	return args.execute({
 		runningGeneration,
 		generationContext,
@@ -384,5 +423,6 @@ export async function useGenerationExecutor<T>(args: {
 		workspaceId,
 		signal: args.signal,
 		finishGeneration,
+		appEntryResolver,
 	});
 }

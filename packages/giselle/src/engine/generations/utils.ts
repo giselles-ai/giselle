@@ -1,11 +1,11 @@
 import { hasTierAccess, languageModels } from "@giselles-ai/language-model";
-import type { GenerationId } from "@giselles-ai/protocol";
 import {
 	type CompletedGeneration,
 	type FileContent,
 	type FileId,
 	Generation,
 	GenerationContext,
+	type GenerationId,
 	type GenerationOutput,
 	type ImageGenerationNode,
 	isImageGenerationNode,
@@ -26,6 +26,7 @@ import {
 import type { DataContent, FilePart, ImagePart, ModelMessage } from "ai";
 import type { GiselleStorage } from "../storage";
 import type { GiselleEngineContext } from "../types";
+import type { AppEntryResolver } from "./types";
 
 interface GeneratedImageData {
 	uint8Array: Uint8Array;
@@ -38,6 +39,7 @@ export async function buildMessageObject({
 	fileResolver,
 	generationContentResolver,
 	imageGenerationResolver,
+	appEntryResolver,
 }: {
 	node: OperationNode;
 	contextNodes: Node[];
@@ -50,6 +52,7 @@ export async function buildMessageObject({
 		nodeId: NodeId,
 		outputId: OutputId,
 	) => Promise<ImagePart[] | undefined>;
+	appEntryResolver: AppEntryResolver;
 }): Promise<ModelMessage[]> {
 	switch (node.content.type) {
 		case "textGeneration": {
@@ -58,6 +61,7 @@ export async function buildMessageObject({
 				contextNodes,
 				fileResolver,
 				generationContentResolver,
+				appEntryResolver,
 			});
 		}
 		case "imageGeneration": {
@@ -67,6 +71,7 @@ export async function buildMessageObject({
 				fileResolver,
 				generationContentResolver,
 				imageGenerationResolver,
+				appEntryResolver,
 			);
 		}
 		case "action":
@@ -87,6 +92,7 @@ async function buildGenerationMessageForTextGeneration({
 	contextNodes,
 	fileResolver,
 	generationContentResolver,
+	appEntryResolver,
 }: {
 	node: TextGenerationNode;
 	contextNodes: Node[];
@@ -95,6 +101,7 @@ async function buildGenerationMessageForTextGeneration({
 		nodeId: NodeId,
 		outputId: OutputId,
 	) => Promise<string | undefined>;
+	appEntryResolver: AppEntryResolver;
 }): Promise<ModelMessage[]> {
 	const llmProvider = node.content.llm.provider;
 	const prompt = node.content.prompt;
@@ -262,8 +269,18 @@ async function buildGenerationMessageForTextGeneration({
 				userMessage = userMessage.replace(replaceKeyword, result ?? "");
 				break;
 			}
-			case "appEntry":
+			case "appEntry": {
+				const result = appEntryResolver(
+					sourceKeyword.nodeId,
+					sourceKeyword.outputId,
+				);
+
+				userMessage = userMessage.replace(
+					replaceKeyword,
+					result === undefined ? "" : `${result}`,
+				);
 				break;
+			}
 			default: {
 				const _exhaustiveCheck: never = contextNode.content;
 				throw new Error(`Unhandled type: ${_exhaustiveCheck}`);
@@ -409,6 +426,7 @@ async function buildGenerationMessageForImageGeneration(
 		nodeId: NodeId,
 		outputId: OutputId,
 	) => Promise<ImagePart[] | undefined>,
+	appEntryResolver: AppEntryResolver,
 ): Promise<ModelMessage[]> {
 	const prompt = node.content.prompt;
 	if (prompt === undefined) {
@@ -526,14 +544,26 @@ async function buildGenerationMessageForImageGeneration(
 
 			case "action":
 			case "trigger":
-			case "query":
-			case "appEntry": {
+			case "query": {
 				const result = await textGenerationResolver(
 					contextNode.id,
 					sourceKeyword.outputId,
 				);
 				// If there is no matching Output, replace it with an empty string (remove the pattern string from userMessage)
 				userMessage = userMessage.replace(replaceKeyword, result ?? "");
+				break;
+			}
+
+			case "appEntry": {
+				const result = appEntryResolver(
+					sourceKeyword.nodeId,
+					sourceKeyword.outputId,
+				);
+
+				userMessage = userMessage.replace(
+					replaceKeyword,
+					result === undefined ? "" : `${result}`,
+				);
 				break;
 			}
 
