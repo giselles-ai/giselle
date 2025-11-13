@@ -1,5 +1,7 @@
 import { githubIssuesVectorStoreFlag } from "@/flags";
 import { getGitHubIdentityState } from "@/services/accounts";
+import { fetchCurrentTeam } from "@/services/teams";
+import { getGitHubVectorStoreQuota } from "@/services/teams/plan-features/github-vector-store";
 import {
 	deleteRepositoryIndex,
 	registerRepositoryIndex,
@@ -41,11 +43,24 @@ export default async function TeamVectorStorePage() {
 		installationsWithRepos,
 		repositoryIndexes,
 		isGithubIssuesVectorStoreEnabled,
+		team,
 	] = await Promise.all([
 		getInstallationsWithRepos(),
 		getGitHubRepositoryIndexes(),
 		githubIssuesVectorStoreFlag(),
+		fetchCurrentTeam(),
 	]);
+
+	const quota = getGitHubVectorStoreQuota(team.plan);
+	const hasAccess = quota.isAvailable;
+	const hasReachedLimit =
+		hasAccess && repositoryIndexes.length >= quota.maxStores;
+	const registerDisabled = !hasAccess || hasReachedLimit;
+	const registerDisabledReason = !hasAccess
+		? "GitHub Vector Stores are available on Pro or Team plans."
+		: hasReachedLimit
+			? "You've reached the number of GitHub Vector Stores included in your plan."
+			: undefined;
 
 	return (
 		<div className="flex flex-col gap-[24px]">
@@ -54,6 +69,8 @@ export default async function TeamVectorStorePage() {
 					installationsWithRepos={installationsWithRepos}
 					registerRepositoryIndexAction={registerRepositoryIndex}
 					githubIssuesVectorStore={isGithubIssuesVectorStoreEnabled}
+					disabled={registerDisabled}
+					disabledReason={registerDisabledReason}
 				/>
 			</div>
 			<RepositoryList
@@ -62,6 +79,9 @@ export default async function TeamVectorStorePage() {
 				triggerManualIngestAction={triggerManualIngest}
 				updateRepositoryIndexAction={updateRepositoryIndex}
 				githubIssuesVectorStore={isGithubIssuesVectorStoreEnabled}
+				hasAccess={hasAccess}
+				maxStores={quota.maxStores}
+				teamPlan={team.plan}
 			/>
 		</div>
 	);
