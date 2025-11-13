@@ -19,6 +19,7 @@ import {
 	githubRepositoryContentStatus,
 	githubRepositoryEmbeddingProfiles,
 	githubRepositoryIndex,
+	teams,
 } from "@/db";
 import {
 	createManualIngestTrigger,
@@ -156,6 +157,14 @@ export async function registerRepositoryIndex(
 
 		const newIndexId = `gthbi_${createId()}` as GitHubRepositoryIndexId;
 		const insertionResult = await db.transaction<ActionResult>(async (tx) => {
+			// Serialize quota enforcement by locking the owning team row.
+			await tx
+				.select({ dbId: teams.dbId })
+				.from(teams)
+				.where(eq(teams.dbId, team.dbId))
+				.limit(1)
+				.for("update");
+
 			const [existingRepository] = await tx
 				.select({ dbId: githubRepositoryIndex.dbId })
 				.from(githubRepositoryIndex)
