@@ -36,7 +36,7 @@ interface FirstWorkspaceEmailProps {
 export const FirstWorkspaceEmail = ({
 	userName = "there",
 	createWorkspaceUrl = "https://studio.giselles.ai",
-	_stageUrl = "https://studio.giselles.ai/stage",
+	stageUrl: _stageUrl = "https://studio.giselles.ai/stage",
 	docsUrl = "https://docs.giselles.ai/en/guides/introduction",
 }: FirstWorkspaceEmailProps) => {
 	const baseUrl = getBaseUrl();

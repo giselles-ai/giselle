@@ -36,7 +36,7 @@ interface ChangelogAnnouncementEmailProps {
 }
 
 export const ChangelogAnnouncementEmail = ({
-	_userName = "there",
+	userName: _userName = "there",
 	date = new Date().toLocaleDateString("en-US", {
 		month: "long",
 		day: "numeric",

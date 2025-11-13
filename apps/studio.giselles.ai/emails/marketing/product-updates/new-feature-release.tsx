@@ -36,8 +36,8 @@ interface NewFeatureReleaseEmailProps {
 }
 
 export const NewFeatureReleaseEmail = ({
-	_userName = "there",
-	_featureName = "Node Builder",
+	userName: _userName = "there",
+	featureName: _featureName = "Node Builder",
 	date = new Date().toLocaleDateString("en-US", {
 		month: "long",
 		day: "numeric",
