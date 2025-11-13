@@ -80,7 +80,7 @@ describe("groupNodes", () => {
 
 		expect(result).toEqual({
 			operationNodeGroups: [],
-			triggerNodeGroups: [],
+			starterNodeGroups: [],
 		});
 	});
 
