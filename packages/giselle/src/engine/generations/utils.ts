@@ -32,34 +32,40 @@ interface GeneratedImageData {
 	base64: string;
 }
 
-export async function buildMessageObject(
-	node: OperationNode,
-	contextNodes: Node[],
-	fileResolver: (fileId: FileId) => Promise<DataContent>,
-	textGenerationResolver: (
+export async function buildMessageObject({
+	node,
+	contextNodes,
+	fileResolver,
+	generationContentResolver,
+	imageGenerationResolver,
+}: {
+	node: OperationNode;
+	contextNodes: Node[];
+	fileResolver: (fileId: FileId) => Promise<DataContent>;
+	generationContentResolver: (
 		nodeId: NodeId,
 		outputId: OutputId,
-	) => Promise<string | undefined>,
+	) => Promise<string | undefined>;
 	imageGenerationResolver: (
 		nodeId: NodeId,
 		outputId: OutputId,
-	) => Promise<ImagePart[] | undefined>,
-): Promise<ModelMessage[]> {
+	) => Promise<ImagePart[] | undefined>;
+}): Promise<ModelMessage[]> {
 	switch (node.content.type) {
 		case "textGeneration": {
-			return await buildGenerationMessageForTextGeneration(
-				node as TextGenerationNode,
+			return await buildGenerationMessageForTextGeneration({
+				node: node as TextGenerationNode,
 				contextNodes,
 				fileResolver,
-				textGenerationResolver,
-			);
+				generationContentResolver,
+			});
 		}
 		case "imageGeneration": {
 			return await buildGenerationMessageForImageGeneration(
 				node as ImageGenerationNode,
 				contextNodes,
 				fileResolver,
-				textGenerationResolver,
+				generationContentResolver,
 				imageGenerationResolver,
 			);
 		}
@@ -76,15 +82,20 @@ export async function buildMessageObject(
 	}
 }
 
-async function buildGenerationMessageForTextGeneration(
-	node: TextGenerationNode,
-	contextNodes: Node[],
-	fileResolver: (fileId: FileId) => Promise<DataContent>,
-	textGenerationResolver: (
+async function buildGenerationMessageForTextGeneration({
+	node,
+	contextNodes,
+	fileResolver,
+	generationContentResolver,
+}: {
+	node: TextGenerationNode;
+	contextNodes: Node[];
+	fileResolver: (fileId: FileId) => Promise<DataContent>;
+	generationContentResolver: (
 		nodeId: NodeId,
 		outputId: OutputId,
-	) => Promise<string | undefined>,
-): Promise<ModelMessage[]> {
+	) => Promise<string | undefined>;
+}): Promise<ModelMessage[]> {
 	const llmProvider = node.content.llm.provider;
 	const prompt = node.content.prompt;
 	if (prompt === undefined) {
@@ -242,9 +253,8 @@ async function buildGenerationMessageForTextGeneration(
 
 			case "query":
 			case "trigger":
-			case "action":
-			case "appEntry": {
-				const result = await textGenerationResolver(
+			case "action": {
+				const result = await generationContentResolver(
 					contextNode.id,
 					sourceKeyword.outputId,
 				);
@@ -252,7 +262,8 @@ async function buildGenerationMessageForTextGeneration(
 				userMessage = userMessage.replace(replaceKeyword, result ?? "");
 				break;
 			}
-
+			case "appEntry":
+				break;
 			default: {
 				const _exhaustiveCheck: never = contextNode.content;
 				throw new Error(`Unhandled type: ${_exhaustiveCheck}`);
