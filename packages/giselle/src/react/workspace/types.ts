@@ -44,7 +44,7 @@ export interface WorkflowDesignerContextValue {
 		options?: { save?: boolean },
 	) => void;
 	setUiViewport: (viewport: Viewport) => void;
-	deleteNode: (nodeId: NodeId | string) => Promise<void> | void;
+	deleteNode: (nodeId: NodeId | string) => Promise<void>;
 	deleteConnection: (connectionIdLike: string) => void;
 	updateName: (name: string | undefined) => void;
 	uploadFile: (
