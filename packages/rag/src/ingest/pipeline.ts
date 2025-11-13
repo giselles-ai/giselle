@@ -6,6 +6,7 @@ import type { ChunkStore } from "../chunk-store/types";
 import { createDefaultChunker } from "../chunker";
 import type { ChunkerFunction } from "../chunker/types";
 import type { Document, DocumentLoader } from "../document-loader/types";
+import { isGatewaySupportedEmbeddingProfile } from "../embedder/gateway";
 import { createEmbedderFromProfile } from "../embedder/profiles";
 import type {
 	EmbedderFunction,
@@ -88,14 +89,18 @@ export function createPipeline<
 		);
 	}
 
-	const apiKey =
-		process.env[
-			profile.provider === "openai"
-				? "OPENAI_API_KEY"
-				: profile.provider === "google"
-					? "GOOGLE_GENERATIVE_AI_API_KEY"
-					: "COHERE_API_KEY"
-		];
+	const gatewayApiKey = process.env.AI_GATEWAY_API_KEY;
+	const useGateway =
+		Boolean(gatewayApiKey) && isGatewaySupportedEmbeddingProfile(profile);
+	const apiKey = useGateway
+		? gatewayApiKey
+		: process.env[
+				profile.provider === "openai"
+					? "OPENAI_API_KEY"
+					: profile.provider === "google"
+						? "GOOGLE_GENERATIVE_AI_API_KEY"
+						: "COHERE_API_KEY"
+			];
 	if (!apiKey) {
 		throw new ConfigurationError(
 			`No API key found for embedding profile ${options.embeddingProfileId}`,
@@ -105,7 +110,7 @@ export function createPipeline<
 	const resolvedEmbedder = createEmbedderFromProfile(
 		options.embeddingProfileId,
 		apiKey,
-		{ embeddingComplete },
+		{ embeddingComplete, transport: useGateway ? "gateway" : undefined },
 	);
 
 	/**

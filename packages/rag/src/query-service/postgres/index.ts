@@ -9,6 +9,7 @@ import { EMBEDDING_COLUMNS } from "../../database/constants";
 import { PoolManager } from "../../database/postgres";
 import { ensurePgVectorTypes } from "../../database/postgres/pgvector-registry";
 import type { DatabaseConfig } from "../../database/types";
+import { isGatewaySupportedEmbeddingProfile } from "../../embedder/gateway";
 import { createEmbedderFromProfile } from "../../embedder/profiles";
 import type { EmbeddingCompleteCallback } from "../../embedder/types";
 import {
@@ -127,14 +128,18 @@ export function createPostgresQueryService<
 				);
 			}
 
-			const apiKey =
-				process.env[
-					profile.provider === "openai"
-						? "OPENAI_API_KEY"
-						: profile.provider === "google"
-							? "GOOGLE_GENERATIVE_AI_API_KEY"
-							: "COHERE_API_KEY"
-				];
+			const gatewayApiKey = process.env.AI_GATEWAY_API_KEY;
+			const useGateway =
+				Boolean(gatewayApiKey) && isGatewaySupportedEmbeddingProfile(profile);
+			const apiKey = useGateway
+				? gatewayApiKey
+				: process.env[
+						profile.provider === "openai"
+							? "OPENAI_API_KEY"
+							: profile.provider === "google"
+								? "GOOGLE_GENERATIVE_AI_API_KEY"
+								: "COHERE_API_KEY"
+					];
 			if (!apiKey) {
 				throw new ConfigurationError(
 					`No API key found for embedding profile ${profileId}`,
@@ -143,6 +148,7 @@ export function createPostgresQueryService<
 
 			const embedder = createEmbedderFromProfile(profileId, apiKey, {
 				embeddingComplete,
+				transport: useGateway ? "gateway" : undefined,
 			});
 			const queryEmbedding = await embedder.embed(query);
 
