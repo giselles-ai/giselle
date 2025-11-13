@@ -135,7 +135,7 @@ async function buildGenerationMessageForTextGeneration({
 				break;
 			}
 			case "textGeneration": {
-				const result = await textGenerationResolver(
+				const result = await generationContentResolver(
 					contextNode.id,
 					sourceKeyword.outputId,
 				);
