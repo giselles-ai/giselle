@@ -32,7 +32,10 @@ import { Button } from "../../components/button";
 import { ConfigureSourcesDialog } from "./configure-sources-dialog";
 import { DiagnosticModal } from "./diagnostic-modal";
 import { getErrorMessage } from "./error-messages";
-import { GITHUB_EMBEDDING_PROFILES } from "./github-embedding-profiles";
+import {
+	DEFAULT_GITHUB_EMBEDDING_PROFILE_ID,
+	GITHUB_EMBEDDING_PROFILES,
+} from "./github-embedding-profiles";
 import type { DocumentLoaderErrorCode } from "./types";
 
 type RepositoryItemProps = {
@@ -64,11 +67,62 @@ export function RepositoryItem({
 	// Derive unique embedding profile IDs from content statuses
 	const embeddingProfileIds = useMemo(
 		() =>
-			[...new Set(contentStatuses.map((cs) => cs.embeddingProfileId))].sort(
-				(a, b) => a - b,
-			),
+			[
+				...new Set(
+					contentStatuses
+						.map((cs) => cs.embeddingProfileId)
+						.filter(
+							(id): id is number =>
+								typeof id === "number" && Number.isFinite(id),
+						),
+				),
+			].sort((a, b) => a - b),
 		[contentStatuses],
 	);
+
+	const fallbackProfileId =
+		embeddingProfileIds[0] ?? DEFAULT_GITHUB_EMBEDDING_PROFILE_ID;
+
+	const profileStatusesById = useMemo(() => {
+		const map = new Map<
+			number,
+			(typeof githubRepositoryContentStatus.$inferSelect)[]
+		>();
+		for (const status of contentStatuses) {
+			const profileId =
+				typeof status.embeddingProfileId === "number" &&
+				Number.isFinite(status.embeddingProfileId)
+					? status.embeddingProfileId
+					: fallbackProfileId;
+			const current = map.get(profileId);
+			if (current) {
+				current.push(status);
+			} else {
+				map.set(profileId, [status]);
+			}
+		}
+
+		if (map.size === 0) {
+			map.set(fallbackProfileId, []);
+		}
+
+		return map;
+	}, [contentStatuses, fallbackProfileId]);
+
+	const displayedProfileIds = useMemo(() => {
+		const ids = [...embeddingProfileIds];
+		const fallbackStatuses = profileStatusesById.get(fallbackProfileId) ?? [];
+
+		if (fallbackStatuses.length > 0 && !ids.includes(fallbackProfileId)) {
+			ids.push(fallbackProfileId);
+		}
+
+		if (ids.length === 0) {
+			ids.push(fallbackProfileId);
+		}
+
+		return ids.sort((a, b) => a - b);
+	}, [embeddingProfileIds, fallbackProfileId, profileStatusesById]);
 
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [showConfigureDialog, setShowConfigureDialog] = useState(false);
@@ -160,17 +214,18 @@ export function RepositoryItem({
 			</div>
 			{/* Row 2: Cards grid */}
 			<div className="grid grid-cols-3 gap-3 w-full">
-				{embeddingProfileIds.map((profileId) => {
+				{displayedProfileIds.map((profileId) => {
 					const profile =
 						GITHUB_EMBEDDING_PROFILES[
 							profileId as keyof typeof GITHUB_EMBEDDING_PROFILES
 						];
+					const profileStatuses = profileStatusesById.get(profileId) ?? [];
 					return (
 						<EmbeddingModelCard
 							key={profileId}
 							profile={profile}
 							profileId={profileId}
-							contentStatuses={contentStatuses}
+							profileStatuses={profileStatuses}
 							isIngesting={isIngesting}
 							onShowDiagnostic={() => setShowDiagnosticModal(true)}
 						/>
@@ -220,7 +275,7 @@ export function RepositoryItem({
 				setOpen={setShowConfigureDialog}
 				repositoryData={repositoryData}
 				updateRepositoryIndexAction={updateRepositoryIndexAction}
-				enabledProfiles={embeddingProfileIds}
+				enabledProfiles={displayedProfileIds}
 			/>
 
 			<DiagnosticModal
@@ -240,21 +295,16 @@ export function RepositoryItem({
 function EmbeddingModelCard({
 	profile,
 	profileId,
-	contentStatuses,
+	profileStatuses,
 	isIngesting,
 	onShowDiagnostic,
 }: {
 	profile?: (typeof GITHUB_EMBEDDING_PROFILES)[keyof typeof GITHUB_EMBEDDING_PROFILES];
 	profileId: number;
-	contentStatuses: (typeof githubRepositoryContentStatus.$inferSelect)[];
+	profileStatuses: (typeof githubRepositoryContentStatus.$inferSelect)[];
 	isIngesting: boolean;
 	onShowDiagnostic: () => void;
 }) {
-	// Filter statuses for this embedding profile
-	const profileStatuses = contentStatuses.filter(
-		(cs) => cs.embeddingProfileId === profileId,
-	);
-
 	// Get status for each content type
 	const blobStatus = profileStatuses.find((cs) => cs.contentType === "blob");
 	const pullRequestStatus = profileStatuses.find(

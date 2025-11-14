@@ -18,7 +18,10 @@ import { CircleDot, Code, GitPullRequest, Plus, X } from "lucide-react";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { GlassButton } from "@/components/ui/glass-button";
 import type { GitHubRepositoryContentType } from "@/db";
-import { GITHUB_EMBEDDING_PROFILES } from "./github-embedding-profiles";
+import {
+	DEFAULT_GITHUB_EMBEDDING_PROFILE_ID,
+	GITHUB_EMBEDDING_PROFILES,
+} from "./github-embedding-profiles";
 import type { ActionResult, InstallationWithRepos } from "./types";
 
 type RepositoryRegistrationDialogProps = {
@@ -49,7 +52,9 @@ export function RepositoryRegistrationDialog({
 		pullRequests: { enabled: false },
 		issues: { enabled: false },
 	});
-	const [selectedProfiles, setSelectedProfiles] = useState<number[]>([1]); // Default to OpenAI Small
+	const [selectedProfiles, setSelectedProfiles] = useState<number[]>([
+		DEFAULT_GITHUB_EMBEDDING_PROFILE_ID,
+	]);
 
 	const selectedInstallation = useMemo(
 		() =>
@@ -159,7 +164,7 @@ export function RepositoryRegistrationDialog({
 						pullRequests: { enabled: false },
 						issues: { enabled: false },
 					});
-					setSelectedProfiles([1]); // Reset to default
+					setSelectedProfiles([DEFAULT_GITHUB_EMBEDDING_PROFILE_ID]);
 				} else {
 					setError(result.error);
 				}

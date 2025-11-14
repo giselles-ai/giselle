@@ -70,11 +70,17 @@ export async function getGitHubRepositoryIndexes(
 			repoMap.set(key, acc);
 		}
 
-		const set =
-			acc.contentTypeToProfiles.get(row.contentType) ?? new Set<number>();
-		set.add(row.embeddingProfileId);
-		if (!acc.contentTypeToProfiles.has(row.contentType)) {
-			acc.contentTypeToProfiles.set(row.contentType, set);
+		let profileSet = acc.contentTypeToProfiles.get(row.contentType);
+		if (!profileSet) {
+			profileSet = new Set<number>();
+			acc.contentTypeToProfiles.set(row.contentType, profileSet);
+		}
+
+		if (
+			typeof row.embeddingProfileId === "number" &&
+			Number.isFinite(row.embeddingProfileId)
+		) {
+			profileSet.add(row.embeddingProfileId);
 		}
 	}
 
@@ -86,7 +92,11 @@ export async function getGitHubRepositoryIndexes(
 		contentTypes: Array.from(r.contentTypeToProfiles.entries()).map(
 			([contentType, ids]) => ({
 				contentType,
-				embeddingProfileIds: Array.from(ids),
+				embeddingProfileIds: Array.from(ids)
+					.filter(
+						(id): id is number => typeof id === "number" && Number.isFinite(id),
+					)
+					.sort((a, b) => a - b),
 			}),
 		),
 	}));

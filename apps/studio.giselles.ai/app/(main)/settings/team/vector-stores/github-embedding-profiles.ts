@@ -10,3 +10,21 @@ export const GITHUB_EMBEDDING_PROFILES = Object.fromEntries(
 		([, profile]) => profile.provider !== "cohere",
 	),
 ) as typeof EMBEDDING_PROFILES;
+
+const orderedProfileIds = Object.keys(GITHUB_EMBEDDING_PROFILES)
+	.map((id) => Number.parseInt(id, 10))
+	.filter((id) => Number.isFinite(id))
+	.sort((a, b) => a - b);
+
+const fallbackProfileId = Number.parseInt(
+	Object.keys(EMBEDDING_PROFILES)[0] ?? "1",
+	10,
+);
+
+export const DEFAULT_GITHUB_EMBEDDING_PROFILE_ID = Number.isFinite(
+	orderedProfileIds[0],
+)
+	? (orderedProfileIds[0] as number)
+	: Number.isFinite(fallbackProfileId)
+		? fallbackProfileId
+		: 1;

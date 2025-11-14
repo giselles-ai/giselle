@@ -20,7 +20,10 @@ import type {
 } from "@/db";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
-import { GITHUB_EMBEDDING_PROFILES } from "./github-embedding-profiles";
+import {
+	DEFAULT_GITHUB_EMBEDDING_PROFILE_ID,
+	GITHUB_EMBEDDING_PROFILES,
+} from "./github-embedding-profiles";
 
 type ConfigureSourcesDialogProps = {
 	open: boolean;
@@ -42,7 +45,7 @@ export function ConfigureSourcesDialog({
 	setOpen,
 	repositoryData,
 	updateRepositoryIndexAction,
-	enabledProfiles = [1],
+	enabledProfiles = [DEFAULT_GITHUB_EMBEDDING_PROFILE_ID],
 }: ConfigureSourcesDialogProps) {
 	const { repositoryIndex, contentStatuses } = repositoryData;
 	const [isPending, startTransition] = useTransition();
@@ -61,13 +64,20 @@ export function ConfigureSourcesDialog({
 		issues: { enabled: issueStatus?.enabled ?? false },
 	});
 
-	const [selectedProfiles, setSelectedProfiles] =
-		useState<number[]>(enabledProfiles);
+	const [selectedProfiles, setSelectedProfiles] = useState<number[]>(
+		enabledProfiles.length > 0
+			? enabledProfiles
+			: [DEFAULT_GITHUB_EMBEDDING_PROFILE_ID],
+	);
 
 	// Reset profiles when dialog opens
 	useEffect(() => {
 		if (open) {
-			setSelectedProfiles(enabledProfiles);
+			setSelectedProfiles(
+				enabledProfiles.length > 0
+					? enabledProfiles
+					: [DEFAULT_GITHUB_EMBEDDING_PROFILE_ID],
+			);
 		}
 	}, [open, enabledProfiles]);
 
