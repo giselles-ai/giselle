@@ -54,6 +54,7 @@ export function GitHubNodeInfo({
 				<GitHubRepositoryBadge
 					owner={node.content.source.state.owner}
 					repo={node.content.source.state.repo}
+					nodeType="vectorStore"
 				/>
 			</div>
 		) : (

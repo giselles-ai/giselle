@@ -12,5 +12,13 @@ import { useWorkflowDesigner } from "../workspace";
 export function useNodeGroups() {
 	const { data } = useWorkflowDesigner();
 
-	return useMemo<GroupedNodes>(() => groupNodes(data), [data]);
+	return useMemo<GroupedNodes>(() => {
+		if (!data || !data.nodes || !data.connections) {
+			return {
+				operationNodeGroups: [],
+				starterNodeGroups: [],
+			};
+		}
+		return groupNodes(data);
+	}, [data]);
 }
