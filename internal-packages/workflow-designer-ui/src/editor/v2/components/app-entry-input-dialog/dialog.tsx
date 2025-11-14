@@ -1,6 +1,6 @@
 import { Button } from "@giselle-internal/ui/button";
 import { useToasts } from "@giselle-internal/ui/toast";
-import { useActController, useGiselleEngine } from "@giselles-ai/giselle/react";
+import { useActSystem, useGiselleEngine } from "@giselles-ai/giselle/react";
 import type { AppEntryNode, ConnectionId } from "@giselles-ai/protocol";
 import { clsx } from "clsx/lite";
 import { LoaderIcon, PlayIcon, XIcon } from "lucide-react";
@@ -33,7 +33,7 @@ export function AppEntryInputDialog({
 	>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	const { createAndStartAct } = useActController();
+	const { createAndStartAct } = useActSystem();
 	const { toast } = useToasts();
 
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
