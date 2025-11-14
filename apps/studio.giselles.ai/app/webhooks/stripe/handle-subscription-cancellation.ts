@@ -35,7 +35,7 @@ export async function handleSubscriptionCancellation(
 
 	const shouldApplyStripeCancellation =
 		team.plan !== "internal" && team.plan !== "enterprise";
-	// Enterprise plan is not managed in Stripe, so cancellation webhooks should never mutate those teams.
+	// Enterprise and internal plans are not managed in Stripe, so cancellation webhooks should never mutate those teams.
 
 	if (shouldApplyStripeCancellation) {
 		// Get the earliest admin's membership ID
