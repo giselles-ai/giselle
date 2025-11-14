@@ -83,7 +83,6 @@ import {
 	updateWorkspace,
 } from "./workspaces";
 
-export type * from "./acts";
 export * from "./acts";
 export * from "./integrations";
 export * from "./storage";
