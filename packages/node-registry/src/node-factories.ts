@@ -66,7 +66,9 @@ type ClonedFileDataPayload = FileData & {
 export function isClonedFileDataPayload(
 	data: FileData,
 ): data is ClonedFileDataPayload {
-	return "originalFileIdForCopy" in data;
+	return (
+		"originalFileIdForCopy" in data && data.originalFileIdForCopy !== undefined
+	);
 }
 
 type OperationNodeContentType = OperationNode["content"]["type"];
@@ -472,10 +474,14 @@ const fileVariableFactoryImpl = {
 		clonedContent.files = orig.content.files.map(
 			(fileData: FileData): ClonedFileDataPayload => {
 				const newFileId = FileId.generate();
+				// Handle transitive cloning: if already cloned, preserve the original file ID
+				const actualOriginalFileId = isClonedFileDataPayload(fileData)
+					? fileData.originalFileIdForCopy
+					: fileData.id;
 				return {
 					...fileData,
 					id: newFileId,
-					originalFileIdForCopy: fileData.id,
+					originalFileIdForCopy: actualOriginalFileId,
 				};
 			},
 		);
