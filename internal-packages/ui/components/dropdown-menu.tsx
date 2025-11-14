@@ -5,19 +5,21 @@ import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 import type React from "react";
 import { PopoverContent } from "./popover";
 
-interface MenuItem {
+export type MenuItem<
+	TExtra extends Record<string, unknown> = Record<string, unknown>,
+> = {
 	value: string | number;
 	label: string;
 	icon?: React.ReactNode;
 	destructive?: boolean;
 	disabled?: boolean;
 	action?: () => void;
-}
+} & TExtra;
 
-interface MenuGroup<T extends MenuItem> {
+export interface MenuGroup<TMenuItem extends MenuItem = MenuItem> {
 	groupId: string | number;
 	groupLabel: string;
-	items: Array<T>;
+	items: Array<TMenuItem>;
 }
 
 type MenuContent = MenuItem | MenuGroup<MenuItem>;

@@ -5,7 +5,11 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
-import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
+import {
+	DropdownMenu,
+	type MenuGroup,
+	type MenuItem,
+} from "@giselle-internal/ui/dropdown-menu";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	useActSystem,
@@ -38,9 +42,13 @@ type RunItem = {
 	connectionIds: ConnectionId[];
 };
 
-type StarterRunItem = RunItem & {
-	node: TriggerNode | AppEntryNode;
+type TriggerRunItem = RunItem & {
+	node: TriggerNode;
 };
+type AppEntryRunItem = RunItem & {
+	node: AppEntryNode;
+};
+type StarterRunItem = TriggerRunItem | AppEntryRunItem;
 
 type NodeGroupRunItem = RunItem & {
 	label: string;
@@ -201,6 +209,16 @@ function SingleNodeGroupRunButton({
 	);
 }
 
+type RunMenuItem = MenuItem<
+	| {
+			type: "appEntry" | "trigger";
+			run: StarterRunItem;
+	  }
+	| {
+			type: "nodeGroup";
+			run: NodeGroupRunItem;
+	  }
+>;
 function MultipleRunsDropdown({
 	starterRuns,
 	nodeGroupRuns,
@@ -214,18 +232,48 @@ function MultipleRunsDropdown({
 	const [openDialogNodeId, setOpenDialogNodeId] = useState<string | null>(null);
 
 	const runGroups = useMemo(() => {
-		const groups = [];
+		const groups: MenuGroup<RunMenuItem>[] = [];
 		if (starterRuns.length > 0) {
-			groups.push({
-				groupId: "triggerNodes",
-				groupLabel: "Trigger Nodes",
-				items: starterRuns.map((run) => ({
-					value: run.node.id,
-					label: run.node.name ?? defaultName(run.node),
-					type: "trigger" as const,
-					run,
-				})),
-			});
+			const appEntryRunItems: RunMenuItem[] = [];
+			const triggerRunItems: RunMenuItem[] = [];
+			for (const starterRun of starterRuns) {
+				switch (starterRun.node.content.type) {
+					case "appEntry":
+						appEntryRunItems.push({
+							value: starterRun.node.id,
+							label: starterRun.node.name ?? defaultName(starterRun.node),
+							type: "appEntry" as const,
+							run: starterRun,
+						});
+						break;
+					case "trigger":
+						triggerRunItems.push({
+							value: starterRun.node.id,
+							label: starterRun.node.name ?? defaultName(starterRun.node),
+							type: "trigger" as const,
+							run: starterRun,
+						});
+						break;
+					default: {
+						const _exhaustiveCheck: never = starterRun.node.content;
+						throw new Error(`Unhandled type: ${_exhaustiveCheck}`);
+					}
+				}
+			}
+			if (appEntryRunItems.length > 0) {
+				groups.push({
+					groupId: "appEntry",
+					groupLabel: "App Entry Nodes",
+					items: appEntryRunItems,
+				});
+			}
+			if (triggerRunItems.length > 0) {
+				groups.push({
+					groupId: "trigger",
+					groupLabel: "Trigger Nodes",
+					items: triggerRunItems,
+				});
+			}
 		}
 		if (nodeGroupRuns.length > 0) {
 			groups.push({
@@ -353,13 +401,30 @@ export function RunButton() {
 	const nodeGroups = useNodeGroups();
 
 	const { starterRuns, nodeGroupRuns } = useMemo(() => {
-		const starterRuns: StarterRunItem[] = nodeGroups.starterNodeGroups.map(
-			(group) => ({
-				node: group.node,
-				nodeIds: group.nodeGroup.nodeIds,
-				connectionIds: group.nodeGroup.connectionIds,
-			}),
-		);
+		const starterRuns: StarterRunItem[] = [];
+
+		for (const group of nodeGroups.starterNodeGroups) {
+			switch (group.node.content.type) {
+				case "appEntry":
+					starterRuns.push({
+						node: group.node as AppEntryNode,
+						nodeIds: group.nodeGroup.nodeIds,
+						connectionIds: group.nodeGroup.connectionIds,
+					});
+					break;
+				case "trigger":
+					starterRuns.push({
+						node: group.node as TriggerNode,
+						nodeIds: group.nodeGroup.nodeIds,
+						connectionIds: group.nodeGroup.connectionIds,
+					});
+					break;
+				default: {
+					const _exhaustiveCheck: never = group.node.content;
+					throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
+				}
+			}
+		}
 
 		const nodeGroupRuns: NodeGroupRunItem[] =
 			nodeGroups.operationNodeGroups.map((group, index) => ({
