@@ -5,7 +5,7 @@ import type {
 	DocumentVectorStoreId,
 	DocumentVectorStoreSourceId,
 } from "@giselles-ai/types";
-import { isProPlan, type TeamWithSubscription } from "@/services/teams";
+import type { TeamWithSubscription } from "@/services/teams";
 
 export type DocumentIngestTrigger =
 	| { type: "manual"; userId: string }
@@ -30,8 +30,7 @@ export function createDocumentIngestEmbeddingCallback(
 	args: DocumentIngestEmbeddingMetadata,
 ): EmbeddingCompleteCallback {
 	return async (metrics) => {
-		const isPro = isProPlan(args.team);
-		const planTag = isPro ? "plan:pro" : "plan:free";
+		const planTag = `plan:${args.team.plan}`;
 		const userId =
 			args.trigger.type === "manual"
 				? args.trigger.userId
@@ -46,7 +45,6 @@ export function createDocumentIngestEmbeddingCallback(
 				metadata: {
 					teamId: args.team.id,
 					teamDbId: args.team.dbId,
-					isProPlan: isPro,
 					teamPlan: args.team.plan,
 					subscriptionId: args.team.activeSubscriptionId ?? "",
 					userId,

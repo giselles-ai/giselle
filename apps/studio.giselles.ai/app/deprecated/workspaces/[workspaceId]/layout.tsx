@@ -20,11 +20,7 @@ import { getGitHubRepositoryIndexes } from "@/lib/vector-stores/github";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { getUsageLimitsForTeam } from "@/packages/lib/usage-limits";
 import { fetchCurrentUser } from "@/services/accounts";
-import {
-	fetchWorkspaceTeam,
-	isMemberOfTeam,
-	isProPlan,
-} from "@/services/teams";
+import { fetchWorkspaceTeam, isMemberOfTeam } from "@/services/teams";
 
 export default async function Layout({
 	params,
@@ -112,7 +108,6 @@ export default async function Layout({
 			usageLimits={usageLimits}
 			telemetry={{
 				metadata: {
-					isProPlan: isProPlan(workspaceTeam),
 					teamPlan: workspaceTeam.plan,
 					userId: currentUser.id,
 					subscriptionId: workspaceTeam.activeSubscriptionId ?? "",

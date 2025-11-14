@@ -27,11 +27,7 @@ import { getWorkspaceTeam } from "@/lib/workspaces/get-workspace-team";
 import { fetchUsageLimits } from "@/packages/lib/fetch-usage-limits";
 import { onConsumeAgentTime } from "@/packages/lib/on-consume-agent-time";
 import { fetchCurrentUser } from "@/services/accounts";
-import {
-	type CurrentTeam,
-	fetchCurrentTeam,
-	isProPlan,
-} from "@/services/teams";
+import { type CurrentTeam, fetchCurrentTeam } from "@/services/teams";
 import type { runActJob } from "@/trigger/run-act-job";
 import { getDocumentVectorStoreQueryService } from "../lib/vector-stores/document/query/service";
 import {
@@ -99,8 +95,8 @@ async function traceGenerationForTeam(args: {
 	providerMetadata?: ProviderMetadata;
 	requestId?: string;
 }) {
-	const isPro = isProPlan(args.team);
-	const planTag = isPro ? "plan:pro" : "plan:free";
+	const teamPlan = args.team.plan;
+	const planTag = `plan:${teamPlan}`;
 
 	await traceGeneration({
 		generation: args.generation,
@@ -110,8 +106,7 @@ async function traceGenerationForTeam(args: {
 		tags: [planTag],
 		metadata: {
 			generationId: args.generation.id,
-			isProPlan: isPro,
-			teamPlan: args.team.plan,
+			teamPlan,
 			userId: args.userId,
 			subscriptionId: args.team.activeSubscriptionId ?? "",
 			providerMetadata: args.providerMetadata,
@@ -130,15 +125,14 @@ async function traceEmbeddingForTeam(args: {
 	userId: string;
 	team: TeamForPlan;
 }) {
-	const isPro = isProPlan(args.team);
-	const planTag = isPro ? "plan:pro" : "plan:free";
+	const teamPlan = args.team.plan;
+	const planTag = `plan:${teamPlan}`;
 
 	const { queryContext } = args;
 	const baseMetadata = {
 		generationId: args.generation.id,
 		teamId: args.team.id,
-		isProPlan: isPro,
-		teamPlan: args.team.plan,
+		teamPlan,
 		userId: args.userId,
 		subscriptionId: args.team.activeSubscriptionId ?? "",
 		resourceProvider: queryContext.provider,
