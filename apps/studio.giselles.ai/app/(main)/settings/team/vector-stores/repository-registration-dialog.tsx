@@ -34,7 +34,6 @@ type RepositoryRegistrationDialogProps = {
 		}[],
 		embeddingProfileIds?: number[],
 	) => Promise<ActionResult>;
-	githubIssuesVectorStore?: boolean;
 	disabled?: boolean;
 	disabledReason?: string;
 };
@@ -42,7 +41,6 @@ type RepositoryRegistrationDialogProps = {
 export function RepositoryRegistrationDialog({
 	installationsWithRepos,
 	registerRepositoryIndexAction,
-	githubIssuesVectorStore = false,
 	disabled = false,
 	disabledReason,
 }: RepositoryRegistrationDialogProps) {
@@ -358,25 +356,23 @@ export function RepositoryRegistrationDialog({
 								</div>
 
 								{/* Issues Configuration */}
-								{githubIssuesVectorStore && (
-									<div className="bg-inverse/5 rounded-lg p-4">
-										<Toggle
-											name="issues-toggle"
-											checked={contentConfig.issues.enabled}
-											onCheckedChange={handleToggleIssues}
-										>
-											<div className="flex-1 mr-3">
-												<div className="flex items-center gap-2 mb-1">
-													<CircleDot size={18} className="text-text-muted" />
-													<span className="text-text font-medium">Issues</span>
-												</div>
-												<p className="text-xs text-text-muted">
-													Index issue titles, descriptions, and comments
-												</p>
+								<div className="bg-inverse/5 rounded-lg p-4">
+									<Toggle
+										name="issues-toggle"
+										checked={contentConfig.issues.enabled}
+										onCheckedChange={handleToggleIssues}
+									>
+										<div className="flex-1 mr-3">
+											<div className="flex items-center gap-2 mb-1">
+												<CircleDot size={18} className="text-text-muted" />
+												<span className="text-text font-medium">Issues</span>
 											</div>
-										</Toggle>
-									</div>
-								)}
+											<p className="text-xs text-text-muted">
+												Index issue titles, descriptions, and comments
+											</p>
+										</div>
+									</Toggle>
+								</div>
 							</div>
 
 							{/* Embedding Profiles Section */}

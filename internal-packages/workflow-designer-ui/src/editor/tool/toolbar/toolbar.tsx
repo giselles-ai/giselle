@@ -166,7 +166,7 @@ export function Toolbar() {
 	);
 	const googleModels = getAvailableModels(
 		isFreeUser
-			? ["gemini-2.5-flash-lite-preview-06-17"]
+			? ["gemini-2.5-flash-lite"]
 			: ["gemini-2.5-pro-exp-03-25", "gemini-1.5-pro-latest", "gemini-1.0-pro"],
 		"google",
 		llmProviders,

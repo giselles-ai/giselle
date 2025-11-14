@@ -12,7 +12,7 @@ export const runActJob = schemaJob({
 		team: z.object({
 			id: z.string<`tm_${string}`>(),
 			subscriptionId: z.string().nullable(),
-			plan: z.enum(["free", "pro", "team", "internal"]),
+			plan: z.enum(["free", "pro", "team", "enterprise", "internal"]),
 		}),
 	}),
 	run: async (payload) => {

@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { logger } from "@/lib/logger";
 import { getUser } from "@/lib/supabase";
 import type { TeamId } from "./types";
+import { isIconName } from "./utils";
 
 async function userTeams() {
 	const supabaseUser = await getUser();
@@ -48,6 +49,7 @@ async function userApps(teamIds: TeamId[]) {
 			with: {
 				apps: {
 					columns: {
+						id: true,
 						appEntryNodeId: true,
 					},
 					with: {
@@ -74,12 +76,20 @@ async function userApps(teamIds: TeamId[]) {
 							);
 							if (appEntryNode === undefined) {
 								logger.warn(
-									`App entry node not found for app ${app.appEntryNodeId}`,
+									`App entry node<${app.appEntryNodeId}> not found for app<${app.id}>.`,
 								);
 								return null;
 							}
+							const giselleApp = await giselleEngine.getApp({
+								appId: app.id,
+							});
 							return {
-								name: appEntryNode.name ?? "New App" /** @todo default name */,
+								id: app.id,
+								name: giselleApp.name,
+								description: giselleApp.description,
+								iconName: isIconName(giselleApp.iconName)
+									? giselleApp.iconName
+									: "workflow",
 								appEntryNodeId: appEntryNode.id,
 								workspaceId: workspace.id,
 								workspaceName: workspace.name,
@@ -88,7 +98,7 @@ async function userApps(teamIds: TeamId[]) {
 							};
 						}),
 					),
-				),
+				).then((apps) => apps.filter((app) => app !== null)),
 		);
 }
 

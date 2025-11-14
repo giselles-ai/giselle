@@ -1,6 +1,5 @@
 import { and, eq } from "drizzle-orm";
 import { db, githubRepositoryContentStatus, githubRepositoryIndex } from "@/db";
-import { githubIssuesVectorStoreFlag } from "@/flags";
 
 type ContentType = {
 	contentType: "blob" | "pull_request" | "issue";
@@ -18,7 +17,6 @@ type GitHubRepositoryIndex = {
 export async function getGitHubRepositoryIndexes(
 	teamDbId: number,
 ): Promise<GitHubRepositoryIndex[]> {
-	const includeIssues = await githubIssuesVectorStoreFlag();
 	const repositories = await db
 		.select({
 			id: githubRepositoryIndex.id,
@@ -59,11 +57,6 @@ export async function getGitHubRepositoryIndexes(
 	>();
 
 	for (const row of repositories) {
-		// Filter out issues if feature flag is disabled
-		if (row.contentType === "issue" && !includeIssues) {
-			continue;
-		}
-
 		const key = `${row.owner}/${row.repo}`;
 		let acc = repoMap.get(key);
 		if (!acc) {

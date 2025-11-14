@@ -231,6 +231,20 @@ const queryService = createPostgresQueryService({
 });
 ```
 
+#### Vercel AI Gateway Embeddings
+
+Set the `AI_GATEWAY_API_KEY` environment variable to route supported embedding
+models through the [Vercel AI Gateway](https://vercel.com/docs/ai/ai-gateway).
+The following profiles are currently supported:
+
+- `openai/text-embedding-3-small`
+- `openai/text-embedding-3-large`
+- `google/gemini-embedding-001`
+
+When the gateway API key is present, these models automatically use the
+configured gateway instead of connecting directly to the underlying providers.
+Other embedding profiles continue to use their provider-specific API keys.
+
 
 
 ## Environment Variables
@@ -238,6 +252,7 @@ const queryService = createPostgresQueryService({
 - `OPENAI_API_KEY`: Required for OpenAI embedders
 - `GOOGLE_GENERATIVE_AI_API_KEY`: Required for Google Gemini embedders
 - `COHERE_API_KEY`: Required for Cohere embedders
+- `AI_GATEWAY_API_KEY`: Optional. Routes supported models through Vercel AI Gateway
 - `DATABASE_URL`: PostgreSQL connection string with pgvector extension
 
 ## Development

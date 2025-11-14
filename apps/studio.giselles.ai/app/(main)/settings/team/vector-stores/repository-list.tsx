@@ -25,7 +25,6 @@ type RepositoryListProps = {
 		}[],
 		embeddingProfileIds?: number[],
 	) => Promise<{ success: boolean; error?: string }>;
-	githubIssuesVectorStore?: boolean;
 	hasAccess: boolean;
 	maxStores: number;
 	teamPlan: TeamPlan;
@@ -36,7 +35,6 @@ export function RepositoryList({
 	deleteRepositoryIndexAction,
 	triggerManualIngestAction,
 	updateRepositoryIndexAction,
-	githubIssuesVectorStore = false,
 	hasAccess,
 	maxStores,
 	teamPlan,
@@ -69,7 +67,6 @@ export function RepositoryList({
 									deleteRepositoryIndexAction={deleteRepositoryIndexAction}
 									triggerManualIngestAction={triggerManualIngestAction}
 									updateRepositoryIndexAction={updateRepositoryIndexAction}
-									githubIssuesVectorStore={githubIssuesVectorStore}
 								/>
 							))}
 						</div>
@@ -188,6 +185,7 @@ const PLAN_LABELS: Record<TeamPlan, string> = {
 	free: "Free",
 	pro: "Pro",
 	team: "Team",
+	enterprise: "Enterprise",
 	internal: "Internal",
 };
 

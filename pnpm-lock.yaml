@@ -1117,6 +1117,9 @@ importers:
 
   packages/rag:
     dependencies:
+      '@ai-sdk/gateway':
+        specifier: 'catalog:'
+        version: 1.0.23(zod@3.25.76)
       '@ai-sdk/google':
         specifier: 'catalog:'
         version: 2.0.14(zod@3.25.76)

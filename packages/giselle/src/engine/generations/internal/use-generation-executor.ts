@@ -1,3 +1,4 @@
+import { isClonedFileDataPayload } from "@giselles-ai/node-registry";
 import type {
 	ActId,
 	FileId,
@@ -7,6 +8,7 @@ import type {
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import {
+	AppParameterId,
 	type CompletedGeneration,
 	type Generation,
 	GenerationContext,
@@ -27,8 +29,8 @@ import type {
 } from "ai";
 import { UsageLimitError } from "../../error";
 import { filePath } from "../../files/utils";
-import type { GenerationMetadata } from "../../generations";
 import type { GiselleEngineContext } from "../../types";
+import type { AppEntryResolver, GenerationMetadata } from "../types";
 import {
 	checkUsageLimits,
 	getGeneratedImage,
@@ -72,6 +74,7 @@ export async function useGenerationExecutor<T>(args: {
 			nodeId: NodeId,
 			outputId: OutputId,
 		) => Promise<ImagePart[] | undefined>;
+		appEntryResolver: AppEntryResolver;
 		workspaceId: WorkspaceId;
 		signal?: AbortSignal;
 		finishGeneration: FinishGeneration;
@@ -137,11 +140,31 @@ export async function useGenerationExecutor<T>(args: {
 		await setGeneration(failedGeneration);
 		throw new UsageLimitError(usageLimitStatus.error);
 	}
+
+	// Build file ID mapping for duplicated nodes
+	// This allows fileResolver to find the actual storage file ID for cloned files
+	const fileIdMap = new Map<FileId, FileId>();
+	for (const sourceNode of generationContext.sourceNodes) {
+		if (sourceNode.content.type !== "file") {
+			continue;
+		}
+		for (const file of sourceNode.content.files) {
+			const actualFileId = isClonedFileDataPayload(file)
+				? file.originalFileIdForCopy
+				: file.id;
+			fileIdMap.set(file.id, actualFileId);
+		}
+	}
+
 	async function fileResolver(fileId: FileId): Promise<DataContent> {
 		const fileRetrievalStartTime = Date.now();
+
+		// Get the actual file ID from the map (handles cloned files)
+		const actualFileId = fileIdMap.get(fileId) ?? fileId;
+
 		const path = filePath({
 			...runningGeneration.context.origin,
-			fileId,
+			fileId: actualFileId,
 		});
 		const exists = await args.context.storage.exists(path);
 		const blob = exists ? await args.context.storage.getBlob(path) : undefined;
@@ -374,6 +397,46 @@ export async function useGenerationExecutor<T>(args: {
 		return { completedGeneration, outputFileBlobs };
 	}
 
+	const appEntryResolver: AppEntryResolver = (nodeId, outputId) => {
+		const appEntryNode = args.generation.context.sourceNodes.find(
+			(sourceNode) => sourceNode.id === nodeId,
+		);
+		if (appEntryNode === undefined) {
+			throw new Error(`Node<${nodeId}> not found`);
+		}
+		const output = appEntryNode.outputs.find(
+			(output) => output.id === outputId,
+		);
+
+		if (output === undefined) {
+			throw new Error(`Output<${outputId}> not found`);
+		}
+
+		const parseResult = AppParameterId.safeParse(output.accessor);
+
+		if (!parseResult.success) {
+			throw new Error(`Invalid app parameter id: ${output.accessor}`);
+		}
+		const parameterInput = generationContext.inputs?.find(
+			(input) => input.type === "parameters",
+		);
+		if (parameterInput === undefined) {
+			throw new Error(`No parameters input found`);
+		}
+		const parameter = parameterInput.items.find(
+			(item) => item.name === parseResult.data,
+		);
+
+		if (parameter === undefined) {
+			args.context.logger.warn(
+				{ parameterInput },
+				`Parameter ${parseResult.data} not found`,
+			);
+			return undefined;
+		}
+		return parameter.value;
+	};
+
 	return args.execute({
 		runningGeneration,
 		generationContext,
@@ -384,5 +447,6 @@ export async function useGenerationExecutor<T>(args: {
 		workspaceId,
 		signal: args.signal,
 		finishGeneration,
+		appEntryResolver,
 	});
 }

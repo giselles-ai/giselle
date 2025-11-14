@@ -44,6 +44,7 @@ export function generateImage(args: {
 			fileResolver,
 			generationContentResolver,
 			imageGenerationResolver,
+			appEntryResolver,
 			finishGeneration,
 			setGeneration,
 			signal,
@@ -54,13 +55,14 @@ export function generateImage(args: {
 					throw new Error("Invalid generation type");
 				}
 
-				const messages = await buildMessageObject(
-					operationNode,
-					generationContext.sourceNodes,
+				const messages = await buildMessageObject({
+					node: operationNode,
+					contextNodes: generationContext.sourceNodes,
 					fileResolver,
 					generationContentResolver,
 					imageGenerationResolver,
-				);
+					appEntryResolver,
+				});
 
 				let generationOutputs: GenerationOutput[] = [];
 				switch (operationNode.content.llm.provider) {

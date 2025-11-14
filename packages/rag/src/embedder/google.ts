@@ -10,7 +10,11 @@ import type { EmbedderFunction } from "./types";
 export function createGoogleEmbedder(config: EmbedderConfig): EmbedderFunction {
 	const google = createGoogleGenerativeAI({ apiKey: config.apiKey });
 
-	return createAiSdkEmbedder(config, (modelName) =>
-		google.textEmbeddingModel(modelName),
+	return createAiSdkEmbedder(
+		{
+			...config,
+			transport: config.transport ?? "provider",
+		},
+		(modelName) => google.textEmbeddingModel(modelName),
 	);
 }

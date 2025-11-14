@@ -10,7 +10,11 @@ import type { EmbedderFunction } from "./types";
 export function createOpenAIEmbedder(config: EmbedderConfig): EmbedderFunction {
 	const openai = createOpenAI({ apiKey: config.apiKey });
 
-	return createAiSdkEmbedder(config, (modelName) =>
-		openai.embedding(modelName),
+	return createAiSdkEmbedder(
+		{
+			...config,
+			transport: config.transport ?? "provider",
+		},
+		(modelName) => openai.embedding(modelName),
 	);
 }

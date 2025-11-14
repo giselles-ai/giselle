@@ -86,6 +86,7 @@ export function generateContent({
 			fileResolver,
 			generationContentResolver,
 			imageGenerationResolver,
+			appEntryResolver,
 		}) => {
 			const operationNode = generationContext.operationNode;
 			if (!isTextGenerationNode(operationNode)) {
@@ -99,13 +100,14 @@ export function generateContent({
 				throw new Error("Invalid language model");
 			}
 
-			const messages = await buildMessageObject(
-				operationNode,
-				generationContext.sourceNodes,
+			const messages = await buildMessageObject({
+				node: operationNode,
+				contextNodes: generationContext.sourceNodes,
 				fileResolver,
 				generationContentResolver,
 				imageGenerationResolver,
-			);
+				appEntryResolver,
+			});
 
 			let preparedToolSet: PreparedToolSet = {
 				toolSet: {},

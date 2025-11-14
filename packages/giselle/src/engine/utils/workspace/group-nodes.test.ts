@@ -7,7 +7,7 @@ describe("groupNodes", () => {
 		const result = groupNodes(gourpNodesFixture);
 
 		// Since fixture only has operation nodes, all groups should be in operationNodeGroups
-		expect(result.triggerNodeGroups).toHaveLength(0);
+		expect(result.starterNodeGroups).toHaveLength(0);
 		const groups = result.operationNodeGroups;
 
 		// Sort groups by size for consistent testing
@@ -58,7 +58,7 @@ describe("groupNodes", () => {
 		const result = groupNodes(workspace);
 
 		// Since fixture only has operation nodes, all groups should be in operationNodeGroups
-		expect(result.triggerNodeGroups).toHaveLength(0);
+		expect(result.starterNodeGroups).toHaveLength(0);
 		const groups = result.operationNodeGroups;
 
 		// Each node should be in its own group
@@ -80,7 +80,7 @@ describe("groupNodes", () => {
 
 		expect(result).toEqual({
 			operationNodeGroups: [],
-			triggerNodeGroups: [],
+			starterNodeGroups: [],
 		});
 	});
 
@@ -102,7 +102,7 @@ describe("groupNodes", () => {
 		const result = groupNodes(workspace);
 
 		// Since fixture only has operation nodes, all groups should be in operationNodeGroups
-		expect(result.triggerNodeGroups).toHaveLength(0);
+		expect(result.starterNodeGroups).toHaveLength(0);
 		const groups = result.operationNodeGroups;
 
 		// Self-loop doesn't create additional groups

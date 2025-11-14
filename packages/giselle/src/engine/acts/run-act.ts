@@ -98,7 +98,7 @@ async function executeStep(args: {
 				await executeQuery(args);
 				break;
 			case "appEntry":
-				throw new Error("Not implemented");
+				break;
 			default: {
 				const _exhaustiveCheck: never =
 					args.generation.context.operationNode.content.type;
