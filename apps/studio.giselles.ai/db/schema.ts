@@ -77,7 +77,7 @@ export const subscriptionRelations = relations(subscriptions, ({ one }) => ({
 	}),
 }));
 
-export type TeamPlan = "free" | "pro" | "team" | "internal";
+export type TeamPlan = "free" | "pro" | "team" | "enterprise" | "internal";
 export const teams = pgTable("teams", {
 	id: text("id").$type<TeamId>().notNull().unique(),
 	dbId: serial("db_id").primaryKey(),

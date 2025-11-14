@@ -53,5 +53,11 @@ export async function handleSubscriptionCancellation(
 	await db
 		.update(teams)
 		.set({ plan: "free" })
-		.where(and(eq(teams.dbId, sub.teamDbId), ne(teams.plan, "internal")));
+		.where(
+			and(
+				eq(teams.dbId, sub.teamDbId),
+				ne(teams.plan, "internal"),
+				ne(teams.plan, "enterprise"),
+			),
+		);
 }

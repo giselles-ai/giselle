@@ -112,6 +112,7 @@ const PLAN_LABELS: Record<TeamPlan, string> = {
 	free: "Free",
 	pro: "Pro",
 	team: "Team",
+	enterprise: "Enterprise",
 	internal: "Internal",
 };
 

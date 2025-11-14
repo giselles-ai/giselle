@@ -11,6 +11,8 @@ const TEAM_MEMBER_QUOTAS: Record<TeamPlan, TeamMemberQuota> = {
 	free: { isAvailable: false, maxMembers: 1 },
 	pro: { isAvailable: false, maxMembers: 1 },
 	team: { isAvailable: true, maxMembers: 10 },
+	// NOTE: Enterprise uses temporary values until we support per-contract limits.
+	enterprise: { isAvailable: true, maxMembers: 100 },
 	internal: { isAvailable: true, maxMembers: 100 },
 };
 

@@ -9,6 +9,8 @@ const GITHUB_VECTOR_STORE_QUOTAS: Record<TeamPlan, GitHubVectorStoreQuota> = {
 	free: { isAvailable: false, maxStores: 0 },
 	pro: { isAvailable: true, maxStores: 3 },
 	team: { isAvailable: true, maxStores: 10 },
+	// NOTE: Enterprise uses temporary values until we support per-contract limits.
+	enterprise: { isAvailable: true, maxStores: 100 },
 	internal: { isAvailable: true, maxStores: 100 },
 };
 
