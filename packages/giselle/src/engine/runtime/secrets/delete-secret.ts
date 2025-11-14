@@ -1,5 +1,5 @@
 import { Secret, type SecretId, SecretIndex } from "@giselles-ai/protocol";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import type { GiselleEngineContext } from "../../contracts";
 import { secretPath, workspaceSecretIndexPath } from "./paths";
 

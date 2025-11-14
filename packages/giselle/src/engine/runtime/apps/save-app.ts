@@ -1,8 +1,9 @@
 import { App } from "@giselles-ai/protocol";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import { appPath } from "../path";
 import { createGiselleFunction } from "../utils/create-giselle-function";
 
+export const SaveAppInput = z.object({ app: App });
 export const saveApp = createGiselleFunction({
 	input: z.object({ app: App }),
 	handler: async ({ context, input }) => {

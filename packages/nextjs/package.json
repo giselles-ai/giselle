@@ -1,5 +1,5 @@
 {
-	"name": "@giselles-ai/giselle",
+	"name": "@giselles-ai/nextjs",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
@@ -31,7 +31,6 @@
 		"pino": "catalog:",
 		"tsup": "catalog:",
 		"vitest": "catalog:",
-		"zod": "catalog:",
 		"zustand": "catalog:"
 	},
 	"dependencies": {
@@ -42,7 +41,9 @@
 		"@ai-sdk/openai": "catalog:",
 		"@ai-sdk/provider": "catalog:",
 		"@giselles-ai/action-registry": "workspace:*",
+		"@giselles-ai/giselle": "workspace:*",
 		"@giselles-ai/github-tool": "workspace:^",
+		"@giselles-ai/http": "workspace:*",
 		"@giselles-ai/language-model": "workspace:^",
 		"@giselles-ai/node-registry": "workspace:*",
 		"@giselles-ai/text-editor-utils": "workspace:^",

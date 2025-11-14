@@ -1,3 +1,4 @@
+import type { ActExecutorOptions, CreateActInputs } from "@giselles-ai/giselle";
 import type {
 	ActId,
 	NodeGenerationIndex,
@@ -6,7 +7,6 @@ import type {
 import { useCallback, useEffect } from "react";
 import useSWR from "swr";
 import { useShallow } from "zustand/shallow";
-import type { ActExecutorOptions, CreateActInputs } from "../../engine";
 import { useGenerationRunnerSystem } from "../generations";
 import { useGiselleEngine } from "../use-giselle-engine";
 import { useActStore } from "./store";

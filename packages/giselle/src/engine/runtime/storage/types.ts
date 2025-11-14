@@ -1,4 +1,4 @@
-import type { z } from "zod/v4";
+import type * as z from "zod/v4";
 
 export type BlobLike = Buffer | Uint8Array | ArrayBuffer;
 

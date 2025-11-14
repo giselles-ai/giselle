@@ -7,7 +7,7 @@ import {
 	type QueuedGeneration,
 	type Sequence,
 } from "@giselles-ai/protocol";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import type { GiselleLogger } from "../../../logger";
 import type { GiselleEngineContext } from "../../contracts";
 import {

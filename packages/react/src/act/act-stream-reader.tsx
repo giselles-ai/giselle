@@ -1,11 +1,8 @@
 "use client";
 
+import { type StreamData, StreamEvent } from "@giselles-ai/giselle";
 import type { ActId } from "@giselles-ai/protocol";
 import { useEffect } from "react";
-import {
-	type StreamData,
-	StreamEvent,
-} from "../../engine/runtime/acts/stream-act";
 
 export type StreamDataEventHandler = (data: StreamData) => void;
 

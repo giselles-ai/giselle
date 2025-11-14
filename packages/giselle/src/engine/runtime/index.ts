@@ -84,6 +84,7 @@ import {
 } from "./workspaces";
 
 export * from "./acts";
+export * from "./error";
 export * from "./integrations";
 export * from "./storage";
 export * from "./telemetry";

@@ -4,7 +4,7 @@ import {
 	TriggerId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
-import type { z } from "zod/v4";
+import type * as z from "zod/v4";
 import type { GiselleEngineContext } from "../../contracts";
 import { addGitHubRepositoryIntegrationIndex } from "../integrations/utils";
 import { getWorkspace, setWorkspace } from "../workspaces/utils";

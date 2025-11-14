@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import { GitHubIntegrationState } from "./provider/github";
 
 export * from "./provider/github";

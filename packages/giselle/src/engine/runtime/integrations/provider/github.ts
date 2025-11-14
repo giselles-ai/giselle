@@ -1,5 +1,5 @@
 import type { Installtion, Repository } from "@giselles-ai/github-tool";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 
 export const GitHubIntegrationUnsetState = z.object({
 	status: z.literal("unset"),

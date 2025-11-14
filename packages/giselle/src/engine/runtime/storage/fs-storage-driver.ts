@@ -1,6 +1,6 @@
 import { promises as fs } from "node:fs";
 import { dirname, join } from "node:path";
-import type { z } from "zod/v4";
+import type * as z from "zod/v4";
 import type {
 	BlobLike,
 	GetJsonParams,

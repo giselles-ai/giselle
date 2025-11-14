@@ -20,7 +20,7 @@ import {
 	Workspace,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import type { GiselleEngineContext } from "../../contracts";
 import { setGeneration } from "../generations";
 import { buildLevels } from "../utils/build-levels";

@@ -1,5 +1,5 @@
 {
 	"extends": "@giselles-ai/tsconfig/react-library.json",
-	"include": [".", "../react"],
+	"include": ["."],
 	"exclude": ["node_modules"]
 }
