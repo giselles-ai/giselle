@@ -33,7 +33,7 @@ import {
 	startAct,
 	streamAct,
 } from "./acts";
-import { saveApp } from "./apps";
+import { getApp, saveApp } from "./apps";
 import { deleteApp } from "./apps/delete-app";
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";
 import { copyFile, getFileText, removeFile, uploadFile } from "./files";
@@ -346,6 +346,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		},
 		saveApp: bindGiselleFunction(saveApp, context),
 		deleteApp: bindGiselleFunction(deleteApp, context),
+		getApp: bindGiselleFunction(getApp, context),
 	};
 }
 

@@ -12,7 +12,9 @@ type CreateWorkspaceState = {
 
 const initialState: CreateWorkspaceState = {};
 
-export function CreateWorkspaceButton() {
+export function CreateWorkspaceButton({
+	label,
+}: React.ComponentProps<typeof CreateWorkspaceSubmitButton>) {
 	const router = useRouter();
 
 	const createWorkspace = useCallback(
@@ -42,7 +44,7 @@ export function CreateWorkspaceButton() {
 
 	return (
 		<form action={formAction} className="flex flex-col items-start gap-2">
-			<CreateWorkspaceSubmitButton />
+			<CreateWorkspaceSubmitButton label={label} />
 			{state.error ? (
 				<p className="text-sm text-error-500" role="alert">
 					{state.error}
@@ -52,7 +54,11 @@ export function CreateWorkspaceButton() {
 	);
 }
 
-function CreateWorkspaceSubmitButton() {
+function CreateWorkspaceSubmitButton({
+	label = "New Workspace",
+}: {
+	label?: string;
+}) {
 	const { pending } = useFormStatus();
 
 	return (
@@ -65,7 +71,7 @@ function CreateWorkspaceSubmitButton() {
 			<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
 				<Plus className="size-3 text-background group-hover:text-background transition-colors" />
 			</span>
-			New Workspace
+			{label}
 		</GlassButton>
 	);
 }

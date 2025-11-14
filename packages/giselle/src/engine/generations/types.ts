@@ -1,3 +1,4 @@
+import type { NodeId, OutputId } from "@giselles-ai/protocol";
 import type { ToolSet } from "ai";
 
 export type PreparedToolSet = {
@@ -7,3 +8,8 @@ export type PreparedToolSet = {
 export interface GenerationMetadata {
 	[key: string]: string | number | GenerationMetadata | null | undefined;
 }
+
+export type AppEntryResolver = (
+	nodeId: NodeId,
+	outputId: OutputId,
+) => string | number | undefined;
