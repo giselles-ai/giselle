@@ -35,7 +35,6 @@ type ConfigureSourcesDialogProps = {
 		embeddingProfileIds?: number[],
 	) => Promise<{ success: boolean; error?: string }>;
 	enabledProfiles?: number[];
-	githubIssuesVectorStore?: boolean;
 };
 
 export function ConfigureSourcesDialog({
@@ -44,7 +43,6 @@ export function ConfigureSourcesDialog({
 	repositoryData,
 	updateRepositoryIndexAction,
 	enabledProfiles = [1],
-	githubIssuesVectorStore = false,
 }: ConfigureSourcesDialogProps) {
 	const { repositoryIndex, contentStatuses } = repositoryData;
 	const [isPending, startTransition] = useTransition();
@@ -172,18 +170,16 @@ export function ConfigureSourcesDialog({
 								/>
 
 								{/* Issues Configuration */}
-								{githubIssuesVectorStore && (
-									<ContentTypeToggle
-										icon={CircleDot}
-										label="Issues"
-										description="Index issue titles, descriptions, and comments"
-										enabled={config.issues.enabled}
-										onToggle={(enabled) =>
-											setConfig({ ...config, issues: { enabled } })
-										}
-										status={issueStatus}
-									/>
-								)}
+								<ContentTypeToggle
+									icon={CircleDot}
+									label="Issues"
+									description="Index issue titles, descriptions, and comments"
+									enabled={config.issues.enabled}
+									onToggle={(enabled) =>
+										setConfig({ ...config, issues: { enabled } })
+									}
+									status={issueStatus}
+								/>
 							</div>
 						</div>
 

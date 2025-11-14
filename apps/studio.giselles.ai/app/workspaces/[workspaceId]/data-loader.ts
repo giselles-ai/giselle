@@ -5,7 +5,6 @@ import { db } from "@/db";
 import {
 	aiGatewayFlag,
 	aiGatewayUnsupportedModelsFlag,
-	githubIssuesVectorStoreFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
 	stageFlag,
@@ -59,8 +58,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const documentVectorStores = await getDocumentVectorStores(
 		workspaceTeam.dbId,
 	);
-	const githubIssuesVectorStore = await githubIssuesVectorStoreFlag();
-
 	return {
 		currentUser,
 		agent,
@@ -83,7 +80,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			aiGateway,
 			aiGatewayUnsupportedModels,
 			googleUrlContext,
-			githubIssuesVectorStore,
 		},
 	};
 }

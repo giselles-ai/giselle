@@ -22,7 +22,6 @@ type RepositoryListProps = {
 		}[],
 		embeddingProfileIds?: number[],
 	) => Promise<{ success: boolean; error?: string }>;
-	githubIssuesVectorStore?: boolean;
 };
 
 export function RepositoryList({
@@ -30,7 +29,6 @@ export function RepositoryList({
 	deleteRepositoryIndexAction,
 	triggerManualIngestAction,
 	updateRepositoryIndexAction,
-	githubIssuesVectorStore = false,
 }: RepositoryListProps) {
 	return (
 		<div className="flex flex-col gap-y-[16px]">
@@ -50,7 +48,6 @@ export function RepositoryList({
 								deleteRepositoryIndexAction={deleteRepositoryIndexAction}
 								triggerManualIngestAction={triggerManualIngestAction}
 								updateRepositoryIndexAction={updateRepositoryIndexAction}
-								githubIssuesVectorStore={githubIssuesVectorStore}
 							/>
 						))}
 					</div>

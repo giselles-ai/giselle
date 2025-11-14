@@ -4,7 +4,6 @@ import {
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
 import {
-	useFeatureFlag,
 	useVectorStore,
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
@@ -34,7 +33,6 @@ export function GitHubVectorStoreNodePropertiesPanel({
 	const { updateNodeData } = useWorkflowDesigner();
 	const vectorStore = useVectorStore();
 	const settingPath = vectorStore?.githubSettingPath;
-	const { githubIssuesVectorStore } = useFeatureFlag();
 
 	// Get repository indexes
 	const githubRepositoryIndexes = vectorStore?.githubRepositoryIndexes ?? [];
@@ -194,9 +192,8 @@ export function GitHubVectorStoreNodePropertiesPanel({
 		if (selectedRepo) {
 			setSelectedContentType(contentType);
 
-			// Set default embedding profile
-			// When feature flag is off, always use DEFAULT_EMBEDDING_PROFILE_ID
-			// When feature flag is on, use first available profile for the content type
+			// Set default embedding profile to the first available option,
+			// falling back to the default profile when none are configured
 			let profileId: EmbeddingProfileId = DEFAULT_EMBEDDING_PROFILE_ID;
 			if (selectedRepo.contentTypes) {
 				const contentTypeProfiles = selectedRepo.contentTypes.find(
@@ -371,40 +368,38 @@ export function GitHubVectorStoreNodePropertiesPanel({
 														</div>
 													)}
 												</label>
-												{githubIssuesVectorStore && (
-													<label
-														className={`flex items-center space-x-3 cursor-pointer ${
-															!hasIssueContent
-																? "opacity-50 cursor-not-allowed"
-																: ""
-														}`}
-													>
-														<input
-															type="radio"
-															name="contentType"
-															value="issue"
-															checked={selectedContentType === "issue"}
-															onChange={() => handleContentTypeChange("issue")}
-															disabled={!hasIssueContent}
-															className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500"
-														/>
-														<span className="text-[14px] text-inverse">
-															Issues
-														</span>
-														{!hasIssueContent && (
-															<div className="flex items-center gap-1 group relative">
-																<span className="text-[12px] text-inverse/50">
-																	Not configured
-																</span>
-																<Info className="w-3 h-3 text-inverse/50 cursor-help" />
-																<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-bg-800/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
-																	Enable Issues for {selectedRepoKey} in Vector
-																	Store settings
-																</div>
+												<label
+													className={`flex items-center space-x-3 cursor-pointer ${
+														!hasIssueContent
+															? "opacity-50 cursor-not-allowed"
+															: ""
+													}`}
+												>
+													<input
+														type="radio"
+														name="contentType"
+														value="issue"
+														checked={selectedContentType === "issue"}
+														onChange={() => handleContentTypeChange("issue")}
+														disabled={!hasIssueContent}
+														className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500"
+													/>
+													<span className="text-[14px] text-inverse">
+														Issues
+													</span>
+													{!hasIssueContent && (
+														<div className="flex items-center gap-1 group relative">
+															<span className="text-[12px] text-inverse/50">
+																Not configured
+															</span>
+															<Info className="w-3 h-3 text-inverse/50 cursor-help" />
+															<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-bg-800/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
+																Enable Issues for {selectedRepoKey} in Vector
+																Store settings
 															</div>
-														)}
-													</label>
-												)}
+														</div>
+													)}
+												</label>
 											</>
 										);
 									})()}
