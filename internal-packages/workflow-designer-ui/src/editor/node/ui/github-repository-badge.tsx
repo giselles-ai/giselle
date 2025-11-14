@@ -11,7 +11,7 @@ export function GitHubRepositoryBadge({
 	repo,
 }: GitHubRepositoryBadgeProps) {
 	return (
-		<div className="flex items-center rounded-full bg-bg pl-[16px] pr-[16px] py-2 text-white-200 transition-colors text-[12px]">
+		<div className="flex items-center rounded-full bg-surface pl-[16px] pr-[16px] py-2 text-white-200 transition-colors text-[12px]">
 			<div className="space-x-[2px]">
 				<span>{owner}</span>
 				<span>/</span>

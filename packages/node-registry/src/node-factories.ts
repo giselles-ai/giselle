@@ -9,6 +9,8 @@ import {
 	type AppEntryNode,
 	DEFAULT_MAX_RESULTS,
 	DEFAULT_SIMILARITY_THRESHOLD,
+	type DraftApp,
+	DraftAppParameterId,
 	type FileContent,
 	type FileData,
 	FileId,
@@ -115,6 +117,22 @@ function cloneAndRenewInputIdsWithMap(
 		idMap[i.id] = newId;
 	}
 	return { newIo: newInputs, idMap };
+}
+
+function createDefaultDraftApp(): DraftApp {
+	return {
+		name: "",
+		description: "",
+		iconName: "",
+		parameters: [
+			{
+				id: DraftAppParameterId.generate(),
+				name: "",
+				type: "text",
+				required: true,
+			},
+		],
+	};
 }
 
 // --- Node Factory Interface and Result Type ---
@@ -602,6 +620,7 @@ const appEntryFactoryImpl = {
 			content: {
 				type: "appEntry",
 				status: "unconfigured",
+				draftApp: createDefaultDraftApp(),
 			},
 			inputs: [],
 			outputs: [],
@@ -612,12 +631,32 @@ const appEntryFactoryImpl = {
 			cloneAndRenewInputIdsWithMap(orig.inputs);
 		const { newIo: newOutputs, idMap: outputIdMap } =
 			cloneAndRenewOutputIdsWithMap(orig.outputs);
+		const clonedContent = structuredClone(orig.content);
+		const nextContent: AppEntryNode["content"] =
+			clonedContent.status === "configured"
+				? {
+						type: "appEntry",
+						status: "unconfigured",
+						draftApp: createDefaultDraftApp(),
+					}
+				: {
+						...clonedContent,
+						draftApp: {
+							...clonedContent.draftApp,
+							parameters: clonedContent.draftApp.parameters.map(
+								(parameter) => ({
+									...parameter,
+									id: DraftAppParameterId.generate(),
+								}),
+							),
+						},
+					};
 
 		const newNode = {
 			id: NodeId.generate(),
 			type: "operation",
 			name: `Copy of ${orig.name ?? defaultName(orig)}`,
-			content: structuredClone(orig.content),
+			content: nextContent,
 			inputs: newInputs,
 			outputs: newOutputs,
 		} satisfies AppEntryNode;

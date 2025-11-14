@@ -14,6 +14,7 @@ import {
 } from "@giselle-internal/ui/dialog";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { Toggle } from "@giselle-internal/ui/toggle";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import { CircleDot, Code, GitPullRequest, Plus, X } from "lucide-react";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { GlassButton } from "@/components/ui/glass-button";
@@ -34,12 +35,16 @@ type RepositoryRegistrationDialogProps = {
 		embeddingProfileIds?: number[],
 	) => Promise<ActionResult>;
 	githubIssuesVectorStore?: boolean;
+	disabled?: boolean;
+	disabledReason?: string;
 };
 
 export function RepositoryRegistrationDialog({
 	installationsWithRepos,
 	registerRepositoryIndexAction,
 	githubIssuesVectorStore = false,
+	disabled = false,
+	disabledReason,
 }: RepositoryRegistrationDialogProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [ownerId, setOwnerId] = useState<string>("");
@@ -177,6 +182,42 @@ export function RepositoryRegistrationDialog({
 			registerRepositoryIndexAction,
 		],
 	);
+
+	if (disabled) {
+		const disabledButton = (
+			<GlassButton
+				className="cursor-not-allowed opacity-60"
+				disabled
+				type="button"
+			>
+				<span className="grid size-4 place-items-center rounded-full bg-primary-200 opacity-50">
+					<Plus className="size-3 text-link-muted" />
+				</span>
+				Register Repository
+			</GlassButton>
+		);
+
+		if (!disabledReason) {
+			return disabledButton;
+		}
+
+		return (
+			<Tooltip.Provider delayDuration={200}>
+				<Tooltip.Root>
+					<Tooltip.Trigger asChild>{disabledButton}</Tooltip.Trigger>
+					<Tooltip.Portal>
+						<Tooltip.Content
+							side="bottom"
+							className="z-50 max-w-xs rounded-md border border-border-muted bg-surface px-3 py-2 text-xs text-inverse shadow-lg"
+						>
+							{disabledReason}
+							<Tooltip.Arrow style={{ fill: "var(--color-surface)" }} />
+						</Tooltip.Content>
+					</Tooltip.Portal>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+		);
+	}
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>

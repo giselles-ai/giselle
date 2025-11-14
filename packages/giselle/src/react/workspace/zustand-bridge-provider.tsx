@@ -1,4 +1,9 @@
-import type { FileData, NodeLike, Workspace } from "@giselles-ai/protocol";
+import {
+	type FileData,
+	isAppEntryNode,
+	type NodeLike,
+	type Workspace,
+} from "@giselles-ai/protocol";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
 	type GiselleRequestOptions,
@@ -153,6 +158,31 @@ export function ZustandBridgeProvider({
 	// Get current state
 	const state = appStore();
 
+	const deleteNode = useCallback<WorkflowDesignerContextValue["deleteNode"]>(
+		async (nodeId) => {
+			const currentWorkspace = appStore.getState().workspace;
+			if (currentWorkspace === null) {
+				return;
+			}
+			const targetNode = currentWorkspace.nodes.find(
+				(node) => node.id === nodeId,
+			);
+			if (targetNode === undefined) {
+				return;
+			}
+			console.debug("delete node", targetNode);
+			state.deleteNode(nodeId);
+			if (
+				isAppEntryNode(targetNode) &&
+				targetNode.content.status === "configured"
+			) {
+				await client.deleteApp({ appId: targetNode.content.appId });
+				await saveImmediately();
+			}
+		},
+		[state, client, saveImmediately],
+	);
+
 	// Create context value that matches the existing API
 	const contextValue = useMemo<WorkflowDesignerContextValue>(
 		() => ({
@@ -165,7 +195,7 @@ export function ZustandBridgeProvider({
 			updateNodeDataContent: (node, content) =>
 				state.updateNodeDataContent(node, content),
 			setUiNodeState: state.setUiNodeState,
-			deleteNode: state.deleteNode,
+			deleteNode,
 			deleteConnection: state.deleteConnection,
 			uploadFile: (files, node, options) =>
 				state.uploadFile(client, data.id, files, node, options),
@@ -184,7 +214,7 @@ export function ZustandBridgeProvider({
 			openPropertiesPanel: state.openPropertiesPanel,
 			setOpenPropertiesPanel: state.setOpenPropertiesPanel,
 		}),
-		[state, textGenerationApi, client, data, saveImmediately],
+		[state, textGenerationApi, client, data, saveImmediately, deleteNode],
 	);
 
 	// Wait for workspace to be initialized

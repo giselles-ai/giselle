@@ -5,21 +5,21 @@ import type {
 import type { LanguageModelProvider } from "@giselles-ai/language-model";
 import type {
 	Act,
+	App,
+	AppId,
+	CompletedGeneration,
 	EmbeddingProfileId,
+	FailedGeneration,
+	GenerationOrigin,
+	OutputFileBlob,
+	RunningGeneration,
 	Trigger,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import type { EmbeddingMetrics, QueryService } from "@giselles-ai/rag";
 import type { ModelMessage, ProviderMetadata } from "ai";
 import type { GiselleLogger } from "../logger/types";
-import type {
-	CompletedGeneration,
-	FailedGeneration,
-	GenerationMetadata,
-	GenerationOrigin,
-	OutputFileBlob,
-	RunningGeneration,
-} from "./generations";
+import type { GenerationMetadata } from "./generations";
 import type { GiselleStorage } from "./storage";
 import type { TelemetrySettings } from "./telemetry";
 import type { UsageLimits } from "./usage-limits";
@@ -60,6 +60,10 @@ export interface GenerationCompleteCallbackFunctionArgs {
 	providerMetadata?: ProviderMetadata;
 	generationMetadata?: GenerationMetadata;
 }
+type AppCreateCallbackFunction = (args: { app: App }) => void | Promise<void>;
+type AppDeleteCallbackFunction = (args: {
+	appId: AppId;
+}) => void | Promise<void>;
 type GenerationCompleteCallbackFunction = (
 	args: GenerationCompleteCallbackFunctionArgs,
 ) => void | Promise<void>;
@@ -105,6 +109,8 @@ export interface GiselleEngineContext {
 		document?: DocumentVectorStoreQueryService<Record<string, unknown>>;
 	};
 	callbacks?: {
+		appCreate?: AppCreateCallbackFunction;
+		appDelete?: AppDeleteCallbackFunction;
 		generationComplete?: GenerationCompleteCallbackFunction;
 		generationFailed?: GenerationFailedCallbackFunction;
 		flowTriggerUpdate?: (flowTrigger: Trigger) => Promise<void>;
@@ -205,6 +211,8 @@ export interface GiselleEngineConfig {
 		document?: DocumentVectorStoreQueryService<Record<string, unknown>>;
 	};
 	callbacks?: {
+		appCreate?: AppCreateCallbackFunction;
+		appDelete?: AppDeleteCallbackFunction;
 		generationComplete?: GenerationCompleteCallbackFunction;
 		generationFailed?: GenerationFailedCallbackFunction;
 		flowTriggerUpdate?: (flowTrigger: Trigger) => Promise<void>;
