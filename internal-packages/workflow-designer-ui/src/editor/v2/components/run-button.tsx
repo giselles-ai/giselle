@@ -12,7 +12,7 @@ import {
 } from "@giselle-internal/ui/dropdown-menu";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
-	useActSystem,
+	useActController,
 	useNodeGroups,
 	useWorkflowDesigner,
 } from "@giselles-ai/giselle/react";
@@ -105,7 +105,7 @@ function RunOptionItem({
 
 function useRunAct() {
 	const { data, setUiNodeState } = useWorkflowDesigner();
-	const { createAndStartAct } = useActSystem(data.id);
+	const { createAndStartAct } = useActController();
 	const { toast, error } = useToasts();
 
 	return async (item: RunItem) => {
