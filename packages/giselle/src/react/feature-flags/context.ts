@@ -7,7 +7,6 @@ export interface FeatureFlagContextValue {
 	aiGateway: boolean;
 	aiGatewayUnsupportedModels: boolean;
 	googleUrlContext: boolean;
-	githubIssuesVectorStore: boolean;
 }
 export const FeatureFlagContext = createContext<
 	FeatureFlagContextValue | undefined

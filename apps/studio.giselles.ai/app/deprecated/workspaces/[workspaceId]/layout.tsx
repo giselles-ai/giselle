@@ -10,7 +10,6 @@ import { db, flowTriggers } from "@/db";
 import {
 	aiGatewayFlag,
 	aiGatewayUnsupportedModelsFlag,
-	githubIssuesVectorStoreFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
 	stageFlag,
@@ -79,7 +78,6 @@ export default async function Layout({
 	const documentVectorStores = await getDocumentVectorStores(
 		workspaceTeam.dbId,
 	);
-	const githubIssuesVectorStore = await githubIssuesVectorStoreFlag();
 
 	// return children
 	return (
@@ -127,7 +125,6 @@ export default async function Layout({
 				aiGateway,
 				aiGatewayUnsupportedModels,
 				googleUrlContext,
-				githubIssuesVectorStore,
 			}}
 			trigger={{
 				callbacks: {
