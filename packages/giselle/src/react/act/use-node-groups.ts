@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import {
 	type GroupedNodes,
 	groupNodes,
-} from "../../engine/utils/workspace/group-nodes";
+} from "../../engine/runtime/utils/workspace/group-nodes";
 import { useWorkflowDesigner } from "../workspace";
 
 /**

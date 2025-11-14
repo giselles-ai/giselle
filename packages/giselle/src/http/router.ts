@@ -22,8 +22,8 @@ import {
 	CreateAndStartActInputs,
 	type Patch,
 	StartActInputs,
-} from "../engine/acts";
-import { ConfigureTriggerInput } from "../engine/triggers";
+} from "../engine/runtime/acts";
+import { ConfigureTriggerInput } from "../engine/runtime/triggers";
 import { JsonResponse } from "../utils";
 import { createHandler, withUsageLimitErrorHandler } from "./create-handler";
 

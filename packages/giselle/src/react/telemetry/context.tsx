@@ -1,5 +1,5 @@
 import { createContext, type ReactNode, useContext } from "react";
-import type { TelemetrySettings } from "../../engine/telemetry";
+import type { TelemetrySettings } from "../../engine/runtime/telemetry";
 
 export const TelemetryContext = createContext<TelemetrySettings | undefined>(
 	undefined,
