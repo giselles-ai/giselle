@@ -257,18 +257,43 @@ export function NodeComponent({
 	const requiresSetup = nodeRequiresSetup(node);
 	const inputHandleContentType = getInputHandleContentType(node);
 
+	type VariantType = {
+		isText: boolean;
+		isFile: boolean;
+		isWebPage: boolean;
+		isTextGeneration: boolean;
+		isImageGeneration: boolean;
+		isGithub: boolean;
+		isVectorStore: boolean;
+		isTrigger: boolean;
+		isAction: boolean;
+		isQuery: boolean;
+		isAppEntry: boolean;
+		isVectorStoreGithub: boolean;
+		isVectorStoreDocument: boolean;
+		isFillIcon: boolean;
+		isStrokeIcon: boolean;
+		isDarkIconText: boolean;
+		isLightIconText: boolean;
+	};
 	const getNodeColorVariable = useCallback(
-		(v: typeof v): string | undefined => {
-			if (v.isText) return "var(--color-text-node-1)";
-			if (v.isFile) return "var(--color-file-node-1)";
-			if (v.isWebPage) return "var(--color-webPage-node-1)";
-			if (v.isTextGeneration) return "var(--color-generation-node-1)";
-			if (v.isImageGeneration) return "var(--color-image-generation-node-1)";
-			if (v.isGithub || v.isVectorStoreGithub || v.isVectorStoreDocument)
+		(variant: VariantType): string | undefined => {
+			if (variant.isText) return "var(--color-text-node-1)";
+			if (variant.isFile) return "var(--color-file-node-1)";
+			if (variant.isWebPage) return "var(--color-webPage-node-1)";
+			if (variant.isTextGeneration) return "var(--color-generation-node-1)";
+			if (variant.isImageGeneration)
+				return "var(--color-image-generation-node-1)";
+			if (
+				variant.isGithub ||
+				variant.isVectorStoreGithub ||
+				variant.isVectorStoreDocument
+			)
 				return "var(--color-github-node-1)";
-			if (v.isTrigger || v.isAppEntry) return "var(--color-trigger-node-1)";
-			if (v.isAction) return "var(--color-action-node-1)";
-			if (v.isQuery) return "var(--color-query-node-1)";
+			if (variant.isTrigger || variant.isAppEntry)
+				return "var(--color-trigger-node-1)";
+			if (variant.isAction) return "var(--color-action-node-1)";
+			if (variant.isQuery) return "var(--color-query-node-1)";
 			return undefined;
 		},
 		[],
