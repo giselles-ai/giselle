@@ -30,12 +30,14 @@ describe("createAiSdkEmbedder", () => {
 	it("should call embeddingComplete callback after embed", async () => {
 		const mockEmbedding = [0.1, 0.2, 0.3];
 		const mockUsage = { tokens: 10 };
+		const providerMetadata = { requestId: "req_123" };
 		const embeddingCompleteCallback = vi.fn();
 
 		// biome-ignore lint/suspicious/noExplicitAny: mock
 		(embed as any).mockResolvedValue({
 			embedding: mockEmbedding,
 			usage: mockUsage,
+			providerMetadata,
 		});
 
 		const embedder = createAiSdkEmbedder(
@@ -61,6 +63,8 @@ describe("createAiSdkEmbedder", () => {
 				operation: "embed",
 				startTime: expect.any(Date),
 				endTime: expect.any(Date),
+				transport: "provider",
+				providerMetadata,
 			}),
 		);
 	});
@@ -190,6 +194,7 @@ describe("createAiSdkEmbedder", () => {
 				operation: "embedMany",
 				startTime: expect.any(Date),
 				endTime: expect.any(Date),
+				transport: "provider",
 			}),
 		);
 	});
@@ -226,6 +231,7 @@ describe("createAiSdkEmbedder", () => {
 				operation: "embed",
 				startTime: expect.any(Date),
 				endTime: expect.any(Date),
+				transport: "provider",
 			}),
 		);
 	});

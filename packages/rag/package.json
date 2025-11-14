@@ -12,6 +12,7 @@
 		"format": "biome check --write ."
 	},
 	"dependencies": {
+		"@ai-sdk/gateway": "catalog:",
 		"@ai-sdk/google": "catalog:",
 		"@ai-sdk/openai": "catalog:",
 		"@giselles-ai/protocol": "workspace:*",

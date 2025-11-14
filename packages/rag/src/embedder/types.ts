@@ -1,3 +1,5 @@
+import type { ProviderMetadata } from "ai";
+
 /**
  * Metrics collected after embedding completion
  */
@@ -11,6 +13,8 @@ export interface EmbeddingMetrics {
 	operation: "embed" | "embedMany";
 	startTime: Date;
 	endTime: Date;
+	transport?: "gateway" | "provider";
+	providerMetadata?: ProviderMetadata;
 }
 
 /**

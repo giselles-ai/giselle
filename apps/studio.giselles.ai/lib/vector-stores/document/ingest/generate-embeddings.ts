@@ -1,10 +1,11 @@
 import type { EmbeddingProfileId } from "@giselles-ai/protocol";
 import { EMBEDDING_PROFILES } from "@giselles-ai/protocol";
-import type {
-	EmbedderFunction,
-	EmbeddingCompleteCallback,
+import {
+	createEmbedderFromProfile,
+	type EmbedderFunction,
+	type EmbeddingCompleteCallback,
+	isGatewaySupportedEmbeddingProfile,
 } from "@giselles-ai/rag";
-import { createEmbedderFromProfile } from "@giselles-ai/rag";
 
 interface GenerateEmbeddingsOptions {
 	chunks: string[];
@@ -76,14 +77,18 @@ export async function generateEmbeddings(
 	}
 
 	// Get API key for the provider
-	const apiKey =
-		process.env[
-			profile.provider === "openai"
-				? "OPENAI_API_KEY"
-				: profile.provider === "google"
-					? "GOOGLE_GENERATIVE_AI_API_KEY"
-					: "COHERE_API_KEY"
-		];
+	const gatewayApiKey = process.env.AI_GATEWAY_API_KEY;
+	const useGateway =
+		Boolean(gatewayApiKey) && isGatewaySupportedEmbeddingProfile(profile);
+	const apiKey = useGateway
+		? gatewayApiKey
+		: process.env[
+				profile.provider === "openai"
+					? "OPENAI_API_KEY"
+					: profile.provider === "google"
+						? "GOOGLE_GENERATIVE_AI_API_KEY"
+						: "COHERE_API_KEY"
+			];
 
 	if (!apiKey) {
 		throw Object.assign(
@@ -98,7 +103,10 @@ export async function generateEmbeddings(
 	const embedder: EmbedderFunction = createEmbedderFromProfile(
 		embeddingProfileId,
 		apiKey,
-		{ embeddingComplete },
+		{
+			embeddingComplete,
+			transport: useGateway ? "gateway" : "provider",
+		},
 	);
 
 	// Generate embeddings in batches
