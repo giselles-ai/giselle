@@ -33,9 +33,24 @@ export async function handleSubscriptionCancellation(
 		throw new Error(`Team not found (id: ${sub.teamDbId})`);
 	}
 
-	const shouldApplyStripeCancellation =
+	let shouldApplyStripeCancellation =
 		team.plan !== "internal" && team.plan !== "enterprise";
 	// Enterprise and internal plans are not managed in Stripe, so cancellation webhooks should never mutate those teams.
+
+	if (shouldApplyStripeCancellation) {
+		const [latestTeam] = await db
+			.select({ plan: teams.plan })
+			.from(teams)
+			.where(eq(teams.dbId, sub.teamDbId))
+			.limit(1);
+
+		if (!latestTeam) {
+			throw new Error(`Team not found (id: ${sub.teamDbId})`);
+		}
+
+		shouldApplyStripeCancellation =
+			latestTeam.plan !== "internal" && latestTeam.plan !== "enterprise";
+	}
 
 	if (shouldApplyStripeCancellation) {
 		// Get the earliest admin's membership ID
