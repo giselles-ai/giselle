@@ -144,11 +144,8 @@ export function GitHubVectorStoreNodePropertiesPanel({
 	}, [allRepositories, selectedRepoKey]);
 
 	const contentTypeOptions = useMemo(() => {
-		const {
-			hasBlobContent,
-			hasPullRequestContent,
-			hasIssueContent,
-		} = contentTypeAvailability;
+		const { hasBlobContent, hasPullRequestContent, hasIssueContent } =
+			contentTypeAvailability;
 
 		const options: Array<{
 			value: "blob" | "pull_request" | "issue";

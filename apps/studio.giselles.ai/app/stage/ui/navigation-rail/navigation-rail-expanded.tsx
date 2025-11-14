@@ -33,11 +33,7 @@ export function NavigationRailExpanded({
 		<NavigationRailContainer variant="expanded">
 			<NavigationRailHeader>
 				<div className="flex items-center justify-between w-full pt-6 pb-4">
-					<Link
-						href="/"
-						aria-label="Go to home"
-						className="group"
-					>
+					<Link href="/" aria-label="Go to home" className="group">
 						<GiselleLogo className="w-[96px] h-auto fill-inverse group-hover:fill-primary-100 transition-colors" />
 					</Link>
 					<MenuButton
