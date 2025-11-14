@@ -36,12 +36,9 @@ export function NavigationRailExpanded({
 					<Link
 						href="/"
 						aria-label="Go to home"
-						className="flex items-center gap-[3px] group"
+						className="group"
 					>
 						<GiselleLogo className="w-[96px] h-auto fill-inverse group-hover:fill-primary-100 transition-colors" />
-						<span className="text-inverse text-[13px] font-semibold group-hover:text-primary-100 transition-colors">
-							Studio
-						</span>
 					</Link>
 					<MenuButton
 						onClick={() => onCollapseButtonClick()}

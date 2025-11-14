@@ -117,18 +117,26 @@ function GitHubVectorStoreUsageNotice({
 	const limitReached = remaining === 0;
 
 	return (
-		<div className="rounded-lg border border-white/10 bg-white/5 px-4 py-3">
-			<div className="flex items-center justify-between text-[13px] text-text/70">
+		<div>
+			<div className="flex items-center gap-2 rounded-lg bg-white/5 px-2 py-1.5 text-[13px] text-text/70">
 				<span>GitHub Vector Stores used</span>
-				<span className="font-semibold text-inverse">
+				<span>-</span>
+				{!limitReached && (
+					<span className="text-[12px] text-text/60">
+						{remaining} GitHub Vector {remaining === 1 ? "Store" : "Stores"}{" "}
+						remaining in your {getPlanLabel(teamPlan)} plan.
+					</span>
+				)}
+				{limitReached && (
+					<span className="text-[12px] text-text/60">
+						You've used all GitHub Vector Stores included in your{" "}
+						{getPlanLabel(teamPlan)} plan.
+					</span>
+				)}
+				<span className="ml-auto font-semibold text-inverse">
 					{usageCount} / {maxStores}
 				</span>
 			</div>
-			<p className="mt-1 text-[12px] text-text/60">
-				{limitReached
-					? `You've used all GitHub Vector Stores included in your ${getPlanLabel(teamPlan)} plan.`
-					: `${remaining} GitHub Vector ${remaining === 1 ? "Store" : "Stores"} remaining in your ${getPlanLabel(teamPlan)} plan.`}
-			</p>
 			{limitReached && (
 				<Alert
 					variant="destructive"
