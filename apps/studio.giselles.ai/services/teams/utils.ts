@@ -1,3 +1,4 @@
+import { titleCase } from "@giselles-ai/utils";
 import { createId } from "@paralleldrive/cuid2";
 import type { CurrentTeam, TeamId } from "./types";
 
@@ -17,12 +18,7 @@ const PLAN_LABELS: Record<string, string> = {
 };
 
 export function formatPlanName(plan: CurrentTeam["plan"]) {
-	return PLAN_LABELS[plan] ?? `${capitalize(plan)} plan`;
-}
-
-function capitalize(value: string) {
-	if (!value) return value;
-	return value.charAt(0).toUpperCase() + value.slice(1);
+	return PLAN_LABELS[plan] ?? `${titleCase(plan)} plan`;
 }
 
 export function createTeamId(): TeamId {
