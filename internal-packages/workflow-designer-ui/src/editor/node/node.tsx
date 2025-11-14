@@ -257,20 +257,24 @@ export function NodeComponent({
 	const requiresSetup = nodeRequiresSetup(node);
 	const inputHandleContentType = getInputHandleContentType(node);
 
+	function getNodeColorVariable(v: typeof v): string | undefined {
+		if (v.isText) return "var(--color-text-node-1)";
+		if (v.isFile) return "var(--color-file-node-1)";
+		if (v.isWebPage) return "var(--color-webPage-node-1)";
+		if (v.isTextGeneration) return "var(--color-generation-node-1)";
+		if (v.isImageGeneration) return "var(--color-image-generation-node-1)";
+		if (v.isGithub || v.isVectorStoreGithub || v.isVectorStoreDocument)
+			return "var(--color-github-node-1)";
+		if (v.isTrigger || v.isAppEntry) return "var(--color-trigger-node-1)";
+		if (v.isAction) return "var(--color-action-node-1)";
+		if (v.isQuery) return "var(--color-query-node-1)";
+		return undefined;
+	}
+
 	const borderGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
-		let colorVar = "";
-		if (v.isText) colorVar = "var(--color-text-node-1)";
-		else if (v.isFile) colorVar = "var(--color-file-node-1)";
-		else if (v.isWebPage) colorVar = "var(--color-webPage-node-1)";
-		else if (v.isTextGeneration) colorVar = "var(--color-generation-node-1)";
-		else if (v.isImageGeneration) colorVar = "var(--color-image-generation-node-1)";
-		else if (v.isGithub || v.isVectorStoreGithub || v.isVectorStoreDocument)
-			colorVar = "var(--color-github-node-1)";
-		else if (v.isTrigger || v.isAppEntry) colorVar = "var(--color-trigger-node-1)";
-		else if (v.isAction) colorVar = "var(--color-action-node-1)";
-		else if (v.isQuery) colorVar = "var(--color-query-node-1)";
-		else return undefined;
+		const colorVar = getNodeColorVariable(v);
+		if (!colorVar) return undefined;
 
 		return {
 			backgroundImage: `linear-gradient(to bottom right, color-mix(in srgb, ${colorVar} 30%, transparent 70%), color-mix(in srgb, ${colorVar} 50%, transparent 50%) 50%, ${colorVar})`,
@@ -279,18 +283,8 @@ export function NodeComponent({
 
 	const backgroundGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
-		let colorVar = "";
-		if (v.isText) colorVar = "var(--color-text-node-1)";
-		else if (v.isFile) colorVar = "var(--color-file-node-1)";
-		else if (v.isWebPage) colorVar = "var(--color-webPage-node-1)";
-		else if (v.isTextGeneration) colorVar = "var(--color-generation-node-1)";
-		else if (v.isImageGeneration) colorVar = "var(--color-image-generation-node-1)";
-		else if (v.isGithub || v.isVectorStoreGithub || v.isVectorStoreDocument)
-			colorVar = "var(--color-github-node-1)";
-		else if (v.isTrigger || v.isAppEntry) colorVar = "var(--color-trigger-node-1)";
-		else if (v.isAction) colorVar = "var(--color-action-node-1)";
-		else if (v.isQuery) colorVar = "var(--color-query-node-1)";
-		else return undefined;
+		const colorVar = getNodeColorVariable(v);
+		if (!colorVar) return undefined;
 
 		return {
 			backgroundImage: `radial-gradient(ellipse farthest-corner at center, color-mix(in srgb, ${colorVar} 15%, transparent 85%) 0%, color-mix(in srgb, ${colorVar} 6%, transparent 94%) 50%, color-mix(in srgb, ${colorVar} 3%, transparent 97%) 75%, transparent 100%)`,
