@@ -324,10 +324,10 @@ export function NodeComponent({
 				selected && v.isAppEntry && "shadow-trigger-node-1",
 				selected && v.isAction && "shadow-action-node-1",
 				selected && v.isQuery && "shadow-query-node-1",
-				selected && "shadow-[0px_0px_16px_0px]",
+				selected && "shadow-[0px_0px_18px_2px_rgba(0,0,0,0.4)]",
 				selected &&
 					(v.isTrigger || v.isAppEntry) &&
-					"shadow-[0px_0px_16px_0px_hsl(220,15%,50%)]",
+					"shadow-[0px_0px_18px_2px_hsla(220,15%,50%,0.4)]",
 				highlighted && v.isText && "shadow-text-node-1",
 				highlighted && v.isFile && "shadow-file-node-1",
 				highlighted && v.isWebPage && "shadow-webPage-node-1",
@@ -340,10 +340,10 @@ export function NodeComponent({
 				highlighted && v.isAppEntry && "shadow-trigger-node-1",
 				highlighted && v.isAction && "shadow-action-node-1",
 				highlighted && v.isQuery && "shadow-query-node-1",
-				highlighted && "shadow-[0px_0px_16px_0px]",
+				highlighted && "shadow-[0px_0px_18px_2px_rgba(0,0,0,0.4)]",
 				highlighted &&
 					(v.isTrigger || v.isAppEntry) &&
-					"shadow-[0px_0px_16px_0px_hsl(220,15%,50%)]",
+					"shadow-[0px_0px_18px_2px_hsla(220,15%,50%,0.4)]",
 				preview && "opacity-50",
 				!preview && "min-h-[110px]",
 				requiresSetup && "opacity-80",
