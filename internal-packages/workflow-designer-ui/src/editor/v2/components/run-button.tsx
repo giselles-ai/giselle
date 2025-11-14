@@ -105,7 +105,7 @@ function RunOptionItem({
 
 function useRunAct() {
 	const { data, setUiNodeState } = useWorkflowDesigner();
-	const { createAndStartAct } = useActSystem();
+	const { createAndStartAct } = useActSystem(data.id);
 	const { toast, error } = useToasts();
 
 	return async (item: RunItem) => {
