@@ -1,4 +1,3 @@
-import { githubIssuesVectorStoreFlag } from "@/flags";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 import { getGitHubVectorStoreQuota } from "@/services/teams/plan-features/github-vector-store";
@@ -39,15 +38,9 @@ export default async function TeamVectorStorePage() {
 		return <GitHubAppInstallRequiredCard />;
 	}
 
-	const [
-		installationsWithRepos,
-		repositoryIndexes,
-		isGithubIssuesVectorStoreEnabled,
-		team,
-	] = await Promise.all([
+	const [installationsWithRepos, repositoryIndexes, team] = await Promise.all([
 		getInstallationsWithRepos(),
 		getGitHubRepositoryIndexes(),
-		githubIssuesVectorStoreFlag(),
 		fetchCurrentTeam(),
 	]);
 
@@ -68,7 +61,6 @@ export default async function TeamVectorStorePage() {
 				<RepositoryRegistrationDialog
 					installationsWithRepos={installationsWithRepos}
 					registerRepositoryIndexAction={registerRepositoryIndex}
-					githubIssuesVectorStore={isGithubIssuesVectorStoreEnabled}
 					disabled={registerDisabled}
 					disabledReason={registerDisabledReason}
 				/>
@@ -78,7 +70,6 @@ export default async function TeamVectorStorePage() {
 				deleteRepositoryIndexAction={deleteRepositoryIndex}
 				triggerManualIngestAction={triggerManualIngest}
 				updateRepositoryIndexAction={updateRepositoryIndex}
-				githubIssuesVectorStore={isGithubIssuesVectorStoreEnabled}
 				hasAccess={hasAccess}
 				maxStores={quota.maxStores}
 				teamPlan={team.plan}

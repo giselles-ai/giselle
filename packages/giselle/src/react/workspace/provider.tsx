@@ -48,7 +48,6 @@ export function WorkspaceProvider({
 				aiGatewayUnsupportedModels:
 					featureFlag?.aiGatewayUnsupportedModels ?? false,
 				googleUrlContext: featureFlag?.googleUrlContext ?? false,
-				githubIssuesVectorStore: featureFlag?.githubIssuesVectorStore ?? false,
 			}}
 		>
 			<TelemetryProvider settings={telemetry}>
