@@ -12,14 +12,13 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
-import { Select } from "@giselle-internal/ui/select";
+import { Input } from "@giselle-internal/ui/input";
+import { TabNavigation } from "@giselle-internal/ui/tab-navigation";
 import { Play, RotateCcw, Star } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
 import { GlassButton } from "@/components/ui/glass-button";
-import { Input } from "@/components/ui/input";
-import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { Card } from "../../(main)/settings/components/card";
 import { SearchHeader } from "../../(main)/workspaces/components/search-header";
 
@@ -41,16 +40,10 @@ interface Playlist {
 	appsCount: number;
 }
 
-interface TeamOption {
-	value: string;
-	label: string;
-	avatarUrl?: string;
-}
-
 interface ShowcaseClientProps {
-	teamOptions: TeamOption[];
 	teamApps: Record<string, App[]>;
 	teamHistory: Record<string, App[]>;
+	currentTeamId: string;
 }
 
 // Mock playlist data - replace with actual data from props
@@ -84,14 +77,20 @@ const mockPlaylists: Playlist[] = [
 ];
 
 export function ShowcaseClient({
-	teamOptions,
 	teamApps,
 	teamHistory,
+	currentTeamId,
 }: ShowcaseClientProps) {
 	const router = useRouter();
-	const [activeTab, setActiveTab] = useState<"Apps" | "Playlist" | "History">(
-		"Apps",
-	);
+	const searchParams = useSearchParams();
+	const currentTab =
+		(searchParams.get("tab") as "Apps" | "Playlist" | "History") || "Apps";
+
+	const tabLinks = [
+		{ href: "/stage/showcase?tab=Apps", label: "Apps" },
+		{ href: "/stage/showcase?tab=Playlist", label: "Playlist" },
+		{ href: "/stage/showcase?tab=History", label: "History" },
+	] as const;
 
 	// Playlist dialog state
 	const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] = useState(false);
@@ -104,48 +103,15 @@ export function ShowcaseClient({
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sortOption, setSortOption] = useState<SortOption>("date-desc");
 
-	// Team selection state
-	const [selectedTeamId, setSelectedTeamId] = useState<string>(
-		teamOptions[0]?.value || "",
-	);
-
-	// Add CSS styles for team selection dropdown
-	useEffect(() => {
-		const styleElement = document.createElement("style");
-		styleElement.textContent = `
-      .team-select button[type="button"] {
-        background-color: rgba(255, 255, 255, 0.05) !important;
-        border: none !important;
-        color: white !important;
-        font-size: 14px !important;
-        font-family: inherit !important;
-      }
-      .team-select button[type="button"]:hover {
-        background-color: rgba(255, 255, 255, 0.1) !important;
-      }
-      .team-select button[type="button"] svg {
-        margin-left: 8px !important;
-      }
-      .team-select [role="option"] {
-        font-size: 14px !important;
-      }
-    `;
-		document.head.appendChild(styleElement);
-
-		return () => {
-			document.head.removeChild(styleElement);
-		};
-	}, []);
-
-	// Get apps for selected team
+	// Get apps for selected team (use currentTeamId from server)
 	const currentApps = useMemo(() => {
-		return teamApps[selectedTeamId] || [];
-	}, [teamApps, selectedTeamId]);
+		return teamApps[currentTeamId] || [];
+	}, [teamApps, currentTeamId]);
 
-	// Get history for selected team
+	// Get history for selected team (use currentTeamId from server)
 	const currentHistory = useMemo(() => {
-		return teamHistory[selectedTeamId] || [];
-	}, [teamHistory, selectedTeamId]);
+		return teamHistory[currentTeamId] || [];
+	}, [teamHistory, currentTeamId]);
 
 	// Handle playlist form submission
 	const handleSavePlaylist = () => {
@@ -211,23 +177,6 @@ export function ShowcaseClient({
 		});
 	}, [filteredHistory, sortOption]);
 
-	// Team options with icons for the dropdown
-	const teamOptionsWithIcons = useMemo(
-		() =>
-			teamOptions.map((team) => ({
-				...team,
-				icon: team.avatarUrl ? (
-					<AvatarImage
-						avatarUrl={team.avatarUrl}
-						width={16}
-						height={16}
-						alt={team.label}
-					/>
-				) : undefined,
-			})),
-		[teamOptions],
-	);
-
 	return (
 		<div className="flex-1 px-[24px] bg-background pt-16 md:pt-0 pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 h-full flex flex-col">
 			<div className="py-6 h-full flex flex-col">
@@ -246,61 +195,16 @@ export function ShowcaseClient({
 							Explore featured workflows and inspiring examples
 						</p>
 					</div>
-
-					{/* Team Selection Dropdown */}
-					<div
-						style={
-							{
-								width: "fit-content",
-								minWidth: "auto",
-							} as React.CSSProperties
-						}
-					>
-						<div className="team-select">
-							<Select
-								placeholder="Select team"
-								options={teamOptionsWithIcons}
-								renderOption={(o) => o.label}
-								value={selectedTeamId}
-								onValueChange={(value) => setSelectedTeamId(value)}
-								widthClassName="[&>button]:text-[14px] [&>button]:px-2 [&>button]:py-1 [&>button]:rounded-sm [&>button]:gap-2"
-								triggerClassName="text-text"
-							/>
-						</div>
-					</div>
 				</div>
 
 				{/* Tabs */}
 				<div className="mb-8">
-					<div className="flex items-center px-0 py-0 border-b border-border">
-						<div className="flex items-center space-x-[12px]">
-							{["Apps", "Playlist", "History"].map((tab) => {
-								const isActive = activeTab === tab;
-								return (
-									<button
-										key={tab}
-										type="button"
-										onClick={() =>
-											setActiveTab(tab as "Apps" | "Playlist" | "History")
-										}
-										className={`text-[16px] font-sans font-medium transition-colors px-2 py-2 relative rounded-md
-                    ${
-											isActive
-												? "text-primary-100 [text-shadow:0px_0px_20px_#0087f6] after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-[2px] after:bg-primary-100"
-												: "text-tabs-inactive-text hover:text-white-100 hover:after:content-[''] hover:after:absolute hover:after:left-0 hover:after:right-0 hover:after:bottom-0 hover:after:h-[2px] hover:after:bg-primary-100"
-										}`}
-									>
-										{tab}
-									</button>
-								);
-							})}
-						</div>
-					</div>
+					<TabNavigation links={tabLinks} ariaLabelPrefix="tab" />
 				</div>
 
 				{/* Content area */}
 				<div className="flex-1 overflow-auto min-h-0">
-					{activeTab === "Apps" && (
+					{currentTab === "Apps" && (
 						<>
 							<SearchHeader
 								searchQuery={searchQuery}
@@ -427,7 +331,7 @@ export function ShowcaseClient({
 						</>
 					)}
 
-					{activeTab === "Playlist" && (
+					{currentTab === "Playlist" && (
 						<>
 							<div className="mb-8 flex justify-start">
 								<Dialog
@@ -582,7 +486,7 @@ export function ShowcaseClient({
 						</>
 					)}
 
-					{activeTab === "History" && (
+					{currentTab === "History" && (
 						<>
 							<SearchHeader
 								searchQuery={searchQuery}
@@ -658,7 +562,7 @@ export function ShowcaseClient({
 													onClick={() => {
 														if (item.workspaceId) {
 															router.push(
-																`/stage?workspaceId=${item.workspaceId}&teamId=${selectedTeamId}`,
+																`/stage?workspaceId=${item.workspaceId}&teamId=${currentTeamId}`,
 															);
 														}
 													}}

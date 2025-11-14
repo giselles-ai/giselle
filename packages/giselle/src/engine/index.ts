@@ -1,15 +1,20 @@
-import type {
-	FetchingWebPage,
-	FileId,
-	GitHubEventData,
-	NodeId,
-	SecretId,
-	Trigger,
-	TriggerId,
-	Workspace,
-	WorkspaceId,
+import {
+	ActId,
+	type FetchingWebPage,
+	type FileId,
+	type Generation,
+	GenerationId,
+	type GenerationOrigin,
+	type GitHubEventData,
+	type NodeId,
+	type QueuedGeneration,
+	type RunningGeneration,
+	type SecretId,
+	type Trigger,
+	type TriggerId,
+	type Workspace,
+	type WorkspaceId,
 } from "@giselles-ai/protocol";
-import { ActId, GenerationId } from "@giselles-ai/protocol";
 import { noopLogger } from "../logger/noop-logger";
 import type { GiselleLogger } from "../logger/types";
 import {
@@ -28,21 +33,19 @@ import {
 	startAct,
 	streamAct,
 } from "./acts";
+import { saveApp } from "./apps";
+import { deleteApp } from "./apps/delete-app";
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";
 import { copyFile, getFileText, removeFile, uploadFile } from "./files";
 import {
 	cancelGeneration,
-	type Generation,
 	type GenerationMetadata,
-	type GenerationOrigin,
 	generateContent,
 	generateImage,
 	getGeneratedImage,
 	getGeneration,
 	getGenerationMessageChunkss,
 	getNodeGenerations,
-	type QueuedGeneration,
-	type RunningGeneration,
 	setGeneration,
 } from "./generations";
 import { getActGenerationIndexes } from "./generations/get-act-generation-indexes";
@@ -72,6 +75,7 @@ import type {
 	SetRunActProcessArgs,
 	WaitUntil,
 } from "./types";
+import { bindGiselleFunction } from "./utils/create-giselle-function";
 import {
 	copyWorkspace,
 	createSampleWorkspaces,
@@ -340,6 +344,8 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		runAct(args: RunActInputs) {
 			return runAct({ ...args, context });
 		},
+		saveApp: bindGiselleFunction(saveApp, context),
+		deleteApp: bindGiselleFunction(deleteApp, context),
 	};
 }
 

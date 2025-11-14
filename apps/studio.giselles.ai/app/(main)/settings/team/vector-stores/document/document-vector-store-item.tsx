@@ -15,6 +15,7 @@ import { RepoActionMenu } from "@giselle-internal/ui/repo-action-menu";
 import { useToasts } from "@giselle-internal/ui/toast";
 import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselles-ai/protocol";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import clsx from "clsx/lite";
 import {
 	AlertCircle,
 	ArrowUpFromLine,
@@ -363,6 +364,7 @@ function DocumentVectorStoreConfigureDialog({
 	const [isPending, startTransition] = useTransition();
 	const [isUploadingDocuments, setIsUploadingDocuments] = useState(false);
 	const [isDragActive, setIsDragActive] = useState(false);
+	const [isValidFile, setIsValidFile] = useState(true);
 	const [uploadMessage, setUploadMessage] = useState("");
 	const [documentSources, setDocumentSources] = useState<DocumentSourceItem[]>(
 		() => buildDocumentSourceItems(store.sources),
@@ -528,18 +530,42 @@ function DocumentVectorStoreConfigureDialog({
 		fileInputRef.current?.click();
 	}, []);
 
+	const validateItems = useCallback(
+		(dataTransferItemList: DataTransferItemList) => {
+			let isValid = true;
+			for (const dataTransferItem of dataTransferItemList) {
+				if (!isValid) {
+					break;
+				}
+				if (dataTransferItem.kind !== "file") {
+					isValid = false;
+					break;
+				}
+				const file = dataTransferItem.getAsFile();
+				if (file) {
+					isValid = isSupportedDocumentFile(file);
+				}
+			}
+			return isValid;
+		},
+		[],
+	);
+
 	const handleDragOver = useCallback(
 		(event: React.DragEvent<HTMLButtonElement>) => {
 			event.preventDefault();
+			const isValid = validateItems(event.dataTransfer.items);
+			setIsValidFile(isValid);
 			setIsDragActive(true);
 		},
-		[],
+		[validateItems],
 	);
 
 	const handleDragLeave = useCallback(
 		(event: React.DragEvent<HTMLButtonElement>) => {
 			event.preventDefault();
 			setIsDragActive(false);
+			setIsValidFile(true);
 		},
 		[],
 	);
@@ -548,6 +574,7 @@ function DocumentVectorStoreConfigureDialog({
 		(event: React.DragEvent<HTMLButtonElement>) => {
 			event.preventDefault();
 			setIsDragActive(false);
+			setIsValidFile(true);
 			if (event.dataTransfer.files?.length) {
 				void handleFilesUpload(event.dataTransfer.files);
 			}
@@ -741,27 +768,68 @@ function DocumentVectorStoreConfigureDialog({
 								onDragLeave={handleDragLeave}
 								onDrop={handleDrop}
 								disabled={isUploadingDocuments}
-								className={`flex flex-col items-center gap-3 rounded-xl border border-dashed border-border-muted bg-surface px-6 py-8 text-center transition-colors focus:outline-none focus:ring-2 focus:ring-inverse/30 ${isDragActive ? "border-white/30 bg-white/5" : ""} ${isUploadingDocuments ? "opacity-60" : ""}`}
+								className="group w-full"
+								data-dragging={isDragActive}
+								data-valid={isValidFile}
 							>
-								<ArrowUpFromLine className="h-8 w-8 text-text/60" />
-								<p className="text-inverse text-sm">
-									Drop {SUPPORTED_FILE_TYPES_LABEL} files here to upload.
-								</p>
-								<p className="text-xs text-text/60">
-									Maximum {DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_LABEL} per file.
-								</p>
-								<span className="text-sm font-semibold text-inverse underline">
-									Select Files
-								</span>
-								{isUploadingDocuments ? (
-									<div className="flex items-center gap-2 text-xs text-text/60">
-										<Loader2 className="h-3 w-3 animate-spin" />
-										Uploading...
-									</div>
-								) : null}
+								<div
+									className={clsx(
+										"h-full w-full flex flex-col justify-center items-center gap-[16px] px-[24px] py-[16px]",
+										"bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)]",
+										"border border-dotted rounded-[8px] border-transparent",
+										"group-hover:border-black-400",
+										"group-data-[dragging=true]:border-black-400",
+										"group-data-[dragging=true]:group-data-[valid=false]:border-error-900",
+										isUploadingDocuments && "opacity-60",
+									)}
+								>
+									{isDragActive ? (
+										isValidFile ? (
+											<>
+												<ArrowUpFromLine className="size-[30px] text-text-muted" />
+												<p className="text-center text-inverse">
+													Drop to upload your {SUPPORTED_FILE_TYPES_LABEL} files
+												</p>
+											</>
+										) : (
+											<>
+												<AlertCircle className="size-[30px] text-error-900" />
+												<p className="text-center text-error-900">
+													Only {SUPPORTED_FILE_TYPES_LABEL} files are allowed
+												</p>
+											</>
+										)
+									) : (
+										<div className="flex flex-col gap-[16px] justify-center items-center py-[16px]">
+											<ArrowUpFromLine className="size-[38px] text-text-muted" />
+											<label
+												htmlFor={`file-input-${store.id}`}
+												className="text-center flex flex-col gap-[16px] text-inverse cursor-pointer"
+											>
+												<p>
+													Drop {SUPPORTED_FILE_TYPES_LABEL} files here to
+													upload.
+												</p>
+												<div className="flex gap-[8px] justify-center items-center">
+													<span>or</span>
+													<span className="font-bold text-[14px] underline">
+														Select files
+													</span>
+												</div>
+											</label>
+										</div>
+									)}
+									{isUploadingDocuments ? (
+										<div className="flex items-center gap-2 text-xs text-text/60">
+											<Loader2 className="h-3 w-3 animate-spin" />
+											Uploading...
+										</div>
+									) : null}
+								</div>
 							</button>
 							<input
 								ref={fileInputRef}
+								id={`file-input-${store.id}`}
 								type="file"
 								accept={DOCUMENT_UPLOAD_ACCEPT}
 								multiple
