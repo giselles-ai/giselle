@@ -270,28 +270,19 @@ export function NodeComponent({
 			}
 			className={clsx(
 				"group relative flex flex-col rounded-[16px] py-[16px] gap-[16px] min-w-[180px]",
-				"bg-gradient-to-tl transition-all backdrop-blur-[4px]",
-				v.isText && "from-text-node-1/10 to-text-node-2 shadow-text-node-1",
-				v.isFile && "from-file-node-1/10 to-file-node-2 shadow-file-node-1",
-				v.isWebPage &&
-					"from-webPage-node-1/10 to-webPage-node-2 shadow-webPage-node-1",
-				v.isTextGeneration &&
-					"from-generation-node-1/10 to-generation-node-2 shadow-generation-node-1",
-				v.isImageGeneration &&
-					"from-image-generation-node-1/20 to-image-generation-node-2 shadow-image-generation-node-1",
-				v.isGithub &&
-					"from-github-node-1/10 to-github-node-2 shadow-github-node-1",
-				v.isVectorStoreGithub &&
-					"from-github-node-1/10 to-github-node-2 shadow-github-node-1",
-				v.isVectorStoreDocument &&
-					"from-github-node-1/10 to-github-node-2 shadow-github-node-1",
-				v.isTrigger &&
-					"from-trigger-node-1/10 to-trigger-node-2 shadow-trigger-node-1",
-				v.isAppEntry &&
-					"from-trigger-node-1/10 to-trigger-node-2 shadow-trigger-node-1",
-				v.isAction &&
-					"from-action-node-1/10 to-action-node-2 shadow-action-node-1",
-				v.isQuery && "from-query-node-1/10 to-query-node-2 shadow-query-node-1",
+				"bg-transparent transition-all backdrop-blur-[4px]",
+				v.isText && "shadow-text-node-1",
+				v.isFile && "shadow-file-node-1",
+				v.isWebPage && "shadow-webPage-node-1",
+				v.isTextGeneration && "shadow-generation-node-1",
+				v.isImageGeneration && "shadow-image-generation-node-1",
+				v.isGithub && "shadow-github-node-1",
+				v.isVectorStoreGithub && "shadow-github-node-1",
+				v.isVectorStoreDocument && "shadow-github-node-1",
+				v.isTrigger && "shadow-trigger-node-1",
+				v.isAppEntry && "shadow-trigger-node-1",
+				v.isAction && "shadow-action-node-1",
+				v.isQuery && "shadow-query-node-1",
 				selected && "shadow-[0px_0px_16px_0px]",
 				selected &&
 					(v.isTrigger || v.isAppEntry) &&
@@ -353,7 +344,7 @@ export function NodeComponent({
 			</AnimatePresence>
 			<div
 				className={clsx(
-					"absolute z-0 rounded-[16px] inset-0 border-[1px] mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder",
+					"absolute z-0 rounded-[16px] inset-0 border-[1.5px] mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder",
 					requiresSetup
 						? "border-black/60 border-dashed [border-width:2px]"
 						: "border-transparent",
