@@ -41,6 +41,7 @@ import { useGenerationExecutor } from "./internal/use-generation-executor";
 import { createPostgresTools } from "./tools/postgres";
 import type { GenerationMetadata, PreparedToolSet } from "./types";
 import { buildMessageObject, getGeneration } from "./utils";
+import { isClonedFileDataPayload } from "@giselles-ai/node-registry";
 
 type StreamItem<T> = T extends AsyncIterableStream<infer Inner> ? Inner : never;
 
@@ -78,8 +79,29 @@ export function generateContent({
 	logger.info(`generation: ${JSON.stringify(generation)}`);
 	logger.info(`context: ${JSON.stringify(context)}`);
 	const generationContext = GenerationContext.parse(generation.context);
-	logger.debug(generationContext, "generationContext");
-	logger.debug(generationContext.sourceNodes, "sourceNodes");
+	logger.info(
+		{
+			totalSourceNodes: generationContext.sourceNodes.length,
+			fileNodes: generationContext.sourceNodes
+				.filter((node) => node.content.type === "file")
+				.map((node) => ({
+					nodeId: node.id,
+					filesCount:
+						node.content.type === "file" ? node.content.files.length : 0,
+					files:
+						node.content.type === "file"
+							? node.content.files.map((file) => ({
+									fileId: file.id,
+									isCloned: isClonedFileDataPayload(file),
+									originalFileIdForCopy: isClonedFileDataPayload(file)
+										? file.originalFileIdForCopy
+										: undefined,
+								}))
+							: [],
+				})),
+		},
+		"Processing source nodes for file mapping",
+	);
 	return useGenerationExecutor({
 		context,
 		generation,
