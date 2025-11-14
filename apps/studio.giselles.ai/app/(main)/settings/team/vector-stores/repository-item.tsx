@@ -257,10 +257,10 @@ function EmbeddingModelCard({
 
 	// Get status for each content type
 	const blobStatus = profileStatuses.find((cs) => cs.contentType === "blob");
+	const issueStatus = profileStatuses.find((cs) => cs.contentType === "issue");
 	const pullRequestStatus = profileStatuses.find(
 		(cs) => cs.contentType === "pull_request",
 	);
-	const issueStatus = profileStatuses.find((cs) => cs.contentType === "issue");
 
 	return (
 		<div
@@ -373,98 +373,6 @@ function EmbeddingModelCard({
 						)}
 				</div>
 
-				{/* Pull Requests Section */}
-				<div>
-					<div className="flex items-center justify-between">
-						<span className="text-gray-300">Pull Requests</span>
-						<div className="flex items-center gap-2">
-							{pullRequestStatus?.enabled ? (
-								pullRequestStatus.status === "completed" ? (
-									<StatusBadge status="success" variant="dot">
-										Enabled
-									</StatusBadge>
-								) : (
-									<div className="flex items-center gap-2">
-										<div className="flex items-center px-2 py-1 rounded-full border border-border-muted">
-											<StatusIndicator
-												status={
-													isIngesting && pullRequestStatus.enabled
-														? "running"
-														: pullRequestStatus.status
-												}
-												size="sm"
-												showLabel={false}
-											/>
-											<span
-												className={`text-[12px] leading-[14px] font-medium font-geist flex-1 text-center ml-1.5 ${
-													pullRequestStatus.status === "failed"
-														? "text-error-900"
-														: "text-text-muted"
-												}`}
-											>
-												{isIngesting && pullRequestStatus.enabled
-													? "Running"
-													: pullRequestStatus.status === "idle"
-														? "Idle"
-														: "Error"}
-											</span>
-										</div>
-										{pullRequestStatus?.status === "failed" &&
-											pullRequestStatus?.errorCode === "DOCUMENT_NOT_FOUND" && (
-												<button
-													type="button"
-													onClick={onShowDiagnostic}
-													className="text-[#1663F3] text-[12px] leading-[14px] font-medium font-geist hover:underline"
-												>
-													Check ↗
-												</button>
-											)}
-									</div>
-								)
-							) : (
-								<StatusBadge status="ignored" variant="dot">
-									Disabled
-								</StatusBadge>
-							)}
-						</div>
-					</div>
-					{pullRequestStatus?.enabled && (
-						<div className="text-[10px] text-gray-500 flex justify-between">
-							<span>
-								{pullRequestStatus.lastSyncedAt
-									? `Last sync: ${formatTimestamp.toRelativeTime(new Date(pullRequestStatus.lastSyncedAt).getTime())}`
-									: "Never synced"}
-							</span>
-							{pullRequestStatus.metadata &&
-								(() => {
-									const metadata = pullRequestStatus.metadata;
-									if (
-										metadata &&
-										"lastIngestedPrNumber" in metadata &&
-										metadata.lastIngestedPrNumber
-									) {
-										return <span>PR: #{metadata.lastIngestedPrNumber}</span>;
-									}
-									return null;
-								})()}
-						</div>
-					)}
-					{pullRequestStatus?.enabled &&
-						pullRequestStatus.status === "failed" &&
-						pullRequestStatus.errorCode && (
-							<div className="text-xs text-red-400 mt-1">
-								{getErrorMessage(
-									pullRequestStatus.errorCode as DocumentLoaderErrorCode,
-								)}
-								{pullRequestStatus.retryAfter &&
-									` • Retry ${formatTimestamp.toRelativeTime(new Date(pullRequestStatus.retryAfter).getTime())}`}
-							</div>
-						)}
-					{pullRequestStatus === undefined && (
-						<div className="text-[10px] text-gray-500">Not configured</div>
-					)}
-				</div>
-
 				{/* Issues Section */}
 				<div>
 					<div className="flex items-center justify-between">
@@ -555,6 +463,98 @@ function EmbeddingModelCard({
 							</div>
 						)}
 					{issueStatus === undefined && (
+						<div className="text-[10px] text-gray-500">Not configured</div>
+					)}
+				</div>
+
+				{/* Pull Requests Section */}
+				<div>
+					<div className="flex items-center justify-between">
+						<span className="text-gray-300">Pull Requests</span>
+						<div className="flex items-center gap-2">
+							{pullRequestStatus?.enabled ? (
+								pullRequestStatus.status === "completed" ? (
+									<StatusBadge status="success" variant="dot">
+										Enabled
+									</StatusBadge>
+								) : (
+									<div className="flex items-center gap-2">
+										<div className="flex items-center px-2 py-1 rounded-full border border-border-muted">
+											<StatusIndicator
+												status={
+													isIngesting && pullRequestStatus.enabled
+														? "running"
+														: pullRequestStatus.status
+												}
+												size="sm"
+												showLabel={false}
+											/>
+											<span
+												className={`text-[12px] leading-[14px] font-medium font-geist flex-1 text-center ml-1.5 ${
+													pullRequestStatus.status === "failed"
+														? "text-error-900"
+														: "text-text-muted"
+												}`}
+											>
+												{isIngesting && pullRequestStatus.enabled
+													? "Running"
+													: pullRequestStatus.status === "idle"
+														? "Idle"
+														: "Error"}
+											</span>
+										</div>
+										{pullRequestStatus?.status === "failed" &&
+											pullRequestStatus?.errorCode === "DOCUMENT_NOT_FOUND" && (
+												<button
+													type="button"
+													onClick={onShowDiagnostic}
+													className="text-[#1663F3] text-[12px] leading-[14px] font-medium font-geist hover:underline"
+												>
+													Check ↗
+												</button>
+											)}
+									</div>
+								)
+							) : (
+								<StatusBadge status="ignored" variant="dot">
+									Disabled
+								</StatusBadge>
+							)}
+						</div>
+					</div>
+					{pullRequestStatus?.enabled && (
+						<div className="text-[10px] text-gray-500 flex justify-between">
+							<span>
+								{pullRequestStatus.lastSyncedAt
+									? `Last sync: ${formatTimestamp.toRelativeTime(new Date(pullRequestStatus.lastSyncedAt).getTime())}`
+									: "Never synced"}
+							</span>
+							{pullRequestStatus.metadata &&
+								(() => {
+									const metadata = pullRequestStatus.metadata;
+									if (
+										metadata &&
+										"lastIngestedPrNumber" in metadata &&
+										metadata.lastIngestedPrNumber
+									) {
+										return <span>PR: #{metadata.lastIngestedPrNumber}</span>;
+									}
+									return null;
+								})()}
+						</div>
+					)}
+					{pullRequestStatus?.enabled &&
+						pullRequestStatus.status === "failed" &&
+						pullRequestStatus.errorCode && (
+							<div className="text-xs text-red-400 mt-1">
+								{getErrorMessage(
+									pullRequestStatus.errorCode as DocumentLoaderErrorCode,
+								)}
+								{pullRequestStatus.retryAfter &&
+									` • Retry ${formatTimestamp.toRelativeTime(new Date(pullRequestStatus.retryAfter).getTime())}`}
+							</div>
+						)}
+					{pullRequestStatus === undefined && (
 						<div className="text-[10px] text-gray-500">Not configured</div>
 					)}
 				</div>
