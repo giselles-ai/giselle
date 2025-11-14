@@ -97,8 +97,11 @@ export async function createAct(
 		(node) => isTriggerNode(node) || isAppEntryNode(node),
 	);
 
-	if (starterNode === undefined) {
-		throw new Error("No trigger or app entry node found");
+	if (
+		starterNode?.content.type === "appEntry" &&
+		starterNode?.content.status === "unconfigured"
+	) {
+		throw new Error("App entry node is unconfigured");
 	}
 
 	const actId = ActId.generate();
