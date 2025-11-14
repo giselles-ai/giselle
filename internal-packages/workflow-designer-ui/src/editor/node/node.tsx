@@ -277,6 +277,26 @@ export function NodeComponent({
 		};
 	}, [v, requiresSetup]);
 
+	const backgroundGradientStyle = useMemo(() => {
+		if (requiresSetup) return undefined;
+		let colorVar = "";
+		if (v.isText) colorVar = "var(--color-text-node-1)";
+		else if (v.isFile) colorVar = "var(--color-file-node-1)";
+		else if (v.isWebPage) colorVar = "var(--color-webPage-node-1)";
+		else if (v.isTextGeneration) colorVar = "var(--color-generation-node-1)";
+		else if (v.isImageGeneration) colorVar = "var(--color-image-generation-node-1)";
+		else if (v.isGithub || v.isVectorStoreGithub || v.isVectorStoreDocument)
+			colorVar = "var(--color-github-node-1)";
+		else if (v.isTrigger || v.isAppEntry) colorVar = "var(--color-trigger-node-1)";
+		else if (v.isAction) colorVar = "var(--color-action-node-1)";
+		else if (v.isQuery) colorVar = "var(--color-query-node-1)";
+		else return undefined;
+
+		return {
+			backgroundImage: `radial-gradient(ellipse farthest-corner at center, color-mix(in srgb, ${colorVar} 15%, transparent 85%) 0%, color-mix(in srgb, ${colorVar} 6%, transparent 94%) 50%, transparent 100%)`,
+		};
+	}, [v, requiresSetup]);
+
 	return (
 		<div
 			data-type={node.type}
@@ -375,6 +395,12 @@ export function NodeComponent({
 					</motion.div>
 				)}
 			</AnimatePresence>
+			<div
+				className={clsx(
+					"absolute z-[-1] rounded-[16px] inset-0",
+				)}
+				style={backgroundGradientStyle}
+			/>
 			<div
 				className={clsx(
 					"absolute z-0 rounded-[16px] inset-0 border-[1.5px] mask-fill",
