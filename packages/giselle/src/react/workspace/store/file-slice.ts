@@ -155,10 +155,13 @@ export const createFileSlice: StateCreator<AppStore, [], [], FileSlice> = (
 		}
 
 		// Always remove from UI state
-		const currentFiles = parentNode.content.files;
-		get().updateFileStatus(
-			parentNode.id,
-			currentFiles.filter((f) => f.id !== file.id),
+		const currentNode = get().workspace?.nodes.find(
+			(n) => n.id === parentNode.id,
 		);
+		if (currentNode !== undefined && isFileNode(currentNode))
+			get().updateFileStatus(
+				parentNode.id,
+				currentNode.content.files.filter((f) => f.id !== file.id),
+			);
 	},
 });
