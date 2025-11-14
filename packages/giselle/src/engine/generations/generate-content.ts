@@ -9,7 +9,6 @@ import {
 	hasCapability,
 	languageModels,
 } from "@giselles-ai/language-model";
-import { isClonedFileDataPayload } from "@giselles-ai/node-registry";
 import type {
 	CompletedGeneration,
 	FailedGeneration,
@@ -19,7 +18,6 @@ import type {
 	RunningGeneration,
 } from "@giselles-ai/protocol";
 import {
-	GenerationContext,
 	isTextGenerationNode,
 	type Output,
 	type TextGenerationLanguageModelData,
@@ -76,32 +74,6 @@ export function generateContent({
 
 	logger.info(`generate content: ${generation.id}`);
 	logger.info(`generation metadata: ${JSON.stringify(metadata)}`);
-	logger.info(`generation: ${JSON.stringify(generation)}`);
-	logger.info(`context: ${JSON.stringify(context)}`);
-	const generationContext = GenerationContext.parse(generation.context);
-	logger.info(
-		{
-			totalSourceNodes: generationContext.sourceNodes.length,
-			fileNodes: generationContext.sourceNodes
-				.filter((node) => node.content.type === "file")
-				.map((node) => ({
-					nodeId: node.id,
-					filesCount:
-						node.content.type === "file" ? node.content.files.length : 0,
-					files:
-						node.content.type === "file"
-							? node.content.files.map((file) => ({
-									fileId: file.id,
-									isCloned: isClonedFileDataPayload(file),
-									originalFileIdForCopy: isClonedFileDataPayload(file)
-										? file.originalFileIdForCopy
-										: undefined,
-								}))
-							: [],
-				})),
-		},
-		"Processing source nodes for file mapping",
-	);
 	return useGenerationExecutor({
 		context,
 		generation,
