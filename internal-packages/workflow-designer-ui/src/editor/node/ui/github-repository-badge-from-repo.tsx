@@ -39,6 +39,7 @@ export function GitHubRepositoryBadgeFromRepo({
 		<GitHubRepositoryBadge
 			owner={data.fullname.owner}
 			repo={data.fullname.repo}
+			nodeType="action"
 		/>
 	);
 }
