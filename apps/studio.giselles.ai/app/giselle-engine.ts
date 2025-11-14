@@ -254,6 +254,13 @@ export const giselleEngine = NextGiselleEngine({
 			});
 		},
 		appDelete: async ({ appId }) => {
+			const currentTeam = await fetchCurrentTeam();
+			const app = await db.query.apps.findFirst({
+				where: (apps, { eq }) => eq(apps.id, appId),
+			});
+			if (app === undefined || app.teamDbId !== currentTeam.dbId) {
+				throw new Error(`App ${appId} not found or access denied`);
+			}
 			await db.delete(apps).where(eq(apps.id, appId));
 		},
 		generationComplete: async (args) => {
