@@ -149,7 +149,7 @@ export const createFileSlice: StateCreator<AppStore, [], [], FileSlice> = (
 		// Only remove from storage if no other nodes reference this file
 		if (referenceCount === 0 && file.status === "uploaded") {
 			await client.removeFile({
-				workspaceId: workspaceId,
+				workspaceId,
 				fileId: actualFileId,
 			});
 		}
