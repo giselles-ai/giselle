@@ -436,15 +436,15 @@ export function NodeComponent({
 				style={borderGradientStyle}
 			/>
 
+			{isTriggerNode(node, "github") &&
+				node.content.state.status === "configured" && (
+					<div className="absolute top-[-20px] left-0 z-10">
+						<GitHubTriggerStatusBadge
+							triggerId={node.content.state.flowTriggerId}
+						/>
+					</div>
+				)}
 			<div className={clsx("px-[16px] relative")}>
-				{isTriggerNode(node, "github") &&
-					node.content.state.status === "configured" && (
-						<div className="-mt-[6px]">
-							<GitHubTriggerStatusBadge
-								triggerId={node.content.state.flowTriggerId}
-							/>
-						</div>
-					)}
 				<div className="flex items-center gap-[8px]">
 					<div
 						className={clsx(
