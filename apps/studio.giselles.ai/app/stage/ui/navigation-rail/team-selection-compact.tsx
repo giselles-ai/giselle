@@ -10,7 +10,7 @@ export function TeamSelectionCompact({
 	userPromise: Promise<UserDataForNavigationRail>;
 }) {
 	const user = use(userPromise);
-	if (!user.allTeams || !user.currentTeam) return null;
+	if (!user.allTeams) return null;
 	return (
 		<TeamSelectionForm
 			allTeams={user.allTeams}

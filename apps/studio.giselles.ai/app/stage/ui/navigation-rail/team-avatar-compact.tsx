@@ -11,7 +11,6 @@ export function TeamAvatarCompact({
 	userPromise: Promise<UserDataForNavigationRail>;
 }) {
 	const user = use(userPromise);
-	if (!user.currentTeam) return null;
 	const team = user.currentTeam;
 	return (
 		<div className="w-full flex justify-center my-2">
