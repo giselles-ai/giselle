@@ -126,7 +126,7 @@ export const navigationItems = [
 		id: "nav-vector-stores",
 		type: "link",
 		icon: SquareLibrary,
-		label: "Vector stores",
+		label: "Vector Stores",
 		href: "/settings/team/vector-stores",
 		isActive: (p: string) => p.startsWith("/settings/team/vector-stores"),
 	},
@@ -161,7 +161,7 @@ export const navigationItems = [
 		id: "nav-whats-new",
 		type: "external",
 		icon: Megaphone,
-		label: "Whats new",
+		label: "What's New",
 		href: "https://docs.giselles.ai/en/releases/release-notes",
 	},
 	{
