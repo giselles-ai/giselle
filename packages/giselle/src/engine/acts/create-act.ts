@@ -101,13 +101,6 @@ export async function createAct(
 		throw new Error("No trigger or app entry node found");
 	}
 
-	if (
-		starterNode.content.type === "appEntry" &&
-		starterNode.content.status === "unconfigured"
-	) {
-		throw new Error("App entry node is unconfigured");
-	}
-
 	const actId = ActId.generate();
 	const levels = buildLevels(nodes, connections);
 
@@ -201,7 +194,7 @@ export async function createAct(
 		id: actId,
 		workspaceId: workspace.id,
 		status: "created",
-		name: defaultName(starterNode),
+		name: starterNode ? defaultName(starterNode) : "node-group",
 		steps: {
 			queued: generations.length,
 			inProgress: 0,
