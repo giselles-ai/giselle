@@ -257,6 +257,26 @@ export function NodeComponent({
 	const requiresSetup = nodeRequiresSetup(node);
 	const inputHandleContentType = getInputHandleContentType(node);
 
+	const borderGradientStyle = useMemo(() => {
+		if (requiresSetup) return undefined;
+		let colorVar = "";
+		if (v.isText) colorVar = "var(--color-text-node-1)";
+		else if (v.isFile) colorVar = "var(--color-file-node-1)";
+		else if (v.isWebPage) colorVar = "var(--color-webPage-node-1)";
+		else if (v.isTextGeneration) colorVar = "var(--color-generation-node-1)";
+		else if (v.isImageGeneration) colorVar = "var(--color-image-generation-node-1)";
+		else if (v.isGithub || v.isVectorStoreGithub || v.isVectorStoreDocument)
+			colorVar = "var(--color-github-node-1)";
+		else if (v.isTrigger || v.isAppEntry) colorVar = "var(--color-trigger-node-1)";
+		else if (v.isAction) colorVar = "var(--color-action-node-1)";
+		else if (v.isQuery) colorVar = "var(--color-query-node-1)";
+		else return undefined;
+
+		return {
+			backgroundImage: `linear-gradient(to bottom right, color-mix(in srgb, ${colorVar} 30%, transparent 70%), color-mix(in srgb, ${colorVar} 50%, transparent 50%) 50%, ${colorVar})`,
+		};
+	}, [v, requiresSetup]);
+
 	return (
 		<div
 			data-type={node.type}
@@ -271,22 +291,35 @@ export function NodeComponent({
 			className={clsx(
 				"group relative flex flex-col rounded-[16px] py-[16px] gap-[16px] min-w-[180px]",
 				"bg-transparent transition-all backdrop-blur-[4px]",
-				v.isText && "shadow-text-node-1",
-				v.isFile && "shadow-file-node-1",
-				v.isWebPage && "shadow-webPage-node-1",
-				v.isTextGeneration && "shadow-generation-node-1",
-				v.isImageGeneration && "shadow-image-generation-node-1",
-				v.isGithub && "shadow-github-node-1",
-				v.isVectorStoreGithub && "shadow-github-node-1",
-				v.isVectorStoreDocument && "shadow-github-node-1",
-				v.isTrigger && "shadow-trigger-node-1",
-				v.isAppEntry && "shadow-trigger-node-1",
-				v.isAction && "shadow-action-node-1",
-				v.isQuery && "shadow-query-node-1",
+				!selected && !highlighted && "shadow-[4px_4px_8px_4px_rgba(0,0,0,0.5)]",
+				selected && v.isText && "shadow-text-node-1",
+				selected && v.isFile && "shadow-file-node-1",
+				selected && v.isWebPage && "shadow-webPage-node-1",
+				selected && v.isTextGeneration && "shadow-generation-node-1",
+				selected && v.isImageGeneration && "shadow-image-generation-node-1",
+				selected && v.isGithub && "shadow-github-node-1",
+				selected && v.isVectorStoreGithub && "shadow-github-node-1",
+				selected && v.isVectorStoreDocument && "shadow-github-node-1",
+				selected && v.isTrigger && "shadow-trigger-node-1",
+				selected && v.isAppEntry && "shadow-trigger-node-1",
+				selected && v.isAction && "shadow-action-node-1",
+				selected && v.isQuery && "shadow-query-node-1",
 				selected && "shadow-[0px_0px_16px_0px]",
 				selected &&
 					(v.isTrigger || v.isAppEntry) &&
 					"shadow-[0px_0px_16px_0px_hsl(220,15%,50%)]",
+				highlighted && v.isText && "shadow-text-node-1",
+				highlighted && v.isFile && "shadow-file-node-1",
+				highlighted && v.isWebPage && "shadow-webPage-node-1",
+				highlighted && v.isTextGeneration && "shadow-generation-node-1",
+				highlighted && v.isImageGeneration && "shadow-image-generation-node-1",
+				highlighted && v.isGithub && "shadow-github-node-1",
+				highlighted && v.isVectorStoreGithub && "shadow-github-node-1",
+				highlighted && v.isVectorStoreDocument && "shadow-github-node-1",
+				highlighted && v.isTrigger && "shadow-trigger-node-1",
+				highlighted && v.isAppEntry && "shadow-trigger-node-1",
+				highlighted && v.isAction && "shadow-action-node-1",
+				highlighted && v.isQuery && "shadow-query-node-1",
 				highlighted && "shadow-[0px_0px_16px_0px]",
 				highlighted &&
 					(v.isTrigger || v.isAppEntry) &&
@@ -344,25 +377,37 @@ export function NodeComponent({
 			</AnimatePresence>
 			<div
 				className={clsx(
-					"absolute z-0 rounded-[16px] inset-0 border-[1.5px] mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder",
+					"absolute z-0 rounded-[16px] inset-0 border-[1.5px] mask-fill",
 					requiresSetup
 						? "border-black/60 border-dashed [border-width:2px]"
 						: "border-transparent",
-					v.isText && "from-text-node-1/40 to-text-node-1",
-					v.isFile && "from-file-node-1/40 to-file-node-1",
-					v.isWebPage && "from-webPage-node-1/40 to-webPage-node-1",
-					v.isTextGeneration &&
-						"from-generation-node-1/40 to-generation-node-1",
-					v.isImageGeneration &&
-						"from-image-generation-node-1/40 to-image-generation-node-1",
-					v.isGithub && "from-github-node-1/40 to-github-node-1",
-					v.isVectorStoreGithub && "from-github-node-1/40 to-github-node-1",
-					v.isVectorStoreDocument && "from-github-node-1/40 to-github-node-1",
-					v.isTrigger && "from-trigger-node-1/60 to-trigger-node-1",
-					v.isAppEntry && "from-trigger-node-1/60 to-trigger-node-1",
-					v.isAction && "from-action-node-1/40 to-action-node-1",
-					v.isQuery && "from-query-node-1/40 to-query-node-1",
+					!borderGradientStyle && "bg-gradient-to-br",
+					!borderGradientStyle && v.isText && "from-text-node-1/30 via-text-node-1/50 to-text-node-1",
+					!borderGradientStyle && v.isFile && "from-file-node-1/30 via-file-node-1/50 to-file-node-1",
+					!borderGradientStyle && v.isWebPage && "from-webPage-node-1/30 via-webPage-node-1/50 to-webPage-node-1",
+					!borderGradientStyle &&
+						v.isTextGeneration &&
+						"from-generation-node-1/30 via-generation-node-1/50 to-generation-node-1",
+					!borderGradientStyle &&
+						v.isImageGeneration &&
+						"from-image-generation-node-1/30 via-image-generation-node-1/50 to-image-generation-node-1",
+					!borderGradientStyle && v.isGithub && "from-github-node-1/30 via-github-node-1/50 to-github-node-1",
+					!borderGradientStyle &&
+						v.isVectorStoreGithub &&
+						"from-github-node-1/30 via-github-node-1/50 to-github-node-1",
+					!borderGradientStyle &&
+						v.isVectorStoreDocument &&
+						"from-github-node-1/30 via-github-node-1/50 to-github-node-1",
+					!borderGradientStyle &&
+						v.isTrigger &&
+						"from-trigger-node-1/30 via-trigger-node-1/50 to-trigger-node-1",
+					!borderGradientStyle &&
+						v.isAppEntry &&
+						"from-trigger-node-1/30 via-trigger-node-1/50 to-trigger-node-1",
+					!borderGradientStyle && v.isAction && "from-action-node-1/30 via-action-node-1/50 to-action-node-1",
+					!borderGradientStyle && v.isQuery && "from-query-node-1/30 via-query-node-1/50 to-query-node-1",
 				)}
+				style={borderGradientStyle}
 			/>
 
 			<div className={clsx("px-[16px] relative")}>
