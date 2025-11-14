@@ -85,8 +85,8 @@
 	/* radial overlay for stage canvases (grid background overlay) */
 	--stage-radial-overlay: radial-gradient(
 		45% 45% at 50% 50%,
-		rgba(20, 30, 45, 0.3),
-		rgba(10, 15, 25, 0.8)
+		rgba(25, 35, 52, 0.3),
+		rgba(12, 18, 30, 0.8)
 	);
 
 	/* auth */
