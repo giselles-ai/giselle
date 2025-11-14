@@ -23,32 +23,48 @@ export async function handleSubscriptionCancellation(
 		);
 	}
 
-	// Get the earliest admin's membership ID
-	const [earliestAdmin] = await db
-		.select({ id: teamMemberships.id })
-		.from(teamMemberships)
-		.where(
-			and(
-				eq(teamMemberships.teamDbId, sub.teamDbId),
-				eq(teamMemberships.role, "admin"),
-			),
-		)
-		.orderBy(teamMemberships.id)
+	const [team] = await db
+		.select({ plan: teams.plan })
+		.from(teams)
+		.where(eq(teams.dbId, sub.teamDbId))
 		.limit(1);
 
-	if (!earliestAdmin) {
-		throw new Error(`No admin found for team (id: ${sub.teamDbId})`);
+	if (!team) {
+		throw new Error(`Team not found (id: ${sub.teamDbId})`);
 	}
 
-	// Delete all team memberships except the earliest admin
-	await db
-		.delete(teamMemberships)
-		.where(
-			and(
-				eq(teamMemberships.teamDbId, sub.teamDbId),
-				ne(teamMemberships.id, earliestAdmin.id),
-			),
-		);
+	const shouldApplyStripeCancellation =
+		team.plan !== "internal" && team.plan !== "enterprise";
+	// Enterprise plan is not managed in Stripe, so cancellation webhooks should never mutate those teams.
+
+	if (shouldApplyStripeCancellation) {
+		// Get the earliest admin's membership ID
+		const [earliestAdmin] = await db
+			.select({ id: teamMemberships.id })
+			.from(teamMemberships)
+			.where(
+				and(
+					eq(teamMemberships.teamDbId, sub.teamDbId),
+					eq(teamMemberships.role, "admin"),
+				),
+			)
+			.orderBy(teamMemberships.id)
+			.limit(1);
+
+		if (!earliestAdmin) {
+			throw new Error(`No admin found for team (id: ${sub.teamDbId})`);
+		}
+
+		// Delete all team memberships except the earliest admin
+		await db
+			.delete(teamMemberships)
+			.where(
+				and(
+					eq(teamMemberships.teamDbId, sub.teamDbId),
+					ne(teamMemberships.id, earliestAdmin.id),
+				),
+			);
+	}
 
 	await db
 		.update(teams)
