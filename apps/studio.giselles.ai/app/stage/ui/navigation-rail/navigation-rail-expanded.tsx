@@ -1,4 +1,5 @@
 import { ChevronsLeftIcon } from "lucide-react";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Suspense, use } from "react";
 import { GiselleLogo } from "@/components/giselle-logo";
@@ -32,7 +33,16 @@ export function NavigationRailExpanded({
 		<NavigationRailContainer variant="expanded">
 			<NavigationRailHeader>
 				<div className="flex items-center justify-between w-full pt-6 pb-4">
-					<GiselleLogo className="w-[96px] h-auto fill-inverse" />
+					<Link
+						href="/"
+						aria-label="Go to home"
+						className="flex items-center gap-[3px] group"
+					>
+						<GiselleLogo className="w-[96px] h-auto fill-inverse group-hover:fill-primary-100 transition-colors" />
+						<span className="text-inverse text-[13px] font-semibold group-hover:text-primary-100 transition-colors">
+							Studio
+						</span>
+					</Link>
 					<MenuButton
 						onClick={() => onCollapseButtonClick()}
 						className="cursor-w-resize"
