@@ -14,7 +14,6 @@ function getBackgroundColorClass(nodeType: NodeType): string {
 			return "bg-trigger-node-1/50";
 		case "action":
 			return "bg-action-node-1/50";
-		case "vectorStore":
 		default:
 			return "bg-github-node-1/50";
 	}

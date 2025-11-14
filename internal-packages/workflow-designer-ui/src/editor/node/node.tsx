@@ -20,7 +20,7 @@ import {
 import clsx from "clsx/lite";
 import { CheckIcon, SquareIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useMemo, useRef, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useTransition } from "react";
 import { useShallow } from "zustand/shallow";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
@@ -257,19 +257,22 @@ export function NodeComponent({
 	const requiresSetup = nodeRequiresSetup(node);
 	const inputHandleContentType = getInputHandleContentType(node);
 
-	function getNodeColorVariable(v: typeof v): string | undefined {
-		if (v.isText) return "var(--color-text-node-1)";
-		if (v.isFile) return "var(--color-file-node-1)";
-		if (v.isWebPage) return "var(--color-webPage-node-1)";
-		if (v.isTextGeneration) return "var(--color-generation-node-1)";
-		if (v.isImageGeneration) return "var(--color-image-generation-node-1)";
-		if (v.isGithub || v.isVectorStoreGithub || v.isVectorStoreDocument)
-			return "var(--color-github-node-1)";
-		if (v.isTrigger || v.isAppEntry) return "var(--color-trigger-node-1)";
-		if (v.isAction) return "var(--color-action-node-1)";
-		if (v.isQuery) return "var(--color-query-node-1)";
-		return undefined;
-	}
+	const getNodeColorVariable = useCallback(
+		(v: typeof v): string | undefined => {
+			if (v.isText) return "var(--color-text-node-1)";
+			if (v.isFile) return "var(--color-file-node-1)";
+			if (v.isWebPage) return "var(--color-webPage-node-1)";
+			if (v.isTextGeneration) return "var(--color-generation-node-1)";
+			if (v.isImageGeneration) return "var(--color-image-generation-node-1)";
+			if (v.isGithub || v.isVectorStoreGithub || v.isVectorStoreDocument)
+				return "var(--color-github-node-1)";
+			if (v.isTrigger || v.isAppEntry) return "var(--color-trigger-node-1)";
+			if (v.isAction) return "var(--color-action-node-1)";
+			if (v.isQuery) return "var(--color-query-node-1)";
+			return undefined;
+		},
+		[],
+	);
 
 	const borderGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
@@ -279,7 +282,7 @@ export function NodeComponent({
 		return {
 			backgroundImage: `linear-gradient(to bottom right, color-mix(in srgb, ${colorVar} 30%, transparent 70%), color-mix(in srgb, ${colorVar} 50%, transparent 50%) 50%, ${colorVar})`,
 		};
-	}, [v, requiresSetup]);
+	}, [v, requiresSetup, getNodeColorVariable]);
 
 	const backgroundGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
@@ -289,7 +292,7 @@ export function NodeComponent({
 		return {
 			backgroundImage: `radial-gradient(ellipse farthest-corner at center, color-mix(in srgb, ${colorVar} 15%, transparent 85%) 0%, color-mix(in srgb, ${colorVar} 6%, transparent 94%) 50%, color-mix(in srgb, ${colorVar} 3%, transparent 97%) 75%, transparent 100%)`,
 		};
-	}, [v, requiresSetup]);
+	}, [v, requiresSetup, getNodeColorVariable]);
 
 	return (
 		<div
@@ -390,9 +393,7 @@ export function NodeComponent({
 				)}
 			</AnimatePresence>
 			<div
-				className={clsx(
-					"absolute z-[-1] rounded-[16px] inset-0",
-				)}
+				className={clsx("absolute z-[-1] rounded-[16px] inset-0")}
 				style={backgroundGradientStyle}
 			/>
 			<div
@@ -402,16 +403,24 @@ export function NodeComponent({
 						? "border-black/60 border-dashed [border-width:2px]"
 						: "border-transparent",
 					!borderGradientStyle && "bg-gradient-to-br",
-					!borderGradientStyle && v.isText && "from-text-node-1/30 via-text-node-1/50 to-text-node-1",
-					!borderGradientStyle && v.isFile && "from-file-node-1/30 via-file-node-1/50 to-file-node-1",
-					!borderGradientStyle && v.isWebPage && "from-webPage-node-1/30 via-webPage-node-1/50 to-webPage-node-1",
+					!borderGradientStyle &&
+						v.isText &&
+						"from-text-node-1/30 via-text-node-1/50 to-text-node-1",
+					!borderGradientStyle &&
+						v.isFile &&
+						"from-file-node-1/30 via-file-node-1/50 to-file-node-1",
+					!borderGradientStyle &&
+						v.isWebPage &&
+						"from-webPage-node-1/30 via-webPage-node-1/50 to-webPage-node-1",
 					!borderGradientStyle &&
 						v.isTextGeneration &&
 						"from-generation-node-1/30 via-generation-node-1/50 to-generation-node-1",
 					!borderGradientStyle &&
 						v.isImageGeneration &&
 						"from-image-generation-node-1/30 via-image-generation-node-1/50 to-image-generation-node-1",
-					!borderGradientStyle && v.isGithub && "from-github-node-1/30 via-github-node-1/50 to-github-node-1",
+					!borderGradientStyle &&
+						v.isGithub &&
+						"from-github-node-1/30 via-github-node-1/50 to-github-node-1",
 					!borderGradientStyle &&
 						v.isVectorStoreGithub &&
 						"from-github-node-1/30 via-github-node-1/50 to-github-node-1",
@@ -424,8 +433,12 @@ export function NodeComponent({
 					!borderGradientStyle &&
 						v.isAppEntry &&
 						"from-trigger-node-1/30 via-trigger-node-1/50 to-trigger-node-1",
-					!borderGradientStyle && v.isAction && "from-action-node-1/30 via-action-node-1/50 to-action-node-1",
-					!borderGradientStyle && v.isQuery && "from-query-node-1/30 via-query-node-1/50 to-query-node-1",
+					!borderGradientStyle &&
+						v.isAction &&
+						"from-action-node-1/30 via-action-node-1/50 to-action-node-1",
+					!borderGradientStyle &&
+						v.isQuery &&
+						"from-query-node-1/30 via-query-node-1/50 to-query-node-1",
 				)}
 				style={borderGradientStyle}
 			/>
