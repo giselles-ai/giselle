@@ -76,9 +76,10 @@ export function generateContent({
 	logger.info(`generate content: ${generation.id}`);
 	logger.info(`generation metadata: ${JSON.stringify(metadata)}`);
 	logger.info(`generation: ${JSON.stringify(generation)}`);
-	logger.info(`context: ${JSON.stringify(context)}`);
+	const generationContext = GenerationContext.parse(generation.context);
+	logger.info(`generationContext: ${generationContext}`);
 	logger.info(
-		`GenerationContext: ${JSON.stringify(GenerationContext.parse(generation.context))}`,
+		`generation operation node: ${JSON.stringify(generationContext.sourceNodes)}`,
 	);
 	return useGenerationExecutor({
 		context,
