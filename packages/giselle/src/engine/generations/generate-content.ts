@@ -9,6 +9,7 @@ import {
 	hasCapability,
 	languageModels,
 } from "@giselles-ai/language-model";
+import { isClonedFileDataPayload } from "@giselles-ai/node-registry";
 import type {
 	CompletedGeneration,
 	FailedGeneration,
@@ -41,7 +42,6 @@ import { useGenerationExecutor } from "./internal/use-generation-executor";
 import { createPostgresTools } from "./tools/postgres";
 import type { GenerationMetadata, PreparedToolSet } from "./types";
 import { buildMessageObject, getGeneration } from "./utils";
-import { isClonedFileDataPayload } from "@giselles-ai/node-registry";
 
 type StreamItem<T> = T extends AsyncIterableStream<infer Inner> ? Inner : never;
 
