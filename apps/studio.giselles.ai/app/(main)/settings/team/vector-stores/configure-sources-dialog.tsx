@@ -50,15 +50,15 @@ export function ConfigureSourcesDialog({
 
 	// Initialize state with current status
 	const blobStatus = contentStatuses.find((cs) => cs.contentType === "blob");
+	const issueStatus = contentStatuses.find((cs) => cs.contentType === "issue");
 	const pullRequestStatus = contentStatuses.find(
 		(cs) => cs.contentType === "pull_request",
 	);
-	const issueStatus = contentStatuses.find((cs) => cs.contentType === "issue");
 
 	const [config, setConfig] = useState({
 		code: { enabled: blobStatus?.enabled ?? true },
-		pullRequests: { enabled: pullRequestStatus?.enabled ?? false },
 		issues: { enabled: issueStatus?.enabled ?? false },
+		pullRequests: { enabled: pullRequestStatus?.enabled ?? false },
 	});
 
 	const [selectedProfiles, setSelectedProfiles] =
@@ -79,8 +79,8 @@ export function ConfigureSourcesDialog({
 				enabled: boolean;
 			}[] = [
 				{ contentType: "blob", enabled: config.code.enabled },
-				{ contentType: "pull_request", enabled: config.pullRequests.enabled },
 				{ contentType: "issue", enabled: config.issues.enabled },
+				{ contentType: "pull_request", enabled: config.pullRequests.enabled },
 			];
 
 			const result = await updateRepositoryIndexAction(
@@ -157,18 +157,6 @@ export function ConfigureSourcesDialog({
 									status={blobStatus}
 								/>
 
-								{/* Pull Requests Configuration */}
-								<ContentTypeToggle
-									icon={GitPullRequest}
-									label="Pull Requests"
-									description="Ingest merged pull request content and discussions"
-									enabled={config.pullRequests.enabled}
-									onToggle={(enabled) =>
-										setConfig({ ...config, pullRequests: { enabled } })
-									}
-									status={pullRequestStatus}
-								/>
-
 								{/* Issues Configuration */}
 								<ContentTypeToggle
 									icon={CircleDot}
@@ -179,6 +167,18 @@ export function ConfigureSourcesDialog({
 										setConfig({ ...config, issues: { enabled } })
 									}
 									status={issueStatus}
+								/>
+
+								{/* Pull Requests Configuration */}
+								<ContentTypeToggle
+									icon={GitPullRequest}
+									label="Pull Requests"
+									description="Ingest merged pull request content and discussions"
+									enabled={config.pullRequests.enabled}
+									onToggle={(enabled) =>
+										setConfig({ ...config, pullRequests: { enabled } })
+									}
+									status={pullRequestStatus}
 								/>
 							</div>
 						</div>

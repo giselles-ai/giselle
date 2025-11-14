@@ -51,8 +51,8 @@ export function RepositoryRegistrationDialog({
 	const [isPending, startTransition] = useTransition();
 	const [contentConfig, setContentConfig] = useState({
 		code: { enabled: true },
-		pullRequests: { enabled: false },
 		issues: { enabled: false },
+		pullRequests: { enabled: false },
 	});
 	const [selectedProfiles, setSelectedProfiles] = useState<number[]>([1]); // Default to OpenAI Small
 
@@ -99,12 +99,11 @@ export function RepositoryRegistrationDialog({
 		setContentConfig((prev) => ({ ...prev, code: { enabled } }));
 	}, []);
 
-	const handleTogglePullRequests = useCallback((enabled: boolean) => {
-		setContentConfig((prev) => ({ ...prev, pullRequests: { enabled } }));
-	}, []);
-
 	const handleToggleIssues = useCallback((enabled: boolean) => {
 		setContentConfig((prev) => ({ ...prev, issues: { enabled } }));
+	}, []);
+	const handleTogglePullRequests = useCallback((enabled: boolean) => {
+		setContentConfig((prev) => ({ ...prev, pullRequests: { enabled } }));
 	}, []);
 
 	const handleSubmit = useCallback(
@@ -141,11 +140,11 @@ export function RepositoryRegistrationDialog({
 					enabled: boolean;
 				}[] = [
 					{ contentType: "blob", enabled: contentConfig.code.enabled },
+					{ contentType: "issue", enabled: contentConfig.issues.enabled },
 					{
 						contentType: "pull_request",
 						enabled: contentConfig.pullRequests.enabled,
 					},
-					{ contentType: "issue", enabled: contentConfig.issues.enabled },
 				];
 
 				const result = await registerRepositoryIndexAction(
@@ -161,8 +160,8 @@ export function RepositoryRegistrationDialog({
 					setRepositoryId("");
 					setContentConfig({
 						code: { enabled: true },
-						pullRequests: { enabled: false },
 						issues: { enabled: false },
+						pullRequests: { enabled: false },
 					});
 					setSelectedProfiles([1]); // Reset to default
 				} else {
@@ -334,6 +333,25 @@ export function RepositoryRegistrationDialog({
 									</Toggle>
 								</div>
 
+								{/* Issues Configuration */}
+								<div className="bg-inverse/5 rounded-lg p-4">
+									<Toggle
+										name="issues-toggle"
+										checked={contentConfig.issues.enabled}
+										onCheckedChange={handleToggleIssues}
+									>
+										<div className="flex-1 mr-3">
+											<div className="flex items-center gap-2 mb-1">
+												<CircleDot size={18} className="text-text-muted" />
+												<span className="text-text font-medium">Issues</span>
+											</div>
+											<p className="text-xs text-text-muted">
+												Index issue titles, descriptions, and comments
+											</p>
+										</div>
+									</Toggle>
+								</div>
+
 								{/* Pull Requests Configuration */}
 								<div className="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] rounded-lg p-4">
 									<Toggle
@@ -350,25 +368,6 @@ export function RepositoryRegistrationDialog({
 											</div>
 											<p className="text-xs text-text-muted">
 												Ingest merged pull request content and discussions
-											</p>
-										</div>
-									</Toggle>
-								</div>
-
-								{/* Issues Configuration */}
-								<div className="bg-inverse/5 rounded-lg p-4">
-									<Toggle
-										name="issues-toggle"
-										checked={contentConfig.issues.enabled}
-										onCheckedChange={handleToggleIssues}
-									>
-										<div className="flex-1 mr-3">
-											<div className="flex items-center gap-2 mb-1">
-												<CircleDot size={18} className="text-text-muted" />
-												<span className="text-text font-medium">Issues</span>
-											</div>
-											<p className="text-xs text-text-muted">
-												Index issue titles, descriptions, and comments
 											</p>
 										</div>
 									</Toggle>
