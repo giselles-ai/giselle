@@ -23,37 +23,12 @@
 	},
 	"devDependencies": {
 		"@giselles-ai/protocol": "workspace:*",
-		"@giselles-ai/rag": "workspace:^",
 		"@giselles-ai/tsconfig": "workspace:*",
-		"@types/pg": "catalog:",
-		"@types/react": "catalog:",
-		"@zod/core": "0.11.6",
-		"pino": "catalog:",
 		"tsup": "catalog:",
-		"vitest": "catalog:",
-		"zustand": "catalog:"
+		"vitest": "catalog:"
 	},
 	"dependencies": {
-		"@ai-sdk/anthropic": "catalog:",
-		"@ai-sdk/fal": "catalog:",
-		"@ai-sdk/gateway": "catalog:",
-		"@ai-sdk/google": "catalog:",
-		"@ai-sdk/openai": "catalog:",
-		"@ai-sdk/provider": "catalog:",
-		"@giselles-ai/action-registry": "workspace:*",
-		"@giselles-ai/giselle": "workspace:*",
-		"@giselles-ai/github-tool": "workspace:^",
-		"@giselles-ai/language-model": "workspace:^",
-		"@giselles-ai/node-registry": "workspace:*",
-		"@giselles-ai/text-editor-utils": "workspace:^",
-		"@giselles-ai/trigger-registry": "workspace:*",
-		"@giselles-ai/web-search": "workspace:^",
-		"ai": "catalog:",
-		"next": "catalog:",
-		"openai": "catalog:",
-		"pg": "catalog:",
-		"react": "catalog:",
-		"swr": "catalog:"
+		"@giselles-ai/giselle": "workspace:*"
 	},
 	"peerDependencies": {
 		"zod": "catalog:",

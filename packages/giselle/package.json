@@ -31,8 +31,7 @@
 		"pino": "catalog:",
 		"tsup": "catalog:",
 		"vitest": "catalog:",
-		"zod": "catalog:",
-		"zustand": "catalog:"
+		"zod": "catalog:"
 	},
 	"dependencies": {
 		"@ai-sdk/anthropic": "catalog:",
@@ -52,11 +51,9 @@
 		"next": "catalog:",
 		"openai": "catalog:",
 		"pg": "catalog:",
-		"react": "catalog:",
-		"swr": "catalog:"
+		"react": "catalog:"
 	},
 	"peerDependencies": {
-		"zod": "catalog:",
-		"zustand": "catalog:"
+		"zod": "catalog:"
 	}
 }
