@@ -9,6 +9,7 @@ import {
 	hasCapability,
 	languageModels,
 } from "@giselles-ai/language-model";
+import type { GiselleLogger } from "@giselles-ai/logger";
 import type {
 	CompletedGeneration,
 	FailedGeneration,
@@ -31,7 +32,6 @@ import {
 	streamText,
 	type UIMessage,
 } from "ai";
-import type { GiselleLogger } from "../../../logger";
 import { batchWriter } from "../../../utils";
 import type { GiselleEngineContext } from "../../contracts";
 import { generationUiMessageChunksPath } from "../path";

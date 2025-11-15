@@ -1,3 +1,4 @@
+import type { GiselleLogger } from "@giselles-ai/logger";
 import {
 	ActId,
 	type Generation,
@@ -8,7 +9,6 @@ import {
 	type Sequence,
 } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
-import type { GiselleLogger } from "../../../logger";
 import type { GiselleEngineContext } from "../../contracts";
 import {
 	type GenerationMetadata,

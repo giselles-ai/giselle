@@ -1,4 +1,5 @@
 import type { LanguageModelProvider } from "@giselles-ai/language-model";
+import type { GiselleLogger } from "@giselles-ai/logger";
 import type {
 	Act,
 	GenerationOrigin,
@@ -7,7 +8,6 @@ import type {
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import type { GiselleStorage } from "@giselles-ai/storage";
-import type { GiselleLogger } from "../../logger";
 import type { GenerationMetadata } from "../runtime/generations";
 import type { TelemetrySettings } from "../runtime/telemetry";
 import type { Vault } from "../runtime/vault";

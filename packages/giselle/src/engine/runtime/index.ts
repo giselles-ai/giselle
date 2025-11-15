@@ -1,3 +1,4 @@
+import { type GiselleLogger, noopLogger } from "@giselles-ai/logger";
 import {
 	ActId,
 	type FetchingWebPage,
@@ -15,7 +16,6 @@ import {
 	type Workspace,
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
-import { type GiselleLogger, noopLogger } from "../../logger";
 import type {
 	GiselleEngineConfig,
 	GiselleEngineContext,

@@ -28,7 +28,6 @@
 		"@types/pg": "catalog:",
 		"@types/react": "catalog:",
 		"@zod/core": "0.11.6",
-		"pino": "catalog:",
 		"tsup": "catalog:",
 		"vitest": "catalog:",
 		"zod": "catalog:"
@@ -43,6 +42,7 @@
 		"@giselles-ai/action-registry": "workspace:*",
 		"@giselles-ai/github-tool": "workspace:^",
 		"@giselles-ai/language-model": "workspace:^",
+		"@giselles-ai/logger": "workspace:*",
 		"@giselles-ai/node-registry": "workspace:*",
 		"@giselles-ai/storage": "workspace:*",
 		"@giselles-ai/text-editor-utils": "workspace:^",
