@@ -22,8 +22,7 @@
 	},
 	"devDependencies": {
 		"@giselles-ai/tsconfig": "workspace:*",
-		"tsup": "catalog:",
-		"vitest": "catalog:"
+		"tsup": "catalog:"
 	},
 	"peerDependencies": {
 		"zod": "catalog:"
