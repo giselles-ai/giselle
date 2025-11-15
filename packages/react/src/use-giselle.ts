@@ -1,11 +1,11 @@
 import type {
-	FormDataRouterHandlers,
-	FormDataRouterInput,
-	FormDataRouterPaths,
+	FormDataRouteHandlers,
+	FormDataRouteHandlersInput,
+	FormDataRoutePath,
 	JsonResponse,
-	JsonRouterHandlers,
-	JsonRouterInput,
-	JsonRouterPaths,
+	JsonRouteHandlers,
+	JsonRouteHandlersInput,
+	JsonRoutePath,
 } from "@giselles-ai/http";
 import { useCallback, useMemo } from "react";
 import type * as z from "zod/v4";
@@ -57,26 +57,26 @@ type ExtractResponseData<T> = T extends JsonResponse<infer U>
  * Provides autocomplete and type checking for all API endpoints
  */
 export type GiselleClient = {
-	[K in JsonRouterPaths | FormDataRouterPaths]: K extends JsonRouterPaths
-		? JsonRouterInput[K] extends z.ZodType<unknown>
+	[K in JsonRoutePath | FormDataRoutePath]: K extends JsonRoutePath
+		? JsonRouteHandlersInput[K] extends z.ZodType<unknown>
 			? (
-					input: z.infer<JsonRouterInput[K]>,
+					input: z.infer<JsonRouteHandlersInput[K]>,
 					options?: GiselleRequestOptions,
 				) => Promise<
-					ExtractResponseData<Awaited<ReturnType<JsonRouterHandlers[K]>>>
+					ExtractResponseData<Awaited<ReturnType<JsonRouteHandlers[K]>>>
 				>
 			: () => Promise<
-					ExtractResponseData<Awaited<ReturnType<JsonRouterHandlers[K]>>>
+					ExtractResponseData<Awaited<ReturnType<JsonRouteHandlers[K]>>>
 				>
-		: K extends FormDataRouterPaths
-			? FormDataRouterInput[K] extends z.ZodType<unknown>
+		: K extends FormDataRoutePath
+			? FormDataRouteHandlersInput[K] extends z.ZodType<unknown>
 				? (
-						input: z.infer<FormDataRouterInput[K]>,
+						input: z.infer<FormDataRouteHandlersInput[K]>,
 					) => Promise<
-						ExtractResponseData<Awaited<ReturnType<FormDataRouterHandlers[K]>>>
+						ExtractResponseData<Awaited<ReturnType<FormDataRouteHandlers[K]>>>
 					>
 				: () => Promise<
-						ExtractResponseData<Awaited<ReturnType<FormDataRouterHandlers[K]>>>
+						ExtractResponseData<Awaited<ReturnType<FormDataRouteHandlers[K]>>>
 					>
 			: never;
 } & {

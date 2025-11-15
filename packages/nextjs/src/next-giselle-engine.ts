@@ -8,12 +8,10 @@ import {
 	verifyRequest as verifyRequestAsGitHubWebook,
 } from "@giselles-ai/github-tool";
 import {
-	createFormDataRouters,
-	createJsonRouters,
-	type FormDataRouterHandlers,
-	isFormDataRouterPath,
-	isJsonRouterPath,
-	type JsonRouterHandlers,
+	formDataRoutes,
+	isFormDataRoutePath,
+	isJsonRoutePath,
+	jsonRoutes,
 } from "@giselles-ai/http";
 import { after } from "next/server";
 import { ZodError } from "zod";
@@ -53,21 +51,6 @@ export function createHttpHandler({
 	giselle: Giselle;
 	config: NextGiselleConfig;
 }) {
-	const jsonRouter: JsonRouterHandlers = {} as JsonRouterHandlers;
-	for (const [path, createRoute] of Object.entries(createJsonRouters)) {
-		if (isJsonRouterPath(path)) {
-			// @ts-expect-error
-			jsonRouter[path] = createRoute(giselle);
-		}
-	}
-
-	const formDataRouter: FormDataRouterHandlers = {} as FormDataRouterHandlers;
-	for (const [path, createRoute] of Object.entries(createFormDataRouters)) {
-		if (isFormDataRouterPath(path)) {
-			formDataRouter[path] = createRoute(giselle);
-		}
-	}
-
 	return async function httpHandler(request: Request) {
 		let ctx: RequestContext | undefined;
 		// Vercel sets the system env var `VERCEL` to "1" on all deployments
@@ -134,9 +117,9 @@ export function createHttpHandler({
 				});
 			}
 
-			if (isJsonRouterPath(routerPath)) {
+			if (isJsonRoutePath(routerPath)) {
 				try {
-					return await jsonRouter[routerPath]({
+					return await jsonRoutes[routerPath](giselle)({
 						// @ts-expect-error
 						input: await getBody(request),
 						signal: request.signal,
@@ -151,8 +134,8 @@ export function createHttpHandler({
 					return new Response("Internal Server Error", { status: 500 });
 				}
 			}
-			if (isFormDataRouterPath(routerPath)) {
-				return await formDataRouter[routerPath]({
+			if (isFormDataRoutePath(routerPath)) {
+				return await formDataRoutes[routerPath](giselle)({
 					// @ts-expect-error
 					input: await getBody(request),
 				});

@@ -27,7 +27,7 @@ import * as z from "zod/v4";
 import { createHandler, withUsageLimitErrorHandler } from "./create-handler";
 import { JsonResponse } from "./json-response";
 
-export const createJsonRouters = {
+export const jsonRoutes = {
 	createWorkspace: (giselle: Giselle) =>
 		createHandler({
 			handler: async () => {
@@ -476,18 +476,18 @@ export const createJsonRouters = {
 } as const;
 
 // Export the types at module level
-export type JsonRouterPaths = keyof typeof createJsonRouters;
-export type JsonRouterHandlers = {
-	[P in JsonRouterPaths]: ReturnType<(typeof createJsonRouters)[P]>;
+export type JsonRoutePath = keyof typeof jsonRoutes;
+export type JsonRouteHandlers = {
+	[P in JsonRoutePath]: ReturnType<(typeof jsonRoutes)[P]>;
 };
-export type JsonRouterInput = {
-	[P in JsonRouterPaths]: Parameters<JsonRouterHandlers[P]>[0]["input"];
+export type JsonRouteHandlersInput = {
+	[P in JsonRoutePath]: Parameters<JsonRouteHandlers[P]>[0]["input"];
 };
-export function isJsonRouterPath(path: string): path is JsonRouterPaths {
-	return path in createJsonRouters;
+export function isJsonRoutePath(path: string): path is JsonRoutePath {
+	return path in jsonRoutes;
 }
 
-export const createFormDataRouters = {
+export const formDataRoutes = {
 	uploadFile: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
@@ -509,15 +509,13 @@ export const createFormDataRouters = {
 } as const;
 
 // Export the types at module level
-export type FormDataRouterPaths = keyof typeof createFormDataRouters;
-export type FormDataRouterHandlers = {
-	[P in FormDataRouterPaths]: ReturnType<(typeof createFormDataRouters)[P]>;
+export type FormDataRoutePath = keyof typeof formDataRoutes;
+export type FormDataRouteHandlers = {
+	[P in FormDataRoutePath]: ReturnType<(typeof formDataRoutes)[P]>;
 };
-export type FormDataRouterInput = {
-	[P in FormDataRouterPaths]: Parameters<FormDataRouterHandlers[P]>[0]["input"];
+export type FormDataRouteHandlersInput = {
+	[P in FormDataRoutePath]: Parameters<FormDataRouteHandlers[P]>[0]["input"];
 };
-export function isFormDataRouterPath(
-	path: string,
-): path is FormDataRouterPaths {
-	return path in createFormDataRouters;
+export function isFormDataRoutePath(path: string): path is FormDataRoutePath {
+	return path in formDataRoutes;
 }

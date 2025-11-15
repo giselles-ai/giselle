@@ -4,16 +4,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createHttpHandler } from "./next-giselle-engine";
 
 // Mock the module dependencies
-vi.mock("../http", () => {
+vi.mock("@giselles-ai/http", () => {
 	const mockJsonHandler = vi.fn().mockResolvedValue({ success: true });
 
 	return {
-		isJsonRouterPath: (path: string) => path === "testRoute",
-		isFormDataRouterPath: () => false,
-		createJsonRouters: {
+		isJsonRoutePath: (path: string) => path === "testRoute",
+		isFormDataRoutePath: () => false,
+		jsonRoutes: {
 			testRoute: () => mockJsonHandler,
 		},
-		createFormDataRouters: {},
+		formDataRoutes: {},
 	};
 });
 
