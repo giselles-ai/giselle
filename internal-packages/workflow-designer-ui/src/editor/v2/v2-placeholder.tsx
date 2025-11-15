@@ -3,7 +3,7 @@
 import {
 	useFeatureFlag,
 	useWorkflowDesignerStore,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import { useCallback, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { ReadOnlyBanner } from "../../ui/read-only-banner";

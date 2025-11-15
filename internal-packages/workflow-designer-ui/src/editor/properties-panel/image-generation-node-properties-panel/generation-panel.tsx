@@ -1,7 +1,7 @@
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import type { ImageGenerationNode } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { Maximize2 } from "lucide-react";

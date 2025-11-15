@@ -1,4 +1,4 @@
-import { useGiselleEngine } from "@giselles-ai/giselle/react";
+import { useGiselleEngine } from "@giselles-ai/react";
 import type { Trigger, TriggerNode } from "@giselles-ai/protocol";
 import { useCallback } from "react";
 import useSWR from "swr";

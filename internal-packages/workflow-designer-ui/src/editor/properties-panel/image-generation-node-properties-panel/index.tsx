@@ -4,7 +4,7 @@ import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import type { ImageGenerationNode } from "@giselles-ai/protocol";
 import { Minimize2 } from "lucide-react";
 import { useCallback, useRef, useState } from "react";

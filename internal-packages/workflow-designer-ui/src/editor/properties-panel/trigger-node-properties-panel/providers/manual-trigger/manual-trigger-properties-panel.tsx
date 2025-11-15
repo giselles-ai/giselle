@@ -11,7 +11,7 @@ import {
 	useGiselleEngine,
 	useTrigger,
 	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import {
 	ManualTriggerParameter,
 	ManualTriggerParameterId,

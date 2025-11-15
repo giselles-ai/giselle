@@ -7,7 +7,7 @@ import {
 	useGiselleEngine,
 	useIntegration,
 	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import {
 	type Output,
 	OutputId,

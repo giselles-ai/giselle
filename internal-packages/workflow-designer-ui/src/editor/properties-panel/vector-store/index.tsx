@@ -1,4 +1,4 @@
-import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
+import { useWorkflowDesigner } from "@giselles-ai/react";
 import type { VectorStoreNode } from "@giselles-ai/protocol";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";

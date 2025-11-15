@@ -19,7 +19,8 @@
 			"import": "./dist/index.mjs",
 			"require": "./dist/index.js",
 			"default": "./dist/index.js"
-		}
+		},
+		"./internal": "./src/index.ts"
 	},
 	"devDependencies": {
 		"@giselles-ai/protocol": "workspace:*",

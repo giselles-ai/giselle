@@ -3,7 +3,7 @@ import {
 	useVectorStore,
 	useWorkflowDesigner,
 	type VectorStoreContextValue,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import type {
 	DocumentVectorStoreSource,
 	EmbeddingProfileId,

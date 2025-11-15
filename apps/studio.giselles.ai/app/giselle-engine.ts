@@ -1,9 +1,6 @@
 import type { QueryContext } from "@giselles-ai/giselle";
-import {
-	getRequestId,
-	NextGiselleEngine,
-} from "@giselles-ai/giselle/next-internal";
 import { traceEmbedding, traceGeneration } from "@giselles-ai/langfuse";
+import { getRequestId, NextGiselleEngine } from "@giselles-ai/nextjs/internal";
 import {
 	type CompletedGeneration,
 	type FailedGeneration,

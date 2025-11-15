@@ -1,5 +1,5 @@
 import { Button } from "@giselle-internal/ui/button";
-import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
+import { useWorkflowDesigner } from "@giselles-ai/react";
 import type { TriggerId, TriggerNode } from "@giselles-ai/protocol";
 import {
 	type GitHubEventId,

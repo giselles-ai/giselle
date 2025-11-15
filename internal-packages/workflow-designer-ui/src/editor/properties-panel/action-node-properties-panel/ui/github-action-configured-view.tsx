@@ -8,7 +8,7 @@ import { githubActions } from "@giselles-ai/action-registry";
 import {
 	useGiselleEngine,
 	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import { defaultName } from "@giselles-ai/node-registry";
 import type {
 	ActionNode,

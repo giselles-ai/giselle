@@ -3,8 +3,8 @@ import type {
 	LanguageModelProvider,
 } from "@giselles-ai/giselle";
 import { fsStorageDriver } from "@giselles-ai/giselle";
-import { NextGiselleEngine } from "@giselles-ai/giselle/next-internal";
 import { traceGeneration } from "@giselles-ai/langfuse";
+import { NextGiselleEngine } from "@giselles-ai/nextjs/internal";
 import { WorkspaceId } from "@giselles-ai/protocol";
 import { supabaseStorageDriver as experimental_supabaseStorageDriver } from "@giselles-ai/supabase-driver";
 import { nodeVaultDriver } from "./lib/vault-driver";

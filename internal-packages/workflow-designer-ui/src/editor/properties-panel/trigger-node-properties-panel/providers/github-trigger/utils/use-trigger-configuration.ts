@@ -1,7 +1,7 @@
 import {
 	useGiselleEngine,
 	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import {
 	type GitHubEventData,
 	type Output,

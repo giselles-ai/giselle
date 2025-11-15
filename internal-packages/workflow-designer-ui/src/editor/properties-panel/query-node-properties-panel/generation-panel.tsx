@@ -1,7 +1,7 @@
 import {
 	useNodeGenerations,
 	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import type { QueryNode } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { StackBlicksIcon } from "../../../icons";

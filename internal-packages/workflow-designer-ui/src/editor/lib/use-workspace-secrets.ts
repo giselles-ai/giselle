@@ -1,7 +1,7 @@
 import {
 	useGiselleEngine,
 	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import useSWR from "swr";
 export function useWorkspaceSecrets(tags?: string[]) {
 	const { data } = useWorkflowDesigner();

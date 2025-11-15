@@ -1,5 +1,5 @@
+import { type GiselleEngine, memoryStorageDriver } from "@giselles-ai/giselle";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { type GiselleEngine, memoryStorageDriver } from "../engine";
 import { createHttpHandler } from "./next-giselle-engine";
 
 // Mock the module dependencies

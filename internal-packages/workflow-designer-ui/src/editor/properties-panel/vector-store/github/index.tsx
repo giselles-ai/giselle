@@ -6,7 +6,7 @@ import {
 import {
 	useVectorStore,
 	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import type {
 	EmbeddingProfileId,
 	GitHubVectorStoreSource,

@@ -1,4 +1,4 @@
-import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
+import { useWorkflowDesigner } from "@giselles-ai/react";
 import { Node } from "@giselles-ai/protocol";
 import { useCallback } from "react";
 

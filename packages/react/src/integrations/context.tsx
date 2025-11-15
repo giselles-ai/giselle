@@ -1,3 +1,4 @@
+import type { Integration } from "@giselles-ai/giselle";
 import {
 	createContext,
 	type PropsWithChildren,
@@ -5,7 +6,6 @@ import {
 	useContext,
 	useState,
 } from "react";
-import type { Integration } from "../../engine/runtime/integrations";
 
 interface IntegrationContextValue {
 	value: Partial<Integration>;

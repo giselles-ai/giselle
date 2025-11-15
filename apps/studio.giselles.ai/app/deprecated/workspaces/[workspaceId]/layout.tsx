@@ -1,7 +1,7 @@
 import {
 	WorkspaceProvider,
 	ZustandBridgeProvider,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import { WorkspaceId } from "@giselles-ai/protocol";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";

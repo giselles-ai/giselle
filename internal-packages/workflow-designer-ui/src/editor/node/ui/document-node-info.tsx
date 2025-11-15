@@ -1,7 +1,7 @@
 import {
 	useVectorStore,
 	type VectorStoreContextValue,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import type { NodeLike } from "@giselles-ai/protocol";
 import { isVectorStoreNode } from "@giselles-ai/protocol";
 import type { ReactElement } from "react";

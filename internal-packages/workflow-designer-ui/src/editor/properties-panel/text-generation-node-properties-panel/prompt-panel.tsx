@@ -10,7 +10,7 @@ import {
 	useFeatureFlag,
 	useUsageLimits,
 	useWorkflowDesignerStore,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import {
 	anthropicLanguageModels,
 	googleLanguageModels,

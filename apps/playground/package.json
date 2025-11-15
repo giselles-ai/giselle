@@ -19,9 +19,11 @@
 	"dependencies": {
 		"@giselle-internal/ui": "workspace:^",
 		"@giselle-internal/workflow-designer-ui": "workspace:*",
-		"@giselles-ai/protocol": "workspace:*",
 		"@giselles-ai/giselle": "workspace:*",
 		"@giselles-ai/langfuse": "workspace:^",
+		"@giselles-ai/nextjs": "workspace:*",
+		"@giselles-ai/protocol": "workspace:*",
+		"@giselles-ai/react": "workspace:*",
 		"@giselles-ai/supabase-driver": "workspace:^",
 		"clsx": "catalog:",
 		"lucide-react": "catalog:",

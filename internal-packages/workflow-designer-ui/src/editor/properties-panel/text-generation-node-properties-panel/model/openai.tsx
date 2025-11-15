@@ -1,7 +1,7 @@
 import { Select } from "@giselle-internal/ui/select";
 import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { Toggle } from "@giselle-internal/ui/toggle";
-import { useUsageLimits } from "@giselles-ai/giselle/react";
+import { useUsageLimits } from "@giselles-ai/react";
 import {
 	Capability,
 	hasCapability,

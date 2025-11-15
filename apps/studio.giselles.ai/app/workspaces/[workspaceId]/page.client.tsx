@@ -5,7 +5,7 @@ import type { Integration } from "@giselles-ai/giselle";
 import {
 	WorkspaceProvider,
 	ZustandBridgeProvider,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import type { Trigger } from "@giselles-ai/protocol";
 import { use } from "react";
 import type { LoaderData } from "./data-loader";

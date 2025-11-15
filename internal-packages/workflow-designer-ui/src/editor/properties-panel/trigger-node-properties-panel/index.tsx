@@ -1,4 +1,4 @@
-import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
+import { useWorkflowDesigner } from "@giselles-ai/react";
 import type { TriggerNode } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { createContext, useContext, useState } from "react";

@@ -1,5 +1,5 @@
 import { Toggle } from "@giselle-internal/ui/toggle";
-import { useUsageLimits } from "@giselles-ai/giselle/react";
+import { useUsageLimits } from "@giselles-ai/react";
 import {
 	anthropicLanguageModels,
 	Capability,

@@ -3,7 +3,7 @@ import {
 	useVectorStore,
 	useWorkflowDesigner,
 	type VectorStoreContextValue,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import { isVectorStoreNode, type QueryNode } from "@giselles-ai/protocol";
 import { TextEditor } from "@giselles-ai/text-editor/react-internal";
 import { DatabaseZapIcon, X } from "lucide-react";

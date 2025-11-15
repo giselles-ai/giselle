@@ -1,4 +1,4 @@
-import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
+import { useWorkflowDesigner } from "@giselles-ai/react";
 import type { TextNode } from "@giselles-ai/protocol";
 import { TextEditor } from "@giselles-ai/text-editor/react";
 import { useRef } from "react";

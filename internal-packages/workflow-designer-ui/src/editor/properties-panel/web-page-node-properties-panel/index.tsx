@@ -5,7 +5,7 @@ import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	useGiselleEngine,
 	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import {
 	type WebPage,
 	WebPageId,

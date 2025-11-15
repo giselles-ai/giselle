@@ -12,7 +12,7 @@ import type { GitHubIntegrationInstallation } from "@giselles-ai/giselle";
 import {
 	useIntegration,
 	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import {
 	type ActionNode,
 	type Input,

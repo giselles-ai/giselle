@@ -1,7 +1,7 @@
 "use client";
 
+import type { TelemetrySettings, UsageLimits } from "@giselles-ai/giselle";
 import type { ReactNode } from "react";
-import type { TelemetrySettings, UsageLimits } from "../../engine";
 import {
 	FeatureFlagContext,
 	type FeatureFlagContextValue,

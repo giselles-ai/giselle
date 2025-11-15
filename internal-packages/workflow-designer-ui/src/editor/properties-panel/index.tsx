@@ -1,4 +1,4 @@
-import { useWorkflowDesignerStore } from "@giselles-ai/giselle/react";
+import { useWorkflowDesignerStore } from "@giselles-ai/react";
 import {
 	isActionNode,
 	isAppEntryNode,

@@ -4,7 +4,7 @@ import {
 	useActSystem,
 	useGiselleEngine,
 	useWorkflowDesignerStore,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import type { AppEntryNode, ConnectionId } from "@giselles-ai/protocol";
 import { clsx } from "clsx/lite";
 import { LoaderIcon, PlayIcon, XIcon } from "lucide-react";

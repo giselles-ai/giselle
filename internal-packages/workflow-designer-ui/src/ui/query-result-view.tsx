@@ -1,7 +1,7 @@
 import {
 	useVectorStore,
 	type VectorStoreContextValue,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import type { Generation } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import {

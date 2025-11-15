@@ -15,7 +15,7 @@ import {
 	useActSystem,
 	useNodeGroups,
 	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import { defaultName } from "@giselles-ai/node-registry";
 import type {
 	AppEntryNode,

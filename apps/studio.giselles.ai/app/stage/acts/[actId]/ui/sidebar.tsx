@@ -5,7 +5,7 @@ import { NodeIcon } from "@giselle-internal/workflow-designer-ui";
 import {
 	ActStreamReader,
 	type StreamDataEventHandler,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import type {
 	Act,
 	Generation,

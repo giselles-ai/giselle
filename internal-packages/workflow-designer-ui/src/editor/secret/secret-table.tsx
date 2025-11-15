@@ -16,11 +16,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@giselle-internal/ui/table";
-import {
-	useGiselleEngine,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
 import { isTextGenerationNode, type SecretId } from "@giselles-ai/protocol";
+import { useGiselleEngine, useWorkflowDesigner } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import { useCallback, useState, useTransition } from "react";
