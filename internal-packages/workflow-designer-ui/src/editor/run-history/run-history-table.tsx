@@ -8,7 +8,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@giselle-internal/ui/table";
-import { useGiselleEngine, useWorkflowDesigner } from "@giselles-ai/react";
+import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import { LoaderIcon, RefreshCcwIcon } from "lucide-react";
 import useSWR from "swr";
 
@@ -27,7 +27,7 @@ function formatDuration(ms: number): string {
 }
 
 export function RunHistoryTable() {
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const { data: workspace } = useWorkflowDesigner();
 	const { data, isLoading, isValidating, mutate } = useSWR(
 		{

@@ -6,7 +6,7 @@ import type {
 import { useCallback, useEffect, useMemo } from "react";
 import useSWR from "swr";
 import { useShallow } from "zustand/shallow";
-import { useGiselleEngine } from "../../use-giselle-engine";
+import { useGiselle } from "../../use-giselle";
 import { useGenerationRunnerSystem } from "../contexts";
 import { useGenerationStore } from "../store";
 
@@ -31,7 +31,7 @@ export function useNodeGenerations({
 		stopGenerationRunner: stopGenerationSystem,
 		addGenerationRunner,
 	} = useGenerationRunnerSystem();
-	const client = useGiselleEngine();
+	const client = useGiselle();
 
 	/** @todo fetch on server */
 	const { data, isLoading } = useSWR(

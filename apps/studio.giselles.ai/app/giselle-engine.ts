@@ -1,6 +1,6 @@
 import type { QueryContext } from "@giselles-ai/giselle";
 import { traceEmbedding, traceGeneration } from "@giselles-ai/langfuse";
-import { getRequestId, NextGiselleEngine } from "@giselles-ai/nextjs/internal";
+import { getRequestId, NextGiselle } from "@giselles-ai/nextjs/internal";
 import {
 	type CompletedGeneration,
 	type FailedGeneration,
@@ -190,7 +190,7 @@ const generateContentProcessor =
 		? "trigger.dev"
 		: "self";
 
-export const giselleEngine = NextGiselleEngine({
+export const giselleEngine = NextGiselle({
 	basePath: "/api/giselle",
 	storage,
 	llmProviders: ["openai", "anthropic", "google"],

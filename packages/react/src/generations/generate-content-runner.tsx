@@ -1,7 +1,7 @@
 import type { Generation, RunningGeneration } from "@giselles-ai/protocol";
 import { createUIMessageStream, readUIMessageStream, type UIMessage } from "ai";
 import { useCallback, useEffect, useRef } from "react";
-import { useGiselleEngine } from "../use-giselle-engine";
+import { useGiselle } from "../use-giselle";
 import { useGenerationRunnerSystem } from "./contexts";
 import { useGenerationStore } from "./store";
 
@@ -57,7 +57,7 @@ export function GenerateContentRunner({
 	onFinish?: GenerateContentOnFinishCallback;
 	onError?: GenerateContentOnErrorCallback;
 }) {
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const upsertMessage = useGenerationStore((s) => s.upsertMessage);
 	const updateGeneration = useGenerationStore((s) => s.updateGeneration);
 	const { updateGenerationStatusToComplete } = useGenerationRunnerSystem();

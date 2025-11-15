@@ -1,7 +1,7 @@
 "use client";
 
 import type { Generation } from "@giselles-ai/protocol";
-import { useGiselleEngine } from "@giselles-ai/react";
+import { useGiselle } from "@giselles-ai/react";
 import type { UIMessage } from "ai";
 import { ChevronRightIcon } from "lucide-react";
 import { Accordion } from "radix-ui";
@@ -83,7 +83,7 @@ function _renderImageLoadingGrid(generation: Generation, keyPrefix: string) {
 	);
 }
 export function GenerationView({ generation }: { generation: Generation }) {
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
 	// Handle ESC key to close lightbox

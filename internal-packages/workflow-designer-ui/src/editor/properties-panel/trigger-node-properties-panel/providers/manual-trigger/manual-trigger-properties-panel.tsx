@@ -15,7 +15,7 @@ import {
 } from "@giselles-ai/protocol";
 import {
 	useFeatureFlag,
-	useGiselleEngine,
+	useGiselle,
 	useTrigger,
 	useWorkflowDesigner,
 } from "@giselles-ai/react";
@@ -37,7 +37,7 @@ const TYPE_OPTIONS = [
 
 export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	const { data: workspace, updateNodeData } = useWorkflowDesigner();
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const [isPending, startTransition] = useTransition();
 	const [parameters, setParameters] = useState<ManualTriggerParameter[]>([]);
 	const [staged, setStaged] = useState(false);

@@ -3,7 +3,7 @@ import { useToasts } from "@giselle-internal/ui/toast";
 import type { AppEntryNode, ConnectionId } from "@giselles-ai/protocol";
 import {
 	useActSystem,
-	useGiselleEngine,
+	useGiselle,
 	useWorkflowDesignerStore,
 } from "@giselles-ai/react";
 import { clsx } from "clsx/lite";
@@ -21,7 +21,7 @@ export function AppEntryInputDialog({
 	connectionIds: ConnectionId[];
 	onClose: () => void;
 }) {
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const { isLoading, data } = useSWR(
 		node.content.status === "unconfigured"
 			? null

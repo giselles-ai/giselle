@@ -1,7 +1,7 @@
 import type { GiselleIntegrationConfig } from "@giselles-ai/giselle";
 import { traceGeneration } from "@giselles-ai/langfuse";
 import type { LanguageModelProvider } from "@giselles-ai/language-model";
-import { NextGiselleEngine } from "@giselles-ai/nextjs/internal";
+import { NextGiselle } from "@giselles-ai/nextjs/internal";
 import { WorkspaceId } from "@giselles-ai/protocol";
 import { fsStorageDriver } from "@giselles-ai/storage";
 import { supabaseStorageDriver as experimental_supabaseStorageDriver } from "@giselles-ai/supabase-driver";
@@ -117,7 +117,7 @@ if (process.env.SAMPLE_APP_WORKSPACE_IDS) {
 	}
 }
 
-export const giselleEngine = NextGiselleEngine({
+export const giselleEngine = NextGiselle({
 	basePath: "/api/giselle",
 	storage,
 	llmProviders,

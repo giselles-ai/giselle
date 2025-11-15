@@ -10,19 +10,19 @@ import {
 } from "@giselles-ai/protocol";
 import type { StateCreator } from "zustand";
 import { APICallError } from "../../errors";
-import type { GiselleEngineClient } from "../../use-giselle-engine";
+import type { GiselleClient } from "../../use-giselle";
 import type { AppStore } from "./store";
 
 export interface FileSlice {
 	uploadFile: (
-		client: GiselleEngineClient,
+		client: GiselleClient,
 		workspaceId: WorkspaceId,
 		files: File[],
 		node: FileNode,
 		options?: { onError?: (error: string) => void },
 	) => Promise<void>;
 	removeFile: (
-		client: GiselleEngineClient,
+		client: GiselleClient,
 		workspaceId: WorkspaceId,
 		file: FileData,
 	) => Promise<void>;

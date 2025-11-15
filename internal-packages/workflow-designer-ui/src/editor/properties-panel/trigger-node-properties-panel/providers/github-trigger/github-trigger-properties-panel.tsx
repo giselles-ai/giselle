@@ -10,7 +10,7 @@ import {
 	type TriggerNode,
 } from "@giselles-ai/protocol";
 import {
-	useGiselleEngine,
+	useGiselle,
 	useIntegration,
 	useWorkflowDesigner,
 } from "@giselles-ai/react";
@@ -332,7 +332,7 @@ export function Installed({
 		useTriggerConfiguration({
 			node,
 		});
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const [isPending, startTransition] = useTransition();
 	const [eventId, setEventId] = useState<GitHubEventId>(
 		reconfigStep?.eventId ?? "github.issue.created",

@@ -5,10 +5,7 @@ import {
 	type Workspace,
 } from "@giselles-ai/protocol";
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import {
-	type GiselleRequestOptions,
-	useGiselleEngine,
-} from "../use-giselle-engine";
+import { type GiselleRequestOptions, useGiselle } from "../use-giselle";
 import { WorkflowDesignerContext } from "./context";
 import { type AppStore, appStore } from "./store";
 import type { WorkflowDesignerContextValue } from "./types";
@@ -17,7 +14,7 @@ import { isSupportedConnection } from "./utils";
 const DEFAULT_SAVE_DELAY = 1000;
 
 interface WorkspaceAutoSaveOptions {
-	client: ReturnType<typeof useGiselleEngine>;
+	client: ReturnType<typeof useGiselle>;
 	saveWorkflowDelay: number;
 }
 
@@ -113,7 +110,7 @@ export function ZustandBridgeProvider({
 	runAssistantApi?: string;
 	saveWorkflowDelay?: number;
 } & WorkspaceCallbackOptions) {
-	const client = useGiselleEngine();
+	const client = useGiselle();
 
 	const { saveImmediately } = useWorkspaceAutoSave({
 		client,

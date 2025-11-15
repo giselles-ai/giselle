@@ -3,7 +3,7 @@ import {
 	type TextGenerationNode,
 	type ToolSet,
 } from "@giselles-ai/protocol";
-import { useGiselleEngine, useWorkflowDesigner } from "@giselles-ai/react";
+import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import z from "zod/v4";
 import { useWorkspaceSecrets } from "../../../../lib/use-workspace-secrets";
@@ -40,7 +40,7 @@ export function useToolProviderConnection<T extends keyof ToolSet>(config: {
 	const [tabValue, setTabValue] = useState<"create" | "select">("create");
 	const { updateNodeDataContent, data: workspace } = useWorkflowDesigner();
 	const { isLoading, data, mutate } = useWorkspaceSecrets(secretTags);
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const [isPending, startTransition] = useTransition();
 
 	const isConfigured = useMemo(

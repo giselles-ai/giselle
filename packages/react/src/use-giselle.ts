@@ -53,10 +53,10 @@ type ExtractResponseData<T> = T extends JsonResponse<infer U>
 		: T;
 
 /**
- * GiselleEngineClient type definition
+ * GiselleClient type definition
  * Provides autocomplete and type checking for all API endpoints
  */
-export type GiselleEngineClient = {
+export type GiselleClient = {
 	[K in JsonRouterPaths | FormDataRouterPaths]: K extends JsonRouterPaths
 		? JsonRouterInput[K] extends z.ZodType<unknown>
 			? (
@@ -84,12 +84,12 @@ export type GiselleEngineClient = {
 };
 
 /**
- * Custom hook that provides a type-safe client for the GiselleEngine API
+ * Custom hook that provides a type-safe client for the Giselle API
  *
  * @param options Configuration options for the client
- * @returns A client object with methods for each GiselleEngine operation
+ * @returns A client object with methods for each Giselle operation
  */
-export function useGiselleEngine(options?: FetchOptions): GiselleEngineClient {
+export function useGiselle(options?: FetchOptions): GiselleClient {
 	const basePath = options?.basePath ?? "/api/giselle";
 
 	// Function to make API requests
@@ -168,7 +168,7 @@ export function useGiselleEngine(options?: FetchOptions): GiselleEngineClient {
 			},
 		);
 
-		return proxyClient as GiselleEngineClient;
+		return proxyClient as GiselleClient;
 	}, [makeRequest, basePath]);
 
 	return client;

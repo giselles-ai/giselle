@@ -16,7 +16,7 @@ import type {
 	NodeLike,
 	OutputId,
 } from "@giselles-ai/protocol";
-import { useGiselleEngine, useWorkflowDesigner } from "@giselles-ai/react";
+import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { PlusIcon, TriangleAlert, XIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";
@@ -103,7 +103,7 @@ export function GitHubActionConfiguredView({
 	handleClick: () => void;
 	isGenerating: boolean;
 }) {
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const {
 		deleteConnection,
 		updateNodeData,

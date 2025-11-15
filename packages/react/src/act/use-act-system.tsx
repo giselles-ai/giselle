@@ -8,7 +8,7 @@ import { useCallback, useEffect } from "react";
 import useSWR from "swr";
 import { useShallow } from "zustand/shallow";
 import { useGenerationRunnerSystem } from "../generations";
-import { useGiselleEngine } from "../use-giselle-engine";
+import { useGiselle } from "../use-giselle";
 import { useActStore } from "./store";
 
 type CreateAndStartActParams = Omit<
@@ -36,7 +36,7 @@ type CreateAndStartActParams = Omit<
 	};
 
 export function useActSystem(workspaceId: WorkspaceId) {
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const { data, isLoading } = useSWR(
 		{ namespace: "get-workspace-inprogress-act", workspaceId },
 		({ workspaceId }) => client.getWorkspaceInprogressAct({ workspaceId }),

@@ -17,7 +17,7 @@ import {
 import type { UIMessage } from "ai";
 import { useCallback, useMemo, useRef } from "react";
 import { useShallow } from "zustand/shallow";
-import { useGiselleEngine } from "../use-giselle-engine";
+import { useGiselle } from "../use-giselle";
 import {
 	type CreateAndStartGenerationRunner,
 	type CreateGenerationRunner,
@@ -43,7 +43,7 @@ export function ZustandBridgeGenerationProvider({
 	generateTextApi?: string;
 	timeout?: number;
 }) {
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const generations = useGenerationStore(useShallow((s) => s.generations));
 	const {
 		addGenerationRunnerStore,

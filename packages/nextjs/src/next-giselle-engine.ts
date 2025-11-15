@@ -1,7 +1,7 @@
 import {
 	GenerationId,
-	GiselleEngine,
-	type GiselleEngineConfig,
+	Giselle,
+	type GiselleConfig,
 } from "@giselles-ai/giselle";
 import {
 	GitHubWebhookUnauthorizedError,
@@ -19,8 +19,7 @@ import { after } from "next/server";
 import { ZodError } from "zod";
 import { type RequestContext, requestContextStore } from "./context";
 
-interface NextGiselleEngineConfig
-	extends Omit<GiselleEngineConfig, "waitUntil"> {
+interface NextGiselleConfig extends Omit<GiselleConfig, "waitUntil"> {
 	basePath: string;
 	useAfterFunction?: boolean;
 }
@@ -51,8 +50,8 @@ export function createHttpHandler({
 	giselleEngine,
 	config,
 }: {
-	giselleEngine: GiselleEngine;
-	config: NextGiselleEngineConfig;
+	giselleEngine: Giselle;
+	config: NextGiselleConfig;
 }) {
 	const jsonRouter: JsonRouterHandlers = {} as JsonRouterHandlers;
 	for (const [path, createRoute] of Object.entries(createJsonRouters)) {
@@ -158,7 +157,7 @@ export function createHttpHandler({
 					input: await getBody(request),
 				});
 			}
-			/** Handle GitHub webhooks with GiselleEngine */
+			/** Handle GitHub webhooks with Giselle */
 			if (routerPath === "github-webhook") {
 				try {
 					await verifyRequestAsGitHubWebook({
@@ -180,8 +179,8 @@ export function createHttpHandler({
 	};
 }
 
-export function NextGiselleEngine(config: NextGiselleEngineConfig) {
-	const giselleEngine = GiselleEngine({ ...config, waitUntil: after });
+export function NextGiselle(config: NextGiselleConfig) {
+	const giselleEngine = Giselle({ ...config, waitUntil: after });
 	const httpHandler = createHttpHandler({
 		giselleEngine,
 		config,

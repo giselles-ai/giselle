@@ -1,7 +1,4 @@
-import {
-	type GiselleEngineContext,
-	UsageLimitError,
-} from "@giselles-ai/giselle";
+import { type GiselleContext, UsageLimitError } from "@giselles-ai/giselle";
 import type * as z from "zod/v4";
 
 /**
@@ -11,11 +8,11 @@ import type * as z from "zod/v4";
 type HandlerArgs<TSchema> = TSchema extends z.ZodObject
 	? {
 			input: z.infer<TSchema>;
-			context: GiselleEngineContext;
+			context: GiselleContext;
 			signal?: AbortSignal;
 		}
 	: {
-			context: GiselleEngineContext;
+			context: GiselleContext;
 			signal?: AbortSignal;
 		};
 
@@ -25,12 +22,12 @@ type HandlerArgs<TSchema> = TSchema extends z.ZodObject
 type HandlerInputArgs<TSchema> = TSchema extends z.ZodObject
 	? {
 			input: TSchema;
-			context: GiselleEngineContext;
+			context: GiselleContext;
 			signal?: AbortSignal;
 		}
 	: {
 			input?: unknown;
-			context: GiselleEngineContext;
+			context: GiselleContext;
 			signal?: AbortSignal;
 		};
 

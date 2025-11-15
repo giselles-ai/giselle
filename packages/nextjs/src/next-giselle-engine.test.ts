@@ -1,4 +1,4 @@
-import type { GiselleEngine } from "@giselles-ai/giselle";
+import type { Giselle } from "@giselles-ai/giselle";
 import { memoryStorageDriver } from "@giselles-ai/storage";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createHttpHandler } from "./next-giselle-engine";
@@ -21,16 +21,16 @@ describe("createHttpHandler", () => {
 	const mockFile = new File(["test image content"], "test.png", {
 		type: "image/png",
 	});
-	const mockGiselleEngine = {
+	const mockGiselle = {
 		getGeneratedImage: vi.fn().mockResolvedValue(mockFile),
-	} as unknown as GiselleEngine;
+	} as unknown as Giselle;
 	const basePath = "/api/giselle";
 	let httpHandler: (request: Request) => Promise<Response>;
 
 	beforeEach(() => {
 		vi.clearAllMocks();
 		httpHandler = createHttpHandler({
-			giselleEngine: mockGiselleEngine,
+			giselleEngine: mockGiselle,
 			config: {
 				basePath,
 				storage: memoryStorageDriver(),
@@ -118,7 +118,7 @@ describe("createHttpHandler", () => {
 
 		const response = await httpHandler(imageRequest);
 
-		expect(mockGiselleEngine.getGeneratedImage).toHaveBeenCalledWith(
+		expect(mockGiselle.getGeneratedImage).toHaveBeenCalledWith(
 			generationId,
 			filename,
 		);

@@ -6,7 +6,7 @@ import {
 	type RunningGeneration,
 } from "@giselles-ai/protocol";
 import { useCallback, useEffect, useRef } from "react";
-import { useGiselleEngine } from "../use-giselle-engine";
+import { useGiselle } from "../use-giselle";
 import { useGenerationRunnerSystem } from "./contexts/generation-runner-system";
 import { GenerateContentRunner } from "./generate-content-runner";
 
@@ -77,7 +77,7 @@ function ImageGenerationRunner({ generation }: { generation: Generation }) {
 		updateGenerationStatusToFailure,
 		addStopHandler,
 	} = useGenerationRunnerSystem();
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const abortControllerRef = useRef<AbortController | null>(null);
 
 	const stop = useCallback(() => {
@@ -141,7 +141,7 @@ function TriggerRunner({ generation }: { generation: Generation }) {
 		updateGenerationStatusToRunning,
 		addStopHandler,
 	} = useGenerationRunnerSystem();
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const stop = () => {};
 	useOnce(() => {
 		if (!isQueuedGeneration(generation)) {
@@ -172,7 +172,7 @@ function ActionRunner({ generation }: { generation: Generation }) {
 		updateGenerationStatusToRunning,
 		addStopHandler,
 	} = useGenerationRunnerSystem();
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const stop = () => {};
 	useOnce(() => {
 		if (!isQueuedGeneration(generation)) {
@@ -204,7 +204,7 @@ function QueryRunner({ generation }: { generation: Generation }) {
 		updateGenerationStatusToFailure,
 		addStopHandler,
 	} = useGenerationRunnerSystem();
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const stop = () => {};
 	useOnce(() => {
 		if (!isQueuedGeneration(generation)) {

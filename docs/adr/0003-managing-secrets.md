@@ -75,7 +75,7 @@ const plaintext = "github_pat_abc123xyz";
 const encryptedSecret = await giselleEngine.encryptSecret(plaintext);
 
 // React
-const client = useGiselleEngine()
+const client = useGiselle()
 const encryptedSecret = await client.encryptSecret({ plaintext })
 
 // Later, decrypt the secret when needed(sever only)

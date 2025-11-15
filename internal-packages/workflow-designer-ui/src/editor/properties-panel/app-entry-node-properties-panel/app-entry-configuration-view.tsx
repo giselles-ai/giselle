@@ -14,7 +14,7 @@ import {
 	DraftAppParameterId,
 	OutputId,
 } from "@giselles-ai/protocol";
-import { useGiselleEngine, useWorkflowDesigner } from "@giselles-ai/react";
+import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import {
@@ -99,7 +99,7 @@ export function AppEntryConfigurationView({
 	const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
 		{},
 	);
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const {
 		updateNodeData,
 		data: { id: workspaceId },

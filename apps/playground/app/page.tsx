@@ -1,13 +1,13 @@
 "use client";
 
-import { useGiselleEngine } from "@giselles-ai/react";
+import { useGiselle } from "@giselles-ai/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
 export default function Home() {
 	const router = useRouter();
-	const giselleEngine = useGiselleEngine();
+	const giselleEngine = useGiselle();
 
 	const createWorkspace = useCallback(async () => {
 		const workspace = await giselleEngine.createWorkspace();
