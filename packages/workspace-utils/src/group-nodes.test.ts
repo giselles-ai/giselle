@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { gourpNodesFixture } from "../__fixtures__/group-nodes";
+import { gourpNodesFixture } from "./__fixtures__/group-nodes";
 import { groupNodes } from "./group-nodes";
 
 describe("groupNodes", () => {

@@ -1,8 +1,8 @@
 import { Workspace } from "@giselles-ai/protocol";
 import { describe, expect, test } from "vitest";
-import { backwardTraversalFixture } from "../__fixtures__/backward-traversal";
-import { multipleConnectionsSameNodesFixture } from "../__fixtures__/multiple-connections-same-nodes";
-import workspace4 from "../__fixtures__/workspace4.json";
+import { backwardTraversalFixture } from "./__fixtures__/backward-traversal";
+import { multipleConnectionsSameNodesFixture } from "./__fixtures__/multiple-connections-same-nodes";
+import workspace4 from "./__fixtures__/workspace4.json";
 import { sliceGraphFromNode } from "./slice-graph-from-node";
 
 describe("slice-graph-from-node", () => {

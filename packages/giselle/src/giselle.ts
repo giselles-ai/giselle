@@ -89,7 +89,6 @@ export type * from "./generations";
 export * from "./integrations";
 export * from "./telemetry";
 export * from "./triggers";
-export * from "./utils/workspace";
 export * from "./vault";
 
 const defaultWaitUntil: WaitUntil = (promise) => {

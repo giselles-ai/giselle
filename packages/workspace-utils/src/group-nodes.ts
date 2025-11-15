@@ -1,14 +1,12 @@
-import type {
-	AppEntryNode,
-	ConnectionId,
-	NodeId,
-	TriggerNode,
-	Workspace,
-} from "@giselles-ai/protocol";
 import {
+	type AppEntryNode,
+	type ConnectionId,
 	isAppEntryNode,
 	isOperationNode,
 	isTriggerNode,
+	type NodeId,
+	type TriggerNode,
+	type Workspace,
 } from "@giselles-ai/protocol";
 import { sliceGraphFromNode } from "./slice-graph-from-node";
 

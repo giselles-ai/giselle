@@ -940,6 +940,9 @@ importers:
       '@giselles-ai/web-search':
         specifier: workspace:^
         version: link:../web-search
+      '@giselles-ai/workspace-utils':
+        specifier: workspace:*
+        version: link:../workspace-utils
       ai:
         specifier: 'catalog:'
         version: 5.0.51(zod@3.25.76)
@@ -1280,6 +1283,9 @@ importers:
       '@giselles-ai/stream':
         specifier: workspace:*
         version: link:../stream
+      '@giselles-ai/workspace-utils':
+        specifier: workspace:*
+        version: link:../workspace-utils
       ai:
         specifier: 'catalog:'
         version: 5.0.51(zod@3.25.76)
@@ -1513,6 +1519,25 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.14.0)(happy-dom@20.0.2)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.7.0)
+
+  packages/workspace-utils:
+    dependencies:
+      '@giselles-ai/protocol':
+        specifier: workspace:*
+        version: link:../protocol
+      zod:
+        specifier: 'catalog:'
+        version: 3.25.76
+    devDependencies:
+      '@giselles-ai/tsconfig':
+        specifier: workspace:*
+        version: link:../../tools/tsconfig
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.6.1)(postcss@8.5.6)(typescript@5.7.3)(yaml@2.7.0)
+      vitest:
+        specifier: 'catalog:'
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@24.10.0)(happy-dom@20.0.2)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.44.0)(yaml@2.7.0)
 
   tools/storage-migration:
     dependencies:

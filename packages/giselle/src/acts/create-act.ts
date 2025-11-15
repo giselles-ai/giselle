@@ -20,11 +20,11 @@ import {
 	Workspace,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
+import { findNodeGroupByNodeId } from "@giselles-ai/workspace-utils";
 import * as z from "zod/v4";
 import { setGeneration } from "../generations";
 import type { GiselleContext } from "../types";
 import { buildLevels } from "../utils/build-levels";
-import { findNodeGroupByNodeId } from "../utils/workspace/group-nodes";
 import { addWorkspaceIndexItem } from "../utils/workspace-index";
 import { getWorkspace } from "../workspaces";
 import { actPath, workspaceActPath } from "./object/paths";
