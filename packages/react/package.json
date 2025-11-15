@@ -37,10 +37,10 @@
 		"@giselles-ai/workspace-utils": "workspace:*",
 		"ai": "catalog:",
 		"react": "catalog:",
-		"swr": "catalog:",
-		"zod": "catalog:"
+		"swr": "catalog:"
 	},
 	"peerDependencies": {
+		"zod": "catalog:",
 		"zustand": "catalog:"
 	}
 }

@@ -33,7 +33,9 @@
 		"@giselles-ai/language-model": "workspace:^",
 		"@giselles-ai/trigger-registry": "workspace:*",
 		"@octokit/webhooks": "catalog:",
-		"ai": "catalog:",
+		"ai": "catalog:"
+	},
+	"peerDependencies": {
 		"zod": "catalog:"
 	}
 }

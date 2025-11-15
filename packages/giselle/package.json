@@ -28,8 +28,7 @@
 		"@types/pg": "catalog:",
 		"@zod/core": "0.11.6",
 		"tsup": "catalog:",
-		"vitest": "catalog:",
-		"zod": "catalog:"
+		"vitest": "catalog:"
 	},
 	"dependencies": {
 		"@ai-sdk/anthropic": "catalog:",
