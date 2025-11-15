@@ -1,0 +1,178 @@
+import {
+	GenerationId,
+	Giselle,
+	type GiselleConfig,
+} from "@giselles-ai/giselle";
+import {
+	GitHubWebhookUnauthorizedError,
+	verifyRequest as verifyRequestAsGitHubWebook,
+} from "@giselles-ai/github-tool";
+import {
+	formDataRoutes,
+	isFormDataRoutePath,
+	isJsonRoutePath,
+	jsonRoutes,
+} from "@giselles-ai/http";
+import { after } from "next/server";
+import { ZodError } from "zod";
+import { type RequestContext, requestContextStore } from "./context";
+
+interface NextGiselleConfig extends Omit<GiselleConfig, "waitUntil"> {
+	basePath: string;
+	useAfterFunction?: boolean;
+}
+
+async function getBody(
+	req: Request,
+): Promise<Record<string, unknown> | undefined> {
+	if (!("body" in req) || !req.body || req.method !== "POST") return;
+
+	const contentType = req.headers.get("content-type");
+	if (contentType?.includes("application/json")) {
+		const text = await req.text();
+		if (text.length === 0) return;
+		return JSON.parse(text);
+	}
+	if (contentType?.includes("application/x-www-form-urlencoded")) {
+		const params = new URLSearchParams(await req.text());
+		return Object.fromEntries(params);
+	}
+	if (contentType?.includes("multipart/form-data")) {
+		const formData = await req.formData();
+		const data = Object.fromEntries(formData.entries());
+		return data;
+	}
+}
+
+export function createHttpHandler({
+	giselle,
+	config,
+}: {
+	giselle: Giselle;
+	config: NextGiselleConfig;
+}) {
+	return async function httpHandler(request: Request) {
+		let ctx: RequestContext | undefined;
+		// Vercel sets the system env var `VERCEL` to "1" on all deployments
+		// (builds/functions). This is the supported way to detect Vercel runtime.
+		// Ref: Vercel Docs → System Environment Variables: VERCEL
+		// https://vercel.com/docs/projects/environment-variables/system-environment-variables
+		if (process.env.VERCEL === "1") {
+			ctx = {
+				// When on Vercel, `x-vercel-id` header can be used as a request correlation ID.
+				// Ref: Vercel Docs → Request headers: x-vercel-id
+				// https://vercel.com/docs/headers/request-headers#x-vercel-id
+				requestId: request.headers.get("x-vercel-id") ?? undefined,
+			};
+		}
+		return await requestContextStore.run(ctx, async () => {
+			const url = new URL(request.url);
+			const pathname = url.pathname;
+
+			// Check if pathname matches /generations/{generationId}/generated-images/{filename}
+			const generatedImageMatch = pathname.match(
+				new RegExp(
+					`^${config.basePath}/generations/([^/]+)/generated-images/([^/]+)$`,
+				),
+			);
+			if (generatedImageMatch) {
+				const generationId = generatedImageMatch[1];
+				const filename = generatedImageMatch[2];
+				const file = await giselle.getGeneratedImage(
+					GenerationId.parse(generationId),
+					filename,
+				);
+				return new Response(file, {
+					headers: {
+						"Content-Type": file.type,
+						"Content-Disposition": `inline; filename="${file.name}"`,
+					},
+				});
+			}
+
+			const a = url.pathname.match(new RegExp(`^${config.basePath}(.+)`));
+
+			const segmentString = a?.at(-1);
+			if (segmentString == null)
+				throw new Error(`Cannot parse action at ${pathname}`);
+			const segments = segmentString
+				.replace(/^\//, "")
+				.split("/")
+				.filter(Boolean);
+
+			if (segments.length !== 1) {
+				throw new Error(`Invalid action at ${pathname}`);
+			}
+
+			const [routerPath] = segments;
+
+			if (config.useAfterFunction) {
+				if (config.telemetry?.isEnabled && config.telemetry?.waitForFlushFn) {
+					after(config.telemetry.waitForFlushFn);
+				}
+
+				// Flush generation index patches after response
+				after(async () => {
+					await giselle.flushGenerationIndexQueue();
+				});
+			}
+
+			if (isJsonRoutePath(routerPath)) {
+				try {
+					return await jsonRoutes[routerPath](giselle)({
+						// @ts-expect-error
+						input: await getBody(request),
+						signal: request.signal,
+					});
+				} catch (e) {
+					if (e instanceof ZodError) {
+						// @todo replace logger
+						console.log(e.message);
+						return new Response("Invalid request body", { status: 400 });
+					}
+					console.log(e);
+					return new Response("Internal Server Error", { status: 500 });
+				}
+			}
+			if (isFormDataRoutePath(routerPath)) {
+				return await formDataRoutes[routerPath](giselle)({
+					// @ts-expect-error
+					input: await getBody(request),
+				});
+			}
+			/** Handle GitHub webhooks with Giselle */
+			if (routerPath === "github-webhook") {
+				try {
+					await verifyRequestAsGitHubWebook({
+						secret:
+							config.integrationConfigs?.github?.authV2.webhookSecret ?? "",
+						request,
+					});
+				} catch (e) {
+					if (GitHubWebhookUnauthorizedError.isInstance(e)) {
+						return new Response("Unauthorized", { status: 401 });
+					}
+					return new Response("Internal Server Error", { status: 500 });
+				}
+				after(() => giselle.handleGitHubWebhookV2({ request }));
+				return new Response("Accepted", { status: 202 });
+			}
+			throw new Error(`Invalid router path at ${pathname}`);
+		});
+	};
+}
+
+export function NextGiselle(config: NextGiselleConfig) {
+	const giselle = Giselle({ ...config, waitUntil: after });
+	const httpHandler = createHttpHandler({
+		giselle,
+		config,
+	});
+	return {
+		...giselle,
+		handlers: {
+			GET: httpHandler,
+			POST: httpHandler,
+		},
+	};
+}

@@ -38,8 +38,10 @@
 		"@urql/core": "catalog:",
 		"ai": "catalog:",
 		"gql.tada": "catalog:",
-		"urql": "catalog:",
-		"zod": "catalog:",
-		"tar": "catalog:"
+		"tar": "catalog:",
+		"urql": "catalog:"
+	},
+	"peerDependencies": {
+		"zod": "catalog:"
 	}
 }

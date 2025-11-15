@@ -1,7 +1,7 @@
 import { TriggerId, type WorkspaceId } from "@giselles-ai/protocol";
 import { and, avg, count, desc, eq, sum } from "drizzle-orm";
 import { notFound } from "next/navigation";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import {
 	acts,
 	agentActivities,
@@ -40,9 +40,7 @@ async function extractLLMLabels(workspaceId?: string | null): Promise<string> {
 	}
 
 	try {
-		const tmpWorkspace = await giselleEngine.getWorkspace(
-			workspaceId as WorkspaceId,
-		);
+		const tmpWorkspace = await giselle.getWorkspace(workspaceId as WorkspaceId);
 
 		// Extract LLM models from workspace nodes
 		const llmModels: string[] = [];

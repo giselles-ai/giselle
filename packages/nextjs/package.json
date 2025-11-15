@@ -1,0 +1,44 @@
+{
+	"name": "@giselles-ai/nextjs",
+	"version": "0.0.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "tsup",
+		"check-types": "tsc --noEmit",
+		"clean": "rm -rf .turbo dist next react node_modules",
+		"test": "vitest run",
+		"format": "biome check --write ."
+	},
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js",
+			"default": "./dist/index.js"
+		},
+		"./internal": "./src/index.ts"
+	},
+	"devDependencies": {
+		"@giselles-ai/tsconfig": "workspace:*",
+		"@types/react": "catalog:",
+		"tsup": "catalog:",
+		"vitest": "catalog:",
+		"zustand": "catalog:"
+	},
+	"dependencies": {
+		"@giselles-ai/giselle": "workspace:*",
+		"@giselles-ai/github-tool": "workspace:^",
+		"@giselles-ai/http": "workspace:*",
+		"@giselles-ai/storage": "workspace:*",
+		"next": "catalog:",
+		"react": "catalog:"
+	},
+	"peerDependencies": {
+		"zod": "catalog:",
+		"zustand": "catalog:"
+	}
+}

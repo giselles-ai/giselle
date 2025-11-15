@@ -1,10 +1,10 @@
 import { SettingDetail } from "@giselle-internal/ui/setting-label";
+import { isVectorStoreNode, type QueryNode } from "@giselles-ai/protocol";
 import {
 	useVectorStore,
 	useWorkflowDesigner,
 	type VectorStoreContextValue,
-} from "@giselles-ai/giselle/react";
-import { isVectorStoreNode, type QueryNode } from "@giselles-ai/protocol";
+} from "@giselles-ai/react";
 import { TextEditor } from "@giselles-ai/text-editor/react-internal";
 import { DatabaseZapIcon, X } from "lucide-react";
 import { useMemo } from "react";

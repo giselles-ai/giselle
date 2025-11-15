@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import { type acts as actsSchema, db } from "@/db";
 import { stageFlag } from "@/flags";
 import { fetchCurrentUser } from "@/services/accounts";
@@ -20,12 +20,12 @@ async function enrichActWithNavigationData(
 	teams: { dbId: number; name: string }[],
 ): Promise<ActWithNavigation | null> {
 	try {
-		const tmpAct = await giselleEngine.getAct({ actId: act.sdkActId });
+		const tmpAct = await giselle.getAct({ actId: act.sdkActId });
 		const team = teams.find((t) => t.dbId === act.teamDbId);
 		if (team === undefined) {
 			throw new Error("Team not found");
 		}
-		const tmpWorkspace = await giselleEngine.getWorkspace(act.sdkWorkspaceId);
+		const tmpWorkspace = await giselle.getWorkspace(act.sdkWorkspaceId);
 
 		const findStepByStatus = (status: string) => {
 			for (const sequence of tmpAct.sequences) {

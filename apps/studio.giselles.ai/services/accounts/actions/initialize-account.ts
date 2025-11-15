@@ -2,7 +2,7 @@
 
 import { createId } from "@paralleldrive/cuid2";
 import type { User } from "@supabase/auth-js";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import {
 	agents,
 	db,
@@ -55,7 +55,7 @@ export const initializeAccount = async (
 		});
 
 		// create sample apps
-		const sampleWorkspaces = await giselleEngine.createSampleWorkspaces();
+		const sampleWorkspaces = await giselle.createSampleWorkspaces();
 		for (const workspace of sampleWorkspaces) {
 			const agentId = `agnt_${createId()}` as const;
 			await tx.insert(agents).values({

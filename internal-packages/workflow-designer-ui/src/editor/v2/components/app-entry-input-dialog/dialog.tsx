@@ -1,11 +1,11 @@
 import { Button } from "@giselle-internal/ui/button";
 import { useToasts } from "@giselle-internal/ui/toast";
+import type { AppEntryNode, ConnectionId } from "@giselles-ai/protocol";
 import {
 	useActSystem,
-	useGiselleEngine,
+	useGiselle,
 	useWorkflowDesignerStore,
-} from "@giselles-ai/giselle/react";
-import type { AppEntryNode, ConnectionId } from "@giselles-ai/protocol";
+} from "@giselles-ai/react";
 import { clsx } from "clsx/lite";
 import { LoaderIcon, PlayIcon, XIcon } from "lucide-react";
 import { Dialog } from "radix-ui";
@@ -21,7 +21,7 @@ export function AppEntryInputDialog({
 	connectionIds: ConnectionId[];
 	onClose: () => void;
 }) {
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const { isLoading, data } = useSWR(
 		node.content.status === "unconfigured"
 			? null

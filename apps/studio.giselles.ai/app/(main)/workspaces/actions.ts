@@ -5,7 +5,7 @@ import { isTriggerNode } from "@giselles-ai/protocol";
 import type { AgentId } from "@giselles-ai/types";
 import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import {
 	agents,
 	db,
@@ -66,10 +66,7 @@ export async function copyAgent(
 		const newAgentId = `agnt_${createId()}` as AgentId;
 		const baseName = agent.name?.trim() || agentId;
 		const newName = `Copy of ${baseName}`;
-		const workspace = await giselleEngine.copyWorkspace(
-			agent.workspaceId,
-			newName,
-		);
+		const workspace = await giselle.copyWorkspace(agent.workspaceId, newName);
 		// The agents table is deprecated, so we are inserting into the workspaces table.
 		await db.insert(agents).values({
 			id: newAgentId,
@@ -91,7 +88,7 @@ export async function copyAgent(
 				continue;
 			}
 
-			const trigger = await giselleEngine.getTrigger({
+			const trigger = await giselle.getTrigger({
 				triggerId: node.content.state.flowTriggerId,
 			});
 			if (

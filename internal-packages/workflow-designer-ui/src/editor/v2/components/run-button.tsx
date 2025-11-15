@@ -11,11 +11,6 @@ import {
 	type MenuItem,
 } from "@giselle-internal/ui/dropdown-menu";
 import { useToasts } from "@giselle-internal/ui/toast";
-import {
-	useActSystem,
-	useNodeGroups,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
 import { defaultName } from "@giselles-ai/node-registry";
 import type {
 	AppEntryNode,
@@ -29,6 +24,11 @@ import {
 	isTextGenerationNode,
 	isTriggerNode,
 } from "@giselles-ai/protocol";
+import {
+	useActSystem,
+	useNodeGroups,
+	useWorkflowDesigner,
+} from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { PlayIcon, UngroupIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";

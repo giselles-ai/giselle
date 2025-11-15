@@ -1,10 +1,10 @@
-import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
 import {
 	isImageGenerationNode,
 	isTextGenerationNode,
 	OutputId,
 	type TextGenerationNode,
 } from "@giselles-ai/protocol";
+import { useWorkflowDesigner } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { CheckIcon, TrashIcon } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";

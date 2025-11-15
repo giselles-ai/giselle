@@ -1,7 +1,7 @@
 import { ActId } from "@giselles-ai/giselle";
 import { logger, schemaTask as schemaJob } from "@trigger.dev/sdk";
 import z from "zod/v4";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 
 export const runActJob = schemaJob({
 	id: "run-act-job",
@@ -16,7 +16,7 @@ export const runActJob = schemaJob({
 		}),
 	}),
 	run: async (payload) => {
-		await giselleEngine.runAct({
+		await giselle.runAct({
 			actId: payload.actId,
 			logger,
 			metadata: {

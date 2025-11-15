@@ -10,15 +10,12 @@ import {
 } from "@giselles-ai/action-registry";
 import type { GitHubIntegrationInstallation } from "@giselles-ai/giselle";
 import {
-	useIntegration,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
-import {
 	type ActionNode,
 	type Input,
 	InputId,
 	OutputId,
 } from "@giselles-ai/protocol";
+import { useIntegration, useWorkflowDesigner } from "@giselles-ai/react";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { GitHubIcon, SpinnerIcon } from "../../../icons";
 // Import icons from GitHub trigger components

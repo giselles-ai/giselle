@@ -1,0 +1,35 @@
+{
+	"name": "@giselles-ai/http",
+	"version": "0.0.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "tsup",
+		"check-types": "tsc --noEmit",
+		"clean": "rm -rf .turbo dist next react node_modules",
+		"format": "biome check --write ."
+	},
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js",
+			"default": "./dist/index.js"
+		}
+	},
+	"devDependencies": {
+		"@giselles-ai/protocol": "workspace:*",
+		"@giselles-ai/tsconfig": "workspace:*",
+		"tsup": "catalog:"
+	},
+	"dependencies": {
+		"@giselles-ai/giselle": "workspace:*"
+	},
+	"peerDependencies": {
+		"zod": "catalog:",
+		"zustand": "catalog:"
+	}
+}

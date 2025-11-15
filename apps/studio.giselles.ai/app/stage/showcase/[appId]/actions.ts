@@ -7,7 +7,7 @@ import type {
 } from "@giselles-ai/protocol";
 import { isTriggerNode } from "@giselles-ai/protocol";
 import { revalidatePath } from "next/cache";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import { acts as actsSchema, db } from "@/db";
 import { fetchCurrentUser } from "@/services/accounts";
 import type { TeamId } from "@/services/teams";
@@ -17,9 +17,7 @@ export async function fetchWorkspaceFlowTrigger(workspaceId: string): Promise<{
 	workspaceName: string;
 } | null> {
 	try {
-		const workspace = await giselleEngine.getWorkspace(
-			workspaceId as WorkspaceId,
-		);
+		const workspace = await giselle.getWorkspace(workspaceId as WorkspaceId);
 
 		// Find trigger node
 		const triggerNode = workspace.nodes.find(
@@ -35,7 +33,7 @@ export async function fetchWorkspaceFlowTrigger(workspaceId: string): Promise<{
 			return null;
 		}
 
-		const flowTrigger = await giselleEngine.getTrigger({
+		const flowTrigger = await giselle.getTrigger({
 			triggerId: triggerNode.content.state.flowTriggerId,
 		});
 
@@ -60,7 +58,7 @@ export async function runWorkspaceApp(
 ): Promise<void> {
 	try {
 		const user = await fetchCurrentUser();
-		const { act } = await giselleEngine.createAct({
+		const { act } = await giselle.createAct({
 			workspaceId: flowTrigger.workspaceId,
 			nodeId: flowTrigger.nodeId,
 			inputs: [
@@ -87,7 +85,7 @@ export async function runWorkspaceApp(
 			sdkWorkspaceId: flowTrigger.workspaceId,
 		});
 
-		await giselleEngine.startAct({
+		await giselle.startAct({
 			actId: act.id,
 			generationOriginType: "stage",
 		});

@@ -3,14 +3,14 @@ import { NextResponse } from "next/server";
 import { agents, db, workspaces } from "@/db";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
-import { giselleEngine } from "../../giselle-engine";
+import { giselle } from "../../giselle";
 
 export async function POST(_request: Request) {
 	const agentId = `agnt_${createId()}` as const;
 	const user = await fetchCurrentUser();
 	const team = await fetchCurrentTeam();
 
-	const workspace = await giselleEngine.createWorkspace();
+	const workspace = await giselle.createWorkspace();
 
 	// The agents table is deprecated, so we are inserting into the workspaces table.
 	await db.insert(agents).values({

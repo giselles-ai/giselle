@@ -18,8 +18,7 @@
 		"@giselles-ai/protocol": "workspace:*",
 		"ai": "catalog:",
 		"pg": "catalog:",
-		"pgvector": "catalog:",
-		"zod": "catalog:"
+		"pgvector": "catalog:"
 	},
 	"devDependencies": {
 		"@giselles-ai/tsconfig": "workspace:^",
@@ -30,7 +29,8 @@
 		"vitest": "catalog:"
 	},
 	"peerDependencies": {
-		"openai": "catalog:"
+		"openai": "catalog:",
+		"zod": "catalog:"
 	},
 	"keywords": [
 		"rag",

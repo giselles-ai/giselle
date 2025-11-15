@@ -1,0 +1,46 @@
+{
+	"name": "@giselles-ai/react",
+	"version": "0.0.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "tsup",
+		"check-types": "tsc --noEmit",
+		"clean": "rm -rf .turbo dist next react node_modules",
+		"format": "biome check --write ."
+	},
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js",
+			"default": "./dist/index.js"
+		}
+	},
+	"devDependencies": {
+		"@giselles-ai/protocol": "workspace:*",
+		"@giselles-ai/tsconfig": "workspace:*",
+		"@types/react": "catalog:",
+		"tsup": "catalog:",
+		"vitest": "catalog:",
+		"zustand": "catalog:"
+	},
+	"dependencies": {
+		"@giselles-ai/giselle": "workspace:*",
+		"@giselles-ai/http": "workspace:*",
+		"@giselles-ai/language-model": "workspace:^",
+		"@giselles-ai/node-registry": "workspace:*",
+		"@giselles-ai/stream": "workspace:*",
+		"@giselles-ai/workspace-utils": "workspace:*",
+		"ai": "catalog:",
+		"react": "catalog:",
+		"swr": "catalog:"
+	},
+	"peerDependencies": {
+		"zod": "catalog:",
+		"zustand": "catalog:"
+	}
+}

@@ -4,16 +4,16 @@ import {
 } from "@giselle-internal/ui/setting-label";
 import type { GitHubIntegrationInstallation } from "@giselles-ai/giselle";
 import {
-	useGiselleEngine,
-	useIntegration,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
-import {
 	type Output,
 	OutputId,
 	type TriggerId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
+import {
+	useGiselle,
+	useIntegration,
+	useWorkflowDesigner,
+} from "@giselles-ai/react";
 import {
 	type GitHubEventId,
 	githubEvents,
@@ -332,7 +332,7 @@ export function Installed({
 		useTriggerConfiguration({
 			node,
 		});
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const [isPending, startTransition] = useTransition();
 	const [eventId, setEventId] = useState<GitHubEventId>(
 		reconfigStep?.eventId ?? "github.issue.created",

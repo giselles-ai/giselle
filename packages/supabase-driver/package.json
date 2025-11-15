@@ -28,7 +28,10 @@
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "catalog:",
-		"@supabase/supabase-js": "catalog:",
+		"@giselles-ai/storage": "workspace:*",
+		"@supabase/supabase-js": "catalog:"
+	},
+	"peerDependencies": {
 		"zod": "catalog:"
 	}
 }

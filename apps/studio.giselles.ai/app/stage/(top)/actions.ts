@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import { acts as actsSchema, db } from "@/db";
 import { fetchCurrentUser } from "@/services/accounts";
 import type { PerformStagePayloads } from "./types";
@@ -11,7 +11,7 @@ export async function performStageAction(
 ): Promise<void> {
 	try {
 		const user = await fetchCurrentUser();
-		const { act } = await giselleEngine.createAct({
+		const { act } = await giselle.createAct({
 			workspaceId: payloads.trigger.workspaceId,
 			nodeId: payloads.trigger.nodeId,
 			inputs: [
@@ -38,7 +38,7 @@ export async function performStageAction(
 			sdkWorkspaceId: payloads.trigger.workspaceId,
 		});
 
-		await giselleEngine.startAct({
+		await giselle.startAct({
 			actId: act.id,
 			generationOriginType: "stage",
 		});

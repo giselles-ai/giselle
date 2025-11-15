@@ -3,15 +3,12 @@ import { Note } from "@giselle-internal/ui/note";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
-	useGiselleEngine,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
-import {
 	type WebPage,
 	WebPageId,
 	type WebPageNode,
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
+import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { TrashIcon } from "lucide-react";
 import { Dialog } from "radix-ui";
@@ -30,7 +27,7 @@ function WebPageListItem({
 	onRemove: () => void;
 }) {
 	const [open, setOpen] = useState(false);
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const { isLoading, data } = useSWR(
 		webpage.status !== "fetched"
 			? null
@@ -160,7 +157,7 @@ function WebPageListItem({
 }
 
 export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const { data, updateNodeData, updateNodeDataContent, deleteNode } =
 		useWorkflowDesigner();
 	const { error } = useToasts();

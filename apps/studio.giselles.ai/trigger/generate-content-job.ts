@@ -1,7 +1,7 @@
 import { GenerationId, isRunningGeneration } from "@giselles-ai/protocol";
 import { logger, schemaTask as schemaJob } from "@trigger.dev/sdk";
 import { z } from "zod/v4";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 
 export const generateContentJob = schemaJob({
 	id: "generate-content",
@@ -16,13 +16,13 @@ export const generateContentJob = schemaJob({
 		}),
 	}),
 	run: async (payload) => {
-		const generation = await giselleEngine.getGeneration(payload.generationId);
+		const generation = await giselle.getGeneration(payload.generationId);
 		if (!isRunningGeneration(generation)) {
 			return {
 				message: `Generation ${payload.generationId} is not running.`,
 			};
 		}
-		await giselleEngine.generateContent({
+		await giselle.generateContent({
 			generation,
 			logger,
 			metadata: {

@@ -1,4 +1,4 @@
-import { useUsageLimits } from "@giselles-ai/giselle/react";
+import { useUsageLimits } from "@giselles-ai/react";
 import { useMemo } from "react";
 
 export function useUsageLimitsReached() {

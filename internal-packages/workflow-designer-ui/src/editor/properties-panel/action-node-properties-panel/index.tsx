@@ -1,8 +1,5 @@
-import {
-	useNodeGenerations,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
 import type { ActionNode, Node } from "@giselles-ai/protocol";
+import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
 import { useCallback } from "react";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";

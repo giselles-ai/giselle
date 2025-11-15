@@ -1,10 +1,7 @@
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
-import {
-	useNodeGenerations,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
 import type { QueryNode } from "@giselles-ai/protocol";
+import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
 import {
 	isJsonContent,
 	jsonContentToText,
