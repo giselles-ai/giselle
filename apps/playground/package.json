@@ -21,6 +21,7 @@
 		"@giselle-internal/workflow-designer-ui": "workspace:*",
 		"@giselles-ai/giselle": "workspace:*",
 		"@giselles-ai/langfuse": "workspace:^",
+		"@giselles-ai/language-model": "workspace:*",
 		"@giselles-ai/nextjs": "workspace:*",
 		"@giselles-ai/protocol": "workspace:*",
 		"@giselles-ai/react": "workspace:*",

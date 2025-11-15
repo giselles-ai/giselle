@@ -276,6 +276,9 @@ importers:
       '@giselles-ai/langfuse':
         specifier: workspace:^
         version: link:../../packages/langfuse
+      '@giselles-ai/language-model':
+        specifier: workspace:*
+        version: link:../../packages/language-model
       '@giselles-ai/nextjs':
         specifier: workspace:*
         version: link:../../packages/nextjs
@@ -968,9 +971,6 @@ importers:
       '@zod/core':
         specifier: 0.11.6
         version: 0.11.6
-      pino:
-        specifier: 'catalog:'
-        version: 9.9.0
       tsup:
         specifier: 'catalog:'
         version: 8.3.5(jiti@2.6.1)(postcss@8.5.6)(typescript@5.7.3)(yaml@2.7.0)

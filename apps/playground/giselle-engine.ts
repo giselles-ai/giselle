@@ -1,8 +1,6 @@
-import type {
-	GiselleIntegrationConfig,
-	LanguageModelProvider,
-} from "@giselles-ai/giselle";
+import type { GiselleIntegrationConfig } from "@giselles-ai/giselle";
 import { traceGeneration } from "@giselles-ai/langfuse";
+import type { LanguageModelProvider } from "@giselles-ai/language-model";
 import { NextGiselleEngine } from "@giselles-ai/nextjs/internal";
 import { WorkspaceId } from "@giselles-ai/protocol";
 import { fsStorageDriver } from "@giselles-ai/storage";
