@@ -2,6 +2,7 @@
 
 import type { WorkspaceId } from "@giselles-ai/protocol";
 import { eq } from "drizzle-orm/sql";
+import { revalidatePath } from "next/cache";
 import { giselle } from "@/app/giselle";
 import { agents, db, workspaces } from "@/db";
 
@@ -15,6 +16,7 @@ export async function updateWorkspaceName(
 	const updatedWorkspace = { ...workspace, name };
 
 	await giselle.updateWorkspace(updatedWorkspace);
+	revalidatePath(`/workspaces/${workspace.id}`, "layout");
 
 	try {
 		await db
