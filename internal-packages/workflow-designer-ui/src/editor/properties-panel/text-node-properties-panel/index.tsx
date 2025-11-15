@@ -1,5 +1,5 @@
-import { useWorkflowDesigner } from "@giselles-ai/react";
 import type { TextNode } from "@giselles-ai/protocol";
+import { useWorkflowDesigner } from "@giselles-ai/react";
 import { TextEditor } from "@giselles-ai/text-editor/react";
 import { useRef } from "react";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";

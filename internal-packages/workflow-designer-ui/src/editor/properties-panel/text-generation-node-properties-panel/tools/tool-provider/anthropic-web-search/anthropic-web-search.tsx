@@ -1,7 +1,7 @@
 import { Button } from "@giselle-internal/ui/button";
 import { Toggle } from "@giselle-internal/ui/toggle";
-import { useWorkflowDesigner } from "@giselles-ai/react";
 import type { TextGenerationNode } from "@giselles-ai/protocol";
+import { useWorkflowDesigner } from "@giselles-ai/react";
 import { Settings2Icon, XIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Slider } from "../../../../../../ui/slider";

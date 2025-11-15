@@ -1,4 +1,3 @@
-import { useWorkflowDesignerStore } from "@giselles-ai/react";
 import { defaultName } from "@giselles-ai/node-registry";
 import {
 	type InputId,
@@ -11,6 +10,7 @@ import {
 	type NodeLike,
 	type OutputId,
 } from "@giselles-ai/protocol";
+import { useWorkflowDesignerStore } from "@giselles-ai/react";
 import {
 	Handle,
 	type NodeProps,

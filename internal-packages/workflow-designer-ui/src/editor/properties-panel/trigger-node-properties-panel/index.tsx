@@ -1,5 +1,5 @@
-import { useWorkflowDesigner } from "@giselles-ai/react";
 import type { TriggerNode } from "@giselles-ai/protocol";
+import { useWorkflowDesigner } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { createContext, useContext, useState } from "react";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";

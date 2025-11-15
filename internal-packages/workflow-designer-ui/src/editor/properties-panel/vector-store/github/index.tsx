@@ -3,10 +3,6 @@ import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
-import {
-	useVectorStore,
-	useWorkflowDesigner,
-} from "@giselles-ai/react";
 import type {
 	EmbeddingProfileId,
 	GitHubVectorStoreSource,
@@ -17,6 +13,7 @@ import {
 	EMBEDDING_PROFILES,
 	isEmbeddingProfileId,
 } from "@giselles-ai/protocol";
+import { useVectorStore, useWorkflowDesigner } from "@giselles-ai/react";
 import { Info } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";

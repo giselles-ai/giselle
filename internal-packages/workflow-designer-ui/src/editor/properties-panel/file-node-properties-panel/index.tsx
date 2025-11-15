@@ -1,5 +1,5 @@
-import { useWorkflowDesigner } from "@giselles-ai/react";
 import type { FileCategory, FileNode } from "@giselles-ai/protocol";
+import { useWorkflowDesigner } from "@giselles-ai/react";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { FilePanel } from "./file-panel";

@@ -4,16 +4,16 @@ import {
 } from "@giselle-internal/ui/setting-label";
 import type { GitHubIntegrationInstallation } from "@giselles-ai/giselle";
 import {
-	useGiselleEngine,
-	useIntegration,
-	useWorkflowDesigner,
-} from "@giselles-ai/react";
-import {
 	type Output,
 	OutputId,
 	type TriggerId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
+import {
+	useGiselleEngine,
+	useIntegration,
+	useWorkflowDesigner,
+} from "@giselles-ai/react";
 import {
 	type GitHubEventId,
 	githubEvents,
