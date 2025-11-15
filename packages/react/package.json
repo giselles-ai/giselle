@@ -34,6 +34,7 @@
 		"@giselles-ai/http": "workspace:*",
 		"@giselles-ai/language-model": "workspace:^",
 		"@giselles-ai/node-registry": "workspace:*",
+		"@giselles-ai/stream-utils": "workspace:*",
 		"ai": "catalog:",
 		"react": "catalog:",
 		"swr": "catalog:",

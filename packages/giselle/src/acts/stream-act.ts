@@ -1,33 +1,7 @@
-import { Act, type ActId } from "@giselles-ai/protocol";
-import * as z from "zod/v4";
+import type { ActId } from "@giselles-ai/protocol";
+import type { StreamData, StreamEvent } from "@giselles-ai/stream-utils";
 import type { GiselleContext } from "../types";
 import { getAct } from "./get-act";
-export const StreamData = z.object({
-	act: Act,
-});
-export type StreamData = z.infer<typeof StreamData>;
-
-const ConnectedEvent = z.object({
-	type: z.literal("connected"),
-});
-const DataEvent = z.object({
-	type: z.literal("data"),
-	data: StreamData,
-});
-const EndEvent = z.object({
-	type: z.literal("end"),
-});
-const ErrorEvent = z.object({
-	type: z.literal("error"),
-	message: z.string(),
-});
-
-export const StreamEvent = z.discriminatedUnion("type", [
-	ConnectedEvent,
-	DataEvent,
-	EndEvent,
-	ErrorEvent,
-]);
 
 function createDataHash(data: StreamData): string {
 	// Create a simple hash of the data to detect changes
@@ -36,7 +10,7 @@ function createDataHash(data: StreamData): string {
 	});
 }
 
-export function formatStreamData(event: z.infer<typeof StreamEvent>): string {
+export function formatStreamData(event: StreamEvent): string {
 	return `data: ${JSON.stringify(event)}\n\n`;
 }
 

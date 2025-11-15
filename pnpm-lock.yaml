@@ -928,6 +928,9 @@ importers:
       '@giselles-ai/storage':
         specifier: workspace:*
         version: link:../storage
+      '@giselles-ai/stream-utils':
+        specifier: workspace:*
+        version: link:../stream-utils
       '@giselles-ai/text-editor-utils':
         specifier: workspace:^
         version: link:../text-editor-utils
@@ -940,18 +943,12 @@ importers:
       ai:
         specifier: 'catalog:'
         version: 5.0.51(zod@3.25.76)
-      next:
-        specifier: 'catalog:'
-        version: 15.5.2(@opentelemetry/api@1.9.0)(@playwright/test@1.56.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       openai:
         specifier: 'catalog:'
         version: 5.11.0(ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@6.0.5))(zod@3.25.76)
       pg:
         specifier: 'catalog:'
         version: 8.14.1
-      react:
-        specifier: 'catalog:'
-        version: 19.1.1
     devDependencies:
       '@giselles-ai/protocol':
         specifier: workspace:*
@@ -965,9 +962,6 @@ importers:
       '@types/pg':
         specifier: 'catalog:'
         version: 8.11.13
-      '@types/react':
-        specifier: 19.1.10
-        version: 19.1.10
       '@zod/core':
         specifier: 0.11.6
         version: 0.11.6
@@ -1283,6 +1277,9 @@ importers:
       '@giselles-ai/node-registry':
         specifier: workspace:*
         version: link:../node-registry
+      '@giselles-ai/stream-utils':
+        specifier: workspace:*
+        version: link:../stream-utils
       ai:
         specifier: 'catalog:'
         version: 5.0.51(zod@3.25.76)
@@ -1329,6 +1326,22 @@ importers:
       zod:
         specifier: 'catalog:'
         version: 3.25.76
+
+  packages/stream-utils:
+    dependencies:
+      '@giselles-ai/protocol':
+        specifier: workspace:*
+        version: link:../protocol
+      zod:
+        specifier: 'catalog:'
+        version: 3.25.76
+    devDependencies:
+      '@giselles-ai/tsconfig':
+        specifier: workspace:*
+        version: link:../../tools/tsconfig
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.6.1)(postcss@8.5.6)(typescript@5.7.3)(yaml@2.7.0)
 
   packages/supabase-driver:
     dependencies:
