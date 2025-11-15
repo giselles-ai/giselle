@@ -22,7 +22,7 @@ import {
 } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
 import { setGeneration } from "../generations";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { buildLevels } from "../utils/build-levels";
 import { findNodeGroupByNodeId } from "../utils/workspace/group-nodes";
 import { addWorkspaceIndexItem } from "../utils/workspace-index";
@@ -42,7 +42,7 @@ export const CreateActInputs = z.object({
 export type CreateActInputs = z.infer<typeof CreateActInputs>;
 
 export async function createAct(
-	args: CreateActInputs & { context: GiselleEngineContext },
+	args: CreateActInputs & { context: GiselleContext },
 ) {
 	let workspace: Workspace | undefined = args.workspace;
 

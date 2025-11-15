@@ -34,7 +34,7 @@ import {
 } from "ai";
 import { generationUiMessageChunksPath } from "../path";
 import { decryptSecret } from "../secrets";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { batchWriter } from "../utils";
 import { useGenerationExecutor } from "./internal/use-generation-executor";
 import { createPostgresTools } from "./tools/postgres";
@@ -65,7 +65,7 @@ export function generateContent({
 	logger: overrideLogger,
 	metadata,
 }: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	generation: RunningGeneration;
 	logger?: GiselleLogger;
 	metadata?: GenerationMetadata;

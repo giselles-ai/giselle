@@ -18,13 +18,13 @@ import { startContentGeneration } from "../generations/start-content-generation"
 import { executeAction } from "../operations";
 import { executeQuery } from "../operations/execute-query";
 import { resolveTrigger } from "../triggers";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { getAct } from "./get-act";
 import { createPatchQueue } from "./patch-queue";
 import { executeAct } from "./shared/act-execution-utils";
 
 async function waitUntilGenerationFinishes(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	generationId: GenerationId;
 }) {
 	while (true) {
@@ -57,7 +57,7 @@ export interface RunActCallbacks {
 }
 
 async function executeStep(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	generation: QueuedGeneration;
 	callbacks?: {
 		onCompleted?: () => void | Promise<void>;
@@ -122,7 +122,7 @@ export type RunActInputs = z.infer<typeof RunActInputs>;
 
 export async function runAct(
 	args: RunActInputs & {
-		context: GiselleEngineContext;
+		context: GiselleContext;
 	},
 ) {
 	const act = await getAct(args);

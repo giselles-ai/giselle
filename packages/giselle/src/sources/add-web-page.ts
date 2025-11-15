@@ -6,13 +6,13 @@ import {
 } from "@giselles-ai/protocol";
 import { webSearch } from "@giselles-ai/web-search";
 import { filePath } from "../files/utils";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 
 export async function addWebPage(args: {
 	webpage: FetchingWebPage;
 	workspaceId: WorkspaceId;
 	provider?: "self-made";
-	context: GiselleEngineContext;
+	context: GiselleContext;
 }) {
 	try {
 		const search = webSearch({ provider: args.provider ?? "self-made" });

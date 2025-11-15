@@ -29,7 +29,7 @@ import type {
 } from "ai";
 import { UsageLimitError } from "../../error";
 import { filePath } from "../../files/utils";
-import type { GiselleEngineContext } from "../../types";
+import type { GiselleContext } from "../../types";
 import type { AppEntryResolver, GenerationMetadata } from "../types";
 import {
 	checkUsageLimits,
@@ -57,7 +57,7 @@ type FinishGeneration = (args: FinishGenerationArgs) => Promise<{
 }>;
 
 export async function useGenerationExecutor<T>(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	generation: QueuedGeneration | RunningGeneration;
 	signal?: AbortSignal;
 	metadata?: GenerationMetadata;

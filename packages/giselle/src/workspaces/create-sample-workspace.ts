@@ -11,11 +11,11 @@ import {
 	type Workspace,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { copyFiles, getWorkspace, setWorkspace } from "./utils";
 
 async function createSampleWorkspaceFromTemplate(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	templateWorkspaceId: WorkspaceId;
 }) {
 	const templateWorkspace = await getWorkspace({
@@ -147,7 +147,7 @@ async function createSampleWorkspaceFromTemplate(args: {
 }
 
 export async function createSampleWorkspaces(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 }) {
 	if (
 		!args.context.sampleAppWorkspaceIds ||

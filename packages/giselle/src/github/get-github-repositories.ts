@@ -1,13 +1,11 @@
 import { octokit } from "@giselles-ai/github-tool";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 
 interface Repository {
 	nodeId: string;
 	fullName: string;
 }
-export async function getGitHubRepositories(args: {
-	context: GiselleEngineContext;
-}) {
+export async function getGitHubRepositories(args: { context: GiselleContext }) {
 	const githubConfig = args.context.integrationConfigs?.github;
 	if (!githubConfig) {
 		return [];

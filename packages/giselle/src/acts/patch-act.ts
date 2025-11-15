@@ -1,12 +1,12 @@
 import { Act, type ActId } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { type Patch, patchAct as patchActObject } from "./object/patch-object";
 import { actPath } from "./object/paths";
 
 export type { Patch };
 
 export async function patchAct(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	actId: ActId;
 	patches: Patch[];
 }) {

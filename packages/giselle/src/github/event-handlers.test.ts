@@ -13,7 +13,7 @@ import {
 } from "@giselles-ai/protocol";
 import { memoryStorageDriver } from "@giselles-ai/storage";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import {
 	type EventHandlerArgs,
 	type EventHandlerDependencies,
@@ -98,7 +98,7 @@ describe("GitHub Event Handlers", () => {
 						},
 					},
 				},
-			} as unknown as GiselleEngineContext,
+			} as unknown as GiselleContext,
 			trigger: {
 				id: mockTriggerId,
 				workspaceId: "wrks-test",
@@ -1361,7 +1361,7 @@ describe("GitHub Event Handlers", () => {
 							},
 						},
 					},
-				} as unknown as GiselleEngineContext,
+				} as unknown as GiselleContext,
 				trigger,
 				createAuthConfig,
 				deps: testDeps,
@@ -1442,7 +1442,7 @@ describe("GitHub Event Handlers", () => {
 							},
 						},
 					},
-				} as unknown as GiselleEngineContext,
+				} as unknown as GiselleContext,
 				trigger,
 				createAuthConfig: vi.fn(),
 				deps: testDeps,

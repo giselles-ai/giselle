@@ -1,19 +1,19 @@
 import type * as z from "zod/v4";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 
 type HandlerArgs<TSchema extends z.ZodObject> = {
 	input: z.infer<TSchema>;
-	context: GiselleEngineContext;
+	context: GiselleContext;
 };
 
 type FunctionInputArgs<TSchema extends z.ZodObject> = {
 	input: z.infer<TSchema>;
-	context: GiselleEngineContext;
+	context: GiselleContext;
 };
 
 type GiselleFunctionInput<
 	// biome-ignore lint/suspicious/noExplicitAny: For use in utility functions
-	T extends (args: { input: any; context: GiselleEngineContext }) => unknown,
+	T extends (args: { input: any; context: GiselleContext }) => unknown,
 > = Parameters<T>[0]["input"];
 
 export function createGiselleFunction<
@@ -43,8 +43,8 @@ export function createGiselleFunction<
 }
 
 /**
- * Binds a Giselle function to a context to be used as a GiselleEngine method.
- * Transfers the inputSchema property so it can be accessed from the engine instance.
+ * Binds a Giselle function to a context to be used as a Giselle method.
+ * Transfers the inputSchema property so it can be accessed from the  instance.
  */
 export function bindGiselleFunction<
 	T extends {
@@ -52,11 +52,11 @@ export function bindGiselleFunction<
 	} & ((args: {
 		// biome-ignore lint/suspicious/noExplicitAny: For use in utility functions
 		input: any;
-		context: GiselleEngineContext;
+		context: GiselleContext;
 	}) => unknown),
 >(
 	fn: T,
-	context: GiselleEngineContext,
+	context: GiselleContext,
 ): ((input: GiselleFunctionInput<T>) => Promise<Awaited<ReturnType<T>>>) & {
 	inputSchema: T["inputSchema"];
 } {

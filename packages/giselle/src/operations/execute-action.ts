@@ -29,10 +29,10 @@ import {
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
 import { useGenerationExecutor } from "../generations/internal/use-generation-executor";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 
 export function executeAction(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	generation: QueuedGeneration;
 }) {
 	return useGenerationExecutor({
@@ -175,7 +175,7 @@ function createActionOutput(
 
 async function executeGitHubAction(args: {
 	state: GitHubActionConfiguredState;
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	generationContext: GenerationContext;
 	generationContentResolver: (
 		nodeId: NodeId,

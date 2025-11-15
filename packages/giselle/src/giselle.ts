@@ -69,8 +69,8 @@ import {
 	setTrigger,
 } from "./triggers";
 import type {
-	GiselleEngineConfig,
-	GiselleEngineContext,
+	GiselleConfig,
+	GiselleContext,
 	SetRunActProcessArgs,
 	WaitUntil,
 } from "./types";
@@ -96,8 +96,8 @@ const defaultWaitUntil: WaitUntil = (promise) => {
 	return promise;
 };
 
-export function GiselleEngine(config: GiselleEngineConfig) {
-	const context: GiselleEngineContext = {
+export function Giselle(config: GiselleConfig) {
+	const context: GiselleContext = {
 		...config,
 		llmProviders: config.llmProviders ?? [],
 		integrationConfigs: config.integrationConfigs ?? {},
@@ -323,7 +323,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 		},
 		setGenerateContentProcess(
 			process: (args: {
-				context: GiselleEngineContext;
+				context: GiselleContext;
 				generation: RunningGeneration;
 				metadata?: GenerationMetadata;
 			}) => Promise<void>,
@@ -348,7 +348,7 @@ export function GiselleEngine(config: GiselleEngineConfig) {
 	};
 }
 
-export type GiselleEngine = ReturnType<typeof GiselleEngine>;
+export type Giselle = ReturnType<typeof Giselle>;
 
 // Re-export value constructors explicitly
 export { ActId, GenerationId };

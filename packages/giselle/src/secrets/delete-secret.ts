@@ -1,13 +1,13 @@
 import { Secret, type SecretId, SecretIndex } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { secretPath, workspaceSecretIndexPath } from "./paths";
 
 export async function deleteSecret({
 	context,
 	secretId,
 }: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	secretId: SecretId;
 }) {
 	const path = secretPath(secretId);

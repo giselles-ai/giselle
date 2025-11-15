@@ -1,5 +1,5 @@
 import * as z from "zod/v4";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 
 export async function addWorkspaceIndexItem<I>({
 	context,
@@ -7,7 +7,7 @@ export async function addWorkspaceIndexItem<I>({
 	item,
 	itemSchema,
 }: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	indexPath: string;
 	item: I;
 	itemSchema: z.ZodType<I>;
@@ -34,7 +34,7 @@ export async function getWorkspaceIndex<I extends z.ZodObject>({
 	indexPath,
 	itemSchema,
 }: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	indexPath: string;
 	itemSchema: I;
 }): Promise<z.infer<I>[]> {

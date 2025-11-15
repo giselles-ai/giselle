@@ -21,7 +21,7 @@ import {
 	generateText,
 	type ModelMessage,
 } from "ai";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { useGenerationExecutor } from "./internal/use-generation-executor";
 import {
 	buildMessageObject,
@@ -30,7 +30,7 @@ import {
 } from "./utils";
 
 export function generateImage(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	generation: QueuedGeneration;
 	signal?: AbortSignal;
 }) {
@@ -145,7 +145,7 @@ async function generateImageWithFal({
 	generationContext: GenerationContext;
 	runningGeneration: RunningGeneration;
 	messages: ModelMessage[];
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	languageModelData: FalLanguageModelData;
 	signal?: AbortSignal;
 }) {
@@ -226,7 +226,7 @@ async function generateImageWithOpenAI({
 	generationContext: GenerationContext;
 	runningGeneration: RunningGeneration;
 	languageModelData: OpenAIImageLanguageModelData;
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	signal?: AbortSignal;
 }) {
 	let prompt = "";
@@ -309,7 +309,7 @@ async function generateImageWithGoogle({
 	generationContext: GenerationContext;
 	runningGeneration: RunningGeneration;
 	languageModelData: GoogleImageLanguageModelData;
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	signal?: AbortSignal;
 }) {
 	const { files } = await generateText({

@@ -1,7 +1,5 @@
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 
-export function getLanguageModelProviders(args: {
-	context: GiselleEngineContext;
-}) {
+export function getLanguageModelProviders(args: { context: GiselleContext }) {
 	return args.context.llmProviders;
 }

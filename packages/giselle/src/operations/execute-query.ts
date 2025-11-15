@@ -33,12 +33,12 @@ import {
 } from "../generations/utils";
 import type {
 	DocumentVectorStoreQueryContext,
-	GiselleEngineContext,
+	GiselleContext,
 	GitHubQueryContext,
 } from "../types";
 
 export function executeQuery(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	generation: QueuedGeneration;
 	metadata?: GenerationMetadata;
 }) {
@@ -291,7 +291,7 @@ async function queryVectorStore(
 	workspaceId: WorkspaceId,
 	query: string,
 	runningGeneration: RunningGeneration,
-	context: GiselleEngineContext,
+	context: GiselleContext,
 	vectorStoreNodes: VectorStoreNode[],
 	maxResults?: number,
 	similarityThreshold?: number,

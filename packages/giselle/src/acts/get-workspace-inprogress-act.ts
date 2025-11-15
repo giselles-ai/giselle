@@ -1,6 +1,6 @@
 import type { WorkspaceId } from "@giselles-ai/protocol";
 import { Act, ActIndexObject } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { getWorkspaceIndex } from "../utils/workspace-index";
 import { actPath, workspaceActPath } from "./object/paths";
 
@@ -8,7 +8,7 @@ export async function getWorkspaceInprogressAct({
 	context,
 	workspaceId,
 }: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	workspaceId: WorkspaceId;
 }) {
 	context.logger.debug("getWorkspaceInprogressAct");

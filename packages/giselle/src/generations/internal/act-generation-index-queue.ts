@@ -2,7 +2,7 @@ import type { ActId } from "@giselles-ai/protocol";
 import { NodeGenerationIndex } from "@giselles-ai/protocol";
 import type { GiselleStorage } from "@giselles-ai/storage";
 import { actGenerationIndexesPath } from "../../path";
-import type { GiselleEngineContext } from "../../types";
+import type { GiselleContext } from "../../types";
 import {
 	applyPatches,
 	type GenerationIndexPatch,
@@ -197,7 +197,7 @@ export async function flushGenerationIndexQueue({
 	options,
 }: {
 	options?: { skipRestart?: boolean };
-	context: GiselleEngineContext;
+	context: GiselleContext;
 }) {
 	// Stop the interval to prevent concurrent processing
 	stopProcessing();

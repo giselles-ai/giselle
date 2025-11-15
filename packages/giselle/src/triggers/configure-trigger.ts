@@ -6,7 +6,7 @@ import {
 } from "@giselles-ai/protocol";
 import type * as z from "zod/v4";
 import { addGitHubRepositoryIntegrationIndex } from "../integrations/utils";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { getWorkspace, setWorkspace } from "../workspaces/utils";
 import { setTrigger } from "./utils";
 
@@ -14,7 +14,7 @@ export const ConfigureTriggerInput = Trigger.omit({ id: true });
 export type ConfigureTriggerInput = z.infer<typeof ConfigureTriggerInput>;
 
 export async function configureTrigger(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	trigger: ConfigureTriggerInput;
 }) {
 	const triggerId = TriggerId.generate();

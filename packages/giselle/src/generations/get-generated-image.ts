@@ -1,5 +1,5 @@
 import type { GenerationId } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import {
 	detectImageType,
 	getGeneratedImage as getGeneratedImageInternal,
@@ -7,7 +7,7 @@ import {
 } from "./utils";
 
 export async function getGeneratedImage(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	generationId: GenerationId;
 	filename: string;
 }) {

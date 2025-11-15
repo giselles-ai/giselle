@@ -1,5 +1,5 @@
 import type { ActId } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { type Patch, patchAct } from "./patch-act";
 
 interface QueuedPatch {
@@ -13,7 +13,7 @@ interface PatchQueueState {
 	queue: QueuedPatch[];
 	processing: boolean;
 	intervalId: NodeJS.Timeout | null;
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	retryConfig: RetryConfig;
 }
 
@@ -29,7 +29,7 @@ interface RetryConfig {
  * Ensures patches are applied in FIFO order and prevents race conditions
  */
 export function createPatchQueue(
-	context: GiselleEngineContext,
+	context: GiselleContext,
 	retryConfig: RetryConfig = { maxRetries: DEFAULT_MAX_RETRIES },
 ) {
 	const state: PatchQueueState = {

@@ -4,7 +4,7 @@ import {
 	SecretIndex,
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { addWorkspaceIndexItem } from "../utils/workspace-index";
 import { secretPath, workspaceSecretIndexPath } from "./paths";
 
@@ -15,7 +15,7 @@ export async function addSecret({
 	workspaceId,
 	tags,
 }: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	label: string;
 	value: string;
 	workspaceId: WorkspaceId;

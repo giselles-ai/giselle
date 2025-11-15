@@ -1,9 +1,9 @@
 import type { WorkspaceId } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { getWorkspace as getWorkspaceInternal } from "./utils";
 
 export async function getWorkspace(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	workspaceId: WorkspaceId;
 }) {
 	return await getWorkspaceInternal({

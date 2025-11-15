@@ -17,7 +17,7 @@ import {
 import { createAndStartAct } from "../acts";
 import { getGitHubRepositoryIntegrationIndex } from "../integrations/utils";
 import { getTrigger } from "../triggers/utils";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { type EventHandlerDependencies, processEvent } from "./event-handlers";
 import { parseCommand } from "./utils";
 
@@ -36,7 +36,7 @@ const events: WebhookEventName[] = [
 ];
 
 export async function handleGitHubWebhookV2(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	request: Request;
 }) {
 	const credentials = args.context.integrationConfigs?.github?.authV2;
@@ -117,7 +117,7 @@ interface ProcessDeps {
 
 async function process<TEventName extends WebhookEventName>(args: {
 	event: WebhookEvent<TEventName>;
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	deps: ProcessDeps & EventHandlerDependencies;
 }) {
 	if (!hasRequiredPayloadProps(args.event)) {

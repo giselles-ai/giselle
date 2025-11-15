@@ -37,7 +37,7 @@ type WaitUntilCallback<T = unknown> = () => T | Promise<T>;
 export type WaitUntil<T = unknown> = (task: WaitUntilTask<T>) => void;
 
 type GenerateContentArgs = {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	generation: RunningGeneration;
 	metadata?: GenerationMetadata;
 };
@@ -47,7 +47,7 @@ type GenerateContentProcess =
 	| { type: "external"; process: (args: GenerateContentArgs) => Promise<void> };
 
 export type SetRunActProcessArgs = {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	act: Act;
 	generationOriginType: GenerationOrigin["type"];
 };
@@ -61,7 +61,7 @@ type RunActProcess =
 
 export type RunAct = (args: SetRunActProcessArgs) => Promise<void>;
 
-export type GiselleEngineCallbacks = {
+export type GiselleCallbacks = {
 	appCreate?: AppCreateCallbackFunction;
 	appDelete?: AppDeleteCallbackFunction;
 	generationComplete?: GenerationCompleteCallbackFunction;
@@ -77,7 +77,7 @@ export type VectorStoreQueryServices = {
 	document?: DocumentVectorStoreQueryService<Record<string, unknown>>;
 };
 
-export interface GiselleEngineContext {
+export interface GiselleContext {
 	storage: GiselleStorage;
 	sampleAppWorkspaceIds?: WorkspaceId[];
 	llmProviders: LanguageModelProvider[];
@@ -93,7 +93,7 @@ export interface GiselleEngineContext {
 	};
 	vault: Vault;
 	vectorStoreQueryServices?: VectorStoreQueryServices;
-	callbacks?: GiselleEngineCallbacks;
+	callbacks?: GiselleCallbacks;
 	aiGateway?: {
 		httpReferer: string;
 		xTitle: string;
@@ -104,7 +104,7 @@ export interface GiselleEngineContext {
 	runActProcess: RunActProcess;
 }
 
-export interface GiselleEngineConfig {
+export interface GiselleConfig {
 	storage: GiselleStorage;
 	sampleAppWorkspaceIds?: WorkspaceId[];
 	llmProviders?: LanguageModelProvider[];
@@ -118,7 +118,7 @@ export interface GiselleEngineConfig {
 	fetchUsageLimitsFn?: FetchUsageLimitsFn;
 	vault: Vault;
 	vectorStoreQueryServices?: VectorStoreQueryServices;
-	callbacks?: GiselleEngineCallbacks;
+	callbacks?: GiselleCallbacks;
 	aiGateway?: {
 		httpReferer: string;
 		xTitle: string;

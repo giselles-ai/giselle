@@ -1,6 +1,6 @@
 import type { Act } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { CreateActInputs, createAct } from "./create-act";
 import { type RunActCallbacks, runAct } from "./run-act";
 import { StartActInputs } from "./start-act";
@@ -21,7 +21,7 @@ export type CreateAndStartActInputs = z.infer<typeof CreateAndStartActInputs>;
 /** @todo telemetry */
 export async function createAndStartAct(
 	args: CreateAndStartActInputs & {
-		context: GiselleEngineContext;
+		context: GiselleContext;
 	},
 ) {
 	const { act } = await createAct(args);

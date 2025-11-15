@@ -9,12 +9,12 @@ import {
 	addGitHubRepositoryIntegrationIndex,
 	removeGitHubRepositoryIntegrationIndex,
 } from "../integrations/utils";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { getWorkspace, setWorkspace } from "../workspaces/utils";
 import { getTrigger, setTrigger } from "./utils";
 
 export async function reconfigureGitHubTrigger(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	triggerId: TriggerId;
 	repositoryNodeId: string;
 	installationId: number;

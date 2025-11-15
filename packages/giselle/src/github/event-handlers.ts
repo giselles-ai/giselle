@@ -16,7 +16,7 @@ import type {
 import { findDiscussionReplyTargetId } from "@giselles-ai/github-tool";
 import type { Trigger } from "@giselles-ai/protocol";
 import type { createAndStartAct } from "../acts";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { getWorkspace } from "../workspaces";
 import type { parseCommand } from "./utils";
 
@@ -150,7 +150,7 @@ export interface EventHandlerDependencies {
 
 export type EventHandlerArgs<TEventName extends WebhookEventName> = {
 	event: WebhookEvent<TEventName>;
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	trigger: Trigger;
 	authConfig: GitHubAuthConfig;
 	deps: EventHandlerDependencies;

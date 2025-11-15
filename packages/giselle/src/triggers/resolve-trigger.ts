@@ -9,11 +9,11 @@ import {
 import { githubEvents } from "@giselles-ai/trigger-registry";
 import { internalSetGeneration } from "../generations/internal/set-generation";
 import { resolveTrigger as resolveGitHubTrigger } from "../github/trigger-utils";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { getTrigger } from "./utils";
 
 export async function resolveTrigger(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	generation: QueuedGeneration;
 }) {
 	const operationNode = args.generation.context.operationNode;

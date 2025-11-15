@@ -1,6 +1,6 @@
 import { Act, type ActId } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { getAct } from "./get-act";
 export const StreamData = z.object({
 	act: Act,
@@ -40,10 +40,7 @@ export function formatStreamData(event: z.infer<typeof StreamEvent>): string {
 	return `data: ${JSON.stringify(event)}\n\n`;
 }
 
-export function streamAct(args: {
-	actId: ActId;
-	context: GiselleEngineContext;
-}) {
+export function streamAct(args: { actId: ActId; context: GiselleContext }) {
 	const encoder = new TextEncoder();
 
 	let pollIntervalId: ReturnType<typeof setInterval> | null = null;

@@ -7,11 +7,11 @@ import {
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
 import { getTrigger, setTrigger } from "../triggers/utils";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { copyFiles, getWorkspace, setWorkspace } from "./utils";
 
 export async function copyWorkspace(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	workspaceId: WorkspaceId;
 	name?: string;
 }) {

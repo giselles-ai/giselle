@@ -1,11 +1,11 @@
 import type { GenerationOrigin, NodeId } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { getGeneration, getNodeGenerationIndexes } from "./utils";
 
 const limit = 10;
 
 export async function getNodeGenerations(args: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	origin: GenerationOrigin;
 	nodeId: NodeId;
 }) {

@@ -1,13 +1,13 @@
 import type { GenerationId } from "@giselles-ai/protocol";
 import { generationUiMessageChunksPath } from "../path";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 
 export async function getGenerationMessageChunkss({
 	context,
 	generationId,
 	startByte = 0,
 }: {
-	context: GiselleEngineContext;
+	context: GiselleContext;
 	generationId: GenerationId;
 	startByte?: number;
 }) {

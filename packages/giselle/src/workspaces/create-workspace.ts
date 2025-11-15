@@ -1,8 +1,8 @@
 import { generateInitialWorkspace, Workspace } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import { setWorkspace } from "./utils";
 
-export async function createWorkspace(args: { context: GiselleEngineContext }) {
+export async function createWorkspace(args: { context: GiselleContext }) {
 	const workspace = generateInitialWorkspace();
 	await setWorkspace({
 		workspaceId: workspace.id,

@@ -25,7 +25,7 @@ import {
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
 import type { DataContent, FilePart, ImagePart, ModelMessage } from "ai";
-import type { GiselleEngineContext } from "../types";
+import type { GiselleContext } from "../types";
 import type { AppEntryResolver } from "./types";
 
 interface GeneratedImageData {
@@ -690,7 +690,7 @@ export function detectImageType(
 export async function handleAgentTimeConsumption(args: {
 	workspaceId: WorkspaceId;
 	generation: CompletedGeneration;
-	onConsumeAgentTime?: NonNullable<GiselleEngineContext["onConsumeAgentTime"]>;
+	onConsumeAgentTime?: NonNullable<GiselleContext["onConsumeAgentTime"]>;
 }) {
 	const { workspaceId, generation, onConsumeAgentTime } = args;
 
@@ -714,7 +714,7 @@ type CheckUsageLimitsResult = { type: "ok" } | { type: "error"; error: string };
 export async function checkUsageLimits(args: {
 	workspaceId: WorkspaceId;
 	generation: Generation;
-	fetchUsageLimitsFn?: NonNullable<GiselleEngineContext["fetchUsageLimitsFn"]>;
+	fetchUsageLimitsFn?: NonNullable<GiselleContext["fetchUsageLimitsFn"]>;
 }): Promise<CheckUsageLimitsResult> {
 	const { workspaceId, generation, fetchUsageLimitsFn } = args;
 	if (fetchUsageLimitsFn == null) {
