@@ -21,8 +21,8 @@ import {
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
-import type { GiselleEngineContext } from "../contracts";
 import { setGeneration } from "../generations";
+import type { GiselleEngineContext } from "../types";
 import { buildLevels } from "../utils/build-levels";
 import { findNodeGroupByNodeId } from "../utils/workspace/group-nodes";
 import { addWorkspaceIndexItem } from "../utils/workspace-index";

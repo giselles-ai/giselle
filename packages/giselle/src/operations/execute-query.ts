@@ -24,11 +24,6 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
-import type {
-	DocumentVectorStoreQueryContext,
-	GiselleEngineContext,
-	GitHubQueryContext,
-} from "../contracts";
 import type { GenerationMetadata } from "../generations";
 import { useGenerationExecutor } from "../generations/internal/use-generation-executor";
 import {
@@ -36,6 +31,11 @@ import {
 	getNodeGenerationIndexes,
 	queryResultToText,
 } from "../generations/utils";
+import type {
+	DocumentVectorStoreQueryContext,
+	GiselleEngineContext,
+	GitHubQueryContext,
+} from "../types";
 
 export function executeQuery(args: {
 	context: GiselleEngineContext;

@@ -1,4 +1,4 @@
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 
 export function getLanguageModelProviders(args: {
 	context: GiselleEngineContext;

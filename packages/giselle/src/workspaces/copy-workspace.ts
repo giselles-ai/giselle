@@ -6,8 +6,8 @@ import {
 	Workspace,
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../contracts";
 import { getTrigger, setTrigger } from "../triggers/utils";
+import type { GiselleEngineContext } from "../types";
 import { copyFiles, getWorkspace, setWorkspace } from "./utils";
 
 export async function copyWorkspace(args: {

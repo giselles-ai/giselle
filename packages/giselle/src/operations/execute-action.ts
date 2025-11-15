@@ -28,8 +28,8 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
-import type { GiselleEngineContext } from "../contracts";
 import { useGenerationExecutor } from "../generations/internal/use-generation-executor";
+import type { GiselleEngineContext } from "../types";
 
 export function executeAction(args: {
 	context: GiselleEngineContext;

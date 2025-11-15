@@ -7,9 +7,9 @@ import {
 	type QueuedGeneration,
 } from "@giselles-ai/protocol";
 import { githubEvents } from "@giselles-ai/trigger-registry";
-import type { GiselleEngineContext } from "../contracts";
 import { internalSetGeneration } from "../generations/internal/set-generation";
 import { resolveTrigger as resolveGitHubTrigger } from "../github/trigger-utils";
+import type { GiselleEngineContext } from "../types";
 import { getTrigger } from "./utils";
 
 export async function resolveTrigger(args: {

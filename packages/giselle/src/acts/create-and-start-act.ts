@@ -1,6 +1,6 @@
 import type { Act } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import { CreateActInputs, createAct } from "./create-act";
 import { type RunActCallbacks, runAct } from "./run-act";
 import { StartActInputs } from "./start-act";

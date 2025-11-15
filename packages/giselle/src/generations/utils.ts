@@ -25,7 +25,7 @@ import {
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
 import type { DataContent, FilePart, ImagePart, ModelMessage } from "ai";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import type { AppEntryResolver } from "./types";
 
 interface GeneratedImageData {

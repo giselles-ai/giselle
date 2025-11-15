@@ -5,11 +5,11 @@ import {
 	type TriggerId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../contracts";
 import {
 	addGitHubRepositoryIntegrationIndex,
 	removeGitHubRepositoryIntegrationIndex,
 } from "../integrations/utils";
+import type { GiselleEngineContext } from "../types";
 import { getWorkspace, setWorkspace } from "../workspaces/utils";
 import { getTrigger, setTrigger } from "./utils";
 

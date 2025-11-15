@@ -1,5 +1,5 @@
 import type { GenerationId } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import { getGeneration as getGenerationInternal } from "./utils";
 
 export async function getGeneration(args: {

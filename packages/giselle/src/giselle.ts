@@ -35,12 +35,6 @@ import {
 import { getApp, saveApp } from "./apps";
 import { deleteApp } from "./apps/delete-app";
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";
-import type {
-	GiselleEngineConfig,
-	GiselleEngineContext,
-	SetRunActProcessArgs,
-	WaitUntil,
-} from "./contracts";
 import { copyFile, getFileText, removeFile, uploadFile } from "./files";
 import {
 	cancelGeneration,
@@ -74,6 +68,12 @@ import {
 	resolveTrigger,
 	setTrigger,
 } from "./triggers";
+import type {
+	GiselleEngineConfig,
+	GiselleEngineContext,
+	SetRunActProcessArgs,
+	WaitUntil,
+} from "./types";
 import { bindGiselleFunction } from "./utils/create-giselle-function";
 import {
 	copyWorkspace,

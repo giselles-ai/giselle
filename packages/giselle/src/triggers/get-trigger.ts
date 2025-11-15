@@ -1,5 +1,5 @@
 import type { TriggerId } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import { getTrigger as systemGetTrigger } from "./utils";
 
 export async function getTrigger(args: {

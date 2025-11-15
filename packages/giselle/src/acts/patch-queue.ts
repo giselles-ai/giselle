@@ -1,5 +1,5 @@
 import type { ActId } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import { type Patch, patchAct } from "./patch-act";
 
 interface QueuedPatch {

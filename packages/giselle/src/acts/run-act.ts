@@ -9,7 +9,6 @@ import {
 	type Sequence,
 } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
-import type { GiselleEngineContext } from "../contracts";
 import {
 	type GenerationMetadata,
 	generateImage,
@@ -19,6 +18,7 @@ import { startContentGeneration } from "../generations/start-content-generation"
 import { executeAction } from "../operations";
 import { executeQuery } from "../operations/execute-query";
 import { resolveTrigger } from "../triggers";
+import type { GiselleEngineContext } from "../types";
 import { getAct } from "./get-act";
 import { createPatchQueue } from "./patch-queue";
 import { executeAct } from "./shared/act-execution-utils";

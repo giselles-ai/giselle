@@ -1,8 +1,8 @@
 import type { ActId } from "@giselles-ai/protocol";
 import { NodeGenerationIndex } from "@giselles-ai/protocol";
 import type { GiselleStorage } from "@giselles-ai/storage";
-import type { GiselleEngineContext } from "../../contracts";
 import { actGenerationIndexesPath } from "../../path";
+import type { GiselleEngineContext } from "../../types";
 import {
 	applyPatches,
 	type GenerationIndexPatch,

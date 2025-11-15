@@ -11,7 +11,7 @@ import {
 	type Workspace,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import { copyFiles, getWorkspace, setWorkspace } from "./utils";
 
 async function createSampleWorkspaceFromTemplate(args: {

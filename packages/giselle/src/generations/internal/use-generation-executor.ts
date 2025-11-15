@@ -27,9 +27,9 @@ import type {
 	ModelMessage,
 	ProviderMetadata,
 } from "ai";
-import type { GiselleEngineContext } from "../../contracts";
 import { UsageLimitError } from "../../error";
 import { filePath } from "../../files/utils";
+import type { GiselleEngineContext } from "../../types";
 import type { AppEntryResolver, GenerationMetadata } from "../types";
 import {
 	checkUsageLimits,

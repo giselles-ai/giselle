@@ -1,5 +1,5 @@
 import type { GenerationId } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import {
 	detectImageType,
 	getGeneratedImage as getGeneratedImageInternal,

@@ -1,5 +1,5 @@
 import { octokit } from "@giselles-ai/github-tool";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 
 interface Repository {
 	nodeId: string;

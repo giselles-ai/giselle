@@ -1,5 +1,5 @@
 import { Secret, type SecretId } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import { secretPath } from "./paths";
 
 export async function decryptSecret(args: {

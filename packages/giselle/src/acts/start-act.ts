@@ -1,6 +1,6 @@
 import { ActId, GenerationOrigin } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import { getAct } from "./get-act";
 import { patches } from "./object/patch-creators";
 import { patchAct } from "./patch-act";

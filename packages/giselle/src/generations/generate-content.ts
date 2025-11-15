@@ -32,9 +32,9 @@ import {
 	streamText,
 	type UIMessage,
 } from "ai";
-import type { GiselleEngineContext } from "../contracts";
 import { generationUiMessageChunksPath } from "../path";
 import { decryptSecret } from "../secrets";
+import type { GiselleEngineContext } from "../types";
 import { batchWriter } from "../utils";
 import { useGenerationExecutor } from "./internal/use-generation-executor";
 import { createPostgresTools } from "./tools/postgres";

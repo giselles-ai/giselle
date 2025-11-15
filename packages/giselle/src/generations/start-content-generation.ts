@@ -3,7 +3,7 @@ import {
 	isQueuedGeneration,
 	type RunningGeneration,
 } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import { generateContent } from "./generate-content";
 import { internalSetGeneration } from "./internal/set-generation";
 import type { GenerationMetadata } from "./types";

@@ -1,6 +1,6 @@
 import type { GenerationId } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../contracts";
 import { generationUiMessageChunksPath } from "../path";
+import type { GiselleEngineContext } from "../types";
 
 export async function getGenerationMessageChunkss({
 	context,

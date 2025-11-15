@@ -1,5 +1,5 @@
 import { generateInitialWorkspace, Workspace } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import { setWorkspace } from "./utils";
 
 export async function createWorkspace(args: { context: GiselleEngineContext }) {

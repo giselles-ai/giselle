@@ -1,5 +1,5 @@
 import type * as z from "zod/v4";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 
 type HandlerArgs<TSchema extends z.ZodObject> = {
 	input: z.infer<TSchema>;

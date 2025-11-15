@@ -15,8 +15,8 @@ import type {
 } from "@giselles-ai/github-tool";
 import { findDiscussionReplyTargetId } from "@giselles-ai/github-tool";
 import type { Trigger } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../contracts";
 import type { createAndStartAct } from "../acts";
+import type { GiselleEngineContext } from "../types";
 import { getWorkspace } from "../workspaces";
 import type { parseCommand } from "./utils";
 

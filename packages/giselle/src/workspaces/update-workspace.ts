@@ -1,6 +1,6 @@
 import type { Workspace } from "@giselles-ai/protocol";
 import { revalidatePath } from "next/cache";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import { setWorkspace } from "./utils";
 
 export async function updateWorkspace(args: {

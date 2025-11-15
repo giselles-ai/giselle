@@ -5,8 +5,8 @@ import {
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
 import { webSearch } from "@giselles-ai/web-search";
-import type { GiselleEngineContext } from "../contracts";
 import { filePath } from "../files/utils";
+import type { GiselleEngineContext } from "../types";
 
 export async function addWebPage(args: {
 	webpage: FetchingWebPage;

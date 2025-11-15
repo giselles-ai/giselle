@@ -1,5 +1,5 @@
 import type { GenerationOrigin, NodeId } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import { getGeneration, getNodeGenerationIndexes } from "./utils";
 
 const limit = 10;

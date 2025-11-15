@@ -13,7 +13,7 @@ import {
 } from "@giselles-ai/protocol";
 import { memoryStorageDriver } from "@giselles-ai/storage";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import {
 	type EventHandlerArgs,
 	type EventHandlerDependencies,

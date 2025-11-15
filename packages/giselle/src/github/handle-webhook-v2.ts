@@ -14,10 +14,10 @@ import {
 	type WebhookEvent,
 	type WebhookEventName,
 } from "@giselles-ai/github-tool";
-import type { GiselleEngineContext } from "../contracts";
 import { createAndStartAct } from "../acts";
 import { getGitHubRepositoryIntegrationIndex } from "../integrations/utils";
 import { getTrigger } from "../triggers/utils";
+import type { GiselleEngineContext } from "../types";
 import { type EventHandlerDependencies, processEvent } from "./event-handlers";
 import { parseCommand } from "./utils";
 

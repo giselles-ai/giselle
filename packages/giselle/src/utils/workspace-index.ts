@@ -1,5 +1,5 @@
 import * as z from "zod/v4";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 
 export async function addWorkspaceIndexItem<I>({
 	context,

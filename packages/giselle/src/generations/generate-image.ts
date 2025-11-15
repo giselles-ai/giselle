@@ -21,7 +21,7 @@ import {
 	generateText,
 	type ModelMessage,
 } from "ai";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import { useGenerationExecutor } from "./internal/use-generation-executor";
 import {
 	buildMessageObject,

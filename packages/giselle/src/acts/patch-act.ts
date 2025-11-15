@@ -1,5 +1,5 @@
 import { Act, type ActId } from "@giselles-ai/protocol";
-import type { GiselleEngineContext } from "../contracts";
+import type { GiselleEngineContext } from "../types";
 import { type Patch, patchAct as patchActObject } from "./object/patch-object";
 import { actPath } from "./object/paths";
 
