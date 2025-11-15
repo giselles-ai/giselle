@@ -9,7 +9,6 @@
 		"build": "tsup",
 		"check-types": "tsc --noEmit",
 		"clean": "rm -rf .turbo dist next react node_modules",
-		"test": "vitest run",
 		"format": "biome check --write ."
 	},
 	"exports": {
