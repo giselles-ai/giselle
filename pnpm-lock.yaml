@@ -309,6 +309,9 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.1.1(react@19.1.1)
+      zod:
+        specifier: 'catalog:'
+        version: 3.25.76
     devDependencies:
       '@biomejs/biome':
         specifier: 'catalog:'
