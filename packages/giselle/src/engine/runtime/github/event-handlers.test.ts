@@ -11,9 +11,9 @@ import {
 	type Trigger,
 	TriggerId,
 } from "@giselles-ai/protocol";
+import { memoryStorageDriver } from "@giselles-ai/storage";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { GiselleEngineContext } from "../../contracts";
-import { memoryStorageDriver } from "../storage";
 import {
 	type EventHandlerArgs,
 	type EventHandlerDependencies,

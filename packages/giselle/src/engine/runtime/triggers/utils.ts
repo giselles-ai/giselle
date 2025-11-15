@@ -1,6 +1,6 @@
 import { Trigger, type TriggerId } from "@giselles-ai/protocol";
+import type { GiselleStorage } from "@giselles-ai/storage";
 import { removeGitHubRepositoryIntegrationIndex } from "../integrations/utils";
-import type { GiselleStorage } from "../storage";
 
 function triggerPath(params: { triggerId: TriggerId }) {
 	return `flow-triggers/${params.triggerId}.json`;

@@ -24,6 +24,7 @@
 		"@giselles-ai/nextjs": "workspace:*",
 		"@giselles-ai/protocol": "workspace:*",
 		"@giselles-ai/react": "workspace:*",
+		"@giselles-ai/storage": "workspace:*",
 		"@giselles-ai/supabase-driver": "workspace:^",
 		"clsx": "catalog:",
 		"lucide-react": "catalog:",

@@ -1,7 +1,7 @@
 import type { ActId } from "@giselles-ai/protocol";
 import { NodeGenerationIndex } from "@giselles-ai/protocol";
+import type { GiselleStorage } from "@giselles-ai/storage";
 import { actGenerationIndexesPath } from "../../path";
-import type { GiselleStorage } from "../../storage";
 
 export async function getActGenerationIndexes(args: {
 	actId: ActId;

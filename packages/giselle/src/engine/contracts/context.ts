@@ -6,9 +6,9 @@ import type {
 	Trigger,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
+import type { GiselleStorage } from "@giselles-ai/storage";
 import type { GiselleLogger } from "../../logger";
 import type { GenerationMetadata } from "../runtime/generations";
-import type { GiselleStorage } from "../runtime/storage";
 import type { TelemetrySettings } from "../runtime/telemetry";
 import type { Vault } from "../runtime/vault";
 import type {

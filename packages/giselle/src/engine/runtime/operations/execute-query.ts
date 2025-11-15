@@ -19,6 +19,7 @@ import {
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
 import type { EmbeddingMetrics } from "@giselles-ai/rag";
+import type { GiselleStorage } from "@giselles-ai/storage";
 import {
 	isJsonContent,
 	jsonContentToText,
@@ -35,7 +36,6 @@ import {
 	getNodeGenerationIndexes,
 	queryResultToText,
 } from "../generations/utils";
-import type { GiselleStorage } from "../storage";
 
 export function executeQuery(args: {
 	context: GiselleEngineContext;

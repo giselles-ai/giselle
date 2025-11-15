@@ -2,7 +2,7 @@ import {
 	GitHubRepositoryIntegrationIndex,
 	type TriggerId,
 } from "@giselles-ai/protocol";
-import type { GiselleStorage } from "../storage";
+import type { GiselleStorage } from "@giselles-ai/storage";
 
 function getGitHubRepositoryIntegrationPath(repositoryNodeId: string): string {
 	return `integrations/github/repositories/${repositoryNodeId}.json`;

@@ -1,7 +1,7 @@
 import type { NodeId } from "@giselles-ai/protocol";
 import { Generation, NodeGenerationIndex } from "@giselles-ai/protocol";
+import type { GiselleStorage } from "@giselles-ai/storage";
 import type { GiselleLogger } from "../../../../logger";
-import type { GiselleStorage } from "../../storage";
 import {
 	generationPath,
 	getNodeGenerationIndexes,

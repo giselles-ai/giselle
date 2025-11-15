@@ -87,7 +87,6 @@ export * from "./acts";
 export * from "./error";
 export type * from "./generations";
 export * from "./integrations";
-export * from "./storage";
 export * from "./telemetry";
 export type * from "./triggers";
 export * from "./utils/workspace";

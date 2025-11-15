@@ -33,6 +33,7 @@
 		"@giselles-ai/giselle": "workspace:*",
 		"@giselles-ai/github-tool": "workspace:^",
 		"@giselles-ai/http": "workspace:*",
+		"@giselles-ai/storage": "workspace:*",
 		"next": "catalog:",
 		"react": "catalog:"
 	},

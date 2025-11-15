@@ -19,13 +19,13 @@ import {
 	type WebPageContent,
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
+import type { GiselleStorage } from "@giselles-ai/storage";
 import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
 import type { DataContent, FilePart, ImagePart, ModelMessage } from "ai";
 import type { GiselleEngineContext } from "../../contracts";
-import type { GiselleStorage } from "../storage";
 import type { AppEntryResolver } from "./types";
 
 interface GeneratedImageData {

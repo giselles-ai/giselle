@@ -1,4 +1,5 @@
-import { type GiselleEngine, memoryStorageDriver } from "@giselles-ai/giselle";
+import type { GiselleEngine } from "@giselles-ai/giselle";
+import { memoryStorageDriver } from "@giselles-ai/storage";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createHttpHandler } from "./next-giselle-engine";
 

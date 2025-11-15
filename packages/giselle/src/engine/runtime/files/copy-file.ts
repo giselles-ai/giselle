@@ -1,5 +1,5 @@
 import type { FileId, WorkspaceId } from "@giselles-ai/protocol";
-import type { GiselleStorage } from "../storage";
+import type { GiselleStorage } from "@giselles-ai/storage";
 import { filePath } from "./utils";
 
 /**

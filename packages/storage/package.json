@@ -1,16 +1,15 @@
 {
-	"name": "@giselles-ai/supabase-driver",
+	"name": "@giselles-ai/storage",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
-	"files": [
-		"dist/**"
-	],
 	"scripts": {
 		"build": "tsup",
 		"check-types": "tsc --noEmit",
+		"clean": "rm -rf .turbo dist next react node_modules",
+		"test": "vitest run",
 		"format": "biome check --write ."
 	},
 	"exports": {
@@ -18,18 +17,17 @@
 		".": {
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.mjs",
-			"require": "./dist/index.js"
+			"require": "./dist/index.js",
+			"default": "./dist/index.js"
 		}
 	},
 	"devDependencies": {
-		"@giselles-ai/giselle": "workspace:^",
-		"@giselles-ai/tsconfig": "workspace:^",
-		"tsup": "catalog:"
+		"@giselles-ai/tsconfig": "workspace:*",
+		"tsup": "catalog:",
+		"vitest": "catalog:",
+		"zod": "catalog:"
 	},
-	"dependencies": {
-		"@aws-sdk/client-s3": "catalog:",
-		"@giselles-ai/storage": "workspace:*",
-		"@supabase/supabase-js": "catalog:",
+	"peerDependencies": {
 		"zod": "catalog:"
 	}
 }
