@@ -1,10 +1,10 @@
 import type { ActId } from "@giselles-ai/giselle";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import { db } from "@/db";
 import type { SidebarDataObject } from "../ui/sidebar";
 
 export async function getSidebarDataObject(actId: ActId) {
-	const act = await giselleEngine.getAct({ actId });
+	const act = await giselle.getAct({ actId });
 	const dbAct = await db.query.acts.findFirst({
 		where: (tasks, { eq }) => eq(tasks.sdkActId, actId),
 		with: {
@@ -14,7 +14,7 @@ export async function getSidebarDataObject(actId: ActId) {
 	if (dbAct === undefined) {
 		throw new Error(`Act with id ${actId} not found`);
 	}
-	const trigger = await giselleEngine.getTrigger({
+	const trigger = await giselle.getTrigger({
 		triggerId: dbAct?.sdkFlowTriggerId,
 	});
 	if (trigger?.configuration.provider !== "manual") {

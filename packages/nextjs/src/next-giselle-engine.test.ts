@@ -30,7 +30,7 @@ describe("createHttpHandler", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		httpHandler = createHttpHandler({
-			giselleEngine: mockGiselle,
+			giselle: mockGiselle,
 			config: {
 				basePath,
 				storage: memoryStorageDriver(),

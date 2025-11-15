@@ -1,4 +1,4 @@
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import { db } from "@/db";
 import { logger } from "@/lib/logger";
 import { getUser } from "@/lib/supabase";
@@ -68,9 +68,7 @@ async function userApps(teamIds: TeamId[]) {
 				await Promise.all(
 					teams.flatMap((team) =>
 						team.apps.map(async (app) => {
-							const workspace = await giselleEngine.getWorkspace(
-								app.workspace.id,
-							);
+							const workspace = await giselle.getWorkspace(app.workspace.id);
 							const appEntryNode = workspace.nodes.find(
 								(node) => node.id === app.appEntryNodeId,
 							);
@@ -80,7 +78,7 @@ async function userApps(teamIds: TeamId[]) {
 								);
 								return null;
 							}
-							const giselleApp = await giselleEngine.getApp({
+							const giselleApp = await giselle.getApp({
 								appId: app.id,
 							});
 							return {

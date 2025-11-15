@@ -7,20 +7,20 @@ import { useCallback } from "react";
 
 export default function Home() {
 	const router = useRouter();
-	const giselleEngine = useGiselle();
+	const giselle = useGiselle();
 
 	const createWorkspace = useCallback(async () => {
-		const workspace = await giselleEngine.createWorkspace();
+		const workspace = await giselle.createWorkspace();
 		router.push(`/workspaces/${workspace.id}`);
-	}, [router.push, giselleEngine]);
+	}, [router.push, giselle]);
 	const createSampleWorkspace = useCallback(async () => {
-		const workspaces = await giselleEngine.createSampleWorkspaces();
+		const workspaces = await giselle.createSampleWorkspaces();
 		// Use the first workspace if multiple are created
 		if (Array.isArray(workspaces) && workspaces.length > 0 && workspaces[0]) {
 			const workspace = workspaces[0];
 			router.push(`/workspaces/${workspace.id}`);
 		}
-	}, [router.push, giselleEngine]);
+	}, [router.push, giselle]);
 	return (
 		<div className="p-[24px] flex gap-[8px]">
 			<button

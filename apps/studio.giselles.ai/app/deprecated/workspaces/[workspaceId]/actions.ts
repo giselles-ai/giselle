@@ -2,19 +2,19 @@
 
 import type { WorkspaceId } from "@giselles-ai/protocol";
 import { eq } from "drizzle-orm/sql";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import { agents, db, workspaces } from "@/db";
 
 export async function updateWorkspaceName(
 	workspaceId: WorkspaceId,
 	name: string,
 ) {
-	const workspace = await giselleEngine.getWorkspace(workspaceId);
+	const workspace = await giselle.getWorkspace(workspaceId);
 
 	const previousWorkspace = structuredClone(workspace);
 	const updatedWorkspace = { ...workspace, name };
 
-	await giselleEngine.updateWorkspace(updatedWorkspace);
+	await giselle.updateWorkspace(updatedWorkspace);
 
 	try {
 		await db
@@ -27,7 +27,7 @@ export async function updateWorkspaceName(
 			.where(eq(workspaces.id, workspaceId));
 	} catch (error) {
 		try {
-			await giselleEngine.updateWorkspace(previousWorkspace);
+			await giselle.updateWorkspace(previousWorkspace);
 		} catch (rollbackError) {
 			console.error(
 				"Failed to rollback workspace name after agents update failure",

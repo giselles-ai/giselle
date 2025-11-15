@@ -190,7 +190,7 @@ const generateContentProcessor =
 		? "trigger.dev"
 		: "self";
 
-export const giselleEngine = NextGiselle({
+export const giselle = NextGiselle({
 	basePath: "/api/giselle",
 	storage,
 	llmProviders: ["openai", "anthropic", "google"],
@@ -421,7 +421,7 @@ export const giselleEngine = NextGiselle({
 // - When already inside Trigger.dev (runtimeEnv === "trigger.dev"),
 //   use metadata to avoid re-fetching auth state
 if (generateContentProcessor === "trigger.dev") {
-	giselleEngine.setGenerateContentProcess(async ({ generation, metadata }) => {
+	giselle.setGenerateContentProcess(async ({ generation, metadata }) => {
 		const requestId = getRequestId();
 		switch (generation.context.origin.type) {
 			case "github-app": {
@@ -485,7 +485,7 @@ if (generateContentProcessor === "trigger.dev") {
 		}
 	});
 
-	giselleEngine.setRunActProcess(async ({ act, generationOriginType }) => {
+	giselle.setRunActProcess(async ({ act, generationOriginType }) => {
 		const requestId = getRequestId();
 		switch (generationOriginType) {
 			case "github-app": {

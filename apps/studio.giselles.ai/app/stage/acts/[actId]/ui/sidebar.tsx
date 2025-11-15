@@ -73,7 +73,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 				});
 			});
 
-			// Fetch generation data for each step using giselleEngine
+			// Fetch generation data for each step using giselle
 			for (const { stepId, generationId } of generationsToFetch) {
 				try {
 					const generation = await fetchGenerationData(generationId);

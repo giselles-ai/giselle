@@ -60,7 +60,7 @@ const supabaseVault = supabaseVaultDriver({
 The Vault is specified when initializing the GiselleEngine:
 
 ```ts
-export const giselleEngine = NextGiselleEngine({
+export const giselle = NextGiselleEngine({
   basePath: "/api/giselle",
   storage,
   vault: supabaseVault,
@@ -72,14 +72,14 @@ Usage pattern:
 ```ts
 // Encrypt a secret (e.g., a GitHub PAT)
 const plaintext = "github_pat_abc123xyz";
-const encryptedSecret = await giselleEngine.encryptSecret(plaintext);
+const encryptedSecret = await giselle.encryptSecret(plaintext);
 
 // React
 const client = useGiselle()
 const encryptedSecret = await client.encryptSecret({ plaintext })
 
 // Later, decrypt the secret when needed(sever only)
-const decryptedSecret = await giselleEngine.decryptSecret(encryptedSecret);
+const decryptedSecret = await giselle.decryptSecret(encryptedSecret);
 
 // Store only the encrypted reference in database
 const userSecrets = {

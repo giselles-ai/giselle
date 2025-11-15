@@ -1,3 +1,3 @@
-import { giselleEngine } from "@/giselle-engine";
+import { giselle } from "@/giselle";
 
-export const { GET, POST } = giselleEngine.handlers;
+export const { GET, POST } = giselle.handlers;

@@ -47,24 +47,24 @@ async function getBody(
 }
 
 export function createHttpHandler({
-	giselleEngine,
+	giselle,
 	config,
 }: {
-	giselleEngine: Giselle;
+	giselle: Giselle;
 	config: NextGiselleConfig;
 }) {
 	const jsonRouter: JsonRouterHandlers = {} as JsonRouterHandlers;
 	for (const [path, createRoute] of Object.entries(createJsonRouters)) {
 		if (isJsonRouterPath(path)) {
 			// @ts-expect-error
-			jsonRouter[path] = createRoute(giselleEngine);
+			jsonRouter[path] = createRoute(giselle);
 		}
 	}
 
 	const formDataRouter: FormDataRouterHandlers = {} as FormDataRouterHandlers;
 	for (const [path, createRoute] of Object.entries(createFormDataRouters)) {
 		if (isFormDataRouterPath(path)) {
-			formDataRouter[path] = createRoute(giselleEngine);
+			formDataRouter[path] = createRoute(giselle);
 		}
 	}
 
@@ -95,7 +95,7 @@ export function createHttpHandler({
 			if (generatedImageMatch) {
 				const generationId = generatedImageMatch[1];
 				const filename = generatedImageMatch[2];
-				const file = await giselleEngine.getGeneratedImage(
+				const file = await giselle.getGeneratedImage(
 					GenerationId.parse(generationId),
 					filename,
 				);
@@ -130,7 +130,7 @@ export function createHttpHandler({
 
 				// Flush generation index patches after response
 				after(async () => {
-					await giselleEngine.flushGenerationIndexQueue();
+					await giselle.flushGenerationIndexQueue();
 				});
 			}
 
@@ -171,7 +171,7 @@ export function createHttpHandler({
 					}
 					return new Response("Internal Server Error", { status: 500 });
 				}
-				after(() => giselleEngine.handleGitHubWebhookV2({ request }));
+				after(() => giselle.handleGitHubWebhookV2({ request }));
 				return new Response("Accepted", { status: 202 });
 			}
 			throw new Error(`Invalid router path at ${pathname}`);
@@ -180,13 +180,13 @@ export function createHttpHandler({
 }
 
 export function NextGiselle(config: NextGiselleConfig) {
-	const giselleEngine = Giselle({ ...config, waitUntil: after });
+	const giselle = Giselle({ ...config, waitUntil: after });
 	const httpHandler = createHttpHandler({
-		giselleEngine,
+		giselle,
 		config,
 	});
 	return {
-		...giselleEngine,
+		...giselle,
 		handlers: {
 			GET: httpHandler,
 			POST: httpHandler,

@@ -117,7 +117,7 @@ if (process.env.SAMPLE_APP_WORKSPACE_IDS) {
 	}
 }
 
-export const giselleEngine = NextGiselle({
+export const giselle = NextGiselle({
 	basePath: "/api/giselle",
 	storage,
 	llmProviders,
