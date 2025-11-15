@@ -44,7 +44,7 @@
 		"@giselles-ai/logger": "workspace:*",
 		"@giselles-ai/node-registry": "workspace:*",
 		"@giselles-ai/storage": "workspace:*",
-		"@giselles-ai/stream-utils": "workspace:*",
+		"@giselles-ai/stream": "workspace:*",
 		"@giselles-ai/text-editor-utils": "workspace:^",
 		"@giselles-ai/trigger-registry": "workspace:*",
 		"@giselles-ai/web-search": "workspace:^",

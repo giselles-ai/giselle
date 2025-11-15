@@ -1,5 +1,5 @@
 import type { ActId } from "@giselles-ai/protocol";
-import type { StreamData, StreamEvent } from "@giselles-ai/stream-utils";
+import type { StreamData, StreamEvent } from "@giselles-ai/stream";
 import type { GiselleContext } from "../types";
 import { getAct } from "./get-act";
 

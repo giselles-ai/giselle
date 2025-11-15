@@ -1,7 +1,7 @@
 "use client";
 
 import type { ActId } from "@giselles-ai/protocol";
-import { type StreamData, StreamEvent } from "@giselles-ai/stream-utils";
+import { type StreamData, StreamEvent } from "@giselles-ai/stream";
 import { useEffect } from "react";
 
 export type StreamDataEventHandler = (data: StreamData) => void;

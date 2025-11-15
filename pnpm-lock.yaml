@@ -928,9 +928,9 @@ importers:
       '@giselles-ai/storage':
         specifier: workspace:*
         version: link:../storage
-      '@giselles-ai/stream-utils':
+      '@giselles-ai/stream':
         specifier: workspace:*
-        version: link:../stream-utils
+        version: link:../stream
       '@giselles-ai/text-editor-utils':
         specifier: workspace:^
         version: link:../text-editor-utils
@@ -1277,9 +1277,9 @@ importers:
       '@giselles-ai/node-registry':
         specifier: workspace:*
         version: link:../node-registry
-      '@giselles-ai/stream-utils':
+      '@giselles-ai/stream':
         specifier: workspace:*
-        version: link:../stream-utils
+        version: link:../stream
       ai:
         specifier: 'catalog:'
         version: 5.0.51(zod@3.25.76)
@@ -1327,7 +1327,7 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
 
-  packages/stream-utils:
+  packages/stream:
     dependencies:
       '@giselles-ai/protocol':
         specifier: workspace:*

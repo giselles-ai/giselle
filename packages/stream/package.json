@@ -1,5 +1,5 @@
 {
-	"name": "@giselles-ai/stream-utils",
+	"name": "@giselles-ai/stream",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
