@@ -209,7 +209,7 @@ export const giselle = NextGiselle({
 				privateKey: "",
 				resolver: {
 					installationIdForRepo: () => 1234,
-					installtionIds: () => [1234],
+					installationIds: () => [1234],
 				},
 			},
 			authV2: {
