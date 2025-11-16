@@ -1,6 +1,7 @@
 import { isClonedFileDataPayload } from "@giselles-ai/node-registry";
 import type {
 	ActId,
+	FailedGeneration,
 	FileId,
 	GeneratedImageContentOutput,
 	NodeId,
@@ -43,6 +44,26 @@ import { getActGenerationIndexes } from "./get-act-generation-indexes";
 import { sanitizeGenerationUsage } from "./sanitize-usage";
 import { internalSetGeneration } from "./set-generation";
 
+export interface OnGenerationCompleteEvent {
+	generation: CompletedGeneration;
+	inputMessages: ModelMessage[];
+	outputFileBlobs: OutputFileBlob[];
+	providerMetadata?: ProviderMetadata;
+	generationMetadata?: GenerationMetadata;
+}
+export type OnGenerationComplete = (
+	event: OnGenerationCompleteEvent,
+) => void | Promise<void>;
+
+export interface OnGenerationErrorEvent {
+	generation: FailedGeneration;
+	inputMessages: ModelMessage[];
+	generationMetadata?: GenerationMetadata;
+}
+export type OnGenerationError = (
+	args: OnGenerationErrorEvent,
+) => void | Promise<void>;
+
 interface FinishGenerationArgs {
 	outputs: GenerationOutput[];
 	usage?: GenerationUsage;
@@ -50,6 +71,7 @@ interface FinishGenerationArgs {
 	inputMessages: ModelMessage[];
 	providerMetadata?: ProviderMetadata;
 	generationMetadata?: GenerationMetadata;
+	onComplete?: OnGenerationComplete;
 }
 type FinishGeneration = (args: FinishGenerationArgs) => Promise<{
 	completedGeneration: CompletedGeneration;
@@ -79,6 +101,7 @@ export async function useGenerationExecutor<T>(args: {
 		signal?: AbortSignal;
 		finishGeneration: FinishGeneration;
 	}) => Promise<T>;
+	onError?: OnGenerationError;
 }): Promise<T> {
 	const generationContext = GenerationContext.parse(args.generation.context);
 
@@ -137,6 +160,10 @@ export async function useGenerationExecutor<T>(args: {
 				dump: usageLimitStatus,
 			},
 		} as const;
+		await Promise.all([
+			setGeneration(failedGeneration),
+			args?.onError?.({ generation: failedGeneration, inputMessages: [] }),
+		]);
 		await setGeneration(failedGeneration);
 		throw new UsageLimitError(usageLimitStatus.error);
 	}
@@ -331,6 +358,7 @@ export async function useGenerationExecutor<T>(args: {
 		inputMessages,
 		generateMessages,
 		providerMetadata,
+		onComplete,
 	}: FinishGenerationArgs) {
 		const sanitizedUsage = sanitizeGenerationUsage(usage);
 		const completionStartTime = Date.now();
@@ -378,7 +406,7 @@ export async function useGenerationExecutor<T>(args: {
 				onConsumeAgentTime: args.context.onConsumeAgentTime,
 			}),
 			(async () => {
-				const result = await args.context.callbacks?.generationComplete?.({
+				const result = await onComplete?.({
 					generation: completedGeneration,
 					inputMessages,
 					outputFileBlobs,

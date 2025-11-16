@@ -45,6 +45,8 @@ import {
 	getGeneration,
 	getGenerationMessageChunkss,
 	getNodeGenerations,
+	type OnGenerationComplete,
+	type OnGenerationError,
 	setGeneration,
 } from "./generations";
 import { getActGenerationIndexes } from "./generations/get-act-generation-indexes";
@@ -307,8 +309,15 @@ export function Giselle(config: GiselleConfig) {
 			generation: RunningGeneration;
 			logger?: GiselleLogger;
 			metadata?: GenerationMetadata;
+			onComplete?: OnGenerationComplete;
+			onError?: OnGenerationError;
 		}) {
-			return generateContent({ ...args, context });
+			return generateContent({
+				...args,
+				context,
+				onComplete: args.onComplete || config.onGenerationComplete,
+				onError: args.onError || config.onGenerationError,
+			});
 		},
 		getGenerationMessageChunks(args: {
 			generationId: GenerationId;

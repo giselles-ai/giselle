@@ -36,7 +36,11 @@ import { generationUiMessageChunksPath } from "../path";
 import { decryptSecret } from "../secrets";
 import type { GiselleContext } from "../types";
 import { batchWriter } from "../utils";
-import { useGenerationExecutor } from "./internal/use-generation-executor";
+import {
+	type OnGenerationComplete,
+	type OnGenerationError,
+	useGenerationExecutor,
+} from "./internal/use-generation-executor";
 import { createPostgresTools } from "./tools/postgres";
 import type { GenerationMetadata, PreparedToolSet } from "./types";
 import { buildMessageObject, getGeneration } from "./utils";
@@ -64,11 +68,15 @@ export function generateContent({
 	generation,
 	logger: overrideLogger,
 	metadata,
+	onComplete,
+	onError,
 }: {
 	context: GiselleContext;
 	generation: RunningGeneration;
 	logger?: GiselleLogger;
 	metadata?: GenerationMetadata;
+	onComplete?: OnGenerationComplete;
+	onError?: OnGenerationError;
 }) {
 	const logger = overrideLogger ?? context.logger;
 
@@ -78,6 +86,7 @@ export function generateContent({
 		context,
 		generation,
 		metadata,
+		onError,
 		execute: async ({
 			finishGeneration,
 			runningGeneration,
@@ -327,7 +336,7 @@ export function generateContent({
 
 						await Promise.all([
 							setGeneration(failedGeneration),
-							context.callbacks?.generationFailed?.({
+							onError?.({
 								generation: failedGeneration,
 								inputMessages: messages,
 							}),
@@ -394,6 +403,7 @@ export function generateContent({
 						usage: await streamTextResult.usage,
 						generateMessages: generateMessages,
 						providerMetadata: await streamTextResult.providerMetadata,
+						onComplete,
 					});
 					logger.info(
 						`Generation completion processing finished in ${Date.now() - generationCompletionStartTime}ms`,
