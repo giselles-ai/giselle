@@ -315,8 +315,6 @@ export function Giselle(config: GiselleConfig) {
 			return generateContent({
 				...args,
 				context,
-				onComplete: args.onComplete || config.onGenerationComplete,
-				onError: args.onError || config.onGenerationError,
 			});
 		},
 		getGenerationMessageChunks(args: {

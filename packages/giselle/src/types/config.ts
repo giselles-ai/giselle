@@ -2,7 +2,6 @@ import type { LanguageModelProvider } from "@giselles-ai/language-model";
 import type { GiselleLogger } from "@giselles-ai/logger";
 import type { WorkspaceId } from "@giselles-ai/protocol";
 import type { GiselleStorage } from "@giselles-ai/storage";
-import type { OnGenerationComplete, OnGenerationError } from "../generations";
 import type { TelemetrySettings } from "../telemetry";
 import type { Vault } from "../vault";
 import type { GiselleCallbacks } from "./callbacks";
@@ -35,6 +34,4 @@ export interface GiselleConfig {
 	};
 	logger?: GiselleLogger;
 	waitUntil?: WaitUntil;
-	onGenerationComplete?: OnGenerationComplete;
-	onGenerationError?: OnGenerationError;
 }

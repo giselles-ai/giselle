@@ -2,6 +2,8 @@ import { GenerationId, isRunningGeneration } from "@giselles-ai/protocol";
 import { logger, schemaTask as schemaJob } from "@trigger.dev/sdk";
 import { z } from "zod/v4";
 import { giselle } from "@/app/giselle";
+import { GenerationMetadata } from "@/lib/generation-metadata";
+import { traceGenerationForTeam } from "@/lib/trace";
 
 export const generateContentJob = schemaJob({
 	id: "generate-content",
@@ -29,6 +31,36 @@ export const generateContentJob = schemaJob({
 				requestId: payload.requestId,
 				userId: payload.userId,
 				team: payload.team,
+			},
+			onComplete: async ({ generationMetadata, generation, ...events }) => {
+				const parsedMetadata = GenerationMetadata.parse(generationMetadata);
+				await traceGenerationForTeam({
+					...events,
+					generation,
+					requestId: parsedMetadata.requestId,
+					userId: parsedMetadata.userId,
+					sessionId: generation.context.origin.actId,
+					team: {
+						id: parsedMetadata.team.id,
+						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						plan: parsedMetadata.team.plan,
+					},
+				});
+			},
+			onError: async ({ generationMetadata, generation, ...events }) => {
+				const parsedMetadata = GenerationMetadata.parse(generationMetadata);
+				await traceGenerationForTeam({
+					...events,
+					generation,
+					requestId: parsedMetadata.requestId,
+					userId: parsedMetadata.userId,
+					sessionId: generation.context.origin.actId,
+					team: {
+						id: parsedMetadata.team.id,
+						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						plan: parsedMetadata.team.plan,
+					},
+				});
 			},
 		});
 	},
