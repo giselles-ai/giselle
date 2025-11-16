@@ -687,7 +687,7 @@ function DocumentVectorStoreConfigureDialog({
 							<span className="sr-only">Close</span>
 						</DialogClose>
 					</div>
-					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
+					<DialogDescription className="font-geist my-2 text-[14px] text-text-muted">
 						Update the name, embedding models, and source files for this vector
 						store.
 					</DialogDescription>
@@ -697,7 +697,7 @@ function DocumentVectorStoreConfigureDialog({
 						<div className="flex flex-col gap-2">
 							<label
 								htmlFor={nameInputId}
-								className="text-sm text-text/60 font-geist"
+								className="text-inverse text-[14px] leading-[16.8px] font-sans"
 							>
 								Name
 							</label>
