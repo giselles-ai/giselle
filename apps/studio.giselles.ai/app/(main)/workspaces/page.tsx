@@ -59,6 +59,7 @@ async function agentsQuery(teamDbId: number) {
 			teamDbId: agents.teamDbId,
 			name: agents.name,
 			workspaceId: agents.workspaceId,
+			graphUrl: agents.graphUrl,
 			createdAt: agents.createdAt,
 			updatedAt: agents.updatedAt,
 			creatorDbId: agents.creatorDbId,
@@ -71,9 +72,9 @@ async function agentsQuery(teamDbId: number) {
 		.orderBy(desc(agents.updatedAt));
 
 	// Get execution counts for each workspace
-	const workspaceIds = agentsList
+	const workspaceIds: WorkspaceId[] = agentsList
 		.map((agent) => agent.workspaceId)
-		.filter((id): id is string => id !== null);
+		.filter((id): id is WorkspaceId => id !== null);
 
 	const executionCounts =
 		workspaceIds.length > 0
@@ -257,22 +258,27 @@ async function agentsQuery(teamDbId: number) {
 		}),
 	);
 
-	return agentsList.map((agent) => ({
-		...agent,
-		executionCount: executionCountMap.get(agent.workspaceId || "") || 0,
-		creator:
-			agent.creatorDisplayName || agent.creatorAvatarUrl
-				? {
-						displayName: agent.creatorDisplayName,
-						avatarUrl: agent.creatorAvatarUrl,
-					}
-				: null,
-		githubRepositories:
-			githubRepositoriesMap.get(agent.workspaceId || "") || [],
-		documentVectorStoreFiles:
-			documentVectorStoreFilesMap.get(agent.workspaceId || "") || [],
-		llmProviders: llmProvidersMap.get(agent.workspaceId || "") || [],
-	}));
+	return agentsList.map((agent) => {
+		const workspaceId = agent.workspaceId;
+		return {
+			...agent,
+			executionCount: workspaceId ? executionCountMap.get(workspaceId) || 0 : 0,
+			creator:
+				agent.creatorDisplayName || agent.creatorAvatarUrl
+					? {
+							displayName: agent.creatorDisplayName,
+							avatarUrl: agent.creatorAvatarUrl,
+						}
+					: null,
+			githubRepositories: workspaceId
+				? githubRepositoriesMap.get(workspaceId) || []
+				: [],
+			documentVectorStoreFiles: workspaceId
+				? documentVectorStoreFilesMap.get(workspaceId) || []
+				: [],
+			llmProviders: workspaceId ? llmProvidersMap.get(workspaceId) || [] : [],
+		};
+	});
 }
 
 export default async function AgentListV2Page() {

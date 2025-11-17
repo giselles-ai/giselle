@@ -102,18 +102,22 @@ export function AgentCard({ agent }: AgentCardProps) {
 										<div className="flex items-center gap-2">
 											<GitHubIcon className="w-3 h-3 text-text/60 flex-shrink-0" />
 											<div className="flex flex-col gap-1 min-w-0 flex-1">
-												{agent.githubRepositories.slice(0, 1).map((repo) => (
-													<div key={repo} className="flex items-center gap-1">
-														<div className="font-geist text-[11px] text-text/60 truncate">
-															{repo}
+												{(() => {
+													const repos = agent.githubRepositories;
+													if (!repos) return null;
+													return repos.slice(0, 1).map((repo) => (
+														<div key={repo} className="flex items-center gap-1">
+															<div className="font-geist text-[11px] text-text/60 truncate">
+																{repo}
+															</div>
+															{repos.length > 1 && (
+																<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted">
+																	+{repos.length - 1}
+																</span>
+															)}
 														</div>
-														{agent.githubRepositories.length > 1 && (
-															<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted">
-																+{agent.githubRepositories.length - 1}
-															</span>
-														)}
-													</div>
-												))}
+													));
+												})()}
 											</div>
 										</div>
 									)}
@@ -124,9 +128,10 @@ export function AgentCard({ agent }: AgentCardProps) {
 										<div className="flex items-center gap-2">
 											<File className="w-3 h-3 text-text/60 flex-shrink-0" />
 											<div className="flex flex-col gap-1 min-w-0 flex-1">
-												{agent.documentVectorStoreFiles
-													.slice(0, 1)
-													.map((fileName) => (
+												{(() => {
+													const files = agent.documentVectorStoreFiles;
+													if (!files) return null;
+													return files.slice(0, 1).map((fileName) => (
 														<div
 															key={fileName}
 															className="flex items-center gap-1"
@@ -134,13 +139,14 @@ export function AgentCard({ agent }: AgentCardProps) {
 															<div className="font-geist text-[11px] text-text/60 truncate">
 																{fileName}
 															</div>
-															{agent.documentVectorStoreFiles.length > 1 && (
+															{files.length > 1 && (
 																<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted">
-																	+{agent.documentVectorStoreFiles.length - 1}
+																	+{files.length - 1}
 																</span>
 															)}
 														</div>
-													))}
+													));
+												})()}
 											</div>
 										</div>
 									)}
