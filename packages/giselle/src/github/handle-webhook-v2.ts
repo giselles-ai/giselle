@@ -15,6 +15,7 @@ import {
 	type WebhookEventName,
 } from "@giselles-ai/github-tool";
 import { createAndStartAct } from "../acts";
+import type { OnGenerationComplete, OnGenerationError } from "../generations";
 import { getGitHubRepositoryIntegrationIndex } from "../integrations/utils";
 import { getTrigger } from "../triggers/utils";
 import type { GiselleContext } from "../types";
@@ -38,6 +39,8 @@ const events: WebhookEventName[] = [
 export async function handleGitHubWebhookV2(args: {
 	context: GiselleContext;
 	request: Request;
+	onGenerationComplete?: OnGenerationComplete;
+	onGenerationError?: OnGenerationError;
 }) {
 	const credentials = args.context.integrationConfigs?.github?.authV2;
 	if (credentials === undefined) {
@@ -65,6 +68,8 @@ export async function handleGitHubWebhookV2(args: {
 				updateDiscussionComment,
 				getDiscussionForCommentCreation,
 			},
+			onGenerationComplete: args.onGenerationComplete,
+			onGenerationError: args.onGenerationError,
 		});
 
 	const handlers: Partial<
@@ -119,6 +124,8 @@ async function process<TEventName extends WebhookEventName>(args: {
 	event: WebhookEvent<TEventName>;
 	context: GiselleContext;
 	deps: ProcessDeps & EventHandlerDependencies;
+	onGenerationComplete?: OnGenerationComplete;
+	onGenerationError?: OnGenerationError;
 }) {
 	if (!hasRequiredPayloadProps(args.event)) {
 		return;

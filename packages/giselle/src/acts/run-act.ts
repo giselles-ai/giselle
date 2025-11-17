@@ -13,6 +13,8 @@ import {
 	type GenerationMetadata,
 	generateImage,
 	getGeneration,
+	type OnGenerationComplete,
+	type OnGenerationError,
 } from "../generations";
 import { startContentGeneration } from "../generations/start-content-generation";
 import { executeAction } from "../operations";
@@ -62,6 +64,8 @@ async function executeStep(args: {
 	callbacks?: {
 		onCompleted?: () => void | Promise<void>;
 		onFailed?: (generation: Generation) => void | Promise<void>;
+		onGenerationComplete?: OnGenerationComplete;
+		onGenerationError?: OnGenerationError;
 	};
 	logger?: GiselleLogger;
 	metadata?: GenerationMetadata;
@@ -75,7 +79,13 @@ async function executeStep(args: {
 				await generateImage({ ...args });
 				break;
 			case "textGeneration": {
-				await startContentGeneration(args);
+				await startContentGeneration({
+					generation: args.generation,
+					context: args.context,
+					metadata: args.metadata,
+					onComplete: args.callbacks?.onGenerationComplete,
+					onError: args.callbacks?.onGenerationError,
+				});
 				const finishedGeneration = await waitUntilGenerationFinishes({
 					context: args.context,
 					generationId: args.generation.id,
@@ -123,6 +133,8 @@ export type RunActInputs = z.infer<typeof RunActInputs>;
 export async function runAct(
 	args: RunActInputs & {
 		context: GiselleContext;
+		onGenerationComplete?: OnGenerationComplete;
+		onGenerationError?: OnGenerationError;
 	},
 ) {
 	const act = await getAct(args);
@@ -152,7 +164,11 @@ export async function runAct(
 				await executeStep({
 					context: args.context,
 					generation: queuedGeneration,
-					callbacks,
+					callbacks: {
+						...callbacks,
+						onGenerationComplete: args.onGenerationComplete,
+						onGenerationError: args.onGenerationError,
+					},
 					metadata: args.metadata,
 				});
 			},

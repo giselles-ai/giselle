@@ -1,5 +1,6 @@
 import type { Act } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
+import type { OnGenerationComplete, OnGenerationError } from "../generations";
 import type { GiselleContext } from "../types";
 import { CreateActInputs, createAct } from "./create-act";
 import { type RunActCallbacks, runAct } from "./run-act";
@@ -7,6 +8,8 @@ import { StartActInputs } from "./start-act";
 
 interface CreateAndStartActCallbacks extends RunActCallbacks {
 	actCreate?: (args: { act: Act }) => void | Promise<void>;
+	generationComplete?: OnGenerationComplete;
+	generationError?: OnGenerationError;
 }
 
 export const CreateAndStartActInputs = z.object({

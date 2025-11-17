@@ -220,6 +220,7 @@ export const giselle = NextGiselle({
 					requestId,
 					userId: "github-app",
 					team,
+					sessionId: args.generation.context.origin.actId,
 				});
 				return;
 			}
@@ -232,6 +233,7 @@ export const giselle = NextGiselle({
 				requestId,
 				userId: currentUser.id,
 				team: currentTeam,
+				sessionId: args.generation.context.origin.actId,
 			});
 		},
 		generationError: async (args) => {

@@ -86,7 +86,7 @@ export function generateContent({
 		context,
 		generation,
 		metadata,
-		onError: onError || context.callbacks?.generationError,
+		onError,
 		execute: async ({
 			finishGeneration,
 			runningGeneration,
@@ -403,7 +403,7 @@ export function generateContent({
 						usage: await streamTextResult.usage,
 						generateMessages: generateMessages,
 						providerMetadata: await streamTextResult.providerMetadata,
-						onComplete: onComplete || context.callbacks?.generationComplete,
+						onComplete,
 					});
 					logger.info(
 						`Generation completion processing finished in ${Date.now() - generationCompletionStartTime}ms`,

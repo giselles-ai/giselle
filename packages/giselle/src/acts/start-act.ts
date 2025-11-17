@@ -1,5 +1,6 @@
 import { ActId, GenerationOrigin } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
+import type { OnGenerationComplete, OnGenerationError } from "../generations";
 import type { GiselleContext } from "../types";
 import { getAct } from "./get-act";
 import { patches } from "./object/patch-creators";
@@ -18,8 +19,12 @@ export async function startAct({
 	actId,
 	context,
 	generationOriginType,
+	onGenerationComplete,
+	onGenerationError,
 }: StartActInputs & {
 	context: GiselleContext;
+	onGenerationComplete?: OnGenerationComplete;
+	onGenerationError?: OnGenerationError;
 }) {
 	const act = await getAct({ context, actId });
 
@@ -35,7 +40,15 @@ export async function startAct({
 
 	switch (context.runActProcess.type) {
 		case "self":
-			context.waitUntil(async () => await runAct({ context, actId }));
+			context.waitUntil(
+				async () =>
+					await runAct({
+						context,
+						actId,
+						onGenerationComplete,
+						onGenerationError,
+					}),
+			);
 			break;
 		case "external":
 			await context.runActProcess.process({
