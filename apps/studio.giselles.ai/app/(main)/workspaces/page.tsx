@@ -3,6 +3,7 @@ import { ToastProvider } from "@giselles-ai/contexts/toast";
 import type { WorkspaceId } from "@giselles-ai/protocol";
 import {
 	isActionNode,
+	isTextGenerationNode,
 	isTriggerNode,
 	isVectorStoreNode,
 } from "@giselles-ai/protocol";
@@ -27,6 +28,7 @@ function AgentList({
 				} | null;
 				githubRepositories: string[];
 				documentVectorStoreFiles: string[];
+				llmProviders: string[];
 			}
 		>
 	>;
@@ -89,9 +91,10 @@ async function agentsQuery(teamDbId: number) {
 		executionCounts.map((ec) => [ec.workspaceId, ec.count]),
 	);
 
-	// Extract GitHub repositories and Document Vector Store file names from workspace nodes
+	// Extract GitHub repositories, Document Vector Store file names, and LLM providers from workspace nodes
 	const githubRepositoriesMap = new Map<string, string[]>();
 	const documentVectorStoreFilesMap = new Map<string, string[]>();
+	const llmProvidersMap = new Map<string, string[]>();
 
 	// Get document vector stores for all teams
 	const teamDbIds = [...new Set(agentsList.map((agent) => agent.teamDbId))];
@@ -116,9 +119,21 @@ async function agentsQuery(teamDbId: number) {
 				);
 				const repositories: string[] = [];
 				const documentFiles: string[] = [];
+				const llmProviders = new Set<string>();
 
 				if (workspace.nodes) {
 					for (const node of workspace.nodes) {
+						// LLM Models
+						if (
+							isTextGenerationNode(node) &&
+							node.content.llm?.provider &&
+							node.content.llm?.id
+						) {
+							const provider = node.content.llm.provider;
+							if (typeof provider === "string") {
+								llmProviders.add(provider);
+							}
+						}
 						// GitHub Vector Store
 						if (
 							isVectorStoreNode(node, "github") &&
@@ -230,6 +245,9 @@ async function agentsQuery(teamDbId: number) {
 					);
 					documentVectorStoreFilesMap.set(agent.workspaceId, documentFiles);
 				}
+				if (llmProviders.size > 0) {
+					llmProvidersMap.set(agent.workspaceId, Array.from(llmProviders));
+				}
 			} catch (error) {
 				console.error(
 					`Error extracting vector store info for workspace ${agent.workspaceId}:`,
@@ -253,6 +271,7 @@ async function agentsQuery(teamDbId: number) {
 			githubRepositoriesMap.get(agent.workspaceId || "") || [],
 		documentVectorStoreFiles:
 			documentVectorStoreFilesMap.get(agent.workspaceId || "") || [],
+		llmProviders: llmProvidersMap.get(agent.workspaceId || "") || [],
 	}));
 }
 

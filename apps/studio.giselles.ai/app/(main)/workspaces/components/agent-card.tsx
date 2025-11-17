@@ -1,9 +1,16 @@
 "use client";
 
 import clsx from "clsx/lite";
-import { File, Plug, Zap } from "lucide-react";
+import { File, Zap } from "lucide-react";
 import Link from "next/link";
 import type { agents as dbAgents } from "@/db";
+import {
+	AnthropicIcon,
+	GitHubIcon,
+	GoogleWhiteIcon,
+	OpenaiIcon,
+	PerplexityIcon,
+} from "../../../../../../internal-packages/workflow-designer-ui/src/icons";
 import { DeleteAgentButton } from "./delete-agent-button";
 import { DuplicateAgentButton } from "./duplicate-agent-button";
 
@@ -16,7 +23,29 @@ interface AgentCardProps {
 		} | null;
 		githubRepositories?: string[];
 		documentVectorStoreFiles?: string[];
+		llmProviders?: string[];
 	};
+}
+
+function LLMProviderIcon({
+	provider,
+	className,
+}: {
+	provider: string;
+	className?: string;
+}) {
+	switch (provider) {
+		case "openai":
+			return <OpenaiIcon className={className} />;
+		case "anthropic":
+			return <AnthropicIcon className={className} />;
+		case "google":
+			return <GoogleWhiteIcon className={className} />;
+		case "perplexity":
+			return <PerplexityIcon className={className} />;
+		default:
+			return null;
+	}
 }
 
 export function AgentCard({ agent }: AgentCardProps) {
@@ -96,7 +125,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 								{agent.githubRepositories &&
 									agent.githubRepositories.length > 0 && (
 										<div className="flex items-center gap-2">
-											<Plug className="w-3 h-3 text-text/60 flex-shrink-0" />
+											<GitHubIcon className="w-3 h-3 text-text/60 flex-shrink-0" />
 											<div className="flex flex-col gap-1 min-w-0 flex-1">
 												{agent.githubRepositories.slice(0, 1).map((repo) => (
 													<div key={repo} className="flex items-center gap-1">
@@ -145,10 +174,26 @@ export function AgentCard({ agent }: AgentCardProps) {
 
 						{/* Integration Icons */}
 						<div className="flex items-center gap-2">
-							{/* TODO: Add integration icons based on workspace nodes */}
-							<div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center" />
-							<div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center" />
-							<div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center" />
+							{agent.llmProviders?.map((provider) => (
+								<div
+									key={provider}
+									className="w-7 h-7 rounded bg-white/10 flex items-center justify-center"
+								>
+									<LLMProviderIcon provider={provider} className="w-4 h-4" />
+								</div>
+							))}
+							{agent.githubRepositories &&
+								agent.githubRepositories.length > 0 && (
+									<div className="w-7 h-7 rounded bg-white/10 flex items-center justify-center">
+										<GitHubIcon className="w-4 h-4 text-text/60" />
+									</div>
+								)}
+							{agent.documentVectorStoreFiles &&
+								agent.documentVectorStoreFiles.length > 0 && (
+									<div className="w-7 h-7 rounded bg-white/10 flex items-center justify-center">
+										<File className="w-4 h-4 text-text/60" />
+									</div>
+								)}
 						</div>
 
 						{/* Footer: Creator and Stats */}

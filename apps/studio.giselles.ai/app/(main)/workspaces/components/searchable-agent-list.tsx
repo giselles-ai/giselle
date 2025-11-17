@@ -21,6 +21,7 @@ type AgentWithMetadata = typeof dbAgents.$inferSelect & {
 	} | null;
 	githubRepositories: string[];
 	documentVectorStoreFiles: string[];
+	llmProviders: string[];
 };
 
 export function SearchableAgentList({
