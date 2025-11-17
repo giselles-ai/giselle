@@ -74,7 +74,7 @@ export async function buildMessageObject({
 				appEntryResolver,
 			);
 		}
-		case "action":
+		case "taskion":
 		case "trigger":
 		case "query":
 		case "appEntry": {
@@ -260,7 +260,7 @@ async function buildGenerationMessageForTextGeneration({
 
 			case "query":
 			case "trigger":
-			case "action": {
+			case "taskion": {
 				const result = await generationContentResolver(
 					contextNode.id,
 					sourceKeyword.outputId,
@@ -542,7 +542,7 @@ async function buildGenerationMessageForImageGeneration(
 				break;
 			}
 
-			case "action":
+			case "taskion":
 			case "trigger":
 			case "query": {
 				const result = await textGenerationResolver(
@@ -758,7 +758,7 @@ export async function checkUsageLimits(args: {
 }
 
 export function queryResultToText(
-	queryResult: Extract<GenerationOutput, { type: "query-result" }>,
+	queryResult: Extrtask<GenerationOutput, { type: "query-result" }>,
 ): string | undefined {
 	if (!queryResult.content || queryResult.content.length === 0) {
 		return undefined;

@@ -17,13 +17,13 @@ import {
 	type OnGenerationError,
 } from "../generations";
 import { startContentGeneration } from "../generations/start-content-generation";
-import { executeAction } from "../operations";
+import { executeTaskion } from "../operations";
 import { executeQuery } from "../operations/execute-query";
 import { resolveTrigger } from "../triggers";
 import type { GiselleContext } from "../types";
-import { getAct } from "./get-act";
+import { getTask } from "./get-task";
 import { createPatchQueue } from "./patch-queue";
-import { executeAct } from "./shared/act-execution-utils";
+import { executeTask } from "./shared/task-execution-utils";
 
 async function waitUntilGenerationFinishes(args: {
 	context: GiselleContext;
@@ -51,7 +51,7 @@ async function waitUntilGenerationFinishes(args: {
 	}
 }
 
-export interface RunActCallbacks {
+export interface RunTaskCallbacks {
 	sequenceStart?: (args: { sequence: Sequence }) => void | Promise<void>;
 	sequenceFail?: (args: { sequence: Sequence }) => void | Promise<void>;
 	sequenceComplete?: (args: { sequence: Sequence }) => void | Promise<void>;
@@ -72,8 +72,8 @@ async function executeStep(args: {
 }) {
 	try {
 		switch (args.generation.context.operationNode.content.type) {
-			case "action":
-				await executeAction(args);
+			case "taskion":
+				await executeTaskion(args);
 				break;
 			case "imageGeneration":
 				await generateImage({ ...args });
@@ -122,31 +122,31 @@ async function executeStep(args: {
 	}
 }
 
-export const RunActInputs = z.object({
-	actId: TaskId.schema,
-	callbacks: z.optional(z.custom<RunActCallbacks>()),
+export const RunTaskInputs = z.object({
+	taskId: TaskId.schema,
+	callbacks: z.optional(z.custom<RunTaskCallbacks>()),
 	logger: z.optional(z.custom<GiselleLogger>()),
 	metadata: z.optional(z.custom<GenerationMetadata>()),
 });
-export type RunActInputs = z.infer<typeof RunActInputs>;
+export type RunTaskInputs = z.infer<typeof RunTaskInputs>;
 
-export async function runAct(
-	args: RunActInputs & {
+export async function runTask(
+	args: RunTaskInputs & {
 		context: GiselleContext;
 		onGenerationComplete?: OnGenerationComplete;
 		onGenerationError?: OnGenerationError;
 	},
 ) {
-	const act = await getAct(args);
+	const task = await getTask(args);
 
-	// Create patch queue for this act execution
+	// Create patch queue for this task execution
 	const patchQueue = createPatchQueue(args.context);
 	const applyPatches = patchQueue.createApplyPatches();
 
 	let executionError: Error | null = null;
 	try {
-		await executeAct({
-			act,
+		await executeTask({
+			task,
 			applyPatches,
 			startGeneration: async (generationId, callbacks) => {
 				const generation = await getGeneration({
@@ -200,7 +200,7 @@ export async function runAct(
 				);
 				await args.callbacks?.sequenceSkip?.({ sequence });
 			},
-			onActComplete: async () => {
+			onTaskComplete: async () => {
 				await patchQueue.flush();
 			},
 		});

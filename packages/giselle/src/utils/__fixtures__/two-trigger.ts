@@ -42,7 +42,7 @@ import type { Workspace } from "@giselles-ai/protocol";
  *     ┌─────────────────────────────────┐
  *     │ nd-Dd7brCDUvMmBK9De             │◄─── number (from trigger)
  *     │ "Create Pull Request Comment"   │
- *     │ (GitHub Action)                 │
+ *     │ (GitHub Taskion)                 │
  *     └─────────────────────────────────┘
  *
  *
@@ -83,7 +83,7 @@ import type { Workspace } from "@giselles-ai/protocol";
  *     ┌─────────────────────────────────┐
  *     │ nd-le8wUlKPyfeueTTP             │◄─── number (from trigger)
  *     │ "Create Pull Request Comment"   │
- *     │ (GitHub Action)                 │
+ *     │ (GitHub Taskion)                 │
  *     └─────────────────────────────────┘
  *
  *
@@ -101,7 +101,7 @@ import type { Workspace } from "@giselles-ai/protocol";
  * Key Points:
  * - Two independent GitHub triggers handle different PR events
  * - Each trigger flows through parallel QA processing (Manual + AI Agents)
- * - Both flows converge on creating PR comments via GitHub Actions
+ * - Both flows converge on creating PR comments via GitHub Taskions
  * - Template variables are shared between both flows for consistency
  * - Flow 1: Ready for Review → processes 3 trigger outputs → creates comment
  * - Flow 2: PR Opened → processes 4 trigger outputs → creates comment
@@ -174,11 +174,11 @@ export const twoTriggerFixture = {
 				{
 					id: "otp-kLODmMvGlJVUj7Si",
 					label: "output",
-					accessor: "action-result",
+					accessor: "taskion-result",
 				},
 			],
 			content: {
-				type: "action",
+				type: "taskion",
 				command: {
 					provider: "github",
 					state: {
@@ -581,11 +581,11 @@ export const twoTriggerFixture = {
 				{
 					id: "otp-L60VkJLvoO8MnpBi",
 					label: "output",
-					accessor: "action-result",
+					accessor: "taskion-result",
 				},
 			],
 			content: {
-				type: "action",
+				type: "taskion",
 				command: {
 					provider: "github",
 					state: {
@@ -613,7 +613,7 @@ export const twoTriggerFixture = {
 				id: "nd-Dd7brCDUvMmBK9De",
 				type: "operation",
 				content: {
-					type: "action",
+					type: "taskion",
 				},
 			},
 			inputId: "inp-Z4RmEr05QmmLR8Cr",
@@ -803,7 +803,7 @@ export const twoTriggerFixture = {
 				id: "nd-Dd7brCDUvMmBK9De",
 				type: "operation",
 				content: {
-					type: "action",
+					type: "taskion",
 				},
 			},
 			inputId: "inp-tfnyvnAY1XEKk0G7",
@@ -1088,7 +1088,7 @@ export const twoTriggerFixture = {
 				id: "nd-le8wUlKPyfeueTTP",
 				type: "operation",
 				content: {
-					type: "action",
+					type: "taskion",
 				},
 			},
 			inputId: "inp-myH2Nm8uNIU2AkKx",
@@ -1107,7 +1107,7 @@ export const twoTriggerFixture = {
 				id: "nd-le8wUlKPyfeueTTP",
 				type: "operation",
 				content: {
-					type: "action",
+					type: "taskion",
 				},
 			},
 			inputId: "inp-FjvXv0PTwpSXHbsw",

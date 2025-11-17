@@ -40,7 +40,7 @@ import {
 	handleAgentTimeConsumption,
 	queryResultToText,
 } from "../utils";
-import { getActGenerationIndexes } from "./get-act-generation-indexes";
+import { getTaskGenerationIndexes } from "./get-task-generation-indexes";
 import { sanitizeGenerationUsage } from "./sanitize-usage";
 import { internalSetGeneration } from "./set-generation";
 
@@ -169,29 +169,29 @@ export async function useGenerationExecutor<T>(args: {
 	}
 
 	// Build file ID mapping for duplicated nodes
-	// This allows fileResolver to find the actual storage file ID for cloned files
+	// This allows fileResolver to find the taskual storage file ID for cloned files
 	const fileIdMap = new Map<FileId, FileId>();
 	for (const sourceNode of generationContext.sourceNodes) {
 		if (sourceNode.content.type !== "file") {
 			continue;
 		}
 		for (const file of sourceNode.content.files) {
-			const actualFileId = isClonedFileDataPayload(file)
+			const taskualFileId = isClonedFileDataPayload(file)
 				? file.originalFileIdForCopy
 				: file.id;
-			fileIdMap.set(file.id, actualFileId);
+			fileIdMap.set(file.id, taskualFileId);
 		}
 	}
 
 	async function fileResolver(fileId: FileId): Promise<DataContent> {
 		const fileRetrievalStartTime = Date.now();
 
-		// Get the actual file ID from the map (handles cloned files)
-		const actualFileId = fileIdMap.get(fileId) ?? fileId;
+		// Get the taskual file ID from the map (handles cloned files)
+		const taskualFileId = fileIdMap.get(fileId) ?? fileId;
 
 		const path = filePath({
 			...runningGeneration.context.origin,
-			fileId: actualFileId,
+			fileId: taskualFileId,
 		});
 		const exists = await args.context.storage.exists(path);
 		const blob = exists ? await args.context.storage.getBlob(path) : undefined;
@@ -205,11 +205,11 @@ export async function useGenerationExecutor<T>(args: {
 		return blob as DataContent;
 	}
 	function findGeneration(nodeId: NodeId) {
-		const actId = runningGeneration.context.origin.actId;
-		if (actId === undefined) {
+		const taskId = runningGeneration.context.origin.taskId;
+		if (taskId === undefined) {
 			return findGenerationByNode(nodeId);
 		}
-		return findGenerationByAct(nodeId, actId);
+		return findGenerationByTask(nodeId, taskId);
 	}
 	async function findGenerationByNode(nodeId: NodeId) {
 		const generationLookupStartTime = Date.now();
@@ -235,18 +235,18 @@ export async function useGenerationExecutor<T>(args: {
 		);
 		return generation;
 	}
-	async function findGenerationByAct(nodeId: NodeId, actId: TaskId) {
-		const actGenerationLookupStartTime = Date.now();
-		const actGenerationIndexes = await getActGenerationIndexes({
+	async function findGenerationByTask(nodeId: NodeId, taskId: TaskId) {
+		const taskGenerationLookupStartTime = Date.now();
+		const taskGenerationIndexes = await getTaskGenerationIndexes({
 			storage: args.context.storage,
-			actId,
+			taskId,
 		});
-		const targetGenerationIndex = actGenerationIndexes?.find(
-			(actGenerationIndex) => actGenerationIndex.nodeId === nodeId,
+		const targetGenerationIndex = taskGenerationIndexes?.find(
+			(taskGenerationIndex) => taskGenerationIndex.nodeId === nodeId,
 		);
 		if (targetGenerationIndex === undefined) {
 			args.context.logger.info(
-				`Generation lookup by act completed in ${Date.now() - actGenerationLookupStartTime}ms (nodeId: ${nodeId}, actId: ${actId}, found: false)`,
+				`Generation lookup by task completed in ${Date.now() - taskGenerationLookupStartTime}ms (nodeId: ${nodeId}, taskId: ${taskId}, found: false)`,
 			);
 			return undefined;
 		}
@@ -255,7 +255,7 @@ export async function useGenerationExecutor<T>(args: {
 			generationId: targetGenerationIndex.id,
 		});
 		args.context.logger.info(
-			`Generation lookup by act completed in ${Date.now() - actGenerationLookupStartTime}ms (nodeId: ${nodeId}, actId: ${actId}, found: true)`,
+			`Generation lookup by task completed in ${Date.now() - taskGenerationLookupStartTime}ms (nodeId: ${nodeId}, taskId: ${taskId}, found: true)`,
 		);
 		return generation;
 	}

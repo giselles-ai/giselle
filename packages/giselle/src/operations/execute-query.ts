@@ -234,7 +234,7 @@ async function resolveQuery(
 				throw new Error("Not implemented");
 
 			case "trigger":
-			case "action":
+			case "taskion":
 			case "appEntry": {
 				const result = await generationContentResolver(
 					contextNode.id,
@@ -258,11 +258,11 @@ async function resolveQuery(
 }
 
 type ConfiguredGitHubVectorStoreSource = GitHubVectorStoreSource & {
-	state: Extract<GitHubVectorStoreSource["state"], { status: "configured" }>;
+	state: Extrtask<GitHubVectorStoreSource["state"], { status: "configured" }>;
 };
 
 type ConfiguredDocumentVectorStoreSource = DocumentVectorStoreSource & {
-	state: Extract<DocumentVectorStoreSource["state"], { status: "configured" }>;
+	state: Extrtask<DocumentVectorStoreSource["state"], { status: "configured" }>;
 };
 
 type ConfiguredVectorStoreSource =

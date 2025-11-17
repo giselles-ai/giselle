@@ -47,13 +47,13 @@ export function batchWriter<T>({
 			return;
 		}
 
-		// Extract items to flush
+		// Extrtask items to flush
 		const items = [...buf];
 		if (!preserveItems) {
 			buf = [];
 		}
 		logger?.debug(
-			`tick: extracted ${items.length} items for flushing, preserveItems: ${preserveItems}`,
+			`tick: extrtasked ${items.length} items for flushing, preserveItems: ${preserveItems}`,
 		);
 
 		// Wait for any ongoing flush to complete

@@ -1,10 +1,10 @@
 import type { Task } from "@giselles-ai/protocol";
 import { describe, expect, it } from "vitest";
-import { patchAct } from "./patch-object";
+import { patchTask } from "./patch-object";
 
-describe("patchAct", () => {
+describe("patchTask", () => {
 	// Helper function to create a minimal Task object for testing
-	function createTestAct(): Task {
+	function createTestTask(): Task {
 		return {
 			id: "tsk-test123" as const,
 			workspaceId: "wrks-test456" as const,
@@ -103,16 +103,16 @@ describe("patchAct", () => {
 
 	describe("string patching", () => {
 		it("should update status field", () => {
-			const act = createTestAct();
-			const result = patchAct(act, { path: "status", set: "completed" });
+			const task = createTestTask();
+			const result = patchTask(task, { path: "status", set: "completed" });
 
 			expect(result.status).toBe("completed");
-			expect(act.status).toBe("inProgress"); // Original should be unchanged
+			expect(task.status).toBe("inProgress"); // Original should be unchanged
 		});
 
 		it("should update trigger field", () => {
-			const act = createTestAct();
-			const result = patchAct(act, { path: "trigger", set: "github" });
+			const task = createTestTask();
+			const result = patchTask(task, { path: "trigger", set: "github" });
 
 			expect(result.trigger).toBe("github");
 		});
@@ -120,15 +120,15 @@ describe("patchAct", () => {
 
 	describe("number patching", () => {
 		it("should set number value", () => {
-			const act = createTestAct();
-			const result = patchAct(act, { path: "steps.queued", set: 5 });
+			const task = createTestTask();
+			const result = patchTask(task, { path: "steps.queued", set: 5 });
 
 			expect(result.steps.queued).toBe(5);
 		});
 
 		it("should increment number value", () => {
-			const act = createTestAct();
-			const result = patchAct(act, {
+			const task = createTestTask();
+			const result = patchTask(task, {
 				path: "steps.completed",
 				increment: 3,
 			});
@@ -137,8 +137,8 @@ describe("patchAct", () => {
 		});
 
 		it("should decrement number value", () => {
-			const act = createTestAct();
-			const result = patchAct(act, {
+			const task = createTestTask();
+			const result = patchTask(task, {
 				path: "steps.inProgress",
 				decrement: 1,
 			});
@@ -149,8 +149,8 @@ describe("patchAct", () => {
 
 	describe("array patching", () => {
 		it("should push to annotations array", () => {
-			const act = createTestAct();
-			const result = patchAct(act, {
+			const task = createTestTask();
+			const result = patchTask(task, {
 				path: "annotations",
 				push: [
 					{
@@ -178,8 +178,8 @@ describe("patchAct", () => {
 		});
 
 		it("should set entire array", () => {
-			const act = createTestAct();
-			const result = patchAct(act, {
+			const task = createTestTask();
+			const result = patchTask(task, {
 				path: "annotations",
 				set: [
 					{
@@ -198,17 +198,17 @@ describe("patchAct", () => {
 
 	describe("array index patching", () => {
 		it("should support both dot and bracket notation", () => {
-			const act = createTestAct();
+			const task = createTestTask();
 
 			// Test bracket notation still works
-			const result1 = patchAct(act, {
+			const result1 = patchTask(task, {
 				path: "sequences[0].steps[1].status",
 				set: "completed",
 			});
 			expect(result1.sequences[0].steps[1].status).toBe("completed");
 
 			// Test dot notation works
-			const result2 = patchAct(act, {
+			const result2 = patchTask(task, {
 				path: "sequences.0.steps.1.status",
 				set: "completed",
 			});
@@ -216,8 +216,8 @@ describe("patchAct", () => {
 		});
 
 		it("should update sequence status using array index", () => {
-			const act = createTestAct();
-			const result = patchAct(act, {
+			const task = createTestTask();
+			const result = patchTask(task, {
 				path: "sequences.0.status",
 				set: "completed",
 			});
@@ -227,8 +227,8 @@ describe("patchAct", () => {
 		});
 
 		it("should update nested step status using array indices", () => {
-			const act = createTestAct();
-			const result = patchAct(act, {
+			const task = createTestTask();
+			const result = patchTask(task, {
 				path: "sequences.0.steps.1.status",
 				set: "completed",
 			});
@@ -239,8 +239,8 @@ describe("patchAct", () => {
 		});
 
 		it("should update step name using array indices", () => {
-			const act = createTestAct();
-			const result = patchAct(act, {
+			const task = createTestTask();
+			const result = patchTask(task, {
 				path: "sequences.0.steps.2.name",
 				set: "Updated Step 3",
 			});
@@ -251,9 +251,9 @@ describe("patchAct", () => {
 
 	describe("multiple patches", () => {
 		it("should apply multiple patches in one call", () => {
-			const act = createTestAct();
-			const result = patchAct(
-				act,
+			const task = createTestTask();
+			const result = patchTask(
+				task,
 				{ path: "status", set: "completed" },
 				{ path: "steps.completed", increment: 2 },
 				{ path: "steps.inProgress", decrement: 1 },
@@ -267,9 +267,9 @@ describe("patchAct", () => {
 		});
 
 		it("should handle complex nested patches", () => {
-			const act = createTestAct();
-			const result = patchAct(
-				act,
+			const task = createTestTask();
+			const result = patchTask(
+				task,
 				{ path: "duration.wallClock", increment: 50 },
 				{ path: "duration.totalTask", set: 75 },
 				{ path: "usage.totalTokens", decrement: 5 },
@@ -283,12 +283,12 @@ describe("patchAct", () => {
 
 	describe("dynamic paths", () => {
 		it("should handle dynamic array indices", () => {
-			const act = createTestAct();
+			const task = createTestTask();
 			const sequenceIndex = 0;
 			const stepIndex = 1;
 
-			const result = patchAct(
-				act,
+			const result = patchTask(
+				task,
 				{ path: "steps.inProgress", increment: 2 },
 				{ path: "steps.queued", decrement: 2 },
 				{ path: `sequences.${sequenceIndex}.status`, set: "running" },
@@ -305,13 +305,13 @@ describe("patchAct", () => {
 		});
 
 		it("should handle computed paths", () => {
-			const act = createTestAct();
+			const task = createTestTask();
 			const patches = [0, 1, 2].map((idx) => ({
 				path: `sequences.0.steps.${idx}.status`,
 				set: "completed" as const,
 			}));
 
-			const result = patchAct(act, ...patches);
+			const result = patchTask(task, ...patches);
 
 			expect(result.sequences[0].steps[0].status).toBe("completed");
 			expect(result.sequences[0].steps[1].status).toBe("completed");
@@ -321,93 +321,93 @@ describe("patchAct", () => {
 
 	describe("edge cases", () => {
 		it("should handle empty patches", () => {
-			const act = createTestAct();
-			const result = patchAct(act);
+			const task = createTestTask();
+			const result = patchTask(task);
 
-			expect(result).toEqual(act);
-			expect(result).not.toBe(act); // Should be a clone
+			expect(result).toEqual(task);
+			expect(result).not.toBe(task); // Should be a clone
 		});
 
 		it("should throw error for invalid path", () => {
-			const act = createTestAct();
+			const task = createTestTask();
 			expect(() => {
-				patchAct(act, { path: "", set: "value" });
+				patchTask(task, { path: "", set: "value" });
 			}).toThrow('Invalid path: ""');
 		});
 
 		it("should throw error for non-existent path", () => {
-			const act = createTestAct();
+			const task = createTestTask();
 			expect(() => {
-				patchAct(act, { path: "nonexistent.field", set: "value" });
+				patchTask(task, { path: "nonexistent.field", set: "value" });
 			}).toThrow('Path not found: "nonexistent.field"');
 		});
 
 		it("should throw error when incrementing non-number", () => {
-			const act = createTestAct();
+			const task = createTestTask();
 			expect(() => {
-				patchAct(act, { path: "status", increment: 1 });
+				patchTask(task, { path: "status", increment: 1 });
 			}).toThrow('Cannot increment non-number at path: "status"');
 		});
 
 		it("should throw error when pushing to non-array", () => {
-			const act = createTestAct();
+			const task = createTestTask();
 			expect(() => {
-				patchAct(act, { path: "status", push: ["item"] });
+				patchTask(task, { path: "status", push: ["item"] });
 			}).toThrow('Cannot push to non-array at path: "status"');
 		});
 
 		it("should throw error for prototype pollution attempts", () => {
-			const act = createTestAct();
+			const task = createTestTask();
 
 			// Test __proto__ pollution
 			expect(() => {
-				patchAct(act, { path: "__proto__.polluted", set: "bad" });
+				patchTask(task, { path: "__proto__.polluted", set: "bad" });
 			}).toThrow('Dangerous path detected: "__proto__.polluted"');
 
 			// Test constructor pollution
 			expect(() => {
-				patchAct(act, { path: "constructor.prototype.polluted", set: "bad" });
+				patchTask(task, { path: "constructor.prototype.polluted", set: "bad" });
 			}).toThrow('Dangerous path detected: "constructor.prototype.polluted"');
 
 			// Test prototype pollution
 			expect(() => {
-				patchAct(act, { path: "sequences.prototype.polluted", set: "bad" });
+				patchTask(task, { path: "sequences.prototype.polluted", set: "bad" });
 			}).toThrow('Dangerous path detected: "sequences.prototype.polluted"');
 
 			// Test nested dangerous key
 			expect(() => {
-				patchAct(act, { path: "sequences.0.__proto__", set: "bad" });
+				patchTask(task, { path: "sequences.0.__proto__", set: "bad" });
 			}).toThrow('Dangerous path detected: "sequences.0.__proto__"');
 
 			// Test dangerous keys with other operations
 			expect(() => {
-				patchAct(act, { path: "constructor", increment: 1 });
+				patchTask(task, { path: "constructor", increment: 1 });
 			}).toThrow('Dangerous path detected: "constructor"');
 
 			expect(() => {
-				patchAct(act, { path: "__proto__", decrement: 1 });
+				patchTask(task, { path: "__proto__", decrement: 1 });
 			}).toThrow('Dangerous path detected: "__proto__"');
 
 			expect(() => {
-				patchAct(act, { path: "prototype", push: ["item"] });
+				patchTask(task, { path: "prototype", push: ["item"] });
 			}).toThrow('Dangerous path detected: "prototype"');
 		});
 
 		it("should allow legitimate paths that might look suspicious", () => {
-			const act = createTestAct();
+			const task = createTestTask();
 
 			// These should work fine
-			const result1 = patchAct(act, { path: "status", set: "completed" });
+			const result1 = patchTask(task, { path: "status", set: "completed" });
 			expect(result1.status).toBe("completed");
 
-			const result2 = patchAct(act, {
+			const result2 = patchTask(task, {
 				path: "sequences.0.status",
 				set: "running",
 			});
 			expect(result2.sequences[0].status).toBe("running");
 
 			// Property names containing the word "proto" should be fine
-			const result3 = patchAct(act, {
+			const result3 = patchTask(task, {
 				path: "trigger",
 				set: "protocol_handler",
 			});
@@ -417,17 +417,17 @@ describe("patchAct", () => {
 
 	describe("immutability", () => {
 		it("should maintain immutability", () => {
-			const act = createTestAct();
-			const original = structuredClone(act);
+			const task = createTestTask();
+			const original = structuredClone(task);
 
-			patchAct(
-				act,
+			patchTask(
+				task,
 				{ path: "status", set: "completed" },
 				{ path: "steps.completed", increment: 5 },
 				{ path: "sequences.0.status", set: "completed" },
 			);
 
-			expect(act).toEqual(original); // Original should remain unchanged
+			expect(task).toEqual(original); // Original should remain unchanged
 		});
 	});
 });

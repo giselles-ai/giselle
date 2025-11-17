@@ -239,7 +239,7 @@ describe("buildLevels", () => {
 
 	describe("twoTriggerFixture - complex real-world scenario", () => {
 		it("should handle multiple trigger flows with filtered connections", () => {
-			// Filter connections to specific connectionIds as used in createAct
+			// Filter connections to specific connectionIds as used in createTask
 			const specificConnectionIds = [
 				"cnnc-PoESuO0NCdNDXRLa",
 				"cnnc-0I4tbbZ9q1xbHl77",
@@ -354,14 +354,14 @@ describe("buildLevels", () => {
 			const manualQA2Level = getNodeLevel("nd-ZEMYDrI7lolEeMEJ");
 			const promptAI2Level = getNodeLevel("nd-pLEJoQT8VDAJ1Ewx");
 			const comment2Level = getNodeLevel("nd-tvQwRmbPhKA69OgT");
-			const action2Level = getNodeLevel("nd-le8wUlKPyfeueTTP");
+			const taskion2Level = getNodeLevel("nd-le8wUlKPyfeueTTP");
 
 			// All should be found and in proper order
 			expect(manualQA2Level).toBeGreaterThan(trigger2Level);
 			expect(promptAI2Level).toBeGreaterThan(trigger2Level);
 			expect(comment2Level).toBeGreaterThan(manualQA2Level);
 			expect(comment2Level).toBeGreaterThan(promptAI2Level);
-			expect(action2Level).toBeGreaterThan(comment2Level);
+			expect(taskion2Level).toBeGreaterThan(comment2Level);
 		});
 	});
 
@@ -493,7 +493,7 @@ describe("buildLevels", () => {
 						{ id: finalInput2Id, label: "Input 2", accessor: "input2" },
 					],
 					outputs: [],
-					content: { type: "action" },
+					content: { type: "taskion" },
 				},
 			];
 
@@ -533,7 +533,7 @@ describe("buildLevels", () => {
 							inputNode: {
 								id: finalNodeId,
 								type: "operation",
-								content: { type: "action" },
+								content: { type: "taskion" },
 							},
 							inputId: finalInput1Id,
 						}) satisfies Connection,
@@ -550,7 +550,7 @@ describe("buildLevels", () => {
 					inputNode: {
 						id: finalNodeId,
 						type: "operation",
-						content: { type: "action" },
+						content: { type: "taskion" },
 					},
 					inputId: finalInput2Id,
 				},

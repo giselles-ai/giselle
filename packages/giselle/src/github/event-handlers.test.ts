@@ -60,9 +60,9 @@ describe("GitHub Event Handlers", () => {
 
 		// Simple dependency mocks with correct type implementations
 		testDeps = {
-			addReaction: vi.fn().mockResolvedValue(undefined),
+			addRetaskion: vi.fn().mockResolvedValue(undefined),
 			ensureWebhookEvent: createEnsureWebhookEventMock(),
-			createAndStartAct: vi.fn().mockResolvedValue(undefined),
+			createAndStartTask: vi.fn().mockResolvedValue(undefined),
 			parseCommand: vi
 				.fn()
 				.mockReturnValue({ callsign: "giselle", content: "help me" }),
@@ -127,7 +127,7 @@ describe("GitHub Event Handlers", () => {
 	});
 
 	describe("handleIssueOpened", () => {
-		it("should handle issue opened event and add reaction", async () => {
+		it("should handle issue opened event and add retaskion", async () => {
 			// Arrange
 			const args = {
 				...baseEventArgs,
@@ -149,9 +149,9 @@ describe("GitHub Event Handlers", () => {
 			// Assert
 			expect(result).toEqual({
 				shouldRun: true,
-				reactionNodeId: "issue-node-id",
+				retaskionNodeId: "issue-node-id",
 			});
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if event type doesn't match", async () => {
@@ -178,7 +178,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if trigger event ID doesn't match", async () => {
@@ -202,7 +202,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 	});
 
@@ -233,10 +233,10 @@ describe("GitHub Event Handlers", () => {
 			// Assert
 			expect(result).toEqual({
 				shouldRun: true,
-				reactionNodeId: "comment-node-id",
+				retaskionNodeId: "comment-node-id",
 			});
 			expect(args.deps.parseCommand).toHaveBeenCalledWith("@giselle help me");
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if callsign doesn't match", async () => {
@@ -271,12 +271,12 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 	});
 
 	describe("handleIssueClosed", () => {
-		it("should handle issue closed event and add reaction", async () => {
+		it("should handle issue closed event and add retaskion", async () => {
 			// Arrange
 			const args = {
 				...baseEventArgs,
@@ -299,9 +299,9 @@ describe("GitHub Event Handlers", () => {
 			// Assert
 			expect(result).toEqual({
 				shouldRun: true,
-				reactionNodeId: "issue-node-id",
+				retaskionNodeId: "issue-node-id",
 			});
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if trigger event ID doesn't match", async () => {
@@ -326,12 +326,12 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 	});
 
 	describe("handlePullRequestOpened", () => {
-		it("should handle pull request opened event and add reaction", async () => {
+		it("should handle pull request opened event and add retaskion", async () => {
 			// Arrange
 			const args = {
 				...baseEventArgs,
@@ -354,9 +354,9 @@ describe("GitHub Event Handlers", () => {
 			// Assert
 			expect(result).toEqual({
 				shouldRun: true,
-				reactionNodeId: "pr-node-id",
+				retaskionNodeId: "pr-node-id",
 			});
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if trigger event ID doesn't match", async () => {
@@ -381,12 +381,12 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 	});
 
 	describe("handlePullRequestClosed", () => {
-		it("should handle pull request closed event and add reaction", async () => {
+		it("should handle pull request closed event and add retaskion", async () => {
 			// Arrange
 			const args = {
 				...baseEventArgs,
@@ -409,9 +409,9 @@ describe("GitHub Event Handlers", () => {
 			// Assert
 			expect(result).toEqual({
 				shouldRun: true,
-				reactionNodeId: "pr-node-id",
+				retaskionNodeId: "pr-node-id",
 			});
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if trigger event ID doesn't match", async () => {
@@ -436,7 +436,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 	});
 
@@ -471,7 +471,7 @@ describe("GitHub Event Handlers", () => {
 			// Assert
 			expect(result).toEqual({
 				shouldRun: true,
-				reactionNodeId: "comment-node-id",
+				retaskionNodeId: "comment-node-id",
 			});
 
 			describe("handlePullRequestReviewCommentCreated", () => {
@@ -505,10 +505,10 @@ describe("GitHub Event Handlers", () => {
 
 					expect(result).toEqual({
 						shouldRun: true,
-						reactionNodeId: "comment-node-id",
+						retaskionNodeId: "comment-node-id",
 					});
 					expect(args.deps.parseCommand).toHaveBeenCalledWith("@giselle help");
-					expect(args.deps.addReaction).not.toHaveBeenCalled();
+					expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 				});
 
 				it("should not run if callsign doesn't match", async () => {
@@ -547,11 +547,11 @@ describe("GitHub Event Handlers", () => {
 					const result = await handlePullRequestReviewCommentCreated(args);
 
 					expect(result).toEqual({ shouldRun: false });
-					expect(args.deps.addReaction).not.toHaveBeenCalled();
+					expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 				});
 			});
 			expect(args.deps.parseCommand).toHaveBeenCalledWith("@giselle help me");
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if callsign doesn't match", async () => {
@@ -590,12 +590,12 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 	});
 
 	describe("handlePullRequestReadyForReview", () => {
-		it("should handle pull request ready for review event and add reaction", async () => {
+		it("should handle pull request ready for review event and add retaskion", async () => {
 			// Arrange
 			const args = {
 				...baseEventArgs,
@@ -619,9 +619,9 @@ describe("GitHub Event Handlers", () => {
 			// Assert
 			expect(result).toEqual({
 				shouldRun: true,
-				reactionNodeId: "pr-node-id",
+				retaskionNodeId: "pr-node-id",
 			});
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if trigger event ID doesn't match", async () => {
@@ -646,7 +646,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 	});
 
@@ -678,9 +678,9 @@ describe("GitHub Event Handlers", () => {
 			// Assert
 			expect(result).toEqual({
 				shouldRun: true,
-				reactionNodeId: "issue-node-id",
+				retaskionNodeId: "issue-node-id",
 			});
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should handle issue labeled event with one of multiple matching labels", () => {
@@ -710,9 +710,9 @@ describe("GitHub Event Handlers", () => {
 			// Assert
 			expect(result).toEqual({
 				shouldRun: true,
-				reactionNodeId: "issue-node-id",
+				retaskionNodeId: "issue-node-id",
 			});
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if added label doesn't match configured labels", () => {
@@ -741,7 +741,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if event type doesn't match", () => {
@@ -774,7 +774,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if trigger event ID doesn't match", () => {
@@ -800,7 +800,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if issue object is missing", () => {
@@ -828,7 +828,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if label object is missing", () => {
@@ -856,7 +856,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if labels condition is missing", () => {
@@ -884,7 +884,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 	});
 
@@ -916,9 +916,9 @@ describe("GitHub Event Handlers", () => {
 			// Assert
 			expect(result).toEqual({
 				shouldRun: true,
-				reactionNodeId: "pr-node-id",
+				retaskionNodeId: "pr-node-id",
 			});
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should handle pull request labeled event with one of multiple matching labels", () => {
@@ -948,9 +948,9 @@ describe("GitHub Event Handlers", () => {
 			// Assert
 			expect(result).toEqual({
 				shouldRun: true,
-				reactionNodeId: "pr-node-id",
+				retaskionNodeId: "pr-node-id",
 			});
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if added label doesn't match configured labels", () => {
@@ -979,7 +979,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if event type doesn't match", () => {
@@ -1012,7 +1012,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if trigger event ID doesn't match", () => {
@@ -1038,7 +1038,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if pull_request object is missing", () => {
@@ -1066,7 +1066,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if label object is missing", () => {
@@ -1094,7 +1094,7 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 
 		it("should not run if labels condition is missing", () => {
@@ -1122,12 +1122,12 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toEqual({ shouldRun: false });
-			expect(args.deps.addReaction).not.toHaveBeenCalled();
+			expect(args.deps.addRetaskion).not.toHaveBeenCalled();
 		});
 	});
 
 	describe("handleDiscussionCreated", () => {
-		it("should handle discussion created event and react to discussion node", () => {
+		it("should handle discussion created event and retask to discussion node", () => {
 			const args = {
 				...baseEventArgs,
 				event: {
@@ -1145,7 +1145,7 @@ describe("GitHub Event Handlers", () => {
 
 			expect(result).toEqual({
 				shouldRun: true,
-				reactionNodeId: "discussion-node-id",
+				retaskionNodeId: "discussion-node-id",
 			});
 		});
 
@@ -1212,7 +1212,7 @@ describe("GitHub Event Handlers", () => {
 
 			expect(result).toEqual({
 				shouldRun: true,
-				reactionNodeId: "comment-node-id",
+				retaskionNodeId: "comment-node-id",
 			});
 			expect(args.deps.parseCommand).toHaveBeenCalledWith("@giselle run");
 		});
@@ -1368,7 +1368,7 @@ describe("GitHub Event Handlers", () => {
 			});
 
 			// Assert
-			expect(testDeps.createAndStartAct).toHaveBeenCalledWith(
+			expect(testDeps.createAndStartTask).toHaveBeenCalledWith(
 				expect.objectContaining({
 					context: expect.anything(),
 					nodeId: expect.any(String),
@@ -1386,7 +1386,7 @@ describe("GitHub Event Handlers", () => {
 					]),
 				}),
 			);
-			expect(testDeps.addReaction).toHaveBeenCalledWith({
+			expect(testDeps.addRetaskion).toHaveBeenCalledWith({
 				id: "issue-node-id",
 				content: "EYES",
 				authConfig: expect.anything(),
@@ -1450,8 +1450,8 @@ describe("GitHub Event Handlers", () => {
 
 			// Assert
 			expect(result).toBe(false);
-			expect(testDeps.createAndStartAct).not.toHaveBeenCalled();
-			expect(testDeps.addReaction).not.toHaveBeenCalled();
+			expect(testDeps.createAndStartTask).not.toHaveBeenCalled();
+			expect(testDeps.addRetaskion).not.toHaveBeenCalled();
 		});
 	});
 });

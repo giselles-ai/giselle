@@ -1,10 +1,10 @@
 import { Generation } from "@giselles-ai/protocol";
 import type { $ZodIssue } from "@zod/core";
 import { expect, test } from "vitest";
-import generationJson from "./fixtures/rename-action-to-operation/generation1.json";
-import { renameActionToOperation } from "./rename-action-to-operation";
+import generationJson from "./fixtures/rename-taskion-to-operation/generation1.json";
+import { renameTaskionToOperation } from "./rename-taskion-to-operation";
 
-test("rename action to operation", () => {
+test("rename taskion to operation", () => {
 	const firstAttempt = Generation.safeParse(generationJson);
 	expect(firstAttempt.success).toBe(false);
 
@@ -13,7 +13,7 @@ test("rename action to operation", () => {
 	}
 	let modData: unknown = generationJson;
 	for (const issue of firstAttempt.error.issues) {
-		modData = renameActionToOperation(modData, issue as $ZodIssue);
+		modData = renameTaskionToOperation(modData, issue as $ZodIssue);
 	}
 	const afterModData = Generation.safeParse(modData);
 	expect(afterModData.success).toBe(true);

@@ -13,11 +13,11 @@ import { describe, expect, test, vi } from "vitest";
 import { resolveTrigger } from "./trigger-utils";
 
 vi.mock("@giselles-ai/github-tool", async () => {
-	const actual = await vi.importActual<
+	const taskual = await vi.importTaskual<
 		typeof import("@giselles-ai/github-tool")
 	>("@giselles-ai/github-tool");
 	return {
-		...actual,
+		...taskual,
 		getPullRequestDiff: vi.fn().mockResolvedValue("diff"),
 		getPullRequestReviewComment: vi
 			.fn()

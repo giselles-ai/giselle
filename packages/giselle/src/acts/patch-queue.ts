@@ -1,9 +1,9 @@
 import type { TaskId } from "@giselles-ai/protocol";
 import type { GiselleContext } from "../types";
-import { type Patch, patchAct } from "./patch-act";
+import { type Patch, patchTask } from "./patch-task";
 
 interface QueuedPatch {
-	actId: TaskId;
+	taskId: TaskId;
 	patches: Patch[];
 	timestamp: number;
 	retryCount: number;
@@ -41,22 +41,22 @@ export function createPatchQueue(
 	};
 
 	/**
-	 * Groups queued patches by actId without merging
+	 * Groups queued patches by taskId without merging
 	 */
 	function processBatch() {
 		if (state.queue.length === 0) {
 			return [];
 		}
 
-		// Group patches by actId while preserving order and tracking retry counts
-		const actGroups = new Map<
+		// Group patches by taskId while preserving order and tracking retry counts
+		const taskGroups = new Map<
 			string,
-			{ actId: TaskId; patches: Patch[]; maxRetryCount: number }
+			{ taskId: TaskId; patches: Patch[]; maxRetryCount: number }
 		>();
 
 		for (const item of state.queue) {
-			const actIdStr = item.actId;
-			const existing = actGroups.get(actIdStr);
+			const taskIdStr = item.taskId;
+			const existing = taskGroups.get(taskIdStr);
 
 			if (existing) {
 				existing.patches.push(...item.patches);
@@ -66,16 +66,16 @@ export function createPatchQueue(
 					item.retryCount,
 				);
 			} else {
-				actGroups.set(actIdStr, {
-					actId: item.actId,
+				taskGroups.set(taskIdStr, {
+					taskId: item.taskId,
 					patches: [...item.patches],
 					maxRetryCount: item.retryCount,
 				});
 			}
 		}
 
-		const batch = Array.from(actGroups.values()).map((group) => ({
-			actId: group.actId,
+		const batch = Array.from(taskGroups.values()).map((group) => ({
+			taskId: group.taskId,
 			patches: group.patches,
 			timestamp: Date.now(),
 			retryCount: group.maxRetryCount,
@@ -100,12 +100,12 @@ export function createPatchQueue(
 		try {
 			const batch = processBatch();
 
-			// Process each act's patches sequentially to maintain order
+			// Process each task's patches sequentially to maintain order
 			for (const item of batch) {
 				try {
-					await patchAct({
+					await patchTask({
 						context: state.context,
-						actId: item.actId,
+						taskId: item.taskId,
 						patches: item.patches,
 					});
 				} catch (error) {
@@ -119,13 +119,13 @@ export function createPatchQueue(
 						};
 						state.queue.unshift(retryItem);
 						console.warn(
-							`Patch failed for act ${item.actId}, retry ${item.retryCount + 1}/${state.retryConfig.maxRetries}:`,
+							`Patch failed for task ${item.taskId}, retry ${item.retryCount + 1}/${state.retryConfig.maxRetries}:`,
 							error,
 						);
 					} else {
 						// Permanent failure - log with severe warning
 						console.error(
-							`Patch permanently failed for act ${item.actId} after ${state.retryConfig.maxRetries} retries. Data loss may occur:`,
+							`Patch permanently failed for task ${item.taskId} after ${state.retryConfig.maxRetries} retries. Data loss may occur:`,
 							error,
 							"Failed patches:",
 							item.patches,
@@ -166,7 +166,7 @@ export function createPatchQueue(
 		}
 
 		// Clear the queue without processing remaining patches
-		// Since cleanup indicates end of act execution, remaining patches
+		// Since cleanup indicates end of task execution, remaining patches
 		// likely represent incomplete or invalid state changes
 		if (state.queue.length > 0) {
 			console.warn(
@@ -179,13 +179,13 @@ export function createPatchQueue(
 	/**
 	 * Adds patches to the queue for processing
 	 */
-	function enqueuePatch(actId: TaskId, patches: Patch[]) {
+	function enqueuePatch(taskId: TaskId, patches: Patch[]) {
 		if (patches.length === 0) {
 			return;
 		}
 
 		state.queue.push({
-			actId,
+			taskId,
 			patches,
 			timestamp: Date.now(),
 			retryCount: 0,
@@ -199,8 +199,8 @@ export function createPatchQueue(
 	 * Creates an applyPatches function that uses the queue
 	 */
 	function createApplyPatches() {
-		return (actId: TaskId, patches: Patch[]) => {
-			enqueuePatch(actId, patches);
+		return (taskId: TaskId, patches: Patch[]) => {
+			enqueuePatch(taskId, patches);
 		};
 	}
 

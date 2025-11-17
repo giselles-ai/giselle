@@ -10,7 +10,7 @@ import type {
 import { patches } from "../object/patch-creators";
 import type { Patch } from "../object/patch-object";
 
-// Valid status transitions for acts
+// Valid status transitions for tasks
 const VALID_ACT_TRANSITIONS: Record<Task["status"], Task["status"][]> = {
 	created: ["inProgress"],
 	inProgress: ["completed", "failed", "cancelled"],
@@ -32,7 +32,7 @@ const VALID_GENERATION_TRANSITIONS: Record<
 	cancelled: [],
 };
 
-export function isValidActTransition(
+export function isValidTaskTransition(
 	from: Task["status"],
 	to: Task["status"],
 ): boolean {
@@ -160,9 +160,9 @@ export function createStepCountPatches(
 	];
 }
 
-export interface ActExecutorOptions {
-	act: Task;
-	applyPatches(actId: TaskId, patches: Patch[]): void | Promise<void>;
+export interface TaskExecutorOptions {
+	task: Task;
+	applyPatches(taskId: TaskId, patches: Patch[]): void | Promise<void>;
 	startGeneration(
 		generationId: GenerationId,
 		callbacks?: {
@@ -170,8 +170,11 @@ export interface ActExecutorOptions {
 			onFailed?: (generation: Generation) => void | Promise<void>;
 		},
 	): Promise<void>;
-	onActStart?: () => void | Promise<void>;
-	onActComplete?: (hasError: boolean, duration: number) => void | Promise<void>;
+	onTaskStart?: () => void | Promise<void>;
+	onTaskComplete?: (
+		hasError: boolean,
+		duration: number,
+	) => void | Promise<void>;
 	onSequenceSkip?: (sequence: Sequence, index: number) => void | Promise<void>;
 	onSequenceStart?: (sequence: Sequence, index: number) => void | Promise<void>;
 	onSequenceComplete?: (
@@ -202,39 +205,39 @@ export interface ActExecutorOptions {
 }
 
 /**
- * Execute an act by running all its sequences in order
+ * Execute an task by running all its sequences in order
  */
-export async function executeAct(
-	opts: ActExecutorOptions,
+export async function executeTask(
+	opts: TaskExecutorOptions,
 ): Promise<{ hasError: boolean; duration: number }> {
 	const startTime = Date.now();
 	let hasError = false;
 
-	// Start act execution
-	await opts.onActStart?.();
-	await opts.applyPatches(opts.act.id, [patches.status.set("inProgress")]);
+	// Start task execution
+	await opts.onTaskStart?.();
+	await opts.applyPatches(opts.task.id, [patches.status.set("inProgress")]);
 
 	// Execute each sequence
-	for (let i = 0; i < opts.act.sequences.length; i++) {
-		const sequence = opts.act.sequences[i];
+	for (let i = 0; i < opts.task.sequences.length; i++) {
+		const sequence = opts.task.sequences[i];
 		const stepCount = sequence.steps.length;
 
 		// Skip remaining sequences if we have an error
 		if (hasError) {
 			// Cancel all remaining steps from all remaining sequences
 			let totalRemainingSteps = 0;
-			for (let j = i; j < opts.act.sequences.length; j++) {
-				totalRemainingSteps += opts.act.sequences[j].steps.length;
+			for (let j = i; j < opts.task.sequences.length; j++) {
+				totalRemainingSteps += opts.task.sequences[j].steps.length;
 			}
 
 			await opts.applyPatches(
-				opts.act.id,
+				opts.task.id,
 				createStepCountPatches("queued", "cancelled", totalRemainingSteps),
 			);
 
 			// Notify about skipped sequences
-			for (let j = i; j < opts.act.sequences.length; j++) {
-				await opts.onSequenceSkip?.(opts.act.sequences[j], j);
+			for (let j = i; j < opts.task.sequences.length; j++) {
+				await opts.onSequenceSkip?.(opts.task.sequences[j], j);
 			}
 			break;
 		}
@@ -244,24 +247,24 @@ export async function executeAct(
 			sequence,
 			startGeneration: opts.startGeneration,
 			onSequenceStart: async (sequence) => {
-				await opts.applyPatches(opts.act.id, [
+				await opts.applyPatches(opts.task.id, [
 					patches.sequences(i).status.set("running"),
 				]);
 				// Move steps to in progress
 				await opts.applyPatches(
-					opts.act.id,
+					opts.task.id,
 					createStepCountPatches("queued", "inProgress", stepCount),
 				);
 				await opts.onSequenceStart?.(sequence, i);
 			},
 			onStepStart: async (step, stepIndex) => {
-				await opts.applyPatches(opts.act.id, [
+				await opts.applyPatches(opts.task.id, [
 					patches.sequences(i).steps(stepIndex).status.set("running"),
 				]);
 				await opts.onStepStart?.(step, i, stepIndex);
 			},
 			onStepComplete: async (step, stepIndex) => {
-				await opts.applyPatches(opts.act.id, [
+				await opts.applyPatches(opts.task.id, [
 					...createStepCountPatches("inProgress", "completed", 1),
 					patches.duration.totalTask.increment(step.duration),
 					patches.sequences(i).steps(stepIndex).duration.set(step.duration),
@@ -274,7 +277,7 @@ export async function executeAct(
 				const errorMessage =
 					error instanceof Error ? error.message : "Unknown error";
 
-				await opts.applyPatches(opts.act.id, [
+				await opts.applyPatches(opts.task.id, [
 					...createStepCountPatches("inProgress", "failed", 1),
 					patches.duration.totalTask.increment(step.duration),
 					patches.sequences(i).steps(stepIndex).status.set("failed"),
@@ -293,7 +296,7 @@ export async function executeAct(
 			},
 			onSequenceError: async (error, sequenceWithDuration) => {
 				hasError = true;
-				await opts.applyPatches(opts.act.id, [
+				await opts.applyPatches(opts.task.id, [
 					patches.sequences(i).status.set("failed"),
 					patches
 						.sequences(i)
@@ -302,7 +305,7 @@ export async function executeAct(
 				await opts.onSequenceError?.(sequenceWithDuration, i, error);
 			},
 			onSequenceComplete: async (sequenceWithDuration) => {
-				await opts.applyPatches(opts.act.id, [
+				await opts.applyPatches(opts.task.id, [
 					patches.sequences(i).status.set("completed"),
 					patches
 						.sequences(i)
@@ -315,14 +318,14 @@ export async function executeAct(
 		hasError = result.hasError;
 	}
 
-	// Complete act execution
+	// Complete task execution
 	const duration = Date.now() - startTime;
-	await opts.applyPatches(opts.act.id, [
+	await opts.applyPatches(opts.task.id, [
 		patches.status.set(hasError ? "failed" : "completed"),
 		patches.duration.wallClock.set(duration),
 	]);
 
-	await opts.onActComplete?.(hasError, duration);
+	await opts.onTaskComplete?.(hasError, duration);
 
 	return { hasError, duration };
 }

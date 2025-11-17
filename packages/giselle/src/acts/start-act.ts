@@ -2,64 +2,64 @@ import { GenerationOrigin, TaskId } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
 import type { OnGenerationComplete, OnGenerationError } from "../generations";
 import type { GiselleContext } from "../types";
-import { getAct } from "./get-act";
+import { getTask } from "./get-task";
 import { patches } from "./object/patch-creators";
-import { patchAct } from "./patch-act";
-import { runAct } from "./run-act";
+import { patchTask } from "./patch-task";
+import { runTask } from "./run-task";
 
-export const StartActInputs = z.object({
-	actId: TaskId.schema,
+export const StartTaskInputs = z.object({
+	taskId: TaskId.schema,
 	generationOriginType: z.enum(
 		GenerationOrigin.options.map((option) => option.shape.type.value),
 	),
 });
-export type StartActInputs = z.infer<typeof StartActInputs>;
+export type StartTaskInputs = z.infer<typeof StartTaskInputs>;
 
-export async function startAct({
-	actId,
+export async function startTask({
+	taskId,
 	context,
 	generationOriginType,
 	onGenerationComplete,
 	onGenerationError,
-}: StartActInputs & {
+}: StartTaskInputs & {
 	context: GiselleContext;
 	onGenerationComplete?: OnGenerationComplete;
 	onGenerationError?: OnGenerationError;
 }) {
-	const act = await getAct({ context, actId });
+	const task = await getTask({ context, taskId });
 
-	if (act.status !== "created") {
-		throw new Error(`Task ${actId} is not in the created state`);
+	if (task.status !== "created") {
+		throw new Error(`Task ${taskId} is not in the created state`);
 	}
 
-	await patchAct({
+	await patchTask({
 		context,
-		actId,
+		taskId,
 		patches: [patches.status.set("inProgress")],
 	});
 
-	switch (context.runActProcess.type) {
+	switch (context.runTaskProcess.type) {
 		case "self":
 			context.waitUntil(
 				async () =>
-					await runAct({
+					await runTask({
 						context,
-						actId,
+						taskId,
 						onGenerationComplete,
 						onGenerationError,
 					}),
 			);
 			break;
 		case "external":
-			await context.runActProcess.process({
+			await context.runTaskProcess.process({
 				context,
-				act,
+				task,
 				generationOriginType,
 			});
 			break;
 		default: {
-			const _exhaustiveCheck: never = context.runActProcess;
-			throw new Error(`Unhandled runActProcess type: ${_exhaustiveCheck}`);
+			const _exhaustiveCheck: never = context.runTaskProcess;
+			throw new Error(`Unhandled runTaskProcess type: ${_exhaustiveCheck}`);
 		}
 	}
 }

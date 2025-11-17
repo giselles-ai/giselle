@@ -15,8 +15,8 @@ function isDangerousKey(key: string): boolean {
 	return DANGEROUS_KEYS.includes(key);
 }
 
-export function patchAct(act: Task, ...patches: Patch[]): Task {
-	const result = structuredClone(act);
+export function patchTask(task: Task, ...patches: Patch[]): Task {
+	const result = structuredClone(task);
 
 	for (const patch of patches) {
 		// Support both [0] and .0 notation for arrays

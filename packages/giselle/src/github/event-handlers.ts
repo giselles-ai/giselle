@@ -1,5 +1,5 @@
 import type {
-	addReaction,
+	addRetaskion,
 	createDiscussionComment,
 	createIssueComment,
 	createPullRequestComment,
@@ -15,8 +15,8 @@ import type {
 } from "@giselles-ai/github-tool";
 import { findDiscussionReplyTargetId } from "@giselles-ai/github-tool";
 import type { Trigger } from "@giselles-ai/protocol";
-import type { createAndStartAct } from "../acts";
 import type { OnGenerationComplete, OnGenerationError } from "../generations";
+import type { createAndStartTask } from "../tasks";
 import type { GiselleContext } from "../types";
 import { getWorkspace } from "../workspaces";
 import type { parseCommand } from "./utils";
@@ -135,9 +135,9 @@ ${miniStepRows.length > 0 ? miniStepRows.join("\n") : ""}`;
 }
 
 export interface EventHandlerDependencies {
-	addReaction: typeof addReaction;
+	addRetaskion: typeof addRetaskion;
 	ensureWebhookEvent: typeof ensureWebhookEvent;
-	createAndStartAct: typeof createAndStartAct;
+	createAndStartTask: typeof createAndStartTask;
 	parseCommand: typeof parseCommand;
 	createIssueComment: typeof createIssueComment;
 	createPullRequestComment: typeof createPullRequestComment;
@@ -159,7 +159,7 @@ export type EventHandlerArgs<TEventName extends WebhookEventName> = {
 
 type EventHandlerResult = {
 	shouldRun: boolean;
-	reactionNodeId?: string;
+	retaskionNodeId?: string;
 };
 
 export function handleIssueOpened<TEventName extends WebhookEventName>(
@@ -177,7 +177,7 @@ export function handleIssueOpened<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, reactionNodeId: issue.node_id };
+	return { shouldRun: true, retaskionNodeId: issue.node_id };
 }
 
 export function handleIssueClosed<TEventName extends WebhookEventName>(
@@ -195,7 +195,7 @@ export function handleIssueClosed<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, reactionNodeId: issue.node_id };
+	return { shouldRun: true, retaskionNodeId: issue.node_id };
 }
 
 export function handleIssueCommentCreated<TEventName extends WebhookEventName>(
@@ -223,7 +223,7 @@ export function handleIssueCommentCreated<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, reactionNodeId: comment.node_id };
+	return { shouldRun: true, retaskionNodeId: comment.node_id };
 }
 
 export function handlePullRequestCommentCreated<
@@ -253,7 +253,7 @@ export function handlePullRequestCommentCreated<
 
 	return {
 		shouldRun: true,
-		reactionNodeId: args.event.data.payload.comment.node_id,
+		retaskionNodeId: args.event.data.payload.comment.node_id,
 	};
 }
 
@@ -289,7 +289,7 @@ export function handlePullRequestReviewCommentCreated<
 
 	return {
 		shouldRun: true,
-		reactionNodeId: comment.node_id,
+		retaskionNodeId: comment.node_id,
 	};
 }
 
@@ -308,7 +308,7 @@ export function handlePullRequestOpened<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, reactionNodeId: pullRequest.node_id };
+	return { shouldRun: true, retaskionNodeId: pullRequest.node_id };
 }
 
 export function handlePullRequestReadyForReview<
@@ -330,7 +330,7 @@ export function handlePullRequestReadyForReview<
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, reactionNodeId: pullRequest.node_id };
+	return { shouldRun: true, retaskionNodeId: pullRequest.node_id };
 }
 
 export function handlePullRequestClosed<TEventName extends WebhookEventName>(
@@ -348,7 +348,7 @@ export function handlePullRequestClosed<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, reactionNodeId: pullRequest.node_id };
+	return { shouldRun: true, retaskionNodeId: pullRequest.node_id };
 }
 
 export function handleIssueLabeled<TEventName extends WebhookEventName>(
@@ -380,7 +380,7 @@ export function handleIssueLabeled<TEventName extends WebhookEventName>(
 	const shouldRun = conditions.labels.includes(addedLabel.name);
 
 	return shouldRun
-		? { shouldRun: true, reactionNodeId: issue.node_id }
+		? { shouldRun: true, retaskionNodeId: issue.node_id }
 		: { shouldRun: false };
 }
 
@@ -413,7 +413,7 @@ export function handlePullRequestLabeled<TEventName extends WebhookEventName>(
 	const shouldRun = conditions.labels.includes(addedLabel.name);
 
 	return shouldRun
-		? { shouldRun: true, reactionNodeId: pullRequest.node_id }
+		? { shouldRun: true, retaskionNodeId: pullRequest.node_id }
 		: { shouldRun: false };
 }
 
@@ -432,7 +432,7 @@ export function handleDiscussionCreated<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, reactionNodeId: discussion.node_id };
+	return { shouldRun: true, retaskionNodeId: discussion.node_id };
 }
 
 export function handleDiscussionCommentCreated<
@@ -457,7 +457,7 @@ export function handleDiscussionCommentCreated<
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, reactionNodeId: comment.node_id };
+	return { shouldRun: true, retaskionNodeId: comment.node_id };
 }
 
 const eventHandlers = [
@@ -511,9 +511,9 @@ export async function processEvent<TEventName extends WebhookEventName>(
 			continue;
 		}
 
-		if (result.reactionNodeId) {
-			await deps.addReaction({
-				id: result.reactionNodeId,
+		if (result.retaskionNodeId) {
+			await deps.addRetaskion({
+				id: result.retaskionNodeId,
 				content: "EYES",
 				authConfig,
 			});
@@ -556,7 +556,7 @@ export async function processEvent<TEventName extends WebhookEventName>(
 			workspaceId: args.trigger.workspaceId,
 		});
 
-		await deps.createAndStartAct({
+		await deps.createAndStartTask({
 			context: args.context,
 			nodeId: args.trigger.nodeId,
 			workspace,
@@ -570,8 +570,8 @@ export async function processEvent<TEventName extends WebhookEventName>(
 			callbacks: {
 				generationComplete: args.onGenerationComplete,
 				generationError: args.onGenerationError,
-				actCreate: async ({ act }) => {
-					progressTableData = act.sequences.map((sequence) => ({
+				taskCreate: async ({ task }) => {
+					progressTableData = task.sequences.map((sequence) => ({
 						id: sequence.id,
 						status: "pending" as const,
 						updatedAt: undefined,

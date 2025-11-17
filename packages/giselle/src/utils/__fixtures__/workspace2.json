@@ -61,11 +61,11 @@
 				{
 					"id": "otp-eaNrDYzvCd0PlJmb",
 					"label": "output",
-					"accessor": "action-result"
+					"accessor": "taskion-result"
 				}
 			],
 			"content": {
-				"type": "action",
+				"type": "taskion",
 				"command": {
 					"provider": "github",
 					"state": {
@@ -122,7 +122,7 @@
 			"inputNode": {
 				"id": "nd-9erM0USHKLZVTMsL",
 				"type": "operation",
-				"content": { "type": "action" }
+				"content": { "type": "taskion" }
 			},
 			"inputId": "inp-rb16pSPDATd9NQTr"
 		},
@@ -152,7 +152,7 @@
 			"inputNode": {
 				"id": "nd-9erM0USHKLZVTMsL",
 				"type": "operation",
-				"content": { "type": "action" }
+				"content": { "type": "taskion" }
 			},
 			"inputId": "inp-zFs2DvWJxsjmnb73"
 		}

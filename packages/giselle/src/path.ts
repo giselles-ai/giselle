@@ -5,8 +5,8 @@ import type {
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 
-export function actGenerationIndexesPath(actId: TaskId) {
-	return `generations/byAct/${actId}.json` as const;
+export function taskGenerationIndexesPath(taskId: TaskId) {
+	return `generations/byTask/${taskId}.json` as const;
 }
 
 export function generationUiMessageChunksPath(generationId: GenerationId) {

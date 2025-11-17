@@ -29,7 +29,7 @@ import { buildLevels } from "../utils/build-levels";
 import { addWorkspaceIndexItem } from "../utils/workspace-index";
 import { getWorkspace } from "../workspaces";
 
-export const CreateActInputs = z.object({
+export const CreateTaskInputs = z.object({
 	workspaceId: z.optional(WorkspaceId.schema),
 	workspace: z.optional(Workspace),
 	connectionIds: z.optional(z.array(ConnectionId.schema)),
@@ -39,10 +39,10 @@ export const CreateActInputs = z.object({
 		GenerationOrigin.options.map((option) => option.shape.type.value),
 	),
 });
-export type CreateActInputs = z.infer<typeof CreateActInputs>;
+export type CreateTaskInputs = z.infer<typeof CreateTaskInputs>;
 
-export async function createAct(
-	args: CreateActInputs & { context: GiselleContext },
+export async function createTask(
+	args: CreateTaskInputs & { context: GiselleContext },
 ) {
 	let workspace: Workspace | undefined = args.workspace;
 
@@ -104,7 +104,7 @@ export async function createAct(
 		throw new Error("App entry node is unconfigured");
 	}
 
-	const actId = TaskId.generate();
+	const taskId = TaskId.generate();
 	const levels = buildLevels(nodes, connections);
 
 	const generations: CreatedGeneration[] = [];
@@ -152,7 +152,7 @@ export async function createAct(
 					origin: {
 						type: args.generationOriginType,
 						workspaceId: workspace.id,
-						actId,
+						taskId,
 					},
 					inputs: args.inputs,
 					operationNode: node,
@@ -193,8 +193,8 @@ export async function createAct(
 		});
 	}
 
-	const act: Task = {
-		id: actId,
+	const task: Task = {
+		id: taskId,
 		workspaceId: workspace.id,
 		status: "created",
 		name: starterNode ? defaultName(starterNode) : "group-nodes",
@@ -221,17 +221,17 @@ export async function createAct(
 		annotations: [],
 		sequences,
 	};
-	args.context.logger.debug(`created act:${act.id}`);
+	args.context.logger.debug(`created task:${task.id}`);
 	await Promise.all([
 		args.context.storage.setJson({
-			path: taskPath(act.id),
-			data: act,
+			path: taskPath(task.id),
+			data: task,
 			schema: Task,
 		}),
 		addWorkspaceIndexItem({
 			context: args.context,
 			indexPath: workspaceTaskPath(workspace.id),
-			item: act,
+			item: task,
 			itemSchema: TaskIndexObject,
 		}),
 		...generations.map((generation) =>
@@ -241,5 +241,5 @@ export async function createAct(
 			}),
 		),
 	]);
-	return { act, generations };
+	return { task, generations };
 }

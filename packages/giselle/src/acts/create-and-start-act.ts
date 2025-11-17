@@ -2,36 +2,36 @@ import type { Task } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
 import type { OnGenerationComplete, OnGenerationError } from "../generations";
 import type { GiselleContext } from "../types";
-import { CreateActInputs, createAct } from "./create-act";
-import { type RunActCallbacks, runAct } from "./run-act";
-import { StartActInputs } from "./start-act";
+import { CreateTaskInputs, createTask } from "./create-task";
+import { type RunTaskCallbacks, runTask } from "./run-task";
+import { StartTaskInputs } from "./start-task";
 
-interface CreateAndStartActCallbacks extends RunActCallbacks {
-	actCreate?: (args: { act: Task }) => void | Promise<void>;
+interface CreateAndStartTaskCallbacks extends RunTaskCallbacks {
+	taskCreate?: (args: { task: Task }) => void | Promise<void>;
 	generationComplete?: OnGenerationComplete;
 	generationError?: OnGenerationError;
 }
 
-export const CreateAndStartActInputs = z.object({
-	...CreateActInputs.shape,
-	...StartActInputs.omit({ actId: true }).shape,
+export const CreateAndStartTaskInputs = z.object({
+	...CreateTaskInputs.shape,
+	...StartTaskInputs.omit({ taskId: true }).shape,
 	...z.object({
-		callbacks: z.optional(z.custom<CreateAndStartActCallbacks>()),
+		callbacks: z.optional(z.custom<CreateAndStartTaskCallbacks>()),
 	}).shape,
 });
-export type CreateAndStartActInputs = z.infer<typeof CreateAndStartActInputs>;
+export type CreateAndStartTaskInputs = z.infer<typeof CreateAndStartTaskInputs>;
 
 /** @todo telemetry */
-export async function createAndStartAct(
-	args: CreateAndStartActInputs & {
+export async function createAndStartTask(
+	args: CreateAndStartTaskInputs & {
 		context: GiselleContext;
 	},
 ) {
-	const { act } = await createAct(args);
-	await args.callbacks?.actCreate?.({ act });
-	await runAct({
+	const { task } = await createTask(args);
+	await args.callbacks?.taskCreate?.({ task });
+	await runTask({
 		context: args.context,
-		actId: act.id,
+		taskId: task.id,
 		callbacks: args.callbacks,
 	});
 }

@@ -1,14 +1,14 @@
 import type { Sequence, Step, Task } from "@giselles-ai/protocol";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { patchAct } from "../object/patch-object";
+import { patchTask } from "../object/patch-object";
 import {
 	createStepCountPatches,
-	executeAct,
-	isValidActTransition,
+	executeTask,
 	isValidGenerationTransition,
-} from "./act-execution-utils";
+	isValidTaskTransition,
+} from "./task-execution-utils";
 
-// Test data factory functions
+// Test data ftaskory functions
 function createTestStep(overrides?: Partial<Step>): Step {
 	return {
 		id: "stp-1" as const,
@@ -32,7 +32,7 @@ function createTestSequence(overrides?: Partial<Sequence>): Sequence {
 	};
 }
 
-function createTestAct(overrides?: Partial<Task>): Task {
+function createTestTask(overrides?: Partial<Task>): Task {
 	const sequences = overrides?.sequences || [createTestSequence()];
 	const totalSteps = sequences.reduce((sum, seq) => sum + seq.steps.length, 0);
 
@@ -60,7 +60,7 @@ function createTestAct(overrides?: Partial<Task>): Task {
 	};
 }
 
-describe("executeAct", () => {
+describe("executeTask", () => {
 	beforeEach(() => {
 		vi.useFakeTimers();
 	});
@@ -69,8 +69,8 @@ describe("executeAct", () => {
 		vi.useRealTimers();
 	});
 
-	it("executes a simple act with one sequence and two steps", async () => {
-		let currentAct = createTestAct({
+	it("executes a simple task with one sequence and two steps", async () => {
+		let currentTask = createTestTask({
 			sequences: [
 				createTestSequence({
 					steps: [
@@ -88,7 +88,7 @@ describe("executeAct", () => {
 		});
 
 		const applyPatches = vi.fn((_id: string, patches) => {
-			currentAct = patchAct(currentAct, ...patches);
+			currentTask = patchTask(currentTask, ...patches);
 			return Promise.resolve();
 		});
 
@@ -97,21 +97,21 @@ describe("executeAct", () => {
 			await callbacks?.onCompleted?.();
 		});
 
-		await executeAct({ act: currentAct, applyPatches, startGeneration });
+		await executeTask({ task: currentTask, applyPatches, startGeneration });
 
 		// Verify final state
-		expect(currentAct.status).toBe("completed");
-		expect(currentAct.steps.queued).toBe(0);
-		expect(currentAct.steps.completed).toBe(2);
+		expect(currentTask.status).toBe("completed");
+		expect(currentTask.steps.queued).toBe(0);
+		expect(currentTask.steps.completed).toBe(2);
 
-		expect(currentAct.sequences[0].status).toBe("completed");
-		expect(currentAct.sequences[0].steps[0].status).toBe("completed");
-		expect(currentAct.sequences[0].steps[1].status).toBe("completed");
+		expect(currentTask.sequences[0].status).toBe("completed");
+		expect(currentTask.sequences[0].steps[0].status).toBe("completed");
+		expect(currentTask.sequences[0].steps[1].status).toBe("completed");
 
 		// Verify timing
-		expect(currentAct.duration.wallClock).toBeGreaterThan(0);
+		expect(currentTask.duration.wallClock).toBeGreaterThan(0);
 		// Total task duration includes the wall clock time of the sequence
-		expect(currentAct.duration.totalTask).toBeGreaterThan(200);
+		expect(currentTask.duration.totalTask).toBeGreaterThan(200);
 
 		// Verify generation calls
 		expect(startGeneration).toHaveBeenCalledTimes(2);
@@ -120,7 +120,7 @@ describe("executeAct", () => {
 	});
 
 	it("executes multiple sequences sequentially", async () => {
-		let currentAct = createTestAct({
+		let currentTask = createTestTask({
 			sequences: [
 				createTestSequence({
 					id: "sqn-1" as const,
@@ -134,7 +134,7 @@ describe("executeAct", () => {
 		});
 
 		const applyPatches = vi.fn((_id: string, patches) => {
-			currentAct = patchAct(currentAct, ...patches);
+			currentTask = patchTask(currentTask, ...patches);
 			return Promise.resolve();
 		});
 
@@ -148,8 +148,8 @@ describe("executeAct", () => {
 			sequenceStartOrder.push(seq.id);
 		});
 
-		await executeAct({
-			act: currentAct,
+		await executeTask({
+			task: currentTask,
 			applyPatches,
 			startGeneration,
 			onSequenceStart,
@@ -157,13 +157,13 @@ describe("executeAct", () => {
 
 		// Verify sequences executed in order
 		expect(sequenceStartOrder).toEqual(["sqn-1", "sqn-2"]);
-		expect(currentAct.status).toBe("completed");
-		expect(currentAct.sequences[0].status).toBe("completed");
-		expect(currentAct.sequences[1].status).toBe("completed");
+		expect(currentTask.status).toBe("completed");
+		expect(currentTask.sequences[0].status).toBe("completed");
+		expect(currentTask.sequences[1].status).toBe("completed");
 	});
 
 	it("handles step failure within a sequence", async () => {
-		let currentAct = createTestAct({
+		let currentTask = createTestTask({
 			sequences: [
 				createTestSequence({
 					steps: [
@@ -181,7 +181,7 @@ describe("executeAct", () => {
 		});
 
 		const applyPatches = vi.fn((_id: string, patches) => {
-			currentAct = patchAct(currentAct, ...patches);
+			currentTask = patchTask(currentTask, ...patches);
 			return Promise.resolve();
 		});
 
@@ -203,26 +203,26 @@ describe("executeAct", () => {
 
 		const onStepError = vi.fn();
 
-		await executeAct({
-			act: currentAct,
+		await executeTask({
+			task: currentTask,
 			applyPatches,
 			startGeneration,
 			onStepError,
 		});
 
-		// Verify act failed
-		expect(currentAct.status).toBe("failed");
-		expect(currentAct.steps.completed).toBe(1);
-		expect(currentAct.steps.failed).toBe(1);
+		// Verify task failed
+		expect(currentTask.status).toBe("failed");
+		expect(currentTask.steps.completed).toBe(1);
+		expect(currentTask.steps.failed).toBe(1);
 
 		// Verify sequence failed
-		expect(currentAct.sequences[0].status).toBe("failed");
-		expect(currentAct.sequences[0].steps[0].status).toBe("completed");
-		expect(currentAct.sequences[0].steps[1].status).toBe("failed");
+		expect(currentTask.sequences[0].status).toBe("failed");
+		expect(currentTask.sequences[0].steps[0].status).toBe("completed");
+		expect(currentTask.sequences[0].steps[1].status).toBe("failed");
 
 		// Verify error annotation was added
-		expect(currentAct.annotations).toHaveLength(1);
-		expect(currentAct.annotations[0]).toMatchObject({
+		expect(currentTask.annotations).toHaveLength(1);
+		expect(currentTask.annotations[0]).toMatchObject({
 			level: "error",
 			stepId: "stp-2",
 			sequenceId: "sqn-1",
@@ -230,7 +230,7 @@ describe("executeAct", () => {
 	});
 
 	it("cancels remaining sequences when a sequence fails", async () => {
-		let currentAct = createTestAct({
+		let currentTask = createTestTask({
 			sequences: [
 				createTestSequence({
 					id: "sqn-1" as const,
@@ -248,7 +248,7 @@ describe("executeAct", () => {
 		});
 
 		const applyPatches = vi.fn((_id: string, patches) => {
-			currentAct = patchAct(currentAct, ...patches);
+			currentTask = patchTask(currentTask, ...patches);
 			return Promise.resolve();
 		});
 
@@ -262,35 +262,35 @@ describe("executeAct", () => {
 		const onSequenceSkip = vi.fn();
 
 		// Verify initial state
-		expect(currentAct.steps.queued).toBe(3);
-		expect(currentAct.steps.inProgress).toBe(0);
+		expect(currentTask.steps.queued).toBe(3);
+		expect(currentTask.steps.inProgress).toBe(0);
 
-		await executeAct({
-			act: currentAct,
+		await executeTask({
+			task: currentTask,
 			applyPatches,
 			startGeneration,
 			onSequenceSkip,
 		});
 
-		// Verify act failed
-		expect(currentAct.status).toBe("failed");
+		// Verify task failed
+		expect(currentTask.status).toBe("failed");
 
 		// Verify first sequence failed
-		expect(currentAct.sequences[0].status).toBe("failed");
+		expect(currentTask.sequences[0].status).toBe("failed");
 
 		// Verify remaining sequences were skipped
 		expect(onSequenceSkip).toHaveBeenCalledTimes(2);
-		expect(onSequenceSkip).toHaveBeenCalledWith(currentAct.sequences[1], 1);
-		expect(onSequenceSkip).toHaveBeenCalledWith(currentAct.sequences[2], 2);
+		expect(onSequenceSkip).toHaveBeenCalledWith(currentTask.sequences[1], 1);
+		expect(onSequenceSkip).toHaveBeenCalledWith(currentTask.sequences[2], 2);
 
 		// Verify step counts - implementation is now fixed
-		expect(currentAct.steps.failed).toBe(1);
-		expect(currentAct.steps.cancelled).toBe(2); // Both remaining sequences' steps are cancelled
-		expect(currentAct.steps.queued).toBe(0); // No steps remain queued
+		expect(currentTask.steps.failed).toBe(1);
+		expect(currentTask.steps.cancelled).toBe(2); // Both remaining sequences' steps are cancelled
+		expect(currentTask.steps.queued).toBe(0); // No steps remain queued
 	});
 
 	it("should cancel ALL remaining sequence steps when a sequence fails", async () => {
-		let currentAct = createTestAct({
+		let currentTask = createTestTask({
 			sequences: [
 				createTestSequence({
 					id: "sqn-1" as const,
@@ -330,7 +330,7 @@ describe("executeAct", () => {
 		});
 
 		const applyPatches = vi.fn((_id: string, patches) => {
-			currentAct = patchAct(currentAct, ...patches);
+			currentTask = patchTask(currentTask, ...patches);
 			return Promise.resolve();
 		});
 
@@ -344,33 +344,33 @@ describe("executeAct", () => {
 		const onSequenceSkip = vi.fn();
 
 		// Verify initial state
-		expect(currentAct.steps.queued).toBe(6); // 1 + 2 + 3 steps
-		expect(currentAct.steps.inProgress).toBe(0);
+		expect(currentTask.steps.queued).toBe(6); // 1 + 2 + 3 steps
+		expect(currentTask.steps.inProgress).toBe(0);
 
-		await executeAct({
-			act: currentAct,
+		await executeTask({
+			task: currentTask,
 			applyPatches,
 			startGeneration,
 			onSequenceSkip,
 		});
 
-		// Verify act failed
-		expect(currentAct.status).toBe("failed");
+		// Verify task failed
+		expect(currentTask.status).toBe("failed");
 
 		// Verify first sequence failed
-		expect(currentAct.sequences[0].status).toBe("failed");
+		expect(currentTask.sequences[0].status).toBe("failed");
 
 		// Verify remaining sequences were skipped
 		expect(onSequenceSkip).toHaveBeenCalledTimes(2);
 
 		// Expected behavior: ALL remaining steps should be cancelled
-		expect(currentAct.steps.failed).toBe(1); // Only the failed step
-		expect(currentAct.steps.cancelled).toBe(5); // All 5 remaining steps should be cancelled
-		expect(currentAct.steps.queued).toBe(0); // No steps should remain queued
+		expect(currentTask.steps.failed).toBe(1); // Only the failed step
+		expect(currentTask.steps.cancelled).toBe(5); // All 5 remaining steps should be cancelled
+		expect(currentTask.steps.queued).toBe(0); // No steps should remain queued
 	});
 
 	it("executes steps in parallel within a sequence", async () => {
-		let currentAct = createTestAct({
+		let currentTask = createTestTask({
 			sequences: [
 				createTestSequence({
 					steps: [
@@ -392,7 +392,7 @@ describe("executeAct", () => {
 		});
 
 		const applyPatches = vi.fn((_id: string, patches) => {
-			currentAct = patchAct(currentAct, ...patches);
+			currentTask = patchTask(currentTask, ...patches);
 			return Promise.resolve();
 		});
 
@@ -405,7 +405,7 @@ describe("executeAct", () => {
 			await callbacks?.onCompleted?.();
 		});
 
-		await executeAct({ act: currentAct, applyPatches, startGeneration });
+		await executeTask({ task: currentTask, applyPatches, startGeneration });
 
 		// Verify all steps started before any completed (shows parallel execution)
 		const startCount = executionOrder.filter((e) =>
@@ -421,16 +421,16 @@ describe("executeAct", () => {
 		// Verify timing - total task duration is sum of all steps
 		// This is by design: totalTask is the sum of all individual task durations
 		// With the fake timer advancing logic, each step adds its duration
-		expect(currentAct.duration.totalTask).toBeGreaterThanOrEqual(300);
+		expect(currentTask.duration.totalTask).toBeGreaterThanOrEqual(300);
 
 		// Wall clock should be less since steps run in parallel
 		// But with our simple timer setup, it might be close to the sum
-		expect(currentAct.duration.wallClock).toBeGreaterThan(0);
-		expect(currentAct.sequences[0].duration.wallClock).toBeGreaterThan(0);
+		expect(currentTask.duration.wallClock).toBeGreaterThan(0);
+		expect(currentTask.sequences[0].duration.wallClock).toBeGreaterThan(0);
 	});
 
 	it("invokes all callbacks in correct order", async () => {
-		let currentAct = createTestAct({
+		let currentTask = createTestTask({
 			sequences: [
 				createTestSequence({
 					steps: [createTestStep({ generationId: "gnr-1" as const })],
@@ -439,7 +439,7 @@ describe("executeAct", () => {
 		});
 
 		const applyPatches = vi.fn((_id: string, patches) => {
-			currentAct = patchAct(currentAct, ...patches);
+			currentTask = patchTask(currentTask, ...patches);
 			return Promise.resolve();
 		});
 
@@ -449,8 +449,8 @@ describe("executeAct", () => {
 
 		const callOrder: string[] = [];
 		const callbacks = {
-			onActStart: vi.fn(() => {
-				callOrder.push("act-start");
+			onTaskStart: vi.fn(() => {
+				callOrder.push("task-start");
 			}),
 			onSequenceStart: vi.fn(() => {
 				callOrder.push("sequence-start");
@@ -464,13 +464,13 @@ describe("executeAct", () => {
 			onSequenceComplete: vi.fn(() => {
 				callOrder.push("sequence-complete");
 			}),
-			onActComplete: vi.fn(() => {
-				callOrder.push("act-complete");
+			onTaskComplete: vi.fn(() => {
+				callOrder.push("task-complete");
 			}),
 		};
 
-		await executeAct({
-			act: currentAct,
+		await executeTask({
+			task: currentTask,
 			applyPatches,
 			startGeneration,
 			...callbacks,
@@ -478,12 +478,12 @@ describe("executeAct", () => {
 
 		// Verify callback order
 		expect(callOrder).toEqual([
-			"act-start",
+			"task-start",
 			"sequence-start",
 			"step-start",
 			"step-complete",
 			"sequence-complete",
-			"act-complete",
+			"task-complete",
 		]);
 
 		// Verify all callbacks were called
@@ -493,7 +493,7 @@ describe("executeAct", () => {
 	});
 
 	it("handles empty sequences gracefully", async () => {
-		let currentAct = createTestAct({
+		let currentTask = createTestTask({
 			sequences: [createTestSequence({ steps: [] })],
 			steps: {
 				queued: 0,
@@ -506,24 +506,24 @@ describe("executeAct", () => {
 		});
 
 		const applyPatches = vi.fn((_id: string, patches) => {
-			currentAct = patchAct(currentAct, ...patches);
+			currentTask = patchTask(currentTask, ...patches);
 			return Promise.resolve();
 		});
 
 		const startGeneration = vi.fn();
 
-		await executeAct({ act: currentAct, applyPatches, startGeneration });
+		await executeTask({ task: currentTask, applyPatches, startGeneration });
 
-		expect(currentAct.status).toBe("completed");
-		expect(currentAct.sequences[0].status).toBe("completed");
+		expect(currentTask.status).toBe("completed");
+		expect(currentTask.sequences[0].status).toBe("completed");
 		expect(startGeneration).not.toHaveBeenCalled();
 	});
 
 	it("handles callback errors without breaking execution", async () => {
-		let currentAct = createTestAct();
+		let currentTask = createTestTask();
 
 		const applyPatches = vi.fn((_id: string, patches) => {
-			currentAct = patchAct(currentAct, ...patches);
+			currentTask = patchTask(currentTask, ...patches);
 			return Promise.resolve();
 		});
 
@@ -537,8 +537,8 @@ describe("executeAct", () => {
 		});
 
 		// Should not throw even with callback error
-		const result = await executeAct({
-			act: currentAct,
+		const result = await executeTask({
+			task: currentTask,
 			applyPatches,
 			startGeneration,
 			onStepStart,
@@ -546,22 +546,22 @@ describe("executeAct", () => {
 
 		// Task should fail because the callback error causes step to fail
 		expect(result.hasError).toBe(true);
-		expect(currentAct.status).toBe("failed");
+		expect(currentTask.status).toBe("failed");
 	});
 });
 
 describe("transition validators", () => {
-	describe("isValidActTransition", () => {
+	describe("isValidTaskTransition", () => {
 		it("allows valid transitions", () => {
-			expect(isValidActTransition("inProgress", "completed")).toBe(true);
-			expect(isValidActTransition("inProgress", "failed")).toBe(true);
-			expect(isValidActTransition("inProgress", "cancelled")).toBe(true);
+			expect(isValidTaskTransition("inProgress", "completed")).toBe(true);
+			expect(isValidTaskTransition("inProgress", "failed")).toBe(true);
+			expect(isValidTaskTransition("inProgress", "cancelled")).toBe(true);
 		});
 
 		it("rejects invalid transitions", () => {
-			expect(isValidActTransition("completed", "inProgress")).toBe(false);
-			expect(isValidActTransition("failed", "completed")).toBe(false);
-			expect(isValidActTransition("cancelled", "failed")).toBe(false);
+			expect(isValidTaskTransition("completed", "inProgress")).toBe(false);
+			expect(isValidTaskTransition("failed", "completed")).toBe(false);
+			expect(isValidTaskTransition("cancelled", "failed")).toBe(false);
 		});
 	});
 

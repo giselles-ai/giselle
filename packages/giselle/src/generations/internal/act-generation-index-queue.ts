@@ -1,17 +1,17 @@
 import type { TaskId } from "@giselles-ai/protocol";
 import { NodeGenerationIndex } from "@giselles-ai/protocol";
 import type { GiselleStorage } from "@giselles-ai/storage";
-import { actGenerationIndexesPath } from "../../path";
+import { taskGenerationIndexesPath } from "../../path";
 import type { GiselleContext } from "../../types";
 import {
 	applyPatches,
 	type GenerationIndexPatch,
 	upsert,
 } from "./generation-index-patches";
-import { getActGenerationIndexes } from "./get-act-generation-indexes";
+import { getTaskGenerationIndexes } from "./get-task-generation-indexes";
 
 interface QueuedPatch {
-	actId: TaskId;
+	taskId: TaskId;
 	patches: GenerationIndexPatch[];
 	timestamp: number;
 	retryCount: number;
@@ -40,16 +40,16 @@ const state: QueueState = {
 };
 
 /**
- * Processes a batch of patches for a specific actId
+ * Processes a batch of patches for a specific taskId
  */
 async function processPatchBatch(
 	storage: GiselleStorage,
 	item: QueuedPatch,
 ): Promise<void> {
 	// Read current indexes
-	const currentIndexes = await getActGenerationIndexes({
+	const currentIndexes = await getTaskGenerationIndexes({
 		storage: storage,
-		actId: item.actId,
+		taskId: item.taskId,
 	});
 
 	// Apply all patches in batch
@@ -57,14 +57,14 @@ async function processPatchBatch(
 
 	// Write back
 	await storage.setJson({
-		path: actGenerationIndexesPath(item.actId),
+		path: taskGenerationIndexesPath(item.taskId),
 		data: updatedIndexes,
 		schema: NodeGenerationIndex.array(),
 	});
 }
 
 /**
- * Processes the queue for all pending actIds
+ * Processes the queue for all pending taskIds
  */
 async function processQueue(storage: GiselleStorage) {
 	if (state.queue.size === 0) {
@@ -77,21 +77,21 @@ async function processQueue(storage: GiselleStorage) {
 	// Clear the queue
 	state.queue.clear();
 
-	// Process each act's patches
-	for (const [actId, item] of itemsToProcess) {
-		// Skip if already processing this actId
-		if (state.processing.has(actId)) {
+	// Process each task's patches
+	for (const [taskId, item] of itemsToProcess) {
+		// Skip if already processing this taskId
+		if (state.processing.has(taskId)) {
 			// Re-queue for next batch
-			const existingItem = state.queue.get(actId);
+			const existingItem = state.queue.get(taskId);
 			if (existingItem) {
 				existingItem.patches.push(...item.patches);
 			} else {
-				state.queue.set(actId, item);
+				state.queue.set(taskId, item);
 			}
 			continue;
 		}
 
-		state.processing.add(actId);
+		state.processing.add(taskId);
 
 		try {
 			await processPatchBatch(storage, item);
@@ -104,7 +104,7 @@ async function processQueue(storage: GiselleStorage) {
 					retryCount: item.retryCount + 1,
 					timestamp: Date.now(),
 				};
-				const existingItem = state.queue.get(actId);
+				const existingItem = state.queue.get(taskId);
 				if (existingItem) {
 					// Merge with existing patches
 					existingItem.patches.unshift(...retryItem.patches);
@@ -113,23 +113,23 @@ async function processQueue(storage: GiselleStorage) {
 						retryItem.retryCount,
 					);
 				} else {
-					state.queue.set(actId, retryItem);
+					state.queue.set(taskId, retryItem);
 				}
 				console.warn(
-					`Generation index patch failed for act ${actId}, retry ${item.retryCount + 1}/${state.retryConfig.maxRetries}:`,
+					`Generation index patch failed for task ${taskId}, retry ${item.retryCount + 1}/${state.retryConfig.maxRetries}:`,
 					error,
 				);
 			} else {
 				// Permanent failure - log with severe warning
 				console.error(
-					`Generation index patch permanently failed for act ${actId} after ${state.retryConfig.maxRetries} retries. Data loss may occur:`,
+					`Generation index patch permanently failed for task ${taskId} after ${state.retryConfig.maxRetries} retries. Data loss may occur:`,
 					error,
 					"Failed patches:",
 					item.patches,
 				);
 			}
 		} finally {
-			state.processing.delete(actId);
+			state.processing.delete(taskId);
 		}
 	}
 }
@@ -163,22 +163,22 @@ function stopProcessing() {
 }
 
 /**
- * Enqueues a patch for the given actId
+ * Enqueues a patch for the given taskId
  */
 function enqueuePatch(
 	storage: GiselleStorage,
-	actId: TaskId,
+	taskId: TaskId,
 	patch: GenerationIndexPatch,
 ) {
-	const existingItem = state.queue.get(actId);
+	const existingItem = state.queue.get(taskId);
 
 	if (existingItem) {
 		// Add to existing patches
 		existingItem.patches.push(patch);
 	} else {
 		// Create new queue item
-		state.queue.set(actId, {
-			actId,
+		state.queue.set(taskId, {
+			taskId,
 			patches: [patch],
 			timestamp: Date.now(),
 			retryCount: 0,
@@ -226,18 +226,18 @@ export async function flushGenerationIndexQueue({
 }
 
 /**
- * Public API for updating act generation indexes
+ * Public API for updating task generation indexes
  */
-export function updateActGenerationIndexes(
+export function updateTaskGenerationIndexes(
 	storage: GiselleStorage,
-	actId: TaskId,
+	taskId: TaskId,
 	newIndex: NodeGenerationIndex,
 ) {
 	// Create an upsert patch
 	const patch = upsert(newIndex);
 
 	// Enqueue the patch
-	enqueuePatch(storage, actId, patch);
+	enqueuePatch(storage, taskId, patch);
 }
 
 // Cleanup function for tests or shutdown

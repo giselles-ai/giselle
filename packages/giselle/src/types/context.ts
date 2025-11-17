@@ -29,20 +29,20 @@ type GenerateContentProcess =
 	| { type: "self" }
 	| { type: "external"; process: (args: GenerateContentArgs) => Promise<void> };
 
-export type SetRunActProcessArgs = {
+export type SetRunTaskProcessArgs = {
 	context: GiselleContext;
-	act: Task;
+	task: Task;
 	generationOriginType: GenerationOrigin["type"];
 };
 
-type RunActProcess =
+type RunTaskProcess =
 	| { type: "self" }
 	| {
 			type: "external";
-			process: (args: SetRunActProcessArgs) => Promise<void>;
+			process: (args: SetRunTaskProcessArgs) => Promise<void>;
 	  };
 
-export type RunAct = (args: SetRunActProcessArgs) => Promise<void>;
+export type RunTask = (args: SetRunTaskProcessArgs) => Promise<void>;
 
 export interface GiselleContext {
 	storage: GiselleStorage;
@@ -68,5 +68,5 @@ export interface GiselleContext {
 	logger: GiselleLogger;
 	waitUntil: WaitUntil;
 	generateContentProcess: GenerateContentProcess;
-	runActProcess: RunActProcess;
+	runTaskProcess: RunTaskProcess;
 }

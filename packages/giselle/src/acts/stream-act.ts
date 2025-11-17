@@ -1,12 +1,12 @@
 import type { TaskId } from "@giselles-ai/protocol";
 import type { StreamData, StreamEvent } from "@giselles-ai/stream";
 import type { GiselleContext } from "../types";
-import { getAct } from "./get-act";
+import { getTask } from "./get-task";
 
 function createDataHash(data: StreamData): string {
 	// Create a simple hash of the data to detect changes
 	return JSON.stringify({
-		actUpdatedAt: data.act.updatedAt,
+		taskUpdatedAt: data.task.updatedAt,
 	});
 }
 
@@ -14,7 +14,7 @@ export function formatStreamData(event: StreamEvent): string {
 	return `data: ${JSON.stringify(event)}\n\n`;
 }
 
-export function streamAct(args: { actId: TaskId; context: GiselleContext }) {
+export function streamTask(args: { taskId: TaskId; context: GiselleContext }) {
 	const encoder = new TextEncoder();
 
 	let pollIntervalId: ReturnType<typeof setInterval> | null = null;
@@ -52,7 +52,7 @@ export function streamAct(args: { actId: TaskId; context: GiselleContext }) {
 
 				try {
 					lastFetchedData = {
-						act: await getAct({ actId: args.actId, context: args.context }),
+						task: await getTask({ taskId: args.taskId, context: args.context }),
 					};
 					const currentHash = createDataHash(lastFetchedData);
 
@@ -70,10 +70,10 @@ export function streamAct(args: { actId: TaskId; context: GiselleContext }) {
 						),
 					);
 				} catch (error) {
-					console.error("Error fetching act and generations:", error);
+					console.error("Error fetching task and generations:", error);
 					lastFetchedData = null;
 
-					// Only send error if controller is still active
+					// Only send error if controller is still taskive
 					try {
 						controller.enqueue(
 							encoder.encode(
@@ -92,7 +92,7 @@ export function streamAct(args: { actId: TaskId; context: GiselleContext }) {
 			const cleanup = () => {
 				cleanupResources();
 
-				// Send end message and close if controller is still active
+				// Send end message and close if controller is still taskive
 				if (controller.desiredSize !== null) {
 					controller.enqueue(encoder.encode(formatStreamData({ type: "end" })));
 					controller.close();
@@ -106,7 +106,7 @@ export function streamAct(args: { actId: TaskId; context: GiselleContext }) {
 
 				await sendUpdate();
 
-				if (lastFetchedData?.act.status === "completed") {
+				if (lastFetchedData?.task.status === "completed") {
 					cleanup();
 				}
 			};

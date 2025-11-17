@@ -1,18 +1,21 @@
 import { Task, type TaskId } from "@giselles-ai/protocol";
 import { taskPath } from "../path";
 import type { GiselleContext } from "../types";
-import { type Patch, patchAct as patchActObject } from "./object/patch-object";
+import {
+	type Patch,
+	patchTask as patchTaskObject,
+} from "./object/patch-object";
 
 export type { Patch };
 
-export async function patchAct(args: {
+export async function patchTask(args: {
 	context: GiselleContext;
-	actId: TaskId;
+	taskId: TaskId;
 	patches: Patch[];
 }) {
-	// Get the current act
-	const currentAct = await args.context.storage.getJson({
-		path: taskPath(args.actId),
+	// Get the current task
+	const currentTask = await args.context.storage.getJson({
+		path: taskPath(args.taskId),
 		schema: Task,
 	});
 
@@ -23,12 +26,12 @@ export async function patchAct(args: {
 	];
 
 	// Apply the patches
-	const updatedAct = patchActObject(currentAct, ...allPatches);
+	const updatedTask = patchTaskObject(currentTask, ...allPatches);
 
 	await args.context.storage.setJson({
-		path: taskPath(args.actId),
-		data: updatedAct,
+		path: taskPath(args.taskId),
+		data: updatedTask,
 	});
 
-	return updatedAct;
+	return updatedTask;
 }

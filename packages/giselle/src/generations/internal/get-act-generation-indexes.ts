@@ -1,17 +1,17 @@
 import type { TaskId } from "@giselles-ai/protocol";
 import { NodeGenerationIndex } from "@giselles-ai/protocol";
 import type { GiselleStorage } from "@giselles-ai/storage";
-import { actGenerationIndexesPath } from "../../path";
+import { taskGenerationIndexesPath } from "../../path";
 
-export async function getActGenerationIndexes(args: {
-	actId: TaskId;
+export async function getTaskGenerationIndexes(args: {
+	taskId: TaskId;
 	storage: GiselleStorage;
 }) {
-	if (!(await args.storage.exists(actGenerationIndexesPath(args.actId)))) {
+	if (!(await args.storage.exists(taskGenerationIndexesPath(args.taskId)))) {
 		return undefined;
 	}
 	return await args.storage.getJson({
-		path: actGenerationIndexesPath(args.actId),
+		path: taskGenerationIndexesPath(args.taskId),
 		schema: NodeGenerationIndex.array(),
 	});
 }

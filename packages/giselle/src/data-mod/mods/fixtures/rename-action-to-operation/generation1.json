@@ -1,9 +1,9 @@
 {
 	"id": "gnr-VUHFraZNbbXGCAQH",
 	"context": {
-		"actionNode": {
+		"taskionNode": {
 			"id": "nd-tEM92Uq8XfX8FW41",
-			"type": "action",
+			"type": "taskion",
 			"content": {
 				"type": "imageGeneration",
 				"llm": {
@@ -17,7 +17,7 @@
 						"background": "auto"
 					}
 				},
-				"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"A whimsical ghost-like entity floating gracefully through the vast emptiness of cosmic space. The character has a simplified, cute design with an oversized round head, big expressive eyes, and a small ethereal body that trails off like wisps of cosmic fog. Despite its cartoonish proportions, the ghost features photorealistic textures - its semi-transparent body capturing and refracting starlight, creating an otherworldly glow against the darkness of space.\"}]},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"The surrounding environment showcases a breathtaking cosmic landscape with swirling nebulae in rich purples, blues and pinks, distant twinkling stars, and perhaps a ringed planet looming in the background. The lighting is dramatic and cinematic - strong rim lighting outlines the ghost's form while subtle volumetric rays cut through the scene, creating depth and atmosphere.\"}]},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"The composition follows cinematic principles with perfect framing and depth of field, as if captured by a master cinematographer for a high-budget science fiction film. The ghost appears to be on a solitary journey through the cosmos, conveying both innocence and subtle melancholy that creates an emotionally resonant moment frozen in time.\"}]},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Ultra-detailed, 8K resolution, with masterful use of lighting and shadow to create a scene that balances fantastical elements with photorealistic rendering techniques.\"}]},{\"type\":\"paragraph\"}]}"
+				"prompt": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"A whimsical ghost-like entity floating gracefully through the vast emptiness of cosmic space. The chartasker has a simplified, cute design with an oversized round head, big expressive eyes, and a small ethereal body that trails off like wisps of cosmic fog. Despite its cartoonish proportions, the ghost features photorealistic textures - its semi-transparent body capturing and refrtasking starlight, creating an otherworldly glow against the darkness of space.\"}]},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"The surrounding environment showcases a breathtaking cosmic landscape with swirling nebulae in rich purples, blues and pinks, distant twinkling stars, and perhaps a ringed planet looming in the background. The lighting is dramatic and cinematic - strong rim lighting outlines the ghost's form while subtle volumetric rays cut through the scene, creating depth and atmosphere.\"}]},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"The composition follows cinematic principles with perfect framing and depth of field, as if captured by a master cinematographer for a high-budget science fiction film. The ghost appears to be on a solitary journey through the cosmos, conveying both innocence and subtle melancholy that creates an emotionally resonant moment frozen in time.\"}]},{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Ultra-detailed, 8K resolution, with masterful use of lighting and shadow to create a scene that balances fantastical elements with photorealistic rendering techniques.\"}]},{\"type\":\"paragraph\"}]}"
 			},
 			"inputs": [
 				{ "id": "inp-LT5aFSiSg4MVUEEO", "label": "Input", "accessor": "Input" }
@@ -33,7 +33,7 @@
 		"sourceNodes": [
 			{
 				"id": "nd-y6j3kLZfJnnEnGoA",
-				"type": "action",
+				"type": "taskion",
 				"content": {
 					"type": "textGeneration",
 					"llm": {

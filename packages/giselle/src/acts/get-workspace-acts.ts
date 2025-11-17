@@ -4,21 +4,21 @@ import { taskPath, workspaceTaskPath } from "../path";
 import type { GiselleContext } from "../types";
 import { getWorkspaceIndex } from "../utils/workspace-index";
 
-export async function getWorkspaceActs(args: {
+export async function getWorkspaceTasks(args: {
 	context: GiselleContext;
 	workspaceId: WorkspaceId;
 }) {
-	const workspaceActIndices = await getWorkspaceIndex({
+	const workspaceTaskIndices = await getWorkspaceIndex({
 		context: args.context,
 		indexPath: workspaceTaskPath(args.workspaceId),
 		itemSchema: TaskIndexObject,
 	});
-	const workspaceActs = (
+	const workspaceTasks = (
 		await Promise.all(
-			workspaceActIndices.map(async (workspaceActIndex) => {
+			workspaceTaskIndices.map(async (workspaceTaskIndex) => {
 				try {
 					return await args.context.storage.getJson({
-						path: taskPath(workspaceActIndex.id),
+						path: taskPath(workspaceTaskIndex.id),
 						schema: Task,
 					});
 				} catch (error) {
@@ -26,15 +26,15 @@ export async function getWorkspaceActs(args: {
 						error instanceof Error ? error.message : "Unknown error";
 					args.context.logger.warn(
 						{
-							actId: workspaceActIndex.id,
+							taskId: workspaceTaskIndex.id,
 							error: errorMessage,
 						},
-						"Failed to load workspace act; skipping.",
+						"Failed to load workspace task; skipping.",
 					);
 					return null;
 				}
 			}),
 		)
-	).filter((act): act is Task => act !== null);
-	return workspaceActs;
+	).filter((task): task is Task => task !== null);
+	return workspaceTasks;
 }
