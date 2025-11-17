@@ -1,14 +1,10 @@
-import type { TaskId } from "@giselles-ai/giselle";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getSidebarDataObject } from "./lib/data";
 import { NavSkelton } from "./ui/nav-skelton";
 import { Sidebar } from "./ui/sidebar";
 import "./mobile-scroll.css";
-
-function isValidTaskId(taskId: string): taskId is TaskId {
-	return taskId.startsWith("act-") && taskId.length === 20; // "act-" + 16 chars
-}
+import { TaskId } from "@giselles-ai/protocol";
 
 export default async function ({
 	children,
@@ -18,11 +14,11 @@ export default async function ({
 }>) {
 	const { taskId: taskIdParam } = await params;
 
-	// Validate taskId parameter
-	if (!isValidTaskId(taskIdParam)) {
+	const result = TaskId.safeParse(taskIdParam);
+	if (!result.success) {
 		notFound();
 	}
-	const taskId: TaskId = taskIdParam;
+	const taskId = result.data;
 	const data = getSidebarDataObject(taskId);
 
 	return (
@@ -35,7 +31,7 @@ export default async function ({
 			</div>
 
 			{/* Main Content - Hidden on mobile */}
-			<main className="hidden md:flex m-0 md:m-[8px] flex-1 rounded-none md:rounded-[12px] backdrop-blur-md border-0 md:border md:border-border shadow-lg shadow-black/10 shadow-inner overflow-hidden">
+			<main className="hidden md:flex m-0 md:m-[8px] flex-1 rounded-none md:rounded-[12px] backdrop-blur-md border-0 md:border md:border-border shadow-black/10 shadow-inner overflow-hidden">
 				{children}
 			</main>
 		</div>
