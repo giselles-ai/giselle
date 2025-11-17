@@ -174,6 +174,8 @@ async function process<TEventName extends WebhookEventName>(args: {
 					trigger,
 					createAuthConfig,
 					deps: args.deps,
+					onGenerationComplete: args.onGenerationComplete,
+					onGenerationError: args.onGenerationError,
 				});
 			} catch (error) {
 				console.error(
