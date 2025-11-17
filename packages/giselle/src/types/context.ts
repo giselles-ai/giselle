@@ -7,9 +7,9 @@ import type {
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import type { GiselleStorage } from "@giselles-ai/storage";
+import type { Vault } from "@giselles-ai/vault";
 import type { GenerationMetadata } from "../generations";
 import type { TelemetrySettings } from "../telemetry";
-import type { Vault } from "../vault";
 import type { GiselleCallbacks } from "./callbacks";
 import type { GitHubIntegrationConfig } from "./integrations";
 import type { VectorStoreQueryServices } from "./query-services";
