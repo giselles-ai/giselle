@@ -13,17 +13,13 @@ import {
 	Text,
 } from "@react-email/components";
 
+import { getEmailAssetUrl } from "../utils/email-assets";
+
 interface ConfirmSignUpEmailProps {
 	token?: string;
 }
 
 const SUPABASE_TOKEN_PLACEHOLDER = "{{ .Token }}";
-
-const baseUrl =
-	process.env.NEXT_PUBLIC_SITE_URL ||
-	(process.env.NODE_ENV === "development"
-		? "http://localhost:3333"
-		: "https://studio.giselles.ai");
 
 export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 	const displayToken = token ?? SUPABASE_TOKEN_PLACEHOLDER;
@@ -66,7 +62,7 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 				<Container style={container}>
 					<Section style={logoSection}>
 						<Img
-							src={`${baseUrl}/static/logo.png`}
+							src={getEmailAssetUrl("logo.png")}
 							width="140"
 							height="70"
 							alt="Giselle"
@@ -116,7 +112,7 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 				<Container style={footerContainer}>
 					<Section style={footerSection}>
 						<Img
-							src={`${baseUrl}/static/letter_footer-logo.png`}
+							src={getEmailAssetUrl("letter_footer-logo.png")}
 							width="100"
 							height="39"
 							alt="Giselle"
@@ -144,7 +140,7 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 								style={socialIconLink}
 							>
 								<Img
-									src={`${baseUrl}/static/github-icon.png`}
+									src={getEmailAssetUrl("github-icon.png")}
 									width="20"
 									height="20"
 									alt="GitHub"
@@ -156,7 +152,7 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 								style={socialIconLink}
 							>
 								<Img
-									src={`${baseUrl}/static/linkedin-icon.png`}
+									src={getEmailAssetUrl("linkedin-icon.png")}
 									width="20"
 									height="20"
 									alt="LinkedIn"
@@ -168,7 +164,7 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 								style={socialIconLink}
 							>
 								<Img
-									src={`${baseUrl}/static/facebook-icon.png`}
+									src={getEmailAssetUrl("facebook-icon.png")}
 									width="20"
 									height="20"
 									alt="Facebook"
@@ -177,7 +173,7 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 							</Link>
 							<Link href="https://x.com/Giselles_AI" style={socialIconLink}>
 								<Img
-									src={`${baseUrl}/static/x-icon.png`}
+									src={getEmailAssetUrl("x-icon.png")}
 									width="20"
 									height="20"
 									alt="X"
@@ -189,7 +185,7 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 								style={socialIconLink}
 							>
 								<Img
-									src={`${baseUrl}/static/instagram-icon.png`}
+									src={getEmailAssetUrl("instagram-icon.png")}
 									width="20"
 									height="20"
 									alt="Instagram"
@@ -201,7 +197,7 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 								style={socialIconLink}
 							>
 								<Img
-									src={`${baseUrl}/static/youtube-icon.png`}
+									src={getEmailAssetUrl("youtube-icon.png")}
 									width="20"
 									height="20"
 									alt="YouTube"
