@@ -294,6 +294,9 @@ importers:
       '@giselles-ai/supabase-driver':
         specifier: workspace:^
         version: link:../../packages/supabase-driver
+      '@giselles-ai/vault':
+        specifier: workspace:*
+        version: link:../../packages/vault
       clsx:
         specifier: 'catalog:'
         version: 2.1.1
