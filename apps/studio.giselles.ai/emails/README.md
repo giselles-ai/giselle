@@ -12,6 +12,12 @@ pnpm -F studio.giselles.ai email:dev
 
 This opens a local preview server at `http://localhost:3333` where you can view and test email templates.
 
+## Static Assets
+
+- Store shared images in `apps/studio.giselles.ai/public/emails`. These files are served from `/emails/*` in production emails.
+- The `emails/static` directory is a symlink to the public assets, so the React Email preview (`pnpm email:dev`) can continue to serve `/static/*` without duplicating files.
+- Use `getEmailAssetUrl("<filename>")` from `emails/utils/email-assets.ts` to reference any asset. The helper automatically switches between `/static` for preview and `/emails` for production.
+
 ## Creating Templates
 
 Add new email templates in this directory. Example:
