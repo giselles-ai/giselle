@@ -2,15 +2,15 @@
 
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import { NodeIcon } from "@giselle-internal/workflow-designer-ui";
-import {
-	ActStreamReader,
-	type StreamDataEventHandler,
-} from "@giselles-ai/giselle/react";
 import type {
 	Act,
 	Generation,
 	ManualTriggerParameter,
 } from "@giselles-ai/protocol";
+import {
+	ActStreamReader,
+	type StreamDataEventHandler,
+} from "@giselles-ai/react";
 import {
 	BrainCircuit,
 	ChevronDownIcon,
@@ -73,7 +73,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 				});
 			});
 
-			// Fetch generation data for each step using giselleEngine
+			// Fetch generation data for each step using giselle
 			for (const { stepId, generationId } of generationsToFetch) {
 				try {
 					const generation = await fetchGenerationData(generationId);

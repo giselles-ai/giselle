@@ -16,11 +16,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@giselle-internal/ui/table";
-import {
-	useGiselleEngine,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
 import { isTextGenerationNode, type SecretId } from "@giselles-ai/protocol";
+import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import { useCallback, useState, useTransition } from "react";
@@ -47,7 +44,7 @@ export function SecretTable() {
 	const { data: workspace, updateNodeDataContent } = useWorkflowDesigner();
 	const { isLoading, data, mutate } = useWorkspaceSecrets();
 	const [isPending, startTransition] = useTransition();
-	const client = useGiselleEngine();
+	const client = useGiselle();
 
 	const handleSubmit = useCallback<React.FormEventHandler<HTMLFormElement>>(
 		(e) => {

@@ -26,7 +26,7 @@ import {
 	useWorkflowDesigner,
 	useWorkflowDesignerStore,
 	workspaceActions,
-} from "@giselles-ai/giselle/react";
+} from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";

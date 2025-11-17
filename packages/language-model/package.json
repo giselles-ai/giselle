@@ -25,7 +25,7 @@
 		"tsup": "catalog:",
 		"vitest": "catalog:"
 	},
-	"dependencies": {
+	"peerDependencies": {
 		"zod": "catalog:"
 	}
 }

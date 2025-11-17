@@ -1,6 +1,6 @@
 import { Toggle } from "@giselle-internal/ui/toggle";
-import { useFeatureFlag, useUsageLimits } from "@giselles-ai/giselle/react";
 import { GoogleLanguageModelData } from "@giselles-ai/protocol";
+import { useFeatureFlag, useUsageLimits } from "@giselles-ai/react";
 import { InfoIcon } from "lucide-react";
 import { TemperatureSlider, TopPSlider } from "./shared-model-controls";
 

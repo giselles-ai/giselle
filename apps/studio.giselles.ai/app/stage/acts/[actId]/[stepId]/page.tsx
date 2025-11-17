@@ -9,7 +9,7 @@ import {
 	type StepId,
 } from "@giselles-ai/protocol";
 import { notFound } from "next/navigation";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import { GenerationView } from "../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
 import { StepLayout } from "./ui/step-layout";
 
@@ -62,7 +62,7 @@ export default async function ({
 }) {
 	const { actId, stepId } = await params;
 
-	const act = await giselleEngine.getAct({ actId });
+	const act = await giselle.getAct({ actId });
 	let step: Step | undefined;
 	for (const sequence of act.sequences) {
 		for (const tmp of sequence.steps) {
@@ -78,7 +78,7 @@ export default async function ({
 	if (step === undefined) {
 		return notFound();
 	}
-	const generation = await giselleEngine.getGeneration(step.generationId);
+	const generation = await giselle.getGeneration(step.generationId);
 	if (generation === undefined) {
 		return notFound();
 	}

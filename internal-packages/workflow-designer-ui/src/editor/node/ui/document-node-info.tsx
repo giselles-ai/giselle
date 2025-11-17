@@ -1,9 +1,9 @@
+import type { NodeLike } from "@giselles-ai/protocol";
+import { isVectorStoreNode } from "@giselles-ai/protocol";
 import {
 	useVectorStore,
 	type VectorStoreContextValue,
-} from "@giselles-ai/giselle/react";
-import type { NodeLike } from "@giselles-ai/protocol";
-import { isVectorStoreNode } from "@giselles-ai/protocol";
+} from "@giselles-ai/react";
 import type { ReactElement } from "react";
 import { useMemo } from "react";
 

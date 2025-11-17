@@ -19,15 +19,20 @@
 	"dependencies": {
 		"@giselle-internal/ui": "workspace:^",
 		"@giselle-internal/workflow-designer-ui": "workspace:*",
-		"@giselles-ai/protocol": "workspace:*",
 		"@giselles-ai/giselle": "workspace:*",
 		"@giselles-ai/langfuse": "workspace:^",
+		"@giselles-ai/language-model": "workspace:*",
+		"@giselles-ai/nextjs": "workspace:*",
+		"@giselles-ai/protocol": "workspace:*",
+		"@giselles-ai/react": "workspace:*",
+		"@giselles-ai/storage": "workspace:*",
 		"@giselles-ai/supabase-driver": "workspace:^",
 		"clsx": "catalog:",
 		"lucide-react": "catalog:",
 		"next": "catalog:",
 		"react": "catalog:",
-		"react-dom": "catalog:"
+		"react-dom": "catalog:",
+		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",

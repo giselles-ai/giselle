@@ -3,11 +3,6 @@
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import { actionRegistry, isActionProvider } from "@giselles-ai/action-registry";
 import {
-	useFeatureFlag,
-	useUsageLimits,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
-import {
 	Capability,
 	hasCapability,
 	type LanguageModel,
@@ -27,6 +22,11 @@ import {
 	triggerNodeDefaultName,
 } from "@giselles-ai/node-registry";
 import { FileCategory } from "@giselles-ai/protocol";
+import {
+	useFeatureFlag,
+	useUsageLimits,
+	useWorkflowDesigner,
+} from "@giselles-ai/react";
 import {
 	isTriggerProvider,
 	triggerRegistry,

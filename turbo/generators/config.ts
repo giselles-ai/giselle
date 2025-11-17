@@ -19,6 +19,11 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
 				destination: "./packages/{{name}}",
 				templateFiles: "templates/*.hbs",
 			},
+			{
+				type: "add",
+				path: "./packages/{{name}}/src/index.ts",
+				template: "",
+			},
 		],
 	});
 }

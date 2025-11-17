@@ -19,6 +19,7 @@
 		"@giselles-ai/language-model": "workspace:^",
 		"@giselles-ai/node-registry": "workspace:*",
 		"@giselles-ai/protocol": "workspace:*",
+		"@giselles-ai/react": "workspace:*",
 		"@giselles-ai/text-editor": "workspace:^",
 		"@giselles-ai/text-editor-utils": "workspace:^",
 		"@giselles-ai/trigger-registry": "workspace:*",
@@ -37,7 +38,6 @@
 		"rehype-raw": "^7.0.0",
 		"remark-gfm": "^4.0.1",
 		"swr": "catalog:",
-		"zod": "catalog:",
 		"zustand": "catalog:"
 	},
 	"devDependencies": {
@@ -53,6 +53,7 @@
 		"vitest": "catalog:"
 	},
 	"peerDependencies": {
-		"pino": "catalog:"
+		"pino": "catalog:",
+		"zod": "catalog:"
 	}
 }

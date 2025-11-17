@@ -29,7 +29,9 @@
 	},
 	"dependencies": {
 		"defuddle": "catalog:",
-		"happy-dom": "catalog:",
+		"happy-dom": "catalog:"
+	},
+	"peerDependencies": {
 		"zod": "catalog:"
 	}
 }

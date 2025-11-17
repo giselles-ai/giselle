@@ -1,11 +1,8 @@
-import {
-	WorkspaceProvider,
-	ZustandBridgeProvider,
-} from "@giselles-ai/giselle/react";
 import { WorkspaceId } from "@giselles-ai/protocol";
+import { WorkspaceProvider, ZustandBridgeProvider } from "@giselles-ai/react";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import { db, flowTriggers } from "@/db";
 import {
 	aiGatewayFlag,
@@ -70,7 +67,7 @@ export default async function Layout({
 	const aiGateway = await aiGatewayFlag();
 	const aiGatewayUnsupportedModels = await aiGatewayUnsupportedModelsFlag();
 	const googleUrlContext = await googleUrlContextFlag();
-	const data = await giselleEngine.getWorkspace(workspaceId);
+	const data = await giselle.getWorkspace(workspaceId);
 	const documentVectorStores = await getDocumentVectorStores(
 		workspaceTeam.dbId,
 	);
