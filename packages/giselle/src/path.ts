@@ -1,7 +1,12 @@
-import type { ActId, AppId, GenerationId } from "@giselles-ai/protocol";
+import type {
+	AppId,
+	GenerationId,
+	TaskId,
+	WorkspaceId,
+} from "@giselles-ai/protocol";
 
-export function actGenerationIndexesPath(actId: ActId) {
-	return `generations/byAct/${actId}.json` as const;
+export function taskGenerationIndexesPath(taskId: TaskId) {
+	return `generations/byTask/${taskId}.json` as const;
 }
 
 export function generationUiMessageChunksPath(generationId: GenerationId) {
@@ -10,4 +15,12 @@ export function generationUiMessageChunksPath(generationId: GenerationId) {
 
 export function appPath(appId: AppId) {
 	return `apps/${appId}.json` as const;
+}
+
+export function taskPath(taskId: TaskId) {
+	return `tasks/${taskId}.json`;
+}
+
+export function workspaceTaskPath(workspaceId: WorkspaceId) {
+	return `tasks/byWorkspace/${workspaceId}.json`;
 }

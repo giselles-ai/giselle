@@ -69,7 +69,7 @@ export default async function StageShowcasePage() {
 		const dbActs = await db
 			.select({
 				dbId: acts.dbId,
-				sdkActId: acts.sdkActId,
+				sdkTaskId: acts.sdkActId,
 				sdkWorkspaceId: acts.sdkWorkspaceId,
 				createdAt: acts.createdAt,
 				teamDbId: acts.teamDbId,

@@ -15,8 +15,8 @@ import type {
 } from "@giselles-ai/github-tool";
 import { findDiscussionReplyTargetId } from "@giselles-ai/github-tool";
 import type { Trigger } from "@giselles-ai/protocol";
-import type { createAndStartAct } from "../acts";
 import type { OnGenerationComplete, OnGenerationError } from "../generations";
+import type { createAndStartTask } from "../tasks";
 import type { GiselleContext } from "../types";
 import { getWorkspace } from "../workspaces";
 import type { parseCommand } from "./utils";
@@ -28,7 +28,7 @@ interface MiniStepProgressTableRow {
 	updatedAt: Date | undefined;
 }
 
-// Since we can't access node information from the new Act structure,
+// Since we can't access node information from the new Task structure,
 // we'll simplify the progress tracking
 type ProgressTableRow = {
 	id: string;
@@ -137,7 +137,7 @@ ${miniStepRows.length > 0 ? miniStepRows.join("\n") : ""}`;
 export interface EventHandlerDependencies {
 	addReaction: typeof addReaction;
 	ensureWebhookEvent: typeof ensureWebhookEvent;
-	createAndStartAct: typeof createAndStartAct;
+	createAndStartTask: typeof createAndStartTask;
 	parseCommand: typeof parseCommand;
 	createIssueComment: typeof createIssueComment;
 	createPullRequestComment: typeof createPullRequestComment;
@@ -556,7 +556,7 @@ export async function processEvent<TEventName extends WebhookEventName>(
 			workspaceId: args.trigger.workspaceId,
 		});
 
-		await deps.createAndStartAct({
+		await deps.createAndStartTask({
 			context: args.context,
 			nodeId: args.trigger.nodeId,
 			workspace,
@@ -570,8 +570,8 @@ export async function processEvent<TEventName extends WebhookEventName>(
 			callbacks: {
 				generationComplete: args.onGenerationComplete,
 				generationError: args.onGenerationError,
-				actCreate: async ({ act }) => {
-					progressTableData = act.sequences.map((sequence) => ({
+				taskCreate: async ({ task }) => {
+					progressTableData = task.sequences.map((sequence) => ({
 						id: sequence.id,
 						status: "pending" as const,
 						updatedAt: undefined,

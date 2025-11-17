@@ -14,9 +14,9 @@ import {
 	type WebhookEvent,
 	type WebhookEventName,
 } from "@giselles-ai/github-tool";
-import { createAndStartAct } from "../acts";
 import type { OnGenerationComplete, OnGenerationError } from "../generations";
 import { getGitHubRepositoryIntegrationIndex } from "../integrations/utils";
+import { createAndStartTask } from "../tasks";
 import { getTrigger } from "../triggers/utils";
 import type { GiselleContext } from "../types";
 import { type EventHandlerDependencies, processEvent } from "./event-handlers";
@@ -57,7 +57,7 @@ export async function handleGitHubWebhookV2(args: {
 				getGitHubRepositoryIntegrationIndex,
 				addReaction,
 				ensureWebhookEvent,
-				createAndStartAct,
+				createAndStartTask,
 				parseCommand,
 				createIssueComment,
 				createPullRequestComment,

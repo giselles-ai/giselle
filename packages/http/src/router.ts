@@ -1,13 +1,12 @@
 import {
 	ConfigureTriggerInput,
-	CreateActInputs,
-	CreateAndStartActInputs,
+	CreateAndStartTaskInputs,
+	CreateTaskInputs,
 	type Giselle,
 	type Patch,
-	StartActInputs,
+	StartTaskInputs,
 } from "@giselles-ai/giselle";
 import {
-	ActId,
 	FetchingWebPage,
 	FileId,
 	Generation,
@@ -18,6 +17,7 @@ import {
 	QueuedGeneration,
 	RunningGeneration,
 	SecretId,
+	TaskId,
 	Trigger,
 	TriggerId,
 	Workspace,
@@ -260,19 +260,19 @@ export const jsonRoutes = {
 				return new Response(null, { status: 204 });
 			},
 		}),
-	createAndStartAct: (giselle: Giselle) =>
+	createAndStartTask: (giselle: Giselle) =>
 		createHandler({
-			input: CreateAndStartActInputs.omit({ callbacks: true }),
+			input: CreateAndStartTaskInputs.omit({ callbacks: true }),
 			handler: async ({ input }) => {
-				await giselle.createAndStartAct(input);
+				await giselle.createAndStartTask(input);
 				return new Response(null, { status: 204 });
 			},
 		}),
-	startAct: (giselle: Giselle) =>
+	startTask: (giselle: Giselle) =>
 		createHandler({
-			input: StartActInputs,
+			input: StartTaskInputs,
 			handler: async ({ input }) => {
-				await giselle.startAct(input);
+				await giselle.startTask(input);
 				return new Response(null, { status: 204 });
 			},
 		}),
@@ -333,31 +333,31 @@ export const jsonRoutes = {
 					secrets: await giselle.getWorkspaceSecrets(input),
 				}),
 		}),
-	createAct: (giselle: Giselle) =>
+	createTask: (giselle: Giselle) =>
 		createHandler({
-			input: CreateActInputs,
+			input: CreateTaskInputs,
 			handler: async ({ input }) =>
-				JsonResponse.json(await giselle.createAct(input)),
+				JsonResponse.json(await giselle.createTask(input)),
 		}),
-	patchAct: (giselle: Giselle) =>
+	patchTask: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
-				actId: ActId.schema,
+				taskId: TaskId.schema,
 				patches: z.array(z.custom<Patch>()),
 			}),
 			handler: async ({ input }) =>
 				JsonResponse.json({
-					act: await giselle.patchAct(input),
+					task: await giselle.patchTask(input),
 				}),
 		}),
-	getWorkspaceActs: (giselle: Giselle) =>
+	getWorkspaceTasks: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
 				workspaceId: WorkspaceId.schema,
 			}),
 			handler: async ({ input }) =>
 				JsonResponse.json({
-					acts: await giselle.getWorkspaceActs(input),
+					tasks: await giselle.getWorkspaceTasks(input),
 				}),
 		}),
 	deleteSecret: (giselle: Giselle) =>
@@ -371,13 +371,13 @@ export const jsonRoutes = {
 				return new Response(null, { status: 204 });
 			},
 		}),
-	streamAct: (giselle: Giselle) =>
+	streamTask: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
-				actId: ActId.schema,
+				taskId: TaskId.schema,
 			}),
 			handler: ({ input }) => {
-				const stream = giselle.streamAct(input);
+				const stream = giselle.streamTask(input);
 				return new Response(stream, {
 					headers: {
 						"Content-Type": "text/event-stream",
@@ -425,26 +425,26 @@ export const jsonRoutes = {
 				return JsonResponse.json({ generation: runningGeneration });
 			},
 		}),
-	getWorkspaceInprogressAct: (giselle: Giselle) =>
+	getWorkspaceInprogressTask: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
 				workspaceId: WorkspaceId.schema,
 			}),
 			handler: async ({ input }) => {
-				const act = await giselle.getWorkspaceInprogressAct({
+				const task = await giselle.getWorkspaceInprogressTask({
 					workspaceId: input.workspaceId,
 				});
-				return JsonResponse.json({ act });
+				return JsonResponse.json({ task });
 			},
 		}),
-	getActGenerationIndexes: (giselle: Giselle) =>
+	getTaskGenerationIndexes: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
-				actId: ActId.schema,
+				taskId: TaskId.schema,
 			}),
 			handler: async ({ input }) => {
-				const result = await giselle.getActGenerationIndexes({
-					actId: input.actId,
+				const result = await giselle.getTaskGenerationIndexes({
+					taskId: input.taskId,
 				});
 				return JsonResponse.json(result);
 			},

@@ -25,8 +25,8 @@ import {
 	isTriggerNode,
 } from "@giselles-ai/protocol";
 import {
-	useActSystem,
 	useNodeGroups,
+	useTaskSystem,
 	useWorkflowDesigner,
 } from "@giselles-ai/react";
 import clsx from "clsx/lite";
@@ -105,7 +105,7 @@ function RunOptionItem({
 
 function useRunAct() {
 	const { data, setUiNodeState } = useWorkflowDesigner();
-	const { createAndStartAct } = useActSystem(data.id);
+	const { createAndStartTask } = useTaskSystem(data.id);
 	const { toast, error } = useToasts();
 
 	return async (item: RunItem) => {
@@ -126,13 +126,13 @@ function useRunAct() {
 		const isSingleNodeRun =
 			item.connectionIds.length === 0 && item.nodeIds.length === 1;
 		const nodeId = isSingleNodeRun ? item.nodeIds[0] : undefined;
-		await createAndStartAct({
+		await createAndStartTask({
 			connectionIds: item.connectionIds,
 			nodeId,
 			inputs: [],
-			onActStart({ cancel, actId }) {
+			onTaskStart({ cancel, taskId }) {
 				toast("Workflow submitted successfully", {
-					id: actId,
+					id: taskId,
 					preserve: true,
 					action: {
 						label: "Cancel",
@@ -142,8 +142,8 @@ function useRunAct() {
 					},
 				});
 			},
-			onActComplete: ({ actId }) => {
-				toast.dismiss(actId);
+			onTaskComplete: ({ taskId }) => {
+				toast.dismiss(taskId);
 			},
 		});
 	};

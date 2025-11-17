@@ -58,7 +58,7 @@ export async function runWorkspaceApp(
 ): Promise<void> {
 	try {
 		const user = await fetchCurrentUser();
-		const { act } = await giselle.createAct({
+		const { task } = await giselle.createTask({
 			workspaceId: flowTrigger.workspaceId,
 			nodeId: flowTrigger.nodeId,
 			inputs: [
@@ -80,13 +80,13 @@ export async function runWorkspaceApp(
 		await db.insert(actsSchema).values({
 			teamDbId: team.dbId,
 			directorDbId: user.dbId,
-			sdkActId: act.id,
+			sdkActId: task.id,
 			sdkFlowTriggerId: flowTrigger.id,
 			sdkWorkspaceId: flowTrigger.workspaceId,
 		});
 
-		await giselle.startAct({
-			actId: act.id,
+		await giselle.startTask({
+			taskId: task.id,
 			generationOriginType: "stage",
 		});
 

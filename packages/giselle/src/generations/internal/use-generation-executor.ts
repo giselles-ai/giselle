@@ -1,11 +1,11 @@
 import { isClonedFileDataPayload } from "@giselles-ai/node-registry";
 import type {
-	ActId,
 	FailedGeneration,
 	FileId,
 	GeneratedImageContentOutput,
 	NodeId,
 	OutputId,
+	TaskId,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import {
@@ -40,7 +40,7 @@ import {
 	handleAgentTimeConsumption,
 	queryResultToText,
 } from "../utils";
-import { getActGenerationIndexes } from "./get-act-generation-indexes";
+import { getTaskGenerationIndexes } from "./get-task-generation-indexes";
 import { sanitizeGenerationUsage } from "./sanitize-usage";
 import { internalSetGeneration } from "./set-generation";
 
@@ -164,7 +164,6 @@ export async function useGenerationExecutor<T>(args: {
 			setGeneration(failedGeneration),
 			args?.onError?.({ generation: failedGeneration, inputMessages: [] }),
 		]);
-		await setGeneration(failedGeneration);
 		throw new UsageLimitError(usageLimitStatus.error);
 	}
 
@@ -205,11 +204,11 @@ export async function useGenerationExecutor<T>(args: {
 		return blob as DataContent;
 	}
 	function findGeneration(nodeId: NodeId) {
-		const actId = runningGeneration.context.origin.actId;
-		if (actId === undefined) {
+		const taskId = runningGeneration.context.origin.taskId;
+		if (taskId === undefined) {
 			return findGenerationByNode(nodeId);
 		}
-		return findGenerationByAct(nodeId, actId);
+		return findGenerationByTask(nodeId, taskId);
 	}
 	async function findGenerationByNode(nodeId: NodeId) {
 		const generationLookupStartTime = Date.now();
@@ -235,18 +234,18 @@ export async function useGenerationExecutor<T>(args: {
 		);
 		return generation;
 	}
-	async function findGenerationByAct(nodeId: NodeId, actId: ActId) {
-		const actGenerationLookupStartTime = Date.now();
-		const actGenerationIndexes = await getActGenerationIndexes({
+	async function findGenerationByTask(nodeId: NodeId, taskId: TaskId) {
+		const taskGenerationLookupStartTime = Date.now();
+		const taskGenerationIndexes = await getTaskGenerationIndexes({
 			storage: args.context.storage,
-			actId,
+			taskId,
 		});
-		const targetGenerationIndex = actGenerationIndexes?.find(
-			(actGenerationIndex) => actGenerationIndex.nodeId === nodeId,
+		const targetGenerationIndex = taskGenerationIndexes?.find(
+			(taskGenerationIndex) => taskGenerationIndex.nodeId === nodeId,
 		);
 		if (targetGenerationIndex === undefined) {
 			args.context.logger.info(
-				`Generation lookup by act completed in ${Date.now() - actGenerationLookupStartTime}ms (nodeId: ${nodeId}, actId: ${actId}, found: false)`,
+				`Generation lookup by task completed in ${Date.now() - taskGenerationLookupStartTime}ms (nodeId: ${nodeId}, taskId: ${taskId}, found: false)`,
 			);
 			return undefined;
 		}
@@ -255,7 +254,7 @@ export async function useGenerationExecutor<T>(args: {
 			generationId: targetGenerationIndex.id,
 		});
 		args.context.logger.info(
-			`Generation lookup by act completed in ${Date.now() - actGenerationLookupStartTime}ms (nodeId: ${nodeId}, actId: ${actId}, found: true)`,
+			`Generation lookup by task completed in ${Date.now() - taskGenerationLookupStartTime}ms (nodeId: ${nodeId}, taskId: ${taskId}, found: true)`,
 		);
 		return generation;
 	}

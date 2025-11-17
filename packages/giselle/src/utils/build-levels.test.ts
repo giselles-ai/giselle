@@ -239,7 +239,7 @@ describe("buildLevels", () => {
 
 	describe("twoTriggerFixture - complex real-world scenario", () => {
 		it("should handle multiple trigger flows with filtered connections", () => {
-			// Filter connections to specific connectionIds as used in createAct
+			// Filter connections to specific connectionIds as used in createTask
 			const specificConnectionIds = [
 				"cnnc-PoESuO0NCdNDXRLa",
 				"cnnc-0I4tbbZ9q1xbHl77",

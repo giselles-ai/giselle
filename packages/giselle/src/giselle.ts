@@ -1,6 +1,5 @@
 import { type GiselleLogger, noopLogger } from "@giselles-ai/logger";
 import {
-	ActId,
 	type FetchingWebPage,
 	type FileId,
 	type Generation,
@@ -11,27 +10,12 @@ import {
 	type QueuedGeneration,
 	type RunningGeneration,
 	type SecretId,
+	TaskId,
 	type Trigger,
 	type TriggerId,
 	type Workspace,
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
-import {
-	type CreateActInputs,
-	type CreateAndStartActInputs,
-	createAct,
-	createAndStartAct,
-	getAct,
-	getWorkspaceActs,
-	getWorkspaceInprogressAct,
-	type Patch,
-	patchAct,
-	type RunActInputs,
-	runAct,
-	type StartActInputs,
-	startAct,
-	streamAct,
-} from "./acts";
 import { getApp, saveApp } from "./apps";
 import { deleteApp } from "./apps/delete-app";
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";
@@ -49,8 +33,8 @@ import {
 	type OnGenerationError,
 	setGeneration,
 } from "./generations";
-import { getActGenerationIndexes } from "./generations/get-act-generation-indexes";
-import { flushGenerationIndexQueue } from "./generations/internal/act-generation-index-queue";
+import { getTaskGenerationIndexes } from "./generations/get-task-generation-indexes";
+import { flushGenerationIndexQueue } from "./generations/internal/task-generation-index-queue";
 import { startContentGeneration } from "./generations/start-content-generation";
 import {
 	getGitHubRepositories,
@@ -61,6 +45,22 @@ import { executeAction } from "./operations";
 import { executeQuery } from "./operations/execute-query";
 import { addSecret, deleteSecret, getWorkspaceSecrets } from "./secrets";
 import { addWebPage } from "./sources";
+import {
+	type CreateAndStartTaskInputs,
+	type CreateTaskInputs,
+	createAndStartTask,
+	createTask,
+	getTask,
+	getWorkspaceInprogressTask,
+	getWorkspaceTasks,
+	type Patch,
+	patchTask,
+	type RunTaskInputs,
+	runTask,
+	type StartTaskInputs,
+	startTask,
+	streamTask,
+} from "./tasks";
 import {
 	type ConfigureTriggerInput,
 	configureTrigger,
@@ -73,7 +73,7 @@ import {
 import type {
 	GiselleConfig,
 	GiselleContext,
-	SetRunActProcessArgs,
+	SetRunTaskProcessArgs,
 	WaitUntil,
 } from "./types";
 import { bindGiselleFunction } from "./utils/create-giselle-function";
@@ -85,10 +85,10 @@ import {
 	updateWorkspace,
 } from "./workspaces";
 
-export * from "./acts";
 export * from "./error";
 export type * from "./generations";
 export * from "./integrations";
+export * from "./tasks";
 export * from "./telemetry";
 export * from "./triggers";
 
@@ -105,7 +105,7 @@ export function Giselle(config: GiselleConfig) {
 		logger: config.logger ?? noopLogger,
 		waitUntil: config.waitUntil ?? defaultWaitUntil,
 		generateContentProcess: { type: "self" },
-		runActProcess: { type: "self" },
+		runTaskProcess: { type: "self" },
 	};
 	return {
 		copyWorkspace: async (workspaceId: WorkspaceId, name?: string) => {
@@ -248,13 +248,13 @@ export function Giselle(config: GiselleConfig) {
 			deleteTrigger({ ...args, context }),
 		executeAction: async (args: { generation: QueuedGeneration }) =>
 			executeAction({ ...args, context }),
-		createAndStartAct: async (
-			args: CreateAndStartActInputs & {
+		createAndStartTask: async (
+			args: CreateAndStartTaskInputs & {
 				onGenerationComplete?: OnGenerationComplete;
 				onGenerationError?: OnGenerationError;
 			},
 		) =>
-			createAndStartAct({
+			createAndStartTask({
 				...args,
 				callbacks: {
 					...args.callbacks,
@@ -265,13 +265,13 @@ export function Giselle(config: GiselleConfig) {
 				},
 				context,
 			}),
-		startAct: async (
-			args: StartActInputs & {
+		startTask: async (
+			args: StartTaskInputs & {
 				onGenerationComplete?: OnGenerationComplete;
 				onGenerationError?: OnGenerationError;
 			},
 		) =>
-			startAct({
+			startTask({
 				...args,
 				onGenerationComplete:
 					args.onGenerationComplete ?? config.callbacks?.generationComplete,
@@ -311,23 +311,23 @@ export function Giselle(config: GiselleConfig) {
 		}) {
 			return await getWorkspaceSecrets({ ...args, context });
 		},
-		async createAct(args: CreateActInputs) {
-			return await createAct({
+		async createTask(args: CreateTaskInputs) {
+			return await createTask({
 				...args,
 				context,
 			});
 		},
-		patchAct(args: { actId: ActId; patches: Patch[] }) {
-			return patchAct({ ...args, context });
+		patchTask(args: { taskId: TaskId; patches: Patch[] }) {
+			return patchTask({ ...args, context });
 		},
-		getWorkspaceActs(args: { workspaceId: WorkspaceId }) {
-			return getWorkspaceActs({ ...args, context });
+		getWorkspaceTasks(args: { workspaceId: WorkspaceId }) {
+			return getWorkspaceTasks({ ...args, context });
 		},
-		getAct(args: { actId: ActId }) {
-			return getAct({ ...args, context });
+		getTask(args: { taskId: TaskId }) {
+			return getTask({ ...args, context });
 		},
-		streamAct(args: { actId: ActId }) {
-			return streamAct({ ...args, context });
+		streamTask(args: { taskId: TaskId }) {
+			return streamTask({ ...args, context });
 		},
 		deleteSecret(args: { workspaceId: WorkspaceId; secretId: SecretId }) {
 			return deleteSecret({ ...args, context });
@@ -377,22 +377,22 @@ export function Giselle(config: GiselleConfig) {
 		) {
 			context.generateContentProcess = { type: "external", process };
 		},
-		getWorkspaceInprogressAct(args: { workspaceId: WorkspaceId }) {
-			return getWorkspaceInprogressAct({ ...args, context });
+		getWorkspaceInprogressTask(args: { workspaceId: WorkspaceId }) {
+			return getWorkspaceInprogressTask({ ...args, context });
 		},
-		getActGenerationIndexes(args: { actId: ActId }) {
-			return getActGenerationIndexes({ ...args, context });
+		getTaskGenerationIndexes(args: { taskId: TaskId }) {
+			return getTaskGenerationIndexes({ ...args, context });
 		},
-		setRunActProcess(process: (args: SetRunActProcessArgs) => Promise<void>) {
-			context.runActProcess = { type: "external", process };
+		setRunTaskProcess(process: (args: SetRunTaskProcessArgs) => Promise<void>) {
+			context.runTaskProcess = { type: "external", process };
 		},
-		runAct(
-			args: RunActInputs & {
+		runTask(
+			args: RunTaskInputs & {
 				onGenerationComplete?: OnGenerationComplete;
 				onGenerationError?: OnGenerationError;
 			},
 		) {
-			return runAct({
+			return runTask({
 				...args,
 				onGenerationComplete:
 					args.onGenerationComplete ?? config.callbacks?.generationComplete,
@@ -410,5 +410,5 @@ export function Giselle(config: GiselleConfig) {
 export type Giselle = ReturnType<typeof Giselle>;
 
 // Re-export value constructors explicitly
-export { ActId, GenerationId };
+export { TaskId, GenerationId };
 export * from "./error";

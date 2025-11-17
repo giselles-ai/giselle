@@ -35,7 +35,7 @@ export function RunHistoryTable() {
 			workspaceId: workspace.id,
 		},
 		({ workspaceId }) =>
-			client.getWorkspaceActs({ workspaceId }).then((res) => res.acts),
+			client.getWorkspaceTasks({ workspaceId }).then((res) => res.tasks),
 	);
 
 	if (isLoading) {

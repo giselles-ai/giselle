@@ -7,7 +7,7 @@ import {
 	getNodeGenerationIndexes,
 	nodeGenerationIndexPath,
 } from "../utils";
-import { updateActGenerationIndexes } from "./act-generation-index-queue";
+import { updateTaskGenerationIndexes } from "./task-generation-index-queue";
 
 function upsertIndex(
 	current: NodeGenerationIndex[] | undefined,
@@ -48,12 +48,12 @@ export async function internalSetGeneration(params: {
 		indexes: nextNodeIndexes,
 	});
 
-	// Update actId-based index when present
-	const actId = params.generation.context.origin.actId;
-	params.logger?.debug(`internalSetGeneration ---- ${actId}`);
+	// Update taskId-based index when present
+	const taskId = params.generation.context.origin.taskId;
+	params.logger?.debug(`internalSetGeneration ---- ${taskId}`);
 	params.logger?.debug(JSON.stringify(newIndex, null, 2));
-	if (actId !== undefined) {
-		updateActGenerationIndexes(params.storage, actId, newIndex);
+	if (taskId !== undefined) {
+		updateTaskGenerationIndexes(params.storage, taskId, newIndex);
 	}
 }
 

@@ -1,7 +1,7 @@
 import { Button } from "@giselle-internal/ui/button";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { ConnectionId, TriggerNode } from "@giselles-ai/protocol";
-import { useActSystem, useWorkflowDesignerStore } from "@giselles-ai/react";
+import { useTaskSystem, useWorkflowDesignerStore } from "@giselles-ai/react";
 import { clsx } from "clsx/lite";
 import { LoaderIcon, PlayIcon, XIcon } from "lucide-react";
 import { Dialog } from "radix-ui";
@@ -36,7 +36,7 @@ export function TriggerInputDialog({
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const workspaceId = useWorkflowDesignerStore((s) => s.workspace.id);
-	const { createAndStartAct } = useActSystem(workspaceId);
+	const { createAndStartTask } = useTaskSystem(workspaceId);
 	const { toast } = useToasts();
 
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
@@ -70,7 +70,7 @@ export function TriggerInputDialog({
 					};
 				});
 
-				await createAndStartAct({
+				await createAndStartTask({
 					connectionIds,
 					inputs: [
 						{
@@ -78,9 +78,9 @@ export function TriggerInputDialog({
 							items: parameterItems,
 						},
 					],
-					onActStart({ cancel, actId }) {
+					onTaskStart({ cancel, taskId }) {
 						toast("Workflow submitted successfully", {
-							id: actId,
+							id: taskId,
 							preserve: true,
 							action: {
 								label: "Cancel",
@@ -90,8 +90,8 @@ export function TriggerInputDialog({
 							},
 						});
 					},
-					onActComplete: ({ actId }) => {
-						toast.dismiss(actId);
+					onTaskComplete: ({ taskId }) => {
+						toast.dismiss(taskId);
 					},
 				});
 				onClose();
@@ -99,7 +99,7 @@ export function TriggerInputDialog({
 				setIsSubmitting(false);
 			}
 		},
-		[inputs, onClose, connectionIds, createAndStartAct, toast],
+		[inputs, onClose, connectionIds, createAndStartTask, toast],
 	);
 
 	if (isLoading) {

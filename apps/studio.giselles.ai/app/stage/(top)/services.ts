@@ -25,7 +25,7 @@ async function enrichActWithNavigationData(
 	createdAt: Date;
 } | null> {
 	try {
-		const tmpAct = await giselle.getAct({ actId: act.sdkActId });
+		const tmpAct = await giselle.getTask({ taskId: act.sdkActId });
 		const team = teams.find((t) => t.dbId === act.teamDbId);
 		if (team === undefined) {
 			throw new Error("Team not found");

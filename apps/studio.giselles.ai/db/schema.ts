@@ -5,11 +5,11 @@ import type {
 	GitHubRepositoryIssueContentType,
 } from "@giselles-ai/github-tool";
 import type {
-	ActId,
 	AppId,
 	EmbeddingDimensions,
 	EmbeddingProfileId,
 	NodeId,
+	TaskId,
 	TriggerId,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
@@ -798,7 +798,7 @@ export const acts = pgTable(
 			.references(() => users.dbId, { onDelete: "cascade" }),
 		sdkWorkspaceId: text("sdk_workspace_id").$type<WorkspaceId>().notNull(),
 		sdkFlowTriggerId: text("sdk_flow_trigger_id").$type<TriggerId>().notNull(),
-		sdkActId: text("sdk_act_id").$type<ActId>().notNull(),
+		sdkActId: text("sdk_act_id").$type<TaskId>().notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at")
 			.defaultNow()
