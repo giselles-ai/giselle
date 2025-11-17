@@ -17,7 +17,7 @@ import {
 	type OnGenerationError,
 } from "../generations";
 import { startContentGeneration } from "../generations/start-content-generation";
-import { executeTaskion } from "../operations";
+import { executeAction } from "../operations";
 import { executeQuery } from "../operations/execute-query";
 import { resolveTrigger } from "../triggers";
 import type { GiselleContext } from "../types";
@@ -72,8 +72,8 @@ async function executeStep(args: {
 }) {
 	try {
 		switch (args.generation.context.operationNode.content.type) {
-			case "taskion":
-				await executeTaskion(args);
+			case "action":
+				await executeAction(args);
 				break;
 			case "imageGeneration":
 				await generateImage({ ...args });

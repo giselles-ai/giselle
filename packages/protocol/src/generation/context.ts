@@ -6,21 +6,21 @@ import { Node, NodeLike, OperationNode, OperationNodeLike } from "../node";
 import { WorkspaceId } from "../workspace";
 
 export const GenerationOriginStudio = z.object({
-	actId: z.optional(TaskId.schema),
+	taskId: z.optional(TaskId.schema),
 	workspaceId: WorkspaceId.schema,
 	type: z.literal("studio"),
 });
 export type GenerationOriginStudio = z.infer<typeof GenerationOriginStudio>;
 
 export const GenerationOriginStage = z.object({
-	actId: TaskId.schema,
+	taskId: TaskId.schema,
 	workspaceId: WorkspaceId.schema,
 	type: z.literal("stage"),
 });
 export type GenerationOriginStage = z.infer<typeof GenerationOriginStage>;
 
 export const GenerationOriginGitHubApp = z.object({
-	actId: TaskId.schema,
+	taskId: TaskId.schema,
 	workspaceId: WorkspaceId.schema,
 	type: z.literal("github-app"),
 });

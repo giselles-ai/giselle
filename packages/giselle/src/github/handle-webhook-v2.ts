@@ -1,5 +1,5 @@
 import {
-	addRetaskion,
+	addReaction,
 	createDiscussionComment,
 	createIssueComment,
 	createPullRequestComment,
@@ -55,7 +55,7 @@ export async function handleGitHubWebhookV2(args: {
 			deps: {
 				getTrigger,
 				getGitHubRepositoryIntegrationIndex,
-				addRetaskion,
+				addReaction,
 				ensureWebhookEvent,
 				createAndStartTask,
 				parseCommand,

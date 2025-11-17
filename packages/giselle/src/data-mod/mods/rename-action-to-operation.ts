@@ -3,7 +3,7 @@ import type { $ZodIssue } from "@zod/core";
 import { getValueAtPath, isObject, setValueAtPath } from "../utils";
 
 /**
- * Deep transforms all instances of "taskion" to "operation" in node types
+ * Deep transforms all instances of "action" to "operation" in node types
  */
 function transformNodeTypes(obj: unknown): unknown {
 	if (!obj || typeof obj !== "object") {
@@ -21,40 +21,38 @@ function transformNodeTypes(obj: unknown): unknown {
 
 	// Process all properties first, to handle nested structures
 	for (const key in result) {
-		if (key !== "taskionNode" && key !== "taskions") {
+		if (key !== "actionNode" && key !== "actions") {
 			// Skip these for special handling
 			result[key] = transformNodeTypes(result[key]);
 		}
 	}
 
-	// If this is a node with type "taskion", change to "operation"
+	// If this is a node with type "action", change to "operation"
 	if (
 		"type" in result &&
-		result.type === "taskion" &&
+		result.type === "action" &&
 		("content" in result || // Regular node
 			"id" in result) // Node reference
 	) {
 		result.type = "operation";
 	}
 
-	// If this has an taskionNode field, rename to operationNode
-	if ("taskionNode" in result) {
-		// Transform the taskionNode contents first
-		const transformedTaskionNode = transformNodeTypes(result.taskionNode);
+	// If this has an actionNode field, rename to operationNode
+	if ("actionNode" in result) {
+		// Transform the actionNode contents first
+		const transformedActionNode = transformNodeTypes(result.actionNode);
 		// Then assign it to operationNode
-		result.operationNode = transformedTaskionNode;
+		result.operationNode = transformedActionNode;
 	}
 
-	// If this has an taskions array, rename to operations (legacy) or steps (current)
-	if ("taskions" in result && Array.isArray(result.taskions)) {
+	// If this has an actions array, rename to operations (legacy) or steps (current)
+	if ("actions" in result && Array.isArray(result.actions)) {
 		// Transform to operations for backward compatibility
-		result.operations = result.taskions.map((taskion) =>
-			transformNodeTypes(taskion),
+		result.operations = result.actions.map((action) =>
+			transformNodeTypes(action),
 		);
 		// Also create steps for new format
-		result.steps = result.taskions.map((taskion) =>
-			transformNodeTypes(taskion),
-		);
+		result.steps = result.actions.map((action) => transformNodeTypes(action));
 	}
 
 	// If this has a jobs array, also create sequences for new format
@@ -67,7 +65,7 @@ function transformNodeTypes(obj: unknown): unknown {
 	return result;
 }
 
-export function renameTaskionToOperation(data: unknown, issue: $ZodIssue) {
+export function renameActionToOperation(data: unknown, issue: $ZodIssue) {
 	// Skip if not a relevant issue
 	if (!isObject(data)) {
 		return data;
@@ -93,10 +91,10 @@ export function renameTaskionToOperation(data: unknown, issue: $ZodIssue) {
 			const template = getValueAtPath(data, templatePath);
 			// If template exists
 			if (template && typeof template === "object") {
-				// First check if the template has an taskionNode (old naming)
-				if ("taskionNode" in template) {
-					// Transform and move taskionNode to operationNode
-					const transformedNode = transformNodeTypes(template.taskionNode);
+				// First check if the template has an actionNode (old naming)
+				if ("actionNode" in template) {
+					// Transform and move actionNode to operationNode
+					const transformedNode = transformNodeTypes(template.actionNode);
 					setValueAtPath(
 						newData,
 						[...templatePath, "operationNode"],
@@ -107,7 +105,7 @@ export function renameTaskionToOperation(data: unknown, issue: $ZodIssue) {
 					return newData;
 				}
 
-				// If no taskionNode, use the node from the parent operation
+				// If no actionNode, use the node from the parent operation
 				const operationPath = templatePath.slice(0, -1); // Go back one level
 				const operation = getValueAtPath(data, operationPath);
 				// If we found the operation and it has a node property, use that
@@ -129,7 +127,7 @@ export function renameTaskionToOperation(data: unknown, issue: $ZodIssue) {
 	// biome-ignore lint/suspicious/noExplicitAny: Using any for generic deep copying
 	const newData = structuredClone(data as Record<string, any>);
 
-	// Case 1: Handle node type rename from "taskion" to "operation"
+	// Case 1: Handle node type rename from "action" to "operation"
 	if (
 		(issue.path.includes("type") && issue.code === "invalid_type") ||
 		issue.code === "invalid_union"
@@ -137,7 +135,7 @@ export function renameTaskionToOperation(data: unknown, issue: $ZodIssue) {
 		// Get the path to the node
 		const nodePath = issue.path.slice(0, issue.path.indexOf("type"));
 		const node = getValueAtPath(data, nodePath);
-		if (node && node.type === "taskion") {
+		if (node && node.type === "action") {
 			// Set type to "operation"
 			setValueAtPath(newData, [...nodePath, "type"], "operation");
 			return newData;
@@ -145,19 +143,19 @@ export function renameTaskionToOperation(data: unknown, issue: $ZodIssue) {
 	}
 
 	// Case 2: Handle field renames in GenerationContext and GenerationTemplate
-	if (issue.path.some((path) => path === "taskionNode")) {
+	if (issue.path.some((path) => path === "actionNode")) {
 		// Fix for GenerationContext case
 		const generationContextPath = [];
-		// Find the path to the object containing taskionNode
+		// Find the path to the object containing actionNode
 		for (let i = 0; i < issue.path.length; i++) {
 			generationContextPath.push(issue.path[i]);
 			const context = getValueAtPath(data, generationContextPath);
-			if (context && typeof context === "object" && "taskionNode" in context) {
-				// Move taskionNode data to operationNode
+			if (context && typeof context === "object" && "actionNode" in context) {
+				// Move actionNode data to operationNode
 				setValueAtPath(
 					newData,
 					[...generationContextPath, "operationNode"],
-					context.taskionNode,
+					context.actionNode,
 				);
 				// Remove the old field using delete instead of undefined
 				const _contextInNewData = getValueAtPath(
@@ -169,7 +167,7 @@ export function renameTaskionToOperation(data: unknown, issue: $ZodIssue) {
 		}
 	}
 
-	// Case 3: Handle Job taskions array rename to operations/steps in job/sequence
+	// Case 3: Handle Job actions array rename to operations/steps in job/sequence
 	if (
 		issue.code === "invalid_type" &&
 		(issue.path.includes("operations") || issue.path.includes("steps"))
@@ -179,24 +177,24 @@ export function renameTaskionToOperation(data: unknown, issue: $ZodIssue) {
 			? issue.path.slice(0, issue.path.indexOf("operations"))
 			: issue.path.slice(0, issue.path.indexOf("steps"));
 		const jobOrSequence = getValueAtPath(data, operationPath);
-		// Look for a parent with 'taskions' array
+		// Look for a parent with 'actions' array
 		if (jobOrSequence && typeof jobOrSequence === "object") {
-			// Check if this object has an taskions array that we need to migrate
-			if (Array.isArray(jobOrSequence.taskions)) {
-				// Copy the taskions array to operations (legacy compatibility)
+			// Check if this object has an actions array that we need to migrate
+			if (Array.isArray(jobOrSequence.actions)) {
+				// Copy the actions array to operations (legacy compatibility)
 				if (issue.path.includes("operations")) {
 					setValueAtPath(
 						newData,
 						[...operationPath, "operations"],
-						jobOrSequence.taskions,
+						jobOrSequence.actions,
 					);
 				}
-				// Copy the taskions array to steps (current format)
+				// Copy the actions array to steps (current format)
 				if (issue.path.includes("steps")) {
 					setValueAtPath(
 						newData,
 						[...operationPath, "steps"],
-						jobOrSequence.taskions,
+						jobOrSequence.actions,
 					);
 				}
 				return newData;
@@ -236,11 +234,11 @@ export function renameTaskionToOperation(data: unknown, issue: $ZodIssue) {
 	}
 
 	// If none of the specific fixes worked, apply the deep transformation
-	// This ensures all taskionNode instances will be properly converted
+	// This ensures all actionNode instances will be properly converted
 	if (
 		isObject(data) &&
-		(JSON.stringify(data).includes('"taskionNode":') ||
-			JSON.stringify(data).includes('"type":"taskion"'))
+		(JSON.stringify(data).includes('"actionNode":') ||
+			JSON.stringify(data).includes('"type":"action"'))
 	) {
 		return transformNodeTypes(data);
 	}

@@ -2,7 +2,7 @@ import { Task } from "@giselles-ai/protocol";
 import z from "zod/v4";
 
 export const StreamData = z.object({
-	act: Task,
+	task: Task,
 });
 export type StreamData = z.infer<typeof StreamData>;
 

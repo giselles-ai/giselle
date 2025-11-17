@@ -24,11 +24,11 @@
 				{
 					"id": "otp-aYvLOOWLyx2sPmIA",
 					"label": "output",
-					"accessor": "taskion-result"
+					"accessor": "action-result"
 				}
 			],
 			"content": {
-				"type": "taskion",
+				"type": "action",
 				"command": {
 					"provider": "github",
 					"state": {
@@ -120,7 +120,7 @@
 			"inputNode": {
 				"id": "nd-c2tg86XNmMef5SUj",
 				"type": "operation",
-				"content": { "type": "taskion" }
+				"content": { "type": "action" }
 			},
 			"inputId": "inp-7iz8ra48uqxekD37"
 		},
@@ -135,7 +135,7 @@
 			"inputNode": {
 				"id": "nd-c2tg86XNmMef5SUj",
 				"type": "operation",
-				"content": { "type": "taskion" }
+				"content": { "type": "action" }
 			},
 			"inputId": "inp-x1tOkyCQv4Dyivsm"
 		}
@@ -359,11 +359,11 @@
 									{
 										"id": "otp-aYvLOOWLyx2sPmIA",
 										"label": "output",
-										"accessor": "taskion-result"
+										"accessor": "action-result"
 									}
 								],
 								"content": {
-									"type": "taskion",
+									"type": "action",
 									"command": {
 										"provider": "github",
 										"state": {
@@ -398,11 +398,11 @@
 										{
 											"id": "otp-aYvLOOWLyx2sPmIA",
 											"label": "output",
-											"accessor": "taskion-result"
+											"accessor": "action-result"
 										}
 									],
 									"content": {
-										"type": "taskion",
+										"type": "action",
 										"command": {
 											"provider": "github",
 											"state": {
@@ -470,7 +470,7 @@
 										"inputNode": {
 											"id": "nd-c2tg86XNmMef5SUj",
 											"type": "operation",
-											"content": { "type": "taskion" }
+											"content": { "type": "action" }
 										},
 										"inputId": "inp-7iz8ra48uqxekD37"
 									},
@@ -485,7 +485,7 @@
 										"inputNode": {
 											"id": "nd-c2tg86XNmMef5SUj",
 											"type": "operation",
-											"content": { "type": "taskion" }
+											"content": { "type": "action" }
 										},
 										"inputId": "inp-x1tOkyCQv4Dyivsm"
 									}
@@ -518,11 +518,11 @@
 						{
 							"id": "otp-aYvLOOWLyx2sPmIA",
 							"label": "output",
-							"accessor": "taskion-result"
+							"accessor": "action-result"
 						}
 					],
 					"content": {
-						"type": "taskion",
+						"type": "action",
 						"command": {
 							"provider": "github",
 							"state": {

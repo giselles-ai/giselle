@@ -3,9 +3,9 @@ import type { $ZodIssue } from "@zod/core";
 import { getValueAtPath, isObject, setValueAtPath } from "../utils";
 
 /**
- * Adds missing `provider` field to `command` objects in taskion nodes.
+ * Adds missing `provider` field to `command` objects in action nodes.
  * This migration handles the transition from the old flow package structure
- * to the new taskion-registry/trigger-registry structure.
+ * to the new action-registry/trigger-registry structure.
  */
 export function addProviderToCommand(data: unknown, issue: $ZodIssue) {
 	// Only handle invalid_union errors related to command.provider
@@ -36,7 +36,7 @@ export function addProviderToCommand(data: unknown, issue: $ZodIssue) {
 	}
 
 	// If provider is missing or has an invalid value, set it to "github"
-	// Since TaskionData is a discriminated union with only GitHubTaskionData,
+	// Since ActionData is a discriminated union with only GitHubActionData,
 	// we default to "github" if provider is missing or invalid
 	const currentProvider = "provider" in command ? command.provider : undefined;
 	if (currentProvider !== "github") {

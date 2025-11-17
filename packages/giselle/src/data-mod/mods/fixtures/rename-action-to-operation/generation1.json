@@ -1,9 +1,9 @@
 {
 	"id": "gnr-VUHFraZNbbXGCAQH",
 	"context": {
-		"taskionNode": {
+		"actionNode": {
 			"id": "nd-tEM92Uq8XfX8FW41",
-			"type": "taskion",
+			"type": "action",
 			"content": {
 				"type": "imageGeneration",
 				"llm": {
@@ -33,7 +33,7 @@
 		"sourceNodes": [
 			{
 				"id": "nd-y6j3kLZfJnnEnGoA",
-				"type": "taskion",
+				"type": "action",
 				"content": {
 					"type": "textGeneration",
 					"llm": {

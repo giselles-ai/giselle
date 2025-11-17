@@ -234,7 +234,7 @@ async function resolveQuery(
 				throw new Error("Not implemented");
 
 			case "trigger":
-			case "taskion":
+			case "action":
 			case "appEntry": {
 				const result = await generationContentResolver(
 					contextNode.id,

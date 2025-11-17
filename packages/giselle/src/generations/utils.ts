@@ -74,7 +74,7 @@ export async function buildMessageObject({
 				appEntryResolver,
 			);
 		}
-		case "taskion":
+		case "action":
 		case "trigger":
 		case "query":
 		case "appEntry": {
@@ -260,7 +260,7 @@ async function buildGenerationMessageForTextGeneration({
 
 			case "query":
 			case "trigger":
-			case "taskion": {
+			case "action": {
 				const result = await generationContentResolver(
 					contextNode.id,
 					sourceKeyword.outputId,
@@ -542,7 +542,7 @@ async function buildGenerationMessageForImageGeneration(
 				break;
 			}
 
-			case "taskion":
+			case "action":
 			case "trigger":
 			case "query": {
 				const result = await textGenerationResolver(

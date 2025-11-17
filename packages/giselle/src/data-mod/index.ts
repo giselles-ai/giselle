@@ -4,14 +4,14 @@ import { addAccessorToInput } from "./mods/add-accessor-to-input";
 import { addProviderToCommand } from "./mods/add-provider-to-command";
 import { fixTypoAccesorToAccessor } from "./mods/fix-typo-accesor-to-accessor";
 import { fixTypoQuquedAtToQueuedAt } from "./mods/fix-typo-ququedAt-queuedAt";
-import { renameTaskionToOperation } from "./mods/rename-taskion-to-operation";
+import { renameActionToOperation } from "./mods/rename-action-to-operation";
 import { unifyGitHubVectorStore } from "./mods/unify-github-vector-store";
 
 function dataMod(data: unknown, issue: $ZodIssue) {
 	let modData = data;
 	modData = fixTypoAccesorToAccessor(modData, issue);
 	modData = fixTypoQuquedAtToQueuedAt(modData, issue);
-	modData = renameTaskionToOperation(modData, issue);
+	modData = renameActionToOperation(modData, issue);
 	modData = addAccessorToInput(modData, issue);
 	modData = addProviderToCommand(modData, issue);
 	modData = unifyGitHubVectorStore(modData, issue);

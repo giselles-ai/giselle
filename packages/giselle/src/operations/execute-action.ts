@@ -1,4 +1,8 @@
 import {
+	type GitHubActionId,
+	githubActions,
+} from "@giselles-ai/action-registry";
+import {
 	createDiscussionComment,
 	createIssue,
 	createIssueComment,
@@ -13,17 +17,13 @@ import {
 import {
 	type GenerationContext,
 	type GenerationOutput,
-	type GitHubTaskionConfiguredState,
-	isTaskionNode,
+	type GitHubActionConfiguredState,
+	isActionNode,
 	isTextNode,
 	type NodeId,
 	type OutputId,
 	type QueuedGeneration,
 } from "@giselles-ai/protocol";
-import {
-	type GitHubTaskionId,
-	githubTaskions,
-} from "@giselles-ai/taskion-registry";
 import {
 	isJsonContent,
 	jsonContentToText,
@@ -31,7 +31,7 @@ import {
 import { useGenerationExecutor } from "../generations/internal/use-generation-executor";
 import type { GiselleContext } from "../types";
 
-export function executeTaskion(args: {
+export function executeAction(args: {
 	context: GiselleContext;
 	generation: QueuedGeneration;
 }) {
@@ -44,17 +44,17 @@ export function executeTaskion(args: {
 			finishGeneration,
 		}) => {
 			const operationNode = generationContext.operationNode;
-			if (!isTaskionNode(operationNode)) {
+			if (!isActionNode(operationNode)) {
 				throw new Error("Invalid generation type");
 			}
 			const command = operationNode.content.command;
 			if (command.state.status !== "configured") {
-				throw new Error("Taskion is not configured");
+				throw new Error("Action is not configured");
 			}
 			let generationOutputs: GenerationOutput[] = [];
 			switch (command.provider) {
 				case "github":
-					generationOutputs = await executeGitHubTaskion({
+					generationOutputs = await executeGitHubAction({
 						state: command.state,
 						context: args.context,
 						generationContext,
@@ -62,7 +62,7 @@ export function executeTaskion(args: {
 					});
 					break;
 				default: {
-					// TODO: Uncomment after implementing all taskion providers
+					// TODO: Uncomment after implementing all action providers
 					// const _exhaustiveCheck: never = command.provider;
 					// throw new Error(`Unhandled provider: ${_exhaustiveCheck}`);
 					const unknownProvider = (command as { provider: string }).provider;
@@ -77,24 +77,24 @@ export function executeTaskion(args: {
 	});
 }
 
-async function resolveTaskionInputs(args: {
-	state: GitHubTaskionConfiguredState;
+async function resolveActionInputs(args: {
+	state: GitHubActionConfiguredState;
 	generationContext: GenerationContext;
 	generationContentResolver: (
 		nodeId: NodeId,
 		outputId: OutputId,
 	) => Promise<string | undefined>;
 }): Promise<Record<string, string>> {
-	const githubTaskionEntry = githubTaskions[args.state.commandId];
-	if (githubTaskionEntry === undefined) {
+	const githubActionEntry = githubActions[args.state.commandId];
+	if (githubActionEntry === undefined) {
 		throw new Error(
-			`GitHub taskion option not found for command ID: ${args.state.commandId}`,
+			`GitHub action option not found for command ID: ${args.state.commandId}`,
 		);
 	}
 	const inputs: Record<string, string> = {};
 	const generationContext = args.generationContext;
 
-	for (const payloadKey of githubTaskionEntry.payload.keyof().options) {
+	for (const payloadKey of githubActionEntry.payload.keyof().options) {
 		const input = generationContext.operationNode.inputs.find(
 			(input) => input.accessor === payloadKey,
 		);
@@ -154,12 +154,12 @@ async function resolveTaskionInputs(args: {
 	return inputs;
 }
 
-function createTaskionOutput(
+function createActionOutput(
 	result: unknown,
 	generationContext: GenerationContext,
 ): GenerationOutput[] {
 	const resultOutput = generationContext.operationNode.outputs.find(
-		(output) => output.accessor === "taskion-result",
+		(output) => output.accessor === "action-result",
 	);
 	if (resultOutput === undefined) {
 		return [];
@@ -173,8 +173,8 @@ function createTaskionOutput(
 	];
 }
 
-async function executeGitHubTaskion(args: {
-	state: GitHubTaskionConfiguredState;
+async function executeGitHubAction(args: {
+	state: GitHubActionConfiguredState;
 	context: GiselleContext;
 	generationContext: GenerationContext;
 	generationContentResolver: (
@@ -187,7 +187,7 @@ async function executeGitHubTaskion(args: {
 		throw new Error("GitHub authV2 configuration is missing");
 	}
 
-	const inputs = await resolveTaskionInputs({
+	const inputs = await resolveActionInputs({
 		state: args.state,
 		generationContext: args.generationContext,
 		generationContentResolver: args.generationContentResolver,
@@ -200,10 +200,10 @@ async function executeGitHubTaskion(args: {
 		installationId: args.state.installationId,
 	};
 
-	function payloadSchema<TTaskionId extends GitHubTaskionId>(
-		taskionId: TTaskionId,
-	): (typeof githubTaskions)[TTaskionId]["payload"] {
-		return githubTaskions[taskionId].payload;
+	function payloadSchema<TActionId extends GitHubActionId>(
+		actionId: TActionId,
+	): (typeof githubActions)[TActionId]["payload"] {
+		return githubActions[actionId].payload;
 	}
 
 	switch (args.state.commandId) {
@@ -213,7 +213,7 @@ async function executeGitHubTaskion(args: {
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
-			return createTaskionOutput(result, args.generationContext);
+			return createActionOutput(result, args.generationContext);
 		}
 		case "github.create.issueComment": {
 			const result = await createIssueComment({
@@ -221,7 +221,7 @@ async function executeGitHubTaskion(args: {
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
-			return createTaskionOutput(result, args.generationContext);
+			return createActionOutput(result, args.generationContext);
 		}
 		case "github.create.pullRequestComment": {
 			const result = await createPullRequestComment({
@@ -229,7 +229,7 @@ async function executeGitHubTaskion(args: {
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
-			return createTaskionOutput(result, args.generationContext);
+			return createActionOutput(result, args.generationContext);
 		}
 		case "github.update.pullRequest": {
 			const result = await updatePullRequest({
@@ -237,7 +237,7 @@ async function executeGitHubTaskion(args: {
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
-			return createTaskionOutput(result, args.generationContext);
+			return createActionOutput(result, args.generationContext);
 		}
 		case "github.reply.pullRequestReviewComment": {
 			const result = await replyPullRequestReviewComment({
@@ -245,7 +245,7 @@ async function executeGitHubTaskion(args: {
 				repositoryNodeId: args.state.repositoryNodeId,
 				authConfig: commonAuthConfig,
 			});
-			return createTaskionOutput(result, args.generationContext);
+			return createActionOutput(result, args.generationContext);
 		}
 		case "github.create.discussionComment": {
 			const { discussionNumber, body, commentId } = payloadSchema(
@@ -289,7 +289,7 @@ async function executeGitHubTaskion(args: {
 				replyToId,
 				authConfig: commonAuthConfig,
 			});
-			return createTaskionOutput(result, args.generationContext);
+			return createActionOutput(result, args.generationContext);
 		}
 		case "github.get.discussion": {
 			const { discussionNumber } = payloadSchema(args.state.commandId).parse(
@@ -314,7 +314,7 @@ async function executeGitHubTaskion(args: {
 				number: discussionNumber,
 				authConfig: commonAuthConfig,
 			});
-			return createTaskionOutput(result.data, args.generationContext);
+			return createActionOutput(result.data, args.generationContext);
 		}
 		default: {
 			const _exhaustiveCheck: never = args.state.commandId;

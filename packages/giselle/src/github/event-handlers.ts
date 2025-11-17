@@ -1,5 +1,5 @@
 import type {
-	addRetaskion,
+	addReaction,
 	createDiscussionComment,
 	createIssueComment,
 	createPullRequestComment,
@@ -135,7 +135,7 @@ ${miniStepRows.length > 0 ? miniStepRows.join("\n") : ""}`;
 }
 
 export interface EventHandlerDependencies {
-	addRetaskion: typeof addRetaskion;
+	addReaction: typeof addReaction;
 	ensureWebhookEvent: typeof ensureWebhookEvent;
 	createAndStartTask: typeof createAndStartTask;
 	parseCommand: typeof parseCommand;
@@ -159,7 +159,7 @@ export type EventHandlerArgs<TEventName extends WebhookEventName> = {
 
 type EventHandlerResult = {
 	shouldRun: boolean;
-	retaskionNodeId?: string;
+	reactionNodeId?: string;
 };
 
 export function handleIssueOpened<TEventName extends WebhookEventName>(
@@ -177,7 +177,7 @@ export function handleIssueOpened<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, retaskionNodeId: issue.node_id };
+	return { shouldRun: true, reactionNodeId: issue.node_id };
 }
 
 export function handleIssueClosed<TEventName extends WebhookEventName>(
@@ -195,7 +195,7 @@ export function handleIssueClosed<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, retaskionNodeId: issue.node_id };
+	return { shouldRun: true, reactionNodeId: issue.node_id };
 }
 
 export function handleIssueCommentCreated<TEventName extends WebhookEventName>(
@@ -223,7 +223,7 @@ export function handleIssueCommentCreated<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, retaskionNodeId: comment.node_id };
+	return { shouldRun: true, reactionNodeId: comment.node_id };
 }
 
 export function handlePullRequestCommentCreated<
@@ -253,7 +253,7 @@ export function handlePullRequestCommentCreated<
 
 	return {
 		shouldRun: true,
-		retaskionNodeId: args.event.data.payload.comment.node_id,
+		reactionNodeId: args.event.data.payload.comment.node_id,
 	};
 }
 
@@ -289,7 +289,7 @@ export function handlePullRequestReviewCommentCreated<
 
 	return {
 		shouldRun: true,
-		retaskionNodeId: comment.node_id,
+		reactionNodeId: comment.node_id,
 	};
 }
 
@@ -308,7 +308,7 @@ export function handlePullRequestOpened<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, retaskionNodeId: pullRequest.node_id };
+	return { shouldRun: true, reactionNodeId: pullRequest.node_id };
 }
 
 export function handlePullRequestReadyForReview<
@@ -330,7 +330,7 @@ export function handlePullRequestReadyForReview<
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, retaskionNodeId: pullRequest.node_id };
+	return { shouldRun: true, reactionNodeId: pullRequest.node_id };
 }
 
 export function handlePullRequestClosed<TEventName extends WebhookEventName>(
@@ -348,7 +348,7 @@ export function handlePullRequestClosed<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, retaskionNodeId: pullRequest.node_id };
+	return { shouldRun: true, reactionNodeId: pullRequest.node_id };
 }
 
 export function handleIssueLabeled<TEventName extends WebhookEventName>(
@@ -380,7 +380,7 @@ export function handleIssueLabeled<TEventName extends WebhookEventName>(
 	const shouldRun = conditions.labels.includes(addedLabel.name);
 
 	return shouldRun
-		? { shouldRun: true, retaskionNodeId: issue.node_id }
+		? { shouldRun: true, reactionNodeId: issue.node_id }
 		: { shouldRun: false };
 }
 
@@ -413,7 +413,7 @@ export function handlePullRequestLabeled<TEventName extends WebhookEventName>(
 	const shouldRun = conditions.labels.includes(addedLabel.name);
 
 	return shouldRun
-		? { shouldRun: true, retaskionNodeId: pullRequest.node_id }
+		? { shouldRun: true, reactionNodeId: pullRequest.node_id }
 		: { shouldRun: false };
 }
 
@@ -432,7 +432,7 @@ export function handleDiscussionCreated<TEventName extends WebhookEventName>(
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, retaskionNodeId: discussion.node_id };
+	return { shouldRun: true, reactionNodeId: discussion.node_id };
 }
 
 export function handleDiscussionCommentCreated<
@@ -457,7 +457,7 @@ export function handleDiscussionCommentCreated<
 		return { shouldRun: false };
 	}
 
-	return { shouldRun: true, retaskionNodeId: comment.node_id };
+	return { shouldRun: true, reactionNodeId: comment.node_id };
 }
 
 const eventHandlers = [
@@ -511,9 +511,9 @@ export async function processEvent<TEventName extends WebhookEventName>(
 			continue;
 		}
 
-		if (result.retaskionNodeId) {
-			await deps.addRetaskion({
-				id: result.retaskionNodeId,
+		if (result.reactionNodeId) {
+			await deps.addReaction({
+				id: result.reactionNodeId,
 				content: "EYES",
 				authConfig,
 			});
