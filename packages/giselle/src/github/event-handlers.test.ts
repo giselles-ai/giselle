@@ -1127,7 +1127,7 @@ describe("GitHub Event Handlers", () => {
 	});
 
 	describe("handleDiscussionCreated", () => {
-		it("should handle discussion created event and retask to discussion node", () => {
+		it("should handle discussion created event and react to discussion node", () => {
 			const args = {
 				...baseEventArgs,
 				event: {
