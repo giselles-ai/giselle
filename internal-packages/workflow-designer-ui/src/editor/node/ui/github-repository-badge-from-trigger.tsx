@@ -26,6 +26,7 @@ export function GitHubRepositoryBadgeFromTrigger({
 		<GitHubRepositoryBadge
 			owner={data.githubRepositoryFullname.owner}
 			repo={data.githubRepositoryFullname.repo}
+			nodeType="trigger"
 		/>
 	);
 }

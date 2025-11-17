@@ -403,6 +403,15 @@ export function RunButton() {
 	const { starterRuns, nodeGroupRuns } = useMemo(() => {
 		const starterRuns: StarterRunItem[] = [];
 
+		if (
+			!nodeGroups?.starterNodeGroups ||
+			!Array.isArray(nodeGroups.starterNodeGroups) ||
+			!nodeGroups?.operationNodeGroups ||
+			!Array.isArray(nodeGroups.operationNodeGroups)
+		) {
+			return { starterRuns: [], nodeGroupRuns: [] };
+		}
+
 		for (const group of nodeGroups.starterNodeGroups) {
 			switch (group.node.content.type) {
 				case "appEntry":
