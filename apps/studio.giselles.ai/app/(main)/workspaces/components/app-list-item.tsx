@@ -22,6 +22,7 @@ import type { AgentId } from "@/services/agents";
 import { GitHubIcon } from "../../../../../../internal-packages/workflow-designer-ui/src/icons";
 import { Button } from "../../settings/components/button";
 import { copyAgent, deleteAgent } from "../actions";
+import { formatExecutionCount } from "./format-execution-count";
 
 interface AppListItemProps {
 	href: string;
@@ -58,15 +59,15 @@ export function AppListItem({
 	const { addToast } = useToast();
 	const router = useRouter();
 
-	const handleDuplicate = useCallback(() => {
+	const handleDuplicate = () => {
 		setMenuOpen(false);
 		setDuplicateDialogOpen(true);
-	}, []);
+	};
 
-	const handleDelete = useCallback(() => {
+	const handleDelete = () => {
 		setMenuOpen(false);
 		setDeleteDialogOpen(true);
-	}, []);
+	};
 
 	const handleDuplicateConfirm = useCallback(() => {
 		if (!agentId) return;
@@ -105,14 +106,6 @@ export function AppListItem({
 		});
 	}, [agentId, router, addToast]);
 
-	const formatExecutionCount = (count?: number) => {
-		if (!count) return "0";
-		if (count >= 1000) {
-			return `${(count / 1000).toFixed(1)}k`;
-		}
-		return count.toString();
-	};
-
 	return (
 		<div
 			className={clsx(
@@ -141,7 +134,7 @@ export function AppListItem({
 											{repo}
 										</div>
 										{githubRepositories.length > 1 && (
-											<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-text/20">
+											<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted">
 												+{githubRepositories.length - 1}
 											</span>
 										)}
@@ -160,7 +153,7 @@ export function AppListItem({
 											{fileName}
 										</div>
 										{documentVectorStoreFiles.length > 1 && (
-											<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-text/20">
+											<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted">
 												+{documentVectorStoreFiles.length - 1}
 											</span>
 										)}
@@ -209,7 +202,7 @@ export function AppListItem({
 										onSelect={handleDuplicate}
 										className={clsx(
 											"rounded-md px-3 py-2 text-[14px] font-medium outline-none",
-											"text-text hover:bg-white/5 cursor-pointer",
+											"text-text hover:bg-surface/5 cursor-pointer",
 										)}
 									>
 										<span className="inline-flex items-center gap-2">

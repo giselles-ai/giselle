@@ -4,15 +4,11 @@ import clsx from "clsx/lite";
 import { File, Zap } from "lucide-react";
 import Link from "next/link";
 import type { agents as dbAgents } from "@/db";
-import {
-	AnthropicIcon,
-	GitHubIcon,
-	GoogleWhiteIcon,
-	OpenaiIcon,
-	PerplexityIcon,
-} from "../../../../../../internal-packages/workflow-designer-ui/src/icons";
+import { GitHubIcon } from "../../../../../../internal-packages/workflow-designer-ui/src/icons";
 import { DeleteAgentButton } from "./delete-agent-button";
 import { DuplicateAgentButton } from "./duplicate-agent-button";
+import { formatExecutionCount } from "./format-execution-count";
+import { LLMProviderIcon } from "./llm-provider-icon";
 
 interface AgentCardProps {
 	agent: typeof dbAgents.$inferSelect & {
@@ -25,27 +21,6 @@ interface AgentCardProps {
 		documentVectorStoreFiles?: string[];
 		llmProviders?: string[];
 	};
-}
-
-function LLMProviderIcon({
-	provider,
-	className,
-}: {
-	provider: string;
-	className?: string;
-}) {
-	switch (provider) {
-		case "openai":
-			return <OpenaiIcon className={className} />;
-		case "anthropic":
-			return <AnthropicIcon className={className} />;
-		case "google":
-			return <GoogleWhiteIcon className={className} />;
-		case "perplexity":
-			return <PerplexityIcon className={className} />;
-		default:
-			return null;
-	}
 }
 
 export function AgentCard({ agent }: AgentCardProps) {
@@ -133,7 +108,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 															{repo}
 														</div>
 														{agent.githubRepositories.length > 1 && (
-															<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-text/20">
+															<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted">
 																+{agent.githubRepositories.length - 1}
 															</span>
 														)}
@@ -160,7 +135,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 																{fileName}
 															</div>
 															{agent.documentVectorStoreFiles.length > 1 && (
-																<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-text/20">
+																<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted">
 																	+{agent.documentVectorStoreFiles.length - 1}
 																</span>
 															)}
@@ -209,11 +184,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 								<div className="flex items-center gap-1">
 									<Zap className="w-3 h-3 text-text/70" />
 									<span className="font-geist text-[12px] text-text/70">
-										{agent.executionCount
-											? agent.executionCount >= 1000
-												? `${(agent.executionCount / 1000).toFixed(1)}k`
-												: agent.executionCount.toString()
-											: "0"}
+										{formatExecutionCount(agent.executionCount)}
 									</span>
 								</div>
 							</div>

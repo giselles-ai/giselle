@@ -3,38 +3,12 @@
 import { File } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { agents as dbAgents } from "@/db";
-import {
-	AnthropicIcon,
-	GitHubIcon,
-	GoogleWhiteIcon,
-	OpenaiIcon,
-	PerplexityIcon,
-} from "../../../../../../internal-packages/workflow-designer-ui/src/icons";
+import { GitHubIcon } from "../../../../../../internal-packages/workflow-designer-ui/src/icons";
 import { Card } from "../../settings/components/card";
 import { AgentCard } from "./agent-card";
 import { AppListItem } from "./app-list-item";
+import { LLMProviderIcon } from "./llm-provider-icon";
 import { SearchHeader } from "./search-header";
-
-function LLMProviderIcon({
-	provider,
-	className,
-}: {
-	provider: string;
-	className?: string;
-}) {
-	switch (provider) {
-		case "openai":
-			return <OpenaiIcon className={className} />;
-		case "anthropic":
-			return <AnthropicIcon className={className} />;
-		case "google":
-			return <GoogleWhiteIcon className={className} />;
-		case "perplexity":
-			return <PerplexityIcon className={className} />;
-		default:
-			return null;
-	}
-}
 
 type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
 type ViewMode = "grid" | "list";
