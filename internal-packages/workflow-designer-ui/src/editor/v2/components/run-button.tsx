@@ -181,7 +181,6 @@ function SingleStarterRunButton({
 				{isAppEntryNode(starterRun.node) && (
 					<AppEntryInputDialog
 						node={starterRun.node}
-						connectionIds={starterRun.connectionIds}
 						onClose={() => setIsDialogOpen(false)}
 					/>
 				)}
@@ -371,7 +370,6 @@ function MultipleRunsDropdown({
 							{isAppEntryNode(starterNode) && (
 								<AppEntryInputDialog
 									node={starterNode}
-									connectionIds={menuItem.run.connectionIds}
 									onClose={() => {
 										setIsDropdownOpen(false);
 										setOpenDialogNodeId(null);
