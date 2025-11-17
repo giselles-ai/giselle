@@ -94,6 +94,7 @@ export const teams = pgTable("teams", {
 export const teamRelations = relations(teams, ({ many }) => ({
 	subscriptions: many(subscriptions),
 	apps: many(apps),
+	tasks: many(tasks),
 }));
 
 export type UserId = `usr_${string}`;
