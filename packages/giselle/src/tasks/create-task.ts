@@ -17,6 +17,7 @@ import {
 	Task,
 	TaskId,
 	TaskIndexObject,
+	type TaskStarter,
 	Workspace,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
@@ -41,8 +42,10 @@ export const CreateTaskInputs = z.object({
 });
 export type CreateTaskInputs = z.infer<typeof CreateTaskInputs>;
 
+export type OnTaskCreate = (event: { task: Task }) => Promise<void> | void;
+
 export async function createTask(
-	args: CreateTaskInputs & { context: GiselleContext },
+	args: CreateTaskInputs & { context: GiselleContext; onCreate?: OnTaskCreate },
 ) {
 	let workspace: Workspace | undefined = args.workspace;
 
@@ -193,8 +196,50 @@ export async function createTask(
 		});
 	}
 
+	let starter: TaskStarter | undefined;
+
+	switch (args.generationOriginType) {
+		case "studio":
+			starter = {
+				type: "run-button",
+			};
+			break;
+		case "github-app":
+			if (!isTriggerNode(starterNode)) {
+				throw new Error("starterNode must be a trigger node");
+			}
+			if (starterNode.content.provider !== "github") {
+				throw new Error("starterNode must be a GitHub trigger node");
+			}
+			if (starterNode.content.state.status === "unconfigured") {
+				throw new Error("starterNode must be configured");
+			}
+			starter = {
+				type: "github-trigger",
+				triggerId: starterNode.content.state.flowTriggerId,
+			};
+			break;
+		case "stage":
+			if (!isAppEntryNode(starterNode)) {
+				throw new Error("starterNode must be an app entry node");
+			}
+			if (starterNode.content.status === "unconfigured") {
+				throw new Error("starterNode must be configured");
+			}
+			starter = {
+				type: "app",
+				appId: starterNode.content.appId,
+			};
+			break;
+		default: {
+			const _exhaustiveCheck: never = args.generationOriginType;
+			throw new Error(`Unhandled generation origin type: ${_exhaustiveCheck}`);
+		}
+	}
+
 	const task: Task = {
 		id: taskId,
+		starter,
 		workspaceId: workspace.id,
 		status: "created",
 		name: starterNode ? defaultName(starterNode) : "group-nodes",
@@ -240,6 +285,7 @@ export async function createTask(
 				generation,
 			}),
 		),
+		args.onCreate?.({ task }),
 	]);
 	return { task, generations };
 }

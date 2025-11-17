@@ -6,6 +6,7 @@ import type {
 	OnGenerationComplete,
 	OnGenerationError,
 } from "../generations";
+import type { OnTaskCreate } from "../tasks";
 import type { QueryContext } from "./query-services";
 
 export interface EmbeddingCompleteCallbackFunctionArgs {
@@ -26,4 +27,5 @@ export type GiselleCallbacks = {
 	embeddingComplete?: EmbeddingCompleteCallbackFunction;
 	generationComplete?: OnGenerationComplete;
 	generationError?: OnGenerationError;
+	taskCreate?: OnTaskCreate;
 };
