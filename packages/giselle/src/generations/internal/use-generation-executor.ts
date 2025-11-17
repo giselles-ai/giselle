@@ -164,7 +164,6 @@ export async function useGenerationExecutor<T>(args: {
 			setGeneration(failedGeneration),
 			args?.onError?.({ generation: failedGeneration, inputMessages: [] }),
 		]);
-		await setGeneration(failedGeneration);
 		throw new UsageLimitError(usageLimitStatus.error);
 	}
 
