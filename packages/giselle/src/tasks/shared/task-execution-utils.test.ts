@@ -8,7 +8,7 @@ import {
 	isValidTaskTransition,
 } from "./task-execution-utils";
 
-// Test data ftaskory functions
+// Test data factory functions
 function createTestStep(overrides?: Partial<Step>): Step {
 	return {
 		id: "stp-1" as const,
