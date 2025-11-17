@@ -1,18 +1,18 @@
 import type { Task } from "@giselles-ai/protocol";
 import { create } from "zustand";
 
-interface ActStore {
-	activeAct: Task | undefined;
+interface TaskStore {
+	activeTask: Task | undefined;
 	creating: boolean;
-	setActiveAct: (act: Task | undefined) => void;
+	setActiveTask: (task: Task | undefined) => void;
 	setCreating: (creating: boolean) => void;
 }
 
-export const useActStore = create<ActStore>((set) => ({
-	activeAct: undefined,
+export const useTaskStore = create<TaskStore>((set) => ({
+	activeTask: undefined,
 	creating: false,
-	setActiveAct: (act: Task | undefined) => {
-		set({ activeAct: act });
+	setActiveTask: (task: Task | undefined) => {
+		set({ activeTask: task });
 	},
 	setCreating: (creating: boolean) => {
 		set({ creating });

@@ -74,7 +74,7 @@ export function useNodeGenerations({
 						? generation.context.origin.type === "studio" &&
 							generation.context.origin.workspaceId === origin.workspaceId
 						: generation.context.origin.type !== "studio" &&
-							generation.context.origin.actId === origin.actId),
+							generation.context.origin.taskId === origin.taskId),
 			)
 			.sort(
 				(a, b) =>

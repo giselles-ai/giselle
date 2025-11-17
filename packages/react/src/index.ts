@@ -1,10 +1,10 @@
 "use client";
 
-export * from "./act";
 export * from "./errors";
 export * from "./feature-flags";
 export * from "./generations";
 export * from "./integrations";
+export * from "./task";
 export * from "./telemetry";
 export * from "./trigger";
 export * from "./usage-limits";

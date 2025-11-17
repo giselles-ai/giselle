@@ -44,9 +44,9 @@ function transformJsonToFormData(json: Record<string, unknown>): FormData {
 }
 
 /**
- * Extract response data type from API handler return types
+ * Extrtask response data type from API handler return types
  */
-type ExtractResponseData<T> = T extends JsonResponse<infer U>
+type ExtrtaskResponseData<T> = T extends JsonResponse<infer U>
 	? U
 	: T extends Promise<infer U>
 		? U
@@ -63,20 +63,20 @@ export type GiselleClient = {
 					input: z.infer<JsonRouteHandlersInput[K]>,
 					options?: GiselleRequestOptions,
 				) => Promise<
-					ExtractResponseData<Awaited<ReturnType<JsonRouteHandlers[K]>>>
+					ExtrtaskResponseData<Awaited<ReturnType<JsonRouteHandlers[K]>>>
 				>
 			: () => Promise<
-					ExtractResponseData<Awaited<ReturnType<JsonRouteHandlers[K]>>>
+					ExtrtaskResponseData<Awaited<ReturnType<JsonRouteHandlers[K]>>>
 				>
 		: K extends FormDataRoutePath
 			? FormDataRouteHandlersInput[K] extends z.ZodType<unknown>
 				? (
 						input: z.infer<FormDataRouteHandlersInput[K]>,
 					) => Promise<
-						ExtractResponseData<Awaited<ReturnType<FormDataRouteHandlers[K]>>>
+						ExtrtaskResponseData<Awaited<ReturnType<FormDataRouteHandlers[K]>>>
 					>
 				: () => Promise<
-						ExtractResponseData<Awaited<ReturnType<FormDataRouteHandlers[K]>>>
+						ExtrtaskResponseData<Awaited<ReturnType<FormDataRouteHandlers[K]>>>
 					>
 			: never;
 } & {

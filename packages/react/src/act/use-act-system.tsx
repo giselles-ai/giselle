@@ -1,4 +1,7 @@
-import type { ActExecutorOptions, CreateActInputs } from "@giselles-ai/giselle";
+import type {
+	CreateTaskInputs,
+	TaskExecutorOptions,
+} from "@giselles-ai/giselle";
 import type {
 	NodeGenerationIndex,
 	TaskId,
@@ -9,59 +12,58 @@ import useSWR from "swr";
 import { useShallow } from "zustand/shallow";
 import { useGenerationRunnerSystem } from "../generations";
 import { useGiselle } from "../use-giselle";
-import { useActStore } from "./store";
+import { useTaskStore } from "./store";
 
-type CreateAndStartActParams = Omit<
-	CreateActInputs,
+type CreateAndStartTaskParams = Omit<
+	CreateTaskInputs,
 	"generationOriginType" | "workspace" | "workspaceId"
 > &
 	Omit<
-		ActExecutorOptions,
-		| "act"
+		TaskExecutorOptions,
+		| "task"
 		| "applyPatches"
 		| "generationAdapter"
-		| "onActStart"
-		| "onActComplete"
+		| "onTaskStart"
+		| "onTaskComplete"
 		| "startGeneration"
 	> & {
-		onActStart?: (options: {
+		onTaskStart?: (options: {
 			cancel: () => Promise<void>;
-			actId: string;
+			taskId: string;
 		}) => void | Promise<void>;
-		onActComplete?: (options: {
+		onTaskComplete?: (options: {
 			hasError: boolean;
 			duration: number;
-			actId: string;
+			taskId: string;
 		}) => void | Promise<void>;
 	};
 
-export function useActSystem(workspaceId: WorkspaceId) {
+export function useTaskSystem(workspaceId: WorkspaceId) {
 	const client = useGiselle();
 	const { data, isLoading } = useSWR(
-		{ namespace: "get-workspace-inprogress-act", workspaceId },
-		({ workspaceId }) => client.getWorkspaceInprogressAct({ workspaceId }),
+		{ namespace: "get-workspace-inprogress-task", workspaceId },
+		({ workspaceId }) => client.getWorkspaceInprogressTask({ workspaceId }),
 	);
 	const { addGenerationRunner, stopGenerationRunner } =
 		useGenerationRunnerSystem();
-	const { creating } = useActStore(
+	const { creating } = useTaskStore(
 		useShallow((s) => ({
-			activeAct: s.activeAct,
+			activeTask: s.activeTask,
 			creating: s.creating,
 		})),
 	);
-	const setActiveAct = useActStore((s) => s.setActiveAct);
-	const setCreating = useActStore((s) => s.setCreating);
+	const setActiveTask = useTaskStore((s) => s.setActiveTask);
+	const setCreating = useTaskStore((s) => s.setCreating);
 
-	const pollingActGenerations = useCallback(
-		async (actId: TaskId) => {
-			let didActFinished = false;
+	const pollingTaskGenerations = useCallback(
+		async (taskId: TaskId) => {
+			let didTaskFinished = false;
 			const prevGenerationIndexMap = new Map<string, NodeGenerationIndex>();
-			while (!didActFinished) {
-				const { act, generationIndexes } = await client.getActGenerationIndexes(
-					{
-						actId,
-					},
-				);
+			while (!didTaskFinished) {
+				const { task, generationIndexes } =
+					await client.getTaskGenerationIndexes({
+						taskId,
+					});
 				const changedGenerationIndexes =
 					generationIndexes?.filter((nextGenerationIndex) => {
 						const prev = prevGenerationIndexMap.get(nextGenerationIndex.id);
@@ -85,11 +87,11 @@ export function useActSystem(workspaceId: WorkspaceId) {
 				}
 
 				if (
-					act.status === "completed" ||
-					act.status === "failed" ||
-					act.status === "cancelled"
+					task.status === "completed" ||
+					task.status === "failed" ||
+					task.status === "cancelled"
 				) {
-					didActFinished = true;
+					didTaskFinished = true;
 				}
 
 				await new Promise((resolve) => setTimeout(resolve, 1000 * 5));
@@ -102,21 +104,21 @@ export function useActSystem(workspaceId: WorkspaceId) {
 		if (isLoading) {
 			return;
 		}
-		setActiveAct(data?.act);
-		if (data?.act !== undefined) {
-			pollingActGenerations(data.act.id);
+		setActiveTask(data?.task);
+		if (data?.task !== undefined) {
+			pollingTaskGenerations(data.task.id);
 		}
-	}, [data, isLoading, setActiveAct, pollingActGenerations]);
+	}, [data, isLoading, setActiveTask, pollingTaskGenerations]);
 
-	const createAndStartAct = useCallback(
+	const createAndStartTask = useCallback(
 		async ({
 			connectionIds,
 			nodeId,
 			inputs,
-			onActStart,
-		}: CreateAndStartActParams) => {
+			onTaskStart,
+		}: CreateAndStartTaskParams) => {
 			setCreating(true);
-			const { act, generations } = await client.createAct({
+			const { task, generations } = await client.createTask({
 				connectionIds,
 				nodeId,
 				workspaceId,
@@ -124,9 +126,9 @@ export function useActSystem(workspaceId: WorkspaceId) {
 				inputs,
 			});
 
-			setActiveAct(act);
+			setActiveTask(task);
 			addGenerationRunner(generations);
-			onActStart?.({
+			onTaskStart?.({
 				cancel: async () => {
 					await Promise.all(
 						generations.map((generation) =>
@@ -134,27 +136,27 @@ export function useActSystem(workspaceId: WorkspaceId) {
 						),
 					);
 				},
-				actId: act.id,
+				taskId: task.id,
 			});
-			await client.startAct({
-				actId: act.id,
+			await client.startTask({
+				taskId: task.id,
 				generationOriginType: "studio",
 			});
 			setCreating(false);
-			await pollingActGenerations(act.id);
+			await pollingTaskGenerations(task.id);
 		},
 		[
 			setCreating,
 			workspaceId,
 			client,
 			addGenerationRunner,
-			pollingActGenerations,
-			setActiveAct,
+			pollingTaskGenerations,
+			setActiveTask,
 			stopGenerationRunner,
 		],
 	);
 	return {
 		creating,
-		createAndStartAct,
+		createAndStartTask,
 	};
 }

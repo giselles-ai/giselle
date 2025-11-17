@@ -7,11 +7,11 @@ import { useEffect } from "react";
 export type StreamDataEventHandler = (data: StreamData) => void;
 
 /**
- * ActStreamReader - Server-Sent Events (SSE) Stream Handler
+ * TaskStreamReader - Server-Sent Events (SSE) Stream Handler
  *
  * Flow Diagram:
  * ┌─────────┐    HTTP POST     ┌───────────────┐    SSE Stream    ┌─────────────┐
- * │ Client  │ ─────────────── ▶│ /streamAct    │ ─────────────── ▶│ Stream      │
+ * │ Client  │ ─────────────── ▶│ /streamTask    │ ─────────────── ▶│ Stream      │
  * │ React   │                  │ API           │                  │ Processing  │
  * └─────────┘                  └───────────────┘                  └─────────────┘
  *      ▲                              │                                 │
@@ -23,13 +23,13 @@ export type StreamDataEventHandler = (data: StreamData) => void;
  *
  * Event Types:
  * - "connected": Initial connection established
- * - "data": New act data available → triggers onUpdateAction
+ * - "data": New task data available → triggers onUpdateAction
  * - "end": Stream completed naturally
  * - "error": Error occurred in stream
  *
  * SSE Message Handling:
  * - Buffers partial messages across stream chunks
- * - Splits chunks by "\n\n" to extract complete SSE messages
+ * - Splits chunks by "\n\n" to extrtask complete SSE messages
  * - Handles network/browser chunk boundaries gracefully
  *
  * Cleanup Strategy:
@@ -37,12 +37,12 @@ export type StreamDataEventHandler = (data: StreamData) => void;
  * - cancelled flag: Stops stream processing loop safely
  * - reader.cancel(): Releases ReadableStream resources
  */
-export function ActStreamReader({
-	actId,
+export function TaskStreamReader({
+	taskId,
 	onUpdateAction,
 	children,
 }: React.PropsWithChildren<{
-	actId: TaskId;
+	taskId: TaskId;
 	onUpdateAction: StreamDataEventHandler;
 }>) {
 	useEffect(() => {
@@ -55,12 +55,12 @@ export function ActStreamReader({
 			try {
 				// === FETCH PHASE ===
 				// Establish SSE connection to streaming endpoint
-				const apiResponse = await fetch(`/api/giselle/streamAct`, {
+				const apiResponse = await fetch(`/api/giselle/streamTask`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify({ actId }),
+					body: JSON.stringify({ taskId }),
 					signal: controller.signal, // Enable request cancellation
 				});
 
@@ -99,7 +99,7 @@ export function ActStreamReader({
 							if (!trimmed || !trimmed.startsWith("data:")) continue; // Skip empty or non-data lines
 
 							try {
-								// Extract JSON payload from SSE message
+								// Extrtask JSON payload from SSE message
 								const json = trimmed.slice(5).trim(); // Remove "data:" prefix
 								const parsed = JSON.parse(json);
 								const streamEvent = StreamEvent.parse(parsed); // Validate structure
@@ -116,7 +116,7 @@ export function ActStreamReader({
 										}
 										break;
 									case "data":
-										// New act data received - notify parent component
+										// New task data received - notify parent component
 										onUpdateAction(streamEvent.data);
 										break;
 									case "end":
@@ -170,7 +170,7 @@ export function ActStreamReader({
 			cancelled = true; // Stop processing new messages
 			controller.abort(); // Cancel ongoing HTTP request
 		};
-	}, [actId, onUpdateAction]); // Re-establish stream when actId or callback changes
+	}, [taskId, onUpdateAction]); // Re-establish stream when taskId or callback changes
 
 	return children;
 }
