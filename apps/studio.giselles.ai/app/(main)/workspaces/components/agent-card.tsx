@@ -1,34 +1,31 @@
 "use client";
 
-import { formatTimestamp } from "@giselles-ai/lib/utils";
 import clsx from "clsx/lite";
+import { File, Plug, Zap } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import type { agents as dbAgents } from "@/db";
-import { AppThumbnail } from "./app-thumbnail";
 import { DeleteAgentButton } from "./delete-agent-button";
 import { DuplicateAgentButton } from "./duplicate-agent-button";
 
-export function AgentCard({ agent }: { agent: typeof dbAgents.$inferSelect }) {
+interface AgentCardProps {
+	agent: typeof dbAgents.$inferSelect & {
+		executionCount?: number;
+		creator?: {
+			displayName: string | null;
+			avatarUrl: string | null;
+		} | null;
+		githubRepositories?: string[];
+		documentVectorStoreFiles?: string[];
+	};
+}
+
+export function AgentCard({ agent }: AgentCardProps) {
 	const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
 		const card = e.currentTarget;
 		const rect = card.getBoundingClientRect();
 		card.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
 		card.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
 	};
-
-	const [relativeTime, setRelativeTime] = useState("");
-
-	useEffect(() => {
-		const update = () => {
-			setRelativeTime(
-				formatTimestamp.toRelativeTime(new Date(agent.updatedAt).getTime()),
-			);
-		};
-		update();
-		const id = setInterval(update, 60_000);
-		return () => clearInterval(id);
-	}, [agent.updatedAt]);
 
 	if (!agent.workspaceId) {
 		return null;
@@ -39,7 +36,7 @@ export function AgentCard({ agent }: { agent: typeof dbAgents.$inferSelect }) {
 			onMouseMove={handleMouseMove}
 			aria-label={agent.name || "Untitled workspace"}
 			className={clsx(
-				"group relative flex h-[300px] w-[267px] flex-none flex-col rounded-[12px]",
+				"group relative flex h-[280px] w-[267px] flex-none flex-col rounded-[12px]",
 				"bg-[linear-gradient(135deg,rgba(100,130,200,0.20)_0%,rgba(60,80,120,0.35)_40%,rgba(20,30,60,0.85)_100%)]",
 				"filter grayscale hover:grayscale-0 transition duration-500",
 			)}
@@ -74,18 +71,107 @@ export function AgentCard({ agent }: { agent: typeof dbAgents.$inferSelect }) {
 				</div>
 				<Link
 					href={`/workspaces/${agent.workspaceId}`}
-					className="flex h-full flex-col pt-2"
+					className="flex h-full flex-col pt-2 px-2"
 					prefetch={false}
 				>
-					<AppThumbnail />
-					<div className="mt-3 px-2">
-						<h3 className="font-sans text-[16px] font-semibold text-inverse line-clamp-2">
-							{agent.name || "Untitled"}
-						</h3>
-						<div className="flex items-center justify-between mt-1">
-							<span className="max-w-[200px] truncate font-geist text-xs text-text/80">
-								Edited <span suppressHydrationWarning>{relativeTime}</span>
+					{/* Title */}
+					<h3 className="font-sans text-[18px] font-semibold text-inverse line-clamp-2 mb-2">
+						{agent.name || "Untitled"}
+					</h3>
+
+					{/* Description */}
+					<p className="font-geist text-[13px] text-link-muted line-clamp-2 mb-3">
+						Use a Large Language Model to summarize customer feedback.Use...
+					</p>
+
+					{/* Integration Icons and Footer */}
+					<div className="mt-auto flex flex-col gap-3">
+						{/* Vector Stores Group */}
+						{(agent.githubRepositories &&
+							agent.githubRepositories.length > 0) ||
+						(agent.documentVectorStoreFiles &&
+							agent.documentVectorStoreFiles.length > 0) ? (
+							<div className="flex flex-col gap-1.5">
+								{/* GitHub Repositories */}
+								{agent.githubRepositories &&
+									agent.githubRepositories.length > 0 && (
+										<div className="flex items-center gap-2">
+											<Plug className="w-3 h-3 text-text/60 flex-shrink-0" />
+											<div className="flex flex-col gap-1 min-w-0 flex-1">
+												{agent.githubRepositories.slice(0, 1).map((repo) => (
+													<div key={repo} className="flex items-center gap-1">
+														<div className="font-geist text-[11px] text-text/60 truncate">
+															{repo}
+														</div>
+														{agent.githubRepositories.length > 1 && (
+															<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-text/20">
+																+{agent.githubRepositories.length - 1}
+															</span>
+														)}
+													</div>
+												))}
+											</div>
+										</div>
+									)}
+
+								{/* Document Vector Store Files */}
+								{agent.documentVectorStoreFiles &&
+									agent.documentVectorStoreFiles.length > 0 && (
+										<div className="flex items-center gap-2">
+											<File className="w-3 h-3 text-text/60 flex-shrink-0" />
+											<div className="flex flex-col gap-1 min-w-0 flex-1">
+												{agent.documentVectorStoreFiles
+													.slice(0, 1)
+													.map((fileName) => (
+														<div
+															key={fileName}
+															className="flex items-center gap-1"
+														>
+															<div className="font-geist text-[11px] text-text/60 truncate">
+																{fileName}
+															</div>
+															{agent.documentVectorStoreFiles.length > 1 && (
+																<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-text/20">
+																	+{agent.documentVectorStoreFiles.length - 1}
+																</span>
+															)}
+														</div>
+													))}
+											</div>
+										</div>
+									)}
+							</div>
+						) : null}
+
+						{/* Integration Icons */}
+						<div className="flex items-center gap-2">
+							{/* TODO: Add integration icons based on workspace nodes */}
+							<div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center" />
+							<div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center" />
+							<div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center" />
+						</div>
+
+						{/* Footer: Creator and Stats */}
+						<div className="flex items-center justify-between">
+							<span className="font-geist text-[12px] text-text/70">
+								by {agent.creator?.displayName || "Unknown"}
 							</span>
+							<div className="flex items-center gap-3">
+								{/* <div className="flex items-center gap-1">
+									<Star className="w-3 h-3 text-text/70" />
+									<span className="font-geist text-[12px] text-text/70">517</span>
+								</div> */}
+								<div className="flex items-center gap-1">
+									<Zap className="w-3 h-3 text-text/70" />
+									<span className="font-geist text-[12px] text-text/70">
+										{agent.executionCount
+											? agent.executionCount >= 1000
+												? `${(agent.executionCount / 1000).toFixed(1)}k`
+												: agent.executionCount.toString()
+											: "0"}
+									</span>
+								</div>
+							</div>
 						</div>
 					</div>
 				</Link>

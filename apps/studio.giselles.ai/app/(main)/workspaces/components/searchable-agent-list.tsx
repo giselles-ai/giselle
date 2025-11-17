@@ -13,10 +13,20 @@ import { SearchHeader } from "./search-header";
 type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
 type ViewMode = "grid" | "list";
 
+type AgentWithMetadata = typeof dbAgents.$inferSelect & {
+	executionCount: number;
+	creator: {
+		displayName: string | null;
+		avatarUrl: string | null;
+	} | null;
+	githubRepositories: string[];
+	documentVectorStoreFiles: string[];
+};
+
 export function SearchableAgentList({
 	agents,
 }: {
-	agents: (typeof dbAgents.$inferSelect)[];
+	agents: AgentWithMetadata[];
 }) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sortOption, setSortOption] = useState<SortOption>("date-desc");
