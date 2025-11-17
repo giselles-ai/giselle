@@ -12,11 +12,11 @@ import {
 } from "@giselle-internal/ui/dialog";
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import { useToast } from "@giselles-ai/contexts/toast";
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx/lite";
 import { Ellipsis, File, X, Zap } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { DropdownMenu } from "radix-ui";
 import { useCallback, useState, useTransition } from "react";
 import type { AgentId } from "@/services/agents";
 import { GitHubIcon } from "../../../../../../internal-packages/workflow-designer-ui/src/icons";
@@ -180,8 +180,11 @@ export function AppListItem({
 				</div>
 				{agentId && (
 					<>
-						<DropdownMenu.Root open={menuOpen} onOpenChange={setMenuOpen}>
-							<DropdownMenu.Trigger asChild>
+						<DropdownMenuPrimitive.Root
+							open={menuOpen}
+							onOpenChange={setMenuOpen}
+						>
+							<DropdownMenuPrimitive.Trigger asChild>
 								<button
 									type="button"
 									className="text-text/60 hover:text-text/80 transition-colors flex-shrink-0"
@@ -189,16 +192,16 @@ export function AppListItem({
 								>
 									<Ellipsis className="w-4 h-4" />
 								</button>
-							</DropdownMenu.Trigger>
-							<DropdownMenu.Portal>
-								<DropdownMenu.Content
+							</DropdownMenuPrimitive.Trigger>
+							<DropdownMenuPrimitive.Portal>
+								<DropdownMenuPrimitive.Content
 									sideOffset={4}
 									className={clsx(
 										"relative z-50 min-w-[165px] overflow-hidden rounded-[12px] p-1 text-text shadow-md",
 									)}
 								>
 									<GlassSurfaceLayers tone="default" borderStyle="solid" />
-									<DropdownMenu.Item
+									<DropdownMenuPrimitive.Item
 										onSelect={handleDuplicate}
 										className={clsx(
 											"rounded-md px-3 py-2 text-[14px] font-medium outline-none",
@@ -208,8 +211,8 @@ export function AppListItem({
 										<span className="inline-flex items-center gap-2">
 											Duplicate
 										</span>
-									</DropdownMenu.Item>
-									<DropdownMenu.Item
+									</DropdownMenuPrimitive.Item>
+									<DropdownMenuPrimitive.Item
 										onSelect={handleDelete}
 										className={clsx(
 											"rounded-md px-3 py-2 text-[14px] font-medium outline-none",
@@ -219,10 +222,10 @@ export function AppListItem({
 										<span className="inline-flex items-center gap-2">
 											Delete
 										</span>
-									</DropdownMenu.Item>
-								</DropdownMenu.Content>
-							</DropdownMenu.Portal>
-						</DropdownMenu.Root>
+									</DropdownMenuPrimitive.Item>
+								</DropdownMenuPrimitive.Content>
+							</DropdownMenuPrimitive.Portal>
+						</DropdownMenuPrimitive.Root>
 
 						{/* Duplicate Dialog */}
 						<Dialog
