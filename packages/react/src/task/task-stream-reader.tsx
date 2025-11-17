@@ -29,7 +29,7 @@ export type StreamDataEventHandler = (data: StreamData) => void;
  *
  * SSE Message Handling:
  * - Buffers partial messages across stream chunks
- * - Splits chunks by "\n\n" to extrtask complete SSE messages
+ * - Splits chunks by "\n\n" to extract complete SSE messages
  * - Handles network/browser chunk boundaries gracefully
  *
  * Cleanup Strategy:

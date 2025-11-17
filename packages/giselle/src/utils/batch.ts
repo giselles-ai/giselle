@@ -53,7 +53,7 @@ export function batchWriter<T>({
 			buf = [];
 		}
 		logger?.debug(
-			`tick: extrtasked ${items.length} items for flushing, preserveItems: ${preserveItems}`,
+			`tick: extracted ${items.length} items for flushing, preserveItems: ${preserveItems}`,
 		);
 
 		// Wait for any ongoing flush to complete

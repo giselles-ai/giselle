@@ -73,7 +73,7 @@ export function streamTask(args: { taskId: TaskId; context: GiselleContext }) {
 					console.error("Error fetching task and generations:", error);
 					lastFetchedData = null;
 
-					// Only send error if controller is still taskive
+					// Only send error if controller is still active
 					try {
 						controller.enqueue(
 							encoder.encode(
@@ -92,7 +92,7 @@ export function streamTask(args: { taskId: TaskId; context: GiselleContext }) {
 			const cleanup = () => {
 				cleanupResources();
 
-				// Send end message and close if controller is still taskive
+				// Send end message and close if controller is still active
 				if (controller.desiredSize !== null) {
 					controller.enqueue(encoder.encode(formatStreamData({ type: "end" })));
 					controller.close();
