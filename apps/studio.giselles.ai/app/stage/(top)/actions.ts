@@ -1,47 +1,45 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { giselle } from "@/app/giselle";
-import { acts as actsSchema, db } from "@/db";
 import { fetchCurrentUser } from "@/services/accounts";
 import type { PerformStagePayloads } from "./types";
 
 export async function performStageAction(
-	payloads: PerformStagePayloads,
+	_payloads: PerformStagePayloads,
 ): Promise<void> {
 	try {
-		const user = await fetchCurrentUser();
-		const { act } = await giselle.createAct({
-			workspaceId: payloads.trigger.workspaceId,
-			nodeId: payloads.trigger.nodeId,
-			inputs: [
-				{
-					type: "parameters",
-					items: payloads.parameterItems,
-				},
-			],
-			generationOriginType: "stage",
-		});
+		await fetchCurrentUser();
+		// 	const { task } = await giselle.createTask({
+		// 		workspaceId: payloads.trigger.workspaceId,
+		// 		nodeId: payloads.trigger.nodeId,
+		// 		inputs: [
+		// 			{
+		// 				type: "parameters",
+		// 				items: payloads.parameterItems,
+		// 			},
+		// 		],
+		// 		generationOriginType: "stage",
+		// 	});
 
-		const team = await db.query.teams.findFirst({
-			where: (teams, { eq }) => eq(teams.id, payloads.teamId),
-		});
-		if (team === undefined) {
-			throw new Error("Team not found");
-		}
+		// 	const team = await db.query.teams.findFirst({
+		// 		where: (teams, { eq }) => eq(teams.id, payloads.teamId),
+		// 	});
+		// 	if (team === undefined) {
+		// 		throw new Error("Team not found");
+		// 	}
 
-		await db.insert(actsSchema).values({
-			teamDbId: team.dbId,
-			directorDbId: user.dbId,
-			sdkActId: act.id,
-			sdkFlowTriggerId: payloads.trigger.id,
-			sdkWorkspaceId: payloads.trigger.workspaceId,
-		});
+		// await db.insert(actsSchema).values({
+		// 	teamDbId: team.dbId,
+		// 	directorDbId: user.dbId,
+		// 	sdkActId: act.id,
+		// 	sdkFlowTriggerId: payloads.trigger.id,
+		// 	sdkWorkspaceId: payloads.trigger.workspaceId,
+		// });
 
-		await giselle.startAct({
-			actId: act.id,
-			generationOriginType: "stage",
-		});
+		// await giselle.startAct({
+		// 	taskId: act.id,
+		// 	generationOriginType: "stage",
+		// });
 
 		revalidatePath("/stage");
 	} catch (error) {

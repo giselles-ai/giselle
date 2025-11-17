@@ -34,7 +34,7 @@ const dummyGeneration: Generation = {
 		sourceNodes: [],
 		connections: [],
 		origin: {
-			actId: "act-Ibp7hXQp2TWPUEUo",
+			taskId: "tsk-Ibp7hXQp2TWPUEUo",
 			workspaceId: "wrks-bQi1pOHmSRtH8Qo6",
 			type: "studio",
 		},

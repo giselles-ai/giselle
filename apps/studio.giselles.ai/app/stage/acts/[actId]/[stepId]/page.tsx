@@ -58,11 +58,11 @@ function getModelInfo(generation: Generation): {
 export default async function ({
 	params,
 }: {
-	params: Promise<{ actId: TaskId; stepId: StepId }>;
+	params: Promise<{ taskId: TaskId; stepId: StepId }>;
 }) {
-	const { actId, stepId } = await params;
+	const { taskId, stepId } = await params;
 
-	const act = await giselle.getAct({ actId });
+	const act = await giselle.getTask({ taskId });
 	let step: Step | undefined;
 	for (const sequence of act.sequences) {
 		for (const tmp of sequence.steps) {

@@ -3,10 +3,10 @@ import { logger, schemaTask as schemaJob } from "@trigger.dev/sdk";
 import z from "zod/v4";
 import { giselle } from "@/app/giselle";
 
-export const runActJob = schemaJob({
-	id: "run-act-job",
+export const runTaskJob = schemaJob({
+	id: "run-task-job",
 	schema: z.object({
-		actId: TaskId.schema,
+		taskId: TaskId.schema,
 		requestId: z.string().optional(),
 		userId: z.string(),
 		team: z.object({
@@ -16,8 +16,8 @@ export const runActJob = schemaJob({
 		}),
 	}),
 	run: async (payload) => {
-		await giselle.runAct({
-			actId: payload.actId,
+		await giselle.runTask({
+			taskId: payload.taskId,
 			logger,
 			metadata: {
 				userId: payload.userId,

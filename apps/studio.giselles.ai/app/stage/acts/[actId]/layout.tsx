@@ -6,24 +6,24 @@ import { NavSkelton } from "./ui/nav-skelton";
 import { Sidebar } from "./ui/sidebar";
 import "./mobile-scroll.css";
 
-function isValidActId(actId: string): actId is TaskId {
-	return actId.startsWith("act-") && actId.length === 20; // "act-" + 16 chars
+function isValidTaskId(taskId: string): taskId is TaskId {
+	return taskId.startsWith("act-") && taskId.length === 20; // "act-" + 16 chars
 }
 
 export default async function ({
 	children,
 	params,
 }: React.PropsWithChildren<{
-	params: Promise<{ actId: string }>;
+	params: Promise<{ taskId: string }>;
 }>) {
-	const { actId: actIdParam } = await params;
+	const { taskId: taskIdParam } = await params;
 
-	// Validate actId parameter
-	if (!isValidActId(actIdParam)) {
+	// Validate taskId parameter
+	if (!isValidTaskId(taskIdParam)) {
 		notFound();
 	}
-	const actId: TaskId = actIdParam;
-	const data = getSidebarDataObject(actId);
+	const taskId: TaskId = taskIdParam;
+	const data = getSidebarDataObject(taskId);
 
 	return (
 		<div className="bg-bg text-foreground min-h-screen md:h-screen md:flex md:flex-row font-sans">

@@ -3,16 +3,16 @@ import { giselle } from "@/app/giselle";
 import { db } from "@/db";
 import type { SidebarDataObject } from "../ui/sidebar";
 
-export async function getSidebarDataObject(actId: TaskId) {
-	const act = await giselle.getAct({ actId });
+export async function getSidebarDataObject(taskId: TaskId) {
+	const act = await giselle.getTask({ taskId });
 	const dbAct = await db.query.acts.findFirst({
-		where: (tasks, { eq }) => eq(tasks.sdkActId, actId),
+		where: (tasks, { eq }) => eq(tasks.sdkActId, taskId),
 		with: {
 			team: true,
 		},
 	});
 	if (dbAct === undefined) {
-		throw new Error(`Task with id ${actId} not found`);
+		throw new Error(`Task with id ${taskId} not found`);
 	}
 	const trigger = await giselle.getTrigger({
 		triggerId: dbAct?.sdkFlowTriggerId,

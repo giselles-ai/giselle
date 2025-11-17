@@ -20,7 +20,7 @@ async function enrichActWithNavigationData(
 	teams: { dbId: number; name: string }[],
 ): Promise<ActWithNavigation | null> {
 	try {
-		const tmpAct = await giselle.getAct({ actId: act.sdkActId });
+		const tmpTask = await giselle.getTask({ taskId: act.sdkActId });
 		const team = teams.find((t) => t.dbId === act.teamDbId);
 		if (team === undefined) {
 			throw new Error("Team not found");
@@ -28,7 +28,7 @@ async function enrichActWithNavigationData(
 		const tmpWorkspace = await giselle.getWorkspace(act.sdkWorkspaceId);
 
 		const findStepByStatus = (status: string) => {
-			for (const sequence of tmpAct.sequences) {
+			for (const sequence of tmpTask.sequences) {
 				for (const step of sequence.steps) {
 					if (step.status === status) {
 						return step;
@@ -39,10 +39,10 @@ async function enrichActWithNavigationData(
 		};
 
 		const getFirstStep = () => {
-			if (tmpAct.sequences.length === 0) {
+			if (tmpTask.sequences.length === 0) {
 				return null;
 			}
-			const firstSequence = tmpAct.sequences[0];
+			const firstSequence = tmpTask.sequences[0];
 			if (firstSequence.steps.length === 0) {
 				return null;
 			}
@@ -50,20 +50,20 @@ async function enrichActWithNavigationData(
 		};
 
 		const getLastStep = () => {
-			if (tmpAct.sequences.length === 0) {
+			if (tmpTask.sequences.length === 0) {
 				return null;
 			}
-			const lastSequence = tmpAct.sequences[tmpAct.sequences.length - 1];
+			const lastSequence = tmpTask.sequences[tmpTask.sequences.length - 1];
 			if (lastSequence.steps.length === 0) {
 				return null;
 			}
 			return lastSequence.steps[lastSequence.steps.length - 1];
 		};
 
-		let link = `/stage/acts/${tmpAct.id}`;
+		let link = `/stage/acts/${tmpTask.id}`;
 		let targetStep = null;
 
-		switch (tmpAct.status) {
+		switch (tmpTask.status) {
 			case "created":
 			case "inProgress":
 				targetStep = findStepByStatus("running") ?? getFirstStep();
@@ -78,7 +78,7 @@ async function enrichActWithNavigationData(
 				targetStep = findStepByStatus("failed");
 				break;
 			default: {
-				const _exhaustiveCheck: never = tmpAct.status;
+				const _exhaustiveCheck: never = tmpTask.status;
 				throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
 			}
 		}
@@ -101,8 +101,8 @@ async function enrichActWithNavigationData(
 		}
 
 		return {
-			id: tmpAct.id,
-			status: tmpAct.status,
+			id: tmpTask.id,
+			status: tmpTask.status,
 			createdAt: act.createdAt.toISOString(),
 			link,
 			teamName: team.name,

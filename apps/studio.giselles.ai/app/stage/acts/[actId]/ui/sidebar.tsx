@@ -8,8 +8,8 @@ import type {
 	Task,
 } from "@giselles-ai/protocol";
 import {
-	ActStreamReader,
 	type StreamDataEventHandler,
+	TaskStreamReader,
 } from "@giselles-ai/react";
 import {
 	BrainCircuit,
@@ -49,8 +49,8 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 	const [isInputsExpanded, setIsInputsExpanded] = useState(false);
 	const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
 
-	const updateAct = useCallback<StreamDataEventHandler>((data) => {
-		setAct(data.act);
+	const updateTask = useCallback<StreamDataEventHandler>((data) => {
+		setAct(data.task);
 	}, []);
 
 	// Fetch generation data for completed steps and trigger step
@@ -98,7 +98,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 	}, []);
 
 	return (
-		<ActStreamReader actId={defaultAct.id} onUpdateAction={updateAct}>
+		<TaskStreamReader taskId={defaultAct.id} onUpdateAction={updateTask}>
 			<aside className="w-full md:flex md:flex-col md:w-[320px] border-0 md:border-[2px] md:border-transparent m-0 md:my-[8px] pb-20 md:pb-0">
 				{/* Large Back Arrow */}
 				<div className="pt-[16px] mb-[20px] px-[16px] md:px-[32px]">
@@ -342,6 +342,6 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 						))}
 				</div>
 			</aside>
-		</ActStreamReader>
+		</TaskStreamReader>
 	);
 }

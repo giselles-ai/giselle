@@ -39,7 +39,7 @@ export const generateContentJob = schemaJob({
 					generation,
 					requestId: parsedMetadata.requestId,
 					userId: parsedMetadata.userId,
-					sessionId: generation.context.origin.actId,
+					sessionId: generation.context.origin.taskId,
 					team: {
 						id: parsedMetadata.team.id,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
@@ -54,7 +54,7 @@ export const generateContentJob = schemaJob({
 					generation,
 					requestId: parsedMetadata.requestId,
 					userId: parsedMetadata.userId,
-					sessionId: generation.context.origin.actId,
+					sessionId: generation.context.origin.taskId,
 					team: {
 						id: parsedMetadata.team.id,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,

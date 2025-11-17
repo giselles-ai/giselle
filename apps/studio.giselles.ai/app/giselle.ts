@@ -19,7 +19,7 @@ import { fetchUsageLimits } from "@/packages/lib/fetch-usage-limits";
 import { onConsumeAgentTime } from "@/packages/lib/on-consume-agent-time";
 import { fetchCurrentUser } from "@/services/accounts";
 import { type CurrentTeam, fetchCurrentTeam } from "@/services/teams";
-import type { runActJob } from "@/trigger/run-act-job";
+import type { runTaskJob } from "@/trigger/run-task-job";
 import { getDocumentVectorStoreQueryService } from "../lib/vector-stores/document/query/service";
 import {
 	gitHubIssueQueryService,
@@ -220,7 +220,7 @@ export const giselle = NextGiselle({
 					requestId,
 					userId: "github-app",
 					team,
-					sessionId: args.generation.context.origin.actId,
+					sessionId: args.generation.context.origin.taskId,
 				});
 				return;
 			}
@@ -233,7 +233,7 @@ export const giselle = NextGiselle({
 				requestId,
 				userId: currentUser.id,
 				team: currentTeam,
-				sessionId: args.generation.context.origin.actId,
+				sessionId: args.generation.context.origin.taskId,
 			});
 		},
 		generationError: async (args) => {
@@ -272,7 +272,7 @@ export const giselle = NextGiselle({
 						metrics: args.embeddingMetrics,
 						generation: args.generation,
 						queryContext: args.queryContext,
-						sessionId: args.generation.context.origin.actId,
+						sessionId: args.generation.context.origin.taskId,
 						userId: parsedMetadata.userId,
 						team: {
 							id: parsedMetadata.team.id,
@@ -291,7 +291,7 @@ export const giselle = NextGiselle({
 							metrics: args.embeddingMetrics,
 							generation: args.generation,
 							queryContext: args.queryContext,
-							sessionId: args.generation.context.origin.actId,
+							sessionId: args.generation.context.origin.taskId,
 							userId: "github-app",
 							team,
 						});
@@ -307,7 +307,7 @@ export const giselle = NextGiselle({
 							metrics: args.embeddingMetrics,
 							generation: args.generation,
 							queryContext: args.queryContext,
-							sessionId: args.generation.context.origin.actId,
+							sessionId: args.generation.context.origin.taskId,
 							userId: currentUser.id,
 							team: currentTeam,
 						});
@@ -427,14 +427,14 @@ if (generateContentProcessor === "trigger.dev") {
 		}
 	});
 
-	giselle.setRunActProcess(async ({ act, generationOriginType }) => {
+	giselle.setRunTaskProcess(async ({ task, generationOriginType }) => {
 		const requestId = getRequestId();
 		switch (generationOriginType) {
 			case "github-app": {
-				const team = await getWorkspaceTeam(act.workspaceId);
+				const team = await getWorkspaceTeam(task.workspaceId);
 
-				await jobs.trigger<typeof runActJob>("run-act-job", {
-					actId: act.id,
+				await jobs.trigger<typeof runTaskJob>("run-task-job", {
+					taskId: task.id,
 					requestId,
 					userId: "github-app",
 					team: {
@@ -452,8 +452,8 @@ if (generateContentProcessor === "trigger.dev") {
 					fetchCurrentTeam(),
 				]);
 
-				await jobs.trigger<typeof runActJob>("run-act-job", {
-					actId: act.id,
+				await jobs.trigger<typeof runTaskJob>("run-task-job", {
+					taskId: task.id,
 					requestId,
 					userId: currentUser.id,
 					team: {
