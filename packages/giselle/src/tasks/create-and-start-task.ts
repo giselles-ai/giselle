@@ -33,5 +33,7 @@ export async function createAndStartTask(
 		context: args.context,
 		taskId: task.id,
 		callbacks: args.callbacks,
+		onGenerationComplete: args.callbacks?.generationComplete,
+		onGenerationError: args.callbacks?.generationError,
 	});
 }
