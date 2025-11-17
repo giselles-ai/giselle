@@ -258,11 +258,11 @@ async function resolveQuery(
 }
 
 type ConfiguredGitHubVectorStoreSource = GitHubVectorStoreSource & {
-	state: Extrtask<GitHubVectorStoreSource["state"], { status: "configured" }>;
+	state: Extract<GitHubVectorStoreSource["state"], { status: "configured" }>;
 };
 
 type ConfiguredDocumentVectorStoreSource = DocumentVectorStoreSource & {
-	state: Extrtask<DocumentVectorStoreSource["state"], { status: "configured" }>;
+	state: Extract<DocumentVectorStoreSource["state"], { status: "configured" }>;
 };
 
 type ConfiguredVectorStoreSource =

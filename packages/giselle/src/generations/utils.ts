@@ -758,7 +758,7 @@ export async function checkUsageLimits(args: {
 }
 
 export function queryResultToText(
-	queryResult: Extrtask<GenerationOutput, { type: "query-result" }>,
+	queryResult: Extract<GenerationOutput, { type: "query-result" }>,
 ): string | undefined {
 	if (!queryResult.content || queryResult.content.length === 0) {
 		return undefined;

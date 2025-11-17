@@ -47,7 +47,7 @@ export function batchWriter<T>({
 			return;
 		}
 
-		// Extrtask items to flush
+		// Extract items to flush
 		const items = [...buf];
 		if (!preserveItems) {
 			buf = [];

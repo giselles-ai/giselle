@@ -99,7 +99,7 @@ export function TaskStreamReader({
 							if (!trimmed || !trimmed.startsWith("data:")) continue; // Skip empty or non-data lines
 
 							try {
-								// Extrtask JSON payload from SSE message
+								// Extract JSON payload from SSE message
 								const json = trimmed.slice(5).trim(); // Remove "data:" prefix
 								const parsed = JSON.parse(json);
 								const streamEvent = StreamEvent.parse(parsed); // Validate structure

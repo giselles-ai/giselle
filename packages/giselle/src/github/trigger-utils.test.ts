@@ -13,7 +13,7 @@ import { describe, expect, test, vi } from "vitest";
 import { resolveTrigger } from "./trigger-utils";
 
 vi.mock("@giselles-ai/github-tool", async () => {
-	const taskual = await vi.importTaskual<
+	const taskual = await vi.importActual<
 		typeof import("@giselles-ai/github-tool")
 	>("@giselles-ai/github-tool");
 	return {

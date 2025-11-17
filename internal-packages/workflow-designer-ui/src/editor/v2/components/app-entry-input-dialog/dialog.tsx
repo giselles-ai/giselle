@@ -2,8 +2,8 @@ import { Button } from "@giselle-internal/ui/button";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { AppEntryNode, ConnectionId } from "@giselles-ai/protocol";
 import {
-	useActSystem,
 	useGiselle,
+	useTaskSystem,
 	useWorkflowDesignerStore,
 } from "@giselles-ai/react";
 import { clsx } from "clsx/lite";
@@ -38,7 +38,7 @@ export function AppEntryInputDialog({
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const workspaceId = useWorkflowDesignerStore((s) => s.workspace.id);
-	const { createAndStartAct } = useActSystem(workspaceId);
+	const { createAndStartTask } = useTaskSystem(workspaceId);
 	const { toast } = useToasts();
 
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
@@ -114,7 +114,7 @@ export function AppEntryInputDialog({
 					};
 				});
 
-				await createAndStartAct({
+				await createAndStartTask({
 					connectionIds,
 					inputs: [
 						{
@@ -122,9 +122,9 @@ export function AppEntryInputDialog({
 							items: parameterItems,
 						},
 					],
-					onActStart({ cancel, actId }) {
+					onTaskStart({ cancel, taskId }) {
 						toast("Workflow submitted successfully", {
-							id: actId,
+							id: taskId,
 							preserve: true,
 							action: {
 								label: "Cancel",
@@ -134,8 +134,8 @@ export function AppEntryInputDialog({
 							},
 						});
 					},
-					onActComplete: ({ actId }) => {
-						toast.dismiss(actId);
+					onTaskComplete: ({ taskId }) => {
+						toast.dismiss(taskId);
 					},
 				});
 				onClose();
@@ -143,7 +143,7 @@ export function AppEntryInputDialog({
 				setIsSubmitting(false);
 			}
 		},
-		[data, onClose, connectionIds, createAndStartAct, toast],
+		[data, onClose, connectionIds, createAndStartTask, toast],
 	);
 
 	if (isLoading || data === undefined) {

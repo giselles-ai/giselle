@@ -170,7 +170,7 @@ export function parseCommand(text: string): Command | null {
 		return null;
 	}
 
-	// Extrtask callSign (first word) and remaining content
+	// Extract callSign (first word) and remaining content
 	const parts = commandMatch[1].trim().split(/\s+/);
 	const callsign = parts[0];
 	const firstLineContent = parts.slice(1).join(" ");
