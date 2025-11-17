@@ -7,7 +7,6 @@ import {
 	StartActInputs,
 } from "@giselles-ai/giselle";
 import {
-	ActId,
 	FetchingWebPage,
 	FileId,
 	Generation,
@@ -18,6 +17,7 @@ import {
 	QueuedGeneration,
 	RunningGeneration,
 	SecretId,
+	TaskId,
 	Trigger,
 	TriggerId,
 	Workspace,
@@ -342,7 +342,7 @@ export const jsonRoutes = {
 	patchAct: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
-				actId: ActId.schema,
+				actId: TaskId.schema,
 				patches: z.array(z.custom<Patch>()),
 			}),
 			handler: async ({ input }) =>
@@ -374,7 +374,7 @@ export const jsonRoutes = {
 	streamAct: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
-				actId: ActId.schema,
+				actId: TaskId.schema,
 			}),
 			handler: ({ input }) => {
 				const stream = giselle.streamAct(input);
@@ -440,7 +440,7 @@ export const jsonRoutes = {
 	getActGenerationIndexes: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
-				actId: ActId.schema,
+				actId: TaskId.schema,
 			}),
 			handler: async ({ input }) => {
 				const result = await giselle.getActGenerationIndexes({

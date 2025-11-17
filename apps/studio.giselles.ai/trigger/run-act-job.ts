@@ -1,4 +1,4 @@
-import { ActId } from "@giselles-ai/giselle";
+import { TaskId } from "@giselles-ai/giselle";
 import { logger, schemaTask as schemaJob } from "@trigger.dev/sdk";
 import z from "zod/v4";
 import { giselle } from "@/app/giselle";
@@ -6,7 +6,7 @@ import { giselle } from "@/app/giselle";
 export const runActJob = schemaJob({
 	id: "run-act-job",
 	schema: z.object({
-		actId: ActId.schema,
+		actId: TaskId.schema,
 		requestId: z.string().optional(),
 		userId: z.string(),
 		team: z.object({

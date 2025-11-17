@@ -1,8 +1,8 @@
 import type { WorkspaceId } from "@giselles-ai/protocol";
-import { Act, ActIndexObject } from "@giselles-ai/protocol";
+import { Task, TaskIndexObject } from "@giselles-ai/protocol";
+import { taskPath, workspaceTaskPath } from "../path";
 import type { GiselleContext } from "../types";
 import { getWorkspaceIndex } from "../utils/workspace-index";
-import { actPath, workspaceActPath } from "./object/paths";
 
 export async function getWorkspaceInprogressAct({
 	context,
@@ -14,8 +14,8 @@ export async function getWorkspaceInprogressAct({
 	context.logger.debug("getWorkspaceInprogressAct");
 	const workspaceActIndexes = await getWorkspaceIndex({
 		context,
-		indexPath: workspaceActPath(workspaceId),
-		itemSchema: ActIndexObject,
+		indexPath: workspaceTaskPath(workspaceId),
+		itemSchema: TaskIndexObject,
 	});
 	context.logger.debug(
 		{ workspaceActIndices: workspaceActIndexes },
@@ -26,8 +26,8 @@ export async function getWorkspaceInprogressAct({
 			workspaceActIndexes.map(async (workspaceActIndex) => {
 				try {
 					return await context.storage.getJson({
-						path: actPath(workspaceActIndex.id),
-						schema: Act,
+						path: taskPath(workspaceActIndex.id),
+						schema: Task,
 					});
 				} catch (error) {
 					const errorMessage =
@@ -43,7 +43,7 @@ export async function getWorkspaceInprogressAct({
 				}
 			}),
 		)
-	).filter((act): act is Act => act !== null);
+	).filter((act): act is Task => act !== null);
 	context.logger.debug({ workspaceActs }, "workspaceActs:");
 	const inprogressActs = workspaceActs
 		.sort((a, b) => b.createdAt - a.createdAt)

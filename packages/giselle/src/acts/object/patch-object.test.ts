@@ -1,12 +1,12 @@
-import type { Act } from "@giselles-ai/protocol";
+import type { Task } from "@giselles-ai/protocol";
 import { describe, expect, it } from "vitest";
 import { patchAct } from "./patch-object";
 
 describe("patchAct", () => {
-	// Helper function to create a minimal Act object for testing
-	function createTestAct(): Act {
+	// Helper function to create a minimal Task object for testing
+	function createTestAct(): Task {
 		return {
-			id: "act-test123" as const,
+			id: "tsk-test123" as const,
 			workspaceId: "wrks-test456" as const,
 			name: "test",
 			status: "inProgress",

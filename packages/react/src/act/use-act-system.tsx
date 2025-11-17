@@ -1,7 +1,7 @@
 import type { ActExecutorOptions, CreateActInputs } from "@giselles-ai/giselle";
 import type {
-	ActId,
 	NodeGenerationIndex,
+	TaskId,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { useCallback, useEffect } from "react";
@@ -53,7 +53,7 @@ export function useActSystem(workspaceId: WorkspaceId) {
 	const setCreating = useActStore((s) => s.setCreating);
 
 	const pollingActGenerations = useCallback(
-		async (actId: ActId) => {
+		async (actId: TaskId) => {
 			let didActFinished = false;
 			const prevGenerationIndexMap = new Map<string, NodeGenerationIndex>();
 			while (!didActFinished) {

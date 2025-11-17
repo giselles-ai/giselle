@@ -1,4 +1,4 @@
-import type { Act, Sequence, Step } from "@giselles-ai/protocol";
+import type { Sequence, Step, Task } from "@giselles-ai/protocol";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { patchAct } from "../object/patch-object";
 import {
@@ -32,14 +32,14 @@ function createTestSequence(overrides?: Partial<Sequence>): Sequence {
 	};
 }
 
-function createTestAct(overrides?: Partial<Act>): Act {
+function createTestAct(overrides?: Partial<Task>): Task {
 	const sequences = overrides?.sequences || [createTestSequence()];
 	const totalSteps = sequences.reduce((sum, seq) => sum + seq.steps.length, 0);
 
 	return {
-		id: "act-1" as const,
+		id: "tsk-1" as const,
 		workspaceId: "wrks-1" as const,
-		name: "Test Act",
+		name: "Test Task",
 		status: "inProgress",
 		steps: {
 			queued: totalSteps,
@@ -544,7 +544,7 @@ describe("executeAct", () => {
 			onStepStart,
 		});
 
-		// Act should fail because the callback error causes step to fail
+		// Task should fail because the callback error causes step to fail
 		expect(result.hasError).toBe(true);
 		expect(currentAct.status).toBe("failed");
 	});

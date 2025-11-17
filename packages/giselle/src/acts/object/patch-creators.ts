@@ -1,11 +1,11 @@
-import type { Act } from "@giselles-ai/protocol";
+import type { Task } from "@giselles-ai/protocol";
 import type { Patch } from "./patch-object";
 
-// Type-safe patch creators for Act fields
+// Type-safe patch creators for Task fields
 
 // Status patches
 const status = {
-	set: (value: Act["status"]): Patch => ({
+	set: (value: Task["status"]): Patch => ({
 		path: "status",
 		set: value,
 	}),
@@ -14,7 +14,7 @@ const status = {
 // Steps patches
 const steps = {
 	queued: {
-		set: (value: Act["steps"]["queued"]): Patch => ({
+		set: (value: Task["steps"]["queued"]): Patch => ({
 			path: "steps.queued",
 			set: value,
 		}),
@@ -28,7 +28,7 @@ const steps = {
 		}),
 	},
 	inProgress: {
-		set: (value: Act["steps"]["inProgress"]): Patch => ({
+		set: (value: Task["steps"]["inProgress"]): Patch => ({
 			path: "steps.inProgress",
 			set: value,
 		}),
@@ -42,7 +42,7 @@ const steps = {
 		}),
 	},
 	completed: {
-		set: (value: Act["steps"]["completed"]): Patch => ({
+		set: (value: Task["steps"]["completed"]): Patch => ({
 			path: "steps.completed",
 			set: value,
 		}),
@@ -56,7 +56,7 @@ const steps = {
 		}),
 	},
 	warning: {
-		set: (value: Act["steps"]["warning"]): Patch => ({
+		set: (value: Task["steps"]["warning"]): Patch => ({
 			path: "steps.warning",
 			set: value,
 		}),
@@ -70,7 +70,7 @@ const steps = {
 		}),
 	},
 	cancelled: {
-		set: (value: Act["steps"]["cancelled"]): Patch => ({
+		set: (value: Task["steps"]["cancelled"]): Patch => ({
 			path: "steps.cancelled",
 			set: value,
 		}),
@@ -84,7 +84,7 @@ const steps = {
 		}),
 	},
 	failed: {
-		set: (value: Act["steps"]["failed"]): Patch => ({
+		set: (value: Task["steps"]["failed"]): Patch => ({
 			path: "steps.failed",
 			set: value,
 		}),
@@ -102,7 +102,7 @@ const steps = {
 // Duration patches
 const duration = {
 	wallClock: {
-		set: (value: Act["duration"]["wallClock"]): Patch => ({
+		set: (value: Task["duration"]["wallClock"]): Patch => ({
 			path: "duration.wallClock",
 			set: value,
 		}),
@@ -116,7 +116,7 @@ const duration = {
 		}),
 	},
 	totalTask: {
-		set: (value: Act["duration"]["totalTask"]): Patch => ({
+		set: (value: Task["duration"]["totalTask"]): Patch => ({
 			path: "duration.totalTask",
 			set: value,
 		}),
@@ -134,7 +134,7 @@ const duration = {
 // Usage patches
 const usage = {
 	inputTokens: {
-		set: (value: Act["usage"]["inputTokens"]): Patch => ({
+		set: (value: Task["usage"]["inputTokens"]): Patch => ({
 			path: "usage.promptTokens",
 			set: value,
 		}),
@@ -148,7 +148,7 @@ const usage = {
 		}),
 	},
 	outputTokens: {
-		set: (value: Act["usage"]["outputTokens"]): Patch => ({
+		set: (value: Task["usage"]["outputTokens"]): Patch => ({
 			path: "usage.completionTokens",
 			set: value,
 		}),
@@ -162,7 +162,7 @@ const usage = {
 		}),
 	},
 	totalTokens: {
-		set: (value: Act["usage"]["totalTokens"]): Patch => ({
+		set: (value: Task["usage"]["totalTokens"]): Patch => ({
 			path: "usage.totalTokens",
 			set: value,
 		}),
@@ -179,11 +179,11 @@ const usage = {
 
 // Annotations patches
 const annotations = {
-	push: (items: Act["annotations"]): Patch => ({
+	push: (items: Task["annotations"]): Patch => ({
 		path: "annotations",
 		push: items,
 	}),
-	set: (items: Act["annotations"]): Patch => ({
+	set: (items: Task["annotations"]): Patch => ({
 		path: "annotations",
 		set: items,
 	}),
@@ -192,7 +192,7 @@ const annotations = {
 // Sequences patches with dynamic indices
 const sequences = (index: number) => ({
 	status: {
-		set: (value: Act["sequences"][number]["status"]): Patch => ({
+		set: (value: Task["sequences"][number]["status"]): Patch => ({
 			path: `sequences.${index}.status`,
 			set: value,
 		}),
@@ -200,7 +200,7 @@ const sequences = (index: number) => ({
 	duration: {
 		wallClock: {
 			set: (
-				value: Act["sequences"][number]["duration"]["wallClock"],
+				value: Task["sequences"][number]["duration"]["wallClock"],
 			): Patch => ({
 				path: `sequences.${index}.duration.wallClock`,
 				set: value,
@@ -216,7 +216,7 @@ const sequences = (index: number) => ({
 		},
 		totalTask: {
 			set: (
-				value: Act["sequences"][number]["duration"]["totalTask"],
+				value: Task["sequences"][number]["duration"]["totalTask"],
 			): Patch => ({
 				path: `sequences.${index}.duration.totalTask`,
 				set: value,
@@ -234,7 +234,7 @@ const sequences = (index: number) => ({
 	usage: {
 		inputTokens: {
 			set: (
-				value: Act["sequences"][number]["usage"]["inputTokens"],
+				value: Task["sequences"][number]["usage"]["inputTokens"],
 			): Patch => ({
 				path: `sequences.${index}.usage.inputTokens`,
 				set: value,
@@ -250,7 +250,7 @@ const sequences = (index: number) => ({
 		},
 		outputTokens: {
 			set: (
-				value: Act["sequences"][number]["usage"]["outputTokens"],
+				value: Task["sequences"][number]["usage"]["outputTokens"],
 			): Patch => ({
 				path: `sequences.${index}.usage.outputTokens`,
 				set: value,
@@ -266,7 +266,7 @@ const sequences = (index: number) => ({
 		},
 		totalTokens: {
 			set: (
-				value: Act["sequences"][number]["usage"]["totalTokens"],
+				value: Task["sequences"][number]["usage"]["totalTokens"],
 			): Patch => ({
 				path: `sequences.${index}.usage.totalTokens`,
 				set: value,
@@ -284,7 +284,7 @@ const sequences = (index: number) => ({
 	steps: (stepIndex: number) => ({
 		status: {
 			set: (
-				value: Act["sequences"][number]["steps"][number]["status"],
+				value: Task["sequences"][number]["steps"][number]["status"],
 			): Patch => ({
 				path: `sequences.${index}.steps.${stepIndex}.status`,
 				set: value,
@@ -292,7 +292,7 @@ const sequences = (index: number) => ({
 		},
 		name: {
 			set: (
-				value: Act["sequences"][number]["steps"][number]["name"],
+				value: Task["sequences"][number]["steps"][number]["name"],
 			): Patch => ({
 				path: `sequences.${index}.steps.${stepIndex}.name`,
 				set: value,
@@ -300,7 +300,7 @@ const sequences = (index: number) => ({
 		},
 		duration: {
 			set: (
-				value: Act["sequences"][number]["steps"][number]["duration"],
+				value: Task["sequences"][number]["steps"][number]["duration"],
 			): Patch => ({
 				path: `sequences.${index}.steps.${stepIndex}.duration`,
 				set: value,
@@ -317,7 +317,7 @@ const sequences = (index: number) => ({
 		usage: {
 			inputTokens: {
 				set: (
-					value: Act["sequences"][number]["steps"][number]["usage"]["inputTokens"],
+					value: Task["sequences"][number]["steps"][number]["usage"]["inputTokens"],
 				): Patch => ({
 					path: `sequences.${index}.steps.${stepIndex}.usage.inputTokens`,
 					set: value,
@@ -333,7 +333,7 @@ const sequences = (index: number) => ({
 			},
 			outputTokens: {
 				set: (
-					value: Act["sequences"][number]["steps"][number]["usage"]["outputTokens"],
+					value: Task["sequences"][number]["steps"][number]["usage"]["outputTokens"],
 				): Patch => ({
 					path: `sequences.${index}.steps.${stepIndex}.usage.outputTokens`,
 					set: value,
@@ -349,7 +349,7 @@ const sequences = (index: number) => ({
 			},
 			totalTokens: {
 				set: (
-					value: Act["sequences"][number]["steps"][number]["usage"]["totalTokens"],
+					value: Task["sequences"][number]["steps"][number]["usage"]["totalTokens"],
 				): Patch => ({
 					path: `sequences.${index}.steps.${stepIndex}.usage.totalTokens`,
 					set: value,
@@ -369,11 +369,11 @@ const sequences = (index: number) => ({
 
 // Other simple fields
 const trigger = {
-	set: (value: Act["trigger"]): Patch => ({ path: "trigger", set: value }),
+	set: (value: Task["trigger"]): Patch => ({ path: "trigger", set: value }),
 } as const;
 
 const updatedAt = {
-	set: (value: Act["updatedAt"]): Patch => ({ path: "updatedAt", set: value }),
+	set: (value: Task["updatedAt"]): Patch => ({ path: "updatedAt", set: value }),
 } as const;
 
 // Convenience re-export of all patch creators

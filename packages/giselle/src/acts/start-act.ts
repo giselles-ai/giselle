@@ -1,4 +1,4 @@
-import { ActId, GenerationOrigin } from "@giselles-ai/protocol";
+import { GenerationOrigin, TaskId } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
 import type { OnGenerationComplete, OnGenerationError } from "../generations";
 import type { GiselleContext } from "../types";
@@ -8,7 +8,7 @@ import { patchAct } from "./patch-act";
 import { runAct } from "./run-act";
 
 export const StartActInputs = z.object({
-	actId: ActId.schema,
+	actId: TaskId.schema,
 	generationOriginType: z.enum(
 		GenerationOrigin.options.map((option) => option.shape.type.value),
 	),
@@ -29,7 +29,7 @@ export async function startAct({
 	const act = await getAct({ context, actId });
 
 	if (act.status !== "created") {
-		throw new Error(`Act ${actId} is not in the created state`);
+		throw new Error(`Task ${actId} is not in the created state`);
 	}
 
 	await patchAct({

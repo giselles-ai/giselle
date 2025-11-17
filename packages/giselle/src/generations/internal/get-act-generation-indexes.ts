@@ -1,10 +1,10 @@
-import type { ActId } from "@giselles-ai/protocol";
+import type { TaskId } from "@giselles-ai/protocol";
 import { NodeGenerationIndex } from "@giselles-ai/protocol";
 import type { GiselleStorage } from "@giselles-ai/storage";
 import { actGenerationIndexesPath } from "../../path";
 
 export async function getActGenerationIndexes(args: {
-	actId: ActId;
+	actId: TaskId;
 	storage: GiselleStorage;
 }) {
 	if (!(await args.storage.exists(actGenerationIndexesPath(args.actId)))) {

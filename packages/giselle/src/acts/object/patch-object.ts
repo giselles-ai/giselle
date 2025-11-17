@@ -1,4 +1,4 @@
-import type { Act } from "@giselles-ai/protocol";
+import type { Task } from "@giselles-ai/protocol";
 
 // Patch types - one for each operation
 export type Patch =
@@ -15,7 +15,7 @@ function isDangerousKey(key: string): boolean {
 	return DANGEROUS_KEYS.includes(key);
 }
 
-export function patchAct(act: Act, ...patches: Patch[]): Act {
+export function patchAct(act: Task, ...patches: Patch[]): Task {
 	const result = structuredClone(act);
 
 	for (const patch of patches) {

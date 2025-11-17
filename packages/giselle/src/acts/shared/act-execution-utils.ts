@@ -1,17 +1,17 @@
 import type {
-	Act,
-	ActId,
 	Generation,
 	GenerationId,
 	GenerationStatus,
 	Sequence,
 	Step,
+	Task,
+	TaskId,
 } from "@giselles-ai/protocol";
 import { patches } from "../object/patch-creators";
 import type { Patch } from "../object/patch-object";
 
 // Valid status transitions for acts
-const VALID_ACT_TRANSITIONS: Record<Act["status"], Act["status"][]> = {
+const VALID_ACT_TRANSITIONS: Record<Task["status"], Task["status"][]> = {
 	created: ["inProgress"],
 	inProgress: ["completed", "failed", "cancelled"],
 	completed: [],
@@ -33,8 +33,8 @@ const VALID_GENERATION_TRANSITIONS: Record<
 };
 
 export function isValidActTransition(
-	from: Act["status"],
-	to: Act["status"],
+	from: Task["status"],
+	to: Task["status"],
 ): boolean {
 	return VALID_ACT_TRANSITIONS[from]?.includes(to) ?? false;
 }
@@ -150,8 +150,8 @@ async function executeSequence({
  * Create patches to move step counts between states
  */
 export function createStepCountPatches(
-	from: keyof Act["steps"],
-	to: keyof Act["steps"],
+	from: keyof Task["steps"],
+	to: keyof Task["steps"],
 	count: number,
 ): Patch[] {
 	return [
@@ -161,8 +161,8 @@ export function createStepCountPatches(
 }
 
 export interface ActExecutorOptions {
-	act: Act;
-	applyPatches(actId: ActId, patches: Patch[]): void | Promise<void>;
+	act: Task;
+	applyPatches(actId: TaskId, patches: Patch[]): void | Promise<void>;
 	startGeneration(
 		generationId: GenerationId,
 		callbacks?: {

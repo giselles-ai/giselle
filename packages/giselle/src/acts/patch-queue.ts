@@ -1,9 +1,9 @@
-import type { ActId } from "@giselles-ai/protocol";
+import type { TaskId } from "@giselles-ai/protocol";
 import type { GiselleContext } from "../types";
 import { type Patch, patchAct } from "./patch-act";
 
 interface QueuedPatch {
-	actId: ActId;
+	actId: TaskId;
 	patches: Patch[];
 	timestamp: number;
 	retryCount: number;
@@ -51,7 +51,7 @@ export function createPatchQueue(
 		// Group patches by actId while preserving order and tracking retry counts
 		const actGroups = new Map<
 			string,
-			{ actId: ActId; patches: Patch[]; maxRetryCount: number }
+			{ actId: TaskId; patches: Patch[]; maxRetryCount: number }
 		>();
 
 		for (const item of state.queue) {
@@ -179,7 +179,7 @@ export function createPatchQueue(
 	/**
 	 * Adds patches to the queue for processing
 	 */
-	function enqueuePatch(actId: ActId, patches: Patch[]) {
+	function enqueuePatch(actId: TaskId, patches: Patch[]) {
 		if (patches.length === 0) {
 			return;
 		}
@@ -199,7 +199,7 @@ export function createPatchQueue(
 	 * Creates an applyPatches function that uses the queue
 	 */
 	function createApplyPatches() {
-		return (actId: ActId, patches: Patch[]) => {
+		return (actId: TaskId, patches: Patch[]) => {
 			enqueuePatch(actId, patches);
 		};
 	}

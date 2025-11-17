@@ -1,11 +1,11 @@
 import { isClonedFileDataPayload } from "@giselles-ai/node-registry";
 import type {
-	ActId,
 	FailedGeneration,
 	FileId,
 	GeneratedImageContentOutput,
 	NodeId,
 	OutputId,
+	TaskId,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import {
@@ -235,7 +235,7 @@ export async function useGenerationExecutor<T>(args: {
 		);
 		return generation;
 	}
-	async function findGenerationByAct(nodeId: NodeId, actId: ActId) {
+	async function findGenerationByAct(nodeId: NodeId, actId: TaskId) {
 		const actGenerationLookupStartTime = Date.now();
 		const actGenerationIndexes = await getActGenerationIndexes({
 			storage: args.context.storage,

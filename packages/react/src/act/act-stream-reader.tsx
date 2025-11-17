@@ -1,6 +1,6 @@
 "use client";
 
-import type { ActId } from "@giselles-ai/protocol";
+import type { TaskId } from "@giselles-ai/protocol";
 import { type StreamData, StreamEvent } from "@giselles-ai/stream";
 import { useEffect } from "react";
 
@@ -42,7 +42,7 @@ export function ActStreamReader({
 	onUpdateAction,
 	children,
 }: React.PropsWithChildren<{
-	actId: ActId;
+	actId: TaskId;
 	onUpdateAction: StreamDataEventHandler;
 }>) {
 	useEffect(() => {

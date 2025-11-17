@@ -1,6 +1,5 @@
 import { type GiselleLogger, noopLogger } from "@giselles-ai/logger";
 import {
-	ActId,
 	type FetchingWebPage,
 	type FileId,
 	type Generation,
@@ -11,6 +10,7 @@ import {
 	type QueuedGeneration,
 	type RunningGeneration,
 	type SecretId,
+	TaskId,
 	type Trigger,
 	type TriggerId,
 	type Workspace,
@@ -317,16 +317,16 @@ export function Giselle(config: GiselleConfig) {
 				context,
 			});
 		},
-		patchAct(args: { actId: ActId; patches: Patch[] }) {
+		patchAct(args: { actId: TaskId; patches: Patch[] }) {
 			return patchAct({ ...args, context });
 		},
 		getWorkspaceActs(args: { workspaceId: WorkspaceId }) {
 			return getWorkspaceActs({ ...args, context });
 		},
-		getAct(args: { actId: ActId }) {
+		getAct(args: { actId: TaskId }) {
 			return getAct({ ...args, context });
 		},
-		streamAct(args: { actId: ActId }) {
+		streamAct(args: { actId: TaskId }) {
 			return streamAct({ ...args, context });
 		},
 		deleteSecret(args: { workspaceId: WorkspaceId; secretId: SecretId }) {
@@ -380,7 +380,7 @@ export function Giselle(config: GiselleConfig) {
 		getWorkspaceInprogressAct(args: { workspaceId: WorkspaceId }) {
 			return getWorkspaceInprogressAct({ ...args, context });
 		},
-		getActGenerationIndexes(args: { actId: ActId }) {
+		getActGenerationIndexes(args: { actId: TaskId }) {
 			return getActGenerationIndexes({ ...args, context });
 		},
 		setRunActProcess(process: (args: SetRunActProcessArgs) => Promise<void>) {
@@ -410,5 +410,5 @@ export function Giselle(config: GiselleConfig) {
 export type Giselle = ReturnType<typeof Giselle>;
 
 // Re-export value constructors explicitly
-export { ActId, GenerationId };
+export { TaskId, GenerationId };
 export * from "./error";

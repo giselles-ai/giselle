@@ -1,26 +1,26 @@
 import { z } from "zod/v4";
-import { ActId } from "../act/act-id";
+import { TaskId } from "../act/act-id";
 import { Connection } from "../connection";
 import type { WebhookEvent } from "../integrations/github-webhooks";
 import { Node, NodeLike, OperationNode, OperationNodeLike } from "../node";
 import { WorkspaceId } from "../workspace";
 
 export const GenerationOriginStudio = z.object({
-	actId: z.optional(ActId.schema),
+	actId: z.optional(TaskId.schema),
 	workspaceId: WorkspaceId.schema,
 	type: z.literal("studio"),
 });
 export type GenerationOriginStudio = z.infer<typeof GenerationOriginStudio>;
 
 export const GenerationOriginStage = z.object({
-	actId: ActId.schema,
+	actId: TaskId.schema,
 	workspaceId: WorkspaceId.schema,
 	type: z.literal("stage"),
 });
 export type GenerationOriginStage = z.infer<typeof GenerationOriginStage>;
 
 export const GenerationOriginGitHubApp = z.object({
-	actId: ActId.schema,
+	actId: TaskId.schema,
 	workspaceId: WorkspaceId.schema,
 	type: z.literal("github-app"),
 });

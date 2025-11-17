@@ -1,4 +1,4 @@
-import type { ActId } from "@giselles-ai/giselle";
+import type { TaskId } from "@giselles-ai/giselle";
 import { NodeIcon } from "@giselles-ai/icons/node";
 import { defaultName } from "@giselles-ai/node-registry";
 import {
@@ -58,7 +58,7 @@ function getModelInfo(generation: Generation): {
 export default async function ({
 	params,
 }: {
-	params: Promise<{ actId: ActId; stepId: StepId }>;
+	params: Promise<{ actId: TaskId; stepId: StepId }>;
 }) {
 	const { actId, stepId } = await params;
 

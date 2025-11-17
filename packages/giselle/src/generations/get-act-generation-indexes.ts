@@ -1,4 +1,4 @@
-import type { ActId } from "@giselles-ai/protocol";
+import type { TaskId } from "@giselles-ai/protocol";
 import { getAct } from "../acts";
 import type { GiselleContext } from "../types";
 import { getActGenerationIndexes as internal_getActGenerationIndexes } from "./internal/get-act-generation-indexes";
@@ -8,7 +8,7 @@ export async function getActGenerationIndexes({
 	context,
 }: {
 	context: GiselleContext;
-	actId: ActId;
+	actId: TaskId;
 }) {
 	const [act, generationIndexes] = await Promise.all([
 		getAct({ actId, context }),

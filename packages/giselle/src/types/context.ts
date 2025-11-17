@@ -1,9 +1,9 @@
 import type { LanguageModelProvider } from "@giselles-ai/language-model";
 import type { GiselleLogger } from "@giselles-ai/logger";
 import type {
-	Act,
 	GenerationOrigin,
 	RunningGeneration,
+	Task,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import type { GiselleStorage } from "@giselles-ai/storage";
@@ -31,7 +31,7 @@ type GenerateContentProcess =
 
 export type SetRunActProcessArgs = {
 	context: GiselleContext;
-	act: Act;
+	act: Task;
 	generationOriginType: GenerationOrigin["type"];
 };
 

@@ -1,4 +1,4 @@
-import type { ActId } from "@giselles-ai/protocol";
+import type { TaskId } from "@giselles-ai/protocol";
 import { NodeGenerationIndex } from "@giselles-ai/protocol";
 import type { GiselleStorage } from "@giselles-ai/storage";
 import { actGenerationIndexesPath } from "../../path";
@@ -11,15 +11,15 @@ import {
 import { getActGenerationIndexes } from "./get-act-generation-indexes";
 
 interface QueuedPatch {
-	actId: ActId;
+	actId: TaskId;
 	patches: GenerationIndexPatch[];
 	timestamp: number;
 	retryCount: number;
 }
 
 interface QueueState {
-	queue: Map<ActId, QueuedPatch>;
-	processing: Set<ActId>;
+	queue: Map<TaskId, QueuedPatch>;
+	processing: Set<TaskId>;
 	intervalId: NodeJS.Timeout | null;
 	retryConfig: RetryConfig;
 }
@@ -167,7 +167,7 @@ function stopProcessing() {
  */
 function enqueuePatch(
 	storage: GiselleStorage,
-	actId: ActId,
+	actId: TaskId,
 	patch: GenerationIndexPatch,
 ) {
 	const existingItem = state.queue.get(actId);
@@ -230,7 +230,7 @@ export async function flushGenerationIndexQueue({
  */
 export function updateActGenerationIndexes(
 	storage: GiselleStorage,
-	actId: ActId,
+	actId: TaskId,
 	newIndex: NodeGenerationIndex,
 ) {
 	// Create an upsert patch

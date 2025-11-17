@@ -1,12 +1,12 @@
 import type { GiselleLogger } from "@giselles-ai/logger";
 import {
-	ActId,
 	type Generation,
 	type GenerationId,
 	isCompletedGeneration,
 	isFailedGeneration,
 	type QueuedGeneration,
 	type Sequence,
+	TaskId,
 } from "@giselles-ai/protocol";
 import * as z from "zod/v4";
 import {
@@ -123,7 +123,7 @@ async function executeStep(args: {
 }
 
 export const RunActInputs = z.object({
-	actId: ActId.schema,
+	actId: TaskId.schema,
 	callbacks: z.optional(z.custom<RunActCallbacks>()),
 	logger: z.optional(z.custom<GiselleLogger>()),
 	metadata: z.optional(z.custom<GenerationMetadata>()),

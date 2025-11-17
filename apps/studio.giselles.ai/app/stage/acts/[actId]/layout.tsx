@@ -1,4 +1,4 @@
-import type { ActId } from "@giselles-ai/giselle";
+import type { TaskId } from "@giselles-ai/giselle";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getSidebarDataObject } from "./lib/data";
@@ -6,7 +6,7 @@ import { NavSkelton } from "./ui/nav-skelton";
 import { Sidebar } from "./ui/sidebar";
 import "./mobile-scroll.css";
 
-function isValidActId(actId: string): actId is ActId {
+function isValidActId(actId: string): actId is TaskId {
 	return actId.startsWith("act-") && actId.length === 20; // "act-" + 16 chars
 }
 
@@ -22,7 +22,7 @@ export default async function ({
 	if (!isValidActId(actIdParam)) {
 		notFound();
 	}
-	const actId: ActId = actIdParam;
+	const actId: TaskId = actIdParam;
 	const data = getSidebarDataObject(actId);
 
 	return (

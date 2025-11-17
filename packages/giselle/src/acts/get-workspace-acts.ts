@@ -1,8 +1,8 @@
 import type { WorkspaceId } from "@giselles-ai/protocol";
-import { Act, ActIndexObject } from "@giselles-ai/protocol";
+import { Task, TaskIndexObject } from "@giselles-ai/protocol";
+import { taskPath, workspaceTaskPath } from "../path";
 import type { GiselleContext } from "../types";
 import { getWorkspaceIndex } from "../utils/workspace-index";
-import { actPath, workspaceActPath } from "./object/paths";
 
 export async function getWorkspaceActs(args: {
 	context: GiselleContext;
@@ -10,16 +10,16 @@ export async function getWorkspaceActs(args: {
 }) {
 	const workspaceActIndices = await getWorkspaceIndex({
 		context: args.context,
-		indexPath: workspaceActPath(args.workspaceId),
-		itemSchema: ActIndexObject,
+		indexPath: workspaceTaskPath(args.workspaceId),
+		itemSchema: TaskIndexObject,
 	});
 	const workspaceActs = (
 		await Promise.all(
 			workspaceActIndices.map(async (workspaceActIndex) => {
 				try {
 					return await args.context.storage.getJson({
-						path: actPath(workspaceActIndex.id),
-						schema: Act,
+						path: taskPath(workspaceActIndex.id),
+						schema: Task,
 					});
 				} catch (error) {
 					const errorMessage =
@@ -35,6 +35,6 @@ export async function getWorkspaceActs(args: {
 				}
 			}),
 		)
-	).filter((act): act is Act => act !== null);
+	).filter((act): act is Task => act !== null);
 	return workspaceActs;
 }

@@ -28,7 +28,7 @@ interface MiniStepProgressTableRow {
 	updatedAt: Date | undefined;
 }
 
-// Since we can't access node information from the new Act structure,
+// Since we can't access node information from the new Task structure,
 // we'll simplify the progress tracking
 type ProgressTableRow = {
 	id: string;

@@ -1,8 +1,5 @@
 import { defaultName } from "@giselles-ai/node-registry";
 import {
-	Act,
-	ActId,
-	ActIndexObject,
 	ConnectionId,
 	type CreatedGeneration,
 	GenerationContextInput,
@@ -17,17 +14,20 @@ import {
 	SequenceId,
 	type Step,
 	StepId,
+	Task,
+	TaskId,
+	TaskIndexObject,
 	Workspace,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { findNodeGroupByNodeId } from "@giselles-ai/workspace-utils";
 import * as z from "zod/v4";
 import { setGeneration } from "../generations";
+import { taskPath, workspaceTaskPath } from "../path";
 import type { GiselleContext } from "../types";
 import { buildLevels } from "../utils/build-levels";
 import { addWorkspaceIndexItem } from "../utils/workspace-index";
 import { getWorkspace } from "../workspaces";
-import { actPath, workspaceActPath } from "./object/paths";
 
 export const CreateActInputs = z.object({
 	workspaceId: z.optional(WorkspaceId.schema),
@@ -104,7 +104,7 @@ export async function createAct(
 		throw new Error("App entry node is unconfigured");
 	}
 
-	const actId = ActId.generate();
+	const actId = TaskId.generate();
 	const levels = buildLevels(nodes, connections);
 
 	const generations: CreatedGeneration[] = [];
@@ -193,7 +193,7 @@ export async function createAct(
 		});
 	}
 
-	const act: Act = {
+	const act: Task = {
 		id: actId,
 		workspaceId: workspace.id,
 		status: "created",
@@ -224,15 +224,15 @@ export async function createAct(
 	args.context.logger.debug(`created act:${act.id}`);
 	await Promise.all([
 		args.context.storage.setJson({
-			path: actPath(act.id),
+			path: taskPath(act.id),
 			data: act,
-			schema: Act,
+			schema: Task,
 		}),
 		addWorkspaceIndexItem({
 			context: args.context,
-			indexPath: workspaceActPath(workspace.id),
+			indexPath: workspaceTaskPath(workspace.id),
 			item: act,
-			itemSchema: ActIndexObject,
+			itemSchema: TaskIndexObject,
 		}),
 		...generations.map((generation) =>
 			setGeneration({

@@ -3,9 +3,9 @@
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import { NodeIcon } from "@giselle-internal/workflow-designer-ui";
 import type {
-	Act,
 	Generation,
 	ManualTriggerParameter,
+	Task,
 } from "@giselles-ai/protocol";
 import {
 	ActStreamReader,
@@ -33,7 +33,7 @@ import {
 import { MobileActions } from "./mobile-actions";
 
 export interface SidebarDataObject {
-	act: Act;
+	act: Task;
 	appName: string;
 	teamName: string;
 	triggerParameters: ManualTriggerParameter[];

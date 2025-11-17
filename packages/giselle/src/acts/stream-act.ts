@@ -1,4 +1,4 @@
-import type { ActId } from "@giselles-ai/protocol";
+import type { TaskId } from "@giselles-ai/protocol";
 import type { StreamData, StreamEvent } from "@giselles-ai/stream";
 import type { GiselleContext } from "../types";
 import { getAct } from "./get-act";
@@ -14,7 +14,7 @@ export function formatStreamData(event: StreamEvent): string {
 	return `data: ${JSON.stringify(event)}\n\n`;
 }
 
-export function streamAct(args: { actId: ActId; context: GiselleContext }) {
+export function streamAct(args: { actId: TaskId; context: GiselleContext }) {
 	const encoder = new TextEncoder();
 
 	let pollIntervalId: ReturnType<typeof setInterval> | null = null;
