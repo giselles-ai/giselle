@@ -36,7 +36,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 			onMouseMove={handleMouseMove}
 			aria-label={agent.name || "Untitled workspace"}
 			className={clsx(
-				"group relative flex h-[280px] w-[267px] flex-none flex-col rounded-[12px]",
+				"group relative flex h-[260px] w-[267px] flex-none flex-col rounded-[12px]",
 				"bg-[linear-gradient(135deg,rgba(100,130,200,0.20)_0%,rgba(60,80,120,0.35)_40%,rgba(20,30,60,0.85)_100%)]",
 				"filter grayscale hover:grayscale-0 transition duration-500",
 			)}
@@ -80,7 +80,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 					</h3>
 
 					{/* Description */}
-					<p className="font-geist text-[13px] text-link-muted line-clamp-2 mb-3">
+					<p className="font-geist text-[13px] text-link-muted line-clamp-2">
 						Use a Large Language Model to summarize customer feedback.Use...
 					</p>
 
@@ -91,7 +91,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 							agent.githubRepositories.length > 0) ||
 						(agent.documentVectorStoreFiles &&
 							agent.documentVectorStoreFiles.length > 0) ? (
-							<div className="flex flex-col gap-1.5">
+							<div className="flex flex-col">
 								{/* GitHub Repositories */}
 								{agent.githubRepositories &&
 									agent.githubRepositories.length > 0 && (
