@@ -65,7 +65,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 			onMouseMove={handleMouseMove}
 			aria-label={agent.name || "Untitled workspace"}
 			className={clsx(
-				"group relative flex h-[260px] w-[267px] flex-none flex-col rounded-[12px]",
+				"group relative flex h-[260px] w-full flex-none flex-col rounded-[12px]",
 				"bg-[linear-gradient(135deg,rgba(100,130,200,0.20)_0%,rgba(60,80,120,0.35)_40%,rgba(20,30,60,0.85)_100%)]",
 				"filter grayscale hover:grayscale-0 transition duration-500",
 			)}
