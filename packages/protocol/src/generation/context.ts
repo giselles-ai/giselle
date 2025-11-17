@@ -1,8 +1,8 @@
 import { z } from "zod/v4";
-import { TaskId } from "../act/act-id";
 import { Connection } from "../connection";
 import type { WebhookEvent } from "../integrations/github-webhooks";
 import { Node, NodeLike, OperationNode, OperationNodeLike } from "../node";
+import { TaskId } from "../task/task-id";
 import { WorkspaceId } from "../workspace";
 
 export const GenerationOriginStudio = z.object({
