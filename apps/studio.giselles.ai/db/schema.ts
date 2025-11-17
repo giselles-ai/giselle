@@ -194,6 +194,10 @@ export const workspaceRelations = relations(workspaces, ({ one }) => ({
 		fields: [workspaces.creatorDbId],
 		references: [users.dbId],
 	}),
+	team: one(teams, {
+		fields: [workspaces.teamDbId],
+		references: [teams.dbId],
+	}),
 }));
 
 export const oauthCredentials = pgTable(
@@ -844,7 +848,7 @@ export const apps = pgTable(
 	(table) => [index().on(table.teamDbId)],
 );
 
-export const appRelations = relations(apps, ({ one }) => ({
+export const appRelations = relations(apps, ({ one, many }) => ({
 	team: one(teams, {
 		fields: [apps.teamDbId],
 		references: [teams.dbId],
@@ -852,5 +856,37 @@ export const appRelations = relations(apps, ({ one }) => ({
 	workspace: one(workspaces, {
 		fields: [apps.workspaceDbId],
 		references: [workspaces.dbId],
+	}),
+	tasks: many(tasks),
+}));
+
+export const tasks = pgTable(
+	"tasks",
+	{
+		id: text("id").$type<TaskId>().notNull().unique(),
+		dbId: serial("db_id").primaryKey(),
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		appDbId: integer("app_db_id").references(() => apps.dbId, {
+			onDelete: "cascade",
+		}),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.notNull()
+			.$onUpdate(() => new Date()),
+	},
+	(table) => [index().on(table.teamDbId)],
+);
+
+export const taskRelations = relations(tasks, ({ one }) => ({
+	team: one(teams, {
+		fields: [tasks.teamDbId],
+		references: [teams.dbId],
+	}),
+	app: one(apps, {
+		fields: [tasks.appDbId],
+		references: [apps.dbId],
 	}),
 }));
