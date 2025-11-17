@@ -32,9 +32,9 @@ import {
 import clsx from "clsx/lite";
 import { PlayIcon, UngroupIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
+import { AppEntryInputDialog } from "../../../app/app-entry-input-dialog";
 import { NodeIcon } from "../../../icons/node";
 import { isPromptEmpty } from "../../lib/validate-prompt";
-import { AppEntryInputDialog } from "./app-entry-input-dialog";
 import { TriggerInputDialog } from "./trigger-input-dialog";
 
 type RunItem = {

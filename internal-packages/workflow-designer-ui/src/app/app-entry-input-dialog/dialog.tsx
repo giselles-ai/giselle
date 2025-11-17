@@ -1,6 +1,6 @@
 import { Button } from "@giselle-internal/ui/button";
 import { useToasts } from "@giselle-internal/ui/toast";
-import type { AppEntryNode, ConnectionId } from "@giselles-ai/protocol";
+import type { AppEntryNode } from "@giselles-ai/protocol";
 import {
 	useGiselle,
 	useTaskSystem,
@@ -14,11 +14,9 @@ import useSWR from "swr";
 
 export function AppEntryInputDialog({
 	node,
-	connectionIds,
 	onClose,
 }: {
 	node: AppEntryNode;
-	connectionIds: ConnectionId[];
 	onClose: () => void;
 }) {
 	const client = useGiselle();
@@ -115,7 +113,7 @@ export function AppEntryInputDialog({
 				});
 
 				await createAndStartTask({
-					connectionIds,
+					nodeId: node.id,
 					inputs: [
 						{
 							type: "parameters",
@@ -143,7 +141,7 @@ export function AppEntryInputDialog({
 				setIsSubmitting(false);
 			}
 		},
-		[data, onClose, connectionIds, createAndStartTask, toast],
+		[data, onClose, node, createAndStartTask, toast],
 	);
 
 	if (isLoading || data === undefined) {
