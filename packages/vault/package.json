@@ -1,17 +1,14 @@
 {
-	"name": "@giselles-ai/supabase-driver",
+	"name": "@giselles-ai/vault",
 	"version": "0.0.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
-	"files": [
-		"dist/**"
-	],
 	"scripts": {
 		"build": "tsup",
 		"check-types": "tsc --noEmit",
-		"format": "biome check --write ."
+		"format": "biome format --write ."
 	},
 	"exports": {
 		"./package.json": "./package.json",
@@ -22,14 +19,8 @@
 		}
 	},
 	"devDependencies": {
-		"@giselles-ai/tsconfig": "workspace:^",
+		"@giselles-ai/tsconfig": "workspace:*",
 		"tsup": "catalog:"
-	},
-	"dependencies": {
-		"@aws-sdk/client-s3": "catalog:",
-		"@giselles-ai/storage": "workspace:*",
-		"@giselles-ai/vault": "workspace:*",
-		"@supabase/supabase-js": "catalog:"
 	},
 	"peerDependencies": {
 		"zod": "catalog:"

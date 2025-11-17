@@ -1,4 +1,4 @@
-import type { VaultDriver } from "@giselles-ai/giselle";
+import type { VaultDriver } from "@giselles-ai/vault";
 import { createClient } from "@supabase/supabase-js";
 
 interface SupabaseVaultDriverConfig {

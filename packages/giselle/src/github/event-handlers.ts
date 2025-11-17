@@ -16,6 +16,7 @@ import type {
 import { findDiscussionReplyTargetId } from "@giselles-ai/github-tool";
 import type { Trigger } from "@giselles-ai/protocol";
 import type { createAndStartAct } from "../acts";
+import type { OnGenerationComplete, OnGenerationError } from "../generations";
 import type { GiselleContext } from "../types";
 import { getWorkspace } from "../workspaces";
 import type { parseCommand } from "./utils";
@@ -482,6 +483,8 @@ export async function processEvent<TEventName extends WebhookEventName>(
 		trigger: EventHandlerArgs<TEventName>["trigger"];
 		createAuthConfig: (installationId: number) => GitHubAuthConfig;
 		deps: EventHandlerDependencies;
+		onGenerationComplete?: OnGenerationComplete;
+		onGenerationError?: OnGenerationError;
 	},
 ) {
 	if (
@@ -565,6 +568,8 @@ export async function processEvent<TEventName extends WebhookEventName>(
 				},
 			],
 			callbacks: {
+				generationComplete: args.onGenerationComplete,
+				generationError: args.onGenerationError,
 				actCreate: async ({ act }) => {
 					progressTableData = act.sequences.map((sequence) => ({
 						id: sequence.id,

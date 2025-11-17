@@ -6,11 +6,14 @@ import { createGiselleFunction } from "../utils/create-giselle-function";
 export const saveApp = createGiselleFunction({
 	input: z.object({ app: App }),
 	handler: async ({ context, input }) => {
+		const exist = await context.storage.exists(appPath(input.app.id));
 		await context.storage.setJson({
 			path: appPath(input.app.id),
 			schema: App,
 			data: input.app,
 		});
-		await context.callbacks?.appCreate?.({ app: input.app });
+		if (!exist) {
+			await context.callbacks?.appCreate?.({ app: input.app });
+		}
 	},
 });

@@ -45,6 +45,8 @@ import {
 	getGeneration,
 	getGenerationMessageChunkss,
 	getNodeGenerations,
+	type OnGenerationComplete,
+	type OnGenerationError,
 	setGeneration,
 } from "./generations";
 import { getActGenerationIndexes } from "./generations/get-act-generation-indexes";
@@ -89,7 +91,6 @@ export type * from "./generations";
 export * from "./integrations";
 export * from "./telemetry";
 export * from "./triggers";
-export * from "./vault";
 
 const defaultWaitUntil: WaitUntil = (promise) => {
 	return promise;
@@ -247,11 +248,42 @@ export function Giselle(config: GiselleConfig) {
 			deleteTrigger({ ...args, context }),
 		executeAction: async (args: { generation: QueuedGeneration }) =>
 			executeAction({ ...args, context }),
-		createAndStartAct: async (args: CreateAndStartActInputs) =>
-			createAndStartAct({ ...args, context }),
-		startAct: async (args: StartActInputs) => startAct({ ...args, context }),
-		handleGitHubWebhookV2: async (args: { request: Request }) =>
-			handleGitHubWebhookV2({ ...args, context }),
+		createAndStartAct: async (
+			args: CreateAndStartActInputs & {
+				onGenerationComplete?: OnGenerationComplete;
+				onGenerationError?: OnGenerationError;
+			},
+		) =>
+			createAndStartAct({
+				...args,
+				callbacks: {
+					...args.callbacks,
+					generationComplete:
+						args.onGenerationComplete ?? config.callbacks?.generationComplete,
+					generationError:
+						args.onGenerationError ?? config.callbacks?.generationError,
+				},
+				context,
+			}),
+		startAct: async (
+			args: StartActInputs & {
+				onGenerationComplete?: OnGenerationComplete;
+				onGenerationError?: OnGenerationError;
+			},
+		) =>
+			startAct({
+				...args,
+				onGenerationComplete:
+					args.onGenerationComplete ?? config.callbacks?.generationComplete,
+				onGenerationError:
+					args.onGenerationError ?? config.callbacks?.generationError,
+				context,
+			}),
+		handleGitHubWebhookV2: async (args: {
+			request: Request;
+			onGenerationComplete?: OnGenerationComplete;
+			onGenerationError?: OnGenerationError;
+		}) => handleGitHubWebhookV2({ ...args, context }),
 		executeQuery: async (generation: QueuedGeneration) =>
 			executeQuery({ context, generation }),
 		addWebPage: async (args: {
@@ -307,8 +339,15 @@ export function Giselle(config: GiselleConfig) {
 			generation: RunningGeneration;
 			logger?: GiselleLogger;
 			metadata?: GenerationMetadata;
+			onComplete?: OnGenerationComplete;
+			onError?: OnGenerationError;
 		}) {
-			return generateContent({ ...args, context });
+			return generateContent({
+				...args,
+				onComplete: args.onComplete ?? config.callbacks?.generationComplete,
+				onError: args.onError ?? config.callbacks?.generationError,
+				context,
+			});
 		},
 		getGenerationMessageChunks(args: {
 			generationId: GenerationId;
@@ -317,8 +356,17 @@ export function Giselle(config: GiselleConfig) {
 		}) {
 			return getGenerationMessageChunkss({ ...args, context });
 		},
-		startContentGeneration(args: { generation: Generation }) {
-			return startContentGeneration({ ...args, context });
+		startContentGeneration(args: {
+			generation: Generation;
+			onComplete?: OnGenerationComplete;
+			onError?: OnGenerationError;
+		}) {
+			return startContentGeneration({
+				...args,
+				onComplete: args.onComplete ?? config.callbacks?.generationComplete,
+				onError: args.onError ?? config.callbacks?.generationError,
+				context,
+			});
 		},
 		setGenerateContentProcess(
 			process: (args: {
@@ -338,8 +386,20 @@ export function Giselle(config: GiselleConfig) {
 		setRunActProcess(process: (args: SetRunActProcessArgs) => Promise<void>) {
 			context.runActProcess = { type: "external", process };
 		},
-		runAct(args: RunActInputs) {
-			return runAct({ ...args, context });
+		runAct(
+			args: RunActInputs & {
+				onGenerationComplete?: OnGenerationComplete;
+				onGenerationError?: OnGenerationError;
+			},
+		) {
+			return runAct({
+				...args,
+				onGenerationComplete:
+					args.onGenerationComplete ?? config.callbacks?.generationComplete,
+				onGenerationError:
+					args.onGenerationError ?? config.callbacks?.generationError,
+				context,
+			});
 		},
 		saveApp: bindGiselleFunction(saveApp, context),
 		deleteApp: bindGiselleFunction(deleteApp, context),

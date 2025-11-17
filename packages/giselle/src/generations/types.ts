@@ -13,3 +13,5 @@ export type AppEntryResolver = (
 	nodeId: NodeId,
 	outputId: OutputId,
 ) => string | number | undefined;
+
+export type * from "./internal/use-generation-executor";

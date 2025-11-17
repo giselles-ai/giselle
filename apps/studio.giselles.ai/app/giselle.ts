@@ -1,25 +1,19 @@
 import type { QueryContext } from "@giselles-ai/giselle";
-import { traceEmbedding, traceGeneration } from "@giselles-ai/langfuse";
+import { traceEmbedding } from "@giselles-ai/langfuse";
 import { getRequestId, NextGiselle } from "@giselles-ai/nextjs/internal";
-import {
-	type CompletedGeneration,
-	type FailedGeneration,
-	type OutputFileBlob,
-	type RunningGeneration,
-	WorkspaceId,
-} from "@giselles-ai/protocol";
+import { type RunningGeneration, WorkspaceId } from "@giselles-ai/protocol";
 import type { EmbeddingMetrics } from "@giselles-ai/rag";
 import {
 	supabaseStorageDriver as experimental_supabaseStorageDriver,
 	supabaseVaultDriver,
 } from "@giselles-ai/supabase-driver";
 import { tasks as jobs } from "@trigger.dev/sdk";
-import type { ModelMessage, ProviderMetadata } from "ai";
 import { eq } from "drizzle-orm";
 import { apps, db } from "@/db";
 import { waitForLangfuseFlush } from "@/instrumentation.node";
 import { GenerationMetadata } from "@/lib/generation-metadata";
 import { logger } from "@/lib/logger";
+import { traceGenerationForTeam } from "@/lib/trace";
 import { getWorkspaceTeam } from "@/lib/workspaces/get-workspace-team";
 import { fetchUsageLimits } from "@/packages/lib/fetch-usage-limits";
 import { onConsumeAgentTime } from "@/packages/lib/on-consume-agent-time";
@@ -81,38 +75,6 @@ if (
 }
 
 type TeamForPlan = Pick<CurrentTeam, "id" | "activeSubscriptionId" | "plan">;
-
-async function traceGenerationForTeam(args: {
-	generation: CompletedGeneration | FailedGeneration;
-	inputMessages: ModelMessage[];
-	outputFileBlobs?: OutputFileBlob[];
-	sessionId?: string;
-	userId: string;
-	team: TeamForPlan;
-	providerMetadata?: ProviderMetadata;
-	requestId?: string;
-}) {
-	const teamPlan = args.team.plan;
-	const planTag = `plan:${teamPlan}`;
-
-	await traceGeneration({
-		generation: args.generation,
-		outputFileBlobs: args.outputFileBlobs,
-		inputMessages: args.inputMessages,
-		userId: args.userId,
-		tags: [planTag],
-		metadata: {
-			generationId: args.generation.id,
-			teamPlan,
-			userId: args.userId,
-			subscriptionId: args.team.activeSubscriptionId ?? "",
-			providerMetadata: args.providerMetadata,
-			requestId: args.requestId,
-			workspaceId: args.generation.context.origin.workspaceId,
-		},
-		sessionId: args.sessionId,
-	});
-}
 
 async function traceEmbeddingForTeam(args: {
 	metrics: EmbeddingMetrics;
@@ -248,23 +210,33 @@ export const giselle = NextGiselle({
 			await db.delete(apps).where(eq(apps.id, appId));
 		},
 		generationComplete: async (args) => {
-			if (runtimeEnv === "trigger.dev") {
-				const parsedMetadata = GenerationMetadata.parse(
-					args.generationMetadata,
+			const requestId = getRequestId();
+			if (args.generation.context.origin.type === "github-app") {
+				const team = await getWorkspaceTeam(
+					args.generation.context.origin.workspaceId,
 				);
 				await traceGenerationForTeam({
 					...args,
-					requestId: parsedMetadata.requestId,
-					userId: parsedMetadata.userId,
+					requestId,
+					userId: "github-app",
+					team,
 					sessionId: args.generation.context.origin.actId,
-					team: {
-						id: parsedMetadata.team.id,
-						activeSubscriptionId: parsedMetadata.team.subscriptionId,
-						plan: parsedMetadata.team.plan,
-					},
 				});
 				return;
 			}
+			const [currentUser, currentTeam] = await Promise.all([
+				fetchCurrentUser(),
+				fetchCurrentTeam(),
+			]);
+			await traceGenerationForTeam({
+				...args,
+				requestId,
+				userId: currentUser.id,
+				team: currentTeam,
+				sessionId: args.generation.context.origin.actId,
+			});
+		},
+		generationError: async (args) => {
 			const requestId = getRequestId();
 			if (args.generation.context.origin.type === "github-app") {
 				const team = await getWorkspaceTeam(
@@ -278,36 +250,6 @@ export const giselle = NextGiselle({
 				});
 				return;
 			}
-			const [currentUser, currentTeam] = await Promise.all([
-				fetchCurrentUser(),
-				fetchCurrentTeam(),
-			]);
-			await traceGenerationForTeam({
-				...args,
-				requestId,
-				userId: currentUser.id,
-				team: currentTeam,
-			});
-		},
-		generationFailed: async (args) => {
-			if (runtimeEnv === "trigger.dev") {
-				const parsedMetadata = GenerationMetadata.parse(
-					args.generationMetadata,
-				);
-				await traceGenerationForTeam({
-					...args,
-					requestId: parsedMetadata.requestId,
-					userId: parsedMetadata.userId,
-					sessionId: args.generation.context.origin.actId,
-					team: {
-						id: parsedMetadata.team.id,
-						activeSubscriptionId: parsedMetadata.team.subscriptionId,
-						plan: parsedMetadata.team.plan,
-					},
-				});
-				return;
-			}
-			const requestId = getRequestId();
 			const [currentUser, currentTeam] = await Promise.all([
 				fetchCurrentUser(),
 				fetchCurrentTeam(),

@@ -294,6 +294,9 @@ importers:
       '@giselles-ai/supabase-driver':
         specifier: workspace:^
         version: link:../../packages/supabase-driver
+      '@giselles-ai/vault':
+        specifier: workspace:*
+        version: link:../../packages/vault
       clsx:
         specifier: 'catalog:'
         version: 2.1.1
@@ -940,6 +943,9 @@ importers:
       '@giselles-ai/trigger-registry':
         specifier: workspace:*
         version: link:../trigger-registry
+      '@giselles-ai/vault':
+        specifier: workspace:*
+        version: link:../vault
       '@giselles-ai/web-search':
         specifier: workspace:^
         version: link:../web-search
@@ -1352,6 +1358,9 @@ importers:
       '@giselles-ai/storage':
         specifier: workspace:*
         version: link:../storage
+      '@giselles-ai/vault':
+        specifier: workspace:*
+        version: link:../vault
       '@supabase/supabase-js':
         specifier: 'catalog:'
         version: 2.50.5(bufferutil@4.0.9)(utf-8-validate@6.0.5)
@@ -1359,9 +1368,6 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
     devDependencies:
-      '@giselles-ai/giselle':
-        specifier: workspace:^
-        version: link:../giselle
       '@giselles-ai/tsconfig':
         specifier: workspace:^
         version: link:../../tools/tsconfig
@@ -1479,6 +1485,19 @@ importers:
       title-case:
         specifier: 4.3.2
         version: 4.3.2
+      zod:
+        specifier: 'catalog:'
+        version: 3.25.76
+    devDependencies:
+      '@giselles-ai/tsconfig':
+        specifier: workspace:*
+        version: link:../../tools/tsconfig
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.6.1)(postcss@8.5.6)(typescript@5.7.3)(yaml@2.7.0)
+
+  packages/vault:
+    dependencies:
       zod:
         specifier: 'catalog:'
         version: 3.25.76

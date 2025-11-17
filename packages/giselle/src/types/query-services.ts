@@ -31,3 +31,10 @@ export type GitHubVectorStoreQueryService<
 export type DocumentVectorStoreQueryService<
 	M extends Record<string, unknown> = Record<string, never>,
 > = QueryService<DocumentVectorStoreQueryContext, M>;
+
+export type VectorStoreQueryServices = {
+	github?: GitHubVectorStoreQueryService<Record<string, unknown>>;
+	githubIssue?: GitHubVectorStoreQueryService<Record<string, unknown>>;
+	githubPullRequest?: GitHubVectorStoreQueryService<Record<string, unknown>>;
+	document?: DocumentVectorStoreQueryService<Record<string, unknown>>;
+};

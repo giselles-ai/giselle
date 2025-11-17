@@ -1,7 +1,5 @@
 import type { Vault, VaultDriver } from "./types";
 
-export * from "./types";
-
 export function createVault(driver: VaultDriver): Vault {
 	return {
 		encrypt: async (plaintext, options) => {

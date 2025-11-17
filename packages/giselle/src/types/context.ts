@@ -4,37 +4,20 @@ import type {
 	Act,
 	GenerationOrigin,
 	RunningGeneration,
-	Trigger,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import type { GiselleStorage } from "@giselles-ai/storage";
+import type { Vault } from "@giselles-ai/vault";
 import type { GenerationMetadata } from "../generations";
 import type { TelemetrySettings } from "../telemetry";
-import type { Vault } from "../vault";
-import type {
-	AppCreateCallbackFunction,
-	AppDeleteCallbackFunction,
-	EmbeddingCompleteCallbackFunction,
-	GenerationCompleteCallbackFunction,
-	GenerationFailedCallbackFunction,
-} from "./callbacks";
-import type {
-	GiselleIntegrationConfig,
-	GitHubIntegrationConfig,
-} from "./integrations";
-import type {
-	DocumentVectorStoreQueryService,
-	GitHubVectorStoreQueryService,
-} from "./query-services";
+import type { GiselleCallbacks } from "./callbacks";
+import type { GitHubIntegrationConfig } from "./integrations";
+import type { VectorStoreQueryServices } from "./query-services";
 import type {
 	ConsumeAgentTimeCallback,
 	FetchUsageLimitsFn,
 } from "./usage-limits";
-
-type WaitUntilTask<T = unknown> = Promise<T> | WaitUntilCallback<T>;
-type WaitUntilCallback<T = unknown> = () => T | Promise<T>;
-
-export type WaitUntil<T = unknown> = (task: WaitUntilTask<T>) => void;
+import type { WaitUntil } from "./wait-until";
 
 type GenerateContentArgs = {
 	context: GiselleContext;
@@ -61,22 +44,6 @@ type RunActProcess =
 
 export type RunAct = (args: SetRunActProcessArgs) => Promise<void>;
 
-export type GiselleCallbacks = {
-	appCreate?: AppCreateCallbackFunction;
-	appDelete?: AppDeleteCallbackFunction;
-	generationComplete?: GenerationCompleteCallbackFunction;
-	generationFailed?: GenerationFailedCallbackFunction;
-	flowTriggerUpdate?: (flowTrigger: Trigger) => Promise<void>;
-	embeddingComplete?: EmbeddingCompleteCallbackFunction;
-};
-
-export type VectorStoreQueryServices = {
-	github?: GitHubVectorStoreQueryService<Record<string, unknown>>;
-	githubIssue?: GitHubVectorStoreQueryService<Record<string, unknown>>;
-	githubPullRequest?: GitHubVectorStoreQueryService<Record<string, unknown>>;
-	document?: DocumentVectorStoreQueryService<Record<string, unknown>>;
-};
-
 export interface GiselleContext {
 	storage: GiselleStorage;
 	sampleAppWorkspaceIds?: WorkspaceId[];
@@ -102,27 +69,4 @@ export interface GiselleContext {
 	waitUntil: WaitUntil;
 	generateContentProcess: GenerateContentProcess;
 	runActProcess: RunActProcess;
-}
-
-export interface GiselleConfig {
-	storage: GiselleStorage;
-	sampleAppWorkspaceIds?: WorkspaceId[];
-	llmProviders?: LanguageModelProvider[];
-	integrationConfigs?: GiselleIntegrationConfig;
-	onConsumeAgentTime?: ConsumeAgentTimeCallback;
-	telemetry?: {
-		isEnabled?: boolean;
-		waitForFlushFn?: () => Promise<unknown>;
-		metadata?: TelemetrySettings["metadata"];
-	};
-	fetchUsageLimitsFn?: FetchUsageLimitsFn;
-	vault: Vault;
-	vectorStoreQueryServices?: VectorStoreQueryServices;
-	callbacks?: GiselleCallbacks;
-	aiGateway?: {
-		httpReferer: string;
-		xTitle: string;
-	};
-	logger?: GiselleLogger;
-	waitUntil?: WaitUntil;
 }

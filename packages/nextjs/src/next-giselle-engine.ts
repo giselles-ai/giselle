@@ -154,7 +154,13 @@ export function createHttpHandler({
 					}
 					return new Response("Internal Server Error", { status: 500 });
 				}
-				after(() => giselle.handleGitHubWebhookV2({ request }));
+				after(() =>
+					giselle.handleGitHubWebhookV2({
+						request,
+						onGenerationComplete: config.callbacks?.generationComplete,
+						onGenerationError: config.callbacks?.generationError,
+					}),
+				);
 				return new Response("Accepted", { status: 202 });
 			}
 			throw new Error(`Invalid router path at ${pathname}`);
