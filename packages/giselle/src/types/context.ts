@@ -60,7 +60,7 @@ export interface GiselleContext {
 	};
 	vault: Vault;
 	vectorStoreQueryServices?: VectorStoreQueryServices;
-	callbacks?: GiselleCallbacks;
+	callbacks?: Omit<GiselleCallbacks, "generationComplete" | "generationError">;
 	aiGateway?: {
 		httpReferer: string;
 		xTitle: string;
