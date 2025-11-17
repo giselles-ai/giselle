@@ -3,16 +3,16 @@ import type {
 	GitHubPersonalAccessTokenAuth,
 } from "@giselles-ai/github-tool";
 
-interface GitHubInstalltionAppAuthResolver {
+interface GitHubInstallationAppAuthResolver {
 	installationIdForRepo: (repositoryNodeId: string) => Promise<number> | number;
-	installtionIds: () => Promise<number[]> | number[];
+	installationIds: () => Promise<number[]> | number[];
 }
 
 export interface GitHubIntegrationConfig {
 	auth:
 		| GitHubPersonalAccessTokenAuth
 		| (Omit<GitHubInstallationAppAuth, "installationId"> & {
-				resolver: GitHubInstalltionAppAuthResolver;
+				resolver: GitHubInstallationAppAuthResolver;
 		  });
 	authV2: {
 		appId: string;

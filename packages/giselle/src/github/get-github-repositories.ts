@@ -27,7 +27,7 @@ export async function getGitHubRepositories(args: { context: GiselleContext }) {
 	const githubAppId = githubConfig.auth.appId;
 	const githubAppPrivateKey = githubConfig.auth.privateKey;
 
-	const installationIds = await githubConfig.auth.resolver.installtionIds();
+	const installationIds = await githubConfig.auth.resolver.installationIds();
 
 	const repos: Repository[] = [];
 	await Promise.all(
