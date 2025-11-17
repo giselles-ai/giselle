@@ -8,6 +8,7 @@ describe("patchTask", () => {
 		return {
 			id: "tsk-test123" as const,
 			workspaceId: "wrks-test456" as const,
+			starter: { type: "run-button" },
 			name: "test",
 			status: "inProgress",
 			steps: {
