@@ -5,8 +5,6 @@ import { useEffect, useRef } from "react";
 // Fixed grid and dot size in pixels
 const gridSize = 16;
 const dotSize = 2.5;
-const lineWidth = 0.3;
-
 export function Background() {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -169,16 +167,6 @@ export function Background() {
 			"u_pixelRatio",
 		);
 
-		// Get attribute and uniform locations for lines
-		const linePositionAttributeLocation = gl.getAttribLocation(
-			lineProgram,
-			"a_position",
-		);
-		const lineResolutionUniformLocation = gl.getUniformLocation(
-			lineProgram,
-			"u_resolution",
-		);
-
 		// Create buffers
 		const dotPositionBuffer = gl.createBuffer();
 		const linePositionBuffer = gl.createBuffer();
@@ -190,8 +178,6 @@ export function Background() {
 			gl.clear(gl.COLOR_BUFFER_BIT);
 
 			const pixelRatio = window.devicePixelRatio || 1;
-			const scaledLineWidth = lineWidth * pixelRatio;
-
 			const screenWidth = canvas.width / pixelRatio;
 			const screenHeight = canvas.height / pixelRatio;
 
