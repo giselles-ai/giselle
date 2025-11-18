@@ -62,7 +62,6 @@ function AppCard({
 	const router = useRouter();
 	const handleSubmit = useCallback(
 		(event: { inputs: GenerationContextInput[] }) => {
-			console.log("????");
 			startTransition(async () => {
 				const taskId = await onSubmitCreateAndStartTask(event);
 				router.push(`/v2/stage/tasks/${taskId}`);
