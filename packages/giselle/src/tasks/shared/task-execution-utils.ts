@@ -324,7 +324,6 @@ export async function executeTask(
 		patches.status.set(hasError ? "failed" : "completed"),
 		patches.duration.wallClock.set(duration),
 	]);
-	await opts.applyPatches(opts.task.id, [patches.status.set("completed")]);
 
 	await opts.onTaskComplete?.(hasError, duration);
 
