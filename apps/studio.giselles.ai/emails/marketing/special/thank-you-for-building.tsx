@@ -17,7 +17,7 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
+	getEmailAssetUrl,
 	h1,
 	main,
 	section,
@@ -33,7 +33,7 @@ interface ThankYouForBuildingEmailProps {
 export const ThankYouForBuildingEmail = ({
 	continueBuildingUrl = "https://studio.giselles.ai",
 }: ThankYouForBuildingEmailProps) => {
-	const baseUrl = getBaseUrl();
+	const heroImageSrc = getEmailAssetUrl("thank-you-for-building-1.jpg");
 	return (
 		<Html>
 			<Head>
@@ -42,10 +42,10 @@ export const ThankYouForBuildingEmail = ({
 			<Preview>Thank you for building with Giselle</Preview>
 			<Body style={main}>
 				<Container style={container}>
-					<EmailHeader baseUrl={baseUrl} />
+					<EmailHeader />
 					<Section style={imageSection}>
 						<Img
-							src={`${baseUrl}/static/thank-you-for-building-1.jpg`}
+							src={heroImageSrc}
 							width="600"
 							alt="Thank you for building"
 							style={image}
@@ -71,7 +71,7 @@ export const ThankYouForBuildingEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

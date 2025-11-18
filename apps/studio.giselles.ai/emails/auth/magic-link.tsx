@@ -15,7 +15,6 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
 	h1,
 	main,
 	section,
@@ -33,7 +32,6 @@ const SUPABASE_CONFIRMATION_URL_PLACEHOLDER = "{{ .ConfirmationURL }}";
 export const MagicLinkEmail = ({ confirmationUrl }: MagicLinkEmailProps) => {
 	const displayConfirmationUrl =
 		confirmationUrl ?? SUPABASE_CONFIRMATION_URL_PLACEHOLDER;
-	const baseUrl = getBaseUrl();
 
 	return (
 		<Html>
@@ -46,7 +44,6 @@ export const MagicLinkEmail = ({ confirmationUrl }: MagicLinkEmailProps) => {
 					<EmailHeader
 						heading="Sign in to Giselle."
 						subheading="Access your workspace instantly."
-						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -66,7 +63,7 @@ export const MagicLinkEmail = ({ confirmationUrl }: MagicLinkEmailProps) => {
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

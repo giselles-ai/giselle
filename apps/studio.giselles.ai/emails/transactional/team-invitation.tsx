@@ -17,7 +17,6 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
 	h1,
 	highlightText,
 	link,
@@ -47,7 +46,6 @@ export const TeamInvitationEmail = ({
 	const displayTeamName = teamName ?? TEAM_NAME_PLACEHOLDER;
 	const _displayInviterEmail = inviterEmail ?? INVITER_EMAIL_PLACEHOLDER;
 	const displayJoinUrl = joinUrl ?? JOIN_URL_PLACEHOLDER;
-	const baseUrl = getBaseUrl();
 
 	return (
 		<Html>
@@ -60,7 +58,6 @@ export const TeamInvitationEmail = ({
 					<EmailHeader
 						heading="You've been invited to collaborate in Giselle."
 						subheading="Join your team and start building together."
-						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -95,7 +92,7 @@ export const TeamInvitationEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

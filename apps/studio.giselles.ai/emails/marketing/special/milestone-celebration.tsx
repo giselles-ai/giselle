@@ -17,7 +17,7 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
+	getEmailAssetUrl,
 	h1,
 	main,
 	section,
@@ -33,7 +33,7 @@ interface MilestoneCelebrationEmailProps {
 export const MilestoneCelebrationEmail = ({
 	seeWhatsNextUrl = "https://studio.giselles.ai",
 }: MilestoneCelebrationEmailProps) => {
-	const baseUrl = getBaseUrl();
+	const heroImageSrc = getEmailAssetUrl("milestone-celebration-1.jpg");
 	return (
 		<Html>
 			<Head>
@@ -42,10 +42,10 @@ export const MilestoneCelebrationEmail = ({
 			<Preview>We&apos;ve reached a new milestone — thanks to you</Preview>
 			<Body style={main}>
 				<Container style={container}>
-					<EmailHeader baseUrl={baseUrl} />
+					<EmailHeader />
 					<Section style={imageSection}>
 						<Img
-							src={`${baseUrl}/static/milestone-celebration-1.jpg`}
+							src={heroImageSrc}
 							width="600"
 							alt="Milestone celebration"
 							style={image}
@@ -73,7 +73,7 @@ export const MilestoneCelebrationEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

@@ -16,7 +16,6 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
 	h1,
 	link,
 	main,
@@ -42,7 +41,6 @@ export const YouHaveBeenInvitedEmail = ({
 	const displaySiteUrl = siteUrl ?? SUPABASE_SITE_URL_PLACEHOLDER;
 	const displayConfirmationUrl =
 		confirmationUrl ?? SUPABASE_CONFIRMATION_URL_PLACEHOLDER;
-	const baseUrl = getBaseUrl();
 
 	return (
 		<Html>
@@ -55,7 +53,6 @@ export const YouHaveBeenInvitedEmail = ({
 					<EmailHeader
 						heading="Welcome to Giselle."
 						subheading="Your journey to build AI agents begins here."
-						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -89,7 +86,7 @@ export const YouHaveBeenInvitedEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

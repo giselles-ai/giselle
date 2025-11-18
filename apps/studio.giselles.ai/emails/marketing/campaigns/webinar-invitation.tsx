@@ -16,7 +16,6 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
 	link,
 	main,
 	section,
@@ -39,7 +38,6 @@ export const WebinarInvitationEmail = ({
 	webinarTime = "2:00 PM EST",
 	joinUrl = "https://giselles.ai/webinar",
 }: WebinarInvitationEmailProps) => {
-	const baseUrl = getBaseUrl();
 	return (
 		<Html>
 			<Head>
@@ -51,7 +49,6 @@ export const WebinarInvitationEmail = ({
 					<EmailHeader
 						heading="Let's grow together."
 						subheading="Become a Giselle Ambassador."
-						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -86,7 +83,7 @@ export const WebinarInvitationEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

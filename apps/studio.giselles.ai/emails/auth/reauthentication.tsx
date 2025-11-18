@@ -15,7 +15,6 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
 	h1,
 	main,
 	section,
@@ -34,7 +33,6 @@ export const ReauthenticationEmail = ({
 	token,
 }: ReauthenticationEmailProps) => {
 	const displayToken = token ?? SUPABASE_TOKEN_PLACEHOLDER;
-	const baseUrl = getBaseUrl();
 
 	return (
 		<Html>
@@ -47,7 +45,6 @@ export const ReauthenticationEmail = ({
 					<EmailHeader
 						heading="Verify your identity."
 						subheading="Secure access with Giselle."
-						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -65,7 +62,7 @@ export const ReauthenticationEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

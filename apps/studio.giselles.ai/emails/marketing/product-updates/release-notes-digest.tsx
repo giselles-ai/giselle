@@ -14,7 +14,7 @@ import {
 	container,
 	EmailFonts,
 	EmailFooter,
-	getBaseUrl,
+	getEmailAssetUrl,
 	link,
 	main,
 	section,
@@ -33,7 +33,7 @@ export const ReleaseNotesDigestEmail = ({
 	userName = "there",
 	viewReleaseNotesUrl = "https://giselles.ai/changelog",
 }: ReleaseNotesDigestEmailProps) => {
-	const baseUrl = getBaseUrl();
+	const digestImageSrc = getEmailAssetUrl("digest-202512.jpg");
 	return (
 		<Html>
 			<Head>
@@ -44,7 +44,7 @@ export const ReleaseNotesDigestEmail = ({
 				<Container style={container}>
 					<Section style={imageSection}>
 						<Img
-							src={`${baseUrl}/static/digest-202512.jpg`}
+							src={digestImageSrc}
 							width="600"
 							alt="Release Notes Digest"
 							style={image}
@@ -92,7 +92,7 @@ export const ReleaseNotesDigestEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

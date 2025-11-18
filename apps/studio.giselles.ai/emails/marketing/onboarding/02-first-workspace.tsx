@@ -16,7 +16,6 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
 	link,
 	main,
 	section,
@@ -39,7 +38,6 @@ export const FirstWorkspaceEmail = ({
 	stageUrl: _stageUrl = "https://studio.giselles.ai/stage",
 	docsUrl = "https://docs.giselles.ai/en/guides/introduction",
 }: FirstWorkspaceEmailProps) => {
-	const baseUrl = getBaseUrl();
 	return (
 		<Html>
 			<Head>
@@ -51,7 +49,6 @@ export const FirstWorkspaceEmail = ({
 					<EmailHeader
 						heading="Ready to collaborate?"
 						subheading="Create your workspace."
-						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -100,7 +97,7 @@ export const FirstWorkspaceEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

@@ -1,20 +1,20 @@
 import { Container, Img, Link, Section, Text } from "@react-email/components";
 
-interface EmailFooterProps {
-	baseUrl?: string;
-}
+import { getEmailAssetUrl } from "../utils/email-assets";
 
-export const EmailFooter = ({
-	baseUrl = process.env.NEXT_PUBLIC_SITE_URL ||
-		(process.env.NODE_ENV === "development"
-			? "http://localhost:3333"
-			: "https://studio.giselles.ai"),
-}: EmailFooterProps) => {
+export const EmailFooter = () => {
+	const footerLogoSrc = getEmailAssetUrl("letter_footer-logo.png");
+	const githubIconSrc = getEmailAssetUrl("github-icon.png");
+	const linkedinIconSrc = getEmailAssetUrl("linkedin-icon.png");
+	const facebookIconSrc = getEmailAssetUrl("facebook-icon.png");
+	const xIconSrc = getEmailAssetUrl("x-icon.png");
+	const instagramIconSrc = getEmailAssetUrl("instagram-icon.png");
+	const youtubeIconSrc = getEmailAssetUrl("youtube-icon.png");
 	return (
 		<Container style={footerContainer}>
 			<Section style={footerSection}>
 				<Img
-					src={`${baseUrl}/static/letter_footer-logo.png`}
+					src={footerLogoSrc}
 					width="100"
 					height="39"
 					alt="Giselle"
@@ -42,7 +42,7 @@ export const EmailFooter = ({
 						style={socialIconLink}
 					>
 						<Img
-							src={`${baseUrl}/static/github-icon.png`}
+							src={githubIconSrc}
 							width="20"
 							height="20"
 							alt="GitHub"
@@ -54,7 +54,7 @@ export const EmailFooter = ({
 						style={socialIconLink}
 					>
 						<Img
-							src={`${baseUrl}/static/linkedin-icon.png`}
+							src={linkedinIconSrc}
 							width="20"
 							height="20"
 							alt="LinkedIn"
@@ -66,7 +66,7 @@ export const EmailFooter = ({
 						style={socialIconLink}
 					>
 						<Img
-							src={`${baseUrl}/static/facebook-icon.png`}
+							src={facebookIconSrc}
 							width="20"
 							height="20"
 							alt="Facebook"
@@ -75,7 +75,7 @@ export const EmailFooter = ({
 					</Link>
 					<Link href="https://x.com/Giselles_AI" style={socialIconLink}>
 						<Img
-							src={`${baseUrl}/static/x-icon.png`}
+							src={xIconSrc}
 							width="20"
 							height="20"
 							alt="X"
@@ -87,7 +87,7 @@ export const EmailFooter = ({
 						style={socialIconLink}
 					>
 						<Img
-							src={`${baseUrl}/static/instagram-icon.png`}
+							src={instagramIconSrc}
 							width="20"
 							height="20"
 							alt="Instagram"
@@ -99,7 +99,7 @@ export const EmailFooter = ({
 						style={socialIconLink}
 					>
 						<Img
-							src={`${baseUrl}/static/youtube-icon.png`}
+							src={youtubeIconSrc}
 							width="20"
 							height="20"
 							alt="YouTube"

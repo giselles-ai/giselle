@@ -119,12 +119,3 @@ export const highlightText = {
 	verticalAlign: "baseline",
 	marginTop: "2px",
 };
-
-export const getBaseUrl = () => {
-	return (
-		process.env.NEXT_PUBLIC_SITE_URL ||
-		(process.env.NODE_ENV === "development"
-			? "http://localhost:3333"
-			: "https://studio.giselles.ai")
-	);
-};

@@ -17,7 +17,6 @@ import {
 	EmailFooter,
 	EmailHeader,
 	footerText,
-	getBaseUrl,
 	h1,
 	link,
 	main,
@@ -36,7 +35,6 @@ const SUPABASE_TOKEN_PLACEHOLDER = "{{ .Token }}";
 
 export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 	const displayToken = token ?? SUPABASE_TOKEN_PLACEHOLDER;
-	const baseUrl = getBaseUrl();
 	return (
 		<Html>
 			<Head>
@@ -48,7 +46,6 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 					<EmailHeader
 						heading="Verify your email."
 						subheading="Your workspace is almost ready."
-						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -88,7 +85,7 @@ export const ConfirmSignUpEmail = ({ token }: ConfirmSignUpEmailProps) => {
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

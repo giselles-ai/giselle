@@ -16,7 +16,6 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
 	link,
 	main,
 	section,
@@ -41,7 +40,6 @@ export const ResetPasswordEmail = ({
 	const displaySiteUrl = siteUrl ?? SUPABASE_SITE_URL_PLACEHOLDER;
 	const displayTokenHash = tokenHash ?? SUPABASE_TOKEN_HASH_PLACEHOLDER;
 	const resetUrl = `${displaySiteUrl}/password_reset/confirm?token_hash=${displayTokenHash}&type=recovery&next=/password_reset/new_password`;
-	const baseUrl = getBaseUrl();
 
 	return (
 		<Html>
@@ -54,7 +52,6 @@ export const ResetPasswordEmail = ({
 					<EmailHeader
 						heading="Reset your Giselle password."
 						subheading="Your journey continues securely."
-						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -87,7 +84,7 @@ export const ResetPasswordEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

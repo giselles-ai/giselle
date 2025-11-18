@@ -18,7 +18,7 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
+	getEmailAssetUrl,
 	link,
 	main,
 	section,
@@ -45,7 +45,7 @@ export const ChangelogAnnouncementEmail = ({
 	screenshotUrl,
 	viewChangelogUrl = "https://giselles.ai/changelog",
 }: ChangelogAnnouncementEmailProps) => {
-	const baseUrl = getBaseUrl();
+	const headerBannerSrc = getEmailAssetUrl("giselletimes.png");
 	return (
 		<Html>
 			<Head>
@@ -54,10 +54,10 @@ export const ChangelogAnnouncementEmail = ({
 			<Preview>Giselle update</Preview>
 			<Body style={main}>
 				<Container style={container}>
-					<EmailHeader baseUrl={baseUrl} />
+					<EmailHeader />
 					<Section style={headerBannerSection}>
 						<Img
-							src={`${baseUrl}/static/giselletimes.png`}
+							src={headerBannerSrc}
 							width="300"
 							alt="Giselle Times"
 							style={headerBannerImage}
@@ -133,7 +133,7 @@ export const ChangelogAnnouncementEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

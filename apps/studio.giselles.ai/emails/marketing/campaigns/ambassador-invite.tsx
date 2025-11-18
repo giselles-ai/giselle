@@ -17,7 +17,7 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
+	getEmailAssetUrl,
 	link,
 	main,
 	section,
@@ -36,7 +36,7 @@ export const AmbassadorInviteEmail = ({
 	userName = "there",
 	applyUrl = "https://giselles.ai/ambassador",
 }: AmbassadorInviteEmailProps) => {
-	const baseUrl = getBaseUrl();
+	const heroImageSrc = getEmailAssetUrl("ambassador-invite.jpg");
 	return (
 		<Html>
 			<Head>
@@ -45,10 +45,10 @@ export const AmbassadorInviteEmail = ({
 			<Preview>Join the Giselle Ambassador Program 🪶</Preview>
 			<Body style={main}>
 				<Container style={container}>
-					<EmailHeader baseUrl={baseUrl} />
+					<EmailHeader />
 					<Section style={imageSection}>
 						<Img
-							src={`${baseUrl}/static/ambassador-invite.jpg`}
+							src={heroImageSrc}
 							width="600"
 							alt="Giselle Ambassador Program"
 							style={image}
@@ -80,7 +80,7 @@ export const AmbassadorInviteEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

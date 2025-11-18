@@ -16,7 +16,6 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
 	link,
 	main,
 	section,
@@ -40,7 +39,6 @@ export const ReminderEmail = ({
 	releaseNotesUrl:
 		_releaseNotesUrl = "https://docs.giselles.ai/en/releases/release-notes",
 }: ReminderEmailProps) => {
-	const baseUrl = getBaseUrl();
 	return (
 		<Html>
 			<Head>
@@ -52,7 +50,6 @@ export const ReminderEmail = ({
 					<EmailHeader
 						heading="Your workspace is waiting."
 						subheading="Create your first agent and start building."
-						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -99,7 +96,7 @@ export const ReminderEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

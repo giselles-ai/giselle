@@ -16,7 +16,6 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
 	link,
 	main,
 	section,
@@ -39,7 +38,6 @@ export const LongTimeNoSeeEmail = ({
 	examplesGalleryUrl = "https://giselles.ai",
 	releaseNotesUrl = "https://docs.giselles.ai/en/releases/release-notes",
 }: LongTimeNoSeeEmailProps) => {
-	const baseUrl = getBaseUrl();
 	return (
 		<Html>
 			<Head>
@@ -51,7 +49,6 @@ export const LongTimeNoSeeEmail = ({
 					<EmailHeader
 						heading="It's been a while."
 						subheading="Your agents are waiting for you."
-						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -104,7 +101,7 @@ export const LongTimeNoSeeEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

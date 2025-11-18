@@ -16,7 +16,6 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
 	link,
 	main,
 	section,
@@ -39,7 +38,6 @@ export const WelcomeEmail = ({
 	createWorkspaceUrl = "https://studio.giselles.ai",
 	examplesGalleryUrl = "https://giselles.ai",
 }: WelcomeEmailProps) => {
-	const baseUrl = getBaseUrl();
 	return (
 		<Html>
 			<Head>
@@ -51,7 +49,6 @@ export const WelcomeEmail = ({
 					<EmailHeader
 						heading="Welcome to Giselle."
 						subheading="Your journey to build AI agents begins here."
-						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -105,7 +102,7 @@ export const WelcomeEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

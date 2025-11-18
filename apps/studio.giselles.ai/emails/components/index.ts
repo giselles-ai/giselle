@@ -1,3 +1,4 @@
+export { getEmailAssetUrl } from "../utils/email-assets";
 export { EmailFonts } from "./email-fonts";
 export { EmailFooter } from "./email-footer";
 export { EmailHeader } from "./email-header";
@@ -7,7 +8,6 @@ export {
 	codeContainer,
 	container,
 	footerText,
-	getBaseUrl,
 	h1,
 	highlightText,
 	link,

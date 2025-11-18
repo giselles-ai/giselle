@@ -17,7 +17,6 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
 	h1,
 	link,
 	main,
@@ -39,7 +38,6 @@ export const IncompleteSignupEmail = ({
 	completeSignupUrl = "https://studio.giselles.ai/signup/verify-email",
 	resendCodeUrl = "https://studio.giselles.ai/signup/verify-email",
 }: IncompleteSignupEmailProps) => {
-	const baseUrl = getBaseUrl();
 	return (
 		<Html>
 			<Head>
@@ -51,7 +49,6 @@ export const IncompleteSignupEmail = ({
 					<EmailHeader
 						heading="It's been a while."
 						subheading="Your agents are waiting for you."
-						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -89,7 +86,7 @@ export const IncompleteSignupEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

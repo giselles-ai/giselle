@@ -17,7 +17,7 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
+	getEmailAssetUrl,
 	h1,
 	main,
 	section,
@@ -33,7 +33,7 @@ interface YearInReviewEmailProps {
 export const YearInReviewEmail = ({
 	viewYearInGiselleUrl = "https://studio.giselles.ai/year-in-review",
 }: YearInReviewEmailProps) => {
-	const baseUrl = getBaseUrl();
+	const heroImageSrc = getEmailAssetUrl("year-in-review-1.jpg");
 	const currentYear = new Date().getFullYear();
 	return (
 		<Html>
@@ -45,10 +45,10 @@ export const YearInReviewEmail = ({
 			</Preview>
 			<Body style={main}>
 				<Container style={container}>
-					<EmailHeader baseUrl={baseUrl} />
+					<EmailHeader />
 					<Section style={imageSection}>
 						<Img
-							src={`${baseUrl}/static/year-in-review-1.jpg`}
+							src={heroImageSrc}
 							width="600"
 							alt="Year in review"
 							style={image}
@@ -74,7 +74,7 @@ export const YearInReviewEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

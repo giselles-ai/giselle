@@ -15,7 +15,6 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
 	main,
 	section,
 	signatureText,
@@ -33,7 +32,6 @@ export const FeedbackSurveyEmail = ({
 	userName = "there",
 	surveyUrl = "https://giselles.ai/feedback",
 }: FeedbackSurveyEmailProps) => {
-	const baseUrl = getBaseUrl();
 	return (
 		<Html>
 			<Head>
@@ -45,7 +43,6 @@ export const FeedbackSurveyEmail = ({
 					<EmailHeader
 						heading="We'd love your feedback."
 						subheading="Your thoughts help us make Giselle better."
-						baseUrl={baseUrl}
 					/>
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
@@ -73,7 +70,7 @@ export const FeedbackSurveyEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

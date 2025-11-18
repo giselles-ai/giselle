@@ -16,7 +16,6 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
 	h1,
 	link,
 	main,
@@ -46,7 +45,6 @@ export const ChangeEmailAddressEmail = ({
 	const displayNewEmail = newEmail ?? SUPABASE_NEW_EMAIL_PLACEHOLDER;
 	const displayConfirmationUrl =
 		confirmationUrl ?? SUPABASE_CONFIRMATION_URL_PLACEHOLDER;
-	const baseUrl = getBaseUrl();
 
 	return (
 		<Html>
@@ -56,7 +54,7 @@ export const ChangeEmailAddressEmail = ({
 			<Preview>Confirm Change of Email</Preview>
 			<Body style={main}>
 				<Container style={container}>
-					<EmailHeader baseUrl={baseUrl} />
+					<EmailHeader />
 					<Section style={topBorderSection}>
 						<Hr style={topBorder} />
 					</Section>
@@ -89,7 +87,7 @@ export const ChangeEmailAddressEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);

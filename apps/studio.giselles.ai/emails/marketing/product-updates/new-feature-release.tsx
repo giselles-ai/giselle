@@ -18,7 +18,7 @@ import {
 	EmailFonts,
 	EmailFooter,
 	EmailHeader,
-	getBaseUrl,
+	getEmailAssetUrl,
 	link,
 	main,
 	section,
@@ -45,7 +45,8 @@ export const NewFeatureReleaseEmail = ({
 	}),
 	viewUpdateUrl = "https://studio.giselles.ai",
 }: NewFeatureReleaseEmailProps) => {
-	const baseUrl = getBaseUrl();
+	const headerBannerSrc = getEmailAssetUrl("giselletimes.png");
+	const featureImageSrc = getEmailAssetUrl("new-feature-release-sample.jpg");
 	return (
 		<Html>
 			<Head>
@@ -54,7 +55,7 @@ export const NewFeatureReleaseEmail = ({
 			<Preview>New in Giselle: Node Builder</Preview>
 			<Body style={main}>
 				<Container style={container}>
-					<EmailHeader baseUrl={baseUrl} />
+					<EmailHeader />
 					<Section style={headerBannerSection}>
 						<Row>
 							<Column style={leftColumn}>
@@ -62,7 +63,7 @@ export const NewFeatureReleaseEmail = ({
 							</Column>
 							<Column style={centerColumn}>
 								<Img
-									src={`${baseUrl}/static/giselletimes.png`}
+									src={headerBannerSrc}
 									width="300"
 									alt="Giselle Times"
 									style={headerBannerImage}
@@ -102,7 +103,7 @@ export const NewFeatureReleaseEmail = ({
 						</Text>
 						<Hr style={articleDivider} />
 						<Img
-							src={`${baseUrl}/static/new-feature-release-sample.jpg`}
+							src={featureImageSrc}
 							width="600"
 							alt="New feature in Giselle"
 							style={image}
@@ -140,7 +141,7 @@ export const NewFeatureReleaseEmail = ({
 						<Hr style={topBorder} />
 					</Section>
 				</Container>
-				<EmailFooter baseUrl={baseUrl} />
+				<EmailFooter />
 			</Body>
 		</Html>
 	);
