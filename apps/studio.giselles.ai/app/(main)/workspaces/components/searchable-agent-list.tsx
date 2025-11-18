@@ -1,22 +1,33 @@
 "use client";
 
+import { File } from "lucide-react";
 import { useMemo, useState } from "react";
-
 import type { agents as dbAgents } from "@/db";
+import { GitHubIcon } from "../../../../../../internal-packages/workflow-designer-ui/src/icons";
 import { Card } from "../../settings/components/card";
 import { AgentCard } from "./agent-card";
 import { AppListItem } from "./app-list-item";
-import { DeleteAgentButton } from "./delete-agent-button";
-import { DuplicateAgentButton } from "./duplicate-agent-button";
+import { LLMProviderIcon } from "./llm-provider-icon";
 import { SearchHeader } from "./search-header";
 
 type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
 type ViewMode = "grid" | "list";
 
+type AgentWithMetadata = typeof dbAgents.$inferSelect & {
+	executionCount: number;
+	creator: {
+		displayName: string | null;
+		avatarUrl: string | null;
+	} | null;
+	githubRepositories: string[];
+	documentVectorStoreFiles: string[];
+	llmProviders: string[];
+};
+
 export function SearchableAgentList({
 	agents,
 }: {
-	agents: (typeof dbAgents.$inferSelect)[];
+	agents: AgentWithMetadata[];
 }) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sortOption, setSortOption] = useState<SortOption>("date-desc");
@@ -75,13 +86,31 @@ export function SearchableAgentList({
 					</div>
 				</div>
 			) : viewMode === "grid" ? (
-				<div className="relative flex h-full w-full flex-wrap items-start justify-start gap-4">
+				<div className="relative grid h-full w-full grid-cols-[repeat(auto-fill,minmax(267px,1fr))] gap-4">
 					{sortedAgents.map((agent) => (
 						<AgentCard key={agent.id} agent={agent} />
 					))}
 				</div>
 			) : (
-				<Card className="gap-0 py-2">
+				<Card className="!flex !flex-col gap-0 py-2">
+					{/* Table Header */}
+					<div className="grid grid-cols-[2fr_1fr_1.5fr_1fr_auto] items-center gap-4 px-2 py-2 border-b-[0.5px] border-border-muted">
+						<p className="text-[12px] font-geist font-semibold text-text/60 uppercase tracking-wide">
+							Name
+						</p>
+						<p className="text-[12px] font-geist font-semibold text-text/60 uppercase tracking-wide">
+							Integration
+						</p>
+						<p className="text-[12px] font-geist font-semibold text-text/60 uppercase tracking-wide">
+							Connected
+						</p>
+						<p className="text-[12px] font-geist font-semibold text-text/60 uppercase tracking-wide">
+							Builder
+						</p>
+						<p className="text-[12px] font-geist font-semibold text-text/60 uppercase tracking-wide">
+							Runs
+						</p>
+					</div>
 					{sortedAgents.map((agent) => {
 						if (!agent.workspaceId) return null;
 						return (
@@ -90,16 +119,29 @@ export function SearchableAgentList({
 								href={`/workspaces/${agent.workspaceId}`}
 								title={agent.name || "Untitled"}
 								subtitle={`Edited ${agent.updatedAt.toLocaleDateString()}`}
-								rightActions={
+								creator={agent.creator?.displayName || null}
+								githubRepositories={agent.githubRepositories}
+								documentVectorStoreFiles={agent.documentVectorStoreFiles}
+								executionCount={agent.executionCount}
+								agentId={agent.id}
+								agentName={agent.name || "Untitled"}
+								integrationIcons={
 									<>
-										<DuplicateAgentButton
-											agentId={agent.id}
-											agentName={agent.name || "Untitled"}
-										/>
-										<DeleteAgentButton
-											agentId={agent.id}
-											agentName={agent.name || "Untitled"}
-										/>
+										{agent.llmProviders?.map((provider) => (
+											<LLMProviderIcon
+												key={provider}
+												provider={provider}
+												className="w-4 h-4"
+											/>
+										))}
+										{agent.githubRepositories &&
+											agent.githubRepositories.length > 0 && (
+												<GitHubIcon className="w-4 h-4 text-text/60" />
+											)}
+										{agent.documentVectorStoreFiles &&
+											agent.documentVectorStoreFiles.length > 0 && (
+												<File className="w-4 h-4 text-text/60" />
+											)}
 									</>
 								}
 							/>
