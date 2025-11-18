@@ -23,35 +23,72 @@ export async function handleSubscriptionCancellation(
 		);
 	}
 
-	// Get the earliest admin's membership ID
-	const [earliestAdmin] = await db
-		.select({ id: teamMemberships.id })
-		.from(teamMemberships)
-		.where(
-			and(
-				eq(teamMemberships.teamDbId, sub.teamDbId),
-				eq(teamMemberships.role, "admin"),
-			),
-		)
-		.orderBy(teamMemberships.id)
+	const [team] = await db
+		.select({ plan: teams.plan })
+		.from(teams)
+		.where(eq(teams.dbId, sub.teamDbId))
 		.limit(1);
 
-	if (!earliestAdmin) {
-		throw new Error(`No admin found for team (id: ${sub.teamDbId})`);
+	if (!team) {
+		throw new Error(`Team not found (id: ${sub.teamDbId})`);
 	}
 
-	// Delete all team memberships except the earliest admin
-	await db
-		.delete(teamMemberships)
-		.where(
-			and(
-				eq(teamMemberships.teamDbId, sub.teamDbId),
-				ne(teamMemberships.id, earliestAdmin.id),
-			),
-		);
+	let shouldApplyStripeCancellation =
+		team.plan !== "internal" && team.plan !== "enterprise";
+	// Enterprise and internal plans are not managed in Stripe, so cancellation webhooks should never mutate those teams.
+
+	if (shouldApplyStripeCancellation) {
+		const [latestTeam] = await db
+			.select({ plan: teams.plan })
+			.from(teams)
+			.where(eq(teams.dbId, sub.teamDbId))
+			.limit(1);
+
+		if (!latestTeam) {
+			throw new Error(`Team not found (id: ${sub.teamDbId})`);
+		}
+
+		shouldApplyStripeCancellation =
+			latestTeam.plan !== "internal" && latestTeam.plan !== "enterprise";
+	}
+
+	if (shouldApplyStripeCancellation) {
+		// Get the earliest admin's membership ID
+		const [earliestAdmin] = await db
+			.select({ id: teamMemberships.id })
+			.from(teamMemberships)
+			.where(
+				and(
+					eq(teamMemberships.teamDbId, sub.teamDbId),
+					eq(teamMemberships.role, "admin"),
+				),
+			)
+			.orderBy(teamMemberships.id)
+			.limit(1);
+
+		if (!earliestAdmin) {
+			throw new Error(`No admin found for team (id: ${sub.teamDbId})`);
+		}
+
+		// Delete all team memberships except the earliest admin
+		await db
+			.delete(teamMemberships)
+			.where(
+				and(
+					eq(teamMemberships.teamDbId, sub.teamDbId),
+					ne(teamMemberships.id, earliestAdmin.id),
+				),
+			);
+	}
 
 	await db
 		.update(teams)
 		.set({ plan: "free" })
-		.where(and(eq(teams.dbId, sub.teamDbId), ne(teams.plan, "internal")));
+		.where(
+			and(
+				eq(teams.dbId, sub.teamDbId),
+				ne(teams.plan, "internal"),
+				ne(teams.plan, "enterprise"),
+			),
+		);
 }

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { acts, agents, db } from "@/db";
 import { stageFlag } from "@/flags";
 import { fetchCurrentUser } from "@/services/accounts";
-import { fetchUserTeams } from "@/services/teams";
+import { fetchCurrentTeam, fetchUserTeams } from "@/services/teams";
 import { fetchFlowTriggers } from "../(top)/services";
 import { ShowcaseClient } from "./showcase-client";
 
@@ -14,11 +14,7 @@ export default async function StageShowcasePage() {
 	}
 
 	const teams = await fetchUserTeams();
-	const teamOptions = teams.map((team) => ({
-		value: team.id,
-		label: team.name,
-		avatarUrl: team.avatarUrl ?? undefined,
-	}));
+	const currentTeam = await fetchCurrentTeam();
 
 	// Fetch only executable apps (using same logic as stage)
 	const user = await fetchCurrentUser();
@@ -73,7 +69,7 @@ export default async function StageShowcasePage() {
 		const dbActs = await db
 			.select({
 				dbId: acts.dbId,
-				sdkActId: acts.sdkActId,
+				sdkTaskId: acts.sdkActId,
 				sdkWorkspaceId: acts.sdkWorkspaceId,
 				createdAt: acts.createdAt,
 				teamDbId: acts.teamDbId,
@@ -122,9 +118,9 @@ export default async function StageShowcasePage() {
 
 	return (
 		<ShowcaseClient
-			teamOptions={teamOptions}
 			teamApps={teamApps}
 			teamHistory={teamHistory}
+			currentTeamId={currentTeam.id}
 		/>
 	);
 }

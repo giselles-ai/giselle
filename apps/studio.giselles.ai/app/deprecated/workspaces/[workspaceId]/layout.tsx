@@ -1,16 +1,12 @@
-import {
-	WorkspaceProvider,
-	ZustandBridgeProvider,
-} from "@giselles-ai/giselle/react";
 import { WorkspaceId } from "@giselles-ai/protocol";
+import { WorkspaceProvider, ZustandBridgeProvider } from "@giselles-ai/react";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import { db, flowTriggers } from "@/db";
 import {
 	aiGatewayFlag,
 	aiGatewayUnsupportedModelsFlag,
-	githubIssuesVectorStoreFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
 	stageFlag,
@@ -21,11 +17,7 @@ import { getGitHubRepositoryIndexes } from "@/lib/vector-stores/github";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { getUsageLimitsForTeam } from "@/packages/lib/usage-limits";
 import { fetchCurrentUser } from "@/services/accounts";
-import {
-	fetchWorkspaceTeam,
-	isMemberOfTeam,
-	isProPlan,
-} from "@/services/teams";
+import { fetchWorkspaceTeam, isMemberOfTeam } from "@/services/teams";
 
 export default async function Layout({
 	params,
@@ -75,11 +67,10 @@ export default async function Layout({
 	const aiGateway = await aiGatewayFlag();
 	const aiGatewayUnsupportedModels = await aiGatewayUnsupportedModelsFlag();
 	const googleUrlContext = await googleUrlContextFlag();
-	const data = await giselleEngine.getWorkspace(workspaceId);
+	const data = await giselle.getWorkspace(workspaceId);
 	const documentVectorStores = await getDocumentVectorStores(
 		workspaceTeam.dbId,
 	);
-	const githubIssuesVectorStore = await githubIssuesVectorStoreFlag();
 
 	// return children
 	return (
@@ -114,7 +105,6 @@ export default async function Layout({
 			usageLimits={usageLimits}
 			telemetry={{
 				metadata: {
-					isProPlan: isProPlan(workspaceTeam),
 					teamPlan: workspaceTeam.plan,
 					userId: currentUser.id,
 					subscriptionId: workspaceTeam.activeSubscriptionId ?? "",
@@ -127,7 +117,6 @@ export default async function Layout({
 				aiGateway,
 				aiGatewayUnsupportedModels,
 				googleUrlContext,
-				githubIssuesVectorStore,
 			}}
 			trigger={{
 				callbacks: {

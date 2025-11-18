@@ -1,10 +1,7 @@
 "use client";
 
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
-import {
-	useFeatureFlag,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
+import { useFeatureFlag, useWorkflowDesigner } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { ChevronDownIcon } from "lucide-react";
 import Link from "next/link";

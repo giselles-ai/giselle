@@ -159,7 +159,13 @@ async function insertSubscription(
 		.set({
 			plan: subscription.status === "active" ? "pro" : "free",
 		})
-		.where(and(eq(teams.dbId, teamDbId), ne(teams.plan, "internal")));
+		.where(
+			and(
+				eq(teams.dbId, teamDbId),
+				ne(teams.plan, "internal"),
+				ne(teams.plan, "enterprise"),
+			),
+		);
 }
 
 async function updateSubscription(subscription: Stripe.Subscription) {
@@ -204,7 +210,13 @@ async function updateSubscription(subscription: Stripe.Subscription) {
 			.set({
 				plan: subscription.status === "active" ? "pro" : "free",
 			})
-			.where(and(eq(teams.dbId, updated.teamDbId), ne(teams.plan, "internal")));
+			.where(
+				and(
+					eq(teams.dbId, updated.teamDbId),
+					ne(teams.plan, "internal"),
+					ne(teams.plan, "enterprise"),
+				),
+			);
 	}
 }
 

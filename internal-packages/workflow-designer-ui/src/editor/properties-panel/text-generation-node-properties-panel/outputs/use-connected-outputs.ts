@@ -1,4 +1,3 @@
-import { useWorkflowDesigner } from "@giselles-ai/giselle/react";
 import {
 	type ActionNode,
 	type AppEntryNode,
@@ -7,6 +6,7 @@ import {
 	type TriggerNode,
 	VariableNode,
 } from "@giselles-ai/protocol";
+import { useWorkflowDesigner } from "@giselles-ai/react";
 import { useMemo } from "react";
 import type { ConnectedOutputWithDetails } from "./types";
 
@@ -108,12 +108,14 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 				...connectedActionInputs,
 				...connectedVariableInputs,
 				...connectedQueryInputs,
+				...connectedAppEntryInputs,
 			],
 			generation: connectedGeneratedInputs,
 			variable: connectedVariableInputs,
 			action: connectedActionInputs,
 			trigger: connectedTriggerInputs,
 			query: connectedQueryInputs,
+			appEntry: connectedAppEntryInputs,
 		};
 	}, [node.id, data.connections, data.nodes]);
 }

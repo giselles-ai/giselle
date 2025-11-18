@@ -1,8 +1,8 @@
+import type { NodeId } from "@giselles-ai/protocol";
 import {
 	useNodeGenerations,
 	useWorkflowDesignerStore,
-} from "@giselles-ai/giselle/react";
-import type { NodeId } from "@giselles-ai/protocol";
+} from "@giselles-ai/react";
 import { BaseEdge, type EdgeProps, getBezierPath } from "@xyflow/react";
 import clsx from "clsx/lite";
 import type { PropsWithChildren } from "react";
@@ -94,6 +94,7 @@ export function Connector({
 					"group-data-[output-node-content-type=vectorStore]:group-data-[input-node-content-type=query]:!stroke-[url(#vectorStoreToQueryNode)]",
 					"group-data-[output-node-content-type=trigger]:group-data-[input-node-content-type=query]:!stroke-[url(#triggerToQueryNode)]",
 					"group-data-[output-node-content-type=action]:group-data-[input-node-content-type=query]:!stroke-[url(#actionToQueryNode)]",
+					"group-data-[output-node-content-type=appEntry]:group-data-[input-node-content-type=textGeneration]:!stroke-[url(#appEntryToTextGeneration)]",
 				)}
 				filter="url(#white-glow-filter)"
 			/>
@@ -210,6 +211,16 @@ export function GradientDef() {
 				</linearGradient>
 				<linearGradient
 					id="triggerToTextGeneration"
+					x1="0%"
+					y1="0%"
+					x2="100%"
+					y2="0%"
+				>
+					<stop offset="0%" stopColor="var(--color-trigger-node-1)" />
+					<stop offset="100%" stopColor="var(--color-primary-900)" />
+				</linearGradient>
+				<linearGradient
+					id="appEntryToTextGeneration"
 					x1="0%"
 					y1="0%"
 					x2="100%"

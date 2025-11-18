@@ -1,7 +1,6 @@
-import { DocsLink } from "@giselle-internal/ui/docs-link";
-import { PageHeading } from "@giselle-internal/ui/page-heading";
-import { githubIssuesVectorStoreFlag } from "@/flags";
 import { getGitHubIdentityState } from "@/services/accounts";
+import { fetchCurrentTeam } from "@/services/teams";
+import { getGitHubVectorStoreQuota } from "@/services/teams/plan-features/github-vector-store";
 import {
 	deleteRepositoryIndex,
 	registerRepositoryIndex,
@@ -39,41 +38,41 @@ export default async function TeamVectorStorePage() {
 		return <GitHubAppInstallRequiredCard />;
 	}
 
-	const [
-		installationsWithRepos,
-		repositoryIndexes,
-		isGithubIssuesVectorStoreEnabled,
-	] = await Promise.all([
+	const [installationsWithRepos, repositoryIndexes, team] = await Promise.all([
 		getInstallationsWithRepos(),
 		getGitHubRepositoryIndexes(),
-		githubIssuesVectorStoreFlag(),
+		fetchCurrentTeam(),
 	]);
+
+	const quota = getGitHubVectorStoreQuota(team.plan);
+	const hasAccess = quota.isAvailable;
+	const hasReachedLimit =
+		hasAccess && repositoryIndexes.length >= quota.maxStores;
+	const registerDisabled = !hasAccess || hasReachedLimit;
+	const registerDisabledReason = !hasAccess
+		? "GitHub Vector Stores are available on Pro or Team plans."
+		: hasReachedLimit
+			? "You've reached the number of GitHub Vector Stores included in your plan."
+			: undefined;
 
 	return (
 		<div className="flex flex-col gap-[24px]">
-			<div className="flex justify-between items-center">
-				<PageHeading glow>Vector Stores</PageHeading>
-				<div className="flex items-center gap-4">
-					<DocsLink
-						href="https://docs.giselles.ai/en/guides/settings/team/vector-stores"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						About Vector Stores
-					</DocsLink>
-					<RepositoryRegistrationDialog
-						installationsWithRepos={installationsWithRepos}
-						registerRepositoryIndexAction={registerRepositoryIndex}
-						githubIssuesVectorStore={isGithubIssuesVectorStoreEnabled}
-					/>
-				</div>
+			<div className="flex justify-end">
+				<RepositoryRegistrationDialog
+					installationsWithRepos={installationsWithRepos}
+					registerRepositoryIndexAction={registerRepositoryIndex}
+					disabled={registerDisabled}
+					disabledReason={registerDisabledReason}
+				/>
 			</div>
 			<RepositoryList
 				repositories={repositoryIndexes}
 				deleteRepositoryIndexAction={deleteRepositoryIndex}
 				triggerManualIngestAction={triggerManualIngest}
 				updateRepositoryIndexAction={updateRepositoryIndex}
-				githubIssuesVectorStore={isGithubIssuesVectorStoreEnabled}
+				hasAccess={hasAccess}
+				maxStores={quota.maxStores}
+				teamPlan={team.plan}
 			/>
 		</div>
 	);

@@ -1,13 +1,14 @@
 "use server";
 
 import * as Sentry from "@sentry/nextjs";
-import { and, asc, count, desc, eq, ne } from "drizzle-orm";
+import { and, asc, count, desc, eq, gt, isNull, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
 	agentActivities,
 	agents,
 	db,
+	invitations,
 	subscriptions,
 	supabaseUserMappings,
 	type TeamRole,
@@ -22,8 +23,11 @@ import { getUser } from "@/lib/supabase";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import { handleMemberChange } from "@/services/teams/member-change";
+import {
+	canManageTeamMembers,
+	getTeamMemberQuota,
+} from "@/services/teams/plan-features/team-members";
 import type { TeamId } from "@/services/teams/types";
-import { hasTeamPlanFeatures } from "@/services/teams/utils";
 import {
 	deleteAvatar,
 	uploadAvatar,
@@ -36,6 +40,7 @@ import {
 	listInvitations,
 	revokeInvitation,
 	sendInvitationEmail,
+	TEAM_MEMBER_LIMIT_REACHED_ERROR,
 } from "./invitation";
 
 function isUserId(value: string): value is UserId {
@@ -613,6 +618,7 @@ type InvitationResult = {
 		| "db_error"
 		| "email_error"
 		| "plan_not_supported"
+		| "plan_limit_reached"
 		| "unknown_error";
 	error?: string;
 };
@@ -629,7 +635,8 @@ export async function sendInvitationsAction(
 ): Promise<SendInvitationsResult> {
 	const currentUser = await fetchCurrentUser();
 	const currentTeam = await fetchCurrentTeam();
-	if (!hasTeamPlanFeatures(currentTeam)) {
+	const quota = getTeamMemberQuota(currentTeam.plan);
+	if (!canManageTeamMembers(currentTeam.plan) || !quota.isAvailable) {
 		return {
 			overallStatus: "failure",
 			results: emails.map((email) => ({
@@ -640,7 +647,27 @@ export async function sendInvitationsAction(
 		};
 	}
 
-	const invitationPromises = emails.map(
+	const seatUsage = await getTeamSeatUsage(currentTeam.dbId);
+	const seatsRemaining = Math.max(
+		quota.maxMembers - (seatUsage.memberCount + seatUsage.pendingInvitations),
+		0,
+	);
+
+	if (seatsRemaining === 0) {
+		return {
+			overallStatus: "failure",
+			results: emails.map((email) => ({
+				email,
+				status: "plan_limit_reached",
+				error: TEAM_MEMBER_LIMIT_REACHED_ERROR,
+			})),
+		};
+	}
+
+	const allowedEmails = emails.slice(0, seatsRemaining);
+	const overflowEmails = emails.slice(seatsRemaining);
+
+	const invitationPromises = allowedEmails.map(
 		async (email): Promise<InvitationResult> => {
 			let invitation: Invitation | null = null;
 			try {
@@ -653,11 +680,18 @@ export async function sendInvitationsAction(
 				await sendInvitationEmail(invitation);
 				return { email, status: "success" };
 			} catch (error: unknown) {
-				const status = invitation ? "email_error" : "db_error";
 				const errorMessage =
 					error instanceof Error
 						? error.message
 						: "Unknown error during invitation process";
+				if (errorMessage === TEAM_MEMBER_LIMIT_REACHED_ERROR) {
+					return {
+						email,
+						status: "plan_limit_reached",
+						error: TEAM_MEMBER_LIMIT_REACHED_ERROR,
+					};
+				}
+				const status = invitation ? "email_error" : "db_error";
 				return { email, status, error: errorMessage };
 			}
 		},
@@ -685,7 +719,15 @@ export async function sendInvitationsAction(
 		},
 	);
 
-	const successfulCount = detailedResults.filter(
+	const overflowResults: InvitationResult[] = overflowEmails.map((email) => ({
+		email,
+		status: "plan_limit_reached",
+		error: TEAM_MEMBER_LIMIT_REACHED_ERROR,
+	}));
+
+	const combinedResults = [...detailedResults, ...overflowResults];
+
+	const successfulCount = combinedResults.filter(
 		(r) => r.status === "success",
 	).length;
 	let overallStatus: SendInvitationsResult["overallStatus"];
@@ -701,7 +743,30 @@ export async function sendInvitationsAction(
 
 	return {
 		overallStatus,
-		results: detailedResults,
+		results: combinedResults,
+	};
+}
+
+async function getTeamSeatUsage(teamDbId: number) {
+	const [memberCountResult] = await db
+		.select({ value: count() })
+		.from(teamMemberships)
+		.where(eq(teamMemberships.teamDbId, teamDbId));
+
+	const [pendingInvitationResult] = await db
+		.select({ value: count() })
+		.from(invitations)
+		.where(
+			and(
+				eq(invitations.teamDbId, teamDbId),
+				isNull(invitations.revokedAt),
+				gt(invitations.expiredAt, new Date()),
+			),
+		);
+
+	return {
+		memberCount: Number(memberCountResult?.value ?? 0),
+		pendingInvitations: Number(pendingInvitationResult?.value ?? 0),
 	};
 }
 
@@ -715,7 +780,7 @@ export async function revokeInvitationAction(
 	const token = formData.get("token") as string;
 	try {
 		const currentTeam = await fetchCurrentTeam();
-		if (!hasTeamPlanFeatures(currentTeam)) {
+		if (!canManageTeamMembers(currentTeam.plan)) {
 			return {
 				success: false,
 				error: INVITE_MEMBERS_NOT_AVAILABLE_ERROR,
@@ -749,7 +814,7 @@ export async function resendInvitationAction(
 	const token = formData.get("token") as string;
 	try {
 		const currentTeam = await fetchCurrentTeam();
-		if (!hasTeamPlanFeatures(currentTeam)) {
+		if (!canManageTeamMembers(currentTeam.plan)) {
 			return {
 				success: false,
 				error: INVITE_MEMBERS_NOT_AVAILABLE_ERROR,

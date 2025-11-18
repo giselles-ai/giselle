@@ -4,7 +4,7 @@ import {
 	type Workspace,
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import { type acts as actsSchema, db } from "@/db";
 import { fetchCurrentUser } from "@/services/accounts";
 import type { FilterType, FlowTriggerUIItem, TeamId } from "./types";
@@ -25,12 +25,12 @@ async function enrichActWithNavigationData(
 	createdAt: Date;
 } | null> {
 	try {
-		const tmpAct = await giselleEngine.getAct({ actId: act.sdkActId });
+		const tmpAct = await giselle.getTask({ taskId: act.sdkActId });
 		const team = teams.find((t) => t.dbId === act.teamDbId);
 		if (team === undefined) {
 			throw new Error("Team not found");
 		}
-		const tmpWorkspace = await giselleEngine.getWorkspace(act.sdkWorkspaceId);
+		const tmpWorkspace = await giselle.getWorkspace(act.sdkWorkspaceId);
 
 		const findStepByStatus = (status: string) => {
 			for (const sequence of tmpAct.sequences) {
@@ -184,7 +184,7 @@ export async function fetchFlowTriggers(
 
 		for (const tmpFlowTrigger of tmpFlowTriggers) {
 			if (!workspaceMap.has(tmpFlowTrigger.sdkWorkspaceId)) {
-				const tmpWorkspace = await giselleEngine.getWorkspace(
+				const tmpWorkspace = await giselle.getWorkspace(
 					tmpFlowTrigger.sdkWorkspaceId,
 				);
 				workspaceMap.set(tmpFlowTrigger.sdkWorkspaceId, tmpWorkspace);
@@ -205,7 +205,7 @@ export async function fetchFlowTriggers(
 				continue;
 			}
 
-			const flowTrigger = await giselleEngine.getTrigger({
+			const flowTrigger = await giselle.getTrigger({
 				triggerId: tmpFlowTrigger.sdkFlowTriggerId,
 			});
 			if (flowTrigger === undefined) {

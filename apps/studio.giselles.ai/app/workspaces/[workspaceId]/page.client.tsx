@@ -2,13 +2,9 @@
 
 import { Editor } from "@giselle-internal/workflow-designer-ui";
 import type { Integration } from "@giselles-ai/giselle";
-import {
-	WorkspaceProvider,
-	ZustandBridgeProvider,
-} from "@giselles-ai/giselle/react";
 import type { Trigger } from "@giselles-ai/protocol";
+import { WorkspaceProvider, ZustandBridgeProvider } from "@giselles-ai/react";
 import { use } from "react";
-import { isProPlan } from "@/services/teams/utils";
 import type { LoaderData } from "./data-loader";
 
 interface Props {
@@ -54,7 +50,6 @@ export function Page({
 			usageLimits={data.usageLimits}
 			telemetry={{
 				metadata: {
-					isProPlan: isProPlan(data.workspaceTeam),
 					teamPlan: data.workspaceTeam.plan,
 					userId: data.currentUser.id,
 					subscriptionId: data.workspaceTeam.activeSubscriptionId ?? "",

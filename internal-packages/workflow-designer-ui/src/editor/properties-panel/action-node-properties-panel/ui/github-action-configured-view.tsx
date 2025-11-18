@@ -5,10 +5,6 @@ import {
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
 import { githubActions } from "@giselles-ai/action-registry";
-import {
-	useGiselleEngine,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
 import { defaultName } from "@giselles-ai/node-registry";
 import type {
 	ActionNode,
@@ -20,6 +16,7 @@ import type {
 	NodeLike,
 	OutputId,
 } from "@giselles-ai/protocol";
+import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { PlusIcon, TriangleAlert, XIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";
@@ -106,7 +103,7 @@ export function GitHubActionConfiguredView({
 	handleClick: () => void;
 	isGenerating: boolean;
 }) {
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const {
 		deleteConnection,
 		updateNodeData,

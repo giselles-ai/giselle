@@ -1,11 +1,10 @@
 import type { WorkspaceId } from "@giselles-ai/protocol";
 import { notFound } from "next/navigation";
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import { db } from "@/db";
 import {
 	aiGatewayFlag,
 	aiGatewayUnsupportedModelsFlag,
-	githubIssuesVectorStoreFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
 	stageFlag,
@@ -55,11 +54,10 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const aiGateway = await aiGatewayFlag();
 	const aiGatewayUnsupportedModels = await aiGatewayUnsupportedModelsFlag();
 	const googleUrlContext = await googleUrlContextFlag();
-	const data = await giselleEngine.getWorkspace(workspaceId);
+	const data = await giselle.getWorkspace(workspaceId);
 	const documentVectorStores = await getDocumentVectorStores(
 		workspaceTeam.dbId,
 	);
-	const githubIssuesVectorStore = await githubIssuesVectorStoreFlag();
 
 	return {
 		currentUser,
@@ -83,7 +81,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			aiGateway,
 			aiGatewayUnsupportedModels,
 			googleUrlContext,
-			githubIssuesVectorStore,
 		},
 	};
 }

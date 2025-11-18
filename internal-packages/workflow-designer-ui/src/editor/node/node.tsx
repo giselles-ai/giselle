@@ -1,4 +1,3 @@
-import { useWorkflowDesignerStore } from "@giselles-ai/giselle/react";
 import { defaultName } from "@giselles-ai/node-registry";
 import {
 	type InputId,
@@ -11,6 +10,7 @@ import {
 	type NodeLike,
 	type OutputId,
 } from "@giselles-ai/protocol";
+import { useWorkflowDesignerStore } from "@giselles-ai/react";
 import {
 	Handle,
 	type NodeProps,
@@ -20,7 +20,7 @@ import {
 import clsx from "clsx/lite";
 import { CheckIcon, SquareIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useMemo, useRef, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useTransition } from "react";
 import { useShallow } from "zustand/shallow";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
@@ -194,8 +194,130 @@ export function NodeComponent({
 		return tmp;
 	}, [node]);
 
+	/**
+	 * Abbreviating variant as v.
+	 */
+	const v = useMemo(() => {
+		const isText = node.content.type === "text";
+		const isFile = node.content.type === "file";
+		const isWebPage = node.content.type === "webPage";
+		const isTextGeneration = node.content.type === "textGeneration";
+		const isImageGeneration = node.content.type === "imageGeneration";
+		const isGithub = node.content.type === "github";
+		const isVectorStore = node.content.type === "vectorStore";
+		const isTrigger = node.content.type === "trigger";
+		const isAction = node.content.type === "action";
+		const isQuery = node.content.type === "query";
+		const isAppEntry = node.content.type === "appEntry";
+
+		const isVectorStoreGithub =
+			isVectorStore &&
+			isVectorStoreNode(node) &&
+			node.content.source.provider === "github";
+		const isVectorStoreDocument =
+			isVectorStore &&
+			isVectorStoreNode(node) &&
+			node.content.source.provider === "document";
+
+		const isFillIcon =
+			isText || isFile || isWebPage || isGithub || isVectorStore || isAction;
+		const isStrokeIcon =
+			isTextGeneration || isImageGeneration || isTrigger || isQuery;
+
+		const isDarkIconText = isText || isFile || isWebPage || isQuery;
+		const isLightIconText =
+			isTextGeneration ||
+			isImageGeneration ||
+			isGithub ||
+			isVectorStoreGithub ||
+			isTrigger ||
+			isAction;
+
+		return {
+			isText,
+			isFile,
+			isWebPage,
+			isTextGeneration,
+			isImageGeneration,
+			isGithub,
+			isVectorStore,
+			isTrigger,
+			isAction,
+			isQuery,
+			isAppEntry,
+			isVectorStoreGithub,
+			isVectorStoreDocument,
+			isFillIcon,
+			isStrokeIcon,
+			isDarkIconText,
+			isLightIconText,
+		};
+	}, [node]);
+
 	const requiresSetup = nodeRequiresSetup(node);
 	const inputHandleContentType = getInputHandleContentType(node);
+
+	type VariantType = {
+		isText: boolean;
+		isFile: boolean;
+		isWebPage: boolean;
+		isTextGeneration: boolean;
+		isImageGeneration: boolean;
+		isGithub: boolean;
+		isVectorStore: boolean;
+		isTrigger: boolean;
+		isAction: boolean;
+		isQuery: boolean;
+		isAppEntry: boolean;
+		isVectorStoreGithub: boolean;
+		isVectorStoreDocument: boolean;
+		isFillIcon: boolean;
+		isStrokeIcon: boolean;
+		isDarkIconText: boolean;
+		isLightIconText: boolean;
+	};
+	const getNodeColorVariable = useCallback(
+		(variant: VariantType): string | undefined => {
+			if (variant.isText) return "var(--color-text-node-1)";
+			if (variant.isFile) return "var(--color-file-node-1)";
+			if (variant.isWebPage) return "var(--color-webPage-node-1)";
+			if (variant.isTextGeneration) return "var(--color-generation-node-1)";
+			if (variant.isImageGeneration)
+				return "var(--color-image-generation-node-1)";
+			if (
+				variant.isGithub ||
+				variant.isVectorStoreGithub ||
+				variant.isVectorStoreDocument
+			)
+				return "var(--color-github-node-1)";
+			if (variant.isTrigger || variant.isAppEntry)
+				return "var(--color-trigger-node-1)";
+			if (variant.isAction) return "var(--color-action-node-1)";
+			if (variant.isQuery) return "var(--color-query-node-1)";
+			return undefined;
+		},
+		[],
+	);
+
+	const borderGradientStyle = useMemo(() => {
+		if (requiresSetup) return undefined;
+		const colorVar = getNodeColorVariable(v);
+		if (!colorVar) return undefined;
+
+		return {
+			backgroundImage: `linear-gradient(to bottom right, color-mix(in srgb, ${colorVar} 30%, transparent 70%), color-mix(in srgb, ${colorVar} 50%, transparent 50%) 50%, ${colorVar})`,
+		};
+	}, [v, requiresSetup, getNodeColorVariable]);
+
+	const backgroundGradientStyle = useMemo(() => {
+		if (requiresSetup) return undefined;
+		const colorVar = getNodeColorVariable(v);
+		if (!colorVar) return undefined;
+
+		return {
+			backgroundImage: `radial-gradient(ellipse farthest-corner at center, color-mix(in srgb, ${colorVar} 15%, transparent 85%) 0%, color-mix(in srgb, ${colorVar} 6%, transparent 94%) 50%, color-mix(in srgb, ${colorVar} 3%, transparent 97%) 75%, transparent 100%)`,
+		};
+	}, [v, requiresSetup, getNodeColorVariable]);
 
 	return (
 		<div
@@ -210,29 +332,42 @@ export function NodeComponent({
 			}
 			className={clsx(
 				"group relative flex flex-col rounded-[16px] py-[16px] gap-[16px] min-w-[180px]",
-				"bg-gradient-to-tl transition-all backdrop-blur-[4px]",
-				"data-[content-type=text]:from-text-node-1] data-[content-type=text]:to-text-node-2 data-[content-type=text]:shadow-text-node-1",
-				"data-[content-type=file]:from-file-node-1] data-[content-type=file]:to-file-node-2 data-[content-type=file]:shadow-file-node-1",
-				"data-[content-type=webPage]:from-webPage-node-1] data-[content-type=webPage]:to-webPage-node-2 data-[content-type=webPage]:shadow-webPage-node-1",
-				"data-[content-type=textGeneration]:from-generation-node-1] data-[content-type=textGeneration]:to-generation-node-2 data-[content-type=textGeneration]:shadow-generation-node-1",
-				"data-[content-type=imageGeneration]:from-image-generation-node-1] data-[content-type=imageGeneration]:to-image-generation-node-2 data-[content-type=imageGeneration]:shadow-image-generation-node-1",
-				"data-[content-type=github]:from-github-node-1] data-[content-type=github]:to-github-node-2 data-[content-type=github]:shadow-github-node-1",
-				"data-[content-type=vectorStore]:data-[vector-store-source-provider=github]:from-github-node-1] data-[content-type=vectorStore]:data-[vector-store-source-provider=github]:to-github-node-2 data-[content-type=vectorStore]:data-[vector-store-source-provider=github]:shadow-github-node-1",
-				"data-[content-type=vectorStore]:data-[vector-store-source-provider=githubPullRequest]:from-github-node-1] data-[content-type=vectorStore]:data-[vector-store-source-provider=githubPullRequest]:to-github-node-2 data-[content-type=vectorStore]:data-[vector-store-source-provider=githubPullRequest]:shadow-github-node-1",
-				"data-[content-type=vectorStore]:data-[vector-store-source-provider=document]:from-github-node-1] data-[content-type=vectorStore]:data-[vector-store-source-provider=document]:to-github-node-2 data-[content-type=vectorStore]:data-[vector-store-source-provider=document]:shadow-github-node-1",
-				"data-[content-type=webSearch]:from-web-search-node-1] data-[content-type=webSearch]:to-web-search-node-2 data-[content-type=webSearch]:shadow-web-search-node-1",
-				"data-[content-type=audioGeneration]:from-audio-generation-node-1] data-[content-type=audioGeneration]:to-audio-generation-node-2 data-[content-type=audioGeneration]:shadow-audio-generation-node-1",
-				"data-[content-type=videoGeneration]:from-video-generation-node-1] data-[content-type=videoGeneration]:to-video-generation-node-2 data-[content-type=videoGeneration]:shadow-video-generation-node-1",
-				"data-[content-type=trigger]:from-trigger-node-1/60] data-[content-type=trigger]:to-trigger-node-2 data-[content-type=trigger]:shadow-trigger-node-1",
-				"data-[content-type=appEntry]:from-trigger-node-1/60] data-[content-type=appEntry]:to-trigger-node-2 data-[content-type=appEntry]:shadow-trigger-node-1",
-				"data-[content-type=action]:from-action-node-1] data-[content-type=action]:to-action-node-2 data-[content-type=action]:shadow-action-node-1",
-				"data-[content-type=query]:from-query-node-1] data-[content-typeG=query]:to-query-node-2 data-[content-type=query]:shadow-query-node-1",
-				"data-[selected=true]:shadow-[0px_0px_16px_0px]",
-				"data-[selected=true]:data-[content-type=trigger]:shadow-[0px_0px_16px_0px_hsl(220,15%,50%)]",
-				"data-[highlighted=true]:shadow-[0px_0px_16px_0px]",
-				"data-[highlighted=true]:data-[content-type=trigger]:shadow-[0px_0px_16px_0px_hsl(220,15%,50%)]",
-				"data-[preview=true]:opacity-50",
-				"not-data-preview:min-h-[110px]",
+				"bg-transparent transition-all backdrop-blur-[4px]",
+				!selected && !highlighted && "shadow-[4px_4px_8px_4px_rgba(0,0,0,0.5)]",
+				selected && v.isText && "shadow-text-node-1",
+				selected && v.isFile && "shadow-file-node-1",
+				selected && v.isWebPage && "shadow-webPage-node-1",
+				selected && v.isTextGeneration && "shadow-generation-node-1",
+				selected && v.isImageGeneration && "shadow-image-generation-node-1",
+				selected && v.isGithub && "shadow-github-node-1",
+				selected && v.isVectorStoreGithub && "shadow-github-node-1",
+				selected && v.isVectorStoreDocument && "shadow-github-node-1",
+				selected && v.isTrigger && "shadow-trigger-node-1",
+				selected && v.isAppEntry && "shadow-trigger-node-1",
+				selected && v.isAction && "shadow-action-node-1",
+				selected && v.isQuery && "shadow-query-node-1",
+				selected && "shadow-[0px_0px_20px_1px_rgba(0,0,0,0.4)]",
+				selected &&
+					(v.isTrigger || v.isAppEntry) &&
+					"shadow-[0px_0px_20px_1px_hsla(220,15%,50%,0.4)]",
+				highlighted && v.isText && "shadow-text-node-1",
+				highlighted && v.isFile && "shadow-file-node-1",
+				highlighted && v.isWebPage && "shadow-webPage-node-1",
+				highlighted && v.isTextGeneration && "shadow-generation-node-1",
+				highlighted && v.isImageGeneration && "shadow-image-generation-node-1",
+				highlighted && v.isGithub && "shadow-github-node-1",
+				highlighted && v.isVectorStoreGithub && "shadow-github-node-1",
+				highlighted && v.isVectorStoreDocument && "shadow-github-node-1",
+				highlighted && v.isTrigger && "shadow-trigger-node-1",
+				highlighted && v.isAppEntry && "shadow-trigger-node-1",
+				highlighted && v.isAction && "shadow-action-node-1",
+				highlighted && v.isQuery && "shadow-query-node-1",
+				highlighted && "shadow-[0px_0px_20px_1px_rgba(0,0,0,0.4)]",
+				highlighted &&
+					(v.isTrigger || v.isAppEntry) &&
+					"shadow-[0px_0px_20px_1px_hsla(220,15%,50%,0.4)]",
+				preview && "opacity-50",
+				!preview && "min-h-[110px]",
 				requiresSetup && "opacity-80",
 			)}
 		>
@@ -283,98 +418,114 @@ export function NodeComponent({
 				)}
 			</AnimatePresence>
 			<div
+				className={clsx("absolute z-[-1] rounded-[16px] inset-0")}
+				style={backgroundGradientStyle}
+			/>
+			<div
 				className={clsx(
-					"absolute z-0 rounded-[16px] inset-0 border-[1px] mask-fill bg-gradient-to-br bg-origin-border bg-clip-boarder",
+					"absolute z-0 rounded-[16px] inset-0 border-[1.5px] mask-fill",
 					requiresSetup
 						? "border-black/60 border-dashed [border-width:2px]"
 						: "border-transparent",
-					"group-data-[content-type=text]:from-text-node-1/40 group-data-[content-type=text]:to-text-node-1",
-					"group-data-[content-type=file]:from-file-node-1/40 group-data-[content-type=file]:to-file-node-1",
-					"group-data-[content-type=webPage]:from-webPage-node-1/40 group-data-[content-type=webPage]:to-webPage-node-1",
-					"group-data-[content-type=textGeneration]:from-generation-node-1/40 group-data-[content-type=textGeneration]:to-generation-node-1",
-					"group-data-[content-type=imageGeneration]:from-image-generation-node-1/40 group-data-[content-type=imageGeneration]:to-image-generation-node-1",
-					"group-data-[content-type=github]:from-github-node-1/40 group-data-[content-type=github]:to-github-node-1",
-					"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:from-github-node-1/40 group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:to-github-node-1",
-					"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:from-github-node-1/40 group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:to-github-node-1",
-					"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:from-github-node-1/40 group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:to-github-node-1",
-					"group-data-[content-type=webSearch]:from-web-search-node-1/40 group-data-[content-type=webSearch]:to-web-search-node-1",
-					"group-data-[content-type=audioGeneration]:from-audio-generation-node-1/40 group-data-[content-type=audioGeneration]:to-audio-generation-node-1",
-					"group-data-[content-type=videoGeneration]:from-video-generation-node-1/40 group-data-[content-type=videoGeneration]:to-video-generation-node-1",
-					"group-data-[content-type=trigger]:from-trigger-node-1/60 group-data-[content-type=trigger]:to-trigger-node-1",
-					"group-data-[content-type=appEntry]:from-trigger-node-1/60 group-data-[content-type=trigger]:to-trigger-node-1",
-					"group-data-[content-type=action]:from-action-node-1/40 group-data-[content-type=action]:to-action-node-1",
-					"group-data-[content-type=query]:from-query-node-1/40 group-data-[content-type=query]:to-query-node-1",
+					!borderGradientStyle && "bg-gradient-to-br",
+					!borderGradientStyle &&
+						v.isText &&
+						"from-text-node-1/30 via-text-node-1/50 to-text-node-1",
+					!borderGradientStyle &&
+						v.isFile &&
+						"from-file-node-1/30 via-file-node-1/50 to-file-node-1",
+					!borderGradientStyle &&
+						v.isWebPage &&
+						"from-webPage-node-1/30 via-webPage-node-1/50 to-webPage-node-1",
+					!borderGradientStyle &&
+						v.isTextGeneration &&
+						"from-generation-node-1/30 via-generation-node-1/50 to-generation-node-1",
+					!borderGradientStyle &&
+						v.isImageGeneration &&
+						"from-image-generation-node-1/30 via-image-generation-node-1/50 to-image-generation-node-1",
+					!borderGradientStyle &&
+						v.isGithub &&
+						"from-github-node-1/30 via-github-node-1/50 to-github-node-1",
+					!borderGradientStyle &&
+						v.isVectorStoreGithub &&
+						"from-github-node-1/30 via-github-node-1/50 to-github-node-1",
+					!borderGradientStyle &&
+						v.isVectorStoreDocument &&
+						"from-github-node-1/30 via-github-node-1/50 to-github-node-1",
+					!borderGradientStyle &&
+						v.isTrigger &&
+						"from-trigger-node-1/30 via-trigger-node-1/50 to-trigger-node-1",
+					!borderGradientStyle &&
+						v.isAppEntry &&
+						"from-trigger-node-1/30 via-trigger-node-1/50 to-trigger-node-1",
+					!borderGradientStyle &&
+						v.isAction &&
+						"from-action-node-1/30 via-action-node-1/50 to-action-node-1",
+					!borderGradientStyle &&
+						v.isQuery &&
+						"from-query-node-1/30 via-query-node-1/50 to-query-node-1",
 				)}
+				style={borderGradientStyle}
 			/>
 
+			{isTriggerNode(node, "github") &&
+				node.content.state.status === "configured" && (
+					<div className="absolute top-[-20px] left-0 z-10">
+						<GitHubTriggerStatusBadge
+							triggerId={node.content.state.flowTriggerId}
+						/>
+					</div>
+				)}
 			<div className={clsx("px-[16px] relative")}>
-				{isTriggerNode(node, "github") &&
-					node.content.state.status === "configured" && (
-						<div className="-mt-[6px]">
-							<GitHubTriggerStatusBadge
-								triggerId={node.content.state.flowTriggerId}
-							/>
-						</div>
-					)}
 				<div className="flex items-center gap-[8px]">
 					<div
 						className={clsx(
 							"w-[32px] h-[32px] flex items-center justify-center rounded-[8px] padding-[8px]",
-							"group-data-[content-type=text]:bg-text-node-1",
-							"group-data-[content-type=file]:bg-file-node-1",
-							"group-data-[content-type=webPage]:bg-webPage-node-1",
-							"group-data-[content-type=textGeneration]:bg-generation-node-1",
-							"group-data-[content-type=imageGeneration]:bg-image-generation-node-1",
-							"group-data-[content-type=github]:bg-github-node-1",
-							"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:bg-github-node-1",
-							"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:bg-github-node-1",
-							"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:bg-github-node-1",
-							"group-data-[content-type=webSearch]:bg-web-search-node-1",
-							"group-data-[content-type=audioGeneration]:bg-audio-generation-node-1",
-							"group-data-[content-type=videoGeneration]:bg-video-generation-node-1",
-							"group-data-[content-type=trigger]:bg-trigger-node-1",
-							"group-data-[content-type=appEntry]:bg-trigger-node-1",
-							"group-data-[content-type=action]:bg-action-node-1",
-							"group-data-[content-type=query]:bg-query-node-1",
+							v.isText && "bg-text-node-1",
+							v.isFile && "bg-file-node-1",
+							v.isWebPage && "bg-webPage-node-1",
+							v.isTextGeneration && "bg-generation-node-1",
+							v.isImageGeneration && "bg-image-generation-node-1",
+							v.isGithub && "bg-github-node-1",
+							v.isVectorStoreGithub && "bg-github-node-1",
+							v.isVectorStoreDocument && "bg-github-node-1",
+							v.isTrigger && "bg-trigger-node-1",
+							v.isAppEntry && "bg-trigger-node-1",
+							v.isAction && "bg-action-node-1",
+							v.isQuery && "bg-query-node-1",
 						)}
 					>
 						<NodeIcon
 							node={node}
 							className={clsx(
 								"w-[16px] h-[16px]",
-								"group-data-[content-type=text]:fill-current",
-								"group-data-[content-type=file]:fill-current",
-								"group-data-[content-type=webPage]:fill-current",
-								"group-data-[content-type=textGeneration]:fill-current",
-								"group-data-[content-type=imageGeneration]:fill-current",
-								"group-data-[content-type=github]:fill-current",
-								"group-data-[content-type=vectorStore]:stroke-current fill-none",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:fill-current",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:fill-current",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:stroke-current fill-none",
-								"group-data-[content-type=webSearch]:stroke-current fill-none",
-								"group-data-[content-type=audioGeneration]:stroke-current fill-none",
-								"group-data-[content-type=videoGeneration]:stroke-current fill-none",
-								"group-data-[content-type=trigger]:stroke-current fill-none",
-								"group-data-[content-type=appEntry]:stroke-current fill-none",
-								"group-data-[content-type=action]:fill-current",
-								"group-data-[content-type=query]:stroke-current fill-none",
-								"group-data-[content-type=text]:text-background",
-								"group-data-[content-type=file]:text-background",
-								"group-data-[content-type=webPage]:text-background",
-								"group-data-[content-type=textGeneration]:text-inverse",
-								"group-data-[content-type=imageGeneration]:text-inverse",
-								"group-data-[content-type=github]:text-inverse",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:text-background",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:text-background",
-								"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:text-background",
-								"group-data-[content-type=webSearch]:text-inverse",
-								"group-data-[content-type=audioGeneration]:text-inverse",
-								"group-data-[content-type=videoGeneration]:text-inverse",
-								"group-data-[content-type=trigger]:text-inverse",
-								"group-data-[content-type=appEntry]:text-inverse",
-								"group-data-[content-type=action]:text-inverse",
-								"group-data-[content-type=query]:text-background",
+								v.isText && "fill-current",
+								v.isFile && "fill-current",
+								v.isWebPage && "fill-current",
+								v.isTextGeneration && "fill-current",
+								v.isImageGeneration && "fill-current",
+								v.isGithub && "fill-current",
+								v.isVectorStore &&
+									!v.isVectorStoreGithub &&
+									"stroke-current fill-none",
+								v.isVectorStoreGithub && "fill-current",
+								v.isVectorStoreDocument && "stroke-current fill-none",
+								v.isTrigger && "stroke-current fill-none",
+								v.isAppEntry && "stroke-current fill-none",
+								v.isAction && "fill-current",
+								v.isQuery && "stroke-current fill-none",
+								v.isText && "text-background",
+								v.isFile && "text-background",
+								v.isWebPage && "text-background",
+								v.isTextGeneration && "text-inverse",
+								v.isImageGeneration && "text-inverse",
+								v.isGithub && "text-inverse",
+								v.isVectorStoreGithub && "text-background",
+								v.isVectorStoreDocument && "text-background",
+								v.isTrigger && "text-inverse",
+								v.isAppEntry && "text-inverse",
+								v.isAction && "text-inverse",
+								v.isQuery && "text-background",
 							)}
 						/>
 					</div>
@@ -503,12 +654,9 @@ export function NodeComponent({
 										id="blank-handle"
 										className={clsx(
 											"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px] !bg-bg",
-											"group-data-[content-type=textGeneration]:!border-generation-node-1",
-											"group-data-[content-type=imageGeneration]:!border-image-generation-node-1",
-											"group-data-[content-type=webSearch]:!border-web-search-node-1",
-											"group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
-											"group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
-											"group-data-[content-type=query]:!border-query-node-1",
+											v.isTextGeneration && "!border-generation-node-1",
+											v.isImageGeneration && "!border-image-generation-node-1",
+											v.isQuery && "!border-query-node-1",
 										)}
 									/>
 									<div className="absolute left-[-12px] text-[12px] text-text-muted whitespace-nowrap -translate-x-[100%]">
@@ -537,40 +685,31 @@ export function NodeComponent({
 									position={Position.Right}
 									className={clsx(
 										"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px]",
-										"group-data-[content-type=textGeneration]:!border-generation-node-1",
-										"group-data-[content-type=imageGeneration]:!border-image-generation-node-1",
-										"group-data-[content-type=github]:!border-github-node-1",
-										"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:!border-github-node-1",
-										"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:!border-github-node-1",
-										"group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:!border-github-node-1",
-										"group-data-[content-type=text]:!border-text-node-1",
-										"group-data-[content-type=file]:!border-file-node-1",
-										"group-data-[content-type=webPage]:!border-webPage-node-1",
-										"group-data-[content-type=webPage]:!border-webPage-node-1",
-										"group-data-[content-type=webSearch]:!border-web-search-node-1",
-										"group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
-										"group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
-										"group-data-[content-type=trigger]:!border-trigger-node-1",
-										"group-data-[content-type=appEntry]:!border-trigger-node-1",
-										"group-data-[content-type=action]:!border-action-node-1",
-										"group-data-[content-type=query]:!border-query-node-1",
-										"group-data-[state=connected]:group-data-[content-type=textGeneration]:!bg-generation-node-1",
-										"group-data-[state=connected]:group-data-[content-type=imageGeneration]:!bg-image-generation-node-1",
-										"group-data-[state=connected]:group-data-[content-type=github]:!bg-github-node-1",
-										"group-data-[state=connected]:group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=github]:!bg-github-node-1",
-										"group-data-[state=connected]:group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=githubPullRequest]:!bg-github-node-1",
-										"group-data-[state=connected]:group-data-[content-type=vectorStore]:group-data-[vector-store-source-provider=document]:!bg-github-node-1",
-										"group-data-[state=connected]:group-data-[content-type=text]:!bg-text-node-1 group-data-[state=connected]:group-data-[content-type=text]:!border-text-node-1",
-										"group-data-[state=connected]:group-data-[content-type=file]:!bg-file-node-1 group-data-[state=connected]:group-data-[content-type=file]:!border-file-node-1",
-										"group-data-[state=connected]:group-data-[content-type=webPage]:!bg-webPage-node-1 group-data-[state=connected]:group-data-[content-type=webPage]:!border-webPage-node-1",
-										"group-data-[state=connected]:group-data-[content-type=webSearch]:!bg-web-search-node-1 group-data-[state=connected]:group-data-[content-type=webSearch]:!border-web-search-node-1",
-										"group-data-[state=connected]:group-data-[content-type=audioGeneration]:!bg-audio-generation-node-1 group-data-[state=connected]:group-data-[content-type=audioGeneration]:!border-audio-generation-node-1",
-										"group-data-[state=connected]:group-data-[content-type=videoGeneration]:!bg-video-generation-node-1 group-data-[state=connected]:group-data-[content-type=videoGeneration]:!border-video-generation-node-1",
-										"group-data-[state=connected]:group-data-[content-type=trigger]:!bg-trigger-node-1 group-data-[state=connected]:group-data-[content-type=trigger]:!border-trigger-node-1",
-										"group-data-[state=connected]:group-data-[content-type=appEntry]:!bg-trigger-node-1 group-data-[state=connected]:group-data-[content-type=appEntry]:!border-trigger-node-1",
-										"group-data-[state=connected]:group-data-[content-type=action]:!bg-action-node-1 group-data-[state=connected]:group-data-[content-type=action]:!border-action-node-1",
-										"group-data-[state=connected]:group-data-[content-type=query]:!bg-query-node-1 group-data-[state=connected]:group-data-[content-type=query]:!border-query-node-1",
 										"group-data-[state=disconnected]:!bg-bg",
+										v.isTextGeneration &&
+											"!border-generation-node-1 group-data-[state=connected]:!bg-generation-node-1",
+										v.isImageGeneration &&
+											"!border-image-generation-node-1 group-data-[state=connected]:!bg-image-generation-node-1",
+										v.isGithub &&
+											"!border-github-node-1 group-data-[state=connected]:!bg-github-node-1",
+										v.isVectorStoreGithub &&
+											"!border-github-node-1 group-data-[state=connected]:!bg-github-node-1",
+										v.isVectorStoreDocument &&
+											"!border-github-node-1 group-data-[state=connected]:!bg-github-node-1",
+										v.isText &&
+											"!border-text-node-1 group-data-[state=connected]:!bg-text-node-1 group-data-[state=connected]:!border-text-node-1",
+										v.isFile &&
+											"!border-file-node-1 group-data-[state=connected]:!bg-file-node-1 group-data-[state=connected]:!border-file-node-1",
+										v.isWebPage &&
+											"!border-webPage-node-1 group-data-[state=connected]:!bg-webPage-node-1 group-data-[state=connected]:!border-webPage-node-1",
+										v.isTrigger &&
+											"!border-trigger-node-1 group-data-[state=connected]:!bg-trigger-node-1 group-data-[state=connected]:!border-trigger-node-1",
+										v.isAppEntry &&
+											"!border-trigger-node-1 group-data-[state=connected]:!bg-trigger-node-1 group-data-[state=connected]:!border-trigger-node-1",
+										v.isAction &&
+											"!border-action-node-1 group-data-[state=connected]:!bg-action-node-1 group-data-[state=connected]:!border-action-node-1",
+										v.isQuery &&
+											"!border-query-node-1 group-data-[state=connected]:!bg-query-node-1 group-data-[state=connected]:!border-query-node-1",
 									)}
 								/>
 								<div

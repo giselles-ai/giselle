@@ -2,7 +2,7 @@ import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchCurrentTeam, isProPlan } from "@/services/teams";
+import { fetchCurrentTeam, formatPlanName, isProPlan } from "@/services/teams";
 import { manageBilling } from "@/services/teams/actions/manage-billing";
 import { upgradeTeam } from "@/services/teams/actions/upgrade-team";
 import type { CurrentTeam } from "@/services/teams/types";
@@ -83,7 +83,7 @@ function BillingInfoForFreePlan({ team }: BillingInfoProps) {
 			<div className="flex flex-col gap-y-0.5">
 				<div className="flex flex-wrap items-center gap-x-1 text-inverse font-medium">
 					<p className="text-[22px] leading-[26.4px] tracking-[-0.04em] font-sans">
-						Free Plan
+						{formatPlanName(team.plan)}
 					</p>
 				</div>
 				<p className="text-link-muted font-medium text-[12px] leading-[20.4px] font-geist">
@@ -115,7 +115,9 @@ function BillingInfoForProPlan({ team }: BillingInfoProps) {
 			<div className="flex flex-col gap-y-[2px]">
 				<div className="flex flex-col gap-0.5">
 					<p className="text-[22px] leading-[26.4px] tracking-[-0.04em] font-medium font-sans">
-						<span className="text-primary-400">Pro Plan</span>
+						<span className="text-primary-400">
+							{formatPlanName(team.plan)}
+						</span>
 					</p>
 				</div>
 				<p className="text-link-muted font-medium text-[12px] leading-[20.4px] font-geist">

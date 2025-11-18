@@ -60,6 +60,7 @@ const Component = (props: NodeViewProps) => {
 					"data-[content-type=webPage]:bg-webPage-node-1/20 data-[content-type=webPage]:text-webPage-node-1",
 					"data-[content-type=action]:bg-action-node-1/20 data-[content-type=action]:text-action-node-1",
 					"data-[content-type=trigger]:bg-trigger-node-1/20 data-[content-type=trigger]:text-trigger-node-1",
+					"data-[content-type=appEntry]:bg-trigger-node-1/20 data-[content-type=appEntry]:text-trigger-node-1",
 					"data-[content-type=query]:bg-query-node-1/20 data-[content-type=query]:text-query-node-1",
 					"border-transparent data-[selected=true]:border-primary-900",
 					"text-[12px]",

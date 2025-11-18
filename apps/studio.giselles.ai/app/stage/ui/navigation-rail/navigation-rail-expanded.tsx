@@ -1,4 +1,5 @@
 import { ChevronsLeftIcon } from "lucide-react";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Suspense, use } from "react";
 import { GiselleLogo } from "@/components/giselle-logo";
@@ -26,13 +27,15 @@ export function NavigationRailExpanded({
 	currentPath?: string;
 }) {
 	const user = use(userPromise);
-	const isPro = user.currentTeam?.isPro ?? false;
+	const isPro = user.currentTeam.isPro;
 
 	return (
 		<NavigationRailContainer variant="expanded">
 			<NavigationRailHeader>
 				<div className="flex items-center justify-between w-full pt-6 pb-4">
-					<GiselleLogo className="w-[96px] h-auto fill-inverse" />
+					<Link href="/" aria-label="Go to home" className="group">
+						<GiselleLogo className="w-[96px] h-auto fill-inverse group-hover:fill-primary-100 transition-colors" />
+					</Link>
 					<MenuButton
 						onClick={() => onCollapseButtonClick()}
 						className="cursor-w-resize"

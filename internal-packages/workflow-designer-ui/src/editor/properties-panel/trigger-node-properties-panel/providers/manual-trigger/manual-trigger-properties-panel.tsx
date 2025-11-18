@@ -7,18 +7,18 @@ import {
 import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import {
-	useFeatureFlag,
-	useGiselleEngine,
-	useTrigger,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
-import {
 	ManualTriggerParameter,
 	ManualTriggerParameterId,
 	type Output,
 	OutputId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
+import {
+	useFeatureFlag,
+	useGiselle,
+	useTrigger,
+	useWorkflowDesigner,
+} from "@giselles-ai/react";
 import { TrashIcon } from "lucide-react";
 import {
 	type FormEventHandler,
@@ -37,7 +37,7 @@ const TYPE_OPTIONS = [
 
 export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 	const { data: workspace, updateNodeData } = useWorkflowDesigner();
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const [isPending, startTransition] = useTransition();
 	const [parameters, setParameters] = useState<ManualTriggerParameter[]>([]);
 	const [staged, setStaged] = useState(false);

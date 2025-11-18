@@ -3,11 +3,6 @@
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import { actionRegistry, isActionProvider } from "@giselles-ai/action-registry";
 import {
-	useFeatureFlag,
-	useUsageLimits,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
-import {
 	Capability,
 	hasCapability,
 	type LanguageModel,
@@ -27,6 +22,11 @@ import {
 	triggerNodeDefaultName,
 } from "@giselles-ai/node-registry";
 import { FileCategory } from "@giselles-ai/protocol";
+import {
+	useFeatureFlag,
+	useUsageLimits,
+	useWorkflowDesigner,
+} from "@giselles-ai/react";
 import {
 	isTriggerProvider,
 	triggerRegistry,
@@ -166,7 +166,7 @@ export function Toolbar() {
 	);
 	const googleModels = getAvailableModels(
 		isFreeUser
-			? ["gemini-2.5-flash-lite-preview-06-17"]
+			? ["gemini-2.5-flash-lite"]
 			: ["gemini-2.5-pro-exp-03-25", "gemini-1.5-pro-latest", "gemini-1.0-pro"],
 		"google",
 		llmProviders,
@@ -196,12 +196,19 @@ export function Toolbar() {
 	);
 
 	return (
-		<div className="relative rounded-[12px] overflow-hidden">
+		<div
+			className="relative rounded-[12px] overflow-hidden"
+			style={{
+				boxShadow:
+					"0 0 8px rgba(255, 255, 255, 0.05), 0 0 16px rgba(255, 255, 255, 0.02)",
+			}}
+		>
 			{/* blur+border only; popovers manage their own base fill */}
 			<GlassSurfaceLayers
 				tone="default"
 				borderStyle="solid"
-				withBaseFill={false}
+				withBaseFill={true}
+				baseFillMixPercent={80}
 				zIndexClass="z-0"
 			/>
 			<div className="flex divide-x divide-[hsla(232,36%,72%,0.2)] items-center px-[4px] py-[8px]">
@@ -209,7 +216,7 @@ export function Toolbar() {
 					type="single"
 					className={clsx(
 						"flex items-center px-[4px] z-10 h-full gap-[12px] text-inverse",
-						"**:data-tool:hover:bg-bg-850/10 **:data-tool:p-[4px] **:data-tool:rounded-[4px]",
+						"**:data-tool:hover:bg-bg-850/30 **:data-tool:p-[4px] **:data-tool:rounded-[4px]",
 						"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 						"**:data-icon:w-[24px] **:data-icon:h-[24px] **:data-icon:text-inverse ",
 					)}

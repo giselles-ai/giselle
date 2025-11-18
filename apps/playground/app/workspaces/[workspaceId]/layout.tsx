@@ -1,4 +1,4 @@
-import { WorkspaceProvider } from "@giselles-ai/giselle/react";
+import { WorkspaceProvider } from "@giselles-ai/react";
 import type { ReactNode } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -11,7 +11,6 @@ export default function Layout({ children }: { children: ReactNode }) {
 				aiGateway: false,
 				aiGatewayUnsupportedModels: false,
 				googleUrlContext: false,
-				githubIssuesVectorStore: false,
 			}}
 		>
 			{children}

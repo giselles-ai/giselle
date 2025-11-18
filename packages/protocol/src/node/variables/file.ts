@@ -9,6 +9,7 @@ export const FileDataBase = z.object({
 	type: z.string(),
 	size: z.number(),
 	status: z.string(),
+	originalFileIdForCopy: z.optional(FileId.schema),
 });
 
 export const UploadingFileData = FileDataBase.extend({

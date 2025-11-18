@@ -3,7 +3,7 @@ import { z } from "zod/v4";
 import { GenerationStatus } from "../generation";
 import { GenerationId } from "../generation/generation-id";
 import { WorkspaceId } from "../workspace";
-import { ActId } from "./act-id";
+import { TaskId } from "./act-id";
 
 export const SequenceId = createIdGenerator("sqn");
 
@@ -47,8 +47,8 @@ export const Sequence = z.object({
 });
 export type Sequence = z.infer<typeof Sequence>;
 
-export const Act = z.object({
-	id: ActId.schema,
+export const Task = z.object({
+	id: TaskId.schema,
 	workspaceId: WorkspaceId.schema,
 	name: z.string(),
 	status: z.enum(["created", "inProgress", "completed", "failed", "cancelled"]),
@@ -75,9 +75,9 @@ export const Act = z.object({
 	annotations: z.array(ActAnnotationObject).default([]),
 	sequences: z.array(Sequence),
 });
-export type Act = z.infer<typeof Act>;
+export type Task = z.infer<typeof Task>;
 
-export const ActIndexObject = Act.pick({
+export const TaskIndexObject = Task.pick({
 	id: true,
 	workspaceId: true,
 });

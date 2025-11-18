@@ -3,11 +3,6 @@ import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
-import {
-	useFeatureFlag,
-	useVectorStore,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
 import type {
 	EmbeddingProfileId,
 	GitHubVectorStoreSource,
@@ -18,6 +13,7 @@ import {
 	EMBEDDING_PROFILES,
 	isEmbeddingProfileId,
 } from "@giselles-ai/protocol";
+import { useVectorStore, useWorkflowDesigner } from "@giselles-ai/react";
 import { Info } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -34,7 +30,6 @@ export function GitHubVectorStoreNodePropertiesPanel({
 	const { updateNodeData } = useWorkflowDesigner();
 	const vectorStore = useVectorStore();
 	const settingPath = vectorStore?.githubSettingPath;
-	const { githubIssuesVectorStore } = useFeatureFlag();
 
 	// Get repository indexes
 	const githubRepositoryIndexes = vectorStore?.githubRepositoryIndexes ?? [];
@@ -144,6 +139,28 @@ export function GitHubVectorStoreNodePropertiesPanel({
 				) ?? false,
 		};
 	}, [allRepositories, selectedRepoKey]);
+
+	const contentTypeOptions = useMemo(() => {
+		const { hasBlobContent, hasPullRequestContent, hasIssueContent } =
+			contentTypeAvailability;
+
+		const options: Array<{
+			value: "blob" | "pull_request" | "issue";
+			label: string;
+		}> = [];
+
+		if (hasBlobContent) {
+			options.push({ value: "blob", label: "Code" });
+		}
+		if (hasIssueContent) {
+			options.push({ value: "issue", label: "Issues" });
+		}
+		if (hasPullRequestContent) {
+			options.push({ value: "pull_request", label: "Pull Requests" });
+		}
+
+		return options;
+	}, [contentTypeAvailability]);
 
 	const availableEmbeddingProfiles = useMemo(() => {
 		const selectedRepo = allRepositories.find(
@@ -297,118 +314,33 @@ export function GitHubVectorStoreNodePropertiesPanel({
 								<SettingDetail className="mb-0">Content Type</SettingDetail>
 							</div>
 							<div className="grow min-w-0">
-								<div className="flex items-center gap-[12px] flex-wrap">
-									{(() => {
-										const {
-											hasBlobContent,
-											hasPullRequestContent,
-											hasIssueContent,
-										} = contentTypeAvailability;
-
-										return (
-											<>
-												<label
-													className={`flex items-center space-x-3 cursor-pointer ${
-														!hasBlobContent
-															? "opacity-50 cursor-not-allowed"
-															: ""
-													}`}
-												>
-													<input
-														type="radio"
-														name="contentType"
-														value="blob"
-														checked={selectedContentType === "blob"}
-														onChange={() => handleContentTypeChange("blob")}
-														disabled={!hasBlobContent}
-														className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500"
-													/>
-													<span className="text-[14px] text-inverse">Code</span>
-													{!hasBlobContent && (
-														<div className="flex items-center gap-1 group relative">
-															<span className="text-[12px] text-inverse/50">
-																Not configured
-															</span>
-															<Info className="w-3 h-3 text-inverse/50 cursor-help" />
-															<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-bg-800/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
-																Enable Code for {selectedRepoKey} in Vector
-																Store settings
-															</div>
-														</div>
-													)}
-												</label>
-												<label
-													className={`flex items-center space-x-3 cursor-pointer ${
-														!hasPullRequestContent
-															? "opacity-50 cursor-not-allowed"
-															: ""
-													}`}
-												>
-													<input
-														type="radio"
-														name="contentType"
-														value="pull_request"
-														checked={selectedContentType === "pull_request"}
-														onChange={() =>
-															handleContentTypeChange("pull_request")
-														}
-														disabled={!hasPullRequestContent}
-														className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500"
-													/>
-													<span className="text-[14px] text-inverse">
-														Pull Requests
-													</span>
-													{!hasPullRequestContent && (
-														<div className="flex items-center gap-1 group relative">
-															<span className="text-[12px] text-inverse/50">
-																Not configured
-															</span>
-															<Info className="w-3 h-3 text-inverse/50 cursor-help" />
-															<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-bg-800/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
-																Enable Pull Requests for that repository in
-																Vector Store settings
-															</div>
-														</div>
-													)}
-												</label>
-												{githubIssuesVectorStore && (
-													<label
-														className={`flex items-center space-x-3 cursor-pointer ${
-															!hasIssueContent
-																? "opacity-50 cursor-not-allowed"
-																: ""
-														}`}
-													>
-														<input
-															type="radio"
-															name="contentType"
-															value="issue"
-															checked={selectedContentType === "issue"}
-															onChange={() => handleContentTypeChange("issue")}
-															disabled={!hasIssueContent}
-															className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500"
-														/>
-														<span className="text-[14px] text-inverse">
-															Issues
-														</span>
-														{!hasIssueContent && (
-															<div className="flex items-center gap-1 group relative">
-																<span className="text-[12px] text-inverse/50">
-																	Not configured
-																</span>
-																<Info className="w-3 h-3 text-inverse/50 cursor-help" />
-																<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-bg-800/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
-																	Enable Issues for {selectedRepoKey} in Vector
-																	Store settings
-																</div>
-															</div>
-														)}
-													</label>
-												)}
-											</>
-										);
-									})()}
-								</div>
+								{contentTypeOptions.length > 0 ? (
+									<Select
+										value={selectedContentType || ""}
+										onValueChange={(value) => {
+											if (
+												value === "blob" ||
+												value === "pull_request" ||
+												value === "issue"
+											) {
+												handleContentTypeChange(value);
+											}
+										}}
+										options={contentTypeOptions}
+										placeholder="Select content type"
+									/>
+								) : (
+									<div className="flex items-center gap-1 group relative">
+										<span className="text-[14px] text-inverse/50">
+											No content types available
+										</span>
+										<Info className="w-3 h-3 text-inverse/50 cursor-help" />
+										<div className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-bg-800/80 backdrop-blur-md border border-white/10 text-inverse text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
+											Enable content types for {selectedRepoKey} in Vector Store
+											settings
+										</div>
+									</div>
+								)}
 							</div>
 						</div>
 					</div>

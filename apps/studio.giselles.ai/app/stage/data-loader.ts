@@ -10,17 +10,18 @@ export async function dataLoader() {
 		displayName: accountInfo.displayName ?? undefined,
 		email: accountInfo.email ?? undefined,
 		avatarUrl: accountInfo.avatarUrl ?? undefined,
-		planName: isPro ? "Pro plan" : "Free plan",
 		currentTeam: {
 			id: currentTeam.id,
 			name: currentTeam.name,
 			avatarUrl: currentTeam.avatarUrl ?? undefined,
-			isPro: isProPlan(currentTeam),
+			plan: currentTeam.plan,
+			isPro,
 		},
 		allTeams: allTeams.map((t) => ({
 			id: t.id,
 			name: t.name,
 			avatarUrl: t.avatarUrl ?? undefined,
+			plan: t.plan,
 			isPro: isProPlan(t),
 		})),
 	};

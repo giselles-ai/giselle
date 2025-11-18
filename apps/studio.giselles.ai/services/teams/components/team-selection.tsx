@@ -11,6 +11,7 @@ export async function TeamSelection() {
 		id: team.id,
 		name: team.name,
 		avatarUrl: team.avatarUrl,
+		plan: team.plan,
 		isPro: isProPlan(team),
 	}));
 
@@ -18,6 +19,7 @@ export async function TeamSelection() {
 		id: currentTeam.id,
 		name: currentTeam.name,
 		avatarUrl: currentTeam.avatarUrl,
+		plan: currentTeam.plan,
 		isPro: isProPlan(currentTeam),
 	};
 

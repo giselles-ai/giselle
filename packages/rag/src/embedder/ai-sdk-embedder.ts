@@ -8,6 +8,7 @@ export interface EmbedderConfig {
 	profile: EmbeddingProfile;
 	maxRetries?: number;
 	embeddingComplete?: EmbeddingCompleteCallback;
+	transport?: "gateway" | "provider";
 }
 
 export function createAiSdkEmbedder(
@@ -20,6 +21,7 @@ export function createAiSdkEmbedder(
 
 	const { model, provider, dimensions } = config.profile;
 	const maxRetries = config.maxRetries ?? 3;
+	const transport = config.transport ?? "provider";
 	const normalizeUsage = (
 		rawUsage: unknown,
 	): { tokens: number; imageTokens?: number } | undefined => {
@@ -66,6 +68,8 @@ export function createAiSdkEmbedder(
 							operation: "embed",
 							startTime,
 							endTime: new Date(),
+							transport,
+							providerMetadata: result.providerMetadata,
 						});
 					} catch (error) {
 						console.error("Embedding callback error:", error);
@@ -103,6 +107,8 @@ export function createAiSdkEmbedder(
 							operation: "embedMany",
 							startTime,
 							endTime: new Date(),
+							transport,
+							providerMetadata: result.providerMetadata,
 						});
 					} catch (error) {
 						console.error("Embedding callback error:", error);

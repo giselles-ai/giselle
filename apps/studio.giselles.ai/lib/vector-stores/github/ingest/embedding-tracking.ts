@@ -3,7 +3,7 @@ import type {
 	EmbeddingCompleteCallback,
 	EmbeddingMetrics,
 } from "@giselles-ai/rag";
-import { isProPlan, type TeamWithSubscription } from "@/services/teams";
+import type { TeamWithSubscription } from "@/services/teams";
 import type { IngestTrigger } from "./process-repository";
 
 type IngestMetadata = {
@@ -23,8 +23,7 @@ export function createIngestEmbeddingCallback(
 	return async (metrics: EmbeddingMetrics) => {
 		const { team, trigger, resource } = metadata;
 
-		const isPro = isProPlan(team);
-		const planTag = isPro ? "plan:pro" : "plan:free";
+		const planTag = `plan:${team.plan}`;
 		const userId = trigger.type === "manual" ? trigger.userId : "cron";
 
 		await traceEmbedding({
@@ -34,7 +33,6 @@ export function createIngestEmbeddingCallback(
 			tags: [planTag, "embedding-purpose:ingestion"],
 			metadata: {
 				teamId: team.id,
-				isProPlan: isPro,
 				teamPlan: team.plan,
 				subscriptionId: team.activeSubscriptionId ?? "",
 				userId,

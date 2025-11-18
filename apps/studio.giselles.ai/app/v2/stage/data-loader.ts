@@ -1,8 +1,9 @@
-import { giselleEngine } from "@/app/giselle-engine";
+import { giselle } from "@/app/giselle";
 import { db } from "@/db";
 import { logger } from "@/lib/logger";
 import { getUser } from "@/lib/supabase";
 import type { TeamId } from "./types";
+import { isIconName } from "./utils";
 
 async function userTeams() {
 	const supabaseUser = await getUser();
@@ -48,6 +49,7 @@ async function userApps(teamIds: TeamId[]) {
 			with: {
 				apps: {
 					columns: {
+						id: true,
 						appEntryNodeId: true,
 					},
 					with: {
@@ -66,20 +68,26 @@ async function userApps(teamIds: TeamId[]) {
 				await Promise.all(
 					teams.flatMap((team) =>
 						team.apps.map(async (app) => {
-							const workspace = await giselleEngine.getWorkspace(
-								app.workspace.id,
-							);
+							const workspace = await giselle.getWorkspace(app.workspace.id);
 							const appEntryNode = workspace.nodes.find(
 								(node) => node.id === app.appEntryNodeId,
 							);
 							if (appEntryNode === undefined) {
 								logger.warn(
-									`App entry node not found for app ${app.appEntryNodeId}`,
+									`App entry node<${app.appEntryNodeId}> not found for app<${app.id}>.`,
 								);
 								return null;
 							}
+							const giselleApp = await giselle.getApp({
+								appId: app.id,
+							});
 							return {
-								name: appEntryNode.name ?? "New App" /** @todo default name */,
+								id: app.id,
+								name: giselleApp.name,
+								description: giselleApp.description,
+								iconName: isIconName(giselleApp.iconName)
+									? giselleApp.iconName
+									: "workflow",
 								appEntryNodeId: appEntryNode.id,
 								workspaceId: workspace.id,
 								workspaceName: workspace.name,
@@ -88,7 +96,7 @@ async function userApps(teamIds: TeamId[]) {
 							};
 						}),
 					),
-				),
+				).then((apps) => apps.filter((app) => app !== null)),
 		);
 }
 

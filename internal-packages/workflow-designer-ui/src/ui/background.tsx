@@ -3,10 +3,8 @@
 import { useEffect, useRef } from "react";
 
 // Fixed grid and dot size in pixels
-const gridSize = 22;
+const gridSize = 16;
 const dotSize = 2.5;
-const lineWidth = 0.3;
-
 export function Background() {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -169,16 +167,6 @@ export function Background() {
 			"u_pixelRatio",
 		);
 
-		// Get attribute and uniform locations for lines
-		const linePositionAttributeLocation = gl.getAttribLocation(
-			lineProgram,
-			"a_position",
-		);
-		const lineResolutionUniformLocation = gl.getUniformLocation(
-			lineProgram,
-			"u_resolution",
-		);
-
 		// Create buffers
 		const dotPositionBuffer = gl.createBuffer();
 		const linePositionBuffer = gl.createBuffer();
@@ -190,60 +178,12 @@ export function Background() {
 			gl.clear(gl.COLOR_BUFFER_BIT);
 
 			const pixelRatio = window.devicePixelRatio || 1;
-			const scaledLineWidth = lineWidth * pixelRatio;
-
 			const screenWidth = canvas.width / pixelRatio;
 			const screenHeight = canvas.height / pixelRatio;
 
 			// Calculate grid dimensions with fixed cell size
 			const horizontalLines = Math.floor(screenHeight / gridSize) + 1;
 			const verticalLines = Math.floor(screenWidth / gridSize) + 1;
-
-			// Draw grid lines first
-			// biome-ignore lint/correctness/useHookAtTopLevel: This is not a React hook, but a WebGL API https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/useProgram
-			gl.useProgram(lineProgram);
-			gl.uniform2f(lineResolutionUniformLocation, canvas.width, canvas.height);
-			gl.bindBuffer(gl.ARRAY_BUFFER, linePositionBuffer);
-			gl.enableVertexAttribArray(linePositionAttributeLocation);
-			gl.vertexAttribPointer(
-				linePositionAttributeLocation,
-				2,
-				gl.FLOAT,
-				false,
-				0,
-				0,
-			);
-
-			// Draw horizontal lines
-			const horizontalLinePoints: number[] = [];
-			for (let i = 0; i < horizontalLines; i++) {
-				const y = i * gridSize * pixelRatio;
-				horizontalLinePoints.push(0, y);
-				horizontalLinePoints.push(canvas.width, y);
-			}
-
-			gl.bufferData(
-				gl.ARRAY_BUFFER,
-				new Float32Array(horizontalLinePoints),
-				gl.STATIC_DRAW,
-			);
-			gl.lineWidth(scaledLineWidth);
-			gl.drawArrays(gl.LINES, 0, horizontalLinePoints.length / 2);
-
-			// Draw vertical lines
-			const verticalLinePoints: number[] = [];
-			for (let i = 0; i < verticalLines; i++) {
-				const x = i * gridSize * pixelRatio;
-				verticalLinePoints.push(x, 0);
-				verticalLinePoints.push(x, canvas.height);
-			}
-
-			gl.bufferData(
-				gl.ARRAY_BUFFER,
-				new Float32Array(verticalLinePoints),
-				gl.STATIC_DRAW,
-			);
-			gl.drawArrays(gl.LINES, 0, verticalLinePoints.length / 2);
 
 			// Now draw dots on top
 			// biome-ignore lint/correctness/useHookAtTopLevel: This is not a React hook, but a WebGL API https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/useProgram

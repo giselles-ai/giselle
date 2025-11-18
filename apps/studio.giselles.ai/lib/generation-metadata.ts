@@ -6,6 +6,6 @@ export const GenerationMetadata = z.object({
 	team: z.object({
 		id: z.string<`tm_${string}`>(),
 		subscriptionId: z.string().nullable(),
-		plan: z.enum(["free", "pro", "team", "internal"]),
+		plan: z.enum(["free", "pro", "team", "enterprise", "internal"]),
 	}),
 });

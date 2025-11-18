@@ -22,13 +22,16 @@
 		}
 	},
 	"devDependencies": {
-		"@giselles-ai/giselle": "workspace:^",
 		"@giselles-ai/tsconfig": "workspace:^",
 		"tsup": "catalog:"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "catalog:",
-		"@supabase/supabase-js": "catalog:",
+		"@giselles-ai/storage": "workspace:*",
+		"@giselles-ai/vault": "workspace:*",
+		"@supabase/supabase-js": "catalog:"
+	},
+	"peerDependencies": {
 		"zod": "catalog:"
 	}
 }

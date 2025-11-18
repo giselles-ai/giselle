@@ -1,13 +1,10 @@
 import {
-	useGiselleEngine,
-	useWorkflowDesigner,
-} from "@giselles-ai/giselle/react";
-import {
 	type GitHubEventData,
 	type Output,
 	OutputId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
+import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import {
 	githubEvents,
 	githubEventToInputFields,
@@ -32,7 +29,7 @@ export const useTriggerConfiguration = ({
 	node: TriggerNode;
 }): UseTriggerConfigurationReturn => {
 	const { data: workspace, updateNodeData } = useWorkflowDesigner();
-	const client = useGiselleEngine();
+	const client = useGiselle();
 	const [isPending, startTransition] = useTransition();
 
 	const configureTrigger = useCallback(

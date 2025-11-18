@@ -13,6 +13,7 @@ import {
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
 import { Select } from "@giselle-internal/ui/select";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import { Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { email as emailValidator, parse, pipe, string } from "valibot";
@@ -23,11 +24,15 @@ import { type SendInvitationsResult, sendInvitationsAction } from "./actions";
 type InviteMemberDialogProps = {
 	memberEmails: string[];
 	invitationEmails: string[];
+	disabled?: boolean;
+	disabledReason?: string;
 };
 
 export function InviteMemberDialog({
 	memberEmails,
 	invitationEmails,
+	disabled = false,
+	disabledReason,
 }: InviteMemberDialogProps) {
 	const [open, setOpen] = useState(false);
 	const [emailInput, setEmailInput] = useState("");
@@ -308,6 +313,45 @@ export function InviteMemberDialog({
 		}
 		setIsLoading(false);
 	};
+
+	if (disabled) {
+		const disabledButton = (
+			<GlassButton
+				type="button"
+				className="cursor-not-allowed opacity-60"
+				disabled
+				aria-disabled="true"
+			>
+				<span className="grid size-4 place-items-center rounded-full bg-primary-200 opacity-50">
+					<Plus className="size-3 text-link-muted" />
+				</span>
+				<span className="text-[14px] font-medium leading-[20px]">
+					Invite Member
+				</span>
+			</GlassButton>
+		);
+
+		if (!disabledReason) {
+			return disabledButton;
+		}
+
+		return (
+			<Tooltip.Provider delayDuration={200}>
+				<Tooltip.Root>
+					<Tooltip.Trigger asChild>{disabledButton}</Tooltip.Trigger>
+					<Tooltip.Portal>
+						<Tooltip.Content
+							side="bottom"
+							className="z-50 max-w-xs rounded-md border border-border-muted bg-surface px-3 py-2 text-xs text-inverse shadow-lg"
+						>
+							{disabledReason}
+							<Tooltip.Arrow style={{ fill: "var(--color-surface)" }} />
+						</Tooltip.Content>
+					</Tooltip.Portal>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+		);
+	}
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen} key={dialogKey}>

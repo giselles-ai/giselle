@@ -14,6 +14,7 @@ import {
 } from "@giselle-internal/ui/dialog";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { Toggle } from "@giselle-internal/ui/toggle";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import { CircleDot, Code, GitPullRequest, Plus, X } from "lucide-react";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { GlassButton } from "@/components/ui/glass-button";
@@ -33,13 +34,15 @@ type RepositoryRegistrationDialogProps = {
 		}[],
 		embeddingProfileIds?: number[],
 	) => Promise<ActionResult>;
-	githubIssuesVectorStore?: boolean;
+	disabled?: boolean;
+	disabledReason?: string;
 };
 
 export function RepositoryRegistrationDialog({
 	installationsWithRepos,
 	registerRepositoryIndexAction,
-	githubIssuesVectorStore = false,
+	disabled = false,
+	disabledReason,
 }: RepositoryRegistrationDialogProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [ownerId, setOwnerId] = useState<string>("");
@@ -48,8 +51,8 @@ export function RepositoryRegistrationDialog({
 	const [isPending, startTransition] = useTransition();
 	const [contentConfig, setContentConfig] = useState({
 		code: { enabled: true },
-		pullRequests: { enabled: false },
 		issues: { enabled: false },
+		pullRequests: { enabled: false },
 	});
 	const [selectedProfiles, setSelectedProfiles] = useState<number[]>([1]); // Default to OpenAI Small
 
@@ -96,12 +99,11 @@ export function RepositoryRegistrationDialog({
 		setContentConfig((prev) => ({ ...prev, code: { enabled } }));
 	}, []);
 
-	const handleTogglePullRequests = useCallback((enabled: boolean) => {
-		setContentConfig((prev) => ({ ...prev, pullRequests: { enabled } }));
-	}, []);
-
 	const handleToggleIssues = useCallback((enabled: boolean) => {
 		setContentConfig((prev) => ({ ...prev, issues: { enabled } }));
+	}, []);
+	const handleTogglePullRequests = useCallback((enabled: boolean) => {
+		setContentConfig((prev) => ({ ...prev, pullRequests: { enabled } }));
 	}, []);
 
 	const handleSubmit = useCallback(
@@ -138,11 +140,11 @@ export function RepositoryRegistrationDialog({
 					enabled: boolean;
 				}[] = [
 					{ contentType: "blob", enabled: contentConfig.code.enabled },
+					{ contentType: "issue", enabled: contentConfig.issues.enabled },
 					{
 						contentType: "pull_request",
 						enabled: contentConfig.pullRequests.enabled,
 					},
-					{ contentType: "issue", enabled: contentConfig.issues.enabled },
 				];
 
 				const result = await registerRepositoryIndexAction(
@@ -158,8 +160,8 @@ export function RepositoryRegistrationDialog({
 					setRepositoryId("");
 					setContentConfig({
 						code: { enabled: true },
-						pullRequests: { enabled: false },
 						issues: { enabled: false },
+						pullRequests: { enabled: false },
 					});
 					setSelectedProfiles([1]); // Reset to default
 				} else {
@@ -177,6 +179,42 @@ export function RepositoryRegistrationDialog({
 			registerRepositoryIndexAction,
 		],
 	);
+
+	if (disabled) {
+		const disabledButton = (
+			<GlassButton
+				className="cursor-not-allowed opacity-60"
+				disabled
+				type="button"
+			>
+				<span className="grid size-4 place-items-center rounded-full bg-primary-200 opacity-50">
+					<Plus className="size-3 text-link-muted" />
+				</span>
+				Register Repository
+			</GlassButton>
+		);
+
+		if (!disabledReason) {
+			return disabledButton;
+		}
+
+		return (
+			<Tooltip.Provider delayDuration={200}>
+				<Tooltip.Root>
+					<Tooltip.Trigger asChild>{disabledButton}</Tooltip.Trigger>
+					<Tooltip.Portal>
+						<Tooltip.Content
+							side="bottom"
+							className="z-50 max-w-xs rounded-md border border-border-muted bg-surface px-3 py-2 text-xs text-inverse shadow-lg"
+						>
+							{disabledReason}
+							<Tooltip.Arrow style={{ fill: "var(--color-surface)" }} />
+						</Tooltip.Content>
+					</Tooltip.Portal>
+				</Tooltip.Root>
+			</Tooltip.Provider>
+		);
+	}
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -295,6 +333,25 @@ export function RepositoryRegistrationDialog({
 									</Toggle>
 								</div>
 
+								{/* Issues Configuration */}
+								<div className="bg-inverse/5 rounded-lg p-4">
+									<Toggle
+										name="issues-toggle"
+										checked={contentConfig.issues.enabled}
+										onCheckedChange={handleToggleIssues}
+									>
+										<div className="flex-1 mr-3">
+											<div className="flex items-center gap-2 mb-1">
+												<CircleDot size={18} className="text-text-muted" />
+												<span className="text-text font-medium">Issues</span>
+											</div>
+											<p className="text-xs text-text-muted">
+												Index issue titles, descriptions, and comments
+											</p>
+										</div>
+									</Toggle>
+								</div>
+
 								{/* Pull Requests Configuration */}
 								<div className="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] rounded-lg p-4">
 									<Toggle
@@ -315,27 +372,6 @@ export function RepositoryRegistrationDialog({
 										</div>
 									</Toggle>
 								</div>
-
-								{/* Issues Configuration */}
-								{githubIssuesVectorStore && (
-									<div className="bg-inverse/5 rounded-lg p-4">
-										<Toggle
-											name="issues-toggle"
-											checked={contentConfig.issues.enabled}
-											onCheckedChange={handleToggleIssues}
-										>
-											<div className="flex-1 mr-3">
-												<div className="flex items-center gap-2 mb-1">
-													<CircleDot size={18} className="text-text-muted" />
-													<span className="text-text font-medium">Issues</span>
-												</div>
-												<p className="text-xs text-text-muted">
-													Index issue titles, descriptions, and comments
-												</p>
-											</div>
-										</Toggle>
-									</div>
-								)}
 							</div>
 
 							{/* Embedding Profiles Section */}

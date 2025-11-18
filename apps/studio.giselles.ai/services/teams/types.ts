@@ -6,7 +6,7 @@ export function isTeamId(id: string): id is TeamId {
 }
 
 export type CurrentTeam = {
-	id: typeof teams.$inferSelect.id;
+	id: TeamId;
 	dbId: typeof teams.$inferSelect.dbId;
 	name: typeof teams.$inferSelect.name;
 	avatarUrl?: typeof teams.$inferSelect.avatarUrl;
@@ -17,9 +17,9 @@ export type CurrentTeam = {
 export type TeamWithSubscription = CurrentTeam;
 
 export type Team = {
-	id: typeof teams.$inferSelect.id;
+	id: TeamId;
 	name: typeof teams.$inferSelect.name;
 	avatarUrl?: typeof teams.$inferSelect.avatarUrl;
-	plan?: typeof teams.$inferSelect.plan;
+	plan: typeof teams.$inferSelect.plan;
 	isPro?: boolean;
 };
