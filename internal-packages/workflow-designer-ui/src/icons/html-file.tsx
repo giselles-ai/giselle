@@ -18,4 +18,3 @@ export function HtmlFileIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
 		</svg>
 	);
 }
-

@@ -1,7 +1,10 @@
 import clsx from "clsx/lite";
 import type { FC, SVGProps } from "react";
 
-export const AudioIcon: FC<SVGProps<SVGSVGElement>> = ({ className, ...props }) => (
+export const AudioIcon: FC<SVGProps<SVGSVGElement>> = ({
+	className,
+	...props
+}) => (
 	<svg
 		width="24"
 		height="24"

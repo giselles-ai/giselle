@@ -17,4 +17,3 @@ export function DocxFileIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
 		</svg>
 	);
 }
-

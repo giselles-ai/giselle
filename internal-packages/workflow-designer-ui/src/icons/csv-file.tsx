@@ -18,4 +18,3 @@ export function CsvFileIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
 		</svg>
 	);
 }
-
