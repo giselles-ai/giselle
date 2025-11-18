@@ -37,7 +37,7 @@ export function AppEntryNodePropertiesPanel({ node }: { node: AppEntryNode }) {
 						/>
 					)}
 					{node.content.status === "configured" && (
-						<AppEntryConfiguredView node={node} />
+						<AppEntryConfiguredView node={node} appId={node.content.appId} />
 					)}
 				</div>
 			</PropertiesPanelContent>
