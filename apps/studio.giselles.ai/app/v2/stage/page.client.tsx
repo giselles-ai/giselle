@@ -1,71 +1,109 @@
+"use client";
+
+import {
+	Dialog,
+	DialogContent,
+	DialogTitle,
+	DialogTrigger,
+} from "@giselle-internal/ui/dialog";
+import { AppEntryInputDialog } from "@giselle-internal/workflow-designer-ui";
+import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
+import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
 import { DynamicIcon } from "lucide-react/dynamic";
-import { use } from "react";
+import { useRouter } from "next/navigation";
+import { use, useCallback, useTransition } from "react";
 import { CreateWorkspaceButton } from "@/app/(main)/workspaces/create-workspace-button";
 import type { LoaderData } from "./data-loader";
-import type { App } from "./types";
+import type { StageApp } from "./types";
 
-const suggestedApps: App[] = [
-	{
-		id: "data-analyzer",
-		name: "Data Analyzer",
-		description: "Extract insights from your data",
-		iconName: "chart-bar",
-	},
-	{
-		id: "email-writer",
-		name: "Email Writer",
-		description: "Compose professional emails",
-		iconName: "mail",
-	},
-	{
-		id: "code-reviewer",
-		name: "Code Reviewer",
-		description: "Review and improve code quality",
-		iconName: "code",
-	},
-	{
-		id: "research-assistant",
-		name: "Research Assistant",
-		description: "Deep research and analysis",
-		iconName: "brain",
-	},
-	{
-		id: "creative-brainstorm",
-		name: "Creative Brainstorm",
-		description: "Generate creative ideas",
-		iconName: "sparkles",
-	},
-];
+// const suggestedApps: App[] = [
+// 	{
+// 		id: "data-analyzer",
+// 		name: "Data Analyzer",
+// 		description: "Extract insights from your data",
+// 		iconName: "chart-bar",
+// 	},
+// 	{
+// 		id: "email-writer",
+// 		name: "Email Writer",
+// 		description: "Compose professional emails",
+// 		iconName: "mail",
+// 	},
+// 	{
+// 		id: "code-reviewer",
+// 		name: "Code Reviewer",
+// 		description: "Review and improve code quality",
+// 		iconName: "code",
+// 	},
+// 	{
+// 		id: "research-assistant",
+// 		name: "Research Assistant",
+// 		description: "Deep research and analysis",
+// 		iconName: "brain",
+// 	},
+// 	{
+// 		id: "creative-brainstorm",
+// 		name: "Creative Brainstorm",
+// 		description: "Generate creative ideas",
+// 		iconName: "sparkles",
+// 	},
+// ];
 
 function AppCard({
-	name,
-	description,
-	iconName,
-	onClick,
-}: App & {
-	onClick?: React.MouseEventHandler;
+	app,
+	onSubmitCreateAndStartTask,
+}: {
+	app: StageApp;
+	onSubmitCreateAndStartTask: (event: {
+		inputs: GenerationContextInput[];
+	}) => Promise<TaskId>;
 }) {
+	const [_isPending, startTransition] = useTransition();
+	const router = useRouter();
+	const handleSubmit = useCallback(
+		(event: { inputs: GenerationContextInput[] }) => {
+			console.log("????");
+			startTransition(async () => {
+				const taskId = await onSubmitCreateAndStartTask(event);
+				router.push(`/v2/stage/tasks/${taskId}`);
+			});
+		},
+		[onSubmitCreateAndStartTask, router],
+	);
 	return (
-		<button
-			onClick={onClick}
-			className="w-full flex items-start gap-4 p-4 rounded-lg border border-border hover:border-border-muted transition-all text-left group cursor-pointer h-[100px]"
-			type="button"
-		>
-			<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br">
-				<DynamicIcon name={iconName} className="h-6 w-6 text-white" />
-			</div>
-			<div className="flex-1 min-w-0">
-				<h3 className="text-base font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-					{name}
-				</h3>
-				<p className="text-sm text-muted-foreground line-clamp-2">
-					{description}
-				</p>
-			</div>
-		</button>
+		<Dialog>
+			<DialogTrigger className="w-full flex items-start gap-4 p-4 rounded-lg border border-border hover:border-border-muted transition-all text-left group cursor-pointer h-[100px]">
+				<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br">
+					<DynamicIcon name={app.iconName} className="h-6 w-6 text-white" />
+				</div>
+				<div className="flex-1 min-w-0">
+					<h3 className="text-base font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+						{app.name}
+					</h3>
+					<p className="text-sm text-muted-foreground line-clamp-2">
+						{app.description}
+					</p>
+				</div>
+			</DialogTrigger>
+			<DialogContent variant="glass">
+				<DialogTitle className="sr-only">
+					verride inputs to test workflow
+				</DialogTitle>
+
+				<AppEntryInputDialog app={app} onSubmit={handleSubmit} />
+			</DialogContent>
+		</Dialog>
 	);
 }
-export function Page({ dataLoader }: { dataLoader: Promise<LoaderData> }) {
+export function Page({
+	dataLoader,
+	createAndStartTaskAction,
+}: {
+	dataLoader: Promise<LoaderData>;
+	createAndStartTaskAction: (
+		inputs: CreateAndStartTaskInputs,
+	) => Promise<TaskId>;
+}) {
 	const data = use(dataLoader);
 	return (
 		<div className="max-w-7xl mx-auto px-8 py-12">
@@ -85,7 +123,18 @@ export function Page({ dataLoader }: { dataLoader: Promise<LoaderData> }) {
 					) : (
 						<div className="space-y-3">
 							{data.apps.map((app) => (
-								<AppCard {...app} key={app.id} />
+								<AppCard
+									app={app}
+									key={app.id}
+									onSubmitCreateAndStartTask={(event) =>
+										createAndStartTaskAction({
+											generationOriginType: "stage",
+											nodeId: app.entryNodeId,
+											inputs: event.inputs,
+											workspaceId: app.workspaceId,
+										})
+									}
+								/>
 							))}
 						</div>
 					)}
@@ -93,7 +142,7 @@ export function Page({ dataLoader }: { dataLoader: Promise<LoaderData> }) {
 				{/* Your apps */}
 
 				{/* Suggested apps */}
-				<div>
+				{/*<div>
 					<h2 className="text-2xl font-semibold text-foreground mb-6">
 						Suggested apps
 					</h2>
@@ -102,7 +151,7 @@ export function Page({ dataLoader }: { dataLoader: Promise<LoaderData> }) {
 							<AppCard {...app} key={app.id} />
 						))}
 					</div>
-				</div>
+				</div>*/}
 				{/* Suggested apps */}
 			</div>
 		</div>

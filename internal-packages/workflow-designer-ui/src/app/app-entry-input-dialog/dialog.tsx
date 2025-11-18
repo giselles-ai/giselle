@@ -52,7 +52,9 @@ export function AppEntryInputDialog({
 	onSubmit,
 	...props
 }: AppEntryInputDialogProps & {
-	onSubmit: (event: { inputs: GenerationContextInput[] }) => Promise<void>;
+	onSubmit: (event: {
+		inputs: GenerationContextInput[];
+	}) => Promise<void> | void;
 	onClose?: () => void;
 }) {
 	const client = useGiselle();
@@ -92,7 +94,7 @@ export function AppEntryInputDialog({
 		async (e) => {
 			e.preventDefault();
 
-			if (data === undefined) {
+			if (app === undefined) {
 				return;
 			}
 
@@ -100,7 +102,7 @@ export function AppEntryInputDialog({
 			const errors: Record<string, string> = {};
 			const values: Record<string, string | number> = {};
 
-			for (const parameter of data.parameters) {
+			for (const parameter of app.parameters) {
 				const formDataEntryValue = formData.get(parameter.name);
 				const value = formDataEntryValue
 					? formDataEntryValue.toString().trim()
@@ -174,7 +176,7 @@ export function AppEntryInputDialog({
 				setIsSubmitting(false);
 			}
 		},
-		[data, onClose, onSubmit],
+		[app, onClose, onSubmit],
 	);
 
 	if (isLoading) {

@@ -2,7 +2,7 @@ import { giselle } from "@/app/giselle";
 import { db } from "@/db";
 import { logger } from "@/lib/logger";
 import { getUser } from "@/lib/supabase";
-import type { TeamId } from "./types";
+import type { StageApp, TeamId } from "./types";
 import { isIconName } from "./utils";
 
 async function userTeams() {
@@ -43,61 +43,75 @@ async function userTeams() {
 }
 
 async function userApps(teamIds: TeamId[]) {
-	return await db.query.teams
-		.findMany({
-			where: (teams, { inArray }) => inArray(teams.id, teamIds),
-			with: {
-				apps: {
-					columns: {
-						id: true,
-						appEntryNodeId: true,
-					},
-					with: {
-						workspace: {
-							columns: {
-								id: true,
-								name: true,
-							},
+	const teams = await db.query.teams.findMany({
+		where: (teams, { inArray }) => inArray(teams.id, teamIds),
+		with: {
+			apps: {
+				with: {
+					workspace: {
+						columns: {
+							id: true,
+							name: true,
 						},
 					},
 				},
 			},
-		})
-		.then(
-			async (teams) =>
-				await Promise.all(
-					teams.flatMap((team) =>
-						team.apps.map(async (app) => {
-							const workspace = await giselle.getWorkspace(app.workspace.id);
-							const appEntryNode = workspace.nodes.find(
-								(node) => node.id === app.appEntryNodeId,
-							);
-							if (appEntryNode === undefined) {
-								logger.warn(
-									`App entry node<${app.appEntryNodeId}> not found for app<${app.id}>.`,
-								);
-								return null;
-							}
-							const giselleApp = await giselle.getApp({
-								appId: app.id,
-							});
-							return {
-								id: app.id,
-								name: giselleApp.name,
-								description: giselleApp.description,
-								iconName: isIconName(giselleApp.iconName)
-									? giselleApp.iconName
-									: "workflow",
-								appEntryNodeId: appEntryNode.id,
-								workspaceId: workspace.id,
-								workspaceName: workspace.name,
-								teamName: team.name,
-								teamId: team.id,
-							};
-						}),
-					),
-				).then((apps) => apps.filter((app) => app !== null)),
-		);
+		},
+	});
+	const result = await Promise.all(
+		teams.flatMap((team) =>
+			team.apps.map(async (app) => {
+				const workspace = await giselle.getWorkspace(app.workspace.id);
+				const appEntryNode = workspace.nodes.find(
+					(node) => node.id === app.appEntryNodeId,
+				);
+				if (appEntryNode === undefined) {
+					logger.warn(
+						`App entry node<${app.appEntryNodeId}> not found for app<${app.id}>.`,
+					);
+					return null;
+				}
+				const giselleApp = await giselle.getApp({
+					appId: app.id,
+				});
+				return { team, workspace, giselleApp };
+				// return {
+				// 	id: app.id,
+				// 	name: giselleApp.name,
+				// 	description: giselleApp.description,
+				// 	iconName: isIconName(giselleApp.iconName)
+				// 		? giselleApp.iconName
+				// 		: "workflow",
+				// 	appEntryNodeId: appEntryNode.id,
+				// 	workspaceId: workspace.id,
+				// 	workspaceName: workspace.name,
+				// 	teamName: team.name,
+				// 	teamId: team.id,
+				// };
+			}),
+		),
+	).then((result) => result.filter((data) => data !== null));
+
+	const apps: StageApp[] = [];
+
+	for (const data of result) {
+		apps.push({
+			id: data.giselleApp.id,
+			name: data.giselleApp.name,
+			description: data.giselleApp.description,
+			iconName: isIconName(data.giselleApp.iconName)
+				? data.giselleApp.iconName
+				: "workflow",
+			entryNodeId: data.giselleApp.entryNodeId,
+			parameters: data.giselleApp.parameters,
+			workspaceId: data.workspace.id,
+			workspaceName: data.workspace.name ?? "Untitled workspace",
+			teamName: data.team.name,
+			teamId: data.team.id,
+		});
+	}
+
+	return apps;
 }
 
 async function userTasks(teamIds: TeamId[]) {
