@@ -84,7 +84,12 @@ async function agentsQuery(teamDbId: number) {
 						count: count(acts.dbId),
 					})
 					.from(acts)
-					.where(inArray(acts.sdkWorkspaceId, workspaceIds))
+					.where(
+						and(
+							eq(acts.teamDbId, teamDbId),
+							inArray(acts.sdkWorkspaceId, workspaceIds),
+						),
+					)
 					.groupBy(acts.sdkWorkspaceId)
 			: [];
 
