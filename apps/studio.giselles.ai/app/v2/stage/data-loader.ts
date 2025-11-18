@@ -1,9 +1,9 @@
+import { isIconName } from "@giselle-internal/ui/utils";
 import { giselle } from "@/app/giselle";
 import { db } from "@/db";
 import { logger } from "@/lib/logger";
 import { getUser } from "@/lib/supabase";
 import type { StageApp, TeamId } from "./types";
-import { isIconName } from "./utils";
 
 async function userTeams() {
 	const supabaseUser = await getUser();
@@ -88,7 +88,7 @@ async function userApps(teamIds: TeamId[]) {
 			description: data.giselleApp.description,
 			iconName: isIconName(data.giselleApp.iconName)
 				? data.giselleApp.iconName
-				: "workflow",
+				: "cable",
 			entryNodeId: data.giselleApp.entryNodeId,
 			parameters: data.giselleApp.parameters,
 			workspaceId: data.workspace.id,

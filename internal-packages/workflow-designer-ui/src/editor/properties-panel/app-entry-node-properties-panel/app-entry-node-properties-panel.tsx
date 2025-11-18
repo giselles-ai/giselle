@@ -21,6 +21,7 @@ export function AppEntryNodePropertiesPanel({ node }: { node: AppEntryNode }) {
 				onChangeName={(name) => updateNodeData(node, { name })}
 				docsUrl="https://docs.giselles.ai/en/glossary/trigger-node"
 				onDelete={() => deleteNode(node.id)}
+				readonly
 			/>
 			<PropertiesPanelContent>
 				<div
@@ -36,7 +37,7 @@ export function AppEntryNodePropertiesPanel({ node }: { node: AppEntryNode }) {
 						/>
 					)}
 					{node.content.status === "configured" && (
-						<AppEntryConfiguredView node={node} />
+						<AppEntryConfiguredView node={node} appId={node.content.appId} />
 					)}
 				</div>
 			</PropertiesPanelContent>

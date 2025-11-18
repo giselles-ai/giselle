@@ -10,11 +10,13 @@ export function NodePanelHeader({
 	docsUrl,
 	onChangeName,
 	onDelete,
+	readonly = false,
 }: {
 	node: NodeLike;
 	docsUrl?: string;
 	onChangeName?: (name?: string) => void;
 	onDelete?: () => void;
+	readonly?: boolean;
 }) {
 	return (
 		<PropertiesPanelHeader
@@ -68,6 +70,7 @@ export function NodePanelHeader({
 					)}
 				</div>
 			}
+			readonly={readonly}
 		/>
 	);
 }

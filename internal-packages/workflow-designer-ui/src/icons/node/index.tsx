@@ -1,5 +1,6 @@
 import { getImageGenerationModelProvider } from "@giselles-ai/language-model";
 import {
+	type AppEntryNode,
 	isActionNode,
 	isFileNode,
 	isImageGenerationNode,
@@ -24,6 +25,7 @@ import { RecraftIcon } from "../recraft";
 import { StableDiffusionIcon } from "../stable-diffusion";
 import { TextFileIcon } from "../text-file";
 import { WebPageFileIcon } from "../web-page-file";
+import { AppEntryNodeIcon } from "./app-entry-node-icon";
 import { DocumentVectorStoreIcon } from "./document-vector-store-icon";
 
 // Node-specific GitHub icon with dark fill for visibility on light backgrounds
@@ -170,7 +172,13 @@ export function NodeIcon({
 				case "query":
 					return <DatabaseZapIcon {...props} data-content-type-icon />;
 				case "appEntry":
-					return <ZapIcon {...props} data-content-type-icon />;
+					return (
+						<AppEntryNodeIcon
+							node={node as AppEntryNode}
+							{...props}
+							data-content-type-icon
+						/>
+					);
 				default: {
 					const _exhaustiveCheck: never = node.content.type;
 					throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
