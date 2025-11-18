@@ -94,10 +94,13 @@ function IngestStatusBadge({
 	const Icon = config.icon;
 	const badge = (
 		<span
-			className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${config.className}`}
+			className={clsx(
+				"inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium",
+				config.className,
+			)}
 		>
 			<Icon
-				className={`h-3 w-3 ${config.animate ? "animate-spin" : ""}`}
+				className={clsx("h-3 w-3", config.animate && "animate-spin")}
 				aria-hidden="true"
 			/>
 			{config.label}
@@ -852,11 +855,11 @@ function DocumentVectorStoreConfigureDialog({
 													key={source.id}
 													className="flex items-center justify-between gap-3 rounded-lg border border-border-muted bg-surface px-3 py-2"
 												>
-													<div className="flex items-center justify-between min-w-0 flex-1">
+													<div className="flex items-start justify-between min-w-0 flex-1 gap-2">
 														<span className="text-inverse text-sm font-medium break-all min-w-0">
 															{source.fileName}
 														</span>
-														<div className="flex-shrink-0">
+														<div className="flex-shrink-0 pt-0.5">
 															<IngestStatusBadge
 																status={source.ingestStatus}
 																errorCode={source.ingestErrorCode}

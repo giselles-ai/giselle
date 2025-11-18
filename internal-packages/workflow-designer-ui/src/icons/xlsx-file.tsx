@@ -18,4 +18,3 @@ export function XlsxFileIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
 		</svg>
 	);
 }
-

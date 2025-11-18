@@ -18,4 +18,3 @@ export function PptxFileIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
 		</svg>
 	);
 }
-

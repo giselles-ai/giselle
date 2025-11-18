@@ -6,19 +6,18 @@ import {
 } from "@giselles-ai/react";
 import type { ReactElement } from "react";
 import { useMemo } from "react";
-
-import {
-	type DocumentVectorStore,
-	useDocumentVectorStores,
-} from "../../hooks/use-document-vector-stores";
 import { MarkdownFileIcon } from "../../../icons/markdown-file";
 import { PdfFileIcon } from "../../../icons/pdf-file";
 import { TextFileIcon } from "../../../icons/text-file";
+import { useDocumentVectorStores } from "../../hooks/use-document-vector-stores";
 import { RequiresSetupBadge } from "./requires-setup-badge";
 
 type FileType = "pdf" | "txt" | "md";
 
-const FILE_TYPE_ICONS: Record<FileType, React.ComponentType<{ className?: string }>> = {
+const FILE_TYPE_ICONS: Record<
+	FileType,
+	React.ComponentType<{ className?: string }>
+> = {
 	pdf: PdfFileIcon,
 	txt: TextFileIcon,
 	md: MarkdownFileIcon,
@@ -30,7 +29,13 @@ const FILE_TYPE_EXTENSIONS: Record<string, FileType> = {
 	".md": "md",
 };
 
-function StoreNameBadge({ label, fileTypes }: { label: string; fileTypes: FileType[] }) {
+function StoreNameBadge({
+	label,
+	fileTypes,
+}: {
+	label: string;
+	fileTypes: FileType[];
+}) {
 	return (
 		<div className="px-[16px]">
 			<div className="inline-flex items-center gap-1.5 rounded-full bg-github-node-1/50 px-[16px] py-1 text-[12px] font-medium text-inverse transition-colors">
@@ -67,8 +72,7 @@ export function DocumentNodeInfo({
 
 	const vectorStore = useVectorStore();
 	const contextDocumentStores =
-		(vectorStore as VectorStoreContextValue | undefined)?.documentStores ??
-		[];
+		(vectorStore as VectorStoreContextValue | undefined)?.documentStores ?? [];
 	const { stores, isLoading } = useDocumentVectorStores({
 		shouldFetch: Boolean(documentVectorStoreId),
 		fallbackStores: contextDocumentStores,
@@ -88,7 +92,9 @@ export function DocumentNodeInfo({
 		const types = new Set<FileType>();
 		for (const source of store.sources) {
 			const fileName = source.fileName.toLowerCase();
-			for (const [extension, fileType] of Object.entries(FILE_TYPE_EXTENSIONS)) {
+			for (const [extension, fileType] of Object.entries(
+				FILE_TYPE_EXTENSIONS,
+			)) {
 				if (fileName.endsWith(extension)) {
 					types.add(fileType);
 					break;

@@ -1,7 +1,10 @@
 import clsx from "clsx/lite";
 import type { SVGProps } from "react";
 
-export function MarkdownFileIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
+export function MarkdownFileIcon({
+	className,
+	...props
+}: SVGProps<SVGSVGElement>) {
 	return (
 		<svg
 			width="24"
@@ -18,4 +21,3 @@ export function MarkdownFileIcon({ className, ...props }: SVGProps<SVGSVGElement
 		</svg>
 	);
 }
-
