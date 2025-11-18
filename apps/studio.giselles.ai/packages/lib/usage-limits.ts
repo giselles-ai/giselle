@@ -1,5 +1,4 @@
 import type { UsageLimits } from "@giselles-ai/giselle";
-import { Tier } from "@giselles-ai/language-model";
 import { eq } from "drizzle-orm";
 import { agentTimeRestrictions, db, teams } from "@/db";
 import {
@@ -7,11 +6,12 @@ import {
 	calculateAgentTimeUsageMs,
 } from "../../services/agents/activities";
 import { type CurrentTeam, isProPlan, type TeamId } from "../../services/teams";
+import { getLanguageModelTier } from "../../services/teams/plan-features/language-models";
 
 export async function getUsageLimitsForTeam(
 	team: CurrentTeam,
 ): Promise<UsageLimits> {
-	const featureTier = isProPlan(team) ? Tier.enum.pro : Tier.enum.free;
+	const featureTier = getLanguageModelTier(team.plan);
 	const agentTimeUsage = await calculateAgentTimeUsageMs(team.dbId);
 	const restricted = await fetchAgentTimeRestrictedTeamIds();
 	const agentTimeLimitValue = agentTimeLimit(team, restricted);
