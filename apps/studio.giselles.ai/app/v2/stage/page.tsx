@@ -1,5 +1,6 @@
 import { Button } from "@giselle-internal/ui/button";
 import { Suspense } from "react";
+import { createAndStartTask } from "./action";
 import { dataLoader } from "./data-loader";
 import { Page } from "./page.client";
 
@@ -22,7 +23,10 @@ export default function HomePage() {
 			</div>
 
 			<Suspense fallback={<div>Loading...</div>}>
-				<Page dataLoader={dataLoader()} />
+				<Page
+					dataLoader={dataLoader()}
+					createAndStartTaskAction={createAndStartTask}
+				/>
 			</Suspense>
 		</div>
 	);
