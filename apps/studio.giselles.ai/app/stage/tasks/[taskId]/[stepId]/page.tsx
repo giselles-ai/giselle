@@ -62,9 +62,9 @@ export default async function ({
 }) {
 	const { taskId, stepId } = await params;
 
-	const act = await giselle.getTask({ taskId });
+	const task = await giselle.getTask({ taskId });
 	let step: Step | undefined;
-	for (const sequence of act.sequences) {
+	for (const sequence of task.sequences) {
 		for (const tmp of sequence.steps) {
 			if (tmp.id === stepId) {
 				step = tmp;

@@ -1,29 +1,34 @@
 import type { TaskId } from "@giselles-ai/giselle";
 import { giselle } from "@/app/giselle";
 import { db } from "@/db";
+import { logger } from "@/lib/logger";
 import type { SidebarDataObject } from "../ui/sidebar";
 
 export async function getSidebarDataObject(taskId: TaskId) {
-	const act = await giselle.getTask({ taskId });
-	const dbAct = await db.query.acts.findFirst({
-		where: (tasks, { eq }) => eq(tasks.sdkActId, taskId),
+	const task = await giselle.getTask({ taskId });
+	if (task.starter.type !== "app") {
+		throw new Error(`Task with id ${taskId} is not an app`);
+	}
+	logger.info({ task }, "task");
+	const appId = task.starter.appId;
+	const app = await db.query.apps.findFirst({
+		where: (apps, { eq }) => eq(apps.id, appId),
 		with: {
-			team: true,
+			team: {
+				columns: {
+					name: true,
+				},
+			},
 		},
 	});
-	if (dbAct === undefined) {
-		throw new Error(`Task with id ${taskId} not found`);
+	if (app === undefined) {
+		throw new Error(`App with id ${appId} not found`);
 	}
-	const trigger = await giselle.getTrigger({
-		triggerId: dbAct?.sdkFlowTriggerId,
-	});
-	if (trigger?.configuration.provider !== "manual") {
-		throw new Error(`Trigger with id ${dbAct?.sdkFlowTriggerId} is not manual`);
-	}
+	const giselleApp = await giselle.getApp({ appId });
 	return {
-		act,
-		appName: act.name,
-		teamName: dbAct.team.name,
-		triggerParameters: trigger.configuration.event.parameters,
+		task,
+		appName: giselleApp.name,
+		teamName: app.team.name,
+		appParameters: giselleApp.parameters,
 	} satisfies SidebarDataObject;
 }
