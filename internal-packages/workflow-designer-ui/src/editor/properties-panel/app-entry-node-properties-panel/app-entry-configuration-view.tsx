@@ -25,6 +25,7 @@ import {
 } from "react";
 import * as z from "zod/v4";
 import { SpinnerIcon } from "../../../icons";
+import { AppIconSelect } from "./app-icon-select";
 
 const TYPE_OPTIONS = [
 	{ value: "text", label: "Text" },
@@ -92,7 +93,7 @@ export function AppEntryConfigurationView({
 	const [isPending, startTransition] = useTransition();
 	const [appName, setAppName] = useState(draftApp.name);
 	const [appDescription, setAppDescription] = useState(draftApp.description);
-	const [appIconName, setAppIconName] = useState<string>(draftApp.iconName);
+	const [appIconName, setAppIconName] = useState(draftApp.iconName || "cable");
 	const [draftAppParameters, setDraftAppParameters] = useState<
 		DraftAppParameter[]
 	>(draftApp.parameters);
@@ -236,34 +237,11 @@ export function AppEntryConfigurationView({
 							</div>
 
 							<div className="flex flex-col gap-[4px]">
-								<SettingDetail>Icon Name</SettingDetail>
-								<input
-									id="app-icon-name"
-									type="text"
-									placeholder="Enter icon name"
+								<SettingDetail>Icon</SettingDetail>
+								<AppIconSelect
 									value={appIconName}
-									onChange={(e) => {
-										setAppIconName(e.target.value);
-										if (validationErrors.iconName) {
-											setValidationErrors((prev) => ({
-												...prev,
-												iconName: undefined,
-											}));
-										}
-									}}
-									className={clsx(
-										"w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]",
-										validationErrors.iconName
-											? "border border-red-500"
-											: "border-none",
-									)}
-									data-1p-ignore
+									onValueChange={(value) => setAppIconName(value)}
 								/>
-								{validationErrors.iconName && (
-									<span className="text-[12px] text-red-500">
-										{validationErrors.iconName}
-									</span>
-								)}
 							</div>
 						</div>
 					</div>
