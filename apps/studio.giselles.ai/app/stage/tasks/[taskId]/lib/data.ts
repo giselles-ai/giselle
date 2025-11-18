@@ -1,7 +1,6 @@
 import type { TaskId } from "@giselles-ai/giselle";
 import { giselle } from "@/app/giselle";
 import { db } from "@/db";
-import { logger } from "@/lib/logger";
 import type { SidebarDataObject } from "../ui/sidebar";
 
 export async function getSidebarDataObject(taskId: TaskId) {
@@ -9,7 +8,6 @@ export async function getSidebarDataObject(taskId: TaskId) {
 	if (task.starter.type !== "app") {
 		throw new Error(`Task with id ${taskId} is not an app`);
 	}
-	logger.info({ task }, "task");
 	const appId = task.starter.appId;
 	const app = await db.query.apps.findFirst({
 		where: (apps, { eq }) => eq(apps.id, appId),
