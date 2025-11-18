@@ -205,32 +205,17 @@ async function agentsQuery(teamDbId: number) {
 							const { documentVectorStoreId } = node.content.source.state;
 							const documentStores =
 								documentStoresByTeam.get(agent.teamDbId) || [];
-							console.log(
-								`[DEBUG] Workspace ${agent.workspaceId}: Found document vector store node with ID: ${documentVectorStoreId}`,
-							);
-							console.log(
-								`[DEBUG] Available document stores for team ${agent.teamDbId}:`,
-								documentStores.map((s) => s.id),
-							);
 							const store = documentStores.find(
 								(s) => s.id === documentVectorStoreId,
 							);
 							if (store) {
-								console.log(
-									`[DEBUG] Found store: ${store.id}, sources count: ${store.sources.length}`,
-								);
 								if (store.sources.length > 0) {
 									for (const source of store.sources) {
-										console.log(`[DEBUG] Adding file: ${source.fileName}`);
 										if (!documentFiles.includes(source.fileName)) {
 											documentFiles.push(source.fileName);
 										}
 									}
 								}
-							} else {
-								console.log(
-									`[DEBUG] Store not found for documentVectorStoreId: ${documentVectorStoreId}`,
-								);
 							}
 						}
 					}
@@ -240,10 +225,6 @@ async function agentsQuery(teamDbId: number) {
 					githubRepositoriesMap.set(agent.workspaceId, repositories);
 				}
 				if (documentFiles.length > 0) {
-					console.log(
-						`[DEBUG] Workspace ${agent.workspaceId}: Setting document files:`,
-						documentFiles,
-					);
 					documentVectorStoreFilesMap.set(agent.workspaceId, documentFiles);
 				}
 				if (llmProviders.size > 0) {
