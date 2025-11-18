@@ -2,11 +2,7 @@
 
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import { NodeIcon } from "@giselle-internal/workflow-designer-ui";
-import type {
-	Generation,
-	ManualTriggerParameter,
-	Task,
-} from "@giselles-ai/protocol";
+import type { AppParameter, Generation, Task } from "@giselles-ai/protocol";
 import {
 	type StreamDataEventHandler,
 	TaskStreamReader,
@@ -33,15 +29,20 @@ import {
 import { MobileActions } from "./mobile-actions";
 
 export interface SidebarDataObject {
-	act: Task;
+	task: Task;
 	appName: string;
 	teamName: string;
-	triggerParameters: ManualTriggerParameter[];
+	appParameters: AppParameter[];
 }
 
 export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
-	const { act: defaultAct, appName, teamName, triggerParameters } = use(data);
-	const [act, setAct] = useState(defaultAct);
+	const {
+		task: defaultTask,
+		appName,
+		teamName,
+		appParameters: triggerParameters,
+	} = use(data);
+	const [task, setTask] = useState(defaultTask);
 	const [stepGenerations, setStepGenerations] = useState<
 		Record<string, Generation>
 	>({});
@@ -50,7 +51,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 	const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
 
 	const updateTask = useCallback<StreamDataEventHandler>((data) => {
-		setAct(data.task);
+		setTask(data.task);
 	}, []);
 
 	// Fetch generation data for completed steps and trigger step
@@ -62,7 +63,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 			}> = [];
 
 			// Collect all completed steps that need generation data, including trigger step
-			act.sequences.forEach((sequence) => {
+			task.sequences.forEach((sequence) => {
 				sequence.steps.forEach((step) => {
 					if (step.status === "completed" && !stepGenerations[step.id]) {
 						generationsToFetch.push({
@@ -90,7 +91,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 		};
 
 		fetchGenerations();
-	}, [act, stepGenerations]);
+	}, [task, stepGenerations]);
 
 	// Track when component has mounted to prevent hydration mismatch
 	useEffect(() => {
@@ -98,16 +99,16 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 	}, []);
 
 	return (
-		<TaskStreamReader taskId={defaultAct.id} onUpdateAction={updateTask}>
+		<TaskStreamReader taskId={defaultTask.id} onUpdateAction={updateTask}>
 			<aside className="w-full md:flex md:flex-col md:w-[320px] border-0 md:border-[2px] md:border-transparent m-0 md:my-[8px] pb-20 md:pb-0">
 				{/* Large Back Arrow */}
 				<div className="pt-[16px] mb-[20px] px-[16px] md:px-[32px]">
 					<Link
-						href="/stage/acts"
+						href="/stage/tasks"
 						className="flex items-center gap-[8px] text-inverse hover:text-white-700 transition-colors group"
 					>
 						<ChevronLeftIcon className="size-[24px] group-hover:-translate-x-1 transition-transform" />
-						<span className="text-[16px] font-medium">Back to Acts</span>
+						<span className="text-[16px] font-medium">Back to Tasks</span>
 					</Link>
 				</div>
 
@@ -141,22 +142,22 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 					<div className="mt-[16px]">
 						<div className="flex items-center justify-center md:justify-start gap-2 text-[11px]">
 							<span className="text-white/50">
-								{formatExecutionDate(act.createdAt)}
+								{formatExecutionDate(task.createdAt)}
 							</span>
 							<StatusBadge
-								status={getStatusBadgeStatus(act.status)}
+								status={getStatusBadgeStatus(task.status)}
 								variant="dot"
 							>
-								{act.status || "Unknown"}
+								{task.status || "Unknown"}
 							</StatusBadge>
 						</div>
 					</div>
 
 					{/* Input Values Section */}
 					{hasMounted &&
-						act.sequences[0]?.steps[0] &&
+						task.sequences[0]?.steps[0] &&
 						(() => {
-							const triggerStep = act.sequences[0].steps[0];
+							const triggerStep = task.sequences[0].steps[0];
 							const triggerGeneration = stepGenerations[triggerStep.id];
 							const inputs =
 								triggerGeneration?.context?.inputs?.find(
@@ -215,131 +216,126 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 
 				{/* Steps Section */}
 				<div className="space-y-4 pb-4 px-[16px] md:px-[32px] md:flex-1 md:overflow-y-auto md:min-h-0">
-					{act.sequences
-						.filter((_, index) => index > 0)
-						.map((sequence, sequenceIndex) => (
-							<div key={sequence.id} className="space-y-3">
-								{/* Step Header */}
-								<div className="text-[14px] font-medium text-white/60 mb-2">
-									Step {sequenceIndex + 1}
-								</div>
+					{task.sequences.map((sequence, sequenceIndex) => (
+						<div key={sequence.id} className="space-y-3">
+							{/* Step Header */}
+							<div className="text-[14px] font-medium text-white/60 mb-2">
+								Step {sequenceIndex + 1}
+							</div>
 
-								{/* Step Cards */}
-								<div className="space-y-2">
-									{sequence.steps.map((step) => {
-										const isExpanded = expandedSteps.has(step.id);
-										const generation = stepGenerations[step.id];
+							{/* Step Cards */}
+							<div className="space-y-2">
+								{sequence.steps.map((step) => {
+									const isExpanded = expandedSteps.has(step.id);
+									const generation = stepGenerations[step.id];
 
-										const handleStepClick = (e: React.MouseEvent) => {
-											// モバイルの場合はアコーディオン開閉
-											if (window.innerWidth < 768) {
-												e.preventDefault();
-												setExpandedSteps((prev) => {
-													const newSet = new Set(prev);
-													if (newSet.has(step.id)) {
-														newSet.delete(step.id);
-													} else {
-														newSet.add(step.id);
-													}
-													return newSet;
-												});
-											}
-											// デスクトップの場合はページ遷移（Linkのデフォルト動作）
-										};
+									const handleStepClick = (e: React.MouseEvent) => {
+										// モバイルの場合はアコーディオン開閉
+										if (window.innerWidth < 768) {
+											e.preventDefault();
+											setExpandedSteps((prev) => {
+												const newSet = new Set(prev);
+												if (newSet.has(step.id)) {
+													newSet.delete(step.id);
+												} else {
+													newSet.add(step.id);
+												}
+												return newSet;
+											});
+										}
+										// デスクトップの場合はページ遷移（Linkのデフォルト動作）
+									};
 
-										return (
-											<div key={step.id}>
-												<Link
-													href={`/stage/acts/${act.id}/${step.id}`}
-													className="block group"
-													onClick={handleStepClick}
+									return (
+										<div key={step.id}>
+											<Link
+												href={`/stage/tasks/${task.id}/${step.id}`}
+												className="block group"
+												onClick={handleStepClick}
+											>
+												<div
+													className="flex w-full p-4 justify-between items-center rounded-[8px] border border-white/20 bg-transparent hover:bg-white/5 transition-colors"
+													style={{
+														borderColor: "rgba(181, 192, 202, 0.20)",
+													}}
 												>
-													<div
-														className="flex w-full p-4 justify-between items-center rounded-[8px] border border-white/20 bg-transparent hover:bg-white/5 transition-colors"
-														style={{
-															borderColor: "rgba(181, 192, 202, 0.20)",
-														}}
-													>
-														<div className="flex items-center gap-3">
-															{/* Step Icon */}
-															<div className="w-8 h-8 rounded-[8px] bg-white flex items-center justify-center flex-shrink-0">
-																{step.status === "queued" && (
-																	<CircleDashedIcon className="text-black size-[16px]" />
-																)}
-																{step.status === "running" && (
-																	<RefreshCw className="text-black size-[16px]" />
-																)}
-																{step.status === "completed" &&
-																	(() => {
-																		if (generation) {
-																			return (
-																				<NodeIcon
-																					node={
-																						generation.context.operationNode
-																					}
-																					className="size-[16px] text-black"
-																				/>
-																			);
-																		}
+													<div className="flex items-center gap-3">
+														{/* Step Icon */}
+														<div className="w-8 h-8 rounded-[8px] bg-white flex items-center justify-center flex-shrink-0">
+															{step.status === "queued" && (
+																<CircleDashedIcon className="text-black size-[16px]" />
+															)}
+															{step.status === "running" && (
+																<RefreshCw className="text-black size-[16px]" />
+															)}
+															{step.status === "completed" &&
+																(() => {
+																	if (generation) {
 																		return (
-																			<BrainCircuit className="text-black size-[16px]" />
+																			<NodeIcon
+																				node={generation.context.operationNode}
+																				className="size-[16px] text-black"
+																			/>
 																		);
-																	})()}
-																{step.status === "failed" && (
-																	<XIcon className="text-black size-[16px]" />
-																)}
-																{step.status === "cancelled" && (
-																	<CircleSlashIcon className="text-black size-[16px]" />
-																)}
-															</div>
-
-															{/* Step Info */}
-															<div className="flex-1 min-w-0">
-																<div className="text-white font-bold text-[12px]">
-																	{step.name || "Untitled"}
-																</div>
-																<div
-																	className="flex items-center gap-1 text-[10px] font-medium leading-[1.4]"
-																	style={{ color: "#505D7B" }}
-																>
-																	{step.status === "completed" &&
-																		(() => {
-																			const modelInfo =
-																				getModelInfo(generation);
-																			return <span>{modelInfo.modelName}</span>;
-																		})()}
-																	{step.status === "running" && "Running"}
-																	{step.status === "failed" && "Failed"}
-																	{step.status === "queued" && "Queued"}
-																	{step.status === "cancelled" && "Cancelled"}
-																</div>
-															</div>
-														</div>
-
-														{/* Mobile Accordion Arrow */}
-														<div className="block md:hidden ml-2">
-															{isExpanded ? (
-																<ChevronUpIcon className="size-4 text-white/60" />
-															) : (
-																<ChevronDownIcon className="size-4 text-white/60" />
+																	}
+																	return (
+																		<BrainCircuit className="text-black size-[16px]" />
+																	);
+																})()}
+															{step.status === "failed" && (
+																<XIcon className="text-black size-[16px]" />
+															)}
+															{step.status === "cancelled" && (
+																<CircleSlashIcon className="text-black size-[16px]" />
 															)}
 														</div>
-													</div>
-												</Link>
 
-												{/* Mobile Accordion Content */}
-												{isExpanded && generation && (
-													<div className="block md:hidden mt-2 bg-white/5 rounded-lg p-4 border border-border">
-														<GenerationView generation={generation} />
-														<MobileActions generation={generation} />
+														{/* Step Info */}
+														<div className="flex-1 min-w-0">
+															<div className="text-white font-bold text-[12px]">
+																{step.name || "Untitled"}
+															</div>
+															<div
+																className="flex items-center gap-1 text-[10px] font-medium leading-[1.4]"
+																style={{ color: "#505D7B" }}
+															>
+																{step.status === "completed" &&
+																	(() => {
+																		const modelInfo = getModelInfo(generation);
+																		return <span>{modelInfo.modelName}</span>;
+																	})()}
+																{step.status === "running" && "Running"}
+																{step.status === "failed" && "Failed"}
+																{step.status === "queued" && "Queued"}
+																{step.status === "cancelled" && "Cancelled"}
+															</div>
+														</div>
 													</div>
-												)}
-											</div>
-										);
-									})}
-								</div>
+
+													{/* Mobile Accordion Arrow */}
+													<div className="block md:hidden ml-2">
+														{isExpanded ? (
+															<ChevronUpIcon className="size-4 text-white/60" />
+														) : (
+															<ChevronDownIcon className="size-4 text-white/60" />
+														)}
+													</div>
+												</div>
+											</Link>
+
+											{/* Mobile Accordion Content */}
+											{isExpanded && generation && (
+												<div className="block md:hidden mt-2 bg-white/5 rounded-lg p-4 border border-border">
+													<GenerationView generation={generation} />
+													<MobileActions generation={generation} />
+												</div>
+											)}
+										</div>
+									);
+								})}
 							</div>
-						))}
+						</div>
+					))}
 				</div>
 			</aside>
 		</TaskStreamReader>

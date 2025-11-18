@@ -35,8 +35,8 @@ export function getModelInfo(generation: Generation | undefined): {
 /**
  * Map act status to StatusBadge status
  */
-export function getStatusBadgeStatus(actStatus: string) {
-	switch (actStatus?.toLowerCase()) {
+export function getStatusBadgeStatus(taskStatus: string) {
+	switch (taskStatus?.toLowerCase()) {
 		case "completed":
 		case "success":
 			return "success";
