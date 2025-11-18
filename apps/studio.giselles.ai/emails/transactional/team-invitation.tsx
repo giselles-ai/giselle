@@ -44,7 +44,7 @@ export const TeamInvitationEmail = ({
 	joinUrl,
 }: TeamInvitationEmailProps) => {
 	const displayTeamName = teamName ?? TEAM_NAME_PLACEHOLDER;
-	const _displayInviterEmail = inviterEmail ?? INVITER_EMAIL_PLACEHOLDER;
+	const displayInviterEmail = inviterEmail ?? INVITER_EMAIL_PLACEHOLDER;
 	const displayJoinUrl = joinUrl ?? JOIN_URL_PLACEHOLDER;
 
 	return (
@@ -67,7 +67,7 @@ export const TeamInvitationEmail = ({
 						<Text style={text}>
 							You&apos;ve been invited to join the team{" "}
 							<strong style={highlightText}>{displayTeamName}</strong> by{" "}
-							<strong style={highlightText}>{_displayInviterEmail}</strong>.
+							<strong style={highlightText}>{displayInviterEmail}</strong>.
 						</Text>
 						<Text style={text}>
 							Click the button below to accept and access your shared workspace.
