@@ -53,7 +53,7 @@ export function AppEntryInputDialog({
 	...props
 }: AppEntryInputDialogProps & {
 	onSubmit: (event: { inputs: GenerationContextInput[] }) => Promise<void>;
-	onClose: () => void;
+	onClose?: () => void;
 }) {
 	const client = useGiselle();
 	const { isLoading, data } = useSWR(
@@ -169,31 +169,7 @@ export function AppEntryInputDialog({
 						},
 					],
 				});
-				// await createAndStartTask({
-				// 	nodeId,
-				// 	inputs: [
-				// 		{
-				// 			type: "parameters",
-				// 			items: parameterItems,
-				// 		},
-				// 	],
-				// 	onTaskStart({ cancel, taskId }) {
-				// 		toast("Workflow submitted successfully", {
-				// 			id: taskId,
-				// 			preserve: true,
-				// 			action: {
-				// 				label: "Cancel",
-				// 				onClick: async () => {
-				// 					await cancel();
-				// 				},
-				// 			},
-				// 		});
-				// 	},
-				// 	onTaskComplete: ({ taskId }) => {
-				// 		toast.dismiss(taskId);
-				// 	},
-				// });
-				onClose();
+				onClose?.();
 			} finally {
 				setIsSubmitting(false);
 			}
