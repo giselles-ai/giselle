@@ -21,7 +21,7 @@ const appIconOptions: SelectOption[] = [
 	{ value: "zap", label: "Zap", icon: <Zap /> },
 	{ value: "globe", label: "Globe", icon: <Globe /> },
 	{ value: "code", label: "Code", icon: <Code /> },
-	{ value: "magic", label: "Magic", icon: <Wand /> },
+	{ value: "wand", label: "Wand", icon: <Wand /> },
 	{ value: "grid", label: "Grid", icon: <Grid /> },
 ];
 
