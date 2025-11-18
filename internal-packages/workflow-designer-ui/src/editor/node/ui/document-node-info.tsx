@@ -16,6 +16,43 @@ import { PdfFileIcon } from "../../../icons/pdf-file";
 import { TextFileIcon } from "../../../icons/text-file";
 import { RequiresSetupBadge } from "./requires-setup-badge";
 
+type FileType = "pdf" | "txt" | "md";
+
+const FILE_TYPE_ICONS: Record<FileType, React.ComponentType<{ className?: string }>> = {
+	pdf: PdfFileIcon,
+	txt: TextFileIcon,
+	md: MarkdownFileIcon,
+};
+
+const FILE_TYPE_EXTENSIONS: Record<string, FileType> = {
+	".pdf": "pdf",
+	".txt": "txt",
+	".md": "md",
+};
+
+function StoreNameBadge({ label, fileTypes }: { label: string; fileTypes: FileType[] }) {
+	return (
+		<div className="px-[16px]">
+			<div className="inline-flex items-center gap-1.5 rounded-full bg-github-node-1/50 px-[16px] py-1 text-[12px] font-medium text-inverse transition-colors">
+				{fileTypes.length > 0 && (
+					<div className="flex items-center gap-1">
+						{fileTypes.map((fileType) => {
+							const Icon = FILE_TYPE_ICONS[fileType];
+							return (
+								<Icon
+									key={fileType}
+									className="w-[14px] h-[14px] flex-shrink-0"
+								/>
+							);
+						})}
+					</div>
+				)}
+				<span>{label}</span>
+			</div>
+		</div>
+	);
+}
+
 export function DocumentNodeInfo({
 	node,
 }: {
@@ -29,9 +66,9 @@ export function DocumentNodeInfo({
 		: undefined;
 
 	const vectorStore = useVectorStore();
-	const vectorStoreValue = vectorStore as VectorStoreContextValue | undefined;
-	const contextDocumentStores = (vectorStoreValue?.documentStores ??
-		[]) as DocumentVectorStore[];
+	const contextDocumentStores =
+		(vectorStore as VectorStoreContextValue | undefined)?.documentStores ??
+		[];
 	const { stores, isLoading } = useDocumentVectorStores({
 		shouldFetch: Boolean(documentVectorStoreId),
 		fallbackStores: contextDocumentStores,
@@ -43,26 +80,25 @@ export function DocumentNodeInfo({
 		}
 		return stores.find((candidate) => candidate.id === documentVectorStoreId);
 	}, [documentVectorStoreId, stores]);
-	const storeLabel = store?.name ?? documentVectorStoreId;
 
-	// Extract file type from file names
 	const fileTypes = useMemo(() => {
 		if (!store?.sources || store.sources.length === 0) {
 			return [];
 		}
-		const types = new Set<"pdf" | "txt" | "md">();
+		const types = new Set<FileType>();
 		for (const source of store.sources) {
 			const fileName = source.fileName.toLowerCase();
-			if (fileName.endsWith(".pdf")) {
-				types.add("pdf");
-			} else if (fileName.endsWith(".txt")) {
-				types.add("txt");
-			} else if (fileName.endsWith(".md")) {
-				types.add("md");
+			for (const [extension, fileType] of Object.entries(FILE_TYPE_EXTENSIONS)) {
+				if (fileName.endsWith(extension)) {
+					types.add(fileType);
+					break;
+				}
 			}
 		}
 		return Array.from(types);
 	}, [store?.sources]);
+
+	const storeLabel = store?.name ?? documentVectorStoreId;
 
 	if (!isDocumentVectorStore) {
 		return null;
@@ -74,53 +110,10 @@ export function DocumentNodeInfo({
 
 	if (!store) {
 		if (isLoading) {
-			return (
-				<div className="px-[16px]">
-					<div className="inline-flex items-center rounded-full bg-github-node-1/50 px-[16px] py-1 text-[12px] font-medium text-inverse transition-colors">
-						{documentVectorStoreId}
-					</div>
-				</div>
-			);
+			return <StoreNameBadge label={documentVectorStoreId} fileTypes={[]} />;
 		}
 		return <RequiresSetupBadge />;
 	}
 
-	return (
-		<div className="px-[16px]">
-			<div className="inline-flex items-center gap-1.5 rounded-full bg-github-node-1/50 px-[16px] py-1 text-[12px] font-medium text-inverse transition-colors">
-				{fileTypes.length > 0 && (
-					<div className="flex items-center gap-1">
-						{fileTypes.map((fileType) => {
-							switch (fileType) {
-								case "pdf":
-									return (
-										<PdfFileIcon
-											key="pdf"
-											className="w-[14px] h-[14px] flex-shrink-0"
-										/>
-									);
-								case "txt":
-									return (
-										<TextFileIcon
-											key="txt"
-											className="w-[14px] h-[14px] flex-shrink-0"
-										/>
-									);
-								case "md":
-									return (
-										<MarkdownFileIcon
-											key="md"
-											className="w-[14px] h-[14px] flex-shrink-0"
-										/>
-									);
-								default:
-									return null;
-							}
-						})}
-					</div>
-				)}
-				<span>{storeLabel}</span>
-			</div>
-		</div>
-	);
+	return <StoreNameBadge label={storeLabel} fileTypes={fileTypes} />;
 }
