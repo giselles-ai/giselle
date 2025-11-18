@@ -1,43 +1,92 @@
+"use client";
+
 import { Button } from "@giselle-internal/ui/button";
-import { useToasts } from "@giselle-internal/ui/toast";
-import type { AppEntryNode } from "@giselles-ai/protocol";
-import {
-	useGiselle,
-	useTaskSystem,
-	useWorkflowDesignerStore,
-} from "@giselles-ai/react";
+import type {
+	App,
+	AppEntryNode,
+	GenerationContextInput,
+} from "@giselles-ai/protocol";
+import { useGiselle } from "@giselles-ai/react";
 import { clsx } from "clsx/lite";
 import { LoaderIcon, PlayIcon, XIcon } from "lucide-react";
 import { Dialog } from "radix-ui";
-import { type FormEventHandler, useCallback, useState } from "react";
+import { type FormEventHandler, useCallback, useMemo, useState } from "react";
 import useSWR from "swr";
 
-export function AppEntryInputDialog({
-	node,
-	onClose,
-}: {
+interface AppEntryInputDialogFromAppEntryNode {
 	node: AppEntryNode;
+	app?: never;
+}
+
+interface AppEntryInputDialogFromApp {
+	node?: never;
+	app: App;
+}
+
+type AppEntryInputDialogProps =
+	| AppEntryInputDialogFromAppEntryNode
+	| AppEntryInputDialogFromApp;
+
+function isFromAppEntryNode(
+	props: unknown,
+): props is AppEntryInputDialogFromAppEntryNode {
+	return (
+		typeof props === "object" &&
+		props !== null &&
+		"node" in props &&
+		props.node !== undefined
+	);
+}
+
+function isFromApp(props: unknown): props is AppEntryInputDialogFromApp {
+	return (
+		typeof props === "object" &&
+		props !== null &&
+		"app" in props &&
+		props.app !== undefined
+	);
+}
+
+export function AppEntryInputDialog({
+	onClose,
+	onSubmit,
+	...props
+}: AppEntryInputDialogProps & {
+	onSubmit: (event: { inputs: GenerationContextInput[] }) => Promise<void>;
 	onClose: () => void;
 }) {
 	const client = useGiselle();
 	const { isLoading, data } = useSWR(
-		node.content.status === "unconfigured"
-			? null
-			: {
-					namespace: "getApp",
-					appId: node.content.appId,
-				},
+		isFromAppEntryNode(props) && props.node.content.status === "configured"
+			? { namespace: "getApp", appId: props.node.content.appId }
+			: null,
 		({ appId }) => client.getApp({ appId }).then((res) => res.app),
 	);
+
+	const app = useMemo(() => {
+		if (
+			isFromAppEntryNode({
+				node: props.node,
+				app: props.app,
+			})
+		) {
+			return data;
+		}
+		if (
+			isFromApp({
+				node: props.node,
+				app: props.app,
+			})
+		) {
+			return props.app;
+		}
+		return undefined;
+	}, [props.node, props.app, data]);
 
 	const [validationErrors, setValidationErrors] = useState<
 		Record<string, string>
 	>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
-
-	const workspaceId = useWorkflowDesignerStore((s) => s.workspace.id);
-	const { createAndStartTask } = useTaskSystem(workspaceId);
-	const { toast } = useToasts();
 
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		async (e) => {
@@ -112,39 +161,51 @@ export function AppEntryInputDialog({
 					};
 				});
 
-				await createAndStartTask({
-					nodeId: node.id,
+				await onSubmit({
 					inputs: [
 						{
 							type: "parameters",
 							items: parameterItems,
 						},
 					],
-					onTaskStart({ cancel, taskId }) {
-						toast("Workflow submitted successfully", {
-							id: taskId,
-							preserve: true,
-							action: {
-								label: "Cancel",
-								onClick: async () => {
-									await cancel();
-								},
-							},
-						});
-					},
-					onTaskComplete: ({ taskId }) => {
-						toast.dismiss(taskId);
-					},
 				});
+				// await createAndStartTask({
+				// 	nodeId,
+				// 	inputs: [
+				// 		{
+				// 			type: "parameters",
+				// 			items: parameterItems,
+				// 		},
+				// 	],
+				// 	onTaskStart({ cancel, taskId }) {
+				// 		toast("Workflow submitted successfully", {
+				// 			id: taskId,
+				// 			preserve: true,
+				// 			action: {
+				// 				label: "Cancel",
+				// 				onClick: async () => {
+				// 					await cancel();
+				// 				},
+				// 			},
+				// 		});
+				// 	},
+				// 	onTaskComplete: ({ taskId }) => {
+				// 		toast.dismiss(taskId);
+				// 	},
+				// });
 				onClose();
 			} finally {
 				setIsSubmitting(false);
 			}
 		},
-		[data, onClose, node, createAndStartTask, toast],
+		[data, onClose, onSubmit],
 	);
 
-	if (isLoading || data === undefined) {
+	if (isLoading) {
+		return "loading";
+	}
+
+	if (app === undefined) {
 		return null;
 	}
 
@@ -152,7 +213,7 @@ export function AppEntryInputDialog({
 		<>
 			<div className="flex justify-between items-center mb-[14px]">
 				<h2 className="font-accent text-[18px] font-bold text-primary-100 drop-shadow-[0_0_10px_#0087F6]">
-					Run {data.name}
+					Run {app.name}
 				</h2>
 				<div className="flex gap-[12px]">
 					<Dialog.Close asChild>
@@ -175,7 +236,7 @@ export function AppEntryInputDialog({
 					</p>
 
 					<div className="flex flex-col gap-[8px]">
-						{data.parameters.map((parameter) => {
+						{app.parameters.map((parameter) => {
 							return (
 								<fieldset key={parameter.id} className={clsx("grid gap-2")}>
 									<label

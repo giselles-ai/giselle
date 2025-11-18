@@ -11,6 +11,7 @@ import {
 	type MenuItem,
 } from "@giselle-internal/ui/dropdown-menu";
 import { useToasts } from "@giselle-internal/ui/toast";
+import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import { defaultName } from "@giselles-ai/node-registry";
 import type {
 	AppEntryNode,
@@ -28,6 +29,7 @@ import {
 	useNodeGroups,
 	useTaskSystem,
 	useWorkflowDesigner,
+	useWorkflowDesignerStore,
 } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { PlayIcon, UngroupIcon } from "lucide-react";
@@ -67,6 +69,14 @@ type NodeGroupMenuItem = {
 	type: "nodeGroup";
 	run: NodeGroupRunItem;
 };
+
+type SubmitCreateAndStartTaskInput = Pick<
+	CreateAndStartTaskInputs,
+	"connectionIds" | "inputs" | "nodeId"
+>;
+type SubmitCreateAndStartTask = (
+	input: SubmitCreateAndStartTaskInput,
+) => Promise<void>;
 
 function CenteredDialogContent({ children }: React.PropsWithChildren) {
 	return <DialogContent variant="glass">{children}</DialogContent>;
@@ -151,8 +161,10 @@ function useRunAct() {
 
 function SingleStarterRunButton({
 	starterRun,
+	onCreateAndStartTaskSubmit,
 }: {
 	starterRun: StarterRunItem;
+	onCreateAndStartTaskSubmit: SubmitCreateAndStartTask;
 }) {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -182,6 +194,12 @@ function SingleStarterRunButton({
 					<AppEntryInputDialog
 						node={starterRun.node}
 						onClose={() => setIsDialogOpen(false)}
+						onSubmit={(event) =>
+							onCreateAndStartTaskSubmit({
+								nodeId: starterRun.node.id,
+								inputs: event.inputs,
+							})
+						}
 					/>
 				)}
 			</CenteredDialogContent>
@@ -221,9 +239,11 @@ type RunMenuItem = MenuItem<
 function MultipleRunsDropdown({
 	starterRuns,
 	nodeGroupRuns,
+	onCreateAndStartTaskSubmit,
 }: {
 	starterRuns: StarterRunItem[];
 	nodeGroupRuns: NodeGroupRunItem[];
+	onCreateAndStartTaskSubmit: SubmitCreateAndStartTask;
 }) {
 	const { data, setUiNodeState } = useWorkflowDesigner();
 	const runAct = useRunAct();
@@ -374,6 +394,12 @@ function MultipleRunsDropdown({
 										setIsDropdownOpen(false);
 										setOpenDialogNodeId(null);
 									}}
+									onSubmit={(event) =>
+										onCreateAndStartTaskSubmit({
+											nodeId: starterNode.id,
+											inputs: event.inputs,
+										})
+									}
 								/>
 							)}
 						</CenteredDialogContent>
@@ -397,6 +423,8 @@ function MultipleRunsDropdown({
 
 export function RunButton() {
 	const nodeGroups = useNodeGroups();
+	const workspaceId = useWorkflowDesignerStore((s) => s.workspace.id);
+	const { createAndStartTask } = useTaskSystem(workspaceId);
 
 	const { starterRuns, nodeGroupRuns } = useMemo(() => {
 		const starterRuns: StarterRunItem[] = [];
@@ -444,6 +472,31 @@ export function RunButton() {
 	}, [nodeGroups]);
 
 	const totalRuns = starterRuns.length + nodeGroupRuns.length;
+	const { toast } = useToasts();
+
+	const handleCreateAndStartTaskSubmit = useCallback(
+		async (input: SubmitCreateAndStartTaskInput) => {
+			await createAndStartTask({
+				...input,
+				onTaskStart({ cancel, taskId }) {
+					toast("Workflow submitted successfully", {
+						id: taskId,
+						preserve: true,
+						action: {
+							label: "Cancel",
+							onClick: async () => {
+								await cancel();
+							},
+						},
+					});
+				},
+				onTaskComplete: ({ taskId }) => {
+					toast.dismiss(taskId);
+				},
+			});
+		},
+		[createAndStartTask, toast],
+	);
 
 	// No runnable items
 	if (totalRuns === 0) {
@@ -452,7 +505,12 @@ export function RunButton() {
 
 	// Single trigger node
 	if (totalRuns === 1 && starterRuns.length === 1) {
-		return <SingleStarterRunButton starterRun={starterRuns[0]} />;
+		return (
+			<SingleStarterRunButton
+				starterRun={starterRuns[0]}
+				onCreateAndStartTaskSubmit={handleCreateAndStartTaskSubmit}
+			/>
+		);
 	}
 
 	// Single node group
@@ -465,6 +523,7 @@ export function RunButton() {
 		<MultipleRunsDropdown
 			starterRuns={starterRuns}
 			nodeGroupRuns={nodeGroupRuns}
+			onCreateAndStartTaskSubmit={handleCreateAndStartTaskSubmit}
 		/>
 	);
 }
