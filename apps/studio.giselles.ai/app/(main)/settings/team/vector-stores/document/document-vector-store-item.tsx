@@ -94,10 +94,13 @@ function IngestStatusBadge({
 	const Icon = config.icon;
 	const badge = (
 		<span
-			className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${config.className}`}
+			className={clsx(
+				"inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium",
+				config.className,
+			)}
 		>
 			<Icon
-				className={`h-3 w-3 ${config.animate ? "animate-spin" : ""}`}
+				className={clsx("h-3 w-3", config.animate && "animate-spin")}
 				aria-hidden="true"
 			/>
 			{config.label}
@@ -852,14 +855,16 @@ function DocumentVectorStoreConfigureDialog({
 													key={source.id}
 													className="flex items-center justify-between gap-3 rounded-lg border border-border-muted bg-surface px-3 py-2"
 												>
-													<div className="flex flex-col gap-1.5 min-w-0 flex-1">
-														<span className="text-inverse text-sm font-medium break-all">
+													<div className="flex items-start justify-between min-w-0 flex-1 gap-2">
+														<span className="text-inverse text-sm font-medium break-all min-w-0">
 															{source.fileName}
 														</span>
-														<IngestStatusBadge
-															status={source.ingestStatus}
-															errorCode={source.ingestErrorCode}
-														/>
+														<div className="flex-shrink-0 pt-0.5">
+															<IngestStatusBadge
+																status={source.ingestStatus}
+																errorCode={source.ingestErrorCode}
+															/>
+														</div>
 													</div>
 													<button
 														type="button"
@@ -870,7 +875,7 @@ function DocumentVectorStoreConfigureDialog({
 															)
 														}
 														disabled={isDeleting}
-														className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border-muted text-text/60 transition-colors hover:text-error-500 focus:outline-none focus:ring-2 focus:ring-inverse/30 disabled:cursor-not-allowed disabled:opacity-50 flex-shrink-0"
+														className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text/60 transition-colors hover:text-error-500 focus:outline-none focus:ring-2 focus:ring-inverse/30 disabled:cursor-not-allowed disabled:opacity-50 flex-shrink-0"
 													>
 														<span className="sr-only">
 															Delete {source.fileName}

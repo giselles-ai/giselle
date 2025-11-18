@@ -1,22 +1,21 @@
+import clsx from "clsx/lite";
 import type { FC, SVGProps } from "react";
 
-export const VideoIcon: FC<SVGProps<SVGSVGElement>> = (props) => (
+export const VideoIcon: FC<SVGProps<SVGSVGElement>> = ({
+	className,
+	...props
+}) => (
 	<svg
-		xmlns="http://www.w3.org/2000/svg"
 		width="24"
 		height="24"
 		viewBox="0 0 24 24"
 		fill="none"
-		stroke="currentColor"
-		strokeWidth="2"
-		strokeLinecap="round"
-		strokeLinejoin="round"
-		role="img"
-		aria-label="Video icon"
+		xmlns="http://www.w3.org/2000/svg"
+		role="graphics-symbol"
+		className={clsx("fill-current", className)}
 		{...props}
 	>
-		<title>Video icon</title>
-		<path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14v-4z" />
-		<rect x="3" y="6" width="12" height="12" rx="2" ry="2" />
+		<path d="M19.24 0H3.93C1.76 0 0 1.76 0 3.93V19.24C0 21.41 1.76 23.17 3.93 23.17H19.25C21.42 23.17 23.18 21.41 23.18 19.24V3.93C23.18 1.76 21.42 0 19.25 0H19.24ZM21.17 3.93V6.63H16.86L19.68 2.05C20.53 2.25 21.17 3.01 21.17 3.92V3.93ZM8.8 2H11.6L8.75 6.63H5.95L8.8 2ZM13.95 2H17.36L14.51 6.63H11.1L13.95 2ZM3.93 2H6.45L3.6 6.63H2.11C2.11 6.63 2.04 6.65 2 6.65V3.93C2 2.87 2.87 2 3.93 2ZM19.24 21.17H3.93C2.87 21.17 2 20.3 2 19.24V8.6C2 8.6 2.07 8.62 2.11 8.62H21.17V19.23C21.17 20.29 20.3 21.16 19.24 21.16V21.17Z" />
+		<path d="M9.58006 10.7099C9.02006 10.3799 8.31006 10.7899 8.31006 11.4399V18.3299C8.31006 18.9799 9.01006 19.3899 9.58006 19.0599L15.5501 15.6099C16.1101 15.2799 16.1101 14.4699 15.5501 14.1499L9.58006 10.6999V10.7099Z" />
 	</svg>
 );
