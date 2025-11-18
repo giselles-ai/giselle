@@ -13,6 +13,7 @@ import { LLMProviderIcon } from "./llm-provider-icon";
 interface AgentCardProps {
 	agent: typeof dbAgents.$inferSelect & {
 		executionCount?: number;
+		description?: string | null;
 		creator?: {
 			displayName: string | null;
 			avatarUrl: string | null;
@@ -84,9 +85,12 @@ export function AgentCard({ agent }: AgentCardProps) {
 					</h3>
 
 					{/* Description */}
-					<p className="font-geist text-[13px] text-link-muted line-clamp-2">
-						Use a Large Language Model to summarize customer feedback.Use...
-					</p>
+					{/* TODO: Render agent descriptions once backend data is available. */}
+					{agent.description ? (
+						<p className="font-geist text-[13px] text-link-muted line-clamp-2">
+							{agent.description}
+						</p>
+					) : null}
 
 					{/* Integration Icons and Footer */}
 					<div className="mt-auto flex flex-col gap-3">
