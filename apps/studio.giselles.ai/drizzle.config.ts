@@ -4,8 +4,6 @@ import { defineConfig } from "drizzle-kit";
 const projectDir = process.cwd();
 loadEnvConfig(projectDir);
 
-
-
 export default defineConfig({
 	schema: "./db/schema.ts",
 	out: "./db/migrate",
