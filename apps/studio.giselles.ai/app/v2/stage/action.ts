@@ -1,23 +1,17 @@
 "use server";
 
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
-import {
-	type WorkspaceId,
-	WorkspaceId as WorkspaceIdSchema,
-} from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
 import { db } from "@/db";
 import { fetchCurrentUser } from "@/services/accounts";
 import { isMemberOfTeam } from "@/services/teams";
 
 export async function createAndStartTask(input: CreateAndStartTaskInputs) {
-	let workspaceId: WorkspaceId;
-	try {
-		workspaceId = WorkspaceIdSchema.schema.parse(input.workspaceId);
-	} catch {
+	const workspaceId = input.workspaceId ?? input.workspace?.id;
+
+	if (workspaceId === undefined) {
 		throw new Error("Workspace ID is required");
 	}
-
 	const [user, workspace] = await Promise.all([
 		fetchCurrentUser(),
 		db.query.workspaces.findFirst({
