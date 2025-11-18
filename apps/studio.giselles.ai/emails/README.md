@@ -16,7 +16,8 @@ This opens a local preview server at `http://localhost:3333` where you can view 
 
 - Store shared images in `apps/studio.giselles.ai/public/emails`. These files are served from `/emails/*` in production emails.
 - The `emails/static` directory is a symlink to the public assets, so the React Email preview (`pnpm email:dev`) can continue to serve `/static/*` without duplicating files.
-- Use `getEmailAssetUrl("<filename>")` from `emails/utils/email-assets.ts` to reference any asset. The helper automatically switches between `/static` for preview and `/emails` for production.
+- Use `getEmailAssetUrl("<filename>")` (re-exported via `emails/components`) to reference any asset. The helper automatically switches between `/static` for preview and `/emails` for production, so **do not** hardcode `baseUrl` yourself.
+- `EmailHeader` and `EmailFooter` already include the Giselle logo, footer logo, and social icons using `getEmailAssetUrl`. Just render them without props—no need to pass URLs or hosts.
 
 ## Creating Templates
 
