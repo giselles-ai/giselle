@@ -75,19 +75,6 @@ async function userApps(teamIds: TeamId[]) {
 					appId: app.id,
 				});
 				return { team, workspace, giselleApp };
-				// return {
-				// 	id: app.id,
-				// 	name: giselleApp.name,
-				// 	description: giselleApp.description,
-				// 	iconName: isIconName(giselleApp.iconName)
-				// 		? giselleApp.iconName
-				// 		: "workflow",
-				// 	appEntryNodeId: appEntryNode.id,
-				// 	workspaceId: workspace.id,
-				// 	workspaceName: workspace.name,
-				// 	teamName: team.name,
-				// 	teamId: team.id,
-				// };
 			}),
 		),
 	).then((result) => result.filter((data) => data !== null));
@@ -122,6 +109,8 @@ async function userTasks(teamIds: TeamId[]) {
 				columns: {
 					id: true,
 				},
+				where: (tasks, { isNotNull }) => isNotNull(tasks.appDbId),
+				orderBy: (tasks, { desc }) => desc(tasks.createdAt),
 			},
 		},
 	});
