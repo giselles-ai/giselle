@@ -1,8 +1,8 @@
-import { Font, Head } from "@react-email/components";
+import { Font } from "@react-email/components";
 
 export const EmailFonts = () => {
 	return (
-		<Head>
+		<>
 			<Font
 				fontFamily="DM Sans"
 				fallbackFontFamily="Arial"
@@ -33,6 +33,6 @@ export const EmailFonts = () => {
 				fontWeight={700}
 				fontStyle="normal"
 			/>
-		</Head>
+		</>
 	);
 };
