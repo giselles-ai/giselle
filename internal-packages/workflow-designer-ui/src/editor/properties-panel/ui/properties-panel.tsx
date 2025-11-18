@@ -2,6 +2,7 @@
 
 import { defaultName } from "@giselles-ai/node-registry";
 import type { NodeLike } from "@giselles-ai/protocol";
+import clsx from "clsx/lite";
 import type { ReactNode } from "react";
 import { NodeIcon } from "../../../icons/node";
 import { EditableText } from "../../../ui/editable-text";
@@ -101,12 +102,14 @@ export function PropertiesPanelHeader({
 	icon,
 	onChangeName,
 	action,
+	readonly = false,
 }: {
 	node: NodeLike;
 	description?: string;
 	icon?: ReactNode;
 	onChangeName?: (name?: string) => void;
 	action?: ReactNode;
+	readonly?: boolean;
 }) {
 	return (
 		<div className={getHeaderClasses()}>
@@ -129,7 +132,11 @@ export function PropertiesPanelHeader({
 				</div>
 				<div className="flex-1 min-w-0">
 					<EditableText
-						className="block w-full bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] rounded-[8px]"
+						className={clsx(
+							"block w-full rounded-[8px]",
+							!readonly &&
+								"bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]",
+						)}
 						inputClassName="px-[8px] py-[2px]"
 						buttonClassName="px-[8px] py-[2px]"
 						onValueChange={(value) => {
@@ -143,6 +150,7 @@ export function PropertiesPanelHeader({
 							onChangeName?.(value);
 						}}
 						text={defaultName(node)}
+						readonly={readonly}
 					/>
 				</div>
 			</div>

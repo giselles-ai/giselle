@@ -16,6 +16,7 @@ export function EditableText({
 	onClickToEditMode,
 	inputClassName,
 	buttonClassName,
+	readonly = false,
 	...props
 }: HTMLAttributes<HTMLDivElement> & {
 	text?: string;
@@ -23,6 +24,7 @@ export function EditableText({
 	onClickToEditMode?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 	inputClassName?: string;
 	buttonClassName?: string;
+	readonly?: boolean;
 }) {
 	const [edit, setEdit] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -71,15 +73,18 @@ export function EditableText({
 				type="button"
 				className={clsx(
 					"rounded-l-[4px] last:rounded-r-[4px] data-[editing=true]:hidden",
-					"hover:bg-bg-900/20",
 					"text-inverse text-[14px]",
-					"cursor-default",
 					"!border-0",
+					!readonly && "hover:bg-bg-900/20",
 					buttonClassName,
 				)}
 				data-button
 				data-editing={edit}
+				data-readonly={readonly}
 				onClick={(e) => {
+					if (readonly) {
+						return;
+					}
 					onClickToEditMode?.(e);
 					if (e.isDefaultPrevented()) {
 						return;
