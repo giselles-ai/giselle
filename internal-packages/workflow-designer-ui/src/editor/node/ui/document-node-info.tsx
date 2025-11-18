@@ -104,8 +104,6 @@ export function DocumentNodeInfo({
 		return Array.from(types);
 	}, [store?.sources]);
 
-	const storeLabel = store?.name ?? documentVectorStoreId;
-
 	if (!isDocumentVectorStore) {
 		return null;
 	}
@@ -121,5 +119,6 @@ export function DocumentNodeInfo({
 		return <RequiresSetupBadge />;
 	}
 
+	const storeLabel = store.name ?? documentVectorStoreId;
 	return <StoreNameBadge label={storeLabel} fileTypes={fileTypes} />;
 }
