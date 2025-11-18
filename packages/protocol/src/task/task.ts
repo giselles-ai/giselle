@@ -5,7 +5,7 @@ import { GenerationStatus } from "../generation";
 import { GenerationId } from "../generation/generation-id";
 import { TriggerId } from "../trigger";
 import { WorkspaceId } from "../workspace";
-import { TaskId } from "./act-id";
+import { TaskId } from "./task-id";
 
 export const SequenceId = createIdGenerator("sqn");
 

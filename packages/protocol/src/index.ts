@@ -1,4 +1,3 @@
-export * from "./act";
 export * from "./app";
 export * from "./connection";
 export * from "./embedding";
@@ -6,5 +5,6 @@ export * from "./generation";
 export * from "./integrations";
 export * from "./node";
 export * from "./secret";
+export * from "./task";
 export * from "./trigger";
 export * from "./workspace";
