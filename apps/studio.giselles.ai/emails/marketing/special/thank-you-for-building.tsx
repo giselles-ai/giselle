@@ -1,0 +1,96 @@
+import {
+	Body,
+	Button,
+	Container,
+	Head,
+	Heading,
+	Hr,
+	Html,
+	Img,
+	Preview,
+	Section,
+	Text,
+} from "@react-email/components";
+import {
+	button,
+	container,
+	EmailFonts,
+	EmailFooter,
+	EmailHeader,
+	getEmailAssetUrl,
+	h1,
+	main,
+	section,
+	text,
+	topBorder,
+	topBorderSection,
+} from "../../components";
+
+interface ThankYouForBuildingEmailProps {
+	continueBuildingUrl?: string;
+}
+
+export const ThankYouForBuildingEmail = ({
+	continueBuildingUrl = "https://studio.giselles.ai",
+}: ThankYouForBuildingEmailProps) => {
+	const heroImageSrc = getEmailAssetUrl("thank-you-for-building-1.jpg");
+	return (
+		<Html>
+			<Head>
+				<EmailFonts />
+			</Head>
+			<Preview>Thank you for building with Giselle</Preview>
+			<Body style={main}>
+				<Container style={container}>
+					<EmailHeader />
+					<Section style={imageSection}>
+						<Img
+							src={heroImageSrc}
+							width="600"
+							alt="Thank you for building"
+							style={image}
+						/>
+					</Section>
+					<Section style={section}>
+						<Heading style={h1}>Thank You for Building with Giselle.</Heading>
+						<Text style={text}>
+							Every workflow, every experiment, every deployment — they all move
+							us forward.
+						</Text>
+						<Text style={text}>
+							Your creativity shapes the way AI gets built.
+						</Text>
+						<Text style={text}>
+							Here&apos;s to you, and to what comes next.
+						</Text>
+						<Button href={continueBuildingUrl} style={button}>
+							Continue Building →
+						</Button>
+					</Section>
+					<Section style={topBorderSection}>
+						<Hr style={topBorder} />
+					</Section>
+				</Container>
+				<EmailFooter />
+			</Body>
+		</Html>
+	);
+};
+
+ThankYouForBuildingEmail.PreviewProps = {
+	continueBuildingUrl: "https://studio.giselles.ai",
+} as ThankYouForBuildingEmailProps;
+
+const imageSection = {
+	padding: "0",
+	margin: "0",
+};
+
+const image = {
+	width: "100%",
+	maxWidth: "600px",
+	display: "block",
+	margin: "0 auto",
+};
+
+export default ThankYouForBuildingEmail;
