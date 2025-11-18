@@ -64,7 +64,7 @@ function AppCard({
 		(event: { inputs: GenerationContextInput[] }) => {
 			startTransition(async () => {
 				const taskId = await onSubmitCreateAndStartTask(event);
-				router.push(`/v2/stage/tasks/${taskId}`);
+				router.push(`/stage/tasks/${taskId}`);
 			});
 		},
 		[onSubmitCreateAndStartTask, router],
