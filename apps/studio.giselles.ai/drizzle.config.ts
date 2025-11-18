@@ -4,7 +4,7 @@ import { defineConfig } from "drizzle-kit";
 const projectDir = process.cwd();
 loadEnvConfig(projectDir);
 
-console.log(process.env.POSTGRES_URL);
+
 
 export default defineConfig({
 	schema: "./db/schema.ts",
