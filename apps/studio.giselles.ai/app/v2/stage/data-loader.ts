@@ -100,12 +100,35 @@ async function userApps(teamIds: TeamId[]) {
 		);
 }
 
+async function userTasks(teamIds: TeamId[]) {
+	const teams = await db.query.teams.findMany({
+		where: (teams, { inArray }) => inArray(teams.id, teamIds),
+		with: {
+			tasks: {
+				columns: {
+					id: true,
+				},
+			},
+		},
+	});
+	const taskIds = teams.flatMap((team) => team.tasks.map((task) => task.id));
+
+	const tasks = await Promise.all(
+		taskIds.map((taskId) => giselle.getTask({ taskId })),
+	);
+	return tasks;
+}
+
 export async function dataLoader() {
 	const teams = await userTeams();
-	const apps = await userApps(teams.map((team) => team.id));
+	const teamIds = teams.map((team) => team.id);
+	const [apps, tasks] = await Promise.all([
+		userApps(teamIds),
+		userTasks(teamIds),
+	]);
 
-	logger.debug({ teams, apps });
-	return { teams, apps };
+	logger.debug({ teams, apps, tasks });
+	return { teams, apps, tasks };
 }
 
 export type LoaderData = Awaited<ReturnType<typeof dataLoader>>;

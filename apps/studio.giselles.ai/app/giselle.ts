@@ -9,7 +9,7 @@ import {
 } from "@giselles-ai/supabase-driver";
 import { tasks as jobs } from "@trigger.dev/sdk";
 import { eq } from "drizzle-orm";
-import { apps, db } from "@/db";
+import { apps, db, tasks } from "@/db";
 import { waitForLangfuseFlush } from "@/instrumentation.node";
 import { GenerationMetadata } from "@/lib/generation-metadata";
 import { logger } from "@/lib/logger";
@@ -321,6 +321,41 @@ export const giselle = NextGiselle({
 			} catch (error) {
 				console.error("Embedding callback failed:", error);
 			}
+		},
+		taskCreate: async ({ task }) => {
+			let appDbId: number | undefined;
+
+			if (task.starter.type === "app") {
+				const appId = task.starter.appId;
+				const app = await db.query.apps.findFirst({
+					where: (apps, { eq }) => eq(apps.id, appId),
+					columns: {
+						dbId: true,
+					},
+				});
+				appDbId = app?.dbId;
+			}
+
+			const workspace = await db.query.workspaces.findFirst({
+				where: (workspaces, { eq }) => eq(workspaces.id, task.workspaceId),
+				columns: {},
+				with: {
+					team: {
+						columns: {
+							dbId: true,
+						},
+					},
+				},
+			});
+			if (workspace === undefined) {
+				throw new Error(`Workspace not found for task ${task.id}`);
+			}
+
+			await db.insert(tasks).values({
+				id: task.id,
+				appDbId,
+				teamDbId: workspace.team.dbId,
+			});
 		},
 	},
 	aiGateway: {

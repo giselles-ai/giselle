@@ -39,6 +39,7 @@ function createTestTask(overrides?: Partial<Task>): Task {
 	return {
 		id: "tsk-1" as const,
 		workspaceId: "wrks-1" as const,
+		starter: { type: "run-button" },
 		name: "Test Task",
 		status: "inProgress",
 		steps: {

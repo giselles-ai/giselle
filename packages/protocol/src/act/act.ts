@@ -1,7 +1,9 @@
 import { createIdGenerator } from "@giselles-ai/utils";
 import { z } from "zod/v4";
+import { AppId } from "../app";
 import { GenerationStatus } from "../generation";
 import { GenerationId } from "../generation/generation-id";
+import { TriggerId } from "../trigger";
 import { WorkspaceId } from "../workspace";
 import { TaskId } from "./act-id";
 
@@ -47,8 +49,24 @@ export const Sequence = z.object({
 });
 export type Sequence = z.infer<typeof Sequence>;
 
+const TaskStarter = z.union([
+	z.object({
+		type: z.literal("run-button"),
+	}),
+	z.object({
+		type: z.literal("github-trigger"),
+		triggerId: TriggerId.schema,
+	}),
+	z.object({
+		type: z.literal("app"),
+		appId: AppId.schema,
+	}),
+]);
+export type TaskStarter = z.infer<typeof TaskStarter>;
+
 export const Task = z.object({
 	id: TaskId.schema,
+	starter: TaskStarter,
 	workspaceId: WorkspaceId.schema,
 	name: z.string(),
 	status: z.enum(["created", "inProgress", "completed", "failed", "cancelled"]),

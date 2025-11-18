@@ -53,6 +53,7 @@ import {
 	getTask,
 	getWorkspaceInprogressTask,
 	getWorkspaceTasks,
+	type OnTaskCreate,
 	type Patch,
 	patchTask,
 	type RunTaskInputs,
@@ -311,9 +312,14 @@ export function Giselle(config: GiselleConfig) {
 		}) {
 			return await getWorkspaceSecrets({ ...args, context });
 		},
-		async createTask(args: CreateTaskInputs) {
+		async createTask(
+			args: CreateTaskInputs & {
+				onCreate?: OnTaskCreate;
+			},
+		) {
 			return await createTask({
 				...args,
+				onCreate: args.onCreate ?? config.callbacks?.taskCreate,
 				context,
 			});
 		},
