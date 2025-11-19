@@ -41,7 +41,7 @@ catalog:
   '@tiptap/react': 2.11.5
   '@tiptap/starter-kit': 2.11.5
   '@tiptap/suggestion': 2.11.5
-  '@trigger.dev/sdk': 4.0.5
+  '@trigger.dev/sdk': 4.1.0
   '@turbo/gen': 2.3.3
   '@types/fast-levenshtein': 0.0.4
   '@types/node': 22.14.0
