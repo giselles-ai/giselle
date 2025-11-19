@@ -4,8 +4,7 @@ import { logger, schemaTask as schemaJob } from "@trigger.dev/sdk";
 export const investigatePrivateKeyJob = schemaJob({
 	id: "debug.privateKey.investigation",
 	async run() {
-		const key =
-			process.env.GITHUB_APP_PRIVATE_KEY?.replace(/\\n/g, "\n").trim() ?? "";
+		const key = process.env.GITHUB_APP_PRIVATE_KEY ?? "";
 
 		// --- Step 1: summarize key (safe) --- //
 		const header = key.match(/-----BEGIN ([^-]+)-----/)?.[1] ?? "UNKNOWN";
