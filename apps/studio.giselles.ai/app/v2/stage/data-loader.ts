@@ -19,14 +19,7 @@ async function userTeams() {
 			where: (teamMemberships, { eq }) =>
 				eq(teamMemberships.userDbId, user.userDbId),
 			with: {
-				team: {
-					with: {
-						subscriptions: {
-							where: (subscriptions, { eq }) =>
-								eq(subscriptions.status, "active"),
-						},
-					},
-				},
+				team: true,
 			},
 		})
 		.then((teamMemberships) =>
@@ -35,9 +28,7 @@ async function userTeams() {
 				name: teamMembership.team.name,
 				avatarUrl: teamMembership.team.avatarUrl,
 				role: teamMembership.role,
-				hasActiveSubscription: teamMembership.team.subscriptions.some(
-					(subscription) => subscription.status === "active",
-				),
+				hasActiveSubscription: teamMembership.team.activeSubscriptionId != null,
 			})),
 		);
 }

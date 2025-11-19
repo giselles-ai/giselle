@@ -1,5 +1,6 @@
 import { and, eq, gte, lt, sql } from "drizzle-orm";
-import { agentActivities, agents, db, subscriptions, teams } from "@/db";
+import { agentActivities, agents, db, teams } from "@/db";
+import { getLatestSubscription } from "@/services/subscriptions/get-latest-subscription";
 import { getMonthlyBillingCycle } from "./utils";
 
 /**
@@ -23,19 +24,10 @@ async function getCurrentBillingPeriod(teamDbId: number) {
 			name: teams.name,
 			createdAt: teams.createdAt,
 			plan: teams.plan,
-			activeSubscriptionId: subscriptions.id,
-			activeSubscriptionCurrentPeriodStart: subscriptions.currentPeriodStart,
-			activeSubscriptionCurrentPeriodEnd: subscriptions.currentPeriodEnd,
+			activeSubscriptionId: teams.activeSubscriptionId,
 		})
 		.from(teams)
-		.leftJoin(
-			subscriptions,
-			and(
-				eq(subscriptions.teamDbId, teams.dbId),
-				eq(subscriptions.status, "active"),
-			),
-		)
-		.where(and(eq(teams.dbId, teamDbId)));
+		.where(eq(teams.dbId, teamDbId));
 	if (result.length === 0) {
 		throw new Error(`Team not found: ${teamDbId}`);
 	}
@@ -46,15 +38,19 @@ async function getCurrentBillingPeriod(teamDbId: number) {
 
 	// has active subscription
 	if (data.activeSubscriptionId != null) {
+		const subscription = await getLatestSubscription(data.activeSubscriptionId);
+		if (!subscription) {
+			throw new Error(`Subscription not found: ${data.activeSubscriptionId}`);
+		}
 		if (
-			data.activeSubscriptionCurrentPeriodStart == null ||
-			data.activeSubscriptionCurrentPeriodEnd == null
+			subscription.currentPeriodStart == null ||
+			subscription.currentPeriodEnd == null
 		) {
 			throw new Error(`Invalid subscription period: ${teamDbId}`);
 		}
 		return {
-			start: data.activeSubscriptionCurrentPeriodStart,
-			end: data.activeSubscriptionCurrentPeriodEnd,
+			start: subscription.currentPeriodStart,
+			end: subscription.currentPeriodEnd,
 		};
 	}
 

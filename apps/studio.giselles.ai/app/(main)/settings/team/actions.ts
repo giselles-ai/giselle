@@ -9,7 +9,6 @@ import {
 	agents,
 	db,
 	invitations,
-	subscriptions,
 	supabaseUserMappings,
 	type TeamRole,
 	teamMemberships,
@@ -21,6 +20,7 @@ import { updateGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
 
 import { fetchCurrentUser } from "@/services/accounts";
+import { getLatestSubscription } from "@/services/subscriptions/get-latest-subscription";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import { handleMemberChange } from "@/services/teams/member-change";
 import {
@@ -585,13 +585,7 @@ export async function deleteTeam(
 
 export async function getSubscription(subscriptionId: string) {
 	try {
-		const [dbSubscription] = await db
-			.select({
-				cancelAtPeriodEnd: subscriptions.cancelAtPeriodEnd,
-				cancelAt: subscriptions.cancelAt,
-			})
-			.from(subscriptions)
-			.where(eq(subscriptions.id, subscriptionId));
+		const dbSubscription = await getLatestSubscription(subscriptionId);
 
 		if (!dbSubscription) {
 			throw new Error(`Subscription not found: ${subscriptionId}`);
@@ -599,7 +593,10 @@ export async function getSubscription(subscriptionId: string) {
 
 		return {
 			success: true,
-			data: dbSubscription,
+			data: {
+				cancelAtPeriodEnd: dbSubscription.cancelAtPeriodEnd,
+				cancelAt: dbSubscription.cancelAt,
+			},
 		};
 	} catch (error) {
 		return {
