@@ -155,6 +155,8 @@ export const teams = pgTable("teams", {
 		.notNull()
 		.$onUpdate(() => new Date()),
 	plan: text("plan").$type<TeamPlan>().notNull().default("free"),
+	activeSubscriptionId: text("active_subscription_id"),
+	activeCustomerId: text("active_customer_id"),
 });
 
 export const teamRelations = relations(teams, ({ many }) => ({
