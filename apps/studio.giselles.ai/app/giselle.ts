@@ -359,12 +359,8 @@ export const giselle = NextGiselle({
 		},
 	},
 	aiGateway: {
-		httpReferer:
-			process.env.VERCEL_ENV === "preview"
-				? `https://${process.env.VERCEL_URL}`
-				: "https://studio.giselles.ai",
-		xTitle:
-			process.env.VERCEL_ENV === "preview" ? "Giselle(preview)" : "Giselle",
+		httpReferer: process.env.AI_GATEWAY_HTTP_REFERER ?? "https://giselles.ai",
+		xTitle: process.env.AI_GATEWAY_X_TITLE ?? "Giselle",
 	},
 	logger,
 });
