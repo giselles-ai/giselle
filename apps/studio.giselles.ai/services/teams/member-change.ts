@@ -1,4 +1,4 @@
-import { getLatestSubscription } from "@/services/subscriptions/queries";
+import { getLatestSubscription } from "@/services/subscriptions/get-latest-subscription";
 import { reportUserSeatUsage } from "@/services/usage-based-billing";
 import type { CurrentTeam } from "./types";
 

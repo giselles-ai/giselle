@@ -1,7 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";
 import { db, teamMemberships, userSeatUsageReports } from "@/db";
-import { getLatestSubscription } from "@/services/subscriptions/queries";
+import { getLatestSubscription } from "@/services/subscriptions/get-latest-subscription";
 import { stripe } from "../external/stripe";
 
 const USER_SEAT_METER_NAME = "user_seat_v2";

@@ -2,7 +2,7 @@ import { and, eq, ne } from "drizzle-orm";
 import type Stripe from "stripe";
 import { db } from "@/db/db";
 import { teamMemberships, teams } from "@/db/schema";
-import { getLatestSubscription } from "@/services/subscriptions/queries";
+import { getLatestSubscription } from "@/services/subscriptions/get-latest-subscription";
 
 export async function handleSubscriptionCancellation(
 	subscription: Stripe.Subscription,
