@@ -167,6 +167,10 @@ async function insertSubscription(
 		.update(teams)
 		.set({
 			plan: subscription.status === "active" ? "pro" : "free",
+			activeSubscriptionId:
+				subscription.status === "active" ? subscription.id : null,
+			activeCustomerId:
+				subscription.status === "active" ? getCustomerId(subscription) : null,
 		})
 		.where(
 			and(
@@ -227,11 +231,15 @@ async function updateSubscription(subscription: Stripe.Subscription) {
 			})
 			.where(eq(subscriptions.id, subscription.id));
 
-		// Update team plan
+		// Update team plan and active subscription tracking
 		await tx
 			.update(teams)
 			.set({
 				plan: subscription.status === "active" ? "pro" : "free",
+				activeSubscriptionId:
+					subscription.status === "active" ? subscription.id : null,
+				activeCustomerId:
+					subscription.status === "active" ? getCustomerId(subscription) : null,
 			})
 			.where(
 				and(

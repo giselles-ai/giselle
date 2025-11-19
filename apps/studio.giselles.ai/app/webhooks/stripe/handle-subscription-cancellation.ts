@@ -83,7 +83,11 @@ export async function handleSubscriptionCancellation(
 
 	await db
 		.update(teams)
-		.set({ plan: "free" })
+		.set({
+			plan: "free",
+			activeSubscriptionId: null,
+			activeCustomerId: null,
+		})
 		.where(
 			and(
 				eq(teams.dbId, sub.teamDbId),
