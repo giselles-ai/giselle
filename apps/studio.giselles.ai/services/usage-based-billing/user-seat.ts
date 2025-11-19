@@ -1,6 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";
-import { db, subscriptions, teamMemberships, userSeatUsageReports } from "@/db";
+import { db, teamMemberships, userSeatUsageReports } from "@/db";
+import { getLatestSubscription } from "@/services/subscriptions/queries";
 import { stripe } from "../external/stripe";
 
 const USER_SEAT_METER_NAME = "user_seat_v2";
@@ -61,14 +62,11 @@ async function saveUserSeatUsage(params: {
 }
 
 async function findTeamDbId(subscriptionId: string): Promise<number> {
-	const record = await db
-		.select({ teamDbId: subscriptions.teamDbId })
-		.from(subscriptions)
-		.where(eq(subscriptions.id, subscriptionId));
-	if (record.length === 0) {
+	const subscription = await getLatestSubscription(subscriptionId);
+	if (!subscription) {
 		throw new Error(`Subscription not found: ${subscriptionId}`);
 	}
-	return record[0].teamDbId;
+	return subscription.teamDbId;
 }
 
 async function listTeamMembers(teamDbId: number) {

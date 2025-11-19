@@ -1,7 +1,8 @@
 import { and, eq, ne } from "drizzle-orm";
 import type Stripe from "stripe";
 import { db } from "@/db/db";
-import { subscriptions, teamMemberships, teams } from "@/db/schema";
+import { teamMemberships, teams } from "@/db/schema";
+import { getLatestSubscription } from "@/services/subscriptions/queries";
 
 export async function handleSubscriptionCancellation(
 	subscription: Stripe.Subscription,
@@ -10,12 +11,8 @@ export async function handleSubscriptionCancellation(
 		return;
 	}
 
-	// Get the team_db_id from subscriptions table
-	const [sub] = await db
-		.select({ teamDbId: subscriptions.teamDbId })
-		.from(subscriptions)
-		.where(eq(subscriptions.id, subscription.id))
-		.limit(1);
+	// Get the team_db_id from subscription history
+	const sub = await getLatestSubscription(subscription.id);
 
 	if (!sub) {
 		throw new Error(
