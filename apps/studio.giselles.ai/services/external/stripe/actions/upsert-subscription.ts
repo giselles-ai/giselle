@@ -1,6 +1,12 @@
 import { and, eq, ne } from "drizzle-orm";
 import type Stripe from "stripe";
-import { db, subscriptions, teamMemberships, teams } from "@/db";
+import {
+	db,
+	subscriptionHistories,
+	subscriptions,
+	teamMemberships,
+	teams,
+} from "@/db";
 import {
 	DRAFT_TEAM_NAME_METADATA_KEY,
 	DRAFT_TEAM_USER_DB_ID_METADATA_KEY,
@@ -154,6 +160,9 @@ async function insertSubscription(
 				: null,
 	});
 
+	// Record subscription state to history
+	await recordSubscriptionHistory(tx, subscription, teamDbId);
+
 	await tx
 		.update(teams)
 		.set({
@@ -169,55 +178,111 @@ async function insertSubscription(
 }
 
 async function updateSubscription(subscription: Stripe.Subscription) {
-	const period = getSubscriptionPeriod(subscription);
+	await db.transaction(async (tx) => {
+		const period = getSubscriptionPeriod(subscription);
 
-	const [updated] = await db
-		.update(subscriptions)
-		.set({
-			customerId: getCustomerId(subscription),
-			status: subscription.status,
-			cancelAtPeriodEnd: subscription.cancel_at_period_end,
-			cancelAt:
-				subscription.cancel_at !== null
-					? timestampToDateTime(subscription.cancel_at)
-					: null,
-			canceledAt:
-				subscription.canceled_at !== null
-					? timestampToDateTime(subscription.canceled_at)
-					: null,
-			currentPeriodStart: timestampToDateTime(period.currentPeriodStart),
-			currentPeriodEnd: timestampToDateTime(period.currentPeriodEnd),
-			created: timestampToDateTime(subscription.created),
-			endedAt:
-				subscription.ended_at !== null
-					? timestampToDateTime(subscription.ended_at)
-					: null,
-			trialStart:
-				subscription.trial_start !== null
-					? timestampToDateTime(subscription.trial_start)
-					: null,
-			trialEnd:
-				subscription.trial_end !== null
-					? timestampToDateTime(subscription.trial_end)
-					: null,
-		})
-		.where(eq(subscriptions.id, subscription.id))
-		.returning({ teamDbId: subscriptions.teamDbId });
+		// Get teamDbId from existing subscription
+		const [existing] = await tx
+			.select({ teamDbId: subscriptions.teamDbId })
+			.from(subscriptions)
+			.where(eq(subscriptions.id, subscription.id));
 
-	if (updated) {
-		await db
+		if (!existing) {
+			throw new Error("Subscription not found");
+		}
+
+		// Record new subscription state from Stripe to history
+		await recordSubscriptionHistory(tx, subscription, existing.teamDbId);
+
+		// Update subscriptions table
+		await tx
+			.update(subscriptions)
+			.set({
+				customerId: getCustomerId(subscription),
+				status: subscription.status,
+				cancelAtPeriodEnd: subscription.cancel_at_period_end,
+				cancelAt:
+					subscription.cancel_at !== null
+						? timestampToDateTime(subscription.cancel_at)
+						: null,
+				canceledAt:
+					subscription.canceled_at !== null
+						? timestampToDateTime(subscription.canceled_at)
+						: null,
+				currentPeriodStart: timestampToDateTime(period.currentPeriodStart),
+				currentPeriodEnd: timestampToDateTime(period.currentPeriodEnd),
+				created: timestampToDateTime(subscription.created),
+				endedAt:
+					subscription.ended_at !== null
+						? timestampToDateTime(subscription.ended_at)
+						: null,
+				trialStart:
+					subscription.trial_start !== null
+						? timestampToDateTime(subscription.trial_start)
+						: null,
+				trialEnd:
+					subscription.trial_end !== null
+						? timestampToDateTime(subscription.trial_end)
+						: null,
+			})
+			.where(eq(subscriptions.id, subscription.id));
+
+		// Update team plan
+		await tx
 			.update(teams)
 			.set({
 				plan: subscription.status === "active" ? "pro" : "free",
 			})
 			.where(
 				and(
-					eq(teams.dbId, updated.teamDbId),
+					eq(teams.dbId, existing.teamDbId),
 					ne(teams.plan, "internal"),
 					ne(teams.plan, "enterprise"),
 				),
 			);
-	}
+	});
+}
+
+/**
+ * Records a subscription state snapshot to subscription_histories table
+ */
+async function recordSubscriptionHistory(
+	tx: TransactionType,
+	subscription: Stripe.Subscription,
+	teamDbId: number,
+) {
+	const period = getSubscriptionPeriod(subscription);
+
+	await tx.insert(subscriptionHistories).values({
+		id: subscription.id,
+		teamDbId: teamDbId,
+		customerId: getCustomerId(subscription),
+		status: subscription.status,
+		cancelAtPeriodEnd: subscription.cancel_at_period_end,
+		cancelAt:
+			subscription.cancel_at !== null
+				? timestampToDateTime(subscription.cancel_at)
+				: null,
+		canceledAt:
+			subscription.canceled_at !== null
+				? timestampToDateTime(subscription.canceled_at)
+				: null,
+		currentPeriodStart: timestampToDateTime(period.currentPeriodStart),
+		currentPeriodEnd: timestampToDateTime(period.currentPeriodEnd),
+		created: timestampToDateTime(subscription.created),
+		endedAt:
+			subscription.ended_at !== null
+				? timestampToDateTime(subscription.ended_at)
+				: null,
+		trialStart:
+			subscription.trial_start !== null
+				? timestampToDateTime(subscription.trial_start)
+				: null,
+		trialEnd:
+			subscription.trial_end !== null
+				? timestampToDateTime(subscription.trial_end)
+				: null,
+	});
 }
 
 /**
