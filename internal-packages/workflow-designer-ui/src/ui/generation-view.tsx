@@ -169,6 +169,8 @@ export function GenerationView({ generation }: { generation: Generation }) {
 					{message.parts.map((part, index) => {
 						const lastPart = message.parts.length === index + 1;
 						switch (part.type) {
+							case "step-start":
+								return null;
 							case "reasoning":
 								if (lastPart) {
 									return (
