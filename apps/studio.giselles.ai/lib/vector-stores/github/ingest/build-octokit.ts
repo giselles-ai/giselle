@@ -8,7 +8,10 @@ export function buildOctokit(installationId: number) {
 	if (!appId) {
 		throw new Error("GITHUB_APP_ID is empty");
 	}
-	const privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+	const privateKey = process.env.GITHUB_APP_PRIVATE_KEY?.replace(
+		/\\n/g,
+		"\n",
+	).trim();
 	if (!privateKey) {
 		throw new Error("GITHUB_APP_PRIVATE_KEY is empty");
 	}
@@ -31,7 +34,10 @@ export function buildGitHubAuthConfig(
 	if (!appId) {
 		throw new Error("GITHUB_APP_ID is empty");
 	}
-	const privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+	const privateKey = process.env.GITHUB_APP_PRIVATE_KEY?.replace(
+		/\\n/g,
+		"\n",
+	).trim();
 	if (!privateKey) {
 		throw new Error("GITHUB_APP_PRIVATE_KEY is empty");
 	}

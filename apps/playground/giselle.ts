@@ -43,7 +43,10 @@ if (process.env.VAULT_SECRET === undefined) {
 const integrationConfigs: GiselleIntegrationConfig = {};
 
 const githubAppId = process.env.GITHUB_APP_ID;
-const githubAppPrivateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+const githubAppPrivateKey = process.env.GITHUB_APP_PRIVATE_KEY?.replace(
+	/\\n/g,
+	"\n",
+).trim();
 const githubAppClientId = process.env.GITHUB_APP_CLIENT_ID;
 const githubAppClientSecret = process.env.GITHUB_APP_CLIENT_SECRET;
 const githubAppWebhookSecret = process.env.GITHUB_APP_WEBHOOK_SECRET;
