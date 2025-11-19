@@ -39,6 +39,7 @@ async function fetchTeam(teamId: TeamId, supabaseUserId: string) {
 			avatarUrl: teams.avatarUrl,
 			plan: teams.plan,
 			activeSubscriptionId: teams.activeSubscriptionId,
+			activeCustomerId: teams.activeCustomerId,
 		})
 		.from(teams)
 		// join teamMemberships and supabaseUserMappings to check user's membership
@@ -68,6 +69,7 @@ async function fetchFirstTeam(supabaseUserId: string) {
 			avatarUrl: teams.avatarUrl,
 			plan: teams.plan,
 			activeSubscriptionId: teams.activeSubscriptionId,
+			activeCustomerId: teams.activeCustomerId,
 		})
 		.from(teams)
 		.innerJoin(teamMemberships, eq(teams.dbId, teamMemberships.teamDbId))
