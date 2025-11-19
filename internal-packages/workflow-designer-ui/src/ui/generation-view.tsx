@@ -132,14 +132,6 @@ export function GenerationView({ generation }: { generation: Generation }) {
 			</div>
 		);
 	}
-	// While running, show spinner (main branch behavior) instead of per-image placeholders
-	if (generation.status === "running") {
-		return (
-			<div className="pt-[8px]">
-				<Spinner />
-			</div>
-		);
-	}
 
 	return (
 		<>
