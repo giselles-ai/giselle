@@ -18,5 +18,5 @@ export async function getLatestSubscription(subscriptionId: string) {
 		.orderBy(desc(subscriptionHistories.createdAt))
 		.limit(1);
 
-	return latest || null;
+	return latest ?? null;
 }
