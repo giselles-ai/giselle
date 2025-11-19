@@ -1,6 +1,5 @@
 "use client";
 
-import { GiselleIcon } from "@giselle-internal/workflow-designer-ui";
 import { BellIcon, Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
@@ -42,7 +41,7 @@ export function MobileHeader({
 				className="md:hidden fixed top-0 left-0 right-0 border-b border-border px-4 z-30 h-16 flex items-center justify-between"
 				style={{ backgroundColor: "var(--color-background)" }}
 			>
-				{/* Left side: Menu button + G icon + Stage */}
+				{/* Left side: Menu button + Giselle Logo */}
 				<div className="flex items-center gap-2">
 					<button
 						type="button"
@@ -52,8 +51,9 @@ export function MobileHeader({
 					>
 						<Menu className="w-5 h-5" />
 					</button>
-					<GiselleIcon className="text-inverse w-6 h-6" />
-					<span className="text-inverse text-lg font-semibold">Stage</span>
+					<Link href="/" aria-label="Go to home" className="group">
+						<GiselleLogo className="w-[70px] h-auto fill-inverse group-hover:fill-primary-100 transition-colors" />
+					</Link>
 				</div>
 
 				{/* Right side: Icons */}
