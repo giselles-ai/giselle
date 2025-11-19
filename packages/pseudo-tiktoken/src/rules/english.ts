@@ -46,6 +46,7 @@ const CHUNK_SIZE = 8;
  * @returns Array of subword strings
  */
 export function splitIntoSubwords(word: string): string[] {
+    // console.log(`Splitting: ${word}, MIN=${MIN_WORD_LENGTH_FOR_SPLITTING}`); // Debug log
 	// Words with hyphens are kept as single tokens (e.g., "GPT-4o-mini")
 	if (word.includes("-")) {
 		return [word];
