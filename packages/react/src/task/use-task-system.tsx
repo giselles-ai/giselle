@@ -125,6 +125,8 @@ export function useTaskSystem(workspaceId: WorkspaceId) {
 				generationOriginType: "studio",
 				inputs,
 			});
+			console.dir(task, { depth: null });
+			console.dir(generations, { depth: null });
 
 			setActiveTask(task);
 			addGenerationRunner(generations);
