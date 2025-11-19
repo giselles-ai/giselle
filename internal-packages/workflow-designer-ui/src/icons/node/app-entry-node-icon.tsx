@@ -1,3 +1,5 @@
+"use client";
+
 import { isIconName } from "@giselle-internal/ui/utils";
 import type { AppEntryNode, AppId } from "@giselles-ai/protocol";
 import { useGiselle } from "@giselles-ai/react";
