@@ -25,7 +25,6 @@ export async function getWorkspaceTeam(workspaceId: WorkspaceId) {
 
 	return {
 		...agent.team,
-		activeSubscriptionId: activeSubscription?.id || null,
-		subscription: activeSubscription || null,
+		activeSubscriptionId: activeSubscription?.id ?? null,
 	};
 }
