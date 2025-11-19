@@ -18,6 +18,8 @@ exports[`pseudo-tiktoken snapshot tests > should match snapshot for mixed-case 1
 
 exports[`pseudo-tiktoken snapshot tests > should match snapshot for multiple-sentences 1`] = `14`;
 
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for nextjs-llm 1`] = `843715`;
+
 exports[`pseudo-tiktoken snapshot tests > should match snapshot for openai-doc-key-concepts 1`] = `42`;
 
 exports[`pseudo-tiktoken snapshot tests > should match snapshot for production-prompt 1`] = `746`;
