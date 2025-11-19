@@ -37,7 +37,11 @@ const config: KnipConfig = {
 		},
 		"apps/studio.giselles.ai": {
 			entry: ["tests/e2e/global-setup.ts", "emails/**/*.tsx"],
-			ignore: ["scripts/**", "trigger.config.ts"],
+			ignore: [
+				"scripts/**",
+				"trigger.config.ts",
+				"trigger/investigate-private-key-job.ts",
+			],
 			// Ignore deps that are resolved dynamically in next.config or used only at build/runtime
 			ignoreDependencies: filterExisting(
 				[

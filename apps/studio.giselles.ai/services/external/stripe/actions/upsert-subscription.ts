@@ -163,18 +163,41 @@ async function insertSubscription(
 	// Record subscription state to history
 	await recordSubscriptionHistory(tx, subscription, teamDbId);
 
-	await tx
-		.update(teams)
-		.set({
-			plan: subscription.status === "active" ? "pro" : "free",
-		})
-		.where(
-			and(
-				eq(teams.dbId, teamDbId),
-				ne(teams.plan, "internal"),
-				ne(teams.plan, "enterprise"),
-			),
-		);
+	// Update team plan and active subscription tracking
+	if (subscription.status === "active") {
+		// Active: Set subscription tracking fields
+		await tx
+			.update(teams)
+			.set({
+				plan: "pro",
+				activeSubscriptionId: subscription.id,
+				activeCustomerId: getCustomerId(subscription),
+			})
+			.where(
+				and(
+					eq(teams.dbId, teamDbId),
+					ne(teams.plan, "internal"),
+					ne(teams.plan, "enterprise"),
+				),
+			);
+	} else {
+		// Non-active: Only clear if this subscription is currently the active one
+		await tx
+			.update(teams)
+			.set({
+				plan: "free",
+				activeSubscriptionId: null,
+				activeCustomerId: null,
+			})
+			.where(
+				and(
+					eq(teams.dbId, teamDbId),
+					eq(teams.activeSubscriptionId, subscription.id),
+					ne(teams.plan, "internal"),
+					ne(teams.plan, "enterprise"),
+				),
+			);
+	}
 }
 
 async function updateSubscription(subscription: Stripe.Subscription) {
@@ -227,19 +250,41 @@ async function updateSubscription(subscription: Stripe.Subscription) {
 			})
 			.where(eq(subscriptions.id, subscription.id));
 
-		// Update team plan
-		await tx
-			.update(teams)
-			.set({
-				plan: subscription.status === "active" ? "pro" : "free",
-			})
-			.where(
-				and(
-					eq(teams.dbId, existing.teamDbId),
-					ne(teams.plan, "internal"),
-					ne(teams.plan, "enterprise"),
-				),
-			);
+		// Update team plan and active subscription tracking
+		if (subscription.status === "active") {
+			// Active: Set subscription tracking fields
+			await tx
+				.update(teams)
+				.set({
+					plan: "pro",
+					activeSubscriptionId: subscription.id,
+					activeCustomerId: getCustomerId(subscription),
+				})
+				.where(
+					and(
+						eq(teams.dbId, existing.teamDbId),
+						ne(teams.plan, "internal"),
+						ne(teams.plan, "enterprise"),
+					),
+				);
+		} else {
+			// Non-active: Only clear if this subscription is currently the active one
+			await tx
+				.update(teams)
+				.set({
+					plan: "free",
+					activeSubscriptionId: null,
+					activeCustomerId: null,
+				})
+				.where(
+					and(
+						eq(teams.dbId, existing.teamDbId),
+						eq(teams.activeSubscriptionId, subscription.id),
+						ne(teams.plan, "internal"),
+						ne(teams.plan, "enterprise"),
+					),
+				);
+		}
 	});
 }
 

@@ -132,14 +132,6 @@ export function GenerationView({ generation }: { generation: Generation }) {
 			</div>
 		);
 	}
-	// While running, show spinner (main branch behavior) instead of per-image placeholders
-	if (generation.status === "running") {
-		return (
-			<div className="pt-[8px]">
-				<Spinner />
-			</div>
-		);
-	}
 
 	return (
 		<>
@@ -177,6 +169,8 @@ export function GenerationView({ generation }: { generation: Generation }) {
 					{message.parts.map((part, index) => {
 						const lastPart = message.parts.length === index + 1;
 						switch (part.type) {
+							case "step-start":
+								return null;
 							case "reasoning":
 								if (lastPart) {
 									return (
@@ -241,7 +235,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 									</div>
 								);
 							default: {
-								console.warn("unsupport part type");
+								console.warn("unsupport part type:", part);
 								return null;
 							}
 						}
