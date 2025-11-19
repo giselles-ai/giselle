@@ -91,6 +91,7 @@ export async function handleSubscriptionCancellation(
 		.where(
 			and(
 				eq(teams.dbId, sub.teamDbId),
+				eq(teams.activeSubscriptionId, subscription.id),
 				ne(teams.plan, "internal"),
 				ne(teams.plan, "enterprise"),
 			),
