@@ -4,7 +4,7 @@
  * The trueTokens values should be generated using the generate-true-tokens script.
  */
 
-export type TokenSample = {
+type TokenSample = {
 	id: string;
 	text: string;
 	trueTokens: number; // Token count from tiktoken (gpt-4o-mini)

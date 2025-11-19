@@ -10,4 +10,3 @@ describe("pseudo-tiktoken snapshot tests", () => {
 		});
 	}
 });
-
