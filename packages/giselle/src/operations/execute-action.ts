@@ -314,6 +314,9 @@ async function executeGitHubAction(args: {
 				number: discussionNumber,
 				authConfig: commonAuthConfig,
 			});
+			if (result.error || result.data === undefined) {
+				throw new Error(`Failed to get discussion: ${result.error}`);
+			}
 			return createActionOutput(result.data, args.generationContext);
 		}
 		default: {
