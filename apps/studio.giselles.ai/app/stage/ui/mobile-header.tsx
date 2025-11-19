@@ -120,9 +120,9 @@ function MobileDrawerContent({
 	return (
 		<>
 			{/* Header */}
-			<div className="px-4 pt-6 pb-4 flex items-center justify-between border-b border-border">
+			<div className="px-4 h-16 flex items-center justify-between border-b border-border">
 				<Link href="/" aria-label="Go to home" className="group">
-					<GiselleLogo className="w-[96px] h-auto fill-inverse group-hover:fill-primary-100 transition-colors" />
+					<GiselleLogo className="w-[70px] h-auto fill-inverse group-hover:fill-primary-100 transition-colors" />
 				</Link>
 				<button
 					type="button"
