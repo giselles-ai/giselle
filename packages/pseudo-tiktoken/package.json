@@ -1,0 +1,36 @@
+{
+	"name": "@giselles-ai/pseudo-tiktoken",
+	"version": "0.0.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "tsup",
+		"check-types": "tsc --noEmit",
+		"format": "biome format --write .",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"generate-true-tokens": "tsx scripts/generate-true-tokens.ts"
+	},
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js"
+		}
+	},
+	"devDependencies": {
+		"@giselles-ai/tsconfig": "workspace:*",
+		"@types/node": "catalog:",
+		"tiktoken": "catalog:",
+		"tsup": "catalog:",
+		"tsx": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	},
+	"peerDependencies": {
+		"zod": "catalog:"
+	}
+}

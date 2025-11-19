@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 932 MIT
+* 934 MIT
 * 188 Apache 2.0
 * 48 ISC
 * 28 New BSD
@@ -12514,6 +12514,17 @@ Unknown manually approved
 
 
 
+<a name="tiktoken"></a>
+### tiktoken v1.0.22
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="tiny-invariant"></a>
 ### tiny-invariant v1.3.3
 #### 
@@ -12791,6 +12802,17 @@ Unknown manually approved
 
 <a name="tsup"></a>
 ### tsup v8.3.5
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="tsx"></a>
+### tsx v4.20.6
 #### 
 
 ##### Paths

@@ -1,0 +1,43 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for code-block 1`] = `38`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for empty-string 1`] = `0`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for japanese-english-mixed 1`] = `16`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for long-text 1`] = `153`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for long-words 1`] = `23`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for markdown-headers 1`] = `15`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for markdown-list 1`] = `26`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for mixed-case 1`] = `15`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for multiple-sentences 1`] = `14`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for openai-doc-key-concepts 1`] = `42`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for production-prompt 1`] = `746`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for quotes-and-brackets 1`] = `15`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for simple-sentence 1`] = `10`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for single-word 1`] = `2`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for special-characters 1`] = `31`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for urls-and-links 1`] = `25`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for whitespace-only 1`] = `0`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for with-apostrophes 1`] = `19`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for with-emoji 1`] = `18`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for with-numbers 1`] = `23`;
+
+exports[`pseudo-tiktoken snapshot tests > should match snapshot for with-punctuation 1`] = `26`;
