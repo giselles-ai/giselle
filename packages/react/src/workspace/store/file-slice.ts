@@ -154,10 +154,9 @@ export const createFileSlice: StateCreator<AppStore, [], [], FileSlice> = (
 		await Promise.all(
 			filesToCopy.map(async (fileData) => {
 				const copyingFileData = createCopyingFileData(fileData);
-				const updatedFiles = getCurrentFiles().map((f) =>
-					f.id === fileData.id ? copyingFileData : f,
+				get().updateFileStatus(node.id, (currentFiles) =>
+					currentFiles.map((f) => (f.id === fileData.id ? copyingFileData : f)),
 				);
-				get().updateFileStatus(node.id, updatedFiles);
 
 				try {
 					await client.copyFile({
@@ -170,18 +169,18 @@ export const createFileSlice: StateCreator<AppStore, [], [], FileSlice> = (
 						copyingFileData,
 						Date.now(),
 					);
-					const finalFiles = getCurrentFiles().map((f) =>
-						f.id === fileData.id ? uploadedFileData : f,
+					get().updateFileStatus(node.id, (currentFiles) =>
+						currentFiles.map((f) =>
+							f.id === fileData.id ? uploadedFileData : f,
+						),
 					);
-					get().updateFileStatus(node.id, finalFiles);
 				} catch (error) {
 					const message =
 						error instanceof Error ? error.message : "Copy failed";
 					const failedFileData = createFailedFileData(copyingFileData, message);
-					const errorFiles = getCurrentFiles().map((f) =>
-						f.id === fileData.id ? failedFileData : f,
+					get().updateFileStatus(node.id, (currentFiles) =>
+						currentFiles.map((f) => (f.id === fileData.id ? failedFileData : f)),
 					);
-					get().updateFileStatus(node.id, errorFiles);
 				}
 			}),
 		);
