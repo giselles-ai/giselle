@@ -17,10 +17,20 @@ const recommendedLanguageModelIds: LanguageModelId[] = [
 
 export function LanguageModelV2ToggleGroup() {
 	const [query, setQuery] = useState("");
-	const languageModels = useMemo(
-		() => registryLanguageModels.filter(() => true),
-		[],
-	);
+	const languageModels = useMemo(() => {
+		const normalizedQuery = query.trim().toLowerCase();
+		if (normalizedQuery === "") {
+			return registryLanguageModels;
+		}
+		return registryLanguageModels.filter((model) => {
+			const matchesName = model.name.toLowerCase().includes(normalizedQuery);
+			const matchesId = model.id.toLowerCase().includes(normalizedQuery);
+			const matchesProvider = model.provider
+				.toLowerCase()
+				.includes(normalizedQuery);
+			return matchesName || matchesId || matchesProvider;
+		});
+	}, [query]);
 	const recommendedLanguageModels = useMemo(
 		() =>
 			languageModels.filter((model) =>
@@ -115,27 +125,27 @@ export function LanguageModelV2ToggleGroup() {
 
 					{/* Flat list of models with filtering applied */}
 					<div className="flex flex-col pr-[4px]">
-						{languageModels.length > 0 ? (
-							languageModels.map((languageModel) => (
-								<ToggleGroup.Item
-									key={languageModel.id}
-									asChild
-									value={languageModel.id}
-									onMouseEnter={() => {
-										setHover(languageModel.id);
-									}}
-								>
-									<LanguageModelItemButton
-										modelId={languageModel.id}
-										userTier="free"
-									/>
-								</ToggleGroup.Item>
-							))
-						) : (
-							<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] p-[8px] text-center">
-								No matching models found
-							</p>
-						)}
+						{languageModels.length > 0
+							? languageModels.map((languageModel) => (
+									<ToggleGroup.Item
+										key={languageModel.id}
+										asChild
+										value={languageModel.id}
+										onMouseEnter={() => {
+											setHover(languageModel.id);
+										}}
+									>
+										<LanguageModelItemButton
+											modelId={languageModel.id}
+											userTier="free"
+										/>
+									</ToggleGroup.Item>
+								))
+							: languageModels.length === 0 && (
+									<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] p-[8px] text-center">
+										No matching models found
+									</p>
+								)}
 					</div>
 				</div>
 			</div>
