@@ -7,14 +7,10 @@ const OFFSET_X = 200;
 const OFFSET_Y = 100;
 
 function handleAfterCopy(
-	newNode: Node | undefined | Promise<Node | undefined>,
-	copyFiles: (node: FileNode) => void | Promise<void>,
+	newNode: Node | undefined,
+	copyFiles: (node: FileNode) => Promise<void>,
 ) {
-	if (!newNode || newNode instanceof Promise) {
-		return;
-	}
-
-	if (!isFileNode(newNode)) {
+	if (newNode === undefined || !isFileNode(newNode)) {
 		return;
 	}
 
