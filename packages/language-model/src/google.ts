@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import { Capability, LanguageModelBase, Tier } from "./base";
 import { BaseCostCalculator } from "./costs/calculator";
 import { googleTokenPricing } from "./costs/model-prices";

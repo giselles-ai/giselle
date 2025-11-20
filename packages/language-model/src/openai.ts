@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import { Capability, LanguageModelBase, Tier } from "./base";
 import { openAiTokenPricing } from "./costs";
 import { BaseCostCalculator } from "./costs/calculator";

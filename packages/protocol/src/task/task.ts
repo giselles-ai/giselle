@@ -1,5 +1,5 @@
 import { createIdGenerator } from "@giselles-ai/utils";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import { AppId } from "../app";
 import { GenerationStatus } from "../generation";
 import { GenerationId } from "../generation/generation-id";

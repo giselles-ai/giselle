@@ -1,5 +1,5 @@
 import { customAlphabet } from "nanoid/non-secure";
-import { z as z4 } from "zod/v4";
+import * as z from "zod/v4";
 
 /**
  * Creates an ID generator with built-in validation using Zod v4.
@@ -18,7 +18,7 @@ import { z as z4 } from "zod/v4";
  * userIds.parse("invalid"); // ❌ Throws error
  */
 export const createIdGenerator = <T extends string>(prefix: T) => {
-	const schema = z4
+	const schema = z
 		.string()
 		.regex(
 			new RegExp(`^${prefix}-[0-9A-Za-z]{16}$`),

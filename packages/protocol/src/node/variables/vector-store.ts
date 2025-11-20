@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import { EmbeddingProfileIdSchema } from "../../embedding";
 
 const VectorStoreContentBase = z.object({

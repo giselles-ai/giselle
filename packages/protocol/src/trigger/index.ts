@@ -1,5 +1,5 @@
 import { createIdGenerator } from "@giselles-ai/utils";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import { NodeId } from "../node/base";
 import { WorkspaceId } from "../workspace/id";
 import { GitHubEventConfiguration } from "./github";

@@ -2,7 +2,7 @@ import {
 	isTriggerProvider,
 	type TriggerProvider,
 } from "@giselles-ai/trigger-registry";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import { TriggerId } from "../../trigger";
 
 const TriggerUnconfiguredState = z.object({
