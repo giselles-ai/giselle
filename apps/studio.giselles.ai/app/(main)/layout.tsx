@@ -12,7 +12,10 @@ export default function Layout({ children }: { children: ReactNode }) {
 		<SentryUserWrapper>
 			<div className="min-h-screen flex flex-col md:flex-row bg-bg">
 				<Suspense fallback="">
-					<MobileHeader />
+					<MobileHeader
+						dataLoader={user}
+						teamSelectionSlot={<TeamSelection />}
+					/>
 					<NavigationRail
 						dataLoader={user}
 						teamSelectionSlot={<TeamSelection />}
