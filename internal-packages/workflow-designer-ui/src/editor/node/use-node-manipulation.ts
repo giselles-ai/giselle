@@ -1,4 +1,4 @@
-import { Node } from "@giselles-ai/protocol";
+import { type FileNode, isFileNode, Node } from "@giselles-ai/protocol";
 import { useWorkflowDesigner } from "@giselles-ai/react";
 import { useCallback } from "react";
 
@@ -6,9 +6,36 @@ import { useCallback } from "react";
 const OFFSET_X = 200;
 const OFFSET_Y = 100;
 
+function handleAfterCopy(
+	newNode: Node | undefined | Promise<Node | undefined>,
+	copyFiles: (node: FileNode) => void | Promise<void>,
+) {
+	if (!newNode || newNode instanceof Promise) {
+		return;
+	}
+
+	if (!isFileNode(newNode)) {
+		return;
+	}
+
+	const hasPendingCopy = newNode.content.files.some(
+		(f) => f.status === "pending-copy",
+	);
+
+	if (hasPendingCopy) {
+		copyFiles(newNode);
+	}
+}
+
 export function useNodeManipulation() {
-	const { data, copyNode, copiedNode, setCopiedNode, setUiNodeState } =
-		useWorkflowDesigner();
+	const {
+		data,
+		copyNode,
+		copiedNode,
+		setCopiedNode,
+		setUiNodeState,
+		copyFiles,
+	} = useWorkflowDesigner();
 
 	const copy = useCallback(
 		(onError?: () => void) => {
@@ -45,16 +72,17 @@ export function useNodeManipulation() {
 			// Validate the copied node using Zod schema
 			try {
 				const validatedNode = Node.parse(copiedNode);
-				copyNode(validatedNode, {
+				const newNode = copyNode(validatedNode, {
 					ui: { position, selected: true },
 				});
 				setUiNodeState(validatedNode.id, { selected: false });
+				handleAfterCopy(newNode, copyFiles);
 			} catch (error) {
 				console.error("Failed to paste node - validation error:", error);
 				onError?.();
 			}
 		},
-		[copiedNode, data.ui.nodeState, copyNode, setUiNodeState],
+		[copiedNode, data.ui.nodeState, copyNode, setUiNodeState, copyFiles],
 	);
 
 	const duplicate = useCallback(
@@ -79,16 +107,17 @@ export function useNodeManipulation() {
 					x: nodeState.position.x + OFFSET_X,
 					y: nodeState.position.y + OFFSET_Y,
 				};
-				copyNode(targetNode, {
+				const newNode = copyNode(targetNode, {
 					ui: { position, selected: nodeState.selected },
 				});
 				setUiNodeState(targetNode.id, { selected: false });
+				handleAfterCopy(newNode, copyFiles);
 			} catch (error) {
 				console.error("Failed to duplicate node:", error);
 				onError?.();
 			}
 		},
-		[data, copyNode, setUiNodeState],
+		[data, copyNode, setUiNodeState, copyFiles],
 	);
 
 	return {
