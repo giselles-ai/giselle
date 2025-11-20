@@ -443,7 +443,7 @@ function FileListItem({
 					)}
 					{fileData.status === "failed" && (
 						<p className="text-[12px] text-error-900">
-							{fileData.errorMessage || "Upload failed"}
+							{fileData.errorMessage}
 						</p>
 					)}
 				</div>
