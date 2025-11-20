@@ -885,7 +885,7 @@ export function Toolbar() {
 											align="end"
 											sideOffset={42}
 										>
-											<LanguageModelV2ToggleGroup />
+											<LanguageModelV2ToggleGroup userTier={userTier} />
 										</Popover.Content>
 									</Popover.Portal>
 								</Popover.Root>
@@ -901,7 +901,7 @@ export function Toolbar() {
 													sideOffset={42}
 													onOpenAutoFocus={(e) => e.preventDefault()}
 												>
-													<LanguageModelMegaTooltip userTier="free" />
+													<LanguageModelMegaTooltip userTier={userTier} />
 												</Popover.Content>
 											</Popover.Portal>
 										</Popover.Root>

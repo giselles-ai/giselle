@@ -1,6 +1,7 @@
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import {
 	type LanguageModelId,
+	type LanguageModelTier,
 	languageModels as registryLanguageModels,
 } from "@giselles-ai/language-model-registry";
 import { ToggleGroup } from "radix-ui";
@@ -15,7 +16,11 @@ const recommendedLanguageModelIds: LanguageModelId[] = [
 	"anthropic/claude-sonnet-4-5",
 ];
 
-export function LanguageModelV2ToggleGroup() {
+export function LanguageModelV2ToggleGroup({
+	userTier,
+}: {
+	userTier: LanguageModelTier;
+}) {
 	const [query, setQuery] = useState("");
 	const languageModels = useMemo(() => {
 		const normalizedQuery = query.trim().toLowerCase();
@@ -113,7 +118,7 @@ export function LanguageModelV2ToggleGroup() {
 									>
 										<LanguageModelItemButton
 											modelId={languageModel.id}
-											userTier="free"
+											userTier={userTier}
 										/>
 									</ToggleGroup.Item>
 								))}
@@ -138,7 +143,7 @@ export function LanguageModelV2ToggleGroup() {
 									>
 										<LanguageModelItemButton
 											modelId={languageModel.id}
-											userTier="free"
+											userTier={userTier}
 										/>
 									</ToggleGroup.Item>
 								))
