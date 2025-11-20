@@ -28,7 +28,7 @@ export function LanguageModelV2ToggleGroup() {
 			),
 		[languageModels],
 	);
-	const { setHover, clearHover } = useLanguageModelV2ToggleGroupStore(
+	const { setHover } = useLanguageModelV2ToggleGroupStore(
 		useShallow((s) => ({ setHover: s.setHover, clearHover: s.clearHover })),
 	);
 
