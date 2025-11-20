@@ -1,5 +1,6 @@
 import {
 	type FileData,
+	type FileNode,
 	isAppEntryNode,
 	type NodeLike,
 	type Workspace,
@@ -197,6 +198,7 @@ export function ZustandBridgeProvider({
 			uploadFile: (files, node, options) =>
 				state.uploadFile(client, data.id, files, node, options),
 			removeFile: (file: FileData) => state.removeFile(client, data.id, file),
+			copyFiles: (node: FileNode) => state.copyFiles(client, data.id, node),
 			llmProviders: state.llmProviders,
 			isLoading: state.isLoading,
 			saveWorkspace: saveImmediately,
