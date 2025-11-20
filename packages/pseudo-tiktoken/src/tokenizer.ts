@@ -55,10 +55,10 @@ export function tokenize(text: string): PseudoToken[] {
 		const wordMatch = WORD_RE.exec(remaining);
 		if (wordMatch && wordMatch.index === 0) {
 			const word = wordMatch[0];
-			// Simple optimization: if the word is very long and looks like base64 or hex, 
+			// Simple optimization: if the word is very long and looks like base64 or hex,
 			// it's likely fewer tokens than naive splitting.
 			// However, we'll stick to subword splitting but maybe increase chunk size.
-			
+
 			const subwords = splitIntoSubwords(word);
 			for (const subword of subwords) {
 				tokens.push({ text: subword, index });

@@ -31,30 +31,40 @@ console.log(
 		"Diff".padEnd(DIFF_WIDTH) +
 		RESET,
 );
-console.log("-".repeat(ID_WIDTH + PSEUDO_WIDTH + TRUE_WIDTH + RATIO_WIDTH + DIFF_WIDTH));
+console.log(
+	"-".repeat(ID_WIDTH + PSEUDO_WIDTH + TRUE_WIDTH + RATIO_WIDTH + DIFF_WIDTH),
+);
 
 let totalPseudo = 0;
 let totalTrue = 0;
 
 for (const sample of TOKEN_SAMPLES) {
-	if (sample.trueTokens === 0 && sample.id !== "empty-string" && sample.id !== "nextjs-llm") {
+	if (
+		sample.trueTokens === 0 &&
+		sample.id !== "empty-string" &&
+		sample.id !== "nextjs-llm"
+	) {
 		// Skip samples without true tokens (unless it's intentionally 0)
-        // Note: nextjs-llm has trueTokens but if text is empty (file read fail) count is 0
-        if (sample.text.length > 0) {
-             // just skip printing if no true tokens to compare
-             continue;
-        }
+		// Note: nextjs-llm has trueTokens but if text is empty (file read fail) count is 0
+		if (sample.text.length > 0) {
+			// just skip printing if no true tokens to compare
+			continue;
+		}
 	}
-    
-    if (sample.text.length === 0 && sample.trueTokens === 0 && sample.id !== "empty-string") {
-        // Skip failed file reads
-        continue;
-    }
+
+	if (
+		sample.text.length === 0 &&
+		sample.trueTokens === 0 &&
+		sample.id !== "empty-string"
+	) {
+		// Skip failed file reads
+		continue;
+	}
 
 	const pseudoCount = countTokens(sample.text);
 	const trueCount = sample.trueTokens;
 	const ratio = trueCount === 0 ? 0 : pseudoCount / trueCount;
-    const diff = pseudoCount - trueCount;
+	const diff = pseudoCount - trueCount;
 
 	// Color coding for ratio
 	let color = GREEN;
@@ -70,23 +80,24 @@ for (const sample of TOKEN_SAMPLES) {
 			pseudoCount.toString().padEnd(PSEUDO_WIDTH) +
 			trueCount.toString().padEnd(TRUE_WIDTH) +
 			(trueCount === 0 ? "-" : ratio.toFixed(3)).padEnd(RATIO_WIDTH) +
-            diff.toString().padEnd(DIFF_WIDTH) +
+			diff.toString().padEnd(DIFF_WIDTH) +
 			RESET,
 	);
-    
-    totalPseudo += pseudoCount;
-    totalTrue += trueCount;
+
+	totalPseudo += pseudoCount;
+	totalTrue += trueCount;
 }
 
-console.log("-".repeat(ID_WIDTH + PSEUDO_WIDTH + TRUE_WIDTH + RATIO_WIDTH + DIFF_WIDTH));
+console.log(
+	"-".repeat(ID_WIDTH + PSEUDO_WIDTH + TRUE_WIDTH + RATIO_WIDTH + DIFF_WIDTH),
+);
 const totalRatio = totalPseudo / totalTrue;
 console.log(
-    BOLD +
-    "TOTAL".padEnd(ID_WIDTH) +
-    totalPseudo.toString().padEnd(PSEUDO_WIDTH) +
-    totalTrue.toString().padEnd(TRUE_WIDTH) +
-    totalRatio.toFixed(3).padEnd(RATIO_WIDTH) +
-    (totalPseudo - totalTrue).toString().padEnd(DIFF_WIDTH) +
-    RESET
+	BOLD +
+		"TOTAL".padEnd(ID_WIDTH) +
+		totalPseudo.toString().padEnd(PSEUDO_WIDTH) +
+		totalTrue.toString().padEnd(TRUE_WIDTH) +
+		totalRatio.toFixed(3).padEnd(RATIO_WIDTH) +
+		(totalPseudo - totalTrue).toString().padEnd(DIFF_WIDTH) +
+		RESET,
 );
-
