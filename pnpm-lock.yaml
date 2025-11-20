@@ -1224,10 +1224,10 @@ importers:
         version: 14.0.2
       ai:
         specifier: 'catalog:'
-        version: 5.0.51(zod@4.1.12)
+        version: 5.0.51(zod@3.25.76)
       zod:
         specifier: 'catalog:'
-        version: 4.1.12
+        version: 3.25.76
     devDependencies:
       '@giselles-ai/tsconfig':
         specifier: workspace:*
