@@ -1213,6 +1213,9 @@ importers:
       '@giselles-ai/language-model':
         specifier: workspace:^
         version: link:../language-model
+      '@giselles-ai/language-model-registry':
+        specifier: workspace:*
+        version: link:../language-model-registry
       '@giselles-ai/trigger-registry':
         specifier: workspace:*
         version: link:../trigger-registry
@@ -1221,10 +1224,10 @@ importers:
         version: 14.0.2
       ai:
         specifier: 'catalog:'
-        version: 5.0.51(zod@3.25.76)
+        version: 5.0.51(zod@4.1.12)
       zod:
         specifier: 'catalog:'
-        version: 3.25.76
+        version: 4.1.12
     devDependencies:
       '@giselles-ai/tsconfig':
         specifier: workspace:*

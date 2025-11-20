@@ -9,3 +9,15 @@ export const languageModels = {
 	...anthropic,
 	...google,
 };
+
+export const languageModelProviders = Array.from(
+	new Set(Object.values(languageModels).map((model) => model.provider)),
+);
+
+export function isLanguageModelProvider(
+	provider: unknown,
+): provider is LanguageModelProvider {
+	return languageModelProviders.includes(provider as LanguageModelProvider);
+}
+
+export type LanguageModelProvider = (typeof languageModelProviders)[number];
