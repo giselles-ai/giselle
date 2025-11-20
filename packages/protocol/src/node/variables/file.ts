@@ -42,11 +42,14 @@ export const UploadedFileData = FileDataBase.extend({
 });
 export type UploadedFileData = z.infer<typeof UploadedFileData>;
 export function createUploadedFileData(
-	uploadingFile: UploadingFileData,
+	{ id, name, type, size }: UploadingFileData | CopyingFileData,
 	uploadedAt: number,
 ): UploadedFileData {
 	return {
-		...uploadingFile,
+		id,
+		name,
+		type,
+		size,
 		status: "uploaded",
 		uploadedAt,
 	};
@@ -59,7 +62,7 @@ export const FailedFileData = FileDataBase.extend({
 export type FailedFileData = z.infer<typeof FailedFileData>;
 
 export function createFailedFileData(
-	uploadingFile: UploadingFileData,
+	uploadingFile: UploadingFileData | CopyingFileData,
 	errorMessage: string,
 ): FailedFileData {
 	return {
@@ -69,10 +72,46 @@ export function createFailedFileData(
 	};
 }
 
+export const PendingCopyFileData = FileDataBase.extend({
+	status: z.literal("pending-copy"),
+	originalFileIdForCopy: FileId.schema,
+});
+export type PendingCopyFileData = z.infer<typeof PendingCopyFileData>;
+
+export function createPendingCopyFileData(params: {
+	name: string;
+	type: string;
+	size: number;
+	originalFileIdForCopy: FileId;
+}): PendingCopyFileData {
+	return {
+		...params,
+		id: FileId.generate(),
+		status: "pending-copy",
+	};
+}
+
+export const CopyingFileData = FileDataBase.extend({
+	status: z.literal("copying"),
+	originalFileIdForCopy: FileId.schema,
+});
+export type CopyingFileData = z.infer<typeof CopyingFileData>;
+
+export function createCopyingFileData(
+	pendingCopyFile: PendingCopyFileData,
+): CopyingFileData {
+	return {
+		...pendingCopyFile,
+		status: "copying",
+	};
+}
+
 export const FileData = z.union([
 	UploadingFileData,
 	UploadedFileData,
 	FailedFileData,
+	PendingCopyFileData,
+	CopyingFileData,
 ]);
 export type FileData = z.infer<typeof FileData>;
 
