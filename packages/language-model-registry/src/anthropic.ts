@@ -6,12 +6,12 @@ import {
 } from "./language-model";
 
 export const anthropic = {
-	"anthropic/claude-opus-4-1-20250805": defineLanguageModel({
+	"anthropic/claude-opus-4.1": defineLanguageModel({
 		provider: "anthropic",
-		id: "anthropic/claude-opus-4-1-20250805",
+		id: "anthropic/claude-opus-4.1",
 		contextWindow: 200_000,
-		maxOutputTokens: 4_096,
-		knowledgeCutoff: new Date(2024, 3, 1).getTime(), // Dummy
+		maxOutputTokens: 32_000,
+		knowledgeCutoff: new Date(2025, 0, 31).getTime(),
 		pricing: {
 			input: definePricing(15.0),
 			output: definePricing(75.0),
@@ -20,30 +20,25 @@ export const anthropic = {
 		configurationOptions: {
 			temperature: {
 				description: "Amount of randomness injected into the response.",
-				schema: z.number(),
-			},
-			topP: {
-				description:
-					"Use nucleus sampling. In nucleus sampling, we compute the cumulative distribution over all the options for each subsequent token in decreasing probability order and cut it off once it reaches a particular probability specified by top_p.",
-				schema: z.number(),
+				schema: z.number().min(0).max(1),
 			},
 			reasoningText: {
 				description: "Whether to include reasoning text in the response.",
-				schema: z.boolean().default(false),
+				schema: z.boolean(),
 			},
 		},
 		defaultConfiguration: {
-			temperature: 0.7,
-			topP: 1.0,
+			temperature: 1.0,
 			reasoningText: false,
 		},
+		url: "https://www.anthropic.com/claude/opus",
 	}),
-	"anthropic/claude-sonnet-4-5-20250929": defineLanguageModel({
+	"anthropic/claude-sonnet-4-5": defineLanguageModel({
 		provider: "anthropic",
-		id: "anthropic/claude-sonnet-4-5-20250929",
+		id: "anthropic/claude-sonnet-4-5",
 		contextWindow: 200_000,
-		maxOutputTokens: 4_096,
-		knowledgeCutoff: new Date(2024, 3, 1).getTime(), // Dummy
+		maxOutputTokens: 64_000,
+		knowledgeCutoff: new Date(2025, 0, 31).getTime(),
 		pricing: {
 			input: definePricing(3.0),
 			output: definePricing(15.0),
@@ -54,31 +49,26 @@ export const anthropic = {
 				description: "Amount of randomness injected into the response.",
 				schema: z.number(),
 			},
-			topP: {
-				description:
-					"Use nucleus sampling. In nucleus sampling, we compute the cumulative distribution over all the options for each subsequent token in decreasing probability order and cut it off once it reaches a particular probability specified by top_p.",
-				schema: z.number(),
-			},
 			reasoningText: {
 				description: "Whether to include reasoning text in the response.",
-				schema: z.boolean().default(false),
+				schema: z.boolean(),
 			},
 		},
 		defaultConfiguration: {
-			temperature: 0.7,
-			topP: 1.0,
+			temperature: 1.0,
 			reasoningText: false,
 		},
+		url: "https://www.anthropic.com/claude/sonnet",
 	}),
-	"anthropic/claude-haiku-4-5-20251001": defineLanguageModel({
+	"anthropic/claude-haiku-4-5": defineLanguageModel({
 		provider: "anthropic",
-		id: "anthropic/claude-haiku-4-5-20251001",
+		id: "anthropic/claude-haiku-4-5",
 		contextWindow: 200_000,
-		maxOutputTokens: 4_096,
-		knowledgeCutoff: new Date(2024, 3, 1).getTime(), // Dummy
+		maxOutputTokens: 64_000,
+		knowledgeCutoff: new Date(2025, 1, 28).getTime(),
 		pricing: {
-			input: definePricing(0.25),
-			output: definePricing(1.25),
+			input: definePricing(1.0),
+			output: definePricing(5.0),
 		},
 		tier: "free",
 		configurationOptions: {
@@ -86,20 +76,15 @@ export const anthropic = {
 				description: "Amount of randomness injected into the response.",
 				schema: z.number(),
 			},
-			topP: {
-				description:
-					"Use nucleus sampling. In nucleus sampling, we compute the cumulative distribution over all the options for each subsequent token in decreasing probability order and cut it off once it reaches a particular probability specified by top_p.",
-				schema: z.number(),
-			},
 			reasoningText: {
 				description: "Whether to include reasoning text in the response.",
-				schema: z.boolean().default(false),
+				schema: z.boolean(),
 			},
 		},
 		defaultConfiguration: {
-			temperature: 0.7,
-			topP: 1.0,
+			temperature: 1.0,
 			reasoningText: false,
 		},
+		url: "https://www.anthropic.com/claude/haiku",
 	}),
 } as const satisfies Record<string, AnyLanguageModel>;
