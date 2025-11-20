@@ -5,7 +5,9 @@ import {
 } from "@giselles-ai/language-model-registry";
 import { ToggleGroup } from "radix-ui";
 import { useMemo, useState } from "react";
+import { useShallow } from "zustand/shallow";
 import { LanguageModelItemButton } from "./language-model-item-button";
+import { useLanguageModelV2ToggleGroupStore } from "./store";
 
 const recommendedLanguageModelIds: LanguageModelId[] = [
 	"openai/gpt-5.1-thinking",
@@ -25,6 +27,9 @@ export function LanguageModelV2ToggleGroup() {
 				recommendedLanguageModelIds.includes(model.id),
 			),
 		[languageModels],
+	);
+	const { setHover, clearHover } = useLanguageModelV2ToggleGroupStore(
+		useShallow((s) => ({ setHover: s.setHover, clearHover: s.clearHover })),
 	);
 
 	return (
@@ -85,12 +90,15 @@ export function LanguageModelV2ToggleGroup() {
 								Recommended models
 							</p>
 							{/* Display recommended models */}
-							<div className="flex flex-col gap-[4px] mb-[12px]">
+							<div className="flex flex-col mb-[12px]">
 								{recommendedLanguageModels.map((languageModel) => (
 									<ToggleGroup.Item
 										key={languageModel.id}
 										asChild
 										value={languageModel.id}
+										onMouseEnter={() => {
+											setHover(languageModel.id);
+										}}
 									>
 										<LanguageModelItemButton
 											modelId={languageModel.id}
@@ -106,13 +114,16 @@ export function LanguageModelV2ToggleGroup() {
 					)}
 
 					{/* Flat list of models with filtering applied */}
-					<div className="flex flex-col gap-[4px] pr-[4px]">
+					<div className="flex flex-col pr-[4px]">
 						{languageModels.length > 0 ? (
 							languageModels.map((languageModel) => (
 								<ToggleGroup.Item
 									key={languageModel.id}
 									asChild
 									value={languageModel.id}
+									onMouseEnter={() => {
+										setHover(languageModel.id);
+									}}
 								>
 									<LanguageModelItemButton
 										modelId={languageModel.id}

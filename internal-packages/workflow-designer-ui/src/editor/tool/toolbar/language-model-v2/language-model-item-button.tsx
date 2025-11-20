@@ -23,7 +23,7 @@ export function LanguageModelItemButton({
 			type="button"
 			{...props}
 			className={clsx(
-				"flex gap-[12px] items-center p-[4px] rounded-[4px]",
+				"flex gap-[12px] items-center px-[4px] rounded-[4px] py-[8px]",
 				hasRequiredTier
 					? "hover:bg-bg-850/10 focus:bg-bg-850/10 cursor-pointer"
 					: "opacity-50 cursor-not-allowed",
