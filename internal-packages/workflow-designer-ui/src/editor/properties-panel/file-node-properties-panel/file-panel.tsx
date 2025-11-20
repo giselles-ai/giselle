@@ -415,6 +415,11 @@ function FileListItem({
 	fileData: FileData;
 	onRemove: (file: FileData) => void;
 }) {
+	const isProcessing =
+		fileData.status === "uploading" ||
+		fileData.status === "pending-copy" ||
+		fileData.status === "copying";
+
 	return (
 		<div className="flex items-center justify-between hover:bg-bg-50/50 transition-colors rounded-[8px] group">
 			<div className="flex items-center gap-[12px] flex-1 min-w-0">
@@ -430,8 +435,16 @@ function FileListItem({
 					{fileData.status === "uploading" && (
 						<p className="text-[12px] text-text-muted">Uploading...</p>
 					)}
+					{fileData.status === "pending-copy" && (
+						<p className="text-[12px] text-text-muted">Preparing to copy...</p>
+					)}
+					{fileData.status === "copying" && (
+						<p className="text-[12px] text-text-muted">Copying...</p>
+					)}
 					{fileData.status === "failed" && (
-						<p className="text-[12px] text-error-900">Upload failed</p>
+						<p className="text-[12px] text-error-900">
+							{fileData.errorMessage || "Upload failed"}
+						</p>
 					)}
 				</div>
 			</div>
@@ -439,7 +452,13 @@ function FileListItem({
 			<button
 				type="button"
 				onClick={() => onRemove(fileData)}
-				className="w-[32px] h-[32px] rounded-[6px] flex items-center justify-center hover:bg-bg-100 transition-colors opacity-0 group-hover:opacity-100 shrink-0"
+				disabled={isProcessing}
+				className={clsx(
+					"w-[32px] h-[32px] rounded-[6px] flex items-center justify-center transition-colors shrink-0",
+					isProcessing
+						? "opacity-30 cursor-not-allowed"
+						: "hover:bg-bg-100 opacity-0 group-hover:opacity-100",
+				)}
 			>
 				<TrashIcon size={16} className="text-text-muted hover:text-inverse" />
 			</button>
