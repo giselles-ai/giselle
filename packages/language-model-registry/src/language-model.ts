@@ -29,10 +29,11 @@ export type ConfigurationOptions = Record<
 export interface LanguageModel<
 	C extends ConfigurationOptions = ConfigurationOptions,
 	Provider extends string = string,
+	Id extends string = string,
 > {
 	registryVersion: "1";
 	provider: Provider;
-	id: string;
+	id: Id;
 	contextWindow: number;
 	maxOutputTokens: number;
 	knowledgeCutoff: number;
@@ -49,13 +50,14 @@ export interface LanguageModel<
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: library use
-export type AnyLanguageModel = LanguageModel<any, any>;
+export type AnyLanguageModel = LanguageModel<any, any, any>;
 
 export function defineLanguageModel<
 	const C extends Record<string, ConfigurationOption<z.ZodTypeAny>>,
 	const Provider extends string,
+	const Id extends string,
 >(
-	model: Omit<LanguageModel<C, Provider>, "registryVersion">,
-): LanguageModel<C, Provider> {
+	model: Omit<LanguageModel<C, Provider, Id>, "registryVersion">,
+): LanguageModel<C, Provider, Id> {
 	return { ...model, registryVersion: "1" };
 }

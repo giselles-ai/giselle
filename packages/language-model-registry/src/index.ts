@@ -10,6 +10,14 @@ export const languageModels = {
 	...google,
 };
 
+export const languageModelIds = Array.from(
+	new Set(Object.values(languageModels).map((model) => model.id)),
+);
+export type LanguageModelId = (typeof languageModelIds)[number];
+export function isLanguageModelId(id: unknown): id is LanguageModelId {
+	return languageModelIds.includes(id as LanguageModelId);
+}
+
 export const languageModelProviders = Array.from(
 	new Set(Object.values(languageModels).map((model) => model.provider)),
 );

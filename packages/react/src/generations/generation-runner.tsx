@@ -27,6 +27,7 @@ export function GenerationRunner({ generation }: { generation: Generation }) {
 	const generationContext = GenerationContext.parse(generation.context);
 	switch (generationContext.operationNode.content.type) {
 		case "textGeneration":
+		case "contentGeneration":
 			return <TextGenerationRunner generation={generation} />;
 		case "imageGeneration":
 			return <ImageGenerationRunner generation={generation} />;

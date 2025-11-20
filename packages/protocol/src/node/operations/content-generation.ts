@@ -1,5 +1,7 @@
 import {
+	isLanguageModelId,
 	isLanguageModelProvider,
+	type LanguageModelId,
 	type LanguageModelProvider,
 } from "@giselles-ai/language-model-registry";
 import * as z from "zod/v4";
@@ -11,9 +13,10 @@ export const ContentGenerationContent = z.object({
 		provider: z.custom<LanguageModelProvider>((v) =>
 			isLanguageModelProvider(v),
 		),
-		id: z.string(),
+		id: z.custom<LanguageModelId>((v) => isLanguageModelId(v)),
 		configration: z.record(z.string(), z.any()),
 	}),
+	prompt: z.string(),
 });
 
 export type ContentGenerationContent = z.infer<typeof ContentGenerationContent>;
