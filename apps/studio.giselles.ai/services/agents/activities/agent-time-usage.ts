@@ -42,6 +42,12 @@ async function getCurrentBillingPeriod(teamDbId: number) {
 		if (!subscription) {
 			throw new Error(`Subscription not found: ${data.activeSubscriptionId}`);
 		}
+		// Verify subscription is actually active to prevent using stale subscription data
+		if (subscription.status !== "active") {
+			throw new Error(
+				`Subscription is not active: ${data.activeSubscriptionId} (status: ${subscription.status})`,
+			);
+		}
 		if (
 			subscription.currentPeriodStart == null ||
 			subscription.currentPeriodEnd == null
