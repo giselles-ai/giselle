@@ -1,6 +1,6 @@
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
-import type { FileData } from "@giselles-ai/protocol";
+import { FileData } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import {
 	ArrowUpFromLineIcon,
@@ -453,6 +453,11 @@ function FileListItem({
 				type="button"
 				onClick={() => onRemove(fileData)}
 				disabled={isProcessing}
+				aria-label={
+					isProcessing
+						? `Cannot delete ${fileData.name} while processing`
+						: "Delete file"
+				}
 				className={clsx(
 					"w-[32px] h-[32px] rounded-[6px] flex items-center justify-center transition-colors shrink-0",
 					isProcessing
