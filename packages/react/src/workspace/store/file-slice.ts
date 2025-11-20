@@ -179,7 +179,9 @@ export const createFileSlice: StateCreator<AppStore, [], [], FileSlice> = (
 						error instanceof Error ? error.message : "Copy failed";
 					const failedFileData = createFailedFileData(copyingFileData, message);
 					get().updateFileStatus(node.id, (currentFiles) =>
-						currentFiles.map((f) => (f.id === fileData.id ? failedFileData : f)),
+						currentFiles.map((f) =>
+							f.id === fileData.id ? failedFileData : f,
+						),
 					);
 				}
 			}),

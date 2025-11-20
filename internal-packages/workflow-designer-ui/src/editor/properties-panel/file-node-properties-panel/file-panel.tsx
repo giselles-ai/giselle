@@ -1,6 +1,6 @@
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
-import { FileData } from "@giselles-ai/protocol";
+import type { FileData } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import {
 	ArrowUpFromLineIcon,
