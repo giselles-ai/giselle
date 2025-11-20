@@ -26,7 +26,7 @@ export interface WorkflowDesignerContextValue {
 			ui?: NodeUIState;
 			connectionCloneStrategy?: ConnectionCloneStrategy;
 		},
-	) => Promise<Node | undefined> | Node | undefined;
+	) => Node | undefined;
 	addConnection: (args: {
 		outputNode: NodeLike;
 		outputId: OutputId;
