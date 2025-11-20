@@ -16,6 +16,7 @@ export async function fetchWorkspaceTeam(
 			avatarUrl: teams.avatarUrl,
 			plan: teams.plan,
 			activeSubscriptionId: teams.activeSubscriptionId,
+			activeCustomerId: teams.activeCustomerId,
 		})
 		.from(teams)
 		.where(eq(teams.dbId, workspaceTeamDbId))

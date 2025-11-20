@@ -12,6 +12,7 @@ export type CurrentTeam = {
 	avatarUrl?: typeof teams.$inferSelect.avatarUrl;
 	plan: typeof teams.$inferSelect.plan;
 	activeSubscriptionId: typeof subscriptions.$inferInsert.id | null;
+	activeCustomerId: typeof teams.$inferSelect.activeCustomerId;
 };
 
 export type TeamWithSubscription = CurrentTeam;

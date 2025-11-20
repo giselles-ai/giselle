@@ -1,4 +1,3 @@
-import { getLatestSubscription } from "@/services/subscriptions/get-latest-subscription";
 import { reportUserSeatUsage } from "@/services/usage-based-billing";
 import type { CurrentTeam } from "./types";
 
@@ -8,18 +7,10 @@ import type { CurrentTeam } from "./types";
  */
 export async function handleMemberChange(currentTeam: CurrentTeam) {
 	const subscriptionId = currentTeam.activeSubscriptionId;
-	if (subscriptionId == null) {
+	const customerId = currentTeam.activeCustomerId;
+	if (subscriptionId == null || customerId == null) {
 		// No active subscription, nothing to do
 		return;
 	}
-	const customerId = await fetchCustomerId(subscriptionId);
 	await reportUserSeatUsage(subscriptionId, customerId);
-}
-
-async function fetchCustomerId(subscriptionId: string) {
-	const subscription = await getLatestSubscription(subscriptionId);
-	if (!subscription) {
-		throw new Error(`Subscription ${subscriptionId} not found`);
-	}
-	return subscription.customerId;
 }

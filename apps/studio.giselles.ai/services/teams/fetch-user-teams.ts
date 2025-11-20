@@ -16,6 +16,7 @@ export async function fetchUserTeams() {
 			avatarUrl: teams.avatarUrl,
 			plan: teams.plan,
 			activeSubscriptionId: teams.activeSubscriptionId,
+			activeCustomerId: teams.activeCustomerId,
 			role: teamMemberships.role,
 		})
 		.from(teams)
