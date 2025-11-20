@@ -36,6 +36,7 @@ export const openai = {
 			reasoningEffort: "none",
 			textVerbosity: "medium",
 		},
+		url: "https://platform.openai.com/docs/models/gpt-5.1",
 	}),
 
 	"openai/gpt-5": defineLanguageModel({
@@ -43,7 +44,7 @@ export const openai = {
 		id: "openai/gpt-5",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
-		knowledgeCutoff: Date.now(),
+		knowledgeCutoff: new Date(2024, 8, 30).getTime(),
 		pricing: {
 			input: definePricing(1.25),
 			output: definePricing(10.0),
@@ -63,6 +64,7 @@ export const openai = {
 			reasoningEffort: "minimal",
 			textVerbosity: "medium",
 		},
+		url: "https://platform.openai.com/docs/models/gpt-5",
 	}),
 
 	"openai/gpt-5-codex": defineLanguageModel({
@@ -70,7 +72,7 @@ export const openai = {
 		id: "openai/gpt-5-codex",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
-		knowledgeCutoff: Date.now(),
+		knowledgeCutoff: new Date(2024, 8, 30).getTime(),
 		pricing: {
 			input: definePricing(1.25),
 			output: definePricing(10.0),
@@ -90,6 +92,7 @@ export const openai = {
 			reasoningEffort: "medium",
 			textVerbosity: "medium",
 		},
+		url: "https://platform.openai.com/docs/models/gpt-5-codex",
 	}),
 
 	"openai/gpt-5-mini": defineLanguageModel({
@@ -97,10 +100,10 @@ export const openai = {
 		id: "openai/gpt-5-mini",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
-		knowledgeCutoff: Date.now(),
+		knowledgeCutoff: new Date(2024, 4, 31).getTime(),
 		pricing: {
-			input: definePricing(0.15), // Dummy lower price
-			output: definePricing(0.6),
+			input: definePricing(0.25),
+			output: definePricing(2.0),
 		},
 		tier: "pro",
 		configurationOptions: {
@@ -117,6 +120,7 @@ export const openai = {
 			reasoningEffort: "medium",
 			textVerbosity: "medium",
 		},
+		url: "https://platform.openai.com/docs/models/gpt-5-mini",
 	}),
 
 	"openai/gpt-5-nano": defineLanguageModel({
@@ -124,10 +128,10 @@ export const openai = {
 		id: "openai/gpt-5-nano",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
-		knowledgeCutoff: Date.now(),
+		knowledgeCutoff: new Date(2024, 4, 31).getTime(),
 		pricing: {
-			input: definePricing(0.05), // Dummy lowest price
-			output: definePricing(0.2),
+			input: definePricing(0.05),
+			output: definePricing(0.4),
 		},
 		tier: "free",
 		configurationOptions: {
@@ -144,5 +148,6 @@ export const openai = {
 			reasoningEffort: "medium",
 			textVerbosity: "medium",
 		},
+		url: "https://platform.openai.com/docs/models/gpt-5-nano",
 	}),
 } as const satisfies Record<string, AnyLanguageModel>;

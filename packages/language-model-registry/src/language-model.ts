@@ -39,6 +39,7 @@ export interface LanguageModel<
 		output: PricingUnit;
 	};
 	tier: LanguageModelTier;
+	url: string;
 	configurationOptions: C;
 	defaultConfiguration: {
 		[K in keyof C]: z.infer<C[K]["schema"]>;
