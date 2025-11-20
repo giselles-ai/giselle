@@ -1,4 +1,4 @@
-import { and, eq, ne } from "drizzle-orm";
+import { and, desc, eq, ne } from "drizzle-orm";
 import type Stripe from "stripe";
 import { db, subscriptionHistories, teamMemberships, teams } from "@/db";
 import { getLatestSubscription } from "@/services/subscriptions/get-latest-subscription";
@@ -163,7 +163,14 @@ async function insertSubscription(
 async function updateSubscription(subscription: Stripe.Subscription) {
 	await db.transaction(async (tx) => {
 		// Get teamDbId from existing subscription history
-		const existing = await getLatestSubscription(subscription.id);
+		// Note: We query directly within the transaction instead of using getLatestSubscription
+		// to ensure proper transaction isolation and avoid type complexity
+		const [existing] = await tx
+			.select()
+			.from(subscriptionHistories)
+			.where(eq(subscriptionHistories.id, subscription.id))
+			.orderBy(desc(subscriptionHistories.createdAt))
+			.limit(1);
 
 		if (!existing) {
 			throw new Error("Subscription not found");
