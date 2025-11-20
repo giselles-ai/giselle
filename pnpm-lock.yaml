@@ -757,6 +757,9 @@ importers:
       '@giselles-ai/language-model':
         specifier: workspace:^
         version: link:../../packages/language-model
+      '@giselles-ai/language-model-registry':
+        specifier: workspace:*
+        version: link:../../packages/language-model-registry
       '@giselles-ai/node-registry':
         specifier: workspace:*
         version: link:../../packages/node-registry
@@ -822,7 +825,7 @@ importers:
         version: 2.3.6(react@19.1.1)
       zod:
         specifier: 'catalog:'
-        version: 3.25.76
+        version: 4.1.12
       zustand:
         specifier: 'catalog:'
         version: 5.0.8(@types/react@19.1.10)(react@19.1.1)(use-sync-external-store@1.6.0(react@19.1.1))
@@ -844,7 +847,7 @@ importers:
         version: 19.1.7(@types/react@19.1.10)
       ai:
         specifier: 'catalog:'
-        version: 5.0.51(zod@3.25.76)
+        version: 5.0.51(zod@4.1.12)
       pino:
         specifier: 'catalog:'
         version: 9.9.0

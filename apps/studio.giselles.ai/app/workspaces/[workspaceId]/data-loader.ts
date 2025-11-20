@@ -81,6 +81,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			aiGateway,
 			aiGatewayUnsupportedModels,
 			googleUrlContext,
+			generateContentNode: true,
 		},
 	};
 }
