@@ -585,10 +585,16 @@ export async function deleteTeam(
 
 export async function getSubscription(subscriptionId: string) {
 	try {
+		const currentTeam = await fetchCurrentTeam();
 		const dbSubscription = await getLatestSubscription(subscriptionId);
 
 		if (!dbSubscription) {
 			throw new Error(`Subscription not found: ${subscriptionId}`);
+		}
+
+		// Authorization check: verify the subscription belongs to current team
+		if (dbSubscription.teamDbId !== currentTeam.dbId) {
+			throw new Error("Unauthorized access to subscription");
 		}
 
 		return {
