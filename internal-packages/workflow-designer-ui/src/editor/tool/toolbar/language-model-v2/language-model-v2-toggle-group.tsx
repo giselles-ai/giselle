@@ -43,10 +43,7 @@ export function LanguageModelV2ToggleGroup() {
 	);
 
 	return (
-		<ToggleGroup.Root
-			type="single"
-			onValueChange={(value) => console.log(value)}
-		>
+		<>
 			<div
 				className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
 				style={{
@@ -93,7 +90,11 @@ export function LanguageModelV2ToggleGroup() {
 					/>
 				</div>
 
-				<div className="mt-[0px] mx-[4px] overflow-y-auto">
+				<ToggleGroup.Root
+					className="mt-[0px] mx-[4px] overflow-y-auto"
+					type="single"
+					onValueChange={(value) => console.log(value)}
+				>
 					{recommendedLanguageModels.length > 0 && (
 						<>
 							<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mb-[4px]">
@@ -147,8 +148,8 @@ export function LanguageModelV2ToggleGroup() {
 									</p>
 								)}
 					</div>
-				</div>
+				</ToggleGroup.Root>
 			</div>
-		</ToggleGroup.Root>
+		</>
 	);
 }

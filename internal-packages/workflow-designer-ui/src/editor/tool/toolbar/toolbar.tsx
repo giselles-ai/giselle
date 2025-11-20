@@ -899,6 +899,7 @@ export function Toolbar() {
 												<Popover.Content
 													className="relative overflow-hidden w-[var(--language-model-detail-panel-width)] rounded-[8px] px-[8px] py-[8px] text-inverse"
 													sideOffset={42}
+													onOpenAutoFocus={(e) => e.preventDefault()}
 												>
 													<LanguageModelMegaTooltip userTier="free" />
 												</Popover.Content>
