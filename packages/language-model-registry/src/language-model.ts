@@ -21,7 +21,10 @@ type ConfigurationOption<TSchema extends z.ZodTypeAny> = {
 	schema: TSchema;
 };
 
-type ConfigurationOptions = Record<string, ConfigurationOption<z.ZodTypeAny>>;
+export type ConfigurationOptions = Record<
+	string,
+	ConfigurationOption<z.ZodTypeAny>
+>;
 
 export interface LanguageModel<
 	C extends ConfigurationOptions = ConfigurationOptions,
