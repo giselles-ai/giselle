@@ -62,6 +62,7 @@ import {
 	VideoIcon,
 	WebPageFileIcon,
 } from "./components";
+import { LanguageModelV2ToggleGroup } from "./language-model-v2";
 import {
 	filterModelsByCategory,
 	filterModelsBySearch,
@@ -883,134 +884,7 @@ export function Toolbar() {
 											align="end"
 											sideOffset={42}
 										>
-											<div
-												className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
-												style={{
-													backgroundColor:
-														"color-mix(in srgb, var(--color-background, #00020b) 50%, transparent)",
-												}}
-											/>
-											<GlassSurfaceLayers
-												radiusClass="rounded-[8px]"
-												borderStyle="solid"
-												withBaseFill={false}
-												blurClass="backdrop-blur-lg"
-												zIndexClass="z-0"
-											/>
-											<div className="relative flex flex-col gap-[8px] max-h-[280px] overflow-y-auto">
-												{/* Search box */}
-												<div className="flex h-[28px] p-[8px] items-center gap-[11px] self-stretch rounded-[8px] bg-[rgba(222,233,242,0.20)] mx-[4px] mb-[4px]">
-													<div className="text-text-muted">
-														<svg
-															width="18"
-															height="18"
-															viewBox="0 0 24 24"
-															fill="none"
-															xmlns="http://www.w3.org/2000/svg"
-															role="img"
-															aria-labelledby="searchIconTitle"
-														>
-															<title id="searchIconTitle">Search Icon</title>
-															<path
-																d="M21 21L15.5 15.5M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
-																stroke="currentColor"
-																strokeWidth="2"
-																strokeLinecap="round"
-																strokeLinejoin="round"
-															/>
-														</svg>
-													</div>
-													<input
-														type="text"
-														placeholder="Search LLM Model..."
-														className="w-full bg-transparent border-none text-inverse text-[12px] placeholder:text-link-muted focus:outline-none"
-														value={searchQuery}
-														onChange={(e) => setSearchQuery(e.target.value)}
-													/>
-												</div>
-
-												{/* Tabs displayed after the search box */}
-												<div className="mx-[4px] mb-[6px]">
-													<div className="flex items-center rounded-md gap-2">
-														<button
-															type="button"
-															className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
-																selectedCategory === "All"
-																	? "bg-text-secondary"
-																	: "hover:bg-ghost-element-hover"
-															} text-inverse rounded text-[12px] font-medium leading-[170%]`}
-															onClick={() => setSelectedCategory("All")}
-														>
-															All
-														</button>
-														<button
-															type="button"
-															className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
-																selectedCategory === "Text"
-																	? "bg-text-secondary"
-																	: "hover:bg-ghost-element-hover"
-															} text-inverse rounded text-[12px] font-medium leading-[170%]`}
-															onClick={() => setSelectedCategory("Text")}
-														>
-															Text
-														</button>
-														<button
-															type="button"
-															className={`flex px-[8px] py-0 justify-center items-center gap-[10px] ${
-																selectedCategory === "Image"
-																	? "bg-text-secondary"
-																	: "hover:bg-ghost-element-hover"
-															} text-inverse rounded text-[12px] font-medium leading-[170%]`}
-															onClick={() => setSelectedCategory("Image")}
-														>
-															Image
-														</button>
-														<button
-															type="button"
-															className="flex px-[8px] py-0 justify-center items-center gap-[10px] text-text-muted rounded text-[12px] font-medium leading-[170%] opacity-50 cursor-not-allowed"
-														>
-															Video
-														</button>
-														<button
-															type="button"
-															className="flex px-[8px] py-0 justify-center items-center gap-[10px] text-text-muted rounded text-[12px] font-medium leading-[170%] opacity-50 cursor-not-allowed"
-														>
-															Audio
-														</button>
-													</div>
-												</div>
-
-												<div className="mt-[0px] mx-[4px]">
-													{selectedCategory === "All" &&
-														searchQuery.trim() === "" && (
-															<>
-																<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mb-[4px]">
-																	Recommended models
-																</p>
-																{/* Display recommended models */}
-																{recommendedModels.length > 0 && (
-																	<div className="flex flex-col gap-[4px] mb-[12px]">
-																		{recommendedModels.map(renderModelButton)}
-																	</div>
-																)}
-
-																{/* Divider */}
-																<div className="flex my-[12px] mx-auto w-[90%] py-0 flex-col items-center border-b border-[#505D7B]/20" />
-															</>
-														)}
-
-													{/* Flat list of models with filtering applied */}
-													<div className="flex flex-col gap-[4px] max-h-[200px] overflow-y-auto pr-[4px]">
-														{filteredModels.length > 0 ? (
-															filteredModels.map(renderModelButton)
-														) : (
-															<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] p-[8px] text-center">
-																No matching models found
-															</p>
-														)}
-													</div>
-												</div>
-											</div>
+											<LanguageModelV2ToggleGroup />
 										</Popover.Content>
 									</Popover.Portal>
 								</Popover.Root>

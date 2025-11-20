@@ -14,6 +14,7 @@ export const openai = {
 	"openai/gpt-5.1-thinking": defineLanguageModel({
 		provider: "openai",
 		id: "openai/gpt-5.1-thinking",
+		name: "GPT-5.1 Thinking",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
 		knowledgeCutoff: new Date(2024, 8, 30).getTime(),
@@ -21,7 +22,7 @@ export const openai = {
 			input: definePricing(1.25),
 			output: definePricing(10.0),
 		},
-		tier: "pro",
+		requiredTier: "pro",
 		configurationOptions: {
 			reasoningEffort: {
 				description: reasoningEffortDescription,
@@ -42,6 +43,7 @@ export const openai = {
 	"openai/gpt-5": defineLanguageModel({
 		provider: "openai",
 		id: "openai/gpt-5",
+		name: "GPT-5",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
 		knowledgeCutoff: new Date(2024, 8, 30).getTime(),
@@ -49,7 +51,7 @@ export const openai = {
 			input: definePricing(1.25),
 			output: definePricing(10.0),
 		},
-		tier: "pro",
+		requiredTier: "pro",
 		configurationOptions: {
 			reasoningEffort: {
 				description: reasoningEffortDescription,
@@ -70,6 +72,7 @@ export const openai = {
 	"openai/gpt-5-codex": defineLanguageModel({
 		provider: "openai",
 		id: "openai/gpt-5-codex",
+		name: "GPT-5-Codex",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
 		knowledgeCutoff: new Date(2024, 8, 30).getTime(),
@@ -77,7 +80,7 @@ export const openai = {
 			input: definePricing(1.25),
 			output: definePricing(10.0),
 		},
-		tier: "pro",
+		requiredTier: "pro",
 		configurationOptions: {
 			reasoningEffort: {
 				description: reasoningEffortDescription,
@@ -98,6 +101,7 @@ export const openai = {
 	"openai/gpt-5-mini": defineLanguageModel({
 		provider: "openai",
 		id: "openai/gpt-5-mini",
+		name: "GPT-5 mini",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
 		knowledgeCutoff: new Date(2024, 4, 31).getTime(),
@@ -105,7 +109,7 @@ export const openai = {
 			input: definePricing(0.25),
 			output: definePricing(2.0),
 		},
-		tier: "pro",
+		requiredTier: "pro",
 		configurationOptions: {
 			reasoningEffort: {
 				description: reasoningEffortDescription,
@@ -126,6 +130,7 @@ export const openai = {
 	"openai/gpt-5-nano": defineLanguageModel({
 		provider: "openai",
 		id: "openai/gpt-5-nano",
+		name: "GPT-5 nano",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
 		knowledgeCutoff: new Date(2024, 4, 31).getTime(),
@@ -133,7 +138,7 @@ export const openai = {
 			input: definePricing(0.05),
 			output: definePricing(0.4),
 		},
-		tier: "free",
+		requiredTier: "free",
 		configurationOptions: {
 			reasoningEffort: {
 				description: reasoningEffortDescription,

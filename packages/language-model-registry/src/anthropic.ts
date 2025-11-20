@@ -9,6 +9,7 @@ export const anthropic = {
 	"anthropic/claude-opus-4.1": defineLanguageModel({
 		provider: "anthropic",
 		id: "anthropic/claude-opus-4.1",
+		name: "Claude Opus 4.1",
 		contextWindow: 200_000,
 		maxOutputTokens: 32_000,
 		knowledgeCutoff: new Date(2025, 0, 31).getTime(),
@@ -16,7 +17,7 @@ export const anthropic = {
 			input: definePricing(15.0),
 			output: definePricing(75.0),
 		},
-		tier: "pro",
+		requiredTier: "pro",
 		configurationOptions: {
 			temperature: {
 				description: "Amount of randomness injected into the response.",
@@ -36,6 +37,7 @@ export const anthropic = {
 	"anthropic/claude-sonnet-4-5": defineLanguageModel({
 		provider: "anthropic",
 		id: "anthropic/claude-sonnet-4-5",
+		name: "Claude Sonnet 4.5",
 		contextWindow: 200_000,
 		maxOutputTokens: 64_000,
 		knowledgeCutoff: new Date(2025, 0, 31).getTime(),
@@ -43,7 +45,7 @@ export const anthropic = {
 			input: definePricing(3.0),
 			output: definePricing(15.0),
 		},
-		tier: "pro",
+		requiredTier: "pro",
 		configurationOptions: {
 			temperature: {
 				description: "Amount of randomness injected into the response.",
@@ -63,6 +65,7 @@ export const anthropic = {
 	"anthropic/claude-haiku-4-5": defineLanguageModel({
 		provider: "anthropic",
 		id: "anthropic/claude-haiku-4-5",
+		name: "Claude Haiku 4.5",
 		contextWindow: 200_000,
 		maxOutputTokens: 64_000,
 		knowledgeCutoff: new Date(2025, 1, 28).getTime(),
@@ -70,7 +73,7 @@ export const anthropic = {
 			input: definePricing(1.0),
 			output: definePricing(5.0),
 		},
-		tier: "free",
+		requiredTier: "free",
 		configurationOptions: {
 			temperature: {
 				description: "Amount of randomness injected into the response.",

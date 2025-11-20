@@ -4,7 +4,7 @@ import {
 	hasCapability,
 	languageModels,
 } from "@giselles-ai/language-model";
-import { languageModels as v2LanguageModels } from "@giselles-ai/language-model-registry";
+import { getEntry } from "@giselles-ai/language-model-registry";
 import {
 	type ActionNode,
 	type AppEntryNode,
@@ -688,7 +688,7 @@ const contentGenerationFactoryImpl = {
 				accessor: "generated-text",
 			},
 		];
-		const languageModel = v2LanguageModels[input.id];
+		const languageModel = getEntry(input.id);
 		return {
 			id: NodeId.generate(),
 			type: "operation",

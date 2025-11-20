@@ -9,6 +9,7 @@ export const google = {
 	"google/gemini-2.5-pro": defineLanguageModel({
 		provider: "google",
 		id: "google/gemini-2.5-pro",
+		name: "Gemini 2.5 Pro",
 		contextWindow: 1_048_576,
 		maxOutputTokens: 65_536,
 		knowledgeCutoff: new Date(2025, 0, 31).getTime(),
@@ -16,7 +17,7 @@ export const google = {
 			input: definePricing(1.25),
 			output: definePricing(10.0),
 		},
-		tier: "pro",
+		requiredTier: "pro",
 		configurationOptions: {
 			temperature: {
 				description: "Controls the randomness of the output.",
@@ -41,6 +42,7 @@ export const google = {
 	"google/gemini-2.5-flash": defineLanguageModel({
 		provider: "google",
 		id: "google/gemini-2.5-flash",
+		name: "Gemini 2.5 Flash",
 		contextWindow: 1_048_576,
 		maxOutputTokens: 65_536,
 		knowledgeCutoff: new Date(2025, 0, 31).getTime(),
@@ -48,7 +50,7 @@ export const google = {
 			input: definePricing(0.1),
 			output: definePricing(0.4),
 		},
-		tier: "pro",
+		requiredTier: "pro",
 		configurationOptions: {
 			temperature: {
 				description: "Controls the randomness of the output.",
@@ -73,6 +75,7 @@ export const google = {
 	"google/gemini-2.5-flash-lite": defineLanguageModel({
 		provider: "google",
 		id: "google/gemini-2.5-flash-lite",
+		name: "Gemini 2.5 Flash Lite",
 		contextWindow: 1_048_576,
 		maxOutputTokens: 65_536,
 		knowledgeCutoff: new Date(2025, 0, 31).getTime(),
@@ -80,7 +83,7 @@ export const google = {
 			input: definePricing(0.1),
 			output: definePricing(0.4),
 		},
-		tier: "free",
+		requiredTier: "free",
 		configurationOptions: {
 			temperature: {
 				description: "Controls the randomness of the output.",
