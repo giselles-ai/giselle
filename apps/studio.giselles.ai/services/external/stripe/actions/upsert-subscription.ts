@@ -1,4 +1,4 @@
-import { and, desc, eq, ne } from "drizzle-orm";
+import { and, desc, eq, isNull, ne, or } from "drizzle-orm";
 import type Stripe from "stripe";
 import { db, subscriptionHistories, teamMemberships, teams } from "@/db";
 import {
@@ -148,7 +148,7 @@ async function insertSubscription(
 				),
 			);
 	} else {
-		// Non-active: Only clear if this subscription is currently the active one
+		// Non-active: Clear subscription tracking if it's the active one or if creating new team
 		await tx
 			.update(teams)
 			.set({
@@ -159,7 +159,10 @@ async function insertSubscription(
 			.where(
 				and(
 					eq(teams.dbId, teamDbId),
-					eq(teams.activeSubscriptionId, subscription.id),
+					or(
+						eq(teams.activeSubscriptionId, subscription.id),
+						isNull(teams.activeSubscriptionId),
+					),
 					ne(teams.plan, "internal"),
 					ne(teams.plan, "enterprise"),
 				),
