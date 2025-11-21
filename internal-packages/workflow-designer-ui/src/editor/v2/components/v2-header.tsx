@@ -65,7 +65,7 @@ export function V2Header({
 						</span>
 					)}
 					{/* app name editable */}
-					<div className="max-w-[200px]">
+					<div className="max-w-[300px]">
 						<EditableText
 							key={data.id}
 							ref={editableTextRef}
