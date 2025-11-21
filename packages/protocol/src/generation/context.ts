@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import { Connection } from "../connection";
 import type { WebhookEvent } from "../integrations/github-webhooks";
 import { Node, NodeLike, OperationNode, OperationNodeLike } from "../node";

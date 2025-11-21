@@ -4,9 +4,11 @@ import {
 	hasCapability,
 	languageModels,
 } from "@giselles-ai/language-model";
+import { getEntry } from "@giselles-ai/language-model-registry";
 import {
 	type ActionNode,
 	type AppEntryNode,
+	type ContentGenerationNode,
 	DEFAULT_MAX_RESULTS,
 	DEFAULT_SIMILARITY_THRESHOLD,
 	type DraftApp,
@@ -23,6 +25,7 @@ import {
 	InputId,
 	isActionNode,
 	isAppEntryNode,
+	isContentGenerationNode,
 	isFileNode,
 	isGitHubNode,
 	isImageGenerationNode,
@@ -670,6 +673,116 @@ const appEntryFactoryImpl = {
 	},
 } satisfies NodeFactory<AppEntryNode>;
 
+type CreateContentGenerationNodeInput = Pick<
+	ContentGenerationNode["content"]["languageModel"],
+	"id"
+> &
+	Partial<ContentGenerationNode["content"]["languageModel"]>;
+
+const contentGenerationFactoryImpl = {
+	create: (input) => {
+		const outputs: Output[] = [
+			{
+				id: OutputId.generate(),
+				label: "Output",
+				accessor: "generated-text",
+			},
+		];
+		const languageModel = getEntry(input.id);
+		return {
+			id: NodeId.generate(),
+			type: "operation",
+			content: {
+				type: "contentGeneration",
+				version: "v1",
+				prompt: "",
+				languageModel: {
+					provider: languageModel.provider,
+					id: languageModel.id,
+					configration: languageModel.defaultConfiguration,
+				},
+			},
+			inputs: [],
+			outputs,
+		} satisfies ContentGenerationNode;
+	},
+	clone: (
+		orig: ContentGenerationNode,
+	): NodeFactoryCloneResult<ContentGenerationNode> => {
+		const clonedContent = structuredClone(orig.content);
+		const { newIo: newInputs, idMap: inputIdMap } =
+			cloneAndRenewInputIdsWithMap(orig.inputs);
+		const { newIo: newOutputs, idMap: outputIdMap } =
+			cloneAndRenewOutputIdsWithMap(orig.outputs);
+
+		if (clonedContent.prompt && isJsonContent(clonedContent.prompt)) {
+			try {
+				const promptJsonContent: JSONContent =
+					typeof clonedContent.prompt === "string"
+						? JSON.parse(clonedContent.prompt)
+						: clonedContent.prompt;
+
+				function keepSourceRefs(
+					content: JSONContent[] | undefined,
+				): JSONContent[] | undefined {
+					if (!content) return undefined;
+
+					return content
+						.map((item) => {
+							if (item.content) {
+								const newSubContent = keepSourceRefs(item.content);
+								if (
+									newSubContent &&
+									newSubContent.length === 0 &&
+									item.type !== "paragraph"
+								) {
+									return { ...item, content: newSubContent };
+								}
+
+								if (!newSubContent && item.content) {
+									return null;
+								}
+							}
+							return item;
+						})
+						.filter(
+							(item): item is JSONContent =>
+								item !== null &&
+								!(item.type === "text" && !item.text?.trim() && !item.marks),
+						);
+				}
+
+				const processedPromptContent = keepSourceRefs(
+					promptJsonContent.content,
+				);
+
+				if (processedPromptContent && processedPromptContent.length > 0) {
+					promptJsonContent.content = processedPromptContent;
+					clonedContent.prompt = JSON.stringify(promptJsonContent);
+				} else {
+					clonedContent.prompt = "";
+				}
+			} catch (e) {
+				console.error("Error processing prompt for TextGeneration clone:", e);
+				clonedContent.prompt = "";
+			}
+		}
+
+		const newNode = {
+			id: NodeId.generate(),
+			type: "operation",
+			name: `Copy of ${orig.name ?? defaultName(orig)}`,
+			content: clonedContent,
+			inputs: newInputs,
+			outputs: newOutputs,
+		} satisfies ContentGenerationNode;
+		return { newNode, inputIdMap, outputIdMap };
+	},
+} satisfies NodeFactory<
+	ContentGenerationNode,
+	CreateContentGenerationNodeInput
+>;
+
 // --- Factories Manager ---
 const factoryImplementations = {
 	textGeneration: textGenerationFactoryImpl,
@@ -683,6 +796,7 @@ const factoryImplementations = {
 	vectorStore: vectorStoreFactoryImpl,
 	webPage: webPageFactoryImpl,
 	appEntry: appEntryFactoryImpl,
+	contentGeneration: contentGenerationFactoryImpl,
 } as const;
 
 type CreateArgMap = {
@@ -697,6 +811,7 @@ type CreateArgMap = {
 	vectorStore: Parameters<typeof vectorStoreFactoryImpl.create>[0];
 	webPage: undefined;
 	appEntry: undefined;
+	contentGeneration: CreateContentGenerationNodeInput;
 };
 
 const nodeTypesRequiringArg = (
@@ -847,6 +962,13 @@ export function cloneNode<N extends Node>(
 				) as NodeFactoryCloneResult<N>;
 			}
 			break;
+		case "contentGeneration":
+			if (isContentGenerationNode(sourceNode)) {
+				return contentGenerationFactoryImpl.clone(
+					sourceNode,
+				) as NodeFactoryCloneResult<N>;
+			}
+			break;
 		default: {
 			const _exhaustive: never = contentType;
 			throw new Error(`No clone factory for content type: ${_exhaustive}`);
@@ -897,6 +1019,10 @@ export const nodeFactories = {
 				return factoryImplementations.webPage.create();
 			case "appEntry":
 				return factoryImplementations.appEntry.create();
+			case "contentGeneration":
+				return factoryImplementations.contentGeneration.create(
+					arg as CreateArgMap["contentGeneration"],
+				);
 			default: {
 				const _exhaustive: never = type;
 				throw new Error(`No create factory for content type: ${_exhaustive}`);
@@ -959,6 +1085,11 @@ export const nodeFactories = {
 			case "appEntry":
 				if (isAppEntryNode(sourceNode)) {
 					return factoryImplementations.appEntry.clone(sourceNode);
+				}
+				break;
+			case "contentGeneration":
+				if (isContentGenerationNode(sourceNode)) {
+					return factoryImplementations.contentGeneration.clone(sourceNode);
 				}
 				break;
 			default: {

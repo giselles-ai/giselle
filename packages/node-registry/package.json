@@ -25,6 +25,7 @@
 	"dependencies": {
 		"@giselles-ai/action-registry": "workspace:*",
 		"@giselles-ai/language-model": "workspace:*",
+		"@giselles-ai/language-model-registry": "workspace:*",
 		"@giselles-ai/protocol": "workspace:*",
 		"@giselles-ai/text-editor-utils": "workspace:*",
 		"@giselles-ai/trigger-registry": "workspace:*"

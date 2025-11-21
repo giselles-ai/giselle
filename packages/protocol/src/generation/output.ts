@@ -1,7 +1,7 @@
 import type { LanguageModelV2Source } from "@ai-sdk/provider";
 import { createIdGenerator } from "@giselles-ai/utils";
 import type { ProviderMetadata } from "ai";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import {
 	DocumentVectorStoreSource,
 	GitHubVectorStoreSource,

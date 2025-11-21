@@ -78,7 +78,8 @@ async function executeStep(args: {
 			case "imageGeneration":
 				await generateImage({ ...args });
 				break;
-			case "textGeneration": {
+			case "textGeneration":
+			case "contentGeneration": {
 				await startContentGeneration({
 					generation: args.generation,
 					context: args.context,

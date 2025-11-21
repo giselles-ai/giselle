@@ -9,6 +9,7 @@ import type {
 	SelectEnviromentActionTool,
 	SelectFileNodeCategoryTool,
 	SelectLanguageModelTool,
+	SelectLanguageModelV2Tool,
 	SelectRetrievalCategoryTool,
 	SelectSourceCategoryTool,
 	SelectTriggerTool,
@@ -74,6 +75,13 @@ export function selectLanguageModelTool() {
 		action: "selectLanguageModel",
 		category: "edit",
 	} satisfies SelectLanguageModelTool;
+}
+
+export function selectLanguageModelV2Tool() {
+	return {
+		action: "selectLanguageModelV2",
+		category: "edit",
+	} satisfies SelectLanguageModelV2Tool;
 }
 
 export function addNodeTool(node: Node) {

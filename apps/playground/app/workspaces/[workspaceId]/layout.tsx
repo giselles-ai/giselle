@@ -11,6 +11,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 				aiGateway: false,
 				aiGatewayUnsupportedModels: false,
 				googleUrlContext: false,
+				generateContentNode: false,
 			}}
 		>
 			{children}

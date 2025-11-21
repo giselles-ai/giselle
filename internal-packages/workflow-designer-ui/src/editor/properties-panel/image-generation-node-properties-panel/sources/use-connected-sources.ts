@@ -2,6 +2,7 @@ import type {
 	ActionNode,
 	AppEntryNode,
 	Connection,
+	ContentGenerationNode,
 	FileNode,
 	ImageGenerationNode,
 	NodeBase,
@@ -28,8 +29,9 @@ export function useConnectedSources(node: ImageGenerationNode) {
 		const connectionsToThisNode = data.connections.filter(
 			(connection) => connection.inputNode.id === node.id,
 		);
-		const connectedGeneratedTextSources: ConnectedSource<TextGenerationNode>[] =
-			[];
+		const connectedGeneratedTextSources: ConnectedSource<
+			TextGenerationNode | ContentGenerationNode
+		>[] = [];
 		const connectedGeneratedImageSources: ConnectedSource<ImageGenerationNode>[] =
 			[];
 		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
@@ -58,6 +60,13 @@ export function useConnectedSources(node: ImageGenerationNode) {
 							connectedGeneratedTextSources.push({
 								output,
 								node: node as TextGenerationNode,
+								connection,
+							});
+							break;
+						case "contentGeneration":
+							connectedGeneratedTextSources.push({
+								output,
+								node: node as ContentGenerationNode,
 								connection,
 							});
 							break;

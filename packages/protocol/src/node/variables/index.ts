@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import { NodeBase, NodeReferenceBase } from "../base";
 import { FileContent, FileContentReference } from "./file";
 import { GitHubContent, GitHubContentReference } from "./github";

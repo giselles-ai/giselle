@@ -2,6 +2,7 @@ import { getImageGenerationModelProvider } from "@giselles-ai/language-model";
 import {
 	type AppEntryNode,
 	isActionNode,
+	isContentGenerationNode,
 	isFileNode,
 	isImageGenerationNode,
 	isTextGenerationNode,
@@ -62,6 +63,31 @@ export function NodeIcon({
 	switch (node.type) {
 		case "operation": {
 			switch (node.content.type) {
+				case "contentGeneration":
+					if (!isContentGenerationNode(node)) {
+						throw new Error(
+							`Expected TextGenerationNode, got ${JSON.stringify(node)}`,
+						);
+					}
+					switch (node.content.languageModel.provider) {
+						case "openai":
+							return <OpenaiIcon {...props} data-content-type-icon />;
+						case "anthropic":
+							return <AnthropicIcon {...props} data-content-type-icon />;
+						case "google":
+							// Gemini brand guidelines require using either white or colored icons without modification
+							// See: https://about.google/brand-resource-center/brand-elements/
+							if (/text-inverse/.test(props.className ?? "")) {
+								return <GoogleWhiteIcon {...props} data-content-type-icon />;
+							}
+							return <GoogleIcon {...props} data-content-type-icon />;
+						default: {
+							const _exhaustiveCheck: never =
+								node.content.languageModel.provider;
+							throw new Error(`Unhandled LLMProvider: ${_exhaustiveCheck}`);
+						}
+					}
+
 				case "textGeneration":
 					if (!isTextGenerationNode(node)) {
 						throw new Error(

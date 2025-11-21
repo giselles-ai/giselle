@@ -45,6 +45,7 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 				case "operation":
 					switch (node.content.type) {
 						case "textGeneration":
+						case "contentGeneration":
 							connectedGeneratedInputs.push({
 								...output,
 								node: node as TextGenerationNode,
