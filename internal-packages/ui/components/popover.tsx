@@ -7,7 +7,7 @@ export function PopoverContent(props: React.PropsWithChildren) {
 		<div
 			className={clsx(
 				// Match profile dropdown styling (rounded-xl, p-2, custom shadow)
-				"relative rounded-xl p-2 shadow-[0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)] flex flex-col min-h-0 h-full",
+				"relative rounded-xl p-2 shadow-[0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)] flex flex-col min-h-0 h-full z-50",
 			)}
 			{...props}
 		>
@@ -32,15 +32,19 @@ export function PopoverContent(props: React.PropsWithChildren) {
 
 export function Popover({
 	trigger,
+	align,
+	sideOffset,
 	children,
 }: React.PropsWithChildren<{
+	align?: PopoverPrimitive.PopoverContentProps["align"];
+	sideOffset?: PopoverPrimitive.PopoverContentProps["sideOffset"];
 	trigger: React.ReactNode;
 }>) {
 	return (
 		<PopoverPrimitive.Root>
 			<PopoverPrimitive.Trigger asChild>{trigger}</PopoverPrimitive.Trigger>
 			<PopoverPrimitive.Portal>
-				<PopoverPrimitive.Content asChild>
+				<PopoverPrimitive.Content asChild align={align} sideOffset={sideOffset}>
 					<PopoverContent>{children}</PopoverContent>
 				</PopoverPrimitive.Content>
 			</PopoverPrimitive.Portal>
