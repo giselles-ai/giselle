@@ -2,7 +2,6 @@ import type { WorkspaceId } from "@giselles-ai/protocol";
 import { db } from "@/db";
 
 export async function getWorkspaceTeam(workspaceId: WorkspaceId) {
-	// First, get the workspace and its team
 	const agent = await db.query.agents.findFirst({
 		where: (agents, { eq }) => eq(agents.workspaceId, workspaceId),
 		with: {
@@ -14,17 +13,8 @@ export async function getWorkspaceTeam(workspaceId: WorkspaceId) {
 		throw new Error(`Workspace ${workspaceId} not found`);
 	}
 
-	// Then, check for active subscription
-	const activeSubscription = await db.query.subscriptions.findFirst({
-		where: (subscriptions, { eq, and }) =>
-			and(
-				eq(subscriptions.teamDbId, agent.team.dbId),
-				eq(subscriptions.status, "active"),
-			),
-	});
-
 	return {
 		...agent.team,
-		activeSubscriptionId: activeSubscription?.id ?? null,
+		activeSubscriptionId: agent.team.activeSubscriptionId,
 	};
 }

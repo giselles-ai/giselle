@@ -1,9 +1,10 @@
 import { captureException } from "@sentry/nextjs";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { db, subscriptions, teams } from "@/db";
+import { db, teams } from "@/db";
 import { getGiselleSession, updateGiselleSession } from "@/lib/giselle-session";
 import { stripe } from "@/services/external/stripe";
+import { getLatestSubscription } from "@/services/subscriptions/get-latest-subscription";
 
 export async function GET(_request: Request) {
 	const session = await getGiselleSession();
@@ -34,20 +35,21 @@ export async function GET(_request: Request) {
 }
 
 async function getTeamIdFromSubscription(subscriptionId: string) {
-	const records = await db
+	const subscription = await getLatestSubscription(subscriptionId);
+	if (!subscription) {
+		throw new Error("Subscription not found");
+	}
+	if (subscription.status !== "active") {
+		throw new Error("Subscription is not active");
+	}
+	const [team] = await db
 		.select({
 			teamId: teams.id,
 		})
-		.from(subscriptions)
-		.innerJoin(teams, eq(subscriptions.teamDbId, teams.dbId))
-		.where(
-			and(
-				eq(subscriptions.status, "active"),
-				eq(subscriptions.id, subscriptionId),
-			),
-		);
-	if (records.length === 0) {
-		throw new Error("Subscription not found");
+		.from(teams)
+		.where(eq(teams.dbId, subscription.teamDbId));
+	if (!team) {
+		throw new Error("Team not found");
 	}
-	return records[0].teamId;
+	return team.teamId;
 }
