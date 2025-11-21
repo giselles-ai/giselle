@@ -11,12 +11,12 @@ function getEnumValues(schema: z.ZodTypeAny): string[] {
 	return [];
 }
 export function ConfigurationFormField({
-	key: configKey,
+	name,
 	option,
 	value,
 	onChange,
 }: {
-	key: string;
+	name: string;
 	option: { description: string; schema: z.ZodTypeAny };
 	value: unknown;
 	onChange: (value: unknown) => void;
@@ -28,7 +28,7 @@ export function ConfigurationFormField({
 			return (
 				<Select
 					options={options}
-					placeholder={`Select ${configKey}...`}
+					placeholder={`Select ${name}...`}
 					value={String(value ?? "")}
 					onValueChange={(v) => onChange(v)}
 				/>
@@ -37,7 +37,7 @@ export function ConfigurationFormField({
 		case "boolean":
 			return (
 				<Toggle
-					name={configKey}
+					name={name}
 					checked={Boolean(value)}
 					onCheckedChange={(checked) => onChange(checked)}
 				>

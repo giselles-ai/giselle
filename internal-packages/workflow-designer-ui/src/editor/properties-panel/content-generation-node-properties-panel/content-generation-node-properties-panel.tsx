@@ -42,7 +42,7 @@ export function ContentGenerationNodePropertiesPanel({
 			<PropertiesPanelContent>
 				<div className="grid grid-cols-[100px_1fr] gap-y-[12px] gap-x-[12px] items-start">
 					<SettingDetail size="md">Model</SettingDetail>
-					<div>
+					<div className="overflow-x-hidden">
 						<div className="flex items-center gap-[4px]">
 							<ModelPickerV2 value={node.content.languageModel.id} />
 							<Popover
@@ -76,7 +76,7 @@ export function ContentGenerationNodePropertiesPanel({
 												<div key={key} className="flex flex-col gap-[4px]">
 													<SettingDetail size="sm">{key}</SettingDetail>
 													<ConfigurationFormField
-														key={key}
+														name={key}
 														option={option}
 														value={currentValue}
 														onChange={(value) => {
@@ -109,7 +109,7 @@ export function ContentGenerationNodePropertiesPanel({
 						</div>
 						{Object.keys(node.content.languageModel.configuration).length >
 							0 && (
-							<div className="text-[12px] text-inverse flex items-center gap-2 mt-[2px]">
+							<div className="text-[12px] text-inverse flex flex-wrap items-center gap-2 mt-[2px]">
 								{Object.entries(node.content.languageModel.configuration).map(
 									([key, value]) => (
 										<span key={key} className="text-text-secondary flex gap-1">
