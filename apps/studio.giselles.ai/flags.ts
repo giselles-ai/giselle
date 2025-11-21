@@ -174,3 +174,22 @@ export const newEditorFlag = flag<boolean>({
 		{ value: true, label: "Enable" },
 	],
 });
+
+export const generateContentNodeFlag = flag<boolean>({
+	key: "generate-content-node",
+	async decide() {
+		if (process.env.NODE_ENV === "development") {
+			return takeLocalEnv("GENERATE_CONTENT_NODE_FLAG");
+		}
+		const edgeConfig = await get(`flag__${this.key}`);
+		if (edgeConfig === undefined) {
+			return false;
+		}
+		return edgeConfig === true || edgeConfig === "true";
+	},
+	description: "Enable generate content node",
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+});

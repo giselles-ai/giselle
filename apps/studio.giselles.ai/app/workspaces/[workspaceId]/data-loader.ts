@@ -5,6 +5,7 @@ import { db } from "@/db";
 import {
 	aiGatewayFlag,
 	aiGatewayUnsupportedModelsFlag,
+	generateContentNodeFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
 	stageFlag,
@@ -55,6 +56,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const aiGatewayUnsupportedModels = await aiGatewayUnsupportedModelsFlag();
 	const googleUrlContext = await googleUrlContextFlag();
 	const data = await giselle.getWorkspace(workspaceId);
+	const generateContentNode = await generateContentNodeFlag();
 	const documentVectorStores = await getDocumentVectorStores(
 		workspaceTeam.dbId,
 	);
@@ -81,6 +83,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			aiGateway,
 			aiGatewayUnsupportedModels,
 			googleUrlContext,
+			generateContentNode,
 		},
 	};
 }

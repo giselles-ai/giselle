@@ -184,7 +184,7 @@ export function PromptPanel({
 	return (
 		<PromptEditor
 			key={`${editorVersion ?? 0}-${JSON.stringify(nodes.map((n) => n.id))}`}
-			placeholder="Write your prompt here..."
+			placeholder="Write your prompt... Use @ to reference other nodes"
 			value={node.content.prompt}
 			onValueChange={(value) => {
 				updateNodeDataContent(node, { prompt: value });

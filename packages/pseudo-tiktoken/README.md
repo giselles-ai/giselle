@@ -113,6 +113,33 @@ Based on testing against 21 real-world samples (including production prompts), t
   - Whitespace-only text: Affected by whitespace normalization (design limitation)
   - Special characters: Higher error due to character-by-character tokenization
 
+#### Latest Benchmark (v0.0.0)
+
+| ID                      | Pseudo      | True        | Ratio     | Diff      |
+|-------------------------|-------------|-------------|-----------|-----------|
+| openai-doc-key-concepts | 31          | 30          | 1.033     | 1         |
+| simple-sentence         | 10          | 10          | 1.000     | 0         |
+| multiple-sentences      | 14          | 14          | 1.000     | 0         |
+| with-apostrophes        | 19          | 17          | 1.118     | 2         |
+| long-words              | 23          | 21          | 1.095     | 2         |
+| markdown-headers        | 12          | 17          | 0.706     | -5        |
+| markdown-list           | 26          | 30          | 0.867     | -4        |
+| code-block              | 34          | 30          | 1.133     | 4         |
+| with-punctuation        | 24          | 27          | 0.889     | -3        |
+| with-emoji              | 18          | 18          | 1.000     | 0         |
+| long-text               | 153         | 123         | 1.244     | 30        |
+| mixed-case              | 15          | 22          | 0.682     | -7        |
+| with-numbers            | 23          | 27          | 0.852     | -4        |
+| quotes-and-brackets     | 15          | 16          | 0.938     | -1        |
+| single-word             | 2           | 2           | 1.000     | 0         |
+| whitespace-only         | 0           | 2           | 0.000     | -2        |
+| japanese-english-mixed  | 16          | 12          | 1.333     | 4         |
+| urls-and-links          | 24          | 19          | 1.263     | 5         |
+| special-characters      | 31          | 20          | 1.550     | 11        |
+| production-prompt       | 746         | 655         | 1.139     | 91        |
+| nextjs-llm              | 721392      | 678084      | 1.064     | 43308     |
+| **TOTAL**               | **722628**  | **679196**  | **1.064** | **43432** |
+
 The implementation is designed to err on the side of overestimation to ensure safe context length management, making it suitable for preventing context length violations in production use.
 
 ## Development

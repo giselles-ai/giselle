@@ -1,6 +1,6 @@
 import type { WorkspaceId } from "@giselles-ai/protocol";
-import { and, eq } from "drizzle-orm";
-import { agents, db, subscriptions, teams } from "@/db";
+import { eq } from "drizzle-orm";
+import { agents, db, teams } from "@/db";
 import { getUsageLimitsForTeam } from "./usage-limits";
 
 export async function fetchUsageLimits(workspaceId: WorkspaceId) {
@@ -10,17 +10,11 @@ export async function fetchUsageLimits(workspaceId: WorkspaceId) {
 			dbId: teams.dbId,
 			name: teams.name,
 			plan: teams.plan,
-			activeSubscriptionId: subscriptions.id,
+			activeSubscriptionId: teams.activeSubscriptionId,
+			activeCustomerId: teams.activeCustomerId,
 		})
 		.from(teams)
 		.innerJoin(agents, eq(agents.workspaceId, workspaceId))
-		.leftJoin(
-			subscriptions,
-			and(
-				eq(subscriptions.teamDbId, teams.dbId),
-				eq(subscriptions.status, "active"),
-			),
-		)
 		.where(eq(teams.dbId, agents.teamDbId))
 		.limit(1);
 

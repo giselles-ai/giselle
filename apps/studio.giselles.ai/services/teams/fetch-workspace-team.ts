@@ -1,5 +1,5 @@
-import { and, eq } from "drizzle-orm";
-import { db, subscriptions, teams } from "@/db";
+import { eq } from "drizzle-orm";
+import { db, teams } from "@/db";
 import type { CurrentTeam } from "@/services/teams";
 
 /**
@@ -15,16 +15,10 @@ export async function fetchWorkspaceTeam(
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
 			plan: teams.plan,
-			activeSubscriptionId: subscriptions.id,
+			activeSubscriptionId: teams.activeSubscriptionId,
+			activeCustomerId: teams.activeCustomerId,
 		})
 		.from(teams)
-		.leftJoin(
-			subscriptions,
-			and(
-				eq(subscriptions.teamDbId, teams.dbId),
-				eq(subscriptions.status, "active"),
-			),
-		)
 		.where(eq(teams.dbId, workspaceTeamDbId))
 		.limit(1);
 

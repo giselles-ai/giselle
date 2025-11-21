@@ -1,5 +1,5 @@
 import { createIdGenerator } from "@giselles-ai/utils";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import { WorkspaceId } from "../workspace/id";
 
 export const SecretId = createIdGenerator("scrt");

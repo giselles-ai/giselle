@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import { Connection, ConnectionId } from "../connection";
 import { NodeId, NodeLike, NodeUIState } from "../node";
 import { WorkspaceId } from "./id";

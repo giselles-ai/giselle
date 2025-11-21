@@ -51,10 +51,7 @@ function appAuth() {
 	if (!appId) {
 		throw new Error("GITHUB_APP_ID is empty");
 	}
-	const privateKey = process.env.GITHUB_APP_PRIVATE_KEY?.replace(
-		/\\n/g,
-		"\n",
-	).trim();
+	const privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
 	if (!privateKey) {
 		throw new Error("GITHUB_APP_PRIVATE_KEY is empty");
 	}

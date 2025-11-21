@@ -218,7 +218,8 @@ async function resolveQuery(
 				resolvedQuery = resolvedQuery.replace(replaceKeyword, text);
 				break;
 			}
-			case "textGeneration": {
+			case "textGeneration":
+			case "contentGeneration": {
 				const result = await generationContentResolver(
 					contextNode.id,
 					sourceKeyword.outputId,

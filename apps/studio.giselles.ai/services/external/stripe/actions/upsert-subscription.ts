@@ -1,12 +1,6 @@
-import { and, eq, ne } from "drizzle-orm";
+import { and, desc, eq, isNull, ne, or } from "drizzle-orm";
 import type Stripe from "stripe";
-import {
-	db,
-	subscriptionHistories,
-	subscriptions,
-	teamMemberships,
-	teams,
-} from "@/db";
+import { db, subscriptionHistories, teamMemberships, teams } from "@/db";
 import {
 	DRAFT_TEAM_NAME_METADATA_KEY,
 	DRAFT_TEAM_USER_DB_ID_METADATA_KEY,
@@ -15,6 +9,9 @@ import {
 import { createTeamId } from "@/services/teams/utils";
 import { stripe } from "../config";
 
+// https://github.com/drizzle-team/drizzle-orm/issues/2853#issuecomment-2481083003
+type TransactionType = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
 const timestampToDateTime = (timestamp: number) => new Date(timestamp * 1000);
 const getCustomerId = (subscription: Stripe.Subscription) =>
 	typeof subscription.customer === "string"
@@ -22,28 +19,38 @@ const getCustomerId = (subscription: Stripe.Subscription) =>
 		: subscription.customer.id;
 
 export const upsertSubscription = async (subscriptionId: string) => {
+	// Fetch from Stripe (external API call should be outside transaction)
 	const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-	const existingSubscriptionRecord = await db
-		.select()
-		.from(subscriptions)
-		.where(eq(subscriptions.id, subscription.id));
 
-	if (existingSubscriptionRecord.length > 0) {
-		await updateSubscription(subscription);
-		return;
-	}
+	// Wrap entire operation in transaction to prevent race conditions
+	await db.transaction(async (tx) => {
+		// Check existence within transaction for consistent read
+		const [existing] = await tx
+			.select()
+			.from(subscriptionHistories)
+			.where(eq(subscriptionHistories.id, subscription.id))
+			.orderBy(desc(subscriptionHistories.createdAt))
+			.limit(1);
 
-	await activateProTeamSubscription(subscription);
+		if (existing) {
+			await updateSubscription(tx, subscription, existing.teamDbId);
+		} else {
+			await activateProTeamSubscription(tx, subscription);
+		}
+	});
 };
 
-async function activateProTeamSubscription(subscription: Stripe.Subscription) {
+async function activateProTeamSubscription(
+	tx: TransactionType,
+	subscription: Stripe.Subscription,
+) {
 	const upgradingTeamDbIdKey = UPGRADING_TEAM_DB_ID_KEY;
 	if (upgradingTeamDbIdKey in subscription.metadata) {
 		const teamDbId = Number.parseInt(
 			subscription.metadata[upgradingTeamDbIdKey],
 			10,
 		);
-		await upgradeExistingTeam(subscription, teamDbId);
+		await upgradeExistingTeam(tx, subscription, teamDbId);
 		return;
 	}
 
@@ -58,7 +65,7 @@ async function activateProTeamSubscription(subscription: Stripe.Subscription) {
 			subscription.metadata[draftTeamUserDbIdKey],
 			10,
 		);
-		await createNewProTeam(subscription, userDbId, teamName);
+		await createNewProTeam(tx, subscription, userDbId, teamName);
 		return;
 	}
 
@@ -66,38 +73,31 @@ async function activateProTeamSubscription(subscription: Stripe.Subscription) {
 }
 
 async function createNewProTeam(
+	tx: TransactionType,
 	subscription: Stripe.Subscription,
 	userDbId: number,
 	teamName: string,
 ) {
-	// wrap operations in a transaction to prevent duplicate team and membership creation
-	await db.transaction(async (tx) => {
-		const teamDbId = await createTeam(tx, userDbId, teamName);
-		// if the race condition happens, inserting subscription will successfully raise because of the unique constraint.
-		await insertSubscription(tx, subscription, teamDbId);
-	});
+	const teamDbId = await createTeam(tx, userDbId, teamName);
+	await insertSubscription(tx, subscription, teamDbId);
 }
 
 async function upgradeExistingTeam(
+	tx: TransactionType,
 	subscription: Stripe.Subscription,
 	teamDbId: number,
 ) {
-	await db.transaction(async (tx) => {
-		const result = await tx
-			.select({ dbId: teams.dbId })
-			.from(teams)
-			.for("update")
-			.where(eq(teams.dbId, teamDbId));
-		if (result.length !== 1) {
-			throw new Error("Team not found");
-		}
-		const team = result[0];
-		await insertSubscription(tx, subscription, team.dbId);
-	});
+	const result = await tx
+		.select({ dbId: teams.dbId })
+		.from(teams)
+		.for("update")
+		.where(eq(teams.dbId, teamDbId));
+	if (result.length !== 1) {
+		throw new Error("Team not found");
+	}
+	const team = result[0];
+	await insertSubscription(tx, subscription, team.dbId);
 }
-
-// https://github.com/drizzle-team/drizzle-orm/issues/2853#issuecomment-2481083003
-type TransactionType = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 async function createTeam(
 	tx: TransactionType,
@@ -127,40 +127,55 @@ async function insertSubscription(
 	subscription: Stripe.Subscription,
 	teamDbId: number,
 ) {
-	const period = getSubscriptionPeriod(subscription);
-
-	await tx.insert(subscriptions).values({
-		id: subscription.id,
-		teamDbId: teamDbId,
-		customerId: getCustomerId(subscription),
-		status: subscription.status,
-		cancelAtPeriodEnd: subscription.cancel_at_period_end,
-		cancelAt:
-			subscription.cancel_at !== null
-				? timestampToDateTime(subscription.cancel_at)
-				: null,
-		canceledAt:
-			subscription.canceled_at !== null
-				? timestampToDateTime(subscription.canceled_at)
-				: null,
-		currentPeriodStart: timestampToDateTime(period.currentPeriodStart),
-		currentPeriodEnd: timestampToDateTime(period.currentPeriodEnd),
-		created: timestampToDateTime(subscription.created),
-		endedAt:
-			subscription.ended_at !== null
-				? timestampToDateTime(subscription.ended_at)
-				: null,
-		trialStart:
-			subscription.trial_start !== null
-				? timestampToDateTime(subscription.trial_start)
-				: null,
-		trialEnd:
-			subscription.trial_end !== null
-				? timestampToDateTime(subscription.trial_end)
-				: null,
-	});
-
 	// Record subscription state to history
+	await recordSubscriptionHistory(tx, subscription, teamDbId);
+
+	// Update team plan and active subscription tracking
+	if (subscription.status === "active") {
+		// Active: Set subscription tracking fields
+		await tx
+			.update(teams)
+			.set({
+				plan: "pro",
+				activeSubscriptionId: subscription.id,
+				activeCustomerId: getCustomerId(subscription),
+			})
+			.where(
+				and(
+					eq(teams.dbId, teamDbId),
+					ne(teams.plan, "internal"),
+					ne(teams.plan, "enterprise"),
+				),
+			);
+	} else {
+		// Non-active: Clear subscription tracking if it's the active one or if creating new team
+		await tx
+			.update(teams)
+			.set({
+				plan: "free",
+				activeSubscriptionId: null,
+				activeCustomerId: null,
+			})
+			.where(
+				and(
+					eq(teams.dbId, teamDbId),
+					or(
+						eq(teams.activeSubscriptionId, subscription.id),
+						isNull(teams.activeSubscriptionId),
+					),
+					ne(teams.plan, "internal"),
+					ne(teams.plan, "enterprise"),
+				),
+			);
+	}
+}
+
+async function updateSubscription(
+	tx: TransactionType,
+	subscription: Stripe.Subscription,
+	teamDbId: number,
+) {
+	// Record new subscription state from Stripe to history
 	await recordSubscriptionHistory(tx, subscription, teamDbId);
 
 	// Update team plan and active subscription tracking
@@ -198,94 +213,6 @@ async function insertSubscription(
 				),
 			);
 	}
-}
-
-async function updateSubscription(subscription: Stripe.Subscription) {
-	await db.transaction(async (tx) => {
-		const period = getSubscriptionPeriod(subscription);
-
-		// Get teamDbId from existing subscription
-		const [existing] = await tx
-			.select({ teamDbId: subscriptions.teamDbId })
-			.from(subscriptions)
-			.where(eq(subscriptions.id, subscription.id));
-
-		if (!existing) {
-			throw new Error("Subscription not found");
-		}
-
-		// Record new subscription state from Stripe to history
-		await recordSubscriptionHistory(tx, subscription, existing.teamDbId);
-
-		// Update subscriptions table
-		await tx
-			.update(subscriptions)
-			.set({
-				customerId: getCustomerId(subscription),
-				status: subscription.status,
-				cancelAtPeriodEnd: subscription.cancel_at_period_end,
-				cancelAt:
-					subscription.cancel_at !== null
-						? timestampToDateTime(subscription.cancel_at)
-						: null,
-				canceledAt:
-					subscription.canceled_at !== null
-						? timestampToDateTime(subscription.canceled_at)
-						: null,
-				currentPeriodStart: timestampToDateTime(period.currentPeriodStart),
-				currentPeriodEnd: timestampToDateTime(period.currentPeriodEnd),
-				created: timestampToDateTime(subscription.created),
-				endedAt:
-					subscription.ended_at !== null
-						? timestampToDateTime(subscription.ended_at)
-						: null,
-				trialStart:
-					subscription.trial_start !== null
-						? timestampToDateTime(subscription.trial_start)
-						: null,
-				trialEnd:
-					subscription.trial_end !== null
-						? timestampToDateTime(subscription.trial_end)
-						: null,
-			})
-			.where(eq(subscriptions.id, subscription.id));
-
-		// Update team plan and active subscription tracking
-		if (subscription.status === "active") {
-			// Active: Set subscription tracking fields
-			await tx
-				.update(teams)
-				.set({
-					plan: "pro",
-					activeSubscriptionId: subscription.id,
-					activeCustomerId: getCustomerId(subscription),
-				})
-				.where(
-					and(
-						eq(teams.dbId, existing.teamDbId),
-						ne(teams.plan, "internal"),
-						ne(teams.plan, "enterprise"),
-					),
-				);
-		} else {
-			// Non-active: Only clear if this subscription is currently the active one
-			await tx
-				.update(teams)
-				.set({
-					plan: "free",
-					activeSubscriptionId: null,
-					activeCustomerId: null,
-				})
-				.where(
-					and(
-						eq(teams.dbId, existing.teamDbId),
-						eq(teams.activeSubscriptionId, subscription.id),
-						ne(teams.plan, "internal"),
-						ne(teams.plan, "enterprise"),
-					),
-				);
-		}
-	});
 }
 
 /**

@@ -1,6 +1,6 @@
 import type { ActionProvider } from "@giselles-ai/action-registry";
 import type { TriggerProvider } from "@giselles-ai/trigger-registry";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import { NodeBase, NodeReferenceBase } from "../base";
 import { ActionContent, ActionContentReference } from "./action";
 import {
@@ -8,6 +8,10 @@ import {
 	AppEntryContentReference,
 	AppEntryType,
 } from "./app-entry";
+import {
+	ContentGenerationContent,
+	ContentGenerationContentReference,
+} from "./content-generation";
 import {
 	ImageGenerationContent,
 	ImageGenerationContentReference,
@@ -33,6 +37,7 @@ const OperationNodeContent = z.discriminatedUnion("type", [
 	ActionContent,
 	QueryContent,
 	AppEntryContent,
+	ContentGenerationContent,
 ]);
 
 export const OperationNode = NodeBase.extend({
@@ -55,6 +60,7 @@ export const OperationNodeLike = NodeBase.extend({
 			TriggerContent.shape.type,
 			ActionContent.shape.type,
 			QueryContent.shape.type,
+			ContentGenerationContent.shape.type,
 		]),
 	}),
 });
@@ -144,6 +150,17 @@ export function isAppEntryNode(args?: unknown): args is AppEntryNode {
 	return result.success;
 }
 
+export const ContentGenerationNode = OperationNode.extend({
+	content: ContentGenerationContent,
+});
+export type ContentGenerationNode = z.infer<typeof ContentGenerationNode>;
+export function isContentGenerationNode(
+	args?: unknown,
+): args is ContentGenerationNode {
+	const result = ContentGenerationNode.safeParse(args);
+	return result.success;
+}
+
 const OperationNodeContentReference = z.discriminatedUnion("type", [
 	AppEntryContentReference,
 	TextGenerationContentReference,
@@ -151,6 +168,7 @@ const OperationNodeContentReference = z.discriminatedUnion("type", [
 	TriggerContentReference,
 	ActionContentReference,
 	QueryContentReference,
+	ContentGenerationContentReference,
 ]);
 export const OperationNodeReference = NodeReferenceBase.extend({
 	type: OperationNode.shape.type,

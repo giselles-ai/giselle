@@ -15,6 +15,10 @@ export interface SelectLanguageModelTool extends ToolBase {
 	category: "edit";
 	action: "selectLanguageModel";
 }
+export interface SelectLanguageModelV2Tool extends ToolBase {
+	category: "edit";
+	action: "selectLanguageModelV2";
+}
 
 export interface SelectFileNodeCategoryTool extends ToolBase {
 	category: "edit";
@@ -49,7 +53,8 @@ export type Tool =
 	| SelectSourceCategoryTool
 	| SelectTriggerTool
 	| SelectEnviromentActionTool
-	| SelectRetrievalCategoryTool;
+	| SelectRetrievalCategoryTool
+	| SelectLanguageModelV2Tool;
 
 type ToolAction = Tool["action"];
 
@@ -63,7 +68,8 @@ export function isToolAction(args: unknown): args is ToolAction {
 			args === "selectSourceCategory" ||
 			args === "selectTrigger" ||
 			args === "selectAction" ||
-			args === "selectRetrievalCategory"
+			args === "selectRetrievalCategory" ||
+			args === "selectLanguageModelV2"
 		);
 	}
 	return false;

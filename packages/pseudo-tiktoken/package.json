@@ -11,7 +11,8 @@
 		"format": "biome format --write .",
 		"test": "vitest run",
 		"test:watch": "vitest",
-		"generate-true-tokens": "tsx scripts/generate-true-tokens.ts"
+		"generate-true-tokens": "tsx scripts/generate-true-tokens.ts",
+		"check-token-ratios": "tsx scripts/check-token-ratios.ts"
 	},
 	"exports": {
 		"./package.json": "./package.json",

@@ -8,7 +8,7 @@ export default function StageLayout({ children }: { children: ReactNode }) {
 	return (
 		<div className="min-h-screen flex flex-col md:flex-row bg-bg">
 			<Suspense fallback="">
-				<MobileHeader />
+				<MobileHeader dataLoader={data} />
 				<NavigationRail dataLoader={data} />
 			</Suspense>
 			<div className="flex-1">{children}</div>

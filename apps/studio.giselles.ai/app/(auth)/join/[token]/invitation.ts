@@ -6,7 +6,6 @@ import {
 	db,
 	db as dbInstance,
 	invitations,
-	subscriptions,
 	supabaseUserMappings,
 	type TeamRole,
 	teamMemberships,
@@ -85,16 +84,10 @@ async function fetchTeamWithSubscription(
 			name: teams.name,
 			avatarUrl: teams.avatarUrl,
 			plan: teams.plan,
-			activeSubscriptionId: subscriptions.id,
+			activeSubscriptionId: teams.activeSubscriptionId,
+			activeCustomerId: teams.activeCustomerId,
 		})
 		.from(teams)
-		.leftJoin(
-			subscriptions,
-			and(
-				eq(teams.dbId, subscriptions.teamDbId),
-				eq(subscriptions.status, "active"),
-			),
-		)
 		.where(eq(teams.dbId, teamDbId));
 
 	if (!team) {
@@ -108,6 +101,7 @@ async function fetchTeamWithSubscription(
 		avatarUrl: team.avatarUrl,
 		plan: team.plan,
 		activeSubscriptionId: team.activeSubscriptionId,
+		activeCustomerId: team.activeCustomerId,
 	};
 }
 

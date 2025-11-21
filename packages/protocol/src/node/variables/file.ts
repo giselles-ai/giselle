@@ -1,5 +1,5 @@
 import { createIdGenerator } from "@giselles-ai/utils";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 
 export const FileId = createIdGenerator("fl");
 export type FileId = z.infer<typeof FileId.schema>;

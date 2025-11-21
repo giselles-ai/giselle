@@ -1,6 +1,7 @@
 import { type ActionProvider, getEntry } from "@giselles-ai/action-registry";
 import {
 	isActionNode,
+	isContentGenerationNode,
 	isImageGenerationNode,
 	isQueryNode,
 	isTextGenerationNode,
@@ -50,6 +51,13 @@ export function defaultName(node: NodeLike) {
 						throw new Error(`Expected text generation node, got ${node.type}`);
 					}
 					return node.name ?? node.content.llm.id;
+				case "contentGeneration":
+					if (!isContentGenerationNode(node)) {
+						throw new Error(
+							`Expected content generation node, got ${node.type}`,
+						);
+					}
+					return node.name ?? node.content.languageModel.id;
 				case "imageGeneration":
 					if (!isImageGenerationNode(node)) {
 						throw new Error(`Expected image generation node, got ${node.type}`);

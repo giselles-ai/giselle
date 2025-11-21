@@ -4,7 +4,7 @@ import {
 	OpenAILanguageModel,
 	PerplexityLanguageModel,
 } from "@giselles-ai/language-model";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 import { SecretId } from "../../secret";
 
 export const AnthropicLanguageModelData = AnthropicLanguageModel.pick({

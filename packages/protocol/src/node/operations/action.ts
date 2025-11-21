@@ -1,5 +1,5 @@
 import type { GitHubActionId } from "@giselles-ai/action-registry";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 
 const GitHubActionUnconfiguredState = z.object({
 	status: z.literal("unconfigured"),

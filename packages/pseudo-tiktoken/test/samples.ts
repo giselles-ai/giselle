@@ -4,11 +4,25 @@
  * The trueTokens values should be generated using the generate-true-tokens script.
  */
 
+import fs from "node:fs";
+import path from "node:path";
+
 type TokenSample = {
 	id: string;
 	text: string;
 	trueTokens: number; // Token count from tiktoken (gpt-4o-mini)
 };
+
+const nextJsLlmPath = path.join(__dirname, "nextjs-llm.txt");
+let nextJsLlmText = "";
+
+try {
+	nextJsLlmText = fs.readFileSync(nextJsLlmPath, "utf-8");
+} catch (error) {
+	// Ignore error if file doesn't exist (e.g. in CI or if not downloaded)
+	// But user said they have it.
+	console.warn(`Warning: Could not read ${nextJsLlmPath}`, error);
+}
 
 export const TOKEN_SAMPLES: TokenSample[] = [
 	{
@@ -261,8 +275,12 @@ Follow any project‑specific PR templates, but adapt them as needed to provide 
 </guidelines> </Guideline>
 
 <Author notes>  </Author notes>
-
 		`,
 		trueTokens: 655,
+	},
+	{
+		id: "nextjs-llm",
+		text: nextJsLlmText,
+		trueTokens: 678084,
 	},
 ];

@@ -1,5 +1,5 @@
 import { createIdGenerator } from "@giselles-ai/utils";
-import { z } from "zod/v4";
+import * as z from "zod/v4";
 
 export const InputId = createIdGenerator("inp");
 export type InputId = z.infer<typeof InputId.schema>;
