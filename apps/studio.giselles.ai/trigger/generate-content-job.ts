@@ -15,6 +15,7 @@ export const generateContentJob = schemaJob({
 			id: z.string<`tm_${string}`>(),
 			subscriptionId: z.string().nullable(),
 			plan: z.enum(["free", "pro", "team", "enterprise", "internal"]),
+			activeCustomerId: z.string().nullable(),
 		}),
 	}),
 	run: async (payload) => {
@@ -42,8 +43,9 @@ export const generateContentJob = schemaJob({
 					sessionId: generation.context.origin.taskId,
 					team: {
 						id: parsedMetadata.team.id,
-						activeSubscriptionId: parsedMetadata.team.subscriptionId,
 						plan: parsedMetadata.team.plan,
+						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						activeCustomerId: parsedMetadata.team.activeCustomerId,
 					},
 				});
 			},
@@ -57,8 +59,9 @@ export const generateContentJob = schemaJob({
 					sessionId: generation.context.origin.taskId,
 					team: {
 						id: parsedMetadata.team.id,
-						activeSubscriptionId: parsedMetadata.team.subscriptionId,
 						plan: parsedMetadata.team.plan,
+						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						activeCustomerId: parsedMetadata.team.activeCustomerId,
 					},
 				});
 			},

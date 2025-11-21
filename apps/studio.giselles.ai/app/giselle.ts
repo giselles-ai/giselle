@@ -74,7 +74,10 @@ if (
 	throw new Error("missing github credentials");
 }
 
-type TeamForPlan = Pick<CurrentTeam, "id" | "activeSubscriptionId" | "plan">;
+type TeamForPlan = Pick<
+	CurrentTeam,
+	"id" | "activeSubscriptionId" | "activeCustomerId" | "plan"
+>;
 
 async function traceEmbeddingForTeam(args: {
 	metrics: EmbeddingMetrics;
@@ -276,8 +279,9 @@ export const giselle = NextGiselle({
 						userId: parsedMetadata.userId,
 						team: {
 							id: parsedMetadata.team.id,
-							activeSubscriptionId: parsedMetadata.team.subscriptionId,
 							plan: parsedMetadata.team.plan,
+							activeSubscriptionId: parsedMetadata.team.subscriptionId,
+							activeCustomerId: parsedMetadata.team.activeCustomerId,
 						},
 					});
 					return;
@@ -413,6 +417,7 @@ if (generateContentProcessor === "trigger.dev") {
 						id: team.id,
 						subscriptionId: team.activeSubscriptionId,
 						plan: team.plan,
+						activeCustomerId: team.activeCustomerId,
 					},
 				});
 				break;
@@ -435,6 +440,7 @@ if (generateContentProcessor === "trigger.dev") {
 								id: currentTeam.id,
 								subscriptionId: currentTeam.activeSubscriptionId,
 								plan: currentTeam.plan,
+								activeCustomerId: currentTeam.activeCustomerId,
 							},
 						});
 						break;

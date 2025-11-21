@@ -13,6 +13,7 @@ interface GenerateEmbeddingsOptions {
 	maxBatchSize?: number;
 	signal?: AbortSignal;
 	embeddingComplete?: EmbeddingCompleteCallback;
+	xStripeCustomerId?: string;
 }
 
 interface EmbeddingResult {
@@ -54,6 +55,7 @@ export async function generateEmbeddings(
 		maxBatchSize = DEFAULT_MAX_BATCH_SIZE,
 		signal,
 		embeddingComplete,
+		xStripeCustomerId,
 	} = options;
 
 	if (!Number.isInteger(maxBatchSize) || maxBatchSize <= 0) {
@@ -117,7 +119,16 @@ export async function generateEmbeddings(
 			signal?.throwIfAborted();
 
 			const batch = chunks.slice(i, i + maxBatchSize);
-			const batchEmbeddings = await embedder.embedMany(batch);
+			const batchEmbeddings = await embedder.embedMany(
+				batch,
+				xStripeCustomerId
+					? {
+							headers: {
+								"X-Stripe-Customer-ID": xStripeCustomerId,
+							},
+						}
+					: undefined,
+			);
 
 			if (batchEmbeddings.length !== batch.length) {
 				throw new Error(

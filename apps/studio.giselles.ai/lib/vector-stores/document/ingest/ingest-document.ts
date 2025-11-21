@@ -280,6 +280,8 @@ export async function ingestDocument(
 					embeddingProfileId,
 					signal,
 					embeddingComplete,
+					xStripeCustomerId:
+						telemetryContext?.team.activeCustomerId ?? undefined,
 				});
 
 				signal?.throwIfAborted();
