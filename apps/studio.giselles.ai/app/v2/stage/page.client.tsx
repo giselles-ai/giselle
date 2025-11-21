@@ -6,6 +6,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
+import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { AppEntryInputDialog } from "@giselle-internal/workflow-designer-ui";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
@@ -16,7 +17,7 @@ import type {
 } from "@giselles-ai/protocol";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
-import { use, useCallback, useTransition } from "react";
+import { use, useCallback, useState, useTransition } from "react";
 import { CreateWorkspaceButton } from "@/app/(main)/workspaces/create-workspace-button";
 import type { LoaderData } from "./data-loader";
 import type { StageApp } from "./types";
@@ -206,75 +207,177 @@ export function Page({
 	) => Promise<TaskId>;
 }) {
 	const data = use(dataLoader);
-	return (
-		<div className="max-w-7xl mx-auto px-8 py-12">
-			<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-				{/* Histories */}
-				<div>
-					<h2 className="text-2xl font-semibold text-foreground mb-6">
-						Histories
-					</h2>
-					{data.tasks.length === 0 ? (
-						<div className="flex flex-col items-center justify-center py-12 px-4 border border-border rounded-lg bg-card/30">
-							<p className="text-muted-foreground text-center">
-								No task history yet
-							</p>
-						</div>
-					) : (
-						<div className="space-y-3">
-							{data.tasks.map((task) => (
-								<TaskCard key={task.id} task={task} />
-							))}
-						</div>
-					)}
-				</div>
-				{/* Histories */}
+	const [selectedAppId, setSelectedAppId] = useState<string | undefined>(
+		data.apps[0]?.id,
+	);
 
-				{/* Your apps */}
+	const selectedApp =
+		data.apps.find((app) => app.id === selectedAppId) ?? data.apps[0];
+
+	const handleSelectApp = (appId: string) => {
+		setSelectedAppId(appId);
+	};
+
+	const filteredAppsForBottom =
+		selectedApp != null
+			? data.apps.filter((app) => app.teamId === selectedApp.teamId)
+			: data.apps;
+
+	return (
+		<div className="max-w-[1200px] mx-auto w-full px-[24px] py-[24px] space-y-8">
+			{/* Page heading */}
+			<div className="flex items-center justify-between">
 				<div>
-					<h2 className="text-2xl font-semibold text-foreground mb-6">
-						Your apps
-					</h2>
-					{data.apps.length === 0 ? (
-						<div className="flex flex-col items-center justify-center py-12 px-4 border border-border rounded-lg bg-card/30">
-							<p className="text-muted-foreground mb-4 text-center">
-								You don't have any apps yet
-							</p>
-							<CreateWorkspaceButton label="Create your first app" />
-						</div>
-					) : (
-						<div className="space-y-3">
-							{data.apps.map((app) => (
+					<PageHeading glow>Stage</PageHeading>
+					<p className="mt-1 text-sm text-text-muted">
+						Choose an app to start, review history, and explore your workflows.
+					</p>
+				</div>
+			</div>
+
+			{/* Top container */}
+			<div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.9fr)] gap-8 min-h-[420px]">
+				{/* Left column: Histories + Your apps */}
+				<div className="space-y-6">
+					{/* Histories */}
+					<section>
+						<h2 className="text-2xl font-semibold text-foreground mb-4">
+							Histories
+						</h2>
+						{data.tasks.length === 0 ? (
+							<div className="flex flex-col items-center justify-center py-8 px-4 border border-border rounded-lg bg-card/30">
+								<p className="text-muted-foreground text-center">
+									No task history yet
+								</p>
+							</div>
+						) : (
+							<div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+								{data.tasks.map((task) => (
+									<TaskCard key={task.id} task={task} />
+								))}
+							</div>
+						)}
+					</section>
+
+					{/* Your apps */}
+					<section>
+						<h2 className="text-2xl font-semibold text-foreground mb-4">
+							Your apps
+						</h2>
+						{data.apps.length === 0 ? (
+							<div className="flex flex-col items-center justify-center py-8 px-4 border border-border rounded-lg bg-card/30">
+								<p className="text-muted-foreground mb-4 text-center">
+									You don't have any apps yet
+								</p>
+								<CreateWorkspaceButton label="Create your first app" />
+							</div>
+						) : (
+							<div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+								{data.apps.map((app) => (
+									<button
+										type="button"
+										key={app.id}
+										onClick={() => handleSelectApp(app.id)}
+										className={`w-full text-left px-3 py-2 rounded-md border transition-colors ${
+											selectedApp?.id === app.id
+												? "border-primary bg-primary/10 text-foreground"
+												: "border-border bg-card/30 hover:bg-card/50"
+										}`}
+									>
+										<div className="flex items-center gap-2">
+											<span className="text-sm font-medium line-clamp-1">
+												{app.name}
+											</span>
+											<span className="text-xs text-muted-foreground line-clamp-1">
+												{app.workspaceName}
+											</span>
+										</div>
+										<p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+											{app.description}
+										</p>
+									</button>
+								))}
+							</div>
+						)}
+					</section>
+				</div>
+
+				{/* Right column: Selected app detail */}
+				<div className="border border-border rounded-lg bg-card/40 p-6 flex flex-col">
+					{selectedApp ? (
+						<>
+							<div className="flex items-start justify-between gap-4 mb-4">
+								<div>
+									<p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">
+										Selected app
+									</p>
+									<h2 className="text-2xl font-semibold text-foreground">
+										{selectedApp.name}
+									</h2>
+									<p className="mt-2 text-sm text-muted-foreground max-w-xl">
+										{selectedApp.description}
+									</p>
+								</div>
+							</div>
+							<div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+								<span>Workspace: {selectedApp.workspaceName}</span>
+								<span>Team: {selectedApp.teamName}</span>
+							</div>
+							<div className="mt-6">
 								<AppCard
-									app={app}
-									key={app.id}
+									app={selectedApp}
 									onSubmitCreateAndStartTask={(event) =>
 										createAndStartTaskAction({
 											generationOriginType: "stage",
-											nodeId: app.entryNodeId,
+											nodeId: selectedApp.entryNodeId,
 											inputs: event.inputs,
-											workspaceId: app.workspaceId,
+											workspaceId: selectedApp.workspaceId,
 										})
 									}
 								/>
-							))}
+							</div>
+						</>
+					) : (
+						<div className="flex flex-1 items-center justify-center text-muted-foreground text-sm">
+							No apps available yet.
 						</div>
 					)}
 				</div>
-				{/* Your apps */}
+			</div>
 
-				{/* Suggested apps */}
-				{/*<div>
-					<h2 className="text-2xl font-semibold text-foreground mb-6">
-						Suggested apps
+			{/* Bottom container: apps related to the selected app */}
+			<div className="border border-border rounded-lg bg-card/20 p-6">
+				<div className="flex items-center justify-between mb-4">
+					<h2 className="text-xl font-semibold text-foreground">
+						Apps
+						{selectedApp ? ` in ${selectedApp.teamName}` : ""}
 					</h2>
-					<div className="space-y-3">
-						{suggestedApps.map((app) => (
-							<AppCard {...app} key={app.id} />
+					<p className="text-xs text-muted-foreground">
+						Select an app from the list above to focus this section.
+					</p>
+				</div>
+				{filteredAppsForBottom.length === 0 ? (
+					<p className="text-sm text-muted-foreground">
+						No apps found for the current selection.
+					</p>
+				) : (
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+						{filteredAppsForBottom.map((app) => (
+							<AppCard
+								app={app}
+								key={app.id}
+								onSubmitCreateAndStartTask={(event) =>
+									createAndStartTaskAction({
+										generationOriginType: "stage",
+										nodeId: app.entryNodeId,
+										inputs: event.inputs,
+										workspaceId: app.workspaceId,
+									})
+								}
+							/>
 						))}
 					</div>
-				</div>*/}
-				{/* Suggested apps */}
+				)}
 			</div>
 		</div>
 	);
