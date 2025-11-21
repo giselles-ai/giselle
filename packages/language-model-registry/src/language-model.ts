@@ -46,6 +46,8 @@ export type ConfigurationOption<TSchema extends z.ZodType> = {
 	description: string;
 	schema: TSchema;
 	ui?: {
+		min?: number;
+		max?: number;
 		step?: number;
 	};
 };

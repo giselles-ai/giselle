@@ -25,6 +25,8 @@ export const anthropic = {
 				description: "Amount of randomness injected into the response.",
 				schema: z.number().min(0).max(1),
 				ui: {
+					min: 0.0,
+					max: 1.0,
 					step: 0.1,
 				},
 			},
@@ -58,6 +60,8 @@ export const anthropic = {
 				description: "Amount of randomness injected into the response.",
 				schema: z.number(),
 				ui: {
+					min: 0.0,
+					max: 1.0,
 					step: 0.1,
 				},
 			},
@@ -91,6 +95,8 @@ export const anthropic = {
 				description: "Amount of randomness injected into the response.",
 				schema: z.number(),
 				ui: {
+					min: 0.0,
+					max: 1.0,
 					step: 0.1,
 				},
 			},

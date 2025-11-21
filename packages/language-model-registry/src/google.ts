@@ -25,6 +25,8 @@ export const google = {
 				description: "Controls the randomness of the output.",
 				schema: z.number().min(0.0).max(2.0),
 				ui: {
+					min: 0.0,
+					max: 2.0,
 					step: 0.1,
 				},
 			},
@@ -63,6 +65,8 @@ export const google = {
 				description: "Controls the randomness of the output.",
 				schema: z.number().min(0.0).max(2.0),
 				ui: {
+					min: 0.0,
+					max: 2.0,
 					step: 0.1,
 				},
 			},
@@ -101,6 +105,8 @@ export const google = {
 				description: "Controls the randomness of the output.",
 				schema: z.number().min(0.0).max(2.0),
 				ui: {
+					min: 0.0,
+					max: 2.0,
 					step: 0.1,
 				},
 			},

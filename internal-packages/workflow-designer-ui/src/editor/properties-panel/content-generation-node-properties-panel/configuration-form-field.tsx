@@ -3,6 +3,7 @@ import { Select } from "@giselle-internal/ui/select";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import type { ConfigurationOption } from "@giselles-ai/language-model-registry";
 import type * as z from "zod/v4";
+import { Slider } from "../../../ui/slider";
 
 function getEnumValues(schema: z.ZodTypeAny): string[] {
 	const def = schema.def;
@@ -45,25 +46,29 @@ export function ConfigurationFormField<T extends z.ZodType>({
 					<span className="text-[14px] text-inverse">{option.description}</span>
 				</Toggle>
 			);
-		case "number":
+		case "number": {
+			const numValue = Number(value ?? 0);
+			const step = option.ui?.step ?? 1;
+			const min = option.ui?.min ?? 0;
+			const max = option.ui?.max ?? Infinity;
 			return (
-				<Input
-					type="number"
-					step={option.ui?.step ?? 1}
-					value={String(value ?? "")}
-					onChange={(e) => {
-						const numValue = parseFloat(e.target.value);
-						if (!Number.isNaN(numValue)) {
-							onChange(numValue);
-						}
-					}}
+				<Slider
+					label={name}
+					value={numValue}
+					min={min}
+					max={max}
+					step={step}
+					onChange={(v) => onChange(v)}
 				/>
 			);
+		}
 		default:
-			<Input
-				type="text"
-				value={String(value ?? "")}
-				onChange={(e) => onChange(e.target.value)}
-			/>;
+			return (
+				<Input
+					type="text"
+					value={String(value ?? "")}
+					onChange={(e) => onChange(e.target.value)}
+				/>
+			);
 	}
 }
