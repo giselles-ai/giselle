@@ -698,7 +698,7 @@ const contentGenerationFactoryImpl = {
 				languageModel: {
 					provider: languageModel.provider,
 					id: languageModel.id,
-					configration: languageModel.defaultConfiguration,
+					configuration: languageModel.defaultConfiguration,
 				},
 			},
 			inputs: [],
