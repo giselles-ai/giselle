@@ -60,7 +60,7 @@ export function LanguageModelMegaTooltip({
 				)}
 			<div className="relative text-inverse h-[200px]">
 				{hoveredLanguageModel ? (
-					<div className="px-[16px] py-[16px] flex flex-col gap-[24px]">
+					<div className="px-[16px] py-[16px] flex flex-col gap-[16px]">
 						<div className="flex items-start gap-[16px]">
 							<div className="flex items-center shrink-0">
 								<ProviderIcon
@@ -72,6 +72,9 @@ export function LanguageModelMegaTooltip({
 								{hoveredLanguageModel.name}
 							</p>
 						</div>
+						<p className="text-[14px] text-muted">
+							{hoveredLanguageModel.description}
+						</p>
 						{/*<div className="flex flex-wrap gap-x-[8px] gap-y-[8px]">
 							{hasCapability(
 								languageModelMouseHovered,

@@ -61,6 +61,7 @@ export interface LanguageModel<
 	provider: Provider;
 	id: Id;
 	name: string;
+	description: string;
 	contextWindow: number;
 	maxOutputTokens: number;
 	knowledgeCutoff: number;

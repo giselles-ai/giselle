@@ -14,7 +14,9 @@ export const openai = {
 	"openai/gpt-5.1-thinking": defineLanguageModel({
 		provider: "openai",
 		id: "openai/gpt-5.1-thinking",
-		name: "GPT-5.1 Thinking",
+		name: "GPT-5.1",
+		description:
+			"An upgraded version of GPT-5 that adapts thinking time more precisely to the question to spend more time on complex questions and respond more quickly to simpler tasks.",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
 		knowledgeCutoff: new Date(2024, 8, 30).getTime(),
@@ -39,11 +41,43 @@ export const openai = {
 		},
 		url: "https://platform.openai.com/docs/models/gpt-5.1",
 	}),
+	"openai/gpt-5.1-codex": defineLanguageModel({
+		provider: "openai",
+		id: "openai/gpt-5.1-codex",
+		name: "GPT-5.1 Codex",
+		description:
+			"GPT-5.1-Codex is a version of GPT-5.1 optimized for agentic coding tasks in Codex or similar environments.",
+		contextWindow: 400_000,
+		maxOutputTokens: 128_000,
+		knowledgeCutoff: new Date(2024, 8, 30).getTime(),
+		pricing: {
+			input: definePricing(1.25),
+			output: definePricing(10.0),
+		},
+		requiredTier: "pro",
+		configurationOptions: {
+			reasoningEffort: {
+				description: reasoningEffortDescription,
+				schema: z.enum(["minimal", "low", "medium", "high"]),
+			},
+			textVerbosity: {
+				description: textVerbosityDescription,
+				schema: z.enum(["low", "medium", "high"]),
+			},
+		},
+		defaultConfiguration: {
+			reasoningEffort: "minimal",
+			textVerbosity: "medium",
+		},
+		url: "https://platform.openai.com/docs/models/gpt-5.1-codex",
+	}),
 
 	"openai/gpt-5": defineLanguageModel({
 		provider: "openai",
 		id: "openai/gpt-5",
 		name: "GPT-5",
+		description:
+			"GPT-5 is OpenAI's flagship language model that excels at complex reasoning, broad real-world knowledge, code-intensive, and multi-step agentic tasks.",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
 		knowledgeCutoff: new Date(2024, 8, 30).getTime(),
@@ -73,6 +107,8 @@ export const openai = {
 		provider: "openai",
 		id: "openai/gpt-5-codex",
 		name: "GPT-5-Codex",
+		description:
+			"GPT-5-Codex is a version of GPT-5 optimized for agentic coding tasks in Codex or similar environments.",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
 		knowledgeCutoff: new Date(2024, 8, 30).getTime(),
@@ -102,6 +138,8 @@ export const openai = {
 		provider: "openai",
 		id: "openai/gpt-5-mini",
 		name: "GPT-5 mini",
+		description:
+			"GPT-5 mini is a cost optimized model that excels at reasoning/chat tasks. It offers an optimal balance between speed, cost, and capability.",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
 		knowledgeCutoff: new Date(2024, 4, 31).getTime(),
@@ -131,6 +169,8 @@ export const openai = {
 		provider: "openai",
 		id: "openai/gpt-5-nano",
 		name: "GPT-5 nano",
+		description:
+			"GPT-5 nano is a high throughput model that excels at simple instruction or classification tasks.",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
 		knowledgeCutoff: new Date(2024, 4, 31).getTime(),
