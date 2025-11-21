@@ -470,6 +470,13 @@
       "when": 1763522209496,
       "tag": "0066_cuddly_wither",
       "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "7",
+      "when": 1763705586852,
+      "tag": "0067_peaceful_the_executioner",
+      "breakpoints": true
     }
   ]
 }
