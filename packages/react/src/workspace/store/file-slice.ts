@@ -1,4 +1,5 @@
 import {
+	createCopyingFileData,
 	createFailedFileData,
 	createUploadedFileData,
 	createUploadingFileData,
@@ -6,6 +7,7 @@ import {
 	type FileData,
 	type FileNode,
 	isFileNode,
+	type PendingCopyFileData,
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
 import type { StateCreator } from "zustand";
@@ -25,6 +27,11 @@ export interface FileSlice {
 		client: GiselleClient,
 		workspaceId: WorkspaceId,
 		file: FileData,
+	) => Promise<void>;
+	copyFiles: (
+		client: GiselleClient,
+		workspaceId: WorkspaceId,
+		node: FileNode,
 	) => Promise<void>;
 }
 
@@ -128,5 +135,56 @@ export const createFileSlice: StateCreator<AppStore, [], [], FileSlice> = (
 				currentFiles.filter((f) => f.id !== file.id),
 			);
 		}
+	},
+	copyFiles: async (client, workspaceId, node) => {
+		const getCurrentFiles = (): FileData[] => {
+			const ws = get().workspace;
+			if (!ws) return [];
+			const found = ws.nodes.find((n) => n.id === node.id);
+			if (found && isFileNode(found)) {
+				return found.content.files;
+			}
+			return [];
+		};
+
+		const filesToCopy = getCurrentFiles().filter(
+			(f): f is PendingCopyFileData => f.status === "pending-copy",
+		);
+
+		await Promise.all(
+			filesToCopy.map(async (fileData) => {
+				const copyingFileData = createCopyingFileData(fileData);
+				get().updateFileStatus(node.id, (currentFiles) =>
+					currentFiles.map((f) => (f.id === fileData.id ? copyingFileData : f)),
+				);
+
+				try {
+					await client.copyFile({
+						workspaceId,
+						sourceFileId: fileData.originalFileIdForCopy,
+						destinationFileId: fileData.id,
+					});
+
+					const uploadedFileData = createUploadedFileData(
+						copyingFileData,
+						Date.now(),
+					);
+					get().updateFileStatus(node.id, (currentFiles) =>
+						currentFiles.map((f) =>
+							f.id === fileData.id ? uploadedFileData : f,
+						),
+					);
+				} catch (error) {
+					const message =
+						error instanceof Error ? error.message : "Copy failed";
+					const failedFileData = createFailedFileData(copyingFileData, message);
+					get().updateFileStatus(node.id, (currentFiles) =>
+						currentFiles.map((f) =>
+							f.id === fileData.id ? failedFileData : f,
+						),
+					);
+				}
+			}),
+		);
 	},
 });

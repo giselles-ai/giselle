@@ -9,13 +9,14 @@ import {
 	type ActionNode,
 	type AppEntryNode,
 	type ContentGenerationNode,
+	createPendingCopyFileData,
 	DEFAULT_MAX_RESULTS,
 	DEFAULT_SIMILARITY_THRESHOLD,
 	type DraftApp,
 	DraftAppParameterId,
 	type FileContent,
 	type FileData,
-	FileId,
+	type FileId,
 	type FileNode,
 	type GitHubContent,
 	type GitHubNode,
@@ -474,20 +475,18 @@ const fileVariableFactoryImpl = {
 		}) satisfies FileNode,
 	clone: (orig: FileNode): NodeFactoryCloneResult<FileNode> => {
 		const clonedContent = structuredClone(orig.content);
-		clonedContent.files = orig.content.files.map(
-			(fileData: FileData): ClonedFileDataPayload => {
-				const newFileId = FileId.generate();
-				// Handle transitive cloning: if already cloned, preserve the original file ID
-				const actualOriginalFileId = isClonedFileDataPayload(fileData)
-					? fileData.originalFileIdForCopy
-					: fileData.id;
-				return {
-					...fileData,
-					id: newFileId,
-					originalFileIdForCopy: actualOriginalFileId,
-				};
-			},
-		);
+		clonedContent.files = orig.content.files.map((fileData) => {
+			// Handle transitive cloning: if already cloned, preserve the original file ID
+			const actualOriginalFileId = isClonedFileDataPayload(fileData)
+				? fileData.originalFileIdForCopy
+				: fileData.id;
+			return createPendingCopyFileData({
+				name: fileData.name,
+				type: fileData.type,
+				size: fileData.size,
+				originalFileIdForCopy: actualOriginalFileId,
+			});
+		});
 
 		const { newIo: newInputs, idMap: inputIdMap } =
 			cloneAndRenewInputIdsWithMap(orig.inputs);
