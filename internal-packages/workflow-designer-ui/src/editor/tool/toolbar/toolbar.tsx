@@ -12,6 +12,7 @@ import {
 import {
 	createActionNode,
 	createAppEntryNode,
+	createContentGenerationNode,
 	createDocumentVectorStoreNode,
 	createFileNode,
 	createGitHubVectorStoreNode,
@@ -885,7 +886,16 @@ export function Toolbar() {
 											align="end"
 											sideOffset={42}
 										>
-											<LanguageModelV2ToggleGroup userTier={userTier} />
+											<LanguageModelV2ToggleGroup
+												userTier={userTier}
+												onValueChange={(modelId) => {
+													setSelectedTool(
+														addNodeTool(
+															createContentGenerationNode({ id: modelId }),
+														),
+													);
+												}}
+											/>
 										</Popover.Content>
 									</Popover.Portal>
 								</Popover.Root>
