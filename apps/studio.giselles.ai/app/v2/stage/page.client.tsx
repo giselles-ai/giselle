@@ -1,13 +1,6 @@
 "use client";
 
-import {
-	Dialog,
-	DialogContent,
-	DialogTitle,
-	DialogTrigger,
-} from "@giselle-internal/ui/dialog";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
-import { AppEntryInputDialog } from "@giselle-internal/workflow-designer-ui";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
 import type {
@@ -15,10 +8,17 @@ import type {
 	Task,
 	TaskId,
 } from "@giselles-ai/protocol";
-import { Clock3Icon, File, FolderKanbanIcon } from "lucide-react";
+import { Clock3Icon, File, FolderKanbanIcon, PlayIcon } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
-import { use, useCallback, useEffect, useState, useTransition } from "react";
+import {
+	type FormEventHandler,
+	use,
+	useCallback,
+	useEffect,
+	useState,
+	useTransition,
+} from "react";
 import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider-icon";
 import { CreateWorkspaceButton } from "@/app/(main)/workspaces/create-workspace-button";
 import { GitHubIcon } from "../../../../../internal-packages/workflow-designer-ui/src/icons";
@@ -58,54 +58,142 @@ import type { StageApp } from "./types";
 // 	},
 // ];
 
-function AppCard({
+function SimpleAppEntryForm({
 	app,
-	onSubmitCreateAndStartTask,
-	onSelect,
+	onSubmit,
 }: {
 	app: StageApp;
-	onSubmitCreateAndStartTask: (event: {
-		inputs: GenerationContextInput[];
-	}) => Promise<TaskId>;
-	onSelect?: () => void;
+	onSubmit: (event: { inputs: GenerationContextInput[] }) => void;
 }) {
-	const [_isPending, startTransition] = useTransition();
-	const router = useRouter();
-	const handleSubmit = useCallback(
-		(event: { inputs: GenerationContextInput[] }) => {
-			startTransition(async () => {
-				const taskId = await onSubmitCreateAndStartTask(event);
-				router.push(`/stage/tasks/${taskId}`);
+	const [validationErrors, setValidationErrors] = useState<
+		Record<string, string>
+	>({});
+
+	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
+		(e) => {
+			e.preventDefault();
+
+			const formData = new FormData(e.currentTarget);
+			const errors: Record<string, string> = {};
+			const values: Record<string, string | number> = {};
+
+			for (const parameter of app.parameters) {
+				const formDataEntryValue = formData.get(parameter.name);
+				const value = formDataEntryValue
+					? formDataEntryValue.toString().trim()
+					: "";
+
+				if (parameter.required && value === "") {
+					errors[parameter.id] = `${parameter.name} is required`;
+					continue;
+				}
+
+				if (value === "") {
+					values[parameter.id] = "";
+					continue;
+				}
+
+				switch (parameter.type) {
+					case "text":
+					case "multiline-text":
+						values[parameter.id] = value;
+						break;
+					case "number": {
+						const numValue = Number(value);
+						if (Number.isNaN(numValue)) {
+							errors[parameter.id] = `${parameter.name} must be a valid number`;
+						} else {
+							values[parameter.id] = numValue;
+						}
+						break;
+					}
+					default: {
+						const _exhaustiveCheck: never = parameter.type;
+						throw new Error(`Unhandled input type: ${_exhaustiveCheck}`);
+					}
+				}
+			}
+
+			if (Object.keys(errors).length > 0) {
+				setValidationErrors(errors);
+				return;
+			}
+
+			setValidationErrors({});
+
+			const parameterItems = Object.entries(values).map(([id, value]) => {
+				if (typeof value === "number") {
+					return {
+						name: id,
+						type: "number" as const,
+						value,
+					};
+				}
+				return {
+					name: id,
+					type: "string" as const,
+					value: value as string,
+				};
+			});
+
+			onSubmit({
+				inputs: [
+					{
+						type: "parameters",
+						items: parameterItems,
+					},
+				],
 			});
 		},
-		[onSubmitCreateAndStartTask, router],
+		[app, onSubmit],
 	);
-	return (
-		<Dialog>
-			<DialogTrigger
-				className="flex-none w-[180px] flex items-center gap-3 rounded-lg bg-card/30 hover:bg-card/50 text-left group cursor-pointer transition-all"
-				onClick={onSelect}
-			>
-				<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-card/60 border border-border">
-					<DynamicIcon
-						name={app.iconName}
-						className="h-7 w-7 text-foreground"
-					/>
-				</div>
-				<div className="flex-1 min-w-0">
-					<h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
-						{app.name}
-					</h3>
-				</div>
-			</DialogTrigger>
-			<DialogContent variant="glass">
-				<DialogTitle className="sr-only">
-					verride inputs to test workflow
-				</DialogTitle>
 
-				<AppEntryInputDialog app={app} onSubmit={handleSubmit} />
-			</DialogContent>
-		</Dialog>
+	return (
+		<form onSubmit={handleSubmit} className="flex items-center gap-3 w-full">
+			{app.parameters.map((parameter) => (
+				<div key={parameter.id} className="flex-1 min-w-0">
+					<input
+						id={parameter.name}
+						className="w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-[1px] border-border text-[14px] bg-background"
+						type={parameter.type === "number" ? "number" : "text"}
+						name={parameter.name}
+						placeholder={parameter.name}
+						required={parameter.required}
+					/>
+					{validationErrors[parameter.id] && (
+						<p className="text-xs text-red-500 mt-1">
+							{validationErrors[parameter.id]}
+						</p>
+					)}
+				</div>
+			))}
+			<button
+				type="submit"
+				className="flex-shrink-0 relative flex items-center justify-center outline-none overflow-hidden focus-visible:ring-2 focus-visible:ring-primary-700/60 focus-visible:ring-offset-1 px-6 h-[38px] rounded-lg gap-[6px] bg-gradient-to-b from-[#202530] to-[#12151f] text-white/80 border border-black/70 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)] transition-all duration-200 active:scale-[0.98] cursor-pointer"
+			>
+				<PlayIcon className="h-4 w-4 fill-current" />
+				Run
+			</button>
+		</form>
+	);
+}
+
+function AppCard({ app, onSelect }: { app: StageApp; onSelect?: () => void }) {
+	return (
+		<button
+			type="button"
+			className="flex-none w-[180px] flex items-center gap-3 rounded-lg bg-card/30 hover:bg-card/50 text-left group cursor-pointer transition-all"
+			onClick={onSelect}
+		>
+			<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-card/60 border border-border">
+				<DynamicIcon name={app.iconName} className="h-7 w-7 text-foreground" />
+			</div>
+			<div className="flex-1 min-w-0">
+				<h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
+					{app.name}
+				</h3>
+			</div>
+		</button>
 	);
 }
 
@@ -266,6 +354,11 @@ export function Page({
 	const [selectedAppId, setSelectedAppId] = useState<string | undefined>(
 		undefined,
 	);
+	const [runningAppId, setRunningAppId] = useState<string | undefined>(
+		undefined,
+	);
+	const [_isPending, startTransition] = useTransition();
+	const router = useRouter();
 
 	useEffect(() => {
 		if (!selectedAppId) return;
@@ -277,6 +370,27 @@ export function Page({
 	const selectedApp = selectedAppId
 		? sourceApps.find((app) => app.id === selectedAppId)
 		: undefined;
+
+	const runningApp = runningAppId
+		? data.apps.find((app) => app.id === runningAppId)
+		: undefined;
+
+	const handleRunSubmit = useCallback(
+		(event: { inputs: GenerationContextInput[] }) => {
+			if (!runningApp) return;
+			startTransition(async () => {
+				const taskId = await createAndStartTaskAction({
+					generationOriginType: "stage",
+					nodeId: runningApp.entryNodeId,
+					inputs: event.inputs,
+					workspaceId: runningApp.workspaceId,
+				});
+				setRunningAppId(undefined);
+				router.push(`/stage/tasks/${taskId}`);
+			});
+		},
+		[runningApp, createAndStartTaskAction, router],
+	);
 
 	return (
 		<div className="max-w-[1200px] mx-auto w-full px-[24px] py-[24px]">
@@ -460,7 +574,7 @@ export function Page({
 												</p>
 											) : null}
 										</div>
-										<div className="mt-4 space-y-3">
+										<div className="mt-5 space-y-4">
 											<div>
 												<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
 													Workspace
@@ -584,16 +698,9 @@ export function Page({
 									<AppCard
 										app={app}
 										key={app.id}
-										onSubmitCreateAndStartTask={(event) =>
-											createAndStartTaskAction({
-												generationOriginType: "stage",
-												nodeId: app.entryNodeId,
-												inputs: event.inputs,
-												workspaceId: app.workspaceId,
-											})
-										}
 										onSelect={() => {
 											setSelectedAppId(app.id);
+											setRunningAppId(app.id);
 										}}
 									/>
 								))}
@@ -624,6 +731,63 @@ export function Page({
 					</aside>
 				)}
 			</div>
+
+			{/* Bottom fixed player panel */}
+			{runningApp && (
+				<div className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t border-border shadow-lg">
+					<div className="max-w-[1200px] mx-auto px-[24px] py-4">
+						<div className="flex items-center gap-4">
+							<div className="flex items-center gap-3 flex-shrink-0">
+								<div className="flex h-12 w-12 items-center justify-center rounded-md bg-card/60 border border-border">
+									<DynamicIcon
+										name={runningApp.iconName}
+										className="h-6 w-6 text-foreground"
+									/>
+								</div>
+								<div>
+									<h3 className="text-sm font-semibold text-foreground">
+										{runningApp.name}
+									</h3>
+									{runningApp.description && (
+										<p className="text-xs text-muted-foreground">
+											{runningApp.description}
+										</p>
+									)}
+								</div>
+							</div>
+							<div className="flex-1 min-w-0">
+								<SimpleAppEntryForm
+									app={runningApp}
+									onSubmit={handleRunSubmit}
+								/>
+							</div>
+							<button
+								type="button"
+								onClick={() => setRunningAppId(undefined)}
+								className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
+								aria-label="Close running app"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="24"
+									height="24"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									className="h-5 w-5"
+								>
+									<title>Close</title>
+									<path d="M18 6 6 18" />
+									<path d="m6 6 12 12" />
+								</svg>
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }
