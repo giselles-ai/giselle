@@ -38,11 +38,13 @@ export function Popover({
 	trigger,
 	align,
 	sideOffset,
+	onOpenAutoFocus,
 	children,
 	widthClassName,
 }: React.PropsWithChildren<{
 	align?: PopoverPrimitive.PopoverContentProps["align"];
 	sideOffset?: PopoverPrimitive.PopoverContentProps["sideOffset"];
+	onOpenAutoFocus?: PopoverPrimitive.PopoverContentProps["onOpenAutoFocus"];
 	widthClassName?: string;
 	trigger: React.ReactNode;
 }>) {
@@ -50,7 +52,12 @@ export function Popover({
 		<PopoverPrimitive.Root>
 			<PopoverPrimitive.Trigger asChild>{trigger}</PopoverPrimitive.Trigger>
 			<PopoverPrimitive.Portal>
-				<PopoverPrimitive.Content asChild align={align} sideOffset={sideOffset}>
+				<PopoverPrimitive.Content
+					asChild
+					align={align}
+					sideOffset={sideOffset}
+					onOpenAutoFocus={onOpenAutoFocus}
+				>
 					<PopoverContent widthClassName={widthClassName}>
 						{children}
 					</PopoverContent>

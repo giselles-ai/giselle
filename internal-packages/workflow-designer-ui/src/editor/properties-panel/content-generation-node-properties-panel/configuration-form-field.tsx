@@ -32,12 +32,13 @@ export function ConfigurationFormField<T extends z.ZodType>({
 			const enumValues = getEnumValues(option.schema);
 			const options = enumValues.map((v) => ({ value: v, label: v }));
 			return (
-				<div className="flex flex-col gap-[4px]">
+				<div className="flex justify-between">
 					<ConfigurationFormFieldLabel
 						label={name}
 						tooltip={option.description}
 					/>
 					<Select
+						widthClassName="w-fit"
 						options={options}
 						placeholder={`Select ${name}...`}
 						value={String(value ?? "")}

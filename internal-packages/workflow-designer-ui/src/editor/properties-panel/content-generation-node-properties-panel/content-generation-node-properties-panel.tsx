@@ -46,16 +46,19 @@ export function ContentGenerationNodePropertiesPanel({
 						<div className="flex items-center gap-[4px]">
 							<ModelPickerV2 value={node.content.languageModel.id} />
 							<Popover
+								onOpenAutoFocus={(e) => {
+									e.preventDefault();
+								}}
 								trigger={
 									<button
 										type="button"
-										className="w-[30px] h-[20px] hover:bg-element-hover cursor-pointer flex items-center justify-center rounded-[4px]"
+										className="w-[30px] h-[28px] hover:bg-element-hover cursor-pointer flex items-center justify-center rounded-[4px]"
 									>
 										<Settings2Icon className="size-[14px] shrink-0" />
 									</button>
 								}
-								widthClassName="w-[280px]"
-								sideOffset={12}
+								widthClassName="w-[300px]"
+								sideOffset={10}
 								align="end"
 							>
 								<div className="flex flex-col gap-[12px] p-[12px]">
