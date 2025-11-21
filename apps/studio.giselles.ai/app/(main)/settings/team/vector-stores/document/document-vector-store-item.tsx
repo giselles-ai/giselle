@@ -805,9 +805,7 @@ function DocumentVectorStoreConfigureDialog({
 									) : (
 										<div className="flex flex-col gap-[16px] justify-center items-center py-[16px]">
 											<ArrowUpFromLine className="size-[38px] text-text-muted" />
-											<label
-												className="text-center flex flex-col gap-[16px] text-inverse cursor-pointer"
-											>
+											<div className="text-center flex flex-col gap-[16px] text-inverse cursor-pointer">
 												<p>
 													Drop {SUPPORTED_FILE_TYPES_LABEL} files here to
 													upload.
@@ -818,7 +816,7 @@ function DocumentVectorStoreConfigureDialog({
 														Select files
 													</span>
 												</div>
-											</label>
+											</div>
 										</div>
 									)}
 									{isUploadingDocuments ? (
