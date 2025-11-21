@@ -81,7 +81,7 @@ export function ContentGenerationNodePropertiesPanel({
 													name={key}
 													option={option}
 													value={currentValue}
-													onChange={(value) => {
+													onValueChange={(value) => {
 														updateNodeData(node, {
 															content: {
 																...node.content,
