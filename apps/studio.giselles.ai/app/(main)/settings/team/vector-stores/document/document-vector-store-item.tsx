@@ -806,7 +806,6 @@ function DocumentVectorStoreConfigureDialog({
 										<div className="flex flex-col gap-[16px] justify-center items-center py-[16px]">
 											<ArrowUpFromLine className="size-[38px] text-text-muted" />
 											<label
-												htmlFor={`file-input-${store.id}`}
 												className="text-center flex flex-col gap-[16px] text-inverse cursor-pointer"
 											>
 												<p>
@@ -832,7 +831,6 @@ function DocumentVectorStoreConfigureDialog({
 							</button>
 							<input
 								ref={fileInputRef}
-								id={`file-input-${store.id}`}
 								type="file"
 								accept={DOCUMENT_UPLOAD_ACCEPT}
 								multiple
