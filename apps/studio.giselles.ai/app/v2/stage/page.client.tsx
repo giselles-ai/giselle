@@ -15,9 +15,10 @@ import type {
 	Task,
 	TaskId,
 } from "@giselles-ai/protocol";
+import { Clock3Icon, FolderKanbanIcon } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
-import { use, useCallback, useState, useTransition } from "react";
+import { use, useCallback, useEffect, useState, useTransition } from "react";
 import { CreateWorkspaceButton } from "@/app/(main)/workspaces/create-workspace-button";
 import type { LoaderData } from "./data-loader";
 import type { StageApp } from "./types";
@@ -77,12 +78,12 @@ function AppCard({
 	);
 	return (
 		<Dialog>
-			<DialogTrigger className="w-full flex items-start gap-4 p-4 rounded-lg border border-border hover:border-border-muted transition-all text-left group cursor-pointer h-[100px]">
-				<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br">
+			<DialogTrigger className="w-full flex items-center gap-3 rounded-md text-left group cursor-pointer">
+				<div className="flex h-10 w-10 shrink-0 items-center justify-center">
 					<DynamicIcon name={app.iconName} className="h-6 w-6 text-white" />
 				</div>
 				<div className="flex-1 min-w-0">
-					<h3 className="text-base font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+					<h3 className="text-base text-foreground group-hover:text-primary transition-colors">
 						{app.name}
 					</h3>
 					<p className="text-sm text-muted-foreground line-clamp-2">
@@ -207,21 +208,45 @@ export function Page({
 	) => Promise<TaskId>;
 }) {
 	const data = use(dataLoader);
-	const [selectedAppId, setSelectedAppId] = useState<string | undefined>(
-		data.apps[0]?.id,
+	const historyApps = (() => {
+		const map = new Map<string, StageApp>();
+		for (const task of data.tasks) {
+			const app = data.apps.find(
+				(candidate) => candidate.workspaceId === task.workspaceId,
+			);
+			if (app !== undefined && !map.has(app.id)) {
+				map.set(app.id, app);
+			}
+		}
+		return Array.from(map.values());
+	})();
+
+	const [listSource, setListSource] = useState<"history" | "myApps">(
+		historyApps.length > 0 ? "history" : "myApps",
 	);
 
-	const selectedApp =
-		data.apps.find((app) => app.id === selectedAppId) ?? data.apps[0];
-
-	const handleSelectApp = (appId: string) => {
-		setSelectedAppId(appId);
-	};
-
-	const filteredAppsForBottom =
-		selectedApp != null
-			? data.apps.filter((app) => app.teamId === selectedApp.teamId)
+	const sourceApps =
+		listSource === "history" && historyApps.length > 0
+			? historyApps
 			: data.apps;
+
+	const [selectedAppId, setSelectedAppId] = useState<string | undefined>(
+		sourceApps[0]?.id,
+	);
+
+	useEffect(() => {
+		if (sourceApps.length === 0) {
+			setSelectedAppId(undefined);
+			return;
+		}
+
+		if (!selectedAppId || !sourceApps.some((app) => app.id === selectedAppId)) {
+			setSelectedAppId(sourceApps[0]?.id);
+		}
+	}, [selectedAppId, sourceApps]);
+
+	const selectedApp =
+		sourceApps.find((app) => app.id === selectedAppId) ?? sourceApps[0];
 
 	return (
 		<div className="max-w-[1200px] mx-auto w-full px-[24px] py-[24px]">
@@ -239,50 +264,97 @@ export function Page({
 						</div>
 					</div>
 
-					{/* Top container: Your apps + Selected app */}
+					{/* Top container: menu (history / my apps) + Selected app */}
 					<div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.9fr)] gap-8 min-h-[420px]">
-						{/* Left column: Your apps */}
-						<div className="space-y-6">
+						{/* Left column: menu (history / my apps) */}
+						<div className="space-y-4">
 							<section>
-								<h2 className="text-2xl font-semibold text-foreground mb-4">
-									Your apps
-								</h2>
-								{data.apps.length === 0 ? (
-									<div className="flex flex-col items-center justify-center py-8 px-4 border border-border rounded-lg bg-card/30">
-										<p className="text-muted-foreground mb-4 text-center">
+								<div className="space-y-2">
+									<button
+										type="button"
+										onClick={() => setListSource("history")}
+										className={`w-full flex items-center gap-3 px-2 py-1 rounded-md transition-colors ${
+											listSource === "history"
+												? "bg-primary/15 text-foreground"
+												: "hover:bg-card/20 text-muted-foreground"
+										}`}
+									>
+										<div
+											className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors ${
+												listSource === "history"
+													? "bg-white text-foreground"
+													: "bg-card/30 text-[#505d7b]"
+											}`}
+										>
+											<Clock3Icon
+												className={`h-5 w-5 ${
+													listSource === "history"
+														? "text-[#1663F3]"
+														: "text-[#505d7b]"
+												}`}
+											/>
+										</div>
+										<div className="text-left">
+											<span
+												className={`text-base tracking-wide ${
+													listSource === "history"
+														? "text-foreground"
+														: "text-[#505d7b]"
+												}`}
+											>
+												Histories
+											</span>
+										</div>
+									</button>
+									<button
+										type="button"
+										onClick={() => setListSource("myApps")}
+										className={`w-full flex items-center gap-3 px-2 py-1 rounded-md transition-colors ${
+											listSource === "myApps"
+												? "bg-primary/15 text-foreground"
+												: "hover:bg-card/20 text-muted-foreground"
+										}`}
+									>
+										<div
+											className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors ${
+												listSource === "myApps"
+													? "bg-white text-foreground"
+													: "bg-card/30 text-[#505d7b]"
+											}`}
+										>
+											<FolderKanbanIcon
+												className={`h-5 w-5 ${
+													listSource === "myApps"
+														? "text-[#1663F3]"
+														: "text-[#505d7b]"
+												}`}
+											/>
+										</div>
+										<div className="text-left">
+											<span
+												className={`text-base tracking-wide ${
+													listSource === "myApps"
+														? "text-foreground"
+														: "text-[#505d7b]"
+												}`}
+											>
+												Your apps
+											</span>
+										</div>
+									</button>
+								</div>
+							</section>
+
+							{data.apps.length === 0 && (
+								<section>
+									<div className="flex flex-col items-center justify-center py-6 px-4 border border-border rounded-lg bg-card/30">
+										<p className="text-muted-foreground mb-4 text-center text-sm">
 											You don't have any apps yet
 										</p>
 										<CreateWorkspaceButton label="Create your first app" />
 									</div>
-								) : (
-									<div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-										{data.apps.map((app) => (
-											<button
-												type="button"
-												key={app.id}
-												onClick={() => handleSelectApp(app.id)}
-												className={`w-full text-left px-3 py-2 rounded-md border transition-colors ${
-													selectedApp?.id === app.id
-														? "border-primary bg-primary/10 text-foreground"
-														: "border-border bg-card/30 hover:bg-card/50"
-												}`}
-											>
-												<div className="flex items-center gap-2">
-													<span className="text-sm font-medium line-clamp-1">
-														{app.name}
-													</span>
-													<span className="text-xs text-muted-foreground line-clamp-1">
-														{app.workspaceName}
-													</span>
-												</div>
-												<p className="mt-1 text-xs text-muted-foreground line-clamp-2">
-													{app.description}
-												</p>
-											</button>
-										))}
-									</div>
-								)}
-							</section>
+								</section>
+							)}
 						</div>
 
 						{/* Right column: Selected app detail */}
@@ -328,24 +400,24 @@ export function Page({
 						</div>
 					</div>
 
-					{/* Bottom container: apps related to the selected app */}
-					<div className="border border-border rounded-lg bg-card/20 p-6">
+					{/* Bottom container: apps from current menu selection */}
+					<div className="rounded-lg bg-card/20">
 						<div className="flex items-center justify-between mb-4">
 							<h2 className="text-xl font-semibold text-foreground">
 								Apps
-								{selectedApp ? ` in ${selectedApp.teamName}` : ""}
+								{listSource === "history" ? " from history" : " from your list"}
 							</h2>
 							<p className="text-xs text-muted-foreground">
-								Select an app from the list above to focus this section.
+								Select an app card below to run or inspect it.
 							</p>
 						</div>
-						{filteredAppsForBottom.length === 0 ? (
+						{sourceApps.length === 0 ? (
 							<p className="text-sm text-muted-foreground">
 								No apps found for the current selection.
 							</p>
 						) : (
 							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-								{filteredAppsForBottom.map((app) => (
+								{sourceApps.map((app) => (
 									<AppCard
 										app={app}
 										key={app.id}
@@ -368,7 +440,7 @@ export function Page({
 				<aside className="border border-border rounded-lg bg-card/30 p-4 flex flex-col h-full">
 					<div className="flex items-center justify-between mb-3">
 						<h2 className="text-sm font-semibold text-foreground tracking-wide uppercase">
-							Histories
+							Tasks
 						</h2>
 					</div>
 					{data.tasks.length === 0 ? (
