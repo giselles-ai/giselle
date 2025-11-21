@@ -27,12 +27,15 @@ export const google = {
 				ui: {
 					min: 0.0,
 					max: 2.0,
-					step: 0.1,
+					step: 0.05,
 				},
 			},
 			searchGrounding: {
 				description: "Whether to use Google Search for grounding.",
 				schema: z.boolean(),
+				ui: {
+					label: "Grounding with Google Search",
+				},
 			},
 			urlContext: {
 				description: "Whether to include URL context.",

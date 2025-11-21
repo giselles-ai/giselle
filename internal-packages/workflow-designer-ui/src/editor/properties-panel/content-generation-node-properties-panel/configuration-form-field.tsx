@@ -2,6 +2,7 @@ import { Input } from "@giselle-internal/ui/input";
 import { Select } from "@giselle-internal/ui/select";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import type { ConfigurationOption } from "@giselles-ai/language-model-registry";
+import { titleCase } from "@giselles-ai/utils";
 import { Slider as SliderPrimitive } from "radix-ui";
 import type * as z from "zod/v4";
 import { ConfigurationFormFieldLabel } from "./configuration-form-field-label";
@@ -26,6 +27,7 @@ export function ConfigurationFormField<T extends z.ZodType>({
 	onChange: (value: unknown) => void;
 }) {
 	const fieldType = option.schema.def.type;
+	const label = option.ui?.label ?? titleCase(name);
 
 	switch (fieldType) {
 		case "enum": {
@@ -34,7 +36,7 @@ export function ConfigurationFormField<T extends z.ZodType>({
 			return (
 				<div className="flex justify-between">
 					<ConfigurationFormFieldLabel
-						label={name}
+						label={label}
 						tooltip={option.description}
 					/>
 					<Select
@@ -66,7 +68,7 @@ export function ConfigurationFormField<T extends z.ZodType>({
 				<div className="flex flex-col gap-[8px]">
 					<div className="flex justify-between">
 						<ConfigurationFormFieldLabel
-							label={name}
+							label={label}
 							tooltip={option.description}
 						/>
 
@@ -98,7 +100,7 @@ export function ConfigurationFormField<T extends z.ZodType>({
 			return (
 				<div className="flex flex-col gap-[4px]">
 					<ConfigurationFormFieldLabel
-						label={name}
+						label={label}
 						tooltip={option.description}
 					/>
 					<Input

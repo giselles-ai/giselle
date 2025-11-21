@@ -1,4 +1,3 @@
-import { titleCase } from "@giselles-ai/utils";
 import clsx from "clsx/lite";
 import { Tooltip as TooltipPrimitive } from "radix-ui";
 import type React from "react";
@@ -15,7 +14,7 @@ export function ConfigurationFormFieldLabel({
 			<TooltipPrimitive.Provider>
 				<TooltipPrimitive.Root delayDuration={100}>
 					<TooltipPrimitive.Trigger className="text-[13px] text-text text-left data-[state=delayed-open]:underline decoration-dotted">
-						{titleCase(label)}
+						{label}
 					</TooltipPrimitive.Trigger>
 					<TooltipPrimitive.Portal>
 						<TooltipPrimitive.Content
@@ -35,5 +34,5 @@ export function ConfigurationFormFieldLabel({
 		);
 	}
 
-	return <p className="text-[13px] text-text">{titleCase(label)}</p>;
+	return <p className="text-[13px] text-text">{label}</p>;
 }
