@@ -77,17 +77,6 @@ export interface LanguageModel<
 	};
 }
 
-function isLanguageModelConfigurationKey(
-	data: string,
-): data is keyof ConfigurationOptions {
-	return data in ConfigurationOptions;
-}
-
-export function getDefaultConfigurationValue(
-	languageModel: LanguageModel,
-	key: string,
-) {}
-
 // biome-ignore lint/suspicious/noExplicitAny: library use
 export type AnyLanguageModel = LanguageModel<any, any, any>;
 
