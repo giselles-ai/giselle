@@ -25,22 +25,34 @@ export type EmbeddingCompleteCallback = (
 ) => void | Promise<void>;
 
 /**
+ * Options for embedding operations
+ */
+export interface EmbeddingOptions {
+	/**
+	 * Additional HTTP headers to be sent with the request
+	 */
+	headers?: Record<string, string>;
+}
+
+/**
  * Function type for embedding operations
  */
 export type EmbedderFunction = {
 	/**
 	 * Convert text to an embedding vector
 	 * @param text The text to embed
+	 * @param options Optional configuration for the embedding request
 	 * @returns The embedding vector
 	 */
-	embed(text: string): Promise<number[]>;
+	embed(text: string, options?: EmbeddingOptions): Promise<number[]>;
 
 	/**
 	 * Embed multiple texts at once
 	 * @param texts The array of texts to embed
+	 * @param options Optional configuration for the embedding request
 	 * @returns The array of embedding vectors
 	 */
-	embedMany(texts: string[]): Promise<number[][]>;
+	embedMany(texts: string[], options?: EmbeddingOptions): Promise<number[][]>;
 
 	/**
 	 * Optional callback invoked after embedding completion
