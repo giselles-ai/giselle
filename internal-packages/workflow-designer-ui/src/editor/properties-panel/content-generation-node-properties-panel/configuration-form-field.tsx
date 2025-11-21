@@ -4,7 +4,6 @@ import { Toggle } from "@giselle-internal/ui/toggle";
 import type { ConfigurationOption } from "@giselles-ai/language-model-registry";
 import { Slider as SliderPrimitive } from "radix-ui";
 import type * as z from "zod/v4";
-import { Slider } from "../../../ui/slider";
 import { ConfigurationFormFieldLabel } from "./configuration-form-field-label";
 
 function getEnumValues(schema: z.ZodTypeAny): string[] {
