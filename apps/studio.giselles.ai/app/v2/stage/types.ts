@@ -20,4 +20,8 @@ export interface StageApp {
 	teamName: string;
 	teamId: string;
 	parameters: AppParameter[];
+	isMine: boolean;
+	vectorStoreRepositories: string[];
+	vectorStoreFiles: string[];
+	llmProviders: string[];
 }
