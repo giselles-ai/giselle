@@ -1,5 +1,6 @@
 import { Input } from "@giselle-internal/ui/input";
 import { Select } from "@giselle-internal/ui/select";
+import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import type { ConfigurationOption } from "@giselles-ai/language-model-registry";
 import type * as z from "zod/v4";
@@ -12,6 +13,7 @@ function getEnumValues(schema: z.ZodTypeAny): string[] {
 	}
 	return [];
 }
+
 export function ConfigurationFormField<T extends z.ZodType>({
 	name,
 	option,
@@ -23,17 +25,25 @@ export function ConfigurationFormField<T extends z.ZodType>({
 	value: unknown;
 	onChange: (value: unknown) => void;
 }) {
-	switch (option.schema.def.type) {
+	const fieldType = option.schema.def.type;
+
+	switch (fieldType) {
 		case "enum": {
 			const enumValues = getEnumValues(option.schema);
 			const options = enumValues.map((v) => ({ value: v, label: v }));
 			return (
-				<Select
-					options={options}
-					placeholder={`Select ${name}...`}
-					value={String(value ?? "")}
-					onValueChange={(v) => onChange(v)}
-				/>
+				<div className="flex flex-col gap-[4px]">
+					<SettingDetail size="sm">{name}</SettingDetail>
+					<Select
+						options={options}
+						placeholder={`Select ${name}...`}
+						value={String(value ?? "")}
+						onValueChange={(v) => onChange(v)}
+					/>
+					{option.description && (
+						<p className="text-[11px] text-text-muted">{option.description}</p>
+					)}
+				</div>
 			);
 		}
 		case "boolean":
@@ -52,23 +62,35 @@ export function ConfigurationFormField<T extends z.ZodType>({
 			const min = option.ui?.min ?? 0;
 			const max = option.ui?.max ?? Infinity;
 			return (
-				<Slider
-					label={name}
-					value={numValue}
-					min={min}
-					max={max}
-					step={step}
-					onChange={(v) => onChange(v)}
-				/>
+				<div className="flex flex-col gap-[4px]">
+					<SettingDetail size="sm">{name}</SettingDetail>
+					<Slider
+						label={name}
+						value={numValue}
+						min={min}
+						max={max}
+						step={step}
+						onChange={(v) => onChange(v)}
+					/>
+					{option.description && (
+						<p className="text-[11px] text-text-muted">{option.description}</p>
+					)}
+				</div>
 			);
 		}
 		default:
 			return (
-				<Input
-					type="text"
-					value={String(value ?? "")}
-					onChange={(e) => onChange(e.target.value)}
-				/>
+				<div className="flex flex-col gap-[4px]">
+					<SettingDetail size="sm">{name}</SettingDetail>
+					<Input
+						type="text"
+						value={String(value ?? "")}
+						onChange={(e) => onChange(e.target.value)}
+					/>
+					{option.description && (
+						<p className="text-[11px] text-text-muted">{option.description}</p>
+					)}
+				</div>
 			);
 	}
 }

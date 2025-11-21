@@ -73,34 +73,26 @@ export function ContentGenerationNodePropertiesPanel({
 												node.content.languageModel.configuration[key] ??
 												languageModel.defaultConfiguration[key];
 											return (
-												<div key={key} className="flex flex-col gap-[4px]">
-													<SettingDetail size="sm">{key}</SettingDetail>
-													<ConfigurationFormField
-														name={key}
-														option={option}
-														value={currentValue}
-														onChange={(value) => {
-															updateNodeData(node, {
-																content: {
-																	...node.content,
-																	languageModel: {
-																		...node.content.languageModel,
-																		configuration: {
-																			...node.content.languageModel
-																				.configuration,
-																			[key]: value,
-																		},
+												<ConfigurationFormField
+													key={key}
+													name={key}
+													option={option}
+													value={currentValue}
+													onChange={(value) => {
+														updateNodeData(node, {
+															content: {
+																...node.content,
+																languageModel: {
+																	...node.content.languageModel,
+																	configuration: {
+																		...node.content.languageModel.configuration,
+																		[key]: value,
 																	},
 																},
-															});
-														}}
-													/>
-													{option.description && (
-														<p className="text-[11px] text-text-muted">
-															{option.description}
-														</p>
-													)}
-												</div>
+															},
+														});
+													}}
+												/>
 											);
 										},
 									)}
