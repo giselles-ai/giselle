@@ -36,6 +36,7 @@ export async function traceGenerationForTeam(args: {
 			teamPlan,
 			userId: args.userId,
 			subscriptionId: args.team.activeSubscriptionId ?? "",
+			customerId: args.team.activeCustomerId ?? "",
 			providerMetadata: args.providerMetadata,
 			requestId: args.requestId,
 			workspaceId: args.generation.context.origin.workspaceId,

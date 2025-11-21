@@ -97,6 +97,7 @@ async function traceEmbeddingForTeam(args: {
 		teamPlan,
 		userId: args.userId,
 		subscriptionId: args.team.activeSubscriptionId ?? "",
+		customerId: args.team.activeCustomerId ?? "",
 		resourceProvider: queryContext.provider,
 		workspaceId: queryContext.workspaceId,
 		embeddingProfileId: queryContext.embeddingProfileId,
