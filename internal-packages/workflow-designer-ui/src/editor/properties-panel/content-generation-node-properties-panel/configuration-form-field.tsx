@@ -2,6 +2,7 @@ import { Input } from "@giselle-internal/ui/input";
 import { Select } from "@giselle-internal/ui/select";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import type { ConfigurationOption } from "@giselles-ai/language-model-registry";
+import { Slider as SliderPrimitive } from "radix-ui";
 import type * as z from "zod/v4";
 import { Slider } from "../../../ui/slider";
 import { ConfigurationFormFieldLabel } from "./configuration-form-field-label";
@@ -63,19 +64,34 @@ export function ConfigurationFormField<T extends z.ZodType>({
 			const min = option.ui?.min ?? 0;
 			const max = option.ui?.max ?? Infinity;
 			return (
-				<div className="flex flex-col gap-[4px]">
-					<ConfigurationFormFieldLabel
-						label={name}
-						tooltip={option.description}
-					/>
-					<Slider
-						label={name}
-						value={numValue}
-						min={min}
+				<div className="flex flex-col gap-[8px]">
+					<div className="flex justify-between">
+						<ConfigurationFormFieldLabel
+							label={name}
+							tooltip={option.description}
+						/>
+
+						<p className="text-[12px] font-[700] text-inverse w-[44px] text-right font-mono [font-variant-numeric:tabular-nums]">
+							{numValue.toFixed(2)}
+						</p>
+					</div>
+					<SliderPrimitive.Root
+						className="relative flex w-full touch-none select-none items-center flex-1"
 						max={max}
+						min={min}
 						step={step}
-						onChange={(v) => onChange(v)}
-					/>
+						value={[numValue]}
+						onValueChange={(v) => onChange?.(v[0])}
+					>
+						<SliderPrimitive.Track
+							className="relative h-[2px] w-full grow overflow-hidden bg-transparent
+											before:content-[''] before:absolute before:inset-0
+											before:bg-[repeating-linear-gradient(90deg,#F7F9FD_0px,#F7F9FD_2px,transparent_2px,transparent_4px)]"
+						>
+							<SliderPrimitive.Range className="absolute h-full bg-text-inverse rounded-[9999px]" />
+						</SliderPrimitive.Track>
+						<SliderPrimitive.Thumb className="block h-[10px] w-[10px] rounded-full bg-text-inverse transition-transform hover:scale-110 focus:outline-none focus:ring-0 active:outline-none active:ring-0" />
+					</SliderPrimitive.Root>
 				</div>
 			);
 		}
