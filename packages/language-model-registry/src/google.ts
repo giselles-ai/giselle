@@ -24,6 +24,9 @@ export const google = {
 			temperature: {
 				description: "Controls the randomness of the output.",
 				schema: z.number().min(0.0).max(2.0),
+				ui: {
+					step: 0.1,
+				},
 			},
 			searchGrounding: {
 				description: "Whether to use Google Search for grounding.",
@@ -59,6 +62,9 @@ export const google = {
 			temperature: {
 				description: "Controls the randomness of the output.",
 				schema: z.number().min(0.0).max(2.0),
+				ui: {
+					step: 0.1,
+				},
 			},
 			searchGrounding: {
 				description: "Whether to use Google Search for grounding.",
@@ -94,6 +100,9 @@ export const google = {
 			temperature: {
 				description: "Controls the randomness of the output.",
 				schema: z.number().min(0.0).max(2.0),
+				ui: {
+					step: 0.1,
+				},
 			},
 			searchGrounding: {
 				description: "Whether to use Google Search for grounding.",

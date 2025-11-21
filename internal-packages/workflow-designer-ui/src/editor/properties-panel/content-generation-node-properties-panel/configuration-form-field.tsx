@@ -1,6 +1,7 @@
 import { Input } from "@giselle-internal/ui/input";
 import { Select } from "@giselle-internal/ui/select";
 import { Toggle } from "@giselle-internal/ui/toggle";
+import type { ConfigurationOption } from "@giselles-ai/language-model-registry";
 import type * as z from "zod/v4";
 
 function getEnumValues(schema: z.ZodTypeAny): string[] {
@@ -10,14 +11,14 @@ function getEnumValues(schema: z.ZodTypeAny): string[] {
 	}
 	return [];
 }
-export function ConfigurationFormField({
+export function ConfigurationFormField<T extends z.ZodType>({
 	name,
 	option,
 	value,
 	onChange,
 }: {
 	name: string;
-	option: { description: string; schema: z.ZodTypeAny };
+	option: ConfigurationOption<T>;
 	value: unknown;
 	onChange: (value: unknown) => void;
 }) {
@@ -48,6 +49,7 @@ export function ConfigurationFormField({
 			return (
 				<Input
 					type="number"
+					step={option.ui?.step ?? 1}
 					value={String(value ?? "")}
 					onChange={(e) => {
 						const numValue = parseFloat(e.target.value);

@@ -42,9 +42,12 @@ export function hasTierAccess(
 	return TIER_ORDER[userTier] >= TIER_ORDER[requiredTier];
 }
 
-type ConfigurationOption<TSchema extends z.ZodTypeAny> = {
+export type ConfigurationOption<TSchema extends z.ZodType> = {
 	description: string;
 	schema: TSchema;
+	ui?: {
+		step?: number;
+	};
 };
 
 export type ConfigurationOptions = Record<
