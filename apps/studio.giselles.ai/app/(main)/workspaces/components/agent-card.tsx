@@ -5,6 +5,7 @@ import { File, Zap } from "lucide-react";
 import Link from "next/link";
 import type { agents as dbAgents } from "@/db";
 import { GitHubIcon } from "../../../../../../internal-packages/workflow-designer-ui/src/icons";
+import { Tooltip } from "../../../../../../internal-packages/workflow-designer-ui/src/ui/tooltip";
 import { DeleteAgentButton } from "./delete-agent-button";
 import { DuplicateAgentButton } from "./duplicate-agent-button";
 import { formatExecutionCount } from "./format-execution-count";
@@ -115,9 +116,30 @@ export function AgentCard({ agent }: AgentCardProps) {
 																{repo}
 															</div>
 															{repos.length > 1 && (
-																<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted">
-																	+{repos.length - 1}
-																</span>
+																<Tooltip
+																	text={
+																		<div className="flex flex-col gap-1 bg-bg-900/30 rounded px-2 py-0.5 border border-white/20">
+																			{repos.slice(1).map((hiddenRepo) => (
+																				<span key={hiddenRepo}>
+																					{hiddenRepo}
+																				</span>
+																			))}
+																		</div>
+																	}
+																	variant="dark"
+																	side="top"
+																>
+																	<button
+																		type="button"
+																		className="relative z-50 font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted"
+																		onClick={(e) => {
+																			e.stopPropagation();
+																			e.preventDefault();
+																		}}
+																	>
+																		+{repos.length - 1}
+																	</button>
+																</Tooltip>
 															)}
 														</div>
 													));
@@ -144,9 +166,30 @@ export function AgentCard({ agent }: AgentCardProps) {
 																{fileName}
 															</div>
 															{files.length > 1 && (
-																<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted">
-																	+{files.length - 1}
-																</span>
+																<Tooltip
+																	text={
+																		<div className="flex flex-col gap-1 bg-bg-900/30 rounded px-2 py-0.5 border border-white/20">
+																			{files.slice(1).map((hiddenFile) => (
+																				<span key={hiddenFile}>
+																					{hiddenFile}
+																				</span>
+																			))}
+																		</div>
+																	}
+																	variant="dark"
+																	side="top"
+																>
+																	<button
+																		type="button"
+																		className="relative z-50 font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted"
+																		onClick={(e) => {
+																			e.stopPropagation();
+																			e.preventDefault();
+																		}}
+																	>
+																		+{files.length - 1}
+																	</button>
+																</Tooltip>
 															)}
 														</div>
 													));
