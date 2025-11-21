@@ -827,6 +827,12 @@ export function createTextGenerationNode(
 	return textGenerationFactoryImpl.create(llm);
 }
 
+export function createContentGenerationNode(
+	input: CreateContentGenerationNodeInput,
+): ContentGenerationNode {
+	return contentGenerationFactoryImpl.create(input);
+}
+
 export function createImageGenerationNode(
 	llm: ImageGenerationContent["llm"],
 ): ImageGenerationNode {
