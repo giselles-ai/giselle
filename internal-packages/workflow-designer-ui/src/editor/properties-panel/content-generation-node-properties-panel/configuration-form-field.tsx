@@ -1,10 +1,10 @@
 import { Input } from "@giselle-internal/ui/input";
 import { Select } from "@giselle-internal/ui/select";
-import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import type { ConfigurationOption } from "@giselles-ai/language-model-registry";
 import type * as z from "zod/v4";
 import { Slider } from "../../../ui/slider";
+import { ConfigurationFormFieldLabel } from "./configuration-form-field-label";
 
 function getEnumValues(schema: z.ZodTypeAny): string[] {
 	const def = schema.def;
@@ -33,16 +33,16 @@ export function ConfigurationFormField<T extends z.ZodType>({
 			const options = enumValues.map((v) => ({ value: v, label: v }));
 			return (
 				<div className="flex flex-col gap-[4px]">
-					<SettingDetail size="sm">{name}</SettingDetail>
+					<ConfigurationFormFieldLabel
+						label={name}
+						tooltip={option.description}
+					/>
 					<Select
 						options={options}
 						placeholder={`Select ${name}...`}
 						value={String(value ?? "")}
 						onValueChange={(v) => onChange(v)}
 					/>
-					{option.description && (
-						<p className="text-[11px] text-text-muted">{option.description}</p>
-					)}
 				</div>
 			);
 		}
@@ -63,7 +63,10 @@ export function ConfigurationFormField<T extends z.ZodType>({
 			const max = option.ui?.max ?? Infinity;
 			return (
 				<div className="flex flex-col gap-[4px]">
-					<SettingDetail size="sm">{name}</SettingDetail>
+					<ConfigurationFormFieldLabel
+						label={name}
+						tooltip={option.description}
+					/>
 					<Slider
 						label={name}
 						value={numValue}
@@ -72,24 +75,21 @@ export function ConfigurationFormField<T extends z.ZodType>({
 						step={step}
 						onChange={(v) => onChange(v)}
 					/>
-					{option.description && (
-						<p className="text-[11px] text-text-muted">{option.description}</p>
-					)}
 				</div>
 			);
 		}
 		default:
 			return (
 				<div className="flex flex-col gap-[4px]">
-					<SettingDetail size="sm">{name}</SettingDetail>
+					<ConfigurationFormFieldLabel
+						label={name}
+						tooltip={option.description}
+					/>
 					<Input
 						type="text"
 						value={String(value ?? "")}
 						onChange={(e) => onChange(e.target.value)}
 					/>
-					{option.description && (
-						<p className="text-[11px] text-text-muted">{option.description}</p>
-					)}
 				</div>
 			);
 	}
