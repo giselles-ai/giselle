@@ -58,7 +58,7 @@ export function LanguageModelMegaTooltip({
 						</div>
 					</div>
 				)}
-			<div className="relative text-inverse h-[200px]">
+			<div className="relative text-inverse min-h-[200px]">
 				{hoveredLanguageModel ? (
 					<div className="px-[16px] py-[16px] flex flex-col gap-[16px]">
 						<div className="flex items-start gap-[16px]">
@@ -72,9 +72,57 @@ export function LanguageModelMegaTooltip({
 								{hoveredLanguageModel.name}
 							</p>
 						</div>
-						<p className="text-[14px] text-muted">
+						<p className="text-[14px] text-text-muted">
 							{hoveredLanguageModel.description}
 						</p>
+						<div className="flex flex-row gap-[24px]">
+							<div className="flex flex-col gap-[8px] w-[100px] shrink-0">
+								<p className="text-[14px] font-medium">PRICING</p>
+								<div className="flex flex-col gap-[4px] text-[13px] text-text-muted">
+									<div className="flex justify-between">
+										<span className="text-muted">Input</span>
+										<span>
+											${hoveredLanguageModel.pricing.input.perM.toFixed(2)}
+										</span>
+									</div>
+									<div className="flex justify-between">
+										<span className="text-muted">Output</span>
+										<span>
+											${hoveredLanguageModel.pricing.output.perM.toFixed(2)}
+										</span>
+									</div>
+								</div>
+							</div>
+							<div className="flex flex-col gap-[8px]">
+								<p className="text-[14px] font-medium">CONTEXT</p>
+								<div className="flex flex-col gap-[4px] text-[14px] text-text-muted text-[13px]">
+									<div className="flex justify-between">
+										<span>Window</span>
+										<span>
+											{hoveredLanguageModel.contextWindow.toLocaleString()}
+										</span>
+									</div>
+									<div className="flex justify-between">
+										<span className="text-muted">Max Output Tokens</span>
+										<span>
+											{hoveredLanguageModel.maxOutputTokens.toLocaleString()}
+										</span>
+									</div>
+									<div className="flex justify-between">
+										<span className="text-muted">Knowledge Cutoff</span>
+										<span>
+											{new Date(
+												hoveredLanguageModel.knowledgeCutoff,
+											).toLocaleDateString("en-US", {
+												month: "short",
+												day: "numeric",
+												year: "numeric",
+											})}
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
 						{/*<div className="flex flex-wrap gap-x-[8px] gap-y-[8px]">
 							{hasCapability(
 								languageModelMouseHovered,

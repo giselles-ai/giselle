@@ -55,7 +55,8 @@ export async function buildMessageObject({
 	appEntryResolver: AppEntryResolver;
 }): Promise<ModelMessage[]> {
 	switch (node.content.type) {
-		case "textGeneration": {
+		case "textGeneration":
+		case "contentGeneration": {
 			return await buildGenerationMessageForTextGeneration({
 				node: node as TextGenerationNode,
 				contextNodes,
@@ -141,7 +142,8 @@ async function buildGenerationMessageForTextGeneration({
 				userMessage = userMessage.replace(replaceKeyword, text);
 				break;
 			}
-			case "textGeneration": {
+			case "textGeneration":
+			case "contentGeneration": {
 				const result = await generationContentResolver(
 					contextNode.id,
 					sourceKeyword.outputId,
@@ -462,7 +464,8 @@ async function buildGenerationMessageForImageGeneration(
 				);
 				break;
 			}
-			case "textGeneration": {
+			case "textGeneration":
+			case "contentGeneration": {
 				const result = await textGenerationResolver(
 					contextNode.id,
 					sourceKeyword.outputId,

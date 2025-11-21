@@ -1,6 +1,7 @@
 import type {
 	ActionNode,
 	AppEntryNode,
+	ContentGenerationNode,
 	QueryNode,
 	TextGenerationNode,
 	TriggerNode,
@@ -23,7 +24,9 @@ export function useConnectedSources(node: QueryNode) {
 		const connectedTriggerSources: ConnectedSource<TriggerNode>[] = [];
 		const connectedAppEntrySources: ConnectedSource<AppEntryNode>[] = [];
 		// does not support image generation
-		const connectedGeneratedSources: ConnectedSource<TextGenerationNode>[] = [];
+		const connectedGeneratedSources: ConnectedSource<
+			TextGenerationNode | ContentGenerationNode
+		>[] = [];
 		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
 
 		for (const connection of connectionsToThisNode) {
@@ -47,6 +50,13 @@ export function useConnectedSources(node: QueryNode) {
 							connectedGeneratedSources.push({
 								output,
 								node: node as TextGenerationNode,
+								connection,
+							});
+							break;
+						case "contentGeneration":
+							connectedGeneratedSources.push({
+								output,
+								node: node as ContentGenerationNode,
 								connection,
 							});
 							break;
