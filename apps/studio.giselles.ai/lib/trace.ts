@@ -7,7 +7,10 @@ import type {
 import type { ModelMessage, ProviderMetadata } from "ai";
 import type { CurrentTeam } from "@/services/teams";
 
-type TeamForPlan = Pick<CurrentTeam, "id" | "activeSubscriptionId" | "plan">;
+type TeamForPlan = Pick<
+	CurrentTeam,
+	"id" | "activeSubscriptionId" | "activeCustomerId" | "plan"
+>;
 
 export async function traceGenerationForTeam(args: {
 	generation: CompletedGeneration | FailedGeneration;
@@ -33,6 +36,7 @@ export async function traceGenerationForTeam(args: {
 			teamPlan,
 			userId: args.userId,
 			subscriptionId: args.team.activeSubscriptionId ?? "",
+			customerId: args.team.activeCustomerId ?? "",
 			providerMetadata: args.providerMetadata,
 			requestId: args.requestId,
 			workspaceId: args.generation.context.origin.workspaceId,
