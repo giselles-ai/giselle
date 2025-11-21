@@ -61,7 +61,7 @@ export function ContentGenerationNodePropertiesPanel({
 								sideOffset={10}
 								align="end"
 							>
-								<div className="flex flex-col gap-[12px] p-[12px]">
+								<div className="flex flex-col gap-[20px] p-[12px]">
 									{Object.entries(languageModel.configurationOptions).map(
 										([key, option]) => {
 											// Ensure the key is valid using our type guard
