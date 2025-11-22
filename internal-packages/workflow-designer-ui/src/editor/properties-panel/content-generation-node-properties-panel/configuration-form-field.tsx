@@ -4,6 +4,7 @@ import type { ConfigurationOption } from "@giselles-ai/language-model-registry";
 import { titleCase } from "@giselles-ai/utils";
 import clsx from "clsx/lite";
 import { Undo2Icon } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import {
 	Slider as SliderPrimitive,
 	Switch,
@@ -100,31 +101,40 @@ export function ConfigurationFormField<T extends z.ZodType>({
 						/>
 
 						<div className="flex items-center gap-[4px]">
-							{isValueChanged && (
-								<TooltipPrimitive.Provider delayDuration={0}>
-									<TooltipPrimitive.Root>
-										<TooltipPrimitive.Trigger
-											className="cursor-pointer hover:bg-element-hover size-[16px] flex items-center justify-center rounded-[2px]"
-											onClick={() => onValueChange(defaultValue)}
-										>
-											<Undo2Icon className="size-[14px]" />
-										</TooltipPrimitive.Trigger>
-										<TooltipPrimitive.Portal>
-											<TooltipPrimitive.Content
-												side="top"
-												align="center"
-												className={clsx(
-													"group z-50 overflow-hidden rounded-md p-2 text-[12px] shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 max-w-[300px]",
-													"bg-surface text-inverse",
-												)}
-												sideOffset={2}
-											>
-												Reset to default
-											</TooltipPrimitive.Content>
-										</TooltipPrimitive.Portal>
-									</TooltipPrimitive.Root>
-								</TooltipPrimitive.Provider>
-							)}
+							<AnimatePresence>
+								{isValueChanged && (
+									<motion.div
+										initial={{ opacity: 0, scale: 0.8 }}
+										animate={{ opacity: 1, scale: 1 }}
+										exit={{ opacity: 0, scale: 0.8 }}
+										transition={{ duration: 0.2 }}
+									>
+										<TooltipPrimitive.Provider delayDuration={0}>
+											<TooltipPrimitive.Root>
+												<TooltipPrimitive.Trigger
+													className="cursor-pointer hover:bg-element-hover size-[16px] flex items-center justify-center rounded-[2px]"
+													onClick={() => onValueChange(defaultValue)}
+												>
+													<Undo2Icon className="size-[14px]" />
+												</TooltipPrimitive.Trigger>
+												<TooltipPrimitive.Portal>
+													<TooltipPrimitive.Content
+														side="top"
+														align="center"
+														className={clsx(
+															"group z-50 overflow-hidden rounded-md p-2 text-[12px] shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 max-w-[300px]",
+															"bg-surface text-inverse",
+														)}
+														sideOffset={2}
+													>
+														Reset to default
+													</TooltipPrimitive.Content>
+												</TooltipPrimitive.Portal>
+											</TooltipPrimitive.Root>
+										</TooltipPrimitive.Provider>
+									</motion.div>
+								)}
+							</AnimatePresence>
 							<p className="text-[12px] font-[700] text-inverse text-right font-mono [font-variant-numeric:tabular-nums]">
 								{numValue.toFixed(2)}
 							</p>
