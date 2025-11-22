@@ -22,6 +22,26 @@ function getEnumValues(schema: z.ZodTypeAny): string[] {
 	return [];
 }
 
+function getDecimalPlaces(num: number): number {
+	if (Number.isInteger(num)) return 0;
+	const str = num.toString();
+	if (str.includes(".")) {
+		return str.split(".")[1]?.length ?? 0;
+	}
+	if (str.includes("e")) {
+		const parts = str.split("e");
+		const base = parts[0];
+		const exp = Number.parseInt(parts[1] ?? "0", 10);
+		if (exp < 0) {
+			const baseDecimalPlaces = base.includes(".")
+				? (base.split(".")[1]?.length ?? 0)
+				: 0;
+			return baseDecimalPlaces - exp;
+		}
+	}
+	return 0;
+}
+
 export function ConfigurationFormField<T extends z.ZodType>({
 	name,
 	option,
@@ -94,6 +114,7 @@ export function ConfigurationFormField<T extends z.ZodType>({
 			const step = option.ui?.step ?? 1;
 			const min = option.ui?.min ?? 0;
 			const max = option.ui?.max ?? Infinity;
+			const decimalPlaces = getDecimalPlaces(step);
 			return (
 				<fieldset
 					className="flex flex-col gap-[8px]"
@@ -142,7 +163,7 @@ export function ConfigurationFormField<T extends z.ZodType>({
 								)}
 							</AnimatePresence>
 							<p className="text-[12px] font-[700] text-inverse text-right font-mono [font-variant-numeric:tabular-nums]">
-								{numValue.toFixed(2)}
+								{numValue.toFixed(decimalPlaces)}
 							</p>
 						</div>
 					</div>
