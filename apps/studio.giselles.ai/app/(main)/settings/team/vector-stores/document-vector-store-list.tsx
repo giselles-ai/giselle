@@ -148,8 +148,8 @@ function DocumentVectorStoreLockedCard() {
 				Document Vector Stores are locked
 			</h3>
 			<p className="mt-2 text-text/60 text-sm max-w-xl mx-auto">
-				Upgrade to the Pro or Team plan to ingest knowledge bases and connect Document
-				Vector Stores to your agents.
+				Upgrade to the Pro or Team plan to ingest knowledge bases and connect
+				Document Vector Stores to your agents.
 			</p>
 			<Link
 				href="/settings/team"
