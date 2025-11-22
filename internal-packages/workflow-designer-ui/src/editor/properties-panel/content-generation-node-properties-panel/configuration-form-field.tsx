@@ -10,6 +10,7 @@ import {
 	Switch,
 	Tooltip as TooltipPrimitive,
 } from "radix-ui";
+import { useState } from "react";
 import type * as z from "zod/v4";
 import { ConfigurationFormFieldLabel } from "./configuration-form-field-label";
 
@@ -34,6 +35,7 @@ export function ConfigurationFormField<T extends z.ZodType>({
 	defaultValue: unknown;
 	onValueChange: (value: unknown) => void;
 }) {
+	const [isHovered, setIsHovered] = useState(false);
 	const fieldType = option.schema.def.type;
 	const label = option.ui?.label ?? titleCase(name);
 
@@ -93,7 +95,11 @@ export function ConfigurationFormField<T extends z.ZodType>({
 			const min = option.ui?.min ?? 0;
 			const max = option.ui?.max ?? Infinity;
 			return (
-				<div className="flex flex-col gap-[8px]">
+				<fieldset
+					className="flex flex-col gap-[8px]"
+					onMouseEnter={() => setIsHovered(true)}
+					onMouseLeave={() => setIsHovered(false)}
+				>
 					<div className="flex justify-between">
 						<ConfigurationFormFieldLabel
 							label={label}
@@ -102,7 +108,7 @@ export function ConfigurationFormField<T extends z.ZodType>({
 
 						<div className="flex items-center gap-[4px]">
 							<AnimatePresence>
-								{isValueChanged && (
+								{isValueChanged && isHovered && (
 									<motion.div
 										initial={{ opacity: 0, scale: 0.8 }}
 										animate={{ opacity: 1, scale: 1 }}
@@ -157,7 +163,7 @@ export function ConfigurationFormField<T extends z.ZodType>({
 						</SliderPrimitive.Track>
 						<SliderPrimitive.Thumb className="block h-[10px] w-[10px] rounded-full bg-text-inverse transition-transform hover:scale-110 focus:outline-none focus:ring-0 active:outline-none active:ring-0 cursor-grab" />
 					</SliderPrimitive.Root>
-				</div>
+				</fieldset>
 			);
 		}
 		default:
