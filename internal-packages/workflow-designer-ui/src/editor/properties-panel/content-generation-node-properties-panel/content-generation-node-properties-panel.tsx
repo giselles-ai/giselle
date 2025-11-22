@@ -81,6 +81,7 @@ export function ContentGenerationNodePropertiesPanel({
 													name={key}
 													option={option}
 													value={currentValue}
+													defaultValue={languageModel.defaultConfiguration[key]}
 													onValueChange={(value) => {
 														updateNodeData(node, {
 															content: {

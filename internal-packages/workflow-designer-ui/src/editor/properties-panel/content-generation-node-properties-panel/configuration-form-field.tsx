@@ -3,7 +3,12 @@ import { Select } from "@giselle-internal/ui/select";
 import type { ConfigurationOption } from "@giselles-ai/language-model-registry";
 import { titleCase } from "@giselles-ai/utils";
 import clsx from "clsx/lite";
-import { Slider as SliderPrimitive, Switch } from "radix-ui";
+import { Undo2Icon } from "lucide-react";
+import {
+	Slider as SliderPrimitive,
+	Switch,
+	Tooltip as TooltipPrimitive,
+} from "radix-ui";
 import type * as z from "zod/v4";
 import { ConfigurationFormFieldLabel } from "./configuration-form-field-label";
 
@@ -19,11 +24,13 @@ export function ConfigurationFormField<T extends z.ZodType>({
 	name,
 	option,
 	value,
+	defaultValue,
 	onValueChange,
 }: {
 	name: string;
 	option: ConfigurationOption<T>;
 	value: unknown;
+	defaultValue: unknown;
 	onValueChange: (value: unknown) => void;
 }) {
 	const fieldType = option.schema.def.type;
@@ -90,9 +97,34 @@ export function ConfigurationFormField<T extends z.ZodType>({
 							tooltip={option.description}
 						/>
 
-						<p className="text-[12px] font-[700] text-inverse w-[44px] text-right font-mono [font-variant-numeric:tabular-nums]">
-							{numValue.toFixed(2)}
-						</p>
+						<div className="flex items-center gap-[4px]">
+							<TooltipPrimitive.Provider delayDuration={0}>
+								<TooltipPrimitive.Root>
+									<TooltipPrimitive.Trigger
+										className="cursor-pointer hover:bg-element-hover size-[16px] flex items-center justify-center rounded-[2px]"
+										onClick={() => onValueChange(defaultValue)}
+									>
+										<Undo2Icon className="size-[14px]" />
+									</TooltipPrimitive.Trigger>
+									<TooltipPrimitive.Portal>
+										<TooltipPrimitive.Content
+											side="top"
+											align="center"
+											className={clsx(
+												"group z-50 overflow-hidden rounded-md p-2 text-[12px] shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 max-w-[300px]",
+												"bg-surface text-inverse",
+											)}
+											sideOffset={2}
+										>
+											Reset to default
+										</TooltipPrimitive.Content>
+									</TooltipPrimitive.Portal>
+								</TooltipPrimitive.Root>
+							</TooltipPrimitive.Provider>
+							<p className="text-[12px] font-[700] text-inverse text-right font-mono [font-variant-numeric:tabular-nums]">
+								{numValue.toFixed(2)}
+							</p>
+						</div>
 					</div>
 					<SliderPrimitive.Root
 						className="relative flex w-full touch-none select-none items-center flex-1"
@@ -109,7 +141,7 @@ export function ConfigurationFormField<T extends z.ZodType>({
 						>
 							<SliderPrimitive.Range className="absolute h-full bg-text-inverse rounded-[9999px]" />
 						</SliderPrimitive.Track>
-						<SliderPrimitive.Thumb className="block h-[10px] w-[10px] rounded-full bg-text-inverse transition-transform hover:scale-110 focus:outline-none focus:ring-0 active:outline-none active:ring-0" />
+						<SliderPrimitive.Thumb className="block h-[10px] w-[10px] rounded-full bg-text-inverse transition-transform hover:scale-110 focus:outline-none focus:ring-0 active:outline-none active:ring-0 cursor-grab" />
 					</SliderPrimitive.Root>
 				</div>
 			);
