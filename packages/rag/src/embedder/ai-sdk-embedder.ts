@@ -1,7 +1,11 @@
 import type { EmbeddingProfile } from "@giselles-ai/protocol";
 import { type EmbeddingModel, embed, embedMany } from "ai";
 import { ConfigurationError, EmbeddingError } from "../errors";
-import type { EmbedderFunction, EmbeddingCompleteCallback } from "./types";
+import type {
+	EmbedderFunction,
+	EmbeddingCompleteCallback,
+	EmbeddingOptions,
+} from "./types";
 
 export interface EmbedderConfig {
 	apiKey: string;
@@ -46,13 +50,14 @@ export function createAiSdkEmbedder(
 	};
 
 	return {
-		async embed(text: string): Promise<number[]> {
+		async embed(text: string, options?: EmbeddingOptions): Promise<number[]> {
 			try {
 				const startTime = new Date();
 				const result = await embed({
 					model: getModel(model),
 					maxRetries,
 					value: text,
+					headers: options?.headers,
 				});
 
 				if (config.embeddingComplete) {
@@ -85,13 +90,17 @@ export function createAiSdkEmbedder(
 			}
 		},
 
-		async embedMany(texts: string[]): Promise<number[][]> {
+		async embedMany(
+			texts: string[],
+			options?: EmbeddingOptions,
+		): Promise<number[][]> {
 			try {
 				const startTime = new Date();
 				const result = await embedMany({
 					model: getModel(model),
 					maxRetries,
 					values: texts,
+					headers: options?.headers,
 				});
 
 				if (config.embeddingComplete) {

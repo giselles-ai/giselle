@@ -255,7 +255,14 @@ export function generateContent({
 
 			const model = generationModel(
 				operationNode.content.llm,
-				context.aiGateway,
+				context.aiGateway
+					? {
+							...context.aiGateway,
+							xStripeCustomerId:
+								(metadata?.team as { activeCustomerId?: string | null })
+									?.activeCustomerId ?? undefined,
+						}
+					: undefined,
 			);
 			let generationError: unknown | undefined;
 			const textGenerationStartTime = Date.now();
@@ -498,7 +505,11 @@ function getProviderOptions(languageModelData: TextGenerationLanguageModelData):
 
 function generationModel(
 	languageModel: TextGenerationLanguageModelData,
-	gatewayOptions?: { httpReferer: string; xTitle: string },
+	gatewayOptions?: {
+		httpReferer: string;
+		xTitle: string;
+		xStripeCustomerId?: string;
+	},
 ) {
 	const llmProvider = languageModel.provider;
 	const gateway = createGateway(
@@ -508,6 +519,9 @@ function generationModel(
 					headers: {
 						"http-referer": gatewayOptions.httpReferer,
 						"x-title": gatewayOptions.xTitle,
+						...(gatewayOptions.xStripeCustomerId
+							? { "X-Stripe-Customer-ID": gatewayOptions.xStripeCustomerId }
+							: {}),
 					},
 				},
 	);
