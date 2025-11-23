@@ -1,9 +1,15 @@
+import { Button } from "@giselle-internal/ui/button";
+import {
+	DropdownMenu,
+	type MenuGroup,
+} from "@giselle-internal/ui/dropdown-menu";
 import { Popover } from "@giselle-internal/ui/popover";
 import { SettingDetail } from "@giselle-internal/ui/setting-label";
-import { getEntry } from "@giselles-ai/language-model-registry";
+import { getEntry, tools } from "@giselles-ai/language-model-registry";
 import type { ContentGenerationNode } from "@giselles-ai/protocol";
 import { useWorkflowDesigner } from "@giselles-ai/react";
-import { Settings2Icon } from "lucide-react";
+import { titleCase } from "@giselles-ai/utils";
+import { PlusIcon, Settings2Icon } from "lucide-react";
 import { useMemo } from "react";
 import {
 	NodePanelHeader,
@@ -29,6 +35,32 @@ export function ContentGenerationNodePropertiesPanel({
 	): k is keyof typeof languageModel.defaultConfiguration {
 		return k in languageModel.defaultConfiguration;
 	}
+
+	const toolsGroupByProvider = useMemo<MenuGroup[]>(
+		() => [
+			{
+				groupId: "giselle",
+				groupLabel: "Hosted",
+				items: tools
+					.filter((tool) => tool.provider === "giselle")
+					.map((tool) => ({
+						value: tool.name,
+						label: tool?.title ?? tool.name,
+					})),
+			},
+			{
+				groupId: languageModel.provider,
+				groupLabel: `${titleCase(languageModel.provider)} Provides`,
+				items: tools
+					.filter((tool) => tool.provider === languageModel.provider)
+					.map((tool) => ({
+						value: tool.name,
+						label: tool?.title ?? tool.name,
+					})),
+			},
+		],
+		[languageModel.provider],
+	);
 
 	return (
 		<PropertiesPanelRoot>
@@ -116,6 +148,23 @@ export function ContentGenerationNodePropertiesPanel({
 								)}
 							</div>
 						)}
+					</div>
+
+					<SettingDetail size="md">Context</SettingDetail>
+					<div>todo</div>
+
+					<SettingDetail size="md">Tools</SettingDetail>
+					<div>
+						<DropdownMenu
+							items={toolsGroupByProvider}
+							onSelect={(_e, item) => console.log(item)}
+							trigger={
+								<Button variant="solid" leftIcon={<PlusIcon />}>
+									Add
+								</Button>
+							}
+							modal={false}
+						/>
 					</div>
 				</div>
 			</PropertiesPanelContent>
