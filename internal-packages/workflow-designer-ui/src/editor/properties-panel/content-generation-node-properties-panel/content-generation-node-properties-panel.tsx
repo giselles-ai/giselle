@@ -1,8 +1,5 @@
 import { Button } from "@giselle-internal/ui/button";
-import {
-	DropdownMenu,
-	type MenuGroup,
-} from "@giselle-internal/ui/dropdown-menu";
+import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { Popover } from "@giselle-internal/ui/popover";
 import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import { getEntry, tools } from "@giselles-ai/language-model-registry";
@@ -10,7 +7,7 @@ import type { ContentGenerationNode } from "@giselles-ai/protocol";
 import { useWorkflowDesigner } from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
 import { PlusIcon, Settings2Icon } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
 	NodePanelHeader,
 	PropertiesPanelContent,
@@ -18,6 +15,7 @@ import {
 } from "../ui";
 import { ConfigurationFormField } from "./configuration-form-field";
 import { ModelPickerV2 } from "./model-picker-v2";
+import { ToolConfigurationDialog } from "./tool-configuration-dialog";
 
 export function ContentGenerationNodePropertiesPanel({
 	node,
@@ -36,7 +34,15 @@ export function ContentGenerationNodePropertiesPanel({
 		return k in languageModel.defaultConfiguration;
 	}
 
-	const toolsGroupByProvider = useMemo<MenuGroup[]>(
+	const [selectedToolName, setSelectedToolName] = useState<string | null>(null);
+	const [toolDialogOpen, setToolDialogOpen] = useState(false);
+
+	const selectedTool = useMemo(() => {
+		if (!selectedToolName) return null;
+		return tools.find((tool) => tool.name === selectedToolName) ?? null;
+	}, [selectedToolName]);
+
+	const toolsGroupByProvider = useMemo(
 		() => [
 			{
 				groupId: "giselle",
@@ -61,6 +67,26 @@ export function ContentGenerationNodePropertiesPanel({
 		],
 		[languageModel.provider],
 	);
+
+	const handleToolSelect = (_e: unknown, item: { value: string }) => {
+		setSelectedToolName(item.value);
+		setToolDialogOpen(true);
+	};
+
+	const handleToolConfigSubmit = (config: Record<string, unknown>) => {
+		// TODO: Save tool configuration to node
+		// For now, just log it
+		console.log("Tool config:", selectedToolName, config);
+		setToolDialogOpen(false);
+		setSelectedToolName(null);
+	};
+
+	const handleToolDialogOpenChange = (open: boolean) => {
+		setToolDialogOpen(open);
+		if (!open) {
+			setSelectedToolName(null);
+		}
+	};
 
 	return (
 		<PropertiesPanelRoot>
@@ -157,7 +183,7 @@ export function ContentGenerationNodePropertiesPanel({
 					<div>
 						<DropdownMenu
 							items={toolsGroupByProvider}
-							onSelect={(_e, item) => console.log(item)}
+							onSelect={handleToolSelect}
 							trigger={
 								<Button variant="solid" leftIcon={<PlusIcon />}>
 									Add
@@ -165,6 +191,15 @@ export function ContentGenerationNodePropertiesPanel({
 							}
 							modal={false}
 						/>
+						{selectedTool && (
+							<ToolConfigurationDialog
+								tool={selectedTool}
+								open={toolDialogOpen}
+								onOpenChange={handleToolDialogOpenChange}
+								onSubmit={handleToolConfigSubmit}
+								trigger={null}
+							/>
+						)}
 					</div>
 				</div>
 			</PropertiesPanelContent>

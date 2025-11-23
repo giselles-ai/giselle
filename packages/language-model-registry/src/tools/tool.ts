@@ -1,7 +1,9 @@
 import type z from "zod/v4";
 import type { LanguageModelProvider } from "../language-models";
 
-interface LanguageModelToolConfigurationOption<TSchema extends z.ZodType> {
+export interface LanguageModelToolConfigurationOption<
+	TSchema extends z.ZodType,
+> {
 	name: string;
 	title?: string;
 	schema: TSchema;
