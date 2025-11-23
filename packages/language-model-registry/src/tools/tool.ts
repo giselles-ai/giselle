@@ -31,7 +31,7 @@ export interface LanguageModelTool<
 	name: string;
 	provider: LanguageModelToolProvider;
 	title?: string;
-	tools: readonly T[];
+	tools?: readonly T[];
 	configurationOptions: C;
 }
 
