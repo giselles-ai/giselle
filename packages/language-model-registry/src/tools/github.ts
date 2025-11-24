@@ -164,10 +164,11 @@ export const githubApi = defineLanguageModelTool({
 	provider: "giselle",
 	tools,
 	configurationOptions: {
-		token: {
-			name: "token",
-			type: "text",
+		secretId: {
+			name: "secretId",
+			type: "secret",
 			title: "Token",
+			secretTags: ["github-access-token"],
 		},
 		useTools: {
 			name: "useTools",

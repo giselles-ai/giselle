@@ -1,13 +1,22 @@
+import { Button } from "@giselle-internal/ui/button";
 import { Input } from "@giselle-internal/ui/input";
 import { Select } from "@giselle-internal/ui/select";
 import type {
 	LanguageModelTool,
 	LanguageModelToolConfigurationOption,
 } from "@giselles-ai/language-model-registry";
+import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
 import clsx from "clsx/lite";
 import { Switch } from "radix-ui";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
+import { useWorkspaceSecrets } from "../../lib/use-workspace-secrets";
+import {
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+} from "../text-generation-node-properties-panel/tools/ui/tabs";
 import { ConfigurationFormFieldLabel } from "./configuration-form-field-label";
 import { TagInputField } from "./tag-input-field";
 
@@ -288,6 +297,211 @@ function TextField({
 	);
 }
 
+function SecretField({
+	name,
+	option,
+	value,
+	onValueChange,
+}: {
+	name: string;
+	option: Extract<LanguageModelToolConfigurationOption, { type: "secret" }>;
+	value: unknown;
+	onValueChange: (value: unknown) => void;
+}) {
+	const [tabValue, setTabValue] = useState<"create" | "select">("select");
+	const [tokenValue, setTokenValue] = useState("");
+	const [tokenLabel, setTokenLabel] = useState("");
+	const { data: workspace } = useWorkflowDesigner();
+	const {
+		isLoading,
+		data: secrets,
+		mutate,
+	} = useWorkspaceSecrets(option.secretTags);
+	const client = useGiselle();
+	const [isPending, startTransition] = useTransition();
+
+	const selectedSecretId = typeof value === "string" ? value : undefined;
+
+	const handleCreateSecret = useCallback(() => {
+		if (!tokenValue) return;
+
+		startTransition(async () => {
+			const label = tokenLabel.trim() || `Token ${Date.now()}`;
+			const result = await client.addSecret({
+				workspaceId: workspace.id,
+				label,
+				value: tokenValue,
+				tags: option.secretTags,
+			});
+			mutate([...(secrets ?? []), result.secret], false);
+			onValueChange(result.secret.id);
+			setTokenValue("");
+			setTokenLabel("");
+			setTabValue("select");
+		});
+	}, [
+		tokenValue,
+		tokenLabel,
+		client,
+		workspace.id,
+		option.secretTags,
+		mutate,
+		secrets,
+		onValueChange,
+	]);
+
+	const handleSelectSecret = useCallback(
+		(secretId: string) => {
+			onValueChange(secretId);
+		},
+		[onValueChange],
+	);
+
+	const hasSavedTokens = (secrets ?? []).length > 0;
+
+	return (
+		<div className="flex flex-col gap-[12px]">
+			{isLoading ? (
+				<p className="text-[14px] text-text-muted">Loading...</p>
+			) : !hasSavedTokens ? (
+				<div className="flex flex-col gap-[12px]">
+					<fieldset className="flex flex-col gap-[4px]">
+						<label htmlFor={`${name}_value`} className="text-text text-[13px]">
+							Token
+						</label>
+						<Input
+							type="password"
+							autoComplete="off"
+							data-1p-ignore
+							data-lpignore="true"
+							id={`${name}_value`}
+							value={tokenValue}
+							onChange={(e) => setTokenValue(e.target.value)}
+							placeholder="Enter token value"
+							required
+						/>
+					</fieldset>
+					<fieldset className="flex flex-col gap-[4px]">
+						<label htmlFor={`${name}_label`} className="text-text text-[13px]">
+							Token Name <span className="text-text-muted">(Optional)</span>
+						</label>
+						<Input
+							type="text"
+							id={`${name}_label`}
+							value={tokenLabel}
+							onChange={(e) => setTokenLabel(e.target.value)}
+							placeholder="Give this token a short name"
+						/>
+						{tokenLabel ? (
+							<p className="text-[11px] text-text-muted px-[4px]">
+								This token will be saved and can be reused in other nodes.
+							</p>
+						) : (
+							<p className="text-[11px] text-text-muted px-[4px]">
+								Leave blank to use this token only for this configuration. Add a
+								name to save it for reuse in other nodes.
+							</p>
+						)}
+					</fieldset>
+					<Button
+						type="button"
+						onClick={handleCreateSecret}
+						disabled={!tokenValue || isPending}
+						variant="solid"
+					>
+						{isPending ? "Saving..." : "Save & Use"}
+					</Button>
+				</div>
+			) : (
+				<Tabs
+					value={tabValue}
+					onValueChange={(v) => setTabValue(v as "create" | "select")}
+				>
+					<TabsList className="mb-[12px]">
+						<TabsTrigger value="select">Use Saved Token</TabsTrigger>
+						<TabsTrigger value="create">Paste New Token</TabsTrigger>
+					</TabsList>
+					<TabsContent value="select">
+						<div className="flex flex-col gap-[8px]">
+							<p className="text-[11px] text-text-muted">
+								Pick one of your encrypted tokens to use.
+							</p>
+							<Select
+								options={secrets?.map((s) => ({ ...s, value: s.id })) ?? []}
+								placeholder="Choose a token…"
+								value={selectedSecretId ?? ""}
+								onValueChange={handleSelectSecret}
+								renderOption={(option) => option.label}
+								widthClassName="w-full"
+							/>
+						</div>
+					</TabsContent>
+					<TabsContent value="create">
+						<div className="flex flex-col gap-[12px]">
+							<fieldset className="flex flex-col gap-[4px]">
+								<label
+									htmlFor={`${name}_label`}
+									className="text-text text-[13px]"
+								>
+									Token Name <span className="text-text-muted">(Optional)</span>
+								</label>
+								<Input
+									type="text"
+									id={`${name}_label`}
+									value={tokenLabel}
+									onChange={(e) => setTokenLabel(e.target.value)}
+									placeholder="Give this token a short name"
+								/>
+								{tokenLabel ? (
+									<p className="text-[11px] text-text-muted px-[4px]">
+										This token will be saved and can be reused in other nodes.
+									</p>
+								) : (
+									<p className="text-[11px] text-text-muted px-[4px]">
+										Leave blank to use this token only for this configuration.
+										Add a name to save it for reuse in other nodes.
+									</p>
+								)}
+							</fieldset>
+							<fieldset className="flex flex-col gap-[4px]">
+								<label
+									htmlFor={`${name}_value`}
+									className="text-text text-[13px]"
+								>
+									Token Value
+								</label>
+								<Input
+									type="password"
+									autoComplete="off"
+									data-1p-ignore
+									data-lpignore="true"
+									id={`${name}_value`}
+									value={tokenValue}
+									onChange={(e) => setTokenValue(e.target.value)}
+									placeholder="Enter token value"
+									required
+								/>
+								<p className="text-[11px] text-text-muted px-[4px]">
+									We'll encrypt the token with authenticated encryption before
+									saving it.
+								</p>
+							</fieldset>
+							<Button
+								type="button"
+								onClick={handleCreateSecret}
+								disabled={!tokenValue || isPending}
+								variant="solid"
+							>
+								{isPending ? "Saving..." : "Save & Use"}
+							</Button>
+						</div>
+					</TabsContent>
+				</Tabs>
+			)}
+		</div>
+	);
+}
+
 function ToolConfigurationField({
 	name,
 	option,
@@ -373,6 +587,15 @@ function ToolConfigurationField({
 				<TextField
 					name={name}
 					label={label}
+					option={option}
+					value={currentValue}
+					onValueChange={onValueChange}
+				/>
+			);
+		case "secret":
+			return (
+				<SecretField
+					name={name}
 					option={option}
 					value={currentValue}
 					onValueChange={onValueChange}

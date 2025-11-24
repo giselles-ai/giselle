@@ -7,7 +7,8 @@ export type ToolConfigurationFieldType =
 	| "enum"
 	| "toolSelection"
 	| "tagArray"
-	| "object";
+	| "object"
+	| "secret";
 
 export interface BaseToolConfigurationOption {
 	name: string;
@@ -59,6 +60,12 @@ export interface ObjectToolConfigurationOption
 	type: "object";
 }
 
+export interface SecretToolConfigurationOption
+	extends BaseToolConfigurationOption {
+	type: "secret";
+	secretTags: string[];
+}
+
 export type LanguageModelToolConfigurationOption =
 	| TextToolConfigurationOption
 	| NumberToolConfigurationOption
@@ -66,7 +73,8 @@ export type LanguageModelToolConfigurationOption =
 	| EnumToolConfigurationOption
 	| ToolSelectionToolConfigurationOption
 	| TagArrayToolConfigurationOption
-	| ObjectToolConfigurationOption;
+	| ObjectToolConfigurationOption
+	| SecretToolConfigurationOption;
 
 export type LanguageModelToolConfigurationOptions = Record<
 	string,
