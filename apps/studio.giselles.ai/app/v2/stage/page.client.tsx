@@ -8,7 +8,7 @@ import type {
 	Task,
 	TaskId,
 } from "@giselles-ai/protocol";
-import { File, PlayIcon } from "lucide-react";
+import { File } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import {
@@ -172,11 +172,29 @@ function SimpleAppEntryForm({
 				))}
 				<button
 					type="submit"
-					className="flex-shrink-0 relative flex items-center justify-center outline-none overflow-hidden focus-visible:ring-2 focus-visible:ring-primary-700/60 focus-visible:ring-offset-1 px-6 h-[38px] rounded-lg gap-[6px] bg-gradient-to-b from-[#202530] to-[#12151f] text-white/80 border border-black/70 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)] transition-all duration-200 active:scale-[0.98] cursor-pointer"
+					className="flex-shrink-0 relative flex items-center justify-center px-[24px] h-[38px] rounded-full gap-[8px] border transition-all hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 bg-primary-900 border-primary-900/30 hover:bg-primary-800 text-white outline-none focus-visible:ring-2 focus-visible:ring-primary-700/60 focus-visible:ring-offset-1"
 				>
-					<PlayIcon className="h-4 w-4 fill-current" />
-					Run
+					<span className="mr-[8px] generate-star">✦</span>
+					<span>Run</span>
+					<span className="ml-[8px] flex items-center gap-[2px] text-[11px] text-white/60">
+						<kbd className="px-[4px] py-[1px] bg-white/20 rounded-[4px]">⌘</kbd>
+						<kbd className="px-[4px] py-[1px] bg-white/20 rounded-[4px]">↵</kbd>
+					</span>
 				</button>
+				<style jsx>{`
+					.generate-star { display: inline-block; }
+					.generate-star.generating { animation: continuousRotate 1s linear infinite; }
+					button:hover .generate-star:not(.generating) { animation: rotateStar 0.7s ease-in-out; }
+					@keyframes rotateStar {
+						0% { transform: rotate(0deg) scale(1); }
+						50% { transform: rotate(180deg) scale(1.5); }
+						100% { transform: rotate(360deg) scale(1); }
+					}
+					@keyframes continuousRotate {
+						0% { transform: rotate(0deg); }
+						100% { transform: rotate(360deg); }
+					}
+				`}</style>
 			</div>
 		</form>
 	);
@@ -189,8 +207,8 @@ function AppCard({ app, onSelect }: { app: StageApp; onSelect?: () => void }) {
 			className="flex-none w-[180px] flex items-center gap-3 rounded-lg bg-card/30 hover:bg-card/50 text-left group cursor-pointer transition-all"
 			onClick={onSelect}
 		>
-			<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-card/60 border border-border">
-				<DynamicIcon name={app.iconName} className="h-7 w-7 text-foreground" />
+			<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-card/60 border border-border">
+				<DynamicIcon name={app.iconName} className="h-6 w-6 text-foreground" />
 			</div>
 			<div className="flex-1 min-w-0">
 				<h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
@@ -429,8 +447,8 @@ export function Page({
 						{selectedApp ? (
 							<div className="flex flex-col gap-6 lg:flex-row">
 								{/* Left: thumbnail */}
-								<div className="flex w-full flex-col items-center gap-4 lg:w-[280px] lg:flex-none lg:items-start">
-									<div className="flex h-[280px] w-[280px] items-center justify-center rounded-[8px] bg-card/60 border border-border">
+								<div className="flex w-full flex-col items-center gap-4 lg:w-[240px] lg:flex-none lg:items-start">
+									<div className="flex h-[240px] w-[240px] items-center justify-center rounded-[8px] bg-card/60 border border-border">
 										<DynamicIcon
 											name={selectedApp.iconName}
 											className="h-12 w-12 text-foreground"
@@ -541,7 +559,7 @@ export function Page({
 								</div>
 							</div>
 						) : (
-							<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] h-[280px] w-full rounded-[8px] flex justify-center items-center text-text-muted">
+							<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] h-[240px] w-full rounded-[8px] flex justify-center items-center text-text-muted">
 								<div className="flex flex-col items-center gap-[4px] text-text-muted">
 									<p className="font-[800] text-text/60">
 										{data.apps.length > 0
@@ -564,7 +582,7 @@ export function Page({
 							{/* Column 1: History */}
 							<div>
 								<div className="flex items-center justify-between mb-3">
-									<h2 className="text-sm font-normal text-[color:var(--color-text-60)]">
+									<h2 className="text-link-muted text-[12px] block">
 										Apps from history
 									</h2>
 								</div>
@@ -591,9 +609,7 @@ export function Page({
 							{/* Column 2: My apps */}
 							<div>
 								<div className="flex items-center justify-between mb-3">
-									<h2 className="text-sm font-normal text-[color:var(--color-text-60)]">
-										My apps
-									</h2>
+									<h2 className="text-link-muted text-[12px] block">My apps</h2>
 								</div>
 								{myApps.length === 0 ? (
 									<p className="text-sm text-muted-foreground">
@@ -618,7 +634,7 @@ export function Page({
 							{/* Column 3: Team apps */}
 							<div>
 								<div className="flex items-center justify-between mb-3">
-									<h2 className="text-sm font-normal text-[color:var(--color-text-60)]">
+									<h2 className="text-link-muted text-[12px] block">
 										Team apps
 									</h2>
 								</div>
@@ -672,7 +688,7 @@ export function Page({
 			{runningApp && (
 				<div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
 					<div
-						className="pointer-events-auto px-[24px] py-4 bg-card/95 backdrop-blur-md border-t border-border shadow-lg"
+						className="pointer-events-auto px-[16px] py-3 bg-card/95 backdrop-blur-md border-t border-border shadow-lg"
 						style={{
 							marginLeft: navigationRailWidth,
 							width: `calc(100vw - ${navigationRailWidth}px)`,
