@@ -58,7 +58,11 @@ export function ToolConfigurationDialog({
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange} defaultOpen={defaultOpen}>
 			{trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-			<DialogContent size={size} variant="glass">
+			<DialogContent
+				size={size}
+				variant="glass"
+				onOpenAutoFocus={(e) => e.preventDefault()}
+			>
 				<div className="mb-4 shrink-0">
 					<DialogTitle className="text-[20px] font-medium text-text tracking-tight font-sans">
 						{tool.title ?? tool.name}

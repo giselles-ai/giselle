@@ -24,15 +24,17 @@ function EnumField({
 	value: unknown;
 	onValueChange: (value: unknown) => void;
 }) {
-	const options = option.options.map(
-		(opt: { value: string; label?: string }) => ({
-			value: opt.value,
-			label: opt.label ?? opt.value,
-		}),
-	);
+	const options = option.options.map((opt) => ({
+		value: String(opt.value),
+		label: opt.label ?? String(opt.value),
+	}));
 	return (
 		<div className="flex justify-between">
-			<ConfigurationFormFieldLabel label={label} tooltip={option.description} />
+			<ConfigurationFormFieldLabel
+				label={label}
+				tooltip={option.description}
+				optional={option.optional}
+			/>
 			<div>
 				<Select
 					widthClassName="w-fit"
@@ -189,6 +191,7 @@ function TagArrayField({
 			placeholder={option.placeholder}
 			description={option.description}
 			validate={option.validate}
+			optional={option.optional}
 		/>
 	);
 }
@@ -267,7 +270,11 @@ function TextField({
 }) {
 	return (
 		<div className="flex flex-col gap-[4px]">
-			<ConfigurationFormFieldLabel label={label} tooltip={option.description} />
+			<ConfigurationFormFieldLabel
+				label={label}
+				tooltip={option.description}
+				optional={option.optional}
+			/>
 			<Input
 				name={name}
 				type="text"

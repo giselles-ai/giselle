@@ -11,6 +11,7 @@ export interface TagInputFieldProps {
 	placeholder?: string;
 	description?: string;
 	validate?: (value: string) => { isValid: boolean; message?: string };
+	optional?: boolean;
 }
 
 export function TagInputField({
@@ -20,6 +21,7 @@ export function TagInputField({
 	placeholder = "Add tags (separate with commas)",
 	description,
 	validate,
+	optional,
 }: TagInputFieldProps) {
 	const [inputValue, setInputValue] = useState("");
 	const [errors, setErrors] = useState<
@@ -150,7 +152,11 @@ export function TagInputField({
 
 	return (
 		<div className="flex flex-col gap-[8px]">
-			<ConfigurationFormFieldLabel label={label} tooltip={description} />
+			<ConfigurationFormFieldLabel
+				label={label}
+				tooltip={description}
+				optional={optional}
+			/>
 			<div className="flex flex-col gap-2 rounded-lg bg-bg/80 p-1 pl-0">
 				{value.length > 0 && (
 					<div className="flex flex-wrap items-center gap-1">

@@ -14,6 +14,7 @@ export interface BaseToolConfigurationOption {
 	title?: string;
 	description?: string;
 	defaultValue?: unknown;
+	optional?: boolean;
 }
 
 export interface TextToolConfigurationOption
@@ -35,7 +36,8 @@ export interface BooleanToolConfigurationOption
 	type: "boolean";
 }
 
-export interface EnumToolConfigurationOption extends BaseToolConfigurationOption {
+export interface EnumToolConfigurationOption
+	extends BaseToolConfigurationOption {
 	type: "enum";
 	options: Array<{ value: string; label?: string }>;
 }
