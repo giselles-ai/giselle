@@ -398,19 +398,11 @@ function SecretField({
 							</p>
 						) : (
 							<p className="text-[11px] text-text-muted px-[4px]">
-								Leave blank to use this token only for this configuration. Add a
-								name to save it for reuse in other nodes.
+								Leave blank to use this token only for this node. Add a name to
+								save it for reuse in other nodes.
 							</p>
 						)}
 					</fieldset>
-					<Button
-						type="button"
-						onClick={handleCreateSecret}
-						disabled={!tokenValue || isPending}
-						variant="solid"
-					>
-						{isPending ? "Saving..." : "Save & Use"}
-					</Button>
 				</div>
 			) : (
 				<Tabs
@@ -486,14 +478,6 @@ function SecretField({
 									saving it.
 								</p>
 							</fieldset>
-							<Button
-								type="button"
-								onClick={handleCreateSecret}
-								disabled={!tokenValue || isPending}
-								variant="solid"
-							>
-								{isPending ? "Saving..." : "Save & Use"}
-							</Button>
 						</div>
 					</TabsContent>
 				</Tabs>
