@@ -86,6 +86,7 @@ export function NavigationRail({
 				)}
 			</AnimatePresence>
 			<motion.div
+				data-navigation-rail-spacer
 				initial={{
 					width: "var(--spacing-navigation-rail-expanded)",
 				}}
