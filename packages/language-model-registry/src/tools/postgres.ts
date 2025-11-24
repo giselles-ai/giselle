@@ -1,4 +1,3 @@
-import * as z from "zod/v4";
 import { defineLanguageModelTool, defineTool } from "./tool";
 
 const tools = [
@@ -15,12 +14,6 @@ const tools = [
 	}),
 ] as const;
 
-type ToolName = (typeof tools)[number]["name"];
-function isToolName(arg: unknown): arg is ToolName {
-	return tools.some((tool) => tool.name === arg);
-}
-const ToolName = z.custom<ToolName>((v) => isToolName(v));
-
 export const postgres = defineLanguageModelTool({
 	name: "postgres",
 	title: "PostgreSQL",
@@ -29,11 +22,13 @@ export const postgres = defineLanguageModelTool({
 	configurationOptions: {
 		secretId: {
 			name: "secretId",
-			schema: z.string(),
+			type: "text",
+			title: "Secret ID",
 		},
 		useTools: {
 			name: "useTools",
-			schema: z.array(ToolName),
+			type: "toolSelection",
+			title: "Use Tools",
 		},
 	},
 });

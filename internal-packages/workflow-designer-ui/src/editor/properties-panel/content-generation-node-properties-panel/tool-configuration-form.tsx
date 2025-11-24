@@ -8,35 +8,8 @@ import { titleCase } from "@giselles-ai/utils";
 import clsx from "clsx/lite";
 import { Switch } from "radix-ui";
 import { useEffect, useState } from "react";
-import type * as z from "zod/v4";
 import { ConfigurationFormFieldLabel } from "./configuration-form-field-label";
-
-function getEnumValues(schema: z.ZodTypeAny): string[] {
-	const def = schema.def;
-	if (def.type === "enum") {
-		return (schema as z.ZodEnum).options.map((option) => `${option}`);
-	}
-	return [];
-}
-
-function getNumberConstraints(schema: z.ZodTypeAny): {
-	min?: number;
-	max?: number;
-	step?: number;
-} {
-	const def = schema.def;
-	if (def.type === "number") {
-		// Try to extract min/max from schema checks
-		const checks = (def as { checks?: Array<{ kind: string; value?: number }> })
-			.checks;
-		return {
-			min: checks?.find((c: { kind: string }) => c.kind === "min")?.value,
-			max: checks?.find((c: { kind: string }) => c.kind === "max")?.value,
-			step: 1,
-		};
-	}
-	return {};
-}
+import { TagInputField } from "./tag-input-field";
 
 function EnumField({
 	name,
@@ -47,15 +20,19 @@ function EnumField({
 }: {
 	name: string;
 	label: string;
-	option: LanguageModelToolConfigurationOption<z.ZodType>;
+	option: Extract<LanguageModelToolConfigurationOption, { type: "enum" }>;
 	value: unknown;
 	onValueChange: (value: unknown) => void;
 }) {
-	const enumValues = getEnumValues(option.schema);
-	const options = enumValues.map((v) => ({ value: v, label: v }));
+	const options = option.options.map(
+		(opt: { value: string; label?: string }) => ({
+			value: opt.value,
+			label: opt.label ?? opt.value,
+		}),
+	);
 	return (
 		<div className="flex justify-between">
-			<ConfigurationFormFieldLabel label={label} />
+			<ConfigurationFormFieldLabel label={label} tooltip={option.description} />
 			<div>
 				<Select
 					widthClassName="w-fit"
@@ -71,16 +48,18 @@ function EnumField({
 
 function BooleanField({
 	label,
+	option,
 	value,
 	onValueChange,
 }: {
 	label: string;
+	option: Extract<LanguageModelToolConfigurationOption, { type: "boolean" }>;
 	value: unknown;
 	onValueChange: (value: unknown) => void;
 }) {
 	return (
 		<div className="flex justify-between">
-			<ConfigurationFormFieldLabel label={label} />
+			<ConfigurationFormFieldLabel label={label} tooltip={option.description} />
 			<Switch.Root
 				className={clsx(
 					"h-[15px] w-[27px] rounded-full outline-none transition-colors",
@@ -112,21 +91,20 @@ function NumberField({
 }: {
 	name: string;
 	label: string;
-	option: LanguageModelToolConfigurationOption<z.ZodType>;
+	option: Extract<LanguageModelToolConfigurationOption, { type: "number" }>;
 	value: unknown;
 	onValueChange: (value: unknown) => void;
 }) {
-	const { min, max, step } = getNumberConstraints(option.schema);
-	const numValue = Number(value ?? 0);
+	const numValue = Number(value ?? option.defaultValue ?? 0);
 	return (
 		<div className="flex flex-col gap-[4px]">
-			<ConfigurationFormFieldLabel label={label} />
+			<ConfigurationFormFieldLabel label={label} tooltip={option.description} />
 			<Input
 				name={name}
 				type="number"
-				min={min}
-				max={max}
-				step={step}
+				min={option.min}
+				max={option.max}
+				step={option.step ?? 1}
 				value={numValue}
 				onChange={(e) => {
 					onValueChange(Number(e.target.value));
@@ -138,11 +116,16 @@ function NumberField({
 
 function ToolSelectionField({
 	label,
+	option,
 	value,
 	tools,
 	onValueChange,
 }: {
 	label: string;
+	option: Extract<
+		LanguageModelToolConfigurationOption,
+		{ type: "toolSelection" }
+	>;
 	value: unknown;
 	tools: NonNullable<LanguageModelTool["tools"]>;
 	onValueChange: (value: unknown) => void;
@@ -150,7 +133,7 @@ function ToolSelectionField({
 	const selectedTools = Array.isArray(value) ? (value as string[]) : [];
 	return (
 		<div className="flex flex-col gap-[8px]">
-			<ConfigurationFormFieldLabel label={label} />
+			<ConfigurationFormFieldLabel label={label} tooltip={option.description} />
 			<div className="flex flex-col gap-[8px]">
 				{tools.map((toolOption) => {
 					const isSelected = selectedTools.includes(toolOption.name);
@@ -186,66 +169,40 @@ function ToolSelectionField({
 	);
 }
 
-function ArrayField({
+function TagArrayField({
 	label,
+	option,
 	value,
 	onValueChange,
 }: {
-	name: string;
 	label: string;
+	option: Extract<LanguageModelToolConfigurationOption, { type: "tagArray" }>;
 	value: unknown;
-	tool?: LanguageModelTool;
 	onValueChange: (value: unknown) => void;
 }) {
-	// Special handling for useTools: show checkboxes for available tools
-
-	// For other arrays, show as comma-separated input
-	const arrayValue = Array.isArray(value) ? value.join(", ") : "";
-	const [textValue, setTextValue] = useState(arrayValue);
-
-	useEffect(() => {
-		if (Array.isArray(value)) {
-			const newStr = value.join(", ");
-			// Only update if conceptually different to allow flexible typing
-			const currentParsed = textValue
-				.split(",")
-				.map((v) => v.trim())
-				.filter(Boolean);
-			if (JSON.stringify(value) !== JSON.stringify(currentParsed)) {
-				setTextValue(newStr);
-			}
-		}
-	}, [value, textValue]);
-
+	const arrayValue = Array.isArray(value) ? (value as string[]) : [];
 	return (
-		<div className="flex flex-col gap-[4px]">
-			<ConfigurationFormFieldLabel label={label} />
-			<Input
-				type="text"
-				value={textValue}
-				onChange={(e) => {
-					const newValue = e.target.value;
-					setTextValue(newValue);
-					const values = newValue
-						.split(",")
-						.map((v) => v.trim())
-						.filter(Boolean);
-					onValueChange(values);
-				}}
-				placeholder="Comma-separated values"
-			/>
-		</div>
+		<TagInputField
+			label={label}
+			value={arrayValue}
+			onValueChange={(newValue) => onValueChange(newValue)}
+			placeholder={option.placeholder}
+			description={option.description}
+			validate={option.validate}
+		/>
 	);
 }
 
 function ObjectField({
 	name,
 	label,
+	option,
 	value,
 	onValueChange,
 }: {
 	name: string;
 	label: string;
+	option: Extract<LanguageModelToolConfigurationOption, { type: "object" }>;
 	value: unknown;
 	onValueChange: (value: unknown) => void;
 }) {
@@ -274,10 +231,10 @@ function ObjectField({
 
 	return (
 		<div className="flex flex-col gap-[4px]">
-			<ConfigurationFormFieldLabel label={label} />
+			<ConfigurationFormFieldLabel label={label} tooltip={option.description} />
 			<textarea
 				name={`${name}_display`}
-				className="min-h-[100px] w-full rounded-md border border-border bg-bg px-3 py-2 text-[14px] text-inverse placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-500"
+				className="min-h-[100px] w-full rounded-md border border-border bg-bg px-3 py-2 text-[14px] text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary-500"
 				value={jsonText}
 				onChange={(e) => {
 					const newValue = e.target.value;
@@ -295,27 +252,30 @@ function ObjectField({
 	);
 }
 
-function DefaultField({
+function TextField({
 	name,
 	label,
+	option,
 	value,
 	onValueChange,
 }: {
 	name: string;
 	label: string;
+	option: Extract<LanguageModelToolConfigurationOption, { type: "text" }>;
 	value: unknown;
 	onValueChange: (value: unknown) => void;
 }) {
 	return (
 		<div className="flex flex-col gap-[4px]">
-			<ConfigurationFormFieldLabel label={label} />
+			<ConfigurationFormFieldLabel label={label} tooltip={option.description} />
 			<Input
 				name={name}
 				type="text"
-				value={String(value ?? "")}
+				value={String(value ?? option.defaultValue ?? "")}
 				onChange={(e) => {
 					onValueChange(e.target.value);
 				}}
+				placeholder={option.placeholder}
 			/>
 		</div>
 	);
@@ -330,17 +290,16 @@ function ToolConfigurationField({
 	onValueChange,
 }: {
 	name: string;
-	option: LanguageModelToolConfigurationOption<z.ZodType>;
+	option: LanguageModelToolConfigurationOption;
 	value: unknown;
 	defaultValue?: unknown;
 	tool?: LanguageModelTool;
 	onValueChange: (value: unknown) => void;
 }) {
-	const fieldType = option.schema.def.type;
 	const label = option.title ?? titleCase(name);
-	const currentValue = value ?? defaultValue;
+	const currentValue = value ?? defaultValue ?? option.defaultValue;
 
-	switch (fieldType) {
+	switch (option.type) {
 		case "enum":
 			return (
 				<EnumField
@@ -355,6 +314,7 @@ function ToolConfigurationField({
 			return (
 				<BooleanField
 					label={label}
+					option={option}
 					value={currentValue}
 					onValueChange={onValueChange}
 				/>
@@ -369,23 +329,25 @@ function ToolConfigurationField({
 					onValueChange={onValueChange}
 				/>
 			);
-		case "array":
-			if (name === "useTools" && tool?.tools) {
-				return (
-					<ToolSelectionField
-						label={label}
-						value={value}
-						tools={tool.tools}
-						onValueChange={onValueChange}
-					/>
-				);
+		case "toolSelection":
+			if (!tool?.tools) {
+				return null;
 			}
 			return (
-				<ArrayField
-					name={name}
+				<ToolSelectionField
 					label={label}
+					option={option}
 					value={currentValue}
-					tool={tool}
+					tools={tool.tools}
+					onValueChange={onValueChange}
+				/>
+			);
+		case "tagArray":
+			return (
+				<TagArrayField
+					label={label}
+					option={option}
+					value={currentValue}
 					onValueChange={onValueChange}
 				/>
 			);
@@ -394,19 +356,25 @@ function ToolConfigurationField({
 				<ObjectField
 					name={name}
 					label={label}
+					option={option}
 					value={currentValue}
 					onValueChange={onValueChange}
 				/>
 			);
-		default:
+		case "text":
 			return (
-				<DefaultField
+				<TextField
 					name={name}
 					label={label}
+					option={option}
 					value={currentValue}
 					onValueChange={onValueChange}
 				/>
 			);
+		default: {
+			const _exhaustiveCheck: never = option;
+			return null;
+		}
 	}
 }
 

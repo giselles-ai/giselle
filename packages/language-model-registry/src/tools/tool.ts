@@ -1,17 +1,74 @@
-import type z from "zod/v4";
 import type { LanguageModelProvider } from "../language-models";
 
-export interface LanguageModelToolConfigurationOption<
-	TSchema extends z.ZodType,
-> {
+export type ToolConfigurationFieldType =
+	| "text"
+	| "number"
+	| "boolean"
+	| "enum"
+	| "toolSelection"
+	| "tagArray"
+	| "object";
+
+export interface BaseToolConfigurationOption {
 	name: string;
 	title?: string;
-	schema: TSchema;
+	description?: string;
+	defaultValue?: unknown;
 }
+
+export interface TextToolConfigurationOption
+	extends BaseToolConfigurationOption {
+	type: "text";
+	placeholder?: string;
+}
+
+export interface NumberToolConfigurationOption
+	extends BaseToolConfigurationOption {
+	type: "number";
+	min?: number;
+	max?: number;
+	step?: number;
+}
+
+export interface BooleanToolConfigurationOption
+	extends BaseToolConfigurationOption {
+	type: "boolean";
+}
+
+export interface EnumToolConfigurationOption extends BaseToolConfigurationOption {
+	type: "enum";
+	options: Array<{ value: string; label?: string }>;
+}
+
+export interface ToolSelectionToolConfigurationOption
+	extends BaseToolConfigurationOption {
+	type: "toolSelection";
+}
+
+export interface TagArrayToolConfigurationOption
+	extends BaseToolConfigurationOption {
+	type: "tagArray";
+	placeholder?: string;
+	validate?: (value: string) => { isValid: boolean; message?: string };
+}
+
+export interface ObjectToolConfigurationOption
+	extends BaseToolConfigurationOption {
+	type: "object";
+}
+
+export type LanguageModelToolConfigurationOption =
+	| TextToolConfigurationOption
+	| NumberToolConfigurationOption
+	| BooleanToolConfigurationOption
+	| EnumToolConfigurationOption
+	| ToolSelectionToolConfigurationOption
+	| TagArrayToolConfigurationOption
+	| ObjectToolConfigurationOption;
 
 export type LanguageModelToolConfigurationOptions = Record<
 	string,
-	LanguageModelToolConfigurationOption<z.ZodType>
+	LanguageModelToolConfigurationOption
 >;
 
 export interface Tool<TName extends string = string> {
