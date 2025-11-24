@@ -1,5 +1,7 @@
+import { Input } from "@giselle-internal/ui/input";
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { validateUrl } from "../../lib/validate-url";
 import { ConfigurationFormFieldLabel } from "./configuration-form-field-label";
 
 export interface TagInputFieldProps {
@@ -24,18 +26,38 @@ export function TagInputField({
 		{ message: string; values?: string[] }[]
 	>([]);
 
-	const addTags = () => {
-		if (!inputValue.trim()) return;
+	const extractDomainFromUrl = (input: string): string | null => {
+		// Try to parse as URL
+		const url = validateUrl(input);
+		if (url) {
+			return url.hostname;
+		}
+		return null;
+	};
+
+	const addTags = (
+		textToProcess?: string,
+		options?: { shouldUpdateInput?: boolean },
+	) => {
+		const text = textToProcess ?? inputValue;
+		const shouldUpdateInput = options?.shouldUpdateInput ?? true;
+		if (!text.trim()) return;
 
 		// Parse tags
-		const tags = inputValue
+		const tags = text
 			.trim()
 			.split(/[,;\s]+/)
 			.map((tag) => tag.trim())
 			.filter(Boolean);
 
+		// Convert URLs to domains before processing
+		const processedTags = tags.map((tag) => {
+			const domain = extractDomainFromUrl(tag);
+			return domain ?? tag;
+		});
+
 		// Remove duplicates within the input batch
-		const uniqueTags = [...new Set(tags)];
+		const uniqueTags = [...new Set(processedTags)];
 
 		const validTags: string[] = [];
 		const invalidTags: string[] = [];
@@ -79,13 +101,15 @@ export function TagInputField({
 			onValueChange([...value, ...validTags]);
 		}
 
-		// Update input field
-		if (invalidTags.length > 0 || duplicateTags.length > 0) {
-			// Keep problematic tags in input for correction
-			setInputValue([...invalidTags, ...duplicateTags].join(", "));
-		} else {
-			// Clear input when all tags were processed successfully
-			setInputValue("");
+		// Update input field only if shouldUpdateInput is true
+		if (shouldUpdateInput) {
+			if (invalidTags.length > 0 || duplicateTags.length > 0) {
+				// Keep problematic tags in input for correction
+				setInputValue([...invalidTags, ...duplicateTags].join(", "));
+			} else {
+				// Clear input when all tags were processed successfully
+				setInputValue("");
+			}
 		}
 	};
 
@@ -98,52 +122,63 @@ export function TagInputField({
 			e.preventDefault();
 			addTags();
 		}
+		// TabキーはonBlurで処理される
 	};
 
-	useEffect(() => {
-		if (errors.length > 0) {
-			const timer = setTimeout(() => {
-				setErrors([]);
-			}, 5000);
-			return () => clearTimeout(timer);
+	const handleBlur = () => {
+		addTags();
+	};
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const newValue = e.target.value;
+		setErrors([]);
+
+		if (newValue.includes(",")) {
+			const commaIndex = newValue.indexOf(",");
+			const tagToAdd = newValue.slice(0, commaIndex).trim();
+			const remainingText = newValue.slice(commaIndex + 1);
+
+			if (tagToAdd) {
+				addTags(tagToAdd, { shouldUpdateInput: false });
+				setInputValue(remainingText);
+				return;
+			}
 		}
-	}, [errors]);
+
+		setInputValue(newValue);
+	};
 
 	return (
 		<div className="flex flex-col gap-[8px]">
 			<ConfigurationFormFieldLabel label={label} tooltip={description} />
-			<div className="flex items-start gap-3 rounded-lg bg-bg/80 p-1">
-				<div className="flex min-h-[40px] flex-grow flex-wrap items-center gap-1 px-2">
-					{value.map((tag) => (
-						<div
-							key={tag}
-							className="mb-1 mr-2 flex items-center rounded-[4px] p-[1px] w-fit"
-						>
-							<div className="px-[8px] py-[2px] rounded-[3px] text-[12px] flex items-center gap-[4px] border bg-[rgba(var(--color-primary-rgb),0.05)] text-primary border-[rgba(var(--color-primary-rgb),0.1)]">
-								<span className="max-w-[180px] truncate">{tag}</span>
-								<button
-									type="button"
-									onClick={() => removeTag(tag)}
-									className="ml-1 hover:opacity-70 *:size-[12px]"
-								>
-									<X className="size-[12px]" />
-								</button>
+			<div className="flex flex-col gap-2 rounded-lg bg-bg/80 p-1 pl-0">
+				{value.length > 0 && (
+					<div className="flex flex-wrap items-center gap-1">
+						{value.map((tag) => (
+							<div key={tag} className="flex items-center rounded-[4px] w-fit">
+								<div className="h-[24px] px-[8px] py-[2px] rounded-[3px] text-[12px] leading-[1] flex items-center gap-[4px] border bg-[rgba(var(--color-primary-rgb),0.05)] text-primary border-[rgba(var(--color-primary-rgb),0.1)]">
+									<span className="max-w-[180px] truncate">{tag}</span>
+									<button
+										type="button"
+										onClick={() => removeTag(tag)}
+										className="ml-1 hover:opacity-70 *:size-[12px]"
+									>
+										<X className="size-[12px]" />
+									</button>
+								</div>
 							</div>
-						</div>
-					))}
-					<input
-						type="text"
-						placeholder={value.length > 0 ? "Add more..." : placeholder}
-						value={inputValue}
-						onChange={(e) => {
-							setErrors([]);
-							setInputValue(e.target.value);
-						}}
-						onKeyDown={handleKeyDown}
-						onBlur={addTags}
-						className="min-w-[200px] flex-1 border-none bg-transparent px-1 py-1 text-[14px] text-text outline-none placeholder:text-text-muted"
-					/>
-				</div>
+						))}
+					</div>
+				)}
+				<Input
+					type="text"
+					placeholder={value.length > 0 ? "Add more..." : placeholder}
+					value={inputValue}
+					onChange={handleChange}
+					onKeyDown={handleKeyDown}
+					onBlur={handleBlur}
+					className="w-full h-[24px] text-[12px] rounded-[3px] leading-[1]"
+				/>
 			</div>
 			{errors.length > 0 && (
 				<div className="flex flex-col gap-1">
