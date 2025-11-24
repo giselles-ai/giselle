@@ -409,7 +409,7 @@ export function Page({
 	);
 
 	return (
-		<div className="max-w-[1200px] mx-auto w-full px-[24px] py-[24px]">
+		<div className="w-full px-[24px] py-[24px]">
 			<div className="grid grid-cols-1 gap-8">
 				{/* Main content: heading + apps area */}
 				<div className="space-y-8">
@@ -425,10 +425,10 @@ export function Page({
 					</div>
 
 					{/* Top container: selected app detail */}
-					<div className="rounded-lg bg-card/40 flex flex-col h-[420px]">
+					<div className="flex w-full flex-col rounded-lg bg-card/40">
 						{selectedApp ? (
-							<div className="flex h-full flex-col gap-6 lg:flex-row lg:justify-between">
-								{/* Left: thumbnail + name */}
+							<div className="flex flex-col gap-6 lg:flex-row">
+								{/* Left: thumbnail */}
 								<div className="flex w-full flex-col items-center gap-4 lg:w-[280px] lg:flex-none lg:items-start">
 									<div className="flex h-[280px] w-[280px] items-center justify-center rounded-[8px] bg-card/60 border border-border">
 										<DynamicIcon
@@ -439,77 +439,79 @@ export function Page({
 								</div>
 
 								{/* Right: app details */}
-								<div className="flex w-full flex-col text-sm text-muted-foreground lg:w-[280px] lg:flex-none">
-									<div>
-										<h2 className="text-xl font-semibold text-foreground px-2">
-											{selectedApp.name}
-										</h2>
-										{selectedApp.description ? (
-											<p className="mt-1 text-sm text-muted-foreground px-2 line-clamp-2">
-												{selectedApp.description}
-											</p>
-										) : null}
-									</div>
+								<div className="flex w-full flex-col text-sm text-muted-foreground lg:flex-1">
+									<h2 className="text-xl font-semibold text-foreground px-2 mb-1">
+										{selectedApp.name}
+									</h2>
+									{selectedApp.description ? (
+										<p className="mt-1 text-sm text-muted-foreground px-2 line-clamp-2">
+											{selectedApp.description}
+										</p>
+									) : null}
 									<div className="mt-5 space-y-4">
-										<div>
-											<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
-												Workspace
-											</p>
-											<p className="text-sm text-foreground px-4">
-												{selectedApp.workspaceName}
-											</p>
-										</div>
-										<div>
-											<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
-												Team
-											</p>
-											<p className="text-sm text-foreground px-4">
-												{selectedApp.teamName}
-											</p>
-										</div>
-										<div>
-											<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
-												Vector store repositories
-											</p>
-											{selectedApp.vectorStoreRepositories.length > 0 ? (
-												<div className="flex flex-col gap-1 px-4">
-													{selectedApp.vectorStoreRepositories.map((repo) => (
-														<div
-															key={repo}
-															className="flex items-center gap-2 text-sm text-foreground/70"
-														>
-															<GitHubIcon className="w-4 h-4 text-text/60" />
-															<span className="truncate">{repo}</span>
-														</div>
-													))}
-												</div>
-											) : (
-												<p className="text-sm text-foreground/70 px-4">
-													Not configured yet
+										<div className="flex flex-col gap-4 lg:flex-row">
+											<div className="min-w-0 flex-1">
+												<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
+													Workspace
 												</p>
-											)}
-										</div>
-										<div>
-											<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
-												Vector store files
-											</p>
-											{selectedApp.vectorStoreFiles.length > 0 ? (
-												<div className="flex flex-col gap-1 px-4">
-													{selectedApp.vectorStoreFiles.map((fileName) => (
-														<div
-															key={fileName}
-															className="flex items-center gap-2 text-sm text-foreground/70"
-														>
-															<File className="w-4 h-4 text-text/60" />
-															<span className="truncate">{fileName}</span>
-														</div>
-													))}
-												</div>
-											) : (
-												<p className="text-sm text-foreground/70 px-4">
-													Not configured yet
+												<p className="text-sm text-foreground px-4">
+													{selectedApp.workspaceName}
 												</p>
-											)}
+											</div>
+											<div className="min-w-0 flex-1">
+												<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
+													Team
+												</p>
+												<p className="text-sm text-foreground px-4">
+													{selectedApp.teamName}
+												</p>
+											</div>
+										</div>
+										<div className="flex flex-col gap-4 lg:flex-row">
+											<div className="min-w-0 flex-1">
+												<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
+													Vector store repositories
+												</p>
+												{selectedApp.vectorStoreRepositories.length > 0 ? (
+													<div className="flex flex-col gap-1 px-4">
+														{selectedApp.vectorStoreRepositories.map((repo) => (
+															<div
+																key={repo}
+																className="flex items-center gap-2 text-sm text-foreground/70"
+															>
+																<GitHubIcon className="w-4 h-4 text-text/60" />
+																<span className="truncate">{repo}</span>
+															</div>
+														))}
+													</div>
+												) : (
+													<p className="text-sm text-foreground/70 px-4">
+														Not configured yet
+													</p>
+												)}
+											</div>
+											<div className="min-w-0 flex-1">
+												<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
+													Vector store files
+												</p>
+												{selectedApp.vectorStoreFiles.length > 0 ? (
+													<div className="flex flex-col gap-1 px-4">
+														{selectedApp.vectorStoreFiles.map((fileName) => (
+															<div
+																key={fileName}
+																className="flex items-center gap-2 text-sm text-foreground/70"
+															>
+																<File className="w-4 h-4 text-text/60" />
+																<span className="truncate">{fileName}</span>
+															</div>
+														))}
+													</div>
+												) : (
+													<p className="text-sm text-foreground/70 px-4">
+														Not configured yet
+													</p>
+												)}
+											</div>
 										</div>
 										<div>
 											<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
@@ -539,13 +541,17 @@ export function Page({
 								</div>
 							</div>
 						) : (
-							<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] h-full w-full rounded-[8px] flex justify-center items-center text-text-muted">
+							<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] h-[280px] w-full rounded-[8px] flex justify-center items-center text-text-muted">
 								<div className="flex flex-col items-center gap-[4px] text-text-muted">
 									<p className="font-[800] text-text/60">
-										No apps available yet.
+										{data.apps.length > 0
+											? "No app selected."
+											: "No apps available yet."}
 									</p>
 									<p className="text-text-muted text-[12px] text-center leading-5">
-										Generate or adjust the Prompt to see results.
+										{data.apps.length > 0
+											? "Please select an app from the lists below."
+											: "Generate or adjust the Prompt to see results."}
 									</p>
 								</div>
 							</div>
@@ -692,7 +698,10 @@ export function Page({
 								</div>
 								<button
 									type="button"
-									onClick={() => setRunningAppId(undefined)}
+									onClick={() => {
+										setRunningAppId(undefined);
+										setSelectedAppId(undefined);
+									}}
 									className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
 									aria-label="Close running app"
 								>

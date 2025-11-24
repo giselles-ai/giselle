@@ -12,7 +12,7 @@ export default async function ({ children }: { children: React.ReactNode }) {
 	}
 	const data = dataLoader();
 	return (
-		<div className="min-h-screen flex flex-col md:flex-row bg-bg">
+		<div className="min-h-screen flex flex-col md:flex-row bg-bg overflow-x-hidden">
 			<Suspense fallback="">
 				<MobileHeader dataLoader={data} />
 				<NavigationRail dataLoader={data} />
