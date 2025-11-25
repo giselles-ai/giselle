@@ -5,17 +5,28 @@ import type React from "react";
 export function ConfigurationFormFieldLabel({
 	label,
 	tooltip,
+	optional,
 }: {
 	label: string;
 	tooltip?: React.ReactNode;
+	optional?: boolean;
 }) {
+	const optionalBadge = optional ? (
+		<span className="px-[6px] py-[2px] rounded-[4px] text-[11px] text-text-muted bg-bg border border-border">
+			Optional
+		</span>
+	) : null;
+
 	if (tooltip) {
 		return (
 			<TooltipPrimitive.Provider>
 				<TooltipPrimitive.Root delayDuration={100}>
-					<TooltipPrimitive.Trigger className="text-[13px] text-text text-left data-[state=delayed-open]:underline decoration-dotted">
-						{label}
-					</TooltipPrimitive.Trigger>
+					<div className="flex items-center gap-2">
+						<TooltipPrimitive.Trigger className="text-left data-[state=delayed-open]:underline decoration-dotted">
+							<span className="text-[13px] text-text">{label}</span>
+						</TooltipPrimitive.Trigger>
+						{optionalBadge}
+					</div>
 					<TooltipPrimitive.Portal>
 						<TooltipPrimitive.Content
 							side="left"
@@ -34,5 +45,10 @@ export function ConfigurationFormFieldLabel({
 		);
 	}
 
-	return <p className="text-[13px] text-text">{label}</p>;
+	return (
+		<div className="flex items-center gap-2">
+			<span className="text-[13px] text-text">{label}</span>
+			{optionalBadge}
+		</div>
+	);
 }

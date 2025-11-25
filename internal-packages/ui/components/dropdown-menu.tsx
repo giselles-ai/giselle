@@ -60,6 +60,7 @@ interface DropdownMenuProps<
 	align?: DropdownMenuPrimitive.DropdownMenuContentProps["align"];
 	open?: DropdownMenuPrimitive.DropdownMenuProps["open"];
 	onOpenChange?: DropdownMenuPrimitive.DropdownMenuProps["onOpenChange"];
+	modal?: DropdownMenuPrimitive.DropdownMenuProps["modal"];
 }
 
 function isGroupItem<T extends MenuItem>(
@@ -85,6 +86,7 @@ export function DropdownMenu<
 	align,
 	open,
 	onOpenChange,
+	modal,
 }: DropdownMenuProps<T, TRenderItemAsChild>) {
 	const renderMenuItem = (item: MenuItem) => (
 		<DropdownMenuPrimitive.Item
@@ -125,7 +127,11 @@ export function DropdownMenu<
 	);
 
 	return (
-		<DropdownMenuPrimitive.Root open={open} onOpenChange={onOpenChange}>
+		<DropdownMenuPrimitive.Root
+			open={open}
+			onOpenChange={onOpenChange}
+			modal={modal}
+		>
 			<DropdownMenuPrimitive.Trigger asChild>
 				{trigger}
 			</DropdownMenuPrimitive.Trigger>
@@ -137,15 +143,20 @@ export function DropdownMenu<
 					style={{ maxHeight: "85vh" }}
 				>
 					<PopoverContent>
-						{items.map((option) => {
+						{items.map((option, index) => {
 							if (isGroupItem(option)) {
 								return (
-									<DropdownMenuPrimitive.Group key={option.groupId}>
-										<DropdownMenuPrimitive.Label className="text-text px-[8px] py-[6px] text-[12px] font-medium">
-											{option.groupLabel}
-										</DropdownMenuPrimitive.Label>
-										{option.items.map(renderMenuItem)}
-									</DropdownMenuPrimitive.Group>
+									<div key={option.groupId}>
+										<DropdownMenuPrimitive.Group className="mb-[4px]">
+											<DropdownMenuPrimitive.Label className="text-text-muted px-[8px] py-[3px] text-[11px] font-medium mt-[4px]">
+												{option.groupLabel}
+											</DropdownMenuPrimitive.Label>
+											{option.items.map(renderMenuItem)}
+										</DropdownMenuPrimitive.Group>
+										{index < items.length - 1 && (
+											<DropdownMenuPrimitive.Separator className="bg-text/20 h-px" />
+										)}
+									</div>
 								);
 							}
 							return renderMenuItem(option);

@@ -12,7 +12,7 @@ import {
 } from "radix-ui";
 import { useState } from "react";
 import type * as z from "zod/v4";
-import { ConfigurationFormFieldLabel } from "./configuration-form-field-label";
+import { ConfigurationFormFieldLabel } from "../configuration-form-field-label";
 
 function getEnumValues(schema: z.ZodTypeAny): string[] {
 	const def = schema.def;
