@@ -10,7 +10,7 @@ import {
 import type { ContentGenerationNode } from "@giselles-ai/protocol";
 import { useWorkflowDesigner } from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
-import { PlusIcon, Settings2Icon } from "lucide-react";
+import { PlusIcon, Settings2Icon, XIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
 	NodePanelHeader,
@@ -38,6 +38,10 @@ export function ContentGenerationNodePropertiesPanel({
 	}
 
 	const [selectedToolName, setSelectedToolName] = useState<string | null>(null);
+	const [selectedToolConfig, setSelectedToolConfig] = useState<Record<
+		string,
+		unknown
+	> | null>(null);
 	const [toolDialogOpen, setToolDialogOpen] = useState(false);
 
 	const selectedTool = useMemo(() => {
@@ -48,6 +52,26 @@ export function ContentGenerationNodePropertiesPanel({
 			) ?? null
 		);
 	}, [selectedToolName]);
+
+	// Get configured tools from node
+	const configuredTools = useMemo(() => {
+		const tools =
+			(
+				node.content as {
+					tools?: { name: string; configuration: Record<string, unknown> }[];
+				}
+			).tools ?? [];
+		return tools.map((tool) => {
+			const toolDef = languageModelTools.find(
+				(t: LanguageModelTool) => t.name === tool.name,
+			);
+			return {
+				name: tool.name,
+				title: toolDef?.title ?? tool.name,
+				configuration: tool.configuration,
+			};
+		});
+	}, [node.content]);
 
 	const toolsGroupByProvider = useMemo(
 		() => [
@@ -80,7 +104,34 @@ export function ContentGenerationNodePropertiesPanel({
 
 	const handleToolSelect = (_e: unknown, item: { value: string }) => {
 		setSelectedToolName(item.value);
+		setSelectedToolConfig(null);
 		setToolDialogOpen(true);
+	};
+
+	const handleToolEdit = (
+		toolName: string,
+		config: Record<string, unknown>,
+	) => {
+		setSelectedToolName(toolName);
+		setSelectedToolConfig(config);
+		setToolDialogOpen(true);
+	};
+
+	const handleToolDelete = (toolName: string) => {
+		const existingTools =
+			(
+				node.content as {
+					tools?: { name: string; configuration: Record<string, unknown> }[];
+				}
+			).tools ?? [];
+		const updatedTools = existingTools.filter((tool) => tool.name !== toolName);
+
+		updateNodeData(node, {
+			content: {
+				...node.content,
+				tools: updatedTools,
+			} as typeof node.content,
+		});
 	};
 
 	const handleToolConfigSubmit = (config: Record<string, unknown>) => {
@@ -127,6 +178,7 @@ export function ContentGenerationNodePropertiesPanel({
 		setToolDialogOpen(open);
 		if (!open) {
 			setSelectedToolName(null);
+			setSelectedToolConfig(null);
 		}
 	};
 
@@ -222,25 +274,55 @@ export function ContentGenerationNodePropertiesPanel({
 					<div>todo</div>
 
 					<SettingDetail size="md">Tools</SettingDetail>
-					<div>
-						<DropdownMenu
-							items={toolsGroupByProvider}
-							onSelect={(e, option) => {
-								handleToolSelect(e, { value: String(option.value) });
-							}}
-							trigger={
-								<Button variant="solid" leftIcon={<PlusIcon />}>
-									Add
-								</Button>
-							}
-							modal={false}
-						/>
+					<div className="flex flex-col gap-[8px]">
+						<div className="flex flex-wrap gap-[6px]">
+							{configuredTools.map((tool) => (
+								<div
+									key={tool.name}
+									className="flex items-center gap-[4px] px-[8px] py-[4px] bg-surface rounded-full text-[12px] text-text group"
+								>
+									<button
+										type="button"
+										className="hover:text-text-primary cursor-pointer"
+										onClick={() =>
+											handleToolEdit(tool.name, tool.configuration)
+										}
+									>
+										{tool.title}
+									</button>
+									<button
+										type="button"
+										className="cursor-pointer"
+										onClick={() => handleToolDelete(tool.name)}
+									>
+										<XIcon className="size-[12px]" />
+									</button>
+								</div>
+							))}
+							<DropdownMenu
+								items={toolsGroupByProvider}
+								onSelect={(e, option) => {
+									handleToolSelect(e, { value: String(option.value) });
+								}}
+								trigger={
+									<Button
+										variant="solid"
+										leftIcon={<PlusIcon />}
+										className="rounded-full"
+									>
+										Add
+									</Button>
+								}
+								modal={false}
+							/>
+						</div>
 						{selectedTool && (
 							<ToolConfigurationDialog
 								tool={selectedTool}
 								open={toolDialogOpen}
 								onOpenChange={handleToolDialogOpenChange}
 								onSubmit={handleToolConfigSubmit}
+								currentConfig={selectedToolConfig ?? undefined}
 								trigger={null}
 							/>
 						)}
