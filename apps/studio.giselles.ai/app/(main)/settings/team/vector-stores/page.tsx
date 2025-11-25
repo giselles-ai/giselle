@@ -50,9 +50,9 @@ export default async function TeamVectorStorePage() {
 		hasAccess && repositoryIndexes.length >= quota.maxStores;
 	const registerDisabled = !hasAccess || hasReachedLimit;
 	const registerDisabledReason = !hasAccess
-		? "GitHub Vector Stores are available on Pro or Team plans."
+		? "GitHub Vector Stores are available with the Pro or Team plans."
 		: hasReachedLimit
-			? "You've reached the number of GitHub Vector Stores included in your plan."
+			? "You've reached the maximum number of GitHub Vector Stores included in your plan."
 			: undefined;
 
 	return (
