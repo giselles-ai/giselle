@@ -1,4 +1,4 @@
-import type { QueryContext } from "@giselles-ai/giselle";
+import type { AiGatewayHeaders, QueryContext } from "@giselles-ai/giselle";
 import { traceEmbedding } from "@giselles-ai/langfuse";
 import { getRequestId, NextGiselle } from "@giselles-ai/nextjs/internal";
 import { type RunningGeneration, WorkspaceId } from "@giselles-ai/protocol";
@@ -357,10 +357,25 @@ export const giselle = NextGiselle({
 				teamDbId: workspace.team.dbId,
 			});
 		},
-	},
-	aiGateway: {
-		httpReferer: process.env.AI_GATEWAY_HTTP_REFERER ?? "https://giselles.ai",
-		xTitle: process.env.AI_GATEWAY_X_TITLE ?? "Giselle",
+		buildAiGatewayHeaders: ({ metadata, generation }) => {
+			const parsedMetadata = GenerationMetadata.safeParse(metadata);
+			const stripeCustomerId = parsedMetadata.success
+				? (parsedMetadata.data.team.activeCustomerId ?? undefined)
+				: undefined;
+			const aiGatewayHeaders: AiGatewayHeaders = {
+				"http-referer":
+					process.env.AI_GATEWAY_HTTP_REFERER ?? "https://giselles.ai",
+				"x-title": process.env.AI_GATEWAY_X_TITLE ?? "Giselle",
+			};
+			if (stripeCustomerId !== undefined) {
+				aiGatewayHeaders["stripe-customer-id"] = stripeCustomerId;
+			} else {
+				logger.warn(
+					`Stripe customer ID not found for generation ${generation.id}`,
+				);
+			}
+			return aiGatewayHeaders;
+		},
 	},
 	logger,
 });
@@ -408,6 +423,7 @@ if (generateContentProcessor === "trigger.dev") {
 					team: {
 						id: team.id,
 						subscriptionId: team.activeSubscriptionId,
+						activeCustomerId: team.activeCustomerId,
 						plan: team.plan,
 					},
 				});
@@ -430,6 +446,7 @@ if (generateContentProcessor === "trigger.dev") {
 							team: {
 								id: currentTeam.id,
 								subscriptionId: currentTeam.activeSubscriptionId,
+								activeCustomerId: currentTeam.activeCustomerId,
 								plan: currentTeam.plan,
 							},
 						});
@@ -471,6 +488,7 @@ if (generateContentProcessor === "trigger.dev") {
 					team: {
 						id: team.id,
 						subscriptionId: team.activeSubscriptionId,
+						activeCustomerId: team.activeCustomerId,
 						plan: team.plan,
 					},
 				});
@@ -490,6 +508,7 @@ if (generateContentProcessor === "trigger.dev") {
 					team: {
 						id: currentTeam.id,
 						subscriptionId: currentTeam.activeSubscriptionId,
+						activeCustomerId: currentTeam.activeCustomerId,
 						plan: currentTeam.plan,
 					},
 				});

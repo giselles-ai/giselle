@@ -1,3 +1,4 @@
+export type * from "./ai-gateway";
 export type * from "./callbacks";
 export type * from "./config";
 export type * from "./context";
