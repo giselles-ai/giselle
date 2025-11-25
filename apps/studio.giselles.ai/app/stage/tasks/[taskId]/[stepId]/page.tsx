@@ -96,7 +96,7 @@ export default async function ({
 							<div className="p-[8px] bg-element-active rounded-[4px]">
 								<NodeIcon
 									node={generation.context.operationNode}
-									className="size-[16px]"
+									className="size-[16px] text-inverse"
 								/>
 							</div>
 							<div className="flex flex-col">

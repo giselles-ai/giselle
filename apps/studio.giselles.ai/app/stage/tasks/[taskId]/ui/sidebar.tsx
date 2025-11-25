@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import Link from "next/link";
+import type React from "react";
 import { use, useCallback, useEffect, useState } from "react";
 import { GenerationView } from "../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
 import { fetchGenerationData } from "../actions";
@@ -35,6 +36,18 @@ export interface SidebarDataObject {
 	teamName: string;
 	appParameters: AppParameter[];
 	iconName: string;
+}
+
+type DynamicIconName = React.ComponentProps<typeof DynamicIcon>["name"];
+
+interface GenerationInputItem {
+	name: string;
+	value: unknown;
+}
+
+interface GenerationInputGroup {
+	type: string;
+	items?: GenerationInputItem[];
 }
 
 export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
@@ -103,9 +116,9 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 
 	return (
 		<TaskStreamReader taskId={defaultTask.id} onUpdateAction={updateTask}>
-			<aside className="w-full md:flex md:flex-col md:w-[320px] border-0 md:border-[2px] md:border-transparent m-0 md:my-[8px] pb-20 md:pb-0">
+			<aside className="w-full md:flex md:flex-col md:w-[280px] border-0 md:border-[2px] md:border-transparent m-0 md:my-[8px] pb-20 md:pb-0">
 				{/* Large Back Arrow */}
-				<div className="pt-[16px] mb-[20px] px-[16px] md:px-[32px]">
+				<div className="pt-[16px] mb-0 px-[8px] md:px-[12px]">
 					<Link
 						href="/stage/tasks"
 						className="flex items-center gap-[8px] text-inverse hover:text-white-700 transition-colors group"
@@ -116,12 +129,12 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 				</div>
 
 				{/* App Info Section */}
-				<div className="space-y-[16px] px-[16px] md:px-[32px] text-center md:text-left mt-[20px]">
+				<div className="space-y-[16px] px-[8px] md:px-[12px] text-center md:text-left mt-[20px]">
 					{/* App Thumbnail */}
-					<div className="w-[96px] h-[96px] rounded-[16px] bg-white/5 flex items-center justify-center flex-shrink-0 mx-auto md:mx-0">
+					<div className="relative flex h-[120px] w-[120px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border transition-all bg-card/60 border-[hsl(192,73%,84%)] mx-auto md:mx-0">
 						<DynamicIcon
-							name={iconName}
-							className="h-[48px] w-[48px] text-white/40"
+							name={iconName as DynamicIconName}
+							className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
 						/>
 					</div>
 
@@ -154,19 +167,22 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 						(() => {
 							const triggerStep = task.sequences[0].steps[0];
 							const triggerGeneration = stepGenerations[triggerStep.id];
+							const parametersInput = triggerGeneration?.context?.inputs?.find(
+								(input: GenerationInputGroup) => input.type === "parameters",
+							);
 							const inputs =
-								triggerGeneration?.context?.inputs?.find(
-									(input) => input.type === "parameters",
-								)?.items || [];
+								parametersInput && "items" in parametersInput
+									? parametersInput.items
+									: [];
 
 							return inputs.length > 0 ? (
-								<div className="mt-[24px]">
+								<div className="mt-[24px] mb-[24px]">
 									<button
 										type="button"
 										className="flex items-center justify-between text-[12px] font-medium text-inverse/60 mb-3 w-full cursor-pointer hover:text-inverse/80 transition-colors"
 										onClick={() => setIsInputsExpanded(!isInputsExpanded)}
 									>
-										<span>{inputs.length === 1 ? "Input" : "Inputs"}</span>
+										<span>Input parameter</span>
 										<ChevronDownIcon
 											className={`size-[16px] transition-transform ${
 												isInputsExpanded ? "rotate-180" : ""
@@ -175,7 +191,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 									</button>
 									{isInputsExpanded && (
 										<div className="space-y-2">
-											{inputs.map((input) => {
+											{inputs.map((input: GenerationInputItem) => {
 												// Find the corresponding parameter definition for user-friendly label
 												const parameter = triggerParameters.find(
 													(param) => param.id === input.name,
@@ -206,15 +222,12 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 						})()}
 				</div>
 
-				{/* Separator Line */}
-				<div className="border-t border-border my-4"></div>
-
 				{/* Steps Section */}
-				<div className="space-y-4 pb-4 px-[16px] md:px-[32px] md:flex-1 md:overflow-y-auto md:min-h-0">
+				<div className="space-y-4 pb-4 px-[8px] md:px-[12px] md:flex-1 md:overflow-y-auto md:min-h-0">
 					{task.sequences.map((sequence, sequenceIndex) => (
 						<div key={sequence.id} className="space-y-3">
 							{/* Step Header */}
-							<div className="text-[14px] font-medium text-white/60 mb-2">
+							<div className="text-[12px] font-medium text-inverse/60 mb-2">
 								Step {sequenceIndex + 1}
 							</div>
 
@@ -249,7 +262,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 												onClick={handleStepClick}
 											>
 												<div
-													className="flex w-full p-4 justify-between items-center rounded-[8px] border border-white/20 bg-transparent hover:bg-white/5 transition-colors"
+													className="flex w-full p-2 justify-between items-center rounded-[8px] border border-white/20 bg-transparent hover:bg-white/5 transition-colors"
 													style={{
 														borderColor: "rgba(181, 192, 202, 0.20)",
 													}}
