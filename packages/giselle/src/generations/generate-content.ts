@@ -34,7 +34,7 @@ import {
 } from "ai";
 import { generationUiMessageChunksPath } from "../path";
 import { decryptSecret } from "../secrets";
-import type { GiselleContext } from "../types";
+import type { AiGatewayHeaders, GiselleContext } from "../types";
 import { batchWriter } from "../utils";
 import {
 	type OnGenerationComplete,
@@ -253,16 +253,16 @@ export function generateContent({
 
 			const providerOptions = getProviderOptions(operationNode.content.llm);
 
+			const aiGatewayHeaders = await context.callbacks?.buildAiGatewayHeaders?.(
+				{
+					generation: runningGeneration,
+					metadata,
+				},
+			);
+
 			const model = generationModel(
 				operationNode.content.llm,
-				context.aiGateway
-					? {
-							...context.aiGateway,
-							stripeCustomerId:
-								(metadata?.team as { activeCustomerId?: string | null })
-									?.activeCustomerId ?? undefined,
-						}
-					: undefined,
+				aiGatewayHeaders,
 			);
 			let generationError: unknown | undefined;
 			const textGenerationStartTime = Date.now();
@@ -505,24 +505,14 @@ function getProviderOptions(languageModelData: TextGenerationLanguageModelData):
 
 function generationModel(
 	languageModel: TextGenerationLanguageModelData,
-	gatewayOptions?: {
-		httpReferer: string;
-		xTitle: string;
-		stripeCustomerId?: string;
-	},
+	gatewayHeaders?: AiGatewayHeaders,
 ) {
 	const llmProvider = languageModel.provider;
 	const gateway = createGateway(
-		gatewayOptions === undefined
+		gatewayHeaders === undefined
 			? undefined
 			: {
-					headers: {
-						"http-referer": gatewayOptions.httpReferer,
-						"x-title": gatewayOptions.xTitle,
-						...(gatewayOptions.stripeCustomerId
-							? { "stripe-customer-id": gatewayOptions.stripeCustomerId }
-							: {}),
-					},
+					headers: gatewayHeaders,
 				},
 	);
 	// Use AI Gateway model specifier: "<provider>/<modelId>"
