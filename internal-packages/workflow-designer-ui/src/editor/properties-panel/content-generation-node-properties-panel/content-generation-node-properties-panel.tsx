@@ -28,7 +28,8 @@ export function ContentGenerationNodePropertiesPanel({
 }: {
 	node: ContentGenerationNode;
 }) {
-	const { updateNodeData, deleteNode } = useWorkflowDesigner();
+	const { updateNodeData, updateNodeDataContent, deleteNode } =
+		useWorkflowDesigner();
 	const languageModel = useMemo(
 		() => getEntry(node.content.languageModel.id),
 		[node.content.languageModel.id],
@@ -185,7 +186,7 @@ export function ContentGenerationNodePropertiesPanel({
 		}
 	};
 
-	const { fragments, shouldShowOutputLabel } = useNodeContext(node);
+	const { shouldShowOutputLabel, connections } = useNodeContext(node);
 
 	return (
 		<PropertiesPanelRoot>
@@ -277,14 +278,14 @@ export function ContentGenerationNodePropertiesPanel({
 
 					<SettingDetail size="md">Context</SettingDetail>
 					<div className="flex flex-wrap gap-[6px]">
-						{fragments.map((fragment) => (
+						{connections.map((connection) => (
 							<div
-								key={fragment.output.id}
+								key={connection.output.id}
 								className="flex items-center gap-[4px] px-[8px] py-[4px] bg-surface rounded-full text-[12px] text-text"
 							>
-								{shouldShowOutputLabel(fragment.node.id)
-									? `${defaultName(fragment.node)}:${fragment.output.label}`
-									: defaultName(fragment.node)}
+								{shouldShowOutputLabel(connection.outputNode.id)
+									? `${defaultName(connection.outputNode)}:${connection.output.label}`
+									: defaultName(connection.outputNode)}
 							</div>
 						))}
 					</div>
@@ -345,7 +346,14 @@ export function ContentGenerationNodePropertiesPanel({
 					</div>
 				</div>
 				<SettingDetail size="md">Prompt</SettingDetail>
-				<PromptEditor />
+				<PromptEditor
+					placeholder="Write your prompt... Use @ to reference other nodes"
+					value={node.content.prompt}
+					onValueChange={(value) => {
+						updateNodeDataContent(node, { prompt: value });
+					}}
+					connections={connections}
+				/>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);

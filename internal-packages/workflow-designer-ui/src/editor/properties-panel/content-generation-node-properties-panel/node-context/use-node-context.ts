@@ -1,63 +1,71 @@
-import type {
-	ContentGenerationNode,
-	NodeLike,
-	Output,
-} from "@giselles-ai/protocol";
-import { useWorkflowDesignerStore } from "@giselles-ai/react";
-import { useMemo } from "react";
+import type { ContentGenerationNode, NodeId } from "@giselles-ai/protocol";
+import {
+	type UIConnection,
+	useWorkflowDesignerStore,
+} from "@giselles-ai/react";
+import { useCallback, useMemo } from "react";
 import { useShallow } from "zustand/shallow";
 
-interface ContextFragment {
-	output: Output;
-	node: NodeLike;
-}
-
 export function useNodeContext(node: ContentGenerationNode) {
-	const { nodes, connections } = useWorkflowDesignerStore(
+	const { nodes, connections: allConnections } = useWorkflowDesignerStore(
 		useShallow((s) => ({
 			connections: s.workspace.connections,
 			nodes: s.workspace.nodes,
 		})),
 	);
 
-	const contextFragments = useMemo(() => {
-		const connectedConnections = connections.filter(
+	const connections = useMemo(() => {
+		const connectedConnections = allConnections.filter(
 			(connection) => connection.inputNode.id === node.id,
 		);
 
-		const fragments: ContextFragment[] = [];
-		for (const connectedConnection of connectedConnections) {
-			const connectedNode = nodes.find(
-				(n) => n.id === connectedConnection.outputNode.id,
-			);
-			if (connectedNode === undefined) {
+		const uiConnections: UIConnection[] = [];
+		for (const connection of connectedConnections) {
+			const outputNode = nodes.find((n) => n.id === connection.outputNode.id);
+			if (outputNode === undefined) {
 				continue;
 			}
-			const connectedNodeOutput = connectedNode.outputs.find(
-				(output) => output.id === connectedConnection.outputId,
+			const output = outputNode.outputs.find(
+				(output) => output.id === connection.outputId,
 			);
-			if (connectedNodeOutput === undefined) {
+			if (output === undefined) {
 				continue;
 			}
-			fragments.push({
-				output: connectedNodeOutput,
-				node: connectedNode,
+			const inputNode = nodes.find((n) => n.id === connection.inputNode.id);
+			if (inputNode === undefined) {
+				continue;
+			}
+			const input = inputNode.inputs.find(
+				(input) => input.id === connection.inputId,
+			);
+			if (input === undefined) {
+				continue;
+			}
+			uiConnections.push({
+				id: connection.id,
+				output,
+				outputNode,
+				input,
+				inputNode,
 			});
 		}
-		return fragments;
-	}, [connections, node.id, nodes]);
+		return uiConnections;
+	}, [allConnections, node.id, nodes]);
 
-	const shouldShowOutputLabel = useMemo(() => {
-		const countMap = new Map<string, number>();
-		for (const fragment of contextFragments) {
-			const currentCount = countMap.get(fragment.node.id) ?? 0;
-			countMap.set(fragment.node.id, currentCount + 1);
-		}
-		return (nodeId: string) => (countMap.get(nodeId) ?? 0) > 1;
-	}, [contextFragments]);
+	const shouldShowOutputLabel = useCallback(
+		(nodeId: NodeId) => {
+			const countMap = new Map<string, number>();
+			for (const connection of connections) {
+				const currentCount = countMap.get(connection.outputNode.id) ?? 0;
+				countMap.set(connection.outputNode.id, currentCount + 1);
+			}
+			return (countMap.get(nodeId) ?? 0) > 1;
+		},
+		[connections],
+	);
 
 	return {
-		fragments: contextFragments,
 		shouldShowOutputLabel,
+		connections,
 	};
 }
