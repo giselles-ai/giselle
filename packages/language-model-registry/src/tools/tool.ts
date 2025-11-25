@@ -41,6 +41,7 @@ export interface EnumToolConfigurationOption
 	extends BaseToolConfigurationOption {
 	type: "enum";
 	options: Array<{ value: string; label?: string }>;
+	valueType?: "string" | "number";
 }
 
 export interface ToolSelectionToolConfigurationOption

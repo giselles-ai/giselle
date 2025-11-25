@@ -20,6 +20,7 @@ export const anthropicWebSearch = defineLanguageModelTool({
 		maxUses: {
 			name: "maxUses",
 			type: "enum",
+			valueType: "number",
 			title: "Maximum Uses",
 			description: "Limits the number of searches performed",
 			options: [

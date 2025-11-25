@@ -10,16 +10,23 @@ import {
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
 import type { LanguageModelTool } from "@giselles-ai/language-model-registry";
+import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import {
 	type ComponentProps,
 	type PropsWithChildren,
 	useEffect,
 	useState,
+	useTransition,
 } from "react";
+import { useWorkspaceSecrets } from "../../lib/use-workspace-secrets";
 import {
 	ToolConfigurationForm,
 	validateToolConfiguration,
 } from "./tool-configuration-form";
+import {
+	applyDefaultValues,
+	transformConfigurationValues,
+} from "./tool-configuration-transform";
 
 export interface ToolConfigurationDialogProps
 	extends Omit<ComponentProps<typeof Dialog>, "children"> {
@@ -48,6 +55,20 @@ export function ToolConfigurationDialog({
 	const [config, setConfig] = useState<Record<string, unknown>>(
 		currentConfig ?? {},
 	);
+	const client = useGiselle();
+	const { data: workspace } = useWorkflowDesigner();
+	const [isPending, startTransition] = useTransition();
+
+	// Collect all secret tags from secret-type options
+	const secretTags = new Set<string>();
+	for (const option of Object.values(tool.configurationOptions)) {
+		if (option.type === "secret") {
+			for (const tag of option.secretTags) {
+				secretTags.add(tag);
+			}
+		}
+	}
+	const { data: secrets, mutate } = useWorkspaceSecrets(Array.from(secretTags));
 
 	useEffect(() => {
 		setConfig(currentConfig ?? {});
@@ -57,15 +78,7 @@ export function ToolConfigurationDialog({
 		e.preventDefault();
 
 		// Apply default values for optional fields that are not set
-		const processedConfig: Record<string, unknown> = { ...config };
-		for (const [key, option] of Object.entries(tool.configurationOptions)) {
-			if (
-				processedConfig[key] === undefined &&
-				option.defaultValue !== undefined
-			) {
-				processedConfig[key] = option.defaultValue;
-			}
-		}
+		const processedConfig = applyDefaultValues(tool, config);
 
 		// Validate configuration
 		const validation = validateToolConfiguration(tool, processedConfig);
@@ -75,38 +88,56 @@ export function ToolConfigurationDialog({
 			return;
 		}
 
-		// Transform configuration to match content-generation.ts schema
-		const transformedConfig: Record<string, unknown> = {};
-		for (const [key, value] of Object.entries(processedConfig)) {
-			const option = tool.configurationOptions[key];
-			if (value === undefined || value === null) {
-				// Skip undefined/null values for optional fields
-				if (!option.optional) {
-					// Required field is missing, but validation should have caught this
-					continue;
+		// Process secret fields: create secrets if needed
+		const processSecrets = async () => {
+			const finalConfig: Record<string, unknown> = { ...processedConfig };
+
+			for (const [key, value] of Object.entries(processedConfig)) {
+				const option = tool.configurationOptions[key];
+				if (option.type === "secret") {
+					// Check if value is a token object { token: string, label?: string }
+					if (
+						typeof value === "object" &&
+						value !== null &&
+						"token" in value &&
+						typeof value.token === "string"
+					) {
+						const tokenValue = value.token;
+						const label =
+							"label" in value && typeof value.label === "string"
+								? value.label
+								: undefined;
+
+						// Create secret if token is provided
+						if (tokenValue) {
+							const result = await client.addSecret({
+								workspaceId: workspace.id,
+								label: label ?? "",
+								value: tokenValue,
+								tags: option.secretTags,
+							});
+
+							// Update cache immediately with new secret (optimistic)
+							mutate([...(secrets ?? []), result.secret], false);
+
+							// Replace token object with secret ID
+							finalConfig[key] = result.secret.id;
+						}
+					}
+					// If value is already a string (secretId), keep it as-is
+					else if (typeof value === "string") {
+						finalConfig[key] = value;
+					}
 				}
-				continue;
 			}
 
-			// Transform enum values to strings
-			if (option.type === "enum") {
-				transformedConfig[key] = String(value);
-			}
-			// Transform number values
-			else if (option.type === "number") {
-				transformedConfig[key] = Number(value);
-			}
-			// Transform boolean values
-			else if (option.type === "boolean") {
-				transformedConfig[key] = Boolean(value);
-			}
-			// Keep other types as-is
-			else {
-				transformedConfig[key] = value;
-			}
-		}
+			// Transform configuration to match content-generation.ts schema
+			const transformedConfig = transformConfigurationValues(tool, finalConfig);
 
-		onSubmit(transformedConfig);
+			onSubmit(transformedConfig);
+		};
+
+		startTransition(processSecrets);
 	};
 
 	return (
@@ -145,10 +176,10 @@ export function ToolConfigurationDialog({
 							type="submit"
 							form="tool-config-form"
 							variant="solid"
-							disabled={disabled}
+							disabled={disabled || isPending}
 							size="large"
 						>
-							{submitText}
+							{isPending ? "..." : submitText}
 						</Button>
 					)}
 				</DialogFooter>
