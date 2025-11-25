@@ -160,7 +160,7 @@ function SimpleAppEntryForm({
 							className="w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-[1px] border-border text-[14px] bg-background"
 							type={parameter.type === "number" ? "number" : "text"}
 							name={parameter.name}
-							placeholder={parameter.name}
+							placeholder={`Please enter ${parameter.name}`}
 							required={parameter.required}
 						/>
 						{validationErrors[parameter.id] && (
