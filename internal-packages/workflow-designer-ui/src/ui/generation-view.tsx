@@ -9,7 +9,6 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import { WilliIcon } from "../icons";
 import { THUMB_HEIGHT } from "./constants";
 import { ImageCard } from "./image-card";
-import { ImageGenerationLoading } from "./image-generation-loading";
 import { Lightbox } from "./lightbox";
 
 import { MemoizedMarkdown } from "./memoized-markdown";
@@ -52,36 +51,6 @@ function Spinner() {
 	);
 }
 
-function _renderImageLoadingGrid(generation: Generation, keyPrefix: string) {
-	const isImageGeneration =
-		generation.context.operationNode.content.type === "imageGeneration";
-
-	if (
-		!isImageGeneration ||
-		!("llm" in generation.context.operationNode.content)
-	) {
-		return null;
-	}
-
-	const config = generation.context.operationNode.content
-		.llm as import("@giselles-ai/protocol").ImageGenerationLanguageModelData;
-	let imageCount = 1;
-	if (config.provider !== "google") {
-		imageCount = config.configurations.n;
-	}
-	return (
-		<div className="flex gap-[12px] pt-[8px] overflow-x-auto max-w-full h-full">
-			{Array.from({ length: imageCount }).map((_, index) => (
-				<div
-					key={`${generation.id}-${keyPrefix}-${index}`}
-					className="flex-shrink-0 bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] rounded-[8px] overflow-hidden flex items-center justify-center h-full"
-				>
-					<ImageGenerationLoading configuration={config} />
-				</div>
-			))}
-		</div>
-	);
-}
 export function GenerationView({ generation }: { generation: Generation }) {
 	const client = useGiselle();
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);

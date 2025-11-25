@@ -93,10 +93,10 @@ export default async function ({
 					generation={generation}
 					header={
 						<div className="flex items-center gap-[6px]">
-							<div className="p-[8px] bg-element-active rounded-[4px]">
+							<div className="p-[8px] bg-white rounded-[4px]">
 								<NodeIcon
 									node={generation.context.operationNode}
-									className="size-[16px] text-inverse"
+									className="size-[16px] text-black"
 								/>
 							</div>
 							<div className="flex flex-col">
