@@ -64,11 +64,6 @@ export interface GiselleContext {
 		GiselleCallbacks,
 		"generationComplete" | "generationError" | "taskCreate"
 	>;
-	aiGateway?: {
-		httpReferer: string;
-		xTitle: string;
-		stripeCustomerId?: string;
-	};
 	logger: GiselleLogger;
 	waitUntil: WaitUntil;
 	generateContentProcess: GenerateContentProcess;

@@ -357,10 +357,18 @@ export const giselle = NextGiselle({
 				teamDbId: workspace.team.dbId,
 			});
 		},
-	},
-	aiGateway: {
-		httpReferer: process.env.AI_GATEWAY_HTTP_REFERER ?? "https://giselles.ai",
-		xTitle: process.env.AI_GATEWAY_X_TITLE ?? "Giselle",
+		buildAiGatewayContext: ({ metadata }) => {
+			const parsedMetadata = GenerationMetadata.safeParse(metadata);
+			const stripeCustomerId = parsedMetadata.success
+				? (parsedMetadata.data.team.activeCustomerId ?? undefined)
+				: undefined;
+			return {
+				httpReferer:
+					process.env.AI_GATEWAY_HTTP_REFERER ?? "https://giselles.ai",
+				xTitle: process.env.AI_GATEWAY_X_TITLE ?? "Giselle",
+				stripeCustomerId,
+			};
+		},
 	},
 	logger,
 });
@@ -408,6 +416,7 @@ if (generateContentProcessor === "trigger.dev") {
 					team: {
 						id: team.id,
 						subscriptionId: team.activeSubscriptionId,
+						activeCustomerId: team.activeCustomerId,
 						plan: team.plan,
 					},
 				});
@@ -430,6 +439,7 @@ if (generateContentProcessor === "trigger.dev") {
 							team: {
 								id: currentTeam.id,
 								subscriptionId: currentTeam.activeSubscriptionId,
+								activeCustomerId: currentTeam.activeCustomerId,
 								plan: currentTeam.plan,
 							},
 						});
@@ -471,6 +481,7 @@ if (generateContentProcessor === "trigger.dev") {
 					team: {
 						id: team.id,
 						subscriptionId: team.activeSubscriptionId,
+						activeCustomerId: team.activeCustomerId,
 						plan: team.plan,
 					},
 				});
@@ -490,6 +501,7 @@ if (generateContentProcessor === "trigger.dev") {
 					team: {
 						id: currentTeam.id,
 						subscriptionId: currentTeam.activeSubscriptionId,
+						activeCustomerId: currentTeam.activeCustomerId,
 						plan: currentTeam.plan,
 					},
 				});

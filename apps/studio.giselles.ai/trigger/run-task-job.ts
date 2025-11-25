@@ -12,6 +12,7 @@ export const runTaskJob = schemaJob({
 		team: z.object({
 			id: z.string<`tm_${string}`>(),
 			subscriptionId: z.string().nullable(),
+			activeCustomerId: z.string().nullable().optional(),
 			plan: z.enum(["free", "pro", "team", "enterprise", "internal"]),
 		}),
 	}),

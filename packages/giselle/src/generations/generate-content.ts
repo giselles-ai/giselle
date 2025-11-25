@@ -34,7 +34,7 @@ import {
 } from "ai";
 import { generationUiMessageChunksPath } from "../path";
 import { decryptSecret } from "../secrets";
-import type { GiselleContext } from "../types";
+import type { AiGatewayContext, GiselleContext } from "../types";
 import { batchWriter } from "../utils";
 import {
 	type OnGenerationComplete,
@@ -253,16 +253,16 @@ export function generateContent({
 
 			const providerOptions = getProviderOptions(operationNode.content.llm);
 
+			const aiGatewayContext = await context.callbacks?.buildAiGatewayContext?.(
+				{
+					generation: runningGeneration,
+					metadata,
+				},
+			);
+
 			const model = generationModel(
 				operationNode.content.llm,
-				context.aiGateway
-					? {
-							...context.aiGateway,
-							stripeCustomerId:
-								(metadata?.team as { activeCustomerId?: string | null })
-									?.activeCustomerId ?? undefined,
-						}
-					: undefined,
+				aiGatewayContext,
 			);
 			let generationError: unknown | undefined;
 			const textGenerationStartTime = Date.now();
@@ -505,11 +505,7 @@ function getProviderOptions(languageModelData: TextGenerationLanguageModelData):
 
 function generationModel(
 	languageModel: TextGenerationLanguageModelData,
-	gatewayOptions?: {
-		httpReferer: string;
-		xTitle: string;
-		stripeCustomerId?: string;
-	},
+	gatewayOptions?: AiGatewayContext,
 ) {
 	const llmProvider = languageModel.provider;
 	const gateway = createGateway(
