@@ -778,6 +778,9 @@ importers:
       '@giselles-ai/trigger-registry':
         specifier: workspace:*
         version: link:../../packages/trigger-registry
+      '@giselles-ai/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       '@xyflow/react':
         specifier: 'catalog:'
         version: 12.9.0(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -825,7 +828,7 @@ importers:
         version: 2.3.6(react@19.1.1)
       zod:
         specifier: 'catalog:'
-        version: 4.1.12
+        version: 3.25.76
       zustand:
         specifier: 'catalog:'
         version: 5.0.8(@types/react@19.1.10)(react@19.1.1)(use-sync-external-store@1.6.0(react@19.1.1))

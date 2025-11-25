@@ -698,7 +698,7 @@ const contentGenerationFactoryImpl = {
 				languageModel: {
 					provider: languageModel.provider,
 					id: languageModel.id,
-					configration: languageModel.defaultConfiguration,
+					configuration: languageModel.defaultConfiguration,
 				},
 			},
 			inputs: [],
@@ -825,6 +825,12 @@ export function createTextGenerationNode(
 	llm: TextGenerationContent["llm"],
 ): TextGenerationNode {
 	return textGenerationFactoryImpl.create(llm);
+}
+
+export function createContentGenerationNode(
+	input: CreateContentGenerationNodeInput,
+): ContentGenerationNode {
+	return contentGenerationFactoryImpl.create(input);
 }
 
 export function createImageGenerationNode(

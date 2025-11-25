@@ -202,6 +202,7 @@ export function NodeComponent({
 		const isFile = node.content.type === "file";
 		const isWebPage = node.content.type === "webPage";
 		const isTextGeneration = node.content.type === "textGeneration";
+		const isContentGeneration = node.content.type === "contentGeneration";
 		const isImageGeneration = node.content.type === "imageGeneration";
 		const isGithub = node.content.type === "github";
 		const isVectorStore = node.content.type === "vectorStore";
@@ -238,6 +239,7 @@ export function NodeComponent({
 			isFile,
 			isWebPage,
 			isTextGeneration,
+			isContentGeneration,
 			isImageGeneration,
 			isGithub,
 			isVectorStore,
@@ -262,6 +264,7 @@ export function NodeComponent({
 		isFile: boolean;
 		isWebPage: boolean;
 		isTextGeneration: boolean;
+		isContentGeneration: boolean;
 		isImageGeneration: boolean;
 		isGithub: boolean;
 		isVectorStore: boolean;
@@ -282,6 +285,7 @@ export function NodeComponent({
 			if (variant.isFile) return "var(--color-file-node-1)";
 			if (variant.isWebPage) return "var(--color-webPage-node-1)";
 			if (variant.isTextGeneration) return "var(--color-generation-node-1)";
+			if (variant.isContentGeneration) return "var(--color-generation-node-1)";
 			if (variant.isImageGeneration)
 				return "var(--color-image-generation-node-1)";
 			if (
@@ -338,6 +342,7 @@ export function NodeComponent({
 				selected && v.isFile && "shadow-file-node-1",
 				selected && v.isWebPage && "shadow-webPage-node-1",
 				selected && v.isTextGeneration && "shadow-generation-node-1",
+				selected && v.isContentGeneration && "shadow-generation-node-1",
 				selected && v.isImageGeneration && "shadow-image-generation-node-1",
 				selected && v.isGithub && "shadow-github-node-1",
 				selected && v.isVectorStoreGithub && "shadow-github-node-1",
@@ -354,6 +359,7 @@ export function NodeComponent({
 				highlighted && v.isFile && "shadow-file-node-1",
 				highlighted && v.isWebPage && "shadow-webPage-node-1",
 				highlighted && v.isTextGeneration && "shadow-generation-node-1",
+				highlighted && v.isContentGeneration && "shadow-generation-node-1",
 				highlighted && v.isImageGeneration && "shadow-image-generation-node-1",
 				highlighted && v.isGithub && "shadow-github-node-1",
 				highlighted && v.isVectorStoreGithub && "shadow-github-node-1",
@@ -441,6 +447,9 @@ export function NodeComponent({
 						v.isTextGeneration &&
 						"from-generation-node-1/30 via-generation-node-1/50 to-generation-node-1",
 					!borderGradientStyle &&
+						v.isContentGeneration &&
+						"from-generation-node-1/30 via-generation-node-1/50 to-generation-node-1",
+					!borderGradientStyle &&
 						v.isImageGeneration &&
 						"from-image-generation-node-1/30 via-image-generation-node-1/50 to-image-generation-node-1",
 					!borderGradientStyle &&
@@ -485,6 +494,7 @@ export function NodeComponent({
 							v.isFile && "bg-file-node-1",
 							v.isWebPage && "bg-webPage-node-1",
 							v.isTextGeneration && "bg-generation-node-1",
+							v.isContentGeneration && "bg-generation-node-1",
 							v.isImageGeneration && "bg-image-generation-node-1",
 							v.isGithub && "bg-github-node-1",
 							v.isVectorStoreGithub && "bg-github-node-1",
@@ -503,6 +513,7 @@ export function NodeComponent({
 								v.isFile && "fill-current",
 								v.isWebPage && "fill-current",
 								v.isTextGeneration && "fill-current",
+								v.isContentGeneration && "fill-current",
 								v.isImageGeneration && "fill-current",
 								v.isGithub && "fill-current",
 								v.isVectorStore &&
@@ -655,6 +666,7 @@ export function NodeComponent({
 										className={clsx(
 											"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px] !bg-bg",
 											v.isTextGeneration && "!border-generation-node-1",
+											v.isContentGeneration && "!border-generation-node-1",
 											v.isImageGeneration && "!border-image-generation-node-1",
 											v.isQuery && "!border-query-node-1",
 										)}
@@ -687,6 +699,8 @@ export function NodeComponent({
 										"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px]",
 										"group-data-[state=disconnected]:!bg-bg",
 										v.isTextGeneration &&
+											"!border-generation-node-1 group-data-[state=connected]:!bg-generation-node-1",
+										v.isContentGeneration &&
 											"!border-generation-node-1 group-data-[state=connected]:!bg-generation-node-1",
 										v.isImageGeneration &&
 											"!border-image-generation-node-1 group-data-[state=connected]:!bg-image-generation-node-1",
