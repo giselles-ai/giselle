@@ -1,6 +1,7 @@
 import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { Popover } from "@giselle-internal/ui/popover";
+import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import {
 	getEntry,
@@ -196,7 +197,7 @@ export function ContentGenerationNodePropertiesPanel({
 			/>
 
 			<PropertiesPanelContent>
-				<div className="grid grid-cols-[80px_1fr] gap-y-[12px] gap-x-[12px] items-start mb-[12px]">
+				<div className="grid grid-cols-[60px_1fr] gap-y-[12px] gap-x-[12px] items-start mb-[12px]">
 					<SettingDetail size="md">Model</SettingDetail>
 					<div className="overflow-x-hidden">
 						<div className="flex items-center gap-[4px]">
@@ -344,7 +345,7 @@ export function ContentGenerationNodePropertiesPanel({
 					</div>
 				</div>
 				<SettingDetail size="md">Prompt</SettingDetail>
-				<div>todo</div>
+				<PromptEditor />
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);
