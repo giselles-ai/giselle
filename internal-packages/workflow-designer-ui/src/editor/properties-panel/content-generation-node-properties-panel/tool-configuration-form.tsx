@@ -1,15 +1,13 @@
-import { Button } from "@giselle-internal/ui/button";
 import { Input } from "@giselle-internal/ui/input";
 import { Select } from "@giselle-internal/ui/select";
 import type {
 	LanguageModelTool,
 	LanguageModelToolConfigurationOption,
 } from "@giselles-ai/language-model-registry";
-import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
 import clsx from "clsx/lite";
 import { Switch } from "radix-ui";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useWorkspaceSecrets } from "../../lib/use-workspace-secrets";
 import {
 	Tabs,
@@ -309,52 +307,73 @@ function SecretField({
 	onValueChange: (value: unknown) => void;
 }) {
 	const [tabValue, setTabValue] = useState<"create" | "select">("select");
-	const [tokenValue, setTokenValue] = useState("");
-	const [tokenLabel, setTokenLabel] = useState("");
-	const { data: workspace } = useWorkflowDesigner();
-	const {
-		isLoading,
-		data: secrets,
-		mutate,
-	} = useWorkspaceSecrets(option.secretTags);
-	const client = useGiselle();
-	const [isPending, startTransition] = useTransition();
+	const { isLoading, data: secrets } = useWorkspaceSecrets(option.secretTags);
 
+	// value can be:
+	// - string (secretId)
+	// - { token: string, label?: string } (new token input)
 	const selectedSecretId = typeof value === "string" ? value : undefined;
+	const tokenInput =
+		typeof value === "object" &&
+		value !== null &&
+		"token" in value &&
+		typeof value.token === "string"
+			? {
+					token: value.token,
+					label:
+						"label" in value && typeof value.label === "string"
+							? value.label
+							: undefined,
+				}
+			: undefined;
 
-	const handleCreateSecret = useCallback(() => {
-		if (!tokenValue) return;
+	const [tokenValue, setTokenValue] = useState(tokenInput?.token ?? "");
+	const [tokenLabel, setTokenLabel] = useState(tokenInput?.label ?? "");
 
-		startTransition(async () => {
-			const label = tokenLabel.trim() || `Token ${Date.now()}`;
-			const result = await client.addSecret({
-				workspaceId: workspace.id,
-				label,
-				value: tokenValue,
-				tags: option.secretTags,
-			});
-			mutate([...(secrets ?? []), result.secret], false);
-			onValueChange(result.secret.id);
+	// Sync local state with value prop
+	useEffect(() => {
+		if (tokenInput) {
+			setTokenValue(tokenInput.token);
+			setTokenLabel(tokenInput.label ?? "");
+		} else if (selectedSecretId) {
 			setTokenValue("");
 			setTokenLabel("");
-			setTabValue("select");
-		});
-	}, [
-		tokenValue,
-		tokenLabel,
-		client,
-		workspace.id,
-		option.secretTags,
-		mutate,
-		secrets,
-		onValueChange,
-	]);
+		}
+	}, [tokenInput, selectedSecretId]);
 
 	const handleSelectSecret = useCallback(
 		(secretId: string) => {
 			onValueChange(secretId);
 		},
 		[onValueChange],
+	);
+
+	const handleTokenChange = useCallback(
+		(newToken: string) => {
+			setTokenValue(newToken);
+			if (newToken) {
+				onValueChange({
+					token: newToken,
+					...(tokenLabel && { label: tokenLabel }),
+				});
+			} else {
+				onValueChange(undefined);
+			}
+		},
+		[tokenLabel, onValueChange],
+	);
+
+	const handleTokenLabelChange = useCallback(
+		(newLabel: string) => {
+			setTokenLabel(newLabel);
+			if (tokenValue) {
+				onValueChange({
+					token: tokenValue,
+					...(newLabel && { label: newLabel }),
+				});
+			}
+		},
+		[tokenValue, onValueChange],
 	);
 
 	const hasSavedTokens = (secrets ?? []).length > 0;
@@ -367,7 +386,7 @@ function SecretField({
 				<div className="flex flex-col gap-[12px]">
 					<fieldset className="flex flex-col gap-[4px]">
 						<label htmlFor={`${name}_value`} className="text-text text-[13px]">
-							Token
+							{option.title ?? titleCase(name)}
 						</label>
 						<Input
 							type="password"
@@ -376,10 +395,15 @@ function SecretField({
 							data-lpignore="true"
 							id={`${name}_value`}
 							value={tokenValue}
-							onChange={(e) => setTokenValue(e.target.value)}
+							onChange={(e) => handleTokenChange(e.target.value)}
 							placeholder="Enter token value"
 							required
 						/>
+						{option.description && (
+							<p className="text-[11px] text-text-muted px-[4px]">
+								{option.description}
+							</p>
+						)}
 					</fieldset>
 					<fieldset className="flex flex-col gap-[4px]">
 						<label htmlFor={`${name}_label`} className="text-text text-[13px]">
@@ -389,7 +413,7 @@ function SecretField({
 							type="text"
 							id={`${name}_label`}
 							value={tokenLabel}
-							onChange={(e) => setTokenLabel(e.target.value)}
+							onChange={(e) => handleTokenLabelChange(e.target.value)}
 							placeholder="Give this token a short name"
 						/>
 						{tokenLabel ? (
@@ -441,7 +465,7 @@ function SecretField({
 									type="text"
 									id={`${name}_label`}
 									value={tokenLabel}
-									onChange={(e) => setTokenLabel(e.target.value)}
+									onChange={(e) => handleTokenLabelChange(e.target.value)}
 									placeholder="Give this token a short name"
 								/>
 								{tokenLabel ? (
@@ -469,10 +493,15 @@ function SecretField({
 									data-lpignore="true"
 									id={`${name}_value`}
 									value={tokenValue}
-									onChange={(e) => setTokenValue(e.target.value)}
+									onChange={(e) => handleTokenChange(e.target.value)}
 									placeholder="Enter token value"
 									required
 								/>
+								{option.description && (
+									<p className="text-[11px] text-text-muted px-[4px]">
+										{option.description}
+									</p>
+								)}
 								<p className="text-[11px] text-text-muted px-[4px]">
 									We'll encrypt the token with authenticated encryption before
 									saving it.

@@ -168,6 +168,8 @@ export const githubApi = defineLanguageModelTool({
 			name: "secretId",
 			type: "secret",
 			title: "Token",
+			description:
+				"GitHub token formats: Classic PAT (ghp_ followed by 36 alphanumeric characters), Fine-grained PAT (github_pat_ followed by 82 alphanumeric characters), or OAuth token (gho_ followed by 36 alphanumeric characters).",
 			secretTags: ["github-access-token"],
 		},
 		useTools: {
