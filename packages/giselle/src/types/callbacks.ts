@@ -7,6 +7,7 @@ import type {
 	OnGenerationError,
 } from "../generations";
 import type { OnTaskCreate } from "../tasks";
+import type { BuildAiGatewayHeaders } from "./ai-gateway";
 import type { QueryContext } from "./query-services";
 
 export interface EmbeddingCompleteCallbackFunctionArgs {
@@ -28,4 +29,5 @@ export type GiselleCallbacks = {
 	generationComplete?: OnGenerationComplete;
 	generationError?: OnGenerationError;
 	taskCreate?: OnTaskCreate;
+	buildAiGatewayHeaders?: BuildAiGatewayHeaders;
 };

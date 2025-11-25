@@ -92,14 +92,14 @@ catalog:
   tailwindcss: 4.1.10
   tailwindcss-animate: 1.0.7
   tar: 7.4.3
+  tiktoken: 1.0.22
   tsup: 8.3.5
+  tsx: 4.20.6
   turndown: 7.2.0
   typescript: 5.7.3
   urql: 4.2.2
   vitest: 3.2.4
-  zod: 3.25.76
+  zod: 4.1.12
   zustand: 5.0.8
-  tiktoken: 1.0.22
-  tsx: 4.20.6
 
 minimumReleaseAge: 1440

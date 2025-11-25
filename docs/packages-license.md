@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 934 MIT
+* 931 MIT
 * 188 Apache 2.0
 * 48 ISC
 * 28 New BSD
@@ -1515,17 +1515,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@next/swc-linux-x64-gnu"></a>
 ### @next/swc-linux-x64-gnu v15.5.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@next/swc-linux-x64-musl"></a>
-### @next/swc-linux-x64-musl v15.5.2
 #### 
 
 ##### Paths
@@ -3471,17 +3460,6 @@ LGPL-3.0-or-later permitted
 
 
 
-<a name="@rollup/rollup-linux-x64-musl"></a>
-### @rollup/rollup-linux-x64-musl v4.35.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="@s2-dev/streamstore"></a>
 ### @s2-dev/streamstore v0.17.3
 #### 
@@ -4375,17 +4353,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@tailwindcss/oxide-linux-x64-gnu"></a>
 ### @tailwindcss/oxide-linux-x64-gnu v4.1.10
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@tailwindcss/oxide-linux-x64-musl"></a>
-### @tailwindcss/oxide-linux-x64-musl v4.1.10
 #### 
 
 ##### Paths
@@ -8933,17 +8900,6 @@ BlueOak-1.0.0 permitted
 
 <a name="lightningcss-linux-x64-gnu"></a>
 ### lightningcss-linux-x64-gnu v1.30.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt">Mozilla Public License 2.0</a> permitted
-
-
-
-<a name="lightningcss-linux-x64-musl"></a>
-### lightningcss-linux-x64-musl v1.30.1
 #### 
 
 ##### Paths
