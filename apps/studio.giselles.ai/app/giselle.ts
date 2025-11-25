@@ -357,11 +357,16 @@ export const giselle = NextGiselle({
 				teamDbId: workspace.team.dbId,
 			});
 		},
-		buildAiGatewayContext: ({ metadata }) => {
+		buildAiGatewayContext: ({ metadata, generation }) => {
 			const parsedMetadata = GenerationMetadata.safeParse(metadata);
 			const stripeCustomerId = parsedMetadata.success
 				? (parsedMetadata.data.team.activeCustomerId ?? undefined)
 				: undefined;
+			if (stripeCustomerId === undefined) {
+				logger.warn(
+					`Stripe customer ID not found for generation ${generation.id}`,
+				);
+			}
 			return {
 				httpReferer:
 					process.env.AI_GATEWAY_HTTP_REFERER ?? "https://giselles.ai",
