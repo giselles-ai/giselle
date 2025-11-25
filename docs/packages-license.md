@@ -9,7 +9,7 @@
 * 18 Simplified BSD
 * 6 BlueOak-1.0.0
 * 3 Mozilla Public License 2.0
-* 2 MIT OR Apache-2.0
+* 3 MIT OR Apache-2.0
 * 2 MIT-0
 * 2 Unknown
 * 1 BSD
@@ -778,6 +778,17 @@ MIT OR Apache-2.0 permitted
 
 <a name="@biomejs/cli-linux-x64"></a>
 ### @biomejs/cli-linux-x64 v2.0.6
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+MIT OR Apache-2.0 permitted
+
+
+
+<a name="@biomejs/cli-linux-x64-musl"></a>
+### @biomejs/cli-linux-x64-musl v2.0.6
 #### 
 
 ##### Paths
@@ -2285,6 +2296,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@oxc-resolver/binding-linux-x64-gnu"></a>
 ### @oxc-resolver/binding-linux-x64-gnu v11.13.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@oxc-resolver/binding-linux-x64-musl"></a>
+### @oxc-resolver/binding-linux-x64-musl v11.13.0
 #### 
 
 ##### Paths
