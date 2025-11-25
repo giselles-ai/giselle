@@ -111,6 +111,7 @@ export function ContentGenerationNodePropertiesPanel({
 					)
 				: [...existingTools, toolEntry];
 
+		console.log(updatedTools);
 		// Update node with new tools array
 		updateNodeData(node, {
 			content: {

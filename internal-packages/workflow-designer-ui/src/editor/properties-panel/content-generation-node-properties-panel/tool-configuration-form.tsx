@@ -17,6 +17,11 @@ import {
 } from "../text-generation-node-properties-panel/tools/ui/tabs";
 import { ConfigurationFormFieldLabel } from "./configuration-form-field-label";
 import { TagInputField } from "./tag-input-field";
+import {
+	isSecretConfigurationValue,
+	parseSecretConfigurationValue,
+	type SecretConfigurationValue,
+} from "./tool-configuration-utils";
 
 function EnumField({
 	name,
@@ -304,28 +309,17 @@ function SecretField({
 	name: string;
 	option: Extract<LanguageModelToolConfigurationOption, { type: "secret" }>;
 	value: unknown;
-	onValueChange: (value: unknown) => void;
+	onValueChange: (value: SecretConfigurationValue | null) => void;
 }) {
 	const [tabValue, setTabValue] = useState<"create" | "select">("select");
 	const { isLoading, data: secrets } = useWorkspaceSecrets(option.secretTags);
 
-	// value can be:
-	// - string (secretId)
-	// - { token: string, label?: string } (new token input)
-	const selectedSecretId = typeof value === "string" ? value : undefined;
+	// Parse value into discriminated union
+	const parsedValue = parseSecretConfigurationValue(value);
+	const selectedSecretId =
+		parsedValue?.type === "secretId" ? parsedValue.secretId : undefined;
 	const tokenInput =
-		typeof value === "object" &&
-		value !== null &&
-		"token" in value &&
-		typeof value.token === "string"
-			? {
-					token: value.token,
-					label:
-						"label" in value && typeof value.label === "string"
-							? value.label
-							: undefined,
-				}
-			: undefined;
+		parsedValue?.type === "tokenInput" ? parsedValue.tokenInput : undefined;
 
 	const [tokenValue, setTokenValue] = useState(tokenInput?.token ?? "");
 	const [tokenLabel, setTokenLabel] = useState(tokenInput?.label ?? "");
@@ -341,39 +335,52 @@ function SecretField({
 		}
 	}, [tokenInput, selectedSecretId]);
 
-	const handleSelectSecret = useCallback(
-		(secretId: string) => {
-			onValueChange(secretId);
+	const handleValueChange = useCallback(
+		(parsed: SecretConfigurationValue | null) => {
+			onValueChange(parsed);
 		},
 		[onValueChange],
+	);
+
+	const handleSelectSecret = useCallback(
+		(secretId: string) => {
+			handleValueChange({ type: "secretId", secretId });
+		},
+		[handleValueChange],
 	);
 
 	const handleTokenChange = useCallback(
 		(newToken: string) => {
 			setTokenValue(newToken);
 			if (newToken) {
-				onValueChange({
-					token: newToken,
-					...(tokenLabel && { label: tokenLabel }),
+				handleValueChange({
+					type: "tokenInput",
+					tokenInput: {
+						token: newToken,
+						...(tokenLabel && { label: tokenLabel }),
+					},
 				});
 			} else {
-				onValueChange(undefined);
+				handleValueChange(null);
 			}
 		},
-		[tokenLabel, onValueChange],
+		[tokenLabel, handleValueChange],
 	);
 
 	const handleTokenLabelChange = useCallback(
 		(newLabel: string) => {
 			setTokenLabel(newLabel);
 			if (tokenValue) {
-				onValueChange({
-					token: tokenValue,
-					...(newLabel && { label: newLabel }),
+				handleValueChange({
+					type: "tokenInput",
+					tokenInput: {
+						token: tokenValue,
+						...(newLabel && { label: newLabel }),
+					},
 				});
 			}
 		},
-		[tokenValue, onValueChange],
+		[tokenValue, handleValueChange],
 	);
 
 	const hasSavedTokens = (secrets ?? []).length > 0;
@@ -611,7 +618,13 @@ function ToolConfigurationField({
 					name={name}
 					option={option}
 					value={currentValue}
-					onValueChange={onValueChange}
+					onValueChange={(secretValue) => {
+						if (secretValue === null) {
+							onValueChange(undefined);
+						} else {
+							onValueChange(secretValue);
+						}
+					}}
 				/>
 			);
 		default: {
@@ -704,22 +717,14 @@ function validateConfigurationValue(
 			return { isValid: true };
 		}
 		case "secret": {
-			// secret can be string (secretId) or { token: string, label?: string }
-			if (typeof value === "string") {
-				return { isValid: true };
+			// Validate SecretConfigurationValue (discriminated union)
+			if (!isSecretConfigurationValue(value)) {
+				return {
+					isValid: false,
+					message: "Must be a secret ID or token object",
+				};
 			}
-			if (
-				typeof value === "object" &&
-				value !== null &&
-				"token" in value &&
-				typeof value.token === "string"
-			) {
-				return { isValid: true };
-			}
-			return {
-				isValid: false,
-				message: "Must be a secret ID or token object",
-			};
+			return { isValid: true };
 		}
 		default: {
 			const _exhaustiveCheck: never = option;

@@ -27,6 +27,7 @@ import {
 	applyDefaultValues,
 	transformConfigurationValues,
 } from "./tool-configuration-transform";
+import { isSecretConfigurationValue } from "./tool-configuration-utils";
 
 export interface ToolConfigurationDialogProps
 	extends Omit<ComponentProps<typeof Dialog>, "children"> {
@@ -95,38 +96,32 @@ export function ToolConfigurationDialog({
 			for (const [key, value] of Object.entries(processedConfig)) {
 				const option = tool.configurationOptions[key];
 				if (option.type === "secret") {
-					// Check if value is a token object { token: string, label?: string }
-					if (
-						typeof value === "object" &&
-						value !== null &&
-						"token" in value &&
-						typeof value.token === "string"
-					) {
-						const tokenValue = value.token;
-						const label =
-							"label" in value && typeof value.label === "string"
-								? value.label
-								: undefined;
-
-						// Create secret if token is provided
-						if (tokenValue) {
-							const result = await client.addSecret({
-								workspaceId: workspace.id,
-								label: label ?? "",
-								value: tokenValue,
-								tags: option.secretTags,
-							});
-
-							// Update cache immediately with new secret (optimistic)
-							mutate([...(secrets ?? []), result.secret], false);
-
-							// Replace token object with secret ID
-							finalConfig[key] = result.secret.id;
-						}
+					// value is already SecretConfigurationValue at this point
+					if (!isSecretConfigurationValue(value)) {
+						continue;
 					}
-					// If value is already a string (secretId), keep it as-is
-					else if (typeof value === "string") {
-						finalConfig[key] = value;
+
+					switch (value.type) {
+						case "secretId":
+							finalConfig[key] = value.secretId;
+							break;
+						case "tokenInput":
+							// Create secret if token is provided
+							if (value.tokenInput.token) {
+								const result = await client.addSecret({
+									workspaceId: workspace.id,
+									label: value.tokenInput.label ?? "",
+									value: value.tokenInput.token,
+									tags: option.secretTags,
+								});
+
+								// Update cache immediately with new secret (optimistic)
+								mutate([...(secrets ?? []), result.secret], false);
+
+								// Replace token object with secret ID
+								finalConfig[key] = result.secret.id;
+							}
+							break;
 					}
 				}
 			}
