@@ -352,7 +352,7 @@ export function ContentGenerationNodePropertiesPanel({
 					</div>
 				</div>
 
-				<div className="flex gap-[8px]">
+				<div className="flex gap-[8px] flex-1">
 					<div className="flex-1 flex flex-col">
 						<SettingDetail size="md" className="text-text-muted mb-[6px]">
 							Prompt
