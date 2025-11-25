@@ -93,11 +93,12 @@ export function defineTool<TName extends string>(tool: Tool<TName>) {
 export type LanguageModelToolProvider = "giselle" | LanguageModelProvider;
 
 export interface LanguageModelTool<
+	TName extends string = string,
 	C extends
 		LanguageModelToolConfigurationOptions = LanguageModelToolConfigurationOptions,
 	T extends Tool = Tool,
 > {
-	name: string;
+	name: TName;
 	provider: LanguageModelToolProvider;
 	title?: string;
 	tools?: readonly T[];
@@ -105,9 +106,10 @@ export interface LanguageModelTool<
 }
 
 export function defineLanguageModelTool<
+	TName extends string = string,
 	C extends
 		LanguageModelToolConfigurationOptions = LanguageModelToolConfigurationOptions,
 	T extends Tool = Tool,
->(languageModelTool: LanguageModelTool<C, T>) {
+>(languageModelTool: LanguageModelTool<TName, C, T>) {
 	return languageModelTool;
 }

@@ -2,7 +2,11 @@ import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { Popover } from "@giselle-internal/ui/popover";
 import { SettingDetail } from "@giselle-internal/ui/setting-label";
-import { getEntry, tools } from "@giselles-ai/language-model-registry";
+import {
+	getEntry,
+	type LanguageModelTool,
+	languageModelTools,
+} from "@giselles-ai/language-model-registry";
 import type { ContentGenerationNode } from "@giselles-ai/protocol";
 import { useWorkflowDesigner } from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
@@ -39,7 +43,11 @@ export function ContentGenerationNodePropertiesPanel({
 
 	const selectedTool = useMemo(() => {
 		if (!selectedToolName) return null;
-		return tools.find((tool) => tool.name === selectedToolName) ?? null;
+		return (
+			languageModelTools.find(
+				(tool: LanguageModelTool) => tool.name === selectedToolName,
+			) ?? null
+		);
 	}, [selectedToolName]);
 
 	const toolsGroupByProvider = useMemo(
@@ -47,9 +55,9 @@ export function ContentGenerationNodePropertiesPanel({
 			{
 				groupId: "giselle",
 				groupLabel: "Hosted",
-				items: tools
-					.filter((tool) => tool.provider === "giselle")
-					.map((tool) => ({
+				items: languageModelTools
+					.filter((tool: LanguageModelTool) => tool.provider === "giselle")
+					.map((tool: LanguageModelTool) => ({
 						value: tool.name,
 						label: tool?.title ?? tool.name,
 					})),
@@ -57,9 +65,12 @@ export function ContentGenerationNodePropertiesPanel({
 			{
 				groupId: languageModel.provider,
 				groupLabel: `${titleCase(languageModel.provider)} Provides`,
-				items: tools
-					.filter((tool) => tool.provider === languageModel.provider)
-					.map((tool) => ({
+				items: languageModelTools
+					.filter(
+						(tool: LanguageModelTool) =>
+							tool.provider === languageModel.provider,
+					)
+					.map((tool: LanguageModelTool) => ({
 						value: tool.name,
 						label: tool?.title ?? tool.name,
 					})),
@@ -74,9 +85,40 @@ export function ContentGenerationNodePropertiesPanel({
 	};
 
 	const handleToolConfigSubmit = (config: Record<string, unknown>) => {
-		// TODO: Save tool configuration to node
-		// For now, just log it
-		console.log("Tool config:", selectedToolName, config);
+		if (!selectedToolName) {
+			return;
+		}
+
+		// Transform to content-generation.ts tools format
+		const toolEntry = {
+			name: selectedToolName,
+			configuration: config,
+		};
+
+		// Get existing tools array or create new one
+		const existingTools =
+			(node.content as { tools?: (typeof toolEntry)[] }).tools ?? [];
+
+		// Check if tool already exists, update it; otherwise add new one
+		const toolIndex = existingTools.findIndex(
+			(tool: typeof toolEntry) => tool.name === selectedToolName,
+		);
+
+		const updatedTools =
+			toolIndex >= 0
+				? existingTools.map((tool: typeof toolEntry, index: number) =>
+						index === toolIndex ? toolEntry : tool,
+					)
+				: [...existingTools, toolEntry];
+
+		// Update node with new tools array
+		updateNodeData(node, {
+			content: {
+				...node.content,
+				tools: updatedTools,
+			} as typeof node.content,
+		});
+
 		setToolDialogOpen(false);
 		setSelectedToolName(null);
 	};
@@ -183,7 +225,9 @@ export function ContentGenerationNodePropertiesPanel({
 					<div>
 						<DropdownMenu
 							items={toolsGroupByProvider}
-							onSelect={handleToolSelect}
+							onSelect={(e, option) => {
+								handleToolSelect(e, { value: String(option.value) });
+							}}
 							trigger={
 								<Button variant="solid" leftIcon={<PlusIcon />}>
 									Add

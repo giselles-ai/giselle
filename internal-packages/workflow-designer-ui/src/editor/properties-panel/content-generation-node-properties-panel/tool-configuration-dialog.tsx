@@ -16,7 +16,10 @@ import {
 	useEffect,
 	useState,
 } from "react";
-import { ToolConfigurationForm } from "./tool-configuration-form";
+import {
+	ToolConfigurationForm,
+	validateToolConfiguration,
+} from "./tool-configuration-form";
 
 export interface ToolConfigurationDialogProps
 	extends Omit<ComponentProps<typeof Dialog>, "children"> {
@@ -52,7 +55,58 @@ export function ToolConfigurationDialog({
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		onSubmit(config);
+
+		// Apply default values for optional fields that are not set
+		const processedConfig: Record<string, unknown> = { ...config };
+		for (const [key, option] of Object.entries(tool.configurationOptions)) {
+			if (
+				processedConfig[key] === undefined &&
+				option.defaultValue !== undefined
+			) {
+				processedConfig[key] = option.defaultValue;
+			}
+		}
+
+		// Validate configuration
+		const validation = validateToolConfiguration(tool, processedConfig);
+		if (!validation.isValid) {
+			// TODO: Show validation errors to user
+			console.error("Validation errors:", validation.errors);
+			return;
+		}
+
+		// Transform configuration to match content-generation.ts schema
+		const transformedConfig: Record<string, unknown> = {};
+		for (const [key, value] of Object.entries(processedConfig)) {
+			const option = tool.configurationOptions[key];
+			if (value === undefined || value === null) {
+				// Skip undefined/null values for optional fields
+				if (!option.optional) {
+					// Required field is missing, but validation should have caught this
+					continue;
+				}
+				continue;
+			}
+
+			// Transform enum values to strings
+			if (option.type === "enum") {
+				transformedConfig[key] = String(value);
+			}
+			// Transform number values
+			else if (option.type === "number") {
+				transformedConfig[key] = Number(value);
+			}
+			// Transform boolean values
+			else if (option.type === "boolean") {
+				transformedConfig[key] = Boolean(value);
+			}
+			// Keep other types as-is
+			else {
+				transformedConfig[key] = value;
+			}
+		}
+
+		onSubmit(transformedConfig);
 	};
 
 	return (

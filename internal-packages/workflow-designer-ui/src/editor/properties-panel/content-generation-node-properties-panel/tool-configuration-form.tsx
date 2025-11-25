@@ -616,9 +616,137 @@ function ToolConfigurationField({
 			);
 		default: {
 			const _exhaustiveCheck: never = option;
-			return null;
+			throw new Error(`Unhandled option type: ${_exhaustiveCheck}`);
 		}
 	}
+}
+
+function validateConfigurationValue(
+	option: LanguageModelToolConfigurationOption,
+	value: unknown,
+): { isValid: boolean; message?: string } {
+	// If optional and value is undefined/null/empty, it's valid
+	if (
+		option.optional &&
+		(value === undefined || value === null || value === "")
+	) {
+		return { isValid: true };
+	}
+
+	switch (option.type) {
+		case "text": {
+			if (typeof value !== "string") {
+				return { isValid: false, message: "Must be a string" };
+			}
+			return { isValid: true };
+		}
+		case "number": {
+			if (typeof value !== "number" || Number.isNaN(value)) {
+				return { isValid: false, message: "Must be a number" };
+			}
+			if (option.min !== undefined && value < option.min) {
+				return {
+					isValid: false,
+					message: `Must be at least ${option.min}`,
+				};
+			}
+			if (option.max !== undefined && value > option.max) {
+				return {
+					isValid: false,
+					message: `Must be at most ${option.max}`,
+				};
+			}
+			return { isValid: true };
+		}
+		case "boolean": {
+			if (typeof value !== "boolean") {
+				return { isValid: false, message: "Must be a boolean" };
+			}
+			return { isValid: true };
+		}
+		case "enum": {
+			const validValues = option.options.map((opt) => String(opt.value));
+			if (!validValues.includes(String(value))) {
+				return {
+					isValid: false,
+					message: `Must be one of: ${validValues.join(", ")}`,
+				};
+			}
+			return { isValid: true };
+		}
+		case "tagArray": {
+			if (!Array.isArray(value)) {
+				return { isValid: false, message: "Must be an array" };
+			}
+			if (option.validate) {
+				for (const item of value) {
+					if (typeof item !== "string") {
+						return { isValid: false, message: "All items must be strings" };
+					}
+					const validation = option.validate(item);
+					if (!validation.isValid) {
+						return validation;
+					}
+				}
+			}
+			return { isValid: true };
+		}
+		case "toolSelection": {
+			if (!Array.isArray(value)) {
+				return { isValid: false, message: "Must be an array" };
+			}
+			return { isValid: true };
+		}
+		case "object": {
+			if (typeof value !== "object" || value === null || Array.isArray(value)) {
+				return { isValid: false, message: "Must be an object" };
+			}
+			return { isValid: true };
+		}
+		case "secret": {
+			// secret can be string (secretId) or { token: string, label?: string }
+			if (typeof value === "string") {
+				return { isValid: true };
+			}
+			if (
+				typeof value === "object" &&
+				value !== null &&
+				"token" in value &&
+				typeof value.token === "string"
+			) {
+				return { isValid: true };
+			}
+			return {
+				isValid: false,
+				message: "Must be a secret ID or token object",
+			};
+		}
+		default: {
+			const _exhaustiveCheck: never = option;
+			throw new Error(`Unhandled option type: ${_exhaustiveCheck}`);
+		}
+	}
+}
+
+export function validateToolConfiguration(
+	tool: LanguageModelTool,
+	config: Record<string, unknown>,
+): { isValid: boolean; errors: Record<string, string> } {
+	const errors: Record<string, string> = {};
+
+	for (const [key, option] of Object.entries(tool.configurationOptions)) {
+		const value = config[key];
+		const validation = validateConfigurationValue(option, value);
+
+		if (!validation.isValid) {
+			errors[key] = validation.message ?? "Invalid value";
+		}
+	}
+
+	return {
+		isValid: Object.keys(errors).length === 0,
+		errors,
+	};
 }
 
 export function ToolConfigurationForm({

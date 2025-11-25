@@ -700,6 +700,7 @@ const contentGenerationFactoryImpl = {
 					id: languageModel.id,
 					configuration: languageModel.defaultConfiguration,
 				},
+				tools: [],
 			},
 			inputs: [],
 			outputs,
