@@ -1,17 +1,16 @@
 import type { RunningGeneration } from "@giselles-ai/protocol";
 import type { GenerationMetadata } from "../generations";
 
-export interface AiGatewayContext {
-	httpReferer: string;
-	xTitle: string;
-	stripeCustomerId?: string;
-}
+export type AiGatewayHeaders = {
+	"http-referer": string;
+	"x-title": string;
+} & Record<string, string>;
 
-export interface BuildAiGatewayContextArgs {
+export interface BuildAiGatewayHeadersArgs {
 	generation: RunningGeneration;
 	metadata?: GenerationMetadata;
 }
 
-export type BuildAiGatewayContext = (
-	args: BuildAiGatewayContextArgs,
-) => Promise<AiGatewayContext | undefined> | AiGatewayContext | undefined;
+export type BuildAiGatewayHeaders = (
+	args: BuildAiGatewayHeadersArgs,
+) => Promise<AiGatewayHeaders | undefined> | AiGatewayHeaders | undefined;
