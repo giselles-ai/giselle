@@ -17,9 +17,8 @@ import {
 	PropertiesPanelContent,
 	PropertiesPanelRoot,
 } from "../ui";
-import { ConfigurationFormField } from "./configuration-form-field";
-import { ModelPickerV2 } from "./model-picker-v2";
-import { ToolConfigurationDialog } from "./tool-configuration-dialog";
+import { ConfigurationFormField, ModelPickerV2 } from "./language-model";
+import { ToolConfigurationDialog } from "./tool";
 
 export function ContentGenerationNodePropertiesPanel({
 	node,

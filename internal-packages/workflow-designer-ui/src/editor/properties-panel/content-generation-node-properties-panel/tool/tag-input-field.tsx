@@ -1,8 +1,8 @@
 import { Input } from "@giselle-internal/ui/input";
 import { X } from "lucide-react";
 import { useState } from "react";
-import { validateUrl } from "../../lib/validate-url";
-import { ConfigurationFormFieldLabel } from "./configuration-form-field-label";
+import { validateUrl } from "../../../lib/validate-url";
+import { ConfigurationFormFieldLabel } from "../configuration-form-field-label";
 
 interface TagInputFieldProps {
 	label: string;

@@ -8,14 +8,14 @@ import { titleCase } from "@giselles-ai/utils";
 import clsx from "clsx/lite";
 import { Switch } from "radix-ui";
 import { useCallback, useEffect, useState } from "react";
-import { useWorkspaceSecrets } from "../../lib/use-workspace-secrets";
+import { useWorkspaceSecrets } from "../../../lib/use-workspace-secrets";
 import {
 	Tabs,
 	TabsContent,
 	TabsList,
 	TabsTrigger,
-} from "../text-generation-node-properties-panel/tools/ui/tabs";
-import { ConfigurationFormFieldLabel } from "./configuration-form-field-label";
+} from "../../text-generation-node-properties-panel/tools/ui/tabs";
+import { ConfigurationFormFieldLabel } from "../configuration-form-field-label";
 import { TagInputField } from "./tag-input-field";
 import {
 	isSecretConfigurationValue,

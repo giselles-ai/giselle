@@ -18,7 +18,7 @@ import {
 	useState,
 	useTransition,
 } from "react";
-import { useWorkspaceSecrets } from "../../lib/use-workspace-secrets";
+import { useWorkspaceSecrets } from "../../../lib/use-workspace-secrets";
 import {
 	ToolConfigurationForm,
 	validateToolConfiguration,
