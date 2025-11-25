@@ -74,7 +74,10 @@ export interface WorkspaceSlice {
 		node: T,
 		content: Partial<T["content"]>,
 	) => void;
-	updateFileStatus: (nodeId: NodeId, files: FileData[]) => void;
+	updateFileStatus: (
+		nodeId: NodeId,
+		files: FileData[] | ((files: FileData[]) => FileData[]),
+	) => void;
 }
 
 export const createWorkspaceSlice: StateCreator<WorkspaceSlice> = (
@@ -411,20 +414,26 @@ export const createWorkspaceSlice: StateCreator<WorkspaceSlice> = (
 				},
 			};
 		}),
-	updateFileStatus: (nodeId, files) =>
+	updateFileStatus: (nodeId, filesOrUpdater) =>
 		set((state) => {
 			if (!state.workspace) return {};
 			return {
 				workspace: {
 					...state.workspace,
-					nodes: state.workspace.nodes.map((n) =>
-						n.id === nodeId
-							? ({
-									...n,
-									content: { ...(n as FileNode).content, files: files },
-								} as NodeLike)
-							: n,
-					),
+					nodes: state.workspace.nodes.map((n) => {
+						if (n.id !== nodeId) return n;
+
+						const currentFiles = (n as FileNode).content.files;
+						const newFiles =
+							typeof filesOrUpdater === "function"
+								? filesOrUpdater(currentFiles)
+								: filesOrUpdater;
+
+						return {
+							...n,
+							content: { ...n.content, files: newFiles },
+						} as NodeLike;
+					}),
 				},
 			};
 		}),

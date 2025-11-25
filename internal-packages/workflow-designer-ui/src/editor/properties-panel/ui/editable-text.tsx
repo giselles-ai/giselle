@@ -2,7 +2,6 @@
 
 import clsx from "clsx/lite";
 import {
-	forwardRef,
 	useCallback,
 	useEffect,
 	useImperativeHandle,
@@ -14,20 +13,25 @@ export interface EditableTextRef {
 	triggerEdit: () => void;
 }
 
-export const EditableText = forwardRef<
-	EditableTextRef,
-	{
-		value?: string;
-		fallbackValue: string;
-		onChange?: (value?: string) => void;
-		size?: "medium" | "large";
-		ariaLabel?: string;
-		className?: string;
-	}
->(function EditableText(
-	{ value, fallbackValue, onChange, size = "medium", ariaLabel, className },
+interface EditableTextProps {
+	value?: string;
+	fallbackValue: string;
+	onChange?: (value?: string) => void;
+	size?: "medium" | "large";
+	ariaLabel?: string;
+	className?: string;
+	ref?: React.Ref<EditableTextRef>;
+}
+
+export function EditableText({
+	value,
+	fallbackValue,
+	onChange,
+	size = "medium",
+	ariaLabel,
+	className,
 	ref,
-) {
+}: EditableTextProps) {
 	const [edit, setEdit] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -66,7 +70,7 @@ export const EditableText = forwardRef<
 				type="text"
 				aria-label={ariaLabel}
 				className={clsx(
-					"w-full min-w-[200px] hidden data-[editing=true]:block",
+					"w-full min-w-[300px] hidden data-[editing=true]:block",
 					"outline-none border border-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] focus:border-[color-mix(in_srgb,var(--color-text-inverse,#fff)_30%,transparent)]",
 					"rounded-[8px] bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)]",
 					"!pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px]",
@@ -92,7 +96,7 @@ export const EditableText = forwardRef<
 				className={clsx(
 					"rounded-[8px] data-[editing=true]:hidden text-left",
 					"hover:bg-bg-900/20 group-hover:bg-bg-900/10",
-					"bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] !pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px]",
+					"!pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px]",
 					"data-[size=medium]:text-[14px] data-[size=large]:text-[16px]",
 					"cursor-default w-full overflow-hidden text-ellipsis whitespace-nowrap",
 					!className && "text-inverse",
@@ -106,4 +110,4 @@ export const EditableText = forwardRef<
 			</button>
 		</>
 	);
-});
+}

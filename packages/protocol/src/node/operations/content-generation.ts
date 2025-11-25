@@ -14,7 +14,7 @@ export const ContentGenerationContent = z.object({
 			isLanguageModelProvider(v),
 		),
 		id: z.custom<LanguageModelId>((v) => isLanguageModelId(v)),
-		configration: z.record(z.string(), z.any()),
+		configuration: z.record(z.string(), z.any()),
 	}),
 	prompt: z.string(),
 });

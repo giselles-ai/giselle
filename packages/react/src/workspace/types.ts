@@ -26,7 +26,7 @@ export interface WorkflowDesignerContextValue {
 			ui?: NodeUIState;
 			connectionCloneStrategy?: ConnectionCloneStrategy;
 		},
-	) => Promise<Node | undefined> | Node | undefined;
+	) => Node | undefined;
 	addConnection: (args: {
 		outputNode: NodeLike;
 		outputId: OutputId;
@@ -53,6 +53,7 @@ export interface WorkflowDesignerContextValue {
 		options?: { onError?: (message: string) => void },
 	) => Promise<void>;
 	removeFile: (file: FileData) => Promise<void>;
+	copyFiles: (node: FileNode) => Promise<void>;
 	llmProviders: LanguageModelProvider[];
 	isLoading: boolean;
 	saveWorkspace: () => Promise<void>;

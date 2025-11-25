@@ -24,6 +24,11 @@ export const anthropic = {
 			temperature: {
 				description: "Amount of randomness injected into the response.",
 				schema: z.number().min(0).max(1),
+				ui: {
+					min: 0.0,
+					max: 1.0,
+					step: 0.1,
+				},
 			},
 			reasoningText: {
 				description: "Whether to include reasoning text in the response.",
@@ -54,6 +59,11 @@ export const anthropic = {
 			temperature: {
 				description: "Amount of randomness injected into the response.",
 				schema: z.number(),
+				ui: {
+					min: 0.0,
+					max: 1.0,
+					step: 0.1,
+				},
 			},
 			reasoningText: {
 				description: "Whether to include reasoning text in the response.",
@@ -84,6 +94,11 @@ export const anthropic = {
 			temperature: {
 				description: "Amount of randomness injected into the response.",
 				schema: z.number(),
+				ui: {
+					min: 0.0,
+					max: 1.0,
+					step: 0.1,
+				},
 			},
 			reasoningText: {
 				description: "Whether to include reasoning text in the response.",

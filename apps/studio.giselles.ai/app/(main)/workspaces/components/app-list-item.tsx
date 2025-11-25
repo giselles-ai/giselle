@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
 import type { AgentId } from "@/services/agents";
 import { GitHubIcon } from "../../../../../../internal-packages/workflow-designer-ui/src/icons";
+import { Tooltip } from "../../../../../../internal-packages/workflow-designer-ui/src/ui/tooltip";
 import { Button } from "../../settings/components/button";
 import { copyAgent, deleteAgent } from "../actions";
 import { formatExecutionCount } from "./format-execution-count";
@@ -134,9 +135,28 @@ export function AppListItem({
 											{repo}
 										</div>
 										{githubRepositories.length > 1 && (
-											<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted">
-												+{githubRepositories.length - 1}
-											</span>
+											<Tooltip
+												text={
+													<div className="flex flex-col gap-1 bg-bg-900/30 rounded px-2 py-0.5 border border-white/20">
+														{githubRepositories.slice(1).map((hiddenRepo) => (
+															<span key={hiddenRepo}>{hiddenRepo}</span>
+														))}
+													</div>
+												}
+												variant="dark"
+												side="top"
+											>
+												<button
+													type="button"
+													className="relative z-50 font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted"
+													onClick={(e) => {
+														e.stopPropagation();
+														e.preventDefault();
+													}}
+												>
+													+{githubRepositories.length - 1}
+												</button>
+											</Tooltip>
 										)}
 									</div>
 								))}
@@ -153,9 +173,30 @@ export function AppListItem({
 											{fileName}
 										</div>
 										{documentVectorStoreFiles.length > 1 && (
-											<span className="font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted">
-												+{documentVectorStoreFiles.length - 1}
-											</span>
+											<Tooltip
+												text={
+													<div className="flex flex-col gap-1 bg-bg-900/30 rounded px-2 py-0.5 border border-white/20">
+														{documentVectorStoreFiles
+															.slice(1)
+															.map((hiddenFile) => (
+																<span key={hiddenFile}>{hiddenFile}</span>
+															))}
+													</div>
+												}
+												variant="dark"
+												side="top"
+											>
+												<button
+													type="button"
+													className="relative z-50 font-geist text-[11px] text-text/60 flex-shrink-0 px-1.5 py-0.5 rounded-lg border border-border-muted"
+													onClick={(e) => {
+														e.stopPropagation();
+														e.preventDefault();
+													}}
+												>
+													+{documentVectorStoreFiles.length - 1}
+												</button>
+											</Tooltip>
 										)}
 									</div>
 								))}

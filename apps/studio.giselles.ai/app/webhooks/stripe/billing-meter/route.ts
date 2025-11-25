@@ -17,26 +17,26 @@ export async function POST(req: Request) {
 	const body = await req.text();
 	const sig = req.headers.get("stripe-signature") as string;
 	const webhookSecret = process.env.STRIPE_BILLING_METER_WEBHOOK_SECRET;
-	let thinEvent: Stripe.ThinEvent;
+	let eventNotification: Stripe.V2.Core.EventNotification;
 
 	try {
 		if (!sig || !webhookSecret)
 			return new Response("Webhook secret not found.", { status: 400 });
-		thinEvent = stripe.parseThinEvent(body, sig, webhookSecret);
-		console.log(`🔔  Webhook received: ${thinEvent.type}`);
+		eventNotification = stripe.parseEventNotification(body, sig, webhookSecret);
+		console.log(`🔔  Webhook received: ${eventNotification.type}`);
 	} catch (err: unknown) {
 		console.log(`❌ Error: ${err}`);
 		captureException(err);
 		return new Response(`Webhook Error: ${err}`, { status: 400 });
 	}
 
-	if (!relevantEvents.has(thinEvent.type)) {
-		return new Response(`Unsupported event type: ${thinEvent.type}`, {
+	if (!relevantEvents.has(eventNotification.type)) {
+		return new Response(`Unsupported event type: ${eventNotification.type}`, {
 			status: 400,
 		});
 	}
 
-	const event = await stripe.v2.core.events.retrieve(thinEvent.id);
+	const event = await stripe.v2.core.events.retrieve(eventNotification.id);
 	if (
 		event.type !== "v1.billing.meter.error_report_triggered" &&
 		event.type !== "v1.billing.meter.no_meter_found"

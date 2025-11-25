@@ -1,24 +1,36 @@
-"use client";
+import { Background } from "@giselle-internal/workflow-designer-ui";
+import { WorkspaceId } from "@giselles-ai/protocol";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { dataLoader } from "./data-loader";
+import { Page } from "./page.client";
 
-import { Editor } from "@giselle-internal/workflow-designer-ui";
-import { useSearchParams } from "next/navigation";
+function Loader() {
+	return (
+		<div className="h-screen w-full">
+			<Background />
+		</div>
+	);
+}
 
-export default function Page() {
-	const searchParams = useSearchParams();
-
-	// Get the readOnly state from URL parameters
-	const isReadOnly = searchParams.get("readOnly") === "true";
-
-	// Retrieve role parameter or default to viewer
-	const userRole = (searchParams.get("role") || "viewer") as
-		| "viewer"
-		| "guest"
-		| "editor"
-		| "owner";
+export default async function ({
+	params,
+}: {
+	params: Promise<{
+		workspaceId: string;
+	}>;
+}) {
+	const { data: workspaceId, success } = WorkspaceId.safeParse(
+		(await params).workspaceId,
+	);
+	if (!success) {
+		console.error(params);
+		return notFound();
+	}
 
 	return (
-		<div className="flex flex-col h-screen bg-black-900">
-			<Editor isReadOnly={isReadOnly} userRole={userRole} />
-		</div>
+		<Suspense fallback={<Loader />}>
+			<Page dataLoader={dataLoader(workspaceId)} />
+		</Suspense>
 	);
 }
