@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeading } from "@giselle-internal/ui/page-heading";
+import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
 import type {
@@ -312,28 +313,28 @@ function TaskCard({ task }: { task: Task }) {
 		task.steps.cancelled +
 		task.steps.failed;
 
-	const getStatusColor = (status: Task["status"]) => {
-		switch (status) {
+	const getStatusBadgeStatus = (status: Task["status"]) => {
+		switch (status?.toLowerCase()) {
 			case "completed":
-				return "bg-green-500/10 text-green-600 border-green-500/20";
+			case "success":
+				return "success" as const;
 			case "failed":
-				return "bg-red-500/10 text-red-600 border-red-500/20";
-			case "cancelled":
-				return "bg-gray-500/10 text-gray-600 border-gray-500/20";
-			case "inProgress":
-				return "bg-blue-500/10 text-blue-600 border-blue-500/20";
+			case "error":
+				return "error" as const;
+			case "running":
+			case "processing":
+			case "inprogress":
+				return "info" as const;
+			case "queued":
+			case "pending":
 			case "created":
-				return "bg-yellow-500/10 text-yellow-600 border-yellow-500/20";
+				return "warning" as const;
+			case "cancelled":
+			case "ignored":
+				return "ignored" as const;
 			default:
-				return "bg-gray-500/10 text-gray-600 border-gray-500/20";
+				return "info" as const;
 		}
-	};
-
-	const formatDuration = (ms: number) => {
-		if (ms < 1000) return `${ms}ms`;
-		if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
-		if (ms < 3600000) return `${(ms / 60000).toFixed(1)}m`;
-		return `${(ms / 3600000).toFixed(1)}h`;
 	};
 
 	const formatTokenCount = (count: number) => {
@@ -356,19 +357,12 @@ function TaskCard({ task }: { task: Task }) {
 				<h3 className="text-sm font-semibold text-foreground line-clamp-1 flex-1">
 					{task.name || "Untitled Task"}
 				</h3>
-				<span
-					className={`px-2 py-0.5 text-xs font-medium rounded border ${getStatusColor(
-						task.status,
-					)}`}
-				>
+				<StatusBadge status={getStatusBadgeStatus(task.status)} variant="dot">
 					{task.status}
-				</span>
+				</StatusBadge>
 			</div>
 			<div className="flex items-center gap-4 text-xs text-muted-foreground mb-2">
 				<span>{formatTimestamp.toRelativeTime(task.createdAt)}</span>
-				{task.duration.wallClock > 0 && (
-					<span>• {formatDuration(task.duration.wallClock)}</span>
-				)}
 				{task.usage.totalTokens > 0 && (
 					<span>• {formatTokenCount(task.usage.totalTokens)} tokens</span>
 				)}
