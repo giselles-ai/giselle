@@ -258,7 +258,7 @@ export function generateContent({
 				context.aiGateway
 					? {
 							...context.aiGateway,
-							xStripeCustomerId:
+							stripeCustomerId:
 								(metadata?.team as { activeCustomerId?: string | null })
 									?.activeCustomerId ?? undefined,
 						}
@@ -508,7 +508,7 @@ function generationModel(
 	gatewayOptions?: {
 		httpReferer: string;
 		xTitle: string;
-		xStripeCustomerId?: string;
+		stripeCustomerId?: string;
 	},
 ) {
 	const llmProvider = languageModel.provider;
@@ -519,8 +519,8 @@ function generationModel(
 					headers: {
 						"http-referer": gatewayOptions.httpReferer,
 						"x-title": gatewayOptions.xTitle,
-						...(gatewayOptions.xStripeCustomerId
-							? { "X-Stripe-Customer-ID": gatewayOptions.xStripeCustomerId }
+						...(gatewayOptions.stripeCustomerId
+							? { "stripe-customer-id": gatewayOptions.stripeCustomerId }
 							: {}),
 					},
 				},

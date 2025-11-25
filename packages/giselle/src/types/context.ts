@@ -67,7 +67,7 @@ export interface GiselleContext {
 	aiGateway?: {
 		httpReferer: string;
 		xTitle: string;
-		xStripeCustomerId?: string;
+		stripeCustomerId?: string;
 	};
 	logger: GiselleLogger;
 	waitUntil: WaitUntil;
