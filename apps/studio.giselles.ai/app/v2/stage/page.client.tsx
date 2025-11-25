@@ -469,7 +469,7 @@ export function Page({
 									<div className="mt-5 space-y-4">
 										<div className="flex flex-col gap-4 lg:flex-row">
 											<div className="min-w-0 flex-1">
-												<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
+												<p className="text-link-muted text-[12px] block px-2 pb-1">
 													Workspace
 												</p>
 												<p className="text-sm text-foreground px-4">
@@ -477,7 +477,7 @@ export function Page({
 												</p>
 											</div>
 											<div className="min-w-0 flex-1">
-												<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
+												<p className="text-link-muted text-[12px] block px-2 pb-1">
 													Team
 												</p>
 												<p className="text-sm text-foreground px-4">
@@ -487,7 +487,7 @@ export function Page({
 										</div>
 										<div className="flex flex-col gap-4 lg:flex-row">
 											<div className="min-w-0 flex-1">
-												<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
+												<p className="text-link-muted text-[12px] block px-2 pb-1">
 													Vector store repositories
 												</p>
 												{selectedApp.vectorStoreRepositories.length > 0 ? (
@@ -509,7 +509,7 @@ export function Page({
 												)}
 											</div>
 											<div className="min-w-0 flex-1">
-												<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
+												<p className="text-link-muted text-[12px] block px-2 pb-1">
 													Vector store files
 												</p>
 												{selectedApp.vectorStoreFiles.length > 0 ? (
@@ -532,7 +532,7 @@ export function Page({
 											</div>
 										</div>
 										<div>
-											<p className="text-text-muted text-[13px] font-semibold px-2 pb-1">
+											<p className="text-link-muted text-[12px] block px-2 pb-1">
 												LLM
 											</p>
 											<div className="flex items-center gap-2 px-4 py-1">
@@ -591,7 +591,7 @@ export function Page({
 										No apps found in history.
 									</p>
 								) : (
-									<div className="flex flex-col gap-2">
+									<div className="flex flex-col gap-4">
 										{historyApps.map((app) => (
 											<AppCard
 												app={app}
@@ -612,11 +612,11 @@ export function Page({
 									<h2 className="text-link-muted text-[12px] block">My apps</h2>
 								</div>
 								{myApps.length === 0 ? (
-									<p className="text-sm text-muted-foreground">
+									<p className="text-sm text-muted-foreground/70">
 										No apps found in My apps.
 									</p>
 								) : (
-									<div className="flex flex-col gap-2">
+									<div className="flex flex-col gap-4">
 										{myApps.map((app) => (
 											<AppCard
 												app={app}
@@ -643,7 +643,7 @@ export function Page({
 										No apps found in Team apps.
 									</p>
 								) : (
-									<div className="flex flex-col gap-2">
+									<div className="flex flex-col gap-4">
 										{teamApps.map((app) => (
 											<AppCard
 												app={app}

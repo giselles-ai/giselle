@@ -146,6 +146,7 @@ async function userApps(teamIds: TeamId[], userDbId: number) {
 				return {
 					team,
 					workspace,
+					dbWorkspace: app.workspace,
 					giselleApp,
 					githubRepositories,
 					documentFiles,
@@ -171,7 +172,7 @@ async function userApps(teamIds: TeamId[], userDbId: number) {
 			workspaceName: data.workspace.name ?? "Untitled workspace",
 			teamName: data.team.name,
 			teamId: data.team.id,
-			isMine: data.workspace.creatorDbId === userDbId,
+			isMine: data.dbWorkspace.creatorDbId === userDbId,
 			vectorStoreRepositories: data.githubRepositories,
 			vectorStoreFiles: data.documentFiles,
 			llmProviders: data.llmProviders,
