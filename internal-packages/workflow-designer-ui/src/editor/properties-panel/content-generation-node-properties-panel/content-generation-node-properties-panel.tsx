@@ -7,6 +7,7 @@ import {
 	type LanguageModelTool,
 	languageModelTools,
 } from "@giselles-ai/language-model-registry";
+import { defaultName } from "@giselles-ai/node-registry";
 import type { ContentGenerationNode } from "@giselles-ai/protocol";
 import { useWorkflowDesigner } from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
@@ -18,6 +19,7 @@ import {
 	PropertiesPanelRoot,
 } from "../ui";
 import { ConfigurationFormField, ModelPickerV2 } from "./language-model";
+import { useNodeContext } from "./node-context/use-node-context";
 import { ToolConfigurationDialog } from "./tool";
 
 export function ContentGenerationNodePropertiesPanel({
@@ -182,6 +184,8 @@ export function ContentGenerationNodePropertiesPanel({
 		}
 	};
 
+	const { fragments, shouldShowOutputLabel } = useNodeContext(node);
+
 	return (
 		<PropertiesPanelRoot>
 			<NodePanelHeader
@@ -271,7 +275,18 @@ export function ContentGenerationNodePropertiesPanel({
 					</div>
 
 					<SettingDetail size="md">Context</SettingDetail>
-					<div>todo</div>
+					<div className="flex flex-wrap gap-[6px]">
+						{fragments.map((fragment) => (
+							<div
+								key={fragment.output.id}
+								className="flex items-center gap-[4px] px-[8px] py-[4px] bg-surface rounded-full text-[12px] text-text"
+							>
+								{shouldShowOutputLabel(fragment.node.id)
+									? `${defaultName(fragment.node)}:${fragment.output.label}`
+									: defaultName(fragment.node)}
+							</div>
+						))}
+					</div>
 
 					<SettingDetail size="md">Tools</SettingDetail>
 					<div className="flex flex-col gap-[8px]">
