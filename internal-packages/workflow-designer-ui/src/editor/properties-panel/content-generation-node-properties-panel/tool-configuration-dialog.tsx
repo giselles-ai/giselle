@@ -29,7 +29,7 @@ import {
 } from "./tool-configuration-transform";
 import { isSecretConfigurationValue } from "./tool-configuration-utils";
 
-export interface ToolConfigurationDialogProps
+interface ToolConfigurationDialogProps
 	extends Omit<ComponentProps<typeof Dialog>, "children"> {
 	tool: LanguageModelTool;
 	currentConfig?: Record<string, unknown>;

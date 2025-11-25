@@ -7,13 +7,6 @@ export interface SecretTokenInput {
 }
 
 /**
- * Raw secret configuration value types (for input/output)
- * - string: secretId (existing secret)
- * - SecretTokenInput: new token input object
- */
-export type SecretConfigurationValueRaw = string | SecretTokenInput;
-
-/**
  * Secret configuration value as discriminated union
  */
 export type SecretConfigurationValue =
@@ -106,18 +99,4 @@ export function isSecretConfigurationValue(
 	}
 
 	return false;
-}
-
-/**
- * Converts a SecretConfigurationValue to raw format for storage
- */
-export function toSecretConfigurationValueRaw(
-	value: SecretConfigurationValue,
-): SecretConfigurationValueRaw {
-	switch (value.type) {
-		case "secretId":
-			return value.secretId;
-		case "tokenInput":
-			return value.tokenInput;
-	}
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { validateUrl } from "../../lib/validate-url";
 import { ConfigurationFormFieldLabel } from "./configuration-form-field-label";
 
-export interface TagInputFieldProps {
+interface TagInputFieldProps {
 	label: string;
 	value: string[];
 	onValueChange: (value: string[]) => void;
