@@ -351,7 +351,7 @@ function TaskCard({ task }: { task: Task }) {
 		<button
 			type="button"
 			onClick={handleClick}
-			className="w-full text-left p-4 rounded-lg border border-border bg-card/30 hover:bg-card/50 hover:border-border-muted transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+			className="w-full text-left px-3 py-3 rounded-lg border border-border bg-card/30 hover:bg-card/50 hover:border-border-muted transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
 		>
 			<div className="flex items-start justify-between gap-3 mb-2">
 				<h3 className="text-sm font-semibold text-foreground line-clamp-1 flex-1">
@@ -361,33 +361,17 @@ function TaskCard({ task }: { task: Task }) {
 					{task.status}
 				</StatusBadge>
 			</div>
-			<div className="flex items-center gap-4 text-xs text-muted-foreground mb-2">
+			<div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mb-2">
 				<span>{formatTimestamp.toRelativeTime(task.createdAt)}</span>
 				{task.usage.totalTokens > 0 && (
 					<span>• {formatTokenCount(task.usage.totalTokens)} tokens</span>
 				)}
+				{totalSteps > 0 && (
+					<span>
+						Steps: {task.steps.completed}/{totalSteps}
+					</span>
+				)}
 			</div>
-			{totalSteps > 0 && (
-				<div className="flex items-center gap-2 text-xs text-muted-foreground">
-					<span className="text-foreground/60">Steps:</span>
-					{task.steps.completed > 0 && (
-						<span className="text-green-600">
-							{task.steps.completed} completed
-						</span>
-					)}
-					{task.steps.inProgress > 0 && (
-						<span className="text-blue-600">
-							{task.steps.inProgress} in progress
-						</span>
-					)}
-					{task.steps.failed > 0 && (
-						<span className="text-red-600">{task.steps.failed} failed</span>
-					)}
-					{task.steps.queued > 0 && (
-						<span className="text-yellow-600">{task.steps.queued} queued</span>
-					)}
-				</div>
-			)}
 		</button>
 	);
 }
@@ -875,7 +859,11 @@ export function Page({
 							) : (
 								<div
 									ref={taskListScrollRef}
-									className="space-y-3 overflow-y-auto pr-1"
+									className="space-y-3 overflow-y-auto pr-1 scrollbar-hide"
+									style={{
+										scrollbarWidth: "none",
+										msOverflowStyle: "none",
+									}}
 								>
 									{recentTasks.map((task) => (
 										<TaskCard key={task.id} task={task} />
