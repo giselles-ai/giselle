@@ -30,7 +30,7 @@ export function DialogContent({
 	return (
 		<DialogPortal>
 			<DialogPrimitive.Overlay
-				className="fixed inset-0 z-50"
+				className="fixed inset-0 z-50 backdrop-blur-[1.5px]"
 				style={{ background: "var(--color-dialog-overlay)" }}
 			/>
 			{isGlass ? (

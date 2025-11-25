@@ -164,7 +164,7 @@
 
 	/* glass common */
 	/* unified overlay (scrim) color for dialogs */
-	--color-dialog-overlay: rgba(0, 0, 0, 0.3);
+	--color-dialog-overlay: rgba(0, 0, 0, 0.5);
 	--glass-highlight-bg: linear-gradient(
 		to right,
 		transparent,

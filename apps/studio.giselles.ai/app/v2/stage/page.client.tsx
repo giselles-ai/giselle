@@ -684,7 +684,7 @@ export function Page({
 								</div>
 							</div>
 						) : (
-							<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] h-[240px] w-full rounded-[8px] flex justify-center items-center text-text-muted">
+							<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] h-[240px] w-full rounded-[8px] flex justify-center items-center text-text-muted">
 								<div className="flex flex-col items-center gap-[4px] text-text-muted">
 									<p className="font-[800] text-text/60">
 										{data.apps.length > 0
@@ -1006,9 +1006,7 @@ export function Page({
 
 							{/* Bottom section: Input form */}
 							<div className="flex-1 min-w-0 space-y-2">
-								<p className="text-link-muted text-[11px]">
-									Parameter information
-								</p>
+								<p className="text-link-muted text-[11px]">Input parameters</p>
 								<SimpleAppEntryForm
 									app={runningApp}
 									onSubmit={handleRunSubmit}
