@@ -5,15 +5,8 @@ import type {
 	Output,
 } from "@giselles-ai/protocol";
 
-type UnconnectedOutputWithDetails<T extends NodeBase = NodeLike> = Output & {
-	node: T;
-	connection?: never;
-};
 export type ConnectedOutputWithDetails<T extends NodeBase = NodeLike> =
 	Output & {
 		node: T;
 		connection: Connection;
 	};
-export type OutputWithDetails<T extends NodeBase = NodeLike> =
-	| UnconnectedOutputWithDetails<T>
-	| ConnectedOutputWithDetails<T>;
