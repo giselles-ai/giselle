@@ -1,5 +1,11 @@
 "use client";
 
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogTitle,
+} from "@giselle-internal/ui/dialog";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
@@ -191,76 +197,88 @@ function SimpleAppEntryForm({
 		[app, onSubmit],
 	);
 
+	const isSingleParameter = app.parameters.length === 1;
+
+	const parameterFields = app.parameters.map((parameter) => (
+		<div key={parameter.id} className="min-w-0">
+			<div className="flex items-center gap-2">
+				<input
+					id={parameter.name}
+					className={`rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-[1px] text-[14px] bg-background ${
+						isRunning
+							? "border-transparent text-foreground/60 w-auto"
+							: "border-border text-foreground w-full"
+					}`}
+					type={parameter.type === "number" ? "number" : "text"}
+					name={parameter.name}
+					placeholder={isRunning ? "" : `Please enter ${parameter.name}`}
+					required={parameter.required}
+					onChange={handleChange}
+					disabled={isRunning}
+				/>
+				{isRunning && (
+					<span className="whitespace-nowrap text-xs text-link-muted">
+						Running...
+					</span>
+				)}
+			</div>
+			{validationErrors[parameter.id] && (
+				<p className="mt-1 text-xs text-red-500">
+					{validationErrors[parameter.id]}
+				</p>
+			)}
+		</div>
+	));
+
+	const submitButton = (
+		<button
+			type={isRunning ? "button" : "submit"}
+			onClick={
+				isRunning
+					? () => {
+							onStop?.();
+						}
+					: undefined
+			}
+			disabled={!isFormValid && !isRunning}
+			className="relative flex h-[38px] flex-shrink-0 items-center justify-center gap-[8px] whitespace-nowrap rounded-full border px-[24px] text-[14px] font-[500] font-sans text-white outline-none transition-all hover:translate-y-[-1px] bg-primary-900 border-primary-900/30 hover:bg-primary-800 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 focus-visible:ring-2 focus-visible:ring-primary-700/60 focus-visible:ring-offset-1 cursor-pointer"
+		>
+			<span className="mr-[8px] generate-star">✦</span>
+			<span>{isRunning ? "Stop" : "Run"}</span>
+			<span className="ml-[8px] flex items-center gap-[2px] text-[11px] text-white/60">
+				<kbd className="px-[4px] py-[1px] bg-white/20 rounded-[4px]">⌘</kbd>
+				<kbd className="px-[4px] py-[1px] bg-white/20 rounded-[4px]">↵</kbd>
+			</span>
+		</button>
+	);
+
 	return (
 		<form ref={formRef} onSubmit={handleSubmit} className="w-full">
-			<div className="flex items-center gap-3 w-full">
-				<h3 className="text-sm font-semibold text-foreground whitespace-nowrap">
-					{app.name}
-				</h3>
-				{app.parameters.map((parameter) => (
-					<div key={parameter.id} className="flex-1 min-w-0">
-						<div className="flex items-center gap-2">
-							<input
-								id={parameter.name}
-								className={`rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-[1px] text-[14px] bg-background ${
-									isRunning
-										? "border-transparent text-foreground/60 w-auto"
-										: "border-border text-foreground w-full"
-								}`}
-								type={parameter.type === "number" ? "number" : "text"}
-								name={parameter.name}
-								placeholder={isRunning ? "" : `Please enter ${parameter.name}`}
-								required={parameter.required}
-								onChange={handleChange}
-								disabled={isRunning}
-							/>
-							{isRunning && (
-								<span className="text-xs text-link-muted whitespace-nowrap">
-									Running...
-								</span>
-							)}
-						</div>
-						{validationErrors[parameter.id] && (
-							<p className="text-xs text-red-500 mt-1">
-								{validationErrors[parameter.id]}
-							</p>
-						)}
-					</div>
-				))}
-				<button
-					type={isRunning ? "button" : "submit"}
-					onClick={
-						isRunning
-							? () => {
-									onStop?.();
-								}
-							: undefined
-					}
-					disabled={!isFormValid && !isRunning}
-					className="flex-shrink-0 relative flex items-center justify-center px-[24px] h-[38px] rounded-full gap-[8px] border transition-all hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 bg-primary-900 border-primary-900/30 hover:bg-primary-800 text-white outline-none focus-visible:ring-2 focus-visible:ring-primary-700/60 focus-visible:ring-offset-1"
-				>
-					<span className="mr-[8px] generate-star">✦</span>
-					<span>{isRunning ? "Stop" : "Run"}</span>
-					<span className="ml-[8px] flex items-center gap-[2px] text-[11px] text-white/60">
-						<kbd className="px-[4px] py-[1px] bg-white/20 rounded-[4px]">⌘</kbd>
-						<kbd className="px-[4px] py-[1px] bg-white/20 rounded-[4px]">↵</kbd>
-					</span>
-				</button>
-				<style jsx>{`
-					.generate-star { display: inline-block; }
-					.generate-star.generating { animation: continuousRotate 1s linear infinite; }
-					button:hover .generate-star:not(.generating) { animation: rotateStar 0.7s ease-in-out; }
-					@keyframes rotateStar {
-						0% { transform: rotate(0deg) scale(1); }
-						50% { transform: rotate(180deg) scale(1.5); }
-						100% { transform: rotate(360deg) scale(1); }
-					}
-					@keyframes continuousRotate {
-						0% { transform: rotate(0deg); }
-						100% { transform: rotate(360deg); }
-					}
-				`}</style>
-			</div>
+			{isSingleParameter ? (
+				<div className="flex w-full items-center gap-3">
+					<div className="min-w-0 flex-1">{parameterFields}</div>
+					{submitButton}
+				</div>
+			) : (
+				<div className="flex w-full flex-col gap-3">
+					{parameterFields}
+					<div className="flex justify-end">{submitButton}</div>
+				</div>
+			)}
+			<style jsx>{`
+				.generate-star { display: inline-block; }
+				.generate-star.generating { animation: continuousRotate 1s linear infinite; }
+				button:hover .generate-star:not(.generating) { animation: rotateStar 0.7s ease-in-out; }
+				@keyframes rotateStar {
+					0% { transform: rotate(0deg) scale(1); }
+					50% { transform: rotate(180deg) scale(1.5); }
+					100% { transform: rotate(360deg) scale(1); }
+				}
+				@keyframes continuousRotate {
+					0% { transform: rotate(0deg); }
+					100% { transform: rotate(360deg); }
+				}
+			`}</style>
 		</form>
 	);
 }
@@ -393,7 +411,7 @@ export function Page({
 				(candidate) => candidate.workspaceId === task.workspaceId,
 			);
 			if (app === undefined) continue;
-			// 現在選択中のチームに属するアプリだけを履歴対象にする
+			// Only include apps belonging to the currently selected team in history
 			if (
 				data.currentTeamId !== undefined &&
 				app.teamId !== data.currentTeamId
@@ -423,7 +441,6 @@ export function Page({
 	const [runningAppId, setRunningAppId] = useState<string | undefined>(
 		undefined,
 	);
-	const [navigationRailWidth, setNavigationRailWidth] = useState(0);
 	const [isRunning, startTransition] = useTransition();
 	const [isTaskSidebarOpen, setIsTaskSidebarOpen] = useState(false);
 	const [isAppListScrollable, setIsAppListScrollable] = useState(false);
@@ -515,34 +532,6 @@ export function Page({
 		return () => {
 			element.removeEventListener("scroll", updateScrollState);
 			window.removeEventListener("resize", updateScrollState);
-		};
-	}, []);
-
-	// Track current navigation rail width so the bottom panel aligns with the right content area
-	useEffect(() => {
-		if (
-			typeof window === "undefined" ||
-			typeof ResizeObserver === "undefined"
-		) {
-			return;
-		}
-		const spacer = document.querySelector(
-			"[data-navigation-rail-spacer]",
-		) as HTMLElement | null;
-		if (!spacer) {
-			return;
-		}
-		const updateWidth = () => {
-			const rect = spacer.getBoundingClientRect();
-			setNavigationRailWidth(rect.width);
-		};
-		updateWidth();
-		const observer = new ResizeObserver(() => {
-			updateWidth();
-		});
-		observer.observe(spacer);
-		return () => {
-			observer.disconnect();
 		};
 	}, []);
 
@@ -882,21 +871,52 @@ export function Page({
 				)}
 			</div>
 
-			{/* Bottom fixed player panel */}
-			{runningApp && (
-				<div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
-					<div
-						className="pointer-events-auto px-[16px] py-3 bg-card/95 backdrop-blur-md border-t border-border shadow-lg"
-						style={{
-							marginLeft: navigationRailWidth,
-							width: `calc(100vw - ${navigationRailWidth}px)`,
-						}}
-					>
-						<div className="w-full">
-							<div className="flex items-center gap-4">
-								<div className="flex items-center gap-3 flex-shrink-0">
+			{/* Player dialog */}
+			<Dialog
+				open={runningApp !== undefined}
+				onOpenChange={(open) => {
+					if (!open) {
+						setRunningAppId(undefined);
+						setSelectedAppId(undefined);
+					}
+				}}
+			>
+				{runningApp && (
+					<DialogContent variant="glass" className="max-w-[520px]">
+						<DialogTitle className="sr-only">
+							Run app {runningApp.name}
+						</DialogTitle>
+						<DialogClose
+							className="absolute right-2 top-1 z-20 text-muted-foreground hover:text-foreground transition-colors rounded-sm"
+							aria-label="Close running app"
+							onClick={() => {
+								setRunningAppId(undefined);
+								setSelectedAppId(undefined);
+							}}
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								className="h-5 w-5"
+							>
+								<title>Close</title>
+								<path d="M18 6 6 18" />
+								<path d="m6 6 12 12" />
+							</svg>
+						</DialogClose>
+						<div className="flex flex-col gap-3">
+							{/* Top section: App info */}
+							<div className="space-y-4">
+								<div className="flex items-center gap-4">
 									<div
-										className={`relative flex h-12 w-12 items-center justify-center rounded-md overflow-hidden border transition-all ${
+										className={`relative flex h-[120px] w-[120px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border transition-all ${
 											isRunning
 												? "bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] border-[hsl(192,73%,84%)] shadow-[0_0_22px_rgba(0,135,246,0.95)]"
 												: "bg-card/60 border-[hsl(192,73%,84%)]"
@@ -913,48 +933,95 @@ export function Page({
 											className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
 										/>
 									</div>
+									<div className="min-w-0">
+										<h3 className="text-base font-semibold text-foreground">
+											{runningApp.name}
+										</h3>
+										{runningApp.description ? (
+											<p className="mt-2 line-clamp-2 text-xs text-muted-foreground">
+												{runningApp.description}
+											</p>
+										) : null}
+									</div>
 								</div>
-								<div className="flex-1 min-w-0">
-									<SimpleAppEntryForm
-										app={runningApp}
-										onSubmit={handleRunSubmit}
-										isRunning={isRunning}
-										onStop={() => {
-											setRunningAppId(undefined);
-										}}
-									/>
+								<div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[11px] text-muted-foreground">
+									<div className="min-w-0">
+										<p className="text-link-muted text-[11px]">Workspace</p>
+										<p className="truncate text-foreground text-sm">
+											{runningApp.workspaceName}
+										</p>
+									</div>
+									<div className="min-w-0">
+										<p className="text-link-muted text-[11px]">Team</p>
+										<p className="truncate text-foreground text-sm">
+											{runningApp.teamName}
+										</p>
+									</div>
+									<div className="min-w-0">
+										<p className="text-link-muted text-[11px]">
+											Vector store repositories
+										</p>
+										<p className="truncate text-sm">
+											{runningApp.vectorStoreRepositories.length > 0
+												? runningApp.vectorStoreRepositories[0]
+												: "Not configured yet"}
+										</p>
+									</div>
+									<div className="min-w-0">
+										<p className="text-link-muted text-[11px]">
+											Vector store files
+										</p>
+										<p className="truncate text-sm">
+											{runningApp.vectorStoreFiles.length > 0
+												? runningApp.vectorStoreFiles[0]
+												: "Not configured yet"}
+										</p>
+									</div>
 								</div>
-								<button
-									type="button"
-									onClick={() => {
+								<div className="mt-2">
+									<p className="text-link-muted text-[11px]">LLM</p>
+									<div className="flex items-center gap-2 pt-1">
+										{runningApp.llmProviders.length > 0 ? (
+											runningApp.llmProviders.map((provider) => (
+												<div
+													key={provider}
+													className="flex h-7 w-7 items-center justify-center rounded bg-[color:var(--color-inverse)]/10"
+												>
+													<LLMProviderIcon
+														provider={provider}
+														className="h-4 w-4"
+													/>
+												</div>
+											))
+										) : (
+											<p className="text-xs text-foreground/70">
+												Will be shown here in a future update
+											</p>
+										)}
+									</div>
+								</div>
+							</div>
+
+							<div className="border-t border-border/40" />
+
+							{/* Bottom section: Input form */}
+							<div className="flex-1 min-w-0 space-y-2">
+								<p className="text-link-muted text-[11px]">
+									Parameter information
+								</p>
+								<SimpleAppEntryForm
+									app={runningApp}
+									onSubmit={handleRunSubmit}
+									isRunning={isRunning}
+									onStop={() => {
 										setRunningAppId(undefined);
-										setSelectedAppId(undefined);
 									}}
-									className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
-									aria-label="Close running app"
-								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="24"
-										height="24"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeWidth="2"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										className="h-5 w-5"
-									>
-										<title>Close</title>
-										<path d="M18 6 6 18" />
-										<path d="m6 6 12 12" />
-									</svg>
-								</button>
+								/>
 							</div>
 						</div>
-					</div>
-				</div>
-			)}
+					</DialogContent>
+				)}
+			</Dialog>
 		</div>
 	);
 }
