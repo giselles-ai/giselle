@@ -16,6 +16,7 @@ import {
 	use,
 	useCallback,
 	useEffect,
+	useRef,
 	useState,
 	useTransition,
 } from "react";
@@ -67,6 +68,35 @@ function SimpleAppEntryForm({
 	const [validationErrors, setValidationErrors] = useState<
 		Record<string, string>
 	>({});
+	const [isFormValid, setIsFormValid] = useState(false);
+	const formRef = useRef<HTMLFormElement | null>(null);
+
+	const handleChange = useCallback(() => {
+		const formElement = formRef.current;
+		if (!formElement) {
+			return;
+		}
+
+		let valid = true;
+
+		for (const parameter of app.parameters) {
+			if (!parameter.required) {
+				continue;
+			}
+
+			const field = formElement.elements.namedItem(
+				parameter.name,
+			) as HTMLInputElement | null;
+			const value = field?.value.trim() ?? "";
+
+			if (value === "") {
+				valid = false;
+				break;
+			}
+		}
+
+		setIsFormValid(valid);
+	}, [app.parameters]);
 
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		(e) => {
@@ -148,7 +178,7 @@ function SimpleAppEntryForm({
 	);
 
 	return (
-		<form onSubmit={handleSubmit} className="w-full">
+		<form ref={formRef} onSubmit={handleSubmit} className="w-full">
 			<div className="flex items-center gap-3 w-full">
 				<h3 className="text-sm font-semibold text-foreground whitespace-nowrap">
 					{app.name}
@@ -162,6 +192,7 @@ function SimpleAppEntryForm({
 							name={parameter.name}
 							placeholder={`Please enter ${parameter.name}`}
 							required={parameter.required}
+							onChange={handleChange}
 						/>
 						{validationErrors[parameter.id] && (
 							<p className="text-xs text-red-500 mt-1">
@@ -172,6 +203,7 @@ function SimpleAppEntryForm({
 				))}
 				<button
 					type="submit"
+					disabled={!isFormValid}
 					className="flex-shrink-0 relative flex items-center justify-center px-[24px] h-[38px] rounded-full gap-[8px] border transition-all hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 bg-primary-900 border-primary-900/30 hover:bg-primary-800 text-white outline-none focus-visible:ring-2 focus-visible:ring-primary-700/60 focus-visible:ring-offset-1"
 				>
 					<span className="mr-[8px] generate-star">✦</span>
@@ -200,15 +232,34 @@ function SimpleAppEntryForm({
 	);
 }
 
-function AppCard({ app, onSelect }: { app: StageApp; onSelect?: () => void }) {
+function AppCard({
+	app,
+	onSelect,
+	isSelected = false,
+}: {
+	app: StageApp;
+	onSelect?: () => void;
+	isSelected?: boolean;
+}) {
 	return (
 		<button
 			type="button"
 			className="flex-none w-[180px] flex items-center gap-3 rounded-lg bg-card/30 hover:bg-card/50 text-left group cursor-pointer transition-all"
 			onClick={onSelect}
 		>
-			<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-card/60 border border-border">
-				<DynamicIcon name={app.iconName} className="h-6 w-6 text-foreground" />
+			<div
+				className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md border transition-colors ${
+					isSelected
+						? "bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] border-[hsl(192,73%,84%)] shadow-[0_0_22px_rgba(0,135,246,0.95)]"
+						: "bg-card/60 border-border"
+				}`}
+			>
+				<DynamicIcon
+					name={app.iconName}
+					className={`h-5 w-5 stroke-1 ${
+						isSelected ? "text-[hsl(192,73%,84%)]" : "text-foreground"
+					}`}
+				/>
 			</div>
 			<div className="flex-1 min-w-0">
 				<h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
@@ -363,7 +414,7 @@ export function Page({
 		undefined,
 	);
 	const [navigationRailWidth, setNavigationRailWidth] = useState(0);
-	const [_isPending, startTransition] = useTransition();
+	const [isRunning, startTransition] = useTransition();
 	const router = useRouter();
 
 	useEffect(() => {
@@ -596,6 +647,7 @@ export function Page({
 											<AppCard
 												app={app}
 												key={app.id}
+												isSelected={selectedAppId === app.id}
 												onSelect={() => {
 													setSelectedAppId(app.id);
 													setRunningAppId(app.id);
@@ -621,6 +673,7 @@ export function Page({
 											<AppCard
 												app={app}
 												key={app.id}
+												isSelected={selectedAppId === app.id}
 												onSelect={() => {
 													setSelectedAppId(app.id);
 													setRunningAppId(app.id);
@@ -648,6 +701,7 @@ export function Page({
 											<AppCard
 												app={app}
 												key={app.id}
+												isSelected={selectedAppId === app.id}
 												onSelect={() => {
 													setSelectedAppId(app.id);
 													setRunningAppId(app.id);
@@ -697,12 +751,22 @@ export function Page({
 						<div className="max-w-[1200px] mx-auto w-full">
 							<div className="flex items-center gap-4">
 								<div className="flex items-center gap-3 flex-shrink-0">
-									<div className="relative flex h-14 w-14 items-center justify-center rounded-md bg-card/60 border border-border overflow-hidden">
-										<div className="stage-star-border-bottom" />
-										<div className="stage-star-border-top" />
+									<div
+										className={`relative flex h-12 w-12 items-center justify-center rounded-md overflow-hidden border transition-all ${
+											isRunning
+												? "bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] border-[hsl(192,73%,84%)] shadow-[0_0_22px_rgba(0,135,246,0.95)]"
+												: "bg-card/60 border-[hsl(192,73%,84%)]"
+										}`}
+									>
+										{isRunning && (
+											<>
+												<div className="stage-star-border-bottom" />
+												<div className="stage-star-border-top" />
+											</>
+										)}
 										<DynamicIcon
 											name={runningApp.iconName}
-											className="relative z-[1] h-6 w-6 text-foreground"
+											className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
 										/>
 									</div>
 								</div>
