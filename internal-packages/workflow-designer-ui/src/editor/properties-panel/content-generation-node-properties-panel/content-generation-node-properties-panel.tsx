@@ -199,7 +199,9 @@ export function ContentGenerationNodePropertiesPanel({
 
 			<PropertiesPanelContent>
 				<div className="grid grid-cols-[60px_1fr] gap-y-[12px] gap-x-[12px] items-start mb-[12px]">
-					<SettingDetail size="md">Model</SettingDetail>
+					<SettingDetail size="md" className="text-text-muted">
+						Model
+					</SettingDetail>
 					<div className="overflow-x-hidden">
 						<div className="flex items-center gap-[4px]">
 							<ModelPickerV2 value={node.content.languageModel.id} />
@@ -276,7 +278,9 @@ export function ContentGenerationNodePropertiesPanel({
 						)}
 					</div>
 
-					<SettingDetail size="md">Context</SettingDetail>
+					<SettingDetail size="md" className="text-text-muted">
+						Context
+					</SettingDetail>
 					<div className="flex flex-wrap gap-[6px]">
 						{connections.map((connection) => (
 							<div
@@ -290,7 +294,9 @@ export function ContentGenerationNodePropertiesPanel({
 						))}
 					</div>
 
-					<SettingDetail size="md">Tools</SettingDetail>
+					<SettingDetail size="md" className="text-text-muted">
+						Tools
+					</SettingDetail>
 					<div className="flex flex-col gap-[8px]">
 						<div className="flex flex-wrap gap-[6px]">
 							{configuredTools.map((tool) => (
@@ -345,15 +351,33 @@ export function ContentGenerationNodePropertiesPanel({
 						)}
 					</div>
 				</div>
-				<SettingDetail size="md">Prompt</SettingDetail>
-				<PromptEditor
-					placeholder="Write your prompt... Use @ to reference other nodes"
-					value={node.content.prompt}
-					onValueChange={(value) => {
-						updateNodeDataContent(node, { prompt: value });
-					}}
-					connections={connections}
-				/>
+
+				<div className="flex gap-[8px]">
+					<div className="flex-1 flex flex-col">
+						<SettingDetail size="md" className="text-text-muted mb-[6px]">
+							Prompt
+						</SettingDetail>
+						<PromptEditor
+							placeholder="Write your prompt... Use @ to reference other nodes"
+							value={node.content.prompt}
+							onValueChange={(value) => {
+								updateNodeDataContent(node, { prompt: value });
+							}}
+							connections={connections}
+							containerClassName="flex-1"
+						/>
+					</div>
+					<div className="flex flex-col flex-1">
+						<SettingDetail size="md" className="text-text-muted mb-[6px]">
+							Output
+						</SettingDetail>
+						<div className="rounded-md bg-surface/70 w-full flex-1 p-[8px]">
+							<p className="text-text-muted text-[14px]">
+								Your generation will appear here
+							</p>
+						</div>
+					</div>
+				</div>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);
