@@ -448,6 +448,14 @@ export function Page({
 	const [navigationRailWidth, setNavigationRailWidth] = useState(0);
 	const [isRunning, startTransition] = useTransition();
 	const [isTaskSidebarOpen, setIsTaskSidebarOpen] = useState(false);
+	const [isAppListScrollable, setIsAppListScrollable] = useState(false);
+	const [isAppListAtStart, setIsAppListAtStart] = useState(true);
+	const [isAppListAtEnd, setIsAppListAtEnd] = useState(false);
+	const appListScrollRef = useRef<HTMLDivElement | null>(null);
+	const [isTaskListScrollable, setIsTaskListScrollable] = useState(false);
+	const [isTaskListAtTop, setIsTaskListAtTop] = useState(true);
+	const [isTaskListAtBottom, setIsTaskListAtBottom] = useState(false);
+	const taskListScrollRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
 		if (!selectedAppId) return;
@@ -483,6 +491,54 @@ export function Page({
 				.slice(0, 20),
 		[data.tasks, oneMonthAgo],
 	);
+
+	// Track app list horizontal scroll to show edge gradients similar to music apps
+	useEffect(() => {
+		const element = appListScrollRef.current;
+		if (!element) {
+			return;
+		}
+
+		const updateScrollState = () => {
+			const maxScrollLeft = element.scrollWidth - element.clientWidth;
+			setIsAppListScrollable(maxScrollLeft > 1);
+			setIsAppListAtStart(element.scrollLeft <= 0);
+			setIsAppListAtEnd(element.scrollLeft >= maxScrollLeft - 1);
+		};
+
+		updateScrollState();
+		element.addEventListener("scroll", updateScrollState);
+		window.addEventListener("resize", updateScrollState);
+
+		return () => {
+			element.removeEventListener("scroll", updateScrollState);
+			window.removeEventListener("resize", updateScrollState);
+		};
+	}, []);
+
+	// Track task list vertical scroll to show top/bottom gradients in the sidebar
+	useEffect(() => {
+		const element = taskListScrollRef.current;
+		if (!element) {
+			return;
+		}
+
+		const updateScrollState = () => {
+			const maxScrollTop = element.scrollHeight - element.clientHeight;
+			setIsTaskListScrollable(maxScrollTop > 1);
+			setIsTaskListAtTop(element.scrollTop <= 0);
+			setIsTaskListAtBottom(element.scrollTop >= maxScrollTop - 1);
+		};
+
+		updateScrollState();
+		element.addEventListener("scroll", updateScrollState);
+		window.addEventListener("resize", updateScrollState);
+
+		return () => {
+			element.removeEventListener("scroll", updateScrollState);
+			window.removeEventListener("resize", updateScrollState);
+		};
+	}, []);
 
 	// Track current navigation rail width so the bottom panel aligns with the right content area
 	useEffect(() => {
@@ -529,10 +585,10 @@ export function Page({
 	);
 
 	return (
-		<div className="w-full px-[24px] py-[24px]">
-			<div className="flex items-start gap-8 min-w-0">
+		<div className="w-full">
+			<div className="flex items-start gap-4 min-w-0">
 				{/* Main content: heading + apps area */}
-				<div className="flex-1 min-w-0 space-y-8">
+				<div className="flex-1 min-w-0 space-y-8 px-[24px] py-[24px]">
 					{/* Page heading */}
 					<div className="flex items-center justify-between">
 						<div>
@@ -679,138 +735,168 @@ export function Page({
 					</div>
 
 					{/* Bottom container: three columns of apps */}
-					<div className="rounded-lg bg-card/20 w-full overflow-x-auto">
-						<div className="flex gap-6 w-max">
-							{/* Column 1: History */}
-							<div className="flex flex-col w-[280px] flex-shrink-0">
-								<div className="flex items-center justify-between mb-3">
-									<h2 className="text-link-muted text-[12px] block">
-										Apps from history
-									</h2>
-								</div>
-								{historyApps.length === 0 ? (
-									<p className="text-sm text-muted-foreground">
-										No apps found in history.
-									</p>
-								) : (
-									<div className="flex flex-col gap-4">
-										{historyApps.map((app) => (
-											<AppCard
-												app={app}
-												key={app.id}
-												isSelected={selectedAppId === app.id}
-												onSelect={() => {
-													setSelectedAppId(app.id);
-													setRunningAppId(app.id);
-												}}
-											/>
-										))}
+					<div className="relative rounded-lg bg-card/20 w-full">
+						<div
+							ref={appListScrollRef}
+							className="overflow-x-auto scrollbar-hide"
+							style={{
+								scrollbarWidth: "none",
+								msOverflowStyle: "none",
+							}}
+						>
+							<div className="flex gap-6 w-max pr-4">
+								{/* Column 1: History */}
+								<div className="flex flex-col w-[280px] flex-shrink-0">
+									<div className="flex items-center justify-between mb-3">
+										<h2 className="text-link-muted text-[12px] block">
+											Apps from history
+										</h2>
 									</div>
-								)}
-							</div>
+									{historyApps.length === 0 ? (
+										<p className="text-sm text-muted-foreground">
+											No apps found in history.
+										</p>
+									) : (
+										<div className="flex flex-col gap-4">
+											{historyApps.map((app) => (
+												<AppCard
+													app={app}
+													key={app.id}
+													isSelected={selectedAppId === app.id}
+													onSelect={() => {
+														setSelectedAppId(app.id);
+														setRunningAppId(app.id);
+													}}
+												/>
+											))}
+										</div>
+									)}
+								</div>
 
-							{/* Column 2: My apps */}
-							<div className="flex flex-col w-[280px] flex-shrink-0">
-								<div className="flex items-center justify-between mb-3">
-									<h2 className="text-link-muted text-[12px] block">My apps</h2>
-								</div>
-								{myApps.length === 0 ? (
-									<p className="text-sm text-muted-foreground/70">
-										No apps found in My apps.
-									</p>
-								) : (
-									<div className="flex flex-col gap-4">
-										{myApps.map((app) => (
-											<AppCard
-												app={app}
-												key={app.id}
-												isSelected={selectedAppId === app.id}
-												onSelect={() => {
-													setSelectedAppId(app.id);
-													setRunningAppId(app.id);
-												}}
-											/>
-										))}
+								{/* Column 2: My apps */}
+								<div className="flex flex-col w-[280px] flex-shrink-0">
+									<div className="flex items-center justify-between mb-3">
+										<h2 className="text-link-muted text-[12px] block">
+											My apps
+										</h2>
 									</div>
-								)}
-							</div>
+									{myApps.length === 0 ? (
+										<p className="text-sm text-muted-foreground/70">
+											No apps found in My apps.
+										</p>
+									) : (
+										<div className="flex flex-col gap-4">
+											{myApps.map((app) => (
+												<AppCard
+													app={app}
+													key={app.id}
+													isSelected={selectedAppId === app.id}
+													onSelect={() => {
+														setSelectedAppId(app.id);
+														setRunningAppId(app.id);
+													}}
+												/>
+											))}
+										</div>
+									)}
+								</div>
 
-							{/* Column 3: Team apps */}
-							<div className="flex flex-col w-[280px] flex-shrink-0">
-								<div className="flex items-center justify-between mb-3">
-									<h2 className="text-link-muted text-[12px] block">
-										Team apps
-									</h2>
-								</div>
-								{teamApps.length === 0 ? (
-									<p className="text-sm text-muted-foreground">
-										No apps found in Team apps.
-									</p>
-								) : (
-									<div className="flex flex-col gap-4">
-										{teamApps.map((app) => (
-											<AppCard
-												app={app}
-												key={app.id}
-												isSelected={selectedAppId === app.id}
-												onSelect={() => {
-													setSelectedAppId(app.id);
-													setRunningAppId(app.id);
-												}}
-											/>
-										))}
+								{/* Column 3: Team apps */}
+								<div className="flex flex-col w-[280px] flex-shrink-0">
+									<div className="flex items-center justify-between mb-3">
+										<h2 className="text-link-muted text-[12px] block">
+											Team apps
+										</h2>
 									</div>
-								)}
+									{teamApps.length === 0 ? (
+										<p className="text-sm text-muted-foreground">
+											No apps found in Team apps.
+										</p>
+									) : (
+										<div className="flex flex-col gap-4">
+											{teamApps.map((app) => (
+												<AppCard
+													app={app}
+													key={app.id}
+													isSelected={selectedAppId === app.id}
+													onSelect={() => {
+														setSelectedAppId(app.id);
+														setRunningAppId(app.id);
+													}}
+												/>
+											))}
+										</div>
+									)}
+								</div>
 							</div>
 						</div>
+						{isAppListScrollable && !isAppListAtStart && (
+							<div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[color:var(--color-background)] to-transparent" />
+						)}
+						{isAppListScrollable && !isAppListAtEnd && (
+							<div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[color:var(--color-background)] to-transparent" />
+						)}
 					</div>
 				</div>
 
 				{/* Right sidebar: Tasks history (outside main container) */}
 				{isTaskSidebarOpen && (
-					<aside className="w-[280px] rounded-lg bg-card/30 flex flex-col">
-						<div className="flex items-center justify-between mb-3">
-							<h2 className="text-sm font-semibold text-foreground tracking-wide uppercase">
-								Tasks
-							</h2>
-							<button
-								type="button"
-								onClick={() => {
-									setIsTaskSidebarOpen(false);
-								}}
-								className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
-								aria-label="Close tasks sidebar"
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="24"
-									height="24"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									className="h-4 w-4"
+					<>
+						<div className="self-stretch w-px bg-border/60" />
+						<aside className="relative w-[280px] max-h-[calc(100vh-120px)] rounded-lg bg-card/30 flex flex-col py-[24px] mr-4">
+							<div className="flex items-center justify-between mb-3">
+								<h2 className="text-sm font-semibold text-foreground tracking-wide uppercase">
+									Tasks
+								</h2>
+								<button
+									type="button"
+									onClick={() => {
+										setIsTaskSidebarOpen(false);
+									}}
+									className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
+									aria-label="Close tasks sidebar"
 								>
-									<title>Close tasks</title>
-									<path d="M18 6 6 18" />
-									<path d="m6 6 12 12" />
-								</svg>
-							</button>
-						</div>
-						{recentTasks.length === 0 ? (
-							<div className="flex flex-1 items-center justify-center px-3 py-4 text-sm text-muted-foreground text-center">
-								No task history yet
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="24"
+										height="24"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										className="h-4 w-4"
+									>
+										<title>Close tasks</title>
+										<path d="M18 6 6 18" />
+										<path d="m6 6 12 12" />
+									</svg>
+								</button>
 							</div>
-						) : (
-							<div className="space-y-3 overflow-y-auto pr-1">
-								{recentTasks.map((task) => (
-									<TaskCard key={task.id} task={task} />
-								))}
-							</div>
-						)}
-					</aside>
+							{recentTasks.length === 0 ? (
+								<div className="flex flex-1 items-center justify-center px-3 py-4 text-sm text-muted-foreground text-center">
+									No task history yet
+								</div>
+							) : (
+								<div
+									ref={taskListScrollRef}
+									className="space-y-3 overflow-y-auto pr-1"
+								>
+									{recentTasks.map((task) => (
+										<TaskCard key={task.id} task={task} />
+									))}
+								</div>
+							)}
+
+							{isTaskListScrollable && !isTaskListAtTop && (
+								<div className="pointer-events-none absolute inset-x-0 top-0 h-5 bg-gradient-to-b from-[color:var(--color-background)] to-transparent" />
+							)}
+							{isTaskListScrollable && !isTaskListAtBottom && (
+								<div className="pointer-events-none absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-[color:var(--color-background)] to-transparent" />
+							)}
+						</aside>
+					</>
 				)}
 			</div>
 
