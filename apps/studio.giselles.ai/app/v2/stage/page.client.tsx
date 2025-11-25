@@ -16,6 +16,7 @@ import {
 	use,
 	useCallback,
 	useEffect,
+	useMemo,
 	useRef,
 	useState,
 	useTransition,
@@ -61,15 +62,27 @@ import type { StageApp } from "./types";
 function SimpleAppEntryForm({
 	app,
 	onSubmit,
+	isRunning = false,
+	onStop,
 }: {
 	app: StageApp;
 	onSubmit: (event: { inputs: GenerationContextInput[] }) => void;
+	isRunning?: boolean;
+	onStop?: () => void;
 }) {
 	const [validationErrors, setValidationErrors] = useState<
 		Record<string, string>
 	>({});
 	const [isFormValid, setIsFormValid] = useState(false);
 	const formRef = useRef<HTMLFormElement | null>(null);
+
+	// Initialize validity for apps without required parameters
+	useEffect(() => {
+		const hasRequired = app.parameters.some((parameter) => parameter.required);
+		if (!hasRequired) {
+			setIsFormValid(true);
+		}
+	}, [app.parameters]);
 
 	const handleChange = useCallback(() => {
 		const formElement = formRef.current;
@@ -185,15 +198,27 @@ function SimpleAppEntryForm({
 				</h3>
 				{app.parameters.map((parameter) => (
 					<div key={parameter.id} className="flex-1 min-w-0">
-						<input
-							id={parameter.name}
-							className="w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-[1px] border-border text-[14px] bg-background"
-							type={parameter.type === "number" ? "number" : "text"}
-							name={parameter.name}
-							placeholder={`Please enter ${parameter.name}`}
-							required={parameter.required}
-							onChange={handleChange}
-						/>
+						<div className="flex items-center gap-2">
+							<input
+								id={parameter.name}
+								className={`rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-[1px] text-[14px] bg-background ${
+									isRunning
+										? "border-transparent text-foreground/60 w-auto"
+										: "border-border text-foreground w-full"
+								}`}
+								type={parameter.type === "number" ? "number" : "text"}
+								name={parameter.name}
+								placeholder={isRunning ? "" : `Please enter ${parameter.name}`}
+								required={parameter.required}
+								onChange={handleChange}
+								disabled={isRunning}
+							/>
+							{isRunning && (
+								<span className="text-xs text-link-muted whitespace-nowrap">
+									Running...
+								</span>
+							)}
+						</div>
 						{validationErrors[parameter.id] && (
 							<p className="text-xs text-red-500 mt-1">
 								{validationErrors[parameter.id]}
@@ -202,12 +227,19 @@ function SimpleAppEntryForm({
 					</div>
 				))}
 				<button
-					type="submit"
-					disabled={!isFormValid}
+					type={isRunning ? "button" : "submit"}
+					onClick={
+						isRunning
+							? () => {
+									onStop?.();
+								}
+							: undefined
+					}
+					disabled={!isFormValid && !isRunning}
 					className="flex-shrink-0 relative flex items-center justify-center px-[24px] h-[38px] rounded-full gap-[8px] border transition-all hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px] whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 bg-primary-900 border-primary-900/30 hover:bg-primary-800 text-white outline-none focus-visible:ring-2 focus-visible:ring-primary-700/60 focus-visible:ring-offset-1"
 				>
 					<span className="mr-[8px] generate-star">✦</span>
-					<span>Run</span>
+					<span>{isRunning ? "Stop" : "Run"}</span>
 					<span className="ml-[8px] flex items-center gap-[2px] text-[11px] text-white/60">
 						<kbd className="px-[4px] py-[1px] bg-white/20 rounded-[4px]">⌘</kbd>
 						<kbd className="px-[4px] py-[1px] bg-white/20 rounded-[4px]">↵</kbd>
@@ -415,7 +447,7 @@ export function Page({
 	);
 	const [navigationRailWidth, setNavigationRailWidth] = useState(0);
 	const [isRunning, startTransition] = useTransition();
-	const router = useRouter();
+	const [isTaskSidebarOpen, setIsTaskSidebarOpen] = useState(false);
 
 	useEffect(() => {
 		if (!selectedAppId) return;
@@ -431,6 +463,26 @@ export function Page({
 	const runningApp = runningAppId
 		? data.apps.find((app) => app.id === runningAppId)
 		: undefined;
+
+	const oneMonthAgo = useMemo(() => {
+		const d = new Date();
+		d.setMonth(d.getMonth() - 1);
+		return d;
+	}, []);
+
+	const recentTasks = useMemo(
+		() =>
+			data.tasks
+				.filter((task) => {
+					const createdAt = new Date(task.createdAt);
+					if (Number.isNaN(createdAt.getTime())) {
+						return true;
+					}
+					return createdAt >= oneMonthAgo;
+				})
+				.slice(0, 20),
+		[data.tasks, oneMonthAgo],
+	);
 
 	// Track current navigation rail width so the bottom panel aligns with the right content area
 	useEffect(() => {
@@ -463,25 +515,24 @@ export function Page({
 	const handleRunSubmit = useCallback(
 		(event: { inputs: GenerationContextInput[] }) => {
 			if (!runningApp) return;
+			setIsTaskSidebarOpen(true);
 			startTransition(async () => {
-				const taskId = await createAndStartTaskAction({
+				await createAndStartTaskAction({
 					generationOriginType: "stage",
 					nodeId: runningApp.entryNodeId,
 					inputs: event.inputs,
 					workspaceId: runningApp.workspaceId,
 				});
-				setRunningAppId(undefined);
-				router.push(`/stage/tasks/${taskId}`);
 			});
 		},
-		[runningApp, createAndStartTaskAction, router],
+		[runningApp, createAndStartTaskAction],
 	);
 
 	return (
 		<div className="w-full px-[24px] py-[24px]">
-			<div className="grid grid-cols-1 gap-8">
+			<div className="flex items-start gap-8 min-w-0">
 				{/* Main content: heading + apps area */}
-				<div className="space-y-8">
+				<div className="flex-1 min-w-0 space-y-8">
 					{/* Page heading */}
 					<div className="flex items-center justify-between">
 						<div>
@@ -628,10 +679,10 @@ export function Page({
 					</div>
 
 					{/* Bottom container: three columns of apps */}
-					<div className="rounded-lg bg-card/20">
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+					<div className="rounded-lg bg-card/20 w-full overflow-x-auto">
+						<div className="flex gap-6 w-max">
 							{/* Column 1: History */}
-							<div>
+							<div className="flex flex-col w-[280px] flex-shrink-0">
 								<div className="flex items-center justify-between mb-3">
 									<h2 className="text-link-muted text-[12px] block">
 										Apps from history
@@ -659,7 +710,7 @@ export function Page({
 							</div>
 
 							{/* Column 2: My apps */}
-							<div>
+							<div className="flex flex-col w-[280px] flex-shrink-0">
 								<div className="flex items-center justify-between mb-3">
 									<h2 className="text-link-muted text-[12px] block">My apps</h2>
 								</div>
@@ -685,7 +736,7 @@ export function Page({
 							</div>
 
 							{/* Column 3: Team apps */}
-							<div>
+							<div className="flex flex-col w-[280px] flex-shrink-0">
 								<div className="flex items-center justify-between mb-3">
 									<h2 className="text-link-muted text-[12px] block">
 										Team apps
@@ -715,21 +766,46 @@ export function Page({
 					</div>
 				</div>
 
-				{/* Right sidebar: Tasks history (temporarily hidden) */}
-				{false && (
-					<aside className="border border-border rounded-lg bg-card/30 p-4 flex flex-col h-full">
+				{/* Right sidebar: Tasks history (outside main container) */}
+				{isTaskSidebarOpen && (
+					<aside className="w-[280px] rounded-lg bg-card/30 flex flex-col">
 						<div className="flex items-center justify-between mb-3">
 							<h2 className="text-sm font-semibold text-foreground tracking-wide uppercase">
 								Tasks
 							</h2>
+							<button
+								type="button"
+								onClick={() => {
+									setIsTaskSidebarOpen(false);
+								}}
+								className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
+								aria-label="Close tasks sidebar"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="24"
+									height="24"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									className="h-4 w-4"
+								>
+									<title>Close tasks</title>
+									<path d="M18 6 6 18" />
+									<path d="m6 6 12 12" />
+								</svg>
+							</button>
 						</div>
-						{data.tasks.length === 0 ? (
+						{recentTasks.length === 0 ? (
 							<div className="flex flex-1 items-center justify-center px-3 py-4 text-sm text-muted-foreground text-center">
 								No task history yet
 							</div>
 						) : (
 							<div className="space-y-3 overflow-y-auto pr-1">
-								{data.tasks.map((task) => (
+								{recentTasks.map((task) => (
 									<TaskCard key={task.id} task={task} />
 								))}
 							</div>
@@ -748,7 +824,7 @@ export function Page({
 							width: `calc(100vw - ${navigationRailWidth}px)`,
 						}}
 					>
-						<div className="max-w-[1200px] mx-auto w-full">
+						<div className="w-full">
 							<div className="flex items-center gap-4">
 								<div className="flex items-center gap-3 flex-shrink-0">
 									<div
@@ -774,6 +850,10 @@ export function Page({
 									<SimpleAppEntryForm
 										app={runningApp}
 										onSubmit={handleRunSubmit}
+										isRunning={isRunning}
+										onStop={() => {
+											setRunningAppId(undefined);
+										}}
 									/>
 								</div>
 								<button

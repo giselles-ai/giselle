@@ -16,7 +16,7 @@ export default async function ({ children }: { children: React.ReactNode }) {
 			<Suspense fallback="">
 				<MobileHeader dataLoader={data} />
 				<NavigationRail dataLoader={data} />
-				<div className="flex-1">{children}</div>
+				<div className="flex-1 min-w-0 overflow-x-hidden">{children}</div>
 			</Suspense>
 		</div>
 	);
