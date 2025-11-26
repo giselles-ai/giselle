@@ -2,9 +2,11 @@
 
 import { redirect } from "next/navigation";
 import invariant from "tiny-invariant";
+import { stripeV2Flag } from "@/flags";
 import { UPGRADING_TEAM_DB_ID_KEY } from "../constants";
 import type { CurrentTeam } from "../types";
 import { createCheckoutSession } from "./create-checkout-session";
+import { createCheckoutSessionV2 } from "./create-checkout-session-v2";
 
 export async function upgradeTeam(team: CurrentTeam) {
 	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
@@ -17,10 +19,9 @@ export async function upgradeTeam(team: CurrentTeam) {
 		[UPGRADING_TEAM_DB_ID_KEY]: team.dbId.toString(),
 	};
 
-	const checkoutSession = await createCheckoutSession(
-		subscriptionMetadata,
-		successUrl,
-		cancelUrl,
-	);
+	const useStripeV2 = await stripeV2Flag();
+	const checkoutSession = useStripeV2
+		? await createCheckoutSessionV2(subscriptionMetadata, successUrl, cancelUrl)
+		: await createCheckoutSession(subscriptionMetadata, successUrl, cancelUrl);
 	redirect(checkoutSession.url);
 }
