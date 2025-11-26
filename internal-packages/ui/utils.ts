@@ -5,11 +5,20 @@ export function isIconName(data: unknown): data is IconName {
 		return false;
 	}
 
-	// `iconNames` can be an array or an object depending on bundling/runtime.
-	if (Array.isArray(iconNames)) {
-		return iconNames.includes(data as IconName);
+	// `iconNames` can be an array, set, or an object map depending on bundling/runtime.
+	const collection = iconNames as unknown;
+
+	if (Array.isArray(collection)) {
+		return collection.includes(data as IconName);
 	}
 
-	// Fallback for when iconNames is an object map
-	return data in iconNames;
+	if (collection instanceof Set) {
+		return (collection as Set<IconName>).has(data as IconName);
+	}
+
+	if (typeof collection === "object" && collection !== null) {
+		return Object.hasOwn(collection, data);
+	}
+
+	return false;
 }

@@ -1,0 +1,46 @@
+/* Mobile scroll optimization */
+@media (max-width: 767px) {
+	/* Base mobile scroll setup */
+	html,
+	body {
+		height: auto !important;
+		min-height: 100vh;
+		overflow-y: auto !important;
+		overflow-x: hidden;
+		padding-bottom: 80px !important; /* Mobile navigation clearance */
+	}
+
+	/* Override layout constraints */
+	[class*="h-screen"] {
+		height: auto !important;
+		min-height: 100vh !important;
+	}
+
+	[class*="overflow-y-hidden"],
+	[class*="overflow-hidden"] {
+		overflow-y: auto !important;
+	}
+
+	/* Container fixes */
+	.mobile-scroll-container {
+		height: auto !important;
+		min-height: auto !important;
+		max-height: none !important;
+		overflow: visible !important;
+	}
+
+	.mobile-flex-fix {
+		display: block !important;
+		height: auto !important;
+	}
+}
+
+/* Touch scrolling */
+*,
+.scrollable-area {
+	-webkit-overflow-scrolling: touch;
+}
+
+.scrollable-area {
+	overflow-y: auto;
+}

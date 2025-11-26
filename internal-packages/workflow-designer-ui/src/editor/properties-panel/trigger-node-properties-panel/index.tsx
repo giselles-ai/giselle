@@ -22,7 +22,7 @@ export function TriggerNodePropertiesPanel({ node }: { node: TriggerNode }) {
 				<PanelScrollModeContext.Provider value={setScrollMode}>
 					<div
 						className={clsx(
-							"relative pr-2 custom-scrollbar overflow-y-auto",
+							"relative custom-scrollbar overflow-y-auto",
 							scrollMode === "limited" ? "max-h-[560px]" : "h-full flex-1",
 						)}
 					>

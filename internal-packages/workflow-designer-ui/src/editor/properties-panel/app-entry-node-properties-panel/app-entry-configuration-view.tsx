@@ -192,48 +192,50 @@ export function AppEntryConfigurationView({
 					<SettingLabel className="py-[1.5px]">App Information</SettingLabel>
 					<div className="px-[4px] py-0 w-full bg-transparent text-[14px]">
 						<div className="space-y-[12px]">
-							<div className="flex flex-col gap-[4px]">
-								<SettingDetail>App Name</SettingDetail>
-								<input
-									id="app-name"
-									type="text"
-									placeholder="Enter app name"
-									value={appName}
-									onChange={(e) => {
-										setAppName(e.target.value);
-										if (validationErrors.name) {
-											setValidationErrors((prev) => ({
-												...prev,
-												name: undefined,
-											}));
-										}
-									}}
-									className={clsx(
-										"w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]",
-										validationErrors.name
-											? "border border-red-500"
-											: "border-none",
+							<div className="flex flex-col gap-[12px] md:flex-row">
+								<div className="flex flex-col gap-[4px] flex-1">
+									<SettingDetail>App Name</SettingDetail>
+									<input
+										id="app-name"
+										type="text"
+										placeholder="Enter app name"
+										value={appName}
+										onChange={(e) => {
+											setAppName(e.target.value);
+											if (validationErrors.name) {
+												setValidationErrors((prev) => ({
+													...prev,
+													name: undefined,
+												}));
+											}
+										}}
+										className={clsx(
+											"w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]",
+											validationErrors.name
+												? "border border-red-500"
+												: "border-none",
+										)}
+										data-1p-ignore
+									/>
+									{validationErrors.name && (
+										<span className="text-[12px] text-red-500">
+											{validationErrors.name}
+										</span>
 									)}
-									data-1p-ignore
-								/>
-								{validationErrors.name && (
-									<span className="text-[12px] text-red-500">
-										{validationErrors.name}
-									</span>
-								)}
-							</div>
+								</div>
 
-							<div className="flex flex-col gap-[4px]">
-								<SettingDetail>Description</SettingDetail>
-								<textarea
-									id="app-description"
-									placeholder="Enter app description"
-									value={appDescription}
-									onChange={(e) => setAppDescription(e.target.value)}
-									className="w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px] resize-none"
-									rows={3}
-									data-1p-ignore
-								/>
+								<div className="flex flex-col gap-[4px] flex-1">
+									<SettingDetail>Description</SettingDetail>
+									<textarea
+										id="app-description"
+										placeholder="Enter app description"
+										value={appDescription}
+										onChange={(e) => setAppDescription(e.target.value)}
+										className="w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px] resize-none"
+										rows={3}
+										data-1p-ignore
+									/>
+								</div>
 							</div>
 
 							<div className="flex flex-col gap-[4px]">
