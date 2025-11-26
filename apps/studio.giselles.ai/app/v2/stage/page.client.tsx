@@ -558,10 +558,10 @@ export function Page({
 	}, [isRunning]);
 
 	return (
-		<div className="w-full">
-			<div className="flex items-start gap-4 min-w-0">
+		<div className="w-full h-screen flex flex-col">
+			<div className="flex items-stretch gap-4 min-w-0 flex-1">
 				{/* Main content: heading + apps area */}
-				<div className="flex-1 min-w-0 space-y-8 px-[24px]">
+				<div className="flex-1 min-w-0 space-y-8 px-[24px] pt-[24px]">
 					{/* Page heading */}
 					<div className="flex items-center justify-between">
 						<div>
@@ -851,7 +851,7 @@ export function Page({
 				{isTaskSidebarOpen && (
 					<>
 						<div className="self-stretch w-px bg-border/60" />
-						<aside className="relative w-[280px] max-h-[calc(100vh-120px)] rounded-lg bg-card/30 flex flex-col py-[24px] mr-4">
+						<aside className="relative w-[280px] h-[calc(100vh-120px)] rounded-lg bg-card/30 flex flex-col py-[24px] mr-4">
 							<div className="flex items-center justify-between mb-3">
 								<h2 className="text-sm font-semibold text-foreground tracking-wide uppercase">
 									Tasks
@@ -889,7 +889,7 @@ export function Page({
 							) : (
 								<div
 									ref={taskListScrollRef}
-									className="space-y-3 overflow-y-auto pr-1 scrollbar-hide"
+									className="flex-1 space-y-3 overflow-y-auto pr-1 scrollbar-hide"
 									style={{
 										scrollbarWidth: "none",
 										msOverflowStyle: "none",
