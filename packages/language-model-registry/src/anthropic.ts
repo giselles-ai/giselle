@@ -30,14 +30,14 @@ export const anthropic = {
 					step: 0.1,
 				},
 			},
-			reasoningText: {
+			thinking: {
 				description: "Whether to include reasoning text in the response.",
 				schema: z.boolean(),
 			},
 		},
 		defaultConfiguration: {
 			temperature: 1.0,
-			reasoningText: false,
+			thinking: false,
 		},
 		url: "https://www.anthropic.com/claude/opus",
 	}),
@@ -65,14 +65,14 @@ export const anthropic = {
 					step: 0.1,
 				},
 			},
-			reasoningText: {
+			thinking: {
 				description: "Whether to include reasoning text in the response.",
 				schema: z.boolean(),
 			},
 		},
 		defaultConfiguration: {
 			temperature: 1.0,
-			reasoningText: false,
+			thinking: false,
 		},
 		url: "https://www.anthropic.com/claude/sonnet",
 	}),
@@ -100,14 +100,14 @@ export const anthropic = {
 					step: 0.1,
 				},
 			},
-			reasoningText: {
+			thinking: {
 				description: "Whether to include reasoning text in the response.",
 				schema: z.boolean(),
 			},
 		},
 		defaultConfiguration: {
 			temperature: 1.0,
-			reasoningText: false,
+			thinking: false,
 		},
 		url: "https://www.anthropic.com/claude/haiku",
 	}),
