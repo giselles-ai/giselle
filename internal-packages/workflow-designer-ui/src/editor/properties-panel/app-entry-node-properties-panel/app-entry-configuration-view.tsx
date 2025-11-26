@@ -83,6 +83,94 @@ function parseZodErrors(treeifiedError: TreeifiedError): ValidationErrors {
 	return errors;
 }
 
+interface ParameterRowProps {
+	param: DraftAppParameter;
+	index: number;
+	nameError?: string;
+	showOptional: boolean;
+	onNameChange: (value: string) => void;
+	onTypeChange: (value: DraftAppParameter["type"]) => void;
+	onToggleOptional: () => void;
+	onRemove?: () => void;
+}
+
+function ParameterRow({
+	param,
+	index,
+	nameError,
+	showOptional,
+	onNameChange,
+	onTypeChange,
+	onToggleOptional,
+	onRemove,
+}: ParameterRowProps) {
+	return (
+		<div className="rounded-[8px] bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] px-[8px] py-[8px]">
+			<div className="flex items-start justify-between gap-[8px] mb-[12px]">
+				<span className="text-[14px] font-medium">Parameter {index + 1}</span>
+				{onRemove && (
+					<button
+						type="button"
+						onClick={onRemove}
+						className="text-text hover:text-text transition-colors cursor-pointer"
+					>
+						<TrashIcon className="size-[16px]" />
+					</button>
+				)}
+			</div>
+			<div className="grid grid-cols-[80px_1fr] items-start gap-x-[12px] gap-y-[12px]">
+				<SettingDetail className="pl-[4px]">
+					Name <span className="text-red-500">*</span>
+				</SettingDetail>
+				<div className="flex flex-col gap-[4px]">
+					<input
+						type="text"
+						placeholder="Parameter name"
+						value={param.name}
+						onChange={(e) => {
+							onNameChange(e.target.value);
+						}}
+						className={clsx(
+							"w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]",
+							nameError ? "border border-red-500" : "border-none",
+						)}
+						data-1p-ignore
+					/>
+					{nameError && (
+						<span className="text-[12px] text-red-500">{nameError}</span>
+					)}
+				</div>
+
+				<SettingDetail className="pl-[4px]">
+					Type <span className="text-red-500">*</span>
+				</SettingDetail>
+				<Select
+					options={TYPE_OPTIONS}
+					placeholder="Select type..."
+					value={param.type}
+					onValueChange={(value) =>
+						onTypeChange(value as "text" | "multiline-text" | "number")
+					}
+				/>
+
+				{showOptional && (
+					<>
+						<SettingDetail className="pl-[4px]">Optional</SettingDetail>
+						<div className="flex items-center gap-[8px] h-[37px]">
+							<input
+								type="checkbox"
+								checked={!param.required}
+								onChange={onToggleOptional}
+							/>
+							<span className="text-[12px] text-black-500">Optional field</span>
+						</div>
+					</>
+				)}
+			</div>
+		</div>
+	);
+}
+
 export function AppEntryConfigurationView({
 	node,
 	draftApp,
@@ -252,130 +340,59 @@ export function AppEntryConfigurationView({
 						{draftAppParameters.length > 0 && (
 							<div className="flex flex-col gap-[12px] mb-[16px]">
 								{draftAppParameters.map((param, index) => (
-									<div
+									<ParameterRow
 										key={param.id}
-										className="rounded-[8px] bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] px-[8px] py-[8px]"
-									>
-										<div className="flex items-start justify-between gap-[8px] mb-[12px]">
-											<span className="text-[14px] font-medium">
-												Parameter {index + 1}
-											</span>
-											{index > 0 && (
-												<button
-													type="button"
-													onClick={() => handleRemoveParameter(param.id)}
-													className="text-text hover:text-text transition-colors cursor-pointer"
-												>
-													<TrashIcon className="size-[16px]" />
-												</button>
-											)}
-										</div>
-										<div className="grid grid-cols-[80px_1fr] items-start gap-x-[12px] gap-y-[12px]">
-											<SettingDetail className="pl-[4px]">
-												Name <span className="text-red-500">*</span>
-											</SettingDetail>
-											<div className="flex flex-col gap-[4px]">
-												<input
-													type="text"
-													placeholder="Parameter name"
-													value={param.name}
-													onChange={(e) => {
-														setDraftAppParameters((prev) =>
-															prev.map((p) =>
-																p.id === param.id
-																	? { ...p, name: e.target.value }
-																	: p,
-															),
-														);
-														if (validationErrors.parameters?.[index]?.name) {
-															setValidationErrors((prev) => {
-																const newErrors = { ...prev };
-																if (newErrors.parameters?.[index]) {
-																	const newParams = {
-																		...newErrors.parameters,
-																	};
-																	delete newParams[index].name;
-																	if (
-																		Object.keys(newParams[index]).length === 0
-																	) {
-																		delete newParams[index];
-																	}
-																	newErrors.parameters =
-																		Object.keys(newParams).length > 0
-																			? newParams
-																			: undefined;
-																}
-																return newErrors;
-															});
-														}
-													}}
-													className={clsx(
-														"w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px]",
-														validationErrors.parameters?.[index]?.name
-															? "border border-red-500"
-															: "border-none",
-													)}
-													data-1p-ignore
-												/>
-												{validationErrors.parameters?.[index]?.name && (
-													<span className="text-[12px] text-red-500">
-														{validationErrors.parameters[index].name}
-													</span>
-												)}
-											</div>
-
-											<SettingDetail className="pl-[4px]">
-												Type <span className="text-red-500">*</span>
-											</SettingDetail>
-											<Select
-												options={TYPE_OPTIONS}
-												placeholder="Select type..."
-												value={param.type}
-												onValueChange={(value) =>
-													setDraftAppParameters((prev) =>
-														prev.map((p) =>
-															p.id === param.id
-																? {
-																		...p,
-																		type: value as
-																			| "text"
-																			| "multiline-text"
-																			| "number",
-																	}
-																: p,
-														),
-													)
-												}
-											/>
-
-											{index > 0 && (
-												<>
-													<SettingDetail>Optional</SettingDetail>
-													<div className="flex items-center gap-[8px] h-[37px]">
-														<input
-															type="checkbox"
-															checked={!param.required}
-															onChange={(e) =>
-																setDraftAppParameters((prev) =>
-																	prev.map((p) =>
-																		p.id === param.id
-																			? {
-																					...p,
-																					required: !e.target.checked,
-																				}
-																			: p,
-																	),
-																)
-															}
-														/>
-														<span className="text-[12px] text-black-500">
-															Optional field
-														</span>
-													</div>
-												</>
-											)}
-										</div>
-									</div>
+										param={param}
+										index={index}
+										nameError={validationErrors.parameters?.[index]?.name}
+										showOptional={index > 0}
+										onNameChange={(value) => {
+											setDraftAppParameters((prev) =>
+												prev.map((p) =>
+													p.id === param.id ? { ...p, name: value } : p,
+												),
+											);
+											if (validationErrors.parameters?.[index]?.name) {
+												setValidationErrors((prev) => {
+													const next = { ...prev };
+													if (!next.parameters?.[index]) {
+														return next;
+													}
+													const nextParams = { ...next.parameters };
+													delete nextParams[index].name;
+													if (Object.keys(nextParams[index]).length === 0) {
+														delete nextParams[index];
+													}
+													next.parameters =
+														Object.keys(nextParams).length > 0
+															? nextParams
+															: undefined;
+													return next;
+												});
+											}
+										}}
+										onTypeChange={(value) => {
+											setDraftAppParameters((prev) =>
+												prev.map((p) =>
+													p.id === param.id ? { ...p, type: value } : p,
+												),
+											);
+										}}
+										onToggleOptional={() => {
+											setDraftAppParameters((prev) =>
+												prev.map((p) =>
+													p.id === param.id
+														? { ...p, required: !p.required }
+														: p,
+												),
+											);
+										}}
+										onRemove={
+											index > 0
+												? () => handleRemoveParameter(param.id)
+												: undefined
+										}
+									/>
 								))}
 							</div>
 						)}
