@@ -571,7 +571,7 @@ function generateContentV2({
 		onError: _onError,
 		execute: async ({
 			finishGeneration: _finishGeneration,
-			runningGeneration: _runningGeneration,
+			runningGeneration,
 			generationContext,
 			setGeneration: _setGeneration,
 			fileResolver,
@@ -584,7 +584,20 @@ function generateContentV2({
 				throw new Error("Invalid generation type");
 			}
 
-			const languageModel = getEntry(operationNode.content.languageModel.id);
+			const aiGatewayHeaders = await context.callbacks?.buildAiGatewayHeaders?.(
+				{
+					generation: runningGeneration,
+					metadata,
+				},
+			);
+			const gateway = createGateway(
+				aiGatewayHeaders === undefined
+					? undefined
+					: {
+							headers: aiGatewayHeaders,
+						},
+			);
+
 			const messages = await buildMessageObject({
 				node: operationNode,
 				contextNodes: generationContext.sourceNodes,
@@ -608,7 +621,7 @@ function generateContentV2({
 				);
 
 			streamText({
-				model: languageModel.id,
+				model: gateway(operationNode.content.languageModel.id),
 				messages,
 				tools: toolSet,
 				...callOptions,
