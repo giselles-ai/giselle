@@ -12,7 +12,7 @@ import { defaultName } from "@giselles-ai/node-registry";
 import type { ContentGenerationNode } from "@giselles-ai/protocol";
 import { useWorkflowDesigner } from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
-import { PlusIcon, Settings2Icon, XIcon } from "lucide-react";
+import { MoveUpIcon, PlusIcon, Settings2Icon, XIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
 	NodePanelHeader,
@@ -188,6 +188,32 @@ export function ContentGenerationNodePropertiesPanel({
 
 	const { shouldShowOutputLabel, connections } = useNodeContext(node);
 
+	const isPromptEmpty = useMemo(() => {
+		if (typeof node.content.prompt !== "string") {
+			return true;
+		}
+		if (node.content.prompt.length === 0) {
+			return true;
+		}
+		try {
+			const json = JSON.parse(node.content.prompt);
+			const paragraph = json.content?.[0];
+			if (paragraph === undefined) {
+				return true;
+			}
+			if (paragraph?.content === undefined) {
+				return true;
+			}
+			if (paragraph.content.length === 0) {
+				return true;
+			}
+		} catch {
+			return true;
+		}
+
+		return false;
+	}, [node.content.prompt]);
+
 	return (
 		<PropertiesPanelRoot>
 			<NodePanelHeader
@@ -353,7 +379,7 @@ export function ContentGenerationNodePropertiesPanel({
 				</div>
 
 				<div className="flex gap-[8px] flex-1">
-					<div className="flex-1 flex flex-col">
+					<div className="flex-1 flex flex-col relative">
 						<SettingDetail size="md" className="text-text-muted mb-[6px]">
 							Prompt
 						</SettingDetail>
@@ -366,6 +392,15 @@ export function ContentGenerationNodePropertiesPanel({
 							connections={connections}
 							containerClassName="flex-1"
 						/>
+						<div className="absolute bottom-[8px] right-[8px]">
+							<button
+								className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 disabled:opacity-35"
+								type="button"
+								disabled={isPromptEmpty}
+							>
+								<MoveUpIcon className="size-[16px]" />
+							</button>
+						</div>
 					</div>
 					<div className="flex flex-col flex-1">
 						<SettingDetail size="md" className="text-text-muted mb-[6px]">
