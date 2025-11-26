@@ -395,6 +395,191 @@ function TaskCard({ task }: { task: Task }) {
 	);
 }
 
+interface StageTopCardProps {
+	data: LoaderData;
+	selectedApp?: StageApp;
+	runningApp?: StageApp;
+	runStatus: "idle" | "running" | "completed";
+}
+
+function StageTopCard({
+	data,
+	selectedApp,
+	runningApp,
+	runStatus,
+}: StageTopCardProps) {
+	return (
+		<div className="relative flex w-full flex-col rounded-lg bg-card/40 overflow-hidden">
+			{runningApp && runStatus === "running" && (
+				<div className="pointer-events-none absolute inset-0 z-0">
+					<TopLightOverlay />
+				</div>
+			)}
+			{selectedApp ? (
+				<div className="flex flex-col gap-6 lg:flex-row">
+					{/* Left: thumbnail */}
+					<div className="flex w-full flex-col items-center gap-4 lg:w-[240px] lg:flex-none lg:items-start">
+						<div className="flex h-[240px] w-[240px] items-center justify-center rounded-[8px] bg-card/60 border border-border">
+							<DynamicIcon
+								name={selectedApp.iconName}
+								className="h-12 w-12 text-foreground"
+							/>
+						</div>
+					</div>
+
+					{/* Right: app details */}
+					<div className="flex w-full flex-col text-sm text-muted-foreground lg:flex-1">
+						<h2 className="text-xl font-semibold text-foreground px-2 mb-1">
+							{selectedApp.name}
+						</h2>
+						{selectedApp.description ? (
+							<p className="mt-1 text-sm text-muted-foreground px-2 line-clamp-2">
+								{selectedApp.description}
+							</p>
+						) : null}
+						<div className="mt-5 space-y-4">
+							<div className="flex flex-col gap-4 lg:flex-row">
+								<div className="min-w-0 flex-1">
+									<p className="text-link-muted text-[12px] block px-2 pb-1">
+										Workspace
+									</p>
+									<p className="text-sm text-foreground px-4">
+										{selectedApp.workspaceName}
+									</p>
+								</div>
+								<div className="min-w-0 flex-1">
+									<p className="text-link-muted text-[12px] block px-2 pb-1">
+										Team
+									</p>
+									<p className="text-sm text-foreground px-4">
+										{selectedApp.teamName}
+									</p>
+								</div>
+							</div>
+							<div className="flex flex-col gap-4 lg:flex-row">
+								<div className="min-w-0 flex-1">
+									<p className="text-link-muted text-[12px] block px-2 pb-1">
+										Vector store repositories
+									</p>
+									{selectedApp.vectorStoreRepositories.length > 0 ? (
+										<div className="flex flex-col gap-1 px-4">
+											{selectedApp.vectorStoreRepositories.map((repo) => (
+												<div
+													key={repo}
+													className="flex items-center gap-2 text-sm text-foreground/70"
+												>
+													<GitHubIcon className="w-4 h-4 text-text/60" />
+													<span className="truncate">{repo}</span>
+												</div>
+											))}
+										</div>
+									) : (
+										<p className="text-sm text-foreground/70 px-4">
+											Not configured yet
+										</p>
+									)}
+								</div>
+								<div className="min-w-0 flex-1">
+									<p className="text-link-muted text-[12px] block px-2 pb-1">
+										Vector store files
+									</p>
+									{selectedApp.vectorStoreFiles.length > 0 ? (
+										<div className="flex flex-col gap-1 px-4">
+											{selectedApp.vectorStoreFiles.map((fileName) => (
+												<div
+													key={fileName}
+													className="flex items-center gap-2 text-sm text-foreground/70"
+												>
+													<File className="w-4 h-4 text-text/60" />
+													<span className="truncate">{fileName}</span>
+												</div>
+											))}
+										</div>
+									) : (
+										<p className="text-sm text-foreground/70 px-4">
+											Not configured yet
+										</p>
+									)}
+								</div>
+							</div>
+							<div>
+								<p className="text-link-muted text-[12px] block px-2 pb-1">
+									LLM
+								</p>
+								<div className="flex items-center gap-2 px-4 py-1">
+									{selectedApp.llmProviders.length > 0 ? (
+										selectedApp.llmProviders.map((provider) => (
+											<div
+												key={provider}
+												className="w-7 h-7 rounded bg-[color:var(--color-inverse)]/10 flex items-center justify-center"
+											>
+												<LLMProviderIcon
+													provider={provider}
+													className="w-4 h-4"
+												/>
+											</div>
+										))
+									) : (
+										<p className="text-sm text-foreground/70">
+											Will be shown here in a future update
+										</p>
+									)}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			) : (
+				<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] h-[240px] w-full rounded-[8px] flex justify-center items-center text-text-muted">
+					<div className="flex flex-col items-center gap-[12px] text-text-muted relative z-10">
+						{runningApp && runStatus === "completed" ? (
+							<>
+								<p className="font-[800] text-green-500">Completed</p>
+								<div className="mt-2 flex items-center gap-3">
+									<div className="relative flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border border-[hsl(192,73%,84%)] bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] shadow-[0_0_22px_rgba(0,135,246,0.95)]">
+										<DynamicIcon
+											name={runningApp.iconName}
+											className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
+										/>
+									</div>
+								</div>
+							</>
+						) : runningApp && runStatus === "running" ? (
+							<>
+								<p className="font-[800] text-text/60">Creating task...</p>
+								<p className="text-text-muted text-[12px] text-center leading-5">
+									You can track progress in the Tasks panel on the right.
+								</p>
+								<div className="mt-2 flex items-center gap-3">
+									<div className="stage-running-icon relative flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border border-[hsl(192,73%,84%)] bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] shadow-[0_0_22px_rgba(0,135,246,0.95)]">
+										<DynamicIcon
+											name={runningApp.iconName}
+											className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
+										/>
+									</div>
+								</div>
+							</>
+						) : (
+							<>
+								<p className="font-[800] text-text/60">
+									{data.apps.length > 0
+										? "No app selected."
+										: "No apps available yet."}
+								</p>
+								<p className="text-text-muted text-[12px] text-center leading-5">
+									{data.apps.length > 0
+										? "Please select an app from the lists below."
+										: "Generate or adjust the Prompt to see results."}
+								</p>
+							</>
+						)}
+					</div>
+				</div>
+			)}
+		</div>
+	);
+}
+
 export function Page({
 	dataLoader,
 	createAndStartTaskAction,
@@ -441,6 +626,9 @@ export function Page({
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [isRunning, startTransition] = useTransition();
 	const [isTaskSidebarOpen, setIsTaskSidebarOpen] = useState(false);
+	const [runStatus, setRunStatus] = useState<"idle" | "running" | "completed">(
+		"idle",
+	);
 	const [isAppListScrollable, setIsAppListScrollable] = useState(false);
 	const [isAppListAtStart, setIsAppListAtStart] = useState(true);
 	const [isAppListAtEnd, setIsAppListAtEnd] = useState(false);
@@ -539,23 +727,41 @@ export function Page({
 			setIsDialogOpen(false);
 			setIsTaskSidebarOpen(true);
 			setSelectedAppId(undefined);
+			setRunStatus("running");
 			startTransition(async () => {
-				await createAndStartTaskAction({
-					generationOriginType: "stage",
-					nodeId: runningApp.entryNodeId,
-					inputs: event.inputs,
-					workspaceId: runningApp.workspaceId,
-				});
+				try {
+					await createAndStartTaskAction({
+						generationOriginType: "stage",
+						nodeId: runningApp.entryNodeId,
+						inputs: event.inputs,
+						workspaceId: runningApp.workspaceId,
+					});
+					setRunStatus("completed");
+				} catch (error) {
+					// eslint-disable-next-line no-console
+					console.error("Failed to create and start task from stage:", error);
+					setRunStatus("idle");
+					setRunningAppId(undefined);
+				}
 			});
 		},
 		[runningApp, createAndStartTaskAction],
 	);
 
 	useEffect(() => {
-		if (!isRunning) {
-			setRunningAppId(undefined);
+		if (runStatus !== "completed") {
+			return;
 		}
-	}, [isRunning]);
+
+		const timer = setTimeout(() => {
+			setRunStatus("idle");
+			setRunningAppId(undefined);
+		}, 2000);
+
+		return () => {
+			clearTimeout(timer);
+		};
+	}, [runStatus]);
 
 	return (
 		<div className="w-full h-screen flex flex-col">
@@ -573,165 +779,12 @@ export function Page({
 						</div>
 					</div>
 
-					{/* Top container: selected app detail */}
-					<div className="relative flex w-full flex-col rounded-lg bg-card/40 overflow-hidden">
-						{runningApp && isRunning && (
-							<div className="pointer-events-none absolute inset-0 z-0">
-								<TopLightOverlay />
-							</div>
-						)}
-						{selectedApp ? (
-							<div className="flex flex-col gap-6 lg:flex-row">
-								{/* Left: thumbnail */}
-								<div className="flex w-full flex-col items-center gap-4 lg:w-[240px] lg:flex-none lg:items-start">
-									<div className="flex h-[240px] w-[240px] items-center justify-center rounded-[8px] bg-card/60 border border-border">
-										<DynamicIcon
-											name={selectedApp.iconName}
-											className="h-12 w-12 text-foreground"
-										/>
-									</div>
-								</div>
-
-								{/* Right: app details */}
-								<div className="flex w-full flex-col text-sm text-muted-foreground lg:flex-1">
-									<h2 className="text-xl font-semibold text-foreground px-2 mb-1">
-										{selectedApp.name}
-									</h2>
-									{selectedApp.description ? (
-										<p className="mt-1 text-sm text-muted-foreground px-2 line-clamp-2">
-											{selectedApp.description}
-										</p>
-									) : null}
-									<div className="mt-5 space-y-4">
-										<div className="flex flex-col gap-4 lg:flex-row">
-											<div className="min-w-0 flex-1">
-												<p className="text-link-muted text-[12px] block px-2 pb-1">
-													Workspace
-												</p>
-												<p className="text-sm text-foreground px-4">
-													{selectedApp.workspaceName}
-												</p>
-											</div>
-											<div className="min-w-0 flex-1">
-												<p className="text-link-muted text-[12px] block px-2 pb-1">
-													Team
-												</p>
-												<p className="text-sm text-foreground px-4">
-													{selectedApp.teamName}
-												</p>
-											</div>
-										</div>
-										<div className="flex flex-col gap-4 lg:flex-row">
-											<div className="min-w-0 flex-1">
-												<p className="text-link-muted text-[12px] block px-2 pb-1">
-													Vector store repositories
-												</p>
-												{selectedApp.vectorStoreRepositories.length > 0 ? (
-													<div className="flex flex-col gap-1 px-4">
-														{selectedApp.vectorStoreRepositories.map((repo) => (
-															<div
-																key={repo}
-																className="flex items-center gap-2 text-sm text-foreground/70"
-															>
-																<GitHubIcon className="w-4 h-4 text-text/60" />
-																<span className="truncate">{repo}</span>
-															</div>
-														))}
-													</div>
-												) : (
-													<p className="text-sm text-foreground/70 px-4">
-														Not configured yet
-													</p>
-												)}
-											</div>
-											<div className="min-w-0 flex-1">
-												<p className="text-link-muted text-[12px] block px-2 pb-1">
-													Vector store files
-												</p>
-												{selectedApp.vectorStoreFiles.length > 0 ? (
-													<div className="flex flex-col gap-1 px-4">
-														{selectedApp.vectorStoreFiles.map((fileName) => (
-															<div
-																key={fileName}
-																className="flex items-center gap-2 text-sm text-foreground/70"
-															>
-																<File className="w-4 h-4 text-text/60" />
-																<span className="truncate">{fileName}</span>
-															</div>
-														))}
-													</div>
-												) : (
-													<p className="text-sm text-foreground/70 px-4">
-														Not configured yet
-													</p>
-												)}
-											</div>
-										</div>
-										<div>
-											<p className="text-link-muted text-[12px] block px-2 pb-1">
-												LLM
-											</p>
-											<div className="flex items-center gap-2 px-4 py-1">
-												{selectedApp.llmProviders.length > 0 ? (
-													selectedApp.llmProviders.map((provider) => (
-														<div
-															key={provider}
-															className="w-7 h-7 rounded bg-[color:var(--color-inverse)]/10 flex items-center justify-center"
-														>
-															<LLMProviderIcon
-																provider={provider}
-																className="w-4 h-4"
-															/>
-														</div>
-													))
-												) : (
-													<p className="text-sm text-foreground/70">
-														Will be shown here in a future update
-													</p>
-												)}
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						) : (
-							<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] h-[240px] w-full rounded-[8px] flex justify-center items-center text-text-muted">
-								<div className="flex flex-col items-center gap-[12px] text-text-muted relative z-10">
-									{runningApp && isRunning ? (
-										<>
-											<p className="font-[800] text-text/60">
-												Creating task...
-											</p>
-											<p className="text-text-muted text-[12px] text-center leading-5">
-												You can track progress in the Tasks panel on the right.
-											</p>
-											<div className="mt-2 flex items-center gap-3">
-												<div className="stage-running-icon relative flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border border-[hsl(192,73%,84%)] bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] shadow-[0_0_22px_rgba(0,135,246,0.95)]">
-													<DynamicIcon
-														name={runningApp.iconName}
-														className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
-													/>
-												</div>
-											</div>
-										</>
-									) : (
-										<>
-											<p className="font-[800] text-text/60">
-												{data.apps.length > 0
-													? "No app selected."
-													: "No apps available yet."}
-											</p>
-											<p className="text-text-muted text-[12px] text-center leading-5">
-												{data.apps.length > 0
-													? "Please select an app from the lists below."
-													: "Generate or adjust the Prompt to see results."}
-											</p>
-										</>
-									)}
-								</div>
-							</div>
-						)}
-					</div>
+					<StageTopCard
+						data={data}
+						selectedApp={selectedApp}
+						runningApp={runningApp}
+						runStatus={runStatus}
+					/>
 
 					{/* Bottom container: three columns of apps */}
 					<div className="relative rounded-lg bg-card/20 w-full">
