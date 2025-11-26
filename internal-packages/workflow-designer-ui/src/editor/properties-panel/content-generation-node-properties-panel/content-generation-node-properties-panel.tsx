@@ -9,11 +9,18 @@ import {
 	languageModelTools,
 } from "@giselles-ai/language-model-registry";
 import { defaultName } from "@giselles-ai/node-registry";
-import type { ContentGenerationNode } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
+import { type ContentGenerationNode, Node } from "@giselles-ai/protocol";
+import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
-import { MoveUpIcon, PlusIcon, Settings2Icon, XIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import {
+	MoveUpIcon,
+	PlusIcon,
+	Settings2Icon,
+	SquareIcon,
+	XIcon,
+} from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { GenerationView } from "../../../ui/generation-view";
 import { Tooltip } from "../../../ui/tooltip";
 import {
 	NodePanelHeader,
@@ -29,7 +36,7 @@ export function ContentGenerationNodePropertiesPanel({
 }: {
 	node: ContentGenerationNode;
 }) {
-	const { updateNodeData, updateNodeDataContent, deleteNode } =
+	const { updateNodeData, updateNodeDataContent, deleteNode, data } =
 		useWorkflowDesigner();
 	const languageModel = useMemo(
 		() => getEntry(node.content.languageModel.id),
@@ -214,6 +221,38 @@ export function ContentGenerationNodePropertiesPanel({
 		return false;
 	}, [node.content.prompt]);
 
+	const {
+		createAndStartGenerationRunner,
+		isGenerating,
+		stopGenerationRunner,
+		currentGeneration,
+	} = useNodeGenerations({
+		nodeId: node.id,
+		origin: { type: "studio", workspaceId: data.id },
+	});
+	const handleGenerationButtonClick = useCallback(() => {
+		createAndStartGenerationRunner({
+			origin: {
+				type: "studio",
+				workspaceId: data.id,
+			},
+			operationNode: node,
+			sourceNodes: connections
+				.map((connection) => connection.outputNode)
+				.filter((nodeLike) => {
+					const result = Node.safeParse(nodeLike);
+					return result.success;
+				}) as Node[],
+			connections: connections.map((connection) => ({
+				id: connection.id,
+				inputId: connection.input.id,
+				inputNode: connection.inputNode,
+				outputId: connection.output.id,
+				outputNode: connection.outputNode,
+			})),
+		});
+	}, [createAndStartGenerationRunner, data.id, node, connections]);
+
 	return (
 		<PropertiesPanelRoot>
 			<NodePanelHeader
@@ -392,7 +431,17 @@ export function ContentGenerationNodePropertiesPanel({
 							connections={connections}
 							containerClassName="flex-1"
 						/>
-						{isPromptEmpty ? (
+						{isGenerating ? (
+							<div className="absolute bottom-[8px] right-[8px]">
+								<button
+									className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 cursor-pointer"
+									type="button"
+									onClick={stopGenerationRunner}
+								>
+									<SquareIcon className="size-[16px]" />
+								</button>
+							</div>
+						) : isPromptEmpty ? (
 							<Tooltip
 								text="Enter a prompt to continue"
 								variant="dark"
@@ -411,6 +460,7 @@ export function ContentGenerationNodePropertiesPanel({
 								<button
 									className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 cursor-pointer"
 									type="button"
+									onClick={handleGenerationButtonClick}
 								>
 									<MoveUpIcon className="size-[16px]" />
 								</button>
@@ -422,9 +472,13 @@ export function ContentGenerationNodePropertiesPanel({
 							Output
 						</SettingDetail>
 						<div className="rounded-md bg-surface/70 w-full flex-1 p-[8px]">
-							<p className="text-text-muted text-[14px]">
-								Your generation will appear here
-							</p>
+							{currentGeneration ? (
+								<GenerationView generation={currentGeneration} />
+							) : (
+								<p className="text-text-muted text-[14px]">
+									Your generation will appear here
+								</p>
+							)}
 						</div>
 					</div>
 				</div>
