@@ -4,6 +4,7 @@ import type { Generation } from "@giselles-ai/protocol";
 import { CheckCircle, Copy, Download } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
+import { getAssistantTextFromGeneration } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-text";
 
 interface StepLayoutProps {
 	header: ReactNode;
@@ -16,14 +17,14 @@ export function StepLayout({ header, children, generation }: StepLayoutProps) {
 
 	const handleCopyToClipboard = async () => {
 		try {
-			// Get the text content from the main content area
-			const mainContent = document.querySelector('main [class*="max-w-"]');
-			if (mainContent) {
-				const textContent = mainContent.textContent || "";
-				await navigator.clipboard.writeText(textContent);
-				setCopyFeedback(true);
-				setTimeout(() => setCopyFeedback(false), 2000);
+			const textContent = getAssistantTextFromGeneration(generation);
+			if (!textContent) {
+				return;
 			}
+
+			await navigator.clipboard.writeText(textContent);
+			setCopyFeedback(true);
+			setTimeout(() => setCopyFeedback(false), 2000);
 		} catch (error) {
 			console.error("Failed to copy to clipboard:", error);
 		}
@@ -31,24 +32,7 @@ export function StepLayout({ header, children, generation }: StepLayoutProps) {
 
 	const handleDownload = () => {
 		try {
-			// Extract text content for download
-			let textContent = "";
-
-			if ("messages" in generation) {
-				const assistantMessages =
-					generation.messages?.filter((m) => m.role === "assistant") ?? [];
-
-				textContent = assistantMessages
-					.map((message) =>
-						message.parts
-							?.filter((part) => part.type === "text")
-							.map((part) => part.text)
-							.join("\n"),
-					)
-					.filter(Boolean)
-					.join("\n\n");
-			}
-
+			const textContent = getAssistantTextFromGeneration(generation);
 			if (textContent) {
 				const blob = new Blob([textContent], { type: "text/plain" });
 				const url = URL.createObjectURL(blob);
@@ -67,13 +51,13 @@ export function StepLayout({ header, children, generation }: StepLayoutProps) {
 
 	return (
 		<div className="flex flex-col w-full h-full">
-			<header className="bg-gray-900/80 border-b md:border-b-0 border-border">
-				<div className="p-4 md:p-[16px] flex items-center justify-between">
+			<header className="border-b md:border-b-0 border-border">
+				<div className="px-4 py-[16px] flex items-center justify-between">
 					{header}
 					<div className="flex items-center gap-1">
 						<button
 							type="button"
-							className="p-3 md:p-2 hover:bg-white/10 rounded-lg transition-colors group relative touch-manipulation"
+							className="p-3 md:p-[8px] hover:bg-white/10 rounded-lg transition-colors group relative touch-manipulation"
 							title={copyFeedback ? "Copied!" : "Copy content"}
 							onClick={handleCopyToClipboard}
 						>
@@ -85,7 +69,7 @@ export function StepLayout({ header, children, generation }: StepLayoutProps) {
 						</button>
 						<button
 							type="button"
-							className="p-3 md:p-2 hover:bg-white/10 rounded-lg transition-colors group touch-manipulation"
+							className="p-3 md:p-[8px] hover:bg-white/10 rounded-lg transition-colors group touch-manipulation"
 							title="Download content"
 							onClick={handleDownload}
 						>
@@ -94,7 +78,7 @@ export function StepLayout({ header, children, generation }: StepLayoutProps) {
 					</div>
 				</div>
 			</header>
-			<main className="p-4 md:px-[32px] md:py-[16px] overflow-y-auto flex-1">
+			<main className="p-4 md:px-[24px] md:py-[16px] overflow-y-auto flex-1">
 				<div className="max-w-none">{children}</div>
 			</main>
 		</div>
