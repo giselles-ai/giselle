@@ -530,13 +530,13 @@ export function NodeComponent({
 								v.isWebPage && "text-background",
 								v.isTextGeneration && "text-inverse",
 								v.isImageGeneration && "text-inverse",
-								v.isGithub && "text-inverse",
 								v.isVectorStoreGithub && "text-background",
 								v.isVectorStoreDocument && "text-background",
-								v.isTrigger && "text-inverse",
+								v.isTrigger && !v.isGithub && "text-inverse",
 								v.isAppEntry && "text-inverse",
 								v.isAction && "text-inverse",
 								v.isQuery && "text-background",
+								v.isGithub && "text-background",
 							)}
 						/>
 					</div>
