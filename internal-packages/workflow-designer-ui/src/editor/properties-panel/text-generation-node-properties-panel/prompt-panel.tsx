@@ -105,7 +105,7 @@ export function PromptPanel({
 	const updateNodeData = useWorkflowDesignerStore((s) => s.updateNodeData);
 	const deleteConnection = useWorkflowDesignerStore((s) => s.deleteConnection);
 	const data = useWorkflowDesignerStore((s) => s.workspace);
-	const { all: connectedSources } = useConnectedOutputs(node);
+	const { all: connectedSources, connections } = useConnectedOutputs(node);
 	const { googleUrlContext } = useFeatureFlag();
 	const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 	const usageLimits = useUsageLimits();
@@ -377,13 +377,7 @@ export function PromptPanel({
 				onValueChange={(value) => {
 					updateNodeDataContent(node, { prompt: value });
 				}}
-				nodes={connectedSources.map((source) => source.node)}
-				connectedSources={connectedSources.map(
-					({ node: n, id, label, accessor }) => ({
-						node: n,
-						output: { id, label, accessor },
-					}),
-				)}
+				connections={connections}
 				showToolbar={false}
 				variant="plain"
 				header={header}

@@ -705,9 +705,9 @@ importers:
 
   internal-packages/ui:
     dependencies:
-      '@giselles-ai/protocol':
-        specifier: workspace:^
-        version: link:../../packages/protocol
+      '@giselles-ai/react':
+        specifier: workspace:*
+        version: link:../../packages/react
       '@giselles-ai/text-editor':
         specifier: workspace:^
         version: link:../../packages/text-editor
@@ -1445,6 +1445,9 @@ importers:
       '@giselles-ai/protocol':
         specifier: workspace:^
         version: link:../protocol
+      '@giselles-ai/react':
+        specifier: workspace:*
+        version: link:../react
       '@giselles-ai/text-editor-utils':
         specifier: workspace:^
         version: link:../text-editor-utils

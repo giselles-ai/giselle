@@ -153,7 +153,7 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 		});
 		return map;
 	}, [documentStores]);
-	const { all: connectedInputs } = useConnectedSources(node);
+	const { all: connectedInputs, connections } = useConnectedSources(node);
 	const connectedDatasourceInputs = useMemo(
 		() =>
 			connectedInputs.filter(
@@ -184,13 +184,7 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 				onValueChange={(value) => {
 					updateNodeDataContent(node, { query: value });
 				}}
-				nodes={connectedInputsWithoutDatasource.map((input) => input.node)}
-				connectedSources={connectedInputsWithoutDatasource.map(
-					({ node, output }) => ({
-						node,
-						output,
-					}),
-				)}
+				connections={connections}
 				showToolbar={false}
 				editorClassName="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] border-0 !pt-[12px] !pr-[12px] !pb-[12px] !pl-[12px] rounded-[8px] min-h-[180px]"
 				header={

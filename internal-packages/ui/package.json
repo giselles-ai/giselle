@@ -48,7 +48,7 @@
 		"./utils": "./utils.ts"
 	},
 	"dependencies": {
-		"@giselles-ai/protocol": "workspace:^",
+		"@giselles-ai/react": "workspace:*",
 		"@giselles-ai/text-editor": "workspace:^",
 		"clsx": "catalog:",
 		"lucide-react": "catalog:",
