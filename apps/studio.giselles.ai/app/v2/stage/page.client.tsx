@@ -28,6 +28,7 @@ import {
 	useState,
 	useTransition,
 } from "react";
+import { TopLightOverlay } from "@/app/(main)/lobby/components/top-light-overlay";
 import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider-icon";
 import { GitHubIcon } from "../../../../../internal-packages/workflow-designer-ui/src/icons";
 import type { LoaderData } from "./data-loader";
@@ -560,7 +561,7 @@ export function Page({
 		<div className="w-full">
 			<div className="flex items-start gap-4 min-w-0">
 				{/* Main content: heading + apps area */}
-				<div className="flex-1 min-w-0 space-y-8 px-[24px] py-[24px]">
+				<div className="flex-1 min-w-0 space-y-8 px-[24px]">
 					{/* Page heading */}
 					<div className="flex items-center justify-between">
 						<div>
@@ -573,7 +574,12 @@ export function Page({
 					</div>
 
 					{/* Top container: selected app detail */}
-					<div className="flex w-full flex-col rounded-lg bg-card/40">
+					<div className="relative flex w-full flex-col rounded-lg bg-card/40 overflow-hidden">
+						{runningApp && isRunning && (
+							<div className="pointer-events-none absolute inset-0 z-0">
+								<TopLightOverlay />
+							</div>
+						)}
 						{selectedApp ? (
 							<div className="flex flex-col gap-6 lg:flex-row">
 								{/* Left: thumbnail */}
@@ -690,15 +696,23 @@ export function Page({
 							</div>
 						) : (
 							<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] h-[240px] w-full rounded-[8px] flex justify-center items-center text-text-muted">
-								<div className="flex flex-col items-center gap-[4px] text-text-muted">
+								<div className="flex flex-col items-center gap-[12px] text-text-muted relative z-10">
 									{runningApp && isRunning ? (
 										<>
 											<p className="font-[800] text-text/60">
-												Creating task for {runningApp.name}...
+												Creating task...
 											</p>
 											<p className="text-text-muted text-[12px] text-center leading-5">
 												You can track progress in the Tasks panel on the right.
 											</p>
+											<div className="mt-2 flex items-center gap-3">
+												<div className="stage-running-icon relative flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border border-[hsl(192,73%,84%)] bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] shadow-[0_0_22px_rgba(0,135,246,0.95)]">
+													<DynamicIcon
+														name={runningApp.iconName}
+														className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
+													/>
+												</div>
+											</div>
 										</>
 									) : (
 										<>
