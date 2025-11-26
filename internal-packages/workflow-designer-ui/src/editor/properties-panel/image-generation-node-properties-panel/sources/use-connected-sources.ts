@@ -179,6 +179,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 			query: connectedQuerySources,
 			trigger: connectedTriggerSources,
 			action: connectedActionSources,
+			connections: uiConnections,
 		};
 	}, [node, data.connections, data.nodes]);
 }

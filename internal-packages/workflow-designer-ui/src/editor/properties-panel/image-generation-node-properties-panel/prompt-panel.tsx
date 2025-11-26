@@ -44,7 +44,7 @@ export function PromptPanel({
 	const userTier = usageLimits?.featureTier ?? Tier.enum.free;
 	const { error } = useToasts();
 	const { aiGatewayUnsupportedModels } = useFeatureFlag();
-	const { all: connectedSources } = useConnectedSources(node);
+	const { all: connectedSources, connections } = useConnectedSources(node);
 	const selectableOpenAIImageModels = useMemo(
 		() =>
 			openaiImageModels.filter(
@@ -189,6 +189,7 @@ export function PromptPanel({
 			onValueChange={(value) => {
 				updateNodeDataContent(node, { prompt: value });
 			}}
+			connections={connections}
 			showToolbar={false}
 			variant="plain"
 			header={header}
