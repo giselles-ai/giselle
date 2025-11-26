@@ -224,7 +224,7 @@ export function NavigationRailFooterMenu({
 
 						{/* Logout */}
 						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS} asChild>
-							<SignOutButton className="text-[14px] w-full text-left">
+							<SignOutButton className="w-full text-left">
 								Log Out
 							</SignOutButton>
 						</DropdownMenuPrimitive.Item>
