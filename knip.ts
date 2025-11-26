@@ -36,12 +36,11 @@ const config: KnipConfig = {
 			ignoreDependencies: [],
 		},
 		"apps/studio.giselles.ai": {
-			entry: ["emails/**/*.tsx"],
+			entry: ["tests/e2e/global-setup.ts", "emails/**/*.tsx"],
 			ignore: [
 				"scripts/**",
 				"trigger.config.ts",
 				"trigger/investigate-private-key-job.ts",
-				"app/stage/tasks/[taskId]/**",
 			],
 			// Ignore deps that are resolved dynamically in next.config or used only at build/runtime
 			ignoreDependencies: filterExisting(
@@ -53,15 +52,16 @@ const config: KnipConfig = {
 					"@aws-sdk/client-s3",
 					"pino-pretty",
 					"@react-email/preview-server",
+					"react-dom",
 				],
 				getDepsFor("apps/studio.giselles.ai"),
 			),
 		},
 		"apps/ui.giselles.ai": {
-			ignoreDependencies: [],
+			ignoreDependencies: ["tailwindcss"],
 		},
 		"internal-packages/ui": {
-			ignoreDependencies: [],
+			ignoreDependencies: ["tailwindcss"],
 		},
 		"internal-packages/workflow-designer-ui": {
 			ignoreDependencies: ["tailwindcss"],
