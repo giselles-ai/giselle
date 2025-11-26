@@ -702,9 +702,6 @@ importers:
 
   internal-packages/ui:
     dependencies:
-      '@giselles-ai/protocol':
-        specifier: workspace:^
-        version: link:../../packages/protocol
       '@giselles-ai/react':
         specifier: workspace:*
         version: link:../../packages/react
