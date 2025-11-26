@@ -14,6 +14,7 @@ import { useWorkflowDesigner } from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
 import { MoveUpIcon, PlusIcon, Settings2Icon, XIcon } from "lucide-react";
 import { useMemo, useState } from "react";
+import { Tooltip } from "../../../ui/tooltip";
 import {
 	NodePanelHeader,
 	PropertiesPanelContent,
@@ -392,15 +393,30 @@ export function ContentGenerationNodePropertiesPanel({
 							connections={connections}
 							containerClassName="flex-1"
 						/>
-						<div className="absolute bottom-[8px] right-[8px]">
-							<button
-								className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 disabled:opacity-35"
-								type="button"
-								disabled={isPromptEmpty}
+						{isPromptEmpty ? (
+							<Tooltip
+								text="Enter a prompt to continue"
+								variant="dark"
+								side="top"
+								sideOffset={8}
+								delayDuration={0}
 							>
-								<MoveUpIcon className="size-[16px]" />
-							</button>
-						</div>
+								<div className="absolute bottom-[8px] right-[8px]">
+									<div className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 opacity-35">
+										<MoveUpIcon className="size-[16px]" />
+									</div>
+								</div>
+							</Tooltip>
+						) : (
+							<div className="absolute bottom-[8px] right-[8px]">
+								<button
+									className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 cursor-pointer"
+									type="button"
+								>
+									<MoveUpIcon className="size-[16px]" />
+								</button>
+							</div>
+						)}
 					</div>
 					<div className="flex flex-col flex-1">
 						<SettingDetail size="md" className="text-text-muted mb-[6px]">
