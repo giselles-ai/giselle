@@ -95,3 +95,58 @@ export function defineLanguageModel<
 ): LanguageModel<C, Provider, Id> {
 	return { ...model, registryVersion: "1" };
 }
+
+/**
+ * Parses unknown configuration data against a LanguageModel's schema.
+ * Each configuration option is validated using its Zod schema.
+ * If validation fails for any option, the default value is used instead.
+ *
+ * @param model - The LanguageModel to parse configuration for
+ * @param unknownData - The unknown configuration data to parse
+ * @returns A validated configuration object matching the model's defaultConfiguration type
+ *
+ * @example
+ * ```ts
+ * const unknownData: Record<string, any> = {
+ *   temperature: 0.8,
+ *   thinking: "true", // invalid: should be boolean
+ * };
+ *
+ * const parsed = parseConfiguration(anthropic["anthropic/claude-opus-4.1"], unknownData);
+ * // Result: { temperature: 0.8, thinking: false } (thinking falls back to default)
+ * ```
+ */
+export function parseConfiguration<M extends AnyLanguageModel>(
+	model: M,
+	unknownData: Record<string, unknown>,
+): M["defaultConfiguration"] {
+	const result: Record<string, unknown> = {};
+
+	for (const key in model.configurationOptions) {
+		if (!Object.hasOwn(model.configurationOptions, key)) {
+			continue;
+		}
+
+		const option = model.configurationOptions[key];
+		const defaultValue = model.defaultConfiguration[key];
+		const inputValue = unknownData[key];
+
+		// If the key doesn't exist in the input data, use default
+		if (inputValue === undefined) {
+			result[key] = defaultValue;
+			continue;
+		}
+
+		// Try to parse the value using the Zod schema
+		const parseResult = option.schema.safeParse(inputValue);
+
+		if (parseResult.success) {
+			result[key] = parseResult.data;
+		} else {
+			// Validation failed, use default value
+			result[key] = defaultValue;
+		}
+	}
+
+	return result as M["defaultConfiguration"];
+}

@@ -46,6 +46,7 @@ import {
 import { createPostgresTools } from "./tools/postgres";
 import type { GenerationMetadata, PreparedToolSet } from "./types";
 import { buildMessageObject, getGeneration } from "./utils";
+import { transformGiselleLanguageModelToAiSdkLanguageModelCallOptions } from "./v2/language-model";
 import { buildToolSet } from "./v2/tools";
 
 type StreamItem<T> = T extends AsyncIterableStream<infer Inner> ? Inner : never;
@@ -583,8 +584,8 @@ function generateContentV2({
 				throw new Error("Invalid generation type");
 			}
 
-			const _languageModel = getEntry(operationNode.content.languageModel.id);
-			const _messages = await buildMessageObject({
+			const languageModel = getEntry(operationNode.content.languageModel.id);
+			const messages = await buildMessageObject({
 				node: operationNode,
 				contextNodes: generationContext.sourceNodes,
 				fileResolver,
@@ -593,12 +594,24 @@ function generateContentV2({
 				appEntryResolver,
 			});
 
-			const _toolSet = await buildToolSet({
+			const toolSet = await buildToolSet({
 				context,
 				logger,
 				generationId: generation.id,
 				nodeId: operationNode.id,
 				tools: operationNode.content.tools,
+			});
+
+			const callOptions =
+				transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
+					operationNode.content,
+				);
+
+			streamText({
+				model: languageModel.id,
+				messages,
+				tools: toolSet,
+				...callOptions,
 			});
 		},
 	});
