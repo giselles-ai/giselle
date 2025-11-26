@@ -22,3 +22,11 @@ export function isLanguageModelToolName(
 ): v is LanguageModelToolName {
 	return languageModelToolNames.some((toolName) => toolName === v);
 }
+
+export function getLanguageModelTool(name: LanguageModelToolName) {
+	const tool = languageModelTools.find((tool) => tool.name === name);
+	if (tool === undefined) {
+		throw new Error(`Unknown tool name: ${name}`);
+	}
+	return tool;
+}

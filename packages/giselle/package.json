@@ -40,6 +40,7 @@
 		"@giselles-ai/action-registry": "workspace:*",
 		"@giselles-ai/github-tool": "workspace:^",
 		"@giselles-ai/language-model": "workspace:^",
+		"@giselles-ai/language-model-registry": "workspace:*",
 		"@giselles-ai/logger": "workspace:*",
 		"@giselles-ai/node-registry": "workspace:*",
 		"@giselles-ai/storage": "workspace:*",

@@ -1,6 +1,7 @@
 import { hasTierAccess, languageModels } from "@giselles-ai/language-model";
 import {
 	type CompletedGeneration,
+	type ContentGenerationNode,
 	type FileContent,
 	type FileId,
 	Generation,
@@ -55,10 +56,18 @@ export async function buildMessageObject({
 	appEntryResolver: AppEntryResolver;
 }): Promise<ModelMessage[]> {
 	switch (node.content.type) {
-		case "textGeneration":
-		case "contentGeneration": {
+		case "textGeneration": {
 			return await buildGenerationMessageForTextGeneration({
 				node: node as TextGenerationNode,
+				contextNodes,
+				fileResolver,
+				generationContentResolver,
+				appEntryResolver,
+			});
+		}
+		case "contentGeneration": {
+			return await buildGenerationMessageForContentGeneration({
+				node: node as ContentGenerationNode,
 				contextNodes,
 				fileResolver,
 				generationContentResolver,
@@ -822,4 +831,218 @@ export function queryResultToText(
 	}
 
 	return sections.length > 0 ? sections.join("\n\n---\n\n") : undefined;
+}
+
+async function buildGenerationMessageForContentGeneration({
+	node,
+	contextNodes,
+	fileResolver,
+	generationContentResolver,
+	appEntryResolver,
+}: {
+	node: ContentGenerationNode;
+	contextNodes: Node[];
+	fileResolver: (fileId: FileId) => Promise<DataContent>;
+	generationContentResolver: (
+		nodeId: NodeId,
+		outputId: OutputId,
+	) => Promise<string | undefined>;
+	appEntryResolver: AppEntryResolver;
+}): Promise<ModelMessage[]> {
+	const llmProvider = node.content.languageModel.provider;
+	const prompt = node.content.prompt;
+	if (prompt === undefined) {
+		throw new Error("Prompt cannot be empty");
+	}
+
+	let userMessage = prompt;
+
+	if (isJsonContent(prompt)) {
+		userMessage = jsonContentToText(JSON.parse(prompt));
+	}
+
+	const pattern = /\{\{(nd-[a-zA-Z0-9]+):(otp-[a-zA-Z0-9]+)\}\}/g;
+	const sourceKeywords = [...userMessage.matchAll(pattern)].map((match) => ({
+		nodeId: NodeId.parse(match[1]),
+		outputId: OutputId.parse(match[2]),
+	}));
+
+	const attachedFiles: (FilePart | ImagePart)[] = [];
+	const attachedFileNodeIds: NodeId[] = [];
+	for (const sourceKeyword of sourceKeywords) {
+		const contextNode = contextNodes.find(
+			(contextNode) => contextNode.id === sourceKeyword.nodeId,
+		);
+		if (contextNode === undefined) {
+			continue;
+		}
+		const replaceKeyword = `{{${sourceKeyword.nodeId}:${sourceKeyword.outputId}}}`;
+
+		switch (contextNode.content.type) {
+			case "text": {
+				const jsonOrText = contextNode.content.text;
+				const text = isJsonContent(jsonOrText)
+					? jsonContentToText(JSON.parse(jsonOrText))
+					: jsonOrText;
+				userMessage = userMessage.replace(replaceKeyword, text);
+				break;
+			}
+			case "textGeneration":
+			case "contentGeneration": {
+				const result = await generationContentResolver(
+					contextNode.id,
+					sourceKeyword.outputId,
+				);
+				// If there is no matching Output, replace it with an empty string (remove the pattern string from userMessage)
+				userMessage = userMessage.replace(replaceKeyword, result ?? "");
+				break;
+			}
+			case "file":
+				if (
+					attachedFileNodeIds.some(
+						(attachedFileNodeId) => contextNode.id === attachedFileNodeId,
+					)
+				) {
+					continue;
+				}
+				switch (contextNode.content.category) {
+					case "text": {
+						const fileContents = await getFileContents(
+							contextNode.content,
+							fileResolver,
+						);
+						userMessage = userMessage.replace(
+							replaceKeyword,
+							fileContents
+								.map((fileContent) => {
+									if (fileContent.type === "image") {
+										return null;
+									}
+									if (!(fileContent.data instanceof Uint8Array)) {
+										return null;
+									}
+									const text = new TextDecoder().decode(fileContent.data);
+									return `<File name=${fileContent.filename}>${text}</File>`;
+								})
+								.filter((data) => data !== null)
+								.join(),
+						);
+
+						break;
+					}
+					case "image":
+					case "pdf": {
+						const fileContents = await getFileContents(
+							contextNode.content,
+							fileResolver,
+						);
+						userMessage = userMessage.replace(
+							replaceKeyword,
+							getFilesDescription(attachedFiles.length, fileContents.length),
+						);
+
+						attachedFiles.push(...fileContents);
+						attachedFileNodeIds.push(contextNode.id);
+						break;
+					}
+					default: {
+						const _exhaustiveCheck: never = contextNode.content.category;
+						throw new Error(`Unhandled category: ${_exhaustiveCheck}`);
+					}
+				}
+				break;
+
+			case "github":
+			case "imageGeneration":
+			case "vectorStore":
+				throw new Error("Not implemented");
+
+			case "webPage": {
+				const fileContents = await geWebPageContents(
+					contextNode.content,
+					fileResolver,
+				);
+				switch (llmProvider) {
+					case "anthropic":
+					case "openai":
+						userMessage = userMessage.replace(
+							replaceKeyword,
+							fileContents
+								.map((fileContent) => {
+									if (fileContent.type !== "file") {
+										return null;
+									}
+									if (
+										!(
+											fileContent.data instanceof Uint8Array ||
+											fileContent.data instanceof ArrayBuffer
+										)
+									) {
+										return null;
+									}
+									const text = new TextDecoder().decode(fileContent.data);
+									return `<WebPage name=${fileContent.filename}>${text}</WebPage>`;
+								})
+								.filter((data): data is string => data !== null)
+								.join(),
+						);
+						break;
+					case "google":
+						userMessage = userMessage.replace(
+							replaceKeyword,
+							getFilesDescription(attachedFiles.length, fileContents.length),
+						);
+
+						attachedFiles.push(...fileContents);
+						attachedFileNodeIds.push(contextNode.id);
+						break;
+					default: {
+						const _exhaustiveCheck: never = llmProvider;
+						throw new Error(`Unhandled type: ${_exhaustiveCheck}`);
+					}
+				}
+				break;
+			}
+
+			case "query":
+			case "trigger":
+			case "action": {
+				const result = await generationContentResolver(
+					contextNode.id,
+					sourceKeyword.outputId,
+				);
+				// If there is no matching Output, replace it with an empty string (remove the pattern string from userMessage)
+				userMessage = userMessage.replace(replaceKeyword, result ?? "");
+				break;
+			}
+			case "appEntry": {
+				const result = appEntryResolver(
+					sourceKeyword.nodeId,
+					sourceKeyword.outputId,
+				);
+
+				userMessage = userMessage.replace(
+					replaceKeyword,
+					result === undefined ? "" : `${result}`,
+				);
+				break;
+			}
+			default: {
+				const _exhaustiveCheck: never = contextNode.content;
+				throw new Error(`Unhandled type: ${_exhaustiveCheck}`);
+			}
+		}
+	}
+	return [
+		{
+			role: "user",
+			content: [
+				...attachedFiles,
+				{
+					type: "text",
+					text: userMessage,
+				},
+			],
+		},
+	];
 }

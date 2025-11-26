@@ -9,6 +9,12 @@ import {
 	hasCapability,
 	languageModels,
 } from "@giselles-ai/language-model";
+import {
+	getEntry,
+	getLanguageModelTool,
+	hasConfigurationSchema,
+	hasTools,
+} from "@giselles-ai/language-model-registry";
 import type { GiselleLogger } from "@giselles-ai/logger";
 import type {
 	CompletedGeneration,
@@ -19,8 +25,10 @@ import type {
 	RunningGeneration,
 } from "@giselles-ai/protocol";
 import {
+	isContentGenerationNode,
 	isTextGenerationNode,
 	type Output,
+	SecretId,
 	type TextGenerationLanguageModelData,
 } from "@giselles-ai/protocol";
 import {
@@ -30,8 +38,10 @@ import {
 	smoothStream,
 	stepCountIs,
 	streamText,
+	type ToolSet,
 	type UIMessage,
 } from "ai";
+import z from "zod/v4";
 import { generationUiMessageChunksPath } from "../path";
 import { decryptSecret } from "../secrets";
 import type { AiGatewayHeaders, GiselleContext } from "../types";
@@ -44,6 +54,7 @@ import {
 import { createPostgresTools } from "./tools/postgres";
 import type { GenerationMetadata, PreparedToolSet } from "./types";
 import { buildMessageObject, getGeneration } from "./utils";
+import { createGitHubTools } from "./v2/tools/github";
 
 type StreamItem<T> = T extends AsyncIterableStream<infer Inner> ? Inner : never;
 
@@ -82,6 +93,18 @@ export function generateContent({
 
 	logger.info(`generate content: ${generation.id}`);
 	logger.info(`generation metadata: ${JSON.stringify(metadata)}`);
+
+	if (isContentGenerationNode(generation.context.operationNode)) {
+		return generateContentV2({
+			context,
+			generation,
+			logger: overrideLogger,
+			metadata,
+			onComplete,
+			onError,
+		});
+	}
+	// biome-ignore lint/correctness/useHookAtTopLevel: it's nodejs use
 	return useGenerationExecutor({
 		context,
 		generation,
@@ -529,4 +552,148 @@ function generationModel(
 			throw new Error(`Unknown LLM provider: ${_exhaustiveCheck}`);
 		}
 	}
+}
+
+function generateContentV2({
+	context,
+	generation,
+	logger: overrideLogger,
+	metadata,
+	onComplete,
+	onError,
+}: {
+	context: GiselleContext;
+	generation: RunningGeneration;
+	logger?: GiselleLogger;
+	metadata?: GenerationMetadata;
+	onComplete?: OnGenerationComplete;
+	onError?: OnGenerationError;
+}) {
+	const logger = overrideLogger ?? context.logger;
+	// biome-ignore lint/correctness/useHookAtTopLevel: it's nodejs use
+	return useGenerationExecutor({
+		context,
+		generation,
+		metadata,
+		onError,
+		execute: async ({
+			finishGeneration,
+			runningGeneration,
+			generationContext,
+			setGeneration,
+			fileResolver,
+			generationContentResolver,
+			imageGenerationResolver,
+			appEntryResolver,
+		}) => {
+			const operationNode = generationContext.operationNode;
+			if (!isContentGenerationNode(operationNode)) {
+				throw new Error("Invalid generation type");
+			}
+
+			const languageModel = getEntry(operationNode.content.languageModel.id);
+			const messages = await buildMessageObject({
+				node: operationNode,
+				contextNodes: generationContext.sourceNodes,
+				fileResolver,
+				generationContentResolver,
+				imageGenerationResolver,
+				appEntryResolver,
+			});
+
+			const toolSet: ToolSet = {};
+			for (const tool of operationNode.content.tools) {
+				const languageModelTool = getLanguageModelTool(tool.name);
+				switch (languageModelTool.name) {
+					case "anthropic-web-search":
+						{
+							const configurationOptionSchema = z.object({
+								allowedDomains:
+									languageModelTool.configurationOptions.allowedDomains.schema,
+								blockedDomains:
+									languageModelTool.configurationOptions.blockedDomains.schema,
+								maxUses: languageModelTool.configurationOptions.maxUses.schema,
+							});
+							const result = configurationOptionSchema.safeParse(
+								tool.configuration,
+							);
+							if (!result.success) {
+								logger.warn(
+									`${generation.id}, ${operationNode.id}, anthropic-web-search tool configuration is invalid: ${result.error.message}`,
+								);
+								continue;
+							}
+							const anthropicWebSearchConfiguration = result.data;
+							toolSet.web_search = anthropic.tools.webSearch_20250305({
+								maxUses: anthropicWebSearchConfiguration.maxUses,
+								allowedDomains: anthropicWebSearchConfiguration.allowedDomains,
+								blockedDomains: anthropicWebSearchConfiguration.blockedDomains,
+							});
+						}
+						break;
+					case "github-api": {
+						const unsafeSecretId =
+							tool.configuration[
+								languageModelTool.configurationOptions.secretId.name
+							];
+						const result = SecretId.safeParse(unsafeSecretId);
+						if (result.error) {
+							logger.warn(
+								`${generation.id}, ${operationNode.id}, github-api tool secret id is undefined`,
+							);
+							continue;
+						}
+						const unsafeToken = await decryptSecret({
+							context,
+							secretId: result.data,
+						});
+						if (unsafeToken === undefined) {
+							logger.warn(
+								`${generation.id}, ${operationNode.id}, github-api tool secret token is undefined`,
+							);
+							continue;
+						}
+						const token = unsafeToken;
+						const useTools =
+							tool.configuration[
+								languageModelTool.configurationOptions.useTools.name
+							];
+						if (!Array.isArray(useTools)) {
+							logger.warn(
+								`${generation.id}, ${operationNode.id}, github-api tool use tools is not an array`,
+							);
+							continue;
+						}
+
+						if (!hasTools(languageModelTool)) {
+							continue;
+						}
+
+						const app = octokit({
+							strategy: "personal-access-token",
+							personalAccessToken: token,
+						});
+
+						const githubTools = createGitHubTools(
+							app,
+							languageModelTool.tools,
+							useTools,
+						);
+						Object.assign(toolSet, githubTools);
+						break;
+					}
+					case "google-web-search":
+						break;
+					case "openai-web-search":
+						break;
+					case "postgres":
+						break;
+					default: {
+						const _exhaustiveCheck: never = languageModelTool;
+						throw new Error(`Unknown tool: ${_exhaustiveCheck}`);
+					}
+				}
+			}
+		},
+	});
 }

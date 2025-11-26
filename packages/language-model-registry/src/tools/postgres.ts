@@ -1,3 +1,4 @@
+import * as z from "zod/v4";
 import { defineLanguageModelTool, defineTool } from "./tool";
 
 const tools = [
@@ -11,6 +12,9 @@ const tools = [
 		name: "query",
 		title: "Query",
 		description: "Run a SQL query",
+		schema: z.object({
+			query: z.string().min(1).max(1000),
+		}),
 	}),
 ] as const;
 
