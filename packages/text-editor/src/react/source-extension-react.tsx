@@ -1,5 +1,5 @@
 import { defaultName } from "@giselles-ai/node-registry";
-import { Node as GiselleNode } from "@giselles-ai/protocol";
+import { NodeLike } from "@giselles-ai/protocol";
 import { SourceExtension } from "@giselles-ai/text-editor-utils";
 import {
 	type NodeViewProps,
@@ -26,7 +26,7 @@ const Component = (props: NodeViewProps) => {
 			return undefined;
 		}
 
-		const parsedNodes = GiselleNode.array().parse(nodes);
+		const parsedNodes = NodeLike.array().parse(nodes);
 		const foundNode = parsedNodes.find(
 			(node) => node.id === props.node.attrs.node.id,
 		);
@@ -73,10 +73,10 @@ const Component = (props: NodeViewProps) => {
 };
 
 interface SourceExtensionReactOptions {
-	nodes: GiselleNode[];
+	nodes: NodeLike[];
 }
 interface SourceExtensionReactStorage {
-	nodes: GiselleNode[];
+	nodes: NodeLike[];
 }
 
 export const SourceExtensionReact = SourceExtension.extend<

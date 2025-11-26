@@ -1,4 +1,5 @@
-import type { Node, Output } from "@giselles-ai/protocol";
+import type { NodeLike, Output } from "@giselles-ai/protocol";
+import type { UIConnection } from "@giselles-ai/react";
 import { extensions as baseExtensions } from "@giselles-ai/text-editor-utils";
 import Mention from "@tiptap/extension-mention";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -122,7 +123,7 @@ function Toolbar({ tools }: { tools?: (editor: Editor) => ReactNode }) {
 }
 
 export interface ConnectedSource {
-	node: Node;
+	node: NodeLike;
 	output: Output;
 }
 
@@ -130,8 +131,7 @@ export function TextEditor({
 	value,
 	onValueChange,
 	tools,
-	nodes,
-	connectedSources,
+	connections,
 	placeholder,
 	header,
 	showToolbar = true,
@@ -141,8 +141,7 @@ export function TextEditor({
 	value?: string;
 	onValueChange?: (value: string) => void;
 	tools?: (editor: Editor) => ReactNode;
-	nodes?: Node[];
-	connectedSources?: ConnectedSource[];
+	connections?: UIConnection[];
 	placeholder?: string;
 	header?: ReactNode;
 	showToolbar?: boolean;
@@ -151,8 +150,17 @@ export function TextEditor({
 }) {
 	const extensions = useMemo(() => {
 		const mentionExtension = Mention.configure({
-			suggestion: createSuggestion(connectedSources),
+			suggestion: createSuggestion(connections),
 		});
+
+		const nodes = Array.from(
+			new Map(
+				connections?.map((connection) => [
+					connection.outputNode.id,
+					connection.outputNode,
+				]),
+			).values(),
+		);
 
 		return nodes === undefined
 			? [
@@ -168,7 +176,7 @@ export function TextEditor({
 					mentionExtension,
 					Placeholder.configure({ placeholder }),
 				];
-	}, [nodes, connectedSources, placeholder]);
+	}, [connections, placeholder]);
 	return (
 		<div className="flex flex-col w-full min-h-0 h-full">
 			<EditorProvider

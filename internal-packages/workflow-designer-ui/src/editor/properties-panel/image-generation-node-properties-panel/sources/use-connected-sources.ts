@@ -14,7 +14,7 @@ import type {
 	VariableNode,
 	WebPageNode,
 } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
+import { type UIConnection, useWorkflowDesigner } from "@giselles-ai/react";
 import { useMemo } from "react";
 
 type ConnectedSource<T extends NodeBase> = {
@@ -39,98 +39,112 @@ export function useConnectedSources(node: ImageGenerationNode) {
 		const connectedTriggerSources: ConnectedSource<TriggerNode>[] = [];
 		const connectedActionSources: ConnectedSource<ActionNode>[] = [];
 		const connectedAppEntrySources: ConnectedSource<AppEntryNode>[] = [];
+		const uiConnections: UIConnection[] = [];
 		for (const connection of connectionsToThisNode) {
-			const node = data.nodes.find(
+			const outputNode = data.nodes.find(
 				(node) => node.id === connection.outputNode.id,
 			);
-			if (node === undefined) {
+			if (outputNode === undefined) {
 				continue;
 			}
-			const output = node.outputs.find(
+			const output = outputNode.outputs.find(
 				(output) => output.id === connection.outputId,
 			);
 			if (output === undefined) {
 				continue;
 			}
+			const input = node.inputs.find(
+				(input) => input.id === connection.inputId,
+			);
+			if (input === undefined) {
+				continue;
+			}
+			uiConnections.push({
+				id: connection.id,
+				output,
+				outputNode,
+				input,
+				inputNode: node,
+			});
 
-			switch (node.type) {
+			switch (outputNode.type) {
 				case "operation":
-					switch (node.content.type) {
+					switch (outputNode.content.type) {
 						case "textGeneration":
 							connectedGeneratedTextSources.push({
 								output,
-								node: node as TextGenerationNode,
+								node: outputNode as TextGenerationNode,
 								connection,
 							});
 							break;
 						case "contentGeneration":
 							connectedGeneratedTextSources.push({
 								output,
-								node: node as ContentGenerationNode,
+								node: outputNode as ContentGenerationNode,
 								connection,
 							});
 							break;
 						case "query":
 							connectedQuerySources.push({
 								output,
-								node: node as QueryNode,
+								node: outputNode as QueryNode,
 								connection,
 							});
 							break;
 						case "trigger":
 							connectedTriggerSources.push({
 								output,
-								node: node as TriggerNode,
+								node: outputNode as TriggerNode,
 								connection,
 							});
 							break;
 						case "imageGeneration":
 							connectedGeneratedImageSources.push({
 								output,
-								node: node as ImageGenerationNode,
+								node: outputNode as ImageGenerationNode,
 								connection,
 							});
 							break;
 						case "action":
 							connectedActionSources.push({
 								output,
-								node: node as ActionNode,
+								node: outputNode as ActionNode,
 								connection,
 							});
 							break;
 						case "appEntry":
 							connectedAppEntrySources.push({
 								output,
-								node: node as AppEntryNode,
+								node: outputNode as AppEntryNode,
 								connection,
 							});
 							break;
 						default: {
-							const _exhaustiveCheck: never = node.content.type;
+							const _exhaustiveCheck: never = outputNode.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 						}
 					}
 					break;
 				case "variable":
-					switch (node.content.type) {
+					switch (outputNode.content.type) {
 						case "file":
 							connectedVariableSources.push({
 								output,
-								node: node as FileNode,
+								node: outputNode as FileNode,
 								connection,
 							});
 							break;
 						case "text":
 							connectedVariableSources.push({
 								output,
-								node: node as TextNode,
+								node: outputNode as TextNode,
 								connection,
 							});
 							break;
 						case "webPage":
 							connectedVariableSources.push({
 								output,
-								node: node as WebPageNode,
+								node: outputNode as WebPageNode,
 								connection,
 							});
 							break;
@@ -138,13 +152,13 @@ export function useConnectedSources(node: ImageGenerationNode) {
 						case "github":
 							throw new Error("vectore store can not be connected");
 						default: {
-							const _exhaustiveCheck: never = node.content.type;
+							const _exhaustiveCheck: never = outputNode.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 						}
 					}
 					break;
 				default: {
-					const _exhaustiveCheck: never = node;
+					const _exhaustiveCheck: never = outputNode;
 					throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 				}
 			}
@@ -165,6 +179,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 			query: connectedQuerySources,
 			trigger: connectedTriggerSources,
 			action: connectedActionSources,
+			connections: uiConnections,
 		};
-	}, [node.id, data.connections, data.nodes]);
+	}, [node, data.connections, data.nodes]);
 }

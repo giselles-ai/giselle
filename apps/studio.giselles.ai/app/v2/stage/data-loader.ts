@@ -1,8 +1,16 @@
 import { isIconName } from "@giselle-internal/ui/utils";
+import {
+	isTextGenerationNode,
+	isVectorStoreNode,
+	type WorkspaceId,
+} from "@giselles-ai/protocol";
+import { sliceGraphFromNode } from "@giselles-ai/workspace-utils";
 import { giselle } from "@/app/giselle";
 import { db } from "@/db";
 import { logger } from "@/lib/logger";
 import { getUser } from "@/lib/supabase";
+import { getDocumentVectorStores } from "@/lib/vector-stores/document/queries";
+import { fetchCurrentTeam } from "@/services/teams";
 import type { StageApp, TeamId } from "./types";
 
 async function userTeams() {
@@ -14,26 +22,26 @@ async function userTeams() {
 	if (user === undefined) {
 		throw new Error("User not found");
 	}
-	return await db.query.teamMemberships
-		.findMany({
-			where: (teamMemberships, { eq }) =>
-				eq(teamMemberships.userDbId, user.userDbId),
-			with: {
-				team: true,
-			},
-		})
-		.then((teamMemberships) =>
-			teamMemberships.map((teamMembership) => ({
-				id: teamMembership.team.id,
-				name: teamMembership.team.name,
-				avatarUrl: teamMembership.team.avatarUrl,
-				role: teamMembership.role,
-				hasActiveSubscription: teamMembership.team.activeSubscriptionId != null,
-			})),
-		);
+	const memberships = await db.query.teamMemberships.findMany({
+		where: (teamMemberships, { eq }) =>
+			eq(teamMemberships.userDbId, user.userDbId),
+		with: {
+			team: true,
+		},
+	});
+
+	const teams = memberships.map((teamMembership) => ({
+		id: teamMembership.team.id,
+		name: teamMembership.team.name,
+		avatarUrl: teamMembership.team.avatarUrl,
+		role: teamMembership.role,
+		hasActiveSubscription: teamMembership.team.activeSubscriptionId != null,
+	}));
+
+	return { userDbId: user.userDbId, teams };
 }
 
-async function userApps(teamIds: TeamId[]) {
+async function userApps(teamIds: TeamId[], userDbId: number) {
 	const teams = await db.query.teams.findMany({
 		where: (teams, { inArray }) => inArray(teams.id, teamIds),
 		with: {
@@ -43,16 +51,35 @@ async function userApps(teamIds: TeamId[]) {
 						columns: {
 							id: true,
 							name: true,
+							creatorDbId: true,
 						},
 					},
 				},
 			},
 		},
 	});
+	const teamDbIds = teams.map((team) => team.dbId);
+
+	const documentStoresByTeam = new Map<
+		number,
+		Awaited<ReturnType<typeof getDocumentVectorStores>>
+	>();
+
+	if (teamDbIds.length > 0) {
+		await Promise.all(
+			teamDbIds.map(async (teamDbId) => {
+				const stores = await getDocumentVectorStores(teamDbId);
+				documentStoresByTeam.set(teamDbId, stores);
+			}),
+		);
+	}
+
 	const result = await Promise.all(
 		teams.flatMap((team) =>
 			team.apps.map(async (app) => {
-				const workspace = await giselle.getWorkspace(app.workspace.id);
+				const workspace = await giselle.getWorkspace(
+					app.workspace.id as WorkspaceId,
+				);
 				const appEntryNode = workspace.nodes.find(
 					(node) => node.id === app.appEntryNodeId,
 				);
@@ -65,7 +92,66 @@ async function userApps(teamIds: TeamId[]) {
 				const giselleApp = await giselle.getApp({
 					appId: app.id,
 				});
-				return { team, workspace, giselleApp };
+				// Extract vector store / LLM metadata for this app (slice graph from entry node)
+				const appGraph = sliceGraphFromNode(appEntryNode, workspace);
+				const githubRepositories: string[] = [];
+				const documentFiles: string[] = [];
+				const llmProviders = new Set<string>();
+
+				for (const node of appGraph.nodes) {
+					// LLM providers
+					if (
+						isTextGenerationNode(node) &&
+						node.content.llm?.provider &&
+						node.content.llm?.id
+					) {
+						const provider = node.content.llm.provider;
+						if (typeof provider === "string") {
+							llmProviders.add(provider);
+						}
+					}
+
+					// GitHub Vector Store
+					if (
+						isVectorStoreNode(node, "github") &&
+						node.content.source.state.status === "configured"
+					) {
+						const { owner, repo } = node.content.source.state;
+						const fullName = `${owner}/${repo}`;
+						if (!githubRepositories.includes(fullName)) {
+							githubRepositories.push(fullName);
+						}
+					}
+
+					// Document Vector Store
+					if (
+						isVectorStoreNode(node, "document") &&
+						node.content.source.state.status === "configured"
+					) {
+						const { documentVectorStoreId } = node.content.source.state;
+						const documentStores = documentStoresByTeam.get(team.dbId) || [];
+						const store = documentStores.find(
+							(s) => s.id === documentVectorStoreId,
+						);
+						if (store && store.sources.length > 0) {
+							for (const source of store.sources) {
+								if (!documentFiles.includes(source.fileName)) {
+									documentFiles.push(source.fileName);
+								}
+							}
+						}
+					}
+				}
+
+				return {
+					team,
+					workspace,
+					dbWorkspace: app.workspace,
+					giselleApp,
+					githubRepositories,
+					documentFiles,
+					llmProviders: Array.from(llmProviders),
+				};
 			}),
 		),
 	).then((result) => result.filter((data) => data !== null));
@@ -86,6 +172,10 @@ async function userApps(teamIds: TeamId[]) {
 			workspaceName: data.workspace.name ?? "Untitled workspace",
 			teamName: data.team.name,
 			teamId: data.team.id,
+			isMine: data.dbWorkspace.creatorDbId === userDbId,
+			vectorStoreRepositories: data.githubRepositories,
+			vectorStoreFiles: data.documentFiles,
+			llmProviders: data.llmProviders,
 		});
 	}
 
@@ -114,15 +204,18 @@ async function userTasks(teamIds: TeamId[]) {
 }
 
 export async function dataLoader() {
-	const teams = await userTeams();
+	const { userDbId, teams } = await userTeams();
 	const teamIds = teams.map((team) => team.id);
-	const [apps, tasks] = await Promise.all([
-		userApps(teamIds),
+	const [apps, tasks, currentTeam] = await Promise.all([
+		userApps(teamIds, userDbId),
 		userTasks(teamIds),
+		fetchCurrentTeam(),
 	]);
 
-	logger.debug({ teams, apps, tasks });
-	return { teams, apps, tasks };
+	const currentTeamId = currentTeam?.id ?? teams[0]?.id;
+
+	logger.debug({ teams, apps, tasks, currentTeamId });
+	return { teams, apps, tasks, currentTeamId };
 }
 
 export type LoaderData = Awaited<ReturnType<typeof dataLoader>>;

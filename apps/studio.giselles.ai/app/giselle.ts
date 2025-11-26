@@ -362,6 +362,9 @@ export const giselle = NextGiselle({
 			const stripeCustomerId = parsedMetadata.success
 				? (parsedMetadata.data.team.activeCustomerId ?? undefined)
 				: undefined;
+			const teamPlan = parsedMetadata.success
+				? parsedMetadata.data.team.plan
+				: undefined;
 			const aiGatewayHeaders: AiGatewayHeaders = {
 				"http-referer":
 					process.env.AI_GATEWAY_HTTP_REFERER ?? "https://giselles.ai",
@@ -369,7 +372,9 @@ export const giselle = NextGiselle({
 			};
 			if (stripeCustomerId !== undefined) {
 				aiGatewayHeaders["stripe-customer-id"] = stripeCustomerId;
-			} else {
+				aiGatewayHeaders["stripe-restricted-access-key"] =
+					process.env.STRIPE_AI_GATEWAY_RESTRICTED_ACCESS_KEY ?? "";
+			} else if (teamPlan === "pro" || teamPlan === "team") {
 				logger.warn(
 					`Stripe customer ID not found for generation ${generation.id}`,
 				);

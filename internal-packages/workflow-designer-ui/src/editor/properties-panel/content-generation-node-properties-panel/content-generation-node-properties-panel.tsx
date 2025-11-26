@@ -1,23 +1,27 @@
 import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { Popover } from "@giselle-internal/ui/popover";
+import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import {
 	getEntry,
 	type LanguageModelTool,
 	languageModelTools,
 } from "@giselles-ai/language-model-registry";
+import { defaultName } from "@giselles-ai/node-registry";
 import type { ContentGenerationNode } from "@giselles-ai/protocol";
 import { useWorkflowDesigner } from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
-import { PlusIcon, Settings2Icon, XIcon } from "lucide-react";
+import { MoveUpIcon, PlusIcon, Settings2Icon, XIcon } from "lucide-react";
 import { useMemo, useState } from "react";
+import { Tooltip } from "../../../ui/tooltip";
 import {
 	NodePanelHeader,
 	PropertiesPanelContent,
 	PropertiesPanelRoot,
 } from "../ui";
 import { ConfigurationFormField, ModelPickerV2 } from "./language-model";
+import { useNodeContext } from "./node-context/use-node-context";
 import { ToolConfigurationDialog } from "./tool";
 
 export function ContentGenerationNodePropertiesPanel({
@@ -25,7 +29,8 @@ export function ContentGenerationNodePropertiesPanel({
 }: {
 	node: ContentGenerationNode;
 }) {
-	const { updateNodeData, deleteNode } = useWorkflowDesigner();
+	const { updateNodeData, updateNodeDataContent, deleteNode } =
+		useWorkflowDesigner();
 	const languageModel = useMemo(
 		() => getEntry(node.content.languageModel.id),
 		[node.content.languageModel.id],
@@ -182,6 +187,34 @@ export function ContentGenerationNodePropertiesPanel({
 		}
 	};
 
+	const { shouldShowOutputLabel, connections } = useNodeContext(node);
+
+	const isPromptEmpty = useMemo(() => {
+		if (typeof node.content.prompt !== "string") {
+			return true;
+		}
+		if (node.content.prompt.length === 0) {
+			return true;
+		}
+		try {
+			const json = JSON.parse(node.content.prompt);
+			const paragraph = json.content?.[0];
+			if (paragraph === undefined) {
+				return true;
+			}
+			if (paragraph?.content === undefined) {
+				return true;
+			}
+			if (paragraph.content.length === 0) {
+				return true;
+			}
+		} catch {
+			return true;
+		}
+
+		return false;
+	}, [node.content.prompt]);
+
 	return (
 		<PropertiesPanelRoot>
 			<NodePanelHeader
@@ -192,8 +225,10 @@ export function ContentGenerationNodePropertiesPanel({
 			/>
 
 			<PropertiesPanelContent>
-				<div className="grid grid-cols-[80px_1fr] gap-y-[12px] gap-x-[12px] items-start mb-[12px]">
-					<SettingDetail size="md">Model</SettingDetail>
+				<div className="grid grid-cols-[60px_1fr] gap-y-[12px] gap-x-[12px] items-start mb-[12px]">
+					<SettingDetail size="md" className="text-text-muted">
+						Model
+					</SettingDetail>
 					<div className="overflow-x-hidden">
 						<div className="flex items-center gap-[4px]">
 							<ModelPickerV2 value={node.content.languageModel.id} />
@@ -270,10 +305,25 @@ export function ContentGenerationNodePropertiesPanel({
 						)}
 					</div>
 
-					<SettingDetail size="md">Context</SettingDetail>
-					<div>todo</div>
+					<SettingDetail size="md" className="text-text-muted">
+						Context
+					</SettingDetail>
+					<div className="flex flex-wrap gap-[6px]">
+						{connections.map((connection) => (
+							<div
+								key={connection.output.id}
+								className="flex items-center gap-[4px] px-[8px] py-[4px] bg-surface rounded-full text-[12px] text-text"
+							>
+								{shouldShowOutputLabel(connection.outputNode.id)
+									? `${defaultName(connection.outputNode)}:${connection.output.label}`
+									: defaultName(connection.outputNode)}
+							</div>
+						))}
+					</div>
 
-					<SettingDetail size="md">Tools</SettingDetail>
+					<SettingDetail size="md" className="text-text-muted">
+						Tools
+					</SettingDetail>
 					<div className="flex flex-col gap-[8px]">
 						<div className="flex flex-wrap gap-[6px]">
 							{configuredTools.map((tool) => (
@@ -328,8 +378,57 @@ export function ContentGenerationNodePropertiesPanel({
 						)}
 					</div>
 				</div>
-				<SettingDetail size="md">Prompt</SettingDetail>
-				<div>todo</div>
+
+				<div className="flex gap-[8px] flex-1">
+					<div className="flex-1 flex flex-col relative">
+						<SettingDetail size="md" className="text-text-muted mb-[6px]">
+							Prompt
+						</SettingDetail>
+						<PromptEditor
+							placeholder="Write your prompt... Use @ to reference other nodes"
+							value={node.content.prompt}
+							onValueChange={(value) => {
+								updateNodeDataContent(node, { prompt: value });
+							}}
+							connections={connections}
+							containerClassName="flex-1"
+						/>
+						{isPromptEmpty ? (
+							<Tooltip
+								text="Enter a prompt to continue"
+								variant="dark"
+								side="top"
+								sideOffset={8}
+								delayDuration={0}
+							>
+								<div className="absolute bottom-[8px] right-[8px]">
+									<div className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 opacity-35">
+										<MoveUpIcon className="size-[16px]" />
+									</div>
+								</div>
+							</Tooltip>
+						) : (
+							<div className="absolute bottom-[8px] right-[8px]">
+								<button
+									className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 cursor-pointer"
+									type="button"
+								>
+									<MoveUpIcon className="size-[16px]" />
+								</button>
+							</div>
+						)}
+					</div>
+					<div className="flex flex-col flex-1">
+						<SettingDetail size="md" className="text-text-muted mb-[6px]">
+							Output
+						</SettingDetail>
+						<div className="rounded-md bg-surface/70 w-full flex-1 p-[8px]">
+							<p className="text-text-muted text-[14px]">
+								Your generation will appear here
+							</p>
+						</div>
+					</div>
+				</div>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
 	);
