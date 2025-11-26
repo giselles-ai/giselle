@@ -566,6 +566,7 @@ const githubTools = [
 	}),
 ] as const;
 
+export type GitHubTool = (typeof githubTools)[number];
 const githubToolNames = githubTools.map((tool) => tool.name);
 type GitHubToolName = (typeof githubToolNames)[number];
 
