@@ -43,7 +43,7 @@ export function useConnectedSources(node: QueryNode) {
 			if (output === undefined) {
 				continue;
 			}
-			const input = outputNode.inputs.find(
+			const input = node.inputs.find(
 				(input) => input.id === connection.inputId,
 			);
 			if (input === undefined) {
