@@ -546,6 +546,10 @@ export function Page({
 					inputs: event.inputs,
 					workspaceId: runningApp.workspaceId,
 				});
+				setTimeout(() => {
+					setRunningAppId(undefined);
+					setSelectedAppId(undefined);
+				}, 800);
 			});
 		},
 		[runningApp, createAndStartTaskAction],
@@ -922,12 +926,6 @@ export function Page({
 												: "bg-card/60 border-[hsl(192,73%,84%)]"
 										}`}
 									>
-										{isRunning && (
-											<>
-												<div className="stage-star-border-bottom" />
-												<div className="stage-star-border-top" />
-											</>
-										)}
 										<DynamicIcon
 											name={runningApp.iconName}
 											className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
