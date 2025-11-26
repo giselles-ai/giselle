@@ -1,7 +1,7 @@
 import * as z from "zod/v4";
 import { defineLanguageModelTool, defineTool } from "./tool";
 
-const tools = [
+const postgresTools = [
 	defineTool({
 		name: "getTableStructure",
 		title: "Get Table Structure",
@@ -17,12 +17,13 @@ const tools = [
 		}),
 	}),
 ] as const;
+export type PostgresTool = (typeof postgresTools)[number];
 
 export const postgres = defineLanguageModelTool({
 	name: "postgres",
 	title: "PostgreSQL",
 	provider: "giselle",
-	tools,
+	tools: postgresTools,
 	configurationOptions: {
 		secretId: {
 			name: "secretId",

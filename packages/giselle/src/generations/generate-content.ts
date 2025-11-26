@@ -12,8 +12,6 @@ import {
 import {
 	getEntry,
 	getLanguageModelTool,
-	hasConfigurationSchema,
-	hasTools,
 } from "@giselles-ai/language-model-registry";
 import type { GiselleLogger } from "@giselles-ai/logger";
 import type {
@@ -54,7 +52,10 @@ import {
 import { createPostgresTools } from "./tools/postgres";
 import type { GenerationMetadata, PreparedToolSet } from "./types";
 import { buildMessageObject, getGeneration } from "./utils";
-import { createGitHubTools } from "./v2/tools/github";
+import {
+	createGitHubTools,
+	createPostgresTool as createPostgresToolV2,
+} from "./v2/tools";
 
 type StreamItem<T> = T extends AsyncIterableStream<infer Inner> ? Inner : never;
 
@@ -665,10 +666,6 @@ function generateContentV2({
 							continue;
 						}
 
-						if (!hasTools(languageModelTool)) {
-							continue;
-						}
-
 						const app = octokit({
 							strategy: "personal-access-token",
 							personalAccessToken: token,
@@ -683,11 +680,72 @@ function generateContentV2({
 						break;
 					}
 					case "google-web-search":
+						toolSet.google_search = google.tools.googleSearch({});
 						break;
-					case "openai-web-search":
+					case "openai-web-search": {
+						const configurationOptionSchema = z.object({
+							allowedDomains:
+								languageModelTool.configurationOptions.allowedDomains.schema,
+						});
+						const result = configurationOptionSchema.safeParse(
+							tool.configuration,
+						);
+						if (!result.success) {
+							logger.warn(
+								`${generation.id}, ${operationNode.id}, anthropic-web-search tool configuration is invalid: ${result.error.message}`,
+							);
+							continue;
+						}
+						toolSet.web_search = openai.tools.webSearch(
+							result.data.allowedDomains
+								? { filters: { allowedDomains: result.data.allowedDomains } }
+								: {},
+						);
 						break;
-					case "postgres":
+					}
+					case "postgres": {
+						const unsafeSecretId =
+							tool.configuration[
+								languageModelTool.configurationOptions.secretId.name
+							];
+						const result = SecretId.safeParse(unsafeSecretId);
+						if (result.error) {
+							logger.warn(
+								`${generation.id}, ${operationNode.id}, github-api tool secret id is undefined`,
+							);
+							continue;
+						}
+						const unsafeToken = await decryptSecret({
+							context,
+							secretId: result.data,
+						});
+						if (unsafeToken === undefined) {
+							logger.warn(
+								`${generation.id}, ${operationNode.id}, github-api tool secret token is undefined`,
+							);
+							continue;
+						}
+						const connectionString = unsafeToken;
+						const useTools =
+							tool.configuration[
+								languageModelTool.configurationOptions.useTools.name
+							];
+						if (!Array.isArray(useTools)) {
+							logger.warn(
+								`${generation.id}, ${operationNode.id}, github-api tool use tools is not an array`,
+							);
+							continue;
+						}
+						const postgresTools = createPostgresToolV2({
+							connectionString,
+							useTools,
+							toolDefs: languageModelTool.tools,
+							context,
+						});
+
+						Object.assign(toolSet, postgresTools);
 						break;
+					}
 					default: {
 						const _exhaustiveCheck: never = languageModelTool;
 						throw new Error(`Unknown tool: ${_exhaustiveCheck}`);
