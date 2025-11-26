@@ -435,12 +435,9 @@ export function Page({
 				)
 			: data.apps.filter((app) => app.isMine);
 
-	const [selectedAppId, setSelectedAppId] = useState<string | undefined>(
-		undefined,
-	);
-	const [runningAppId, setRunningAppId] = useState<string | undefined>(
-		undefined,
-	);
+	const [selectedAppId, setSelectedAppId] = useState<string | undefined>();
+	const [runningAppId, setRunningAppId] = useState<string | undefined>();
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [isRunning, startTransition] = useTransition();
 	const [isTaskSidebarOpen, setIsTaskSidebarOpen] = useState(false);
 	const [isAppListScrollable, setIsAppListScrollable] = useState(false);
@@ -538,7 +535,9 @@ export function Page({
 	const handleRunSubmit = useCallback(
 		(event: { inputs: GenerationContextInput[] }) => {
 			if (!runningApp) return;
+			setIsDialogOpen(false);
 			setIsTaskSidebarOpen(true);
+			setSelectedAppId(undefined);
 			startTransition(async () => {
 				await createAndStartTaskAction({
 					generationOriginType: "stage",
@@ -546,14 +545,16 @@ export function Page({
 					inputs: event.inputs,
 					workspaceId: runningApp.workspaceId,
 				});
-				setTimeout(() => {
-					setRunningAppId(undefined);
-					setSelectedAppId(undefined);
-				}, 800);
 			});
 		},
 		[runningApp, createAndStartTaskAction],
 	);
+
+	useEffect(() => {
+		if (!isRunning) {
+			setRunningAppId(undefined);
+		}
+	}, [isRunning]);
 
 	return (
 		<div className="w-full">
@@ -690,16 +691,29 @@ export function Page({
 						) : (
 							<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] h-[240px] w-full rounded-[8px] flex justify-center items-center text-text-muted">
 								<div className="flex flex-col items-center gap-[4px] text-text-muted">
-									<p className="font-[800] text-text/60">
-										{data.apps.length > 0
-											? "No app selected."
-											: "No apps available yet."}
-									</p>
-									<p className="text-text-muted text-[12px] text-center leading-5">
-										{data.apps.length > 0
-											? "Please select an app from the lists below."
-											: "Generate or adjust the Prompt to see results."}
-									</p>
+									{runningApp && isRunning ? (
+										<>
+											<p className="font-[800] text-text/60">
+												Creating task for {runningApp.name}...
+											</p>
+											<p className="text-text-muted text-[12px] text-center leading-5">
+												You can track progress in the Tasks panel on the right.
+											</p>
+										</>
+									) : (
+										<>
+											<p className="font-[800] text-text/60">
+												{data.apps.length > 0
+													? "No app selected."
+													: "No apps available yet."}
+											</p>
+											<p className="text-text-muted text-[12px] text-center leading-5">
+												{data.apps.length > 0
+													? "Please select an app from the lists below."
+													: "Generate or adjust the Prompt to see results."}
+											</p>
+										</>
+									)}
 								</div>
 							</div>
 						)}
@@ -733,10 +747,13 @@ export function Page({
 												<AppCard
 													app={app}
 													key={app.id}
-													isSelected={selectedAppId === app.id}
+													isSelected={
+														selectedAppId === app.id || runningAppId === app.id
+													}
 													onSelect={() => {
 														setSelectedAppId(app.id);
 														setRunningAppId(app.id);
+														setIsDialogOpen(true);
 													}}
 												/>
 											))}
@@ -761,10 +778,13 @@ export function Page({
 												<AppCard
 													app={app}
 													key={app.id}
-													isSelected={selectedAppId === app.id}
+													isSelected={
+														selectedAppId === app.id || runningAppId === app.id
+													}
 													onSelect={() => {
 														setSelectedAppId(app.id);
 														setRunningAppId(app.id);
+														setIsDialogOpen(true);
 													}}
 												/>
 											))}
@@ -789,10 +809,13 @@ export function Page({
 												<AppCard
 													app={app}
 													key={app.id}
-													isSelected={selectedAppId === app.id}
+													isSelected={
+														selectedAppId === app.id || runningAppId === app.id
+													}
 													onSelect={() => {
 														setSelectedAppId(app.id);
 														setRunningAppId(app.id);
+														setIsDialogOpen(true);
 													}}
 												/>
 											))}
@@ -877,9 +900,10 @@ export function Page({
 
 			{/* Player dialog */}
 			<Dialog
-				open={runningApp !== undefined}
+				open={isDialogOpen && runningApp !== undefined}
 				onOpenChange={(open) => {
-					if (!open) {
+					setIsDialogOpen(open);
+					if (!open && !isRunning) {
 						setRunningAppId(undefined);
 						setSelectedAppId(undefined);
 					}
@@ -894,6 +918,7 @@ export function Page({
 							className="absolute right-2 top-1 z-20 text-muted-foreground hover:text-foreground transition-colors rounded-sm"
 							aria-label="Close running app"
 							onClick={() => {
+								setIsDialogOpen(false);
 								setRunningAppId(undefined);
 								setSelectedAppId(undefined);
 							}}
