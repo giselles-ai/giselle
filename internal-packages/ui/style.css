@@ -164,7 +164,7 @@
 
 	/* glass common */
 	/* unified overlay (scrim) color for dialogs */
-	--color-dialog-overlay: rgba(0, 0, 0, 0.3);
+	--color-dialog-overlay: rgba(0, 0, 0, 0.5);
 	--glass-highlight-bg: linear-gradient(
 		to right,
 		transparent,
@@ -261,5 +261,60 @@
 			linear-gradient(#fff 0 0);
 		-webkit-mask-composite: xor;
 		padding: 1px;
+	}
+
+	/* Stage: animated star border overlays for icon containers */
+	.stage-star-border-bottom {
+		position: absolute;
+		width: 260%;
+		height: 40%;
+		opacity: 0.7;
+		bottom: -12px;
+		right: -210%;
+		border-radius: 9999px;
+		background: radial-gradient(
+			circle,
+			color-mix(in srgb, var(--color-text), transparent 20%),
+			transparent 14%
+		);
+		animation: stage-star-move-bottom 6s linear infinite alternate;
+	}
+
+	.stage-star-border-top {
+		position: absolute;
+		width: 260%;
+		height: 40%;
+		opacity: 0.7;
+		top: -12px;
+		left: -210%;
+		border-radius: 9999px;
+		background: radial-gradient(
+			circle,
+			color-mix(in srgb, var(--color-text), transparent 20%),
+			transparent 14%
+		);
+		animation: stage-star-move-top 6s linear infinite alternate;
+	}
+}
+
+@keyframes stage-star-move-bottom {
+	0% {
+		transform: translate(0%, 0%);
+		opacity: 1;
+	}
+	100% {
+		transform: translate(-100%, 0%);
+		opacity: 0;
+	}
+}
+
+@keyframes stage-star-move-top {
+	0% {
+		transform: translate(0%, 0%);
+		opacity: 1;
+	}
+	100% {
+		transform: translate(100%, 0%);
+		opacity: 0;
 	}
 }
