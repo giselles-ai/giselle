@@ -60,8 +60,8 @@ export function transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
 							budgetTokens: 12000,
 						},
 					} satisfies AnthropicProviderOptions,
-				} as Partial<LanguageModelV2CallOptions>,
-			};
+				},
+			} as Partial<LanguageModelV2CallOptions>;
 		}
 		case "google/gemini-3-pro-preview": {
 			const config = parseConfiguration(
