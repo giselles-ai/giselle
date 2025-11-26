@@ -8,7 +8,7 @@ import type {
 	VariableNode,
 	VectorStoreNode,
 } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
+import { type UIConnection, useWorkflowDesigner } from "@giselles-ai/react";
 import { useMemo } from "react";
 import type { ConnectedSource, DatastoreNode } from "./types";
 
@@ -29,55 +29,69 @@ export function useConnectedSources(node: QueryNode) {
 		>[] = [];
 		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
 
+		const uiConnections: UIConnection[] = [];
 		for (const connection of connectionsToThisNode) {
-			const node = data.nodes.find(
+			const outputNode = data.nodes.find(
 				(node) => node.id === connection.outputNode.id,
 			);
-			if (node === undefined) {
+			if (outputNode === undefined) {
 				continue;
 			}
-			const output = node.outputs.find(
+			const output = outputNode.outputs.find(
 				(output) => output.id === connection.outputId,
 			);
 			if (output === undefined) {
 				continue;
 			}
+			const input = outputNode.inputs.find(
+				(input) => input.id === connection.inputId,
+			);
+			if (input === undefined) {
+				continue;
+			}
+			uiConnections.push({
+				id: connection.id,
+				output,
+				outputNode,
+				input,
+				inputNode: node,
+			});
 
-			switch (node.type) {
+			switch (outputNode.type) {
 				case "operation":
-					switch (node.content.type) {
+					switch (outputNode.content.type) {
 						case "textGeneration":
 							connectedGeneratedSources.push({
 								output,
-								node: node as TextGenerationNode,
+								node: outputNode as TextGenerationNode,
 								connection,
 							});
 							break;
 						case "contentGeneration":
 							connectedGeneratedSources.push({
 								output,
-								node: node as ContentGenerationNode,
+								node: outputNode as ContentGenerationNode,
 								connection,
 							});
 							break;
 						case "action":
 							connectedActionSources.push({
 								output,
-								node: node as ActionNode,
+								node: outputNode as ActionNode,
 								connection,
 							});
 							break;
 						case "trigger":
 							connectedTriggerSources.push({
 								output,
-								node: node as TriggerNode,
+								node: outputNode as TriggerNode,
 								connection,
 							});
 							break;
 						case "appEntry":
 							connectedAppEntrySources.push({
 								output,
-								node: node as AppEntryNode,
+								node: outputNode as AppEntryNode,
 								connection,
 							});
 							break;
@@ -85,17 +99,17 @@ export function useConnectedSources(node: QueryNode) {
 						case "query":
 							break;
 						default: {
-							const _exhaustiveCheck: never = node.content.type;
+							const _exhaustiveCheck: never = outputNode.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 						}
 					}
 					break;
 				case "variable":
-					switch (node.content.type) {
+					switch (outputNode.content.type) {
 						case "vectorStore":
 							connectedDatastoreSources.push({
 								output,
-								node: node as VectorStoreNode,
+								node: outputNode as VectorStoreNode,
 								connection,
 							});
 							break;
@@ -103,7 +117,7 @@ export function useConnectedSources(node: QueryNode) {
 						case "text":
 							connectedVariableSources.push({
 								output,
-								node: node as VariableNode,
+								node: outputNode as VariableNode,
 								connection,
 							});
 							break;
@@ -111,13 +125,13 @@ export function useConnectedSources(node: QueryNode) {
 						case "webPage":
 							break;
 						default: {
-							const _exhaustiveCheck: never = node.content.type;
+							const _exhaustiveCheck: never = outputNode.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 						}
 					}
 					break;
 				default: {
-					const _exhaustiveCheck: never = node;
+					const _exhaustiveCheck: never = outputNode;
 					throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 				}
 			}
@@ -136,6 +150,7 @@ export function useConnectedSources(node: QueryNode) {
 			variable: connectedVariableSources,
 			action: connectedActionSources,
 			trigger: connectedTriggerSources,
+			connections: uiConnections,
 		};
-	}, [node.id, data.connections, data.nodes]);
+	}, [node, data.connections, data.nodes]);
 }

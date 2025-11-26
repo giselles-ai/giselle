@@ -189,11 +189,6 @@ export function PromptPanel({
 			onValueChange={(value) => {
 				updateNodeDataContent(node, { prompt: value });
 			}}
-			nodes={nodes}
-			connectedSources={connectedSources.map(({ node, output }) => ({
-				node,
-				output,
-			}))}
 			showToolbar={false}
 			variant="plain"
 			header={header}

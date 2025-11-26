@@ -44,17 +44,9 @@ export function TextGenerationNodePropertiesPanel({
 		nodeId: node.id,
 		origin: { type: "studio", workspaceId: data.id },
 	});
-	const { all: connectedSources } = useConnectedOutputs(node);
+	const { all: connectedSources, connections } = useConnectedOutputs(node);
 	const sourceNodes = useMemo(
 		() => connectedSources.map((c) => c.node),
-		[connectedSources],
-	);
-	const connectedOutputs = useMemo(
-		() =>
-			connectedSources.map(({ node: n, id, label, accessor }) => ({
-				node: n,
-				output: { id, label, accessor },
-			})),
 		[connectedSources],
 	);
 	const [isPromptExpanded, setIsPromptExpanded] = useState(false);
@@ -204,8 +196,7 @@ export function TextGenerationNodePropertiesPanel({
 								onValueChange={(value) => {
 									updateNodeDataContent(node, { prompt: value });
 								}}
-								nodes={sourceNodes}
-								connectedSources={connectedOutputs}
+								connections={connections}
 								placeholder="Write your prompt here..."
 								showToolbar={false}
 								variant="plain"

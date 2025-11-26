@@ -162,10 +162,6 @@ export function ImageGenerationNodePropertiesPanel({
 								onValueChange={(value) => {
 									updateNodeDataContent(node, { prompt: value });
 								}}
-								connectedSources={connectedSources.map(({ node, output }) => ({
-									node,
-									output,
-								}))}
 								placeholder="Write your prompt here..."
 								showToolbar={false}
 								variant="plain"
