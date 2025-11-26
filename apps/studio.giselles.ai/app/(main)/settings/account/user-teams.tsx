@@ -164,11 +164,11 @@ function UserTeamsItem({
 					align="end"
 					className="p-1 border-[0.25px] border-border rounded-[8px] min-w-[165px] bg-surface shadow-none"
 				>
-					<DropdownMenuItem className="p-0">
+					<DropdownMenuItem
+						className="p-0"
+						onSelect={(e) => e.preventDefault()}
+					>
 						<ChangeTeamAndAction
-							teamId={teamId}
-							userId={currentUserId}
-							role={role}
 							renderButton={(isPending) => (
 								<button
 									type="submit"
@@ -181,11 +181,11 @@ function UserTeamsItem({
 							action={() => navigateWithChangeTeam(teamId, "/workspaces")}
 						/>
 					</DropdownMenuItem>
-					<DropdownMenuItem className="p-0">
+					<DropdownMenuItem
+						className="p-0"
+						onSelect={(e) => e.preventDefault()}
+					>
 						<ChangeTeamAndAction
-							teamId={teamId}
-							userId={currentUserId}
-							role={role}
 							renderButton={(isPending) => (
 								<button
 									type="submit"
@@ -199,11 +199,11 @@ function UserTeamsItem({
 						/>
 					</DropdownMenuItem>
 					<div className="my-2 h-px bg-white/10" />
-					<DropdownMenuItem className="p-0">
+					<DropdownMenuItem
+						className="p-0"
+						onSelect={(e) => e.preventDefault()}
+					>
 						<ChangeTeamAndAction
-							teamId={teamId}
-							userId={currentUserId}
-							role={role}
 							renderButton={(isPending) => (
 								<button
 									type="submit"
@@ -223,9 +223,6 @@ function UserTeamsItem({
 }
 
 interface ChangeTeamAndActionProps {
-	teamId: string;
-	userId: string;
-	role: string;
 	renderButton: (isPending: boolean) => React.ReactNode;
 	action: () => Promise<void>;
 }
