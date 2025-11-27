@@ -378,7 +378,7 @@ export function ContentGenerationNodePropertiesPanel({
 									: defaultName(connection.outputNode)}
 							</div>
 						))}
-						{availableContextNodes.length > 0 && (
+						{availableContextNodes.length > 0 ? (
 							<DropdownMenu
 								items={availableContextNodes}
 								onSelect={handleContextSelect}
@@ -393,6 +393,10 @@ export function ContentGenerationNodePropertiesPanel({
 								}
 								modal={false}
 							/>
+						) : (
+							<div className="text-[12px] text-text-muted">
+								Connect nodes to add context
+							</div>
 						)}
 					</div>
 
