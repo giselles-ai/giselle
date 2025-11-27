@@ -370,7 +370,7 @@ function TaskCard({ task }: { task: Task }) {
 		<button
 			type="button"
 			onClick={handleClick}
-			className="w-full text-left px-3 py-3 rounded-lg border border-border bg-card/30 hover:bg-card/50 hover:border-white/20 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+			className="w-full text-left px-3 py-3 rounded-lg border border-border bg-card/30 hover:bg-card/50 hover:border-white/20 transition-all cursor-pointer focus:outline-none"
 		>
 			<div className="flex items-start justify-between gap-3 mb-2">
 				<h3 className="text-sm font-semibold text-foreground line-clamp-1 flex-1">
