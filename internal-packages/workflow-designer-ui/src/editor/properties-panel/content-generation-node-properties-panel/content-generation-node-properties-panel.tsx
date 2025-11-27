@@ -12,6 +12,7 @@ import { defaultName } from "@giselles-ai/node-registry";
 import { type ContentGenerationNode, Node } from "@giselles-ai/protocol";
 import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
+import clsx from "clsx/lite";
 import {
 	MoveUpIcon,
 	PlusIcon,
@@ -19,9 +20,9 @@ import {
 	SquareIcon,
 	XIcon,
 } from "lucide-react";
+import { Tooltip as TooltipPrimitive } from "radix-ui";
 import { useCallback, useMemo, useState } from "react";
 import { GenerationView } from "../../../ui/generation-view";
-import { Tooltip } from "../../../ui/tooltip";
 import { NodePanelHeader, PropertiesPanelRoot } from "../ui";
 import { ConfigurationFormField, ModelPickerV2 } from "./language-model";
 import { useNodeContext } from "./node-context/use-node-context";
@@ -77,6 +78,8 @@ export function ContentGenerationNodePropertiesPanel({
 				name: tool.name,
 				title: toolDef?.title ?? tool.name,
 				configuration: tool.configuration,
+				hasConfigurationOptions:
+					toolDef && Object.keys(toolDef.configurationOptions).length > 0,
 			};
 		});
 	}, [node.content]);
@@ -422,15 +425,43 @@ export function ContentGenerationNodePropertiesPanel({
 									key={tool.name}
 									className="flex items-center gap-[4px] px-[8px] py-[4px] bg-surface rounded-full text-[12px] text-text group"
 								>
-									<button
-										type="button"
-										className="hover:text-text-primary cursor-pointer"
-										onClick={() =>
-											handleToolEdit(tool.name, tool.configuration)
-										}
-									>
-										{tool.title}
-									</button>
+									{tool.hasConfigurationOptions ? (
+										<button
+											type="button"
+											className="hover:text-text-primary cursor-pointer"
+											onClick={() =>
+												handleToolEdit(tool.name, tool.configuration)
+											}
+										>
+											{tool.title}
+										</button>
+									) : (
+										<TooltipPrimitive.Provider>
+											<TooltipPrimitive.Root delayDuration={100}>
+												<TooltipPrimitive.Trigger asChild>
+													<button
+														type="button"
+														className="hover:text-text-primary cursor-pointer"
+													>
+														{tool.title}
+													</button>
+												</TooltipPrimitive.Trigger>
+												<TooltipPrimitive.Portal>
+													<TooltipPrimitive.Content
+														side="top"
+														align="center"
+														className={clsx(
+															"group z-50 overflow-hidden rounded-md px-4 py-4 text-[12px] shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 max-w-[300px]",
+															"bg-surface text-inverse",
+														)}
+														sideOffset={8}
+													>
+														This tool has no configuration
+													</TooltipPrimitive.Content>
+												</TooltipPrimitive.Portal>
+											</TooltipPrimitive.Root>
+										</TooltipPrimitive.Provider>
+									)}
 									<button
 										type="button"
 										className="cursor-pointer"
@@ -495,19 +526,30 @@ export function ContentGenerationNodePropertiesPanel({
 								</button>
 							</div>
 						) : isPromptEmpty ? (
-							<Tooltip
-								text="Enter a prompt to continue"
-								variant="dark"
-								side="top"
-								sideOffset={8}
-								delayDuration={0}
-							>
-								<div className="absolute bottom-[8px] right-[8px]">
-									<div className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 opacity-35">
-										<MoveUpIcon className="size-[16px]" />
-									</div>
-								</div>
-							</Tooltip>
+							<TooltipPrimitive.Provider>
+								<TooltipPrimitive.Root delayDuration={100}>
+									<TooltipPrimitive.Trigger asChild>
+										<div className="absolute bottom-[8px] right-[8px]">
+											<div className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 opacity-35">
+												<MoveUpIcon className="size-[16px]" />
+											</div>
+										</div>
+									</TooltipPrimitive.Trigger>
+									<TooltipPrimitive.Portal>
+										<TooltipPrimitive.Content
+											side="top"
+											align="center"
+											className={clsx(
+												"group z-50 overflow-hidden rounded-md px-4 py-4 text-[12px] shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 max-w-[300px]",
+												"bg-surface text-inverse",
+											)}
+											sideOffset={8}
+										>
+											Enter a prompt to continue
+										</TooltipPrimitive.Content>
+									</TooltipPrimitive.Portal>
+								</TooltipPrimitive.Root>
+							</TooltipPrimitive.Provider>
 						) : (
 							<div className="absolute bottom-[8px] right-[8px]">
 								<button
