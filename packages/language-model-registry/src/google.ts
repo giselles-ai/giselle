@@ -35,18 +35,10 @@ export const google = {
 					"Control thinking behavior. Models adjust reasoning effort dynamically by default, but you can override this for specific latency or complexity requirements.",
 				schema: z.enum(["low", "high"]),
 			},
-			searchGrounding: {
-				description: "Whether to use Google Search for grounding.",
-				schema: z.boolean(),
-				ui: {
-					label: "Grounding with Google Search",
-				},
-			},
 		},
 		defaultConfiguration: {
 			temperature: 1.0,
 			thinkingLevel: "high",
-			searchGrounding: false,
 		},
 		url: "https://ai.google.dev/gemini-api/docs/models",
 	}),
@@ -78,18 +70,10 @@ export const google = {
 				description: "Whether to include reasoning text in the response.",
 				schema: z.boolean(),
 			},
-			searchGrounding: {
-				description: "Whether to use Google Search for grounding.",
-				schema: z.boolean(),
-				ui: {
-					label: "Grounding with Google Search",
-				},
-			},
 		},
 		defaultConfiguration: {
 			temperature: 1.0,
 			thinking: true,
-			searchGrounding: false,
 		},
 		url: "https://ai.google.dev/gemini-api/docs/models",
 	}),
@@ -117,10 +101,6 @@ export const google = {
 					step: 0.1,
 				},
 			},
-			searchGrounding: {
-				description: "Whether to use Google Search for grounding.",
-				schema: z.boolean(),
-			},
 			thinking: {
 				description: "Whether to include reasoning text in the response.",
 				schema: z.boolean(),
@@ -128,7 +108,6 @@ export const google = {
 		},
 		defaultConfiguration: {
 			temperature: 1.0,
-			searchGrounding: false,
 			thinking: true,
 		},
 		url: "https://ai.google.dev/gemini-api/docs/models",
@@ -157,10 +136,6 @@ export const google = {
 					step: 0.1,
 				},
 			},
-			searchGrounding: {
-				description: "Whether to use Google Search for grounding.",
-				schema: z.boolean(),
-			},
 			thinking: {
 				description: "Whether to include reasoning text in the response.",
 				schema: z.boolean(),
@@ -168,7 +143,6 @@ export const google = {
 		},
 		defaultConfiguration: {
 			temperature: 0.7,
-			searchGrounding: false,
 			thinking: false,
 		},
 		url: "https://ai.google.dev/gemini-api/docs/models",
