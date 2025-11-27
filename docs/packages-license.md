@@ -51,7 +51,7 @@
 
 
 <a name="@ai-sdk/anthropic"></a>
-### @ai-sdk/anthropic v2.0.17
+### @ai-sdk/anthropic v2.0.49
 #### 
 
 ##### Paths
@@ -62,7 +62,7 @@
 
 
 <a name="@ai-sdk/fal"></a>
-### @ai-sdk/fal v1.0.13
+### @ai-sdk/fal v1.0.23
 #### 
 
 ##### Paths
@@ -73,7 +73,7 @@
 
 
 <a name="@ai-sdk/gateway"></a>
-### @ai-sdk/gateway v1.0.23
+### @ai-sdk/gateway v2.0.15
 #### 
 
 ##### Paths
@@ -84,7 +84,7 @@
 
 
 <a name="@ai-sdk/google"></a>
-### @ai-sdk/google v2.0.14
+### @ai-sdk/google v2.0.43
 #### 
 
 ##### Paths
@@ -95,7 +95,7 @@
 
 
 <a name="@ai-sdk/openai"></a>
-### @ai-sdk/openai v2.0.30
+### @ai-sdk/openai v2.0.72
 #### 
 
 ##### Paths
@@ -117,7 +117,7 @@
 
 
 <a name="@ai-sdk/provider-utils"></a>
-### @ai-sdk/provider-utils v3.0.9
+### @ai-sdk/provider-utils v3.0.17
 #### 
 
 ##### Paths
@@ -5705,7 +5705,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="ai"></a>
-### ai v5.0.51
+### ai v5.0.101
 #### 
 
 ##### Paths

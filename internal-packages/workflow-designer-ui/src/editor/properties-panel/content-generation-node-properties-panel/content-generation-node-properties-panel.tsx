@@ -9,17 +9,20 @@ import {
 	languageModelTools,
 } from "@giselles-ai/language-model-registry";
 import { defaultName } from "@giselles-ai/node-registry";
-import type { ContentGenerationNode } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
+import { type ContentGenerationNode, Node } from "@giselles-ai/protocol";
+import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
-import { MoveUpIcon, PlusIcon, Settings2Icon, XIcon } from "lucide-react";
-import { useMemo, useState } from "react";
-import { Tooltip } from "../../../ui/tooltip";
 import {
-	NodePanelHeader,
-	PropertiesPanelContent,
-	PropertiesPanelRoot,
-} from "../ui";
+	MoveUpIcon,
+	PlusIcon,
+	Settings2Icon,
+	SquareIcon,
+	XIcon,
+} from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { GenerationView } from "../../../ui/generation-view";
+import { Tooltip } from "../../../ui/tooltip";
+import { NodePanelHeader, PropertiesPanelRoot } from "../ui";
 import { ConfigurationFormField, ModelPickerV2 } from "./language-model";
 import { useNodeContext } from "./node-context/use-node-context";
 import { ToolConfigurationDialog } from "./tool";
@@ -29,7 +32,7 @@ export function ContentGenerationNodePropertiesPanel({
 }: {
 	node: ContentGenerationNode;
 }) {
-	const { updateNodeData, updateNodeDataContent, deleteNode } =
+	const { updateNodeData, updateNodeDataContent, deleteNode, data } =
 		useWorkflowDesigner();
 	const languageModel = useMemo(
 		() => getEntry(node.content.languageModel.id),
@@ -166,7 +169,6 @@ export function ContentGenerationNodePropertiesPanel({
 					)
 				: [...existingTools, toolEntry];
 
-		console.log(updatedTools);
 		// Update node with new tools array
 		updateNodeData(node, {
 			content: {
@@ -215,6 +217,38 @@ export function ContentGenerationNodePropertiesPanel({
 		return false;
 	}, [node.content.prompt]);
 
+	const {
+		createAndStartGenerationRunner,
+		isGenerating,
+		stopGenerationRunner,
+		currentGeneration,
+	} = useNodeGenerations({
+		nodeId: node.id,
+		origin: { type: "studio", workspaceId: data.id },
+	});
+	const handleGenerationButtonClick = useCallback(() => {
+		createAndStartGenerationRunner({
+			origin: {
+				type: "studio",
+				workspaceId: data.id,
+			},
+			operationNode: node,
+			sourceNodes: connections
+				.map((connection) => connection.outputNode)
+				.filter((nodeLike) => {
+					const result = Node.safeParse(nodeLike);
+					return result.success;
+				}) as Node[],
+			connections: connections.map((connection) => ({
+				id: connection.id,
+				inputId: connection.input.id,
+				inputNode: connection.inputNode,
+				outputId: connection.output.id,
+				outputNode: connection.outputNode,
+			})),
+		});
+	}, [createAndStartGenerationRunner, data.id, node, connections]);
+
 	return (
 		<PropertiesPanelRoot>
 			<NodePanelHeader
@@ -224,7 +258,7 @@ export function ContentGenerationNodePropertiesPanel({
 				onDelete={() => deleteNode(node.id)}
 			/>
 
-			<PropertiesPanelContent>
+			<div className="overflow-hidden flex flex-col grow-1">
 				<div className="grid grid-cols-[60px_1fr] gap-y-[12px] gap-x-[12px] items-start mb-[12px]">
 					<SettingDetail size="md" className="text-text-muted">
 						Model
@@ -379,8 +413,8 @@ export function ContentGenerationNodePropertiesPanel({
 					</div>
 				</div>
 
-				<div className="flex gap-[8px] flex-1">
-					<div className="flex-1 flex flex-col relative">
+				<div className="flex gap-[8px] flex-1 overflow-hidden">
+					<div className="w-1/2 flex flex-col relative">
 						<SettingDetail size="md" className="text-text-muted mb-[6px]">
 							Prompt
 						</SettingDetail>
@@ -393,7 +427,17 @@ export function ContentGenerationNodePropertiesPanel({
 							connections={connections}
 							containerClassName="flex-1"
 						/>
-						{isPromptEmpty ? (
+						{isGenerating ? (
+							<div className="absolute bottom-[8px] right-[8px]">
+								<button
+									className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 cursor-pointer"
+									type="button"
+									onClick={stopGenerationRunner}
+								>
+									<SquareIcon className="size-[16px]" />
+								</button>
+							</div>
+						) : isPromptEmpty ? (
 							<Tooltip
 								text="Enter a prompt to continue"
 								variant="dark"
@@ -412,24 +456,29 @@ export function ContentGenerationNodePropertiesPanel({
 								<button
 									className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 cursor-pointer"
 									type="button"
+									onClick={handleGenerationButtonClick}
 								>
 									<MoveUpIcon className="size-[16px]" />
 								</button>
 							</div>
 						)}
 					</div>
-					<div className="flex flex-col flex-1">
+					<div className="flex flex-col w-1/2">
 						<SettingDetail size="md" className="text-text-muted mb-[6px]">
 							Output
 						</SettingDetail>
-						<div className="rounded-md bg-surface/70 w-full flex-1 p-[8px]">
-							<p className="text-text-muted text-[14px]">
-								Your generation will appear here
-							</p>
+						<div className="rounded-md bg-surface/70 w-full flex-1 p-[8px] overflow-y-auto">
+							{currentGeneration ? (
+								<GenerationView generation={currentGeneration} />
+							) : (
+								<p className="text-text-muted text-[14px]">
+									Your generation will appear here
+								</p>
+							)}
 						</div>
 					</div>
 				</div>
-			</PropertiesPanelContent>
+			</div>
 		</PropertiesPanelRoot>
 	);
 }

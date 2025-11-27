@@ -1,6 +1,7 @@
 import {
 	type Generation,
 	GenerationContext,
+	isContentGenerationNode,
 	isQueuedGeneration,
 	isTextGenerationNode,
 	type RunningGeneration,
@@ -63,7 +64,10 @@ function TextGenerationRunner({ generation }: { generation: Generation }) {
 		return null;
 	}
 	const generationContext = GenerationContext.parse(generation.context);
-	if (!isTextGenerationNode(generationContext.operationNode)) {
+	if (
+		!isTextGenerationNode(generationContext.operationNode) &&
+		!isContentGenerationNode(generationContext.operationNode)
+	) {
 		throw new Error("Invalid generation type");
 	}
 	return (
