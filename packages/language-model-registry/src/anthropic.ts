@@ -6,7 +6,7 @@ import {
 } from "./language-model";
 
 export const anthropic = {
-	"anthorpic/claude-opus-4.5": defineLanguageModel({
+	"anthropic/claude-opus-4.5": defineLanguageModel({
 		provider: "anthropic",
 		id: "anthropic/claude-opus-4.5",
 		name: "Claude Opus 4.5",
