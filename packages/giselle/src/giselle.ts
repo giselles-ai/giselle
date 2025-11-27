@@ -107,6 +107,8 @@ export function Giselle(config: GiselleConfig) {
 		waitUntil: config.waitUntil ?? defaultWaitUntil,
 		generateContentProcess: { type: "self" },
 		runTaskProcess: { type: "self" },
+		experimental_contentGenerationNode:
+			config.experimental_contentGenerationNode ?? false,
 	};
 	return {
 		copyWorkspace: async (workspaceId: WorkspaceId, name?: string) => {

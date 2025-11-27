@@ -68,4 +68,5 @@ export interface GiselleContext {
 	waitUntil: WaitUntil;
 	generateContentProcess: GenerateContentProcess;
 	runTaskProcess: RunTaskProcess;
+	experimental_contentGenerationNode: boolean;
 }

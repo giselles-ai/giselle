@@ -7,7 +7,7 @@ export async function createWorkspace(args: { context: GiselleContext }) {
 	await setWorkspace({
 		workspaceId: workspace.id,
 		workspace: Workspace.parse(workspace),
-		storage: args.context.storage,
+		context: args.context,
 	});
 	return workspace;
 }

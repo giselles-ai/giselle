@@ -30,4 +30,5 @@ export interface GiselleConfig {
 	callbacks?: GiselleCallbacks;
 	logger?: GiselleLogger;
 	waitUntil?: WaitUntil;
+	experimental_contentGenerationNode?: boolean;
 }
