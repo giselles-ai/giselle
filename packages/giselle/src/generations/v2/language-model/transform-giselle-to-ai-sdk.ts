@@ -98,5 +98,7 @@ export function transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
 				},
 			} satisfies Partial<LanguageModelV2CallOptions>;
 		}
+		default:
+			return {} satisfies Partial<LanguageModelV2CallOptions>;
 	}
 }
