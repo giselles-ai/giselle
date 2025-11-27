@@ -1,5 +1,29 @@
 import { DocumentLoaderError } from "@giselles-ai/rag";
 import { RequestError } from "@octokit/request-error";
+import type { GitHubAuthConfig } from "../types";
+
+/**
+ * Handle GitHub client initialization errors
+ */
+export function handleGitHubClientError(
+	error: unknown,
+	authConfig: GitHubAuthConfig,
+): never {
+	if (authConfig.strategy === "app-installation") {
+		if (error instanceof RequestError && error.status === 404) {
+			throw DocumentLoaderError.notFound(
+				`/app/installations/${authConfig.installationId}/access_tokens`,
+				error,
+				{
+					source: "github",
+					resourceType: "AppInstallation",
+					statusCode: 404,
+				},
+			);
+		}
+	}
+	throw error;
+}
 
 /**
  * Execute a GitHub REST API request with retry logic and error handling

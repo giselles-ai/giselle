@@ -6,6 +6,7 @@ import {
 import { type Client, CombinedError } from "urql";
 import { graphql } from "../../client";
 import type { GitHubAuthConfig } from "../../types";
+import { handleGitHubClientError } from "../utils";
 import { getCache, issueDetailsCache, setCache } from "./cache";
 import {
 	type FetchContext,
@@ -83,7 +84,11 @@ export function createGitHubIssuesLoader(
 
 	async function getGraphQLClient(): Promise<Client> {
 		if (!graphqlClient) {
-			graphqlClient = await graphql(authConfig);
+			try {
+				graphqlClient = await graphql(authConfig);
+			} catch (error) {
+				handleGitHubClientError(error, authConfig);
+			}
 		}
 		return graphqlClient;
 	}
