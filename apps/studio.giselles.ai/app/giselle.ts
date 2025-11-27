@@ -10,6 +10,7 @@ import {
 import { tasks as jobs } from "@trigger.dev/sdk";
 import { eq } from "drizzle-orm";
 import { apps, db, tasks } from "@/db";
+import { generateContentNodeFlag } from "@/flags";
 import { waitForLangfuseFlush } from "@/instrumentation.node";
 import { GenerationMetadata } from "@/lib/generation-metadata";
 import { logger } from "@/lib/logger";
@@ -388,6 +389,12 @@ export const giselle = NextGiselle({
 		},
 	},
 	logger,
+	async onRequest({ updateContext }) {
+		const useGenerateContentNode = await generateContentNodeFlag();
+		updateContext({
+			experimental_contentGenerationNode: useGenerateContentNode,
+		});
+	},
 });
 
 // Content generation processor: Trigger.dev implementation

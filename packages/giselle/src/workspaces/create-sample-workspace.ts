@@ -19,7 +19,7 @@ async function createSampleWorkspaceFromTemplate(args: {
 	templateWorkspaceId: WorkspaceId;
 }) {
 	const templateWorkspace = await getWorkspace({
-		storage: args.context.storage,
+		context: args.context,
 		workspaceId: args.templateWorkspaceId,
 	});
 	const idMap = new Map<string, string>();
@@ -135,7 +135,7 @@ async function createSampleWorkspaceFromTemplate(args: {
 		setWorkspace({
 			workspaceId: newWorkspaceId,
 			workspace: newWorkspace,
-			storage: args.context.storage,
+			context: args.context,
 		}),
 		copyFiles({
 			storage: args.context.storage,

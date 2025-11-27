@@ -2,6 +2,7 @@ import {
 	GenerationId,
 	Giselle,
 	type GiselleConfig,
+	type GiselleContext,
 } from "@giselles-ai/giselle";
 import {
 	GitHubWebhookUnauthorizedError,
@@ -20,6 +21,11 @@ import { type RequestContext, requestContextStore } from "./context";
 interface NextGiselleConfig extends Omit<GiselleConfig, "waitUntil"> {
 	basePath: string;
 	useAfterFunction?: boolean;
+	onRequest?: (args: {
+		request: Request;
+		context: GiselleContext;
+		updateContext: (updates: Partial<GiselleContext>) => void;
+	}) => void | Promise<void>;
 }
 
 async function getBody(
@@ -52,6 +58,17 @@ export function createHttpHandler({
 	config: NextGiselleConfig;
 }) {
 	return async function httpHandler(request: Request) {
+		// Update context per request if onRequest is provided
+		// This must be done BEFORE requestContextStore.run to ensure context
+		// is updated before any workspace operations
+		if (config.onRequest) {
+			await config.onRequest({
+				request,
+				context: giselle.getContext(),
+				updateContext: (updates) => giselle.updateContext(updates),
+			});
+		}
+
 		let ctx: RequestContext | undefined;
 		// Vercel sets the system env var `VERCEL` to "1" on all deployments
 		// (builds/functions). This is the supported way to detect Vercel runtime.

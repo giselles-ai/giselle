@@ -9,7 +9,7 @@ export async function updateWorkspace(args: {
 	await setWorkspace({
 		workspaceId: args.workspace.id,
 		workspace: args.workspace,
-		storage: args.context.storage,
+		context: args.context,
 	});
 	return args.workspace;
 }
