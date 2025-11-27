@@ -53,6 +53,7 @@ export function transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
 				} satisfies Partial<LanguageModelV2CallOptions>;
 			}
 			return {
+				temperature: config.temperature,
 				providerOptions: {
 					anthropic: {
 						thinking: {
