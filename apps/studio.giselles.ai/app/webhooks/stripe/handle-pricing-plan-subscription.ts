@@ -1,6 +1,12 @@
 import { and, eq, ne } from "drizzle-orm";
 import type Stripe from "stripe";
-import { db, subscriptionHistories, teamMemberships, teams } from "@/db";
+import {
+	db,
+	stripeBillingCadenceHistories,
+	stripeBillingPricingPlanSubscriptionHistories,
+	teamMemberships,
+	teams,
+} from "@/db";
 import {
 	DRAFT_TEAM_NAME_METADATA_KEY,
 	DRAFT_TEAM_USER_DB_ID_METADATA_KEY,
@@ -50,7 +56,28 @@ interface BillingCadence {
 		customer: string;
 		type: string;
 	};
+	billing_cycle: {
+		type: string; // "month" | "year"
+		interval_count: number;
+		month?: {
+			day_of_month: number | null;
+			month_of_year: number | null;
+			time: {
+				hour: number;
+				minute: number;
+				second: number;
+			};
+		};
+	};
 	status: string;
+	settings?: {
+		bill?: {
+			id: string | null;
+			version: string | null;
+		};
+	};
+	metadata?: Record<string, string>;
+	lookup_key?: string | null;
 }
 
 /**
@@ -228,6 +255,9 @@ export async function handlePricingPlanServicingCanceled(event: Stripe.Event) {
 	}
 
 	await db.transaction(async (tx) => {
+		// Record v2 subscription history (canceled state)
+		await recordV2SubscriptionHistory(tx, subscription, cadence, team.dbId);
+
 		// Get the earliest admin's membership ID
 		const [earliestAdmin] = await tx
 			.select({ id: teamMemberships.id })
@@ -271,6 +301,10 @@ export async function handlePricingPlanServicingCanceled(event: Stripe.Event) {
 				),
 			);
 	});
+
+	console.log(
+		`Canceled subscription for team: ${team.dbId}, subscription: ${subscriptionId}`,
+	);
 }
 
 // Helper type for transaction
@@ -301,14 +335,8 @@ async function createNewProTeam(
 		role: "admin",
 	});
 
-	// Record subscription history
-	await recordSubscriptionHistory(
-		tx,
-		subscription,
-		cadence,
-		customerId,
-		team.dbId,
-	);
+	// Record v2 subscription history
+	await recordV2SubscriptionHistory(tx, subscription, cadence, team.dbId);
 
 	console.log(
 		`Created new pro team: ${team.dbId} for subscription: ${subscription.id}`,
@@ -347,14 +375,8 @@ async function upgradeExistingTeam(
 			),
 		);
 
-	// Record subscription history
-	await recordSubscriptionHistory(
-		tx,
-		subscription,
-		cadence,
-		customerId,
-		teamDbId,
-	);
+	// Record v2 subscription history
+	await recordV2SubscriptionHistory(tx, subscription, cadence, teamDbId);
 
 	console.log(
 		`Upgraded team: ${teamDbId} to pro for subscription: ${subscription.id}`,
@@ -362,58 +384,83 @@ async function upgradeExistingTeam(
 }
 
 /**
- * Map v2 servicing_status to v1 Stripe.Subscription.Status
+ * Records v2 billing cadence and subscription history
+ *
+ * Creates records in both stripe_billing_cadence_histories and
+ * stripe_billing_pricing_plan_subscription_histories tables.
+ * Cadence is inserted first to get its dbId for the subscription FK.
  */
-function mapServicingStatusToSubscriptionStatus(
-	servicingStatus: string,
-): Stripe.Subscription.Status {
-	switch (servicingStatus) {
-		case "active":
-			return "active";
-		case "canceled":
-			return "canceled";
-		case "paused":
-			return "paused";
-		case "pending":
-			return "incomplete";
-		default:
-			return "active";
-	}
-}
-
-/**
- * Records a subscription state snapshot to subscription_histories table
- */
-async function recordSubscriptionHistory(
+async function recordV2SubscriptionHistory(
 	tx: TransactionType,
 	subscription: PricingPlanSubscription,
 	cadence: BillingCadence,
-	customerId: string,
 	teamDbId: number,
 ) {
-	// Use cadence.created as period start and next_billing_date as period end
-	const currentPeriodStart = new Date(cadence.created);
-	const currentPeriodEnd = new Date(cadence.next_billing_date);
-	const created = new Date(subscription.created);
-	const canceledAt = subscription.servicing_status_transitions.canceled_at
-		? new Date(subscription.servicing_status_transitions.canceled_at)
-		: null;
+	// Insert cadence history first to get its dbId
+	const [cadenceHistory] = await tx
+		.insert(stripeBillingCadenceHistories)
+		.values({
+			teamDbId,
+			id: cadence.id,
+			customerId: cadence.payer.customer,
+			billingProfileId: cadence.payer.billing_profile,
+			payerType: cadence.payer.type,
+			billingCycleType: cadence.billing_cycle.type,
+			billingCycleIntervalCount: cadence.billing_cycle.interval_count,
+			billingCycleDayOfMonth: cadence.billing_cycle.month?.day_of_month ?? null,
+			billingCycleMonthOfYear:
+				cadence.billing_cycle.month?.month_of_year ?? null,
+			billingCycleTimeHour: cadence.billing_cycle.month?.time.hour ?? 0,
+			billingCycleTimeMinute: cadence.billing_cycle.month?.time.minute ?? 0,
+			billingCycleTimeSecond: cadence.billing_cycle.month?.time.second ?? 0,
+			nextBillingDate: new Date(cadence.next_billing_date),
+			status: cadence.status,
+			billSettingsId: cadence.settings?.bill?.id ?? null,
+			created: new Date(cadence.created),
+			metadata: cadence.metadata ?? null,
+			lookupKey: cadence.lookup_key ?? null,
+		})
+		.returning({ dbId: stripeBillingCadenceHistories.dbId });
 
-	await tx.insert(subscriptionHistories).values({
+	// Insert subscription history with cadence FK
+	await tx.insert(stripeBillingPricingPlanSubscriptionHistories).values({
+		teamDbId,
+		billingCadenceDbId: cadenceHistory.dbId,
 		id: subscription.id,
-		teamDbId: teamDbId,
-		customerId: customerId,
-		status: mapServicingStatusToSubscriptionStatus(
-			subscription.servicing_status,
-		),
-		cancelAtPeriodEnd: false, // v2 doesn't have this concept
-		cancelAt: null, // v2 doesn't have scheduled cancellation
-		canceledAt: canceledAt,
-		currentPeriodStart,
-		currentPeriodEnd,
-		created,
-		endedAt: canceledAt, // Use canceled_at as ended_at for v2
-		trialStart: null, // v2 doesn't expose trial info in this response
-		trialEnd: null,
+		billingCadenceId: cadence.id,
+		pricingPlanId: subscription.pricing_plan,
+		pricingPlanVersionId: subscription.pricing_plan_version,
+		servicingStatus: subscription.servicing_status,
+		collectionStatus: subscription.collection_status,
+		activatedAt: subscription.servicing_status_transitions.activated_at
+			? new Date(subscription.servicing_status_transitions.activated_at)
+			: null,
+		canceledAt: subscription.servicing_status_transitions.canceled_at
+			? new Date(subscription.servicing_status_transitions.canceled_at)
+			: null,
+		pausedAt: subscription.servicing_status_transitions.paused_at
+			? new Date(subscription.servicing_status_transitions.paused_at)
+			: null,
+		collectionCurrentAt: subscription.collection_status_transitions.current_at
+			? new Date(subscription.collection_status_transitions.current_at)
+			: null,
+		collectionPastDueAt: subscription.collection_status_transitions.past_due_at
+			? new Date(subscription.collection_status_transitions.past_due_at)
+			: null,
+		collectionPausedAt: subscription.collection_status_transitions.paused_at
+			? new Date(subscription.collection_status_transitions.paused_at)
+			: null,
+		collectionUnpaidAt: subscription.collection_status_transitions.unpaid_at
+			? new Date(subscription.collection_status_transitions.unpaid_at)
+			: null,
+		collectionAwaitingCustomerActionAt: subscription
+			.collection_status_transitions.awaiting_customer_action_at
+			? new Date(
+					subscription.collection_status_transitions
+						.awaiting_customer_action_at,
+				)
+			: null,
+		created: new Date(subscription.created),
+		metadata: subscription.metadata ?? null,
 	});
 }
