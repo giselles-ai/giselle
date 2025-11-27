@@ -34,6 +34,7 @@ export function transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
 		}
 		case "anthropic/claude-haiku-4-5":
 		case "anthropic/claude-opus-4.1":
+		case "anthropic/claude-opus-4.5":
 		case "anthropic/claude-sonnet-4-5": {
 			const config = parseConfiguration(
 				languageModel,
@@ -99,7 +100,9 @@ export function transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
 				},
 			} satisfies Partial<LanguageModelV2CallOptions>;
 		}
-		default:
-			return {} satisfies Partial<LanguageModelV2CallOptions>;
+		default: {
+			const _exhaustiveCheck: never = languageModel;
+			throw new Error(`Unsupported language model: ${_exhaustiveCheck}`);
+		}
 	}
 }
