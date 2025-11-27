@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { db, teams } from "@/db";
 import { getGiselleSession, updateGiselleSession } from "@/lib/giselle-session";
 import { stripe } from "@/services/external/stripe";
-import { getLatestSubscription } from "@/services/subscriptions/get-latest-subscription";
+import { getLatestSubscriptionV2 } from "@/services/subscriptions/get-latest-subscription-v2";
 
 export async function GET(_request: Request) {
 	const session = await getGiselleSession();
@@ -35,11 +35,11 @@ export async function GET(_request: Request) {
 }
 
 async function getTeamIdFromSubscription(subscriptionId: string) {
-	const subscription = await getLatestSubscription(subscriptionId);
-	if (!subscription) {
+	const result = await getLatestSubscriptionV2(subscriptionId);
+	if (!result) {
 		throw new Error("Subscription not found");
 	}
-	if (subscription.status !== "active") {
+	if (result.subscription.servicingStatus !== "active") {
 		throw new Error("Subscription is not active");
 	}
 	const [team] = await db
@@ -47,7 +47,7 @@ async function getTeamIdFromSubscription(subscriptionId: string) {
 			teamId: teams.id,
 		})
 		.from(teams)
-		.where(eq(teams.dbId, subscription.teamDbId));
+		.where(eq(teams.dbId, result.subscription.teamDbId));
 	if (!team) {
 		throw new Error("Team not found");
 	}

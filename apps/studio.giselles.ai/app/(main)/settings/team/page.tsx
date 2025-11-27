@@ -196,13 +196,15 @@ async function CancellationNotice({ subscriptionId }: CancellationNoticeProps) {
 	}
 
 	const subscription = result.data;
-	if (!subscription.cancelAtPeriodEnd || !subscription.cancelAt) {
+	// v2 subscriptions are canceled immediately (no cancel_at_period_end)
+	// Show notice if subscription is canceled
+	if (subscription.servicingStatus !== "canceled" || !subscription.canceledAt) {
 		return null;
 	}
 
 	return (
 		<p className="mt-2 font-medium text-sm leading-[20.4px] text-warning-900 font-geist">
-			Subscription will end on <LocalDateTime date={subscription.cancelAt} />
+			Subscription canceled on <LocalDateTime date={subscription.canceledAt} />
 		</p>
 	);
 }

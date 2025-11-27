@@ -41,8 +41,6 @@ const config: KnipConfig = {
 				"scripts/**",
 				"trigger.config.ts",
 				"trigger/investigate-private-key-job.ts",
-				// v2 subscription query utilities - will be used when v2 billing is fully integrated
-				"services/subscriptions/get-latest-subscription-v2.ts",
 			],
 			// Ignore deps that are resolved dynamically in next.config or used only at build/runtime
 			ignoreDependencies: filterExisting(

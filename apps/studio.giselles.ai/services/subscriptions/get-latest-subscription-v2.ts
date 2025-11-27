@@ -35,33 +35,3 @@ export async function getLatestSubscriptionV2(subscriptionId: string) {
 
 	return latest ?? null;
 }
-
-/**
- * Get the latest v2 subscription state for a given team
- *
- * This function retrieves the most recent subscription record for a team,
- * useful for checking the current subscription status.
- *
- * @param teamDbId - Team database ID
- * @returns The latest subscription record with its billing cadence, or null if not found
- */
-export async function getLatestSubscriptionByTeamV2(teamDbId: number) {
-	const [latest] = await db
-		.select({
-			subscription: stripeBillingPricingPlanSubscriptionHistories,
-			cadence: stripeBillingCadenceHistories,
-		})
-		.from(stripeBillingPricingPlanSubscriptionHistories)
-		.innerJoin(
-			stripeBillingCadenceHistories,
-			eq(
-				stripeBillingPricingPlanSubscriptionHistories.billingCadenceDbId,
-				stripeBillingCadenceHistories.dbId,
-			),
-		)
-		.where(eq(stripeBillingPricingPlanSubscriptionHistories.teamDbId, teamDbId))
-		.orderBy(desc(stripeBillingPricingPlanSubscriptionHistories.createdAt))
-		.limit(1);
-
-	return latest ?? null;
-}
