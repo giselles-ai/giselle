@@ -7,13 +7,13 @@ import {
 	openAIWithEmptyTools,
 	openAIWithGitHubTool,
 	openAIWithoutTools,
-} from "./__fixtures__/node-convertion/nodes";
+} from "./__fixtures__/node-conversion/nodes";
 import {
 	convertContentGenerationToTextGeneration,
 	convertTextGenerationToContentGeneration,
-} from "./node-convertion";
+} from "./node-conversion";
 
-describe("node-convertion", () => {
+describe("node-conversion", () => {
 	describe("convertTextGenerationToContentGeneration", () => {
 		it("should convert TextGenerationNode to ContentGenerationNode", () => {
 			const textGenerationNode = openAI_1 as TextGenerationNode;
