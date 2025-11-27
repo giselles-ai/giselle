@@ -23,9 +23,10 @@ export async function POST(req: Request) {
 		event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
 		logger.info({ eventType: event.type }, "[stripe-v2-webhook] Received");
 		logger.debug({ event }, "[stripe-v2-webhook] Event payload");
-	} catch (err: unknown) {
-		const message = err instanceof Error ? err.message : "Unknown error";
-		logger.error({ error: message }, "[stripe-v2-webhook] Error");
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : "Unknown error";
+		const errorName = error instanceof Error ? error.name : "UnknownError";
+		logger.error({ errorName, message }, "[stripe-v2-webhook] Error");
 		return new Response(`Webhook Error: ${message}`, { status: 400 });
 	}
 
@@ -67,7 +68,9 @@ export async function POST(req: Request) {
 
 		throw new Error("Unhandled relevant event!");
 	} catch (error) {
-		logger.error({ error }, "[stripe-v2-webhook] Handler failed");
+		const message = error instanceof Error ? error.message : "Unknown error";
+		const errorName = error instanceof Error ? error.name : "UnknownError";
+		logger.error({ errorName, message }, "[stripe-v2-webhook] Handler failed");
 		return new Response(
 			"Webhook handler failed. View your Next.js function logs.",
 			{
