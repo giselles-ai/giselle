@@ -131,6 +131,16 @@ export function useNodeContext(node: ContentGenerationNode) {
 			}
 
 			for (const output of currentNode.outputs) {
+				// Skip if this output is already connected
+				const isAlreadyConnected = connections.some(
+					(conn) =>
+						conn.outputNode.id === currentNode.id &&
+						conn.output.id === output.id,
+				);
+				if (isAlreadyConnected) {
+					continue;
+				}
+
 				const nodeName = defaultName(currentNode);
 				const label =
 					currentNode.outputs.length > 1
@@ -250,9 +260,8 @@ export function useNodeContext(node: ContentGenerationNode) {
 				})),
 			});
 		}
-
 		return groups;
-	}, [data.nodes, node, isSupportedConnection]);
+	}, [data.nodes, node, isSupportedConnection, connections]);
 
 	const handleContextSelect = useCallback(
 		(_e: unknown, item: { value: string; label: string }) => {
