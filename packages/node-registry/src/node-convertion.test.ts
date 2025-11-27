@@ -144,6 +144,7 @@ describe("node-convertion", () => {
 
 			expect(result.content.tools?.github).toBeDefined();
 			expect(result.content.tools?.github?.auth.type).toBe("secret");
+			// @ts-expect-error - Test file: fixture may have type mismatch
 			expect(result.content.tools?.github?.auth.secretId).toBe(
 				"scrt-TESTTESTTESTTEST",
 			);
@@ -235,7 +236,9 @@ describe("node-convertion", () => {
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
 			expect(convertedBack.content.tools?.github).toBeDefined();
 			expect(convertedBack.content.tools?.github?.auth.type).toBe("secret");
+			// @ts-expect-error - Test file: fixture may have type mismatch
 			expect(convertedBack.content.tools?.github?.auth.secretId).toBe(
+				// @ts-expect-error - Test file: fixture may have type mismatch
 				originalNode.content.tools?.github?.auth.secretId,
 			);
 			expect(convertedBack.content.tools?.github?.tools).toEqual(
