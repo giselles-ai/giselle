@@ -370,7 +370,7 @@ function TaskCard({ task }: { task: Task }) {
 		<button
 			type="button"
 			onClick={handleClick}
-			className="w-full text-left px-3 py-3 rounded-lg border border-border bg-card/30 hover:bg-card/50 hover:border-border-muted transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+			className="w-full text-left px-3 py-3 rounded-lg border border-border bg-card/30 hover:bg-card/50 hover:border-white/20 transition-all cursor-pointer focus:outline-none"
 		>
 			<div className="flex items-start justify-between gap-3 mb-2">
 				<h3 className="text-sm font-semibold text-foreground line-clamp-1 flex-1">
@@ -653,9 +653,9 @@ export function Page({
 		? data.apps.find((app) => app.id === runningAppId)
 		: undefined;
 
-	const oneMonthAgo = useMemo(() => {
+	const sevenDaysAgo = useMemo(() => {
 		const d = new Date();
-		d.setMonth(d.getMonth() - 1);
+		d.setDate(d.getDate() - 7);
 		return d;
 	}, []);
 
@@ -667,10 +667,10 @@ export function Page({
 					if (Number.isNaN(createdAt.getTime())) {
 						return true;
 					}
-					return createdAt >= oneMonthAgo;
+					return createdAt >= sevenDaysAgo;
 				})
 				.slice(0, 20),
-		[data.tasks, oneMonthAgo],
+		[data.tasks, sevenDaysAgo],
 	);
 
 	// Track app list horizontal scroll to show edge gradients similar to music apps
@@ -904,7 +904,7 @@ export function Page({
 				{isTaskSidebarOpen && (
 					<>
 						<div className="self-stretch w-px bg-border/60" />
-						<aside className="relative w-[280px] h-[calc(100vh-120px)] rounded-lg bg-card/30 flex flex-col py-[24px] mr-4">
+						<aside className="relative w-[280px] h-screen rounded-lg bg-card/30 flex flex-col py-[24px] mr-4 overflow-hidden">
 							<div className="flex items-center justify-between mb-3">
 								<h2 className="text-sm font-semibold text-foreground tracking-wide uppercase">
 									Tasks
@@ -942,7 +942,7 @@ export function Page({
 							) : (
 								<div
 									ref={taskListScrollRef}
-									className="flex-1 space-y-3 overflow-y-auto pr-1 scrollbar-hide"
+									className="flex-1 min-h-0 space-y-3 overflow-y-auto pr-1 scrollbar-hide"
 									style={{
 										scrollbarWidth: "none",
 										msOverflowStyle: "none",

@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import type React from "react";
 import { use, useCallback, useEffect, useState } from "react";
 import { GenerationView } from "../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
@@ -65,6 +66,8 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 	const [hasMounted, setHasMounted] = useState(false);
 	const [isInputsExpanded, setIsInputsExpanded] = useState(false);
 	const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
+	const router = useRouter();
+	const pathname = usePathname();
 
 	const updateTask = useCallback<StreamDataEventHandler>((data) => {
 		setTask(data.task);
@@ -113,6 +116,43 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 	useEffect(() => {
 		setHasMounted(true);
 	}, []);
+
+	// On desktop, when visiting /stage/tasks/[taskId] without a stepId,
+	// automatically navigate to the first completed step that has generation data.
+	useEffect(() => {
+		if (!hasMounted) {
+			return;
+		}
+
+		if (typeof window === "undefined") {
+			return;
+		}
+
+		// Only auto-select on desktop layout; mobile uses in-place accordion instead.
+		if (window.innerWidth < 768) {
+			return;
+		}
+
+		// If URL already includes a stepId, do nothing.
+		const segments = pathname.split("/").filter(Boolean);
+		// /stage/tasks/[taskId] → ["stage", "tasks", "{taskId}"]
+		// /stage/tasks/[taskId]/[stepId] → ["stage", "tasks", "{taskId}", "{stepId}"]
+		if (segments.length >= 4) {
+			return;
+		}
+
+		for (const sequence of task.sequences) {
+			for (const step of sequence.steps) {
+				const generation = stepGenerations[step.id];
+				if (!generation) {
+					continue;
+				}
+
+				router.replace(`/stage/tasks/${task.id}/${step.id}`);
+				return;
+			}
+		}
+	}, [hasMounted, pathname, router, stepGenerations, task]);
 
 	return (
 		<TaskStreamReader taskId={defaultTask.id} onUpdateAction={updateTask}>
@@ -236,6 +276,10 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 								{sequence.steps.map((step) => {
 									const isExpanded = expandedSteps.has(step.id);
 									const generation = stepGenerations[step.id];
+									const pathSegments = pathname.split("/").filter(Boolean);
+									const currentStepId =
+										pathSegments.length >= 4 ? pathSegments[3] : undefined;
+									const isActive = currentStepId === step.id;
 
 									const handleStepClick = (e: React.MouseEvent) => {
 										// モバイルの場合はアコーディオン開閉
@@ -262,10 +306,9 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 												onClick={handleStepClick}
 											>
 												<div
-													className="flex w-full p-2 justify-between items-center rounded-[8px] border border-white/20 bg-transparent hover:bg-white/5 transition-colors"
-													style={{
-														borderColor: "rgba(181, 192, 202, 0.20)",
-													}}
+													className={`flex w-full p-2 justify-between items-center rounded-[8px] border bg-transparent hover:bg-white/5 transition-colors ${
+														isActive ? "border-white" : "border-white/20"
+													}`}
 												>
 													<div className="flex items-center gap-3">
 														{/* Step Icon */}
