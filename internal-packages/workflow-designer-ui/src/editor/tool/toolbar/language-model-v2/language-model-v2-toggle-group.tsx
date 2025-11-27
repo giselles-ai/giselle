@@ -15,8 +15,8 @@ import { useLanguageModelV2ToggleGroupStore } from "./store";
 
 const recommendedLanguageModelIds: LanguageModelId[] = [
 	"openai/gpt-5.1-thinking",
-	"google/gemini-2.5-pro",
-	"anthropic/claude-sonnet-4-5",
+	"google/gemini-3-pro-preview",
+	"anthropic/claude-opus-4.5",
 ];
 
 export function LanguageModelV2ToggleGroup({
