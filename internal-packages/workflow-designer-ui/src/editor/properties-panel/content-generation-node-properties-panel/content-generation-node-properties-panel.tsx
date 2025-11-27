@@ -1,4 +1,3 @@
-import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { Popover } from "@giselle-internal/ui/popover";
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
@@ -410,13 +409,13 @@ export function ContentGenerationNodePropertiesPanel({
 									handleToolSelect(e, { value: String(option.value) });
 								}}
 								trigger={
-									<Button
-										variant="solid"
-										leftIcon={<PlusIcon />}
-										className="rounded-full"
+									<button
+										type="button"
+										className="flex items-center gap-[4px] px-[8px] py-[4px] bg-surface rounded-full text-[12px] text-text hover:bg-element-hover cursor-pointer"
 									>
-										Add
-									</Button>
+										<PlusIcon className="size-[12px]" />
+										<span>Add</span>
+									</button>
 								}
 								modal={false}
 							/>
