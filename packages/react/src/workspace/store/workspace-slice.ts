@@ -136,10 +136,47 @@ export const createWorkspaceSlice: StateCreator<WorkspaceSlice> = (
 				nodeState: { ...state.workspace.ui.nodeState },
 			};
 			delete ui.nodeState[nodeId];
+
+			// Identify connections to remove
+			const connectionsToRemove = state.workspace.connections.filter(
+				(c) => c.inputNode.id === nodeId || c.outputNode.id === nodeId,
+			);
+
+			// Update connected nodes (e.g. remove inputs from nodes that lost a connection)
+			let nodes = state.workspace.nodes;
+			for (const connection of connectionsToRemove) {
+				if (connection.outputNode.id === nodeId) {
+					// The deleted node was the OUTPUT (source) of this connection.
+					// So we need to update the INPUT (target) node to remove the corresponding input port.
+					const targetNode = nodes.find(
+						(n) => n.id === connection.inputNode.id,
+					);
+					if (targetNode !== undefined) {
+						if (isOperationNode(targetNode) && !isActionNode(targetNode)) {
+							const updatedInputs = targetNode.inputs.filter(
+								(input) => input.id !== connection.inputId,
+							);
+							nodes = nodes.map((n) =>
+								n.id === targetNode.id
+									? { ...targetNode, inputs: updatedInputs }
+									: n,
+							);
+						}
+					}
+				}
+			}
+
+			nodes = nodes.filter((n) => n.id !== nodeId);
+			// Remove connections associated with the node
+			const nextConnections = state.workspace.connections.filter(
+				(c) => c.inputNode.id !== nodeId && c.outputNode.id !== nodeId,
+			);
+
 			return {
 				workspace: {
 					...state.workspace,
-					nodes: state.workspace.nodes.filter((n) => n.id !== nodeId),
+					nodes,
+					connections: nextConnections,
 					ui,
 				},
 			};
