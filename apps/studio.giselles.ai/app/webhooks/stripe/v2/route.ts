@@ -1,5 +1,9 @@
 import type Stripe from "stripe";
 import { stripe } from "@/services/external/stripe";
+import {
+	handlePricingPlanServicingActivated,
+	handlePricingPlanServicingCanceled,
+} from "../handle-pricing-plan-subscription";
 
 const relevantEvents = new Set([
 	"v2.billing.pricing_plan_subscription.servicing_activated",
@@ -8,23 +12,20 @@ const relevantEvents = new Set([
 
 export async function POST(req: Request) {
 	const body = await req.text();
-	const sig = req.headers.get("stripe-signature");
+	const sig = req.headers.get("stripe-signature") as string;
 	const webhookSecret = process.env.STRIPE_V2_WEBHOOK_SECRET;
 	let event: Stripe.Event;
 
 	try {
-		if (!webhookSecret) {
-			return new Response("Webhook secret not configured.", { status: 400 });
-		}
-		if (!sig) {
-			return new Response("Missing stripe-signature header.", { status: 400 });
-		}
+		if (!sig || !webhookSecret)
+			return new Response("Webhook secret not found.", { status: 400 });
 		event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
 		console.log(`🔔  v2 Webhook received: ${event.type}`);
-	} catch (err: unknown) {
-		const message = err instanceof Error ? err.message : "Unknown error";
-		console.log(`❌ Error message: ${message}`);
-		return new Response(`Webhook Error: ${message}`, { status: 400 });
+
+		// biome-ignore lint/suspicious/noExplicitAny: @todo error handling
+	} catch (err: any) {
+		console.log(`❌ Error message: ${err.message}`);
+		return new Response(`Webhook Error: ${err.message}`, { status: 400 });
 	}
 
 	if (!relevantEvents.has(event.type)) {
@@ -38,16 +39,14 @@ export async function POST(req: Request) {
 		if (
 			eventType === "v2.billing.pricing_plan_subscription.servicing_activated"
 		) {
-			// TODO: Implement handler in future PR
-			console.log("🔔  Pricing plan subscription activated (handler pending)");
+			await handlePricingPlanServicingActivated(event);
 			return new Response(JSON.stringify({ received: true }));
 		}
 
 		if (
 			eventType === "v2.billing.pricing_plan_subscription.servicing_canceled"
 		) {
-			// TODO: Implement handler in future PR
-			console.log("🔔  Pricing plan subscription canceled (handler pending)");
+			await handlePricingPlanServicingCanceled(event);
 			return new Response(JSON.stringify({ received: true }));
 		}
 
