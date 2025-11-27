@@ -1,10 +1,10 @@
-import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { Popover } from "@giselle-internal/ui/popover";
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import {
 	getEntry,
+	type LanguageModelId,
 	type LanguageModelTool,
 	languageModelTools,
 } from "@giselles-ai/language-model-registry";
@@ -189,7 +189,12 @@ export function ContentGenerationNodePropertiesPanel({
 		}
 	};
 
-	const { shouldShowOutputLabel, connections } = useNodeContext(node);
+	const {
+		shouldShowOutputLabel,
+		connections,
+		availableContextNodes,
+		handleContextSelect,
+	} = useNodeContext(node);
 
 	const isPromptEmpty = useMemo(() => {
 		if (typeof node.content.prompt !== "string") {
@@ -226,6 +231,23 @@ export function ContentGenerationNodePropertiesPanel({
 		nodeId: node.id,
 		origin: { type: "studio", workspaceId: data.id },
 	});
+	const handleModelChange = useCallback(
+		(modelId: LanguageModelId) => {
+			const newLanguageModel = getEntry(modelId);
+			updateNodeData(node, {
+				content: {
+					...node.content,
+					languageModel: {
+						provider: newLanguageModel.provider,
+						id: newLanguageModel.id,
+						configuration: newLanguageModel.defaultConfiguration,
+					},
+				},
+			});
+		},
+		[node, updateNodeData],
+	);
+
 	const handleGenerationButtonClick = useCallback(() => {
 		createAndStartGenerationRunner({
 			origin: {
@@ -265,7 +287,10 @@ export function ContentGenerationNodePropertiesPanel({
 					</SettingDetail>
 					<div className="overflow-x-hidden">
 						<div className="flex items-center gap-[4px]">
-							<ModelPickerV2 value={node.content.languageModel.id} />
+							<ModelPickerV2
+								value={node.content.languageModel.id}
+								onChange={handleModelChange}
+							/>
 							<Popover
 								onOpenAutoFocus={(e) => {
 									e.preventDefault();
@@ -353,6 +378,22 @@ export function ContentGenerationNodePropertiesPanel({
 									: defaultName(connection.outputNode)}
 							</div>
 						))}
+						{availableContextNodes.length > 0 && (
+							<DropdownMenu
+								items={availableContextNodes}
+								onSelect={handleContextSelect}
+								trigger={
+									<button
+										type="button"
+										className="flex items-center gap-[4px] px-[8px] py-[4px] bg-surface rounded-full text-[12px] text-text hover:bg-element-hover cursor-pointer"
+									>
+										<PlusIcon className="size-[12px]" />
+										<span>Add</span>
+									</button>
+								}
+								modal={false}
+							/>
+						)}
 					</div>
 
 					<SettingDetail size="md" className="text-text-muted">
@@ -389,13 +430,13 @@ export function ContentGenerationNodePropertiesPanel({
 									handleToolSelect(e, { value: String(option.value) });
 								}}
 								trigger={
-									<Button
-										variant="solid"
-										leftIcon={<PlusIcon />}
-										className="rounded-full"
+									<button
+										type="button"
+										className="flex items-center gap-[4px] px-[8px] py-[4px] bg-surface rounded-full text-[12px] text-text hover:bg-element-hover cursor-pointer"
 									>
-										Add
-									</Button>
+										<PlusIcon className="size-[12px]" />
+										<span>Add</span>
+									</button>
 								}
 								modal={false}
 							/>
