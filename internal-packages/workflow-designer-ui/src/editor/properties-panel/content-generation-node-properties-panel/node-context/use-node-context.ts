@@ -132,10 +132,12 @@ export function useNodeContext(node: ContentGenerationNode) {
 
 			for (const output of currentNode.outputs) {
 				// Skip if this output is already connected
-				const isAlreadyConnected = connections.some(
+				const isAlreadyConnected = data.connections.some(
 					(conn) =>
-						conn.outputNode.id === currentNode.id &&
-						conn.output.id === output.id,
+						(conn.outputNode.id === currentNode.id &&
+							conn.outputId === output.id) ||
+						(conn.inputNode.id === currentNode.id &&
+							conn.outputNode.id === node.id),
 				);
 				if (isAlreadyConnected) {
 					continue;
@@ -261,7 +263,7 @@ export function useNodeContext(node: ContentGenerationNode) {
 			});
 		}
 		return groups;
-	}, [data.nodes, node, isSupportedConnection, connections]);
+	}, [data.nodes, node, isSupportedConnection, data.connections]);
 
 	const handleContextSelect = useCallback(
 		(_e: unknown, item: { value: string; label: string }) => {
