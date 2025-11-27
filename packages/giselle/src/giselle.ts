@@ -111,6 +111,10 @@ export function Giselle(config: GiselleConfig) {
 			config.experimental_contentGenerationNode ?? false,
 	};
 	return {
+		updateContext: (updates: Partial<GiselleContext>): void => {
+			Object.assign(context, updates);
+		},
+		getContext: (): GiselleContext => context,
 		copyWorkspace: async (workspaceId: WorkspaceId, name?: string) => {
 			return await copyWorkspace({
 				context,
