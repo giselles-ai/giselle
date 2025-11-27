@@ -117,6 +117,30 @@ async function resolveEmbeddingTelemetryContext(
 	}
 }
 
+function buildAiGatewayHeaders(
+	telemetryContext: DocumentEmbeddingTelemetryContext | null,
+): Record<string, string> | undefined {
+	const headers: Record<string, string> = {
+		"http-referer":
+			process.env.AI_GATEWAY_HTTP_REFERER ?? "https://giselles.ai",
+		"x-title": process.env.AI_GATEWAY_X_TITLE ?? "Giselle",
+	};
+
+	const stripeCustomerId = telemetryContext?.team.activeCustomerId ?? undefined;
+	const teamPlan = telemetryContext?.team.plan;
+	if (stripeCustomerId !== undefined) {
+		headers["stripe-customer-id"] = stripeCustomerId;
+		headers["stripe-restricted-access-key"] =
+			process.env.STRIPE_AI_GATEWAY_RESTRICTED_ACCESS_KEY ?? "";
+	} else if (teamPlan === "pro" || teamPlan === "team") {
+		console.warn(
+			`Stripe customer ID not found for document ingest (team: ${telemetryContext?.team.id})`,
+		);
+	}
+
+	return headers;
+}
+
 /**
  * Ingest a document source by extracting, chunking, and embedding text content
  * This function:
@@ -264,6 +288,9 @@ export async function ingestDocument(
 		let totalEmbeddingCount = 0;
 		const insertedProfileIds: EmbeddingProfileId[] = [];
 
+		// Build AI Gateway headers for billing attribution
+		const aiGatewayHeaders = buildAiGatewayHeaders(telemetryContext);
+
 		try {
 			for (const embeddingProfileId of embeddingProfileIds) {
 				signal?.throwIfAborted();
@@ -280,6 +307,7 @@ export async function ingestDocument(
 					embeddingProfileId,
 					signal,
 					embeddingComplete,
+					headers: aiGatewayHeaders,
 				});
 
 				signal?.throwIfAborted();

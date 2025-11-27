@@ -13,6 +13,7 @@ export interface EmbedderConfig {
 	maxRetries?: number;
 	embeddingComplete?: EmbeddingCompleteCallback;
 	transport?: "gateway" | "provider";
+	headers?: Record<string, string>;
 }
 
 export function createAiSdkEmbedder(
