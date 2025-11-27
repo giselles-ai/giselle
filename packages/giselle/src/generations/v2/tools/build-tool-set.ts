@@ -114,7 +114,7 @@ export async function buildToolSet({
 				const result = configurationOptionSchema.safeParse(tool.configuration);
 				if (!result.success) {
 					logger.warn(
-						`${generationId}, ${nodeId}, anthropic-web-search tool configuration is invalid: ${result.error.message}`,
+						`${generationId}, ${nodeId}, openai-web-search tool configuration is invalid: ${result.error.message}`,
 					);
 					continue;
 				}
