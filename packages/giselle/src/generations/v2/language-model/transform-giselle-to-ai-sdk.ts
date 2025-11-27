@@ -56,8 +56,7 @@ export function transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
 				providerOptions: {
 					anthropic: {
 						thinking: {
-							type: "enabled",
-							budgetTokens: 12000,
+							type: "disabled",
 						},
 					} satisfies AnthropicProviderOptions,
 				},
