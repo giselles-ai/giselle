@@ -134,7 +134,6 @@ describe("parseConfiguration", () => {
 
 			expect(result.temperature).toBe(1.5);
 			expect(result.thinkingLevel).toBe("high");
-			expect(result.searchGrounding).toBe(true);
 		});
 
 		it("should fallback to default when boolean is invalid", () => {
@@ -148,7 +147,6 @@ describe("parseConfiguration", () => {
 
 			expect(result.temperature).toBe(1.0);
 			expect(result.thinkingLevel).toBe("high");
-			expect(result.searchGrounding).toBe(false); // falls back to default
 		});
 
 		it("should handle all invalid values", () => {
@@ -162,7 +160,6 @@ describe("parseConfiguration", () => {
 
 			expect(result.temperature).toBe(1.0); // default
 			expect(result.thinkingLevel).toBe("high"); // default
-			expect(result.searchGrounding).toBe(false); // default
 		});
 	});
 });

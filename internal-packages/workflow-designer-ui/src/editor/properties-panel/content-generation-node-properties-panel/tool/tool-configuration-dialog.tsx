@@ -33,7 +33,7 @@ interface ToolConfigurationDialogProps
 	extends Omit<ComponentProps<typeof Dialog>, "children"> {
 	tool: LanguageModelTool;
 	currentConfig?: Record<string, unknown>;
-	onSubmit: (config: Record<string, unknown>) => void;
+	onSubmit: (name: string, config: Record<string, unknown>) => void;
 	trigger: React.ReactNode | null;
 	disabled?: boolean;
 	size?: DialogSize;
@@ -129,7 +129,7 @@ export function ToolConfigurationDialog({
 			// Transform configuration to match content-generation.ts schema
 			const transformedConfig = transformConfigurationValues(tool, finalConfig);
 
-			onSubmit(transformedConfig);
+			onSubmit(tool.name, transformedConfig);
 		};
 
 		startTransition(processSecrets);

@@ -108,7 +108,7 @@ export function FloatingPropertiesPanel({
 						className={clsx(
 							autoHeight
 								? "absolute top-4 z-10 pointer-events-none"
-								: "absolute top-4 bottom-4 z-10 pointer-events-none",
+								: "absolute top-4 bottom-[68px] z-10 pointer-events-none",
 							position === "right" ? "right-4" : "left-4",
 							"outline-none",
 						)}

@@ -22,6 +22,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
+	createConnectionWithInput,
 	isSupportedConnection,
 	useWorkflowDesigner,
 	useWorkflowDesignerStore,
@@ -168,32 +169,24 @@ function V2NodeCanvas() {
 				if (!safeOutputId.success) throw new Error("Invalid output id");
 				const outputId = safeOutputId.data;
 
-				if (isActionNode(inputNode)) {
-					const safeInputId = InputId.safeParse(connection.targetHandle);
-					if (!safeInputId.success) throw new Error("Invalid input id");
-					addConnection({
-						inputNode,
-						inputId: safeInputId.data,
-						outputNode,
-						outputId,
-					});
-				} else {
-					const newInputId = InputId.generate();
-					const newInput = {
-						id: newInputId,
-						label: "Input",
-						accessor: newInputId,
-					};
-					updateNodeData(inputNode, {
-						inputs: [...inputNode.inputs, newInput],
-					});
-					addConnection({
-						inputNode,
-						inputId: newInput.id,
-						outputId,
-						outputNode,
-					});
+				const inputId = isActionNode(inputNode)
+					? InputId.safeParse(connection.targetHandle).success
+						? InputId.safeParse(connection.targetHandle).data
+						: undefined
+					: undefined;
+
+				if (isActionNode(inputNode) && inputId === undefined) {
+					throw new Error("Invalid input id");
 				}
+
+				createConnectionWithInput({
+					outputNode,
+					outputId,
+					inputNode,
+					inputId,
+					updateNodeData,
+					addConnection,
+				});
 			} catch (error: unknown) {
 				toast.error(
 					error instanceof Error ? error.message : "Failed to connect nodes",
