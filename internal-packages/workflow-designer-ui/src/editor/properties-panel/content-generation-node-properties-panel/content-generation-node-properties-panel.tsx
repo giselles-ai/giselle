@@ -108,7 +108,19 @@ export function ContentGenerationNodePropertiesPanel({
 	);
 
 	const handleToolSelect = (_e: unknown, item: { value: string }) => {
-		setSelectedToolName(item.value);
+		const toolName = item.value;
+		const tool = languageModelTools.find(
+			(t: LanguageModelTool) => t.name === toolName,
+		);
+
+		// If tool has no configuration options, add it immediately without dialog
+		if (tool && Object.keys(tool.configurationOptions).length === 0) {
+			handleToolConfigSubmit({}, toolName);
+			return;
+		}
+
+		// Otherwise, open dialog for configuration
+		setSelectedToolName(toolName);
 		setSelectedToolConfig(null);
 		setToolDialogOpen(true);
 	};
@@ -139,14 +151,18 @@ export function ContentGenerationNodePropertiesPanel({
 		});
 	};
 
-	const handleToolConfigSubmit = (config: Record<string, unknown>) => {
-		if (!selectedToolName) {
+	const handleToolConfigSubmit = (
+		config: Record<string, unknown>,
+		toolNameOverride?: string,
+	) => {
+		const toolName = toolNameOverride ?? selectedToolName;
+		if (!toolName) {
 			return;
 		}
 
 		// Transform to content-generation.ts tools format
 		const toolEntry = {
-			name: selectedToolName,
+			name: toolName,
 			configuration: config,
 		};
 
@@ -156,7 +172,7 @@ export function ContentGenerationNodePropertiesPanel({
 
 		// Check if tool already exists, update it; otherwise add new one
 		const toolIndex = existingTools.findIndex(
-			(tool: typeof toolEntry) => tool.name === selectedToolName,
+			(tool: typeof toolEntry) => tool.name === toolName,
 		);
 
 		const updatedTools =
