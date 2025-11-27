@@ -45,6 +45,9 @@ export interface IngestPipelineOptions<
 	parallelLimit?: number;
 	onProgress?: (progress: IngestProgress) => void;
 	onError?: (error: IngestError) => void;
+
+	// Optional headers for AI Gateway requests
+	headers?: Record<string, string>;
 }
 
 const DEFAULT_MAX_BATCH_SIZE = 100;
@@ -113,6 +116,7 @@ export function createPipeline<
 		{
 			embeddingComplete,
 			transport: useGateway ? "gateway" : "provider",
+			headers: useGateway ? options.headers : undefined,
 		},
 	);
 
