@@ -133,7 +133,7 @@ export async function buildToolSet({
 				const result = SecretId.safeParse(unsafeSecretId);
 				if (result.error) {
 					logger.warn(
-						`${generationId}, ${nodeId}, github-api tool secret id is undefined`,
+						`${generationId}, ${nodeId}, postgres tool secret id is undefined`,
 					);
 					continue;
 				}
@@ -143,7 +143,7 @@ export async function buildToolSet({
 				});
 				if (unsafeToken === undefined) {
 					logger.warn(
-						`${generationId}, ${nodeId}, github-api tool secret token is undefined`,
+						`${generationId}, ${nodeId}, postgres tool secret token is undefined`,
 					);
 					continue;
 				}
@@ -154,7 +154,7 @@ export async function buildToolSet({
 					];
 				if (!Array.isArray(useTools)) {
 					logger.warn(
-						`${generationId}, ${nodeId}, github-api tool use tools is not an array`,
+						`${generationId}, ${nodeId}, postgres tool use tools is not an array`,
 					);
 					continue;
 				}
