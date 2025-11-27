@@ -189,7 +189,12 @@ export function ContentGenerationNodePropertiesPanel({
 		}
 	};
 
-	const { shouldShowOutputLabel, connections } = useNodeContext(node);
+	const {
+		shouldShowOutputLabel,
+		connections,
+		availableContextNodes,
+		handleContextSelect,
+	} = useNodeContext(node);
 
 	const isPromptEmpty = useMemo(() => {
 		if (typeof node.content.prompt !== "string") {
@@ -373,6 +378,22 @@ export function ContentGenerationNodePropertiesPanel({
 									: defaultName(connection.outputNode)}
 							</div>
 						))}
+						{availableContextNodes.length > 0 && (
+							<DropdownMenu
+								items={availableContextNodes}
+								onSelect={handleContextSelect}
+								trigger={
+									<button
+										type="button"
+										className="flex items-center gap-[4px] px-[8px] py-[4px] bg-surface rounded-full text-[12px] text-text hover:bg-element-hover cursor-pointer"
+									>
+										<PlusIcon className="size-[12px]" />
+										<span>Add</span>
+									</button>
+								}
+								modal={false}
+							/>
+						)}
 					</div>
 
 					<SettingDetail size="md" className="text-text-muted">
