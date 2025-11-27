@@ -2,8 +2,8 @@ import { defaultName } from "@giselles-ai/node-registry";
 import {
 	type ContentGenerationNode,
 	InputId,
-	type Node,
 	type NodeId,
+	type NodeLike,
 	type OutputId,
 } from "@giselles-ai/protocol";
 import {
@@ -84,37 +84,37 @@ export function useNodeContext(node: ContentGenerationNode) {
 		}> = [];
 
 		const textGeneratorNodes: Array<{
-			outputNode: Node;
+			outputNode: NodeLike;
 			outputId: OutputId;
 			label: string;
 		}> = [];
 		const textNodes: Array<{
-			outputNode: Node;
+			outputNode: NodeLike;
 			outputId: OutputId;
 			label: string;
 		}> = [];
 		const fileNodes: Array<{
-			outputNode: Node;
+			outputNode: NodeLike;
 			outputId: OutputId;
 			label: string;
 		}> = [];
 		const actionNodes: Array<{
-			outputNode: Node;
+			outputNode: NodeLike;
 			outputId: OutputId;
 			label: string;
 		}> = [];
 		const triggerNodes: Array<{
-			outputNode: Node;
+			outputNode: NodeLike;
 			outputId: OutputId;
 			label: string;
 		}> = [];
 		const queryNodes: Array<{
-			outputNode: Node;
+			outputNode: NodeLike;
 			outputId: OutputId;
 			label: string;
 		}> = [];
 		const otherNodes: Array<{
-			outputNode: Node;
+			outputNode: NodeLike;
 			outputId: OutputId;
 			label: string;
 		}> = [];
