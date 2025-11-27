@@ -3,7 +3,6 @@
 import {
 	InputId,
 	isActionNode,
-	isContentGenerationNode,
 	type NodeId,
 	OutputId,
 } from "@giselles-ai/protocol";
