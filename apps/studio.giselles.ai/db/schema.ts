@@ -171,6 +171,11 @@ export const teamMembershipRelations = relations(
 	}),
 );
 
+/** @deprecated Use WorkspaceMetadata instead */
+export type AgentMetadata = {
+	sample: boolean;
+};
+
 /** @deprecated The agents table does not align with the application domain, so we are migrating to the workspaces table. We are keeping it for gradual migration due to the large scope of impact. */
 export const agents = pgTable(
 	"agents",
@@ -193,6 +198,10 @@ export const agents = pgTable(
 		creatorDbId: integer("creator_db_id")
 			.notNull()
 			.references(() => users.dbId),
+		metadata: jsonb("metadata")
+			.$type<AgentMetadata>()
+			.default({ sample: false })
+			.notNull(),
 	},
 	(table) => [index().on(table.teamDbId)],
 );
@@ -202,6 +211,10 @@ export const agentsRelations = relations(agents, ({ one }) => ({
 		references: [teams.dbId],
 	}),
 }));
+
+export type WorkspaceMetadata = {
+	sample: boolean;
+};
 
 export const workspaces = pgTable("workspaces", {
 	id: text("id").$type<WorkspaceId>().notNull().unique(),
@@ -218,6 +231,10 @@ export const workspaces = pgTable("workspaces", {
 	creatorDbId: integer("creator_db_id")
 		.notNull()
 		.references(() => users.dbId),
+	metadata: jsonb("metadata")
+		.$type<WorkspaceMetadata>()
+		.default({ sample: false })
+		.notNull(),
 });
 
 export const workspaceRelations = relations(workspaces, ({ one }) => ({
