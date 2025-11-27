@@ -126,9 +126,16 @@ function buildAiGatewayHeaders(
 		"x-title": process.env.AI_GATEWAY_X_TITLE ?? "Giselle",
 	};
 
-	const stripeCustomerId = telemetryContext?.team.activeCustomerId;
-	if (stripeCustomerId) {
+	const stripeCustomerId = telemetryContext?.team.activeCustomerId ?? undefined;
+	const teamPlan = telemetryContext?.team.plan;
+	if (stripeCustomerId !== undefined) {
 		headers["stripe-customer-id"] = stripeCustomerId;
+		headers["stripe-restricted-access-key"] =
+			process.env.STRIPE_AI_GATEWAY_RESTRICTED_ACCESS_KEY ?? "";
+	} else if (teamPlan === "pro" || teamPlan === "team") {
+		console.warn(
+			`Stripe customer ID not found for document ingest (team: ${telemetryContext?.team.id})`,
+		);
 	}
 
 	return headers;
