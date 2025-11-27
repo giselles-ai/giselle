@@ -5,6 +5,7 @@ import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import {
 	getEntry,
+	type LanguageModelId,
 	type LanguageModelTool,
 	languageModelTools,
 } from "@giselles-ai/language-model-registry";
@@ -226,6 +227,23 @@ export function ContentGenerationNodePropertiesPanel({
 		nodeId: node.id,
 		origin: { type: "studio", workspaceId: data.id },
 	});
+	const handleModelChange = useCallback(
+		(modelId: LanguageModelId) => {
+			const newLanguageModel = getEntry(modelId);
+			updateNodeData(node, {
+				content: {
+					...node.content,
+					languageModel: {
+						provider: newLanguageModel.provider,
+						id: newLanguageModel.id,
+						configuration: newLanguageModel.defaultConfiguration,
+					},
+				},
+			});
+		},
+		[node, updateNodeData],
+	);
+
 	const handleGenerationButtonClick = useCallback(() => {
 		createAndStartGenerationRunner({
 			origin: {
@@ -265,7 +283,10 @@ export function ContentGenerationNodePropertiesPanel({
 					</SettingDetail>
 					<div className="overflow-x-hidden">
 						<div className="flex items-center gap-[4px]">
-							<ModelPickerV2 value={node.content.languageModel.id} />
+							<ModelPickerV2
+								value={node.content.languageModel.id}
+								onChange={handleModelChange}
+							/>
 							<Popover
 								onOpenAutoFocus={(e) => {
 									e.preventDefault();
