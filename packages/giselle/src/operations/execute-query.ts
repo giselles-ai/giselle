@@ -73,6 +73,12 @@ export function executeQuery(args: {
 						),
 				);
 
+				const aiGatewayHeaders =
+					await args.context.callbacks?.buildAiGatewayHeaders?.({
+						generation: runningGeneration,
+						metadata: args.metadata,
+					});
+
 				const queryResults = await queryVectorStore(
 					workspaceId,
 					query,
@@ -82,6 +88,7 @@ export function executeQuery(args: {
 					operationNode.content.maxResults,
 					operationNode.content.similarityThreshold,
 					args.metadata,
+					aiGatewayHeaders,
 				);
 
 				const outputId = generationContext.operationNode.outputs.find(
@@ -297,6 +304,7 @@ async function queryVectorStore(
 	maxResults?: number,
 	similarityThreshold?: number,
 	metadata?: GenerationMetadata,
+	aiGatewayHeaders?: Record<string, string>,
 ) {
 	if (vectorStoreNodes.length === 0) {
 		return [];
@@ -356,6 +364,7 @@ async function queryVectorStore(
 											generationMetadata: metadata,
 										});
 									},
+									aiGatewayHeaders,
 								);
 								return {
 									type: "vector-store" as const,
@@ -404,6 +413,7 @@ async function queryVectorStore(
 												generationMetadata: metadata,
 											});
 										},
+										aiGatewayHeaders,
 									);
 								return {
 									type: "vector-store" as const,
@@ -452,6 +462,7 @@ async function queryVectorStore(
 											generationMetadata: metadata,
 										});
 									},
+									aiGatewayHeaders,
 								);
 								return {
 									type: "vector-store" as const,
@@ -509,6 +520,7 @@ async function queryVectorStore(
 									generationMetadata: metadata,
 								});
 							},
+							aiGatewayHeaders,
 						);
 						return {
 							type: "vector-store" as const,
