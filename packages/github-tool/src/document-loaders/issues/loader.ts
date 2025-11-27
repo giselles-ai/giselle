@@ -3,10 +3,10 @@ import {
 	type DocumentLoader,
 	DocumentLoaderError,
 } from "@giselles-ai/rag";
-import { RequestError } from "@octokit/request-error";
 import { type Client, CombinedError } from "urql";
 import { graphql } from "../../client";
 import type { GitHubAuthConfig } from "../../types";
+import { handleGitHubClientError } from "../utils";
 import { getCache, issueDetailsCache, setCache } from "./cache";
 import {
 	type FetchContext,
@@ -87,22 +87,7 @@ export function createGitHubIssuesLoader(
 			try {
 				graphqlClient = await graphql(authConfig);
 			} catch (error) {
-				if (error instanceof RequestError && error.status === 404) {
-					const installationId =
-						authConfig.strategy === "app-installation"
-							? authConfig.installationId
-							: "unknown";
-					throw DocumentLoaderError.notFound(
-						`/app/installations/${installationId}/access_tokens`,
-						error,
-						{
-							source: "github",
-							resourceType: "AppInstallation",
-							statusCode: 404,
-						},
-					);
-				}
-				throw error;
+				handleGitHubClientError(error, authConfig);
 			}
 		}
 		return graphqlClient;
