@@ -195,6 +195,20 @@ export async function handlePricingPlanServicingCanceled(event: Stripe.Event) {
 	const subscriptionId = relatedObject.id;
 	console.log(`🔔  Pricing plan subscription canceled: ${subscriptionId}`);
 
+	// Retrieve subscription from Stripe v2 API
+	const subscription = await retrievePricingPlanSubscription(subscriptionId);
+	console.log(
+		"🔔  v2 subscription data (canceled):",
+		JSON.stringify(subscription, null, 2),
+	);
+
+	// Retrieve billing cadence to get customer ID
+	const cadence = await retrieveBillingCadence(subscription.billing_cadence);
+	console.log(
+		"🔔  v2 cadence data (canceled):",
+		JSON.stringify(cadence, null, 2),
+	);
+
 	// Find the team with this active subscription
 	const [team] = await db
 		.select({ dbId: teams.dbId, plan: teams.plan })
