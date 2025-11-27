@@ -22,6 +22,7 @@ export async function POST(req: Request) {
 		}
 		event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
 		logger.info({ eventType: event.type }, "[stripe-v2-webhook] Received");
+		logger.debug({ event }, "[stripe-v2-webhook] Event payload");
 	} catch (err: unknown) {
 		const message = err instanceof Error ? err.message : "Unknown error";
 		logger.error({ error: message }, "[stripe-v2-webhook] Error");
@@ -43,6 +44,10 @@ export async function POST(req: Request) {
 			logger.info(
 				"[stripe-v2-webhook] Pricing plan subscription activated (handler pending)",
 			);
+			logger.debug(
+				{ eventData: event.data },
+				"[stripe-v2-webhook] Activation event data",
+			);
 			return new Response(JSON.stringify({ received: true }));
 		}
 
@@ -52,6 +57,10 @@ export async function POST(req: Request) {
 			// TODO: Implement handler in future PR
 			logger.info(
 				"[stripe-v2-webhook] Pricing plan subscription canceled (handler pending)",
+			);
+			logger.debug(
+				{ eventData: event.data },
+				"[stripe-v2-webhook] Cancellation event data",
 			);
 			return new Response(JSON.stringify({ received: true }));
 		}

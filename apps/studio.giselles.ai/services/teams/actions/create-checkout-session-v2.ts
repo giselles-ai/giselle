@@ -1,4 +1,5 @@
 import invariant from "tiny-invariant";
+import { logger } from "@/lib/logger";
 import { stripe } from "@/services/external/stripe/config";
 
 export async function createCheckoutSessionV2(
@@ -13,6 +14,11 @@ export async function createCheckoutSessionV2(
 	invariant(
 		licenseFeeComponentId,
 		"STRIPE_PRO_LICENSE_FEE_COMPONENT_ID is not set",
+	);
+
+	logger.debug(
+		{ pricingPlanId, licenseFeeComponentId, subscriptionMetadata },
+		"[stripe-v2-checkout] Creating checkout session",
 	);
 
 	const checkoutSession = await stripe.checkout.sessions.create(
@@ -44,6 +50,11 @@ export async function createCheckoutSessionV2(
 	if (checkoutSession.url == null) {
 		throw new Error("checkoutSession.url is null");
 	}
+
+	logger.debug(
+		{ sessionId: checkoutSession.id },
+		"[stripe-v2-checkout] Checkout session created",
+	);
 
 	return { id: checkoutSession.id, url: checkoutSession.url };
 }
