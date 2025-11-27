@@ -30,6 +30,30 @@ function ConnectedNodeRunning({
 	return null;
 }
 
+function getGradientColors(
+	outputContentType: string,
+	inputContentType: string,
+): { startColor: string; endColor: string } {
+	const colorMap: Record<string, string> = {
+		textGeneration: "var(--color-primary-900)",
+		contentGeneration: "var(--color-primary-900)",
+		file: "var(--color-node-data-900)",
+		webPage: "var(--color-webPage-node-1)",
+		text: "var(--color-text-node-1)",
+		imageGeneration: "var(--color-image-generation-node-1)",
+		trigger: "var(--color-trigger-node-1)",
+		action: "var(--color-action-node-1)",
+		query: "var(--color-query-node-1)",
+		vectorStore: "var(--color-vector-store-node-1)",
+		appEntry: "var(--color-trigger-node-1)",
+	};
+
+	return {
+		startColor: colorMap[outputContentType] ?? "var(--color-primary-900)",
+		endColor: colorMap[inputContentType] ?? "var(--color-primary-900)",
+	};
+}
+
 export function Connector({
 	id,
 	sourceX,
@@ -55,53 +79,100 @@ export function Connector({
 		targetY,
 		targetPosition,
 	});
+
+	const outputContentType = connection.outputNode.content.type;
+	const inputContentType = connection.inputNode.content.type;
+	const gradientId = `gradient-${id}`;
+	const { startColor, endColor } = getGradientColors(
+		outputContentType,
+		inputContentType,
+	);
+
+	// Calculate direction vector for animation
+	const dx = targetX - sourceX;
+	const dy = targetY - sourceY;
+	const distance = Math.sqrt(dx * dx + dy * dy);
+	const unitDx = distance > 0 ? dx / distance : 0;
+	const unitDy = distance > 0 ? dy / distance : 0;
+
+	// Animation distance (2x the path length for smooth animation)
+	const animationDistance = distance * 2;
+
 	return (
 		<g
 			className="group"
 			data-output-node-type={connection.outputNode.type}
-			data-output-node-content-type={connection.outputNode.content.type}
+			data-output-node-content-type={outputContentType}
 			data-input-node-type={connection.inputNode.type}
-			data-input-node-content-type={connection.inputNode.content.type}
+			data-input-node-content-type={inputContentType}
 		>
+			<defs>
+				<linearGradient
+					id={gradientId}
+					gradientUnits="userSpaceOnUse"
+					x1={sourceX}
+					y1={sourceY}
+					x2={targetX}
+					y2={targetY}
+				>
+					<stop offset="0%" stopColor={startColor} />
+					<stop offset="100%" stopColor={endColor} />
+				</linearGradient>
+				<linearGradient
+					id={`${gradientId}-animation`}
+					gradientUnits="userSpaceOnUse"
+					x1={sourceX}
+					y1={sourceY}
+					x2={targetX}
+					y2={targetY}
+				>
+					<stop offset="0%" stopColor="rgba(255,255,255,0)" />
+					<stop offset="25%" stopColor="rgba(255,255,255,0)" />
+					<stop offset="49%" stopColor="rgba(255,255,255,0.4)" />
+					<stop offset="51%" stopColor="rgba(255,255,255,0.4)" />
+					<stop offset="75%" stopColor="rgba(255,255,255,0)" />
+					<stop offset="100%" stopColor="rgba(255,255,255,0)" />
+					<animate
+						attributeName="x1"
+						from={sourceX - animationDistance * unitDx}
+						to={targetX + animationDistance * unitDx}
+						dur="1.8s"
+						repeatCount="indefinite"
+					/>
+					<animate
+						attributeName="x2"
+						from={sourceX}
+						to={targetX + 2 * animationDistance * unitDx}
+						dur="1.8s"
+						repeatCount="indefinite"
+					/>
+					<animate
+						attributeName="y1"
+						from={sourceY - animationDistance * unitDy}
+						to={targetY + animationDistance * unitDy}
+						dur="1.8s"
+						repeatCount="indefinite"
+					/>
+					<animate
+						attributeName="y2"
+						from={sourceY}
+						to={targetY + 2 * animationDistance * unitDy}
+						dur="1.8s"
+						repeatCount="indefinite"
+					/>
+				</linearGradient>
+			</defs>
 			<BaseEdge
 				id={id}
 				path={edgePath}
-				className={clsx(
-					"!stroke-[1.5px] bg-bg",
-					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=textGeneration]:!stroke-[url(#textGenerationToTextGeneration)]",
-					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=textGeneration]:!stroke-[url(#fileToTextGeneration)]",
-					"group-data-[output-node-content-type=webPage]:group-data-[input-node-content-type=textGeneration]:!stroke-[url(#webPageToTextGeneration)]",
-					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=textGeneration]:!stroke-[url(#textToTextGeneration)]",
-					"group-data-[output-node-content-type=query]:group-data-[input-node-content-type=textGeneration]:!stroke-[url(#queryToTextGeneration)]",
-					"group-data-[output-node-content-type=action]:group-data-[input-node-content-type=textGeneration]:!stroke-[url(#actionToTextGeneration)]",
-					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#textGenerationToImageGeneration)]",
-					"group-data-[output-node-content-type=imageGeneration]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#imageGenerationToImageGeneration)]",
-					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#fileToImageGeneration)]",
-					"group-data-[output-node-content-type=webPage]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#webPageToImageGeneration)]",
-					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#textToImageGeneration)]",
-					"group-data-[output-node-content-type=action]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#actionToImageGeneration)]",
-					"group-data-[output-node-content-type=trigger]:group-data-[input-node-content-type=textGeneration]:!stroke-[url(#triggerToTextGeneration)]",
-					"group-data-[output-node-content-type=trigger]:group-data-[input-node-content-type=imageGeneration]:!stroke-[url(#triggerToImageGeneration)]",
-					"group-data-[output-node-content-type=trigger]:group-data-[input-node-content-type=action]:!stroke-[url(#triggerToAction)]",
-					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=action]:!stroke-[url(#textGenerationToAction)]",
-					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=action]:!stroke-[url(#fileToAction)]",
-					"group-data-[output-node-content-type=webPage]:group-data-[input-node-content-type=action]:!stroke-[url(#webPageToAction)]",
-					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=action]:!stroke-[url(#textToAction)]",
-					"group-data-[output-node-content-type=textGeneration]:group-data-[input-node-content-type=query]:!stroke-[url(#textGenerationToQueryNode)]",
-					"group-data-[output-node-content-type=file]:group-data-[input-node-content-type=query]:!stroke-[url(#fileToQueryNode)]",
-					"group-data-[output-node-content-type=webPage]:group-data-[input-node-content-type=query]:!stroke-[url(#webPageToQueryNode)]",
-					"group-data-[output-node-content-type=text]:group-data-[input-node-content-type=query]:!stroke-[url(#textToQueryNode)]",
-					"group-data-[output-node-content-type=vectorStore]:group-data-[input-node-content-type=query]:!stroke-[url(#vectorStoreToQueryNode)]",
-					"group-data-[output-node-content-type=trigger]:group-data-[input-node-content-type=query]:!stroke-[url(#triggerToQueryNode)]",
-					"group-data-[output-node-content-type=action]:group-data-[input-node-content-type=query]:!stroke-[url(#actionToQueryNode)]",
-					"group-data-[output-node-content-type=appEntry]:group-data-[input-node-content-type=textGeneration]:!stroke-[url(#appEntryToTextGeneration)]",
-				)}
+				className={clsx("!stroke-[1.5px] bg-bg")}
+				style={{ stroke: `url(#${gradientId})` }}
 				filter="url(#white-glow-filter)"
 			/>
 			<ConnectedNodeRunning inputNodeId={connection.inputNode.id}>
 				<path
 					d={edgePath}
-					stroke="url(#connector-gradient-animation)"
+					stroke={`url(#${gradientId}-animation)`}
 					strokeWidth="2"
 					fill="none"
 					strokeLinecap="round"
@@ -116,280 +187,6 @@ export function GradientDef() {
 	return (
 		<svg role="graphics-symbol">
 			<defs>
-				<linearGradient
-					id="textGenerationToTextGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-primary-900)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
-				</linearGradient>
-				<linearGradient
-					id="fileToTextGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-node-data-900)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
-				</linearGradient>
-				<linearGradient
-					id="webPageToTextGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-webPage-node-1)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
-				</linearGradient>
-				<linearGradient
-					id="textToTextGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-text-node-1)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
-				</linearGradient>
-				<linearGradient
-					id="imageGenerationToImageGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-image-generation-node-1)" />
-					<stop
-						offset="100%"
-						stopColor="var(--color-image-generation-node-1)"
-					/>
-				</linearGradient>
-				<linearGradient
-					id="textGenerationToImageGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-primary-900)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
-				</linearGradient>
-				<linearGradient
-					id="webPageToImageGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-webPage-node-1)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
-				</linearGradient>
-				<linearGradient
-					id="fileToImageGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-node-data-900)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
-				</linearGradient>
-				<linearGradient
-					id="textToImageGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-text-node-1)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
-				</linearGradient>
-				<linearGradient
-					id="triggerToTextGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-trigger-node-1)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
-				</linearGradient>
-				<linearGradient
-					id="appEntryToTextGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-trigger-node-1)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
-				</linearGradient>
-				<linearGradient
-					id="triggerToImageGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-trigger-node-1)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
-				</linearGradient>
-				<linearGradient id="triggerToAction" x1="0%" y1="0%" x2="100%" y2="0%">
-					<stop offset="0%" stopColor="var(--color-trigger-node-1)" />
-					<stop offset="100%" stopColor="var(--color-action-node-1)" />
-				</linearGradient>
-				<linearGradient id="webPageToAction" x1="0%" y1="0%" x2="100%" y2="0%">
-					<stop offset="0%" stopColor="var(--color-webPage-node-1)" />
-					<stop offset="100%" stopColor="var(--color-action-node-1)" />
-				</linearGradient>
-				<linearGradient
-					id="textGenerationToAction"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-primary-900)" />
-					<stop offset="100%" stopColor="var(--color-action-node-1)" />
-				</linearGradient>
-				<linearGradient id="fileToAction" x1="0%" y1="0%" x2="100%" y2="0%">
-					<stop offset="0%" stopColor="var(--color-node-data-900)" />
-					<stop offset="100%" stopColor="var(--color-action-node-1)" />
-				</linearGradient>
-				<linearGradient id="textToAction" x1="0%" y1="0%" x2="100%" y2="0%">
-					<stop offset="0%" stopColor="var(--color-text-node-1)" />
-					<stop offset="100%" stopColor="var(--color-action-node-1)" />
-				</linearGradient>
-				<linearGradient
-					id="actionToImageGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-action-node-1)" />
-					<stop
-						offset="100%"
-						stopColor="var(--color-image-generation-node-1)"
-					/>
-				</linearGradient>
-
-				<linearGradient
-					id="textGenerationToQueryNode"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-primary-900)" />
-					<stop offset="100%" stopColor="var(--color-query-node-1)" />
-				</linearGradient>
-				<linearGradient
-					id="webPageToQueryNode"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-webPage-node-1)" />
-					<stop offset="100%" stopColor="var(--color-query-node-1)" />
-				</linearGradient>
-				<linearGradient id="fileToQueryNode" x1="0%" y1="0%" x2="100%" y2="0%">
-					<stop offset="0%" stopColor="var(--color-node-data-900)" />
-					<stop offset="100%" stopColor="var(--color-query-node-1)" />
-				</linearGradient>
-				<linearGradient id="textToQueryNode" x1="0%" y1="0%" x2="100%" y2="0%">
-					<stop offset="0%" stopColor="var(--color-text-node-1)" />
-					<stop offset="100%" stopColor="var(--color-query-node-1)" />
-				</linearGradient>
-				<linearGradient
-					id="vectorStoreToQueryNode"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-vector-store-node-1)" />
-					<stop offset="100%" stopColor="var(--color-query-node-1)" />
-				</linearGradient>
-				<linearGradient
-					id="triggerToQueryNode"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-trigger-node-1)" />
-					<stop offset="100%" stopColor="var(--color-query-node-1)" />
-				</linearGradient>
-
-				<linearGradient
-					id="actionToQueryNode"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-action-node-1)" />
-					<stop offset="100%" stopColor="var(--color-query-node-1)" />
-				</linearGradient>
-
-				<linearGradient
-					id="queryToTextGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-query-node-1)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
-				</linearGradient>
-
-				<linearGradient
-					id="actionToTextGeneration"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="var(--color-action-node-1)" />
-					<stop offset="100%" stopColor="var(--color-primary-900)" />
-				</linearGradient>
-
-				<linearGradient
-					id="connector-gradient-animation"
-					x1="0%"
-					y1="0%"
-					x2="100%"
-					y2="0%"
-				>
-					<stop offset="0%" stopColor="rgba(255,255,255,0)" />
-					<stop offset="25%" stopColor="rgba(255,255,255,0)" />
-					<stop offset="49%" stopColor="rgba(255,255,255,0.4)" />
-					<stop offset="51%" stopColor="rgba(255,255,255,0.4)" />
-					<stop offset="75%" stopColor="rgba(255,255,255,0)" />
-					<stop offset="100%" stopColor="rgba(255,255,255,0)" />
-
-					<animate
-						attributeName="x1"
-						from="-100%"
-						to="100%"
-						dur="1.8s"
-						repeatCount="indefinite"
-					/>
-					<animate
-						attributeName="x2"
-						from="0%"
-						to="200%"
-						dur="1.8s"
-						repeatCount="indefinite"
-					/>
-				</linearGradient>
 				<filter
 					id="white-glow-filter"
 					x="-50%"
