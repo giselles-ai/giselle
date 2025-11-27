@@ -1,8 +1,12 @@
 import type { TextGenerationNode } from "@giselles-ai/protocol";
 import { describe, expect, it } from "vitest";
 import {
+	anthropicClaudeSonnet,
+	googleGemini,
 	openAI_1,
+	openAIWithEmptyTools,
 	openAIWithGitHubTool,
+	openAIWithoutTools,
 } from "./__fixtures__/node-convertion/nodes";
 import {
 	convertContentGenerationToTextGeneration,
@@ -58,6 +62,46 @@ describe("node-convertion", () => {
 			expect(result.type).toBe(textGenerationNode.type);
 			expect(result.inputs).toEqual(textGenerationNode.inputs);
 			expect(result.outputs).toEqual(textGenerationNode.outputs);
+		});
+
+		it("should handle node without tools", () => {
+			const textGenerationNode = openAIWithoutTools as TextGenerationNode;
+			const result =
+				convertTextGenerationToContentGeneration(textGenerationNode);
+
+			expect(result.content.tools).toHaveLength(0);
+			expect(result.content.languageModel.provider).toBe("openai");
+			expect(result.content.languageModel.id).toBe("openai/gpt-5");
+		});
+
+		it("should handle node with empty tools object", () => {
+			const textGenerationNode = openAIWithEmptyTools as TextGenerationNode;
+			const result =
+				convertTextGenerationToContentGeneration(textGenerationNode);
+
+			expect(result.content.tools).toHaveLength(0);
+			expect(result.content.languageModel.provider).toBe("openai");
+			expect(result.content.languageModel.id).toBe("openai/gpt-5-nano");
+		});
+
+		it("should convert Anthropic Claude model", () => {
+			const textGenerationNode = anthropicClaudeSonnet as TextGenerationNode;
+			const result =
+				convertTextGenerationToContentGeneration(textGenerationNode);
+
+			expect(result.content.languageModel.provider).toBe("anthropic");
+			expect(result.content.languageModel.id).toBe(
+				"anthropic/claude-sonnet-4-5",
+			);
+		});
+
+		it("should convert Google Gemini model", () => {
+			const textGenerationNode = googleGemini as TextGenerationNode;
+			const result =
+				convertTextGenerationToContentGeneration(textGenerationNode);
+
+			expect(result.content.languageModel.provider).toBe("google");
+			expect(result.content.languageModel.id).toBe("google/gemini-2.5-flash");
 		});
 	});
 
@@ -120,6 +164,41 @@ describe("node-convertion", () => {
 			expect(result.inputs).toEqual(textGenerationNode.inputs);
 			expect(result.outputs).toEqual(textGenerationNode.outputs);
 		});
+
+		it("should convert Anthropic Claude model back", () => {
+			const textGenerationNode = anthropicClaudeSonnet as TextGenerationNode;
+			const contentGenerationNode =
+				convertTextGenerationToContentGeneration(textGenerationNode);
+			const result = convertContentGenerationToTextGeneration(
+				contentGenerationNode,
+			);
+
+			expect(result.content.llm?.provider).toBe("anthropic");
+			expect(result.content.llm?.id).toBe("claude-sonnet-4-5-20250929");
+		});
+
+		it("should convert Google Gemini model back", () => {
+			const textGenerationNode = googleGemini as TextGenerationNode;
+			const contentGenerationNode =
+				convertTextGenerationToContentGeneration(textGenerationNode);
+			const result = convertContentGenerationToTextGeneration(
+				contentGenerationNode,
+			);
+
+			expect(result.content.llm?.provider).toBe("google");
+			expect(result.content.llm?.id).toBe("gemini-2.5-flash");
+		});
+
+		it("should handle node without tools when converting back", () => {
+			const textGenerationNode = openAIWithoutTools as TextGenerationNode;
+			const contentGenerationNode =
+				convertTextGenerationToContentGeneration(textGenerationNode);
+			const result = convertContentGenerationToTextGeneration(
+				contentGenerationNode,
+			);
+
+			expect(result.content.tools).toBeUndefined();
+		});
 	});
 
 	describe("round-trip conversion", () => {
@@ -162,6 +241,55 @@ describe("node-convertion", () => {
 			expect(convertedBack.content.tools?.github?.tools).toEqual(
 				originalNode.content.tools?.github?.tools,
 			);
+		});
+
+		it("should preserve data through round-trip conversion without tools", () => {
+			const originalNode = openAIWithoutTools as TextGenerationNode;
+			const contentGenerationNode =
+				convertTextGenerationToContentGeneration(originalNode);
+			const convertedBack = convertContentGenerationToTextGeneration(
+				contentGenerationNode,
+			);
+
+			expect(convertedBack.content.type).toBe(originalNode.content.type);
+			expect(convertedBack.content.llm?.provider).toBe(
+				originalNode.content.llm.provider,
+			);
+			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
+			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
+			expect(convertedBack.content.tools).toBeUndefined();
+		});
+
+		it("should preserve data through round-trip conversion with Anthropic Claude", () => {
+			const originalNode = anthropicClaudeSonnet as TextGenerationNode;
+			const contentGenerationNode =
+				convertTextGenerationToContentGeneration(originalNode);
+			const convertedBack = convertContentGenerationToTextGeneration(
+				contentGenerationNode,
+			);
+
+			expect(convertedBack.content.type).toBe(originalNode.content.type);
+			expect(convertedBack.content.llm?.provider).toBe(
+				originalNode.content.llm.provider,
+			);
+			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
+			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
+		});
+
+		it("should preserve data through round-trip conversion with Google Gemini", () => {
+			const originalNode = googleGemini as TextGenerationNode;
+			const contentGenerationNode =
+				convertTextGenerationToContentGeneration(originalNode);
+			const convertedBack = convertContentGenerationToTextGeneration(
+				contentGenerationNode,
+			);
+
+			expect(convertedBack.content.type).toBe(originalNode.content.type);
+			expect(convertedBack.content.llm?.provider).toBe(
+				originalNode.content.llm.provider,
+			);
+			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
+			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
 		});
 	});
 });
