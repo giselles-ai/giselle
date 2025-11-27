@@ -6,35 +6,43 @@ export async function createCheckoutSession(
 	successUrl: string,
 	cancelUrl: string,
 ) {
-	const proPlanPriceId = process.env.STRIPE_PRO_PLAN_PRICE_ID;
-	const userSeatPriceId = process.env.STRIPE_USER_SEAT_PRICE_ID;
-	const modelUsagePriceId = process.env.STRIPE_MODEL_USAGE_PRICE_ID;
+	const pricingPlanId = process.env.STRIPE_PRO_PRICING_PLAN_ID;
+	const licenseFeeComponentId = process.env.STRIPE_PRO_LICENSE_FEE_COMPONENT_ID;
 
-	invariant(proPlanPriceId, "STRIPE_PRO_PLAN_PRICE_ID is not set");
-	invariant(userSeatPriceId, "STRIPE_USER_SEAT_PRICE_ID is not set");
-	invariant(modelUsagePriceId, "STRIPE_MODEL_USAGE_PRICE_ID is not set");
+	invariant(pricingPlanId, "STRIPE_PRO_PRICING_PLAN_ID is not set");
+	invariant(
+		licenseFeeComponentId,
+		"STRIPE_PRO_LICENSE_FEE_COMPONENT_ID is not set",
+	);
 
-	const checkoutSession = await stripe.checkout.sessions.create({
-		mode: "subscription",
-		line_items: [
-			{
-				price: proPlanPriceId,
-				quantity: 1,
-			},
-			{
-				price: userSeatPriceId,
-			},
-			{
-				price: modelUsagePriceId,
-			},
-		],
-		automatic_tax: { enabled: true },
-		success_url: successUrl,
-		cancel_url: cancelUrl,
-		subscription_data: {
-			metadata: subscriptionMetadata,
+	// Using preview API for pricing plans - requires special apiVersion header
+	// Note: User seat metering should be configured as a rate card component in the pricing plan
+	// biome-ignore lint/suspicious/noExplicitAny: checkout_items is a preview API for pricing plans
+	const checkoutSession = await (stripe.checkout.sessions.create as any)(
+		{
+			checkout_items: [
+				{
+					type: "pricing_plan_subscription_item",
+					pricing_plan_subscription_item: {
+						pricing_plan: pricingPlanId,
+						component_configurations: {
+							[licenseFeeComponentId]: {
+								type: "license_fee_component",
+								license_fee_component: { quantity: 1 },
+							},
+						},
+						metadata: subscriptionMetadata,
+					},
+				},
+			],
+			automatic_tax: { enabled: true },
+			success_url: successUrl,
+			cancel_url: cancelUrl,
 		},
-	});
+		{
+			apiVersion: "2025-11-17.clover;checkout_product_catalog_preview=v1",
+		},
+	);
 
 	if (checkoutSession.url == null) {
 		throw new Error("checkoutSession.url is null");
