@@ -9,7 +9,6 @@ import {
 	hasCapability,
 	languageModels,
 } from "@giselles-ai/language-model";
-import { getEntry } from "@giselles-ai/language-model-registry";
 import type { GiselleLogger } from "@giselles-ai/logger";
 import type {
 	CompletedGeneration,
@@ -552,8 +551,8 @@ function generateContentV2({
 	generation,
 	logger: overrideLogger,
 	metadata,
-	onComplete: _onComplete,
-	onError: _onError,
+	onComplete,
+	onError,
 }: {
 	context: GiselleContext;
 	generation: RunningGeneration;
@@ -568,12 +567,12 @@ function generateContentV2({
 		context,
 		generation,
 		metadata,
-		onError: _onError,
+		onError,
 		execute: async ({
-			finishGeneration: _finishGeneration,
+			finishGeneration,
 			runningGeneration,
 			generationContext,
-			setGeneration: _setGeneration,
+			setGeneration,
 			fileResolver,
 			generationContentResolver,
 			imageGenerationResolver,
@@ -620,12 +619,191 @@ function generateContentV2({
 					operationNode.content,
 				);
 
-			streamText({
+			const abortController = new AbortController();
+			let generationError: unknown | undefined;
+			const textGenerationStartTime = Date.now();
+
+			const streamTextResult = streamText({
+				...callOptions,
+				abortSignal: abortController.signal,
 				model: gateway(operationNode.content.languageModel.id),
 				messages,
 				tools: toolSet,
-				...callOptions,
+				stopWhen: stepCountIs(Object.keys(toolSet).length + 1),
+				onChunk: async () => {
+					const currentGeneration = await getGeneration({
+						storage: context.storage,
+						generationId: generation.id,
+					});
+					if (currentGeneration?.status === "cancelled") {
+						logger.debug(`${generation.id} will abort`);
+						abortController.abort();
+					}
+				},
+				onAbort: () => {
+					logger.debug({ generationId: generation.id }, "streamText onAbort");
+				},
+				onError: ({ error }) => {
+					generationError = error;
+				},
+				onFinish: () => {
+					logger.info(
+						`Text generation completed in ${Date.now() - textGenerationStartTime}ms`,
+					);
+				},
+				experimental_transform: smoothStream({
+					delayInMs: 1000,
+					chunking: "line",
+				}),
 			});
+			let uiMessageStreamResult: GenerateContentResult | undefined;
+			const uiMessageStream = streamTextResult.toUIMessageStream({
+				onFinish: async ({ messages: generateMessages }) => {
+					logger.info(
+						`Text generation stream completed in ${Date.now() - textGenerationStartTime}ms`,
+					);
+					if (generationError) {
+						if (AISDKError.isInstance(generationError)) {
+							logger.error(generationError, `${generation.id} is failed`);
+						}
+						const errInfo = AISDKError.isInstance(generationError)
+							? {
+									name: generationError.name,
+									message: generationError.message,
+								}
+							: {
+									name: "UnknownError",
+									message:
+										generationError instanceof Error
+											? generationError.message
+											: String(generationError),
+								};
+
+						const failedGeneration = {
+							...runningGeneration,
+							status: "failed",
+							failedAt: Date.now(),
+							error: errInfo,
+						} satisfies FailedGeneration;
+
+						await Promise.all([
+							setGeneration(failedGeneration),
+							onError?.({
+								generation: failedGeneration,
+								inputMessages: messages,
+							}),
+						]);
+						uiMessageStreamResult = {
+							success: false,
+							failedGeneration,
+							inputMessages: messages,
+						};
+					}
+					const generationOutputs: GenerationOutput[] = [];
+					const generatedTextOutput =
+						generationContext.operationNode.outputs.find(
+							(output: Output) => output.accessor === "generated-text",
+						);
+					const textRetrievalStartTime = Date.now();
+					const text = await streamTextResult.text;
+					logger.info(
+						`Text retrieval completed in ${Date.now() - textRetrievalStartTime}ms`,
+					);
+					if (generatedTextOutput !== undefined) {
+						generationOutputs.push({
+							type: "generated-text",
+							content: text,
+							outputId: generatedTextOutput.id,
+						});
+					}
+
+					const reasoningRetrievalStartTime = Date.now();
+					const reasoningText = await streamTextResult.reasoningText;
+					logger.info(
+						`Reasoning retrieval completed in ${Date.now() - reasoningRetrievalStartTime}ms`,
+					);
+					const reasoningOutput = generationContext.operationNode.outputs.find(
+						(output: Output) => output.accessor === "reasoning",
+					);
+					if (reasoningOutput !== undefined && reasoningText !== undefined) {
+						generationOutputs.push({
+							type: "reasoning",
+							content: reasoningText,
+							outputId: reasoningOutput.id,
+						});
+					}
+
+					const sourceRetrievalStartTime = Date.now();
+					const sources = await streamTextResult.sources;
+					logger.info(
+						`Source retrieval completed in ${Date.now() - sourceRetrievalStartTime}ms`,
+					);
+					const sourceOutput = generationContext.operationNode.outputs.find(
+						(output: Output) => output.accessor === "source",
+					);
+					if (sourceOutput !== undefined && sources.length > 0) {
+						generationOutputs.push({
+							type: "source",
+							outputId: sourceOutput.id,
+							sources,
+						});
+					}
+					const generationCompletionStartTime = Date.now();
+					const result = await finishGeneration({
+						inputMessages: messages,
+						outputs: generationOutputs,
+						usage: await streamTextResult.usage,
+						generateMessages: generateMessages,
+						providerMetadata: await streamTextResult.providerMetadata,
+						onComplete,
+					});
+					logger.info(
+						`Generation completion processing finished in ${Date.now() - generationCompletionStartTime}ms`,
+					);
+
+					uiMessageStreamResult = {
+						success: true,
+						completedGeneration: result.completedGeneration,
+						inputMessages: messages,
+						outputFileBlobs: result.outputFileBlobs,
+						usage: await streamTextResult.usage,
+						generateMessages: generateMessages,
+						providerMetadata: await streamTextResult.providerMetadata,
+					};
+				},
+			});
+
+			const writer = batchWriter<StreamItem<typeof uiMessageStream>>({
+				process: (batch) => {
+					logger.debug(`Processing batch with ${batch.length} items`);
+					return context.storage.setBlob(
+						generationUiMessageChunksPath(generation.id),
+						new TextEncoder().encode(
+							batch.map((chunk) => JSON.stringify(chunk)).join("\n"),
+						),
+					);
+				},
+				preserveItems: true,
+				logger,
+			});
+
+			let chunkCount = 0;
+			const uiMessageChunks: StreamItem<typeof uiMessageStream>[] = [];
+			for await (const chunk of uiMessageStream) {
+				chunkCount++;
+				logger.debug(`Adding chunk ${chunkCount}: ${chunk.type}`);
+				writer.add(chunk);
+				uiMessageChunks.push(chunk);
+			}
+			logger.debug(`Stream ended, total chunks: ${chunkCount}`);
+			await writer.close();
+			logger.debug(`Writer closed`);
+
+			if (uiMessageStreamResult === undefined) {
+				throw new Error("UI message stream result is undefined");
+			}
+
+			return uiMessageStreamResult;
 		},
 	});
 }

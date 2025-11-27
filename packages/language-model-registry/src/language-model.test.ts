@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { anthropic } from "./anthropic";
 import { google } from "./google";
-import { openai } from "./openai";
 import { parseConfiguration } from "./language-model";
+import { openai } from "./openai";
 
 describe("parseConfiguration", () => {
 	describe("with anthropic/claude-opus-4.1", () => {
@@ -166,4 +166,3 @@ describe("parseConfiguration", () => {
 		});
 	});
 });
-

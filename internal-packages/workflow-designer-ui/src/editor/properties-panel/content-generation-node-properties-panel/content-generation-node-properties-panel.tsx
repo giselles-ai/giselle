@@ -22,11 +22,7 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { GenerationView } from "../../../ui/generation-view";
 import { Tooltip } from "../../../ui/tooltip";
-import {
-	NodePanelHeader,
-	PropertiesPanelContent,
-	PropertiesPanelRoot,
-} from "../ui";
+import { NodePanelHeader, PropertiesPanelRoot } from "../ui";
 import { ConfigurationFormField, ModelPickerV2 } from "./language-model";
 import { useNodeContext } from "./node-context/use-node-context";
 import { ToolConfigurationDialog } from "./tool";
@@ -262,7 +258,7 @@ export function ContentGenerationNodePropertiesPanel({
 				onDelete={() => deleteNode(node.id)}
 			/>
 
-			<PropertiesPanelContent>
+			<div className="overflow-hidden flex flex-col grow-1">
 				<div className="grid grid-cols-[60px_1fr] gap-y-[12px] gap-x-[12px] items-start mb-[12px]">
 					<SettingDetail size="md" className="text-text-muted">
 						Model
@@ -417,8 +413,8 @@ export function ContentGenerationNodePropertiesPanel({
 					</div>
 				</div>
 
-				<div className="flex gap-[8px] flex-1">
-					<div className="flex-1 flex flex-col relative">
+				<div className="flex gap-[8px] flex-1 overflow-hidden">
+					<div className="w-1/2 flex flex-col relative">
 						<SettingDetail size="md" className="text-text-muted mb-[6px]">
 							Prompt
 						</SettingDetail>
@@ -467,11 +463,11 @@ export function ContentGenerationNodePropertiesPanel({
 							</div>
 						)}
 					</div>
-					<div className="flex flex-col flex-1">
+					<div className="flex flex-col w-1/2">
 						<SettingDetail size="md" className="text-text-muted mb-[6px]">
 							Output
 						</SettingDetail>
-						<div className="rounded-md bg-surface/70 w-full flex-1 p-[8px]">
+						<div className="rounded-md bg-surface/70 w-full flex-1 p-[8px] overflow-y-auto">
 							{currentGeneration ? (
 								<GenerationView generation={currentGeneration} />
 							) : (
@@ -482,7 +478,7 @@ export function ContentGenerationNodePropertiesPanel({
 						</div>
 					</div>
 				</div>
-			</PropertiesPanelContent>
+			</div>
 		</PropertiesPanelRoot>
 	);
 }
