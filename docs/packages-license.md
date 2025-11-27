@@ -2,13 +2,13 @@
 
 
 ## Summary
-* 932 MIT
+* 931 MIT
 * 188 Apache 2.0
 * 48 ISC
 * 28 New BSD
 * 18 Simplified BSD
 * 6 BlueOak-1.0.0
-* 3 MIT OR Apache-2.0
+* 2 MIT OR Apache-2.0
 * 2 MIT-0
 * 2 Unknown
 * 2 Mozilla Public License 2.0
@@ -51,7 +51,7 @@
 
 
 <a name="@ai-sdk/anthropic"></a>
-### @ai-sdk/anthropic v2.0.17
+### @ai-sdk/anthropic v2.0.49
 #### 
 
 ##### Paths
@@ -62,7 +62,7 @@
 
 
 <a name="@ai-sdk/fal"></a>
-### @ai-sdk/fal v1.0.13
+### @ai-sdk/fal v1.0.23
 #### 
 
 ##### Paths
@@ -73,7 +73,7 @@
 
 
 <a name="@ai-sdk/gateway"></a>
-### @ai-sdk/gateway v1.0.23
+### @ai-sdk/gateway v2.0.15
 #### 
 
 ##### Paths
@@ -84,7 +84,7 @@
 
 
 <a name="@ai-sdk/google"></a>
-### @ai-sdk/google v2.0.14
+### @ai-sdk/google v2.0.43
 #### 
 
 ##### Paths
@@ -95,7 +95,7 @@
 
 
 <a name="@ai-sdk/openai"></a>
-### @ai-sdk/openai v2.0.30
+### @ai-sdk/openai v2.0.72
 #### 
 
 ##### Paths
@@ -117,7 +117,7 @@
 
 
 <a name="@ai-sdk/provider-utils"></a>
-### @ai-sdk/provider-utils v3.0.9
+### @ai-sdk/provider-utils v3.0.17
 #### 
 
 ##### Paths
@@ -778,17 +778,6 @@ MIT OR Apache-2.0 permitted
 
 <a name="@biomejs/cli-linux-x64"></a>
 ### @biomejs/cli-linux-x64 v2.0.6
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-MIT OR Apache-2.0 permitted
-
-
-
-<a name="@biomejs/cli-linux-x64-musl"></a>
-### @biomejs/cli-linux-x64-musl v2.0.6
 #### 
 
 ##### Paths
@@ -2285,17 +2274,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@oxc-resolver/binding-linux-x64-gnu"></a>
 ### @oxc-resolver/binding-linux-x64-gnu v11.13.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@oxc-resolver/binding-linux-x64-musl"></a>
-### @oxc-resolver/binding-linux-x64-musl v11.13.0
 #### 
 
 ##### Paths
@@ -5694,7 +5672,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="ai"></a>
-### ai v5.0.51
+### ai v5.0.101
 #### 
 
 ##### Paths
