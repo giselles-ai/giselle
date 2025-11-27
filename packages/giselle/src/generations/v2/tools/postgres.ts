@@ -47,7 +47,7 @@ export function createPostgresTool({
 				});
 				break;
 			case "query":
-				tool({
+				toolSet.query = tool({
 					description: "Run a SQL query",
 					inputSchema: z.object({
 						query: z.string().min(1).max(1000),
