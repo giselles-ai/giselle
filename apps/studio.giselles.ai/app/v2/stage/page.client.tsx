@@ -653,9 +653,9 @@ export function Page({
 		? data.apps.find((app) => app.id === runningAppId)
 		: undefined;
 
-	const oneMonthAgo = useMemo(() => {
+	const sevenDaysAgo = useMemo(() => {
 		const d = new Date();
-		d.setMonth(d.getMonth() - 1);
+		d.setDate(d.getDate() - 7);
 		return d;
 	}, []);
 
@@ -667,10 +667,10 @@ export function Page({
 					if (Number.isNaN(createdAt.getTime())) {
 						return true;
 					}
-					return createdAt >= oneMonthAgo;
+					return createdAt >= sevenDaysAgo;
 				})
 				.slice(0, 20),
-		[data.tasks, oneMonthAgo],
+		[data.tasks, sevenDaysAgo],
 	);
 
 	// Track app list horizontal scroll to show edge gradients similar to music apps
