@@ -5,6 +5,7 @@ export function isIconName(data: unknown): data is IconName {
 		return false;
 	}
 
+	// `iconNames` can be an array, set, or an object map depending on bundling/runtime.
 	const collection = iconNames as unknown;
 
 	if (Array.isArray(collection)) {
