@@ -15,7 +15,7 @@ import type { EmbedderFunction } from "./types";
 
 export type CreateEmbedderFromProfileOptions = Pick<
 	EmbedderConfig,
-	"maxRetries" | "embeddingComplete"
+	"maxRetries" | "embeddingComplete" | "headers"
 > & {
 	transport?: "gateway" | "provider";
 };

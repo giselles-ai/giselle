@@ -22,7 +22,10 @@ export function isGatewaySupportedEmbeddingProfile(
 export function createGatewayEmbedder(
 	config: EmbedderConfig,
 ): EmbedderFunction {
-	const gateway = createGateway({ apiKey: config.apiKey });
+	const gateway = createGateway({
+		apiKey: config.apiKey,
+		headers: config.headers,
+	});
 	const modelId = toGatewayModelId(config.profile) as Parameters<
 		typeof gateway.textEmbeddingModel
 	>[0];
