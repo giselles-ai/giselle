@@ -27,6 +27,7 @@ export async function POST(req: Request) {
 		const message = error instanceof Error ? error.message : "Unknown error";
 		const errorName = error instanceof Error ? error.name : "UnknownError";
 		logger.error({ errorName, message }, "[stripe-v2-webhook] Error");
+		logger.debug({ error }, "[stripe-v2-webhook] Error details");
 		return new Response(`Webhook Error: ${message}`, { status: 400 });
 	}
 
@@ -71,6 +72,7 @@ export async function POST(req: Request) {
 		const message = error instanceof Error ? error.message : "Unknown error";
 		const errorName = error instanceof Error ? error.name : "UnknownError";
 		logger.error({ errorName, message }, "[stripe-v2-webhook] Handler failed");
+		logger.debug({ error }, "[stripe-v2-webhook] Handler error details");
 		return new Response(
 			"Webhook handler failed. View your Next.js function logs.",
 			{
