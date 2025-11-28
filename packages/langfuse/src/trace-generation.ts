@@ -4,6 +4,7 @@ import {
 	type FailedGeneration,
 	type ImageGenerationNode,
 	isActionNode,
+	isContentGenerationNode,
 	isImageGenerationNode,
 	isQueryNode,
 	isTextGenerationNode,
@@ -177,7 +178,8 @@ export async function traceGeneration(args: {
 		// Validate supported node types
 		if (
 			!isTextGenerationNode(operationNode) &&
-			!isImageGenerationNode(operationNode)
+			!isImageGenerationNode(operationNode) &&
+			!isContentGenerationNode(operationNode)
 		) {
 			console.warn(
 				`Telemetry: Unsupported node type: ${operationNode.content.type}`,
