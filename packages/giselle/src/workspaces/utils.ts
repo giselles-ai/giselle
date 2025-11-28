@@ -1,9 +1,5 @@
+import { convertTextGenerationToContentGeneration } from "@giselles-ai/node-registry";
 import {
-	convertContentGenerationToTextGeneration,
-	convertTextGenerationToContentGeneration,
-} from "@giselles-ai/node-registry";
-import {
-	isContentGenerationNode,
 	isTextGenerationNode,
 	Node,
 	Workspace,
