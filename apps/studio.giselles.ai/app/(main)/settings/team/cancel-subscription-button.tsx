@@ -42,6 +42,7 @@ export function CancelSubscriptionButton({
 			const result: CancelSubscriptionResult = await cancelSubscription();
 			if (result.success) {
 				setOpen(false);
+				window.location.reload();
 			} else {
 				setError(result.error);
 			}
