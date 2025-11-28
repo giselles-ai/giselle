@@ -195,10 +195,6 @@ function extractMetadata(
 	if (isContentGenerationNode(node)) {
 		const { content } = node;
 		const languageModel = getEntry(content.languageModel.id);
-		const config = parseConfiguration(
-			languageModel,
-			content.languageModel.configuration,
-		);
 
 		switch (languageModel.provider) {
 			case "anthropic":
