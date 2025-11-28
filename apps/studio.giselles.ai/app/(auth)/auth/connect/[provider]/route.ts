@@ -1,4 +1,9 @@
-import { connectIdentity, type OAuthProvider } from "@/services/accounts";
+import { getUser } from "@/lib/supabase";
+import {
+	connectIdentity,
+	type OAuthProvider,
+	reconnectIdentity,
+} from "@/services/accounts";
 
 function isValidOAuthProvider(provider: string): provider is OAuthProvider {
 	return provider === "github" || provider === "google";
@@ -16,5 +21,14 @@ export async function GET(
 	}
 	const provider: OAuthProvider = providerParam;
 
-	await connectIdentity(provider, "/connected");
+	const user = await getUser();
+	const isAlreadyLinked = user.identities?.some(
+		(identity) => identity.provider === provider,
+	);
+
+	if (isAlreadyLinked) {
+		await reconnectIdentity(provider, "/connected");
+	} else {
+		await connectIdentity(provider, "/connected");
+	}
 }
