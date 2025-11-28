@@ -14,6 +14,7 @@ import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
 import clsx from "clsx/lite";
 import { PlusIcon, Settings2Icon, XIcon } from "lucide-react";
+import { Tooltip as TooltipPrimitive } from "radix-ui";
 import { useCallback, useMemo, useState } from "react";
 import { GenerationView } from "../../../ui/generation-view";
 import { GenerateCtaButton, NodePanelHeader, PropertiesPanelRoot } from "../ui";
