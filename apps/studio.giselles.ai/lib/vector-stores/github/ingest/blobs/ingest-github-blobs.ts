@@ -24,6 +24,7 @@ export async function ingestGitHubBlobs(params: {
 	teamDbId: number;
 	embeddingProfileId: EmbeddingProfileId;
 	embeddingComplete?: EmbeddingCompleteCallback;
+	headers?: Record<string, string>;
 }): Promise<void> {
 	const { repositoryIndexDbId, isInitialIngest } = await getRepositoryIndexInfo(
 		params.source,
@@ -55,6 +56,7 @@ export async function ingestGitHubBlobs(params: {
 		}),
 		embeddingProfileId: params.embeddingProfileId,
 		embeddingComplete: params.embeddingComplete,
+		headers: params.headers,
 	});
 
 	const result = await ingest();

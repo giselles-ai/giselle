@@ -15,6 +15,7 @@ import {
 } from "@/db";
 import type { TeamWithSubscription } from "@/services/teams";
 import { fetchTeamByDbId } from "@/services/teams/fetch-team";
+import { buildAiGatewayHeaders } from "../../shared/ai-gateway-headers";
 import type { RepositoryWithStatuses } from "../types";
 import {
 	createBlobMetadata,
@@ -76,12 +77,15 @@ const CONTENT_PROCESSORS: Record<
 			},
 		});
 
+		const headers = buildAiGatewayHeaders(team);
+
 		await ingestGitHubBlobs({
 			octokitClient: octokit,
 			source: { owner, repo, commitSha: commit.sha },
 			teamDbId,
 			embeddingProfileId,
 			embeddingComplete,
+			headers,
 		});
 
 		return {
@@ -108,12 +112,15 @@ const CONTENT_PROCESSORS: Record<
 			},
 		});
 
+		const headers = buildAiGatewayHeaders(team);
+
 		await ingestGitHubPullRequests({
 			githubAuthConfig: buildGitHubAuthConfig(installationId),
 			source: { owner, repo },
 			teamDbId,
 			embeddingProfileId,
 			embeddingComplete,
+			headers,
 		});
 
 		const lastPrNumber = await getLastIngestedPrNumber(
@@ -144,12 +151,15 @@ const CONTENT_PROCESSORS: Record<
 			},
 		});
 
+		const headers = buildAiGatewayHeaders(team);
+
 		await ingestGitHubIssues({
 			githubAuthConfig: buildGitHubAuthConfig(installationId),
 			source: { owner, repo },
 			teamDbId,
 			embeddingProfileId,
 			embeddingComplete,
+			headers,
 		});
 
 		const lastIssueNumber = await getLastIngestedIssueNumber(
