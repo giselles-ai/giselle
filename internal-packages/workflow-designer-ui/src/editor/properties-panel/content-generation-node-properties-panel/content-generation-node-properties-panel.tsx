@@ -23,7 +23,7 @@ import {
 import { Tooltip as TooltipPrimitive } from "radix-ui";
 import { useCallback, useMemo, useState } from "react";
 import { GenerationView } from "../../../ui/generation-view";
-import { NodePanelHeader, PropertiesPanelRoot } from "../ui";
+import { GenerateCtaButton, NodePanelHeader, PropertiesPanelRoot } from "../ui";
 import { ConfigurationFormField, ModelPickerV2 } from "./language-model";
 import { useNodeContext } from "./node-context/use-node-context";
 import { ToolConfigurationDialog } from "./tool";
@@ -515,52 +515,6 @@ export function ContentGenerationNodePropertiesPanel({
 							connections={connections}
 							containerClassName="flex-1"
 						/>
-						{isGenerating ? (
-							<div className="absolute bottom-[8px] right-[8px]">
-								<button
-									className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 cursor-pointer"
-									type="button"
-									onClick={stopGenerationRunner}
-								>
-									<SquareIcon className="size-[16px]" />
-								</button>
-							</div>
-						) : isPromptEmpty ? (
-							<TooltipPrimitive.Provider>
-								<TooltipPrimitive.Root delayDuration={100}>
-									<TooltipPrimitive.Trigger asChild>
-										<div className="absolute bottom-[8px] right-[8px]">
-											<div className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 opacity-35">
-												<MoveUpIcon className="size-[16px]" />
-											</div>
-										</div>
-									</TooltipPrimitive.Trigger>
-									<TooltipPrimitive.Portal>
-										<TooltipPrimitive.Content
-											side="top"
-											align="center"
-											className={clsx(
-												"group z-50 overflow-hidden rounded-md px-4 py-4 text-[12px] shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 max-w-[300px]",
-												"bg-surface text-inverse",
-											)}
-											sideOffset={8}
-										>
-											Enter a prompt to continue
-										</TooltipPrimitive.Content>
-									</TooltipPrimitive.Portal>
-								</TooltipPrimitive.Root>
-							</TooltipPrimitive.Provider>
-						) : (
-							<div className="absolute bottom-[8px] right-[8px]">
-								<button
-									className="p-[6px] bg-gray-300 rounded-full text-[13px] text-gray-800 cursor-pointer"
-									type="button"
-									onClick={handleGenerationButtonClick}
-								>
-									<MoveUpIcon className="size-[16px]" />
-								</button>
-							</div>
-						)}
 					</div>
 					<div className="flex flex-col w-1/2">
 						<SettingDetail size="md" className="text-text-muted mb-[6px]">
@@ -576,6 +530,13 @@ export function ContentGenerationNodePropertiesPanel({
 							)}
 						</div>
 					</div>
+				</div>
+				<div className="py-[8px]">
+					<GenerateCtaButton
+						isGenerating={isGenerating}
+						isEmpty={isPromptEmpty}
+						onClick={handleGenerationButtonClick}
+					/>
 				</div>
 			</div>
 		</PropertiesPanelRoot>
