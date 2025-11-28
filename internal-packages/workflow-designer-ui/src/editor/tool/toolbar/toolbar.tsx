@@ -36,10 +36,10 @@ import clsx from "clsx/lite";
 import {
 	DatabaseZapIcon,
 	FileSlidersIcon,
+	FlagIcon,
 	FolderInputIcon,
-	LandPlotIcon,
+	MilestoneIcon,
 	SparklesIcon,
-	SquareArrowOutUpRightIcon,
 } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
 import { useEffect, useMemo, useState } from "react";
@@ -260,7 +260,7 @@ export function Toolbar() {
 						className="relative"
 					>
 						<Tooltip text={<TooltipAndHotkey text="Trigger" hotkey="t" />}>
-							<LandPlotIcon data-icon />
+							<MilestoneIcon data-icon />
 						</Tooltip>
 						{selectedTool?.action === "selectTrigger" && (
 							<Popover.Root open={true}>
@@ -995,7 +995,7 @@ export function Toolbar() {
 
 					<ToggleGroup.Item value="selectAction" data-tool className="relative">
 						<Tooltip text={<TooltipAndHotkey text="Dispatch" hotkey="d" />}>
-							<SquareArrowOutUpRightIcon data-icon />
+							<FlagIcon data-icon />
 						</Tooltip>
 						{selectedTool?.action === "selectAction" && (
 							<Popover.Root open={true}>
