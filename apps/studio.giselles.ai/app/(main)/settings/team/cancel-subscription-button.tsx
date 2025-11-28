@@ -30,6 +30,7 @@ export function CancelSubscriptionButton({
 	const [open, setOpen] = useState(false);
 	const [isPending, startTransition] = useTransition();
 	const [error, setError] = useState<string | null>(null);
+	const [isSuccess, setIsSuccess] = useState(false);
 
 	// Only show for v2 subscriptions
 	if (!subscriptionId.startsWith("bpps_")) {
@@ -41,8 +42,11 @@ export function CancelSubscriptionButton({
 		startTransition(async () => {
 			const result: CancelSubscriptionResult = await cancelSubscription();
 			if (result.success) {
-				setOpen(false);
-				window.location.reload();
+				setIsSuccess(true);
+				// Delay reload to allow webhook processing
+				setTimeout(() => {
+					window.location.reload();
+				}, 5000);
 			} else {
 				setError(result.error);
 			}
@@ -50,7 +54,7 @@ export function CancelSubscriptionButton({
 	};
 
 	const handleCloseDialog = (event?: { preventDefault: () => void }) => {
-		if (isPending) {
+		if (isPending || isSuccess) {
 			event?.preventDefault();
 			return;
 		}
@@ -59,7 +63,7 @@ export function CancelSubscriptionButton({
 	};
 
 	const handleOpenChange = (newOpen: boolean) => {
-		if (!newOpen && isPending) {
+		if (!newOpen && (isPending || isSuccess)) {
 			return;
 		}
 		setOpen(newOpen);
@@ -74,56 +78,73 @@ export function CancelSubscriptionButton({
 				<Button variant="destructive">Cancel Subscription</Button>
 			</DialogTrigger>
 			<DialogContent
-				variant="destructive"
+				variant={isSuccess ? "default" : "destructive"}
 				onEscapeKeyDown={(e) => handleCloseDialog(e)}
 				onPointerDownOutside={(e) => handleCloseDialog(e)}
 			>
-				<DialogHeader>
-					<div className="flex items-center justify-between">
-						<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-error-900">
-							Cancel Subscription
-						</DialogTitle>
-						<DialogClose className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none">
-							<X className="h-5 w-5" />
-							<span className="sr-only">Close</span>
-						</DialogClose>
-					</div>
-					<DialogDescription className="font-geist mt-2 text-[14px] text-error-900/50">
-						Are you sure you want to cancel your subscription? Your team will be
-						downgraded to the Free plan immediately.
-					</DialogDescription>
-				</DialogHeader>
-				{error && (
-					<Alert
-						variant="destructive"
-						className="mt-2 border-error-900/20 bg-error-900/5"
-					>
-						<AlertDescription className="font-geist text-[12px] font-medium leading-[20.4px] tracking-normal text-error-900/50">
-							{error}
-						</AlertDescription>
-					</Alert>
+				{isSuccess ? (
+					<>
+						<DialogHeader>
+							<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-primary-400">
+								Subscription Cancelled
+							</DialogTitle>
+							<DialogDescription className="font-geist mt-2 text-[14px] text-white-50">
+								Your subscription has been cancelled. The page will refresh
+								shortly.
+							</DialogDescription>
+						</DialogHeader>
+						<DialogBody />
+					</>
+				) : (
+					<>
+						<DialogHeader>
+							<div className="flex items-center justify-between">
+								<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-error-900">
+									Cancel Subscription
+								</DialogTitle>
+								<DialogClose className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none">
+									<X className="h-5 w-5" />
+									<span className="sr-only">Close</span>
+								</DialogClose>
+							</div>
+							<DialogDescription className="font-geist mt-2 text-[14px] text-error-900/50">
+								Are you sure you want to cancel your subscription? Your team
+								will be downgraded to the Free plan immediately.
+							</DialogDescription>
+						</DialogHeader>
+						{error && (
+							<Alert
+								variant="destructive"
+								className="mt-2 border-error-900/20 bg-error-900/5"
+							>
+								<AlertDescription className="font-geist text-[12px] font-medium leading-[20.4px] tracking-normal text-error-900/50">
+									{error}
+								</AlertDescription>
+							</Alert>
+						)}
+						<DialogBody />
+						<DialogFooter>
+							<div className="mt-6 flex justify-end gap-x-3">
+								<Button
+									variant="link"
+									type="button"
+									onClick={() => handleCloseDialog()}
+									disabled={isPending}
+								>
+									Keep Subscription
+								</Button>
+								<Button
+									variant="destructive"
+									type="button"
+									onClick={handleCancel}
+									disabled={isPending}
+								>
+									{isPending ? "Cancelling..." : "Yes, Cancel Subscription"}
+								</Button>
+							</div>
+						</DialogFooter>
+					</>
 				)}
-				<DialogBody />
-				<DialogFooter>
-					<div className="mt-6 flex justify-end gap-x-3">
-						<Button
-							variant="link"
-							type="button"
-							onClick={() => handleCloseDialog()}
-							disabled={isPending}
-						>
-							Keep Subscription
-						</Button>
-						<Button
-							variant="destructive"
-							type="button"
-							onClick={handleCancel}
-							disabled={isPending}
-						>
-							{isPending ? "Cancelling..." : "Yes, Cancel Subscription"}
-						</Button>
-					</div>
-				</DialogFooter>
 			</DialogContent>
 		</Dialog>
 	);
