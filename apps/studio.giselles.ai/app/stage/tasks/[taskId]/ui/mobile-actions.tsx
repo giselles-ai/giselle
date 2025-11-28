@@ -3,6 +3,7 @@
 import type { Generation } from "@giselles-ai/protocol";
 import { CheckCircle, Copy, Download } from "lucide-react";
 import { useState } from "react";
+import { getAssistantTextFromGeneration } from "../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-text";
 
 interface MobileActionsProps {
 	generation: Generation;
@@ -13,23 +14,7 @@ export function MobileActions({ generation }: MobileActionsProps) {
 
 	const handleCopyToClipboard = async () => {
 		try {
-			// Extract text content from generation
-			let textContent = "";
-
-			if ("messages" in generation) {
-				const assistantMessages =
-					generation.messages?.filter((m) => m.role === "assistant") ?? [];
-
-				textContent = assistantMessages
-					.map((message) =>
-						message.parts
-							?.filter((part) => part.type === "text")
-							.map((part) => part.text)
-							.join("\n"),
-					)
-					.filter(Boolean)
-					.join("\n\n");
-			}
+			const textContent = getAssistantTextFromGeneration(generation);
 
 			if (textContent) {
 				await navigator.clipboard.writeText(textContent);
@@ -43,23 +28,7 @@ export function MobileActions({ generation }: MobileActionsProps) {
 
 	const handleDownload = () => {
 		try {
-			// Extract text content for download
-			let textContent = "";
-
-			if ("messages" in generation) {
-				const assistantMessages =
-					generation.messages?.filter((m) => m.role === "assistant") ?? [];
-
-				textContent = assistantMessages
-					.map((message) =>
-						message.parts
-							?.filter((part) => part.type === "text")
-							.map((part) => part.text)
-							.join("\n"),
-					)
-					.filter(Boolean)
-					.join("\n\n");
-			}
+			const textContent = getAssistantTextFromGeneration(generation);
 
 			if (textContent) {
 				const blob = new Blob([textContent], { type: "text/plain" });

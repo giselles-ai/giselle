@@ -13,6 +13,7 @@ interface GenerateEmbeddingsOptions {
 	maxBatchSize?: number;
 	signal?: AbortSignal;
 	embeddingComplete?: EmbeddingCompleteCallback;
+	headers?: Record<string, string>;
 }
 
 interface EmbeddingResult {
@@ -54,6 +55,7 @@ export async function generateEmbeddings(
 		maxBatchSize = DEFAULT_MAX_BATCH_SIZE,
 		signal,
 		embeddingComplete,
+		headers,
 	} = options;
 
 	if (!Number.isInteger(maxBatchSize) || maxBatchSize <= 0) {
@@ -106,6 +108,7 @@ export async function generateEmbeddings(
 		{
 			embeddingComplete,
 			transport: useGateway ? "gateway" : "provider",
+			headers: useGateway ? headers : undefined,
 		},
 	);
 

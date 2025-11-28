@@ -164,7 +164,7 @@
 
 	/* glass common */
 	/* unified overlay (scrim) color for dialogs */
-	--color-dialog-overlay: rgba(0, 0, 0, 0.3);
+	--color-dialog-overlay: rgba(0, 0, 0, 0.5);
 	--glass-highlight-bg: linear-gradient(
 		to right,
 		transparent,
@@ -261,5 +261,25 @@
 			linear-gradient(#fff 0 0);
 		-webkit-mask-composite: xor;
 		padding: 1px;
+	}
+
+	.stage-running-icon {
+		box-shadow: 0 0 22px rgba(0, 135, 246, 0.8);
+		animation: stage-running-icon-pulse 2.2s ease-in-out infinite;
+	}
+}
+
+@keyframes stage-running-icon-pulse {
+	0% {
+		transform: scale(1);
+		box-shadow: 0 0 18px rgba(0, 135, 246, 0.7);
+	}
+	50% {
+		transform: scale(1.03);
+		box-shadow: 0 0 26px rgba(0, 135, 246, 0.95);
+	}
+	100% {
+		transform: scale(1);
+		box-shadow: 0 0 18px rgba(0, 135, 246, 0.7);
 	}
 }

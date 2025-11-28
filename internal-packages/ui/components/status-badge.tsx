@@ -1,7 +1,7 @@
 import clsx from "clsx/lite";
 
 interface StatusBadgeProps {
-	status: "error" | "success" | "ignored" | "info" | "warning";
+	status: "error" | "success" | "ignored" | "info" | "warning" | "primary";
 	variant?: "default" | "dot";
 	className?: string;
 	leftIcon?: React.ReactNode;
@@ -18,14 +18,16 @@ const statusStyles = {
 	info: "bg-[rgba(var(--color-info-rgb),0.05)] text-info border-[rgba(var(--color-info-rgb),0.1)]",
 	ignored:
 		"bg-[rgba(var(--color-ignored-rgb),0.05)] text-ignored border-[rgba(var(--color-ignored-rgb),0.1)]",
+	primary: "bg-primary-300/5 text-primary-300 border-primary-300/10",
 };
 
 const dotStyles = {
 	error: "bg-error",
 	success: "bg-success",
 	warning: "bg-warning",
-	info: "bg-info animate-pulse",
+	info: "bg-info",
 	ignored: "bg-ignored",
+	primary: "bg-primary-300",
 };
 
 const dotTextStyles = {
@@ -34,6 +36,7 @@ const dotTextStyles = {
 	warning: "text-warning",
 	info: "text-info",
 	ignored: "text-ignored",
+	primary: "text-primary-300",
 };
 
 export function StatusBadge({

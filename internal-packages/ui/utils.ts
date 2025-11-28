@@ -5,13 +5,19 @@ export function isIconName(data: unknown): data is IconName {
 		return false;
 	}
 
-	// lucide-react/dynamic's iconNames can be an array or an object depending on bundler.
-	if (Array.isArray(iconNames)) {
-		return iconNames.includes(data as IconName);
+	// `iconNames` can be an array, set, or an object map depending on bundling/runtime.
+	const collection = iconNames as unknown;
+
+	if (Array.isArray(collection)) {
+		return collection.includes(data as IconName);
 	}
 
-	if (iconNames != null && typeof iconNames === "object") {
-		return data in (iconNames as Record<string, unknown>);
+	if (collection instanceof Set) {
+		return (collection as Set<IconName>).has(data as IconName);
+	}
+
+	if (typeof collection === "object" && collection !== null) {
+		return Object.hasOwn(collection, data);
 	}
 
 	// Fallback: when we can't reliably inspect iconNames, accept any string.

@@ -106,6 +106,158 @@ export const subscriptionHistoryRelations = relations(
 	}),
 );
 
+/**
+ * Stripe v2 Billing Cadence history table
+ *
+ * Stores snapshots of billing cadence data from Stripe v2 API.
+ * Each webhook event creates a new history record.
+ *
+ * @see https://docs.stripe.com/api/v2/billing-cadences/object?api-version=2025-11-17.preview
+ */
+export const stripeBillingCadenceHistories = pgTable(
+	"stripe_billing_cadence_histories",
+	{
+		// Giselle fields
+		dbId: serial("db_id").primaryKey(),
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+
+		// Stripe cadence ID (bc_xxx) - not unique, can have multiple records
+		id: text("id").notNull(),
+
+		// Payer info
+		customerId: text("customer_id").notNull(), // cus_xxx
+		billingProfileId: text("billing_profile_id").notNull(), // bilp_xxx
+		payerType: text("payer_type").notNull(), // "customer"
+
+		// Billing cycle
+		billingCycleType: text("billing_cycle_type").notNull(), // "month" | "year"
+		billingCycleIntervalCount: integer(
+			"billing_cycle_interval_count",
+		).notNull(),
+		billingCycleDayOfMonth: integer("billing_cycle_day_of_month"),
+		billingCycleMonthOfYear: integer("billing_cycle_month_of_year"),
+		billingCycleTimeHour: integer("billing_cycle_time_hour").notNull(),
+		billingCycleTimeMinute: integer("billing_cycle_time_minute").notNull(),
+		billingCycleTimeSecond: integer("billing_cycle_time_second").notNull(),
+
+		// Billing dates
+		nextBillingDate: timestamp("next_billing_date").notNull(),
+
+		// Status
+		status: text("status").notNull(), // "active" | etc.
+
+		// Settings
+		billSettingsId: text("bill_settings_id"), // bblset_xxx
+
+		// Timestamps from Stripe
+		created: timestamp("created").notNull(), // cadence.created
+
+		// Metadata
+		metadata: jsonb("metadata"),
+		lookupKey: text("lookup_key"),
+
+		// Note: livemode is available in Stripe response but omitted here as it's self-evident from the environment
+	},
+	(table) => [
+		index("stripe_cadence_hist_id_idx").on(table.id),
+		index("stripe_cadence_hist_team_db_id_idx").on(table.teamDbId),
+		index("stripe_cadence_hist_customer_id_idx").on(table.customerId),
+	],
+);
+
+export const stripeBillingCadenceHistoryRelations = relations(
+	stripeBillingCadenceHistories,
+	({ one }) => ({
+		team: one(teams, {
+			fields: [stripeBillingCadenceHistories.teamDbId],
+			references: [teams.dbId],
+		}),
+	}),
+);
+
+/**
+ * Stripe v2 Pricing Plan Subscription history table
+ *
+ * Stores snapshots of pricing plan subscription data from Stripe v2 API.
+ * Each webhook event creates a new history record.
+ *
+ * @see https://docs.stripe.com/api/v2/pricing-plan-subscriptions/object?api-version=2025-11-17.preview
+ */
+export const stripePricingPlanSubscriptionHistories = pgTable(
+	"stripe_pricing_plan_subscription_histories",
+	{
+		// Giselle fields
+		dbId: serial("db_id").primaryKey(),
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		billingCadenceDbId: integer("billing_cadence_db_id")
+			.notNull()
+			.references(() => stripeBillingCadenceHistories.dbId, {
+				onDelete: "cascade",
+			}),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+
+		// Stripe subscription ID (bpps_xxx) - not unique, can have multiple records
+		id: text("id").notNull(),
+
+		// Stripe IDs
+		billingCadenceId: text("billing_cadence_id").notNull(), // bc_xxx
+		pricingPlanId: text("pricing_plan_id").notNull(), // bpp_xxx
+		pricingPlanVersionId: text("pricing_plan_version_id").notNull(), // bppv_xxx
+
+		// Status fields
+		servicingStatus: text("servicing_status").notNull(), // "active" | "canceled" | "paused" | "pending"
+		collectionStatus: text("collection_status").notNull(), // "current" | "past_due" | "paused" | "unpaid" | "awaiting_customer_action"
+
+		// Servicing status transitions
+		activatedAt: timestamp("activated_at"),
+		canceledAt: timestamp("canceled_at"),
+		pausedAt: timestamp("paused_at"),
+
+		// Collection status transitions
+		collectionCurrentAt: timestamp("collection_current_at"),
+		collectionPastDueAt: timestamp("collection_past_due_at"),
+		collectionPausedAt: timestamp("collection_paused_at"),
+		collectionUnpaidAt: timestamp("collection_unpaid_at"),
+		collectionAwaitingCustomerActionAt: timestamp(
+			"collection_awaiting_customer_action_at",
+		),
+
+		// Timestamps from Stripe
+		created: timestamp("created").notNull(), // subscription.created
+
+		// Metadata
+		metadata: jsonb("metadata"),
+
+		// Note: livemode is available in Stripe response but omitted here as it's self-evident from the environment
+	},
+	(table) => [
+		index("stripe_pps_hist_id_idx").on(table.id),
+		index("stripe_pps_hist_team_db_id_idx").on(table.teamDbId),
+		index("stripe_pps_hist_billing_cadence_db_id_idx").on(
+			table.billingCadenceDbId,
+		),
+	],
+);
+
+export const stripePricingPlanSubscriptionHistoryRelations = relations(
+	stripePricingPlanSubscriptionHistories,
+	({ one }) => ({
+		team: one(teams, {
+			fields: [stripePricingPlanSubscriptionHistories.teamDbId],
+			references: [teams.dbId],
+		}),
+		billingCadence: one(stripeBillingCadenceHistories, {
+			fields: [stripePricingPlanSubscriptionHistories.billingCadenceDbId],
+			references: [stripeBillingCadenceHistories.dbId],
+		}),
+	}),
+);
+
 export type TeamPlan = "free" | "pro" | "team" | "enterprise" | "internal";
 export const teams = pgTable("teams", {
 	id: text("id").$type<TeamId>().notNull().unique(),
@@ -171,6 +323,11 @@ export const teamMembershipRelations = relations(
 	}),
 );
 
+/** @deprecated Use WorkspaceMetadata instead */
+export type AgentMetadata = {
+	sample: boolean;
+};
+
 /** @deprecated The agents table does not align with the application domain, so we are migrating to the workspaces table. We are keeping it for gradual migration due to the large scope of impact. */
 export const agents = pgTable(
 	"agents",
@@ -193,6 +350,10 @@ export const agents = pgTable(
 		creatorDbId: integer("creator_db_id")
 			.notNull()
 			.references(() => users.dbId),
+		metadata: jsonb("metadata")
+			.$type<AgentMetadata>()
+			.default({ sample: false })
+			.notNull(),
 	},
 	(table) => [index().on(table.teamDbId)],
 );
@@ -202,6 +363,10 @@ export const agentsRelations = relations(agents, ({ one }) => ({
 		references: [teams.dbId],
 	}),
 }));
+
+export type WorkspaceMetadata = {
+	sample: boolean;
+};
 
 export const workspaces = pgTable("workspaces", {
 	id: text("id").$type<WorkspaceId>().notNull().unique(),
@@ -218,6 +383,10 @@ export const workspaces = pgTable("workspaces", {
 	creatorDbId: integer("creator_db_id")
 		.notNull()
 		.references(() => users.dbId),
+	metadata: jsonb("metadata")
+		.$type<WorkspaceMetadata>()
+		.default({ sample: false })
+		.notNull(),
 });
 
 export const workspaceRelations = relations(workspaces, ({ one }) => ({

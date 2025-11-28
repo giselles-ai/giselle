@@ -40,6 +40,7 @@ function getInputHandleContentType(node: NodeLike): NodeHandleContentType {
 		| "vectorStore";
 	switch (contentType) {
 		case "textGeneration":
+		case "contentGeneration":
 		case "imageGeneration":
 		case "github":
 		case "text":
@@ -534,6 +535,7 @@ export function NodeComponent({
 								v.isWebPage && "text-background",
 								v.isTextGeneration && "text-inverse",
 								v.isImageGeneration && "text-inverse",
+								v.isGithub && "text-background",
 								v.isVectorStoreGithub && "text-background",
 								v.isVectorStoreDocument && "text-background",
 								v.isTrigger && !v.isGithubTrigger && "text-inverse",
@@ -541,7 +543,6 @@ export function NodeComponent({
 								v.isAppEntry && "text-inverse",
 								v.isAction && "text-inverse",
 								v.isQuery && "text-background",
-								v.isGithub && "text-background",
 							)}
 						/>
 					</div>

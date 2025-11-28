@@ -3,7 +3,13 @@
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import clsx from "clsx/lite";
 import { Dialog } from "radix-ui";
-import { type ReactNode, useCallback, useRef, useState } from "react";
+import {
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { ResizeHandle } from "../../properties-panel/ui/resizable-section";
 
 interface FloatingPropertiesPanelProps {
@@ -100,6 +106,10 @@ export function FloatingPropertiesPanel({
 		[width, minWidth, maxWidth, throttle, position],
 	);
 
+	useEffect(() => {
+		setWidth(defaultWidth);
+	}, [defaultWidth]);
+
 	return (
 		<Dialog.Root open={isOpen} modal={false}>
 			<Dialog.Portal container={container}>
@@ -108,7 +118,7 @@ export function FloatingPropertiesPanel({
 						className={clsx(
 							autoHeight
 								? "absolute top-4 z-10 pointer-events-none"
-								: "absolute top-4 bottom-4 z-10 pointer-events-none",
+								: "absolute top-4 bottom-[68px] z-10 pointer-events-none",
 							position === "right" ? "right-4" : "left-4",
 							"outline-none",
 						)}

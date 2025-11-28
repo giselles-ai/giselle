@@ -477,6 +477,20 @@
       "when": 1763705586852,
       "tag": "0067_peaceful_the_executioner",
       "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "7",
+      "when": 1764222491592,
+      "tag": "0068_warm_vector",
+      "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1764256980624,
+      "tag": "0069_shocking_shooting_star",
+      "breakpoints": true
     }
   ]
 }

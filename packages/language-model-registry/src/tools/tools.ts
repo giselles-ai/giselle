@@ -4,6 +4,8 @@ import { googleWebSearch } from "./google-web-search";
 import { openaiWebSearch } from "./openai-web-search";
 import { postgres } from "./postgres";
 
+export * from "./tool";
+
 export const languageModelTools = [
 	anthropicWebSearch,
 	githubApi,
@@ -21,4 +23,12 @@ export function isLanguageModelToolName(
 	v: unknown,
 ): v is LanguageModelToolName {
 	return languageModelToolNames.some((toolName) => toolName === v);
+}
+
+export function getLanguageModelTool(name: LanguageModelToolName) {
+	const tool = languageModelTools.find((tool) => tool.name === name);
+	if (tool === undefined) {
+		throw new Error(`Unknown tool name: ${name}`);
+	}
+	return tool;
 }

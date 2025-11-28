@@ -22,6 +22,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
+	createConnectionWithInput,
 	isSupportedConnection,
 	useWorkflowDesigner,
 	useWorkflowDesignerStore,
@@ -168,32 +169,24 @@ function V2NodeCanvas() {
 				if (!safeOutputId.success) throw new Error("Invalid output id");
 				const outputId = safeOutputId.data;
 
-				if (isActionNode(inputNode)) {
-					const safeInputId = InputId.safeParse(connection.targetHandle);
-					if (!safeInputId.success) throw new Error("Invalid input id");
-					addConnection({
-						inputNode,
-						inputId: safeInputId.data,
-						outputNode,
-						outputId,
-					});
-				} else {
-					const newInputId = InputId.generate();
-					const newInput = {
-						id: newInputId,
-						label: "Input",
-						accessor: newInputId,
-					};
-					updateNodeData(inputNode, {
-						inputs: [...inputNode.inputs, newInput],
-					});
-					addConnection({
-						inputNode,
-						inputId: newInput.id,
-						outputId,
-						outputNode,
-					});
+				const inputId = isActionNode(inputNode)
+					? InputId.safeParse(connection.targetHandle).success
+						? InputId.safeParse(connection.targetHandle).data
+						: undefined
+					: undefined;
+
+				if (isActionNode(inputNode) && inputId === undefined) {
+					throw new Error("Invalid input id");
 				}
+
+				createConnectionWithInput({
+					outputNode,
+					outputId,
+					inputNode,
+					inputId,
+					updateNodeData,
+					addConnection,
+				});
 			} catch (error: unknown) {
 				toast.error(
 					error instanceof Error ? error.message : "Failed to connect nodes",
@@ -424,6 +417,9 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 		`${selectedNodes[0]?.content.type}` === "trigger" &&
 		`${(selectedNodes[0] as unknown as { content?: { provider?: string } })?.content?.provider}` ===
 			"manual";
+	const isContentGenerationPanel =
+		isPropertiesPanelOpen &&
+		`${selectedNodes[0]?.content.type}` === "contentGeneration";
 
 	const mainRef = useRef<HTMLDivElement>(null);
 
@@ -464,14 +460,25 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 				<Panel order={2}>
 					{/* Main Content Area */}
 					<V2NodeCanvas />
-
 					{/* Floating Properties Panel */}
 					<FloatingPropertiesPanel
 						isOpen={isPropertiesPanelOpen}
 						container={mainRef.current}
 						title="Properties Panel"
-						defaultWidth={isTextGenerationPanel ? 400 : undefined}
-						minWidth={isTextGenerationPanel ? 400 : undefined}
+						defaultWidth={
+							isContentGenerationPanel
+								? 600
+								: isTextGenerationPanel
+									? 400
+									: undefined
+						}
+						minWidth={
+							isContentGenerationPanel
+								? 600
+								: isTextGenerationPanel
+									? 400
+									: undefined
+						}
 						autoHeight={
 							isFilePanel ||
 							isTextPanel ||

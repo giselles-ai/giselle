@@ -1,8 +1,8 @@
 import { defaultName } from "@giselles-ai/node-registry";
+import type { UIConnection } from "@giselles-ai/react";
 import { createSourceExtensionJSONContent } from "@giselles-ai/text-editor-utils";
 import { ReactRenderer } from "@tiptap/react";
 import type { SuggestionOptions } from "@tiptap/suggestion";
-import type { ConnectedSource } from "./component";
 import {
 	type SuggestionItem,
 	SuggestionList,
@@ -10,21 +10,21 @@ import {
 } from "./suggestion-list";
 
 export function createSuggestion(
-	connectedSources: ConnectedSource[] | undefined,
+	connections: UIConnection[] | undefined,
 ): Omit<SuggestionOptions<SuggestionItem>, "editor"> {
 	return {
 		char: "@",
 		items: ({ query }) => {
-			if (connectedSources === undefined) {
+			if (connections === undefined) {
 				return [];
 			}
 
-			const items: SuggestionItem[] = connectedSources.map(
-				({ node, output }) => ({
-					id: `${node.id}-${output.id}`,
-					node,
+			const items: SuggestionItem[] = connections.map(
+				({ outputNode, output }) => ({
+					id: output.id,
+					node: outputNode,
 					output,
-					label: `${node.name ?? defaultName(node)} / ${output.label}`,
+					label: `${outputNode.name ?? defaultName(outputNode)} / ${output.label}`,
 				}),
 			);
 

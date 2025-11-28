@@ -6,6 +6,42 @@ import {
 } from "./language-model";
 
 export const google = {
+	"google/gemini-3-pro-preview": defineLanguageModel({
+		provider: "google",
+		id: "google/gemini-3-pro-preview",
+		name: "Gemini 3 Pro Preview",
+		description:
+			"This model improves upon Gemini 2.5 Pro and is catered towards challenging tasks, especially those involving complex reasoning or agentic workflows. ",
+		contextWindow: 1_048_576,
+		maxOutputTokens: 65_536,
+		knowledgeCutoff: new Date(2025, 0, 31).getTime(),
+		pricing: {
+			input: definePricing(2.0),
+			output: definePricing(12.0),
+		},
+		requiredTier: "pro",
+		configurationOptions: {
+			temperature: {
+				description: "Controls the randomness of the output.",
+				schema: z.number().min(0.0).max(2.0),
+				ui: {
+					min: 0.0,
+					max: 2.0,
+					step: 0.05,
+				},
+			},
+			thinkingLevel: {
+				description:
+					"Control thinking behavior. Models adjust reasoning effort dynamically by default, but you can override this for specific latency or complexity requirements.",
+				schema: z.enum(["low", "high"]),
+			},
+		},
+		defaultConfiguration: {
+			temperature: 1.0,
+			thinkingLevel: "high",
+		},
+		url: "https://ai.google.dev/gemini-api/docs/models",
+	}),
 	"google/gemini-2.5-pro": defineLanguageModel({
 		provider: "google",
 		id: "google/gemini-2.5-pro",
@@ -30,22 +66,14 @@ export const google = {
 					step: 0.05,
 				},
 			},
-			searchGrounding: {
-				description: "Whether to use Google Search for grounding.",
-				schema: z.boolean(),
-				ui: {
-					label: "Grounding with Google Search",
-				},
-			},
-			urlContext: {
-				description: "Whether to include URL context.",
+			thinking: {
+				description: "Whether to include reasoning text in the response.",
 				schema: z.boolean(),
 			},
 		},
 		defaultConfiguration: {
 			temperature: 1.0,
-			searchGrounding: false,
-			urlContext: false,
+			thinking: true,
 		},
 		url: "https://ai.google.dev/gemini-api/docs/models",
 	}),
@@ -73,19 +101,14 @@ export const google = {
 					step: 0.1,
 				},
 			},
-			searchGrounding: {
-				description: "Whether to use Google Search for grounding.",
-				schema: z.boolean(),
-			},
-			urlContext: {
-				description: "Whether to include URL context.",
+			thinking: {
+				description: "Whether to include reasoning text in the response.",
 				schema: z.boolean(),
 			},
 		},
 		defaultConfiguration: {
 			temperature: 1.0,
-			searchGrounding: false,
-			urlContext: false,
+			thinking: true,
 		},
 		url: "https://ai.google.dev/gemini-api/docs/models",
 	}),
@@ -113,19 +136,14 @@ export const google = {
 					step: 0.1,
 				},
 			},
-			searchGrounding: {
-				description: "Whether to use Google Search for grounding.",
+			thinking: {
+				description: "Whether to include reasoning text in the response.",
 				schema: z.boolean(),
-			},
-			urlContext: {
-				description: "Whether to include URL context.",
-				schema: z.boolean().optional().default(false),
 			},
 		},
 		defaultConfiguration: {
 			temperature: 0.7,
-			searchGrounding: false,
-			urlContext: false,
+			thinking: false,
 		},
 		url: "https://ai.google.dev/gemini-api/docs/models",
 	}),

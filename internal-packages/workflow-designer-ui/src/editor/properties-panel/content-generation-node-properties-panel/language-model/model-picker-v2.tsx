@@ -2,6 +2,7 @@
 
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import {
+	isLanguageModelId,
 	type LanguageModel,
 	type LanguageModelId,
 	type LanguageModelProvider,
@@ -17,7 +18,13 @@ const recommendedLanguageModelIds: LanguageModelId[] = [
 	"anthropic/claude-sonnet-4-5",
 ];
 
-export function ModelPickerV2({ value }: { value: LanguageModelId }) {
+export function ModelPickerV2({
+	value,
+	onChange,
+}: {
+	value: LanguageModelId;
+	onChange?: (modelId: LanguageModelId) => void;
+}) {
 	const [open, setOpen] = useState(false);
 	const [query, setQuery] = useState("");
 	const languageModels = useMemo(() => {
@@ -152,6 +159,12 @@ export function ModelPickerV2({ value }: { value: LanguageModelId }) {
 													"flex gap-[12px] items-center p-[4px] rounded-[4px] text-left",
 													"hover:bg-white/5 focus:bg-white/5 cursor-pointer",
 												)}
+												onClick={() => {
+													if (isLanguageModelId(model.id)) {
+														onChange?.(model.id);
+														setOpen(false);
+													}
+												}}
 											>
 												<div className="flex items-center gap-[8px]">
 													<p className="text-[14px] text-left text-nowrap">
@@ -176,6 +189,12 @@ export function ModelPickerV2({ value }: { value: LanguageModelId }) {
 													"flex gap-[12px] items-center p-[4px] rounded-[4px] text-left",
 													"hover:bg-white/5 focus:bg-white/5 cursor-pointer",
 												)}
+												onClick={() => {
+													if (isLanguageModelId(model.id)) {
+														onChange?.(model.id);
+														setOpen(false);
+													}
+												}}
 											>
 												<div className="flex items-center gap-[8px]">
 													<p className="text-[14px] text-left text-nowrap">

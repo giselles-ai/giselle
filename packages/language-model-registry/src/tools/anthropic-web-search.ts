@@ -1,3 +1,4 @@
+import * as z from "zod/v4";
 import { defineLanguageModelTool } from "./tool";
 
 function isValidDomain(domain: string): { isValid: boolean; message?: string } {
@@ -31,6 +32,7 @@ export const anthropicWebSearch = defineLanguageModelTool({
 				{ value: "5", label: "5" },
 			],
 			optional: true,
+			schema: z.number().optional(),
 		},
 		allowedDomains: {
 			name: "allowedDomains",
@@ -41,6 +43,7 @@ export const anthropicWebSearch = defineLanguageModelTool({
 			placeholder: "Domain Names (separate with commas)",
 			validate: isValidDomain,
 			optional: true,
+			schema: z.array(z.string()).optional(),
 		},
 		blockedDomains: {
 			name: "blockedDomains",
@@ -51,6 +54,7 @@ export const anthropicWebSearch = defineLanguageModelTool({
 			placeholder: "Domain Names (separate with commas)",
 			validate: isValidDomain,
 			optional: true,
+			schema: z.array(z.string()).optional(),
 		},
 	},
 });

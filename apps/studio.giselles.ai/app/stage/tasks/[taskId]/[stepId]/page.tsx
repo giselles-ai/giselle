@@ -92,11 +92,11 @@ export default async function ({
 				<StepLayout
 					generation={generation}
 					header={
-						<div className="flex items-center gap-[6px]">
-							<div className="p-[8px] bg-element-active rounded-[4px]">
+						<div className="flex items-center gap-[6px]" key="step-header">
+							<div className="p-[8px] bg-white rounded-[4px]">
 								<NodeIcon
 									node={generation.context.operationNode}
-									className="size-[16px]"
+									className="size-[16px] text-black"
 								/>
 							</div>
 							<div className="flex flex-col">

@@ -77,7 +77,10 @@ export function LanguageModelMegaTooltip({
 						</p>
 						<div className="flex flex-row gap-[24px]">
 							<div className="flex flex-col gap-[8px] w-[100px] shrink-0">
-								<p className="text-[14px] font-medium">PRICING</p>
+								<div className="flex flex-col gap-[2px]">
+									<p className="text-[14px] font-medium">PRICING</p>
+									<p className="text-[11px] text-text-muted">per 1M tokens</p>
+								</div>
 								<div className="flex flex-col gap-[4px] text-[13px] text-text-muted">
 									<div className="flex justify-between">
 										<span className="text-muted">Input</span>
@@ -93,9 +96,9 @@ export function LanguageModelMegaTooltip({
 									</div>
 								</div>
 							</div>
-							<div className="flex flex-col gap-[8px]">
+							<div className="flex flex-col gap-[8px] flex-1">
 								<p className="text-[14px] font-medium">CONTEXT</p>
-								<div className="flex flex-col gap-[4px] text-[14px] text-text-muted text-[13px]">
+								<div className="flex flex-col gap-[4px] text-[13px] text-text-muted text-[13px]">
 									<div className="flex justify-between">
 										<span>Window</span>
 										<span>
@@ -103,19 +106,24 @@ export function LanguageModelMegaTooltip({
 										</span>
 									</div>
 									<div className="flex justify-between">
-										<span className="text-muted">Max Output Tokens</span>
+										<span className="text-muted">
+											Max Output
+											<br /> Tokens
+										</span>
 										<span>
 											{hoveredLanguageModel.maxOutputTokens.toLocaleString()}
 										</span>
 									</div>
 									<div className="flex justify-between">
-										<span className="text-muted">Knowledge Cutoff</span>
+										<span className="text-muted">
+											Knowledge
+											<br /> Cutoff
+										</span>
 										<span>
 											{new Date(
 												hoveredLanguageModel.knowledgeCutoff,
 											).toLocaleDateString("en-US", {
 												month: "short",
-												day: "numeric",
 												year: "numeric",
 											})}
 										</span>

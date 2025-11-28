@@ -223,8 +223,10 @@ export function NavigationRailFooterMenu({
 						<DropdownMenuPrimitive.Separator className="h-px bg-white/10 my-1" />
 
 						{/* Logout */}
-						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS}>
-							<SignOutButton className="text-[14px]">Log Out</SignOutButton>
+						<DropdownMenuPrimitive.Item className={MENU_ITEM_CLASS} asChild>
+							<SignOutButton className="w-full text-left">
+								Log Out
+							</SignOutButton>
 						</DropdownMenuPrimitive.Item>
 					</PopoverContent>
 				</DropdownMenuPrimitive.Content>

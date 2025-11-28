@@ -1,3 +1,4 @@
+import * as z from "zod/v4";
 import { defineLanguageModelTool } from "./tool";
 
 function isValidDomain(domain: string): { isValid: boolean; message?: string } {
@@ -22,6 +23,7 @@ export const openaiWebSearch = defineLanguageModelTool({
 			type: "tagArray",
 			validate: isValidDomain,
 			optional: true,
+			schema: z.array(z.string()).optional(),
 		},
 	},
 });

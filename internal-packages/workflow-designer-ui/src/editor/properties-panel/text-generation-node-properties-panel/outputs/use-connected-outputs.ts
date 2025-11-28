@@ -6,7 +6,7 @@ import {
 	type TriggerNode,
 	VariableNode,
 } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
+import { type UIConnection, useWorkflowDesigner } from "@giselles-ai/react";
 import { useMemo } from "react";
 import type { ConnectedOutputWithDetails } from "./types";
 
@@ -27,42 +27,63 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 		const connectedAppEntryInputs: ConnectedOutputWithDetails<AppEntryNode>[] =
 			[];
 
+		const uiConnections: UIConnection[] = [];
+
 		for (const connection of connectionsToThisNode) {
-			const node = data.nodes.find(
+			const outputNode = data.nodes.find(
 				(node) => node.id === connection.outputNode.id,
 			);
-			if (node === undefined) {
+			if (outputNode === undefined) {
 				continue;
 			}
-			const output = node.outputs.find(
+			const output = outputNode.outputs.find(
 				(output) => output.id === connection.outputId,
 			);
 			if (output === undefined) {
 				continue;
 			}
+			const inputNode = data.nodes.find(
+				(node) => node.id === connection.inputNode.id,
+			);
+			if (inputNode === undefined) {
+				continue;
+			}
+			const input = inputNode.inputs.find(
+				(input) => input.id === connection.inputId,
+			);
+			if (input === undefined) {
+				continue;
+			}
+			uiConnections.push({
+				id: connection.id,
+				output,
+				outputNode,
+				input,
+				inputNode,
+			});
 
-			switch (node.type) {
+			switch (outputNode.type) {
 				case "operation":
-					switch (node.content.type) {
+					switch (outputNode.content.type) {
 						case "textGeneration":
 						case "contentGeneration":
 							connectedGeneratedInputs.push({
 								...output,
-								node: node as TextGenerationNode,
+								node: outputNode as TextGenerationNode,
 								connection,
 							});
 							break;
 						case "action":
 							connectedActionInputs.push({
 								...output,
-								node: node as ActionNode,
+								node: outputNode as ActionNode,
 								connection,
 							});
 							break;
 						case "trigger":
 							connectedTriggerInputs.push({
 								...output,
-								node: node as TriggerNode,
+								node: outputNode as TriggerNode,
 								connection,
 							});
 							break;
@@ -71,19 +92,19 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 						case "query":
 							connectedQueryInputs.push({
 								...output,
-								node: node as QueryNode,
+								node: outputNode as QueryNode,
 								connection,
 							});
 							break;
 						case "appEntry":
 							connectedAppEntryInputs.push({
 								...output,
-								node: node as AppEntryNode,
+								node: outputNode as AppEntryNode,
 								connection,
 							});
 							break;
 						default: {
-							const _exhaustiveCheck: never = node.content.type;
+							const _exhaustiveCheck: never = outputNode.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 						}
 					}
@@ -91,12 +112,12 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 				case "variable":
 					connectedVariableInputs.push({
 						...output,
-						node: VariableNode.parse(node),
+						node: VariableNode.parse(outputNode),
 						connection,
 					});
 					break;
 				default: {
-					const _exhaustiveCheck: never = node;
+					const _exhaustiveCheck: never = outputNode;
 					throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 				}
 			}
@@ -117,6 +138,7 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 			trigger: connectedTriggerInputs,
 			query: connectedQueryInputs,
 			appEntry: connectedAppEntryInputs,
+			connections: uiConnections,
 		};
 	}, [node.id, data.connections, data.nodes]);
 }
