@@ -354,3 +354,89 @@ function getBillingCycleTime(
 		second: timeSource?.second ?? 0,
 	};
 }
+
+/**
+ * Handle v2.billing.pricing_plan_subscription.servicing_canceled event
+ *
+ * This event fires when a pricing plan subscription is canceled.
+ * The team is downgraded from "pro" to "free".
+ */
+export async function handlePricingPlanServicingCanceled(event: Stripe.Event) {
+	// v2 events have related_object instead of data.object for the subscription reference
+	const relatedObject = (
+		event as unknown as { related_object?: { id: string } }
+	).related_object;
+	if (!relatedObject?.id) {
+		throw new Error(
+			"Missing related_object in pricing plan subscription event",
+		);
+	}
+
+	const subscriptionId = relatedObject.id;
+	logger.info(
+		{ subscriptionId },
+		"[stripe-v2-webhook] Pricing plan subscription canceled",
+	);
+
+	// Retrieve subscription from Stripe v2 API
+	const subscription =
+		await stripe.v2.billing.pricingPlanSubscriptions.retrieve(subscriptionId);
+	logger.debug(
+		{ subscription },
+		"[stripe-v2-webhook] Retrieved subscription data",
+	);
+
+	// Retrieve billing cadence
+	const cadence = await stripe.v2.billing.cadences.retrieve(
+		subscription.billing_cadence,
+	);
+	logger.debug({ cadence }, "[stripe-v2-webhook] Retrieved cadence data");
+
+	await db.transaction(async (tx) => {
+		// Find team by subscription history
+		const [existing] = await tx
+			.select({ teamDbId: stripePricingPlanSubscriptionHistories.teamDbId })
+			.from(stripePricingPlanSubscriptionHistories)
+			.where(eq(stripePricingPlanSubscriptionHistories.id, subscription.id))
+			.orderBy(desc(stripePricingPlanSubscriptionHistories.createdAt))
+			.limit(1);
+
+		if (!existing) {
+			throw new Error(
+				`No subscription history found for canceled subscription ${subscriptionId}`,
+			);
+		}
+
+		// Downgrade team to free plan
+		// Note: WHERE condition ensures idempotency - if already canceled,
+		// activeSubscriptionId is null and no rows will be updated
+		await tx
+			.update(teams)
+			.set({
+				plan: "free",
+				activeSubscriptionId: null,
+				activeCustomerId: null,
+			})
+			.where(
+				and(
+					eq(teams.dbId, existing.teamDbId),
+					eq(teams.activeSubscriptionId, subscription.id),
+					ne(teams.plan, "internal"),
+					ne(teams.plan, "enterprise"),
+				),
+			);
+
+		// Record cancellation in history
+		await recordV2SubscriptionHistory(
+			tx,
+			subscription,
+			cadence,
+			existing.teamDbId,
+		);
+
+		logger.info(
+			{ teamDbId: existing.teamDbId, subscriptionId: subscription.id },
+			"[stripe-v2-webhook] Downgraded team to free",
+		);
+	});
+}
