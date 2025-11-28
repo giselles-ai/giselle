@@ -35,10 +35,10 @@ import {
 import clsx from "clsx/lite";
 import {
 	DatabaseZapIcon,
-	FolderOpenIcon,
-	LucideSearch,
-	RocketIcon,
+	FileSlidersIcon,
+	FolderInputIcon,
 	SparklesIcon,
+	SquareArrowOutUpRightIcon,
 	ZapIcon,
 } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
@@ -347,7 +347,7 @@ export function Toolbar() {
 						className="relative"
 					>
 						<Tooltip text={<TooltipAndHotkey text="Import" hotkey="i" />}>
-							<FolderOpenIcon data-icon />
+							<FolderInputIcon data-icon />
 						</Tooltip>
 						{selectedTool?.action === "selectSourceCategory" && (
 							<Popover.Root open={true}>
@@ -929,7 +929,7 @@ export function Toolbar() {
 						className="relative"
 					>
 						<Tooltip text={<TooltipAndHotkey text="Retrieve" hotkey="r" />}>
-							<LucideSearch data-icon />
+							<FileSlidersIcon data-icon />
 						</Tooltip>
 						{selectedTool?.action === "selectRetrievalCategory" && (
 							<Popover.Root open={true}>
@@ -995,7 +995,7 @@ export function Toolbar() {
 
 					<ToggleGroup.Item value="selectAction" data-tool className="relative">
 						<Tooltip text={<TooltipAndHotkey text="Dispatch" hotkey="d" />}>
-							<RocketIcon data-icon />
+							<SquareArrowOutUpRightIcon data-icon />
 						</Tooltip>
 						{selectedTool?.action === "selectAction" && (
 							<Popover.Root open={true}>
