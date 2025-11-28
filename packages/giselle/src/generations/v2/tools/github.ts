@@ -19,7 +19,7 @@ export function createGitHubTools(
 			continue;
 		}
 
-		toolSet[toolDef.name] = defineTool({
+		toolSet[`github.${toolDef.name}`] = defineTool({
 			description: toolDef.description,
 			inputSchema: toolDef.schema,
 			execute: async (params) => {
