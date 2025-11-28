@@ -48,22 +48,34 @@ export function CancelSubscriptionButton({
 		});
 	};
 
-	const handleCloseDialog = () => {
-		if (!isPending) {
-			setOpen(false);
+	const handleCloseDialog = (event?: { preventDefault: () => void }) => {
+		if (isPending) {
+			event?.preventDefault();
+			return;
+		}
+		setOpen(false);
+		setError(null);
+	};
+
+	const handleOpenChange = (newOpen: boolean) => {
+		if (!newOpen && isPending) {
+			return;
+		}
+		setOpen(newOpen);
+		if (!newOpen) {
 			setError(null);
 		}
 	};
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
+		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<DialogTrigger asChild>
 				<Button variant="destructive">Cancel Subscription</Button>
 			</DialogTrigger>
 			<DialogContent
 				variant="destructive"
-				onEscapeKeyDown={handleCloseDialog}
-				onPointerDownOutside={handleCloseDialog}
+				onEscapeKeyDown={(e) => handleCloseDialog(e)}
+				onPointerDownOutside={(e) => handleCloseDialog(e)}
 			>
 				<DialogHeader>
 					<div className="flex items-center justify-between">
@@ -96,7 +108,7 @@ export function CancelSubscriptionButton({
 						<Button
 							variant="link"
 							type="button"
-							onClick={handleCloseDialog}
+							onClick={() => handleCloseDialog()}
 							disabled={isPending}
 						>
 							Keep Subscription
