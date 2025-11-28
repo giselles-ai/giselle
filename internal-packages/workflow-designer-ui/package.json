@@ -24,6 +24,7 @@
 		"@giselles-ai/text-editor": "workspace:^",
 		"@giselles-ai/text-editor-utils": "workspace:^",
 		"@giselles-ai/trigger-registry": "workspace:*",
+		"@giselles-ai/utils": "workspace:*",
 		"@xyflow/react": "catalog:",
 		"clsx": "catalog:",
 		"fast-levenshtein": "catalog:",

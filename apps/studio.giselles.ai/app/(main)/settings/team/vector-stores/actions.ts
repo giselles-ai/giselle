@@ -196,7 +196,7 @@ export async function registerRepositoryIndex(
 				return {
 					success: false,
 					error:
-						"You have reached the number of GitHub Vector Stores included in your plan.",
+						"You've reached the maximum number of GitHub Vector Stores included in your plan.",
 				};
 			}
 
@@ -652,7 +652,7 @@ export async function createDocumentVectorStore(
 				return {
 					success: false,
 					error:
-						"You have reached the number of Document Vector Stores included in your plan.",
+						"You've reached the maximum number of Document Vector Stores included in your plan.",
 				};
 			}
 

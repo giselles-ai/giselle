@@ -1,6 +1,17 @@
-import { Node, Workspace, type WorkspaceId } from "@giselles-ai/protocol";
+import {
+	convertContentGenerationToTextGeneration,
+	convertTextGenerationToContentGeneration,
+} from "@giselles-ai/node-registry";
+import {
+	isContentGenerationNode,
+	isTextGenerationNode,
+	Node,
+	Workspace,
+	type WorkspaceId,
+} from "@giselles-ai/protocol";
 import type { GiselleStorage } from "@giselles-ai/storage";
 import { parseAndMod } from "../data-mod";
+import type { GiselleContext } from "../types";
 
 function workspacePath(workspaceId: WorkspaceId) {
 	return `workspaces/${workspaceId}/workspace.json`;
@@ -9,31 +20,52 @@ function workspacePath(workspaceId: WorkspaceId) {
 export async function setWorkspace({
 	workspaceId,
 	workspace,
-	storage,
+	context,
 }: {
 	workspaceId: WorkspaceId;
 	workspace: Workspace;
-	storage: GiselleStorage;
+	context: GiselleContext;
 }) {
-	await storage.setJson({
+	await context.storage.setJson({
 		path: workspacePath(workspaceId),
-		data: workspace,
+		data: {
+			...workspace,
+			nodes: workspace.nodes.map((node) => {
+				if (!context.experimental_contentGenerationNode) {
+					return node;
+				}
+				if (!isContentGenerationNode(node)) {
+					return node;
+				}
+				return convertContentGenerationToTextGeneration(node);
+			}),
+		},
 	});
 }
 
 export async function getWorkspace({
-	storage,
+	context,
 	workspaceId,
 }: {
-	storage: GiselleStorage;
+	context: GiselleContext;
 	workspaceId: WorkspaceId;
 }) {
-	const workspace = await storage.getJson({
+	const workspace = await context.storage.getJson({
 		path: workspacePath(workspaceId),
 		// bypassingCache: true,
 		schema: Workspace,
 	});
-	const nodes = workspace.nodes.map((node) => parseAndMod(Node, node));
+	const nodes = workspace.nodes
+		.map((node) => parseAndMod(Node, node))
+		.map((node) => {
+			if (!context.experimental_contentGenerationNode) {
+				return node;
+			}
+			if (!isTextGenerationNode(node)) {
+				return node;
+			}
+			return convertTextGenerationToContentGeneration(node);
+		});
 	return {
 		...workspace,
 		nodes,

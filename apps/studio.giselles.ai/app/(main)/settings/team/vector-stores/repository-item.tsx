@@ -309,7 +309,8 @@ function EmbeddingModelCard({
 														: "text-text-muted"
 												}`}
 											>
-												{isIngesting && blobStatus.enabled
+												{(isIngesting && blobStatus.enabled) ||
+												blobStatus.status === "running"
 													? "Running"
 													: blobStatus.status === "idle"
 														? "Idle"
@@ -402,7 +403,8 @@ function EmbeddingModelCard({
 														: "text-text-muted"
 												}`}
 											>
-												{isIngesting && issueStatus.enabled
+												{(isIngesting && issueStatus.enabled) ||
+												issueStatus.status === "running"
 													? "Running"
 													: issueStatus.status === "idle"
 														? "Idle"
@@ -496,7 +498,8 @@ function EmbeddingModelCard({
 														: "text-text-muted"
 												}`}
 											>
-												{isIngesting && pullRequestStatus.enabled
+												{(isIngesting && pullRequestStatus.enabled) ||
+												pullRequestStatus.status === "running"
 													? "Running"
 													: pullRequestStatus.status === "idle"
 														? "Idle"

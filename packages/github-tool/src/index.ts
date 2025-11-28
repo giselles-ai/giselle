@@ -1,5 +1,7 @@
 import { graphql as gql } from "./graphql";
 
+export type { Octokit } from "@octokit/core";
+
 export * from "./discussions";
 export * from "./document-loaders";
 export * from "./errors";

@@ -479,7 +479,12 @@ export function Installed({
 	}, [step.state, setScrollMode]);
 
 	return (
-		<div className="flex flex-col gap-[8px] px-1">
+		<div
+			className={clsx(
+				"flex flex-col px-1",
+				step.state === "select-event" ? "gap-0" : "gap-[8px]",
+			)}
+		>
 			{step.state === "select-event" && (
 				<EventSelectionStep
 					selectedEventId={eventId}

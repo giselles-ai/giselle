@@ -14,6 +14,7 @@ export const generateContentJob = schemaJob({
 		team: z.object({
 			id: z.string<`tm_${string}`>(),
 			subscriptionId: z.string().nullable(),
+			activeCustomerId: z.string().nullable(),
 			plan: z.enum(["free", "pro", "team", "enterprise", "internal"]),
 		}),
 	}),
@@ -43,6 +44,7 @@ export const generateContentJob = schemaJob({
 					team: {
 						id: parsedMetadata.team.id,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						activeCustomerId: parsedMetadata.team.activeCustomerId,
 						plan: parsedMetadata.team.plan,
 					},
 				});
@@ -58,6 +60,7 @@ export const generateContentJob = schemaJob({
 					team: {
 						id: parsedMetadata.team.id,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						activeCustomerId: parsedMetadata.team.activeCustomerId,
 						plan: parsedMetadata.team.plan,
 					},
 				});

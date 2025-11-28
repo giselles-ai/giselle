@@ -28,10 +28,7 @@ export interface GiselleConfig {
 	vault: Vault;
 	vectorStoreQueryServices?: VectorStoreQueryServices;
 	callbacks?: GiselleCallbacks;
-	aiGateway?: {
-		httpReferer: string;
-		xTitle: string;
-	};
 	logger?: GiselleLogger;
 	waitUntil?: WaitUntil;
+	experimental_contentGenerationNode?: boolean;
 }

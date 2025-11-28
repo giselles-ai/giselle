@@ -109,6 +109,7 @@ export function createPostgresQueryService<
 		limit = 10,
 		similarityThreshold?: number,
 		embeddingComplete?: EmbeddingCompleteCallback,
+		headers?: Record<string, string>,
 	): Promise<QueryResult<z.infer<TSchema>>[]> {
 		const pool = PoolManager.getPool(database);
 
@@ -149,6 +150,7 @@ export function createPostgresQueryService<
 			const embedder = createEmbedderFromProfile(profileId, apiKey, {
 				embeddingComplete,
 				transport: useGateway ? "gateway" : "provider",
+				headers: useGateway ? headers : undefined,
 			});
 			const queryEmbedding = await embedder.embed(query);
 

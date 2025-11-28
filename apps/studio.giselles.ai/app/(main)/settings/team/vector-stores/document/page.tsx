@@ -20,9 +20,9 @@ export default async function DocumentVectorStorePage() {
 	const hasReachedLimit = hasAccess && usageCount >= quota.maxStores;
 	const createDisabled = !hasAccess || hasReachedLimit;
 	const createDisabledReason = !hasAccess
-		? "Document Vector Stores are available on Pro or Team plans."
+		? "Document Vector Stores are only available with the Pro or Team plans."
 		: hasReachedLimit
-			? "You've reached the number of Document Vector Stores included in your plan."
+			? "You've reached the maximum number of Document Vector Stores included in your plan."
 			: undefined;
 
 	return (

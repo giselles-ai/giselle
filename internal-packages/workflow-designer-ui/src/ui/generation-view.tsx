@@ -5,11 +5,10 @@ import { useGiselle } from "@giselles-ai/react";
 import type { UIMessage } from "ai";
 import { ChevronRightIcon } from "lucide-react";
 import { Accordion } from "radix-ui";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { WilliIcon } from "../icons";
 import { THUMB_HEIGHT } from "./constants";
 import { ImageCard } from "./image-card";
-import { ImageGenerationLoading } from "./image-generation-loading";
 import { Lightbox } from "./lightbox";
 
 import { MemoizedMarkdown } from "./memoized-markdown";
@@ -52,36 +51,6 @@ function Spinner() {
 	);
 }
 
-function _renderImageLoadingGrid(generation: Generation, keyPrefix: string) {
-	const isImageGeneration =
-		generation.context.operationNode.content.type === "imageGeneration";
-
-	if (
-		!isImageGeneration ||
-		!("llm" in generation.context.operationNode.content)
-	) {
-		return null;
-	}
-
-	const config = generation.context.operationNode.content
-		.llm as import("@giselles-ai/protocol").ImageGenerationLanguageModelData;
-	let imageCount = 1;
-	if (config.provider !== "google") {
-		imageCount = config.configurations.n;
-	}
-	return (
-		<div className="flex gap-[12px] pt-[8px] overflow-x-auto max-w-full h-full">
-			{Array.from({ length: imageCount }).map((_, index) => (
-				<div
-					key={`${generation.id}-${keyPrefix}-${index}`}
-					className="flex-shrink-0 bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] rounded-[8px] overflow-hidden flex items-center justify-center h-full"
-				>
-					<ImageGenerationLoading configuration={config} />
-				</div>
-			))}
-		</div>
-	);
-}
 export function GenerationView({ generation }: { generation: Generation }) {
 	const client = useGiselle();
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
@@ -164,25 +133,26 @@ export function GenerationView({ generation }: { generation: Generation }) {
 						</div>
 					);
 				})}
-			{generatedMessages.map((message) => (
-				<div key={message.id}>
-					{message.parts.map((part, index) => {
-						const lastPart = message.parts.length === index + 1;
+			{generatedMessages.map((message, messageIndex) => (
+				<div key={`${message.id ?? "message"}-${messageIndex}`}>
+					{message.parts.map((part, partIndex) => {
+						const lastPart = message.parts.length === partIndex + 1;
+						const partKey = `${message.id}-${partIndex}-${part.type}`;
 						switch (part.type) {
 							case "step-start":
-								return null;
+								return <Fragment key={partKey} />;
 							case "reasoning":
 								if (lastPart) {
 									return (
 										<Accordion.Root
-											key={`messages.${message.id}.parts.[${index}].reasoning`}
+											key={partKey}
 											type="single"
 											collapsible
 											className="my-[8px]"
-											defaultValue={`messages.${message.id}.parts.[${index}].reasoning`}
+											defaultValue={`messages.${message.id}.parts.[${partIndex}].reasoning`}
 										>
 											<Accordion.Item
-												value={`messages.${message.id}.parts.[${index}].reasoning`}
+												value={`messages.${message.id}.parts.[${partIndex}].reasoning`}
 											>
 												<Accordion.Trigger className="group text-inverse text-[12px] flex items-center gap-[4px] cursor-pointer hover:text-inverse transition-colors data-[state=open]:text-inverse outline-none font-sans">
 													<ChevronRightIcon
@@ -202,14 +172,14 @@ export function GenerationView({ generation }: { generation: Generation }) {
 								}
 								return (
 									<Accordion.Root
-										key={`messages.${message.id}.parts.[${index}].reason`}
+										key={partKey}
 										type="single"
 										collapsible
 										className="my-[8px]"
 										defaultValue=""
 									>
 										<Accordion.Item
-											value={`messages.${message.id}.parts.[${index}].reason`}
+											value={`messages.${message.id}.parts.[${partIndex}].reason`}
 										>
 											<Accordion.Trigger className="group text-inverse text-[12px] flex items-center gap-[4px] cursor-pointer hover:text-inverse transition-colors data-[state=open]:text-inverse outline-none font-sans">
 												<ChevronRightIcon
@@ -227,10 +197,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 
 							case "text":
 								return (
-									<div
-										className="markdown-renderer"
-										key={`${message.id}-${part.text}`}
-									>
+									<div className="markdown-renderer" key={partKey}>
 										<MemoizedMarkdown content={part.text} />
 									</div>
 								);

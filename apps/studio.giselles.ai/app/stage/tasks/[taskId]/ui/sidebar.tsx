@@ -17,7 +17,10 @@ import {
 	RefreshCw,
 	XIcon,
 } from "lucide-react";
+import { DynamicIcon } from "lucide-react/dynamic";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import type React from "react";
 import { use, useCallback, useEffect, useState } from "react";
 import { GenerationView } from "../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
 import { fetchGenerationData } from "../actions";
@@ -33,6 +36,19 @@ export interface SidebarDataObject {
 	appName: string;
 	teamName: string;
 	appParameters: AppParameter[];
+	iconName: string;
+}
+
+type DynamicIconName = React.ComponentProps<typeof DynamicIcon>["name"];
+
+interface GenerationInputItem {
+	name: string;
+	value: unknown;
+}
+
+interface GenerationInputGroup {
+	type: string;
+	items?: GenerationInputItem[];
 }
 
 export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
@@ -41,6 +57,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 		appName,
 		teamName,
 		appParameters: triggerParameters,
+		iconName,
 	} = use(data);
 	const [task, setTask] = useState(defaultTask);
 	const [stepGenerations, setStepGenerations] = useState<
@@ -49,6 +66,8 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 	const [hasMounted, setHasMounted] = useState(false);
 	const [isInputsExpanded, setIsInputsExpanded] = useState(false);
 	const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
+	const router = useRouter();
+	const pathname = usePathname();
 
 	const updateTask = useCallback<StreamDataEventHandler>((data) => {
 		setTask(data.task);
@@ -98,11 +117,48 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 		setHasMounted(true);
 	}, []);
 
+	// On desktop, when visiting /stage/tasks/[taskId] without a stepId,
+	// automatically navigate to the first completed step that has generation data.
+	useEffect(() => {
+		if (!hasMounted) {
+			return;
+		}
+
+		if (typeof window === "undefined") {
+			return;
+		}
+
+		// Only auto-select on desktop layout; mobile uses in-place accordion instead.
+		if (window.innerWidth < 768) {
+			return;
+		}
+
+		// If URL already includes a stepId, do nothing.
+		const segments = pathname.split("/").filter(Boolean);
+		// /stage/tasks/[taskId] → ["stage", "tasks", "{taskId}"]
+		// /stage/tasks/[taskId]/[stepId] → ["stage", "tasks", "{taskId}", "{stepId}"]
+		if (segments.length >= 4) {
+			return;
+		}
+
+		for (const sequence of task.sequences) {
+			for (const step of sequence.steps) {
+				const generation = stepGenerations[step.id];
+				if (!generation) {
+					continue;
+				}
+
+				router.replace(`/stage/tasks/${task.id}/${step.id}`);
+				return;
+			}
+		}
+	}, [hasMounted, pathname, router, stepGenerations, task]);
+
 	return (
 		<TaskStreamReader taskId={defaultTask.id} onUpdateAction={updateTask}>
-			<aside className="w-full md:flex md:flex-col md:w-[320px] border-0 md:border-[2px] md:border-transparent m-0 md:my-[8px] pb-20 md:pb-0">
+			<aside className="w-full md:flex md:flex-col md:w-[280px] border-0 md:border-[2px] md:border-transparent m-0 md:my-[8px] pb-20 md:pb-0">
 				{/* Large Back Arrow */}
-				<div className="pt-[16px] mb-[20px] px-[16px] md:px-[32px]">
+				<div className="pt-[16px] mb-0 px-[8px] md:px-[12px]">
 					<Link
 						href="/stage/tasks"
 						className="flex items-center gap-[8px] text-inverse hover:text-white-700 transition-colors group"
@@ -113,21 +169,13 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 				</div>
 
 				{/* App Info Section */}
-				<div className="space-y-[16px] px-[16px] md:px-[32px] text-center md:text-left mt-[20px]">
+				<div className="space-y-[16px] px-[8px] md:px-[12px] text-center md:text-left mt-[20px]">
 					{/* App Thumbnail */}
-					<div className="w-[96px] h-[96px] rounded-[16px] bg-white/5 flex items-center justify-center flex-shrink-0 mx-auto md:mx-0">
-						<svg
-							role="img"
-							aria-label="App icon"
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 486 640"
-							className="h-[48px] w-[48px] text-white/40"
-							fill="currentColor"
-						>
-							<title>App Icon</title>
-							<path d="M278.186 397.523C241.056 392.676 201.368 394.115 171.855 391.185C142.556 387.776 131.742 363.167 136.856 355.603C158.378 364.712 177.928 368.547 201.794 368.387C241.642 368.227 275.576 356.242 303.544 332.486C331.511 308.729 345.362 280.285 344.936 247.207C342.912 222.545 327.782 184.194 293.742 157.188C290.971 154.791 283.673 150.583 283.673 150.583C258.635 135.615 230.188 128.318 198.438 128.69C170.843 130.129 149.747 135.509 126.574 143.711C73.0358 162.781 54.7103 208.589 55.243 249.018V249.924C63.1273 312.298 93.8652 328.757 125.935 351.342L88.1651 394.913L89.1772 400.613C89.1772 400.613 144.527 399.441 174.412 401.998C257.783 410.84 291.877 467.408 292.516 511.14C293.209 560.784 250.431 625.022 180.645 625.555C81.2397 626.354 78.5229 422.292 78.5229 422.292L0 504.215C2.6636 550.237 46.613 601.958 82.5182 617.938C130.356 636.847 187.251 632.107 211.969 629.603C237.486 627.046 363.368 607.072 379.136 498.143C379.136 467.302 358.041 407.964 278.186 397.523ZM266.093 226.433C279.678 277.302 283.14 315.334 263.749 345.27C250.538 359.598 229.868 364.872 209.199 363.114C206.535 362.901 179.207 358.267 162.746 322.685C179.26 301.272 218.522 250.563 255.599 204.222C260.66 209.814 266.093 226.487 266.093 226.487V226.433ZM136.643 152.607H136.536C149.534 135.935 185.44 129.916 203.392 135.349C221.771 144.404 235.515 161.023 250.645 192.769L196.201 261.909L156.62 312.245C150.333 300.633 144.58 286.997 140.158 271.337C120.927 203.103 123.484 170.877 136.589 152.607H136.643Z" />
-							<path d="M370.506 0C370.506 55.3433 310.362 106.638 255.013 106.638C310.362 106.638 370.506 157.933 370.506 213.277C370.506 157.933 430.65 106.638 486 106.638C430.650 106.638 370.506 55.3433 370.506 0Z" />
-						</svg>
+					<div className="relative flex h-[120px] w-[120px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border transition-all bg-card/60 border-[hsl(192,73%,84%)] mx-auto md:mx-0">
+						<DynamicIcon
+							name={iconName as DynamicIconName}
+							className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
+						/>
 					</div>
 
 					{/* App Name */}
@@ -159,19 +207,22 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 						(() => {
 							const triggerStep = task.sequences[0].steps[0];
 							const triggerGeneration = stepGenerations[triggerStep.id];
+							const parametersInput = triggerGeneration?.context?.inputs?.find(
+								(input: GenerationInputGroup) => input.type === "parameters",
+							);
 							const inputs =
-								triggerGeneration?.context?.inputs?.find(
-									(input) => input.type === "parameters",
-								)?.items || [];
+								parametersInput && "items" in parametersInput
+									? parametersInput.items
+									: [];
 
 							return inputs.length > 0 ? (
-								<div className="mt-[24px]">
+								<div className="mt-[24px] mb-[24px]">
 									<button
 										type="button"
 										className="flex items-center justify-between text-[12px] font-medium text-inverse/60 mb-3 w-full cursor-pointer hover:text-inverse/80 transition-colors"
 										onClick={() => setIsInputsExpanded(!isInputsExpanded)}
 									>
-										<span>{inputs.length === 1 ? "Input" : "Inputs"}</span>
+										<span>Input parameter</span>
 										<ChevronDownIcon
 											className={`size-[16px] transition-transform ${
 												isInputsExpanded ? "rotate-180" : ""
@@ -180,7 +231,7 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 									</button>
 									{isInputsExpanded && (
 										<div className="space-y-2">
-											{inputs.map((input) => {
+											{inputs.map((input: GenerationInputItem) => {
 												// Find the corresponding parameter definition for user-friendly label
 												const parameter = triggerParameters.find(
 													(param) => param.id === input.name,
@@ -211,15 +262,12 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 						})()}
 				</div>
 
-				{/* Separator Line */}
-				<div className="border-t border-border my-4"></div>
-
 				{/* Steps Section */}
-				<div className="space-y-4 pb-4 px-[16px] md:px-[32px] md:flex-1 md:overflow-y-auto md:min-h-0">
+				<div className="space-y-4 pb-4 px-[8px] md:px-[12px] md:flex-1 md:overflow-y-auto md:min-h-0">
 					{task.sequences.map((sequence, sequenceIndex) => (
 						<div key={sequence.id} className="space-y-3">
 							{/* Step Header */}
-							<div className="text-[14px] font-medium text-white/60 mb-2">
+							<div className="text-[12px] font-medium text-inverse/60 mb-2">
 								Step {sequenceIndex + 1}
 							</div>
 
@@ -228,6 +276,10 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 								{sequence.steps.map((step) => {
 									const isExpanded = expandedSteps.has(step.id);
 									const generation = stepGenerations[step.id];
+									const pathSegments = pathname.split("/").filter(Boolean);
+									const currentStepId =
+										pathSegments.length >= 4 ? pathSegments[3] : undefined;
+									const isActive = currentStepId === step.id;
 
 									const handleStepClick = (e: React.MouseEvent) => {
 										// モバイルの場合はアコーディオン開閉
@@ -254,10 +306,9 @@ export function Sidebar({ data }: { data: Promise<SidebarDataObject> }) {
 												onClick={handleStepClick}
 											>
 												<div
-													className="flex w-full p-4 justify-between items-center rounded-[8px] border border-white/20 bg-transparent hover:bg-white/5 transition-colors"
-													style={{
-														borderColor: "rgba(181, 192, 202, 0.20)",
-													}}
+													className={`flex w-full p-2 justify-between items-center rounded-[8px] border bg-transparent hover:bg-white/5 transition-colors ${
+														isActive ? "border-white" : "border-white/20"
+													}`}
 												>
 													<div className="flex items-center gap-3">
 														{/* Step Icon */}

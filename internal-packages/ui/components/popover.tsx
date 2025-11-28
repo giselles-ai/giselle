@@ -2,12 +2,16 @@ import clsx from "clsx/lite";
 import { Popover as PopoverPrimitive } from "radix-ui";
 import { GlassSurfaceLayers } from "./glass-surface";
 
-export function PopoverContent(props: React.PropsWithChildren) {
+export function PopoverContent({
+	widthClassName,
+	...props
+}: React.PropsWithChildren<{ widthClassName?: string }>) {
 	return (
 		<div
 			className={clsx(
 				// Match profile dropdown styling (rounded-xl, p-2, custom shadow)
-				"relative rounded-xl p-2 shadow-[0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)] flex flex-col min-h-0 h-full",
+				"relative rounded-xl p-2 shadow-[0_2px_8px_rgba(5,10,20,0.4),0_1px_2px_rgba(0,0,0,0.3)] flex flex-col min-h-0 h-full z-50",
+				widthClassName,
 			)}
 			{...props}
 		>
@@ -32,16 +36,31 @@ export function PopoverContent(props: React.PropsWithChildren) {
 
 export function Popover({
 	trigger,
+	align,
+	sideOffset,
+	onOpenAutoFocus,
 	children,
+	widthClassName,
 }: React.PropsWithChildren<{
+	align?: PopoverPrimitive.PopoverContentProps["align"];
+	sideOffset?: PopoverPrimitive.PopoverContentProps["sideOffset"];
+	onOpenAutoFocus?: PopoverPrimitive.PopoverContentProps["onOpenAutoFocus"];
+	widthClassName?: string;
 	trigger: React.ReactNode;
 }>) {
 	return (
 		<PopoverPrimitive.Root>
 			<PopoverPrimitive.Trigger asChild>{trigger}</PopoverPrimitive.Trigger>
 			<PopoverPrimitive.Portal>
-				<PopoverPrimitive.Content asChild>
-					<PopoverContent>{children}</PopoverContent>
+				<PopoverPrimitive.Content
+					asChild
+					align={align}
+					sideOffset={sideOffset}
+					onOpenAutoFocus={onOpenAutoFocus}
+				>
+					<PopoverContent widthClassName={widthClassName}>
+						{children}
+					</PopoverContent>
 				</PopoverPrimitive.Content>
 			</PopoverPrimitive.Portal>
 		</PopoverPrimitive.Root>

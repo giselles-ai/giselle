@@ -1,4 +1,3 @@
-import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -10,14 +9,6 @@ function VectorStoreHeader({ title }: { title: string }) {
 			<PageHeading as="h2" glow>
 				{title}
 			</PageHeading>
-			<DocsLink
-				tone="muted"
-				href="https://docs.giselles.ai/en/guides/settings/team/vector-stores"
-				target="_blank"
-				rel="noopener noreferrer"
-			>
-				About Vector Stores
-			</DocsLink>
 		</div>
 	);
 }

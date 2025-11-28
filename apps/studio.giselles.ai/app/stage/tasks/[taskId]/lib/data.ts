@@ -28,5 +28,6 @@ export async function getSidebarDataObject(taskId: TaskId) {
 		appName: giselleApp.name,
 		teamName: app.team.name,
 		appParameters: giselleApp.parameters,
+		iconName: giselleApp.iconName,
 	} satisfies SidebarDataObject;
 }

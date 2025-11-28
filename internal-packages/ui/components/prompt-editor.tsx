@@ -1,5 +1,4 @@
-import type { Node } from "@giselles-ai/protocol";
-import type { ConnectedSource } from "@giselles-ai/text-editor/react";
+import type { UIConnection } from "@giselles-ai/react";
 import { TextEditor } from "@giselles-ai/text-editor/react";
 import clsx from "clsx/lite";
 import { Maximize2 } from "lucide-react";
@@ -10,8 +9,7 @@ type PromptEditorVariant = "plain" | "glass" | "solid" | "compact";
 interface PromptEditorProps {
 	value?: string;
 	onValueChange?: (value: string) => void;
-	nodes?: Node[];
-	connectedSources?: ConnectedSource[];
+	connections?: UIConnection[];
 	placeholder?: string;
 	header?: ReactNode;
 	footer?: ReactNode;
@@ -29,8 +27,7 @@ interface PromptEditorProps {
 export function PromptEditor({
 	value,
 	onValueChange,
-	nodes,
-	connectedSources,
+	connections,
 	placeholder,
 	header,
 	footer,
@@ -65,9 +62,8 @@ export function PromptEditor({
 				<TextEditor
 					value={value}
 					onValueChange={onValueChange}
-					nodes={nodes}
-					connectedSources={connectedSources}
 					placeholder={placeholder}
+					connections={connections}
 					header={header}
 					showToolbar={showToolbar}
 					editorClassName={clsx(

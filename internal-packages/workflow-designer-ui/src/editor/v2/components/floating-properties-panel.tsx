@@ -108,8 +108,9 @@ export function FloatingPropertiesPanel({
 						className={clsx(
 							autoHeight
 								? "absolute top-4 z-10 pointer-events-none"
-								: "absolute top-4 bottom-4 z-10 pointer-events-none",
+								: "absolute top-4 bottom-[68px] z-10 pointer-events-none",
 							position === "right" ? "right-4" : "left-4",
+							"outline-none",
 						)}
 						style={{
 							width: `${width}px`,
@@ -152,7 +153,7 @@ export function FloatingPropertiesPanel({
 							<ResizeHandle
 								direction="horizontal"
 								className={clsx(
-									"absolute top-0 bottom-0 z-20",
+									"absolute top-0 bottom-0 z-20 outline-none",
 									position === "right" ? "left-0" : "right-0",
 								)}
 								onMouseDown={handleMouseDown}

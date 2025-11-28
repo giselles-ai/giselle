@@ -68,6 +68,7 @@ function getNodeIconBackground(node: NodeLike): string {
 			case "imageGeneration":
 				return "bg-image-generation-node-1";
 			case "trigger":
+			case "appEntry":
 				return "bg-trigger-node-1";
 			case "action":
 				return "bg-action-node-1";

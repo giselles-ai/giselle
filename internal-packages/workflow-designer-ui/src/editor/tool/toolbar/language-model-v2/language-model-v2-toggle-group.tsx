@@ -1,25 +1,30 @@
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import {
+	getEntry,
+	hasTierAccess,
+	isLanguageModelId,
 	type LanguageModelId,
 	type LanguageModelTier,
 	languageModels as registryLanguageModels,
 } from "@giselles-ai/language-model-registry";
 import { ToggleGroup } from "radix-ui";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { LanguageModelItemButton } from "./language-model-item-button";
 import { useLanguageModelV2ToggleGroupStore } from "./store";
 
 const recommendedLanguageModelIds: LanguageModelId[] = [
 	"openai/gpt-5.1-thinking",
-	"google/gemini-2.5-pro",
-	"anthropic/claude-sonnet-4-5",
+	"google/gemini-3-pro-preview",
+	"anthropic/claude-opus-4.5",
 ];
 
 export function LanguageModelV2ToggleGroup({
 	userTier,
+	onValueChange,
 }: {
 	userTier: LanguageModelTier;
+	onValueChange?: (modelId: LanguageModelId) => void;
 }) {
 	const [query, setQuery] = useState("");
 	const languageModels = useMemo(() => {
@@ -45,6 +50,24 @@ export function LanguageModelV2ToggleGroup({
 	);
 	const { setHover } = useLanguageModelV2ToggleGroupStore(
 		useShallow((s) => ({ setHover: s.setHover, clearHover: s.clearHover })),
+	);
+
+	const handleValueChange = useCallback(
+		(value: string) => {
+			if (!isLanguageModelId(value)) {
+				console.warn(`Invalid language model ID: ${value}`);
+				return;
+			}
+			const languageModel = getEntry(value);
+			if (!hasTierAccess(userTier, languageModel.requiredTier)) {
+				console.warn(
+					`User tier ${userTier} does not have access to language model ${languageModel.id}`,
+				);
+				return;
+			}
+			onValueChange?.(value);
+		},
+		[userTier, onValueChange],
 	);
 
 	return (
@@ -98,7 +121,7 @@ export function LanguageModelV2ToggleGroup({
 				<ToggleGroup.Root
 					className="mt-[0px] mx-[4px] overflow-y-auto"
 					type="single"
-					onValueChange={(value) => console.log(value)}
+					onValueChange={handleValueChange}
 				>
 					{recommendedLanguageModels.length > 0 && (
 						<>

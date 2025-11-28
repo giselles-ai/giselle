@@ -19,6 +19,7 @@ import type {
 	RunningGeneration,
 } from "@giselles-ai/protocol";
 import {
+	isContentGenerationNode,
 	isTextGenerationNode,
 	type Output,
 	type TextGenerationLanguageModelData,
@@ -34,7 +35,7 @@ import {
 } from "ai";
 import { generationUiMessageChunksPath } from "../path";
 import { decryptSecret } from "../secrets";
-import type { GiselleContext } from "../types";
+import type { AiGatewayHeaders, GiselleContext } from "../types";
 import { batchWriter } from "../utils";
 import {
 	type OnGenerationComplete,
@@ -44,6 +45,8 @@ import {
 import { createPostgresTools } from "./tools/postgres";
 import type { GenerationMetadata, PreparedToolSet } from "./types";
 import { buildMessageObject, getGeneration } from "./utils";
+import { transformGiselleLanguageModelToAiSdkLanguageModelCallOptions } from "./v2/language-model";
+import { buildToolSet } from "./v2/tools";
 
 type StreamItem<T> = T extends AsyncIterableStream<infer Inner> ? Inner : never;
 
@@ -82,6 +85,18 @@ export function generateContent({
 
 	logger.info(`generate content: ${generation.id}`);
 	logger.info(`generation metadata: ${JSON.stringify(metadata)}`);
+
+	if (isContentGenerationNode(generation.context.operationNode)) {
+		return generateContentV2({
+			context,
+			generation,
+			logger: overrideLogger,
+			metadata,
+			onComplete,
+			onError,
+		});
+	}
+	// biome-ignore lint/correctness/useHookAtTopLevel: it's nodejs use
 	return useGenerationExecutor({
 		context,
 		generation,
@@ -253,9 +268,16 @@ export function generateContent({
 
 			const providerOptions = getProviderOptions(operationNode.content.llm);
 
+			const aiGatewayHeaders = await context.callbacks?.buildAiGatewayHeaders?.(
+				{
+					generation: runningGeneration,
+					metadata,
+				},
+			);
+
 			const model = generationModel(
 				operationNode.content.llm,
-				context.aiGateway,
+				aiGatewayHeaders,
 			);
 			let generationError: unknown | undefined;
 			const textGenerationStartTime = Date.now();
@@ -498,17 +520,14 @@ function getProviderOptions(languageModelData: TextGenerationLanguageModelData):
 
 function generationModel(
 	languageModel: TextGenerationLanguageModelData,
-	gatewayOptions?: { httpReferer: string; xTitle: string },
+	gatewayHeaders?: AiGatewayHeaders,
 ) {
 	const llmProvider = languageModel.provider;
 	const gateway = createGateway(
-		gatewayOptions === undefined
+		gatewayHeaders === undefined
 			? undefined
 			: {
-					headers: {
-						"http-referer": gatewayOptions.httpReferer,
-						"x-title": gatewayOptions.xTitle,
-					},
+					headers: gatewayHeaders,
 				},
 	);
 	// Use AI Gateway model specifier: "<provider>/<modelId>"
@@ -525,4 +544,266 @@ function generationModel(
 			throw new Error(`Unknown LLM provider: ${_exhaustiveCheck}`);
 		}
 	}
+}
+
+function generateContentV2({
+	context,
+	generation,
+	logger: overrideLogger,
+	metadata,
+	onComplete,
+	onError,
+}: {
+	context: GiselleContext;
+	generation: RunningGeneration;
+	logger?: GiselleLogger;
+	metadata?: GenerationMetadata;
+	onComplete?: OnGenerationComplete;
+	onError?: OnGenerationError;
+}) {
+	const logger = overrideLogger ?? context.logger;
+	// biome-ignore lint/correctness/useHookAtTopLevel: it's nodejs use
+	return useGenerationExecutor({
+		context,
+		generation,
+		metadata,
+		onError,
+		execute: async ({
+			finishGeneration,
+			runningGeneration,
+			generationContext,
+			setGeneration,
+			fileResolver,
+			generationContentResolver,
+			imageGenerationResolver,
+			appEntryResolver,
+		}) => {
+			const operationNode = generationContext.operationNode;
+			if (!isContentGenerationNode(operationNode)) {
+				throw new Error("Invalid generation type");
+			}
+
+			const aiGatewayHeaders = await context.callbacks?.buildAiGatewayHeaders?.(
+				{
+					generation: runningGeneration,
+					metadata,
+				},
+			);
+			const gateway = createGateway(
+				aiGatewayHeaders === undefined
+					? undefined
+					: {
+							headers: aiGatewayHeaders,
+						},
+			);
+
+			const messages = await buildMessageObject({
+				node: operationNode,
+				contextNodes: generationContext.sourceNodes,
+				fileResolver,
+				generationContentResolver,
+				imageGenerationResolver,
+				appEntryResolver,
+			});
+
+			const toolSet = await buildToolSet({
+				context,
+				logger,
+				generationId: generation.id,
+				nodeId: operationNode.id,
+				tools: operationNode.content.tools,
+			});
+
+			const callOptions =
+				transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
+					operationNode.content,
+				);
+
+			const abortController = new AbortController();
+			let generationError: unknown | undefined;
+			const textGenerationStartTime = Date.now();
+
+			const streamTextResult = streamText({
+				...callOptions,
+				abortSignal: abortController.signal,
+				model: gateway(operationNode.content.languageModel.id),
+				messages,
+				tools: toolSet,
+				stopWhen: stepCountIs(Object.keys(toolSet).length + 1),
+				onChunk: async () => {
+					const currentGeneration = await getGeneration({
+						storage: context.storage,
+						generationId: generation.id,
+					});
+					if (currentGeneration?.status === "cancelled") {
+						logger.debug(`${generation.id} will abort`);
+						abortController.abort();
+					}
+				},
+				onAbort: () => {
+					logger.debug({ generationId: generation.id }, "streamText onAbort");
+				},
+				onError: ({ error }) => {
+					generationError = error;
+				},
+				onFinish: () => {
+					logger.info(
+						`Text generation completed in ${Date.now() - textGenerationStartTime}ms`,
+					);
+				},
+				experimental_transform: smoothStream({
+					delayInMs: 1000,
+					chunking: "line",
+				}),
+			});
+			let uiMessageStreamResult: GenerateContentResult | undefined;
+			const uiMessageStream = streamTextResult.toUIMessageStream({
+				onFinish: async ({ messages: generateMessages }) => {
+					logger.info(
+						`Text generation stream completed in ${Date.now() - textGenerationStartTime}ms`,
+					);
+					if (generationError) {
+						if (AISDKError.isInstance(generationError)) {
+							logger.error(generationError, `${generation.id} is failed`);
+						}
+						const errInfo = AISDKError.isInstance(generationError)
+							? {
+									name: generationError.name,
+									message: generationError.message,
+								}
+							: {
+									name: "UnknownError",
+									message:
+										generationError instanceof Error
+											? generationError.message
+											: String(generationError),
+								};
+
+						const failedGeneration = {
+							...runningGeneration,
+							status: "failed",
+							failedAt: Date.now(),
+							error: errInfo,
+						} satisfies FailedGeneration;
+
+						await Promise.all([
+							setGeneration(failedGeneration),
+							onError?.({
+								generation: failedGeneration,
+								inputMessages: messages,
+							}),
+						]);
+						uiMessageStreamResult = {
+							success: false,
+							failedGeneration,
+							inputMessages: messages,
+						};
+					}
+					const generationOutputs: GenerationOutput[] = [];
+					const generatedTextOutput =
+						generationContext.operationNode.outputs.find(
+							(output: Output) => output.accessor === "generated-text",
+						);
+					const textRetrievalStartTime = Date.now();
+					const text = await streamTextResult.text;
+					logger.info(
+						`Text retrieval completed in ${Date.now() - textRetrievalStartTime}ms`,
+					);
+					if (generatedTextOutput !== undefined) {
+						generationOutputs.push({
+							type: "generated-text",
+							content: text,
+							outputId: generatedTextOutput.id,
+						});
+					}
+
+					const reasoningRetrievalStartTime = Date.now();
+					const reasoningText = await streamTextResult.reasoningText;
+					logger.info(
+						`Reasoning retrieval completed in ${Date.now() - reasoningRetrievalStartTime}ms`,
+					);
+					const reasoningOutput = generationContext.operationNode.outputs.find(
+						(output: Output) => output.accessor === "reasoning",
+					);
+					if (reasoningOutput !== undefined && reasoningText !== undefined) {
+						generationOutputs.push({
+							type: "reasoning",
+							content: reasoningText,
+							outputId: reasoningOutput.id,
+						});
+					}
+
+					const sourceRetrievalStartTime = Date.now();
+					const sources = await streamTextResult.sources;
+					logger.info(
+						`Source retrieval completed in ${Date.now() - sourceRetrievalStartTime}ms`,
+					);
+					const sourceOutput = generationContext.operationNode.outputs.find(
+						(output: Output) => output.accessor === "source",
+					);
+					if (sourceOutput !== undefined && sources.length > 0) {
+						generationOutputs.push({
+							type: "source",
+							outputId: sourceOutput.id,
+							sources,
+						});
+					}
+					const generationCompletionStartTime = Date.now();
+					const result = await finishGeneration({
+						inputMessages: messages,
+						outputs: generationOutputs,
+						usage: await streamTextResult.usage,
+						generateMessages: generateMessages,
+						providerMetadata: await streamTextResult.providerMetadata,
+						onComplete,
+					});
+					logger.info(
+						`Generation completion processing finished in ${Date.now() - generationCompletionStartTime}ms`,
+					);
+
+					uiMessageStreamResult = {
+						success: true,
+						completedGeneration: result.completedGeneration,
+						inputMessages: messages,
+						outputFileBlobs: result.outputFileBlobs,
+						usage: await streamTextResult.usage,
+						generateMessages: generateMessages,
+						providerMetadata: await streamTextResult.providerMetadata,
+					};
+				},
+			});
+
+			const writer = batchWriter<StreamItem<typeof uiMessageStream>>({
+				process: (batch) => {
+					logger.debug(`Processing batch with ${batch.length} items`);
+					return context.storage.setBlob(
+						generationUiMessageChunksPath(generation.id),
+						new TextEncoder().encode(
+							batch.map((chunk) => JSON.stringify(chunk)).join("\n"),
+						),
+					);
+				},
+				preserveItems: true,
+				logger,
+			});
+
+			let chunkCount = 0;
+			const uiMessageChunks: StreamItem<typeof uiMessageStream>[] = [];
+			for await (const chunk of uiMessageStream) {
+				chunkCount++;
+				logger.debug(`Adding chunk ${chunkCount}: ${chunk.type}`);
+				writer.add(chunk);
+				uiMessageChunks.push(chunk);
+			}
+			logger.debug(`Stream ended, total chunks: ${chunkCount}`);
+			await writer.close();
+			logger.debug(`Writer closed`);
+
+			if (uiMessageStreamResult === undefined) {
+				throw new Error("UI message stream result is undefined");
+			}
+
+			return uiMessageStreamResult;
+		},
+	});
 }

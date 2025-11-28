@@ -1,5 +1,5 @@
 import { defaultName } from "@giselles-ai/node-registry";
-import type { Node as GiselleNode, Output } from "@giselles-ai/protocol";
+import type { NodeLike, Output } from "@giselles-ai/protocol";
 import type { SuggestionProps } from "@tiptap/suggestion";
 import clsx from "clsx/lite";
 import {
@@ -12,7 +12,7 @@ import {
 
 export interface SuggestionItem {
 	id: string;
-	node: GiselleNode;
+	node: NodeLike;
 	output: Output;
 	label: string;
 }

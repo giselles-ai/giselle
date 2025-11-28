@@ -17,6 +17,7 @@ import {
 	Archive,
 	CheckIcon,
 	ChevronDownIcon,
+	ClipboardList,
 	RefreshCw,
 	Search,
 	Sparkles,
@@ -418,7 +419,7 @@ export function FilterableActsList({
 												{selectedStatuses.map((status) => (
 													<div
 														key={status}
-														className={`w-3 h-3 rounded-full border border-border ${statusColors[status]}`}
+														className={`w-2 h-2 rounded-full border border-border ${statusColors[status]}`}
 													/>
 												))}
 											</div>
@@ -450,10 +451,31 @@ export function FilterableActsList({
 											)}
 										>
 											<div className="flex items-center gap-2">
-												<div
-													className={`w-3 h-3 rounded-full ${statusColors[status as StatusFilter]}`}
-												/>
-												<span>{label}</span>
+												{status === "created" && (
+													<StatusBadge status="primary" variant="dot">
+														{label}
+													</StatusBadge>
+												)}
+												{status === "inProgress" && (
+													<StatusBadge status="info" variant="dot">
+														{label}
+													</StatusBadge>
+												)}
+												{status === "completed" && (
+													<StatusBadge status="success" variant="dot">
+														{label}
+													</StatusBadge>
+												)}
+												{status === "failed" && (
+													<StatusBadge status="error" variant="dot">
+														{label}
+													</StatusBadge>
+												)}
+												{status === "cancelled" && (
+													<StatusBadge status="ignored" variant="dot">
+														{label}
+													</StatusBadge>
+												)}
 											</div>
 											<CheckIcon
 												className={clsx(
@@ -509,17 +531,28 @@ export function FilterableActsList({
 						</div>
 					) : filteredActs.length === 0 ? (
 						<div className="flex flex-col items-center justify-center h-full text-center">
-							<div className="w-16 h-16 bg-gray-600 rounded-full flex items-center justify-center mb-4">
-								<span className="text-2xl text-gray-400">📝</span>
+							<div className="mb-4 flex items-center justify-center">
+								<div className="relative drop-shadow-[0_5px_5px_rgba(0,0,255,0.4)]">
+									<ClipboardList
+										className="relative z-10 h-9 w-9 text-[#B8E8F4]"
+										strokeWidth={0.8}
+									/>
+									<div className="absolute inset-0 rounded-full bg-[#0087F6] opacity-30 blur-[10px]" />
+								</div>
 							</div>
-							<h2 className="text-lg font-medium text-white-100 mb-2">
+							<h2 className="mb-2 text-lg font-medium text-link-muted">
 								No tasks yet
 							</h2>
-							<p className="text-sm text-white-700 mb-6 max-w-sm">
+							<p className="mb-6 max-w-sm text-sm text-link-muted">
 								Start by creating your first task from the main stage page.
 							</p>
 							<Link href="/stage">
-								<Button variant="solid">Create New Task</Button>
+								<Button variant="glass" size="large" className="h-10 px-4">
+									<div className="flex items-center gap-2">
+										<Sparkles className="w-4 h-4" />
+										<span className="text-sm">Create new task</span>
+									</div>
+								</Button>
 							</Link>
 						</div>
 					) : (

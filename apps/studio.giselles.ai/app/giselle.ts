@@ -1,4 +1,4 @@
-import type { QueryContext } from "@giselles-ai/giselle";
+import type { AiGatewayHeaders, QueryContext } from "@giselles-ai/giselle";
 import { traceEmbedding } from "@giselles-ai/langfuse";
 import { getRequestId, NextGiselle } from "@giselles-ai/nextjs/internal";
 import { type RunningGeneration, WorkspaceId } from "@giselles-ai/protocol";
@@ -10,6 +10,7 @@ import {
 import { tasks as jobs } from "@trigger.dev/sdk";
 import { eq } from "drizzle-orm";
 import { apps, db, tasks } from "@/db";
+import { generateContentNodeFlag } from "@/flags";
 import { waitForLangfuseFlush } from "@/instrumentation.node";
 import { GenerationMetadata } from "@/lib/generation-metadata";
 import { logger } from "@/lib/logger";
@@ -74,7 +75,10 @@ if (
 	throw new Error("missing github credentials");
 }
 
-type TeamForPlan = Pick<CurrentTeam, "id" | "activeSubscriptionId" | "plan">;
+type TeamForPlan = Pick<
+	CurrentTeam,
+	"id" | "activeSubscriptionId" | "activeCustomerId" | "plan"
+>;
 
 async function traceEmbeddingForTeam(args: {
 	metrics: EmbeddingMetrics;
@@ -94,6 +98,7 @@ async function traceEmbeddingForTeam(args: {
 		teamPlan,
 		userId: args.userId,
 		subscriptionId: args.team.activeSubscriptionId ?? "",
+		customerId: args.team.activeCustomerId ?? "",
 		resourceProvider: queryContext.provider,
 		workspaceId: queryContext.workspaceId,
 		embeddingProfileId: queryContext.embeddingProfileId,
@@ -277,6 +282,7 @@ export const giselle = NextGiselle({
 						team: {
 							id: parsedMetadata.team.id,
 							activeSubscriptionId: parsedMetadata.team.subscriptionId,
+							activeCustomerId: parsedMetadata.team.activeCustomerId,
 							plan: parsedMetadata.team.plan,
 						},
 					});
@@ -357,12 +363,38 @@ export const giselle = NextGiselle({
 				teamDbId: workspace.team.dbId,
 			});
 		},
-	},
-	aiGateway: {
-		httpReferer: process.env.AI_GATEWAY_HTTP_REFERER ?? "https://giselles.ai",
-		xTitle: process.env.AI_GATEWAY_X_TITLE ?? "Giselle",
+		buildAiGatewayHeaders: ({ metadata, generation }) => {
+			const parsedMetadata = GenerationMetadata.safeParse(metadata);
+			const stripeCustomerId = parsedMetadata.success
+				? (parsedMetadata.data.team.activeCustomerId ?? undefined)
+				: undefined;
+			const teamPlan = parsedMetadata.success
+				? parsedMetadata.data.team.plan
+				: undefined;
+			const aiGatewayHeaders: AiGatewayHeaders = {
+				"http-referer":
+					process.env.AI_GATEWAY_HTTP_REFERER ?? "https://giselles.ai",
+				"x-title": process.env.AI_GATEWAY_X_TITLE ?? "Giselle",
+			};
+			if (stripeCustomerId !== undefined) {
+				aiGatewayHeaders["stripe-customer-id"] = stripeCustomerId;
+				aiGatewayHeaders["stripe-restricted-access-key"] =
+					process.env.STRIPE_AI_GATEWAY_RESTRICTED_ACCESS_KEY ?? "";
+			} else if (teamPlan === "pro" || teamPlan === "team") {
+				logger.warn(
+					`Stripe customer ID not found for generation ${generation.id}`,
+				);
+			}
+			return aiGatewayHeaders;
+		},
 	},
 	logger,
+	async onRequest({ updateContext }) {
+		const useGenerateContentNode = await generateContentNodeFlag();
+		updateContext({
+			experimental_contentGenerationNode: useGenerateContentNode,
+		});
+	},
 });
 
 // Content generation processor: Trigger.dev implementation
@@ -408,6 +440,7 @@ if (generateContentProcessor === "trigger.dev") {
 					team: {
 						id: team.id,
 						subscriptionId: team.activeSubscriptionId,
+						activeCustomerId: team.activeCustomerId,
 						plan: team.plan,
 					},
 				});
@@ -430,6 +463,7 @@ if (generateContentProcessor === "trigger.dev") {
 							team: {
 								id: currentTeam.id,
 								subscriptionId: currentTeam.activeSubscriptionId,
+								activeCustomerId: currentTeam.activeCustomerId,
 								plan: currentTeam.plan,
 							},
 						});
@@ -471,6 +505,7 @@ if (generateContentProcessor === "trigger.dev") {
 					team: {
 						id: team.id,
 						subscriptionId: team.activeSubscriptionId,
+						activeCustomerId: team.activeCustomerId,
 						plan: team.plan,
 					},
 				});
@@ -490,6 +525,7 @@ if (generateContentProcessor === "trigger.dev") {
 					team: {
 						id: currentTeam.id,
 						subscriptionId: currentTeam.activeSubscriptionId,
+						activeCustomerId: currentTeam.activeCustomerId,
 						plan: currentTeam.plan,
 					},
 				});

@@ -1,20 +1,18 @@
 /* semantic.css (Phase 1.5 scaffold) - not applied globally yet */
 
-@layer utilities {
-	:root {
-		/* map semantic vars to primitives (light defaults) */
-		--color-text: var(--color-gray-50);
-		--color-text-inverse: var(--color-white);
-		--color-surface: var(--color-gray-950);
-		--color-border: var(--color-gray-900);
-		--color-border-muted: var(--color-gray-700);
-		--color-focused: var(--color-info-500);
-		/* secondary / link-muted */
-		--color-text-secondary: #505d7b;
-		--color-link-muted: var(--color-text-secondary);
-		/* Chat bubbles (mirror current alias fallbacks) */
-		--color-chat-bubble-accent-bg: rgba(107, 143, 240, 0.2);
-		--color-chat-bubble-accent-border: rgba(107, 143, 240, 0.8);
-		--color-chat-bubble-user-bg: #4a6fd8;
-	}
+@theme {
+	/* map semantic vars to primitives (light defaults) */
+	--color-text: var(--color-gray-50);
+	--color-text-inverse: var(--color-white);
+	--color-surface: var(--color-gray-950);
+	--color-border: var(--color-gray-900);
+	--color-border-muted: var(--color-gray-700);
+	--color-focused: var(--color-info-500);
+	/* secondary / link-muted */
+	--color-text-secondary: #505d7b;
+	--color-link-muted: var(--color-text-secondary);
+	/* Chat bubbles (mirror current alias fallbacks) */
+	--color-chat-bubble-accent-bg: rgba(107, 143, 240, 0.2);
+	--color-chat-bubble-accent-border: rgba(107, 143, 240, 0.8);
+	--color-chat-bubble-user-bg: #4a6fd8;
 }

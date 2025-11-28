@@ -33,7 +33,7 @@ export function ImageGenerationNodePropertiesPanel({
 			nodeId: node.id,
 			origin: { type: "studio", workspaceId: data.id },
 		});
-	const { all: connectedSources } = useConnectedSources(node);
+	const { all: connectedSources, connections } = useConnectedSources(node);
 	const usageLimitsReached = useUsageLimitsReached();
 	const { error } = useToasts();
 
@@ -162,10 +162,7 @@ export function ImageGenerationNodePropertiesPanel({
 								onValueChange={(value) => {
 									updateNodeDataContent(node, { prompt: value });
 								}}
-								connectedSources={connectedSources.map(({ node, output }) => ({
-									node,
-									output,
-								}))}
+								connections={connections}
 								placeholder="Write your prompt here..."
 								showToolbar={false}
 								variant="plain"

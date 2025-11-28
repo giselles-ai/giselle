@@ -7,6 +7,7 @@ import { type Client, CombinedError } from "urql";
 import { graphql } from "../../client";
 import { octokit } from "../../octokit";
 import type { GitHubAuthConfig } from "../../types";
+import { handleGitHubClientError } from "../utils";
 import {
 	createCacheKey,
 	diffsCache,
@@ -90,7 +91,11 @@ export function createGitHubPullRequestsLoader(
 
 	async function getGraphQLClient(): Promise<Client> {
 		if (!graphqlClient) {
-			graphqlClient = await graphql(authConfig);
+			try {
+				graphqlClient = await graphql(authConfig);
+			} catch (error) {
+				handleGitHubClientError(error, authConfig);
+			}
 		}
 		return graphqlClient;
 	}
