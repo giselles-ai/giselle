@@ -314,20 +314,25 @@ export function Toolbar() {
 														<p className="text-[14px]">App Entry Node</p>
 													</ToggleGroup.Item>
 												)}
-												{triggerRegistry.map((triggerEntry) => (
-													<ToggleGroup.Item
-														key={triggerEntry.provider}
-														value={triggerEntry.provider}
-														data-tool
-													>
-														{triggerEntry.provider === "github" && (
-															<GitHubIcon className="size-[20px] shrink-0" />
-														)}
-														<p className="text-[14px]">
-															{triggerNodeDefaultName(triggerEntry.provider)}
-														</p>
-													</ToggleGroup.Item>
-												))}
+												{triggerRegistry
+													.filter(
+														(triggerEntry) =>
+															triggerEntry.provider === "github",
+													)
+													.map((triggerEntry) => (
+														<ToggleGroup.Item
+															key={triggerEntry.provider}
+															value={triggerEntry.provider}
+															data-tool
+														>
+															{triggerEntry.provider === "github" && (
+																<GitHubIcon className="size-[20px] shrink-0" />
+															)}
+															<p className="text-[14px]">
+																{triggerNodeDefaultName(triggerEntry.provider)}
+															</p>
+														</ToggleGroup.Item>
+													))}
 											</ToggleGroup.Root>
 										</div>
 									</Popover.Content>
