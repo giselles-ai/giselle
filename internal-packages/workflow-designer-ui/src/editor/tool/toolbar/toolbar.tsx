@@ -320,9 +320,6 @@ export function Toolbar() {
 														value={triggerEntry.provider}
 														data-tool
 													>
-														{triggerEntry.provider === "manual" && (
-															<TriggerIcon className="size-[20px] shrink-0" />
-														)}
 														{triggerEntry.provider === "github" && (
 															<GitHubIcon className="size-[20px] shrink-0" />
 														)}
@@ -1051,14 +1048,14 @@ export function Toolbar() {
 														</p>
 													</ToggleGroup.Item>
 												))}
-												<div data-tool className="opacity-50">
+												{/*<div data-tool className="opacity-50">
 													<RocketIcon className="size-[20px] shrink-0" />
 													<p className="text-[14px]">Stage (Coming soon)</p>
-												</div>
-												<div data-tool className="opacity-50">
+												</div>*/}
+												{/*<div data-tool className="opacity-50">
 													<RocketIcon className="size-[20px] shrink-0" />
 													<p className="text-[14px]">Widget (Coming soon)</p>
-												</div>
+												</div>*/}
 											</ToggleGroup.Root>
 										</div>
 									</Popover.Content>
