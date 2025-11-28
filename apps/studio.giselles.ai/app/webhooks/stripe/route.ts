@@ -1,7 +1,6 @@
 import type Stripe from "stripe";
 import { stripe } from "@/services/external/stripe";
 import { upsertSubscription } from "@/services/external/stripe/actions/upsert-subscription";
-import { reportUserSeatUsage } from "@/services/usage-based-billing";
 import { handleInvoiceCreation } from "./handle-invoice-creation";
 import { handleSubscriptionCancellation } from "./handle-subscription-cancellation";
 
@@ -67,47 +66,15 @@ export async function POST(req: Request) {
 						"The checkout session is missing a valid subscription ID. Please check the session data.",
 					);
 				}
-				if (
-					event.data.object.customer == null ||
-					typeof event.data.object.customer !== "string"
-				) {
-					throw new Error(
-						"The checkout session is missing a valid customer ID. Please check the session data.",
-					);
-				}
 				await upsertSubscription(event.data.object.subscription);
-				await reportUserSeatUsage(
-					event.data.object.subscription,
-					event.data.object.customer,
-				);
 				break;
 			}
 
 			case "customer.subscription.updated":
-				if (
-					event.data.object.customer == null ||
-					typeof event.data.object.customer !== "string"
-				) {
-					throw new Error(
-						"The checkout session is missing a valid customer ID. Please check the session data.",
-					);
-				}
 				await upsertSubscription(event.data.object.id);
-				await reportUserSeatUsage(
-					event.data.object.id,
-					event.data.object.customer,
-				);
 				break;
 
 			case "customer.subscription.deleted":
-				if (
-					event.data.object.customer == null ||
-					typeof event.data.object.customer !== "string"
-				) {
-					throw new Error(
-						"The checkout session is missing a valid customer ID. Please check the session data.",
-					);
-				}
 				await handleSubscriptionCancellation(event.data.object);
 				await upsertSubscription(event.data.object.id);
 				break;
