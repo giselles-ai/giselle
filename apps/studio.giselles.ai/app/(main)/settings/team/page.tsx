@@ -8,9 +8,7 @@ import { upgradeTeam } from "@/services/teams/actions/upgrade-team";
 import type { CurrentTeam } from "@/services/teams/types";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
-import { getSubscription } from "./actions";
 import { CancelSubscriptionButton } from "./cancel-subscription-button";
-import { LocalDateTime } from "./components/local-date-time";
 import { DeleteTeam } from "./delete-team";
 import { TeamProfile } from "./team-profile";
 
@@ -132,11 +130,6 @@ function BillingInfoForProPlan({ team }: BillingInfoProps) {
 						Learn about plans and pricing
 					</a>
 				</p>
-				{team.activeSubscriptionId && (
-					<Suspense fallback={<Skeleton className="h-5 w-[300px] mt-2" />}>
-						<CancellationNotice subscriptionId={team.activeSubscriptionId} />
-					</Suspense>
-				)}
 			</div>
 			{team.activeSubscriptionId && (
 				<div className="flex flex-col items-end gap-2">
@@ -180,30 +173,5 @@ function UpdateButton({ subscriptionId }: { subscriptionId: string }) {
 		>
 			Manage Subscription
 		</Button>
-	);
-}
-
-type CancellationNoticeProps = {
-	subscriptionId: string;
-};
-
-async function CancellationNotice({ subscriptionId }: CancellationNoticeProps) {
-	const result = await getSubscription(subscriptionId);
-
-	if (!result.success || !result.data) {
-		console.error("Failed to fetch subscription:", result.error);
-		return null;
-	}
-
-	const subscription = result.data;
-	// v2 uses servicingStatus instead of cancelAtPeriodEnd
-	if (subscription.servicingStatus !== "canceled" || !subscription.canceledAt) {
-		return null;
-	}
-
-	return (
-		<p className="mt-2 font-medium text-sm leading-[20.4px] text-warning-900 font-geist">
-			Subscription canceled on <LocalDateTime date={subscription.canceledAt} />
-		</p>
 	);
 }
