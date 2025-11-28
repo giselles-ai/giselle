@@ -74,6 +74,15 @@ const nextConfig: NextConfig = {
 		];
 	},
 	// biome-ignore lint/suspicious/useAwait: Next.js specification
+	async rewrites() {
+		return [
+			{
+				source: "/stage",
+				destination: "/v2/stage",
+			},
+		];
+	},
+	// biome-ignore lint/suspicious/useAwait: Next.js specification
 	async headers() {
 		return [
 			{
