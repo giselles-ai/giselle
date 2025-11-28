@@ -195,6 +195,10 @@ function extractMetadata(
 	if (isContentGenerationNode(node)) {
 		const { content } = node;
 		const languageModel = getEntry(content.languageModel.id);
+		const config = parseConfiguration(
+			languageModel,
+			content.languageModel.configuration,
+		);
 
 		switch (languageModel.provider) {
 			case "anthropic":
@@ -330,6 +334,15 @@ async function traceContentGeneration(args: {
 		totalTokens: 0,
 	};
 
+	const cost = await calculateDisplayCost(
+		args.operationNode.content.languageModel.provider,
+		args.operationNode.content.languageModel.id,
+		{
+			inputTokens: usage.inputTokens ?? 0,
+			outputTokens: usage.outputTokens ?? 0,
+		},
+	);
+
 	trace.update({
 		output: args.generation.outputs,
 		tags,
@@ -347,6 +360,9 @@ async function traceContentGeneration(args: {
 			input: usage.inputTokens ?? 0,
 			output: usage.outputTokens ?? 0,
 			total: usage.totalTokens ?? 0,
+			inputCost: cost.inputCostForDisplay,
+			outputCost: cost.outputCostForDisplay,
+			totalCost: cost.totalCostForDisplay,
 		},
 		startTime: new Date(args.generation.startedAt),
 		endTime: new Date(args.generation.completedAt),
