@@ -84,34 +84,35 @@ export function ContentGenerationNodePropertiesPanel({
 		});
 	}, [node.content]);
 
-	const toolsGroupByProvider = useMemo(
-		() => [
+	const configuredToolNames = useMemo(
+		() => new Set(configuredTools.map((tool) => tool.name)),
+		[configuredTools],
+	);
+	const toolsGroupByProvider = useMemo(() => {
+		const makeItems = (provider: string) =>
+			languageModelTools
+				.filter(
+					(tool: LanguageModelTool) =>
+						tool.provider === provider && !configuredToolNames.has(tool.name),
+				)
+				.map((tool: LanguageModelTool) => ({
+					value: tool.name,
+					label: tool?.title ?? tool.name,
+				}));
+
+		return [
 			{
 				groupId: "giselle",
 				groupLabel: "Hosted",
-				items: languageModelTools
-					.filter((tool: LanguageModelTool) => tool.provider === "giselle")
-					.map((tool: LanguageModelTool) => ({
-						value: tool.name,
-						label: tool?.title ?? tool.name,
-					})),
+				items: makeItems("giselle"),
 			},
 			{
 				groupId: languageModel.provider,
 				groupLabel: `${titleCase(languageModel.provider)} Provides`,
-				items: languageModelTools
-					.filter(
-						(tool: LanguageModelTool) =>
-							tool.provider === languageModel.provider,
-					)
-					.map((tool: LanguageModelTool) => ({
-						value: tool.name,
-						label: tool?.title ?? tool.name,
-					})),
+				items: makeItems(languageModel.provider),
 			},
-		],
-		[languageModel.provider],
-	);
+		].filter((group) => group.items.length > 0);
+	}, [configuredToolNames, languageModel.provider]);
 
 	const handleToolSelect = (_e: unknown, item: { value: string }) => {
 		const toolName = item.value;
