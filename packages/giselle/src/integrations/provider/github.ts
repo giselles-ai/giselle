@@ -13,6 +13,7 @@ export type GitHubIntegrationUnauthorizedState = z.infer<
 >;
 export const GitHubIntegrationInvalidCredentialState = z.object({
 	status: z.literal("invalid-credential"),
+	authUrl: z.url(),
 });
 export type GitHubIntegrationInvalidCredentialState = z.infer<
 	typeof GitHubIntegrationInvalidCredentialState
