@@ -403,7 +403,7 @@ export async function handlePricingPlanServicingCanceled(event: Stripe.Event) {
 
 		if (!existing) {
 			throw new Error(
-				`No subscription history found for canceled subscription ${subscriptionId}`,
+				`No subscription history found for canceled subscription ${subscription.id}`,
 			);
 		}
 
