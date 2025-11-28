@@ -2,7 +2,7 @@ import { and, eq, ne } from "drizzle-orm";
 import type Stripe from "stripe";
 import { db } from "@/db/db";
 import { teamMemberships, teams } from "@/db/schema";
-import { getLatestSubscription } from "@/services/subscriptions/get-latest-subscription";
+import { getLatestSubscriptionV2 } from "@/services/subscriptions/get-latest-subscription-v2";
 
 export async function handleSubscriptionCancellation(
 	subscription: Stripe.Subscription,
@@ -12,22 +12,24 @@ export async function handleSubscriptionCancellation(
 	}
 
 	// Get the team_db_id from subscription history
-	const sub = await getLatestSubscription(subscription.id);
+	const result = await getLatestSubscriptionV2(subscription.id);
 
-	if (!sub) {
+	if (!result) {
 		throw new Error(
 			`Subscription record not found in database: ${subscription.id}`,
 		);
 	}
 
+	const teamDbId = result.subscription.teamDbId;
+
 	const [team] = await db
 		.select({ plan: teams.plan })
 		.from(teams)
-		.where(eq(teams.dbId, sub.teamDbId))
+		.where(eq(teams.dbId, teamDbId))
 		.limit(1);
 
 	if (!team) {
-		throw new Error(`Team not found (id: ${sub.teamDbId})`);
+		throw new Error(`Team not found (id: ${teamDbId})`);
 	}
 
 	let shouldApplyStripeCancellation =
@@ -38,11 +40,11 @@ export async function handleSubscriptionCancellation(
 		const [latestTeam] = await db
 			.select({ plan: teams.plan })
 			.from(teams)
-			.where(eq(teams.dbId, sub.teamDbId))
+			.where(eq(teams.dbId, teamDbId))
 			.limit(1);
 
 		if (!latestTeam) {
-			throw new Error(`Team not found (id: ${sub.teamDbId})`);
+			throw new Error(`Team not found (id: ${teamDbId})`);
 		}
 
 		shouldApplyStripeCancellation =
@@ -56,7 +58,7 @@ export async function handleSubscriptionCancellation(
 			.from(teamMemberships)
 			.where(
 				and(
-					eq(teamMemberships.teamDbId, sub.teamDbId),
+					eq(teamMemberships.teamDbId, teamDbId),
 					eq(teamMemberships.role, "admin"),
 				),
 			)
@@ -64,7 +66,7 @@ export async function handleSubscriptionCancellation(
 			.limit(1);
 
 		if (!earliestAdmin) {
-			throw new Error(`No admin found for team (id: ${sub.teamDbId})`);
+			throw new Error(`No admin found for team (id: ${teamDbId})`);
 		}
 
 		// Delete all team memberships except the earliest admin
@@ -72,7 +74,7 @@ export async function handleSubscriptionCancellation(
 			.delete(teamMemberships)
 			.where(
 				and(
-					eq(teamMemberships.teamDbId, sub.teamDbId),
+					eq(teamMemberships.teamDbId, teamDbId),
 					ne(teamMemberships.id, earliestAdmin.id),
 				),
 			);
@@ -87,7 +89,7 @@ export async function handleSubscriptionCancellation(
 		})
 		.where(
 			and(
-				eq(teams.dbId, sub.teamDbId),
+				eq(teams.dbId, teamDbId),
 				eq(teams.activeSubscriptionId, subscription.id),
 				ne(teams.plan, "internal"),
 				ne(teams.plan, "enterprise"),
