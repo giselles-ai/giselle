@@ -58,9 +58,7 @@ export function CancelSubscriptionButton({
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button variant="link" className="px-0 text-white-30">
-					Cancel Subscription
-				</Button>
+				<Button variant="destructive">Cancel Subscription</Button>
 			</DialogTrigger>
 			<DialogContent
 				variant="destructive"
