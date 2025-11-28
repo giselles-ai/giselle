@@ -24,6 +24,7 @@ export async function getGitHubIntegrationState(
 	if (identityState.status === "invalid-credential") {
 		return {
 			status: identityState.status,
+			authUrl: "/auth/connect/github",
 		};
 	}
 	if (identityState.status === "error") {
