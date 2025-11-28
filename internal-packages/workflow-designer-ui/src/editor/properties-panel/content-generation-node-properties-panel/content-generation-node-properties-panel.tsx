@@ -263,6 +263,10 @@ export function ContentGenerationNodePropertiesPanel({
 	);
 
 	const handleGenerationButtonClick = useCallback(() => {
+		if (isGenerating) {
+			stopGenerationRunner();
+			return;
+		}
 		createAndStartGenerationRunner({
 			origin: {
 				type: "studio",
@@ -283,7 +287,14 @@ export function ContentGenerationNodePropertiesPanel({
 				outputNode: connection.outputNode,
 			})),
 		});
-	}, [createAndStartGenerationRunner, data.id, node, connections]);
+	}, [
+		createAndStartGenerationRunner,
+		data.id,
+		node,
+		connections,
+		isGenerating,
+		stopGenerationRunner,
+	]);
 
 	return (
 		<PropertiesPanelRoot>
