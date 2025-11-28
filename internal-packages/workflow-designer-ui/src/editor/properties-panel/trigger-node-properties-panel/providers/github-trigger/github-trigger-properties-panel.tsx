@@ -168,33 +168,9 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 		undefined,
 	);
 
+	// Check integration status first
 	if (value?.github === undefined) {
 		return "unset";
-	}
-
-	if (node.content.state.status === "configured") {
-		return (
-			<GitHubTriggerConfiguredView
-				triggerId={node.content.state.flowTriggerId}
-				node={node}
-				onStartReconfigure={(mode) => {
-					reconfigureModeRef.current = mode;
-				}}
-			/>
-		);
-	} else if (
-		node.content.state.status === "reconfiguring" &&
-		value.github.status === "installed"
-	) {
-		return (
-			<GitHubTriggerReconfiguringView
-				installations={value.github.installations}
-				node={node}
-				installationUrl={value.github.installationUrl}
-				triggerId={node.content.state.flowTriggerId}
-				reconfigureMode={reconfigureModeRef.current}
-			/>
-		);
 	}
 
 	switch (value.github.status) {
@@ -210,21 +186,48 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 			);
 		case "invalid-credential":
 			return <GitHubInvalidCredential authUrl={value.github.authUrl} />;
-		case "installed":
-			return (
-				<Installed
-					installations={value.github.installations}
-					node={node}
-					installationUrl={value.github.installationUrl}
-				/>
-			);
 		case "error":
 			return `GitHub integration error: ${value.github.errorMessage}`;
+		case "installed":
+			break;
 		default: {
 			const _exhaustiveCheck: never = value.github;
 			throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
 		}
 	}
+
+	// Only reach here when status is "installed"
+	if (node.content.state.status === "configured") {
+		return (
+			<GitHubTriggerConfiguredView
+				triggerId={node.content.state.flowTriggerId}
+				node={node}
+				onStartReconfigure={(mode) => {
+					reconfigureModeRef.current = mode;
+				}}
+			/>
+		);
+	}
+
+	if (node.content.state.status === "reconfiguring") {
+		return (
+			<GitHubTriggerReconfiguringView
+				installations={value.github.installations}
+				node={node}
+				installationUrl={value.github.installationUrl}
+				triggerId={node.content.state.flowTriggerId}
+				reconfigureMode={reconfigureModeRef.current}
+			/>
+		);
+	}
+
+	return (
+		<Installed
+			installations={value.github.installations}
+			node={node}
+			installationUrl={value.github.installationUrl}
+		/>
+	);
 }
 
 interface SelectEventStep {

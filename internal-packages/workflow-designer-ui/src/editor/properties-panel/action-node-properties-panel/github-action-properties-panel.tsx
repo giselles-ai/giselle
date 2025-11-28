@@ -114,37 +114,11 @@ export function GitHubActionPropertiesPanel({
 		return null;
 	}
 
-	if (node.content.command.state.status === "configured") {
-		return (
-			<div className="flex flex-col h-full">
-				<GitHubActionConfiguredView
-					state={node.content.command.state}
-					node={node}
-					inputs={node.inputs}
-					handleClick={handleClick}
-					isGenerating={isGenerating}
-				/>
-			</div>
-		);
-	} else if (
-		node.content.command.state.status === "reconfiguring" &&
-		value?.github?.status === "installed"
-	) {
-		return (
-			<Installed
-				installations={value.github.installations}
-				node={node}
-				installationUrl={value.github.installationUrl}
-				reconfigStep={{
-					state: "select-repository",
-				}}
-			/>
-		);
-	}
-
+	// Check integration status first
 	if (value?.github === undefined) {
 		return "unset";
 	}
+
 	switch (value.github.status) {
 		case "unset":
 			return "unset";
@@ -158,21 +132,51 @@ export function GitHubActionPropertiesPanel({
 			);
 		case "invalid-credential":
 			return <GitHubInvalidCredential authUrl={value.github.authUrl} />;
-		case "installed":
-			return (
-				<Installed
-					installations={value.github.installations}
-					node={node}
-					installationUrl={value.github.installationUrl}
-				/>
-			);
 		case "error":
 			return `GitHub integration error: ${value.github.errorMessage}`;
+		case "installed":
+			break;
 		default: {
 			const _exhaustiveCheck: never = value.github;
 			throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
 		}
 	}
+
+	// Only reach here when status is "installed"
+	if (node.content.command.state.status === "configured") {
+		return (
+			<div className="flex flex-col h-full">
+				<GitHubActionConfiguredView
+					state={node.content.command.state}
+					node={node}
+					inputs={node.inputs}
+					handleClick={handleClick}
+					isGenerating={isGenerating}
+				/>
+			</div>
+		);
+	}
+
+	if (node.content.command.state.status === "reconfiguring") {
+		return (
+			<Installed
+				installations={value.github.installations}
+				node={node}
+				installationUrl={value.github.installationUrl}
+				reconfigStep={{
+					state: "select-repository",
+				}}
+			/>
+		);
+	}
+
+	return (
+		<Installed
+			installations={value.github.installations}
+			node={node}
+			installationUrl={value.github.installationUrl}
+		/>
+	);
 }
 
 function Unauthorized({ authUrl }: { authUrl: string }) {
