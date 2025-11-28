@@ -220,6 +220,7 @@ export function NodeComponent({
 			isVectorStore &&
 			isVectorStoreNode(node) &&
 			node.content.source.provider === "document";
+		const isGithubTrigger = isTriggerNode(node, "github");
 
 		const isFillIcon =
 			isText || isFile || isWebPage || isGithub || isVectorStore || isAction;
@@ -250,6 +251,7 @@ export function NodeComponent({
 			isAppEntry,
 			isVectorStoreGithub,
 			isVectorStoreDocument,
+			isGithubTrigger,
 			isFillIcon,
 			isStrokeIcon,
 			isDarkIconText,
@@ -275,6 +277,7 @@ export function NodeComponent({
 		isAppEntry: boolean;
 		isVectorStoreGithub: boolean;
 		isVectorStoreDocument: boolean;
+		isGithubTrigger: boolean;
 		isFillIcon: boolean;
 		isStrokeIcon: boolean;
 		isDarkIconText: boolean;
@@ -516,16 +519,17 @@ export function NodeComponent({
 								v.isTextGeneration && "fill-current",
 								v.isContentGeneration && "fill-current",
 								v.isImageGeneration && "fill-current",
-								v.isGithub && "fill-current",
 								v.isVectorStore &&
 									!v.isVectorStoreGithub &&
 									"stroke-current fill-none",
 								v.isVectorStoreGithub && "fill-current",
 								v.isVectorStoreDocument && "stroke-current fill-none",
-								v.isTrigger && "stroke-current fill-none",
+								v.isTrigger && !v.isGithubTrigger && "stroke-current fill-none",
+								v.isGithubTrigger && "fill-current",
 								v.isAppEntry && "stroke-current fill-none",
 								v.isAction && "fill-current",
 								v.isQuery && "stroke-current fill-none",
+								v.isGithub && "fill-current",
 								v.isText && "text-background",
 								v.isFile && "text-background",
 								v.isWebPage && "text-background",
@@ -534,7 +538,8 @@ export function NodeComponent({
 								v.isGithub && "text-background",
 								v.isVectorStoreGithub && "text-background",
 								v.isVectorStoreDocument && "text-background",
-								v.isTrigger && "text-inverse",
+								v.isTrigger && !v.isGithubTrigger && "text-inverse",
+								v.isGithubTrigger && "text-background",
 								v.isAppEntry && "text-inverse",
 								v.isAction && "text-inverse",
 								v.isQuery && "text-background",
