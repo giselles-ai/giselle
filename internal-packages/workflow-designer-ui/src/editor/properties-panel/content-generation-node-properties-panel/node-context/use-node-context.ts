@@ -62,12 +62,24 @@ export function useNodeContext(node: ContentGenerationNode) {
 
 	const shouldShowOutputLabel = useCallback(
 		(nodeId: NodeId) => {
-			const countMap = new Map<string, number>();
+			let connectionCount = 0;
+			let hasMultipleOutputs = false;
+
 			for (const connection of connections) {
-				const currentCount = countMap.get(connection.outputNode.id) ?? 0;
-				countMap.set(connection.outputNode.id, currentCount + 1);
+				if (connection.outputNode.id !== nodeId) {
+					continue;
+				}
+				connectionCount += 1;
+				if (connection.outputNode.outputs.length > 1) {
+					hasMultipleOutputs = true;
+				}
+				if (connectionCount > 1) {
+					return true;
+				}
 			}
-			return (countMap.get(nodeId) ?? 0) > 1;
+
+			// Show labels when the source node exposes multiple outputs even with one connection.
+			return hasMultipleOutputs;
 		},
 		[connections],
 	);
