@@ -9,18 +9,68 @@ import {
 	languageModelTools,
 } from "@giselles-ai/language-model-registry";
 import { defaultName } from "@giselles-ai/node-registry";
-import { type ContentGenerationNode, Node } from "@giselles-ai/protocol";
+import {
+	type CompletedGeneration,
+	type ContentGenerationNode,
+	type FailedGeneration,
+	type Generation,
+	Node,
+} from "@giselles-ai/protocol";
 import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
 import clsx from "clsx/lite";
 import { PlusIcon, Settings2Icon, XIcon } from "lucide-react";
 import { Tooltip as TooltipPrimitive } from "radix-ui";
 import { useCallback, useMemo, useState } from "react";
+import ClipboardButton from "../../../ui/clipboard-button";
 import { GenerationView } from "../../../ui/generation-view";
 import { GenerateCtaButton, NodePanelHeader, PropertiesPanelRoot } from "../ui";
 import { ConfigurationFormField, ModelPickerV2 } from "./language-model";
 import { useNodeContext } from "./node-context/use-node-context";
 import { ToolConfigurationDialog } from "./tool";
+
+// Helper function to extract text content from a generation
+function getGenerationTextContent(generation: Generation): string {
+	// For completed generations, use the outputs field
+	if (generation.status === "completed") {
+		const completedGeneration = generation as CompletedGeneration;
+		// Find all text outputs
+		const textOutputs = completedGeneration.outputs
+			.filter((output) => output.type === "generated-text")
+			.map((output) => (output.type === "generated-text" ? output.content : ""))
+			.join("\n\n");
+
+		if (textOutputs) {
+			return textOutputs;
+		}
+	}
+
+	// Fallback to extracting from messages if no outputs or not completed
+	const generatedMessages =
+		"messages" in generation
+			? (generation.messages?.filter((m) => m.role === "assistant") ?? [])
+			: [];
+
+	return generatedMessages
+		.map((message) =>
+			message.parts
+				?.filter((part) => part.type === "text")
+				.map((part) => (part.type === "text" ? part.text : ""))
+				.join("\n"),
+		)
+		.join("\n");
+}
+
+// Helper function to extract error content from a failed generation
+function getGenerationErrorContent(generation: Generation): string {
+	if (generation.status === "failed") {
+		const failedGeneration = generation as FailedGeneration;
+		const error = failedGeneration.error;
+		return `${error.name}: ${error.message}`;
+	}
+
+	return "";
+}
 
 export function ContentGenerationNodePropertiesPanel({
 	node,
@@ -523,9 +573,29 @@ export function ContentGenerationNodePropertiesPanel({
 						/>
 					</div>
 					<div className="flex flex-col w-1/2">
-						<SettingDetail size="md" className="text-text-muted mb-[6px]">
-							Output
-						</SettingDetail>
+						<div className="flex items-center justify-between mb-[6px]">
+							<SettingDetail size="md" className="text-text-muted">
+								Output
+							</SettingDetail>
+							{currentGeneration &&
+								(currentGeneration.status === "completed" ||
+									currentGeneration.status === "cancelled" ||
+									currentGeneration.status === "failed") && (
+									<ClipboardButton
+										text={
+											currentGeneration.status === "failed"
+												? getGenerationErrorContent(currentGeneration)
+												: getGenerationTextContent(currentGeneration)
+										}
+										tooltip={
+											currentGeneration.status === "failed"
+												? "Copy error to clipboard"
+												: "Copy to clipboard"
+										}
+										className="text-text-muted hover:text-text/60"
+									/>
+								)}
+						</div>
 						<div className="rounded-md bg-surface/70 w-full flex-1 p-[8px] overflow-y-auto">
 							{currentGeneration ? (
 								<GenerationView generation={currentGeneration} />
