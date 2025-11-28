@@ -8,6 +8,11 @@ export const triggerRegistry = [
 		label: "GitHub Trigger",
 		events: githubEvents,
 	},
+	{
+		provider: "manual",
+		label: "Manual Trigger",
+		events: [],
+	},
 ] as const;
 
 export type TriggerProvider = (typeof triggerRegistry)[number]["provider"];
