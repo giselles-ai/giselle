@@ -1,4 +1,4 @@
-import { and, eq, ne } from "drizzle-orm";
+import { and, desc, eq, ne } from "drizzle-orm";
 import type Stripe from "stripe";
 import {
 	db,
@@ -61,6 +61,29 @@ export async function handlePricingPlanServicingActivated(event: Stripe.Event) {
 	const metadata: Record<string, string> = subscription.metadata ?? {};
 
 	await db.transaction(async (tx) => {
+		// Idempotency check: if subscription history already exists, just update the team
+		const [existing] = await tx
+			.select({ teamDbId: stripePricingPlanSubscriptionHistories.teamDbId })
+			.from(stripePricingPlanSubscriptionHistories)
+			.where(eq(stripePricingPlanSubscriptionHistories.id, subscription.id))
+			.orderBy(desc(stripePricingPlanSubscriptionHistories.createdAt))
+			.limit(1);
+
+		if (existing) {
+			logger.info(
+				{ subscriptionId: subscription.id, teamDbId: existing.teamDbId },
+				"[stripe-v2-webhook] Subscription already processed, updating existing team",
+			);
+			await updateExistingTeam(
+				tx,
+				subscription,
+				cadence,
+				customerId,
+				existing.teamDbId,
+			);
+			return;
+		}
+
 		// Check if this is an upgrade of existing team or new team creation
 		if (UPGRADING_TEAM_DB_ID_KEY in metadata) {
 			const teamDbId = Number.parseInt(metadata[UPGRADING_TEAM_DB_ID_KEY], 10);
@@ -171,6 +194,44 @@ async function upgradeExistingTeam(
 	logger.info(
 		{ teamDbId, subscriptionId: subscription.id },
 		"[stripe-v2-webhook] Upgraded team to pro",
+	);
+}
+
+/**
+ * Updates an existing team when webhook is retried (idempotency handling)
+ *
+ * This function is called when a subscription history already exists,
+ * indicating this webhook event has been processed before.
+ */
+async function updateExistingTeam(
+	tx: TransactionType,
+	subscription: Stripe.V2.Billing.PricingPlanSubscription,
+	cadence: Stripe.V2.Billing.Cadence,
+	customerId: string,
+	teamDbId: number,
+) {
+	// Update team's subscription tracking fields
+	await tx
+		.update(teams)
+		.set({
+			plan: "pro",
+			activeSubscriptionId: subscription.id,
+			activeCustomerId: customerId,
+		})
+		.where(
+			and(
+				eq(teams.dbId, teamDbId),
+				ne(teams.plan, "internal"),
+				ne(teams.plan, "enterprise"),
+			),
+		);
+
+	// Record new subscription state to history
+	await recordV2SubscriptionHistory(tx, subscription, cadence, teamDbId);
+
+	logger.info(
+		{ teamDbId, subscriptionId: subscription.id },
+		"[stripe-v2-webhook] Updated existing team (idempotent retry)",
 	);
 }
 
