@@ -85,7 +85,7 @@ export function CancelSubscriptionButton({
 						variant="destructive"
 						className="mt-2 border-error-900/20 bg-error-900/5"
 					>
-						<AlertDescription className="font-geist text-[12px] font-medium leading-[20.4px] tracking-normal text-red-900/50">
+						<AlertDescription className="font-geist text-[12px] font-medium leading-[20.4px] tracking-normal text-error-900/50">
 							{error}
 						</AlertDescription>
 					</Alert>
