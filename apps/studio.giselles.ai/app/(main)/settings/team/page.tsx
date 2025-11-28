@@ -9,6 +9,7 @@ import type { CurrentTeam } from "@/services/teams/types";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { getSubscription } from "./actions";
+import { CancelSubscriptionButton } from "./cancel-subscription-button";
 import { LocalDateTime } from "./components/local-date-time";
 import { DeleteTeam } from "./delete-team";
 import { TeamProfile } from "./team-profile";
@@ -138,13 +139,18 @@ function BillingInfoForProPlan({ team }: BillingInfoProps) {
 				)}
 			</div>
 			{team.activeSubscriptionId && (
-				<form>
-					<Suspense
-						fallback={<Skeleton className="h-10 w-[120px] rounded-md" />}
-					>
-						<UpdateButton subscriptionId={team.activeSubscriptionId} />
-					</Suspense>
-				</form>
+				<div className="flex flex-col items-end gap-2">
+					<form>
+						<Suspense
+							fallback={<Skeleton className="h-10 w-[120px] rounded-md" />}
+						>
+							<UpdateButton subscriptionId={team.activeSubscriptionId} />
+						</Suspense>
+					</form>
+					<CancelSubscriptionButton
+						subscriptionId={team.activeSubscriptionId}
+					/>
+				</div>
 			)}
 		</div>
 	);
