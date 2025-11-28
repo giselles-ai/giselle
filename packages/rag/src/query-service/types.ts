@@ -21,6 +21,7 @@ export interface QueryService<
 	 * @param limit maximum number of results
 	 * @param similarityThreshold minimum similarity score (optional)
 	 * @param embeddingComplete callback invoked after embedding completion (optional)
+	 * @param headers optional headers to pass to the embedding API (e.g., for AI Gateway)
 	 */
 	search(
 		query: string,
@@ -28,5 +29,6 @@ export interface QueryService<
 		limit?: number,
 		similarityThreshold?: number,
 		embeddingComplete?: EmbeddingCompleteCallback,
+		headers?: Record<string, string>,
 	): Promise<QueryResult<TMetadata>[]>;
 }

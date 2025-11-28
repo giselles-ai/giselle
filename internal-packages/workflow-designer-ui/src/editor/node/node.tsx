@@ -40,6 +40,7 @@ function getInputHandleContentType(node: NodeLike): NodeHandleContentType {
 		| "vectorStore";
 	switch (contentType) {
 		case "textGeneration":
+		case "contentGeneration":
 		case "imageGeneration":
 		case "github":
 		case "text":

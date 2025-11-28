@@ -7,7 +7,7 @@ export async function getWorkspace(args: {
 	workspaceId: WorkspaceId;
 }) {
 	return await getWorkspaceInternal({
-		storage: args.context.storage,
+		context: args.context,
 		workspaceId: args.workspaceId,
 	});
 }

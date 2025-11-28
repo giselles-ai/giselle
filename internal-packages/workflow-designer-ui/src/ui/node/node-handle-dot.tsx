@@ -7,6 +7,7 @@ type NodeHandleDotProps = {
 	isConnectable?: boolean;
 	contentType:
 		| "textGeneration"
+		| "contentGeneration"
 		| "imageGeneration"
 		| "github"
 		| "vectorStoreGithub"
@@ -25,6 +26,7 @@ type NodeHandleDotProps = {
 
 const borderToneByType: Record<NodeHandleDotProps["contentType"], string> = {
 	textGeneration: "!border-generation-node-1",
+	contentGeneration: "!border-generation-node-1",
 	imageGeneration: "!border-image-generation-node-1",
 	github: "!border-github-node-1",
 	vectorStoreGithub: "!border-github-node-1",
@@ -42,6 +44,7 @@ const borderToneByType: Record<NodeHandleDotProps["contentType"], string> = {
 
 const fillToneByType: Record<NodeHandleDotProps["contentType"], string> = {
 	textGeneration: "!bg-generation-node-1",
+	contentGeneration: "!bg-generation-node-1",
 	imageGeneration: "!bg-image-generation-node-1",
 	github: "!bg-github-node-1",
 	vectorStoreGithub: "!bg-github-node-1",

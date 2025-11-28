@@ -1,12 +1,12 @@
 import { defaultName } from "@giselles-ai/node-registry";
-import {
-	type ContentGenerationNode,
-	InputId,
-	type NodeId,
-	type NodeLike,
-	type OutputId,
+import type {
+	ContentGenerationNode,
+	NodeId,
+	NodeLike,
+	OutputId,
 } from "@giselles-ai/protocol";
 import {
+	createConnectionWithInput,
 	type UIConnection,
 	useWorkflowDesigner,
 	useWorkflowDesignerStore,
@@ -272,20 +272,12 @@ export function useNodeContext(node: ContentGenerationNode) {
 			if (!outputNode || !outputId) {
 				return;
 			}
-			const newInputId = InputId.generate();
-			const newInput = {
-				id: newInputId,
-				label: "Input",
-				accessor: newInputId,
-			};
-			updateNodeData(node, {
-				inputs: [...node.inputs, newInput],
-			});
-			addConnection({
+			createConnectionWithInput({
 				outputNode,
 				outputId: outputId as OutputId,
 				inputNode: node,
-				inputId: newInput.id,
+				updateNodeData,
+				addConnection,
 			});
 		},
 		[node, addConnection, updateNodeData, data.nodes],

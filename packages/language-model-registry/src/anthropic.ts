@@ -6,6 +6,41 @@ import {
 } from "./language-model";
 
 export const anthropic = {
+	"anthropic/claude-opus-4.5": defineLanguageModel({
+		provider: "anthropic",
+		id: "anthropic/claude-opus-4.5",
+		name: "Claude Opus 4.5",
+		description:
+			"Claude Opus 4.5 is Anthropic’s latest model in the Opus series, meant for demanding reasoning tasks and complex problem solving. ",
+		contextWindow: 200_000,
+		maxOutputTokens: 64_000,
+		knowledgeCutoff: new Date(2025, 2, 31).getTime(),
+		pricing: {
+			input: definePricing(5.0),
+			output: definePricing(25.0),
+		},
+		requiredTier: "pro",
+		configurationOptions: {
+			temperature: {
+				description: "Amount of randomness injected into the response.",
+				schema: z.number().min(0).max(1),
+				ui: {
+					min: 0.0,
+					max: 1.0,
+					step: 0.1,
+				},
+			},
+			thinking: {
+				description: "Whether to include reasoning text in the response.",
+				schema: z.boolean(),
+			},
+		},
+		defaultConfiguration: {
+			temperature: 1.0,
+			thinking: false,
+		},
+		url: "https://www.anthropic.com/claude/opus",
+	}),
 	"anthropic/claude-opus-4.1": defineLanguageModel({
 		provider: "anthropic",
 		id: "anthropic/claude-opus-4.1",

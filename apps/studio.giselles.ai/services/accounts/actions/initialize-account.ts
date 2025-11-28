@@ -64,12 +64,14 @@ export const initializeAccount = async (
 				teamDbId: team.id,
 				creatorDbId: user.dbId,
 				workspaceId: workspace.id,
+				metadata: { sample: true },
 			});
 			await tx.insert(workspaces).values({
 				id: workspace.id,
 				name: workspace.name,
 				teamDbId: team.id,
 				creatorDbId: user.dbId,
+				metadata: { sample: true },
 			});
 		}
 

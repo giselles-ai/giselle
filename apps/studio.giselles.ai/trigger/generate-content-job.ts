@@ -44,6 +44,7 @@ export const generateContentJob = schemaJob({
 					team: {
 						id: parsedMetadata.team.id,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						activeCustomerId: parsedMetadata.team.activeCustomerId,
 						plan: parsedMetadata.team.plan,
 					},
 				});
@@ -59,6 +60,7 @@ export const generateContentJob = schemaJob({
 					team: {
 						id: parsedMetadata.team.id,
 						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						activeCustomerId: parsedMetadata.team.activeCustomerId,
 						plan: parsedMetadata.team.plan,
 					},
 				});

@@ -131,14 +131,12 @@ export interface LanguageModelToolWithoutTools<
 	TName extends string = string,
 	C extends
 		LanguageModelToolConfigurationOptions = LanguageModelToolConfigurationOptions,
-	Schema extends z.ZodType = z.ZodType,
 > {
 	name: TName;
 	provider: LanguageModelToolProvider;
 	title?: string;
 	tools?: never;
 	configurationOptions: C;
-	configurationSchema?: Schema;
 }
 
 export interface LanguageModelToolWithTools<
@@ -146,14 +144,12 @@ export interface LanguageModelToolWithTools<
 	C extends
 		LanguageModelToolConfigurationOptions = LanguageModelToolConfigurationOptions,
 	T extends Tool = Tool,
-	Schema extends z.ZodType = z.ZodType,
 > {
 	name: TName;
 	provider: LanguageModelToolProvider;
 	title?: string;
 	tools: readonly T[];
 	configurationOptions: C;
-	configurationSchema?: Schema;
 }
 
 export type LanguageModelTool<
@@ -161,35 +157,31 @@ export type LanguageModelTool<
 	C extends
 		LanguageModelToolConfigurationOptions = LanguageModelToolConfigurationOptions,
 	T extends Tool = Tool,
-	Schema extends z.ZodType = z.ZodType,
 > =
-	| LanguageModelToolWithoutTools<TName, C, Schema>
-	| LanguageModelToolWithTools<TName, C, T, Schema>;
+	| LanguageModelToolWithoutTools<TName, C>
+	| LanguageModelToolWithTools<TName, C, T>;
 
 export function defineLanguageModelTool<
 	TName extends string = string,
 	C extends
 		LanguageModelToolConfigurationOptions = LanguageModelToolConfigurationOptions,
-	Schema extends z.ZodType = z.ZodType,
 >(
-	languageModelTool: LanguageModelToolWithoutTools<TName, C, Schema>,
-): LanguageModelToolWithoutTools<TName, C, Schema>;
+	languageModelTool: LanguageModelToolWithoutTools<TName, C>,
+): LanguageModelToolWithoutTools<TName, C>;
 export function defineLanguageModelTool<
 	TName extends string = string,
 	C extends
 		LanguageModelToolConfigurationOptions = LanguageModelToolConfigurationOptions,
 	T extends Tool = Tool,
-	Schema extends z.ZodType = z.ZodType,
 >(
-	languageModelTool: LanguageModelToolWithTools<TName, C, T, Schema>,
-): LanguageModelToolWithTools<TName, C, T, Schema>;
+	languageModelTool: LanguageModelToolWithTools<TName, C, T>,
+): LanguageModelToolWithTools<TName, C, T>;
 export function defineLanguageModelTool<
 	TName extends string = string,
 	C extends
 		LanguageModelToolConfigurationOptions = LanguageModelToolConfigurationOptions,
 	T extends Tool = Tool,
-	Schema extends z.ZodType = z.ZodType,
->(languageModelTool: LanguageModelTool<TName, C, T, Schema>) {
+>(languageModelTool: LanguageModelTool<TName, C, T>) {
 	return languageModelTool;
 }
 
@@ -197,31 +189,8 @@ export function hasTools<
 	TName extends string,
 	C extends LanguageModelToolConfigurationOptions,
 	T extends Tool,
-	Schema extends z.ZodType = z.ZodType,
 >(
-	languageModelTool: LanguageModelTool<TName, C, T, Schema>,
-): languageModelTool is LanguageModelToolWithTools<TName, C, T, Schema> {
+	languageModelTool: LanguageModelTool<TName, C, T>,
+): languageModelTool is LanguageModelToolWithTools<TName, C, T> {
 	return "tools" in languageModelTool && languageModelTool.tools !== undefined;
-}
-
-export function hasConfigurationSchema<
-	TName extends string,
-	C extends LanguageModelToolConfigurationOptions,
-	T extends Tool = Tool,
-	Schema extends z.ZodType = z.ZodType,
->(
-	languageModelTool: LanguageModelTool<TName, C, T, Schema>,
-): languageModelTool is LanguageModelTool<TName, C, T, Schema> & {
-	configurationSchema: Schema;
-} {
-	if (
-		"configurationSchema" in languageModelTool &&
-		languageModelTool.configurationSchema !== undefined
-	) {
-		return true;
-	}
-	// Check if all options have schema
-	return Object.values(languageModelTool.configurationOptions).every(
-		(option) => option.schema !== undefined,
-	);
 }

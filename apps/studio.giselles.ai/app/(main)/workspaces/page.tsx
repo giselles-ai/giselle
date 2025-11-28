@@ -63,6 +63,7 @@ async function agentsQuery(teamDbId: number) {
 			createdAt: agents.createdAt,
 			updatedAt: agents.updatedAt,
 			creatorDbId: agents.creatorDbId,
+			metadata: agents.metadata,
 			creatorDisplayName: users.displayName,
 			creatorAvatarUrl: users.avatarUrl,
 		})

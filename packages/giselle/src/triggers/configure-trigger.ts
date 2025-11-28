@@ -20,7 +20,7 @@ export async function configureTrigger(args: {
 	const triggerId = TriggerId.generate();
 	const [workspace] = await Promise.all([
 		getWorkspace({
-			storage: args.context.storage,
+			context: args.context,
 			workspaceId: args.trigger.workspaceId,
 		}),
 		setTrigger({
@@ -57,7 +57,7 @@ export async function configureTrigger(args: {
 					: node,
 			),
 		},
-		storage: args.context.storage,
+		context: args.context,
 	});
 	return triggerId;
 }

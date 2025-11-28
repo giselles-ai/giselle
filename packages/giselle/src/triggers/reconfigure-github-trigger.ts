@@ -71,7 +71,7 @@ export async function reconfigureGitHubTrigger(args: {
 	});
 
 	const workspace = await getWorkspace({
-		storage: args.context.storage,
+		context: args.context,
 		workspaceId: currentTrigger.workspaceId,
 	});
 	await setWorkspace({
@@ -93,7 +93,7 @@ export async function reconfigureGitHubTrigger(args: {
 					: node,
 			),
 		},
-		storage: args.context.storage,
+		context: args.context,
 	});
 	return args.triggerId;
 }
