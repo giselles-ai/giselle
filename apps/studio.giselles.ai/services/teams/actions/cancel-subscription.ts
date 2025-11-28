@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getCurrentUserRole } from "@/app/(main)/settings/team/actions";
 import { logger } from "@/lib/logger";
 import { stripe } from "@/services/external/stripe";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
@@ -55,6 +56,18 @@ export type CancelSubscriptionResult =
 export async function cancelSubscription(): Promise<CancelSubscriptionResult> {
 	try {
 		const team = await fetchCurrentTeam();
+
+		// Check if user is admin
+		const currentUserRoleResult = await getCurrentUserRole();
+		if (
+			!currentUserRoleResult.success ||
+			currentUserRoleResult.data !== "admin"
+		) {
+			return {
+				success: false,
+				error: "Only admin users can cancel subscriptions",
+			};
+		}
 
 		if (!isProPlan(team)) {
 			return {
