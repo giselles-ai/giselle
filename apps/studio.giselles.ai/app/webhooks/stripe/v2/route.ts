@@ -1,4 +1,5 @@
 import type Stripe from "stripe";
+import { logger } from "@/lib/logger";
 import { stripe } from "@/services/external/stripe";
 
 const relevantEvents = new Set([
@@ -20,10 +21,13 @@ export async function POST(req: Request) {
 			return new Response("Missing stripe-signature header.", { status: 400 });
 		}
 		event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
-		console.log(`🔔  v2 Webhook received: ${event.type}`);
-	} catch (err: unknown) {
-		const message = err instanceof Error ? err.message : "Unknown error";
-		console.log(`❌ Error message: ${message}`);
+		logger.info({ eventType: event.type }, "[stripe-v2-webhook] Received");
+		logger.debug({ event }, "[stripe-v2-webhook] Event payload");
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : "Unknown error";
+		const errorName = error instanceof Error ? error.name : "UnknownError";
+		logger.error({ errorName, message }, "[stripe-v2-webhook] Error");
+		logger.debug({ error }, "[stripe-v2-webhook] Error details");
 		return new Response(`Webhook Error: ${message}`, { status: 400 });
 	}
 
@@ -39,7 +43,13 @@ export async function POST(req: Request) {
 			eventType === "v2.billing.pricing_plan_subscription.servicing_activated"
 		) {
 			// TODO: Implement handler in future PR
-			console.log("🔔  Pricing plan subscription activated (handler pending)");
+			logger.info(
+				"[stripe-v2-webhook] Pricing plan subscription activated (handler pending)",
+			);
+			logger.debug(
+				{ eventData: event.data },
+				"[stripe-v2-webhook] Activation event data",
+			);
 			return new Response(JSON.stringify({ received: true }));
 		}
 
@@ -47,13 +57,22 @@ export async function POST(req: Request) {
 			eventType === "v2.billing.pricing_plan_subscription.servicing_canceled"
 		) {
 			// TODO: Implement handler in future PR
-			console.log("🔔  Pricing plan subscription canceled (handler pending)");
+			logger.info(
+				"[stripe-v2-webhook] Pricing plan subscription canceled (handler pending)",
+			);
+			logger.debug(
+				{ eventData: event.data },
+				"[stripe-v2-webhook] Cancellation event data",
+			);
 			return new Response(JSON.stringify({ received: true }));
 		}
 
 		throw new Error("Unhandled relevant event!");
 	} catch (error) {
-		console.log(error);
+		const message = error instanceof Error ? error.message : "Unknown error";
+		const errorName = error instanceof Error ? error.name : "UnknownError";
+		logger.error({ errorName, message }, "[stripe-v2-webhook] Handler failed");
+		logger.debug({ error }, "[stripe-v2-webhook] Handler error details");
 		return new Response(
 			"Webhook handler failed. View your Next.js function logs.",
 			{
