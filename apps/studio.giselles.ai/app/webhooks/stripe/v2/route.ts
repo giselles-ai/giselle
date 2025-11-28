@@ -1,6 +1,7 @@
 import type Stripe from "stripe";
 import { logger } from "@/lib/logger";
 import { stripe } from "@/services/external/stripe";
+import { handlePricingPlanServicingActivated } from "../handle-pricing-plan-subscription";
 
 const relevantEvents = new Set([
 	"v2.billing.pricing_plan_subscription.servicing_activated",
@@ -42,14 +43,7 @@ export async function POST(req: Request) {
 		if (
 			eventType === "v2.billing.pricing_plan_subscription.servicing_activated"
 		) {
-			// TODO: Implement handler in future PR
-			logger.info(
-				"[stripe-v2-webhook] Pricing plan subscription activated (handler pending)",
-			);
-			logger.debug(
-				{ eventData: event.data },
-				"[stripe-v2-webhook] Activation event data",
-			);
+			await handlePricingPlanServicingActivated(event);
 			return new Response(JSON.stringify({ received: true }));
 		}
 

@@ -128,6 +128,9 @@ export const createWorkspaceSlice: StateCreator<WorkspaceSlice> = (
 		}
 	},
 	deleteNode: (nodeIdToDelete) => {
+		const nodeToDelete = get().workspace?.nodes.find(
+			(node) => node.id === nodeIdToDelete,
+		);
 		set((state) => {
 			if (!state.workspace) return {};
 			const nodeId = NodeId.parse(nodeIdToDelete);
@@ -136,19 +139,41 @@ export const createWorkspaceSlice: StateCreator<WorkspaceSlice> = (
 				nodeState: { ...state.workspace.ui.nodeState },
 			};
 			delete ui.nodeState[nodeId];
+
+			const inputsToRemove = new Map(
+				state.workspace.connections
+					.filter((c) => c.outputNode.id === nodeId)
+					.map((c) => [c.inputNode.id, c.inputId]),
+			);
+
+			const nodes = state.workspace.nodes
+				.filter((n) => n.id !== nodeId)
+				.map((n) => {
+					const inputIdToRemove = inputsToRemove.get(n.id);
+					if (!inputIdToRemove || !isOperationNode(n) || isActionNode(n)) {
+						return n;
+					}
+					return {
+						...n,
+						inputs: n.inputs.filter((input) => input.id !== inputIdToRemove),
+					};
+				});
+
+			const nextConnections = state.workspace.connections.filter(
+				(c) => c.inputNode.id !== nodeId && c.outputNode.id !== nodeId,
+			);
+
 			return {
 				workspace: {
 					...state.workspace,
-					nodes: state.workspace.nodes.filter((n) => n.id !== nodeId),
+					nodes,
+					connections: nextConnections,
 					ui,
 				},
 			};
 		});
-		const deleteNode = get().workspace?.nodes.find(
-			(node) => node.id === nodeIdToDelete,
-		);
-		if (deleteNode) {
-			get().deleteNodeCallback?.(deleteNode);
+		if (nodeToDelete) {
+			get().deleteNodeCallback?.(nodeToDelete);
 		}
 	},
 	addConnection: ({ outputNode, outputId, inputNode, inputId }) =>
