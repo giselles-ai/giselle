@@ -202,6 +202,11 @@ async function upgradeExistingTeam(
  *
  * This function is called when a subscription history already exists,
  * indicating this webhook event has been processed before.
+ *
+ * Note: We intentionally create new history records on each retry.
+ * History tables are designed to store multiple snapshots of the same
+ * subscription, allowing us to track state changes and aid debugging.
+ * The idempotency guarantee is for team creation, not history records.
  */
 async function updateExistingTeam(
 	tx: TransactionType,
