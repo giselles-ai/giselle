@@ -20,7 +20,6 @@ import { updateGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
 
 import { fetchCurrentUser } from "@/services/accounts";
-import { getLatestSubscription } from "@/services/subscriptions/get-latest-subscription";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import { handleMemberChange } from "@/services/teams/member-change";
 import {
@@ -581,36 +580,6 @@ export async function deleteTeam(
 
 	// Redirect to team settings page when team is deleted
 	redirect("/settings/team");
-}
-
-export async function getSubscription(subscriptionId: string) {
-	try {
-		const currentTeam = await fetchCurrentTeam();
-		const dbSubscription = await getLatestSubscription(subscriptionId);
-
-		if (!dbSubscription) {
-			throw new Error(`Subscription not found: ${subscriptionId}`);
-		}
-
-		// Authorization check: verify the subscription belongs to current team
-		if (dbSubscription.teamDbId !== currentTeam.dbId) {
-			throw new Error("Unauthorized access to subscription");
-		}
-
-		return {
-			success: true,
-			data: {
-				cancelAtPeriodEnd: dbSubscription.cancelAtPeriodEnd,
-				cancelAt: dbSubscription.cancelAt,
-			},
-		};
-	} catch (error) {
-		return {
-			success: false,
-			error:
-				error instanceof Error ? error.message : "Failed to fetch subscription",
-		};
-	}
 }
 
 // Define result types for sendInvitations

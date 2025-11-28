@@ -202,7 +202,7 @@ export const stripeV2Flag = flag<boolean>({
 		}
 		const edgeConfig = await get(`flag__${this.key}`);
 		if (edgeConfig === undefined) {
-			return false;
+			return true;
 		}
 		return edgeConfig === true || edgeConfig === "true";
 	},
