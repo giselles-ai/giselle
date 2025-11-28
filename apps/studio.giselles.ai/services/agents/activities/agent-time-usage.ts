@@ -1,6 +1,6 @@
 import { and, eq, gte, lt, sql } from "drizzle-orm";
 import { agentActivities, agents, db, teams } from "@/db";
-import { getLatestSubscription } from "@/services/subscriptions/get-latest-subscription";
+import { getLatestSubscriptionV2 } from "@/services/subscriptions/get-latest-subscription-v2";
 import { getMonthlyBillingCycle } from "./utils";
 
 /**
@@ -38,25 +38,36 @@ async function getCurrentBillingPeriod(teamDbId: number) {
 
 	// has active subscription
 	if (data.activeSubscriptionId != null) {
-		const subscription = await getLatestSubscription(data.activeSubscriptionId);
-		if (!subscription) {
+		const result = await getLatestSubscriptionV2(data.activeSubscriptionId);
+		if (!result) {
 			throw new Error(`Subscription not found: ${data.activeSubscriptionId}`);
 		}
 		// Verify subscription is actually active to prevent using stale subscription data
-		if (subscription.status !== "active") {
+		if (result.subscription.servicingStatus !== "active") {
 			throw new Error(
-				`Subscription is not active: ${data.activeSubscriptionId} (status: ${subscription.status})`,
+				`Subscription is not active: ${data.activeSubscriptionId} (status: ${result.subscription.servicingStatus})`,
 			);
 		}
-		if (
-			subscription.currentPeriodStart == null ||
-			subscription.currentPeriodEnd == null
-		) {
-			throw new Error(`Invalid subscription period: ${teamDbId}`);
+		// Calculate billing period from cadence data
+		// nextBillingDate is the end of current period
+		// Start is calculated by subtracting one billing cycle interval
+		const nextBillingDate = result.cadence.nextBillingDate;
+		const billingCycleType = result.cadence.billingCycleType;
+		const intervalCount = result.cadence.billingCycleIntervalCount;
+
+		const periodEnd = nextBillingDate;
+		const periodStart = new Date(nextBillingDate);
+		if (billingCycleType === "month") {
+			periodStart.setMonth(periodStart.getMonth() - intervalCount);
+		} else if (billingCycleType === "year") {
+			periodStart.setFullYear(periodStart.getFullYear() - intervalCount);
+		} else {
+			throw new Error(`Unsupported billing cycle type: ${billingCycleType}`);
 		}
+
 		return {
-			start: subscription.currentPeriodStart,
-			end: subscription.currentPeriodEnd,
+			start: periodStart,
+			end: periodEnd,
 		};
 	}
 
