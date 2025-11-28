@@ -128,6 +128,9 @@ export const createWorkspaceSlice: StateCreator<WorkspaceSlice> = (
 		}
 	},
 	deleteNode: (nodeIdToDelete) => {
+		const nodeToDelete = get().workspace?.nodes.find(
+			(node) => node.id === nodeIdToDelete,
+		);
 		set((state) => {
 			if (!state.workspace) return {};
 			const nodeId = NodeId.parse(nodeIdToDelete);
@@ -137,37 +140,25 @@ export const createWorkspaceSlice: StateCreator<WorkspaceSlice> = (
 			};
 			delete ui.nodeState[nodeId];
 
-			// Identify connections to remove
-			const connectionsToRemove = state.workspace.connections.filter(
-				(c) => c.inputNode.id === nodeId || c.outputNode.id === nodeId,
+			const inputsToRemove = new Map(
+				state.workspace.connections
+					.filter((c) => c.outputNode.id === nodeId)
+					.map((c) => [c.inputNode.id, c.inputId]),
 			);
 
-			// Update connected nodes (e.g. remove inputs from nodes that lost a connection)
-			let nodes = state.workspace.nodes;
-			for (const connection of connectionsToRemove) {
-				if (connection.outputNode.id === nodeId) {
-					// The deleted node was the OUTPUT (source) of this connection.
-					// So we need to update the INPUT (target) node to remove the corresponding input port.
-					const targetNode = nodes.find(
-						(n) => n.id === connection.inputNode.id,
-					);
-					if (targetNode !== undefined) {
-						if (isOperationNode(targetNode) && !isActionNode(targetNode)) {
-							const updatedInputs = targetNode.inputs.filter(
-								(input) => input.id !== connection.inputId,
-							);
-							nodes = nodes.map((n) =>
-								n.id === targetNode.id
-									? { ...targetNode, inputs: updatedInputs }
-									: n,
-							);
-						}
+			const nodes = state.workspace.nodes
+				.filter((n) => n.id !== nodeId)
+				.map((n) => {
+					const inputIdToRemove = inputsToRemove.get(n.id);
+					if (!inputIdToRemove || !isOperationNode(n) || isActionNode(n)) {
+						return n;
 					}
-				}
-			}
+					return {
+						...n,
+						inputs: n.inputs.filter((input) => input.id !== inputIdToRemove),
+					};
+				});
 
-			nodes = nodes.filter((n) => n.id !== nodeId);
-			// Remove connections associated with the node
 			const nextConnections = state.workspace.connections.filter(
 				(c) => c.inputNode.id !== nodeId && c.outputNode.id !== nodeId,
 			);
@@ -181,11 +172,8 @@ export const createWorkspaceSlice: StateCreator<WorkspaceSlice> = (
 				},
 			};
 		});
-		const deleteNode = get().workspace?.nodes.find(
-			(node) => node.id === nodeIdToDelete,
-		);
-		if (deleteNode) {
-			get().deleteNodeCallback?.(deleteNode);
+		if (nodeToDelete) {
+			get().deleteNodeCallback?.(nodeToDelete);
 		}
 	},
 	addConnection: ({ outputNode, outputId, inputNode, inputId }) =>
