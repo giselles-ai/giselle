@@ -28,7 +28,9 @@ export async function manageBilling(subscriptionId: string) {
 		);
 		const customer = cadence.payer.customer;
 		if (!customer) {
-			throw new Error("Customer ID not found in cadence.payer");
+			throw new Error(
+				`Customer ID not found in cadence.payer for subscription ${subscriptionId}`,
+			);
 		}
 		customerId = customer;
 	} else {
