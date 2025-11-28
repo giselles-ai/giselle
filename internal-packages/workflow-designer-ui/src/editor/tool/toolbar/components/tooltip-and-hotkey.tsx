@@ -8,9 +8,7 @@ export function TooltipAndHotkey({
 	return (
 		<div className="flex items-center gap-1">
 			<span>{text}</span>
-			{hotkey && (
-				<span className="text-text-muted uppercase ml-1">{hotkey}</span>
-			)}
+			{hotkey && <span className="uppercase ml-1">{hotkey}</span>}
 		</div>
 	);
 }
