@@ -90,7 +90,7 @@ export async function handlePricingPlanServicingActivated(event: Stripe.Event) {
 			);
 		} else {
 			throw new Error(
-				"Invalid subscription metadata for pricing plan subscription",
+				`Invalid subscription metadata for pricing plan subscription. Expected one of: [${UPGRADING_TEAM_DB_ID_KEY}, (${DRAFT_TEAM_NAME_METADATA_KEY} & ${DRAFT_TEAM_USER_DB_ID_METADATA_KEY})]. Actual keys: [${Object.keys(metadata).join(", ")}]`,
 			);
 		}
 	});
