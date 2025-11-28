@@ -28,18 +28,7 @@ export async function setWorkspace({
 }) {
 	await context.storage.setJson({
 		path: workspacePath(workspaceId),
-		data: {
-			...workspace,
-			nodes: workspace.nodes.map((node) => {
-				if (!context.experimental_contentGenerationNode) {
-					return node;
-				}
-				if (!isContentGenerationNode(node)) {
-					return node;
-				}
-				return convertContentGenerationToTextGeneration(node);
-			}),
-		},
+		data: workspace,
 	});
 }
 
