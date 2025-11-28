@@ -147,7 +147,7 @@ async function upgradeExistingTeam(
 		.where(eq(teams.dbId, teamDbId));
 
 	if (result.length !== 1) {
-		throw new Error("Team not found");
+		throw new Error(`Team not found: ${teamDbId}`);
 	}
 
 	await tx
