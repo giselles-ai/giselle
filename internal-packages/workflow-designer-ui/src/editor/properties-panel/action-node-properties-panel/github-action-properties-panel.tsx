@@ -27,7 +27,7 @@ import {
 	PullRequestReviewCommentCreatedIcon,
 } from "../trigger-node-properties-panel/providers/github-trigger/components/icons";
 import { GitHubRepositoryBlock } from "../trigger-node-properties-panel/ui";
-import { SelectRepository } from "../ui";
+import { GitHubInvalidCredential, SelectRepository } from "../ui";
 import { GitHubActionConfiguredView } from "./ui/github-action-configured-view";
 
 // Default icon for actions without specific icons
@@ -157,7 +157,7 @@ export function GitHubActionPropertiesPanel({
 				/>
 			);
 		case "invalid-credential":
-			return "invalid-credential";
+			return <GitHubInvalidCredential authUrl={value.github.authUrl} />;
 		case "installed":
 			return (
 				<Installed

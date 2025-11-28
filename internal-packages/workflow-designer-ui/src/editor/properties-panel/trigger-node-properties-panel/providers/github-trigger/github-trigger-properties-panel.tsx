@@ -34,7 +34,7 @@ import {
 } from "react";
 import { Tooltip } from "../../../../../ui/tooltip";
 import { isPromptEmpty as isEmpty } from "../../../../lib/validate-prompt";
-import { SelectRepository } from "../../../ui";
+import { GitHubInvalidCredential, SelectRepository } from "../../../ui";
 import { usePanelScrollMode } from "../../index";
 import { GitHubTriggerConfiguredView } from "../../ui";
 import { GitHubTriggerReconfiguringView } from "../../ui/reconfiguring-views/github-trigger-reconfiguring-view";
@@ -209,7 +209,7 @@ export function GitHubTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 				/>
 			);
 		case "invalid-credential":
-			return "invalid-credential";
+			return <GitHubInvalidCredential authUrl={value.github.authUrl} />;
 		case "installed":
 			return (
 				<Installed
