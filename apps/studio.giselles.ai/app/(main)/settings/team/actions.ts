@@ -20,7 +20,7 @@ import { updateGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
 
 import { fetchCurrentUser } from "@/services/accounts";
-import { getLatestSubscription } from "@/services/subscriptions/get-latest-subscription";
+import { getLatestSubscriptionV2 } from "@/services/subscriptions/get-latest-subscription-v2";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import { handleMemberChange } from "@/services/teams/member-change";
 import {
@@ -586,22 +586,24 @@ export async function deleteTeam(
 export async function getSubscription(subscriptionId: string) {
 	try {
 		const currentTeam = await fetchCurrentTeam();
-		const dbSubscription = await getLatestSubscription(subscriptionId);
+		const result = await getLatestSubscriptionV2(subscriptionId);
 
-		if (!dbSubscription) {
+		if (!result) {
 			throw new Error(`Subscription not found: ${subscriptionId}`);
 		}
 
 		// Authorization check: verify the subscription belongs to current team
-		if (dbSubscription.teamDbId !== currentTeam.dbId) {
+		if (result.subscription.teamDbId !== currentTeam.dbId) {
 			throw new Error("Unauthorized access to subscription");
 		}
 
 		return {
 			success: true,
 			data: {
-				cancelAtPeriodEnd: dbSubscription.cancelAtPeriodEnd,
-				cancelAt: dbSubscription.cancelAt,
+				// v2 uses servicingStatus instead of cancel_at_period_end
+				// "canceled" status means the subscription is canceled
+				servicingStatus: result.subscription.servicingStatus,
+				canceledAt: result.subscription.canceledAt,
 			},
 		};
 	} catch (error) {
