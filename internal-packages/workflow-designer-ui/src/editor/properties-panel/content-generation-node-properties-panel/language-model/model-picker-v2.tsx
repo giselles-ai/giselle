@@ -14,7 +14,7 @@ import { useMemo, useState } from "react";
 
 const recommendedLanguageModelIds: LanguageModelId[] = [
 	"openai/gpt-5.1-thinking",
-	"google/gemini-2.5-pro",
+	"google/gemini-3-pro-preview",
 	"anthropic/claude-sonnet-4-5",
 ];
 

@@ -3,7 +3,9 @@ import { WorkspaceId } from "@giselles-ai/protocol";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { giselle } from "@/app/giselle";
 import { agents, db, flowTriggers, workspaces } from "@/db";
+import { generateContentNodeFlag } from "@/flags";
 import { logger } from "@/lib/logger";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { dataLoader } from "./data-loader";
@@ -30,6 +32,11 @@ export default async function ({
 	if (!success) {
 		logger.debug(params);
 		return notFound();
+	}
+
+	const useNewLanguageModel = await generateContentNodeFlag();
+	if (useNewLanguageModel) {
+		giselle.updateContext({ experimental_contentGenerationNode: true });
 	}
 
 	return (

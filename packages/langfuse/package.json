@@ -24,8 +24,9 @@
 		"tsup": "catalog:"
 	},
 	"dependencies": {
-		"@giselles-ai/protocol": "workspace:^",
 		"@giselles-ai/language-model": "workspace:^",
+		"@giselles-ai/language-model-registry": "workspace:*",
+		"@giselles-ai/protocol": "workspace:^",
 		"@giselles-ai/rag": "workspace:^",
 		"langfuse": "catalog:"
 	}
