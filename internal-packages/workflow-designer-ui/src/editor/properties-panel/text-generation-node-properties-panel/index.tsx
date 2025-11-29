@@ -25,7 +25,7 @@ import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { isPromptEmpty } from "../../lib/validate-prompt";
 import { ProTag } from "../../tool";
-import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
+import { PropertiesPanelRoot } from "../ui";
 import { GenerateCtaButton } from "../ui/generate-cta-button";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GenerationPanel } from "./generation-panel";
@@ -154,9 +154,6 @@ export function TextGenerationNodePropertiesPanel({
 			{/*<PropertiesPanelContent>*/}
 			<div className="grow-1 overflow-y-auto flex flex-col gap-[12px]">
 				<div className="flex items-center justify-between gap-[12px]">
-					<label htmlFor="model-picker-trigger" className="sr-only">
-						Model
-					</label>
 					<SettingDetail size="md">Model</SettingDetail>
 					<ModelPicker
 						currentProvider={node.content.llm.provider}
