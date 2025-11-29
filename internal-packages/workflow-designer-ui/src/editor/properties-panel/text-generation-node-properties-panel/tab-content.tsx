@@ -7,26 +7,14 @@ import {
 
 interface TextGenerationTabContentProps {
 	node: TextGenerationNode;
-	onPromptExpand?: () => void;
 	sections?: PromptPanelSections;
 	slots?: PromptPanelSlots;
-	editorVersion?: number;
 }
 
 export function TextGenerationTabContent({
 	node,
-	onPromptExpand,
 	sections,
 	slots,
-	editorVersion,
 }: TextGenerationTabContentProps) {
-	return (
-		<PromptPanel
-			node={node}
-			onExpand={onPromptExpand}
-			sections={sections}
-			slots={slots}
-			editorVersion={editorVersion}
-		/>
-	);
+	return <PromptPanel node={node} sections={sections} slots={slots} />;
 }
