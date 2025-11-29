@@ -1,7 +1,7 @@
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
-import type { TextGenerationNode } from "@giselles-ai/protocol";
+import type { Connection, TextGenerationNode } from "@giselles-ai/protocol";
 import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
 import { useCallback, useEffect, useMemo } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
@@ -21,8 +21,13 @@ export function TextGenerationNodePropertiesPanel({
 }: {
 	node: TextGenerationNode;
 }) {
-	const { data, updateNodeData, updateNodeDataContent, deleteNode } =
-		useWorkflowDesigner();
+	const {
+		data,
+		updateNodeData,
+		updateNodeDataContent,
+		deleteNode,
+		deleteConnection,
+	} = useWorkflowDesigner();
 	const captureOpts: AddEventListenerOptions = { capture: true };
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
@@ -86,6 +91,31 @@ export function TextGenerationNodePropertiesPanel({
 		return () => window.removeEventListener("keydown", onKeydown, captureOpts);
 	}, [generateText]);
 
+	const handleDeleteConnection = useCallback(
+		(connection: Connection) => {
+			deleteConnection(connection.id);
+
+			const connectedNode = data.nodes.find(
+				(n) => n.id === connection.inputNode.id,
+			);
+			switch (connectedNode?.content.type) {
+				case "textGeneration":
+				case "imageGeneration": {
+					updateNodeData(connectedNode, {
+						inputs: connectedNode.inputs.filter(
+							(i) => i.id !== connection.inputId,
+						),
+					});
+					break;
+				}
+			}
+			updateNodeData(node, {
+				outputs: node.outputs.filter((i) => i.id !== connection.outputId),
+			});
+		},
+		[deleteConnection, data.nodes, updateNodeData, node],
+	);
+
 	return (
 		<PropertiesPanelRoot>
 			{usageLimitsReached && <UsageLimitWarning />}
@@ -107,6 +137,13 @@ export function TextGenerationNodePropertiesPanel({
 						const updated = updateModelId(next, id);
 						updateNodeDataContent(node, { llm: updated, tools: {} });
 					}}
+					onNodeChange={(value) => {
+						updateNodeData(node, value);
+					}}
+					onTextGenerationContentChange={(value) => {
+						updateNodeDataContent(node, value);
+					}}
+					onDeleteConnection={handleDeleteConnection}
 				/>
 				<PromptEditor
 					placeholder="Write your prompt... Use @ to reference other nodes"

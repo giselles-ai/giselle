@@ -18,7 +18,7 @@ import { GenerationView } from "../../../ui/generation-view";
 
 function Empty(_: { onGenerate?: () => void; onExpand?: () => void }) {
 	return (
-		<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] min-h-[250px] rounded-[8px] flex justify-center items-center text-text-muted">
+		<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] rounded-[8px] flex justify-center items-center text-text-muted py-[24px]">
 			<EmptyState
 				icon={<TextGenerationIcon width={24} height={24} />}
 				title="Nothing generated yet."
@@ -140,7 +140,9 @@ export function GenerationPanel({
 	}
 	return (
 		<div
-			className={`relative flex flex-col bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] rounded-[8px] py-[8px] ${isExpanded ? "flex-1 min-h-0" : "min-h-[250px]"}`}
+			className={
+				"relative flex flex-col bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] rounded-[8px] py-[8px]"
+			}
 		>
 			{onExpand && (
 				<button
