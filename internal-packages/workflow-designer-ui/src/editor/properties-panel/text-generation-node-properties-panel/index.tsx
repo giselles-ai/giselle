@@ -142,6 +142,8 @@ export function TextGenerationNodePropertiesPanel({
 					}}
 					onDeleteConnection={handleDeleteConnection}
 				/>
+
+				<SettingLabel>Prompt</SettingLabel>
 				<PromptEditor
 					placeholder="Write your prompt... Use @ to reference other nodes"
 					value={node.content.prompt}
@@ -152,6 +154,7 @@ export function TextGenerationNodePropertiesPanel({
 					showToolbar={false}
 					variant="plain"
 					showExpandIcon={false}
+					containerClassName="grow-1"
 				/>
 				<div className="flex flex-col gap-[4px]">
 					<SettingLabel>Output</SettingLabel>
