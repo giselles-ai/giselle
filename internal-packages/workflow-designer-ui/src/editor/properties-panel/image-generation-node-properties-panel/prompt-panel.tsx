@@ -1,4 +1,3 @@
-import { ModelPicker } from "@giselle-internal/ui/model-picker";
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import {
 	SettingDetail,
@@ -24,6 +23,7 @@ import {
 	useWorkflowDesigner,
 } from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
+import { ModelPicker } from "../../../ui/model-picker";
 import { ProTag } from "../../tool/toolbar/components/pro-tag";
 import { createDefaultModelData, updateModelId } from "./model-defaults";
 import { FalModelPanel, OpenAIImageModelPanel } from "./models";

@@ -1,4 +1,3 @@
-import { ModelPicker } from "@giselle-internal/ui/model-picker";
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import {
 	SettingDetail,
@@ -21,6 +20,7 @@ import {
 } from "@giselles-ai/react";
 import { useCallback, useEffect, useMemo } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
+import { ModelPicker } from "../../../ui/model-picker";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { isPromptEmpty } from "../../lib/validate-prompt";
