@@ -90,14 +90,10 @@ export function PromptPanel({
 	node,
 	sections,
 	slots,
-	onExpand,
-	editorVersion,
 }: {
 	node: TextGenerationNode;
 	sections?: PromptPanelSections;
 	slots?: PromptPanelSlots;
-	onExpand?: () => void;
-	editorVersion?: number;
 }) {
 	const updateNodeDataContent = useWorkflowDesignerStore(
 		(s) => s.updateNodeDataContent,
@@ -371,7 +367,7 @@ export function PromptPanel({
 	return (
 		<>
 			<PromptEditor
-				key={`${editorVersion ?? 0}-${JSON.stringify(connectedSources.map((c) => c.node.id))}`}
+				key={JSON.stringify(connectedSources.map((c) => c.node.id))}
 				placeholder="Write your prompt... Use @ to reference other nodes"
 				value={node.content.prompt}
 				onValueChange={(value) => {
@@ -381,9 +377,7 @@ export function PromptPanel({
 				showToolbar={false}
 				variant="plain"
 				header={header}
-				showExpandIcon={true}
-				onExpand={onExpand}
-				expandIconPosition="right"
+				showExpandIcon={false}
 			/>
 			{resolvedSections.advancedOptions && advancedOptions}
 		</>
