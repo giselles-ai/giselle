@@ -1,72 +1,20 @@
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
-import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
+import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
-import {
-	anthropicLanguageModels,
-	googleLanguageModels,
-	hasTierAccess,
-	type LanguageModel,
-	openaiLanguageModels,
-	Tier,
-} from "@giselles-ai/language-model";
 import type { TextGenerationNode } from "@giselles-ai/protocol";
-import {
-	useNodeGenerations,
-	useUsageLimits,
-	useWorkflowDesigner,
-} from "@giselles-ai/react";
+import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
 import { useCallback, useEffect, useMemo } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
-import { ModelPicker } from "../../../ui/model-picker";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { isPromptEmpty } from "../../lib/validate-prompt";
-import { ProTag } from "../../tool";
 import { PropertiesPanelRoot } from "../ui";
 import { GenerateCtaButton } from "../ui/generate-cta-button";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GenerationPanel } from "./generation-panel";
+import { ModelSettings } from "./model";
 import { createDefaultModelData, updateModelId } from "./model-defaults";
 import { useConnectedOutputs } from "./outputs";
-
-function useModelGroups(userTier: Tier) {
-	return useMemo(() => {
-		const toModelPickerModels = (models: LanguageModel[]) =>
-			models.map((model) => {
-				const disabled = !hasTierAccess(model, userTier);
-				return {
-					id: model.id,
-					label: model.id,
-					badge: model.tier === Tier.enum.pro ? <ProTag /> : undefined,
-					disabled,
-					disabledReason: disabled
-						? "Upgrade to Pro to use this model."
-						: undefined,
-				};
-			});
-
-		return [
-			{
-				provider: "openai",
-				label: "OpenAI",
-				models: toModelPickerModels(openaiLanguageModels),
-			},
-			{
-				provider: "anthropic",
-				label: "Anthropic",
-				models: toModelPickerModels(anthropicLanguageModels),
-			},
-			{
-				provider: "google",
-				label: "Google",
-				models: toModelPickerModels(googleLanguageModels),
-			},
-		];
-	}, [userTier]);
-}
 
 export function TextGenerationNodePropertiesPanel({
 	node,
@@ -138,9 +86,6 @@ export function TextGenerationNodePropertiesPanel({
 		return () => window.removeEventListener("keydown", onKeydown, captureOpts);
 	}, [generateText]);
 
-	const usageLimits = useUsageLimits();
-	const groups = useModelGroups(usageLimits?.featureTier ?? Tier.enum.free);
-
 	return (
 		<PropertiesPanelRoot>
 			{usageLimitsReached && <UsageLimitWarning />}
@@ -153,23 +98,16 @@ export function TextGenerationNodePropertiesPanel({
 
 			{/*<PropertiesPanelContent>*/}
 			<div className="grow-1 overflow-y-auto flex flex-col gap-[12px]">
-				<div className="flex items-center justify-between gap-[12px]">
-					<SettingDetail size="md">Model</SettingDetail>
-					<ModelPicker
-						currentProvider={node.content.llm.provider}
-						currentModelId={node.content.llm.id}
-						groups={groups}
-						fullWidth={false}
-						triggerId="model-picker-trigger"
-						onSelect={(provider, modelId) => {
-							const next = createDefaultModelData(
-								provider as "openai" | "anthropic" | "google",
-							);
-							const updated = updateModelId(next, modelId);
-							updateNodeDataContent(node, { llm: updated, tools: {} });
-						}}
-					/>
-				</div>
+				<ModelSettings
+					node={node}
+					onModelChange={({ provider, id }) => {
+						const next = createDefaultModelData(
+							provider as "openai" | "anthropic" | "google",
+						);
+						const updated = updateModelId(next, id);
+						updateNodeDataContent(node, { llm: updated, tools: {} });
+					}}
+				/>
 				<PromptEditor
 					placeholder="Write your prompt... Use @ to reference other nodes"
 					value={node.content.prompt}
