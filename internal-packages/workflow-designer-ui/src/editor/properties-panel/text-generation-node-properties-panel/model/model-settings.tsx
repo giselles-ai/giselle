@@ -11,10 +11,10 @@ import {
 	Tier,
 } from "@giselles-ai/language-model";
 import {
+	type AnthropicLanguageModelData,
 	type Connection,
 	GoogleLanguageModelData,
 	type OpenAILanguageModelData,
-	type Output,
 	OutputId,
 	type TextGenerationContent,
 	type TextGenerationNode,
@@ -24,6 +24,7 @@ import { useCallback, useMemo } from "react";
 import { useShallow } from "zustand/shallow";
 import { ModelPicker } from "../../../../ui/model-picker";
 import { ProTag } from "../../../tool";
+import { AnthropicModelPanel } from "./anthropic";
 import { GoogleModelPanel } from "./google";
 import { OpenAIModelPanel } from "./openai";
 
@@ -250,7 +251,7 @@ export function ModelSettings({
 						}
 					/>
 				)}
-				{/*{node.content.llm.provider === "anthropic" && (
+				{node.content.llm.provider === "anthropic" && (
 					<AnthropicModelPanel
 						anthropicLanguageModel={
 							node.content.llm as AnthropicLanguageModelData
@@ -259,7 +260,7 @@ export function ModelSettings({
 							onTextGenerationContentChange({ llm: value })
 						}
 					/>
-				)}*/}
+				)}
 			</div>
 		</>
 	);
