@@ -109,11 +109,8 @@ export function TextGenerationNodePropertiesPanel({
 					break;
 				}
 			}
-			updateNodeData(node, {
-				outputs: node.outputs.filter((i) => i.id !== connection.outputId),
-			});
 		},
-		[deleteConnection, data.nodes, updateNodeData, node],
+		[deleteConnection, data.nodes, updateNodeData],
 	);
 
 	return (

@@ -12,7 +12,9 @@ import {
 } from "@giselles-ai/language-model";
 import {
 	type Connection,
+	GoogleLanguageModelData,
 	type OpenAILanguageModelData,
+	type Output,
 	OutputId,
 	type TextGenerationContent,
 	type TextGenerationNode,
@@ -22,6 +24,7 @@ import { useCallback, useMemo } from "react";
 import { useShallow } from "zustand/shallow";
 import { ModelPicker } from "../../../../ui/model-picker";
 import { ProTag } from "../../../tool";
+import { GoogleModelPanel } from "./google";
 import { OpenAIModelPanel } from "./openai";
 
 function useModelGroups(userTier: Tier) {
@@ -116,6 +119,95 @@ export function ModelSettings({
 		[node, connections, onNodeChange, onDeleteConnection],
 	);
 
+	const updateOutputForGoogle = useCallback(
+		({
+			urlContext,
+			googleSearch,
+		}: {
+			urlContext: boolean;
+			googleSearch: boolean;
+		}) => {
+			const sourceOutput = node.outputs.find((o) => o.accessor === "source");
+			if (urlContext && googleSearch && sourceOutput) {
+				return;
+			}
+			if ((urlContext || googleSearch) && sourceOutput) {
+				return;
+			}
+			if ((urlContext || googleSearch) && !sourceOutput) {
+				onNodeChange({
+					outputs: [
+						...node.outputs,
+						{ id: OutputId.generate(), label: "Source", accessor: "source" },
+					],
+				});
+				return;
+			}
+			for (const connection of connections) {
+				if (connection.outputId !== sourceOutput?.id) {
+					continue;
+				}
+				onDeleteConnection(connection);
+			}
+			onNodeChange({
+				outputs: node.outputs.filter((i) => i.accessor !== "source"),
+			});
+		},
+		[onNodeChange, node.outputs, connections, onDeleteConnection],
+	);
+
+	const handleGoogleSearchGroundingChange = useCallback(
+		(googleSearch: boolean) => {
+			const result = GoogleLanguageModelData.safeParse(node.content.llm);
+			if (result.error) {
+				console.warn(
+					`Error parsing GoogleLanguageModelData: ${node.content.llm}`,
+				);
+				return;
+			}
+			onTextGenerationContentChange({
+				llm: {
+					...result.data,
+					configurations: {
+						...result.data.configurations,
+						searchGrounding: googleSearch,
+					},
+				} satisfies GoogleLanguageModelData,
+			});
+			updateOutputForGoogle({
+				urlContext: result.data.configurations.urlContext,
+				googleSearch,
+			});
+		},
+		[node, onTextGenerationContentChange, updateOutputForGoogle],
+	);
+
+	const handleGoogleUrlContextChange = useCallback(
+		(urlContext: boolean) => {
+			const result = GoogleLanguageModelData.safeParse(node.content.llm);
+			if (result.error) {
+				console.warn(
+					`Error parsing GoogleLanguageModelData: ${node.content.llm}`,
+				);
+				return;
+			}
+			onTextGenerationContentChange({
+				llm: {
+					...result.data,
+					configurations: {
+						...result.data.configurations,
+						urlContext,
+					},
+				} satisfies GoogleLanguageModelData,
+			});
+			updateOutputForGoogle({
+				urlContext,
+				googleSearch: result.data.configurations.searchGrounding,
+			});
+		},
+		[node, updateOutputForGoogle, onTextGenerationContentChange],
+	);
+
 	return (
 		<>
 			<div className="flex items-center justify-between gap-[12px]">
@@ -146,7 +238,7 @@ export function ModelSettings({
 						onWebSearchChange={handleOpenAIWebSearchChange}
 					/>
 				)}
-				{/*{node.content.llm.provider === "google" && (
+				{node.content.llm.provider === "google" && (
 					<GoogleModelPanel
 						googleLanguageModel={node.content.llm as GoogleLanguageModelData}
 						onSearchGroundingConfigurationChange={
@@ -158,7 +250,7 @@ export function ModelSettings({
 						}
 					/>
 				)}
-				{node.content.llm.provider === "anthropic" && (
+				{/*{node.content.llm.provider === "anthropic" && (
 					<AnthropicModelPanel
 						anthropicLanguageModel={
 							node.content.llm as AnthropicLanguageModelData
