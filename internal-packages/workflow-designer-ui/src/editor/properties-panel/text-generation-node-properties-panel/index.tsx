@@ -1,32 +1,87 @@
-import { SettingLabel } from "@giselle-internal/ui/setting-label";
+import { ModelPicker } from "@giselle-internal/ui/model-picker";
+import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
+import {
+	SettingDetail,
+	SettingLabel,
+} from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
+import {
+	anthropicLanguageModels,
+	googleLanguageModels,
+	hasTierAccess,
+	type LanguageModel,
+	openaiLanguageModels,
+	Tier,
+} from "@giselles-ai/language-model";
 import type { TextGenerationNode } from "@giselles-ai/protocol";
-import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
+import {
+	useNodeGenerations,
+	useUsageLimits,
+	useWorkflowDesigner,
+} from "@giselles-ai/react";
 import { useCallback, useEffect, useMemo } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { isPromptEmpty } from "../../lib/validate-prompt";
+import { ProTag } from "../../tool";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { GenerateCtaButton } from "../ui/generate-cta-button";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GenerationPanel } from "./generation-panel";
+import { createDefaultModelData, updateModelId } from "./model-defaults";
 import { useConnectedOutputs } from "./outputs";
-import { TextGenerationTabContent } from "./tab-content";
+
+function useModelGroups(userTier: Tier) {
+	return useMemo(() => {
+		const toModelPickerModels = (models: LanguageModel[]) =>
+			models.map((model) => {
+				const disabled = !hasTierAccess(model, userTier);
+				return {
+					id: model.id,
+					label: model.id,
+					badge: model.tier === Tier.enum.pro ? <ProTag /> : undefined,
+					disabled,
+					disabledReason: disabled
+						? "Upgrade to Pro to use this model."
+						: undefined,
+				};
+			});
+
+		return [
+			{
+				provider: "openai",
+				label: "OpenAI",
+				models: toModelPickerModels(openaiLanguageModels),
+			},
+			{
+				provider: "anthropic",
+				label: "Anthropic",
+				models: toModelPickerModels(anthropicLanguageModels),
+			},
+			{
+				provider: "google",
+				label: "Google",
+				models: toModelPickerModels(googleLanguageModels),
+			},
+		];
+	}, [userTier]);
+}
 
 export function TextGenerationNodePropertiesPanel({
 	node,
 }: {
 	node: TextGenerationNode;
 }) {
-	const { data, updateNodeData, deleteNode } = useWorkflowDesigner();
+	const { data, updateNodeData, updateNodeDataContent, deleteNode } =
+		useWorkflowDesigner();
 	const captureOpts: AddEventListenerOptions = { capture: true };
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
 			nodeId: node.id,
 			origin: { type: "studio", workspaceId: data.id },
 		});
-	const { all: connectedSources } = useConnectedOutputs(node);
+	const { all: connectedSources, connections } = useConnectedOutputs(node);
 	const sourceNodes = useMemo(
 		() => connectedSources.map((c) => c.node),
 		[connectedSources],
@@ -83,6 +138,9 @@ export function TextGenerationNodePropertiesPanel({
 		return () => window.removeEventListener("keydown", onKeydown, captureOpts);
 	}, [generateText]);
 
+	const usageLimits = useUsageLimits();
+	const groups = useModelGroups(usageLimits?.featureTier ?? Tier.enum.free);
+
 	return (
 		<PropertiesPanelRoot>
 			{usageLimitsReached && <UsageLimitWarning />}
@@ -96,7 +154,41 @@ export function TextGenerationNodePropertiesPanel({
 			<PropertiesPanelContent>
 				<div className="relative flex-1 min-h-0 flex flex-col">
 					<div className="flex-1 min-h-0 overflow-y-auto">
-						<TextGenerationTabContent node={node} />
+						<div className="flex flex-col gap-[8px]">
+							<div className="col-span-2">
+								<div className="flex items-center justify-between gap-[12px]">
+									<label htmlFor="model-picker-trigger" className="sr-only">
+										Model
+									</label>
+									<SettingDetail size="md">Model</SettingDetail>
+									<ModelPicker
+										currentProvider={node.content.llm.provider}
+										currentModelId={node.content.llm.id}
+										groups={groups}
+										fullWidth={false}
+										triggerId="model-picker-trigger"
+										onSelect={(provider, modelId) => {
+											const next = createDefaultModelData(
+												provider as "openai" | "anthropic" | "google",
+											);
+											const updated = updateModelId(next, modelId);
+											updateNodeDataContent(node, { llm: updated, tools: {} });
+										}}
+									/>
+								</div>
+							</div>
+						</div>
+						<PromptEditor
+							placeholder="Write your prompt... Use @ to reference other nodes"
+							value={node.content.prompt}
+							onValueChange={(value) => {
+								updateNodeDataContent(node, { prompt: value });
+							}}
+							connections={connections}
+							showToolbar={false}
+							variant="plain"
+							showExpandIcon={false}
+						/>
 						<div className="mt-[8px]">
 							<SettingLabel className="mb-[4px]">Output</SettingLabel>
 							<GenerationPanel
