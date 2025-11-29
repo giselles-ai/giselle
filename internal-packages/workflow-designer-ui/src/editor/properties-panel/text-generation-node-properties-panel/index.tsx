@@ -151,64 +151,55 @@ export function TextGenerationNodePropertiesPanel({
 				onDelete={() => deleteNode(node.id)}
 			/>
 
-			<PropertiesPanelContent>
-				<div className="relative flex-1 min-h-0 flex flex-col">
-					<div className="flex-1 min-h-0 overflow-y-auto">
-						<div className="flex flex-col gap-[8px]">
-							<div className="col-span-2">
-								<div className="flex items-center justify-between gap-[12px]">
-									<label htmlFor="model-picker-trigger" className="sr-only">
-										Model
-									</label>
-									<SettingDetail size="md">Model</SettingDetail>
-									<ModelPicker
-										currentProvider={node.content.llm.provider}
-										currentModelId={node.content.llm.id}
-										groups={groups}
-										fullWidth={false}
-										triggerId="model-picker-trigger"
-										onSelect={(provider, modelId) => {
-											const next = createDefaultModelData(
-												provider as "openai" | "anthropic" | "google",
-											);
-											const updated = updateModelId(next, modelId);
-											updateNodeDataContent(node, { llm: updated, tools: {} });
-										}}
-									/>
-								</div>
-							</div>
-						</div>
-						<PromptEditor
-							placeholder="Write your prompt... Use @ to reference other nodes"
-							value={node.content.prompt}
-							onValueChange={(value) => {
-								updateNodeDataContent(node, { prompt: value });
-							}}
-							connections={connections}
-							showToolbar={false}
-							variant="plain"
-							showExpandIcon={false}
-						/>
-						<div className="mt-[8px]">
-							<SettingLabel className="mb-[4px]">Output</SettingLabel>
-							<GenerationPanel
-								node={node}
-								onClickGenerateButton={generateText}
-							/>
-						</div>
-					</div>
-					<div className="shrink-0 px-[16px] pt-[8px] pb-[4px]">
-						<GenerateCtaButton
-							isGenerating={isGenerating}
-							isEmpty={isPromptEmpty(node.content.prompt)}
-							onClick={() => {
-								if (isGenerating) stopGenerationRunner();
-								else generateText();
-							}}
-						/>
-					</div>
+			{/*<PropertiesPanelContent>*/}
+			<div className="grow-1 overflow-y-auto flex flex-col gap-[12px]">
+				<div className="flex items-center justify-between gap-[12px]">
+					<label htmlFor="model-picker-trigger" className="sr-only">
+						Model
+					</label>
+					<SettingDetail size="md">Model</SettingDetail>
+					<ModelPicker
+						currentProvider={node.content.llm.provider}
+						currentModelId={node.content.llm.id}
+						groups={groups}
+						fullWidth={false}
+						triggerId="model-picker-trigger"
+						onSelect={(provider, modelId) => {
+							const next = createDefaultModelData(
+								provider as "openai" | "anthropic" | "google",
+							);
+							const updated = updateModelId(next, modelId);
+							updateNodeDataContent(node, { llm: updated, tools: {} });
+						}}
+					/>
 				</div>
-			</PropertiesPanelContent>
+				<PromptEditor
+					placeholder="Write your prompt... Use @ to reference other nodes"
+					value={node.content.prompt}
+					onValueChange={(value) => {
+						updateNodeDataContent(node, { prompt: value });
+					}}
+					connections={connections}
+					showToolbar={false}
+					variant="plain"
+					showExpandIcon={false}
+				/>
+				<div className="flex flex-col gap-[4px]">
+					<SettingLabel>Output</SettingLabel>
+					<GenerationPanel node={node} onClickGenerateButton={generateText} />
+				</div>
+			</div>
+			<div className="shrink-0 px-[16px] pt-[8px] pb-[4px]">
+				<GenerateCtaButton
+					isGenerating={isGenerating}
+					isEmpty={isPromptEmpty(node.content.prompt)}
+					onClick={() => {
+						if (isGenerating) stopGenerationRunner();
+						else generateText();
+					}}
+				/>
+			</div>
+			{/*</PropertiesPanelContent>*/}
 		</PropertiesPanelRoot>
 	);
 }
