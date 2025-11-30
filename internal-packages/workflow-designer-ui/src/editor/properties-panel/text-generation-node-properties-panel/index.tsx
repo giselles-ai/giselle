@@ -14,7 +14,6 @@ import { NodePanelHeader } from "../ui/node-panel-header";
 import { AdvancedOptions } from "./advanced-options";
 import { GenerationPanel } from "./generation-panel";
 import { ModelSettings } from "./model";
-import { createDefaultModelData, updateModelId } from "./model/model-defaults";
 import { useConnectedOutputs } from "./outputs";
 
 export function TextGenerationNodePropertiesPanel({
@@ -117,13 +116,6 @@ export function TextGenerationNodePropertiesPanel({
 			<div className="grow-1 overflow-y-auto flex flex-col gap-[12px]">
 				<ModelSettings
 					node={node}
-					onModelChange={({ provider, id }) => {
-						const next = createDefaultModelData(
-							provider as "openai" | "anthropic" | "google",
-						);
-						const updated = updateModelId(next, id);
-						updateNodeDataContent(node, { llm: updated, tools: {} });
-					}}
 					onNodeChange={(value) => {
 						updateNodeData(node, value);
 					}}

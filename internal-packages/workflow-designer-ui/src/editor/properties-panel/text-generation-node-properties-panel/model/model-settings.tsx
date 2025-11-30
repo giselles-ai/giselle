@@ -26,6 +26,7 @@ import { ModelPicker } from "../../../../ui/model-picker";
 import { ProTag } from "../../../tool";
 import { AnthropicModelPanel } from "./anthropic";
 import { GoogleModelPanel } from "./google";
+import { createDefaultModelData, updateModelId } from "./model-defaults";
 import { OpenAIModelPanel } from "./openai";
 
 function useModelGroups(userTier: Tier) {
@@ -67,13 +68,11 @@ function useModelGroups(userTier: Tier) {
 export function ModelSettings({
 	node,
 	onNodeChange,
-	onModelChange,
 	onTextGenerationContentChange,
 	onDeleteConnection,
 }: {
 	node: TextGenerationNode;
 	onNodeChange: (value: Partial<TextGenerationNode>) => void;
-	onModelChange: ({ provider, id }: { provider: string; id: string }) => void;
 	onTextGenerationContentChange: (
 		value: Partial<TextGenerationContent>,
 	) => void;
@@ -214,9 +213,13 @@ export function ModelSettings({
 
 	const handleSelect = useCallback(
 		(provider: string, id: string) => {
-			onModelChange({ provider, id });
+			const next = createDefaultModelData(
+				provider as "openai" | "anthropic" | "google",
+			);
+			const updated = updateModelId(next, id);
+			onTextGenerationContentChange({ llm: updated });
 		},
-		[onModelChange],
+		[onTextGenerationContentChange],
 	);
 
 	return (
