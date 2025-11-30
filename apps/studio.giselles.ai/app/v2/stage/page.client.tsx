@@ -6,7 +6,6 @@ import {
 	DialogContent,
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
-import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
@@ -408,6 +407,8 @@ function StageTopCard({
 	runningApp,
 	runStatus,
 }: StageTopCardProps) {
+	// Mark data as used to satisfy lint while keeping the prop for future use
+	void data;
 	return (
 		<div className="relative flex w-full flex-col rounded-lg bg-card/40 overflow-hidden">
 			{runningApp && runStatus === "running" && (
@@ -530,8 +531,8 @@ function StageTopCard({
 					</div>
 				</div>
 			) : (
-				<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] h-[240px] w-full rounded-[8px] flex justify-center items-center text-text-muted">
-					<div className="flex flex-col items-center gap-[12px] text-text-muted relative z-10">
+				<div className="w-full flex justify-center items-center py-[32px]">
+					<div className="flex flex-col items-center relative z-10">
 						{runningApp && runStatus === "completed" ? (
 							<>
 								<p className="font-[800] text-green-500">Completed</p>
@@ -560,18 +561,15 @@ function StageTopCard({
 								</div>
 							</>
 						) : (
-							<>
-								<p className="font-[800] text-text/60">
-									{data.apps.length > 0
-										? "No app selected."
-										: "No apps available yet."}
-								</p>
-								<p className="text-text-muted text-[12px] text-center leading-5">
-									{data.apps.length > 0
-										? "Please select an app from the lists below."
-										: "Generate or adjust the Prompt to see results."}
-								</p>
-							</>
+							<p
+								className="font-thin text-[36px] font-sans text-[hsl(192,73%,84%)] text-center"
+								style={{
+									textShadow:
+										"0 0 20px rgb(0,135,246), 0 0 40px rgb(0,135,246), 0 0 60px rgb(0,135,246)",
+								}}
+							>
+								Select an app to run in Stage.
+							</p>
 						)}
 					</div>
 				</div>
@@ -766,19 +764,8 @@ export function Page({
 	return (
 		<div className="w-full h-screen flex flex-col">
 			<div className="flex items-stretch gap-4 min-w-0 flex-1">
-				{/* Main content: heading + apps area */}
+				{/* Main content: apps area */}
 				<div className="flex-1 min-w-0 space-y-8 px-[24px] pt-[24px]">
-					{/* Page heading */}
-					<div className="flex items-center justify-between">
-						<div>
-							<PageHeading glow>Stage</PageHeading>
-							<p className="mt-1 text-sm text-text-muted">
-								Choose an app to start, review history, and explore your
-								workflows.
-							</p>
-						</div>
-					</div>
-
 					<StageTopCard
 						data={data}
 						selectedApp={selectedApp}
