@@ -70,28 +70,37 @@ function AppCard({
 	return (
 		<button
 			type="button"
-			className="flex-none w-[180px] flex items-center gap-3 rounded-lg bg-card/30 hover:bg-card/50 text-left group cursor-pointer transition-all"
+			className={`flex flex-col w-[140px] flex-shrink-0 rounded-[12px] p-3 text-left group cursor-pointer transition-all ${
+				isSelected
+					? "bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] border border-[hsl(192,73%,84%)] shadow-[0_0_22px_rgba(0,135,246,0.95)]"
+					: "bg-card/40 border border-white/15 hover:bg-card/60 hover:border-white/30"
+			}`}
 			onClick={onSelect}
 		>
+			{/* App icon area */}
 			<div
-				className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md border transition-colors ${
+				className={`w-full aspect-square rounded-[8px] mb-3 flex items-center justify-center transition-colors ${
 					isSelected
-						? "bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] border-[hsl(192,73%,84%)] shadow-[0_0_22px_rgba(0,135,246,0.95)]"
-						: "bg-card/60 border-border"
+						? "bg-[color-mix(in_srgb,hsl(192,73%,84%)_20%,transparent)]"
+						: "bg-card/60"
 				}`}
 			>
 				<DynamicIcon
 					name={app.iconName}
-					className={`h-5 w-5 stroke-1 ${
+					className={`h-8 w-8 stroke-1 ${
 						isSelected ? "text-[hsl(192,73%,84%)]" : "text-foreground"
 					}`}
 				/>
 			</div>
-			<div className="flex-1 min-w-0">
-				<h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
-					{app.name}
-				</h3>
-			</div>
+			{/* App info */}
+			<h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-1">
+				{app.name}
+			</h3>
+			{app.description && (
+				<p className="text-xs text-muted-foreground line-clamp-2">
+					{app.description}
+				</p>
+			)}
 		</button>
 	);
 }
@@ -523,10 +532,6 @@ export function Page({
 	const [runStatus, setRunStatus] = useState<"idle" | "running" | "completed">(
 		"idle",
 	);
-	const [isAppListScrollable, setIsAppListScrollable] = useState(false);
-	const [isAppListAtStart, setIsAppListAtStart] = useState(true);
-	const [isAppListAtEnd, setIsAppListAtEnd] = useState(false);
-	const appListScrollRef = useRef<HTMLDivElement | null>(null);
 	const [isTaskListScrollable, setIsTaskListScrollable] = useState(false);
 	const [isTaskListAtTop, setIsTaskListAtTop] = useState(true);
 	const [isTaskListAtBottom, setIsTaskListAtBottom] = useState(false);
@@ -566,30 +571,6 @@ export function Page({
 				.slice(0, 20),
 		[data.tasks, sevenDaysAgo],
 	);
-
-	// Track app list horizontal scroll to show edge gradients similar to music apps
-	useEffect(() => {
-		const element = appListScrollRef.current;
-		if (!element) {
-			return;
-		}
-
-		const updateScrollState = () => {
-			const maxScrollLeft = element.scrollWidth - element.clientWidth;
-			setIsAppListScrollable(maxScrollLeft > 1);
-			setIsAppListAtStart(element.scrollLeft <= 0);
-			setIsAppListAtEnd(element.scrollLeft >= maxScrollLeft - 1);
-		};
-
-		updateScrollState();
-		element.addEventListener("scroll", updateScrollState);
-		window.addEventListener("resize", updateScrollState);
-
-		return () => {
-			element.removeEventListener("scroll", updateScrollState);
-			window.removeEventListener("resize", updateScrollState);
-		};
-	}, []);
 
 	// Track task list vertical scroll to show top/bottom gradients in the sidebar
 	useEffect(() => {
@@ -658,9 +639,9 @@ export function Page({
 
 	return (
 		<div className="w-full h-screen flex flex-col">
-			<div className="flex items-stretch gap-4 min-w-0 flex-1">
+			<div className="flex items-stretch gap-4 min-w-0 flex-1 overflow-hidden">
 				{/* Main content: apps area */}
-				<div className="flex-1 min-w-0 space-y-6 px-[24px] pt-[24px]">
+				<div className="flex-1 min-w-0 space-y-6 px-[24px] pt-[24px] overflow-y-auto">
 					<StageTopCard
 						selectedApp={selectedApp}
 						runningApp={runningApp}
@@ -675,111 +656,97 @@ export function Page({
 						isRunning={isRunning}
 					/>
 
-					{/* Bottom container: three columns of apps */}
-					<div className="relative rounded-lg bg-card/20 w-full">
-						<div
-							ref={appListScrollRef}
-							className="overflow-x-auto scrollbar-hide"
-							style={{
-								scrollbarWidth: "none",
-								msOverflowStyle: "none",
-							}}
-						>
-							<div className="flex gap-6 w-max pr-4">
-								{/* Column 1: History */}
-								<div className="flex flex-col w-[280px] flex-shrink-0">
-									<div className="flex items-center justify-between mb-3">
-										<h2 className="text-link-muted text-[12px] block">
-											Apps from history
-										</h2>
-									</div>
-									{historyApps.length === 0 ? (
-										<p className="text-sm text-muted-foreground">
-											No apps found in history.
-										</p>
-									) : (
-										<div className="flex flex-col gap-4">
-											{historyApps.map((app) => (
-												<AppCard
-													app={app}
-													key={app.id}
-													isSelected={
-														selectedAppId === app.id || runningAppId === app.id
-													}
-													onSelect={() => {
-														setSelectedAppId(app.id);
-													}}
-												/>
-											))}
-										</div>
-									)}
+					{/* App sections - vertical stack with horizontal scroll cards */}
+					<div className="flex flex-col gap-8 w-full pb-8">
+						{/* Section 1: Apps from history */}
+						<div className="flex flex-col">
+							<h2 className="text-link-muted text-[12px] mb-4 max-w-[720px] mx-auto w-full">
+								Apps from history
+							</h2>
+							{historyApps.length === 0 ? (
+								<p className="text-sm text-muted-foreground max-w-[720px] mx-auto w-full">
+									No apps found in history.
+								</p>
+							) : (
+								<div
+									className="flex gap-4 overflow-x-auto pb-2 px-[calc(50%-360px)]"
+									style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+								>
+									{historyApps.map((app) => (
+										<AppCard
+											app={app}
+											key={app.id}
+											isSelected={
+												selectedAppId === app.id || runningAppId === app.id
+											}
+											onSelect={() => {
+												setSelectedAppId(app.id);
+											}}
+										/>
+									))}
 								</div>
-
-								{/* Column 2: My apps */}
-								<div className="flex flex-col w-[280px] flex-shrink-0">
-									<div className="flex items-center justify-between mb-3">
-										<h2 className="text-link-muted text-[12px] block">
-											My apps
-										</h2>
-									</div>
-									{myApps.length === 0 ? (
-										<p className="text-sm text-muted-foreground/70">
-											No apps found in My apps.
-										</p>
-									) : (
-										<div className="flex flex-col gap-4">
-											{myApps.map((app) => (
-												<AppCard
-													app={app}
-													key={app.id}
-													isSelected={
-														selectedAppId === app.id || runningAppId === app.id
-													}
-													onSelect={() => {
-														setSelectedAppId(app.id);
-													}}
-												/>
-											))}
-										</div>
-									)}
-								</div>
-
-								{/* Column 3: Team apps */}
-								<div className="flex flex-col w-[280px] flex-shrink-0">
-									<div className="flex items-center justify-between mb-3">
-										<h2 className="text-link-muted text-[12px] block">
-											Team apps
-										</h2>
-									</div>
-									{teamApps.length === 0 ? (
-										<p className="text-sm text-muted-foreground">
-											No apps found in Team apps.
-										</p>
-									) : (
-										<div className="flex flex-col gap-4">
-											{teamApps.map((app) => (
-												<AppCard
-													app={app}
-													key={app.id}
-													isSelected={
-														selectedAppId === app.id || runningAppId === app.id
-													}
-													onSelect={() => {
-														setSelectedAppId(app.id);
-													}}
-												/>
-											))}
-										</div>
-									)}
-								</div>
-							</div>
+							)}
 						</div>
-						{isAppListScrollable && !isAppListAtStart && (
-							<div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[color:var(--color-background)] to-transparent" />
-						)}
-						{isAppListScrollable && !isAppListAtEnd && (
-							<div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[color:var(--color-background)] to-transparent" />
-						)}
+
+						{/* Section 2: Template apps */}
+						<div className="flex flex-col">
+							<h2 className="text-link-muted text-[12px] mb-4 max-w-[720px] mx-auto w-full">
+								Template apps
+							</h2>
+							{myApps.length === 0 ? (
+								<p className="text-sm text-muted-foreground/70 max-w-[720px] mx-auto w-full">
+									No template apps available.
+								</p>
+							) : (
+								<div
+									className="flex gap-4 overflow-x-auto pb-2 px-[calc(50%-360px)]"
+									style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+								>
+									{myApps.map((app) => (
+										<AppCard
+											app={app}
+											key={app.id}
+											isSelected={
+												selectedAppId === app.id || runningAppId === app.id
+											}
+											onSelect={() => {
+												setSelectedAppId(app.id);
+											}}
+										/>
+									))}
+								</div>
+							)}
+						</div>
+
+						{/* Section 3: Team apps */}
+						<div className="flex flex-col">
+							<h2 className="text-link-muted text-[12px] mb-4 max-w-[720px] mx-auto w-full">
+								Team apps
+							</h2>
+							{teamApps.length === 0 ? (
+								<p className="text-sm text-muted-foreground max-w-[720px] mx-auto w-full">
+									No apps found in Team apps.
+								</p>
+							) : (
+								<div
+									className="flex gap-4 overflow-x-auto pb-2 px-[calc(50%-360px)]"
+									style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+								>
+									{teamApps.map((app) => (
+										<AppCard
+											app={app}
+											key={app.id}
+											isSelected={
+												selectedAppId === app.id || runningAppId === app.id
+											}
+											onSelect={() => {
+												setSelectedAppId(app.id);
+											}}
+										/>
+									))}
+								</div>
+							)}
+						</div>
 					</div>
 				</div>
 
