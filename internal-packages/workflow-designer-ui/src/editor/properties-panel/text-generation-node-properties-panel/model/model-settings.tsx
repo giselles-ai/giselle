@@ -116,6 +116,9 @@ export function ModelSettings({
 				}
 				onDeleteConnection(connection);
 			}
+			onNodeChange({
+				outputs: node.outputs.filter((i) => i.accessor !== "source"),
+			});
 		},
 		[node, connections, onNodeChange, onDeleteConnection],
 	);
