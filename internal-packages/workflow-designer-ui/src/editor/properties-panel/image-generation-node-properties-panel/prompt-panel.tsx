@@ -31,11 +31,9 @@ import { useConnectedSources } from "./sources";
 
 export function PromptPanel({
 	node,
-	onExpand,
 	editorVersion,
 }: {
 	node: ImageGenerationNode;
-	onExpand?: () => void;
 	editorVersion?: number;
 }) {
 	const { data, updateNodeDataContent, updateNodeData, deleteConnection } =
@@ -191,11 +189,7 @@ export function PromptPanel({
 			}}
 			connections={connections}
 			showToolbar={false}
-			variant="plain"
 			header={header}
-			showExpandIcon={true}
-			onExpand={onExpand}
-			expandIconPosition="right"
 		/>
 	);
 }

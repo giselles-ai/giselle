@@ -569,7 +569,6 @@ export function ContentGenerationNodePropertiesPanel({
 								updateNodeDataContent(node, { prompt: value });
 							}}
 							connections={connections}
-							containerClassName="flex-1"
 						/>
 					</div>
 					<div className="flex flex-col w-1/2">

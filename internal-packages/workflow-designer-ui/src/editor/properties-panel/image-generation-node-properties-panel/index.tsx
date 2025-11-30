@@ -104,14 +104,7 @@ export function ImageGenerationNodePropertiesPanel({
 				<div className="relative flex-1 min-h-0 flex flex-col">
 					<div className="flex-1 min-h-0 overflow-y-auto">
 						<div ref={promptEditorRef} className="mt-[12px]">
-							<PromptPanel
-								node={node}
-								onExpand={() => {
-									setEditorVersion((v) => v + 1);
-									requestAnimationFrame(() => setIsPromptExpanded(true));
-								}}
-								editorVersion={editorVersion}
-							/>
+							<PromptPanel node={node} editorVersion={editorVersion} />
 						</div>
 
 						<div className="mt-[8px]" ref={generationPanelRef}>

@@ -152,10 +152,6 @@ export function TextGenerationNodePropertiesPanel({
 						updateNodeDataContent(node, { prompt: value });
 					}}
 					connections={connections}
-					showToolbar={false}
-					variant="plain"
-					showExpandIcon={false}
-					containerClassName="grow-1"
 				/>
 				<AdvancedOptions node={node} />
 				<div className="flex flex-col gap-[4px]">
