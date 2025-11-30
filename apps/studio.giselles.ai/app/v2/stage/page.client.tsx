@@ -8,7 +8,7 @@ import type {
 	Task,
 	TaskId,
 } from "@giselles-ai/protocol";
-import { ArrowUpIcon, PaperclipIcon } from "lucide-react";
+import { ArrowUpIcon, PaperclipIcon, XIcon } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import {
@@ -173,12 +173,14 @@ interface StageTopCardProps {
 	selectedApp?: StageApp;
 	runningApp?: StageApp;
 	runStatus: "idle" | "running" | "completed";
+	onDeselect?: () => void;
 }
 
 function StageTopCard({
 	selectedApp,
 	runningApp,
 	runStatus,
+	onDeselect,
 }: StageTopCardProps) {
 	return (
 		<div className="relative flex w-full max-w-[720px] min-w-[320px] mx-auto flex-col overflow-hidden">
@@ -188,7 +190,15 @@ function StageTopCard({
 				</div>
 			)}
 			{selectedApp ? (
-				<div className="flex items-center gap-4 p-4 rounded-lg bg-card/40">
+				<div className="relative flex items-center gap-4 p-4 rounded-lg bg-card/40">
+					{/* Close button */}
+					<button
+						type="button"
+						onClick={onDeselect}
+						className="absolute top-2 right-2 p-1 rounded-md text-foreground/50 hover:text-foreground hover:bg-white/10 transition-all cursor-pointer"
+					>
+						<XIcon className="h-4 w-4" />
+					</button>
 					{/* App icon */}
 					<div
 						className={`relative flex h-[80px] w-[80px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border transition-all ${
@@ -655,6 +665,7 @@ export function Page({
 						selectedApp={selectedApp}
 						runningApp={runningApp}
 						runStatus={runStatus}
+						onDeselect={() => setSelectedAppId(undefined)}
 					/>
 
 					{/* Chat-style input area */}
