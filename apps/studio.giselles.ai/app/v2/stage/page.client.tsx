@@ -8,7 +8,7 @@ import type {
 	Task,
 	TaskId,
 } from "@giselles-ai/protocol";
-import { PaperclipIcon, SendIcon } from "lucide-react";
+import { ArrowUpIcon, PaperclipIcon } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import {
@@ -181,7 +181,7 @@ function StageTopCard({
 	runStatus,
 }: StageTopCardProps) {
 	return (
-		<div className="relative flex w-full flex-col overflow-hidden">
+		<div className="relative flex w-full max-w-[720px] min-w-[320px] mx-auto flex-col overflow-hidden">
 			{runningApp && runStatus === "running" && (
 				<div className="pointer-events-none absolute inset-0 z-0">
 					<TopLightOverlay />
@@ -347,30 +347,54 @@ function ChatInputArea({
 	});
 
 	return (
-		<div className="relative w-full">
-			{/* Background glow circles for gradient border effect */}
+		<div className="relative w-full max-w-[720px] min-w-[320px] mx-auto">
+			{/* Animated background glow - fluid-like effect */}
 			<div className="absolute inset-0 -z-10 overflow-visible pointer-events-none">
-				{/* Blue glow - left */}
-				<div className="absolute -left-4 top-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-[hsl(192,73%,50%)] blur-[60px] opacity-30" />
-				{/* Cyan glow - center */}
-				<div className="absolute left-1/2 -translate-x-1/2 -bottom-8 w-48 h-24 rounded-full bg-[hsl(192,73%,60%)] blur-[50px] opacity-25" />
-				{/* Blue glow - right */}
-				<div className="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-[hsl(210,80%,50%)] blur-[60px] opacity-30" />
+				{/* Purple blob - moves slowly left-right */}
+				<div
+					className="absolute w-40 h-40 rounded-full blur-[80px] opacity-40 animate-[blob1_8s_ease-in-out_infinite]"
+					style={{
+						background: "hsl(270, 70%, 50%)",
+						left: "-10%",
+						top: "50%",
+					}}
+				/>
+				{/* Pink blob - moves diagonally */}
+				<div
+					className="absolute w-36 h-36 rounded-full blur-[70px] opacity-35 animate-[blob2_10s_ease-in-out_infinite]"
+					style={{
+						background: "hsl(320, 70%, 60%)",
+						left: "30%",
+						top: "0%",
+					}}
+				/>
+				{/* Blue blob - center bottom */}
+				<div
+					className="absolute w-48 h-32 rounded-full blur-[60px] opacity-30 animate-[blob3_12s_ease-in-out_infinite]"
+					style={{
+						background: "hsl(210, 80%, 55%)",
+						left: "50%",
+						bottom: "-20%",
+					}}
+				/>
+				{/* Cyan blob - moves right side */}
+				<div
+					className="absolute w-32 h-32 rounded-full blur-[70px] opacity-35 animate-[blob4_9s_ease-in-out_infinite]"
+					style={{
+						background: "hsl(192, 73%, 50%)",
+						right: "-5%",
+						top: "30%",
+					}}
+				/>
 			</div>
 
 			{/* Main input container */}
 			<div
-				className={`relative flex flex-col gap-3 rounded-[20px] p-4 transition-all ${
+				className={`relative flex flex-col gap-3 rounded-[12px] p-4 transition-all ${
 					isDisabled
-						? "opacity-50"
-						: "shadow-[0_8px_32px_rgba(0,135,246,0.15),0_0_0_1px_rgba(255,255,255,0.1)_inset]"
+						? "opacity-50 bg-white/5"
+						: "bg-white/5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15),inset_0_0_0_1px_rgba(255,255,255,0.08)]"
 				}`}
-				style={{
-					background: isDisabled
-						? "rgba(30, 40, 55, 0.6)"
-						: "linear-gradient(135deg, rgba(30, 45, 65, 0.9) 0%, rgba(25, 35, 50, 0.95) 100%)",
-					backdropFilter: "blur(12px)",
-				}}
 			>
 				{/* Top row: Textarea */}
 				<textarea
@@ -390,31 +414,31 @@ function ChatInputArea({
 
 				{/* Bottom row: Buttons */}
 				<div className="flex items-center justify-between">
-					{/* Left side: Attachment button */}
+					{/* Left side: Attachment button - neumorphism raised style */}
 					<button
 						type="button"
 						disabled={isDisabled}
-						className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[10px] transition-all ${
+						className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] transition-all border border-white/5 shadow-[2px_2px_4px_rgba(0,0,0,0.4),-1px_-1px_3px_rgba(255,255,255,0.06)] ${
 							isDisabled
-								? "bg-white/5 text-muted-foreground cursor-not-allowed"
-								: "bg-white/10 text-foreground/70 hover:bg-white/15 hover:text-foreground cursor-pointer"
+								? "opacity-30 cursor-not-allowed bg-white/80 text-black/50"
+								: "bg-white/80 text-black/70 hover:bg-white/90 hover:text-black/80 cursor-pointer active:shadow-[inset_1px_1px_2px_rgba(0,0,0,0.15)]"
 						}`}
 					>
-						<PaperclipIcon className="h-5 w-5" />
+						<PaperclipIcon className="h-3 w-3" />
 					</button>
 
-					{/* Right side: Send button */}
+					{/* Right side: Send button - neumorphism raised style */}
 					<button
 						type="button"
 						onClick={handleSubmit}
 						disabled={isDisabled || !inputValue.trim()}
-						className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[10px] transition-all ${
+						className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] transition-all border border-white/5 shadow-[2px_2px_4px_rgba(0,0,0,0.4),-1px_-1px_3px_rgba(255,255,255,0.06)] ${
 							isDisabled || !inputValue.trim()
-								? "bg-white/5 text-muted-foreground cursor-not-allowed"
-								: "bg-[hsl(192,73%,50%)] text-white hover:bg-[hsl(192,73%,55%)] cursor-pointer shadow-[0_0_20px_rgba(0,135,246,0.4)]"
+								? "opacity-30 cursor-not-allowed bg-white/80 text-black/50"
+								: "bg-white/80 text-black/70 hover:bg-white/90 hover:text-black/80 cursor-pointer active:shadow-[inset_1px_1px_2px_rgba(0,0,0,0.15)]"
 						}`}
 					>
-						<SendIcon className="h-5 w-5" />
+						<ArrowUpIcon className="h-3 w-3" />
 					</button>
 				</div>
 			</div>
