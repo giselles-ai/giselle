@@ -1,8 +1,13 @@
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
+import type { LanguageModelTier } from "@giselles-ai/language-model-registry";
 import type { Connection, TextGenerationNode } from "@giselles-ai/protocol";
-import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
+import {
+	useNodeGenerations,
+	useUsageLimits,
+	useWorkflowDesigner,
+} from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
@@ -16,7 +21,7 @@ import { GenerationPanel } from "./generation-panel";
 import { ModelSettings } from "./model";
 import { useConnectedOutputs } from "./outputs";
 
-export function TextGenerationNodePropertiesPanel({
+export function TextGenerationNodePropertiesPanelV2({
 	node,
 }: {
 	node: TextGenerationNode;
@@ -101,6 +106,8 @@ export function TextGenerationNodePropertiesPanel({
 		},
 		[deleteConnection, data.nodes, updateNodeData],
 	);
+	const usageLimits = useUsageLimits();
+	const userTier: LanguageModelTier = usageLimits?.featureTier ?? "free";
 
 	return (
 		<PropertiesPanelRoot>
@@ -123,6 +130,7 @@ export function TextGenerationNodePropertiesPanel({
 						updateNodeDataContent(node, value);
 					}}
 					onDeleteConnection={handleDeleteConnection}
+					userTier={userTier}
 				/>
 
 				<SettingLabel>Prompt</SettingLabel>

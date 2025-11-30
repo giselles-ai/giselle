@@ -21,6 +21,7 @@ import { FileNodePropertiesPanel } from "./file-node-properties-panel";
 import { ImageGenerationNodePropertiesPanel } from "./image-generation-node-properties-panel";
 import { QueryNodePropertiesPanel } from "./query-node-properties-panel";
 import { TextGenerationNodePropertiesPanel } from "./text-generation-node-properties-panel";
+import { TextGenerationNodePropertiesPanelV2 } from "./text-generation-node-properties-panel-v2";
 import { TextNodePropertiesPanel } from "./text-node-properties-panel";
 import { TriggerNodePropertiesPanel } from "./trigger-node-properties-panel";
 import { VectorStoreNodePropertiesPanel } from "./vector-store";
@@ -50,7 +51,7 @@ export function PropertiesPanel() {
 			tabIndex={-1}
 		>
 			{isTextGenerationNode(selectedNodes[0]) && (
-				<TextGenerationNodePropertiesPanel
+				<TextGenerationNodePropertiesPanelV2
 					node={selectedNodes[0]}
 					key={selectedNodes[0].id}
 				/>

@@ -2,14 +2,7 @@ import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
-import {
-	anthropicLanguageModels,
-	googleLanguageModels,
-	hasTierAccess,
-	type LanguageModel,
-	openaiLanguageModels,
-	Tier,
-} from "@giselles-ai/language-model";
+import type { LanguageModelTier } from "@giselles-ai/language-model-registry";
 import {
 	type AnthropicLanguageModelData,
 	type Connection,
@@ -19,57 +12,20 @@ import {
 	type TextGenerationContent,
 	type TextGenerationNode,
 } from "@giselles-ai/protocol";
-import { useUsageLimits, useWorkflowDesignerStore } from "@giselles-ai/react";
-import { useCallback, useMemo } from "react";
+import { useWorkflowDesignerStore } from "@giselles-ai/react";
+import { useCallback } from "react";
 import { useShallow } from "zustand/shallow";
-import { ModelPicker } from "../../../../ui/model-picker";
-import { ProTag } from "../../../tool";
+import { ModelPickerV2 } from "../../../../ui/model-picker-v2";
 import { AnthropicModelPanel } from "./anthropic";
 import { GoogleModelPanel } from "./google";
-import { createDefaultModelData, updateModelId } from "./model-defaults";
 import { OpenAIModelPanel } from "./openai";
-
-function useModelGroups(userTier: Tier) {
-	return useMemo(() => {
-		const toModelPickerModels = (models: LanguageModel[]) =>
-			models.map((model) => {
-				const disabled = !hasTierAccess(model, userTier);
-				return {
-					id: model.id,
-					label: model.id,
-					badge: model.tier === Tier.enum.pro ? <ProTag /> : undefined,
-					disabled,
-					disabledReason: disabled
-						? "Upgrade to Pro to use this model."
-						: undefined,
-				};
-			});
-
-		return [
-			{
-				provider: "openai",
-				label: "OpenAI",
-				models: toModelPickerModels(openaiLanguageModels),
-			},
-			{
-				provider: "anthropic",
-				label: "Anthropic",
-				models: toModelPickerModels(anthropicLanguageModels),
-			},
-			{
-				provider: "google",
-				label: "Google",
-				models: toModelPickerModels(googleLanguageModels),
-			},
-		];
-	}, [userTier]);
-}
 
 export function ModelSettings({
 	node,
 	onNodeChange,
 	onTextGenerationContentChange,
 	onDeleteConnection,
+	userTier,
 }: {
 	node: TextGenerationNode;
 	onNodeChange: (value: Partial<TextGenerationNode>) => void;
@@ -77,9 +33,8 @@ export function ModelSettings({
 		value: Partial<TextGenerationContent>,
 	) => void;
 	onDeleteConnection: (connection: Connection) => void;
+	userTier: LanguageModelTier;
 }) {
-	const usageLimits = useUsageLimits();
-	const groups = useModelGroups(usageLimits?.featureTier ?? Tier.enum.free);
 	const { connections } = useWorkflowDesignerStore(
 		useShallow((s) => ({
 			connections: s.workspace.connections,
@@ -211,28 +166,11 @@ export function ModelSettings({
 		[node, updateOutputForGoogle, onTextGenerationContentChange],
 	);
 
-	const handleSelect = useCallback(
-		(provider: string, id: string) => {
-			const next = createDefaultModelData(
-				provider as "openai" | "anthropic" | "google",
-			);
-			const updated = updateModelId(next, id);
-			onTextGenerationContentChange({ llm: updated });
-		},
-		[onTextGenerationContentChange],
-	);
-
 	return (
 		<>
 			<div className="flex items-center justify-between gap-[12px]">
 				<SettingDetail size="md">Model</SettingDetail>
-				<ModelPicker
-					currentProvider={node.content.llm.provider}
-					currentModelId={node.content.llm.id}
-					groups={groups}
-					fullWidth={false}
-					onSelect={handleSelect}
-				/>
+				<ModelPickerV2 userTier={userTier} />
 			</div>
 
 			<SettingLabel>Model parameters</SettingLabel>
