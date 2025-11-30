@@ -8,7 +8,7 @@ import type {
 	Task,
 	TaskId,
 } from "@giselles-ai/protocol";
-import { SendIcon } from "lucide-react";
+import { PaperclipIcon, SendIcon } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import {
@@ -347,14 +347,32 @@ function ChatInputArea({
 	});
 
 	return (
-		<div className="w-full">
+		<div className="relative w-full">
+			{/* Background glow circles for gradient border effect */}
+			<div className="absolute inset-0 -z-10 overflow-visible pointer-events-none">
+				{/* Blue glow - left */}
+				<div className="absolute -left-4 top-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-[hsl(192,73%,50%)] blur-[60px] opacity-30" />
+				{/* Cyan glow - center */}
+				<div className="absolute left-1/2 -translate-x-1/2 -bottom-8 w-48 h-24 rounded-full bg-[hsl(192,73%,60%)] blur-[50px] opacity-25" />
+				{/* Blue glow - right */}
+				<div className="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-[hsl(210,80%,50%)] blur-[60px] opacity-30" />
+			</div>
+
+			{/* Main input container */}
 			<div
-				className={`relative flex items-end gap-3 rounded-[16px] border bg-card/40 p-3 transition-all ${
+				className={`relative flex flex-col gap-3 rounded-[20px] p-4 transition-all ${
 					isDisabled
-						? "border-border/50 opacity-60"
-						: "border-border hover:border-[hsl(192,73%,84%)]/50 focus-within:border-[hsl(192,73%,84%)] focus-within:shadow-[0_0_10px_rgba(0,135,246,0.2)]"
+						? "opacity-50"
+						: "shadow-[0_8px_32px_rgba(0,135,246,0.15),0_0_0_1px_rgba(255,255,255,0.1)_inset]"
 				}`}
+				style={{
+					background: isDisabled
+						? "rgba(30, 40, 55, 0.6)"
+						: "linear-gradient(135deg, rgba(30, 45, 65, 0.9) 0%, rgba(25, 35, 50, 0.95) 100%)",
+					backdropFilter: "blur(12px)",
+				}}
 			>
+				{/* Top row: Textarea */}
 				<textarea
 					ref={textareaRef}
 					value={inputValue}
@@ -363,31 +381,51 @@ function ChatInputArea({
 					placeholder={
 						selectedApp
 							? `Message ${selectedApp.name}...`
-							: "Select an app to start"
+							: "What do you want to do?"
 					}
 					disabled={isDisabled}
 					rows={1}
-					className="flex-1 resize-none bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none disabled:cursor-not-allowed"
+					className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-foreground/40 outline-none disabled:cursor-not-allowed"
 				/>
-				<button
-					type="button"
-					onClick={handleSubmit}
-					disabled={isDisabled || !inputValue.trim()}
-					className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition-all ${
-						isDisabled || !inputValue.trim()
-							? "bg-muted text-muted-foreground cursor-not-allowed"
-							: "bg-primary-900 text-white hover:bg-primary-800 cursor-pointer"
-					}`}
-				>
-					<SendIcon className="h-4 w-4" />
-				</button>
+
+				{/* Bottom row: Buttons */}
+				<div className="flex items-center justify-between">
+					{/* Left side: Attachment button */}
+					<button
+						type="button"
+						disabled={isDisabled}
+						className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[10px] transition-all ${
+							isDisabled
+								? "bg-white/5 text-muted-foreground cursor-not-allowed"
+								: "bg-white/10 text-foreground/70 hover:bg-white/15 hover:text-foreground cursor-pointer"
+						}`}
+					>
+						<PaperclipIcon className="h-5 w-5" />
+					</button>
+
+					{/* Right side: Send button */}
+					<button
+						type="button"
+						onClick={handleSubmit}
+						disabled={isDisabled || !inputValue.trim()}
+						className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[10px] transition-all ${
+							isDisabled || !inputValue.trim()
+								? "bg-white/5 text-muted-foreground cursor-not-allowed"
+								: "bg-[hsl(192,73%,50%)] text-white hover:bg-[hsl(192,73%,55%)] cursor-pointer shadow-[0_0_20px_rgba(0,135,246,0.4)]"
+						}`}
+					>
+						<SendIcon className="h-5 w-5" />
+					</button>
+				</div>
 			</div>
-			<div className="mt-2 flex items-center justify-end gap-2 text-[11px] text-muted-foreground">
+
+			{/* Keyboard shortcut hint */}
+			<div className="mt-3 flex items-center justify-end gap-2 text-[11px] text-foreground/40">
 				<span className="flex items-center gap-1">
-					<kbd className="px-1.5 py-0.5 bg-card/60 border border-border rounded text-[10px]">
+					<kbd className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-[10px]">
 						⌘
 					</kbd>
-					<kbd className="px-1.5 py-0.5 bg-card/60 border border-border rounded text-[10px]">
+					<kbd className="px-1.5 py-0.5 bg-white/5 border border-white/10 rounded text-[10px]">
 						↵
 					</kbd>
 					<span className="ml-1">to send</span>
