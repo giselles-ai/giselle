@@ -116,7 +116,6 @@ export function GenerationPanel({
 	node,
 	onClickGenerateButton,
 	onExpand,
-	isExpanded,
 }: {
 	node: TextGenerationNode;
 	onClickGenerateButton?: () => void;
