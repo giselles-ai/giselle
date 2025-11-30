@@ -1,9 +1,7 @@
 import type { UIConnection } from "@giselles-ai/react";
-// import { TextEditor } from "@giselles-ai/text-editor/react";
+import { TextEditor } from "@giselles-ai/text-editor/react";
 import clsx from "clsx/lite";
 import type { ReactNode } from "react";
-
-import { TextEditor } from "../../../packages/text-editor/src/react";
 
 interface PromptEditorProps {
 	value?: string;
