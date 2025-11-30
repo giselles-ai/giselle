@@ -11,6 +11,7 @@ import { isPromptEmpty } from "../../lib/validate-prompt";
 import { PropertiesPanelRoot } from "../ui";
 import { GenerateCtaButton } from "../ui/generate-cta-button";
 import { NodePanelHeader } from "../ui/node-panel-header";
+import { AdvancedOptions } from "./advanced-options";
 import { GenerationPanel } from "./generation-panel";
 import { ModelSettings } from "./model";
 import { createDefaultModelData, updateModelId } from "./model-defaults";
@@ -156,6 +157,7 @@ export function TextGenerationNodePropertiesPanel({
 					showExpandIcon={false}
 					containerClassName="grow-1"
 				/>
+				<AdvancedOptions node={node} />
 				<div className="flex flex-col gap-[4px]">
 					<SettingLabel>Output</SettingLabel>
 					<GenerationPanel node={node} onClickGenerateButton={generateText} />

@@ -164,12 +164,6 @@ export function ImageGenerationNodePropertiesPanel({
 								}}
 								connections={connections}
 								placeholder="Write your prompt here..."
-								showToolbar={false}
-								variant="plain"
-								showExpandIcon={false}
-								containerClassName="flex-1 min-h-0"
-								editorClassName="h-full min-h-0 overflow-y-auto"
-								fullHeight
 							/>
 						</div>
 						<div className="absolute bottom-[20px] right-[12px]">
