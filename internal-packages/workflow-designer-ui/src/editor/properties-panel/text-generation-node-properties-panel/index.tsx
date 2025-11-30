@@ -14,7 +14,7 @@ import { NodePanelHeader } from "../ui/node-panel-header";
 import { AdvancedOptions } from "./advanced-options";
 import { GenerationPanel } from "./generation-panel";
 import { ModelSettings } from "./model";
-import { createDefaultModelData, updateModelId } from "./model-defaults";
+import { createDefaultModelData, updateModelId } from "./model/model-defaults";
 import { useConnectedOutputs } from "./outputs";
 
 export function TextGenerationNodePropertiesPanel({

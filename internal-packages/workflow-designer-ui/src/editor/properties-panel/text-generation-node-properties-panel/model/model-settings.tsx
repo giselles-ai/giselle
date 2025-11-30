@@ -212,6 +212,13 @@ export function ModelSettings({
 		[node, updateOutputForGoogle, onTextGenerationContentChange],
 	);
 
+	const handleSelect = useCallback(
+		(provider: string, id: string) => {
+			onModelChange({ provider, id });
+		},
+		[onModelChange],
+	);
+
 	return (
 		<>
 			<div className="flex items-center justify-between gap-[12px]">
@@ -221,9 +228,7 @@ export function ModelSettings({
 					currentModelId={node.content.llm.id}
 					groups={groups}
 					fullWidth={false}
-					onSelect={(provider, id) => {
-						onModelChange({ provider, id });
-					}}
+					onSelect={handleSelect}
 				/>
 			</div>
 
