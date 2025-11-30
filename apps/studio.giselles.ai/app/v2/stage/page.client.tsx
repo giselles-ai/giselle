@@ -348,98 +348,104 @@ function ChatInputArea({
 
 	return (
 		<div className="relative w-full max-w-[720px] min-w-[320px] mx-auto">
-			{/* Animated background glow - fluid-like effect */}
-			<div className="absolute inset-0 -z-10 overflow-visible pointer-events-none">
-				{/* Purple blob - moves slowly left-right */}
-				<div
-					className="absolute w-40 h-40 rounded-full blur-[80px] opacity-40 animate-[blob1_8s_ease-in-out_infinite]"
-					style={{
-						background: "hsl(270, 70%, 50%)",
-						left: "-10%",
-						top: "50%",
-					}}
-				/>
-				{/* Pink blob - moves diagonally */}
-				<div
-					className="absolute w-36 h-36 rounded-full blur-[70px] opacity-35 animate-[blob2_10s_ease-in-out_infinite]"
-					style={{
-						background: "hsl(320, 70%, 60%)",
-						left: "30%",
-						top: "0%",
-					}}
-				/>
-				{/* Blue blob - center bottom */}
-				<div
-					className="absolute w-48 h-32 rounded-full blur-[60px] opacity-30 animate-[blob3_12s_ease-in-out_infinite]"
-					style={{
-						background: "hsl(210, 80%, 55%)",
-						left: "50%",
-						bottom: "-20%",
-					}}
-				/>
-				{/* Cyan blob - moves right side */}
-				<div
-					className="absolute w-32 h-32 rounded-full blur-[70px] opacity-35 animate-[blob4_9s_ease-in-out_infinite]"
-					style={{
-						background: "hsl(192, 73%, 50%)",
-						right: "-5%",
-						top: "30%",
-					}}
-				/>
-			</div>
-
-			{/* Main input container */}
+			{/* Outer container - glassmorphism with blur */}
 			<div
-				className={`relative flex flex-col gap-3 rounded-[12px] p-4 transition-all ${
-					isDisabled
-						? "opacity-50 bg-white/5"
-						: "bg-white/5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15),inset_0_0_0_1px_rgba(255,255,255,0.08)]"
+				className={`relative rounded-[20px] p-[6px] transition-all shadow-[0_8px_32px_rgba(0,0,0,0.3),0_2px_8px_rgba(0,0,0,0.2)] ${
+					isDisabled ? "opacity-50" : ""
 				}`}
+				style={{
+					background: "rgba(255, 255, 255, 0.08)",
+					backdropFilter: "blur(12px)",
+					WebkitBackdropFilter: "blur(12px)",
+				}}
 			>
-				{/* Top row: Textarea */}
-				<textarea
-					ref={textareaRef}
-					value={inputValue}
-					onChange={(e) => setInputValue(e.target.value)}
-					onKeyDown={handleKeyDown}
-					placeholder={
-						selectedApp
-							? `Message ${selectedApp.name}...`
-							: "What do you want to do?"
-					}
-					disabled={isDisabled}
-					rows={1}
-					className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-foreground/40 outline-none disabled:cursor-not-allowed"
-				/>
+				{/* Animated background glow - fluid-like effect */}
+				<div className="absolute inset-0 -z-10 overflow-visible pointer-events-none">
+					{/* Purple blob - moves slowly left-right */}
+					<div
+						className="absolute w-40 h-40 rounded-full blur-[80px] opacity-40 animate-[blob1_8s_ease-in-out_infinite]"
+						style={{
+							background: "hsl(270, 70%, 50%)",
+							left: "-10%",
+							top: "50%",
+						}}
+					/>
+					{/* Pink blob - moves diagonally */}
+					<div
+						className="absolute w-36 h-36 rounded-full blur-[70px] opacity-35 animate-[blob2_10s_ease-in-out_infinite]"
+						style={{
+							background: "hsl(320, 70%, 60%)",
+							left: "30%",
+							top: "0%",
+						}}
+					/>
+					{/* Blue blob - center bottom */}
+					<div
+						className="absolute w-48 h-32 rounded-full blur-[60px] opacity-30 animate-[blob3_12s_ease-in-out_infinite]"
+						style={{
+							background: "hsl(210, 80%, 55%)",
+							left: "50%",
+							bottom: "-20%",
+						}}
+					/>
+					{/* Cyan blob - moves right side */}
+					<div
+						className="absolute w-32 h-32 rounded-full blur-[70px] opacity-35 animate-[blob4_9s_ease-in-out_infinite]"
+						style={{
+							background: "hsl(192, 73%, 50%)",
+							right: "-5%",
+							top: "30%",
+						}}
+					/>
+				</div>
 
-				{/* Bottom row: Buttons */}
-				<div className="flex items-center justify-between">
-					{/* Left side: Attachment button - neumorphism raised style */}
-					<button
-						type="button"
+				{/* Inner container - subtle background */}
+				<div className="relative rounded-[14px] bg-background/50 p-4">
+					{/* Top row: Textarea */}
+					<textarea
+						ref={textareaRef}
+						value={inputValue}
+						onChange={(e) => setInputValue(e.target.value)}
+						onKeyDown={handleKeyDown}
+						placeholder={
+							selectedApp
+								? `Message ${selectedApp.name}...`
+								: "What do you want to do?"
+						}
 						disabled={isDisabled}
-						className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] transition-all border border-white/5 shadow-[2px_2px_4px_rgba(0,0,0,0.4),-1px_-1px_3px_rgba(255,255,255,0.06)] ${
-							isDisabled
-								? "opacity-30 cursor-not-allowed bg-white/80 text-black/50"
-								: "bg-white/80 text-black/70 hover:bg-white/90 hover:text-black/80 cursor-pointer active:shadow-[inset_1px_1px_2px_rgba(0,0,0,0.15)]"
-						}`}
-					>
-						<PaperclipIcon className="h-3 w-3" />
-					</button>
+						rows={1}
+						className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-foreground/40 outline-none disabled:cursor-not-allowed"
+					/>
 
-					{/* Right side: Send button - neumorphism raised style */}
-					<button
-						type="button"
-						onClick={handleSubmit}
-						disabled={isDisabled || !inputValue.trim()}
-						className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] transition-all border border-white/5 shadow-[2px_2px_4px_rgba(0,0,0,0.4),-1px_-1px_3px_rgba(255,255,255,0.06)] ${
-							isDisabled || !inputValue.trim()
-								? "opacity-30 cursor-not-allowed bg-white/80 text-black/50"
-								: "bg-white/80 text-black/70 hover:bg-white/90 hover:text-black/80 cursor-pointer active:shadow-[inset_1px_1px_2px_rgba(0,0,0,0.15)]"
-						}`}
-					>
-						<ArrowUpIcon className="h-3 w-3" />
-					</button>
+					{/* Bottom row: Buttons */}
+					<div className="flex items-center justify-between mt-3">
+						{/* Left side: Attachment button - neumorphism raised style */}
+						<button
+							type="button"
+							disabled={isDisabled}
+							className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] transition-all border border-white/5 shadow-[2px_2px_4px_rgba(0,0,0,0.4),-1px_-1px_3px_rgba(255,255,255,0.06)] ${
+								isDisabled
+									? "opacity-30 cursor-not-allowed bg-white/80 text-black/50"
+									: "bg-white/80 text-black/70 hover:bg-white/90 hover:text-black/80 cursor-pointer active:shadow-[inset_1px_1px_2px_rgba(0,0,0,0.15)]"
+							}`}
+						>
+							<PaperclipIcon className="h-3 w-3" />
+						</button>
+
+						{/* Right side: Send button - neumorphism raised style */}
+						<button
+							type="button"
+							onClick={handleSubmit}
+							disabled={isDisabled || !inputValue.trim()}
+							className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] transition-all border border-white/5 shadow-[2px_2px_4px_rgba(0,0,0,0.4),-1px_-1px_3px_rgba(255,255,255,0.06)] ${
+								isDisabled || !inputValue.trim()
+									? "opacity-30 cursor-not-allowed bg-white/80 text-black/50"
+									: "bg-white/80 text-black/70 hover:bg-white/90 hover:text-black/80 cursor-pointer active:shadow-[inset_1px_1px_2px_rgba(0,0,0,0.15)]"
+							}`}
+						>
+							<ArrowUpIcon className="h-3 w-3" />
+						</button>
+					</div>
 				</div>
 			</div>
 
