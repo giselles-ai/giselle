@@ -276,7 +276,7 @@ function StageTopCard({
 								className="font-thin text-[36px] font-sans text-[hsl(192,73%,84%)] text-center"
 								style={{
 									textShadow:
-										"0 0 20px rgb(0,135,246), 0 0 40px rgb(0,135,246), 0 0 60px rgb(0,135,246)",
+										"0 0 15px rgb(0,135,246), 0 0 30px rgb(0,135,246), 0 0 45px rgb(0,135,246), 0 0 70px rgb(0,135,246)",
 								}}
 							>
 								Select an app to run in Stage.
