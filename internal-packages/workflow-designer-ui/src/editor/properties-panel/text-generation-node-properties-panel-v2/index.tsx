@@ -132,17 +132,9 @@ export function TextGenerationNodePropertiesPanelV2({
 			<div className="grow-1 overflow-y-auto flex flex-col gap-[12px]">
 				<ModelSettings
 					node={node}
-					onLanguageModelChange={(languageModel) => {
-						updateNodeDataContent(node, { languageModel });
+					onContentGenerationContentChange={(value) => {
+						updateNodeDataContent(node, value);
 					}}
-					textGenerationNode={textGenerationNode}
-					onNodeChange={(value) => {
-						updateNodeData(textGenerationNode, value);
-					}}
-					onTextGenerationContentChange={(value) => {
-						updateNodeDataContent(textGenerationNode, value);
-					}}
-					onDeleteConnection={handleDeleteConnection}
 					userTier={userTier}
 				/>
 
