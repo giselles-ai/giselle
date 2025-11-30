@@ -42,21 +42,13 @@ export function PromptPanel({
 	const userTier = usageLimits?.featureTier ?? Tier.enum.free;
 	const { error } = useToasts();
 	const { aiGatewayUnsupportedModels } = useFeatureFlag();
-	const { all: connectedSources, connections } = useConnectedSources(node);
+	const { connections } = useConnectedSources(node);
 	const selectableOpenAIImageModels = useMemo(
 		() =>
 			openaiImageModels.filter(
 				(model) => aiGatewayUnsupportedModels || model.id !== "gpt-image-1",
 			),
 		[aiGatewayUnsupportedModels],
-	);
-	const nodes = useMemo(
-		() =>
-			connectedSources
-				.map((source) => Node.safeParse(source.node))
-				.map((parse) => (parse.success ? parse.data : null))
-				.filter((data) => data !== null),
-		[connectedSources],
 	);
 
 	const groups = useMemo(
@@ -181,7 +173,6 @@ export function PromptPanel({
 
 	return (
 		<PromptEditor
-			key={`${editorVersion ?? 0}-${JSON.stringify(nodes.map((n) => n.id))}`}
 			placeholder="Write your prompt... Use @ to reference other nodes"
 			value={node.content.prompt}
 			onValueChange={(value) => {
