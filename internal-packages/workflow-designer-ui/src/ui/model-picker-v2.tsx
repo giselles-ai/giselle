@@ -2,6 +2,7 @@
 
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import {
+	getEntry,
 	hasTierAccess,
 	isLanguageModelId,
 	type LanguageModel,
@@ -103,6 +104,11 @@ export function ModelPickerV2({
 		[onValueChange],
 	);
 
+	const currentLanguageModel = useMemo(
+		() => (value === undefined ? undefined : getEntry(value)),
+		[value],
+	);
+
 	return (
 		<PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
 			<PopoverPrimitive.Trigger asChild>
@@ -117,7 +123,7 @@ export function ModelPickerV2({
 					)}
 				>
 					<span className="min-w-0 text-ellipsis overflow-hidden whitespace-nowrap">
-						{value}
+						{currentLanguageModel?.name}
 					</span>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"

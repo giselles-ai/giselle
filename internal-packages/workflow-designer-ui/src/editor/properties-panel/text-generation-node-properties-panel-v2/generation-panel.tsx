@@ -111,10 +111,14 @@ function getGenerationModelInfo(generation: Generation): {
 	return { provider: "Unknown", modelId: "" };
 }
 
-export function GenerationPanel({ node }: { node: TextGenerationNode }) {
+export function GenerationPanel({
+	textGenerationNode,
+}: {
+	textGenerationNode: TextGenerationNode;
+}) {
 	const { data } = useWorkflowDesigner();
 	const { currentGeneration } = useNodeGenerations({
-		nodeId: node.id,
+		nodeId: textGenerationNode.id,
 		origin: { type: "studio", workspaceId: data.id },
 	});
 

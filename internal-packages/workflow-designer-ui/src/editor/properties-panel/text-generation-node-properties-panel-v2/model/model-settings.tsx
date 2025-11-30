@@ -6,6 +6,7 @@ import type { LanguageModelTier } from "@giselles-ai/language-model-registry";
 import {
 	type AnthropicLanguageModelData,
 	type Connection,
+	type ContentGenerationNode,
 	GoogleLanguageModelData,
 	type OpenAILanguageModelData,
 	OutputId,
@@ -22,12 +23,14 @@ import { OpenAIModelPanel } from "./openai";
 
 export function ModelSettings({
 	node,
+	textGenerationNode,
 	onNodeChange,
 	onTextGenerationContentChange,
 	onDeleteConnection,
 	userTier,
 }: {
-	node: TextGenerationNode;
+	node: ContentGenerationNode;
+	textGenerationNode: TextGenerationNode;
 	onNodeChange: (value: Partial<TextGenerationNode>) => void;
 	onTextGenerationContentChange: (
 		value: Partial<TextGenerationContent>,
@@ -43,7 +46,9 @@ export function ModelSettings({
 
 	const handleOpenAIWebSearchChange = useCallback(
 		(enable: boolean) => {
-			const sourceOutput = node.outputs.find((o) => o.accessor === "source");
+			const sourceOutput = textGenerationNode.outputs.find(
+				(o) => o.accessor === "source",
+			);
 
 			// When enabled, add an Output for Source
 			if (enable) {
@@ -56,7 +61,7 @@ export function ModelSettings({
 				}
 				onNodeChange({
 					outputs: [
-						...node.outputs,
+						...textGenerationNode.outputs,
 						{ id: OutputId.generate(), label: "Source", accessor: "source" },
 					],
 				});
@@ -71,10 +76,12 @@ export function ModelSettings({
 				onDeleteConnection(connection);
 			}
 			onNodeChange({
-				outputs: node.outputs.filter((i) => i.accessor !== "source"),
+				outputs: textGenerationNode.outputs.filter(
+					(i) => i.accessor !== "source",
+				),
 			});
 		},
-		[node, connections, onNodeChange, onDeleteConnection],
+		[textGenerationNode, connections, onNodeChange, onDeleteConnection],
 	);
 
 	const updateOutputForGoogle = useCallback(
@@ -85,7 +92,9 @@ export function ModelSettings({
 			urlContext: boolean;
 			googleSearch: boolean;
 		}) => {
-			const sourceOutput = node.outputs.find((o) => o.accessor === "source");
+			const sourceOutput = textGenerationNode.outputs.find(
+				(o) => o.accessor === "source",
+			);
 			if (urlContext && googleSearch && sourceOutput) {
 				return;
 			}
@@ -95,7 +104,7 @@ export function ModelSettings({
 			if ((urlContext || googleSearch) && !sourceOutput) {
 				onNodeChange({
 					outputs: [
-						...node.outputs,
+						...textGenerationNode.outputs,
 						{ id: OutputId.generate(), label: "Source", accessor: "source" },
 					],
 				});
@@ -108,18 +117,22 @@ export function ModelSettings({
 				onDeleteConnection(connection);
 			}
 			onNodeChange({
-				outputs: node.outputs.filter((i) => i.accessor !== "source"),
+				outputs: textGenerationNode.outputs.filter(
+					(i) => i.accessor !== "source",
+				),
 			});
 		},
-		[onNodeChange, node.outputs, connections, onDeleteConnection],
+		[onNodeChange, textGenerationNode.outputs, connections, onDeleteConnection],
 	);
 
 	const handleGoogleSearchGroundingChange = useCallback(
 		(googleSearch: boolean) => {
-			const result = GoogleLanguageModelData.safeParse(node.content.llm);
+			const result = GoogleLanguageModelData.safeParse(
+				textGenerationNode.content.llm,
+			);
 			if (result.error) {
 				console.warn(
-					`Error parsing GoogleLanguageModelData: ${node.content.llm}`,
+					`Error parsing GoogleLanguageModelData: ${textGenerationNode.content.llm}`,
 				);
 				return;
 			}
@@ -137,15 +150,17 @@ export function ModelSettings({
 				googleSearch,
 			});
 		},
-		[node, onTextGenerationContentChange, updateOutputForGoogle],
+		[textGenerationNode, onTextGenerationContentChange, updateOutputForGoogle],
 	);
 
 	const handleGoogleUrlContextChange = useCallback(
 		(urlContext: boolean) => {
-			const result = GoogleLanguageModelData.safeParse(node.content.llm);
+			const result = GoogleLanguageModelData.safeParse(
+				textGenerationNode.content.llm,
+			);
 			if (result.error) {
 				console.warn(
-					`Error parsing GoogleLanguageModelData: ${node.content.llm}`,
+					`Error parsing GoogleLanguageModelData: ${textGenerationNode.content.llm}`,
 				);
 				return;
 			}
@@ -163,22 +178,27 @@ export function ModelSettings({
 				googleSearch: result.data.configurations.searchGrounding,
 			});
 		},
-		[node, updateOutputForGoogle, onTextGenerationContentChange],
+		[textGenerationNode, updateOutputForGoogle, onTextGenerationContentChange],
 	);
 
 	return (
 		<>
 			<div className="flex items-center justify-between gap-[12px]">
 				<SettingDetail size="md">Model</SettingDetail>
-				<ModelPickerV2 userTier={userTier} />
+				<ModelPickerV2
+					userTier={userTier}
+					value={node.content.languageModel.id}
+				/>
 			</div>
 
 			<SettingLabel>Model parameters</SettingLabel>
 			<div className="col-span-2 flex flex-col gap-[12px]">
-				{node.content.llm.provider === "openai" && (
+				{textGenerationNode.content.llm.provider === "openai" && (
 					<OpenAIModelPanel
-						openaiLanguageModel={node.content.llm as OpenAILanguageModelData}
-						tools={node.content.tools}
+						openaiLanguageModel={
+							textGenerationNode.content.llm as OpenAILanguageModelData
+						}
+						tools={textGenerationNode.content.tools}
 						onModelChange={(value) =>
 							onTextGenerationContentChange({ llm: value })
 						}
@@ -188,9 +208,11 @@ export function ModelSettings({
 						onWebSearchChange={handleOpenAIWebSearchChange}
 					/>
 				)}
-				{node.content.llm.provider === "google" && (
+				{textGenerationNode.content.llm.provider === "google" && (
 					<GoogleModelPanel
-						googleLanguageModel={node.content.llm as GoogleLanguageModelData}
+						googleLanguageModel={
+							textGenerationNode.content.llm as GoogleLanguageModelData
+						}
 						onSearchGroundingConfigurationChange={
 							handleGoogleSearchGroundingChange
 						}
@@ -200,10 +222,10 @@ export function ModelSettings({
 						}
 					/>
 				)}
-				{node.content.llm.provider === "anthropic" && (
+				{textGenerationNode.content.llm.provider === "anthropic" && (
 					<AnthropicModelPanel
 						anthropicLanguageModel={
-							node.content.llm as AnthropicLanguageModelData
+							textGenerationNode.content.llm as AnthropicLanguageModelData
 						}
 						onModelChange={(value) =>
 							onTextGenerationContentChange({ llm: value })

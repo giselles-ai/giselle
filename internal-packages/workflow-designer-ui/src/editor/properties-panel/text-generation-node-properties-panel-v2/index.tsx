@@ -2,13 +2,19 @@ import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { LanguageModelTier } from "@giselles-ai/language-model-registry";
-import type { Connection, TextGenerationNode } from "@giselles-ai/protocol";
+import { convertTextGenerationToContentGeneration } from "@giselles-ai/node-registry";
+import {
+	type Connection,
+	Node,
+	type NodeLike,
+	type TextGenerationNode,
+} from "@giselles-ai/protocol";
 import {
 	useNodeGenerations,
 	useUsageLimits,
 	useWorkflowDesigner,
 } from "@giselles-ai/react";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
@@ -19,13 +25,18 @@ import { NodePanelHeader } from "../ui/node-panel-header";
 import { AdvancedOptions } from "./advanced-options";
 import { GenerationPanel } from "./generation-panel";
 import { ModelSettings } from "./model";
-import { useConnectedOutputs } from "./outputs";
+import { useNodeContext } from "./node-context";
 
+function isNode(nodeLike: NodeLike): nodeLike is Node {
+	const result = Node.safeParse(nodeLike);
+	return result.success;
+}
 export function TextGenerationNodePropertiesPanelV2({
-	node,
+	node: textGenerationNode,
 }: {
 	node: TextGenerationNode;
 }) {
+	const node = convertTextGenerationToContentGeneration(textGenerationNode);
 	const {
 		data,
 		updateNodeData,
@@ -38,11 +49,7 @@ export function TextGenerationNodePropertiesPanelV2({
 			nodeId: node.id,
 			origin: { type: "studio", workspaceId: data.id },
 		});
-	const { all: connectedSources, connections } = useConnectedOutputs(node);
-	const sourceNodes = useMemo(
-		() => connectedSources.map((c) => c.node),
-		[connectedSources],
-	);
+	const { connections } = useNodeContext(node);
 	const usageLimitsReached = useUsageLimitsReached();
 	const { error } = useToasts();
 
@@ -70,19 +77,21 @@ export function TextGenerationNodePropertiesPanelV2({
 				workspaceId: data.id,
 			},
 			operationNode: node,
-			sourceNodes,
+			sourceNodes: connections
+				.map((connection) => connection.outputNode)
+				.filter((nodeLike) => isNode(nodeLike)),
 			connections: data.connections.filter(
 				(connection) => connection.inputNode.id === node.id,
 			),
 		});
 	}, [
-		sourceNodes,
 		data.id,
 		data.connections,
 		node,
 		createAndStartGenerationRunner,
 		usageLimitsReached,
 		error,
+		connections,
 	]);
 
 	const handleDeleteConnection = useCallback(
@@ -123,11 +132,12 @@ export function TextGenerationNodePropertiesPanelV2({
 			<div className="grow-1 overflow-y-auto flex flex-col gap-[12px]">
 				<ModelSettings
 					node={node}
+					textGenerationNode={textGenerationNode}
 					onNodeChange={(value) => {
-						updateNodeData(node, value);
+						updateNodeData(textGenerationNode, value);
 					}}
 					onTextGenerationContentChange={(value) => {
-						updateNodeDataContent(node, value);
+						updateNodeDataContent(textGenerationNode, value);
 					}}
 					onDeleteConnection={handleDeleteConnection}
 					userTier={userTier}
@@ -142,10 +152,10 @@ export function TextGenerationNodePropertiesPanelV2({
 					}}
 					connections={connections}
 				/>
-				<AdvancedOptions node={node} />
+				<AdvancedOptions textGenerationNode={textGenerationNode} />
 				<div className="flex flex-col gap-[4px]">
 					<SettingLabel>Output</SettingLabel>
-					<GenerationPanel node={node} />
+					<GenerationPanel textGenerationNode={textGenerationNode} />
 				</div>
 			</div>
 			<div className="shrink-0 px-[16px] pt-[8px] pb-[4px]">
