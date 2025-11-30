@@ -188,7 +188,6 @@ export function PromptPanel({
 				updateNodeDataContent(node, { prompt: value });
 			}}
 			connections={connections}
-			showToolbar={false}
 			header={header}
 		/>
 	);

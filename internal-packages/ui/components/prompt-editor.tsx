@@ -1,6 +1,5 @@
 import type { UIConnection } from "@giselles-ai/react";
 import { TextEditor } from "@giselles-ai/text-editor/react";
-import clsx from "clsx/lite";
 import type { ReactNode } from "react";
 
 interface PromptEditorProps {
@@ -9,10 +8,6 @@ interface PromptEditorProps {
 	connections?: UIConnection[];
 	placeholder?: string;
 	header?: ReactNode;
-	showToolbar?: boolean;
-	editorClassName?: string;
-	minHeightClass?: string;
-	fullHeight?: boolean;
 }
 
 export function PromptEditor({
@@ -21,8 +16,6 @@ export function PromptEditor({
 	connections,
 	placeholder,
 	header,
-	showToolbar = false,
-	editorClassName,
 }: PromptEditorProps) {
 	return (
 		<TextEditor
@@ -31,11 +24,7 @@ export function PromptEditor({
 			placeholder={placeholder}
 			connections={connections}
 			header={header}
-			showToolbar={showToolbar}
-			editorClassName={clsx(
-				"bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] border-none py-[4px] px-[8px] rounded-[8px] h-full min-h-[80px]",
-				editorClassName,
-			)}
+			editorClassName="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] border-none py-[4px] px-[8px] rounded-[8px] h-full min-h-[80px]"
 			editorContainerProps={{
 				className: "grow-1",
 			}}

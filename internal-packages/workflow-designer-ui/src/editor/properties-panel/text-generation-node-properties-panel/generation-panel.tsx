@@ -9,14 +9,13 @@ import {
 } from "@giselles-ai/protocol";
 import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
 import clsx from "clsx/lite";
-import { ArrowDownIcon, ArrowUpIcon, Maximize2, TimerIcon } from "lucide-react";
-import { useCallback } from "react";
+import { ArrowDownIcon, ArrowUpIcon, TimerIcon } from "lucide-react";
 import { TextGenerationIcon } from "../../../icons";
 import ClipboardButton from "../../../ui/clipboard-button";
 import { EmptyState } from "../../../ui/empty-state";
 import { GenerationView } from "../../../ui/generation-view";
 
-function Empty(_: { onGenerate?: () => void; onExpand?: () => void }) {
+function Empty() {
 	return (
 		<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] rounded-[8px] flex justify-center items-center text-text-muted py-[24px]">
 			<EmptyState
@@ -112,30 +111,15 @@ function getGenerationModelInfo(generation: Generation): {
 	return { provider: "Unknown", modelId: "" };
 }
 
-export function GenerationPanel({
-	node,
-	onClickGenerateButton,
-	onExpand,
-}: {
-	node: TextGenerationNode;
-	onClickGenerateButton?: () => void;
-	onExpand?: () => void;
-	isExpanded?: boolean;
-}) {
+export function GenerationPanel({ node }: { node: TextGenerationNode }) {
 	const { data } = useWorkflowDesigner();
 	const { currentGeneration } = useNodeGenerations({
 		nodeId: node.id,
 		origin: { type: "studio", workspaceId: data.id },
 	});
 
-	const handleGenerate = useCallback(() => {
-		if (onClickGenerateButton) {
-			onClickGenerateButton();
-		}
-	}, [onClickGenerateButton]);
-
 	if (currentGeneration === undefined) {
-		return <Empty onGenerate={handleGenerate} onExpand={onExpand} />;
+		return <Empty />;
 	}
 	return (
 		<div
@@ -143,16 +127,6 @@ export function GenerationPanel({
 				"relative flex flex-col bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] rounded-[8px] py-[8px]"
 			}
 		>
-			{onExpand && (
-				<button
-					type="button"
-					onClick={onExpand}
-					className="absolute bottom-[8px] right-[8px] size-[32px] rounded-full bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] flex items-center justify-center transition-colors group z-10"
-					aria-label="Expand"
-				>
-					<Maximize2 className="size-[16px] text-inverse group-hover:text-[color-mix(in_srgb,var(--color-text-inverse,#fff)_80%,transparent)]" />
-				</button>
-			)}
 			<div
 				className={clsx(
 					"border-b border-white-400/20 py-[4px] px-[16px] flex items-center gap-[8px]",

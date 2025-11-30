@@ -145,7 +145,7 @@ export function TextGenerationNodePropertiesPanel({
 				<AdvancedOptions node={node} />
 				<div className="flex flex-col gap-[4px]">
 					<SettingLabel>Output</SettingLabel>
-					<GenerationPanel node={node} onClickGenerateButton={generateText} />
+					<GenerationPanel node={node} />
 				</div>
 			</div>
 			<div className="shrink-0 px-[16px] pt-[8px] pb-[4px]">
