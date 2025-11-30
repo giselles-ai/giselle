@@ -11,10 +11,9 @@ import {
 	openaiImageModels,
 	Tier,
 } from "@giselles-ai/language-model";
-import {
-	type ImageGenerationLanguageModelData,
-	type ImageGenerationNode,
-	Node,
+import type {
+	ImageGenerationLanguageModelData,
+	ImageGenerationNode,
 } from "@giselles-ai/protocol";
 import {
 	isSupportedConnection,
@@ -29,13 +28,7 @@ import { createDefaultModelData, updateModelId } from "./model-defaults";
 import { FalModelPanel, OpenAIImageModelPanel } from "./models";
 import { useConnectedSources } from "./sources";
 
-export function PromptPanel({
-	node,
-	editorVersion,
-}: {
-	node: ImageGenerationNode;
-	editorVersion?: number;
-}) {
+export function PromptPanel({ node }: { node: ImageGenerationNode }) {
 	const { data, updateNodeDataContent, updateNodeData, deleteConnection } =
 		useWorkflowDesigner();
 	const usageLimits = useUsageLimits();
