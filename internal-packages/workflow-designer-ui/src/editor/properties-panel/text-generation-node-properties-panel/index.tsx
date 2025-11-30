@@ -29,7 +29,6 @@ export function TextGenerationNodePropertiesPanel({
 		deleteNode,
 		deleteConnection,
 	} = useWorkflowDesigner();
-	const captureOpts: AddEventListenerOptions = { capture: true };
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
 			nodeId: node.id,
@@ -81,16 +80,6 @@ export function TextGenerationNodePropertiesPanel({
 		usageLimitsReached,
 		error,
 	]);
-
-	useEffect(() => {
-		const onKeydown = (e: KeyboardEvent) => {
-			if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-				generateText();
-			}
-		};
-		window.addEventListener("keydown", onKeydown, captureOpts);
-		return () => window.removeEventListener("keydown", onKeydown, captureOpts);
-	}, [generateText]);
 
 	const handleDeleteConnection = useCallback(
 		(connection: Connection) => {
