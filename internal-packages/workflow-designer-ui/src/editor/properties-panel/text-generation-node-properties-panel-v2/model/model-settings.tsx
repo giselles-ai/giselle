@@ -2,7 +2,11 @@ import {
 	SettingDetail,
 	SettingLabel,
 } from "@giselle-internal/ui/setting-label";
-import type { LanguageModelTier } from "@giselles-ai/language-model-registry";
+import {
+	getEntry,
+	type LanguageModelId,
+	type LanguageModelTier,
+} from "@giselles-ai/language-model-registry";
 import {
 	type AnthropicLanguageModelData,
 	type Connection,
@@ -23,6 +27,7 @@ import { OpenAIModelPanel } from "./openai";
 
 export function ModelSettings({
 	node,
+	onLanguageModelChange,
 	textGenerationNode,
 	onNodeChange,
 	onTextGenerationContentChange,
@@ -30,6 +35,9 @@ export function ModelSettings({
 	userTier,
 }: {
 	node: ContentGenerationNode;
+	onLanguageModelChange?: (
+		value: ContentGenerationNode["content"]["languageModel"],
+	) => void;
 	textGenerationNode: TextGenerationNode;
 	onNodeChange: (value: Partial<TextGenerationNode>) => void;
 	onTextGenerationContentChange: (
@@ -181,6 +189,18 @@ export function ModelSettings({
 		[textGenerationNode, updateOutputForGoogle, onTextGenerationContentChange],
 	);
 
+	const handleLanguageModelIdChange = useCallback(
+		(value: LanguageModelId) => {
+			const languageModel = getEntry(value);
+			onLanguageModelChange?.({
+				id: languageModel.id,
+				provider: languageModel.provider,
+				configuration: languageModel.defaultConfiguration,
+			});
+		},
+		[onLanguageModelChange],
+	);
+
 	return (
 		<>
 			<div className="flex items-center justify-between gap-[12px]">
@@ -188,6 +208,7 @@ export function ModelSettings({
 				<ModelPickerV2
 					userTier={userTier}
 					value={node.content.languageModel.id}
+					onValueChange={handleLanguageModelIdChange}
 				/>
 			</div>
 
