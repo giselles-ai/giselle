@@ -1,12 +1,11 @@
 "use client";
 
+import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
 import clsx from "clsx/lite";
 import { Popover as PopoverPrimitive } from "radix-ui";
-import type { ReactNode } from "react";
-import { useMemo, useState } from "react";
-import { GlassSurfaceLayers } from "./glass-surface";
+import { type ReactNode, useMemo, useState } from "react";
 
-export type ModelPickerGroup = {
+type ModelPickerGroup = {
 	provider: string;
 	label?: string;
 	models: Array<{

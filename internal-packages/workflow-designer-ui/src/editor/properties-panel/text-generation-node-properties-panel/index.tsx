@@ -1,32 +1,40 @@
+import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
-import type { TextGenerationNode } from "@giselles-ai/protocol";
+import type { Connection, TextGenerationNode } from "@giselles-ai/protocol";
 import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { isPromptEmpty } from "../../lib/validate-prompt";
-import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
+import { PropertiesPanelRoot } from "../ui";
 import { GenerateCtaButton } from "../ui/generate-cta-button";
 import { NodePanelHeader } from "../ui/node-panel-header";
+import { AdvancedOptions } from "./advanced-options";
 import { GenerationPanel } from "./generation-panel";
+import { ModelSettings } from "./model";
+import { createDefaultModelData, updateModelId } from "./model-defaults";
 import { useConnectedOutputs } from "./outputs";
-import { TextGenerationTabContent } from "./tab-content";
 
 export function TextGenerationNodePropertiesPanel({
 	node,
 }: {
 	node: TextGenerationNode;
 }) {
-	const { data, updateNodeData, deleteNode } = useWorkflowDesigner();
-	const captureOpts: AddEventListenerOptions = { capture: true };
+	const {
+		data,
+		updateNodeData,
+		updateNodeDataContent,
+		deleteNode,
+		deleteConnection,
+	} = useWorkflowDesigner();
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
 			nodeId: node.id,
 			origin: { type: "studio", workspaceId: data.id },
 		});
-	const { all: connectedSources } = useConnectedOutputs(node);
+	const { all: connectedSources, connections } = useConnectedOutputs(node);
 	const sourceNodes = useMemo(
 		() => connectedSources.map((c) => c.node),
 		[connectedSources],
@@ -73,15 +81,27 @@ export function TextGenerationNodePropertiesPanel({
 		error,
 	]);
 
-	useEffect(() => {
-		const onKeydown = (e: KeyboardEvent) => {
-			if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-				generateText();
+	const handleDeleteConnection = useCallback(
+		(connection: Connection) => {
+			deleteConnection(connection.id);
+
+			const connectedNode = data.nodes.find(
+				(n) => n.id === connection.inputNode.id,
+			);
+			switch (connectedNode?.content.type) {
+				case "textGeneration":
+				case "imageGeneration": {
+					updateNodeData(connectedNode, {
+						inputs: connectedNode.inputs.filter(
+							(i) => i.id !== connection.inputId,
+						),
+					});
+					break;
+				}
 			}
-		};
-		window.addEventListener("keydown", onKeydown, captureOpts);
-		return () => window.removeEventListener("keydown", onKeydown, captureOpts);
-	}, [generateText]);
+		},
+		[deleteConnection, data.nodes, updateNodeData],
+	);
 
 	return (
 		<PropertiesPanelRoot>
@@ -93,30 +113,52 @@ export function TextGenerationNodePropertiesPanel({
 				onDelete={() => deleteNode(node.id)}
 			/>
 
-			<PropertiesPanelContent>
-				<div className="relative flex-1 min-h-0 flex flex-col">
-					<div className="flex-1 min-h-0 overflow-y-auto">
-						<TextGenerationTabContent node={node} />
-						<div className="mt-[8px]">
-							<SettingLabel className="mb-[4px]">Output</SettingLabel>
-							<GenerationPanel
-								node={node}
-								onClickGenerateButton={generateText}
-							/>
-						</div>
-					</div>
-					<div className="shrink-0 px-[16px] pt-[8px] pb-[4px]">
-						<GenerateCtaButton
-							isGenerating={isGenerating}
-							isEmpty={isPromptEmpty(node.content.prompt)}
-							onClick={() => {
-								if (isGenerating) stopGenerationRunner();
-								else generateText();
-							}}
-						/>
-					</div>
+			{/*<PropertiesPanelContent>*/}
+			<div className="grow-1 overflow-y-auto flex flex-col gap-[12px]">
+				<ModelSettings
+					node={node}
+					onModelChange={({ provider, id }) => {
+						const next = createDefaultModelData(
+							provider as "openai" | "anthropic" | "google",
+						);
+						const updated = updateModelId(next, id);
+						updateNodeDataContent(node, { llm: updated, tools: {} });
+					}}
+					onNodeChange={(value) => {
+						updateNodeData(node, value);
+					}}
+					onTextGenerationContentChange={(value) => {
+						updateNodeDataContent(node, value);
+					}}
+					onDeleteConnection={handleDeleteConnection}
+				/>
+
+				<SettingLabel>Prompt</SettingLabel>
+				<PromptEditor
+					placeholder="Write your prompt... Use @ to reference other nodes"
+					value={node.content.prompt}
+					onValueChange={(value) => {
+						updateNodeDataContent(node, { prompt: value });
+					}}
+					connections={connections}
+				/>
+				<AdvancedOptions node={node} />
+				<div className="flex flex-col gap-[4px]">
+					<SettingLabel>Output</SettingLabel>
+					<GenerationPanel node={node} />
 				</div>
-			</PropertiesPanelContent>
+			</div>
+			<div className="shrink-0 px-[16px] pt-[8px] pb-[4px]">
+				<GenerateCtaButton
+					isGenerating={isGenerating}
+					isEmpty={isPromptEmpty(node.content.prompt)}
+					onClick={() => {
+						if (isGenerating) stopGenerationRunner();
+						else generateText();
+					}}
+				/>
+			</div>
+			{/*</PropertiesPanelContent>*/}
 		</PropertiesPanelRoot>
 	);
 }
