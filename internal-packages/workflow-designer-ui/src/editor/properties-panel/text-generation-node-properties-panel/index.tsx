@@ -3,7 +3,7 @@ import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { Connection, TextGenerationNode } from "@giselles-ai/protocol";
 import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
