@@ -153,6 +153,13 @@ export function TextEditor({
 	editorClassName?: string;
 	editorContainerProps?: EditorProviderProps["editorContainerProps"];
 }) {
+	const connectionsSignature = useMemo(
+		() =>
+			connections === undefined
+				? "no-connections"
+				: JSON.stringify(connections.map((connection) => connection.id)),
+		[connections],
+	);
 	const extensions = useMemo(() => {
 		const mentionExtension = Mention.configure({
 			suggestion: createSuggestion(connections),
@@ -184,6 +191,7 @@ export function TextEditor({
 	}, [connections, placeholder]);
 	return (
 		<EditorProvider
+			key={`text-editor-${connectionsSignature}`}
 			slotBefore={
 				<>
 					{showToolbar && <Toolbar tools={tools} />}
@@ -202,7 +210,6 @@ export function TextEditor({
 			onUpdate={(p) => {
 				onValueChange?.(JSON.stringify(p.editor.getJSON()));
 			}}
-			immediatelyRender={false}
 			editorProps={{
 				attributes: {
 					class: clsx("prompt-editor", editorClassName),
