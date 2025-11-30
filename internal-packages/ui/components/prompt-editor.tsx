@@ -23,6 +23,7 @@ export function PromptEditor({
 			onValueChange={onValueChange}
 			placeholder={placeholder}
 			connections={connections}
+			showToolbar={false}
 			header={header}
 			editorClassName="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] border-none py-[4px] px-[8px] rounded-[8px] h-full min-h-[80px]"
 			editorContainerProps={{
