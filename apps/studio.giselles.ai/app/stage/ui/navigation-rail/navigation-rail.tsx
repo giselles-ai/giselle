@@ -2,17 +2,15 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { usePathname } from "next/navigation";
-import { type ReactNode, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { NavigationRailCollapsed } from "./navigation-rail-collapsed";
 import { NavigationRailExpanded } from "./navigation-rail-expanded";
 import type { NavigationRailState, UserDataForNavigationRail } from "./types";
 
 export function NavigationRail({
 	dataLoader,
-	teamSelectionSlot,
 }: {
 	dataLoader: Promise<UserDataForNavigationRail>;
-	teamSelectionSlot?: ReactNode;
 }) {
 	const [state, setState] = useState<NavigationRailState>("expanded");
 	const pathname = usePathname();
@@ -37,7 +35,7 @@ export function NavigationRail({
 			<AnimatePresence initial={false}>
 				{state === "expanded" && (
 					<motion.div
-						className="hidden md:block fixed top-0 left-0 h-full"
+						className="hidden md:block fixed top-14 left-0 h-[calc(100vh-3.5rem)]"
 						exit={{
 							opacity: 0,
 							width: "var(--spacing-navigation-rail-collapsed)",
@@ -53,7 +51,6 @@ export function NavigationRail({
 					>
 						<NavigationRailExpanded
 							user={dataLoader}
-							teamSelectionSlot={teamSelectionSlot}
 							onCollapseButtonClick={() => setState("collapsed")}
 							currentPath={pathname}
 						/>
@@ -63,7 +60,7 @@ export function NavigationRail({
 			<AnimatePresence initial={false}>
 				{state === "collapsed" && (
 					<motion.div
-						className="hidden md:block fixed top-0 left-0 h-full"
+						className="hidden md:block fixed top-14 left-0 h-[calc(100vh-3.5rem)]"
 						initial={{
 							opacity: 1,
 							width: "var(--spacing-navigation-rail-collapsed)",

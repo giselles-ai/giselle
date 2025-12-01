@@ -3,10 +3,8 @@ import {
 	Activity,
 	Blocks,
 	Bolt,
-	Crown,
 	Globe,
 	LibraryIcon,
-	Megaphone,
 	Puzzle,
 	SparklesIcon,
 	SquareLibrary,
@@ -152,18 +150,7 @@ export const navigationItems = [
 			!p.includes("/usage"),
 	},
 	{ id: "divider-2", type: "divider" },
-	// Upgrade button
-	{ id: "nav-upgrade", type: "action", icon: Crown, label: "Upgrade" },
-	// Spacer section above Docs
-	{ id: "section-others", type: "section", label: "" },
 	// Others
-	{
-		id: "nav-whats-new",
-		type: "external",
-		icon: Megaphone,
-		label: "What's New",
-		href: "https://docs.giselles.ai/en/releases/release-notes",
-	},
 	{
 		id: "nav-more",
 		type: "submenu",

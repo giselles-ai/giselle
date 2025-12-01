@@ -11,11 +11,19 @@ export async function graphql(authConfig: GitHubAuthConfig) {
 				privateKey: authConfig.privateKey,
 				installationId: authConfig.installationId,
 			});
-			const installationAcessTokenAuthentication = await auth({
-				type: "installation",
-				installationId: authConfig.installationId,
-			});
-			token = installationAcessTokenAuthentication.token;
+			try {
+				const installationAcessTokenAuthentication = await auth({
+					type: "installation",
+					installationId: authConfig.installationId,
+				});
+				token = installationAcessTokenAuthentication.token;
+			} catch (error) {
+				const errorMessage =
+					error instanceof Error ? error.message : String(error);
+				throw new Error(
+					`Failed to authenticate GitHub App installation (ID: ${authConfig.installationId}): ${errorMessage}. The installation may have been removed or the app may not have access to it.`,
+				);
+			}
 			break;
 		}
 		case "app": {

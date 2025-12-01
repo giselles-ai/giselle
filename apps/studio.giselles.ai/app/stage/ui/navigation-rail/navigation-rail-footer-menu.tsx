@@ -61,30 +61,18 @@ export function NavigationRailFooterMenu({
 		<DropdownMenuPrimitive.Root>
 			<DropdownMenuPrimitive.Trigger asChild>
 				<button
-					className={`w-full hover:bg-ghost-element-hover h-full rounded-[8px] cursor-pointer outline-none px-1 py-1.5 flex ${
-						variant === "collapsed" ? "justify-center" : "items-center gap-2"
-					}`}
+					className="w-full hover:bg-ghost-element-hover h-full rounded-[8px] cursor-pointer outline-none px-1 py-1.5 flex items-center justify-center"
 					type="button"
 				>
 					<div className="size-8 flex items-center justify-center shrink-0">
 						<AvatarImage
-							className="rounded-full"
+							className="rounded-full w-8 h-8"
 							avatarUrl={user.avatarUrl ?? null}
-							width={24}
-							height={24}
+							width={32}
+							height={32}
 							alt={user.displayName || user.email || "User"}
 						/>
 					</div>
-					{variant === "expanded" && (
-						<div className="flex flex-col min-w-0 flex-1 text-left">
-							<p className="truncate text-text-muted text-sm">
-								{user.displayName ?? user.email}
-							</p>
-							<p className="truncate text-stage-accent text-[10px]">
-								{formatPlanName(user.currentTeam.plan)}
-							</p>
-						</div>
-					)}
 				</button>
 			</DropdownMenuPrimitive.Trigger>
 			<DropdownMenuPrimitive.Portal>
@@ -92,9 +80,30 @@ export function NavigationRailFooterMenu({
 					align="start"
 					alignOffset={0}
 					sideOffset={4}
-					className={"z-50 w-[var(--radix-dropdown-menu-trigger-width)]"}
+					className="z-50 min-w-[200px]"
 				>
 					<PopoverContent>
+						{/* User Info */}
+						<div className="px-[8px] py-[6px] mb-1">
+							<div className="flex items-center gap-2 mb-2">
+								<AvatarImage
+									className="rounded-full shrink-0"
+									avatarUrl={user.avatarUrl ?? null}
+									width={32}
+									height={32}
+									alt={user.displayName || user.email || "User"}
+								/>
+								<div className="flex flex-col min-w-0 flex-1 text-left">
+									<p className="truncate text-text text-sm font-medium">
+										{user.displayName ?? user.email}
+									</p>
+									<p className="truncate text-text-muted text-[10px]">
+										{formatPlanName(user.currentTeam.plan)}
+									</p>
+								</div>
+							</div>
+						</div>
+						<DropdownMenuPrimitive.Separator className="h-px bg-white/10 my-1" />
 						{/* Account Settings with Submenu */}
 						<DropdownMenuPrimitive.Sub>
 							<DropdownMenuPrimitive.SubTrigger

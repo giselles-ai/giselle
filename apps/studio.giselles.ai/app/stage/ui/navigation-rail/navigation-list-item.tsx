@@ -3,8 +3,6 @@ import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Button } from "@/app/(main)/settings/components/button";
-import { upgradeCurrentTeam } from "@/services/teams/actions/upgrade-current-team";
 import type { NavigationItem } from "./navigation-items";
 import type { NavigationRailState } from "./types";
 
@@ -54,26 +52,6 @@ export function NavigationListItem(
 					</div>
 					{props.variant === "expanded" && props.label}
 				</a>
-			);
-		case "action":
-			return props.variant === "expanded" ? (
-				<form className="w-full my-2">
-					<Button
-						className="block p-2 w-full text-center font-medium text-[14px] leading-[20.4px] font-geist text-white bg-primary-900 hover:bg-primary-900/80 rounded-lg transition-colors"
-						formAction={upgradeCurrentTeam}
-					>
-						Upgrade to Pro
-					</Button>
-				</form>
-			) : (
-				<Link
-					href="/settings/team"
-					className="text-stage-sidebar-text/60 text-sm flex items-center py-0.5 hover:text-stage-sidebar-text-hover rounded-lg px-1"
-				>
-					<div className="size-8 flex items-center justify-center">
-						<props.icon className="size-4" />
-					</div>
-				</Link>
 			);
 		case "section":
 			return props.variant === "expanded" ? (

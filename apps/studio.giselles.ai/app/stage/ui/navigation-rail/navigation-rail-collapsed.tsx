@@ -1,6 +1,6 @@
 import { GiselleIcon } from "@giselle-internal/workflow-designer-ui";
 import { ChevronsRightIcon } from "lucide-react";
-import { Suspense, use } from "react";
+import { Suspense } from "react";
 import { MenuButton } from "./menu-button";
 import { navigationItems } from "./navigation-items";
 import { NavigationList } from "./navigation-list";
@@ -10,7 +10,6 @@ import { NavigationRailContentsContainer } from "./navigation-rail-contents-cont
 import { NavigationRailFooter } from "./navigation-rail-footer";
 import { NavigationRailFooterMenu } from "./navigation-rail-footer-menu";
 import { NavigationRailHeader } from "./navigation-rail-header";
-import { TeamAvatarCompact } from "./team-avatar-compact";
 import type { UserDataForNavigationRail } from "./types";
 
 export function NavigationRailCollapsed({
@@ -22,8 +21,6 @@ export function NavigationRailCollapsed({
 	user: Promise<UserDataForNavigationRail>;
 	currentPath?: string;
 }) {
-	const user = use(userPromise);
-	const isPro = user.currentTeam.isPro;
 	return (
 		<NavigationRailContainer variant="collapsed">
 			<NavigationRailHeader>
@@ -38,12 +35,8 @@ export function NavigationRailCollapsed({
 				</div>
 			</NavigationRailHeader>
 			<NavigationRailContentsContainer>
-				<TeamAvatarCompact userPromise={userPromise} />
 				<NavigationList>
 					{navigationItems.map((navigationItem) => {
-						if (navigationItem.type === "action" && isPro) {
-							return null;
-						}
 						return (
 							<NavigationListItem
 								key={navigationItem.id}
