@@ -33,7 +33,22 @@ export async function getGitHubRepositoryFullname(args: {
 			repo: result.data.node.name,
 		};
 	} catch (error) {
+		// Re-throw if it's already a properly formatted error
 		if (error instanceof Error) {
+			// Check if error message indicates installation not found
+			if (
+				error.message.includes("installation not found") ||
+				error.message.includes("installation may have been removed")
+			) {
+				throw error;
+			}
+			// Check if original error message indicates 404
+			const errorMessage = error.message;
+			if (errorMessage.includes("Not Found") || errorMessage.includes("404")) {
+				throw new Error(
+					`GitHub App installation not found (ID: ${args.installationId}). The installation may have been removed or the app may not have access to it.`,
+				);
+			}
 			throw error;
 		}
 		throw new Error(
