@@ -1,5 +1,9 @@
-import { convertTextGenerationToContentGeneration } from "@giselles-ai/node-registry";
 import {
+	convertContentGenerationToTextGeneration,
+	convertTextGenerationToContentGeneration,
+} from "@giselles-ai/node-registry";
+import {
+	isContentGenerationNode,
 	isTextGenerationNode,
 	Node,
 	Workspace,
@@ -43,13 +47,19 @@ export async function getWorkspace({
 	const nodes = workspace.nodes
 		.map((node) => parseAndMod(Node, node))
 		.map((node) => {
-			if (!context.experimental_contentGenerationNode) {
-				return node;
+			if (
+				context.experimental_contentGenerationNode &&
+				isTextGenerationNode(node)
+			) {
+				return convertTextGenerationToContentGeneration(node);
 			}
-			if (!isTextGenerationNode(node)) {
-				return node;
+			if (
+				!context.experimental_contentGenerationNode &&
+				isContentGenerationNode(node)
+			) {
+				return convertContentGenerationToTextGeneration(node);
 			}
-			return convertTextGenerationToContentGeneration(node);
+			return node;
 		});
 	return {
 		...workspace,
