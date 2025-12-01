@@ -526,7 +526,8 @@ export function Page({
 	) => Promise<TaskId>;
 }) {
 	const data = use(dataLoader);
-	const historyApps = (() => {
+	// TODO: Use history apps if needed in the future
+	const _historyApps = (() => {
 		const map = new Map<string, StageApp>();
 		for (const task of data.tasks) {
 			const app = data.apps.find(
@@ -745,24 +746,24 @@ export function Page({
 									</div>
 								</div>
 
-								{/* Section 2: Apps from history */}
+								{/* Section 2: Select an Apps to Run */}
 								<div className="flex flex-col">
 									<h2 className="text-inverse text-[14px] max-w-[960px] mx-auto w-full text-center">
-										Apps from history
+										Select an Apps to Run
 									</h2>
-									{historyApps.length === 0 ? (
+									{teamApps.length === 0 ? (
 										<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
-											No apps found in history.
+											No apps available.
 										</p>
 									) : (
 										<div
-											className="flex gap-4 overflow-x-auto pt-4 pb-4 px-[calc(50%-480px)]"
+											className="flex gap-4 overflow-x-auto pt-4 pb-4 max-w-[960px] mx-auto w-full px-4"
 											style={{
 												scrollbarWidth: "none",
 												msOverflowStyle: "none",
 											}}
 										>
-											{historyApps.map((app) => (
+											{teamApps.map((app) => (
 												<AppCard
 													app={app}
 													key={app.id}
@@ -781,7 +782,7 @@ export function Page({
 								{/* Section 3: Team apps */}
 								<div className="flex flex-col">
 									<h2 className="text-inverse text-[14px] max-w-[960px] mx-auto w-full text-center">
-										Team apps
+										Edit Apps in Studio
 									</h2>
 									{teamApps.length === 0 ? (
 										<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
@@ -789,7 +790,7 @@ export function Page({
 										</p>
 									) : (
 										<div
-											className="flex gap-4 overflow-x-auto pt-4 pb-4 px-[calc(50%-480px)]"
+											className="flex gap-4 overflow-x-auto pt-4 pb-4 max-w-[960px] mx-auto w-full px-4"
 											style={{
 												scrollbarWidth: "none",
 												msOverflowStyle: "none",
