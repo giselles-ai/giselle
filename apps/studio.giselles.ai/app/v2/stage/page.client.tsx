@@ -15,6 +15,7 @@ import {
 	XIcon,
 } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
+import { useRouter } from "next/navigation";
 import {
 	use,
 	useCallback,
@@ -295,7 +296,22 @@ function ChatInputArea({
 		[apps],
 	);
 
-	const [submittedValue, setSubmittedValue] = useState("");
+	const resizeTextarea = useCallback(() => {
+		const textarea = textareaRef.current;
+		if (textarea) {
+			textarea.style.height = "auto";
+			textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
+		}
+	}, []);
+
+	const handleInputChange = useCallback(
+		(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+			setInputValue(e.target.value);
+			// Auto-resize textarea on input change
+			resizeTextarea();
+		},
+		[resizeTextarea],
+	);
 
 	const handleSubmit = useCallback(() => {
 		if (!selectedApp || !inputValue.trim()) return;
@@ -310,7 +326,6 @@ function ChatInputArea({
 			? [{ name: textParam.id, type: "string" as const, value: inputValue }]
 			: [{ name: "input", type: "string" as const, value: inputValue }];
 
-		setSubmittedValue(inputValue);
 		onSubmit({
 			inputs: [
 				{
@@ -319,10 +334,10 @@ function ChatInputArea({
 				},
 			],
 		});
-		if (!isRunning) {
-			setInputValue("");
-		}
-	}, [selectedApp, inputValue, onSubmit, isRunning]);
+		setInputValue("");
+		// Reset textarea height after clearing
+		setTimeout(() => resizeTextarea(), 0);
+	}, [selectedApp, inputValue, onSubmit, resizeTextarea]);
 
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -333,23 +348,6 @@ function ChatInputArea({
 		},
 		[handleSubmit],
 	);
-
-	// Reset submitted value when running stops
-	useEffect(() => {
-		if (!isRunning) {
-			setSubmittedValue("");
-			setInputValue("");
-		}
-	}, [isRunning]);
-
-	// Auto-resize textarea
-	useEffect(() => {
-		const textarea = textareaRef.current;
-		if (textarea) {
-			textarea.style.height = "auto";
-			textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
-		}
-	});
 
 	return (
 		<div className="relative w-full max-w-[960px] min-w-[320px] mx-auto">
@@ -429,16 +427,8 @@ function ChatInputArea({
 					{/* Textarea */}
 					<textarea
 						ref={textareaRef}
-						value={
-							isRunning && submittedValue
-								? `${submittedValue} + generating`
-								: inputValue
-						}
-						onChange={(e) => {
-							if (!isRunning) {
-								setInputValue(e.target.value);
-							}
-						}}
+						value={inputValue}
+						onChange={handleInputChange}
 						onKeyDown={handleKeyDown}
 						placeholder={
 							selectedApp
@@ -553,6 +543,7 @@ export function Page({
 				)
 			: data.apps.filter((app) => app.isMine);
 
+	const router = useRouter();
 	const [selectedAppId, setSelectedAppId] = useState<string | undefined>();
 	const [runningAppId, setRunningAppId] = useState<string | undefined>();
 	const [isRunning, startTransition] = useTransition();
@@ -582,13 +573,15 @@ export function Page({
 			setRunStatus("running");
 			startTransition(async () => {
 				try {
-					await createAndStartTaskAction({
+					const taskId = await createAndStartTaskAction({
 						generationOriginType: "stage",
 						nodeId: selectedApp.entryNodeId,
 						inputs: event.inputs,
 						workspaceId: selectedApp.workspaceId,
 					});
 					setRunStatus("completed");
+					// Navigate to task page immediately when completed
+					router.push(`/stage/tasks/${taskId}`);
 				} catch (error) {
 					// eslint-disable-next-line no-console
 					console.error("Failed to create and start task from stage:", error);
@@ -597,23 +590,8 @@ export function Page({
 				}
 			});
 		},
-		[selectedApp, createAndStartTaskAction],
+		[selectedApp, createAndStartTaskAction, router],
 	);
-
-	useEffect(() => {
-		if (runStatus !== "completed") {
-			return;
-		}
-
-		const timer = setTimeout(() => {
-			setRunStatus("idle");
-			setRunningAppId(undefined);
-		}, 2000);
-
-		return () => {
-			clearTimeout(timer);
-		};
-	}, [runStatus]);
 
 	return (
 		<div className="w-full h-screen flex flex-col">
