@@ -16,35 +16,6 @@ import { Popover as PopoverPrimitive, ToggleGroup } from "radix-ui";
 import { useCallback, useMemo, useState } from "react";
 import { ProTag } from "../editor/tool";
 
-function LanguageModelItem({
-	languageModel,
-	userTier,
-}: {
-	languageModel: LanguageModel;
-	userTier: LanguageModelTier;
-}) {
-	const hasRequredTier = hasTierAccess(userTier, languageModel.requiredTier);
-	return (
-		<button
-			type="button"
-			aria-disabled={!hasRequredTier}
-			className={clsx(
-				"flex gap-[12px] items-center p-[4px] rounded-[4px] text-left",
-				hasRequredTier
-					? "hover:bg-white/5 focus:bg-white/5 cursor-pointer"
-					: "disabled:opacity-50 disabled:cursor-not-allowed",
-			)}
-		>
-			<div className="flex items-center gap-[8px]">
-				<p className="text-[14px] text-left text-nowrap">
-					{languageModel.name}
-				</p>
-				{languageModel.requiredTier === "pro" && <ProTag />}
-			</div>
-		</button>
-	);
-}
-
 export function ModelPickerV2({
 	value,
 	onValueChange,
@@ -94,6 +65,7 @@ export function ModelPickerV2({
 
 	const handleValueChange = useCallback(
 		(value: string) => {
+			console.log("???");
 			if (!isLanguageModelId(value)) {
 				console.warn(`Invalid language model ID: ${value}`);
 				return;
@@ -202,12 +174,23 @@ export function ModelPickerV2({
 												value={model.id}
 												key={model.id}
 												asChild
-												disabled={hasTierAccess(userTier, model.requiredTier)}
+												disabled={!hasTierAccess(userTier, model.requiredTier)}
 											>
-												<LanguageModelItem
-													languageModel={model}
-													userTier={userTier}
-												/>
+												<button
+													type="button"
+													className={clsx(
+														"flex gap-[12px] items-center p-[4px] rounded-[4px] text-left",
+														"hover:bg-white/5 focus:bg-white/5 cursor-pointer",
+														"disabled:opacity-50 disabled:cursor-not-allowed",
+													)}
+												>
+													<div className="flex items-center gap-[8px]">
+														<p className="text-[14px] text-left text-nowrap">
+															{model.name}
+														</p>
+														{model.requiredTier === "pro" && <ProTag />}
+													</div>
+												</button>
 											</ToggleGroup.Item>
 										))}
 									</div>
