@@ -2,15 +2,9 @@
 
 import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
-import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import { GitHubIcon } from "@giselles-ai/icons/github";
-import { formatTimestamp } from "@giselles-ai/lib/utils";
-import type {
-	GenerationContextInput,
-	Task,
-	TaskId,
-} from "@giselles-ai/protocol";
+import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
 import {
 	ArrowUpIcon,
 	FileIcon,
@@ -21,7 +15,6 @@ import {
 	XIcon,
 } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
-import { useRouter } from "next/navigation";
 import {
 	use,
 	useCallback,
@@ -117,79 +110,6 @@ function AppCard({
 	);
 }
 
-function TaskCard({ task }: { task: Task }) {
-	const router = useRouter();
-	const totalSteps =
-		task.steps.queued +
-		task.steps.inProgress +
-		task.steps.completed +
-		task.steps.warning +
-		task.steps.cancelled +
-		task.steps.failed;
-
-	const getStatusBadgeStatus = (status: Task["status"]) => {
-		switch (status?.toLowerCase()) {
-			case "completed":
-			case "success":
-				return "success" as const;
-			case "failed":
-			case "error":
-				return "error" as const;
-			case "running":
-			case "processing":
-			case "inprogress":
-				return "info" as const;
-			case "queued":
-			case "pending":
-			case "created":
-				return "warning" as const;
-			case "cancelled":
-			case "ignored":
-				return "ignored" as const;
-			default:
-				return "info" as const;
-		}
-	};
-
-	const formatTokenCount = (count: number) => {
-		if (count < 1000) return count.toString();
-		if (count < 1000000) return `${(count / 1000).toFixed(1)}K`;
-		return `${(count / 1000000).toFixed(1)}M`;
-	};
-
-	const handleClick = () => {
-		router.push(`/stage/tasks/${task.id}`);
-	};
-
-	return (
-		<button
-			type="button"
-			onClick={handleClick}
-			className="w-full text-left px-3 py-3 rounded-lg border border-border bg-card/30 hover:bg-card/50 hover:border-white/20 transition-all cursor-pointer focus:outline-none"
-		>
-			<div className="flex items-start justify-between gap-3 mb-2">
-				<h3 className="text-sm font-semibold text-foreground line-clamp-1 flex-1">
-					{task.name || "Untitled Task"}
-				</h3>
-				<StatusBadge status={getStatusBadgeStatus(task.status)} variant="dot">
-					{task.status}
-				</StatusBadge>
-			</div>
-			<div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mb-2">
-				<span>{formatTimestamp.toRelativeTime(task.createdAt)}</span>
-				{task.usage.totalTokens > 0 && (
-					<span>• {formatTokenCount(task.usage.totalTokens)} tokens</span>
-				)}
-				{totalSteps > 0 && (
-					<span>
-						Steps: {task.steps.completed}/{totalSteps}
-					</span>
-				)}
-			</div>
-		</button>
-	);
-}
-
 interface StageTopCardProps {
 	selectedApp?: StageApp;
 	runningApp?: StageApp;
@@ -234,9 +154,14 @@ function StageTopCard({
 					</div>
 					{/* App details */}
 					<div className="min-w-0 flex-1">
-						<h3 className="text-lg font-semibold text-foreground">
-							{selectedApp.name}
-						</h3>
+						<div className="flex items-center gap-2">
+							<h3 className="text-lg font-semibold text-foreground">
+								{selectedApp.name}
+							</h3>
+							{runningApp && runStatus === "running" && (
+								<span className="text-sm text-text-muted">Generating...</span>
+							)}
+						</div>
 						{selectedApp.description ? (
 							<p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
 								{selectedApp.description}
@@ -314,9 +239,7 @@ function StageTopCard({
 						) : runningApp && runStatus === "running" ? (
 							<>
 								<p className="font-[800] text-text/60">Creating task...</p>
-								<p className="text-text-muted text-[12px] text-center leading-5">
-									You can track progress in the Tasks panel on the right.
-								</p>
+								<p className="text-text-muted text-[12px] text-center leading-5"></p>
 								<div className="mt-2 flex items-center gap-3">
 									<div className="stage-running-icon relative flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border border-[hsl(192,73%,84%)] bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] shadow-[0_0_22px_rgba(0,135,246,0.95)]">
 										<DynamicIcon
@@ -372,6 +295,8 @@ function ChatInputArea({
 		[apps],
 	);
 
+	const [submittedValue, setSubmittedValue] = useState("");
+
 	const handleSubmit = useCallback(() => {
 		if (!selectedApp || !inputValue.trim()) return;
 
@@ -385,6 +310,7 @@ function ChatInputArea({
 			? [{ name: textParam.id, type: "string" as const, value: inputValue }]
 			: [{ name: "input", type: "string" as const, value: inputValue }];
 
+		setSubmittedValue(inputValue);
 		onSubmit({
 			inputs: [
 				{
@@ -393,8 +319,10 @@ function ChatInputArea({
 				},
 			],
 		});
-		setInputValue("");
-	}, [selectedApp, inputValue, onSubmit]);
+		if (!isRunning) {
+			setInputValue("");
+		}
+	}, [selectedApp, inputValue, onSubmit, isRunning]);
 
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -405,6 +333,14 @@ function ChatInputArea({
 		},
 		[handleSubmit],
 	);
+
+	// Reset submitted value when running stops
+	useEffect(() => {
+		if (!isRunning) {
+			setSubmittedValue("");
+			setInputValue("");
+		}
+	}, [isRunning]);
 
 	// Auto-resize textarea
 	useEffect(() => {
@@ -426,9 +362,28 @@ function ChatInputArea({
 					background: "rgba(255, 255, 255, 0.04)",
 					backdropFilter: "blur(8px)",
 					WebkitBackdropFilter: "blur(8px)",
-					border: "1px solid rgba(255,255,255,0.08)",
+					border: isRunning
+						? "1px solid transparent"
+						: "1px solid rgba(255,255,255,0.08)",
 				}}
 			>
+				{isRunning && (
+					<div
+						className="absolute inset-0 rounded-[20px] pointer-events-none"
+						style={{
+							background:
+								"linear-gradient(90deg, transparent 0%, hsl(210,80%,55%) 20%, hsl(192,73%,84%) 50%, hsl(210,80%,55%) 80%, transparent 100%)",
+							backgroundSize: "200% 100%",
+							animation: "border-glow-rotate 2s linear infinite",
+							mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+							maskComposite: "exclude",
+							WebkitMask:
+								"linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+							WebkitMaskComposite: "xor",
+							padding: "1px",
+						}}
+					/>
+				)}
 				{/* Animated background glow - subtle fluid effect */}
 				<div className="absolute inset-0 -z-10 overflow-visible pointer-events-none">
 					{/* Purple blob - moves slowly left-right */}
@@ -474,8 +429,16 @@ function ChatInputArea({
 					{/* Textarea */}
 					<textarea
 						ref={textareaRef}
-						value={inputValue}
-						onChange={(e) => setInputValue(e.target.value)}
+						value={
+							isRunning && submittedValue
+								? `${submittedValue} + generating`
+								: inputValue
+						}
+						onChange={(e) => {
+							if (!isRunning) {
+								setInputValue(e.target.value);
+							}
+						}}
 						onKeyDown={handleKeyDown}
 						placeholder={
 							selectedApp
@@ -593,14 +556,9 @@ export function Page({
 	const [selectedAppId, setSelectedAppId] = useState<string | undefined>();
 	const [runningAppId, setRunningAppId] = useState<string | undefined>();
 	const [isRunning, startTransition] = useTransition();
-	const [isTaskSidebarOpen, setIsTaskSidebarOpen] = useState(false);
 	const [runStatus, setRunStatus] = useState<"idle" | "running" | "completed">(
 		"idle",
 	);
-	const [isTaskListScrollable, setIsTaskListScrollable] = useState(false);
-	const [isTaskListAtTop, setIsTaskListAtTop] = useState(true);
-	const [isTaskListAtBottom, setIsTaskListAtBottom] = useState(false);
-	const taskListScrollRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
 		if (!selectedAppId) return;
@@ -617,54 +575,9 @@ export function Page({
 		? data.apps.find((app) => app.id === runningAppId)
 		: undefined;
 
-	const sevenDaysAgo = useMemo(() => {
-		const d = new Date();
-		d.setDate(d.getDate() - 7);
-		return d;
-	}, []);
-
-	const recentTasks = useMemo(
-		() =>
-			data.tasks
-				.filter((task) => {
-					const createdAt = new Date(task.createdAt);
-					if (Number.isNaN(createdAt.getTime())) {
-						return true;
-					}
-					return createdAt >= sevenDaysAgo;
-				})
-				.slice(0, 20),
-		[data.tasks, sevenDaysAgo],
-	);
-
-	// Track task list vertical scroll to show top/bottom gradients in the sidebar
-	useEffect(() => {
-		const element = taskListScrollRef.current;
-		if (!element) {
-			return;
-		}
-
-		const updateScrollState = () => {
-			const maxScrollTop = element.scrollHeight - element.clientHeight;
-			setIsTaskListScrollable(maxScrollTop > 1);
-			setIsTaskListAtTop(element.scrollTop <= 0);
-			setIsTaskListAtBottom(element.scrollTop >= maxScrollTop - 1);
-		};
-
-		updateScrollState();
-		element.addEventListener("scroll", updateScrollState);
-		window.addEventListener("resize", updateScrollState);
-
-		return () => {
-			element.removeEventListener("scroll", updateScrollState);
-			window.removeEventListener("resize", updateScrollState);
-		};
-	}, []);
-
 	const handleRunSubmit = useCallback(
 		(event: { inputs: GenerationContextInput[] }) => {
 			if (!selectedApp) return;
-			setIsTaskSidebarOpen(true);
 			setRunningAppId(selectedApp.id);
 			setRunStatus("running");
 			startTransition(async () => {
@@ -870,70 +783,6 @@ export function Page({
 						/>
 					</div>
 				</div>
-
-				{/* Right sidebar: Tasks history (outside main container) */}
-				{isTaskSidebarOpen && (
-					<>
-						<div className="self-stretch w-px bg-border/60" />
-						<aside className="relative w-[280px] h-screen rounded-lg bg-card/30 flex flex-col py-[24px] mr-4 overflow-hidden">
-							<div className="flex items-center justify-between mb-3">
-								<h2 className="text-sm font-semibold text-foreground tracking-wide uppercase">
-									Tasks
-								</h2>
-								<button
-									type="button"
-									onClick={() => {
-										setIsTaskSidebarOpen(false);
-									}}
-									className="text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
-									aria-label="Close tasks sidebar"
-								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="24"
-										height="24"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeWidth="2"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										className="h-4 w-4"
-									>
-										<title>Close tasks</title>
-										<path d="M18 6 6 18" />
-										<path d="m6 6 12 12" />
-									</svg>
-								</button>
-							</div>
-							{recentTasks.length === 0 ? (
-								<div className="flex flex-1 items-center justify-center px-3 py-4 text-sm text-muted-foreground text-center">
-									No task history yet
-								</div>
-							) : (
-								<div
-									ref={taskListScrollRef}
-									className="flex-1 min-h-0 space-y-3 overflow-y-auto pr-1 scrollbar-hide"
-									style={{
-										scrollbarWidth: "none",
-										msOverflowStyle: "none",
-									}}
-								>
-									{recentTasks.map((task) => (
-										<TaskCard key={task.id} task={task} />
-									))}
-								</div>
-							)}
-
-							{isTaskListScrollable && !isTaskListAtTop && (
-								<div className="pointer-events-none absolute inset-x-0 top-0 h-5 bg-gradient-to-b from-[color:var(--color-background)] to-transparent" />
-							)}
-							{isTaskListScrollable && !isTaskListAtBottom && (
-								<div className="pointer-events-none absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-[color:var(--color-background)] to-transparent" />
-							)}
-						</aside>
-					</>
-				)}
 			</div>
 		</div>
 	);
