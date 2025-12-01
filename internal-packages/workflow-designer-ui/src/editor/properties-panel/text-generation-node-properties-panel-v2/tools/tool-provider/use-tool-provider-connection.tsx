@@ -1,7 +1,6 @@
 import {
 	type ContentGenerationNode,
 	SecretId,
-	type TextGenerationNode,
 	type ToolSet,
 } from "@giselles-ai/protocol";
 import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
