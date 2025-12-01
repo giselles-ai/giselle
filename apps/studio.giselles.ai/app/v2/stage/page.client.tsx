@@ -1,5 +1,6 @@
 "use client";
 
+import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
@@ -199,7 +200,7 @@ function StageTopCard({
 				</div>
 			)}
 			{selectedApp ? (
-				<div className="relative flex items-center gap-4 p-4 rounded-lg bg-card/40">
+				<div className="relative flex items-center gap-4 px-4 py-[32px] rounded-lg bg-card/40">
 					{/* Close button */}
 					<button
 						type="button"
@@ -210,19 +211,14 @@ function StageTopCard({
 					</button>
 					{/* App icon */}
 					<div
-						className={`relative flex h-[80px] w-[80px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border transition-all ${
-							runStatus === "running"
-								? "bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] border-[hsl(192,73%,84%)] shadow-[0_0_22px_rgba(0,135,246,0.95)]"
-								: "bg-card/60 border-border"
-						}`}
+						className="relative flex h-[80px] w-[80px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border transition-all bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] border-[hsl(192,73%,84%)]"
+						style={{
+							boxShadow: "0 0 10px rgb(0,135,246), 0 0 20px rgb(0,135,246)",
+						}}
 					>
 						<DynamicIcon
 							name={selectedApp.iconName}
-							className={`relative z-[1] h-8 w-8 stroke-1 ${
-								runStatus === "running"
-									? "text-[hsl(192,73%,84%)]"
-									: "text-foreground"
-							}`}
+							className="relative z-[1] h-8 w-8 stroke-1 text-[hsl(192,73%,84%)]"
 						/>
 					</div>
 					{/* App details */}
@@ -261,7 +257,7 @@ function StageTopCard({
 					</div>
 				</div>
 			) : (
-				<div className="w-full flex justify-center items-center py-[32px]">
+				<div className="w-full h-[144px] flex justify-center items-center">
 					<div className="flex flex-col items-center relative z-10">
 						{runningApp && runStatus === "completed" ? (
 							<>
@@ -367,22 +363,23 @@ function ChatInputArea({
 
 	return (
 		<div className="relative w-full max-w-[720px] min-w-[320px] mx-auto">
-			{/* Outer container - glassmorphism with blur */}
+			{/* Outer container - subtle glassmorphism */}
 			<div
-				className={`relative rounded-[20px] p-[6px] transition-all shadow-[0_8px_32px_rgba(0,0,0,0.3),0_2px_8px_rgba(0,0,0,0.2)] ${
+				className={`relative rounded-[20px] p-[6px] transition-all shadow-[0_4px_16px_rgba(0,0,0,0.15)] ${
 					isDisabled ? "opacity-50" : ""
 				}`}
 				style={{
-					background: "rgba(255, 255, 255, 0.08)",
-					backdropFilter: "blur(12px)",
-					WebkitBackdropFilter: "blur(12px)",
+					background: "rgba(255, 255, 255, 0.04)",
+					backdropFilter: "blur(8px)",
+					WebkitBackdropFilter: "blur(8px)",
+					border: "1px solid rgba(255,255,255,0.08)",
 				}}
 			>
-				{/* Animated background glow - fluid-like effect */}
+				{/* Animated background glow - subtle fluid effect */}
 				<div className="absolute inset-0 -z-10 overflow-visible pointer-events-none">
 					{/* Purple blob - moves slowly left-right */}
 					<div
-						className="absolute w-40 h-40 rounded-full blur-[80px] opacity-40 animate-[blob1_8s_ease-in-out_infinite]"
+						className="absolute w-40 h-40 rounded-full blur-[80px] opacity-20 animate-[blob1_8s_ease-in-out_infinite]"
 						style={{
 							background: "hsl(270, 70%, 50%)",
 							left: "-10%",
@@ -391,7 +388,7 @@ function ChatInputArea({
 					/>
 					{/* Pink blob - moves diagonally */}
 					<div
-						className="absolute w-36 h-36 rounded-full blur-[70px] opacity-35 animate-[blob2_10s_ease-in-out_infinite]"
+						className="absolute w-36 h-36 rounded-full blur-[70px] opacity-15 animate-[blob2_10s_ease-in-out_infinite]"
 						style={{
 							background: "hsl(320, 70%, 60%)",
 							left: "30%",
@@ -400,7 +397,7 @@ function ChatInputArea({
 					/>
 					{/* Blue blob - center bottom */}
 					<div
-						className="absolute w-48 h-32 rounded-full blur-[60px] opacity-30 animate-[blob3_12s_ease-in-out_infinite]"
+						className="absolute w-48 h-32 rounded-full blur-[60px] opacity-15 animate-[blob3_12s_ease-in-out_infinite]"
 						style={{
 							background: "hsl(210, 80%, 55%)",
 							left: "50%",
@@ -409,7 +406,7 @@ function ChatInputArea({
 					/>
 					{/* Cyan blob - moves right side */}
 					<div
-						className="absolute w-32 h-32 rounded-full blur-[70px] opacity-35 animate-[blob4_9s_ease-in-out_infinite]"
+						className="absolute w-32 h-32 rounded-full blur-[70px] opacity-15 animate-[blob4_9s_ease-in-out_infinite]"
 						style={{
 							background: "hsl(192, 73%, 50%)",
 							right: "-5%",
@@ -419,7 +416,7 @@ function ChatInputArea({
 				</div>
 
 				{/* Inner container - subtle background */}
-				<div className="relative rounded-[14px] bg-background/50 p-4">
+				<div className="relative rounded-[14px] bg-link-muted/10 p-4">
 					{/* Top row: Textarea */}
 					<textarea
 						ref={textareaRef}
@@ -436,34 +433,43 @@ function ChatInputArea({
 						className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-foreground/40 outline-none disabled:cursor-not-allowed"
 					/>
 
-					{/* Bottom row: Buttons */}
+					{/* Bottom row: App name and buttons */}
 					<div className="flex items-center justify-between mt-3">
-						{/* Left side: Attachment button - neumorphism raised style */}
-						<button
-							type="button"
-							disabled={isDisabled}
-							className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] transition-all border border-white/5 shadow-[2px_2px_4px_rgba(0,0,0,0.4),-1px_-1px_3px_rgba(255,255,255,0.06)] ${
-								isDisabled
-									? "opacity-30 cursor-not-allowed bg-white/80 text-black/50"
-									: "bg-white/80 text-black/70 hover:bg-white/90 hover:text-black/80 cursor-pointer active:shadow-[inset_1px_1px_2px_rgba(0,0,0,0.15)]"
-							}`}
-						>
-							<PaperclipIcon className="h-3 w-3" />
-						</button>
+						{/* Left side: Selected app name */}
+						<div className="flex items-center gap-2 text-[12px] text-foreground/60">
+							{selectedApp ? (
+								<span className="truncate max-w-[200px]">
+									{selectedApp.name}
+								</span>
+							) : null}
+						</div>
 
-						{/* Right side: Send button - neumorphism raised style */}
-						<button
-							type="button"
-							onClick={handleSubmit}
-							disabled={isDisabled || !inputValue.trim()}
-							className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] transition-all border border-white/5 shadow-[2px_2px_4px_rgba(0,0,0,0.4),-1px_-1px_3px_rgba(255,255,255,0.06)] ${
-								isDisabled || !inputValue.trim()
-									? "opacity-30 cursor-not-allowed bg-white/80 text-black/50"
-									: "bg-white/80 text-black/70 hover:bg-white/90 hover:text-black/80 cursor-pointer active:shadow-[inset_1px_1px_2px_rgba(0,0,0,0.15)]"
-							}`}
-						>
-							<ArrowUpIcon className="h-3 w-3" />
-						</button>
+						{/* Right side: Attachment + Send buttons */}
+						<div className="flex items-center gap-2">
+							<button
+								type="button"
+								disabled={isDisabled}
+								className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] transition-all border border-white/5 shadow-[2px_2px_4px_rgba(0,0,0,0.4),-1px_-1px_3px_rgba(255,255,255,0.06)] ${
+									isDisabled
+										? "opacity-30 cursor-not-allowed bg-white/80 text-black/50"
+										: "bg-white/80 text-black/70 hover:bg-white/90 hover:text-black/80 cursor-pointer active:shadow-[inset_1px_1px_2px_rgba(0,0,0,0.15)]"
+								}`}
+							>
+								<PaperclipIcon className="h-3 w-3" />
+							</button>
+							<button
+								type="button"
+								onClick={handleSubmit}
+								disabled={isDisabled || !inputValue.trim()}
+								className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] transition-all border border-white/5 shadow-[2px_2px_4px_rgba(0,0,0,0.4),-1px_-1px_3px_rgba(255,255,255,0.06)] ${
+									isDisabled || !inputValue.trim()
+										? "opacity-30 cursor-not-allowed bg-white/80 text-black/50"
+										: "bg-white/80 text-black/70 hover:bg-white/90 hover:text-black/80 cursor-pointer active:shadow-[inset_1px_1px_2px_rgba(0,0,0,0.15)]"
+								}`}
+							>
+								<ArrowUpIcon className="h-3 w-3" />
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -641,112 +647,166 @@ export function Page({
 		<div className="w-full h-screen flex flex-col">
 			<div className="flex items-stretch gap-4 min-w-0 flex-1 overflow-hidden">
 				{/* Main content: apps area */}
-				<div className="flex-1 min-w-0 space-y-6 px-[24px] pt-[24px] overflow-y-auto">
-					<StageTopCard
-						selectedApp={selectedApp}
-						runningApp={runningApp}
-						runStatus={runStatus}
-						onDeselect={() => setSelectedAppId(undefined)}
-					/>
+				<div className="relative flex-1 min-w-0 flex flex-col px-[24px] pt-[24px] overflow-hidden">
+					{/* About Stage docs link */}
+					<div className="absolute top-4 right-6">
+						<DocsLink
+							href="https://docs.giselles.ai/features/stage"
+							target="_blank"
+							rel="noopener noreferrer"
+							tone="muted"
+						>
+							About Stage
+						</DocsLink>
+					</div>
+					{/* Sticky top section: app info + chat input */}
+					<div className="flex-shrink-0 space-y-6 pb-6">
+						<StageTopCard
+							selectedApp={selectedApp}
+							runningApp={runningApp}
+							runStatus={runStatus}
+							onDeselect={() => setSelectedAppId(undefined)}
+						/>
 
-					{/* Chat-style input area */}
-					<ChatInputArea
-						selectedApp={selectedApp}
-						onSubmit={handleRunSubmit}
-						isRunning={isRunning}
-					/>
+						{/* Chat-style input area */}
+						<ChatInputArea
+							selectedApp={selectedApp}
+							onSubmit={handleRunSubmit}
+							isRunning={isRunning}
+						/>
+					</div>
 
-					{/* App sections - vertical stack with horizontal scroll cards */}
-					<div className="flex flex-col gap-8 w-full pb-8">
-						{/* Section 1: Apps from history */}
-						<div className="flex flex-col">
-							<h2 className="text-link-muted text-[12px] mb-4 max-w-[720px] mx-auto w-full">
-								Apps from history
-							</h2>
-							{historyApps.length === 0 ? (
-								<p className="text-sm text-muted-foreground max-w-[720px] mx-auto w-full">
-									No apps found in history.
-								</p>
-							) : (
-								<div
-									className="flex gap-4 overflow-x-auto pb-2 px-[calc(50%-360px)]"
-									style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-								>
-									{historyApps.map((app) => (
-										<AppCard
-											app={app}
-											key={app.id}
-											isSelected={
-												selectedAppId === app.id || runningAppId === app.id
-											}
-											onSelect={() => {
-												setSelectedAppId(app.id);
+					{/* Scrollable app sections */}
+					<div className="relative flex-1 min-h-0">
+						<div
+							className="absolute inset-0 overflow-y-auto"
+							style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+						>
+							<div className="flex flex-col gap-8 w-full pb-8 pt-12">
+								{/* Section 1: Apps from history */}
+								<div className="flex flex-col">
+									<h2 className="text-inverse text-[14px] max-w-[720px] mx-auto w-full text-center">
+										Apps from history
+									</h2>
+									{historyApps.length === 0 ? (
+										<p className="text-sm text-muted-foreground max-w-[720px] mx-auto w-full">
+											No apps found in history.
+										</p>
+									) : (
+										<div
+											className="flex gap-4 overflow-x-auto pt-4 pb-4 px-[calc(50%-360px)]"
+											style={{
+												scrollbarWidth: "none",
+												msOverflowStyle: "none",
 											}}
-										/>
-									))}
+										>
+											{historyApps.map((app) => (
+												<AppCard
+													app={app}
+													key={app.id}
+													isSelected={
+														selectedAppId === app.id || runningAppId === app.id
+													}
+													onSelect={() => {
+														setSelectedAppId(app.id);
+													}}
+												/>
+											))}
+										</div>
+									)}
 								</div>
-							)}
-						</div>
 
-						{/* Section 2: Template apps */}
-						<div className="flex flex-col">
-							<h2 className="text-link-muted text-[12px] mb-4 max-w-[720px] mx-auto w-full">
-								Template apps
-							</h2>
-							{myApps.length === 0 ? (
-								<p className="text-sm text-muted-foreground/70 max-w-[720px] mx-auto w-full">
-									No template apps available.
-								</p>
-							) : (
-								<div
-									className="flex gap-4 overflow-x-auto pb-2 px-[calc(50%-360px)]"
-									style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-								>
-									{myApps.map((app) => (
-										<AppCard
-											app={app}
-											key={app.id}
-											isSelected={
-												selectedAppId === app.id || runningAppId === app.id
-											}
-											onSelect={() => {
-												setSelectedAppId(app.id);
+								{/* Section 2: Template apps */}
+								<div className="flex flex-col">
+									<h2 className="text-inverse text-[14px] max-w-[720px] mx-auto w-full text-center">
+										Template apps
+									</h2>
+									{myApps.length === 0 ? (
+										<p className="text-sm text-muted-foreground/70 max-w-[720px] mx-auto w-full">
+											No template apps available.
+										</p>
+									) : (
+										<div
+											className="flex gap-4 overflow-x-auto pt-4 pb-4 px-[calc(50%-360px)]"
+											style={{
+												scrollbarWidth: "none",
+												msOverflowStyle: "none",
 											}}
-										/>
-									))}
+										>
+											{myApps.map((app) => (
+												<AppCard
+													app={app}
+													key={app.id}
+													isSelected={
+														selectedAppId === app.id || runningAppId === app.id
+													}
+													onSelect={() => {
+														setSelectedAppId(app.id);
+													}}
+												/>
+											))}
+										</div>
+									)}
 								</div>
-							)}
-						</div>
 
-						{/* Section 3: Team apps */}
-						<div className="flex flex-col">
-							<h2 className="text-link-muted text-[12px] mb-4 max-w-[720px] mx-auto w-full">
-								Team apps
-							</h2>
-							{teamApps.length === 0 ? (
-								<p className="text-sm text-muted-foreground max-w-[720px] mx-auto w-full">
-									No apps found in Team apps.
-								</p>
-							) : (
-								<div
-									className="flex gap-4 overflow-x-auto pb-2 px-[calc(50%-360px)]"
-									style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-								>
-									{teamApps.map((app) => (
-										<AppCard
-											app={app}
-											key={app.id}
-											isSelected={
-												selectedAppId === app.id || runningAppId === app.id
-											}
-											onSelect={() => {
-												setSelectedAppId(app.id);
+								{/* Section 3: Team apps */}
+								<div className="flex flex-col">
+									<h2 className="text-inverse text-[14px] max-w-[720px] mx-auto w-full text-center">
+										Team apps
+									</h2>
+									{teamApps.length === 0 ? (
+										<p className="text-sm text-muted-foreground max-w-[720px] mx-auto w-full">
+											No apps found in Team apps.
+										</p>
+									) : (
+										<div
+											className="flex gap-4 overflow-x-auto pt-4 pb-4 px-[calc(50%-360px)]"
+											style={{
+												scrollbarWidth: "none",
+												msOverflowStyle: "none",
 											}}
-										/>
-									))}
+										>
+											{teamApps.map((app) => (
+												<AppCard
+													app={app}
+													key={app.id}
+													isSelected={
+														selectedAppId === app.id || runningAppId === app.id
+													}
+													onSelect={() => {
+														setSelectedAppId(app.id);
+													}}
+												/>
+											))}
+										</div>
+									)}
 								</div>
-							)}
+							</div>
 						</div>
+						{/* Top gradient fade */}
+						<div
+							className="pointer-events-none absolute inset-x-0 top-0 h-24"
+							style={{
+								background:
+									"linear-gradient(to bottom, var(--color-background) 0%, transparent 100%)",
+								maskImage:
+									"linear-gradient(to bottom, black 0%, black 30%, transparent 100%)",
+								WebkitMaskImage:
+									"linear-gradient(to bottom, black 0%, black 30%, transparent 100%)",
+							}}
+						/>
+						{/* Bottom gradient fade */}
+						<div
+							className="pointer-events-none absolute inset-x-0 bottom-0 h-24"
+							style={{
+								background:
+									"linear-gradient(to top, var(--color-background) 0%, transparent 100%)",
+								maskImage:
+									"linear-gradient(to top, black 0%, black 30%, transparent 100%)",
+								WebkitMaskImage:
+									"linear-gradient(to top, black 0%, black 30%, transparent 100%)",
+							}}
+						/>
 					</div>
 				</div>
 
