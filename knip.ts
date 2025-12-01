@@ -65,7 +65,7 @@ const config: KnipConfig = {
 		},
 		"internal-packages/workflow-designer-ui": {
 			ignoreDependencies: ["tailwindcss"],
-			ignoreFiles: [
+			ignore: [
 				// Not currently used in the product, but kept as a reference implementation for future use
 				"src/editor/properties-panel/content-generation-node-properties-panel/**/*",
 			],

@@ -7,6 +7,13 @@ export interface SecretTokenInput {
 }
 
 /**
+ * Secret configuration value as discriminated union
+ */
+export type SecretConfigurationValue =
+	| { type: "secretId"; secretId: string }
+	| { type: "tokenInput"; tokenInput: SecretTokenInput };
+
+/**
  * Type guard to check if a value is a SecretTokenInput object
  */
 export function isSecretTokenInput(value: unknown): value is SecretTokenInput {
@@ -67,4 +74,29 @@ export function parseSecretConfigurationValue(
 	}
 
 	return null;
+}
+
+/**
+ * Type guard to check if a value is a SecretConfigurationValue
+ */
+export function isSecretConfigurationValue(
+	value: unknown,
+): value is SecretConfigurationValue {
+	if (typeof value !== "object" || value === null) {
+		return false;
+	}
+
+	if (!("type" in value)) {
+		return false;
+	}
+
+	if (value.type === "secretId") {
+		return "secretId" in value && typeof value.secretId === "string";
+	}
+
+	if (value.type === "tokenInput") {
+		return "tokenInput" in value && isSecretTokenInput(value.tokenInput);
+	}
+
+	return false;
 }
