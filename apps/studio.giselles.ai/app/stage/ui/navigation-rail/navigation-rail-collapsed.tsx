@@ -11,7 +11,7 @@ import type { UserDataForNavigationRail } from "./types";
 
 export function NavigationRailCollapsed({
 	onExpandButtonClick,
-	user: userPromise,
+	user: _userPromise,
 	currentPath,
 }: {
 	onExpandButtonClick: () => void;

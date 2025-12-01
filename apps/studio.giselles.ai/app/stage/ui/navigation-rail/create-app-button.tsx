@@ -7,11 +7,7 @@ import { GlassButton } from "@/components/ui/glass-button";
 import { MenuButton } from "./menu-button";
 import type { NavigationRailState } from "./types";
 
-export function CreateAppButton({
-	variant,
-}: {
-	variant: NavigationRailState;
-}) {
+export function CreateAppButton({ variant }: { variant: NavigationRailState }) {
 	const router = useRouter();
 	const [isCreating, setIsCreating] = useState(false);
 

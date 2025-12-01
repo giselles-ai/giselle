@@ -39,7 +39,7 @@ const HELP_ITEMS = [
 
 export function NavigationRailFooterMenu({
 	user: userPromise,
-	variant,
+	variant: _variant,
 }: {
 	user: Promise<UserDataForNavigationRail>;
 	variant: NavigationRailState;

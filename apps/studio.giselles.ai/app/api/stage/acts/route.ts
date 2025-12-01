@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { fetchEnrichedActs } from "@/app/stage/(top)/services";
-import type { ActWithNavigation } from "@/app/stage/tasks/types";
 import { stageFlag } from "@/flags";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";
