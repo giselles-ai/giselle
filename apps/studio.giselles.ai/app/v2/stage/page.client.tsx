@@ -10,7 +10,14 @@ import type {
 	Task,
 	TaskId,
 } from "@giselles-ai/protocol";
-import { ArrowUpIcon, PaperclipIcon, XIcon } from "lucide-react";
+import {
+	ArrowUpIcon,
+	HeadphonesIcon,
+	PaperclipIcon,
+	UserIcon,
+	UsersIcon,
+	XIcon,
+} from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import {
@@ -22,6 +29,7 @@ import {
 	useState,
 	useTransition,
 } from "react";
+import { ActionCard } from "@/app/(main)/lobby/components/action-card";
 import { TopLightOverlay } from "@/app/(main)/lobby/components/top-light-overlay";
 import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider-icon";
 import type { LoaderData } from "./data-loader";
@@ -194,7 +202,7 @@ function StageTopCard({
 	onDeselect,
 }: StageTopCardProps) {
 	return (
-		<div className="relative flex w-full max-w-[720px] min-w-[320px] mx-auto flex-col overflow-hidden">
+		<div className="relative flex w-full max-w-[960px] min-w-[320px] mx-auto flex-col overflow-hidden">
 			{runningApp && runStatus === "running" && (
 				<div className="pointer-events-none absolute inset-0 z-0">
 					<TopLightOverlay />
@@ -377,7 +385,7 @@ function ChatInputArea({
 	});
 
 	return (
-		<div className="relative w-full max-w-[720px] min-w-[320px] mx-auto">
+		<div className="relative w-full max-w-[960px] min-w-[320px] mx-auto">
 			{/* Outer container - subtle glassmorphism */}
 			<div
 				className={`relative rounded-[20px] p-[6px] transition-all shadow-[0_4px_16px_rgba(0,0,0,0.15)] ${
@@ -542,7 +550,8 @@ export function Page({
 	const teamApps = data.currentTeamId
 		? data.apps.filter((app) => app.teamId === data.currentTeamId)
 		: data.apps;
-	const myApps =
+	// TODO: Set up Giselle team apps later
+	const _myApps =
 		data.currentTeamId != null
 			? data.apps.filter(
 					(app) => app.isMine && app.teamId === data.currentTeamId,
@@ -703,18 +712,51 @@ export function Page({
 							style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
 						>
 							<div className="flex flex-col gap-8 w-full pb-8 pt-12">
-								{/* Section 1: Apps from history */}
+								{/* Section 1: Sample apps from Giselle team */}
 								<div className="flex flex-col">
-									<h2 className="text-inverse text-[14px] max-w-[720px] mx-auto w-full text-center">
+									<h2 className="text-inverse text-[14px] max-w-[960px] mx-auto w-full text-center">
+										Sample apps from Giselle team
+									</h2>
+									<div className="grid grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
+										<ActionCard
+											icon={HeadphonesIcon}
+											title="Customer Support"
+											description="Answer customer inquiries and resolve issues"
+											onClick={() => {
+												// TODO: Set up app selection
+											}}
+										/>
+										<ActionCard
+											icon={UserIcon}
+											title="Tech Support"
+											description="Help with technical problems and troubleshooting"
+											onClick={() => {
+												// TODO: Set up app selection
+											}}
+										/>
+										<ActionCard
+											icon={UsersIcon}
+											title="Product Manager"
+											description="Plan features and prioritize product roadmap"
+											onClick={() => {
+												// TODO: Set up app selection
+											}}
+										/>
+									</div>
+								</div>
+
+								{/* Section 2: Apps from history */}
+								<div className="flex flex-col">
+									<h2 className="text-inverse text-[14px] max-w-[960px] mx-auto w-full text-center">
 										Apps from history
 									</h2>
 									{historyApps.length === 0 ? (
-										<p className="text-sm text-muted-foreground max-w-[720px] mx-auto w-full">
+										<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
 											No apps found in history.
 										</p>
 									) : (
 										<div
-											className="flex gap-4 overflow-x-auto pt-4 pb-4 px-[calc(50%-360px)]"
+											className="flex gap-4 overflow-x-auto pt-4 pb-4 px-[calc(50%-480px)]"
 											style={{
 												scrollbarWidth: "none",
 												msOverflowStyle: "none",
@@ -736,51 +778,18 @@ export function Page({
 									)}
 								</div>
 
-								{/* Section 2: Template apps */}
-								<div className="flex flex-col">
-									<h2 className="text-inverse text-[14px] max-w-[720px] mx-auto w-full text-center">
-										Template apps
-									</h2>
-									{myApps.length === 0 ? (
-										<p className="text-sm text-muted-foreground/70 max-w-[720px] mx-auto w-full">
-											No template apps available.
-										</p>
-									) : (
-										<div
-											className="flex gap-4 overflow-x-auto pt-4 pb-4 px-[calc(50%-360px)]"
-											style={{
-												scrollbarWidth: "none",
-												msOverflowStyle: "none",
-											}}
-										>
-											{myApps.map((app) => (
-												<AppCard
-													app={app}
-													key={app.id}
-													isSelected={
-														selectedAppId === app.id || runningAppId === app.id
-													}
-													onSelect={() => {
-														setSelectedAppId(app.id);
-													}}
-												/>
-											))}
-										</div>
-									)}
-								</div>
-
 								{/* Section 3: Team apps */}
 								<div className="flex flex-col">
-									<h2 className="text-inverse text-[14px] max-w-[720px] mx-auto w-full text-center">
+									<h2 className="text-inverse text-[14px] max-w-[960px] mx-auto w-full text-center">
 										Team apps
 									</h2>
 									{teamApps.length === 0 ? (
-										<p className="text-sm text-muted-foreground max-w-[720px] mx-auto w-full">
+										<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
 											No apps found in Team apps.
 										</p>
 									) : (
 										<div
-											className="flex gap-4 overflow-x-auto pt-4 pb-4 px-[calc(50%-360px)]"
+											className="flex gap-4 overflow-x-auto pt-4 pb-4 px-[calc(50%-480px)]"
 											style={{
 												scrollbarWidth: "none",
 												msOverflowStyle: "none",

@@ -33,12 +33,12 @@ export function ActionCard({
 			</div>
 			<div className="flex flex-col relative z-10">
 				<span
-					className="text-text font-medium"
+					className="text-text font-medium text-[14px]"
 					style={{ textShadow: titleTextShadow }}
 				>
 					{title}
 				</span>
-				<span className="text-text/60 text-sm">{description}</span>
+				<span className="text-text/60 text-[12px]">{description}</span>
 			</div>
 		</button>
 	);
