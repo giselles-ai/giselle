@@ -94,7 +94,7 @@ export function TextGenerationNodePropertiesPanelV2({
 		connections,
 	]);
 
-	const handleDeleteConnection = useCallback(
+	const _handleDeleteConnection = useCallback(
 		(connection: Connection) => {
 			deleteConnection(connection.id);
 
