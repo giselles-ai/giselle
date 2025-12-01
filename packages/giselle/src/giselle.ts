@@ -358,7 +358,10 @@ export function Giselle(config: GiselleConfig) {
 				...args,
 				onComplete: args.onComplete ?? config.callbacks?.generationComplete,
 				onError: args.onError ?? config.callbacks?.generationError,
-				context,
+				context: {
+					...context,
+					logger: args.logger ?? context.logger,
+				},
 			});
 		},
 		getGenerationMessageChunks(args: {

@@ -9,7 +9,6 @@ import {
 	hasCapability,
 	languageModels,
 } from "@giselles-ai/language-model";
-import type { GiselleLogger } from "@giselles-ai/logger";
 import type {
 	CompletedGeneration,
 	FailedGeneration,
@@ -69,19 +68,17 @@ type GenerateContentResult =
 export function generateContent({
 	context,
 	generation,
-	logger: overrideLogger,
 	metadata,
 	onComplete,
 	onError,
 }: {
 	context: GiselleContext;
 	generation: RunningGeneration;
-	logger?: GiselleLogger;
 	metadata?: GenerationMetadata;
 	onComplete?: OnGenerationComplete;
 	onError?: OnGenerationError;
 }) {
-	const logger = overrideLogger ?? context.logger;
+	const logger = context.logger;
 
 	logger.info(`generate content: ${generation.id}`);
 	logger.info(`generation metadata: ${JSON.stringify(metadata)}`);
@@ -90,7 +87,6 @@ export function generateContent({
 		return generateContentV2({
 			context,
 			generation,
-			logger: overrideLogger,
 			metadata,
 			onComplete,
 			onError,
@@ -549,19 +545,17 @@ function generationModel(
 function generateContentV2({
 	context,
 	generation,
-	logger: overrideLogger,
 	metadata,
 	onComplete,
 	onError,
 }: {
 	context: GiselleContext;
 	generation: RunningGeneration;
-	logger?: GiselleLogger;
 	metadata?: GenerationMetadata;
 	onComplete?: OnGenerationComplete;
 	onError?: OnGenerationError;
 }) {
-	const logger = overrideLogger ?? context.logger;
+	const logger = context.logger;
 	// biome-ignore lint/correctness/useHookAtTopLevel: it's nodejs use
 	return useGenerationExecutor({
 		context,
@@ -607,10 +601,7 @@ function generateContentV2({
 			});
 
 			const toolSet = await buildToolSet({
-				context: {
-					...context,
-					logger,
-				},
+				context,
 				generationId: generation.id,
 				nodeId: operationNode.id,
 				tools: operationNode.content.tools,
