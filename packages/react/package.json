@@ -32,6 +32,7 @@
 		"@giselles-ai/giselle": "workspace:*",
 		"@giselles-ai/http": "workspace:*",
 		"@giselles-ai/language-model": "workspace:^",
+		"@giselles-ai/language-model-registry": "workspace:*",
 		"@giselles-ai/node-registry": "workspace:*",
 		"@giselles-ai/stream": "workspace:*",
 		"@giselles-ai/workspace-utils": "workspace:*",

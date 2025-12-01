@@ -24,6 +24,7 @@ import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	createConnectionWithInput,
 	isSupportedConnection,
+	useFeatureFlag,
 	useWorkflowDesigner,
 	useWorkflowDesignerStore,
 	workspaceActions,
@@ -151,6 +152,7 @@ function V2NodeCanvas() {
 		return arr;
 	}, [data.connections, data.selectedConnectionIds]);
 
+	const { generateContentNode } = useFeatureFlag();
 	const handleConnect = useCallback(
 		(connection: Connection) => {
 			try {
@@ -162,7 +164,11 @@ function V2NodeCanvas() {
 				);
 				if (!outputNode || !inputNode) throw new Error("Node not found");
 
-				const isSupported = isSupportedConnection(outputNode, inputNode);
+				const isSupported = isSupportedConnection(
+					outputNode,
+					inputNode,
+					generateContentNode,
+				);
 				if (!isSupported.canConnect) throw new Error(isSupported.message);
 
 				const safeOutputId = OutputId.safeParse(connection.sourceHandle);
@@ -193,7 +199,7 @@ function V2NodeCanvas() {
 				);
 			}
 		},
-		[addConnection, data.nodes, toast, updateNodeData],
+		[addConnection, data.nodes, toast, updateNodeData, generateContentNode],
 	);
 
 	const isValidConnection: IsValidConnection = (connection) => {

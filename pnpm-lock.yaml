@@ -1354,6 +1354,9 @@ importers:
       '@giselles-ai/language-model':
         specifier: workspace:^
         version: link:../language-model
+      '@giselles-ai/language-model-registry':
+        specifier: workspace:*
+        version: link:../language-model-registry
       '@giselles-ai/node-registry':
         specifier: workspace:*
         version: link:../node-registry

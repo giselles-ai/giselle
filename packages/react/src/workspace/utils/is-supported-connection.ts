@@ -19,7 +19,18 @@ export type ConnectionValidationResult =
 export function isSupportedConnection(
 	outputNode: NodeLike,
 	inputNode: NodeLike,
+	experimental_contentGenerationNode = false,
 ): ConnectionValidationResult {
+	if (experimental_contentGenerationNode) {
+		return isSupportedConnectionV2(outputNode, inputNode);
+	}
+	if (outputNode.id === inputNode.id) {
+		// prevent self-loop
+		return {
+			canConnect: false,
+			message: "Connecting to the same node is not allowed",
+		};
+	}
 	// prevent self-loop
 	if (outputNode.id === inputNode.id) {
 		return {
@@ -180,4 +191,87 @@ export function isSupportedConnection(
 	return {
 		canConnect: true,
 	};
+}
+
+function isSupportedConnectionV2(
+	outputNode: NodeLike,
+	inputNode: NodeLike,
+): ConnectionValidationResult {
+	if (outputNode.id === inputNode.id) {
+		// prevent self-loop
+		return {
+			canConnect: false,
+			message: "Connecting to the same node is not allowed",
+		};
+	}
+
+	switch (inputNode.type) {
+		case "variable":
+			return {
+				canConnect: false,
+				message: "This node does not receive inputs",
+			};
+		case "operation":
+			switch (inputNode.content.type) {
+				case "action":
+					if (
+						outputNode.content.type === "contentGeneration" ||
+						outputNode.content.type === "text" ||
+						outputNode.content.type === "textGeneration" ||
+						outputNode.content.type === "trigger" ||
+						outputNode.content.type === "appEntry"
+					) {
+						return {
+							canConnect: true,
+						};
+					}
+					return {
+						canConnect: false,
+						message: `Action Node does not receive ${outputNode.content.type}`,
+					};
+				case "appEntry":
+					// App Entry Node doesn't have inputs in the UI,
+					// so this shouldn't happen (defensive programming)
+					return {
+						canConnect: false,
+						message: `App Entry Node does not receive ${outputNode.content.type}`,
+					};
+				case "contentGeneration":
+				case "imageGeneration":
+				case "textGeneration":
+					if (outputNode.content.type === "vectorStore") {
+						return {
+							canConnect: false,
+							message: `${outputNode.content.type} Node does not receive Query Node`,
+						};
+					}
+					return {
+						canConnect: true,
+					};
+				case "query":
+					if (
+						outputNode.content.type === "contentGeneration" ||
+						outputNode.content.type === "textGeneration"
+					) {
+						return {
+							canConnect: true,
+						};
+					}
+					return {
+						canConnect: false,
+						message: `Query Node does not receive ${outputNode.content.type}`,
+					};
+				case "trigger":
+					// Trigger Node doesn't have inputs in the UI,
+					// so this shouldn't happen (defensive programming)
+					return {
+						canConnect: false,
+						message: `App Entry Node does not receive ${outputNode.content.type}`,
+					};
+				default: {
+					const _exhaustiveCheck: never = inputNode.content.type;
+					throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
+				}
+			}
+	}
 }
