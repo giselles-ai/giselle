@@ -3,12 +3,18 @@ import type { Tool } from "@giselles-ai/language-model-registry";
 import { hasSchema } from "@giselles-ai/language-model-registry";
 import type { ToolSet } from "ai";
 import { tool as defineTool } from "ai";
+import type { GiselleContext } from "../../../types";
 
-export function createGitHubTools(
-	octokit: Octokit,
-	toolDefs: readonly Tool[],
-	useTools: string[],
-): ToolSet {
+export function createGitHubTools({
+	octokit,
+	toolDefs,
+	useTools,
+}: {
+	octokit: Octokit;
+	toolDefs: readonly Tool[];
+	useTools: string[];
+	context: GiselleContext;
+}): ToolSet {
 	const toolSet: ToolSet = {};
 
 	for (const toolDef of toolDefs) {
