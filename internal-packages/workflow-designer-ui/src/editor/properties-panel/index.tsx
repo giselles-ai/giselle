@@ -16,7 +16,6 @@ import clsx from "clsx/lite";
 import { useShallow } from "zustand/shallow";
 import { ActionNodePropertiesPanel } from "./action-node-properties-panel";
 import { AppEntryNodePropertiesPanel } from "./app-entry-node-properties-panel";
-import { ContentGenerationNodePropertiesPanel as _ContentGenerationNodePropertiesPanel } from "./content-generation-node-properties-panel";
 import { FileNodePropertiesPanel } from "./file-node-properties-panel";
 import { ImageGenerationNodePropertiesPanel } from "./image-generation-node-properties-panel";
 import { QueryNodePropertiesPanel } from "./query-node-properties-panel";

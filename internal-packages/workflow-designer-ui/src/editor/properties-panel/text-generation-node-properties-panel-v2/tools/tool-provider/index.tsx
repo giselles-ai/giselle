@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { GitHubIcon } from "../../../../../icons";
 import { AnthropicWebSearchToolConfigurationDialog } from "./anthropic-web-search";
 import { GitHubToolConfigurationDialog } from "./github";
+import { GoogleWebSearchToolConfigurationDialog } from "./google-web-search";
 import { OpenAiWebSearchToolConfigurationDialog } from "./openai-web-search";
 import { PostgresToolConfigurationDialog } from "./postgres";
 
@@ -50,5 +51,14 @@ export const toolProviders: ToolProviderDescriptor[] = [
 			<OpenAiWebSearchToolConfigurationDialog node={node} />
 		),
 		requirement: (node) => node.content.languageModel.provider === "openai",
+	},
+	{
+		toolName: "google-web-search",
+		label: "Google Web Search",
+		icon: <GlobeIcon data-tool-icon />,
+		renderConfiguration: (node) => (
+			<GoogleWebSearchToolConfigurationDialog node={node} />
+		),
+		requirement: (node) => node.content.languageModel.provider === "google",
 	},
 ];
