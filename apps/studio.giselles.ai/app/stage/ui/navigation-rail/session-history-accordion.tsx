@@ -4,7 +4,7 @@ import { WilliIcon } from "@giselle-internal/workflow-designer-ui";
 import { ChevronDownIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Accordion } from "radix-ui";
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 import type { ActWithNavigation } from "../../tasks/types/index";
 
 async function fetchActs(): Promise<ActWithNavigation[]> {
@@ -20,19 +20,15 @@ export function SessionHistoryAccordion({
 }: {
 	variant: "expanded" | "collapsed";
 }) {
-	const [acts, setActs] = useState<ActWithNavigation[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-
-	useEffect(() => {
-		fetchActs()
-			.then((data) => {
-				setActs(data);
-				setIsLoading(false);
-			})
-			.catch(() => {
-				setIsLoading(false);
-			});
-	}, []);
+	const { data: acts = [], isLoading } = useSWR(
+		"session-history-acts",
+		fetchActs,
+		{
+			revalidateIfStale: false,
+			revalidateOnFocus: false,
+			revalidateOnReconnect: false,
+		},
+	);
 
 	if (variant === "collapsed") {
 		return (
