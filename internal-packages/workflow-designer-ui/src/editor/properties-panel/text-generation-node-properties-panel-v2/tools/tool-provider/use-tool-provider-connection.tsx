@@ -1,4 +1,5 @@
 import {
+	type ContentGenerationNode,
 	SecretId,
 	type TextGenerationNode,
 	type ToolSet,
@@ -25,7 +26,7 @@ const ToolProviderSetupPayload = z.discriminatedUnion("secretType", [
 export function useToolProviderConnection<T extends keyof ToolSet>(config: {
 	secretTags: string[];
 	toolKey: T;
-	node: TextGenerationNode;
+	node: ContentGenerationNode;
 	buildToolConfig: (secretId: SecretId) => ToolSet[T];
 	isUpdatingExistingConfiguration?: boolean;
 }) {
@@ -44,15 +45,17 @@ export function useToolProviderConnection<T extends keyof ToolSet>(config: {
 	const [isPending, startTransition] = useTransition();
 
 	const isConfigured = useMemo(
-		() => node.content.tools?.[toolKey] !== undefined,
+		() => node.content.tools.some((tool) => tool.name === toolKey),
 		[node, toolKey],
 	);
 
 	const preserveExistingToolSelections = useCallback(
 		(secretId: SecretId) => {
-			const currentTool = node.content.tools?.[toolKey];
+			const currentTool = node.content.tools.find(
+				(tool) => tool.name === toolKey,
+			);
 			const currentToolSettings =
-				currentTool && "tools" in currentTool ? currentTool.tools : [];
+				currentTool && "useTools" in currentTool ? currentTool.useTools : [];
 
 			const newToolConfig = buildToolConfig(secretId);
 			return {

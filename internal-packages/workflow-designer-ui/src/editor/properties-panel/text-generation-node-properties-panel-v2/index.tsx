@@ -147,7 +147,7 @@ export function TextGenerationNodePropertiesPanelV2({
 					}}
 					connections={connections}
 				/>
-				<AdvancedOptions textGenerationNode={textGenerationNode} />
+				<AdvancedOptions node={node} />
 				<div className="flex flex-col gap-[4px]">
 					<SettingLabel>Output</SettingLabel>
 					<GenerationPanel textGenerationNode={textGenerationNode} />
