@@ -1,9 +1,9 @@
 "use client";
 
 import { WilliIcon } from "@giselle-internal/workflow-designer-ui";
+import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { Accordion } from "radix-ui";
 import useSWR from "swr";
 import type { ActWithNavigation } from "../../tasks/types/index";
 

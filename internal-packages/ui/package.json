@@ -42,7 +42,6 @@
 		"./glass-surface": "./components/glass-surface.tsx",
 		"./prompt-editor": "./components/prompt-editor.tsx",
 		"./icon-box": "./components/icon-box.tsx",
-		"./model-picker": "./components/model-picker.tsx",
 		"./setting-label": "./components/setting-label.tsx",
 		"./setting-row": "./components/setting-row.tsx",
 		"./utils": "./utils.ts"

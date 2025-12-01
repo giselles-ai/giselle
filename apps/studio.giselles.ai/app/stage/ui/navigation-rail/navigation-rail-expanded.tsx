@@ -1,6 +1,7 @@
+import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon, ChevronsLeftIcon } from "lucide-react";
-import { Accordion } from "radix-ui";
 import { useMemo } from "react";
+import { CreateAppButton } from "./create-app-button";
 import { MenuButton } from "./menu-button";
 import type { NavigationItem } from "./navigation-items";
 import { navigationItems, navigationItemsFooter } from "./navigation-items";
@@ -78,6 +79,13 @@ export function NavigationRailExpanded({
 			</NavigationRailHeader>
 			<NavigationRailContentsContainer>
 				<NavigationList>
+					{/* Create App button before first section */}
+					{groupedItems.length > 0 &&
+					groupedItems[0]?.section?.id === "section-agent" ? (
+						<div className="px-1 pt-3 pb-1">
+							<CreateAppButton variant="expanded" />
+						</div>
+					) : null}
 					{groupedItems.map((group) => {
 						if (!group.section) {
 							// Render non-section items directly

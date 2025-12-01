@@ -1,4 +1,5 @@
 import { ChevronsRightIcon } from "lucide-react";
+import { CreateAppButton } from "./create-app-button";
 import { MenuButton } from "./menu-button";
 import { navigationItems, navigationItemsFooter } from "./navigation-items";
 import { NavigationList } from "./navigation-list";
@@ -31,6 +32,10 @@ export function NavigationRailCollapsed({
 			</NavigationRailHeader>
 			<NavigationRailContentsContainer>
 				<NavigationList>
+					{/* Create App button */}
+					<div className="px-1 pt-3 pb-1 flex justify-center">
+						<CreateAppButton variant="collapsed" />
+					</div>
 					{navigationItems.map((navigationItem) => {
 						return (
 							<NavigationListItem
