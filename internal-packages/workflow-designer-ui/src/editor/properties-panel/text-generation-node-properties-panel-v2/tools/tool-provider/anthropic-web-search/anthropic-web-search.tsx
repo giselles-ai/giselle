@@ -23,6 +23,7 @@ function isValidDomain(domain: string): { isValid: boolean; message?: string } {
 	return { isValid: true };
 }
 
+const toolName = "anthropic-web-search";
 export function AnthropicWebSearchToolConfigurationDialog({
 	node,
 	open: externalOpen,
@@ -39,9 +40,7 @@ export function AnthropicWebSearchToolConfigurationDialog({
 	const setOpen = externalOnOpenChange ?? setInternalOpen;
 
 	const currentToolConfig = useMemo(() => {
-		const tool = node.content.tools.find(
-			(tool) => tool.name === "anthropic-web-search",
-		);
+		const tool = node.content.tools.find((tool) => tool.name === toolName);
 		if (tool === undefined) {
 			return undefined;
 		}
@@ -178,57 +177,70 @@ export function AnthropicWebSearchToolConfigurationDialog({
 		(e) => {
 			e.preventDefault();
 
-			// Clear unused domain list based on filtering mode
 			const finalAllowedDomains =
 				filteringMode === "allow" ? allowedDomains : undefined;
 			const finalBlockedDomains =
 				filteringMode === "block" ? blockedDomains : undefined;
+			const nextConfiguration = {
+				allowedDomains: finalAllowedDomains,
+				blockedDomains: finalBlockedDomains,
+			};
 
-			if (currentToolConfig) {
-				if (webSearchEnabled) {
+			type ToolTransition = "noop" | "add" | "update" | "remove";
+			const transition: ToolTransition = !currentToolConfig
+				? webSearchEnabled
+					? "add"
+					: "noop"
+				: webSearchEnabled
+					? "update"
+					: "remove";
+
+			if (transition === "noop") {
+				setDomainListError(null);
+				setOpen(false);
+				return;
+			}
+
+			switch (transition) {
+				case "remove": {
+					updateNodeDataContent(node, {
+						...node.content,
+						tools: node.content.tools.filter((tool) => tool.name !== toolName),
+					});
+					break;
+				}
+				case "update": {
 					updateNodeDataContent(node, {
 						...node.content,
 						tools: node.content.tools.map((tool) =>
-							tool.name === "anthropic-web-search"
+							tool.name === toolName
 								? {
 										...tool,
 										configuration: {
 											...tool.configuration,
-											allowedDomains: finalAllowedDomains,
-											blockedDomains: finalBlockedDomains,
+											...nextConfiguration,
 										},
 									}
 								: tool,
 						),
 					});
-				} else {
-					updateNodeDataContent(node, {
-						...node.content,
-						tools: node.content.tools.filter(
-							(tool) => tool.name !== "anthropic-web-search",
-						),
-					});
+					break;
 				}
-			} else {
-				if (webSearchEnabled) {
+				case "add": {
 					updateNodeDataContent(node, {
 						...node.content,
 						tools: [
 							...node.content.tools,
 							{
-								name: "anthropic-web-search",
-								configuration: {
-									allowedDomains: finalAllowedDomains,
-									blockedDomains: finalBlockedDomains,
-								},
+								name: toolName,
+								configuration: nextConfiguration,
 							},
 						],
 					});
+					break;
 				}
 			}
-			// Update node configuration
 
-			// Clear errors and close
 			setDomainListError(null);
 			setOpen(false);
 		},
