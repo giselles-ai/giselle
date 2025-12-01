@@ -417,9 +417,6 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 		`${selectedNodes[0]?.content.type}` === "trigger" &&
 		`${(selectedNodes[0] as unknown as { content?: { provider?: string } })?.content?.provider}` ===
 			"manual";
-	const isContentGenerationPanel =
-		isPropertiesPanelOpen &&
-		`${selectedNodes[0]?.content.type}` === "contentGeneration";
 
 	const mainRef = useRef<HTMLDivElement>(null);
 
@@ -465,20 +462,8 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 						isOpen={isPropertiesPanelOpen}
 						container={mainRef.current}
 						title="Properties Panel"
-						defaultWidth={
-							isContentGenerationPanel
-								? 600
-								: isTextGenerationPanel
-									? 400
-									: undefined
-						}
-						minWidth={
-							isContentGenerationPanel
-								? 600
-								: isTextGenerationPanel
-									? 400
-									: undefined
-						}
+						defaultWidth={isTextGenerationPanel ? 400 : undefined}
+						minWidth={isTextGenerationPanel ? 400 : undefined}
 						autoHeight={
 							isFilePanel ||
 							isTextPanel ||
