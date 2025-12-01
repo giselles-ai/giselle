@@ -162,6 +162,7 @@ export function ModelPickerV2({
 							<ToggleGroup.Root
 								className="flex flex-col gap-[6px] max-h-[220px] overflow-y-auto"
 								type="single"
+								value={value}
 								onValueChange={handleValueChange}
 							>
 								{languageModelGroupByProvider.map((group) => (
