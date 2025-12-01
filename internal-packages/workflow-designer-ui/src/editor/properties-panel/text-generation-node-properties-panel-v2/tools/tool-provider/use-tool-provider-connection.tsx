@@ -138,9 +138,9 @@ export function useToolProviderConnection<
 		if ("secretId" in tool && tool.configuration) {
 			const result = SecretId.safeParse(tool.secretId);
 			if (result.error) {
-				return result.data;
+				return undefined;
 			}
-			return undefined;
+			return result.data;
 		}
 		return undefined;
 	}, [node, toolName]);
