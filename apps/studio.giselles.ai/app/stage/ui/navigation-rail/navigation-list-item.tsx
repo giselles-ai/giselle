@@ -69,6 +69,9 @@ export function NavigationListItem(
 			);
 		case "divider":
 			return <div className="h-px bg-border/20 my-1 mx-2" />;
+		case "action":
+			// Action items are not currently used in navigationItems
+			return null;
 		case "submenu":
 			return props.variant === "expanded" ? (
 				!mounted ? (

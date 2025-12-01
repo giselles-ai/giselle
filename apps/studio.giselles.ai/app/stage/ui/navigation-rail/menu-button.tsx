@@ -4,12 +4,14 @@ export function MenuButton({
 	onClick,
 	children,
 	className,
+	disabled,
+	...props
 }: Pick<
 	React.DetailedHTMLProps<
 		React.ButtonHTMLAttributes<HTMLButtonElement>,
 		HTMLButtonElement
 	>,
-	"onClick" | "children" | "className"
+	"onClick" | "children" | "className" | "disabled" | "aria-label"
 >) {
 	return (
 		<button
@@ -19,6 +21,8 @@ export function MenuButton({
 				className,
 			)}
 			onClick={onClick}
+			disabled={disabled}
+			{...props}
 		>
 			{children}
 		</button>
