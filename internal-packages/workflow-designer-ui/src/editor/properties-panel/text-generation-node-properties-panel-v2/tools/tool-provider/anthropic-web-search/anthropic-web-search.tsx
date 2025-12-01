@@ -4,7 +4,7 @@ import type { ContentGenerationNode } from "@giselles-ai/protocol";
 import { useWorkflowDesigner } from "@giselles-ai/react";
 import { Settings2Icon, XIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-
+import { upsertArray } from "../../../../../lib/upsert-array";
 import { ToolConfigurationDialog } from "../../ui/tool-configuration-dialog";
 
 // Domain validation function
@@ -186,14 +186,12 @@ export function AnthropicWebSearchToolConfigurationDialog({
 				blockedDomains: finalBlockedDomains,
 			};
 
-			type ToolTransition = "noop" | "add" | "update" | "remove";
-			const transition: ToolTransition = !currentToolConfig
-				? webSearchEnabled
-					? "add"
-					: "noop"
-				: webSearchEnabled
-					? "update"
-					: "remove";
+			type ToolTransition = "noop" | "upsert" | "remove";
+			const transition: ToolTransition = webSearchEnabled
+				? "upsert"
+				: currentToolConfig
+					? "remove"
+					: "noop";
 
 			if (transition === "noop") {
 				setDomainListError(null);
@@ -209,33 +207,17 @@ export function AnthropicWebSearchToolConfigurationDialog({
 					});
 					break;
 				}
-				case "update": {
+				case "upsert": {
 					updateNodeDataContent(node, {
 						...node.content,
-						tools: node.content.tools.map((tool) =>
-							tool.name === toolName
-								? {
-										...tool,
-										configuration: {
-											...tool.configuration,
-											...nextConfiguration,
-										},
-									}
-								: tool,
-						),
-					});
-					break;
-				}
-				case "add": {
-					updateNodeDataContent(node, {
-						...node.content,
-						tools: [
-							...node.content.tools,
+						tools: upsertArray(
+							node.content.tools,
 							{
 								name: toolName,
 								configuration: nextConfiguration,
 							},
-						],
+							(tool) => tool.name === toolName,
+						),
 					});
 					break;
 				}
