@@ -535,9 +535,6 @@ function GitHubToolConfigurationDialogInternal({
 												className="group appearance-none size-[18px] rounded border flex items-center justify-center transition-colors outline-none data-[state=checked]:border-primary-900 data-[state=checked]:bg-primary-900"
 												value={tool}
 												id={tool}
-												defaultChecked={node.content.tools?.some(
-													(tool) => tool.name === "github-api",
-												)}
 												name="tools"
 											>
 												<Checkbox.Indicator className="text-background">
