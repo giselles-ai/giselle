@@ -1,6 +1,7 @@
 "use client";
 
 import { DocsLink } from "@giselle-internal/ui/docs-link";
+import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
@@ -307,16 +308,30 @@ function StageTopCard({
 // Chat-style input area for running apps
 function ChatInputArea({
 	selectedApp,
+	apps,
+	onAppSelect,
 	onSubmit,
 	isRunning,
 }: {
 	selectedApp?: StageApp;
+	apps: StageApp[];
+	onAppSelect: (appId: string) => void;
 	onSubmit: (event: { inputs: GenerationContextInput[] }) => void;
 	isRunning: boolean;
 }) {
 	const [inputValue, setInputValue] = useState("");
 	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 	const isDisabled = !selectedApp || isRunning;
+
+	const appOptions: SelectOption[] = useMemo(
+		() =>
+			apps.map((app) => ({
+				value: app.id,
+				label: app.name,
+				icon: <DynamicIcon name={app.iconName} className="h-4 w-4" />,
+			})),
+		[apps],
+	);
 
 	const handleSubmit = useCallback(() => {
 		if (!selectedApp || !inputValue.trim()) return;
@@ -416,8 +431,8 @@ function ChatInputArea({
 				</div>
 
 				{/* Inner container - subtle background */}
-				<div className="relative rounded-[14px] bg-link-muted/10 p-4">
-					{/* Top row: Textarea */}
+				<div className="relative rounded-[14px] bg-link-muted/10 pt-4 px-4 pb-2">
+					{/* Textarea */}
 					<textarea
 						ref={textareaRef}
 						value={inputValue}
@@ -433,15 +448,18 @@ function ChatInputArea({
 						className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-foreground/40 outline-none disabled:cursor-not-allowed"
 					/>
 
-					{/* Bottom row: App name and buttons */}
+					{/* Bottom row: App selector and buttons */}
 					<div className="flex items-center justify-between mt-3">
-						{/* Left side: Selected app name */}
-						<div className="flex items-center gap-2 text-[12px] text-foreground/60">
-							{selectedApp ? (
-								<span className="truncate max-w-[200px]">
-									{selectedApp.name}
-								</span>
-							) : null}
+						{/* Left side: App selector */}
+						<div className="flex-1 max-w-[200px]">
+							<Select
+								options={appOptions}
+								placeholder="Select an app..."
+								value={selectedApp?.id}
+								onValueChange={onAppSelect}
+								disabled={isRunning}
+								widthClassName="w-full"
+							/>
 						</div>
 
 						{/* Right side: Attachment + Send buttons */}
@@ -671,6 +689,8 @@ export function Page({
 						{/* Chat-style input area */}
 						<ChatInputArea
 							selectedApp={selectedApp}
+							apps={data.apps}
+							onAppSelect={(appId) => setSelectedAppId(appId)}
 							onSubmit={handleRunSubmit}
 							isRunning={isRunning}
 						/>
