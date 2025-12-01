@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { GitHubIcon } from "../../../../../icons";
 import { AnthropicWebSearchToolConfigurationDialog } from "./anthropic-web-search";
 import { GitHubToolConfigurationDialog } from "./github";
+import { OpenAiWebSearchToolConfigurationDialog } from "./openai-web-search";
 import { PostgresToolConfigurationDialog } from "./postgres";
 
 interface ToolProviderDescriptor {
@@ -40,5 +41,14 @@ export const toolProviders: ToolProviderDescriptor[] = [
 			<AnthropicWebSearchToolConfigurationDialog node={node} />
 		),
 		requirement: (node) => node.content.languageModel.provider === "anthropic",
+	},
+	{
+		toolName: "openai-web-search",
+		label: "OpenAI Web Search",
+		icon: <GlobeIcon data-tool-icon />,
+		renderConfiguration: (node) => (
+			<OpenAiWebSearchToolConfigurationDialog node={node} />
+		),
+		requirement: (node) => node.content.languageModel.provider === "openai",
 	},
 ];
