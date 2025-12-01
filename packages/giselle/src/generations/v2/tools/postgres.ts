@@ -28,7 +28,7 @@ export function createPostgresTool({
 		}
 		switch (toolDef.name) {
 			case "getTableStructure":
-				toolSet.getTableStructure = tool({
+				toolSet.postgres_getTableStructure = tool({
 					description:
 						"Returns database table structure sorted by table and position.",
 					inputSchema: z.object({}),
@@ -47,7 +47,7 @@ export function createPostgresTool({
 				});
 				break;
 			case "query":
-				toolSet.query = tool({
+				toolSet.postgres_query = tool({
 					description: "Run a SQL query",
 					inputSchema: z.object({
 						query: z.string().min(1).max(1000),
