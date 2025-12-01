@@ -317,7 +317,7 @@ function PostgresToolConfigurationDialogInternal({
 						onClick={() => {
 							updateNodeDataContent(node, {
 								tools: node.content.tools.filter(
-									(tool) => tool.name !== "github-api",
+									(tool) => tool.name !== "postgres",
 								),
 							});
 							onOpenChange?.(false);
