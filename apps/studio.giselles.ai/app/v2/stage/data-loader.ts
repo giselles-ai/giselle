@@ -4,7 +4,6 @@ import {
 	isVectorStoreNode,
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
-import { sliceGraphFromNode } from "@giselles-ai/workspace-utils";
 import { giselle } from "@/app/giselle";
 import { db } from "@/db";
 import { logger } from "@/lib/logger";
@@ -92,13 +91,14 @@ async function userApps(teamIds: TeamId[], userDbId: number) {
 				const giselleApp = await giselle.getApp({
 					appId: app.id,
 				});
-				// Extract vector store / LLM metadata for this app (slice graph from entry node)
-				const appGraph = sliceGraphFromNode(appEntryNode, workspace);
+				// Extract vector store / LLM metadata for this app
 				const githubRepositories: string[] = [];
 				const documentFiles: string[] = [];
 				const llmProviders = new Set<string>();
 
-				for (const node of appGraph.nodes) {
+				// LLM providers and vector stores: check all nodes in workspace
+				// (not just reachable ones, as they might be referenced indirectly)
+				for (const node of workspace.nodes) {
 					// LLM providers
 					if (
 						isTextGenerationNode(node) &&
@@ -110,7 +110,6 @@ async function userApps(teamIds: TeamId[], userDbId: number) {
 							llmProviders.add(provider);
 						}
 					}
-
 					// GitHub Vector Store
 					if (
 						isVectorStoreNode(node, "github") &&

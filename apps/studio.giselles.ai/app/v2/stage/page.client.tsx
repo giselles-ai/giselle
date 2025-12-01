@@ -4,6 +4,7 @@ import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
+import { GitHubIcon } from "@giselles-ai/icons/github";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
 import type {
 	GenerationContextInput,
@@ -12,6 +13,7 @@ import type {
 } from "@giselles-ai/protocol";
 import {
 	ArrowUpIcon,
+	FileIcon,
 	HeadphonesIcon,
 	PaperclipIcon,
 	UserIcon,
@@ -240,27 +242,56 @@ function StageTopCard({
 								{selectedApp.description}
 							</p>
 						) : null}
-						<div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-							<span>{selectedApp.workspaceName}</span>
-							<span className="text-border">•</span>
-							<span>{selectedApp.teamName}</span>
-							{selectedApp.llmProviders.length > 0 && (
-								<>
-									<span className="text-border">•</span>
+						<div className="mt-2 flex flex-col gap-2 text-xs">
+							<div className="flex items-center gap-4">
+								<div className="flex items-center gap-2">
+									<span className="font-medium text-text-muted">
+										Workspace:
+									</span>
+									<span className="text-text">{selectedApp.workspaceName}</span>
+								</div>
+								<div className="flex items-center gap-2">
+									<span className="font-medium text-text-muted">LLM:</span>
 									<div className="flex items-center gap-1">
-										{selectedApp.llmProviders.map((provider) => (
-											<div
-												key={provider}
-												className="flex h-5 w-5 items-center justify-center rounded bg-[color:var(--color-inverse)]/10"
-											>
-												<LLMProviderIcon
-													provider={provider}
-													className="h-3 w-3"
-												/>
+										{selectedApp.llmProviders.length > 0 ? (
+											selectedApp.llmProviders.map((provider) => (
+												<div
+													key={provider}
+													className="flex h-5 w-5 items-center justify-center rounded bg-[color:var(--color-inverse)]/10"
+												>
+													<LLMProviderIcon
+														provider={provider}
+														className="h-3 w-3"
+													/>
+												</div>
+											))
+										) : (
+											<span className="text-text">-</span>
+										)}
+									</div>
+								</div>
+							</div>
+							{(selectedApp.vectorStoreRepositories.length > 0 ||
+								selectedApp.vectorStoreFiles.length > 0) && (
+								<div className="flex items-center gap-2">
+									<span className="font-medium text-text-muted">
+										Vector Store:
+									</span>
+									<div className="flex flex-wrap items-center gap-2">
+										{selectedApp.vectorStoreRepositories.map((repo) => (
+											<div key={repo} className="flex items-center gap-1.5">
+												<GitHubIcon className="w-3 h-3 text-text/60 flex-shrink-0" />
+												<span className="truncate text-text">{repo}</span>
+											</div>
+										))}
+										{selectedApp.vectorStoreFiles.map((file) => (
+											<div key={file} className="flex items-center gap-1.5">
+												<FileIcon className="w-3 h-3 text-text/60 flex-shrink-0" />
+												<span className="truncate text-text">{file}</span>
 											</div>
 										))}
 									</div>
-								</>
+								</div>
 							)}
 						</div>
 					</div>
