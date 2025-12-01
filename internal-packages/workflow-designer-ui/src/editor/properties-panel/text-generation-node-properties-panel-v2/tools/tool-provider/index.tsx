@@ -1,5 +1,5 @@
 import type { LanguageModelToolName } from "@giselles-ai/language-model-registry";
-import type { ContentGenerationNode, ToolSet } from "@giselles-ai/protocol";
+import type { ContentGenerationNode } from "@giselles-ai/protocol";
 import { DatabaseIcon, GlobeIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { GitHubIcon } from "../../../../../icons";
@@ -32,13 +32,13 @@ export const toolProviders: ToolProviderDescriptor[] = [
 			<PostgresToolConfigurationDialog node={node} />
 		),
 	},
-	// {
-	// 	key: "anthropicWebSearch",
-	// 	label: "Anthropic Web Search",
-	// 	icon: <GlobeIcon data-tool-icon />,
-	// 	renderConfiguration: (node) => (
-	// 		<AnthropicWebSearchToolConfigurationDialog node={node} />
-	// 	),
-	// 	requirement: (node) => node.content.languageModel.provider === "anthropic",
-	// },
+	{
+		toolName: "anthropic-web-search",
+		label: "Anthropic Web Search",
+		icon: <GlobeIcon data-tool-icon />,
+		renderConfiguration: (node) => (
+			<AnthropicWebSearchToolConfigurationDialog node={node} />
+		),
+		requirement: (node) => node.content.languageModel.provider === "anthropic",
+	},
 ];

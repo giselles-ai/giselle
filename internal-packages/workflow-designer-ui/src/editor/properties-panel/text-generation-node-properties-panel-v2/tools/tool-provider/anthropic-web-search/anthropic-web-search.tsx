@@ -3,13 +3,9 @@ import { Toggle } from "@giselle-internal/ui/toggle";
 import type { ContentGenerationNode } from "@giselles-ai/protocol";
 import { useWorkflowDesigner } from "@giselles-ai/react";
 import { Settings2Icon, XIcon } from "lucide-react";
-import { useCallback, useState } from "react";
-import { Slider } from "../../../../../../ui/slider";
+import { useCallback, useMemo, useState } from "react";
 
 import { ToolConfigurationDialog } from "../../ui/tool-configuration-dialog";
-
-// Configuration
-const MAX_USES_LIMIT = 10;
 
 // Domain validation function
 function isValidDomain(domain: string): { isValid: boolean; message?: string } {
@@ -42,24 +38,42 @@ export function AnthropicWebSearchToolConfigurationDialog({
 	const open = externalOpen ?? internalOpen;
 	const setOpen = externalOnOpenChange ?? setInternalOpen;
 
+	const currentToolConfig = useMemo(() => {
+		const tool = node.content.tools.find(
+			(tool) => tool.name === "anthropic-web-search",
+		);
+		if (tool === undefined) {
+			return undefined;
+		}
+		const maxUses = Number.parseInt(tool.configuration.maxUses);
+		const allowedDomains = tool.configuration.allowedDomains ?? [];
+		const blockedDomains = tool.configuration.blockedDomains ?? [];
+
+		return {
+			maxUses,
+			allowedDomains,
+			blockedDomains,
+		};
+	}, [node.content.tools]);
+
 	// Get current configuration or set defaults
-	const currentConfig = node.content.tools?.anthropicWebSearch;
-	const [webSearchEnabled, setWebSearchEnabled] = useState(!!currentConfig);
-	const [maxUses, setMaxUses] = useState(currentConfig?.maxUses ?? 3);
+	const [webSearchEnabled, setWebSearchEnabled] = useState(!!currentToolConfig);
 	const [filteringMode, setFilteringMode] = useState<
 		"none" | "allow" | "block"
 	>(
-		currentConfig?.allowedDomains && currentConfig.allowedDomains.length > 0
+		currentToolConfig?.allowedDomains &&
+			currentToolConfig.allowedDomains.length > 0
 			? "allow"
-			: currentConfig?.blockedDomains && currentConfig.blockedDomains.length > 0
+			: currentToolConfig?.blockedDomains &&
+					currentToolConfig.blockedDomains.length > 0
 				? "block"
 				: "none",
 	);
 	const [allowedDomains, setAllowedDomains] = useState<string[]>(
-		currentConfig?.allowedDomains ?? [],
+		currentToolConfig?.allowedDomains ?? [],
 	);
 	const [blockedDomains, setBlockedDomains] = useState<string[]>(
-		currentConfig?.blockedDomains ?? [],
+		currentToolConfig?.blockedDomains ?? [],
 	);
 
 	const [domainListError, setDomainListError] = useState<string | null>(null);
@@ -67,10 +81,6 @@ export function AnthropicWebSearchToolConfigurationDialog({
 	const [domainErrors, setDomainErrors] = useState<
 		{ message: string; domains?: string[] }[]
 	>([]);
-
-	const handleMaxUsesChange = useCallback((value: number) => {
-		setMaxUses(value);
-	}, []);
 
 	const addDomainTags = () => {
 		if (!domainInput.trim()) return;
@@ -174,20 +184,49 @@ export function AnthropicWebSearchToolConfigurationDialog({
 			const finalBlockedDomains =
 				filteringMode === "block" ? blockedDomains : undefined;
 
+			if (currentToolConfig) {
+				if (webSearchEnabled) {
+					updateNodeDataContent(node, {
+						...node.content,
+						tools: node.content.tools.map((tool) =>
+							tool.name === "anthropic-web-search"
+								? {
+										...tool,
+										configuration: {
+											...tool.configuration,
+											allowedDomains: finalAllowedDomains,
+											blockedDomains: finalBlockedDomains,
+										},
+									}
+								: tool,
+						),
+					});
+				} else {
+					updateNodeDataContent(node, {
+						...node.content,
+						tools: node.content.tools.filter(
+							(tool) => tool.name !== "anthropic-web-search",
+						),
+					});
+				}
+			} else {
+				if (webSearchEnabled) {
+					updateNodeDataContent(node, {
+						...node.content,
+						tools: [
+							...node.content.tools,
+							{
+								name: "anthropic-web-search",
+								configuration: {
+									allowedDomains: finalAllowedDomains,
+									blockedDomains: finalBlockedDomains,
+								},
+							},
+						],
+					});
+				}
+			}
 			// Update node configuration
-			updateNodeDataContent(node, {
-				...node.content,
-				tools: {
-					...node.content.tools,
-					anthropicWebSearch: webSearchEnabled
-						? {
-								maxUses,
-								allowedDomains: finalAllowedDomains,
-								blockedDomains: finalBlockedDomains,
-							}
-						: undefined,
-				},
-			});
 
 			// Clear errors and close
 			setDomainListError(null);
@@ -196,12 +235,12 @@ export function AnthropicWebSearchToolConfigurationDialog({
 		[
 			node,
 			updateNodeDataContent,
-			maxUses,
 			filteringMode,
 			allowedDomains,
 			blockedDomains,
-			webSearchEnabled,
 			setOpen,
+			currentToolConfig,
+			webSearchEnabled,
 		],
 	);
 
@@ -243,7 +282,7 @@ export function AnthropicWebSearchToolConfigurationDialog({
 				</div>
 
 				{/* Maximum Uses Slider */}
-				{webSearchEnabled && (
+				{/*{webSearchEnabled && (
 					<div className="flex flex-col gap-2">
 						<div className="flex items-center gap-4">
 							<div className="text-[14px] py-[1.5px]">
@@ -262,7 +301,7 @@ export function AnthropicWebSearchToolConfigurationDialog({
 							onChange={handleMaxUsesChange}
 						/>
 					</div>
-				)}
+				)}*/}
 
 				{webSearchEnabled && (
 					<>
