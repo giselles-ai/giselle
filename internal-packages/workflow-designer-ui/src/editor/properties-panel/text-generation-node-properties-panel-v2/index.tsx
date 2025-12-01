@@ -2,12 +2,12 @@ import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { LanguageModelTier } from "@giselles-ai/language-model-registry";
-import { convertTextGenerationToContentGeneration } from "@giselles-ai/node-registry";
+import { convertContentGenerationToTextGeneration } from "@giselles-ai/node-registry";
 import {
 	type Connection,
+	type ContentGenerationNode,
 	Node,
 	type NodeLike,
-	type TextGenerationNode,
 } from "@giselles-ai/protocol";
 import {
 	useNodeGenerations,
@@ -32,11 +32,11 @@ function isNode(nodeLike: NodeLike): nodeLike is Node {
 	return result.success;
 }
 export function TextGenerationNodePropertiesPanelV2({
-	node: textGenerationNode,
+	node,
 }: {
-	node: TextGenerationNode;
+	node: ContentGenerationNode;
 }) {
-	const node = convertTextGenerationToContentGeneration(textGenerationNode);
+	const textGenerationNode = convertContentGenerationToTextGeneration(node);
 	const {
 		data,
 		updateNodeData,
