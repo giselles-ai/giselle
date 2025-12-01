@@ -607,8 +607,10 @@ function generateContentV2({
 			});
 
 			const toolSet = await buildToolSet({
-				context,
-				logger,
+				context: {
+					...context,
+					logger,
+				},
 				generationId: generation.id,
 				nodeId: operationNode.id,
 				tools: operationNode.content.tools,
@@ -629,7 +631,11 @@ function generateContentV2({
 				model: gateway(operationNode.content.languageModel.id),
 				messages,
 				tools: toolSet,
-				stopWhen: stepCountIs(Object.keys(toolSet).length + 1),
+				stopWhen: ({ steps }) => {
+					logger.debug(steps, "stopWhen");
+					const lastStep = steps[steps.length - 1];
+					return lastStep.finishReason === "stop";
+				},
 				onChunk: async () => {
 					const currentGeneration = await getGeneration({
 						storage: context.storage,
@@ -639,6 +645,9 @@ function generateContentV2({
 						logger.debug(`${generation.id} will abort`);
 						abortController.abort();
 					}
+				},
+				onStepFinish: (result) => {
+					logger.debug(result, "onStepFinish");
 				},
 				onAbort: () => {
 					logger.debug({ generationId: generation.id }, "streamText onAbort");
