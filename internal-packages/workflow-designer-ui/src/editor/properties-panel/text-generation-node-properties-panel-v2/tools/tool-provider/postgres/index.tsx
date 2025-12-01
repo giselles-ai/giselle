@@ -39,7 +39,6 @@ export function PostgresToolConfigurationDialog({
 		secretTags,
 		toolName: "postgres",
 		node,
-		buildToolConfig: (secretId) => ({ tools: [], secretId }),
 	});
 
 	if (!isConfigured) {
@@ -263,23 +262,27 @@ function PostgresToolConfigurationDialogInternal({
 	>(
 		(e) => {
 			e.preventDefault();
-			if (node.content.tools?.postgres === undefined) {
+			if (!node.content.tools?.some((node) => node.name === "postgres")) {
 				return;
 			}
 			const formData = new FormData(e.currentTarget);
 
-			const tools = formData
+			const useTools = formData
 				.getAll("tools")
 				.filter((tool) => typeof tool === "string");
 			updateNodeDataContent(node, {
 				...node.content,
-				tools: {
-					...node.content.tools,
-					postgres: {
-						...node.content.tools.postgres,
-						tools,
-					},
-				},
+				tools: node.content.tools.map((tool) =>
+					tool.name === "postgres"
+						? {
+								...tool,
+								configuration: {
+									...tool.configuration,
+									useTools,
+								},
+							}
+						: tool,
+				),
 			});
 			onOpenChange?.(false);
 		},
@@ -313,12 +316,11 @@ function PostgresToolConfigurationDialogInternal({
 						type="button"
 						onClick={() => {
 							updateNodeDataContent(node, {
-								...node.content,
-								tools: {
-									...node.content.tools,
-									postgres: undefined,
-								},
+								tools: node.content.tools.filter(
+									(tool) => tool.name !== "github-api",
+								),
 							});
+							onOpenChange?.(false);
 						}}
 						leftIcon={<TrashIcon className="size-[12px]" />}
 						size="compact"
@@ -344,8 +346,8 @@ function PostgresToolConfigurationDialogInternal({
 												className="group appearance-none size-[18px] rounded border flex items-center justify-center transition-colors outline-none data-[state=checked]:border-primary-900 data-[state=checked]:bg-primary-900"
 												value={tool}
 												id={tool}
-												defaultChecked={node.content.tools?.postgres?.tools.includes(
-													tool,
+												defaultChecked={node.content.tools?.some(
+													(tool) => tool.name === "postgres",
 												)}
 												name="tools"
 											>

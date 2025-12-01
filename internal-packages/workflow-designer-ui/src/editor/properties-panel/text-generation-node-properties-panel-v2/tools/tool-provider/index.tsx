@@ -24,14 +24,14 @@ export const toolProviders: ToolProviderDescriptor[] = [
 			<GitHubToolConfigurationDialog node={node} />
 		),
 	},
-	// {
-	// 	key: "postgres",
-	// 	label: "PostgreSQL",
-	// 	icon: <DatabaseIcon data-tool-icon />,
-	// 	renderConfiguration: (node) => (
-	// 		<PostgresToolConfigurationDialog node={node} />
-	// 	),
-	// },
+	{
+		toolName: "postgres",
+		label: "PostgreSQL",
+		icon: <DatabaseIcon data-tool-icon />,
+		renderConfiguration: (node) => (
+			<PostgresToolConfigurationDialog node={node} />
+		),
+	},
 	// {
 	// 	key: "anthropicWebSearch",
 	// 	label: "Anthropic Web Search",
