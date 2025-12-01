@@ -55,12 +55,17 @@ export function NavigationListItem(
 			);
 		case "section":
 			return props.variant === "expanded" ? (
-				<div className="text-text-muted text-[13px] font-semibold px-2 pt-3 pb-1">
+				<div className="text-text-muted text-[13px] font-semibold px-2 pt-3 pb-1 flex items-center gap-2">
+					{"icon" in props && props.icon ? (
+						<div className="size-8 flex items-center justify-center">
+							<props.icon className="size-4" />
+						</div>
+					) : null}
 					{props.label}
 				</div>
 			) : (
-				// Reserve the same vertical space (≈35.7px) when label is hidden
-				<div className="h-[35.7px]" />
+				// Reserve the same vertical space (≈35.5px) when label is hidden
+				<div className="h-[35.5px]" />
 			);
 		case "divider":
 			return <div className="h-px bg-border/20 my-1 mx-2" />;
