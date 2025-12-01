@@ -65,7 +65,6 @@ export function ModelPickerV2({
 
 	const handleValueChange = useCallback(
 		(value: string) => {
-			console.log("???");
 			if (!isLanguageModelId(value)) {
 				console.warn(`Invalid language model ID: ${value}`);
 				return;
