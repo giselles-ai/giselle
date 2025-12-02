@@ -30,7 +30,6 @@
 		"./accent-link": "./components/accent-link.tsx",
 		"./app-icon": "./components/app-icon.tsx",
 		"./role-menu": "./components/role-menu.tsx",
-		"./revoke-invitation-dialog": "./components/revoke-invitation-dialog.tsx",
 		"./status-indicator": "./components/status-indicator.tsx",
 		"./section-header": "./components/section-header.tsx",
 		"./repo-action-menu": "./components/repo-action-menu.tsx",
