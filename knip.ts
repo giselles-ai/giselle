@@ -60,6 +60,10 @@ const config: KnipConfig = {
 		"internal-packages/ui": {},
 		"internal-packages/workflow-designer-ui": {
 			ignoreDependencies: ["tailwindcss"],
+			ignore: [
+				// Not currently used in the product, but kept as a reference implementation for future use
+				"src/editor/properties-panel/content-generation-node-properties-panel/**/*",
+			],
 		},
 		"packages/rag": {
 			ignore: ["src/chunker/__fixtures__/code-sample.ts"],

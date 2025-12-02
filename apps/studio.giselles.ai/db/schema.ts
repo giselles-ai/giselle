@@ -34,77 +34,10 @@ import {
 	unique,
 	uniqueIndex,
 } from "drizzle-orm/pg-core";
-import type { Stripe } from "stripe";
 import type { ContentStatusMetadata } from "@/lib/vector-stores/github/types";
 import type { AgentId } from "@/services/agents/types";
 import type { TeamId } from "@/services/teams/types";
 import { vectorWithoutDimensions } from "./custom-types";
-
-export const subscriptionHistories = pgTable(
-	"subscription_histories",
-	{
-		// Subscription ID from Stripe, e.g. sub_1234.
-		// Note: Not unique because we store multiple history records per subscription
-		id: text("id").notNull(),
-		dbId: serial("db_id").primaryKey(),
-		teamDbId: integer("team_db_id")
-			.notNull()
-			.references(() => teams.dbId, { onDelete: "cascade" }),
-		// Customer ID from Stripe, e.g. cus_xxx.
-		customerId: text("customer_id").notNull(),
-		status: text("status").$type<Stripe.Subscription.Status>().notNull(),
-		cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull(),
-		cancelAt: timestamp("cancel_at"),
-		canceledAt: timestamp("canceled_at"),
-
-		/**
-		 * These fields are removed from the Stripe Subscription object.
-		 * - current_period_start
-		 * - current_period_end
-		 *
-		 * But we keep them for compatibility with existing data.
-		 * New values are populated from subscriptionItem objects.
-		 */
-		currentPeriodStart: timestamp("current_period_start").notNull(),
-		currentPeriodEnd: timestamp("current_period_end").notNull(),
-
-		/**
-		 * Timestamp when the subscription was created in Stripe.
-		 * This value comes from Stripe and never changes.
-		 */
-		created: timestamp("created").notNull(),
-		endedAt: timestamp("ended_at"),
-		trialStart: timestamp("trial_start"),
-		trialEnd: timestamp("trial_end"),
-
-		/**
-		 * Timestamp when this history record was created in our database.
-		 * This is different from `created` field which is the subscription creation time in Stripe.
-		 */
-		createdAt: timestamp("created_at").defaultNow().notNull(),
-	},
-	(table) => [
-		index("sub_hist_id_created_at_idx").on(table.id, table.createdAt),
-		index("sub_hist_team_db_id_created_at_idx").on(
-			table.teamDbId,
-			table.createdAt,
-		),
-		index("sub_hist_id_team_db_id_created_at_idx").on(
-			table.id,
-			table.teamDbId,
-			table.createdAt,
-		),
-	],
-);
-export const subscriptionHistoryRelations = relations(
-	subscriptionHistories,
-	({ one }) => ({
-		team: one(teams, {
-			fields: [subscriptionHistories.teamDbId],
-			references: [teams.dbId],
-		}),
-	}),
-);
 
 /**
  * Stripe v2 Billing Cadence history table

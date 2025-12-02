@@ -491,6 +491,13 @@
       "when": 1764256980624,
       "tag": "0069_shocking_shooting_star",
       "breakpoints": true
+    },
+    {
+      "idx": 70,
+      "version": "7",
+      "when": 1764318117118,
+      "tag": "0070_even_living_lightning",
+      "breakpoints": true
     }
   ]
 }
