@@ -1,7 +1,7 @@
 "use client";
 
 import { NodeIcon } from "@giselle-internal/workflow-designer-ui";
-import type { Generation, Task } from "@giselles-ai/protocol";
+import type { Generation, Task, TaskId } from "@giselles-ai/protocol";
 import {
 	type StreamDataEventHandler,
 	TaskStreamReader,
@@ -26,7 +26,7 @@ import { getModelInfo } from "../lib/utils";
 
 interface StepsSectionProps {
 	taskPromise: Promise<Task>;
-	taskId: string;
+	taskId: TaskId;
 }
 
 function StepActions({ generation }: { generation: Generation }) {
@@ -139,8 +139,11 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 			}
 		};
 
-		fetchGenerations();
-	}, [task, stepGenerations]);
+		fetchGenerations().catch((error) => {
+			console.error("Failed to fetch generations:", error);
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [task]);
 
 	// Count completed steps
 	const completedStepsCount = task.sequences.reduce(
