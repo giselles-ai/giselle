@@ -22,7 +22,6 @@
 		"./toast": "./components/toast.tsx",
 		"./status-badge": "./components/status-badge.tsx",
 		"./separator": "./components/separator.tsx",
-		"./link-muted": "./components/link-muted.tsx",
 		"./tabs": "./components/tabs.tsx",
 		"./tab-navigation": "./components/tab-navigation.tsx",
 		"./glass-card": "./components/glass-card.tsx",
