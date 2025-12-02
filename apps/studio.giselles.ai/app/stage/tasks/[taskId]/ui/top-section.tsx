@@ -32,7 +32,9 @@ export function TopSection({ data }: { data: Promise<TopSectionData> }) {
 							<StatusBadge
 								status="warning"
 								variant="default"
-								leftIcon={<FilePenLine className="stroke-[hsl(192,73%,84%)] stroke-[1.5] transition-colors group-hover:stroke-[hsl(192,73%,20%)]" />}
+								leftIcon={
+									<FilePenLine className="stroke-[hsl(192,73%,84%)] stroke-[1.5] transition-colors group-hover:stroke-[hsl(192,73%,20%)]" />
+								}
 							>
 								Edit in Studio
 							</StatusBadge>

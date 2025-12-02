@@ -40,7 +40,7 @@ export async function getTopSectionData(
 	if (task.starter.type !== "app") {
 		throw new Error(`Task with id ${taskId} is not an app`);
 	}
-	
+
 	return {
 		task,
 		workspaceId: task.workspaceId,
