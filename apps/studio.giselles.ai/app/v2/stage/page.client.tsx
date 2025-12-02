@@ -6,15 +6,7 @@ import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
 import { ArrowUpIcon, Image as ImageIcon, Search } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
-import {
-	use,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-	useTransition,
-} from "react";
+import { use, useCallback, useRef, useState, useTransition } from "react";
 import { TopLightOverlay } from "@/app/(main)/lobby/components/top-light-overlay";
 import { AgentCard } from "@/app/(main)/workspaces/components/agent-card";
 import type { LoaderData } from "./data-loader";
@@ -153,34 +145,27 @@ function ChatInputArea({
 	const [inputValue, setInputValue] = useState("");
 	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-	const appOptions: SelectOption[] = useMemo(
-		() =>
-			apps.map((app) => ({
-				value: app.id,
-				label: app.name,
-				icon: <DynamicIcon name={app.iconName} className="h-4 w-4" />,
-			})),
-		[apps],
-	);
+	const appOptions: SelectOption[] = apps.map((app) => ({
+		value: app.id,
+		label: app.name,
+		icon: <DynamicIcon name={app.iconName} className="h-4 w-4" />,
+	}));
 
-	const resizeTextarea = useCallback(() => {
+	const resizeTextarea = () => {
 		const textarea = textareaRef.current;
 		if (textarea) {
 			textarea.style.height = "auto";
 			textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
 		}
-	}, []);
+	};
 
-	const handleInputChange = useCallback(
-		(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-			setInputValue(e.target.value);
-			// Auto-resize textarea on input change
-			resizeTextarea();
-		},
-		[resizeTextarea],
-	);
+	const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+		setInputValue(e.target.value);
+		// Auto-resize textarea on input change
+		resizeTextarea();
+	};
 
-	const handleSubmit = useCallback(() => {
+	const handleSubmit = () => {
 		if (!selectedApp || !inputValue.trim() || isRunning) return;
 
 		// Build inputs from the single text input
@@ -202,19 +187,18 @@ function ChatInputArea({
 			],
 		});
 		setInputValue("");
-		// Reset textarea height after clearing
-		setTimeout(() => resizeTextarea(), 0);
-	}, [selectedApp, inputValue, onSubmit, resizeTextarea, isRunning]);
+		// Reset textarea height after clearing - use requestAnimationFrame for better timing
+		requestAnimationFrame(() => {
+			resizeTextarea();
+		});
+	};
 
-	const handleKeyDown = useCallback(
-		(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-			if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-				e.preventDefault();
-				handleSubmit();
-			}
-		},
-		[handleSubmit],
-	);
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+		if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+			e.preventDefault();
+			handleSubmit();
+		}
+	};
 
 	return (
 		<div className="relative w-full max-w-[960px] min-w-[320px] mx-auto">
@@ -318,16 +302,22 @@ export function Page({
 		"idle",
 	);
 
-	useEffect(() => {
-		if (!selectedAppId) return;
-		if (!data.apps.some((app) => app.id === selectedAppId)) {
-			setSelectedAppId(undefined);
-		}
-	}, [selectedAppId, data.apps]);
-
+	// Validate selectedAppId during render - if invalid, treat as undefined
 	const selectedApp = selectedAppId
 		? data.apps.find((app) => app.id === selectedAppId)
 		: undefined;
+
+	const handleAppSelect = useCallback(
+		(appId: string) => {
+			// Validate app exists before setting
+			if (data.apps.some((app) => app.id === appId)) {
+				setSelectedAppId(appId);
+			} else {
+				setSelectedAppId(undefined);
+			}
+		},
+		[data.apps],
+	);
 
 	const runningApp = runningAppId
 		? data.apps.find((app) => app.id === runningAppId)
@@ -373,7 +363,7 @@ export function Page({
 						<ChatInputArea
 							selectedApp={selectedApp}
 							apps={data.apps}
-							onAppSelect={(appId) => setSelectedAppId(appId)}
+							onAppSelect={handleAppSelect}
 							onSubmit={handleRunSubmit}
 							isRunning={isRunning}
 						/>
@@ -467,7 +457,7 @@ export function Page({
 												selectedAppId === app.id || runningAppId === app.id
 											}
 											onSelect={() => {
-												setSelectedAppId(app.id);
+												handleAppSelect(app.id);
 											}}
 										/>
 									))}
