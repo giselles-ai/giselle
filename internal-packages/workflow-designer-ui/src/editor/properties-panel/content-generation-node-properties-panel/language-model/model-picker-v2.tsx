@@ -6,13 +6,20 @@ import {
 	type LanguageModel,
 	type LanguageModelId,
 	type LanguageModelProvider,
+	type LanguageModelTier,
 	languageModels as registryLanguageModels,
 } from "@giselles-ai/language-model-registry";
 import clsx from "clsx/lite";
 import { Popover as PopoverPrimitive } from "radix-ui";
 import { useMemo, useState } from "react";
 
-const recommendedLanguageModelIds: LanguageModelId[] = [
+const freeRecommendedLanguageModelIds: LanguageModelId[] = [
+	"openai/gpt-5-nano",
+	"anthropic/claude-haiku-4-5",
+	"google/gemini-2.5-flash-lite",
+];
+
+const proRecommendedLanguageModelIds: LanguageModelId[] = [
 	"openai/gpt-5.1-thinking",
 	"google/gemini-3-pro-preview",
 	"anthropic/claude-opus-4.5",
@@ -21,9 +28,11 @@ const recommendedLanguageModelIds: LanguageModelId[] = [
 export function ModelPickerV2({
 	value,
 	onChange,
+	userTier = "free",
 }: {
 	value: LanguageModelId;
 	onChange?: (modelId: LanguageModelId) => void;
+	userTier?: LanguageModelTier;
 }) {
 	const [open, setOpen] = useState(false);
 	const [query, setQuery] = useState("");
@@ -41,12 +50,16 @@ export function ModelPickerV2({
 			return matchesName || matchesId || matchesProvider;
 		});
 	}, [query]);
+	const recommendedLanguageModelIds =
+		userTier === "free"
+			? freeRecommendedLanguageModelIds
+			: proRecommendedLanguageModelIds;
 	const recommendedLanguageModels = useMemo(
 		() =>
 			languageModels.filter((model) =>
 				recommendedLanguageModelIds.includes(model.id),
 			),
-		[languageModels],
+		[languageModels, recommendedLanguageModelIds],
 	);
 
 	const languageModelGroupByProvider = useMemo(() => {

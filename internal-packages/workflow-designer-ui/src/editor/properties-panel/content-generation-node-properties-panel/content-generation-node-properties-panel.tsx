@@ -16,7 +16,11 @@ import {
 	type Generation,
 	Node,
 } from "@giselles-ai/protocol";
-import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
+import {
+	useNodeGenerations,
+	useUsageLimits,
+	useWorkflowDesigner,
+} from "@giselles-ai/react";
 import { titleCase } from "@giselles-ai/utils";
 import clsx from "clsx/lite";
 import { PlusIcon, Settings2Icon, XIcon } from "lucide-react";
@@ -79,6 +83,8 @@ export function ContentGenerationNodePropertiesPanel({
 }) {
 	const { updateNodeData, updateNodeDataContent, deleteNode, data } =
 		useWorkflowDesigner();
+	const usageLimits = useUsageLimits();
+	const userTier = usageLimits?.featureTier ?? "free";
 	const languageModel = useMemo(
 		() => getEntry(node.content.languageModel.id),
 		[node.content.languageModel.id],
@@ -360,6 +366,7 @@ export function ContentGenerationNodePropertiesPanel({
 							<ModelPickerV2
 								value={node.content.languageModel.id}
 								onChange={handleModelChange}
+								userTier={userTier}
 							/>
 							<Popover
 								onOpenAutoFocus={(e) => {

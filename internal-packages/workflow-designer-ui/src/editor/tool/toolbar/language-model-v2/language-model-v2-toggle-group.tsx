@@ -13,7 +13,13 @@ import { useShallow } from "zustand/shallow";
 import { LanguageModelItemButton } from "./language-model-item-button";
 import { useLanguageModelV2ToggleGroupStore } from "./store";
 
-const recommendedLanguageModelIds: LanguageModelId[] = [
+const freeRecommendedLanguageModelIds: LanguageModelId[] = [
+	"openai/gpt-5-nano",
+	"anthropic/claude-haiku-4-5",
+	"google/gemini-2.5-flash-lite",
+];
+
+const proRecommendedLanguageModelIds: LanguageModelId[] = [
 	"openai/gpt-5.1-thinking",
 	"google/gemini-3-pro-preview",
 	"anthropic/claude-opus-4.5",
@@ -41,12 +47,16 @@ export function LanguageModelV2ToggleGroup({
 			return matchesName || matchesId || matchesProvider;
 		});
 	}, [query]);
+	const recommendedLanguageModelIds =
+		userTier === "free"
+			? freeRecommendedLanguageModelIds
+			: proRecommendedLanguageModelIds;
 	const recommendedLanguageModels = useMemo(
 		() =>
 			languageModels.filter((model) =>
 				recommendedLanguageModelIds.includes(model.id),
 			),
-		[languageModels],
+		[languageModels, recommendedLanguageModelIds],
 	);
 	const { setHover } = useLanguageModelV2ToggleGroupStore(
 		useShallow((s) => ({ setHover: s.setHover, clearHover: s.clearHover })),
