@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
+import type React from "react";
 import { Suspense } from "react";
-import { getTopSectionData } from "./lib/data";
 import { InputAreaPlaceholder } from "./ui/input-area-placeholder";
 import { StepsSection } from "./ui/steps-section";
 import { TopSection } from "./ui/top-section";
@@ -10,8 +10,10 @@ import { giselle } from "@/app/giselle";
 
 export default async function ({
 	params,
+	children,
 }: {
 	params: Promise<{ taskId: string }>;
+	children: React.ReactNode;
 }) {
 	const { taskId: taskIdParam } = await params;
 
@@ -20,8 +22,12 @@ export default async function ({
 		notFound();
 	}
 	const taskId = result.data;
-	const topSectionData = getTopSectionData(taskId);
+	// Fetch task once and reuse for both sections
 	const taskPromise = giselle.getTask({ taskId });
+	const topSectionData = taskPromise.then((task) => ({
+		task,
+		workspaceId: task.workspaceId,
+	}));
 
 	return (
 		<div className="bg-bg text-foreground min-h-screen font-sans">
@@ -44,6 +50,9 @@ export default async function ({
 					{/* TODO: Input area will be added here - placeholder for future functionality */}
 					<InputAreaPlaceholder />
 				</div>
+
+				{/* Render nested routes */}
+				{children}
 			</div>
 		</div>
 	);

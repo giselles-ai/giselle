@@ -142,7 +142,7 @@ function ChatInputArea({
 	apps,
 	onAppSelect,
 	onSubmit,
-	isRunning: _isRunning,
+	isRunning,
 }: {
 	selectedApp?: StageApp;
 	apps: StageApp[];
@@ -181,7 +181,7 @@ function ChatInputArea({
 	);
 
 	const handleSubmit = useCallback(() => {
-		if (!selectedApp || !inputValue.trim()) return;
+		if (!selectedApp || !inputValue.trim() || isRunning) return;
 
 		// Build inputs from the single text input
 		// If app has parameters, use the first text parameter; otherwise send as generic input
@@ -204,7 +204,7 @@ function ChatInputArea({
 		setInputValue("");
 		// Reset textarea height after clearing
 		setTimeout(() => resizeTextarea(), 0);
-	}, [selectedApp, inputValue, onSubmit, resizeTextarea]);
+	}, [selectedApp, inputValue, onSubmit, resizeTextarea, isRunning]);
 
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -227,7 +227,8 @@ function ChatInputArea({
 					onKeyDown={handleKeyDown}
 					placeholder="Ask anything—powered by Giselle docs"
 					rows={1}
-					className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-foreground/40 outline-none"
+					disabled={isRunning}
+					className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-foreground/40 outline-none disabled:cursor-not-allowed"
 				/>
 
 				{/* Bottom row: App selector and buttons */}
@@ -254,7 +255,8 @@ function ChatInputArea({
 						<button
 							type="button"
 							onClick={handleSubmit}
-							className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] border border-white"
+							disabled={isRunning || !selectedApp || !inputValue.trim()}
+							className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] border border-white disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							<ArrowUpIcon className="h-3 w-3 stroke-white" />
 						</button>
@@ -440,7 +442,7 @@ export function Page({
 						<div className="flex flex-col">
 							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-4">
 								<h2 className="text-inverse text-[16px]">
-									Select an Apps to Run
+									Select an App to Run
 								</h2>
 								<div className="relative">
 									<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
