@@ -3,7 +3,6 @@ import { google } from "@ai-sdk/google";
 import { openai } from "@ai-sdk/openai";
 import { octokit } from "@giselles-ai/github-tool";
 import { getLanguageModelTool } from "@giselles-ai/language-model-registry";
-import type { GiselleLogger } from "@giselles-ai/logger";
 import type { ContentGenerationContent } from "@giselles-ai/protocol";
 import { SecretId } from "@giselles-ai/protocol";
 import type { ToolSet } from "ai";
@@ -15,18 +14,20 @@ import { createPostgresTool } from "./postgres";
 
 export async function buildToolSet({
 	context,
-	logger,
 	generationId,
 	nodeId,
 	tools,
 }: {
 	context: GiselleContext;
-	logger: GiselleLogger;
 	generationId: string;
 	nodeId: string;
 	tools: ContentGenerationContent["tools"];
-}): Promise<ToolSet> {
+}): Promise<{
+	toolSet: ToolSet;
+	cleanupFunctions: Array<() => void | Promise<void>>;
+}> {
 	const toolSet: ToolSet = {};
+	const cleanupFunctions: Array<() => void | Promise<void>> = [];
 	for (const tool of tools) {
 		const languageModelTool = getLanguageModelTool(tool.name);
 		switch (languageModelTool.name) {
@@ -43,7 +44,7 @@ export async function buildToolSet({
 						tool.configuration,
 					);
 					if (!result.success) {
-						logger.warn(
+						context.logger.warn(
 							`${generationId}, ${nodeId}, anthropic-web-search tool configuration is invalid: ${result.error.message}`,
 						);
 						continue;
@@ -63,7 +64,7 @@ export async function buildToolSet({
 					];
 				const result = SecretId.safeParse(unsafeSecretId);
 				if (result.error) {
-					logger.warn(
+					context.logger.warn(
 						`${generationId}, ${nodeId}, github-api tool secret id is undefined`,
 					);
 					continue;
@@ -73,7 +74,7 @@ export async function buildToolSet({
 					secretId: result.data,
 				});
 				if (unsafeToken === undefined) {
-					logger.warn(
+					context.logger.warn(
 						`${generationId}, ${nodeId}, github-api tool secret token is undefined`,
 					);
 					continue;
@@ -84,7 +85,7 @@ export async function buildToolSet({
 						languageModelTool.configurationOptions.useTools.name
 					];
 				if (!Array.isArray(useTools)) {
-					logger.warn(
+					context.logger.warn(
 						`${generationId}, ${nodeId}, github-api tool use tools is not an array`,
 					);
 					continue;
@@ -95,11 +96,12 @@ export async function buildToolSet({
 					personalAccessToken: token,
 				});
 
-				const githubTools = createGitHubTools(
-					app,
-					languageModelTool.tools,
+				const githubTools = createGitHubTools({
+					octokit: app,
+					toolDefs: languageModelTool.tools,
 					useTools,
-				);
+					context,
+				});
 				Object.assign(toolSet, githubTools);
 				break;
 			}
@@ -113,7 +115,7 @@ export async function buildToolSet({
 				});
 				const result = configurationOptionSchema.safeParse(tool.configuration);
 				if (!result.success) {
-					logger.warn(
+					context.logger.warn(
 						`${generationId}, ${nodeId}, openai-web-search tool configuration is invalid: ${result.error.message}`,
 					);
 					continue;
@@ -132,7 +134,7 @@ export async function buildToolSet({
 					];
 				const result = SecretId.safeParse(unsafeSecretId);
 				if (result.error) {
-					logger.warn(
+					context.logger.warn(
 						`${generationId}, ${nodeId}, postgres tool secret id is undefined`,
 					);
 					continue;
@@ -142,7 +144,7 @@ export async function buildToolSet({
 					secretId: result.data,
 				});
 				if (unsafeToken === undefined) {
-					logger.warn(
+					context.logger.warn(
 						`${generationId}, ${nodeId}, postgres tool secret token is undefined`,
 					);
 					continue;
@@ -153,7 +155,7 @@ export async function buildToolSet({
 						languageModelTool.configurationOptions.useTools.name
 					];
 				if (!Array.isArray(useTools)) {
-					logger.warn(
+					context.logger.warn(
 						`${generationId}, ${nodeId}, postgres tool use tools is not an array`,
 					);
 					continue;
@@ -165,7 +167,8 @@ export async function buildToolSet({
 					context,
 				});
 
-				Object.assign(toolSet, postgresTools);
+				Object.assign(toolSet, postgresTools.toolSet);
+				cleanupFunctions.push(postgresTools.cleanup);
 				break;
 			}
 			default: {
@@ -174,5 +177,5 @@ export async function buildToolSet({
 			}
 		}
 	}
-	return toolSet;
+	return { toolSet, cleanupFunctions };
 }

@@ -9,7 +9,6 @@ import {
 	hasCapability,
 	languageModels,
 } from "@giselles-ai/language-model";
-import type { GiselleLogger } from "@giselles-ai/logger";
 import type {
 	CompletedGeneration,
 	FailedGeneration,
@@ -69,19 +68,17 @@ type GenerateContentResult =
 export function generateContent({
 	context,
 	generation,
-	logger: overrideLogger,
 	metadata,
 	onComplete,
 	onError,
 }: {
 	context: GiselleContext;
 	generation: RunningGeneration;
-	logger?: GiselleLogger;
 	metadata?: GenerationMetadata;
 	onComplete?: OnGenerationComplete;
 	onError?: OnGenerationError;
 }) {
-	const logger = overrideLogger ?? context.logger;
+	const logger = context.logger;
 
 	logger.info(`generate content: ${generation.id}`);
 	logger.info(`generation metadata: ${JSON.stringify(metadata)}`);
@@ -90,7 +87,6 @@ export function generateContent({
 		return generateContentV2({
 			context,
 			generation,
-			logger: overrideLogger,
 			metadata,
 			onComplete,
 			onError,
@@ -549,19 +545,17 @@ function generationModel(
 function generateContentV2({
 	context,
 	generation,
-	logger: overrideLogger,
 	metadata,
 	onComplete,
 	onError,
 }: {
 	context: GiselleContext;
 	generation: RunningGeneration;
-	logger?: GiselleLogger;
 	metadata?: GenerationMetadata;
 	onComplete?: OnGenerationComplete;
 	onError?: OnGenerationError;
 }) {
-	const logger = overrideLogger ?? context.logger;
+	const logger = context.logger;
 	// biome-ignore lint/correctness/useHookAtTopLevel: it's nodejs use
 	return useGenerationExecutor({
 		context,
@@ -606,9 +600,8 @@ function generateContentV2({
 				appEntryResolver,
 			});
 
-			const toolSet = await buildToolSet({
+			const { toolSet, cleanupFunctions } = await buildToolSet({
 				context,
-				logger,
 				generationId: generation.id,
 				nodeId: operationNode.id,
 				tools: operationNode.content.tools,
@@ -629,7 +622,11 @@ function generateContentV2({
 				model: gateway(operationNode.content.languageModel.id),
 				messages,
 				tools: toolSet,
-				stopWhen: stepCountIs(Object.keys(toolSet).length + 1),
+				stopWhen: ({ steps }) => {
+					logger.debug(steps, "stopWhen");
+					const lastStep = steps[steps.length - 1];
+					return lastStep.finishReason !== "tool-calls";
+				},
 				onChunk: async () => {
 					const currentGeneration = await getGeneration({
 						storage: context.storage,
@@ -639,6 +636,9 @@ function generateContentV2({
 						logger.debug(`${generation.id} will abort`);
 						abortController.abort();
 					}
+				},
+				onStepFinish: (result) => {
+					logger.debug(result, "onStepFinish");
 				},
 				onAbort: () => {
 					logger.debug({ generationId: generation.id }, "streamText onAbort");
@@ -661,6 +661,13 @@ function generateContentV2({
 				onFinish: async ({ messages: generateMessages }) => {
 					logger.info(
 						`Text generation stream completed in ${Date.now() - textGenerationStartTime}ms`,
+					);
+					const toolCleanupStartTime = Date.now();
+					await Promise.all(
+						cleanupFunctions.map((cleanupFunction) => cleanupFunction()),
+					);
+					logger.info(
+						`Tool cleanup completed in ${Date.now() - toolCleanupStartTime}ms`,
 					);
 					if (generationError) {
 						if (AISDKError.isInstance(generationError)) {

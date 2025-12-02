@@ -17,9 +17,6 @@ export function createPostgresTool({
 }) {
 	const pool = new Pool({ connectionString });
 
-	context.waitUntil(async () => {
-		await pool.end();
-	});
 	const toolSet: ToolSet = {};
 
 	for (const toolDef of toolDefs) {
@@ -28,11 +25,12 @@ export function createPostgresTool({
 		}
 		switch (toolDef.name) {
 			case "getTableStructure":
-				toolSet.getTableStructure = tool({
+				toolSet.postgres_getTableStructure = tool({
 					description:
 						"Returns database table structure sorted by table and position.",
 					inputSchema: z.object({}),
 					execute: async () => {
+						context.logger.debug("Getting table structure");
 						const client = await pool.connect();
 						const res = await client.query(
 							`
@@ -47,7 +45,7 @@ export function createPostgresTool({
 				});
 				break;
 			case "query":
-				toolSet.query = tool({
+				toolSet.postgres_query = tool({
 					description: "Run a SQL query",
 					inputSchema: z.object({
 						query: z.string().min(1).max(1000),
@@ -68,5 +66,11 @@ export function createPostgresTool({
 			}
 		}
 	}
-	return toolSet;
+	return {
+		toolSet,
+		cleanup: async () => {
+			await pool.end();
+			context.logger.debug("Postgres tool ended");
+		},
+	};
 }
