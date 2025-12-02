@@ -34,12 +34,8 @@ const config: KnipConfig = {
 				"pino-pretty",
 			],
 		},
-		"apps/ui.giselles.ai": {
-			ignoreDependencies: ["tailwindcss"],
-		},
-		"internal-packages/ui": {
-			ignoreDependencies: ["tailwindcss"],
-		},
+		"apps/ui.giselles.ai": {},
+		"internal-packages/ui": {},
 		"internal-packages/workflow-designer-ui": {
 			ignoreDependencies: ["tailwindcss"],
 			ignore: [
