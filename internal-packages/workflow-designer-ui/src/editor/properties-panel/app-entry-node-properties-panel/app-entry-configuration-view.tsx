@@ -1,10 +1,6 @@
 import { Button } from "@giselle-internal/ui/button";
 import { Select } from "@giselle-internal/ui/select";
 import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
-import {
 	App,
 	type AppEntryNode,
 	AppId,
@@ -25,6 +21,7 @@ import {
 } from "react";
 import * as z from "zod/v4";
 import { SpinnerIcon } from "../../../icons";
+import { SettingDetail, SettingLabel } from "../ui/setting-label";
 import { AppIconSelect } from "./app-icon-select";
 
 const TYPE_OPTIONS = [

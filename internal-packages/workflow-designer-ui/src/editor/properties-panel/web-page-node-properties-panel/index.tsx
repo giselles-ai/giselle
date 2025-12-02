@@ -1,6 +1,4 @@
 import { Button } from "@giselle-internal/ui/button";
-import { Note } from "@giselle-internal/ui/note";
-import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	type WebPage,
@@ -16,6 +14,8 @@ import { type FormEventHandler, useCallback, useState } from "react";
 import useSWR from "swr";
 import { validateUrl } from "../../lib/validate-url";
 import { NodePanelHeader } from "../ui/node-panel-header";
+import { Note } from "../ui/note";
+import { SettingLabel } from "../ui/setting-label";
 
 function WebPageListItem({
 	webpage,

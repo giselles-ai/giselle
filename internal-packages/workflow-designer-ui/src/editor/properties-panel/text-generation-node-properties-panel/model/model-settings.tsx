@@ -1,8 +1,4 @@
 import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
-import {
 	anthropicLanguageModels,
 	googleLanguageModels,
 	hasTierAccess,
@@ -24,6 +20,7 @@ import { useCallback, useMemo } from "react";
 import { useShallow } from "zustand/shallow";
 import { ModelPicker } from "../../../../ui/model-picker";
 import { ProTag } from "../../../tool";
+import { SettingDetail, SettingLabel } from "../../ui/setting-label";
 import { AnthropicModelPanel } from "./anthropic";
 import { GoogleModelPanel } from "./google";
 import { createDefaultModelData, updateModelId } from "./model-defaults";

@@ -1,7 +1,5 @@
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { Popover } from "@giselle-internal/ui/popover";
-import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
-import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import {
 	getEntry,
 	type LanguageModelId,
@@ -25,6 +23,8 @@ import { useCallback, useMemo, useState } from "react";
 import ClipboardButton from "../../../ui/clipboard-button";
 import { GenerationView } from "../../../ui/generation-view";
 import { GenerateCtaButton, NodePanelHeader, PropertiesPanelRoot } from "../ui";
+import { PromptEditor } from "../ui/prompt-editor";
+import { SettingDetail } from "../ui/setting-label";
 import { ConfigurationFormField, ModelPickerV2 } from "./language-model";
 import { useNodeContext } from "./node-context/use-node-context";
 import { ToolConfigurationDialog } from "./tool";
@@ -565,7 +565,7 @@ export function ContentGenerationNodePropertiesPanel({
 						<PromptEditor
 							placeholder="Write your prompt... Use @ to reference other nodes"
 							value={node.content.prompt}
-							onValueChange={(value) => {
+							onValueChange={(value: string) => {
 								updateNodeDataContent(node, { prompt: value });
 							}}
 							connections={connections}

@@ -1,4 +1,3 @@
-import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import { isVectorStoreNode, type QueryNode } from "@giselles-ai/protocol";
 import {
 	useVectorStore,
@@ -10,6 +9,7 @@ import { DatabaseZapIcon, X } from "lucide-react";
 import { useMemo } from "react";
 import { GitHubIcon } from "../../../icons";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
+import { SettingDetail } from "../ui/setting-label";
 import { type ConnectedSource, useConnectedSources } from "./sources";
 
 type DocumentVectorStoreSummary = NonNullable<
