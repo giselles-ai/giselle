@@ -25,7 +25,6 @@
 		"./link-muted": "./components/link-muted.tsx",
 		"./tabs": "./components/tabs.tsx",
 		"./tab-navigation": "./components/tab-navigation.tsx",
-		"./inverse-surface": "./components/inverse-surface.tsx",
 		"./glass-card": "./components/glass-card.tsx",
 		"./page-heading": "./components/page-heading.tsx",
 		"./docs-link": "./components/docs-link.tsx",
