@@ -7,6 +7,7 @@ import Link from "next/link";
 import { use } from "react";
 
 export interface TopSectionData {
+	// TODO: task property is reserved for future use
 	task: Task;
 	workspaceId: string;
 }
