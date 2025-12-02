@@ -3,7 +3,12 @@ import type { UIConnection } from "@giselles-ai/react";
 import { extensions as baseExtensions } from "@giselles-ai/text-editor-utils";
 import Mention from "@tiptap/extension-mention";
 import Placeholder from "@tiptap/extension-placeholder";
-import { type Editor, EditorProvider, useCurrentEditor } from "@tiptap/react";
+import {
+	type Editor,
+	EditorProvider,
+	type EditorProviderProps,
+	useCurrentEditor,
+} from "@tiptap/react";
 import clsx from "clsx/lite";
 import {
 	BoldIcon,
@@ -136,7 +141,7 @@ export function TextEditor({
 	header,
 	showToolbar = true,
 	editorClassName,
-	fullHeight,
+	editorContainerProps,
 }: {
 	value?: string;
 	onValueChange?: (value: string) => void;
@@ -146,8 +151,15 @@ export function TextEditor({
 	header?: ReactNode;
 	showToolbar?: boolean;
 	editorClassName?: string;
-	fullHeight?: boolean;
+	editorContainerProps?: EditorProviderProps["editorContainerProps"];
 }) {
+	const connectionsSignature = useMemo(
+		() =>
+			connections === undefined
+				? "no-connections"
+				: JSON.stringify(connections.map((connection) => connection.id)),
+		[connections],
+	);
 	const extensions = useMemo(() => {
 		const mentionExtension = Mention.configure({
 			suggestion: createSuggestion(connections),
@@ -178,39 +190,31 @@ export function TextEditor({
 				];
 	}, [connections, placeholder]);
 	return (
-		<div className="flex flex-col w-full min-h-0 h-full">
-			<EditorProvider
-				slotBefore={
-					<>
-						{showToolbar && <Toolbar tools={tools} />}
-						{header && <div className="mb-[4px]">{header}</div>}
-					</>
-				}
-				extensions={extensions}
-				content={
-					value === undefined
+		<EditorProvider
+			key={`text-editor-${connectionsSignature}`}
+			slotBefore={
+				<>
+					{showToolbar && <Toolbar tools={tools} />}
+					{header && <div className="mb-[4px]">{header}</div>}
+				</>
+			}
+			extensions={extensions}
+			content={
+				value === undefined
+					? undefined
+					: value === ""
 						? undefined
-						: value === ""
-							? undefined
-							: JSON.parse(value)
-				}
-				editorContainerProps={{
-					className: "flex-1 flex flex-col min-h-0 h-full",
-				}}
-				onUpdate={(p) => {
-					onValueChange?.(JSON.stringify(p.editor.getJSON()));
-				}}
-				immediatelyRender={false}
-				editorProps={{
-					attributes: {
-						class: clsx(
-							"prompt-editor border border-text-inverse rounded-[8px] p-[16px] pb-0 box-border flex-1 overflow-y-auto",
-							editorClassName,
-						),
-						...(fullHeight ? { style: "height: 100%" } : {}),
-					},
-				}}
-			/>
-		</div>
+						: JSON.parse(value)
+			}
+			editorContainerProps={editorContainerProps}
+			onUpdate={(p) => {
+				onValueChange?.(JSON.stringify(p.editor.getJSON()));
+			}}
+			editorProps={{
+				attributes: {
+					class: clsx("prompt-editor", editorClassName),
+				},
+			}}
+		/>
 	);
 }

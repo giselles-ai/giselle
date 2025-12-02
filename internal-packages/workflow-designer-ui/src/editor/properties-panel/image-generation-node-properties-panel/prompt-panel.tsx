@@ -1,4 +1,3 @@
-import { ModelPicker } from "@giselle-internal/ui/model-picker";
 import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
 import {
 	SettingDetail,
@@ -12,10 +11,9 @@ import {
 	openaiImageModels,
 	Tier,
 } from "@giselles-ai/language-model";
-import {
-	type ImageGenerationLanguageModelData,
-	type ImageGenerationNode,
-	Node,
+import type {
+	ImageGenerationLanguageModelData,
+	ImageGenerationNode,
 } from "@giselles-ai/protocol";
 import {
 	isSupportedConnection,
@@ -24,41 +22,26 @@ import {
 	useWorkflowDesigner,
 } from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
+import { ModelPicker } from "../../../ui/model-picker";
 import { ProTag } from "../../tool/toolbar/components/pro-tag";
 import { createDefaultModelData, updateModelId } from "./model-defaults";
 import { FalModelPanel, OpenAIImageModelPanel } from "./models";
 import { useConnectedSources } from "./sources";
 
-export function PromptPanel({
-	node,
-	onExpand,
-	editorVersion,
-}: {
-	node: ImageGenerationNode;
-	onExpand?: () => void;
-	editorVersion?: number;
-}) {
+export function PromptPanel({ node }: { node: ImageGenerationNode }) {
 	const { data, updateNodeDataContent, updateNodeData, deleteConnection } =
 		useWorkflowDesigner();
 	const usageLimits = useUsageLimits();
 	const userTier = usageLimits?.featureTier ?? Tier.enum.free;
 	const { error } = useToasts();
 	const { aiGatewayUnsupportedModels } = useFeatureFlag();
-	const { all: connectedSources, connections } = useConnectedSources(node);
+	const { connections } = useConnectedSources(node);
 	const selectableOpenAIImageModels = useMemo(
 		() =>
 			openaiImageModels.filter(
 				(model) => aiGatewayUnsupportedModels || model.id !== "gpt-image-1",
 			),
 		[aiGatewayUnsupportedModels],
-	);
-	const nodes = useMemo(
-		() =>
-			connectedSources
-				.map((source) => Node.safeParse(source.node))
-				.map((parse) => (parse.success ? parse.data : null))
-				.filter((data) => data !== null),
-		[connectedSources],
 	);
 
 	const groups = useMemo(
@@ -183,19 +166,13 @@ export function PromptPanel({
 
 	return (
 		<PromptEditor
-			key={`${editorVersion ?? 0}-${JSON.stringify(nodes.map((n) => n.id))}`}
 			placeholder="Write your prompt... Use @ to reference other nodes"
 			value={node.content.prompt}
 			onValueChange={(value) => {
 				updateNodeDataContent(node, { prompt: value });
 			}}
 			connections={connections}
-			showToolbar={false}
-			variant="plain"
 			header={header}
-			showExpandIcon={true}
-			onExpand={onExpand}
-			expandIconPosition="right"
 		/>
 	);
 }

@@ -23,14 +23,8 @@ type ToolPart = Extract<UIMessage["parts"][number], { type: string }> & {
 
 function isToolPart(part: ToolPart): boolean {
 	return (
-		part.type.startsWith("tool-github.") ||
-		part.type.startsWith("tool-getMe") ||
-		part.type.startsWith("tool-create") ||
-		part.type.startsWith("tool-update") ||
-		part.type.startsWith("tool-list") ||
-		part.type.startsWith("tool-search") ||
-		part.type.startsWith("tool-merge") ||
-		part.type.startsWith("tool-add") ||
+		part.type.startsWith("tool-github-api_") ||
+		part.type.startsWith("tool-postgres_") ||
 		part.type.startsWith("tool-web_search")
 	);
 }
