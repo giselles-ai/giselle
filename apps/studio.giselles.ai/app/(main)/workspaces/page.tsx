@@ -174,6 +174,16 @@ async function agentsQuery(teamDbId: number) {
 									}
 								}
 							} catch (error) {
+								// Silently skip if installation is not found (may have been removed)
+								const errorMessage =
+									error instanceof Error ? error.message : String(error);
+								if (
+									errorMessage.includes("installation not found") ||
+									errorMessage.includes("installation may have been removed")
+								) {
+									// Installation was removed, skip silently
+									continue;
+								}
 								console.error(
 									`Error getting trigger repository for workspace ${agent.workspaceId}:`,
 									error,
@@ -196,6 +206,16 @@ async function agentsQuery(teamDbId: number) {
 									repositories.push(fullName);
 								}
 							} catch (error) {
+								// Silently skip if installation is not found (may have been removed)
+								const errorMessage =
+									error instanceof Error ? error.message : String(error);
+								if (
+									errorMessage.includes("installation not found") ||
+									errorMessage.includes("installation may have been removed")
+								) {
+									// Installation was removed, skip silently
+									continue;
+								}
 								console.error(
 									`Error getting action repository for workspace ${agent.workspaceId}:`,
 									error,

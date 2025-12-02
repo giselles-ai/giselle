@@ -600,7 +600,7 @@ function generateContentV2({
 				appEntryResolver,
 			});
 
-			const toolSet = await buildToolSet({
+			const { toolSet, cleanupFunctions } = await buildToolSet({
 				context,
 				generationId: generation.id,
 				nodeId: operationNode.id,
@@ -661,6 +661,13 @@ function generateContentV2({
 				onFinish: async ({ messages: generateMessages }) => {
 					logger.info(
 						`Text generation stream completed in ${Date.now() - textGenerationStartTime}ms`,
+					);
+					const toolCleanupStartTime = Date.now();
+					await Promise.all(
+						cleanupFunctions.map((cleanupFunction) => cleanupFunction()),
+					);
+					logger.info(
+						`Tool cleanup completed in ${Date.now() - toolCleanupStartTime}ms`,
 					);
 					if (generationError) {
 						if (AISDKError.isInstance(generationError)) {

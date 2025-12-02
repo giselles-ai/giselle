@@ -1,30 +1,4 @@
-import fs from "node:fs";
-import path from "node:path";
 import type { KnipConfig } from "knip";
-
-function getDepsFor(workspaceRelPath: string): Set<string> {
-	const pkgPath = path.join(__dirname, workspaceRelPath, "package.json");
-	try {
-		const json = JSON.parse(fs.readFileSync(pkgPath, "utf8")) as {
-			dependencies?: Record<string, string>;
-			devDependencies?: Record<string, string>;
-		};
-		return new Set([
-			...Object.keys(json.dependencies ?? {}),
-			...Object.keys(json.devDependencies ?? {}),
-		]);
-	} catch {
-		return new Set();
-	}
-}
-
-function filterExisting(
-	pkgs: string[] | undefined,
-	deps: Set<string>,
-): string[] {
-	if (!pkgs?.length) return [];
-	return pkgs.filter((name) => deps.has(name));
-}
 
 const config: KnipConfig = {
 	biome: false,
@@ -33,29 +7,32 @@ const config: KnipConfig = {
 	},
 	workspaces: {
 		"apps/playground": {
-			ignoreDependencies: [],
+			ignoreDependencies: [
+				"@aws-sdk/client-s3",
+				"@supabase/realtime-js",
+				"@supabase/supabase-js",
+				"happy-dom",
+				"jsdom",
+				"pg",
+			],
 		},
 		"apps/studio.giselles.ai": {
-			entry: ["tests/e2e/global-setup.ts", "emails/**/*.tsx"],
+			entry: ["emails/**/*.tsx"],
 			ignore: [
 				"scripts/**",
 				"trigger.config.ts",
 				"trigger/investigate-private-key-job.ts",
 			],
 			// Ignore deps that are resolved dynamically in next.config or used only at build/runtime
-			ignoreDependencies: filterExisting(
-				[
-					"@embedpdf/pdfium",
-					"@opentelemetry/sdk-node",
-					"import-in-the-middle",
-					"require-in-the-middle",
-					"@aws-sdk/client-s3",
-					"pino-pretty",
-					"@react-email/preview-server",
-					"react-dom",
-				],
-				getDepsFor("apps/studio.giselles.ai"),
-			),
+			ignoreDependencies: [
+				"@aws-sdk/client-s3",
+				"@embedpdf/pdfium",
+				"@opentelemetry/sdk-node",
+				"import-in-the-middle",
+				"require-in-the-middle",
+				"@react-email/preview-server",
+				"pino-pretty",
+			],
 		},
 		"apps/ui.giselles.ai": {
 			ignoreDependencies: ["tailwindcss"],
